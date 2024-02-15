@@ -1,14 +1,19 @@
-version: '3'
-services:
-  base:
-    env_file:
-      - .docker_env
-    image: node:16.20.2-bookworm
+version: "3.8"
+services: 
+  cadence_web:
+    container_name: cadence_web
+    build:
+      context: . #if your Dockerfile is not at the same level change the path here (./cadence_web)
+      target: dev
+    restart: always
+    command: pnpm run dev
+    environment:
+      - NODE_ENV=development 
+      #if you're using Windows, you may need to uncomment the next line
+      #- WATCHPACK_POLLING=true
     volumes:
-      - .:/usr/src/service
-    working_dir: /usr/src/service
-    command: npm run dev
-  install:
-    extends:
-      base
-    command: /bin/sh -c "npm install --no-save --unsafe-perm"
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - 8088:8088

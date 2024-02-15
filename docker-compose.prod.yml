@@ -1,0 +1,10 @@
+version: "3.8"
+services: 
+  cadence_web:
+    container_name: cadence_web
+    build: .
+    restart: always #change if you don't want your container restarting
+    environment:
+      - NODE_ENV=production
+    ports:
+      - 8088:8088
