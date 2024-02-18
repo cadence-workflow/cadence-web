@@ -4,17 +4,22 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 8080",
-    "build": "next build",
+    "build": "NODE_ENV=production next build",
     "start": "next start",
     "lint": "next lint",
-    "generate:idl": "mkdir src/idl; pnpm run generate:idl:proto",
-    "generate:idl:proto": "rm -rf src/idl/proto && cp -R node_modules/cadence-idl/proto src/idl/proto"
+    "install": "npm run install-idl",
+    "install-idl": "cd node_modules && npx tiged https://github.com/uber/cadence-idl#34b4519b270945fbb38f413137dfb50b5fc20af7 cadence-idl",
+    "generate:idl": "mkdir -p src/idl; npm run generate:idl:proto",
+    "generate:idl:proto": "rm -rf src/idl/proto && cp -R node_modules/cadence-idl/proto src/idl/proto",
+    "postinstall": "npm run generate:idl"
+  },
+  "engines": {
+    "npm": ">=8.7.0"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.10.0",
     "@grpc/proto-loader": "^0.7.10",
     "baseui": "^14.0.0",
-    "cadence-idl": "github:uber/cadence-idl#34b4519b270945fbb38f413137dfb50b5fc20af7",
     "lodash": "^4.17.21",
     "next": "14.1.0",
     "react": "^18.2.0",
@@ -32,14 +37,11 @@
     "eslint-plugin-baseui": "^13.0.0",
     "typescript": "^5.3.3"
   },
-  "pnpm": {
-    "overrides": {
-      "d3-color": "3.1.0",
-      "react-window": "1.8.7",
-      "react-uid": "2.3.2",
-      "react-map-gl": "5.3.19",
-      "react-virtualized-auto-sizer": "1.0.22"
-    }
-  },
-  "packageManager": "pnpm@8.15.2+sha256.90bb5d6382cb2cb8b8d4959a076b3953d84d1d94121717097bcd41c71344fa14"
+  "overrides": {
+    "d3-color": "3.1.0",
+    "react-window": "1.8.7",
+    "react-uid": "2.3.2",
+    "react-map-gl": "5.3.19",
+    "react-virtualized-auto-sizer": "1.0.22"
+  }
 }
