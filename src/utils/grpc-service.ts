@@ -19,7 +19,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import path from 'path';
 import get from 'lodash/get';
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
@@ -108,12 +107,11 @@ class GRPCService {
             (error: Error & { details: string, message: string, code: number }, response: any) => {
               try {
                 if (error) {
-                  const customError: Error & { httpStatusCode?: number, grpcStatusCode?: number } = new Error(error.details || error.message || response.body || response)
+                  const customError: Error & { httpStatusCode?: number, grpcStatusCode?: number } = new Error(error?.details || error?.message || response?.body || response)
                   customError.httpStatusCode = GRPC_ERROR_STATUS_TO_HTTP_ERROR_CODE_MAP[error.code] || 500;
                   customError.grpcStatusCode = error.code;
                   throw customError;
                 }
-
                 return resolve(formatResponse(response));
               } catch (e) {
                 reject(e);
