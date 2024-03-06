@@ -3,18 +3,19 @@
   "version": "4.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 8080",
-    "build": "NODE_ENV=production next build",
-    "start": "next start",
+    "dev": "next dev -p ${CADENCE_WEB_PORT}",
+    "build": "NODE_ENV=production && next build",
+    "start": "CADENCE_WEB_PORT=8088 && next start -p ${CADENCE_WEB_PORT}",
     "lint": "next lint",
     "install": "npm run install-idl",
-    "install-idl": "cd node_modules && npx tiged https://github.com/uber/cadence-idl#34b4519b270945fbb38f413137dfb50b5fc20af7 cadence-idl",
+    "install-idl": "mkdir -p node_modules && cd node_modules && npx tiged https://github.com/uber/cadence-idl#34b4519b270945fbb38f413137dfb50b5fc20af7 cadence-idl",
     "generate:idl": "mkdir -p src/idl; npm run generate:idl:proto",
     "generate:idl:proto": "rm -rf src/idl/proto && cp -R node_modules/cadence-idl/proto src/idl/proto",
     "postinstall": "npm run generate:idl"
   },
   "engines": {
-    "npm": ">=8.7.0"
+    "node": "^18.17.1",
+    "npm": ">=9.6.7"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.10.0",
@@ -22,15 +23,17 @@
     "baseui": "^14.0.0",
     "lodash": "^4.17.21",
     "next": "14.1.0",
+    "query-string": "^9.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "styletron-engine-monolithic": "^1.0.0",
-    "styletron-react": "^6.1.1"
+    "styletron-react": "^6.1.1",
+    "use-between": "^1.3.5"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.202",
     "@types/node": "^20.11.17",
-    "@types/react": "^18.2.55",
+    "@types/react": "^18.2.57",
     "@types/react-dom": "^18.2.19",
     "eslint": "^8.56.0",
     "eslint-config-next": "14.1.0",
