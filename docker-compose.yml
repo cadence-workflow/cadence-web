@@ -6,7 +6,7 @@ services:
       context: . #if your Dockerfile is not at the same level change the path here (./cadence_web)
       target: dev
     restart: always
-    command: pnpm run dev
+    command: npm run dev
     environment:
       - NODE_ENV=development 
       #if you're using Windows, you may need to uncomment the next line
