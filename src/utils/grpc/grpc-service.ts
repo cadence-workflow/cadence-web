@@ -23,8 +23,8 @@ import get from 'lodash/get';
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import type { ServiceClient } from '@grpc/grpc-js/build/src/make-client';
+import GRPC_PROTO_DIR_BASE_PATH from '@/configs/grpc/grpc-proto-dir-base-path';
 
-const BASE_PATH = 'src/idl/proto';
 const MAX_MESSAGE_SIZE = 64 * 1024 * 1024; //TODO: make this configurable for oss
 const GRPC_OPTIONS = {
   'grpc.max_send_message_length': MAX_MESSAGE_SIZE,
@@ -44,17 +44,19 @@ const GRPC_ERROR_STATUS_TO_HTTP_ERROR_CODE_MAP: { [index: string]: number } = {
 
 export type GRPCRequestConfig = {
   serviceName: string;
+  metadata?: Record<string, string>
+}
+export type GRPCServiceConfig = {
+  peer: string;
+  requestConfig: GRPCRequestConfig;
+  schemaPath: string;
+  servicePath: string;
 }
 
 class GRPCService {
   service: ServiceClient;
   requestConfig: GRPCRequestConfig;
-  constructor({ peers, requestConfig, schemaPath, servicePath }: {
-    peers: string;
-    requestConfig: GRPCRequestConfig;
-    schemaPath: string;
-    servicePath: string;
-  }) {
+  constructor({ peer, requestConfig, schemaPath, servicePath }: GRPCServiceConfig) {
     const ServiceDefinition: any = get(
       grpc.loadPackageDefinition(
         protoLoader.loadSync(schemaPath, {
@@ -62,15 +64,14 @@ class GRPCService {
           enums: String,
           longs: String,
           defaults: true,
-          includeDirs: [BASE_PATH],
+          includeDirs: [GRPC_PROTO_DIR_BASE_PATH],
           oneofs: true,
         })
       ),
       servicePath
     );
-
     this.service = new ServiceDefinition(
-      peers,
+      peer,
       grpc.credentials.createInsecure(),
       GRPC_OPTIONS
     );
@@ -92,8 +93,8 @@ class GRPCService {
       const deadline = new Date();
 
       deadline.setSeconds(deadline.getSeconds() + 2);
-
       return new Promise((resolve, reject) => {
+
         this.service.waitForReady(deadline, error => {
           if (error) {
             return reject(error);
@@ -129,11 +130,12 @@ class GRPCService {
 
   meta() {
     const meta = new grpc.Metadata();
-
     meta.add('rpc-service', this.requestConfig.serviceName);
     meta.add('rpc-caller', 'cadence-web');
     meta.add('rpc-encoding', 'proto');
-
+    Object.entries(this.requestConfig.metadata || {}).forEach(([key, value]) => {
+      meta.add(key, value);
+    });
     /* Object.entries(this.ctx.authTokenHeaders || {}).forEach(([key, value]) => {
        meta.add(key, value);
      });

@@ -1,23 +1,23 @@
 import React from 'react';
 import { styled } from 'baseui';
-import { Spinner } from 'baseui/spinner';
+import { Props } from './domains-table-end-message.type';
 
 const EndMessageContainer = styled('div', ({ $theme }) => ({
   ...$theme.typography.LabelSmall,
   color: $theme.colors.contentTertiary,
 }));
 
-type DomainTableEndMessageProps = {
-  isLoading: boolean;
-  hasSearchResults: boolean;
-};
 
 export default function DomainTableEndMessage({
-  isLoading,
+  canLoadMoreResults,
   hasSearchResults,
-}: DomainTableEndMessageProps) {
-  if (isLoading) {
-    return <Spinner />;
+  infiniteScrollTargetRef
+}: Props) {
+
+  if (canLoadMoreResults) {
+    return (
+      <div data-testid="infinite-scroll-load-more" ref={infiniteScrollTargetRef} />
+    );
   }
 
   if (hasSearchResults) {
