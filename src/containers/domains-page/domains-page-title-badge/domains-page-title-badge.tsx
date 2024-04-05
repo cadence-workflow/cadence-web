@@ -1,16 +1,18 @@
+"use client";
 import React from 'react';
 import { Badge } from 'baseui/badge';
 import { StyleObject } from 'styletron-react';
 import { Theme } from 'baseui';
 
 type Props = {
-	count: number;
-};
+	content: string | number
+}
 
-export default function DomainPageHeaderCount({ count }: Props) {
+export default function DomainsPageTitleBadge({ content }: Props) {
+
 	return (
 		<Badge
-			content={count}
+			content={content}
 			overrides={{
 				Badge: {
 					style: ({ $theme }: { $theme: Theme }): StyleObject => ({
