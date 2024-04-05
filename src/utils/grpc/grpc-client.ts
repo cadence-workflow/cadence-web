@@ -116,4 +116,4 @@ const clusterServicesMethods = CLUSTERS_CONFIGS.reduce((result, c) => {
     return result;
 }, {} as { [k: string]: any })
 
-export default { clusterMethods: clusterServicesMethods }
+export const clusterMethods = clusterServicesMethods;

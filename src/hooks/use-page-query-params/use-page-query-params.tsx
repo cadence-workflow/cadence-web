@@ -22,7 +22,7 @@ export default function usePageQueryParams(
   const search = useMemo(() => {
     if (typeof window !== 'undefined') return window.location.search;
     return searchQueryParams.toString();
-  }, [searchQueryParams, typeof window !== 'undefined' && window.location.search]);
+  }, [searchQueryParams]);
 
   const values = useMemo(() => {
     const urlQueryParamsObject = queryString.parse(search);
@@ -49,7 +49,7 @@ export default function usePageQueryParams(
         rerender(newHref)
       }
     },
-    [router, configs, search]
+    [extraConfig?.replace, extraConfig?.pageRerender, configs, search, router.replace, router.push, pathname, rerender]
   );
 
   return [values, setter];
