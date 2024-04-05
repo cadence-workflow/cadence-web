@@ -6,6 +6,11 @@ const domainPageQueryParamsConfig: PageQueryParamConfig[] = [{
     defaultValue: ""
 },
 {
+    key: "clusterName",
+    queryParamKey: "c",
+    defaultValue: ""
+},
+{
     key: "sortColumn",
     queryParamKey: "sc",
 },

@@ -1,82 +1,74 @@
 "use client";
-import React, { useMemo } from 'react';
-import Image from 'next/image'
-import cadenceIcon from '@/assets/cadence-logo.svg';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Cell, Grid } from 'baseui/layout-grid';
 
-import type { DomainData, SortingOrder } from '../domains-page.types';
-import TableLink from './domains-table-link';
 import Table from '@/layout/table';
-import domainPageQueryParamsConfig from '../domains-page-query-params';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import sortBy, { SortByReturnValue, toggleSortOrder } from '@/utils/sort-by';
 import useStyletronClasses from '@/hooks/useStyletronClasses';
+import DomainTableEndMessage from '@/containers/domains-page/domains-table-end-message/domains-table-end-message';
+import domainPageQueryParamsConfig from '../domains-page-query-params';
+
+import { domainTableColumns } from './domains-table.config';
+
+import type { DomainData, SortingOrder } from '../domains-page.types';
+import { Props } from './domains-table.types';
 import { cssStyles } from './domains-table.styles';
-import { Cell, Grid } from 'baseui/layout-grid';
+import { useInView } from 'react-intersection-observer';
 
 
-type Props = {
-  domains: Array<DomainData>;
-};
 
-function DomainsTable({ domains }: Props) {
+
+const DOMAINS_LIST_PAGE_SIZE = 20;
+
+function DomainsTable({ domains, tableColumns = domainTableColumns }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
+  const [visibleListItems, setVisibleListItems] = useState(Math.min(DOMAINS_LIST_PAGE_SIZE, domains.length));
 
   const [queryParams, setQueryParams] = usePageQueryParams(domainPageQueryParamsConfig, { pageRerender: false });
+
+  useEffect(() => {
+    setVisibleListItems(DOMAINS_LIST_PAGE_SIZE);
+  }, [queryParams]);
 
   const filteredDomains = useMemo(
     () => {
       const lowerCaseSearch = queryParams.searchText?.toLowerCase();
+      const clusterName = queryParams.clusterName
       return domains.filter(
-        ({ id, name }) =>
-        (!lowerCaseSearch ||
-          id.toLowerCase().includes(lowerCaseSearch) ||
-          name.toLowerCase().includes(lowerCaseSearch))
+        ({ id, name, clusters }) =>
+          (!lowerCaseSearch ||
+            id.toLowerCase().includes(lowerCaseSearch) ||
+            name.toLowerCase().includes(lowerCaseSearch))
+          && (!clusterName || clusters.find((c) => c.clusterName === clusterName))
       );
     },
-    [domains, queryParams.searchText]
+    [domains, queryParams.searchText, queryParams.clusterName]
   );
   const sortedDomains = useMemo(
     () => sortBy<DomainData>(filteredDomains, (d) => (d[queryParams.sortColumn as keyof DomainData] as SortByReturnValue), queryParams.sortOrder),
     [filteredDomains, queryParams.sortColumn, queryParams.sortOrder]
   );
+  const paginatedDomains = useMemo(
+    () => sortedDomains.slice(0, visibleListItems),
+    [sortedDomains, visibleListItems]
+  );
 
-  const columns = [
-
-    {
-      name: 'Domain Name',
-      id: 'name',
-      renderCell: (row: DomainData) => (
-        <div className={cls.domainNameCell}>
-          <Image width={16} height={16} alt='Cadence Icon' src={cadenceIcon} />
-          <TableLink href={"a"}>{row.name}</TableLink>
-        </div>
-      ),
-      sortable: true,
-    },
-    {
-      name: 'Cluster',
-      id: 'cluster',
-      renderCell: (row: DomainData) => (
-        <div className={cls.clustersLinks}>
-          {row.clusters.length > 1 && row.clusters.map(({ clusterName }) => <TableLink key={clusterName} href={"/"}>{clusterName}</TableLink>)}
-          {row.clusters.length === 1 && row.clusters[0]?.clusterName}
-        </div>
-      ),
-    },
-    {
-      name: '',
-      id: 'metrics',
-      renderCell: () => <div className={cls.metricLinkContainer}><TableLink href={"/"}>Metrics</TableLink></div>,
-    },
-  ]
+  const { ref: loadMoreRef } = useInView({
+    onChange: (inView) => {
+      if (inView && visibleListItems < sortedDomains.length) {
+        setVisibleListItems((v) => Math.min(v + DOMAINS_LIST_PAGE_SIZE, sortedDomains.length));
+      }
+    }
+  });
 
   return (
     <section className={cls.tableContainer}>
       <Grid>
         <Cell span={12}>
           <Table
-            data={sortedDomains}
-            columns={columns}
+            data={paginatedDomains}
+            columns={tableColumns}
             shouldShowResults={true}
             onSort={(columnID) => setQueryParams({
               sortColumn: columnID,
@@ -88,7 +80,12 @@ function DomainsTable({ domains }: Props) {
             })}
             sortColumn={queryParams.sortColumn}
             sortOrder={queryParams.sortOrder as SortingOrder}
-            endMessage={null}
+            endMessage={<DomainTableEndMessage
+              key={visibleListItems}
+              canLoadMoreResults={paginatedDomains.length < sortedDomains.length}
+              hasSearchResults={sortedDomains.length > 0}
+              infiniteScrollTargetRef={loadMoreRef}
+            />}
           />
         </Cell>
       </Grid>

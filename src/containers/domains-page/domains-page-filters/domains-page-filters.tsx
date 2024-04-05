@@ -8,32 +8,27 @@ import domainPageQueryParamsConfig from "../domains-page-query-params";
 import usePageQueryParams from "@/hooks/use-page-query-params/use-page-query-params";
 import { Delete, Filter, Search, } from "baseui/icon";
 import useStyletronClasses from "@/hooks/useStyletronClasses";
-import DomainPageHeaderCount from "./domain-page-header-count";
-import { cssStyles, overrides } from "./domains-page-header.styles";
+import { cssStyles, overrides } from "./domains-page-filters.styles";
 import { Button } from "baseui/button";
 import { useMemo, useState } from "react";
+import CLUSTERS_CONFIGS from "@/configs/clusters/clusters-configs";
 
-type Props = {
-  domainsCount: number;
-};
-
-export default function DomainPageHeader({ domainsCount }: Props) {
+export default function DomainPageHeader() {
   const [queryParams, setQueryParams] = usePageQueryParams(domainPageQueryParamsConfig, { pageRerender: false });
   const { cls, theme } = useStyletronClasses(cssStyles);
   const [showFilters, setShowFilters] = useState(false);
   const selectedFiltersCount = useMemo(() => {
     return 0;
-/*     return domainPageQueryParamsConfig
-      .reduce((result, { key, defaultValue }) => queryParams[key] === defaultValue ? result : result + 1, 0); */
+    /*     return domainPageQueryParamsConfig
+          .reduce((result, { key, defaultValue }) => queryParams[key] === defaultValue ? result : result + 1, 0); */
   }, [queryParams]);
+
+  const clustersOptions = CLUSTERS_CONFIGS.map(({ clusterName }) => ({ label: clusterName, id: clusterName }));
+  const clusterValue = clustersOptions.filter(({ id }) => id === queryParams.clusterName)
   return (
     <section>
       <Grid>
         <Cell span={12}>
-          <div className={cls.titleContainer}>
-            <LabelLarge>All domains</LabelLarge>
-            <DomainPageHeaderCount count={domainsCount} />
-          </div>
           <div className={cls.searchBarContainer}>
             <Input
               overrides={overrides.searchInput}
@@ -54,19 +49,12 @@ export default function DomainPageHeader({ domainsCount }: Props) {
           </div>
           {showFilters && <div className={cls.filtersContainer}>
             <div className={cls.selectFilterContainer}>
-              <FormControl overrides={overrides.selectFormControl}
-                label="Enironments">
-                <Select
-                  id="id-select-domains-environments"
-                  size="compact"
-                />
-              </FormControl>
-            </div>
-            <div className={cls.selectFilterContainer}>
               <FormControl overrides={overrides.selectFormControl} label="Clusters">
                 <Select
-                  id="id-select-domains-clusters"
                   size="compact"
+                  value={clusterValue}
+                  options={clustersOptions}
+                  onChange={(params) => setQueryParams({ clusterName: params.value[0].id })}
                 />
               </FormControl>
             </div>

@@ -110,14 +110,14 @@ function SortableTableHeadCell({
   );
 }
 
-type TableColumn<T> = {
+export type TableColumn<T> = {
   name: string;
   id: string;
-  renderCell: (row: T) => React.ReactNode;
+  renderCell: React.ComponentType<T> | ((row: T) => React.ReactNode);
   sortable?: boolean;
 };
 
-type Props<T> = {
+export type Props<T> = {
   data: Array<T>;
   columns: Array<TableColumn<T>>;
   shouldShowResults: boolean;
@@ -163,7 +163,7 @@ function Table<T extends Object>({
                 {columns.map((column) => {
                   return (
                     <StyledTableBodyCell $size='compact' $divider="clean" key={`${column.id}-${rowIndex}`}>
-                      {column.renderCell(row)}
+                      {<column.renderCell {...row} />}
                     </StyledTableBodyCell>
                   );
                 })}

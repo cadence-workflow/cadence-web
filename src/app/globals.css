@@ -6,9 +6,15 @@
 
 html,
 body {
+  display: flex;
+  flex-direction: column;
   max-width: 100vw;
   overflow-x: hidden;
   height: 100%;
 }
 
-
+body main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
