@@ -21,7 +21,7 @@ export default function DomainPageHeader() {
     return 0;
     /*     return domainPageQueryParamsConfig
           .reduce((result, { key, defaultValue }) => queryParams[key] === defaultValue ? result : result + 1, 0); */
-  }, [queryParams]);
+  }, [/* queryParams */]);
 
   const clustersOptions = CLUSTERS_CONFIGS.map(({ clusterName }) => ({ label: clusterName, id: clusterName }));
   const clusterValue = clustersOptions.filter(({ id }) => id === queryParams.clusterName)
