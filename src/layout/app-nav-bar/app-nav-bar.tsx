@@ -1,5 +1,5 @@
 "use client"
-import useStyletronClasses from '@/hooks/useStyletronClasses';
+import useStyletronClasses from '@/hooks/use-styletron-classes';
 import { AppNavBar as BaseAppNavBar } from 'baseui/app-nav-bar';
 import { cssStyles } from './app-nav-bar.styles';
 

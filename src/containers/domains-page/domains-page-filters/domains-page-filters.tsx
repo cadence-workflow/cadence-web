@@ -7,7 +7,7 @@ import { FormControl } from 'baseui/form-control';
 import domainPageQueryParamsConfig from "../domains-page-query-params";
 import usePageQueryParams from "@/hooks/use-page-query-params/use-page-query-params";
 import { Delete, Filter, Search, } from "baseui/icon";
-import useStyletronClasses from "@/hooks/useStyletronClasses";
+import useStyletronClasses from "@/hooks/use-styletron-classes";
 import { cssStyles, overrides } from "./domains-page-filters.styles";
 import { Button } from "baseui/button";
 import { useMemo, useState } from "react";
