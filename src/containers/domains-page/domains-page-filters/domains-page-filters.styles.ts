@@ -1,4 +1,4 @@
-import type { StyletronCSSObject, StyletronCSSObjectOf } from "@/hooks/useStyletronClasses";
+import type { StyletronCSSObject, StyletronCSSObjectOf } from "@/hooks/use-styletron-classes";
 import { Theme } from "baseui";
 import type { FormControlOverrides } from "baseui/form-control/types";
 import type { InputOverrides } from "baseui/input/types";
