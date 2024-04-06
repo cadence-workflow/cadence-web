@@ -19,15 +19,16 @@ export default function usePageQueryParams(
   const searchQueryParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter()
-  const prevStateUrl = usePreviousValue(stateUrl);
+  const prevSearchQueryParam = usePreviousValue(searchQueryParams);
 
   const search = useMemo(() => {
-    // if update is due to history change then the search value would be available in window.location.search
-    // otherwise we get it from searchQueryParams
-    if (prevStateUrl !== stateUrl) return window.location.search;
-    return searchQueryParams.toString();
-  }, [searchQueryParams, stateUrl, prevStateUrl]);
-
+    // get changed value from searchQueryParams if it was changed
+    // otherwise change would be due history state change and search value is available in window.location.search
+    if (prevSearchQueryParam !== searchQueryParams) return searchQueryParams.toString();
+    return window.location.search;
+    // stateUrl is needed in deps to recalculate window.location.search
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQueryParams, prevSearchQueryParam, stateUrl]);
   const values = useMemo(() => {
     const urlQueryParamsObject = queryString.parse(search);
     return getPageQueryParamsValues(configs, urlQueryParamsObject);
