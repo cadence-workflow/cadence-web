@@ -1,4 +1,4 @@
-import grpcClient from "@/utils/grpc/grpc-client";
+import * as grpcClient from "@/utils/grpc/grpc-client";
 import { unstable_cache } from "next/cache";
 import { DomainData } from "./domains-page.types";
 import CLUSTERS_CONFIGS from "@/configs/clusters/clusters-configs";
