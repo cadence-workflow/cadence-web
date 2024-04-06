@@ -1,12 +1,13 @@
 import { useCallback, useMemo, useState } from 'react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import queryString from 'query-string';
 import isObjectLike from 'lodash/isObjectLike';
+import { useBetween } from 'use-between';
+import usePreviousValue from '@/hooks/usePreviousValue';
 import type { PageQueryParamConfig, PageQueryParamsSetter, QueryParamSetterExtraConfig, QueryParamsSetterObject, QueryParamsValues } from './types';
 import { getPageQueryParamsValues, getUpdatedUrlSearch } from './utils';
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { useBetween } from 'use-between';
 
-const useSharedHistoryState = () => useBetween(useState<string>);
+const use_Shared_HistoryState = () => useBetween(useState<string>);
 
 export default function usePageQueryParams(
   configs: PageQueryParamConfig[],
@@ -14,15 +15,18 @@ export default function usePageQueryParams(
 ): [QueryParamsValues, PageQueryParamsSetter] {
   // state shared across all usePageQueryParams instances so that when one of the hook uses history state (which doesn't cause full page rerender)
   // other usePageQueryParams hooks will get rerendered and update their internal value of window.location.search
-  const [, rerender] = useSharedHistoryState()
+  const [stateUrl, rerender] = use_Shared_HistoryState()
   const searchQueryParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter()
+  const prevStateUrl = usePreviousValue(stateUrl);
 
   const search = useMemo(() => {
-    if (typeof window !== 'undefined') return window.location.search;
+    // if update is due to history change then the search value would be available in window.location.search
+    // otherwise we get it from searchQueryParams
+    if (prevStateUrl !== stateUrl) return window.location.search;
     return searchQueryParams.toString();
-  }, [searchQueryParams]);
+  }, [searchQueryParams, stateUrl]);
 
   const values = useMemo(() => {
     const urlQueryParamsObject = queryString.parse(search);
@@ -43,13 +47,13 @@ export default function usePageQueryParams(
       const newHref = pathname + (updatedUrlSearch ? `?${updatedUrlSearch}` : '');
 
       if (pageRerender) {
-        routerNavigate(newHref)
+        routerNavigate(newHref);
       } else {
         stateNavigate(window.history.state, '', newHref);
-        rerender(newHref)
+        rerender(newHref);
       }
     },
-    [extraConfig?.replace, extraConfig?.pageRerender, configs, search, router.replace, router.push, pathname, rerender]
+    [extraConfig?.replace, extraConfig?.pageRerender, search, configs, router.replace, router.push, pathname, rerender];
   );
 
   return [values, setter];
