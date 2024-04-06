@@ -1,4 +1,4 @@
-import type { StyletronCSSObject, StyletronCSSObjectOf } from "@/hooks/useStyletronClasses";
+import type { StyletronCSSObject, StyletronCSSObjectOf } from "@/hooks/use-styletron-classes";
 
 const cssStylesObj = {
     titleIcon: {

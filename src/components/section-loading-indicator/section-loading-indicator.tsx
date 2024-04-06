@@ -1,5 +1,5 @@
 "use client";
-import useStyletronClasses from "@/hooks/useStyletronClasses";
+import useStyletronClasses from "@/hooks/use-styletron-classes";
 import { Spinner, SIZE, type SpinnerProps } from "baseui/spinner";
 import { cssStyles } from "./section-loading-indicator.styles";
 

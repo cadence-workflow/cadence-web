@@ -5,7 +5,7 @@ import { Cell, Grid } from 'baseui/layout-grid';
 import Table from '@/layout/table';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import sortBy, { SortByReturnValue, toggleSortOrder } from '@/utils/sort-by';
-import useStyletronClasses from '@/hooks/useStyletronClasses';
+import useStyletronClasses from '@/hooks/use-styletron-classes';
 import DomainTableEndMessage from '@/containers/domains-page/domains-table-end-message/domains-table-end-message';
 import domainPageQueryParamsConfig from '../domains-page-query-params';
 
