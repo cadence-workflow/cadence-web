@@ -15,7 +15,7 @@ import {
 import ChevronUp from 'baseui/icon/chevron-up';
 import ChevronDown from 'baseui/icon/chevron-down';
 
-import { SortingOrder } from '@/containers/domains-page/domains-page.types';
+import { SortingOrder } from './table.types';
 
 const SortableHeaderContainer = styled('div', ({ $theme }) => ({
   display: 'flex',

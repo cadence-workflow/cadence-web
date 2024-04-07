@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 
-import type { DomainData, SortingOrder } from '@/containers/domains-page/domains-page.types';
+import type { DomainData } from '@/containers/domains-page/domains-page.types';
 import TableLink from '@/containers/domains-page/domains-table-link/domains-table-link';
 
 import useStyletronClasses from '@/hooks/use-styletron-classes';

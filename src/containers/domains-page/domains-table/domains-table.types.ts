@@ -1,4 +1,4 @@
-import { TableColumn } from "@/layout/table";
+import { TableColumn } from "@/layout/table/table";
 import { DomainData } from "../domains-page.types";
 
 export type DomainTableColumns = Array<TableColumn<DomainData>>;

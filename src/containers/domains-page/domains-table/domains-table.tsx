@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Cell, Grid } from 'baseui/layout-grid';
 
-import Table from '@/layout/table';
+import Table from '@/layout/table/table';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import sortBy, { SortByReturnValue, toggleSortOrder } from '@/utils/sort-by';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
@@ -11,7 +11,8 @@ import domainPageQueryParamsConfig from '../domains-page-query-params';
 
 import { domainTableColumns } from './domains-table.config';
 
-import type { DomainData, SortingOrder } from '../domains-page.types';
+import type { DomainData } from '../domains-page.types';
+import { SortingOrder } from '@/layout/table/table.types';
 import { Props } from './domains-table.types';
 import { cssStyles } from './domains-table.styles';
 import { useInView } from 'react-intersection-observer';
