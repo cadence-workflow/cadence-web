@@ -1,5 +1,5 @@
 export type DomainData = {
-  //ClientDashboardHref: string;
+  activeClusterName: string;
   clusters: [{ clusterName: string }];
   id: string;
   name: string;
