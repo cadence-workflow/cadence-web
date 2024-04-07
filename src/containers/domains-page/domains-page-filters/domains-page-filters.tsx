@@ -1,6 +1,5 @@
 "use client"
 import { Input } from "baseui/input";
-import { LabelLarge } from 'baseui/typography';
 import { Cell, Grid } from "baseui/layout-grid";
 import { Select } from "baseui/select";
 import { FormControl } from 'baseui/form-control';
@@ -13,6 +12,7 @@ import { Button } from "baseui/button";
 import { useMemo, useState } from "react";
 import CLUSTERS_CONFIGS from "@/configs/clusters/clusters-configs";
 
+const clustersOptions = CLUSTERS_CONFIGS.map(({ clusterName }) => ({ label: clusterName, id: clusterName }));
 export default function DomainPageHeader() {
   const [queryParams, setQueryParams] = usePageQueryParams(domainPageQueryParamsConfig, { pageRerender: false });
   const { cls, theme } = useStyletronClasses(cssStyles);
@@ -23,7 +23,6 @@ export default function DomainPageHeader() {
           .reduce((result, { key, defaultValue }) => queryParams[key] === defaultValue ? result : result + 1, 0); */
   }, [/* queryParams */]);
 
-  const clustersOptions = CLUSTERS_CONFIGS.map(({ clusterName }) => ({ label: clusterName, id: clusterName }));
   const clusterValue = clustersOptions.filter(({ id }) => id === queryParams.clusterName)
   return (
     <section>
@@ -54,7 +53,7 @@ export default function DomainPageHeader() {
                   size="compact"
                   value={clusterValue}
                   options={clustersOptions}
-                  onChange={(params) => setQueryParams({ clusterName: params.value[0].id })}
+                  onChange={(params) => setQueryParams({ clusterName: params.value[0]?.id })}
                 />
               </FormControl>
             </div>
