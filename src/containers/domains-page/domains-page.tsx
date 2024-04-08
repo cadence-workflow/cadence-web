@@ -1,7 +1,7 @@
 import React, { JSXElementConstructor, Suspense } from "react";
 import DomainPageHeader from "./domains-page-filters/domains-page-filters";
 import DomainsTable from "./domains-table/domains-table";
-import { getCachedDomains } from "./domains-page.utils";
+import { getCachedDomains } from "./utils/get-domains";
 import DomainPageTitle from "./domains-page-title/domains-page-title";
 import DomainsPageTitleBadge from "./domains-page-title-badge/domains-page-title-badge";
 import SectionLoadingIndicator from "@/components/section-loading-indicator/section-loading-indicator";
@@ -15,7 +15,7 @@ async function RSCWithAsyncProps<Component extends keyof JSX.IntrinsicElements |
     )
 }
 
-export default async function Domains() {
+export default async function DomainsPage() {
 
     return (
         <>
