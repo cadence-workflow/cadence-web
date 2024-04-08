@@ -38,7 +38,7 @@ const TableMessage = withStyle(StyledTableLoadingMessage, ({ $theme }) => ({
 
 const tableHeadCellStyles = ($theme: Theme) => ({
   ...$theme.typography.LabelXSmall,
-  color: '#a6a6a6',
+  color: '#5E5E5E',
 });
 
 const TableHeadCell = withStyle(StyledTableHeadCell, ({ $theme }) => ({
