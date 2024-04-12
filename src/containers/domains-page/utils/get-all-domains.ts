@@ -1,7 +1,7 @@
 import * as grpcClient from "@/utils/grpc/grpc-client";
 import { unstable_cache } from "next/cache";
 import { DomainData } from "../domains-page.types";
-import CLUSTERS_CONFIGS from "@/config/clusters/clusters-config";
+import CLUSTERS_CONFIGS from "@/config/clusters/clusters.config";
 
 export const getAllDomains =  async () => {
     const results = await Promise.all(CLUSTERS_CONFIGS.map(({ clusterName }) => grpcClient.clusterMethods[clusterName].listDomains({ pageSize: 1000 })))
