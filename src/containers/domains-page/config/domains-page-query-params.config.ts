@@ -1,11 +1,12 @@
 import { PageQueryParam } from "@/hooks/use-page-query-params/types"
+import { SortingOrder } from "@/layout/table/table.types";
 
 const domainPageQueryParamsConfig:
     [
         PageQueryParam<"searchText", string>,
         PageQueryParam<"clusterName", string>,
         PageQueryParam<"sortColumn", string>,
-        PageQueryParam<"sortOrder", string>
+        PageQueryParam<"sortOrder", SortingOrder>
     ]
     = [{
         key: "searchText",
