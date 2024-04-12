@@ -4,7 +4,7 @@ import useStyletronClasses from '@/hooks/use-styletron-classes';
 import { cssStyles, overrides } from './domains-page-filters-cluster-name.styles';
 import { FormControl } from 'baseui/form-control';
 import { Select } from 'baseui/select';
-import CLUSTERS_CONFIGS from '@/config/clusters/clusters-config';
+import CLUSTERS_CONFIGS from '@/config/clusters/clusters.config';
 import { DomainPageFilterProps } from "../domains-page-filters/domains-page-filters.types";
 
 const clustersOptions = CLUSTERS_CONFIGS.map(({ clusterName }) => ({ label: clusterName, id: clusterName }));

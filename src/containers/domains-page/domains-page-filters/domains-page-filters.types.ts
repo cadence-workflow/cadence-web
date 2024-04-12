@@ -1,5 +1,5 @@
 import type { PageQueryParamKeys } from "@/hooks/use-page-query-params/types";
-import domainPageQueryParamsConfig from "@/containers/domains-page/domains-page-query-params";
+import domainPageQueryParamsConfig from "@/containers/domains-page/config/domains-page-query-params.config";
 
 
 export type DomainPageFilterProps = {

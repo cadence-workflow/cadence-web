@@ -8,7 +8,7 @@ import usePageQueryParams from "@/hooks/use-page-query-params/use-page-query-par
 import useStyletronClasses from "@/hooks/use-styletron-classes";
 import domainPageQueryParamsConfig from "../config/domains-page-query-params";
 import getDomainsPageChangedFiltersCount from "../utils/get-domain-page-changed-filters-count";
-import domainPageFilters from "../config/domains-page-filters-config";
+import domainPageFilters from "../config/domains-page-filters.config";
 import { cssStyles, overrides } from "./domains-page-filters.styles";
 import clearDomainPageFilters from "../utils/clear-domain-page-filters";
 
