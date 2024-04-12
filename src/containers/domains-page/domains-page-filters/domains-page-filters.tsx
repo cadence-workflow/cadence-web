@@ -1,29 +1,26 @@
 "use client"
-import { Input } from "baseui/input";
-import { Cell, Grid } from "baseui/layout-grid";
-import { Select } from "baseui/select";
-import { FormControl } from 'baseui/form-control';
-import domainPageQueryParamsConfig from "../domains-page-query-params";
-import usePageQueryParams from "@/hooks/use-page-query-params/use-page-query-params";
-import { Delete, Filter, Search, } from "baseui/icon";
-import useStyletronClasses from "@/hooks/use-styletron-classes";
-import { cssStyles, overrides } from "./domains-page-filters.styles";
-import { Button } from "baseui/button";
 import { useMemo, useState } from "react";
-import CLUSTERS_CONFIGS from "@/configs/clusters/clusters-configs";
+import { Button } from "baseui/button";
+import { Input } from "baseui/input";
+import { Delete, Filter, Search, } from "baseui/icon";
+import { Cell, Grid } from "baseui/layout-grid";
+import usePageQueryParams from "@/hooks/use-page-query-params/use-page-query-params";
+import useStyletronClasses from "@/hooks/use-styletron-classes";
+import domainPageQueryParamsConfig from "../config/domains-page-query-params";
+import getDomainsPageChangedFiltersCount from "../utils/get-domain-page-changed-filters-count";
+import domainPageFilters from "../config/domains-page-filters-config";
+import { cssStyles, overrides } from "./domains-page-filters.styles";
 
-const clustersOptions = CLUSTERS_CONFIGS.map(({ clusterName }) => ({ label: clusterName, id: clusterName }));
-export default function DomainPageHeader() {
+
+export default function DomainPageFilters() {
   const [queryParams, setQueryParams] = usePageQueryParams(domainPageQueryParamsConfig, { pageRerender: false });
   const { cls, theme } = useStyletronClasses(cssStyles);
   const [showFilters, setShowFilters] = useState(false);
-  const selectedFiltersCount = useMemo(() => {
-    return 0;
-    /*     return domainPageQueryParamsConfig
-          .reduce((result, { key, defaultValue }) => queryParams[key] === defaultValue ? result : result + 1, 0); */
-  }, [/* queryParams */]);
 
-  const clusterValue = clustersOptions.filter(({ id }) => id === queryParams.clusterName)
+  const selectedFiltersCount = useMemo(() => {
+    return getDomainsPageChangedFiltersCount(queryParams);
+  }, [queryParams]);
+
   return (
     <section>
       <Grid>
@@ -47,16 +44,11 @@ export default function DomainPageHeader() {
             </Button>
           </div>
           {showFilters && <div className={cls.filtersContainer}>
-            <div className={cls.selectFilterContainer}>
-              <FormControl overrides={overrides.selectFormControl} label="Clusters">
-                <Select
-                  size="compact"
-                  value={clusterValue}
-                  options={clustersOptions}
-                  onChange={(params) => setQueryParams({ clusterName: params.value[0]?.id })}
-                />
-              </FormControl>
-            </div>
+            {domainPageFilters.map((f) => {
+              return (
+                <f.renderFilter key={f.id} onChange={(v) => setQueryParams({ [f.id]: v })} value={queryParams[f.id]} />
+              );
+            })}
             <div className={cls.clearBtnContainer}>
               <Button startEnhancer={<Delete />} kind="tertiary" size="compact" >
                 Clear filters

@@ -1,10 +1,10 @@
 import React, { JSXElementConstructor, Suspense } from "react";
-import DomainPageHeader from "./domains-page-filters/domains-page-filters";
-import DomainsTable from "./domains-table/domains-table";
-import { getCachedDomains } from "./utils/get-domains";
-import DomainPageTitle from "./domains-page-title/domains-page-title";
-import DomainsPageTitleBadge from "./domains-page-title-badge/domains-page-title-badge";
+import DomainPageHeader from "@/containers/domains-page/domains-page-filters/domains-page-filters";
+import DomainsTable from "@/containers/domains-page/domains-table/domains-table";
+import DomainPageTitle from "@/containers/domains-page/domains-page-title/domains-page-title";
+import DomainsPageTitleBadge from "@/containers/domains-page/domains-page-title-badge/domains-page-title-badge";
 import SectionLoadingIndicator from "@/components/section-loading-indicator/section-loading-indicator";
+import { getCachedAllDomains } from "@/containers/domains-page/utils/get-all-domains";
 
 
 async function RSCWithAsyncProps<Component extends keyof JSX.IntrinsicElements | JSXElementConstructor<any>, ComponentProps extends React.ComponentProps<Component>>({ component, getAsyncProps }: { component: Component, getAsyncProps: () => Promise<ComponentProps> }) {
@@ -24,7 +24,7 @@ export default async function DomainsPage() {
                     <RSCWithAsyncProps
                         component={DomainsPageTitleBadge}
                         getAsyncProps={async () => {
-                            const res = await getCachedDomains();
+                            const res = await getCachedAllDomains();
                             return { content: res.domains.length }
                         }} />
                 </Suspense>
@@ -36,7 +36,7 @@ export default async function DomainsPage() {
                 <RSCWithAsyncProps
                     component={DomainsTable}
                     getAsyncProps={async () => {
-                        const res = await getCachedDomains();
+                        const res = await getCachedAllDomains();
                         return { domains: res.domains }
                     }} />
             </Suspense>

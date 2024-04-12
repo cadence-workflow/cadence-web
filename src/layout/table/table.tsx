@@ -15,7 +15,7 @@ import {
 import ChevronUp from 'baseui/icon/chevron-up';
 import ChevronDown from 'baseui/icon/chevron-down';
 
-import { SortingOrder } from './table.types';
+import type { Props } from './table.types';
 
 const SortableHeaderContainer = styled('div', ({ $theme }) => ({
   display: 'flex',
@@ -109,24 +109,6 @@ function SortableTableHeadCell({
     </TableHeadCellSortable>
   );
 }
-
-export type TableColumn<T> = {
-  name: string;
-  id: string;
-  renderCell: React.ComponentType<T> | ((row: T) => React.ReactNode);
-  sortable?: boolean;
-};
-
-export type Props<T> = {
-  data: Array<T>;
-  columns: Array<TableColumn<T>>;
-  shouldShowResults: boolean;
-  endMessage: React.ReactNode;
-  // Sort params
-  onSort: (column: string) => void;
-  sortColumn: string;
-  sortOrder: SortingOrder;
-};
 
 function Table<T extends Object>({
   data,
