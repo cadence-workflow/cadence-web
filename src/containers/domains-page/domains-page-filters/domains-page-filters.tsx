@@ -6,7 +6,7 @@ import { Delete, Filter, Search, } from "baseui/icon";
 import { Cell, Grid } from "baseui/layout-grid";
 import usePageQueryParams from "@/hooks/use-page-query-params/use-page-query-params";
 import useStyletronClasses from "@/hooks/use-styletron-classes";
-import domainPageQueryParamsConfig from "../config/domains-page-query-params";
+import domainPageQueryParamsConfig from "../config/domains-page-query-params.config";
 import getDomainsPageChangedFiltersCount from "../utils/get-domain-page-changed-filters-count";
 import domainPageFilters from "../config/domains-page-filters.config";
 import { cssStyles, overrides } from "./domains-page-filters.styles";
