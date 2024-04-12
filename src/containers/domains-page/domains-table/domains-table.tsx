@@ -7,9 +7,9 @@ import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-par
 import sortBy, { SortByReturnValue, toggleSortOrder } from '@/utils/sort-by';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import DomainTableEndMessage from '@/containers/domains-page/domains-table-end-message/domains-table-end-message';
-import domainPageQueryParamsConfig from '../config/domains-page-query-params';
+import domainPageQueryParamsConfig from '../config/domains-page-query-params.config';
 
-import { domainTableColumns } from '../config/domains-table-columns-config';
+import { domainTableColumns } from '../config/domains-table-columns.config';
 
 import type { DomainData } from '../domains-page.types';
 import { SortingOrder } from '@/layout/table/table.types';
