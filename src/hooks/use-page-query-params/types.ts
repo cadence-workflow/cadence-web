@@ -26,6 +26,7 @@ export type PageQueryParamMultiValue<K extends string, T extends any[]> = {
 export type PageQueryParams = (PageQueryParam<string, any> | PageQueryParamMultiValue<string, any[]>)[];
 export type PageQueryParamKeys<P extends PageQueryParams> = keyof PageQueryParamValues<P>;
 
+export type PageQueryParamSetter<P extends PageQueryParams> = (newParams: Partial<PageQueryParamSetterValues<P>>, setterExtraConfig?: QueryParamSetterExtraConfig) => void
 
 // get the type for the values object of the page query params e.g {count: 1}
 // The Extracted type is the keys of the available query params and the type of the value corresponding to the key

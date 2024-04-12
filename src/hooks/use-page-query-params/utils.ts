@@ -37,7 +37,7 @@ export const getPageQueryParamsValues = <P extends PageQueryParams>(
         const val = getArrayValForMultiValParams(valInUrl, isMultiValue);
         const configKey: PageQueryParamKeys<P> = configObject.key;
 
-        if (val === null || (isMultiValue && val.length === 0)) {
+        if (val === undefined || val === null || (isMultiValue && val.length === 0)) {
             result[configKey] = configObject?.defaultValue;
         } else if (isMultiValue && typeof configObject.parseValue === 'function') {
             result[configKey] = Array.isArray(val)

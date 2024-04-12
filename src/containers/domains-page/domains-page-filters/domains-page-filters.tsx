@@ -10,6 +10,7 @@ import domainPageQueryParamsConfig from "../config/domains-page-query-params";
 import getDomainsPageChangedFiltersCount from "../utils/get-domain-page-changed-filters-count";
 import domainPageFilters from "../config/domains-page-filters-config";
 import { cssStyles, overrides } from "./domains-page-filters.styles";
+import clearDomainPageFilters from "../utils/clear-domain-page-filters";
 
 
 export default function DomainPageFilters() {
@@ -50,7 +51,7 @@ export default function DomainPageFilters() {
               );
             })}
             <div className={cls.clearBtnContainer}>
-              <Button startEnhancer={<Delete />} kind="tertiary" size="compact" >
+              <Button startEnhancer={<Delete />} kind="tertiary" size="compact" onClick={() => { clearDomainPageFilters(setQueryParams) }} >
                 Clear filters
               </Button>
             </div>

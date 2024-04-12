@@ -5,10 +5,6 @@ const domainPageFilters = [
     {
         id: 'clusterName',
         renderFilter: DomainsPageFiltersClusterName,
-    },
-    {
-        id: 'searchText',
-        renderFilter: DomainsPageFiltersClusterName,
     }
 ] as const satisfies DomainPageFilters;
 

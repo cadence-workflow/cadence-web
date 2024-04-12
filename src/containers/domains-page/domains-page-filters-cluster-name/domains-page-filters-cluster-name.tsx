@@ -21,7 +21,7 @@ function DomainsPageFiltersClusterName({ onChange, value }: DomainPageFilterProp
                     size="compact"
                     value={clusterValue}
                     options={clustersOptions}
-                    onChange={(params) => onChange(String(params.value[0]?.id))}
+                    onChange={(params) => onChange(typeof params.value[0]?.id === 'undefined' ? undefined : String(params.value[0]?.id))}
                 />
             </FormControl>
         </div>

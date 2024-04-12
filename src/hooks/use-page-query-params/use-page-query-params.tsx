@@ -4,7 +4,7 @@ import queryString from 'query-string';
 import isObjectLike from 'lodash/isObjectLike';
 import { useBetween } from 'use-between';
 import usePreviousValue from '@/hooks/use-previous-value';
-import type { PageQueryParamSetterValues, PageQueryParamValues, PageQueryParams, QueryParamSetterExtraConfig } from './types';
+import type { PageQueryParamSetter, PageQueryParamSetterValues, PageQueryParamValues, PageQueryParams, QueryParamSetterExtraConfig } from './types';
 import { getPageQueryParamsValues, getUpdatedUrlSearch } from './utils';
 
 const useShared_HistoryState = () => useBetween(useState<string>);
@@ -13,7 +13,7 @@ const useShared_HistoryState = () => useBetween(useState<string>);
 export default function usePageQueryParams<P extends PageQueryParams>(
   config: P,
   extraConfig?: QueryParamSetterExtraConfig
-): [PageQueryParamValues<P>, (newParams: Partial<PageQueryParamSetterValues<P>>, setterExtraConfig?: QueryParamSetterExtraConfig) => void] {
+): [PageQueryParamValues<P>, PageQueryParamSetter<P>] {
   // state shared across all usePageQueryParams instances so that when one of the hook uses history state (which doesn't cause full page rerender)
   // other usePageQueryParams hooks will get rerendered and update their internal value of window.location.search
   const [stateUrl, rerender] = useShared_HistoryState()
@@ -36,8 +36,8 @@ export default function usePageQueryParams<P extends PageQueryParams>(
     return getPageQueryParamsValues<P>(config, urlQueryParamsObject);
   }, [config, search]);
 
-  const setter = useCallback(
-    (newParams: Partial<PageQueryParamSetterValues<P>>, setterExtraConfig?: QueryParamSetterExtraConfig) => {
+  const setter = useCallback<PageQueryParamSetter<P>>(
+    (newParams, setterExtraConfig) => {
       if (!isObjectLike(newParams)) {
         return;
       }
