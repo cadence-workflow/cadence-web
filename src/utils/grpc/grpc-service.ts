@@ -23,7 +23,7 @@ import get from 'lodash/get';
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import type { ServiceClient } from '@grpc/grpc-js/build/src/make-client';
-import GRPC_PROTO_DIR_BASE_PATH from '@/configs/grpc/grpc-proto-dir-base-path';
+import GRPC_PROTO_DIR_BASE_PATH from '@/config/grpc/grpc-proto-dir-base-path';
 
 const MAX_MESSAGE_SIZE = 64 * 1024 * 1024; //TODO: make this configurable for oss
 const GRPC_OPTIONS = {

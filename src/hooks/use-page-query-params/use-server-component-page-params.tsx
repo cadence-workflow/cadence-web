@@ -1,9 +1,9 @@
-import type { PageQueryParamConfig, QueryParamsValues, ParsedQuery } from './types';
+import type { ParsedQuery, PageQueryParams } from './types';
 import { getPageQueryParamsValues } from './utils';
 
-export function useServerComponentQueryParams(
-    configs: PageQueryParamConfig[],
+export function useServerComponentQueryParams<P extends PageQueryParams>(
+    config: P,
     searchQueryParams: ParsedQuery<string>,
-): QueryParamsValues {
-    return getPageQueryParamsValues(configs, searchQueryParams);
+) {
+    return getPageQueryParamsValues(config, searchQueryParams);
 }

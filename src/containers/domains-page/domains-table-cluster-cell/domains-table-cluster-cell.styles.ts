@@ -6,10 +6,6 @@ const cssStylesObj = {
         gap: theme.sizing.scale400,
         ...theme.typography.LabelXSmall,
     }),
-    metricLinkContainer: (theme) => ({
-        display: 'flex',
-        ...theme.typography.LabelXSmall,
-    }),
 } satisfies StyletronCSSObject;
 
 export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> = cssStylesObj;
