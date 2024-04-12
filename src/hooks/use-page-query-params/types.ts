@@ -36,9 +36,9 @@ export type PageQueryParamValues<B extends PageQueryParams> = {
 };
 
 export type ExtractedPageParamsValuesType<K extends string, B extends PageQueryParams> =
-    B extends (infer BoxType)[]
-    ? BoxType extends PageQueryParam<K, infer V> ? V :
-    BoxType extends PageQueryParamMultiValue<K, infer MV> ? MV :
+    B extends (infer ParamType)[]
+    ? ParamType extends PageQueryParam<K, infer V> ? V :
+    ParamType extends PageQueryParamMultiValue<K, infer MV> ? MV :
     never
     : never;
 
@@ -50,9 +50,9 @@ export type PageQueryParamSetterValues<B extends PageQueryParams> = {
 };
 
 export type ExtractedPageParamsSetterType<K extends string, B extends PageQueryParams> =
-    B extends (infer BoxType)[]
-    ? BoxType extends PageQueryParam<K, any> ? (string | undefined) :
-    BoxType extends PageQueryParamMultiValue<K, any> ? (string[] | undefined) :
+    B extends (infer ParamType)[]
+    ? ParamType extends PageQueryParam<K, infer V> ? (V extends string ? (V | undefined) : (string | undefined)) : // Check if the param extends string we return the type itself as it can be an enum otherwise force string or undefined
+    ParamType extends PageQueryParamMultiValue<K, infer MV> ? (MV extends string[] ? (MV | undefined) : (string[] | undefined)) : // Check if the param extends string[] we return the type itself as it can be an enum otherwise force string or undefined
     never
     : never;
 
