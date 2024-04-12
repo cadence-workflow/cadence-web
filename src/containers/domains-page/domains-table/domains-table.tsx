@@ -16,6 +16,7 @@ import { SortingOrder } from '@/layout/table/table.types';
 import { Props } from './domains-table.types';
 import { cssStyles } from './domains-table.styles';
 import { useInView } from 'react-intersection-observer';
+import domainPageFilters from '../config/domains-page-filters.config';
 
 
 
@@ -35,16 +36,16 @@ function DomainsTable({ domains, tableColumns = domainTableColumns }: Props) {
   const filteredDomains = useMemo(
     () => {
       const lowerCaseSearch = queryParams.searchText?.toLowerCase();
-      const clusterName = queryParams.clusterName
       return domains.filter(
-        ({ id, name, clusters }) =>
-          (!lowerCaseSearch ||
-            id.toLowerCase().includes(lowerCaseSearch) ||
-            name.toLowerCase().includes(lowerCaseSearch))
-          && (!clusterName || clusters.find((c) => c.clusterName === clusterName))
+        (d) =>
+        ((!lowerCaseSearch ||
+          d.id.toLowerCase().includes(lowerCaseSearch) ||
+          d.name.toLowerCase().includes(lowerCaseSearch))
+          && domainPageFilters.every((f) => f.filterFunc(d, queryParams)))
+
       );
     },
-    [domains, queryParams.searchText, queryParams.clusterName]
+    [domains, queryParams]
   );
   const sortedDomains = useMemo(
     () => sortBy<DomainData>(filteredDomains, (d) => (d[queryParams.sortColumn as keyof DomainData] as SortByReturnValue), queryParams.sortOrder),
