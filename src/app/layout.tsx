@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Rubik } from "next/font/google";
 import "./globals.css";
 import StyledJsxRegistry from "./registry";
-import StyletronProviderWrapper from "./StyletronProviderWrapper";
+import StyletronProvider from "../providers/styletron-provider";
 
 const inter = Rubik({ subsets: ["latin"] });
 
@@ -20,9 +20,9 @@ export default function RootLayout({
     <html lang="en">
       <StyledJsxRegistry />
       <body className={inter.className}>
-        <StyletronProviderWrapper>
+        <StyletronProvider>
           {children}
-        </StyletronProviderWrapper>
+        </StyletronProvider>
       </body>
     </html>
   );

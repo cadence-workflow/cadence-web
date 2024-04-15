@@ -4,8 +4,9 @@ import queryString from 'query-string';
 import isObjectLike from 'lodash/isObjectLike';
 import { useBetween } from 'use-between';
 import usePreviousValue from '@/hooks/use-previous-value';
-import type { PageQueryParamSetter, PageQueryParamSetterValues, PageQueryParamValues, PageQueryParams, QueryParamSetterExtraConfig } from './types';
-import { getPageQueryParamsValues, getUpdatedUrlSearch } from './utils';
+import type { PageQueryParamSetter, PageQueryParamValues, PageQueryParams, QueryParamSetterExtraConfig } from './use-page-query-params.types';
+import getUpdatedUrlSearch from './helpers/get-updated-url-search';
+import getPageQueryParamsValues from './helpers/get-page-query-params-values';
 
 const useShared_HistoryState = () => useBetween(useState<string>);
 
