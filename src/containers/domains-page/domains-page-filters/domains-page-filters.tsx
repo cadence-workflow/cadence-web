@@ -7,10 +7,10 @@ import { Cell, Grid } from "baseui/layout-grid";
 import usePageQueryParams from "@/hooks/use-page-query-params/use-page-query-params";
 import useStyletronClasses from "@/hooks/use-styletron-classes";
 import domainPageQueryParamsConfig from "../config/domains-page-query-params.config";
-import getDomainsPageChangedFiltersCount from "../utils/get-domain-page-changed-filters-count";
+import getDomainsPageChangedFiltersCount from "../helpers/get-domain-page-changed-filters-count";
 import domainPageFilters from "../config/domains-page-filters.config";
 import { cssStyles, overrides } from "./domains-page-filters.styles";
-import clearDomainPageFilters from "../utils/clear-domain-page-filters";
+import clearDomainPageFilters from "../helpers/clear-domain-page-filters";
 
 
 export default function DomainPageFilters() {
