@@ -4,7 +4,7 @@ import DomainsTable from "@/containers/domains-page/domains-table/domains-table"
 import DomainPageTitle from "@/containers/domains-page/domains-page-title/domains-page-title";
 import DomainsPageTitleBadge from "@/containers/domains-page/domains-page-title-badge/domains-page-title-badge";
 import SectionLoadingIndicator from "@/components/section-loading-indicator/section-loading-indicator";
-import { getCachedAllDomains } from "@/containers/domains-page/utils/get-all-domains";
+import { getCachedAllDomains } from "@/containers/domains-page/helpers/get-all-domains";
 
 
 async function RSCWithAsyncProps<Component extends keyof JSX.IntrinsicElements | JSXElementConstructor<any>, ComponentProps extends React.ComponentProps<Component>>({ component, getAsyncProps }: { component: Component, getAsyncProps: () => Promise<ComponentProps> }) {

@@ -1,4 +1,4 @@
-import { PageQueryParamSetter, PageQueryParams } from "@/hooks/use-page-query-params/types";
+import { PageQueryParamSetter, PageQueryParams } from "@/hooks/use-page-query-params/use-page-query-params.types";
 import domainPageFilters from "../config/domains-page-filters.config";
 import { DomainPageFilters } from "../domains-page-filters/domains-page-filters.types";
 
