@@ -7,7 +7,8 @@ function clearDomainPageFilters<P extends PageQueryParams>(
     setQueryParams: PageQueryParamSetter<P>,
     filters: DomainPageFilters = domainPageFilters
 ) {
-    const newValues = Object.fromEntries(filters.map((f) => [f.id, undefined]));
-    setQueryParams(newValues);
+    const emptyFiltersKeyValueEntries = filters.map((f) => [f.id, undefined]);
+    const emptyValuesObj = Object.fromEntries(emptyFiltersKeyValueEntries);
+    setQueryParams(emptyValuesObj);
 }
 export default clearDomainPageFilters;
