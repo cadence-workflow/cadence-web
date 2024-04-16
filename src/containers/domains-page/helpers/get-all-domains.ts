@@ -3,13 +3,15 @@ import { unstable_cache } from "next/cache";
 import { DomainData } from "../domains-page.types";
 import CLUSTERS_CONFIGS from "@/config/clusters/clusters.config";
 
-export const getAllDomains =  async () => {
+export const getAllDomains = async () => {
     const results = await Promise.all(CLUSTERS_CONFIGS.map(({ clusterName }) => grpcClient.clusterMethods[clusterName].listDomains({ pageSize: 1000 })))
-    const allDomains: Array<DomainData> = []
+    const allUniqueDomains: Record<string, DomainData> = {}
     results.forEach((res) => {
-        allDomains.push(...res.domains)
+        res.domains.forEach((d: DomainData) => {
+            allUniqueDomains[`${d.id}-${d.name}-${d.activeClusterName}`] = d;
+        })
     })
-    return { domains: allDomains }
+    return { domains: Object.values(allUniqueDomains) }
 }
 
 export const getCachedAllDomains = unstable_cache(
