@@ -6,7 +6,7 @@
 import type { Config } from 'jest';
 
 import nextJest from 'next/jest.js'
- 
+
 const createJestConfig = nextJest({
   // Provide the path to your Next.js app to load next.config.js and .env files in your test environment
   dir: './',
@@ -51,7 +51,14 @@ const config: Config = {
   // ],
 
   // An object that configures minimum threshold enforcement for coverage results
-  // coverageThreshold: undefined,
+  coverageThreshold: {
+    global: {
+      branches: 85,
+      functions: 85,
+      lines: 85,
+      statements: 85
+    }
+  },
 
   // A path to a custom dependency extractor
   // dependencyExtractor: undefined,
