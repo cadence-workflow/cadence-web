@@ -7,16 +7,17 @@ const EndMessageContainer = styled('div', ({ $theme }) => ({
   color: $theme.colors.contentTertiary,
 }));
 
-
 export default function DomainTableEndMessage({
   canLoadMoreResults,
   hasSearchResults,
-  infiniteScrollTargetRef
+  infiniteScrollTargetRef,
 }: Props) {
-
   if (canLoadMoreResults) {
     return (
-      <div data-testid="infinite-scroll-load-more" ref={infiniteScrollTargetRef} />
+      <div
+        data-testid="infinite-scroll-load-more"
+        ref={infiniteScrollTargetRef}
+      />
     );
   }
 

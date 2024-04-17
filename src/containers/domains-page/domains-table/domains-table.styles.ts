@@ -1,9 +1,13 @@
-import type { StyletronCSSObject, StyletronCSSObjectOf } from "@/hooks/use-styletron-classes";
+import type {
+  StyletronCSSObject,
+  StyletronCSSObjectOf,
+} from '@/hooks/use-styletron-classes';
 
 const cssStylesObj = {
-    tableContainer: {
-        overflowX: "auto"
-    },
+  tableContainer: {
+    overflowX: 'auto',
+  },
 } satisfies StyletronCSSObject;
 
-export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> = cssStylesObj;
+export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> =
+  cssStylesObj;

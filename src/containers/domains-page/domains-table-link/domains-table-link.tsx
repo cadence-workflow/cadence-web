@@ -10,8 +10,8 @@ const TableLinkBase = withStyle<typeof StyledLink, { disabled: boolean }>(
       color: `${$theme.colors.contentStateDisabled} !important`,
     },
     ':visited': {
-      color: 'inherit'
-    }
+      color: 'inherit',
+    },
   })
 );
 
@@ -25,7 +25,13 @@ export default function DomainsTableLink({
   children: React.ReactNode;
 }) {
   return (
-    <TableLinkBase className={className} href={href} target="_blank" rel="noreferrer" disabled={!href}>
+    <TableLinkBase
+      className={className}
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      disabled={!href}
+    >
       {children}
     </TableLinkBase>
   );
