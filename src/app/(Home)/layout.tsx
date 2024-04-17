@@ -1,5 +1,4 @@
-import AppNavBar from "@/layout/app-nav-bar/app-nav-bar";
-
+import AppNavBar from '@/layout/app-nav-bar/app-nav-bar';
 
 export default function HomeLayout({
   children,
@@ -9,7 +8,7 @@ export default function HomeLayout({
   return (
     <main>
       <AppNavBar />
-        {children}
+      {children}
     </main>
   );
 }

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import React from 'react';
 
 import type { DomainData } from '@/containers/domains-page/domains-page.types';
@@ -7,16 +7,20 @@ import TableLink from '@/containers/domains-page/domains-table-link/domains-tabl
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import { cssStyles } from './domains-table-cluster-cell.styles';
 
-
 function DomainsTableClusterCell(props: DomainData) {
-    const { cls } = useStyletronClasses(cssStyles);
+  const { cls } = useStyletronClasses(cssStyles);
 
-    return (
-        <div className={cls.clustersLinks}>
-            {props.clusters.length > 1 && props.clusters.map(({ clusterName }) => <TableLink key={clusterName} href={"/"}>{clusterName}</TableLink>)}
-            {props.clusters.length === 1 && props.clusters[0]?.clusterName}
-        </div>
-    );
+  return (
+    <div className={cls.clustersLinks}>
+      {props.clusters.length > 1 &&
+        props.clusters.map(({ clusterName }) => (
+          <TableLink key={clusterName} href={'/'}>
+            {clusterName}
+          </TableLink>
+        ))}
+      {props.clusters.length === 1 && props.clusters[0]?.clusterName}
+    </div>
+  );
 }
 
 export default DomainsTableClusterCell;

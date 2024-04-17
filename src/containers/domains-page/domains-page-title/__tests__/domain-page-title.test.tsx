@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from "@/test-utils/rtl";
+import { render, screen } from '@/test-utils/rtl';
 import DomainPageTitle from '../domains-page-title';
 
 describe('DomainPageTitle', () => {

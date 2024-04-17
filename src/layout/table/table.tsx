@@ -45,9 +45,12 @@ const TableHeadCell = withStyle(StyledTableHeadCell, ({ $theme }) => ({
   ...tableHeadCellStyles($theme),
 }));
 
-const TableHeadCellSortable = withStyle(StyledTableHeadCellSortable, ({ $theme }) => ({
-  ...tableHeadCellStyles($theme),
-}));
+const TableHeadCellSortable = withStyle(
+  StyledTableHeadCellSortable,
+  ({ $theme }) => ({
+    ...tableHeadCellStyles($theme),
+  })
+);
 
 function TableMessageCell({
   numColumns,
@@ -97,14 +100,16 @@ function SortableTableHeadCell({
 
   return (
     <TableHeadCellSortable
-      $size='compact'
+      $size="compact"
       $divider="clean"
       onClick={() => onSort(columnID)}
       $isFocusVisible={false}
     >
       <SortableHeaderContainer aria-label={`${columnID}, ${sortLabel}`}>
         {name}
-        {columnID === sortColumn && SortIcon && <SortIcon size="16px" aria-hidden="true" role="presentation" />}
+        {columnID === sortColumn && SortIcon && (
+          <SortIcon size="16px" aria-hidden="true" role="presentation" />
+        )}
       </SortableHeaderContainer>
     </TableHeadCellSortable>
   );
@@ -144,14 +149,20 @@ function Table<T extends Object>({
               <StyledTableBodyRow key={rowIndex}>
                 {columns.map((column) => {
                   return (
-                    <StyledTableBodyCell $size='compact' $divider="clean" key={`${column.id}-${rowIndex}`}>
+                    <StyledTableBodyCell
+                      $size="compact"
+                      $divider="clean"
+                      key={`${column.id}-${rowIndex}`}
+                    >
                       {<column.renderCell {...row} />}
                     </StyledTableBodyCell>
                   );
                 })}
               </StyledTableBodyRow>
             ))}
-          <TableMessageCell numColumns={columns.length}>{endMessage}</TableMessageCell>
+          <TableMessageCell numColumns={columns.length}>
+            {endMessage}
+          </TableMessageCell>
         </StyledTableBody>
       </StyledTable>
     </TableRoot>

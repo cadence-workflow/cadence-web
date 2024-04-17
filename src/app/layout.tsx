@@ -1,14 +1,15 @@
-import type { Metadata } from "next";
-import { Rubik } from "next/font/google";
-import "./globals.css";
-import StyledJsxRegistry from "./registry";
-import StyletronProvider from "../providers/styletron-provider";
+import type { Metadata } from 'next';
+import { Rubik } from 'next/font/google';
+import './globals.css';
+import StyledJsxRegistry from './registry';
+import StyletronProvider from '../providers/styletron-provider';
 
-const inter = Rubik({ subsets: ["latin"] });
+const inter = Rubik({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "Cadence",
-  description: "Fault-Tolerant Stateful Code Platform, focus on your business logic and let Cadence take care of the complexity of distributed systems",
+  title: 'Cadence',
+  description:
+    'Fault-Tolerant Stateful Code Platform, focus on your business logic and let Cadence take care of the complexity of distributed systems',
 };
 
 export default function RootLayout({
@@ -20,9 +21,7 @@ export default function RootLayout({
     <html lang="en">
       <StyledJsxRegistry />
       <body className={inter.className}>
-        <StyletronProvider>
-          {children}
-        </StyletronProvider>
+        <StyletronProvider>{children}</StyletronProvider>
       </body>
     </html>
   );

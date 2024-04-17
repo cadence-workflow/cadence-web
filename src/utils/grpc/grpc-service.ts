@@ -44,19 +44,24 @@ const GRPC_ERROR_STATUS_TO_HTTP_ERROR_CODE_MAP: { [index: string]: number } = {
 
 export type GRPCRequestConfig = {
   serviceName: string;
-  metadata?: Record<string, string>
-}
+  metadata?: Record<string, string>;
+};
 export type GRPCServiceConfig = {
   peer: string;
   requestConfig: GRPCRequestConfig;
   schemaPath: string;
   servicePath: string;
-}
+};
 
 class GRPCService {
   service: ServiceClient;
   requestConfig: GRPCRequestConfig;
-  constructor({ peer, requestConfig, schemaPath, servicePath }: GRPCServiceConfig) {
+  constructor({
+    peer,
+    requestConfig,
+    schemaPath,
+    servicePath,
+  }: GRPCServiceConfig) {
     const ServiceDefinition: any = get(
       grpc.loadPackageDefinition(
         protoLoader.loadSync(schemaPath, {
@@ -84,18 +89,17 @@ class GRPCService {
     method,
     transform = (payload) => payload,
   }: {
-    method: string,
-    formatRequest?: (req: any) => any,
-    formatResponse?: (res: any) => any,
-    transform?: (payload: any) => any,
+    method: string;
+    formatRequest?: (req: any) => any;
+    formatResponse?: (res: any) => any;
+    transform?: (payload: any) => any;
   }) {
     return (payload: any) => {
       const deadline = new Date();
 
       deadline.setSeconds(deadline.getSeconds() + 2);
       return new Promise((resolve, reject) => {
-
-        this.service.waitForReady(deadline, error => {
+        this.service.waitForReady(deadline, (error) => {
           if (error) {
             return reject(error);
           }
@@ -105,11 +109,23 @@ class GRPCService {
             formatRequest(transform(payload)),
             this.meta(),
             { deadline },
-            (error: Error & { details: string, message: string, code: number }, response: any) => {
+            (
+              error: Error & { details: string; message: string; code: number },
+              response: any
+            ) => {
               try {
                 if (error) {
-                  const customError: Error & { httpStatusCode?: number, grpcStatusCode?: number } = new Error(error?.details || error?.message || response?.body || response)
-                  customError.httpStatusCode = GRPC_ERROR_STATUS_TO_HTTP_ERROR_CODE_MAP[error.code] || 500;
+                  const customError: Error & {
+                    httpStatusCode?: number;
+                    grpcStatusCode?: number;
+                  } = new Error(
+                    error?.details ||
+                      error?.message ||
+                      response?.body ||
+                      response
+                  );
+                  customError.httpStatusCode =
+                    GRPC_ERROR_STATUS_TO_HTTP_ERROR_CODE_MAP[error.code] || 500;
                   customError.grpcStatusCode = error.code;
                   throw customError;
                 }
@@ -133,9 +149,11 @@ class GRPCService {
     meta.add('rpc-service', this.requestConfig.serviceName);
     meta.add('rpc-caller', 'cadence-web');
     meta.add('rpc-encoding', 'proto');
-    Object.entries(this.requestConfig.metadata || {}).forEach(([key, value]) => {
-      meta.add(key, value);
-    });
+    Object.entries(this.requestConfig.metadata || {}).forEach(
+      ([key, value]) => {
+        meta.add(key, value);
+      }
+    );
     /* Object.entries(this.ctx.authTokenHeaders || {}).forEach(([key, value]) => {
        meta.add(key, value);
      });

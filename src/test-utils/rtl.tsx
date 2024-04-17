@@ -6,7 +6,6 @@ import { TestProvider } from './test-provider';
 import type { JSXElementConstructor, ReactNode } from 'react';
 import { PublicProviderProps, RenderHookOptions } from './rtl.types';
 
-
 const customRender = (
   element: Parameters<typeof render>[0],
   providerProps?: PublicProviderProps,
@@ -22,7 +21,10 @@ const customRenderHook = <PropsT, ResultT>(
   renderOptions?: RenderHookOptions<PropsT>
 ) => {
   const { wrapper } = getWrapper(providerProps, renderOptions);
-  return renderHook(callback, { wrapper, initialProps: renderOptions?.initialProps });
+  return renderHook(callback, {
+    wrapper,
+    initialProps: renderOptions?.initialProps,
+  });
 };
 
 const getWrapper = (
