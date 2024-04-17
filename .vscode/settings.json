@@ -1,3 +1,5 @@
 {
-    "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true
 }
