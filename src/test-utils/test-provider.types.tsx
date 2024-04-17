@@ -1,9 +1,9 @@
-import { ReactElement } from "react";
+import { ReactElement } from 'react';
 
 export type Props = {
-    children?: ReactElement;
-    router?: {
-        initialUrl?: string;
-        pathnames?: string[]
-    };
+  children?: ReactElement;
+  router?: {
+    initialUrl?: string;
+    pathnames?: string[];
+  };
 };
