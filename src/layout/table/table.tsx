@@ -17,40 +17,59 @@ import ChevronDown from 'baseui/icon/chevron-down';
 
 import type { Props } from './table.types';
 
-const SortableHeaderContainer = styled('div', ({ $theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  columnGap: $theme.sizing.scale300,
-}));
-
-const TableRoot = withStyle(StyledRoot, ({ $theme }) => ({
-  alignSelf: 'center',
-  flex: '1 1 0',
-  overflow: 'visible',
-  width: '100%',
-}));
-
-const TableMessage = withStyle(StyledTableLoadingMessage, ({ $theme }) => ({
-  display: 'flex',
-  justifyContent: 'center',
-}));
-
-const tableHeadCellStyles = ($theme: Theme) => ({
-  ...$theme.typography.LabelXSmall,
-  color: '#5E5E5E',
-});
-
-const TableHeadCell = withStyle(StyledTableHeadCell, ({ $theme }) => ({
-  ...tableHeadCellStyles($theme),
-}));
-
-const TableHeadCellSortable = withStyle(
-  StyledTableHeadCellSortable,
-  ({ $theme }) => ({
-    ...tableHeadCellStyles($theme),
-  })
-);
+export default function Table<T extends Object>({
+  data,
+  columns,
+  shouldShowResults,
+  endMessage,
+  ...sortParams
+}: Props<T>) {
+  return (
+    <TableRoot>
+      <StyledTable>
+        <StyledTableHead>
+          <StyledTableHeadRow>
+            {columns.map((column) =>
+              column.sortable ? (
+                <SortableTableHeadCell
+                  key={column.id}
+                  name={column.name}
+                  columnID={column.id}
+                  {...sortParams}
+                />
+              ) : (
+                <TableHeadCell $size="compact" $divider="clean" key={column.id}>
+                  {column.name}
+                </TableHeadCell>
+              )
+            )}
+          </StyledTableHeadRow>
+        </StyledTableHead>
+        <StyledTableBody>
+          {shouldShowResults &&
+            data.map((row: T, rowIndex: number) => (
+              <StyledTableBodyRow key={rowIndex}>
+                {columns.map((column) => {
+                  return (
+                    <StyledTableBodyCell
+                      $size="compact"
+                      $divider="clean"
+                      key={`${column.id}-${rowIndex}`}
+                    >
+                      {<column.renderCell {...row} />}
+                    </StyledTableBodyCell>
+                  );
+                })}
+              </StyledTableBodyRow>
+            ))}
+          <TableMessageCell numColumns={columns.length}>
+            {endMessage}
+          </TableMessageCell>
+        </StyledTableBody>
+      </StyledTable>
+    </TableRoot>
+  );
+}
 
 function TableMessageCell({
   numColumns,
@@ -115,58 +134,37 @@ function SortableTableHeadCell({
   );
 }
 
-function Table<T extends Object>({
-  data,
-  columns,
-  shouldShowResults,
-  endMessage,
-  ...sortParams
-}: Props<T>) {
-  return (
-    <TableRoot>
-      <StyledTable>
-        <StyledTableHead>
-          <StyledTableHeadRow>
-            {columns.map((column) =>
-              column.sortable ? (
-                <SortableTableHeadCell
-                  key={column.id}
-                  name={column.name}
-                  columnID={column.id}
-                  {...sortParams}
-                />
-              ) : (
-                <TableHeadCell $size="compact" $divider="clean" key={column.id}>
-                  {column.name}
-                </TableHeadCell>
-              )
-            )}
-          </StyledTableHeadRow>
-        </StyledTableHead>
-        <StyledTableBody>
-          {shouldShowResults &&
-            data.map((row: T, rowIndex: number) => (
-              <StyledTableBodyRow key={rowIndex}>
-                {columns.map((column) => {
-                  return (
-                    <StyledTableBodyCell
-                      $size="compact"
-                      $divider="clean"
-                      key={`${column.id}-${rowIndex}`}
-                    >
-                      {<column.renderCell {...row} />}
-                    </StyledTableBodyCell>
-                  );
-                })}
-              </StyledTableBodyRow>
-            ))}
-          <TableMessageCell numColumns={columns.length}>
-            {endMessage}
-          </TableMessageCell>
-        </StyledTableBody>
-      </StyledTable>
-    </TableRoot>
-  );
-}
+const SortableHeaderContainer = styled('div', ({ $theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  columnGap: $theme.sizing.scale300,
+}));
 
-export default Table;
+const TableRoot = withStyle(StyledRoot, ({ $theme }) => ({
+  alignSelf: 'center',
+  flex: '1 1 0',
+  overflow: 'visible',
+  width: '100%',
+}));
+
+const TableMessage = withStyle(StyledTableLoadingMessage, ({ $theme }) => ({
+  display: 'flex',
+  justifyContent: 'center',
+}));
+
+const tableHeadCellStyles = ($theme: Theme) => ({
+  ...$theme.typography.LabelXSmall,
+  color: '#5E5E5E',
+});
+
+const TableHeadCell = withStyle(StyledTableHeadCell, ({ $theme }) => ({
+  ...tableHeadCellStyles($theme),
+}));
+
+const TableHeadCellSortable = withStyle(
+  StyledTableHeadCellSortable,
+  ({ $theme }) => ({
+    ...tableHeadCellStyles($theme),
+  })
+);
