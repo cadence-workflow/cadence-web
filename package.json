@@ -25,6 +25,7 @@
     "query-string": "^9.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-icons": "^5.1.0",
     "react-intersection-observer": "^9.8.1",
     "styletron-engine-monolithic": "^1.0.0",
     "styletron-react": "^6.1.1",
