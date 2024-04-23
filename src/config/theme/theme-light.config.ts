@@ -1,5 +1,5 @@
-import { DeepPartial, MakeExtendable, Theme } from "baseui/styles";
-import baseWebIconsOverrides from "./base-web-icons-ovverrides.config";
+import { DeepPartial, MakeExtendable, Theme } from 'baseui/styles';
+import baseWebIconsOverrides from './base-web-icons-overrides.config';
 
 const themeLight = {
   grid: { maxWidth: 1580 },
