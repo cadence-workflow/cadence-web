@@ -5,21 +5,7 @@ import DomainPageTitle from '@/containers/domains-page/domains-page-title/domain
 import DomainsPageTitleBadge from '@/containers/domains-page/domains-page-title-badge/domains-page-title-badge';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import { getCachedAllDomains } from '@/containers/domains-page/helpers/get-all-domains';
-
-async function RSCWithAsyncProps<
-  Component extends keyof JSX.IntrinsicElements | JSXElementConstructor<any>,
-  ComponentProps extends React.ComponentProps<Component>,
->({
-  component,
-  getAsyncProps,
-}: {
-  component: Component;
-  getAsyncProps: () => Promise<ComponentProps>;
-}) {
-  const asyncProps = await getAsyncProps();
-  const Component = component;
-  return <Component {...asyncProps} />;
-}
+import AsyncPropsLoader from '@/components/async-props-loader/async-props-loader';
 
 export default async function DomainsPage() {
   return (
@@ -27,7 +13,7 @@ export default async function DomainsPage() {
       <DomainPageTitle
         countBadge={
           <Suspense>
-            <RSCWithAsyncProps
+            <AsyncPropsLoader
               component={DomainsPageTitleBadge}
               getAsyncProps={async () => {
                 const res = await getCachedAllDomains();
@@ -41,7 +27,7 @@ export default async function DomainsPage() {
         <DomainPageHeader />
       </Suspense>
       <Suspense fallback={<SectionLoadingIndicator />}>
-        <RSCWithAsyncProps
+        <AsyncPropsLoader
           component={DomainsTable}
           getAsyncProps={async () => {
             const res = await getCachedAllDomains();
