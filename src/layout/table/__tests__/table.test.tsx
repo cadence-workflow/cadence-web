@@ -24,6 +24,7 @@ const SAMPLE_COLUMNS = Array.from(
     renderCell: ({ value }: TestDataT) => {
       return `data_${value}_${colIndex}`;
     },
+    width: `${100 / SAMPLE_DATA_NUM_COLUMNS}%`,
   })
 );
 
