@@ -1,4 +1,4 @@
-import AppNavBar from '@/layout/app-nav-bar/app-nav-bar';
+import AppNavBar from '@/components/app-nav-bar/app-nav-bar';
 
 export default function HomeLayout({
   children,
