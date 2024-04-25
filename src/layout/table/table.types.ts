@@ -2,6 +2,7 @@ export type TableColumn<T> = {
   name: string;
   id: string;
   renderCell: React.ComponentType<T> | ((row: T) => React.ReactNode);
+  width: string;
   sortable?: boolean;
 };
 
