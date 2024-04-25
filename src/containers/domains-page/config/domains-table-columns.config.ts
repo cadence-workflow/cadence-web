@@ -8,11 +8,13 @@ export const domainTableColumns: Array<TableColumn<DomainData>> = [
     name: 'Domain Name',
     id: 'name',
     renderCell: DomainsTableDomainNameCell,
+    width: '80%',
     sortable: true,
   },
   {
     name: 'Cluster',
     id: 'cluster',
     renderCell: DomainsTableClusterCell,
+    width: '20%',
   },
 ];
