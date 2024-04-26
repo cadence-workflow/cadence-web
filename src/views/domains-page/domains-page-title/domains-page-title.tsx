@@ -5,7 +5,7 @@ import useStyletronClasses from '@/hooks/use-styletron-classes';
 import { cssStyles } from './domains-page-title.styles';
 import { Props } from './domains-page-title.types';
 
-export default function DomainPageTitle({ countBadge }: Props) {
+export default function DomainsPageTitle({ countBadge }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
 
   return (

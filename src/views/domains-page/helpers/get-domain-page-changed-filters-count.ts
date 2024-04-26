@@ -2,14 +2,14 @@ import {
   PageQueryParamValues,
   PageQueryParams,
 } from '@/hooks/use-page-query-params/use-page-query-params.types';
-import domainPageFilters from '../config/domains-page-filters.config';
-import domainPageQueryParamsConfig from '../config/domains-page-query-params.config';
-import { DomainPageFilters } from '../domains-page-filters/domains-page-filters.types';
+import domainsPageFiltersConfig from '../config/domains-page-filters.config';
+import domainsPageQueryParamsConfig from '../config/domains-page-query-params.config';
+import { DomainsPageFiltersConfig } from '../domains-page-filters/domains-page-filters.types';
 
 function getDomainsPageChangedFiltersCount(
   queryParams: PageQueryParamValues<PageQueryParams>,
-  queryParamsConfig: PageQueryParams = domainPageQueryParamsConfig,
-  filters: DomainPageFilters = domainPageFilters
+  queryParamsConfig: PageQueryParams = domainsPageQueryParamsConfig,
+  filters: DomainsPageFiltersConfig = domainsPageFiltersConfig
 ) {
   const configsByKey = Object.fromEntries(
     queryParamsConfig.map((c) => [c.key, c])

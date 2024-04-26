@@ -1,7 +1,7 @@
-import { DomainPageFilters } from '../domains-page-filters/domains-page-filters.types';
+import { DomainsPageFiltersConfig } from '../domains-page-filters/domains-page-filters.types';
 import DomainsPageFiltersClusterName from '../domains-page-filters-cluster-name/domains-page-filters-cluster-name';
 
-const domainPageFilters = [
+const domainsPageFiltersConfig = [
   {
     id: 'clusterName',
     filterFunc: (domain, queryParams) =>
@@ -11,6 +11,6 @@ const domainPageFilters = [
       ),
     renderFilter: DomainsPageFiltersClusterName,
   },
-] as const satisfies DomainPageFilters;
+] as const satisfies DomainsPageFiltersConfig;
 
-export default domainPageFilters;
+export default domainsPageFiltersConfig;

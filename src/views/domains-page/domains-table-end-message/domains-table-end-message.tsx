@@ -7,7 +7,7 @@ const EndMessageContainer = styled('div', ({ $theme }) => ({
   color: $theme.colors.contentTertiary,
 }));
 
-export default function DomainTableEndMessage({
+export default function DomainsTableEndMessage({
   canLoadMoreResults,
   hasSearchResults,
   infiniteScrollTargetRef,
