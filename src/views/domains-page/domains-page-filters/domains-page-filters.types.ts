@@ -2,7 +2,7 @@ import type {
   PageQueryParamKeys,
   PageQueryParamValues,
 } from '@/hooks/use-page-query-params/use-page-query-params.types';
-import domainPageQueryParamsConfig from '@/containers/domains-page/config/domains-page-query-params.config';
+import domainPageQueryParamsConfig from '@/views/domains-page/config/domains-page-query-params.config';
 import { DomainData } from '../domains-page.types';
 
 export type DomainPageFilterProps<InputType = any, OutputType = any> = {
