@@ -2,23 +2,23 @@ import type {
   PageQueryParamKeys,
   PageQueryParamValues,
 } from '@/hooks/use-page-query-params/use-page-query-params.types';
-import domainPageQueryParamsConfig from '@/views/domains-page/config/domains-page-query-params.config';
+import domainsPageQueryParamsConfig from '@/views/domains-page/config/domains-page-query-params.config';
 import { DomainData } from '../domains-page.types';
 
-export type DomainPageFilterProps<InputType = any, OutputType = any> = {
+export type DomainsPageFilterProps<InputType = any, OutputType = any> = {
   value: InputType;
   onChange: (v: OutputType) => void;
 };
 
-export type DomainPageFilter = {
-  id: PageQueryParamKeys<typeof domainPageQueryParamsConfig>;
+export type DomainsPageFilterConfig = {
+  id: PageQueryParamKeys<typeof domainsPageQueryParamsConfig>;
   filterFunc: (
     d: DomainData,
-    queryParams: PageQueryParamValues<typeof domainPageQueryParamsConfig>
+    queryParams: PageQueryParamValues<typeof domainsPageQueryParamsConfig>
   ) => boolean;
   renderFilter:
-    | React.ComponentType<DomainPageFilterProps>
-    | ((props: DomainPageFilterProps) => React.ReactNode);
+    | React.ComponentType<DomainsPageFilterProps>
+    | ((props: DomainsPageFilterProps) => React.ReactNode);
 };
 
-export type DomainPageFilters = Array<DomainPageFilter>;
+export type DomainsPageFiltersConfig = Array<DomainsPageFilterConfig>;

@@ -3,7 +3,7 @@ import { DomainData } from '../domains-page.types';
 import DomainsTableClusterCell from '../domains-table-cluster-cell/domains-table-cluster-cell';
 import DomainsTableDomainNameCell from '../domains-table-domain-name-cell/domains-table-domain-name-cell';
 
-export const domainTableColumns: Array<TableColumn<DomainData>> = [
+const domainsTableColumnsConfig: Array<TableColumn<DomainData>> = [
   {
     name: 'Domain Name',
     id: 'name',
@@ -18,3 +18,5 @@ export const domainTableColumns: Array<TableColumn<DomainData>> = [
     width: '20%',
   },
 ];
+
+export default domainsTableColumnsConfig;
