@@ -1,15 +1,15 @@
 import React from 'react';
 import { render, screen } from '@/test-utils/rtl';
-import DomainPageTitle from '../domains-page-title';
+import DomainsPageTitle from '../domains-page-title';
 
-describe('DomainPageTitle', () => {
+describe('DomainsPageTitle', () => {
   it('should render title', async () => {
-    render(<DomainPageTitle countBadge={null} />);
+    render(<DomainsPageTitle countBadge={null} />);
     await screen.findByText('All domains');
   });
 
   it('should render passed count badge', async () => {
-    render(<DomainPageTitle countBadge={<div data-testid="count-badge" />} />);
+    render(<DomainsPageTitle countBadge={<div data-testid="count-badge" />} />);
     await screen.findAllByTestId('count-badge');
   });
 });

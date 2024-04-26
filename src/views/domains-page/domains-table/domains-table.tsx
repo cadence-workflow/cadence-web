@@ -6,28 +6,31 @@ import Table from '@/components/table/table';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import sortBy, { SortByReturnValue, toggleSortOrder } from '@/utils/sort-by';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
-import DomainTableEndMessage from '@/views/domains-page/domains-table-end-message/domains-table-end-message';
-import domainPageQueryParamsConfig from '../config/domains-page-query-params.config';
+import DomainsTableEndMessage from '@/views/domains-page/domains-table-end-message/domains-table-end-message';
+import domainsPageQueryParamsConfig from '../config/domains-page-query-params.config';
 
-import { domainTableColumns } from '../config/domains-table-columns.config';
+import domainsTableColumnsConfig from '../config/domains-table-columns.config';
 
 import type { DomainData } from '../domains-page.types';
 import { SortingOrder } from '@/components/table/table.types';
 import { Props } from './domains-table.types';
 import { cssStyles } from './domains-table.styles';
 import { useInView } from 'react-intersection-observer';
-import domainPageFilters from '../config/domains-page-filters.config';
+import domainsPageFiltersConfig from '../config/domains-page-filters.config';
 
 const DOMAINS_LIST_PAGE_SIZE = 20;
 
-function DomainsTable({ domains, tableColumns = domainTableColumns }: Props) {
+function DomainsTable({
+  domains,
+  tableColumns = domainsTableColumnsConfig,
+}: Props) {
   const { cls } = useStyletronClasses(cssStyles);
   const [visibleListItems, setVisibleListItems] = useState(
     Math.min(DOMAINS_LIST_PAGE_SIZE, domains.length)
   );
 
   const [queryParams, setQueryParams] = usePageQueryParams(
-    domainPageQueryParamsConfig,
+    domainsPageQueryParamsConfig,
     { pageRerender: false }
   );
 
@@ -42,7 +45,7 @@ function DomainsTable({ domains, tableColumns = domainTableColumns }: Props) {
         (!lowerCaseSearch ||
           d.id.toLowerCase().includes(lowerCaseSearch) ||
           d.name.toLowerCase().includes(lowerCaseSearch)) &&
-        domainPageFilters.every((f) => f.filterFunc(d, queryParams))
+        domainsPageFiltersConfig.every((f) => f.filterFunc(d, queryParams))
     );
   }, [domains, queryParams]);
   const sortedDomains = useMemo(
@@ -91,7 +94,7 @@ function DomainsTable({ domains, tableColumns = domainTableColumns }: Props) {
             sortColumn={queryParams.sortColumn}
             sortOrder={queryParams.sortOrder as SortingOrder}
             endMessage={
-              <DomainTableEndMessage
+              <DomainsTableEndMessage
                 key={visibleListItems}
                 canLoadMoreResults={
                   paginatedDomains.length < sortedDomains.length

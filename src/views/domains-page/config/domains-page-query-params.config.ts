@@ -1,7 +1,7 @@
 import { PageQueryParam } from '@/hooks/use-page-query-params/use-page-query-params.types';
 import { SortingOrder } from '@/components/table/table.types';
 
-const domainPageQueryParamsConfig: [
+const domainsPageQueryParamsConfig: [
   PageQueryParam<'searchText', string>,
   PageQueryParam<'clusterName', string>,
   PageQueryParam<'sortColumn', string>,
@@ -27,4 +27,4 @@ const domainPageQueryParamsConfig: [
   },
 ] as const;
 
-export default domainPageQueryParamsConfig;
+export default domainsPageQueryParamsConfig;
