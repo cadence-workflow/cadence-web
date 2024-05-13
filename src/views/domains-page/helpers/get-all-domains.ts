@@ -19,8 +19,6 @@ export const getAllDomains = async () => {
   return { domains: Object.values(allUniqueDomains) };
 };
 
-export const getCachedAllDomains = cache(unstable_cache(
-  getAllDomains,
-  ['cluster-domains'],
-  { revalidate: 60 }
-));
+export const getCachedAllDomains = cache(
+  unstable_cache(getAllDomains, ['cluster-domains'], { revalidate: 60 })
+);
