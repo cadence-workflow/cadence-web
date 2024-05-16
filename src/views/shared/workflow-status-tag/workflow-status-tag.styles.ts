@@ -11,21 +11,21 @@ export function overrides(args: OverridesArgs) {
         style: ({ $theme }: { $theme: Theme }): StyleObject => {
           let tagColor: string;
           switch (args.status) {
-            case 'running':
+            case 'WORKFLOW_EXECUTION_STATUS_RUNNING':
               tagColor = $theme.colors.accent100;
               break;
-            case 'completed':
+            case 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED':
               tagColor = $theme.colors.positive100;
               break;
-            case 'failed':
-            case 'timedOut':
+            case 'WORKFLOW_EXECUTION_CLOSE_STATUS_FAILED':
+            case 'WORKFLOW_EXECUTION_CLOSE_STATUS_TIMED_OUT':
               tagColor = $theme.colors.negative100;
               break;
-            case 'canceled':
-            case 'terminated':
+            case 'WORKFLOW_EXECUTION_CLOSE_STATUS_CANCELED':
+            case 'WORKFLOW_EXECUTION_CLOSE_STATUS_TERMINATED':
               tagColor = $theme.colors.warning100;
               break;
-            case 'continuedAsNew':
+            case 'WORKFLOW_EXECUTION_CLOSE_STATUS_CONTINUED_AS_NEW':
               tagColor = $theme.colors.primary100;
               break;
             default:
