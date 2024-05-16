@@ -21,18 +21,18 @@ describe('WorkflowStatusTagIcon', () => {
     link?: string;
     expectedIcon?: string;
   }> = [
-    {
-      name: 'should render Running start icon correctly',
-      kind: 'start',
-      status: 'running',
-      expectedIcon: 'running-spinner',
-    },
-    {
-      name: 'should return null if there is no icon configured',
-      kind: 'end',
-      status: 'running',
-    },
-  ];
+      {
+        name: 'should render Running start icon correctly',
+        kind: 'start',
+        status: 'WORKFLOW_EXECUTION_STATUS_RUNNING',
+        expectedIcon: 'running-spinner',
+      },
+      {
+        name: 'should return null if there is no icon configured',
+        kind: 'end',
+        status: 'WORKFLOW_EXECUTION_STATUS_RUNNING',
+      },
+    ];
 
   tests.forEach((test) => {
     it(test.name, () => {

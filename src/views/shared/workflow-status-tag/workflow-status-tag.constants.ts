@@ -1,12 +1,12 @@
 import type { WorkflowStatus, Props } from './workflow-status-tag.types';
 
 export const WORKFLOW_STATUS_NAMES: Record<WorkflowStatus, string> = {
-  running: 'Running',
-  completed: 'Completed',
-  failed: 'Failed',
-  canceled: 'Canceled',
-  terminated: 'Terminated',
-  continuedAsNew: 'Continued As New',
-  timedOut: 'Timed Out',
-  unknown: 'Unknown',
+  WORKFLOW_EXECUTION_STATUS_RUNNING: 'Running',
+  WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED: 'Completed',
+  WORKFLOW_EXECUTION_CLOSE_STATUS_FAILED: 'Failed',
+  WORKFLOW_EXECUTION_CLOSE_STATUS_CANCELED: 'Canceled',
+  WORKFLOW_EXECUTION_CLOSE_STATUS_TERMINATED: 'Terminated',
+  WORKFLOW_EXECUTION_CLOSE_STATUS_CONTINUED_AS_NEW: 'Continued As New',
+  WORKFLOW_EXECUTION_CLOSE_STATUS_TIMED_OUT: 'Timed Out',
+  WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID: 'Unknown',
 };

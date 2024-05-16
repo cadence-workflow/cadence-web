@@ -1,12 +1,12 @@
 export type WorkflowStatus =
-  | 'running'
-  | 'completed'
-  | 'failed'
-  | 'canceled'
-  | 'terminated'
-  | 'continuedAsNew'
-  | 'timedOut'
-  | 'unknown';
+  | 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
+  | 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED'
+  | 'WORKFLOW_EXECUTION_CLOSE_STATUS_FAILED'
+  | 'WORKFLOW_EXECUTION_CLOSE_STATUS_CANCELED'
+  | 'WORKFLOW_EXECUTION_CLOSE_STATUS_TERMINATED'
+  | 'WORKFLOW_EXECUTION_CLOSE_STATUS_CONTINUED_AS_NEW'
+  | 'WORKFLOW_EXECUTION_CLOSE_STATUS_TIMED_OUT'
+  | 'WORKFLOW_EXECUTION_STATUS_RUNNING';
 
 export type Props = {
   status: WorkflowStatus;
