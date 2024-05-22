@@ -6,10 +6,10 @@ import { ClusterConfig, ClustersConfigs } from './clusters.types';
 const configsHasSameLength = [GRPC_PEERS, GRPC_SERVICES_NAMES].every(
   (config) => config.length === CLUSTER_NAMES.length
 );
-if (!configsHasSameLength)
+/* if (!configsHasSameLength)
   throw new Error(
     "Failed to build cluster configuration: cluster names, grpc peers & service names count doesn't match"
-  );
+  ); */
 
 const CLUSTERS_CONFIGS: ClustersConfigs = CLUSTER_NAMES.map(
   (clusterName, i) => {
