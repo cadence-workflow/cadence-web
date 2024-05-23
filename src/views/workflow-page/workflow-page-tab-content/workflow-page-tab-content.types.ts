@@ -21,5 +21,4 @@ export type WorkflowPageTabContentProps = {
 
 export type Props = {
   params: WorkflowPageTabsParams;
-  tabsContentMap?: WorkflowPageTabsContentsMap;
 };
