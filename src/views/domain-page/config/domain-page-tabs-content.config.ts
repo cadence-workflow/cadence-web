@@ -9,4 +9,4 @@ const domainPageTabsContentConfig = {
   settings: DomainPageSettings,
 } as const satisfies DomainPageTabsContentConfig;
 
-export default domainPageTabsContentConfig
+export default domainPageTabsContentConfig;
