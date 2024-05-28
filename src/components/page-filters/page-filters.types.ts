@@ -5,13 +5,9 @@ import {
   PageQueryParams,
 } from '@/hooks/use-page-query-params/use-page-query-params.types';
 
-export type PageFilterIsSetProps<P extends PageQueryParams> = {
+export type PageFilterComponentProps<P extends PageQueryParams> = {
   queryParams: PageQueryParamValues<P>;
-};
-
-export type PageFilterComponentProps<T extends PageQueryParams> = {
-  queryParams: PageQueryParamValues<T>;
-  setQueryParams: PageQueryParamSetter<T>;
+  setQueryParams: PageQueryParamSetter<P>;
 };
 
 export type PageFilterConfig<P extends PageQueryParams> = {
@@ -20,12 +16,12 @@ export type PageFilterConfig<P extends PageQueryParams> = {
   queryParamKeys: Array<PageQueryParamKeys<P>>;
 };
 
-export interface Props<
+export type Props<
   P extends PageQueryParams,
   K extends PageQueryParamKeys<P>,
-> {
-  searchId: PageQueryParamValues<P>[K] extends string ? K : never;
+> = {
+  searchQueryParamKey: PageQueryParamValues<P>[K] extends string ? K : never;
   searchPlaceholder: string;
   pageQueryParamsConfig: P;
   pageFiltersConfig: Array<PageFilterConfig<P>>;
-}
+};
