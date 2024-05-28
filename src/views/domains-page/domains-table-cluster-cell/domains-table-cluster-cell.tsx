@@ -14,7 +14,10 @@ function DomainsTableClusterCell(props: DomainData) {
     <div className={cls.clustersLinks}>
       {props.clusters.length > 1 &&
         props.clusters.map(({ clusterName }) => (
-          <TableLink key={clusterName} href={'/'}>
+          <TableLink
+            key={clusterName}
+            href={`/domains/${props.name}/${clusterName}`}
+          >
             {clusterName}
           </TableLink>
         ))}

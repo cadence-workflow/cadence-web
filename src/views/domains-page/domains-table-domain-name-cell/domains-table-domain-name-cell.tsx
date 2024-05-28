@@ -15,7 +15,9 @@ function DomainsTableDomainNameCell(props: DomainData) {
   return (
     <div className={cls.domainNameCell}>
       <Image width={16} height={16} alt="Cadence Icon" src={cadenceIcon} />
-      <TableLink href={'a'}>{props.name}</TableLink>
+      <TableLink href={`/domains/${props.name}/${props.activeClusterName}`}>
+        {props.name}
+      </TableLink>
     </div>
   );
 }
