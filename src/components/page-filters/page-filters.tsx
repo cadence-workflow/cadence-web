@@ -16,7 +16,7 @@ export default function PageFilters<
   P extends PageQueryParams,
   K extends PageQueryParamKeys<P>,
 >({
-  searchId,
+  searchQueryParamKey,
   searchPlaceholder,
   pageFiltersConfig,
   pageQueryParamsConfig,
@@ -59,10 +59,10 @@ export default function PageFilters<
     <>
       <styled.SearchInputContainer>
         <Input
-          value={queryParams[searchId]}
+          value={queryParams[searchQueryParamKey]}
           onChange={(event) =>
             setQueryParams({
-              [searchId]: event.target.value,
+              [searchQueryParamKey]: event.target.value,
             } as Partial<PageQueryParamSetterValues<P>>)
           }
           placeholder={searchPlaceholder}

@@ -141,7 +141,7 @@ function setup({
 
   render(
     <PageFilters
-      searchId="search"
+      searchQueryParamKey="search"
       searchPlaceholder="placeholder"
       pageFiltersConfig={MOCK_FILTERS_CONFIG}
       pageQueryParamsConfig={mockPageQueryParamConfig}
