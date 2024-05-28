@@ -9,11 +9,14 @@ describe('DomainTableClusterCell', () => {
     const clusterLinks = await screen.findAllByRole('link');
     clusterLinks.forEach((clusterLink, i) => {
       expect(clusterLink.innerHTML).toBe(globalDomain.clusters[i].clusterName);
-      expect(clusterLink).toHaveAttribute('href', '/');
+      expect(clusterLink).toHaveAttribute(
+        'href',
+        `/domains/${globalDomain.name}/${globalDomain.clusters[i].clusterName}`
+      );
     });
   });
 
-  it('should render cluster name as text if domain is in single cluser', async () => {
+  it('should render cluster name as text if domain is in single cluster', async () => {
     render(<DomainsTableClusterCell {...localDomain} />);
     const clusterLinks = screen.queryAllByRole('link');
     expect(clusterLinks).toHaveLength(0);
