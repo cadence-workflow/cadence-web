@@ -5,6 +5,8 @@ import AsyncPropsLoader from '@/components/async-props-loader/async-props-loader
 import WorkflowStatusTag from '../shared/workflow-status-tag/workflow-status-tag';
 import { getCachedWorkflowExecution } from './helpers/get-workflow-execution';
 import decodeUrlParams from '@/utils/decode-url-params';
+import WorkflowPageTabs from './workflow-page-tabs/workflow-page-tabs';
+import PageSection from '@/components/page-section/page-section';
 
 export default async function WorkflowPage({ params, children }: Props) {
   const decodedParams = decodeUrlParams(params) as Props['params'];
@@ -41,7 +43,8 @@ export default async function WorkflowPage({ params, children }: Props) {
           </Suspense>
         }
       />
-      {children}
+      <WorkflowPageTabs />
+      <PageSection>{children}</PageSection>
     </>
   );
 }
