@@ -6,9 +6,9 @@ export default function HomeLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <main>
+    <>
       <AppNavBar />
-      {children}
-    </main>
+      <main>{children}</main>
+    </>
   );
 }
