@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@/test-utils/rtl';
+import { render, screen } from '@/test-utils/rtl';
 import WorkflowPage from '../workflow-page';
 import type { Props } from '../workflow-page.types';
 
@@ -8,6 +8,14 @@ jest.mock(
   () =>
     function TestPageHeader() {
       return <div data-testid="page-header" />;
+    }
+);
+
+jest.mock(
+  '../workflow-page-tabs/workflow-page-tabs',
+  () =>
+    function TestPageHeader() {
+      return <div data-testid="page-tabs" />;
     }
 );
 
@@ -25,15 +33,20 @@ describe('WorkflowPage', () => {
   });
 
   it('renders workflow page header correctly', async () => {
-    const { getByTestId } = await setup({});
-    expect(getByTestId('page-header')).toBeInTheDocument();
+    await setup({});
+    expect(screen.getByTestId('page-header')).toBeInTheDocument();
+  });
+
+  it('renders workflow page tabs correctly', async () => {
+    await setup({});
+    expect(screen.getByTestId('page-tabs')).toBeInTheDocument();
   });
 
   it('renders children', async () => {
-    const { getByText } = await setup({
+    await setup({
       children: <div>Mock Children</div>,
     });
-    expect(getByText('Mock Children')).toBeInTheDocument();
+    expect(screen.getByText('Mock Children')).toBeInTheDocument();
   });
 });
 
