@@ -42,6 +42,11 @@ describe('WorkflowPage', () => {
     expect(screen.getByTestId('page-tabs')).toBeInTheDocument();
   });
 
+  it('renders workflow page tabs correctly', async () => {
+    const { getByTestId } = await setup({});
+    expect(getByTestId('page-tabs')).toBeInTheDocument();
+  });
+
   it('renders children', async () => {
     await setup({
       children: <div>Mock Children</div>,
