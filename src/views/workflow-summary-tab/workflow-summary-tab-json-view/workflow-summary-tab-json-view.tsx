@@ -8,7 +8,8 @@ import SegmentedControlRounded from '@/components/segmented-control-rounded/segm
 import PrettyJson from '@/components/pretty-json/pretty-json';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import { jsonViewTabsOptions } from './workflow-summary-tab-json-view.constants';
-import type { JsonValue, Props } from './workflow-summary-tab-json-view.types';
+import type { Props } from './workflow-summary-tab-json-view.types';
+import { JsonValue } from '@/components/pretty-json/pretty-json.types';
 import { cssStyles } from './workflow-summary-tab-json-view.styles';
 
 export default function WorkflowSummaryTabJsonView({

@@ -9,7 +9,7 @@ export default function PrettyJson({ json }: Props) {
 
   return (
     <JsonView
-      data={json}
+      data={json as object}
       shouldExpandNode={allExpanded}
       clickToExpandNode
       style={{ ...cls, noQuotesForStringValues: false }}
