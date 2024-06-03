@@ -4,11 +4,11 @@ import {
 } from '../use-page-query-params.types';
 
 export const queryParamsConfig: [
-  PageQueryParam<'sortBy', string>,
-  PageQueryParam<'aliased', string>,
+  PageQueryParam<'sortBy', string | undefined>,
+  PageQueryParam<'aliased', string | undefined>,
   PageQueryParam<'defaulted', string>,
-  PageQueryParam<'parsed', number>,
-  PageQueryParamMultiValue<'parsedMultiVal', number[]>,
+  PageQueryParam<'parsed', number | undefined>,
+  PageQueryParamMultiValue<'parsedMultiVal', number[] | undefined>,
   PageQueryParamMultiValue<'multiValDefaulted', string[]>,
 ] = [
   {
@@ -28,7 +28,7 @@ export const queryParamsConfig: [
   },
   {
     key: 'parsedMultiVal',
-    parseValue: (v) => (v ? parseInt(v) : 0),
+    parseValue: (vals) => vals.map((v) => parseInt(v)),
     isMultiValue: true,
   },
   {

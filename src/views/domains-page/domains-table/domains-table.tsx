@@ -48,16 +48,15 @@ function DomainsTable({
         domainsPageFiltersConfig.every((f) => f.filterFunc(d, queryParams))
     );
   }, [domains, queryParams]);
-  const sortedDomains = useMemo(
-    () =>
-      sortBy<DomainData>(
-        filteredDomains,
-        (d) =>
-          d[queryParams.sortColumn as keyof DomainData] as SortByReturnValue,
-        queryParams.sortOrder
-      ),
-    [filteredDomains, queryParams.sortColumn, queryParams.sortOrder]
-  );
+  const sortedDomains = useMemo(() => {
+    if (!queryParams.sortColumn || !queryParams.sortOrder)
+      return filteredDomains;
+    return sortBy<DomainData>(
+      filteredDomains,
+      (d) => d[queryParams.sortColumn as keyof DomainData] as SortByReturnValue,
+      queryParams.sortOrder
+    );
+  }, [filteredDomains, queryParams.sortColumn, queryParams.sortOrder]);
   const paginatedDomains = useMemo(
     () => sortedDomains.slice(0, visibleListItems),
     [sortedDomains, visibleListItems]

@@ -4,8 +4,8 @@ import { SortingOrder } from '@/components/table/table.types';
 const domainsPageQueryParamsConfig: [
   PageQueryParam<'searchText', string>,
   PageQueryParam<'clusterName', string>,
-  PageQueryParam<'sortColumn', string>,
-  PageQueryParam<'sortOrder', SortingOrder>,
+  PageQueryParam<'sortColumn', string | undefined>,
+  PageQueryParam<'sortOrder', SortingOrder | undefined>,
 ] = [
   {
     key: 'searchText',
@@ -24,6 +24,12 @@ const domainsPageQueryParamsConfig: [
   {
     key: 'sortOrder',
     queryParamKey: 'so',
+    parseValue: (value: string) => {
+      if (value === 'ASC' || value === 'DESC') {
+        return value;
+      }
+      return undefined;
+    },
   },
 ] as const;
 

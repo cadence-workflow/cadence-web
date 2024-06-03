@@ -29,13 +29,13 @@ const getUpdatedUrlSearch = <P extends PageQueryParams>(
       const queryParamValue =
         queryParamValuesToUpdateMap[c.key as PageQueryParamKeys<P>];
       const queryParamKey = c.queryParamKey || c.key;
-      if (queryParamValue === undefined) searchParamsURL.delete(queryParamKey);
-      else if (Array.isArray(queryParamValue)) {
-        searchParamsURL.delete(queryParamKey);
-        queryParamValue.forEach((v) => {
+      searchParamsURL.delete(queryParamKey);
+      if (c.isMultiValue && Array.isArray(queryParamValue)) {
+        (queryParamValue as any[]).forEach((v) => {
           searchParamsURL.append(queryParamKey, String(v));
         });
-      } else searchParamsURL.set(queryParamKey, String(queryParamValue));
+      } else if (queryParamValue !== undefined)
+        searchParamsURL.set(queryParamKey, String(queryParamValue));
     }
   });
 
