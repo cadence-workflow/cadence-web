@@ -46,9 +46,9 @@ describe('filterDomainsIrrelevantToCluster', () => {
   it('should handle null or undefined domains array gracefully', () => {
     //@ts-ignore domains comes from backend so testing null behavior
     const resultWithNull = filterDomainsIrrelevantToCluster('ClusterA', null);
-    //@ts-ignore domains comes from backend so testing undefined behavior
     const resultWithUndefined = filterDomainsIrrelevantToCluster(
       'ClusterA',
+      //@ts-ignore domains comes from backend so testing undefined behavior
       undefined
     );
 

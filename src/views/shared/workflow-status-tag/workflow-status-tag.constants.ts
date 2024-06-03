@@ -1,4 +1,4 @@
-import type { WorkflowStatus, Props } from './workflow-status-tag.types';
+import type { WorkflowStatus } from './workflow-status-tag.types';
 
 export const WORKFLOW_STATUS_NAMES: Record<WorkflowStatus, string> = {
   WORKFLOW_EXECUTION_STATUS_RUNNING: 'Running',
