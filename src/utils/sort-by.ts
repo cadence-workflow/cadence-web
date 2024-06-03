@@ -31,8 +31,8 @@ function toggleSortOrder({
   currentSortOrder,
   newSortColumn,
 }: {
-  currentSortColumn: string;
-  currentSortOrder: SortOrder;
+  currentSortColumn?: string;
+  currentSortOrder?: SortOrder;
   newSortColumn: string;
 }) {
   return currentSortColumn === newSortColumn && currentSortOrder === 'ASC'
