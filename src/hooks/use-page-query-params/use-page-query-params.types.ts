@@ -5,30 +5,37 @@ export type QueryParamSetterExtraConfig =
       pageRerender?: boolean; // by default when url changes the whole pages rerender, set to false if only components that uses the hook(& their children) needs to be rerenderd
     }
   | undefined;
-export type ParseValueFunction<T> = (value: string) => T | undefined;
-export type ParseValueFunctionOptional<T> = T extends string
-  ? { parseValue?: ParseValueFunction<T> | undefined }
-  : { parseValue: ParseValueFunction<T> };
+
+// function to parse the value of the query param from string to the desired type
+export type ParseValueFunction<ValT, ReturnT> = (value: ValT) => ReturnT;
+export type ParseValueFunctionOptional<ValT, ReturnT> = [ValT] extends [ReturnT] // if ReturnT extends ValT then we make the parseValue optional as the value can be directly used
+  ? { parseValue?: ParseValueFunction<ValT, ReturnT> | undefined }
+  : { parseValue: ParseValueFunction<ValT, ReturnT> };
+
+// default value to be used if the query param is not present in url
+export type DefaultValueOptional<T> = undefined extends T // if T has undefined in its type then we make the parseValue optional
+  ? { defaultValue?: T }
+  : { defaultValue: T };
 
 //TODO: K now accepts Type of string so the user can pass PageQueryParam<string, any>
 // an enhancement is to force user to use literal strings e.g PageQueryParam<"mykey",any>
 export type PageQueryParam<K extends string, T = any> = {
   key: K;
   queryParamKey?: string;
-  defaultValue?: T;
   isMultiValue?: false;
-} & ParseValueFunctionOptional<T>;
+} & DefaultValueOptional<T> &
+  ParseValueFunctionOptional<string, T>;
 
-export type PageQueryParamMultiValue<K extends string, T extends any[]> = {
+export type PageQueryParamMultiValue<K extends string, T = any> = {
   key: K; // key to get/set url query param, also it would be used as the query param name in the url if `queryParamKey` is not set
   queryParamKey?: string; // use to give a different query param name in the url than the one used in code. this can be used if you want appreviated name in the url while keeping the `key` more readable in code
-  defaultValue?: T; // default value to be used if the query param is not present in url
   isMultiValue: true; // indicates if this query param accepts multiple values and makes sure value is always returned as array even if the query param at some point has single value
-} & (T extends Array<infer I> ? ParseValueFunctionOptional<I> : never);
+} & DefaultValueOptional<T> &
+  ParseValueFunctionOptional<string[], T>;
 
 export type PageQueryParams = (
   | PageQueryParam<string, any>
-  | PageQueryParamMultiValue<string, any[]>
+  | PageQueryParamMultiValue<string, any>
 )[];
 export type PageQueryParamKeys<P extends PageQueryParams> =
   keyof PageQueryParamValues<P>;

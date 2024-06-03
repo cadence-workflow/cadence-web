@@ -13,8 +13,8 @@ export type Props<T> = {
   endMessage: React.ReactNode;
   // Sort params
   onSort: (column: string) => void;
-  sortColumn: string;
-  sortOrder: SortingOrder;
+  sortColumn?: string;
+  sortOrder?: SortingOrder;
 };
 
 export type SortingOrder = 'ASC' | 'DESC';
