@@ -12,7 +12,11 @@ export default function WorkflowSummaryTab({
 }: WorkflowPageTabContentProps) {
   const { cls } = useStyletronClasses(cssStyles);
   const [{ loading, error, data: workflowHistory }, setWorkflowHistory] =
-    useState({ loading: true, error: null, data: null });
+    useState<{ loading: boolean; error: any; data: any }>({
+      loading: true,
+      error: null,
+      data: null,
+    });
   const workflowEvents = workflowHistory?.history?.events;
 
   useEffect(() => {
