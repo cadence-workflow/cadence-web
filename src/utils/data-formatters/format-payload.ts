@@ -1,4 +1,6 @@
-const formatPayload = (payload: { data?: string | null }) => {
+const formatPayload = (
+  payload: { data?: string | null } | null | undefined
+) => {
   const data = payload?.data;
 
   if (!data) {
