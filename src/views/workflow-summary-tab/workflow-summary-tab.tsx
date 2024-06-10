@@ -1,11 +1,12 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import formatPayload from '@/views/workflow-page/helpers/format-payload';
 import { cssStyles } from './workflow-summary-tab.styles';
 import type { WorkflowPageTabContentProps } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 import WorkflowSummaryTabJsonView from './workflow-summary-tab-json-view/workflow-summary-tab-json-view';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
+import formatWorkflowHistoryEvent from '@/utils/data-formatters/format-workflow-history-event';
+import formatWorkflowInputPayload from '@/utils/data-formatters/format-workflow-input-payload';
 
 export default function WorkflowSummaryTab({
   params,
@@ -37,6 +38,18 @@ export default function WorkflowSummaryTab({
   if (error) throw new Error(error);
   if (loading) return <SectionLoadingIndicator />;
 
+  const lastEvent = workflowEvents?.[workflowEvents.length - 1];
+  const workflowCompletedEvent =
+    lastEvent && lastEvent.attributes?.startsWith('workflowExecution')
+      ? lastEvent
+      : undefined;
+  const formattedCompletedEvent = workflowCompletedEvent
+    ? formatWorkflowHistoryEvent(workflowCompletedEvent)
+    : undefined;
+  const resultJson = formattedCompletedEvent
+    ? formattedCompletedEvent[lastEvent.attributes]
+    : undefined;
+
   return (
     <div className={cls.pageContainer}>
       <div className={cls.mainContent}>
@@ -45,10 +58,10 @@ export default function WorkflowSummaryTab({
       </div>
       <div className={cls.jsonArea}>
         <WorkflowSummaryTabJsonView
-          inputJson={formatPayload(
+          inputJson={formatWorkflowInputPayload(
             workflowEvents?.[0]?.workflowExecutionStartedEventAttributes?.input
           )}
-          resultJson={{}}
+          resultJson={resultJson}
         />
       </div>
     </div>
