@@ -1,17 +1,17 @@
 import { type PageQueryParam } from '@/hooks/use-page-query-params/use-page-query-params.types';
-import { type SortingOrder } from '@/components/table/table.types';
+import { type SortOrder } from '@/utils/sort-by';
 import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
-import parseDateQueryParam from '../helpers/parse-date-query-param';
-import { WORKFLOW_STATUS_NAMES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
 import isWorkflowStatus from '@/views/shared/workflow-status-tag/helpers/is-workflow-status';
+import parseDateQueryParam from '../helpers/parse-date-query-param';
 
 const domainPageQueryParamsConfig: [
   PageQueryParam<'search', string>,
   PageQueryParam<'status', WorkflowStatus | undefined>,
+  // TODO @adhitya.mamallan - change these to timeRangeStart/End in the follow-up PR
   PageQueryParam<'startDate', Date | undefined>,
   PageQueryParam<'endDate', Date | undefined>,
   PageQueryParam<'sortColumn', string>,
-  PageQueryParam<'sortOrder', SortingOrder>,
+  PageQueryParam<'sortOrder', SortOrder>,
 ] = [
   {
     key: 'search',

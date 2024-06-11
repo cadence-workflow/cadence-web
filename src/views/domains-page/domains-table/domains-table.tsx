@@ -12,7 +12,7 @@ import domainsPageQueryParamsConfig from '../config/domains-page-query-params.co
 import domainsTableColumnsConfig from '../config/domains-table-columns.config';
 
 import type { DomainData } from '../domains-page.types';
-import { SortingOrder } from '@/components/table/table.types';
+import { type SortOrder } from '@/utils/sort-by';
 import { Props } from './domains-table.types';
 import { cssStyles } from './domains-table.styles';
 import { useInView } from 'react-intersection-observer';
@@ -91,7 +91,7 @@ function DomainsTable({
               })
             }
             sortColumn={queryParams.sortColumn}
-            sortOrder={queryParams.sortOrder as SortingOrder}
+            sortOrder={queryParams.sortOrder as SortOrder}
             endMessage={
               <DomainsTableEndMessage
                 key={visibleListItems}

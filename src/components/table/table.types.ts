@@ -1,3 +1,5 @@
+import { type SortOrder } from '@/utils/sort-by';
+
 export type TableColumn<T> = {
   name: string;
   id: string;
@@ -14,7 +16,5 @@ export type Props<T> = {
   // Sort params
   onSort: (column: string) => void;
   sortColumn?: string;
-  sortOrder?: SortingOrder;
+  sortOrder?: SortOrder;
 };
-
-export type SortingOrder = 'ASC' | 'DESC';

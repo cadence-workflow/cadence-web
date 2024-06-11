@@ -49,7 +49,9 @@ function sortBy<ArrayItemType>(
     getSortCompareFunction<ArrayItemType>(sortBy, sortOrder)
   );
 }
+
+export const SORT_ORDERS = ['ASC', 'DESC'] as const;
 export type SortByReturnValue = string | number | boolean | null | undefined;
-export type SortOrder = 'ASC' | 'DESC';
+export type SortOrder = (typeof SORT_ORDERS)[number];
 export { getSortCompareFunction, toggleSortOrder };
 export default sortBy;
