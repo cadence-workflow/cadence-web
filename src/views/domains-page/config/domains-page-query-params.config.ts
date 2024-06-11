@@ -1,11 +1,11 @@
 import { PageQueryParam } from '@/hooks/use-page-query-params/use-page-query-params.types';
-import { SortingOrder } from '@/components/table/table.types';
+import { type SortOrder } from '@/utils/sort-by';
 
 const domainsPageQueryParamsConfig: [
   PageQueryParam<'searchText', string>,
   PageQueryParam<'clusterName', string>,
   PageQueryParam<'sortColumn', string | undefined>,
-  PageQueryParam<'sortOrder', SortingOrder | undefined>,
+  PageQueryParam<'sortOrder', SortOrder | undefined>,
 ] = [
   {
     key: 'searchText',
