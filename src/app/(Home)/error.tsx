@@ -1,7 +1,7 @@
 'use client';
-import { HeadingXSmall } from 'baseui/typography';
 import { ThemeConsumer, styled } from 'baseui';
 import AlertIcon from 'baseui/icon/alert';
+import { HeadingXSmall } from 'baseui/typography';
 
 const StyledContainer = styled('div', ({ $theme }) => {
   return {

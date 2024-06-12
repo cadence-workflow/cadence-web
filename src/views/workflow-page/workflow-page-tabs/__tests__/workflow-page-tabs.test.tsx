@@ -1,7 +1,9 @@
 import React from 'react';
+
 import { render, screen } from '@/test-utils/rtl';
-import WorkflowPageTabs from '../workflow-page-tabs';
+
 import workflowPageTabsConfig from '../../config/workflow-page-tabs.config';
+import WorkflowPageTabs from '../workflow-page-tabs';
 
 const mockPushFn = jest.fn();
 //TODO @assem.hafez  create testing util for router

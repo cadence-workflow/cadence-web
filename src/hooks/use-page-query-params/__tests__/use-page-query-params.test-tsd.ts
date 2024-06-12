@@ -1,4 +1,5 @@
 import { expectAssignable, expectNotAssignable } from 'tsd-lite';
+
 import type {
   PageQueryParam,
   PageQueryParamMultiValue,

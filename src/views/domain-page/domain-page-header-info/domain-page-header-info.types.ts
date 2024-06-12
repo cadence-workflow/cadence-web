@@ -1,4 +1,5 @@
-import React from 'react';
+import type React from 'react';
+
 import type { DomainInfo } from '../domain-page.types';
 
 type LoadingProps = {

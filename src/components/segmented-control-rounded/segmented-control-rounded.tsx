@@ -1,7 +1,9 @@
 'use client';
-import { Segment, SegmentedControl } from 'baseui/segmented-control';
-import { overrides } from './segmented-control-rounded.styles';
 import React, { useId } from 'react';
+
+import { Segment, SegmentedControl } from 'baseui/segmented-control';
+
+import { overrides } from './segmented-control-rounded.styles';
 import type { Props } from './segmented-control-rounded.types';
 
 export default function SegmentedControlRounded({

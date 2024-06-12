@@ -1,5 +1,5 @@
-import formatRetryPolicy from '../format-retry-policy';
 import formatDurationToSeconds from '../format-duration-to-seconds';
+import formatRetryPolicy from '../format-retry-policy';
 
 jest.mock('../format-duration-to-seconds', () => jest.fn());
 const mockedFormatDurationToSeconds =

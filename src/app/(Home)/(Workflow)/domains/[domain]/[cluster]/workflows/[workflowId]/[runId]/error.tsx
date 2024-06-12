@@ -1,7 +1,7 @@
 'use client';
-import { HeadingXSmall } from 'baseui/typography';
 import { styled } from 'baseui';
 import AlertIcon from 'baseui/icon/alert';
+import { HeadingXSmall } from 'baseui/typography';
 
 // TODO: @assem.hafez extract error component to reusable error messages component
 

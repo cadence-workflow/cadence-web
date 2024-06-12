@@ -1,5 +1,6 @@
-import { IconProps } from 'baseui/icon';
-import React from 'react';
+import type React from 'react';
+
+import { type IconProps } from 'baseui/icon';
 
 export type PageTab = {
   key: string;

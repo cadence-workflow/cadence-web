@@ -1,5 +1,6 @@
-import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
 import { WORKFLOW_STATUS_NAMES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
+import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
+
 import mapWorkflowStatusToStatusCode from '../map-workflow-status-to-status-code';
 
 describe('mapWorkflowStatusToStatusCode', () => {

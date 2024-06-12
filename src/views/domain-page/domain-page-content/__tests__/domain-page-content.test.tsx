@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { render, screen } from '@/test-utils/rtl';
+
 import DomainPageContent from '../domain-page-content';
 import type {
   DomainPageContentParams,
@@ -51,7 +53,7 @@ describe('DomainPageContent', () => {
 
   it('throws a Not Found error if domain tab does not exist in config', () => {
     render(
-      // @ts-ignore allow passing unknown domainTab to test recieving wrong value as a param
+      // @ts-expect-error allow passing unknown domainTab to test recieving wrong value as a param
       <DomainPageContent params={{ ...mockParams, domainTab: 'unknown-tab' }} />
     );
     expect(mockNotFound).toHaveBeenCalled();

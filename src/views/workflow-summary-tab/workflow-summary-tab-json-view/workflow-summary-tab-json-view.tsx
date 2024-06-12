@@ -1,16 +1,19 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import copy from 'copy-to-clipboard';
-import { MdCopyAll } from 'react-icons/md';
+
 import { Button, KIND as BUTTON_KIND, SHAPE, SIZE } from 'baseui/button';
 import { ACCESSIBILITY_TYPE, Tooltip } from 'baseui/tooltip';
-import SegmentedControlRounded from '@/components/segmented-control-rounded/segmented-control-rounded';
+import copy from 'copy-to-clipboard';
+import { MdCopyAll } from 'react-icons/md';
+
 import PrettyJson from '@/components/pretty-json/pretty-json';
+import { type JsonValue } from '@/components/pretty-json/pretty-json.types';
+import SegmentedControlRounded from '@/components/segmented-control-rounded/segmented-control-rounded';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
+
 import { jsonViewTabsOptions } from './workflow-summary-tab-json-view.constants';
-import type { Props } from './workflow-summary-tab-json-view.types';
-import { JsonValue } from '@/components/pretty-json/pretty-json.types';
 import { cssStyles } from './workflow-summary-tab-json-view.styles';
+import type { Props } from './workflow-summary-tab-json-view.types';
 
 export default function WorkflowSummaryTabJsonView({
   inputJson,

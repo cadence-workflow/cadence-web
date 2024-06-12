@@ -1,8 +1,12 @@
 import { cache } from 'react';
-import * as grpcClient from '@/utils/grpc/grpc-client';
+
 import { unstable_cache } from 'next/cache';
-import { DomainData } from '../domains-page.types';
+
 import CLUSTERS_CONFIGS from '@/config/clusters/clusters.config';
+import * as grpcClient from '@/utils/grpc/grpc-client';
+
+import { type DomainData } from '../domains-page.types';
+
 import filterDomainsIrrelevantToCluster from './filter-domains-irrelevant-to-cluster';
 import getUniqueDomains from './get-unique-domains';
 

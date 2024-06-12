@@ -1,11 +1,12 @@
 import React, { Suspense } from 'react';
+
+import AsyncPropsLoader from '@/components/async-props-loader/async-props-loader';
+import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import DomainsPageFilters from '@/views/domains-page/domains-page-filters/domains-page-filters';
-import DomainsTable from '@/views/domains-page/domains-table/domains-table';
 import DomainsPageTitle from '@/views/domains-page/domains-page-title/domains-page-title';
 import DomainsPageTitleBadge from '@/views/domains-page/domains-page-title-badge/domains-page-title-badge';
-import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
+import DomainsTable from '@/views/domains-page/domains-table/domains-table';
 import { getCachedAllDomains } from '@/views/domains-page/helpers/get-all-domains';
-import AsyncPropsLoader from '@/components/async-props-loader/async-props-loader';
 
 export default async function DomainsPage() {
   return (

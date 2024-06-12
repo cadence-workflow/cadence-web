@@ -1,4 +1,4 @@
-import { DomainData } from '../domains-page.types';
+import { type DomainData } from '../domains-page.types';
 
 export default function getUniqueDomains(domains: DomainData[]) {
   const allUniqueDomains: Record<string, boolean> = {};

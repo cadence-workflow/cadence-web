@@ -1,10 +1,11 @@
 import {
-  ExtractedPageParamsValuesType,
-  PageQueryParamKeys,
-  PageQueryParams,
-  PageQueryParamValues,
-  ParsedQuery,
+  type ExtractedPageParamsValuesType,
+  type PageQueryParamKeys,
+  type PageQueryParams,
+  type PageQueryParamValues,
+  type ParsedQuery,
 } from '../use-page-query-params.types';
+
 import getArrayValForMultiValParams from './get-array-val-for-multi-val-params';
 
 /**

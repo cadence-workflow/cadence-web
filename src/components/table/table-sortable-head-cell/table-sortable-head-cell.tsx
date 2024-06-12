@@ -1,9 +1,10 @@
 import React from 'react';
-import ChevronUp from 'baseui/icon/chevron-up';
-import ChevronDown from 'baseui/icon/chevron-down';
 
-import type { Props } from './table-sortable-head-cell.types';
+import ChevronDown from 'baseui/icon/chevron-down';
+import ChevronUp from 'baseui/icon/chevron-up';
+
 import { styled } from './table-sortable-head-cell.styles';
+import type { Props } from './table-sortable-head-cell.types';
 
 export default function TableSortableHeadCell({
   name,

@@ -1,5 +1,5 @@
 import { useStyletron, type Theme } from 'baseui';
-import { StyleObject } from 'styletron-react';
+import { type StyleObject } from 'styletron-react';
 
 export type StyletronCSSObjectValue =
   | StyleObject
