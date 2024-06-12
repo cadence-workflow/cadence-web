@@ -1,10 +1,11 @@
 'use client';
-import PageSection from '@/components/page-section/page-section';
 import PageFilters from '@/components/page-filters/page-filters';
+import PageSection from '@/components/page-section/page-section';
 
-import { styled } from './domain-page-workflows-filters.styles';
 import domainPageQueryParamsConfig from '../config/domain-page-query-params.config';
 import domainPageWorkflowsFiltersConfig from '../config/domain-page-workflows-filters.config';
+
+import { styled } from './domain-page-workflows-filters.styles';
 
 export default function DomainPageWorkflowsFilters() {
   return (

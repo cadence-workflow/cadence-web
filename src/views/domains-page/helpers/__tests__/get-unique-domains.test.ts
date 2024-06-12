@@ -1,5 +1,5 @@
+import { type DomainData } from '../../domains-page.types';
 import getUniqueDomains from '../get-unique-domains';
-import { DomainData } from '../../domains-page.types';
 
 describe('getUniqueDomains', () => {
   it('should return unique domains based on id-name-activeClusterName', () => {

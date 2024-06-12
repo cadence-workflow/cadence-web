@@ -1,10 +1,11 @@
 import React, { Fragment } from 'react';
+import type { JSXElementConstructor, ReactNode } from 'react';
+
 import { render, renderHook } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { TestProvider } from './test-provider';
 
-import type { JSXElementConstructor, ReactNode } from 'react';
-import { PublicProviderProps, RenderHookOptions } from './rtl.types';
+import { type PublicProviderProps, type RenderHookOptions } from './rtl.types';
+import { TestProvider } from './test-provider';
 
 const customRender = (
   element: Parameters<typeof render>[0],
@@ -47,8 +48,11 @@ const getWrapper = (
   return { wrapper };
 };
 
+// eslint-disable-next-line import/export
 export * from '@testing-library/react';
 
+// eslint-disable-next-line import/export
 export { customRender as render };
 
+// eslint-disable-next-line import/export
 export { customRenderHook as renderHook };

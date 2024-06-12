@@ -1,10 +1,10 @@
-import formatWorkflowExecutionContinuedAsNewEventAttributes from '../format-workflow-execution-continued-as-new-event-attributes';
 import formatDurationToSeconds from '../../format-duration-to-seconds';
-import formatWorkflowEventId from '../../format-workflow-event-id';
-import formatFailureDetails from '../../format-failure-details';
 import formatEnum from '../../format-enum';
+import formatFailureDetails from '../../format-failure-details';
 import formatPayloadMap from '../../format-payload-map';
+import formatWorkflowEventId from '../../format-workflow-event-id';
 import formatWorkflowInputPayload from '../../format-workflow-input-payload';
+import formatWorkflowExecutionContinuedAsNewEventAttributes from '../format-workflow-execution-continued-as-new-event-attributes';
 
 jest.mock('../../format-duration-to-seconds');
 jest.mock('../../format-workflow-event-id');

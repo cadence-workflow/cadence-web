@@ -1,4 +1,5 @@
 import React from 'react';
+
 import {
   StyledTable,
   StyledTableHead,
@@ -8,11 +9,11 @@ import {
   StyledTableBodyCell,
 } from 'baseui/table-semantic';
 
-import type { Props } from './table.types';
-import { styled } from './table.styles';
 import TableSortableHeadCell from './table-sortable-head-cell/table-sortable-head-cell';
+import { styled } from './table.styles';
+import type { Props } from './table.types';
 
-export default function Table<T extends Object>({
+export default function Table<T extends object>({
   data,
   columns,
   shouldShowResults,

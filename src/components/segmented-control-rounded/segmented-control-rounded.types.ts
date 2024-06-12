@@ -1,8 +1,9 @@
+import type React from 'react';
+
 import type {
   SegmentProps,
   SegmentedControlProps,
 } from 'baseui/segmented-control';
-import React from 'react';
 
 export type SegmentControlRoundedOption = Omit<SegmentProps, 'key'> & {
   key: React.Key; // make key required

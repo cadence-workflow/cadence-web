@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { render, screen, fireEvent } from '@/test-utils/rtl';
+
 import SegmentedControlRounded from '../segmented-control-rounded';
 
 describe('SegmentedControlRounded Component', () => {

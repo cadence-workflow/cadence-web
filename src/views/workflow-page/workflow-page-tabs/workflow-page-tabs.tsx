@@ -1,10 +1,14 @@
 'use client';
 import React from 'react';
-import PageTabs from '@/components/page-tabs/page-tabs';
-import workflowPageTabsConfig from '../config/workflow-page-tabs.config';
-import type { WorkflowPageTabsParams } from './workflow-page-tabs.types';
-import decodeUrlParams from '@/utils/decode-url-params';
+
 import { useRouter, useParams } from 'next/navigation';
+
+import PageTabs from '@/components/page-tabs/page-tabs';
+import decodeUrlParams from '@/utils/decode-url-params';
+
+import workflowPageTabsConfig from '../config/workflow-page-tabs.config';
+
+import type { WorkflowPageTabsParams } from './workflow-page-tabs.types';
 
 export default function WorkflowPageTabs() {
   const router = useRouter();

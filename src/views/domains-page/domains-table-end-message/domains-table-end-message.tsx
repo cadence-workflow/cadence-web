@@ -1,6 +1,8 @@
 import React from 'react';
+
 import { styled } from 'baseui';
-import { Props } from './domains-table-end-message.type';
+
+import { type Props } from './domains-table-end-message.type';
 
 const EndMessageContainer = styled('div', ({ $theme }) => ({
   ...$theme.typography.LabelSmall,

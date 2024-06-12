@@ -1,6 +1,8 @@
 'use client';
-import useStyletronClasses from '@/hooks/use-styletron-classes';
 import { AppNavBar as BaseAppNavBar } from 'baseui/app-nav-bar';
+
+import useStyletronClasses from '@/hooks/use-styletron-classes';
+
 import { cssStyles } from './app-nav-bar.styles';
 
 export default function AppNavBar() {
