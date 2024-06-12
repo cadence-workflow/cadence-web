@@ -19,10 +19,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import get from 'lodash/get';
 import * as grpc from '@grpc/grpc-js';
-import * as protoLoader from '@grpc/proto-loader';
 import type { ServiceClient } from '@grpc/grpc-js/build/src/make-client';
+import * as protoLoader from '@grpc/proto-loader';
+import get from 'lodash/get';
+
 import GRPC_PROTO_DIR_BASE_PATH from '@/config/grpc/grpc-proto-dir-base-path';
 
 const MAX_MESSAGE_SIZE = 64 * 1024 * 1024; //TODO: make this configurable for oss

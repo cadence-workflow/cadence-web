@@ -1,10 +1,11 @@
 import React from 'react';
+
 import { render, screen } from '@/test-utils/rtl';
 
-import DomainPageHeaderInfo from '../domain-page-header-info';
-import domainPageHeaderInfoItemsConfig from '../../config/domain-page-header-info-items.config';
 import { mockDomainInfo } from '../../__fixtures__/domain-info';
+import domainPageHeaderInfoItemsConfig from '../../config/domain-page-header-info-items.config';
 import { type Props } from '../../domain-page-header-info-item/domain-page-header-info-item.types';
+import DomainPageHeaderInfo from '../domain-page-header-info';
 
 jest.mock(
   '../../domain-page-header-info-item/domain-page-header-info-item',

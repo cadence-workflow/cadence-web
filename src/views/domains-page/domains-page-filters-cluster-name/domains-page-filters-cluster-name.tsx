@@ -1,16 +1,19 @@
 'use client';
 import React from 'react';
+
 import { FormControl } from 'baseui/form-control';
 import { Select } from 'baseui/select';
 
-import useStyletronClasses from '@/hooks/use-styletron-classes';
+import { type PageFilterComponentProps } from '@/components/page-filters/page-filters.types';
 import CLUSTERS_CONFIGS from '@/config/clusters/clusters.config';
-import { PageFilterComponentProps } from '@/components/page-filters/page-filters.types';
+import useStyletronClasses from '@/hooks/use-styletron-classes';
+
+import type domainsPageQueryParamsConfig from '../config/domains-page-query-params.config';
+
 import {
   cssStyles,
   overrides,
 } from './domains-page-filters-cluster-name.styles';
-import domainsPageQueryParamsConfig from '../config/domains-page-query-params.config';
 
 const clustersOptions = CLUSTERS_CONFIGS.map(({ clusterName }) => ({
   label: clusterName,

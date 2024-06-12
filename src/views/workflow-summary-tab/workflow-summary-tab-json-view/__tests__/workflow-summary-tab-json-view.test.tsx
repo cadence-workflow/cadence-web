@@ -1,6 +1,9 @@
 import React from 'react';
-import { render, fireEvent, screen, act } from '@/test-utils/rtl';
+
 import copy from 'copy-to-clipboard';
+
+import { render, fireEvent, screen, act } from '@/test-utils/rtl';
+
 import WorkflowSummaryTabJsonView from '../workflow-summary-tab-json-view';
 
 // Mock dependencies

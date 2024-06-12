@@ -1,9 +1,11 @@
 import React from 'react';
+
 import { render, screen, act, fireEvent } from '@/test-utils/rtl';
 
-import DomainPageTabs from '../domain-page-tabs';
-import domainPageTabsConfig from '../../config/domain-page-tabs.config';
 import { type PageTab } from '@/components/page-tabs/page-tabs.types';
+
+import domainPageTabsConfig from '../../config/domain-page-tabs.config';
+import DomainPageTabs from '../domain-page-tabs';
 
 const mockPushFn = jest.fn();
 jest.mock('next/navigation', () => ({

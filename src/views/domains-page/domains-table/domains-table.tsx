@@ -1,22 +1,26 @@
 'use client';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+
 import { Cell, Grid } from 'baseui/layout-grid';
+import { useInView } from 'react-intersection-observer';
 
 import Table from '@/components/table/table';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
-import sortBy, { SortByReturnValue, toggleSortOrder } from '@/utils/sort-by';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
+import sortBy, {
+  type SortByReturnValue,
+  toggleSortOrder,
+  type SortOrder,
+} from '@/utils/sort-by';
 import DomainsTableEndMessage from '@/views/domains-page/domains-table-end-message/domains-table-end-message';
-import domainsPageQueryParamsConfig from '../config/domains-page-query-params.config';
 
-import domainsTableColumnsConfig from '../config/domains-table-columns.config';
-
-import type { DomainData } from '../domains-page.types';
-import { type SortOrder } from '@/utils/sort-by';
-import { Props } from './domains-table.types';
-import { cssStyles } from './domains-table.styles';
-import { useInView } from 'react-intersection-observer';
 import domainsPageFiltersConfig from '../config/domains-page-filters.config';
+import domainsPageQueryParamsConfig from '../config/domains-page-query-params.config';
+import domainsTableColumnsConfig from '../config/domains-table-columns.config';
+import type { DomainData } from '../domains-page.types';
+
+import { cssStyles } from './domains-table.styles';
+import { type Props } from './domains-table.types';
 
 const DOMAINS_LIST_PAGE_SIZE = 20;
 

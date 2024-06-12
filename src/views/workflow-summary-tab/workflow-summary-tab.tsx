@@ -1,12 +1,14 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { cssStyles } from './workflow-summary-tab.styles';
-import type { WorkflowPageTabContentProps } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
-import WorkflowSummaryTabJsonView from './workflow-summary-tab-json-view/workflow-summary-tab-json-view';
-import useStyletronClasses from '@/hooks/use-styletron-classes';
+
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
+import useStyletronClasses from '@/hooks/use-styletron-classes';
 import formatWorkflowHistoryEvent from '@/utils/data-formatters/format-workflow-history-event';
 import formatWorkflowInputPayload from '@/utils/data-formatters/format-workflow-input-payload';
+import type { WorkflowPageTabContentProps } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
+
+import WorkflowSummaryTabJsonView from './workflow-summary-tab-json-view/workflow-summary-tab-json-view';
+import { cssStyles } from './workflow-summary-tab.styles';
 
 export default function WorkflowSummaryTab({
   params,

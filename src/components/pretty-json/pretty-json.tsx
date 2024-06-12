@@ -1,8 +1,10 @@
 'use client';
-import useStyletronClasses from '@/hooks/use-styletron-classes';
 import { JsonView, allExpanded } from 'react-json-view-lite';
-import type { Props } from './pretty-json.types';
+
+import useStyletronClasses from '@/hooks/use-styletron-classes';
+
 import { cssStyles } from './pretty-json.styles';
+import type { Props } from './pretty-json.types';
 
 export default function PrettyJson({ json }: Props) {
   const { cls } = useStyletronClasses(cssStyles);

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { styled } from './workflow-status-tag-icon.styles';
-import { Props } from './workflow-status-tag-icon.types';
+import { type Props } from './workflow-status-tag-icon.types';
 
 export default function WorkflowStatusTagIcon(props: Props) {
   switch (props.kind) {

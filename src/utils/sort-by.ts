@@ -19,7 +19,7 @@ function getSortCompareFunction<ArrayItemType>(
         result = -1;
       // null and undefined should always be swapped to become at the beginning, but undefined should be before null
       else if (bVal === undefined || bVal === null) result = 1;
-      // @ts-ignore: 'aVal' is possibly 'null'. aVal can't be null but TS can't infere that from the above conditions
+      // @ts-expect-error: 'aVal' is possibly 'null'. aVal can't be null but TS can't infere that from the above conditions
       else result = aVal < bVal ? -1 : 1;
     }
     return result !== 0 ? factor * result : result;

@@ -1,17 +1,20 @@
 import { useCallback, useMemo, useState } from 'react';
+
+import isObjectLike from 'lodash/isObjectLike';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import queryString from 'query-string';
-import isObjectLike from 'lodash/isObjectLike';
 import { useBetween } from 'use-between';
+
 import usePreviousValue from '@/hooks/use-previous-value';
+
+import getPageQueryParamsValues from './helpers/get-page-query-params-values';
+import getUpdatedUrlSearch from './helpers/get-updated-url-search';
 import type {
   PageQueryParamSetter,
   PageQueryParamValues,
   PageQueryParams,
   QueryParamSetterExtraConfig,
 } from './use-page-query-params.types';
-import getUpdatedUrlSearch from './helpers/get-updated-url-search';
-import getPageQueryParamsValues from './helpers/get-page-query-params-values';
 
 const useShared_HistoryState = () => useBetween(useState<string>);
 

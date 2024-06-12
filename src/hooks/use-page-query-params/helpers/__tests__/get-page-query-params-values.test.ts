@@ -18,7 +18,7 @@ describe('getPageQueryParamsValues', () => {
       unrelevant: 'b',
     });
     expect(values.sortBy).toBe('a');
-    // @ts-ignore: property unrelevant doesn't exist in unrelevant (this is expected)
+    // @ts-expect-error: property unrelevant doesn't exist in unrelevant (this is expected)
     expect(values.unrelevant).not.toBeDefined();
   });
 

@@ -1,17 +1,19 @@
 import React from 'react';
+
 import { render, screen, act, fireEvent } from '@/test-utils/rtl';
+
 import * as usePageQueryParamsModule from '@/hooks/use-page-query-params/use-page-query-params';
 import { type PageQueryParamValues } from '@/hooks/use-page-query-params/use-page-query-params.types';
 
+import {
+  mockQueryParamsValues,
+  mockPageQueryParamConfig,
+} from '../__fixtures__/page-filters.fixtures';
 import PageFilters from '../page-filters';
 import {
   type PageFilterComponentProps,
   type PageFilterConfig,
 } from '../page-filters.types';
-import {
-  mockQueryParamsValues,
-  mockPageQueryParamConfig,
-} from '../__fixtures__/page-filters.fixtures';
 
 const mockSetQueryParams = jest.fn();
 jest.mock('../../../hooks/use-page-query-params/use-page-query-params', () =>

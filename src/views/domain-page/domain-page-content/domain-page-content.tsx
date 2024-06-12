@@ -1,12 +1,15 @@
 import React from 'react';
+
 import { notFound } from 'next/navigation';
+
 import decodeUrlParams from '@/utils/decode-url-params';
+
+import domainPageTabsContentConfig from '../config/domain-page-tabs-content.config';
 
 import {
   type DomainPageContentParams,
   type Props,
 } from './domain-page-content.types';
-import domainPageTabsContentConfig from '../config/domain-page-tabs-content.config';
 
 export default function DomainPageContent(props: Props) {
   const decodedParams = decodeUrlParams(

@@ -1,4 +1,9 @@
-import { DeepPartial, MakeExtendable, Theme } from 'baseui/styles';
+import {
+  type DeepPartial,
+  type MakeExtendable,
+  type Theme,
+} from 'baseui/styles';
+
 import baseWebIconsOverrides from './base-web-icons-overrides.config';
 
 const themeLight = {

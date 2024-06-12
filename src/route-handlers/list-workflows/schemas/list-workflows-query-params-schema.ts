@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
+import getTimestampNsFromISO from '@/utils/datetime/get-timestamp-ns-from-iso';
 import { SORT_ORDERS } from '@/utils/sort-by';
 import isWorkflowStatus from '@/views/shared/workflow-status-tag/helpers/is-workflow-status';
 import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
-import getTimestampNsFromISO from '@/utils/datetime/get-timestamp-ns-from-iso';
 
 const listWorkflowsQueryParamSchema = z.object({
   pageSize: z

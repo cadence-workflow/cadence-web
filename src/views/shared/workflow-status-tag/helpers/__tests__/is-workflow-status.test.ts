@@ -1,5 +1,5 @@
-import isWorkflowStatus from '../is-workflow-status';
 import { WORKFLOW_STATUS_NAMES } from '../../workflow-status-tag.constants';
+import isWorkflowStatus from '../is-workflow-status';
 
 describe('isWorkflowStatus', () => {
   it('should return true for valid workflow status', () => {

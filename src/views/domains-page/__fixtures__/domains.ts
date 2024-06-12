@@ -1,4 +1,4 @@
-import { DomainData } from '../domains-page.types';
+import { type DomainData } from '../domains-page.types';
 
 export const globalDomain: DomainData = {
   id: 'test-global-domain-id',

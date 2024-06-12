@@ -1,7 +1,8 @@
-import { getMediaQueryMargins } from '@/utils/media-query/get-media-queries-margins';
 import type { Theme } from 'baseui';
-import { TabOverrides, TabsOverrides } from 'baseui/tabs-motion';
+import { type TabOverrides, type TabsOverrides } from 'baseui/tabs-motion';
 import type { StyleObject } from 'styletron-react';
+
+import { getMediaQueryMargins } from '@/utils/media-query/get-media-queries-margins';
 
 export const overrides = {
   tabs: {

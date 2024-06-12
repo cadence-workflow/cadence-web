@@ -1,5 +1,5 @@
-import formatWorkflowExecutionTerminatedEventAttributes from '../format-workflow-execution-terminated-event-attributes';
 import formatPayload from '../../format-payload';
+import formatWorkflowExecutionTerminatedEventAttributes from '../format-workflow-execution-terminated-event-attributes';
 
 jest.mock('../../format-payload');
 

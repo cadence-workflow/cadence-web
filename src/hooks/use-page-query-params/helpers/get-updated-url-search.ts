@@ -9,9 +9,9 @@
  */
 
 import {
-  PageQueryParamKeys,
-  PageQueryParams,
-  PageQueryParamSetterValues,
+  type PageQueryParamKeys,
+  type PageQueryParams,
+  type PageQueryParamSetterValues,
 } from '../use-page-query-params.types';
 
 const getUpdatedUrlSearch = <P extends PageQueryParams>(

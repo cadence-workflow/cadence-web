@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Skeleton } from 'baseui/skeleton';
 
 import { overrides, styled } from './domain-page-header-info-item.styles';

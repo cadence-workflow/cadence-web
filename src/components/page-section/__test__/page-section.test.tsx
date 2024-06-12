@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { render } from '@/test-utils/rtl';
+
 import PageSection from '../page-section';
 
 describe('PageSection', () => {

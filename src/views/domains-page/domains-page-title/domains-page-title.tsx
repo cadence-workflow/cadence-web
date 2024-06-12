@@ -1,9 +1,11 @@
 'use client';
-import { LabelLarge } from 'baseui/typography';
 import { Cell, Grid } from 'baseui/layout-grid';
+import { LabelLarge } from 'baseui/typography';
+
 import useStyletronClasses from '@/hooks/use-styletron-classes';
+
 import { cssStyles } from './domains-page-title.styles';
-import { Props } from './domains-page-title.types';
+import { type Props } from './domains-page-title.types';
 
 export default function DomainsPageTitle({ countBadge }: Props) {
   const { cls } = useStyletronClasses(cssStyles);

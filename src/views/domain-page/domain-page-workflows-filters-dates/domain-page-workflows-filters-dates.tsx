@@ -1,13 +1,16 @@
 'use client';
 import * as React from 'react';
+
 import { DatePicker } from 'baseui/datepicker';
 import { FormControl } from 'baseui/form-control';
 import { SIZE } from 'baseui/input';
 
 import { type PageFilterComponentProps } from '@/components/page-filters/page-filters.types';
+
+import type domainPageQueryParamsConfig from '../config/domain-page-query-params.config';
+
 import { DATE_FORMAT } from './domain-page-workflows-filters-dates.constants';
 import { overrides } from './domain-page-workflows-filters-dates.styles';
-import domainPageQueryParamsConfig from '../config/domain-page-query-params.config';
 
 export default function DomainPageWorkflowsFiltersDates({
   queryParams,

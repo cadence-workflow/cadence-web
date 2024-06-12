@@ -1,12 +1,13 @@
 'use client';
 import React from 'react';
-import Image from 'next/image';
+
 import { Cell, Grid } from 'baseui/layout-grid';
+import Image from 'next/image';
 
 import cadenceLogoBlack from '@/assets/cadence-logo-black.svg';
 
-import { type Props } from './domain-page-header.types';
 import { styled } from './domain-page-header.styles';
+import { type Props } from './domain-page-header.types';
 
 export default function DomainPageHeader(props: Props) {
   return (

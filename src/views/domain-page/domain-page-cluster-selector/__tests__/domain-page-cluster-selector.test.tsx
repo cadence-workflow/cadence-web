@@ -1,12 +1,13 @@
 import React from 'react';
+
 import { render, screen, fireEvent, act, within } from '@/test-utils/rtl';
 
-import DomainPageClusterSelector from '../domain-page-cluster-selector';
 import {
   mockDomainInfo,
   mockDomainInfoSingleCluster,
 } from '../../__fixtures__/domain-info';
 import { type DomainInfo } from '../../domain-page.types';
+import DomainPageClusterSelector from '../domain-page-cluster-selector';
 
 const mockPushFn = jest.fn();
 jest.mock('next/navigation', () => ({

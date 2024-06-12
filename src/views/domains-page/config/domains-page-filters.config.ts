@@ -1,4 +1,4 @@
-import { DomainsPageFiltersConfig } from '../domains-page-filters/domains-page-filters.types';
+import { type DomainsPageFiltersConfig } from '../domains-page-filters/domains-page-filters.types';
 import DomainsPageFiltersClusterName from '../domains-page-filters-cluster-name/domains-page-filters-cluster-name';
 
 const domainsPageFiltersConfig = [

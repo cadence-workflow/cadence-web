@@ -1,8 +1,10 @@
 'use client';
 import React, { useRef } from 'react';
+
 import { useServerInsertedHTML } from 'next/navigation';
+import { type Server } from 'styletron-engine-monolithic';
+
 import { styletron } from '@/styletron';
-import { Server } from 'styletron-engine-monolithic';
 
 export default function StyledJsxRegistry() {
   const isServerInserted = useRef(false);

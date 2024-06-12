@@ -54,7 +54,7 @@ describe('formatWorkflowExecutionCancelRequestedEventAttributes', () => {
 
     const formattedAttributes =
       formatWorkflowExecutionCancelRequestedEventAttributes({
-        // @ts-ignore - initiatedId is missing intentionally
+        // @ts-expect-error - initiatedId is missing intentionally
         externalExecutionInfo,
         otherAttribute: 'value',
       });

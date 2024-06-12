@@ -1,5 +1,6 @@
 import type { PageTab } from '@/components/page-tabs/page-tabs.types';
-import workflowPageTabsConfig from '../config/workflow-page-tabs.config';
+
+import type workflowPageTabsConfig from '../config/workflow-page-tabs.config';
 
 export type WorkflowPageTabs = Array<PageTab>;
 

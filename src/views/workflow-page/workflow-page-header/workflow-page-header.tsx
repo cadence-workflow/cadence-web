@@ -1,14 +1,17 @@
 'use client';
 import React from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
+
 import { Breadcrumbs } from 'baseui/breadcrumbs';
 import { StyledLink } from 'baseui/link';
-import useStyletronClasses from '@/hooks/use-styletron-classes';
-import PageSection from '@/components/page-section/page-section';
+import Image from 'next/image';
+import Link from 'next/link';
+
 import cadenceLogoBlack from '@/assets/cadence-logo-black.svg';
-import type { Props } from './workflow-page-header.types';
+import PageSection from '@/components/page-section/page-section';
+import useStyletronClasses from '@/hooks/use-styletron-classes';
+
 import { cssStyles, overrides } from './workflow-page-header.styles';
+import type { Props } from './workflow-page-header.types';
 
 export default function WorkflowPageHeader({
   domain,

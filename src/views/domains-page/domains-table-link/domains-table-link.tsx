@@ -1,8 +1,10 @@
 import React from 'react';
+
 import { withStyle } from 'baseui';
 import { StyledLink } from 'baseui/link';
 import Link from 'next/link';
-import { Props } from './domains-table-link.types';
+
+import { type Props } from './domains-table-link.types';
 
 const TableLinkBase = withStyle<typeof StyledLink, { disabled: boolean }>(
   StyledLink,

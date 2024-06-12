@@ -1,4 +1,4 @@
-import domainPageTabsConfig from '../config/domain-page-tabs.config';
+import type domainPageTabsConfig from '../config/domain-page-tabs.config';
 
 type DomainTabName = (typeof domainPageTabsConfig)[number]['key'];
 

@@ -1,10 +1,11 @@
+import { type Theme } from 'baseui';
+import type { FormControlOverrides } from 'baseui/form-control/types';
+import { type StyleObject } from 'styletron-react';
+
 import type {
   StyletronCSSObject,
   StyletronCSSObjectOf,
 } from '@/hooks/use-styletron-classes';
-import { Theme } from 'baseui';
-import type { FormControlOverrides } from 'baseui/form-control/types';
-import { StyleObject } from 'styletron-react';
 
 export const overrides = {
   selectFormControl: {

@@ -1,6 +1,6 @@
-import formatWorkflowExecutionCanceledEventAttributes from '../format-workflow-execution-canceled-event-attributes';
-import formatWorkflowEventId from '../../format-workflow-event-id';
 import formatPayload from '../../format-payload';
+import formatWorkflowEventId from '../../format-workflow-event-id';
+import formatWorkflowExecutionCanceledEventAttributes from '../format-workflow-execution-canceled-event-attributes';
 
 jest.mock('../../format-workflow-event-id');
 jest.mock('../../format-payload');

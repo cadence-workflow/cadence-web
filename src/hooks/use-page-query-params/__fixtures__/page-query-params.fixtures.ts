@@ -1,6 +1,6 @@
 import {
-  PageQueryParam,
-  PageQueryParamMultiValue,
+  type PageQueryParam,
+  type PageQueryParamMultiValue,
 } from '../use-page-query-params.types';
 
 export const queryParamsConfig: [

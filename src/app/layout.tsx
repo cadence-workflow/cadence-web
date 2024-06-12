@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import { Rubik } from 'next/font/google';
+
 import './globals.css';
-import StyledJsxRegistry from './registry';
 import StyletronProvider from '../providers/styletron-provider';
+
+import StyledJsxRegistry from './registry';
 
 const inter = Rubik({ subsets: ['latin'] });
 

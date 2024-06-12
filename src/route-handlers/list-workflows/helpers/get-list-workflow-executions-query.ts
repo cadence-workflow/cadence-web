@@ -1,5 +1,6 @@
-import type { WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
 import { type SortOrder } from '@/utils/sort-by';
+import type { WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
+
 import mapWorkflowStatusToStatusCode from './map-workflow-status-to-status-code';
 
 export default function getListWorkflowExecutionsQuery({

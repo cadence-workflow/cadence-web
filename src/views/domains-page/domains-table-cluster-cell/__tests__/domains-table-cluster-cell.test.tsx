@@ -1,7 +1,9 @@
 import React from 'react';
+
 import { render, screen } from '@/test-utils/rtl';
-import DomainsTableClusterCell from '../domains-table-cluster-cell';
+
 import { globalDomain, localDomain } from '../../__fixtures__/domains';
+import DomainsTableClusterCell from '../domains-table-cluster-cell';
 
 describe('DomainTableClusterCell', () => {
   it('should render link for each cluster if domain is in more than one cluster', async () => {

@@ -1,5 +1,6 @@
-import mapExecutionsToWorkflows from '../map-executions-to-workflows';
 import type { DomainWorkflow } from '@/views/domain-page/domain-page.types';
+
+import mapExecutionsToWorkflows from '../map-executions-to-workflows';
 
 // TODO @adhitya.mamallan - use GRPC types when they are ready
 const MOCK_WORKFLOW_EXECUTIONS: Array<any> = [

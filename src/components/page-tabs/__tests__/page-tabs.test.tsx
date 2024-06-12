@@ -1,4 +1,5 @@
 import { render, fireEvent } from '@/test-utils/rtl';
+
 import PageTabs from '../page-tabs';
 
 // Mock props

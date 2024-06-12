@@ -1,6 +1,8 @@
-import { type ZodIssue, z } from 'zod';
-import listWorkflowsQueryParamSchema from './schemas/list-workflows-query-params-schema';
+import { type ZodIssue, type z } from 'zod';
+
 import { type DomainWorkflow } from '@/views/domain-page/domain-page.types';
+
+import type listWorkflowsQueryParamSchema from './schemas/list-workflows-query-params-schema';
 
 export type RouteParams = {
   domain: string;

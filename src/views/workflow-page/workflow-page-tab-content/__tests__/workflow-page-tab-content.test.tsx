@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { render } from '@/test-utils/rtl';
+
 import WorkflowPageTabContent from '../workflow-page-tab-content';
 import type { WorkflowPageTabContentProps } from '../workflow-page-tab-content.types';
 
@@ -26,7 +28,7 @@ describe('WorkflowPageTabContent', () => {
   it('does not return any tab cotent if workflowTab is not present in the contentsMap', () => {
     const paramsWithoutTabContent = { ...params, workflowTab: 'unkown-tab' };
     const { container } = render(
-      //@ts-ignore allow passing unknown workflowtab to test recieving wrong value as a param
+      //@ts-expect-error allow passing unknown workflowtab to test recieving wrong value as a param
       <WorkflowPageTabContent params={paramsWithoutTabContent} />
     );
     expect(container.firstChild?.textContent).toBe('');

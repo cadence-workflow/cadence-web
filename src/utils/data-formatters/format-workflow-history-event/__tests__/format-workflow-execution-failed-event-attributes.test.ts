@@ -1,6 +1,6 @@
-import formatWorkflowExecutionFailedEventAttributes from '../format-workflow-execution-failed-event-attributes';
 import formatFailureDetails from '../../format-failure-details';
 import formatWorkflowEventId from '../../format-workflow-event-id';
+import formatWorkflowExecutionFailedEventAttributes from '../format-workflow-execution-failed-event-attributes';
 
 jest.mock('../../format-failure-details');
 jest.mock('../../format-workflow-event-id');

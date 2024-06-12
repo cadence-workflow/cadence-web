@@ -3,11 +3,11 @@ import React, { Suspense } from 'react';
 import AsyncPropsLoader from '@/components/async-props-loader/async-props-loader';
 import decodeUrlParams from '@/utils/decode-url-params';
 
-import { Props } from './domain-page.types';
-import { getCachedDomainInfo } from './helpers/get-domain-info';
 import DomainPageHeader from './domain-page-header/domain-page-header';
 import DomainPageHeaderInfo from './domain-page-header-info/domain-page-header-info';
 import DomainPageTabs from './domain-page-tabs/domain-page-tabs';
+import { type Props } from './domain-page.types';
+import { getCachedDomainInfo } from './helpers/get-domain-info';
 
 export default async function DomainPage(props: Props) {
   const decodedParams = decodeUrlParams(props.params);

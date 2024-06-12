@@ -15,7 +15,7 @@ function parseJsonLines(input: string) {
   // Split the input by new lines
   const lines = input.split('\n');
 
-  let jsonArray = [];
+  const jsonArray = [];
   let currentJson = '';
 
   lines.forEach((line) => {

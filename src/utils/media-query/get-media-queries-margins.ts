@@ -1,5 +1,6 @@
 import type { Theme } from 'baseui';
 import type { StyleObject } from 'styletron-react';
+
 import { getMediaQueriesForBreakpoints } from './get-media-queries-for-breakpoints';
 
 const defaultCreateMargins = (margin: number): StyleObject => ({

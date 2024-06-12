@@ -1,5 +1,7 @@
 import React, { Suspense } from 'react';
+
 import { render, screen, waitFor } from '@/test-utils/rtl';
+
 import AsyncPropsLoader from '../async-props-loader';
 
 const MockComponent = (props: any) => <div>{JSON.stringify(props)}</div>;

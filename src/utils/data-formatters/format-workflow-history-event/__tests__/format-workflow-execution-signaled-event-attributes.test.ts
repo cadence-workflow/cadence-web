@@ -1,5 +1,5 @@
-import formatWorkflowExecutionSignaledEventAttributes from '../format-workflow-execution-signaled-event-attributes';
 import formatWorkflowInputPayload from '../../format-workflow-input-payload';
+import formatWorkflowExecutionSignaledEventAttributes from '../format-workflow-execution-signaled-event-attributes';
 
 jest.mock('../../format-workflow-input-payload');
 

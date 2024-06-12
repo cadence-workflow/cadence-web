@@ -1,7 +1,10 @@
 import React from 'react';
-import StyletronProvider from '@/providers/styletron-provider';
-import { Props } from './test-provider.types';
+
 import { MemoryRouterProvider } from 'next-router-mock/MemoryRouterProvider';
+
+import StyletronProvider from '@/providers/styletron-provider';
+
+import { type Props } from './test-provider.types';
 
 jest.mock('next/router', () => jest.requireActual('next-router-mock'));
 

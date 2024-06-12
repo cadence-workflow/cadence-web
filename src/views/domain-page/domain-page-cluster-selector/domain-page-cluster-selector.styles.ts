@@ -1,6 +1,6 @@
-import type { StyleObject } from 'styletron-react';
 import { styled as createStyled, type Theme } from 'baseui';
 import type { SelectOverrides } from 'baseui/select';
+import type { StyleObject } from 'styletron-react';
 
 export const styled = {
   ItemLabel: createStyled('div', ({ $theme }) => ({

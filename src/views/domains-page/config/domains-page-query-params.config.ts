@@ -1,4 +1,4 @@
-import { PageQueryParam } from '@/hooks/use-page-query-params/use-page-query-params.types';
+import { type PageQueryParam } from '@/hooks/use-page-query-params/use-page-query-params.types';
 import { type SortOrder } from '@/utils/sort-by';
 
 const domainsPageQueryParamsConfig: [

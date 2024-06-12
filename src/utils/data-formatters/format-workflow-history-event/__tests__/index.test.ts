@@ -1,7 +1,3 @@
-import formatWorkflowHistoryEvent, {
-  AttributesFormattersEvent,
-  AttributesFormattersKeys,
-} from '../index';
 import formatWorkflowExecutionCancelRequestedEventAttributes from '../format-workflow-execution-cancel-requested-event-attributes';
 import formatWorkflowExecutionCanceledEventAttributes from '../format-workflow-execution-canceled-event-attributes';
 import formatWorkflowExecutionCompletedEventAttributes from '../format-workflow-execution-completed-event-attributes';
@@ -10,6 +6,10 @@ import formatWorkflowExecutionFailedEventAttributes from '../format-workflow-exe
 import formatWorkflowExecutionSignaledEventAttributes from '../format-workflow-execution-signaled-event-attributes';
 import formatWorkflowExecutionStartedEventAttributes from '../format-workflow-execution-started-event-attributes';
 import formatWorkflowExecutionTerminatedEventAttributes from '../format-workflow-execution-terminated-event-attributes';
+import formatWorkflowHistoryEvent, {
+  type AttributesFormattersEvent,
+  AttributesFormattersKeys,
+} from '../index';
 
 jest.mock('../format-workflow-execution-cancel-requested-event-attributes');
 jest.mock('../format-workflow-execution-canceled-event-attributes');
@@ -117,7 +117,7 @@ describe('formatWorkflowHistoryEvent', () => {
       someData: 'someValue',
     };
 
-    // @ts-ignore - intentionally testing unknown attributes
+    // @ts-expect-error - intentionally testing unknown attributes
     const result = formatWorkflowHistoryEvent(event);
 
     expect(result).toEqual(event);

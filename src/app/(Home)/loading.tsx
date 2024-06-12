@@ -1,5 +1,5 @@
 'use client';
-import { ProgressBar, ProgressBarOverrides } from 'baseui/progress-bar';
+import { ProgressBar, type ProgressBarOverrides } from 'baseui/progress-bar';
 
 const progressOverrides = {
   BarContainer: {

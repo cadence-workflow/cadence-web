@@ -1,6 +1,8 @@
-import GRPCService, { GRPCRequestConfig } from './grpc-service';
-import grpcServiceConfigurations from '../../config/grpc/grpc-services-config';
 import CLUSTERS_CONFIGS from '@/config/clusters/clusters.config';
+
+import grpcServiceConfigurations from '../../config/grpc/grpc-services-config';
+
+import GRPCService, { type GRPCRequestConfig } from './grpc-service';
 
 const clusterServicesMethods = CLUSTERS_CONFIGS.reduce(
   (result, c) => {

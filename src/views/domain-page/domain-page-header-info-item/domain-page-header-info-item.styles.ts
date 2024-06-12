@@ -1,7 +1,6 @@
-import type { StyleObject } from 'styletron-react';
-
 import { styled as createStyled, type Theme } from 'baseui';
 import type { SkeletonOverrides } from 'baseui/skeleton/types';
+import type { StyleObject } from 'styletron-react';
 
 export const styled = {
   ItemTitle: createStyled('div', ({ $theme }) => ({

@@ -1,6 +1,7 @@
-import { IconProps } from 'baseui/icon';
-import { Icon } from 'baseui/styles';
-import { ComponentType } from 'react';
+import { type ComponentType } from 'react';
+
+import { type IconProps } from 'baseui/icon';
+import { type Icon } from 'baseui/styles';
 import { MdFilterList, MdSearch } from 'react-icons/md';
 
 const baseWebIconsOverrides = {

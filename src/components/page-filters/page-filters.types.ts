@@ -1,8 +1,8 @@
 import {
-  PageQueryParamKeys,
-  PageQueryParamSetter,
-  PageQueryParamValues,
-  PageQueryParams,
+  type PageQueryParamKeys,
+  type PageQueryParamSetter,
+  type PageQueryParamValues,
+  type PageQueryParams,
 } from '@/hooks/use-page-query-params/use-page-query-params.types';
 
 export type PageFilterComponentProps<P extends PageQueryParams> = {

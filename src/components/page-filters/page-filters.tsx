@@ -1,16 +1,18 @@
-import React from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
+
 import { Button, KIND, SIZE } from 'baseui/button';
 import { Search, Filter, Delete } from 'baseui/icon';
 import { Input } from 'baseui/input';
 
-import { Props } from './page-filters.types';
-import { styled, overrides } from './page-filters.styles';
+import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import {
   type PageQueryParams,
   type PageQueryParamKeys,
   type PageQueryParamSetterValues,
 } from '@/hooks/use-page-query-params/use-page-query-params.types';
-import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
+
+import { styled, overrides } from './page-filters.styles';
+import { type Props } from './page-filters.types';
 
 export default function PageFilters<
   P extends PageQueryParams,
@@ -21,13 +23,13 @@ export default function PageFilters<
   pageFiltersConfig,
   pageQueryParamsConfig,
 }: Props<P, K>) {
-  const [areFiltersShown, setAreFiltersShown] = React.useState(false);
+  const [areFiltersShown, setAreFiltersShown] = useState(false);
   const [queryParams, setQueryParams] = usePageQueryParams(
     pageQueryParamsConfig,
     { pageRerender: false }
   );
 
-  const activeFiltersCount = React.useMemo(() => {
+  const activeFiltersCount = useMemo(() => {
     const configsByKey = Object.fromEntries(
       pageQueryParamsConfig.map((c) => [c.key, c])
     );
@@ -41,7 +43,7 @@ export default function PageFilters<
     ).length;
   }, [pageFiltersConfig, pageQueryParamsConfig, queryParams]);
 
-  const resetAllFilters = React.useCallback(() => {
+  const resetAllFilters = useCallback(() => {
     setQueryParams(
       pageFiltersConfig.reduce(
         (acc, pageFilter) => {

@@ -1,9 +1,10 @@
 import React from 'react';
+
 import { render, screen } from '@/test-utils/rtl';
 
+import { type WorkflowStatus } from '../../workflow-status-tag.types';
 import WorkflowStatusTagIcon from '../workflow-status-tag-icon';
-import { WorkflowStatusTagIconKind } from '../workflow-status-tag-icon.types';
-import { WorkflowStatus } from '../../workflow-status-tag.types';
+import { type WorkflowStatusTagIconKind } from '../workflow-status-tag-icon.types';
 
 describe('WorkflowStatusTagIcon', () => {
   beforeEach(() => {
