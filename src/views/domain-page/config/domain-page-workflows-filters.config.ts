@@ -1,6 +1,6 @@
+import { type DomainPageWorkflowsFiltersConfig } from '../domain-page-workflows-filters/domain-page-workflows-filters.types';
 import DomainPageWorkflowsFiltersDates from '../domain-page-workflows-filters-dates/domain-page-workflows-filters-dates';
 import DomainPageWorkflowsFiltersStatus from '../domain-page-workflows-filters-status/domain-page-workflows-filters-status';
-import { type DomainPageWorkflowsFiltersConfig } from '../domain-page-workflows-filters/domain-page-workflows-filters.types';
 
 const domainPageWorkflowsFiltersConfig = [
   {

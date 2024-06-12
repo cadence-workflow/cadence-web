@@ -1,6 +1,6 @@
 import type { Theme } from 'baseui';
-import type { StyleObject } from 'styletron-react';
 import type { BadgeOverrides } from 'baseui/badge';
+import type { StyleObject } from 'styletron-react';
 
 export const overrides = {
   badge: {

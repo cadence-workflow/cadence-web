@@ -10,7 +10,7 @@
  */
 const getArrayValForMultiValParams = (
   val: string | null | (string | null)[],
-  isMultiValue: Boolean
+  isMultiValue: boolean
 ) => {
   if (isMultiValue) {
     const arr = !Array.isArray(val) ? [val] : val;

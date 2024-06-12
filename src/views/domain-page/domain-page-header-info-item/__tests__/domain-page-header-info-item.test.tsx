@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { render, screen } from '@/test-utils/rtl';
 
 import DomainPageHeaderInfoItem from '../domain-page-header-info-item';

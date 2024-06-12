@@ -1,12 +1,13 @@
 import type { ComponentProps } from 'react';
-import type { StyleObject } from 'styletron-react';
+
 import type { Theme } from 'baseui';
 import {
   type SegmentOverrides,
   type SegmentedControlOverrides,
-  StyledSegment,
-  StyledActive,
+  type StyledSegment,
+  type StyledActive,
 } from 'baseui/segmented-control';
+import type { StyleObject } from 'styletron-react';
 
 export const overrides = {
   segmentedControl: {

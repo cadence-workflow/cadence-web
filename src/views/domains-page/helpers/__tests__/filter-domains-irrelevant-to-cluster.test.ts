@@ -1,5 +1,5 @@
-import filterDomainsIrrelevantToCluster from '../filter-domains-irrelevant-to-cluster';
 import type { DomainData } from '../../domains-page.types';
+import filterDomainsIrrelevantToCluster from '../filter-domains-irrelevant-to-cluster';
 
 describe('filterDomainsIrrelevantToCluster', () => {
   it('should return domains relevant to the specified cluster', () => {
@@ -44,11 +44,11 @@ describe('filterDomainsIrrelevantToCluster', () => {
   });
 
   it('should handle null or undefined domains array gracefully', () => {
-    //@ts-ignore domains comes from backend so testing null behavior
+    //@ts-expect-error domains comes from backend so testing null behavior
     const resultWithNull = filterDomainsIrrelevantToCluster('ClusterA', null);
     const resultWithUndefined = filterDomainsIrrelevantToCluster(
       'ClusterA',
-      //@ts-ignore domains comes from backend so testing undefined behavior
+      //@ts-expect-error domains comes from backend so testing undefined behavior
       undefined
     );
 

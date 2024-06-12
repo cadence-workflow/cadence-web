@@ -1,8 +1,9 @@
 'use client';
-import PageSection from '@/components/page-section/page-section';
 import PageFilters from '@/components/page-filters/page-filters';
-import domainsPageQueryParamsConfig from '../config/domains-page-query-params.config';
+import PageSection from '@/components/page-section/page-section';
+
 import domainsPageFiltersConfig from '../config/domains-page-filters.config';
+import domainsPageQueryParamsConfig from '../config/domains-page-query-params.config';
 
 export default function DomainsPageFilters() {
   return (

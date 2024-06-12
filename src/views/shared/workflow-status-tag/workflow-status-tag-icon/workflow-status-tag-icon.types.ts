@@ -1,4 +1,4 @@
-import { WorkflowStatus } from '../workflow-status-tag.types';
+import { type WorkflowStatus } from '../workflow-status-tag.types';
 
 export type WorkflowStatusTagIconKind = 'start' | 'end';
 

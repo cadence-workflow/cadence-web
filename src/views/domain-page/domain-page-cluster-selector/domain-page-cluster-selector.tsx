@@ -1,11 +1,13 @@
 'use client';
 import React from 'react';
+
 import { Select, SIZE } from 'baseui/select';
 import { type Route } from 'next';
 import { useRouter, useParams } from 'next/navigation';
 
-import { overrides, styled } from './domain-page-cluster-selector.styles';
 import { type DomainHeaderInfoItemContentProps } from '../domain-page-header-info/domain-page-header-info.types';
+
+import { overrides, styled } from './domain-page-cluster-selector.styles';
 
 export default function DomainPageClusterSelector(
   props: DomainHeaderInfoItemContentProps

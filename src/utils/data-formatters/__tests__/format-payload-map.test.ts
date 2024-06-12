@@ -1,5 +1,5 @@
-import formatPayloadMap from '../format-payload-map';
 import formatPayload from '../format-payload';
+import formatPayloadMap from '../format-payload-map';
 
 jest.mock('../format-payload', () =>
   jest.fn().mockImplementation((value) => JSON.stringify(value))

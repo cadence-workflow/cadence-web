@@ -19,10 +19,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+import formatDurationToSeconds from '../format-duration-to-seconds';
 import formatEnum from '../format-enum';
 import formatFailureDetails from '../format-failure-details';
 import formatPayloadMap from '../format-payload-map';
-import formatDurationToSeconds from '../format-duration-to-seconds';
 import formatWorkflowEventId from '../format-workflow-event-id';
 import formatWorkflowInputPayload from '../format-workflow-input-payload';
 

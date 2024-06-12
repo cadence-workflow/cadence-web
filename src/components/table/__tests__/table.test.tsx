@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { render, screen, fireEvent, act } from '@/test-utils/rtl';
 
 import Table from '../table';

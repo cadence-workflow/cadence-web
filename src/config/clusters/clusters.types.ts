@@ -1,6 +1,6 @@
 import {
-  GRPCRequestConfig,
-  GRPCServiceConfig,
+  type GRPCRequestConfig,
+  type GRPCServiceConfig,
 } from '@/utils/grpc/grpc-service';
 
 export type ClusterConfig = {

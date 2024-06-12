@@ -19,13 +19,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+import formatDurationToSeconds from '../format-duration-to-seconds';
 import formatEnum from '../format-enum';
 import formatFailureDetails from '../format-failure-details';
 import formatPayloadMap from '../format-payload-map';
-import formatTimestampToDatetime from '../format-timestamp-to-datetime';
-import formatDurationToSeconds from '../format-duration-to-seconds';
-import formatRetryPolicy from '../format-retry-policy';
 import formatPrevAutoResetPoints from '../format-prev-auto-reset-points';
+import formatRetryPolicy from '../format-retry-policy';
+import formatTimestampToDatetime from '../format-timestamp-to-datetime';
 import formatWorkflowInputPayload from '../format-workflow-input-payload';
 
 const formatWorkflowExecutionStartedEventAttributes = ({

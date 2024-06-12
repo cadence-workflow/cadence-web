@@ -1,4 +1,4 @@
-import { JsonValue } from '@/components/pretty-json/pretty-json.types';
+import { type JsonValue } from '@/components/pretty-json/pretty-json.types';
 
 export type Props = {
   inputJson: JsonValue;

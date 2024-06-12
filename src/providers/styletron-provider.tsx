@@ -1,10 +1,13 @@
 'use client';
 import React from 'react';
-import { Provider } from 'styletron-react';
-import { styletron } from '../styletron';
+
 import { BaseProvider, createTheme } from 'baseui';
-import themeProviderOverrides from '@/config/theme/theme-provider-overrides.config';
+import { Provider } from 'styletron-react';
+
 import themeLight from '@/config/theme/theme-light.config';
+import themeProviderOverrides from '@/config/theme/theme-provider-overrides.config';
+
+import { styletron } from '../styletron';
 
 const cadenceLightTheme = createTheme(themeLight);
 

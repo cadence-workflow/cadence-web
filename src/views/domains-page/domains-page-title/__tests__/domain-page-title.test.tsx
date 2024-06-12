@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { render, screen } from '@/test-utils/rtl';
+
 import DomainsPageTitle from '../domains-page-title';
 
 describe('DomainsPageTitle', () => {

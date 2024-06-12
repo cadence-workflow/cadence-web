@@ -1,11 +1,12 @@
 'use client';
 import React from 'react';
+
 import { Tag, VARIANT } from 'baseui/tag';
 
+import WorkflowStatusTagIcon from './workflow-status-tag-icon/workflow-status-tag-icon';
 import { WORKFLOW_STATUS_NAMES } from './workflow-status-tag.constants';
 import { overrides } from './workflow-status-tag.styles';
 import type { Props } from './workflow-status-tag.types';
-import WorkflowStatusTagIcon from './workflow-status-tag-icon/workflow-status-tag-icon';
 
 export default function WorkflowStatusTag(props: Props) {
   return (

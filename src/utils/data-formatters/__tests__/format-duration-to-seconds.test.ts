@@ -36,7 +36,7 @@ describe('formatDurationToSeconds', () => {
 
   test('should return NaN for missing seconds input', () => {
     const duration = {};
-    // @ts-ignore - intentionally testing invalid input
+    // @ts-expect-error - intentionally testing invalid input
     expect(formatDurationToSeconds(duration)).toBeNaN();
   });
 });
