@@ -1,10 +1,12 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
-import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
+import { useSuspenseQuery } from '@tanstack/react-query';
+
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import formatWorkflowHistoryEvent from '@/utils/data-formatters/format-workflow-history-event';
 import formatWorkflowInputPayload from '@/utils/data-formatters/format-workflow-input-payload';
+import request from '@/utils/request';
 import type { WorkflowPageTabContentProps } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
 import WorkflowSummaryTabJsonView from './workflow-summary-tab-json-view/workflow-summary-tab-json-view';
@@ -14,31 +16,15 @@ export default function WorkflowSummaryTab({
   params,
 }: WorkflowPageTabContentProps) {
   const { cls } = useStyletronClasses(cssStyles);
-  const [{ loading, error, data: workflowHistory }, setWorkflowHistory] =
-    useState<{ loading: boolean; error: any; data: any }>({
-      loading: true,
-      error: null,
-      data: null,
-    });
+
+  const { data: workflowHistory } = useSuspenseQuery({
+    queryKey: ['workflow_history'],
+    queryFn: () =>
+      request(
+        `/api/domains/${params.domain}/${params.cluster}/workflows/${params.workflowId}/${params.runId}/history`
+      ).then((res) => res.json()),
+  });
   const workflowEvents = workflowHistory?.history?.events;
-
-  useEffect(() => {
-    fetch(
-      `/api/domains/${params.domain}/${params.cluster}/workflows/${params.workflowId}/${params.runId}/history`
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setWorkflowHistory({ data, error: null, loading: false });
-      })
-      .catch((error) => {
-        setWorkflowHistory({ data: null, error, loading: false });
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // propagate error to the closest error layout
-  if (error) throw new Error(error);
-  if (loading) return <SectionLoadingIndicator />;
 
   const lastEvent = workflowEvents?.[workflowEvents.length - 1];
   const workflowCompletedEvent =
