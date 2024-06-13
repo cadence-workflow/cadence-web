@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { Suspense } from 'react';
 
 import { Breadcrumbs } from 'baseui/breadcrumbs';
 import { StyledLink } from 'baseui/link';
@@ -10,6 +10,8 @@ import cadenceLogoBlack from '@/assets/cadence-logo-black.svg';
 import PageSection from '@/components/page-section/page-section';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 
+import WorkflowPageStatusTag from '../workflow-page-status-tag/workflow-page-status-tag';
+
 import { cssStyles, overrides } from './workflow-page-header.styles';
 import type { Props } from './workflow-page-header.types';
 
@@ -18,7 +20,6 @@ export default function WorkflowPageHeader({
   workflowId,
   runId,
   cluster,
-  workflowStatusTag,
 }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
   return (
@@ -47,7 +48,9 @@ export default function WorkflowPageHeader({
         </StyledLink>
         <div className={cls.breadcrumbItemContainer}>
           {runId}
-          {workflowStatusTag}
+          <Suspense>
+            <WorkflowPageStatusTag />
+          </Suspense>
         </div>
       </Breadcrumbs>
     </PageSection>
