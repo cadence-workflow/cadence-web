@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 
 import { render, screen, waitFor } from '@/test-utils/rtl';
 

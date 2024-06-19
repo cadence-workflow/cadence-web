@@ -28,7 +28,7 @@ const formatFailureDetails = (failure: { details?: string | null }) => {
 
   try {
     return JSON.parse(decodedFailureDetails);
-  } catch (e) {
+  } catch {
     return decodedFailureDetails;
   }
 };
