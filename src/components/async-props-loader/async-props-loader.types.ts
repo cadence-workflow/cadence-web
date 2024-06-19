@@ -1,4 +1,4 @@
-import { JSXElementConstructor, type JSX } from 'react';
+import { type JSX } from 'react';
 
 export type AsyncLoaderComponent =
   | keyof JSX.IntrinsicElements

@@ -12,7 +12,7 @@ const formatPayload = (
   // try parsing as JSON
   try {
     return JSON.parse(parsedData);
-  } catch (e) {
+  } catch {
     // remove double quotes from the string
     const formattedString = parsedData.replace(/"/g, '');
 

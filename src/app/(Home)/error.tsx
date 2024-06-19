@@ -1,5 +1,5 @@
 'use client';
-import { ThemeConsumer, styled } from 'baseui';
+import { styled } from 'baseui';
 import AlertIcon from 'baseui/icon/alert';
 import { HeadingXSmall } from 'baseui/typography';
 
