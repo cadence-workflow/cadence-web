@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { Cell, Grid } from 'baseui/layout-grid';
 import { useInView } from 'react-intersection-observer';

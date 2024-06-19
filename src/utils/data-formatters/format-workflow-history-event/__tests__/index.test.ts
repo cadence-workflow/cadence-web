@@ -8,7 +8,6 @@ import formatWorkflowExecutionStartedEventAttributes from '../format-workflow-ex
 import formatWorkflowExecutionTerminatedEventAttributes from '../format-workflow-execution-terminated-event-attributes';
 import formatWorkflowHistoryEvent, {
   type AttributesFormattersEvent,
-  AttributesFormattersKeys,
 } from '../index';
 
 jest.mock('../format-workflow-execution-cancel-requested-event-attributes');
