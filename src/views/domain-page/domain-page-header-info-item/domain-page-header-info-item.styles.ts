@@ -17,10 +17,10 @@ export const styled = {
       }),
     })
   ),
-  ItemContainer: createStyled('div', ({ $theme }) => ({
+  ItemContainer: createStyled('div', {
     display: 'flex',
     flexDirection: 'column',
-  })),
+  }),
 };
 
 export const overrides = {

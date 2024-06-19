@@ -9,7 +9,7 @@ describe('DomainTableClusterCell', () => {
   it('should render link for domain if domain using the active cluster', async () => {
     render(<DomainsTableDomainNameCell {...globalDomain} />);
     const clusterLinks = await screen.findAllByRole('link');
-    clusterLinks.forEach((clusterLink, i) => {
+    clusterLinks.forEach((clusterLink) => {
       expect(clusterLink.innerHTML).toBe(globalDomain.name);
       expect(clusterLink).toHaveAttribute(
         'href',
