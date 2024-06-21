@@ -1,4 +1,5 @@
 module.exports = {
+  ignorePatterns: ['src/__generated__/'],
   extends: [
     'next/core-web-vitals',
     'plugin:react/recommended',

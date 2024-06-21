@@ -8,7 +8,7 @@ type LoadingProps = {
 
 type LoadedProps = {
   loading: false;
-  domainInfo: DomainInfo;
+  domainInfo: DomainInfo | null;
   cluster: string;
 };
 

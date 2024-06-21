@@ -84,22 +84,12 @@ class GRPCService {
     this.requestConfig = requestConfig;
   }
 
-  request({
-    formatRequest = (req) => req,
-    formatResponse = (res) => res,
-    method,
-    transform = (payload) => payload,
-  }: {
-    method: string;
-    formatRequest?: (req: any) => any;
-    formatResponse?: (res: any) => any;
-    transform?: (payload: any) => any;
-  }) {
-    return (payload: any) => {
+  request<Req, Res>({ method }: { method: string }) {
+    return (payload: Req) => {
       const deadline = new Date();
 
       deadline.setSeconds(deadline.getSeconds() + 2);
-      return new Promise((resolve, reject) => {
+      return new Promise<Res>((resolve, reject) => {
         this.service.waitForReady(deadline, (error) => {
           if (error) {
             return reject(error);
@@ -107,7 +97,7 @@ class GRPCService {
 
           deadline.setSeconds(deadline.getSeconds() + 50);
           this.service[method](
-            formatRequest(transform(payload)),
+            payload,
             this.meta(),
             { deadline },
             (
@@ -130,7 +120,7 @@ class GRPCService {
                   customError.grpcStatusCode = error.code;
                   throw customError;
                 }
-                return resolve(formatResponse(response));
+                return resolve(response);
               } catch (e) {
                 reject(e);
               }

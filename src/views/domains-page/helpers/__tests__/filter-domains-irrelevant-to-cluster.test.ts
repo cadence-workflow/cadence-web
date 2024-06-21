@@ -1,33 +1,45 @@
+import { getDomainObj } from '../../__fixtures__/domains';
 import type { DomainData } from '../../domains-page.types';
 import filterDomainsIrrelevantToCluster from '../filter-domains-irrelevant-to-cluster';
 
 describe('filterDomainsIrrelevantToCluster', () => {
   it('should return domains relevant to the specified cluster', () => {
     // picking few domains data as clusters is the only required
-    const domains: Pick<DomainData, 'clusters' | 'name'>[] = [
-      { name: '1', clusters: [{ clusterName: 'ClusterA' }] },
-      { name: '2', clusters: [{ clusterName: 'ClusterB' }] },
-      {
+    const domains = [
+      getDomainObj({
+        id: '1',
+        name: '1',
+        clusters: [{ clusterName: 'ClusterA' }],
+      }),
+      getDomainObj({
+        id: '1',
+        name: '2',
+        clusters: [{ clusterName: 'ClusterB' }],
+      }),
+      getDomainObj({
+        id: '3',
         name: '3',
         clusters: [{ clusterName: 'ClusterA' }, { clusterName: 'ClusterC' }],
-      },
+      }),
     ];
 
     const result = filterDomainsIrrelevantToCluster('ClusterA', domains);
 
-    expect(result).toEqual([
-      { name: '1', clusters: [{ clusterName: 'ClusterA' }] },
-      {
-        name: '3',
-        clusters: [{ clusterName: 'ClusterA' }, { clusterName: 'ClusterC' }],
-      },
-    ]);
+    expect(result).toEqual([domains[0], domains[2]]);
   });
 
   it('should return an empty array if no domains are relevant to the specified cluster', () => {
-    const domains: Pick<DomainData, 'clusters'>[] = [
-      { clusters: [{ clusterName: 'ClusterB' }] },
-      { clusters: [{ clusterName: 'ClusterC' }] },
+    const domains = [
+      getDomainObj({
+        id: '1',
+        name: '1',
+        clusters: [{ clusterName: 'ClusterB' }],
+      }),
+      getDomainObj({
+        id: '2',
+        name: '2',
+        clusters: [{ clusterName: 'ClusterC' }],
+      }),
     ];
 
     const result = filterDomainsIrrelevantToCluster('ClusterA', domains);
