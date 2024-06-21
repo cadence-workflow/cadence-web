@@ -35,5 +35,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-#idl
-src/idl
+#generated
+src/__generated__

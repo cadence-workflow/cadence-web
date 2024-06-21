@@ -5,8 +5,6 @@ import { unstable_cache } from 'next/cache';
 import CLUSTERS_CONFIGS from '@/config/clusters/clusters.config';
 import * as grpcClient from '@/utils/grpc/grpc-client';
 
-import { type DomainData } from '../domains-page.types';
-
 import filterDomainsIrrelevantToCluster from './filter-domains-irrelevant-to-cluster';
 import getUniqueDomains from './get-unique-domains';
 
@@ -15,7 +13,7 @@ export const getAllDomains = async () => {
     CLUSTERS_CONFIGS.map(({ clusterName }) =>
       grpcClient.clusterMethods[clusterName]
         .listDomains({ pageSize: 1000 })
-        .then(({ domains }: { domains: DomainData[] }) => {
+        .then(({ domains }) => {
           return filterDomainsIrrelevantToCluster(clusterName, domains);
         })
     )

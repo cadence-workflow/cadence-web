@@ -1,3 +1,5 @@
+import { Long } from '@grpc/proto-loader';
+
 import { type DomainInfo } from '../domain-page.types';
 
 export const mockDomainInfo: DomainInfo = {
@@ -10,6 +12,16 @@ export const mockDomainInfo: DomainInfo = {
   description: 'This is a mock domain used for test fixtures',
   ownerEmail: 'mockdomainowner@gmail.com',
   isGlobalDomain: true,
+  badBinaries: null,
+  asyncWorkflowConfig: null,
+  historyArchivalStatus: 'ARCHIVAL_STATUS_DISABLED',
+  failoverInfo: null,
+  isolationGroups: null,
+  visibilityArchivalStatus: 'ARCHIVAL_STATUS_DISABLED',
+  visibilityArchivalUri: '',
+  workflowExecutionRetentionPeriod: null,
+  historyArchivalUri: '',
+  failoverVersion: new Long(123456),
 };
 
 export const mockDomainInfoSingleCluster: DomainInfo = {
@@ -23,4 +35,14 @@ export const mockDomainInfoSingleCluster: DomainInfo = {
     'This is a mock domain with single cluster used for test fixtures',
   ownerEmail: 'mockdomainowner@gmail.com',
   isGlobalDomain: true,
+  badBinaries: null,
+  asyncWorkflowConfig: null,
+  historyArchivalStatus: 'ARCHIVAL_STATUS_DISABLED',
+  failoverInfo: null,
+  isolationGroups: null,
+  visibilityArchivalStatus: 'ARCHIVAL_STATUS_DISABLED',
+  visibilityArchivalUri: '',
+  workflowExecutionRetentionPeriod: null,
+  historyArchivalUri: '',
+  failoverVersion: new Long(123456),
 };
