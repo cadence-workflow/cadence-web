@@ -7,13 +7,13 @@ export const mockDomainPageQueryParamsValues: PageQueryParamValues<
 > = {
   search: '',
   status: undefined,
-  startDate: undefined,
-  endDate: undefined,
+  timeRangeStart: undefined,
+  timeRangeEnd: undefined,
   sortColumn: 'startTime',
   sortOrder: 'DESC',
 };
 
 export const mockDateOverrides = {
-  startDate: new Date(1684800000000), // 23 May 2023 00:00
-  endDate: new Date(1684886400000), // 24 May 2023 00:00
+  timeRangeStart: new Date(1684800000000), // 23 May 2023 00:00
+  timeRangeEnd: new Date(1684886400000), // 24 May 2023 00:00
 };

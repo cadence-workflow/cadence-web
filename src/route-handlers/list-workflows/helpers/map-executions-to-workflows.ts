@@ -5,37 +5,28 @@ import type { DomainWorkflow } from '@/views/domain-page/domain-page.types';
 export default function mapExecutionsToWorkflows(
   executions: Array<any>
 ): Array<DomainWorkflow> {
-  return executions.reduce((acc: Array<DomainWorkflow>, execution) => {
-    if (
-      !execution.workflowExecution?.runId ||
-      !execution.workflowExecution?.workflowId
-    ) {
-      return acc;
-    }
+  return executions
+    .filter(
+      (execution) =>
+        execution.workflowExecution?.runId &&
+        execution.workflowExecution?.workflowId &&
+        execution.type?.name &&
+        execution.startTime
+    )
+    .map((execution): DomainWorkflow => {
+      const workflowExecutionCloseTime = execution.closeTime
+        ? parseGrpcTimestamp(execution.closeTime)
+        : undefined;
 
-    if (!execution.type?.name) {
-      return acc;
-    }
-
-    if (!execution.startTime) {
-      return acc;
-    }
-
-    const workflowExecutionCloseTime = execution.closeTime
-      ? parseGrpcTimestamp(execution.closeTime)
-      : undefined;
-
-    acc.push({
-      workflowID: execution.workflowExecution.workflowId,
-      runID: execution.workflowExecution?.runId,
-      workflowName: execution.type?.name,
-      status: Boolean(workflowExecutionCloseTime)
-        ? execution.closeStatus
-        : 'WORKFLOW_EXECUTION_STATUS_RUNNING',
-      startTime: parseGrpcTimestamp(execution.startTime),
-      closeTime: workflowExecutionCloseTime,
+      return {
+        workflowID: execution.workflowExecution.workflowId,
+        runID: execution.workflowExecution?.runId,
+        workflowName: execution.type?.name,
+        status: Boolean(workflowExecutionCloseTime)
+          ? execution.closeStatus
+          : 'WORKFLOW_EXECUTION_STATUS_RUNNING',
+        startTime: parseGrpcTimestamp(execution.startTime),
+        closeTime: workflowExecutionCloseTime,
+      };
     });
-
-    return acc;
-  }, []);
 }
