@@ -10,7 +10,7 @@ const domainPageWorkflowsFiltersConfig = [
   },
   {
     id: 'dates',
-    queryParamKeys: ['startDate', 'endDate'],
+    queryParamKeys: ['timeRangeStart', 'timeRangeEnd'],
     component: DomainPageWorkflowsFiltersDates,
   },
 ] as const satisfies DomainPageWorkflowsFiltersConfig;

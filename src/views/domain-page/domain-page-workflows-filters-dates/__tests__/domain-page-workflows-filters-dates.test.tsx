@@ -48,8 +48,8 @@ describe('DomainPageWorkflowsFiltersDates', () => {
     });
 
     expect(mockSetQueryParams).toHaveBeenCalledWith({
-      startDate: '2023-05-13T00:00:00.000Z',
-      endDate: '2023-05-14T00:00:00.000Z',
+      timeRangeStart: '2023-05-13T00:00:00.000Z',
+      timeRangeEnd: '2023-05-14T00:00:00.000Z',
     });
   });
 
@@ -63,12 +63,12 @@ describe('DomainPageWorkflowsFiltersDates', () => {
       fireEvent.focus(datePicker);
     });
 
-    const startDateLabel = screen.getByLabelText(
+    const timeRangeStartLabel = screen.getByLabelText(
       "Choose Saturday, May 13th 2023. It's available."
     );
 
     act(() => {
-      fireEvent.click(startDateLabel);
+      fireEvent.click(timeRangeStartLabel);
     });
 
     screen.getByText(
@@ -93,12 +93,12 @@ describe('DomainPageWorkflowsFiltersDates', () => {
       fireEvent.focus(datePicker);
     });
 
-    const startDateLabel = screen.getByLabelText(
+    const timeRangeStartLabel = screen.getByLabelText(
       "Choose Saturday, May 13th 2023. It's available."
     );
 
     act(() => {
-      fireEvent.click(startDateLabel);
+      fireEvent.click(timeRangeStartLabel);
     });
 
     screen.getByText(
@@ -123,8 +123,8 @@ describe('DomainPageWorkflowsFiltersDates', () => {
     });
 
     expect(mockSetQueryParams).toHaveBeenCalledWith({
-      startDate: undefined,
-      endDate: undefined,
+      timeRangeStart: undefined,
+      timeRangeEnd: undefined,
     });
   });
 });
