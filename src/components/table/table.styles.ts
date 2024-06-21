@@ -1,4 +1,4 @@
-import { withStyle } from 'baseui';
+import { type Theme, withStyle } from 'baseui';
 import {
   StyledRoot,
   StyledTableHeadCell,
@@ -13,10 +13,17 @@ export const styled = {
     overflow: 'visible',
     width: '100%',
   }),
-  TableMessage: withStyle(StyledTableLoadingMessage, {
-    display: 'flex',
-    justifyContent: 'center',
-  }),
+  TableMessage: withStyle(
+    StyledTableLoadingMessage,
+    ({ $theme }: { $theme: Theme }) => ({
+      display: 'flex',
+      justifyContent: 'center',
+      justifySelf: 'stretch',
+      // The base StyledTableLoadingMessage uses the shorthand property for paddding
+      // https://styletron.org/concepts#shorthand-and-longhand-properties
+      padding: `${$theme.sizing.scale600} 0`,
+    })
+  ),
   TableHeadCell: withStyle<typeof StyledTableHeadCell, { $width: string }>(
     StyledTableHeadCell,
     ({ $theme, $width }) => ({
