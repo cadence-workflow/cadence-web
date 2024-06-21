@@ -30,7 +30,9 @@ export default function getListWorkflowExecutionsQuery({
       searchQueries.push('CloseTime = missing');
     } else {
       searchQueries.push(
-        `CloseStatus = ${mapWorkflowStatusToStatusCode(workflowStatus)}`
+        // This is a bit of a hack, since Close Status is 0-indexed unlike the proto spec
+        // https://cadenceworkflow.io/docs/concepts/search-workflows/#query-capabilities
+        `CloseStatus = ${mapWorkflowStatusToStatusCode(workflowStatus) - 1}`
       );
     }
   }

@@ -24,10 +24,12 @@ export async function listWorkflows(
   if (error) {
     return NextResponse.json(
       {
-        error: 'Invalid argument(s) for workflow search',
+        message: 'Invalid argument(s) for workflow search',
         validationErrors: error.errors,
       },
-      { status: 400 }
+      {
+        status: 400,
+      }
     );
   }
 
@@ -55,13 +57,14 @@ export async function listWorkflows(
 
     return NextResponse.json(response);
   } catch (e: any) {
-    // TODO: improve error formatting when we have a GRPC error type
     return NextResponse.json(
       {
-        error: 'Error fetching workflows',
-        message: e.toString(),
+        message: 'Failed to fetch workflows',
       },
-      { status: e.httpStatusCode }
+      {
+        // TODO @adhitya.mamallan - Use the GRPCError type once it is available
+        status: e.httpStatusCode ?? 500,
+      }
     );
   }
 }

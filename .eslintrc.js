@@ -23,6 +23,7 @@ module.exports = {
       {
         args: 'all',
         caughtErrors: 'all',
+        argsIgnorePattern: '^_',
         destructuredArrayIgnorePattern: '^_',
         ignoreRestSiblings: true,
       },

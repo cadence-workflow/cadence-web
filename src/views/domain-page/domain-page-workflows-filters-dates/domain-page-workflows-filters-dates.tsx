@@ -20,8 +20,8 @@ export default function DomainPageWorkflowsFiltersDates({
 
   React.useEffect(() => {
     setDates(
-      Boolean(queryParams.startDate) && Boolean(queryParams.endDate)
-        ? [queryParams.startDate, queryParams.endDate]
+      Boolean(queryParams.timeRangeStart) && Boolean(queryParams.timeRangeEnd)
+        ? [queryParams.timeRangeStart, queryParams.timeRangeEnd]
         : []
     );
   }, [queryParams]);
@@ -37,8 +37,8 @@ export default function DomainPageWorkflowsFiltersDates({
           setDates(date);
           if (date.length === 0) {
             setQueryParams({
-              startDate: undefined,
-              endDate: undefined,
+              timeRangeStart: undefined,
+              timeRangeEnd: undefined,
             });
           } else if (date.length === 2) {
             const [start, end] = date;
@@ -46,16 +46,17 @@ export default function DomainPageWorkflowsFiltersDates({
               return;
             }
             setQueryParams({
-              startDate: start.toISOString(),
-              endDate: end.toISOString(),
+              timeRangeStart: start.toISOString(),
+              timeRangeEnd: end.toISOString(),
             });
           }
         }}
         onClose={() => {
           if (dates.length !== 2 || dates.some((date) => !date)) {
             setDates(
-              Boolean(queryParams.startDate) && Boolean(queryParams.endDate)
-                ? [queryParams.startDate, queryParams.endDate]
+              Boolean(queryParams.timeRangeStart) &&
+                Boolean(queryParams.timeRangeEnd)
+                ? [queryParams.timeRangeStart, queryParams.timeRangeEnd]
                 : []
             );
           }
