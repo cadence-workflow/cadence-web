@@ -16,6 +16,7 @@ jobs:
       with:
         node-version: '18'
     - run: npm ci
+    - run: npm run install-idl && npm run generate:idl
     - run: npm run lint
     - run: npm run typecheck
     - run: npm run test

@@ -1,6 +1,3 @@
-export type DomainData = {
-  activeClusterName: string;
-  clusters: Array<{ clusterName: string }>;
-  id: string;
-  name: string;
-};
+import { type Domain } from '@/__generated__/proto-ts/uber/cadence/api/v1/Domain';
+
+export type DomainData = Domain;

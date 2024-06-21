@@ -21,6 +21,7 @@ export default function DomainPageHeaderInfo(props: Props) {
             loading={props.loading}
             content={
               !props.loading &&
+              !!props.domainInfo &&
               (configItem.component ? (
                 <configItem.component
                   domainInfo={props.domainInfo}
