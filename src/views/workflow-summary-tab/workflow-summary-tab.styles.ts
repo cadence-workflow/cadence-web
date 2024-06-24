@@ -10,13 +10,13 @@ const cssStylesObj = {
     gap: theme.sizing.scale1000,
   }),
   mainContent: (theme) => ({
-    flex: '1 0 260px',
+    flex: '1 0 300px',
     display: 'flex',
     flexDirection: 'column',
     gap: theme.sizing.scale900,
   }),
   jsonArea: {
-    flex: '1 0 260px',
+    flex: '1 0 300px',
   },
 } satisfies StyletronCSSObject;
 

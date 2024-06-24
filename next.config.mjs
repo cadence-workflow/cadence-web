@@ -23,6 +23,12 @@ const nextConfig = {
         destination: '/domains/:domain/:cluster/workflows',
         permanent: true,
       },
+      {
+        source: '/domains/:domain/:cluster/workflows/:workflowId/:runId',
+        destination:
+          '/domains/:domain/:cluster/workflows/:workflowId/:runId/summary',
+        permanent: true,
+      },
     ];
   },
 };
