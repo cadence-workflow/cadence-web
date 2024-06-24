@@ -21,14 +21,6 @@ jest.mock(
     }
 );
 
-jest.mock('../helpers/get-workflow-execution', () => ({
-  getWorkflowExecution: jest.fn().mockResolvedValue({
-    workflowExecutionInfo: {
-      closeStatus: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
-    },
-  }),
-}));
-
 describe('WorkflowPage', () => {
   afterEach(() => {
     jest.clearAllMocks();
