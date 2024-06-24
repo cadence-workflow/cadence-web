@@ -7,11 +7,11 @@ import { getMediaQueryMargins } from '@/utils/media-query/get-media-queries-marg
 export const overrides = {
   tabs: {
     Root: {
-      style: {
+      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
         display: 'flex',
         flexDirection: 'column',
-        borderBottom: '1px solid #F3F3F3',
-      },
+        borderBottom: `1px solid ${$theme.colors.borderOpaque}`,
+      }),
     },
     TabBar: {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
