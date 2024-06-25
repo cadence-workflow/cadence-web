@@ -1,12 +1,6 @@
-export type WorkflowStatus =
-  | 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
-  | 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED'
-  | 'WORKFLOW_EXECUTION_CLOSE_STATUS_FAILED'
-  | 'WORKFLOW_EXECUTION_CLOSE_STATUS_CANCELED'
-  | 'WORKFLOW_EXECUTION_CLOSE_STATUS_TERMINATED'
-  | 'WORKFLOW_EXECUTION_CLOSE_STATUS_CONTINUED_AS_NEW'
-  | 'WORKFLOW_EXECUTION_CLOSE_STATUS_TIMED_OUT'
-  | 'WORKFLOW_EXECUTION_STATUS_RUNNING';
+import { type WorkflowExecutionCloseStatus } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionCloseStatus';
+
+export type WorkflowStatus = WorkflowExecutionCloseStatus;
 
 export type Props = {
   status: WorkflowStatus;

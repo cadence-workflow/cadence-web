@@ -64,7 +64,7 @@ describe('SegmentedControlRounded Component', () => {
   });
 
   it('renders with correct active key', () => {
-    const { debug } = render(
+    render(
       <SegmentedControlRounded
         activeKey="2"
         onChange={() => {}}
@@ -72,7 +72,6 @@ describe('SegmentedControlRounded Component', () => {
         options={mockOptions}
       />
     );
-    debug();
     const activeSegment = screen.getByTitle('Option 2');
     expect(activeSegment).toHaveAttribute('aria-selected', 'true');
   });

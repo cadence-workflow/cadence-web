@@ -14,7 +14,6 @@ const listWorkflowsQueryParamSchema = z.object({
     ),
   search: z.string().optional(),
   status: z
-    // TODO @adhitya.mamallan - convert this to an enum when the GRPC type is ready
     .custom<WorkflowStatus>(isWorkflowStatus, {
       message: 'Invalid workflow status',
     })
