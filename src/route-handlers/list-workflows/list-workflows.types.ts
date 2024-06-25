@@ -19,8 +19,7 @@ export type ListWorkflowsRequestQueryParams = z.input<
 
 export type ListWorkflowsResponse = {
   workflows: Array<DomainWorkflow>;
-  // TODO @adhitya.mamallan - use the Byte[] type from Protobuf when it is available
-  nextPage: any;
+  nextPage: Buffer;
 };
 
 export type ListWorkflowsError = {

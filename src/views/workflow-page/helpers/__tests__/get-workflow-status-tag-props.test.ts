@@ -18,12 +18,12 @@ describe('getWorkflowStatusTagProps', () => {
     });
   });
 
-  it('should return RUNNING status if workflow is not completed', () => {
+  it('should return INVALID (running) status if workflow is not completed', () => {
     mockedGetWorkflowIsCompleted.mockReturnValue(false);
     const lastEvent = { attributes: 'someRunningEventAttributes' };
 
     expect(getWorkflowStatusTagProps(lastEvent)).toEqual({
-      status: 'WORKFLOW_EXECUTION_STATUS_RUNNING',
+      status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
     });
   });
 

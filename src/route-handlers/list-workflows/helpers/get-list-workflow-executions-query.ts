@@ -1,7 +1,6 @@
 import { type SortOrder } from '@/utils/sort-by';
+import { WORKFLOW_STATUSES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
 import type { WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
-
-import mapWorkflowStatusToStatusCode from './map-workflow-status-to-status-code';
 
 export default function getListWorkflowExecutionsQuery({
   search,
@@ -26,13 +25,13 @@ export default function getListWorkflowExecutionsQuery({
   }
 
   if (workflowStatus) {
-    if (workflowStatus === 'WORKFLOW_EXECUTION_STATUS_RUNNING') {
+    if (workflowStatus === WORKFLOW_STATUSES.running) {
       searchQueries.push('CloseTime = missing');
     } else {
       searchQueries.push(
-        // This is a bit of a hack, since Close Status is 0-indexed unlike the proto spec
+        // Query CloseStatus is 0-indexed (and excludes INVALID)
         // https://cadenceworkflow.io/docs/concepts/search-workflows/#query-capabilities
-        `CloseStatus = ${mapWorkflowStatusToStatusCode(workflowStatus) - 1}`
+        `CloseStatus = ${Object.values(WORKFLOW_STATUSES).indexOf(workflowStatus) - 1}`
       );
     }
   }

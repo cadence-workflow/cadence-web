@@ -153,10 +153,10 @@ function generateWorkflowPages(count: number): Array<ListWorkflowsResponse> {
         startTime: 1684800000000,
         closeTime: count > 5 ? 1684886400000 : undefined,
       })),
-      nextPage: pageIndex + 1,
+      nextPage: Buffer.from(`${pageIndex + 1}`),
     })
   );
 
-  pages[pages.length - 1].nextPage = undefined;
+  pages[pages.length - 1].nextPage = Buffer.from('');
   return pages;
 }
