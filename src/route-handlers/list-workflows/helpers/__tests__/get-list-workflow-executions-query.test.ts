@@ -18,7 +18,7 @@ describe('getListWorkflowExecutionsQuery', () => {
   it('should return query for running status', () => {
     const query = getListWorkflowExecutionsQuery({
       search: 'mocksearchterm',
-      workflowStatus: 'WORKFLOW_EXECUTION_STATUS_RUNNING',
+      workflowStatus: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
     });
     expect(query).toEqual(
       '(WorkflowType = "mocksearchterm" OR WorkflowID = "mocksearchterm" OR RunID = "mocksearchterm") AND CloseTime = missing ORDER BY StartTime DESC'

@@ -34,21 +34,21 @@ export async function listWorkflows(
   }
 
   try {
-    const res = await grpcClient.clusterMethods[
-      decodedParams.cluster
-    ].listWorkflows({
-      domain: decodedParams.domain,
-      pageSize: queryParams.pageSize,
-      nextPageToken: queryParams.nextPage,
-      query: getListWorkflowExecutionsQuery({
-        search: queryParams.search,
-        workflowStatus: queryParams.status,
-        sortColumn: queryParams.sortColumn,
-        sortOrder: queryParams.sortOrder,
-        timeRangeStart: queryParams.timeRangeStart,
-        timeRangeEnd: queryParams.timeRangeEnd,
-      }),
-    });
+    const res = await grpcClient
+      .getClusterMethods(decodedParams.cluster)
+      .listWorkflows({
+        domain: decodedParams.domain,
+        pageSize: queryParams.pageSize,
+        nextPageToken: queryParams.nextPage,
+        query: getListWorkflowExecutionsQuery({
+          search: queryParams.search,
+          workflowStatus: queryParams.status,
+          sortColumn: queryParams.sortColumn,
+          sortOrder: queryParams.sortOrder,
+          timeRangeStart: queryParams.timeRangeStart,
+          timeRangeEnd: queryParams.timeRangeEnd,
+        }),
+      });
 
     const response: ListWorkflowsResponse = {
       workflows: mapExecutionsToWorkflows(res.executions),

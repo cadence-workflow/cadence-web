@@ -30,9 +30,8 @@ const getWorkflowStatusTagProps = (
 ): Pick<WorkflowStatusTagProps, 'status' | 'link'> => {
   const isCompleted = getWorkflowIsCompleted(lastEvent?.attributes);
 
-  if (!lastEvent) return { status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID' };
-
-  if (!isCompleted) return { status: 'WORKFLOW_EXECUTION_STATUS_RUNNING' };
+  if (!lastEvent || !isCompleted)
+    return { status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID' };
 
   switch (lastEvent?.attributes) {
     case 'workflowExecutionFailedEventAttributes':

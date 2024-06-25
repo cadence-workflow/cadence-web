@@ -32,14 +32,12 @@ describe('DomainPageWorkflowsFiltersStatus', () => {
     act(() => {
       fireEvent.click(selectFilter);
     });
-    const runningOption = screen.getByText(
-      WORKFLOW_STATUS_NAMES.WORKFLOW_EXECUTION_STATUS_RUNNING
-    );
+    const runningOption = screen.getByText('Running');
     act(() => {
       fireEvent.click(runningOption);
     });
     expect(mockSetQueryParams).toHaveBeenCalledWith({
-      status: 'WORKFLOW_EXECUTION_STATUS_RUNNING',
+      status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
     });
   });
 

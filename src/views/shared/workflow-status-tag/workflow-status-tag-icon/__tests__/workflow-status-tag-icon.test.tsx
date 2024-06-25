@@ -25,13 +25,13 @@ describe('WorkflowStatusTagIcon', () => {
     {
       name: 'should render Running start icon correctly',
       kind: 'start',
-      status: 'WORKFLOW_EXECUTION_STATUS_RUNNING',
+      status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
       expectedIcon: 'running-spinner',
     },
     {
       name: 'should return null if there is no icon configured',
       kind: 'end',
-      status: 'WORKFLOW_EXECUTION_STATUS_RUNNING',
+      status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
     },
   ];
 

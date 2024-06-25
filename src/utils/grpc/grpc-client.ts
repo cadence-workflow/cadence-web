@@ -243,3 +243,13 @@ const clusterServicesMethods = CLUSTERS_CONFIGS.reduce(
 );
 
 export const clusterMethods = clusterServicesMethods;
+
+export function getClusterMethods(
+  cluster: string
+): (typeof clusterMethods)[string] {
+  const methods = clusterMethods[cluster];
+  if (!methods) {
+    throw new Error('Invalid cluster provided');
+  }
+  return methods;
+}

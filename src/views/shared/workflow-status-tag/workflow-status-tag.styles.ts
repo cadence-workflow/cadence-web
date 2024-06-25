@@ -2,6 +2,7 @@ import { type Theme } from 'baseui';
 import type { TagOverrides } from 'baseui/tag/types';
 import { type StyleObject } from 'styletron-react';
 
+import { WORKFLOW_STATUSES } from './workflow-status-tag.constants';
 import { type OverridesArgs } from './workflow-status-tag.types';
 
 export function overrides(args: OverridesArgs) {
@@ -11,21 +12,21 @@ export function overrides(args: OverridesArgs) {
         style: ({ $theme }: { $theme: Theme }): StyleObject => {
           let tagColor: string;
           switch (args.status) {
-            case 'WORKFLOW_EXECUTION_STATUS_RUNNING':
+            case WORKFLOW_STATUSES.running:
               tagColor = $theme.colors.accent100;
               break;
-            case 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED':
+            case WORKFLOW_STATUSES.completed:
               tagColor = $theme.colors.positive100;
               break;
-            case 'WORKFLOW_EXECUTION_CLOSE_STATUS_FAILED':
-            case 'WORKFLOW_EXECUTION_CLOSE_STATUS_TIMED_OUT':
+            case WORKFLOW_STATUSES.failed:
+            case WORKFLOW_STATUSES.timedOut:
               tagColor = $theme.colors.negative100;
               break;
-            case 'WORKFLOW_EXECUTION_CLOSE_STATUS_CANCELED':
-            case 'WORKFLOW_EXECUTION_CLOSE_STATUS_TERMINATED':
+            case WORKFLOW_STATUSES.canceled:
+            case WORKFLOW_STATUSES.terminated:
               tagColor = $theme.colors.warning100;
               break;
-            case 'WORKFLOW_EXECUTION_CLOSE_STATUS_CONTINUED_AS_NEW':
+            case WORKFLOW_STATUSES.continuedAsNew:
               tagColor = $theme.colors.primary100;
               break;
             default:

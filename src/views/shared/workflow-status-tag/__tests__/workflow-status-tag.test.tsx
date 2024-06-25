@@ -26,7 +26,7 @@ describe('WorkflowStatusTag', () => {
   }> = [
     {
       name: 'should render Running correctly',
-      workflowStatus: 'WORKFLOW_EXECUTION_STATUS_RUNNING',
+      workflowStatus: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
       text: 'Running',
     },
     {

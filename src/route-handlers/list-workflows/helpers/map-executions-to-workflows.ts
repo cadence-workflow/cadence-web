@@ -1,32 +1,30 @@
+import type { WorkflowExecutionInfo } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionInfo';
 import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
 import type { DomainWorkflow } from '@/views/domain-page/domain-page.types';
 
-// TODO @adhitya.mamallan - use GRPC types here when they are ready
 export default function mapExecutionsToWorkflows(
-  executions: Array<any>
+  executions: Array<WorkflowExecutionInfo>
 ): Array<DomainWorkflow> {
-  return executions
-    .filter(
-      (execution) =>
-        execution.workflowExecution?.runId &&
-        execution.workflowExecution?.workflowId &&
-        execution.type?.name &&
-        execution.startTime
-    )
-    .map((execution): DomainWorkflow => {
-      const workflowExecutionCloseTime = execution.closeTime
-        ? parseGrpcTimestamp(execution.closeTime)
-        : undefined;
+  return executions.reduce((acc: Array<DomainWorkflow>, execution) => {
+    if (
+      !execution.workflowExecution ||
+      !execution.type ||
+      !execution.startTime
+    ) {
+      return acc;
+    }
 
-      return {
-        workflowID: execution.workflowExecution.workflowId,
-        runID: execution.workflowExecution?.runId,
-        workflowName: execution.type?.name,
-        status: Boolean(workflowExecutionCloseTime)
-          ? execution.closeStatus
-          : 'WORKFLOW_EXECUTION_STATUS_RUNNING',
-        startTime: parseGrpcTimestamp(execution.startTime),
-        closeTime: workflowExecutionCloseTime,
-      };
+    acc.push({
+      workflowID: execution.workflowExecution.workflowId,
+      runID: execution.workflowExecution.runId,
+      workflowName: execution.type.name,
+      status: execution.closeStatus,
+      startTime: parseGrpcTimestamp(execution.startTime),
+      closeTime: execution.closeTime
+        ? parseGrpcTimestamp(execution.closeTime)
+        : undefined,
     });
+
+    return acc;
+  }, []);
 }
