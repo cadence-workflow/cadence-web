@@ -1,5 +1,3 @@
-import { Long } from '@grpc/proto-loader';
-
 import { type DomainData } from '../domains-page.types';
 
 export const getDomainObj = (
@@ -19,7 +17,7 @@ export const getDomainObj = (
   visibilityArchivalUri: '',
   workflowExecutionRetentionPeriod: null,
   historyArchivalUri: '',
-  failoverVersion: new Long(123456),
+  failoverVersion: 123456,
   activeClusterName: 'ClusterA',
   clusters: [{ clusterName: 'clusterA' }, { clusterName: 'clusterB' }],
   ...overrides,

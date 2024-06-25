@@ -1,5 +1,3 @@
-import { Long } from '@grpc/proto-loader';
-
 import { type DomainInfo } from '../domain-page.types';
 
 export const mockDomainInfo: DomainInfo = {
@@ -21,7 +19,7 @@ export const mockDomainInfo: DomainInfo = {
   visibilityArchivalUri: '',
   workflowExecutionRetentionPeriod: null,
   historyArchivalUri: '',
-  failoverVersion: new Long(123456),
+  failoverVersion: 123456,
 };
 
 export const mockDomainInfoSingleCluster: DomainInfo = {
@@ -44,5 +42,5 @@ export const mockDomainInfoSingleCluster: DomainInfo = {
   visibilityArchivalUri: '',
   workflowExecutionRetentionPeriod: null,
   historyArchivalUri: '',
-  failoverVersion: new Long(123456),
+  failoverVersion: 123456,
 };
