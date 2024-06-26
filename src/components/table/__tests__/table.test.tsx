@@ -42,7 +42,7 @@ describe('Table', () => {
     );
   });
 
-  it('should render empty if shouldShowResults is passed, even if data is present', async () => {
+  it('should render empty if shouldShowResults is false, even if data is present', async () => {
     setup({ shouldShowResults: false });
 
     expect(await screen.findByText('Sample end message')).toBeDefined();

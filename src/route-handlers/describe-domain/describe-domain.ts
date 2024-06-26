@@ -16,7 +16,7 @@ export async function describeDomain(
       .getClusterMethods(decodedParams.cluster)
       .describeDomain({ name: decodedParams.domain });
 
-    return NextResponse.json(res);
+    return NextResponse.json(res.domain);
   } catch (e: any) {
     // TODO: improve error formatting when we have a GRPC error type
     return NextResponse.json(

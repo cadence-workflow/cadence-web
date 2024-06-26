@@ -18,6 +18,7 @@ export default async function DomainPage(props: Props) {
         domainMetadata={
           <Suspense fallback={<DomainPageHeaderInfo loading />}>
             <AsyncPropsLoader
+              // TODO: Use react-query to fetch domain page info in the header
               component={DomainPageHeaderInfo}
               getAsyncProps={async () => {
                 const res = await getCachedDomainInfo(decodedParams.cluster, {
