@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 
 import decodeUrlParams from '@/utils/decode-url-params';
 import * as grpcClient from '@/utils/grpc/grpc-client';
+import { getHTTPStatusCode } from '@/utils/grpc/grpc-error';
 
 import getListWorkflowExecutionsQuery from './helpers/get-list-workflow-executions-query';
 import mapExecutionsToWorkflows from './helpers/map-executions-to-workflows';
@@ -56,14 +57,14 @@ export async function listWorkflows(
     };
 
     return NextResponse.json(response);
-  } catch (e: any) {
+  } catch (e) {
     return NextResponse.json(
       {
-        message: 'Failed to fetch workflows',
+        message: 'Error fetching workflows',
+        cause: e,
       },
       {
-        // TODO @adhitya.mamallan - Use the GRPCError type once it is available
-        status: e.httpStatusCode ?? 500,
+        status: getHTTPStatusCode(e),
       }
     );
   }

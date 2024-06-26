@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 
 import decodeUrlParams from '@/utils/decode-url-params';
 import * as grpcClient from '@/utils/grpc/grpc-client';
+import { getHTTPStatusCode } from '@/utils/grpc/grpc-error';
 
 import { type RequestParams, type RouteParams } from './describe-domain.types';
 
@@ -17,14 +18,13 @@ export async function describeDomain(
       .describeDomain({ name: decodedParams.domain });
 
     return NextResponse.json(res.domain);
-  } catch (e: any) {
-    // TODO: improve error formatting when we have a GRPC error type
+  } catch (e) {
     return NextResponse.json(
       {
         error: 'Error fetching domain info',
-        message: e.toString(),
+        cause: e,
       },
-      { status: e.httpStatusCode ?? 500 }
+      { status: getHTTPStatusCode(e) }
     );
   }
 }
