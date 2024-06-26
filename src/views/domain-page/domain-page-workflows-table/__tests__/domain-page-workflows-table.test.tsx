@@ -65,7 +65,7 @@ describe(DomainPageWorkflowsTable.name, () => {
       }
     }
 
-    expect(renderErrorMessage).toEqual('Failed to fetch workflows');
+    expect(renderErrorMessage).toEqual('Request failed');
   });
 
   it('renders workflows and allows the user to try again if there is an error', async () => {
@@ -111,24 +111,20 @@ async function setup({
   if (errorCase === 'subsequent-fetch-error') {
     requestMock
       .mockResolvedValueOnce({
-        ok: true,
         json: () => Promise.resolve(pages[0]),
       })
-      .mockResolvedValueOnce({ ok: false })
+      .mockRejectedValueOnce(new Error('Request failed'))
       .mockResolvedValueOnce({
-        ok: true,
         json: () => Promise.resolve(pages[1]),
       });
   } else if (errorCase === 'initial-fetch-error') {
-    requestMock.mockResolvedValueOnce({ ok: false });
+    requestMock.mockRejectedValueOnce(new Error('Request failed'));
   } else {
     requestMock
       .mockResolvedValueOnce({
-        ok: true,
         json: () => Promise.resolve(pages[0]),
       })
       .mockResolvedValueOnce({
-        ok: true,
         json: () => Promise.resolve(pages[1]),
       });
   }

@@ -1,29 +1,12 @@
 'use client';
-import { styled } from 'baseui';
-import AlertIcon from 'baseui/icon/alert';
-import { HeadingXSmall } from 'baseui/typography';
-
-const StyledContainer = styled('div', ({ $theme }) => {
-  return {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: $theme.sizing.scale800,
-    padding: `${$theme.sizing.scale900} ${$theme.sizing.scale600}`,
-  };
-});
+import ErrorPanel from '@/components/error-panel/error-panel';
 
 export default function HomePageError({
   error,
+  reset,
 }: Readonly<{
   error: Error;
+  reset: () => void;
 }>) {
-  return (
-    <StyledContainer>
-      <AlertIcon size={64} />
-      <HeadingXSmall>Something went wrong</HeadingXSmall>
-    </StyledContainer>
-  );
+  return <ErrorPanel message="Something went wrong" reset={reset} />;
 }
