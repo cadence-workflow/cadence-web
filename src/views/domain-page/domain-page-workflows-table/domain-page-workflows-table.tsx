@@ -54,12 +54,7 @@ export default function DomainPageWorkflowsTable(props: Props) {
             nextPage: pageParam as string,
           },
         })
-      ).then((res) => {
-        if (!res.ok) {
-          throw new Error('Failed to fetch workflows');
-        }
-        return res.json();
-      }),
+      ).then((res) => res.json()),
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => {
       if (!lastPage.nextPage) return undefined;
