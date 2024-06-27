@@ -1,13 +1,10 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 
-import AsyncPropsLoader from '@/components/async-props-loader/async-props-loader';
 import decodeUrlParams from '@/utils/decode-url-params';
 
 import DomainPageHeader from './domain-page-header/domain-page-header';
-import DomainPageHeaderInfo from './domain-page-header-info/domain-page-header-info';
 import DomainPageTabs from './domain-page-tabs/domain-page-tabs';
 import { type Props } from './domain-page.types';
-import { getCachedDomainInfo } from './helpers/get-domain-info';
 
 export default async function DomainPage(props: Props) {
   const decodedParams = decodeUrlParams(props.params);
@@ -15,24 +12,7 @@ export default async function DomainPage(props: Props) {
     <>
       <DomainPageHeader
         domain={decodedParams.domain}
-        domainMetadata={
-          <Suspense fallback={<DomainPageHeaderInfo loading />}>
-            <AsyncPropsLoader
-              // TODO: Use react-query to fetch domain page info in the header
-              component={DomainPageHeaderInfo}
-              getAsyncProps={async () => {
-                const res = await getCachedDomainInfo(decodedParams.cluster, {
-                  name: decodedParams.domain,
-                });
-                return {
-                  loading: false,
-                  domainInfo: res.domain,
-                  cluster: decodedParams.cluster,
-                };
-              }}
-            />
-          </Suspense>
-        }
+        cluster={decodedParams.cluster}
       />
       <DomainPageTabs />
       {/* props.children is injected here by the Next router, loading domain-page-content.tsx  */}

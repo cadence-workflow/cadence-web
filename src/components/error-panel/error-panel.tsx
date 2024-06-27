@@ -1,3 +1,4 @@
+import { useQueryErrorResetBoundary } from '@tanstack/react-query';
 import { Button, SIZE, KIND, SHAPE } from 'baseui/button';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -10,6 +11,7 @@ import { type Props } from './error-panel.types';
 
 export default function ErrorPanel(props: Props) {
   const router = useRouter();
+  const { reset: resetQueryErrors } = useQueryErrorResetBoundary();
 
   return (
     <styled.ErrorContainer>
@@ -26,8 +28,9 @@ export default function ErrorPanel(props: Props) {
               onClick={() => {
                 switch (action.kind) {
                   case 'retry':
-                    // TODO @adhitya.mamallan: once the react-query domain changes are landed, try to replace this with props.reset()
+                    resetQueryErrors();
                     router.refresh();
+                    props.reset();
                     break;
                   case 'link-internal':
                     router.push(action.link);
