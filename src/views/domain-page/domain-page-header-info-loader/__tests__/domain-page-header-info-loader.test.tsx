@@ -6,29 +6,33 @@ import * as requestModule from '@/utils/request';
 
 import { mockDomainInfo } from '../../__fixtures__/domain-info';
 import { type DomainInfo } from '../../domain-page.types';
-import DomainPageMetadata from '../domain-page-metadata';
+import DomainPageHeaderInfoLoader from '../domain-page-header-info-loader';
 
-jest.mock('@/components/list-table/list-table', () =>
-  jest.fn(({ data }: { data: DomainInfo }) => (
-    <div>
-      Mock metadata table
-      <div>Domain ID: {data.id}</div>
-      <div>Active cluster: {data.activeClusterName}</div>
-    </div>
-  ))
+jest.mock('../../domain-page-header-info/domain-page-header-info', () =>
+  jest.fn(
+    ({ domainInfo, cluster }: { domainInfo: DomainInfo; cluster: string }) => (
+      <div>
+        Mock domain info for Domain {domainInfo.name} in {cluster}
+        <div>Domain ID: {domainInfo.id}</div>
+      </div>
+    )
+  )
 );
 
 jest.mock('@/utils/request');
 
-describe(DomainPageMetadata.name, () => {
-  it('renders metadata without error', async () => {
+describe(DomainPageHeaderInfoLoader.name, () => {
+  it('renders header info without error', async () => {
     await setup({});
 
-    expect(await screen.findByText('Mock metadata table')).toBeInTheDocument();
+    expect(
+      await screen.findByText(
+        'Mock domain info for Domain mock-domain-staging in cluster_1'
+      )
+    ).toBeInTheDocument();
     expect(
       screen.getByText('Domain ID: mock-domain-staging-uuid')
     ).toBeInTheDocument();
-    expect(screen.getByText('Active cluster: cluster_1')).toBeInTheDocument();
   });
 
   it('does not render if the initial call fails', async () => {
@@ -43,7 +47,7 @@ describe(DomainPageMetadata.name, () => {
       }
     }
 
-    expect(renderErrorMessage).toEqual('Failed to fetch domain metadata');
+    expect(renderErrorMessage).toEqual('Failed to fetch domain info');
   });
 });
 
@@ -52,7 +56,7 @@ async function setup({ error }: { error?: boolean }) {
   const requestMock = jest.spyOn(requestModule, 'default') as jest.Mock;
 
   if (error) {
-    requestMock.mockRejectedValue(new Error('Failed to fetch domain metadata'));
+    requestMock.mockRejectedValue(new Error('Failed to fetch domain info'));
   } else {
     requestMock.mockResolvedValue({
       json: () => Promise.resolve(mockDomainInfo),
@@ -61,7 +65,10 @@ async function setup({ error }: { error?: boolean }) {
 
   render(
     <Suspense>
-      <DomainPageMetadata domain="mock-domain" cluster="mock-cluster" />
+      <DomainPageHeaderInfoLoader
+        domain="mock-domain-staging"
+        cluster="cluster_1"
+      />
     </Suspense>
   );
 }
