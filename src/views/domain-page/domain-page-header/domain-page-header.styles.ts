@@ -13,6 +13,10 @@ export const styled = {
     gap: $theme.sizing.scale500,
   })),
   DomainNameLabel: createStyled('div', ({ $theme }) => ({
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: $theme.sizing.scale600,
     ...$theme.typography.HeadingSmall,
   })),
 };
