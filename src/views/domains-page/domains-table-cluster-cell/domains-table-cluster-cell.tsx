@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 
-import LinkBlack from '@/components/link-black/link-black';
+import Link from '@/components/link/link';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import type { DomainData } from '@/views/domains-page/domains-page.types';
 
@@ -14,12 +14,12 @@ function DomainsTableClusterCell(props: DomainData) {
     <div className={cls.clustersLinks}>
       {props.clusters.length > 1 &&
         props.clusters.map(({ clusterName }) => (
-          <LinkBlack
+          <Link
             key={clusterName}
             href={`/domains/${props.name}/${clusterName}`}
           >
             {clusterName}
-          </LinkBlack>
+          </Link>
         ))}
       {props.clusters.length === 1 && props.clusters[0]?.clusterName}
     </div>
