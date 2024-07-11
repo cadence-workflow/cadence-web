@@ -8,6 +8,7 @@ const cssStylesObj = {
     display: 'flex',
     alignItems: 'center',
     gap: theme.sizing.scale400,
+    ...theme.typography.ParagraphSmall,
   }),
 } satisfies StyletronCSSObject;
 
