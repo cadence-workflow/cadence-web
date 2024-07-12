@@ -2,13 +2,11 @@ import React from 'react';
 
 import { render, screen, act, fireEvent } from '@/test-utils/rtl';
 
-import { type PageQueryParamValues } from '@/hooks/use-page-query-params/use-page-query-params.types';
-
 import {
   mockDomainPageQueryParamsValues,
   mockDateOverrides,
 } from '../../__fixtures__/domain-page-query-params';
-import type domainPageQueryParamsConfig from '../../config/domain-page-query-params.config';
+import { type DomainPageWorkflowFiltersDatesValue } from '../domain-page-workflow-filters-dates.types';
 import DomainPageWorkflowsFiltersDates from '../domain-page-workflows-filters-dates';
 
 jest.useFakeTimers().setSystemTime(new Date('2023-05-25'));
@@ -28,7 +26,7 @@ describe('DomainPageWorkflowsFiltersDates', () => {
 
   it('renders without errors when dates are already provided in query params', () => {
     setup({
-      queryParamsOverrides: mockDateOverrides,
+      overrides: mockDateOverrides,
     });
     expect(
       // TODO - set timezone config for unit tests to UTC
@@ -39,7 +37,7 @@ describe('DomainPageWorkflowsFiltersDates', () => {
   });
 
   it('sets query params when date is set', () => {
-    const { mockSetQueryParams } = setup({});
+    const { mockSetValue } = setup({});
     const datePicker = screen.getByPlaceholderText('Select time range');
     act(() => {
       fireEvent.change(datePicker, {
@@ -47,15 +45,15 @@ describe('DomainPageWorkflowsFiltersDates', () => {
       });
     });
 
-    expect(mockSetQueryParams).toHaveBeenCalledWith({
-      timeRangeStart: '2023-05-13T00:00:00.000Z',
-      timeRangeEnd: '2023-05-14T00:00:00.000Z',
+    expect(mockSetValue).toHaveBeenCalledWith({
+      timeRangeStart: new Date('2023-05-13T00:00:00.000Z'),
+      timeRangeEnd: new Date('2023-05-14T00:00:00.000Z'),
     });
   });
 
   it('resets to previous date when one date is selected and then the modal is closed', () => {
-    const { mockSetQueryParams } = setup({
-      queryParamsOverrides: mockDateOverrides,
+    const { mockSetValue } = setup({
+      overrides: mockDateOverrides,
     });
     const datePicker = screen.getByPlaceholderText('Select time range');
 
@@ -82,11 +80,11 @@ describe('DomainPageWorkflowsFiltersDates', () => {
     expect(datePicker).toHaveValue(
       '23 May 2023, 00:00 +00 – 24 May 2023, 00:00 +00'
     );
-    expect(mockSetQueryParams).not.toHaveBeenCalled();
+    expect(mockSetValue).not.toHaveBeenCalled();
   });
 
   it('resets to empty state when one date is selected and then the modal is closed', () => {
-    const { mockSetQueryParams } = setup({});
+    const { mockSetValue } = setup({});
     const datePicker = screen.getByPlaceholderText('Select time range');
 
     act(() => {
@@ -110,19 +108,19 @@ describe('DomainPageWorkflowsFiltersDates', () => {
     });
 
     expect(datePicker).toHaveValue('');
-    expect(mockSetQueryParams).not.toHaveBeenCalled();
+    expect(mockSetValue).not.toHaveBeenCalled();
   });
 
   it('clears the date when the clear button is clicked', () => {
-    const { mockSetQueryParams } = setup({
-      queryParamsOverrides: mockDateOverrides,
+    const { mockSetValue } = setup({
+      overrides: mockDateOverrides,
     });
     const clearButton = screen.getByLabelText('Clear value');
     act(() => {
       fireEvent.click(clearButton);
     });
 
-    expect(mockSetQueryParams).toHaveBeenCalledWith({
+    expect(mockSetValue).toHaveBeenCalledWith({
       timeRangeStart: undefined,
       timeRangeEnd: undefined,
     });
@@ -130,22 +128,21 @@ describe('DomainPageWorkflowsFiltersDates', () => {
 });
 
 function setup({
-  queryParamsOverrides,
+  overrides,
 }: {
-  queryParamsOverrides?: Partial<
-    PageQueryParamValues<typeof domainPageQueryParamsConfig>
-  >;
+  overrides?: DomainPageWorkflowFiltersDatesValue;
 }) {
-  const mockSetQueryParams = jest.fn();
+  const mockSetValue = jest.fn();
   render(
     <DomainPageWorkflowsFiltersDates
-      queryParams={{
-        ...mockDomainPageQueryParamsValues,
-        ...queryParamsOverrides,
+      value={{
+        timeRangeStart: mockDomainPageQueryParamsValues.timeRangeStart,
+        timeRangeEnd: mockDomainPageQueryParamsValues.timeRangeEnd,
+        ...overrides,
       }}
-      setQueryParams={mockSetQueryParams}
+      setValue={mockSetValue}
     />
   );
 
-  return { mockSetQueryParams };
+  return { mockSetValue };
 }
