@@ -9,6 +9,7 @@ import {
   type PageQueryParams,
   type PageQueryParamKeys,
   type PageQueryParamSetterValues,
+  type PageQueryParamValues,
 } from '@/hooks/use-page-query-params/use-page-query-params.types';
 
 import { styled, overrides } from './page-filters.styles';
@@ -34,8 +35,8 @@ export default function PageFilters<
       pageQueryParamsConfig.map((c) => [c.key, c])
     );
     return pageFiltersConfig.filter((pageFilter) =>
-      pageFilter.queryParamKeys.every(
-        (queryParamKey) =>
+      Object.keys(pageFilter.getValue(queryParams)).every(
+        (queryParamKey: PageQueryParamKeys<P>) =>
           queryParams[queryParamKey] &&
           queryParams[queryParamKey] !==
             configsByKey[queryParamKey].defaultValue
@@ -44,18 +45,23 @@ export default function PageFilters<
   }, [pageFiltersConfig, pageQueryParamsConfig, queryParams]);
 
   const resetAllFilters = useCallback(() => {
+    const emptyQueryParamsObject = pageQueryParamsConfig.reduce(
+      (acc, config) => ({
+        ...acc,
+        [config.key]: undefined,
+      }),
+      {}
+    ) as PageQueryParamValues<P>;
+
     setQueryParams(
-      pageFiltersConfig.reduce(
-        (acc, pageFilter) => {
-          pageFilter.queryParamKeys.forEach((queryParamKey) => {
-            acc[queryParamKey] = undefined;
-          });
-          return acc;
-        },
-        {} as Partial<PageQueryParamSetterValues<P>>
-      )
+      pageFiltersConfig.reduce((acc, pageFilter) => {
+        return {
+          ...acc,
+          ...pageFilter.getValue(emptyQueryParamsObject),
+        };
+      }, {})
     );
-  }, [pageFiltersConfig, setQueryParams]);
+  }, [pageFiltersConfig, pageQueryParamsConfig, setQueryParams]);
 
   return (
     <>
@@ -91,8 +97,10 @@ export default function PageFilters<
             return (
               <styled.SearchFilterContainer key={filter.id}>
                 <filter.component
-                  queryParams={queryParams}
-                  setQueryParams={setQueryParams}
+                  value={filter.getValue(queryParams)}
+                  setValue={(newValue) =>
+                    setQueryParams(filter.formatValue(newValue))
+                  }
                 />
               </styled.SearchFilterContainer>
             );

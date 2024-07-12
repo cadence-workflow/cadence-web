@@ -21,47 +21,50 @@ jest.mock('../../../hooks/use-page-query-params/use-page-query-params', () =>
 );
 
 const MockFilterA = ({
-  queryParams,
-  setQueryParams,
-}: PageFilterComponentProps<typeof mockPageQueryParamConfig>) => {
+  value,
+  setValue,
+}: PageFilterComponentProps<{ paramA: string }>) => {
   return (
     <div>
-      <div>Value 1: {queryParams.paramA}</div>
+      <div>Value 1: {value.paramA}</div>
       <div
         data-testid="change-filters"
-        onClick={() => setQueryParams({ paramA: 'valueA2' })}
+        onClick={() => setValue({ paramA: 'valueA2' })}
       />
     </div>
   );
 };
 
 const MockFilterB = ({
-  queryParams,
-  setQueryParams,
-}: PageFilterComponentProps<typeof mockPageQueryParamConfig>) => {
+  value,
+  setValue,
+}: PageFilterComponentProps<{ paramB: string }>) => {
   return (
     <div>
-      <div>Value 2: {queryParams.paramB}</div>
+      <div>Value 2: {value.paramB}</div>
       <div
         data-testid="change-filters"
-        onClick={() => setQueryParams({ paramB: 'valueB2' })}
+        onClick={() => setValue({ paramB: 'valueB2' })}
       />
     </div>
   );
 };
 
-const MOCK_FILTERS_CONFIG: Array<
-  PageFilterConfig<typeof mockPageQueryParamConfig>
-> = [
+const MOCK_FILTERS_CONFIG: [
+  PageFilterConfig<typeof mockPageQueryParamConfig, { paramA: string }>,
+  PageFilterConfig<typeof mockPageQueryParamConfig, { paramB: string }>,
+] = [
   {
     id: 'filterA',
+    getValue: (v) => ({ paramA: v.paramA }),
+    formatValue: (v) => v,
     component: MockFilterA,
-    queryParamKeys: ['paramA'],
   },
   {
     id: 'filterB',
+    getValue: (v) => ({ paramB: v.paramB }),
+    formatValue: (v) => v,
     component: MockFilterB,
-    queryParamKeys: ['paramB'],
   },
 ];
 

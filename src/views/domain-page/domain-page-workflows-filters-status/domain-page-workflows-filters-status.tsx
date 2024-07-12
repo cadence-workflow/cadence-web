@@ -7,17 +7,16 @@ import { Select, SIZE } from 'baseui/select';
 import { type PageFilterComponentProps } from '@/components/page-filters/page-filters.types';
 import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
 
-import type domainPageQueryParamsConfig from '../config/domain-page-query-params.config';
-
+import { type DomainPageWorkflowFiltersStatusValue } from './domain-page-workflow-filters-status-types';
 import { WORKFLOW_STATUS_OPTIONS } from './domain-page-workflows-filters-status.constants';
 import { overrides } from './domain-page-workflows-filters-status.styles';
 
 export default function DomainPageWorkflowsFiltersStatus({
-  queryParams,
-  setQueryParams,
-}: PageFilterComponentProps<typeof domainPageQueryParamsConfig>) {
+  value,
+  setValue,
+}: PageFilterComponentProps<DomainPageWorkflowFiltersStatusValue>) {
   const statusOptionValue = WORKFLOW_STATUS_OPTIONS.filter(
-    (option) => option.id === queryParams.status
+    (option) => option.id === value.status
   );
 
   return (
@@ -27,7 +26,7 @@ export default function DomainPageWorkflowsFiltersStatus({
         value={statusOptionValue}
         options={WORKFLOW_STATUS_OPTIONS}
         onChange={(params) =>
-          setQueryParams({
+          setValue({
             status: WORKFLOW_STATUS_OPTIONS.find(
               (opt) => opt.id === params.value[0]?.id
             )

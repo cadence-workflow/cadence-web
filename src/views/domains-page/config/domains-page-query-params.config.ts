@@ -3,7 +3,7 @@ import { type SortOrder } from '@/utils/sort-by';
 
 const domainsPageQueryParamsConfig: [
   PageQueryParam<'searchText', string>,
-  PageQueryParam<'clusterName', string>,
+  PageQueryParam<'clusterName', string | undefined>,
   PageQueryParam<'sortColumn', string | undefined>,
   PageQueryParam<'sortOrder', SortOrder | undefined>,
 ] = [
@@ -15,7 +15,6 @@ const domainsPageQueryParamsConfig: [
   {
     key: 'clusterName',
     queryParamKey: 'c',
-    defaultValue: '',
   },
   {
     key: 'sortColumn',
