@@ -1,18 +1,12 @@
 import React from 'react';
 
 import { Spinner } from 'baseui/spinner';
-
-import useInfiniteScrollRef from '@/hooks/use-infinite-scroll-ref';
+import { InView } from 'react-intersection-observer';
 
 import { styled } from './domain-page-workflows-table-end-message.styles';
 import { type Props } from './domain-page-workflows-table-end-message.types';
 
 export default function DomainPageWorkflowsTableEndMessage(props: Props) {
-  const targetRef = useInfiniteScrollRef({
-    fetchResults: props.fetchNextPage,
-    isFetchingResults: props.isFetchingNextPage,
-  });
-
   if (props.isFetchingNextPage) {
     return <Spinner data-testid="loading-spinner" />;
   }
@@ -34,9 +28,17 @@ export default function DomainPageWorkflowsTableEndMessage(props: Props) {
 
   if (props.hasNextPage) {
     return (
-      <div data-testid="infinite-scroll-spinner" ref={targetRef}>
+      <InView
+        as="div"
+        data-testid="infinite-scroll-spinner"
+        onChange={(inView) => {
+          if (inView && !props.isFetchingNextPage) {
+            props.fetchNextPage();
+          }
+        }}
+      >
         <Spinner />
-      </div>
+      </InView>
     );
   }
 

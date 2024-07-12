@@ -2,11 +2,10 @@ import React from 'react';
 
 import { render, screen, fireEvent, act } from '@/test-utils/rtl';
 
-import { type PageQueryParamValues } from '@/hooks/use-page-query-params/use-page-query-params.types';
 import { WORKFLOW_STATUS_NAMES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
 
 import { mockDomainPageQueryParamsValues } from '../../__fixtures__/domain-page-query-params';
-import type domainPageQueryParamsConfig from '../../config/domain-page-query-params.config';
+import { type DomainPageWorkflowFiltersStatusValue } from '../domain-page-workflow-filters-status-types';
 import DomainPageWorkflowsFiltersStatus from '../domain-page-workflows-filters-status';
 
 describe('DomainPageWorkflowsFiltersStatus', () => {
@@ -27,7 +26,7 @@ describe('DomainPageWorkflowsFiltersStatus', () => {
   });
 
   it('calls the setQueryParams function when an option is selected', () => {
-    const { mockSetQueryParams } = setup({});
+    const { mockSetValue } = setup({});
     const selectFilter = screen.getByRole('combobox');
     act(() => {
       fireEvent.click(selectFilter);
@@ -36,14 +35,14 @@ describe('DomainPageWorkflowsFiltersStatus', () => {
     act(() => {
       fireEvent.click(runningOption);
     });
-    expect(mockSetQueryParams).toHaveBeenCalledWith({
+    expect(mockSetValue).toHaveBeenCalledWith({
       status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
     });
   });
 
   it('calls the setQueryParams function when the filter is cleared', () => {
-    const { mockSetQueryParams } = setup({
-      queryParamsOverrides: {
+    const { mockSetValue } = setup({
+      overrides: {
         status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_FAILED',
       },
     });
@@ -51,27 +50,25 @@ describe('DomainPageWorkflowsFiltersStatus', () => {
     act(() => {
       fireEvent.click(clearButton);
     });
-    expect(mockSetQueryParams).toHaveBeenCalledWith({ status: undefined });
+    expect(mockSetValue).toHaveBeenCalledWith({ status: undefined });
   });
 });
 
 function setup({
-  queryParamsOverrides,
+  overrides,
 }: {
-  queryParamsOverrides?: Partial<
-    PageQueryParamValues<typeof domainPageQueryParamsConfig>
-  >;
+  overrides?: DomainPageWorkflowFiltersStatusValue;
 }) {
-  const mockSetQueryParams = jest.fn();
+  const mockSetValue = jest.fn();
   render(
     <DomainPageWorkflowsFiltersStatus
-      queryParams={{
-        ...mockDomainPageQueryParamsValues,
-        ...queryParamsOverrides,
+      value={{
+        status: mockDomainPageQueryParamsValues.status,
+        ...overrides,
       }}
-      setQueryParams={mockSetQueryParams}
+      setValue={mockSetValue}
     />
   );
 
-  return { mockSetQueryParams };
+  return { mockSetValue };
 }

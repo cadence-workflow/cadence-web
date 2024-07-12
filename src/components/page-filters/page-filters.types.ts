@@ -1,19 +1,28 @@
 import {
   type PageQueryParamKeys,
-  type PageQueryParamSetter,
   type PageQueryParamValues,
   type PageQueryParams,
+  type PageQueryParamSetterValues,
 } from '@/hooks/use-page-query-params/use-page-query-params.types';
 
-export type PageFilterComponentProps<P extends PageQueryParams> = {
-  queryParams: PageQueryParamValues<P>;
-  setQueryParams: PageQueryParamSetter<P>;
+export type PageFilterComponentProps<V extends object> = {
+  value: V;
+  setValue: (value: V) => void;
 };
 
-export type PageFilterConfig<P extends PageQueryParams> = {
+export type PageFilterConfig<
+  P extends PageQueryParams,
+  V extends Partial<PageQueryParamValues<P>>,
+> = {
   id: string;
-  component: React.ComponentType<PageFilterComponentProps<P>>;
-  queryParamKeys: Array<PageQueryParamKeys<P>>;
+  getValue: (queryParamsValues: PageQueryParamValues<P>) => V;
+  formatValue: (
+    value: V
+  ) => Pick<
+    PageQueryParamSetterValues<P>,
+    keyof V extends string ? keyof V : never
+  >;
+  component: React.ComponentType<PageFilterComponentProps<V>>;
 };
 
 export type Props<
@@ -23,5 +32,5 @@ export type Props<
   searchQueryParamKey: PageQueryParamValues<P>[K] extends string ? K : never;
   searchPlaceholder: string;
   pageQueryParamsConfig: P;
-  pageFiltersConfig: Array<PageFilterConfig<P>>;
+  pageFiltersConfig: Array<PageFilterConfig<P, any>>;
 };

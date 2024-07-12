@@ -7,24 +7,23 @@ import { SIZE } from 'baseui/input';
 
 import { type PageFilterComponentProps } from '@/components/page-filters/page-filters.types';
 
-import type domainPageQueryParamsConfig from '../config/domain-page-query-params.config';
-
+import { type DomainPageWorkflowFiltersDatesValue } from './domain-page-workflow-filters-dates.types';
 import { DATE_FORMAT } from './domain-page-workflows-filters-dates.constants';
 import { overrides } from './domain-page-workflows-filters-dates.styles';
 
 export default function DomainPageWorkflowsFiltersDates({
-  queryParams,
-  setQueryParams,
-}: PageFilterComponentProps<typeof domainPageQueryParamsConfig>) {
+  value,
+  setValue,
+}: PageFilterComponentProps<DomainPageWorkflowFiltersDatesValue>) {
   const [dates, setDates] = React.useState<Array<Date | null | undefined>>([]);
 
   React.useEffect(() => {
     setDates(
-      Boolean(queryParams.timeRangeStart) && Boolean(queryParams.timeRangeEnd)
-        ? [queryParams.timeRangeStart, queryParams.timeRangeEnd]
+      Boolean(value.timeRangeStart) && Boolean(value.timeRangeEnd)
+        ? [value.timeRangeStart, value.timeRangeEnd]
         : []
     );
-  }, [queryParams]);
+  }, [value]);
 
   return (
     <FormControl label="Dates" overrides={overrides.dateFormControl}>
@@ -36,7 +35,7 @@ export default function DomainPageWorkflowsFiltersDates({
           }
           setDates(date);
           if (date.length === 0) {
-            setQueryParams({
+            setValue({
               timeRangeStart: undefined,
               timeRangeEnd: undefined,
             });
@@ -45,18 +44,17 @@ export default function DomainPageWorkflowsFiltersDates({
             if (!start || !end) {
               return;
             }
-            setQueryParams({
-              timeRangeStart: start.toISOString(),
-              timeRangeEnd: end.toISOString(),
+            setValue({
+              timeRangeStart: start,
+              timeRangeEnd: end,
             });
           }
         }}
         onClose={() => {
           if (dates.length !== 2 || dates.some((date) => !date)) {
             setDates(
-              Boolean(queryParams.timeRangeStart) &&
-                Boolean(queryParams.timeRangeEnd)
-                ? [queryParams.timeRangeStart, queryParams.timeRangeEnd]
+              Boolean(value.timeRangeStart) && Boolean(value.timeRangeEnd)
+                ? [value.timeRangeStart, value.timeRangeEnd]
                 : []
             );
           }
