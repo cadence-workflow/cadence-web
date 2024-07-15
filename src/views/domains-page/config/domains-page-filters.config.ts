@@ -1,9 +1,9 @@
 import { type DomainsPageFilterConfig } from '../domains-page-filters/domains-page-filters.types';
-import { type DomainPageFiltersClusterNameValue } from '../domains-page-filters-cluster-name/domain-page-filters-cluster-name.types';
 import DomainsPageFiltersClusterName from '../domains-page-filters-cluster-name/domains-page-filters-cluster-name';
+import { type DomainsPageFiltersClusterNameValue } from '../domains-page-filters-cluster-name/domains-page-filters-cluster-name.types';
 
 const domainsPageFiltersConfig: [
-  DomainsPageFilterConfig<DomainPageFiltersClusterNameValue>,
+  DomainsPageFilterConfig<DomainsPageFiltersClusterNameValue>,
 ] = [
   {
     id: 'clusterName',

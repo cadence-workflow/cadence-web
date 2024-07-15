@@ -8,11 +8,11 @@ import { type PageFilterComponentProps } from '@/components/page-filters/page-fi
 import CLUSTERS_CONFIGS from '@/config/clusters/clusters.config';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 
-import { type DomainPageFiltersClusterNameValue } from './domain-page-filters-cluster-name.types';
 import {
   cssStyles,
   overrides,
 } from './domains-page-filters-cluster-name.styles';
+import { type DomainsPageFiltersClusterNameValue } from './domains-page-filters-cluster-name.types';
 
 const clustersOptions = CLUSTERS_CONFIGS.map(({ clusterName }) => ({
   label: clusterName,
@@ -22,7 +22,7 @@ const clustersOptions = CLUSTERS_CONFIGS.map(({ clusterName }) => ({
 function DomainsPageFiltersClusterName({
   value,
   setValue,
-}: PageFilterComponentProps<DomainPageFiltersClusterNameValue>) {
+}: PageFilterComponentProps<DomainsPageFiltersClusterNameValue>) {
   const { cls } = useStyletronClasses(cssStyles);
 
   const clusterValue = clustersOptions.filter(
