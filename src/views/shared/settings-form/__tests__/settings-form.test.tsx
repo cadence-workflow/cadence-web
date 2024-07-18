@@ -8,10 +8,10 @@ import {
   mockZodSchema,
   mockData,
   mockFormConfig,
-} from '../__fixtures__/form.fixtures';
-import Form from '../form';
+} from '../__fixtures__/settings-form.fixtures';
+import SettingsForm from '../settings-form';
 
-describe(Form.name, () => {
+describe(SettingsForm.name, () => {
   it('should render form correctly', () => {
     setup({});
 
@@ -52,6 +52,26 @@ describe(Form.name, () => {
       },
       expect.anything()
     );
+  });
+
+  it('should call onSubmitError if the call to submit fails', async () => {
+    const { user, mockOnSubmit, mockOnSubmitError } = setup({});
+
+    const submitButton = screen.getByRole('button');
+    expect(submitButton).toHaveAttribute('disabled');
+
+    const formFieldA = screen.getByDisplayValue('mock_data_A');
+
+    await user.clear(formFieldA);
+    await user.type(formFieldA, 'new_mock_data_A');
+
+    expect(formFieldA).toHaveValue('new_mock_data_A');
+    expect(submitButton).not.toHaveAttribute('disabled');
+
+    mockOnSubmit.mockRejectedValueOnce('Test error case');
+    await user.click(submitButton);
+
+    expect(mockOnSubmitError).toHaveBeenCalled();
   });
 
   it('should disable submit button if a field is reset to original value', async () => {
@@ -100,16 +120,18 @@ describe(Form.name, () => {
 function setup({}) {
   const user = userEvent.setup();
   const mockOnSubmit = jest.fn();
+  const mockOnSubmitError = jest.fn();
 
   render(
-    <Form
+    <SettingsForm
       data={mockData}
       zodSchema={mockZodSchema}
       formConfig={mockFormConfig}
       onSubmit={mockOnSubmit}
       submitButtonText="Submit form"
+      onSubmitError={mockOnSubmitError}
     />
   );
 
-  return { user, mockOnSubmit };
+  return { user, mockOnSubmit, mockOnSubmitError };
 }
