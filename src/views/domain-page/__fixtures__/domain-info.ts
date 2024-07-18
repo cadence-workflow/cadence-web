@@ -17,7 +17,10 @@ export const mockDomainInfo: DomainInfo = {
   isolationGroups: null,
   visibilityArchivalStatus: 'ARCHIVAL_STATUS_DISABLED',
   visibilityArchivalUri: '',
-  workflowExecutionRetentionPeriod: null,
+  workflowExecutionRetentionPeriod: {
+    seconds: 86400,
+    nanos: 0,
+  },
   historyArchivalUri: '',
   failoverVersion: 123456,
 };
@@ -40,7 +43,10 @@ export const mockDomainInfoSingleCluster: DomainInfo = {
   isolationGroups: null,
   visibilityArchivalStatus: 'ARCHIVAL_STATUS_DISABLED',
   visibilityArchivalUri: '',
-  workflowExecutionRetentionPeriod: null,
+  workflowExecutionRetentionPeriod: {
+    seconds: 86400,
+    nanos: 0,
+  },
   historyArchivalUri: '',
   failoverVersion: 123456,
 };

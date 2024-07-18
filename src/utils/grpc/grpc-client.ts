@@ -26,6 +26,8 @@ import { type SignalWorkflowExecutionRequest__Input } from '@/__generated__/prot
 import { type SignalWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/SignalWorkflowExecutionResponse';
 import { type TerminateWorkflowExecutionRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/TerminateWorkflowExecutionRequest';
 import { type TerminateWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/TerminateWorkflowExecutionResponse';
+import { type UpdateDomainRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/UpdateDomainRequest';
+import { type UpdateDomainResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/UpdateDomainResponse';
 import CLUSTERS_CONFIGS from '@/config/clusters/clusters.config';
 
 import grpcServiceConfigurations from '../../config/grpc/grpc-services-config';
@@ -91,6 +93,10 @@ const clusterServicesMethods = CLUSTERS_CONFIGS.reduce(
         method: 'DescribeDomain',
         // formatResponse: formatResponseDomain,
       }),
+      updateDomain: domainService.request<
+        UpdateDomainRequest__Input,
+        UpdateDomainResponse
+      >({ method: 'UpdateDomain' }),
       describeTaskList: workflowService.request<
         DescribeTaskListRequest__Input,
         DescribeTaskListResponse
@@ -205,6 +211,9 @@ const clusterServicesMethods = CLUSTERS_CONFIGS.reduce(
       describeDomain: (
         payload: DescribeDomainRequest__Input
       ) => Promise<DescribeDomainResponse>;
+      updateDomain: (
+        payload: UpdateDomainRequest__Input
+      ) => Promise<UpdateDomainResponse>;
       describeTaskList: (
         paload: DescribeTaskListRequest__Input
       ) => Promise<DescribeTaskListResponse>;
