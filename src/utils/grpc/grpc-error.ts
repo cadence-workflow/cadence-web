@@ -9,6 +9,7 @@ const GRPC_ERROR_STATUS_TO_HTTP_ERROR_CODE_MAP: { [index: string]: number } = {
   [grpc.status.PERMISSION_DENIED]: 403,
   [grpc.status.NOT_FOUND]: 404,
   [grpc.status.UNIMPLEMENTED]: 404,
+  [grpc.status.RESOURCE_EXHAUSTED]: 429,
   [grpc.status.UNAVAILABLE]: 503,
   [grpc.status.DEADLINE_EXCEEDED]: 504,
 };
