@@ -1,6 +1,7 @@
 import { createElement } from 'react';
 
 import FormattedDate from '@/components/formatted-date/formatted-date';
+import Link from '@/components/link/link';
 import { type TableColumn } from '@/components/table/table.types';
 import WorkflowStatusTag from '@/views/shared/workflow-status-tag/workflow-status-tag';
 
@@ -10,7 +11,14 @@ const domainPageWorkflowsTableConfig: Array<TableColumn<DomainWorkflow>> = [
   {
     name: 'Workflow ID',
     id: 'WorkflowID',
-    renderCell: (row: DomainWorkflow) => row.workflowID,
+    renderCell: (row: DomainWorkflow) =>
+      createElement(
+        Link,
+        {
+          href: `workflows/${encodeURIComponent(row.workflowID)}/${encodeURIComponent(row.runID)}`,
+        },
+        row.workflowID
+      ),
     width: '27.5%',
   },
   {
