@@ -86,14 +86,15 @@ describe(DomainPageSettings.name, () => {
     });
 
     expect(requestMock).toHaveBeenCalledTimes(2);
+    expect(
+      await screen.findByText('Successfully updated domain settings')
+    ).toBeInTheDocument();
   });
 
   it('submits modified settings with error', async () => {
     const { user, requestMock, updateDomainMock } = await setup({
       updateError: true,
     });
-
-    const consoleErrorSpy = jest.spyOn(console, 'error');
 
     const submitButton = await screen.findByText('Save settings');
     await user.click(submitButton);
@@ -111,10 +112,11 @@ describe(DomainPageSettings.name, () => {
       },
     });
 
-    // TODO @adhitya.mamallan - once we have an error banner, assert on it
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      new Error('Failed to update domain')
-    );
+    expect(
+      await screen.findByText(
+        'Error updating domain settings: Failed to update domain'
+      )
+    ).toBeInTheDocument();
     expect(requestMock).toHaveBeenCalledTimes(1);
   });
 
