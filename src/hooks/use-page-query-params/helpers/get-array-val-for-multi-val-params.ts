@@ -9,12 +9,12 @@
  * within the whole codebase we just mark the values that we plan to contain multiple values and we return them as arrays even if they had a single value
  */
 const getArrayValForMultiValParams = (
-  val: string | null | (string | null)[],
+  val: string | null | undefined | (string | null)[],
   isMultiValue: boolean
 ) => {
   if (isMultiValue) {
     const arr = !Array.isArray(val) ? [val] : val;
-    return arr.filter((v) => v !== null) as string[];
+    return arr.filter((v) => v !== null && v !== undefined) as string[];
   }
   return Array.isArray(val) ? val[0] : val;
 };
