@@ -11,15 +11,8 @@ const domainPageWorkflowsTableConfig: Array<TableColumn<DomainWorkflow>> = [
   {
     name: 'Workflow ID',
     id: 'WorkflowID',
-    renderCell: (row: DomainWorkflow) =>
-      createElement(
-        Link,
-        {
-          href: `workflows/${encodeURIComponent(row.workflowID)}/${encodeURIComponent(row.runID)}`,
-        },
-        row.workflowID
-      ),
-    width: '27.5%',
+    renderCell: (row: DomainWorkflow) => row.workflowID,
+    width: '25.5%',
   },
   {
     name: 'Status',
@@ -31,8 +24,15 @@ const domainPageWorkflowsTableConfig: Array<TableColumn<DomainWorkflow>> = [
   {
     name: 'Run ID',
     id: 'RunID',
-    renderCell: (row: DomainWorkflow) => row.runID,
-    width: '20%',
+    renderCell: (row: DomainWorkflow) =>
+      createElement(
+        Link,
+        {
+          href: `workflows/${encodeURIComponent(row.workflowID)}/${encodeURIComponent(row.runID)}`,
+        },
+        row.runID
+      ),
+    width: '22%',
   },
   {
     name: 'Workflow type',
