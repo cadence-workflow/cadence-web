@@ -11,9 +11,10 @@ export default function request(
     absoluteUrl = `http://127.0.0.1:${process.env.CADENCE_WEB_PORT || 3000}${url}`;
   }
   return fetch(absoluteUrl, { cache: 'no-cache', ...(options || {}) }).then(
-    (res) => {
+    async (res) => {
       if (!res.ok) {
-        throw new RequestError(`Request failed: ${url}`, res.status);
+        const error = await res.json();
+        throw new RequestError(error.error, res.status);
       }
       return res;
     }
