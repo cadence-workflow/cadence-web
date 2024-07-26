@@ -4,6 +4,7 @@ import { snakeCase } from 'lodash';
 
 import ADMIN_SECURITY_TOKEN from '@/config/auth/admin-security-token';
 import * as grpcClient from '@/utils/grpc/grpc-client';
+import { GRPCError } from '@/utils/grpc/grpc-error';
 
 import updateDomainValuesSchema from './schemas/update-domain-values-schema';
 import { type Params, type UpdateDomainResponse } from './update-domain.types';
@@ -35,6 +36,6 @@ export default async function updateDomain(
     }
     return res.domain;
   } catch (e) {
-    throw new Error(e instanceof Error ? e.message : 'Unknown');
+    throw new Error(e instanceof GRPCError ? e.message : 'Unknown');
   }
 }
