@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 
 import decodeUrlParams from '@/utils/decode-url-params';
 import * as grpcClient from '@/utils/grpc/grpc-client';
-import { getHTTPStatusCode } from '@/utils/grpc/grpc-error';
+import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 
 import { type RequestParams, type RouteParams } from './describe-domain.types';
 
@@ -21,7 +21,8 @@ export async function describeDomain(
   } catch (e) {
     return NextResponse.json(
       {
-        error: 'Error fetching domain info',
+        error:
+          e instanceof GRPCError ? e.message : 'Error fetching domain info',
         cause: e,
       },
       { status: getHTTPStatusCode(e) }
