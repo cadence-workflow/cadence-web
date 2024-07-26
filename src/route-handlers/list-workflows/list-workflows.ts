@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 
 import decodeUrlParams from '@/utils/decode-url-params';
 import * as grpcClient from '@/utils/grpc/grpc-client';
-import { getHTTPStatusCode } from '@/utils/grpc/grpc-error';
+import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 
 import getListWorkflowExecutionsQuery from './helpers/get-list-workflow-executions-query';
 import mapExecutionsToWorkflows from './helpers/map-executions-to-workflows';
@@ -60,7 +60,8 @@ export async function listWorkflows(
   } catch (e) {
     return NextResponse.json(
       {
-        message: 'Error fetching workflows',
+        message:
+          e instanceof GRPCError ? e.message : 'Error fetching workflows',
         cause: e,
       },
       {
