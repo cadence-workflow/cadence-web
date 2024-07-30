@@ -4,6 +4,7 @@ const jestTSDConfig = {
     name: 'types',
   },
   runner: 'jest-runner-tsd',
+  rootDir: '../../',
   testMatch: ['**/__tests__/*.test-tsd.ts'],
 };
 
