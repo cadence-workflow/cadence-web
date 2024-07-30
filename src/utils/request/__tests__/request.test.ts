@@ -1,6 +1,7 @@
 import request from '../request';
+import { RequestError } from '../request-error';
 
-describe('request', () => {
+describe('request on browser env', () => {
   afterEach(() => {
     const mockedFetch = global.fetch as jest.MockedFunction<
       typeof global.fetch
@@ -29,5 +30,20 @@ describe('request', () => {
     await request(url, options);
     expect(fetch).toHaveBeenCalledWith(url, { cache: 'no-cache', ...options });
   });
-  // TODO: @assem.hafez add test for server, currently the testing environment is browser
+
+  it('should return error if request.ok is false', async () => {
+    // mock fetch failure
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: false,
+        json: async () => ({ error: 'test error' }),
+        status: 500,
+      } as Response)
+    );
+    const url = '/api/data';
+    const options = { method: 'POST' };
+    expect(request(url, options)).rejects.toThrow(
+      new RequestError('test error', 400)
+    );
+  });
 });
