@@ -11,6 +11,7 @@ module.exports = {
   plugins: ['react'],
   rules: {
     'react/react-in-jsx-scope': 'off',
+    'no-console': ['error'],
 
     // Typescript rules
     '@typescript-eslint/consistent-type-imports': [
