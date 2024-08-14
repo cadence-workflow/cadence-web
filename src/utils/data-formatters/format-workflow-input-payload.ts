@@ -1,3 +1,5 @@
+import logger from '@/utils/logger';
+
 const formatWorkflowInputPayload = (
   payload: { data?: string | null } | null | undefined
 ) => {
@@ -39,12 +41,12 @@ function parseJsonLines(input: string) {
       const jsonObject = JSON.parse(currentJson);
       jsonArray.push(jsonObject);
     } catch {
-      //TODO: @assem.hafez add logging here to capture parse issues
-      console.error(
-        'Error parsing JSON string:',
-        currentJson,
-        ',Original Input:',
-        input
+      logger.error(
+        {
+          input,
+          currentJson,
+        },
+        'Error parsing JSON string'
       );
     }
   }
