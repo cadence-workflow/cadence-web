@@ -2,7 +2,7 @@
 import React from 'react';
 
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { pick } from 'lodash';
+import pick from 'lodash/pick';
 import { useParams } from 'next/navigation';
 
 import request from '@/utils/request';

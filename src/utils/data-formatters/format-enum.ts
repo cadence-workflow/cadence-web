@@ -19,7 +19,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import { lowerCase, snakeCase, startCase, flowRight } from 'lodash';
+import flowRight from 'lodash/flowRight';
+import lowerCase from 'lodash/lowerCase';
+import snakeCase from 'lodash/snakeCase';
+import startCase from 'lodash/startCase';
 
 const convertToUpper = (value: string) => value.toUpperCase();
 

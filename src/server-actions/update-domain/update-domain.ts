@@ -1,6 +1,6 @@
 'use server';
 
-import { snakeCase } from 'lodash';
+import snakeCase from 'lodash/snakeCase';
 
 import ADMIN_SECURITY_TOKEN from '@/config/auth/admin-security-token';
 import * as grpcClient from '@/utils/grpc/grpc-client';
