@@ -8,5 +8,11 @@ export default function WorkflowTabsError({
   error: Error;
   reset: () => void;
 }>) {
-  return <ErrorPanel message="Failed to load workflow content" reset={reset} />;
+  return (
+    <ErrorPanel
+      error={error}
+      message="Failed to load workflow content"
+      reset={reset}
+    />
+  );
 }
