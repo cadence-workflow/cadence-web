@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 import { useQueryErrorResetBoundary } from '@tanstack/react-query';
 import { Button, SIZE, KIND, SHAPE } from 'baseui/button';
 import Image from 'next/image';
@@ -5,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { MdRefresh, MdOpenInNew } from 'react-icons/md';
 
 import errorIcon from '@/assets/error-icon.svg';
+import logger from '@/utils/logger';
 
 import { styled } from './error-panel.styles';
 import { type Props } from './error-panel.types';
@@ -12,6 +15,12 @@ import { type Props } from './error-panel.types';
 export default function ErrorPanel(props: Props) {
   const router = useRouter();
   const { reset: resetQueryErrors } = useQueryErrorResetBoundary();
+
+  useEffect(() => {
+    if (props.error && !props.omitLogging) {
+      logger.error(props.error, props.message);
+    }
+  }, [props.error, props.message, props.omitLogging]);
 
   return (
     <styled.ErrorContainer>
@@ -30,7 +39,7 @@ export default function ErrorPanel(props: Props) {
                   case 'retry':
                     resetQueryErrors();
                     router.refresh();
-                    props.reset();
+                    props.reset?.();
                     break;
                   case 'link-internal':
                     router.push(action.link);

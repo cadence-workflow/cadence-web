@@ -18,7 +18,10 @@ import domainPageWorkflowsTableConfig from '../config/domain-page-workflows-tabl
 import DomainPageWorkflowsTableEndMessage from '../domain-page-workflows-table-end-message/domain-page-workflows-table-end-message';
 import getNextSortOrder from '../helpers/get-next-sort-order';
 
-import { PAGE_SIZE } from './domain-page-workflows-table.constants';
+import {
+  NO_WORKFLOWS_ERROR_MESSAGE,
+  PAGE_SIZE,
+} from './domain-page-workflows-table.constants';
 import { type Props } from './domain-page-workflows-table.types';
 
 export default function DomainPageWorkflowsTable(props: Props) {
@@ -66,6 +69,16 @@ export default function DomainPageWorkflowsTable(props: Props) {
     () => data.pages.flatMap((page) => page.workflows ?? []),
     [data]
   );
+
+  if (
+    !queryParams.search &&
+    !queryParams.status &&
+    !queryParams.timeRangeStart &&
+    !queryParams.timeRangeEnd &&
+    workflows.length === 0
+  ) {
+    throw new Error(NO_WORKFLOWS_ERROR_MESSAGE);
+  }
 
   return (
     <PageSection>

@@ -8,5 +8,7 @@ export default function WorkflowPageError({
   error: Error;
   reset: () => void;
 }>) {
-  return <ErrorPanel message="Failed to load workflow" reset={reset} />;
+  return (
+    <ErrorPanel error={error} message="Failed to load workflow" reset={reset} />
+  );
 }

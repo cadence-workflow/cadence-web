@@ -19,6 +19,14 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
+const mockError = jest.fn();
+jest.mock('@/utils/logger', () => ({
+  __esModule: true,
+  default: {
+    error: () => mockError(),
+  },
+}));
+
 const mockResetQueryErrors = jest.fn();
 jest.mock('@tanstack/react-query', () => ({
   ...jest.requireActual('@tanstack/react-query'),
@@ -60,6 +68,25 @@ describe(ErrorPanel.name, () => {
 
     expect(screen.getByAltText('Error')).toBeInTheDocument();
     expect(screen.getByText('Mock error message')).toBeInTheDocument();
+  });
+
+  it('should emit log if an error is passed', async () => {
+    setup({
+      message: 'Mock error message',
+      error: new Error('something bad happened'),
+    });
+
+    expect(mockError).toHaveBeenCalled();
+  });
+
+  it('should not emit log if an error is passed but omitLogging is true', async () => {
+    setup({
+      message: 'Mock error message',
+      error: new Error('Something was not found'),
+      omitLogging: true,
+    });
+
+    expect(mockError).not.toHaveBeenCalled();
   });
 
   it('should render correctly with actions', async () => {
@@ -132,14 +159,26 @@ describe(ErrorPanel.name, () => {
 
 function setup({
   message,
+  error,
   actions,
+  omitLogging,
 }: {
   message: string;
+  error?: Error;
   actions?: Array<ErrorAction>;
+  omitLogging?: boolean;
 }) {
   const mockReset = jest.fn();
   const mockWindowOpen = jest.fn();
   jest.spyOn(window, 'open').mockImplementation(mockWindowOpen);
-  render(<ErrorPanel message={message} actions={actions} reset={mockReset} />);
+  render(
+    <ErrorPanel
+      message={message}
+      error={error}
+      actions={actions}
+      reset={mockReset}
+      omitLogging={omitLogging}
+    />
+  );
   return { mockReset, mockWindowOpen };
 }

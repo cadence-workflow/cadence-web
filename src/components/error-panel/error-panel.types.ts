@@ -20,7 +20,9 @@ type ExternalLinkAction = BaseAction & {
 export type ErrorAction = RetryAction | InternalLinkAction | ExternalLinkAction;
 
 export type Props = {
+  error?: Error;
   message: string;
   actions?: Array<ErrorAction>;
-  reset: () => void;
+  reset?: () => void;
+  omitLogging?: boolean;
 };
