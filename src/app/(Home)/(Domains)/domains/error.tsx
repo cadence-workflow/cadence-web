@@ -8,5 +8,7 @@ export default function DomainsPageError({
   error: Error;
   reset: () => void;
 }>) {
-  return <ErrorPanel message="Failed to load domains" reset={reset} />;
+  return (
+    <ErrorPanel error={error} message="Failed to load domains" reset={reset} />
+  );
 }

@@ -8,5 +8,7 @@ export default function HomePageError({
   error: Error;
   reset: () => void;
 }>) {
-  return <ErrorPanel message="Something went wrong" reset={reset} />;
+  return (
+    <ErrorPanel error={error} message="Something went wrong" reset={reset} />
+  );
 }

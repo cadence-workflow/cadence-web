@@ -1,6 +1,6 @@
 import type domainPageTabsConfig from '../config/domain-page-tabs.config';
 
-type DomainTabName = (typeof domainPageTabsConfig)[number]['key'];
+export type DomainTabName = (typeof domainPageTabsConfig)[number]['key'];
 
 export type DomainPageContentParams = {
   domain: string;
