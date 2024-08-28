@@ -22,6 +22,7 @@ export default function DomainPageError({ error, reset }: Props) {
           },
         ]}
         reset={reset}
+        omitLogging={true}
       />
     );
   }

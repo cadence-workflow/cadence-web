@@ -8,8 +8,8 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 const LOGGER_CONFIG: LoggerOptions<CustomLevels> = {
   level: isDevelopment ? 'trace' : 'info',
   formatters: {
-    level(label, number) {
-      return { level: isDevelopment ? number : label };
+    level(label) {
+      return { level: label };
     },
   },
   // To add custom levels, update the corresponding type and add the level values here

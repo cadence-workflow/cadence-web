@@ -14,7 +14,9 @@ export default function request(
     async (res) => {
       if (!res.ok) {
         const error = await res.json();
-        throw new RequestError(error.error, res.status);
+        throw new RequestError(error.message, res.status, {
+          cause: error.cause,
+        });
       }
       return res;
     }

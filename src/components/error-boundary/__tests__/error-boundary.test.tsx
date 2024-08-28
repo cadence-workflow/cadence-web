@@ -49,4 +49,19 @@ describe(ErrorBoundary.name, () => {
       expect(mockError).toHaveBeenCalledWith(expect.any(Error), 'Test error');
     }
   });
+
+  it('should not log errors thrown in children if omitLogging is passed', () => {
+    try {
+      act(() => {
+        render(
+          <ErrorBoundary fallback={<div>Fallback</div>} omitLogging>
+            <BadComponent shouldThrow={true} />
+          </ErrorBoundary>
+        );
+      });
+    } catch {
+      expect(screen.getByText('Fallback')).toBeInTheDocument();
+      expect(mockError).not.toHaveBeenCalled();
+    }
+  });
 });
