@@ -36,7 +36,7 @@ describe('request on browser env', () => {
     global.fetch = jest.fn(() =>
       Promise.resolve({
         ok: false,
-        json: async () => ({ error: 'test error' }),
+        json: async () => ({ message: 'test error' }),
         status: 500,
       } as Response)
     );
