@@ -4,8 +4,10 @@ import React from 'react';
 import { useSuspenseQuery } from '@tanstack/react-query';
 
 import useStyletronClasses from '@/hooks/use-styletron-classes';
+import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
 import formatWorkflowHistory from '@/utils/data-formatters/format-workflow-history';
 import request from '@/utils/request';
+import { type RequestError } from '@/utils/request/request-error';
 import type { WorkflowPageTabContentProps } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
 import getWorkflowIsCompleted from '../workflow-page/helpers/get-workflow-is-completed';
@@ -19,9 +21,14 @@ export default function WorkflowSummaryTab({
 }: WorkflowPageTabContentProps) {
   const { cls } = useStyletronClasses(cssStyles);
 
-  const { workflowTab, ...histroyQueryParams } = params;
-  const { data: workflowHistory } = useSuspenseQuery({
-    queryKey: ['workflow_history', histroyQueryParams] as const,
+  const { workflowTab, ...historyQueryParams } = params;
+  const { data: workflowHistory } = useSuspenseQuery<
+    GetWorkflowHistoryResponse,
+    RequestError,
+    GetWorkflowHistoryResponse,
+    [string, typeof historyQueryParams]
+  >({
+    queryKey: ['workflow_history', historyQueryParams] as const,
     queryFn: ({ queryKey: [_, qp] }) =>
       request(
         `/api/domains/${qp.domain}/${qp.cluster}/workflows/${qp.workflowId}/${qp.runId}/history`
