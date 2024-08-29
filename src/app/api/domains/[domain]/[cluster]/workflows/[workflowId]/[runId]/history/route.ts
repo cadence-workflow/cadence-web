@@ -1,25 +1,11 @@
-import decodeUrlParams from '@/utils/decode-url-params';
-import * as grpcClient from '@/utils/grpc/grpc-client';
+import { type NextRequest } from 'next/server';
 
-// TODO: @assem.hafez move api handlers implementations to another file
-type RouteParams = {
-  domain: string;
-  cluster: string;
-  workflowId: string;
-  runId: string;
-};
+import getWorkflowHistory from '@/route-handlers/get-workflow-history/get-workflow-history';
+import { type RouteParams } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
+
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: RouteParams }
 ) {
-  const decodedParams = decodeUrlParams(params);
-  const res = await grpcClient.clusterMethods[params.cluster].getHistory({
-    domain: decodedParams.domain,
-    workflowExecution: {
-      workflowId: decodedParams.workflowId,
-      runId: decodedParams.runId,
-    },
-  });
-
-  return Response.json(res);
+  return getWorkflowHistory(request, { params });
 }
