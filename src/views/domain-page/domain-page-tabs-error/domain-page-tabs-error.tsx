@@ -27,6 +27,7 @@ export default function DomainPageTabsError({ error, reset }: Props) {
       error={error}
       message={errorConfig.message}
       actions={errorConfig.actions}
+      omitLogging={errorConfig.omitLogging}
       reset={reset}
     />
   );
