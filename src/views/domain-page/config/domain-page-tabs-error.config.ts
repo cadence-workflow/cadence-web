@@ -1,5 +1,6 @@
+import getDomainWorkflowsErrorConfig from '@/views/domain-workflows/helpers/get-domain-workflows-error-config';
+
 import { type DomainPageTabsErrorConfig } from '../domain-page-tabs-error/domain-page-tabs-error.types';
-import getDomainWorkflowsErrorConfig from '../helpers/get-domain-workflows-error-config';
 
 const domainPageTabsErrorConfig: DomainPageTabsErrorConfig = {
   workflows: getDomainWorkflowsErrorConfig,

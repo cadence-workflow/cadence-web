@@ -13,20 +13,20 @@ import {
 } from '@/route-handlers/list-workflows/list-workflows.types';
 import request from '@/utils/request';
 
-import domainPageQueryParamsConfig from '../config/domain-page-query-params.config';
-import domainPageWorkflowsTableConfig from '../config/domain-page-workflows-table.config';
-import DomainPageWorkflowsTableEndMessage from '../domain-page-workflows-table-end-message/domain-page-workflows-table-end-message';
+import domainWorkflowsQueryParamsConfig from '../config/domain-workflows-query-params.config';
+import domainWorkflowsTableConfig from '../config/domain-workflows-table.config';
+import DomainWorkflowsTableEndMessage from '../domain-workflows-table-end-message/domain-workflows-table-end-message';
 import getNextSortOrder from '../helpers/get-next-sort-order';
 
 import {
   NO_WORKFLOWS_ERROR_MESSAGE,
   PAGE_SIZE,
-} from './domain-page-workflows-table.constants';
-import { type Props } from './domain-page-workflows-table.types';
+} from './domain-workflows-table.constants';
+import { type Props } from './domain-workflows-table.types';
 
-export default function DomainPageWorkflowsTable(props: Props) {
+export default function DomainWorkflowsTable(props: Props) {
   const [queryParams, setQueryParams] = usePageQueryParams(
-    domainPageQueryParamsConfig
+    domainWorkflowsQueryParamsConfig
   );
 
   const requestQueryParams: ListWorkflowsRequestQueryParams = {
@@ -84,7 +84,7 @@ export default function DomainPageWorkflowsTable(props: Props) {
     <PageSection>
       <Table
         data={workflows}
-        columns={domainPageWorkflowsTableConfig}
+        columns={domainWorkflowsTableConfig}
         shouldShowResults={!isLoading && workflows.length > 0}
         onSort={(column) => {
           setQueryParams({
@@ -99,7 +99,7 @@ export default function DomainPageWorkflowsTable(props: Props) {
         sortColumn={queryParams.sortColumn}
         sortOrder={queryParams.sortOrder}
         endMessage={
-          <DomainPageWorkflowsTableEndMessage
+          <DomainWorkflowsTableEndMessage
             hasWorkflows={workflows.length > 0}
             error={error}
             fetchNextPage={fetchNextPage}

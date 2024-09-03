@@ -5,7 +5,7 @@ import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow
 
 import parseDateQueryParam from '../helpers/parse-date-query-param';
 
-const domainPageQueryParamsConfig: [
+const domainWorkflowsQueryParamsConfig: [
   PageQueryParam<'search', string>,
   PageQueryParam<'status', WorkflowStatus | undefined>,
   PageQueryParam<'timeRangeStart', Date | undefined>,
@@ -45,4 +45,4 @@ const domainPageQueryParamsConfig: [
   },
 ] as const;
 
-export default domainPageQueryParamsConfig;
+export default domainWorkflowsQueryParamsConfig;

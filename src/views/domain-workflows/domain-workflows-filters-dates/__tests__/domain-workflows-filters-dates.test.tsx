@@ -3,20 +3,20 @@ import React from 'react';
 import { render, screen, act, fireEvent } from '@/test-utils/rtl';
 
 import {
-  mockDomainPageQueryParamsValues,
+  mockDomainWorkflowsQueryParamsValues,
   mockDateOverrides,
-} from '../../__fixtures__/domain-page-query-params';
-import { type DomainPageWorkflowFiltersDatesValue } from '../domain-page-workflow-filters-dates.types';
-import DomainPageWorkflowsFiltersDates from '../domain-page-workflows-filters-dates';
+} from '../../__fixtures__/domain-workflows-query-params';
+import DomainWorkflowsFiltersDates from '../domain-workflows-filters-dates';
+import { type DomainWorkflowsFiltersDatesValue } from '../domain-workflows-filters-dates.types';
 
 jest.useFakeTimers().setSystemTime(new Date('2023-05-25'));
 
-jest.mock('../domain-page-workflows-filters-dates.constants', () => ({
-  ...jest.requireActual('../domain-page-workflows-filters-dates.constants'),
+jest.mock('../domain-workflows-filters-dates.constants', () => ({
+  ...jest.requireActual('../domain-workflows-filters-dates.constants'),
   DATE_FORMAT: 'dd MMM yyyy, HH:mm x',
 }));
 
-describe('DomainPageWorkflowsFiltersDates', () => {
+describe('DomainWorkflowsFiltersDates', () => {
   it('displays the date picker component', () => {
     setup({});
     expect(
@@ -130,14 +130,14 @@ describe('DomainPageWorkflowsFiltersDates', () => {
 function setup({
   overrides,
 }: {
-  overrides?: DomainPageWorkflowFiltersDatesValue;
+  overrides?: DomainWorkflowsFiltersDatesValue;
 }) {
   const mockSetValue = jest.fn();
   render(
-    <DomainPageWorkflowsFiltersDates
+    <DomainWorkflowsFiltersDates
       value={{
-        timeRangeStart: mockDomainPageQueryParamsValues.timeRangeStart,
-        timeRangeEnd: mockDomainPageQueryParamsValues.timeRangeEnd,
+        timeRangeStart: mockDomainWorkflowsQueryParamsValues.timeRangeStart,
+        timeRangeEnd: mockDomainWorkflowsQueryParamsValues.timeRangeEnd,
         ...overrides,
       }}
       setValue={mockSetValue}
