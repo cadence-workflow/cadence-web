@@ -1,5 +1,6 @@
-import { type DomainPageTabErrorConfig } from '../domain-page-tabs-error/domain-page-tabs-error.types';
-import { NO_WORKFLOWS_ERROR_MESSAGE } from '../domain-page-workflows-table/domain-page-workflows-table.constants';
+import { type DomainPageTabErrorConfig } from '@/views/domain-page/domain-page-tabs-error/domain-page-tabs-error.types';
+
+import { NO_WORKFLOWS_ERROR_MESSAGE } from '../domain-workflows-table/domain-workflows-table.constants';
 
 export default function getDomainWorkflowsErrorConfig(
   err: Error

@@ -3,11 +3,10 @@ import { createElement } from 'react';
 import FormattedDate from '@/components/formatted-date/formatted-date';
 import Link from '@/components/link/link';
 import { type TableColumn } from '@/components/table/table.types';
+import { type DomainWorkflow } from '@/views/domain-page/domain-page.types';
 import WorkflowStatusTag from '@/views/shared/workflow-status-tag/workflow-status-tag';
 
-import { type DomainWorkflow } from '../domain-page.types';
-
-const domainPageWorkflowsTableConfig: Array<TableColumn<DomainWorkflow>> = [
+const domainWorkflowsTableConfig: Array<TableColumn<DomainWorkflow>> = [
   {
     name: 'Workflow ID',
     id: 'WorkflowID',
@@ -58,4 +57,4 @@ const domainPageWorkflowsTableConfig: Array<TableColumn<DomainWorkflow>> = [
   },
 ];
 
-export default domainPageWorkflowsTableConfig;
+export default domainWorkflowsTableConfig;
