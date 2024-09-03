@@ -70,7 +70,7 @@ export default function PageFilters<
           value={queryParams[searchQueryParamKey]}
           onChange={(event) =>
             setQueryParams({
-              [searchQueryParamKey]: event.target.value,
+              [searchQueryParamKey]: event.target.value || undefined,
             } as Partial<PageQueryParamSetterValues<P>>)
           }
           placeholder={searchPlaceholder}
