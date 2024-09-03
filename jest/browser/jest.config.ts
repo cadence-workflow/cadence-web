@@ -3,16 +3,20 @@
  * https://jestjs.io/docs/configuration
  */
 
-
 import type { Config } from 'jest';
-import nextJest from 'next/jest.js'
+import nextJest from 'next/jest.js';
 
-const esModules = ['query-string', 'decode-uri-component','split-on-first','filter-obj']
+const esModules = [
+  'query-string',
+  'decode-uri-component',
+  'split-on-first',
+  'filter-obj',
+];
 
 const createJestConfig = nextJest({
   // Provide the path to your Next.js app to load next.config.js and .env files in your test environment
   dir: './',
-})
+});
 const config: Config = {
   displayName: {
     color: 'magenta',
@@ -40,13 +44,13 @@ const config: Config = {
   //coverageDirectory: "coverage",
 
   // An array of regexp pattern strings used to skip coverage collection
- /*  coveragePathIgnorePatterns: [
+  /*  coveragePathIgnorePatterns: [
     "/node_modules/",
     "src/test-utils",
   ], */
 
   // Indicates which provider should be used to instrument code for coverage
- // coverageProvider: "v8",
+  // coverageProvider: "v8",
 
   // A list of reporter names that Jest uses when writing coverage reports
   // coverageReporters: [
@@ -57,7 +61,7 @@ const config: Config = {
   // ],
 
   // An object that configures minimum threshold enforcement for coverage results
-/*   coverageThreshold: {
+  /*   coverageThreshold: {
     global: {
       branches: 85,
       functions: 85,
@@ -139,7 +143,7 @@ const config: Config = {
   // resetModules: false,
 
   // A path to a custom resolver
-   resolver: '<rootDir>/jest/browser/jest.resolver.js',
+  resolver: '<rootDir>/jest/browser/jest.resolver.js',
 
   // Automatically restore mock state and implementation before every test
   // restoreMocks: false,
@@ -158,9 +162,11 @@ const config: Config = {
   // The paths to modules that run some code to configure or set up the testing environment before each test
   setupFiles: ['<rootDir>/jest/browser/jest.polyfills.js'],
 
-
   // A list of paths to modules that run some code to configure or set up the testing framework before each test
-  setupFilesAfterEnv: ["<rootDir>/jest/browser/jest.setup.ts"],
+  setupFilesAfterEnv: ['<rootDir>/jest/browser/jest.setup.ts'],
+
+  // Path to the snapshot serializer module Jest should use for snapshot testing
+  snapshotResolver: '<rootDir>/jest/browser/jest.snapshot-resolver.js',
 
   // The number of seconds after which a test is considered as slow and reported as such in the results.
   // slowTestThreshold: 5,
@@ -169,7 +175,7 @@ const config: Config = {
   // snapshotSerializers: [],
 
   // The test environment that will be used for testing
-  testEnvironment: "jsdom",
+  testEnvironment: 'jsdom',
 
   // Options that will be passed to the testEnvironment
   // testEnvironmentOptions: {},
@@ -178,9 +184,7 @@ const config: Config = {
   // testLocationInResults: false,
 
   // The glob patterns Jest uses to detect test files
-  testMatch: [
-    "**/__tests__/**/*.test.[t]s?(x)"
-  ],
+  testMatch: ['**/__tests__/**/*.test.[t]s?(x)'],
 
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
   // testPathIgnorePatterns: [
@@ -218,8 +222,8 @@ const config: Config = {
   // Whether to use watchman for file crawling
   // watchman: true,
 };
- 
-const getCustomizedConfig= async () => {
+
+const getCustomizedConfig = async () => {
   const jestConfig = await createJestConfig(config)();
   return {
     ...jestConfig,
@@ -228,7 +232,7 @@ const getCustomizedConfig= async () => {
     transformIgnorePatterns: jestConfig.transformIgnorePatterns?.filter(
       (ptn) => ptn !== '/node_modules/'
     ),
-  }
-}
+  };
+};
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
-export default getCustomizedConfig
+export default getCustomizedConfig;
