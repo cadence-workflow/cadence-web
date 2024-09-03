@@ -12,8 +12,8 @@ import {
   type ListWorkflowsRequestQueryParams,
 } from '@/route-handlers/list-workflows/list-workflows.types';
 import request from '@/utils/request';
+import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
 
-import domainWorkflowsQueryParamsConfig from '../config/domain-workflows-query-params.config';
 import domainWorkflowsTableConfig from '../config/domain-workflows-table.config';
 import DomainWorkflowsTableEndMessage from '../domain-workflows-table-end-message/domain-workflows-table-end-message';
 import getNextSortOrder from '../helpers/get-next-sort-order';
@@ -26,7 +26,7 @@ import { type Props } from './domain-workflows-table.types';
 
 export default function DomainWorkflowsTable(props: Props) {
   const [queryParams, setQueryParams] = usePageQueryParams(
-    domainWorkflowsQueryParamsConfig
+    domainPageQueryParamsConfig
   );
 
   const requestQueryParams: ListWorkflowsRequestQueryParams = {

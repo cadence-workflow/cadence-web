@@ -1,9 +1,9 @@
 'use client';
 import PageFilters from '@/components/page-filters/page-filters';
 import PageSection from '@/components/page-section/page-section';
+import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
 
 import domainWorkflowsFiltersConfig from '../config/domain-workflows-filters.config';
-import domainWorkflowsQueryParamsConfig from '../config/domain-workflows-query-params.config';
 
 import { styled } from './domain-workflows-filters.styles';
 
@@ -15,7 +15,7 @@ export default function DomainWorkflowsFilters() {
           searchQueryParamKey="search"
           searchPlaceholder="Find workflow"
           pageFiltersConfig={domainWorkflowsFiltersConfig}
-          pageQueryParamsConfig={domainWorkflowsQueryParamsConfig}
+          pageQueryParamsConfig={domainPageQueryParamsConfig}
         />
       </styled.FiltersContainer>
     </PageSection>

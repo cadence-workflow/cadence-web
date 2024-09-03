@@ -1,19 +1,18 @@
 import { type PageFilterConfig } from '@/components/page-filters/page-filters.types';
+import type domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
 
 import DomainWorkflowsFiltersDates from '../domain-workflows-filters-dates/domain-workflows-filters-dates';
 import { type DomainWorkflowsFiltersDatesValue } from '../domain-workflows-filters-dates/domain-workflows-filters-dates.types';
 import DomainWorkflowsFiltersStatus from '../domain-workflows-filters-status/domain-workflows-filters-status';
 import { type DomainWorkflowsFiltersStatusValue } from '../domain-workflows-filters-status/domain-workflows-filters-status-types';
 
-import type domainWorkflowsQueryParamsConfig from './domain-workflows-query-params.config';
-
 const domainWorkflowsFiltersConfig: [
   PageFilterConfig<
-    typeof domainWorkflowsQueryParamsConfig,
+    typeof domainPageQueryParamsConfig,
     DomainWorkflowsFiltersStatusValue
   >,
   PageFilterConfig<
-    typeof domainWorkflowsQueryParamsConfig,
+    typeof domainPageQueryParamsConfig,
     DomainWorkflowsFiltersDatesValue
   >,
 ] = [

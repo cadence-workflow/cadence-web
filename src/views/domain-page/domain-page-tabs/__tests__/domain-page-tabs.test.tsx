@@ -61,6 +61,32 @@ describe('DomainPageTabs', () => {
     expect(mockPushFn).toHaveBeenCalledWith('page-2');
   });
 
+  it('retains query params when new tab is clicked', () => {
+    // TODO: this is a bit hacky, see if there is a better way to mock the window search property
+    const originalWindow = window;
+    window = Object.create(window);
+    Object.defineProperty(window, 'location', {
+      value: {
+        ...window.location,
+        search: '?queryParam1=one&queryParam2=two',
+      },
+      writable: true,
+    });
+
+    render(<DomainPageTabs />);
+
+    const page2Tab = screen.getByText('Page 2');
+    act(() => {
+      fireEvent.click(page2Tab);
+    });
+
+    expect(mockPushFn).toHaveBeenCalledWith(
+      'page-2?queryParam1=one&queryParam2=two'
+    );
+
+    window = originalWindow;
+  });
+
   it('renders tabs artworks correctly', () => {
     render(<DomainPageTabs />);
 

@@ -1,9 +1,8 @@
 import { type PageQueryParamValues } from '@/hooks/use-page-query-params/use-page-query-params.types';
-
-import type domainWorkflowsQueryParamsConfig from '../config/domain-workflows-query-params.config';
+import type domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
 
 export const mockDomainWorkflowsQueryParamsValues: PageQueryParamValues<
-  typeof domainWorkflowsQueryParamsConfig
+  typeof domainPageQueryParamsConfig
 > = {
   search: '',
   status: undefined,
