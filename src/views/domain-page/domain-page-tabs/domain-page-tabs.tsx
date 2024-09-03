@@ -22,7 +22,9 @@ export default function DomainPageTabs() {
         selectedTab={decodedParams.domainTab}
         tabList={domainPageTabsConfig}
         setSelectedTab={(newTab) => {
-          router.push(encodeURIComponent(newTab.toString()));
+          router.push(
+            `${encodeURIComponent(newTab.toString())}${window.location.search}`
+          );
         }}
       />
     </styled.PageTabsContainer>

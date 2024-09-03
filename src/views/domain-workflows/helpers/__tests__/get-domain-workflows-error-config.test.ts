@@ -14,6 +14,7 @@ describe(getDomainWorkflowsErrorConfig.name, () => {
       getDomainWorkflowsErrorConfig(new Error(NO_WORKFLOWS_ERROR_MESSAGE))
     ).toEqual({
       message: 'No workflows found for this domain',
+      omitLogging: true,
       actions: [
         {
           kind: 'link-external',
