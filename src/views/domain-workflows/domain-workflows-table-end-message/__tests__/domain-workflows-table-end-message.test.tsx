@@ -5,10 +5,10 @@ import {
 
 import { render, screen, act, fireEvent } from '@/test-utils/rtl';
 
-import DomainPageWorkflowsTableEndMessage from '../domain-page-workflows-table-end-message';
-import { type Props } from '../domain-page-workflows-table-end-message.types';
+import DomainWorkflowsTableEndMessage from '../domain-workflows-table-end-message';
+import { type Props } from '../domain-workflows-table-end-message.types';
 
-describe(DomainPageWorkflowsTableEndMessage.name, () => {
+describe(DomainWorkflowsTableEndMessage.name, () => {
   it('renders loading state while fetching next page', () => {
     setup({ isFetchingNextPage: true });
 
@@ -69,9 +69,7 @@ function setup(overrides: Partial<Props>) {
     isFetchingNextPage: false,
   };
 
-  render(
-    <DomainPageWorkflowsTableEndMessage {...defaultProps} {...overrides} />
-  );
+  render(<DomainWorkflowsTableEndMessage {...defaultProps} {...overrides} />);
 
   return { mockFetchNextPage };
 }

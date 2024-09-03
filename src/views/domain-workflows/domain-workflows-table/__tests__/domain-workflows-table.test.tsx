@@ -5,12 +5,12 @@ import { render, screen, act, fireEvent } from '@/test-utils/rtl';
 import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list-workflows.types';
 import * as requestModule from '@/utils/request';
 
-import { mockDomainPageQueryParamsValues } from '../../__fixtures__/domain-page-query-params';
-import { type Props as EndMessageProps } from '../../domain-page-workflows-table-end-message/domain-page-workflows-table-end-message.types';
-import DomainPageWorkflowsTable from '../domain-page-workflows-table';
+import { mockDomainWorkflowsQueryParamsValues } from '../../__fixtures__/domain-workflows-query-params';
+import { type Props as EndMessageProps } from '../../domain-workflows-table-end-message/domain-workflows-table-end-message.types';
+import DomainWorkflowsTable from '../domain-workflows-table';
 
 jest.mock(
-  '../../domain-page-workflows-table-end-message/domain-page-workflows-table-end-message',
+  '../../domain-workflows-table-end-message/domain-workflows-table-end-message',
   () =>
     jest.fn((props: EndMessageProps) => (
       <button data-testid="mock-end-message" onClick={props.fetchNextPage}>
@@ -27,10 +27,10 @@ jest.mock('@/utils/request');
 
 const mockSetQueryParams = jest.fn();
 jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
-  jest.fn(() => [mockDomainPageQueryParamsValues, mockSetQueryParams])
+  jest.fn(() => [mockDomainWorkflowsQueryParamsValues, mockSetQueryParams])
 );
 
-describe(DomainPageWorkflowsTable.name, () => {
+describe(DomainWorkflowsTable.name, () => {
   it('renders workflows without error', async () => {
     await setup({});
 
@@ -131,7 +131,7 @@ async function setup({
 
   render(
     <Suspense>
-      <DomainPageWorkflowsTable domain="mock-domain" cluster="mock-cluster" />
+      <DomainWorkflowsTable domain="mock-domain" cluster="mock-cluster" />
     </Suspense>
   );
 }

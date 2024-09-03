@@ -4,11 +4,11 @@ import { render, screen, fireEvent, act } from '@/test-utils/rtl';
 
 import { WORKFLOW_STATUS_NAMES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
 
-import { mockDomainPageQueryParamsValues } from '../../__fixtures__/domain-page-query-params';
-import { type DomainPageWorkflowFiltersStatusValue } from '../domain-page-workflow-filters-status-types';
-import DomainPageWorkflowsFiltersStatus from '../domain-page-workflows-filters-status';
+import { mockDomainWorkflowsQueryParamsValues } from '../../__fixtures__/domain-workflows-query-params';
+import DomainWorkflowsFiltersStatus from '../domain-workflows-filters-status';
+import { type DomainWorkflowsFiltersStatusValue } from '../domain-workflows-filters-status-types';
 
-describe('DomainPageWorkflowsFiltersStatus', () => {
+describe('DomainWorkflowsFiltersStatus', () => {
   it('renders without errors', () => {
     setup({});
     expect(screen.getByRole('combobox')).toBeInTheDocument();
@@ -57,13 +57,13 @@ describe('DomainPageWorkflowsFiltersStatus', () => {
 function setup({
   overrides,
 }: {
-  overrides?: DomainPageWorkflowFiltersStatusValue;
+  overrides?: DomainWorkflowsFiltersStatusValue;
 }) {
   const mockSetValue = jest.fn();
   render(
-    <DomainPageWorkflowsFiltersStatus
+    <DomainWorkflowsFiltersStatus
       value={{
-        status: mockDomainPageQueryParamsValues.status,
+        status: mockDomainWorkflowsQueryParamsValues.status,
         ...overrides,
       }}
       setValue={mockSetValue}

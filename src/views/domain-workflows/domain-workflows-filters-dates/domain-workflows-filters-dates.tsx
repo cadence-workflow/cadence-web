@@ -7,14 +7,14 @@ import { SIZE } from 'baseui/input';
 
 import { type PageFilterComponentProps } from '@/components/page-filters/page-filters.types';
 
-import { type DomainPageWorkflowFiltersDatesValue } from './domain-page-workflow-filters-dates.types';
-import { DATE_FORMAT } from './domain-page-workflows-filters-dates.constants';
-import { overrides } from './domain-page-workflows-filters-dates.styles';
+import { DATE_FORMAT } from './domain-workflows-filters-dates.constants';
+import { overrides } from './domain-workflows-filters-dates.styles';
+import { type DomainWorkflowsFiltersDatesValue } from './domain-workflows-filters-dates.types';
 
-export default function DomainPageWorkflowsFiltersDates({
+export default function DomainWorkflowsFiltersDates({
   value,
   setValue,
-}: PageFilterComponentProps<DomainPageWorkflowFiltersDatesValue>) {
+}: PageFilterComponentProps<DomainWorkflowsFiltersDatesValue>) {
   const [dates, setDates] = React.useState<Array<Date | null | undefined>>([]);
 
   React.useEffect(() => {
