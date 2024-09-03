@@ -1,4 +1,4 @@
-import { NO_WORKFLOWS_ERROR_MESSAGE } from '../../domain-page-workflows-table/domain-page-workflows-table.constants';
+import { NO_WORKFLOWS_ERROR_MESSAGE } from '../../domain-workflows-table/domain-workflows-table.constants';
 import getDomainWorkflowsErrorConfig from '../get-domain-workflows-error-config';
 
 describe(getDomainWorkflowsErrorConfig.name, () => {
