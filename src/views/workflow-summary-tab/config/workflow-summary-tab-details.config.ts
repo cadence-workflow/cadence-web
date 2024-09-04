@@ -1,4 +1,4 @@
-import { Fragment, createElement } from 'react';
+import { createElement } from 'react';
 
 import WorkflowStatusTag from '@/views/shared/workflow-status-tag/workflow-status-tag';
 import getWorkflowIsCompleted from '@/views/workflow-page/helpers/get-workflow-is-completed';
