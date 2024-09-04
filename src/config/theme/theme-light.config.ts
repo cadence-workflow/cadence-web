@@ -11,6 +11,7 @@ const themeLight = {
   icons: baseWebIconsOverrides,
   colors: {
     borderOpaque: '#F3F3F3',
+    backgroundSecondary: '#F3F3F3',
   },
 } satisfies DeepPartial<MakeExtendable<Theme>>;
 
