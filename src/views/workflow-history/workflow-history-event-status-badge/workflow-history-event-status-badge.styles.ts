@@ -21,6 +21,7 @@ export const styled = {
       alignItems: 'center',
       justifyContent: 'center',
       borderRadius: '16px',
+      flexShrink: 0,
       width: containerSize,
       height: containerSize,
       ...(
