@@ -6,7 +6,7 @@ import { WORKFLOW_STATUS_NAMES } from '@/views/shared/workflow-status-tag/workfl
 
 import { mockDomainWorkflowsQueryParamsValues } from '../../__fixtures__/domain-workflows-query-params';
 import DomainWorkflowsFiltersStatus from '../domain-workflows-filters-status';
-import { type DomainWorkflowsFiltersStatusValue } from '../domain-workflows-filters-status-types';
+import { type DomainWorkflowsFiltersStatusValue } from '../domain-workflows-filters-status.types';
 
 describe('DomainWorkflowsFiltersStatus', () => {
   it('renders without errors', () => {

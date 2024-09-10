@@ -7,9 +7,9 @@ import { Select, SIZE } from 'baseui/select';
 import { type PageFilterComponentProps } from '@/components/page-filters/page-filters.types';
 import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
 
-import { type DomainWorkflowsFiltersStatusValue } from './domain-workflows-filters-status-types';
 import { WORKFLOW_STATUS_OPTIONS } from './domain-workflows-filters-status.constants';
 import { overrides } from './domain-workflows-filters-status.styles';
+import { type DomainWorkflowsFiltersStatusValue } from './domain-workflows-filters-status.types';
 
 export default function DomainWorkflowsFiltersStatus({
   value,
