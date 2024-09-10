@@ -4,7 +4,7 @@ import type domainPageQueryParamsConfig from '@/views/domain-page/config/domain-
 import DomainWorkflowsFiltersDates from '../domain-workflows-filters-dates/domain-workflows-filters-dates';
 import { type DomainWorkflowsFiltersDatesValue } from '../domain-workflows-filters-dates/domain-workflows-filters-dates.types';
 import DomainWorkflowsFiltersStatus from '../domain-workflows-filters-status/domain-workflows-filters-status';
-import { type DomainWorkflowsFiltersStatusValue } from '../domain-workflows-filters-status/domain-workflows-filters-status-types';
+import { type DomainWorkflowsFiltersStatusValue } from '../domain-workflows-filters-status/domain-workflows-filters-status.types';
 
 const domainWorkflowsFiltersConfig: [
   PageFilterConfig<
