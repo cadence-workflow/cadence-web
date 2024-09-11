@@ -22,3 +22,7 @@ export type TaskList = {
   activityTaskListStatus: TaskListStatus | null;
   decisionTaskListStatus: TaskListStatus | null;
 };
+
+export type DescribeTaskListResponse = {
+  taskList: TaskList;
+};
