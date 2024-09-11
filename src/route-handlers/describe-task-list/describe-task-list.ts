@@ -39,14 +39,14 @@ export async function describeTaskList(
         taskListType: 'TASK_LIST_TYPE_ACTIVITY',
       });
 
-    const res: TaskList = {
+    const taskList: TaskList = {
       name: decodedParams.taskListName,
       pollers: getPollersForTaskList({ decisionTaskList, activityTaskList }),
       decisionTaskListStatus: decisionTaskList.taskListStatus,
       activityTaskListStatus: activityTaskList.taskListStatus,
     };
 
-    return NextResponse.json({ taskList: res });
+    return NextResponse.json({ taskList });
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
       { requestParams: decodedParams, cause: e },

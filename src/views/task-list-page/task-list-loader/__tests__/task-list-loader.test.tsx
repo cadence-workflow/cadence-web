@@ -4,14 +4,25 @@ import { HttpResponse } from 'msw';
 
 import { render, screen, act } from '@/test-utils/rtl';
 
+import { type DescribeTaskListResponse } from '@/route-handlers/describe-task-list/describe-task-list.types';
+import type { Props as TaskListLabelProps } from '@/views/shared/task-list-label/task-list-label.types';
+
 import TaskListLoader from '../task-list-loader';
+
+jest.mock('@/views/shared/task-list-label/task-list-label', () =>
+  jest.fn(({ taskList }: TaskListLabelProps) => (
+    <div>
+      {taskList.name}: {taskList.pollers.length} workers
+    </div>
+  ))
+);
 
 describe(TaskListLoader.name, () => {
   it('renders task list without error', async () => {
     await setup({});
 
     expect(
-      await screen.findByText('Placeholder for Task List table')
+      await screen.findByText('tasklist-1: 2 workers')
     ).toBeInTheDocument();
 
     expect(
@@ -61,6 +72,7 @@ async function setup({ error }: { error?: boolean }) {
             : {
                 jsonResponse: {
                   taskList: {
+                    name: 'tasklist-1',
                     pollers: [
                       {
                         activityHandler: true,
@@ -77,8 +89,10 @@ async function setup({ error }: { error?: boolean }) {
                         ratePerSecond: 100000,
                       },
                     ],
+                    activityTaskListStatus: null,
+                    decisionTaskListStatus: null,
                   },
-                },
+                } satisfies DescribeTaskListResponse,
               }),
         },
       ],
