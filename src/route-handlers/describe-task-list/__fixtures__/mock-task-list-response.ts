@@ -4,7 +4,7 @@ export const mockDecisionTaskListResponse: DescribeTaskListResponse = {
   pollers: [
     {
       lastAccessTime: {
-        seconds: 1725370637,
+        seconds: '1725370637',
         nanos: 431444568,
       },
       identity: 'poller-1@mock-domain@tasklist-1',
@@ -12,7 +12,7 @@ export const mockDecisionTaskListResponse: DescribeTaskListResponse = {
     },
     {
       lastAccessTime: {
-        seconds: 1725370636,
+        seconds: '1725370636',
         nanos: 402492620,
       },
       identity: 'poller-2@mock-domain@tasklist-1',
@@ -26,7 +26,7 @@ export const mockActivityTaskListResponse: DescribeTaskListResponse = {
   pollers: [
     {
       lastAccessTime: {
-        seconds: 1725370657,
+        seconds: '1725370657',
         nanos: 336205308,
       },
       identity: 'poller-1@mock-domain@tasklist-1',
@@ -34,7 +34,7 @@ export const mockActivityTaskListResponse: DescribeTaskListResponse = {
     },
     {
       lastAccessTime: {
-        seconds: 1725370630,
+        seconds: '1725370630',
         nanos: 347193652,
       },
       identity: 'poller-2@mock-domain@tasklist-1',

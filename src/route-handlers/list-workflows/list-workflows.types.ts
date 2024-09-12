@@ -19,7 +19,7 @@ export type ListWorkflowsRequestQueryParams = z.input<
 
 export type ListWorkflowsResponse = {
   workflows: Array<DomainWorkflow>;
-  nextPage: Buffer;
+  nextPage: string;
 };
 
 export type ListWorkflowsError = {
