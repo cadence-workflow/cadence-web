@@ -3,7 +3,8 @@ export type WorkflowEventStatus =
   | 'ONGOING'
   | 'WAITING'
   | 'COMPLETED'
-  | 'FAILED';
+  | 'FAILED'
+  | 'CANCELED';
 
 export type Props = {
   status: WorkflowEventStatus;
