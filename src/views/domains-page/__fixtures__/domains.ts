@@ -17,7 +17,7 @@ export const getDomainObj = (
   visibilityArchivalUri: '',
   workflowExecutionRetentionPeriod: null,
   historyArchivalUri: '',
-  failoverVersion: 123456,
+  failoverVersion: '123456',
   activeClusterName: 'ClusterA',
   clusters: [{ clusterName: 'clusterA' }, { clusterName: 'clusterB' }],
   ...overrides,
