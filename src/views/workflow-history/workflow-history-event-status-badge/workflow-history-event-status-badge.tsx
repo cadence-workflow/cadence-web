@@ -2,7 +2,12 @@ import React from 'react';
 
 import { useStyletron } from 'baseui';
 import { Spinner } from 'baseui/spinner';
-import { MdCheck, MdHourglassTop, MdReportGmailerrorred } from 'react-icons/md';
+import {
+  MdCheck,
+  MdClose,
+  MdHourglassTop,
+  MdReportGmailerrorred,
+} from 'react-icons/md';
 
 import getBadgeIconSize from './helpers/get-badge-icon-size';
 import {
@@ -29,6 +34,8 @@ export default function WorkflowHistoryEventStatusBadge({
         return <MdCheck size={iconSize} />;
       case WORKFLOW_EVENT_STATUS.FAILED:
         return <MdReportGmailerrorred size={iconSize} />;
+      case WORKFLOW_EVENT_STATUS.CANCELED:
+        return <MdClose size={iconSize} />;
       case WORKFLOW_EVENT_STATUS.ONGOING:
         return <Spinner $size={iconSize} />;
       case WORKFLOW_EVENT_STATUS.WAITING:
