@@ -37,6 +37,10 @@ export const styled = {
             color: $theme.colors.negative,
             backgroundColor: '#FFE1DE',
           },
+          [WORKFLOW_EVENT_STATUS.CANCELED]: {
+            color: $theme.colors.negative,
+            backgroundColor: '#FFE1DE',
+          },
           [WORKFLOW_EVENT_STATUS.WAITING]: {
             color: $theme.colors.black,
             backgroundColor: $theme.colors.backgroundSecondary,

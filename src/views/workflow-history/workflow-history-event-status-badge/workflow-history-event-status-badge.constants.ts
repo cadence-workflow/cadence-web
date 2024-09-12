@@ -6,6 +6,7 @@ import type {
 export const WORKFLOW_EVENT_STATUS = {
   COMPLETED: 'COMPLETED',
   FAILED: 'FAILED',
+  CANCELED: 'CANCELED',
   ONGOING: 'ONGOING',
   WAITING: 'WAITING',
 } as const satisfies Record<WorkflowEventStatus, WorkflowEventStatus>;
