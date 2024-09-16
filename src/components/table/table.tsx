@@ -6,7 +6,6 @@ import {
   StyledTableHeadRow,
   StyledTableBody,
   StyledTableBodyRow,
-  StyledTableBodyCell,
 } from 'baseui/table-semantic';
 
 import TableSortableHeadCell from './table-sortable-head-cell/table-sortable-head-cell';
@@ -53,13 +52,13 @@ export default function Table<T extends object>({
               <StyledTableBodyRow key={rowIndex}>
                 {columns.map((column) => {
                   return (
-                    <StyledTableBodyCell
+                    <styled.TableBodyCell
                       $size="compact"
                       $divider="clean"
                       key={`${column.id}-${rowIndex}`}
                     >
                       {<column.renderCell {...row} />}
-                    </StyledTableBodyCell>
+                    </styled.TableBodyCell>
                   );
                 })}
               </StyledTableBodyRow>

@@ -10,15 +10,16 @@ export type RouteParams = {
 export type RequestParams = {
   params: RouteParams;
 };
-export type Poller = Omit<PollerInfo, 'lastAccessTime'> & {
-  decisionHandler: boolean;
-  activityHandler: boolean;
+
+export type Worker = Omit<PollerInfo, 'lastAccessTime'> & {
+  hasDecisionHandler: boolean;
+  hasActivityHandler: boolean;
   lastAccessTime?: number;
 };
 
 export type TaskList = {
   name: string;
-  pollers: Array<Poller>;
+  workers: Array<Worker>;
   activityTaskListStatus: TaskListStatus | null;
   decisionTaskListStatus: TaskListStatus | null;
 };
