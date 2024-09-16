@@ -2,84 +2,84 @@ import {
   mockDecisionTaskListResponse,
   mockActivityTaskListResponse,
 } from '../../__fixtures__/mock-task-list-response';
-import getPollersForTaskList from '../get-pollers-for-task-list';
+import getWorkersForTaskList from '../get-workers-for-task-list';
 
-const MOCK_POLLERS_RESPONSE_MIXED = [
+const MOCK_WORKERS_RESPONSE_MIXED = [
   {
-    activityHandler: true,
-    decisionHandler: true,
+    hasActivityHandler: true,
+    hasDecisionHandler: true,
     identity: 'poller-1@mock-domain@tasklist-1',
     lastAccessTime: 1725370657336.2053,
     ratePerSecond: 100000,
   },
   {
-    activityHandler: true,
-    decisionHandler: true,
+    hasActivityHandler: true,
+    hasDecisionHandler: true,
     identity: 'poller-2@mock-domain@tasklist-1',
     lastAccessTime: 1725370636402.4927,
     ratePerSecond: 100000,
   },
 ];
 
-const MOCK_POLLERS_RESPONSE_DECISION = [
+const MOCK_WORKERS_RESPONSE_DECISION = [
   {
-    activityHandler: false,
-    decisionHandler: true,
+    hasActivityHandler: false,
+    hasDecisionHandler: true,
     identity: 'poller-1@mock-domain@tasklist-1',
     lastAccessTime: 1725370637431.4446,
     ratePerSecond: 100000,
   },
   {
-    activityHandler: false,
-    decisionHandler: true,
+    hasActivityHandler: false,
+    hasDecisionHandler: true,
     identity: 'poller-2@mock-domain@tasklist-1',
     lastAccessTime: 1725370636402.4927,
     ratePerSecond: 100000,
   },
 ];
 
-const MOCK_POLLERS_RESPONSE_ACTIVITY = [
+const MOCK_WORKERS_RESPONSE_ACTIVITY = [
   {
-    activityHandler: true,
-    decisionHandler: false,
+    hasActivityHandler: true,
+    hasDecisionHandler: false,
     identity: 'poller-1@mock-domain@tasklist-1',
     lastAccessTime: 1725370657336.2053,
     ratePerSecond: 100000,
   },
   {
-    activityHandler: true,
-    decisionHandler: false,
+    hasActivityHandler: true,
+    hasDecisionHandler: false,
     identity: 'poller-2@mock-domain@tasklist-1',
     lastAccessTime: 1725370630347.1936,
     ratePerSecond: 100000,
   },
 ];
 
-describe(getPollersForTaskList.name, () => {
-  it('should return pollers with lastAccessTime being latest of decision/activity poller accessTime', () => {
-    const res = getPollersForTaskList({
+describe(getWorkersForTaskList.name, () => {
+  it('should return workers with lastAccessTime being latest of decision/activity worker accessTime', () => {
+    const res = getWorkersForTaskList({
       decisionTaskList: mockDecisionTaskListResponse,
       activityTaskList: mockActivityTaskListResponse,
     });
 
-    expect(res).toEqual(MOCK_POLLERS_RESPONSE_MIXED);
+    expect(res).toEqual(MOCK_WORKERS_RESPONSE_MIXED);
   });
 
-  it('should return decision pollers if the tasklist has no activity pollers', () => {
-    const res = getPollersForTaskList({
+  it('should return decision workers if the tasklist has no activity workers', () => {
+    const res = getWorkersForTaskList({
       decisionTaskList: mockDecisionTaskListResponse,
       activityTaskList: undefined,
     });
 
-    expect(res).toEqual(MOCK_POLLERS_RESPONSE_DECISION);
+    expect(res).toEqual(MOCK_WORKERS_RESPONSE_DECISION);
   });
 
-  it('should return activity pollers if the tasklist has no decision pollers', () => {
-    const res = getPollersForTaskList({
+  it('should return activity workers if the tasklist has no decision workers', () => {
+    const res = getWorkersForTaskList({
       decisionTaskList: undefined,
       activityTaskList: mockActivityTaskListResponse,
     });
 
-    expect(res).toEqual(MOCK_POLLERS_RESPONSE_ACTIVITY);
+    expect(res).toEqual(MOCK_WORKERS_RESPONSE_ACTIVITY);
   });
 });

@@ -10,7 +10,7 @@ import {
   type RequestParams,
   type RouteParams,
 } from './describe-task-list.types';
-import getPollersForTaskList from './helpers/get-pollers-for-task-list';
+import getWorkersForTaskList from './helpers/get-workers-for-task-list';
 
 export async function describeTaskList(
   _: NextRequest,
@@ -41,7 +41,7 @@ export async function describeTaskList(
 
     const taskList: TaskList = {
       name: decodedParams.taskListName,
-      pollers: getPollersForTaskList({ decisionTaskList, activityTaskList }),
+      workers: getWorkersForTaskList({ decisionTaskList, activityTaskList }),
       decisionTaskListStatus: decisionTaskList.taskListStatus,
       activityTaskListStatus: activityTaskList.taskListStatus,
     };

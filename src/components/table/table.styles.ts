@@ -32,11 +32,7 @@ export const styled = {
       color: '#5E5E5E',
     })
   ),
-  TableBodyCell: withStyle<typeof StyledTableBodyCell, { $width: string }>(
-    StyledTableBodyCell,
-    ({ $width }) => ({
-      width: $width,
-      wordBreak: 'break-word',
-    })
-  ),
+  TableBodyCell: withStyle<typeof StyledTableBodyCell>(StyledTableBodyCell, {
+    verticalAlign: 'middle',
+  }),
 };

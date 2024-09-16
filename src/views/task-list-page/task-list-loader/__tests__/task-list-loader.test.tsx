@@ -7,12 +7,28 @@ import { render, screen, act } from '@/test-utils/rtl';
 import { type DescribeTaskListResponse } from '@/route-handlers/describe-task-list/describe-task-list.types';
 import type { Props as TaskListLabelProps } from '@/views/shared/task-list-label/task-list-label.types';
 
+import { mockTaskList } from '../../__fixtures__/mock-task-list';
+import { type Props as TaskListTableProps } from '../../task-list-workers-table/task-list-workers-table.types';
 import TaskListLoader from '../task-list-loader';
+
+jest.mock('../../task-list-workers-table/task-list-workers-table', () =>
+  jest.fn(({ taskList }: TaskListTableProps) => (
+    <div>
+      {taskList.workers.map((w) => (
+        <div key={w.identity}>{w.identity}</div>
+      ))}
+    </div>
+  ))
+);
+
+jest.mock('../../task-list-filters/task-list-filters', () =>
+  jest.fn(() => <div>Mock task list filters</div>)
+);
 
 jest.mock('@/views/shared/task-list-label/task-list-label', () =>
   jest.fn(({ taskList }: TaskListLabelProps) => (
     <div>
-      {taskList.name}: {taskList.pollers.length} workers
+      {taskList.name}: {taskList.workers.length} workers
     </div>
   ))
 );
@@ -22,7 +38,7 @@ describe(TaskListLoader.name, () => {
     await setup({});
 
     expect(
-      await screen.findByText('tasklist-1: 2 workers')
+      await screen.findByText('tasklist-1: 3 workers')
     ).toBeInTheDocument();
 
     expect(
@@ -71,27 +87,7 @@ async function setup({ error }: { error?: boolean }) {
               }
             : {
                 jsonResponse: {
-                  taskList: {
-                    name: 'tasklist-1',
-                    pollers: [
-                      {
-                        activityHandler: true,
-                        decisionHandler: true,
-                        identity: 'poller-1@mock-domain@tasklist-1',
-                        lastAccessTime: 1725370657336.2053,
-                        ratePerSecond: 100000,
-                      },
-                      {
-                        activityHandler: true,
-                        decisionHandler: true,
-                        identity: 'poller-2@mock-domain@tasklist-1',
-                        lastAccessTime: 1725370636402.4927,
-                        ratePerSecond: 100000,
-                      },
-                    ],
-                    activityTaskListStatus: null,
-                    decisionTaskListStatus: null,
-                  },
+                  taskList: mockTaskList,
                 } satisfies DescribeTaskListResponse,
               }),
         },
