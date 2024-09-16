@@ -52,7 +52,7 @@ describe(TaskListLabel.name, () => {
         <TaskListLabel
           taskList={{
             ...mockTaskList,
-            pollers: mockTaskList.pollers.slice(0, test.numWorkers),
+            workers: mockTaskList.workers.slice(0, test.numWorkers),
           }}
         />
       );
