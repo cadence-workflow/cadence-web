@@ -12,4 +12,5 @@ export type Props = {
   };
   queryClientConfig?: QueryClientConfig;
   endpointsMocks?: MSWMocksHandlersProps['endpointsMocks'];
+  enableAnimations?: boolean;
 };
