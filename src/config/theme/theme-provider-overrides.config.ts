@@ -1,4 +1,6 @@
-const themeProviderOverrides = {
+import { type BaseProviderOverrides } from 'baseui';
+
+const themeProviderOverrides: BaseProviderOverrides = {
   AppContainer: {
     style: {
       display: 'flex',
