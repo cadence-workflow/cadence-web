@@ -13,6 +13,7 @@ import TaskListLabel from '@/views/shared/task-list-label/task-list-label';
 import TaskListFilters from '../task-list-filters/task-list-filters';
 import TaskListWorkersTable from '../task-list-workers-table/task-list-workers-table';
 
+import { TASK_LIST_REFETCH_INTERVAL_MS } from './task-list-loader.constants';
 import { styled } from './task-list-loader.styles';
 import { type Props } from './task-list-loader.types';
 
@@ -25,6 +26,7 @@ export default function TaskListLoader(props: Props) {
       request(
         `/api/domains/${props.domain}/${props.cluster}/task-list/${props.taskListName}`
       ).then((res) => res.json()),
+    refetchInterval: TASK_LIST_REFETCH_INTERVAL_MS,
   });
 
   return (
