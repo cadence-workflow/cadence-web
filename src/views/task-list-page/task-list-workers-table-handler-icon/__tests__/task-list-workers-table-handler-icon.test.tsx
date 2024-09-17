@@ -33,7 +33,8 @@ describe(TaskListWorkersTableHandlerIcon.name, () => {
   tests.forEach((test) => {
     it(test.name, () => {
       const { container } = render(
-        <TaskListWorkersTableHandlerIcon hasHandler={test.hasHandler} />
+        <TaskListWorkersTableHandlerIcon hasHandler={test.hasHandler} />,
+        { isSnapshotTest: true }
       );
 
       expect(container).toMatchSnapshot();
