@@ -1,5 +1,3 @@
-import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
-
 import type { ActivityHistoryEvent } from '../workflow-history.types';
 
 export const scheduleActivityTaskEvent = {
@@ -50,7 +48,7 @@ export const scheduleActivityTaskEvent = {
     },
   },
   attributes: 'activityTaskScheduledEventAttributes',
-} as const satisfies HistoryEvent;
+} as const satisfies ActivityHistoryEvent;
 
 export const startActivityTaskEvent = {
   eventId: '9',

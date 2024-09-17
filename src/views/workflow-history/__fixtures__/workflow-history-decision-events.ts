@@ -56,8 +56,69 @@ export const completeDecisionTaskEvent = {
   attributes: 'decisionTaskCompletedEventAttributes',
 } as const satisfies DecisionHistoryEvent;
 
+export const failedDecisionTaskEvent = {
+  eventId: '5',
+  eventTime: {
+    seconds: '1725747370',
+    nanos: 599272953,
+  },
+  attributes: 'decisionTaskFailedEventAttributes',
+  version: '575102',
+  taskId: '22647174902',
+  decisionTaskFailedEventAttributes: {
+    scheduledEventId: '2',
+    startedEventId: '3',
+    cause: 'DECISION_TASK_FAILED_CAUSE_BAD_START_CHILD_EXECUTION_ATTRIBUTES',
+    failure: {
+      reason: '',
+      details: 'WorkflowId exceeds length limit.',
+    },
+    identity:
+      '1@dca50-hrk@cadence-canary-production@canary-task-queue@bd570bec-e2cf-470f-937b-0e71d3d8a6d8',
+    baseRunId: '',
+    newRunId: '',
+    forkEventVersion: '0',
+    binaryChecksum: 'uDeploy:ffc875a4c3571872881f79c939921e00398ab260',
+    requestId: '66f7f58b-3d3b-4178-972a-fa7825ceec39',
+  },
+} as const satisfies DecisionHistoryEvent;
+
+export const timeoutDecisionTaskEvent = {
+  eventId: '6',
+  eventTime: {
+    seconds: '1725747370',
+    nanos: 599273063,
+  },
+  attributes: 'decisionTaskTimedOutEventAttributes',
+  version: '575102',
+  taskId: '22647174903',
+  decisionTaskTimedOutEventAttributes: {
+    scheduledEventId: '2',
+    startedEventId: '3',
+    cause: 'DECISION_TASK_TIMED_OUT_CAUSE_TIMEOUT',
+    timeoutType: 'TIMEOUT_TYPE_HEARTBEAT',
+    reason: 'Missed heart beat',
+    baseRunId: '',
+    newRunId: '',
+    forkEventVersion: '0',
+    requestId: '66f7f58b-3d3b-4178-972a-fa7825ceec40',
+  },
+} as const satisfies DecisionHistoryEvent;
+
 export const completedDecisionTaskEvents: DecisionHistoryEvent[] = [
   scheduleDecisionTaskEvent,
   startDecisionTaskEvent,
   completeDecisionTaskEvent,
+];
+
+export const failedDecisionTaskEvents: DecisionHistoryEvent[] = [
+  scheduleDecisionTaskEvent,
+  startDecisionTaskEvent,
+  failedDecisionTaskEvent,
+];
+
+export const timedoutDecisionTaskEvents: DecisionHistoryEvent[] = [
+  scheduleDecisionTaskEvent,
+  startDecisionTaskEvent,
+  timeoutDecisionTaskEvent,
 ];
