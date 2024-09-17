@@ -1,7 +1,4 @@
-import { type Theme, withStyle } from 'baseui';
-import { Root } from 'baseui/accordion/styled-components';
-import { CardOverrides, Card, StyledRoot as StyleCardRoot } from 'baseui/card';
-import { ConfigurationOverride } from 'baseui/helpers/overrides';
+import { type Theme } from 'baseui';
 import { type TileOverrides } from 'baseui/tile';
 import { type StyleObject } from 'styletron-react';
 

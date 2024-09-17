@@ -1,7 +1,6 @@
 import { render, screen, userEvent, act } from '@/test-utils/rtl';
 
 import {
-  completeActivityTaskEvent,
   scheduleActivityTaskEvent,
   startActivityTaskEvent,
 } from '../../__fixtures__/workflow-history-activity-events';
