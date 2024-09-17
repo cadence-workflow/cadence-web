@@ -12,7 +12,8 @@ describe('WorkflowHistoryEventStatusBadge', () => {
   it('should match snapshot when status is not valid and badge should not be rendered', () => {
     const { container } = render(
       // @ts-expect-error invalid status
-      <WorkflowHistoryEventStatusBadge status="INVALID_STATUS" />
+      <WorkflowHistoryEventStatusBadge status="INVALID_STATUS" />,
+      { isSnapshotTest: true }
     );
     expect(container).toMatchSnapshot();
   });
@@ -29,7 +30,8 @@ describe('WorkflowHistoryEventStatusBadge', () => {
     for (const size of Object.values(WORKFLOW_EVENT_STATUS_BADGE_SIZES)) {
       it(`should match snapshot when status is ${status} and size is ${size}`, () => {
         const { container } = render(
-          <WorkflowHistoryEventStatusBadge status={status} size={size} />
+          <WorkflowHistoryEventStatusBadge status={status} size={size} />,
+          { isSnapshotTest: true }
         );
         expect(container).toMatchSnapshot();
       });
