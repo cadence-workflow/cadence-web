@@ -14,10 +14,30 @@ exports[`WorkflowHistoryEventStatusBadge should match snapshot when size is not 
 exports[`WorkflowHistoryEventStatusBadge should match snapshot when status is CANCELED and size is medium 1`] = `
 <div>
   <div
-    class="css-fWeknQ"
+    class="style={
+  '*, *::before, *::after': {
+    '-moz-animation': 'none !important',
+    '-moz-transition': ' none !important',
+    animation: 'none !important',
+    'caret-color': ' transparent !important',
+    transition: ' none !important',
+  },
+}
+"
   >
     <div
-      class="css-imTrvB"
+      class="style={
+  alignItems: 'center',
+  backgroundColor: '#FFE1DE',
+  borderRadius: '16px',
+  color: '#E11900',
+  display: 'flex',
+  flexShrink: 0,
+  height: '24px',
+  justifyContent: 'center',
+  width: '24px',
+}
+"
     >
       <svg
         fill="currentColor"
@@ -39,7 +59,8 @@ exports[`WorkflowHistoryEventStatusBadge should match snapshot when status is CA
     </div>
   </div>
   <div
-    class="css-PKJb"
+    class="style={}
+"
   />
 </div>
 `;
@@ -47,10 +68,30 @@ exports[`WorkflowHistoryEventStatusBadge should match snapshot when status is CA
 exports[`WorkflowHistoryEventStatusBadge should match snapshot when status is CANCELED and size is small 1`] = `
 <div>
   <div
-    class="css-fWeknQ"
+    class="style={
+  '*, *::before, *::after': {
+    '-moz-animation': 'none !important',
+    '-moz-transition': ' none !important',
+    animation: 'none !important',
+    'caret-color': ' transparent !important',
+    transition: ' none !important',
+  },
+}
+"
   >
     <div
-      class="css-bJbCmb"
+      class="style={
+  alignItems: 'center',
+  backgroundColor: '#FFE1DE',
+  borderRadius: '16px',
+  color: '#E11900',
+  display: 'flex',
+  flexShrink: 0,
+  height: '16px',
+  justifyContent: 'center',
+  width: '16px',
+}
+"
     >
       <svg
         fill="currentColor"
@@ -72,7 +113,8 @@ exports[`WorkflowHistoryEventStatusBadge should match snapshot when status is CA
     </div>
   </div>
   <div
-    class="css-PKJb"
+    class="style={}
+"
   />
 </div>
 `;
@@ -80,10 +122,30 @@ exports[`WorkflowHistoryEventStatusBadge should match snapshot when status is CA
 exports[`WorkflowHistoryEventStatusBadge should match snapshot when status is COMPLETED and size is medium 1`] = `
 <div>
   <div
-    class="css-fWeknQ"
+    class="style={
+  '*, *::before, *::after': {
+    '-moz-animation': 'none !important',
+    '-moz-transition': ' none !important',
+    animation: 'none !important',
+    'caret-color': ' transparent !important',
+    transition: ' none !important',
+  },
+}
+"
   >
     <div
-      class="css-gxDomB"
+      class="style={
+  alignItems: 'center',
+  backgroundColor: '#D3EFDA',
+  borderRadius: '16px',
+  color: '#009A51',
+  display: 'flex',
+  flexShrink: 0,
+  height: '24px',
+  justifyContent: 'center',
+  width: '24px',
+}
+"
     >
       <svg
         fill="currentColor"
@@ -105,7 +167,8 @@ exports[`WorkflowHistoryEventStatusBadge should match snapshot when status is CO
     </div>
   </div>
   <div
-    class="css-PKJb"
+    class="style={}
+"
   />
 </div>
 `;
@@ -113,10 +176,30 @@ exports[`WorkflowHistoryEventStatusBadge should match snapshot when status is CO
 exports[`WorkflowHistoryEventStatusBadge should match snapshot when status is COMPLETED and size is small 1`] = `
 <div>
   <div
-    class="css-fWeknQ"
+    class="style={
+  '*, *::before, *::after': {
+    '-moz-animation': 'none !important',
+    '-moz-transition': ' none !important',
+    animation: 'none !important',
+    'caret-color': ' transparent !important',
+    transition: ' none !important',
+  },
+}
+"
   >
     <div
-      class="css-ljhiBX"
+      class="style={
+  alignItems: 'center',
+  backgroundColor: '#D3EFDA',
+  borderRadius: '16px',
+  color: '#009A51',
+  display: 'flex',
+  flexShrink: 0,
+  height: '16px',
+  justifyContent: 'center',
+  width: '16px',
+}
+"
     >
       <svg
         fill="currentColor"
@@ -138,7 +221,8 @@ exports[`WorkflowHistoryEventStatusBadge should match snapshot when status is CO
     </div>
   </div>
   <div
-    class="css-PKJb"
+    class="style={}
+"
   />
 </div>
 `;
@@ -146,10 +230,30 @@ exports[`WorkflowHistoryEventStatusBadge should match snapshot when status is CO
 exports[`WorkflowHistoryEventStatusBadge should match snapshot when status is FAILED and size is medium 1`] = `
 <div>
   <div
-    class="css-fWeknQ"
+    class="style={
+  '*, *::before, *::after': {
+    '-moz-animation': 'none !important',
+    '-moz-transition': ' none !important',
+    animation: 'none !important',
+    'caret-color': ' transparent !important',
+    transition: ' none !important',
+  },
+}
+"
   >
     <div
-      class="css-imTrvB"
+      class="style={
+  alignItems: 'center',
+  backgroundColor: '#FFE1DE',
+  borderRadius: '16px',
+  color: '#E11900',
+  display: 'flex',
+  flexShrink: 0,
+  height: '24px',
+  justifyContent: 'center',
+  width: '24px',
+}
+"
     >
       <svg
         fill="currentColor"
@@ -174,7 +278,8 @@ exports[`WorkflowHistoryEventStatusBadge should match snapshot when status is FA
     </div>
   </div>
   <div
-    class="css-PKJb"
+    class="style={}
+"
   />
 </div>
 `;
@@ -182,10 +287,30 @@ exports[`WorkflowHistoryEventStatusBadge should match snapshot when status is FA
 exports[`WorkflowHistoryEventStatusBadge should match snapshot when status is FAILED and size is small 1`] = `
 <div>
   <div
-    class="css-fWeknQ"
+    class="style={
+  '*, *::before, *::after': {
+    '-moz-animation': 'none !important',
+    '-moz-transition': ' none !important',
+    animation: 'none !important',
+    'caret-color': ' transparent !important',
+    transition: ' none !important',
+  },
+}
+"
   >
     <div
-      class="css-bJbCmb"
+      class="style={
+  alignItems: 'center',
+  backgroundColor: '#FFE1DE',
+  borderRadius: '16px',
+  color: '#E11900',
+  display: 'flex',
+  flexShrink: 0,
+  height: '16px',
+  justifyContent: 'center',
+  width: '16px',
+}
+"
     >
       <svg
         fill="currentColor"
@@ -210,7 +335,8 @@ exports[`WorkflowHistoryEventStatusBadge should match snapshot when status is FA
     </div>
   </div>
   <div
-    class="css-PKJb"
+    class="style={}
+"
   />
 </div>
 `;
@@ -218,21 +344,64 @@ exports[`WorkflowHistoryEventStatusBadge should match snapshot when status is FA
 exports[`WorkflowHistoryEventStatusBadge should match snapshot when status is ONGOING and size is medium 1`] = `
 <div>
   <div
-    class="css-fWeknQ"
+    class="style={
+  '*, *::before, *::after': {
+    '-moz-animation': 'none !important',
+    '-moz-transition': ' none !important',
+    animation: 'none !important',
+    'caret-color': ' transparent !important',
+    transition: ' none !important',
+  },
+}
+"
   >
     <div
-      class="css-bXJwPs"
+      class="style={
+  alignItems: 'center',
+  backgroundColor: '#DEE9FE',
+  borderRadius: '16px',
+  display: 'flex',
+  flexShrink: 0,
+  height: '24px',
+  justifyContent: 'center',
+  width: '24px',
+}
+"
     >
       <i
         aria-busy="true"
         aria-label="loading"
-        class="css-dVLAqi"
+        class="style={
+  animationDuration: '1000ms',
+  animationIterationCount: 'infinite',
+  animationName: "keyFrames={\\n  from: { transform: 'rotate(0deg)' },\\n  to: { transform: 'rotate(360deg)' },\\n}\\n",
+  animationTimingFunction: 'linear',
+  borderBottomColor: '#EEEEEE',
+  borderBottomStyle: 'solid',
+  borderBottomWidth: 'NaNpx',
+  borderLeftColor: '#EEEEEE',
+  borderLeftStyle: 'solid',
+  borderLeftWidth: 'NaNpx',
+  borderRadius: '50%',
+  borderRightColor: '#EEEEEE',
+  borderRightStyle: 'solid',
+  borderRightWidth: 'NaNpx',
+  borderTopColor: '#276EF1',
+  borderTopStyle: 'solid',
+  borderTopWidth: 'NaNpx',
+  cursor: 'wait',
+  display: 'block',
+  height: '14px',
+  width: '14px',
+}
+"
         role="progressbar"
       />
     </div>
   </div>
   <div
-    class="css-PKJb"
+    class="style={}
+"
   />
 </div>
 `;
@@ -240,21 +409,64 @@ exports[`WorkflowHistoryEventStatusBadge should match snapshot when status is ON
 exports[`WorkflowHistoryEventStatusBadge should match snapshot when status is ONGOING and size is small 1`] = `
 <div>
   <div
-    class="css-fWeknQ"
+    class="style={
+  '*, *::before, *::after': {
+    '-moz-animation': 'none !important',
+    '-moz-transition': ' none !important',
+    animation: 'none !important',
+    'caret-color': ' transparent !important',
+    transition: ' none !important',
+  },
+}
+"
   >
     <div
-      class="css-icIqWi"
+      class="style={
+  alignItems: 'center',
+  backgroundColor: '#DEE9FE',
+  borderRadius: '16px',
+  display: 'flex',
+  flexShrink: 0,
+  height: '16px',
+  justifyContent: 'center',
+  width: '16px',
+}
+"
     >
       <i
         aria-busy="true"
         aria-label="loading"
-        class="css-dQmCZe"
+        class="style={
+  animationDuration: '1000ms',
+  animationIterationCount: 'infinite',
+  animationName: "keyFrames={\\n  from: { transform: 'rotate(0deg)' },\\n  to: { transform: 'rotate(360deg)' },\\n}\\n",
+  animationTimingFunction: 'linear',
+  borderBottomColor: '#EEEEEE',
+  borderBottomStyle: 'solid',
+  borderBottomWidth: 'NaNpx',
+  borderLeftColor: '#EEEEEE',
+  borderLeftStyle: 'solid',
+  borderLeftWidth: 'NaNpx',
+  borderRadius: '50%',
+  borderRightColor: '#EEEEEE',
+  borderRightStyle: 'solid',
+  borderRightWidth: 'NaNpx',
+  borderTopColor: '#276EF1',
+  borderTopStyle: 'solid',
+  borderTopWidth: 'NaNpx',
+  cursor: 'wait',
+  display: 'block',
+  height: '10px',
+  width: '10px',
+}
+"
         role="progressbar"
       />
     </div>
   </div>
   <div
-    class="css-PKJb"
+    class="style={}
+"
   />
 </div>
 `;
@@ -262,10 +474,30 @@ exports[`WorkflowHistoryEventStatusBadge should match snapshot when status is ON
 exports[`WorkflowHistoryEventStatusBadge should match snapshot when status is WAITING and size is medium 1`] = `
 <div>
   <div
-    class="css-fWeknQ"
+    class="style={
+  '*, *::before, *::after': {
+    '-moz-animation': 'none !important',
+    '-moz-transition': ' none !important',
+    animation: 'none !important',
+    'caret-color': ' transparent !important',
+    transition: ' none !important',
+  },
+}
+"
   >
     <div
-      class="css-fUSnSp"
+      class="style={
+  alignItems: 'center',
+  backgroundColor: '#F3F3F3',
+  borderRadius: '16px',
+  color: '#000000',
+  display: 'flex',
+  flexShrink: 0,
+  height: '24px',
+  justifyContent: 'center',
+  width: '24px',
+}
+"
     >
       <svg
         fill="currentColor"
@@ -287,7 +519,8 @@ exports[`WorkflowHistoryEventStatusBadge should match snapshot when status is WA
     </div>
   </div>
   <div
-    class="css-PKJb"
+    class="style={}
+"
   />
 </div>
 `;
@@ -295,10 +528,30 @@ exports[`WorkflowHistoryEventStatusBadge should match snapshot when status is WA
 exports[`WorkflowHistoryEventStatusBadge should match snapshot when status is WAITING and size is small 1`] = `
 <div>
   <div
-    class="css-fWeknQ"
+    class="style={
+  '*, *::before, *::after': {
+    '-moz-animation': 'none !important',
+    '-moz-transition': ' none !important',
+    animation: 'none !important',
+    'caret-color': ' transparent !important',
+    transition: ' none !important',
+  },
+}
+"
   >
     <div
-      class="css-kGwihL"
+      class="style={
+  alignItems: 'center',
+  backgroundColor: '#F3F3F3',
+  borderRadius: '16px',
+  color: '#000000',
+  display: 'flex',
+  flexShrink: 0,
+  height: '16px',
+  justifyContent: 'center',
+  width: '16px',
+}
+"
     >
       <svg
         fill="currentColor"
@@ -320,7 +573,8 @@ exports[`WorkflowHistoryEventStatusBadge should match snapshot when status is WA
     </div>
   </div>
   <div
-    class="css-PKJb"
+    class="style={}
+"
   />
 </div>
 `;
@@ -328,10 +582,20 @@ exports[`WorkflowHistoryEventStatusBadge should match snapshot when status is WA
 exports[`WorkflowHistoryEventStatusBadge should match snapshot when status is not valid and badge should not be rendered 1`] = `
 <div>
   <div
-    class="css-fWeknQ"
+    class="style={
+  '*, *::before, *::after': {
+    '-moz-animation': 'none !important',
+    '-moz-transition': ' none !important',
+    animation: 'none !important',
+    'caret-color': ' transparent !important',
+    transition: ' none !important',
+  },
+}
+"
   />
   <div
-    class="css-PKJb"
+    class="style={}
+"
   />
 </div>
 `;

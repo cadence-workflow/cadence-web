@@ -6,6 +6,8 @@ import {
   QueryClientProvider,
 } from '@tanstack/react-query';
 import { MemoryRouterProvider } from 'next-router-mock/MemoryRouterProvider';
+// @ts-expect-error Could not find a declaration file for module 'styletron-engine-snapshot'
+import { StyletronSnapshotEngine } from 'styletron-engine-snapshot';
 
 import themeProviderOverrides from '@/config/theme/theme-provider-overrides.config';
 import StyletronProvider from '@/providers/styletron-provider';
@@ -14,6 +16,8 @@ import MSWMockHandlers from './msw-mock-handlers/msw-mock-handlers';
 import { type Props } from './test-provider.types';
 
 jest.mock('next/router', () => jest.requireActual('next-router-mock'));
+
+const snapshotEngine = new StyletronSnapshotEngine();
 
 const disableAnimationOverrides = {
   AppContainer: {
@@ -57,6 +61,7 @@ export const TestProvider = ({
   queryClientConfig = {},
   endpointsMocks,
   enableAnimations = false,
+  isSnapshotTest = false,
 }: Props) => {
   const [client] = useState(() => getQueryClient(queryClientConfig));
   const themeOverridesWithDisabledAnimations = useMemo(() => {
@@ -66,6 +71,9 @@ export const TestProvider = ({
   return (
     <StyletronProvider
       baseProviderOverrides={themeOverridesWithDisabledAnimations}
+      {...(isSnapshotTest && {
+        styletronEngine: snapshotEngine,
+      })}
     >
       <MSWMockHandlers endpointsMocks={endpointsMocks} />
       <MemoryRouterProvider url={router.initialUrl}>

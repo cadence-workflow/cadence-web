@@ -3,10 +3,20 @@
 exports[`TaskListWorkersTableHandlerIcon should render correctly if worker does not have handler 1`] = `
 <div>
   <div
-    class="css-cOgsKQ"
+    class="style={
+  '*, *::before, *::after': {
+    '-moz-animation': 'none !important',
+    '-moz-transition': ' none !important',
+    animation: 'none !important',
+    'caret-color': ' transparent !important',
+    transition: ' none !important',
+  },
+}
+"
   >
     <div
-      class="css-gstZaV"
+      class="style={ color: '#CBCBCB', display: 'block' }
+"
     >
       <svg
         display="block"
@@ -29,7 +39,8 @@ exports[`TaskListWorkersTableHandlerIcon should render correctly if worker does 
     </div>
   </div>
   <div
-    class="css-PKJb"
+    class="style={}
+"
   />
 </div>
 `;
@@ -37,10 +48,20 @@ exports[`TaskListWorkersTableHandlerIcon should render correctly if worker does 
 exports[`TaskListWorkersTableHandlerIcon should render correctly if worker has handler 1`] = `
 <div>
   <div
-    class="css-cOgsKQ"
+    class="style={
+  '*, *::before, *::after': {
+    '-moz-animation': 'none !important',
+    '-moz-transition': ' none !important',
+    animation: 'none !important',
+    'caret-color': ' transparent !important',
+    transition: ' none !important',
+  },
+}
+"
   >
     <div
-      class="css-fbOyLS"
+      class="style={ color: '#009A51', display: 'block' }
+"
     >
       <svg
         display="block"
@@ -63,7 +84,8 @@ exports[`TaskListWorkersTableHandlerIcon should render correctly if worker has h
     </div>
   </div>
   <div
-    class="css-PKJb"
+    class="style={}
+"
   />
 </div>
 `;

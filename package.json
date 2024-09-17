@@ -73,6 +73,7 @@
     "next-router-mock": "^0.9.13",
     "pino-pretty": "^11.2.2",
     "prettier": "3.2.5",
+    "styletron-engine-snapshot": "^1.0.2",
     "ts-jest": "^29.1.2",
     "typescript": "^5.3.3",
     "typescript-eslint": "^7.13.0",
