@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 
+import { userEvent } from '@testing-library/user-event';
 import { HttpResponse } from 'msw';
 
 import { render, screen, act } from '@/test-utils/rtl';
@@ -8,11 +9,44 @@ import { type FetchWorkflowQueryTypesResponse } from '@/route-handlers/fetch-wor
 
 import WorkflowQueriesLoader from '../workflow-queries-loader';
 
+jest.mock('../../workflow-queries-tile/workflow-queries-tile', () =>
+  jest.fn(({ name, onClick, runQuery }) => (
+    <div onClick={onClick}>
+      <div>Mock tile: {name}</div>
+      <button onClick={runQuery}>Run</button>
+    </div>
+  ))
+);
+
+jest.mock(
+  '../../workflow-queries-result-json/workflow-queries-result-json',
+  () =>
+    jest.fn(({ data }) => (
+      <div>
+        <div>Mock JSON</div>
+        <div>{JSON.stringify(data)}</div>
+      </div>
+    ))
+);
+
 describe(WorkflowQueriesLoader.name, () => {
-  it('WIP: renders query types without error', async () => {
+  it('renders without error', async () => {
     await setup({});
 
-    expect(await screen.findByText(/__query_types/)).toBeInTheDocument();
+    expect(await screen.findByText(/__open_sessions/)).toBeInTheDocument();
+  });
+
+  it('runs query and updates JSON', async () => {
+    const { user } = await setup({});
+
+    const queryRunButtons = await screen.findAllByRole('button');
+    expect(queryRunButtons).toHaveLength(2);
+
+    await user.click(queryRunButtons[1]);
+
+    expect(
+      await screen.findByText(/{"name":"__open_sessions"}/)
+    ).toBeInTheDocument();
   });
 
   it('does not render if the initial call fails', async () => {
@@ -32,6 +66,8 @@ describe(WorkflowQueriesLoader.name, () => {
 });
 
 async function setup({ error }: { error?: boolean }) {
+  const user = userEvent.setup();
+
   render(
     <Suspense>
       <WorkflowQueriesLoader
@@ -64,4 +100,6 @@ async function setup({ error }: { error?: boolean }) {
       ],
     }
   );
+
+  return { user };
 }
