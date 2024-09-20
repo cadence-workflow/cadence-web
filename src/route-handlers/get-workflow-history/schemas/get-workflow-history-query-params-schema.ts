@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const getWorkflowHistoryQueryParamSchema = z.object({
+const getWorkflowHistoryQueryParamsSchema = z.object({
   pageSize: z
     .string()
     .transform((val) => parseInt(val, 10))
@@ -16,4 +16,4 @@ const getWorkflowHistoryQueryParamSchema = z.object({
     .optional(),
 });
 
-export default getWorkflowHistoryQueryParamSchema;
+export default getWorkflowHistoryQueryParamsSchema;

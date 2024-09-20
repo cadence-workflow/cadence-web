@@ -9,7 +9,7 @@ import {
   type RouteParams,
   type RequestParams,
 } from './get-workflow-history.types';
-import getWorkflowHistoryQueryParamSchema from './schemas/get-workflow-history-query-params-schema';
+import getWorkflowHistoryQueryParamsSchema from './schemas/get-workflow-history-query-params-schema';
 
 export default async function getWorkflowHistory(
   request: NextRequest,
@@ -17,7 +17,7 @@ export default async function getWorkflowHistory(
 ) {
   const decodedParams = decodeUrlParams<RouteParams>(requestParams.params);
   const { data: queryParams, error } =
-    getWorkflowHistoryQueryParamSchema.safeParse(
+    getWorkflowHistoryQueryParamsSchema.safeParse(
       Object.fromEntries(request.nextUrl.searchParams)
     );
 
@@ -49,6 +49,20 @@ export default async function getWorkflowHistory(
 
     return Response.json(res);
   } catch (e) {
+    if (
+      e instanceof GRPCError &&
+      e.message ===
+        'Requested workflow history not found, may have passed retention period.'
+    ) {
+      return NextResponse.json(
+        {
+          message: 'Workflow not found',
+          cause: e,
+        },
+        { status: 404 }
+      );
+    }
+
     logger.error<RouteHandlerErrorPayload>(
       { requestParams: decodedParams, cause: e },
       'Error fetching workflow history'
