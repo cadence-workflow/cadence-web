@@ -3,6 +3,7 @@ import React from 'react';
 
 import { useSuspenseQuery } from '@tanstack/react-query';
 
+import PageSection from '@/components/page-section/page-section';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
 import formatWorkflowHistory from '@/utils/data-formatters/format-workflow-history';
@@ -50,23 +51,25 @@ export default function WorkflowSummaryTab({
     : undefined;
 
   return (
-    <div className={cls.pageContainer}>
-      <div className={cls.mainContent}>
-        <WorkflowSummaryTabDetails
-          firstHistoryEvent={formattedStartEvent}
-          lastHistoryEvent={formattedLastEvent}
-          params={params}
-        />
-        {/*  <div>Taskslist</div> */}
+    <PageSection>
+      <div className={cls.pageContainer}>
+        <div className={cls.mainContent}>
+          <WorkflowSummaryTabDetails
+            firstHistoryEvent={formattedStartEvent}
+            lastHistoryEvent={formattedLastEvent}
+            params={params}
+          />
+          {/*  <div>Taskslist</div> */}
+        </div>
+        <div className={cls.jsonArea}>
+          <WorkflowSummaryTabJsonView
+            inputJson={
+              formattedStartEvent?.[formattedStartEvent.attributes]?.input
+            }
+            resultJson={resultJson}
+          />
+        </div>
       </div>
-      <div className={cls.jsonArea}>
-        <WorkflowSummaryTabJsonView
-          inputJson={
-            formattedStartEvent?.[formattedStartEvent.attributes]?.input
-          }
-          resultJson={resultJson}
-        />
-      </div>
-    </div>
+    </PageSection>
   );
 }
