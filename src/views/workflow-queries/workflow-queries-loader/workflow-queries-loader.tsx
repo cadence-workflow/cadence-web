@@ -1,15 +1,17 @@
 'use client';
 import React, { useState } from 'react';
 
-import { useQueries, useSuspenseQuery } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 
 import { type FetchWorkflowQueryTypesResponse } from '@/route-handlers/fetch-workflow-query-types/fetch-workflow-query-types.types';
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
 
+import getWorkflowQueryStatus from '../helpers/get-workflow-query-status';
 import WorkflowQueriesResultJson from '../workflow-queries-result-json/workflow-queries-result-json';
 import WorkflowQueriesTile from '../workflow-queries-tile/workflow-queries-tile';
 
+import useWorkflowQueries from './hooks/use-workflow-queries';
 import { styled } from './workflow-queries-loader.styles';
 import { type Props } from './workflow-queries-loader.types';
 
@@ -30,22 +32,13 @@ export default function WorkflowQueriesLoader(props: Props) {
   });
 
   const [selectedQueryIndex, setSelectedQueryIndex] = useState<number>(-1);
-  const [inputs, setInputs] = useState<Record<string, string | undefined>>({});
 
-  // TODO: when the queries are ready, add their generic types here
-  const queries = useQueries({
-    queries: queryTypes.map((name) => ({
-      queryKey: [name, inputs[name]] as const,
-      queryFn: ({
-        queryKey: [name, input],
-      }: {
-        queryKey: readonly [string, string | undefined];
-      }) => {
-        // TODO: add the actual query here
-        return { name, input };
-      },
-      enabled: false,
-    })),
+  const { queries, inputs, setInputs } = useWorkflowQueries({
+    domain: props.domain,
+    cluster: props.cluster,
+    workflowId: props.workflowId,
+    runId: props.runId,
+    queryTypes,
   });
 
   return (
@@ -62,14 +55,17 @@ export default function WorkflowQueriesLoader(props: Props) {
             isSelected={index === selectedQueryIndex}
             onClick={() => setSelectedQueryIndex(index)}
             runQuery={queries[index].refetch}
-            queryStatus={queries[index].status}
+            queryStatus={getWorkflowQueryStatus({
+              queryStatus: queries[index].status,
+              isFetching: queries[index].isFetching,
+            })}
           />
         ))}
       </styled.QueriesSidebar>
       <styled.QueryResultView>
         <WorkflowQueriesResultJson
           data={queries[selectedQueryIndex]?.data}
-          error={queries[selectedQueryIndex]?.error}
+          error={queries[selectedQueryIndex]?.error ?? undefined}
           loading={queries[selectedQueryIndex]?.isFetching}
         />
       </styled.QueryResultView>
