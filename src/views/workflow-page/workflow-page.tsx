@@ -1,6 +1,5 @@
 import React from 'react';
 
-import PageSection from '@/components/page-section/page-section';
 import decodeUrlParams from '@/utils/decode-url-params';
 
 import WorkflowPageHeader from './workflow-page-header/workflow-page-header';
@@ -19,7 +18,7 @@ export default async function WorkflowPage({ params, children }: Props) {
         cluster={decodedParams.cluster}
       />
       <WorkflowPageTabs />
-      <PageSection>{children}</PageSection>
+      {children}
     </>
   );
 }
