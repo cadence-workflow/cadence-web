@@ -1,4 +1,4 @@
-import { type QueryStatus } from '@tanstack/react-query';
+export type WorkflowQueryStatus = 'pending' | 'fetching' | 'success' | 'error';
 
 export type Props = {
   name: string;
@@ -7,5 +7,5 @@ export type Props = {
   isSelected: boolean;
   onClick: () => void;
   runQuery: () => void;
-  queryStatus?: QueryStatus;
+  queryStatus?: WorkflowQueryStatus;
 };
