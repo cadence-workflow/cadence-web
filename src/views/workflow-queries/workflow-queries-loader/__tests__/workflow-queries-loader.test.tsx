@@ -6,6 +6,7 @@ import { HttpResponse } from 'msw';
 import { render, screen, act } from '@/test-utils/rtl';
 
 import { type FetchWorkflowQueryTypesResponse } from '@/route-handlers/fetch-workflow-query-types/fetch-workflow-query-types.types';
+import { type QueryWorkflowResponse } from '@/route-handlers/query-workflow/query-workflow.types';
 
 import WorkflowQueriesLoader from '../workflow-queries-loader';
 
@@ -44,9 +45,8 @@ describe(WorkflowQueriesLoader.name, () => {
 
     await user.click(queryRunButtons[1]);
 
-    expect(
-      await screen.findByText(/{"name":"__open_sessions"}/)
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/"test_1"/)).toBeInTheDocument();
+    expect(await screen.findByText(/"test_2"/)).toBeInTheDocument();
   });
 
   it('does not render if the initial call fails', async () => {
@@ -96,6 +96,14 @@ async function setup({ error }: { error?: boolean }) {
                   queryTypes: ['__query_types', '__open_sessions'],
                 } satisfies FetchWorkflowQueryTypesResponse,
               }),
+        },
+        {
+          path: '/api/domains/:domain/:cluster/workflows/:workflowId/:runId/query/:queryName',
+          httpMethod: 'POST',
+          jsonResponse: {
+            result: ['test_1', 'test_2'],
+            rejected: null,
+          } satisfies QueryWorkflowResponse,
         },
       ],
     }

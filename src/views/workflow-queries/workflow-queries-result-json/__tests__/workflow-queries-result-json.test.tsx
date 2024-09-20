@@ -1,12 +1,20 @@
 import React from 'react';
 
 import copy from 'copy-to-clipboard';
+import { act } from 'react-dom/test-utils';
 
-import { render, fireEvent, screen, act } from '@/test-utils/rtl';
+import { render, fireEvent, screen } from '@/test-utils/rtl';
+
+import { type QueryWorkflowResponse } from '@/route-handlers/query-workflow/query-workflow.types';
 
 import WorkflowQueriesResultJson from '../workflow-queries-result-json';
 
 jest.mock('copy-to-clipboard', jest.fn);
+
+jest.mock('../helpers/get-query-json-content', () => ({
+  __esModule: true,
+  default: jest.fn(({ data }) => ({ content: data.result, isError: false })),
+}));
 
 jest.mock('@/components/pretty-json/pretty-json', () =>
   jest.fn(({ json }) => (
@@ -26,13 +34,13 @@ describe(WorkflowQueriesResultJson.name, () => {
   });
 
   it('copies JSON to clipboard', () => {
-    const inputData = { input: 'dataJson' };
-    setup({ data: inputData });
+    const testData = { test: 'dataJson' };
+    setup({ data: { result: testData, rejected: null } });
 
     const copyButton = screen.getByRole('button');
     fireEvent.click(copyButton);
 
-    expect(copy).toHaveBeenCalledWith(JSON.stringify(inputData, null, '\t'));
+    expect(copy).toHaveBeenCalledWith(JSON.stringify(testData, null, '\t'));
   });
 
   it('show tooltip for 1 second and remove it', () => {
@@ -58,11 +66,11 @@ describe(WorkflowQueriesResultJson.name, () => {
 });
 
 function setup({
-  data = { input: 'dataJson' },
+  data = { result: { test: 'dataJson' }, rejected: null },
   error = undefined,
   loading = false,
 }: {
-  data?: any;
+  data?: QueryWorkflowResponse;
   error?: any;
   loading?: boolean;
 }) {

@@ -5,6 +5,7 @@ import { userEvent } from '@testing-library/user-event';
 import { render, screen } from '@/test-utils/rtl';
 
 import WorkflowQueriesTile from '../workflow-queries-tile';
+import { type WorkflowQueryStatus } from '../workflow-queries-tile.types';
 
 jest.mock('../../workflow-queries-tile-input/workflow-queries-tile-input', () =>
   jest.fn(() => <div>Mock input</div>)
@@ -25,6 +26,12 @@ describe(WorkflowQueriesTile.name, () => {
     setup({ input: 'test input' });
 
     expect(screen.getByText('Mock input')).toBeInTheDocument();
+  });
+
+  it('disables run button when query status is fetching', () => {
+    setup({ status: 'fetching' });
+
+    expect(screen.getByText('Run')).toBeDisabled();
   });
 
   it('calls onSelect when clicked', async () => {
@@ -67,9 +74,11 @@ describe(WorkflowQueriesTile.name, () => {
 function setup({
   input = undefined,
   isSelected = false,
+  status = 'success',
 }: {
   input?: string | undefined;
   isSelected?: boolean;
+  status?: WorkflowQueryStatus;
 }) {
   const user = userEvent.setup();
   const mockOnChangeInput = jest.fn();
@@ -84,7 +93,7 @@ function setup({
       isSelected={isSelected}
       onClick={mockOnClick}
       runQuery={mockRunQuery}
-      queryStatus="pending"
+      queryStatus={status}
     />
   );
 
