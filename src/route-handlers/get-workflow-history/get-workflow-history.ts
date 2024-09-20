@@ -5,13 +5,33 @@ import * as grpcClient from '@/utils/grpc/grpc-client';
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
-import { type RequestParams } from './get-workflow-history.types';
+import {
+  type RouteParams,
+  type RequestParams,
+} from './get-workflow-history.types';
+import getWorkflowHistoryQueryParamSchema from './schemas/get-workflow-history-query-params-schema';
 
 export default async function getWorkflowHistory(
-  _: NextRequest,
+  request: NextRequest,
   requestParams: RequestParams
 ) {
-  const decodedParams = decodeUrlParams(requestParams.params);
+  const decodedParams = decodeUrlParams<RouteParams>(requestParams.params);
+  const { data: queryParams, error } =
+    getWorkflowHistoryQueryParamSchema.safeParse(
+      Object.fromEntries(request.nextUrl.searchParams)
+    );
+
+  if (error) {
+    return NextResponse.json(
+      {
+        message: 'Invalid query param(s)',
+        validationErrors: error.errors,
+      },
+      {
+        status: 400,
+      }
+    );
+  }
 
   try {
     const res = await grpcClient.clusterMethods[
@@ -22,6 +42,9 @@ export default async function getWorkflowHistory(
         workflowId: decodedParams.workflowId,
         runId: decodedParams.runId,
       },
+      pageSize: queryParams.pageSize,
+      waitForNewEvent: queryParams.waitForNewEvent,
+      nextPageToken: queryParams.nextPage,
     });
 
     return Response.json(res);
