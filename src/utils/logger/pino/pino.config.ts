@@ -16,17 +16,19 @@ const LOGGER_CONFIG: LoggerOptions<CustomLevels> = {
   // customLevels: {
   //   silly: 5,
   // },
-  browser: {
-    transmit: {
-      level: 'warn',
-      send: (level, logEvent) => {
-        navigator.sendBeacon(
-          '/api/log',
-          JSON.stringify(getLogBody(level, logEvent))
-        );
+  ...(!isDevelopment && {
+    browser: {
+      transmit: {
+        level: 'warn',
+        send: (level, logEvent) => {
+          navigator.sendBeacon(
+            '/api/log',
+            JSON.stringify(getLogBody(level, logEvent))
+          );
+        },
       },
     },
-  },
+  }),
 };
 
 export default LOGGER_CONFIG;

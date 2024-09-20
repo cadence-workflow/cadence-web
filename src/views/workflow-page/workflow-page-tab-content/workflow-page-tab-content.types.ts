@@ -1,6 +1,9 @@
 import type workflowPageTabsConfig from '../config/workflow-page-tabs.config';
 import type { WorkflowPageTabsParams } from '../workflow-page-tabs/workflow-page-tabs.types';
 
+export type WorkflowPageTabName =
+  (typeof workflowPageTabsConfig)[number]['key'];
+
 export type WorkflowPageTabsContentsMap = {
   [k in (typeof workflowPageTabsConfig)[number]['key']]:
     | React.ComponentType<WorkflowPageTabContentProps>
@@ -12,7 +15,7 @@ export type WorkflowPageTabContentParams = {
   cluster: string;
   workflowId: string;
   runId: string;
-  workflowTab: (typeof workflowPageTabsConfig)[number]['key'];
+  workflowTab: WorkflowPageTabName;
 };
 
 export type WorkflowPageTabContentProps = {
