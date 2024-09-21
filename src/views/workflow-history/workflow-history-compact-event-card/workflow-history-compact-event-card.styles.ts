@@ -31,6 +31,8 @@ const cssStylesObj = {
     flexDirection: 'column',
     alignItems: 'flex-start',
     gap: $theme.sizing.scale200,
+    textAlign: 'start',
+    wordBreak: 'break-word',
   }),
   label: ($theme: Theme) => ({
     ...$theme.typography.LabelSmall,
