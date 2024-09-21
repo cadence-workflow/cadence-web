@@ -43,7 +43,9 @@ export default function WorkflowHistoryCompactEventCard({
             />
           </div>
         )}
-        <div className={cls.secondaryLabel}>{secondaryLabel}</div>
+        <div suppressHydrationWarning className={cls.secondaryLabel}>
+          {secondaryLabel}
+        </div>
       </div>
     </Tile>
   );
