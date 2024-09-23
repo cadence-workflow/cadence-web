@@ -3,7 +3,7 @@ import {
   intersectionMockInstance,
 } from 'react-intersection-observer/test-utils';
 
-import { render, screen, act, fireEvent, waitFor } from '@/test-utils/rtl';
+import { render, screen, act, fireEvent } from '@/test-utils/rtl';
 
 import { RequestError } from '@/utils/request/request-error';
 
@@ -44,12 +44,7 @@ describe('WorkflowHistoryTimelineLoadMore', () => {
     act(() => {
       mockIsIntersecting(spinnerDiv, 1);
     });
-    waitFor(
-      () => {
-        expect(mockFetchNextPage).toHaveBeenCalled();
-      },
-      { timeout: 2000 }
-    ); //TODO @assem.hafez remove the waitFor when removing the setTimeout
+    expect(mockFetchNextPage).toHaveBeenCalled();
   });
 });
 
