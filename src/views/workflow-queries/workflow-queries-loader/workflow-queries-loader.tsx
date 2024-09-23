@@ -48,33 +48,35 @@ export default function WorkflowQueriesLoader(props: Props) {
   });
 
   return (
-    <styled.PageContainer>
-      <styled.QueriesSidebar>
-        {filteredQueryTypes.map((name, index) => (
-          <WorkflowQueriesTile
-            key={name}
-            name={name}
-            input={inputs[name]}
-            onChangeInput={(v) =>
-              setInputs((oldInputs) => ({ ...oldInputs, [name]: v }))
-            }
-            isSelected={index === selectedQueryIndex}
-            onClick={() => setSelectedQueryIndex(index)}
-            runQuery={queries[index].refetch}
-            queryStatus={getWorkflowQueryStatus({
-              queryStatus: queries[index].status,
-              isFetching: queries[index].isFetching,
-            })}
+    <styled.PageSection>
+      <styled.PageContainer>
+        <styled.QueriesSidebar>
+          {filteredQueryTypes.map((name, index) => (
+            <WorkflowQueriesTile
+              key={name}
+              name={name}
+              input={inputs[name]}
+              onChangeInput={(v) =>
+                setInputs((oldInputs) => ({ ...oldInputs, [name]: v }))
+              }
+              isSelected={index === selectedQueryIndex}
+              onClick={() => setSelectedQueryIndex(index)}
+              runQuery={queries[index].refetch}
+              queryStatus={getWorkflowQueryStatus({
+                queryStatus: queries[index].status,
+                isFetching: queries[index].isFetching,
+              })}
+            />
+          ))}
+        </styled.QueriesSidebar>
+        <styled.QueryResultView>
+          <WorkflowQueriesResultJson
+            data={queries[selectedQueryIndex]?.data}
+            error={queries[selectedQueryIndex]?.error ?? undefined}
+            loading={queries[selectedQueryIndex]?.isFetching}
           />
-        ))}
-      </styled.QueriesSidebar>
-      <styled.QueryResultView>
-        <WorkflowQueriesResultJson
-          data={queries[selectedQueryIndex]?.data}
-          error={queries[selectedQueryIndex]?.error ?? undefined}
-          loading={queries[selectedQueryIndex]?.isFetching}
-        />
-      </styled.QueryResultView>
-    </styled.PageContainer>
+        </styled.QueryResultView>
+      </styled.PageContainer>
+    </styled.PageSection>
   );
 }
