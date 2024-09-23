@@ -11,9 +11,10 @@ export const styled = {
     ({ $theme, $hidden }: { $theme: Theme; $hidden?: boolean }) => ({
       ...$theme.borders.border200,
       borderColor: $theme.colors.borderOpaque,
-      height: $hidden ? 0 : '100%',
       marginLeft: $theme.sizing.scale500,
-      transition: `height 0.2s ${$theme.animation.easeOutCurve}`,
+      ...($hidden && {
+        height: 0,
+      }),
     })
   ),
 };

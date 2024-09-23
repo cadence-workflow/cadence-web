@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 
 import { HttpResponse } from 'msw';
+import { VirtuosoMockContext } from 'react-virtuoso';
 
 import { act, render, screen } from '@/test-utils/rtl';
 
@@ -94,6 +95,15 @@ function setup({ error }: { error?: boolean }) {
               }),
         },
       ],
+    },
+    {
+      wrapper: ({ children }) => (
+        <VirtuosoMockContext.Provider
+          value={{ viewportHeight: 1000, itemHeight: 100 }}
+        >
+          {children}
+        </VirtuosoMockContext.Provider>
+      ),
     }
   );
 }

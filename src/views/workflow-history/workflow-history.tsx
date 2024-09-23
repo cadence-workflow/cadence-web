@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-query';
 import { HeadingXSmall } from 'baseui/typography';
 import queryString from 'query-string';
+import { Virtuoso } from 'react-virtuoso';
 
 import PageSection from '@/components/page-section/page-section';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
@@ -30,7 +31,7 @@ export default function WorkflowHistory({
   const { workflowTab, ...historyQueryParams } = params;
   const wfhistoryRequestArgs = {
     ...historyQueryParams,
-    pageSize: 1,
+    pageSize: 200,
     waitForNewEvent: 'true',
   };
 
@@ -83,37 +84,50 @@ export default function WorkflowHistory({
       <div className={cls.pageContainer}>
         <HeadingXSmall>Workflow history</HeadingXSmall>
         <div className={cls.eventsContainer}>
-          <section className={cls.compactSection}>
-            {groupedHistoryEventsEntries.map(
-              ([groupId, { label, status, timeLabel }]) => (
-                <WorkflowHistoryCompactEventCard
-                  key={groupId}
-                  status={status}
-                  label={label}
-                  secondaryLabel={timeLabel}
-                  showLabelPlaceholder={!label}
-                />
-              )
-            )}
-          </section>
+          <div role="list" className={cls.compactSection}>
+            <Virtuoso
+              data={groupedHistoryEventsEntries}
+              itemContent={(_, [groupId, { label, status, timeLabel }]) => (
+                <div role="listitem" className={cls.compactCardContainer}>
+                  <WorkflowHistoryCompactEventCard
+                    key={groupId}
+                    status={status}
+                    label={label}
+                    secondaryLabel={timeLabel}
+                    showLabelPlaceholder={!label}
+                  />
+                </div>
+              )}
+            />
+          </div>
           <section className={cls.timelineSection}>
-            {groupedHistoryEventsEntries.map(([groupId, group], index) => (
-              <WorkflowHistoryTimelineGroup
-                key={groupId}
-                status={group.status}
-                label={group.label}
-                timeLabel={group.timeLabel}
-                events={group.events}
-                eventsMetadata={group.eventsMetadata}
-                hasMissingEvents={group.hasMissingEvents}
-                isLastEvent={index === groupedHistoryEventsEntries.length - 1}
-              />
-            ))}
-            <WorkflowHistoryTimelineLoadMore
-              error={error}
-              fetchNextPage={fetchNextPage}
-              hasNextPage={hasNextPage}
-              isFetchingNextPage={isFetchingNextPage}
+            <Virtuoso
+              useWindowScroll
+              data={groupedHistoryEventsEntries}
+              itemContent={(index, [groupId, group]) => (
+                <WorkflowHistoryTimelineGroup
+                  key={groupId}
+                  status={group.status}
+                  label={
+                    group.label + index + groupedHistoryEventsEntries.length
+                  }
+                  timeLabel={group.timeLabel}
+                  events={group.events}
+                  eventsMetadata={group.eventsMetadata}
+                  hasMissingEvents={group.hasMissingEvents}
+                  isLastEvent={index === groupedHistoryEventsEntries.length - 1}
+                />
+              )}
+              components={{
+                Footer: () => (
+                  <WorkflowHistoryTimelineLoadMore
+                    error={error}
+                    fetchNextPage={fetchNextPage}
+                    hasNextPage={hasNextPage}
+                    isFetchingNextPage={isFetchingNextPage}
+                  />
+                ),
+              }}
             />
           </section>
         </div>
