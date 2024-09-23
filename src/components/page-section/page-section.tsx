@@ -1,19 +1,6 @@
 'use client';
-import React from 'react';
+import { styled } from './page-section.styles';
 
-import { Cell, Grid } from 'baseui/layout-grid';
+const PageSection = styled.PageSection;
 
-import type { Props } from './page-section.types';
-
-export default function PageSection<
-  T extends React.ComponentType<any> | keyof JSX.IntrinsicElements = 'section',
->({ children, as, ...rest }: Props<T>) {
-  const Component = as || 'section';
-  return (
-    <Component {...rest}>
-      <Grid>
-        <Cell span={12}>{children}</Cell>
-      </Grid>
-    </Component>
-  );
-}
+export default PageSection;
