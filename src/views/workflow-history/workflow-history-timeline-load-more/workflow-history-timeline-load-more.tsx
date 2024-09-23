@@ -37,9 +37,7 @@ export default function WorkflowHistoryTimelineLoadMore(props: Props) {
         data-testid="intersection-observer-container"
         onChange={(inView) => {
           if (inView && !props.isFetchingNextPage) {
-            // For testing purposes
-            // TODO @assem.hafez: Remove setimeout on page finalization
-            setTimeout(() => props.fetchNextPage(), 2000);
+            props.fetchNextPage();
           }
         }}
       >
