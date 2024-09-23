@@ -9,6 +9,7 @@ const cssStylesObj = {
     flexDirection: 'column',
     marginTop: theme.sizing.scale900,
     marginBottom: theme.sizing.scale900,
+    flex: 1,
   }),
 } satisfies StyletronCSSObject;
 

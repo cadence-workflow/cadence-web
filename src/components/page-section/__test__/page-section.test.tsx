@@ -15,7 +15,7 @@ describe('PageSection', () => {
   });
   it('renders with custom element', () => {
     const { getByRole } = render(
-      <PageSection as="nav">Test Content</PageSection>
+      <PageSection $as="nav">Test Content</PageSection>
     );
     const sectionElement = getByRole('navigation', { name: '' });
     expect(sectionElement).toBeInTheDocument();
@@ -23,7 +23,7 @@ describe('PageSection', () => {
   });
   it('renders provided children', () => {
     const { getByText } = render(
-      <PageSection as="menu">Test menu</PageSection>
+      <PageSection $as="menu">Test menu</PageSection>
     );
     const sectionElement = getByText('Test menu');
     expect(sectionElement).toBeInTheDocument();
