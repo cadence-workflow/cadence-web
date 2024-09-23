@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { useSuspenseQuery } from '@tanstack/react-query';
 
@@ -12,6 +12,7 @@ import WorkflowQueriesResultJson from '../workflow-queries-result-json/workflow-
 import WorkflowQueriesTile from '../workflow-queries-tile/workflow-queries-tile';
 
 import useWorkflowQueries from './hooks/use-workflow-queries';
+import { EXCLUDED_QUERY_TYPES } from './workflow-queries-loader.constants';
 import { styled } from './workflow-queries-loader.styles';
 import { type Props } from './workflow-queries-loader.types';
 
@@ -31,6 +32,11 @@ export default function WorkflowQueriesLoader(props: Props) {
       ).then((res) => res.json()),
   });
 
+  const filteredQueryTypes = useMemo(
+    () => queryTypes.filter((q) => !EXCLUDED_QUERY_TYPES.has(q)),
+    [queryTypes]
+  );
+
   const [selectedQueryIndex, setSelectedQueryIndex] = useState<number>(-1);
 
   const { queries, inputs, setInputs } = useWorkflowQueries({
@@ -38,13 +44,13 @@ export default function WorkflowQueriesLoader(props: Props) {
     cluster: props.cluster,
     workflowId: props.workflowId,
     runId: props.runId,
-    queryTypes,
+    queryTypes: filteredQueryTypes,
   });
 
   return (
     <styled.PageContainer>
       <styled.QueriesSidebar>
-        {queryTypes.map((name, index) => (
+        {filteredQueryTypes.map((name, index) => (
           <WorkflowQueriesTile
             key={name}
             name={name}

@@ -3,6 +3,7 @@ import React from 'react';
 import { Button, KIND, SIZE } from 'baseui/button';
 import { MdPlayArrow } from 'react-icons/md';
 
+import WorkflowQueriesStatusIcon from '../workflow-queries-status-icon/workflow-queries-status-icon';
 import WorkflowQueriesTileInput from '../workflow-queries-tile-input/workflow-queries-tile-input';
 
 import { overrides, styled } from './workflow-queries-tile.styles';
@@ -12,10 +13,10 @@ export default function WorkflowQueriesTile(props: Props) {
   return (
     <styled.Tile onClick={() => props.onClick()} $isSelected={props.isSelected}>
       <styled.Header>
-        <styled.Label>
-          {props.name}
-          {/* TODO: add status icon */}
-        </styled.Label>
+        <styled.LabelContainer>
+          <styled.Label>{props.name}</styled.Label>
+          <WorkflowQueriesStatusIcon status={props.queryStatus} />
+        </styled.LabelContainer>
         <styled.Actions>
           <Button
             overrides={overrides.inputButton}
