@@ -32,10 +32,14 @@ export const styled = {
     alignItems: 'center',
     justifyContent: 'space-between',
   }),
+  LabelContainer: createStyled('div', ({ $theme }) => ({
+    display: 'flex',
+    gap: $theme.sizing.scale300,
+  })),
   Label: createStyled('div', ({ $theme }) => ({
     ...$theme.typography.MonoLabelSmall,
     paddingLeft: $theme.sizing.scale300,
-    maxWidth: '240px',
+    maxWidth: '180px',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
