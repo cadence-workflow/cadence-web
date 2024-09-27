@@ -10,7 +10,7 @@ describe('formatDurationToSeconds', () => {
   });
 
   test('should return seconds as number for valid input', () => {
-    const duration = { seconds: 60 };
+    const duration = { seconds: '60' };
     expect(formatDurationToSeconds(duration)).toBe(60);
   });
 
@@ -20,7 +20,7 @@ describe('formatDurationToSeconds', () => {
   });
 
   test('should handle zero seconds', () => {
-    const duration = { seconds: 0 };
+    const duration = { seconds: '0' };
     expect(formatDurationToSeconds(duration)).toBe(0);
   });
 

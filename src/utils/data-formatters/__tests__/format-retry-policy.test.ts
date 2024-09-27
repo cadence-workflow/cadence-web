@@ -1,3 +1,5 @@
+import { type RetryPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/RetryPolicy';
+
 import formatDurationToSeconds from '../format-duration-to-seconds';
 import formatRetryPolicy from '../format-retry-policy';
 
@@ -21,10 +23,13 @@ describe('formatRetryPolicy', () => {
   });
 
   test('should return formatted retry policy with valid input', () => {
-    const retryPolicy = {
-      expirationInterval: { seconds: 60 },
-      initialInterval: { seconds: '30' },
-      maximumInterval: { seconds: 300 },
+    const retryPolicy: RetryPolicy = {
+      expirationInterval: { seconds: '60', nanos: 0 },
+      initialInterval: { seconds: '30', nanos: 0 },
+      maximumInterval: { seconds: '300', nanos: 0 },
+      backoffCoefficient: 10,
+      maximumAttempts: 10,
+      nonRetryableErrorReasons: [],
     };
     const formattedExpirationInterval = 60;
     const formattedInitialInterval = 30;
@@ -39,6 +44,9 @@ describe('formatRetryPolicy', () => {
       expirationIntervalInSeconds: formattedExpirationInterval,
       initialIntervalInSeconds: formattedInitialInterval,
       maximumIntervalInSeconds: formattedMaximumInterval,
+      backoffCoefficient: 10,
+      maximumAttempts: 10,
+      nonRetryableErrorReasons: [],
     };
 
     expect(formatRetryPolicy(retryPolicy)).toEqual(
