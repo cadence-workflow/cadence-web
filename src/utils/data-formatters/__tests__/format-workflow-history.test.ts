@@ -30,7 +30,9 @@ describe('formatWorkflowHistory', () => {
     const expectedTimestamp = new Date('2023-06-18T12:34:56.Z');
     mockedFormatTimestampToDatetime.mockReturnValue(expectedTimestamp);
     mockedFormatWorkflowHistoryEvent.mockReturnValue({ formattedEvent: true });
-    mockedFormatWorkflowHistoryEventType.mockReturnValue('FormattedEventType');
+    mockedFormatWorkflowHistoryEventType.mockReturnValue(
+      'ActivityTaskCanceled'
+    );
 
     const input = {
       archived: true,
@@ -54,7 +56,7 @@ describe('formatWorkflowHistory', () => {
           {
             eventId: 1,
             timestamp: expectedTimestamp,
-            eventType: 'FormattedEventType',
+            eventType: 'ActivityTaskCanceled',
             attributes: 'workflowExecutionStartedEventAttributes',
             formattedEvent: true,
           },

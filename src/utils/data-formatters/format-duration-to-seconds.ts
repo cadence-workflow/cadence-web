@@ -19,8 +19,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+import { type Duration } from '@/__generated__/proto-ts/google/protobuf/Duration';
+
 const formatDurationToSeconds = (
-  duration?: { seconds: number | string } | null
+  duration?: Pick<Duration, 'seconds'> | null
 ) => (duration ? parseInt(String(duration.seconds)) : null);
 
 export default formatDurationToSeconds;

@@ -3,11 +3,13 @@ import formatFailureDetails from '../format-failure-details';
 describe('formatFailureDetails', () => {
   test('should return null if failure details are not provided', () => {
     const failure = {};
+    // @ts-expect-error Testing with wrong type `{}`
     expect(formatFailureDetails(failure)).toBeNull();
   });
 
   test('should return null if failure details are null', () => {
     const failure = { details: null };
+    // @ts-expect-error Testing with wrong type `{ details: null}`
     expect(formatFailureDetails(failure)).toBeNull();
   });
 

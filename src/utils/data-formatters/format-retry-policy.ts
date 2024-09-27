@@ -19,20 +19,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+import type { RetryPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/RetryPolicy';
+
 import formatDurationToSeconds from './format-duration-to-seconds';
 
-type RetryPolicyInterval = { seconds: number | string } | null;
-
-const formatRetryPolicy = (
-  retryPolicy:
-    | {
-        expirationInterval?: RetryPolicyInterval;
-        initialInterval?: RetryPolicyInterval;
-        maximumInterval?: RetryPolicyInterval;
-      }
-    | null
-    | undefined
-) => {
+const formatRetryPolicy = (retryPolicy: RetryPolicy | null | undefined) => {
   if (!retryPolicy) {
     return null;
   }

@@ -20,6 +20,7 @@ describe('formatPayloadMap', () => {
 
   test('should return null if fieldKey is not present in map', () => {
     const map = { otherKey: { subkey: { value: 'test' } } };
+    // @ts-expect-error Testing without passing `someKey` property
     expect(formatPayloadMap(map, 'someKey')).toBeNull();
   });
 

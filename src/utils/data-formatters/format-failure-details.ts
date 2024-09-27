@@ -19,7 +19,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-const formatFailureDetails = (failure: { details?: string | null }) => {
+import { type Failure } from '@/__generated__/proto-ts/uber/cadence/api/v1/Failure';
+
+const formatFailureDetails = (failure: Pick<Failure, 'details'> | null) => {
   if (!failure?.details) {
     return null;
   }

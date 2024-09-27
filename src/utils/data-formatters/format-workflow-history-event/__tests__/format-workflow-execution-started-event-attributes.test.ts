@@ -107,12 +107,19 @@ describe('formatWorkflowExecutionStartedEventAttributes', () => {
       expirationIntervalInSeconds: 600,
       initialIntervalInSeconds: 30,
       maximumIntervalInSeconds: 300,
+      backoffCoefficient: 100,
+      maximumAttempts: 1,
+      nonRetryableErrorReasons: [],
     });
     mockedFormatPrevAutoResetPoints.mockReturnValueOnce({
       points: [
         {
           createdTimeNano: new Date(123456000),
           expiringTimeNano: new Date(789000101),
+          binaryChecksum: '122434',
+          firstDecisionCompletedId: '123',
+          resettable: true,
+          runId: '2348yjk',
         },
       ],
     });
@@ -176,14 +183,20 @@ describe('formatWorkflowExecutionStartedEventAttributes', () => {
           {
             createdTimeNano: new Date(123456000),
             expiringTimeNano: new Date(789000101),
+            binaryChecksum: '122434',
+            firstDecisionCompletedId: '123',
+            resettable: true,
+            runId: '2348yjk',
           },
         ],
       },
       retryPolicy: {
         expirationIntervalInSeconds: 600,
-
         initialIntervalInSeconds: 30,
         maximumIntervalInSeconds: 300,
+        backoffCoefficient: 100,
+        maximumAttempts: 1,
+        nonRetryableErrorReasons: [],
       },
       searchAttributes: eventAttributes.searchAttributes,
     });

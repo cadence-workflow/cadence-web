@@ -19,28 +19,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+import { type ResetPoints } from '@/__generated__/proto-ts/uber/cadence/api/v1/ResetPoints';
+
 import formatTimestampToDatetime from './format-timestamp-to-datetime';
 
-const formatPrevAutoResetPoints = (
-  prevAutoResetPoints:
-    | {
-        points?:
-          | Array<{
-              createdTime?: {
-                seconds: number | string;
-                nanos: number | string;
-              };
-              expiringTime?: {
-                seconds: number | string;
-                nanos: number | string;
-              };
-            }>
-          | null
-          | undefined;
-      }
-    | null
-    | undefined
-) => {
+const formatPrevAutoResetPoints = (prevAutoResetPoints: ResetPoints | null) => {
   const points = prevAutoResetPoints?.points;
 
   if (!points) {
