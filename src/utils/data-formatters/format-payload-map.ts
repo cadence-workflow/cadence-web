@@ -21,9 +21,9 @@
 
 import formatPayload from './format-payload';
 
-const formatPayloadMap = (
-  map: { [k: string]: any } | null | undefined,
-  fieldKey: string
+const formatPayloadMap = <K extends string>(
+  map: { [key in K]: any } | null | undefined,
+  fieldKey: K
 ) => {
   if (!map?.[fieldKey]) {
     return null;
@@ -41,7 +41,7 @@ const formatPayloadMap = (
         }),
         {}
       ),
-  };
+  } as { [key in K]: any };
 };
 
 export default formatPayloadMap;
