@@ -8,6 +8,12 @@ const cssStylesObj = {
     display: 'flex',
     flexDirection: 'column',
   },
+  pageHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+  },
   eventsContainer: (theme) => ({
     display: 'flex',
     marginTop: theme.sizing.scale500,
