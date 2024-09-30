@@ -19,6 +19,7 @@ import type { WorkflowPageTabContentProps } from '@/views/workflow-page/workflow
 
 import { groupHistoryEvents } from './helpers/group-history-events';
 import WorkflowHistoryCompactEventCard from './workflow-history-compact-event-card/workflow-history-compact-event-card';
+import WorkflowHistoryExportJsonButton from './workflow-history-export-json-button/workflow-history-export-json-button';
 import WorkflowHistoryTimelineGroup from './workflow-history-timeline-group/workflow-history-timeline-group';
 import WorkflowHistoryTimelineLoadMore from './workflow-history-timeline-load-more/workflow-history-timeline-load-more';
 import { cssStyles } from './workflow-history.styles';
@@ -82,7 +83,10 @@ export default function WorkflowHistory({
   return (
     <PageSection>
       <div className={cls.pageContainer}>
-        <HeadingXSmall>Workflow history</HeadingXSmall>
+        <div className={cls.pageHeader}>
+          <HeadingXSmall>Workflow history</HeadingXSmall>
+          <WorkflowHistoryExportJsonButton {...wfhistoryRequestArgs} />
+        </div>
         <div className={cls.eventsContainer}>
           <div role="list" className={cls.compactSection}>
             <Virtuoso
