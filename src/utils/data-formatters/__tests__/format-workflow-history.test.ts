@@ -1,7 +1,8 @@
+import { completeActivityTaskEvent } from '@/views/workflow-history/__fixtures__/workflow-history-activity-events';
+
 import formatTimestampToDatetime from '../format-timestamp-to-datetime';
 import formatWorkflowHistory from '../format-workflow-history';
 import formatWorkflowHistoryEvent from '../format-workflow-history-event';
-import formatWorkflowHistoryEventType from '../format-workflow-history-event-type';
 
 jest.mock('../format-timestamp-to-datetime');
 jest.mock('../format-workflow-history-event');
@@ -16,10 +17,6 @@ const mockedFormatWorkflowHistoryEvent =
   formatWorkflowHistoryEvent as jest.MockedFunction<
     typeof formatWorkflowHistoryEvent
   >;
-const mockedFormatWorkflowHistoryEventType =
-  formatWorkflowHistoryEventType as jest.MockedFunction<
-    typeof formatWorkflowHistoryEventType
-  >;
 
 describe('formatWorkflowHistory', () => {
   beforeEach(() => {
@@ -29,21 +26,13 @@ describe('formatWorkflowHistory', () => {
   it('should format workflow history correctly', () => {
     const expectedTimestamp = new Date('2023-06-18T12:34:56.Z');
     mockedFormatTimestampToDatetime.mockReturnValue(expectedTimestamp);
+    //@ts-expect-error using mock value that doesn't match formatting schema for easier validation
     mockedFormatWorkflowHistoryEvent.mockReturnValue({ formattedEvent: true });
-    mockedFormatWorkflowHistoryEventType.mockReturnValue(
-      'ActivityTaskCanceled'
-    );
 
     const input = {
       archived: true,
       history: {
-        events: [
-          {
-            eventId: '1',
-            eventTime: { seconds: '1234567890', nano: 0 },
-            attributes: 'workflowExecutionStartedEventAttributes',
-          },
-        ],
+        events: [completeActivityTaskEvent],
       },
       rawHistory: ['raw event data'],
       otherData: 'some other data',
@@ -54,10 +43,6 @@ describe('formatWorkflowHistory', () => {
       history: {
         events: [
           {
-            eventId: 1,
-            timestamp: expectedTimestamp,
-            eventType: 'ActivityTaskCanceled',
-            attributes: 'workflowExecutionStartedEventAttributes',
             formattedEvent: true,
           },
         ],
@@ -67,16 +52,6 @@ describe('formatWorkflowHistory', () => {
     };
 
     expect(formatWorkflowHistory(input)).toEqual(expectedOutput);
-    expect(mockedFormatTimestampToDatetime).toHaveBeenCalledWith({
-      seconds: '1234567890',
-      nano: 0,
-    });
-    expect(mockedFormatWorkflowHistoryEvent).toHaveBeenCalledWith({
-      attributes: 'workflowExecutionStartedEventAttributes',
-    });
-    expect(formatWorkflowHistoryEventType).toHaveBeenCalledWith(
-      'workflowExecutionStartedEventAttributes'
-    );
   });
 
   it('should set archived to null if not provided', () => {
