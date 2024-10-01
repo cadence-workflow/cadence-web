@@ -1,0 +1,779 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`formatWorkflowHistoryEvent should format workflow activityTaskCancelRequestedEventAttributes to match snapshot 1`] = `
+{
+  "activityId": "0",
+  "decisionTaskCompletedEventId": 4,
+  "eventId": 52,
+  "eventType": "ActivityTaskCancelRequested",
+  "taskId": "605133998",
+  "timestamp": 2024-09-19T12:08:35.549Z,
+  "version": "587402",
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow activityTaskCanceledEventAttributes to match snapshot 1`] = `
+{
+  "details": null,
+  "eventId": 14,
+  "eventType": "ActivityTaskCanceled",
+  "identity": "canary@958hb341-a376-431b-a17a-ed7d8a97ba91",
+  "latestCancelRequestedEventId": 13,
+  "scheduledEventId": 7,
+  "startedEventId": 9,
+  "taskId": "22647174813",
+  "timestamp": 2024-09-07T22:16:10.632Z,
+  "version": "575102",
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow activityTaskCompletedEventAttributes to match snapshot 1`] = `
+{
+  "eventId": 10,
+  "eventType": "ActivityTaskCompleted",
+  "identity": "cadence@958ab341-a386-431b-a17a-ed7d8a97ba91",
+  "result": null,
+  "scheduledEventId": 7,
+  "startedEventId": 9,
+  "taskId": "22647174813",
+  "timestamp": 2024-09-07T22:16:10.632Z,
+  "version": "575102",
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow activityTaskFailedEventAttributes to match snapshot 1`] = `
+{
+  "details": null,
+  "eventId": 11,
+  "eventType": "ActivityTaskFailed",
+  "identity": "cadence@958ab341-a376-431n-a17a-ed7d8a97ba91",
+  "reason": "",
+  "scheduledEventId": 7,
+  "startedEventId": 9,
+  "taskId": "22647174813",
+  "timestamp": 2024-09-07T22:16:10.632Z,
+  "version": "575102",
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow activityTaskScheduledEventAttributes to match snapshot 1`] = `
+{
+  "activityId": "0",
+  "activityType": {
+    "name": "activity.cron.Start",
+  },
+  "decisionTaskCompletedEventId": 4,
+  "domain": null,
+  "eventId": 7,
+  "eventType": "ActivityTaskScheduled",
+  "header": {
+    "fields": {
+      "test-field": "1kqptday8h@xu-13tt7m",
+    },
+  },
+  "heartbeatTimeoutSeconds": 0,
+  "input": [
+    "1725747370575409843",
+    "gadence-canary-xdc",
+    "workflow.sanity",
+  ],
+  "retryPolicy": null,
+  "scheduleToCloseTimeoutSeconds": 360,
+  "scheduleToStartTimeoutSeconds": 180,
+  "startToCloseTimeoutSeconds": 180,
+  "taskId": "22647174805",
+  "taskList": {
+    "kind": null,
+    "name": "task-queue",
+  },
+  "timestamp": 2024-09-07T22:16:10.599Z,
+  "version": "575102",
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow activityTaskStartedEventAttributes to match snapshot 1`] = `
+{
+  "attempt": 0,
+  "eventId": 9,
+  "eventType": "ActivityTaskStarted",
+  "identity": "cadence@958ab341-a375-431b-a17a-ed7d8a97ba91",
+  "lastFailureDetails": null,
+  "lastFailureReason": "",
+  "requestId": "27e61b29-7rc9-48f4-9e78-0366e9ffd413",
+  "scheduledEventId": 7,
+  "taskId": "22647174807",
+  "timestamp": 2024-09-07T22:16:10.599Z,
+  "version": "575102",
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow activityTaskTimedOutEventAttributes to match snapshot 1`] = `
+{
+  "details": null,
+  "eventId": 12,
+  "eventType": "ActivityTaskTimedOut",
+  "lastFailureDetails": null,
+  "lastFailureReason": "",
+  "scheduledEventId": 7,
+  "startedEventId": 9,
+  "taskId": "22647174813",
+  "timeoutType": "TIMEOUT_TYPE_START_TO_CLOSE",
+  "timestamp": 2024-09-07T22:16:10.632Z,
+  "version": "575102",
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow cancelTimerFailedEventAttributes to match snapshot 1`] = `
+{
+  "cause": "",
+  "decisionTaskCompletedEventId": 9,
+  "eventId": 53,
+  "eventType": "CancelTimerFailed",
+  "identity": "67b17b8c-fc30-4c5c-ac7e-bc3046311b18",
+  "taskId": "12690929028",
+  "timerId": "0",
+  "timestamp": 2024-09-07T22:37:50.860Z,
+  "version": "587402",
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow childWorkflowExecutionCanceledEventAttributes to match snapshot 1`] = `
+{
+  "details": "canceled before starting other workflow: CanceledError",
+  "domain": "cadence-domain",
+  "eventId": 44,
+  "eventType": "ChildWorkflowExecutionCanceled",
+  "initiatedEventId": 40,
+  "startedEventId": 42,
+  "taskId": "5877269786",
+  "timestamp": 2024-09-08T04:27:55.993Z,
+  "version": "575102",
+  "workflowExecution": {
+    "runId": "107495f0-ab19-4631-b6b9-dca2c2a30482",
+    "workflowId": "workflow.cancellation-workflow.cancellation.external-child",
+  },
+  "workflowType": {
+    "name": "workflow.cancellation.external",
+  },
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow childWorkflowExecutionCompletedEventAttributes to match snapshot 1`] = `
+{
+  "domain": "cadence-domain",
+  "eventId": 43,
+  "eventType": "ChildWorkflowExecutionCompleted",
+  "initiatedEventId": 9,
+  "result": null,
+  "startedEventId": 41,
+  "taskId": "5877269785",
+  "timestamp": 2024-09-08T04:27:54.218Z,
+  "version": "575102",
+  "workflowExecution": {
+    "runId": "107495f0-ab19-4631-b6b9-dca2c2a30482",
+    "workflowId": "workflow.cancellation-workflow.cancellation.external-child",
+  },
+  "workflowType": {
+    "name": "workflow.cancellation.external",
+  },
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow childWorkflowExecutionFailedEventAttributes to match snapshot 1`] = `
+{
+  "details": null,
+  "domain": "cadence-domain",
+  "eventId": 47,
+  "eventType": "ChildWorkflowExecutionFailed",
+  "initiatedEventId": 40,
+  "reason": "",
+  "startedEventId": 42,
+  "taskId": "5877269789",
+  "timestamp": 2024-09-08T04:27:58.993Z,
+  "version": "575102",
+  "workflowExecution": {
+    "runId": "107495f0-ab19-4631-b6b9-dca2c2a30482",
+    "workflowId": "workflow.cancellation-workflow.cancellation.external-child",
+  },
+  "workflowType": {
+    "name": "workflow.cancellation.external",
+  },
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow childWorkflowExecutionStartedEventAttributes to match snapshot 1`] = `
+{
+  "domain": "cadence-domain",
+  "eventId": 42,
+  "eventType": "ChildWorkflowExecutionStarted",
+  "header": {
+    "fields": {},
+  },
+  "initiatedEventId": 40,
+  "taskId": "5877269784",
+  "timestamp": 2024-09-08T04:27:53.862Z,
+  "version": "575102",
+  "workflowExecution": {
+    "runId": "107495f0-ab19-4631-b6b9-dca2c2a30482",
+    "workflowId": "workflow.cancellation-workflow.cancellation.external-child",
+  },
+  "workflowType": {
+    "name": "workflow.cancellation.external",
+  },
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow childWorkflowExecutionTerminatedEventAttributes to match snapshot 1`] = `
+{
+  "domain": "cadence-domain",
+  "eventId": 45,
+  "eventType": "ChildWorkflowExecutionTerminated",
+  "initiatedEventId": 40,
+  "startedEventId": 42,
+  "taskId": "5877269787",
+  "timestamp": 2024-09-08T04:27:56.993Z,
+  "version": "575102",
+  "workflowExecution": {
+    "runId": "107495f0-ab19-4631-b6b9-dca2c2a30482",
+    "workflowId": "workflow.cancellation-workflow.cancellation.external-child",
+  },
+  "workflowType": {
+    "name": "workflow.cancellation.external",
+  },
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow childWorkflowExecutionTimedOutEventAttributes to match snapshot 1`] = `
+{
+  "domain": "cadence-domain",
+  "eventId": 46,
+  "eventType": "ChildWorkflowExecutionTimedOut",
+  "initiatedEventId": 40,
+  "startedEventId": 42,
+  "taskId": "5877269788",
+  "timeoutType": "TIMEOUT_TYPE_HEARTBEAT",
+  "timestamp": 2024-09-08T04:27:57.993Z,
+  "version": "575102",
+  "workflowExecution": {
+    "runId": "107495f0-ab19-4631-b6b9-dca2c2a30482",
+    "workflowId": "workflow.cancellation-workflow.cancellation.external-child",
+  },
+  "workflowType": {
+    "name": "workflow.cancellation.external",
+  },
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow decisionTaskCompletedEventAttributes to match snapshot 1`] = `
+{
+  "binaryChecksum": "cadence:eb16a90a9182002897d7a6c6585871eedace71d1",
+  "eventId": 4,
+  "eventType": "DecisionTaskCompleted",
+  "executionContext": "",
+  "identity": "cadence@958ab342-a376-431b-a17a-ed7d8a97ba91",
+  "scheduledEventId": "2",
+  "startedEventId": "3",
+  "taskId": "22647174802",
+  "timestamp": 2024-09-07T22:16:10.599Z,
+  "version": "575102",
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow decisionTaskFailedEventAttributes to match snapshot 1`] = `
+{
+  "baseRunId": "",
+  "binaryChecksum": "ffc875a4c3571872881f79c939921e00398ab360",
+  "cause": "DECISION_TASK_FAILED_CAUSE_BAD_START_CHILD_EXECUTION_ATTRIBUTES",
+  "details": "WorkflowId exceeds length limit.",
+  "eventId": 5,
+  "eventType": "DecisionTaskFailed",
+  "forkEventVersion": 0,
+  "identity": "cadence@958ab341-a375-431b-a27a-ed7d8a97ba91",
+  "newRunId": "",
+  "reason": "",
+  "requestId": "66f7f58b-3d3b-4178-972a-fa7825ceec39",
+  "scheduledEventId": 2,
+  "startedEventId": 3,
+  "taskId": "22647174902",
+  "timestamp": 2024-09-07T22:16:10.599Z,
+  "version": "575102",
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow decisionTaskScheduledEventAttributes to match snapshot 1`] = `
+{
+  "attempt": 0,
+  "eventId": 2,
+  "eventType": "DecisionTaskScheduled",
+  "startToCloseTimeoutSeconds": 10,
+  "taskId": "22647174794",
+  "taskList": {
+    "kind": null,
+    "name": "task-queue",
+  },
+  "timestamp": 2024-09-07T22:16:10.552Z,
+  "version": "575102",
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow decisionTaskStartedEventAttributes to match snapshot 1`] = `
+{
+  "eventId": 3,
+  "eventType": "DecisionTaskStarted",
+  "identity": "cadence@958ab341-a376-431b-a17a-ed7d8a97ba92",
+  "requestId": "66f7f58b-3d3b-4178-972a-fa7825ceec38",
+  "scheduledEventId": 2,
+  "taskId": "22647174798",
+  "timestamp": 2024-09-07T22:16:10.575Z,
+  "version": "575102",
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow decisionTaskTimedOutEventAttributes to match snapshot 1`] = `
+{
+  "baseRunId": "",
+  "cause": "DECISION_TASK_TIMED_OUT_CAUSE_TIMEOUT",
+  "eventId": 6,
+  "eventType": "DecisionTaskTimedOut",
+  "forkEventVersion": 0,
+  "newRunId": "",
+  "reason": "Missed heart beat",
+  "requestId": "66f7f58b-3d3b-4178-972a-fa7825ceec40",
+  "scheduledEventId": 2,
+  "startedEventId": 3,
+  "taskId": "22647174903",
+  "timeoutType": "TIMEOUT_TYPE_HEARTBEAT",
+  "timestamp": 2024-09-07T22:16:10.599Z,
+  "version": "575102",
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow externalWorkflowExecutionCancelRequestedEventAttributes to match snapshot 1`] = `
+{
+  "domain": "cadence-domain",
+  "eventId": 26,
+  "eventType": "ExternalWorkflowExecutionCancelRequested",
+  "initiatedEventId": 25,
+  "taskId": "5877269818",
+  "timestamp": 2024-09-07T22:52:50.927Z,
+  "version": "575102",
+  "workflowExecution": {
+    "runId": "",
+    "workflowId": "workflow.cancellation-workflow.cancellation.external-child",
+  },
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow externalWorkflowExecutionSignaledEventAttributes to match snapshot 1`] = `
+{
+  "control": 0,
+  "domain": "cadence-domain",
+  "eventId": 31,
+  "eventType": "ExternalWorkflowExecutionSignaled",
+  "initiatedEventId": 30,
+  "taskId": "8090823672",
+  "timestamp": 2024-09-08T04:26:10.375Z,
+  "version": "575102",
+  "workflowExecution": {
+    "runId": "",
+    "workflowId": "workflow.reset.base-b3439f7e-1daa-4716-a42e-3a621631bad3",
+  },
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow markerRecordedEventAttributes to match snapshot 1`] = `
+{
+  "decisionTaskCompletedEventId": 4,
+  "details": [
+    "initial version",
+    "3",
+  ],
+  "eventId": 3,
+  "eventType": "MarkerRecorded",
+  "header": null,
+  "markerName": "Version",
+  "taskId": "22647173802",
+  "timestamp": 2024-08-27T08:31:55.549Z,
+  "version": "575102",
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow requestCancelActivityTaskFailedEventAttributes to match snapshot 1`] = `
+{
+  "activityId": "0",
+  "cause": "",
+  "decisionTaskCompletedEventId": 4,
+  "eventId": 54,
+  "eventType": "RequestCancelActivityTaskFailed",
+  "taskId": "22647174807",
+  "timestamp": 2024-09-07T22:16:10.599Z,
+  "version": "587402",
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow requestCancelExternalWorkflowExecutionFailedEventAttributes to match snapshot 1`] = `
+{
+  "cause": "CANCEL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_INVALID",
+  "control": null,
+  "decisionTaskCompletedEventId": 24,
+  "domain": "cadence-domain",
+  "eventId": 25,
+  "eventType": "RequestCancelExternalWorkflowExecutionFailed",
+  "initiatedEventId": 25,
+  "taskId": "5877269814",
+  "timestamp": 2024-09-07T22:51:10.886Z,
+  "version": "575102",
+  "workflowExecution": {
+    "runId": "",
+    "workflowId": "workflow.cancellation-workflow.cancellation.external-child",
+  },
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow requestCancelExternalWorkflowExecutionInitiatedEventAttributes to match snapshot 1`] = `
+{
+  "childWorkflowOnly": true,
+  "control": null,
+  "decisionTaskCompletedEventId": 24,
+  "domain": "cadence-domain",
+  "eventId": 25,
+  "eventType": "RequestCancelExternalWorkflowExecutionInitiated",
+  "taskId": "5877269814",
+  "timestamp": 2024-09-07T22:51:10.886Z,
+  "version": "575102",
+  "workflowExecution": {
+    "runId": "",
+    "workflowId": "workflow.cancellation-workflow.cancellation.external-child",
+  },
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow signalExternalWorkflowExecutionFailedEventAttributes to match snapshot 1`] = `
+{
+  "cause": "SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_INVALID",
+  "control": 0,
+  "decisionTaskCompletedEventId": 4,
+  "domain": "cadence-domain",
+  "eventId": 31,
+  "eventType": "SignalExternalWorkflowExecutionFailed",
+  "initiatedEventId": 30,
+  "taskId": "8090823672",
+  "timestamp": 2024-09-08T04:27:50.375Z,
+  "version": "575102",
+  "workflowExecution": {
+    "runId": "",
+    "workflowId": "workflow.reset.base-b3439f7e-1daa-4716-a42e-3a621631bad3",
+  },
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow signalExternalWorkflowExecutionInitiatedEventAttributes to match snapshot 1`] = `
+{
+  "childWorkflowOnly": true,
+  "control": 0,
+  "decisionTaskCompletedEventId": 4,
+  "domain": "cadence-domain",
+  "eventId": 30,
+  "eventType": "SignalExternalWorkflowExecutionInitiated",
+  "input": [
+    "signalValue",
+  ],
+  "signalName": "signalBeforeReset",
+  "taskId": "8090823668",
+  "timestamp": 2024-09-08T04:24:30.356Z,
+  "version": "575102",
+  "workflowExecution": {
+    "runId": "",
+    "workflowId": "workflow.reset.base-b3439f7e-1daa-4716-a42e-3a621631bad3",
+  },
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow startChildWorkflowExecutionFailedEventAttributes to match snapshot 1`] = `
+{
+  "cause": "CHILD_WORKFLOW_EXECUTION_FAILED_CAUSE_INVALID",
+  "control": null,
+  "decisionTaskCompletedEventId": 4,
+  "domain": "cadence-domain",
+  "eventId": 41,
+  "eventType": "StartChildWorkflowExecutionFailed",
+  "initiatedEventId": NaN,
+  "taskId": "5877269783",
+  "timestamp": 2024-09-08T04:27:52.830Z,
+  "version": "575102",
+  "workflowId": "workflow.cancellation-workflow.cancellation.external-child",
+  "workflowType": {
+    "name": "workflow.cancellation.external",
+  },
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow startChildWorkflowExecutionInitiatedEventAttributes to match snapshot 1`] = `
+{
+  "control": null,
+  "cronSchedule": "",
+  "decisionTaskCompletedEventId": 4,
+  "delayStartSeconds": null,
+  "domain": "cadence-domain",
+  "eventId": 40,
+  "eventType": "StartChildWorkflowExecutionInitiated",
+  "executionStartToCloseTimeoutSeconds": 360,
+  "firstRunAt": null,
+  "header": {
+    "fields": {},
+  },
+  "input": [
+    1726492751798812400,
+    30000000000,
+  ],
+  "jitterStart": null,
+  "memo": null,
+  "parentClosePolicy": "abandon",
+  "retryPolicy": null,
+  "searchAttributes": null,
+  "taskId": "5877269782",
+  "taskList": {
+    "kind": null,
+    "name": "canary-task-queue",
+  },
+  "taskStartToCloseTimeoutSeconds": 10,
+  "timestamp": 1975-06-21T10:47:51.830Z,
+  "version": "575102",
+  "workflowId": "workflow.cancellation-workflow.cancellation.external-child",
+  "workflowIdReusePolicy": "allow duplicate",
+  "workflowType": {
+    "name": "workflow.cancellation.external",
+  },
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow timerCanceledEventAttributes to match snapshot 1`] = `
+{
+  "decisionTaskCompletedEventId": 9,
+  "eventId": 18,
+  "eventType": "TimerCanceled",
+  "identity": "67b17b8c-fc30-4c5c-ac7e-bc3046311b18",
+  "startedEventId": 5,
+  "taskId": "12690929028",
+  "timerId": "0",
+  "timestamp": 2024-09-07T22:37:50.860Z,
+  "version": "575102",
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow timerFiredEventAttributes to match snapshot 1`] = `
+{
+  "eventId": 17,
+  "eventType": "TimerFired",
+  "startedEventId": 10,
+  "taskId": "12690929027",
+  "timerId": "0",
+  "timestamp": 2024-09-07T22:34:30.005Z,
+  "version": "575102",
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow timerStartedEventAttributes to match snapshot 1`] = `
+{
+  "decisionTaskCompletedEventId": 4,
+  "eventId": 16,
+  "eventType": "TimerStarted",
+  "startToFireTimeoutSeconds": 5,
+  "taskId": "12690929026",
+  "timerId": "0",
+  "timestamp": 2024-09-07T22:32:50.632Z,
+  "version": "575102",
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow upsertWorkflowSearchAttributesEventAttributes to match snapshot 1`] = `
+{
+  "decisionTaskCompletedEventId": 4,
+  "eventId": 58,
+  "eventType": "UpsertWorkflowSearchAttributes",
+  "searchAttributes": {
+    "indexedFields": {
+      "CadenceChangeVersion": [
+        "initial version-3",
+      ],
+    },
+  },
+  "taskId": "6051339897",
+  "timestamp": 2024-09-17T07:00:43.322Z,
+  "version": "587402",
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow workflowExecutionCancelRequestedEventAttributes to match snapshot 1`] = `
+{
+  "cause": "",
+  "eventId": 56,
+  "eventType": "WorkflowExecutionCancelRequested",
+  "externalInitiatedEventId": null,
+  "externalWorkflowExecution": {
+    "runId": "",
+    "workflowId": "",
+  },
+  "identity": "",
+  "requestId": "",
+  "taskId": "12690929027",
+  "timestamp": 2024-09-11T09:16:12.860Z,
+  "version": "580100",
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow workflowExecutionCanceledEventAttributes to match snapshot 1`] = `
+{
+  "decisionTaskCompletedEventId": 9,
+  "details": "workflow sleep: CanceledError",
+  "eventId": 57,
+  "eventType": "WorkflowExecutionCanceled",
+  "taskId": "12690929027",
+  "timestamp": 2024-09-11T09:16:12.860Z,
+  "version": "580100",
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow workflowExecutionCompletedEventAttributes to match snapshot 1`] = `
+{
+  "decisionTaskCompletedEventId": 4,
+  "eventId": 51,
+  "eventType": "WorkflowExecutionCompleted",
+  "result": null,
+  "taskId": "605133998",
+  "timestamp": 2024-09-19T12:08:35.549Z,
+  "version": "587402",
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow workflowExecutionContinuedAsNewEventAttributes to match snapshot 1`] = `
+{
+  "backoffStartIntervalInSeconds": 55,
+  "decisionTaskCompletedEventId": 17,
+  "eventId": 55,
+  "eventType": "WorkflowExecutionContinuedAsNew",
+  "executionStartToCloseTimeoutSeconds": 1080,
+  "failureDetails": null,
+  "failureReason": "",
+  "header": {
+    "fields": {},
+  },
+  "initiator": "cron_schedule",
+  "input": [],
+  "lastCompletionResult": null,
+  "memo": null,
+  "newExecutionRunId": "8f27807a-9125-4833-b8f1-d52a4c59be9a",
+  "searchAttributes": null,
+  "taskId": "22647174866",
+  "taskList": {
+    "kind": null,
+    "name": "cadence-task-queue",
+  },
+  "taskStartToCloseTimeoutSeconds": 10,
+  "timestamp": 2024-09-07T22:16:15.636Z,
+  "version": "587402",
+  "workflowType": {
+    "name": "workflow.cron",
+  },
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow workflowExecutionFailedEventAttributes to match snapshot 1`] = `
+{
+  "decisionTaskCompletedEventId": 4,
+  "details": "new execution triggered by reset is not completed",
+  "eventId": 48,
+  "eventType": "WorkflowExecutionFailed",
+  "reason": "cadenceInternal:Generic",
+  "taskId": "22647173803",
+  "timestamp": 2024-09-19T12:05:15.549Z,
+  "version": "575102",
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow workflowExecutionSignaledEventAttributes to match snapshot 1`] = `
+{
+  "eventId": 2,
+  "eventType": "WorkflowExecutionSignaled",
+  "identity": "cadence-service",
+  "input": [
+    "cadence.signal",
+  ],
+  "requestId": "488cd24f-37b0-48f7-955a-c5c8c7653290",
+  "signalName": "signal-name",
+  "taskId": "22647173801",
+  "timestamp": 2024-08-27T08:30:15.549Z,
+  "version": "575102",
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow workflowExecutionStartedEventAttributes to match snapshot 1`] = `
+{
+  "attempt": null,
+  "continuedExecutionRunId": "e8565005-a234-4077-a917-6e5992ccbe4a",
+  "continuedFailureDetails": null,
+  "continuedFailureReason": null,
+  "cronSchedule": "@every 1m",
+  "eventId": 1,
+  "eventType": "WorkflowExecutionStarted",
+  "executionStartToCloseTimeoutSeconds": 1080,
+  "expirationTimestamp": null,
+  "firstDecisionTaskBackoffSeconds": 55,
+  "firstExecutionRunId": "1d0e29d3-9c20-4eda-aeca-daed7f0ccb2e",
+  "firstScheduledTimeNano": 1716246362895.4253,
+  "header": {
+    "fields": {},
+  },
+  "identity": null,
+  "initiator": "cron_schedule",
+  "input": [],
+  "lastCompletionResult": null,
+  "memo": null,
+  "originalExecutionRunId": "9c42ffa3-c9b1-430d-a993-b84fdce8c9f2",
+  "parentInitiatedEventId": null,
+  "parentWorkflowDomain": null,
+  "parentWorkflowExecution": null,
+  "partitionConfig": {},
+  "prevAutoResetPoints": {
+    "points": [],
+  },
+  "requestId": "8b2d2b6f-996a-431e-96b3-17d19cf0e508",
+  "retryPolicy": null,
+  "searchAttributes": null,
+  "taskId": "22647173800",
+  "taskList": {
+    "kind": null,
+    "name": "cadence-tasklist",
+  },
+  "taskStartToCloseTimeoutSeconds": 10,
+  "timestamp": 2024-08-27T08:28:35.549Z,
+  "version": "575102",
+  "workflowType": {
+    "name": "workflow.cron",
+  },
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow workflowExecutionTerminatedEventAttributes to match snapshot 1`] = `
+{
+  "details": null,
+  "eventId": 49,
+  "eventType": "WorkflowExecutionTerminated",
+  "identity": "history-service",
+  "reason": "reset domain",
+  "taskId": "6051339957",
+  "timestamp": 2024-09-19T12:06:55.549Z,
+  "version": "587402",
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow workflowExecutionTimedOutEventAttributes to match snapshot 1`] = `
+{
+  "eventId": 50,
+  "eventType": "WorkflowExecutionTimedOut",
+  "taskId": "6051339957",
+  "timeoutType": "TIMEOUT_TYPE_START_TO_CLOSE",
+  "timestamp": 2024-09-19T12:08:35.549Z,
+  "version": "587402",
+}
+`;

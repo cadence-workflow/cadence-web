@@ -19,9 +19,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import formatTimestampToDatetime from './format-timestamp-to-datetime';
 import formatWorkflowHistoryEvent from './format-workflow-history-event';
-import formatWorkflowHistoryEventType from './format-workflow-history-event-type';
 
 const formatWorkflowHistory = ({
   archived,
@@ -32,13 +30,7 @@ const formatWorkflowHistory = ({
   ...response,
   archived: archived || null,
   history: {
-    events: events.map(({ eventId, eventTime, ...event }: any) => ({
-      eventId: parseInt(eventId),
-      timestamp: formatTimestampToDatetime(eventTime),
-      eventType: formatWorkflowHistoryEventType(event.attributes),
-      ...event,
-      ...formatWorkflowHistoryEvent(event),
-    })),
+    events: events.map(formatWorkflowHistoryEvent),
   },
   rawHistory: rawHistory?.length ? rawHistory : null,
 });
