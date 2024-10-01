@@ -40,8 +40,36 @@ export const requestCancelExternalWorkflowEvent = {
   attributes: 'externalWorkflowExecutionCancelRequestedEventAttributes',
 } as const satisfies RequestCancelExternalWorkflowExecutionHistoryEvent;
 
+export const failRequestCancelExternalWorkflowEvent = {
+  eventId: '25',
+  eventTime: {
+    seconds: '1725749470',
+    nanos: 886551263,
+  },
+  version: '575102',
+  taskId: '5877269814',
+  requestCancelExternalWorkflowExecutionFailedEventAttributes: {
+    decisionTaskCompletedEventId: '24',
+    domain: 'cadence-domain',
+    workflowExecution: {
+      workflowId: 'workflow.cancellation-workflow.cancellation.external-child',
+      runId: '',
+    },
+    control: '',
+    cause: 'CANCEL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_INVALID',
+    initiatedEventId: '25',
+  },
+  attributes: 'requestCancelExternalWorkflowExecutionFailedEventAttributes',
+} as const satisfies RequestCancelExternalWorkflowExecutionHistoryEvent;
+
 export const requestedCancelExternalWorkflowEvents: RequestCancelExternalWorkflowExecutionHistoryEvent[] =
   [
     initiateRequestCancelExternalWorkflowEvent,
     requestCancelExternalWorkflowEvent,
+  ];
+
+export const failedCancelExternalWorkflowEvents: RequestCancelExternalWorkflowExecutionHistoryEvent[] =
+  [
+    initiateRequestCancelExternalWorkflowEvent,
+    failRequestCancelExternalWorkflowEvent,
   ];
