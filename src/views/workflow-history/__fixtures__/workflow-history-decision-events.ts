@@ -71,14 +71,13 @@ export const failedDecisionTaskEvent = {
     cause: 'DECISION_TASK_FAILED_CAUSE_BAD_START_CHILD_EXECUTION_ATTRIBUTES',
     failure: {
       reason: '',
-      details: 'WorkflowId exceeds length limit.',
+      details: 'V29ya2Zsb3dJZCBleGNlZWRzIGxlbmd0aCBsaW1pdC4=',
     },
-    identity:
-      '1@dca50-hrk@cadence-canary-production@canary-task-queue@bd570bec-e2cf-470f-937b-0e71d3d8a6d8',
+    identity: 'cadence@958ab341-a375-431b-a27a-ed7d8a97ba91',
     baseRunId: '',
     newRunId: '',
     forkEventVersion: '0',
-    binaryChecksum: 'uDeploy:ffc875a4c3571872881f79c939921e00398ab260',
+    binaryChecksum: 'ffc875a4c3571872881f79c939921e00398ab360',
     requestId: '66f7f58b-3d3b-4178-972a-fa7825ceec39',
   },
 } as const satisfies DecisionHistoryEvent;
