@@ -61,7 +61,7 @@ export default function WorkflowHistoryExportJsonButton(props: Props) {
     <>
       <ToasterContainer autoHideDuration={2000} placement="bottom" />
       <Button
-        $size="mini"
+        $size="compact"
         kind="secondary"
         startEnhancer={<MdOutlineCloudDownload size={16} />}
         onClick={handleExport}
