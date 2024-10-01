@@ -63,6 +63,7 @@ type ToPascalCase<T extends string> = T extends `${infer First}_${infer Rest}`
   : Capitalize<Lowercase<T>>;
 
 // Utility type to check if a string contains "INVALID" and exclude it from the type
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type ExcludeInvalid<T extends string> = T extends `${infer _}INVALID${infer _}`
   ? never
   : T;

@@ -3,8 +3,9 @@ import { Suspense } from 'react';
 import { HttpResponse } from 'msw';
 import { VirtuosoMockContext } from 'react-virtuoso';
 
-import { act, render, screen } from '@/test-utils/rtl';
+import { act, render, screen, userEvent } from '@/test-utils/rtl';
 
+import { type Props as PageFiltersToggleProps } from '@/components/page-filters/page-filters-toggle/page-filters-toggle.types';
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
 
 import { completedActivityTaskEvents } from '../__fixtures__/workflow-history-activity-events';
@@ -23,6 +24,25 @@ jest.mock(
   '../workflow-history-timeline-load-more/workflow-history-timeline-load-more',
   () => jest.fn(() => <div>Load more</div>)
 );
+
+jest.mock(
+  '@/components/page-filters/page-filters-toggle/page-filters-toggle',
+  () =>
+    jest.fn((props: PageFiltersToggleProps) => (
+      <button onClick={props.onClick}>Filter Toggle</button>
+    ))
+);
+
+jest.mock(
+  '@/components/page-filters/page-filters-fields/page-filters-fields',
+  () => jest.fn(() => <div>Filter Fields</div>)
+);
+
+jest.mock('@/components/page-filters/hooks/use-page-filters', () =>
+  jest.fn().mockReturnValue({})
+);
+
+jest.mock('../config/workflow-history-filters.config', () => []);
 
 describe('WorkflowHistory', () => {
   it('renders page correctly', async () => {
@@ -53,6 +73,21 @@ describe('WorkflowHistory', () => {
         'Failed to fetch workflow history'
       );
     }
+  });
+  it('should render the page initially with filters hidden', async () => {
+    setup({});
+    expect(screen.queryByText('Filter Fields')).not.toBeInTheDocument();
+  });
+
+  it('should show filters on executing toggle button onClick', async () => {
+    setup({});
+    const toggleButton = await screen.findByText('Filter Toggle');
+
+    await act(() => {
+      userEvent.click(toggleButton);
+    });
+
+    expect(await screen.findByText('Filter Fields')).toBeInTheDocument();
   });
 });
 

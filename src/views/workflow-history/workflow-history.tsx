@@ -1,5 +1,5 @@
 'use client';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import {
   useSuspenseInfiniteQuery,
@@ -9,6 +9,9 @@ import { HeadingXSmall } from 'baseui/typography';
 import queryString from 'query-string';
 import { Virtuoso } from 'react-virtuoso';
 
+import usePageFilters from '@/components/page-filters/hooks/use-page-filters';
+import PageFiltersFields from '@/components/page-filters/page-filters-fields/page-filters-fields';
+import PageFiltersToggle from '@/components/page-filters/page-filters-toggle/page-filters-toggle';
 import PageSection from '@/components/page-section/page-section';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
@@ -17,6 +20,9 @@ import { type RequestError } from '@/utils/request/request-error';
 import sortBy from '@/utils/sort-by';
 import type { WorkflowPageTabContentProps } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
+import workflowPageQueryParamsConfig from '../workflow-page/config/workflow-page-query-params.config';
+
+import workflowHistoryFiltersConfig from './config/workflow-history-filters.config';
 import { groupHistoryEvents } from './helpers/group-history-events';
 import WorkflowHistoryCompactEventCard from './workflow-history-compact-event-card/workflow-history-compact-event-card';
 import WorkflowHistoryExportJsonButton from './workflow-history-export-json-button/workflow-history-export-json-button';
@@ -35,6 +41,12 @@ export default function WorkflowHistory({
     pageSize: 200,
     waitForNewEvent: 'true',
   };
+
+  const { activeFiltersCount, queryParams, ...pageFiltersRest } =
+    usePageFilters({
+      pageQueryParamsConfig: workflowPageQueryParamsConfig,
+      pageFiltersConfig: workflowHistoryFiltersConfig,
+    });
 
   const {
     data: result,
@@ -65,32 +77,62 @@ export default function WorkflowHistory({
     return (result.pages || []).flat(1);
   }, [result]);
 
-  const groupedHistoryEvents = useMemo(() => {
+  const filteredEvents = useMemo(() => {
     const events = workflowHistory
       .map(({ history }) => history?.events || [])
       .flat(1);
-    return groupHistoryEvents(events);
-  }, [workflowHistory]);
+    return events.filter((event) =>
+      workflowHistoryFiltersConfig.every((f) => {
+        if (f.filterTarget === 'event') return f.filterFunc(event, queryParams);
+        return true;
+      })
+    );
+  }, [workflowHistory, queryParams]);
 
-  const groupedHistoryEventsEntries = useMemo(() => {
+  const groupedHistoryEvents = useMemo(() => {
+    return groupHistoryEvents(filteredEvents);
+  }, [filteredEvents]);
+
+  const filteredGroupedHistoryEventsEntries = useMemo(() => {
     return sortBy(
       Object.entries(groupedHistoryEvents),
       ([_, { timeMs }]) => timeMs,
       'ASC'
-    );
-  }, [groupedHistoryEvents]);
+    ).filter(([_, g]) => {
+      return workflowHistoryFiltersConfig.every((f) => {
+        if (f.filterTarget === 'group') return f.filterFunc(g, queryParams);
+        return true;
+      });
+    });
+  }, [groupedHistoryEvents, queryParams]);
+
+  const [areFiltersShown, setAreFiltersShown] = useState(false);
 
   return (
-    <PageSection>
-      <div className={cls.pageContainer}>
-        <div className={cls.pageHeader}>
-          <HeadingXSmall>Workflow history</HeadingXSmall>
+    <PageSection className={cls.pageContainer}>
+      <div className={cls.pageHeader}>
+        <HeadingXSmall>Workflow history</HeadingXSmall>
+        <div className={cls.headerActions}>
           <WorkflowHistoryExportJsonButton {...wfhistoryRequestArgs} />
+          <PageFiltersToggle
+            activeFiltersCount={activeFiltersCount}
+            onClick={() => setAreFiltersShown((v) => !v)}
+            isActive={areFiltersShown}
+          />
         </div>
+      </div>
+      {areFiltersShown && (
+        <PageFiltersFields
+          pageFiltersConfig={workflowHistoryFiltersConfig}
+          queryParams={queryParams}
+          {...pageFiltersRest}
+        />
+      )}
+      {filteredGroupedHistoryEventsEntries.length > 0 && (
         <div className={cls.eventsContainer}>
           <div role="list" className={cls.compactSection}>
             <Virtuoso
-              data={groupedHistoryEventsEntries}
+              data={filteredGroupedHistoryEventsEntries}
               itemContent={(_, [groupId, { label, status, timeLabel }]) => (
                 <div role="listitem" className={cls.compactCardContainer}>
                   <WorkflowHistoryCompactEventCard
@@ -107,19 +149,19 @@ export default function WorkflowHistory({
           <section className={cls.timelineSection}>
             <Virtuoso
               useWindowScroll
-              data={groupedHistoryEventsEntries}
+              data={filteredGroupedHistoryEventsEntries}
               itemContent={(index, [groupId, group]) => (
                 <WorkflowHistoryTimelineGroup
                   key={groupId}
                   status={group.status}
-                  label={
-                    group.label + index + groupedHistoryEventsEntries.length
-                  }
+                  label={group.label}
                   timeLabel={group.timeLabel}
                   events={group.events}
                   eventsMetadata={group.eventsMetadata}
                   hasMissingEvents={group.hasMissingEvents}
-                  isLastEvent={index === groupedHistoryEventsEntries.length - 1}
+                  isLastEvent={
+                    index === filteredGroupedHistoryEventsEntries.length - 1
+                  }
                 />
               )}
               components={{
@@ -135,7 +177,10 @@ export default function WorkflowHistory({
             />
           </section>
         </div>
-      </div>
+      )}
+      {filteredGroupedHistoryEventsEntries.length === 0 && (
+        <div className={cls.noResultsContainer}>No Results</div>
+      )}
     </PageSection>
   );
 }
