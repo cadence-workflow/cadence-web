@@ -8,65 +8,25 @@ import { type PageQueryParamValues } from '@/hooks/use-page-query-params/use-pag
 import {
   mockQueryParamsValues,
   mockPageQueryParamConfig,
+  mockFiltersConfig,
 } from '../__fixtures__/page-filters.fixtures';
 import PageFilters from '../page-filters';
-import {
-  type PageFilterComponentProps,
-  type PageFilterConfig,
-} from '../page-filters.types';
+import { type Props as PageFiltersToggleProps } from '../page-filters-toggle/page-filters-toggle.types';
 
 const mockSetQueryParams = jest.fn();
 jest.mock('../../../hooks/use-page-query-params/use-page-query-params', () =>
   jest.fn(() => [mockQueryParamsValues, mockSetQueryParams])
 );
 
-const MockFilterA = ({
-  value,
-  setValue,
-}: PageFilterComponentProps<{ paramA: string }>) => {
-  return (
-    <div>
-      <div>Value 1: {value.paramA}</div>
-      <div
-        data-testid="change-filters"
-        onClick={() => setValue({ paramA: 'valueA2' })}
-      />
-    </div>
-  );
-};
+jest.mock('../page-filters-fields/page-filters-fields', () =>
+  jest.fn(() => <div data-testid="filter-fields">Filter Fields</div>)
+);
 
-const MockFilterB = ({
-  value,
-  setValue,
-}: PageFilterComponentProps<{ paramB: string }>) => {
-  return (
-    <div>
-      <div>Value 2: {value.paramB}</div>
-      <div
-        data-testid="change-filters"
-        onClick={() => setValue({ paramB: 'valueB2' })}
-      />
-    </div>
-  );
-};
-
-const MOCK_FILTERS_CONFIG: [
-  PageFilterConfig<typeof mockPageQueryParamConfig, { paramA: string }>,
-  PageFilterConfig<typeof mockPageQueryParamConfig, { paramB: string }>,
-] = [
-  {
-    id: 'filterA',
-    getValue: (v) => ({ paramA: v.paramA }),
-    formatValue: (v) => v,
-    component: MockFilterA,
-  },
-  {
-    id: 'filterB',
-    getValue: (v) => ({ paramB: v.paramB }),
-    formatValue: (v) => v,
-    component: MockFilterB,
-  },
-];
+jest.mock('../page-filters-toggle/page-filters-toggle', () =>
+  jest.fn((props: PageFiltersToggleProps) => (
+    <button onClick={props.onClick}>Filters Button</button>
+  ))
+);
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -88,43 +48,15 @@ describe('PageFilters', () => {
   it('should show filters when Filters button is clicked, and modify additional filters', async () => {
     setup({});
 
-    const filtersButton = await screen.findByText('Filters');
+    const filtersButton = await screen.findByRole('button', {
+      name: 'Filters Button',
+    });
 
     act(() => {
       fireEvent.click(filtersButton);
     });
 
-    const filtersButtons = await screen.findAllByTestId('change-filters');
-    expect(filtersButtons).toHaveLength(2);
-
-    act(() => {
-      fireEvent.click(filtersButtons[0]);
-    });
-
-    expect(mockSetQueryParams).toHaveBeenCalledWith({ paramA: 'valueA2' });
-  });
-
-  it('should reset filters when clear filters button is pressed', async () => {
-    setup({
-      valuesOverrides: { paramA: 'valueA2', paramB: 'valueB2' },
-    });
-
-    const filtersButton = await screen.findByText('Filters (2)');
-
-    act(() => {
-      fireEvent.click(filtersButton);
-    });
-
-    const clearFiltersButton = await screen.findByText('Clear filters');
-
-    act(() => {
-      fireEvent.click(clearFiltersButton);
-    });
-
-    expect(mockSetQueryParams).toHaveBeenCalledWith({
-      paramA: undefined,
-      paramB: undefined,
-    });
+    expect(screen.getByTestId('filter-fields')).toBeInTheDocument();
   });
 });
 
@@ -148,7 +80,7 @@ function setup({
     <PageFilters
       searchQueryParamKey="search"
       searchPlaceholder="placeholder"
-      pageFiltersConfig={MOCK_FILTERS_CONFIG}
+      pageFiltersConfig={mockFiltersConfig}
       pageQueryParamsConfig={mockPageQueryParamConfig}
     />
   );
