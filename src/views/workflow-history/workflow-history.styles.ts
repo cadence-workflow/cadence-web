@@ -7,6 +7,7 @@ const cssStylesObj = {
   pageContainer: {
     display: 'flex',
     flexDirection: 'column',
+    flex: 1,
   },
   pageHeader: {
     display: 'flex',
@@ -14,6 +15,10 @@ const cssStylesObj = {
     justifyContent: 'space-between',
     flexWrap: 'wrap',
   },
+  headerActions: (theme) => ({
+    display: 'flex',
+    gap: theme.sizing.scale500,
+  }),
   eventsContainer: (theme) => ({
     display: 'flex',
     marginTop: theme.sizing.scale500,
@@ -40,6 +45,11 @@ const cssStylesObj = {
     flexDirection: 'column',
     flex: 1,
   },
+  noResultsContainer: (theme) => ({
+    textAlign: 'center',
+    padding: `${theme.sizing.scale900} 0`,
+    ...theme.typography.LabelSmall,
+  }),
 } satisfies StyletronCSSObject;
 
 export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> =

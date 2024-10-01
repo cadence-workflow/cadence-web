@@ -1,4 +1,8 @@
 import type { HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
+import { type PageFilterConfig } from '@/components/page-filters/page-filters.types';
+import { type PageQueryParamValues } from '@/hooks/use-page-query-params/use-page-query-params.types';
+
+import type workflowPageQueryParamsConfig from '../workflow-page/config/workflow-page-query-params.config';
 
 import type { WorkflowEventStatus } from './workflow-history-event-status-badge/workflow-history-event-status-badge.types';
 
@@ -158,3 +162,19 @@ export type SingleHistoryEvent = HistoryEvent & {
     | 'workflowExecutionContinuedAsNewEventAttributes'
     | 'upsertWorkflowSearchAttributesEventAttributes';
 };
+
+export type WorkflowHistoryFilterTarget = 'group' | 'event';
+export type WorkflowHistoryFilterConfig<
+  V extends Partial<PageQueryParamValues<typeof workflowPageQueryParamsConfig>>,
+> = PageFilterConfig<typeof workflowPageQueryParamsConfig, V> & {
+  filterTarget: WorkflowHistoryFilterTarget;
+} & (
+    | {
+        filterFunc: (d: HistoryEvent, value: V) => boolean;
+        filterTarget: 'event';
+      }
+    | {
+        filterFunc: (d: HistoryEventsGroup, value: V) => boolean;
+        filterTarget: 'group';
+      }
+  );
