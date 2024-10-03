@@ -2,6 +2,7 @@
 import React from 'react';
 
 import { useSuspenseQuery } from '@tanstack/react-query';
+import queryString from 'query-string';
 
 import PageSection from '@/components/page-section/page-section';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
@@ -32,7 +33,7 @@ export default function WorkflowSummaryTab({
     queryKey: ['workflow_history', historyQueryParams] as const,
     queryFn: ({ queryKey: [_, qp] }) =>
       request(
-        `/api/domains/${qp.domain}/${qp.cluster}/workflows/${qp.workflowId}/${qp.runId}/history`
+        `/api/domains/${qp.domain}/${qp.cluster}/workflows/${qp.workflowId}/${qp.runId}/history?${queryString.stringify({ pageSize: 600 })}`
       ).then((res) => res.json()),
   });
   const formattedWorkflowHistory = formatWorkflowHistory(workflowHistory);

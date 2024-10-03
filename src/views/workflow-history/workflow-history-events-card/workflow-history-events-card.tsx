@@ -4,10 +4,9 @@ import React from 'react';
 import { Accordion, Panel } from 'baseui/accordion';
 import { Skeleton } from 'baseui/skeleton';
 
-import PrettyJson from '@/components/pretty-json/pretty-json';
-import type { JsonValue } from '@/components/pretty-json/pretty-json.types';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 
+import WorkflowHistoryEventDetails from '../workflow-history-event-details/workflow-history-event-details';
 import getBadgeContainerSize from '../workflow-history-event-status-badge/helpers/get-badge-container-size';
 import WorkflowHistoryEventStatusBadge from '../workflow-history-event-status-badge/workflow-history-event-status-badge';
 
@@ -18,6 +17,7 @@ export default function WorkflowHistoryEventsCard({
   events,
   eventsMetadata,
   showEventPlaceholder,
+  decodedPageUrlParams,
 }: Props) {
   const { cls, theme } = useStyletronClasses(cssStyles);
 
@@ -38,7 +38,10 @@ export default function WorkflowHistoryEventsCard({
               </>
             }
           >
-            <PrettyJson json={events[index] as never as JsonValue} />
+            <WorkflowHistoryEventDetails
+              event={events[index]}
+              decodedPageUrlParams={decodedPageUrlParams}
+            />
           </Panel>
         );
       })}

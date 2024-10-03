@@ -17,6 +17,7 @@ export default function WorkflowHistoryTimelineGroup({
   isLastEvent,
   eventsMetadata,
   hasMissingEvents,
+  decodedPageUrlParams,
 }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
 
@@ -35,6 +36,7 @@ export default function WorkflowHistoryTimelineGroup({
           events={events}
           eventsMetadata={eventsMetadata}
           showEventPlaceholder={hasMissingEvents}
+          decodedPageUrlParams={decodedPageUrlParams}
         />
       </div>
     </div>

@@ -4,6 +4,7 @@ import React from 'react';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import pick from 'lodash/pick';
 import { useParams } from 'next/navigation';
+import queryString from 'query-string';
 
 import request from '@/utils/request';
 import WorkflowStatusTag from '@/views/shared/workflow-status-tag/workflow-status-tag';
@@ -24,7 +25,7 @@ export default function WorkflowPageStatusTag() {
     ] as const,
     queryFn: ({ queryKey: [_, qp] }) =>
       request(
-        `/api/domains/${qp.domain}/${qp.cluster}/workflows/${qp.workflowId}/${qp.runId}/history`
+        `/api/domains/${qp.domain}/${qp.cluster}/workflows/${qp.workflowId}/${qp.runId}/history?${queryString.stringify({ pageSize: 600 })}`
       ).then((res) => res.json()),
   });
 
