@@ -3,6 +3,7 @@ import { type PageFilterConfig } from '@/components/page-filters/page-filters.ty
 import { type PageQueryParamValues } from '@/hooks/use-page-query-params/use-page-query-params.types';
 
 import type workflowPageQueryParamsConfig from '../workflow-page/config/workflow-page-query-params.config';
+import { type WorkflowPageTabContentProps } from '../workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
 import type { WorkflowEventStatus } from './workflow-history-event-status-badge/workflow-history-event-status-badge.types';
 
@@ -178,3 +179,5 @@ export type WorkflowHistoryFilterConfig<
         filterTarget: 'group';
       }
   );
+
+export type Props = WorkflowPageTabContentProps;

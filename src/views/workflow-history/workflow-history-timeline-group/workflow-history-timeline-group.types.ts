@@ -1,4 +1,7 @@
-import type { HistoryEventsGroup } from '../workflow-history.types';
+import type {
+  HistoryEventsGroup,
+  Props as WorkflowHistoryProps,
+} from '../workflow-history.types';
 
 export type Props = Pick<
   HistoryEventsGroup,
@@ -10,4 +13,5 @@ export type Props = Pick<
   | 'status'
 > & {
   isLastEvent: boolean;
+  decodedPageUrlParams: WorkflowHistoryProps['params'];
 };

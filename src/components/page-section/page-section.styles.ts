@@ -8,6 +8,8 @@ export const styled = {
       maxWidth: `${$theme.grid.maxWidth + 2 * margin}px`,
       paddingRight: `${margin}px`,
       paddingLeft: `${margin}px`,
+      width: '100%',
+      margin: '0 auto',
     })),
   })),
 };
