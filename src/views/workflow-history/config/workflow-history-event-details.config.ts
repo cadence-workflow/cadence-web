@@ -1,9 +1,7 @@
-import { createElement } from 'react';
-
-import PrettyJson from '@/components/pretty-json/pretty-json';
 import formatDate from '@/utils/data-formatters/format-date';
 
 import { type WorkflowHistoryEventDetailsConfig } from '../workflow-history-event-details/workflow-history-event-details.types';
+import WorkflowHistoryEventDetailsJson from '../workflow-history-event-details-json/workflow-history-event-details-json';
 import WorkflowHistoryEventDetailsTaskListLink from '../workflow-history-event-details-task-list-link/workflow-history-event-details-task-list-link';
 
 const workflowHistoryEventDetailsConfig = [
@@ -25,11 +23,8 @@ const workflowHistoryEventDetailsConfig = [
   {
     name: 'Json as PrettyJson',
     pathRegex: '.*(input|result|details|Error)$',
-    valueComponent: ({ entryValue }) => {
-      return createElement(PrettyJson, {
-        json: entryValue,
-      });
-    },
+    valueComponent: WorkflowHistoryEventDetailsJson,
+    forceWrap: true,
   },
   {
     name: 'Duration timeout & backoff seconds',

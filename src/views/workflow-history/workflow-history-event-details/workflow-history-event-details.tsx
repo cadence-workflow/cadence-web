@@ -5,7 +5,7 @@ import useStyletronClasses from '@/hooks/use-styletron-classes';
 import formatWorkflowHistoryEvent from '@/utils/data-formatters/format-workflow-history-event';
 
 import generateHistoryEventDetails from './helpers/generate-history-event-details';
-import { cssStyles } from './workflow-history-event-details.styles';
+import { cssStyles, styled } from './workflow-history-event-details.styles';
 import type {
   WorkflowHistoryEventDetailsEntry,
   Props,
@@ -28,8 +28,11 @@ export default function WorkflowHistoryEventDetails({
 
   return (
     <div>
-      {detailsEntries.map((entry) => (
-        <div className={cls.detailsRow} key={entry.key}>
+      {detailsEntries.map((entry, index) => (
+        <styled.DetailsRow
+          $forceWrap={entry.renderConfig?.forceWrap}
+          key={`${entry.key}-${entry.path}-${entry.renderConfig?.name}-${index}`}
+        >
           <div className={cls.detailsLabel}>
             {entry.renderConfig?.getLabel
               ? entry.renderConfig.getLabel({
@@ -39,7 +42,7 @@ export default function WorkflowHistoryEventDetails({
                 })
               : entry.path}
           </div>
-          <div className={cls.detailsValue}>
+          <styled.DetailsValue $forceWrap={entry.renderConfig?.forceWrap}>
             {entry.renderConfig?.valueComponent ? (
               <entry.renderConfig.valueComponent
                 entryKey={entry.key}
@@ -50,8 +53,8 @@ export default function WorkflowHistoryEventDetails({
             ) : (
               String(entry.value)
             )}
-          </div>
-        </div>
+          </styled.DetailsValue>
+        </styled.DetailsRow>
       ))}
     </div>
   );
