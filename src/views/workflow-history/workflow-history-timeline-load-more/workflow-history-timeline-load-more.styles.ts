@@ -6,6 +6,7 @@ export const styled = {
     'div',
     ({ $theme, $isError }) => ({
       margin: '0 auto',
+      textAlign: 'center',
       padding: $theme.sizing.scale600,
       ...$theme.typography.LabelSmall,
       color: $isError

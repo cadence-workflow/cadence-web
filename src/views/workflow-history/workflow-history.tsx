@@ -15,10 +15,10 @@ import PageFiltersToggle from '@/components/page-filters/page-filters-toggle/pag
 import PageSection from '@/components/page-section/page-section';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
+import decodeUrlParams from '@/utils/decode-url-params';
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
 import sortBy from '@/utils/sort-by';
-import type { WorkflowPageTabContentProps } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
 import workflowPageQueryParamsConfig from '../workflow-page/config/workflow-page-query-params.config';
 
@@ -29,11 +29,11 @@ import WorkflowHistoryExportJsonButton from './workflow-history-export-json-butt
 import WorkflowHistoryTimelineGroup from './workflow-history-timeline-group/workflow-history-timeline-group';
 import WorkflowHistoryTimelineLoadMore from './workflow-history-timeline-load-more/workflow-history-timeline-load-more';
 import { cssStyles } from './workflow-history.styles';
+import { type Props } from './workflow-history.types';
 
-export default function WorkflowHistory({
-  params,
-}: WorkflowPageTabContentProps) {
+export default function WorkflowHistory({ params }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
+  const decodedParams = decodeUrlParams<Props['params']>(params);
 
   const { workflowTab, ...historyQueryParams } = params;
   const wfhistoryRequestArgs = {
@@ -162,6 +162,7 @@ export default function WorkflowHistory({
                   isLastEvent={
                     index === filteredGroupedHistoryEventsEntries.length - 1
                   }
+                  decodedPageUrlParams={decodedParams}
                 />
               )}
               components={{

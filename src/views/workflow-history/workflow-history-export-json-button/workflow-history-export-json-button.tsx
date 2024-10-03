@@ -8,6 +8,8 @@ import queryString from 'query-string';
 import { MdOutlineCloudDownload } from 'react-icons/md';
 
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
+import formatWorkflowHistoryEvent from '@/utils/data-formatters/format-workflow-history-event';
+import { type FormattedHistoryEvent } from '@/utils/data-formatters/schema/format-history-event-schema';
 import logger from '@/utils/logger';
 import request from '@/utils/request';
 import { RequestError } from '@/utils/request/request-error';
@@ -35,19 +37,21 @@ export default function WorkflowHistoryExportJsonButton(props: Props) {
 
   const handleExport = async () => {
     try {
-      const events = [];
+      const eventsToExport: (FormattedHistoryEvent | null)[] = [];
       setLoadingState('loading');
       do {
         const res = await request(
-          `/api/domains/${props.domain}/${props.cluster}/workflows/${props.workflowId}/${props.runId}/history?${queryString.stringify({ pageSize: 500, nextPage: nextPage.current })}`
+          `/api/domains/${props.domain}/${props.cluster}/workflows/${props.workflowId}/${props.runId}/history?${queryString.stringify({ pageSize: 500, nextPage: nextPage.current }, { skipEmptyString: true })}`
         );
         const data: GetWorkflowHistoryResponse = await res.json();
         nextPage.current = data.nextPageToken;
-        events.push(...(data.history?.events || []));
+        const events = data.history?.events || [];
+        const formattedEvents = events.map(formatWorkflowHistoryEvent);
+        eventsToExport.push(...formattedEvents);
       } while (nextPage.current);
 
       setLoadingState('idle');
-      downloadJSON(events);
+      downloadJSON(eventsToExport);
     } catch (e) {
       if (!(e instanceof RequestError)) {
         logger.error(e, 'Failed to export workflow');

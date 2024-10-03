@@ -85,6 +85,13 @@ function setup({
   status = 'COMPLETED',
   timeLabel = 'Started at 18 Sep, 11:37:12 GMT+2',
   isLastEvent = false,
+  decodedPageUrlParams = {
+    cluster: 'testCluster',
+    domain: 'testDomain',
+    workflowId: 'testWorkflowId',
+    runId: 'testRunId',
+    workflowTab: 'history',
+  },
 }: Partial<Props>) {
   return render(
     <WorkflowHistoryTimelineGroup
@@ -95,6 +102,7 @@ function setup({
       timeLabel={timeLabel}
       hasMissingEvents={hasMissingEvents}
       status={status}
+      decodedPageUrlParams={decodedPageUrlParams}
     />
   );
 }
