@@ -8,6 +8,8 @@ import type {
   StyletronCSSObjectOf,
 } from '@/hooks/use-styletron-classes';
 
+import getBadgeContainerSize from '../workflow-history-event-status-badge/helpers/get-badge-container-size';
+
 export const overrides = {
   circularSkeleton: {
     Root: {
@@ -53,6 +55,16 @@ export const overrides = {
         },
       },
     },
+    Content: {
+      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+        maxHeight: '70vh',
+        overflow: 'auto',
+        // align content with the panel label by assigning it the value of: header padding + statusIcon + gap between icon and header label
+        paddingLeft: `calc(${getBadgeContainerSize($theme, 'small')} + ${$theme.sizing.scale500} + ${$theme.sizing.scale500})`,
+        paddingTop: `0px`,
+        paddingBottom: $theme.sizing.scale400,
+      }),
+    },
   } satisfies AccordionOverrides,
 };
 
@@ -66,6 +78,29 @@ const cssStylesObj = {
     display: 'flex',
     alignItems: 'center',
     gap: $theme.sizing.scale500,
+  }),
+
+  detailsRow: (theme) => ({
+    display: 'flex',
+    flexDirection: 'row',
+    gap: theme.sizing.scale300,
+    flexWrap: 'wrap',
+    paddingTop: theme.sizing.scale200,
+    paddingBottom: theme.sizing.scale200,
+    wordBreak: 'break-word',
+  }),
+  detailsLabel: (theme) => ({
+    minWidth: '150px',
+    maxWidth: '150px',
+    display: 'flex',
+    color: theme.colors.contentTertiary,
+    ...theme.typography.LabelXSmall,
+  }),
+  detailsValue: (theme) => ({
+    color: theme.colors.contentPrimary,
+    ...theme.typography.LabelXSmall,
+    display: 'flex',
+    flex: '1 0 300px',
   }),
 } satisfies StyletronCSSObject;
 

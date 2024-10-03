@@ -12,11 +12,20 @@ jest.mock(
   () => jest.fn(({ status }) => <div>{status} status</div>)
 );
 
-jest.mock('@/components/pretty-json/pretty-json', () =>
-  jest.fn(({ json }) => <div>Json eventId: {json.eventId}</div>)
+jest.mock(
+  '../../workflow-history-event-details/workflow-history-event-details',
+  () => jest.fn(({ event }) => <div>Details eventId: {event.eventId}</div>)
 );
 
 describe('WorkflowHistoryEventsCard', () => {
+  const mockParams: Props['decodedPageUrlParams'] = {
+    cluster: 'testCluster',
+    domain: 'testDomain',
+    workflowId: 'testWorkflowId',
+    runId: 'testRunId',
+    workflowTab: 'history',
+  };
+
   it('shows events label and status correctly', () => {
     const events: Props['events'] = [
       scheduleActivityTaskEvent,
@@ -36,6 +45,7 @@ describe('WorkflowHistoryEventsCard', () => {
       <WorkflowHistoryEventsCard
         events={events}
         eventsMetadata={eventsMetadata}
+        decodedPageUrlParams={mockParams}
       />
     );
 
@@ -58,10 +68,11 @@ describe('WorkflowHistoryEventsCard', () => {
       <WorkflowHistoryEventsCard
         events={events}
         eventsMetadata={eventsMetadata}
+        decodedPageUrlParams={mockParams}
       />
     );
 
-    expect(screen.queryByText('Json eventId:')).not.toBeInTheDocument();
+    expect(screen.queryByText('Details eventId:')).not.toBeInTheDocument();
   });
 
   it('expand panel onClick', async () => {
@@ -83,6 +94,7 @@ describe('WorkflowHistoryEventsCard', () => {
       <WorkflowHistoryEventsCard
         events={events}
         eventsMetadata={eventsMetadata}
+        decodedPageUrlParams={mockParams}
       />
     );
     expect(
@@ -92,7 +104,9 @@ describe('WorkflowHistoryEventsCard', () => {
     await act(async () => {
       await userEvent.click(screen.getByText('Second event'));
     });
-    const panelContent = screen.getByText(`Json eventId: ${events[1].eventId}`);
+    const panelContent = screen.getByText(
+      `Details eventId: ${events[1].eventId}`
+    );
     expect(panelContent).toBeInTheDocument();
   });
 
@@ -108,6 +122,7 @@ describe('WorkflowHistoryEventsCard', () => {
       <WorkflowHistoryEventsCard
         events={events}
         eventsMetadata={eventsMetadata}
+        decodedPageUrlParams={mockParams}
         showEventPlaceholder
       />
     );
@@ -121,6 +136,7 @@ describe('WorkflowHistoryEventsCard', () => {
       <WorkflowHistoryEventsCard
         events={events}
         eventsMetadata={eventsMetadata}
+        decodedPageUrlParams={mockParams}
         showEventPlaceholder
       />
     );

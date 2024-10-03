@@ -1,3 +1,5 @@
+import { type z } from 'zod';
+
 import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
 
 import formatActivityTaskCancelRequestedEvent from '../format-workflow-history-event/format-activity-task-cancel-requested-event';
@@ -379,3 +381,173 @@ export const getFormatHistoryEventSchema = function (event: HistoryEvent) {
       return unExistingEventType(event.attributes); // should not be unreachable, used to show a type error if not all attributes cases are covered
   }
 };
+
+export type FormattedWorkflowExecutionStartedEvent = z.infer<
+  typeof formatWorkflowExecutionStartedEventSchema
+>;
+export type FormattedWorkflowExecutionCompletedEvent = z.infer<
+  typeof formatWorkflowExecutionCompletedEventSchema
+>;
+export type FormattedWorkflowExecutionFailedEvent = z.infer<
+  typeof formatWorkflowExecutionFailedEventSchema
+>;
+export type FormattedWorkflowExecutionTimedOutEvent = z.infer<
+  typeof formatWorkflowExecutionTimedOutEventSchema
+>;
+export type FormattedWorkflowExecutionSignaledEvent = z.infer<
+  typeof formatWorkflowExecutionSignaledEventSchema
+>;
+export type FormattedWorkflowExecutionTerminatedEvent = z.infer<
+  typeof formatWorkflowExecutionTerminatedEventSchema
+>;
+export type FormattedWorkflowExecutionCanceledEvent = z.infer<
+  typeof formatWorkflowExecutionCanceledEventSchema
+>;
+export type FormattedWorkflowExecutionContinuedAsNewEvent = z.infer<
+  typeof formatWorkflowExecutionContinuedAsNewEventSchema
+>;
+export type FormattedWorkflowExecutionCancelRequestedEventAttributesSchema =
+  z.infer<typeof formatWorkflowExecutionCancelRequestedEventAttributesSchema>;
+export type FormattedDecisionTaskCompletedEvent = z.infer<
+  typeof formatDecisionTaskCompletedEventSchema
+>;
+export type FormattedDecisionTaskFailedEvent = z.infer<
+  typeof formatDecisionTaskFailedEventSchema
+>;
+export type FormattedDecisionTaskScheduledEvent = z.infer<
+  typeof formatDecisionTaskScheduledEventSchema
+>;
+export type FormattedDecisionTaskStartedEvent = z.infer<
+  typeof formatDecisionTaskStartedEventSchema
+>;
+export type FormattedDecisionTaskTimedOutEvent = z.infer<
+  typeof formatDecisionTaskTimedOutEventSchema
+>;
+export type FormattedActivityTaskCancelRequestedEvent = z.infer<
+  typeof formatActivityTaskCancelRequestedEventSchema
+>;
+export type FormattedActivityTaskCanceledEvent = z.infer<
+  typeof formatActivityTaskCanceledEventSchema
+>;
+export type FormattedActivityTaskCompletedEvent = z.infer<
+  typeof formatActivityTaskCompletedEventSchema
+>;
+export type FormattedActivityTaskFailedEvent = z.infer<
+  typeof formatActivityTaskFailedEventSchema
+>;
+export type FormattedActivityTaskScheduledEvent = z.infer<
+  typeof formatActivityTaskScheduledEventSchema
+>;
+export type FormattedActivityTaskStartedEvent = z.infer<
+  typeof formatActivityTaskStartedEventSchema
+>;
+export type FormattedActivityTaskTimedOutEvent = z.infer<
+  typeof formatActivityTaskTimedOutEventSchema
+>;
+export type FormattedRequestCancelActivityTaskFailedEvent = z.infer<
+  typeof formatRequestCancelActivityTaskFailedEventSchema
+>;
+export type FormattedTimerCanceledEvent = z.infer<
+  typeof formatTimerCanceledEventSchema
+>;
+export type FormattedTimerFiredEvent = z.infer<
+  typeof formatTimerFiredEventSchema
+>;
+export type FormattedTimerStartedEvent = z.infer<
+  typeof formatTimerStartedEventSchema
+>;
+export type FormattedCancelTimerFailedEvent = z.infer<
+  typeof formatCancelTimerFailedEventSchema
+>;
+export type FormattedMarkerRecordedEvent = z.infer<
+  typeof formatMarkerRecordedEventSchema
+>;
+export type FormattedExternalWorkflowExecutionCancelRequestedEvent = z.infer<
+  typeof formatExternalWorkflowExecutionCancelRequestedEventSchema
+>;
+export type FormattedExternalWorkflowExecutionSignaledEvent = z.infer<
+  typeof formatExternalWorkflowExecutionSignaledEventSchema
+>;
+export type FormattedSignalExternalWorkflowExecutionFailedEvent = z.infer<
+  typeof formatSignalExternalWorkflowExecutionFailedEventSchema
+>;
+export type FormattedSignalExternalWorkflowExecutionInitiatedEvent = z.infer<
+  typeof formatSignalExternalWorkflowExecutionInitiatedEventSchema
+>;
+export type FormattedRequestCancelExternalWorkflowExecutionFailedEvent =
+  z.infer<typeof formatRequestCancelExternalWorkflowExecutionFailedEventSchema>;
+export type FormattedRequestCancelExternalWorkflowExecutionInitiatedEvent =
+  z.infer<
+    typeof formatRequestCancelExternalWorkflowExecutionInitiatedEventSchema
+  >;
+export type FormattedChildWorkflowExecutionCanceledEvent = z.infer<
+  typeof formatChildWorkflowExecutionCanceledEventSchema
+>;
+export type FormattedChildWorkflowExecutionCompletedEvent = z.infer<
+  typeof formatChildWorkflowExecutionCompletedEventSchema
+>;
+export type FormattedChildWorkflowExecutionFailedEvent = z.infer<
+  typeof formatChildWorkflowExecutionFailedEventSchema
+>;
+export type FormattedChildWorkflowExecutionStartedEvent = z.infer<
+  typeof formatChildWorkflowExecutionStartedEventSchema
+>;
+export type FormattedChildWorkflowExecutionTerminatedEvent = z.infer<
+  typeof formatChildWorkflowExecutionTerminatedEventSchema
+>;
+export type FormattedChildWorkflowExecutionTimedOutEvent = z.infer<
+  typeof formatChildWorkflowExecutionTimedOutEventSchema
+>;
+export type FormattedStartChildWorkflowExecutionFailedEvent = z.infer<
+  typeof formatStartChildWorkflowExecutionFailedEventSchema
+>;
+export type FormattedStartChildWorkflowExecutionInitiatedEvent = z.infer<
+  typeof formatStartChildWorkflowExecutionInitiatedEventSchema
+>;
+export type FormattedUpsertWorkflowSearchAttributesEvent = z.infer<
+  typeof formatUpsertWorkflowSearchAttributesEventSchema
+>;
+
+export type FormattedHistoryEvent =
+  | FormattedWorkflowExecutionStartedEvent
+  | FormattedWorkflowExecutionCompletedEvent
+  | FormattedWorkflowExecutionFailedEvent
+  | FormattedWorkflowExecutionTimedOutEvent
+  | FormattedWorkflowExecutionSignaledEvent
+  | FormattedWorkflowExecutionTerminatedEvent
+  | FormattedWorkflowExecutionCanceledEvent
+  | FormattedWorkflowExecutionContinuedAsNewEvent
+  | FormattedWorkflowExecutionCancelRequestedEventAttributesSchema
+  | FormattedDecisionTaskCompletedEvent
+  | FormattedDecisionTaskFailedEvent
+  | FormattedDecisionTaskScheduledEvent
+  | FormattedDecisionTaskStartedEvent
+  | FormattedDecisionTaskTimedOutEvent
+  | FormattedActivityTaskCancelRequestedEvent
+  | FormattedActivityTaskCanceledEvent
+  | FormattedActivityTaskCompletedEvent
+  | FormattedActivityTaskFailedEvent
+  | FormattedActivityTaskScheduledEvent
+  | FormattedActivityTaskStartedEvent
+  | FormattedActivityTaskTimedOutEvent
+  | FormattedRequestCancelActivityTaskFailedEvent
+  | FormattedTimerCanceledEvent
+  | FormattedTimerFiredEvent
+  | FormattedTimerStartedEvent
+  | FormattedCancelTimerFailedEvent
+  | FormattedMarkerRecordedEvent
+  | FormattedExternalWorkflowExecutionCancelRequestedEvent
+  | FormattedExternalWorkflowExecutionSignaledEvent
+  | FormattedSignalExternalWorkflowExecutionFailedEvent
+  | FormattedSignalExternalWorkflowExecutionInitiatedEvent
+  | FormattedRequestCancelExternalWorkflowExecutionFailedEvent
+  | FormattedRequestCancelExternalWorkflowExecutionInitiatedEvent
+  | FormattedChildWorkflowExecutionCanceledEvent
+  | FormattedChildWorkflowExecutionCompletedEvent
+  | FormattedChildWorkflowExecutionFailedEvent
+  | FormattedChildWorkflowExecutionStartedEvent
+  | FormattedChildWorkflowExecutionTerminatedEvent
+  | FormattedChildWorkflowExecutionTimedOutEvent
+  | FormattedStartChildWorkflowExecutionFailedEvent
+  | FormattedStartChildWorkflowExecutionInitiatedEvent
+  | FormattedUpsertWorkflowSearchAttributesEvent;
