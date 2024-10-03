@@ -13,17 +13,18 @@ export type WorkflowHistoryEventDetailsFuncArgs = {
   value: any;
 };
 
+export type WorkflowHistoryEventDetailsValueComponentProps = {
+  entryKey: string;
+  entryPath: string;
+  entryValue: any;
+} & WorfklowHistoryProps['params'];
+
 export type WorkflowHistoryEventDetailsConfig = {
   name: string;
   getLabel?: (args: WorkflowHistoryEventDetailsFuncArgs) => string;
-  valueComponent?: React.ComponentType<
-    {
-      entryKey: string;
-      entryPath: string;
-      entryValue: any;
-    } & WorfklowHistoryProps['params']
-  >;
+  valueComponent?: React.ComponentType<WorkflowHistoryEventDetailsValueComponentProps>;
   hide?: (args: WorkflowHistoryEventDetailsFuncArgs) => boolean;
+  forceWrap?: boolean;
 } & (
   | { key: string }
   | { path: string }
