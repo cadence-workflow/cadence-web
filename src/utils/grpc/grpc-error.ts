@@ -37,7 +37,7 @@ export type GRPCInputError = Error & {
 
 export function getHTTPStatusCode(error: unknown) {
   if (error instanceof GRPCError) {
-    return error.httpStatusCode;
+    return error.httpStatusCode || 500;
   }
   return 500;
 }
