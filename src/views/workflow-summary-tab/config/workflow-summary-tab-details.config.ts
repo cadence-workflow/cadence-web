@@ -1,7 +1,7 @@
 import { createElement } from 'react';
 
+import WorkflowHistoryEventDetailsTaskListLink from '@/views/shared/workflow-history-event-details-task-list-link/workflow-history-event-details-task-list-link';
 import WorkflowStatusTag from '@/views/shared/workflow-status-tag/workflow-status-tag';
-import getWorkflowIsCompleted from '@/views/workflow-page/helpers/get-workflow-is-completed';
 import getWorkflowStatusTagProps from '@/views/workflow-page/helpers/get-workflow-status-tag-props';
 
 import { type WorkflowSummaryTabDetailsConfig } from '../workflow-summary-tab-details/workflow-summary-tab-details.types';
@@ -11,38 +11,29 @@ const workflowSummaryTabDetailsConfig: WorkflowSummaryTabDetailsConfig[] = [
   {
     key: 'status',
     getLabel: () => 'Status',
-    valueComponent: ({ lastEvent, params }) =>
+    valueComponent: ({ lastEvent, decodedPageUrlParams }) =>
       createElement(
         WorkflowStatusTag,
         getWorkflowStatusTagProps(lastEvent, {
-          cluster: params.cluster,
-          workflowId: params.workflowId,
-          domain: params.domain,
+          cluster: decodedPageUrlParams.cluster,
+          workflowId: decodedPageUrlParams.workflowId,
+          domain: decodedPageUrlParams.domain,
         })
       ),
   },
   {
-    key: 'lastEvent',
-    getLabel: () => 'Last event',
-    valueComponent: ({ lastEvent }) => {
-      return createElement(
-        'div',
-        { suppressHydrationWarning: true },
-        `${lastEvent?.eventType} (${new Date(lastEvent.timestamp).toLocaleString()})`
-      );
-    },
-  },
-  {
     key: 'continuedFrom',
     getLabel: () => 'Continued from',
-    valueComponent: ({ firstEvent, params }) => {
+    valueComponent: ({ firstEvent, decodedPageUrlParams }) => {
       const runId =
         firstEvent?.workflowExecutionStartedEventAttributes
           ?.continuedExecutionRunId;
-      return createElement(WorkflowSummaryTabDetailsExecutionLink, {
-        ...params,
-        runId,
-      });
+      if (runId) {
+        return createElement(WorkflowSummaryTabDetailsExecutionLink, {
+          ...decodedPageUrlParams,
+          runId,
+        });
+      }
     },
     hide: ({ firstEvent }) =>
       !firstEvent?.workflowExecutionStartedEventAttributes
@@ -51,7 +42,8 @@ const workflowSummaryTabDetailsConfig: WorkflowSummaryTabDetailsConfig[] = [
   {
     key: 'workflowId',
     getLabel: () => 'Workflow ID',
-    valueComponent: ({ params }) => params.workflowId,
+    valueComponent: ({ decodedPageUrlParams }) =>
+      decodedPageUrlParams.workflowId,
   },
   {
     key: 'workflowType',
@@ -62,29 +54,30 @@ const workflowSummaryTabDetailsConfig: WorkflowSummaryTabDetailsConfig[] = [
   {
     key: 'runId',
     getLabel: () => 'Run ID',
-    valueComponent: ({ params }) => params.runId,
+    valueComponent: ({ decodedPageUrlParams }) => decodedPageUrlParams.runId,
   },
   {
     key: 'startTime',
     getLabel: () => 'Start at',
-    valueComponent: ({ firstEvent }) =>
+    valueComponent: ({ formattedFirstEvent }) =>
       createElement(
         'div',
         { suppressHydrationWarning: true },
-        firstEvent?.timestamp
-          ? new Date(firstEvent.timestamp).toLocaleString()
+        formattedFirstEvent?.timestamp
+          ? new Date(formattedFirstEvent.timestamp).toLocaleString()
           : '-'
       ),
   },
   {
     key: 'endTime',
     getLabel: () => 'End time',
-    valueComponent: ({ lastEvent }) => {
-      const isCompletedEvent = getWorkflowIsCompleted(lastEvent.attributes);
+    valueComponent: ({ formattedCloseEvent }) => {
       return createElement(
         'div',
         { suppressHydrationWarning: true },
-        isCompletedEvent ? new Date(lastEvent.timestamp).toLocaleString() : '-'
+        formattedCloseEvent?.timestamp
+          ? new Date(formattedCloseEvent.timestamp).toLocaleString()
+          : '-'
       );
     },
   },
@@ -97,24 +90,40 @@ const workflowSummaryTabDetailsConfig: WorkflowSummaryTabDetailsConfig[] = [
       !firstEvent?.workflowExecutionStartedEventAttributes?.cronSchedule,
   },
   {
+    key: 'taskList',
+    getLabel: () => 'Task list',
+    valueComponent: ({ formattedFirstEvent, decodedPageUrlParams }) => {
+      if (formattedFirstEvent && 'taskList' in formattedFirstEvent) {
+        return createElement(WorkflowHistoryEventDetailsTaskListLink, {
+          domain: decodedPageUrlParams.domain,
+          cluster: decodedPageUrlParams.cluster,
+          taskList: formattedFirstEvent?.taskList,
+        });
+      }
+    },
+  },
+  {
     key: 'parentWorkflow',
     getLabel: () => 'Parent workflow',
-    valueComponent: ({ firstEvent, params }) => {
+    valueComponent: ({ decodedPageUrlParams, formattedFirstEvent }) => {
       const { runId, workflowId } =
-        firstEvent?.workflowExecutionStartedEventAttributes
-          ?.parentWorkflowExecution || {};
-      return createElement(WorkflowSummaryTabDetailsExecutionLink, {
-        domain:
-          firstEvent?.workflowExecutionStartedEventAttributes
-            ?.parentWorkflowDomain,
-        cluster: params.cluster,
-        workflowId,
-        runId,
-      });
+        formattedFirstEvent?.parentWorkflowExecution || {};
+      const domain = formattedFirstEvent?.parentWorkflowDomain;
+      if (runId && workflowId && domain && decodedPageUrlParams.cluster) {
+        return createElement(WorkflowSummaryTabDetailsExecutionLink, {
+          domain,
+          cluster: decodedPageUrlParams.cluster,
+          workflowId,
+          runId,
+        });
+      }
     },
-    hide: ({ firstEvent }) =>
-      !firstEvent?.workflowExecutionStartedEventAttributes
-        ?.parentWorkflowExecution?.runId,
+    hide: ({ formattedFirstEvent, decodedPageUrlParams }) => {
+      const { runId, workflowId } =
+        formattedFirstEvent?.parentWorkflowExecution || {};
+      const domain = formattedFirstEvent?.parentWorkflowDomain;
+      return !(runId && workflowId && domain && decodedPageUrlParams.cluster);
+    },
   },
 ];
 

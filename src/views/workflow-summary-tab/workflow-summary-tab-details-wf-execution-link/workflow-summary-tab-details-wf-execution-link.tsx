@@ -15,7 +15,7 @@ export default function WorkflowSummaryTabDetailsExecutionLink({
   return (
     <StyledLink
       $as={Link}
-      href={`/domains/${domain}/${cluster}/workflows/${workflowId}/${runId}`}
+      href={`/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows/${encodeURIComponent(workflowId)}/${encodeURIComponent(runId)}`}
       style={{ fontWeight: 'inherit' }}
     >
       {runId}

@@ -35,7 +35,7 @@ type TransformEventType<T extends string> = CapitalizeFirstLetter<
 >;
 
 const formatWorkflowHistoryEventType = <T extends HistoryEvent['attributes']>(
-  attributes: T | null
+  attributes: T
 ) => {
   if (!attributes) return attributes;
 
