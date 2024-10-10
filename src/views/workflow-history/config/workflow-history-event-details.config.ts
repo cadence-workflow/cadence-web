@@ -1,8 +1,10 @@
+import { createElement } from 'react';
+
 import formatDate from '@/utils/data-formatters/format-date';
 
+import WorkflowHistoryEventDetailsTaskListLink from '../../shared/workflow-history-event-details-task-list-link/workflow-history-event-details-task-list-link';
 import { type WorkflowHistoryEventDetailsConfig } from '../workflow-history-event-details/workflow-history-event-details.types';
 import WorkflowHistoryEventDetailsJson from '../workflow-history-event-details-json/workflow-history-event-details-json';
-import WorkflowHistoryEventDetailsTaskListLink from '../workflow-history-event-details-task-list-link/workflow-history-event-details-task-list-link';
 
 const workflowHistoryEventDetailsConfig = [
   {
@@ -18,7 +20,13 @@ const workflowHistoryEventDetailsConfig = [
   {
     name: 'Tasklists as links',
     key: 'taskList',
-    valueComponent: WorkflowHistoryEventDetailsTaskListLink,
+    valueComponent: ({ entryValue, domain, cluster }) => {
+      return createElement(WorkflowHistoryEventDetailsTaskListLink, {
+        domain: domain,
+        cluster: cluster,
+        taskList: entryValue,
+      });
+    },
   },
   {
     name: 'Json as PrettyJson',
