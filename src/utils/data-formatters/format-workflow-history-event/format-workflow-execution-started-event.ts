@@ -60,7 +60,9 @@ const formatWorkflowExecutionStartedEvent = ({
   ...eventFields
 }: WorkflowExecutionStartedEvent) => {
   return {
-    ...formatWorkflowCommonEventFields(eventFields),
+    ...formatWorkflowCommonEventFields<'workflowExecutionStartedEventAttributes'>(
+      eventFields
+    ),
     ...eventAttributes,
     taskList: {
       kind: formatEnum(taskList?.kind, 'TASK_LIST_KIND'),

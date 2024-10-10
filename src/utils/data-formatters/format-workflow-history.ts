@@ -19,18 +19,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
+
 import formatWorkflowHistoryEvent from './format-workflow-history-event';
 
 const formatWorkflowHistory = ({
   archived,
-  history: { events },
+  history,
   rawHistory,
   ...response
-}: any) => ({
+}: GetWorkflowHistoryResponse) => ({
   ...response,
   archived: archived || null,
   history: {
-    events: events.map(formatWorkflowHistoryEvent),
+    events: (history?.events || []).map(formatWorkflowHistoryEvent),
   },
   rawHistory: rawHistory?.length ? rawHistory : null,
 });

@@ -2,6 +2,13 @@ import React from 'react';
 
 import { render, screen } from '@/test-utils/rtl';
 
+import formatWorkflowHistoryEvent from '@/utils/data-formatters/format-workflow-history-event';
+import { type FormattedHistoryEventForType } from '@/utils/data-formatters/schema/format-history-event-schema';
+import {
+  completeWorkflowExecutionEvent,
+  startWorkflowExecutionEvent,
+} from '@/views/workflow-history/__fixtures__/workflow-history-single-events';
+
 import WorkflowSummaryTabDetails from '../workflow-summary-tab-details';
 import {
   type WorkflowSummaryTabDetailsConfig,
@@ -32,7 +39,7 @@ jest.mock(
     ] satisfies WorkflowSummaryTabDetailsConfig[]
 );
 
-const params: Props['params'] = {
+const params: Props['decodedPageUrlParams'] = {
   cluster: 'testCluster',
   domain: 'testDomain',
   workflowId: 'testWorkflowId',
@@ -41,37 +48,36 @@ const params: Props['params'] = {
 };
 
 describe('WorkflowSummaryTabDetails', () => {
+  // TODO @assem.hafez enhance typing for formattedFirstHistoryEvent
+  //@ts-expect-error - TS is complaining about the type of formattedFirstHistoryEvent
+  const formattedFirstHistoryEvent: FormattedHistoryEventForType<'WorkflowExecutionStarted'> =
+    formatWorkflowHistoryEvent(startWorkflowExecutionEvent);
+  const formattedCloseHistoryEvent = formatWorkflowHistoryEvent(
+    completeWorkflowExecutionEvent
+  );
   it('should render workflow type name from firstHistoryEvent', () => {
-    const firstHistoryEvent = {
-      workflowExecutionStartedEventAttributes: {
-        workflowType: {
-          name: 'TestWorkflowType',
-        },
-      },
-    };
-    const lastHistoryEvent = {};
-
     render(
       <WorkflowSummaryTabDetails
-        firstHistoryEvent={firstHistoryEvent}
-        lastHistoryEvent={lastHistoryEvent}
-        params={params}
+        firstHistoryEvent={startWorkflowExecutionEvent}
+        lastHistoryEvent={completeWorkflowExecutionEvent}
+        formattedFirstHistoryEvent={formattedFirstHistoryEvent}
+        formattedCloseHistoryEvent={formattedCloseHistoryEvent}
+        decodedPageUrlParams={params}
       />
     );
 
     expect(screen.getByText(/Workflow:/)).toBeInTheDocument();
-    expect(screen.getByText('TestWorkflowType')).toBeInTheDocument();
+    expect(screen.getByText('workflow.cron')).toBeInTheDocument();
   });
 
   it('should render all detail rows that are not hidden', () => {
-    const firstHistoryEvent = {};
-    const lastHistoryEvent = {};
-
     render(
       <WorkflowSummaryTabDetails
-        firstHistoryEvent={firstHistoryEvent}
-        lastHistoryEvent={lastHistoryEvent}
-        params={params}
+        firstHistoryEvent={startWorkflowExecutionEvent}
+        lastHistoryEvent={completeWorkflowExecutionEvent}
+        formattedFirstHistoryEvent={formattedFirstHistoryEvent}
+        formattedCloseHistoryEvent={formattedCloseHistoryEvent}
+        decodedPageUrlParams={params}
       />
     );
 
@@ -82,14 +88,13 @@ describe('WorkflowSummaryTabDetails', () => {
   });
 
   it('should not render detail rows that are hidden', () => {
-    const firstHistoryEvent = {};
-    const lastHistoryEvent = {};
-
     render(
       <WorkflowSummaryTabDetails
-        firstHistoryEvent={firstHistoryEvent}
-        lastHistoryEvent={lastHistoryEvent}
-        params={params}
+        firstHistoryEvent={startWorkflowExecutionEvent}
+        lastHistoryEvent={completeWorkflowExecutionEvent}
+        formattedFirstHistoryEvent={formattedFirstHistoryEvent}
+        formattedCloseHistoryEvent={formattedCloseHistoryEvent}
+        decodedPageUrlParams={params}
       />
     );
 

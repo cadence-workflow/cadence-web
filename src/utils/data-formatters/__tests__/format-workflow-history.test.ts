@@ -34,8 +34,8 @@ describe('formatWorkflowHistory', () => {
       history: {
         events: [completeActivityTaskEvent],
       },
-      rawHistory: ['raw event data'],
-      otherData: 'some other data',
+      rawHistory: [],
+      nextPageToken: '',
     };
 
     const expectedOutput = {
@@ -47,8 +47,8 @@ describe('formatWorkflowHistory', () => {
           },
         ],
       },
-      rawHistory: ['raw event data'],
-      otherData: 'some other data',
+      rawHistory: null,
+      nextPageToken: '',
     };
 
     expect(formatWorkflowHistory(input)).toEqual(expectedOutput);
@@ -60,6 +60,7 @@ describe('formatWorkflowHistory', () => {
         events: [],
       },
       rawHistory: [],
+      nextPageToken: '',
     };
 
     const expectedOutput = {
@@ -68,8 +69,9 @@ describe('formatWorkflowHistory', () => {
         events: [],
       },
       rawHistory: null,
+      nextPageToken: '',
     };
-
+    //@ts-expect-error testing missing archived field
     expect(formatWorkflowHistory(input)).toEqual(expectedOutput);
   });
 
@@ -79,6 +81,8 @@ describe('formatWorkflowHistory', () => {
         events: [],
       },
       rawHistory: [],
+      nextPageToken: '',
+      archived: false,
     };
 
     const expectedOutput = {
@@ -87,6 +91,7 @@ describe('formatWorkflowHistory', () => {
         events: [],
       },
       rawHistory: null,
+      nextPageToken: '',
     };
 
     expect(formatWorkflowHistory(input)).toEqual(expectedOutput);
@@ -98,7 +103,8 @@ describe('formatWorkflowHistory', () => {
       history: {
         events: [],
       },
-      rawHistory: ['raw event data'],
+      rawHistory: [],
+      nextPageToken: '',
     };
 
     const expectedOutput = {
@@ -106,7 +112,8 @@ describe('formatWorkflowHistory', () => {
       history: {
         events: [],
       },
-      rawHistory: ['raw event data'],
+      rawHistory: null,
+      nextPageToken: '',
     };
 
     expect(formatWorkflowHistory(input)).toEqual(expectedOutput);
@@ -119,6 +126,7 @@ describe('formatWorkflowHistory', () => {
         events: [],
       },
       rawHistory: null,
+      nextPageToken: '',
     };
 
     const expectedOutput = {
@@ -127,8 +135,9 @@ describe('formatWorkflowHistory', () => {
         events: [],
       },
       rawHistory: null,
+      nextPageToken: '',
     };
-
+    //@ts-expect-error testing null raw history
     expect(formatWorkflowHistory(input)).toEqual(expectedOutput);
   });
 });

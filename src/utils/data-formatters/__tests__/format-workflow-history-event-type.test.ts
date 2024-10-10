@@ -24,6 +24,7 @@ describe('formatWorkflowHistoryEventType', () => {
   it('should handle null input correctly', () => {
     const input = null;
     const expectedOutput = null;
+    // @ts-expect-error Testing with wrong attribute null
     expect(formatWorkflowHistoryEventType(input)).toEqual(expectedOutput);
   });
 

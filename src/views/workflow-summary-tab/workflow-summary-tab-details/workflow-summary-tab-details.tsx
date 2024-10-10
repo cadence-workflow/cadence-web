@@ -13,7 +13,9 @@ import { type Props } from './workflow-summary-tab-details.types';
 export default function WorkflowSummaryTabDetails({
   firstHistoryEvent,
   lastHistoryEvent,
-  params,
+  formattedFirstHistoryEvent,
+  formattedCloseHistoryEvent,
+  decodedPageUrlParams,
 }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
 
@@ -35,8 +37,10 @@ export default function WorkflowSummaryTabDetails({
               !c.hide ||
               !c.hide({
                 firstEvent: firstHistoryEvent,
+                formattedFirstEvent: formattedFirstHistoryEvent,
+                formattedCloseEvent: formattedCloseHistoryEvent,
                 lastEvent: lastHistoryEvent,
-                params,
+                decodedPageUrlParams,
               })
           )
           .map((c) => (
@@ -46,7 +50,9 @@ export default function WorkflowSummaryTabDetails({
                 <c.valueComponent
                   firstEvent={firstHistoryEvent}
                   lastEvent={lastHistoryEvent}
-                  params={params}
+                  formattedFirstEvent={formattedFirstHistoryEvent}
+                  formattedCloseEvent={formattedCloseHistoryEvent}
+                  decodedPageUrlParams={decodedPageUrlParams}
                 />
               </div>
             </div>
