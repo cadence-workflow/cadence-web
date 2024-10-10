@@ -551,3 +551,7 @@ export type FormattedHistoryEvent =
   | FormattedStartChildWorkflowExecutionFailedEvent
   | FormattedStartChildWorkflowExecutionInitiatedEvent
   | FormattedUpsertWorkflowSearchAttributesEvent;
+
+export type FormattedHistoryEventForType<
+  T extends FormattedHistoryEvent['eventType'],
+> = Extract<FormattedHistoryEvent, { eventType: T }>;

@@ -9,15 +9,17 @@ import { type Props } from './workflow-history-event-details-task-list-link.type
 export default function WorkflowHistoryEventDetailsTaskListLink({
   cluster,
   domain,
-  entryValue,
+  taskList,
 }: Props) {
+  if (!taskList?.name) return null;
+  if (taskList.kind === 'STICKY' || !cluster || !domain) return taskList.name;
   return (
     <StyledLink
       $as={Link}
-      href={`/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/task-lists/${encodeURIComponent(entryValue.name)}`}
+      href={`/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/task-lists/${encodeURIComponent(taskList.name)}`}
       style={{ fontWeight: 'inherit' }}
     >
-      {entryValue.name}
+      {taskList?.name}
     </StyledLink>
   );
 }
