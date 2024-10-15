@@ -2,6 +2,9 @@ import React, { Suspense } from 'react';
 
 import { render, screen } from '@/test-utils/rtl';
 
+import { type DescribeWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeWorkflowExecutionResponse';
+import { type GetWorkflowExecutionHistoryResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/GetWorkflowExecutionHistoryResponse';
+import { startWorkflowExecutionEvent } from '@/views/workflow-history/__fixtures__/workflow-history-single-events';
 import { type WorkflowPageTabContentProps } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
 import WorkflowSummaryTab from '../workflow-summary-tab';
@@ -37,25 +40,25 @@ describe('WorkflowSummaryTab', () => {
           {
             path: '/api/domains/:domain/:cluster/workflows/:workflowId/:runId/history',
             httpMethod: 'GET',
-            //TODO: @assem.hafez Provide more realistic mock
             jsonResponse: {
               history: {
-                events: [
-                  {
-                    eventId: '13',
-                    attributes: 'workflowExecutionStartedEventAttributes',
-                    startAttributes: { input: 'startInput' },
-                    workflowExecutionStartedEventAttributes: {},
-                  },
-                  {
-                    eventId: '2',
-                    attributes: 'workflowExecutionCompletedEventAttributes',
-                    lastAttributes: { result: 'lastResult' },
-                    workflowExecutionCompletedEventAttributes: {},
-                  },
-                ],
+                events: [startWorkflowExecutionEvent],
               },
-            },
+              rawHistory: [],
+              nextPageToken: '',
+              archived: false,
+            } satisfies GetWorkflowExecutionHistoryResponse,
+          },
+          {
+            path: '/api/domains/:domain/:cluster/workflows/:workflowId/:runId',
+            httpMethod: 'GET',
+            jsonResponse: {
+              executionConfiguration: null,
+              pendingChildren: [],
+              pendingActivities: [],
+              pendingDecision: null,
+              workflowExecutionInfo: null,
+            } satisfies DescribeWorkflowExecutionResponse,
           },
         ],
       }
