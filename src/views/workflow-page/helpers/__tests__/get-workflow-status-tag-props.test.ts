@@ -1,4 +1,7 @@
 // Import the function to be tested
+import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
+import { continueAsNewWorkflowExecutionEvent } from '@/views/workflow-history/__fixtures__/workflow-history-single-events';
+
 import getWorkflowIsCompleted from '../get-workflow-is-completed';
 import getWorkflowStatusTagProps from '../get-workflow-status-tag-props';
 
@@ -20,7 +23,9 @@ describe('getWorkflowStatusTagProps', () => {
 
   it('should return INVALID (running) status if workflow is not completed', () => {
     mockedGetWorkflowIsCompleted.mockReturnValue(false);
-    const lastEvent = { attributes: 'someRunningEventAttributes' };
+    const lastEvent: Pick<HistoryEvent, 'attributes'> = {
+      attributes: 'workflowExecutionStartedEventAttributes',
+    };
 
     expect(getWorkflowStatusTagProps(lastEvent)).toEqual({
       status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
@@ -29,7 +34,9 @@ describe('getWorkflowStatusTagProps', () => {
 
   it('should return FAILED status if workflow failed', () => {
     mockedGetWorkflowIsCompleted.mockReturnValue(true);
-    const lastEvent = { attributes: 'workflowExecutionFailedEventAttributes' };
+    const lastEvent: Pick<HistoryEvent, 'attributes'> = {
+      attributes: 'workflowExecutionFailedEventAttributes',
+    };
 
     expect(getWorkflowStatusTagProps(lastEvent)).toEqual({
       status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_FAILED',
@@ -38,7 +45,7 @@ describe('getWorkflowStatusTagProps', () => {
 
   it('should return CANCELED status if workflow canceled or cancel requested', () => {
     mockedGetWorkflowIsCompleted.mockReturnValue(true);
-    const lastEvent = {
+    const lastEvent: Pick<HistoryEvent, 'attributes'> = {
       attributes: 'workflowExecutionCanceledEventAttributes',
     };
 
@@ -55,7 +62,7 @@ describe('getWorkflowStatusTagProps', () => {
 
   it('should return COMPLETED status if workflow completed', () => {
     mockedGetWorkflowIsCompleted.mockReturnValue(true);
-    const lastEvent = {
+    const lastEvent: Pick<HistoryEvent, 'attributes'> = {
       attributes: 'workflowExecutionCompletedEventAttributes',
     };
 
@@ -66,7 +73,7 @@ describe('getWorkflowStatusTagProps', () => {
 
   it('should return TERMINATED status if workflow terminated', () => {
     mockedGetWorkflowIsCompleted.mockReturnValue(true);
-    const lastEvent = {
+    const lastEvent: Pick<HistoryEvent, 'attributes'> = {
       attributes: 'workflowExecutionTerminatedEventAttributes',
     };
 
@@ -77,12 +84,11 @@ describe('getWorkflowStatusTagProps', () => {
 
   it('should return CONTINUED_AS_NEW status and link if workflow continued as new', () => {
     mockedGetWorkflowIsCompleted.mockReturnValue(true);
-    const lastEvent = {
-      attributes: 'workflowExecutionContinuedAsNewEventAttributes',
-      workflowExecutionContinuedAsNewEventAttributes: {
-        newExecutionRunId: 'newRunId',
-      },
-    };
+    const lastEvent = continueAsNewWorkflowExecutionEvent;
+    const newRunId =
+      continueAsNewWorkflowExecutionEvent
+        .workflowExecutionContinuedAsNewEventAttributes.newExecutionRunId;
+
     const workflowInfo = {
       cluster: 'testCluster',
       workflowId: 'testWorkflowId',
@@ -91,18 +97,13 @@ describe('getWorkflowStatusTagProps', () => {
 
     expect(getWorkflowStatusTagProps(lastEvent, workflowInfo)).toEqual({
       status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_CONTINUED_AS_NEW',
-      link: '/domains/testDomain/testCluster/workflows/testWorkflowId/newRunId',
+      link: `/domains/testDomain/testCluster/workflows/testWorkflowId/${newRunId}`,
     });
   });
 
   it('should return CONTINUED_AS_NEW status with undefined link if workflowInfo is incomplete', () => {
     mockedGetWorkflowIsCompleted.mockReturnValue(true);
-    const lastEvent = {
-      attributes: 'workflowExecutionContinuedAsNewEventAttributes',
-      workflowExecutionContinuedAsNewEventAttributes: {
-        newExecutionRunId: 'newRunId',
-      },
-    };
+    const lastEvent = continueAsNewWorkflowExecutionEvent;
 
     expect(getWorkflowStatusTagProps(lastEvent)).toEqual({
       status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_CONTINUED_AS_NEW',
@@ -112,7 +113,7 @@ describe('getWorkflowStatusTagProps', () => {
 
   it('should return TIMED_OUT status if workflow timed out', () => {
     mockedGetWorkflowIsCompleted.mockReturnValue(true);
-    const lastEvent = {
+    const lastEvent: Pick<HistoryEvent, 'attributes'> = {
       attributes: 'workflowExecutionTimedOutEventAttributes',
     };
 
@@ -123,7 +124,10 @@ describe('getWorkflowStatusTagProps', () => {
 
   it('should return INVALID status for unrecognized attributes', () => {
     mockedGetWorkflowIsCompleted.mockReturnValue(true);
-    const lastEvent = { attributes: 'someUnknownEventAttributes' };
+    const lastEvent: Pick<HistoryEvent, 'attributes'> = {
+      // @ts-expect-error testing invalid attributes
+      attributes: 'someUnknownEventAttributes',
+    };
 
     expect(getWorkflowStatusTagProps(lastEvent)).toEqual({
       status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',

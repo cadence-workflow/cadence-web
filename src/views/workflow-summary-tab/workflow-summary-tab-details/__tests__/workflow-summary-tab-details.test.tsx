@@ -2,6 +2,7 @@ import React from 'react';
 
 import { render, screen } from '@/test-utils/rtl';
 
+import { type DescribeWorkflowResponse } from '@/route-handlers/describe-workflow/describe-workflow.types';
 import formatWorkflowHistoryEvent from '@/utils/data-formatters/format-workflow-history-event';
 import { type FormattedHistoryEventForType } from '@/utils/data-formatters/schema/format-history-event-schema';
 import {
@@ -47,6 +48,14 @@ const params: Props['decodedPageUrlParams'] = {
   workflowTab: 'summary',
 };
 
+const mockWorkflowDetails: DescribeWorkflowResponse = {
+  executionConfiguration: null,
+  pendingChildren: [],
+  pendingActivities: [],
+  pendingDecision: null,
+  workflowExecutionInfo: null,
+};
+
 describe('WorkflowSummaryTabDetails', () => {
   // TODO @assem.hafez enhance typing for formattedFirstHistoryEvent
   //@ts-expect-error - TS is complaining about the type of formattedFirstHistoryEvent
@@ -59,9 +68,10 @@ describe('WorkflowSummaryTabDetails', () => {
     render(
       <WorkflowSummaryTabDetails
         firstHistoryEvent={startWorkflowExecutionEvent}
-        lastHistoryEvent={completeWorkflowExecutionEvent}
+        closeHistoryEvent={completeWorkflowExecutionEvent}
         formattedFirstHistoryEvent={formattedFirstHistoryEvent}
         formattedCloseHistoryEvent={formattedCloseHistoryEvent}
+        workflowDetails={mockWorkflowDetails}
         decodedPageUrlParams={params}
       />
     );
@@ -74,9 +84,10 @@ describe('WorkflowSummaryTabDetails', () => {
     render(
       <WorkflowSummaryTabDetails
         firstHistoryEvent={startWorkflowExecutionEvent}
-        lastHistoryEvent={completeWorkflowExecutionEvent}
+        closeHistoryEvent={completeWorkflowExecutionEvent}
         formattedFirstHistoryEvent={formattedFirstHistoryEvent}
         formattedCloseHistoryEvent={formattedCloseHistoryEvent}
+        workflowDetails={mockWorkflowDetails}
         decodedPageUrlParams={params}
       />
     );
@@ -91,9 +102,10 @@ describe('WorkflowSummaryTabDetails', () => {
     render(
       <WorkflowSummaryTabDetails
         firstHistoryEvent={startWorkflowExecutionEvent}
-        lastHistoryEvent={completeWorkflowExecutionEvent}
+        closeHistoryEvent={completeWorkflowExecutionEvent}
         formattedFirstHistoryEvent={formattedFirstHistoryEvent}
         formattedCloseHistoryEvent={formattedCloseHistoryEvent}
+        workflowDetails={mockWorkflowDetails}
         decodedPageUrlParams={params}
       />
     );

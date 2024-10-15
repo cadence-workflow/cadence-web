@@ -11,10 +11,10 @@ const workflowSummaryTabDetailsConfig: WorkflowSummaryTabDetailsConfig[] = [
   {
     key: 'status',
     getLabel: () => 'Status',
-    valueComponent: ({ lastEvent, decodedPageUrlParams }) =>
+    valueComponent: ({ closeEvent, decodedPageUrlParams }) =>
       createElement(
         WorkflowStatusTag,
-        getWorkflowStatusTagProps(lastEvent, {
+        getWorkflowStatusTagProps(closeEvent, {
           cluster: decodedPageUrlParams.cluster,
           workflowId: decodedPageUrlParams.workflowId,
           domain: decodedPageUrlParams.domain,
