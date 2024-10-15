@@ -1,9 +1,9 @@
 'use client';
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { Cell, Grid } from 'baseui/layout-grid';
 import { useInView } from 'react-intersection-observer';
 
+import PageSection from '@/components/page-section/page-section';
 import Table from '@/components/table/table';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
@@ -77,39 +77,37 @@ function DomainsTable({
   });
 
   return (
-    <section className={cls.tableContainer}>
-      <Grid>
-        <Cell span={12}>
-          <Table
-            data={paginatedDomains}
-            columns={tableColumns}
-            shouldShowResults={true}
-            onSort={(columnID) =>
-              setQueryParams({
-                sortColumn: columnID,
-                sortOrder: toggleSortOrder({
-                  currentSortColumn: queryParams.sortColumn,
-                  currentSortOrder: queryParams.sortOrder,
-                  newSortColumn: columnID,
-                }),
-              })
-            }
-            sortColumn={queryParams.sortColumn}
-            sortOrder={queryParams.sortOrder as SortOrder}
-            endMessage={
-              <DomainsTableEndMessage
-                key={visibleListItems}
-                canLoadMoreResults={
-                  paginatedDomains.length < sortedDomains.length
-                }
-                hasSearchResults={sortedDomains.length > 0}
-                infiniteScrollTargetRef={loadMoreRef}
-              />
-            }
-          />
-        </Cell>
-      </Grid>
-    </section>
+    <PageSection>
+      <section className={cls.tableContainer}>
+        <Table
+          data={paginatedDomains}
+          columns={tableColumns}
+          shouldShowResults={true}
+          onSort={(columnID) =>
+            setQueryParams({
+              sortColumn: columnID,
+              sortOrder: toggleSortOrder({
+                currentSortColumn: queryParams.sortColumn,
+                currentSortOrder: queryParams.sortOrder,
+                newSortColumn: columnID,
+              }),
+            })
+          }
+          sortColumn={queryParams.sortColumn}
+          sortOrder={queryParams.sortOrder as SortOrder}
+          endMessage={
+            <DomainsTableEndMessage
+              key={visibleListItems}
+              canLoadMoreResults={
+                paginatedDomains.length < sortedDomains.length
+              }
+              hasSearchResults={sortedDomains.length > 0}
+              infiniteScrollTargetRef={loadMoreRef}
+            />
+          }
+        />
+      </section>
+    </PageSection>
   );
 }
 

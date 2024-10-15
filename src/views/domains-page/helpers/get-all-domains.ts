@@ -12,7 +12,7 @@ import getUniqueDomains from './get-unique-domains';
 const MAX_DOMAINS_TO_FETCH = 2000;
 
 export const getAllDomains = async () => {
-  const results = await Promise.all(
+  const results = await Promise.allSettled(
     CLUSTERS_CONFIGS.map(({ clusterName }) =>
       grpcClient
         .getClusterMethods(clusterName)
@@ -31,7 +31,15 @@ export const getAllDomains = async () => {
         })
     )
   );
-  return { domains: getUniqueDomains(results.flat(1)) };
+
+  return {
+    domains: getUniqueDomains(
+      results.flatMap((res) => (res.status === 'fulfilled' ? res.value : []))
+    ),
+    failedClusters: CLUSTERS_CONFIGS.map((config) => config.clusterName).filter(
+      (_, index) => results[index].status === 'rejected'
+    ),
+  };
 };
 
 export const getCachedAllDomains = cache(
