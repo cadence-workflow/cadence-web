@@ -26,6 +26,7 @@ const workflowCompletedAttributes = [
   'workflowExecutionContinuedAsNewEventAttributes',
   'workflowExecutionFailedEventAttributes',
   'workflowExecutionTerminatedEventAttributes',
+  'workflowExecutionTimedOutEventAttributes',
 ];
 
 const getWorkflowIsCompleted = (lastEventAttributes: string) =>

@@ -184,7 +184,10 @@ const externalExecutionInfoSchema = z.object({
 const historyEventBaseSchema = z.object({
   eventId: z.string(),
   eventTime: timestampSchema.nullable(),
-  version: z.string(),
+  // version is recieved as a numeric value if it is 0
+  // this is unexpected behavior from grpc protoLoader
+  // coerce the value to string to avoid the issue
+  version: z.coerce.string(),
   taskId: z.string(),
 });
 

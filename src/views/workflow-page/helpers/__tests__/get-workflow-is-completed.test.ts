@@ -9,6 +9,7 @@ describe('getWorkflowIsCompleted', () => {
     'workflowExecutionContinuedAsNewEventAttributes',
     'workflowExecutionFailedEventAttributes',
     'workflowExecutionTerminatedEventAttributes',
+    'workflowExecutionTimedOutEventAttributes',
   ];
 
   it('should return true for attributes in the workflowCompletedAttributes list', () => {
