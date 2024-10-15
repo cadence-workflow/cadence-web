@@ -2,11 +2,13 @@ import React, { Suspense } from 'react';
 
 import AsyncPropsLoader from '@/components/async-props-loader/async-props-loader';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
-import DomainsPageFilters from '@/views/domains-page/domains-page-filters/domains-page-filters';
-import DomainsPageTitle from '@/views/domains-page/domains-page-title/domains-page-title';
-import DomainsPageTitleBadge from '@/views/domains-page/domains-page-title-badge/domains-page-title-badge';
-import DomainsTable from '@/views/domains-page/domains-table/domains-table';
-import { getCachedAllDomains } from '@/views/domains-page/helpers/get-all-domains';
+
+import DomainsPageErrorBanner from './domains-page-error-banner/domains-page-error-banner';
+import DomainsPageFilters from './domains-page-filters/domains-page-filters';
+import DomainsPageTitle from './domains-page-title/domains-page-title';
+import DomainsPageTitleBadge from './domains-page-title-badge/domains-page-title-badge';
+import DomainsTable from './domains-table/domains-table';
+import { getCachedAllDomains } from './helpers/get-all-domains';
 
 export default async function DomainsPage() {
   return (
@@ -25,6 +27,15 @@ export default async function DomainsPage() {
         }
       />
       <DomainsPageFilters />
+      <Suspense>
+        <AsyncPropsLoader
+          component={DomainsPageErrorBanner}
+          getAsyncProps={async () => {
+            const res = await getCachedAllDomains();
+            return { failedClusters: res.failedClusters };
+          }}
+        />
+      </Suspense>
       <Suspense fallback={<SectionLoadingIndicator />}>
         <AsyncPropsLoader
           component={DomainsTable}
