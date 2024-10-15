@@ -6,15 +6,17 @@ import queryString from 'query-string';
 
 import PageSection from '@/components/page-section/page-section';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
+import { type DescribeWorkflowResponse } from '@/route-handlers/describe-workflow/describe-workflow.types';
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
 import formatWorkflowHistory from '@/utils/data-formatters/format-workflow-history';
+import formatWorkflowHistoryEvent from '@/utils/data-formatters/format-workflow-history-event';
 import { type FormattedHistoryEventForType } from '@/utils/data-formatters/schema/format-history-event-schema';
 import decodeUrlParams from '@/utils/decode-url-params';
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
 import type { WorkflowPageTabContentProps } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
-import getWorkflowIsCompleted from '../workflow-page/helpers/get-workflow-is-completed';
+import WORKFLOW_PAGE_STATUS_REFRESH_INTERVAL from '../workflow-page/config/workflow-page-status-refresh-interval.config';
 
 import WorkflowSummaryTabDetails from './workflow-summary-tab-details/workflow-summary-tab-details';
 import WorkflowSummaryTabJsonView from './workflow-summary-tab-json-view/workflow-summary-tab-json-view';
@@ -26,30 +28,53 @@ export default function WorkflowSummaryTab({
   const { cls } = useStyletronClasses(cssStyles);
   const decodedParams =
     decodeUrlParams<WorkflowPageTabContentProps['params']>(params);
-  const { workflowTab, ...historyQueryParams } = params;
+  const { workflowTab, ...paramsWithoutTab } = params;
+  const historyParams = { ...paramsWithoutTab, pageSize: 1 };
   const { data: workflowHistory } = useSuspenseQuery<
     GetWorkflowHistoryResponse,
     RequestError,
     GetWorkflowHistoryResponse,
-    [string, typeof historyQueryParams]
+    [string, typeof historyParams]
   >({
-    queryKey: ['workflow_history', historyQueryParams] as const,
-    queryFn: ({ queryKey: [_, qp] }) =>
+    queryKey: ['workflow_history', historyParams] as const,
+    queryFn: ({ queryKey: [_, p] }) =>
       request(
-        `/api/domains/${qp.domain}/${qp.cluster}/workflows/${qp.workflowId}/${qp.runId}/history?${queryString.stringify({ pageSize: 600 })}`
+        `/api/domains/${p.domain}/${p.cluster}/workflows/${p.workflowId}/${p.runId}/history?${queryString.stringify({ pageSize: p.pageSize })}`
       ).then((res) => res.json()),
   });
+
+  const { data: workflowDetails } = useSuspenseQuery<
+    DescribeWorkflowResponse,
+    RequestError,
+    DescribeWorkflowResponse,
+    [string, typeof paramsWithoutTab]
+  >({
+    queryKey: ['describe_workflow', paramsWithoutTab] as const,
+    queryFn: ({ queryKey: [_, p] }) =>
+      request(
+        `/api/domains/${p.domain}/${p.cluster}/workflows/${p.workflowId}/${p.runId}`
+      ).then((res) => res.json()),
+    refetchInterval: (query) => {
+      const { closeStatus } = query.state.data?.workflowExecutionInfo || {};
+      if (
+        !closeStatus ||
+        closeStatus === 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
+      )
+        return WORKFLOW_PAGE_STATUS_REFRESH_INTERVAL;
+
+      return false;
+    },
+  });
+
   const historyEvents = workflowHistory?.history?.events || [];
   const firstEvent = historyEvents[0];
-  const lastEvent = historyEvents[historyEvents.length - 1];
+  const closeEvent = workflowDetails.workflowExecutionInfo?.closeEvent || null;
   const formattedWorkflowHistory = formatWorkflowHistory(workflowHistory);
-  const workflowEvents = formattedWorkflowHistory?.history?.events;
   const formattedStartEvent = formattedWorkflowHistory?.history
     ?.events?.[0] as FormattedHistoryEventForType<'WorkflowExecutionStarted'>;
 
-  const formattedLastEvent = workflowEvents?.[workflowEvents.length - 1];
-  const formattedCloseEvent = getWorkflowIsCompleted(lastEvent?.attributes)
-    ? formattedLastEvent
+  const formattedCloseEvent = closeEvent
+    ? formatWorkflowHistoryEvent(closeEvent)
     : null;
 
   const resultJson =
@@ -63,9 +88,10 @@ export default function WorkflowSummaryTab({
         <div className={cls.mainContent}>
           <WorkflowSummaryTabDetails
             firstHistoryEvent={firstEvent}
-            lastHistoryEvent={lastEvent}
+            closeHistoryEvent={closeEvent}
             formattedFirstHistoryEvent={formattedStartEvent}
             formattedCloseHistoryEvent={formattedCloseEvent}
+            workflowDetails={workflowDetails}
             decodedPageUrlParams={decodedParams}
           />
           {/*  <div>Taskslist</div> */}

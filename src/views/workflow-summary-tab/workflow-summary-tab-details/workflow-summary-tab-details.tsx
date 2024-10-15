@@ -12,10 +12,11 @@ import { type Props } from './workflow-summary-tab-details.types';
 
 export default function WorkflowSummaryTabDetails({
   firstHistoryEvent,
-  lastHistoryEvent,
+  closeHistoryEvent,
   formattedFirstHistoryEvent,
   formattedCloseHistoryEvent,
   decodedPageUrlParams,
+  workflowDetails,
 }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
 
@@ -39,7 +40,8 @@ export default function WorkflowSummaryTabDetails({
                 firstEvent: firstHistoryEvent,
                 formattedFirstEvent: formattedFirstHistoryEvent,
                 formattedCloseEvent: formattedCloseHistoryEvent,
-                lastEvent: lastHistoryEvent,
+                closeEvent: closeHistoryEvent,
+                workflowDetails,
                 decodedPageUrlParams,
               })
           )
@@ -49,9 +51,10 @@ export default function WorkflowSummaryTabDetails({
               <div className={cls.detailsValue}>
                 <c.valueComponent
                   firstEvent={firstHistoryEvent}
-                  lastEvent={lastHistoryEvent}
+                  closeEvent={closeHistoryEvent}
                   formattedFirstEvent={formattedFirstHistoryEvent}
                   formattedCloseEvent={formattedCloseHistoryEvent}
+                  workflowDetails={workflowDetails}
                   decodedPageUrlParams={decodedPageUrlParams}
                 />
               </div>

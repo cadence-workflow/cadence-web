@@ -19,18 +19,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
 import type { Props as WorkflowStatusTagProps } from '@/views/shared/workflow-status-tag/workflow-status-tag-icon/workflow-status-tag-icon.types';
 
 import getWorkflowIsCompleted from './get-workflow-is-completed';
 
 //TODO: @assem.hafez add type form response to lastEvent
 const getWorkflowStatusTagProps = (
-  lastEvent: any,
+  lastEvent?: Pick<
+    HistoryEvent,
+    'attributes' | 'workflowExecutionContinuedAsNewEventAttributes'
+  > | null,
   workflowInfo?: { cluster: string; workflowId: string; domain: string }
 ): Pick<WorkflowStatusTagProps, 'status' | 'link'> => {
-  const isCompleted = getWorkflowIsCompleted(lastEvent?.attributes);
+  if (!lastEvent || !lastEvent.attributes)
+    return { status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID' };
 
-  if (!lastEvent || !isCompleted)
+  const isCompleted = getWorkflowIsCompleted(lastEvent.attributes);
+  if (!isCompleted)
     return { status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID' };
 
   switch (lastEvent?.attributes) {
