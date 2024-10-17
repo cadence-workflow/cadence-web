@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Tabs, Tab } from 'baseui/tabs-motion';
 
-import { overrides } from './page-tabs.styles';
+import { overrides, styled } from './page-tabs.styles';
 import { type Props } from './page-tabs.types';
 
 export default function PageTabs({
@@ -18,12 +18,17 @@ export default function PageTabs({
       }}
       overrides={overrides.tabs}
     >
-      {tabList.map(({ key, title, artwork }) => (
+      {tabList.map((tab) => (
         <Tab
           overrides={overrides.tab}
-          key={key}
-          title={title}
-          artwork={artwork}
+          key={tab.key}
+          title={
+            <styled.TabTitleContainer>
+              {tab.title}
+              {tab.endEnhancer ? <tab.endEnhancer /> : null}
+            </styled.TabTitleContainer>
+          }
+          artwork={tab.artwork}
         />
       ))}
     </Tabs>

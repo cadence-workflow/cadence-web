@@ -6,7 +6,6 @@ import queryString from 'query-string';
 
 import PageSection from '@/components/page-section/page-section';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
-import { type DescribeWorkflowResponse } from '@/route-handlers/describe-workflow/describe-workflow.types';
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
 import formatWorkflowHistory from '@/utils/data-formatters/format-workflow-history';
 import formatWorkflowHistoryEvent from '@/utils/data-formatters/format-workflow-history-event';
@@ -16,7 +15,7 @@ import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
 import type { WorkflowPageTabContentProps } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
-import WORKFLOW_PAGE_STATUS_REFRESH_INTERVAL from '../workflow-page/config/workflow-page-status-refresh-interval.config';
+import useDescribeWorkflow from '../workflow-page/hooks/use-describe-workflow';
 
 import WorkflowSummaryTabDetails from './workflow-summary-tab-details/workflow-summary-tab-details';
 import WorkflowSummaryTabJsonView from './workflow-summary-tab-json-view/workflow-summary-tab-json-view';
@@ -43,27 +42,8 @@ export default function WorkflowSummaryTab({
       ).then((res) => res.json()),
   });
 
-  const { data: workflowDetails } = useSuspenseQuery<
-    DescribeWorkflowResponse,
-    RequestError,
-    DescribeWorkflowResponse,
-    [string, typeof paramsWithoutTab]
-  >({
-    queryKey: ['describe_workflow', paramsWithoutTab] as const,
-    queryFn: ({ queryKey: [_, p] }) =>
-      request(
-        `/api/domains/${p.domain}/${p.cluster}/workflows/${p.workflowId}/${p.runId}`
-      ).then((res) => res.json()),
-    refetchInterval: (query) => {
-      const { closeStatus } = query.state.data?.workflowExecutionInfo || {};
-      if (
-        !closeStatus ||
-        closeStatus === 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
-      )
-        return WORKFLOW_PAGE_STATUS_REFRESH_INTERVAL;
-
-      return false;
-    },
+  const { data: workflowDetails } = useDescribeWorkflow({
+    ...paramsWithoutTab,
   });
 
   const historyEvents = workflowHistory?.history?.events || [];
