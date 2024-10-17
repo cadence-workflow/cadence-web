@@ -1,8 +1,17 @@
-import type { Theme } from 'baseui';
+import { styled as createStyled, type Theme } from 'baseui';
 import { type TabOverrides, type TabsOverrides } from 'baseui/tabs-motion';
 import type { StyleObject } from 'styletron-react';
 
 import { getMediaQueryMargins } from '@/utils/media-query/get-media-queries-margins';
+
+export const styled = {
+  TabTitleContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: $theme.sizing.scale400,
+  })),
+};
 
 export const overrides = {
   tabs: {
