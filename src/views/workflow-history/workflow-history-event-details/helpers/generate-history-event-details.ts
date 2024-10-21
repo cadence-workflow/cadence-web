@@ -1,40 +1,73 @@
 import isObjectLike from 'lodash/isObjectLike';
 
-import { type WorkflowHistoryEventDetailsEntry } from '../workflow-history-event-details.types';
+import {
+  type WorkflowHistoryEventDetailsGroupEntry,
+  type WorkflowHistoryEventDetailsEntry,
+  type WorkflowHistoryEventDetailsEntries,
+} from '../workflow-history-event-details.types';
 
 import getHistoryEventFieldRenderConfig from './get-history-event-field-render-config';
 
-function flatten<E extends object>(
-  prefix: string,
-  objValue: any,
-  event: E,
-  result: WorkflowHistoryEventDetailsEntry[]
-) {
-  Object.entries(objValue).forEach(([k, value]) => {
-    const path = prefix ? `${prefix}.${k}` : k;
+export default function generateHistoryEventDetails({
+  details,
+  parentPath = '',
+}: {
+  details: object;
+  parentPath?: string;
+}): WorkflowHistoryEventDetailsEntries {
+  if (details === null || details === undefined) {
+    return [];
+  }
+
+  const result: WorkflowHistoryEventDetailsEntries = [];
+
+  Object.entries(details).forEach(([key, value]) => {
+    const path = parentPath ? `${parentPath}.${key}` : key;
 
     const renderConfig = getHistoryEventFieldRenderConfig({
-      key: k,
+      key,
       path,
       value,
     });
-    if (renderConfig?.hide && renderConfig.hide({ key: k, path, value })) {
+
+    if (renderConfig?.hide && renderConfig.hide({ key, path, value })) {
       return;
     }
 
     if (!renderConfig?.valueComponent && isObjectLike(value)) {
-      flatten(path, value, event, result);
+      const entries = Object.entries(value);
+      if (entries.length === 1) {
+        result.push(
+          ...generateHistoryEventDetails({
+            details: value,
+            parentPath: path,
+          })
+        );
+      } else {
+        const groupEntry: WorkflowHistoryEventDetailsGroupEntry = {
+          key,
+          path,
+          isGroup: true,
+          groupEntries: generateHistoryEventDetails({
+            details: value,
+            parentPath: path,
+          }),
+          renderConfig,
+        };
+        result.push(groupEntry);
+      }
       return;
     }
 
-    result.push({ key: k, path, value, renderConfig });
+    const entry: WorkflowHistoryEventDetailsEntry = {
+      key,
+      path,
+      value,
+      renderConfig,
+      isGroup: false,
+    };
+    result.push(entry);
   });
-}
 
-export default function generateHistoryEventDetails<E extends object>(
-  event: E
-) {
-  const result: WorkflowHistoryEventDetailsEntry[] = [];
-  flatten<E>('', event || {}, event, result);
   return result;
 }

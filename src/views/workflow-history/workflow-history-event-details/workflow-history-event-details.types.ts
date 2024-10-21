@@ -1,4 +1,5 @@
 import type { HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
+import { type WorkflowPageTabsParams } from '@/views/workflow-page/workflow-page-tabs/workflow-page-tabs.types';
 
 import type { Props as WorfklowHistoryProps } from '../workflow-history.types';
 
@@ -17,7 +18,7 @@ export type WorkflowHistoryEventDetailsValueComponentProps = {
   entryKey: string;
   entryPath: string;
   entryValue: any;
-} & WorfklowHistoryProps['params'];
+} & WorkflowPageTabsParams;
 
 export type WorkflowHistoryEventDetailsConfig = {
   name: string;
@@ -34,9 +35,25 @@ export type WorkflowHistoryEventDetailsConfig = {
     }
 );
 
-export type WorkflowHistoryEventDetailsEntry = {
+type WorkflowHistoryEventDetailsEntryBase = {
   key: string;
   path: string;
-  value: any;
-  renderConfig?: WorkflowHistoryEventDetailsConfig | null;
+  isGroup?: boolean;
+  renderConfig: WorkflowHistoryEventDetailsConfig | null;
 };
+
+export type WorkflowHistoryEventDetailsEntry =
+  WorkflowHistoryEventDetailsEntryBase & {
+    isGroup: false;
+    value: any;
+  };
+
+export type WorkflowHistoryEventDetailsGroupEntry =
+  WorkflowHistoryEventDetailsEntryBase & {
+    isGroup: true;
+    groupEntries: WorkflowHistoryEventDetailsEntries;
+  };
+
+export type WorkflowHistoryEventDetailsEntries = Array<
+  WorkflowHistoryEventDetailsEntry | WorkflowHistoryEventDetailsGroupEntry
+>;
