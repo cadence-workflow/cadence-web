@@ -90,6 +90,12 @@ const workflowSummaryTabDetailsConfig: WorkflowSummaryTabDetailsConfig[] = [
       !firstEvent?.workflowExecutionStartedEventAttributes?.cronSchedule,
   },
   {
+    key: 'historyEventsCount',
+    getLabel: () => 'History events',
+    valueComponent: ({ workflowDetails }) =>
+      workflowDetails.workflowExecutionInfo?.historyLength,
+  },
+  {
     key: 'taskList',
     getLabel: () => 'Task list',
     valueComponent: ({ formattedFirstEvent, decodedPageUrlParams }) => {
