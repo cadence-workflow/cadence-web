@@ -45,7 +45,7 @@ describe('getSingleEventGroupFromEvents', () => {
       activityTaskCancelRequestedEventAttributes: `Activity ${cancelRequestActivityTaskEvent.activityTaskCancelRequestedEventAttributes?.activityId}: Cancel Request`,
       requestCancelActivityTaskFailedEventAttributes: `Activity ${failCancelRequestActivityTaskEvent.requestCancelActivityTaskFailedEventAttributes?.activityId}: Cancel Request Failed`,
       cancelTimerFailedEventAttributes: `Timer ${failCancelTimerEvent.cancelTimerFailedEventAttributes?.timerId}: Cancellation Failed`,
-      markerRecordedEventAttributes: 'Version Marker',
+      markerRecordedEventAttributes: 'Version Marker: Version',
       upsertWorkflowSearchAttributesEventAttributes:
         'Workflow Search Attributes',
       workflowExecutionStartedEventAttributes: 'Workflow Started',

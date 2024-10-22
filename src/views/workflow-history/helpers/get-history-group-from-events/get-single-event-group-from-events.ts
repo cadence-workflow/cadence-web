@@ -14,7 +14,7 @@ export default function getSingleEventGroupFromEvents(
     activityTaskCancelRequestedEventAttributes: `Activity ${event.activityTaskCancelRequestedEventAttributes?.activityId}: Cancel Request`,
     requestCancelActivityTaskFailedEventAttributes: `Activity ${event.requestCancelActivityTaskFailedEventAttributes?.activityId}: Cancel Request Failed`,
     cancelTimerFailedEventAttributes: `Timer ${event.cancelTimerFailedEventAttributes?.timerId}: Cancellation Failed`,
-    markerRecordedEventAttributes: 'Version Marker',
+    markerRecordedEventAttributes: `Version Marker: ${event.markerRecordedEventAttributes?.markerName}`,
     upsertWorkflowSearchAttributesEventAttributes: 'Workflow Search Attributes',
     workflowExecutionStartedEventAttributes: 'Workflow Started',
     workflowExecutionCompletedEventAttributes: 'Workflow Completed',
