@@ -1,5 +1,6 @@
 import { type ZodIssue, type z } from 'zod';
 
+import { type DefaultMiddlewaresContext } from '@/utils/route-handlers-middleware';
 import { type DomainWorkflow } from '@/views/domain-page/domain-page.types';
 
 import type listWorkflowsQueryParamSchema from './schemas/list-workflows-query-params-schema';
@@ -27,3 +28,5 @@ export type ListWorkflowsError = {
   validationErrors?: Array<ZodIssue>;
   message?: string;
 };
+
+export type Context = DefaultMiddlewaresContext;

@@ -2,10 +2,17 @@ import { type NextRequest } from 'next/server';
 
 import describeWorkflow from '@/route-handlers/describe-workflow/describe-workflow';
 import { type RouteParams } from '@/route-handlers/describe-workflow/describe-workflow.types';
+import { routeHandlerWithMiddlewares } from '@/utils/route-handlers-middleware';
+import routeHandlersDefaultMiddlewares from '@/utils/route-handlers-middleware/config/route-handlers-default-middlewares.config';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: RouteParams }
+  options: { params: RouteParams }
 ) {
-  return describeWorkflow(request, { params });
+  return routeHandlerWithMiddlewares(
+    describeWorkflow,
+    request,
+    options,
+    routeHandlersDefaultMiddlewares
+  );
 }
