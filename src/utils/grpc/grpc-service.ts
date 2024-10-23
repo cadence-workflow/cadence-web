@@ -23,6 +23,7 @@ import * as grpc from '@grpc/grpc-js';
 import type { ServiceClient } from '@grpc/grpc-js/build/src/make-client';
 import * as protoLoader from '@grpc/proto-loader';
 import get from 'lodash/get';
+import merge from 'lodash/merge';
 
 import GRPC_PROTO_DIR_BASE_PATH from '@/config/grpc/grpc-proto-dir-base-path';
 
@@ -34,9 +35,11 @@ const GRPC_OPTIONS = {
   'grpc.max_receive_message_length': MAX_MESSAGE_SIZE,
 };
 
+export type GRPCMetadata = Record<string, string | never>;
+
 export type GRPCRequestConfig = {
   serviceName: string;
-  metadata?: Record<string, string>;
+  metadata?: GRPCMetadata;
 };
 export type GRPCServiceConfig = {
   peer: string;
@@ -75,10 +78,19 @@ class GRPCService {
     this.requestConfig = requestConfig;
   }
 
-  request<Req, Res>({ method }: { method: string }) {
-    return (payload: Req) => {
+  request<Req, Res>({
+    method,
+    metadata: methodMetadata,
+  }: {
+    method: string;
+    metadata?: GRPCMetadata;
+  }) {
+    return (
+      payload: Req,
+      { metadata: reqMetadata }: { metadata?: GRPCMetadata } = {}
+    ) => {
       const deadline = new Date();
-
+      const metadata = merge({}, methodMetadata || {}, reqMetadata || {});
       deadline.setSeconds(deadline.getSeconds() + 2);
       return new Promise<Res>((resolve, reject) => {
         this.service.waitForReady(deadline, (error) => {
@@ -94,7 +106,7 @@ class GRPCService {
           deadline.setSeconds(deadline.getSeconds() + 50);
           this.service[method](
             payload,
-            this.meta(),
+            this.meta(metadata),
             { deadline },
             (error: GRPCInputError, response: any) => {
               try {
@@ -124,20 +136,23 @@ class GRPCService {
     grpc.getClientChannel(this.service).close();
   }
 
-  meta() {
+  meta(reqMetadata?: GRPCMetadata) {
     const meta = new grpc.Metadata();
-    meta.add('rpc-service', this.requestConfig.serviceName);
-    meta.add('rpc-caller', 'cadence-web');
-    meta.add('rpc-encoding', 'proto');
-    Object.entries(this.requestConfig.metadata || {}).forEach(
-      ([key, value]) => {
+    const headers = merge(
+      {
+        'rpc-service': this.requestConfig.serviceName,
+        'rpc-caller': 'cadence-web',
+        'rpc-encoding': 'proto',
+      },
+      this.requestConfig.metadata,
+      reqMetadata
+    );
+    Object.entries(headers).forEach(([key, value]) => {
+      if (value) {
         meta.add(key, value);
       }
-    );
-    /* Object.entries(this.ctx.authTokenHeaders || {}).forEach(([key, value]) => {
-       meta.add(key, value);
-     });
- */
+    });
+
     return meta;
   }
 }
