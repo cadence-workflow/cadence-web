@@ -1,19 +1,20 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
 import decodeUrlParams from '@/utils/decode-url-params';
-import * as grpcClient from '@/utils/grpc/grpc-client';
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
 import {
   type RouteParams,
   type RequestParams,
+  type Context,
 } from './get-workflow-history.types';
 import getWorkflowHistoryQueryParamsSchema from './schemas/get-workflow-history-query-params-schema';
 
 export default async function getWorkflowHistory(
   request: NextRequest,
-  requestParams: RequestParams
+  requestParams: RequestParams,
+  ctx: Context
 ) {
   const decodedParams = decodeUrlParams<RouteParams>(requestParams.params);
   const { data: queryParams, error } =
@@ -34,9 +35,7 @@ export default async function getWorkflowHistory(
   }
 
   try {
-    const res = await grpcClient.clusterMethods[
-      decodedParams.cluster
-    ].getHistory({
+    const res = await ctx.grpcClusterMethods.getHistory({
       domain: decodedParams.domain,
       workflowExecution: {
         workflowId: decodedParams.workflowId,

@@ -1,24 +1,25 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
 import decodeUrlParams from '@/utils/decode-url-params';
-import * as grpcClient from '@/utils/grpc/grpc-client';
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
-import { type RequestParams } from './fetch-workflow-query-types.types';
+import {
+  type Context,
+  type RequestParams,
+} from './fetch-workflow-query-types.types';
 import parseErrorMessageForQueryTypes from './helpers/parse-error-message-for-query-types';
 import { queryTypesDataSchema } from './schemas/query-types-data-schema';
 
 export default async function fetchWorkflowQueryTypes(
   _: NextRequest,
-  requestParams: RequestParams
+  requestParams: RequestParams,
+  ctx: Context
 ) {
   const decodedParams = decodeUrlParams(requestParams.params);
 
   try {
-    const res = await grpcClient.clusterMethods[
-      decodedParams.cluster
-    ].queryWorkflow({
+    const res = await ctx.grpcClusterMethods.queryWorkflow({
       domain: decodedParams.domain,
       workflowExecution: {
         workflowId: decodedParams.workflowId,

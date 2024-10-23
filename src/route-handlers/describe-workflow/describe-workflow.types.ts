@@ -1,6 +1,7 @@
 import { type DescribeWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeWorkflowExecutionResponse';
 import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
 import { type WorkflowExecutionInfo } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionInfo';
+import { type DefaultMiddlewaresContext } from '@/utils/route-handlers-middleware';
 
 export type RouteParams = {
   domain: string;
@@ -45,3 +46,5 @@ export type DescribeArchivedWorkflowResponse = Omit<
     partitionConfig: null;
   };
 };
+
+export type Context = DefaultMiddlewaresContext;
