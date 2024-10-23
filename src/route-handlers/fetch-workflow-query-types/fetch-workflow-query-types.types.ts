@@ -1,3 +1,5 @@
+import { type DefaultMiddlewaresContext } from '@/utils/route-handlers-middleware';
+
 export type RouteParams = {
   domain: string;
   cluster: string;
@@ -12,3 +14,5 @@ export type RequestParams = {
 export type FetchWorkflowQueryTypesResponse = {
   queryTypes: Array<string>;
 };
+
+export type Context = DefaultMiddlewaresContext;

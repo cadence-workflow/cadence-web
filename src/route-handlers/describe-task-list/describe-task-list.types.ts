@@ -1,5 +1,6 @@
 import { type PollerInfo } from '@/__generated__/proto-ts/uber/cadence/api/v1/PollerInfo';
 import { type TaskListStatus } from '@/__generated__/proto-ts/uber/cadence/api/v1/TaskListStatus';
+import { type DefaultMiddlewaresContext } from '@/utils/route-handlers-middleware';
 
 export type RouteParams = {
   domain: string;
@@ -27,3 +28,5 @@ export type TaskList = {
 export type DescribeTaskListResponse = {
   taskList: TaskList;
 };
+
+export type Context = DefaultMiddlewaresContext;

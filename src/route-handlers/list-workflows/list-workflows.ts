@@ -1,13 +1,13 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
 import decodeUrlParams from '@/utils/decode-url-params';
-import * as grpcClient from '@/utils/grpc/grpc-client';
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
 import getListWorkflowExecutionsQuery from './helpers/get-list-workflow-executions-query';
 import mapExecutionsToWorkflows from './helpers/map-executions-to-workflows';
 import type {
+  Context,
   ListWorkflowsResponse,
   RequestParams,
   RouteParams,
@@ -16,7 +16,8 @@ import listWorkflowsQueryParamSchema from './schemas/list-workflows-query-params
 
 export async function listWorkflows(
   request: NextRequest,
-  requestParams: RequestParams
+  requestParams: RequestParams,
+  ctx: Context
 ) {
   const decodedParams = decodeUrlParams(requestParams.params) as RouteParams;
 
@@ -36,21 +37,19 @@ export async function listWorkflows(
   }
 
   try {
-    const res = await grpcClient
-      .getClusterMethods(decodedParams.cluster)
-      .listWorkflows({
-        domain: decodedParams.domain,
-        pageSize: queryParams.pageSize,
-        nextPageToken: queryParams.nextPage,
-        query: getListWorkflowExecutionsQuery({
-          search: queryParams.search,
-          workflowStatus: queryParams.status,
-          sortColumn: queryParams.sortColumn,
-          sortOrder: queryParams.sortOrder,
-          timeRangeStart: queryParams.timeRangeStart,
-          timeRangeEnd: queryParams.timeRangeEnd,
-        }),
-      });
+    const res = await ctx.grpcClusterMethods.listWorkflows({
+      domain: decodedParams.domain,
+      pageSize: queryParams.pageSize,
+      nextPageToken: queryParams.nextPage,
+      query: getListWorkflowExecutionsQuery({
+        search: queryParams.search,
+        workflowStatus: queryParams.status,
+        sortColumn: queryParams.sortColumn,
+        sortOrder: queryParams.sortOrder,
+        timeRangeStart: queryParams.timeRangeStart,
+        timeRangeEnd: queryParams.timeRangeEnd,
+      }),
+    });
 
     const response: ListWorkflowsResponse = {
       workflows: mapExecutionsToWorkflows(res.executions),
