@@ -22,6 +22,7 @@ import {
   NO_WORKFLOWS_ERROR_MESSAGE,
   PAGE_SIZE,
 } from './domain-workflows-table.constants';
+import { styled } from './domain-workflows-table.styles';
 import { type Props } from './domain-workflows-table.types';
 
 export default function DomainWorkflowsTable(props: Props) {
@@ -82,32 +83,34 @@ export default function DomainWorkflowsTable(props: Props) {
 
   return (
     <PageSection>
-      <Table
-        data={workflows}
-        columns={domainWorkflowsTableConfig}
-        shouldShowResults={!isLoading && workflows.length > 0}
-        onSort={(column) => {
-          setQueryParams({
-            sortColumn: column,
-            sortOrder: getNextSortOrder({
-              currentColumn: queryParams.sortColumn,
-              nextColumn: column,
-              currentSortOrder: queryParams.sortOrder,
-            }),
-          });
-        }}
-        sortColumn={queryParams.sortColumn}
-        sortOrder={queryParams.sortOrder}
-        endMessage={
-          <DomainWorkflowsTableEndMessage
-            hasWorkflows={workflows.length > 0}
-            error={error}
-            fetchNextPage={fetchNextPage}
-            hasNextPage={hasNextPage}
-            isFetchingNextPage={isFetchingNextPage}
-          />
-        }
-      />
+      <styled.TableContainer>
+        <Table
+          data={workflows}
+          columns={domainWorkflowsTableConfig}
+          shouldShowResults={!isLoading && workflows.length > 0}
+          onSort={(column) => {
+            setQueryParams({
+              sortColumn: column,
+              sortOrder: getNextSortOrder({
+                currentColumn: queryParams.sortColumn,
+                nextColumn: column,
+                currentSortOrder: queryParams.sortOrder,
+              }),
+            });
+          }}
+          sortColumn={queryParams.sortColumn}
+          sortOrder={queryParams.sortOrder}
+          endMessage={
+            <DomainWorkflowsTableEndMessage
+              hasWorkflows={workflows.length > 0}
+              error={error}
+              fetchNextPage={fetchNextPage}
+              hasNextPage={hasNextPage}
+              isFetchingNextPage={isFetchingNextPage}
+            />
+          }
+        />
+      </styled.TableContainer>
     </PageSection>
   );
 }
