@@ -20,6 +20,7 @@ jest.mock(
   '../workflow-history-timeline-group/workflow-history-timeline-group',
   () => jest.fn(() => <div>Timeline group card</div>)
 );
+
 jest.mock(
   '../workflow-history-timeline-load-more/workflow-history-timeline-load-more',
   () => jest.fn(() => <div>Load more</div>)
@@ -74,25 +75,25 @@ describe('WorkflowHistory', () => {
       );
     }
   });
+
   it('should render the page initially with filters hidden', async () => {
     setup({});
     expect(screen.queryByText('Filter Fields')).not.toBeInTheDocument();
   });
 
   it('should show filters on executing toggle button onClick', async () => {
-    setup({});
+    const { user } = setup({});
     const toggleButton = await screen.findByText('Filter Toggle');
 
-    await act(() => {
-      userEvent.click(toggleButton);
-    });
+    await user.click(toggleButton);
 
     expect(await screen.findByText('Filter Fields')).toBeInTheDocument();
   });
 });
 
 function setup({ error }: { error?: boolean }) {
-  render(
+  const user = userEvent.setup();
+  const renderResult = render(
     <Suspense>
       <WorkflowHistory
         params={{
@@ -141,4 +142,6 @@ function setup({ error }: { error?: boolean }) {
       ),
     }
   );
+
+  return { user, ...renderResult };
 }

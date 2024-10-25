@@ -1,5 +1,5 @@
 'use client';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 
 import {
   useSuspenseInfiniteQuery,
@@ -7,7 +7,7 @@ import {
 } from '@tanstack/react-query';
 import { HeadingXSmall } from 'baseui/typography';
 import queryString from 'query-string';
-import { Virtuoso } from 'react-virtuoso';
+import { Virtuoso, type VirtuosoHandle } from 'react-virtuoso';
 
 import usePageFilters from '@/components/page-filters/hooks/use-page-filters';
 import PageFiltersFields from '@/components/page-filters/page-filters-fields/page-filters-fields';
@@ -108,6 +108,8 @@ export default function WorkflowHistory({ params }: Props) {
 
   const [areFiltersShown, setAreFiltersShown] = useState(false);
 
+  const timelineSectionListRef = useRef<VirtuosoHandle>(null);
+
   return (
     <PageSection className={cls.pageContainer}>
       <div className={cls.pageHeader}>
@@ -133,7 +135,7 @@ export default function WorkflowHistory({ params }: Props) {
           <div role="list" className={cls.compactSection}>
             <Virtuoso
               data={filteredGroupedHistoryEventsEntries}
-              itemContent={(_, [groupId, { label, status, timeLabel }]) => (
+              itemContent={(index, [groupId, { label, status, timeLabel }]) => (
                 <div role="listitem" className={cls.compactCardContainer}>
                   <WorkflowHistoryCompactEventCard
                     key={groupId}
@@ -141,15 +143,26 @@ export default function WorkflowHistory({ params }: Props) {
                     label={label}
                     secondaryLabel={timeLabel}
                     showLabelPlaceholder={!label}
+                    onClick={() => {
+                      timelineSectionListRef.current?.scrollToIndex({
+                        index,
+                        align: 'start',
+                        behavior: 'smooth',
+                      });
+                    }}
                   />
                 </div>
               )}
+              endReached={() => {
+                if (!isFetchingNextPage && hasNextPage) fetchNextPage();
+              }}
             />
           </div>
           <section className={cls.timelineSection}>
             <Virtuoso
               useWindowScroll
               data={filteredGroupedHistoryEventsEntries}
+              ref={timelineSectionListRef}
               itemContent={(index, [groupId, group]) => (
                 <WorkflowHistoryTimelineGroup
                   key={groupId}
