@@ -19,6 +19,7 @@ export default function WorkflowHistoryCompactEventCard({
   label,
   secondaryLabel,
   showLabelPlaceholder,
+  onClick,
 }: Props) {
   const { cls, theme } = useStyletronClasses(cssStyles);
 
@@ -28,6 +29,7 @@ export default function WorkflowHistoryCompactEventCard({
       tileKind={TILE_KIND.selection}
       headerAlignment={ALIGNMENT.right}
       bodyAlignment={ALIGNMENT.left}
+      onClick={onClick}
     >
       <WorkflowHistoryEventStatusBadge status={status} size="small" />
       <div className={cls.textContainer}>

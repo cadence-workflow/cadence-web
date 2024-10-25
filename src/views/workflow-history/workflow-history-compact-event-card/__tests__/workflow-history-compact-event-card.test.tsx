@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { render, screen } from '@/test-utils/rtl';
+import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import type WorkflowHistoryEventStatusBadge from '../../workflow-history-event-status-badge/workflow-history-event-status-badge';
 import WorkflowHistoryCompactEventCard from '../workflow-history-compact-event-card';
@@ -45,15 +45,34 @@ describe('WorkflowHistoryCompactEventCard', () => {
     const badge = screen.getByText('ONGOING');
     expect(badge).toBeInTheDocument();
   });
+
+  it('calls onClick when clicked', async () => {
+    const { user, mockOnClick } = setup({
+      label: 'test label',
+    });
+
+    const tile = screen.getByText('test label');
+
+    await user.click(tile);
+
+    expect(mockOnClick).toHaveBeenCalled();
+  });
 });
 
 function setup(props: Partial<Props>) {
-  return render(
-    <WorkflowHistoryCompactEventCard
-      status="COMPLETED"
-      label="test label"
-      secondaryLabel="test secondaryLabel"
-      {...props}
-    />
-  );
+  const user = userEvent.setup();
+  const mockOnClick = jest.fn();
+  return {
+    ...render(
+      <WorkflowHistoryCompactEventCard
+        status="COMPLETED"
+        label="test label"
+        secondaryLabel="test secondaryLabel"
+        onClick={mockOnClick}
+        {...props}
+      />
+    ),
+    user,
+    mockOnClick,
+  };
 }
