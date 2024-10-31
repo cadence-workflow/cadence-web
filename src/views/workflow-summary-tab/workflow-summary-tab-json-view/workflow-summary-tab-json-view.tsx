@@ -8,6 +8,7 @@ import { MdCopyAll } from 'react-icons/md';
 
 import PrettyJson from '@/components/pretty-json/pretty-json';
 import { type JsonValue } from '@/components/pretty-json/pretty-json.types';
+import PrettyJsonSkeleton from '@/components/pretty-json-skeleton/pretty-json-skeleton';
 import SegmentedControlRounded from '@/components/segmented-control-rounded/segmented-control-rounded';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 
@@ -18,6 +19,7 @@ import type { Props } from './workflow-summary-tab-json-view.types';
 export default function WorkflowSummaryTabJsonView({
   inputJson,
   resultJson,
+  isWorkflowRunning,
 }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
   const [showTooltip, setShowTooltip] = useState(false);
@@ -67,7 +69,11 @@ export default function WorkflowSummaryTabJsonView({
           </Button>
         </Tooltip>
       </div>
-      <PrettyJson json={jsonMap[activeTab]} />
+      {activeTab === 'result' && isWorkflowRunning ? (
+        <PrettyJsonSkeleton width="200px" />
+      ) : (
+        <PrettyJson json={jsonMap[activeTab]} />
+      )}
     </div>
   );
 }
