@@ -2,8 +2,12 @@ import React from 'react';
 
 import { render } from '@/test-utils/rtl';
 
-import WorkflowPageHeader from '../workflow-page-header'; // Import the component
+import WorkflowPageHeader from '../workflow-page-header';
 import type { Props } from '../workflow-page-header.types';
+
+jest.mock('query-string', () => ({
+  stringifyUrl: jest.fn(() => 'mock-stringified-api-url'),
+}));
 
 jest.mock(
   '../../workflow-page-status-tag/workflow-page-status-tag',
@@ -29,14 +33,17 @@ describe('WorkflowPageHeader', () => {
     );
   });
 
-  it('renders breadcrumbs with correct workflowId content and link', () => {
+  it('renders breadcrumbs with correct workflowId content and query-string stringified link', () => {
     const workflowId = 'test-workflowId';
     const { getByText } = setup({ workflowId });
 
     // Verify workflowId breadcrumb
     const workflowIdBreadcrumb = getByText(workflowId);
     expect(workflowIdBreadcrumb).toBeInTheDocument();
-    expect(workflowIdBreadcrumb).toHaveAttribute('href', `/#`);
+    expect(workflowIdBreadcrumb).toHaveAttribute(
+      'href',
+      '/mock-stringified-api-url'
+    );
   });
 
   it('renders breadcrumbs with correct runId and status tag', () => {
