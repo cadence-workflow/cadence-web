@@ -103,6 +103,8 @@ function setup({
       hasMissingEvents={hasMissingEvents}
       status={status}
       decodedPageUrlParams={decodedPageUrlParams}
+      getIsEventExpanded={jest.fn()}
+      onEventToggle={jest.fn()}
     />
   );
 }
