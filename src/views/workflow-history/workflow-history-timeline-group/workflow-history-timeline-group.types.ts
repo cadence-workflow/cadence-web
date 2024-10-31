@@ -1,3 +1,7 @@
+import {
+  type GetIsEventExpanded,
+  type ToggleIsEventExpanded,
+} from '../hooks/use-event-expansion-toggle.types';
 import type {
   HistoryEventsGroup,
   Props as WorkflowHistoryProps,
@@ -14,4 +18,6 @@ export type Props = Pick<
 > & {
   isLastEvent: boolean;
   decodedPageUrlParams: WorkflowHistoryProps['params'];
+  getIsEventExpanded: GetIsEventExpanded;
+  onEventToggle: ToggleIsEventExpanded;
 };

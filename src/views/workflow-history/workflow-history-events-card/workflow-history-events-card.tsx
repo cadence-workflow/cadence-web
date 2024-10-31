@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 
-import { Accordion, Panel } from 'baseui/accordion';
+import { StatelessAccordion, Panel } from 'baseui/accordion';
 import { Skeleton } from 'baseui/skeleton';
 
 import useStyletronClasses from '@/hooks/use-styletron-classes';
@@ -18,16 +18,23 @@ export default function WorkflowHistoryEventsCard({
   eventsMetadata,
   showEventPlaceholder,
   decodedPageUrlParams,
+  getIsEventExpanded,
+  onEventToggle,
 }: Props) {
   const { cls, theme } = useStyletronClasses(cssStyles);
 
   if (!eventsMetadata?.length && !showEventPlaceholder) return null;
+  const expanded = events.reduce((result, { eventId }) => {
+    if (getIsEventExpanded(eventId)) result.push(eventId);
+    return result;
+  }, [] as string[]);
+
   return (
-    <Accordion overrides={overrides.accordion} accordion>
+    <StatelessAccordion overrides={overrides.accordion} expanded={expanded}>
       {eventsMetadata?.map((event, index) => {
         return (
           <Panel
-            key={`${event.label}-${index}`}
+            key={events[index].eventId}
             title={
               <>
                 <WorkflowHistoryEventStatusBadge
@@ -37,6 +44,7 @@ export default function WorkflowHistoryEventsCard({
                 <div className={cls.eventLabel}>{event.label}</div>
               </>
             }
+            onClick={() => onEventToggle(events[index].eventId)}
           >
             <WorkflowHistoryEventDetails
               event={events[index]}
@@ -66,6 +74,6 @@ export default function WorkflowHistoryEventsCard({
           <></>
         </Panel>
       )}
-    </Accordion>
+    </StatelessAccordion>
   );
 }

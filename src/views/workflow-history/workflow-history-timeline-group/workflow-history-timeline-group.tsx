@@ -18,6 +18,8 @@ export default function WorkflowHistoryTimelineGroup({
   eventsMetadata,
   hasMissingEvents,
   decodedPageUrlParams,
+  getIsEventExpanded,
+  onEventToggle,
 }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
 
@@ -37,6 +39,8 @@ export default function WorkflowHistoryTimelineGroup({
           eventsMetadata={eventsMetadata}
           showEventPlaceholder={hasMissingEvents}
           decodedPageUrlParams={decodedPageUrlParams}
+          getIsEventExpanded={getIsEventExpanded}
+          onEventToggle={onEventToggle}
         />
       </div>
     </div>
