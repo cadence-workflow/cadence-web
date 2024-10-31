@@ -24,7 +24,9 @@ import workflowPageQueryParamsConfig from '../workflow-page/config/workflow-page
 
 import workflowHistoryFiltersConfig from './config/workflow-history-filters.config';
 import { groupHistoryEvents } from './helpers/group-history-events';
+import useEventExpansionToggle from './hooks/use-event-expansion-toggle';
 import WorkflowHistoryCompactEventCard from './workflow-history-compact-event-card/workflow-history-compact-event-card';
+import WorkflowHistoryExpandAllEventsButton from './workflow-history-expand-all-events-button/workflow-history-expand-all-events-button';
 import WorkflowHistoryExportJsonButton from './workflow-history-export-json-button/workflow-history-export-json-button';
 import WorkflowHistoryTimelineGroup from './workflow-history-timeline-group/workflow-history-timeline-group';
 import WorkflowHistoryTimelineLoadMore from './workflow-history-timeline-load-more/workflow-history-timeline-load-more';
@@ -107,6 +109,14 @@ export default function WorkflowHistory({ params }: Props) {
   }, [groupedHistoryEvents, queryParams]);
 
   const [areFiltersShown, setAreFiltersShown] = useState(false);
+  const {
+    isExpandAllEvents,
+    toggleIsExpandAllEvents,
+    toggleIsEventExpanded,
+    getIsEventExpanded,
+  } = useEventExpansionToggle({
+    visibleEvents: filteredEvents,
+  });
 
   const timelineSectionListRef = useRef<VirtuosoHandle>(null);
 
@@ -115,6 +125,10 @@ export default function WorkflowHistory({ params }: Props) {
       <div className={cls.pageHeader}>
         <HeadingXSmall>Workflow history</HeadingXSmall>
         <div className={cls.headerActions}>
+          <WorkflowHistoryExpandAllEventsButton
+            isExpandAllEvents={isExpandAllEvents}
+            toggleIsExpandAllEvents={toggleIsExpandAllEvents}
+          />
           <WorkflowHistoryExportJsonButton {...wfhistoryRequestArgs} />
           <PageFiltersToggle
             activeFiltersCount={activeFiltersCount}
@@ -176,6 +190,8 @@ export default function WorkflowHistory({ params }: Props) {
                     index === filteredGroupedHistoryEventsEntries.length - 1
                   }
                   decodedPageUrlParams={decodedParams}
+                  getIsEventExpanded={getIsEventExpanded}
+                  onEventToggle={toggleIsEventExpanded}
                 />
               )}
               components={{

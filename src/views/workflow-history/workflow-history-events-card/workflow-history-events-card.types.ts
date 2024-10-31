@@ -1,5 +1,9 @@
 import type { HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
 
+import {
+  type GetIsEventExpanded,
+  type ToggleIsEventExpanded,
+} from '../hooks/use-event-expansion-toggle.types';
 import type {
   HistoryGroupEventMetadata,
   Props as WorfklowHistoryProps,
@@ -10,4 +14,6 @@ export type Props = {
   eventsMetadata: Pick<HistoryGroupEventMetadata, 'label' | 'status'>[];
   showEventPlaceholder?: boolean;
   decodedPageUrlParams: WorfklowHistoryProps['params'];
+  getIsEventExpanded: GetIsEventExpanded;
+  onEventToggle: ToggleIsEventExpanded;
 };

@@ -1,4 +1,4 @@
-import { render, screen, userEvent, act } from '@/test-utils/rtl';
+import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import {
   scheduleActivityTaskEvent,
@@ -18,14 +18,6 @@ jest.mock(
 );
 
 describe('WorkflowHistoryEventsCard', () => {
-  const mockParams: Props['decodedPageUrlParams'] = {
-    cluster: 'testCluster',
-    domain: 'testDomain',
-    workflowId: 'testWorkflowId',
-    runId: 'testRunId',
-    workflowTab: 'history',
-  };
-
   it('shows events label and status correctly', () => {
     const events: Props['events'] = [
       scheduleActivityTaskEvent,
@@ -41,13 +33,10 @@ describe('WorkflowHistoryEventsCard', () => {
         status: 'ONGOING',
       },
     ];
-    render(
-      <WorkflowHistoryEventsCard
-        events={events}
-        eventsMetadata={eventsMetadata}
-        decodedPageUrlParams={mockParams}
-      />
-    );
+    setup({
+      events,
+      eventsMetadata,
+    });
 
     expect(screen.getByText('First event')).toBeInTheDocument();
     expect(screen.getByText('COMPLETED status')).toBeInTheDocument();
@@ -56,7 +45,7 @@ describe('WorkflowHistoryEventsCard', () => {
     expect(screen.getByText('ONGOING status')).toBeInTheDocument();
   });
 
-  it('render accordion collapsed initially', () => {
+  it('render accordion collapsed when get getIsEventExpanded returns false', () => {
     const events: Props['events'] = [scheduleActivityTaskEvent];
     const eventsMetadata: Props['eventsMetadata'] = [
       {
@@ -64,18 +53,41 @@ describe('WorkflowHistoryEventsCard', () => {
         status: 'COMPLETED',
       },
     ];
-    render(
-      <WorkflowHistoryEventsCard
-        events={events}
-        eventsMetadata={eventsMetadata}
-        decodedPageUrlParams={mockParams}
-      />
-    );
+    setup({
+      events,
+      eventsMetadata,
+      getIsEventExpanded: jest.fn().mockReturnValue(false),
+    });
 
-    expect(screen.queryByText('Details eventId:')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        `Details eventId: ${scheduleActivityTaskEvent.eventId}`
+      )
+    ).not.toBeInTheDocument();
   });
 
-  it('expand panel onClick', async () => {
+  it('render accordion expanded when get getIsEventExpanded returns faltruese', async () => {
+    const events: Props['events'] = [scheduleActivityTaskEvent];
+    const eventsMetadata: Props['eventsMetadata'] = [
+      {
+        label: 'First event',
+        status: 'COMPLETED',
+      },
+    ];
+    setup({
+      events,
+      eventsMetadata,
+      getIsEventExpanded: jest.fn().mockReturnValue(true),
+    });
+
+    expect(
+      await screen.findByText(
+        `Details eventId: ${scheduleActivityTaskEvent.eventId}`
+      )
+    ).toBeInTheDocument();
+  });
+
+  it('should call onEventToggle callback on click', async () => {
     const events: Props['events'] = [
       scheduleActivityTaskEvent,
       startActivityTaskEvent,
@@ -90,24 +102,17 @@ describe('WorkflowHistoryEventsCard', () => {
         status: 'ONGOING',
       },
     ];
-    render(
-      <WorkflowHistoryEventsCard
-        events={events}
-        eventsMetadata={eventsMetadata}
-        decodedPageUrlParams={mockParams}
-      />
-    );
+    const { user, mockedOnEventToggle } = setup({
+      events,
+      eventsMetadata,
+    });
     expect(
       screen.queryByText(JSON.stringify(events[1]))
     ).not.toBeInTheDocument();
 
-    await act(async () => {
-      await userEvent.click(screen.getByText('Second event'));
-    });
-    const panelContent = screen.getByText(
-      `Details eventId: ${events[1].eventId}`
-    );
-    expect(panelContent).toBeInTheDocument();
+    await user.click(screen.getByText('Second event'));
+
+    expect(mockedOnEventToggle).toHaveBeenCalled();
   });
 
   it('should add placeholder event when showMissingEventPlaceholder is set to true', async () => {
@@ -118,28 +123,22 @@ describe('WorkflowHistoryEventsCard', () => {
         status: 'COMPLETED',
       },
     ];
-    const { container } = render(
-      <WorkflowHistoryEventsCard
-        events={events}
-        eventsMetadata={eventsMetadata}
-        decodedPageUrlParams={mockParams}
-        showEventPlaceholder
-      />
-    );
+    const { container } = setup({
+      events,
+      eventsMetadata,
+      showEventPlaceholder: true,
+    });
     expect(container.querySelector('[testid="loader"]')).toBeInTheDocument();
   });
 
   it('should add placeholder event when showMissingEventPlaceholder and eventsMetadata is empty', async () => {
     const events: Props['events'] = [];
     const eventsMetadata: Props['eventsMetadata'] = [];
-    const { container } = render(
-      <WorkflowHistoryEventsCard
-        events={events}
-        eventsMetadata={eventsMetadata}
-        decodedPageUrlParams={mockParams}
-        showEventPlaceholder
-      />
-    );
+    const { container } = setup({
+      events,
+      eventsMetadata,
+      showEventPlaceholder: true,
+    });
     expect(container.querySelector('[testid="loader"]')).toBeInTheDocument();
   });
 
@@ -148,3 +147,41 @@ describe('WorkflowHistoryEventsCard', () => {
     render(<WorkflowHistoryEventsCard events={null} eventsMetadata={null} />);
   });
 });
+
+const mockParams: Props['decodedPageUrlParams'] = {
+  cluster: 'testCluster',
+  domain: 'testDomain',
+  workflowId: 'testWorkflowId',
+  runId: 'testRunId',
+  workflowTab: 'history',
+};
+
+function setup({
+  events,
+  eventsMetadata,
+  decodedPageUrlParams = mockParams,
+  showEventPlaceholder = false,
+  onEventToggle = jest.fn(),
+  getIsEventExpanded = jest.fn(),
+}: Partial<Omit<Props, 'events' | 'eventsMetadata'>> &
+  Pick<Props, 'events' | 'eventsMetadata'>) {
+  const user = userEvent.setup();
+
+  const props: Props = {
+    events,
+    eventsMetadata,
+    decodedPageUrlParams,
+    showEventPlaceholder,
+    onEventToggle,
+    getIsEventExpanded,
+  };
+
+  const renderResult = render(<WorkflowHistoryEventsCard {...props} />);
+
+  return {
+    ...renderResult,
+    user,
+    mockedGetIsEventExpanded: props.getIsEventExpanded,
+    mockedOnEventToggle: props.onEventToggle,
+  };
+}
