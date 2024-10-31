@@ -15,6 +15,7 @@ import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
 import type { WorkflowPageTabContentProps } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
+import getWorkflowIsCompleted from '../workflow-page/helpers/get-workflow-is-completed';
 import useDescribeWorkflow from '../workflow-page/hooks/use-describe-workflow';
 
 import WorkflowSummaryTabDetails from './workflow-summary-tab-details/workflow-summary-tab-details';
@@ -62,6 +63,11 @@ export default function WorkflowSummaryTab({
       ? formattedCloseEvent.result
       : undefined;
 
+  const isWorkflowRunning =
+    !closeEvent ||
+    !closeEvent.attributes ||
+    !getWorkflowIsCompleted(closeEvent.attributes);
+
   return (
     <PageSection>
       <div className={cls.pageContainer}>
@@ -84,6 +90,7 @@ export default function WorkflowSummaryTab({
                 : []
             }
             resultJson={resultJson}
+            isWorkflowRunning={isWorkflowRunning}
           />
         </div>
       </div>

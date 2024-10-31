@@ -12,6 +12,7 @@ const themeLight = {
   colors: {
     borderOpaque: '#F3F3F3',
     backgroundSecondary: '#F3F3F3',
+    backgroundTertiary: '#E8E8E8',
     backgroundWarningLight: '#FDF2DC',
   },
 } satisfies DeepPartial<MakeExtendable<Theme>>;
