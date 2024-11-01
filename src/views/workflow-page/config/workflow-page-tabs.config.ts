@@ -26,7 +26,7 @@ const workflowPageTabsConfig = [
     artwork: MdOutlineManageSearch,
   },
   {
-    key: 'stackTrace',
+    key: 'stack-trace',
     title: 'Stack Trace',
     artwork: MdOutlineTerminal,
   },
