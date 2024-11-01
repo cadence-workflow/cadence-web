@@ -8,7 +8,7 @@ const workflowPageTabsErrorConfig: WorkflowPageTabsErrorConfig = {
     getWorkflowPageErrorConfig(err, 'Failed to load workflow history'),
   queries: (err) =>
     getWorkflowPageErrorConfig(err, 'Failed to load workflow queries'),
-  stackTrace: (err) =>
+  'stack-trace': (err) =>
     getWorkflowPageErrorConfig(err, 'Failed to load workflow stack trace'),
 } as const;
 

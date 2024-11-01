@@ -33,8 +33,8 @@ jest.mock(
       queries: () => ({
         message: 'queries error',
       }),
-      stackTrace: () => ({
-        message: 'stackTrace error',
+      'stack-trace': () => ({
+        message: 'stack trace error',
       }),
     }) as const satisfies WorkflowPageTabsErrorConfig
 );

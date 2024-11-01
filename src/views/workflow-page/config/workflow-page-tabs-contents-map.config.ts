@@ -9,7 +9,7 @@ const workflowPageTabsContentsMapConfig = {
   summary: WorkflowSummaryTab,
   history: WorkflowHistory,
   queries: WorkflowQueries,
-  stackTrace: WorkflowStackTrace,
+  'stack-trace': WorkflowStackTrace,
 } as const satisfies WorkflowPageTabsContentsMap;
 
 export default workflowPageTabsContentsMapConfig;
