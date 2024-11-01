@@ -119,7 +119,7 @@ async function setup({
           cluster: 'test-cluster',
           runId: 'test-runid',
           workflowId: 'test-workflowId',
-          workflowTab: 'stackTrace',
+          workflowTab: 'stack-trace',
         }}
       />
     </Suspense>,
