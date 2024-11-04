@@ -30,8 +30,15 @@ const getWorkflowStatusTagProps = (
     HistoryEvent,
     'attributes' | 'workflowExecutionContinuedAsNewEventAttributes'
   > | null,
-  workflowInfo?: { cluster: string; workflowId: string; domain: string }
-): Pick<WorkflowStatusTagProps, 'status' | 'link'> => {
+  workflowInfo?: { cluster: string; workflowId: string; domain: string },
+  isArchived?: boolean
+): Pick<WorkflowStatusTagProps, 'status' | 'link' | 'isArchived'> => {
+  if (isArchived)
+    return {
+      status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
+      isArchived: true,
+    };
+
   if (!lastEvent || !lastEvent.attributes)
     return { status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID' };
 

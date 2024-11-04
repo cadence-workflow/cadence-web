@@ -11,14 +11,18 @@ const workflowSummaryTabDetailsConfig: WorkflowSummaryTabDetailsConfig[] = [
   {
     key: 'status',
     getLabel: () => 'Status',
-    valueComponent: ({ closeEvent, decodedPageUrlParams }) =>
+    valueComponent: ({ closeEvent, decodedPageUrlParams, workflowDetails }) =>
       createElement(
         WorkflowStatusTag,
-        getWorkflowStatusTagProps(closeEvent, {
-          cluster: decodedPageUrlParams.cluster,
-          workflowId: decodedPageUrlParams.workflowId,
-          domain: decodedPageUrlParams.domain,
-        })
+        getWorkflowStatusTagProps(
+          closeEvent,
+          {
+            cluster: decodedPageUrlParams.cluster,
+            workflowId: decodedPageUrlParams.workflowId,
+            domain: decodedPageUrlParams.domain,
+          },
+          workflowDetails.workflowExecutionInfo?.isArchived
+        )
       ),
   },
   {
@@ -80,6 +84,10 @@ const workflowSummaryTabDetailsConfig: WorkflowSummaryTabDetailsConfig[] = [
           : '-'
       );
     },
+    hide: ({ workflowDetails }) => {
+      //hide it on archived events as the value is not available
+      return Boolean(workflowDetails.workflowExecutionInfo?.isArchived);
+    },
   },
   {
     key: 'cronSchedule',
@@ -94,6 +102,10 @@ const workflowSummaryTabDetailsConfig: WorkflowSummaryTabDetailsConfig[] = [
     getLabel: () => 'History events',
     valueComponent: ({ workflowDetails }) =>
       workflowDetails.workflowExecutionInfo?.historyLength,
+    hide: ({ workflowDetails }) => {
+      //hide it on archived events as the value is not available
+      return Boolean(workflowDetails.workflowExecutionInfo?.isArchived);
+    },
   },
   {
     key: 'taskList',

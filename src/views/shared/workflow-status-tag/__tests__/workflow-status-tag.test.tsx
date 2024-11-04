@@ -23,6 +23,7 @@ describe('WorkflowStatusTag', () => {
     workflowStatus: WorkflowStatus;
     text: string;
     link?: string;
+    isArchived?: boolean;
   }> = [
     {
       name: 'should render Running correctly',
@@ -65,17 +66,26 @@ describe('WorkflowStatusTag', () => {
       text: 'Continued As New',
       link: 'mock_continued_workflow_link',
     },
+    {
+      name: 'should render Archived correctly',
+      workflowStatus: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
+      isArchived: true,
+      text: 'Archived',
+    },
   ];
 
   tests.forEach((test) => {
     it(test.name, () => {
       render(
-        <WorkflowStatusTag status={test.workflowStatus} link={test.link} />
+        <WorkflowStatusTag
+          status={test.workflowStatus}
+          link={test.link}
+          isArchived={test.isArchived}
+        />
       );
 
       const tag = screen.getByText(test.text);
       expect(tag).toBeInTheDocument();
-
       expect(screen.getByText('Mock icon start')).toBeInTheDocument();
       expect(screen.getByText('Mock icon end')).toBeInTheDocument();
 
