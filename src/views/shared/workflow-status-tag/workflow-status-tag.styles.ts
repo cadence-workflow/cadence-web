@@ -11,27 +11,31 @@ export function overrides(args: OverridesArgs) {
       Root: {
         style: ({ $theme }: { $theme: Theme }): StyleObject => {
           let tagColor: string;
-          switch (args.status) {
-            case WORKFLOW_STATUSES.running:
-              tagColor = $theme.colors.accent100;
-              break;
-            case WORKFLOW_STATUSES.completed:
-              tagColor = $theme.colors.positive100;
-              break;
-            case WORKFLOW_STATUSES.failed:
-            case WORKFLOW_STATUSES.timedOut:
-              tagColor = $theme.colors.negative100;
-              break;
-            case WORKFLOW_STATUSES.canceled:
-            case WORKFLOW_STATUSES.terminated:
-              tagColor = $theme.colors.warning100;
-              break;
-            case WORKFLOW_STATUSES.continuedAsNew:
-              tagColor = $theme.colors.primary100;
-              break;
-            default:
-              tagColor = $theme.colors.negative100;
-              break;
+          if (args.isArchived) {
+            tagColor = $theme.colors.warning100;
+          } else {
+            switch (args.status) {
+              case WORKFLOW_STATUSES.running:
+                tagColor = $theme.colors.accent100;
+                break;
+              case WORKFLOW_STATUSES.completed:
+                tagColor = $theme.colors.positive100;
+                break;
+              case WORKFLOW_STATUSES.failed:
+              case WORKFLOW_STATUSES.timedOut:
+                tagColor = $theme.colors.negative100;
+                break;
+              case WORKFLOW_STATUSES.canceled:
+              case WORKFLOW_STATUSES.terminated:
+                tagColor = $theme.colors.warning100;
+                break;
+              case WORKFLOW_STATUSES.continuedAsNew:
+                tagColor = $theme.colors.primary100;
+                break;
+              default:
+                tagColor = $theme.colors.negative100;
+                break;
+            }
           }
 
           return {
