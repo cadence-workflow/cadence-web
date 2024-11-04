@@ -6,4 +6,5 @@ export type Props = {
   kind: WorkflowStatusTagIconKind;
   status: WorkflowStatus;
   link?: string;
+  isArchived?: boolean;
 };

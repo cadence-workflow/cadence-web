@@ -5,9 +5,11 @@ export type WorkflowStatus = WorkflowExecutionCloseStatus;
 export type Props = {
   status: WorkflowStatus;
   link?: string;
+  isArchived?: boolean;
 };
 
 export type OverridesArgs = {
   status: WorkflowStatus;
   link?: string;
+  isArchived?: boolean;
 };

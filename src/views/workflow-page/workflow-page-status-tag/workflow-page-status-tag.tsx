@@ -28,9 +28,12 @@ export default function WorkflowPageStatusTag() {
     return null;
   }
 
-  const closeEvent = workflowDetails.workflowExecutionInfo?.closeEvent;
+  const { closeEvent, isArchived } =
+    workflowDetails.workflowExecutionInfo || {};
 
   return (
-    <WorkflowStatusTag {...getWorkflowStatusTagProps(closeEvent, params)} />
+    <WorkflowStatusTag
+      {...getWorkflowStatusTagProps(closeEvent, params, isArchived)}
+    />
   );
 }

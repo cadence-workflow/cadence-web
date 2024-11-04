@@ -133,4 +133,11 @@ describe('getWorkflowStatusTagProps', () => {
       status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
     });
   });
+
+  it('should return INVALID status and isArchived true for archived workflows', () => {
+    expect(getWorkflowStatusTagProps(undefined, undefined, true)).toEqual({
+      status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
+      isArchived: true,
+    });
+  });
 });
