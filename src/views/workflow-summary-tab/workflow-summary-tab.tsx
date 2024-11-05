@@ -18,6 +18,7 @@ import type { WorkflowPageTabContentProps } from '@/views/workflow-page/workflow
 import getWorkflowIsCompleted from '../workflow-page/helpers/get-workflow-is-completed';
 import useDescribeWorkflow from '../workflow-page/hooks/use-describe-workflow';
 
+import getWorkflowResultJson from './helpers/get-workflow-result-json';
 import WorkflowSummaryTabDetails from './workflow-summary-tab-details/workflow-summary-tab-details';
 import WorkflowSummaryTabJsonView from './workflow-summary-tab-json-view/workflow-summary-tab-json-view';
 import { cssStyles } from './workflow-summary-tab.styles';
@@ -58,10 +59,9 @@ export default function WorkflowSummaryTab({
     ? formatWorkflowHistoryEvent(closeEvent)
     : null;
 
-  const resultJson =
-    formattedCloseEvent && 'result' in formattedCloseEvent
-      ? formattedCloseEvent.result
-      : undefined;
+  const resultJson = formattedCloseEvent
+    ? getWorkflowResultJson(formattedCloseEvent)
+    : undefined;
 
   const isWorkflowRunning =
     !closeEvent ||
