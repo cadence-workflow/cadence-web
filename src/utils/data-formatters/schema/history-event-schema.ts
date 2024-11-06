@@ -315,7 +315,7 @@ export const decisionTaskFailedEventSchema = historyEventBaseSchema.extend({
     identity: z.string(),
     baseRunId: z.string(),
     newRunId: z.string(),
-    forkEventVersion: z.string(),
+    forkEventVersion: z.coerce.string(),
     binaryChecksum: z.string(),
     requestId: z.string(),
   }),
