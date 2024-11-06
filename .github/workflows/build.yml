@@ -23,4 +23,4 @@ jobs:
     #- run: npm run test:unit
     #- run: npm run test-server &
     #- run: npm run test
-    - run: npx next@14 experimental-compile
+    - run: npx next@14 build --experimental-build-mode compile
