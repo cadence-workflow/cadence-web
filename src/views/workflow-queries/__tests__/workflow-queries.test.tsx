@@ -8,9 +8,9 @@ import { render, screen, act } from '@/test-utils/rtl';
 import { type FetchWorkflowQueryTypesResponse } from '@/route-handlers/fetch-workflow-query-types/fetch-workflow-query-types.types';
 import { type QueryWorkflowResponse } from '@/route-handlers/query-workflow/query-workflow.types';
 
-import WorkflowQueriesLoader from '../workflow-queries-loader';
+import WorkflowQueries from '../workflow-queries';
 
-jest.mock('../../workflow-queries-tile/workflow-queries-tile', () =>
+jest.mock('../workflow-queries-tile/workflow-queries-tile', () =>
   jest.fn(({ name, onClick, runQuery }) => (
     <div onClick={onClick}>
       <div>Mock tile: {name}</div>
@@ -19,18 +19,16 @@ jest.mock('../../workflow-queries-tile/workflow-queries-tile', () =>
   ))
 );
 
-jest.mock(
-  '../../workflow-queries-result-json/workflow-queries-result-json',
-  () =>
-    jest.fn(({ data }) => (
-      <div>
-        <div>Mock JSON</div>
-        <div>{JSON.stringify(data)}</div>
-      </div>
-    ))
+jest.mock('../workflow-queries-result-json/workflow-queries-result-json', () =>
+  jest.fn(({ data }) => (
+    <div>
+      <div>Mock JSON</div>
+      <div>{JSON.stringify(data)}</div>
+    </div>
+  ))
 );
 
-describe(WorkflowQueriesLoader.name, () => {
+describe(WorkflowQueries.name, () => {
   it('renders without error and does not show excluded query type', async () => {
     await setup({});
 
@@ -71,11 +69,14 @@ async function setup({ error }: { error?: boolean }) {
 
   render(
     <Suspense>
-      <WorkflowQueriesLoader
-        domain="mock-domain"
-        cluster="mock-cluster"
-        workflowId="mock-workflow-id"
-        runId="mock-run-id"
+      <WorkflowQueries
+        params={{
+          domain: 'mock-domain',
+          cluster: 'mock-cluster',
+          workflowId: 'mock-workflow-id',
+          runId: 'mock-run-id',
+          workflowTab: 'queries',
+        }}
       />
     </Suspense>,
     {

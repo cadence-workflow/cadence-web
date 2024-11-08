@@ -10,7 +10,7 @@ export default function getWorkflowQueryStatus({
   isFetching: boolean;
 }): WorkflowQueryStatus {
   if (isFetching) {
-    return 'fetching';
+    return 'loading';
   }
 
   switch (queryStatus) {
@@ -19,6 +19,6 @@ export default function getWorkflowQueryStatus({
     case 'success':
       return 'success';
     case 'pending':
-      return 'pending';
+      return 'idle';
   }
 }
