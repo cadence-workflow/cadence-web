@@ -28,13 +28,18 @@ export default function useWorkflowQueries({
         RequestError,
         QueryWorkflowResponse,
         [
+          'workflow_query',
           { workflowId: string; runId: string; name: string },
           string | undefined,
         ]
       >
     >((name) => ({
-      queryKey: [{ workflowId, runId, name }, inputs[name]] as const,
-      queryFn: ({ queryKey: [{ name }, input] }) =>
+      queryKey: [
+        'workflow_query',
+        { workflowId, runId, name },
+        inputs[name],
+      ] as const,
+      queryFn: ({ queryKey: [_, { name }, input] }) =>
         request(
           `/api/domains/${domain}/${cluster}/workflows/${workflowId}/${runId}/query/${name}`,
           {

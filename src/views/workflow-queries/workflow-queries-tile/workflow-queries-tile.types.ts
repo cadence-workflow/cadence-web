@@ -1,4 +1,4 @@
-export type WorkflowQueryStatus = 'pending' | 'fetching' | 'success' | 'error';
+export type WorkflowQueryStatus = 'idle' | 'loading' | 'success' | 'error';
 
 export type Props = {
   name: string;

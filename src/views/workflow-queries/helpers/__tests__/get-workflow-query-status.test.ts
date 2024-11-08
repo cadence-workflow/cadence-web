@@ -11,10 +11,10 @@ describe(getWorkflowQueryStatus.name, () => {
     expected: WorkflowQueryStatus;
   }> = [
     {
-      name: 'returns fetching if isFetching is true',
+      name: 'returns loading if isFetching is true',
       status: 'pending',
       isFetching: true,
-      expected: 'fetching',
+      expected: 'loading',
     },
     {
       name: 'returns success if query status is success',
@@ -29,10 +29,10 @@ describe(getWorkflowQueryStatus.name, () => {
       expected: 'error',
     },
     {
-      name: 'returns pending if query status is pending',
+      name: 'returns idle if query status is pending',
       status: 'pending',
       isFetching: false,
-      expected: 'pending',
+      expected: 'idle',
     },
   ];
 

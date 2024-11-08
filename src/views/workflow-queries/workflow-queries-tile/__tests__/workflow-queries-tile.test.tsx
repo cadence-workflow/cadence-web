@@ -34,8 +34,8 @@ describe(WorkflowQueriesTile.name, () => {
     expect(screen.getByText('Mock input')).toBeInTheDocument();
   });
 
-  it('disables run button when query status is fetching', () => {
-    setup({ status: 'fetching' });
+  it('disables run button when query status is loading', () => {
+    setup({ status: 'loading' });
 
     expect(screen.getByText('Run')).toBeDisabled();
   });
