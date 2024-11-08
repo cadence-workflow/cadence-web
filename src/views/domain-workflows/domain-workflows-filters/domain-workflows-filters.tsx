@@ -13,7 +13,7 @@ export default function DomainWorkflowsFilters() {
       <styled.FiltersContainer>
         <PageFilters
           searchQueryParamKey="search"
-          searchPlaceholder="Find workflow"
+          searchPlaceholder="Search for Workflow ID, Run ID, or Workflow Type"
           pageFiltersConfig={domainWorkflowsFiltersConfig}
           pageQueryParamsConfig={domainPageQueryParamsConfig}
         />
