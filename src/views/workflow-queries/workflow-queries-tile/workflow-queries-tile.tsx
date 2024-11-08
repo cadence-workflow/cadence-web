@@ -33,7 +33,7 @@ export default function WorkflowQueriesTile(props: Props) {
             kind={KIND.secondary}
             endEnhancer={MdPlayArrow}
             onClick={props.runQuery}
-            disabled={props.queryStatus === 'fetching'}
+            disabled={props.queryStatus === 'loading'}
           >
             Run
           </Button>

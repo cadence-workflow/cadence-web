@@ -4,8 +4,7 @@ export const styled = {
   ViewContainer: createStyled<'div', { $isError: boolean }>(
     'div',
     ({ $theme, $isError }) => ({
-      // TODO: revisit this when PageSection is fixed
-      minHeight: '50vh',
+      flex: '1 0 150px',
       alignSelf: 'stretch',
       display: 'flex',
       flexDirection: 'row',

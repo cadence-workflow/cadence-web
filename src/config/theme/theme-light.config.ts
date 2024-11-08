@@ -14,6 +14,7 @@ const themeLight = {
     backgroundSecondary: '#F3F3F3',
     backgroundTertiary: '#E8E8E8',
     backgroundWarningLight: '#FDF2DC',
+    backgroundPositive: '#0E8345',
   },
 } satisfies DeepPartial<MakeExtendable<Theme>>;
 

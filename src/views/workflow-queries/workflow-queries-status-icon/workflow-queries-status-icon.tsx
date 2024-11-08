@@ -11,15 +11,18 @@ export default function WorkflowQueriesStatusIcon({ status }: Props) {
   switch (status) {
     case 'error':
       return (
-        <MdWarning size={theme.sizing.scale600} color={theme.colors.negative} />
+        <MdWarning
+          size={theme.sizing.scale600}
+          color={theme.colors.backgroundNegative}
+        />
       );
-    case 'fetching':
+    case 'loading':
       return <Spinner $size={theme.sizing.scale600} />;
     case 'success':
       return (
         <MdCheckCircle
           size={theme.sizing.scale600}
-          color={theme.colors.positive}
+          color={theme.colors.backgroundPositive}
         />
       );
     default:
