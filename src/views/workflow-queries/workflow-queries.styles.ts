@@ -26,6 +26,8 @@ export const styled = {
     rowGap: $theme.sizing.scale600,
   })),
   QueryResultView: createStyled('div', {
-    flex: '1 0 300px',
+    flex: '1',
+    display: 'flex',
+    flexDirection: 'column',
   }),
 };

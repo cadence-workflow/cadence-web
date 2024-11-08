@@ -43,8 +43,6 @@ export default function WorkflowQueriesResultJson(props: Props) {
             content={() => <>Copied</>}
           >
             <Button
-              // TODO: Add overrides for the copy button so that
-              // it sticks to the top right when the window is resized
               onClick={() => {
                 copy(JSON.stringify(content, null, '\t'));
                 setShowTooltip(true);
