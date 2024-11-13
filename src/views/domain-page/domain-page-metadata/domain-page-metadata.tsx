@@ -4,7 +4,6 @@ import React from 'react';
 import { useSuspenseQuery } from '@tanstack/react-query';
 
 import ListTable from '@/components/list-table/list-table';
-import PageSection from '@/components/page-section/page-section';
 import request from '@/utils/request';
 
 import domainPageMetadataTableConfig from '../config/domain-page-metadata-table.config';
@@ -23,13 +22,11 @@ export default function DomainPageMetadata(props: DomainPageTabContentProps) {
   });
 
   return (
-    <PageSection>
-      <styled.MetadataContainer>
-        <ListTable
-          data={domainInfo}
-          listTableConfig={domainPageMetadataTableConfig}
-        />
-      </styled.MetadataContainer>
-    </PageSection>
+    <styled.MetadataContainer>
+      <ListTable
+        data={domainInfo}
+        listTableConfig={domainPageMetadataTableConfig}
+      />
+    </styled.MetadataContainer>
   );
 }
