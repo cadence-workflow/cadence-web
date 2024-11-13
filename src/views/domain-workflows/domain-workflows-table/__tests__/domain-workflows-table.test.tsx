@@ -1,13 +1,23 @@
-import { Suspense } from 'react';
+import { HttpResponse } from 'msw';
 
-import { render, screen, act, fireEvent } from '@/test-utils/rtl';
+import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list-workflows.types';
-import * as requestModule from '@/utils/request';
 
+import type { Props as MSWMocksHandlersProps } from '../../../../test-utils/msw-mock-handlers/msw-mock-handlers.types';
 import { mockDomainWorkflowsQueryParamsValues } from '../../__fixtures__/domain-workflows-query-params';
 import { type Props as EndMessageProps } from '../../domain-workflows-table-end-message/domain-workflows-table-end-message.types';
 import DomainWorkflowsTable from '../domain-workflows-table';
+
+jest.mock('@/components/error-panel/error-panel', () =>
+  jest.fn(({ message }: { message: string }) => <div>{message}</div>)
+);
+
+jest.mock('../helpers/get-workflows-error-panel-props', () =>
+  jest.fn().mockImplementation(({ error }) => ({
+    message: error ? 'Error loading workflows' : 'No workflows found',
+  }))
+);
 
 jest.mock(
   '../../domain-workflows-table-end-message/domain-workflows-table-end-message',
@@ -20,10 +30,10 @@ jest.mock(
 );
 
 jest.mock('query-string', () => ({
-  stringifyUrl: jest.fn(() => 'mock-stringified-api-url'),
+  stringifyUrl: jest.fn(
+    () => '/api/domains/mock-domain/mock-cluster/workflows'
+  ),
 }));
-
-jest.mock('@/utils/request');
 
 const mockSetQueryParams = jest.fn();
 jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
@@ -32,7 +42,7 @@ jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
 
 describe(DomainWorkflowsTable.name, () => {
   it('renders workflows without error', async () => {
-    await setup({});
+    const { user } = setup({});
 
     expect(await screen.findByText('Mock end message: OK')).toBeInTheDocument();
     Array(10).forEach((_, index) => {
@@ -41,9 +51,7 @@ describe(DomainWorkflowsTable.name, () => {
       ).toBeInTheDocument();
     });
 
-    act(() => {
-      fireEvent.click(screen.getByTestId('mock-end-message'));
-    });
+    await user.click(screen.getByTestId('mock-end-message'));
 
     expect(await screen.findByText('Mock end message: OK')).toBeInTheDocument();
     Array(10).forEach((_, index) => {
@@ -53,23 +61,22 @@ describe(DomainWorkflowsTable.name, () => {
     });
   });
 
-  it('does not render if the initial call fails', async () => {
-    let renderErrorMessage;
-    try {
-      await act(async () => {
-        await setup({ errorCase: 'initial-fetch-error' });
-      });
-    } catch (error) {
-      if (error instanceof Error) {
-        renderErrorMessage = error.message;
-      }
-    }
+  it('renders error panel if the initial call fails', async () => {
+    setup({ errorCase: 'initial-fetch-error' });
 
-    expect(renderErrorMessage).toEqual('Request failed');
+    expect(
+      await screen.findByText('Error loading workflows')
+    ).toBeInTheDocument();
+  });
+
+  it('renders error panel if no workflows are found', async () => {
+    setup({ errorCase: 'no-workflows' });
+
+    expect(await screen.findByText('No workflows found')).toBeInTheDocument();
   });
 
   it('renders workflows and allows the user to try again if there is an error', async () => {
-    await setup({ errorCase: 'subsequent-fetch-error' });
+    const { user } = setup({ errorCase: 'subsequent-fetch-error' });
 
     expect(await screen.findByText('Mock end message: OK')).toBeInTheDocument();
     Array(10).forEach((_, index) => {
@@ -78,17 +85,13 @@ describe(DomainWorkflowsTable.name, () => {
       ).toBeInTheDocument();
     });
 
-    act(() => {
-      fireEvent.click(screen.getByTestId('mock-end-message'));
-    });
+    await user.click(screen.getByTestId('mock-end-message'));
 
     expect(
       await screen.findByText('Mock end message: Error')
     ).toBeInTheDocument();
 
-    act(() => {
-      fireEvent.click(screen.getByTestId('mock-end-message'));
-    });
+    await user.click(screen.getByTestId('mock-end-message'));
 
     expect(await screen.findByText('Mock end message: OK')).toBeInTheDocument();
     Array(10).forEach((_, index) => {
@@ -99,41 +102,57 @@ describe(DomainWorkflowsTable.name, () => {
   });
 });
 
-async function setup({
+function setup({
   errorCase,
 }: {
-  errorCase?: 'initial-fetch-error' | 'subsequent-fetch-error';
+  errorCase?: 'initial-fetch-error' | 'subsequent-fetch-error' | 'no-workflows';
 }) {
-  // TODO: @adhitya.mamallan - This is not type-safe, explore using a library such as nock or msw
-  const requestMock = jest.spyOn(requestModule, 'default') as jest.Mock;
   const pages = generateWorkflowPages(2);
+  let currentEventIndex = 0;
+  const user = userEvent.setup();
 
-  if (errorCase === 'subsequent-fetch-error') {
-    requestMock
-      .mockResolvedValueOnce({
-        json: () => Promise.resolve(pages[0]),
-      })
-      .mockRejectedValueOnce(new Error('Request failed'))
-      .mockResolvedValueOnce({
-        json: () => Promise.resolve(pages[1]),
-      });
-  } else if (errorCase === 'initial-fetch-error') {
-    requestMock.mockRejectedValueOnce(new Error('Request failed'));
-  } else {
-    requestMock
-      .mockResolvedValueOnce({
-        json: () => Promise.resolve(pages[0]),
-      })
-      .mockResolvedValueOnce({
-        json: () => Promise.resolve(pages[1]),
-      });
-  }
+  render(<DomainWorkflowsTable domain="mock-domain" cluster="mock-cluster" />, {
+    endpointsMocks: [
+      {
+        path: '/api/domains/:domain/:cluster/workflows',
+        httpMethod: 'GET',
+        mockOnce: false,
+        httpResolver: async () => {
+          const index = currentEventIndex;
+          currentEventIndex++;
 
-  render(
-    <Suspense>
-      <DomainWorkflowsTable domain="mock-domain" cluster="mock-cluster" />
-    </Suspense>
-  );
+          switch (errorCase) {
+            case 'no-workflows':
+              return HttpResponse.json({ workflows: [], nextPage: undefined });
+            case 'initial-fetch-error':
+              return HttpResponse.json(
+                { message: 'Request failed' },
+                { status: 500 }
+              );
+            case 'subsequent-fetch-error':
+              if (index === 0) {
+                return HttpResponse.json(pages[0]);
+              } else if (index === 1) {
+                return HttpResponse.json(
+                  { message: 'Request failed' },
+                  { status: 500 }
+                );
+              } else {
+                return HttpResponse.json(pages[1]);
+              }
+            default:
+              if (index === 0) {
+                return HttpResponse.json(pages[0]);
+              } else {
+                return HttpResponse.json(pages[1]);
+              }
+          }
+        },
+      },
+    ] as MSWMocksHandlersProps['endpointsMocks'],
+  });
+
+  return { user };
 }
 
 // TODO @adhitya.mamallan - Explore using fakerjs.dev for cases like this
