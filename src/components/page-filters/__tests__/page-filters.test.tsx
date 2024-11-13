@@ -45,6 +45,30 @@ describe('PageFilters', () => {
     expect(mockSetQueryParams).toHaveBeenCalledWith({ search: 'test-search' });
   });
 
+  it('should prune quotes and spaces from input text if no regexp is passed', async () => {
+    setup({});
+
+    const searchInput = await screen.findByRole('textbox');
+
+    act(() => {
+      fireEvent.change(searchInput, { target: { value: ` "test-search'` } });
+    });
+
+    expect(mockSetQueryParams).toHaveBeenCalledWith({ search: 'test-search' });
+  });
+
+  it('should prune symbols from input text if regexp is passed', async () => {
+    setup({ searchTrimRegExp: /[-]/g });
+
+    const searchInput = await screen.findByRole('textbox');
+
+    act(() => {
+      fireEvent.change(searchInput, { target: { value: 'test-search' } });
+    });
+
+    expect(mockSetQueryParams).toHaveBeenCalledWith({ search: 'testsearch' });
+  });
+
   it('should show filters when Filters button is clicked, and modify additional filters', async () => {
     setup({});
 
@@ -62,10 +86,12 @@ describe('PageFilters', () => {
 
 function setup({
   valuesOverrides,
+  searchTrimRegExp,
 }: {
   valuesOverrides?: Partial<
     PageQueryParamValues<typeof mockPageQueryParamConfig>
   >;
+  searchTrimRegExp?: RegExp;
 }) {
   if (valuesOverrides) {
     jest
@@ -82,6 +108,7 @@ function setup({
       searchPlaceholder="placeholder"
       pageFiltersConfig={mockFiltersConfig}
       pageQueryParamsConfig={mockPageQueryParamConfig}
+      {...(searchTrimRegExp ? { searchTrimRegExp } : {})}
     />
   );
 }

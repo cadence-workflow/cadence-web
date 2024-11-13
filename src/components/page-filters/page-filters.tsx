@@ -23,6 +23,7 @@ export default function PageFilters<
   searchPlaceholder,
   pageFiltersConfig,
   pageQueryParamsConfig,
+  searchTrimRegExp = /['"\s]/g,
 }: Props<P, K>) {
   const [areFiltersShown, setAreFiltersShown] = useState(false);
 
@@ -34,11 +35,15 @@ export default function PageFilters<
       <styled.SearchInputContainer>
         <Input
           value={queryParams[searchQueryParamKey]}
-          onChange={(event) =>
+          onChange={(event) => {
+            const searchValue = searchTrimRegExp
+              ? event.target.value.replaceAll(searchTrimRegExp, '')
+              : event.target.value;
+
             setQueryParams({
-              [searchQueryParamKey]: event.target.value || undefined,
-            } as Partial<PageQueryParamSetterValues<P>>)
-          }
+              [searchQueryParamKey]: searchValue || undefined,
+            } as Partial<PageQueryParamSetterValues<P>>);
+          }}
           placeholder={searchPlaceholder}
           startEnhancer={() => <Search />}
           clearOnEscape
