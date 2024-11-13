@@ -33,4 +33,5 @@ export type Props<
   searchPlaceholder: string;
   pageQueryParamsConfig: P;
   pageFiltersConfig: Array<PageFilterConfig<P, any>>;
+  searchTrimRegExp?: RegExp;
 };
