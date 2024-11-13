@@ -20,6 +20,7 @@ export const mockDecisionTaskListResponse: DescribeTaskListResponse = {
     },
   ],
   taskListStatus: null,
+  partitionConfig: null,
 };
 
 export const mockActivityTaskListResponse: DescribeTaskListResponse = {
@@ -42,4 +43,5 @@ export const mockActivityTaskListResponse: DescribeTaskListResponse = {
     },
   ],
   taskListStatus: null,
+  partitionConfig: null,
 };
