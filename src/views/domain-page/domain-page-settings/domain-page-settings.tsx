@@ -8,7 +8,6 @@ import {
 } from '@tanstack/react-query';
 import { toaster, ToasterContainer, PLACEMENT } from 'baseui/toast';
 
-import PageSection from '@/components/page-section/page-section';
 import updateDomain from '@/server-actions/update-domain/update-domain';
 import request from '@/utils/request';
 import SettingsForm from '@/views/shared/settings-form/settings-form';
@@ -68,27 +67,25 @@ export default function DomainPageSettings(props: DomainPageTabContentProps) {
       autoHideDuration={SETTINGS_UPDATE_TOAST_DURATION_MS}
       overrides={overrides.toast}
     >
-      <PageSection>
-        <styled.SettingsContainer>
-          <SettingsForm
-            data={domainInfo}
-            zodSchema={domainPageSettingsFormSchema}
-            formConfig={domainPageSettingsFormConfig}
-            onSubmit={async (data) =>
-              await saveSettings.mutateAsync(data).then(() => {
-                queryClient.invalidateQueries({
-                  queryKey: ['describeDomain', props],
-                });
-                toaster.positive('Successfully updated domain settings');
-              })
-            }
-            submitButtonText="Save settings"
-            onSubmitError={(e) =>
-              toaster.negative('Error updating domain settings: ' + e.message)
-            }
-          />
-        </styled.SettingsContainer>
-      </PageSection>
+      <styled.SettingsContainer>
+        <SettingsForm
+          data={domainInfo}
+          zodSchema={domainPageSettingsFormSchema}
+          formConfig={domainPageSettingsFormConfig}
+          onSubmit={async (data) =>
+            await saveSettings.mutateAsync(data).then(() => {
+              queryClient.invalidateQueries({
+                queryKey: ['describeDomain', props],
+              });
+              toaster.positive('Successfully updated domain settings');
+            })
+          }
+          submitButtonText="Save settings"
+          onSubmitError={(e) =>
+            toaster.negative('Error updating domain settings: ' + e.message)
+          }
+        />
+      </styled.SettingsContainer>
     </ToasterContainer>
   );
 }

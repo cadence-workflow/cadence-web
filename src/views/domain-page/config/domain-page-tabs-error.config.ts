@@ -1,9 +1,10 @@
-import getDomainWorkflowsErrorConfig from '@/views/domain-workflows/helpers/get-domain-workflows-error-config';
-
 import { type DomainPageTabsErrorConfig } from '../domain-page-tabs-error/domain-page-tabs-error.types';
 
 const domainPageTabsErrorConfig: DomainPageTabsErrorConfig = {
-  workflows: getDomainWorkflowsErrorConfig,
+  workflows: () => ({
+    message: 'Failed to load workflows',
+    actions: [{ kind: 'retry', label: 'Retry' }],
+  }),
   metadata: () => ({
     message: 'Failed to load metadata',
     actions: [{ kind: 'retry', label: 'Retry' }],

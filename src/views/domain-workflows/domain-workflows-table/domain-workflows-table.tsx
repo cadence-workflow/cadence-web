@@ -1,10 +1,11 @@
 'use client';
 import React, { useMemo } from 'react';
 
-import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import queryString from 'query-string';
 
-import PageSection from '@/components/page-section/page-section';
+import ErrorPanel from '@/components/error-panel/error-panel';
+import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import Table from '@/components/table/table';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import {
@@ -18,12 +19,10 @@ import domainWorkflowsTableConfig from '../config/domain-workflows-table.config'
 import DomainWorkflowsTableEndMessage from '../domain-workflows-table-end-message/domain-workflows-table-end-message';
 import getNextSortOrder from '../helpers/get-next-sort-order';
 
-import {
-  NO_WORKFLOWS_ERROR_MESSAGE,
-  PAGE_SIZE,
-} from './domain-workflows-table.constants';
+import { PAGE_SIZE } from './domain-workflows-table.constants';
 import { styled } from './domain-workflows-table.styles';
 import { type Props } from './domain-workflows-table.types';
+import getWorkflowsErrorPanelProps from './helpers/get-workflows-error-panel-props';
 
 export default function DomainWorkflowsTable(props: Props) {
   const [queryParams, setQueryParams] = usePageQueryParams(
@@ -47,7 +46,8 @@ export default function DomainWorkflowsTable(props: Props) {
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-  } = useSuspenseInfiniteQuery<ListWorkflowsResponse>({
+    refetch,
+  } = useInfiniteQuery<ListWorkflowsResponse>({
     queryKey: ['listWorkflows', { ...props, ...requestQueryParams }],
     queryFn: async ({ pageParam }) =>
       request(
@@ -66,51 +66,58 @@ export default function DomainWorkflowsTable(props: Props) {
     },
   });
 
-  const workflows = useMemo(
-    () => data.pages.flatMap((page) => page.workflows ?? []),
-    [data]
-  );
+  const workflows = useMemo(() => {
+    if (!data) return [];
+    return data.pages.flatMap((page) => page.workflows ?? []);
+  }, [data]);
 
-  if (
-    !queryParams.search &&
-    !queryParams.status &&
-    !queryParams.timeRangeStart &&
-    !queryParams.timeRangeEnd &&
-    workflows.length === 0
-  ) {
-    throw new Error(NO_WORKFLOWS_ERROR_MESSAGE);
+  if (isLoading) {
+    return <SectionLoadingIndicator />;
+  }
+
+  if (workflows.length === 0) {
+    const errorPanelProps = getWorkflowsErrorPanelProps({
+      error,
+      areSearchParamsAbsent:
+        !queryParams.search &&
+        !queryParams.status &&
+        !queryParams.timeRangeStart &&
+        !queryParams.timeRangeEnd,
+    });
+
+    if (errorPanelProps) {
+      return <ErrorPanel {...errorPanelProps} reset={refetch} />;
+    }
   }
 
   return (
-    <PageSection>
-      <styled.TableContainer>
-        <Table
-          data={workflows}
-          columns={domainWorkflowsTableConfig}
-          shouldShowResults={!isLoading && workflows.length > 0}
-          onSort={(column) => {
-            setQueryParams({
-              sortColumn: column,
-              sortOrder: getNextSortOrder({
-                currentColumn: queryParams.sortColumn,
-                nextColumn: column,
-                currentSortOrder: queryParams.sortOrder,
-              }),
-            });
-          }}
-          sortColumn={queryParams.sortColumn}
-          sortOrder={queryParams.sortOrder}
-          endMessage={
-            <DomainWorkflowsTableEndMessage
-              hasWorkflows={workflows.length > 0}
-              error={error}
-              fetchNextPage={fetchNextPage}
-              hasNextPage={hasNextPage}
-              isFetchingNextPage={isFetchingNextPage}
-            />
-          }
-        />
-      </styled.TableContainer>
-    </PageSection>
+    <styled.TableContainer>
+      <Table
+        data={workflows}
+        columns={domainWorkflowsTableConfig}
+        shouldShowResults={!isLoading && workflows.length > 0}
+        onSort={(column) => {
+          setQueryParams({
+            sortColumn: column,
+            sortOrder: getNextSortOrder({
+              currentColumn: queryParams.sortColumn,
+              nextColumn: column,
+              currentSortOrder: queryParams.sortOrder,
+            }),
+          });
+        }}
+        sortColumn={queryParams.sortColumn}
+        sortOrder={queryParams.sortOrder}
+        endMessage={
+          <DomainWorkflowsTableEndMessage
+            hasWorkflows={workflows.length > 0}
+            error={error}
+            fetchNextPage={fetchNextPage}
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+          />
+        }
+      />
+    </styled.TableContainer>
   );
 }

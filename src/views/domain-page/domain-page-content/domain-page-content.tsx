@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 
 import { notFound } from 'next/navigation';
@@ -6,6 +7,7 @@ import decodeUrlParams from '@/utils/decode-url-params';
 
 import domainPageTabsContentConfig from '../config/domain-page-tabs-content.config';
 
+import { styled } from './domain-page-content.styles';
 import {
   type DomainPageContentParams,
   type Props,
@@ -22,11 +24,11 @@ export default function DomainPageContent(props: Props) {
   }
 
   return (
-    <section>
+    <styled.PageSection>
       <TabContent
         domain={decodedParams.domain}
         cluster={decodedParams.cluster}
       />
-    </section>
+    </styled.PageSection>
   );
 }
