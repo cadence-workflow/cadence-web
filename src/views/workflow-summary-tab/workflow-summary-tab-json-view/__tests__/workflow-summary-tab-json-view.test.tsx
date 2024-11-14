@@ -1,13 +1,13 @@
 import React from 'react';
 
-import copy from 'copy-to-clipboard';
-
-import { render, fireEvent, screen, act } from '@/test-utils/rtl';
+import { render, fireEvent, screen } from '@/test-utils/rtl';
 
 import WorkflowSummaryTabJsonView from '../workflow-summary-tab-json-view';
 
-// Mock dependencies
-jest.mock('copy-to-clipboard', jest.fn);
+jest.mock('@/components/copy-text-button/copy-text-button', () =>
+  jest.fn(({ textToCopy }) => <div>Copy Button: {textToCopy}</div>)
+);
+
 jest.mock(
   '@/components/segmented-control-rounded/segmented-control-rounded',
   () =>
@@ -71,45 +71,17 @@ describe('WorkflowSummaryTabJsonView Component', () => {
     expect(getByText('Mock JSON skeleton')).toBeInTheDocument();
   });
 
-  it('copies JSON to clipboard', () => {
-    render(
+  it('renders copy text button and pass the correct text', () => {
+    const { getByText } = render(
       <WorkflowSummaryTabJsonView
         inputJson={inputJson}
         resultJson={resultJson}
-        isWorkflowRunning={false}
+        isWorkflowRunning={true}
       />
     );
 
-    const copyButton = screen.getByText('Copy');
-    fireEvent.click(copyButton);
-
-    expect(copy).toHaveBeenCalledWith(JSON.stringify(inputJson, null, '\t'));
-  });
-
-  it('show tooltip for 1 second and remove it', () => {
-    jest.useFakeTimers();
-
-    render(
-      <WorkflowSummaryTabJsonView
-        inputJson={inputJson}
-        resultJson={resultJson}
-        isWorkflowRunning={false}
-      />
-    );
-
-    const copyButton = screen.getByText('Copy');
-    fireEvent.click(copyButton);
-    const visibleTooltip = screen.getByText('Copied');
-    expect(visibleTooltip).toBeInTheDocument();
-
-    act(() => {
-      jest.advanceTimersByTime(1000 + 500); //hide + animation duration
-    });
-
-    // Ensure the tooltip is hidden after 1000ms
-    const hiddenTooltip = screen.queryByText('Copied');
-    expect(hiddenTooltip).not.toBeInTheDocument();
-
-    jest.useRealTimers();
+    const copyButton = getByText(/Copy Button/);
+    expect(copyButton).toBeInTheDocument();
+    expect(copyButton.innerHTML).toMatch(JSON.stringify(inputJson, null, '\t'));
   });
 });
