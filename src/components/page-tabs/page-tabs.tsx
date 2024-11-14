@@ -9,6 +9,7 @@ export default function PageTabs({
   tabList,
   selectedTab,
   setSelectedTab,
+  endEnhancer,
 }: Props) {
   return (
     <Tabs
@@ -17,6 +18,7 @@ export default function PageTabs({
         setSelectedTab(activeKey);
       }}
       overrides={overrides.tabs}
+      endEnhancer={endEnhancer}
     >
       {tabList.map((tab) => (
         <Tab

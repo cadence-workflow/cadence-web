@@ -1,11 +1,7 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
-import { Button, KIND as BUTTON_KIND, SHAPE, SIZE } from 'baseui/button';
-import { ACCESSIBILITY_TYPE, Tooltip } from 'baseui/tooltip';
-import copy from 'copy-to-clipboard';
-import { MdCopyAll } from 'react-icons/md';
-
+import CopyTextButton from '@/components/copy-text-button/copy-text-button';
 import PrettyJson from '@/components/pretty-json/pretty-json';
 import { type JsonValue } from '@/components/pretty-json/pretty-json.types';
 import PrettyJsonSkeleton from '@/components/pretty-json-skeleton/pretty-json-skeleton';
@@ -22,23 +18,21 @@ export default function WorkflowSummaryTabJsonView({
   isWorkflowRunning,
 }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
-  const [showTooltip, setShowTooltip] = useState(false);
-  const jsonMap: Record<string, JsonValue> = {
-    input: inputJson,
-    result: resultJson,
-  };
+  const jsonMap: Record<string, JsonValue> = useMemo(
+    () => ({
+      input: inputJson,
+      result: resultJson,
+    }),
+    [inputJson, resultJson]
+  );
   const [activeTab, setActiveTab] = useState<string>(
     jsonViewTabsOptions[0].key
   );
 
-  useEffect(() => {
-    if (showTooltip) {
-      const timer = setTimeout(() => {
-        setShowTooltip(false);
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [showTooltip]);
+  const textToCopy = useMemo(() => {
+    return JSON.stringify(jsonMap[activeTab], null, '\t');
+  }, [jsonMap, activeTab]);
+
   return (
     <div className={cls.jsonViewContainer}>
       <div className={cls.jsonViewHeader}>
@@ -47,27 +41,7 @@ export default function WorkflowSummaryTabJsonView({
           options={jsonViewTabsOptions}
           onChange={({ activeKey }) => setActiveTab(activeKey.toString())}
         />
-        <Tooltip
-          animateOutTime={400}
-          isOpen={showTooltip}
-          showArrow
-          placement="bottom"
-          accessibilityType={ACCESSIBILITY_TYPE.tooltip}
-          content={() => <>Copied</>}
-        >
-          <Button
-            onClick={() => {
-              copy(JSON.stringify(jsonMap[activeTab], null, '\t'));
-              setShowTooltip(true);
-            }}
-            size={SIZE.mini}
-            shape={SHAPE.pill}
-            kind={BUTTON_KIND.secondary}
-            startEnhancer={<MdCopyAll />}
-          >
-            Copy
-          </Button>
-        </Tooltip>
+        <CopyTextButton textToCopy={textToCopy} />
       </div>
       {activeTab === 'result' && isWorkflowRunning ? (
         <PrettyJsonSkeleton width="200px" />
