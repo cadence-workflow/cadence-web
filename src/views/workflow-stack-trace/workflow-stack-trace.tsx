@@ -77,7 +77,9 @@ export default function WorkflowStackTrace(props: WorkflowPageTabContentProps) {
       )}
       {!isFetching && isSuccess && (
         <div className={cls.stackTrace}>
-          <pre>{String(data.result) || 'No stack trace...'}</pre>
+          <pre className={cls.stackTracePre}>
+            {String(data.result) || 'No stack trace...'}
+          </pre>
         </div>
       )}
     </PageSection>
