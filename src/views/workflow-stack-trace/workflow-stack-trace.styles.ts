@@ -40,6 +40,10 @@ const cssStylesObj = {
     color: theme.colors.contentSecondary,
     flex: 1,
   }),
+  stackTracePre: {
+    whiteSpace: 'pre-wrap',
+    wordBreak: 'break-word',
+  },
 } satisfies StyletronCSSObject;
 
 export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> =
