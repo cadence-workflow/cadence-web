@@ -28,6 +28,7 @@ export const overrides = {
         alignItems: 'center',
         marginBottom: $theme.sizing.scale200,
         ...$theme.typography.LabelSmall,
+        lineHeight: $theme.typography.LabelMedium.lineHeight,
       }),
     },
   } satisfies BreadcrumbsOverrides,
