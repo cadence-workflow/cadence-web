@@ -28,15 +28,16 @@ export const overrides = {
         alignSelf: 'center',
         ...getMediaQueryMargins($theme, (margin) => ({
           maxWidth: `${$theme.grid.maxWidth + 2 * margin}px`,
+          paddingRight: `${margin}px`,
+          paddingLeft: `${margin}px`,
         })),
       }),
     },
     TabList: {
-      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
-        ...getMediaQueryMargins($theme),
+      style: {
         paddingBottom: 0,
         marginBottom: 0,
-      }),
+      },
     },
     TabBorder: {
       style: {
