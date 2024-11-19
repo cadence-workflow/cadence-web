@@ -51,9 +51,9 @@ export default function usePageQueryParams<P extends PageQueryParams>(
         return;
       }
       const replace =
-        extraConfig?.replace ?? setterExtraConfig?.replace ?? false;
+        setterExtraConfig?.replace ?? extraConfig?.replace ?? false;
       const pageRerender =
-        extraConfig?.pageRerender ?? setterExtraConfig?.pageRerender ?? true;
+        setterExtraConfig?.pageRerender ?? extraConfig?.pageRerender ?? true;
 
       const updatedUrlSearch = getUpdatedUrlSearch(config, newParams, search);
       const routerNavigate = replace ? router.replace : router.push;
