@@ -18,7 +18,7 @@ export default function usePageFilters<P extends PageQueryParams>({
 }) {
   const [queryParams, setQueryParams] = usePageQueryParams(
     pageQueryParamsConfig,
-    { pageRerender: false }
+    { replace: true, pageRerender: false }
   );
 
   const activeFiltersCount = useMemo(() => {
