@@ -18,6 +18,10 @@ jest.mock('../../../hooks/use-page-query-params/use-page-query-params', () =>
   jest.fn(() => [mockQueryParamsValues, mockSetQueryParams])
 );
 
+jest.mock('../page-filters-search/page-filters-search', () =>
+  jest.fn(() => <div data-testid="search-bar">Page Filters Search</div>)
+);
+
 jest.mock('../page-filters-fields/page-filters-fields', () =>
   jest.fn(() => <div data-testid="filter-fields">Filter Fields</div>)
 );
@@ -33,40 +37,10 @@ afterEach(() => {
 });
 
 describe('PageFilters', () => {
-  it('should render search bar correctly and call setSearch on input change', async () => {
+  it('should render search bar correctly', async () => {
     setup({});
 
-    const searchInput = await screen.findByRole('textbox');
-
-    act(() => {
-      fireEvent.change(searchInput, { target: { value: 'test-search' } });
-    });
-
-    expect(mockSetQueryParams).toHaveBeenCalledWith({ search: 'test-search' });
-  });
-
-  it('should prune quotes and spaces from input text if no regexp is passed', async () => {
-    setup({});
-
-    const searchInput = await screen.findByRole('textbox');
-
-    act(() => {
-      fireEvent.change(searchInput, { target: { value: ` "test-search'` } });
-    });
-
-    expect(mockSetQueryParams).toHaveBeenCalledWith({ search: 'test-search' });
-  });
-
-  it('should prune symbols from input text if regexp is passed', async () => {
-    setup({ searchTrimRegExp: /[-]/g });
-
-    const searchInput = await screen.findByRole('textbox');
-
-    act(() => {
-      fireEvent.change(searchInput, { target: { value: 'test-search' } });
-    });
-
-    expect(mockSetQueryParams).toHaveBeenCalledWith({ search: 'testsearch' });
+    expect(await screen.findByTestId('search-bar')).toBeInTheDocument();
   });
 
   it('should show filters when Filters button is clicked, and modify additional filters', async () => {
