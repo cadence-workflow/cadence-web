@@ -21,7 +21,7 @@
 
 import formatDurationToSeconds from '../format-duration-to-seconds';
 import formatEnum from '../format-enum';
-import formatPayload from '../format-payload';
+import formatInputPayload from '../format-input-payload';
 import formatPayloadMap from '../format-payload-map';
 import formatRetryPolicy from '../format-retry-policy';
 
@@ -51,7 +51,7 @@ const formatActivityTaskScheduledEvent = ({
     domain: domain || null,
     header: formatPayloadMap(header, 'fields'),
     heartbeatTimeoutSeconds: formatDurationToSeconds(heartbeatTimeout),
-    input: formatPayload(input),
+    input: formatInputPayload(input),
     retryPolicy: formatRetryPolicy(retryPolicy),
     scheduleToCloseTimeoutSeconds: formatDurationToSeconds(
       scheduleToCloseTimeout
