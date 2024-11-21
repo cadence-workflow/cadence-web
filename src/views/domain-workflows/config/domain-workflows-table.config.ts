@@ -6,7 +6,7 @@ import { type TableColumn } from '@/components/table/table.types';
 import { type DomainWorkflow } from '@/views/domain-page/domain-page.types';
 import WorkflowStatusTag from '@/views/shared/workflow-status-tag/workflow-status-tag';
 
-const domainWorkflowsTableConfig: Array<TableColumn<DomainWorkflow>> = [
+const domainWorkflowsTableConfig = [
   {
     name: 'Workflow ID',
     id: 'WorkflowID',
@@ -55,6 +55,6 @@ const domainWorkflowsTableConfig: Array<TableColumn<DomainWorkflow>> = [
     width: '12.5%',
     sortable: true,
   },
-];
+] as const satisfies Array<TableColumn<DomainWorkflow>>;
 
 export default domainWorkflowsTableConfig;
