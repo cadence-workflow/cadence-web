@@ -19,7 +19,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import formatWorkflowInputPayload from '../format-workflow-input-payload';
+import formatInputPayload from '../format-input-payload';
 
 import formatWorkflowCommonEventFields from './format-workflow-common-event-fields';
 import { type SignalExternalWorkflowExecutionInitiatedEvent } from './format-workflow-history-event.type';
@@ -38,7 +38,7 @@ const formatSignalExternalWorkflowExecutionInitiatedEvent = ({
     ...eventAttributes,
     control: control ? parseInt(atob(control)) : null,
     decisionTaskCompletedEventId: parseInt(decisionTaskCompletedEventId),
-    input: formatWorkflowInputPayload(input),
+    input: formatInputPayload(input),
   };
 };
 

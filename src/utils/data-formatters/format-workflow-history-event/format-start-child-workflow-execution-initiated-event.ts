@@ -21,9 +21,9 @@
 
 import formatDurationToSeconds from '../format-duration-to-seconds';
 import formatEnum from '../format-enum';
+import formatInputPayload from '../format-input-payload';
 import formatPayloadMap from '../format-payload-map';
 import formatRetryPolicy from '../format-retry-policy';
-import formatWorkflowInputPayload from '../format-workflow-input-payload';
 
 import formatWorkflowCommonEventFields from './format-workflow-common-event-fields';
 import { type StartChildWorkflowExecutionInitiatedEvent } from './format-workflow-history-event.type';
@@ -57,7 +57,7 @@ const formatStartChildWorkflowExecutionInitiatedEvent = ({
       executionStartToCloseTimeout
     ),
     header: formatPayloadMap(header, 'fields'),
-    input: formatWorkflowInputPayload(input),
+    input: formatInputPayload(input),
     memo: formatPayloadMap(memo, 'fields'),
     parentClosePolicy: formatEnum(parentClosePolicy, 'PARENT_CLOSE_POLICY'),
     retryPolicy: formatRetryPolicy(retryPolicy),
