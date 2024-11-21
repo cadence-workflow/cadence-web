@@ -41,14 +41,17 @@ export async function listWorkflows(
       domain: decodedParams.domain,
       pageSize: queryParams.pageSize,
       nextPageToken: queryParams.nextPage,
-      query: getListWorkflowExecutionsQuery({
-        search: queryParams.search,
-        workflowStatus: queryParams.status,
-        sortColumn: queryParams.sortColumn,
-        sortOrder: queryParams.sortOrder,
-        timeRangeStart: queryParams.timeRangeStart,
-        timeRangeEnd: queryParams.timeRangeEnd,
-      }),
+      query:
+        queryParams.inputType === 'query'
+          ? queryParams.query
+          : getListWorkflowExecutionsQuery({
+              search: queryParams.search,
+              workflowStatus: queryParams.status,
+              sortColumn: queryParams.sortColumn,
+              sortOrder: queryParams.sortOrder,
+              timeRangeStart: queryParams.timeRangeStart,
+              timeRangeEnd: queryParams.timeRangeEnd,
+            }),
     });
 
     const response: ListWorkflowsResponse = {

@@ -4,12 +4,14 @@ import type domainPageQueryParamsConfig from '@/views/domain-page/config/domain-
 export const mockDomainWorkflowsQueryParamsValues: PageQueryParamValues<
   typeof domainPageQueryParamsConfig
 > = {
+  inputType: 'search',
   search: '',
   status: undefined,
   timeRangeStart: undefined,
   timeRangeEnd: undefined,
   sortColumn: 'startTime',
   sortOrder: 'DESC',
+  query: '',
 };
 
 export const mockDateOverrides = {
