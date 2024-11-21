@@ -12,7 +12,9 @@ const listWorkflowsQueryParamSchema = z.object({
     .pipe(
       z.number().positive({ message: 'Page size must be a positive integer' })
     ),
+  inputType: z.enum(['search', 'query']),
   search: z.string().optional(),
+  query: z.string().optional(),
   status: z
     .custom<WorkflowStatus>(isWorkflowStatus, {
       message: 'Invalid workflow status',
