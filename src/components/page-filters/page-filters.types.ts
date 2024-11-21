@@ -5,6 +5,8 @@ import {
   type PageQueryParamSetterValues,
 } from '@/hooks/use-page-query-params/use-page-query-params.types';
 
+import { type Props as PageFiltersSearchProps } from './page-filters-search/page-filters-search.types';
+
 export type PageFilterComponentProps<V extends object> = {
   value: V;
   setValue: (value: V) => void;
@@ -29,9 +31,6 @@ export type Props<
   P extends PageQueryParams,
   K extends PageQueryParamKeys<P>,
 > = {
-  searchQueryParamKey: PageQueryParamValues<P>[K] extends string ? K : never;
-  searchPlaceholder: string;
   pageQueryParamsConfig: P;
   pageFiltersConfig: Array<PageFilterConfig<P, any>>;
-  searchTrimRegExp?: RegExp;
-};
+} & PageFiltersSearchProps<P, K>;
