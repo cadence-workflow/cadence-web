@@ -1,6 +1,6 @@
 import logger from '@/utils/logger';
 
-const formatWorkflowInputPayload = (
+const formatInputPayload = (
   payload: { data?: string | null } | null | undefined
 ) => {
   const data = payload?.data;
@@ -54,4 +54,4 @@ function parseJsonLines(input: string) {
   return jsonArray;
 }
 
-export default formatWorkflowInputPayload;
+export default formatInputPayload;

@@ -73,7 +73,7 @@ exports[`formatWorkflowHistoryEvent should format workflow activityTaskScheduled
   },
   "heartbeatTimeoutSeconds": 0,
   "input": [
-    "1725747370575409843",
+    1725747370575410000,
     "gadence-canary-xdc",
     "workflow.sanity",
   ],

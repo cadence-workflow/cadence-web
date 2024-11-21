@@ -24,11 +24,11 @@ import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
 import formatDurationToSeconds from '../format-duration-to-seconds';
 import formatEnum from '../format-enum';
 import formatFailureDetails from '../format-failure-details';
+import formatInputPayload from '../format-input-payload';
 import formatPayloadMap from '../format-payload-map';
 import formatPrevAutoResetPoints from '../format-prev-auto-reset-points';
 import formatRetryPolicy from '../format-retry-policy';
 import formatTimestampToDatetime from '../format-timestamp-to-datetime';
-import formatWorkflowInputPayload from '../format-workflow-input-payload';
 
 import formatWorkflowCommonEventFields from './format-workflow-common-event-fields';
 import { type WorkflowExecutionStartedEvent } from './format-workflow-history-event.type';
@@ -68,7 +68,7 @@ const formatWorkflowExecutionStartedEvent = ({
       kind: formatEnum(taskList?.kind, 'TASK_LIST_KIND'),
       name: taskList?.name || null,
     },
-    input: formatWorkflowInputPayload(input),
+    input: formatInputPayload(input),
     executionStartToCloseTimeoutSeconds: formatDurationToSeconds(
       executionStartToCloseTimeout
     ),
