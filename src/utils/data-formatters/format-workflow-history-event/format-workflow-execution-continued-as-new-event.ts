@@ -22,9 +22,9 @@
 import formatDurationToSeconds from '../format-duration-to-seconds';
 import formatEnum from '../format-enum';
 import formatFailureDetails from '../format-failure-details';
+import formatInputPayload from '../format-input-payload';
 import formatPayloadMap from '../format-payload-map';
 import formatWorkflowEventId from '../format-workflow-event-id';
-import formatWorkflowInputPayload from '../format-workflow-input-payload';
 
 import formatWorkflowCommonEventFields from './format-workflow-common-event-fields';
 import { type WorkflowExecutionContinuedAsNewEvent } from './format-workflow-history-event.type';
@@ -61,7 +61,7 @@ const formatWorkflowExecutionContinuedAsNewEvent = ({
     failureReason: failure?.reason || '',
     header: formatPayloadMap(header, 'fields'),
     initiator: formatEnum(initiator, 'CONTINUE_AS_NEW_INITIATOR'),
-    input: formatWorkflowInputPayload(input),
+    input: formatInputPayload(input),
     memo: formatPayloadMap(memo, 'fields'),
     searchAttributes: formatPayloadMap(searchAttributes, 'indexedFields'),
     taskList: {

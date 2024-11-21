@@ -1,35 +1,35 @@
-import formatWorkflowInputPayload from '../format-workflow-input-payload';
+import formatInputPayload from '../format-input-payload';
 
-describe('formatWorkflowInputPayload', () => {
+describe('formatInputPayload', () => {
   // empty data checks
   test('should return null if payload is null', () => {
     const input = null;
     const expected = null;
-    expect(formatWorkflowInputPayload(input)).toEqual(expected);
+    expect(formatInputPayload(input)).toEqual(expected);
   });
 
   test('should return null if payload is undefined', () => {
     const input = undefined;
     const expected = null;
-    expect(formatWorkflowInputPayload(input)).toEqual(expected);
+    expect(formatInputPayload(input)).toEqual(expected);
   });
 
   test('should return null if data is missing', () => {
     const input = {};
     const expected = null;
-    expect(formatWorkflowInputPayload(input)).toEqual(expected);
+    expect(formatInputPayload(input)).toEqual(expected);
   });
 
   test('should return null if data is null', () => {
     const input = { data: null };
     const expected = null;
-    expect(formatWorkflowInputPayload(input)).toEqual(expected);
+    expect(formatInputPayload(input)).toEqual(expected);
   });
 
   test('should return null if data is an empty string', () => {
     const input = { data: '' };
     const expected = null;
-    expect(formatWorkflowInputPayload(input)).toEqual(expected);
+    expect(formatInputPayload(input)).toEqual(expected);
   });
   // end of empty data checks
 
@@ -41,7 +41,7 @@ describe('formatWorkflowInputPayload', () => {
       { name: 'John', age: 30 },
       { name: 'Jane', age: 25 },
     ];
-    expect(formatWorkflowInputPayload(input)).toEqual(expected);
+    expect(formatInputPayload(input)).toEqual(expected);
   });
 
   test('should handle base64 encoded JSON with \\n within string values', () => {
@@ -54,7 +54,7 @@ describe('formatWorkflowInputPayload', () => {
       { name: 'John\nDoe', age: 30 },
       { name: 'Alice', city: 'Wonderland' },
     ];
-    expect(formatWorkflowInputPayload(input)).toEqual(expected);
+    expect(formatInputPayload(input)).toEqual(expected);
   });
 
   test('should handle base64 encoded malformed JSON gracefully', () => {
@@ -62,12 +62,12 @@ describe('formatWorkflowInputPayload', () => {
       data: btoa(`{"name": "John", "age": 30}\n{malformed JSON}`),
     };
     const expected = [{ name: 'John', age: 30 }];
-    expect(formatWorkflowInputPayload(input)).toEqual(expected);
+    expect(formatInputPayload(input)).toEqual(expected);
   });
   test('should handle base64 encoded mix of numbers, strings, arrays, nulls', () => {
     const input = { data: btoa(`42\n"Hello, World!"\n[1, 2, 3]\nnull`) };
     const expected = [42, 'Hello, World!', [1, 2, 3], null];
-    expect(formatWorkflowInputPayload(input)).toEqual(expected);
+    expect(formatInputPayload(input)).toEqual(expected);
   });
 
   test('should handle base64 encoded JSON objects with mixed types', () => {
@@ -79,7 +79,7 @@ describe('formatWorkflowInputPayload', () => {
     const expected = [
       { number: 123, string: 'test', array: [1, 'two', 3], nullValue: null },
     ];
-    expect(formatWorkflowInputPayload(input)).toEqual(expected);
+    expect(formatInputPayload(input)).toEqual(expected);
   });
 
   test('should handle base64 encoded multiple mixed JSON objects', () => {
@@ -94,6 +94,6 @@ describe('formatWorkflowInputPayload', () => {
       42,
       'Hello',
     ];
-    expect(formatWorkflowInputPayload(input)).toEqual(expected);
+    expect(formatInputPayload(input)).toEqual(expected);
   });
 });
