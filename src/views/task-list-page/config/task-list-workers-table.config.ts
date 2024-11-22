@@ -1,7 +1,7 @@
 import { createElement } from 'react';
 
 import FormattedDate from '@/components/formatted-date/formatted-date';
-import { type TableColumn } from '@/components/table/table.types';
+import { type TableConfig } from '@/components/table/table.types';
 import { type Worker } from '@/route-handlers/describe-task-list/describe-task-list.types';
 
 import TaskListWorkersTableHandlerIcon from '../task-list-workers-table-handler-icon/task-list-workers-table-handler-icon';
@@ -40,6 +40,6 @@ const taskListWorkersTableConfig = [
       }),
     width: '10%',
   },
-] as const satisfies Array<TableColumn<Worker>>;
+] as const satisfies TableConfig<Worker>;
 
 export default taskListWorkersTableConfig;
