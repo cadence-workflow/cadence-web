@@ -11,6 +11,14 @@ type TestDataT = {
 const SAMPLE_DATA_NUM_ROWS = 10;
 const SAMPLE_DATA_NUM_COLUMNS = 5;
 
+jest.mock('../table-sortable-head-cell/table-sortable-head-cell', () =>
+  jest.fn(({ name, columnID, onSort }) => (
+    <th data-testid="sortable-head-cell" onClick={() => onSort(columnID)}>
+      {name}
+    </th>
+  ))
+);
+
 const SAMPLE_ROWS: Array<TestDataT> = Array.from(
   { length: SAMPLE_DATA_NUM_ROWS },
   (_, rowIndex) => ({ value: `test_${rowIndex}` })
@@ -56,6 +64,11 @@ describe('Table', () => {
     const { mockOnSort } = setup({ shouldShowResults: true });
 
     const columnElements = await screen.findAllByText(/Column Name \d+/);
+    expect(columnElements.length).toEqual(5);
+
+    const sortableColumnHeadCells =
+      await screen.findAllByTestId('sortable-head-cell');
+    expect(sortableColumnHeadCells.length).toEqual(5);
 
     act(() => {
       fireEvent.click(columnElements[0]);
@@ -63,9 +76,26 @@ describe('Table', () => {
 
     expect(mockOnSort).toHaveBeenCalledWith('column_id_0');
   });
+
+  it('should render plain head cells for sortable columns when onSort is missing', async () => {
+    setup({ shouldShowResults: true, omitOnSort: true });
+
+    const columnElements = await screen.findAllByText(/Column Name \d+/);
+    expect(columnElements.length).toEqual(5);
+
+    const sortableColumnHeadCells =
+      screen.queryAllByTestId('sortable-head-cell');
+    expect(sortableColumnHeadCells.length).toEqual(0);
+  });
 });
 
-function setup({ shouldShowResults }: { shouldShowResults: boolean }) {
+function setup({
+  shouldShowResults,
+  omitOnSort,
+}: {
+  shouldShowResults: boolean;
+  omitOnSort?: boolean;
+}) {
   const mockOnSort = jest.fn();
   render(
     <Table
@@ -73,7 +103,7 @@ function setup({ shouldShowResults }: { shouldShowResults: boolean }) {
       columns={SAMPLE_COLUMNS}
       shouldShowResults={shouldShowResults}
       endMessage={<div>Sample end message</div>}
-      onSort={mockOnSort}
+      {...(!omitOnSort && { onSort: mockOnSort })}
       sortColumn={SAMPLE_COLUMNS[SAMPLE_DATA_NUM_COLUMNS - 1].id}
       sortOrder="DESC"
     />

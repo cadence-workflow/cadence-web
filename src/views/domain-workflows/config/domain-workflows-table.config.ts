@@ -2,7 +2,7 @@ import { createElement } from 'react';
 
 import FormattedDate from '@/components/formatted-date/formatted-date';
 import Link from '@/components/link/link';
-import { type TableColumn } from '@/components/table/table.types';
+import { type TableConfig } from '@/components/table/table.types';
 import { type DomainWorkflow } from '@/views/domain-page/domain-page.types';
 import WorkflowStatusTag from '@/views/shared/workflow-status-tag/workflow-status-tag';
 
@@ -55,6 +55,6 @@ const domainWorkflowsTableConfig = [
     width: '12.5%',
     sortable: true,
   },
-] as const satisfies Array<TableColumn<DomainWorkflow>>;
+] as const satisfies TableConfig<DomainWorkflow>;
 
 export default domainWorkflowsTableConfig;

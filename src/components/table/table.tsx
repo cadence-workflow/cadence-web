@@ -10,28 +10,32 @@ import {
 
 import TableSortableHeadCell from './table-sortable-head-cell/table-sortable-head-cell';
 import { styled } from './table.styles';
-import type { Props } from './table.types';
+import type { Props, TableConfig } from './table.types';
 
-export default function Table<T extends object>({
+export default function Table<T extends object, C extends TableConfig<T>>({
   data,
   columns,
   shouldShowResults,
   endMessage,
-  ...sortParams
-}: Props<T>) {
+  onSort,
+  sortColumn,
+  sortOrder,
+}: Props<T, C>) {
   return (
     <styled.TableRoot>
       <StyledTable>
         <StyledTableHead>
           <StyledTableHeadRow>
             {columns.map((column) =>
-              column.sortable ? (
+              column.sortable && typeof onSort === 'function' ? (
                 <TableSortableHeadCell
                   key={column.id}
                   name={column.name}
                   columnID={column.id}
                   width={column.width}
-                  {...sortParams}
+                  onSort={onSort}
+                  sortColumn={sortColumn}
+                  sortOrder={sortOrder}
                 />
               ) : (
                 <styled.TableHeadCell
