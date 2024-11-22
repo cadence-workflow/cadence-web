@@ -1,10 +1,10 @@
-import { type TableColumn } from '@/components/table/table.types';
+import { type TableConfig } from '@/components/table/table.types';
 
 import { type DomainData } from '../domains-page.types';
 import DomainsTableClusterCell from '../domains-table-cluster-cell/domains-table-cluster-cell';
 import DomainsTableDomainNameCell from '../domains-table-domain-name-cell/domains-table-domain-name-cell';
 
-const domainsTableColumnsConfig: Array<TableColumn<DomainData>> = [
+const domainsTableColumnsConfig = [
   {
     name: 'Domain Name',
     id: 'name',
@@ -18,6 +18,6 @@ const domainsTableColumnsConfig: Array<TableColumn<DomainData>> = [
     renderCell: DomainsTableClusterCell,
     width: '20%',
   },
-];
+] as const satisfies TableConfig<DomainData>;
 
 export default domainsTableColumnsConfig;
