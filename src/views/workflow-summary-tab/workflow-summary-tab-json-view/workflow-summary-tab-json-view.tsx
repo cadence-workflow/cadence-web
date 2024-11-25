@@ -3,10 +3,11 @@ import React, { useMemo, useState } from 'react';
 
 import CopyTextButton from '@/components/copy-text-button/copy-text-button';
 import PrettyJson from '@/components/pretty-json/pretty-json';
-import { type JsonValue } from '@/components/pretty-json/pretty-json.types';
+import { type PrettyJsonValue } from '@/components/pretty-json/pretty-json.types';
 import PrettyJsonSkeleton from '@/components/pretty-json-skeleton/pretty-json-skeleton';
 import SegmentedControlRounded from '@/components/segmented-control-rounded/segmented-control-rounded';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
+import losslessJsonStringify from '@/utils/lossless-json-stringify';
 
 import { jsonViewTabsOptions } from './workflow-summary-tab-json-view.constants';
 import { cssStyles } from './workflow-summary-tab-json-view.styles';
@@ -18,7 +19,7 @@ export default function WorkflowSummaryTabJsonView({
   isWorkflowRunning,
 }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
-  const jsonMap: Record<string, JsonValue> = useMemo(
+  const jsonMap: Record<string, PrettyJsonValue> = useMemo(
     () => ({
       input: inputJson,
       result: resultJson,
@@ -30,7 +31,7 @@ export default function WorkflowSummaryTabJsonView({
   );
 
   const textToCopy = useMemo(() => {
-    return JSON.stringify(jsonMap[activeTab], null, '\t');
+    return losslessJsonStringify(jsonMap[activeTab], null, '\t');
   }, [jsonMap, activeTab]);
 
   return (

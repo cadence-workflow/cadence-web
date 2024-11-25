@@ -73,7 +73,7 @@ exports[`formatWorkflowHistoryEvent should format workflow activityTaskScheduled
   },
   "heartbeatTimeoutSeconds": 0,
   "input": [
-    1725747370575410000,
+    1725747370575409843n,
     "gadence-canary-xdc",
     "workflow.sanity",
   ],
@@ -523,7 +523,7 @@ exports[`formatWorkflowHistoryEvent should format workflow startChildWorkflowExe
     "fields": {},
   },
   "input": [
-    1726492751798812400,
+    1726492751798812308n,
     30000000000,
   ],
   "jitterStart": null,

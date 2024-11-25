@@ -5,6 +5,7 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import queryString from 'query-string';
 
 import PageSection from '@/components/page-section/page-section';
+import { type PrettyJsonValue } from '@/components/pretty-json/pretty-json.types';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
 import formatWorkflowHistory from '@/utils/data-formatters/format-workflow-history';
@@ -86,7 +87,7 @@ export default function WorkflowSummaryTab({
           <WorkflowSummaryTabJsonView
             inputJson={
               formattedStartEvent && 'input' in formattedStartEvent
-                ? formattedStartEvent?.input
+                ? (formattedStartEvent?.input as PrettyJsonValue)
                 : []
             }
             resultJson={resultJson}
