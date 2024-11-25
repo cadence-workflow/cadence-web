@@ -7,19 +7,22 @@ import Table from '@/components/table/table';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
 
-import domainWorkflowsTableConfig from '../config/domain-workflows-table.config';
+import domainWorkflowsQueryTableConfig from '../config/domain-workflows-query-table.config';
+import domainWorkflowsSearchTableConfig from '../config/domain-workflows-search-table.config';
+import { type Props } from '../domain-workflows-table/domain-workflows-table.types';
 import DomainWorkflowsTableEndMessage from '../domain-workflows-table-end-message/domain-workflows-table-end-message';
 import getNextSortOrder from '../helpers/get-next-sort-order';
 import useListWorkflows from '../hooks/use-list-workflows';
 
 import { styled } from './domain-workflows-table.styles';
-import { type Props } from './domain-workflows-table.types';
 import getWorkflowsErrorPanelProps from './helpers/get-workflows-error-panel-props';
 
 export default function DomainWorkflowsTable({ domain, cluster }: Props) {
   const [queryParams, setQueryParams] = usePageQueryParams(
     domainPageQueryParamsConfig
   );
+
+  const inputType = queryParams.inputType;
 
   const {
     workflows,
@@ -29,17 +32,7 @@ export default function DomainWorkflowsTable({ domain, cluster }: Props) {
     fetchNextPage,
     isFetchingNextPage,
     refetch,
-  } = useListWorkflows({
-    domain,
-    cluster,
-    inputType: queryParams.inputType,
-    search: queryParams.search,
-    status: queryParams.status,
-    sortColumn: queryParams.sortColumn,
-    sortOrder: queryParams.sortOrder,
-    timeRangeStart: queryParams.timeRangeStart?.toISOString(),
-    timeRangeEnd: queryParams.timeRangeEnd?.toISOString(),
-  });
+  } = useListWorkflows({ domain, cluster });
 
   if (isLoading) {
     return <SectionLoadingIndicator />;
@@ -47,6 +40,7 @@ export default function DomainWorkflowsTable({ domain, cluster }: Props) {
 
   if (workflows.length === 0) {
     const errorPanelProps = getWorkflowsErrorPanelProps({
+      inputType,
       error,
       areSearchParamsAbsent:
         !queryParams.search &&
@@ -56,7 +50,11 @@ export default function DomainWorkflowsTable({ domain, cluster }: Props) {
     });
 
     if (errorPanelProps) {
-      return <ErrorPanel {...errorPanelProps} reset={refetch} />;
+      return (
+        <styled.ErrorPanelContainer>
+          <ErrorPanel {...errorPanelProps} reset={refetch} />
+        </styled.ErrorPanelContainer>
+      );
     }
   }
 
@@ -64,20 +62,7 @@ export default function DomainWorkflowsTable({ domain, cluster }: Props) {
     <styled.TableContainer>
       <Table
         data={workflows}
-        columns={domainWorkflowsTableConfig}
         shouldShowResults={!isLoading && workflows.length > 0}
-        onSort={(column) => {
-          setQueryParams({
-            sortColumn: column,
-            sortOrder: getNextSortOrder({
-              currentColumn: queryParams.sortColumn,
-              nextColumn: column,
-              currentSortOrder: queryParams.sortOrder,
-            }),
-          });
-        }}
-        sortColumn={queryParams.sortColumn}
-        sortOrder={queryParams.sortOrder}
         endMessage={
           <DomainWorkflowsTableEndMessage
             hasWorkflows={workflows.length > 0}
@@ -87,6 +72,25 @@ export default function DomainWorkflowsTable({ domain, cluster }: Props) {
             isFetchingNextPage={isFetchingNextPage}
           />
         }
+        {...(inputType === 'query'
+          ? {
+              columns: domainWorkflowsQueryTableConfig,
+            }
+          : {
+              columns: domainWorkflowsSearchTableConfig,
+              onSort: (column) => {
+                setQueryParams({
+                  sortColumn: column,
+                  sortOrder: getNextSortOrder({
+                    currentColumn: queryParams.sortColumn,
+                    nextColumn: column,
+                    currentSortOrder: queryParams.sortOrder,
+                  }),
+                });
+              },
+              sortColumn: queryParams.sortColumn,
+              sortOrder: queryParams.sortOrder,
+            })}
       />
     </styled.TableContainer>
   );

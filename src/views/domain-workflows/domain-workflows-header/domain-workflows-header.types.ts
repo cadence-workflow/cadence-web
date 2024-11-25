@@ -2,3 +2,8 @@ import { type ListWorkflowsRequestQueryParams } from '@/route-handlers/list-work
 
 export type DomainWorkflowsHeaderInputType =
   ListWorkflowsRequestQueryParams['inputType'];
+
+export type Props = {
+  domain: string;
+  cluster: string;
+};

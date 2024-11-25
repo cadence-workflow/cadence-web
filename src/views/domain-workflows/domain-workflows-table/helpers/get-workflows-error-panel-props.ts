@@ -1,13 +1,24 @@
 import { type Props as ErrorPanelProps } from '@/components/error-panel/error-panel.types';
+import { type RequestError } from '@/utils/request/request-error';
+
+import { type DomainWorkflowsHeaderInputType } from '../../domain-workflows-header/domain-workflows-header.types';
 
 export default function getWorkflowsErrorPanelProps({
+  inputType,
   error,
   areSearchParamsAbsent,
 }: {
-  error: Error | null;
+  inputType: DomainWorkflowsHeaderInputType;
+  error: RequestError | null;
   areSearchParamsAbsent: boolean;
 }): ErrorPanelProps | undefined {
   if (error) {
+    if (inputType === 'query' && error.status === 400) {
+      return {
+        message: 'Error in query: ' + error.message,
+      };
+    }
+
     return {
       message: 'Failed to fetch workflows',
       actions: [{ kind: 'retry', label: 'Retry' }],
