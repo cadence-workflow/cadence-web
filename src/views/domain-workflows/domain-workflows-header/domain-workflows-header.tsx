@@ -11,6 +11,7 @@ import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-
 
 import domainWorkflowsFiltersConfig from '../config/domain-workflows-filters.config';
 import DomainWorkflowsQueryInput from '../domain-workflows-query-input/domain-workflows-query-input';
+import DomainWorkflowsQueryLabel from '../domain-workflows-query-label/domain-workflows-query-label';
 import useListWorkflows from '../hooks/use-list-workflows';
 
 import { overrides, styled } from './domain-workflows-header.styles';
@@ -50,8 +51,7 @@ export default function DomainWorkflowsHeader({ domain, cluster }: Props) {
           <Segment
             overrides={overrides.inputToggleSegment}
             key="query"
-            // TODO @adhitya.mamallan - replace this with the label tooltip component
-            label="Query"
+            label={<DomainWorkflowsQueryLabel />}
           />
         </SegmentedControl>
         {queryParams.inputType === 'query' ? (
