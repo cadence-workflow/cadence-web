@@ -11,10 +11,12 @@ import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-
 
 import domainWorkflowsFiltersConfig from '../config/domain-workflows-filters.config';
 import DomainWorkflowsQueryInput from '../domain-workflows-query-input/domain-workflows-query-input';
+import useListWorkflows from '../hooks/use-list-workflows';
 
 import { overrides, styled } from './domain-workflows-header.styles';
+import { type Props } from './domain-workflows-header.types';
 
-export default function DomainWorkflowsHeader() {
+export default function DomainWorkflowsHeader({ domain, cluster }: Props) {
   const [areFiltersShown, setAreFiltersShown] = useState(false);
 
   const { resetAllFilters, activeFiltersCount, queryParams, setQueryParams } =
@@ -22,6 +24,8 @@ export default function DomainWorkflowsHeader() {
       pageFiltersConfig: domainWorkflowsFiltersConfig,
       pageQueryParamsConfig: domainPageQueryParamsConfig,
     });
+
+  const { refetch } = useListWorkflows({ domain, cluster });
 
   return (
     <styled.HeaderContainer>
@@ -54,6 +58,7 @@ export default function DomainWorkflowsHeader() {
           <DomainWorkflowsQueryInput
             value={queryParams.query}
             setValue={(v) => setQueryParams({ query: v })}
+            refetchQuery={refetch}
           />
         ) : (
           <>

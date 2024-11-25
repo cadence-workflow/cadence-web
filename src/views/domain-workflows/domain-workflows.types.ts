@@ -1,7 +1,5 @@
-import {
-  type RouteParams as ListWorkflowsRouteParams,
-  type ListWorkflowsRequestQueryParams,
-} from '@/route-handlers/list-workflows/list-workflows.types';
+import { type RouteParams as ListWorkflowsRouteParams } from '@/route-handlers/list-workflows/list-workflows.types';
 
-export type UseListWorkflowsParams = ListWorkflowsRouteParams &
-  Omit<ListWorkflowsRequestQueryParams, 'pageSize'> & { pageSize?: number };
+export type UseListWorkflowsParams = ListWorkflowsRouteParams & {
+  pageSize?: number;
+};

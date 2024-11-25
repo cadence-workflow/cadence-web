@@ -41,16 +41,26 @@ jest.mock('@/components/page-filters/hooks/use-page-filters', () =>
   }))
 );
 
+jest.mock('../../hooks/use-list-workflows', () =>
+  jest.fn(() => ({
+    refetch: jest.fn(),
+  }))
+);
+
 describe(DomainWorkflowsHeader.name, () => {
   it('renders segmented control', async () => {
-    render(<DomainWorkflowsHeader />);
+    render(
+      <DomainWorkflowsHeader domain="mock_domain" cluster="mock_cluster" />
+    );
 
     expect(await screen.findByText('Search')).toBeInTheDocument();
     expect(await screen.findByText('Query')).toBeInTheDocument();
   });
 
   it('renders page search and filters button when input type is search', async () => {
-    render(<DomainWorkflowsHeader />);
+    render(
+      <DomainWorkflowsHeader domain="mock_domain" cluster="mock_cluster" />
+    );
 
     expect(await screen.findByText('Filter search')).toBeInTheDocument();
     expect(await screen.findByText('Filter toggle')).toBeInTheDocument();
@@ -58,7 +68,9 @@ describe(DomainWorkflowsHeader.name, () => {
 
   it('renders page filters when filter toggle is clicked', async () => {
     const user = userEvent.setup();
-    render(<DomainWorkflowsHeader />);
+    render(
+      <DomainWorkflowsHeader domain="mock_domain" cluster="mock_cluster" />
+    );
 
     const filterToggle = await screen.findByText('Filter toggle');
     await user.click(filterToggle);
@@ -77,14 +89,18 @@ describe(DomainWorkflowsHeader.name, () => {
       setQueryParams: mockSetQueryParams,
     });
 
-    render(<DomainWorkflowsHeader />);
+    render(
+      <DomainWorkflowsHeader domain="mock_domain" cluster="mock_cluster" />
+    );
 
     expect(await screen.findByText('Query')).toBeInTheDocument();
   });
 
   it('toggles input type when segmented control is used', async () => {
     const user = userEvent.setup();
-    render(<DomainWorkflowsHeader />);
+    render(
+      <DomainWorkflowsHeader domain="mock_domain" cluster="mock_cluster" />
+    );
 
     const queryButton = await screen.findByText('Search');
     await user.click(queryButton);

@@ -29,17 +29,27 @@ describe(DomainWorkflowsQueryInput.name, () => {
 
     expect(mockSetValue).toHaveBeenCalledWith('mock_query');
   });
+
+  it('calls refetchQuery when the Rerun Query button is clicked', async () => {
+    const { mockRefetch, user } = setup({ startValue: 'test_query' });
+
+    await user.click(await screen.findByText('Rerun Query'));
+
+    expect(mockRefetch).toHaveBeenCalled();
+  });
 });
 
 function setup({ startValue }: { startValue?: string }) {
   const mockSetValue = jest.fn();
+  const mockRefetch = jest.fn();
   const user = userEvent.setup();
   render(
     <DomainWorkflowsQueryInput
       value={startValue ?? ''}
       setValue={mockSetValue}
+      refetchQuery={mockRefetch}
     />
   );
 
-  return { mockSetValue, user };
+  return { mockSetValue, mockRefetch, user };
 }
