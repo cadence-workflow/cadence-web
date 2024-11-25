@@ -1,5 +1,6 @@
 import logger from '@/utils/logger';
 
+import losslessJsonParse from '../lossless-json-parse';
 const formatInputPayload = (
   payload: { data?: string | null } | null | undefined
 ) => {
@@ -25,7 +26,7 @@ function parseJsonLines(input: string) {
 
     try {
       // Try to parse the current JSON string
-      const jsonObject = JSON.parse(currentJson);
+      const jsonObject = losslessJsonParse(currentJson);
       // If successful, add the object to the array
       jsonArray.push(jsonObject);
       // Reset currentJson for the next JSON object
@@ -38,7 +39,7 @@ function parseJsonLines(input: string) {
   // Handle case where the last JSON object might be malformed
   if (currentJson.trim() !== '') {
     try {
-      const jsonObject = JSON.parse(currentJson);
+      const jsonObject = losslessJsonParse(currentJson);
       jsonArray.push(jsonObject);
     } catch {
       logger.error(

@@ -1,3 +1,5 @@
+import losslessJsonParse from '../lossless-json-parse';
+
 const formatPayload = (
   payload: { data?: string | null } | null | undefined
 ) => {
@@ -11,7 +13,7 @@ const formatPayload = (
 
   // try parsing as JSON
   try {
-    return JSON.parse(parsedData);
+    return losslessJsonParse(parsedData);
   } catch {
     // remove double quotes from the string
     const formattedString = parsedData.replace(/"/g, '');

@@ -2,6 +2,8 @@ import React from 'react';
 
 import { render } from '@/test-utils/rtl';
 
+import losslessJsonStringify from '@/utils/lossless-json-stringify';
+
 import WorkflowSummaryTabJsonView from '../workflow-history-event-details-json';
 
 jest.mock('@/components/copy-text-button/copy-text-button', () =>
@@ -13,11 +15,14 @@ jest.mock('@/components/pretty-json/pretty-json', () =>
 );
 
 describe('WorkflowSummaryTabJsonView Component', () => {
-  const inputJson = { input: 'inputJson' };
+  const losslessInputJson = {
+    input: 'inputJson',
+    long: BigInt('9007199254740991345435'),
+  };
 
   it('renders correctly with initial props', () => {
     const { getByText } = render(
-      <WorkflowSummaryTabJsonView entryValue={inputJson} />
+      <WorkflowSummaryTabJsonView entryValue={losslessInputJson} />
     );
 
     expect(getByText('PrettyJson Mock')).toBeInTheDocument();
@@ -25,11 +30,13 @@ describe('WorkflowSummaryTabJsonView Component', () => {
 
   it('renders copy text button and pass the correct text', () => {
     const { getByText } = render(
-      <WorkflowSummaryTabJsonView entryValue={inputJson} />
+      <WorkflowSummaryTabJsonView entryValue={losslessInputJson} />
     );
 
     const copyButton = getByText(/Copy Button/);
     expect(copyButton).toBeInTheDocument();
-    expect(copyButton.innerHTML).toMatch(JSON.stringify(inputJson, null, '\t'));
+    expect(copyButton.innerHTML).toMatch(
+      losslessJsonStringify(losslessInputJson, null, '\t')
+    );
   });
 });

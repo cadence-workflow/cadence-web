@@ -1,4 +1,4 @@
-import { type JsonValue } from '@/components/pretty-json/pretty-json.types';
+import { type PrettyJsonValue } from '@/components/pretty-json/pretty-json.types';
 import { type QueryWorkflowResponse } from '@/route-handlers/query-workflow/query-workflow.types';
 import { type RequestError } from '@/utils/request/request-error';
 
@@ -9,6 +9,6 @@ export type Props = {
 };
 
 export type QueryJsonContent = {
-  content: JsonValue | undefined;
+  content: PrettyJsonValue | undefined;
   isError: boolean;
 };

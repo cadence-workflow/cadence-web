@@ -1,7 +1,7 @@
-import { type JsonValue } from '@/components/pretty-json/pretty-json.types';
+import { type PrettyJsonValue } from '@/components/pretty-json/pretty-json.types';
 
 export type Props = {
-  inputJson: JsonValue;
-  resultJson: JsonValue;
+  inputJson: PrettyJsonValue;
+  resultJson: PrettyJsonValue;
   isWorkflowRunning: boolean;
 };
