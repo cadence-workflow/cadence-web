@@ -1,11 +1,13 @@
 import { HttpResponse } from 'msw';
 
-import { render, screen, userEvent } from '@/test-utils/rtl';
+import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
+import * as usePageQueryParamsModule from '@/hooks/use-page-query-params/use-page-query-params';
 import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list-workflows.types';
 
 import type { Props as MSWMocksHandlersProps } from '../../../../test-utils/msw-mock-handlers/msw-mock-handlers.types';
 import { mockDomainWorkflowsQueryParamsValues } from '../../__fixtures__/domain-workflows-query-params';
+import { type DomainWorkflowsHeaderInputType } from '../../domain-workflows-header/domain-workflows-header.types';
 import { type Props as EndMessageProps } from '../../domain-workflows-table-end-message/domain-workflows-table-end-message.types';
 import DomainWorkflowsTable from '../domain-workflows-table';
 
@@ -14,9 +16,26 @@ jest.mock('@/components/error-panel/error-panel', () =>
 );
 
 jest.mock('../helpers/get-workflows-error-panel-props', () =>
-  jest.fn().mockImplementation(({ error }) => ({
-    message: error ? 'Error loading workflows' : 'No workflows found',
-  }))
+  jest
+    .fn()
+    .mockImplementation(
+      ({
+        error,
+        inputType,
+      }: {
+        error: Error;
+        inputType: DomainWorkflowsHeaderInputType;
+      }) => {
+        if (inputType === 'query') {
+          return {
+            message: error ? error.message : undefined,
+          };
+        }
+        return {
+          message: error ? 'Error loading workflows' : 'No workflows found',
+        };
+      }
+    )
 );
 
 jest.mock(
@@ -41,6 +60,10 @@ jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
 );
 
 describe(DomainWorkflowsTable.name, () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('renders workflows without error', async () => {
     const { user } = setup({});
 
@@ -69,10 +92,28 @@ describe(DomainWorkflowsTable.name, () => {
     ).toBeInTheDocument();
   });
 
-  it('renders error panel if no workflows are found', async () => {
+  it('renders error panel in search mode if no workflows are found', async () => {
     setup({ errorCase: 'no-workflows' });
 
     expect(await screen.findByText('No workflows found')).toBeInTheDocument();
+  });
+
+  it('renders empty table in query mode if no workflows are found', async () => {
+    jest
+      .spyOn(usePageQueryParamsModule, 'default')
+      .mockReturnValue([
+        { ...mockDomainWorkflowsQueryParamsValues, inputType: 'query' },
+        mockSetQueryParams,
+      ]);
+
+    setup({ errorCase: 'no-workflows' });
+    const progressbar = await screen.findByRole('progressbar');
+
+    await waitFor(() => {
+      expect(progressbar).not.toBeInTheDocument();
+    });
+
+    expect(screen.queryByText('No workflows found')).not.toBeInTheDocument();
   });
 
   it('renders workflows and allows the user to try again if there is an error', async () => {
@@ -123,7 +164,10 @@ function setup({
 
           switch (errorCase) {
             case 'no-workflows':
-              return HttpResponse.json({ workflows: [], nextPage: undefined });
+              return HttpResponse.json({
+                workflows: [],
+                nextPage: undefined,
+              });
             case 'initial-fetch-error':
               return HttpResponse.json(
                 { message: 'Request failed' },

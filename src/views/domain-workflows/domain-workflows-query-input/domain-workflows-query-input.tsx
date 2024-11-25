@@ -7,7 +7,11 @@ import { MdPlayArrow, MdCode, MdRefresh } from 'react-icons/md';
 import { overrides } from './domain-workflows-query-input.styles';
 import { type Props } from './domain-workflows-query-input.types';
 
-export default function DomainWorkflowsQueryInput({ value, setValue }: Props) {
+export default function DomainWorkflowsQueryInput({
+  value,
+  setValue,
+  refetchQuery,
+}: Props) {
   const [queryText, setQueryText] = useState<string>('');
 
   useEffect(() => {
@@ -30,7 +34,9 @@ export default function DomainWorkflowsQueryInput({ value, setValue }: Props) {
         clearOnEscape
       />
       <Button
-        onClick={() => setValue(queryText || undefined)}
+        onClick={() =>
+          isQueryUnchanged ? refetchQuery() : setValue(queryText || undefined)
+        }
         overrides={overrides.runButton}
         startEnhancer={isQueryUnchanged ? <MdRefresh /> : <MdPlayArrow />}
       >
