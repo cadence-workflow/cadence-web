@@ -8,7 +8,7 @@ import DomainWorkflowsTable from './domain-workflows-table/domain-workflows-tabl
 export default function DomainWorkflows(props: DomainPageTabContentProps) {
   return (
     <>
-      <DomainWorkflowsHeader />
+      <DomainWorkflowsHeader domain={props.domain} cluster={props.cluster} />
       <DomainWorkflowsTable domain={props.domain} cluster={props.cluster} />
     </>
   );
