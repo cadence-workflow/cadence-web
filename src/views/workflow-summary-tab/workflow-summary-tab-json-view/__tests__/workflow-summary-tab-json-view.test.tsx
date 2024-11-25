@@ -2,6 +2,8 @@ import React from 'react';
 
 import { render, fireEvent, screen } from '@/test-utils/rtl';
 
+import losslessJsonStringify from '@/utils/lossless-json-stringify';
+
 import WorkflowSummaryTabJsonView from '../workflow-summary-tab-json-view';
 
 jest.mock('@/components/copy-text-button/copy-text-button', () =>
@@ -25,14 +27,20 @@ jest.mock('@/components/pretty-json-skeleton/pretty-json-skeleton', () =>
 );
 
 describe('WorkflowSummaryTabJsonView Component', () => {
-  const inputJson = { input: 'inputJson' };
-  const resultJson = { result: 'resultJson' };
+  const losslessInputJson = {
+    input: 'inputJson',
+    long: BigInt('12345678901234567890'),
+  };
+  const losselessResultJson = {
+    result: 'resultJson',
+    long: BigInt('12345678901234567891'),
+  };
 
   it('renders correctly with initial props', () => {
     const { getByText } = render(
       <WorkflowSummaryTabJsonView
-        inputJson={inputJson}
-        resultJson={resultJson}
+        inputJson={losslessInputJson}
+        resultJson={losselessResultJson}
         isWorkflowRunning={false}
       />
     );
@@ -44,8 +52,8 @@ describe('WorkflowSummaryTabJsonView Component', () => {
   it('handles tab change', () => {
     render(
       <WorkflowSummaryTabJsonView
-        inputJson={inputJson}
-        resultJson={resultJson}
+        inputJson={losslessInputJson}
+        resultJson={losselessResultJson}
         isWorkflowRunning={false}
       />
     );
@@ -59,8 +67,8 @@ describe('WorkflowSummaryTabJsonView Component', () => {
   it('renders loading state correctly', () => {
     const { getByText } = render(
       <WorkflowSummaryTabJsonView
-        inputJson={inputJson}
-        resultJson={resultJson}
+        inputJson={losslessInputJson}
+        resultJson={losselessResultJson}
         isWorkflowRunning={true}
       />
     );
@@ -74,14 +82,15 @@ describe('WorkflowSummaryTabJsonView Component', () => {
   it('renders copy text button and pass the correct text', () => {
     const { getByText } = render(
       <WorkflowSummaryTabJsonView
-        inputJson={inputJson}
-        resultJson={resultJson}
+        inputJson={losslessInputJson}
+        resultJson={losselessResultJson}
         isWorkflowRunning={true}
       />
     );
-
     const copyButton = getByText(/Copy Button/);
     expect(copyButton).toBeInTheDocument();
-    expect(copyButton.innerHTML).toMatch(JSON.stringify(inputJson, null, '\t'));
+    expect(copyButton.innerHTML).toMatch(
+      losslessJsonStringify(losslessInputJson, null, '\t')
+    );
   });
 });

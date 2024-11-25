@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 
 import CopyTextButton from '@/components/copy-text-button/copy-text-button';
 import PrettyJson from '@/components/pretty-json/pretty-json';
+import losslessJsonStringify from '@/utils/lossless-json-stringify';
 
 import getQueryJsonContent from './helpers/get-query-json-content';
 import { styled } from './workflow-queries-result-json.styles';
@@ -15,7 +16,7 @@ export default function WorkflowQueriesResultJson(props: Props) {
   );
 
   const textToCopy = useMemo(() => {
-    return JSON.stringify(content, null, '\t');
+    return losslessJsonStringify(content, null, '\t');
   }, [content]);
 
   return (

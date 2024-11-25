@@ -46,6 +46,8 @@ export async function queryWorkflow(
       },
     });
 
+    // TODO @assem.hafez: we may loss numeric percision here as we are parsing a result from other languages that may include long numbers
+    // one options is not to parse the result and return it as string and handle the parsing on the client side
     return NextResponse.json({
       result: res.queryResult
         ? JSON.parse(
