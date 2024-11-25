@@ -11,6 +11,7 @@ import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-h
 import formatWorkflowHistoryEvent from '@/utils/data-formatters/format-workflow-history-event';
 import { type FormattedHistoryEvent } from '@/utils/data-formatters/schema/format-history-event-schema';
 import logger from '@/utils/logger';
+import losslessJsonStringify from '@/utils/lossless-json-stringify';
 import request from '@/utils/request';
 import { RequestError } from '@/utils/request/request-error';
 
@@ -23,7 +24,7 @@ export default function WorkflowHistoryExportJsonButton(props: Props) {
   >('idle');
 
   const downloadJSON = (jsonData: any) => {
-    const blob = new Blob([JSON.stringify(jsonData, null, '\t')], {
+    const blob = new Blob([losslessJsonStringify(jsonData, null, '\t')], {
       type: 'application/json',
     });
     const url = window.URL.createObjectURL(blob);

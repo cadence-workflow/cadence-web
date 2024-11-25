@@ -1,14 +1,15 @@
 export type Props = {
-  json: JsonValue;
+  json: PrettyJsonValue;
 };
 
-export type JsonValue =
+export type PrettyJsonValue =
   | string
   | number
   | boolean
   | null
   | JsonObject
-  | JsonArray;
+  | JsonArray
+  | bigint;
 
-type JsonObject = { [key: string]: JsonValue };
-type JsonArray = JsonValue[];
+type JsonObject = { [key: string]: PrettyJsonValue };
+type JsonArray = PrettyJsonValue[];
