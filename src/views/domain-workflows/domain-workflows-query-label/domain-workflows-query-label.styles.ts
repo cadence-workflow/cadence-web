@@ -28,7 +28,8 @@ export const styled = {
   })),
   SupportedOperatorsContainer: createStyled('div', ({ $theme }) => ({
     display: 'flex',
-    columnGap: $theme.sizing.scale300,
+    flexWrap: 'wrap',
+    gap: $theme.sizing.scale300,
   })),
   SupportedOperator: createStyled('div', ({ $theme }) => ({
     ...$theme.typography.MonoParagraphXSmall,
