@@ -12,7 +12,7 @@
     "generate:idl": "mkdir -p src/__generated__/idl && npm run generate:idl:proto && npm run generate:idl:proto:types",
     "generate:idl:proto": "rm -rf src/__generated__/idl/proto && cp -R node_modules/cadence-idl/proto src/__generated__/idl/proto",
     "generate:idl:proto:types": "rm -rf src/__generated__/proto-ts &&  ./node_modules/.bin/proto-loader-gen-types  --includeDirs=src/__generated__/idl/proto/  --enums=String --longs=String --bytes=String --defaults --inputTemplate='%s__Input' --outputTemplate='%s' --oneofs --grpcLib=@grpc/grpc-js --outDir=src/__generated__/proto-ts/ $(npx glob --all --nodir --cwd=src/__generated__/idl/proto **/*.proto) ",
-    "test": "jest --config jest.config.ts",
+    "test": "jest --config jest.config.ts && npm run test:types",
     "test:unit": "npm run test:unit:browser && npm run test:unit:node",
     "test:unit:browser": "jest --config jest/browser/jest.config.ts",
     "test:unit:node": "jest --config jest/node/jest.config.ts",
