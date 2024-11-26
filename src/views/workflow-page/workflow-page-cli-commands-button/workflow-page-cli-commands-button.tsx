@@ -14,7 +14,7 @@ export default function WorkflowPageCliCommandsButton() {
       <Button
         size="compact"
         kind="tertiary"
-        startEnhancer={<MdOutlineTerminal />}
+        startEnhancer={<MdOutlineTerminal size={20} />}
         onClick={() => setIsOpen((v) => !v)}
       >
         CLI commands
