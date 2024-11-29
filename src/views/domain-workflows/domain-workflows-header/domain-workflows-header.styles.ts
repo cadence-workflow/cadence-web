@@ -19,20 +19,29 @@ export const styled = {
       flexDirection: 'row',
     },
   })),
+  SearchContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+    flexGrow: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: $theme.sizing.scale500,
+    [$theme.mediaQuery.medium]: {
+      flexDirection: 'row',
+    },
+  })),
 };
 
 export const overrides = {
   inputToggle: {
     Root: {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
-        flex: '1 0 auto',
         height: $theme.sizing.scale950,
         padding: $theme.sizing.scale0,
         borderRadius: $theme.borders.radius300,
-        width: '100%',
         ...$theme.typography.ParagraphSmall,
+        width: 'auto',
+        flexGrow: 1,
         [$theme.mediaQuery.medium]: {
-          width: 'auto',
+          flexGrow: 0,
         },
       }),
     },

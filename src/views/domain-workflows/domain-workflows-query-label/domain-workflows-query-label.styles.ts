@@ -68,6 +68,11 @@ export const styled = {
 
 export const overrides = {
   popover: {
+    Body: {
+      style: ({ $theme }) => ({
+        margin: $theme.sizing.scale600,
+      }),
+    },
     Inner: {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
         backgroundColor: $theme.colors.backgroundPrimary,
