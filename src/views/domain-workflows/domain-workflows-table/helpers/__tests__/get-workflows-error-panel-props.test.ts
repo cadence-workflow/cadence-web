@@ -28,7 +28,7 @@ describe(getWorkflowsErrorPanelProps.name, () => {
     });
   });
 
-  it('returns "not found" error panel props when search params are absent', () => {
+  it('returns "not found" error panel props when search params are absent in search mode', () => {
     expect(
       getWorkflowsErrorPanelProps({
         inputType: 'search',
@@ -46,6 +46,16 @@ describe(getWorkflowsErrorPanelProps.name, () => {
         },
       ],
     });
+  });
+
+  it('returns undefined when search params are absent in query mode', () => {
+    expect(
+      getWorkflowsErrorPanelProps({
+        inputType: 'query',
+        error: null,
+        areSearchParamsAbsent: true,
+      })
+    ).toEqual(undefined);
   });
 
   it('returns undefined in all other cases', () => {

@@ -25,7 +25,7 @@ export default function getWorkflowsErrorPanelProps({
     };
   }
 
-  if (areSearchParamsAbsent) {
+  if (inputType === 'search' && areSearchParamsAbsent) {
     return {
       message: 'No workflows found for this domain',
       actions: [

@@ -20,12 +20,30 @@ describe(DomainWorkflowsQueryInput.name, () => {
     expect(await screen.findByText('Rerun Query')).toBeInTheDocument();
   });
 
+  it('renders in loading state when query is running', async () => {
+    setup({ isQueryRunning: true });
+
+    expect(
+      await screen.findByLabelText('loading Run Query')
+    ).toBeInTheDocument();
+  });
+
   it('calls setValue and changes text when the Run Query button is clicked', async () => {
     const { mockSetValue, user } = setup({});
 
     const textbox = await screen.findByRole('textbox');
     await user.type(textbox, 'mock_query');
     await user.click(await screen.findByText('Run Query'));
+
+    expect(mockSetValue).toHaveBeenCalledWith('mock_query');
+  });
+
+  it('calls setValue and changes text when Enter is pressed', async () => {
+    const { mockSetValue, user } = setup({});
+
+    const textbox = await screen.findByRole('textbox');
+    await user.type(textbox, 'mock_query');
+    await user.keyboard('{Enter}');
 
     expect(mockSetValue).toHaveBeenCalledWith('mock_query');
   });
@@ -39,7 +57,13 @@ describe(DomainWorkflowsQueryInput.name, () => {
   });
 });
 
-function setup({ startValue }: { startValue?: string }) {
+function setup({
+  startValue,
+  isQueryRunning,
+}: {
+  startValue?: string;
+  isQueryRunning?: boolean;
+}) {
   const mockSetValue = jest.fn();
   const mockRefetch = jest.fn();
   const user = userEvent.setup();
@@ -48,6 +72,7 @@ function setup({ startValue }: { startValue?: string }) {
       value={startValue ?? ''}
       setValue={mockSetValue}
       refetchQuery={mockRefetch}
+      isQueryRunning={isQueryRunning ?? false}
     />
   );
 
