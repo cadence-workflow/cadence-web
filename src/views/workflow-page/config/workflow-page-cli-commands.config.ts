@@ -9,46 +9,45 @@ const workflowPageCliCommandsConfig: CliCommandConfig[] = [
   },
   {
     label: 'List domain settings',
-    command:
-      'cadence --env {staging|prod|prod02} --domain {domain-name} domain describe',
+    command: 'cadence --domain {domain-name} domain describe',
     group: 'domain',
   },
   {
     label: 'Update domain active cluster',
     description: 'Make sure the domain_data has UberIgnoringLisa:true',
     command:
-      'cadence --env {staging|prod|prod02} --domain {domain-name} domain update -active_cluster {cluster-name}',
+      'cadence --domain {domain-name} domain update -active_cluster {cluster-name}',
     group: 'domain',
   },
   {
     label: 'Update domain bad binary',
     command:
-      'cadence --env {staging|prod|prod02} --domain {domain-name} domain update --add_bad_binary {bad-binary-SHA} --reason \'"{reason}"\'',
+      'cadence --domain {domain-name} domain update --add_bad_binary {bad-binary-SHA} --reason \'"{reason}"\'',
     group: 'domain',
   },
   // workflow commands
   {
     label: 'Run a workflow',
     command:
-      'cadence --env {staging|prod|prod02} --domain {domain-name} workflow run --tl {task-list-name} --wt {workflow-type-name} --et 60 -i \'"{input-string}"\'',
+      'cadence --domain {domain-name} workflow run --tl {task-list-name} --wt {workflow-type-name} --et 60 -i \'"{input-string}"\'',
     group: 'workflow',
   },
   {
     label: 'See workflow settings',
     command:
-      'cadence --env {staging|prod|prod02} --domain {domain-name} workflow describe -w {workflow-id} -r {run-id}',
+      'cadence --domain {domain-name} workflow describe -w {workflow-id} -r {run-id}',
     group: 'workflow',
   },
   {
     label: 'See workflow history',
     command:
-      'cadence --env {staging|prod|prod02} --domain {domain-name} workflow show -w {workflow-id} -r {run-id}',
+      'cadence --domain {domain-name} workflow show -w {workflow-id} -r {run-id}',
     group: 'workflow',
   },
   {
     label: 'Signal a workflow',
     command:
-      'cadence --env {staging|prod|prod02} --domain {domain-name} workflow signal -w {workflow-id} -r {run-id} --name {signal-name} --input \'"{signal-payload}"\'',
+      'cadence --domain {domain-name} workflow signal -w {workflow-id} -r {run-id} --name {signal-name} --input \'"{signal-payload}"\'',
     group: 'workflow',
   },
   {
@@ -74,14 +73,12 @@ const workflowPageCliCommandsConfig: CliCommandConfig[] = [
   },
   {
     label: 'List closed workflows',
-    command:
-      'cadence --env {staging|prod|prod02} --domain {domain-name} workflow {list|listall}',
+    command: 'cadence --domain {domain-name} workflow {list|listall}',
     group: 'workflow',
   },
   {
     label: 'List open workflows',
-    command:
-      'cadence --env {staging|prod|prod02} --domain {domain-name} workflow {list|listall} --open',
+    command: 'cadence --domain {domain-name} workflow {list|listall} --open',
     group: 'workflow',
   },
   {
