@@ -149,7 +149,10 @@ export default function WorkflowHistory({ params }: Props) {
           <div role="list" className={cls.compactSection}>
             <Virtuoso
               data={filteredGroupedHistoryEventsEntries}
-              itemContent={(index, [groupId, { label, status, timeLabel }]) => (
+              itemContent={(
+                index,
+                [groupId, { label, status, timeLabel, badges }]
+              ) => (
                 <div role="listitem" className={cls.compactCardContainer}>
                   <WorkflowHistoryCompactEventCard
                     key={groupId}
@@ -157,6 +160,7 @@ export default function WorkflowHistory({ params }: Props) {
                     label={label}
                     secondaryLabel={timeLabel}
                     showLabelPlaceholder={!label}
+                    badges={badges}
                     onClick={() => {
                       timelineSectionListRef.current?.scrollToIndex({
                         index,
@@ -185,6 +189,7 @@ export default function WorkflowHistory({ params }: Props) {
                   timeLabel={group.timeLabel}
                   events={group.events}
                   eventsMetadata={group.eventsMetadata}
+                  badges={group.badges}
                   hasMissingEvents={group.hasMissingEvents}
                   isLastEvent={
                     index === filteredGroupedHistoryEventsEntries.length - 1

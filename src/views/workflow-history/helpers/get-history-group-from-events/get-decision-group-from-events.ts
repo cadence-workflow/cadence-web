@@ -12,11 +12,22 @@ export default function getDecisionGroupFromEvents(
   const label = 'Decision Task';
   let hasMissingEvents = false;
   const groupType = 'Decision';
+  const badges = [];
 
   const firstEvent = events[0];
-
+  const scheduleAttr = 'decisionTaskScheduledEventAttributes';
+  const scheduleEvent = events.find(
+    ({ attributes }) => attributes === scheduleAttr
+  );
   if (firstEvent.attributes !== 'decisionTaskScheduledEventAttributes') {
     hasMissingEvents = true;
+  }
+
+  if (scheduleEvent && scheduleEvent[scheduleAttr]?.attempt) {
+    const attempts = scheduleEvent[scheduleAttr].attempt;
+    badges.push({
+      content: `${attempts} Attempt${attempts !== 1 ? 's' : ''}`,
+    });
   }
   const eventToLabel: HistoryGroupEventToStringMap<DecisionHistoryGroup> = {
     decisionTaskScheduledEventAttributes: 'Scheduled',
@@ -39,6 +50,7 @@ export default function getDecisionGroupFromEvents(
     label,
     hasMissingEvents,
     groupType,
+    badges,
     ...getCommonHistoryGroupFields<DecisionHistoryGroup>(
       events,
       eventToStatus,

@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 
+import { Badge } from 'baseui/badge';
 import { Skeleton } from 'baseui/skeleton';
 import { ALIGNMENT, TILE_KIND, Tile } from 'baseui/tile';
 
@@ -17,15 +18,16 @@ import { type Props } from './workflow-history-compact-event-card.types';
 export default function WorkflowHistoryCompactEventCard({
   status,
   label,
-  secondaryLabel,
+  badges,
   showLabelPlaceholder,
   onClick,
 }: Props) {
   const { cls, theme } = useStyletronClasses(cssStyles);
+  const hasBadges = badges !== undefined && badges.length > 0;
 
   return (
     <Tile
-      overrides={overrides.Tile}
+      overrides={overrides.title}
       tileKind={TILE_KIND.selection}
       headerAlignment={ALIGNMENT.right}
       bodyAlignment={ALIGNMENT.left}
@@ -34,21 +36,34 @@ export default function WorkflowHistoryCompactEventCard({
       <WorkflowHistoryEventStatusBadge status={status} size="small" />
       <div className={cls.textContainer}>
         {label && !showLabelPlaceholder && (
-          <div className={cls.label}>{label}</div>
-        )}
-        {showLabelPlaceholder && (
           <div className={cls.label}>
-            <Skeleton
-              rows={0}
-              width="100px"
-              height={theme.typography.LabelSmall.lineHeight.toString()}
-            />
+            {label}
+            {hasBadges &&
+              badges.map((badge) => (
+                <>
+                  {' '}
+                  <Badge
+                    key={badge.content}
+                    overrides={overrides.badge}
+                    content={badge.content}
+                    shape="rectangle"
+                    color="primary"
+                  />
+                </>
+              ))}
           </div>
         )}
-        <div suppressHydrationWarning className={cls.secondaryLabel}>
-          {secondaryLabel}
-        </div>
       </div>
+
+      {showLabelPlaceholder && (
+        <div className={cls.label}>
+          <Skeleton
+            rows={0}
+            width="100px"
+            height={theme.typography.LabelSmall.lineHeight.toString()}
+          />
+        </div>
+      )}
     </Tile>
   );
 }

@@ -1,9 +1,30 @@
 import { styled as createStyled, type Theme } from 'baseui';
+import { type BadgeOverrides } from 'baseui/badge';
+import { type StyleObject } from 'styletron-react';
 
 import type {
   StyletronCSSObject,
   StyletronCSSObjectOf,
 } from '@/hooks/use-styletron-classes';
+
+export const overrides = {
+  headerBadge: {
+    Badge: {
+      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+        backgroundColor: $theme.colors.backgroundSecondary,
+        color: $theme.colors.contentSecondary,
+        ...$theme.typography.LabelXSmall,
+        whiteSpace: 'nowrap',
+        marginTop: $theme.sizing.scale100,
+        marginBottom: $theme.sizing.scale100,
+        [$theme.mediaQuery.medium]: {
+          marginTop: 0,
+          marginBottom: 0,
+        },
+      }),
+    },
+  } satisfies BadgeOverrides,
+};
 
 export const styled = {
   VerticalDivider: createStyled<'div', { $hidden?: boolean }>(
