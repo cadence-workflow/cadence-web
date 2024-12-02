@@ -6,12 +6,26 @@ import WorkflowHistoryEventDetailsExecutionLink from '@/views/shared/workflow-hi
 import WorkflowHistoryEventDetailsTaskListLink from '../../shared/workflow-history-event-details-task-list-link/workflow-history-event-details-task-list-link';
 import { type WorkflowHistoryEventDetailsConfig } from '../workflow-history-event-details/workflow-history-event-details.types';
 import WorkflowHistoryEventDetailsJson from '../workflow-history-event-details-json/workflow-history-event-details-json';
+import WorkflowHistoryEventDetailsPlaceholderText from '../workflow-history-event-details-placeholder-text/workflow-history-event-details-placeholder-text';
 
 const workflowHistoryEventDetailsConfig = [
   {
     name: 'Filter empty value',
     customMatcher: ({ value }) => value === null || value === undefined,
     hide: () => true,
+  },
+  {
+    name: 'Not set placeholder',
+    customMatcher: ({ value, path }) => {
+      return (
+        value === 0 &&
+        new RegExp(
+          'retryPolicy.(maximumAttempts|expirationIntervalInSeconds)$'
+        ).test(path)
+      );
+    },
+    valueComponent: () =>
+      createElement(WorkflowHistoryEventDetailsPlaceholderText),
   },
   {
     name: 'Date object as time string',

@@ -12,17 +12,25 @@ export default function getActivityGroupFromEvents(
   let label = '';
   let hasMissingEvents = false;
   const groupType = 'Activity';
+  const badges = [];
 
   const scheduleAttr = 'activityTaskScheduledEventAttributes';
+  const startAttr = 'activityTaskStartedEventAttributes';
   const scheduleEvent = events.find(
     ({ attributes }) => attributes === scheduleAttr
   );
+  const startEvent = events.find(({ attributes }) => attributes === startAttr);
   const firstEvent = events[0];
 
   if (scheduleEvent) {
     label = `Activity ${scheduleEvent[scheduleAttr]?.activityId}: ${scheduleEvent[scheduleAttr]?.activityType?.name}`;
   }
-
+  if (startEvent && startEvent[startAttr]?.attempt) {
+    const attempts = startEvent[startAttr].attempt;
+    badges.push({
+      content: `${attempts} Attempt${attempts !== 1 ? 's' : ''}`,
+    });
+  }
   if (firstEvent.attributes !== 'activityTaskScheduledEventAttributes') {
     hasMissingEvents = true;
   }
@@ -51,6 +59,7 @@ export default function getActivityGroupFromEvents(
     label,
     hasMissingEvents,
     groupType,
+    badges,
     ...getCommonHistoryGroupFields<ActivityHistoryGroup>(
       events,
       eventToStatus,

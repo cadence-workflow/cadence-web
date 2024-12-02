@@ -30,6 +30,17 @@ export default function getSingleEventGroupFromEvents(
   const label = eventToGroupLabel[event.attributes];
   const groupType = 'Event';
   const hasMissingEvents = false;
+  const badges = [];
+
+  if (
+    event.attributes === 'workflowExecutionStartedEventAttributes' &&
+    event.workflowExecutionStartedEventAttributes?.attempt
+  ) {
+    const attempts = event.workflowExecutionStartedEventAttributes.attempt;
+    badges.push({
+      content: `${attempts} Attempt${attempts !== 1 ? 's' : ''}`,
+    });
+  }
 
   const eventToLabel: HistoryGroupEventToStringMap<SingleEventHistoryGroup> = {
     activityTaskCancelRequestedEventAttributes: 'Requested',
@@ -69,6 +80,7 @@ export default function getSingleEventGroupFromEvents(
     label,
     hasMissingEvents,
     groupType,
+    badges,
     ...getCommonHistoryGroupFields<SingleEventHistoryGroup>(
       events,
       eventToStatus,

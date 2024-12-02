@@ -45,6 +45,14 @@ describe('WorkflowHistoryTimelineGroup', () => {
     expect(screen.getByText('CANCELED')).toBeInTheDocument();
   });
 
+  it('renders badges correctly', () => {
+    setup({
+      badges: [{ content: 'test badge 1' }, { content: 'test badge 2' }],
+    });
+    expect(screen.getByText('test badge 1')).toBeInTheDocument();
+    expect(screen.getByText('test badge 2')).toBeInTheDocument();
+  });
+
   it('renders group timeLabel correctly', () => {
     setup({ timeLabel: 'Started at 19 Sep, 11:37:12 GMT+2' });
 
@@ -92,6 +100,7 @@ function setup({
     runId: 'testRunId',
     workflowTab: 'history',
   },
+  badges,
 }: Partial<Props>) {
   return render(
     <WorkflowHistoryTimelineGroup
@@ -105,6 +114,7 @@ function setup({
       decodedPageUrlParams={decodedPageUrlParams}
       getIsEventExpanded={jest.fn()}
       onEventToggle={jest.fn()}
+      badges={badges}
     />
   );
 }
