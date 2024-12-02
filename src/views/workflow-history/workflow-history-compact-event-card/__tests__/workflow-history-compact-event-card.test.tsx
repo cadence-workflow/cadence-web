@@ -30,11 +30,13 @@ describe('WorkflowHistoryCompactEventCard', () => {
     expect(container.querySelector('[testid="loader"]')).toBeInTheDocument();
   });
 
-  it('renders secondaryLabel correctly', () => {
+  it('renders badges correctly', () => {
     setup({
-      secondaryLabel: 'date text',
+      badges: [{ content: 'test badge 1' }, { content: 'test badge 2' }],
     });
-    expect(screen.getByText('date text')).toBeInTheDocument();
+
+    expect(screen.getByText('test badge 1')).toBeInTheDocument();
+    expect(screen.getByText('test badge 2')).toBeInTheDocument();
   });
 
   it('renders with correct status', () => {
