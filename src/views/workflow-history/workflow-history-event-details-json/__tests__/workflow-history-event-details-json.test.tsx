@@ -14,7 +14,7 @@ jest.mock('@/components/pretty-json/pretty-json', () =>
   jest.fn(() => <div>PrettyJson Mock</div>)
 );
 
-describe('WorkflowSummaryTabJsonView Component', () => {
+describe('WorkflowHistoryEventDetailsJson', () => {
   const losslessInputJson = {
     input: 'inputJson',
     long: BigInt('9007199254740991345435'),

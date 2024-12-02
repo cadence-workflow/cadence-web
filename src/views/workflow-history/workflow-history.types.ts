@@ -23,6 +23,10 @@ export type HistoryGroupEventMetadata = {
   timeLabel: string;
 };
 
+export type HistoryGroupBadge = {
+  content: string;
+};
+
 export type HistoryGroupEventToStatusMap<GroupT extends HistoryEventsGroup> =
   Record<
     GroupT['events'][number]['attributes'],
@@ -44,6 +48,7 @@ type BaseHistoryGroup = {
   hasMissingEvents: boolean;
   timeMs: number | null;
   timeLabel: string;
+  badges?: HistoryGroupBadge[];
 };
 
 export type ActivityHistoryGroup = BaseHistoryGroup & {

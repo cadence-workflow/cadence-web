@@ -15,6 +15,7 @@ export type Props = Pick<
   | 'label'
   | 'hasMissingEvents'
   | 'status'
+  | 'badges'
 > & {
   isLastEvent: boolean;
   decodedPageUrlParams: WorkflowHistoryProps['params'];
