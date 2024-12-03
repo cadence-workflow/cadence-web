@@ -3,7 +3,7 @@ import React from 'react';
 import { render, screen, fireEvent, act } from '@/test-utils/rtl';
 
 import WorkflowHistoryFiltersType from '../workflow-history-filters-status';
-import { WORKFLOW_HISTORY_EVENT_FILTERING_STATUS_OPTIONS } from '../workflow-history-filters-status.constants';
+import { WORKFLOW_HISTORY_EVENT_FILTERING_STATUS_LABELS_MAP } from '../workflow-history-filters-status.constants';
 import { type WorkflowHistoryFiltersStatusValue } from '../workflow-history-filters-status.types';
 
 describe('WorkflowHistoryFiltersStatus', () => {
@@ -18,14 +18,16 @@ describe('WorkflowHistoryFiltersStatus', () => {
     act(() => {
       fireEvent.click(selectFilter);
     });
-    WORKFLOW_HISTORY_EVENT_FILTERING_STATUS_OPTIONS.forEach(({ label }) =>
-      expect(screen.getByText(label)).toBeInTheDocument()
+
+    Object.entries(WORKFLOW_HISTORY_EVENT_FILTERING_STATUS_LABELS_MAP).forEach(
+      ([_, label]) => expect(screen.getByText(label)).toBeInTheDocument()
     );
   });
 
   it('calls the setQueryParams function when an option is selected', () => {
     const { mockSetValue } = setup({});
     const selectFilter = screen.getByRole('combobox');
+
     act(() => {
       fireEvent.click(selectFilter);
     });
@@ -34,21 +36,23 @@ describe('WorkflowHistoryFiltersStatus', () => {
       fireEvent.click(completedOption);
     });
     expect(mockSetValue).toHaveBeenCalledWith({
-      historyEventStatus: 'COMPLETED',
+      historyEventStatuses: ['COMPLETED'],
     } as WorkflowHistoryFiltersStatusValue);
   });
 
   it('calls the setQueryParams function when the filter is cleared', () => {
     const { mockSetValue } = setup({
       overrides: {
-        historyEventStatus: 'COMPLETED',
+        historyEventStatuses: ['COMPLETED'],
       },
     });
-    const clearButton = screen.getByLabelText('Clear value');
+    const clearButton = screen.getByLabelText('Clear all');
     act(() => {
       fireEvent.click(clearButton);
     });
-    expect(mockSetValue).toHaveBeenCalledWith({ historyEventType: undefined });
+    expect(mockSetValue).toHaveBeenCalledWith({
+      historyEventStatuses: undefined,
+    });
   });
 });
 
@@ -61,7 +65,7 @@ function setup({
   render(
     <WorkflowHistoryFiltersType
       value={{
-        historyEventStatus: undefined,
+        historyEventStatuses: undefined,
         ...overrides,
       }}
       setValue={mockSetValue}

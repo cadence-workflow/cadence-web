@@ -8,7 +8,7 @@ import { type PageFilterComponentProps } from '@/components/page-filters/page-fi
 
 import { type WorkflowEventStatus } from '../workflow-history-event-status-badge/workflow-history-event-status-badge.types';
 
-import { WORKFLOW_HISTORY_EVENT_FILTERING_STATUS_OPTIONS } from './workflow-history-filters-status.constants';
+import { WORKFLOW_HISTORY_EVENT_FILTERING_STATUS_LABELS_MAP } from './workflow-history-filters-status.constants';
 import { overrides } from './workflow-history-filters-status.styles';
 import { type WorkflowHistoryFiltersStatusValue } from './workflow-history-filters-status.types';
 
@@ -16,27 +16,32 @@ export default function WorkflowHistoryFiltersStatus({
   value,
   setValue,
 }: PageFilterComponentProps<WorkflowHistoryFiltersStatusValue>) {
-  const statusOptionValue =
-    WORKFLOW_HISTORY_EVENT_FILTERING_STATUS_OPTIONS.filter(
-      (option) => option.id === value.historyEventStatus
-    );
+  const statusOptionsValue =
+    value.historyEventStatuses?.map((status) => ({
+      id: status,
+      label: WORKFLOW_HISTORY_EVENT_FILTERING_STATUS_LABELS_MAP[status],
+    })) ?? [];
 
   return (
     <FormControl label="Status" overrides={overrides.selectFormControl}>
       <Select
+        multi
         size={SIZE.compact}
-        value={statusOptionValue}
-        options={WORKFLOW_HISTORY_EVENT_FILTERING_STATUS_OPTIONS}
-        onChange={(params) =>
+        value={statusOptionsValue}
+        options={Object.entries(
+          WORKFLOW_HISTORY_EVENT_FILTERING_STATUS_LABELS_MAP
+        ).map(([id, label]) => ({
+          id,
+          label,
+        }))}
+        onChange={(params) => {
           setValue({
-            historyEventStatus:
-              WORKFLOW_HISTORY_EVENT_FILTERING_STATUS_OPTIONS.find(
-                (opt) => opt.id === params.value[0]?.id
-              )
-                ? (String(params.value[0]?.id) as WorkflowEventStatus)
+            historyEventStatuses:
+              params.value.length > 0
+                ? params.value.map((v) => v.id as WorkflowEventStatus)
                 : undefined,
-          })
-        }
+          });
+        }}
         placeholder="All"
       />
     </FormControl>

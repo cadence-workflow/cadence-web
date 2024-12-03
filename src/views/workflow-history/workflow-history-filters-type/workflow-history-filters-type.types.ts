@@ -1,4 +1,4 @@
-export type WokflowHistoryEventFilteringType =
+export type WorkflowHistoryEventFilteringType =
   | 'DECISION'
   | 'ACTIVITY'
   | 'SIGNAL'
@@ -8,5 +8,5 @@ export type WokflowHistoryEventFilteringType =
   | 'WORKFLOW';
 
 export type WorkflowHistoryFiltersTypeValue = {
-  historyEventType: WokflowHistoryEventFilteringType | undefined;
+  historyEventTypes: WorkflowHistoryEventFilteringType[] | undefined;
 };
