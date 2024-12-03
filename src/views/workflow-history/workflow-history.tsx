@@ -108,7 +108,7 @@ export default function WorkflowHistory({ params }: Props) {
     });
   }, [groupedHistoryEvents, queryParams]);
 
-  const [areFiltersShown, setAreFiltersShown] = useState(false);
+  const [areFiltersShown, setAreFiltersShown] = useState(true);
   const {
     isExpandAllEvents,
     toggleIsExpandAllEvents,

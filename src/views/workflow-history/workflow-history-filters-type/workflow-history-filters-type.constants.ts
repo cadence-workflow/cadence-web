@@ -1,42 +1,21 @@
 import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
 
-import { type WokflowHistoryEventFilteringType } from './workflow-history-filters-type.types';
+import { type WorkflowHistoryEventFilteringType } from './workflow-history-filters-type.types';
 
-export const WORKFLOW_HISTORY_EVENT_FILTERING_TYPES: WokflowHistoryEventFilteringType[] =
+export const WORKFLOW_HISTORY_EVENT_FILTERING_TYPES: WorkflowHistoryEventFilteringType[] =
   ['ACTIVITY', 'CHILDWORKFLOW', 'DECISION', 'SIGNAL', 'TIMER', 'WORKFLOW'];
 
-export const WORKFLOW_HISTORY_EVENT_FILTERING_TYPES_OPTIONS = [
-  {
-    label: 'Decision',
-    id: 'DECISION',
-  },
-  {
-    label: 'Activity',
-    id: 'ACTIVITY',
-  },
-  {
-    label: 'Signal',
-    id: 'SIGNAL',
-  },
-  {
-    label: 'Timer',
-    id: 'TIMER',
-  },
-  {
-    label: 'Child Workflow',
-    id: 'CHILDWORKFLOW',
-  },
-  {
-    label: 'Workflow',
-    id: 'WORKFLOW',
-  },
-] as const satisfies {
-  id: WokflowHistoryEventFilteringType;
-  label: string;
-}[];
+export const WORKFLOW_HISTORY_EVENT_FILTERING_TYPES_LABEL_MAP = {
+  DECISION: 'Decision',
+  ACTIVITY: 'Activity',
+  SIGNAL: 'Signal',
+  TIMER: 'Timer',
+  WORKFLOW: 'Workflow',
+  CHILDWORKFLOW: 'Child Workflow',
+} as const satisfies Record<WorkflowHistoryEventFilteringType, string>;
 
 export const WORKFLOW_HISTORY_EVENT_FILTERING_TYPE_TO_ATTRS_MAP: Record<
-  WokflowHistoryEventFilteringType,
+  WorkflowHistoryEventFilteringType,
   HistoryEvent['attributes'][]
 > = {
   ACTIVITY: [

@@ -3,7 +3,7 @@ import React from 'react';
 import { render, screen, fireEvent, act } from '@/test-utils/rtl';
 
 import WorkflowHistoryFiltersType from '../workflow-history-filters-type';
-import { WORKFLOW_HISTORY_EVENT_FILTERING_TYPES_OPTIONS } from '../workflow-history-filters-type.constants';
+import { WORKFLOW_HISTORY_EVENT_FILTERING_TYPES_LABEL_MAP } from '../workflow-history-filters-type.constants';
 import { type WorkflowHistoryFiltersTypeValue } from '../workflow-history-filters-type.types';
 
 describe('WorkflowHistoryFiltersType', () => {
@@ -18,8 +18,9 @@ describe('WorkflowHistoryFiltersType', () => {
     act(() => {
       fireEvent.click(selectFilter);
     });
-    WORKFLOW_HISTORY_EVENT_FILTERING_TYPES_OPTIONS.forEach(({ label }) =>
-      expect(screen.getByText(label)).toBeInTheDocument()
+
+    Object.entries(WORKFLOW_HISTORY_EVENT_FILTERING_TYPES_LABEL_MAP).forEach(
+      ([_, label]) => expect(screen.getByText(label)).toBeInTheDocument()
     );
   });
 
@@ -34,21 +35,21 @@ describe('WorkflowHistoryFiltersType', () => {
       fireEvent.click(decisionOption);
     });
     expect(mockSetValue).toHaveBeenCalledWith({
-      historyEventType: 'DECISION',
+      historyEventTypes: ['DECISION'],
     });
   });
 
   it('calls the setQueryParams function when the filter is cleared', () => {
     const { mockSetValue } = setup({
       overrides: {
-        historyEventType: 'ACTIVITY',
+        historyEventTypes: ['ACTIVITY'],
       },
     });
-    const clearButton = screen.getByLabelText('Clear value');
+    const clearButton = screen.getByLabelText('Clear all');
     act(() => {
       fireEvent.click(clearButton);
     });
-    expect(mockSetValue).toHaveBeenCalledWith({ historyEventType: undefined });
+    expect(mockSetValue).toHaveBeenCalledWith({ historyEventTypes: undefined });
   });
 });
 
@@ -57,7 +58,7 @@ function setup({ overrides }: { overrides?: WorkflowHistoryFiltersTypeValue }) {
   render(
     <WorkflowHistoryFiltersType
       value={{
-        historyEventType: undefined,
+        historyEventTypes: undefined,
         ...overrides,
       }}
       setValue={mockSetValue}

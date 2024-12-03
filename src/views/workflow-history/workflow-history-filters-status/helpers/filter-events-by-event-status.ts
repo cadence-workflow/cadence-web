@@ -5,10 +5,8 @@ export default function filterEventsByEventStatus(
   group: HistoryEventsGroup,
   value: WorkflowHistoryFiltersStatusValue
 ) {
-  const selectedGroupStatus = value.historyEventStatus;
-  if (!selectedGroupStatus) return true;
+  const selectedGroupStatuses = value.historyEventStatuses;
+  if (!selectedGroupStatuses) return true;
 
-  if (group.status === selectedGroupStatus) return true;
-
-  return false;
+  return selectedGroupStatuses.includes(group.status);
 }
