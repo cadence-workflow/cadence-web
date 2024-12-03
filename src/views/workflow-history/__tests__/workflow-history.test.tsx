@@ -76,18 +76,18 @@ describe('WorkflowHistory', () => {
     }
   });
 
-  it('should render the page initially with filters hidden', async () => {
+  it('should render the page initially with filters shown', async () => {
     setup({});
-    expect(screen.queryByText('Filter Fields')).not.toBeInTheDocument();
+    expect(await screen.findByText('Filter Fields')).toBeInTheDocument();
   });
 
-  it('should show filters on executing toggle button onClick', async () => {
+  it('should hide filters on executing toggle button onClick', async () => {
     const { user } = setup({});
     const toggleButton = await screen.findByText('Filter Toggle');
 
     await user.click(toggleButton);
 
-    expect(await screen.findByText('Filter Fields')).toBeInTheDocument();
+    expect(screen.queryByText('Filter Fields')).not.toBeInTheDocument();
   });
 });
 

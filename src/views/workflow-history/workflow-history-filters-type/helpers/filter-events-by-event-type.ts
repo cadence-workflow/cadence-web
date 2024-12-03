@@ -8,11 +8,11 @@ const filterEventsByEventType = function (
   value: WorkflowHistoryFiltersTypeValue
 ) {
   const attr = event.attributes;
-  if (value.historyEventType === undefined) return true;
-  const selectedAttributes =
-    WORKFLOW_HISTORY_EVENT_FILTERING_TYPE_TO_ATTRS_MAP[
-      value.historyEventType
-    ] || [];
+  if (value.historyEventTypes === undefined) return true;
+
+  const selectedAttributes = value.historyEventTypes.flatMap(
+    (type) => WORKFLOW_HISTORY_EVENT_FILTERING_TYPE_TO_ATTRS_MAP[type]
+  );
   if (selectedAttributes.includes(attr)) return true;
   return false;
 };
