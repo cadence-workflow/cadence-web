@@ -12,7 +12,7 @@ const workflowHistoryFiltersConfig: [
 ] = [
   {
     id: 'historyEventType',
-    getValue: (v) => ({ historyEventType: v.historyEventType }),
+    getValue: (v) => ({ historyEventTypes: v.historyEventTypes }),
     formatValue: (v) => v,
     component: WorkflowHistoryFiltersType,
     filterFunc: filterEventsByEventType,
@@ -20,7 +20,7 @@ const workflowHistoryFiltersConfig: [
   },
   {
     id: 'historyEventStatus',
-    getValue: (v) => ({ historyEventStatus: v.historyEventStatus }),
+    getValue: (v) => ({ historyEventStatuses: v.historyEventStatuses }),
     formatValue: (v) => v,
     component: WorkflowHistoryFiltersStatus,
     filterFunc: filterEventsByEventStatus,
