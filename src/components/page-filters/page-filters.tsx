@@ -18,9 +18,7 @@ export default function PageFilters<
 >({
   pageFiltersConfig,
   pageQueryParamsConfig,
-  searchQueryParamKey,
-  searchPlaceholder,
-  searchTrimRegExp,
+  ...restSearchProps
 }: Props<P, K>) {
   const [areFiltersShown, setAreFiltersShown] = useState(false);
 
@@ -32,9 +30,7 @@ export default function PageFilters<
       <styled.SearchInputContainer>
         <PageFiltersSearch
           pageQueryParamsConfig={pageQueryParamsConfig}
-          searchQueryParamKey={searchQueryParamKey}
-          searchPlaceholder={searchPlaceholder}
-          searchTrimRegExp={searchTrimRegExp}
+          {...restSearchProps}
         />
         <PageFiltersToggle
           isActive={areFiltersShown}
