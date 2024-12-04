@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Search } from 'baseui/icon';
 import { Input } from 'baseui/input';
+import debounce from 'lodash/debounce';
 
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import {
@@ -21,20 +22,42 @@ export default function PageFiltersSearch<
   searchQueryParamKey,
   searchPlaceholder,
   searchTrimRegExp = /['"\s]/g,
+  inputDebounceDurationMs,
 }: Props<P, K>) {
   const [queryParams, setQueryParams] = usePageQueryParams(
     pageQueryParamsConfig,
     { replace: true, pageRerender: false }
   );
 
+  const queryParamsSearch = queryParams[searchQueryParamKey];
+
+  const [inputState, setInputState] = useState<string>('');
+
+  useEffect(() => {
+    setInputState(queryParamsSearch);
+  }, [queryParamsSearch]);
+
+  const setSearch = useCallback(
+    (value: string) =>
+      setQueryParams({ [searchQueryParamKey]: value } as Partial<
+        PageQueryParamSetterValues<P>
+      >),
+    [searchQueryParamKey, setQueryParams]
+  );
+
+  const setSearchMaybeDebounced = useMemo(() => {
+    if (inputDebounceDurationMs)
+      return debounce(setSearch, inputDebounceDurationMs);
+    return setSearch;
+  }, [setSearch, inputDebounceDurationMs]);
+
   return (
     <Input
-      value={queryParams[searchQueryParamKey]}
+      value={inputState}
       onChange={(event) => {
         const searchValue = event.target.value.replaceAll(searchTrimRegExp, '');
-        setQueryParams({
-          [searchQueryParamKey]: searchValue || undefined,
-        } as Partial<PageQueryParamSetterValues<P>>);
+        setInputState(searchValue);
+        setSearchMaybeDebounced(searchValue);
       }}
       placeholder={searchPlaceholder}
       startEnhancer={() => <Search />}

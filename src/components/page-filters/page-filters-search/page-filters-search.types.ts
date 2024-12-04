@@ -12,4 +12,5 @@ export type Props<
   searchQueryParamKey: PageQueryParamValues<P>[K] extends string ? K : never;
   searchPlaceholder: string;
   searchTrimRegExp?: RegExp;
+  inputDebounceDurationMs?: number;
 };

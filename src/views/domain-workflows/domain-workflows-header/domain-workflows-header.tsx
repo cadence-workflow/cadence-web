@@ -10,6 +10,7 @@ import PageFiltersToggle from '@/components/page-filters/page-filters-toggle/pag
 import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
 
 import domainWorkflowsFiltersConfig from '../config/domain-workflows-filters.config';
+import DOMAIN_WORKFLOWS_SEARCH_DEBOUNCE_MS from '../config/domain-workflows-search-debounce-ms.config';
 import DomainWorkflowsQueryInput from '../domain-workflows-query-input/domain-workflows-query-input';
 import DomainWorkflowsQueryLabel from '../domain-workflows-query-label/domain-workflows-query-label';
 import useListWorkflows from '../hooks/use-list-workflows';
@@ -70,6 +71,7 @@ export default function DomainWorkflowsHeader({ domain, cluster }: Props) {
               pageQueryParamsConfig={domainPageQueryParamsConfig}
               searchQueryParamKey="search"
               searchPlaceholder="Search for Workflow ID, Run ID, or Workflow Type"
+              inputDebounceDurationMs={DOMAIN_WORKFLOWS_SEARCH_DEBOUNCE_MS}
             />
             <PageFiltersToggle
               isActive={areFiltersShown}
