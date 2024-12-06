@@ -12,6 +12,9 @@ export const mockDomainWorkflowsQueryParamsValues: PageQueryParamValues<
   sortColumn: 'startTime',
   sortOrder: 'DESC',
   query: '',
+  workflowId: '',
+  workflowType: '',
+  statusBasic: undefined,
 };
 
 export const mockDateOverrides = {
