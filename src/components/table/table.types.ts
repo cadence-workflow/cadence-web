@@ -1,4 +1,8 @@
+import type React from 'react';
+
 import { type SortOrder } from '@/utils/sort-by';
+
+import { type Props as InfiniteScrollLoaderProps } from './table-infinite-scroll-loader/table-infinite-scroll-loader.types';
 
 export type TableColumn<T> = {
   name: string;
@@ -16,6 +20,15 @@ type AreAnyColumnsSortable<T, C extends TableConfig<T>> = true extends {
   ? true
   : false;
 
+type EndMessageProps =
+  | {
+      kind: 'simple';
+      content: React.ReactNode;
+    }
+  | ({
+      kind: 'infinite-scroll';
+    } & InfiniteScrollLoaderProps);
+
 type OnSortFunctionOptional<T, C extends TableConfig<T>> =
   AreAnyColumnsSortable<T, C> extends true
     ? { onSort: (column: string) => void }
@@ -25,7 +38,7 @@ export type Props<T, C extends TableConfig<T>> = {
   data: Array<T>;
   columns: C;
   shouldShowResults: boolean;
-  endMessage: React.ReactNode;
+  endMessageProps: EndMessageProps;
   sortColumn?: string;
   sortOrder?: SortOrder;
 } & OnSortFunctionOptional<T, C>;
