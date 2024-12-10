@@ -50,11 +50,15 @@ export default function TaskListWorkersTable({ taskList }: Props) {
             }),
           })
         }
-        endMessage={
-          filteredAndSortedWorkers.length === 0 ? (
-            <styled.EndMessageContainer>No workers</styled.EndMessageContainer>
-          ) : null
-        }
+        endMessageProps={{
+          kind: 'simple',
+          content:
+            filteredAndSortedWorkers.length === 0 ? (
+              <styled.EndMessageContainer>
+                No workers
+              </styled.EndMessageContainer>
+            ) : null,
+        }}
       />
     </styled.TableContainer>
   );

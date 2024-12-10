@@ -3,10 +3,10 @@ import React from 'react';
 import { Spinner } from 'baseui/spinner';
 import { InView } from 'react-intersection-observer';
 
-import { styled } from './domain-workflows-table-end-message.styles';
-import { type Props } from './domain-workflows-table-end-message.types';
+import { styled } from './table-infinite-scroll-loader.styles';
+import { type Props } from './table-infinite-scroll-loader.types';
 
-export default function DomainWorkflowsTableEndMessage(props: Props) {
+export default function TableInfiniteScrollLoader(props: Props) {
   if (props.isFetchingNextPage) {
     return <Spinner data-testid="loading-spinner" />;
   }
@@ -42,7 +42,7 @@ export default function DomainWorkflowsTableEndMessage(props: Props) {
     );
   }
 
-  if (props.hasWorkflows) {
+  if (props.hasData) {
     return (
       <styled.EndMessageContainer>End of results</styled.EndMessageContainer>
     );

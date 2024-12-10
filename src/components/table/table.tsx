@@ -8,6 +8,7 @@ import {
   StyledTableBodyRow,
 } from 'baseui/table-semantic';
 
+import TableInfiniteScrollLoader from './table-infinite-scroll-loader/table-infinite-scroll-loader';
 import TableSortableHeadCell from './table-sortable-head-cell/table-sortable-head-cell';
 import { styled } from './table.styles';
 import type { Props, TableConfig } from './table.types';
@@ -16,7 +17,7 @@ export default function Table<T extends object, C extends TableConfig<T>>({
   data,
   columns,
   shouldShowResults,
-  endMessage,
+  endMessageProps,
   onSort,
   sortColumn,
   sortOrder,
@@ -69,7 +70,13 @@ export default function Table<T extends object, C extends TableConfig<T>>({
             ))}
           <tr>
             <td colSpan={columns.length}>
-              <styled.TableMessage>{endMessage}</styled.TableMessage>
+              <styled.TableMessage>
+                {endMessageProps.kind === 'infinite-scroll' ? (
+                  <TableInfiniteScrollLoader {...endMessageProps} />
+                ) : (
+                  <>{endMessageProps.content}</>
+                )}
+              </styled.TableMessage>
             </td>
           </tr>
         </StyledTableBody>

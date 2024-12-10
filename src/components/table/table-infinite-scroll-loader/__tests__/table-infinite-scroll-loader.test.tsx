@@ -5,10 +5,10 @@ import {
 
 import { render, screen, act, fireEvent } from '@/test-utils/rtl';
 
-import DomainWorkflowsTableEndMessage from '../domain-workflows-table-end-message';
-import { type Props } from '../domain-workflows-table-end-message.types';
+import TableInfiniteScrollLoader from '../table-infinite-scroll-loader';
+import { type Props } from '../table-infinite-scroll-loader.types';
 
-describe(DomainWorkflowsTableEndMessage.name, () => {
+describe(TableInfiniteScrollLoader.name, () => {
   it('renders loading state while fetching next page', () => {
     setup({ isFetchingNextPage: true });
 
@@ -29,7 +29,7 @@ describe(DomainWorkflowsTableEndMessage.name, () => {
     expect(mockFetchNextPage).toHaveBeenCalled();
   });
 
-  it('renders loading state with the infinite scroll ref when more workflows can be loaded', () => {
+  it('renders loading state with the infinite scroll ref when more data can be loaded', () => {
     const { mockFetchNextPage } = setup({
       hasNextPage: true,
       isFetchingNextPage: false,
@@ -47,13 +47,13 @@ describe(DomainWorkflowsTableEndMessage.name, () => {
   });
 
   it('renders end message when there are workflows', () => {
-    setup({ hasWorkflows: true, hasNextPage: false });
+    setup({ hasData: true, hasNextPage: false });
 
     expect(screen.getByText('End of results')).toBeInTheDocument();
   });
 
-  it('renders end message when there are no workflows', () => {
-    setup({ hasWorkflows: false, hasNextPage: false });
+  it('renders end message when there is no data', () => {
+    setup({ hasData: false, hasNextPage: false });
 
     expect(screen.getByText('No results')).toBeInTheDocument();
   });
@@ -62,14 +62,14 @@ describe(DomainWorkflowsTableEndMessage.name, () => {
 function setup(overrides: Partial<Props>) {
   const mockFetchNextPage = jest.fn();
   const defaultProps: Props = {
-    hasWorkflows: true,
+    hasData: true,
     error: null,
     fetchNextPage: mockFetchNextPage,
     hasNextPage: true,
     isFetchingNextPage: false,
   };
 
-  render(<DomainWorkflowsTableEndMessage {...defaultProps} {...overrides} />);
+  render(<TableInfiniteScrollLoader {...defaultProps} {...overrides} />);
 
   return { mockFetchNextPage };
 }

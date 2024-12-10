@@ -102,7 +102,10 @@ function setup({
       data={SAMPLE_ROWS}
       columns={SAMPLE_COLUMNS}
       shouldShowResults={shouldShowResults}
-      endMessage={<div>Sample end message</div>}
+      endMessageProps={{
+        kind: 'simple',
+        content: <div>Sample end message</div>,
+      }}
       {...(!omitOnSort && { onSort: mockOnSort })}
       sortColumn={SAMPLE_COLUMNS[SAMPLE_DATA_NUM_COLUMNS - 1].id}
       sortOrder="DESC"
