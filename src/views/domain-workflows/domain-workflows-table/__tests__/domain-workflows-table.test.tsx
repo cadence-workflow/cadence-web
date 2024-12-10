@@ -2,13 +2,13 @@ import { HttpResponse } from 'msw';
 
 import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
+import { type Props as LoaderProps } from '@/components/table/table-infinite-scroll-loader/table-infinite-scroll-loader.types';
 import * as usePageQueryParamsModule from '@/hooks/use-page-query-params/use-page-query-params';
 import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list-workflows.types';
 
 import type { Props as MSWMocksHandlersProps } from '../../../../test-utils/msw-mock-handlers/msw-mock-handlers.types';
 import { mockDomainWorkflowsQueryParamsValues } from '../../__fixtures__/domain-workflows-query-params';
 import { type DomainWorkflowsHeaderInputType } from '../../domain-workflows-header/domain-workflows-header.types';
-import { type Props as EndMessageProps } from '../../domain-workflows-table-end-message/domain-workflows-table-end-message.types';
 import DomainWorkflowsTable from '../domain-workflows-table';
 
 jest.mock('@/components/error-panel/error-panel', () =>
@@ -39,10 +39,10 @@ jest.mock('../helpers/get-workflows-error-panel-props', () =>
 );
 
 jest.mock(
-  '../../domain-workflows-table-end-message/domain-workflows-table-end-message',
+  '@/components/table/table-infinite-scroll-loader/table-infinite-scroll-loader',
   () =>
-    jest.fn((props: EndMessageProps) => (
-      <button data-testid="mock-end-message" onClick={props.fetchNextPage}>
+    jest.fn((props: LoaderProps) => (
+      <button data-testid="mock-loader" onClick={props.fetchNextPage}>
         Mock end message: {props.error ? 'Error' : 'OK'}
       </button>
     ))
@@ -74,7 +74,7 @@ describe(DomainWorkflowsTable.name, () => {
       ).toBeInTheDocument();
     });
 
-    await user.click(screen.getByTestId('mock-end-message'));
+    await user.click(screen.getByTestId('mock-loader'));
 
     expect(await screen.findByText('Mock end message: OK')).toBeInTheDocument();
     Array(10).forEach((_, index) => {
@@ -126,13 +126,13 @@ describe(DomainWorkflowsTable.name, () => {
       ).toBeInTheDocument();
     });
 
-    await user.click(screen.getByTestId('mock-end-message'));
+    await user.click(screen.getByTestId('mock-loader'));
 
     expect(
       await screen.findByText('Mock end message: Error')
     ).toBeInTheDocument();
 
-    await user.click(screen.getByTestId('mock-end-message'));
+    await user.click(screen.getByTestId('mock-loader'));
 
     expect(await screen.findByText('Mock end message: OK')).toBeInTheDocument();
     Array(10).forEach((_, index) => {

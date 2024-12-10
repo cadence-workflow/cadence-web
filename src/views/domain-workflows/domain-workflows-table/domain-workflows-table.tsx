@@ -10,7 +10,6 @@ import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-
 import domainWorkflowsQueryTableConfig from '../config/domain-workflows-query-table.config';
 import domainWorkflowsSearchTableConfig from '../config/domain-workflows-search-table.config';
 import { type Props } from '../domain-workflows-table/domain-workflows-table.types';
-import DomainWorkflowsTableEndMessage from '../domain-workflows-table-end-message/domain-workflows-table-end-message';
 import getNextSortOrder from '../helpers/get-next-sort-order';
 import useListWorkflows from '../hooks/use-list-workflows';
 
@@ -63,15 +62,14 @@ export default function DomainWorkflowsTable({ domain, cluster }: Props) {
       <Table
         data={workflows}
         shouldShowResults={!isLoading && workflows.length > 0}
-        endMessage={
-          <DomainWorkflowsTableEndMessage
-            hasWorkflows={workflows.length > 0}
-            error={error}
-            fetchNextPage={fetchNextPage}
-            hasNextPage={hasNextPage}
-            isFetchingNextPage={isFetchingNextPage}
-          />
-        }
+        endMessageProps={{
+          kind: 'infinite-scroll',
+          hasData: workflows.length > 0,
+          error,
+          fetchNextPage,
+          hasNextPage,
+          isFetchingNextPage,
+        }}
         {...(inputType === 'query'
           ? {
               columns: domainWorkflowsQueryTableConfig,

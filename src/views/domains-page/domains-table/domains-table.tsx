@@ -1,8 +1,6 @@
 'use client';
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { useInView } from 'react-intersection-observer';
-
 import PageSection from '@/components/page-section/page-section';
 import Table from '@/components/table/table';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
@@ -12,7 +10,6 @@ import sortBy, {
   toggleSortOrder,
   type SortOrder,
 } from '@/utils/sort-by';
-import DomainsTableEndMessage from '@/views/domains-page/domains-table-end-message/domains-table-end-message';
 
 import domainsPageFiltersConfig from '../config/domains-page-filters.config';
 import domainsPageQueryParamsConfig from '../config/domains-page-query-params.config';
@@ -66,16 +63,6 @@ function DomainsTable({
     [sortedDomains, visibleListItems]
   );
 
-  const { ref: loadMoreRef } = useInView({
-    onChange: (inView) => {
-      if (inView && visibleListItems < sortedDomains.length) {
-        setVisibleListItems((v) =>
-          Math.min(v + DOMAINS_LIST_PAGE_SIZE, sortedDomains.length)
-        );
-      }
-    },
-  });
-
   return (
     <PageSection>
       <section className={cls.tableContainer}>
@@ -95,16 +82,17 @@ function DomainsTable({
           }
           sortColumn={queryParams.sortColumn}
           sortOrder={queryParams.sortOrder as SortOrder}
-          endMessage={
-            <DomainsTableEndMessage
-              key={visibleListItems}
-              canLoadMoreResults={
-                paginatedDomains.length < sortedDomains.length
-              }
-              hasSearchResults={sortedDomains.length > 0}
-              infiniteScrollTargetRef={loadMoreRef}
-            />
-          }
+          endMessageProps={{
+            kind: 'infinite-scroll',
+            hasData: sortedDomains.length > 0,
+            hasNextPage: paginatedDomains.length < sortedDomains.length,
+            fetchNextPage: () =>
+              setVisibleListItems((v) =>
+                Math.min(v + DOMAINS_LIST_PAGE_SIZE, sortedDomains.length)
+              ),
+            isFetchingNextPage: false,
+            error: null,
+          }}
         />
       </section>
     </PageSection>
