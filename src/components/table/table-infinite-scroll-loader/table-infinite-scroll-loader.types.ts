@@ -1,5 +1,5 @@
 export type Props = {
-  hasWorkflows: boolean;
+  hasData: boolean;
   error: Error | null;
   fetchNextPage: () => void;
   hasNextPage: boolean;
