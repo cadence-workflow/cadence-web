@@ -24,7 +24,7 @@ export default function TaskListLoader(props: Props) {
     queryKey: ['describeTaskList', props],
     queryFn: () =>
       request(
-        `/api/domains/${props.domain}/${props.cluster}/task-list/${props.taskListName}`
+        `/api/domains/${encodeURIComponent(props.domain)}/${encodeURIComponent(props.cluster)}/task-list/${encodeURIComponent(props.taskListName)}`
       ).then((res) => res.json()),
     refetchInterval: TASK_LIST_REFETCH_INTERVAL_MS,
   });
