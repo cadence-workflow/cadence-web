@@ -57,7 +57,7 @@ jest.mock('@/components/page-filters/hooks/use-page-filters', () =>
   }))
 );
 
-jest.mock('../../hooks/use-list-workflows/use-list-workflow', () =>
+jest.mock('../../hooks/use-list-workflows/use-list-workflows', () =>
   jest.fn(() => ({
     refetch: jest.fn(),
   }))

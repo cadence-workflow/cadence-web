@@ -11,15 +11,15 @@ import {
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
 
-import { DEFAULT_WORKFLOWS_PAGE_SIZE } from './use-list-workflows.constants';
-import { type Props } from './use-list-workflows.types';
+import DOMAIN_WORKFLOWS_PAGE_SIZE from '../config/domain-workflows-page-size.config';
+import { type UseListWorkflowsParams } from '../domain-workflows.types';
 
 export default function useListWorkflows({
   domain,
   cluster,
   filtersValues,
-  pageSize = DEFAULT_WORKFLOWS_PAGE_SIZE,
-}: Props) {
+  pageSize = DOMAIN_WORKFLOWS_PAGE_SIZE,
+}: UseListWorkflowsParams) {
   const {
     inputType,
     search,

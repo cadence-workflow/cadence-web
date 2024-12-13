@@ -5,7 +5,7 @@ import ErrorPanel from '@/components/error-panel/error-panel';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
-import useListWorkflows from '@/views/shared/hooks/use-list-workflows/use-list-workflows';
+import useListWorkflows from '@/views/domain-workflows/hooks/use-list-workflows';
 import WorkflowsTable from '@/views/shared/workflows-table/workflows-table';
 
 import { type Props } from '../domain-workflows-table/domain-workflows-table.types';

@@ -13,7 +13,7 @@ import {
   type PageQueryParams,
 } from '@/hooks/use-page-query-params/use-page-query-params.types';
 
-import useListWorkflows from '../hooks/use-list-workflows/use-list-workflows';
+import useListWorkflows from '../../domain-workflows/hooks/use-list-workflows';
 
 import WORKFLOWS_SEARCH_DEBOUNCE_MS from './config/workflows-search-debounce-ms.config';
 import { overrides, styled } from './workflows-header.styles';
