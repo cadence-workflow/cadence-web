@@ -5,6 +5,8 @@ import {
   type useInfiniteQuery,
 } from '@tanstack/react-query';
 
+import { type UseMergedInfiniteQueriesError } from './use-merged-infinite-queries-error';
+
 export type MergedQueryStatus = 'idle' | 'loading' | 'success' | 'error';
 
 export type MergedQueriesResults<TData> = {
@@ -15,6 +17,8 @@ export type MergedQueriesResults<TData> = {
   isFetchingNextPage: boolean;
   hasNextPage: boolean;
   fetchNextPage: () => void;
+  error: UseMergedInfiniteQueriesError | null;
+  refetch: () => void;
 };
 
 export type SingleInfiniteQueryOptions<TResponse, TPageParam> =
