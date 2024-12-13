@@ -38,7 +38,7 @@ export default function getSingleEventGroupFromEvents(
   ) {
     const attempts = event.workflowExecutionStartedEventAttributes.attempt;
     badges.push({
-      content: `${attempts} Attempt${attempts !== 1 ? 's' : ''}`,
+      content: `${attempts + 1} Attempts`,
     });
   }
 
