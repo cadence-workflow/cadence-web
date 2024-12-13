@@ -3,6 +3,7 @@ import { act } from 'react-dom/test-utils';
 import { renderHook, waitFor } from '@/test-utils/rtl';
 
 import useMergedInfiniteQueries from '../use-merged-infinite-queries';
+import { UseMergedInfiniteQueriesError } from '../use-merged-infinite-queries-error';
 import { type SingleInfiniteQueryOptions } from '../use-merged-infinite-queries.types';
 
 type MockAPIResponse = {
@@ -105,6 +106,7 @@ describe(useMergedInfiniteQueries.name, () => {
       const [mergedResult] = result.current;
       expect(mergedResult.data).toStrictEqual([0, 2, 4, 6, 8]);
       expect(mergedResult.status).toStrictEqual('error');
+      expect(mergedResult.error).toBeInstanceOf(UseMergedInfiniteQueriesError);
     });
   });
 
