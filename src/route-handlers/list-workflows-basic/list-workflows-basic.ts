@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
+import { type ListOpenWorkflowExecutionsRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListOpenWorkflowExecutionsRequest';
 import decodeUrlParams from '@/utils/decode-url-params';
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
@@ -38,33 +39,42 @@ export async function listWorkflowsBasic(
     );
   }
 
-  try {
-    const listEndpoint =
-      queryParams.kind === 'open'
-        ? ctx.grpcClusterMethods.openWorkflows
-        : ctx.grpcClusterMethods.closedWorkflows;
-
-    const res = await listEndpoint({
-      domain: decodedParams.domain,
-      pageSize: queryParams.pageSize,
-      nextPageToken: queryParams.nextPage,
-      startTimeFilter: {
-        earliestTime: queryParams.timeRangeStart,
-        latestTime: queryParams.timeRangeEnd,
-      },
+  const baseParams = {
+    domain: decodedParams.domain,
+    pageSize: queryParams.pageSize,
+    nextPageToken: queryParams.nextPage,
+    startTimeFilter: {
+      earliestTime: queryParams.timeRangeStart,
+      latestTime: queryParams.timeRangeEnd,
+    },
+    ...((queryParams.workflowId || queryParams.runId) && {
+      filters: 'executionFilter',
       executionFilter: {
         workflowId: queryParams.workflowId,
         runId: queryParams.runId,
       },
+    }),
+    ...(queryParams.workflowType && {
+      filters: 'typeFilter',
       typeFilter: {
         name: queryParams.workflowType,
       },
-      ...(queryParams.kind === 'closed' && {
-        statusFilter: {
-          status: queryParams.closeStatus,
-        },
-      }),
-    });
+    }),
+  } satisfies ListOpenWorkflowExecutionsRequest__Input;
+
+  try {
+    const res =
+      queryParams.kind === 'closed'
+        ? await ctx.grpcClusterMethods.closedWorkflows({
+            ...baseParams,
+            ...(queryParams.closeStatus && {
+              filters: 'statusFilter',
+              statusFilter: {
+                status: queryParams.closeStatus,
+              },
+            }),
+          })
+        : await ctx.grpcClusterMethods.openWorkflows({ ...baseParams });
 
     const response: ListWorkflowsBasicResponse = {
       workflows: mapExecutionsToWorkflows(res.executions),
