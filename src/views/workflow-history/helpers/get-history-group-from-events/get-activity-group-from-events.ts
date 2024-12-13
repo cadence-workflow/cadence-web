@@ -27,8 +27,9 @@ export default function getActivityGroupFromEvents(
   }
   if (startEvent && startEvent[startAttr]?.attempt) {
     const attempts = startEvent[startAttr].attempt;
+
     badges.push({
-      content: `${attempts} Attempt${attempts !== 1 ? 's' : ''}`,
+      content: `${attempts + 1} Attempts`,
     });
   }
   if (firstEvent.attributes !== 'activityTaskScheduledEventAttributes') {
