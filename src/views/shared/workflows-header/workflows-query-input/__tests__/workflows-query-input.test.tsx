@@ -2,7 +2,7 @@ import React from 'react';
 
 import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
-import DomainWorkflowsQueryInput from '../domain-workflows-query-input';
+import DomainWorkflowsQueryInput from '../workflows-query-input';
 
 describe(DomainWorkflowsQueryInput.name, () => {
   it('renders as expected', async () => {

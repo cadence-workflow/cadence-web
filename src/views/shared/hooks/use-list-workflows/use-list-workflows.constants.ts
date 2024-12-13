@@ -1,0 +1,1 @@
+export const DEFAULT_WORKFLOWS_PAGE_SIZE = 10;

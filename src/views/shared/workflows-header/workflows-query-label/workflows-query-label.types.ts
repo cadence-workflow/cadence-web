@@ -3,7 +3,7 @@ export type ExampleQuery = {
   text: string;
 };
 
-export type DomainWorkflowsQueryTooltipConfig = {
+export type WorkflowsQueryTooltipConfig = {
   title: string;
   subtitle: string;
   supportedOperators: Array<string>;

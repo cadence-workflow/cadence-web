@@ -6,7 +6,7 @@ import { type TableConfig } from '@/components/table/table.types';
 import { type DomainWorkflow } from '@/views/domain-page/domain-page.types';
 import WorkflowStatusTag from '@/views/shared/workflow-status-tag/workflow-status-tag';
 
-const domainWorkflowsSearchTableConfig = [
+const workflowsTableSortableConfig = [
   {
     name: 'Workflow ID',
     id: 'WorkflowID',
@@ -57,4 +57,4 @@ const domainWorkflowsSearchTableConfig = [
   },
 ] as const satisfies TableConfig<DomainWorkflow>;
 
-export default domainWorkflowsSearchTableConfig;
+export default workflowsTableSortableConfig;

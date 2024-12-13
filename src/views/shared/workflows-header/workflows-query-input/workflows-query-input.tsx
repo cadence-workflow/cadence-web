@@ -4,10 +4,10 @@ import { Button } from 'baseui/button';
 import { Input } from 'baseui/input';
 import { MdPlayArrow, MdCode, MdRefresh } from 'react-icons/md';
 
-import { styled, overrides } from './domain-workflows-query-input.styles';
-import { type Props } from './domain-workflows-query-input.types';
+import { styled, overrides } from './workflows-query-input.styles';
+import { type Props } from './workflows-query-input.types';
 
-export default function DomainWorkflowsQueryInput({
+export default function WorkflowsQueryInput({
   value,
   setValue,
   refetchQuery,
