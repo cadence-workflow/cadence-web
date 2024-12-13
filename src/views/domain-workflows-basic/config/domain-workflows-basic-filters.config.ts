@@ -32,6 +32,7 @@ const domainWorkflowsBasicFiltersConfig: [
       timeRangeStart: v.timeRangeStart?.toISOString(),
       timeRangeEnd: v.timeRangeEnd?.toISOString(),
     }),
+    // TODO: make a shared dates picker so that you can customize this one to not be clearable
     component: DomainWorkflowsFiltersDates,
   },
 ] as const;
