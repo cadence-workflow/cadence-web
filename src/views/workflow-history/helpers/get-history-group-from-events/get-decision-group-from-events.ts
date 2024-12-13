@@ -26,7 +26,7 @@ export default function getDecisionGroupFromEvents(
   if (scheduleEvent && scheduleEvent[scheduleAttr]?.attempt) {
     const attempts = scheduleEvent[scheduleAttr].attempt;
     badges.push({
-      content: `${attempts} Attempt${attempts !== 1 ? 's' : ''}`,
+      content: `${attempts + 1} Attempts`,
     });
   }
   const eventToLabel: HistoryGroupEventToStringMap<DecisionHistoryGroup> = {
