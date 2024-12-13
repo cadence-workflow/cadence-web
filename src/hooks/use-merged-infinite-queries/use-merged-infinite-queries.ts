@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 
 import { InfiniteQueryObserver, useQueryClient } from '@tanstack/react-query';
 
@@ -6,6 +6,7 @@ import mergeSortedArrays from '@/utils/merge-sorted-arrays';
 
 import getMergedFetchNextPage from './helpers/get-merged-fetch-next-page';
 import getMergedQueryStatus from './helpers/get-merged-query-status';
+import { UseMergedInfiniteQueriesError } from './use-merged-infinite-queries-error';
 import {
   type SingleInfiniteQueryResult,
   type MergedQueriesResults,
@@ -26,8 +27,8 @@ import {
  * @param flattenResult - A function that takes the expected query result and flattens it into an array of items
  * @param compare - A comparison function used to sort and merge results.
  * The function should accept two arguments and return:
- *   - A number > 0 if the first argument has a higher priority.
- *   - A number <= 0 if the second argument has a higher or equal priority.
+ *   - A number > 0 if the second argument comes first.
+ *   - A number <= 0 if the first argument comes first.
  *   - **Note:** The comparison logic must match the sorting logic used in the queries to maintain consistency.
  *
  * @returns A tuple [mergedQueryResults, queryResults]:
@@ -85,6 +86,14 @@ export default function useMergedInfiniteQueries<TData, TResponse, TPageParam>({
     });
   }, [flattenedDataArrays, count, compare]);
 
+  const refetchQueriesWithError = useCallback(() => {
+    queryResults.forEach((res) => {
+      if (res.isError) {
+        res.refetch();
+      }
+    });
+  }, [queryResults]);
+
   const mergedQueryResults = {
     data: sortedArray,
     status: getMergedQueryStatus(queryResults),
@@ -99,6 +108,18 @@ export default function useMergedInfiniteQueries<TData, TResponse, TPageParam>({
       pageSize,
       setCount,
     }),
+    error: queryResults.some((qr) => qr.isError)
+      ? new UseMergedInfiniteQueriesError(
+          'One or more infinite queries failed',
+          queryResults.reduce((errors: Array<Error>, qr) => {
+            if (qr.isError) {
+              errors.push(qr.error);
+            }
+            return errors;
+          }, [])
+        )
+      : null,
+    refetch: refetchQueriesWithError,
     // ...add other properties if needed
   };
   return [mergedQueryResults, queryResults];
