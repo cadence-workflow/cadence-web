@@ -8,7 +8,6 @@ import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-
 import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
 import WorkflowsTable from '@/views/shared/workflows-table/workflows-table';
 
-import DOMAIN_WORKFLOWS_PAGE_SIZE from '../config/domain-workflows-page-size.config';
 import { type Props } from '../domain-workflows-table/domain-workflows-table.types';
 import getNextSortOrder from '../helpers/get-next-sort-order';
 
@@ -41,7 +40,6 @@ export default function DomainWorkflowsTable({ domain, cluster }: Props) {
       sortOrder: queryParams.sortOrder,
       query: queryParams.query,
     },
-    pageSize: DOMAIN_WORKFLOWS_PAGE_SIZE,
   });
 
   if (isLoading) {
