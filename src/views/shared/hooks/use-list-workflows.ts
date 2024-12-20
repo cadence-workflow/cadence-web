@@ -5,21 +5,25 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import queryString from 'query-string';
 
 import {
+  type RouteParams as ListWorkflowsRouteParams,
   type ListWorkflowsResponse,
   type ListWorkflowsRequestQueryParams,
 } from '@/route-handlers/list-workflows/list-workflows.types';
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
 
-import DOMAIN_WORKFLOWS_PAGE_SIZE from '../config/domain-workflows-page-size.config';
-import { type UseListWorkflowsParams } from '../domain-workflows.types';
+import DOMAIN_WORKFLOWS_PAGE_SIZE from '../../domain-workflows/config/domain-workflows-page-size.config';
+import { type WorkflowsFiltersValues } from '../workflows-header/workflows-header.types';
 
 export default function useListWorkflows({
   domain,
   cluster,
   filtersValues,
   pageSize = DOMAIN_WORKFLOWS_PAGE_SIZE,
-}: UseListWorkflowsParams) {
+}: ListWorkflowsRouteParams & {
+  filtersValues: WorkflowsFiltersValues;
+  pageSize?: number;
+}) {
   const {
     inputType,
     search,
