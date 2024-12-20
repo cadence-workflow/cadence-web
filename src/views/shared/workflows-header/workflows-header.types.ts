@@ -18,11 +18,8 @@ export type Props<
   S extends PageQueryParamKeys<P>,
   Q extends PageQueryParamKeys<P>,
 > = {
-  domain: string;
-  cluster: string;
   pageQueryParamsConfig: P;
   pageFiltersConfig: Array<PageFilterConfig<P, any>>;
-  filtersValues: WorkflowsFiltersValues;
   inputTypeQueryParamKey: PageQueryParamValues<P>[I] extends WorkflowsHeaderInputType
     ? I
     : never;
@@ -30,6 +27,8 @@ export type Props<
   queryStringQueryParamKey: PageQueryParamValues<P>[Q] extends string
     ? Q
     : never;
+  refetchQuery: () => void;
+  isQueryRunning: boolean;
 };
 
 export type WorkflowsFiltersValues = {

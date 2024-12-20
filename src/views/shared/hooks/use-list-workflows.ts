@@ -18,10 +18,10 @@ export default function useListWorkflows({
   domain,
   cluster,
   filtersValues,
-  pageSize = 10,
+  pageSize,
 }: ListWorkflowsRouteParams & {
   filtersValues: WorkflowsFiltersValues;
-  pageSize?: number;
+  pageSize: number;
 }) {
   const {
     inputType,

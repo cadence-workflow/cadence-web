@@ -1,5 +1,6 @@
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
+import * as usePageFiltersModule from '@/components/page-filters/hooks/use-page-filters';
 import { type Props as PageFiltersToggleProps } from '@/components/page-filters/page-filters-toggle/page-filters-toggle.types';
 import { type PageFilterConfig } from '@/components/page-filters/page-filters.types';
 import { mockDomainPageQueryParamsValues } from '@/views/domain-page/__fixtures__/domain-page-query-params';
@@ -7,7 +8,6 @@ import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-
 
 import { type WorkflowStatus } from '../../workflow-status-tag/workflow-status-tag.types';
 import WorkflowsHeader from '../workflows-header';
-import { type WorkflowsFiltersValues } from '../workflows-header.types';
 
 const mockFiltersConfig: [
   PageFilterConfig<
@@ -57,13 +57,11 @@ jest.mock('@/components/page-filters/hooks/use-page-filters', () =>
   }))
 );
 
-jest.mock('../../hooks/use-list-workflows', () =>
-  jest.fn(() => ({
-    refetch: jest.fn(),
-  }))
-);
-
 describe(WorkflowsHeader.name, () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('renders segmented control', async () => {
     setup({});
 
@@ -88,12 +86,17 @@ describe(WorkflowsHeader.name, () => {
   });
 
   it('renders query input when input type is query', async () => {
-    setup({
-      filtersValuesOverrides: {
+    jest.spyOn(usePageFiltersModule, 'default').mockReturnValueOnce({
+      resetAllFilters: mockResetAllFilters,
+      activeFiltersCount: mockActiveFiltersCount,
+      queryParams: {
+        ...mockDomainPageQueryParamsValues,
         inputType: 'query',
       },
+      setQueryParams: mockSetQueryParams,
     });
 
+    setup({});
     expect(await screen.findByText('Query')).toBeInTheDocument();
   });
 
@@ -110,25 +113,17 @@ describe(WorkflowsHeader.name, () => {
   });
 });
 
-function setup({
-  filtersValuesOverrides,
-}: {
-  filtersValuesOverrides?: Partial<WorkflowsFiltersValues>;
-}) {
+function setup({ isQueryRunning }: { isQueryRunning?: boolean }) {
   const user = userEvent.setup();
   const renderResult = render(
     <WorkflowsHeader
-      domain="mock_domain"
-      cluster="mock_cluster"
       pageQueryParamsConfig={domainPageQueryParamsConfig}
       pageFiltersConfig={mockFiltersConfig}
-      filtersValues={{
-        ...mockDomainPageQueryParamsValues,
-        ...filtersValuesOverrides,
-      }}
       inputTypeQueryParamKey="inputType"
       searchQueryParamKey="search"
       queryStringQueryParamKey="query"
+      refetchQuery={jest.fn()}
+      isQueryRunning={isQueryRunning ?? false}
     />
   );
 

@@ -13,8 +13,6 @@ import {
   type PageQueryParams,
 } from '@/hooks/use-page-query-params/use-page-query-params.types';
 
-import useListWorkflows from '../hooks/use-list-workflows';
-
 import WORKFLOWS_SEARCH_DEBOUNCE_MS from './config/workflows-search-debounce-ms.config';
 import { overrides, styled } from './workflows-header.styles';
 import { type Props } from './workflows-header.types';
@@ -27,14 +25,13 @@ export default function WorkflowsHeader<
   S extends PageQueryParamKeys<P>,
   Q extends PageQueryParamKeys<P>,
 >({
-  domain,
-  cluster,
   pageQueryParamsConfig,
   pageFiltersConfig,
-  filtersValues,
   inputTypeQueryParamKey,
   searchQueryParamKey,
   queryStringQueryParamKey,
+  refetchQuery,
+  isQueryRunning,
 }: Props<P, I, S, Q>) {
   const [areFiltersShown, setAreFiltersShown] = useState(false);
 
@@ -44,13 +41,8 @@ export default function WorkflowsHeader<
       pageQueryParamsConfig,
     });
 
-  const { inputType, query } = filtersValues;
-
-  const { refetch, isFetching } = useListWorkflows({
-    domain,
-    cluster,
-    filtersValues,
-  });
+  const inputType = queryParams[inputTypeQueryParamKey];
+  const query = queryParams[queryStringQueryParamKey];
 
   return (
     <styled.HeaderContainer>
@@ -87,8 +79,8 @@ export default function WorkflowsHeader<
                 [queryStringQueryParamKey]: v,
               } as Partial<PageQueryParamSetterValues<P>>)
             }
-            refetchQuery={refetch}
-            isQueryRunning={isFetching}
+            refetchQuery={refetchQuery}
+            isQueryRunning={isQueryRunning}
           />
         ) : (
           <styled.SearchContainer>
