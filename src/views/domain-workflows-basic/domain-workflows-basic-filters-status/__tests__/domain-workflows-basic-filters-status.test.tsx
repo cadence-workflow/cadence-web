@@ -2,7 +2,7 @@ import React from 'react';
 
 import { render, screen, fireEvent, act } from '@/test-utils/rtl';
 
-import { mockDomainWorkflowsQueryParamsValues } from '@/views/domain-workflows/__fixtures__/domain-workflows-query-params';
+import { mockDomainPageQueryParamsValues } from '@/views/domain-page/__fixtures__/domain-page-query-params';
 
 import DomainWorkflowsBasicFiltersStatus from '../domain-workflows-basic-filters-status';
 import { WORKFLOW_STATUS_NAMES_BASIC_VISIBILITY } from '../domain-workflows-basic-filters-status.constants';
@@ -63,7 +63,7 @@ function setup({
   render(
     <DomainWorkflowsBasicFiltersStatus
       value={{
-        statusBasic: mockDomainWorkflowsQueryParamsValues.statusBasic,
+        statusBasic: mockDomainPageQueryParamsValues.statusBasic,
         ...overrides,
       }}
       setValue={mockSetValue}
