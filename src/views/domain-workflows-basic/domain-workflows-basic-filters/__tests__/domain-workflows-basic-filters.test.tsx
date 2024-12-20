@@ -1,7 +1,7 @@
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import { type Props as PageFiltersToggleProps } from '@/components/page-filters/page-filters-toggle/page-filters-toggle.types';
-import { mockDomainWorkflowsQueryParamsValues } from '@/views/domain-workflows/__fixtures__/domain-workflows-query-params';
+import { mockDomainPageQueryParamsValues } from '@/views/domain-page/__fixtures__/domain-page-query-params';
 
 import DomainWorkflowsBasicFilters from '../domain-workflows-basic-filters';
 
@@ -33,7 +33,7 @@ jest.mock('@/components/page-filters/hooks/use-page-filters', () =>
   jest.fn(() => ({
     resetAllFilters: mockResetAllFilters,
     activeFiltersCount: mockActiveFiltersCount,
-    queryParams: mockDomainWorkflowsQueryParamsValues,
+    queryParams: mockDomainPageQueryParamsValues,
     setQueryParams: mockSetQueryParams,
   }))
 );

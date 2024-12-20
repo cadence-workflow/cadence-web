@@ -6,7 +6,7 @@ import { type Props as LoaderProps } from '@/components/table/table-infinite-scr
 import * as usePageQueryParamsModule from '@/hooks/use-page-query-params/use-page-query-params';
 import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list-workflows.types';
 import type { Props as MSWMocksHandlersProps } from '@/test-utils/msw-mock-handlers/msw-mock-handlers.types';
-import { mockDomainWorkflowsQueryParamsValues } from '@/views/domain-workflows/__fixtures__/domain-workflows-query-params';
+import { mockDomainPageQueryParamsValues } from '@/views/domain-page/__fixtures__/domain-page-query-params';
 
 import DomainWorkflowsBasicTable from '../domain-workflows-basic-table';
 
@@ -41,7 +41,7 @@ jest.mock('query-string', () => ({
 
 const mockSetQueryParams = jest.fn();
 jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
-  jest.fn(() => [mockDomainWorkflowsQueryParamsValues, mockSetQueryParams])
+  jest.fn(() => [mockDomainPageQueryParamsValues, mockSetQueryParams])
 );
 
 describe(DomainWorkflowsBasicTable.name, () => {
@@ -133,7 +133,7 @@ describe(DomainWorkflowsBasicTable.name, () => {
   it('calls only listOpen if Running status is selected', async () => {
     jest.spyOn(usePageQueryParamsModule, 'default').mockReturnValue([
       {
-        ...mockDomainWorkflowsQueryParamsValues,
+        ...mockDomainPageQueryParamsValues,
         statusBasic: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
       },
       mockSetQueryParams,
@@ -157,7 +157,7 @@ describe(DomainWorkflowsBasicTable.name, () => {
   it('calls only listClosed if a close status is selected', async () => {
     jest.spyOn(usePageQueryParamsModule, 'default').mockReturnValue([
       {
-        ...mockDomainWorkflowsQueryParamsValues,
+        ...mockDomainPageQueryParamsValues,
         statusBasic: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
       },
       mockSetQueryParams,
