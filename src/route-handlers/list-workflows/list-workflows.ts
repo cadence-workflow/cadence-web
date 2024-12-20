@@ -36,23 +36,27 @@ export async function listWorkflows(
     );
   }
 
+  const listWorkflowsParams = {
+    domain: decodedParams.domain,
+    pageSize: queryParams.pageSize,
+    nextPageToken: queryParams.nextPage,
+    query:
+      queryParams.inputType === 'query'
+        ? queryParams.query
+        : getListWorkflowExecutionsQuery({
+            search: queryParams.search,
+            workflowStatus: queryParams.status,
+            sortColumn: queryParams.sortColumn,
+            sortOrder: queryParams.sortOrder,
+            timeRangeStart: queryParams.timeRangeStart,
+            timeRangeEnd: queryParams.timeRangeEnd,
+          }),
+  };
+
   try {
-    const res = await ctx.grpcClusterMethods.listWorkflows({
-      domain: decodedParams.domain,
-      pageSize: queryParams.pageSize,
-      nextPageToken: queryParams.nextPage,
-      query:
-        queryParams.inputType === 'query'
-          ? queryParams.query
-          : getListWorkflowExecutionsQuery({
-              search: queryParams.search,
-              workflowStatus: queryParams.status,
-              sortColumn: queryParams.sortColumn,
-              sortOrder: queryParams.sortOrder,
-              timeRangeStart: queryParams.timeRangeStart,
-              timeRangeEnd: queryParams.timeRangeEnd,
-            }),
-    });
+    const res = queryParams.shouldListArchived
+      ? await ctx.grpcClusterMethods.archivedWorkflows(listWorkflowsParams)
+      : await ctx.grpcClusterMethods.listWorkflows(listWorkflowsParams);
 
     const response: ListWorkflowsResponse = {
       workflows: mapExecutionsToWorkflows(res.executions),
