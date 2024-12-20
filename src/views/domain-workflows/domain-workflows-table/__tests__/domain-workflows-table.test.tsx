@@ -7,7 +7,7 @@ import * as usePageQueryParamsModule from '@/hooks/use-page-query-params/use-pag
 import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list-workflows.types';
 
 import type { Props as MSWMocksHandlersProps } from '../../../../test-utils/msw-mock-handlers/msw-mock-handlers.types';
-import { mockDomainWorkflowsQueryParamsValues } from '../../__fixtures__/domain-workflows-query-params';
+import { mockDomainPageQueryParamsValues } from '../../../domain-page/__fixtures__/domain-page-query-params';
 import { type DomainWorkflowsHeaderInputType } from '../../domain-workflows-header/domain-workflows-header.types';
 import DomainWorkflowsTable from '../domain-workflows-table';
 
@@ -56,7 +56,7 @@ jest.mock('query-string', () => ({
 
 const mockSetQueryParams = jest.fn();
 jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
-  jest.fn(() => [mockDomainWorkflowsQueryParamsValues, mockSetQueryParams])
+  jest.fn(() => [mockDomainPageQueryParamsValues, mockSetQueryParams])
 );
 
 describe(DomainWorkflowsTable.name, () => {
@@ -102,7 +102,7 @@ describe(DomainWorkflowsTable.name, () => {
     jest
       .spyOn(usePageQueryParamsModule, 'default')
       .mockReturnValue([
-        { ...mockDomainWorkflowsQueryParamsValues, inputType: 'query' },
+        { ...mockDomainPageQueryParamsValues, inputType: 'query' },
         mockSetQueryParams,
       ]);
 

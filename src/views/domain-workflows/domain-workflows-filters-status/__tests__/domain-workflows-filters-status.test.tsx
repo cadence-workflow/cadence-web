@@ -4,7 +4,7 @@ import { render, screen, fireEvent, act } from '@/test-utils/rtl';
 
 import { WORKFLOW_STATUS_NAMES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
 
-import { mockDomainWorkflowsQueryParamsValues } from '../../__fixtures__/domain-workflows-query-params';
+import { mockDomainPageQueryParamsValues } from '../../../domain-page/__fixtures__/domain-page-query-params';
 import DomainWorkflowsFiltersStatus from '../domain-workflows-filters-status';
 import { type DomainWorkflowsFiltersStatusValue } from '../domain-workflows-filters-status.types';
 
@@ -63,7 +63,7 @@ function setup({
   render(
     <DomainWorkflowsFiltersStatus
       value={{
-        status: mockDomainWorkflowsQueryParamsValues.status,
+        status: mockDomainPageQueryParamsValues.status,
         ...overrides,
       }}
       setValue={mockSetValue}

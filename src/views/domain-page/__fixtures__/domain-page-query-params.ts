@@ -1,7 +1,7 @@
 import { type PageQueryParamValues } from '@/hooks/use-page-query-params/use-page-query-params.types';
 import type domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
 
-export const mockDomainWorkflowsQueryParamsValues: PageQueryParamValues<
+export const mockDomainPageQueryParamsValues: PageQueryParamValues<
   typeof domainPageQueryParamsConfig
 > = {
   inputType: 'search',

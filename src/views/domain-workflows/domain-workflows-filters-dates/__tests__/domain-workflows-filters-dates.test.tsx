@@ -3,9 +3,9 @@ import React from 'react';
 import { render, screen, act, fireEvent } from '@/test-utils/rtl';
 
 import {
-  mockDomainWorkflowsQueryParamsValues,
+  mockDomainPageQueryParamsValues,
   mockDateOverrides,
-} from '../../__fixtures__/domain-workflows-query-params';
+} from '../../../domain-page/__fixtures__/domain-page-query-params';
 import DomainWorkflowsFiltersDates from '../domain-workflows-filters-dates';
 import { type DomainWorkflowsFiltersDatesValue } from '../domain-workflows-filters-dates.types';
 
@@ -136,8 +136,8 @@ function setup({
   render(
     <DomainWorkflowsFiltersDates
       value={{
-        timeRangeStart: mockDomainWorkflowsQueryParamsValues.timeRangeStart,
-        timeRangeEnd: mockDomainWorkflowsQueryParamsValues.timeRangeEnd,
+        timeRangeStart: mockDomainPageQueryParamsValues.timeRangeStart,
+        timeRangeEnd: mockDomainPageQueryParamsValues.timeRangeEnd,
         ...overrides,
       }}
       setValue={mockSetValue}
