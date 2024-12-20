@@ -3,7 +3,7 @@ import { render, screen, userEvent } from '@/test-utils/rtl';
 import * as usePageFiltersModule from '@/components/page-filters/hooks/use-page-filters';
 import { type Props as PageFiltersToggleProps } from '@/components/page-filters/page-filters-toggle/page-filters-toggle.types';
 
-import { mockDomainWorkflowsQueryParamsValues } from '../../__fixtures__/domain-workflows-query-params';
+import { mockDomainPageQueryParamsValues } from '../../../domain-page/__fixtures__/domain-page-query-params';
 import DomainWorkflowsHeader from '../domain-workflows-header';
 
 jest.mock(
@@ -36,7 +36,7 @@ jest.mock('@/components/page-filters/hooks/use-page-filters', () =>
   jest.fn(() => ({
     resetAllFilters: mockResetAllFilters,
     activeFiltersCount: mockActiveFiltersCount,
-    queryParams: mockDomainWorkflowsQueryParamsValues,
+    queryParams: mockDomainPageQueryParamsValues,
     setQueryParams: mockSetQueryParams,
   }))
 );
@@ -83,7 +83,7 @@ describe(DomainWorkflowsHeader.name, () => {
       resetAllFilters: mockResetAllFilters,
       activeFiltersCount: mockActiveFiltersCount,
       queryParams: {
-        ...mockDomainWorkflowsQueryParamsValues,
+        ...mockDomainPageQueryParamsValues,
         inputType: 'query',
       },
       setQueryParams: mockSetQueryParams,
