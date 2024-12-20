@@ -54,9 +54,10 @@ export async function listWorkflows(
   };
 
   try {
-    const res = queryParams.shouldListArchived
-      ? await ctx.grpcClusterMethods.archivedWorkflows(listWorkflowsParams)
-      : await ctx.grpcClusterMethods.listWorkflows(listWorkflowsParams);
+    const res =
+      queryParams.listType === 'archived'
+        ? await ctx.grpcClusterMethods.archivedWorkflows(listWorkflowsParams)
+        : await ctx.grpcClusterMethods.listWorkflows(listWorkflowsParams);
 
     const response: ListWorkflowsResponse = {
       workflows: mapExecutionsToWorkflows(res.executions),
