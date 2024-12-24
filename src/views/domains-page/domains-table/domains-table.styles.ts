@@ -5,7 +5,7 @@ import type {
 
 const cssStylesObj = {
   tableContainer: {
-    overflowX: 'auto',
+    //overflowX: 'auto',
   },
 } satisfies StyletronCSSObject;
 

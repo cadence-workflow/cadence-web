@@ -13,6 +13,7 @@ export default function TableSortableHeadCell({
   onSort,
   sortColumn,
   sortOrder,
+  isSortable,
 }: Props) {
   let SortIcon, sortLabel;
 
@@ -30,21 +31,25 @@ export default function TableSortableHeadCell({
       sortLabel = 'not sorted';
       break;
   }
+  const HeadCellComponent = isSortable
+    ? styled.SortableHeadCellRoot
+    : styled.HeadCellRoot;
+  const ariaLabel = isSortable ? `${name}, ${sortLabel}` : name;
 
   return (
-    <styled.SortableHeadCellRoot
+    <HeadCellComponent
       $size="compact"
       $divider="clean"
       $width={width}
-      onClick={() => onSort(columnID)}
       $isFocusVisible={false}
+      {...(onSort && isSortable ? { onClick: () => onSort(columnID) } : null)}
     >
-      <styled.SortableHeaderContainer aria-label={`${name}, ${sortLabel}`}>
+      <styled.HeaderContainer aria-label={ariaLabel}>
         {name}
-        {columnID === sortColumn && SortIcon && (
+        {isSortable && columnID === sortColumn && SortIcon && (
           <SortIcon size="16px" aria-hidden="true" role="presentation" />
         )}
-      </styled.SortableHeaderContainer>
-    </styled.SortableHeadCellRoot>
+      </styled.HeaderContainer>
+    </HeadCellComponent>
   );
 }
