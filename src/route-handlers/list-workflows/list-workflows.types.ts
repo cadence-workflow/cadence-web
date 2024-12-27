@@ -18,6 +18,8 @@ export type ListWorkflowsRequestQueryParams = z.input<
   typeof listWorkflowsQueryParamSchema
 >;
 
+export type TimeColumn = ListWorkflowsRequestQueryParams['timeColumn'];
+
 export type ListWorkflowsResponse = {
   workflows: Array<DomainWorkflow>;
   nextPage: string;

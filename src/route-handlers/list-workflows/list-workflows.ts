@@ -48,6 +48,7 @@ export async function listWorkflows(
             workflowStatus: queryParams.status,
             sortColumn: queryParams.sortColumn,
             sortOrder: queryParams.sortOrder,
+            timeColumn: queryParams.timeColumn,
             timeRangeStart: queryParams.timeRangeStart,
             timeRangeEnd: queryParams.timeRangeEnd,
           }),

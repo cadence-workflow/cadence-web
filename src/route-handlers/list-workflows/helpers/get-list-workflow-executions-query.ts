@@ -2,11 +2,14 @@ import { type SortOrder } from '@/utils/sort-by';
 import { WORKFLOW_STATUSES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
 import type { WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
 
+import { type TimeColumn } from '../list-workflows.types';
+
 export default function getListWorkflowExecutionsQuery({
   search,
   workflowStatus,
   sortColumn,
   sortOrder,
+  timeColumn,
   timeRangeStart,
   timeRangeEnd,
 }: {
@@ -14,6 +17,7 @@ export default function getListWorkflowExecutionsQuery({
   workflowStatus?: WorkflowStatus;
   sortColumn?: string;
   sortOrder?: SortOrder;
+  timeColumn: TimeColumn;
   timeRangeStart?: string;
   timeRangeEnd?: string;
 }) {
@@ -37,11 +41,11 @@ export default function getListWorkflowExecutionsQuery({
   }
 
   if (timeRangeStart) {
-    searchQueries.push(`StartTime > "${timeRangeStart}"`);
+    searchQueries.push(`${timeColumn} > "${timeRangeStart}"`);
   }
 
   if (timeRangeEnd) {
-    searchQueries.push(`StartTime <= "${timeRangeEnd}"`);
+    searchQueries.push(`${timeColumn} <= "${timeRangeEnd}"`);
   }
 
   return (
