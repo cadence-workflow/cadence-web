@@ -2,10 +2,10 @@ import React from 'react';
 
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
-import TableSortableHeadCell from '../table-sortable-head-cell';
-import { type Props } from '../table-sortable-head-cell.types';
+import TableHeadCell from '../table-head-cell';
+import { type Props } from '../table-head-cell.types';
 
-describe(TableSortableHeadCell.name, () => {
+describe(TableHeadCell.name, () => {
   // sortable test cases
   it('should not render as sorted when sort column does not match', async () => {
     setup({ isSortable: true, sortColumn: 'column_2', sortOrder: 'DESC' });
@@ -72,7 +72,7 @@ function setup({
   const user = userEvent.setup();
   const mockOnSort = jest.fn();
   render(
-    <TableSortableHeadCell
+    <TableHeadCell
       name="Column 1"
       columnID="column_1"
       width="20%"

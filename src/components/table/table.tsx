@@ -12,7 +12,7 @@ import TableBodyCell from './table-body-cell/table-body-cell';
 import TableFooterMessage from './table-footer-message/table-footer-message';
 import TableInfiniteScrollLoader from './table-infinite-scroll-loader/table-infinite-scroll-loader';
 import TableRoot from './table-root/table-root';
-import TableSortableHeadCell from './table-sortable-head-cell/table-sortable-head-cell';
+import TableHeadCell from './table-sortable-head-cell/table-head-cell';
 import type { Props, TableConfig } from './table.types';
 
 export default function Table<T extends object, C extends TableConfig<T>>({
@@ -30,7 +30,7 @@ export default function Table<T extends object, C extends TableConfig<T>>({
         <StyledTableHead>
           <StyledTableHeadRow>
             {columns.map((column) => (
-              <TableSortableHeadCell
+              <TableHeadCell
                 key={column.id}
                 name={column.name}
                 columnID={column.id}

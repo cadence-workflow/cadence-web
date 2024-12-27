@@ -3,10 +3,10 @@ import React from 'react';
 import ChevronDown from 'baseui/icon/chevron-down';
 import ChevronUp from 'baseui/icon/chevron-up';
 
-import { styled } from './table-sortable-head-cell.styles';
-import type { Props } from './table-sortable-head-cell.types';
+import { styled } from './table-head-cell.styles';
+import type { Props } from './table-head-cell.types';
 
-export default function TableSortableHeadCell({
+export default function TableHeadCell({
   name,
   columnID,
   width,

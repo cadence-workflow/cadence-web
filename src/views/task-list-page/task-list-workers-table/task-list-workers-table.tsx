@@ -33,33 +33,29 @@ export default function TaskListWorkersTable({ taskList }: Props) {
   );
 
   return (
-    <styled.TableContainer>
-      <Table
-        data={filteredAndSortedWorkers}
-        columns={taskListWorkersTableConfig}
-        shouldShowResults={true}
-        sortColumn={queryParams.sortColumn}
-        sortOrder={queryParams.sortOrder}
-        onSort={(column) =>
-          setQueryParams({
-            sortColumn: isValidTableColumn(column) ? column : undefined,
-            sortOrder: toggleSortOrder({
-              currentSortColumn: queryParams.sortColumn,
-              currentSortOrder: queryParams.sortOrder,
-              newSortColumn: column,
-            }),
-          })
-        }
-        endMessageProps={{
-          kind: 'simple',
-          content:
-            filteredAndSortedWorkers.length === 0 ? (
-              <styled.EndMessageContainer>
-                No workers
-              </styled.EndMessageContainer>
-            ) : null,
-        }}
-      />
-    </styled.TableContainer>
+    <Table
+      data={filteredAndSortedWorkers}
+      columns={taskListWorkersTableConfig}
+      shouldShowResults={true}
+      sortColumn={queryParams.sortColumn}
+      sortOrder={queryParams.sortOrder}
+      onSort={(column) =>
+        setQueryParams({
+          sortColumn: isValidTableColumn(column) ? column : undefined,
+          sortOrder: toggleSortOrder({
+            currentSortColumn: queryParams.sortColumn,
+            currentSortOrder: queryParams.sortOrder,
+            newSortColumn: column,
+          }),
+        })
+      }
+      endMessageProps={{
+        kind: 'simple',
+        content:
+          filteredAndSortedWorkers.length === 0 ? (
+            <styled.EndMessageContainer>No workers</styled.EndMessageContainer>
+          ) : null,
+      }}
+    />
   );
 }
