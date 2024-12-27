@@ -50,6 +50,7 @@ export default function useListWorkflows({
           url: `/api/domains/${domain}/${cluster}/workflows`,
           query: {
             ...requestQueryParams,
+            listType: 'default',
             pageSize: pageSize.toString(),
             nextPage: pageParam as string,
           } as const satisfies ListWorkflowsRequestQueryParams,
