@@ -12,11 +12,9 @@ type TestDataT = {
 const SAMPLE_DATA_NUM_ROWS = 10;
 const SAMPLE_DATA_NUM_COLUMNS = 5;
 
-jest.mock('../table-sortable-head-cell/table-sortable-head-cell', () =>
+jest.mock('../table-head-cell/table-head-cell', () =>
   jest.fn(({ name, columnID, onSort }) => (
-    <th data-testid="sortable-head-cell" onClick={() => onSort(columnID)}>
-      {name}
-    </th>
+    <th onClick={() => onSort(columnID)}>{name}</th>
   ))
 );
 jest.mock('../table-body-cell/table-body-cell', () =>

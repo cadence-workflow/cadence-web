@@ -14,7 +14,7 @@ import TableBodyCell from '../table/table-body-cell/table-body-cell';
 import TableFooterMessage from '../table/table-footer-message/table-footer-message';
 import TableInfiniteScrollLoader from '../table/table-infinite-scroll-loader/table-infinite-scroll-loader';
 import TableRoot from '../table/table-root/table-root';
-import TableHeadCell from '../table/table-sortable-head-cell/table-head-cell';
+import TableHeadCell from '../table/table-head-cell/table-head-cell';
 
 import type { Props, TableConfig } from './table-virtualized.types';
 
