@@ -5,35 +5,27 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import queryString from 'query-string';
 
 import {
-  type RouteParams as ListWorkflowsRouteParams,
   type ListWorkflowsResponse,
   type ListWorkflowsRequestQueryParams,
 } from '@/route-handlers/list-workflows/list-workflows.types';
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
 
-import { type WorkflowsFiltersValues } from '../workflows-header/workflows-header.types';
+import { type UseListWorkflowsParams } from './use-list-workflows.types';
 
 export default function useListWorkflows({
   domain,
   cluster,
-  filtersValues,
   pageSize,
-}: ListWorkflowsRouteParams & {
-  filtersValues: WorkflowsFiltersValues;
-  pageSize: number;
-}) {
-  const {
-    inputType,
-    search,
-    status,
-    timeRangeStart,
-    timeRangeEnd,
-    sortColumn,
-    sortOrder,
-    query,
-  } = filtersValues;
-
+  inputType,
+  search,
+  status,
+  timeRangeStart,
+  timeRangeEnd,
+  sortColumn,
+  sortOrder,
+  query,
+}: UseListWorkflowsParams) {
   const requestQueryParams = {
     inputType,
     ...(inputType === 'query'

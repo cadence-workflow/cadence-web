@@ -15,17 +15,15 @@ export default function DomainWorkflowsHeader({ domain, cluster }: Props) {
   const { refetch, isFetching } = useListWorkflows({
     domain,
     cluster,
-    filtersValues: {
-      inputType: queryParams.inputType,
-      search: queryParams.search,
-      status: queryParams.status,
-      timeRangeStart: queryParams.timeRangeStart,
-      timeRangeEnd: queryParams.timeRangeEnd,
-      sortColumn: queryParams.sortColumn,
-      sortOrder: queryParams.sortOrder,
-      query: queryParams.query,
-    },
     pageSize: DOMAIN_WORKFLOWS_PAGE_SIZE,
+    inputType: queryParams.inputType,
+    search: queryParams.search,
+    status: queryParams.status,
+    timeRangeStart: queryParams.timeRangeStart,
+    timeRangeEnd: queryParams.timeRangeEnd,
+    sortColumn: queryParams.sortColumn,
+    sortOrder: queryParams.sortOrder,
+    query: queryParams.query,
   });
 
   return (

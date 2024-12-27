@@ -5,9 +5,6 @@ import {
   type PageQueryParams,
 } from '@/hooks/use-page-query-params/use-page-query-params.types';
 import { type ListWorkflowsRequestQueryParams } from '@/route-handlers/list-workflows/list-workflows.types';
-import { type SortOrder } from '@/utils/sort-by';
-
-import { type WorkflowStatus } from '../workflow-status-tag/workflow-status-tag.types';
 
 export type WorkflowsHeaderInputType =
   ListWorkflowsRequestQueryParams['inputType'];
@@ -29,15 +26,4 @@ export type Props<
     : never;
   refetchQuery: () => void;
   isQueryRunning: boolean;
-};
-
-export type WorkflowsFiltersValues = {
-  inputType: WorkflowsHeaderInputType;
-  search?: string;
-  status?: WorkflowStatus;
-  timeRangeStart?: Date;
-  timeRangeEnd?: Date;
-  sortColumn: string;
-  sortOrder: SortOrder;
-  query: string;
 };
