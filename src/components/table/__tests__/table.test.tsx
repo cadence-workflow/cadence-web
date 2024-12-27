@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { render, screen, fireEvent, act } from '@/test-utils/rtl';
+import { render, screen } from '@/test-utils/rtl';
 
 import Table from '../table';
 import { type EndMessageProps } from '../table.types';

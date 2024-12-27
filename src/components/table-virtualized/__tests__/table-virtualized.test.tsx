@@ -2,7 +2,7 @@ import React from 'react';
 
 import { VirtuosoMockContext } from 'react-virtuoso';
 
-import { render, screen, fireEvent, act, waitFor } from '@/test-utils/rtl';
+import { render, screen } from '@/test-utils/rtl';
 
 import { type EndMessageProps } from '@/components/table/table.types';
 
