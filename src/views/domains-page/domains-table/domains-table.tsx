@@ -2,10 +2,8 @@
 import React, { useMemo } from 'react';
 
 import PageSection from '@/components/page-section/page-section';
-import Table from '@/components/table/table';
 import TableVirtualized from '@/components/table-virtualized/table-virtualized';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
-import useStyletronClasses from '@/hooks/use-styletron-classes';
 import sortBy, {
   type SortByReturnValue,
   toggleSortOrder,
@@ -17,15 +15,12 @@ import domainsPageQueryParamsConfig from '../config/domains-page-query-params.co
 import domainsTableColumnsConfig from '../config/domains-table-columns.config';
 import type { DomainData } from '../domains-page.types';
 
-import { cssStyles } from './domains-table.styles';
 import { type Props } from './domains-table.types';
 
 function DomainsTable({
   domains,
   tableColumns = domainsTableColumnsConfig,
 }: Props) {
-  const { cls } = useStyletronClasses(cssStyles);
-
   const [queryParams, setQueryParams] = usePageQueryParams(
     domainsPageQueryParamsConfig,
     { pageRerender: false }
