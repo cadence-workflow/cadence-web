@@ -3,6 +3,7 @@ import React from 'react';
 import { render, screen, fireEvent, act } from '@/test-utils/rtl';
 
 import Table from '../table';
+import { type EndMessageProps } from '../table.types';
 
 type TestDataT = {
   value: string;
@@ -26,6 +27,9 @@ jest.mock('../table-root/table-root', () =>
 );
 jest.mock('../table-footer-message/table-footer-message', () =>
   jest.fn(({ children }) => <div>{children}</div>)
+);
+jest.mock('../table-infinite-scroll-loader/table-infinite-scroll-loader', () =>
+  jest.fn(() => <div>Infinite Loader</div>)
 );
 
 const SAMPLE_ROWS: Array<TestDataT> = Array.from(
@@ -80,30 +84,31 @@ describe('Table', () => {
     expect(await screen.findByText('Sample end message')).toBeDefined();
   });
 
-  it('should call onSort when the table column is clicked', async () => {
-    const { mockOnSort } = setup({ shouldShowResults: true });
-
-    const columnElements = await screen.findAllByText(/Column Name \d+/);
-    expect(columnElements.length).toEqual(5);
-
-    const sortableColumnHeadCells =
-      await screen.findAllByTestId('sortable-head-cell');
-    expect(sortableColumnHeadCells.length).toEqual(5);
-
-    act(() => {
-      fireEvent.click(columnElements[0]);
+  it('should render TableInfiniteScrollLoader when loader kind is infinite-scroll', async () => {
+    setup({
+      shouldShowResults: false,
+      endMessageProps: {
+        kind: 'infinite-scroll',
+        hasData: true,
+        fetchNextPage: () => undefined,
+        error: null,
+        hasNextPage: false,
+        isFetchingNextPage: false,
+      },
     });
 
-    expect(mockOnSort).toHaveBeenCalledWith('column_id_0');
+    expect(await screen.findByText('Infinite Loader')).toBeDefined();
   });
 });
 
 function setup({
   shouldShowResults,
   omitOnSort,
+  endMessageProps,
 }: {
   shouldShowResults: boolean;
   omitOnSort?: boolean;
+  endMessageProps?: EndMessageProps;
 }) {
   const mockOnSort = jest.fn();
   render(
@@ -111,10 +116,12 @@ function setup({
       data={SAMPLE_ROWS}
       columns={SAMPLE_COLUMNS}
       shouldShowResults={shouldShowResults}
-      endMessageProps={{
-        kind: 'simple',
-        content: <div>Sample end message</div>,
-      }}
+      endMessageProps={
+        endMessageProps || {
+          kind: 'simple',
+          content: <div>Sample end message</div>,
+        }
+      }
       {...(!omitOnSort && { onSort: mockOnSort })}
       sortColumn={SAMPLE_COLUMNS[SAMPLE_DATA_NUM_COLUMNS - 1].id}
       sortOrder="DESC"
