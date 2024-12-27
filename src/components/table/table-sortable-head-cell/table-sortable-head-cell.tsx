@@ -31,25 +31,31 @@ export default function TableSortableHeadCell({
       sortLabel = 'not sorted';
       break;
   }
-  const HeadCellComponent = isSortable
-    ? styled.SortableHeadCellRoot
-    : styled.HeadCellRoot;
-  const ariaLabel = isSortable ? `${name}, ${sortLabel}` : name;
+
+  if (isSortable) {
+    return (
+      <styled.SortableHeadCellRoot
+        $size="compact"
+        $divider="clean"
+        $width={width}
+        $isFocusVisible={false}
+        {...(onSort ? { onClick: () => onSort(columnID) } : null)}
+      >
+        <styled.HeaderContainer aria-label={`${name}, ${sortLabel}`}>
+          {name}
+          {columnID === sortColumn && SortIcon && (
+            <SortIcon size="16px" aria-hidden="true" role="presentation" />
+          )}
+        </styled.HeaderContainer>
+      </styled.SortableHeadCellRoot>
+    );
+  }
 
   return (
-    <HeadCellComponent
-      $size="compact"
-      $divider="clean"
-      $width={width}
-      $isFocusVisible={false}
-      {...(onSort && isSortable ? { onClick: () => onSort(columnID) } : null)}
-    >
-      <styled.HeaderContainer aria-label={ariaLabel}>
+    <styled.HeadCellRoot $size="compact" $divider="clean" $width={width}>
+      <styled.HeaderContainer aria-label={`${name}`}>
         {name}
-        {isSortable && columnID === sortColumn && SortIcon && (
-          <SortIcon size="16px" aria-hidden="true" role="presentation" />
-        )}
       </styled.HeaderContainer>
-    </HeadCellComponent>
+    </styled.HeadCellRoot>
   );
 }

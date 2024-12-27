@@ -53,34 +53,32 @@ function DomainsTable({
 
   return (
     <PageSection>
-      <section className={cls.tableContainer}>
-        <TableVirtualized
-          useWindowScroll
-          data={sortedDomains}
-          columns={tableColumns}
-          shouldShowResults={true}
-          onSort={(columnID) =>
-            setQueryParams({
-              sortColumn: columnID,
-              sortOrder: toggleSortOrder({
-                currentSortColumn: queryParams.sortColumn,
-                currentSortOrder: queryParams.sortOrder,
-                newSortColumn: columnID,
-              }),
-            })
-          }
-          sortColumn={queryParams.sortColumn}
-          sortOrder={queryParams.sortOrder as SortOrder}
-          endMessageProps={{
-            kind: 'infinite-scroll',
-            hasData: sortedDomains.length > 0,
-            hasNextPage: false,
-            fetchNextPage: () => {},
-            isFetchingNextPage: false,
-            error: null,
-          }}
-        />
-      </section>
+      <TableVirtualized
+        useWindowScroll
+        data={sortedDomains}
+        columns={tableColumns}
+        shouldShowResults={true}
+        onSort={(columnID) =>
+          setQueryParams({
+            sortColumn: columnID,
+            sortOrder: toggleSortOrder({
+              currentSortColumn: queryParams.sortColumn,
+              currentSortOrder: queryParams.sortOrder,
+              newSortColumn: columnID,
+            }),
+          })
+        }
+        sortColumn={queryParams.sortColumn}
+        sortOrder={queryParams.sortOrder as SortOrder}
+        endMessageProps={{
+          kind: 'infinite-scroll',
+          hasData: sortedDomains.length > 0,
+          hasNextPage: false,
+          fetchNextPage: () => {},
+          isFetchingNextPage: false,
+          error: null,
+        }}
+      />
     </PageSection>
   );
 }

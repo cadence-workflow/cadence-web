@@ -3,11 +3,7 @@ import type {
   StyletronCSSObjectOf,
 } from '@/hooks/use-styletron-classes';
 
-const cssStylesObj = {
-  tableContainer: {
-    //overflowX: 'auto',
-  },
-} satisfies StyletronCSSObject;
+const cssStylesObj = {} satisfies StyletronCSSObject;
 
 export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> =
   cssStylesObj;
