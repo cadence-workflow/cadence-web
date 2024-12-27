@@ -12,9 +12,9 @@ import { TableVirtuoso } from 'react-virtuoso';
 
 import TableBodyCell from '../table/table-body-cell/table-body-cell';
 import TableFooterMessage from '../table/table-footer-message/table-footer-message';
+import TableHeadCell from '../table/table-head-cell/table-head-cell';
 import TableInfiniteScrollLoader from '../table/table-infinite-scroll-loader/table-infinite-scroll-loader';
 import TableRoot from '../table/table-root/table-root';
-import TableHeadCell from '../table/table-head-cell/table-head-cell';
 
 import type { Props, TableConfig } from './table-virtualized.types';
 

@@ -10,9 +10,9 @@ import {
 
 import TableBodyCell from './table-body-cell/table-body-cell';
 import TableFooterMessage from './table-footer-message/table-footer-message';
+import TableHeadCell from './table-head-cell/table-head-cell';
 import TableInfiniteScrollLoader from './table-infinite-scroll-loader/table-infinite-scroll-loader';
 import TableRoot from './table-root/table-root';
-import TableHeadCell from './table-head-cell/table-head-cell';
 import type { Props, TableConfig } from './table.types';
 
 export default function Table<T extends object, C extends TableConfig<T>>({
