@@ -7,6 +7,7 @@ describe('getListWorkflowExecutionsQuery', () => {
       workflowStatus: 'WORKFLOW_EXECUTION_CLOSE_STATUS_TERMINATED',
       sortColumn: 'CloseTime',
       sortOrder: 'ASC',
+      timeColumn: 'StartTime',
       timeRangeStart: '1712066100000000',
       timeRangeEnd: '1712096100000000',
     });
@@ -18,6 +19,7 @@ describe('getListWorkflowExecutionsQuery', () => {
   it('should return query for running status', () => {
     const query = getListWorkflowExecutionsQuery({
       search: 'mocksearchterm',
+      timeColumn: 'StartTime',
       workflowStatus: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
     });
     expect(query).toEqual(
@@ -25,8 +27,8 @@ describe('getListWorkflowExecutionsQuery', () => {
     );
   });
 
-  it('should return default query with no params', () => {
-    const query = getListWorkflowExecutionsQuery({});
+  it('should return default query with no params except for time column', () => {
+    const query = getListWorkflowExecutionsQuery({ timeColumn: 'StartTime' });
     expect(query).toEqual('ORDER BY StartTime DESC');
   });
 });
