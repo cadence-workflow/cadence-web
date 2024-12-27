@@ -53,9 +53,7 @@ export default function TableHeadCell({
 
   return (
     <styled.HeadCellRoot $size="compact" $divider="clean" $width={width}>
-      <styled.HeaderContainer aria-label={`${name}`}>
-        {name}
-      </styled.HeaderContainer>
+      <styled.HeaderContainer aria-label={name}>{name}</styled.HeaderContainer>
     </styled.HeadCellRoot>
   );
 }
