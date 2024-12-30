@@ -31,6 +31,7 @@ export default function DomainWorkflowsTable({ domain, cluster }: Props) {
   } = useListWorkflows({
     domain,
     cluster,
+    listType: 'default',
     pageSize: DOMAIN_WORKFLOWS_PAGE_SIZE,
     inputType: queryParams.inputType,
     search: queryParams.search,
