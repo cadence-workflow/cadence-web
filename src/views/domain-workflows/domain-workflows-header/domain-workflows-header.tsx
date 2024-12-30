@@ -15,6 +15,7 @@ export default function DomainWorkflowsHeader({ domain, cluster }: Props) {
   const { refetch, isFetching } = useListWorkflows({
     domain,
     cluster,
+    listType: 'default',
     pageSize: DOMAIN_WORKFLOWS_PAGE_SIZE,
     inputType: queryParams.inputType,
     search: queryParams.search,
