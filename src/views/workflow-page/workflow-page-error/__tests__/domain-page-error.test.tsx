@@ -36,7 +36,7 @@ describe(WorkflowPageError.name, () => {
   it('renders "not found" error page correctly', () => {
     render(
       <WorkflowPageError
-        error={new RequestError('Could not find domain', 404)}
+        error={new RequestError('Could not find workflow', 404)}
         reset={() => {}}
       />
     );
