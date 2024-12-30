@@ -32,6 +32,7 @@ jest.mock(
       workflows: (props) => <MockedTabContent {...props} tab="workflows" />,
       metadata: (props) => <MockedTabContent {...props} tab="metadata" />,
       settings: (props) => <MockedTabContent {...props} tab="settings" />,
+      archival: (props) => <MockedTabContent {...props} tab="archival" />,
     }) as const satisfies DomainPageTabsContentConfig
 );
 
