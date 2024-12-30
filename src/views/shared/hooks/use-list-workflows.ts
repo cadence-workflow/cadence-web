@@ -17,15 +17,20 @@ export default function useListWorkflows({
   domain,
   cluster,
   pageSize,
-  inputType,
-  search,
-  status,
-  timeRangeStart,
-  timeRangeEnd,
-  sortColumn,
-  sortOrder,
-  query,
+  listType,
+  ...filtersValues
 }: UseListWorkflowsParams) {
+  const {
+    inputType,
+    search,
+    status,
+    timeRangeStart,
+    timeRangeEnd,
+    sortColumn,
+    sortOrder,
+    query,
+  } = filtersValues;
+
   const requestQueryParams = {
     inputType,
     ...(inputType === 'query'
@@ -53,7 +58,8 @@ export default function useListWorkflows({
           url: `/api/domains/${domain}/${cluster}/workflows`,
           query: {
             ...requestQueryParams,
-            listType: 'default',
+            listType: listType,
+            timeColumn: listType === 'archived' ? 'CloseTime' : 'StartTime',
             pageSize: pageSize.toString(),
             nextPage: pageParam as string,
           } as const satisfies ListWorkflowsRequestQueryParams,
