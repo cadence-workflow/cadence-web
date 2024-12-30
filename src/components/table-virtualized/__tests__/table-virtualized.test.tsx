@@ -1,9 +1,12 @@
 import React from 'react';
 
+import { VirtuosoMockContext } from 'react-virtuoso';
+
 import { render, screen } from '@/test-utils/rtl';
 
-import Table from '../table';
-import { type EndMessageProps } from '../table.types';
+import { type EndMessageProps } from '@/components/table/table.types';
+
+import TableVirtualized from '../table-virtualized';
 
 type TestDataT = {
   value: string;
@@ -12,24 +15,24 @@ type TestDataT = {
 const SAMPLE_DATA_NUM_ROWS = 10;
 const SAMPLE_DATA_NUM_COLUMNS = 5;
 
-jest.mock('../table-head-cell/table-head-cell', () =>
+jest.mock('../../table/table-head-cell/table-head-cell', () =>
   jest.fn(({ name, columnID, onSort }) => (
     <th onClick={() => onSort(columnID)}>{name}</th>
   ))
 );
-jest.mock('../table-body-cell/table-body-cell', () =>
+jest.mock('../../table/table-body-cell/table-body-cell', () =>
   jest.fn(({ children }) => <td>{children}</td>)
 );
-jest.mock('../table-root/table-root', () =>
+jest.mock('../../table/table-root/table-root', () =>
   jest.fn(({ children }) => <div>{children}</div>)
 );
-jest.mock('../table-footer-message/table-footer-message', () =>
+jest.mock('../../table/table-footer-message/table-footer-message', () =>
   jest.fn(({ children }) => <div>{children}</div>)
 );
-jest.mock('../table-infinite-scroll-loader/table-infinite-scroll-loader', () =>
-  jest.fn(() => <div>Infinite Loader</div>)
+jest.mock(
+  '../../table/table-infinite-scroll-loader/table-infinite-scroll-loader',
+  () => jest.fn(() => <div>Infinite Loader</div>)
 );
-
 const SAMPLE_ROWS: Array<TestDataT> = Array.from(
   { length: SAMPLE_DATA_NUM_ROWS },
   (_, rowIndex) => ({ value: `test_${rowIndex}` })
@@ -48,7 +51,7 @@ const SAMPLE_COLUMNS = Array.from(
   })
 );
 
-describe('Table', () => {
+describe('TableVirtualized', () => {
   it('should render without error', async () => {
     setup({ shouldShowResults: true });
 
@@ -110,7 +113,7 @@ function setup({
 }) {
   const mockOnSort = jest.fn();
   render(
-    <Table
+    <TableVirtualized
       data={SAMPLE_ROWS}
       columns={SAMPLE_COLUMNS}
       shouldShowResults={shouldShowResults}
@@ -123,7 +126,17 @@ function setup({
       {...(!omitOnSort && { onSort: mockOnSort })}
       sortColumn={SAMPLE_COLUMNS[SAMPLE_DATA_NUM_COLUMNS - 1].id}
       sortOrder="DESC"
-    />
+    />,
+    undefined,
+    {
+      wrapper: ({ children }) => (
+        <VirtuosoMockContext.Provider
+          value={{ viewportHeight: 1000, itemHeight: 100 }}
+        >
+          {children}
+        </VirtuosoMockContext.Provider>
+      ),
+    }
   );
   return { mockOnSort };
 }
