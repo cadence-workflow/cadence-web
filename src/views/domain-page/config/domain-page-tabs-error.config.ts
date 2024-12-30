@@ -13,6 +13,10 @@ const domainPageTabsErrorConfig: DomainPageTabsErrorConfig = {
     message: 'Failed to load settings',
     actions: [{ kind: 'retry', label: 'Retry' }],
   }),
+  archival: () => ({
+    message: 'Failed to load archival workflows',
+    actions: [{ kind: 'retry', label: 'Retry' }],
+  }),
 } as const;
 
 export default domainPageTabsErrorConfig;
