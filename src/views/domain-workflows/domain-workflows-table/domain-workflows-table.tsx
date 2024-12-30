@@ -3,15 +3,14 @@ import React from 'react';
 
 import ErrorPanel from '@/components/error-panel/error-panel';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
-import Table from '@/components/table/table';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
+import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
+import WorkflowsTable from '@/views/shared/workflows-table/workflows-table';
 
-import domainWorkflowsQueryTableConfig from '../config/domain-workflows-query-table.config';
-import domainWorkflowsSearchTableConfig from '../config/domain-workflows-search-table.config';
+import DOMAIN_WORKFLOWS_PAGE_SIZE from '../config/domain-workflows-page-size.config';
 import { type Props } from '../domain-workflows-table/domain-workflows-table.types';
 import getNextSortOrder from '../helpers/get-next-sort-order';
-import useListWorkflows from '../hooks/use-list-workflows';
 
 import { styled } from './domain-workflows-table.styles';
 import getWorkflowsErrorPanelProps from './helpers/get-workflows-error-panel-props';
@@ -21,8 +20,6 @@ export default function DomainWorkflowsTable({ domain, cluster }: Props) {
     domainPageQueryParamsConfig
   );
 
-  const inputType = queryParams.inputType;
-
   const {
     workflows,
     error,
@@ -31,7 +28,19 @@ export default function DomainWorkflowsTable({ domain, cluster }: Props) {
     fetchNextPage,
     isFetchingNextPage,
     refetch,
-  } = useListWorkflows({ domain, cluster });
+  } = useListWorkflows({
+    domain,
+    cluster,
+    pageSize: DOMAIN_WORKFLOWS_PAGE_SIZE,
+    inputType: queryParams.inputType,
+    search: queryParams.search,
+    status: queryParams.status,
+    timeRangeStart: queryParams.timeRangeStart,
+    timeRangeEnd: queryParams.timeRangeEnd,
+    sortColumn: queryParams.sortColumn,
+    sortOrder: queryParams.sortOrder,
+    query: queryParams.query,
+  });
 
   if (isLoading) {
     return <SectionLoadingIndicator />;
@@ -39,7 +48,7 @@ export default function DomainWorkflowsTable({ domain, cluster }: Props) {
 
   if (workflows.length === 0) {
     const errorPanelProps = getWorkflowsErrorPanelProps({
-      inputType,
+      inputType: queryParams.inputType,
       error,
       areSearchParamsAbsent:
         !queryParams.search &&
@@ -58,36 +67,30 @@ export default function DomainWorkflowsTable({ domain, cluster }: Props) {
   }
 
   return (
-    <Table
-      data={workflows}
-      shouldShowResults={!isLoading && workflows.length > 0}
-      endMessageProps={{
-        kind: 'infinite-scroll',
-        hasData: workflows.length > 0,
-        error,
-        fetchNextPage,
-        hasNextPage,
-        isFetchingNextPage,
-      }}
-      {...(inputType === 'query'
-        ? {
-            columns: domainWorkflowsQueryTableConfig,
-          }
-        : {
-            columns: domainWorkflowsSearchTableConfig,
-            onSort: (column) => {
-              setQueryParams({
-                sortColumn: column,
-                sortOrder: getNextSortOrder({
-                  currentColumn: queryParams.sortColumn,
-                  nextColumn: column,
-                  currentSortOrder: queryParams.sortOrder,
+    <WorkflowsTable
+      workflows={workflows}
+      isLoading={isLoading}
+      error={error}
+      hasNextPage={hasNextPage}
+      fetchNextPage={fetchNextPage}
+      isFetchingNextPage={isFetchingNextPage}
+      sortParams={
+        queryParams.inputType === 'search'
+          ? {
+              onSort: (column: string) =>
+                setQueryParams({
+                  sortColumn: column,
+                  sortOrder: getNextSortOrder({
+                    currentColumn: queryParams.sortColumn,
+                    nextColumn: column,
+                    currentSortOrder: queryParams.sortOrder,
+                  }),
                 }),
-              });
-            },
-            sortColumn: queryParams.sortColumn,
-            sortOrder: queryParams.sortOrder,
-          })}
+              sortColumn: queryParams.sortColumn,
+              sortOrder: queryParams.sortOrder,
+            }
+          : undefined
+      }
     />
   );
 }

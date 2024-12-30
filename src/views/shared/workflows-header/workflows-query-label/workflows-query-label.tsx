@@ -11,11 +11,11 @@ import { MdCopyAll, MdInfoOutline, MdOpenInNew } from 'react-icons/md';
 
 import CopyTextButton from '@/components/copy-text-button/copy-text-button';
 
-import domainWorkflowsQueryTooltipConfig from '../config/domain-workflows-query-tooltip.config';
+import workflowsQueryTooltipConfig from '../config/workflows-query-tooltip.config';
 
-import { overrides, styled } from './domain-workflows-query-label.styles';
+import { overrides, styled } from './workflows-query-label.styles';
 
-export default function DomainWorkflowsQueryLabel() {
+export default function WorkflowsQueryLabel() {
   return (
     <styled.LabelContainer>
       <div>Query</div>
@@ -27,14 +27,14 @@ export default function DomainWorkflowsQueryLabel() {
           <styled.TooltipContentContainer>
             <styled.TooltipHeader>
               <styled.TooltipTitle>
-                {domainWorkflowsQueryTooltipConfig.title}
+                {workflowsQueryTooltipConfig.title}
               </styled.TooltipTitle>
               <styled.TooltipText>
-                {domainWorkflowsQueryTooltipConfig.subtitle}
+                {workflowsQueryTooltipConfig.subtitle}
               </styled.TooltipText>
             </styled.TooltipHeader>
             <styled.SupportedOperatorsContainer>
-              {domainWorkflowsQueryTooltipConfig.supportedOperators.map(
+              {workflowsQueryTooltipConfig.supportedOperators.map(
                 (operator) => (
                   <styled.SupportedOperator key={operator}>
                     {operator}
@@ -43,12 +43,12 @@ export default function DomainWorkflowsQueryLabel() {
               )}
             </styled.SupportedOperatorsContainer>
             <styled.TooltipText>
-              {domainWorkflowsQueryTooltipConfig.docsCta}
+              {workflowsQueryTooltipConfig.docsCta}
             </styled.TooltipText>
             <styled.TooltipTitle>
-              {domainWorkflowsQueryTooltipConfig.exampleQueriesTitle}
+              {workflowsQueryTooltipConfig.exampleQueriesTitle}
             </styled.TooltipTitle>
-            {domainWorkflowsQueryTooltipConfig.exampleQueries.map((query) => (
+            {workflowsQueryTooltipConfig.exampleQueries.map((query) => (
               <styled.QueryContainer key={query.label}>
                 <styled.QueryLabel>{query.label}</styled.QueryLabel>
                 <styled.QueryText>
@@ -69,12 +69,12 @@ export default function DomainWorkflowsQueryLabel() {
               size={SIZE.mini}
               overrides={overrides.docsLinkButton}
               $as="a"
-              href={domainWorkflowsQueryTooltipConfig.docsLink}
+              href={workflowsQueryTooltipConfig.docsLink}
               target="_blank"
               rel="noreferrer"
               endEnhancer={<MdOpenInNew />}
             >
-              {domainWorkflowsQueryTooltipConfig.docsButtonText}
+              {workflowsQueryTooltipConfig.docsButtonText}
             </Button>
           </styled.TooltipContentContainer>
         )}

@@ -5,10 +5,10 @@ import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 import { type Props as LoaderProps } from '@/components/table/table-infinite-scroll-loader/table-infinite-scroll-loader.types';
 import * as usePageQueryParamsModule from '@/hooks/use-page-query-params/use-page-query-params';
 import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list-workflows.types';
+import { type WorkflowsHeaderInputType } from '@/views/shared/workflows-header/workflows-header.types';
 
 import type { Props as MSWMocksHandlersProps } from '../../../../test-utils/msw-mock-handlers/msw-mock-handlers.types';
 import { mockDomainPageQueryParamsValues } from '../../../domain-page/__fixtures__/domain-page-query-params';
-import { type DomainWorkflowsHeaderInputType } from '../../domain-workflows-header/domain-workflows-header.types';
 import DomainWorkflowsTable from '../domain-workflows-table';
 
 jest.mock('@/components/error-panel/error-panel', () =>
@@ -24,7 +24,7 @@ jest.mock('../helpers/get-workflows-error-panel-props', () =>
         inputType,
       }: {
         error: Error;
-        inputType: DomainWorkflowsHeaderInputType;
+        inputType: WorkflowsHeaderInputType;
       }) => {
         if (inputType === 'query') {
           return {
