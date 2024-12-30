@@ -2,7 +2,6 @@
 import React from 'react';
 
 import ErrorPanel from '@/components/error-panel/error-panel';
-import PanelSection from '@/components/panel-section/panel-section';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import { toggleSortOrder } from '@/utils/sort-by';
@@ -10,12 +9,16 @@ import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-
 import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
 import WorkflowsTable from '@/views/shared/workflows-table/workflows-table';
 
-import DOMAIN_WORKFLOWS_PAGE_SIZE from '../config/domain-workflows-page-size.config';
+import DOMAIN_WORKFLOWS_ARCHIVAL_PAGE_SIZE from '../config/domain-workflows-archival-page-size.config';
 
-import { type Props } from './domain-workflows-table.types';
-import getWorkflowsErrorPanelProps from './helpers/get-workflows-error-panel-props';
+import { styled } from './domain-workflows-archival-table.styles';
+import { type Props } from './domain-workflows-archival-table.types';
+import getArchivalErrorPanelProps from './helpers/get-archival-error-panel-props';
 
-export default function DomainWorkflowsTable({ domain, cluster }: Props) {
+export default function DomainWorkflowsArchivalTable({
+  domain,
+  cluster,
+}: Props) {
   const [queryParams, setQueryParams] = usePageQueryParams(
     domainPageQueryParamsConfig
   );
@@ -31,40 +34,34 @@ export default function DomainWorkflowsTable({ domain, cluster }: Props) {
   } = useListWorkflows({
     domain,
     cluster,
-    listType: 'default',
-    pageSize: DOMAIN_WORKFLOWS_PAGE_SIZE,
-    inputType: queryParams.inputType,
-    search: queryParams.search,
-    status: queryParams.status,
-    timeRangeStart: queryParams.timeRangeStart,
-    timeRangeEnd: queryParams.timeRangeEnd,
-    sortColumn: queryParams.sortColumn,
-    sortOrder: queryParams.sortOrder,
-    query: queryParams.query,
+    listType: 'archived',
+    pageSize: DOMAIN_WORKFLOWS_ARCHIVAL_PAGE_SIZE,
+    inputType: queryParams.inputTypeArchival,
+    search: queryParams.searchArchival,
+    status: queryParams.statusArchival,
+    timeRangeStart: queryParams.timeRangeStartArchival,
+    timeRangeEnd: queryParams.timeRangeEndArchival,
+    sortColumn: queryParams.sortColumnArchival,
+    sortOrder: queryParams.sortOrderArchival,
+    query: queryParams.queryArchival,
   });
 
   if (isLoading) {
     return <SectionLoadingIndicator />;
   }
 
-  if (workflows.length === 0) {
-    const errorPanelProps = getWorkflowsErrorPanelProps({
-      inputType: queryParams.inputType,
-      error,
-      areSearchParamsAbsent:
-        !queryParams.search &&
-        !queryParams.status &&
-        !queryParams.timeRangeStart &&
-        !queryParams.timeRangeEnd,
-    });
-
-    if (errorPanelProps) {
-      return (
-        <PanelSection>
-          <ErrorPanel {...errorPanelProps} reset={refetch} />
-        </PanelSection>
-      );
-    }
+  if (workflows.length === 0 && error) {
+    return (
+      <styled.ErrorPanelContainer>
+        <ErrorPanel
+          {...getArchivalErrorPanelProps({
+            inputType: queryParams.inputTypeArchival,
+            error,
+          })}
+          reset={refetch}
+        />
+      </styled.ErrorPanelContainer>
+    );
   }
 
   return (
@@ -76,20 +73,20 @@ export default function DomainWorkflowsTable({ domain, cluster }: Props) {
       fetchNextPage={fetchNextPage}
       isFetchingNextPage={isFetchingNextPage}
       sortParams={
-        queryParams.inputType === 'search'
+        queryParams.inputTypeArchival === 'search'
           ? {
               onSort: (column: string) =>
                 setQueryParams({
                   sortColumn: column,
                   sortOrder: toggleSortOrder({
-                    currentSortColumn: queryParams.sortColumn,
-                    currentSortOrder: queryParams.sortOrder,
+                    currentSortColumn: queryParams.sortColumnArchival,
+                    currentSortOrder: queryParams.sortOrderArchival,
                     newSortColumn: column,
                     defaultSortOrder: 'DESC',
                   }),
                 }),
-              sortColumn: queryParams.sortColumn,
-              sortOrder: queryParams.sortOrder,
+              sortColumn: queryParams.sortColumnArchival,
+              sortOrder: queryParams.sortOrderArchival,
             }
           : undefined
       }

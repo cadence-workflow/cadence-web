@@ -19,6 +19,11 @@ jest.mock(
   () => jest.fn(() => <div>Mock archival disabled panel</div>)
 );
 
+jest.mock(
+  '../domain-workflows-archival-table/domain-workflows-archival-table',
+  () => jest.fn(() => <div>Mock archival table</div>)
+);
+
 describe(DomainWorkflowsArchival.name, () => {
   it('renders without error and shows archival disabled page', async () => {
     await setup({});
@@ -32,6 +37,7 @@ describe(DomainWorkflowsArchival.name, () => {
     await setup({ isArchivalEnabled: true });
 
     expect(await screen.findByText('Mock archival header')).toBeInTheDocument();
+    expect(await screen.findByText('Mock archival table')).toBeInTheDocument();
   });
 
   it('does not render if the initial call fails', async () => {
