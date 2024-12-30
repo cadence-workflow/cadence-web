@@ -54,8 +54,8 @@ export default function WorkflowsHeader<
               {
                 [inputTypeQueryParamKey]:
                   activeKey === 'query' ? 'query' : 'search',
-              } as Partial<PageQueryParamSetterValues<P>>,
-              { replace: false, pageRerender: true }
+              } as Partial<PageQueryParamSetterValues<P>>
+              // { replace: false, pageRerender: true }
             );
           }}
           overrides={overrides.inputToggle}

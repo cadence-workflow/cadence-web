@@ -106,10 +106,7 @@ describe(WorkflowsHeader.name, () => {
     const queryButton = await screen.findByText('Query');
     await user.click(queryButton);
 
-    expect(mockSetQueryParams).toHaveBeenCalledWith(
-      { inputType: 'query' },
-      { pageRerender: true, replace: false }
-    );
+    expect(mockSetQueryParams).toHaveBeenCalledWith({ inputType: 'query' });
   });
 });
 
