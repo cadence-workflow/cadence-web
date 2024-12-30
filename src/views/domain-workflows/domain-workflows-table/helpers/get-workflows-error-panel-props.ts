@@ -1,14 +1,13 @@
 import { type Props as ErrorPanelProps } from '@/components/error-panel/error-panel.types';
 import { type RequestError } from '@/utils/request/request-error';
-
-import { type DomainWorkflowsHeaderInputType } from '../../domain-workflows-header/domain-workflows-header.types';
+import { type WorkflowsHeaderInputType } from '@/views/shared/workflows-header/workflows-header.types';
 
 export default function getWorkflowsErrorPanelProps({
   inputType,
   error,
   areSearchParamsAbsent,
 }: {
-  inputType: DomainWorkflowsHeaderInputType;
+  inputType: WorkflowsHeaderInputType;
   error: RequestError | null;
   areSearchParamsAbsent: boolean;
 }): ErrorPanelProps | undefined {
