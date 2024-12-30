@@ -2,9 +2,9 @@ import React from 'react';
 
 import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
-import DomainWorkflowsQueryInput from '../domain-workflows-query-input';
+import WorkflowsQueryInput from '../workflows-query-input';
 
-describe(DomainWorkflowsQueryInput.name, () => {
+describe(WorkflowsQueryInput.name, () => {
   it('renders as expected', async () => {
     setup({});
 
@@ -68,7 +68,7 @@ function setup({
   const mockRefetch = jest.fn();
   const user = userEvent.setup();
   render(
-    <DomainWorkflowsQueryInput
+    <WorkflowsQueryInput
       value={startValue ?? ''}
       setValue={mockSetValue}
       refetchQuery={mockRefetch}

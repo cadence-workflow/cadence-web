@@ -1,6 +1,6 @@
-import { type DomainWorkflowsQueryTooltipConfig } from '../domain-workflows-query-label/domain-workflows-query-label.types';
+import { type WorkflowsQueryTooltipConfig } from '../workflows-query-label/workflows-query-label.types';
 
-const domainWorkflowsQueryTooltipConfig = {
+const workflowsQueryTooltipConfig = {
   title: 'Query for Workflows',
   subtitle: `Queries allow you to perform targeted searches that
   go beyond the capabilities of the search UI. We support the following operators:`,
@@ -26,6 +26,6 @@ const domainWorkflowsQueryTooltipConfig = {
   docsButtonText: 'Check out the docs',
   docsLink:
     'https://cadenceworkflow.io/docs/concepts/search-workflows/#query-capabilities',
-} as const satisfies DomainWorkflowsQueryTooltipConfig;
+} as const satisfies WorkflowsQueryTooltipConfig;
 
-export default domainWorkflowsQueryTooltipConfig;
+export default workflowsQueryTooltipConfig;

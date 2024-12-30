@@ -5,9 +5,9 @@ import Link from '@/components/link/link';
 import { type DomainWorkflow } from '@/views/domain-page/domain-page.types';
 import WorkflowStatusTag from '@/views/shared/workflow-status-tag/workflow-status-tag';
 
-import { type DomainWorkflowsQueryTableConfig } from '../domain-workflows-table/domain-workflows-table.types';
+import { type WorkflowsTableNonSortableConfig } from '../workflows-table.types';
 
-const domainWorkflowsQueryTableConfig = [
+const workflowsTableNonSortableConfig = [
   {
     name: 'Workflow ID',
     id: 'WorkflowID',
@@ -54,6 +54,6 @@ const domainWorkflowsQueryTableConfig = [
       createElement(FormattedDate, { timestampMs: row.closeTime }),
     width: '12.5%',
   },
-] as const satisfies DomainWorkflowsQueryTableConfig;
+] as const satisfies WorkflowsTableNonSortableConfig;
 
-export default domainWorkflowsQueryTableConfig;
+export default workflowsTableNonSortableConfig;

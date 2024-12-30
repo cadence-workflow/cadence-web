@@ -1,14 +1,14 @@
 import { type PageQueryParam } from '@/hooks/use-page-query-params/use-page-query-params.types';
 import parseDateQueryParam from '@/utils/datetime/parse-date-query-param';
 import { type SortOrder } from '@/utils/sort-by';
-import { type DomainWorkflowsHeaderInputType } from '@/views/domain-workflows/domain-workflows-header/domain-workflows-header.types';
 import { type WorkflowStatusBasicVisibility } from '@/views/domain-workflows-basic/domain-workflows-basic-filters-status/domain-workflows-basic-filters-status.types';
 import isWorkflowStatusBasicVisibility from '@/views/domain-workflows-basic/domain-workflows-basic-filters-status/helpers/is-workflow-status-basic-visibility';
 import isWorkflowStatus from '@/views/shared/workflow-status-tag/helpers/is-workflow-status';
 import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
+import { type WorkflowsHeaderInputType } from '@/views/shared/workflows-header/workflows-header.types';
 
 const domainPageQueryParamsConfig: [
-  PageQueryParam<'inputType', DomainWorkflowsHeaderInputType>,
+  PageQueryParam<'inputType', WorkflowsHeaderInputType>,
   // Search input
   PageQueryParam<'search', string>,
   PageQueryParam<'status', WorkflowStatus | undefined>,
