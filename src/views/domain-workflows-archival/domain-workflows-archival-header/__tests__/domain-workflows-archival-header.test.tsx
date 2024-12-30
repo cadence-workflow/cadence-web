@@ -41,6 +41,9 @@ describe(DomainWorkflowsArchivalHeader.name, () => {
       />
     );
 
-    expect(mockSetQueryParams).toHaveBeenCalledWith('test');
+    expect(mockSetQueryParams).toHaveBeenCalledWith({
+      timeRangeStartArchival: '2023-05-15T00:00:00.000Z',
+      timeRangeEndArchival: '2023-05-25T00:00:00.000Z',
+    });
   });
 });
