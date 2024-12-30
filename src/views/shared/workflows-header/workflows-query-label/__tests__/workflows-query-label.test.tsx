@@ -2,15 +2,15 @@ import React from 'react';
 
 import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
-import DomainWorkflowsQueryLabel from '../domain-workflows-query-label';
-import { type DomainWorkflowsQueryTooltipConfig } from '../domain-workflows-query-label.types';
+import DomainWorkflowsQueryLabel from '../workflows-query-label';
+import { type WorkflowsQueryTooltipConfig } from '../workflows-query-label.types';
 
 jest.mock('@/components/copy-text-button/copy-text-button', () =>
   jest.fn(({ textToCopy }) => <div>Copy Button: {textToCopy}</div>)
 );
 
 jest.mock(
-  '../../config/domain-workflows-query-tooltip.config',
+  '../../config/workflows-query-tooltip.config',
   () =>
     ({
       title: 'Mock queries title',
@@ -26,7 +26,7 @@ jest.mock(
       ],
       docsButtonText: 'Mock docs button',
       docsLink: 'https://mock.docs-button.link',
-    }) satisfies DomainWorkflowsQueryTooltipConfig
+    }) satisfies WorkflowsQueryTooltipConfig
 );
 
 describe(DomainWorkflowsQueryLabel.name, () => {

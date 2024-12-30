@@ -4,38 +4,41 @@ import { useMemo } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import queryString from 'query-string';
 
-import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import {
   type ListWorkflowsResponse,
   type ListWorkflowsRequestQueryParams,
 } from '@/route-handlers/list-workflows/list-workflows.types';
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
-import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
 
-import DOMAIN_WORKFLOWS_PAGE_SIZE from '../config/domain-workflows-page-size.config';
-import { type UseListWorkflowsParams } from '../domain-workflows.types';
+import { type UseListWorkflowsParams } from './use-list-workflows.types';
 
 export default function useListWorkflows({
   domain,
   cluster,
-  pageSize = DOMAIN_WORKFLOWS_PAGE_SIZE,
+  pageSize,
+  inputType,
+  search,
+  status,
+  timeRangeStart,
+  timeRangeEnd,
+  sortColumn,
+  sortOrder,
+  query,
 }: UseListWorkflowsParams) {
-  const [queryParams] = usePageQueryParams(domainPageQueryParamsConfig);
-
   const requestQueryParams = {
-    inputType: queryParams.inputType,
-    ...(queryParams.inputType === 'query'
+    inputType,
+    ...(inputType === 'query'
       ? {
-          query: queryParams.query,
+          query,
         }
       : {
-          search: queryParams.search,
-          status: queryParams.status,
-          sortColumn: queryParams.sortColumn,
-          sortOrder: queryParams.sortOrder,
-          timeRangeStart: queryParams.timeRangeStart?.toISOString(),
-          timeRangeEnd: queryParams.timeRangeEnd?.toISOString(),
+          search,
+          status,
+          sortColumn,
+          sortOrder,
+          timeRangeStart: timeRangeStart?.toISOString(),
+          timeRangeEnd: timeRangeEnd?.toISOString(),
         }),
   };
 
