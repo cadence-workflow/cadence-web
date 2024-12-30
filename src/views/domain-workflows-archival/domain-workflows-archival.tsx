@@ -22,7 +22,10 @@ export default function DomainWorkflowsArchival(
       ),
   });
 
-  if (!historyArchivalStatus || !visibilityArchivalStatus) {
+  if (
+    historyArchivalStatus !== 'ARCHIVAL_STATUS_ENABLED' ||
+    visibilityArchivalStatus !== 'ARCHIVAL_STATUS_ENABLED'
+  ) {
     // TODO: archival landing page
     return <div>Archival disabled</div>;
   }
