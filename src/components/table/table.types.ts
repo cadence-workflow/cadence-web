@@ -20,7 +20,7 @@ type AreAnyColumnsSortable<T, C extends TableConfig<T>> = true extends {
   ? true
   : false;
 
-type EndMessageProps =
+export type EndMessageProps =
   | {
       kind: 'simple';
       content: React.ReactNode;
@@ -29,7 +29,7 @@ type EndMessageProps =
       kind: 'infinite-scroll';
     } & InfiniteScrollLoaderProps);
 
-type OnSortFunctionOptional<T, C extends TableConfig<T>> =
+export type OnSortFunctionOptional<T, C extends TableConfig<T>> =
   AreAnyColumnsSortable<T, C> extends true
     ? { onSort: (column: string) => void }
     : { onSort?: (column: string) => void };

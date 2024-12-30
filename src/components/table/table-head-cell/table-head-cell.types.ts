@@ -6,5 +6,6 @@ export type Props = {
   width: string;
   sortColumn?: string;
   sortOrder?: SortOrder;
-  onSort: (column: string) => void;
+  isSortable?: boolean;
+  onSort?: (column: string) => void;
 };
