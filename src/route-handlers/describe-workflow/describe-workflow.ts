@@ -122,21 +122,39 @@ export default async function describeWorkflow(
       };
       return NextResponse.json(res);
     } catch (e) {
-      logger.error<RouteHandlerErrorPayload>(
-        { requestParams: decodedParams, cause: e },
-        'Error fetching workflow execution info'
-      );
+      // skips logs for NotFound errors
+      // treat 400 responses for requesting unconfigured archives as 404
+      if (
+        e instanceof GRPCError &&
+        (e.httpStatusCode === 404 ||
+          (e.httpStatusCode === 400 &&
+            e.message ===
+              'Requested workflow history not found, may have passed retention period.'))
+      ) {
+        return NextResponse.json(
+          {
+            message: 'Requested workflow history not found',
+            cause: e,
+          },
+          { status: 404 }
+        );
+      } else {
+        logger.error<RouteHandlerErrorPayload>(
+          { requestParams: decodedParams, cause: e },
+          'Error fetching workflow execution info'
+        );
 
-      return NextResponse.json(
-        {
-          message:
-            e instanceof GRPCError
-              ? e.message
-              : 'Error fetching workflow execution info',
-          cause: e,
-        },
-        { status: getHTTPStatusCode(e) }
-      );
+        return NextResponse.json(
+          {
+            message:
+              e instanceof GRPCError
+                ? e.message
+                : 'Error fetching workflow execution info',
+            cause: e,
+          },
+          { status: getHTTPStatusCode(e) }
+        );
+      }
     }
   }
 }
