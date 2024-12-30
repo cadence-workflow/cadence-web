@@ -1,8 +1,20 @@
 import { styled as createStyled, withStyle } from 'baseui';
-import { StyledTableHeadCellSortable } from 'baseui/table-semantic';
+import {
+  StyledTableHeadCell,
+  StyledTableHeadCellSortable,
+} from 'baseui/table-semantic';
 
 export const styled = {
-  SortableHeaderContainer: createStyled('div', ({ $theme }) => ({
+  HeadCellRoot: withStyle<typeof StyledTableHeadCell, { $width: string }>(
+    StyledTableHeadCell,
+    ({ $theme, $width }) => ({
+      ...$theme.typography.LabelXSmall,
+      width: $width,
+      color: '#5E5E5E',
+      position: 'static',
+    })
+  ),
+  HeaderContainer: createStyled('div', ({ $theme }) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -15,5 +27,6 @@ export const styled = {
     ...$theme.typography.LabelXSmall,
     width: $width,
     color: '#5E5E5E',
+    position: 'static',
   })),
 };

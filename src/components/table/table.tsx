@@ -8,9 +8,11 @@ import {
   StyledTableBodyRow,
 } from 'baseui/table-semantic';
 
+import TableBodyCell from './table-body-cell/table-body-cell';
+import TableFooterMessage from './table-footer-message/table-footer-message';
+import TableHeadCell from './table-head-cell/table-head-cell';
 import TableInfiniteScrollLoader from './table-infinite-scroll-loader/table-infinite-scroll-loader';
-import TableSortableHeadCell from './table-sortable-head-cell/table-sortable-head-cell';
-import { styled } from './table.styles';
+import TableRoot from './table-root/table-root';
 import type { Props, TableConfig } from './table.types';
 
 export default function Table<T extends object, C extends TableConfig<T>>({
@@ -23,32 +25,22 @@ export default function Table<T extends object, C extends TableConfig<T>>({
   sortOrder,
 }: Props<T, C>) {
   return (
-    <styled.TableRoot>
+    <TableRoot>
       <StyledTable>
         <StyledTableHead>
           <StyledTableHeadRow>
-            {columns.map((column) =>
-              column.sortable && typeof onSort === 'function' ? (
-                <TableSortableHeadCell
-                  key={column.id}
-                  name={column.name}
-                  columnID={column.id}
-                  width={column.width}
-                  onSort={onSort}
-                  sortColumn={sortColumn}
-                  sortOrder={sortOrder}
-                />
-              ) : (
-                <styled.TableHeadCell
-                  $size="compact"
-                  $divider="clean"
-                  $width={column.width}
-                  key={column.id}
-                >
-                  {column.name}
-                </styled.TableHeadCell>
-              )
-            )}
+            {columns.map((column) => (
+              <TableHeadCell
+                key={column.id}
+                name={column.name}
+                columnID={column.id}
+                width={column.width}
+                onSort={onSort}
+                sortColumn={sortColumn}
+                sortOrder={sortOrder}
+                isSortable={Boolean(column.sortable)}
+              />
+            ))}
           </StyledTableHeadRow>
         </StyledTableHead>
         <StyledTableBody>
@@ -57,30 +49,30 @@ export default function Table<T extends object, C extends TableConfig<T>>({
               <StyledTableBodyRow key={rowIndex}>
                 {columns.map((column) => {
                   return (
-                    <styled.TableBodyCell
+                    <TableBodyCell
                       $size="compact"
                       $divider="clean"
                       key={`${column.id}-${rowIndex}`}
                     >
                       {<column.renderCell {...row} />}
-                    </styled.TableBodyCell>
+                    </TableBodyCell>
                   );
                 })}
               </StyledTableBodyRow>
             ))}
           <tr>
             <td colSpan={columns.length}>
-              <styled.TableMessage>
+              <TableFooterMessage>
                 {endMessageProps.kind === 'infinite-scroll' ? (
                   <TableInfiniteScrollLoader {...endMessageProps} />
                 ) : (
                   <>{endMessageProps.content}</>
                 )}
-              </styled.TableMessage>
+              </TableFooterMessage>
             </td>
           </tr>
         </StyledTableBody>
       </StyledTable>
-    </styled.TableRoot>
+    </TableRoot>
   );
 }

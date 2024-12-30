@@ -58,38 +58,36 @@ export default function DomainWorkflowsTable({ domain, cluster }: Props) {
   }
 
   return (
-    <styled.TableContainer>
-      <Table
-        data={workflows}
-        shouldShowResults={!isLoading && workflows.length > 0}
-        endMessageProps={{
-          kind: 'infinite-scroll',
-          hasData: workflows.length > 0,
-          error,
-          fetchNextPage,
-          hasNextPage,
-          isFetchingNextPage,
-        }}
-        {...(inputType === 'query'
-          ? {
-              columns: domainWorkflowsQueryTableConfig,
-            }
-          : {
-              columns: domainWorkflowsSearchTableConfig,
-              onSort: (column) => {
-                setQueryParams({
-                  sortColumn: column,
-                  sortOrder: getNextSortOrder({
-                    currentColumn: queryParams.sortColumn,
-                    nextColumn: column,
-                    currentSortOrder: queryParams.sortOrder,
-                  }),
-                });
-              },
-              sortColumn: queryParams.sortColumn,
-              sortOrder: queryParams.sortOrder,
-            })}
-      />
-    </styled.TableContainer>
+    <Table
+      data={workflows}
+      shouldShowResults={!isLoading && workflows.length > 0}
+      endMessageProps={{
+        kind: 'infinite-scroll',
+        hasData: workflows.length > 0,
+        error,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+      }}
+      {...(inputType === 'query'
+        ? {
+            columns: domainWorkflowsQueryTableConfig,
+          }
+        : {
+            columns: domainWorkflowsSearchTableConfig,
+            onSort: (column) => {
+              setQueryParams({
+                sortColumn: column,
+                sortOrder: getNextSortOrder({
+                  currentColumn: queryParams.sortColumn,
+                  nextColumn: column,
+                  currentSortOrder: queryParams.sortOrder,
+                }),
+              });
+            },
+            sortColumn: queryParams.sortColumn,
+            sortOrder: queryParams.sortOrder,
+          })}
+    />
   );
 }
