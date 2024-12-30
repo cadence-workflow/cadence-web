@@ -50,13 +50,10 @@ export default function WorkflowsHeader<
         <SegmentedControl
           activeKey={inputType}
           onChange={({ activeKey }) => {
-            setQueryParams(
-              {
-                [inputTypeQueryParamKey]:
-                  activeKey === 'query' ? 'query' : 'search',
-              } as Partial<PageQueryParamSetterValues<P>>
-              // { replace: false, pageRerender: true }
-            );
+            setQueryParams({
+              [inputTypeQueryParamKey]:
+                activeKey === 'query' ? 'query' : 'search',
+            } as Partial<PageQueryParamSetterValues<P>>);
           }}
           overrides={overrides.inputToggle}
         >
