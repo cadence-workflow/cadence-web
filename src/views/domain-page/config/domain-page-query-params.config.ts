@@ -22,6 +22,15 @@ const domainPageQueryParamsConfig: [
   PageQueryParam<'workflowId', string>,
   PageQueryParam<'workflowType', string>,
   PageQueryParam<'statusBasic', WorkflowStatusBasicVisibility | undefined>,
+  // Archival inputs
+  PageQueryParam<'inputTypeArchival', WorkflowsHeaderInputType>,
+  PageQueryParam<'searchArchival', string>,
+  PageQueryParam<'statusArchival', WorkflowStatus | undefined>,
+  PageQueryParam<'timeRangeStartArchival', Date | undefined>,
+  PageQueryParam<'timeRangeEndArchival', Date | undefined>,
+  PageQueryParam<'sortColumnArchival', string>,
+  PageQueryParam<'sortOrderArchival', SortOrder>,
+  PageQueryParam<'queryArchival', string>,
 ] = [
   {
     key: 'inputType',
@@ -76,6 +85,49 @@ const domainPageQueryParamsConfig: [
     queryParamKey: 'status',
     parseValue: (value: string) =>
       isWorkflowStatusBasicVisibility(value) ? value : undefined,
+  },
+  {
+    key: 'inputTypeArchival',
+    queryParamKey: 'ainput',
+    defaultValue: 'search',
+    parseValue: (value: string) => (value === 'query' ? 'query' : 'search'),
+  },
+  {
+    key: 'searchArchival',
+    queryParamKey: 'asearch',
+    defaultValue: '',
+  },
+  {
+    key: 'statusArchival',
+    queryParamKey: 'astatus',
+    parseValue: (value: string) =>
+      isWorkflowStatus(value) ? value : undefined,
+  },
+  {
+    key: 'timeRangeStartArchival',
+    queryParamKey: 'astart',
+    parseValue: parseDateQueryParam,
+  },
+  {
+    key: 'timeRangeEndArchival',
+    queryParamKey: 'aend',
+    parseValue: parseDateQueryParam,
+  },
+  {
+    key: 'sortColumnArchival',
+    queryParamKey: 'acolumn',
+    defaultValue: 'StartTime',
+  },
+  {
+    key: 'sortOrderArchival',
+    queryParamKey: 'aorder',
+    defaultValue: 'DESC',
+    parseValue: (value: string) => (value === 'ASC' ? 'ASC' : 'DESC'),
+  },
+  {
+    key: 'queryArchival',
+    queryParamKey: 'aquery',
+    defaultValue: '',
   },
 ] as const;
 
