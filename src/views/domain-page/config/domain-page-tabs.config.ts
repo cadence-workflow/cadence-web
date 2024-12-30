@@ -1,4 +1,4 @@
-import { MdListAlt, MdSettings, MdSort } from 'react-icons/md';
+import { MdArchive, MdListAlt, MdSettings, MdSort } from 'react-icons/md';
 
 import type { DomainPageTabs } from '../domain-page-tabs/domain-page-tabs.types';
 
@@ -17,6 +17,11 @@ const domainPageTabsConfig = [
     key: 'settings',
     title: 'Settings',
     artwork: MdSettings,
+  },
+  {
+    key: 'archival',
+    title: 'Archival',
+    artwork: MdArchive,
   },
 ] as const satisfies DomainPageTabs;
 

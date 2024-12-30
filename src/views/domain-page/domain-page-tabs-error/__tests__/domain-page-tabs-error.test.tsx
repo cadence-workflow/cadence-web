@@ -33,6 +33,9 @@ jest.mock(
       settings: () => ({
         message: 'settings error',
       }),
+      archival: () => ({
+        message: 'archival error',
+      }),
     }) as const satisfies DomainPageTabsErrorConfig
 );
 
