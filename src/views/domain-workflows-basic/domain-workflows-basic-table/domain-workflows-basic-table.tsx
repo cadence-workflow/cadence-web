@@ -55,21 +55,19 @@ export default function DomainWorkflowsBasicTable({ domain, cluster }: Props) {
   }
 
   return (
-    <styled.TableContainer>
-      <Table
-        data={data}
-        columns={domainWorkflowsBasicTableConfig}
-        shouldShowResults={!isLoading && data.length > 0}
-        endMessageProps={{
-          kind: 'infinite-scroll',
-          hasData: data.length > 0,
-          error:
-            status === 'error' ? new Error('One or more queries failed') : null,
-          fetchNextPage,
-          hasNextPage,
-          isFetchingNextPage,
-        }}
-      />
-    </styled.TableContainer>
+    <Table
+      data={data}
+      columns={domainWorkflowsBasicTableConfig}
+      shouldShowResults={!isLoading && data.length > 0}
+      endMessageProps={{
+        kind: 'infinite-scroll',
+        hasData: data.length > 0,
+        error:
+          status === 'error' ? new Error('One or more queries failed') : null,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+      }}
+    />
   );
 }
