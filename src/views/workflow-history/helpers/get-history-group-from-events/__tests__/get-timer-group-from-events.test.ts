@@ -7,6 +7,8 @@ import {
 import type { TimerHistoryEvent } from '../../../workflow-history.types';
 import getTimerGroupFromEvents from '../get-timer-group-from-events';
 
+jest.useFakeTimers().setSystemTime(new Date('2024-05-25'));
+
 describe('getTimerGroupFromEvents', () => {
   it('should return a group with a correct label', () => {
     const events: TimerHistoryEvent[] = [startTimerTaskEvent];
