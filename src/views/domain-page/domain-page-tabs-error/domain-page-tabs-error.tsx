@@ -1,6 +1,7 @@
 import { useParams } from 'next/navigation';
 
 import ErrorPanel from '@/components/error-panel/error-panel';
+import PanelSection from '@/components/panel-section/panel-section';
 
 import domainPageTabsErrorConfig from '../config/domain-page-tabs-error.config';
 import { type DomainTabName } from '../domain-page-content/domain-page-content.types';
@@ -13,22 +14,26 @@ export default function DomainPageTabsError({ error, reset }: Props) {
 
   if (typeof getConfig !== 'function') {
     return (
-      <ErrorPanel
-        error={error}
-        message={'Failed to load domain content'}
-        reset={reset}
-      />
+      <PanelSection heightPercent={35}>
+        <ErrorPanel
+          error={error}
+          message={'Failed to load domain content'}
+          reset={reset}
+        />
+      </PanelSection>
     );
   }
 
   const errorConfig = getConfig(error);
   return (
-    <ErrorPanel
-      error={error}
-      message={errorConfig.message}
-      actions={errorConfig.actions}
-      omitLogging={errorConfig.omitLogging}
-      reset={reset}
-    />
+    <PanelSection heightPercent={35}>
+      <ErrorPanel
+        error={error}
+        message={errorConfig.message}
+        actions={errorConfig.actions}
+        omitLogging={errorConfig.omitLogging}
+        reset={reset}
+      />
+    </PanelSection>
   );
 }
