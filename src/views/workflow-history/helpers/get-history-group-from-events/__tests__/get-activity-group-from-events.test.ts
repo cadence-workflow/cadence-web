@@ -10,6 +10,8 @@ import {
 import type { ActivityHistoryEvent } from '../../../workflow-history.types';
 import getActivityGroupFromEvents from '../get-activity-group-from-events';
 
+jest.useFakeTimers().setSystemTime(new Date('2024-05-25'));
+
 describe('getActivityGroupFromEvents', () => {
   it('should return a group with a proper label when scheduled event exists', () => {
     const events: ActivityHistoryEvent[] = [scheduleActivityTaskEvent];

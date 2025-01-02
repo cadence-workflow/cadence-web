@@ -11,6 +11,8 @@ import type {
 } from '../../workflow-history.types';
 import getCommonHistoryGroupFields from '../get-common-history-group-fields';
 
+jest.useFakeTimers().setSystemTime(new Date('2024-05-25'));
+
 describe('getCommonHistoryGroupFields', () => {
   it('should return group eventsMetadata with correct labels', () => {
     const group = setup({});
