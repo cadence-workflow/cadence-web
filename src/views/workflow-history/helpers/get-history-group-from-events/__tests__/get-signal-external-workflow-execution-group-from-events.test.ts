@@ -7,6 +7,8 @@ import {
 import type { SignalExternalWorkflowExecutionHistoryEvent } from '../../../workflow-history.types';
 import getSignalExternalWorkflowExecutionGroupFromEvents from '../get-signal-external-workflow-execution-group-from-events';
 
+jest.useFakeTimers().setSystemTime(new Date('2024-05-25'));
+
 describe('getSignalExternalWorkflowExecutionGroupFromEvents', () => {
   it('should return a group with a correct label', () => {
     const events: SignalExternalWorkflowExecutionHistoryEvent[] = [

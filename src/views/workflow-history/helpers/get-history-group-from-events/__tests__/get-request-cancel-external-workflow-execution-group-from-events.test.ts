@@ -6,6 +6,8 @@ import {
 import type { RequestCancelExternalWorkflowExecutionHistoryEvent } from '../../../workflow-history.types';
 import getRequestCancelExternalWorkflowExecutionGroupFromEvents from '../get-request-cancel-external-workflow-execution-group-from-events';
 
+jest.useFakeTimers().setSystemTime(new Date('2024-05-25'));
+
 describe('getRequestCancelExternalWorkflowExecutionGroupFromEvents', () => {
   it('should return a group with a correct label', () => {
     const events: RequestCancelExternalWorkflowExecutionHistoryEvent[] = [
