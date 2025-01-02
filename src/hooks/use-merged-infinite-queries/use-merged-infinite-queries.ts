@@ -24,7 +24,7 @@ import {
  *
  * @param queries - Array of react-query Infinite Query configurations.
  * @param pageSize - Number of items to add to the result array when requesting new data.
- * @param flattenResponse - A function that takes the expected query result and flattens it into an array of items
+ * @param flattenResponse - A function that takes the expected query response and flattens it into an array of items
  * @param compare - A comparison function used to sort and merge results.
  * The function should accept two arguments and return:
  *   - A number > 0 if the second argument comes first.
