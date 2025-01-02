@@ -11,6 +11,8 @@ import {
 import type { ChildWorkflowExecutionHistoryEvent } from '../../../workflow-history.types';
 import getChildWorkflowExecutionGroupFromEvents from '../get-child-workflow-execution-group-from-events';
 
+jest.useFakeTimers().setSystemTime(new Date('2024-05-25'));
+
 describe('getChildWorkflowExecutionGroupFromEvents', () => {
   it('should return a group with a proper label', () => {
     const events: ChildWorkflowExecutionHistoryEvent[] = [
