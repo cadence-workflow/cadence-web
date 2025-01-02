@@ -5,14 +5,24 @@ import { type WorkflowsHeaderInputType } from '@/views/shared/workflows-header/w
 export default function getArchivalErrorPanelProps({
   inputType,
   error,
+  queryString,
 }: {
   inputType: WorkflowsHeaderInputType;
   error: RequestError;
+  queryString: string;
 }): ErrorPanelProps {
-  if (inputType === 'query' && error.status === 400) {
-    return {
-      message: 'Error in query: ' + error.message,
-    };
+  if (inputType === 'query') {
+    if (!queryString) {
+      return {
+        message: 'Please enter a valid query with a CloseTime filter',
+      };
+    }
+
+    if (error.status === 400) {
+      return {
+        message: 'Error in query: ' + error.message,
+      };
+    }
   }
 
   return {

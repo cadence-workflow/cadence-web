@@ -8,6 +8,7 @@ describe(getArchivalErrorPanelProps.name, () => {
       getArchivalErrorPanelProps({
         inputType: 'search',
         error: new RequestError('Test error', 500),
+        queryString: 'mock_query_string',
       })
     ).toEqual({
       message: 'Failed to fetch archived workflows',
@@ -20,9 +21,22 @@ describe(getArchivalErrorPanelProps.name, () => {
       getArchivalErrorPanelProps({
         inputType: 'query',
         error: new RequestError('Incorrect query', 400),
+        queryString: 'mock_query_string',
       })
     ).toEqual({
       message: 'Error in query: Incorrect query',
+    });
+  });
+
+  it('returns custom error message for empty query', () => {
+    expect(
+      getArchivalErrorPanelProps({
+        inputType: 'query',
+        error: new RequestError('Incorrect query', 400),
+        queryString: '',
+      })
+    ).toEqual({
+      message: 'Please enter a valid query with a CloseTime filter',
     });
   });
 });

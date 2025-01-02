@@ -57,6 +57,7 @@ export default function DomainWorkflowsArchivalTable({
           {...getArchivalErrorPanelProps({
             inputType: queryParams.inputTypeArchival,
             error,
+            queryString: queryParams.queryArchival,
           })}
           reset={refetch}
         />
