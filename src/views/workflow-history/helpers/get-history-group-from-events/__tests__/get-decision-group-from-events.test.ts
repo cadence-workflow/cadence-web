@@ -9,6 +9,8 @@ import {
 import type { DecisionHistoryEvent } from '../../../workflow-history.types';
 import getDecisionGroupFromEvents from '../get-decision-group-from-events';
 
+jest.useFakeTimers().setSystemTime(new Date('2024-05-25'));
+
 describe('getDecisionGroupFromEvents', () => {
   it('should return a group with a proper label when scheduled event exists', () => {
     const events: DecisionHistoryEvent[] = [scheduleDecisionTaskEvent];
