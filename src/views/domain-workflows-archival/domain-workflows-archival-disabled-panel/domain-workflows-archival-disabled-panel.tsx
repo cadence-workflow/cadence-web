@@ -1,26 +1,40 @@
 import Image from 'next/image';
+import { MdOpenInNew } from 'react-icons/md';
 
 import errorIcon from '@/assets/error-icon.svg';
+import Link from '@/components/link/link';
+import PanelSection from '@/components/panel-section/panel-section';
+
+import domainWorkflowsArchivalDisabledPanelConfig from '../config/domain-workflows-archival-disabled-panel.config';
 
 import { styled } from './domain-workflows-archival-disabled-panel.styles';
 
 export default function DomainWorkflowsArchivalDisabledPanel() {
   return (
-    <styled.PanelContainer>
-      <styled.TopSpacer />
+    <PanelSection heightPercent={35}>
       <Image width={64} height={64} alt="Error" src={errorIcon} />
-      <styled.Title>Archival not enabled for domain</styled.Title>
+      <styled.Title>
+        {domainWorkflowsArchivalDisabledPanelConfig.title}
+      </styled.Title>
       <styled.Content>
-        <styled.Subtitle>
-          This domain currently does not have history archival and/or visibility
-          archival enabled.
-        </styled.Subtitle>
-        <styled.Subtitle>
-          To enable the Cadence UI archival screen you will need to enable both
-          history archival and visibility archival.
-        </styled.Subtitle>
+        {domainWorkflowsArchivalDisabledPanelConfig.details.map(
+          (detail, index) => (
+            <styled.Detail key={`details-${index}`}>{detail}</styled.Detail>
+          )
+        )}
       </styled.Content>
-      <styled.BottomSpacer />
-    </styled.PanelContainer>
+      <styled.LinksContainer>
+        {domainWorkflowsArchivalDisabledPanelConfig.links.map(
+          ({ text, href }) => (
+            <styled.LinkContainer key={`link-${href}`}>
+              <Link href={href} target="_blank" rel="noreferrer">
+                {text}
+              </Link>
+              <MdOpenInNew />
+            </styled.LinkContainer>
+          )
+        )}
+      </styled.LinksContainer>
+    </PanelSection>
   );
 }
