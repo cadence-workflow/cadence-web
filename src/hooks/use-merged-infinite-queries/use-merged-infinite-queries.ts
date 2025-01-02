@@ -17,14 +17,14 @@ import {
  * Combines results from multiple infinite queries in sorted order.
  *
  * To ensure the order of the combined results remains consistent even after fetching additional data,
- * this hook requests extra data (page size * number of queries) from all queries. This ensures no higher-priority items are missed
- * when sorting, even if they appear in later pages of data.
+ * this hook requests extra data (page size * number of queries) from all queries. This ensures
+ * no higher-priority items are missed when sorting, even if they appear in later pages of data.
  *
  * For instance, to show 5 items across 3 queries, it fetches 15 items.
  *
  * @param queries - Array of react-query Infinite Query configurations.
  * @param pageSize - Number of items to add to the result array when requesting new data.
- * @param flattenResult - A function that takes the expected query result and flattens it into an array of items
+ * @param flattenResponse - A function that takes the expected query result and flattens it into an array of items
  * @param compare - A comparison function used to sort and merge results.
  * The function should accept two arguments and return:
  *   - A number > 0 if the second argument comes first.
