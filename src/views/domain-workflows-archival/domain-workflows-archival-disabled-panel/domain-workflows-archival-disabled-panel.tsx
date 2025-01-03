@@ -11,8 +11,8 @@ import { styled } from './domain-workflows-archival-disabled-panel.styles';
 
 export default function DomainWorkflowsArchivalDisabledPanel() {
   return (
-    <PanelSection heightPercent={35}>
-      <Image width={64} height={64} alt="Error" src={errorIcon} />
+    <PanelSection>
+      <Image width={64} alt="Error" src={errorIcon} />
       <styled.Title>
         {domainWorkflowsArchivalDisabledPanelConfig.title}
       </styled.Title>

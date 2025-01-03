@@ -1,12 +1,12 @@
 import { styled } from './panel-section.styles';
 import { type Props } from './panel-section.types';
 
-export default function PanelSection({ children, heightPercent }: Props) {
+export default function PanelSection({ children }: Props) {
   return (
-    <styled.PanelContainer>
-      <styled.Spacer $heightPercent={heightPercent} />
+    <styled.PanelSectionContainer>
+      <styled.Spacer $height="40%" />
       {children}
-      <styled.Spacer $heightPercent={100 - heightPercent} />
-    </styled.PanelContainer>
+      <styled.Spacer $height="60%" />
+    </styled.PanelSectionContainer>
   );
 }
