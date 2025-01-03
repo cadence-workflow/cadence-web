@@ -14,7 +14,7 @@ export default function DomainPageTabsError({ error, reset }: Props) {
 
   if (typeof getConfig !== 'function') {
     return (
-      <PanelSection heightPercent={35}>
+      <PanelSection>
         <ErrorPanel
           error={error}
           message={'Failed to load domain content'}
@@ -26,7 +26,7 @@ export default function DomainPageTabsError({ error, reset }: Props) {
 
   const errorConfig = getConfig(error);
   return (
-    <PanelSection heightPercent={35}>
+    <PanelSection>
       <ErrorPanel
         error={error}
         message={errorConfig.message}

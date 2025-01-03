@@ -46,7 +46,7 @@ export default function DomainWorkflowsBasicTable({ domain, cluster }: Props) {
 
     if (errorPanelProps) {
       return (
-        <PanelSection heightPercent={35}>
+        <PanelSection>
           <ErrorPanel {...errorPanelProps} reset={refetch} />
         </PanelSection>
       );
