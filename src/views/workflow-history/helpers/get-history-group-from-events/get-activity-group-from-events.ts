@@ -26,10 +26,13 @@ export default function getActivityGroupFromEvents(
     label = `Activity ${scheduleEvent[scheduleAttr]?.activityId}: ${scheduleEvent[scheduleAttr]?.activityType?.name}`;
   }
   if (startEvent && startEvent[startAttr]?.attempt) {
-    const attempts = startEvent[startAttr].attempt;
+    const currentAttemptNumber = startEvent[startAttr].attempt;
 
     badges.push({
-      content: `${attempts + 1} Attempts`,
+      content:
+        currentAttemptNumber === 1
+          ? '1 Retry'
+          : `${currentAttemptNumber} Retries`,
     });
   }
   if (firstEvent.attributes !== 'activityTaskScheduledEventAttributes') {

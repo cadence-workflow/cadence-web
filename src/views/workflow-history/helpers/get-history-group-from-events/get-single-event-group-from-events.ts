@@ -36,9 +36,14 @@ export default function getSingleEventGroupFromEvents(
     event.attributes === 'workflowExecutionStartedEventAttributes' &&
     event.workflowExecutionStartedEventAttributes?.attempt
   ) {
-    const attempts = event.workflowExecutionStartedEventAttributes.attempt;
+    const currentAttemptNumber =
+      event.workflowExecutionStartedEventAttributes.attempt;
+
     badges.push({
-      content: `${attempts + 1} Attempts`,
+      content:
+        currentAttemptNumber === 1
+          ? '1 Retry'
+          : `${currentAttemptNumber} Retries`,
     });
   }
 
