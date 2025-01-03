@@ -2,6 +2,7 @@
 import React from 'react';
 
 import ErrorPanel from '@/components/error-panel/error-panel';
+import PanelSection from '@/components/panel-section/panel-section';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import { toggleSortOrder } from '@/utils/sort-by';
@@ -11,7 +12,6 @@ import WorkflowsTable from '@/views/shared/workflows-table/workflows-table';
 
 import DOMAIN_WORKFLOWS_ARCHIVAL_PAGE_SIZE from '../config/domain-workflows-archival-page-size.config';
 
-import { styled } from './domain-workflows-archival-table.styles';
 import { type Props } from './domain-workflows-archival-table.types';
 import getArchivalErrorPanelProps from './helpers/get-archival-error-panel-props';
 
@@ -52,7 +52,7 @@ export default function DomainWorkflowsArchivalTable({
 
   if (workflows.length === 0 && error) {
     return (
-      <styled.ErrorPanelContainer>
+      <PanelSection>
         <ErrorPanel
           {...getArchivalErrorPanelProps({
             inputType: queryParams.inputTypeArchival,
@@ -61,7 +61,7 @@ export default function DomainWorkflowsArchivalTable({
           })}
           reset={refetch}
         />
-      </styled.ErrorPanelContainer>
+      </PanelSection>
     );
   }
 
