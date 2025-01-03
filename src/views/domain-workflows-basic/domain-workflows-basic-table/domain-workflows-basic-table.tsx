@@ -3,11 +3,10 @@ import React from 'react';
 
 import ErrorPanel from '@/components/error-panel/error-panel';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
-import Table from '@/components/table/table';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
+import WorkflowsTable from '@/views/shared/workflows-table/workflows-table';
 
-import domainWorkflowsBasicTableConfig from '../config/domain-workflows-basic-table.config';
 import useListWorkflowsBasic from '../hooks/use-list-workflows-basic';
 
 import { styled } from './domain-workflows-basic-table.styles';
@@ -55,19 +54,15 @@ export default function DomainWorkflowsBasicTable({ domain, cluster }: Props) {
   }
 
   return (
-    <Table
-      data={data}
-      columns={domainWorkflowsBasicTableConfig}
-      shouldShowResults={!isLoading && data.length > 0}
-      endMessageProps={{
-        kind: 'infinite-scroll',
-        hasData: data.length > 0,
-        error:
-          status === 'error' ? new Error('One or more queries failed') : null,
-        fetchNextPage,
-        hasNextPage,
-        isFetchingNextPage,
-      }}
+    <WorkflowsTable
+      workflows={data}
+      isLoading={isLoading}
+      error={
+        status === 'error' ? new Error('One or more queries failed') : null
+      }
+      hasNextPage={hasNextPage}
+      fetchNextPage={fetchNextPage}
+      isFetchingNextPage={isFetchingNextPage}
     />
   );
 }
