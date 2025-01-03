@@ -1,5 +1,6 @@
 import { createElement } from 'react';
 
+import formatDate from '@/utils/data-formatters/format-date';
 import WorkflowHistoryEventDetailsTaskListLink from '@/views/shared/workflow-history-event-details-task-list-link/workflow-history-event-details-task-list-link';
 import WorkflowStatusTag from '@/views/shared/workflow-status-tag/workflow-status-tag';
 import getWorkflowStatusTagProps from '@/views/workflow-page/helpers/get-workflow-status-tag-props';
@@ -68,7 +69,7 @@ const workflowSummaryTabDetailsConfig: WorkflowSummaryTabDetailsConfig[] = [
         'div',
         { suppressHydrationWarning: true },
         formattedFirstEvent?.timestamp
-          ? new Date(formattedFirstEvent.timestamp).toLocaleString()
+          ? formatDate(formattedFirstEvent.timestamp.valueOf())
           : '-'
       ),
   },
@@ -80,7 +81,7 @@ const workflowSummaryTabDetailsConfig: WorkflowSummaryTabDetailsConfig[] = [
         'div',
         { suppressHydrationWarning: true },
         formattedCloseEvent?.timestamp
-          ? new Date(formattedCloseEvent.timestamp).toLocaleString()
+          ? formatDate(formattedCloseEvent.timestamp.valueOf())
           : '-'
       );
     },
