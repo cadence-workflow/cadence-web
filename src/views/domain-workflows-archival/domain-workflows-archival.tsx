@@ -7,6 +7,7 @@ import { type DomainPageTabContentProps } from '@/views/domain-page/domain-page-
 
 import { type DomainInfo } from '../domain-page/domain-page.types';
 
+import DomainWorkflowsArchivalDisabledPanel from './domain-workflows-archival-disabled-panel/domain-workflows-archival-disabled-panel';
 import DomainWorkflowsArchivalHeader from './domain-workflows-archival-header/domain-workflows-archival-header';
 
 export default function DomainWorkflowsArchival(
@@ -26,8 +27,7 @@ export default function DomainWorkflowsArchival(
     historyArchivalStatus !== 'ARCHIVAL_STATUS_ENABLED' ||
     visibilityArchivalStatus !== 'ARCHIVAL_STATUS_ENABLED'
   ) {
-    // TODO: archival landing page
-    return <div>Archival disabled</div>;
+    return <DomainWorkflowsArchivalDisabledPanel />;
   }
 
   return (
