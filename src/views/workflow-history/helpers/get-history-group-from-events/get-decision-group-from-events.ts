@@ -24,9 +24,11 @@ export default function getDecisionGroupFromEvents(
   }
 
   if (scheduleEvent && scheduleEvent[scheduleAttr]?.attempt) {
-    const attempts = scheduleEvent[scheduleAttr].attempt;
+    const retryAttemptNumber = scheduleEvent[scheduleAttr].attempt;
+
     badges.push({
-      content: `${attempts + 1} Attempts`,
+      content:
+        retryAttemptNumber === 1 ? '1 Retry' : `${retryAttemptNumber} Retries`,
     });
   }
   const eventToLabel: HistoryGroupEventToStringMap<DecisionHistoryGroup> = {
