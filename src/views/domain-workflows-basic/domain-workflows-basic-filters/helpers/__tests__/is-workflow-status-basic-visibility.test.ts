@@ -1,4 +1,4 @@
-import { WORKFLOW_STATUS_NAMES_BASIC_VISIBILITY } from '../../domain-workflows-basic-filters-status.constants';
+import { WORKFLOW_STATUS_NAMES_BASIC_VISIBILITY } from '../../../domain-workflows-basic-filters-status/domain-workflows-basic-filters-status.constants';
 import isWorkflowStatusBasicVisibility from '../is-workflow-status-basic-visibility';
 
 describe(isWorkflowStatusBasicVisibility.name, () => {

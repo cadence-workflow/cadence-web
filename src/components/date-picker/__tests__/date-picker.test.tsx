@@ -2,21 +2,22 @@ import React from 'react';
 
 import { render, screen, act, fireEvent } from '@/test-utils/rtl';
 
-import {
-  mockDomainPageQueryParamsValues,
-  mockDateOverrides,
-} from '../../../domain-page/__fixtures__/domain-page-query-params';
-import DomainWorkflowsFiltersDates from '../domain-workflows-filters-dates';
-import { type DomainWorkflowsFiltersDatesValue } from '../domain-workflows-filters-dates.types';
+import DatePicker from '../date-picker';
+import { type DateRange } from '../date-picker.types';
 
 jest.useFakeTimers().setSystemTime(new Date('2023-05-25'));
 
-jest.mock('../domain-workflows-filters-dates.constants', () => ({
-  ...jest.requireActual('../domain-workflows-filters-dates.constants'),
+jest.mock('../date-picker.constants', () => ({
+  ...jest.requireActual('../date-picker.constants'),
   DATE_FORMAT: 'dd MMM yyyy, HH:mm x',
 }));
 
-describe('DomainWorkflowsFiltersDates', () => {
+export const mockDateOverrides: DateRange = {
+  start: new Date(1684800000000), // 23 May 2023 00:00
+  end: new Date(1684886400000), // 24 May 2023 00:00
+};
+
+describe(DatePicker.name, () => {
   it('displays the date picker component', () => {
     setup({});
     expect(
@@ -37,7 +38,7 @@ describe('DomainWorkflowsFiltersDates', () => {
   });
 
   it('sets query params when date is set', () => {
-    const { mockSetValue } = setup({});
+    const { mockSetDates } = setup({});
     const datePicker = screen.getByPlaceholderText('Select time range');
     act(() => {
       fireEvent.change(datePicker, {
@@ -45,14 +46,14 @@ describe('DomainWorkflowsFiltersDates', () => {
       });
     });
 
-    expect(mockSetValue).toHaveBeenCalledWith({
-      timeRangeStart: new Date('2023-05-13T00:00:00.000Z'),
-      timeRangeEnd: new Date('2023-05-14T00:00:00.000Z'),
+    expect(mockSetDates).toHaveBeenCalledWith({
+      start: new Date('2023-05-13T00:00:00.000Z'),
+      end: new Date('2023-05-14T00:00:00.000Z'),
     });
   });
 
   it('resets to previous date when one date is selected and then the modal is closed', () => {
-    const { mockSetValue } = setup({
+    const { mockSetDates } = setup({
       overrides: mockDateOverrides,
     });
     const datePicker = screen.getByPlaceholderText('Select time range');
@@ -80,11 +81,11 @@ describe('DomainWorkflowsFiltersDates', () => {
     expect(datePicker).toHaveValue(
       '23 May 2023, 00:00 +00 – 24 May 2023, 00:00 +00'
     );
-    expect(mockSetValue).not.toHaveBeenCalled();
+    expect(mockSetDates).not.toHaveBeenCalled();
   });
 
   it('resets to empty state when one date is selected and then the modal is closed', () => {
-    const { mockSetValue } = setup({});
+    const { mockSetDates } = setup({});
     const datePicker = screen.getByPlaceholderText('Select time range');
 
     act(() => {
@@ -108,11 +109,11 @@ describe('DomainWorkflowsFiltersDates', () => {
     });
 
     expect(datePicker).toHaveValue('');
-    expect(mockSetValue).not.toHaveBeenCalled();
+    expect(mockSetDates).not.toHaveBeenCalled();
   });
 
   it('clears the date when the clear button is clicked', () => {
-    const { mockSetValue } = setup({
+    const { mockSetDates } = setup({
       overrides: mockDateOverrides,
     });
     const clearButton = screen.getByLabelText('Clear value');
@@ -120,29 +121,27 @@ describe('DomainWorkflowsFiltersDates', () => {
       fireEvent.click(clearButton);
     });
 
-    expect(mockSetValue).toHaveBeenCalledWith({
-      timeRangeStart: undefined,
-      timeRangeEnd: undefined,
+    expect(mockSetDates).toHaveBeenCalledWith({
+      start: undefined,
+      end: undefined,
     });
   });
 });
 
-function setup({
-  overrides,
-}: {
-  overrides?: DomainWorkflowsFiltersDatesValue;
-}) {
-  const mockSetValue = jest.fn();
+function setup({ overrides }: { overrides?: DateRange }) {
+  const mockSetDates = jest.fn();
   render(
-    <DomainWorkflowsFiltersDates
-      value={{
-        timeRangeStart: mockDomainPageQueryParamsValues.timeRangeStart,
-        timeRangeEnd: mockDomainPageQueryParamsValues.timeRangeEnd,
+    <DatePicker
+      label="Mock label"
+      placeholder="Mock placeholder"
+      dates={{
+        start: undefined,
+        end: undefined,
         ...overrides,
       }}
-      setValue={mockSetValue}
+      setDates={mockSetDates}
     />
   );
 
-  return { mockSetValue };
+  return { mockSetDates };
 }

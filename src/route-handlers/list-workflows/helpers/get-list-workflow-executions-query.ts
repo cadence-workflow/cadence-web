@@ -2,11 +2,15 @@ import { type SortOrder } from '@/utils/sort-by';
 import { WORKFLOW_STATUSES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
 import type { WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
 
-import { type TimeColumn } from '../list-workflows.types';
+import {
+  type ListWorkflowsCronValue,
+  type TimeColumn,
+} from '../list-workflows.types';
 
 export default function getListWorkflowExecutionsQuery({
   search,
   workflowStatus,
+  cron,
   sortColumn,
   sortOrder,
   timeColumn,
@@ -15,6 +19,7 @@ export default function getListWorkflowExecutionsQuery({
 }: {
   search?: string;
   workflowStatus?: WorkflowStatus;
+  cron?: ListWorkflowsCronValue;
   sortColumn?: string;
   sortOrder?: SortOrder;
   timeColumn: TimeColumn;
@@ -38,6 +43,10 @@ export default function getListWorkflowExecutionsQuery({
         `CloseStatus = ${Object.values(WORKFLOW_STATUSES).indexOf(workflowStatus) - 1}`
       );
     }
+  }
+
+  if (cron) {
+    searchQueries.push(`IsCron = "${cron === 'CRON'}"`);
   }
 
   if (timeRangeStart) {

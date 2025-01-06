@@ -211,6 +211,7 @@ function generateWorkflowPages(count: number): Array<ListWorkflowsResponse> {
         status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
         startTime: 1684800000000,
         closeTime: count > 5 ? 1684886400000 : undefined,
+        isCron: false,
       })),
       nextPage: `${pageIndex + 1}`,
     })

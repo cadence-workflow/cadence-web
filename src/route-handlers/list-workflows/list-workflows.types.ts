@@ -18,6 +18,11 @@ export type ListWorkflowsRequestQueryParams = z.input<
   typeof listWorkflowsQueryParamSchema
 >;
 
+export type ListWorkflowsCronValue = Exclude<
+  ListWorkflowsRequestQueryParams['cron'],
+  undefined
+>;
+
 export type TimeColumn = ListWorkflowsRequestQueryParams['timeColumn'];
 
 export type ListWorkflowsResponse = {

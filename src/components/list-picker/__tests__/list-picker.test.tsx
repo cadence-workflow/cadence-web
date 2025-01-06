@@ -2,16 +2,22 @@ import React from 'react';
 
 import { render, screen, fireEvent, act } from '@/test-utils/rtl';
 
-import { WORKFLOW_STATUS_NAMES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
+import ListPicker from '../list-picker';
 
-import { mockDomainPageQueryParamsValues } from '../../../domain-page/__fixtures__/domain-page-query-params';
-import DomainWorkflowsFiltersStatus from '../domain-workflows-filters-status';
-import { type DomainWorkflowsFiltersStatusValue } from '../domain-workflows-filters-status.types';
+const MOCK_LIST_PICKER_LABELS = {
+  opt1: 'Option 1',
+  opt2: 'Option 2',
+  opt3: 'Option 3',
+};
 
-describe('DomainWorkflowsFiltersStatus', () => {
+type MockListPickerOption = keyof typeof MOCK_LIST_PICKER_LABELS;
+
+describe(ListPicker.name, () => {
   it('renders without errors', () => {
     setup({});
     expect(screen.getByRole('combobox')).toBeInTheDocument();
+    expect(screen.getByText('Mock label')).toBeInTheDocument();
+    expect(screen.getByText('Mock placeholder')).toBeInTheDocument();
   });
 
   it('displays all the options in the select component', () => {
@@ -20,7 +26,7 @@ describe('DomainWorkflowsFiltersStatus', () => {
     act(() => {
       fireEvent.click(selectFilter);
     });
-    Object.entries(WORKFLOW_STATUS_NAMES).forEach(([_, value]) =>
+    Object.entries(MOCK_LIST_PICKER_LABELS).forEach(([_, value]) =>
       expect(screen.getByText(value)).toBeInTheDocument()
     );
   });
@@ -31,20 +37,16 @@ describe('DomainWorkflowsFiltersStatus', () => {
     act(() => {
       fireEvent.click(selectFilter);
     });
-    const runningOption = screen.getByText('Running');
+    const option = screen.getByText('Option 1');
     act(() => {
-      fireEvent.click(runningOption);
+      fireEvent.click(option);
     });
-    expect(mockSetValue).toHaveBeenCalledWith({
-      status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
-    });
+    expect(mockSetValue).toHaveBeenCalledWith('opt1');
   });
 
   it('calls the setQueryParams function when the filter is cleared', () => {
     const { mockSetValue } = setup({
-      overrides: {
-        status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_FAILED',
-      },
+      override: 'opt2',
     });
     const clearButton = screen.getByLabelText('Clear value');
     act(() => {
@@ -54,19 +56,15 @@ describe('DomainWorkflowsFiltersStatus', () => {
   });
 });
 
-function setup({
-  overrides,
-}: {
-  overrides?: DomainWorkflowsFiltersStatusValue;
-}) {
+function setup({ override }: { override?: MockListPickerOption }) {
   const mockSetValue = jest.fn();
   render(
-    <DomainWorkflowsFiltersStatus
-      value={{
-        status: mockDomainPageQueryParamsValues.status,
-        ...overrides,
-      }}
+    <ListPicker
+      label="Mock label"
+      placeholder="Mock placeholder"
+      value={override ?? undefined}
       setValue={mockSetValue}
+      labelMap={MOCK_LIST_PICKER_LABELS}
     />
   );
 

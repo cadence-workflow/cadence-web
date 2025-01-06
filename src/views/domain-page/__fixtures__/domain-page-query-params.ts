@@ -10,6 +10,7 @@ export const mockDomainPageQueryParamsValues = {
   sortColumn: 'startTime',
   sortOrder: 'DESC',
   query: '',
+  cron: undefined,
   workflowId: '',
   workflowType: '',
   statusBasic: undefined,
@@ -21,9 +22,5 @@ export const mockDomainPageQueryParamsValues = {
   sortColumnArchival: 'startTime',
   sortOrderArchival: 'DESC',
   queryArchival: '',
+  cronArchival: undefined,
 } as const satisfies PageQueryParamValues<typeof domainPageQueryParamsConfig>;
-
-export const mockDateOverrides = {
-  timeRangeStart: new Date(1684800000000), // 23 May 2023 00:00
-  timeRangeEnd: new Date(1684886400000), // 24 May 2023 00:00
-};

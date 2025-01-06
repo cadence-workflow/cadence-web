@@ -46,6 +46,7 @@ export async function listWorkflows(
         : getListWorkflowExecutionsQuery({
             search: queryParams.search,
             workflowStatus: queryParams.status,
+            cron: queryParams.cron,
             sortColumn: queryParams.sortColumn,
             sortOrder: queryParams.sortOrder,
             timeColumn: queryParams.timeColumn,
