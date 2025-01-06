@@ -85,8 +85,8 @@ describe('getRequestCancelExternalWorkflowExecutionGroupFromEvents', () => {
     const group =
       getRequestCancelExternalWorkflowExecutionGroupFromEvents(events);
     expect(group.eventsMetadata.map(({ timeLabel }) => timeLabel)).toEqual([
-      'Initiated at 07 Sep, 22:51:10 GMT+0',
-      'Requested at 07 Sep, 22:52:50 GMT+0',
+      'Initiated at 07 Sep, 22:51:10 UTC',
+      'Requested at 07 Sep, 22:52:50 UTC',
     ]);
   });
 });
