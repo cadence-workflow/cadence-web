@@ -18,8 +18,8 @@ import formatChildWorkflowExecutionStartedEvent from '../format-workflow-history
 import formatChildWorkflowExecutionTimedOutEvent from '../format-workflow-history-event/format-child-workflow-execution-timed-out-event';
 import formatDecisionTaskCompletedEvent from '../format-workflow-history-event/format-decision-task-completed-event';
 import formatDecisionTaskFailedEvent from '../format-workflow-history-event/format-decision-task-failed-event';
-import formatDecisionTaskStartedEvent from '../format-workflow-history-event/format-decision-task-scheduled-event';
-import formatDecisionTaskScheduledEvent from '../format-workflow-history-event/format-decision-task-started-event';
+import formatDecisionTaskScheduledEvent from '../format-workflow-history-event/format-decision-task-scheduled-event';
+import formatDecisionTaskStartedEvent from '../format-workflow-history-event/format-decision-task-started-event';
 import formatDecisionTaskTimedOutEvent from '../format-workflow-history-event/format-decision-timed-out-event';
 import formatExternalWorkflowExecutionCancelRequestedEvent from '../format-workflow-history-event/format-external-workflow-execution-cancel-requested-event';
 import formatExternalWorkflowExecutionSignaledEvent from '../format-workflow-history-event/format-external-workflow-execution-signaled-event';
