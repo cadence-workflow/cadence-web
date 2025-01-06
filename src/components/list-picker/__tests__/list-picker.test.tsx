@@ -52,7 +52,7 @@ describe(ListPicker.name, () => {
     act(() => {
       fireEvent.click(clearButton);
     });
-    expect(mockSetValue).toHaveBeenCalledWith({ status: undefined });
+    expect(mockSetValue).toHaveBeenCalledWith(undefined);
   });
 });
 

@@ -20,9 +20,7 @@ export const mockDateOverrides: DateRange = {
 describe(DatePicker.name, () => {
   it('displays the date picker component', () => {
     setup({});
-    expect(
-      screen.getByPlaceholderText('Select time range')
-    ).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Mock placeholder')).toBeInTheDocument();
   });
 
   it('renders without errors when dates are already provided in query params', () => {
@@ -39,7 +37,7 @@ describe(DatePicker.name, () => {
 
   it('sets query params when date is set', () => {
     const { mockSetDates } = setup({});
-    const datePicker = screen.getByPlaceholderText('Select time range');
+    const datePicker = screen.getByPlaceholderText('Mock placeholder');
     act(() => {
       fireEvent.change(datePicker, {
         target: { value: '13 May 2023, 00:00 +00 – 14 May 2023, 00:00 +00' },
@@ -56,7 +54,7 @@ describe(DatePicker.name, () => {
     const { mockSetDates } = setup({
       overrides: mockDateOverrides,
     });
-    const datePicker = screen.getByPlaceholderText('Select time range');
+    const datePicker = screen.getByPlaceholderText('Mock placeholder');
 
     act(() => {
       fireEvent.focus(datePicker);
@@ -86,7 +84,7 @@ describe(DatePicker.name, () => {
 
   it('resets to empty state when one date is selected and then the modal is closed', () => {
     const { mockSetDates } = setup({});
-    const datePicker = screen.getByPlaceholderText('Select time range');
+    const datePicker = screen.getByPlaceholderText('Mock placeholder');
 
     act(() => {
       fireEvent.focus(datePicker);

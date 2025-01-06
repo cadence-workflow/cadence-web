@@ -8,6 +8,19 @@ const MOCK_LABEL_MAP = {
 
 describe(getOptionsFromLabelMap.name, () => {
   it('returns array of id-label pairs for a label map', () => {
-    expect(getOptionsFromLabelMap(MOCK_LABEL_MAP)).toEqual([]);
+    expect(getOptionsFromLabelMap(MOCK_LABEL_MAP)).toEqual([
+      {
+        id: 'opt1',
+        label: 'Option 1',
+      },
+      {
+        id: 'opt2',
+        label: 'Option 2',
+      },
+      {
+        id: 'opt3',
+        label: 'Option 3',
+      },
+    ]);
   });
 });
