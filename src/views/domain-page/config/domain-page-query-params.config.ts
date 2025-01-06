@@ -1,8 +1,6 @@
 import { type PageQueryParam } from '@/hooks/use-page-query-params/use-page-query-params.types';
 import parseDateQueryParam from '@/utils/datetime/parse-date-query-param';
 import { type SortOrder } from '@/utils/sort-by';
-import { WORKFLOW_CRON_LABELS } from '@/views/domain-workflows/domain-workflows-header/domain-workflows-header.constants';
-import { type WorkflowCronValue } from '@/views/domain-workflows/domain-workflows-header/domain-workflows-header.types';
 import { type WorkflowStatusClosed } from '@/views/domain-workflows-archival/domain-workflows-archival-header/domain-workflows-archival-header.types';
 import { type WorkflowStatusBasicVisibility } from '@/views/domain-workflows-basic/domain-workflows-basic-filters/domain-workflows-basic-filters.types';
 import isWorkflowStatusBasicVisibility from '@/views/domain-workflows-basic/domain-workflows-basic-filters/helpers/is-workflow-status-basic-visibility';
@@ -19,7 +17,6 @@ const domainPageQueryParamsConfig: [
   PageQueryParam<'timeRangeEnd', Date | undefined>,
   PageQueryParam<'sortColumn', string>,
   PageQueryParam<'sortOrder', SortOrder>,
-  PageQueryParam<'cron', WorkflowCronValue | undefined>,
   // Query input
   PageQueryParam<'query', string>,
   // Basic Visibility inputs
@@ -35,7 +32,6 @@ const domainPageQueryParamsConfig: [
   PageQueryParam<'sortColumnArchival', string>,
   PageQueryParam<'sortOrderArchival', SortOrder>,
   PageQueryParam<'queryArchival', string>,
-  PageQueryParam<'cronArchival', WorkflowCronValue | undefined>,
 ] = [
   {
     key: 'inputType',
@@ -72,11 +68,6 @@ const domainPageQueryParamsConfig: [
     queryParamKey: 'order',
     defaultValue: 'DESC',
     parseValue: (value: string) => (value === 'ASC' ? 'ASC' : 'DESC'),
-  },
-  {
-    key: 'cron',
-    parseValue: (value: string) =>
-      value in WORKFLOW_CRON_LABELS ? (value as WorkflowCronValue) : undefined,
   },
   {
     key: 'query',
@@ -141,12 +132,6 @@ const domainPageQueryParamsConfig: [
     key: 'queryArchival',
     queryParamKey: 'aquery',
     defaultValue: '',
-  },
-  {
-    key: 'cronArchival',
-    queryParamKey: 'acron',
-    parseValue: (value: string) =>
-      value in WORKFLOW_CRON_LABELS ? (value as WorkflowCronValue) : undefined,
   },
 ] as const;
 

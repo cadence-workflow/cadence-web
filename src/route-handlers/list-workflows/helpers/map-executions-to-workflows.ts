@@ -23,7 +23,6 @@ export default function mapExecutionsToWorkflows(
       closeTime: execution.closeTime
         ? parseGrpcTimestamp(execution.closeTime)
         : undefined,
-      isCron: execution.isCron,
     });
 
     return acc;

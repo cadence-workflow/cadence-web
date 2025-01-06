@@ -7,9 +7,6 @@ import type domainPageQueryParamsConfig from '@/views/domain-page/config/domain-
 import { WORKFLOW_STATUS_NAMES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
 import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
 
-import { WORKFLOW_CRON_LABELS } from '../domain-workflows-header/domain-workflows-header.constants';
-import { type WorkflowCronValue } from '../domain-workflows-header/domain-workflows-header.types';
-
 const domainWorkflowsFiltersConfig: [
   PageFilterConfig<
     typeof domainPageQueryParamsConfig,
@@ -18,10 +15,6 @@ const domainWorkflowsFiltersConfig: [
   PageFilterConfig<
     typeof domainPageQueryParamsConfig,
     { timeRangeStart: Date | undefined; timeRangeEnd: Date | undefined }
-  >,
-  PageFilterConfig<
-    typeof domainPageQueryParamsConfig,
-    { cron: WorkflowCronValue | undefined }
   >,
 ] = [
   {
@@ -57,19 +50,6 @@ const domainWorkflowsFiltersConfig: [
         },
         setDates: ({ start, end }) =>
           setValue({ timeRangeStart: start, timeRangeEnd: end }),
-      }),
-  },
-  {
-    id: 'cron',
-    getValue: (v) => ({ cron: v.cron }),
-    formatValue: (v) => v,
-    component: ({ value, setValue }) =>
-      createElement(ListPicker<WorkflowCronValue>, {
-        label: 'Cron workflows',
-        placeholder: 'All',
-        value: value.cron,
-        setValue: (v) => setValue({ cron: v }),
-        labelMap: WORKFLOW_CRON_LABELS,
       }),
   },
 ] as const;

@@ -10,7 +10,6 @@ export const mockDomainPageQueryParamsValues = {
   sortColumn: 'startTime',
   sortOrder: 'DESC',
   query: '',
-  cron: undefined,
   workflowId: '',
   workflowType: '',
   statusBasic: undefined,
@@ -22,5 +21,4 @@ export const mockDomainPageQueryParamsValues = {
   sortColumnArchival: 'startTime',
   sortOrderArchival: 'DESC',
   queryArchival: '',
-  cronArchival: undefined,
 } as const satisfies PageQueryParamValues<typeof domainPageQueryParamsConfig>;
