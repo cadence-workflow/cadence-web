@@ -59,6 +59,7 @@ const domainWorkflowsArchivalFiltersConfig: [
             timeRangeStartArchival: start,
             timeRangeEndArchival: end,
           }),
+        clearable: false,
       }),
   },
 ] as const;
