@@ -104,8 +104,8 @@ describe('getSignalExternalWorkflowExecutionGroupFromEvents', () => {
     ];
     const group = getSignalExternalWorkflowExecutionGroupFromEvents(events);
     expect(group.eventsMetadata.map(({ timeLabel }) => timeLabel)).toEqual([
-      'Initiated at 08 Sep, 04:24:30 GMT+0',
-      'Signaled at 08 Sep, 04:26:10 GMT+0',
+      'Initiated at 08 Sep, 04:24:30 UTC',
+      'Signaled at 08 Sep, 04:26:10 UTC',
     ]);
   });
 });

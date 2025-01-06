@@ -91,8 +91,8 @@ describe('getTimerGroupFromEvents', () => {
     ];
     const group = getTimerGroupFromEvents(events);
     expect(group.eventsMetadata.map(({ timeLabel }) => timeLabel)).toEqual([
-      'Started at 07 Sep, 22:32:50 GMT+0',
-      'Fired at 07 Sep, 22:34:30 GMT+0',
+      'Started at 07 Sep, 22:32:50 UTC',
+      'Fired at 07 Sep, 22:34:30 UTC',
     ]);
   });
 });

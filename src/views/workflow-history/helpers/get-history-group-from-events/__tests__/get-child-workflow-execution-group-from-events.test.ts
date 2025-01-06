@@ -201,13 +201,13 @@ describe('getChildWorkflowExecutionGroupFromEvents', () => {
     ];
     const group = getChildWorkflowExecutionGroupFromEvents(events);
     expect(group.eventsMetadata.map(({ timeLabel }) => timeLabel)).toEqual([
-      'Initiated at 21 Jun 1975, 10:47:51 GMT+0',
-      'Initiation failed at 08 Sep, 04:27:52 GMT+0',
-      'Started at 08 Sep, 04:27:53 GMT+0',
-      'Completed at 08 Sep, 04:27:54 GMT+0',
-      'Failed at 08 Sep, 04:27:58 GMT+0',
-      'Timed out at 08 Sep, 04:27:57 GMT+0',
-      'Canceled at 08 Sep, 04:27:55 GMT+0',
+      'Initiated at 21 Jun 1975, 10:47:51 UTC',
+      'Initiation failed at 08 Sep, 04:27:52 UTC',
+      'Started at 08 Sep, 04:27:53 UTC',
+      'Completed at 08 Sep, 04:27:54 UTC',
+      'Failed at 08 Sep, 04:27:58 UTC',
+      'Timed out at 08 Sep, 04:27:57 UTC',
+      'Canceled at 08 Sep, 04:27:55 UTC',
     ]);
   });
 });

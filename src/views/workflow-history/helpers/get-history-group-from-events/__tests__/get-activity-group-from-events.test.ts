@@ -181,9 +181,9 @@ describe('getActivityGroupFromEvents', () => {
     ];
     const group = getActivityGroupFromEvents(events);
     expect(group.eventsMetadata.map(({ timeLabel }) => timeLabel)).toEqual([
-      'Scheduled at 07 Sep, 22:16:10 GMT+0',
-      'Started at 07 Sep, 22:16:10 GMT+0',
-      'Completed at 07 Sep, 22:16:10 GMT+0',
+      'Scheduled at 07 Sep, 22:16:10 UTC',
+      'Started at 07 Sep, 22:16:10 UTC',
+      'Completed at 07 Sep, 22:16:10 UTC',
     ]);
   });
 });
