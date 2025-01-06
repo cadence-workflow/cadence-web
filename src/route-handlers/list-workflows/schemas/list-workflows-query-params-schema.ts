@@ -21,7 +21,6 @@ const listWorkflowsQueryParamSchema = z
         message: 'Invalid workflow status',
       })
       .optional(),
-    cron: z.enum(['CRON', 'NON_CRON']).optional(),
     timeColumn: z
       .enum(['StartTime', 'CloseTime'])
       .optional()
