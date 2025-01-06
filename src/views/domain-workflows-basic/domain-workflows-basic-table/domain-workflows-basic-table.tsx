@@ -2,6 +2,7 @@
 import React from 'react';
 
 import ErrorPanel from '@/components/error-panel/error-panel';
+import PanelSection from '@/components/panel-section/panel-section';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
@@ -9,7 +10,6 @@ import WorkflowsTable from '@/views/shared/workflows-table/workflows-table';
 
 import useListWorkflowsBasic from '../hooks/use-list-workflows-basic';
 
-import { styled } from './domain-workflows-basic-table.styles';
 import { type Props } from './domain-workflows-basic-table.types';
 import getWorkflowsBasicErrorPanelProps from './helpers/get-workflows-basic-error-panel-props';
 
@@ -46,9 +46,9 @@ export default function DomainWorkflowsBasicTable({ domain, cluster }: Props) {
 
     if (errorPanelProps) {
       return (
-        <styled.ErrorPanelContainer>
+        <PanelSection>
           <ErrorPanel {...errorPanelProps} reset={refetch} />
-        </styled.ErrorPanelContainer>
+        </PanelSection>
       );
     }
   }
