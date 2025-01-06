@@ -1,6 +1,7 @@
 import { createElement } from 'react';
 
 import formatDate from '@/utils/data-formatters/format-date';
+import formatDuration from '@/utils/data-formatters/format-duration';
 import WorkflowHistoryEventDetailsExecutionLink from '@/views/shared/workflow-history-event-details-wf-execution-link/workflow-history-event-details-wf-execution-link';
 
 import WorkflowHistoryEventDetailsTaskListLink from '../../shared/workflow-history-event-details-task-list-link/workflow-history-event-details-task-list-link';
@@ -52,7 +53,9 @@ const workflowHistoryEventDetailsConfig = [
   {
     name: 'Duration timeout & backoff seconds',
     pathRegex: '(TimeoutSeconds|BackoffSeconds)$',
-    valueComponent: ({ entryValue }) => `${entryValue}s`, // TODO @assem.hafez: format the value as duration
+    getLabel: ({ key }) => key.replace(/Seconds$/, ''), // remove seconds suffix from label as formatted duration can be minutes/hours etc.
+    valueComponent: ({ entryValue }) =>
+      formatDuration({ seconds: entryValue > 0 ? entryValue : 0, nanos: 0 }),
   },
   {
     name: 'WorkflowExecution as link',
