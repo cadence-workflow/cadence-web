@@ -19,18 +19,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import formatWorkflowCommonEventFields from './format-workflow-common-event-fields';
-import { type DecisionTaskStartedEvent } from './format-workflow-history-event.type';
+import formatDurationToSeconds from '../format-duration-to-seconds';
+import formatEnum from '../format-enum';
 
-const formatDecisionTaskStartedEvent = ({
-  decisionTaskStartedEventAttributes: { scheduledEventId, ...eventAttributes },
+import formatWorkflowCommonEventFields from './format-workflow-common-event-fields';
+import { type DecisionTaskScheduledEvent } from './format-workflow-history-event.type';
+
+const formatDecisionTaskScheduledEvent = ({
+  decisionTaskScheduledEventAttributes: {
+    startToCloseTimeout,
+    taskList,
+    ...eventAttributes
+  },
   ...eventFields
-}: DecisionTaskStartedEvent) => {
+}: DecisionTaskScheduledEvent) => {
   return {
     ...formatWorkflowCommonEventFields(eventFields),
     ...eventAttributes,
-    scheduledEventId: parseInt(scheduledEventId),
+    taskList: {
+      kind: formatEnum(taskList?.kind, 'TASK_LIST_KIND'),
+      name: taskList?.name || null,
+    },
+    startToCloseTimeoutSeconds: formatDurationToSeconds(startToCloseTimeout),
   };
 };
 
-export default formatDecisionTaskStartedEvent;
+export default formatDecisionTaskScheduledEvent;
