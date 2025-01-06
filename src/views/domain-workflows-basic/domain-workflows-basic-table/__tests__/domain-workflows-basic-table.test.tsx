@@ -270,7 +270,6 @@ function generateWorkflowPages(
           : 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
         startTime: 1684800000000 - pageIndex * 1000 - index * 100,
         closeTime: isOpen ? undefined : 1684886400000,
-        isCron: false,
       })),
       nextPage: `${pageIndex + 1}`,
     })
