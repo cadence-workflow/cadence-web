@@ -30,14 +30,19 @@ function toggleSortOrder({
   currentSortColumn,
   currentSortOrder,
   newSortColumn,
+  defaultSortOrder = 'ASC',
 }: {
   currentSortColumn?: string;
   currentSortOrder?: SortOrder;
   newSortColumn: string;
+  defaultSortOrder?: SortOrder;
 }) {
-  return currentSortColumn === newSortColumn && currentSortOrder === 'ASC'
-    ? 'DESC'
-    : 'ASC';
+  const negatedSortOrder = defaultSortOrder === 'ASC' ? 'DESC' : 'ASC';
+
+  return currentSortColumn === newSortColumn &&
+    currentSortOrder === defaultSortOrder
+    ? negatedSortOrder
+    : defaultSortOrder;
 }
 
 function sortBy<ArrayItemType>(

@@ -9,6 +9,7 @@ import { type DomainInfo } from '../domain-page/domain-page.types';
 
 import DomainWorkflowsArchivalDisabledPanel from './domain-workflows-archival-disabled-panel/domain-workflows-archival-disabled-panel';
 import DomainWorkflowsArchivalHeader from './domain-workflows-archival-header/domain-workflows-archival-header';
+import DomainWorkflowsArchivalTable from './domain-workflows-archival-table/domain-workflows-archival-table';
 
 export default function DomainWorkflowsArchival(
   props: DomainPageTabContentProps
@@ -36,12 +37,10 @@ export default function DomainWorkflowsArchival(
         domain={props.domain}
         cluster={props.cluster}
       />
-      {/* TODO: archival table
       <DomainWorkflowsArchivalTable
         domain={props.domain}
         cluster={props.cluster}
       />
-      */}
     </>
   );
 }
