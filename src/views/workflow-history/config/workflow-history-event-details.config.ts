@@ -79,6 +79,11 @@ const workflowHistoryEventDetailsConfig = [
       });
     },
   },
+  {
+    name: 'Retry config attempt as retryAttempt',
+    key: 'attempt',
+    getLabel: () => 'retryAttempt',
+  },
 ] as const satisfies WorkflowHistoryEventDetailsConfig[];
 
 export default workflowHistoryEventDetailsConfig;
