@@ -19,4 +19,5 @@ export type DomainWorkflow = {
   status: WorkflowStatus;
   startTime: number;
   closeTime: number | null | undefined;
+  isCron: boolean;
 };

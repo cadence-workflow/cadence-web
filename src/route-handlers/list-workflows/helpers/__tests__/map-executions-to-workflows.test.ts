@@ -113,6 +113,7 @@ const MOCK_MAPPED_WORKFLOWS: Array<DomainWorkflow> = [
     status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
     startTime: 1717408148258,
     closeTime: 1717409148258,
+    isCron: false,
   },
   {
     workflowID: 'mock-wf-uuid-2',
@@ -121,6 +122,7 @@ const MOCK_MAPPED_WORKFLOWS: Array<DomainWorkflow> = [
     status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
     startTime: 1717408148258,
     closeTime: undefined,
+    isCron: false,
   },
 ];
 
