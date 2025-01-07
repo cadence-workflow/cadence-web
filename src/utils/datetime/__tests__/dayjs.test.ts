@@ -13,7 +13,7 @@ describe('dayjs utility', () => {
   });
 
   it('should calculate duration using duration plugin', () => {
-    const duration = dayjs.duration({ hours: 2, minutes: 30 });
+    const duration = dayjs.duration({ hours: 2, minutes: 55 });
     expect(duration.humanize()).toBe('3 hours');
   });
 
