@@ -3,7 +3,7 @@ import React from 'react';
 import { render, screen, fireEvent, act } from '@/test-utils/rtl';
 
 import WorkflowHistoryFiltersType from '../workflow-history-filters-status';
-import { WORKFLOW_HISTORY_EVENT_FILTERING_STATUS_LABELS_MAP } from '../workflow-history-filters-status.constants';
+import { HISTORY_EVENT_FILTER_STATUS_LABELS_MAP } from '../workflow-history-filters-status.constants';
 import { type WorkflowHistoryFiltersStatusValue } from '../workflow-history-filters-status.types';
 
 describe('WorkflowHistoryFiltersStatus', () => {
@@ -19,7 +19,7 @@ describe('WorkflowHistoryFiltersStatus', () => {
       fireEvent.click(selectFilter);
     });
 
-    Object.entries(WORKFLOW_HISTORY_EVENT_FILTERING_STATUS_LABELS_MAP).forEach(
+    Object.entries(HISTORY_EVENT_FILTER_STATUS_LABELS_MAP).forEach(
       ([_, label]) => expect(screen.getByText(label)).toBeInTheDocument()
     );
   });

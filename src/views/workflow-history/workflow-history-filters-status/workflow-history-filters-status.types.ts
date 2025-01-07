@@ -1,5 +1,9 @@
-import { type WorkflowEventStatus } from '../workflow-history-event-status-badge/workflow-history-event-status-badge.types';
+export type HistoryEventFilterStatus =
+  | 'COMPLETED'
+  | 'FAILED'
+  | 'CANCELED'
+  | 'PENDING';
 
 export type WorkflowHistoryFiltersStatusValue = {
-  historyEventStatuses: WorkflowEventStatus[] | undefined;
+  historyEventStatuses: HistoryEventFilterStatus[] | undefined;
 };
