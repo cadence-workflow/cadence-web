@@ -1,6 +1,6 @@
 import { type PageQueryParamMultiValue } from '@/hooks/use-page-query-params/use-page-query-params.types';
-import { WORKFLOW_EVENT_STATUS } from '@/views/workflow-history/workflow-history-event-status-badge/workflow-history-event-status-badge.constants';
-import { type WorkflowEventStatus } from '@/views/workflow-history/workflow-history-event-status-badge/workflow-history-event-status-badge.types';
+import { HISTORY_EVENT_FILTER_STATUSES } from '@/views/workflow-history/workflow-history-filters-status/workflow-history-filters-status.constants';
+import { type HistoryEventFilterStatus } from '@/views/workflow-history/workflow-history-filters-status/workflow-history-filters-status.types';
 import { WORKFLOW_HISTORY_EVENT_FILTERING_TYPES } from '@/views/workflow-history/workflow-history-filters-type/workflow-history-filters-type.constants';
 import { type WorkflowHistoryEventFilteringType } from '@/views/workflow-history/workflow-history-filters-type/workflow-history-filters-type.types';
 
@@ -11,7 +11,7 @@ const workflowPageQueryParamsConfig: [
   >,
   PageQueryParamMultiValue<
     'historyEventStatuses',
-    WorkflowEventStatus[] | undefined
+    HistoryEventFilterStatus[] | undefined
   >,
 ] = [
   {
@@ -36,8 +36,8 @@ const workflowPageQueryParamsConfig: [
     queryParamKey: 'hs',
     isMultiValue: true,
     parseValue: (v) => {
-      if (v.every((s) => s in WORKFLOW_EVENT_STATUS)) {
-        return v as WorkflowEventStatus[];
+      if (v.every((s) => s in HISTORY_EVENT_FILTER_STATUSES)) {
+        return v as HistoryEventFilterStatus[];
       }
       return undefined;
     },
