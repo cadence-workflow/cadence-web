@@ -6,11 +6,12 @@ import { Select, SIZE } from 'baseui/select';
 
 import { type PageFilterComponentProps } from '@/components/page-filters/page-filters.types';
 
-import { type WorkflowEventStatus } from '../workflow-history-event-status-badge/workflow-history-event-status-badge.types';
-
-import { WORKFLOW_HISTORY_EVENT_FILTERING_STATUS_LABELS_MAP } from './workflow-history-filters-status.constants';
+import { HISTORY_EVENT_FILTER_STATUS_LABELS_MAP } from './workflow-history-filters-status.constants';
 import { overrides } from './workflow-history-filters-status.styles';
-import { type WorkflowHistoryFiltersStatusValue } from './workflow-history-filters-status.types';
+import {
+  type HistoryEventFilterStatus,
+  type WorkflowHistoryFiltersStatusValue,
+} from './workflow-history-filters-status.types';
 
 export default function WorkflowHistoryFiltersStatus({
   value,
@@ -19,7 +20,7 @@ export default function WorkflowHistoryFiltersStatus({
   const statusOptionsValue =
     value.historyEventStatuses?.map((status) => ({
       id: status,
-      label: WORKFLOW_HISTORY_EVENT_FILTERING_STATUS_LABELS_MAP[status],
+      label: HISTORY_EVENT_FILTER_STATUS_LABELS_MAP[status],
     })) ?? [];
 
   return (
@@ -28,17 +29,17 @@ export default function WorkflowHistoryFiltersStatus({
         multi
         size={SIZE.compact}
         value={statusOptionsValue}
-        options={Object.entries(
-          WORKFLOW_HISTORY_EVENT_FILTERING_STATUS_LABELS_MAP
-        ).map(([id, label]) => ({
-          id,
-          label,
-        }))}
+        options={Object.entries(HISTORY_EVENT_FILTER_STATUS_LABELS_MAP).map(
+          ([id, label]) => ({
+            id,
+            label,
+          })
+        )}
         onChange={(params) => {
           setValue({
             historyEventStatuses:
               params.value.length > 0
-                ? params.value.map((v) => v.id as WorkflowEventStatus)
+                ? params.value.map((v) => v.id as HistoryEventFilterStatus)
                 : undefined,
           });
         }}
