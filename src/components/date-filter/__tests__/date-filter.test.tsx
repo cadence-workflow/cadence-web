@@ -2,13 +2,13 @@ import React from 'react';
 
 import { render, screen, act, fireEvent } from '@/test-utils/rtl';
 
-import DatePicker from '../date-picker';
-import { type DateRange } from '../date-picker.types';
+import DateFilter from '../date-filter';
+import { type DateRange } from '../date-filter.types';
 
 jest.useFakeTimers().setSystemTime(new Date('2023-05-25'));
 
-jest.mock('../date-picker.constants', () => ({
-  ...jest.requireActual('../date-picker.constants'),
+jest.mock('../date-filter.constants', () => ({
+  ...jest.requireActual('../date-filter.constants'),
   DATE_FORMAT: 'dd MMM yyyy, HH:mm x',
 }));
 
@@ -17,7 +17,7 @@ export const mockDateOverrides: DateRange = {
   end: new Date(1684886400000), // 24 May 2023 00:00
 };
 
-describe(DatePicker.name, () => {
+describe(DateFilter.name, () => {
   it('displays the date picker component', () => {
     setup({});
     expect(screen.getByPlaceholderText('Mock placeholder')).toBeInTheDocument();
@@ -36,7 +36,7 @@ describe(DatePicker.name, () => {
   });
 
   it('sets query params when date is set', () => {
-    const { mockSetDates } = setup({});
+    const { mockOnChangeDates } = setup({});
     const datePicker = screen.getByPlaceholderText('Mock placeholder');
     act(() => {
       fireEvent.change(datePicker, {
@@ -44,14 +44,14 @@ describe(DatePicker.name, () => {
       });
     });
 
-    expect(mockSetDates).toHaveBeenCalledWith({
+    expect(mockOnChangeDates).toHaveBeenCalledWith({
       start: new Date('2023-05-13T00:00:00.000Z'),
       end: new Date('2023-05-14T00:00:00.000Z'),
     });
   });
 
   it('resets to previous date when one date is selected and then the modal is closed', () => {
-    const { mockSetDates } = setup({
+    const { mockOnChangeDates } = setup({
       overrides: mockDateOverrides,
     });
     const datePicker = screen.getByPlaceholderText('Mock placeholder');
@@ -79,11 +79,11 @@ describe(DatePicker.name, () => {
     expect(datePicker).toHaveValue(
       '23 May 2023, 00:00 +00 – 24 May 2023, 00:00 +00'
     );
-    expect(mockSetDates).not.toHaveBeenCalled();
+    expect(mockOnChangeDates).not.toHaveBeenCalled();
   });
 
   it('resets to empty state when one date is selected and then the modal is closed', () => {
-    const { mockSetDates } = setup({});
+    const { mockOnChangeDates } = setup({});
     const datePicker = screen.getByPlaceholderText('Mock placeholder');
 
     act(() => {
@@ -107,11 +107,11 @@ describe(DatePicker.name, () => {
     });
 
     expect(datePicker).toHaveValue('');
-    expect(mockSetDates).not.toHaveBeenCalled();
+    expect(mockOnChangeDates).not.toHaveBeenCalled();
   });
 
   it('clears the date when the clear button is clicked', () => {
-    const { mockSetDates } = setup({
+    const { mockOnChangeDates } = setup({
       overrides: mockDateOverrides,
     });
     const clearButton = screen.getByLabelText('Clear value');
@@ -119,7 +119,7 @@ describe(DatePicker.name, () => {
       fireEvent.click(clearButton);
     });
 
-    expect(mockSetDates).toHaveBeenCalledWith({
+    expect(mockOnChangeDates).toHaveBeenCalledWith({
       start: undefined,
       end: undefined,
     });
@@ -127,9 +127,9 @@ describe(DatePicker.name, () => {
 });
 
 function setup({ overrides }: { overrides?: DateRange }) {
-  const mockSetDates = jest.fn();
+  const mockOnChangeDates = jest.fn();
   render(
-    <DatePicker
+    <DateFilter
       label="Mock label"
       placeholder="Mock placeholder"
       dates={{
@@ -137,9 +137,9 @@ function setup({ overrides }: { overrides?: DateRange }) {
         end: undefined,
         ...overrides,
       }}
-      setDates={mockSetDates}
+      onChangeDates={mockOnChangeDates}
     />
   );
 
-  return { mockSetDates };
+  return { mockOnChangeDates };
 }

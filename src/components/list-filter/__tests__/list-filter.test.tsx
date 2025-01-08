@@ -2,17 +2,17 @@ import React from 'react';
 
 import { render, screen, fireEvent, act } from '@/test-utils/rtl';
 
-import ListPicker from '../list-picker';
+import ListFilter from '../list-filter';
 
-const MOCK_LIST_PICKER_LABELS = {
+const MOCK_LIST_FILTER_LABELS = {
   opt1: 'Option 1',
   opt2: 'Option 2',
   opt3: 'Option 3',
 };
 
-type MockListPickerOption = keyof typeof MOCK_LIST_PICKER_LABELS;
+type MockListFilterOption = keyof typeof MOCK_LIST_FILTER_LABELS;
 
-describe(ListPicker.name, () => {
+describe(ListFilter.name, () => {
   it('renders without errors', () => {
     setup({});
     expect(screen.getByRole('combobox')).toBeInTheDocument();
@@ -26,13 +26,13 @@ describe(ListPicker.name, () => {
     act(() => {
       fireEvent.click(selectFilter);
     });
-    Object.entries(MOCK_LIST_PICKER_LABELS).forEach(([_, value]) =>
+    Object.entries(MOCK_LIST_FILTER_LABELS).forEach(([_, value]) =>
       expect(screen.getByText(value)).toBeInTheDocument()
     );
   });
 
   it('calls the setQueryParams function when an option is selected', () => {
-    const { mockSetValue } = setup({});
+    const { mockOnChangeValue } = setup({});
     const selectFilter = screen.getByRole('combobox');
     act(() => {
       fireEvent.click(selectFilter);
@@ -41,32 +41,32 @@ describe(ListPicker.name, () => {
     act(() => {
       fireEvent.click(option);
     });
-    expect(mockSetValue).toHaveBeenCalledWith('opt1');
+    expect(mockOnChangeValue).toHaveBeenCalledWith('opt1');
   });
 
   it('calls the setQueryParams function when the filter is cleared', () => {
-    const { mockSetValue } = setup({
+    const { mockOnChangeValue } = setup({
       override: 'opt2',
     });
     const clearButton = screen.getByLabelText('Clear value');
     act(() => {
       fireEvent.click(clearButton);
     });
-    expect(mockSetValue).toHaveBeenCalledWith(undefined);
+    expect(mockOnChangeValue).toHaveBeenCalledWith(undefined);
   });
 });
 
-function setup({ override }: { override?: MockListPickerOption }) {
-  const mockSetValue = jest.fn();
+function setup({ override }: { override?: MockListFilterOption }) {
+  const mockOnChangeValue = jest.fn();
   render(
-    <ListPicker
+    <ListFilter
       label="Mock label"
       placeholder="Mock placeholder"
       value={override ?? undefined}
-      setValue={mockSetValue}
-      labelMap={MOCK_LIST_PICKER_LABELS}
+      onChangeValue={mockOnChangeValue}
+      labelMap={MOCK_LIST_FILTER_LABELS}
     />
   );
 
-  return { mockSetValue };
+  return { mockOnChangeValue };
 }

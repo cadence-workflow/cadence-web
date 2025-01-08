@@ -7,6 +7,6 @@ export type Props = {
   label: string;
   placeholder: string;
   dates: DateRange;
-  setDates: (v: DateRange) => void;
+  onChangeDates: (v: DateRange) => void;
   clearable?: boolean;
 };

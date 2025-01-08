@@ -1,7 +1,7 @@
 import { createElement } from 'react';
 
-import DatePicker from '@/components/date-picker/date-picker';
-import ListPicker from '@/components/list-picker/list-picker';
+import DateFilter from '@/components/date-filter/date-filter';
+import ListFilter from '@/components/list-filter/list-filter';
 import { type PageFilterConfig } from '@/components/page-filters/page-filters.types';
 import type domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
 import { WORKFLOW_STATUS_NAMES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
@@ -22,11 +22,11 @@ const domainWorkflowsFiltersConfig: [
     getValue: (v) => ({ status: v.status }),
     formatValue: (v) => v,
     component: ({ value, setValue }) =>
-      createElement(ListPicker<WorkflowStatus>, {
+      createElement(ListFilter<WorkflowStatus>, {
         label: 'Status',
         placeholder: 'Show all statuses',
         value: value.status,
-        setValue: (v) => setValue({ status: v }),
+        onChangeValue: (v) => setValue({ status: v }),
         labelMap: WORKFLOW_STATUS_NAMES,
       }),
   },
@@ -41,14 +41,14 @@ const domainWorkflowsFiltersConfig: [
       timeRangeEnd: v.timeRangeEnd?.toISOString(),
     }),
     component: ({ value, setValue }) =>
-      createElement(DatePicker, {
+      createElement(DateFilter, {
         label: 'Dates',
         placeholder: 'Select time range',
         dates: {
           start: value.timeRangeStart,
           end: value.timeRangeEnd,
         },
-        setDates: ({ start, end }) =>
+        onChangeDates: ({ start, end }) =>
           setValue({ timeRangeStart: start, timeRangeEnd: end }),
       }),
   },

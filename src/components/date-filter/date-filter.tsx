@@ -1,19 +1,19 @@
 'use client';
 import * as React from 'react';
 
-import { DatePicker as DatePickerBaseweb } from 'baseui/datepicker';
+import { DatePicker } from 'baseui/datepicker';
 import { FormControl } from 'baseui/form-control';
 import { SIZE } from 'baseui/input';
 
-import { DATE_FORMAT } from './date-picker.constants';
-import { overrides } from './date-picker.styles';
-import { type Props } from './date-picker.types';
+import { DATE_FORMAT } from './date-filter.constants';
+import { overrides } from './date-filter.styles';
+import { type Props } from './date-filter.types';
 
-export default function DatePicker({
+export default function DateFilter({
   label,
   placeholder,
   dates,
-  setDates,
+  onChangeDates,
   clearable = true,
 }: Props) {
   const [internalDates, setInternalDates] = React.useState<
@@ -32,7 +32,7 @@ export default function DatePicker({
 
   return (
     <FormControl label={label} overrides={overrides.dateFormControl}>
-      <DatePickerBaseweb
+      <DatePicker
         value={internalDates}
         onChange={({ date: newDates }) => {
           if (!newDates || !Array.isArray(newDates)) {
@@ -40,7 +40,7 @@ export default function DatePicker({
           }
           setInternalDates(newDates);
           if (newDates.length === 0) {
-            setDates({
+            onChangeDates({
               start: undefined,
               end: undefined,
             });
@@ -49,7 +49,7 @@ export default function DatePicker({
             if (!start || !end) {
               return;
             }
-            setDates({ start, end });
+            onChangeDates({ start, end });
           }
         }}
         onClose={() => {

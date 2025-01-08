@@ -5,12 +5,12 @@ import { FormControl } from 'baseui/form-control';
 import { Select, SIZE } from 'baseui/select';
 
 import getOptionsFromLabelMap from './helpers/get-options-from-label-map';
-import { overrides } from './list-picker.styles';
-import { type Props } from './list-picker.types';
+import { overrides } from './list-filter.styles';
+import { type Props } from './list-filter.types';
 
-export default function ListPicker<T extends string>({
+export default function ListFilter<T extends string>({
   value,
-  setValue,
+  onChangeValue,
   labelMap,
   label,
   placeholder,
@@ -25,7 +25,7 @@ export default function ListPicker<T extends string>({
         value={optionValue}
         options={options}
         onChange={(params) =>
-          setValue(
+          onChangeValue(
             options.find((opt) => opt.id === params.value[0]?.id)
               ? (String(params.value[0]?.id) as T)
               : undefined

@@ -2,8 +2,8 @@ import { createElement } from 'react';
 
 import { omit } from 'lodash';
 
-import DatePicker from '@/components/date-picker/date-picker';
-import ListPicker from '@/components/list-picker/list-picker';
+import DateFilter from '@/components/date-filter/date-filter';
+import ListFilter from '@/components/list-filter/list-filter';
 import { type PageFilterConfig } from '@/components/page-filters/page-filters.types';
 import type domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
 import { WORKFLOW_STATUS_NAMES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
@@ -28,11 +28,11 @@ const domainWorkflowsArchivalFiltersConfig: [
     getValue: (v) => v,
     formatValue: (v) => v,
     component: ({ value, setValue }) =>
-      createElement(ListPicker<WorkflowStatusClosed>, {
+      createElement(ListFilter<WorkflowStatusClosed>, {
         label: 'Status',
         placeholder: 'Show all statuses',
         value: value.statusArchival,
-        setValue: (v) => setValue({ statusArchival: v }),
+        onChangeValue: (v) => setValue({ statusArchival: v }),
         labelMap: omit(
           WORKFLOW_STATUS_NAMES,
           'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
@@ -47,14 +47,14 @@ const domainWorkflowsArchivalFiltersConfig: [
       timeRangeEndArchival: v.timeRangeEndArchival?.toISOString(),
     }),
     component: ({ value, setValue }) =>
-      createElement(DatePicker, {
+      createElement(DateFilter, {
         label: 'Dates',
         placeholder: 'Select time range',
         dates: {
           start: value.timeRangeStartArchival,
           end: value.timeRangeEndArchival,
         },
-        setDates: ({ start, end }) =>
+        onChangeDates: ({ start, end }) =>
           setValue({
             timeRangeStartArchival: start,
             timeRangeEndArchival: end,
