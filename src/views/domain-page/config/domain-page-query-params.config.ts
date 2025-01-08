@@ -1,8 +1,9 @@
 import { type PageQueryParam } from '@/hooks/use-page-query-params/use-page-query-params.types';
 import parseDateQueryParam from '@/utils/datetime/parse-date-query-param';
 import { type SortOrder } from '@/utils/sort-by';
-import { type WorkflowStatusBasicVisibility } from '@/views/domain-workflows-basic/domain-workflows-basic-filters-status/domain-workflows-basic-filters-status.types';
-import isWorkflowStatusBasicVisibility from '@/views/domain-workflows-basic/domain-workflows-basic-filters-status/helpers/is-workflow-status-basic-visibility';
+import { type WorkflowStatusClosed } from '@/views/domain-workflows-archival/domain-workflows-archival-header/domain-workflows-archival-header.types';
+import { type WorkflowStatusBasicVisibility } from '@/views/domain-workflows-basic/domain-workflows-basic-filters/domain-workflows-basic-filters.types';
+import isWorkflowStatusBasicVisibility from '@/views/domain-workflows-basic/domain-workflows-basic-filters/helpers/is-workflow-status-basic-visibility';
 import isWorkflowStatus from '@/views/shared/workflow-status-tag/helpers/is-workflow-status';
 import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
 import { type WorkflowsHeaderInputType } from '@/views/shared/workflows-header/workflows-header.types';
@@ -25,7 +26,7 @@ const domainPageQueryParamsConfig: [
   // Archival inputs
   PageQueryParam<'inputTypeArchival', WorkflowsHeaderInputType>,
   PageQueryParam<'searchArchival', string>,
-  PageQueryParam<'statusArchival', WorkflowStatus | undefined>,
+  PageQueryParam<'statusArchival', WorkflowStatusClosed | undefined>,
   PageQueryParam<'timeRangeStartArchival', Date | undefined>,
   PageQueryParam<'timeRangeEndArchival', Date | undefined>,
   PageQueryParam<'sortColumnArchival', string>,
@@ -101,7 +102,10 @@ const domainPageQueryParamsConfig: [
     key: 'statusArchival',
     queryParamKey: 'astatus',
     parseValue: (value: string) =>
-      isWorkflowStatus(value) ? value : undefined,
+      isWorkflowStatus(value) &&
+      value !== 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
+        ? value
+        : undefined,
   },
   {
     key: 'timeRangeStartArchival',

@@ -1,15 +1,19 @@
 import { createElement } from 'react';
 
+import { omit } from 'lodash';
+
+import DateFilter from '@/components/date-filter/date-filter';
+import ListFilter from '@/components/list-filter/list-filter';
 import { type PageFilterConfig } from '@/components/page-filters/page-filters.types';
 import type domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
-import DomainWorkflowsFiltersDates from '@/views/domain-workflows/domain-workflows-filters-dates/domain-workflows-filters-dates';
-import DomainWorkflowsFiltersStatus from '@/views/domain-workflows/domain-workflows-filters-status/domain-workflows-filters-status';
-import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
+import { WORKFLOW_STATUS_NAMES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
+
+import { type WorkflowStatusClosed } from '../domain-workflows-archival-header/domain-workflows-archival-header.types';
 
 const domainWorkflowsArchivalFiltersConfig: [
   PageFilterConfig<
     typeof domainPageQueryParamsConfig,
-    { statusArchival: WorkflowStatus | undefined }
+    { statusArchival: WorkflowStatusClosed | undefined }
   >,
   PageFilterConfig<
     typeof domainPageQueryParamsConfig,
@@ -24,15 +28,15 @@ const domainWorkflowsArchivalFiltersConfig: [
     getValue: (v) => v,
     formatValue: (v) => v,
     component: ({ value, setValue }) =>
-      createElement(DomainWorkflowsFiltersStatus, {
-        value: {
-          status: value.statusArchival,
-        },
-        setValue: ({ status }) => {
-          setValue({
-            statusArchival: status,
-          });
-        },
+      createElement(ListFilter<WorkflowStatusClosed>, {
+        label: 'Status',
+        placeholder: 'Show all statuses',
+        value: value.statusArchival,
+        onChangeValue: (v) => setValue({ statusArchival: v }),
+        labelMap: omit(
+          WORKFLOW_STATUS_NAMES,
+          'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
+        ),
       }),
   },
   {
@@ -43,17 +47,19 @@ const domainWorkflowsArchivalFiltersConfig: [
       timeRangeEndArchival: v.timeRangeEndArchival?.toISOString(),
     }),
     component: ({ value, setValue }) =>
-      createElement(DomainWorkflowsFiltersDates, {
-        value: {
-          timeRangeStart: value.timeRangeStartArchival,
-          timeRangeEnd: value.timeRangeEndArchival,
+      createElement(DateFilter, {
+        label: 'Dates',
+        placeholder: 'Select time range',
+        dates: {
+          start: value.timeRangeStartArchival,
+          end: value.timeRangeEndArchival,
         },
-        setValue: ({ timeRangeStart, timeRangeEnd }) => {
+        onChangeDates: ({ start, end }) =>
           setValue({
-            timeRangeStartArchival: timeRangeStart,
-            timeRangeEndArchival: timeRangeEnd,
-          });
-        },
+            timeRangeStartArchival: start,
+            timeRangeEndArchival: end,
+          }),
+        clearable: false,
       }),
   },
 ] as const;
