@@ -1,26 +1,35 @@
+import { createElement } from 'react';
+
+import DateFilter from '@/components/date-filter/date-filter';
+import ListFilter from '@/components/list-filter/list-filter';
 import { type PageFilterConfig } from '@/components/page-filters/page-filters.types';
 import type domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
-import DomainWorkflowsFiltersDates from '@/views/domain-workflows/domain-workflows-filters-dates/domain-workflows-filters-dates';
-import { type DomainWorkflowsFiltersDatesValue } from '@/views/domain-workflows/domain-workflows-filters-dates/domain-workflows-filters-dates.types';
 
-import DomainWorkflowsBasicFiltersStatus from '../domain-workflows-basic-filters-status/domain-workflows-basic-filters-status';
-import { type DomainWorkflowsBasicFiltersStatusValue } from '../domain-workflows-basic-filters-status/domain-workflows-basic-filters-status.types';
+import { WORKFLOW_STATUS_NAMES_BASIC_VISIBILITY } from '../domain-workflows-basic-filters/domain-workflows-basic-filters.constants';
+import { type WorkflowStatusBasicVisibility } from '../domain-workflows-basic-filters/domain-workflows-basic-filters.types';
 
 const domainWorkflowsBasicFiltersConfig: [
   PageFilterConfig<
     typeof domainPageQueryParamsConfig,
-    DomainWorkflowsBasicFiltersStatusValue
+    { statusBasic: WorkflowStatusBasicVisibility | undefined }
   >,
   PageFilterConfig<
     typeof domainPageQueryParamsConfig,
-    DomainWorkflowsFiltersDatesValue
+    { timeRangeStart: Date | undefined; timeRangeEnd: Date | undefined }
   >,
 ] = [
   {
     id: 'status',
     getValue: (v) => ({ statusBasic: v.statusBasic }),
     formatValue: (v) => v,
-    component: DomainWorkflowsBasicFiltersStatus,
+    component: ({ value, setValue }) =>
+      createElement(ListFilter<WorkflowStatusBasicVisibility>, {
+        label: 'Status',
+        placeholder: 'Show all statuses',
+        value: value.statusBasic,
+        onChangeValue: (v) => setValue({ statusBasic: v }),
+        labelMap: WORKFLOW_STATUS_NAMES_BASIC_VISIBILITY,
+      }),
   },
   {
     id: 'dates',
@@ -32,8 +41,18 @@ const domainWorkflowsBasicFiltersConfig: [
       timeRangeStart: v.timeRangeStart?.toISOString(),
       timeRangeEnd: v.timeRangeEnd?.toISOString(),
     }),
-    // TODO: make a shared dates picker so that you can customize this one to not be clearable
-    component: DomainWorkflowsFiltersDates,
+    component: ({ value, setValue }) =>
+      createElement(DateFilter, {
+        label: 'Dates',
+        placeholder: 'Select time range',
+        dates: {
+          start: value.timeRangeStart,
+          end: value.timeRangeEnd,
+        },
+        onChangeDates: ({ start, end }) =>
+          setValue({ timeRangeStart: start, timeRangeEnd: end }),
+        clearable: false,
+      }),
   },
 ] as const;
 
