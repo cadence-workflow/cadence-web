@@ -46,4 +46,16 @@ describe(WorkflowPageError.name, () => {
       )
     ).toBeInTheDocument();
   });
+
+  it('renders "Forbidden" error page correctly', () => {
+    render(
+      <WorkflowPageError
+        error={new RequestError('Could not find workflow', 403)}
+        reset={() => {}}
+      />
+    );
+    expect(
+      screen.getByText("Access denied, can't load workflow")
+    ).toBeInTheDocument();
+  });
 });
