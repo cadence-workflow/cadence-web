@@ -21,4 +21,17 @@ describe('getWorkflowPageErrorConfig', () => {
       actions: [{ kind: 'retry', label: 'Retry' }],
     });
   });
+
+  it('returns correct error config when request errors with 403', () => {
+    expect(
+      getWorkflowPageErrorConfig(
+        new RequestError('test error', 403),
+        undefined,
+        'current tab'
+      )
+    ).toEqual({
+      message: `Access denied, can't fetch current tab`,
+      omitLogging: true,
+    });
+  });
 });
