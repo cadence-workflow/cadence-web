@@ -3,13 +3,29 @@ import { type WorkflowPageTabsErrorConfig } from '../workflow-page-tabs-error/wo
 
 const workflowPageTabsErrorConfig: WorkflowPageTabsErrorConfig = {
   summary: (err) =>
-    getWorkflowPageErrorConfig(err, 'Failed to load workflow summary'),
+    getWorkflowPageErrorConfig(
+      err,
+      'Failed to load workflow summary',
+      'summary'
+    ),
   history: (err) =>
-    getWorkflowPageErrorConfig(err, 'Failed to load workflow history'),
+    getWorkflowPageErrorConfig(
+      err,
+      'Failed to load workflow history',
+      'history'
+    ),
   queries: (err) =>
-    getWorkflowPageErrorConfig(err, 'Failed to load workflow queries'),
+    getWorkflowPageErrorConfig(
+      err,
+      'Failed to load workflow queries',
+      'queries'
+    ),
   'stack-trace': (err) =>
-    getWorkflowPageErrorConfig(err, 'Failed to load workflow stack trace'),
+    getWorkflowPageErrorConfig(
+      err,
+      'Failed to load workflow stack trace',
+      'stack trace'
+    ),
 } as const;
 
 export default workflowPageTabsErrorConfig;
