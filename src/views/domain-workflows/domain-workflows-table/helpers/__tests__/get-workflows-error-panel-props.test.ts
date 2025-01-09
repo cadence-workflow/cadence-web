@@ -28,6 +28,18 @@ describe(getWorkflowsErrorPanelProps.name, () => {
     });
   });
 
+  it('returns correct error message for forbidden', () => {
+    expect(
+      getWorkflowsErrorPanelProps({
+        inputType: 'search',
+        error: new RequestError('Incorrect query', 403),
+        areSearchParamsAbsent: false,
+      })
+    ).toEqual({
+      message: "Access denied, can't fetch workflows",
+    });
+  });
+
   it('returns "not found" error panel props when search params are absent in search mode', () => {
     expect(
       getWorkflowsErrorPanelProps({

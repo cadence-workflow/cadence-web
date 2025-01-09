@@ -9,6 +9,24 @@ import { type Props } from './workflow-page-error.types';
 export default function WorkflowPageError({ error, reset }: Props) {
   const { domain, cluster } = useParams();
 
+  if (error instanceof RequestError && error.status === 403) {
+    return (
+      <ErrorPanel
+        error={error}
+        message={`Access denied, can't fetch workflow`}
+        actions={[
+          {
+            kind: 'link-internal',
+            label: 'Go to domain page',
+            link: `/domains/${domain}/${cluster}`,
+          },
+        ]}
+        reset={reset}
+        omitLogging={true}
+      />
+    );
+  }
+
   if (error instanceof RequestError && error.status === 404) {
     return (
       <ErrorPanel

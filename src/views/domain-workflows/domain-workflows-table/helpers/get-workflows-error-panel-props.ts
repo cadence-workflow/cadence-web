@@ -12,6 +12,12 @@ export default function getWorkflowsErrorPanelProps({
   areSearchParamsAbsent: boolean;
 }): ErrorPanelProps | undefined {
   if (error) {
+    if (error.status === 403) {
+      return {
+        message: "Access denied, can't fetch workflows",
+      };
+    }
+
     if (inputType === 'query' && error.status === 400) {
       return {
         message: 'Error in query: ' + error.message,
