@@ -20,7 +20,7 @@ export const styled = {
     alignItems: 'flex-start',
     ...$theme.typography.LabelSmall,
   })),
-  MenuItemDescription: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+  MenuItemSubtitle: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     ...$theme.typography.ParagraphXSmall,
   })),
 };

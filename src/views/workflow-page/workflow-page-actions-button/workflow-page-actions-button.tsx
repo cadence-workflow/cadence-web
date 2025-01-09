@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 
 import { Button, KIND, SIZE } from 'baseui/button';
 import { PLACEMENT, StatefulPopover } from 'baseui/popover';
@@ -9,6 +9,8 @@ import { MdArrowDropDown } from 'react-icons/md';
 
 import useDescribeWorkflow from '../hooks/use-describe-workflow';
 import WorkflowPageActionsMenu from '../workflow-page-actions-menu/workflow-page-actions-menu';
+import { type WorkflowAction } from '../workflow-page-actions-menu/workflow-page-actions-menu.types';
+import WorkflowPageActionsModal from '../workflow-page-actions-modal/workflow-page-actions-modal';
 import { type WorkflowPageParams } from '../workflow-page.types';
 
 import { overrides } from './workflow-page-actions-button.styles';
@@ -31,29 +33,39 @@ export default function WorkflowPageActionsButton() {
     ...workflowDetailsParams,
   });
 
+  const [selectedAction, setSelectedAction] = useState<
+    WorkflowAction | undefined
+  >(undefined);
+
   return (
-    <StatefulPopover
-      placement={PLACEMENT.bottomRight}
-      overrides={overrides.popover}
-      content={() => (
-        <WorkflowPageActionsMenu
-          workflow={workflow}
-          isLoading={isLoading}
-          disableAll={isError}
-          onMenuItemSelect={() => {}}
-        />
-      )}
-      returnFocus
-      autoFocus
-    >
-      <Button
-        size={SIZE.compact}
-        kind={KIND.secondary}
-        endEnhancer={<MdArrowDropDown size={20} />}
+    <>
+      <StatefulPopover
+        placement={PLACEMENT.bottomRight}
+        overrides={overrides.popover}
+        content={() => (
+          <WorkflowPageActionsMenu
+            workflow={workflow}
+            isLoading={isLoading}
+            disableAll={isError}
+            onActionSelect={(action) => setSelectedAction(action)}
+          />
+        )}
+        returnFocus
+        autoFocus
       >
-        Workflow Actions
-      </Button>
-      {/* <WorkflowPageActionsModal /> */}
-    </StatefulPopover>
+        <Button
+          size={SIZE.compact}
+          kind={KIND.secondary}
+          endEnhancer={<MdArrowDropDown size={20} />}
+        >
+          Workflow Actions
+        </Button>
+      </StatefulPopover>
+      <WorkflowPageActionsModal
+        workflow={workflow}
+        action={selectedAction}
+        onClose={() => setSelectedAction(undefined)}
+      />
+    </>
   );
 }

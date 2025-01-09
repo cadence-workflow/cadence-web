@@ -5,17 +5,18 @@ import { type DescribeWorkflowResponse } from '@/route-handlers/describe-workflo
 export type WorkflowAction = {
   id: string;
   label: string;
-  description: string;
+  subtitle: string;
   icon: React.ComponentType<{
     size?: IconProps['size'];
     color?: IconProps['color'];
   }>;
   getIsEnabled: (workflow: DescribeWorkflowResponse) => boolean;
+  // Add a field for the endpoint to call
 };
 
 export type Props = {
   workflow: DescribeWorkflowResponse;
   isLoading: boolean;
   disableAll: boolean;
-  onMenuItemSelect: (action: WorkflowAction) => void;
+  onActionSelect: (action: WorkflowAction) => void;
 };

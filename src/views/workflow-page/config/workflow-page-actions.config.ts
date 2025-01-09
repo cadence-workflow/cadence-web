@@ -7,7 +7,7 @@ const workflowPageActionsConfig = [
   {
     id: 'cancel',
     label: 'Cancel',
-    description: 'Cancel a workflow execution',
+    subtitle: 'Cancel a workflow execution',
     icon: MdHighlightOff,
     getIsEnabled: (workflow) =>
       !getWorkflowIsCompleted(
@@ -17,7 +17,7 @@ const workflowPageActionsConfig = [
   {
     id: 'terminate',
     label: 'Terminate',
-    description: 'Terminate a workflow execution',
+    subtitle: 'Terminate a workflow execution',
     icon: MdPowerSettingsNew,
     getIsEnabled: (workflow) =>
       !getWorkflowIsCompleted(

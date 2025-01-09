@@ -9,7 +9,7 @@ export default function WorkflowPageActionsMenu({
   workflow,
   isLoading,
   disableAll,
-  onMenuItemSelect,
+  onActionSelect,
 }: Props) {
   return (
     <styled.MenuItemsContainer>
@@ -18,7 +18,7 @@ export default function WorkflowPageActionsMenu({
           key={action.id}
           kind={KIND.tertiary}
           overrides={overrides.button}
-          onClick={() => onMenuItemSelect(action)}
+          onClick={() => onActionSelect(action)}
           isLoading={isLoading}
           disabled={disableAll ? true : !action.getIsEnabled(workflow)}
         >
@@ -26,9 +26,9 @@ export default function WorkflowPageActionsMenu({
             <action.icon />
             <styled.MenuItemLabel>
               {action.label}
-              <styled.MenuItemDescription>
-                {action.description}
-              </styled.MenuItemDescription>
+              <styled.MenuItemSubtitle>
+                {action.subtitle}
+              </styled.MenuItemSubtitle>
             </styled.MenuItemLabel>
           </styled.MenuItemContainer>
         </Button>
