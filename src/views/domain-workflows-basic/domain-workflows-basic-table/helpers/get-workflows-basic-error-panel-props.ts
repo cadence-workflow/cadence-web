@@ -12,6 +12,16 @@ export default function getWorkflowsBasicErrorPanelProps({
   areSearchParamsAbsent: boolean;
 }): ErrorPanelProps | undefined {
   if (error) {
+    if (
+      error.errors.find(
+        (error) => error instanceof RequestError && error.status === 403
+      )
+    ) {
+      return {
+        message: "Access denied, can't fetch workflows",
+      };
+    }
+
     const validationErrors = error.errors.reduce(
       (acc: Array<ZodIssue>, error: Error) => {
         if (error instanceof RequestError && error.validationErrors) {
