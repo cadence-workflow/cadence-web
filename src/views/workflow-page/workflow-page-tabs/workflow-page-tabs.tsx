@@ -28,7 +28,7 @@ export default function WorkflowPageTabs() {
       endEnhancer={
         <styled.EndButtonsContainer>
           <WorkflowPageCliCommandsButton />
-          <ErrorBoundary fallbackRender={() => null} omitLogging={true}>
+          <ErrorBoundary fallbackRender={() => null}>
             <WorkflowPageActionsButton />
           </ErrorBoundary>
         </styled.EndButtonsContainer>

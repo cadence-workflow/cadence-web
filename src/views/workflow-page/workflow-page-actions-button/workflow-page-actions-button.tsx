@@ -25,11 +25,7 @@ export default function WorkflowPageActionsButton() {
     'domain'
   );
 
-  const {
-    data: workflow,
-    isLoading,
-    isError,
-  } = useDescribeWorkflow({
+  const { data: workflow } = useDescribeWorkflow({
     ...workflowDetailsParams,
   });
 
@@ -45,8 +41,6 @@ export default function WorkflowPageActionsButton() {
         content={() => (
           <WorkflowPageActionsMenu
             workflow={workflow}
-            isLoading={isLoading}
-            disableAll={isError}
             onActionSelect={(action) => setSelectedAction(action)}
           />
         )}

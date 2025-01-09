@@ -16,7 +16,5 @@ export type WorkflowAction = {
 
 export type Props = {
   workflow: DescribeWorkflowResponse;
-  isLoading: boolean;
-  disableAll: boolean;
   onActionSelect: (action: WorkflowAction) => void;
 };
