@@ -13,7 +13,7 @@ export default function WorkflowPageError({ error, reset }: Props) {
     return (
       <ErrorPanel
         error={error}
-        message={`Access denied, can't load workflow`}
+        message={`Access denied, can't fetch workflow`}
         actions={[
           {
             kind: 'link-internal',

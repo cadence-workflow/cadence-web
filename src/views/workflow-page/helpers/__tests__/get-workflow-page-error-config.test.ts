@@ -30,9 +30,8 @@ describe('getWorkflowPageErrorConfig', () => {
         'current tab'
       )
     ).toEqual({
-      message: `Access denied, can't load current tab`,
+      message: `Access denied, can't fetch current tab`,
       omitLogging: true,
-      actions: [{ kind: 'retry', label: 'Retry' }],
     });
   });
 });

@@ -8,8 +8,7 @@ export default function getWorkflowPageErrorConfig(
 ): DomainPageTabErrorConfig {
   if (err instanceof RequestError && err.status === 403) {
     return {
-      message: `Access denied, can't load ${fetchedContentLabel}`,
-      actions: [{ kind: 'retry', label: 'Retry' }],
+      message: `Access denied, can't fetch ${fetchedContentLabel}`,
       omitLogging: true,
     };
   }

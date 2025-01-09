@@ -55,7 +55,7 @@ describe(WorkflowPageError.name, () => {
       />
     );
     expect(
-      screen.getByText("Access denied, can't load workflow")
+      screen.getByText("Access denied, can't fetch workflow")
     ).toBeInTheDocument();
   });
 });
