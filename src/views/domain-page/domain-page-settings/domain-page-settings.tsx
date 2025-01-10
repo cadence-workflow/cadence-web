@@ -8,8 +8,9 @@ import {
 } from '@tanstack/react-query';
 import { toaster, ToasterContainer, PLACEMENT } from 'baseui/toast';
 
-import updateDomain from '@/server-actions/update-domain/update-domain';
+import { type UpdateDomainFields } from '@/route-handlers/update-domain/update-domain.types';
 import request from '@/utils/request';
+import { type RequestError } from '@/utils/request/request-error';
 import SettingsForm from '@/views/shared/settings-form/settings-form';
 
 import {
@@ -37,13 +38,12 @@ export default function DomainPageSettings(props: DomainPageTabContentProps) {
     queryClient
   );
 
-  const saveSettings = useMutation(
+  const saveSettings = useMutation<DomainInfo, RequestError, SettingsValues>(
     {
-      mutationFn: (data: SettingsValues): Promise<DomainInfo> => {
-        return updateDomain({
-          cluster: props.cluster,
-          domain: props.domain,
-          values: {
+      mutationFn: (data: SettingsValues) =>
+        request(`/api/domains/${props.domain}/${props.cluster}/update`, {
+          method: 'POST',
+          body: JSON.stringify({
             description: data.description,
             historyArchivalStatus: data.historyArchival
               ? 'ARCHIVAL_STATUS_ENABLED'
@@ -54,9 +54,8 @@ export default function DomainPageSettings(props: DomainPageTabContentProps) {
             workflowExecutionRetentionPeriod: {
               seconds: data.retentionPeriodSeconds,
             },
-          },
-        });
-      },
+          } satisfies UpdateDomainFields),
+        }).then((res) => res.json()),
     },
     queryClient
   );
