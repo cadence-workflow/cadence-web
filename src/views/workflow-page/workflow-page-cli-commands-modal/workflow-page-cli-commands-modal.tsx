@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 
+import { SIZE as BUTTON_SIZE } from 'baseui/button';
 import {
   Modal,
   ModalHeader,
@@ -74,7 +75,7 @@ export default function WorkflowPageCliCommandsModal({
         </div>
       </ModalBody>
       <ModalFooter>
-        <ModalButton size="compact" onClick={onClose}>
+        <ModalButton size={BUTTON_SIZE.compact} onClick={onClose}>
           Close
         </ModalButton>
       </ModalFooter>
