@@ -38,6 +38,16 @@ jest.mock('../../config/workflow-page-tabs.config', () => [
   },
 ]);
 
+jest.mock(
+  '../../workflow-page-cli-commands-button/workflow-page-cli-commands-button',
+  () => jest.fn(() => <div>CLI Commands</div>)
+);
+
+jest.mock(
+  '../../workflow-page-actions-button/workflow-page-actions-button',
+  () => jest.fn(() => <div>Actions</div>)
+);
+
 describe('WorkflowPageTabs', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -50,6 +60,14 @@ describe('WorkflowPageTabs', () => {
       expect(screen.getByText(title)).toBeInTheDocument();
     });
   });
+
+  it('renders tabs buttons correctly', () => {
+    setup();
+
+    expect(screen.getByText('CLI Commands')).toBeInTheDocument();
+    expect(screen.getByText('Actions')).toBeInTheDocument();
+  });
+
   it('renders tabs artworks correctly', () => {
     setup();
     workflowPageTabsConfig.forEach(({ key, artwork }) => {
