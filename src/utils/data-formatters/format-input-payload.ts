@@ -15,26 +15,30 @@ const formatInputPayload = (
 };
 
 function parseJsonLines(input: string) {
-  // Split the input by new lines
-  const lines = input.split('\n');
-
   const jsonArray = [];
   let currentJson = '';
+  const separators = ['\n', ' '];
 
-  lines.forEach((line) => {
-    currentJson += line; // Append the line to the current JSON string
-
-    try {
+  for (let i = 0; i < input.length; i++) {
+    const char = input[i];
+    if (separators.includes(char)) {
       // Try to parse the current JSON string
-      const jsonObject = losslessJsonParse(currentJson);
-      // If successful, add the object to the array
-      jsonArray.push(jsonObject);
-      // Reset currentJson for the next JSON object
-      currentJson = '';
-    } catch {
-      // If parsing fails, keep appending lines until we get a valid JSON
+      if (currentJson) {
+        try {
+          const jsonObject = losslessJsonParse(currentJson);
+          // If successful, add the object to the array
+          jsonArray.push(jsonObject);
+          // Reset currentJson for the next JSON object
+          currentJson = '';
+        } catch {
+          // If parsing fails, treat the separator as part of the currentJson and continue with the next char
+          currentJson += char;
+        }
+      }
+    } else {
+      currentJson += char;
     }
-  });
+  }
 
   // Handle case where the last JSON object might be malformed
   if (currentJson.trim() !== '') {

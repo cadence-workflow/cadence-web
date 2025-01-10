@@ -33,7 +33,7 @@ describe('formatInputPayload', () => {
   });
   // end of empty data checks
 
-  test('should parse base64 encoded JSON lines correctly', () => {
+  test('should parse base64 encoded JSON lines separated by \n correctly', () => {
     const input = {
       data: btoa(`{"name": "John", "age": 30}\n{"name": "Jane", "age": 25}`),
     };
@@ -44,8 +44,32 @@ describe('formatInputPayload', () => {
     expect(formatInputPayload(input)).toEqual(expected);
   });
 
+  test('should parse base64 encoded JSON lines separated by space correctly', () => {
+    const input = {
+      data: btoa(`{"name": "John", "age": 30} {"name": "Jane", "age": 25}`),
+    };
+    const expected = [
+      { name: 'John', age: 30 },
+      { name: 'Jane', age: 25 },
+    ];
+    expect(formatInputPayload(input)).toEqual(expected);
+  });
+
+  test('should parse base64 encoded JSON with spaced strings correctly', () => {
+    const input = {
+      data: btoa(`{"name": "John Doe", "age": 30} {"name": "Jane", "age": 25}`),
+    };
+    const expected = [
+      { name: 'John Doe', age: 30 },
+      { name: 'Jane', age: 25 },
+    ];
+    expect(formatInputPayload(input)).toEqual(expected);
+  });
+
   test('should handle base64 encoded JSON with \\n within string values', () => {
     const input = {
+      // new line is added as \\n within "John Doe" as the object is strigified and therfore escaped
+      // while it used as \n only between the JSON values as it is not part of the json values
       data: btoa(
         `{"name": "John\\nDoe", "age": 30}\n{"name": "Alice", "city": "Wonderland"}`
       ),
