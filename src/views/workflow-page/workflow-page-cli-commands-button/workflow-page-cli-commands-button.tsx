@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 
-import { Button } from 'baseui/button';
+import { Button, KIND, SIZE } from 'baseui/button';
 import { MdOutlineTerminal } from 'react-icons/md';
 
 import WorkflowPageCliCommandsModal from '../workflow-page-cli-commands-modal/workflow-page-cli-commands-modal';
@@ -12,8 +12,8 @@ export default function WorkflowPageCliCommandsButton() {
   return (
     <>
       <Button
-        size="compact"
-        kind="tertiary"
+        size={SIZE.compact}
+        kind={KIND.tertiary}
         startEnhancer={<MdOutlineTerminal size={20} />}
         onClick={() => setIsOpen((v) => !v)}
       >
