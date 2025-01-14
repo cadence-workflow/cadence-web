@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 
 import { GRPCError } from '@/utils/grpc/grpc-error';
-import { mockGrpcClusterMethods } from '@/utils/route-handlers-middleware/middlewares/__fixtures__/grpc-cluster-methods';
+import { mockGrpcClusterMethods } from '@/utils/route-handlers-middleware/middlewares/__mocks__/grpc-cluster-methods';
 
 import { cancelWorkflow } from '../cancel-workflow';
 import {
