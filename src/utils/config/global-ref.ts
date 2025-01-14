@@ -1,5 +1,3 @@
-import 'server-only';
-
 export default class GlobalRef<T> {
   private readonly sym: symbol;
 

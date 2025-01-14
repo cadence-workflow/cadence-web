@@ -6,7 +6,7 @@ type MockConfigDefinitions = {
   config2: ConfigEnvDefinition;
 };
 jest.mock(
-  '../../config/dynamic/dynamic.config',
+  '@/config/dynamic/dynamic.config',
   () =>
     ({
       config1: { env: '$$$_MOCK_ENV_CONFIG1', default: 'default1' },
@@ -33,7 +33,7 @@ describe('getTransformedConfigs', () => {
     const result = getTransformedConfigs();
     expect(result).toEqual({
       config1: 'envValue1',
-      config2: 'default1',
+      config2: 'default2',
     } satisfies LoadedConfigs<MockConfigDefinitions>);
   });
 });

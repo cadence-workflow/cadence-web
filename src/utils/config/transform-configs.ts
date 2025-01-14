@@ -12,7 +12,7 @@ export default function transformConfigs<C extends ConfigDefinitionRecords>(
       }
 
       const envValue = (process.env[definition.env] || '').trim();
-      return [key, envValue ?? definition.default];
+      return [key, envValue === '' ? definition.default : envValue];
     })
   );
 
