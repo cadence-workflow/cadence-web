@@ -4,18 +4,28 @@ import type dynamicConfigs from '@/config/dynamic/dynamic.config';
 
 export type ConfigAsyncResolverDefinition<Args, ReturnType> = {
   resolver: (args: Args) => Promise<ReturnType>;
+  // isPublic?: boolean; // would be implemented in upcoming PR
 };
 
 export type ConfigSyncResolverDefinition<Args, ReturnType> = {
   resolver: (args: Args) => ReturnType;
-  //forceSync?: boolean; // would be replaced in upcoming PR
+  // forceSync?: boolean; // would be replaced in upcoming PR
+  // isPublic?: boolean; // would be implemented in upcoming PR
 };
 
 export type ConfigEnvDefinition = {
   env: string;
   default: string;
   // forceSync?: boolean; // would be replaced in upcoming PR
+  // isPublic?: boolean; // would be implemented in upcoming PR
 };
+
+export type ConfigDefinition =
+  | ConfigAsyncResolverDefinition<any, any>
+  | ConfigSyncResolverDefinition<any, any>
+  | ConfigEnvDefinition;
+
+export type ConfigDefinitionRecords = Record<string, ConfigDefinition>;
 
 type InferLoadedConfig<T extends Record<string, any>> = {
   [K in keyof T]: T[K] extends ConfigEnvDefinition
@@ -27,7 +37,9 @@ type InferLoadedConfig<T extends Record<string, any>> = {
         : never; // If it doesn't match any known type, it's never
 };
 
-export type LoadedConfigs = InferLoadedConfig<typeof dynamicConfigs>;
+export type LoadedConfigs<
+  C extends ConfigDefinitionRecords = typeof dynamicConfigs,
+> = InferLoadedConfig<C>;
 
 export type ArgOfConfigResolver<K extends keyof LoadedConfigs> =
   LoadedConfigs[K] extends (args: any) => any
