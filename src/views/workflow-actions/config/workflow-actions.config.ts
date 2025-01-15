@@ -1,9 +1,10 @@
 import { MdHighlightOff, MdPowerSettingsNew } from 'react-icons/md';
 
-import getWorkflowIsCompleted from '../helpers/get-workflow-is-completed';
-import { type WorkflowAction } from '../workflow-page-actions-menu/workflow-page-actions-menu.types';
+import getWorkflowIsCompleted from '@/views/workflow-page/helpers/get-workflow-is-completed';
 
-const workflowPageActionsConfig = [
+import { type WorkflowAction } from '../workflow-actions.types';
+
+const workflowActionsConfig = [
   {
     id: 'cancel',
     label: 'Cancel',
@@ -26,4 +27,4 @@ const workflowPageActionsConfig = [
   },
 ] as const satisfies Array<WorkflowAction>;
 
-export default workflowPageActionsConfig;
+export default workflowActionsConfig;

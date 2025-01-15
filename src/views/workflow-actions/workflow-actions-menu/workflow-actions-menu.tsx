@@ -1,17 +1,17 @@
 import { Button, KIND } from 'baseui/button';
 
-import workflowPageActionsConfig from '../config/workflow-page-actions.config';
+import workflowActionsConfig from '../config/workflow-actions.config';
 
-import { overrides, styled } from './workflow-page-actions-menu.styles';
-import { type Props } from './workflow-page-actions-menu.types';
+import { overrides, styled } from './workflow-actions-menu.styles';
+import { type Props } from './workflow-actions-menu.types';
 
-export default function WorkflowPageActionsMenu({
+export default function WorkflowActionsMenu({
   workflow,
   onActionSelect,
 }: Props) {
   return (
     <styled.MenuItemsContainer>
-      {workflowPageActionsConfig.map((action) => (
+      {workflowActionsConfig.map((action) => (
         <Button
           key={action.id}
           kind={KIND.tertiary}

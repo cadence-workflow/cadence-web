@@ -4,9 +4,10 @@ import { HttpResponse } from 'msw';
 
 import { act, render, screen, userEvent } from '@/test-utils/rtl';
 
-import { describeWorkflowResponse } from '../../__fixtures__/describe-workflow-response';
-import { mockWorkflowPageActionsConfig } from '../../__fixtures__/workflow-actions-config';
-import WorkflowPageActionsButton from '../workflow-page-actions-button';
+import { describeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
+
+import { mockWorkflowActionsConfig } from '../__fixtures__/workflow-actions-config';
+import WorkflowActions from '../workflow-actions';
 
 jest.mock('next/navigation', () => ({
   ...jest.requireActual('next/navigation'),
@@ -18,7 +19,7 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
-jest.mock('../../workflow-page-actions-modal/workflow-page-actions-modal', () =>
+jest.mock('../../workflow-actions-modal/workflow-actions-modal', () =>
   jest.fn((props) => {
     return props.action ? (
       <div data-testid="actions-modal">Actions Modal</div>
@@ -26,11 +27,11 @@ jest.mock('../../workflow-page-actions-modal/workflow-page-actions-modal', () =>
   })
 );
 
-jest.mock('../../workflow-page-actions-menu/workflow-page-actions-menu', () =>
+jest.mock('../../workflow-actions-menu/workflow-actions-menu', () =>
   jest.fn((props) => {
     return (
       <div
-        onClick={() => props.onActionSelect(mockWorkflowPageActionsConfig[0])}
+        onClick={() => props.onActionSelect(mockWorkflowActionsConfig[0])}
         data-testid="actions-menu"
       >
         Actions Menu{props.disabled ? ' (disabled)' : ''}
@@ -39,7 +40,7 @@ jest.mock('../../workflow-page-actions-menu/workflow-page-actions-menu', () =>
   })
 );
 
-describe(WorkflowPageActionsButton.name, () => {
+describe(WorkflowActions.name, () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -88,7 +89,7 @@ async function setup({ isError }: { isError?: boolean }) {
 
   const renderResult = render(
     <Suspense>
-      <WorkflowPageActionsButton />
+      <WorkflowActions />
     </Suspense>,
     {
       endpointsMocks: [
