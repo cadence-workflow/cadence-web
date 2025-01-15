@@ -1,10 +1,9 @@
 import { type ModalProps } from 'baseui/modal';
 
-import { render, screen, userEvent } from '@/test-utils/rtl';
-
-import { describeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
+import { render, screen } from '@/test-utils/rtl';
 
 import { mockWorkflowActionsConfig } from '../../__fixtures__/workflow-actions-config';
+import { mockWorkflowDetailsParams } from '../../__fixtures__/workflow-details-params';
 import WorkflowActionsModal from '../workflow-actions-modal';
 
 jest.mock('baseui/modal', () => ({
@@ -17,6 +16,11 @@ jest.mock('baseui/modal', () => ({
     ) : null,
 }));
 
+jest.mock(
+  '../../workflow-actions-modal-content/workflow-actions-modal-content',
+  () => jest.fn(() => <div>Actions Modal Content</div>)
+);
+
 describe(WorkflowActionsModal.name, () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -25,12 +29,8 @@ describe(WorkflowActionsModal.name, () => {
   it('renders the action as expected', async () => {
     setup({});
 
-    expect(await screen.findAllByText('Mock cancel workflow')).toHaveLength(2);
     expect(
-      screen.getByText('Mock cancel a workflow execution')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: 'Mock cancel workflow' })
+      await screen.findByText('Actions Modal Content')
     ).toBeInTheDocument();
   });
 
@@ -39,28 +39,16 @@ describe(WorkflowActionsModal.name, () => {
 
     expect(screen.queryByRole('dialog')).toBeNull();
   });
-
-  it('calls onClose when the Go Back button is pressed', async () => {
-    const { user, mockOnClose } = setup({});
-
-    const goBackButton = await screen.findByText('Go back');
-    await user.click(goBackButton);
-
-    expect(mockOnClose).toHaveBeenCalled();
-  });
 });
 
 function setup({ omitAction }: { omitAction?: boolean }) {
-  const user = userEvent.setup();
   const mockOnClose = jest.fn();
 
   render(
     <WorkflowActionsModal
-      workflow={describeWorkflowResponse}
+      {...mockWorkflowDetailsParams}
       action={omitAction ? undefined : mockWorkflowActionsConfig[0]}
       onClose={mockOnClose}
     />
   );
-
-  return { user, mockOnClose };
 }

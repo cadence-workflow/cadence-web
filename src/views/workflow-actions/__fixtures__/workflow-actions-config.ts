@@ -9,6 +9,10 @@ export const mockWorkflowActionsConfig = [
     subtitle: 'Mock cancel a workflow execution',
     icon: MdHighlightOff,
     getIsEnabled: () => true,
+    apiRoute: 'cancel',
+    onSuccess: (params) => {
+      params.sendNotification('Mock notification');
+    },
   },
   {
     id: 'terminate',
@@ -16,5 +20,9 @@ export const mockWorkflowActionsConfig = [
     subtitle: 'Mock terminate a workflow execution',
     icon: MdPowerSettingsNew,
     getIsEnabled: () => false,
+    apiRoute: 'terminate',
+    onSuccess: (params) => {
+      params.sendNotification('Mock notification');
+    },
   },
-] as const satisfies Array<WorkflowAction>;
+] as const satisfies Array<WorkflowAction<NonNullable<unknown>>>;
