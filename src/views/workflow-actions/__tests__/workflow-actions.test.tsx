@@ -19,7 +19,7 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
-jest.mock('../../workflow-actions-modal/workflow-actions-modal', () =>
+jest.mock('../workflow-actions-modal/workflow-actions-modal', () =>
   jest.fn((props) => {
     return props.action ? (
       <div data-testid="actions-modal">Actions Modal</div>
@@ -27,7 +27,7 @@ jest.mock('../../workflow-actions-modal/workflow-actions-modal', () =>
   })
 );
 
-jest.mock('../../workflow-actions-menu/workflow-actions-menu', () =>
+jest.mock('../workflow-actions-menu/workflow-actions-menu', () =>
   jest.fn((props) => {
     return (
       <div
