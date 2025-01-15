@@ -8,6 +8,7 @@ import { describeWorkflowResponse } from '@/views/workflow-page/__fixtures__/des
 
 import { mockWorkflowDetailsParams } from '../../workflow-page/__fixtures__/workflow-details-params';
 import { mockWorkflowActionsConfig } from '../__fixtures__/workflow-actions-config';
+import { mockWorkflowDetailsParams } from '../__fixtures__/workflow-details-params';
 import WorkflowActions from '../workflow-actions';
 
 jest.mock('next/navigation', () => ({

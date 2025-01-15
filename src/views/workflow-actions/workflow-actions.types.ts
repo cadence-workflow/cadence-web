@@ -1,4 +1,5 @@
 import { type IconProps } from 'baseui/icon';
+import { type Duration } from 'baseui/snackbar';
 
 import { type DescribeWorkflowResponse } from '@/route-handlers/describe-workflow/describe-workflow.types';
 
