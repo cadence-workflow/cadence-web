@@ -22,6 +22,8 @@ import { type ListWorkflowExecutionsRequest__Input } from '@/__generated__/proto
 import { type ListWorkflowExecutionsResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListWorkflowExecutionsResponse';
 import { type QueryWorkflowRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/QueryWorkflowRequest';
 import { type QueryWorkflowResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/QueryWorkflowResponse';
+import { type RequestCancelWorkflowExecutionRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/RequestCancelWorkflowExecutionRequest';
+import { type RequestCancelWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/RequestCancelWorkflowExecutionResponse';
 import { type SignalWorkflowExecutionRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/SignalWorkflowExecutionRequest';
 import { type SignalWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/SignalWorkflowExecutionResponse';
 import { type TerminateWorkflowExecutionRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/TerminateWorkflowExecutionRequest';
@@ -93,6 +95,9 @@ export type GRPCClusterMethods = {
   terminateWorkflow: (
     payload: TerminateWorkflowExecutionRequest__Input
   ) => Promise<TerminateWorkflowExecutionResponse>;
+  requestCancelWorkflow: (
+    payload: RequestCancelWorkflowExecutionRequest__Input
+  ) => Promise<RequestCancelWorkflowExecutionResponse>;
 };
 
 const clusterServices = CLUSTERS_CONFIGS.reduce((result, c) => {
@@ -246,6 +251,13 @@ const getClusterServicesMethods = (
       TerminateWorkflowExecutionResponse
     >({
       method: 'TerminateWorkflowExecution',
+      metadata: metadata,
+    }),
+    requestCancelWorkflow: workflowService.request<
+      RequestCancelWorkflowExecutionRequest__Input,
+      RequestCancelWorkflowExecutionResponse
+    >({
+      method: 'RequestCancelWorkflowExecution',
       metadata: metadata,
     }),
   };
