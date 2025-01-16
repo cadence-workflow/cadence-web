@@ -2,9 +2,10 @@ import { type ModalProps } from 'baseui/modal';
 
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
-import { describeWorkflowResponse } from '../../__fixtures__/describe-workflow-response';
-import { mockWorkflowPageActionsConfig } from '../../__fixtures__/workflow-actions-config';
-import WorkflowPageActionsModal from '../workflow-page-actions-modal';
+import { describeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
+
+import { mockWorkflowActionsConfig } from '../../__fixtures__/workflow-actions-config';
+import WorkflowActionsModal from '../workflow-actions-modal';
 
 jest.mock('baseui/modal', () => ({
   ...jest.requireActual('baseui/modal'),
@@ -16,7 +17,7 @@ jest.mock('baseui/modal', () => ({
     ) : null,
 }));
 
-describe(WorkflowPageActionsModal.name, () => {
+describe(WorkflowActionsModal.name, () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -54,9 +55,9 @@ function setup({ omitAction }: { omitAction?: boolean }) {
   const mockOnClose = jest.fn();
 
   render(
-    <WorkflowPageActionsModal
+    <WorkflowActionsModal
       workflow={describeWorkflowResponse}
-      action={omitAction ? undefined : mockWorkflowPageActionsConfig[0]}
+      action={omitAction ? undefined : mockWorkflowActionsConfig[0]}
       onClose={mockOnClose}
     />
   );

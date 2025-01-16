@@ -3,11 +3,11 @@ import { Modal, ModalButton } from 'baseui/modal';
 
 import { type DescribeWorkflowResponse } from '@/route-handlers/describe-workflow/describe-workflow.types';
 
-import { type WorkflowAction } from '../workflow-page-actions-menu/workflow-page-actions-menu.types';
+import { type WorkflowAction } from '../workflow-actions.types';
 
-import { overrides, styled } from './workflow-page-actions-modal.styles';
+import { overrides, styled } from './workflow-actions-modal.styles';
 
-export default function WorkflowPageActionsModal({
+export default function WorkflowActionsModal({
   // workflow,
   action,
   onClose,
