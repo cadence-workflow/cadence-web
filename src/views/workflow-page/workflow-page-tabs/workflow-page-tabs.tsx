@@ -6,9 +6,9 @@ import { useRouter, useParams } from 'next/navigation';
 import ErrorBoundary from '@/components/error-boundary/error-boundary';
 import PageTabs from '@/components/page-tabs/page-tabs';
 import decodeUrlParams from '@/utils/decode-url-params';
+import WorkflowActions from '@/views/workflow-actions/workflow-actions';
 
 import workflowPageTabsConfig from '../config/workflow-page-tabs.config';
-import WorkflowPageActionsButton from '../workflow-page-actions-button/workflow-page-actions-button';
 import WorkflowPageCliCommandsButton from '../workflow-page-cli-commands-button/workflow-page-cli-commands-button';
 
 import { styled } from './workflow-page-tabs.styles';
@@ -29,7 +29,7 @@ export default function WorkflowPageTabs() {
         <styled.EndButtonsContainer>
           <WorkflowPageCliCommandsButton />
           <ErrorBoundary fallbackRender={() => null}>
-            <WorkflowPageActionsButton />
+            <WorkflowActions />
           </ErrorBoundary>
         </styled.EndButtonsContainer>
       }

@@ -2,16 +2,17 @@ import React from 'react';
 
 import { render, screen, userEvent, within } from '@/test-utils/rtl';
 
-import { describeWorkflowResponse } from '../../__fixtures__/describe-workflow-response';
-import { mockWorkflowPageActionsConfig } from '../../__fixtures__/workflow-actions-config';
-import WorkflowPageActionsMenu from '../workflow-page-actions-menu';
+import { describeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
+
+import { mockWorkflowActionsConfig } from '../../__fixtures__/workflow-actions-config';
+import WorkflowActionsMenu from '../workflow-actions-menu';
 
 jest.mock(
-  '../../config/workflow-page-actions.config',
-  () => mockWorkflowPageActionsConfig
+  '../../config/workflow-actions.config',
+  () => mockWorkflowActionsConfig
 );
 
-describe(WorkflowPageActionsMenu.name, () => {
+describe(WorkflowActionsMenu.name, () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -55,7 +56,7 @@ function setup() {
   const mockOnActionSelect = jest.fn();
 
   const renderResult = render(
-    <WorkflowPageActionsMenu
+    <WorkflowActionsMenu
       workflow={describeWorkflowResponse}
       onActionSelect={mockOnActionSelect}
     />

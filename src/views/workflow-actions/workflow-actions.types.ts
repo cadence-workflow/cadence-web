@@ -13,8 +13,3 @@ export type WorkflowAction = {
   getIsEnabled: (workflow: DescribeWorkflowResponse) => boolean;
   // Add a field for the endpoint to call
 };
-
-export type Props = {
-  workflow: DescribeWorkflowResponse;
-  onActionSelect: (action: WorkflowAction) => void;
-};

@@ -7,15 +7,15 @@ import { pick } from 'lodash';
 import { useParams } from 'next/navigation';
 import { MdArrowDropDown } from 'react-icons/md';
 
-import useDescribeWorkflow from '../hooks/use-describe-workflow';
-import WorkflowPageActionsMenu from '../workflow-page-actions-menu/workflow-page-actions-menu';
-import { type WorkflowAction } from '../workflow-page-actions-menu/workflow-page-actions-menu.types';
-import WorkflowPageActionsModal from '../workflow-page-actions-modal/workflow-page-actions-modal';
-import { type WorkflowPageParams } from '../workflow-page.types';
+import useDescribeWorkflow from '../workflow-page/hooks/use-describe-workflow';
+import { type WorkflowPageParams } from '../workflow-page/workflow-page.types';
 
-import { overrides } from './workflow-page-actions-button.styles';
+import WorkflowActionsMenu from './workflow-actions-menu/workflow-actions-menu';
+import WorkflowActionsModal from './workflow-actions-modal/workflow-actions-modal';
+import { overrides } from './workflow-actions.styles';
+import { type WorkflowAction } from './workflow-actions.types';
 
-export default function WorkflowPageActionsButton() {
+export default function WorkflowActions() {
   const params = useParams<WorkflowPageParams>();
   const workflowDetailsParams = pick(
     params,
@@ -39,7 +39,7 @@ export default function WorkflowPageActionsButton() {
         placement={PLACEMENT.bottomRight}
         overrides={overrides.popover}
         content={() => (
-          <WorkflowPageActionsMenu
+          <WorkflowActionsMenu
             workflow={workflow}
             onActionSelect={(action) => setSelectedAction(action)}
           />
@@ -55,7 +55,7 @@ export default function WorkflowPageActionsButton() {
           Workflow Actions
         </Button>
       </StatefulPopover>
-      <WorkflowPageActionsModal
+      <WorkflowActionsModal
         workflow={workflow}
         action={selectedAction}
         onClose={() => setSelectedAction(undefined)}
