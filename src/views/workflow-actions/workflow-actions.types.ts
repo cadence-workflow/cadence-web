@@ -14,6 +14,8 @@ export type WorkflowAction<R> = {
   id: string;
   label: string;
   subtitle: string;
+  modalText: string;
+  docsLink: string;
   icon: React.ComponentType<{
     size?: IconProps['size'];
     color?: IconProps['color'];

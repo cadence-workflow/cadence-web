@@ -67,7 +67,7 @@ export default function WorkflowActionsModalContent<R>({
     <>
       <styled.ModalHeader>{action.label} workflow</styled.ModalHeader>
       <styled.ModalBody>
-        {action.subtitle}
+        {action.modalText}
         {error && (
           <Banner
             hierarchy={HIERARCHY.low}
