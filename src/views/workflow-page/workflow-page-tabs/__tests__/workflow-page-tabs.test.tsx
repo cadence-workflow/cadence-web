@@ -43,9 +43,8 @@ jest.mock(
   () => jest.fn(() => <div>CLI Commands</div>)
 );
 
-jest.mock(
-  '../../workflow-page-actions-button/workflow-page-actions-button',
-  () => jest.fn(() => <div>Actions</div>)
+jest.mock('@/views/workflow-actions/workflow-actions', () =>
+  jest.fn(() => <div>Actions</div>)
 );
 
 describe('WorkflowPageTabs', () => {
