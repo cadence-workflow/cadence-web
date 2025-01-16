@@ -18,17 +18,6 @@ export const getAllDomains = async () => {
         .getClusterMethods(clusterName)
         .listDomains({ pageSize: MAX_DOMAINS_TO_FETCH })
         .then(({ domains }) => {
-          logger.info(
-            {
-              domains: domains
-                .filter(
-                  (d) =>
-                    d.visibilityArchivalStatus === 'ARCHIVAL_STATUS_ENABLED'
-                )
-                .map((d) => d.name),
-            },
-            'Domains with archival enabled'
-          );
           if (domains.length >= MAX_DOMAINS_TO_FETCH - 100) {
             logger.warn(
               {
