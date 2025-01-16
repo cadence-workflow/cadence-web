@@ -1,8 +1,8 @@
 import { MdHighlightOff, MdPowerSettingsNew } from 'react-icons/md';
 
-import { type WorkflowAction } from '../workflow-page-actions-menu/workflow-page-actions-menu.types';
+import { type WorkflowAction } from '../workflow-actions.types';
 
-export const mockWorkflowPageActionsConfig = [
+export const mockWorkflowActionsConfig = [
   {
     id: 'cancel',
     label: 'Mock cancel',
