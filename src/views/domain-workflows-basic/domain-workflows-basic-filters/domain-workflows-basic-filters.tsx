@@ -25,7 +25,7 @@ export default function DomainWorkflowsBasicFilters() {
 
   useEffect(() => {
     if (!queryParams.timeRangeStart && !queryParams.timeRangeEnd) {
-      const now = dayjs(new Date());
+      const now = dayjs();
       setQueryParams({
         timeRangeStart: now
           .subtract(DOMAIN_WORKFLOWS_BASIC_START_DAYS_CONFIG, 'days')
