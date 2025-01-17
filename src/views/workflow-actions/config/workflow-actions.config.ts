@@ -1,10 +1,15 @@
 import { MdHighlightOff, MdPowerSettingsNew } from 'react-icons/md';
 
-import getWorkflowIsCompleted from '@/views/workflow-page/helpers/get-workflow-is-completed';
+import { type CancelWorkflowResponse } from '@/route-handlers/cancel-workflow/cancel-workflow.types';
+import { type TerminateWorkflowResponse } from '@/route-handlers/terminate-workflow/terminate-workflow.types';
 
+import getWorkflowIsCompleted from '../../workflow-page/helpers/get-workflow-is-completed';
 import { type WorkflowAction } from '../workflow-actions.types';
 
-const workflowActionsConfig = [
+const workflowActionsConfig: [
+  WorkflowAction<CancelWorkflowResponse>,
+  WorkflowAction<TerminateWorkflowResponse>,
+] = [
   {
     id: 'cancel',
     label: 'Cancel',
@@ -14,6 +19,8 @@ const workflowActionsConfig = [
       !getWorkflowIsCompleted(
         workflow.workflowExecutionInfo?.closeEvent?.attributes ?? ''
       ),
+    apiRoute: 'cancel',
+    getSuccessMessage: () => 'Workflow cancellation has been requested.',
   },
   {
     id: 'terminate',
@@ -24,7 +31,9 @@ const workflowActionsConfig = [
       !getWorkflowIsCompleted(
         workflow.workflowExecutionInfo?.closeEvent?.attributes ?? ''
       ),
+    apiRoute: 'terminate',
+    getSuccessMessage: () => 'Workflow has been terminated.',
   },
-] as const satisfies Array<WorkflowAction>;
+] as const;
 
 export default workflowActionsConfig;
