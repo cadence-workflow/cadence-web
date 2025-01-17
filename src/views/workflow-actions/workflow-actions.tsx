@@ -2,13 +2,21 @@
 import React, { useState } from 'react';
 
 import { Button, KIND, SIZE } from 'baseui/button';
-import { PLACEMENT, StatefulPopover } from 'baseui/popover';
+import {
+  StatefulPopover,
+  PLACEMENT as POPOVER_PLACEMENT,
+} from 'baseui/popover';
+import {
+  SnackbarProvider,
+  PLACEMENT as SNACKBAR_PLACEMENT,
+  DURATION,
+} from 'baseui/snackbar';
 import { pick } from 'lodash';
 import { useParams } from 'next/navigation';
 import { MdArrowDropDown } from 'react-icons/md';
 
-import useDescribeWorkflow from '../workflow-page/hooks/use-describe-workflow';
-import { type WorkflowPageParams } from '../workflow-page/workflow-page.types';
+import useDescribeWorkflow from '@/views/workflow-page/hooks/use-describe-workflow';
+import { type WorkflowPageParams } from '@/views/workflow-page/workflow-page.types';
 
 import WorkflowActionsMenu from './workflow-actions-menu/workflow-actions-menu';
 import WorkflowActionsModal from './workflow-actions-modal/workflow-actions-modal';
@@ -30,13 +38,17 @@ export default function WorkflowActions() {
   });
 
   const [selectedAction, setSelectedAction] = useState<
-    WorkflowAction | undefined
+    WorkflowAction<unknown> | undefined
   >(undefined);
 
   return (
-    <>
+    <SnackbarProvider
+      placement={SNACKBAR_PLACEMENT.bottom}
+      overrides={overrides.snackbar}
+      defaultDuration={DURATION.infinite}
+    >
       <StatefulPopover
-        placement={PLACEMENT.bottomRight}
+        placement={POPOVER_PLACEMENT.bottomRight}
         overrides={overrides.popover}
         content={() => (
           <WorkflowActionsMenu
@@ -56,10 +68,10 @@ export default function WorkflowActions() {
         </Button>
       </StatefulPopover>
       <WorkflowActionsModal
-        workflow={workflow}
+        {...workflowDetailsParams}
         action={selectedAction}
         onClose={() => setSelectedAction(undefined)}
       />
-    </>
+    </SnackbarProvider>
   );
 }
