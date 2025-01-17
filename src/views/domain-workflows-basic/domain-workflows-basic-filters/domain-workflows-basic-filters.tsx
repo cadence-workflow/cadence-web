@@ -5,11 +5,12 @@ import usePageFilters from '@/components/page-filters/hooks/use-page-filters';
 import PageFiltersFields from '@/components/page-filters/page-filters-fields/page-filters-fields';
 import PageFiltersSearch from '@/components/page-filters/page-filters-search/page-filters-search';
 import PageFiltersToggle from '@/components/page-filters/page-filters-toggle/page-filters-toggle';
-import getDateDaysBeforeToday from '@/utils/datetime/get-date-days-before-today';
+import dayjs from '@/utils/datetime/dayjs';
 import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
 
 import domainWorkflowsBasicFiltersConfig from '../config/domain-workflows-basic-filters.config';
 import DOMAIN_WORKFLOWS_BASIC_SEARCH_DEBOUNCE_MS from '../config/domain-workflows-basic-search-debounce-ms.config';
+import DOMAIN_WORKFLOWS_BASIC_START_DAYS_CONFIG from '../config/domain-workflows-basic-start-days.config';
 
 import { styled } from './domain-workflows-basic-filters.styles';
 
@@ -24,9 +25,12 @@ export default function DomainWorkflowsBasicFilters() {
 
   useEffect(() => {
     if (!queryParams.timeRangeStart && !queryParams.timeRangeEnd) {
+      const now = dayjs(new Date());
       setQueryParams({
-        timeRangeStart: getDateDaysBeforeToday(30).toISOString(),
-        timeRangeEnd: getDateDaysBeforeToday(0).toISOString(),
+        timeRangeStart: now
+          .subtract(DOMAIN_WORKFLOWS_BASIC_START_DAYS_CONFIG, 'days')
+          .toISOString(),
+        timeRangeEnd: now.toISOString(),
       });
     }
   }, [queryParams.timeRangeStart, queryParams.timeRangeEnd, setQueryParams]);

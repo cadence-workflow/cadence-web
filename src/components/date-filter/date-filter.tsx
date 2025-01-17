@@ -5,7 +5,9 @@ import { DatePicker } from 'baseui/datepicker';
 import { FormControl } from 'baseui/form-control';
 import { SIZE } from 'baseui/input';
 
-import { DATE_FORMAT } from './date-filter.constants';
+import dayjs from '@/utils/datetime/dayjs';
+
+import { DATE_FORMAT, QUICK_SELECT_OPTIONS } from './date-filter.constants';
 import { overrides } from './date-filter.styles';
 import { type Props } from './date-filter.types';
 
@@ -39,27 +41,45 @@ export default function DateFilter({
             return;
           }
           setInternalDates(newDates);
+
           if (newDates.length === 0) {
             onChangeDates({
               start: undefined,
               end: undefined,
             });
-          } else if (newDates.length === 2) {
+          } else if (newDates.length === 2 && newDates[0] && newDates[1]) {
             const [start, end] = newDates;
-            if (!start || !end) {
-              return;
-            }
-            onChangeDates({ start, end });
+            onChangeDates({
+              start,
+              end:
+                start.getTime() === end.getTime()
+                  ? dayjs(start).endOf('day').toDate()
+                  : end,
+            });
           }
         }}
         onClose={() => {
-          if (
-            internalDates.length !== 2 ||
-            internalDates.some((date) => !date)
-          ) {
+          if (internalDates.some((date) => !date)) {
             resetDates();
+          } else if (internalDates.length === 1 && internalDates[0]) {
+            onChangeDates({
+              start: internalDates[0],
+              end: dayjs(internalDates[0]).endOf('day').toDate(),
+            });
           }
         }}
+        quickSelectOptions={QUICK_SELECT_OPTIONS.map(
+          ({ label, durationSeconds }) => {
+            const now = new Date();
+            return {
+              id: label,
+              beginDate: dayjs(now)
+                .subtract(durationSeconds, 'seconds')
+                .toDate(),
+              endDate: now,
+            };
+          }
+        )}
         placeholder={placeholder}
         formatString={DATE_FORMAT}
         size={SIZE.compact}
