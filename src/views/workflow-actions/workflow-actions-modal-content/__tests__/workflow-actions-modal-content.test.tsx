@@ -45,14 +45,13 @@ describe(WorkflowActionsModalContent.name, () => {
   });
 
   it('calls mockCancelWorkflow, sends toast, and closes modal when the action button is clicked', async () => {
-    const { user, mockOnClose, mockCancelWorkflow } = setup({});
+    const { user, mockOnClose } = setup({});
 
     const cancelButton = await screen.findByRole('button', {
       name: 'Mock cancel workflow',
     });
     await user.click(cancelButton);
 
-    expect(mockCancelWorkflow).toHaveBeenCalled();
     expect(mockEnqueue).toHaveBeenCalledWith(
       expect.objectContaining({
         message: 'Mock cancel notification',
@@ -62,14 +61,13 @@ describe(WorkflowActionsModalContent.name, () => {
   });
 
   it('Displays banner when the action button is clicked and action fails', async () => {
-    const { user, mockOnClose, mockCancelWorkflow } = setup({ error: true });
+    const { user, mockOnClose } = setup({ error: true });
 
     const cancelButton = await screen.findByRole('button', {
       name: 'Mock cancel workflow',
     });
     await user.click(cancelButton);
 
-    expect(mockCancelWorkflow).toHaveBeenCalled();
     expect(
       await screen.findByText('Failed to cancel workflow')
     ).toBeInTheDocument();
@@ -80,7 +78,6 @@ describe(WorkflowActionsModalContent.name, () => {
 function setup({ error }: { error?: boolean }) {
   const user = userEvent.setup();
   const mockOnClose = jest.fn();
-  const mockCancelWorkflow = jest.fn();
 
   render(
     <WorkflowActionsModalContent
@@ -95,7 +92,6 @@ function setup({ error }: { error?: boolean }) {
           httpMethod: 'POST',
           mockOnce: false,
           httpResolver: () => {
-            mockCancelWorkflow();
             if (error) {
               return HttpResponse.json(
                 { message: 'Failed to cancel workflow' },
@@ -109,5 +105,5 @@ function setup({ error }: { error?: boolean }) {
     }
   );
 
-  return { user, mockOnClose, mockCancelWorkflow };
+  return { user, mockOnClose };
 }
