@@ -41,7 +41,7 @@ export default function DomainWorkflowsArchivalHeader({
       !queryParams.timeRangeStartArchival &&
       !queryParams.timeRangeEndArchival
     ) {
-      const now = dayjs(new Date());
+      const now = dayjs();
       setQueryParams({
         timeRangeStartArchival: now
           .subtract(DOMAIN_WORKFLOWS_ARCHIVAL_START_DAYS_CONFIG, 'days')

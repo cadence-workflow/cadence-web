@@ -70,13 +70,11 @@ export default function DateFilter({
         }}
         quickSelectOptions={QUICK_SELECT_OPTIONS.map(
           ({ label, durationSeconds }) => {
-            const now = new Date();
+            const now = dayjs();
             return {
               id: label,
-              beginDate: dayjs(now)
-                .subtract(durationSeconds, 'seconds')
-                .toDate(),
-              endDate: now,
+              beginDate: now.subtract(durationSeconds, 'seconds').toDate(),
+              endDate: now.toDate(),
             };
           }
         )}
