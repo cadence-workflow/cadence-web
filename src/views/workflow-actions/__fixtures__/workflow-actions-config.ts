@@ -14,7 +14,7 @@ export const mockWorkflowActionsConfig: [
     label: 'Mock cancel',
     subtitle: 'Mock cancel a workflow execution',
     modal: {
-      text: 'Mock cancel a workflow execution',
+      text: 'Mock modal text to cancel a workflow execution',
       docsLink: {
         text: 'Mock docs link',
         href: 'https://mock.docs.link',
@@ -30,7 +30,7 @@ export const mockWorkflowActionsConfig: [
     label: 'Mock terminate',
     subtitle: 'Mock terminate a workflow execution',
     modal: {
-      text: 'Mock terminate a workflow execution',
+      text: 'Mock modal text to terminate a workflow execution',
       docsLink: {
         text: 'Mock docs link',
         href: 'https://mock.docs.link',

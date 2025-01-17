@@ -18,9 +18,11 @@ export const styled = {
     justifyContent: 'space-between',
   }),
   Link: withStyle(StyledLink, ({ $theme }: { $theme: Theme }) => ({
-    display: 'flex',
-    color: $theme.colors.contentTertiary,
+    alignSelf: 'start',
     ...$theme.typography.LabelSmall,
+    display: 'flex',
+    alignItems: 'center',
+    columnGap: $theme.sizing.scale100,
   })),
 };
 

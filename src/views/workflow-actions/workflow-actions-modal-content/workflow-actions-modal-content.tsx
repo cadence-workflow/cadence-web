@@ -3,7 +3,7 @@ import { Banner, HIERARCHY, KIND as BANNER_KIND } from 'baseui/banner';
 import { KIND as BUTTON_KIND, SIZE } from 'baseui/button';
 import { ModalButton } from 'baseui/modal';
 import { useSnackbar } from 'baseui/snackbar';
-import { MdCheckCircle, MdErrorOutline } from 'react-icons/md';
+import { MdCheckCircle, MdErrorOutline, MdOpenInNew } from 'react-icons/md';
 
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
@@ -68,8 +68,13 @@ export default function WorkflowActionsModalContent<R>({
       <styled.ModalHeader>{action.label} workflow</styled.ModalHeader>
       <styled.ModalBody>
         {action.modal.text}
-        <styled.Link href={action.modal.docsLink.href}>
+        <styled.Link
+          href={action.modal.docsLink.href}
+          target="_blank"
+          rel="noreferrer"
+        >
           {action.modal.docsLink.text}
+          <MdOpenInNew />
         </styled.Link>
         {error && (
           <Banner
@@ -86,6 +91,7 @@ export default function WorkflowActionsModalContent<R>({
       </styled.ModalBody>
       <styled.ModalFooter>
         <ModalButton
+          autoFocus={true} // TODO: this needs to be set to false if there is an input
           size={SIZE.compact}
           kind={BUTTON_KIND.secondary}
           onClick={onCloseModal}

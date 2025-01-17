@@ -28,11 +28,14 @@ describe(WorkflowActionsModalContent.name, () => {
 
     expect(await screen.findAllByText('Mock cancel workflow')).toHaveLength(2);
     expect(
-      screen.getByText('Mock cancel a workflow execution')
+      screen.getByText('Mock modal text to cancel a workflow execution')
     ).toBeInTheDocument();
     expect(
       screen.getByRole('button', { name: 'Mock cancel workflow' })
     ).toBeInTheDocument();
+
+    const docsLink = screen.getByText('Mock docs link');
+    expect(docsLink).toHaveAttribute('href', 'https://mock.docs.link');
   });
 
   it('calls onCloseModal when the Go Back button is clicked', async () => {
