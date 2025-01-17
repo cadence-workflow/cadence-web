@@ -3,9 +3,9 @@ import { HttpResponse } from 'msw';
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import { type CancelWorkflowResponse } from '@/route-handlers/cancel-workflow/cancel-workflow.types';
+import { mockWorkflowDetailsParams } from '@/views/workflow-page/__fixtures__/workflow-details-params';
 
 import { mockWorkflowActionsConfig } from '../../__fixtures__/workflow-actions-config';
-import { mockWorkflowDetailsParams } from '../../__fixtures__/workflow-details-params';
 import WorkflowActionsModalContent from '../workflow-actions-modal-content';
 
 const mockEnqueue = jest.fn();
@@ -55,9 +55,8 @@ describe(WorkflowActionsModalContent.name, () => {
     expect(mockCancelWorkflow).toHaveBeenCalled();
     expect(mockEnqueue).toHaveBeenCalledWith(
       expect.objectContaining({
-        message: 'Mock notification',
-      }),
-      undefined
+        message: 'Mock cancel notification',
+      })
     );
     expect(mockOnClose).toHaveBeenCalled();
   });

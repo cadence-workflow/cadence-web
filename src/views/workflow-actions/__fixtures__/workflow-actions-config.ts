@@ -1,8 +1,14 @@
 import { MdHighlightOff, MdPowerSettingsNew } from 'react-icons/md';
 
+import { type CancelWorkflowResponse } from '@/route-handlers/cancel-workflow/cancel-workflow.types';
+import { type TerminateWorkflowResponse } from '@/route-handlers/terminate-workflow/terminate-workflow.types';
+
 import { type WorkflowAction } from '../workflow-actions.types';
 
-export const mockWorkflowActionsConfig = [
+export const mockWorkflowActionsConfig: [
+  WorkflowAction<CancelWorkflowResponse>,
+  WorkflowAction<TerminateWorkflowResponse>,
+] = [
   {
     id: 'cancel',
     label: 'Mock cancel',
@@ -10,9 +16,7 @@ export const mockWorkflowActionsConfig = [
     icon: MdHighlightOff,
     getIsEnabled: () => true,
     apiRoute: 'cancel',
-    onSuccess: (params) => {
-      params.sendNotification('Mock notification');
-    },
+    getSuccessMessage: () => 'Mock cancel notification',
   },
   {
     id: 'terminate',
@@ -21,8 +25,6 @@ export const mockWorkflowActionsConfig = [
     icon: MdPowerSettingsNew,
     getIsEnabled: () => false,
     apiRoute: 'terminate',
-    onSuccess: (params) => {
-      params.sendNotification('Mock notification');
-    },
+    getSuccessMessage: () => 'Mock terminate notification',
   },
-] as const satisfies Array<WorkflowAction<NonNullable<unknown>>>;
+] as const;

@@ -20,9 +20,7 @@ const workflowActionsConfig: [
         workflow.workflowExecutionInfo?.closeEvent?.attributes ?? ''
       ),
     apiRoute: 'cancel',
-    onSuccess: ({ sendNotification }) => {
-      sendNotification('Workflow cancellation has been requested.');
-    },
+    getSuccessMessage: () => 'Workflow cancellation has been requested.',
   },
   {
     id: 'terminate',
@@ -34,9 +32,7 @@ const workflowActionsConfig: [
         workflow.workflowExecutionInfo?.closeEvent?.attributes ?? ''
       ),
     apiRoute: 'terminate',
-    onSuccess: ({ sendNotification }) => {
-      sendNotification('Workflow has been terminated.');
-    },
+    getSuccessMessage: () => 'Workflow has been terminated.',
   },
 ] as const;
 

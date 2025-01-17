@@ -5,7 +5,6 @@ import { ModalButton } from 'baseui/modal';
 import { useSnackbar } from 'baseui/snackbar';
 import { MdCheckCircle, MdErrorOutline } from 'react-icons/md';
 
-import logger from '@/utils/logger';
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
 
@@ -21,7 +20,7 @@ export default function WorkflowActionsModalContent<R>({
 }: Props<R>) {
   const queryClient = useQueryClient();
   const { enqueue, dequeue } = useSnackbar();
-  const { mutateAsync, isPending, error } = useMutation<
+  const { mutate, isPending, error } = useMutation<
     R,
     RequestError,
     WorkflowActionInputParams
@@ -42,6 +41,24 @@ export default function WorkflowActionsModalContent<R>({
             }),
           }
         ).then((res) => res.json() as R),
+      onSuccess: (result, params) => {
+        const {
+          // TODO: input,
+          ...workflowDetailsParams
+        } = params;
+
+        queryClient.invalidateQueries({
+          queryKey: ['describe_workflow', workflowDetailsParams],
+        });
+
+        onCloseModal();
+        enqueue({
+          message: action.getSuccessMessage(result, params),
+          startEnhancer: MdCheckCircle,
+          actionMessage: 'OK',
+          actionOnClick: () => dequeue(),
+        });
+      },
     },
     queryClient
   );
@@ -75,42 +92,7 @@ export default function WorkflowActionsModalContent<R>({
         <ModalButton
           size={SIZE.compact}
           kind={BUTTON_KIND.primary}
-          onClick={async () => {
-            mutateAsync(params).then(
-              (result) => {
-                const {
-                  // TODO: input,
-                  ...workflowDetailsParams
-                } = params;
-
-                queryClient.invalidateQueries({
-                  queryKey: ['describe_workflow', workflowDetailsParams],
-                });
-
-                onCloseModal();
-
-                action.onSuccess({
-                  result,
-                  inputParams: params,
-                  sendNotification: (message, duration) =>
-                    enqueue(
-                      {
-                        message,
-                        startEnhancer: MdCheckCircle,
-                        actionMessage: 'OK',
-                        actionOnClick: () => dequeue(),
-                      },
-                      duration
-                    ),
-                });
-              },
-              (e) =>
-                logger.error(
-                  { error: e, params },
-                  'Failed to perform workflow action'
-                )
-            );
-          }}
+          onClick={() => mutate(params)}
           isLoading={isPending}
         >
           {action.label} workflow
