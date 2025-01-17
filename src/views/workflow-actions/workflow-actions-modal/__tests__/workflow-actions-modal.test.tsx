@@ -4,7 +4,6 @@ import { render, screen } from '@/test-utils/rtl';
 
 import { mockWorkflowDetailsParams } from '../../../workflow-page/__fixtures__/workflow-details-params';
 import { mockWorkflowActionsConfig } from '../../__fixtures__/workflow-actions-config';
-import { mockWorkflowDetailsParams } from '../../__fixtures__/workflow-details-params';
 import WorkflowActionsModal from '../workflow-actions-modal';
 
 jest.mock('baseui/modal', () => ({
