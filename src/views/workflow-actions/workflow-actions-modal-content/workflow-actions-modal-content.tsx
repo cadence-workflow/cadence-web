@@ -67,7 +67,10 @@ export default function WorkflowActionsModalContent<R>({
     <>
       <styled.ModalHeader>{action.label} workflow</styled.ModalHeader>
       <styled.ModalBody>
-        {action.modalText}
+        {action.modal.text}
+        <styled.Link href={action.modal.docsLink.href}>
+          {action.modal.docsLink.text}
+        </styled.Link>
         {error && (
           <Banner
             hierarchy={HIERARCHY.low}

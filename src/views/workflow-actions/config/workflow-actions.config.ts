@@ -14,10 +14,13 @@ const workflowActionsConfig: [
     id: 'cancel',
     label: 'Cancel',
     subtitle: 'Cancel a workflow execution',
-    modalText:
-      "Cancels a running workflow by scheduling a cancellation request in the workflow's history, giving it a chance to clean up.",
-    docsLink:
-      'https://cadenceworkflow.io/docs/cli#signal-cancel-terminate-workflow',
+    modal: {
+      text: "Cancels a running workflow by scheduling a cancellation request in the workflow's history, giving it a chance to clean up.",
+      docsLink: {
+        text: 'Read more about cancelling workflows',
+        href: 'https://cadenceworkflow.io/docs/cli#signal-cancel-terminate-workflow',
+      },
+    },
     icon: MdHighlightOff,
     getIsEnabled: (workflow) =>
       !getWorkflowIsCompleted(
@@ -30,10 +33,13 @@ const workflowActionsConfig: [
     id: 'terminate',
     label: 'Terminate',
     subtitle: 'Terminate a workflow execution',
-    modalText:
-      'Terminates a running workflow immediately. Please terminate a workflow only if you know what you are doing.',
-    docsLink:
-      'https://cadenceworkflow.io/docs/cli#signal-cancel-terminate-workflow',
+    modal: {
+      text: 'Terminates a running workflow immediately. Please terminate a workflow only if you know what you are doing.',
+      docsLink: {
+        text: 'Read more about terminating workflows',
+        href: 'https://cadenceworkflow.io/docs/cli#signal-cancel-terminate-workflow',
+      },
+    },
     icon: MdPowerSettingsNew,
     getIsEnabled: (workflow) =>
       !getWorkflowIsCompleted(
