@@ -50,39 +50,7 @@ describe(DateFilter.name, () => {
     });
   });
 
-  it('resets to previous date when one date is selected and then the modal is closed', () => {
-    const { mockOnChangeDates } = setup({
-      overrides: mockDateOverrides,
-    });
-    const datePicker = screen.getByPlaceholderText('Mock placeholder');
-
-    act(() => {
-      fireEvent.focus(datePicker);
-    });
-
-    const timeRangeStartLabel = screen.getByLabelText(
-      "Choose Saturday, May 13th 2023. It's available."
-    );
-
-    act(() => {
-      fireEvent.click(timeRangeStartLabel);
-    });
-
-    screen.getByText(
-      'Selected date is 13 May 2023, 00:00 +00. Select the second date.'
-    );
-
-    act(() => {
-      fireEvent.keyDown(datePicker, { keyCode: 9 });
-    });
-
-    expect(datePicker).toHaveValue(
-      '23 May 2023, 00:00 +00 – 24 May 2023, 00:00 +00'
-    );
-    expect(mockOnChangeDates).not.toHaveBeenCalled();
-  });
-
-  it('resets to empty state when one date is selected and then the modal is closed', () => {
+  it('sets start and end time accordingly when one date is selected and then the modal is closed', () => {
     const { mockOnChangeDates } = setup({});
     const datePicker = screen.getByPlaceholderText('Mock placeholder');
 
@@ -106,8 +74,46 @@ describe(DateFilter.name, () => {
       fireEvent.keyDown(datePicker, { keyCode: 9 });
     });
 
-    expect(datePicker).toHaveValue('');
-    expect(mockOnChangeDates).not.toHaveBeenCalled();
+    expect(mockOnChangeDates).toHaveBeenCalledWith({
+      start: new Date('2023-05-13T00:00:00.000Z'),
+      end: new Date('2023-05-13T23:59:59.999Z'),
+    });
+  });
+
+  it('sets start and end time accordingly when the same date is selected', () => {
+    const { mockOnChangeDates } = setup({});
+    const datePicker = screen.getByPlaceholderText('Mock placeholder');
+
+    act(() => {
+      fireEvent.focus(datePicker);
+    });
+
+    const timeRangeStartLabel = screen.getByLabelText(
+      "Choose Saturday, May 13th 2023. It's available."
+    );
+
+    act(() => {
+      fireEvent.click(timeRangeStartLabel);
+    });
+
+    screen.getByText(
+      'Selected date is 13 May 2023, 00:00 +00. Select the second date.'
+    );
+
+    screen.debug();
+
+    const timeRangeEndLabel = screen.getByLabelText(
+      "Selected start date. Saturday, May 13th 2023. It's available."
+    );
+
+    act(() => {
+      fireEvent.click(timeRangeEndLabel);
+    });
+
+    expect(mockOnChangeDates).toHaveBeenCalledWith({
+      start: new Date('2023-05-13T00:00:00.000Z'),
+      end: new Date('2023-05-13T23:59:59.999Z'),
+    });
   });
 
   it('clears the date when the clear button is clicked', () => {
