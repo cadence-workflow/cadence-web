@@ -1,5 +1,6 @@
 import { type Theme, withStyle } from 'baseui';
 import { type BannerOverrides } from 'baseui/banner';
+import { StyledLink } from 'baseui/link';
 import { ModalBody, ModalFooter, ModalHeader } from 'baseui/modal';
 
 export const styled = {
@@ -7,12 +8,22 @@ export const styled = {
     marginTop: $theme.sizing.scale850,
   })),
   ModalBody: withStyle(ModalBody, ({ $theme }: { $theme: Theme }) => ({
+    display: 'flex',
+    flexDirection: 'column',
+    rowGap: $theme.sizing.scale600,
     marginBottom: $theme.sizing.scale800,
   })),
   ModalFooter: withStyle(ModalFooter, {
     display: 'flex',
     justifyContent: 'space-between',
   }),
+  Link: withStyle(StyledLink, ({ $theme }: { $theme: Theme }) => ({
+    alignSelf: 'start',
+    ...$theme.typography.LabelSmall,
+    display: 'flex',
+    alignItems: 'center',
+    columnGap: $theme.sizing.scale100,
+  })),
 };
 
 export const overrides = {
