@@ -2,59 +2,132 @@ import { type z } from 'zod';
 
 import type dynamicConfigs from '@/config/dynamic/dynamic.config';
 
-export type ConfigAsyncResolverDefinition<Args, ReturnType> = {
-  resolver: (args: Args) => Promise<ReturnType>;
-  // isPublic?: boolean; // would be implemented in upcoming PR
+type ConfigResolver<Args, ReturnType> = Args extends undefined
+  ? () => ReturnType
+  : (args: Args) => ReturnType;
+
+export type ConfigAsyncResolverDefinition<
+  Args,
+  ReturnType,
+  EvalOn extends ResolverEvaluateOn<Args>,
+  IsPublic extends boolean = false,
+> = {
+  resolver: ConfigResolver<Args, Promise<ReturnType>>;
+  isPublic?: IsPublic;
+  evaluateOn: EvalOn;
 };
 
-export type ConfigSyncResolverDefinition<Args, ReturnType> = {
-  resolver: (args: Args) => ReturnType;
-  // forceSync?: boolean; // would be replaced in upcoming PR
-  // isPublic?: boolean; // would be implemented in upcoming PR
+export type ConfigSyncResolverDefinition<
+  Args,
+  ReturnType,
+  EvalOn extends ResolverEvaluateOn<Args>,
+  IsPublic extends boolean = false,
+> = {
+  resolver: ConfigResolver<Args, ReturnType>;
+  isPublic?: IsPublic;
+  evaluateOn: EvalOn;
 };
 
-export type ConfigEnvDefinition = {
+export type ConfigEnvDefinition<IsPublic extends boolean = false> = {
   env: string;
   default: string;
-  // forceSync?: boolean; // would be replaced in upcoming PR
-  // isPublic?: boolean; // would be implemented in upcoming PR
+  isPublic?: IsPublic;
+  evaluateOn?: 'serverStart';
 };
 
 export type ConfigDefinition =
-  | ConfigAsyncResolverDefinition<any, any>
-  | ConfigSyncResolverDefinition<any, any>
-  | ConfigEnvDefinition;
+  | ConfigAsyncResolverDefinition<any, any, 'request' | 'serverStart', any>
+  | ConfigSyncResolverDefinition<any, any, 'request' | 'serverStart', any>
+  | ConfigEnvDefinition<any>;
 
 export type ConfigDefinitionRecords = Record<string, ConfigDefinition>;
 
-type InferLoadedConfig<T extends Record<string, any>> = {
+type ResolverType<Args, ReturnType, EvalOn extends ResolverEvaluateOn<Args>> =
+  | ConfigSyncResolverDefinition<Args, ReturnType, EvalOn>
+  | ConfigAsyncResolverDefinition<Args, ReturnType, EvalOn>;
+
+type ResolverEvaluateOn<Args> = Args extends undefined
+  ? 'serverStart' | 'request'
+  : 'request';
+
+export type InferLoadedConfig<T extends Record<string, ConfigDefinition>> = {
   [K in keyof T]: T[K] extends ConfigEnvDefinition
     ? string // If it's an env definition, the value is a string
-    : T[K] extends ConfigSyncResolverDefinition<infer Args, infer ReturnType>
-      ? (args: Args) => ReturnType // If it's a sync resolver, it's a function with matching signature
-      : T[K] extends ConfigAsyncResolverDefinition<infer Args, infer ReturnType>
-        ? (args: Args) => Promise<ReturnType> // If it's an async resolver, it's a promise-returning function
-        : never; // If it doesn't match any known type, it's never
+    : T[K] extends ResolverType<any, infer ReturnType, infer EvalOn>
+      ? EvalOn extends 'serverStart'
+        ? ReturnType // If it's a sync resolver with evaluateOn serverStart, return the type directly
+        : T[K] extends ConfigSyncResolverDefinition<
+              infer Args,
+              infer ReturnType,
+              any
+            >
+          ? ConfigResolver<Args, ReturnType> // If it's a sync resolver, it's a function with matching signature
+          : T[K] extends ConfigAsyncResolverDefinition<
+                infer Args,
+                infer ReturnType,
+                any
+              >
+            ? ConfigResolver<Args, Promise<ReturnType>> // If it's an async resolver, it's a promise-returning function
+            : never // If it doesn't match any known type, it's never
+      : never; //If it doesn't match any known type, it's never
 };
+
+export type InferResolverSchema<Definitions extends ConfigDefinitionRecords> = {
+  [Key in keyof Definitions as Definitions[Key] extends ResolverType<
+    any,
+    any,
+    any
+  >
+    ? Key
+    : never]: Definitions[Key] extends ResolverType<
+    infer Args,
+    infer ReturnType,
+    any
+  >
+    ? { args: z.ZodType<Args>; returnType: z.ZodType<ReturnType> }
+    : never;
+};
+
+export type ArgsOfConfigResolver<
+  C extends InferLoadedConfig<ConfigDefinitionRecords>,
+  K extends keyof C,
+> = C[K] extends (args: any) => any ? Parameters<C[K]>[0] : undefined;
+
+// Types based on dynamicConfigs const
+type LoadedPublicConfigs<T extends ConfigDefinitionRecords> = {
+  [K in keyof T]: T[K] extends
+    | ConfigEnvDefinition<infer IsPublic>
+    | ConfigAsyncResolverDefinition<any, any, any, infer IsPublic>
+    | ConfigSyncResolverDefinition<any, any, any, infer IsPublic>
+    ? IsPublic extends true // If it's an env definition, the value is a string
+      ? K
+      : never
+    : never; //If it doesn't match any known type, it's never
+}[keyof LoadedConfigs];
+
+export type PublicConfigKeys = LoadedPublicConfigs<typeof dynamicConfigs>;
+
+export type DynamicConfig = typeof dynamicConfigs;
 
 export type LoadedConfigs<
   C extends ConfigDefinitionRecords = typeof dynamicConfigs,
 > = InferLoadedConfig<C>;
 
-export type ArgOfConfigResolver<K extends keyof LoadedConfigs> =
-  LoadedConfigs[K] extends (args: any) => any
-    ? Parameters<LoadedConfigs[K]>[0]
-    : undefined;
+export type ArgsOfLoadedConfigResolver<K extends keyof LoadedConfigs> =
+  ArgsOfConfigResolver<LoadedConfigs, K>;
 
 export type LoadedConfigValue<K extends keyof LoadedConfigs> =
   LoadedConfigs[K] extends (args: any) => any
     ? ReturnType<LoadedConfigs[K]>
-    : string;
+    : LoadedConfigs[K];
 
 export type ConfigKeysWithArgs = {
-  [K in keyof LoadedConfigs]: LoadedConfigs[K] extends (args: undefined) => any
+  [K in keyof LoadedConfigs]: LoadedConfigs[K] extends ConfigResolver<
+    undefined,
+    any
+  >
     ? never
-    : LoadedConfigs[K] extends (args: any) => any
+    : LoadedConfigs[K] extends ConfigResolver<any, any>
       ? K
       : never;
 }[keyof LoadedConfigs];
@@ -63,18 +136,5 @@ export type ConfigKeysWithoutArgs = Exclude<
   keyof LoadedConfigs,
   ConfigKeysWithArgs
 >;
-
-type ResolverType<Args, ReturnType> =
-  | ConfigSyncResolverDefinition<Args, ReturnType>
-  | ConfigAsyncResolverDefinition<Args, ReturnType>;
-
-export type InferResolverSchema<Definitions extends Record<string, any>> = {
-  [Key in keyof Definitions]: Definitions[Key] extends ResolverType<
-    infer Args,
-    infer ReturnType
-  >
-    ? { args: z.ZodType<Args>; returnType: z.ZodType<ReturnType> }
-    : never;
-};
 
 export type ResolverSchemas = InferResolverSchema<typeof dynamicConfigs>;
