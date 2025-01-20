@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 import { type LoadedConfigs } from '../config.types';
 import getConfigValue from '../get-config-value';
 import { loadedGlobalConfigs } from '../global-configs-ref';
@@ -7,6 +9,14 @@ jest.mock('../global-configs-ref', () => ({
     COMPUTED: jest.fn(),
     CADENCE_WEB_PORT: 'someValue',
   } satisfies Partial<LoadedConfigs>,
+}));
+
+jest.mock('@/config/dynamic/resolvers/schemas/resolver-schemas', () => ({
+  COMPUTED: {
+    args: z.undefined(),
+    returnType: z.string(),
+  },
+  CADENCE_WEB_PORT: 'someValue',
 }));
 
 describe('getConfigValue', () => {
@@ -23,8 +33,8 @@ describe('getConfigValue', () => {
     const mockFn = loadedGlobalConfigs.COMPUTED as jest.Mock;
     mockFn.mockResolvedValue('resolvedValue');
 
-    const result = await getConfigValue('COMPUTED', ['arg']);
-    expect(mockFn).toHaveBeenCalledWith(['arg']);
+    const result = await getConfigValue('COMPUTED');
+    expect(mockFn).toHaveBeenCalledWith(undefined);
     expect(result).toBe('resolvedValue');
   });
 });
