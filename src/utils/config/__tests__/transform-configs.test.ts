@@ -90,7 +90,6 @@ describe('getTransformedConfigs', () => {
     } satisfies LoadedConfigs<typeof configs>);
   });
 
-  // should throw an error if the resolved value does not match the schema
   it('should throw an error if the resolved value does not match the schema', async () => {
     const configs = {
       config3: {
