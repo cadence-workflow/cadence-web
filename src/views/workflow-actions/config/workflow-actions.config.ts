@@ -37,7 +37,7 @@ const workflowActionsConfig: [
       text: 'Terminates a running workflow immediately. Please terminate a workflow only if you know what you are doing.',
       docsLink: {
         text: 'Read more about terminating workflows',
-        href: 'https://cadenceworkflow.io/docs/cli#signal-cancel-terminatde-workflow',
+        href: 'https://cadenceworkflow.io/docs/cli#signal-cancel-terminate-workflow',
       },
     },
     icon: MdPowerSettingsNew,
