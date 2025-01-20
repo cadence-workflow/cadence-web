@@ -13,6 +13,13 @@ export const mockWorkflowActionsConfig: [
     id: 'cancel',
     label: 'Mock cancel',
     subtitle: 'Mock cancel a workflow execution',
+    modal: {
+      text: 'Mock modal text to cancel a workflow execution',
+      docsLink: {
+        text: 'Mock docs link',
+        href: 'https://mock.docs.link',
+      },
+    },
     icon: MdHighlightOff,
     getIsEnabled: () => true,
     apiRoute: 'cancel',
@@ -22,6 +29,13 @@ export const mockWorkflowActionsConfig: [
     id: 'terminate',
     label: 'Mock terminate',
     subtitle: 'Mock terminate a workflow execution',
+    modal: {
+      text: 'Mock modal text to terminate a workflow execution',
+      docsLink: {
+        text: 'Mock docs link',
+        href: 'https://mock.docs.link',
+      },
+    },
     icon: MdPowerSettingsNew,
     getIsEnabled: () => false,
     apiRoute: 'terminate',
