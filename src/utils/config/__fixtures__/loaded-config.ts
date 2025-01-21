@@ -1,6 +1,6 @@
-import { type LoadedConfigResolvedValues } from '../config.types';
+import { type LoadedConfigs } from '../config.types';
 
-const mockResolvedConfigValues: LoadedConfigResolvedValues = {
+const mockResolvedConfigValues: LoadedConfigs = {
   ADMIN_SECURITY_TOKEN: 'mock-secret',
   CADENCE_WEB_PORT: '3000',
   CLUSTERS: [
