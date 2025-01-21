@@ -4,11 +4,14 @@ import React, { useMemo, useState } from 'react';
 
 import { useSuspenseQuery } from '@tanstack/react-query';
 
+import ErrorPanel from '@/components/error-panel/error-panel';
+import PanelSection from '@/components/panel-section/panel-section';
 import { type FetchWorkflowQueryTypesResponse } from '@/route-handlers/fetch-workflow-query-types/fetch-workflow-query-types.types';
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
 import { type WorkflowPageTabContentProps } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
+import workflowQueriesEmptyPanelConfig from './config/workflow-queries-empty-panel.config';
 import getWorkflowQueryStatus from './helpers/get-workflow-query-status';
 import useWorkflowQueries from './hooks/use-workflow-queries';
 import WorkflowQueriesResultJson from './workflow-queries-result-json/workflow-queries-result-json';
@@ -44,6 +47,14 @@ export default function WorkflowQueries(props: WorkflowPageTabContentProps) {
     ...props.params,
     queryTypes: filteredQueryTypes,
   });
+
+  if (filteredQueryTypes.length === 0) {
+    return (
+      <PanelSection>
+        <ErrorPanel {...workflowQueriesEmptyPanelConfig} />
+      </PanelSection>
+    );
+  }
 
   return (
     <styled.PageSection>
