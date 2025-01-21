@@ -19,7 +19,12 @@ export default async function getConfigValue<K extends ConfigKeysWithArgs>(
 // Overload for keys not requiring arguments (env configs)
 export default async function getConfigValue<K extends ConfigKeysWithoutArgs>(
   key: K,
-  arg?: undefined
+  arg?: ArgsOfLoadedConfigResolver<K>
+): Promise<LoadedConfigValue<K>>;
+
+export default async function getConfigValue<K extends keyof LoadedConfigs>(
+  key: K,
+  arg: ArgsOfLoadedConfigResolver<K>
 ): Promise<LoadedConfigValue<K>>;
 
 export default async function getConfigValue<K extends keyof LoadedConfigs>(
@@ -30,7 +35,7 @@ export default async function getConfigValue<K extends keyof LoadedConfigs>(
     throw new Error('getConfigValue cannot be invoked on browser');
   }
 
-  const value = loadedGlobalConfigs[key] as LoadedConfigs[K];
+  const value = loadedGlobalConfigs[key as K];
 
   if (typeof value === 'function') {
     const k = key as keyof ResolverSchemas;
