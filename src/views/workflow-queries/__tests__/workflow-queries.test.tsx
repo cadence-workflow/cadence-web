@@ -28,12 +28,26 @@ jest.mock('../workflow-queries-result-json/workflow-queries-result-json', () =>
   ))
 );
 
+jest.mock('@/components/error-panel/error-panel', () =>
+  jest.fn(({ message }: { message: string }) => <div>{message}</div>)
+);
+
+jest.mock('../config/workflow-queries-empty-panel.config', () => ({
+  message: 'No queries available',
+}));
+
 describe(WorkflowQueries.name, () => {
   it('renders without error and does not show excluded query type', async () => {
     await setup({});
 
     expect(await screen.findByText(/__open_sessions/)).toBeInTheDocument();
     expect(screen.queryByText(/__stack_trace/)).toBeNull();
+  });
+
+  it('renders with error panel if there are no query types available', async () => {
+    await setup({ noQueries: true });
+
+    expect(await screen.findByText('No queries available'));
   });
 
   it('runs query and updates JSON', async () => {
@@ -64,7 +78,13 @@ describe(WorkflowQueries.name, () => {
   });
 });
 
-async function setup({ error }: { error?: boolean }) {
+async function setup({
+  error,
+  noQueries,
+}: {
+  error?: boolean;
+  noQueries?: boolean;
+}) {
   const user = userEvent.setup();
 
   render(
@@ -95,11 +115,9 @@ async function setup({ error }: { error?: boolean }) {
               }
             : {
                 jsonResponse: {
-                  queryTypes: [
-                    '__query_types',
-                    '__open_sessions',
-                    '__stack_trace',
-                  ],
+                  queryTypes: noQueries
+                    ? []
+                    : ['__query_types', '__open_sessions', '__stack_trace'],
                 } satisfies FetchWorkflowQueryTypesResponse,
               }),
         },
