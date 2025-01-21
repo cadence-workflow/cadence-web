@@ -3,9 +3,9 @@ import { z } from 'zod';
 import {
   type InferResolverSchema,
   type ConfigEnvDefinition,
-  type LoadedConfigs,
   type ConfigSyncResolverDefinition,
   type ConfigAsyncResolverDefinition,
+  type InferLoadedConfig,
 } from '../config.types';
 import transformConfigs from '../transform-configs';
 
@@ -33,7 +33,7 @@ describe('getTransformedConfigs', () => {
     const result = await transformConfigs(configs, resolversSchemas);
     expect(result).toEqual({
       config1: 'envValue1',
-    } satisfies LoadedConfigs<typeof configs>);
+    } satisfies InferLoadedConfig<typeof configs>);
   });
 
   it('should get default value for unset environment variables', async () => {
@@ -46,7 +46,7 @@ describe('getTransformedConfigs', () => {
     const result = await transformConfigs(configs, resolversSchemas);
     expect(result).toEqual({
       config2: 'default2',
-    } satisfies LoadedConfigs<typeof configs>);
+    } satisfies InferLoadedConfig<typeof configs>);
   });
 
   it('should get resolved value for configuration that is evaluated on server start', async () => {
@@ -67,7 +67,7 @@ describe('getTransformedConfigs', () => {
     expect(configs.config3.resolver).toHaveBeenCalledWith(undefined);
     expect(result).toEqual({
       config3: 3,
-    } satisfies LoadedConfigs<typeof configs>);
+    } satisfies InferLoadedConfig<typeof configs>);
   });
 
   it('should get the resolver for configuration that is evaluated on request', async () => {
@@ -87,7 +87,7 @@ describe('getTransformedConfigs', () => {
     const result = await transformConfigs(configs, resolversSchemas);
     expect(result).toEqual({
       config3: configs.config3.resolver,
-    } satisfies LoadedConfigs<typeof configs>);
+    } satisfies InferLoadedConfig<typeof configs>);
   });
 
   it('should throw an error if the resolved value does not match the schema', async () => {
