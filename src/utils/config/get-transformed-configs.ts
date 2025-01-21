@@ -6,8 +6,6 @@ import resolverSchemas from '../../config/dynamic/resolvers/schemas/resolver-sch
 import type { LoadedConfigs } from './config.types';
 import transformConfigs from './transform-configs';
 
-export default async function getTransformedConfigs(): Promise<
-  LoadedConfigs<typeof configDefinitions>
-> {
+export default async function getTransformedConfigs(): Promise<LoadedConfigs> {
   return await transformConfigs(configDefinitions, resolverSchemas);
 }
