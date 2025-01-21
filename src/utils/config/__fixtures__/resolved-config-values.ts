@@ -7,29 +7,7 @@ const mockResolvedConfigValues: LoadedConfigResolvedValues = {
   COMPUTED: ['mock-computed'],
   COMPUTED_WITH_ARG: ['mock-arg'],
   DYNAMIC_WITH_ARG: 5,
-  CLUSTERS: [
-    {
-      clusterName: 'mock-cluster1',
-      grpc: {
-        serviceName: 'mock-service1',
-        peer: 'mock.localhost:7933',
-      },
-    },
-    {
-      clusterName: 'mock-cluster2',
-      grpc: {
-        serviceName: 'mock-service2',
-        peer: 'mock.localhost:7933',
-      },
-    },
-  ],
-  CLUSTERS_PUBLIC: [
-    {
-      clusterName: 'mock-cluster1',
-    },
-    {
-      clusterName: 'mock-cluster2',
-    },
-  ],
+  GRPC_PROTO_DIR_BASE_PATH: 'mock/path/to/grpc/proto',
+  GRPC_SERVICES_NAMES: 'mock-grpc-service-name',
 };
 export default mockResolvedConfigValues;
