@@ -15,6 +15,7 @@ import PageFiltersToggle from '@/components/page-filters/page-filters-toggle/pag
 import PageSection from '@/components/page-section/page-section';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
+import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
 import decodeUrlParams from '@/utils/decode-url-params';
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
@@ -66,7 +67,12 @@ export default function WorkflowHistory({ params }: Props) {
     queryKey: ['workflow_history_paginated', wfhistoryRequestArgs] as const,
     queryFn: ({ queryKey: [_, qp], pageParam }) =>
       request(
-        `/api/domains/${qp.domain}/${qp.cluster}/workflows/${qp.workflowId}/${qp.runId}/history?${queryString.stringify({ pageSize: qp.pageSize, nextPage: pageParam, waitForNewEvent: qp.waitForNewEvent })}`
+        `/api/domains/${qp.domain}/${qp.cluster}/workflows/${qp.workflowId}/${qp.runId}/history?${queryString.stringify(
+          {
+            nextPage: pageParam,
+            waitForNewEvent: qp.waitForNewEvent,
+          }
+        )}`
       ).then((res) => res.json()),
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => {
@@ -144,6 +150,27 @@ export default function WorkflowHistory({ params }: Props) {
           {...pageFiltersRest}
         />
       )}
+      {typeof window !== undefined && (
+        <Timeline
+          options={{
+            height: '600px',
+          }}
+          items={filteredGroupedHistoryEventsEntries.map(
+            ([eventGroupName, eventGroup]) => {
+              const startTimestamp = eventGroup.events[0].eventTime;
+              const startTime = new Date(startTimestamp);
+
+              const endTimestamp =
+                eventGroup.events[eventGroup.events.length - 1].eventTime;
+            }
+          )}
+          animation={{
+            duration: 3000,
+            easingFunction: 'easeInQuint',
+          }}
+        />
+      )}
+
       {filteredGroupedHistoryEventsEntries.length > 0 && (
         <div className={cls.eventsContainer}>
           <div role="list" className={cls.compactSection}>
