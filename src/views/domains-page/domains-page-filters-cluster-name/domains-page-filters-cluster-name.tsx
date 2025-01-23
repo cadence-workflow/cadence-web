@@ -1,18 +1,13 @@
 'use client';
-import React from 'react';
+import React, { useContext } from 'react';
 
-import { useQuery } from '@tanstack/react-query';
 import { FormControl } from 'baseui/form-control';
 import { Select } from 'baseui/select';
 
 import { type PageFilterComponentProps } from '@/components/page-filters/page-filters.types';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
-import {
-  type GetConfigRequestQuery,
-  type GetConfigResponse,
-} from '@/route-handlers/get-config/get-config.types';
-import request from '@/utils/request';
-import { type RequestError } from '@/utils/request/request-error';
+
+import { DomainsPageContext } from '../domains-page-context-provider/domains-page-context-provider';
 
 import {
   cssStyles,
@@ -26,28 +21,13 @@ function DomainsPageFiltersClusterName({
 }: PageFilterComponentProps<DomainsPageFiltersClusterNameValue>) {
   const { cls } = useStyletronClasses(cssStyles);
 
-  const { data: clusters = [], isLoading } = useQuery<
-    GetConfigResponse<'CLUSTERS_PUBLIC'>,
-    RequestError,
-    GetConfigResponse<'CLUSTERS_PUBLIC'>,
-    [string, GetConfigRequestQuery<'CLUSTERS_PUBLIC'>]
-  >({
-    queryKey: [
-      'dynamic_config',
-      { configKey: 'CLUSTERS_PUBLIC', jsonArgs: undefined },
-    ] as const,
-    queryFn: ({ queryKey: [_, { configKey }] }) => {
-      return request(`/api/config?configKey=${configKey}`, {
-        method: 'GET',
-      }).then((res) => res.json());
-    },
-  });
-  const clustersOptions = (clusters as { clusterName: string }[]).map(
-    ({ clusterName }) => ({
-      label: clusterName,
-      id: clusterName,
-    })
-  );
+  const pageCtx = useContext(DomainsPageContext);
+  const { CLUSTERS_PUBLIC } = pageCtx.pageConfig;
+
+  const clustersOptions = CLUSTERS_PUBLIC.map(({ clusterName }) => ({
+    label: clusterName,
+    id: clusterName,
+  }));
 
   const clusterValue = clustersOptions.filter(
     ({ id }) => id === value.clusterName
@@ -60,7 +40,6 @@ function DomainsPageFiltersClusterName({
           size="compact"
           value={clusterValue}
           options={clustersOptions}
-          isLoading={isLoading}
           onChange={(params) =>
             setValue({
               clusterName:
