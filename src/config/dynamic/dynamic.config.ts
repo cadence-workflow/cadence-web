@@ -7,10 +7,8 @@ import type {
 
 import clusters from './resolvers/clusters';
 import clustersPublic from './resolvers/clusters-public';
-import {
-  type ClusterConfig,
-  type ClustersConfigs,
-} from './resolvers/clusters.types';
+import { type PublicClustersConfigs } from './resolvers/clusters-public.types';
+import { type ClustersConfigs } from './resolvers/clusters.types';
 
 const dynamicConfigs: {
   CADENCE_WEB_PORT: ConfigEnvDefinition;
@@ -22,7 +20,7 @@ const dynamicConfigs: {
   >;
   CLUSTERS_PUBLIC: ConfigSyncResolverDefinition<
     undefined,
-    Pick<ClusterConfig, 'clusterName'>[],
+    PublicClustersConfigs,
     'serverStart',
     true
   >;

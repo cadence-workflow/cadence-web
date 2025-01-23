@@ -1,7 +1,8 @@
 'use client';
-import React from 'react';
+import React, { useContext } from 'react';
 
 import domainPageHeaderInfoItemsConfig from '../config/domain-page-header-info-items.config';
+import { DomainPageContext } from '../domain-page-context-provider/domain-page-context-provider';
 import DomainPageHeaderInfoItem from '../domain-page-header-info-item/domain-page-header-info-item';
 
 import { styled } from './domain-page-header-info.styles';
@@ -11,6 +12,7 @@ import {
 } from './domain-page-header-info.types';
 
 export default function DomainPageHeaderInfo(props: Props) {
+  const pageCtx = useContext(DomainPageContext);
   return (
     <styled.DomainDetailsContainer>
       {domainPageHeaderInfoItemsConfig.map(
@@ -28,10 +30,13 @@ export default function DomainPageHeaderInfo(props: Props) {
                   cluster={props.cluster}
                 />
               ) : (
-                configItem.getLabel({
-                  domainInfo: props.domainInfo,
-                  cluster: props.cluster,
-                })
+                configItem.getLabel(
+                  {
+                    domainInfo: props.domainInfo,
+                    cluster: props.cluster,
+                  },
+                  pageCtx
+                )
               ))
             }
             placeholderSize={configItem.placeholderSize}

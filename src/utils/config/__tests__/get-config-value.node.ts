@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-import { type LoadedConfigs } from '../config.types';
 import getConfigValue from '../get-config-value';
 import { loadedGlobalConfigs } from '../global-configs-ref';
 
