@@ -30,9 +30,9 @@ import { type TerminateWorkflowExecutionRequest__Input } from '@/__generated__/p
 import { type TerminateWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/TerminateWorkflowExecutionResponse';
 import { type UpdateDomainRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/UpdateDomainRequest';
 import { type UpdateDomainResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/UpdateDomainResponse';
-import CLUSTERS_CONFIGS from '@/config/clusters/clusters.config';
 
 import grpcServiceConfigurations from '../../config/grpc/grpc-services-config';
+import getConfigValue from '../config/get-config-value';
 
 import GRPCService, {
   type GRPCMetadata,
@@ -100,46 +100,50 @@ export type GRPCClusterMethods = {
   ) => Promise<RequestCancelWorkflowExecutionResponse>;
 };
 
-const clusterServices = CLUSTERS_CONFIGS.reduce((result, c) => {
-  const requestConfig: GRPCRequestConfig = {
-    serviceName: c.grpc.serviceName,
-    metadata: c.grpc.metadata,
-  };
+const getClusterServices = async () => {
+  const CLUSTERS_CONFIGS = await getConfigValue('CLUSTERS');
+  return CLUSTERS_CONFIGS.reduce((result, c) => {
+    const requestConfig: GRPCRequestConfig = {
+      serviceName: c.grpc.serviceName,
+      metadata: c.grpc.metadata,
+    };
 
-  const adminService = new GRPCService({
-    peer: c.grpc.peer,
-    requestConfig,
-    ...grpcServiceConfigurations.adminServiceConfig,
-  });
-  const domainService = new GRPCService({
-    peer: c.grpc.peer,
-    requestConfig,
-    ...grpcServiceConfigurations.domainServiceConfig,
-  });
-  const visibilityService = new GRPCService({
-    peer: c.grpc.peer,
-    requestConfig,
-    ...grpcServiceConfigurations.visibilityServiceConfig,
-  });
-  const workflowService = new GRPCService({
-    peer: c.grpc.peer,
-    requestConfig,
-    ...grpcServiceConfigurations.workflowServiceConfig,
-  });
+    const adminService = new GRPCService({
+      peer: c.grpc.peer,
+      requestConfig,
+      ...grpcServiceConfigurations.adminServiceConfig,
+    });
+    const domainService = new GRPCService({
+      peer: c.grpc.peer,
+      requestConfig,
+      ...grpcServiceConfigurations.domainServiceConfig,
+    });
+    const visibilityService = new GRPCService({
+      peer: c.grpc.peer,
+      requestConfig,
+      ...grpcServiceConfigurations.visibilityServiceConfig,
+    });
+    const workflowService = new GRPCService({
+      peer: c.grpc.peer,
+      requestConfig,
+      ...grpcServiceConfigurations.workflowServiceConfig,
+    });
 
-  result[c.clusterName] = {
-    adminService,
-    domainService,
-    visibilityService,
-    workflowService,
-  };
-  return result;
-}, {} as ClusterServices);
+    result[c.clusterName] = {
+      adminService,
+      domainService,
+      visibilityService,
+      workflowService,
+    };
+    return result;
+  }, {} as ClusterServices);
+};
 
-const getClusterServicesMethods = (
+const getClusterServicesMethods = async (
   c: string,
   metadata?: GRPCMetadata
-): GRPCClusterMethods => {
+): Promise<GRPCClusterMethods> => {
+  const clusterServices = await getClusterServices();
   const { visibilityService, adminService, domainService, workflowService } =
     clusterServices[c];
 
@@ -263,11 +267,11 @@ const getClusterServicesMethods = (
   };
 };
 
-export function getClusterMethods(
+export async function getClusterMethods(
   cluster: string,
   requestMetadata?: GRPCMetadata
-): GRPCClusterMethods {
-  const methods = getClusterServicesMethods(cluster, requestMetadata);
+): Promise<GRPCClusterMethods> {
+  const methods = await getClusterServicesMethods(cluster, requestMetadata);
   if (!methods) {
     throw new Error(`Invalid cluster provided: ${cluster}`);
   }

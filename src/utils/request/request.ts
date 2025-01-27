@@ -1,6 +1,8 @@
+import getConfigValue from '../config/get-config-value';
+
 import { RequestError } from './request-error';
 
-export default function request(
+export default async function request(
   url: string,
   options?: RequestInit
 ): Promise<Response> {
@@ -8,7 +10,8 @@ export default function request(
   const isRelativeUrl = url.startsWith('/');
   const isOnServer = typeof window === 'undefined';
   if (isOnServer && isRelativeUrl) {
-    absoluteUrl = `http://127.0.0.1:${process.env.CADENCE_WEB_PORT || 3000}${url}`;
+    const port = await getConfigValue('CADENCE_WEB_PORT');
+    absoluteUrl = `http://127.0.0.1:${port}${url}`;
   }
   return fetch(absoluteUrl, { cache: 'no-cache', ...(options || {}) }).then(
     async (res) => {
