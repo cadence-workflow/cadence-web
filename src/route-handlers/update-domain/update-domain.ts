@@ -3,7 +3,7 @@
 import snakeCase from 'lodash/snakeCase';
 import { NextResponse, type NextRequest } from 'next/server';
 
-import ADMIN_SECURITY_TOKEN from '@/config/auth/admin-security-token';
+import getConfigValue from '@/utils/config/get-config-value';
 import decodeUrlParams from '@/utils/decode-url-params';
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
@@ -30,7 +30,7 @@ export async function updateDomain(
       { status: 400 }
     );
   }
-
+  const ADMIN_SECURITY_TOKEN = await getConfigValue('ADMIN_SECURITY_TOKEN');
   try {
     const res = await ctx.grpcClusterMethods.updateDomain({
       ...values,

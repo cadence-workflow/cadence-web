@@ -1,4 +1,7 @@
+import getConfigValue from '@/utils/config/get-config-value';
+
 import request from '../request';
+jest.mock('@/utils/config/get-config-value');
 
 describe('request on node env', () => {
   afterEach(() => {
@@ -17,13 +20,11 @@ describe('request on node env', () => {
   it('should call fetch with relative URL converted to absolute URL on server and no-cache option', async () => {
     const url = '/api/data';
     const options = { method: 'POST' };
+    const port = await getConfigValue('CADENCE_WEB_PORT');
     await request(url, options);
-    expect(fetch).toHaveBeenCalledWith(
-      `http://127.0.0.1:${process.env.CADENCE_WEB_PORT || 3000}` + url,
-      {
-        cache: 'no-cache',
-        ...options,
-      }
-    );
+    expect(fetch).toHaveBeenCalledWith(`http://127.0.0.1:${port}` + url, {
+      cache: 'no-cache',
+      ...options,
+    });
   });
 });

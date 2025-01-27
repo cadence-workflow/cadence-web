@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-import { type LoadedConfigs } from '../config.types';
 import getConfigValue from '../get-config-value';
 import { loadedGlobalConfigs } from '../global-configs-ref';
 
@@ -8,7 +7,7 @@ jest.mock('../global-configs-ref', () => ({
   loadedGlobalConfigs: {
     COMPUTED: jest.fn(),
     CADENCE_WEB_PORT: 'someValue',
-  } satisfies Partial<LoadedConfigs>,
+  },
 }));
 
 jest.mock('@/config/dynamic/resolvers/schemas/resolver-schemas', () => ({
@@ -30,9 +29,11 @@ describe('getConfigValue', () => {
   });
 
   it('calls the function with the provided argument and returns the result', async () => {
+    // TODO: Fix the type of LoadedConfigs and make it more unit testable
+    // @ts-expect-error COMPUTED is a function
     const mockFn = loadedGlobalConfigs.COMPUTED as jest.Mock;
     mockFn.mockResolvedValue('resolvedValue');
-
+    // @ts-expect-error COMPUTED is not a loaded config
     const result = await getConfigValue('COMPUTED');
     expect(mockFn).toHaveBeenCalledWith(undefined);
     expect(result).toBe('resolvedValue');
