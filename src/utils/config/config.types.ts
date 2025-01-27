@@ -143,7 +143,10 @@ export type DynamicConfig = typeof dynamicConfigs;
 
 export type PublicDynamicConfigDefinitions =
   PublicConfigsDefinitions<DynamicConfig>;
+
 export type PublicDynamicConfigKeys = keyof PublicDynamicConfigDefinitions;
+export type PublicLoadedConfig =
+  InferLoadedConfig<PublicDynamicConfigDefinitions>;
 
 export type LoadedConfigs = InferLoadedConfig<DynamicConfig>;
 

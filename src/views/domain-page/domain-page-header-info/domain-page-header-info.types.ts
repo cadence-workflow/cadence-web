@@ -1,5 +1,6 @@
 import type React from 'react';
 
+import { type DomainPageContextType } from '../domain-page-context-provider/domain-page-context-provider.types';
 import type { DomainInfo } from '../domain-page.types';
 
 type LoadingProps = {
@@ -30,7 +31,10 @@ interface InfoItemComponent extends InfoItemBase {
 }
 
 interface InfoItemLabel extends InfoItemBase {
-  getLabel: (props: DomainHeaderInfoItemContentProps) => string;
+  getLabel: (
+    props: DomainHeaderInfoItemContentProps,
+    pageCtx: DomainPageContextType
+  ) => string;
   component?: never;
 }
 
