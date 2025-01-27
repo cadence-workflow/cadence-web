@@ -1,3 +1,5 @@
+import type { ButtonOverrides } from 'baseui/button';
+
 import type {
   StyletronCSSObject,
   StyletronCSSObjectOf,
@@ -28,6 +30,12 @@ const cssStylesObj = {
     [theme.mediaQuery.medium]: {
       flexDirection: 'row',
     },
+  }),
+  timelineChartContainer: (theme) => ({
+    marginTop: theme.sizing.scale500,
+    marginBottom: theme.sizing.scale500,
+    position: 'relative',
+    zIndex: 0,
   }),
   eventsContainer: (theme) => ({
     display: 'flex',
@@ -67,3 +75,13 @@ const cssStylesObj = {
 
 export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> =
   cssStylesObj;
+
+export const overrides = {
+  timelineToggleButton: {
+    Root: {
+      style: {
+        whiteSpace: 'nowrap',
+      },
+    },
+  } satisfies ButtonOverrides,
+};

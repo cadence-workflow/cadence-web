@@ -5,8 +5,10 @@ import {
   useSuspenseInfiniteQuery,
   type InfiniteData,
 } from '@tanstack/react-query';
+import { Button, KIND } from 'baseui/button';
 import { HeadingXSmall } from 'baseui/typography';
 import queryString from 'query-string';
+import { MdSchedule } from 'react-icons/md';
 import { Virtuoso, type VirtuosoHandle } from 'react-virtuoso';
 
 import usePageFilters from '@/components/page-filters/hooks/use-page-filters';
@@ -15,13 +17,13 @@ import PageFiltersToggle from '@/components/page-filters/page-filters-toggle/pag
 import PageSection from '@/components/page-section/page-section';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
-import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
 import decodeUrlParams from '@/utils/decode-url-params';
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
 import sortBy from '@/utils/sort-by';
 
 import workflowPageQueryParamsConfig from '../workflow-page/config/workflow-page-query-params.config';
+import useDescribeWorkflow from '../workflow-page/hooks/use-describe-workflow';
 
 import workflowHistoryFiltersConfig from './config/workflow-history-filters.config';
 import { groupHistoryEvents } from './helpers/group-history-events';
@@ -29,9 +31,10 @@ import useEventExpansionToggle from './hooks/use-event-expansion-toggle';
 import WorkflowHistoryCompactEventCard from './workflow-history-compact-event-card/workflow-history-compact-event-card';
 import WorkflowHistoryExpandAllEventsButton from './workflow-history-expand-all-events-button/workflow-history-expand-all-events-button';
 import WorkflowHistoryExportJsonButton from './workflow-history-export-json-button/workflow-history-export-json-button';
+import WorkflowHistoryTimelineChart from './workflow-history-timeline-chart/workflow-history-timeline-chart';
 import WorkflowHistoryTimelineGroup from './workflow-history-timeline-group/workflow-history-timeline-group';
 import WorkflowHistoryTimelineLoadMore from './workflow-history-timeline-load-more/workflow-history-timeline-load-more';
-import { cssStyles } from './workflow-history.styles';
+import { cssStyles, overrides } from './workflow-history.styles';
 import { type Props } from './workflow-history.types';
 
 export default function WorkflowHistory({ params }: Props) {
@@ -50,6 +53,8 @@ export default function WorkflowHistory({ params }: Props) {
       pageQueryParamsConfig: workflowPageQueryParamsConfig,
       pageFiltersConfig: workflowHistoryFiltersConfig,
     });
+
+  const { data: workflow } = useDescribeWorkflow({ ...params });
 
   const {
     data: result,
@@ -70,6 +75,7 @@ export default function WorkflowHistory({ params }: Props) {
         `/api/domains/${qp.domain}/${qp.cluster}/workflows/${qp.workflowId}/${qp.runId}/history?${queryString.stringify(
           {
             nextPage: pageParam,
+            pageSize: 2,
             waitForNewEvent: qp.waitForNewEvent,
           }
         )}`
@@ -81,21 +87,23 @@ export default function WorkflowHistory({ params }: Props) {
     },
   });
 
-  const workflowHistory = useMemo(() => {
-    return (result.pages || []).flat(1);
-  }, [result]);
+  const workflowHistoryEvents = useMemo(
+    () =>
+      (result.pages || [])
+        .flat(1)
+        .map(({ history }) => history?.events || [])
+        .flat(1),
+    [result]
+  );
 
   const filteredEvents = useMemo(() => {
-    const events = workflowHistory
-      .map(({ history }) => history?.events || [])
-      .flat(1);
-    return events.filter((event) =>
+    return workflowHistoryEvents.filter((event) =>
       workflowHistoryFiltersConfig.every((f) => {
         if (f.filterTarget === 'event') return f.filterFunc(event, queryParams);
         return true;
       })
     );
-  }, [workflowHistory, queryParams]);
+  }, [queryParams, workflowHistoryEvents]);
 
   const groupedHistoryEvents = useMemo(() => {
     return groupHistoryEvents(filteredEvents);
@@ -124,6 +132,8 @@ export default function WorkflowHistory({ params }: Props) {
     visibleEvents: filteredEvents,
   });
 
+  const [isTimelineChartShown, setIsTimelineChartShown] = useState(false);
+
   const timelineSectionListRef = useRef<VirtuosoHandle>(null);
 
   return (
@@ -141,6 +151,15 @@ export default function WorkflowHistory({ params }: Props) {
             onClick={() => setAreFiltersShown((v) => !v)}
             isActive={areFiltersShown}
           />
+          <Button
+            $size="compact"
+            kind={isTimelineChartShown ? KIND.primary : KIND.secondary}
+            onClick={() => setIsTimelineChartShown((v) => !v)}
+            startEnhancer={<MdSchedule size={16} />}
+            overrides={overrides.timelineToggleButton}
+          >
+            Timeline
+          </Button>
         </div>
       </div>
       {areFiltersShown && (
@@ -150,27 +169,23 @@ export default function WorkflowHistory({ params }: Props) {
           {...pageFiltersRest}
         />
       )}
-      {typeof window !== undefined && (
-        <Timeline
-          options={{
-            height: '600px',
-          }}
-          items={filteredGroupedHistoryEventsEntries.map(
-            ([eventGroupName, eventGroup]) => {
-              const startTimestamp = eventGroup.events[0].eventTime;
-              const startTime = new Date(startTimestamp);
-
-              const endTimestamp =
-                eventGroup.events[eventGroup.events.length - 1].eventTime;
+      {typeof window !== 'undefined' && isTimelineChartShown && (
+        <div className={cls.timelineChartContainer}>
+          <WorkflowHistoryTimelineChart
+            eventGroups={filteredGroupedHistoryEventsEntries.map(([_, g]) => g)}
+            isInitialLoading={
+              workflow.workflowExecutionInfo?.closeStatus ===
+              'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
+                ? result.pages[result.pages.length - 1].history?.events
+                    .length !== 0
+                : hasNextPage
             }
-          )}
-          animation={{
-            duration: 3000,
-            easingFunction: 'easeInQuint',
-          }}
-        />
+            hasMoreEvents={hasNextPage}
+            isFetchingMoreEvents={isFetchingNextPage}
+            fetchMoreEvents={fetchNextPage}
+          />
+        </div>
       )}
-
       {filteredGroupedHistoryEventsEntries.length > 0 && (
         <div className={cls.eventsContainer}>
           <div role="list" className={cls.compactSection}>
