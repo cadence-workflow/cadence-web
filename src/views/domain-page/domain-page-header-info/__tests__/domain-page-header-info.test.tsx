@@ -4,6 +4,7 @@ import { render, screen } from '@/test-utils/rtl';
 
 import { mockDomainInfo } from '../../__fixtures__/domain-info';
 import domainPageHeaderInfoItemsConfig from '../../config/domain-page-header-info-items.config';
+import { DomainPageContext } from '../../domain-page-context-provider/domain-page-context-provider';
 import { type Props } from '../../domain-page-header-info-item/domain-page-header-info-item.types';
 import DomainPageHeaderInfo from '../domain-page-header-info';
 
@@ -35,7 +36,13 @@ describe(DomainPageHeaderInfo.name, () => {
   });
 
   it('Should render in loading state', () => {
-    render(<DomainPageHeaderInfo loading={true} />);
+    render(
+      <DomainPageContext.Provider
+        value={{ pageConfig: { CLUSTERS_PUBLIC: [] } }}
+      >
+        <DomainPageHeaderInfo loading={true} />
+      </DomainPageContext.Provider>
+    );
 
     domainPageHeaderInfoItemsConfig.forEach((configItem) => {
       expect(screen.getByText(configItem.title)).toBeInTheDocument();
@@ -47,11 +54,15 @@ describe(DomainPageHeaderInfo.name, () => {
 
   it('Should render all data after loading', () => {
     render(
-      <DomainPageHeaderInfo
-        loading={false}
-        cluster="cluster_1"
-        domainInfo={mockDomainInfo}
-      />
+      <DomainPageContext.Provider
+        value={{ pageConfig: { CLUSTERS_PUBLIC: [] } }}
+      >
+        <DomainPageHeaderInfo
+          loading={false}
+          cluster="cluster_1"
+          domainInfo={mockDomainInfo}
+        />
+      </DomainPageContext.Provider>
     );
 
     domainPageHeaderInfoItemsConfig.forEach((configItem) => {

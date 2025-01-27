@@ -1,12 +1,13 @@
 'use client';
-import React from 'react';
+import React, { useContext } from 'react';
 
 import { FormControl } from 'baseui/form-control';
 import { Select } from 'baseui/select';
 
 import { type PageFilterComponentProps } from '@/components/page-filters/page-filters.types';
-import CLUSTERS_CONFIGS from '@/config/clusters/clusters.config';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
+
+import { DomainsPageContext } from '../domains-page-context-provider/domains-page-context-provider';
 
 import {
   cssStyles,
@@ -14,16 +15,19 @@ import {
 } from './domains-page-filters-cluster-name.styles';
 import { type DomainsPageFiltersClusterNameValue } from './domains-page-filters-cluster-name.types';
 
-const clustersOptions = CLUSTERS_CONFIGS.map(({ clusterName }) => ({
-  label: clusterName,
-  id: clusterName,
-}));
-
 function DomainsPageFiltersClusterName({
   value,
   setValue,
 }: PageFilterComponentProps<DomainsPageFiltersClusterNameValue>) {
   const { cls } = useStyletronClasses(cssStyles);
+
+  const pageCtx = useContext(DomainsPageContext);
+  const { CLUSTERS_PUBLIC } = pageCtx.pageConfig;
+
+  const clustersOptions = CLUSTERS_PUBLIC.map(({ clusterName }) => ({
+    label: clusterName,
+    id: clusterName,
+  }));
 
   const clusterValue = clustersOptions.filter(
     ({ id }) => id === value.clusterName

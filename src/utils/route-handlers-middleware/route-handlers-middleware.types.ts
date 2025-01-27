@@ -12,7 +12,7 @@ export type MiddlewareFunction<
   request: NextRequest,
   options: { params: Record<string, string> },
   ctx: Record<string, unknown>
-) => ReturnT;
+) => ReturnT | Promise<ReturnT>;
 
 export type GetAllMiddlewaresReturnTypes<M extends MiddlewareFunction[]> = {
   [K in keyof M]: M[K] extends MiddlewareFunction<infer ReturnT>
