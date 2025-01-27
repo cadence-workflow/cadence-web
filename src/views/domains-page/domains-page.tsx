@@ -13,41 +13,39 @@ import { getCachedAllDomains } from './helpers/get-all-domains';
 
 export default async function DomainsPage() {
   return (
-    <>
-      <DomainsPageContextProvider>
-        <DomainsPageTitle
-          countBadge={
-            <Suspense>
-              <AsyncPropsLoader
-                component={DomainsPageTitleBadge}
-                getAsyncProps={async () => {
-                  const res = await getCachedAllDomains();
-                  return { content: res.domains.length };
-                }}
-              />
-            </Suspense>
-          }
+    <DomainsPageContextProvider>
+      <DomainsPageTitle
+        countBadge={
+          <Suspense>
+            <AsyncPropsLoader
+              component={DomainsPageTitleBadge}
+              getAsyncProps={async () => {
+                const res = await getCachedAllDomains();
+                return { content: res.domains.length };
+              }}
+            />
+          </Suspense>
+        }
+      />
+      <DomainsPageFilters />
+      <Suspense>
+        <AsyncPropsLoader
+          component={DomainsPageErrorBanner}
+          getAsyncProps={async () => {
+            const res = await getCachedAllDomains();
+            return { failedClusters: res.failedClusters };
+          }}
         />
-        <DomainsPageFilters />
-        <Suspense>
-          <AsyncPropsLoader
-            component={DomainsPageErrorBanner}
-            getAsyncProps={async () => {
-              const res = await getCachedAllDomains();
-              return { failedClusters: res.failedClusters };
-            }}
-          />
-        </Suspense>
-        <Suspense fallback={<SectionLoadingIndicator />}>
-          <AsyncPropsLoader
-            component={DomainsTable}
-            getAsyncProps={async () => {
-              const res = await getCachedAllDomains();
-              return { domains: res.domains };
-            }}
-          />
-        </Suspense>
-      </DomainsPageContextProvider>
-    </>
+      </Suspense>
+      <Suspense fallback={<SectionLoadingIndicator />}>
+        <AsyncPropsLoader
+          component={DomainsTable}
+          getAsyncProps={async () => {
+            const res = await getCachedAllDomains();
+            return { domains: res.domains };
+          }}
+        />
+      </Suspense>
+    </DomainsPageContextProvider>
   );
 }
