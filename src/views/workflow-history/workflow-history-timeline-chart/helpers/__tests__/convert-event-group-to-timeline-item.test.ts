@@ -1,6 +1,7 @@
-import { completedActivityTaskEvents } from '@/views/workflow-history/__fixtures__/workflow-history-activity-events';
-import { startTimerTaskEvent } from '@/views/workflow-history/__fixtures__/workflow-history-timer-events';
-import { type ActivityHistoryGroup } from '@/views/workflow-history/workflow-history.types';
+import {
+  mockActivityEventGroup,
+  mockTimerEventGroup,
+} from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
 
 import convertEventGroupToTimelineChartItem from '../convert-event-group-to-timeline-item';
 
@@ -8,47 +9,55 @@ jest.mock('../get-class-name-for-event-group', () =>
   jest.fn(() => 'mock-class-name')
 );
 
-const MOCK_HISTORY_EVENT_GROUP: ActivityHistoryGroup = {
-  label: 'Mock event',
-  groupType: 'Activity',
-  status: 'COMPLETED',
-  eventsMetadata: [],
-  hasMissingEvents: false,
-  timeMs: 1725747370000,
-  timeLabel: 'Mock time label',
-  events: completedActivityTaskEvents,
-};
-
 jest.useFakeTimers().setSystemTime(new Date('2024-09-10'));
 
 describe(convertEventGroupToTimelineChartItem.name, () => {
   it('converts an event group to timeline chart item correctly', () => {
     expect(
-      convertEventGroupToTimelineChartItem(MOCK_HISTORY_EVENT_GROUP, {} as any)
-    ).toEqual({});
+      convertEventGroupToTimelineChartItem(mockActivityEventGroup, {} as any)
+    ).toEqual({
+      className: 'mock-class-name',
+      content: 'Mock event',
+      end: new Date('2024-09-07T22:16:20.000Z'),
+      start: new Date('2024-09-07T22:16:10.599Z'),
+      title: 'Mock event: Mock time label',
+      type: 'range',
+    });
   });
 
   it('returns end time as present when the event is ongoing or waiting', () => {
     expect(
       convertEventGroupToTimelineChartItem(
-        { ...MOCK_HISTORY_EVENT_GROUP, timeMs: null, status: 'ONGOING' },
+        { ...mockActivityEventGroup, timeMs: null, status: 'ONGOING' },
         {} as any
       )
-    ).toEqual({});
+    ).toEqual({
+      className: 'mock-class-name',
+      content: 'Mock event',
+      end: new Date('2024-09-10T00:00:00.000Z'),
+      start: new Date('2024-09-07T22:16:10.599Z'),
+      title: 'Mock event: Mock time label',
+      type: 'range',
+    });
   });
 
   it('returns end time as timer end time when the event is an ongoing timer', () => {
     expect(
       convertEventGroupToTimelineChartItem(
         {
-          ...MOCK_HISTORY_EVENT_GROUP,
+          ...mockTimerEventGroup,
           timeMs: null,
           status: 'ONGOING',
-          groupType: 'Timer',
-          events: [startTimerTaskEvent],
         },
         {} as any
       )
-    ).toEqual({});
+    ).toEqual({
+      className: 'mock-class-name',
+      content: 'Mock event',
+      end: new Date('2024-09-07T22:32:55.632Z'),
+      start: new Date('2024-09-07T22:32:50.632Z'),
+      title: 'Mock event: Mock time label',
+      type: 'range',
+    });
   });
 });

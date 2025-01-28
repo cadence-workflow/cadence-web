@@ -11,7 +11,7 @@ export type TimelineChartItem = {
 
 export type Props = {
   eventGroups: Array<HistoryEventsGroup>;
-  isInitialLoading: boolean;
+  isLoading: boolean;
   hasMoreEvents: boolean;
   fetchMoreEvents: () => void;
   isFetchingMoreEvents: boolean;

@@ -1,4 +1,7 @@
-import { type SkeletonOverrides } from 'baseui/skeleton/types';
+import { styled as createStyled, withStyle, type Theme } from 'baseui';
+import { Spinner } from 'baseui/spinner';
+import { type TagOverrides } from 'baseui/tag';
+import { type StyleObject } from 'styletron-react';
 
 import type {
   StyletronCSSObject,
@@ -65,12 +68,37 @@ const cssStylesObj = {
 export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> =
   cssStylesObj;
 
+export const styled = {
+  TimelineContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+    marginTop: $theme.sizing.scale500,
+    marginBottom: $theme.sizing.scale500,
+    position: 'relative',
+    zIndex: 0,
+  })),
+  LoaderContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+    position: 'absolute',
+    top: $theme.sizing.scale400,
+    right: $theme.sizing.scale400,
+    zIndex: 2,
+  })),
+  Spinner: withStyle(Spinner, ({ $theme }) => ({
+    width: $theme.sizing.scale500,
+    height: $theme.sizing.scale500,
+    borderWidth: '2px',
+    marginRight: '1px',
+    borderTopColor: $theme.colors.contentInversePrimary,
+    borderRightColor: $theme.colors.accent200,
+    borderLeftColor: $theme.colors.accent200,
+    borderBottomColor: $theme.colors.accent200,
+  })),
+};
+
 export const overrides = {
-  skeleton: {
+  tag: {
     Root: {
-      style: {
-        width: '100%',
-      },
+      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+        borderRadius: $theme.borders.radius200,
+      }),
     },
-  } satisfies SkeletonOverrides,
+  } satisfies TagOverrides,
 };

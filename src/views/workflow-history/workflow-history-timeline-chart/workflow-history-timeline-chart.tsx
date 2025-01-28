@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
-import { Skeleton } from 'baseui/skeleton';
+import { Tag, VARIANT, KIND } from 'baseui/tag';
 // @ts-expect-error: react-visjs-timeline does not have type declarations available
 import Timeline from 'react-visjs-timeline';
 
@@ -9,7 +9,11 @@ import useStyletronClasses from '@/hooks/use-styletron-classes';
 import { type HistoryEventsGroup } from '../workflow-history.types';
 
 import convertEventGroupToTimelineChartItem from './helpers/convert-event-group-to-timeline-item';
-import { cssStyles, overrides } from './workflow-history-timeline-chart.styles';
+import {
+  cssStyles,
+  overrides,
+  styled,
+} from './workflow-history-timeline-chart.styles';
 import {
   type Props,
   type TimelineChartItem,
@@ -17,7 +21,7 @@ import {
 
 export default function WorkflowHistoryTimelineChart({
   eventGroups,
-  isInitialLoading,
+  isLoading,
   hasMoreEvents,
   fetchMoreEvents,
   isFetchingMoreEvents,
@@ -27,14 +31,6 @@ export default function WorkflowHistoryTimelineChart({
   useEffect(() => {
     if (hasMoreEvents && !isFetchingMoreEvents) fetchMoreEvents();
   }, [hasMoreEvents, isFetchingMoreEvents, fetchMoreEvents]);
-
-  const [isLoading, setIsLoading] = useState(isInitialLoading);
-
-  useEffect(() => {
-    if (!isInitialLoading) {
-      setIsLoading(false);
-    }
-  }, [isInitialLoading]);
 
   const timelineItems = useMemo(
     () =>
@@ -52,17 +48,28 @@ export default function WorkflowHistoryTimelineChart({
     [eventGroups, cls]
   );
 
-  if (isLoading) {
-    return <Skeleton animation height="400px" overrides={overrides.skeleton} />;
-  }
-
   return (
-    <Timeline
-      options={{
-        height: '400px',
-        verticalScroll: true,
-      }}
-      items={timelineItems}
-    />
+    <styled.TimelineContainer>
+      {isLoading && (
+        <styled.LoaderContainer>
+          <Tag
+            variant={VARIANT.solid}
+            closeable={false}
+            kind={KIND.accent}
+            startEnhancer={styled.Spinner}
+            overrides={overrides.tag}
+          >
+            Loading events
+          </Tag>
+        </styled.LoaderContainer>
+      )}
+      <Timeline
+        options={{
+          height: '400px',
+          verticalScroll: true,
+        }}
+        items={timelineItems}
+      />
+    </styled.TimelineContainer>
   );
 }

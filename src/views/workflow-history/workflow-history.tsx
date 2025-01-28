@@ -54,7 +54,9 @@ export default function WorkflowHistory({ params }: Props) {
       pageFiltersConfig: workflowHistoryFiltersConfig,
     });
 
-  const { data: workflow } = useDescribeWorkflow({ ...params });
+  const {
+    data: { workflowExecutionInfo },
+  } = useDescribeWorkflow({ ...params });
 
   const {
     data: result,
@@ -75,7 +77,7 @@ export default function WorkflowHistory({ params }: Props) {
         `/api/domains/${qp.domain}/${qp.cluster}/workflows/${qp.workflowId}/${qp.runId}/history?${queryString.stringify(
           {
             nextPage: pageParam,
-            pageSize: 2,
+            pageSize: qp.pageSize,
             waitForNewEvent: qp.waitForNewEvent,
           }
         )}`
@@ -87,7 +89,7 @@ export default function WorkflowHistory({ params }: Props) {
     },
   });
 
-  const workflowHistoryEvents = useMemo(
+  const events = useMemo(
     () =>
       (result.pages || [])
         .flat(1)
@@ -96,31 +98,36 @@ export default function WorkflowHistory({ params }: Props) {
     [result]
   );
 
-  const filteredEvents = useMemo(() => {
-    return workflowHistoryEvents.filter((event) =>
-      workflowHistoryFiltersConfig.every((f) => {
-        if (f.filterTarget === 'event') return f.filterFunc(event, queryParams);
-        return true;
-      })
-    );
-  }, [queryParams, workflowHistoryEvents]);
+  const filteredEvents = useMemo(
+    () =>
+      events.filter((event) =>
+        workflowHistoryFiltersConfig.every((f) => {
+          if (f.filterTarget === 'event')
+            return f.filterFunc(event, queryParams);
+          return true;
+        })
+      ),
+    [queryParams, events]
+  );
 
-  const groupedHistoryEvents = useMemo(() => {
-    return groupHistoryEvents(filteredEvents);
-  }, [filteredEvents]);
+  const eventGroups = useMemo(
+    () => groupHistoryEvents(filteredEvents),
+    [filteredEvents]
+  );
 
-  const filteredGroupedHistoryEventsEntries = useMemo(() => {
-    return sortBy(
-      Object.entries(groupedHistoryEvents),
-      ([_, { timeMs }]) => timeMs,
-      'ASC'
-    ).filter(([_, g]) => {
-      return workflowHistoryFiltersConfig.every((f) => {
-        if (f.filterTarget === 'group') return f.filterFunc(g, queryParams);
-        return true;
-      });
-    });
-  }, [groupedHistoryEvents, queryParams]);
+  const filteredEventGroups = useMemo(
+    () =>
+      sortBy(
+        Object.entries(eventGroups),
+        ([_, { timeMs }]) => timeMs,
+        'ASC'
+      ).filter(([_, g]) =>
+        workflowHistoryFiltersConfig.every((f) =>
+          f.filterTarget === 'group' ? f.filterFunc(g, queryParams) : true
+        )
+      ),
+    [eventGroups, queryParams]
+  );
 
   const [areFiltersShown, setAreFiltersShown] = useState(true);
   const {
@@ -170,27 +177,25 @@ export default function WorkflowHistory({ params }: Props) {
         />
       )}
       {typeof window !== 'undefined' && isTimelineChartShown && (
-        <div className={cls.timelineChartContainer}>
-          <WorkflowHistoryTimelineChart
-            eventGroups={filteredGroupedHistoryEventsEntries.map(([_, g]) => g)}
-            isInitialLoading={
-              workflow.workflowExecutionInfo?.closeStatus ===
-              'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
-                ? result.pages[result.pages.length - 1].history?.events
-                    .length !== 0
-                : hasNextPage
-            }
-            hasMoreEvents={hasNextPage}
-            isFetchingMoreEvents={isFetchingNextPage}
-            fetchMoreEvents={fetchNextPage}
-          />
-        </div>
+        <WorkflowHistoryTimelineChart
+          eventGroups={filteredEventGroups.map(([_, g]) => g)}
+          isLoading={
+            workflowExecutionInfo?.closeStatus ===
+            'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
+              ? result.pages[result.pages.length - 1].history?.events.length !==
+                0
+              : hasNextPage
+          }
+          hasMoreEvents={hasNextPage}
+          isFetchingMoreEvents={isFetchingNextPage}
+          fetchMoreEvents={fetchNextPage}
+        />
       )}
-      {filteredGroupedHistoryEventsEntries.length > 0 && (
+      {filteredEventGroups.length > 0 && (
         <div className={cls.eventsContainer}>
           <div role="list" className={cls.compactSection}>
             <Virtuoso
-              data={filteredGroupedHistoryEventsEntries}
+              data={filteredEventGroups}
               itemContent={(
                 index,
                 [groupId, { label, status, timeLabel, badges }]
@@ -221,7 +226,7 @@ export default function WorkflowHistory({ params }: Props) {
           <section className={cls.timelineSection}>
             <Virtuoso
               useWindowScroll
-              data={filteredGroupedHistoryEventsEntries}
+              data={filteredEventGroups}
               ref={timelineSectionListRef}
               itemContent={(index, [groupId, group]) => (
                 <WorkflowHistoryTimelineGroup
@@ -233,9 +238,7 @@ export default function WorkflowHistory({ params }: Props) {
                   eventsMetadata={group.eventsMetadata}
                   badges={group.badges}
                   hasMissingEvents={group.hasMissingEvents}
-                  isLastEvent={
-                    index === filteredGroupedHistoryEventsEntries.length - 1
-                  }
+                  isLastEvent={index === filteredEventGroups.length - 1}
                   decodedPageUrlParams={decodedParams}
                   getIsEventExpanded={getIsEventExpanded}
                   onEventToggle={toggleIsEventExpanded}
@@ -255,7 +258,7 @@ export default function WorkflowHistory({ params }: Props) {
           </section>
         </div>
       )}
-      {filteredGroupedHistoryEventsEntries.length === 0 && (
+      {filteredEventGroups.length === 0 && (
         <div className={cls.noResultsContainer}>No Results</div>
       )}
     </PageSection>
