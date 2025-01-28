@@ -1,5 +1,3 @@
-import { result } from 'lodash';
-
 import { type DescribeClusterRequest__Input } from '@/__generated__/proto-ts/uber/cadence/admin/v1/DescribeClusterRequest';
 import { type DescribeClusterResponse } from '@/__generated__/proto-ts/uber/cadence/admin/v1/DescribeClusterResponse';
 import { type DescribeWorkflowExecutionRequest__Input } from '@/__generated__/proto-ts/uber/cadence/admin/v1/DescribeWorkflowExecutionRequest';
@@ -37,7 +35,6 @@ import { type ClusterConfig } from '@/config/dynamic/resolvers/clusters.types';
 import grpcServiceConfigurations from '../../config/grpc/grpc-services-config';
 import getConfigValue from '../config/get-config-value';
 import GlobalRef from '../global-ref';
-import logger from '../logger';
 
 import GRPCService, {
   type GRPCMetadata,
@@ -111,10 +108,7 @@ const clusterServicesMap: ClustersServices = clisterServicesMapGlobalRef.value;
 
 const getClusterServices = async (c: ClusterConfig) => {
   if (clusterServicesMap[c.clusterName]) {
-    logger.info(`Returning cluster service ${c.clusterName} from cache`);
     return clusterServicesMap[c.clusterName];
-  } else {
-    logger.info(`Adding cluster service ${c.clusterName} from cache`);
   }
 
   const requestConfig: GRPCRequestConfig = {
