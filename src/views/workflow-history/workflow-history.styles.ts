@@ -31,12 +31,6 @@ const cssStylesObj = {
       flexDirection: 'row',
     },
   }),
-  timelineChartContainer: (theme) => ({
-    marginTop: theme.sizing.scale500,
-    marginBottom: theme.sizing.scale500,
-    position: 'relative',
-    zIndex: 0,
-  }),
   eventsContainer: (theme) => ({
     display: 'flex',
     marginTop: theme.sizing.scale500,

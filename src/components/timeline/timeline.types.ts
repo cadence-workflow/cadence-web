@@ -6,3 +6,8 @@ export type TimelineItem = {
   type: 'box' | 'point' | 'range' | 'background';
   className: string;
 };
+
+export type Props = {
+  items: Array<TimelineItem>;
+  height?: string;
+};
