@@ -100,11 +100,11 @@ export type GRPCClusterMethods = {
 };
 
 // cache services instances
-const clisterServicesMapGlobalRef = new GlobalRef<ClustersServices>(
+const clusterServicesMapGlobalRef = new GlobalRef<ClustersServices>(
   'cluster-services-map',
   {}
 );
-const clusterServicesMap: ClustersServices = clisterServicesMapGlobalRef.value;
+const clusterServicesMap: ClustersServices = clusterServicesMapGlobalRef.value;
 
 const getClusterServices = async (c: ClusterConfig) => {
   if (clusterServicesMap[c.clusterName]) {
@@ -148,7 +148,7 @@ const getClusterServices = async (c: ClusterConfig) => {
   return services;
 };
 
-const getClustersServices = async () => {
+const getAllClustersServices = async () => {
   const CLUSTERS_CONFIGS = await getConfigValue('CLUSTERS');
   const clustersServices: ClustersServices = {};
 
@@ -162,7 +162,7 @@ const getClusterServicesMethods = async (
   c: string,
   metadata?: GRPCMetadata
 ): Promise<GRPCClusterMethods> => {
-  const clusterServices = await getClustersServices();
+  const clusterServices = await getAllClustersServices();
   const { visibilityService, adminService, domainService, workflowService } =
     clusterServices[c];
 
