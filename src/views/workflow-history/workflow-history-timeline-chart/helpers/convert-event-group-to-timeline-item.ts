@@ -26,7 +26,7 @@ export default function convertEventGroupToTimelineItem(
 
   if (
     group.groupType === 'Timer' &&
-    (group.status === 'ONGOING' || group.status === 'WAITING')
+    ['ONGOING', 'WAITING'].includes(group.status)
   ) {
     const timerDuration =
       group.events[0].timerStartedEventAttributes?.startToFireTimeout;
@@ -35,7 +35,10 @@ export default function convertEventGroupToTimelineItem(
       const timerDurationMs = parseGrpcTimestamp(timerDuration);
       groupEndDayjs = groupStartDayjs.add(timerDurationMs, 'milliseconds');
     }
-  } else if (group.timeMs) {
+  } else if (
+    group.timeMs &&
+    ['COMPLETED', 'FAILED', 'CANCELED'].includes(group.status)
+  ) {
     groupEndDayjs = dayjs(group.timeMs);
   }
 

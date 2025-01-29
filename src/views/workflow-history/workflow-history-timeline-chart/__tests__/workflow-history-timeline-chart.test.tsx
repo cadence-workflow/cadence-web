@@ -6,8 +6,8 @@ import {
 } from '../../__fixtures__/workflow-history-event-groups';
 import WorkflowHistoryTimelineChart from '../workflow-history-timeline-chart';
 
-jest.mock('react-visjs-timeline', () =>
-  jest.fn(() => <div>Visjs timeline</div>)
+jest.mock('@/components/timeline/timeline', () =>
+  jest.fn(() => <div>Mock timeline</div>)
 );
 
 jest.mock('../helpers/convert-event-group-to-timeline-item.ts', () =>
@@ -17,12 +17,12 @@ jest.mock('../helpers/convert-event-group-to-timeline-item.ts', () =>
 describe(WorkflowHistoryTimelineChart.name, () => {
   it('renders correctly', async () => {
     setup({});
-    expect(await screen.findByText('Visjs timeline')).toBeInTheDocument();
+    expect(await screen.findByText('Mock timeline')).toBeInTheDocument();
   });
 
   it('renders in loading state if isLoading is true', async () => {
     setup({ isLoading: true });
-    expect(await screen.findByText('Visjs timeline')).toBeInTheDocument();
+    expect(await screen.findByText('Mock timeline')).toBeInTheDocument();
     expect(await screen.findByText('Loading events')).toBeInTheDocument();
   });
 
