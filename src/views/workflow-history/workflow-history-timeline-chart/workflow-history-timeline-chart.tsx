@@ -1,9 +1,10 @@
+'use client';
 import React, { useEffect, useMemo } from 'react';
 
 import { Tag, VARIANT, KIND } from 'baseui/tag';
-// @ts-expect-error: react-visjs-timeline does not have type declarations available
-import Timeline from 'react-visjs-timeline';
+import dynamic from 'next/dynamic';
 
+import { type TimelineItem } from '@/components/timeline/timeline.types';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 
 import { type HistoryEventsGroup } from '../workflow-history.types';
@@ -14,10 +15,11 @@ import {
   overrides,
   styled,
 } from './workflow-history-timeline-chart.styles';
-import {
-  type Props,
-  type TimelineChartItem,
-} from './workflow-history-timeline-chart.types';
+import { type Props } from './workflow-history-timeline-chart.types';
+
+const Timeline = dynamic(() => import('@/components/timeline/timeline'), {
+  ssr: false,
+});
 
 export default function WorkflowHistoryTimelineChart({
   eventGroups,
@@ -35,7 +37,7 @@ export default function WorkflowHistoryTimelineChart({
   const timelineItems = useMemo(
     () =>
       eventGroups.reduce(
-        (items: Array<TimelineChartItem>, group: HistoryEventsGroup) => {
+        (items: Array<TimelineItem>, group: HistoryEventsGroup) => {
           const timelineChartItem = convertEventGroupToTimelineChartItem(
             group,
             cls
@@ -63,13 +65,7 @@ export default function WorkflowHistoryTimelineChart({
           </Tag>
         </styled.LoaderContainer>
       )}
-      <Timeline
-        options={{
-          height: '400px',
-          verticalScroll: true,
-        }}
-        items={timelineItems}
-      />
+      <Timeline items={timelineItems} />
     </styled.TimelineContainer>
   );
 }

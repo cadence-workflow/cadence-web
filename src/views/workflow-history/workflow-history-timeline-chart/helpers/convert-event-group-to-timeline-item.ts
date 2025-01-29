@@ -1,17 +1,17 @@
+import { type TimelineItem } from '@/components/timeline/timeline.types';
 import { type ClsObjectFor } from '@/hooks/use-styletron-classes';
 import dayjs from '@/utils/datetime/dayjs';
 import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
 
 import { type HistoryEventsGroup } from '../../workflow-history.types';
 import { type cssStyles } from '../workflow-history-timeline-chart.styles';
-import { type TimelineChartItem } from '../workflow-history-timeline-chart.types';
 
 import getClassNameForEventGroup from './get-class-name-for-event-group';
 
-export default function convertEventGroupToTimelineChartItem(
+export default function convertEventGroupToTimelineItem(
   group: HistoryEventsGroup,
   classes: ClsObjectFor<typeof cssStyles>
-): TimelineChartItem | undefined {
+): TimelineItem | undefined {
   if (group.events.length === 0) {
     return undefined;
   }
@@ -24,15 +24,16 @@ export default function convertEventGroupToTimelineChartItem(
 
   let groupEndDayjs = dayjs();
 
-  if (group.status === 'ONGOING' || group.status === 'WAITING') {
-    if (group.groupType === 'Timer') {
-      const timerDuration =
-        group.events[0].timerStartedEventAttributes?.startToFireTimeout;
+  if (
+    group.groupType === 'Timer' &&
+    (group.status === 'ONGOING' || group.status === 'WAITING')
+  ) {
+    const timerDuration =
+      group.events[0].timerStartedEventAttributes?.startToFireTimeout;
 
-      if (timerDuration) {
-        const timerDurationMs = parseGrpcTimestamp(timerDuration);
-        groupEndDayjs = groupStartDayjs.add(timerDurationMs, 'milliseconds');
-      }
+    if (timerDuration) {
+      const timerDurationMs = parseGrpcTimestamp(timerDuration);
+      groupEndDayjs = groupStartDayjs.add(timerDurationMs, 'milliseconds');
     }
   } else if (group.timeMs) {
     groupEndDayjs = dayjs(group.timeMs);

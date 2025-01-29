@@ -3,7 +3,7 @@ import {
   mockTimerEventGroup,
 } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
 
-import convertEventGroupToTimelineChartItem from '../convert-event-group-to-timeline-item';
+import convertEventGroupToTimelineItem from '../convert-event-group-to-timeline-item';
 
 jest.mock('../get-class-name-for-event-group', () =>
   jest.fn(() => 'mock-class-name')
@@ -11,10 +11,10 @@ jest.mock('../get-class-name-for-event-group', () =>
 
 jest.useFakeTimers().setSystemTime(new Date('2024-09-10'));
 
-describe(convertEventGroupToTimelineChartItem.name, () => {
+describe(convertEventGroupToTimelineItem.name, () => {
   it('converts an event group to timeline chart item correctly', () => {
     expect(
-      convertEventGroupToTimelineChartItem(mockActivityEventGroup, {} as any)
+      convertEventGroupToTimelineItem(mockActivityEventGroup, {} as any)
     ).toEqual({
       className: 'mock-class-name',
       content: 'Mock event',
@@ -27,7 +27,7 @@ describe(convertEventGroupToTimelineChartItem.name, () => {
 
   it('returns end time as present when the event is ongoing or waiting', () => {
     expect(
-      convertEventGroupToTimelineChartItem(
+      convertEventGroupToTimelineItem(
         { ...mockActivityEventGroup, timeMs: null, status: 'ONGOING' },
         {} as any
       )
@@ -43,7 +43,7 @@ describe(convertEventGroupToTimelineChartItem.name, () => {
 
   it('returns end time as timer end time when the event is an ongoing timer', () => {
     expect(
-      convertEventGroupToTimelineChartItem(
+      convertEventGroupToTimelineItem(
         {
           ...mockTimerEventGroup,
           timeMs: null,

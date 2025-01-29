@@ -17,6 +17,14 @@ export default function getClassNameForEventGroup(
       default:
         return classes.timer;
     }
+  } else if (group.groupType === 'Event') {
+    switch (group.status) {
+      case 'CANCELED':
+      case 'FAILED':
+        return classes.singleNegative;
+      default:
+        return classes.singleCompleted;
+    }
   } else {
     switch (group.status) {
       case 'CANCELED':
