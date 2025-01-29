@@ -1,8 +1,10 @@
 export default class GlobalRef<T> {
   private readonly sym: symbol;
 
-  constructor(uniqueName: string) {
+  constructor(uniqueName: string, defaultValue?: T) {
     this.sym = Symbol.for(uniqueName);
+    const g = global as any;
+    if (g[this.sym] === undefined) g[this.sym] = defaultValue;
   }
 
   get value() {

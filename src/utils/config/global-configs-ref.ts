@@ -1,5 +1,6 @@
+import GlobalRef from '../global-ref';
+
 import { type LoadedConfigs } from './config.types';
-import GlobalRef from './global-ref';
 
 const globalConfigRef = new GlobalRef<LoadedConfigs>('cadence-config');
 const setLoadedGlobalConfigs = (c: LoadedConfigs): void => {
