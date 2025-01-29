@@ -105,6 +105,15 @@ describe('WorkflowHistory', () => {
 
     expect(screen.queryByText('Filter Fields')).not.toBeInTheDocument();
   });
+
+  it('should show timeline when the Timeline button is clicked', async () => {
+    const { user } = setup({});
+    const timelineButton = await screen.findByText('Timeline');
+
+    await user.click(timelineButton);
+
+    expect(screen.queryByText('Timeline chart')).toBeInTheDocument();
+  });
 });
 
 function setup({
