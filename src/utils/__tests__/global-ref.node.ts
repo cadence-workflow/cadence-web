@@ -23,6 +23,11 @@ describe('GlobalRef', () => {
     expect(globalRef.value).toBeUndefined();
   });
 
+  it('should return default value if value is not set and default value is passed', () => {
+    const globalRef = new GlobalRef<number>('unique-name', 100);
+    expect(globalRef.value).toBe(100);
+  });
+
   it('should handle different types of values', () => {
     const stringRef = new GlobalRef<string>('string-unique-name');
     stringRef.value = 'test string';
