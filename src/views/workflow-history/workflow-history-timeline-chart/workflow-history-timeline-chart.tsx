@@ -7,8 +7,6 @@ import dynamic from 'next/dynamic';
 import { type TimelineItem } from '@/components/timeline/timeline.types';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 
-import { type HistoryEventsGroup } from '../workflow-history.types';
-
 import convertEventGroupToTimelineChartItem from './helpers/convert-event-group-to-timeline-item';
 import {
   cssStyles,
@@ -22,7 +20,7 @@ const Timeline = dynamic(() => import('@/components/timeline/timeline'), {
 });
 
 export default function WorkflowHistoryTimelineChart({
-  eventGroups,
+  eventGroupsEntries,
   isLoading,
   hasMoreEvents,
   fetchMoreEvents,
@@ -36,18 +34,19 @@ export default function WorkflowHistoryTimelineChart({
 
   const timelineItems = useMemo(
     () =>
-      eventGroups.reduce(
-        (items: Array<TimelineItem>, group: HistoryEventsGroup) => {
-          const timelineChartItem = convertEventGroupToTimelineChartItem(
-            group,
-            cls
-          );
-          timelineChartItem && items.push(timelineChartItem);
-          return items;
-        },
-        []
-      ),
-    [eventGroups, cls]
+      eventGroupsEntries.reduce((items: Array<TimelineItem>, [_, group]) => {
+        const timelineChartItem = convertEventGroupToTimelineChartItem(
+          group,
+          cls
+        );
+
+        if (timelineChartItem) {
+          items.push(timelineChartItem);
+        }
+
+        return items;
+      }, []),
+    [eventGroupsEntries, cls]
   );
 
   return (

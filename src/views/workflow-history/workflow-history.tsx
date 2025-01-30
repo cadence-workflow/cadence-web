@@ -115,7 +115,7 @@ export default function WorkflowHistory({ params }: Props) {
     [filteredEvents]
   );
 
-  const filteredEventGroups = useMemo(
+  const filteredEventGroupsEntries = useMemo(
     () =>
       sortBy(
         Object.entries(eventGroups),
@@ -178,7 +178,7 @@ export default function WorkflowHistory({ params }: Props) {
       )}
       {typeof window !== 'undefined' && isTimelineChartShown && (
         <WorkflowHistoryTimelineChart
-          eventGroups={filteredEventGroups.map(([_, g]) => g)}
+          eventGroupsEntries={filteredEventGroupsEntries}
           isLoading={
             workflowExecutionInfo?.closeStatus ===
             'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
@@ -191,11 +191,11 @@ export default function WorkflowHistory({ params }: Props) {
           fetchMoreEvents={fetchNextPage}
         />
       )}
-      {filteredEventGroups.length > 0 && (
+      {filteredEventGroupsEntries.length > 0 && (
         <div className={cls.eventsContainer}>
           <div role="list" className={cls.compactSection}>
             <Virtuoso
-              data={filteredEventGroups}
+              data={filteredEventGroupsEntries}
               itemContent={(
                 index,
                 [groupId, { label, status, timeLabel, badges }]
@@ -226,7 +226,7 @@ export default function WorkflowHistory({ params }: Props) {
           <section className={cls.timelineSection}>
             <Virtuoso
               useWindowScroll
-              data={filteredEventGroups}
+              data={filteredEventGroupsEntries}
               ref={timelineSectionListRef}
               itemContent={(index, [groupId, group]) => (
                 <WorkflowHistoryTimelineGroup
@@ -238,7 +238,7 @@ export default function WorkflowHistory({ params }: Props) {
                   eventsMetadata={group.eventsMetadata}
                   badges={group.badges}
                   hasMissingEvents={group.hasMissingEvents}
-                  isLastEvent={index === filteredEventGroups.length - 1}
+                  isLastEvent={index === filteredEventGroupsEntries.length - 1}
                   decodedPageUrlParams={decodedParams}
                   getIsEventExpanded={getIsEventExpanded}
                   onEventToggle={toggleIsEventExpanded}
@@ -258,7 +258,7 @@ export default function WorkflowHistory({ params }: Props) {
           </section>
         </div>
       )}
-      {filteredEventGroups.length === 0 && (
+      {filteredEventGroupsEntries.length === 0 && (
         <div className={cls.noResultsContainer}>No Results</div>
       )}
     </PageSection>

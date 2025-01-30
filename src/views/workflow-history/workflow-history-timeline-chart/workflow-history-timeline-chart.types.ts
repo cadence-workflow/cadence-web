@@ -1,7 +1,7 @@
 import { type HistoryEventsGroup } from '../workflow-history.types';
 
 export type Props = {
-  eventGroups: Array<HistoryEventsGroup>;
+  eventGroupsEntries: Array<[string, HistoryEventsGroup]>;
   isLoading: boolean;
   hasMoreEvents: boolean;
   fetchMoreEvents: () => void;
