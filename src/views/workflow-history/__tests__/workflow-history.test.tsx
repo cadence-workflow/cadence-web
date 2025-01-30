@@ -7,6 +7,7 @@ import { act, render, screen, userEvent } from '@/test-utils/rtl';
 
 import { type Props as PageFiltersToggleProps } from '@/components/page-filters/page-filters-toggle/page-filters-toggle.types';
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
+import { describeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
 
 import { completedActivityTaskEvents } from '../__fixtures__/workflow-history-activity-events';
 import WorkflowHistory from '../workflow-history';
@@ -19,6 +20,11 @@ jest.mock(
 jest.mock(
   '../workflow-history-timeline-group/workflow-history-timeline-group',
   () => jest.fn(() => <div>Timeline group card</div>)
+);
+
+jest.mock(
+  '../workflow-history-timeline-chart/workflow-history-timeline-chart',
+  () => jest.fn(() => <div>Timeline chart</div>)
 );
 
 jest.mock(
@@ -76,6 +82,16 @@ describe('WorkflowHistory', () => {
     }
   });
 
+  it('throws an error if the workflow summary request fails', async () => {
+    try {
+      await act(() => setup({ summaryError: true }));
+    } catch (error) {
+      expect((error as Error)?.message).toBe(
+        'Failed to fetch workflow summary'
+      );
+    }
+  });
+
   it('should render the page initially with filters shown', async () => {
     setup({});
     expect(await screen.findByText('Filter Fields')).toBeInTheDocument();
@@ -89,9 +105,24 @@ describe('WorkflowHistory', () => {
 
     expect(screen.queryByText('Filter Fields')).not.toBeInTheDocument();
   });
+
+  it('should show timeline when the Timeline button is clicked', async () => {
+    const { user } = setup({});
+    const timelineButton = await screen.findByText('Timeline');
+
+    await user.click(timelineButton);
+
+    expect(screen.queryByText('Timeline chart')).toBeInTheDocument();
+  });
 });
 
-function setup({ error }: { error?: boolean }) {
+function setup({
+  error,
+  summaryError,
+}: {
+  error?: boolean;
+  summaryError?: boolean;
+}) {
   const user = userEvent.setup();
   const renderResult = render(
     <Suspense>
@@ -128,6 +159,22 @@ function setup({ error }: { error?: boolean }) {
                   nextPageToken: '',
                   rawHistory: [],
                 } satisfies GetWorkflowHistoryResponse,
+              }),
+        },
+        {
+          path: '/api/domains/:domain/:cluster/workflows/:workflowId/:runId',
+          httpMethod: 'GET',
+          ...(summaryError
+            ? {
+                httpResolver: () => {
+                  return HttpResponse.json(
+                    { message: 'Failed to fetch workflow summary' },
+                    { status: 500 }
+                  );
+                },
+              }
+            : {
+                jsonResponse: describeWorkflowResponse,
               }),
         },
       ],
