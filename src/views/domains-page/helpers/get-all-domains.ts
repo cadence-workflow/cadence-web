@@ -1,8 +1,6 @@
 import 'server-only';
 import { cache } from 'react';
 
-import { unstable_cache } from 'next/cache';
-
 import getConfigValue from '@/utils/config/get-config-value';
 import * as grpcClient from '@/utils/grpc/grpc-client';
 import logger from '@/utils/logger';
@@ -44,6 +42,4 @@ export const getAllDomains = async () => {
   };
 };
 
-export const getCachedAllDomains = cache(
-  unstable_cache(getAllDomains, ['cluster-domains'], { revalidate: 60 })
-);
+export const getCachedAllDomains = cache(getAllDomains);
