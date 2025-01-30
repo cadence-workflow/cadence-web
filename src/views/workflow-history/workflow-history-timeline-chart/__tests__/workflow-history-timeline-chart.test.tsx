@@ -56,7 +56,10 @@ function setup({
   const mockFetchMoreEvents = jest.fn();
   render(
     <WorkflowHistoryTimelineChart
-      eventGroups={[mockActivityEventGroup, mockTimerEventGroup]}
+      eventGroupsEntries={[
+        ['Group 1', mockActivityEventGroup],
+        ['Group 2', mockTimerEventGroup],
+      ]}
       isLoading={isLoading}
       hasMoreEvents={hasMoreEvents}
       fetchMoreEvents={mockFetchMoreEvents}
