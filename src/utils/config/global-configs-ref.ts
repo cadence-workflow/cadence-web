@@ -7,5 +7,8 @@ const setLoadedGlobalConfigs = (c: LoadedConfigs): void => {
   globalConfigRef.value = c;
 };
 
-const loadedGlobalConfigs: LoadedConfigs = globalConfigRef.value;
-export { loadedGlobalConfigs, setLoadedGlobalConfigs };
+const getLoadedGlobalConfigs = (): LoadedConfigs => {
+  return globalConfigRef.value;
+};
+
+export { getLoadedGlobalConfigs, setLoadedGlobalConfigs };
