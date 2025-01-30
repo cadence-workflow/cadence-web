@@ -8,7 +8,7 @@ import type {
   ConfigKeysWithoutArgs,
   ResolverSchemas,
 } from './config.types';
-import { loadedGlobalConfigs } from './global-configs-ref';
+import { getLoadedGlobalConfigs } from './global-configs-ref';
 
 // Overload for keys requiring arguments
 export default async function getConfigValue<K extends ConfigKeysWithArgs>(
@@ -35,6 +35,7 @@ export default async function getConfigValue<K extends keyof LoadedConfigs>(
     throw new Error('getConfigValue cannot be invoked on browser');
   }
 
+  const loadedGlobalConfigs = getLoadedGlobalConfigs();
   const value = loadedGlobalConfigs[key as K];
 
   if (typeof value === 'function') {
