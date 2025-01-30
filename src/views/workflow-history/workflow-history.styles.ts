@@ -1,3 +1,5 @@
+import type { ButtonOverrides } from 'baseui/button';
+
 import type {
   StyletronCSSObject,
   StyletronCSSObjectOf,
@@ -67,3 +69,13 @@ const cssStylesObj = {
 
 export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> =
   cssStylesObj;
+
+export const overrides = {
+  timelineToggleButton: {
+    Root: {
+      style: {
+        whiteSpace: 'nowrap',
+      },
+    },
+  } satisfies ButtonOverrides,
+};
