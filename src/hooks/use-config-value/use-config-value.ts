@@ -9,7 +9,6 @@ import {
   type GetConfigKeysWithoutArgs,
   type GetConfigRequestQuery,
 } from '@/route-handlers/get-config/get-config.types';
-import logger from '@/utils/logger';
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
 
@@ -28,7 +27,7 @@ export default function useConfigValue<K extends GetConfigKeys>(
   key: K,
   args?: GetConfigArgs<K>
 ): UseConfigValueResult<K> {
-  const queryResult = useQuery<
+  return useQuery<
     GetConfigResponse<K>,
     RequestError,
     GetConfigResponse<K>,
@@ -49,13 +48,4 @@ export default function useConfigValue<K extends GetConfigKeys>(
         }
       ).then((res) => res.json()),
   });
-
-  if (queryResult.error) {
-    logger.error(
-      { key, args, error: queryResult.error },
-      'Error fetching dynamic config value'
-    );
-  }
-
-  return queryResult;
 }

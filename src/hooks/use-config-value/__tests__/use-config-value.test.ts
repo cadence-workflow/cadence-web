@@ -2,17 +2,7 @@ import { HttpResponse } from 'msw';
 
 import { renderHook, waitFor } from '@/test-utils/rtl';
 
-import { RequestError } from '@/utils/request/request-error';
-
 import useConfigValue from '../use-config-value';
-
-const mockError = jest.fn();
-jest.mock('@/utils/logger', () => ({
-  __esModule: true,
-  default: {
-    error: (payload: any, msg: string) => mockError(payload, msg),
-  },
-}));
 
 describe(useConfigValue.name, () => {
   it('should return correct loading state and result', async () => {
@@ -26,21 +16,13 @@ describe(useConfigValue.name, () => {
     });
   });
 
-  it('should log and return error if the API route errors out', async () => {
+  it('should return error if the API route errors out', async () => {
     const { result } = setup({ error: true });
 
     await waitFor(() => {
       const res = result.current;
-      expect(res.status).toStrictEqual('error');
+      expect(res.status).toEqual('error');
     });
-
-    expect(mockError).toHaveBeenCalledWith(
-      expect.objectContaining({
-        key: 'MOCK_CONFIG_VALUE',
-        error: expect.any(RequestError),
-      }),
-      'Error fetching dynamic config value'
-    );
   });
 });
 
