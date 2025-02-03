@@ -45,8 +45,6 @@ describe(useConfigValue.name, () => {
 });
 
 function setup({ error }: { error?: boolean }) {
-  const mockGetConfigValue = jest.fn();
-
   const { result } = renderHook(
     () =>
       // @ts-expect-error - using a nonexistent config value
@@ -58,7 +56,6 @@ function setup({ error }: { error?: boolean }) {
           httpMethod: 'GET',
           mockOnce: false,
           httpResolver: async () => {
-            mockGetConfigValue();
             if (error) {
               return HttpResponse.json(
                 { message: 'Failed to fetch config' },
@@ -73,5 +70,5 @@ function setup({ error }: { error?: boolean }) {
     }
   );
 
-  return { result, mockGetConfigValue };
+  return { result };
 }
