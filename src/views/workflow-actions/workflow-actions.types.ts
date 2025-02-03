@@ -10,8 +10,10 @@ export type WorkflowActionInputParams = {
   // TODO: add input here for extended workflow actions
 };
 
+export type WorkflowActionID = 'cancel' | 'terminate';
+
 export type WorkflowAction<R> = {
-  id: string;
+  id: WorkflowActionID;
   label: string;
   subtitle: string;
   modal: {

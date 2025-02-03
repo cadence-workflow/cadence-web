@@ -7,6 +7,7 @@ import { type Props } from './workflow-actions-menu.types';
 
 export default function WorkflowActionsMenu({
   workflow,
+  actionsEnabledConfig,
   onActionSelect,
 }: Props) {
   return (
@@ -17,7 +18,11 @@ export default function WorkflowActionsMenu({
           kind={KIND.tertiary}
           overrides={overrides.button}
           onClick={() => onActionSelect(action)}
-          disabled={!action.getIsEnabled(workflow)}
+          disabled={
+            actionsEnabledConfig[action.id]
+              ? !action.getIsEnabled(workflow)
+              : false
+          }
         >
           <styled.MenuItemContainer>
             <action.icon />
