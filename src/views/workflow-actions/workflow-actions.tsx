@@ -75,6 +75,7 @@ export default function WorkflowActions() {
         <Button
           size={SIZE.compact}
           kind={KIND.secondary}
+          overrides={overrides.button}
           endEnhancer={<MdArrowDropDown size={20} />}
           isLoading={isLoading}
         >
