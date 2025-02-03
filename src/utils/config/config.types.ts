@@ -148,6 +148,9 @@ export type PublicDynamicConfigKeys = keyof PublicDynamicConfigDefinitions;
 export type PublicLoadedConfig =
   InferLoadedConfig<PublicDynamicConfigDefinitions>;
 
+export type PublicLoadedResolvedValues =
+  ConfigResolvedValues<PublicDynamicConfigDefinitions>;
+
 export type LoadedConfigs = InferLoadedConfig<DynamicConfig>;
 
 export type ArgsOfLoadedConfigResolver<K extends keyof LoadedConfigs> =
@@ -187,3 +190,14 @@ export type ResolverSchemas = InferResolverSchema<DynamicConfig>;
 
 export type ArgsOfDynamicConfigResolver<K extends keyof ResolverSchemas> =
   ResolverSchemas[K]['args'];
+
+export type PublicConfigKeysWithArgs = {
+  [K in keyof PublicDynamicConfigDefinitions]: K extends ConfigKeysWithArgs
+    ? K
+    : never;
+}[keyof PublicDynamicConfigDefinitions];
+
+export type PublicConfigKeysWithoutArgs = Exclude<
+  keyof PublicDynamicConfigDefinitions,
+  PublicConfigKeysWithArgs
+>;
