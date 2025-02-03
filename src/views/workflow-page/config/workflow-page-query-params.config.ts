@@ -1,4 +1,7 @@
-import { type PageQueryParamMultiValue } from '@/hooks/use-page-query-params/use-page-query-params.types';
+import {
+  type PageQueryParam,
+  type PageQueryParamMultiValue,
+} from '@/hooks/use-page-query-params/use-page-query-params.types';
 import { HISTORY_EVENT_FILTER_STATUSES } from '@/views/workflow-history/workflow-history-filters-status/workflow-history-filters-status.constants';
 import { type HistoryEventFilterStatus } from '@/views/workflow-history/workflow-history-filters-status/workflow-history-filters-status.types';
 import { WORKFLOW_HISTORY_EVENT_FILTERING_TYPES } from '@/views/workflow-history/workflow-history-filters-type/workflow-history-filters-type.constants';
@@ -13,6 +16,7 @@ const workflowPageQueryParamsConfig: [
     'historyEventStatuses',
     HistoryEventFilterStatus[] | undefined
   >,
+  PageQueryParam<'historySelectedEventId', string | undefined>,
 ] = [
   {
     key: 'historyEventTypes',
@@ -41,6 +45,10 @@ const workflowPageQueryParamsConfig: [
       }
       return undefined;
     },
+  },
+  {
+    key: 'historySelectedEventId',
+    queryParamKey: 'he',
   },
 ] as const;
 
