@@ -10,7 +10,6 @@ import {
 export default async function workflowActionsEnabled(
   _: WorkflowActionsEnabledResolverParams
 ): Promise<WorkflowActionsEnabledConfig> {
-  await new Promise((resolve) => setTimeout(resolve, 100000));
   return {
     terminate: true,
     cancel: true,

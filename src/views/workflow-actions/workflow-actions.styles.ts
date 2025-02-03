@@ -20,12 +20,51 @@ export const overrides = {
     },
   } satisfies SnackbarElementOverrides,
   button: {
-    LoadingSpinner: {
-      style: ({ $theme }) => ({
-        borderRightColor: $theme.colors.accent200,
-        borderLeftColor: $theme.colors.accent200,
-        borderBottomColor: $theme.colors.accent200,
+    BaseButton: {
+      style: ({
+        $theme,
+        $isLoading,
+      }: {
+        $theme: Theme;
+        $isLoading: boolean;
+      }): StyleObject => ({
+        ...($isLoading && {
+          // https://github.com/uber/baseweb/blob/main/src/skeleton/skeleton.tsx
+          // Background animation
+          animationTimingFunction: 'ease-out',
+          animationDuration: '1.5s',
+          animationIterationCount: 'infinite',
+          backgroundSize: '400% 100%',
+          animationName: {
+            '0%': {
+              backgroundPosition: '100% 50%',
+            },
+            '100%': {
+              backgroundPosition: '0% 50%',
+            },
+          },
+          // Background gradient
+          backgroundImage: `linear-gradient(135deg,
+            ${$theme.colors.backgroundTertiary},
+            ${$theme.colors.backgroundTertiary},
+            ${$theme.colors.backgroundTertiary},
+            ${$theme.colors.backgroundTertiary},
+            ${$theme.colors.backgroundTertiary},
+            ${$theme.colors.backgroundTertiary},
+            ${$theme.colors.backgroundSecondary},
+            ${$theme.colors.backgroundTertiary},
+            ${$theme.colors.backgroundTertiary},
+            ${$theme.colors.backgroundTertiary},
+            ${$theme.colors.backgroundTertiary},
+            ${$theme.colors.backgroundTertiary},
+            ${$theme.colors.backgroundTertiary})`,
+        }),
       }),
+    },
+    LoadingSpinnerContainer: {
+      style: {
+        display: 'none',
+      } satisfies StyleObject,
     },
   } satisfies ButtonOverrides,
 };
