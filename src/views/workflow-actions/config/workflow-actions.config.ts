@@ -22,7 +22,7 @@ const workflowActionsConfig: [
       },
     },
     icon: MdHighlightOff,
-    getIsEnabled: (workflow) =>
+    getIsRunnable: (workflow) =>
       !getWorkflowIsCompleted(
         workflow.workflowExecutionInfo?.closeEvent?.attributes ?? ''
       ),
@@ -41,7 +41,7 @@ const workflowActionsConfig: [
       },
     },
     icon: MdPowerSettingsNew,
-    getIsEnabled: (workflow) =>
+    getIsRunnable: (workflow) =>
       !getWorkflowIsCompleted(
         workflow.workflowExecutionInfo?.closeEvent?.attributes ?? ''
       ),

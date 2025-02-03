@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 
 import { HttpResponse } from 'msw';
 
-import { act, render, screen, userEvent } from '@/test-utils/rtl';
+import { act, render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
 import { describeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
 
@@ -25,12 +25,16 @@ jest.mock('../workflow-actions-modal/workflow-actions-modal', () =>
 
 jest.mock('../workflow-actions-menu/workflow-actions-menu', () =>
   jest.fn((props) => {
+    const areAllActionsDisabled = Object.entries(
+      props.actionsEnabledConfig
+    ).every(([_, value]) => value === false);
+
     return (
       <div
         onClick={() => props.onActionSelect(mockWorkflowActionsConfig[0])}
         data-testid="actions-menu"
       >
-        Actions Menu{props.disabled ? ' (disabled)' : ''}
+        Actions Menu{areAllActionsDisabled ? ' (disabled)' : ''}
       </div>
     );
   })
@@ -43,22 +47,48 @@ describe(WorkflowActions.name, () => {
 
   it('renders the button with the correct text', async () => {
     await setup({});
+
     const actionsButton = await screen.findByRole('button');
+    expect(actionsButton).toHaveAttribute(
+      'aria-label',
+      expect.stringContaining('loading')
+    );
+
+    await waitFor(() => {
+      expect(actionsButton).not.toHaveAttribute(
+        'aria-label',
+        expect.stringContaining('loading')
+      );
+    });
+
     expect(actionsButton).toHaveTextContent('Workflow Actions');
   });
 
   it('renders the menu when the button is clicked', async () => {
     const { user } = await setup({});
 
-    await user.click(await screen.findByText('Workflow Actions'));
+    const actionsButton = await screen.findByRole('button');
+    await user.click(actionsButton);
 
     expect(await screen.findByTestId('actions-menu')).toBeInTheDocument();
+  });
+
+  it('renders the button with disabled configs if config fetching fails', async () => {
+    const { user } = await setup({ isConfigError: true });
+
+    const actionsButton = await screen.findByRole('button');
+    await user.click(actionsButton);
+
+    const actionsMenu = await screen.findByTestId('actions-menu');
+    expect(actionsMenu).toBeInTheDocument();
+    expect(actionsMenu).toHaveTextContent('Actions Menu (disabled)');
   });
 
   it('shows the modal when a menu option is clicked', async () => {
     const { user } = await setup({});
 
-    await user.click(await screen.findByText('Workflow Actions'));
+    const actionsButton = await screen.findByRole('button');
+    await user.click(actionsButton);
     await user.click(await screen.findByTestId('actions-menu'));
 
     expect(await screen.findByTestId('actions-modal')).toBeInTheDocument();
@@ -80,7 +110,13 @@ describe(WorkflowActions.name, () => {
   });
 });
 
-async function setup({ isError }: { isError?: boolean }) {
+async function setup({
+  isError,
+  isConfigError,
+}: {
+  isError?: boolean;
+  isConfigError?: boolean;
+}) {
   const user = userEvent.setup();
 
   const renderResult = render(
@@ -102,6 +138,28 @@ async function setup({ isError }: { isError?: boolean }) {
               return HttpResponse.json(describeWorkflowResponse, {
                 status: 200,
               });
+            }
+          },
+        },
+        {
+          path: '/api/config',
+          httpMethod: 'GET',
+          httpResolver: () => {
+            if (isConfigError) {
+              return HttpResponse.json(
+                { message: 'Failed to fetch config' },
+                { status: 500 }
+              );
+            } else {
+              return HttpResponse.json(
+                {
+                  terminate: true,
+                  cancel: true,
+                },
+                {
+                  status: 200,
+                }
+              );
             }
           },
         },

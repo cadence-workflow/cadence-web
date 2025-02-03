@@ -27,7 +27,7 @@ export type WorkflowAction<R> = {
     size?: IconProps['size'];
     color?: IconProps['color'];
   }>;
-  getIsEnabled: (workflow: DescribeWorkflowResponse) => boolean;
+  getIsRunnable: (workflow: DescribeWorkflowResponse) => boolean;
   apiRoute: string;
   getSuccessMessage: (
     result: R,
