@@ -15,6 +15,7 @@ import { pick } from 'lodash';
 import { useParams } from 'next/navigation';
 import { MdArrowDropDown } from 'react-icons/md';
 
+import useConfigValue from '@/hooks/use-config-value/use-config-value';
 import useDescribeWorkflow from '@/views/workflow-page/hooks/use-describe-workflow';
 import { type WorkflowPageParams } from '@/views/workflow-page/workflow-page.types';
 
@@ -37,6 +38,14 @@ export default function WorkflowActions() {
     ...workflowDetailsParams,
   });
 
+  const { data: actionsEnabledConfig, isLoading } = useConfigValue(
+    'WORKFLOW_ACTIONS_ENABLED',
+    {
+      domain: params.domain,
+      cluster: params.cluster,
+    }
+  );
+
   const [selectedAction, setSelectedAction] = useState<
     WorkflowAction<unknown> | undefined
   >(undefined);
@@ -53,6 +62,7 @@ export default function WorkflowActions() {
         content={() => (
           <WorkflowActionsMenu
             workflow={workflow}
+            actionsEnabledConfig={actionsEnabledConfig}
             onActionSelect={(action) => setSelectedAction(action)}
           />
         )}
@@ -62,7 +72,9 @@ export default function WorkflowActions() {
         <Button
           size={SIZE.compact}
           kind={KIND.secondary}
+          overrides={overrides.button}
           endEnhancer={<MdArrowDropDown size={20} />}
+          isLoading={isLoading}
         >
           Workflow Actions
         </Button>
