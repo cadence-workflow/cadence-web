@@ -19,7 +19,8 @@ export default function WorkflowActionsMenu({
           overrides={overrides.button}
           onClick={() => onActionSelect(action)}
           disabled={
-            !actionsEnabledConfig[action.id] || !action.getIsRunnable(workflow)
+            !actionsEnabledConfig?.[action.id] ||
+            !action.getIsRunnable(workflow)
           }
         >
           <styled.MenuItemContainer>

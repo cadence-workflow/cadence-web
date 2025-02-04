@@ -21,7 +21,6 @@ import { type WorkflowPageParams } from '@/views/workflow-page/workflow-page.typ
 
 import WorkflowActionsMenu from './workflow-actions-menu/workflow-actions-menu';
 import WorkflowActionsModal from './workflow-actions-modal/workflow-actions-modal';
-import { DEFAULT_ACTIONS_ENABLED_CONFIG } from './workflow-actions.constants';
 import { overrides } from './workflow-actions.styles';
 import { type WorkflowAction } from './workflow-actions.types';
 
@@ -63,9 +62,7 @@ export default function WorkflowActions() {
         content={() => (
           <WorkflowActionsMenu
             workflow={workflow}
-            actionsEnabledConfig={
-              actionsEnabledConfig ?? DEFAULT_ACTIONS_ENABLED_CONFIG
-            }
+            actionsEnabledConfig={actionsEnabledConfig}
             onActionSelect={(action) => setSelectedAction(action)}
           />
         )}
