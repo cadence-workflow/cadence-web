@@ -146,18 +146,22 @@ export default function WorkflowHistory({ params }: Props) {
     events,
     filteredEventGroupsEntries,
   });
+
+  const isLastPageEmpty =
+    result.pages[result.pages.length - 1].history?.events.length === 0;
+
   const keepLoadingMoreEvents = useMemo(() => {
     if (shouldSearchForInitialEvent && !initialEventFound) return true;
     return false;
   }, [shouldSearchForInitialEvent, initialEventFound]);
 
   const { isLoadingMore } = useKeepLoadingEvents({
-    keepLoading: keepLoadingMoreEvents,
+    shouldKeepLoading: keepLoadingMoreEvents,
     stopAfterEndReached: true,
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-    resultPages: result.pages,
+    isLastPageEmpty,
     isFetchNextPageError,
   });
 
@@ -181,6 +185,7 @@ export default function WorkflowHistory({ params }: Props) {
   if (contentIsLoading) {
     return <SectionLoadingIndicator />;
   }
+
   return (
     <PageSection className={cls.pageContainer}>
       <div className={cls.pageHeader}>
@@ -221,8 +226,7 @@ export default function WorkflowHistory({ params }: Props) {
           isLoading={
             workflowExecutionInfo?.closeStatus ===
             'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
-              ? result.pages[result.pages.length - 1].history?.events.length !==
-                0
+              ? !isLastPageEmpty
               : hasNextPage
           }
           hasMoreEvents={hasNextPage}

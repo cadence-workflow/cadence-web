@@ -1,8 +1,6 @@
-import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
-
 export type UseKeepLoadingEventsParams = {
-  keepLoading: boolean;
-  resultPages: GetWorkflowHistoryResponse[];
+  shouldKeepLoading: boolean;
+  isLastPageEmpty: boolean;
   hasNextPage: boolean;
   fetchNextPage: () => void;
   isFetchingNextPage: boolean;

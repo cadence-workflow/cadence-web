@@ -1,6 +1,5 @@
 import { renderHook } from '@/test-utils/rtl';
 
-import { completedDecisionTaskEvents } from '../../__fixtures__/workflow-history-decision-events';
 import useKeepLoadingEvents from '../use-keep-loading-events';
 import { type UseKeepLoadingEventsParams } from '../use-keep-loading-events.types';
 
@@ -14,14 +13,14 @@ describe('useKeepLoadingEvents', () => {
     expect(result.current.reachedAvailableHistoryEnd).toBe(true);
   });
 
-  it('should call fetchNextPage when keepLoading is true and there are more pages', () => {
-    const { fetchNextPageMock } = setup({ keepLoading: true });
+  it('should call fetchNextPage when shouldKeepLoading is true and there are more pages', () => {
+    const { fetchNextPageMock } = setup({ shouldKeepLoading: true });
 
     expect(fetchNextPageMock).toHaveBeenCalled();
   });
 
-  it('should not call fetchNextPage when keepLoading is false', () => {
-    const { fetchNextPageMock } = setup({ keepLoading: false });
+  it('should not call fetchNextPage when shouldKeepLoading is false', () => {
+    const { fetchNextPageMock } = setup({ shouldKeepLoading: false });
 
     expect(fetchNextPageMock).not.toHaveBeenCalled();
   });
@@ -61,7 +60,7 @@ describe('useKeepLoadingEvents', () => {
 
   it('should return isLoadingMore as true when keepLoadingMore conditions are met', () => {
     const { result, rerender } = setup({
-      keepLoading: true,
+      shouldKeepLoading: true,
       stopAfterEndReached: true,
       hasNextPage: true,
       isFetchNextPageError: false,
@@ -70,31 +69,17 @@ describe('useKeepLoadingEvents', () => {
     expect(result.current.isLoadingMore).toBe(true);
 
     rerender({
-      keepLoading: true,
+      shouldKeepLoading: true,
       hasNextPage: true,
       isFetchNextPageError: false,
       // stopAfterEndReached and simulate end by empty events page
       stopAfterEndReached: true,
-      resultPages: [
-        {
-          history: { events: completedDecisionTaskEvents },
-          rawHistory: [],
-          nextPageToken: '',
-          archived: false,
-        },
-        // last page is empty should signify end of history
-        {
-          history: { events: [] },
-          rawHistory: [],
-          nextPageToken: '',
-          archived: false,
-        },
-      ],
+      isLastPageEmpty: true,
     });
     expect(result.current.isLoadingMore).toBe(false);
 
     rerender({
-      keepLoading: true,
+      shouldKeepLoading: true,
       stopAfterEndReached: true,
       hasNextPage: true,
       // adding error
@@ -109,16 +94,9 @@ function setup(params: Partial<UseKeepLoadingEventsParams>) {
   const { result, rerender } = renderHook(
     (runTimeChanges?: Partial<UseKeepLoadingEventsParams>) =>
       useKeepLoadingEvents({
-        keepLoading: true,
+        shouldKeepLoading: true,
         stopAfterEndReached: true,
-        resultPages: [
-          {
-            history: { events: completedDecisionTaskEvents },
-            rawHistory: [],
-            nextPageToken: '',
-            archived: false,
-          },
-        ],
+        isLastPageEmpty: false,
         hasNextPage: true,
         fetchNextPage,
         isFetchingNextPage: false,
