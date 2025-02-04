@@ -15,6 +15,7 @@ import usePageFilters from '@/components/page-filters/hooks/use-page-filters';
 import PageFiltersFields from '@/components/page-filters/page-filters-fields/page-filters-fields';
 import PageFiltersToggle from '@/components/page-filters/page-filters-toggle/page-filters-toggle';
 import PageSection from '@/components/page-section/page-section';
+import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
 import decodeUrlParams from '@/utils/decode-url-params';
@@ -28,6 +29,8 @@ import useDescribeWorkflow from '../workflow-page/hooks/use-describe-workflow';
 import workflowHistoryFiltersConfig from './config/workflow-history-filters.config';
 import { groupHistoryEvents } from './helpers/group-history-events';
 import useEventExpansionToggle from './hooks/use-event-expansion-toggle';
+import useInitialSelectedEvent from './hooks/use-initial-selected-event';
+import useKeepLoadingEvents from './hooks/use-keep-loading-events';
 import WorkflowHistoryCompactEventCard from './workflow-history-compact-event-card/workflow-history-compact-event-card';
 import WorkflowHistoryExpandAllEventsButton from './workflow-history-expand-all-events-button/workflow-history-expand-all-events-button';
 import WorkflowHistoryExportJsonButton from './workflow-history-export-json-button/workflow-history-export-json-button';
@@ -48,11 +51,15 @@ export default function WorkflowHistory({ params }: Props) {
     waitForNewEvent: 'true',
   };
 
-  const { activeFiltersCount, queryParams, ...pageFiltersRest } =
-    usePageFilters({
-      pageQueryParamsConfig: workflowPageQueryParamsConfig,
-      pageFiltersConfig: workflowHistoryFiltersConfig,
-    });
+  const {
+    activeFiltersCount,
+    queryParams,
+    setQueryParams,
+    ...pageFiltersRest
+  } = usePageFilters({
+    pageQueryParamsConfig: workflowPageQueryParamsConfig,
+    pageFiltersConfig: workflowHistoryFiltersConfig,
+  });
 
   const {
     data: { workflowExecutionInfo },
@@ -64,6 +71,7 @@ export default function WorkflowHistory({ params }: Props) {
     fetchNextPage,
     isFetchingNextPage,
     error,
+    isFetchNextPageError,
   } = useSuspenseInfiniteQuery<
     GetWorkflowHistoryResponse,
     RequestError,
@@ -129,6 +137,33 @@ export default function WorkflowHistory({ params }: Props) {
     [eventGroups, queryParams]
   );
 
+  const {
+    initialEventFound,
+    initialEventGroupIndex,
+    shouldSearchForInitialEvent,
+  } = useInitialSelectedEvent({
+    selectedEventId: queryParams.historySelectedEventId,
+    events,
+    filteredEventGroupsEntries,
+  });
+  const keepLoadingMoreEvents = useMemo(() => {
+    if (shouldSearchForInitialEvent && !initialEventFound) return true;
+    return false;
+  }, [shouldSearchForInitialEvent, initialEventFound]);
+
+  const { isLoadingMore } = useKeepLoadingEvents({
+    keepLoading: keepLoadingMoreEvents,
+    stopAfterEndReached: true,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+    resultPages: result.pages,
+    isFetchNextPageError,
+  });
+
+  const contentIsLoading =
+    shouldSearchForInitialEvent && !initialEventFound && isLoadingMore;
+
   const [areFiltersShown, setAreFiltersShown] = useState(true);
   const {
     isExpandAllEvents,
@@ -143,6 +178,9 @@ export default function WorkflowHistory({ params }: Props) {
 
   const timelineSectionListRef = useRef<VirtuosoHandle>(null);
 
+  if (contentIsLoading) {
+    return <SectionLoadingIndicator />;
+  }
   return (
     <PageSection className={cls.pageContainer}>
       <div className={cls.pageHeader}>
@@ -173,6 +211,7 @@ export default function WorkflowHistory({ params }: Props) {
         <PageFiltersFields
           pageFiltersConfig={workflowHistoryFiltersConfig}
           queryParams={queryParams}
+          setQueryParams={setQueryParams}
           {...pageFiltersRest}
         />
       )}
@@ -196,9 +235,14 @@ export default function WorkflowHistory({ params }: Props) {
           <div role="list" className={cls.compactSection}>
             <Virtuoso
               data={filteredEventGroupsEntries}
+              {...(initialEventGroupIndex === undefined
+                ? {}
+                : {
+                    initialTopMostItemIndex: initialEventGroupIndex,
+                  })}
               itemContent={(
                 index,
-                [groupId, { label, status, timeLabel, badges }]
+                [groupId, { label, status, timeLabel, badges, events }]
               ) => (
                 <div role="listitem" className={cls.compactCardContainer}>
                   <WorkflowHistoryCompactEventCard
@@ -208,7 +252,13 @@ export default function WorkflowHistory({ params }: Props) {
                     secondaryLabel={timeLabel}
                     showLabelPlaceholder={!label}
                     badges={badges}
+                    selected={
+                      queryParams.historySelectedEventId === events[0].eventId
+                    }
                     onClick={() => {
+                      setQueryParams({
+                        historySelectedEventId: events[0].eventId,
+                      });
                       timelineSectionListRef.current?.scrollToIndex({
                         index,
                         align: 'start',
@@ -228,6 +278,16 @@ export default function WorkflowHistory({ params }: Props) {
               useWindowScroll
               data={filteredEventGroupsEntries}
               ref={timelineSectionListRef}
+              defaultItemHeight={160}
+              {...(initialEventGroupIndex === undefined
+                ? {}
+                : {
+                    initialTopMostItemIndex: {
+                      index: initialEventGroupIndex,
+                      align: 'start',
+                      behavior: 'smooth',
+                    },
+                  })}
               itemContent={(index, [groupId, group]) => (
                 <WorkflowHistoryTimelineGroup
                   key={groupId}
