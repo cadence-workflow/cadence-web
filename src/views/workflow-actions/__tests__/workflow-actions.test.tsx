@@ -25,9 +25,11 @@ jest.mock('../workflow-actions-modal/workflow-actions-modal', () =>
 
 jest.mock('../workflow-actions-menu/workflow-actions-menu', () =>
   jest.fn((props) => {
-    const areAllActionsDisabled = Object.entries(
-      props.actionsEnabledConfig
-    ).every(([_, value]) => value === false);
+    const areAllActionsDisabled = props.actionsEnabledConfig
+      ? Object.entries(props.actionsEnabledConfig).every(
+          ([_, value]) => value === false
+        )
+      : true;
 
     return (
       <div
