@@ -27,5 +27,9 @@ const mockResolvedConfigValues: LoadedConfigResolvedValues = {
       clusterName: 'mock-cluster2',
     },
   ],
+  WORKFLOW_ACTIONS_ENABLED: {
+    terminate: true,
+    cancel: true,
+  },
 };
 export default mockResolvedConfigValues;
