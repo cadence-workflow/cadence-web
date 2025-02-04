@@ -24,6 +24,16 @@ const resolverSchemas: ResolverSchemas = {
       })
     ),
   },
+  WORKFLOW_ACTIONS_ENABLED: {
+    args: z.object({
+      cluster: z.string(),
+      domain: z.string(),
+    }),
+    returnType: z.object({
+      cancel: z.boolean(),
+      terminate: z.boolean(),
+    }),
+  },
 };
 
 export default resolverSchemas;
