@@ -8,7 +8,6 @@ import {
   render,
   screen,
   userEvent,
-  waitFor,
   waitForElementToBeRemoved,
 } from '@/test-utils/rtl';
 
@@ -142,7 +141,7 @@ describe('WorkflowHistory', () => {
       hasNextPage: true,
     });
 
-    act(() => {
+    await act(async () => {
       const resolver = getRequestResolver();
       resolver({
         history: {
@@ -154,9 +153,10 @@ describe('WorkflowHistory', () => {
       });
     });
 
-    expect(await screen.findByText('keep loading events')).toBeInTheDocument();
+    const loadingIndicator = await screen.findByText('keep loading events');
+    expect(loadingIndicator).toBeInTheDocument();
 
-    act(() => {
+    await act(async () => {
       const secondPageResolver = getRequestResolver();
       secondPageResolver({
         history: {
@@ -168,9 +168,7 @@ describe('WorkflowHistory', () => {
       });
     });
 
-    await waitFor(() => {
-      expect(screen.queryByText('keep loading events')).not.toBeInTheDocument();
-    });
+    await waitForElementToBeRemoved(loadingIndicator);
   });
 });
 
