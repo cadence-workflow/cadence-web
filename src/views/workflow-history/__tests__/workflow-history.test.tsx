@@ -136,7 +136,9 @@ describe('WorkflowHistory', () => {
   it('should show loading while searching for initial selectedEventId', async () => {
     const { getRequestResolver } = await setup({
       resolveLoadMoreManually: true,
-      pageQueryParamsValues: { historySelectedEventId: '3' },
+      pageQueryParamsValues: {
+        historySelectedEventId: completedDecisionTaskEvents[1].eventId,
+      },
       hasNextPage: true,
     });
 
