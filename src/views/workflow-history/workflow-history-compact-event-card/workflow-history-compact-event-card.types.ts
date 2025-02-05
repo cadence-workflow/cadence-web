@@ -10,4 +10,5 @@ export type Props = {
   showLabelPlaceholder?: boolean;
   badges?: HistoryGroupBadge[];
   onClick: TileProps['onClick'];
+  selected?: boolean;
 };

@@ -11,8 +11,19 @@ import type {
 export const overrides = {
   title: {
     Root: {
-      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+      style: ({
+        $theme,
+        $selected,
+      }: {
+        $theme: Theme;
+        $selected: boolean;
+      }): StyleObject => ({
         padding: $theme.sizing.scale550,
+        ...($selected
+          ? {
+              boxShadow: `inset 0px 0px 0px 2px ${$theme.colors.primary}`,
+            }
+          : null),
       }),
     },
     BodyContainerContent: {
