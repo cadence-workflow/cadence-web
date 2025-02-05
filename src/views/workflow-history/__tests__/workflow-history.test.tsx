@@ -8,6 +8,7 @@ import {
   render,
   screen,
   userEvent,
+  waitFor,
   waitForElementToBeRemoved,
 } from '@/test-utils/rtl';
 
@@ -139,7 +140,7 @@ describe('WorkflowHistory', () => {
       hasNextPage: true,
     });
 
-    await act(() => {
+    act(() => {
       const resolver = getRequestResolver();
       resolver({
         history: {
@@ -153,19 +154,21 @@ describe('WorkflowHistory', () => {
 
     expect(await screen.findByText('keep loading events')).toBeInTheDocument();
 
-    const secondPageResolver = getRequestResolver();
-    secondPageResolver({
-      history: {
-        events: [completedDecisionTaskEvents[1]],
-      },
-      archived: false,
-      nextPageToken: 'mock-next-page-token',
-      rawHistory: [],
+    act(() => {
+      const secondPageResolver = getRequestResolver();
+      secondPageResolver({
+        history: {
+          events: [completedDecisionTaskEvents[1]],
+        },
+        archived: false,
+        nextPageToken: 'mock-next-page-token',
+        rawHistory: [],
+      });
     });
 
-    expect(
-      await screen.findByText('keep loading events')
-    ).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByText('keep loading events')).not.toBeInTheDocument();
+    });
   });
 });
 
