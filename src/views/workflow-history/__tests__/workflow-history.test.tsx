@@ -8,6 +8,7 @@ import {
   render,
   screen,
   userEvent,
+  waitFor,
   waitForElementToBeRemoved,
 } from '@/test-utils/rtl';
 
@@ -168,7 +169,9 @@ describe('WorkflowHistory', () => {
       });
     });
 
-    await waitForElementToBeRemoved(loadingIndicator);
+    await waitFor(() => {
+      expect(loadingIndicator).not.toBeInTheDocument();
+    });
   });
 });
 
