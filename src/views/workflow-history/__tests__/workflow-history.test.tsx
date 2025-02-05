@@ -135,11 +135,13 @@ describe('WorkflowHistory', () => {
   it('should show loading while searching for initial selectedEventId', async () => {
     const { getRequestResolver } = await setup({
       resolveLoadMoreManually: true,
-      pageQueryParamsValues: { historySelectedEventId: '3' },
+      pageQueryParamsValues: {
+        historySelectedEventId: completedDecisionTaskEvents[1].eventId,
+      },
       hasNextPage: true,
     });
 
-    await act(() => {
+    await act(async () => {
       const resolver = getRequestResolver();
       resolver({
         history: {
@@ -151,21 +153,22 @@ describe('WorkflowHistory', () => {
       });
     });
 
-    expect(await screen.findByText('keep loading events')).toBeInTheDocument();
+    const loadingIndicator = await screen.findByText('keep loading events');
+    expect(loadingIndicator).toBeInTheDocument();
 
-    const secondPageResolver = getRequestResolver();
-    secondPageResolver({
-      history: {
-        events: [completedDecisionTaskEvents[1]],
-      },
-      archived: false,
-      nextPageToken: 'mock-next-page-token',
-      rawHistory: [],
+    await act(async () => {
+      const secondPageResolver = getRequestResolver();
+      secondPageResolver({
+        history: {
+          events: [completedDecisionTaskEvents[1]],
+        },
+        archived: false,
+        nextPageToken: 'mock-next-page-token',
+        rawHistory: [],
+      });
     });
 
-    expect(
-      await screen.findByText('keep loading events')
-    ).not.toBeInTheDocument();
+    await waitForElementToBeRemoved(loadingIndicator);
   });
 });
 
