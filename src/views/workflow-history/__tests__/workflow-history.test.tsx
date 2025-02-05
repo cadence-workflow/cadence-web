@@ -223,7 +223,7 @@ async function setup({
           httpResolver: async () => {
             requestIndex = requestIndex + 1;
             if (requestIndex > 0 && resolveLoadMoreManually) {
-              await new Promise((resolve, reject) => {
+              return await new Promise((resolve, reject) => {
                 requestResolver = (result: GetWorkflowHistoryResponse) =>
                   resolve(HttpResponse.json(result, { status: 200 }));
                 requestRejector = () =>
