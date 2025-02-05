@@ -137,6 +137,7 @@ export default function WorkflowHistory({ params }: Props) {
     [eventGroups, queryParams]
   );
 
+  // search for the event selected in the URL on initial page load
   const {
     initialEventFound,
     initialEventGroupIndex,

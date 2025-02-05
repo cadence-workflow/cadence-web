@@ -4,6 +4,12 @@ import getHistoryEventGroupId from '../helpers/get-history-event-group-id';
 
 import { type UseInitialSelectedEventParams } from './use-initial-selected-event.types';
 
+/*
+ * This hook is used to search for the event and the group of the event that
+ * was selected when the component is mounted. It returns a boolean indicating if the
+ * initial event should be searched for, a boolean indicating if the initial
+ * event was found, and the index of the group that contains the event.
+ */
 export default function useInitialSelectedEvent({
   selectedEventId,
   events,
