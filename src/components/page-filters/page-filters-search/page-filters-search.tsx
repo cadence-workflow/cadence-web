@@ -21,7 +21,7 @@ export default function PageFiltersSearch<
   pageQueryParamsConfig,
   searchQueryParamKey,
   searchPlaceholder,
-  searchTrimRegExp = /['"\s]/g,
+  searchTrimRegExp = /^\s+|['"]/g,
   inputDebounceDurationMs,
 }: Props<P, K>) {
   const [queryParams, setQueryParams] = usePageQueryParams(
