@@ -14,7 +14,7 @@ const listWorkflowsQueryParamSchema = z
       ),
     listType: z.enum(['default', 'archived']),
     inputType: z.enum(['search', 'query']),
-    search: z.string().optional(),
+    search: z.string().trim().optional(),
     query: z.string().optional(),
     status: z
       .custom<WorkflowStatus>(isWorkflowStatus, {

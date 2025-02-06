@@ -33,14 +33,14 @@ describe(PageFiltersSearch.name, () => {
     expect(mockSetQueryParams).toHaveBeenCalledWith({ search: 'test-search' });
   });
 
-  it('should prune quotes and spaces from input text if no regexp is passed', async () => {
+  it('should prune quotes and start spaces from input text if no regexp is passed', async () => {
     const { user } = setup({});
 
     const searchInput = await screen.findByRole('textbox');
 
-    await user.type(searchInput, ` "test-search'`);
+    await user.type(searchInput, ` "test search' `);
 
-    expect(mockSetQueryParams).toHaveBeenCalledWith({ search: 'test-search' });
+    expect(mockSetQueryParams).toHaveBeenCalledWith({ search: 'test search ' });
   });
 
   it('should prune symbols from input text if regexp is passed', async () => {
