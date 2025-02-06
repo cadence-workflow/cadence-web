@@ -170,7 +170,7 @@ describe('WorkflowHistory', () => {
     });
 
     await waitFor(() => {
-      expect(loadingIndicator).not.toBeInTheDocument();
+      expect(screen.queryByText('keep loading events')).not.toBeInTheDocument();
     });
   });
 });
