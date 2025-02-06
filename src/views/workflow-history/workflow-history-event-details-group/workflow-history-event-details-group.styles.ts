@@ -26,8 +26,8 @@ export const styled = {
     'div',
     { $forceWrap?: boolean; $useBlackText?: boolean }
   >('div', ({ $theme, $forceWrap, $useBlackText }) => ({
-    minWidth: '150px',
-    maxWidth: '150px',
+    minWidth: '200px',
+    maxWidth: '200px',
     display: 'flex',
     color: $useBlackText
       ? $theme.colors.contentPrimary
