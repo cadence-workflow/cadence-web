@@ -14,8 +14,14 @@ jest.useFakeTimers().setSystemTime(new Date('2024-09-10'));
 describe(convertEventGroupToTimelineItem.name, () => {
   it('converts an event group to timeline chart item correctly', () => {
     expect(
-      convertEventGroupToTimelineItem(mockActivityEventGroup, {} as any)
+      convertEventGroupToTimelineItem({
+        group: mockActivityEventGroup,
+        index: 1,
+        classes: {} as any,
+        isSelected: false,
+      })
     ).toEqual({
+      id: 1,
       className: 'mock-class-name',
       content: 'Mock event',
       end: new Date('2024-09-07T22:16:20.000Z'),
@@ -27,11 +33,14 @@ describe(convertEventGroupToTimelineItem.name, () => {
 
   it('returns end time as present when the event is ongoing or waiting', () => {
     expect(
-      convertEventGroupToTimelineItem(
-        { ...mockActivityEventGroup, timeMs: null, status: 'ONGOING' },
-        {} as any
-      )
+      convertEventGroupToTimelineItem({
+        group: { ...mockActivityEventGroup, timeMs: null, status: 'ONGOING' },
+        index: 1,
+        classes: {} as any,
+        isSelected: false,
+      })
     ).toEqual({
+      id: 1,
       className: 'mock-class-name',
       content: 'Mock event',
       end: new Date('2024-09-10T00:00:00.000Z'),
@@ -43,15 +52,18 @@ describe(convertEventGroupToTimelineItem.name, () => {
 
   it('returns end time as timer end time when the event is an ongoing timer', () => {
     expect(
-      convertEventGroupToTimelineItem(
-        {
+      convertEventGroupToTimelineItem({
+        group: {
           ...mockTimerEventGroup,
           timeMs: null,
           status: 'ONGOING',
         },
-        {} as any
-      )
+        index: 1,
+        classes: {} as any,
+        isSelected: false,
+      })
     ).toEqual({
+      id: 1,
       className: 'mock-class-name',
       content: 'Mock event',
       end: new Date('2024-09-07T22:32:55.632Z'),

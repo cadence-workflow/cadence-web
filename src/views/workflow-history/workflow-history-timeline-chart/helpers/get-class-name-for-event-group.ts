@@ -3,39 +3,60 @@ import { type ClsObjectFor } from '@/hooks/use-styletron-classes';
 import { type HistoryEventsGroup } from '../../workflow-history.types';
 import { type cssStyles } from '../workflow-history-timeline-chart.styles';
 
+import isValidClassName from './is-valid-class-name';
+
 export default function getClassNameForEventGroup(
   group: HistoryEventsGroup,
-  classes: ClsObjectFor<typeof cssStyles>
+  classes: ClsObjectFor<typeof cssStyles>,
+  isSelected: boolean
 ): string {
+  let kind: string, color: string;
+
   if (group.groupType === 'Timer') {
+    kind = 'timer';
     switch (group.status) {
       case 'CANCELED':
       case 'FAILED':
-        return classes.timerNegative;
+        color = 'Negative';
+        break;
       case 'COMPLETED':
-        return classes.timerCompleted;
+        color = 'Completed';
+        break;
       default:
-        return classes.timer;
+        color = 'Waiting';
+        break;
     }
   } else if (group.groupType === 'Event') {
+    kind = 'single';
     switch (group.status) {
       case 'CANCELED':
       case 'FAILED':
-        return classes.singleNegative;
+        color = 'Negative';
+        break;
       default:
-        return classes.singleCompleted;
+        color = 'Completed';
+        break;
     }
   } else {
+    kind = 'regular';
     switch (group.status) {
       case 'CANCELED':
       case 'FAILED':
-        return classes.negative;
+        color = 'Negative';
+        break;
       case 'COMPLETED':
-        return classes.completed;
+        color = 'Completed';
+        break;
       case 'WAITING':
-        return classes.waiting;
+        color = 'Waiting';
+        break;
       default:
-        return classes.ongoing;
+        color = 'Ongoing';
+        break;
     }
   }
+
+  const key = kind + color + (isSelected ? 'Selected' : '');
+
+  return classes[isValidClassName(classes, key) ? key : 'regularWaiting'];
 }
