@@ -42,11 +42,10 @@ const regular = (theme: Theme) => ({
   borderRadius: `${theme.sizing.scale300} !important`,
 });
 
-const single = (theme: Theme, selected?: boolean) => ({
+const single = (theme: Theme) => ({
   color: `${theme.colors.contentPrimary} !important`,
   paddingInline: '2px',
-  borderRadius: theme.sizing.scale500,
-  ...(selected ? {} : { backgroundColor: 'unset' }),
+  borderRadius: theme.sizing.scale300,
 });
 
 const selected = (
@@ -107,10 +106,12 @@ const cssStylesObj = {
   singleCompleted: (theme) => ({
     ...single(theme),
     ...completed(theme),
+    backgroundColor: 'unset',
   }),
   singleNegative: (theme) => ({
     ...single(theme),
     ...negative(theme),
+    backgroundColor: 'unset',
   }),
   timerWaitingSelected: (theme) => ({
     ...timer(theme),
@@ -141,11 +142,11 @@ const cssStylesObj = {
     ...selected(theme, waiting),
   }),
   singleCompletedSelected: (theme) => ({
-    ...single(theme, true),
+    ...single(theme),
     ...selected(theme, completed, 'single'),
   }),
   singleNegativeSelected: (theme) => ({
-    ...single(theme, true),
+    ...single(theme),
     ...selected(theme, negative, 'single'),
   }),
 } satisfies StyletronCSSObject;
