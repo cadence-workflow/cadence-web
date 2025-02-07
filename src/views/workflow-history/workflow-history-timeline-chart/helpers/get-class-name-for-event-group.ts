@@ -3,7 +3,7 @@ import { type ClsObjectFor } from '@/hooks/use-styletron-classes';
 import { type HistoryEventsGroup } from '../../workflow-history.types';
 import { type cssStyles } from '../workflow-history-timeline-chart.styles';
 
-import isValidClassName from './is-valid-class-name';
+import isValidClassNameKey from './is-valid-class-name-key';
 
 export default function getClassNameForEventGroup(
   group: HistoryEventsGroup,
@@ -56,7 +56,11 @@ export default function getClassNameForEventGroup(
     }
   }
 
-  const key = kind + color + (isSelected ? 'Selected' : '');
+  const classNameKey = `${kind}${color}${isSelected ? 'Selected' : ''}`;
 
-  return classes[isValidClassName(classes, key) ? key : 'regularWaiting'];
+  if (isValidClassNameKey(classes, classNameKey)) {
+    return classes[classNameKey];
+  }
+
+  return classes.regularWaiting;
 }
