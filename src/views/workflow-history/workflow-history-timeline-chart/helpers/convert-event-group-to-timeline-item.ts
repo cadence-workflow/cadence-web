@@ -8,10 +8,17 @@ import { type cssStyles } from '../workflow-history-timeline-chart.styles';
 
 import getClassNameForEventGroup from './get-class-name-for-event-group';
 
-export default function convertEventGroupToTimelineItem(
-  group: HistoryEventsGroup,
-  classes: ClsObjectFor<typeof cssStyles>
-): TimelineItem | undefined {
+export default function convertEventGroupToTimelineItem({
+  group,
+  index,
+  classes,
+  isSelected,
+}: {
+  group: HistoryEventsGroup;
+  index: number;
+  classes: ClsObjectFor<typeof cssStyles>;
+  isSelected: boolean;
+}): TimelineItem | undefined {
   if (group.events.length === 0) {
     return undefined;
   }
@@ -43,11 +50,12 @@ export default function convertEventGroupToTimelineItem(
   }
 
   return {
+    id: index,
     start: groupStartDayjs.toDate(),
     end: groupEndDayjs.toDate(),
     content: group.label,
     title: `${group.label}: ${group.timeLabel}`,
     type: group.groupType === 'Event' ? 'point' : 'range',
-    className: getClassNameForEventGroup(group, classes),
+    className: getClassNameForEventGroup(group, classes, isSelected),
   };
 }
