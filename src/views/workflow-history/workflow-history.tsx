@@ -181,6 +181,7 @@ export default function WorkflowHistory({ params }: Props) {
 
   const [isTimelineChartShown, setIsTimelineChartShown] = useState(false);
 
+  const compactSectionListRef = useRef<VirtuosoHandle>(null);
   const timelineSectionListRef = useRef<VirtuosoHandle>(null);
 
   if (contentIsLoading) {
@@ -224,6 +225,7 @@ export default function WorkflowHistory({ params }: Props) {
       {typeof window !== 'undefined' && isTimelineChartShown && (
         <WorkflowHistoryTimelineChart
           eventGroupsEntries={filteredEventGroupsEntries}
+          selectedEventId={queryParams.historySelectedEventId}
           isLoading={
             workflowExecutionInfo?.closeStatus ===
             'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
@@ -233,6 +235,25 @@ export default function WorkflowHistory({ params }: Props) {
           hasMoreEvents={hasNextPage}
           isFetchingMoreEvents={isFetchingNextPage}
           fetchMoreEvents={fetchNextPage}
+          onClickEventGroup={(eventGroupIndex) => {
+            setQueryParams({
+              historySelectedEventId:
+                filteredEventGroupsEntries[eventGroupIndex][1].events[0]
+                  .eventId,
+            });
+
+            compactSectionListRef.current?.scrollToIndex({
+              index: eventGroupIndex,
+              align: 'start',
+              behavior: 'smooth',
+            });
+
+            timelineSectionListRef.current?.scrollToIndex({
+              index: eventGroupIndex,
+              align: 'start',
+              behavior: 'smooth',
+            });
+          }}
         />
       )}
       {filteredEventGroupsEntries.length > 0 && (
@@ -240,6 +261,7 @@ export default function WorkflowHistory({ params }: Props) {
           <div role="list" className={cls.compactSection}>
             <Virtuoso
               data={filteredEventGroupsEntries}
+              ref={compactSectionListRef}
               {...(initialEventGroupIndex === undefined
                 ? {}
                 : {

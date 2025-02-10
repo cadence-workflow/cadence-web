@@ -1,4 +1,5 @@
 export type TimelineItem = {
+  id: number;
   start: Date;
   end?: Date;
   content: string;
@@ -10,4 +11,5 @@ export type TimelineItem = {
 export type Props = {
   items: Array<TimelineItem>;
   height?: string;
+  onClickItem: (itemId: number) => void;
 };

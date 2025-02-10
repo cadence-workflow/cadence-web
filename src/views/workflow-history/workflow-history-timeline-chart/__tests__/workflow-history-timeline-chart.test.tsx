@@ -64,6 +64,8 @@ function setup({
       hasMoreEvents={hasMoreEvents}
       fetchMoreEvents={mockFetchMoreEvents}
       isFetchingMoreEvents={isFetchingMoreEvents}
+      selectedEventId={mockActivityEventGroup.events[0].eventId}
+      onClickEventGroup={jest.fn()}
     />
   );
 
