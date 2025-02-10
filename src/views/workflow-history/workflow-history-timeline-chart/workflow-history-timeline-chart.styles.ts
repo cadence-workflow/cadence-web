@@ -8,59 +8,146 @@ import type {
   StyletronCSSObjectOf,
 } from '@/hooks/use-styletron-classes';
 
+// Colours
+const waiting = (theme: Theme) => ({
+  backgroundColor: `${theme.colors.backgroundSecondary} !important`,
+  borderColor: `${theme.colors.contentPrimary} !important`,
+});
+
+const completed = (_: Theme) => ({
+  backgroundColor: '#D3EFDA !important',
+  borderColor: '#009A51 !important',
+});
+
+const negative = (theme: Theme) => ({
+  backgroundColor: '#FFE1DE !important',
+  borderColor: `${theme.colors.negative} !important`,
+});
+
+const ongoing = (theme: Theme) => ({
+  backgroundColor: '#DEE9FE !important',
+  borderColor: `${theme.colors.accent} !important`,
+});
+
+// Items
+const timer = (_: Theme) => ({
+  paddingInline: '2px',
+  borderWidth: '0 2px !important',
+  borderRadius: '0 !important',
+});
+
+const regular = (theme: Theme) => ({
+  color: `${theme.colors.contentPrimary} !important`,
+  paddingInline: '2px',
+  borderRadius: `${theme.sizing.scale300} !important`,
+});
+
+const single = (theme: Theme) => ({
+  color: `${theme.colors.contentPrimary} !important`,
+  paddingInline: '2px',
+  borderRadius: theme.sizing.scale300,
+});
+
+const selected = (
+  theme: Theme,
+  color: (theme: Theme) => { backgroundColor: string; borderColor: string },
+  kind: 'regular' | 'single' | 'timer' = 'regular'
+) => {
+  const unselectedStyle = color(theme);
+
+  let borderColor: string;
+  switch (kind) {
+    case 'single':
+      borderColor = `${theme.colors.contentInversePrimary} !important`;
+      break;
+    case 'timer':
+    case 'regular':
+    default:
+      borderColor = unselectedStyle.borderColor;
+      break;
+  }
+
+  return {
+    color: `${theme.colors.contentInversePrimary} !important`,
+    borderColor,
+    backgroundColor: unselectedStyle.borderColor,
+  };
+};
+
 const cssStylesObj = {
-  timer: (theme) => ({
-    paddingInline: '2px',
-    borderWidth: '0 2px !important',
-    color: `${theme.colors.contentPrimary} !important`,
-    backgroundColor: `${theme.colors.backgroundSecondary} !important`,
-    borderColor: `${theme.colors.contentPrimary} !important`,
+  timerWaiting: (theme) => ({
+    ...timer(theme),
+    ...waiting(theme),
   }),
   timerCompleted: (theme) => ({
-    paddingInline: '2px',
-    borderWidth: '0 2px !important',
-    color: `${theme.colors.contentPrimary} !important`,
-    backgroundColor: '#D3EFDA !important',
-    borderColor: '#009A51 !important',
+    ...timer(theme),
+    ...completed(theme),
   }),
   timerNegative: (theme) => ({
-    paddingInline: '2px',
-    borderWidth: '0 2px !important',
-    color: `${theme.colors.contentPrimary} !important`,
-    backgroundColor: '#FFE1DE !important',
-    borderColor: `${theme.colors.negative} !important`,
+    ...timer(theme),
+    ...negative(theme),
   }),
-  completed: (theme) => ({
-    paddingInline: '2px',
-    color: `${theme.colors.contentPrimary} !important`,
-    backgroundColor: '#D3EFDA !important',
-    borderColor: '#009A51 !important',
+  regularCompleted: (theme) => ({
+    ...regular(theme),
+    ...completed(theme),
   }),
-  ongoing: (theme) => ({
-    paddingInline: '2px',
-    color: `${theme.colors.contentPrimary} !important`,
-    backgroundColor: '#DEE9FE !important',
-    borderColor: `${theme.colors.accent} !important`,
+  regularOngoing: (theme) => ({
+    ...regular(theme),
+    ...ongoing(theme),
   }),
-  negative: (theme) => ({
-    paddingInline: '2px',
-    color: `${theme.colors.contentPrimary} !important`,
-    backgroundColor: '#FFE1DE !important',
-    borderColor: `${theme.colors.negative} !important`,
+  regularNegative: (theme) => ({
+    ...regular(theme),
+    ...negative(theme),
   }),
-  waiting: (theme) => ({
-    paddingInline: '2px',
-    color: `${theme.colors.contentPrimary} !important`,
-    backgroundColor: `${theme.colors.backgroundSecondary} !important`,
-    borderColor: `${theme.colors.contentPrimary} !important`,
+  regularWaiting: (theme) => ({
+    ...regular(theme),
+    ...waiting(theme),
   }),
   singleCompleted: (theme) => ({
-    color: `${theme.colors.contentPrimary} !important`,
-    borderColor: '#009A51 !important',
+    ...single(theme),
+    ...completed(theme),
+    backgroundColor: 'unset',
   }),
   singleNegative: (theme) => ({
-    color: `${theme.colors.contentPrimary} !important`,
-    borderColor: `${theme.colors.negative} !important`,
+    ...single(theme),
+    ...negative(theme),
+    backgroundColor: 'unset',
+  }),
+  timerWaitingSelected: (theme) => ({
+    ...timer(theme),
+    ...selected(theme, waiting, 'timer'),
+  }),
+  timerCompletedSelected: (theme) => ({
+    ...timer(theme),
+    ...selected(theme, completed, 'timer'),
+  }),
+  timerNegativeSelected: (theme) => ({
+    ...timer(theme),
+    ...selected(theme, negative, 'timer'),
+  }),
+  regularCompletedSelected: (theme) => ({
+    ...regular(theme),
+    ...selected(theme, completed),
+  }),
+  regularOngoingSelected: (theme) => ({
+    ...regular(theme),
+    ...selected(theme, ongoing),
+  }),
+  regularNegativeSelected: (theme) => ({
+    ...regular(theme),
+    ...selected(theme, negative),
+  }),
+  regularWaitingSelected: (theme) => ({
+    ...regular(theme),
+    ...selected(theme, waiting),
+  }),
+  singleCompletedSelected: (theme) => ({
+    ...single(theme),
+    ...selected(theme, completed, 'single'),
+  }),
+  singleNegativeSelected: (theme) => ({
+    ...single(theme),
+    ...selected(theme, negative, 'single'),
   }),
 } satisfies StyletronCSSObject;
 

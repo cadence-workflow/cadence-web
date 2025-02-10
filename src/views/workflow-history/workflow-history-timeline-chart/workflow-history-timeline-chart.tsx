@@ -21,10 +21,12 @@ const Timeline = dynamic(() => import('@/components/timeline/timeline'), {
 
 export default function WorkflowHistoryTimelineChart({
   eventGroupsEntries,
+  selectedEventId,
   isLoading,
   hasMoreEvents,
   fetchMoreEvents,
   isFetchingMoreEvents,
+  onClickEventGroup,
 }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
 
@@ -34,19 +36,24 @@ export default function WorkflowHistoryTimelineChart({
 
   const timelineItems = useMemo(
     () =>
-      eventGroupsEntries.reduce((items: Array<TimelineItem>, [_, group]) => {
-        const timelineChartItem = convertEventGroupToTimelineChartItem(
-          group,
-          cls
-        );
+      eventGroupsEntries.reduce(
+        (items: Array<TimelineItem>, [_, group], index) => {
+          const timelineChartItem = convertEventGroupToTimelineChartItem({
+            group,
+            index,
+            classes: cls,
+            isSelected: group.events[0].eventId === selectedEventId,
+          });
 
-        if (timelineChartItem) {
-          items.push(timelineChartItem);
-        }
+          if (timelineChartItem) {
+            items.push(timelineChartItem);
+          }
 
-        return items;
-      }, []),
-    [eventGroupsEntries, cls]
+          return items;
+        },
+        []
+      ),
+    [eventGroupsEntries, cls, selectedEventId]
   );
 
   return (
@@ -64,7 +71,7 @@ export default function WorkflowHistoryTimelineChart({
           </Tag>
         </styled.LoaderContainer>
       )}
-      <Timeline items={timelineItems} />
+      <Timeline items={timelineItems} onClickItem={onClickEventGroup} />
     </styled.TimelineContainer>
   );
 }
