@@ -1,12 +1,11 @@
-import type { HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
+import type { ExtendedActivityHistoryEvent } from '../../workflow-history.types';
 
-import type { ActivityHistoryEvent } from '../../workflow-history.types';
-
-export default function isActivityEvent(
-  event: Pick<HistoryEvent, 'attributes'>
-): event is ActivityHistoryEvent {
+export default function isExtendedActivityEvent(event: {
+  attributes: string;
+}): event is ExtendedActivityHistoryEvent {
   return [
     'activityTaskScheduledEventAttributes',
+    'pendingActivityTaskStartEventAttributes',
     'activityTaskStartedEventAttributes',
     'activityTaskCompletedEventAttributes',
     'activityTaskFailedEventAttributes',

@@ -1,7 +1,10 @@
 import differenceBy from 'lodash/differenceBy';
 
 import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
-import { allWorkflowEventTypesAttrs } from '@/views/workflow-history/__fixtures__/all-workflow-event-types-attributes';
+import {
+  allWorkflowEventTypesAttrs,
+  allWorkflowEventTypesAttrsExtended,
+} from '@/views/workflow-history/__fixtures__/all-workflow-event-types-attributes';
 import {
   cancelActivityTaskEvent,
   completeActivityTaskEvent,
@@ -10,11 +13,16 @@ import {
   startActivityTaskEvent,
   timeoutActivityTaskEvent,
 } from '@/views/workflow-history/__fixtures__/workflow-history-activity-events';
-import { type ActivityHistoryEvent } from '@/views/workflow-history/workflow-history.types';
+import { pendingActivityTaskStartEvent } from '@/views/workflow-history/__fixtures__/workflow-history-pending-events';
+import {
+  type ExtendedHistoryEvent,
+  type ExtendedActivityHistoryEvent,
+} from '@/views/workflow-history/workflow-history.types';
 
-import isActivityEvent from '../is-activity-event';
+import isExtendedActivityEvent from '../is-extended-activity-event';
 
-const validEvents: ActivityHistoryEvent[] = [
+const validEvents: ExtendedActivityHistoryEvent[] = [
+  pendingActivityTaskStartEvent,
   scheduleActivityTaskEvent,
   startActivityTaskEvent,
   completeActivityTaskEvent,
@@ -23,31 +31,31 @@ const validEvents: ActivityHistoryEvent[] = [
   cancelActivityTaskEvent,
 ];
 
-const invalidEvents: Pick<HistoryEvent, 'attributes'>[] = differenceBy(
-  allWorkflowEventTypesAttrs,
+const invalidEvents: Pick<ExtendedHistoryEvent, 'attributes'>[] = differenceBy(
+  allWorkflowEventTypesAttrsExtended,
   validEvents,
   'attributes'
 );
 
-describe('isActivityEvent', () => {
+describe('isExtendedActivityEvent', () => {
   it('should return true for valid activity events', () => {
     validEvents.forEach((event) => {
-      expect(isActivityEvent(event)).toBe(true);
+      expect(isExtendedActivityEvent(event)).toBe(true);
     });
   });
 
   it('should return false for invalid activity events', () => {
     invalidEvents.forEach((event) => {
-      expect(isActivityEvent(event)).toBe(false);
+      expect(isExtendedActivityEvent(event)).toBe(false);
     });
   });
 
   it('should return false for null, undefined, or missing attributes', () => {
     //@ts-expect-error null is not of type HistoryEvent
-    expect(isActivityEvent(null)).toBe(false);
+    expect(isExtendedActivityEvent(null)).toBe(false);
     //@ts-expect-error undefined is not of type HistoryEvent
-    expect(isActivityEvent(undefined)).toBe(false);
+    expect(isExtendedActivityEvent(undefined)).toBe(false);
     //@ts-expect-error {} is not of type HistoryEvent
-    expect(isActivityEvent({})).toBe(false);
+    expect(isExtendedActivityEvent({})).toBe(false);
   });
 });

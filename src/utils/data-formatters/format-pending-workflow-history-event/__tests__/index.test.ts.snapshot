@@ -1,0 +1,46 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`formatWorkflowHistoryEvent should format workflow pendingActivityTaskStartEventAttributes to match snapshot 1`] = `
+{
+  "activityId": "0",
+  "activityType": {
+    "name": "activity.cron.Start",
+  },
+  "attempt": 1,
+  "eventId": null,
+  "eventTime": 2024-09-07T22:16:10.599Z,
+  "eventType": "PendingActivityTaskStart",
+  "expirationTime": 1970-01-01T00:06:00.000Z,
+  "heartbeatDetails": [
+    "1725747370575409843",
+    "gadence-canary-xdc",
+    "workflow.sanity",
+  ],
+  "lastFailure": {
+    "details": "",
+    "reason": "",
+  },
+  "lastFailureDetails": null,
+  "lastFailureReason": "",
+  "lastHeartbeatTime": null,
+  "lastStartedTime": null,
+  "lastWorkerIdentity": "",
+  "maximumAttempts": 10,
+  "scheduleId": 7,
+  "scheduledTime": 1970-01-01T00:03:00.000Z,
+  "startedWorkerIdentity": "",
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow pendingDecisionTaskScheduleEventAttributes to match snapshot 1`] = `
+{
+  "attempt": 1,
+  "eventId": 2,
+  "eventTime": 2024-09-07T22:16:10.599Z,
+  "eventType": "PendingDecisionTaskSchedule",
+  "originalScheduledTime": null,
+  "scheduleId": 7,
+  "scheduledTime": 1970-01-01T00:03:00.000Z,
+  "startedTime": null,
+}
+`;
