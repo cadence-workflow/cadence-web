@@ -3,7 +3,11 @@ import VisJSTimeline from 'react-visjs-timeline';
 
 import type { Props } from './timeline.types';
 
-export default function Timeline({ items, height = '400px' }: Props) {
+export default function Timeline({
+  items,
+  height = '400px',
+  onClickItem,
+}: Props) {
   return (
     <VisJSTimeline
       options={{
@@ -11,6 +15,9 @@ export default function Timeline({ items, height = '400px' }: Props) {
         verticalScroll: true,
       }}
       items={items}
+      clickHandler={({ item }: { item: number | null }) => {
+        if (item !== null) onClickItem(item);
+      }}
     />
   );
 }
