@@ -1,36 +1,98 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Cadence Web UI
+
+[![Build Status](https://github.com/uber/cadence-web/actions/workflows/build.yml/badge.svg)](https://github.com/uber/cadence-web/actions/workflows/build.yml) [![Docker Status](https://github.com/uber/cadence-web/actions/workflows/docker_publish.yml/badge.svg)](https://hub.docker.com/r/ubercadence/web/tags)
+
+Cadence is a distributed, scalable, durable, and highly available orchestration engine we developed at Uber Engineering to execute asynchronous long-running business logic in a scalable and resilient way.
+
+This web UI is used to view workflows from [Cadence][cadence], see what's running, and explore and debug workflow executions.
+
 
 ## Getting Started
 
-First, run the development server:
+### Configuration
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Set these environment variables if you need to change their defaults
+
+| Variable                     | Description                                  | Default          |
+| ---------------------------- | -------------------------------------------- | ---------------- |
+| CADENCE_GRPC_PEERS           | Comma-delmited list of grpc peers            | 127.0.0.1:7833   |
+| CADENCE_GRPC_SERVICES_NAMES  | Comma-delmited list of grpc services to call | cadence-frontend |
+| CADENCE_CLUSTERS_NAMES       | Comma-delmited list of cluster names         | cluster0         |
+| CADENCE_WEB_PORT             | HTTP port to serve on                        | 8088             |
+| ENABLE_AUTH                  | Enable auth feature                          | false            |
+| CADENCE_ADMIN_SECURITY_TOKEN | Admin token for accessing admin methods      | ''               |
+
+Note: `cadence-web` can be connected to multiple clusters by adding comma-delimted entries for `CADENCE_GRPC_PEERS`, `CADENCE_GRPC_SERVICES_NAMES` & `CADENCE_CLUSTERS_NAMES` for each cluster (each cluster values are grouped by it's index within the Comma-delmited lists).
+
+
+### Using cadence-web
+
+Latest version of `cadence-web` is included in `cadence` composed docker containers that can be found [here](https://github.com/cadence-workflow/cadence#getting-started). To start using it clone `cadence` repo and run the following command
+```
+docker-compose -f docker/docker-compose.yml up
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Building & developing cadence-web 
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+`cadence-web` requires node `v18` or greater to be able to run correctly.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+#### Creating a production build
 
-## Learn More
+To create a production build, follow this steps:
 
-To learn more about Next.js, take a look at the following resources:
+- Install npm packages and download idls
+```
+npm install && npm run install-idl && npm run generate:idl
+```
+- Build the project files
+```
+npm run build
+```
+- After building the code, the server can be started by running this command from the same directory that includes the build
+```
+npm start
+```
+- The webapp can be accessed now through `localhost:8088` (port can be changed using `CADENCE_WEB_PORT` environment variable)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+#### Running develompent environment
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+To create a production build, follow this steps:
 
-## Deploy on Vercel
+- Install npm packages and download idls
+```
+npm install && npm run install-idl && npm run generate:idl
+```
+- Build the project files
+```
+npm run build
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+#### Using VSCode Dev Containers
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+1. Set up the [Remote Containers plugin](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) in VSCode.
+2. Open the cadence-web directory in VSCode.
+3. Use the Command Palette to select the 'Reopen folder in Container' option. `npm install` should run automatically in the container upon doing so.
+4. Run the app in the container with `npm run dev`.
+5. Open `localhost:8088` (or the custom Cadence Web port you have defined) to load the webapp.
+
+#### NPM scripts
+
+`build`: `Generates production builds`
+`start`: `Starts a production build`
+`dev`: `Run development server`
+`install-idl`: `Downloads idl files required for building/running the project`
+`generate:idl`: `Move idl files inside the project and generate typescript types for them`
+`test`: `Run all test cases`
+`test:unit`: `Run all unit tests`
+`test:unit:browser`: `Run only browser unit tests`
+`test:unit:browser`: `Run only node unit tests`
+`lint`: `Run eslint`
+`typecheck`: `Run typescript checks`
+
+
+
+## Licence
+
+MIT License, please see [LICENSE](https://github.com/cadence-workflow/cadence-web/blob/master/LICENSE) for details.
+
+[cadence]: https://github.com/cadence-workflow/cadence
