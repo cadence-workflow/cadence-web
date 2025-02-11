@@ -1,5 +1,3 @@
-import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
-
 import { type ExtendedHistoryEvent } from '../workflow-history.types';
 
 import isChildWorkflowExecutionEvent from './check-history-event-group/is-child-workflow-execution-event';

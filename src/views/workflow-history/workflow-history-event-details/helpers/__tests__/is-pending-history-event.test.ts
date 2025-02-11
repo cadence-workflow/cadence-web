@@ -1,10 +1,6 @@
 import differenceBy from 'lodash/differenceBy';
 
-import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
-import {
-  allWorkflowEventTypesAttrs,
-  allWorkflowEventTypesAttrsExtended,
-} from '@/views/workflow-history/__fixtures__/all-workflow-event-types-attributes';
+import { allWorkflowEventTypesAttrsExtended } from '@/views/workflow-history/__fixtures__/all-workflow-event-types-attributes';
 import {
   pendingActivityTaskStartEvent,
   pendingDecisionTaskScheduleEvent,

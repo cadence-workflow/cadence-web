@@ -1,6 +1,5 @@
 import { renderHook } from '@/test-utils/rtl';
 
-import { completedActivityTaskEvents } from '../../__fixtures__/workflow-history-activity-events';
 import { completedDecisionTaskEvents } from '../../__fixtures__/workflow-history-decision-events';
 import useInitialSelectedEvent from '../use-initial-selected-event';
 
