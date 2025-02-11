@@ -27,7 +27,7 @@ Note: `cadence-web` can be connected to multiple clusters by adding comma-delimt
 
 ### Using cadence-web
 
-Latest version of `cadence-web` is included in `cadence` composed docker containers that can be found [here](https://github.com/cadence-workflow/cadence#getting-started). To start using it clone `cadence` repo and run the following command
+Latest version of `cadence-web` is included in `cadence` composed docker containers that can be found [here][cadence]. To start using it clone `cadence` repo and run the following command
 ```
 docker-compose -f docker/docker-compose.yml up
 ```
@@ -40,32 +40,34 @@ docker-compose -f docker/docker-compose.yml up
 
 To create a production build, follow this steps:
 
-- Install npm packages and download idls
+1. Install npm packages and download idls
 ```
 npm install && npm run install-idl && npm run generate:idl
 ```
-- Build the project files
+2. Build the project files
 ```
 npm run build
 ```
-- After building the code, the server can be started by running this command from the same directory that includes the build
+3. After building the code, the server can be started by running this command from the same directory that includes the build
 ```
 npm start
 ```
-- The webapp can be accessed now through `localhost:8088` (port can be changed using `CADENCE_WEB_PORT` environment variable)
+4. The webapp can be accessed now through `localhost:8088` (port can be changed using `CADENCE_WEB_PORT` environment variable)
 
-#### Running develompent environment
+#### Running development environment
 
 To create a production build, follow this steps:
 
-- Install npm packages and download idls
+1. Install npm packages and download idls
 ```
 npm install && npm run install-idl && npm run generate:idl
 ```
-- Build the project files
+2. Build the project files
 ```
-npm run build
+npm run dev
 ```
+
+Note: For contribution we recommend using dev containers check `VSCode Dev Containers` section for more information
 
 #### Using VSCode Dev Containers
 
