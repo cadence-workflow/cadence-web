@@ -263,12 +263,14 @@ export default function WorkflowHistory({ params }: Props) {
           isFetchingMoreEvents={isFetchingNextPage}
           fetchMoreEvents={fetchNextPage}
           onClickEventGroup={(eventGroupIndex) => {
-            setQueryParams({
-              historySelectedEventId:
-                filteredEventGroupsEntries[eventGroupIndex][1].events[0]
-                  .eventId,
-            });
-
+            const eventId =
+              filteredEventGroupsEntries[eventGroupIndex][1].events[0]
+                .eventId || undefined;
+            if (eventId) {
+              setQueryParams({
+                historySelectedEventId: eventId,
+              });
+            }
             compactSectionListRef.current?.scrollToIndex({
               index: eventGroupIndex,
               align: 'start',
