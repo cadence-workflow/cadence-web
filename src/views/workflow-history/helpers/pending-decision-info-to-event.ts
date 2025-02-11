@@ -12,7 +12,7 @@ export default function pendingDecisionInfoToEvent(
       eventTime: decisionInfo.scheduledTime,
       pendingDecisionTaskScheduleEventAttributes: {
         ...decisionInfo,
-        state: 'PENDING_DECISION_STATE_SCHEDULED', // make it clear to ts that the state is started (same as a typeguard)
+        state: 'PENDING_DECISION_STATE_SCHEDULED', // make it clear to ts that the state is scheduled (same as a typeguard)
       },
     } satisfies PendingDecisionTaskScheduleEvent;
   }

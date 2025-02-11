@@ -28,7 +28,7 @@ export const getFormatPendingEventSchema = (event: PendingHistoryEvent) => {
     case 'pendingDecisionTaskScheduleEventAttributes':
       return formatPendingDecisionTaskScheduleEventSchema;
     default:
-      return unExistingEventType(event); // should not be unreachable, used to show a type error if not all attributes cases are covered
+      return unExistingEventType(event); // used to show a type error if any pending event attributes cases are not covered
   }
 };
 

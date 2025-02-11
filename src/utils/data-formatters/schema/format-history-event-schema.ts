@@ -378,7 +378,7 @@ export const getFormatHistoryEventSchema = (event: HistoryEvent) => {
       return formatUpsertWorkflowSearchAttributesEventSchema;
 
     default:
-      return unExistingEventType(event.attributes); // should not be unreachable, used to show a type error if not all attributes cases are covered
+      return unExistingEventType(event.attributes); // used to show a type error if any attributes cases are covered
   }
 };
 
