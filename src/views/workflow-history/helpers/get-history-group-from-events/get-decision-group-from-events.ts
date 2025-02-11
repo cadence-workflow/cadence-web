@@ -1,13 +1,13 @@
 import type {
-  DecisionHistoryEvent,
   DecisionHistoryGroup,
+  ExtendedDecisionHistoryEvent,
   HistoryGroupEventToStatusMap,
   HistoryGroupEventToStringMap,
 } from '../../workflow-history.types';
 import getCommonHistoryGroupFields from '../get-common-history-group-fields';
 
 export default function getDecisionGroupFromEvents(
-  events: DecisionHistoryEvent[]
+  events: ExtendedDecisionHistoryEvent[]
 ): DecisionHistoryGroup {
   const label = 'Decision Task';
   let hasMissingEvents = false;
@@ -16,22 +16,49 @@ export default function getDecisionGroupFromEvents(
 
   const firstEvent = events[0];
   const scheduleAttr = 'decisionTaskScheduledEventAttributes';
-  const scheduleEvent = events.find(
-    ({ attributes }) => attributes === scheduleAttr
-  );
-  if (firstEvent.attributes !== 'decisionTaskScheduledEventAttributes') {
+  const pendingStartAttr = 'pendingDecisionTaskScheduleEventAttributes';
+
+  let scheduleEvent: ExtendedDecisionHistoryEvent | undefined;
+  let pendingScheduleEvent: ExtendedDecisionHistoryEvent | undefined;
+
+  events.forEach((e) => {
+    if (e.attributes === scheduleAttr) scheduleEvent = e;
+    if (e.attributes === pendingStartAttr) pendingScheduleEvent = e;
+  });
+
+  if (
+    firstEvent.attributes !== 'decisionTaskScheduledEventAttributes' &&
+    firstEvent.attributes !== 'pendingDecisionTaskScheduleEventAttributes'
+  ) {
     hasMissingEvents = true;
   }
 
-  if (scheduleEvent && scheduleEvent[scheduleAttr]?.attempt) {
-    const retryAttemptNumber = scheduleEvent[scheduleAttr].attempt;
+  let retryAttemptNumber = 0;
 
+  if (
+    pendingScheduleEvent &&
+    pendingStartAttr in pendingScheduleEvent &&
+    pendingScheduleEvent[pendingStartAttr]?.attempt
+  ) {
+    retryAttemptNumber = pendingScheduleEvent[pendingStartAttr].attempt;
+  }
+
+  if (
+    scheduleEvent &&
+    scheduleAttr in scheduleEvent &&
+    scheduleEvent[scheduleAttr]?.attempt
+  ) {
+    retryAttemptNumber = scheduleEvent[scheduleAttr].attempt;
+  }
+
+  if (retryAttemptNumber) {
     badges.push({
       content:
         retryAttemptNumber === 1 ? '1 Retry' : `${retryAttemptNumber} Retries`,
     });
   }
   const eventToLabel: HistoryGroupEventToStringMap<DecisionHistoryGroup> = {
+    pendingDecisionTaskScheduleEventAttributes: 'Scheduling',
     decisionTaskScheduledEventAttributes: 'Scheduled',
     decisionTaskStartedEventAttributes: 'Started',
     decisionTaskCompletedEventAttributes: 'Completed',
@@ -39,6 +66,7 @@ export default function getDecisionGroupFromEvents(
     decisionTaskTimedOutEventAttributes: 'Timed out',
   };
   const eventToStatus: HistoryGroupEventToStatusMap<DecisionHistoryGroup> = {
+    pendingDecisionTaskScheduleEventAttributes: 'WAITING',
     decisionTaskScheduledEventAttributes: (_, events, index) =>
       index < events.length - 1 ? 'COMPLETED' : 'WAITING',
     decisionTaskStartedEventAttributes: (_, events, index) =>
@@ -57,7 +85,7 @@ export default function getDecisionGroupFromEvents(
       events,
       eventToStatus,
       eventToLabel,
-      {}
+      { pendingDecisionTaskScheduleEventAttributes: 'Scheduled at' }
     ),
   };
 }

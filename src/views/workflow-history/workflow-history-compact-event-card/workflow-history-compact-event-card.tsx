@@ -21,6 +21,7 @@ export default function WorkflowHistoryCompactEventCard({
   badges,
   showLabelPlaceholder,
   selected,
+  disabled,
   onClick,
 }: Props) {
   const { cls, theme } = useStyletronClasses(cssStyles);
@@ -33,6 +34,7 @@ export default function WorkflowHistoryCompactEventCard({
       headerAlignment={ALIGNMENT.right}
       bodyAlignment={ALIGNMENT.left}
       selected={selected}
+      disabled={disabled}
       onClick={onClick}
     >
       <WorkflowHistoryEventStatusBadge status={status} size="small" />

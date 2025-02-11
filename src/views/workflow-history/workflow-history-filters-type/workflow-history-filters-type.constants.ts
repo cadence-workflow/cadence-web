@@ -1,4 +1,4 @@
-import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
+import { type ExtendedHistoryEvent } from '../workflow-history.types';
 
 import { type WorkflowHistoryEventFilteringType } from './workflow-history-filters-type.types';
 
@@ -16,10 +16,11 @@ export const WORKFLOW_HISTORY_EVENT_FILTERING_TYPES_LABEL_MAP = {
 
 export const WORKFLOW_HISTORY_EVENT_FILTERING_TYPE_TO_ATTRS_MAP: Record<
   WorkflowHistoryEventFilteringType,
-  HistoryEvent['attributes'][]
+  ExtendedHistoryEvent['attributes'][]
 > = {
   ACTIVITY: [
     'activityTaskScheduledEventAttributes',
+    'pendingActivityTaskStartEventAttributes',
     'activityTaskStartedEventAttributes',
     'activityTaskCompletedEventAttributes',
     'activityTaskFailedEventAttributes',
@@ -29,6 +30,7 @@ export const WORKFLOW_HISTORY_EVENT_FILTERING_TYPE_TO_ATTRS_MAP: Record<
     'requestCancelActivityTaskFailedEventAttributes',
   ],
   DECISION: [
+    'pendingDecisionTaskScheduleEventAttributes',
     'decisionTaskScheduledEventAttributes',
     'decisionTaskStartedEventAttributes',
     'decisionTaskCompletedEventAttributes',

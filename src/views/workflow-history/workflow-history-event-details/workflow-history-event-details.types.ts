@@ -1,10 +1,12 @@
-import type { HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
 import { type WorkflowPageTabsParams } from '@/views/workflow-page/workflow-page-tabs/workflow-page-tabs.types';
 
-import type { Props as WorfklowHistoryProps } from '../workflow-history.types';
+import type {
+  ExtendedHistoryEvent,
+  Props as WorfklowHistoryProps,
+} from '../workflow-history.types';
 
 export type Props = {
-  event: HistoryEvent;
+  event: ExtendedHistoryEvent;
   decodedPageUrlParams: WorfklowHistoryProps['params'];
 };
 
