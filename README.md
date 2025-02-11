@@ -67,15 +67,13 @@ npm install && npm run install-idl && npm run generate:idl
 npm run dev
 ```
 
-Note: For contribution we recommend using dev containers check `VSCode Dev Containers` section for more information
+Note: For contribution we recommend using dev containers, check `VSCode Dev Containers` section for more information
 
 #### Using VSCode Dev Containers
 
 1. Set up the [Remote Containers plugin](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) in VSCode.
 2. Open the cadence-web directory in VSCode.
-3. Use the Command Palette to select the 'Reopen folder in Container' option. `npm install` should run automatically in the container upon doing so.
-4. Run the app in the container with `npm run dev`.
-5. Open `localhost:8088` (or the custom Cadence Web port you have defined) to load the webapp.
+3. Follow same commands used listed in `Running development environment` section.
 
 #### NPM scripts
 
