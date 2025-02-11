@@ -271,6 +271,7 @@ export default function WorkflowHistory({ params }: Props) {
                 historySelectedEventId: eventId,
               });
             }
+        
             compactSectionListRef.current?.scrollToIndex({
               index: eventGroupIndex,
               align: 'start',
