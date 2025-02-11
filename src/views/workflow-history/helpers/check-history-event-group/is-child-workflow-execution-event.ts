@@ -1,10 +1,8 @@
-import type { HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
-
 import type { ChildWorkflowExecutionHistoryEvent } from '../../workflow-history.types';
 
-export default function isChildWorkflowExecutionEvent(
-  event: Pick<HistoryEvent, 'attributes'>
-): event is ChildWorkflowExecutionHistoryEvent {
+export default function isChildWorkflowExecutionEvent(event: {
+  attributes: string;
+}): event is ChildWorkflowExecutionHistoryEvent {
   return [
     'startChildWorkflowExecutionInitiatedEventAttributes',
     'startChildWorkflowExecutionFailedEventAttributes',

@@ -3,6 +3,7 @@ import React from 'react';
 import { render, screen } from '@/test-utils/rtl';
 
 import { completeActivityTaskEvent } from '../../__fixtures__/workflow-history-activity-events';
+import { pendingActivityTaskStartEvent } from '../../__fixtures__/workflow-history-pending-events';
 import { workflowPageUrlParams } from '../../__fixtures__/workflow-page-url-params';
 import generateHistoryEventDetails from '../helpers/generate-history-event-details';
 import WorkflowHistoryEventDetails from '../workflow-history-event-details';
@@ -56,6 +57,30 @@ describe(WorkflowHistoryEventDetails.name, () => {
     render(
       <WorkflowHistoryEventDetails
         event={completeActivityTaskEvent}
+        decodedPageUrlParams={workflowPageUrlParams}
+      />
+    );
+
+    expect(screen.getByText(/"testValue"/)).toBeInTheDocument();
+  });
+
+  it('renders pending event details with path and value', () => {
+    mockGenerateHistoryEventDetails.mockReturnValue([
+      {
+        key: 'testKey',
+        path: 'testPath',
+        isGroup: false,
+        value: 'testValue',
+        renderConfig: {
+          name: 'Mock render config without custom label',
+          customMatcher: () => true,
+        },
+      },
+    ] satisfies WorkflowHistoryEventDetailsEntries);
+
+    render(
+      <WorkflowHistoryEventDetails
+        event={pendingActivityTaskStartEvent}
         decodedPageUrlParams={workflowPageUrlParams}
       />
     );

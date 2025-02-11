@@ -1,4 +1,7 @@
+import { type Timestamp } from '@/__generated__/proto-ts/google/protobuf/Timestamp';
 import type { HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
+import { type PendingActivityInfo } from '@/__generated__/proto-ts/uber/cadence/api/v1/PendingActivityInfo';
+import { type PendingDecisionInfo } from '@/__generated__/proto-ts/uber/cadence/api/v1/PendingDecisionInfo';
 import { type PageFilterConfig } from '@/components/page-filters/page-filters.types';
 import { type PageQueryParamValues } from '@/hooks/use-page-query-params/use-page-query-params.types';
 
@@ -50,15 +53,51 @@ type BaseHistoryGroup = {
   timeLabel: string;
   badges?: HistoryGroupBadge[];
 };
+export type PendingDecisionScheduleInfo = Omit<PendingDecisionInfo, 'state'> & {
+  state: 'PENDING_DECISION_STATE_SCHEDULED';
+};
+
+export type PendingActivityStartInfo = Omit<PendingActivityInfo, 'state'> & {
+  state: 'PENDING_ACTIVITY_STATE_STARTED';
+};
+
+export type PendingActivityTaskStartEvent = {
+  attributes: 'pendingActivityTaskStartEventAttributes';
+  eventTime: Timestamp | null;
+  eventId: null;
+  computedEventId: string;
+  pendingActivityTaskStartEventAttributes: PendingActivityStartInfo;
+};
+
+export type PendingDecisionTaskScheduleEvent = {
+  attributes: 'pendingDecisionTaskScheduleEventAttributes';
+  eventTime: Timestamp | null;
+  eventId: string;
+  pendingDecisionTaskScheduleEventAttributes: PendingDecisionScheduleInfo;
+};
+
+export type PendingHistoryEvent =
+  | PendingDecisionTaskScheduleEvent
+  | PendingActivityTaskStartEvent;
+
+export type ExtendedActivityHistoryEvent =
+  | ActivityHistoryEvent
+  | PendingActivityTaskStartEvent;
+
+export type ExtendedDecisionHistoryEvent =
+  | DecisionHistoryEvent
+  | PendingDecisionTaskScheduleEvent;
+
+export type ExtendedHistoryEvent = HistoryEvent | PendingHistoryEvent;
 
 export type ActivityHistoryGroup = BaseHistoryGroup & {
   groupType: 'Activity';
-  events: ActivityHistoryEvent[];
+  events: ExtendedActivityHistoryEvent[];
 };
 
 export type DecisionHistoryGroup = BaseHistoryGroup & {
   groupType: 'Decision';
-  events: DecisionHistoryEvent[];
+  events: ExtendedDecisionHistoryEvent[];
 };
 
 export type TimerHistoryGroup = BaseHistoryGroup & {
@@ -176,7 +215,7 @@ export type WorkflowHistoryFilterConfig<
   filterTarget: WorkflowHistoryFilterTarget;
 } & (
     | {
-        filterFunc: (d: HistoryEvent, value: V) => boolean;
+        filterFunc: (d: ExtendedHistoryEvent, value: V) => boolean;
         filterTarget: 'event';
       }
     | {
