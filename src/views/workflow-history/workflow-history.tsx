@@ -1,5 +1,5 @@
 'use client';
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 
 import {
   useSuspenseInfiniteQuery,
@@ -28,6 +28,8 @@ import useDescribeWorkflow from '../workflow-page/hooks/use-describe-workflow';
 
 import workflowHistoryFiltersConfig from './config/workflow-history-filters.config';
 import { groupHistoryEvents } from './helpers/group-history-events';
+import pendingActivitiesInfoToEvents from './helpers/pending-activities-info-to-events';
+import pendingDecisionInfoToEvent from './helpers/pending-decision-info-to-event';
 import useEventExpansionToggle from './hooks/use-event-expansion-toggle';
 import useInitialSelectedEvent from './hooks/use-initial-selected-event';
 import useKeepLoadingEvents from './hooks/use-keep-loading-events';
@@ -38,7 +40,10 @@ import WorkflowHistoryTimelineChart from './workflow-history-timeline-chart/work
 import WorkflowHistoryTimelineGroup from './workflow-history-timeline-group/workflow-history-timeline-group';
 import WorkflowHistoryTimelineLoadMore from './workflow-history-timeline-load-more/workflow-history-timeline-load-more';
 import { cssStyles, overrides } from './workflow-history.styles';
-import { type Props } from './workflow-history.types';
+import {
+  type ExtendedHistoryEvent,
+  type Props,
+} from './workflow-history.types';
 
 export default function WorkflowHistory({ params }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
@@ -61,10 +66,8 @@ export default function WorkflowHistory({ params }: Props) {
     pageFiltersConfig: workflowHistoryFiltersConfig,
   });
 
-  const {
-    data: { workflowExecutionInfo },
-  } = useDescribeWorkflow({ ...params });
-
+  const { data: wfExecutionDescription } = useDescribeWorkflow({ ...params });
+  const { workflowExecutionInfo } = wfExecutionDescription;
   const {
     data: result,
     hasNextPage,
@@ -105,22 +108,46 @@ export default function WorkflowHistory({ params }: Props) {
         .flat(1),
     [result]
   );
-
-  const filteredEvents = useMemo(
-    () =>
-      events.filter((event) =>
-        workflowHistoryFiltersConfig.every((f) => {
-          if (f.filterTarget === 'event')
-            return f.filterFunc(event, queryParams);
-          return true;
-        })
-      ),
-    [queryParams, events]
+  const shouldFilterEvent = useCallback(
+    (event: ExtendedHistoryEvent) => {
+      return workflowHistoryFiltersConfig.every((f) => {
+        if (f.filterTarget === 'event') return f.filterFunc(event, queryParams);
+        return true;
+      });
+    },
+    [queryParams]
   );
 
+  const filteredEvents = useMemo(
+    () => events.filter(shouldFilterEvent),
+    [shouldFilterEvent, events]
+  );
+
+  const filteredPendingHistoryEvents = useMemo(() => {
+    const pendingStartActivities = pendingActivitiesInfoToEvents(
+      wfExecutionDescription.pendingActivities
+    ).filter(shouldFilterEvent);
+    let pendingScheduleDecision = wfExecutionDescription.pendingDecision
+      ? pendingDecisionInfoToEvent(wfExecutionDescription.pendingDecision)
+      : null;
+    if (pendingScheduleDecision !== null) {
+      const decisionMatchesFilters = shouldFilterEvent(pendingScheduleDecision);
+      if (!decisionMatchesFilters) pendingScheduleDecision = null;
+    }
+
+    return {
+      pendingStartActivities,
+      pendingScheduleDecision,
+    };
+  }, [shouldFilterEvent, wfExecutionDescription]);
+
   const eventGroups = useMemo(
-    () => groupHistoryEvents(filteredEvents),
-    [filteredEvents]
+    () =>
+      groupHistoryEvents(filteredEvents, {
+        ...filteredPendingHistoryEvents,
+        allEvents: events,
+      }),
+    [events, filteredEvents, filteredPendingHistoryEvents]
   );
 
   const filteredEventGroupsEntries = useMemo(
@@ -236,11 +263,14 @@ export default function WorkflowHistory({ params }: Props) {
           isFetchingMoreEvents={isFetchingNextPage}
           fetchMoreEvents={fetchNextPage}
           onClickEventGroup={(eventGroupIndex) => {
-            setQueryParams({
-              historySelectedEventId:
-                filteredEventGroupsEntries[eventGroupIndex][1].events[0]
-                  .eventId,
-            });
+            const eventId =
+              filteredEventGroupsEntries[eventGroupIndex][1].events[0]
+                .eventId || undefined;
+            if (eventId) {
+              setQueryParams({
+                historySelectedEventId: eventId,
+              });
+            }
 
             compactSectionListRef.current?.scrollToIndex({
               index: eventGroupIndex,
@@ -282,10 +312,12 @@ export default function WorkflowHistory({ params }: Props) {
                     selected={
                       queryParams.historySelectedEventId === events[0].eventId
                     }
+                    disabled={!Boolean(events[0].eventId)}
                     onClick={() => {
-                      setQueryParams({
-                        historySelectedEventId: events[0].eventId,
-                      });
+                      if (events[0].eventId)
+                        setQueryParams({
+                          historySelectedEventId: events[0].eventId,
+                        });
                       timelineSectionListRef.current?.scrollToIndex({
                         index,
                         align: 'start',
