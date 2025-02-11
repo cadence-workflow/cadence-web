@@ -22,7 +22,14 @@ Set these environment variables if you need to change their defaults
 | ENABLE_AUTH                  | Enable auth feature                          | false            |
 | CADENCE_ADMIN_SECURITY_TOKEN | Admin token for accessing admin methods      | ''               |
 
-Note: `cadence-web` can be connected to multiple clusters by adding comma-delimted entries for `CADENCE_GRPC_PEERS`, `CADENCE_GRPC_SERVICES_NAMES` & `CADENCE_CLUSTERS_NAMES` for each cluster (each cluster values are grouped by it's index within the Comma-delmited lists).
+Note: To connect `cadence-web` to multiple clusters, you will need to add comma-delimted entries for `CADENCE_GRPC_PEERS`, `CADENCE_GRPC_SERVICES_NAMES` & `CADENCE_CLUSTERS_NAMES` for each cluster (each cluster values are grouped by their index within the comma-delmited lists).
+
+Example:
+```
+CADENCE_GRPC_PEERS=127.0.0.1:3000,127.0.0.1:5000 
+CADENCE_GRPC_SERVICES_NAMES=cadence-frontend-cluster0,cadence-frontend-cluster1
+CADENCE_CLUSTERS_NAMES=cluster0,cluster1
+```
 
 
 ### Using cadence-web
@@ -56,16 +63,17 @@ npm start
 
 #### Running development environment
 
-To create a production build, follow this steps:
+To run development server, follow this steps:
 
 1. Install npm packages and download idls
 ```
 npm install && npm run install-idl && npm run generate:idl
 ```
-2. Build the project files
+2. Run development server using
 ```
 npm run dev
 ```
+3. The webapp can be accessed now through `localhost:8088` (port can be changed using `CADENCE_WEB_PORT` environment variable)
 
 Note: For contribution we recommend using dev containers, check [VSCode Dev Containers](#using-vscode-dev-containers) section for more information
 
@@ -73,7 +81,22 @@ Note: For contribution we recommend using dev containers, check [VSCode Dev Cont
 
 1. Set up the [Remote Containers plugin](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) in VSCode.
 2. Open the cadence-web directory in VSCode.
-3. Follow same commands used listed in [Running development environment](#running-development-environment) section.
+3. Make sure to update `CADENCE_GRPC_PEERS` with the correct host. (If you are connecting to a server on a container host machine use `host.docker.interal:7833`, were `7833` is the grpc port for a running [cadence-frontend](https://github.com/cadence-workflow/cadence/tree/master/service/frontend) service)
+4. Use the Command Palette to select the 'Reopen folder in Container' option
+5. Follow same commands listed in [Running development environment](#running-development-environment) section.
+
+
+#### Developing cadence-web againist cadence composed docker
+
+To start development againist a dockerised cadence services, clone `cadence` repo and run the following command from the root of the project
+```
+docker-compose -f docker/docker-compose-ui-dev.yml up
+```
+
+You can make any customization to the yml file or reuse other exisiting yml files withing the `docker` directory. (Make sure that cadence-web is not included in the composed container or remove it)
+
+After running `cadence`, start `cadence-web` for development using one of the previous methods ([Running development environment](#running-development-environment),[VSCode Dev Containers](#using-vscode-dev-containers) )
+
 
 #### NPM scripts
 
@@ -82,10 +105,10 @@ Note: For contribution we recommend using dev containers, check [VSCode Dev Cont
 `dev`: `Run development server`
 `install-idl`: `Downloads idl files required for building/running the project`
 `generate:idl`: `Move idl files inside the project and generate typescript types for them`
-`test`: `Run all test cases`
-`test:unit`: `Run all unit tests`
+`test`: `Run all test cases. To pass extra jest flags, use enviroment specific scripts e.g. test:unit:*`
+`test:unit`: `Run all unit tests. To pass extra jest flags, use enviroment specific scripts e.g. test:unit:*`
 `test:unit:browser`: `Run only browser unit tests`
-`test:unit:browser`: `Run only node unit tests`
+`test:unit:node`: `Run only node unit tests`
 `lint`: `Run eslint`
 `typecheck`: `Run typescript checks`
 
