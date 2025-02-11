@@ -21,9 +21,7 @@ export const formatPendingDecisionTaskScheduleEventSchema =
 function unExistingEventType(_: never) {
   return null;
 }
-export const getFormatPendingEventSchema = function (
-  event: PendingHistoryEvent
-) {
+export const getFormatPendingEventSchema = (event: PendingHistoryEvent) => {
   switch (event.attributes) {
     case 'pendingActivityTaskStartEventAttributes':
       return formatPendingActivityTaskStartEventSchema;

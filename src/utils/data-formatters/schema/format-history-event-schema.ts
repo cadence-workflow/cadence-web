@@ -272,7 +272,7 @@ export const formatUpsertWorkflowSearchAttributesEventSchema =
 function unExistingEventType(_: never) {
   return null;
 }
-export const getFormatHistoryEventSchema = function (event: HistoryEvent) {
+export const getFormatHistoryEventSchema = (event: HistoryEvent) => {
   switch (event.attributes) {
     case 'workflowExecutionStartedEventAttributes':
       return formatWorkflowExecutionStartedEventSchema;
