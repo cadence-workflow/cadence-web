@@ -1,10 +1,9 @@
-import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
-
+import { type ExtendedHistoryEvent } from '../../workflow-history.types';
 import { WORKFLOW_HISTORY_EVENT_FILTERING_TYPE_TO_ATTRS_MAP } from '../workflow-history-filters-type.constants';
 import { type WorkflowHistoryFiltersTypeValue } from '../workflow-history-filters-type.types';
 
 const filterEventsByEventType = function (
-  event: HistoryEvent,
+  event: ExtendedHistoryEvent,
   value: WorkflowHistoryFiltersTypeValue
 ) {
   const attr = event.attributes;
