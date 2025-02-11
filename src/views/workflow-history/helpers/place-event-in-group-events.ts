@@ -1,10 +1,10 @@
 import sortedIndexBy from 'lodash/sortedIndexBy';
 
-import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
+import { type ExtendedHistoryEvent } from '../workflow-history.types';
 
 export default function placeEventInGroupEvents(
-  event: HistoryEvent,
-  events: HistoryEvent[]
+  event: ExtendedHistoryEvent,
+  events: ExtendedHistoryEvent[]
 ) {
   const sortedEvents = [...events];
   sortedEvents.splice(

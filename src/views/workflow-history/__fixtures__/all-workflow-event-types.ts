@@ -24,6 +24,10 @@ import {
   timeoutDecisionTaskEvent,
 } from './workflow-history-decision-events';
 import {
+  pendingDecisionTaskScheduleEvent,
+  pendingActivityTaskStartEvent,
+} from './workflow-history-pending-events';
+import {
   initiateRequestCancelExternalWorkflowEvent,
   requestCancelExternalWorkflowEvent,
   failRequestCancelExternalWorkflowEvent,
@@ -98,4 +102,10 @@ export const allWorkflowEvents = [
   terminateWorkflowExecutionEvent,
   timeoutWorkflowExecutionEvent,
   upsertWorkflowSearchAttributesEvent,
+];
+
+export const allWorkflowEventsExtended = [
+  ...allWorkflowEvents,
+  pendingDecisionTaskScheduleEvent,
+  pendingActivityTaskStartEvent,
 ];

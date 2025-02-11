@@ -1,22 +1,28 @@
-import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
+import { type ExtendedHistoryEvent } from '../workflow-history.types';
 
-import isActivityEvent from './check-history-event-group/is-activity-event';
 import isChildWorkflowExecutionEvent from './check-history-event-group/is-child-workflow-execution-event';
-import isDecisionEvent from './check-history-event-group/is-decision-event';
+import isExtendedActivityEvent from './check-history-event-group/is-extended-activity-event';
+import isExtendedDecisionEvent from './check-history-event-group/is-extended-decision-event';
 import isRequestCancelExternalWorkflowExecutionEvent from './check-history-event-group/is-request-cancel-external-workflow-execution-event';
 import isSignalExternalWorkflowExecutionEvent from './check-history-event-group/is-signal-external-workflow-execution-event';
 import isTimerEvent from './check-history-event-group/is-timer-event';
 
 export default function getHistoryEventGroupId(
-  event: HistoryEvent
+  event: ExtendedHistoryEvent
 ): string | undefined {
-  if (
-    isActivityEvent(event) &&
+  if (event.attributes === 'pendingActivityTaskStartEventAttributes') {
+    return event[event.attributes]?.scheduleId;
+  } else if (
+    event.attributes === 'pendingDecisionTaskScheduleEventAttributes'
+  ) {
+    return event[event.attributes]?.scheduleId;
+  } else if (
+    isExtendedActivityEvent(event) &&
     event.attributes !== 'activityTaskScheduledEventAttributes'
   ) {
     return event[event.attributes]?.scheduledEventId;
   } else if (
-    isDecisionEvent(event) &&
+    isExtendedDecisionEvent(event) &&
     event.attributes !== 'decisionTaskScheduledEventAttributes'
   ) {
     return event[event.attributes]?.scheduledEventId;

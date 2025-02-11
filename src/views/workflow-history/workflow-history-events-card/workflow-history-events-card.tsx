@@ -24,30 +24,34 @@ export default function WorkflowHistoryEventsCard({
   const { cls, theme } = useStyletronClasses(cssStyles);
 
   if (!eventsMetadata?.length && !showEventPlaceholder) return null;
-  const expanded = events.reduce((result, { eventId }) => {
-    if (getIsEventExpanded(eventId)) result.push(eventId);
+  const expanded = events.reduce((result, event) => {
+    const id = event.eventId === null ? event.computedEventId : event.eventId;
+    if (getIsEventExpanded(id)) result.push(id);
     return result;
   }, [] as string[]);
 
   return (
     <StatelessAccordion overrides={overrides.accordion} expanded={expanded}>
-      {eventsMetadata?.map((event, index) => {
+      {eventsMetadata?.map((eventMetadata, index) => {
+        const event = events[index];
+        const id =
+          event.eventId === null ? event.computedEventId : event.eventId;
         return (
           <Panel
-            key={events[index].eventId}
+            key={id}
             title={
               <>
                 <WorkflowHistoryEventStatusBadge
                   size="small"
-                  status={event.status}
+                  status={eventMetadata.status}
                 />
-                <div className={cls.eventLabel}>{event.label}</div>
+                <div className={cls.eventLabel}>{eventMetadata.label}</div>
               </>
             }
-            onClick={() => onEventToggle(events[index].eventId)}
+            onClick={() => onEventToggle(id)}
           >
             <WorkflowHistoryEventDetails
-              event={events[index]}
+              event={event}
               decodedPageUrlParams={decodedPageUrlParams}
             />
           </Panel>

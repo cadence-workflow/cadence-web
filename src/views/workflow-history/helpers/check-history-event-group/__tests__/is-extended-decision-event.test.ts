@@ -7,11 +7,13 @@ import {
   startDecisionTaskEvent,
   completeDecisionTaskEvent,
 } from '@/views/workflow-history/__fixtures__/workflow-history-decision-events';
-import type { DecisionHistoryEvent } from '@/views/workflow-history/workflow-history.types';
+import { pendingDecisionTaskScheduleEvent } from '@/views/workflow-history/__fixtures__/workflow-history-pending-events';
+import type { ExtendedDecisionHistoryEvent } from '@/views/workflow-history/workflow-history.types';
 
-import isDecisionEvent from '../is-decision-event';
+import isExtendedDecisionEvent from '../is-extended-decision-event';
 
-const validEvents: Pick<DecisionHistoryEvent, 'attributes'>[] = [
+const validEvents: Pick<ExtendedDecisionHistoryEvent, 'attributes'>[] = [
+  pendingDecisionTaskScheduleEvent,
   scheduleDecisionTaskEvent,
   startDecisionTaskEvent,
   completeDecisionTaskEvent,
@@ -26,25 +28,25 @@ const invalidEvents: Pick<HistoryEvent, 'attributes'>[] = differenceBy(
   'attributes'
 );
 
-describe('isDecisionEvent', () => {
+describe('isExtendedDecisionEvent', () => {
   it('should return true for valid decision events', () => {
     validEvents.forEach((event) => {
-      expect(isDecisionEvent(event)).toBe(true);
+      expect(isExtendedDecisionEvent(event)).toBe(true);
     });
   });
 
   it('should return false for invalid decision events', () => {
     invalidEvents.forEach((event) => {
-      expect(isDecisionEvent(event)).toBe(false);
+      expect(isExtendedDecisionEvent(event)).toBe(false);
     });
   });
 
   it('should return false for null, undefined, or missing attributes', () => {
     //@ts-expect-error null is not of type HistoryEvent
-    expect(isDecisionEvent(null)).toBe(false);
+    expect(isExtendedDecisionEvent(null)).toBe(false);
     //@ts-expect-error undefined is not of type HistoryEvent
-    expect(isDecisionEvent(undefined)).toBe(false);
+    expect(isExtendedDecisionEvent(undefined)).toBe(false);
     //@ts-expect-error {} is not of type HistoryEvent
-    expect(isDecisionEvent({})).toBe(false);
+    expect(isExtendedDecisionEvent({})).toBe(false);
   });
 });
