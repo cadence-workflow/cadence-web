@@ -7,7 +7,7 @@ import formatPayload from '../format-payload';
 import formatTimestampToDatetime from '../format-timestamp-to-datetime';
 
 export default function formatPendingActivityTaskStartEvent({
-  pendingActivityTaskStartEventAttributes: { ...pendingInfo },
+  pendingActivityTaskStartEventAttributes: pendingInfo,
   eventTime,
   eventId,
 }: PendingActivityTaskStartEvent) {

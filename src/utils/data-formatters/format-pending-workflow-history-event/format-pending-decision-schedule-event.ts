@@ -5,7 +5,7 @@ import { type PendingDecisionTaskScheduleEvent } from '@/views/workflow-history/
 import formatTimestampToDatetime from '../format-timestamp-to-datetime';
 
 const formatPendingDecisionTaskScheduleEvent = ({
-  pendingDecisionTaskScheduleEventAttributes: { ...pendingInfo },
+  pendingDecisionTaskScheduleEventAttributes: pendingInfo,
   eventTime,
   eventId,
 }: PendingDecisionTaskScheduleEvent) => {

@@ -2,16 +2,16 @@ import logger from '@/utils/logger';
 import { type PendingHistoryEvent } from '@/views/workflow-history/workflow-history.types';
 
 import {
-  getFormatPendingStartEventSchema,
+  getFormatPendingEventSchema,
   type FormattedHistoryPendingEvent,
 } from '../schema/format-history-pending-event-schema';
 
 export default function formatPendingWorkflowHistoryEvent(
-  info: PendingHistoryEvent
+  event: PendingHistoryEvent
 ): FormattedHistoryPendingEvent | null {
-  const schema = getFormatPendingStartEventSchema(info);
+  const schema = getFormatPendingEventSchema(event);
   if (schema) {
-    const { data, error } = schema.safeParse(info);
+    const { data, error } = schema.safeParse(event);
     if (error) {
       logger.warn({ cause: error }, 'Failed to format workflow pending event');
       return null;
