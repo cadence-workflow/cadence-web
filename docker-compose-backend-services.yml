@@ -1,4 +1,5 @@
 # modified version of https://github.com/cadence-workflow/cadence/blob/master/docker/docker-compose-es-v7.yml
+# It includes all services except UI
 
 services:
   cassandra:
