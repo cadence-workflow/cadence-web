@@ -88,7 +88,7 @@ Note: For contribution we recommend using dev containers, check [VSCode Dev Cont
 
 #### Developing cadence-web against cadence composed docker
 
-To start development against a dockerized cadence services, run the following command from the root of the project
+To start development against dockerized cadence services, run the following command from the root of the project
 ```
 docker-compose -f docker-compose-backend-services.yml up
 ```
