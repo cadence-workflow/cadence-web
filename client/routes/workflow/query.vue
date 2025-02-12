@@ -1,6 +1,6 @@
 <script>
 // Copyright (c) 2017-2025 Uber Technologies Inc.
-// Portions of the Software are attributed to Copyright (c) 2020-2024 Temporal Technologies Inc.
+// Portions of the Software are attributed to Copyright (c) 2020-2025 Temporal Technologies Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,13 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import { getQueryResult } from './helpers';
-import { SelectInput } from '~components';
-import { httpService } from '~services';
+import { getQueryResult } from "./helpers";
+import { SelectInput } from "~components";
+import { httpService } from "~services";
 
 export default {
   components: {
-    'select-input': SelectInput,
+    "select-input": SelectInput,
   },
   data() {
     return {
@@ -39,7 +39,7 @@ export default {
       running: false,
     };
   },
-  props: ['baseAPIURL', 'clusterName', 'taskListName', 'isWorkerRunning'],
+  props: ["baseAPIURL", "clusterName", "taskListName", "isWorkerRunning"],
   created() {
     if (!this.isWorkerRunning) {
       return;
@@ -61,7 +61,7 @@ export default {
           ({ queryResult }) => {
             this.queryResult = getQueryResult(queryResult);
           },
-          e => {
+          (e) => {
             this.error = (e.json && e.json.message) || e.status || e.message;
           }
         )
@@ -75,14 +75,14 @@ export default {
       return httpService
         .get(`${this.baseAPIURL}/query`)
         .then(
-          queries => {
-            this.queries = queries.filter(query => query !== '__stack_trace');
+          (queries) => {
+            this.queries = queries.filter((query) => query !== "__stack_trace");
 
             if (!this.queryName) {
               [this.queryName] = this.queries;
             }
           },
-          error => {
+          (error) => {
             this.error =
               (error.json && error.json.message) ||
               error.status ||

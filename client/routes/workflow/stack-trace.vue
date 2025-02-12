@@ -1,6 +1,6 @@
 <script>
 // Copyright (c) 2017-2025 Uber Technologies Inc.
-// Portions of the Software are attributed to Copyright (c) 2020-2024 Temporal Technologies Inc.
+// Portions of the Software are attributed to Copyright (c) 2020-2025 Temporal Technologies Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,9 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import { getQueryResult } from './helpers';
-import { getDatetimeFormattedString } from '~helpers';
-import { httpService } from '~services';
+import { getQueryResult } from "./helpers";
+import { getDatetimeFormattedString } from "~helpers";
+import { httpService } from "~services";
 
 export default {
   data() {
@@ -33,13 +33,13 @@ export default {
     };
   },
   props: [
-    'baseAPIURL',
-    'clusterName',
-    'dateFormat',
-    'isWorkerRunning',
-    'taskListName',
-    'timeFormat',
-    'timezone',
+    "baseAPIURL",
+    "clusterName",
+    "dateFormat",
+    "isWorkerRunning",
+    "taskListName",
+    "timeFormat",
+    "timezone",
   ],
   computed: {
     formattedStackTraceTimestamp() {
@@ -52,7 +52,7 @@ export default {
             timeFormat,
             timezone,
           })
-        : '';
+        : "";
     },
   },
   created() {
@@ -72,7 +72,7 @@ export default {
           this.stackTrace = getQueryResult(queryResult);
           this.stackTraceTimestamp = new Date();
         })
-        .catch(e => {
+        .catch((e) => {
           // eslint-disable-next-line no-console
           console.error(e);
           this.stackTrace = {

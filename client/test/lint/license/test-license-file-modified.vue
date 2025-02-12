@@ -1,6 +1,6 @@
 <script>
 // Copyright (c) 2017-2025 Uber Technologies Inc.
-// Portions of the Software are attributed to Copyright (c) 2021-2024 Temporal Technologies Inc.
+// Portions of the Software are attributed to Copyright (c) 2021-2025 Temporal Technologies Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +21,6 @@
 // THE SOFTWARE.
 
 export default {
-  name: 'test-license-file-modified',
+  name: "test-license-file-modified",
 };
 </script>

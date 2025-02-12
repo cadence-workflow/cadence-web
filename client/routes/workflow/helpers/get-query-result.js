@@ -1,5 +1,5 @@
 // Copyright (c) 2017-2025 Uber Technologies Inc.
-// Portions of the Software are attributed to Copyright (c) 2020-2024 Temporal Technologies Inc.
+// Portions of the Software are attributed to Copyright (c) 2020-2025 Temporal Technologies Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -19,7 +19,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-const getQueryResult = queryResponse => {
+const getQueryResult = (queryResponse) => {
   return { payloads: queryResponse };
 };
 

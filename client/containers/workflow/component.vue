@@ -1,6 +1,6 @@
 <script>
 // Copyright (c) 2017-2025 Uber Technologies Inc.
-// Portions of the Software are attributed to Copyright (c) 2020-2024 Temporal Technologies Inc.
+// Portions of the Software are attributed to Copyright (c) 2020-2025 Temporal Technologies Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,16 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import { RETRY_COUNT_MAX, RETRY_TIMEOUT } from './constants';
+import { RETRY_COUNT_MAX, RETRY_TIMEOUT } from "./constants";
 import {
   getHistoryEvents,
   getHistoryTimelineEvents,
   getSummary,
-} from './helpers';
-import { NOTIFICATION_TYPE_ERROR } from '~constants';
-import { getErrorMessage } from '~helpers';
-import { NavigationBar, NavigationLink } from '~components';
-import { httpService } from '~services';
+} from "./helpers";
+import { NOTIFICATION_TYPE_ERROR } from "~constants";
+import { getErrorMessage } from "~helpers";
+import { NavigationBar, NavigationLink } from "~components";
+import { httpService } from "~services";
 
 export default {
   data() {
@@ -61,34 +61,34 @@ export default {
     };
   },
   props: [
-    'clusterName',
-    'dateFormat',
-    'displayWorkflowId',
-    'domain',
-    'pendingTaskCount',
-    'runId',
-    'taskListName',
-    'timeFormat',
-    'timezone',
-    'workflow',
-    'workflowHistoryEventHighlightList',
-    'workflowHistoryEventHighlightListEnabled',
-    'workflowId',
+    "clusterName",
+    "dateFormat",
+    "displayWorkflowId",
+    "domain",
+    "pendingTaskCount",
+    "runId",
+    "taskListName",
+    "timeFormat",
+    "timezone",
+    "workflow",
+    "workflowHistoryEventHighlightList",
+    "workflowHistoryEventHighlightListEnabled",
+    "workflowId",
   ],
   created() {
     this.unwatch.push(
-      this.$watch('baseAPIURL', this.onBaseApiUrlChange, { immediate: true })
+      this.$watch("baseAPIURL", this.onBaseApiUrlChange, { immediate: true })
     );
     this.unwatch.push(
-      this.$watch('historyUrl', this.onHistoryUrlChange, { immediate: true })
+      this.$watch("historyUrl", this.onHistoryUrlChange, { immediate: true })
     );
   },
   beforeDestroy() {
     this.clearWatches();
   },
   components: {
-    'navigation-bar': NavigationBar,
-    'navigation-link': NavigationLink,
+    "navigation-bar": NavigationBar,
+    "navigation-link": NavigationLink,
   },
   computed: {
     baseAPIURL() {
@@ -155,7 +155,7 @@ export default {
       this.summary.wfStatus = undefined;
       this.summary.workflow = undefined;
 
-      this.$emit('clearWorkflow');
+      this.$emit("clearWorkflow");
     },
     clearWatches() {
       while (this.unwatch.length) {
@@ -177,7 +177,7 @@ export default {
 
       return httpService
         .get(pagedHistoryUrl)
-        .then(res => {
+        .then((res) => {
           // eslint-disable-next-line no-underscore-dangle
           if (this._isDestroyed) {
             return null;
@@ -213,14 +213,14 @@ export default {
           });
 
           if (shouldHighlightEventId) {
-            this.$emit('highlight-event-id', this.$route.query.eventId);
+            this.$emit("highlight-event-id", this.$route.query.eventId);
           }
 
           this.fetchHistoryPageRetryCount = 0;
 
           return this.events;
         })
-        .catch(error => {
+        .catch((error) => {
           // eslint-disable-next-line no-console
           console.error(error);
 
@@ -229,7 +229,7 @@ export default {
             return;
           }
 
-          this.$emit('onNotification', {
+          this.$emit("onNotification", {
             message: getErrorMessage(error),
             type: NOTIFICATION_TYPE_ERROR,
           });
@@ -251,7 +251,7 @@ export default {
       const { taskListName } = this;
 
       if (!taskListName) {
-        return Promise.reject('task list name is required');
+        return Promise.reject("task list name is required");
       }
 
       httpService
@@ -259,10 +259,10 @@ export default {
           `/api/domains/${this.$route.params.domain}/task-lists/${taskListName}`
         )
         .then(
-          taskList => {
+          (taskList) => {
             this.taskList = { name: taskListName, ...taskList };
           },
-          error => {
+          (error) => {
             this.taskList = { name: taskListName };
             this.error =
               (error.json && error.json.message) ||
@@ -286,15 +286,15 @@ export default {
       return httpService
         .get(baseAPIURL)
         .then(
-          wf => {
-            this.$emit('setWorkflow', wf);
+          (wf) => {
+            this.$emit("setWorkflow", wf);
             this.isWorkflowRunning = !wf.workflowExecutionInfo.closeTime;
             this.baseApiUrlRetryCount = 0;
 
             return wf;
           },
-          error => {
-            this.$emit('onNotification', {
+          (error) => {
+            this.$emit("onNotification", {
               message: getErrorMessage(error),
               type: NOTIFICATION_TYPE_ERROR,
             });
@@ -318,10 +318,10 @@ export default {
       }
     },
     onNotification(event) {
-      this.$emit('onNotification', event);
+      this.$emit("onNotification", event);
     },
     onWorkflowHistoryEventParamToggle(event) {
-      this.$emit('onWorkflowHistoryEventParamToggle', event);
+      this.$emit("onWorkflowHistoryEventParamToggle", event);
     },
   },
 };

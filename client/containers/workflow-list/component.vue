@@ -1,6 +1,6 @@
 <script>
 // Copyright (c) 2017-2025 Uber Technologies Inc.
-// Portions of the Software are attributed to Copyright (c) 2020-2024 Temporal Technologies Inc.
+// Portions of the Software are attributed to Copyright (c) 2020-2025 Temporal Technologies Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,9 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import moment from 'moment';
-import debounce from 'lodash-es/debounce';
-import lowerCase from 'lodash-es/lowerCase';
+import moment from "moment";
+import debounce from "lodash-es/debounce";
+import lowerCase from "lodash-es/lowerCase";
 import {
   IS_CRON_LIST,
   FILTER_MODE_ADVANCED,
@@ -33,14 +33,14 @@ import {
   STATUS_CLOSED,
   STATUS_LIST,
   STATUS_OPEN,
-} from './constants';
+} from "./constants";
 import {
   getCriteria,
   getFormattedResults,
   getMinStartDate,
   isRangeValid,
   isRouteRangeValid,
-} from './helpers';
+} from "./helpers";
 import {
   ButtonFill,
   DateRangePicker,
@@ -51,32 +51,32 @@ import {
   SelectInput,
   TextInput,
   WorkflowGrid,
-} from '~components';
-import { delay, getEndTimeIsoString, getStartTimeIsoString } from '~helpers';
-import { httpService } from '~services';
-import { featureFlagService } from '~services';
+} from "~components";
+import { delay, getEndTimeIsoString, getStartTimeIsoString } from "~helpers";
+import { httpService } from "~services";
+import { featureFlagService } from "~services";
 
 export default {
-  name: 'workflow-list',
+  name: "workflow-list",
   props: [
-    'clusterName',
-    'dateFormat',
-    'domain',
-    'fetchWorkflowListUrl',
-    'filterBy',
-    'filterMode',
-    'filterModeButtonEnabled',
-    'filterModeButtonLabel',
-    'isCron',
-    'isCronInputVisible',
-    'queryString',
-    'state',
-    'status',
-    'statusName',
-    'timeFormat',
-    'timezone',
-    'workflowId',
-    'workflowName',
+    "clusterName",
+    "dateFormat",
+    "domain",
+    "fetchWorkflowListUrl",
+    "filterBy",
+    "filterMode",
+    "filterModeButtonEnabled",
+    "filterModeButtonLabel",
+    "isCron",
+    "isCronInputVisible",
+    "queryString",
+    "state",
+    "status",
+    "statusName",
+    "timeFormat",
+    "timezone",
+    "workflowId",
+    "workflowName",
   ],
   data() {
     return {
@@ -95,7 +95,7 @@ export default {
   },
   async created() {
     const defaultDateRange = await featureFlagService.getConfiguration({
-      name: 'defaultDateRange',
+      name: "defaultDateRange",
     });
 
     this.defaultDateRange = Number(defaultDateRange) || 30;
@@ -111,15 +111,15 @@ export default {
     clearInterval(this.interval);
   },
   components: {
-    'button-fill': ButtonFill,
-    'date-range-picker': DateRangePicker,
-    'error-message': ErrorMessage,
-    'feature-flag': FeatureFlag,
-    'flex-grid': FlexGrid,
-    'flex-grid-item': FlexGridItem,
-    'select-input': SelectInput,
-    'text-input': TextInput,
-    'workflow-grid': WorkflowGrid,
+    "button-fill": ButtonFill,
+    "date-range-picker": DateRangePicker,
+    "error-message": ErrorMessage,
+    "feature-flag": FeatureFlag,
+    "flex-grid": FlexGrid,
+    "flex-grid-item": FlexGridItem,
+    "select-input": SelectInput,
+    "text-input": TextInput,
+    "workflow-grid": WorkflowGrid,
   },
   computed: {
     criteria() {
@@ -219,7 +219,7 @@ export default {
         return `No workflows for the selected filters`;
       }
 
-      if (typeof this.range === 'string') {
+      if (typeof this.range === "string") {
         return `No workflows within ${lowerCase(this.range)}`;
       }
 
@@ -227,7 +227,7 @@ export default {
         return `No workflows within selected period`;
       }
 
-      return 'No Results';
+      return "No Results";
     },
     crossRegionProps() {
       const { clusterName, domain } = this;
@@ -245,9 +245,9 @@ export default {
     },
     async fetch(url, queryWithStatus) {
       let workflows = [];
-      let nextPageToken = '';
+      let nextPageToken = "";
 
-      if ([null, ''].includes(queryWithStatus.nextPageToken)) {
+      if ([null, ""].includes(queryWithStatus.nextPageToken)) {
         return { workflows, nextPageToken };
       }
 
@@ -280,19 +280,19 @@ export default {
 
         nextPageToken = request.nextPageToken;
       } catch (error) {
-        if (error.name === 'AbortError') {
-          return { status: 'aborted' };
+        if (error.name === "AbortError") {
+          return { status: "aborted" };
         }
 
         this.error =
           (error.json && error.json.message) || error.status || error.message;
 
-        return { status: 'error' };
+        return { status: "error" };
       } finally {
         this.loading = false;
       }
 
-      return { status: 'success', workflows, nextPageToken };
+      return { status: "success", workflows, nextPageToken };
     },
     async fetchDomain() {
       const { domain, now } = this;
@@ -367,7 +367,7 @@ export default {
           query
         );
 
-        if (status !== 'success') {
+        if (status !== "success") {
           return;
         }
 
@@ -395,7 +395,7 @@ export default {
           queryOpen
         );
 
-        if (openStatus !== 'success') {
+        if (openStatus !== "success") {
           return;
         }
 
@@ -410,7 +410,7 @@ export default {
           queryClosed
         );
 
-        if (closedStatus !== 'success') {
+        if (closedStatus !== "success") {
           return;
         }
 
@@ -447,29 +447,29 @@ export default {
         this.clearState();
         this.fetchWorkflowList();
       },
-      typeof Mocha === 'undefined' ? 200 : 60,
+      typeof Mocha === "undefined" ? 200 : 60,
       { maxWait: 1000 }
     ),
     onFilterChange(event) {
       const target = event.target || event.testTarget; // test hook since Event.target is readOnly and unsettable
-      const name = target.getAttribute('name');
+      const name = target.getAttribute("name");
       const value = target.value;
 
-      this.$emit('onFilterChange', { [name]: value });
+      this.$emit("onFilterChange", { [name]: value });
     },
     onIsCronChange(isCron) {
       if (isCron) {
-        this.$emit('onFilterChange', { isCron: isCron.value });
+        this.$emit("onFilterChange", { isCron: isCron.value });
       }
     },
     onStatusChange(status) {
       if (status) {
-        this.$emit('onFilterChange', { status: status.value });
+        this.$emit("onFilterChange", { status: status.value });
       }
     },
     onFilterModeClick() {
       this.clearState();
-      this.$emit('onFilterModeClick');
+      this.$emit("onFilterModeClick");
     },
     onWorkflowGridScroll(startIndex, endIndex) {
       if (!this.npt && !this.nptAlt) {
@@ -482,7 +482,7 @@ export default {
       const query = { ...this.$route.query };
 
       if (range) {
-        if (typeof range === 'string') {
+        if (typeof range === "string") {
           query.range = range;
           delete query.startTime;
           delete query.endTime;
