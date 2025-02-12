@@ -84,7 +84,7 @@ export default {
       </div>
       <div>
         <a
-          href="https://github.com/samarabbas/cadence-samples"
+          href="https://github.com/cadence-workflow/cadence-samples"
           target="_blank"
           rel="noopener noreferrer"
         >
