@@ -1,5 +1,5 @@
 <script>
-// Copyright (c) 2017-2024 Uber Technologies Inc.
+// Copyright (c) 2017-2025 Uber Technologies Inc.
 //
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy

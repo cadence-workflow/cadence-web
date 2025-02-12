@@ -1,5 +1,5 @@
 <script>
-// Modifications Copyright (c) 2021-2024 Uber Technologies Inc.
+// Modifications Copyright (c) 2021-2025 Uber Technologies Inc.
 // Copyright (c) 2021-2024 Temporal Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
