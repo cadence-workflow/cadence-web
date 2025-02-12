@@ -118,7 +118,7 @@ After running `cadence`, start `cadence-web` for development using one of the pr
 
 
 
-## Licence
+## License
 
 MIT License, please see [LICENSE](https://github.com/cadence-workflow/cadence-web/blob/master/LICENSE) for details.
 
