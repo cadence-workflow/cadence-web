@@ -34,7 +34,7 @@ CADENCE_CLUSTERS_NAMES=cluster0,cluster1
 
 ### Using cadence-web
 
-Latest version of `cadence-web` is included in `cadence` composed docker containers that can be found [here][cadence]. To start using it clone `cadence` repo and run the following command
+The latest version of `cadence-web` is included in the `cadence` composed docker containers in the [main Cadence repository][cadence]. Follow the instructions there to get started.
 ```
 docker-compose -f docker/docker-compose.yml up
 ```
