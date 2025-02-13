@@ -9,12 +9,14 @@ import { type DomainPageTabContentProps } from '@/views/domain-page/domain-page-
 
 import isClusterAdvancedVisibilityEnabled from './helpers/is-cluster-advanced-visibility-enabled';
 
-const DomainWorkflowBasic = dynamic(
+const DomainWorkflowsBasic = dynamic(
   () => import('@/views/domain-workflows-basic/domain-workflows-basic')
 );
+
 const DomainWorkflowsHeader = dynamic(
   () => import('./domain-workflows-header/domain-workflows-header')
 );
+
 const DomainWorkflowsTable = dynamic(
   () => import('./domain-workflows-table/domain-workflows-table')
 );
@@ -32,9 +34,10 @@ export default function DomainWorkflows(props: DomainPageTabContentProps) {
 
   if (!isAdvancedVisibilityEnabled) {
     return (
-      <DomainWorkflowBasic domain={props.domain} cluster={props.cluster} />
+      <DomainWorkflowsBasic domain={props.domain} cluster={props.cluster} />
     );
   }
+
   return (
     <>
       <DomainWorkflowsHeader domain={props.domain} cluster={props.cluster} />
