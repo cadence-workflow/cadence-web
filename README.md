@@ -19,7 +19,6 @@ Set these environment variables if you need to change their defaults
 | CADENCE_GRPC_SERVICES_NAMES  | Comma-delimited list of gRPC services to call | cadence-frontend |
 | CADENCE_CLUSTERS_NAMES       | Comma-delimited list of cluster names         | cluster0         |
 | CADENCE_WEB_PORT             | HTTP port to serve on                         | 8088             |
-| ENABLE_AUTH                  | Enable auth feature                           | false            |
 | CADENCE_ADMIN_SECURITY_TOKEN | Admin token for accessing admin methods       | ''               |
 
 Note: To connect `cadence-web` to multiple clusters, you will need to add comma-delimted entries for `CADENCE_GRPC_PEERS`, `CADENCE_GRPC_SERVICES_NAMES` & `CADENCE_CLUSTERS_NAMES` for each cluster (each cluster values are grouped by their index within the Comma-delimited lists).
