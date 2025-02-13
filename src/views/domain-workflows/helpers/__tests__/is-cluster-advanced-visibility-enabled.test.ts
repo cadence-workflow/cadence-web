@@ -1,10 +1,11 @@
-import isClusterAdvancedVisibilityEnabled from '../is-cluster-advanced-visibility-enabled';
 import type { DescribeClusterResponse } from '@/route-handlers/describe-cluster/describe-cluster.types';
+
+import isClusterAdvancedVisibilityEnabled from '../is-cluster-advanced-visibility-enabled';
 
 const mockVisibilityStore = {
   features: [],
   backend: '',
-  settings: []
+  settings: [],
 };
 
 describe('isClusterAdvancedVisibilityEnabled', () => {

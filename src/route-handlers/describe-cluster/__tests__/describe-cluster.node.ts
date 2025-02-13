@@ -1,24 +1,23 @@
 import { NextRequest } from 'next/server';
 
+import type { DescribeClusterResponse as OriginalDescribeClusterResponse } from '@/__generated__/proto-ts/uber/cadence/admin/v1/DescribeClusterResponse';
 import { GRPCError } from '@/utils/grpc/grpc-error';
 import { mockGrpcClusterMethods } from '@/utils/route-handlers-middleware/middlewares/__mocks__/grpc-cluster-methods';
 
 import { describeCluster } from '../describe-cluster';
 import {
-  DescribeClusterResponse,
+  type DescribeClusterResponse,
   type Context,
 } from '../describe-cluster.types';
-import type { DescribeClusterResponse as OriginalDescribeClusterResponse } from '@/__generated__/proto-ts/uber/cadence/admin/v1/DescribeClusterResponse';
 
 describe('describeCluster', () => {
-
   it('calls describeCluster and returns valid response without membershipInfo', async () => {
     const { res, mockDescribeCluster, mockSuccessResponse } = await setup({});
 
     expect(mockDescribeCluster).toHaveBeenCalledWith({
-      name: 'mock-cluster'
+      name: 'mock-cluster',
     });
-    const { membershipInfo, ...rest } = mockSuccessResponse
+    const { membershipInfo, ...rest } = mockSuccessResponse;
     const routHandleRes: DescribeClusterResponse = rest;
     const responseJson = await res.json();
     expect(responseJson).toEqual(routHandleRes);
@@ -44,17 +43,17 @@ describe('describeCluster', () => {
     const originalEnvObj = globalThis.process.env;
     globalThis.process.env = {
       ...process.env,
-      CADENCE_ADVANCED_VISIBILITY: "true"
-    }
+      CADENCE_ADVANCED_VISIBILITY: 'true',
+    };
 
     const { res, mockDescribeCluster } = await setup({});
 
     expect(mockDescribeCluster).not.toHaveBeenCalled();
 
     const responseJson = await res.json();
-    expect(responseJson.persistenceInfo.visibilityStore.features[0].enabled).toBe(
-      true
-    )
+    expect(
+      responseJson.persistenceInfo.visibilityStore.features[0].enabled
+    ).toBe(true);
     globalThis.process.env = originalEnvObj;
   });
 
@@ -62,31 +61,27 @@ describe('describeCluster', () => {
     const originalEnvObj = globalThis.process.env;
     globalThis.process.env = {
       ...process.env,
-      CADENCE_ADVANCED_VISIBILITY: "not true"
-    }
+      CADENCE_ADVANCED_VISIBILITY: 'not true',
+    };
 
     const { res, mockDescribeCluster } = await setup({});
 
     expect(mockDescribeCluster).not.toHaveBeenCalled();
 
     const responseJson = await res.json();
-    expect(responseJson.persistenceInfo.visibilityStore.features[0].enabled).toBe(
-      false
-    )
+    expect(
+      responseJson.persistenceInfo.visibilityStore.features[0].enabled
+    ).toBe(false);
     globalThis.process.env = originalEnvObj;
   });
 });
 
-async function setup({
-  error,
-}: {
-  error?: true;
-}) {
+async function setup({ error }: { error?: true }) {
   const mockSuccessResponse: OriginalDescribeClusterResponse = {
     persistenceInfo: {},
     membershipInfo: null,
     supportedClientVersions: null,
-  }
+  };
 
   const mockDescribeCluster = jest
     .spyOn(mockGrpcClusterMethods, 'describeCluster')

@@ -1,18 +1,26 @@
-import DomainWorkflows from '../domain-workflows';
-import { type DomainPageTabContentProps } from '@/views/domain-page/domain-page-content/domain-page-content.types';
 import { Suspense } from 'react';
+
 import { HttpResponse } from 'msw';
-import { render, screen } from '@/test-utils/rtl';
-import { DescribeClusterResponse } from '@/route-handlers/describe-cluster/describe-cluster.types';
 import { act } from 'react-dom/test-utils';
 
+import { render, screen } from '@/test-utils/rtl';
 
-jest.mock('@/views/domain-workflows-basic/domain-workflows-basic', () => () => <div>Basic Workflows</div>);
-jest.mock('../domain-workflows-header/domain-workflows-header', () => () => <div>Workflows Header</div>);
-jest.mock('../domain-workflows-table/domain-workflows-table', () => () => <div>Workflows Table</div>);
+import { type DescribeClusterResponse } from '@/route-handlers/describe-cluster/describe-cluster.types';
+import { type DomainPageTabContentProps } from '@/views/domain-page/domain-page-content/domain-page-content.types';
+
+import DomainWorkflows from '../domain-workflows';
+
+jest.mock('@/views/domain-workflows-basic/domain-workflows-basic', () =>
+  jest.fn(() => <div>Basic Workflows</div>)
+);
+jest.mock('../domain-workflows-header/domain-workflows-header', () =>
+  jest.fn(() => <div>Workflows Header</div>)
+);
+jest.mock('../domain-workflows-table/domain-workflows-table', () =>
+  jest.fn(() => <div>Workflows Table</div>)
+);
 
 describe('DomainWorkflows', () => {
-
   it('should render basic workflows when advanced visibility is disabled', async () => {
     await setup({ isAdvancedVisibility: false });
 
@@ -25,7 +33,6 @@ describe('DomainWorkflows', () => {
     expect(await screen.findByText('Workflows Header')).toBeInTheDocument();
     expect(await screen.findByText('Workflows Table')).toBeInTheDocument();
   });
-
 
   it('should render workflows header and table when advanced visibility is enabled', async () => {
     let renderErrorMessage;
@@ -42,7 +49,6 @@ describe('DomainWorkflows', () => {
     expect(renderErrorMessage).toEqual('Failed to fetch cluster info');
   });
 });
-
 
 async function setup({
   isAdvancedVisibility = false,
@@ -68,29 +74,32 @@ async function setup({
           mockOnce: false,
           ...(error
             ? {
-              httpResolver: () => {
-                return HttpResponse.json(
-                  { message: 'Failed to fetch cluster info' },
-                  { status: 500 }
-                );
-              },
-            }
-            : {
-              jsonResponse: {
-                persistenceInfo: {
-                  visibilityStore: {
-                    features: [{ key: 'advancedVisibilityEnabled', enabled: isAdvancedVisibility }],
-                    backend: '',
-                    settings: []
-                  },
+                httpResolver: () => {
+                  return HttpResponse.json(
+                    { message: 'Failed to fetch cluster info' },
+                    { status: 500 }
+                  );
                 },
-                supportedClientVersions: null
-              } satisfies DescribeClusterResponse,
-            }),
+              }
+            : {
+                jsonResponse: {
+                  persistenceInfo: {
+                    visibilityStore: {
+                      features: [
+                        {
+                          key: 'advancedVisibilityEnabled',
+                          enabled: isAdvancedVisibility,
+                        },
+                      ],
+                      backend: '',
+                      settings: [],
+                    },
+                  },
+                  supportedClientVersions: null,
+                } satisfies DescribeClusterResponse,
+              }),
         },
       ],
     }
   );
-
 }
-

@@ -9,7 +9,6 @@ import { type DomainPageTabContentProps } from '@/views/domain-page/domain-page-
 
 import isClusterAdvancedVisibilityEnabled from './helpers/is-cluster-advanced-visibility-enabled';
 
-
 const DomainWorkflowBasic = dynamic(
   () => import('@/views/domain-workflows-basic/domain-workflows-basic')
 );
