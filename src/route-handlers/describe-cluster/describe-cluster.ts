@@ -38,10 +38,9 @@ export async function describeCluster(
   }
 
   try {
-    const res =
-      await ctx.grpcClusterMethods.describeCluster({
-        name: decodedParams.cluster,
-      });
+    const res = await ctx.grpcClusterMethods.describeCluster({
+      name: decodedParams.cluster,
+    });
 
     const sanitizedRes: DescribeClusterResponse = omit(res, 'membershipInfo'); // No need to return host information to client
 
