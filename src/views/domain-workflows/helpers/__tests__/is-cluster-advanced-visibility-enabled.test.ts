@@ -72,7 +72,7 @@ describe('isClusterAdvancedVisibilityEnabled', () => {
   it('should return false when persistenceInfo is undefined', () => {
     const cluster: DescribeClusterResponse = {
       supportedClientVersions: null,
-      // @ts-expect-error testing non esisting persistenceInfo
+      // @ts-expect-error testing nonexisting persistenceInfo
       persistenceInfo: undefined,
     };
     expect(isClusterAdvancedVisibilityEnabled(cluster)).toBe(false);

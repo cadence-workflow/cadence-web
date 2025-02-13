@@ -1,7 +1,6 @@
 import omit from 'lodash/omit';
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { type DescribeClusterResponse as OriginalDescribeClusterResponse } from '@/__generated__/proto-ts/uber/cadence/admin/v1/DescribeClusterResponse';
 import decodeUrlParams from '@/utils/decode-url-params';
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
@@ -20,7 +19,7 @@ export async function describeCluster(
 ) {
   const decodedParams = decodeUrlParams(requestParams.params) as RouteParams;
 
-  // temporarily solution to disable invoking describeCluster
+  // temporary solution to disable invoking describeCluster
   if (process.env.CADENCE_ADVANCED_VISIBILITY) {
     const res = {
       persistenceInfo: {
@@ -39,7 +38,7 @@ export async function describeCluster(
   }
 
   try {
-    const res: OriginalDescribeClusterResponse =
+    const res =
       await ctx.grpcClusterMethods.describeCluster({
         name: decodedParams.cluster,
       });
