@@ -1,11 +1,43 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
+import { useSuspenseQuery } from '@tanstack/react-query';
+import dynamic from 'next/dynamic';
+
+import { type DescribeClusterResponse } from '@/route-handlers/describe-cluster/describe-cluster.types';
+import request from '@/utils/request';
 import { type DomainPageTabContentProps } from '@/views/domain-page/domain-page-content/domain-page-content.types';
 
-import DomainWorkflowsHeader from './domain-workflows-header/domain-workflows-header';
-import DomainWorkflowsTable from './domain-workflows-table/domain-workflows-table';
+import isClusterAdvancedVisibilityEnabled from './helpers/is-cluster-advanced-visibility-enabled';
+
+const DomainWorkflowsBasic = dynamic(
+  () => import('@/views/domain-workflows-basic/domain-workflows-basic')
+);
+
+const DomainWorkflowsHeader = dynamic(
+  () => import('./domain-workflows-header/domain-workflows-header')
+);
+
+const DomainWorkflowsTable = dynamic(
+  () => import('./domain-workflows-table/domain-workflows-table')
+);
 
 export default function DomainWorkflows(props: DomainPageTabContentProps) {
+  const { data } = useSuspenseQuery<DescribeClusterResponse>({
+    queryKey: ['describeCluster', props],
+    queryFn: () =>
+      request(`/api/clusters/${props.cluster}`).then((res) => res.json()),
+  });
+
+  const isAdvancedVisibilityEnabled = useMemo(() => {
+    return isClusterAdvancedVisibilityEnabled(data);
+  }, [data]);
+
+  if (!isAdvancedVisibilityEnabled) {
+    return (
+      <DomainWorkflowsBasic domain={props.domain} cluster={props.cluster} />
+    );
+  }
+
   return (
     <>
       <DomainWorkflowsHeader domain={props.domain} cluster={props.cluster} />
