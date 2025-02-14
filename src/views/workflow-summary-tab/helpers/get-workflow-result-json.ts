@@ -34,7 +34,7 @@ export default function getWorkflowResultJson(
     // only add failure fields if it was failed not to confuse user
     if (failureDetails || failureReason) {
       result.failureDetails = failureDetails;
-      result.failureReason = failureDetails;
+      result.failureReason = failureReason;
     }
     return result;
   }
