@@ -7,6 +7,7 @@ export type PrettyJsonValue =
   | number
   | boolean
   | null
+  | undefined
   | JsonObject
   | JsonArray
   | bigint;
