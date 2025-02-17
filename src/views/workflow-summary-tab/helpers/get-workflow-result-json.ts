@@ -12,8 +12,8 @@ export default function getWorkflowResultJson(
     return { reason, details };
   }
   if (eventType === 'WorkflowExecutionTerminated') {
-    const { details, reason } = formattedEvent;
-    return { reason, details };
+    const { details, reason, identity } = formattedEvent;
+    return { reason, details, identity };
   }
 
   if (eventType === 'WorkflowExecutionContinuedAsNew') {

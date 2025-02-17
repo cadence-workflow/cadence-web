@@ -60,9 +60,9 @@ export default function WorkflowSummaryTab({
     ? formatWorkflowHistoryEvent(closeEvent)
     : null;
 
-  const resultJson = formattedCloseEvent
+  const resultJson = (formattedCloseEvent
     ? getWorkflowResultJson(formattedCloseEvent)
-    : undefined;
+    : undefined ) as PrettyJsonValue;
 
   const isWorkflowRunning =
     !closeEvent ||
