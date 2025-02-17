@@ -46,7 +46,7 @@ const workflowHistoryEventDetailsConfig = [
   },
   {
     name: 'Json as PrettyJson',
-    pathRegex: '(input|result|details|Error)$',
+    pathRegex: '(input|result|details|Error|lastCompletionResult)$',
     valueComponent: WorkflowHistoryEventDetailsJson,
     forceWrap: true,
   },
