@@ -49,6 +49,7 @@ describe('getWorkflowResultJson', () => {
     expect(getWorkflowResultJson(formattedEvent)).toEqual({
       reason: 'cadenceInternal:Generic',
       details: 'terminated details',
+      identity: '1111',
     });
   });
 
