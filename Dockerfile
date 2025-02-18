@@ -67,4 +67,4 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 USER nextjs
 
 
-CMD  "PORT=${CADENCE_WEB_PORT:-8088} exec node server.js"
+CMD  ["sh","-c", "PORT=${CADENCE_WEB_PORT:-8088} exec node server.js"]
