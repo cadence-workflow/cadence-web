@@ -7,6 +7,8 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const BUILD_OUTPUT = process.env.NEXT_CONFIG_BUILD_OUTPUT === 'standalone' ? 'standalone' : undefined;
+
 const nextConfig = {
   webpack: (config) => {
     config.resolve.alias = {
@@ -31,6 +33,7 @@ const nextConfig = {
       },
     ];
   },
+  output: BUILD_OUTPUT,
   experimental: {
     instrumentationHook: true,
   },
