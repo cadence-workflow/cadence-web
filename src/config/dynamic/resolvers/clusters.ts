@@ -15,11 +15,11 @@ const getArrayFromCommaSeparatedString = (
 export default function clusters() {
   const clusterNames = getArrayFromCommaSeparatedString(
     process.env.CADENCE_CLUSTERS_NAMES,
-    ['default']
+    ['cluster0']
   );
   const peers = getArrayFromCommaSeparatedString(
     process.env.CADENCE_GRPC_PEERS,
-    ['127.0.0.1:7933']
+    ['127.0.0.1:7833']
   );
 
   const serviceNames = getArrayFromCommaSeparatedString(
