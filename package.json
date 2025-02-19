@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev -p ${CADENCE_WEB_PORT} | pino-pretty",
     "build": "NODE_ENV=production && next build",
-    "start": "next start -p ${CADENCE_WEB_PORT-8088}",
+    "start": "next start -p ${CADENCE_WEB_PORT}",
     "lint": "next lint",
     "typecheck": "tsc --noemit",
     "install-idl": "mkdir -p node_modules && cd node_modules && npx --yes tiged https://github.com/cadence-workflow/cadence-idl cadence-idl --force",
