@@ -5,7 +5,7 @@ import logger from '.';
 import registerConsoleLogger from './console/register-console-logger';
 
 export async function registerLoggers() {
-  const consoleLogger = logger.child({ module: 'console' });
+  const consoleLogger = logger.child({ name: 'console' });
   if (process.env.NEXT_RUNTIME === 'nodejs') {
     console.error = registerConsoleLogger(consoleLogger, 'error');
     console.log = registerConsoleLogger(consoleLogger, 'log');
