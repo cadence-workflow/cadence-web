@@ -6,6 +6,7 @@ import { type CustomLevels } from './pino.types';
 const isDevelopment = process.env.NODE_ENV === 'development';
 
 const LOGGER_CONFIG: LoggerOptions<CustomLevels> = {
+  messageKey: 'message',
   level: isDevelopment ? 'trace' : 'info',
   formatters: {
     level(label) {

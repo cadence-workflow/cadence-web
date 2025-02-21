@@ -3,6 +3,7 @@ import { cache } from 'react';
 
 import getConfigValue from '@/utils/config/get-config-value';
 import * as grpcClient from '@/utils/grpc/grpc-client';
+import { GRPCError } from '@/utils/grpc/grpc-error';
 import logger from '@/utils/logger';
 
 import filterDomainsIrrelevantToCluster from './filter-domains-irrelevant-to-cluster';
@@ -18,18 +19,28 @@ export const getAllDomains = async () => {
 
       return clusterMethods
         .listDomains({ pageSize: MAX_DOMAINS_TO_FETCH })
-        .then(({ domains }) => {
-          if (domains.length >= MAX_DOMAINS_TO_FETCH - 100) {
-            logger.warn(
-              {
-                domainsCount: domains.length,
-                maxDomainsCount: MAX_DOMAINS_TO_FETCH,
-              },
-              'Number of domains in cluster approaching/exceeds max number of domains that can be fetched'
+        .then(
+          ({ domains }) => {
+            if (domains.length >= MAX_DOMAINS_TO_FETCH - 100) {
+              logger.warn(
+                {
+                  domainsCount: domains.length,
+                  maxDomainsCount: MAX_DOMAINS_TO_FETCH,
+                },
+                'Number of domains in cluster approaching/exceeds max number of domains that can be fetched'
+              );
+            }
+            return filterDomainsIrrelevantToCluster(clusterName, domains);
+          },
+          (reason) => {
+            logger.error(
+              { error: reason, clusterName },
+              `Failed to fetch domains for ${clusterName}` +
+                (reason instanceof GRPCError ? `: ${reason.message}` : '')
             );
+            throw reason;
           }
-          return filterDomainsIrrelevantToCluster(clusterName, domains);
-        });
+        );
     })
   );
   return {

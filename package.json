@@ -3,7 +3,7 @@
   "version": "4.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p ${CADENCE_WEB_PORT} | pino-pretty",
+    "dev": "next dev -p ${CADENCE_WEB_PORT} | pino-pretty --messageKey message",
     "build": "NODE_ENV=production && next build",
     "start": "next start -p ${CADENCE_WEB_PORT}",
     "lint": "next lint",
@@ -34,7 +34,6 @@
     "lodash": "^4.17.21",
     "lossless-json": "^4.0.2",
     "next": "14.2.16",
-    "next-logger": "^5.0.0",
     "pino": "^9.3.2",
     "query-string": "^9.0.0",
     "react": "^18.2.0",
