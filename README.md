@@ -80,7 +80,7 @@ Note: For contribution we recommend using dev containers, check [VSCode Dev Cont
 
 1. Set up the [Remote Containers plugin](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) in VSCode.
 2. Open the cadence-web directory in VSCode.
-3. Make sure to update `CADENCE_GRPC_PEERS` with the correct host. (If you are connecting to a server on a container host machine use `host.docker.interal:7833`, where `7833` is the gRPC port for a running [cadence-frontend](https://github.com/cadence-workflow/cadence/tree/master/service/frontend) service)
+3. Make sure to update `CADENCE_GRPC_PEERS` with the correct host. (If you are connecting to a server on a container host machine use `host.docker.internal:7833`, where `7833` is the gRPC port for a running [cadence-frontend](https://github.com/cadence-workflow/cadence/tree/master/service/frontend) service)
 4. Use the Command Palette to select the 'Reopen folder in Container' option
 5. Follow same commands listed in [Running development environment](#running-development-environment) section.
 
