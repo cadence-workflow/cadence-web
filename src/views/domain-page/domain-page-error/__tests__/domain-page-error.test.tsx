@@ -38,7 +38,7 @@ describe(DomainPageError.name, () => {
     render(
       <DomainPageError
         error={
-          new RequestError('Could not find domain', 'domains/mock-domain', 404)
+          new RequestError('Could not find domain', '/domains/mock-domain', 404)
         }
         reset={() => {}}
       />
@@ -51,7 +51,7 @@ describe(DomainPageError.name, () => {
   it('renders "forbidden" error page correctly', () => {
     render(
       <DomainPageError
-        error={new RequestError('forbidden', 'domains/mock-domain', 403)}
+        error={new RequestError('forbidden', '/domains/mock-domain', 403)}
         reset={() => {}}
       />
     );

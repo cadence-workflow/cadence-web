@@ -15,7 +15,7 @@ describe('getWorkflowPageErrorConfig', () => {
   it('returns "Workflow not found" error config when request errors with 404', () => {
     expect(
       getWorkflowPageErrorConfig(
-        new RequestError('test error', 'workflow', 404)
+        new RequestError('test error', '/workflow', 404)
       )
     ).toEqual({
       message: 'Workflow not found',
@@ -27,7 +27,7 @@ describe('getWorkflowPageErrorConfig', () => {
   it('returns correct error config when request errors with 403', () => {
     expect(
       getWorkflowPageErrorConfig(
-        new RequestError('test error', 'workflow', 403),
+        new RequestError('test error', '/workflow', 403),
         undefined,
         'current tab'
       )
