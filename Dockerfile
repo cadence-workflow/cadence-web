@@ -61,10 +61,11 @@ RUN chown nextjs:nodejs .next
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
+COPY --from=builder --chown=nextjs:nodejs /app/src/__generated__/ ./src/__generated__/ 
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 USER nextjs
 
 
-CMD  ["sh","-c", "PORT=${CADENCE_WEB_PORT:-8088} exec node server.js"]
+CMD  ["sh","-c", "CADENCE_WEB_PORT=${CADENCE_WEB_PORT:-8088} PORT=${CADENCE_WEB_PORT} exec node server.js"]
