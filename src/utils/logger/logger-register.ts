@@ -5,8 +5,8 @@ import logger from '.';
 import registerConsoleLogger from './console/register-console-logger';
 
 export function registerLoggers() {
-  const consoleLogger = logger.child({ name: 'console' });
   if (process.env.NEXT_RUNTIME === 'nodejs') {
+    const consoleLogger = logger.child({ name: 'console' });
     console.error = registerConsoleLogger(consoleLogger, 'error');
     console.log = registerConsoleLogger(consoleLogger, 'log');
     console.info = registerConsoleLogger(consoleLogger, 'info');
