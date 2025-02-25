@@ -26,6 +26,14 @@ export default function clusters() {
     process.env.CADENCE_GRPC_SERVICES_NAMES,
     ['cadence-frontend']
   );
+  if (
+    clusterNames.length !== peers.length &&
+    clusterNames.length !== serviceNames.length
+  ) {
+    throw new Error(
+      `Count mismatch in environment variables CADENCE_CLUSTERS_NAMES, CADENCE_GRPC_PEERS & CADENCE_GRPC_SERVICES_NAMES values. Recieved: ${clusterNames}(${clusterNames.length}), ${serviceNames}(${serviceNames.length}) & ${peers}(${peers.length}) respectively.`
+    );
+  }
 
   return clusterNames.map((clusterName, i) => {
     return {
