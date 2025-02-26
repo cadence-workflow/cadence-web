@@ -1,3 +1,5 @@
+import { isString } from 'lodash';
+
 import { type Logger } from '..';
 
 import stripEscapesFromNextLog from './helpers/strip-escapes-from-next-log';
@@ -22,11 +24,10 @@ export default function registerConsoleLogger(
     const error = args[errorIndex];
 
     const restData = args.filter(
-      (arg, index) =>
-        typeof arg === 'object' && arg !== null && index !== errorIndex
+      (arg, index) => !isString(arg) && index !== errorIndex
     );
 
-    const messages = args.filter((arg) => typeof arg === 'string');
+    const messages = args.filter(isString);
     const parsedMessage = stripEscapesFromNextLog(messages.join(' ')).trim();
 
     logger[level](
