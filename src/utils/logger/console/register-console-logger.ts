@@ -20,25 +20,24 @@ export default function registerConsoleLogger(
   const level = CONSOLE_LOG_LEVEL_TO_LOG_LEVEL_MAP[consoleLogLevel];
 
   return (...args: unknown[]) => {
-    const errorIndex = args.findIndex((arg) => arg instanceof Error);
-    const error = args[errorIndex];
-
-    const restData = args.filter(
-      (arg, index) => !isString(arg) && index !== errorIndex
-    );
-
     const messages = args.filter(isString);
     const parsedMessage = stripEscapesFromNextLog(messages.join(' ')).trim();
+
+    const errors = args.filter((arg) => arg instanceof Error);
+    const firstError = errors[0];
+
+    const restData = args.filter(
+      (arg) => !isString(arg) && !(arg instanceof Error)
+    );
 
     logger[level](
       {
         ...(restData.length > 0 ? { data: restData } : {}),
-        ...(error ? { error } : {}),
+        ...(errors.length > 0 ? { errors } : {}),
       },
-      error &&
-        error instanceof Error &&
+      firstError instanceof Error &&
         (!parsedMessage || parsedMessage === NEXTJS_ERROR_PREFIX)
-        ? error.message
+        ? firstError.message
         : parsedMessage
     );
   };

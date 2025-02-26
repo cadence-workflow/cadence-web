@@ -28,12 +28,12 @@ describe(registerConsoleLogger.name, () => {
     log(NEXTJS_ERROR_PREFIX, new Error('Something went wrong'));
 
     expect(mockLogger.error).toHaveBeenCalledWith(
-      { error: new Error('Something went wrong') },
+      { errors: [new Error('Something went wrong')] },
       'Something went wrong'
     );
   });
 
-  it('should keep subsequent errors in the data field if multiple are logged', () => {
+  it('should parse errors correctly if multiple are logged', () => {
     const { log, mockLogger } = setup('error');
     log(
       NEXTJS_ERROR_PREFIX,
@@ -44,8 +44,11 @@ describe(registerConsoleLogger.name, () => {
 
     expect(mockLogger.error).toHaveBeenCalledWith(
       {
-        data: [new Error('Something else went wrong'), { key: 'value' }],
-        error: new Error('Something went wrong'),
+        data: [{ key: 'value' }],
+        errors: [
+          new Error('Something went wrong'),
+          new Error('Something else went wrong'),
+        ],
       },
       'Something went wrong'
     );
