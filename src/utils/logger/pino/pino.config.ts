@@ -13,7 +13,6 @@ const LOGGER_CONFIG: LoggerOptions<CustomLevels> = {
     level: (label) => ({ level: label }),
   },
   serializers: {
-    error: stdSerializers.err,
     errors: (errors: Array<Error>) => errors.map(stdSerializers.err),
   },
   // To add custom levels, update the corresponding type and add the level values here
