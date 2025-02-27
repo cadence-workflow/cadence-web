@@ -40,6 +40,10 @@ jest.mock('next/navigation', () => ({
     // Server component stops rendering after a redirect is called
     throw new Error('Redirected');
   },
+  notFound: () => {
+    // Server component stops rendering after notFound is called
+    throw new Error('Not found');
+  },
 }));
 
 jest.mock(
@@ -86,9 +90,11 @@ describe(RedirectDomain.name, () => {
       expectedRedirect: '/domains?s=mock-domain-shared-name',
     },
     {
-      name: 'should redirect to All Domains page if no domain exists',
+      name: 'should call notFound if no domain exists',
       urlParams: ['mock-domain-nonexistent'],
-      expectedRedirect: '/domains',
+      assertOnError: (e) => {
+        expect(e).toEqual('Not found');
+      },
     },
     {
       // This never happens in practice because the router simply would not route to this component
