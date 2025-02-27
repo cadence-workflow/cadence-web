@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import queryString from 'query-string';
 
 import { getCachedAllDomains } from '../domains-page/helpers/get-all-domains';
 
@@ -21,7 +22,15 @@ export default async function RedirectDomain(props: Props) {
   if (!domainDetails) {
     redirect('/domains');
   } else if (restDomains.length > 0) {
-    redirect(`/domains?s=${domain}`);
+    redirect(
+      queryString.stringifyUrl({
+        url: '/domains',
+        query: {
+          // TODO @assem.hafez: see if this type can be asserted
+          s: domain,
+        },
+      })
+    );
   }
 
   const baseUrl = `/domains/${encodeURIComponent(domain)}/${encodeURIComponent(domainDetails.activeClusterName)}`;
