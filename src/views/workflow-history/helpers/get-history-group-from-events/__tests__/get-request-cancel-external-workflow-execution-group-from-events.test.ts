@@ -23,33 +23,36 @@ describe('getRequestCancelExternalWorkflowExecutionGroupFromEvents', () => {
   });
 
   it('should return a group with hasMissingEvents set to true when any event is missing', () => {
-    const missingInitiatedEvent: RequestCancelExternalWorkflowExecutionHistoryEvent[] =
-      [requestCancelExternalWorkflowEvent];
+    const assertions: Array<{
+      name: string;
+      events: RequestCancelExternalWorkflowExecutionHistoryEvent[];
+      assertionValue: boolean;
+    }> = [
+      {
+        name: 'missingInitiatedEvent',
+        events: [requestCancelExternalWorkflowEvent],
+        assertionValue: true,
+      },
+      {
+        name: 'missingCloseEvent',
+        events: [initiateRequestCancelExternalWorkflowEvent],
+        assertionValue: true,
+      },
+      {
+        name: 'completedEvent',
+        events: [
+          initiateRequestCancelExternalWorkflowEvent,
+          requestCancelExternalWorkflowEvent,
+        ],
+        assertionValue: false,
+      },
+    ];
 
-    const incompletedCancelRequestGroup1 =
-      getRequestCancelExternalWorkflowExecutionGroupFromEvents(
-        missingInitiatedEvent
-      );
-    expect(incompletedCancelRequestGroup1.hasMissingEvents).toBe(true);
-
-    const missingCloseEvent: RequestCancelExternalWorkflowExecutionHistoryEvent[] =
-      [initiateRequestCancelExternalWorkflowEvent];
-
-    const incompletedCancelRequestGroup2 =
-      getRequestCancelExternalWorkflowExecutionGroupFromEvents(
-        missingCloseEvent
-      );
-    expect(incompletedCancelRequestGroup2.hasMissingEvents).toBe(true);
-
-    const completedEvent: RequestCancelExternalWorkflowExecutionHistoryEvent[] =
-      [
-        initiateRequestCancelExternalWorkflowEvent,
-        requestCancelExternalWorkflowEvent,
-      ];
-
-    const completedCancelRequestGroup =
-      getRequestCancelExternalWorkflowExecutionGroupFromEvents(completedEvent);
-    expect(completedCancelRequestGroup.hasMissingEvents).toBe(false);
+    assertions.forEach(({ name, events, assertionValue }) => {
+      const group =
+        getRequestCancelExternalWorkflowExecutionGroupFromEvents(events);
+      expect([name, group.hasMissingEvents]).toEqual([name, assertionValue]);
+    });
   });
 
   it('should return a group with groupType equal to RequestCancelExternalWorkflowExecution', () => {
