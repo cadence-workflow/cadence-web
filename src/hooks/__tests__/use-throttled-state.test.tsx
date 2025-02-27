@@ -28,10 +28,11 @@ describe('useThrottledState', () => {
 
   it('should pass the correct settings to throttle', () => {
     renderHook(() => useThrottledState(0, 1, defaultThrottleSettings));
-    expect(mockedThrottle).toHaveBeenCalledWith(expect.any(Function), 1, {
-      leading: false,
-      trailing: true,
-    });
+    expect(mockedThrottle).toHaveBeenCalledWith(
+      expect.any(Function),
+      1,
+      defaultThrottleSettings
+    );
   });
 
   it('should immediately update if executeImmediately is true', () => {
