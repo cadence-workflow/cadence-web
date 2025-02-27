@@ -60,7 +60,7 @@ describe(RedirectDomain.name, () => {
   const tests: Array<{
     name: string;
     urlParams: Array<string>;
-    assertOnError?: (e: unknown) => void;
+    assertOnError?: (e: Error) => void;
     expectedRedirect?: string;
   }> = [
     {
@@ -93,14 +93,15 @@ describe(RedirectDomain.name, () => {
       name: 'should call notFound if no domain exists',
       urlParams: ['mock-domain-nonexistent'],
       assertOnError: (e) => {
-        expect(e).toEqual('Not found');
+        expect(e.message).toEqual('Not found');
       },
     },
     {
       // This never happens in practice because the router simply would not route to this component
       name: 'should throw if domain is invalid',
       urlParams: [],
-      assertOnError: (e) => expect(e).toEqual('Invalid domain URL param'),
+      assertOnError: (e) =>
+        expect(e.message).toEqual('Invalid domain URL param'),
     },
   ];
 

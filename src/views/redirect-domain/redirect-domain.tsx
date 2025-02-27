@@ -7,11 +7,11 @@ import { type Props } from './redirect-domain.types';
 
 export default async function RedirectDomain(props: Props) {
   const [encodedDomain, ...restParams] = props.params.domainParams;
-  const domain = decodeURIComponent(encodedDomain);
-
-  if (!domain) {
+  if (!encodedDomain) {
     throw new Error('Invalid domain URL param');
   }
+
+  const domain = decodeURIComponent(encodedDomain);
 
   const { domains } = await getCachedAllDomains();
 
