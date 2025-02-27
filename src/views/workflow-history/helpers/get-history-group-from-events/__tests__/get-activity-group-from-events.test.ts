@@ -49,37 +49,46 @@ describe('getActivityGroupFromEvents', () => {
   });
 
   it('should return a group with hasMissingEvents when any event is missing', () => {
-    const missingCloseEvent: ActivityHistoryEvent[] = [
-      scheduleActivityTaskEvent,
-      startActivityTaskEvent,
+    const assertions: Array<{
+      name: string;
+      events: ActivityHistoryEvent[];
+      assertionValue: boolean;
+    }> = [
+      {
+        name: 'missingCloseEvent',
+        events: [scheduleActivityTaskEvent, startActivityTaskEvent],
+        assertionValue: true,
+      },
+      {
+        name: 'missingScheduleEvent',
+        events: [startActivityTaskEvent, failedActivityTaskEvent],
+        assertionValue: true,
+      },
+      {
+        name: 'missingTimoutAndCloseEvent',
+        events: [scheduleActivityTaskEvent],
+        assertionValue: true,
+      },
+      {
+        name: 'completeEvents',
+        events: [
+          scheduleActivityTaskEvent,
+          startActivityTaskEvent,
+          completeActivityTaskEvent,
+        ],
+        assertionValue: false,
+      },
+      {
+        name: 'timedoutEvents',
+        events: [scheduleActivityTaskEvent, timeoutActivityTaskEvent],
+        assertionValue: false,
+      },
     ];
-    const incompleteActivityGroup1 =
-      getActivityGroupFromEvents(missingCloseEvent);
-    expect(incompleteActivityGroup1.hasMissingEvents).toBe(true);
 
-    const missingScheduleEvent: ActivityHistoryEvent[] = [
-      startActivityTaskEvent,
-      failedActivityTaskEvent,
-    ];
-    const incompleteActivityGroup2 =
-      getActivityGroupFromEvents(missingScheduleEvent);
-    expect(incompleteActivityGroup2.hasMissingEvents).toBe(true);
-
-    const missingStartEvent: ActivityHistoryEvent[] = [
-      scheduleActivityTaskEvent,
-      timeoutActivityTaskEvent,
-    ];
-    const incompleteActivityGroup3 =
-      getActivityGroupFromEvents(missingStartEvent);
-    expect(incompleteActivityGroup3.hasMissingEvents).toBe(true);
-
-    const completedEvents: ActivityHistoryEvent[] = [
-      scheduleActivityTaskEvent,
-      startActivityTaskEvent,
-      completeActivityTaskEvent,
-    ];
-    const completeActivityGroup = getActivityGroupFromEvents(completedEvents);
-    expect(completeActivityGroup.hasMissingEvents).toBe(false);
+    assertions.forEach(({ name, events, assertionValue }) => {
+      const group = getActivityGroupFromEvents(events);
+      expect([name, group.hasMissingEvents]).toEqual([name, assertionValue]);
+    });
   });
 
   it('should return a group with groupType equal to Activity', () => {

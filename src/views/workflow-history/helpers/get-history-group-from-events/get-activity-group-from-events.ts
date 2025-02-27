@@ -14,28 +14,31 @@ export default function getActivityGroupFromEvents(
   const badges = [];
 
   const scheduleAttr = 'activityTaskScheduledEventAttributes';
+  const timeoutAttr = 'activityTaskTimedOutEventAttributes';
   const startAttr = 'activityTaskStartedEventAttributes';
   const pendingStartAttr = 'pendingActivityTaskStartEventAttributes';
   const closeAttrs = [
     'activityTaskCompletedEventAttributes',
     'activityTaskFailedEventAttributes',
-    'activityTaskTimedOutEventAttributes',
     'activityTaskCanceledEventAttributes',
   ];
 
   let scheduleEvent: ExtendedActivityHistoryEvent | undefined;
+  let timeoutEvent: ExtendedActivityHistoryEvent | undefined;
   let startEvent: ExtendedActivityHistoryEvent | undefined;
   let pendingStartEvent: ExtendedActivityHistoryEvent | undefined;
   let closeEvent: ExtendedActivityHistoryEvent | undefined;
 
   events.forEach((e) => {
     if (e.attributes === scheduleAttr) scheduleEvent = e;
+    if (e.attributes === timeoutAttr) timeoutEvent = e;
     if (e.attributes === startAttr) startEvent = e;
     if (e.attributes === pendingStartAttr) pendingStartEvent = e;
     if (closeAttrs.includes(e.attributes)) closeEvent = e;
   });
 
-  const hasMissingEvents = !scheduleEvent || !startEvent || !closeEvent;
+  const hasMissingEvents =
+    !scheduleEvent || !(timeoutEvent || (startEvent && closeEvent));
 
   // getting group label
   if (scheduleEvent && scheduleAttr in scheduleEvent) {

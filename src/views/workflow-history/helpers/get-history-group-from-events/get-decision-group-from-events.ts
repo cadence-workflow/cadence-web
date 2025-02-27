@@ -16,25 +16,28 @@ export default function getDecisionGroupFromEvents(
   const pendingScheduleAttr = 'pendingDecisionTaskScheduleEventAttributes';
   const scheduleAttr = 'decisionTaskScheduledEventAttributes';
   const startAttr = 'decisionTaskStartedEventAttributes';
+  const timeoutAttr = 'decisionTaskTimedOutEventAttributes';
   const closeAttrs = [
     'decisionTaskCompletedEventAttributes',
     'decisionTaskFailedEventAttributes',
-    'decisionTaskTimedOutEventAttributes',
   ];
 
   let scheduleEvent: ExtendedDecisionHistoryEvent | undefined;
   let pendingScheduleEvent: ExtendedDecisionHistoryEvent | undefined;
+  let timeoutEvent: ExtendedDecisionHistoryEvent | undefined;
   let startEvent: ExtendedDecisionHistoryEvent | undefined;
   let closeEvent: ExtendedDecisionHistoryEvent | undefined;
 
   events.forEach((e) => {
     if (e.attributes === pendingScheduleAttr) pendingScheduleEvent = e;
     if (e.attributes === scheduleAttr) scheduleEvent = e;
+    if (e.attributes === timeoutAttr) timeoutEvent = e;
     if (e.attributes === startAttr) startEvent = e;
     if (closeAttrs.includes(e.attributes)) closeEvent = e;
   });
 
-  const hasMissingEvents = !scheduleEvent || !startEvent || !closeEvent;
+  const hasMissingEvents =
+    !scheduleEvent || !(timeoutEvent || (startEvent && closeEvent));
 
   let retryAttemptNumber = 0;
   if (

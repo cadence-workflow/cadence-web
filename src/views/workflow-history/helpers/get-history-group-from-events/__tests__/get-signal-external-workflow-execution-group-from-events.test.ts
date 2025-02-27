@@ -23,29 +23,35 @@ describe('getSignalExternalWorkflowExecutionGroupFromEvents', () => {
   });
 
   it('should return a group with hasMissingEvents set to true when any event is missing', () => {
-    const missingInitiatedEvent: SignalExternalWorkflowExecutionHistoryEvent[] =
-      [signalExternalWorkflowEvent];
-
-    const incompletedSignalGroup1 =
-      getSignalExternalWorkflowExecutionGroupFromEvents(missingInitiatedEvent);
-    expect(incompletedSignalGroup1.hasMissingEvents).toBe(true);
-
-    const missingCloseEvent: SignalExternalWorkflowExecutionHistoryEvent[] = [
-      initiateSignalExternalWorkflowEvent,
+    const assertions: Array<{
+      name: string;
+      events: SignalExternalWorkflowExecutionHistoryEvent[];
+      assertionValue: boolean;
+    }> = [
+      {
+        name: 'missingInitiatedEvent',
+        events: [signalExternalWorkflowEvent],
+        assertionValue: true,
+      },
+      {
+        name: 'missingCloseEvent',
+        events: [initiateSignalExternalWorkflowEvent],
+        assertionValue: true,
+      },
+      {
+        name: 'completeEvents',
+        events: [
+          initiateSignalExternalWorkflowEvent,
+          signalExternalWorkflowEvent,
+        ],
+        assertionValue: false,
+      },
     ];
 
-    const incompletedSignalGroup2 =
-      getSignalExternalWorkflowExecutionGroupFromEvents(missingCloseEvent);
-    expect(incompletedSignalGroup2.hasMissingEvents).toBe(true);
-
-    const completedEvent: SignalExternalWorkflowExecutionHistoryEvent[] = [
-      initiateSignalExternalWorkflowEvent,
-      signalExternalWorkflowEvent,
-    ];
-
-    const completedSignalGroup =
-      getSignalExternalWorkflowExecutionGroupFromEvents(completedEvent);
-    expect(completedSignalGroup.hasMissingEvents).toBe(false);
+    assertions.forEach(({ name, events, assertionValue }) => {
+      const group = getSignalExternalWorkflowExecutionGroupFromEvents(events);
+      expect([name, group.hasMissingEvents]).toEqual([name, assertionValue]);
+    });
   });
 
   it('should return a group with groupType equal to SignalExternalWorkflowExecution', () => {

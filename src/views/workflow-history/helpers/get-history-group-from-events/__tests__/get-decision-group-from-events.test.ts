@@ -25,38 +25,51 @@ describe('getDecisionGroupFromEvents', () => {
   });
 
   it('should return a group with hasMissingEvents set to true when any event is missing', () => {
-    const missingScheduleEvent: ExtendedDecisionHistoryEvent[] = [
-      startDecisionTaskEvent,
-      completeDecisionTaskEvent,
+    const assertions: Array<{
+      name: string;
+      events: ExtendedDecisionHistoryEvent[];
+      assertionValue: boolean;
+    }> = [
+      {
+        name: 'missingScheduleEvent',
+        events: [startDecisionTaskEvent, completeDecisionTaskEvent],
+        assertionValue: true,
+      },
+      {
+        name: 'missingTimoutAndCloseEvent',
+        events: [scheduleDecisionTaskEvent],
+        assertionValue: true,
+      },
+      {
+        name: 'missingStartEvent',
+        events: [scheduleDecisionTaskEvent, completeDecisionTaskEvent],
+        assertionValue: true,
+      },
+      {
+        name: 'missingCompleteEvent',
+        events: [scheduleDecisionTaskEvent, startDecisionTaskEvent],
+        assertionValue: true,
+      },
+      {
+        name: 'completeEvents',
+        events: [
+          scheduleDecisionTaskEvent,
+          startDecisionTaskEvent,
+          completeDecisionTaskEvent,
+        ],
+        assertionValue: false,
+      },
+      {
+        name: 'timedoutEvents',
+        events: [scheduleDecisionTaskEvent, timeoutDecisionTaskEvent],
+        assertionValue: false,
+      },
     ];
-    const incompletedDecisionGroup1 =
-      getDecisionGroupFromEvents(missingScheduleEvent);
-    expect(incompletedDecisionGroup1.hasMissingEvents).toBe(true);
 
-    const missingStartEvent: ExtendedDecisionHistoryEvent[] = [
-      scheduleDecisionTaskEvent,
-      completeDecisionTaskEvent,
-    ];
-    const incompletedDecisionGroup2 =
-      getDecisionGroupFromEvents(missingStartEvent);
-    expect(incompletedDecisionGroup2.hasMissingEvents).toBe(true);
-
-    const missingCompleteEvent: ExtendedDecisionHistoryEvent[] = [
-      scheduleDecisionTaskEvent,
-      startDecisionTaskEvent,
-    ];
-    const incompletedDecisionGroup3 =
-      getDecisionGroupFromEvents(missingCompleteEvent);
-    expect(incompletedDecisionGroup3.hasMissingEvents).toBe(true);
-
-    const completedEvent: ExtendedDecisionHistoryEvent[] = [
-      scheduleDecisionTaskEvent,
-      startDecisionTaskEvent,
-      completeDecisionTaskEvent,
-    ];
-    const incompletedDecisionGroup4 =
-      getDecisionGroupFromEvents(completedEvent);
-    expect(incompletedDecisionGroup4.hasMissingEvents).toBe(false);
+    assertions.forEach(({ name, events, assertionValue }) => {
+      const group = getDecisionGroupFromEvents(events);
+      expect([name, group.hasMissingEvents]).toEqual([name, assertionValue]);
+    });
   });
 
   it('should return a group with groupType equal to Decision', () => {
