@@ -66,7 +66,9 @@ describe('useThrottledState', () => {
   });
 
   it('should throttle updating state', async () => {
-    const { result } = renderHook(() => useThrottledState(0, 10000));
+    const { result } = renderHook(() =>
+      useThrottledState(0, 10000, defaultThrottleSettings)
+    );
     const setState = result.current[1];
 
     act(() => {
