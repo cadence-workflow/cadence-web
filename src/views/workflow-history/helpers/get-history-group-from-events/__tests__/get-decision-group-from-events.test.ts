@@ -24,27 +24,39 @@ describe('getDecisionGroupFromEvents', () => {
     expect(group.label).toBe('Decision Task');
   });
 
-  it('should return a group with hasMissingEvents set to true when scheduled event is missing', () => {
-    const completeEvents: ExtendedDecisionHistoryEvent[] = [
+  it('should return a group with hasMissingEvents set to true when any event is missing', () => {
+    const missingScheduleEvent: ExtendedDecisionHistoryEvent[] = [
       startDecisionTaskEvent,
       completeDecisionTaskEvent,
     ];
-    const completedDecisiongroup = getDecisionGroupFromEvents(completeEvents);
-    expect(completedDecisiongroup.hasMissingEvents).toBe(true);
+    const incompletedDecisionGroup1 = getDecisionGroupFromEvents(missingScheduleEvent);
+    expect(incompletedDecisionGroup1.hasMissingEvents).toBe(true);
 
-    const failureEvents: ExtendedDecisionHistoryEvent[] = [
-      startDecisionTaskEvent,
-      failedDecisionTaskEvent,
-    ];
-    const failedDecisiongroup = getDecisionGroupFromEvents(failureEvents);
-    expect(failedDecisiongroup.hasMissingEvents).toBe(true);
 
-    const timeoutEvents: ExtendedDecisionHistoryEvent[] = [
-      startDecisionTaskEvent,
-      timeoutDecisionTaskEvent,
+    const missingStartEvent: ExtendedDecisionHistoryEvent[] = [
+      scheduleDecisionTaskEvent,
+      completeDecisionTaskEvent,
     ];
-    const timedoutDecisiongroup = getDecisionGroupFromEvents(timeoutEvents);
-    expect(timedoutDecisiongroup.hasMissingEvents).toBe(true);
+    const incompletedDecisionGroup2 = getDecisionGroupFromEvents(missingStartEvent);
+    expect(incompletedDecisionGroup2.hasMissingEvents).toBe(true);
+
+
+    const missingCompleteEvent: ExtendedDecisionHistoryEvent[] = [
+      scheduleDecisionTaskEvent,
+      startDecisionTaskEvent,
+    ];
+    const incompletedDecisionGroup3 = getDecisionGroupFromEvents(missingCompleteEvent);
+    expect(incompletedDecisionGroup3.hasMissingEvents).toBe(true);
+
+
+    const completedEvent: ExtendedDecisionHistoryEvent[] = [
+      scheduleDecisionTaskEvent,
+      startDecisionTaskEvent,
+      completeDecisionTaskEvent,
+    ];
+    const incompletedDecisionGroup4 = getDecisionGroupFromEvents(completedEvent);
+    expect(incompletedDecisionGroup4.hasMissingEvents).toBe(false);
+
   });
 
   it('should return a group with groupType equal to Decision', () => {

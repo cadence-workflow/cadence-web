@@ -26,45 +26,49 @@ describe('getChildWorkflowExecutionGroupFromEvents', () => {
     expect(group.label).toBe(expectedLabel);
   });
 
-  it('should return a group with hasMissingEvents set to true when initiate event is missing', () => {
-    const intiateFailedEvents: ChildWorkflowExecutionHistoryEvent[] = [
+  it('should return a group with hasMissingEvents set to true when any event is missing', () => {
+    const missingInitiatedEvent: ChildWorkflowExecutionHistoryEvent[] = [
       initiateFailureChildWorkflowEvent,
     ];
-    const intiateFailedChildWorkflowgroup =
-      getChildWorkflowExecutionGroupFromEvents(intiateFailedEvents);
-    expect(intiateFailedChildWorkflowgroup.hasMissingEvents).toBe(true);
+    const incompleteChildWorkflowGroup1 =
+      getChildWorkflowExecutionGroupFromEvents(missingInitiatedEvent);
+    expect(incompleteChildWorkflowGroup1.hasMissingEvents).toBe(true);
 
-    const completeEvents: ChildWorkflowExecutionHistoryEvent[] = [
-      startChildWorkflowEvent,
-      completeChildWorkflowEvent,
-    ];
-    const completedChildWorkflowgroup =
-      getChildWorkflowExecutionGroupFromEvents(completeEvents);
-    expect(completedChildWorkflowgroup.hasMissingEvents).toBe(true);
 
-    const failureEvents: ChildWorkflowExecutionHistoryEvent[] = [
-      startChildWorkflowEvent,
-      failChildWorkflowEvent,
+    const missingInitiationFailureAndCloseEvent: ChildWorkflowExecutionHistoryEvent[] = [
+      initiateChildWorkflowEvent,
     ];
-    const failedChildWorkflowgroup =
-      getChildWorkflowExecutionGroupFromEvents(failureEvents);
-    expect(failedChildWorkflowgroup.hasMissingEvents).toBe(true);
+    const incompleteChildWorkflowGroup2 =
+      getChildWorkflowExecutionGroupFromEvents(missingInitiationFailureAndCloseEvent);
+    expect(incompleteChildWorkflowGroup2.hasMissingEvents).toBe(true);
 
-    const timeoutEvents: ChildWorkflowExecutionHistoryEvent[] = [
-      startChildWorkflowEvent,
-      timeoutChildWorkflowEvent,
-    ];
-    const timedoutChildWorkflowgroup =
-      getChildWorkflowExecutionGroupFromEvents(timeoutEvents);
-    expect(timedoutChildWorkflowgroup.hasMissingEvents).toBe(true);
 
-    const cancelEvents: ChildWorkflowExecutionHistoryEvent[] = [
+    const missingCloseEvent: ChildWorkflowExecutionHistoryEvent[] = [
+      initiateChildWorkflowEvent,
       startChildWorkflowEvent,
-      cancelChildWorkflowEvent,
     ];
-    const cancelChildWorkflowgroup =
-      getChildWorkflowExecutionGroupFromEvents(cancelEvents);
-    expect(cancelChildWorkflowgroup.hasMissingEvents).toBe(true);
+    const incompleteChildWorkflowGroup3 =
+      getChildWorkflowExecutionGroupFromEvents(missingCloseEvent);
+    expect(incompleteChildWorkflowGroup3.hasMissingEvents).toBe(true);
+
+    const missingStartEvent: ChildWorkflowExecutionHistoryEvent[] = [
+      initiateChildWorkflowEvent,
+      completeChildWorkflowEvent
+    ];
+    
+    const incompleteChildWorkflowGroup4 =
+      getChildWorkflowExecutionGroupFromEvents(missingStartEvent);
+    expect(incompleteChildWorkflowGroup4.hasMissingEvents).toBe(true);
+
+    const completedFailedInitiationEvent: ChildWorkflowExecutionHistoryEvent[] = [
+      initiateChildWorkflowEvent,
+      initiateFailureChildWorkflowEvent,
+    ];
+    
+    const completedChildWorkflowGroup1 =
+      getChildWorkflowExecutionGroupFromEvents(completedFailedInitiationEvent);
+    expect(completedChildWorkflowGroup1.hasMissingEvents).toBe(false);
+
   });
 
   it('should return a group with groupType equal to ChildWorkflow', () => {

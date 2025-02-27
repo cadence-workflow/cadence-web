@@ -10,26 +10,33 @@ export default function getActivityGroupFromEvents(
   events: ExtendedActivityHistoryEvent[]
 ): ActivityHistoryGroup {
   let label = '';
-  let hasMissingEvents = false;
   const groupType = 'Activity';
   const badges = [];
 
   const scheduleAttr = 'activityTaskScheduledEventAttributes';
   const startAttr = 'activityTaskStartedEventAttributes';
   const pendingStartAttr = 'pendingActivityTaskStartEventAttributes';
+  const closeAttrs = [
+    'activityTaskCompletedEventAttributes',
+    'activityTaskFailedEventAttributes',
+    'activityTaskTimedOutEventAttributes',
+    'activityTaskCanceledEventAttributes'
+  ]
 
   let scheduleEvent: ExtendedActivityHistoryEvent | undefined;
   let startEvent: ExtendedActivityHistoryEvent | undefined;
   let pendingStartEvent: ExtendedActivityHistoryEvent | undefined;
+  let closeEvent: ExtendedActivityHistoryEvent | undefined;
 
   events.forEach((e) => {
     if (e.attributes === scheduleAttr) scheduleEvent = e;
     if (e.attributes === startAttr) startEvent = e;
     if (e.attributes === pendingStartAttr) pendingStartEvent = e;
+    if (closeAttrs.includes(e.attributes)) closeEvent = e;
   });
 
-  const firstEvent = events[0];
-
+  const hasMissingEvents = !scheduleEvent || !startEvent || !closeEvent;
+  
   // getting group label
   if (scheduleEvent && scheduleAttr in scheduleEvent) {
     label = `Activity ${scheduleEvent[scheduleAttr]?.activityId}: ${scheduleEvent[scheduleAttr]?.activityType?.name}`;
@@ -54,11 +61,6 @@ export default function getActivityGroupFromEvents(
       content:
         retryAttemptNumber === 1 ? '1 Retry' : `${retryAttemptNumber} Retries`,
     });
-  }
-
-  // checking for missing events
-  if (firstEvent.attributes !== 'activityTaskScheduledEventAttributes') {
-    hasMissingEvents = true;
   }
 
   const eventToLabel: HistoryGroupEventToStringMap<ActivityHistoryGroup> = {

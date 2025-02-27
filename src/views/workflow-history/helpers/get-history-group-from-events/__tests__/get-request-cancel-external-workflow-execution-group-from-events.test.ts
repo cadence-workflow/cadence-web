@@ -22,12 +22,28 @@ describe('getRequestCancelExternalWorkflowExecutionGroupFromEvents', () => {
     expect(group.label).toBe(expectedLabel);
   });
 
-  it('should return a group with hasMissingEvents set to true when initiated event is missing', () => {
-    const requestEvents: RequestCancelExternalWorkflowExecutionHistoryEvent[] =
+  it('should return a group with hasMissingEvents set to true when any event is missing', () => {
+    const missingInitiatedEvent: RequestCancelExternalWorkflowExecutionHistoryEvent[] =
       [requestCancelExternalWorkflowEvent];
-    const requestGroup =
-      getRequestCancelExternalWorkflowExecutionGroupFromEvents(requestEvents);
-    expect(requestGroup.hasMissingEvents).toBe(true);
+
+    const incompletedCancelRequestGroup1 =
+      getRequestCancelExternalWorkflowExecutionGroupFromEvents(missingInitiatedEvent);
+    expect(incompletedCancelRequestGroup1.hasMissingEvents).toBe(true);
+
+    const missingCloseEvent: RequestCancelExternalWorkflowExecutionHistoryEvent[] =
+      [initiateRequestCancelExternalWorkflowEvent];
+
+    const incompletedCancelRequestGroup2 =
+      getRequestCancelExternalWorkflowExecutionGroupFromEvents(missingCloseEvent);
+    expect(incompletedCancelRequestGroup2.hasMissingEvents).toBe(true);
+
+    const completedEvent: RequestCancelExternalWorkflowExecutionHistoryEvent[] =
+      [initiateRequestCancelExternalWorkflowEvent, requestCancelExternalWorkflowEvent];
+
+    const completedCancelRequestGroup =
+      getRequestCancelExternalWorkflowExecutionGroupFromEvents(completedEvent);
+    expect(completedCancelRequestGroup.hasMissingEvents).toBe(false);
+
   });
 
   it('should return a group with groupType equal to RequestCancelExternalWorkflowExecution', () => {

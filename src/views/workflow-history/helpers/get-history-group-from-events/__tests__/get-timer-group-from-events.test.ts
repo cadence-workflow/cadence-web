@@ -20,14 +20,30 @@ describe('getTimerGroupFromEvents', () => {
     expect(group.label).toBe(expectedLabel);
   });
 
-  it('should return a group with hasMissingEvents set to true when start event is missing', () => {
-    const fireEvents: TimerHistoryEvent[] = [fireTimerTaskEvent];
-    const firedTimerGroup = getTimerGroupFromEvents(fireEvents);
-    expect(firedTimerGroup.hasMissingEvents).toBe(true);
+  it('should return a group with hasMissingEvents set to true when any event is missing', () => {
+    const missingStartEvent: TimerHistoryEvent[] =
+      [fireTimerTaskEvent];
 
-    const cancelEvents: TimerHistoryEvent[] = [cancelTimerTaskEvent];
-    const canceledTimerGroup = getTimerGroupFromEvents(cancelEvents);
-    expect(canceledTimerGroup.hasMissingEvents).toBe(true);
+    const incompletedTimerGroup1 =
+      getTimerGroupFromEvents(missingStartEvent);
+    expect(incompletedTimerGroup1.hasMissingEvents).toBe(true);
+
+
+    const missingCloseEvent: TimerHistoryEvent[] =
+      [startTimerTaskEvent];
+
+    const incompletedTimerGroup2 =
+      getTimerGroupFromEvents(missingCloseEvent);
+    expect(incompletedTimerGroup2.hasMissingEvents).toBe(true);
+
+    
+    const completedEvent: TimerHistoryEvent[] =
+      [startTimerTaskEvent, cancelTimerTaskEvent];
+
+    const completedTimerGroup =
+      getTimerGroupFromEvents(completedEvent);
+    expect(completedTimerGroup.hasMissingEvents).toBe(false);
+
   });
 
   it('should return a group with groupType equal to Timer', () => {
