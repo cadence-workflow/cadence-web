@@ -44,7 +44,7 @@ export default async function fetchWorkflowQueryTypes(
     }
 
     logger.error<RouteHandlerErrorPayload>(
-      { requestParams: decodedParams, cause: e },
+      { requestParams: decodedParams, error: e },
       'Error querying workflow for query types'
     );
 

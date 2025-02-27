@@ -3,7 +3,7 @@ import type logger from '.';
 export type Logger = typeof logger;
 
 export type RouteHandlerErrorPayload = {
-  cause?: any;
+  error?: any;
   requestParams?: object;
   queryParams?: object;
 };

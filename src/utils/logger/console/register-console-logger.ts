@@ -24,7 +24,6 @@ export default function registerConsoleLogger(
     const parsedMessage = stripEscapesFromNextLog(messages.join(' ')).trim();
 
     const errors = args.filter((arg) => arg instanceof Error);
-    const firstError = errors[0];
 
     const restData = args.filter(
       (arg) => !isString(arg) && !(arg instanceof Error)
@@ -35,9 +34,9 @@ export default function registerConsoleLogger(
         ...(restData.length > 0 ? { data: restData } : {}),
         ...(errors.length > 0 ? { errors } : {}),
       },
-      firstError instanceof Error &&
+      errors[0] instanceof Error &&
         (!parsedMessage || parsedMessage === NEXTJS_ERROR_PREFIX)
-        ? firstError.message
+        ? errors[0].message
         : parsedMessage
     );
   };

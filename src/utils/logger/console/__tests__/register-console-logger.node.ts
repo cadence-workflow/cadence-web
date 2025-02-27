@@ -28,7 +28,7 @@ describe(registerConsoleLogger.name, () => {
     log(NEXTJS_ERROR_PREFIX, new Error('Something went wrong'));
 
     expect(mockLogger.error).toHaveBeenCalledWith(
-      { errors: [new Error('Something went wrong')] },
+      { error: new Error('Something went wrong') },
       'Something went wrong'
     );
   });

@@ -63,7 +63,7 @@ export default async function getWorkflowHistory(
     }
 
     logger.error<RouteHandlerErrorPayload>(
-      { requestParams: decodedParams, cause: e },
+      { requestParams: decodedParams, error: e },
       'Error fetching workflow history'
     );
 

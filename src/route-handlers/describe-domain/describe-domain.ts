@@ -25,7 +25,7 @@ export async function describeDomain(
     return NextResponse.json(res.domain);
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
-      { requestParams: decodedParams, cause: e },
+      { requestParams: decodedParams, error: e },
       'Error fetching domain info'
     );
 

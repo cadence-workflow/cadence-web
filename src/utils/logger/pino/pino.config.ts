@@ -1,4 +1,4 @@
-import type { LoggerOptions } from 'pino';
+import { stdSerializers, type LoggerOptions } from 'pino';
 
 import getLogBody from './helpers/get-log-body';
 import { type CustomLevels } from './pino.types';
@@ -7,11 +7,14 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 
 const LOGGER_CONFIG: LoggerOptions<CustomLevels> = {
   messageKey: 'message',
+  errorKey: 'error',
   level: isDevelopment ? 'trace' : 'info',
   formatters: {
-    level(label) {
-      return { level: label };
-    },
+    level: (label) => ({ level: label }),
+  },
+  serializers: {
+    error: stdSerializers.err,
+    errors: (errors: Array<Error>) => errors.map(stdSerializers.err),
   },
   // To add custom levels, update the corresponding type and add the level values here
   // customLevels: {
