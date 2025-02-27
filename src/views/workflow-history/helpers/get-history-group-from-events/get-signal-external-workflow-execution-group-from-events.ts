@@ -18,7 +18,7 @@ export default function getSignalExternalWorkflowExecutionGroupFromEvents(
   const closeAttrs = [
     'signalExternalWorkflowExecutionFailedEventAttributes',
     'externalWorkflowExecutionSignaledEventAttributes',
-  ]
+  ];
 
   let initiatedEvent: SignalExternalWorkflowExecutionHistoryEvent | undefined;
   let closeEvent: SignalExternalWorkflowExecutionHistoryEvent | undefined;
@@ -35,21 +35,21 @@ export default function getSignalExternalWorkflowExecutionGroupFromEvents(
   }
 
   const eventToLabel: HistoryGroupEventToStringMap<SignalExternalWorkflowExecutionHistoryGroup> =
-  {
-    signalExternalWorkflowExecutionInitiatedEventAttributes: 'Initiated',
-    signalExternalWorkflowExecutionFailedEventAttributes: 'Failed',
-    externalWorkflowExecutionSignaledEventAttributes: 'Signaled',
-  };
+    {
+      signalExternalWorkflowExecutionInitiatedEventAttributes: 'Initiated',
+      signalExternalWorkflowExecutionFailedEventAttributes: 'Failed',
+      externalWorkflowExecutionSignaledEventAttributes: 'Signaled',
+    };
   const eventToStatus: HistoryGroupEventToStatusMap<SignalExternalWorkflowExecutionHistoryGroup> =
-  {
-    signalExternalWorkflowExecutionInitiatedEventAttributes: (
-      _,
-      events,
-      index
-    ) => (index < events.length - 1 ? 'COMPLETED' : 'WAITING'),
-    signalExternalWorkflowExecutionFailedEventAttributes: 'FAILED',
-    externalWorkflowExecutionSignaledEventAttributes: 'COMPLETED',
-  };
+    {
+      signalExternalWorkflowExecutionInitiatedEventAttributes: (
+        _,
+        events,
+        index
+      ) => (index < events.length - 1 ? 'COMPLETED' : 'WAITING'),
+      signalExternalWorkflowExecutionFailedEventAttributes: 'FAILED',
+      externalWorkflowExecutionSignaledEventAttributes: 'COMPLETED',
+    };
 
   return {
     label,

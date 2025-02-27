@@ -29,34 +29,34 @@ describe('getDecisionGroupFromEvents', () => {
       startDecisionTaskEvent,
       completeDecisionTaskEvent,
     ];
-    const incompletedDecisionGroup1 = getDecisionGroupFromEvents(missingScheduleEvent);
+    const incompletedDecisionGroup1 =
+      getDecisionGroupFromEvents(missingScheduleEvent);
     expect(incompletedDecisionGroup1.hasMissingEvents).toBe(true);
-
 
     const missingStartEvent: ExtendedDecisionHistoryEvent[] = [
       scheduleDecisionTaskEvent,
       completeDecisionTaskEvent,
     ];
-    const incompletedDecisionGroup2 = getDecisionGroupFromEvents(missingStartEvent);
+    const incompletedDecisionGroup2 =
+      getDecisionGroupFromEvents(missingStartEvent);
     expect(incompletedDecisionGroup2.hasMissingEvents).toBe(true);
-
 
     const missingCompleteEvent: ExtendedDecisionHistoryEvent[] = [
       scheduleDecisionTaskEvent,
       startDecisionTaskEvent,
     ];
-    const incompletedDecisionGroup3 = getDecisionGroupFromEvents(missingCompleteEvent);
+    const incompletedDecisionGroup3 =
+      getDecisionGroupFromEvents(missingCompleteEvent);
     expect(incompletedDecisionGroup3.hasMissingEvents).toBe(true);
-
 
     const completedEvent: ExtendedDecisionHistoryEvent[] = [
       scheduleDecisionTaskEvent,
       startDecisionTaskEvent,
       completeDecisionTaskEvent,
     ];
-    const incompletedDecisionGroup4 = getDecisionGroupFromEvents(completedEvent);
+    const incompletedDecisionGroup4 =
+      getDecisionGroupFromEvents(completedEvent);
     expect(incompletedDecisionGroup4.hasMissingEvents).toBe(false);
-
   });
 
   it('should return a group with groupType equal to Decision', () => {

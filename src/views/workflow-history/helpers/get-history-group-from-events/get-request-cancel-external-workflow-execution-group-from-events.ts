@@ -12,14 +12,19 @@ export default function getRequestCancelExternalWorkflowExecutionGroupFromEvents
   const label = 'Request Cancel External Workflow';
   const groupType = 'RequestCancelExternalWorkflowExecution';
 
-  const initiatedAttr = 'requestCancelExternalWorkflowExecutionInitiatedEventAttributes';
+  const initiatedAttr =
+    'requestCancelExternalWorkflowExecutionInitiatedEventAttributes';
   const closeAttrs = [
     'requestCancelExternalWorkflowExecutionFailedEventAttributes',
     'externalWorkflowExecutionCancelRequestedEventAttributes',
-  ]
+  ];
 
-  let initiatedEvent: RequestCancelExternalWorkflowExecutionHistoryEvent | undefined;
-  let closeEvent: RequestCancelExternalWorkflowExecutionHistoryEvent | undefined;
+  let initiatedEvent:
+    | RequestCancelExternalWorkflowExecutionHistoryEvent
+    | undefined;
+  let closeEvent:
+    | RequestCancelExternalWorkflowExecutionHistoryEvent
+    | undefined;
 
   events.forEach((e) => {
     if (e.attributes === initiatedAttr) initiatedEvent = e;
@@ -29,23 +34,23 @@ export default function getRequestCancelExternalWorkflowExecutionGroupFromEvents
   const hasMissingEvents = !initiatedEvent || !closeEvent;
 
   const eventToLabel: HistoryGroupEventToStringMap<RequestCancelExternalWorkflowExecutionHistoryGroup> =
-  {
-    requestCancelExternalWorkflowExecutionInitiatedEventAttributes:
-      'Initiated',
-    requestCancelExternalWorkflowExecutionFailedEventAttributes: 'Failed',
-    externalWorkflowExecutionCancelRequestedEventAttributes: 'Requested',
-  };
+    {
+      requestCancelExternalWorkflowExecutionInitiatedEventAttributes:
+        'Initiated',
+      requestCancelExternalWorkflowExecutionFailedEventAttributes: 'Failed',
+      externalWorkflowExecutionCancelRequestedEventAttributes: 'Requested',
+    };
 
   const eventToStatus: HistoryGroupEventToStatusMap<RequestCancelExternalWorkflowExecutionHistoryGroup> =
-  {
-    requestCancelExternalWorkflowExecutionInitiatedEventAttributes: (
-      _,
-      events,
-      index
-    ) => (index < events.length - 1 ? 'COMPLETED' : 'WAITING'),
-    requestCancelExternalWorkflowExecutionFailedEventAttributes: 'FAILED',
-    externalWorkflowExecutionCancelRequestedEventAttributes: 'COMPLETED',
-  };
+    {
+      requestCancelExternalWorkflowExecutionInitiatedEventAttributes: (
+        _,
+        events,
+        index
+      ) => (index < events.length - 1 ? 'COMPLETED' : 'WAITING'),
+      requestCancelExternalWorkflowExecutionFailedEventAttributes: 'FAILED',
+      externalWorkflowExecutionCancelRequestedEventAttributes: 'COMPLETED',
+    };
 
   return {
     label,

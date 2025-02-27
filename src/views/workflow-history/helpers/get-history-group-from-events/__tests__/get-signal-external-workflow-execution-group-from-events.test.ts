@@ -30,20 +30,22 @@ describe('getSignalExternalWorkflowExecutionGroupFromEvents', () => {
       getSignalExternalWorkflowExecutionGroupFromEvents(missingInitiatedEvent);
     expect(incompletedSignalGroup1.hasMissingEvents).toBe(true);
 
-    const missingCloseEvent: SignalExternalWorkflowExecutionHistoryEvent[] =
-      [initiateSignalExternalWorkflowEvent];
+    const missingCloseEvent: SignalExternalWorkflowExecutionHistoryEvent[] = [
+      initiateSignalExternalWorkflowEvent,
+    ];
 
     const incompletedSignalGroup2 =
       getSignalExternalWorkflowExecutionGroupFromEvents(missingCloseEvent);
     expect(incompletedSignalGroup2.hasMissingEvents).toBe(true);
 
-    const completedEvent: SignalExternalWorkflowExecutionHistoryEvent[] =
-      [initiateSignalExternalWorkflowEvent, signalExternalWorkflowEvent];
+    const completedEvent: SignalExternalWorkflowExecutionHistoryEvent[] = [
+      initiateSignalExternalWorkflowEvent,
+      signalExternalWorkflowEvent,
+    ];
 
     const completedSignalGroup =
       getSignalExternalWorkflowExecutionGroupFromEvents(completedEvent);
     expect(completedSignalGroup.hasMissingEvents).toBe(false);
-
   });
 
   it('should return a group with groupType equal to SignalExternalWorkflowExecution', () => {

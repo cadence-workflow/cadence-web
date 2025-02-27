@@ -22,7 +22,7 @@ export default function getChildWorkflowExecutionGroupFromEvents(
     'childWorkflowExecutionCanceledEventAttributes',
     'childWorkflowExecutionTimedOutEventAttributes',
     'childWorkflowExecutionTerminatedEventAttributes',
-  ]
+  ];
 
   let initiatedEvent: ChildWorkflowExecutionHistoryEvent | undefined;
   let startFailedEvent: ChildWorkflowExecutionHistoryEvent | undefined;
@@ -36,8 +36,8 @@ export default function getChildWorkflowExecutionGroupFromEvents(
     if (closeAttrs.includes(e.attributes)) closeEvent = e;
   });
 
-  const hasMissingEvents = !initiatedEvent || !(startFailedEvent || (startEvent && closeEvent));
-
+  const hasMissingEvents =
+    !initiatedEvent || !(startFailedEvent || (startEvent && closeEvent));
 
   const label = childWorkflowName
     ? `Child Workflow: ${childWorkflowName}`
@@ -45,32 +45,32 @@ export default function getChildWorkflowExecutionGroupFromEvents(
   const groupType = 'ChildWorkflowExecution';
 
   const eventToLabel: HistoryGroupEventToStringMap<ChildWorkflowExecutionHistoryGroup> =
-  {
-    startChildWorkflowExecutionInitiatedEventAttributes: 'Initiated',
-    startChildWorkflowExecutionFailedEventAttributes: 'Initiation failed',
-    childWorkflowExecutionStartedEventAttributes: 'Started',
-    childWorkflowExecutionCompletedEventAttributes: 'Completed',
-    childWorkflowExecutionFailedEventAttributes: 'Failed',
-    childWorkflowExecutionCanceledEventAttributes: 'Canceled',
-    childWorkflowExecutionTimedOutEventAttributes: 'Timed out',
-    childWorkflowExecutionTerminatedEventAttributes: 'Terminated',
-  };
+    {
+      startChildWorkflowExecutionInitiatedEventAttributes: 'Initiated',
+      startChildWorkflowExecutionFailedEventAttributes: 'Initiation failed',
+      childWorkflowExecutionStartedEventAttributes: 'Started',
+      childWorkflowExecutionCompletedEventAttributes: 'Completed',
+      childWorkflowExecutionFailedEventAttributes: 'Failed',
+      childWorkflowExecutionCanceledEventAttributes: 'Canceled',
+      childWorkflowExecutionTimedOutEventAttributes: 'Timed out',
+      childWorkflowExecutionTerminatedEventAttributes: 'Terminated',
+    };
   const eventToStatus: HistoryGroupEventToStatusMap<ChildWorkflowExecutionHistoryGroup> =
-  {
-    startChildWorkflowExecutionInitiatedEventAttributes: (
-      _,
-      events,
-      index
-    ) => (index < events.length - 1 ? 'COMPLETED' : 'WAITING'),
-    startChildWorkflowExecutionFailedEventAttributes: 'FAILED',
-    childWorkflowExecutionStartedEventAttributes: (_, events, index) =>
-      index < events.length - 1 ? 'COMPLETED' : 'ONGOING',
-    childWorkflowExecutionCompletedEventAttributes: 'COMPLETED',
-    childWorkflowExecutionFailedEventAttributes: 'FAILED',
-    childWorkflowExecutionCanceledEventAttributes: 'CANCELED',
-    childWorkflowExecutionTimedOutEventAttributes: 'FAILED',
-    childWorkflowExecutionTerminatedEventAttributes: 'FAILED',
-  };
+    {
+      startChildWorkflowExecutionInitiatedEventAttributes: (
+        _,
+        events,
+        index
+      ) => (index < events.length - 1 ? 'COMPLETED' : 'WAITING'),
+      startChildWorkflowExecutionFailedEventAttributes: 'FAILED',
+      childWorkflowExecutionStartedEventAttributes: (_, events, index) =>
+        index < events.length - 1 ? 'COMPLETED' : 'ONGOING',
+      childWorkflowExecutionCompletedEventAttributes: 'COMPLETED',
+      childWorkflowExecutionFailedEventAttributes: 'FAILED',
+      childWorkflowExecutionCanceledEventAttributes: 'CANCELED',
+      childWorkflowExecutionTimedOutEventAttributes: 'FAILED',
+      childWorkflowExecutionTerminatedEventAttributes: 'FAILED',
+    };
 
   return {
     label,

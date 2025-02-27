@@ -1,7 +1,6 @@
 import {
   cancelActivityTaskEvent,
   completeActivityTaskEvent,
-  completedActivityTaskEvents,
   failedActivityTaskEvent,
   scheduleActivityTaskEvent,
   startActivityTaskEvent,
@@ -54,21 +53,24 @@ describe('getActivityGroupFromEvents', () => {
       scheduleActivityTaskEvent,
       startActivityTaskEvent,
     ];
-    const incompleteActivityGroup1 = getActivityGroupFromEvents(missingCloseEvent);
+    const incompleteActivityGroup1 =
+      getActivityGroupFromEvents(missingCloseEvent);
     expect(incompleteActivityGroup1.hasMissingEvents).toBe(true);
 
     const missingScheduleEvent: ActivityHistoryEvent[] = [
       startActivityTaskEvent,
       failedActivityTaskEvent,
     ];
-    const incompleteActivityGroup2 = getActivityGroupFromEvents(missingScheduleEvent);
+    const incompleteActivityGroup2 =
+      getActivityGroupFromEvents(missingScheduleEvent);
     expect(incompleteActivityGroup2.hasMissingEvents).toBe(true);
 
     const missingStartEvent: ActivityHistoryEvent[] = [
       scheduleActivityTaskEvent,
       timeoutActivityTaskEvent,
     ];
-    const incompleteActivityGroup3 = getActivityGroupFromEvents(missingStartEvent);
+    const incompleteActivityGroup3 =
+      getActivityGroupFromEvents(missingStartEvent);
     expect(incompleteActivityGroup3.hasMissingEvents).toBe(true);
 
     const completedEvents: ActivityHistoryEvent[] = [

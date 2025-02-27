@@ -20,7 +20,7 @@ export default function getDecisionGroupFromEvents(
     'decisionTaskCompletedEventAttributes',
     'decisionTaskFailedEventAttributes',
     'decisionTaskTimedOutEventAttributes',
-  ]
+  ];
 
   let scheduleEvent: ExtendedDecisionHistoryEvent | undefined;
   let pendingScheduleEvent: ExtendedDecisionHistoryEvent | undefined;
@@ -34,7 +34,7 @@ export default function getDecisionGroupFromEvents(
     if (closeAttrs.includes(e.attributes)) closeEvent = e;
   });
 
-  const hasMissingEvents =  !scheduleEvent || !startEvent || !closeEvent;
+  const hasMissingEvents = !scheduleEvent || !startEvent || !closeEvent;
 
   let retryAttemptNumber = 0;
   if (

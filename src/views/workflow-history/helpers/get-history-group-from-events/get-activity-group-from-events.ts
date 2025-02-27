@@ -20,8 +20,8 @@ export default function getActivityGroupFromEvents(
     'activityTaskCompletedEventAttributes',
     'activityTaskFailedEventAttributes',
     'activityTaskTimedOutEventAttributes',
-    'activityTaskCanceledEventAttributes'
-  ]
+    'activityTaskCanceledEventAttributes',
+  ];
 
   let scheduleEvent: ExtendedActivityHistoryEvent | undefined;
   let startEvent: ExtendedActivityHistoryEvent | undefined;
@@ -36,7 +36,7 @@ export default function getActivityGroupFromEvents(
   });
 
   const hasMissingEvents = !scheduleEvent || !startEvent || !closeEvent;
-  
+
   // getting group label
   if (scheduleEvent && scheduleAttr in scheduleEvent) {
     label = `Activity ${scheduleEvent[scheduleAttr]?.activityId}: ${scheduleEvent[scheduleAttr]?.activityType?.name}`;
