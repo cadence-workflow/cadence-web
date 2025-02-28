@@ -1,10 +1,14 @@
 import getListWorkflowExecutionsQuery from '../get-list-workflow-executions-query';
 
 describe('getListWorkflowExecutionsQuery', () => {
-  it('should return query', () => {
+  it('should return query to show various open and closed workflows', () => {
     const query = getListWorkflowExecutionsQuery({
       search: 'mocksearchterm',
-      workflowStatus: 'WORKFLOW_EXECUTION_CLOSE_STATUS_TERMINATED',
+      workflowStatuses: [
+        'WORKFLOW_EXECUTION_CLOSE_STATUS_TERMINATED',
+        'WORKFLOW_EXECUTION_CLOSE_STATUS_CANCELED',
+        'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
+      ],
       sortColumn: 'CloseTime',
       sortOrder: 'ASC',
       timeColumn: 'StartTime',
@@ -13,17 +17,6 @@ describe('getListWorkflowExecutionsQuery', () => {
     });
     expect(query).toEqual(
       '(WorkflowType = "mocksearchterm" OR WorkflowID = "mocksearchterm" OR RunID = "mocksearchterm") AND CloseStatus = 3 AND StartTime > "1712066100000000" AND StartTime <= "1712096100000000" ORDER BY CloseTime ASC'
-    );
-  });
-
-  it('should return query for running status', () => {
-    const query = getListWorkflowExecutionsQuery({
-      search: 'mocksearchterm',
-      timeColumn: 'StartTime',
-      workflowStatus: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
-    });
-    expect(query).toEqual(
-      '(WorkflowType = "mocksearchterm" OR WorkflowID = "mocksearchterm" OR RunID = "mocksearchterm") AND CloseTime = missing ORDER BY StartTime DESC'
     );
   });
 

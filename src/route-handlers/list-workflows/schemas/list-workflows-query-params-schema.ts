@@ -16,10 +16,12 @@ const listWorkflowsQueryParamSchema = z
     inputType: z.enum(['search', 'query']),
     search: z.string().trim().optional(),
     query: z.string().optional(),
-    status: z
-      .custom<WorkflowStatus>(isWorkflowStatus, {
-        message: 'Invalid workflow status',
-      })
+    statuses: z
+      .array(
+        z.custom<WorkflowStatus>(isWorkflowStatus, {
+          message: 'Invalid workflow status',
+        })
+      )
       .optional(),
     timeColumn: z
       .enum(['StartTime', 'CloseTime'])
