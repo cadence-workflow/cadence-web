@@ -36,8 +36,9 @@ export default function getDecisionGroupFromEvents(
     if (closeAttrs.includes(e.attributes)) closeEvent = e;
   });
 
-  const hasMissingEvents =
-    !scheduleEvent || !(timeoutEvent || (startEvent && closeEvent));
+  const hasAllTimeoutEvents = scheduleEvent && timeoutEvent;
+  const hasAllCloseEvents = scheduleEvent && startEvent && closeEvent;
+  const hasMissingEvents = !hasAllTimeoutEvents && !hasAllCloseEvents;
 
   let retryAttemptNumber = 0;
   if (
