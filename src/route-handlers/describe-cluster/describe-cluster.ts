@@ -47,7 +47,7 @@ export async function describeCluster(
     return NextResponse.json(sanitizedRes);
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
-      { requestParams: decodedParams, cause: e },
+      { requestParams: decodedParams, error: e },
       'Error fetching cluster info'
     );
 

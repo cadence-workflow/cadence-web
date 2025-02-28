@@ -7,7 +7,7 @@ describe(getArchivalErrorPanelProps.name, () => {
     expect(
       getArchivalErrorPanelProps({
         inputType: 'search',
-        error: new RequestError('Test error', 500),
+        error: new RequestError('Test error', '/archival', 500),
         queryString: 'mock_query_string',
       })
     ).toEqual({
@@ -20,7 +20,7 @@ describe(getArchivalErrorPanelProps.name, () => {
     expect(
       getArchivalErrorPanelProps({
         inputType: 'query',
-        error: new RequestError('Incorrect query', 400),
+        error: new RequestError('Incorrect query', '/archival', 400),
         queryString: 'mock_query_string',
       })
     ).toEqual({
@@ -32,7 +32,7 @@ describe(getArchivalErrorPanelProps.name, () => {
     expect(
       getArchivalErrorPanelProps({
         inputType: 'query',
-        error: new RequestError('Incorrect query', 400),
+        error: new RequestError('Incorrect query', '/archival', 400),
         queryString: '',
       })
     ).toEqual({
