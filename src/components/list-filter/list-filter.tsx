@@ -16,7 +16,9 @@ export default function ListFilter<T extends string>({
   placeholder,
 }: Props<T>) {
   const options = getOptionsFromLabelMap(labelMap);
-  const optionValue = options.filter((option) => option.id === value);
+  const optionValue = value
+    ? [{ id: value, label: labelMap[value] }]
+    : undefined;
 
   return (
     <FormControl label={label} overrides={overrides.selectFormControl}>
