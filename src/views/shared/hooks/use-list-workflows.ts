@@ -23,7 +23,7 @@ export default function useListWorkflows({
   const {
     inputType,
     search,
-    status,
+    statuses,
     timeRangeStart,
     timeRangeEnd,
     sortColumn,
@@ -39,8 +39,7 @@ export default function useListWorkflows({
         }
       : {
           search,
-          // Temporary change, this will be removed in a follow-up
-          statuses: status ? [status] : [],
+          statuses,
           sortColumn,
           sortOrder,
           timeRangeStart: timeRangeStart?.toISOString(),
