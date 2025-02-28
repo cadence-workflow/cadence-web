@@ -39,7 +39,7 @@ describe(TaskListError.name, () => {
   it('renders "not found" error page correctly', () => {
     render(
       <TaskListError
-        error={new RequestError('Could not find domain', 404)}
+        error={new RequestError('Could not find domain', '/tasklist', 404)}
         reset={() => {}}
       />
     );
@@ -51,7 +51,7 @@ describe(TaskListError.name, () => {
   it('renders "forbidden" error page correctly', () => {
     render(
       <TaskListError
-        error={new RequestError('Forbidden', 403)}
+        error={new RequestError('Forbidden', '/tasklist', 403)}
         reset={() => {}}
       />
     );

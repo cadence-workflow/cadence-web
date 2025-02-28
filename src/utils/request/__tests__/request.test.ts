@@ -43,7 +43,7 @@ describe('request on browser env', () => {
     const url = '/api/data';
     const options = { method: 'POST' };
     expect(request(url, options)).rejects.toThrow(
-      new RequestError('test error', 400)
+      new RequestError('test error', '/api/data', 400)
     );
   });
 });

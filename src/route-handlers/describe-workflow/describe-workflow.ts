@@ -140,7 +140,7 @@ export default async function describeWorkflow(
         );
       } else {
         logger.error<RouteHandlerErrorPayload>(
-          { requestParams: decodedParams, cause: e },
+          { requestParams: decodedParams, error: e },
           'Error fetching workflow execution info'
         );
 

@@ -10,17 +10,28 @@ export default function getRequestCancelExternalWorkflowExecutionGroupFromEvents
   events: RequestCancelExternalWorkflowExecutionHistoryEvent[]
 ): RequestCancelExternalWorkflowExecutionHistoryGroup {
   const label = 'Request Cancel External Workflow';
-  let hasMissingEvents = false;
   const groupType = 'RequestCancelExternalWorkflowExecution';
 
-  const firstEvent = events[0];
+  const initiatedAttr =
+    'requestCancelExternalWorkflowExecutionInitiatedEventAttributes';
+  const closeAttrs = [
+    'requestCancelExternalWorkflowExecutionFailedEventAttributes',
+    'externalWorkflowExecutionCancelRequestedEventAttributes',
+  ];
 
-  if (
-    firstEvent.attributes !==
-    'requestCancelExternalWorkflowExecutionInitiatedEventAttributes'
-  ) {
-    hasMissingEvents = true;
-  }
+  let initiatedEvent:
+    | RequestCancelExternalWorkflowExecutionHistoryEvent
+    | undefined;
+  let closeEvent:
+    | RequestCancelExternalWorkflowExecutionHistoryEvent
+    | undefined;
+
+  events.forEach((e) => {
+    if (e.attributes === initiatedAttr) initiatedEvent = e;
+    if (closeAttrs.includes(e.attributes)) closeEvent = e;
+  });
+
+  const hasMissingEvents = !initiatedEvent || !closeEvent;
 
   const eventToLabel: HistoryGroupEventToStringMap<RequestCancelExternalWorkflowExecutionHistoryGroup> =
     {

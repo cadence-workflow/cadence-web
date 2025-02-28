@@ -28,7 +28,7 @@ describe('formatWorkflowHistoryEvent', () => {
       })
     ).toBe(null);
     expect(logger.warn).toHaveBeenCalledWith(
-      { cause: expect.any(ZodError) },
+      { error: expect.any(ZodError) },
       'Failed to format workflow pending event'
     );
   });
