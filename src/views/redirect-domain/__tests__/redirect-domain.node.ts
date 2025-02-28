@@ -60,6 +60,7 @@ describe(RedirectDomain.name, () => {
   const tests: Array<{
     name: string;
     urlParams: Array<string>;
+    queryParams?: { [key: string]: string | string[] | undefined };
     assertOnError?: (e: Error) => void;
     expectedRedirect?: string;
   }> = [
@@ -73,6 +74,22 @@ describe(RedirectDomain.name, () => {
       urlParams: ['mock-domain-unique', 'workflows', 'mock-wfid', 'mock-runid'],
       expectedRedirect:
         '/domains/mock-domain-unique/mock-cluster-1/workflows/mock-wfid/mock-runid',
+    },
+    {
+      name: 'should redirect with query params',
+      urlParams: [
+        'mock-domain-unique',
+        'workflows',
+        'mock-wfid',
+        'mock-runid',
+        'history',
+      ],
+      queryParams: {
+        ht: 'ACTIVITY',
+        hs: 'COMPLETED',
+      },
+      expectedRedirect:
+        '/domains/mock-domain-unique/mock-cluster-1/workflows/mock-wfid/mock-runid/history?ht=ACTIVITY&hs=COMPLETED',
     },
     {
       name: 'should redirect to All Domains page with search param if multiple domains exist',

@@ -4,4 +4,5 @@ export type RouteParams = {
 
 export type Props = {
   params: RouteParams;
+  searchParams?: { [key: string]: string | string[] | undefined };
 };

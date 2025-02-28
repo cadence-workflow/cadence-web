@@ -24,6 +24,7 @@ const nextConfig = {
     // TODO - load tabs configs here to dynamically define redirects
     return [
       {
+        // This regex matches paths that try to load a domain or workflow without specifying the active cluster
         source:
           '/domains/:path((?:[^/]+)(?:/(?:workflows|metadata|settings|archival|task-lists)(?:/.*)?)?)',
         destination: '/redirects/domain/:path',

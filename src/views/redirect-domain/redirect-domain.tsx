@@ -35,5 +35,10 @@ export default async function RedirectDomain(props: Props) {
 
   const baseUrl = `/domains/${encodeURIComponent(domain)}/${encodeURIComponent(domainDetails.activeClusterName)}`;
 
-  redirect(baseUrl + (restParams.length > 0 ? `/${restParams.join('/')}` : ''));
+  redirect(
+    queryString.stringifyUrl({
+      url: baseUrl + (restParams.length > 0 ? `/${restParams.join('/')}` : ''),
+      query: props.searchParams,
+    })
+  );
 }
