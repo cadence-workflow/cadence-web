@@ -14,7 +14,7 @@ export type UseListWorkflowsParams = ListWorkflowsRouteParams & {
   inputType: WorkflowsHeaderInputType;
   listType: ListType;
   search?: string;
-  status?: WorkflowStatus;
+  statuses?: Array<WorkflowStatus>;
   timeRangeStart?: Date;
   timeRangeEnd?: Date;
   sortColumn?: string;
