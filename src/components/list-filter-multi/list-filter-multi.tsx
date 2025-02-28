@@ -25,6 +25,7 @@ export default function ListFilterMulti<T extends string>({
   return (
     <FormControl label={label} overrides={overrides.selectFormControl}>
       <Select
+        multi
         size={SIZE.compact}
         value={optionsValues}
         options={options}
