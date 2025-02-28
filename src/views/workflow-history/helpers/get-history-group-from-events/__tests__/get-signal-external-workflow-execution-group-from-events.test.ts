@@ -22,20 +22,36 @@ describe('getSignalExternalWorkflowExecutionGroupFromEvents', () => {
     expect(group.label).toBe(expectedLabel);
   });
 
-  it('should return a group with hasMissingEvents set to true when initiate event is missing', () => {
-    const signalEvents: SignalExternalWorkflowExecutionHistoryEvent[] = [
-      signalExternalWorkflowEvent,
+  it('should return a group with hasMissingEvents set to true when any event is missing', () => {
+    const assertions: Array<{
+      name: string;
+      events: SignalExternalWorkflowExecutionHistoryEvent[];
+      assertionValue: boolean;
+    }> = [
+      {
+        name: 'missingInitiatedEvent',
+        events: [signalExternalWorkflowEvent],
+        assertionValue: true,
+      },
+      {
+        name: 'missingCloseEvent',
+        events: [initiateSignalExternalWorkflowEvent],
+        assertionValue: true,
+      },
+      {
+        name: 'completeEvents',
+        events: [
+          initiateSignalExternalWorkflowEvent,
+          signalExternalWorkflowEvent,
+        ],
+        assertionValue: false,
+      },
     ];
-    const signalGroup =
-      getSignalExternalWorkflowExecutionGroupFromEvents(signalEvents);
-    expect(signalGroup.hasMissingEvents).toBe(true);
 
-    const failEvents: SignalExternalWorkflowExecutionHistoryEvent[] = [
-      failSignalExternalWorkflowEvent,
-    ];
-    const failedGroup =
-      getSignalExternalWorkflowExecutionGroupFromEvents(failEvents);
-    expect(failedGroup.hasMissingEvents).toBe(true);
+    assertions.forEach(({ name, events, assertionValue }) => {
+      const group = getSignalExternalWorkflowExecutionGroupFromEvents(events);
+      expect([name, group.hasMissingEvents]).toEqual([name, assertionValue]);
+    });
   });
 
   it('should return a group with groupType equal to SignalExternalWorkflowExecution', () => {

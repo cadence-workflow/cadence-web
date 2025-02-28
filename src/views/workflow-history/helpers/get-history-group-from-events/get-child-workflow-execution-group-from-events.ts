@@ -13,18 +13,38 @@ export default function getChildWorkflowExecutionGroupFromEvents(
   const childWorkflowName =
     firstEvent[firstEvent.attributes]?.workflowType?.name;
 
+  const initiatedAttr = 'startChildWorkflowExecutionInitiatedEventAttributes';
+  const startAttr = 'childWorkflowExecutionStartedEventAttributes';
+  const startFailedAttr = 'startChildWorkflowExecutionFailedEventAttributes';
+  const closeAttrs = [
+    'childWorkflowExecutionCompletedEventAttributes',
+    'childWorkflowExecutionFailedEventAttributes',
+    'childWorkflowExecutionCanceledEventAttributes',
+    'childWorkflowExecutionTimedOutEventAttributes',
+    'childWorkflowExecutionTerminatedEventAttributes',
+  ];
+
+  let initiatedEvent: ChildWorkflowExecutionHistoryEvent | undefined;
+  let startFailedEvent: ChildWorkflowExecutionHistoryEvent | undefined;
+  let startEvent: ChildWorkflowExecutionHistoryEvent | undefined;
+  let closeEvent: ChildWorkflowExecutionHistoryEvent | undefined;
+
+  events.forEach((e) => {
+    if (e.attributes === initiatedAttr) initiatedEvent = e;
+    if (e.attributes === startAttr) startEvent = e;
+    if (e.attributes === startFailedAttr) startFailedEvent = e;
+    if (closeAttrs.includes(e.attributes)) closeEvent = e;
+  });
+
+  const hasAllFailureEvents = initiatedEvent && startFailedEvent;
+  const hasAllCloseEvents = initiatedEvent && startEvent && closeEvent;
+  const hasMissingEvents = !hasAllFailureEvents && !hasAllCloseEvents;
+
   const label = childWorkflowName
     ? `Child Workflow: ${childWorkflowName}`
     : 'Child Workflow';
-  let hasMissingEvents = false;
   const groupType = 'ChildWorkflowExecution';
 
-  if (
-    firstEvent.attributes !==
-    'startChildWorkflowExecutionInitiatedEventAttributes'
-  ) {
-    hasMissingEvents = true;
-  }
   const eventToLabel: HistoryGroupEventToStringMap<ChildWorkflowExecutionHistoryGroup> =
     {
       startChildWorkflowExecutionInitiatedEventAttributes: 'Initiated',
