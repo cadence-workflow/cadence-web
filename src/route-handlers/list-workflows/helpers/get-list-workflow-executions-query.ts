@@ -42,7 +42,7 @@ export default function getListWorkflowExecutionsQuery({
   });
 
   if (workflowStatusQueries.length > 0) {
-    searchQueries.push(`(${workflowStatusQueries.join(' AND ')})`);
+    searchQueries.push(`(${workflowStatusQueries.join(' OR ')})`);
   }
 
   if (timeRangeStart) {

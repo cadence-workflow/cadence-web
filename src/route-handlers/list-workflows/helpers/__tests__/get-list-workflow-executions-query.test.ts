@@ -16,7 +16,9 @@ describe('getListWorkflowExecutionsQuery', () => {
       timeRangeEnd: '1712096100000000',
     });
     expect(query).toEqual(
-      '(WorkflowType = "mocksearchterm" OR WorkflowID = "mocksearchterm" OR RunID = "mocksearchterm") AND CloseStatus = 3 AND StartTime > "1712066100000000" AND StartTime <= "1712096100000000" ORDER BY CloseTime ASC'
+      '(WorkflowType = "mocksearchterm" OR WorkflowID = "mocksearchterm" OR RunID = "mocksearchterm") AND ' +
+        '(CloseStatus = 3 OR CloseStatus = 2 OR CloseTime = missing) AND ' +
+        'StartTime > "1712066100000000" AND StartTime <= "1712096100000000" ORDER BY CloseTime ASC'
     );
   });
 
