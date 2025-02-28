@@ -86,6 +86,13 @@ export default function DateFilter({
         clearable={clearable}
         timeSelectStart
         timeSelectEnd
+        overrides={{
+          TimeSelect: {
+            props: {
+              creatable: true,
+            },
+          },
+        }}
       />
     </FormControl>
   );
