@@ -23,7 +23,7 @@ export default function useListWorkflows({
   const {
     inputType,
     search,
-    status,
+    statuses,
     timeRangeStart,
     timeRangeEnd,
     sortColumn,
