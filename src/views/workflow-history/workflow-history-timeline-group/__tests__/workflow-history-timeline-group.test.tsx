@@ -104,7 +104,6 @@ function setup({
 }: Partial<Props>) {
   return render(
     <WorkflowHistoryTimelineGroup
-      statusReady
       events={events}
       eventsMetadata={eventsMetadata}
       isLastEvent={isLastEvent}

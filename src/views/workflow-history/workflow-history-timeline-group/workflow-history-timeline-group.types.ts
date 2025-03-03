@@ -17,7 +17,6 @@ export type Props = Pick<
   | 'status'
   | 'badges'
 > & {
-  statusReady: boolean;
   isLastEvent: boolean;
   decodedPageUrlParams: WorkflowHistoryProps['params'];
   getIsEventExpanded: GetIsEventExpanded;

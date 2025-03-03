@@ -402,9 +402,6 @@ export default function WorkflowHistory({ params }: Props) {
                 <WorkflowHistoryTimelineGroup
                   key={groupId}
                   status={group.status}
-                  statusReady={
-                    !group.hasMissingEvents || reachedAvailableHistoryEnd
-                  }
                   label={group.label}
                   timeLabel={group.timeLabel}
                   events={group.events}
