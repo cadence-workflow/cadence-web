@@ -3,12 +3,12 @@ import type {
   VisibleHistoryGroupRanges,
 } from '../workflow-history.types';
 
-export default function getVisibleGroupsWithMissingEvents(
+export default function getVisibileGroupsHasMissingEvents(
   groupEntries: Array<[string, Pick<HistoryEventsGroup, 'hasMissingEvents'>]>,
-  visibileRanges: VisibleHistoryGroupRanges
+  visibleRanges: VisibleHistoryGroupRanges
 ): boolean {
   const { startIndex, endIndex, compactStartIndex, compactEndIndex } =
-    visibileRanges;
+    visibleRanges;
   const visibleHasMissing = groupEntries
     .slice(startIndex, endIndex + 1)
     .some(([_, { hasMissingEvents }]) => hasMissingEvents);

@@ -28,7 +28,7 @@ import workflowPageQueryParamsConfig from '../workflow-page/config/workflow-page
 import useDescribeWorkflow from '../workflow-page/hooks/use-describe-workflow';
 
 import workflowHistoryFiltersConfig from './config/workflow-history-filters.config';
-import getVisibleGroupsWithMissingEvents from './helpers/get-visible-groups-with-missing-events';
+import getVisibleGroupsHasMissingEvents from './helpers/get-visible-groups-has-missing-events';
 import { groupHistoryEvents } from './helpers/group-history-events';
 import pendingActivitiesInfoToEvents from './helpers/pending-activities-info-to-events';
 import pendingDecisionInfoToEvent from './helpers/pending-decision-info-to-event';
@@ -190,7 +190,7 @@ export default function WorkflowHistory({ params }: Props) {
     result.pages[result.pages.length - 1].history?.events.length === 0;
 
   const visibleGroupsHasMissingEvents = useMemo(() => {
-    return getVisibleGroupsWithMissingEvents(
+    return getVisibleGroupsHasMissingEvents(
       filteredEventGroupsEntries,
       visibleGroupsRange
     );
@@ -385,7 +385,7 @@ export default function WorkflowHistory({ params }: Props) {
               rangeChanged={({ startIndex, endIndex }) =>
                 setTimelineListVisibleRange((currentRanges) => ({
                   ...currentRanges,
-                  startIndex: startIndex,
+                  startIndex,
                   endIndex,
                 }))
               }

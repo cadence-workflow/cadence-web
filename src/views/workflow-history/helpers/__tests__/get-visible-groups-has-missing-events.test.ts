@@ -1,6 +1,6 @@
-import getVisibleGroupsWithMissingEvents from '../get-visible-groups-with-missing-events';
+import getVisibleGroupsHasMissingEvents from '../get-visible-groups-has-missing-events';
 
-describe('getVisibleGroupsWithMissingEvents', () => {
+describe('getVisibleGroupsHasMissingEvents', () => {
   const groupEntries: [string, { hasMissingEvents: boolean }][] = [
     ['group1', { hasMissingEvents: false }],
     ['group2', { hasMissingEvents: true }],
@@ -15,7 +15,7 @@ describe('getVisibleGroupsWithMissingEvents', () => {
       compactStartIndex: 2,
       compactEndIndex: 3,
     };
-    expect(getVisibleGroupsWithMissingEvents(groupEntries, visibleRanges)).toBe(
+    expect(getVisibleGroupsHasMissingEvents(groupEntries, visibleRanges)).toBe(
       true
     );
   });
@@ -27,7 +27,7 @@ describe('getVisibleGroupsWithMissingEvents', () => {
       compactStartIndex: 2,
       compactEndIndex: 3,
     };
-    expect(getVisibleGroupsWithMissingEvents(groupEntries, visibleRanges)).toBe(
+    expect(getVisibleGroupsHasMissingEvents(groupEntries, visibleRanges)).toBe(
       true
     );
   });
@@ -39,7 +39,7 @@ describe('getVisibleGroupsWithMissingEvents', () => {
       compactStartIndex: 2,
       compactEndIndex: 2,
     };
-    expect(getVisibleGroupsWithMissingEvents(groupEntries, visibleRanges)).toBe(
+    expect(getVisibleGroupsHasMissingEvents(groupEntries, visibleRanges)).toBe(
       false
     );
   });
@@ -51,7 +51,7 @@ describe('getVisibleGroupsWithMissingEvents', () => {
       compactStartIndex: 0,
       compactEndIndex: 0,
     };
-    expect(getVisibleGroupsWithMissingEvents([], visibleRanges)).toBe(false);
+    expect(getVisibleGroupsHasMissingEvents([], visibleRanges)).toBe(false);
   });
 
   it('should handle out of range numbers and return false', () => {
@@ -61,7 +61,7 @@ describe('getVisibleGroupsWithMissingEvents', () => {
       compactStartIndex: 100,
       compactEndIndex: 200,
     };
-    expect(getVisibleGroupsWithMissingEvents(groupEntries, visibleRanges)).toBe(
+    expect(getVisibleGroupsHasMissingEvents(groupEntries, visibleRanges)).toBe(
       false
     );
   });
