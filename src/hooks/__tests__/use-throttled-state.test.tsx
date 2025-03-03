@@ -81,5 +81,4 @@ describe('useThrottledState', () => {
     jest.advanceTimersByTime(10000);
     await waitFor(() => expect(result.current[0]).toBe(3));
   });
-
 });

@@ -12,7 +12,6 @@ export default function useThrottledState<State>(
   const stateRef = useRef(initValue);
   const [, setState] = useState<State>(initValue);
 
-
   const throttledRerender = useMemo(
     () => throttle(setState, throttleMillis, { leading, trailing }),
     [setState, throttleMillis, leading, trailing]
