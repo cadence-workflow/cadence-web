@@ -107,7 +107,7 @@ const domainPageQueryParamsConfig: [
   },
   {
     key: 'statusesArchival',
-    queryParamKey: 'astatus',
+    queryParamKey: 'astatuses',
     isMultiValue: true,
     parseValue: (value: Array<string>) =>
       value.every(
