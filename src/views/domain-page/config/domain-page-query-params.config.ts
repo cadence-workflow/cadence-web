@@ -115,7 +115,7 @@ const domainPageQueryParamsConfig: [
           isWorkflowStatus(status) &&
           status !== 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
       )
-        ? value
+        ? (value as Array<WorkflowStatusClosed>)
         : undefined,
   },
   {
