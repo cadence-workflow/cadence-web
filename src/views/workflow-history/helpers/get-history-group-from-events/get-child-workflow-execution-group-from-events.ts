@@ -36,8 +36,9 @@ export default function getChildWorkflowExecutionGroupFromEvents(
     if (closeAttrs.includes(e.attributes)) closeEvent = e;
   });
 
-  const hasMissingEvents =
-    !initiatedEvent || !(startFailedEvent || (startEvent && closeEvent));
+  const hasAllFailureEvents = initiatedEvent && startFailedEvent;
+  const hasAllCloseEvents = initiatedEvent && startEvent && closeEvent;
+  const hasMissingEvents = !hasAllFailureEvents && !hasAllCloseEvents;
 
   const label = childWorkflowName
     ? `Child Workflow: ${childWorkflowName}`

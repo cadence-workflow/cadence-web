@@ -45,7 +45,7 @@ export async function cancelWorkflow(
     return NextResponse.json({} satisfies CancelWorkflowResponse);
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
-      { requestParams: decodedParams, cause: e },
+      { requestParams: decodedParams, error: e },
       'Error cancelling workflow'
     );
 

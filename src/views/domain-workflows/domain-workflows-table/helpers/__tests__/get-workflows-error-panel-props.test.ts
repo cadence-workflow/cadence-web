@@ -7,7 +7,7 @@ describe(getWorkflowsErrorPanelProps.name, () => {
     expect(
       getWorkflowsErrorPanelProps({
         inputType: 'search',
-        error: new RequestError('Test error', 500),
+        error: new RequestError('Test error', '/workflows', 500),
         areSearchParamsAbsent: false,
       })
     ).toEqual({
@@ -20,7 +20,7 @@ describe(getWorkflowsErrorPanelProps.name, () => {
     expect(
       getWorkflowsErrorPanelProps({
         inputType: 'query',
-        error: new RequestError('Incorrect query', 400),
+        error: new RequestError('Incorrect query', '/workflows', 400),
         areSearchParamsAbsent: false,
       })
     ).toEqual({
@@ -32,7 +32,7 @@ describe(getWorkflowsErrorPanelProps.name, () => {
     expect(
       getWorkflowsErrorPanelProps({
         inputType: 'search',
-        error: new RequestError('Incorrect query', 403),
+        error: new RequestError('Access denied', '/workflows', 403),
         areSearchParamsAbsent: false,
       })
     ).toEqual({

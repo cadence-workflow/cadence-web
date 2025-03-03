@@ -37,8 +37,9 @@ export default function getActivityGroupFromEvents(
     if (closeAttrs.includes(e.attributes)) closeEvent = e;
   });
 
-  const hasMissingEvents =
-    !scheduleEvent || !(timeoutEvent || (startEvent && closeEvent));
+  const hasAllTimeoutEvents = scheduleEvent && timeoutEvent;
+  const hasAllCloseEvents = scheduleEvent && startEvent && closeEvent;
+  const hasMissingEvents = !hasAllTimeoutEvents && !hasAllCloseEvents;
 
   // getting group label
   if (scheduleEvent && scheduleAttr in scheduleEvent) {

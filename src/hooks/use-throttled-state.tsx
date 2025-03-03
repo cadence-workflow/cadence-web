@@ -12,30 +12,27 @@ export default function useThrottledState<State>(
   const stateRef = useRef(initValue);
   const [, setState] = useState<State>(initValue);
 
-  const throttledSetState = useMemo(
+
+  const throttledRerender = useMemo(
     () => throttle(setState, throttleMillis, { leading, trailing }),
     [setState, throttleMillis, leading, trailing]
   );
 
   // clear previous throttled events
   useEffect(() => {
-    return () => throttledSetState.cancel();
-  }, [throttledSetState]);
+    return () => throttledRerender.cancel();
+  }, [throttledRerender]);
 
   const refSetState = useCallback(
     (callback: (arg: State) => State, executeImmediately?: boolean): void => {
-      if (typeof callback !== 'function')
-        throw new Error(
-          'useThrottledState setter function requires function as first argument'
-        );
       const newVal = callback(stateRef.current);
       stateRef.current = newVal;
-      throttledSetState(newVal);
+      throttledRerender(newVal);
       if (executeImmediately) {
-        throttledSetState.flush();
+        throttledRerender.flush();
       }
     },
-    [throttledSetState]
+    [throttledRerender]
   );
 
   return [stateRef.current, refSetState] as const;

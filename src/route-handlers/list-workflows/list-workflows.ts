@@ -68,7 +68,7 @@ export async function listWorkflows(
     return NextResponse.json(response);
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
-      { requestParams: decodedParams, queryParams, cause: e },
+      { requestParams: decodedParams, queryParams, error: e },
       'Error fetching workflows' +
         (e instanceof GRPCError ? ': ' + e.message : '')
     );

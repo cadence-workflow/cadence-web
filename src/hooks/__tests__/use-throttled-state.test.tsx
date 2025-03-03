@@ -82,17 +82,4 @@ describe('useThrottledState', () => {
     await waitFor(() => expect(result.current[0]).toBe(3));
   });
 
-  it('should throw an error if non-function is passed to setState', () => {
-    const { result } = renderHook(() => useThrottledState(0));
-    const setState = result.current[1];
-
-    expect(() => {
-      act(() => {
-        //@ts-expect-error testing non functional arguments error
-        setState(1);
-      });
-    }).toThrow(
-      'useThrottledState setter function requires function as first argument'
-    );
-  });
 });
