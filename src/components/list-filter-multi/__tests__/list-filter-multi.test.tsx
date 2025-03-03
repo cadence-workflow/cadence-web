@@ -55,7 +55,7 @@ describe(ListFilterMulti.name, () => {
       override: ['opt2'],
     });
 
-    const clearButton = screen.getByLabelText('Clear value');
+    const clearButton = screen.getByLabelText('Clear all');
     await user.click(clearButton);
 
     expect(mockOnChangeValues).toHaveBeenCalledWith(undefined);
