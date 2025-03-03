@@ -1,7 +1,7 @@
 import { createElement } from 'react';
 
 import DateFilter from '@/components/date-filter/date-filter';
-import ListFilter from '@/components/list-filter/list-filter';
+import ListFilterMulti from '@/components/list-filter-multi/list-filter-multi';
 import { type PageFilterConfig } from '@/components/page-filters/page-filters.types';
 import type domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
 import { WORKFLOW_STATUS_NAMES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
@@ -10,7 +10,7 @@ import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow
 const domainWorkflowsFiltersConfig: [
   PageFilterConfig<
     typeof domainPageQueryParamsConfig,
-    { status: WorkflowStatus | undefined }
+    { statuses: Array<WorkflowStatus> | undefined }
   >,
   PageFilterConfig<
     typeof domainPageQueryParamsConfig,
@@ -18,15 +18,15 @@ const domainWorkflowsFiltersConfig: [
   >,
 ] = [
   {
-    id: 'status',
-    getValue: (v) => ({ status: v.status }),
+    id: 'statuses',
+    getValue: (v) => ({ statuses: v.statuses }),
     formatValue: (v) => v,
     component: ({ value, setValue }) =>
-      createElement(ListFilter<WorkflowStatus>, {
+      createElement(ListFilterMulti<WorkflowStatus>, {
         label: 'Status',
         placeholder: 'Show all statuses',
-        value: value.status,
-        onChangeValue: (v) => setValue({ status: v }),
+        values: value.statuses,
+        onChangeValues: (v) => setValue({ statuses: v }),
         labelMap: WORKFLOW_STATUS_NAMES,
       }),
   },
