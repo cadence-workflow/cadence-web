@@ -35,7 +35,7 @@ describe('WorkflowHistoryEventStatusBadge', () => {
       <WorkflowHistoryEventStatusBadge
         status="COMPLETED"
         statusReady
-      // @ts-expect-error invalid size
+        // @ts-expect-error invalid size
         size="invalid"
       />
     );
