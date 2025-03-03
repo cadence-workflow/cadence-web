@@ -4,6 +4,11 @@ import { SORT_ORDERS } from '@/utils/sort-by';
 import isWorkflowStatus from '@/views/shared/workflow-status-tag/helpers/is-workflow-status';
 import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
 
+// TODO: this should go in a shared location
+const workflowStatusSchema = z.custom<WorkflowStatus>(isWorkflowStatus, {
+  message: 'Invalid workflow status',
+});
+
 const listWorkflowsQueryParamSchema = z
   .object({
     pageSize: z
@@ -16,10 +21,11 @@ const listWorkflowsQueryParamSchema = z
     inputType: z.enum(['search', 'query']),
     search: z.string().trim().optional(),
     query: z.string().optional(),
-    status: z
-      .custom<WorkflowStatus>(isWorkflowStatus, {
-        message: 'Invalid workflow status',
-      })
+    statuses: z
+      .union([
+        workflowStatusSchema.transform((status) => [status]),
+        z.array(workflowStatusSchema),
+      ])
       .optional(),
     timeColumn: z
       .enum(['StartTime', 'CloseTime'])

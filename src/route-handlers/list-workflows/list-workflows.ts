@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server';
+import queryString from 'query-string';
 
 import decodeUrlParams from '@/utils/decode-url-params';
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
@@ -22,7 +23,7 @@ export async function listWorkflows(
   const decodedParams = decodeUrlParams(requestParams.params) as RouteParams;
 
   const { data: queryParams, error } = listWorkflowsQueryParamSchema.safeParse(
-    Object.fromEntries(request.nextUrl.searchParams)
+    queryString.parse(request.nextUrl.searchParams.toString())
   );
   if (error) {
     return NextResponse.json(
@@ -45,7 +46,7 @@ export async function listWorkflows(
         ? queryParams.query
         : getListWorkflowExecutionsQuery({
             search: queryParams.search,
-            workflowStatus: queryParams.status,
+            workflowStatuses: queryParams.statuses,
             sortColumn: queryParams.sortColumn,
             sortOrder: queryParams.sortOrder,
             timeColumn: queryParams.timeColumn,

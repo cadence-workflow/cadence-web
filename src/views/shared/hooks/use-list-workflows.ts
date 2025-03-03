@@ -39,7 +39,8 @@ export default function useListWorkflows({
         }
       : {
           search,
-          status,
+          // Temporary change, this will be removed in a follow-up
+          statuses: status ? [status] : [],
           sortColumn,
           sortOrder,
           timeRangeStart: timeRangeStart?.toISOString(),
