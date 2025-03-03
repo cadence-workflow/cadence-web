@@ -33,7 +33,8 @@ describe('WorkflowHistoryEventStatusBadge', () => {
   it('should match snapshot when size is not valid and icon should not be rendered', () => {
     const { container } = render(
       <WorkflowHistoryEventStatusBadge
-        status="COMPLETED"
+        // @ts-expect-error invalid status
+        status="COMPLETE"
         statusReady
         // @ts-expect-error invalid size
         size="invalid"
