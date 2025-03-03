@@ -51,6 +51,7 @@ const domainPageQueryParamsConfig: [
   },
   {
     key: 'statuses',
+    queryParamKey: 'status',
     isMultiValue: true,
     parseValue: (value: Array<string>) =>
       value.every(isWorkflowStatus) ? value : undefined,
@@ -107,7 +108,7 @@ const domainPageQueryParamsConfig: [
   },
   {
     key: 'statusesArchival',
-    queryParamKey: 'astatuses',
+    queryParamKey: 'astatus',
     isMultiValue: true,
     parseValue: (value: Array<string>) =>
       value.every(
