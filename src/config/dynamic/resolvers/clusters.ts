@@ -27,7 +27,7 @@ export default function clusters() {
     ['cadence-frontend']
   );
   if (
-    clusterNames.length !== peers.length &&
+    clusterNames.length !== peers.length ||
     clusterNames.length !== serviceNames.length
   ) {
     throw new Error(

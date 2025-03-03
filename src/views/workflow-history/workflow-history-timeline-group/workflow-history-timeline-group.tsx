@@ -17,6 +17,7 @@ import { type Props } from './workflow-history-timeline-group.types';
 
 export default function WorkflowHistoryTimelineGroup({
   status,
+  statusReady,
   label,
   timeLabel,
   events,
@@ -33,7 +34,11 @@ export default function WorkflowHistoryTimelineGroup({
   return (
     <div className={cls.groupContainer}>
       <div className={cls.timelineEventHeader}>
-        <WorkflowHistoryEventStatusBadge status={status} size="medium" />
+        <WorkflowHistoryEventStatusBadge
+          status={status}
+          statusReady={statusReady}
+          size="medium"
+        />
         <div className={cls.timelineEventLabelAndTime}>
           <div className={cls.timelineEventsLabel}>{label}</div>
           {hasBadges && (
