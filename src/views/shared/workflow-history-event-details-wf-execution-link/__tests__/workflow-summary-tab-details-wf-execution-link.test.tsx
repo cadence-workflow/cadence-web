@@ -18,11 +18,18 @@ describe('WorkflowHistoryEventDetailsExecutionLink', () => {
   it('should render the link with correct workflow run link', () => {
     render(<WorkflowHistoryEventDetailsExecutionLink {...props} />);
 
-    const linkElement = screen.getByText(props.runId).closest('a');
+    const linkElement = screen.getByRole('link');
     expect(linkElement).toHaveAttribute(
       'href',
       `/domains/${props.domain}/${props.cluster}/workflows/${props.workflowId}/${props.runId}`
     );
+  });
+
+  it('should render runId as a the link text for workflow run link', () => {
+    render(<WorkflowHistoryEventDetailsExecutionLink {...props} />);
+
+    const linkElement = screen.getByRole('link', { name: props.runId });
+    expect(linkElement).toBeInTheDocument();
   });
 
   it('should render the link with correct workflow search link', () => {
@@ -35,11 +42,25 @@ describe('WorkflowHistoryEventDetailsExecutionLink', () => {
       />
     );
 
-    const linkElement = screen.getByText(props.workflowId).closest('a');
+    const linkElement = screen.getByRole('link');
     expect(linkElement).toHaveAttribute(
       'href',
       `/domains/${props.domain}/${props.cluster}/workflows?search=${props.workflowId}`
     );
+  });
+
+  it('should render workflowId as a the link text for workflow search link', () => {
+    render(
+      <WorkflowHistoryEventDetailsExecutionLink
+        domain={props.domain}
+        cluster={props.cluster}
+        workflowId={props.workflowId}
+        runId=""
+      />
+    );
+
+    const linkElement = screen.getByRole('link', { name: props.workflowId });
+    expect(linkElement).toBeInTheDocument();
   });
 
   it('should not render link if runId and workflowId is missing', () => {
