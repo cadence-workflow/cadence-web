@@ -59,14 +59,8 @@ const workflowHistoryEventDetailsConfig = [
   },
   {
     name: 'WorkflowExecution as link',
-    customMatcher: ({ value, path }) => {
-      const isWorkflowExecution =
-        /(parentWorkflowExecution|externalWorkflowExecution|workflowExecution)$/.test(
-          path
-        );
-      if (!isWorkflowExecution) return false;
-      return Boolean(value?.runId) && Boolean(value?.workflowId);
-    },
+    pathRegex:
+      '(parentWorkflowExecution|externalWorkflowExecution|workflowExecution)$',
     valueComponent: ({ entryValue, domain, cluster }) => {
       return createElement(WorkflowHistoryEventDetailsExecutionLink, {
         domain,

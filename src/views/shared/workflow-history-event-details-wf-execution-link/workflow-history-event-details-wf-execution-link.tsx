@@ -11,14 +11,20 @@ export default function WorkflowHistoryEventDetailsExecutionLink({
   cluster,
   domain,
 }: Props) {
-  const noMissingData = Boolean(domain && cluster && workflowId && runId);
+  const linkText = runId || workflowId;
+  if (!linkText) return null;
 
-  const href = noMissingData
-    ? `/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows/${encodeURIComponent(workflowId)}/${encodeURIComponent(runId)}`
-    : '';
+  let href = '';
+  if (domain && cluster && workflowId) {
+    href = runId
+      ? `/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows/${encodeURIComponent(workflowId)}/${encodeURIComponent(runId)}`
+      : // TODO: @assem.hafez make query params type safe
+        `/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows?search=${encodeURIComponent(workflowId)}`;
+  }
+
   return (
     <Link href={href} style={{ fontWeight: 'inherit' }}>
-      {runId}
+      {linkText}
     </Link>
   );
 }
