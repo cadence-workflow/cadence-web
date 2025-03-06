@@ -80,7 +80,7 @@
     "tstyche": "^3.0.0",
     "typescript": "^5.3.3",
     "typescript-eslint": "^7.13.0",
-    "undici": "^6.19.2"
+    "undici": "^6.21.1"
   },
   "overrides": {
     "d3-color": "3.1.0",
