@@ -42,6 +42,7 @@ export default function WorkflowHistoryEventsCard({
             title={
               <>
                 <WorkflowHistoryEventStatusBadge
+                  statusReady={true}
                   size="small"
                   status={eventMetadata.status}
                 />
@@ -66,11 +67,13 @@ export default function WorkflowHistoryEventsCard({
                 width={getBadgeContainerSize(theme, 'small')}
                 height={getBadgeContainerSize(theme, 'small')}
                 overrides={overrides.circularSkeleton}
+                animation
               />
               <Skeleton
                 rows={0}
                 width="100px"
                 height={theme.typography.LabelSmall.lineHeight.toString()}
+                animation
               />
             </div>
           }

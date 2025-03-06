@@ -10,26 +10,30 @@ export default function getSignalExternalWorkflowExecutionGroupFromEvents(
   events: SignalExternalWorkflowExecutionHistoryEvent[]
 ): SignalExternalWorkflowExecutionHistoryGroup {
   let label = '';
-  let hasMissingEvents = false;
   const groupType = 'SignalExternalWorkflowExecution';
 
-  const initiationEventAttr =
+  const initiatedAttr =
     'signalExternalWorkflowExecutionInitiatedEventAttributes';
-  const initiationEvent = events.find(
-    ({ attributes }) => attributes === initiationEventAttr
-  );
-  const firstEvent = events[0];
 
-  if (initiationEvent) {
-    label = `External Workflow Signal: ${initiationEvent[initiationEventAttr]?.signalName}`;
+  const closeAttrs = [
+    'signalExternalWorkflowExecutionFailedEventAttributes',
+    'externalWorkflowExecutionSignaledEventAttributes',
+  ];
+
+  let initiatedEvent: SignalExternalWorkflowExecutionHistoryEvent | undefined;
+  let closeEvent: SignalExternalWorkflowExecutionHistoryEvent | undefined;
+
+  events.forEach((e) => {
+    if (e.attributes === initiatedAttr) initiatedEvent = e;
+    if (closeAttrs.includes(e.attributes)) closeEvent = e;
+  });
+
+  const hasMissingEvents = !initiatedEvent || !closeEvent;
+
+  if (initiatedEvent) {
+    label = `External Workflow Signal: ${initiatedEvent[initiatedAttr]?.signalName}`;
   }
 
-  if (
-    firstEvent.attributes !==
-    'signalExternalWorkflowExecutionInitiatedEventAttributes'
-  ) {
-    hasMissingEvents = true;
-  }
   const eventToLabel: HistoryGroupEventToStringMap<SignalExternalWorkflowExecutionHistoryGroup> =
     {
       signalExternalWorkflowExecutionInitiatedEventAttributes: 'Initiated',

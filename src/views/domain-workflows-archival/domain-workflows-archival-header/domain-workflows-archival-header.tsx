@@ -28,7 +28,7 @@ export default function DomainWorkflowsArchivalHeader({
     listType: 'archived',
     inputType: queryParams.inputTypeArchival,
     search: queryParams.searchArchival,
-    status: queryParams.statusArchival,
+    statuses: queryParams.statusesArchival,
     timeRangeStart: queryParams.timeRangeStartArchival,
     timeRangeEnd: queryParams.timeRangeEndArchival,
     sortColumn: queryParams.sortColumnArchival,

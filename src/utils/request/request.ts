@@ -13,12 +13,14 @@ export default async function request(
     const port = await getConfigValue('CADENCE_WEB_PORT');
     absoluteUrl = `http://127.0.0.1:${port}${url}`;
   }
+
   return fetch(absoluteUrl, { cache: 'no-cache', ...(options || {}) }).then(
     async (res) => {
       if (!res.ok) {
         const error = await res.json();
         throw new RequestError(
           error.message,
+          url,
           res.status,
           error.validationErrors,
           {

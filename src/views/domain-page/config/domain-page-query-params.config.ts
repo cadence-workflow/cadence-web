@@ -1,4 +1,7 @@
-import { type PageQueryParam } from '@/hooks/use-page-query-params/use-page-query-params.types';
+import {
+  type PageQueryParamMultiValue,
+  type PageQueryParam,
+} from '@/hooks/use-page-query-params/use-page-query-params.types';
 import parseDateQueryParam from '@/utils/datetime/parse-date-query-param';
 import { type SortOrder } from '@/utils/sort-by';
 import { type WorkflowStatusClosed } from '@/views/domain-workflows-archival/domain-workflows-archival-header/domain-workflows-archival-header.types';
@@ -12,7 +15,7 @@ const domainPageQueryParamsConfig: [
   PageQueryParam<'inputType', WorkflowsHeaderInputType>,
   // Search input
   PageQueryParam<'search', string>,
-  PageQueryParam<'status', WorkflowStatus | undefined>,
+  PageQueryParamMultiValue<'statuses', Array<WorkflowStatus> | undefined>,
   PageQueryParam<'timeRangeStart', Date | undefined>,
   PageQueryParam<'timeRangeEnd', Date | undefined>,
   PageQueryParam<'sortColumn', string>,
@@ -26,7 +29,10 @@ const domainPageQueryParamsConfig: [
   // Archival inputs
   PageQueryParam<'inputTypeArchival', WorkflowsHeaderInputType>,
   PageQueryParam<'searchArchival', string>,
-  PageQueryParam<'statusArchival', WorkflowStatusClosed | undefined>,
+  PageQueryParamMultiValue<
+    'statusesArchival',
+    Array<WorkflowStatusClosed> | undefined
+  >,
   PageQueryParam<'timeRangeStartArchival', Date | undefined>,
   PageQueryParam<'timeRangeEndArchival', Date | undefined>,
   PageQueryParam<'sortColumnArchival', string>,
@@ -44,9 +50,11 @@ const domainPageQueryParamsConfig: [
     defaultValue: '',
   },
   {
-    key: 'status',
-    parseValue: (value: string) =>
-      isWorkflowStatus(value) ? value : undefined,
+    key: 'statuses',
+    queryParamKey: 'status',
+    isMultiValue: true,
+    parseValue: (value: Array<string>) =>
+      value.every(isWorkflowStatus) ? value : undefined,
   },
   {
     key: 'timeRangeStart',
@@ -99,12 +107,16 @@ const domainPageQueryParamsConfig: [
     defaultValue: '',
   },
   {
-    key: 'statusArchival',
+    key: 'statusesArchival',
     queryParamKey: 'astatus',
-    parseValue: (value: string) =>
-      isWorkflowStatus(value) &&
-      value !== 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
-        ? value
+    isMultiValue: true,
+    parseValue: (value: Array<string>) =>
+      value.every(
+        (status) =>
+          isWorkflowStatus(status) &&
+          status !== 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
+      )
+        ? (value as Array<WorkflowStatusClosed>)
         : undefined,
   },
   {

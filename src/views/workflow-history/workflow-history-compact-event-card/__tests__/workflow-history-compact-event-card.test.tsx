@@ -67,6 +67,7 @@ function setup(props: Partial<Props>) {
   return {
     ...render(
       <WorkflowHistoryCompactEventCard
+        statusReady
         status="COMPLETED"
         label="test label"
         secondaryLabel="test secondaryLabel"

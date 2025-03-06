@@ -19,7 +19,7 @@ export default function DomainWorkflowsHeader({ domain, cluster }: Props) {
     pageSize: DOMAIN_WORKFLOWS_PAGE_SIZE,
     inputType: queryParams.inputType,
     search: queryParams.search,
-    status: queryParams.status,
+    statuses: queryParams.statuses,
     timeRangeStart: queryParams.timeRangeStart,
     timeRangeEnd: queryParams.timeRangeEnd,
     sortColumn: queryParams.sortColumn,

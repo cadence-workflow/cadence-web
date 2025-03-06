@@ -72,7 +72,7 @@ describe('routeHandlerWithMiddlewares', () => {
     expect(result).toBeInstanceOf(NextResponse);
     expect(result.status).toBe(500);
     expect(logger.error).toHaveBeenCalledWith(
-      { cause: mockError },
+      { error: mockError },
       `Error in Middlewares: ${mockRequest.url}`
     );
     expect(mockRequestHandler).not.toHaveBeenCalled();

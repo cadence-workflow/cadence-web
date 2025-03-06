@@ -19,7 +19,7 @@ describe('WorkflowHistoryTimelineLoadMore', () => {
 
   it('renders error message if there is an error, and allows retrying', () => {
     const { mockFetchNextPage } = setup({
-      error: new RequestError('An error occurred', 500),
+      error: new RequestError('An error occurred', '/history', 500),
     });
 
     expect(screen.getByText(/Failed to load more items./)).toBeInTheDocument();

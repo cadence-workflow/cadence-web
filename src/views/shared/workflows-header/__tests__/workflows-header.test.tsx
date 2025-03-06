@@ -12,12 +12,12 @@ import WorkflowsHeader from '../workflows-header';
 const mockFiltersConfig: [
   PageFilterConfig<
     typeof domainPageQueryParamsConfig,
-    { status: WorkflowStatus | undefined }
+    { statuses: Array<WorkflowStatus> | undefined }
   >,
 ] = [
   {
     id: 'filter1',
-    getValue: (queryParams) => ({ status: queryParams.status }),
+    getValue: (queryParams) => ({ statuses: queryParams.statuses }),
     formatValue: (v) => v,
     component: () => <div>filter</div>,
   },
