@@ -5,6 +5,7 @@ import { type HistoryGroupBadge } from '../workflow-history.types';
 
 export type Props = {
   status: WorkflowEventStatus;
+  statusReady: boolean;
   label: string;
   secondaryLabel: string;
   showLabelPlaceholder?: boolean;

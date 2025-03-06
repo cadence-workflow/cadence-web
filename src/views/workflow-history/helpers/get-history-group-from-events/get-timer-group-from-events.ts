@@ -12,12 +12,25 @@ export default function getTimerGroupFromEvents(
   const firstEvent = events[0];
 
   const label = `Timer ${firstEvent[firstEvent.attributes]?.timerId}`; // TODO add duration
-  let hasMissingEvents = false;
   const groupType = 'Timer';
 
-  if (firstEvent.attributes !== 'timerStartedEventAttributes') {
-    hasMissingEvents = true;
-  }
+  const startedAttr = 'timerStartedEventAttributes';
+
+  const closeAttrs = [
+    'timerFiredEventAttributes',
+    'timerCanceledEventAttributes',
+  ];
+
+  let startedEvent: TimerHistoryEvent | undefined;
+  let closeEvent: TimerHistoryEvent | undefined;
+
+  events.forEach((e) => {
+    if (e.attributes === startedAttr) startedEvent = e;
+    if (closeAttrs.includes(e.attributes)) closeEvent = e;
+  });
+
+  const hasMissingEvents = !startedEvent || !closeEvent;
+
   const eventToLabel: HistoryGroupEventToStringMap<TimerHistoryGroup> = {
     timerStartedEventAttributes: 'Started',
     timerFiredEventAttributes: 'Fired',

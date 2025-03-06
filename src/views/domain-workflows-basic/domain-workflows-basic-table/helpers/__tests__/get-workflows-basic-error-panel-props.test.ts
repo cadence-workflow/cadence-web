@@ -10,7 +10,7 @@ describe(getWorkflowsBasicErrorPanelProps.name, () => {
     expect(
       getWorkflowsBasicErrorPanelProps({
         error: new UseMergedInfiniteQueriesError('Test error', [
-          new RequestError('Something went wrong', 500),
+          new RequestError('Something went wrong', '/query1', 500),
         ]),
         areSearchParamsAbsent: false,
       })
@@ -24,7 +24,7 @@ describe(getWorkflowsBasicErrorPanelProps.name, () => {
     expect(
       getWorkflowsBasicErrorPanelProps({
         error: new UseMergedInfiniteQueriesError('Test error', [
-          new RequestError('Invalid input', 400, [
+          new RequestError('Invalid input', '/query1', 400, [
             {
               code: z.ZodIssueCode.custom,
               path: ['test-path'],

@@ -17,6 +17,7 @@ import { type Props } from './workflow-history-compact-event-card.types';
 
 export default function WorkflowHistoryCompactEventCard({
   status,
+  statusReady,
   label,
   badges,
   showLabelPlaceholder,
@@ -37,7 +38,11 @@ export default function WorkflowHistoryCompactEventCard({
       disabled={disabled}
       onClick={onClick}
     >
-      <WorkflowHistoryEventStatusBadge status={status} size="small" />
+      <WorkflowHistoryEventStatusBadge
+        status={status}
+        statusReady={statusReady}
+        size="small"
+      />
       <div className={cls.textContainer}>
         {label && !showLabelPlaceholder && (
           <div className={cls.label}>

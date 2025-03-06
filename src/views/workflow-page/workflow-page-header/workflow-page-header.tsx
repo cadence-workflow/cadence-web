@@ -55,6 +55,7 @@ export default function WorkflowPageHeader({
               ('workflows' satisfies (typeof domainPageTabsConfig)[number]['key']),
             // ensuring that these query params exist in config
             query: {
+              // TODO @assem.hafez: fix this; this is incorrect because we need to be asserting on query key
               search: workflowId,
             } satisfies Partial<
               PageQueryParamSetterValues<typeof domainPageQueryParamsConfig>

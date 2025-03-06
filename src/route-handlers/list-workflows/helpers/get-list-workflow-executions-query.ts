@@ -6,7 +6,7 @@ import { type TimeColumn } from '../list-workflows.types';
 
 export default function getListWorkflowExecutionsQuery({
   search,
-  workflowStatus,
+  workflowStatuses,
   sortColumn,
   sortOrder,
   timeColumn,
@@ -14,7 +14,7 @@ export default function getListWorkflowExecutionsQuery({
   timeRangeEnd,
 }: {
   search?: string;
-  workflowStatus?: WorkflowStatus;
+  workflowStatuses?: Array<WorkflowStatus>;
   sortColumn?: string;
   sortOrder?: SortOrder;
   timeColumn: TimeColumn;
@@ -28,16 +28,21 @@ export default function getListWorkflowExecutionsQuery({
     );
   }
 
-  if (workflowStatus) {
-    if (workflowStatus === WORKFLOW_STATUSES.running) {
-      searchQueries.push('CloseTime = missing');
+  const workflowStatusQueries: Array<string> = [];
+  workflowStatuses?.forEach((status) => {
+    if (status === WORKFLOW_STATUSES.running) {
+      workflowStatusQueries.push('CloseTime = missing');
     } else {
-      searchQueries.push(
-        // Query CloseStatus is 0-indexed (and excludes INVALID)
+      workflowStatusQueries.push(
+        // Numerical query CloseStatus is 0-indexed (and excludes INVALID)
         // https://cadenceworkflow.io/docs/concepts/search-workflows/#query-capabilities
-        `CloseStatus = ${Object.values(WORKFLOW_STATUSES).indexOf(workflowStatus) - 1}`
+        `CloseStatus = ${Object.values(WORKFLOW_STATUSES).indexOf(status) - 1}`
       );
     }
+  });
+
+  if (workflowStatusQueries.length > 0) {
+    searchQueries.push(`(${workflowStatusQueries.join(' OR ')})`);
   }
 
   if (timeRangeStart) {

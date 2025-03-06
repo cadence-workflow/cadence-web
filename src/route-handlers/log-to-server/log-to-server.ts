@@ -9,7 +9,7 @@ export async function logToServer(request: NextRequest) {
   const { data, error } = logToServerPayloadSchema.safeParse(requestBodyJSON);
   if (error) {
     logger.error<RouteHandlerErrorPayload>(
-      { cause: error },
+      { error: error },
       'Failed to parse log from browser'
     );
 

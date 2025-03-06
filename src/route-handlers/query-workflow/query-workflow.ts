@@ -58,7 +58,7 @@ export async function queryWorkflow(
     } satisfies QueryWorkflowResponse);
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
-      { requestParams: decodedParams, cause: e },
+      { requestParams: decodedParams, error: e },
       'Error querying workflow'
     );
 

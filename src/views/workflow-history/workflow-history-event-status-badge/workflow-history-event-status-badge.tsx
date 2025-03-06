@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { useStyletron } from 'baseui';
+import { Skeleton } from 'baseui/skeleton';
 import { Spinner } from 'baseui/spinner';
 import {
   MdCheck,
@@ -9,19 +10,37 @@ import {
   MdReportGmailerrorred,
 } from 'react-icons/md';
 
+import getBadgeContainerSize from './helpers/get-badge-container-size';
 import getBadgeIconSize from './helpers/get-badge-icon-size';
 import {
   WORKFLOW_EVENT_STATUS,
   WORKFLOW_EVENT_STATUS_BADGE_SIZES,
 } from './workflow-history-event-status-badge.constants';
-import { styled } from './workflow-history-event-status-badge.styles';
+import {
+  styled,
+  overrides,
+} from './workflow-history-event-status-badge.styles';
 import type { Props } from './workflow-history-event-status-badge.types';
 
 export default function WorkflowHistoryEventStatusBadge({
   status,
+  statusReady,
   size = WORKFLOW_EVENT_STATUS_BADGE_SIZES.medium,
 }: Props) {
   const [_, theme] = useStyletron();
+
+  if (!statusReady) {
+    const skeletonSize = getBadgeContainerSize(theme, size);
+    return (
+      <Skeleton
+        height={skeletonSize}
+        width={skeletonSize}
+        overrides={overrides.circularSkeleton}
+        animation
+      />
+    );
+  }
+
   if (!WORKFLOW_EVENT_STATUS[status]) return null;
 
   const renderIcon = () => {

@@ -1,4 +1,5 @@
 import { styled as createStyled } from 'baseui';
+import { type SkeletonOverrides } from 'baseui/skeleton/types';
 
 import type { StyletronCSSObjectValue } from '@/hooks/use-styletron-classes';
 
@@ -8,6 +9,17 @@ import type {
   Props,
   WorkflowEventStatusBadgeSize,
 } from './workflow-history-event-status-badge.types';
+
+export const overrides = {
+  circularSkeleton: {
+    Root: {
+      style: {
+        borderRadius: '50%',
+        flexShrink: 0, // prevent badge from shrinking in flex containers
+      },
+    },
+  } satisfies SkeletonOverrides,
+};
 
 export const styled = {
   BadgeContainer: createStyled<

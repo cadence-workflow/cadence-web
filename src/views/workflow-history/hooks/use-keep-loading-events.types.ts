@@ -6,4 +6,5 @@ export type UseKeepLoadingEventsParams = {
   isFetchingNextPage: boolean;
   isFetchNextPageError: boolean;
   stopAfterEndReached?: boolean;
+  continueLoadingAfterError?: boolean;
 };

@@ -17,6 +17,7 @@ import PageFiltersToggle from '@/components/page-filters/page-filters-toggle/pag
 import PageSection from '@/components/page-section/page-section';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
+import useThrottledState from '@/hooks/use-throttled-state';
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
 import decodeUrlParams from '@/utils/decode-url-params';
 import request from '@/utils/request';
@@ -27,6 +28,7 @@ import workflowPageQueryParamsConfig from '../workflow-page/config/workflow-page
 import useDescribeWorkflow from '../workflow-page/hooks/use-describe-workflow';
 
 import workflowHistoryFiltersConfig from './config/workflow-history-filters.config';
+import getVisibleGroupsHasMissingEvents from './helpers/get-visible-groups-has-missing-events';
 import { groupHistoryEvents } from './helpers/group-history-events';
 import pendingActivitiesInfoToEvents from './helpers/pending-activities-info-to-events';
 import pendingDecisionInfoToEvent from './helpers/pending-decision-info-to-event';
@@ -41,6 +43,7 @@ import WorkflowHistoryTimelineGroup from './workflow-history-timeline-group/work
 import WorkflowHistoryTimelineLoadMore from './workflow-history-timeline-load-more/workflow-history-timeline-load-more';
 import { cssStyles, overrides } from './workflow-history.styles';
 import {
+  type VisibleHistoryGroupRanges,
   type ExtendedHistoryEvent,
   type Props,
 } from './workflow-history.types';
@@ -164,6 +167,14 @@ export default function WorkflowHistory({ params }: Props) {
     [eventGroups, queryParams]
   );
 
+  const [visibleGroupsRange, setTimelineListVisibleRange] =
+    useThrottledState<VisibleHistoryGroupRanges>({
+      startIndex: -1,
+      endIndex: -1,
+      compactStartIndex: -1,
+      compactEndIndex: -1,
+    });
+
   // search for the event selected in the URL on initial page load
   const {
     initialEventFound,
@@ -178,14 +189,27 @@ export default function WorkflowHistory({ params }: Props) {
   const isLastPageEmpty =
     result.pages[result.pages.length - 1].history?.events.length === 0;
 
+  const visibleGroupsHasMissingEvents = useMemo(() => {
+    return getVisibleGroupsHasMissingEvents(
+      filteredEventGroupsEntries,
+      visibleGroupsRange
+    );
+  }, [filteredEventGroupsEntries, visibleGroupsRange]);
+
   const keepLoadingMoreEvents = useMemo(() => {
     if (shouldSearchForInitialEvent && !initialEventFound) return true;
+    if (visibleGroupsHasMissingEvents) return true;
     return false;
-  }, [shouldSearchForInitialEvent, initialEventFound]);
+  }, [
+    shouldSearchForInitialEvent,
+    initialEventFound,
+    visibleGroupsHasMissingEvents,
+  ]);
 
-  const { isLoadingMore } = useKeepLoadingEvents({
+  const { isLoadingMore, reachedAvailableHistoryEnd } = useKeepLoadingEvents({
     shouldKeepLoading: keepLoadingMoreEvents,
     stopAfterEndReached: true,
+    continueLoadingAfterError: true,
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
@@ -292,6 +316,13 @@ export default function WorkflowHistory({ params }: Props) {
             <Virtuoso
               data={filteredEventGroupsEntries}
               ref={compactSectionListRef}
+              rangeChanged={({ startIndex, endIndex }) =>
+                setTimelineListVisibleRange((currentRanges) => ({
+                  ...currentRanges,
+                  compactStartIndex: startIndex,
+                  compactEndIndex: endIndex,
+                }))
+              }
               {...(initialEventGroupIndex === undefined
                 ? {}
                 : {
@@ -299,12 +330,25 @@ export default function WorkflowHistory({ params }: Props) {
                   })}
               itemContent={(
                 index,
-                [groupId, { label, status, timeLabel, badges, events }]
+                [
+                  groupId,
+                  {
+                    label,
+                    status,
+                    timeLabel,
+                    badges,
+                    events,
+                    hasMissingEvents,
+                  },
+                ]
               ) => (
                 <div role="listitem" className={cls.compactCardContainer}>
                   <WorkflowHistoryCompactEventCard
                     key={groupId}
                     status={status}
+                    statusReady={
+                      !hasMissingEvents || reachedAvailableHistoryEnd
+                    }
                     label={label}
                     secondaryLabel={timeLabel}
                     showLabelPlaceholder={!label}
@@ -338,6 +382,13 @@ export default function WorkflowHistory({ params }: Props) {
               data={filteredEventGroupsEntries}
               ref={timelineSectionListRef}
               defaultItemHeight={160}
+              rangeChanged={({ startIndex, endIndex }) =>
+                setTimelineListVisibleRange((currentRanges) => ({
+                  ...currentRanges,
+                  startIndex,
+                  endIndex,
+                }))
+              }
               {...(initialEventGroupIndex === undefined
                 ? {}
                 : {
@@ -356,7 +407,9 @@ export default function WorkflowHistory({ params }: Props) {
                   events={group.events}
                   eventsMetadata={group.eventsMetadata}
                   badges={group.badges}
-                  hasMissingEvents={group.hasMissingEvents}
+                  hasMissingEvents={
+                    group.hasMissingEvents && !reachedAvailableHistoryEnd
+                  }
                   isLastEvent={index === filteredEventGroupsEntries.length - 1}
                   decodedPageUrlParams={decodedParams}
                   getIsEventExpanded={getIsEventExpanded}

@@ -45,7 +45,7 @@ export async function terminateWorkflow(
     return NextResponse.json({} satisfies TerminateWorkflowResponse);
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
-      { requestParams: decodedParams, cause: e },
+      { requestParams: decodedParams, error: e },
       'Error terminating workflow'
     );
 

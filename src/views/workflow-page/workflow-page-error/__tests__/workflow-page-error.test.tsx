@@ -36,7 +36,7 @@ describe(WorkflowPageError.name, () => {
   it('renders "not found" error page correctly', () => {
     render(
       <WorkflowPageError
-        error={new RequestError('Could not find workflow', 404)}
+        error={new RequestError('Could not find workflow', '/workflow', 404)}
         reset={() => {}}
       />
     );
@@ -50,7 +50,7 @@ describe(WorkflowPageError.name, () => {
   it('renders "Forbidden" error page correctly', () => {
     render(
       <WorkflowPageError
-        error={new RequestError('Could not find workflow', 403)}
+        error={new RequestError('Could not find workflow', '/workflow', 403)}
         reset={() => {}}
       />
     );
