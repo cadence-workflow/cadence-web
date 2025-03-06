@@ -1,6 +1,5 @@
 {
   "name": "cadence-web",
-  "version": "4.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev -p ${CADENCE_WEB_PORT} | pino-pretty --messageKey message",
