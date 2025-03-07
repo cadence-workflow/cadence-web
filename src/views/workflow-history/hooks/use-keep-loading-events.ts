@@ -10,24 +10,29 @@ export default function useKeepLoadingEvents({
   isFetchingNextPage,
   stopAfterEndReached,
   isFetchNextPageError,
+  continueLoadingAfterError,
 }: UseKeepLoadingEventsParams) {
   const reachedAvailableHistoryEnd = useRef(false);
 
-  const stoppedDueToError = useRef(isFetchNextPageError);
-
+  const hadErrorOnce = useRef(isFetchNextPageError);
   // update reachedAvailableHistoryEnd
-  const reached = !hasNextPage || (hasNextPage && isLastPageEmpty);
+  const reached =
+    !hasNextPage || (hasNextPage && isLastPageEmpty && !isFetchNextPageError);
   if (reached && !reachedAvailableHistoryEnd.current)
     reachedAvailableHistoryEnd.current = true;
 
-  // update stoppedDueToError
-  if (isFetchNextPageError && !stoppedDueToError.current)
-    stoppedDueToError.current = true;
+  // update hadErrorOnce
+  if (isFetchNextPageError && !hadErrorOnce.current)
+    hadErrorOnce.current = true;
+
+  const stopDueToError =
+    isFetchNextPageError ||
+    (hadErrorOnce.current && !continueLoadingAfterError);
 
   const canLoadMore =
     shouldKeepLoading &&
     !(stopAfterEndReached && reachedAvailableHistoryEnd.current) &&
-    !stoppedDueToError.current &&
+    !stopDueToError &&
     hasNextPage;
 
   useEffect(() => {
@@ -36,7 +41,7 @@ export default function useKeepLoadingEvents({
 
   return {
     reachedAvailableHistoryEnd: reachedAvailableHistoryEnd.current,
-    stoppedDueToError: stoppedDueToError.current,
+    stoppedDueToError: stopDueToError,
     isLoadingMore: canLoadMore,
   };
 }

@@ -33,7 +33,11 @@ export default function WorkflowHistoryTimelineGroup({
   return (
     <div className={cls.groupContainer}>
       <div className={cls.timelineEventHeader}>
-        <WorkflowHistoryEventStatusBadge status={status} size="medium" />
+        <WorkflowHistoryEventStatusBadge
+          status={status}
+          statusReady={!hasMissingEvents}
+          size="medium"
+        />
         <div className={cls.timelineEventLabelAndTime}>
           <div className={cls.timelineEventsLabel}>{label}</div>
           {hasBadges && (

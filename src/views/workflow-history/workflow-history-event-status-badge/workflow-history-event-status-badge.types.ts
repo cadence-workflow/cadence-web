@@ -8,5 +8,6 @@ export type WorkflowEventStatus =
 
 export type Props = {
   status: WorkflowEventStatus;
+  statusReady: boolean;
   size?: WorkflowEventStatusBadgeSize;
 };

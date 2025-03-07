@@ -26,45 +26,43 @@ describe('getChildWorkflowExecutionGroupFromEvents', () => {
     expect(group.label).toBe(expectedLabel);
   });
 
-  it('should return a group with hasMissingEvents set to true when initiate event is missing', () => {
-    const intiateFailedEvents: ChildWorkflowExecutionHistoryEvent[] = [
-      initiateFailureChildWorkflowEvent,
+  it('should return a group with hasMissingEvents set to true when any event is missing', () => {
+    const assertions: Array<{
+      name: string;
+      events: ChildWorkflowExecutionHistoryEvent[];
+      assertionValue: boolean;
+    }> = [
+      {
+        name: 'missingInitiatedEvent',
+        events: [initiateFailureChildWorkflowEvent],
+        assertionValue: true,
+      },
+      {
+        name: 'missingInitiationFailureAndCloseEvent',
+        events: [initiateChildWorkflowEvent],
+        assertionValue: true,
+      },
+      {
+        name: 'missingCloseEvent',
+        events: [initiateChildWorkflowEvent, startChildWorkflowEvent],
+        assertionValue: true,
+      },
+      {
+        name: 'missingStartEvent',
+        events: [initiateChildWorkflowEvent, completeChildWorkflowEvent],
+        assertionValue: true,
+      },
+      {
+        name: 'completedFailedInitiationEvent',
+        events: [initiateChildWorkflowEvent, initiateFailureChildWorkflowEvent],
+        assertionValue: false,
+      },
     ];
-    const intiateFailedChildWorkflowgroup =
-      getChildWorkflowExecutionGroupFromEvents(intiateFailedEvents);
-    expect(intiateFailedChildWorkflowgroup.hasMissingEvents).toBe(true);
 
-    const completeEvents: ChildWorkflowExecutionHistoryEvent[] = [
-      startChildWorkflowEvent,
-      completeChildWorkflowEvent,
-    ];
-    const completedChildWorkflowgroup =
-      getChildWorkflowExecutionGroupFromEvents(completeEvents);
-    expect(completedChildWorkflowgroup.hasMissingEvents).toBe(true);
-
-    const failureEvents: ChildWorkflowExecutionHistoryEvent[] = [
-      startChildWorkflowEvent,
-      failChildWorkflowEvent,
-    ];
-    const failedChildWorkflowgroup =
-      getChildWorkflowExecutionGroupFromEvents(failureEvents);
-    expect(failedChildWorkflowgroup.hasMissingEvents).toBe(true);
-
-    const timeoutEvents: ChildWorkflowExecutionHistoryEvent[] = [
-      startChildWorkflowEvent,
-      timeoutChildWorkflowEvent,
-    ];
-    const timedoutChildWorkflowgroup =
-      getChildWorkflowExecutionGroupFromEvents(timeoutEvents);
-    expect(timedoutChildWorkflowgroup.hasMissingEvents).toBe(true);
-
-    const cancelEvents: ChildWorkflowExecutionHistoryEvent[] = [
-      startChildWorkflowEvent,
-      cancelChildWorkflowEvent,
-    ];
-    const cancelChildWorkflowgroup =
-      getChildWorkflowExecutionGroupFromEvents(cancelEvents);
-    expect(cancelChildWorkflowgroup.hasMissingEvents).toBe(true);
+    assertions.forEach(({ name, events, assertionValue }) => {
+      const group = getChildWorkflowExecutionGroupFromEvents(events);
+      expect([name, group.hasMissingEvents]).toEqual([name, assertionValue]);
+    });
   });
 
   it('should return a group with groupType equal to ChildWorkflow', () => {

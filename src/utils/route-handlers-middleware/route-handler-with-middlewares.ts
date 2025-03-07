@@ -35,7 +35,7 @@ export default async function routeHandlersWithMiddlewares<
         };
       }
     } catch (e) {
-      logger.error({ cause: e }, `Error in Middlewares: ${request.url}`);
+      logger.error({ error: e }, `Error in Middlewares: ${request.url}`);
 
       return NextResponse.json(
         {

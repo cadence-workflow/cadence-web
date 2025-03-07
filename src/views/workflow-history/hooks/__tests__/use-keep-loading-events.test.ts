@@ -40,6 +40,28 @@ describe('useKeepLoadingEvents', () => {
     expect(fetchNextPageMock).not.toHaveBeenCalled();
   });
 
+  it('should not call fetchNextPage after error when continueLoadingAfterError is false', () => {
+    const { fetchNextPageMock, rerender } = setup({
+      isFetchNextPageError: true,
+      continueLoadingAfterError: false,
+    });
+
+    rerender({ isFetchNextPageError: false });
+
+    expect(fetchNextPageMock).not.toHaveBeenCalled();
+  });
+
+  it('should call fetchNextPage after error when continueLoadingAfterError is true', () => {
+    const { fetchNextPageMock, rerender } = setup({
+      isFetchNextPageError: true,
+      continueLoadingAfterError: true,
+    });
+
+    rerender({ isFetchNextPageError: false });
+
+    expect(fetchNextPageMock).toHaveBeenCalled();
+  });
+
   it('should set stoppedDueToError to true when isFetchNextPageError is true', () => {
     const { result, rerender } = setup({
       isFetchNextPageError: false,

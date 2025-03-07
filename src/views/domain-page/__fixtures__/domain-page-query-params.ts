@@ -4,7 +4,7 @@ import type domainPageQueryParamsConfig from '@/views/domain-page/config/domain-
 export const mockDomainPageQueryParamsValues = {
   inputType: 'search',
   search: '',
-  status: undefined,
+  statuses: undefined,
   timeRangeStart: undefined,
   timeRangeEnd: undefined,
   sortColumn: 'startTime',
@@ -15,7 +15,7 @@ export const mockDomainPageQueryParamsValues = {
   statusBasic: undefined,
   inputTypeArchival: 'search',
   searchArchival: '',
-  statusArchival: undefined,
+  statusesArchival: undefined,
   timeRangeStartArchival: undefined,
   timeRangeEndArchival: undefined,
   sortColumnArchival: 'startTime',

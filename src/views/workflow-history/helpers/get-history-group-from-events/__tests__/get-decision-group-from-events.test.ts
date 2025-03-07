@@ -24,27 +24,52 @@ describe('getDecisionGroupFromEvents', () => {
     expect(group.label).toBe('Decision Task');
   });
 
-  it('should return a group with hasMissingEvents set to true when scheduled event is missing', () => {
-    const completeEvents: ExtendedDecisionHistoryEvent[] = [
-      startDecisionTaskEvent,
-      completeDecisionTaskEvent,
+  it('should return a group with hasMissingEvents set to true when any event is missing', () => {
+    const assertions: Array<{
+      name: string;
+      events: ExtendedDecisionHistoryEvent[];
+      assertionValue: boolean;
+    }> = [
+      {
+        name: 'missingScheduleEvent',
+        events: [startDecisionTaskEvent, completeDecisionTaskEvent],
+        assertionValue: true,
+      },
+      {
+        name: 'missingTimoutAndCloseEvent',
+        events: [scheduleDecisionTaskEvent],
+        assertionValue: true,
+      },
+      {
+        name: 'missingStartEvent',
+        events: [scheduleDecisionTaskEvent, completeDecisionTaskEvent],
+        assertionValue: true,
+      },
+      {
+        name: 'missingCompleteEvent',
+        events: [scheduleDecisionTaskEvent, startDecisionTaskEvent],
+        assertionValue: true,
+      },
+      {
+        name: 'completeEvents',
+        events: [
+          scheduleDecisionTaskEvent,
+          startDecisionTaskEvent,
+          completeDecisionTaskEvent,
+        ],
+        assertionValue: false,
+      },
+      {
+        name: 'timedoutEvents',
+        events: [scheduleDecisionTaskEvent, timeoutDecisionTaskEvent],
+        assertionValue: false,
+      },
     ];
-    const completedDecisiongroup = getDecisionGroupFromEvents(completeEvents);
-    expect(completedDecisiongroup.hasMissingEvents).toBe(true);
 
-    const failureEvents: ExtendedDecisionHistoryEvent[] = [
-      startDecisionTaskEvent,
-      failedDecisionTaskEvent,
-    ];
-    const failedDecisiongroup = getDecisionGroupFromEvents(failureEvents);
-    expect(failedDecisiongroup.hasMissingEvents).toBe(true);
-
-    const timeoutEvents: ExtendedDecisionHistoryEvent[] = [
-      startDecisionTaskEvent,
-      timeoutDecisionTaskEvent,
-    ];
-    const timedoutDecisiongroup = getDecisionGroupFromEvents(timeoutEvents);
-    expect(timedoutDecisiongroup.hasMissingEvents).toBe(true);
+    assertions.forEach(({ name, events, assertionValue }) => {
+      const group = getDecisionGroupFromEvents(events);
+      expect([name, group.hasMissingEvents]).toEqual([name, assertionValue]);
+    });
   });
 
   it('should return a group with groupType equal to Decision', () => {

@@ -10,37 +10,43 @@ export default function getDecisionGroupFromEvents(
   events: ExtendedDecisionHistoryEvent[]
 ): DecisionHistoryGroup {
   const label = 'Decision Task';
-  let hasMissingEvents = false;
   const groupType = 'Decision';
   const badges = [];
 
-  const firstEvent = events[0];
+  const pendingScheduleAttr = 'pendingDecisionTaskScheduleEventAttributes';
   const scheduleAttr = 'decisionTaskScheduledEventAttributes';
-  const pendingStartAttr = 'pendingDecisionTaskScheduleEventAttributes';
+  const startAttr = 'decisionTaskStartedEventAttributes';
+  const timeoutAttr = 'decisionTaskTimedOutEventAttributes';
+  const closeAttrs = [
+    'decisionTaskCompletedEventAttributes',
+    'decisionTaskFailedEventAttributes',
+  ];
 
   let scheduleEvent: ExtendedDecisionHistoryEvent | undefined;
   let pendingScheduleEvent: ExtendedDecisionHistoryEvent | undefined;
+  let timeoutEvent: ExtendedDecisionHistoryEvent | undefined;
+  let startEvent: ExtendedDecisionHistoryEvent | undefined;
+  let closeEvent: ExtendedDecisionHistoryEvent | undefined;
 
   events.forEach((e) => {
+    if (e.attributes === pendingScheduleAttr) pendingScheduleEvent = e;
     if (e.attributes === scheduleAttr) scheduleEvent = e;
-    if (e.attributes === pendingStartAttr) pendingScheduleEvent = e;
+    if (e.attributes === timeoutAttr) timeoutEvent = e;
+    if (e.attributes === startAttr) startEvent = e;
+    if (closeAttrs.includes(e.attributes)) closeEvent = e;
   });
 
-  if (
-    firstEvent.attributes !== 'decisionTaskScheduledEventAttributes' &&
-    firstEvent.attributes !== 'pendingDecisionTaskScheduleEventAttributes'
-  ) {
-    hasMissingEvents = true;
-  }
+  const hasAllTimeoutEvents = scheduleEvent && timeoutEvent;
+  const hasAllCloseEvents = scheduleEvent && startEvent && closeEvent;
+  const hasMissingEvents = !hasAllTimeoutEvents && !hasAllCloseEvents;
 
   let retryAttemptNumber = 0;
-
   if (
     pendingScheduleEvent &&
-    pendingStartAttr in pendingScheduleEvent &&
-    pendingScheduleEvent[pendingStartAttr]?.attempt
+    pendingScheduleAttr in pendingScheduleEvent &&
+    pendingScheduleEvent[pendingScheduleAttr]?.attempt
   ) {
-    retryAttemptNumber = pendingScheduleEvent[pendingStartAttr].attempt;
+    retryAttemptNumber = pendingScheduleEvent[pendingScheduleAttr].attempt;
   }
 
   if (

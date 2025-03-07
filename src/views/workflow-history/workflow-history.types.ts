@@ -224,4 +224,11 @@ export type WorkflowHistoryFilterConfig<
       }
   );
 
+export type VisibleHistoryGroupRanges = {
+  startIndex: number;
+  endIndex: number;
+  compactStartIndex: number;
+  compactEndIndex: number;
+};
+
 export type Props = WorkflowPageTabContentProps;

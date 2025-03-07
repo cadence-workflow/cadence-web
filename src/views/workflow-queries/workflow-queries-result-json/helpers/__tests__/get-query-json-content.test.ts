@@ -29,7 +29,7 @@ describe(getQueryJsonContent.name, () => {
       props: {
         data: undefined,
         loading: false,
-        error: new RequestError('Something went wrong', 500),
+        error: new RequestError('Something went wrong', '/workflow', 500),
       },
       expected: {
         content: { message: 'Something went wrong' },

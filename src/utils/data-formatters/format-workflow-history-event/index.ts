@@ -13,7 +13,7 @@ export default function formatWorkflowHistoryEvent(
   if (schema) {
     const { data, error } = schema.safeParse(event);
     if (error) {
-      logger.warn({ cause: error }, 'Failed to format workflow event');
+      logger.warn({ error: error }, 'Failed to format workflow event');
       return null;
     }
     return data ?? null;
