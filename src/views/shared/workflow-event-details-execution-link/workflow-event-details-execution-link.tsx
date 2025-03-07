@@ -1,11 +1,13 @@
 'use client';
 import React from 'react';
 
+import queryString from 'query-string';
+
 import Link from '@/components/link/link';
 
-import { type Props } from './workflow-history-event-details-wf-execution-link.types';
+import { type Props } from './workflow-event-details-execution-link.types';
 
-export default function WorkflowHistoryEventDetailsExecutionLink({
+export default function WorkflowEventDetailsExecutionLink({
   runId,
   workflowId,
   cluster,
@@ -19,7 +21,8 @@ export default function WorkflowHistoryEventDetailsExecutionLink({
     href = runId
       ? `/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows/${encodeURIComponent(workflowId)}/${encodeURIComponent(runId)}`
       : // TODO: @assem.hafez make query params type safe
-        `/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows?search=${encodeURIComponent(workflowId)}`;
+        //NOTE: workflowId is passed to both search and workflowId to support basic/advanced/visibility
+        `/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows?${queryString.stringify({ search: workflowId, workflowId })}`;
   }
 
   return (

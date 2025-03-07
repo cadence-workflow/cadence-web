@@ -5,9 +5,9 @@ import pick from 'lodash/pick';
 
 import { screen, render } from '@/test-utils/rtl';
 
-import WorkflowHistoryEventDetailsExecutionLink from '../workflow-history-event-details-wf-execution-link';
+import WorkflowEventDetailsExecutionLink from '../workflow-event-details-execution-link';
 
-describe('WorkflowHistoryEventDetailsExecutionLink', () => {
+describe('WorkflowEventDetailsExecutionLink', () => {
   const props = {
     runId: 'testRunId',
     workflowId: 'testWorkflowId',
@@ -16,7 +16,7 @@ describe('WorkflowHistoryEventDetailsExecutionLink', () => {
   };
 
   it('should render the link with correct workflow run link', () => {
-    render(<WorkflowHistoryEventDetailsExecutionLink {...props} />);
+    render(<WorkflowEventDetailsExecutionLink {...props} />);
 
     const linkElement = screen.getByRole('link');
     expect(linkElement).toHaveAttribute(
@@ -26,7 +26,7 @@ describe('WorkflowHistoryEventDetailsExecutionLink', () => {
   });
 
   it('should render runId as a the link text for workflow run link', () => {
-    render(<WorkflowHistoryEventDetailsExecutionLink {...props} />);
+    render(<WorkflowEventDetailsExecutionLink {...props} />);
 
     const linkElement = screen.getByRole('link', { name: props.runId });
     expect(linkElement).toBeInTheDocument();
@@ -34,7 +34,7 @@ describe('WorkflowHistoryEventDetailsExecutionLink', () => {
 
   it('should render the link with correct workflow search link', () => {
     render(
-      <WorkflowHistoryEventDetailsExecutionLink
+      <WorkflowEventDetailsExecutionLink
         domain={props.domain}
         cluster={props.cluster}
         workflowId={props.workflowId}
@@ -45,13 +45,13 @@ describe('WorkflowHistoryEventDetailsExecutionLink', () => {
     const linkElement = screen.getByRole('link');
     expect(linkElement).toHaveAttribute(
       'href',
-      `/domains/${props.domain}/${props.cluster}/workflows?search=${props.workflowId}`
+      `/domains/${props.domain}/${props.cluster}/workflows?search=${props.workflowId}&workflowId=${props.workflowId}`
     );
   });
 
   it('should render workflowId as a the link text for workflow search link', () => {
     render(
-      <WorkflowHistoryEventDetailsExecutionLink
+      <WorkflowEventDetailsExecutionLink
         domain={props.domain}
         cluster={props.cluster}
         workflowId={props.workflowId}
@@ -65,7 +65,7 @@ describe('WorkflowHistoryEventDetailsExecutionLink', () => {
 
   it('should not render link if runId and workflowId is missing', () => {
     render(
-      <WorkflowHistoryEventDetailsExecutionLink
+      <WorkflowEventDetailsExecutionLink
         domain={props.domain}
         cluster={props.cluster}
         workflowId=""
@@ -84,7 +84,7 @@ describe('WorkflowHistoryEventDetailsExecutionLink', () => {
     propKeys.forEach((key) => {
       const { container } = render(
         // @ts-expect-error testing missing props
-        <WorkflowHistoryEventDetailsExecutionLink {...omit(props, key)} />
+        <WorkflowEventDetailsExecutionLink {...omit(props, key)} />
       );
       const linkElement = container.querySelector('a');
       expect(linkElement).toHaveAttribute('href', '/');
