@@ -21,7 +21,7 @@ export default function WorkflowEventDetailsExecutionLink({
     href = runId
       ? `/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows/${encodeURIComponent(workflowId)}/${encodeURIComponent(runId)}`
       : // TODO: @assem.hafez make query params type safe
-        //NOTE: workflowId is passed to both search and workflowId to support basic/advanced/visibility
+        // NOTE: workflowId is passed to both search and workflowId to support basic/advanced/visibility
         `/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows?${queryString.stringify({ search: workflowId, workflowId })}`;
   }
 
