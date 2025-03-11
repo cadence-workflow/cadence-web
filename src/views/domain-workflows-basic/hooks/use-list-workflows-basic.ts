@@ -11,6 +11,7 @@ import DOMAIN_WORKFLOWS_BASIC_PAGE_SIZE from '../config/domain-workflows-basic-p
 import { type UseListWorkflowsBasicParams } from '../domain-workflows-basic.types';
 
 import getListWorkflowsBasicQueryOptions from './helpers/get-list-workflows-basic-query-options';
+import shouldPickSecondWorkflow from './helpers/should-pick-second-workflow';
 
 export default function useListWorkflowsBasic({
   domain,
@@ -85,6 +86,6 @@ export default function useListWorkflowsBasic({
     queries: queryConfigs,
     pageSize: DOMAIN_WORKFLOWS_BASIC_PAGE_SIZE,
     flattenResponse: (result) => result.workflows,
-    compare: (a, b) => (a.startTime > b.startTime ? -1 : 1),
+    shouldPickSecond: shouldPickSecondWorkflow,
   });
 }
