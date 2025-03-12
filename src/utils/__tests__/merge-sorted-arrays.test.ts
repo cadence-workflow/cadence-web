@@ -1,7 +1,7 @@
 import mergeSortedArrays from '../merge-sorted-arrays';
 
-function defaultShouldPickSecond(first: number, second: number) {
-  return first > second;
+function defaultCompareFunc(a: number, b: number) {
+  return a < b ? -1 : 1;
 }
 
 describe(mergeSortedArrays.name, () => {
@@ -15,7 +15,7 @@ describe(mergeSortedArrays.name, () => {
     const result = mergeSortedArrays({
       sortedArrays,
       itemsCount,
-      shouldPickSecond: defaultShouldPickSecond,
+      compareFunc: defaultCompareFunc,
     });
     expect(result.sortedArray).toEqual([1, 2, 3, 4, 5]);
     expect(result.pointers).toEqual([1, 1, 0]);
@@ -27,7 +27,7 @@ describe(mergeSortedArrays.name, () => {
     const result = mergeSortedArrays({
       sortedArrays,
       itemsCount,
-      shouldPickSecond: defaultShouldPickSecond,
+      compareFunc: defaultCompareFunc,
     });
     expect(result.sortedArray).toEqual([]);
     expect(result.pointers).toEqual([-1, -1, -1]);
@@ -39,7 +39,7 @@ describe(mergeSortedArrays.name, () => {
     const result = mergeSortedArrays({
       sortedArrays,
       itemsCount,
-      shouldPickSecond: defaultShouldPickSecond,
+      compareFunc: defaultCompareFunc,
     });
     expect(result.sortedArray).toEqual([1, 2, 3, 4]);
     expect(result.pointers).toEqual([1, 1, -1]);
@@ -52,12 +52,8 @@ describe(mergeSortedArrays.name, () => {
       [9, 6, 3],
     ];
     const itemsCount = 5;
-    const shouldPickSecond = (first: number, second: number) => first < second;
-    const result = mergeSortedArrays({
-      sortedArrays,
-      itemsCount,
-      shouldPickSecond,
-    });
+    const compareFunc = (a: number, b: number) => (a < b ? 1 : -1);
+    const result = mergeSortedArrays({ sortedArrays, itemsCount, compareFunc });
     expect(result.sortedArray).toEqual([9, 8, 7, 6, 5]);
     expect(result.pointers).toEqual([0, 1, 1]);
   });
@@ -71,7 +67,7 @@ describe(mergeSortedArrays.name, () => {
     const result = mergeSortedArrays({
       sortedArrays,
       itemsCount,
-      shouldPickSecond: defaultShouldPickSecond,
+      compareFunc: defaultCompareFunc,
     });
     expect(result.sortedArray).toEqual([1, 2, 3, 4]);
     expect(result.pointers).toEqual([1, 1]);

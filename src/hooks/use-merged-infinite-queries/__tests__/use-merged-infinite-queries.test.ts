@@ -63,7 +63,7 @@ describe(useMergedInfiniteQueries.name, () => {
         queries: MOCK_QUERY_CONFIG,
         pageSize: 5,
         flattenResponse: (res) => res.entries,
-        shouldPickSecond: (first, second) => second < first,
+        compare: (a, b) => (a < b ? -1 : 1),
       })
     );
 
@@ -98,7 +98,7 @@ describe(useMergedInfiniteQueries.name, () => {
         queries: MOCK_QUERY_CONFIG_WITH_ERROR,
         pageSize: 5,
         flattenResponse: (res) => res.entries,
-        shouldPickSecond: (first, second) => second < first,
+        compare: (a, b) => (a < b ? -1 : 1),
       })
     );
 
@@ -116,7 +116,7 @@ describe(useMergedInfiniteQueries.name, () => {
         queries: MOCK_QUERY_CONFIG,
         pageSize: 5,
         flattenResponse: (res) => res.entries,
-        shouldPickSecond: (first, second) => second < first,
+        compare: (a, b) => (a < b ? -1 : 1),
       })
     );
 
@@ -153,7 +153,7 @@ describe(useMergedInfiniteQueries.name, () => {
         queries: MOCK_QUERY_CONFIG,
         pageSize: 5,
         flattenResponse: (res) => res.entries,
-        shouldPickSecond: (first, second) => second < first,
+        compare: (a, b) => (a < b ? -1 : 1),
       })
     );
 

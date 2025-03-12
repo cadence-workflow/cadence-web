@@ -1,6 +1,6 @@
 import { type DomainWorkflow } from '@/views/domain-page/domain-page.types';
 
-import shouldPickSecondWorkflow from '../should-pick-second-workflow';
+import compareBasicVisibilityWorkflows from '../compare-basic-visibility-workflows';
 
 function createMockWorkflow(
   startTime: number,
@@ -18,32 +18,32 @@ function createMockWorkflow(
   };
 }
 
-describe('shouldPickSecondWorkflow', () => {
+describe('compareBasicVisibilityWorkflows', () => {
   it('should pick workflow with later start time for running workflows', () => {
     const firstWorkflow = createMockWorkflow(1741500000000);
     const secondWorkflow = createMockWorkflow(1741600000000);
 
-    expect(shouldPickSecondWorkflow(firstWorkflow, secondWorkflow)).toBe(true);
-    expect(shouldPickSecondWorkflow(secondWorkflow, firstWorkflow)).toBe(false);
+    expect(compareBasicVisibilityWorkflows(firstWorkflow, secondWorkflow)).toBe(1);
+    expect(compareBasicVisibilityWorkflows(secondWorkflow, firstWorkflow)).toBe(-1);
   });
 
   it('should pick workflow with later close time for closed workflows', () => {
     const firstWorkflow = createMockWorkflow(1741400000000, 1741600000000);
     const secondWorkflow = createMockWorkflow(1741500000000, 1741700000000);
 
-    expect(shouldPickSecondWorkflow(firstWorkflow, secondWorkflow)).toBe(true);
-    expect(shouldPickSecondWorkflow(secondWorkflow, firstWorkflow)).toBe(false);
+    expect(compareBasicVisibilityWorkflows(firstWorkflow, secondWorkflow)).toBe(1);
+    expect(compareBasicVisibilityWorkflows(secondWorkflow, firstWorkflow)).toBe(-1);
   });
 
   it('should pick running workflows over closed workflows', () => {
     const runningWorkflow = createMockWorkflow(1741500000000);
     const closedWorkflow = createMockWorkflow(1741500000000, 1741600000000);
 
-    expect(shouldPickSecondWorkflow(runningWorkflow, closedWorkflow)).toBe(
-      false
+    expect(compareBasicVisibilityWorkflows(runningWorkflow, closedWorkflow)).toBe(
+      -1
     );
-    expect(shouldPickSecondWorkflow(closedWorkflow, runningWorkflow)).toBe(
-      true
+    expect(compareBasicVisibilityWorkflows(closedWorkflow, runningWorkflow)).toBe(
+      1
     );
   });
 
@@ -51,6 +51,6 @@ describe('shouldPickSecondWorkflow', () => {
     const firstWorkflow = createMockWorkflow(1741500000000, 1741600000000);
     const secondWorkflow = createMockWorkflow(1741500000000, 1741600000000);
 
-    expect(shouldPickSecondWorkflow(firstWorkflow, secondWorkflow)).toBe(false);
+    expect(compareBasicVisibilityWorkflows(firstWorkflow, secondWorkflow)).toBe(-1);
   });
 });

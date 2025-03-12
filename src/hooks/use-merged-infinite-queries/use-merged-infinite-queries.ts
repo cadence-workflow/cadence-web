@@ -25,8 +25,10 @@ import {
  * @param queries - Array of react-query Infinite Query configurations.
  * @param pageSize - Number of items to add to the result array when requesting new data.
  * @param flattenResponse - A function that takes the expected query response and flattens it into an array of items
- * @param shouldPickSecond - A comparison function that returns true if the second argument
- *   should be picked over the first argument.
+ * @param compare - A comparison function used to sort and merge results.
+ * The function should accept two arguments and return:
+ *   - A number > 0 if the second argument comes first.
+ *   - A number <= 0 if the first argument comes first.
  *   - **Note:** The comparison logic must match the sorting logic used in the queries to maintain consistency.
  *
  * @returns A tuple [mergedQueryResults, queryResults]:
@@ -37,7 +39,7 @@ export default function useMergedInfiniteQueries<TData, TResponse, TPageParam>({
   queries,
   pageSize,
   flattenResponse,
-  shouldPickSecond,
+  compare,
 }: Props<TData, TResponse, TPageParam>): [
   MergedQueriesResults<TData>,
   Array<SingleInfiniteQueryResult<TResponse>>,
@@ -80,9 +82,9 @@ export default function useMergedInfiniteQueries<TData, TResponse, TPageParam>({
     return mergeSortedArrays<TData>({
       sortedArrays: flattenedDataArrays,
       itemsCount: count,
-      shouldPickSecond,
+      compareFunc: compare,
     });
-  }, [flattenedDataArrays, count, shouldPickSecond]);
+  }, [flattenedDataArrays, count, compare]);
 
   const refetchQueriesWithError = useCallback(() => {
     queryResults.forEach((res) => {

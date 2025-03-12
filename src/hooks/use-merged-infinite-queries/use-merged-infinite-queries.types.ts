@@ -39,5 +39,5 @@ export type Props<TData, TResponse, TPageParam> = {
   queries: Array<SingleInfiniteQueryOptions<TResponse, TPageParam>>;
   pageSize: number;
   flattenResponse: (queryResult: TResponse) => Array<TData>;
-  shouldPickSecond: (first: TData, second: TData) => boolean;
+  compare: (a: TData, b: TData) => number;
 };

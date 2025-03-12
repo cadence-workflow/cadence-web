@@ -7,9 +7,10 @@
  *
  * @param sortedArrays - An array of sorted arrays to pick items from and merge.
  * @param itemsCount - The number of items to pick from the sorted arrays.
- * @param shouldPickSecond - A comparison function that returns true if the second argument
- *   should be picked over the first argument.
- * - **Note:** The comparison logic must align with the sorting logic of the input arrays to maintain consistency.
+ * @param compareFunc - A comparison function used to determine the order of items.
+ *   - If the function returns a number > 0, the first argument is considered the higher-priority candidate.
+ *   - If the function returns a number <= 0, the second argument is considered the higher-priority candidate.
+ * **Note:** The comparison logic must align with the sorting logic of the input arrays to maintain consistency.
  *
  * @returns An object containing:
  *   - `pointers`: An array of the last picked index from each input array.
@@ -18,11 +19,11 @@
 export default function mergeSortedArrays<T>({
   sortedArrays,
   itemsCount,
-  shouldPickSecond = (first: T, second: T): boolean => first < second,
+  compareFunc = (a: T, b: T): number => (a < b ? -1 : 1),
 }: {
   sortedArrays: Array<Array<T>>;
   itemsCount: number;
-  shouldPickSecond: (first: T, second: T) => boolean;
+  compareFunc: (a: T, b: T) => number;
 }) {
   const pointers: Array<number> = new Array(sortedArrays.length).fill(-1);
   const sortedArray: Array<T> = [];
@@ -33,7 +34,7 @@ export default function mergeSortedArrays<T>({
         if (p >= sortedArrays[arrIndex].length - 1) return result;
 
         const valueAtNextPointer = sortedArrays[arrIndex][p + 1];
-        if (!result || shouldPickSecond(result.value, valueAtNextPointer))
+        if (!result || compareFunc(result.value, valueAtNextPointer) > 0)
           return { value: valueAtNextPointer, index: arrIndex };
 
         return result;
