@@ -10,8 +10,8 @@ import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-
 import DOMAIN_WORKFLOWS_BASIC_PAGE_SIZE from '../config/domain-workflows-basic-page-size.config';
 import { type UseListWorkflowsBasicParams } from '../domain-workflows-basic.types';
 
-import getListWorkflowsBasicQueryOptions from './helpers/get-list-workflows-basic-query-options';
 import compareBasicVisibilityWorkflows from './helpers/compare-basic-visibility-workflows';
+import getListWorkflowsBasicQueryOptions from './helpers/get-list-workflows-basic-query-options';
 
 export default function useListWorkflowsBasic({
   domain,
