@@ -7,10 +7,11 @@
  *
  * @param sortedArrays - An array of sorted arrays to pick items from and merge.
  * @param itemsCount - The number of items to pick from the sorted arrays.
- * @param compareFunc - A comparison function used to determine the order of items.
- *   - If the function returns a number > 0, the first argument is considered the higher-priority candidate.
- *   - If the function returns a number <= 0, the second argument is considered the higher-priority candidate.
- * **Note:** The comparison logic must align with the sorting logic of the input arrays to maintain consistency.
+ * @param compareFunc - A comparison function used to determine the order of items. It should take two items and return:
+ *   - A positive number (> 0) if the second item should come before the first.
+ *   - Zero or a negative number (<= 0) if the first item should come before the second.
+ *   - This logic must match the sorting logic of the input arrays to ensure consistency.
+ *   - For more details, see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#comparefn
  *
  * @returns An object containing:
  *   - `pointers`: An array of the last picked index from each input array.

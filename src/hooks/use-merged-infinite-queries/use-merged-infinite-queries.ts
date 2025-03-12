@@ -25,11 +25,11 @@ import {
  * @param queries - Array of react-query Infinite Query configurations.
  * @param pageSize - Number of items to add to the result array when requesting new data.
  * @param flattenResponse - A function that takes the expected query response and flattens it into an array of items
- * @param compare - A comparison function used to sort and merge results.
- * The function should accept two arguments and return:
- *   - A number > 0 if the second argument comes first.
- *   - A number <= 0 if the first argument comes first.
- *   - **Note:** The comparison logic must match the sorting logic used in the queries to maintain consistency.
+ * @param compare - A comparison function used to determine the order of items. It should take two items and return:
+ *   - A positive number (> 0) if the second item should come before the first.
+ *   - Zero or a negative number (<= 0) if the first item should come before the second.
+ *   - This logic must match the sorting logic used in the queries to ensure consistency.
+ *   - For more details, see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#comparefn
  *
  * @returns A tuple [mergedQueryResults, queryResults]:
  *   - `mergedQueryResults`: The merged and sorted results from all queries.

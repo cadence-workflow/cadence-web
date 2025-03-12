@@ -5,7 +5,7 @@ import WorkflowHistoryEventDetailsTaskListLink from '@/views/shared/workflow-his
 import WorkflowStatusTag from '@/views/shared/workflow-status-tag/workflow-status-tag';
 import getWorkflowStatusTagProps from '@/views/workflow-page/helpers/get-workflow-status-tag-props';
 
-import WorkflowHistoryEventDetailsExecutionLink from '../../shared/workflow-history-event-details-wf-execution-link/workflow-history-event-details-wf-execution-link';
+import WorkflowEventDetailsExecutionLink from '../../shared/workflow-event-details-execution-link/workflow-event-details-execution-link';
 import { type WorkflowSummaryTabDetailsConfig } from '../workflow-summary-tab-details/workflow-summary-tab-details.types';
 
 const workflowSummaryTabDetailsConfig: WorkflowSummaryTabDetailsConfig[] = [
@@ -34,7 +34,7 @@ const workflowSummaryTabDetailsConfig: WorkflowSummaryTabDetailsConfig[] = [
         firstEvent?.workflowExecutionStartedEventAttributes
           ?.continuedExecutionRunId;
       if (runId) {
-        return createElement(WorkflowHistoryEventDetailsExecutionLink, {
+        return createElement(WorkflowEventDetailsExecutionLink, {
           ...decodedPageUrlParams,
           runId,
         });
@@ -129,7 +129,7 @@ const workflowSummaryTabDetailsConfig: WorkflowSummaryTabDetailsConfig[] = [
         formattedFirstEvent?.parentWorkflowExecution || {};
       const domain = formattedFirstEvent?.parentWorkflowDomain;
       if (runId && workflowId && domain && decodedPageUrlParams.cluster) {
-        return createElement(WorkflowHistoryEventDetailsExecutionLink, {
+        return createElement(WorkflowEventDetailsExecutionLink, {
           domain,
           cluster: decodedPageUrlParams.cluster,
           workflowId,

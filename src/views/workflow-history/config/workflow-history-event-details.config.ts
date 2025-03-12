@@ -2,7 +2,7 @@ import { createElement } from 'react';
 
 import formatDate from '@/utils/data-formatters/format-date';
 import formatDuration from '@/utils/data-formatters/format-duration';
-import WorkflowHistoryEventDetailsExecutionLink from '@/views/shared/workflow-history-event-details-wf-execution-link/workflow-history-event-details-wf-execution-link';
+import WorkflowEventDetailsExecutionLink from '@/views/shared/workflow-event-details-execution-link/workflow-event-details-execution-link';
 
 import WorkflowHistoryEventDetailsTaskListLink from '../../shared/workflow-history-event-details-task-list-link/workflow-history-event-details-task-list-link';
 import { type WorkflowHistoryEventDetailsConfig } from '../workflow-history-event-details/workflow-history-event-details.types';
@@ -62,7 +62,7 @@ const workflowHistoryEventDetailsConfig = [
     pathRegex:
       '(parentWorkflowExecution|externalWorkflowExecution|workflowExecution)$',
     valueComponent: ({ entryValue, domain, cluster }) => {
-      return createElement(WorkflowHistoryEventDetailsExecutionLink, {
+      return createElement(WorkflowEventDetailsExecutionLink, {
         domain,
         cluster,
         workflowId: entryValue?.workflowId,
@@ -75,7 +75,7 @@ const workflowHistoryEventDetailsConfig = [
     pathRegex:
       '(firstExecutionRunId|originalExecutionRunId|newExecutionRunId)$',
     valueComponent: ({ entryValue, domain, cluster, workflowId }) => {
-      return createElement(WorkflowHistoryEventDetailsExecutionLink, {
+      return createElement(WorkflowEventDetailsExecutionLink, {
         domain,
         cluster,
         workflowId,
