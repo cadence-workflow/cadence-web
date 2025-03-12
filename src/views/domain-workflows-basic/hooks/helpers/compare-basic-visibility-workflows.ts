@@ -17,4 +17,4 @@ export default function compareBasicVisibilityWorkflows(
   }
 
   return second.closeTime > first.closeTime ? 1 : -1;
-} 
+}
