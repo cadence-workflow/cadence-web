@@ -29,7 +29,10 @@ export const pendingActivityTaskStartSchema = z.object({
   pendingActivityTaskStartEventAttributes: z.object({
     activityId: z.string(),
     activityType: activityTypeSchema.nullable(),
-    state: z.literal(PendingActivityState.PENDING_ACTIVITY_STATE_STARTED),
+    state: z.enum([
+      PendingActivityState.PENDING_ACTIVITY_STATE_SCHEDULED,
+      PendingActivityState.PENDING_ACTIVITY_STATE_STARTED,
+    ]),
     heartbeatDetails: payloadSchema.nullable(),
     lastHeartbeatTime: timestampSchema.nullable(),
     lastStartedTime: timestampSchema.nullable(),

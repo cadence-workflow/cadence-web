@@ -58,7 +58,7 @@ export type PendingDecisionScheduleInfo = Omit<PendingDecisionInfo, 'state'> & {
 };
 
 export type PendingActivityStartInfo = Omit<PendingActivityInfo, 'state'> & {
-  state: 'PENDING_ACTIVITY_STATE_STARTED';
+  state: 'PENDING_ACTIVITY_STATE_SCHEDULED' | 'PENDING_ACTIVITY_STATE_STARTED';
 };
 
 export type PendingActivityTaskStartEvent = {

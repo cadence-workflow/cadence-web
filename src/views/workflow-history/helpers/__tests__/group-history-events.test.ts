@@ -9,6 +9,7 @@ import {
 import { startDecisionTaskEvent } from '../../__fixtures__/workflow-history-decision-events';
 import {
   pendingActivityTaskStartEvent,
+  pendingActivityTaskStartEventWithScheduledState,
   pendingDecisionTaskScheduleEvent,
 } from '../../__fixtures__/workflow-history-pending-events';
 import type { ActivityHistoryEvent } from '../../workflow-history.types';
@@ -137,6 +138,25 @@ describe('groupHistoryEvents', () => {
   it('should append pending activity start to group that has scheduled activity event only', () => {
     const events: ActivityHistoryEvent[] = [scheduleActivityTaskEvent];
     const pendingStartActivities = [pendingActivityTaskStartEvent];
+    (getHistoryEventGroupId as jest.Mock).mockReturnValue('group1');
+
+    const result = groupHistoryEvents(events, {
+      allEvents: events,
+      pendingScheduleDecision: null,
+      pendingStartActivities,
+    });
+
+    expect(result.group1.events).toEqual([
+      ...events,
+      ...pendingStartActivities,
+    ]);
+  });
+
+  it('should append pending activity start with scheduled state to group that has scheduled activity event only', () => {
+    const events: ActivityHistoryEvent[] = [scheduleActivityTaskEvent];
+    const pendingStartActivities = [
+      pendingActivityTaskStartEventWithScheduledState,
+    ];
     (getHistoryEventGroupId as jest.Mock).mockReturnValue('group1');
 
     const result = groupHistoryEvents(events, {

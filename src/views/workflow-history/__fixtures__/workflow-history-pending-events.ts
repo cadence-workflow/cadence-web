@@ -5,7 +5,7 @@ import type {
 
 export const pendingActivityTaskStartEvent = {
   eventId: null,
-  computedEventId: 'pending-16',
+  computedEventId: 'pending-7',
   attributes: 'pendingActivityTaskStartEventAttributes',
   eventTime: {
     seconds: '1725747370',
@@ -40,6 +40,14 @@ export const pendingActivityTaskStartEvent = {
     scheduleId: '7',
     startedWorkerIdentity: '',
     state: 'PENDING_ACTIVITY_STATE_STARTED',
+  },
+} as const satisfies PendingActivityTaskStartEvent;
+
+export const pendingActivityTaskStartEventWithScheduledState = {
+  ...pendingActivityTaskStartEvent,
+  pendingActivityTaskStartEventAttributes: {
+    ...pendingActivityTaskStartEvent.pendingActivityTaskStartEventAttributes,
+    state: 'PENDING_ACTIVITY_STATE_SCHEDULED',
   },
 } as const satisfies PendingActivityTaskStartEvent;
 

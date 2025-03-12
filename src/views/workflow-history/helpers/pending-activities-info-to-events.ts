@@ -7,6 +7,7 @@ export default function pendingActivitiesInfoToEvents(
 ): PendingActivityTaskStartEvent[] {
   const events = activities.map((activityInfo) => {
     switch (activityInfo.state) {
+      case 'PENDING_ACTIVITY_STATE_SCHEDULED':
       case 'PENDING_ACTIVITY_STATE_STARTED':
         return {
           attributes: 'pendingActivityTaskStartEventAttributes',
@@ -15,7 +16,7 @@ export default function pendingActivitiesInfoToEvents(
           computedEventId: `Pending-${activityInfo.scheduleId}`,
           pendingActivityTaskStartEventAttributes: {
             ...activityInfo,
-            state: 'PENDING_ACTIVITY_STATE_STARTED', // make it clear to ts that the state is started (same as a typeguard)
+            state: activityInfo.state, // make it clear to ts that the state is start or scheduled (same as a typeguard)
           },
         } satisfies PendingActivityTaskStartEvent;
       default:

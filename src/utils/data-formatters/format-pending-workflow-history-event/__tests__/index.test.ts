@@ -3,6 +3,7 @@ import { ZodError } from 'zod';
 import logger from '@/utils/logger';
 import {
   pendingActivityTaskStartEvent,
+  pendingActivityTaskStartEventWithScheduledState,
   pendingDecisionTaskScheduleEvent,
 } from '@/views/workflow-history/__fixtures__/workflow-history-pending-events';
 
@@ -12,6 +13,7 @@ jest.mock('@/utils/logger');
 
 const pendingEvents = [
   pendingActivityTaskStartEvent,
+  pendingActivityTaskStartEventWithScheduledState,
   pendingDecisionTaskScheduleEvent,
 ];
 describe('formatWorkflowHistoryEvent', () => {

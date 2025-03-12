@@ -1,7 +1,6 @@
-import omit from 'lodash/omit';
-
 import { type PendingActivityTaskStartEvent } from '@/views/workflow-history/workflow-history.types';
 
+import formatEnum from '../format-enum';
 import formatFailureDetails from '../format-failure-details';
 import formatPayload from '../format-payload';
 import formatTimestampToDatetime from '../format-timestamp-to-datetime';
@@ -12,10 +11,11 @@ export default function formatPendingActivityTaskStartEvent({
   eventId,
 }: PendingActivityTaskStartEvent) {
   return {
-    ...omit(pendingInfo, 'state'),
+    ...pendingInfo,
     eventId,
     eventTime: formatTimestampToDatetime(eventTime),
     eventType: 'PendingActivityTaskStart',
+    state: formatEnum(pendingInfo.state, 'PENDING_ACTIVITY_STATE', 'pascal'),
 
     scheduleId: parseInt(pendingInfo.scheduleId),
     lastHeartbeatTime: formatTimestampToDatetime(pendingInfo.lastHeartbeatTime),
