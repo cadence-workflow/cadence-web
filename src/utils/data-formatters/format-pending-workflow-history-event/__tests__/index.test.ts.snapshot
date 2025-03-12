@@ -16,10 +16,6 @@ exports[`formatWorkflowHistoryEvent should format workflow pendingActivityTaskSt
     "gadence-canary-xdc",
     "workflow.sanity",
   ],
-  "lastFailure": {
-    "details": "",
-    "reason": "",
-  },
   "lastFailureDetails": null,
   "lastFailureReason": "",
   "lastHeartbeatTime": null,
@@ -49,10 +45,6 @@ exports[`formatWorkflowHistoryEvent should format workflow pendingActivityTaskSt
     "gadence-canary-xdc",
     "workflow.sanity",
   ],
-  "lastFailure": {
-    "details": "",
-    "reason": "",
-  },
   "lastFailureDetails": null,
   "lastFailureReason": "",
   "lastHeartbeatTime": null,
