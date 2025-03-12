@@ -11,7 +11,7 @@ export default function pendingActivitiesInfoToEvents(
       case 'PENDING_ACTIVITY_STATE_STARTED':
         return {
           attributes: 'pendingActivityTaskStartEventAttributes',
-          eventTime: activityInfo.lastStartedTime,
+          eventTime: activityInfo.lastStartedTime ?? activityInfo.scheduledTime,
           eventId: null,
           computedEventId: `Pending-${activityInfo.scheduleId}`,
           pendingActivityTaskStartEventAttributes: {
