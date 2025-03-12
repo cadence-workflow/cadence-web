@@ -6,24 +6,33 @@ import formatPayload from '../format-payload';
 import formatTimestampToDatetime from '../format-timestamp-to-datetime';
 
 export default function formatPendingActivityTaskStartEvent({
-  pendingActivityTaskStartEventAttributes: pendingInfo,
+  pendingActivityTaskStartEventAttributes: {
+    scheduleId,
+    state,
+    lastHeartbeatTime,
+    lastStartedTime,
+    scheduledTime,
+    expirationTime,
+    heartbeatDetails,
+    lastFailure,
+    ...eventAttributes
+  },
   eventTime,
   eventId,
 }: PendingActivityTaskStartEvent) {
   return {
-    ...pendingInfo,
+    ...eventAttributes,
     eventId,
     eventTime: formatTimestampToDatetime(eventTime),
     eventType: 'PendingActivityTaskStart',
-    state: formatEnum(pendingInfo.state, 'PENDING_ACTIVITY_STATE', 'pascal'),
-
-    scheduleId: parseInt(pendingInfo.scheduleId),
-    lastHeartbeatTime: formatTimestampToDatetime(pendingInfo.lastHeartbeatTime),
-    lastStartedTime: formatTimestampToDatetime(pendingInfo.lastStartedTime),
-    scheduledTime: formatTimestampToDatetime(pendingInfo.scheduledTime),
-    expirationTime: formatTimestampToDatetime(pendingInfo.expirationTime),
-    heartbeatDetails: formatPayload(pendingInfo.heartbeatDetails),
-    lastFailureDetails: formatFailureDetails(pendingInfo.lastFailure),
-    lastFailureReason: pendingInfo.lastFailure?.reason,
+    state: formatEnum(state, 'PENDING_ACTIVITY_STATE', 'pascal'),
+    scheduleId: parseInt(scheduleId),
+    lastHeartbeatTime: formatTimestampToDatetime(lastHeartbeatTime),
+    lastStartedTime: formatTimestampToDatetime(lastStartedTime),
+    scheduledTime: formatTimestampToDatetime(scheduledTime),
+    expirationTime: formatTimestampToDatetime(expirationTime),
+    heartbeatDetails: formatPayload(heartbeatDetails),
+    lastFailureDetails: formatFailureDetails(lastFailure),
+    lastFailureReason: lastFailure?.reason,
   };
 }
