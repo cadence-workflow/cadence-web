@@ -10,6 +10,7 @@ import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-
 import DOMAIN_WORKFLOWS_BASIC_PAGE_SIZE from '../config/domain-workflows-basic-page-size.config';
 import { type UseListWorkflowsBasicParams } from '../domain-workflows-basic.types';
 
+import compareBasicVisibilityWorkflows from './helpers/compare-basic-visibility-workflows';
 import getListWorkflowsBasicQueryOptions from './helpers/get-list-workflows-basic-query-options';
 
 export default function useListWorkflowsBasic({
@@ -85,6 +86,6 @@ export default function useListWorkflowsBasic({
     queries: queryConfigs,
     pageSize: DOMAIN_WORKFLOWS_BASIC_PAGE_SIZE,
     flattenResponse: (result) => result.workflows,
-    compare: (a, b) => (a.startTime > b.startTime ? -1 : 1),
+    compare: compareBasicVisibilityWorkflows,
   });
 }
