@@ -17,7 +17,7 @@ const formatPendingDecisionTaskStartEvent = ({
   return {
     ...eventAttributes,
     state: formatEnum(state, 'PENDING_DECISION_STATE', 'pascal'),
-    eventType: 'PendingDecisionTaskSchedule',
+    eventType: 'PendingDecisionTaskStart',
     eventTime: formatTimestampToDatetime(eventTime),
 
     scheduleId: parseInt(scheduleId),
