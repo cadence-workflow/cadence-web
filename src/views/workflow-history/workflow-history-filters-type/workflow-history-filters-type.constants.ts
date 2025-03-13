@@ -30,7 +30,7 @@ export const WORKFLOW_HISTORY_EVENT_FILTERING_TYPE_TO_ATTRS_MAP: Record<
     'requestCancelActivityTaskFailedEventAttributes',
   ],
   DECISION: [
-    'pendingDecisionTaskScheduleEventAttributes',
+    'pendingDecisionTaskStartEventAttributes',
     'decisionTaskScheduledEventAttributes',
     'decisionTaskStartedEventAttributes',
     'decisionTaskCompletedEventAttributes',

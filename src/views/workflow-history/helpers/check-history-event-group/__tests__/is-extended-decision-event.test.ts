@@ -7,14 +7,14 @@ import {
   startDecisionTaskEvent,
   completeDecisionTaskEvent,
 } from '@/views/workflow-history/__fixtures__/workflow-history-decision-events';
-import { pendingDecisionTaskScheduleEvent } from '@/views/workflow-history/__fixtures__/workflow-history-pending-events';
+import { pendingDecisionTaskStartEvent } from '@/views/workflow-history/__fixtures__/workflow-history-pending-events';
 import type { ExtendedDecisionHistoryEvent } from '@/views/workflow-history/workflow-history.types';
 
 import isExtendedDecisionEvent from '../is-extended-decision-event';
 
 const validEvents: Pick<ExtendedDecisionHistoryEvent, 'attributes'>[] = [
-  pendingDecisionTaskScheduleEvent,
   scheduleDecisionTaskEvent,
+  pendingDecisionTaskStartEvent,
   startDecisionTaskEvent,
   completeDecisionTaskEvent,
   //TODO @assem.hafez change this to actual mockups

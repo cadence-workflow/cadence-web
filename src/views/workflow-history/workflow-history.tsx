@@ -130,27 +130,22 @@ export default function WorkflowHistory({ params }: Props) {
     const pendingStartActivities = pendingActivitiesInfoToEvents(
       wfExecutionDescription.pendingActivities
     ).filter(shouldFilterEvent);
-    let pendingScheduleDecision = wfExecutionDescription.pendingDecision
+    let pendingStartDecision = wfExecutionDescription.pendingDecision
       ? pendingDecisionInfoToEvent(wfExecutionDescription.pendingDecision)
       : null;
-    if (pendingScheduleDecision !== null) {
-      const decisionMatchesFilters = shouldFilterEvent(pendingScheduleDecision);
-      if (!decisionMatchesFilters) pendingScheduleDecision = null;
+    if (pendingStartDecision !== null) {
+      const decisionMatchesFilters = shouldFilterEvent(pendingStartDecision);
+      if (!decisionMatchesFilters) pendingStartDecision = null;
     }
-
     return {
       pendingStartActivities,
-      pendingScheduleDecision,
+      pendingStartDecision,
     };
   }, [shouldFilterEvent, wfExecutionDescription]);
 
   const eventGroups = useMemo(
-    () =>
-      groupHistoryEvents(filteredEvents, {
-        ...filteredPendingHistoryEvents,
-        allEvents: events,
-      }),
-    [events, filteredEvents, filteredPendingHistoryEvents]
+    () => groupHistoryEvents(filteredEvents, filteredPendingHistoryEvents),
+    [filteredEvents, filteredPendingHistoryEvents]
   );
 
   const filteredEventGroupsEntries = useMemo(

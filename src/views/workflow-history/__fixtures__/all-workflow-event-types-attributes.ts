@@ -66,7 +66,7 @@ const allAttrsArr = arrayOfAllAttrs([
 const allAttrsArrExtended = arrayOfAllAttrsExtended([
   ...allAttrsArr,
   'pendingActivityTaskStartEventAttributes',
-  'pendingDecisionTaskScheduleEventAttributes',
+  'pendingDecisionTaskStartEventAttributes',
 ]);
 
 export const allWorkflowEventTypesAttrs: Pick<HistoryEvent, 'attributes'>[] =

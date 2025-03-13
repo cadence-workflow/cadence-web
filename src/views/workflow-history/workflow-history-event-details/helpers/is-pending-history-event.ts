@@ -5,6 +5,6 @@ export default function isPendingHistoryEvent(event: {
 }): event is PendingHistoryEvent {
   return (
     event?.attributes === 'pendingActivityTaskStartEventAttributes' ||
-    event?.attributes === 'pendingDecisionTaskScheduleEventAttributes'
+    event?.attributes === 'pendingDecisionTaskStartEventAttributes'
   );
 }

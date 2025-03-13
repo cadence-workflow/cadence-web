@@ -18,11 +18,9 @@ export default function formatPendingActivityTaskStartEvent({
     ...eventAttributes
   },
   eventTime,
-  eventId,
 }: PendingActivityTaskStartEvent) {
   return {
     ...eventAttributes,
-    eventId,
     eventTime: formatTimestampToDatetime(eventTime),
     eventType: 'PendingActivityTaskStart',
     state: formatEnum(state, 'PENDING_ACTIVITY_STATE', 'pascal'),

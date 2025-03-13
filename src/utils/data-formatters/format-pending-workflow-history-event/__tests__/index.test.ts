@@ -3,8 +3,9 @@ import { ZodError } from 'zod';
 import logger from '@/utils/logger';
 import {
   pendingActivityTaskStartEvent,
-  pendingActivityTaskStartEventWithScheduledState,
-  pendingDecisionTaskScheduleEvent,
+  pendingActivityTaskStartEventWithStartedState,
+  pendingDecisionTaskStartEvent,
+  pendingDecisionTaskStartEventWithStartedState,
 } from '@/views/workflow-history/__fixtures__/workflow-history-pending-events';
 
 import formatPendingWorkflowHistoryEvent from '..';
@@ -13,8 +14,9 @@ jest.mock('@/utils/logger');
 
 const pendingEvents = [
   pendingActivityTaskStartEvent,
-  pendingActivityTaskStartEventWithScheduledState,
-  pendingDecisionTaskScheduleEvent,
+  pendingActivityTaskStartEventWithStartedState,
+  pendingDecisionTaskStartEvent,
+  pendingDecisionTaskStartEventWithStartedState,
 ];
 describe('formatWorkflowHistoryEvent', () => {
   pendingEvents.forEach((event) => {

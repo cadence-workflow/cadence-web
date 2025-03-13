@@ -54,7 +54,7 @@ type BaseHistoryGroup = {
   badges?: HistoryGroupBadge[];
 };
 export type PendingDecisionScheduleInfo = Omit<PendingDecisionInfo, 'state'> & {
-  state: 'PENDING_DECISION_STATE_SCHEDULED';
+  state: 'PENDING_DECISION_STATE_SCHEDULED' | 'PENDING_DECISION_STATE_STARTED';
 };
 
 export type PendingActivityStartInfo = Omit<PendingActivityInfo, 'state'> & {
@@ -69,15 +69,16 @@ export type PendingActivityTaskStartEvent = {
   pendingActivityTaskStartEventAttributes: PendingActivityStartInfo;
 };
 
-export type PendingDecisionTaskScheduleEvent = {
-  attributes: 'pendingDecisionTaskScheduleEventAttributes';
+export type PendingDecisionTaskStartEvent = {
+  attributes: 'pendingDecisionTaskStartEventAttributes';
   eventTime: Timestamp | null;
-  eventId: string;
-  pendingDecisionTaskScheduleEventAttributes: PendingDecisionScheduleInfo;
+  eventId: null;
+  computedEventId: string;
+  pendingDecisionTaskStartEventAttributes: PendingDecisionScheduleInfo;
 };
 
 export type PendingHistoryEvent =
-  | PendingDecisionTaskScheduleEvent
+  | PendingDecisionTaskStartEvent
   | PendingActivityTaskStartEvent;
 
 export type ExtendedActivityHistoryEvent =
@@ -86,7 +87,7 @@ export type ExtendedActivityHistoryEvent =
 
 export type ExtendedDecisionHistoryEvent =
   | DecisionHistoryEvent
-  | PendingDecisionTaskScheduleEvent;
+  | PendingDecisionTaskStartEvent;
 
 export type ExtendedHistoryEvent = HistoryEvent | PendingHistoryEvent;
 

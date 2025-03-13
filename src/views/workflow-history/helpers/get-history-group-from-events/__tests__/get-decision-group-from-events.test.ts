@@ -5,11 +5,14 @@ import {
   startDecisionTaskEvent,
   timeoutDecisionTaskEvent,
 } from '@/views/workflow-history/__fixtures__/workflow-history-decision-events';
-import { pendingDecisionTaskScheduleEvent } from '@/views/workflow-history/__fixtures__/workflow-history-pending-events';
+import {
+  pendingDecisionTaskStartEvent,
+  pendingDecisionTaskStartEventWithStartedState,
+} from '@/views/workflow-history/__fixtures__/workflow-history-pending-events';
 
 import type {
   ExtendedDecisionHistoryEvent,
-  PendingDecisionTaskScheduleEvent,
+  PendingDecisionTaskStartEvent,
 } from '../../../workflow-history.types';
 import getDecisionGroupFromEvents from '../get-decision-group-from-events';
 
@@ -84,8 +87,8 @@ describe('getDecisionGroupFromEvents', () => {
 
   it('should return group eventsMetadata with correct labels', () => {
     const events: ExtendedDecisionHistoryEvent[] = [
-      pendingDecisionTaskScheduleEvent,
       scheduleDecisionTaskEvent,
+      pendingDecisionTaskStartEvent,
       startDecisionTaskEvent,
       completeDecisionTaskEvent,
       failedDecisionTaskEvent,
@@ -93,8 +96,8 @@ describe('getDecisionGroupFromEvents', () => {
     ];
     const group = getDecisionGroupFromEvents(events);
     expect(group.eventsMetadata.map(({ label }) => label)).toEqual([
-      'Scheduling',
       'Scheduled',
+      'Starting',
       'Started',
       'Completed',
       'Failed',
@@ -112,15 +115,14 @@ describe('getDecisionGroupFromEvents', () => {
       'WAITING',
     ]);
 
-    // pending schedule
-    const pendingScheduleEvents: PendingDecisionTaskScheduleEvent[] = [
-      pendingDecisionTaskScheduleEvent,
+    // pending start
+    const pendingStartedEvents: PendingDecisionTaskStartEvent[] = [
+      pendingDecisionTaskStartEvent,
     ];
-    const pendingScheduledGroup = getDecisionGroupFromEvents(
-      pendingScheduleEvents
-    );
+    const pendingStartedGroup =
+      getDecisionGroupFromEvents(pendingStartedEvents);
     expect(
-      pendingScheduledGroup.eventsMetadata.map(({ status }) => status)
+      pendingStartedGroup.eventsMetadata.map(({ status }) => status)
     ).toEqual(['WAITING']);
 
     // started
@@ -188,6 +190,24 @@ describe('getDecisionGroupFromEvents', () => {
     ]);
   });
 
+  it('should use correct time label prefix for pending decision events', () => {
+    const scheduledStateGroup = getDecisionGroupFromEvents([
+      scheduleDecisionTaskEvent,
+      pendingDecisionTaskStartEvent,
+    ]);
+    expect(scheduledStateGroup.eventsMetadata[1].timeLabel).toMatch(
+      /^Scheduled at/
+    );
+
+    const startedStateGroup = getDecisionGroupFromEvents([
+      scheduleDecisionTaskEvent,
+      pendingDecisionTaskStartEventWithStartedState,
+    ]);
+    expect(startedStateGroup.eventsMetadata[1].timeLabel).toMatch(
+      /^Started at/
+    );
+  });
+
   it('should return a badge if schedueled attempts are greater than zero', () => {
     const retryEvent = {
       ...scheduleDecisionTaskEvent,
@@ -201,11 +221,11 @@ describe('getDecisionGroupFromEvents', () => {
     expect(group.badges).toEqual([{ content: '2 Retries' }]);
   });
 
-  it('should return a badge if pending schedueled attempts are greater than zero', () => {
+  it('should return a badge if pending start attempts are greater than zero', () => {
     const retryEvent = {
-      ...pendingDecisionTaskScheduleEvent,
-      pendingDecisionTaskScheduleEventAttributes: {
-        ...pendingDecisionTaskScheduleEvent.pendingDecisionTaskScheduleEventAttributes,
+      ...pendingDecisionTaskStartEvent,
+      pendingDecisionTaskStartEventAttributes: {
+        ...pendingDecisionTaskStartEvent.pendingDecisionTaskStartEventAttributes,
         attempt: 2,
       },
     };

@@ -7,7 +7,7 @@ import type {
   HistoryEventsGroup,
   HistoryEventsGroups,
   PendingActivityTaskStartEvent,
-  PendingDecisionTaskScheduleEvent,
+  PendingDecisionTaskStartEvent,
 } from '../workflow-history.types';
 
 import isChildWorkflowExecutionEvent from './check-history-event-group/is-child-workflow-execution-event';
@@ -31,12 +31,10 @@ export function groupHistoryEvents(
   events: HistoryEvent[],
   {
     pendingStartActivities,
-    pendingScheduleDecision,
-    allEvents,
+    pendingStartDecision,
   }: {
     pendingStartActivities: PendingActivityTaskStartEvent[];
-    pendingScheduleDecision: PendingDecisionTaskScheduleEvent | null;
-    allEvents: HistoryEvent[];
+    pendingStartDecision: PendingDecisionTaskStartEvent | null;
   }
 ) {
   const groupByFirstEventId: HistoryEventsGroups = {};
@@ -136,32 +134,29 @@ export function groupHistoryEvents(
     }
   });
 
-  if (pendingScheduleDecision && pendingScheduleDecision.eventTime) {
-    const groupId = getHistoryEventGroupId(pendingScheduleDecision);
+  if (pendingStartDecision && pendingStartDecision.eventTime) {
+    const groupId = getHistoryEventGroupId(pendingStartDecision);
     if (!groupId) {
       logger.warn(
         {
-          eventId: pendingScheduleDecision.eventId,
-          eventTime: pendingScheduleDecision.eventTime,
+          computedEventId: pendingStartDecision.computedEventId,
+          eventTime: pendingStartDecision.eventTime,
         },
         "Couldn't extract groupId from event, check event payload and extraction logic"
       );
-    } else if (
-      !groupByFirstEventId[groupId] ||
-      groupByFirstEventId[groupId].events.length === 0
-    ) {
-      const previousEventId = String(
-        parseInt(pendingScheduleDecision.eventId) - 1
-      );
-      const findPreviousEvent = allEvents.find(
-        (e) => e.eventId === previousEventId
-      );
-      const previousGroupId = findPreviousEvent
-        ? getHistoryEventGroupId(findPreviousEvent)
-        : null;
-      if (previousGroupId && groupByFirstEventId[previousGroupId]) {
+    } else {
+      const currentGroup = groupByFirstEventId[groupId];
+      // add pendingStart to group only if it is scheduled
+      if (
+        currentGroup &&
+        currentGroup?.events.length === 1 &&
+        currentGroup.events[0].attributes ===
+          'decisionTaskScheduledEventAttributes' &&
+        currentGroup.events.every(isExtendedDecisionEvent)
+      ) {
         const updatedEventsArr: ExtendedDecisionHistoryEvent[] = [
-          pendingScheduleDecision,
+          ...currentGroup.events,
+          pendingStartDecision,
         ];
         groupByFirstEventId[groupId] =
           getDecisionGroupFromEvents(updatedEventsArr);

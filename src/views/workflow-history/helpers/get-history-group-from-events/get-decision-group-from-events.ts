@@ -3,6 +3,7 @@ import type {
   ExtendedDecisionHistoryEvent,
   HistoryGroupEventToStatusMap,
   HistoryGroupEventToStringMap,
+  PendingDecisionTaskStartEvent,
 } from '../../workflow-history.types';
 import getCommonHistoryGroupFields from '../get-common-history-group-fields';
 
@@ -13,8 +14,8 @@ export default function getDecisionGroupFromEvents(
   const groupType = 'Decision';
   const badges = [];
 
-  const pendingScheduleAttr = 'pendingDecisionTaskScheduleEventAttributes';
   const scheduleAttr = 'decisionTaskScheduledEventAttributes';
+  const pendingStartAttr = 'pendingDecisionTaskStartEventAttributes';
   const startAttr = 'decisionTaskStartedEventAttributes';
   const timeoutAttr = 'decisionTaskTimedOutEventAttributes';
   const closeAttrs = [
@@ -23,13 +24,13 @@ export default function getDecisionGroupFromEvents(
   ];
 
   let scheduleEvent: ExtendedDecisionHistoryEvent | undefined;
-  let pendingScheduleEvent: ExtendedDecisionHistoryEvent | undefined;
+  let pendingStartEvent: PendingDecisionTaskStartEvent | undefined;
   let timeoutEvent: ExtendedDecisionHistoryEvent | undefined;
   let startEvent: ExtendedDecisionHistoryEvent | undefined;
   let closeEvent: ExtendedDecisionHistoryEvent | undefined;
 
   events.forEach((e) => {
-    if (e.attributes === pendingScheduleAttr) pendingScheduleEvent = e;
+    if (e.attributes === pendingStartAttr) pendingStartEvent = e;
     if (e.attributes === scheduleAttr) scheduleEvent = e;
     if (e.attributes === timeoutAttr) timeoutEvent = e;
     if (e.attributes === startAttr) startEvent = e;
@@ -42,11 +43,11 @@ export default function getDecisionGroupFromEvents(
 
   let retryAttemptNumber = 0;
   if (
-    pendingScheduleEvent &&
-    pendingScheduleAttr in pendingScheduleEvent &&
-    pendingScheduleEvent[pendingScheduleAttr]?.attempt
+    pendingStartEvent &&
+    pendingStartAttr in pendingStartEvent &&
+    pendingStartEvent[pendingStartAttr]?.attempt
   ) {
-    retryAttemptNumber = pendingScheduleEvent[pendingScheduleAttr].attempt;
+    retryAttemptNumber = pendingStartEvent[pendingStartAttr].attempt;
   }
 
   if (
@@ -64,23 +65,28 @@ export default function getDecisionGroupFromEvents(
     });
   }
   const eventToLabel: HistoryGroupEventToStringMap<DecisionHistoryGroup> = {
-    pendingDecisionTaskScheduleEventAttributes: 'Scheduling',
     decisionTaskScheduledEventAttributes: 'Scheduled',
+    pendingDecisionTaskStartEventAttributes: 'Starting',
     decisionTaskStartedEventAttributes: 'Started',
     decisionTaskCompletedEventAttributes: 'Completed',
     decisionTaskFailedEventAttributes: 'Failed',
     decisionTaskTimedOutEventAttributes: 'Timed out',
   };
   const eventToStatus: HistoryGroupEventToStatusMap<DecisionHistoryGroup> = {
-    pendingDecisionTaskScheduleEventAttributes: 'WAITING',
     decisionTaskScheduledEventAttributes: (_, events, index) =>
       index < events.length - 1 ? 'COMPLETED' : 'WAITING',
+    pendingDecisionTaskStartEventAttributes: 'WAITING',
     decisionTaskStartedEventAttributes: (_, events, index) =>
       index < events.length - 1 ? 'COMPLETED' : 'ONGOING',
     decisionTaskCompletedEventAttributes: 'COMPLETED',
     decisionTaskFailedEventAttributes: 'FAILED',
     decisionTaskTimedOutEventAttributes: 'FAILED',
   };
+
+  const pendingStartEventTimePrefix = pendingStartEvent?.[pendingStartAttr]
+    .startedTime
+    ? 'Started at'
+    : 'Scheduled at';
 
   return {
     label,
@@ -91,7 +97,9 @@ export default function getDecisionGroupFromEvents(
       events,
       eventToStatus,
       eventToLabel,
-      { pendingDecisionTaskScheduleEventAttributes: 'Scheduled at' }
+      {
+        pendingDecisionTaskStartEventAttributes: pendingStartEventTimePrefix,
+      }
     ),
   };
 }

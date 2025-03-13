@@ -2,15 +2,18 @@ import type { HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/
 import logger from '@/utils/logger';
 
 import {
-  completeActivityTaskEvent,
   scheduleActivityTaskEvent,
   startActivityTaskEvent,
 } from '../../__fixtures__/workflow-history-activity-events';
-import { startDecisionTaskEvent } from '../../__fixtures__/workflow-history-decision-events';
+import {
+  scheduleDecisionTaskEvent,
+  startDecisionTaskEvent,
+} from '../../__fixtures__/workflow-history-decision-events';
 import {
   pendingActivityTaskStartEvent,
-  pendingActivityTaskStartEventWithScheduledState,
-  pendingDecisionTaskScheduleEvent,
+  pendingActivityTaskStartEventWithStartedState,
+  pendingDecisionTaskStartEvent,
+  pendingDecisionTaskStartEventWithStartedState,
 } from '../../__fixtures__/workflow-history-pending-events';
 import type { ActivityHistoryEvent } from '../../workflow-history.types';
 import getHistoryEventGroupId from '../get-history-event-group-id';
@@ -37,8 +40,7 @@ describe('groupHistoryEvents', () => {
 
   it('should return initial groups if no events are passed', () => {
     const result = groupHistoryEvents([], {
-      allEvents: [],
-      pendingScheduleDecision: null,
+      pendingStartDecision: null,
       pendingStartActivities: [],
     });
     expect(result).toEqual({});
@@ -48,8 +50,7 @@ describe('groupHistoryEvents', () => {
     const events: HistoryEvent[] = [scheduleActivityTaskEvent];
     mockedGetHistoryEventGroupId.mockReturnValue(undefined);
     groupHistoryEvents(events, {
-      allEvents: events,
-      pendingScheduleDecision: null,
+      pendingStartDecision: null,
       pendingStartActivities: [],
     });
     expect(mockLoggerWarn).toHaveBeenCalledWith(
@@ -69,8 +70,7 @@ describe('groupHistoryEvents', () => {
     mockedGetHistoryEventGroupId.mockReturnValue('group1');
 
     groupHistoryEvents(events, {
-      allEvents: events,
-      pendingScheduleDecision: null,
+      pendingStartDecision: null,
       pendingStartActivities: [],
     });
 
@@ -95,8 +95,7 @@ describe('groupHistoryEvents', () => {
     (getHistoryEventGroupId as jest.Mock).mockReturnValue('group1');
 
     const result = groupHistoryEvents(events, {
-      allEvents: events,
-      pendingScheduleDecision: null,
+      pendingStartDecision: null,
       pendingStartActivities: [],
     });
     expect(result.group1.events).toEqual(events);
@@ -106,15 +105,14 @@ describe('groupHistoryEvents', () => {
     const events: HistoryEvent[] = [
       {
         ...scheduleActivityTaskEvent,
-        //@ts-expect-error Type '"fakeAttribute"' is not assignable to type
+        // @ts-expect-error Type '"fakeAttribute"' is not assignable to type
         attributes: 'fakeAttribute',
       },
     ];
     (getHistoryEventGroupId as jest.Mock).mockReturnValue('group3');
 
     const result = groupHistoryEvents(events, {
-      allEvents: events,
-      pendingScheduleDecision: null,
+      pendingStartDecision: null,
       pendingStartActivities: [],
     });
 
@@ -141,8 +139,7 @@ describe('groupHistoryEvents', () => {
     (getHistoryEventGroupId as jest.Mock).mockReturnValue('group1');
 
     const result = groupHistoryEvents(events, {
-      allEvents: events,
-      pendingScheduleDecision: null,
+      pendingStartDecision: null,
       pendingStartActivities,
     });
 
@@ -152,16 +149,15 @@ describe('groupHistoryEvents', () => {
     ]);
   });
 
-  it('should append pending activity start with scheduled state to group that has scheduled activity event only', () => {
+  it('should append pending activity start with started state to group that has scheduled activity event only', () => {
     const events: ActivityHistoryEvent[] = [scheduleActivityTaskEvent];
     const pendingStartActivities = [
-      pendingActivityTaskStartEventWithScheduledState,
+      pendingActivityTaskStartEventWithStartedState,
     ];
     (getHistoryEventGroupId as jest.Mock).mockReturnValue('group1');
 
     const result = groupHistoryEvents(events, {
-      allEvents: events,
-      pendingScheduleDecision: null,
+      pendingStartDecision: null,
       pendingStartActivities,
     });
 
@@ -177,8 +173,7 @@ describe('groupHistoryEvents', () => {
     (getHistoryEventGroupId as jest.Mock).mockReturnValue('group1');
 
     const result = groupHistoryEvents(events, {
-      allEvents: events,
-      pendingScheduleDecision: null,
+      pendingStartDecision: null,
       pendingStartActivities,
     });
 
@@ -194,8 +189,7 @@ describe('groupHistoryEvents', () => {
     (getHistoryEventGroupId as jest.Mock).mockReturnValue('group1');
 
     const result = groupHistoryEvents(events, {
-      allEvents: events,
-      pendingScheduleDecision: null,
+      pendingStartDecision: null,
       pendingStartActivities,
     });
 
@@ -203,59 +197,60 @@ describe('groupHistoryEvents', () => {
   });
 
   // pending decision schedule section
-  it('should append pending decision schedule to group if no events are present in the group', () => {
-    const events: HistoryEvent[] = [
-      { ...completeActivityTaskEvent, eventId: '98' }, //previous event
-    ];
-    const pendingScheduleDecision = {
-      ...pendingDecisionTaskScheduleEvent,
-      eventId: '99',
-    };
-    (getHistoryEventGroupId as jest.Mock).mockImplementation((event) => {
-      return event.eventId === '99' ? 'group2' : 'group1';
-    });
-
-    const result = groupHistoryEvents(events, {
-      allEvents: events,
-      pendingScheduleDecision,
-      pendingStartActivities: [],
-    });
-
-    expect(result.group2.events).toEqual([pendingScheduleDecision]);
-  });
-
-  it('should not append pending decision schedule to group if events are already present in the group', () => {
-    const events: HistoryEvent[] = [startDecisionTaskEvent];
-    const pendingScheduleDecision = pendingDecisionTaskScheduleEvent;
+  it('should append pending decision start to group that has scheduled decision event only', () => {
+    const events: HistoryEvent[] = [scheduleDecisionTaskEvent];
     (getHistoryEventGroupId as jest.Mock).mockReturnValue('group1');
 
     const result = groupHistoryEvents(events, {
-      allEvents: events,
-      pendingScheduleDecision,
+      pendingStartDecision: pendingDecisionTaskStartEvent,
+      pendingStartActivities: [],
+    });
+
+    expect(result.group1.events).toEqual([
+      ...events,
+      pendingDecisionTaskStartEvent,
+    ]);
+  });
+
+  it('should append pending decision start with started state to group that has scheduled decision event only', () => {
+    const events: HistoryEvent[] = [scheduleDecisionTaskEvent];
+    (getHistoryEventGroupId as jest.Mock).mockReturnValue('group1');
+
+    const result = groupHistoryEvents(events, {
+      pendingStartDecision: pendingDecisionTaskStartEventWithStartedState,
+      pendingStartActivities: [],
+    });
+
+    expect(result.group1.events).toEqual([
+      ...events,
+      pendingDecisionTaskStartEventWithStartedState,
+    ]);
+  });
+
+  it('should not append pending decision start to group if it does not have scheduled decision event', () => {
+    const events: HistoryEvent[] = [startDecisionTaskEvent];
+    (getHistoryEventGroupId as jest.Mock).mockReturnValue('group1');
+
+    const result = groupHistoryEvents(events, {
+      pendingStartDecision: pendingDecisionTaskStartEvent,
       pendingStartActivities: [],
     });
 
     expect(result.group1.events).toEqual(events);
   });
 
-  it('should append pending decision schedule to group if previous event exists and group is empty', () => {
+  it('should not append pending decision start to group if group has more than one event', () => {
     const events: HistoryEvent[] = [
-      { ...completeActivityTaskEvent, eventId: '98' }, //previous event
+      scheduleDecisionTaskEvent,
+      startDecisionTaskEvent,
     ];
-    const pendingScheduleDecision = {
-      ...pendingDecisionTaskScheduleEvent,
-      eventId: '99',
-    };
-    (getHistoryEventGroupId as jest.Mock).mockImplementation((event) => {
-      return event.eventId === '99' ? 'group2' : 'group1';
-    });
+    (getHistoryEventGroupId as jest.Mock).mockReturnValue('group1');
 
     const result = groupHistoryEvents(events, {
-      allEvents: events,
-      pendingScheduleDecision,
+      pendingStartDecision: pendingDecisionTaskStartEvent,
       pendingStartActivities: [],
     });
 
-    expect(result.group2.events).toEqual([pendingScheduleDecision]);
+    expect(result.group1.events).toEqual(events);
   });
 });

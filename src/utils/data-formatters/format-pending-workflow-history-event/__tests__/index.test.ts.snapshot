@@ -7,7 +7,6 @@ exports[`formatWorkflowHistoryEvent should format workflow pendingActivityTaskSt
     "name": "activity.cron.Start",
   },
   "attempt": 1,
-  "eventId": null,
   "eventTime": 2024-09-07T22:16:10.599Z,
   "eventType": "PendingActivityTaskStart",
   "expirationTime": 1970-01-01T00:06:00.000Z,
@@ -24,8 +23,8 @@ exports[`formatWorkflowHistoryEvent should format workflow pendingActivityTaskSt
   "maximumAttempts": 10,
   "scheduleId": 7,
   "scheduledTime": 1970-01-01T00:03:00.000Z,
-  "startedWorkerIdentity": "",
-  "state": "started",
+  "startedWorkerIdentity": "worker-1",
+  "state": "scheduled",
 }
 `;
 
@@ -36,7 +35,6 @@ exports[`formatWorkflowHistoryEvent should format workflow pendingActivityTaskSt
     "name": "activity.cron.Start",
   },
   "attempt": 1,
-  "eventId": null,
   "eventTime": 2024-09-07T22:16:10.599Z,
   "eventType": "PendingActivityTaskStart",
   "expirationTime": 1970-01-01T00:06:00.000Z,
@@ -48,25 +46,38 @@ exports[`formatWorkflowHistoryEvent should format workflow pendingActivityTaskSt
   "lastFailureDetails": null,
   "lastFailureReason": "",
   "lastHeartbeatTime": null,
-  "lastStartedTime": null,
+  "lastStartedTime": 2024-09-07T22:16:10.599Z,
   "lastWorkerIdentity": "",
   "maximumAttempts": 10,
   "scheduleId": 7,
   "scheduledTime": 1970-01-01T00:03:00.000Z,
-  "startedWorkerIdentity": "",
-  "state": "scheduled",
+  "startedWorkerIdentity": "worker-1",
+  "state": "started",
 }
 `;
 
-exports[`formatWorkflowHistoryEvent should format workflow pendingDecisionTaskScheduleEventAttributes to match snapshot 1`] = `
+exports[`formatWorkflowHistoryEvent should format workflow pendingDecisionTaskStartEventAttributes to match snapshot 1`] = `
 {
   "attempt": 1,
-  "eventId": 2,
   "eventTime": 2024-09-07T22:16:10.599Z,
   "eventType": "PendingDecisionTaskSchedule",
   "originalScheduledTime": null,
   "scheduleId": 7,
   "scheduledTime": 1970-01-01T00:03:00.000Z,
   "startedTime": null,
+  "state": "scheduled",
+}
+`;
+
+exports[`formatWorkflowHistoryEvent should format workflow pendingDecisionTaskStartEventAttributes to match snapshot 2`] = `
+{
+  "attempt": 1,
+  "eventTime": 2024-09-07T22:16:10.599Z,
+  "eventType": "PendingDecisionTaskSchedule",
+  "originalScheduledTime": null,
+  "scheduleId": 7,
+  "scheduledTime": 1970-01-01T00:03:00.000Z,
+  "startedTime": 2024-09-07T22:16:10.599Z,
+  "state": "started",
 }
 `;

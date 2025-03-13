@@ -1,6 +1,6 @@
 import type {
   PendingActivityTaskStartEvent,
-  PendingDecisionTaskScheduleEvent,
+  PendingDecisionTaskStartEvent,
 } from '../workflow-history.types';
 
 export const pendingActivityTaskStartEvent = {
@@ -16,7 +16,6 @@ export const pendingActivityTaskStartEvent = {
     activityType: {
       name: 'activity.cron.Start',
     },
-
     heartbeatDetails: {
       data: 'MTcyNTc0NzM3MDU3NTQwOTg0MwoiZ2FkZW5jZS1jYW5hcnkteGRjIgoid29ya2Zsb3cuc2FuaXR5Igo=',
     },
@@ -38,27 +37,32 @@ export const pendingActivityTaskStartEvent = {
       nanos: 0,
     },
     scheduleId: '7',
-    startedWorkerIdentity: '',
-    state: 'PENDING_ACTIVITY_STATE_STARTED',
-  },
-} as const satisfies PendingActivityTaskStartEvent;
-
-export const pendingActivityTaskStartEventWithScheduledState = {
-  ...pendingActivityTaskStartEvent,
-  pendingActivityTaskStartEventAttributes: {
-    ...pendingActivityTaskStartEvent.pendingActivityTaskStartEventAttributes,
+    startedWorkerIdentity: 'worker-1',
     state: 'PENDING_ACTIVITY_STATE_SCHEDULED',
   },
 } as const satisfies PendingActivityTaskStartEvent;
 
-export const pendingDecisionTaskScheduleEvent = {
-  eventId: '2',
-  attributes: 'pendingDecisionTaskScheduleEventAttributes',
+export const pendingActivityTaskStartEventWithStartedState = {
+  ...pendingActivityTaskStartEvent,
+  pendingActivityTaskStartEventAttributes: {
+    ...pendingActivityTaskStartEvent.pendingActivityTaskStartEventAttributes,
+    state: 'PENDING_ACTIVITY_STATE_STARTED',
+    lastStartedTime: {
+      seconds: '1725747370',
+      nanos: 599547391,
+    },
+  },
+} as const satisfies PendingActivityTaskStartEvent;
+
+export const pendingDecisionTaskStartEvent = {
+  eventId: null,
+  computedEventId: 'pending-7',
+  attributes: 'pendingDecisionTaskStartEventAttributes',
   eventTime: {
     seconds: '1725747370',
     nanos: 599547391,
   },
-  pendingDecisionTaskScheduleEventAttributes: {
+  pendingDecisionTaskStartEventAttributes: {
     originalScheduledTime: null,
     startedTime: null,
     attempt: 1,
@@ -69,4 +73,16 @@ export const pendingDecisionTaskScheduleEvent = {
     scheduleId: '7',
     state: 'PENDING_DECISION_STATE_SCHEDULED',
   },
-} as const satisfies PendingDecisionTaskScheduleEvent;
+} as const satisfies PendingDecisionTaskStartEvent;
+
+export const pendingDecisionTaskStartEventWithStartedState = {
+  ...pendingDecisionTaskStartEvent,
+  pendingDecisionTaskStartEventAttributes: {
+    ...pendingDecisionTaskStartEvent.pendingDecisionTaskStartEventAttributes,
+    state: 'PENDING_DECISION_STATE_STARTED',
+    startedTime: {
+      seconds: '1725747370',
+      nanos: 599547391,
+    },
+  },
+} as const satisfies PendingDecisionTaskStartEvent;

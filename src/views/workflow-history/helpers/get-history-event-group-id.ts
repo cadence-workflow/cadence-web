@@ -12,9 +12,7 @@ export default function getHistoryEventGroupId(
 ): string | undefined {
   if (event.attributes === 'pendingActivityTaskStartEventAttributes') {
     return event[event.attributes]?.scheduleId;
-  } else if (
-    event.attributes === 'pendingDecisionTaskScheduleEventAttributes'
-  ) {
+  } else if (event.attributes === 'pendingDecisionTaskStartEventAttributes') {
     return event[event.attributes]?.scheduleId;
   } else if (
     isExtendedActivityEvent(event) &&

@@ -4,7 +4,7 @@ export default function isExtendedDecisionEvent(event: {
   attributes: string;
 }): event is ExtendedDecisionHistoryEvent {
   return [
-    'pendingDecisionTaskScheduleEventAttributes',
+    'pendingDecisionTaskStartEventAttributes',
     'decisionTaskScheduledEventAttributes',
     'decisionTaskStartedEventAttributes',
     'decisionTaskCompletedEventAttributes',

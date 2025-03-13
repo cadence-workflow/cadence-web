@@ -3,7 +3,7 @@ import differenceBy from 'lodash/differenceBy';
 import { allWorkflowEventTypesAttrsExtended } from '@/views/workflow-history/__fixtures__/all-workflow-event-types-attributes';
 import {
   pendingActivityTaskStartEvent,
-  pendingDecisionTaskScheduleEvent,
+  pendingDecisionTaskStartEvent,
 } from '@/views/workflow-history/__fixtures__/workflow-history-pending-events';
 import {
   type ExtendedHistoryEvent,
@@ -14,7 +14,7 @@ import isPendingHistoryEvent from '../is-pending-history-event';
 
 const validEvents: PendingHistoryEvent[] = [
   pendingActivityTaskStartEvent,
-  pendingDecisionTaskScheduleEvent,
+  pendingDecisionTaskStartEvent,
 ];
 
 const invalidEvents: Pick<ExtendedHistoryEvent, 'attributes'>[] = differenceBy(

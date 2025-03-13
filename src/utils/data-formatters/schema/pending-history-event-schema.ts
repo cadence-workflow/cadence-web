@@ -47,12 +47,16 @@ export const pendingActivityTaskStartSchema = z.object({
   }),
 });
 
-export const pendingDecisionTaskScheduleSchema = z.object({
-  attributes: z.literal('pendingDecisionTaskScheduleEventAttributes'),
+export const pendingDecisionTaskStartSchema = z.object({
+  attributes: z.literal('pendingDecisionTaskStartEventAttributes'),
   eventTime: timestampSchema.nullable(),
-  eventId: z.string(),
-  pendingDecisionTaskScheduleEventAttributes: z.object({
-    state: z.literal(PendingDecisionState.PENDING_DECISION_STATE_SCHEDULED),
+  eventId: z.null(),
+  computedEventId: z.string(),
+  pendingDecisionTaskStartEventAttributes: z.object({
+    state: z.enum([
+      PendingDecisionState.PENDING_DECISION_STATE_SCHEDULED,
+      PendingDecisionState.PENDING_DECISION_STATE_STARTED,
+    ]),
     scheduledTime: timestampSchema.nullable(),
     startedTime: timestampSchema.nullable(),
     attempt: z.number(),

@@ -24,7 +24,7 @@ import {
   timeoutDecisionTaskEvent,
 } from './workflow-history-decision-events';
 import {
-  pendingDecisionTaskScheduleEvent,
+  pendingDecisionTaskStartEvent,
   pendingActivityTaskStartEvent,
 } from './workflow-history-pending-events';
 import {
@@ -106,6 +106,6 @@ export const allWorkflowEvents = [
 
 export const allWorkflowEventsExtended = [
   ...allWorkflowEvents,
-  pendingDecisionTaskScheduleEvent,
+  pendingDecisionTaskStartEvent,
   pendingActivityTaskStartEvent,
 ];
