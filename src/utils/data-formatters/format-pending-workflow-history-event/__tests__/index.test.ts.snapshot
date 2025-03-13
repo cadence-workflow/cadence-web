@@ -60,7 +60,7 @@ exports[`formatWorkflowHistoryEvent should format workflow pendingDecisionTaskSt
 {
   "attempt": 1,
   "eventTime": 2024-09-07T22:16:10.599Z,
-  "eventType": "PendingDecisionTaskSchedule",
+  "eventType": "PendingDecisionTaskStart",
   "originalScheduledTime": null,
   "scheduleId": 7,
   "scheduledTime": 1970-01-01T00:03:00.000Z,
@@ -73,7 +73,7 @@ exports[`formatWorkflowHistoryEvent should format workflow pendingDecisionTaskSt
 {
   "attempt": 1,
   "eventTime": 2024-09-07T22:16:10.599Z,
-  "eventType": "PendingDecisionTaskSchedule",
+  "eventType": "PendingDecisionTaskStart",
   "originalScheduledTime": null,
   "scheduleId": 7,
   "scheduledTime": 1970-01-01T00:03:00.000Z,
