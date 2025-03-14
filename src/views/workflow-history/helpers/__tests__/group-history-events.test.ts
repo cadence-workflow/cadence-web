@@ -11,6 +11,7 @@ import {
 } from '../../__fixtures__/workflow-history-decision-events';
 import {
   pendingActivityTaskStartEvent,
+  pendingActivityTaskStartEventWithCancelRequestedState,
   pendingActivityTaskStartEventWithStartedState,
   pendingDecisionTaskStartEvent,
   pendingDecisionTaskStartEventWithStartedState,
@@ -149,22 +150,25 @@ describe('groupHistoryEvents', () => {
     ]);
   });
 
-  it('should append pending activity start with started state to group that has scheduled activity event only', () => {
+  it('should append pending activity start with different states to group that has scheduled activity event only', () => {
     const events: ActivityHistoryEvent[] = [scheduleActivityTaskEvent];
-    const pendingStartActivities = [
+    const testPendingActivities = [
       pendingActivityTaskStartEventWithStartedState,
+      pendingActivityTaskStartEventWithCancelRequestedState,
     ];
     (getHistoryEventGroupId as jest.Mock).mockReturnValue('group1');
 
-    const result = groupHistoryEvents(events, {
-      pendingStartDecision: null,
-      pendingStartActivities,
-    });
+    testPendingActivities.forEach((pendingActivityTaskStart) => {
+      const result = groupHistoryEvents(events, {
+        pendingStartDecision: null,
+        pendingStartActivities: [pendingActivityTaskStart],
+      });
 
-    expect(result.group1.events).toEqual([
-      ...events,
-      ...pendingStartActivities,
-    ]);
+      expect(result.group1.events).toEqual([
+        ...events,
+        pendingActivityTaskStart,
+      ]);
+    });
   });
 
   it('should not append pending activity start to group if it does not have scheduled activity event', () => {

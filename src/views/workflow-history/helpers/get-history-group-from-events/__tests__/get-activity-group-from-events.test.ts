@@ -6,15 +6,19 @@ import {
   startActivityTaskEvent,
   timeoutActivityTaskEvent,
 } from '@/views/workflow-history/__fixtures__/workflow-history-activity-events';
+import {
+  pendingActivityTaskStartEvent,
+  pendingActivityTaskStartEventWithStartedState,
+} from '@/views/workflow-history/__fixtures__/workflow-history-pending-events';
 
-import type { ActivityHistoryEvent } from '../../../workflow-history.types';
+import type { ExtendedActivityHistoryEvent } from '../../../workflow-history.types';
 import getActivityGroupFromEvents from '../get-activity-group-from-events';
 
 jest.useFakeTimers().setSystemTime(new Date('2024-05-25'));
 
 describe('getActivityGroupFromEvents', () => {
   it('should return a group with a proper label when scheduled event exists', () => {
-    const events: ActivityHistoryEvent[] = [scheduleActivityTaskEvent];
+    const events: ExtendedActivityHistoryEvent[] = [scheduleActivityTaskEvent];
 
     const scheduelAttrs =
       scheduleActivityTaskEvent.activityTaskScheduledEventAttributes;
@@ -26,21 +30,21 @@ describe('getActivityGroupFromEvents', () => {
   });
 
   it('should return a group with empty label when scheduled event is missing', () => {
-    const completeEvents: ActivityHistoryEvent[] = [
+    const completeEvents: ExtendedActivityHistoryEvent[] = [
       startActivityTaskEvent,
       completeActivityTaskEvent,
     ];
     const completedActivitygroup = getActivityGroupFromEvents(completeEvents);
     expect(completedActivitygroup.label).toBe('');
 
-    const failureEvents: ActivityHistoryEvent[] = [
+    const failureEvents: ExtendedActivityHistoryEvent[] = [
       startActivityTaskEvent,
       failedActivityTaskEvent,
     ];
     const failedActivitygroup = getActivityGroupFromEvents(failureEvents);
     expect(failedActivitygroup.label).toBe('');
 
-    const timeoutEvents: ActivityHistoryEvent[] = [
+    const timeoutEvents: ExtendedActivityHistoryEvent[] = [
       startActivityTaskEvent,
       timeoutActivityTaskEvent,
     ];
@@ -51,7 +55,7 @@ describe('getActivityGroupFromEvents', () => {
   it('should return a group with hasMissingEvents when any event is missing', () => {
     const assertions: Array<{
       name: string;
-      events: ActivityHistoryEvent[];
+      events: ExtendedActivityHistoryEvent[];
       assertionValue: boolean;
     }> = [
       {
@@ -92,7 +96,7 @@ describe('getActivityGroupFromEvents', () => {
   });
 
   it('should return a group with groupType equal to Activity', () => {
-    const events: ActivityHistoryEvent[] = [
+    const events: ExtendedActivityHistoryEvent[] = [
       scheduleActivityTaskEvent,
       startActivityTaskEvent,
       completeActivityTaskEvent,
@@ -102,8 +106,9 @@ describe('getActivityGroupFromEvents', () => {
   });
 
   it('should return group eventsMetadata with correct labels', () => {
-    const events: ActivityHistoryEvent[] = [
+    const events: ExtendedActivityHistoryEvent[] = [
       scheduleActivityTaskEvent,
+      pendingActivityTaskStartEvent,
       startActivityTaskEvent,
       completeActivityTaskEvent,
       failedActivityTaskEvent,
@@ -113,6 +118,7 @@ describe('getActivityGroupFromEvents', () => {
     const group = getActivityGroupFromEvents(events);
     expect(group.eventsMetadata.map(({ label }) => label)).toEqual([
       'Scheduled',
+      'Starting',
       'Started',
       'Completed',
       'Failed',
@@ -123,14 +129,16 @@ describe('getActivityGroupFromEvents', () => {
 
   it('should return group eventsMetadata with correct status', () => {
     // just scheduled
-    const scheduleEvents: ActivityHistoryEvent[] = [scheduleActivityTaskEvent];
+    const scheduleEvents: ExtendedActivityHistoryEvent[] = [
+      scheduleActivityTaskEvent,
+    ];
     const scheduledGroup = getActivityGroupFromEvents(scheduleEvents);
     expect(scheduledGroup.eventsMetadata.map(({ status }) => status)).toEqual([
       'WAITING',
     ]);
 
     // started
-    const startEvents: ActivityHistoryEvent[] = [
+    const startEvents: ExtendedActivityHistoryEvent[] = [
       scheduleActivityTaskEvent,
       startActivityTaskEvent,
     ];
@@ -141,7 +149,7 @@ describe('getActivityGroupFromEvents', () => {
     ]);
 
     // Completed
-    const completeEvents: ActivityHistoryEvent[] = [
+    const completeEvents: ExtendedActivityHistoryEvent[] = [
       scheduleActivityTaskEvent,
       startActivityTaskEvent,
       completeActivityTaskEvent,
@@ -154,7 +162,7 @@ describe('getActivityGroupFromEvents', () => {
     ]);
 
     // Failed
-    const failureEvents: ActivityHistoryEvent[] = [
+    const failureEvents: ExtendedActivityHistoryEvent[] = [
       scheduleActivityTaskEvent,
       startActivityTaskEvent,
       failedActivityTaskEvent,
@@ -167,7 +175,7 @@ describe('getActivityGroupFromEvents', () => {
     ]);
 
     // Canceled
-    const cancelEvents: ActivityHistoryEvent[] = [
+    const cancelEvents: ExtendedActivityHistoryEvent[] = [
       scheduleActivityTaskEvent,
       startActivityTaskEvent,
       cancelActivityTaskEvent,
@@ -180,7 +188,7 @@ describe('getActivityGroupFromEvents', () => {
     ]);
 
     // Timed out
-    const timeoutEvents: ActivityHistoryEvent[] = [
+    const timeoutEvents: ExtendedActivityHistoryEvent[] = [
       scheduleActivityTaskEvent,
       startActivityTaskEvent,
       timeoutActivityTaskEvent,
@@ -194,7 +202,7 @@ describe('getActivityGroupFromEvents', () => {
   });
 
   it('should return group eventsMetadata with correct timeLabel', () => {
-    const events: ActivityHistoryEvent[] = [
+    const events: ExtendedActivityHistoryEvent[] = [
       scheduleActivityTaskEvent,
       startActivityTaskEvent,
       completeActivityTaskEvent,
@@ -205,5 +213,23 @@ describe('getActivityGroupFromEvents', () => {
       'Started at 07 Sep, 22:16:10 UTC',
       'Completed at 07 Sep, 22:16:10 UTC',
     ]);
+  });
+
+  it('should use correct time label prefix for pending activity events', () => {
+    const groupWithScheduledState = getActivityGroupFromEvents([
+      scheduleActivityTaskEvent,
+      pendingActivityTaskStartEvent,
+    ]);
+    expect(groupWithScheduledState.eventsMetadata[1].timeLabel).toMatch(
+      /^Scheduled at/
+    );
+
+    const groupWithStartedState = getActivityGroupFromEvents([
+      scheduleActivityTaskEvent,
+      pendingActivityTaskStartEventWithStartedState,
+    ]);
+    expect(groupWithStartedState.eventsMetadata[1].timeLabel).toMatch(
+      /^Last started at/
+    );
   });
 });

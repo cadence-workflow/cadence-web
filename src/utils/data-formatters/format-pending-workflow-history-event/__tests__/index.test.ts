@@ -3,6 +3,7 @@ import { ZodError } from 'zod';
 import logger from '@/utils/logger';
 import {
   pendingActivityTaskStartEvent,
+  pendingActivityTaskStartEventWithCancelRequestedState,
   pendingActivityTaskStartEventWithStartedState,
   pendingDecisionTaskStartEvent,
   pendingDecisionTaskStartEventWithStartedState,
@@ -15,6 +16,7 @@ jest.mock('@/utils/logger');
 const pendingEvents = [
   pendingActivityTaskStartEvent,
   pendingActivityTaskStartEventWithStartedState,
+  pendingActivityTaskStartEventWithCancelRequestedState,
   pendingDecisionTaskStartEvent,
   pendingDecisionTaskStartEventWithStartedState,
 ];

@@ -115,7 +115,7 @@ export function groupHistoryEvents(
       );
     } else {
       const currentGroup = groupByFirstEventId[groupId];
-      // add pendingStart to group only if it is schedueled
+      // add pendingStart to group only if it is scheduled
       if (
         pa.eventTime &&
         currentGroup &&

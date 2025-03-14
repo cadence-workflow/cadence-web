@@ -3,6 +3,7 @@ import type {
   ExtendedActivityHistoryEvent,
   HistoryGroupEventToStatusMap,
   HistoryGroupEventToStringMap,
+  PendingActivityTaskStartEvent,
 } from '../../workflow-history.types';
 import getCommonHistoryGroupFields from '../get-common-history-group-fields';
 
@@ -26,7 +27,7 @@ export default function getActivityGroupFromEvents(
   let scheduleEvent: ExtendedActivityHistoryEvent | undefined;
   let timeoutEvent: ExtendedActivityHistoryEvent | undefined;
   let startEvent: ExtendedActivityHistoryEvent | undefined;
-  let pendingStartEvent: ExtendedActivityHistoryEvent | undefined;
+  let pendingStartEvent: PendingActivityTaskStartEvent | undefined;
   let closeEvent: ExtendedActivityHistoryEvent | undefined;
 
   events.forEach((e) => {
@@ -89,6 +90,11 @@ export default function getActivityGroupFromEvents(
     activityTaskTimedOutEventAttributes: 'FAILED',
   };
 
+  const pendingStartEventTimePrefix = pendingStartEvent?.[pendingStartAttr]
+    .lastStartedTime
+    ? 'Last started at'
+    : 'Scheduled at';
+
   return {
     label,
     hasMissingEvents,
@@ -98,7 +104,7 @@ export default function getActivityGroupFromEvents(
       events,
       eventToStatus,
       eventToLabel,
-      { pendingActivityTaskStartEventAttributes: 'Last started at' }
+      { pendingActivityTaskStartEventAttributes: pendingStartEventTimePrefix }
     ),
   };
 }
