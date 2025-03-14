@@ -15,7 +15,7 @@ export default function pendingDecisionInfoToEvent(
         eventTime: decisionInfo.startedTime ?? decisionInfo.scheduledTime,
         pendingDecisionTaskStartEventAttributes: {
           ...decisionInfo,
-          state: decisionInfo.state, // make it clear to ts that the state is scheduled (same as a typeguard)
+          state: decisionInfo.state, // make it clear to ts that the state is scheduled or started (same as a typeguard)
         },
       } satisfies PendingDecisionTaskStartEvent;
     default:
