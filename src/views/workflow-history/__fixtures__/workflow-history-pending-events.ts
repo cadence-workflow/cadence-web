@@ -54,6 +54,14 @@ export const pendingActivityTaskStartEventWithStartedState = {
   },
 } as const satisfies PendingActivityTaskStartEvent;
 
+export const pendingActivityTaskStartEventWithCancelRequestedState = {
+  ...pendingActivityTaskStartEventWithStartedState,
+  pendingActivityTaskStartEventAttributes: {
+    ...pendingActivityTaskStartEventWithStartedState.pendingActivityTaskStartEventAttributes,
+    state: 'PENDING_ACTIVITY_STATE_CANCEL_REQUESTED',
+  },
+} as const satisfies PendingActivityTaskStartEvent;
+
 export const pendingDecisionTaskStartEvent = {
   eventId: null,
   computedEventId: 'pending-7',

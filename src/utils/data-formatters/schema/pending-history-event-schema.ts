@@ -32,6 +32,7 @@ export const pendingActivityTaskStartSchema = z.object({
     state: z.enum([
       PendingActivityState.PENDING_ACTIVITY_STATE_SCHEDULED,
       PendingActivityState.PENDING_ACTIVITY_STATE_STARTED,
+      PendingActivityState.PENDING_ACTIVITY_STATE_CANCEL_REQUESTED,
     ]),
     heartbeatDetails: payloadSchema.nullable(),
     lastHeartbeatTime: timestampSchema.nullable(),

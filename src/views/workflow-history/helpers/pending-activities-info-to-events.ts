@@ -9,6 +9,7 @@ export default function pendingActivitiesInfoToEvents(
     switch (activityInfo.state) {
       case 'PENDING_ACTIVITY_STATE_SCHEDULED':
       case 'PENDING_ACTIVITY_STATE_STARTED':
+      case 'PENDING_ACTIVITY_STATE_CANCEL_REQUESTED':
         return {
           attributes: 'pendingActivityTaskStartEventAttributes',
           eventTime: activityInfo.lastStartedTime ?? activityInfo.scheduledTime,
