@@ -24,7 +24,7 @@ exports[`formatWorkflowHistoryEvent should format workflow pendingActivityTaskSt
   "scheduleId": 7,
   "scheduledTime": 1970-01-01T00:03:00.000Z,
   "startedWorkerIdentity": "worker-1",
-  "state": "scheduled",
+  "state": "Scheduled",
 }
 `;
 
@@ -52,7 +52,7 @@ exports[`formatWorkflowHistoryEvent should format workflow pendingActivityTaskSt
   "scheduleId": 7,
   "scheduledTime": 1970-01-01T00:03:00.000Z,
   "startedWorkerIdentity": "worker-1",
-  "state": "started",
+  "state": "Started",
 }
 `;
 
@@ -80,7 +80,7 @@ exports[`formatWorkflowHistoryEvent should format workflow pendingActivityTaskSt
   "scheduleId": 7,
   "scheduledTime": 1970-01-01T00:03:00.000Z,
   "startedWorkerIdentity": "worker-1",
-  "state": "cancel requested",
+  "state": "CancelRequested",
 }
 `;
 
@@ -93,7 +93,7 @@ exports[`formatWorkflowHistoryEvent should format workflow pendingDecisionTaskSt
   "scheduleId": 7,
   "scheduledTime": 1970-01-01T00:03:00.000Z,
   "startedTime": null,
-  "state": "scheduled",
+  "state": "Scheduled",
 }
 `;
 
@@ -106,6 +106,6 @@ exports[`formatWorkflowHistoryEvent should format workflow pendingDecisionTaskSt
   "scheduleId": 7,
   "scheduledTime": 1970-01-01T00:03:00.000Z,
   "startedTime": 2024-09-07T22:16:10.599Z,
-  "state": "started",
+  "state": "Started",
 }
 `;
