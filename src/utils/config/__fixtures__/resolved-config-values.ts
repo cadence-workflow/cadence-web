@@ -30,6 +30,7 @@ const mockResolvedConfigValues: LoadedConfigResolvedValues = {
   WORKFLOW_ACTIONS_ENABLED: {
     terminate: true,
     cancel: true,
+    restart: true,
   },
 };
 export default mockResolvedConfigValues;

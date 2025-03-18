@@ -32,6 +32,7 @@ const resolverSchemas: ResolverSchemas = {
     returnType: z.object({
       cancel: z.boolean(),
       terminate: z.boolean(),
+      restart: z.boolean(),
     }),
   },
 };

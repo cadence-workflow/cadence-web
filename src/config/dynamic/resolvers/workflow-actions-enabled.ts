@@ -13,5 +13,6 @@ export default async function workflowActionsEnabled(
   return {
     terminate: true,
     cancel: true,
+    restart: true,
   };
 }

@@ -3,9 +3,12 @@ import { HttpResponse } from 'msw';
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import { type CancelWorkflowResponse } from '@/route-handlers/cancel-workflow/cancel-workflow.types';
+import { type RestartWorkflowResponse } from '@/route-handlers/restart-workflow/restart-workflow.types';
+import { type TerminateWorkflowResponse } from '@/route-handlers/terminate-workflow/terminate-workflow.types';
 import { mockWorkflowDetailsParams } from '@/views/workflow-page/__fixtures__/workflow-details-params';
 
 import { mockWorkflowActionsConfig } from '../../__fixtures__/workflow-actions-config';
+import { type WorkflowAction } from '../../workflow-actions.types';
 import WorkflowActionsModalContent from '../workflow-actions-modal-content';
 
 const mockEnqueue = jest.fn();
@@ -76,15 +79,37 @@ describe(WorkflowActionsModalContent.name, () => {
     ).toBeInTheDocument();
     expect(mockOnClose).not.toHaveBeenCalled();
   });
+
+  it('renders array text correctly in modal content', () => {
+    const cancelAction = {
+      ...mockWorkflowActionsConfig[0],
+      modal: {
+        text: ['First line of array text', 'Second line of array text'],
+      },
+    };
+
+    setup({ actionConfig: cancelAction });
+
+    expect(screen.getByText('First line of array text')).toBeInTheDocument();
+    expect(screen.getByText('Second line of array text')).toBeInTheDocument();
+  });
 });
 
-function setup({ error }: { error?: boolean }) {
+function setup({
+  error,
+  actionConfig,
+}: {
+  error?: boolean;
+  actionConfig?: WorkflowAction<
+    CancelWorkflowResponse | TerminateWorkflowResponse | RestartWorkflowResponse
+  >;
+}) {
   const user = userEvent.setup();
   const mockOnClose = jest.fn();
 
   render(
     <WorkflowActionsModalContent
-      action={mockWorkflowActionsConfig[0]}
+      action={actionConfig ?? mockWorkflowActionsConfig[0]}
       params={{ ...mockWorkflowDetailsParams }}
       onCloseModal={mockOnClose}
     />,

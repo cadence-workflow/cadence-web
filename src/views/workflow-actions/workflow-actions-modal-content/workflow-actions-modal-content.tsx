@@ -63,19 +63,27 @@ export default function WorkflowActionsModalContent<R>({
     queryClient
   );
 
+  const modalText = Array.isArray(action.modal.text) ? (
+    action.modal.text.map((text, index) => <p key={index}>{text}</p>)
+  ) : (
+    <p>{action.modal.text}</p>
+  );
+
   return (
     <>
       <styled.ModalHeader>{action.label} workflow</styled.ModalHeader>
       <styled.ModalBody>
-        {action.modal.text}
-        <styled.Link
-          href={action.modal.docsLink.href}
-          target="_blank"
-          rel="noreferrer"
-        >
-          {action.modal.docsLink.text}
-          <MdOpenInNew />
-        </styled.Link>
+        {modalText}
+        {action.modal.docsLink && (
+          <styled.Link
+            href={action.modal.docsLink.href}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {action.modal.docsLink.text}
+            <MdOpenInNew />
+          </styled.Link>
+        )}
         {error && (
           <Banner
             hierarchy={HIERARCHY.low}

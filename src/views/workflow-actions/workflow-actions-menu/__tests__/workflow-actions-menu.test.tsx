@@ -20,7 +20,7 @@ describe(WorkflowActionsMenu.name, () => {
 
   it('renders the menu items correctly', () => {
     setup({
-      actionsEnabledConfig: { terminate: true, cancel: true },
+      actionsEnabledConfig: { terminate: true, cancel: true, restart: true },
     });
 
     const menuButtons = screen.getAllByRole('button');
@@ -43,7 +43,7 @@ describe(WorkflowActionsMenu.name, () => {
 
   it('disables menu items if they are disabled from config', () => {
     setup({
-      actionsEnabledConfig: { terminate: true, cancel: false },
+      actionsEnabledConfig: { terminate: true, cancel: false, restart: true },
     });
 
     const menuButtons = screen.getAllByRole('button');
@@ -89,7 +89,7 @@ describe(WorkflowActionsMenu.name, () => {
 
   it('calls onActionSelect when the action button is clicked', async () => {
     const { user, mockOnActionSelect } = setup({
-      actionsEnabledConfig: { terminate: true, cancel: true },
+      actionsEnabledConfig: { terminate: true, cancel: true, restart: true },
     });
 
     const menuButtons = screen.getAllByRole('button');
