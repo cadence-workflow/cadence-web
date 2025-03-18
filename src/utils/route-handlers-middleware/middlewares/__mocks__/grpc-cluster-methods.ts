@@ -18,4 +18,5 @@ export const mockGrpcClusterMethods: GRPCClusterMethods = {
   signalWorkflow: jest.fn(),
   terminateWorkflow: jest.fn(),
   requestCancelWorkflow: jest.fn(),
+  restartWorkflow: jest.fn(),
 };
