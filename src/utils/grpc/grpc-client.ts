@@ -24,6 +24,8 @@ import { type QueryWorkflowRequest__Input } from '@/__generated__/proto-ts/uber/
 import { type QueryWorkflowResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/QueryWorkflowResponse';
 import { type RequestCancelWorkflowExecutionRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/RequestCancelWorkflowExecutionRequest';
 import { type RequestCancelWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/RequestCancelWorkflowExecutionResponse';
+import { type RestartWorkflowExecutionRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/RestartWorkflowExecutionRequest';
+import { type RestartWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/RestartWorkflowExecutionResponse';
 import { type SignalWorkflowExecutionRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/SignalWorkflowExecutionRequest';
 import { type SignalWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/SignalWorkflowExecutionResponse';
 import { type TerminateWorkflowExecutionRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/TerminateWorkflowExecutionRequest';
@@ -97,6 +99,9 @@ export type GRPCClusterMethods = {
   requestCancelWorkflow: (
     payload: RequestCancelWorkflowExecutionRequest__Input
   ) => Promise<RequestCancelWorkflowExecutionResponse>;
+  restartWorkflow: (
+    payload: RestartWorkflowExecutionRequest__Input
+  ) => Promise<RestartWorkflowExecutionResponse>;
 };
 
 // cache services instances
@@ -281,6 +286,13 @@ const getClusterServicesMethods = async (
       RequestCancelWorkflowExecutionResponse
     >({
       method: 'RequestCancelWorkflowExecution',
+      metadata: metadata,
+    }),
+    restartWorkflow: workflowService.request<
+      RestartWorkflowExecutionRequest__Input,
+      RestartWorkflowExecutionResponse
+    >({
+      method: 'RestartWorkflowExecution',
       metadata: metadata,
     }),
   };
