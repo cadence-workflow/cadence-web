@@ -1,4 +1,8 @@
-import { MdHighlightOff, MdPowerSettingsNew, MdRefresh } from 'react-icons/md';
+import {
+  MdHighlightOff,
+  MdPowerSettingsNew,
+  MdOutlineRestartAlt,
+} from 'react-icons/md';
 
 import { type CancelWorkflowResponse } from '@/route-handlers/cancel-workflow/cancel-workflow.types';
 import { type RestartWorkflowResponse } from '@/route-handlers/restart-workflow/restart-workflow.types';
@@ -60,7 +64,7 @@ const workflowActionsConfig: [
         'What differentiates Restart from Reset is that Restarted workflow is not aware of the previous workflow execution.',
       ],
     },
-    icon: MdRefresh,
+    icon: MdOutlineRestartAlt,
     getIsRunnable: () => true,
     apiRoute: 'restart',
     getSuccessMessage: (result) =>
