@@ -1,3 +1,4 @@
+import formatEnum from '../format-enum';
 import formatFailureDetails from '../format-failure-details';
 import formatPayload from '../format-payload';
 
@@ -10,6 +11,7 @@ const formatActivityTaskTimedOutEvent = ({
     lastFailure,
     scheduledEventId,
     startedEventId,
+    timeoutType,
     ...eventAttributes
   },
   ...eventFields
@@ -17,6 +19,7 @@ const formatActivityTaskTimedOutEvent = ({
   return {
     ...formatWorkflowCommonEventFields(eventFields),
     ...eventAttributes,
+    timeoutType: formatEnum(timeoutType, 'TIMEOUT_TYPE', 'pascal'),
     details: formatPayload(details),
     lastFailureDetails: formatFailureDetails(lastFailure),
     lastFailureReason: lastFailure?.reason || '',

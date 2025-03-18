@@ -12,7 +12,7 @@ describe('formatEnum', () => {
     const input = ['PREFIX_ENUM_SNAKE_VALUE', 'PREFIX_ENUM'] as const;
     const output = formatEnum(...input);
 
-    expect(output).toEqual('snake_value');
+    expect(output).toEqual('SNAKE_VALUE');
   });
 
   it('should format enum by removing prefix and convert to pascal case when caseFormat is pascal.', () => {
@@ -23,6 +23,6 @@ describe('formatEnum', () => {
     ] as const;
     const output = formatEnum(...input);
 
-    expect(output).toEqual('pascal value');
+    expect(output).toEqual('PascalValue');
   });
 });

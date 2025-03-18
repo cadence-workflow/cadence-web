@@ -1,4 +1,4 @@
-import flowRight from 'lodash/flowRight';
+import flow from 'lodash/flow';
 import lowerCase from 'lodash/lowerCase';
 import snakeCase from 'lodash/snakeCase';
 import startCase from 'lodash/startCase';
@@ -7,15 +7,11 @@ type Formatter = (value: string) => string;
 
 const convertToUpper: Formatter = (value: string) => value.toUpperCase();
 
-const upperSnakeCase: Formatter = flowRight([snakeCase, convertToUpper]);
+const upperSnakeCase: Formatter = flow([snakeCase, convertToUpper]);
 
 const removeWhiteSpace: Formatter = (value: string) => value.replace(/\s/g, '');
 
-const pascalCase: Formatter = flowRight([
-  lowerCase,
-  startCase,
-  removeWhiteSpace,
-]);
+const pascalCase: Formatter = flow([lowerCase, startCase, removeWhiteSpace]);
 
 // Case formatter map with strict typing
 const caseFormatterMap = {
