@@ -32,8 +32,8 @@ export default function useListWorkflowsBasic({
     const requestQueryParamsBase = {
       workflowId: queryParams.workflowId,
       workflowType: queryParams.workflowType,
-      timeRangeStart: queryParams.timeRangeStart?.toISOString() ?? '',
-      timeRangeEnd: queryParams.timeRangeEnd?.toISOString() ?? '',
+      timeRangeStart: queryParams.timeRangeStartBasic.toISOString(),
+      timeRangeEnd: queryParams.timeRangeEndBasic.toISOString(),
       pageSize: pageSize.toString(),
       ...(queryParams.statusBasic !== 'ALL_CLOSED' &&
       queryParams.statusBasic !== 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
@@ -77,8 +77,8 @@ export default function useListWorkflowsBasic({
     loadClosedWorkflows,
     queryParams.workflowId,
     queryParams.workflowType,
-    queryParams.timeRangeStart,
-    queryParams.timeRangeEnd,
+    queryParams.timeRangeStartBasic,
+    queryParams.timeRangeEndBasic,
     queryParams.statusBasic,
   ]);
 

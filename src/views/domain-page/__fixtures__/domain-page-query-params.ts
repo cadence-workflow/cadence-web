@@ -13,6 +13,8 @@ export const mockDomainPageQueryParamsValues = {
   workflowId: '',
   workflowType: '',
   statusBasic: undefined,
+  timeRangeStartBasic: new Date('2024-11-17T03:24:00'),
+  timeRangeEndBasic: new Date('2024-12-17T03:24:00'),
   inputTypeArchival: 'search',
   searchArchival: '',
   statusesArchival: undefined,
