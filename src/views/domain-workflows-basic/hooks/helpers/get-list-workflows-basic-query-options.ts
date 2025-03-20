@@ -38,6 +38,5 @@ export default function getListWorkflowsBasicQueryOptions({
     },
     retry: false,
     refetchOnWindowFocus: (query) => query.state.status !== 'error',
-    gcTime: 0,
   };
 }
