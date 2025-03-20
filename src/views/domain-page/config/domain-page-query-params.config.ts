@@ -2,9 +2,11 @@ import {
   type PageQueryParamMultiValue,
   type PageQueryParam,
 } from '@/hooks/use-page-query-params/use-page-query-params.types';
+import dayjs from '@/utils/datetime/dayjs';
 import parseDateQueryParam from '@/utils/datetime/parse-date-query-param';
 import { type SortOrder } from '@/utils/sort-by';
 import { type WorkflowStatusClosed } from '@/views/domain-workflows-archival/domain-workflows-archival-header/domain-workflows-archival-header.types';
+import DOMAIN_WORKFLOWS_BASIC_START_DAYS_CONFIG from '@/views/domain-workflows-basic/config/domain-workflows-basic-start-days.config';
 import { type WorkflowStatusBasicVisibility } from '@/views/domain-workflows-basic/domain-workflows-basic-filters/domain-workflows-basic-filters.types';
 import isWorkflowStatusBasicVisibility from '@/views/domain-workflows-basic/domain-workflows-basic-filters/helpers/is-workflow-status-basic-visibility';
 import isWorkflowStatus from '@/views/shared/workflow-status-tag/helpers/is-workflow-status';
@@ -26,6 +28,8 @@ const domainPageQueryParamsConfig: [
   PageQueryParam<'workflowId', string>,
   PageQueryParam<'workflowType', string>,
   PageQueryParam<'statusBasic', WorkflowStatusBasicVisibility | undefined>,
+  PageQueryParam<'timeRangeStartBasic', Date>,
+  PageQueryParam<'timeRangeEndBasic', Date>,
   // Archival inputs
   PageQueryParam<'inputTypeArchival', WorkflowsHeaderInputType>,
   PageQueryParam<'searchArchival', string>,
@@ -94,6 +98,24 @@ const domainPageQueryParamsConfig: [
     queryParamKey: 'status',
     parseValue: (value: string) =>
       isWorkflowStatusBasicVisibility(value) ? value : undefined,
+  },
+  {
+    key: 'timeRangeStartBasic',
+    queryParamKey: 'start',
+    defaultValue: dayjs()
+      .subtract(DOMAIN_WORKFLOWS_BASIC_START_DAYS_CONFIG, 'days')
+      .toDate(),
+    parseValue: (v) =>
+      parseDateQueryParam(v) ??
+      dayjs()
+        .subtract(DOMAIN_WORKFLOWS_BASIC_START_DAYS_CONFIG, 'days')
+        .toDate(),
+  },
+  {
+    key: 'timeRangeEndBasic',
+    queryParamKey: 'end',
+    defaultValue: dayjs().toDate(),
+    parseValue: (v) => parseDateQueryParam(v) ?? dayjs().toDate(),
   },
   {
     key: 'inputTypeArchival',

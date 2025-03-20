@@ -26,7 +26,6 @@ describe(getListWorkflowsBasicQueryOptions.name, () => {
         },
       ],
       initialPageParam: undefined,
-      gcTime: 0,
       retry: false,
     });
   });

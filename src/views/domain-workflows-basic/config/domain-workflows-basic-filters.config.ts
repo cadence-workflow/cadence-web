@@ -15,7 +15,10 @@ const domainWorkflowsBasicFiltersConfig: [
   >,
   PageFilterConfig<
     typeof domainPageQueryParamsConfig,
-    { timeRangeStart: Date | undefined; timeRangeEnd: Date | undefined }
+    {
+      timeRangeStartBasic: Date | undefined;
+      timeRangeEndBasic: Date | undefined;
+    }
   >,
 ] = [
   {
@@ -34,23 +37,26 @@ const domainWorkflowsBasicFiltersConfig: [
   {
     id: 'dates',
     getValue: (v) => ({
-      timeRangeStart: v.timeRangeStart,
-      timeRangeEnd: v.timeRangeEnd,
+      timeRangeStartBasic: v.timeRangeStartBasic,
+      timeRangeEndBasic: v.timeRangeEndBasic,
     }),
     formatValue: (v) => ({
-      timeRangeStart: v.timeRangeStart?.toISOString(),
-      timeRangeEnd: v.timeRangeEnd?.toISOString(),
+      timeRangeStartBasic: v.timeRangeStartBasic?.toISOString(),
+      timeRangeEndBasic: v.timeRangeEndBasic?.toISOString(),
     }),
     component: ({ value, setValue }) =>
       createElement(DateFilter, {
         label: 'Dates',
         placeholder: 'Select time range',
         dates: {
-          start: value.timeRangeStart,
-          end: value.timeRangeEnd,
+          start: value.timeRangeStartBasic,
+          end: value.timeRangeEndBasic,
         },
         onChangeDates: ({ start, end }) =>
-          setValue({ timeRangeStart: start, timeRangeEnd: end }),
+          setValue({
+            timeRangeStartBasic: start,
+            timeRangeEndBasic: end,
+          }),
         clearable: false,
       }),
   },
