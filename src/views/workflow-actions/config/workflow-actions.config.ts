@@ -61,7 +61,7 @@ const workflowActionsConfig: [
     modal: {
       text: [
         'Restarts a workflow by creating a new execution with a fresh Run ID while using the existing input. If the previous execution is still running, it will be terminated.',
-        'What differentiates Restart from Reset is that restarted workflow is not aware of the previous workflow execution.',
+        'What differentiates Restart from Reset is that the restarted workflow is not aware of the previous workflow execution.',
       ],
     },
     icon: MdOutlineRestartAlt,
