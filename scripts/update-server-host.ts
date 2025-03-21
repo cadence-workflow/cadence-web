@@ -4,7 +4,6 @@ import { join } from 'path';
 const serverPath = join(process.cwd(), '.next/standalone/server.js');
 
 try {
-  // Read the server.js file
   const serverContent = readFileSync(serverPath, 'utf8');
 
   // Check if env vars exist in the files otherwise throw an error
