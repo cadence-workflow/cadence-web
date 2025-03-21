@@ -59,11 +59,14 @@ export default function WorkflowActions() {
       <StatefulPopover
         placement={POPOVER_PLACEMENT.bottomRight}
         overrides={overrides.popover}
-        content={() => (
+        content={({ close }) => (
           <WorkflowActionsMenu
             workflow={workflow}
             actionsEnabledConfig={actionsEnabledConfig}
-            onActionSelect={(action) => setSelectedAction(action)}
+            onActionSelect={(action) => {
+              setSelectedAction(action);
+              close();
+            }}
           />
         )}
         returnFocus

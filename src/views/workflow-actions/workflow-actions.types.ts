@@ -1,3 +1,5 @@
+import { type ReactNode } from 'react';
+
 import { type IconProps } from 'baseui/icon';
 
 import { type DescribeWorkflowResponse } from '@/route-handlers/describe-workflow/describe-workflow.types';
@@ -11,6 +13,11 @@ export type WorkflowActionInputParams = {
 };
 
 export type WorkflowActionID = 'cancel' | 'terminate' | 'restart';
+
+export type WorkflowActionSuccessMessageProps<R> = {
+  result: R;
+  inputParams: WorkflowActionInputParams;
+};
 
 export type WorkflowAction<R> = {
   id: WorkflowActionID;
@@ -29,8 +36,7 @@ export type WorkflowAction<R> = {
   }>;
   getIsRunnable: (workflow: DescribeWorkflowResponse) => boolean;
   apiRoute: string;
-  getSuccessMessage: (
-    result: R,
-    inputParams: WorkflowActionInputParams
-  ) => string;
+  renderSuccessMessage: (
+    props: WorkflowActionSuccessMessageProps<R>
+  ) => ReactNode;
 };

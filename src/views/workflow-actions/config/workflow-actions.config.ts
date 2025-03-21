@@ -1,3 +1,5 @@
+import { createElement } from 'react';
+
 import {
   MdHighlightOff,
   MdPowerSettingsNew,
@@ -9,6 +11,7 @@ import { type RestartWorkflowResponse } from '@/route-handlers/restart-workflow/
 import { type TerminateWorkflowResponse } from '@/route-handlers/terminate-workflow/terminate-workflow.types';
 
 import getWorkflowIsCompleted from '../../workflow-page/helpers/get-workflow-is-completed';
+import WorkflowActionRestartSuccessMsg from '../workflow-action-restart-success-msg/workflow-action-restart-success-msg';
 import { type WorkflowAction } from '../workflow-actions.types';
 
 const workflowActionsConfig: [
@@ -33,7 +36,7 @@ const workflowActionsConfig: [
         workflow.workflowExecutionInfo?.closeEvent?.attributes ?? ''
       ),
     apiRoute: 'cancel',
-    getSuccessMessage: () => 'Workflow cancellation has been requested.',
+    renderSuccessMessage: () => 'Workflow cancellation has been requested.',
   },
   {
     id: 'terminate',
@@ -52,7 +55,7 @@ const workflowActionsConfig: [
         workflow.workflowExecutionInfo?.closeEvent?.attributes ?? ''
       ),
     apiRoute: 'terminate',
-    getSuccessMessage: () => 'Workflow has been terminated.',
+    renderSuccessMessage: () => 'Workflow has been terminated.',
   },
   {
     id: 'restart',
@@ -67,9 +70,8 @@ const workflowActionsConfig: [
     icon: MdOutlineRestartAlt,
     getIsRunnable: () => true,
     apiRoute: 'restart',
-    getSuccessMessage: (result) =>
-      // TODO: change runid to a link (upcomming PR)
-      `Workflow has been restarted with new run ID: ${result.runId}`,
+    renderSuccessMessage: (props) =>
+      createElement(WorkflowActionRestartSuccessMsg, props),
   },
 ] as const;
 

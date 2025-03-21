@@ -53,7 +53,10 @@ export default function WorkflowActionsModalContent<R>({
 
         onCloseModal();
         enqueue({
-          message: action.getSuccessMessage(result, params),
+          message: action.renderSuccessMessage?.({
+            result,
+            inputParams: params,
+          }),
           startEnhancer: MdCheckCircle,
           actionMessage: 'OK',
           actionOnClick: () => dequeue(),

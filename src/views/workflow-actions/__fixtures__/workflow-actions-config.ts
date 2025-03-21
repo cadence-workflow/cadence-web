@@ -23,7 +23,7 @@ export const mockWorkflowActionsConfig: [
     icon: MdHighlightOff,
     getIsRunnable: () => true,
     apiRoute: 'cancel',
-    getSuccessMessage: () => 'Mock cancel notification',
+    renderSuccessMessage: () => 'Mock cancel notification',
   },
   {
     id: 'terminate',
@@ -39,6 +39,6 @@ export const mockWorkflowActionsConfig: [
     icon: MdPowerSettingsNew,
     getIsRunnable: () => false,
     apiRoute: 'terminate',
-    getSuccessMessage: () => 'Mock terminate notification',
+    renderSuccessMessage: () => 'Mock terminate notification',
   },
 ] as const;
