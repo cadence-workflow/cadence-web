@@ -2,9 +2,11 @@
   "name": "cadence-web",
   "private": true,
   "scripts": {
-    "dev": "next dev -p ${CADENCE_WEB_PORT} | pino-pretty --messageKey message",
-    "build": "NODE_ENV=production && next build",
-    "start": "next start -p ${CADENCE_WEB_PORT}",
+    "dev": "next dev -p ${CADENCE_WEB_PORT:-8088} -H ${CADENCE_WEB_HOSTNAME:-0.0.0.0} | pino-pretty --messageKey message",
+    "build": "NODE_ENV=production next build",
+    "build-standalone": "NODE_ENV=production NEXT_CONFIG_BUILD_OUTPUT=standalone next build",
+    "post-build-standalone": "tsx scripts/update-server-host.ts",
+    "start": "next start -p ${CADENCE_WEB_PORT:-8088} -H ${CADENCE_WEB_HOSTNAME:-0.0.0.0}",
     "lint": "next lint",
     "typecheck": "tsc --noemit",
     "install-idl": "mkdir -p node_modules && cd node_modules && npx --yes tiged https://github.com/cadence-workflow/cadence-idl cadence-idl --force",
@@ -78,6 +80,7 @@
     "styletron-engine-snapshot": "^1.0.2",
     "ts-jest": "^29.1.2",
     "tstyche": "^3.0.0",
+    "tsx": "^4.19.3",
     "typescript": "^5.3.3",
     "typescript-eslint": "^7.13.0",
     "undici": "^6.19.2"

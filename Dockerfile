@@ -35,11 +35,11 @@ COPY . .
 # Uncomment the following line in case you want to disable telemetry during the build.
 ENV NEXT_TELEMETRY_DISABLED 1
 # optimize Build size by inclduding only required resources
-ENV NEXT_CONFIG_BUILD_OUTPUT standalone
 
 RUN npm run generate:idl
 RUN npm run build
-
+RUN npm run build-standalone
+RUN npm run post-build-standalone
 
 # Production image, copy all the files and run next
 FROM base AS runner
@@ -68,4 +68,4 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 USER nextjs
 
 
-CMD  ["sh","-c", "CADENCE_WEB_PORT=${CADENCE_WEB_PORT:-8088} PORT=${CADENCE_WEB_PORT} exec node server.js"]
+CMD  ["sh","-c", "CADENCE_WEB_PORT=${CADENCE_WEB_PORT:-8088} CADENCE_WEB_HOSTNAME=${CADENCE_WEB_HOSTNAME:-0.0.0.0} exec node server.js"]
