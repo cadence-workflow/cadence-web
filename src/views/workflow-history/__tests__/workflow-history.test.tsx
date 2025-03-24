@@ -159,7 +159,7 @@ describe('WorkflowHistory', () => {
 
     await act(async () => {
       const secondPageResolver = getRequestResolver();
-      secondPageResolver({
+      await secondPageResolver({
         history: {
           events: [completedDecisionTaskEvents[1]],
         },
