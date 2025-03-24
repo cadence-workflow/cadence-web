@@ -1,6 +1,10 @@
 import { z } from 'zod';
 
 import { type ResolverSchemas } from '../../../../utils/config/config.types';
+import {
+  WORKFLOW_ACTIONS_DISABLED_REASONS,
+  WORKFLOW_ACTIONS_ENABLED_CONFIG_VALUES,
+} from '../workflow-actions-enabled.constants';
 
 const resolverSchemas: ResolverSchemas = {
   CLUSTERS: {
@@ -30,9 +34,18 @@ const resolverSchemas: ResolverSchemas = {
       domain: z.string(),
     }),
     returnType: z.object({
-      cancel: z.boolean(),
-      terminate: z.boolean(),
-      restart: z.boolean(),
+      cancel: z.enum([
+        WORKFLOW_ACTIONS_ENABLED_CONFIG_VALUES.enabled,
+        ...WORKFLOW_ACTIONS_DISABLED_REASONS,
+      ]),
+      terminate: z.enum([
+        WORKFLOW_ACTIONS_ENABLED_CONFIG_VALUES.enabled,
+        ...WORKFLOW_ACTIONS_DISABLED_REASONS,
+      ]),
+      restart: z.enum([
+        WORKFLOW_ACTIONS_ENABLED_CONFIG_VALUES.enabled,
+        ...WORKFLOW_ACTIONS_DISABLED_REASONS,
+      ]),
     }),
   },
 };
