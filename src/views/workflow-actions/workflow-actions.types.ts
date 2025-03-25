@@ -4,7 +4,7 @@ import { type IconProps } from 'baseui/icon';
 
 import { type DescribeWorkflowResponse } from '@/route-handlers/describe-workflow/describe-workflow.types';
 
-import { type WORKFLOW_ACTION_RUN_STATUS_VALUES } from './workflow-actions.constants';
+import type WORKFLOW_ACTIONS_NON_RUNNABLE_STATUSES_CONFIG from './config/workflow-actions-non-runnable-statuses.config';
 
 export type WorkflowActionInputParams = {
   domain: string;
@@ -21,8 +21,12 @@ export type WorkflowActionSuccessMessageProps<R> = {
   inputParams: WorkflowActionInputParams;
 };
 
-export type WorkflowActionRunStatus =
-  (typeof WORKFLOW_ACTION_RUN_STATUS_VALUES)[number];
+export type WorkflowActionNonRunnableStatus =
+  (typeof WORKFLOW_ACTIONS_NON_RUNNABLE_STATUSES_CONFIG)[number];
+
+export type WorkflowActionRunnableStatus =
+  | 'RUNNABLE'
+  | WorkflowActionNonRunnableStatus;
 
 export type WorkflowAction<R> = {
   id: WorkflowActionID;
@@ -39,7 +43,9 @@ export type WorkflowAction<R> = {
     size?: IconProps['size'];
     color?: IconProps['color'];
   }>;
-  getRunStatus: (workflow: DescribeWorkflowResponse) => WorkflowActionRunStatus;
+  getRunnableStatus: (
+    workflow: DescribeWorkflowResponse
+  ) => WorkflowActionRunnableStatus;
   apiRoute: string;
   renderSuccessMessage: (
     props: WorkflowActionSuccessMessageProps<R>

@@ -1,5 +1,3 @@
-import { WORKFLOW_ACTIONS_ENABLED_CONFIG_VALUES } from '@/config/dynamic/resolvers/workflow-actions-enabled.constants';
-
 import { type LoadedConfigResolvedValues } from '../config.types';
 
 const mockResolvedConfigValues: LoadedConfigResolvedValues = {
@@ -30,9 +28,9 @@ const mockResolvedConfigValues: LoadedConfigResolvedValues = {
     },
   ],
   WORKFLOW_ACTIONS_ENABLED: {
-    terminate: WORKFLOW_ACTIONS_ENABLED_CONFIG_VALUES.enabled,
-    cancel: WORKFLOW_ACTIONS_ENABLED_CONFIG_VALUES.enabled,
-    restart: WORKFLOW_ACTIONS_ENABLED_CONFIG_VALUES.enabled,
+    terminate: 'ENABLED',
+    cancel: 'ENABLED',
+    restart: 'ENABLED',
   },
 };
 export default mockResolvedConfigValues;

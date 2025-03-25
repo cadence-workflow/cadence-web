@@ -1,14 +1,12 @@
-import {
-  WORKFLOW_ACTION_DISABLED_LABELS,
-  WORKFLOW_ACTION_RUN_STATUS_LABELS,
-} from '../../workflow-actions-menu.constants';
+import WORKFLOW_ACTIONS_DISABLED_REASONS_CONFIG from '../../../config/workflow-actions-disabled-reasons.config';
+import WORKFLOW_ACTIONS_NON_RUNNABLE_REASONS_CONFIG from '../../../config/workflow-actions-non-runnable-reasons.config';
 import getActionDisabledReason from '../get-action-disabled-reason';
 
 describe(getActionDisabledReason.name, () => {
   it('returns undefined when action is enabled and runnable', () => {
     const result = getActionDisabledReason({
       actionEnabledConfig: 'ENABLED',
-      actionRunStatus: 'RUNNABLE',
+      actionRunnableStatus: 'RUNNABLE',
     });
 
     expect(result).toBeUndefined();
@@ -17,7 +15,7 @@ describe(getActionDisabledReason.name, () => {
   it('returns loading message when config is not loaded', () => {
     const result = getActionDisabledReason({
       actionEnabledConfig: undefined,
-      actionRunStatus: 'RUNNABLE',
+      actionRunnableStatus: 'RUNNABLE',
     });
 
     expect(result).toBe('Workflow actions config has not loaded yet');
@@ -25,30 +23,34 @@ describe(getActionDisabledReason.name, () => {
 
   it('returns disabled label when action is disabled from config', () => {
     const result = getActionDisabledReason({
-      actionEnabledConfig: 'DISABLED_UNKNOWN',
-      actionRunStatus: 'RUNNABLE',
+      actionEnabledConfig: 'DISABLED_DEFAULT',
+      actionRunnableStatus: 'RUNNABLE',
     });
 
-    expect(result).toBe(WORKFLOW_ACTION_DISABLED_LABELS.DISABLED_UNKNOWN);
+    expect(result).toBe(
+      WORKFLOW_ACTIONS_DISABLED_REASONS_CONFIG.DISABLED_DEFAULT
+    );
   });
 
   it('returns unauthorized label when action is unauthorized', () => {
     const result = getActionDisabledReason({
       actionEnabledConfig: 'DISABLED_UNAUTHORIZED',
-      actionRunStatus: 'RUNNABLE',
-    });
-
-    expect(result).toBe(WORKFLOW_ACTION_DISABLED_LABELS.DISABLED_UNAUTHORIZED);
-  });
-
-  it('returns workflow closed label when workflow is not runnable', () => {
-    const result = getActionDisabledReason({
-      actionEnabledConfig: 'ENABLED',
-      actionRunStatus: 'NOT_RUNNABLE_WORKFLOW_CLOSED',
+      actionRunnableStatus: 'RUNNABLE',
     });
 
     expect(result).toBe(
-      WORKFLOW_ACTION_RUN_STATUS_LABELS.NOT_RUNNABLE_WORKFLOW_CLOSED
+      WORKFLOW_ACTIONS_DISABLED_REASONS_CONFIG.DISABLED_UNAUTHORIZED
+    );
+  });
+
+  it('returns workflow closed label when workflow is not runnable because of being closed', () => {
+    const result = getActionDisabledReason({
+      actionEnabledConfig: 'ENABLED',
+      actionRunnableStatus: 'NOT_RUNNABLE_WORKFLOW_CLOSED',
+    });
+
+    expect(result).toBe(
+      WORKFLOW_ACTIONS_NON_RUNNABLE_REASONS_CONFIG.NOT_RUNNABLE_WORKFLOW_CLOSED
     );
   });
 });

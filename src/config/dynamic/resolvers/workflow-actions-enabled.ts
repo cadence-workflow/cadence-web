@@ -1,4 +1,3 @@
-import { WORKFLOW_ACTIONS_ENABLED_CONFIG_VALUES } from './workflow-actions-enabled.constants';
 import {
   type WorkflowActionsEnabledConfig,
   type WorkflowActionsEnabledResolverParams,
@@ -12,8 +11,8 @@ export default async function workflowActionsEnabled(
   _: WorkflowActionsEnabledResolverParams
 ): Promise<WorkflowActionsEnabledConfig> {
   return {
-    terminate: WORKFLOW_ACTIONS_ENABLED_CONFIG_VALUES.enabled,
-    cancel: WORKFLOW_ACTIONS_ENABLED_CONFIG_VALUES.enabled,
-    restart: WORKFLOW_ACTIONS_ENABLED_CONFIG_VALUES.enabled,
+    terminate: 'ENABLED',
+    cancel: 'ENABLED',
+    restart: 'ENABLED',
   };
 }
