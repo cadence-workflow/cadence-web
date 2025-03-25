@@ -142,6 +142,12 @@ describe('WorkflowHistory', () => {
       hasNextPage: true,
     });
 
+    // Wait for initial loading state
+    await waitFor(() => {
+      expect(screen.getByText('keep loading events')).toBeInTheDocument();
+    });
+
+    // Load first page
     await act(async () => {
       const resolver = getRequestResolver();
       resolver({
@@ -154,9 +160,12 @@ describe('WorkflowHistory', () => {
       });
     });
 
-    const loadingIndicator = await screen.findByText('keep loading events');
-    expect(loadingIndicator).toBeInTheDocument();
+    // Verify loading state persists
+    await waitFor(() => {
+      expect(screen.getByText('keep loading events')).toBeInTheDocument();
+    });
 
+    // Load second page with selected event
     await act(async () => {
       const secondPageResolver = getRequestResolver();
       await secondPageResolver({
@@ -169,6 +178,7 @@ describe('WorkflowHistory', () => {
       });
     });
 
+    // Wait for loading to complete and verify final state
     await waitFor(() => {
       expect(screen.queryByText('keep loading events')).not.toBeInTheDocument();
     });
@@ -205,6 +215,7 @@ async function setup({
   const getRequestResolver = () => requestResolver;
   const getRequestRejector = () => requestRejector;
   let requestIndex = -1;
+
   const renderResult = render(
     <Suspense fallback={'Suspense placeholder'}>
       <WorkflowHistory
@@ -225,24 +236,28 @@ async function setup({
           mockOnce: false,
           httpResolver: async () => {
             requestIndex = requestIndex + 1;
+
             if (requestIndex > 0 && resolveLoadMoreManually) {
               return await new Promise((resolve, reject) => {
-                requestResolver = (result: GetWorkflowHistoryResponse) =>
+                requestResolver = (result: GetWorkflowHistoryResponse) => {
                   resolve(HttpResponse.json(result, { status: 200 }));
-                requestRejector = () =>
+                };
+                requestRejector = () => {
                   reject(
                     HttpResponse.json(
                       { message: 'Failed to fetch workflow history' },
                       { status: 500 }
                     )
                   );
+                };
               });
             } else {
-              if (error)
+              if (error) {
                 return HttpResponse.json(
                   { message: 'Failed to fetch workflow history' },
                   { status: 500 }
                 );
+              }
 
               return HttpResponse.json(
                 {
