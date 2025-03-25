@@ -1,6 +1,6 @@
 import { type WorkflowActionID } from '@/views/workflow-actions/workflow-actions.types';
 
-import { type WORKFLOW_ACTIONS_DISABLED_VALUES } from './workflow-actions-enabled.constants';
+import type WORKFLOW_ACTIONS_DISABLED_VALUES_CONFIG from './workflow-actions-disabled-values.config';
 
 export type WorkflowActionsEnabledResolverParams = {
   domain: string;
@@ -8,7 +8,7 @@ export type WorkflowActionsEnabledResolverParams = {
 };
 
 export type WorkflowActionDisabledValue =
-  (typeof WORKFLOW_ACTIONS_DISABLED_VALUES)[number];
+  (typeof WORKFLOW_ACTIONS_DISABLED_VALUES_CONFIG)[number];
 
 export type WorkflowActionEnabledConfigValue =
   | 'ENABLED'

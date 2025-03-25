@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import { type ResolverSchemas } from '../../../../utils/config/config.types';
-import { WORKFLOW_ACTIONS_DISABLED_VALUES } from '../workflow-actions-enabled.constants';
+import { WORKFLOW_ACTIONS_DISABLED_VALUES } from '../workflow-actions-disabled-values.config';
 
 const workflowActionsEnabledValueSchema = z.enum([
   'ENABLED',
