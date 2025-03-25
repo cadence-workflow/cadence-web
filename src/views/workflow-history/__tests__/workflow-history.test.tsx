@@ -142,7 +142,6 @@ describe('WorkflowHistory', () => {
       hasNextPage: true,
     });
 
-    // Wait for initial loading state
     await waitFor(() => {
       expect(screen.getByText('keep loading events')).toBeInTheDocument();
     });
@@ -160,15 +159,14 @@ describe('WorkflowHistory', () => {
       });
     });
 
-    // Verify loading state persists
     await waitFor(() => {
       expect(screen.getByText('keep loading events')).toBeInTheDocument();
     });
 
-    // Load second page with selected event
+    // Load second page
     await act(async () => {
       const secondPageResolver = getRequestResolver();
-      await secondPageResolver({
+      secondPageResolver({
         history: {
           events: [completedDecisionTaskEvents[1]],
         },
@@ -178,7 +176,6 @@ describe('WorkflowHistory', () => {
       });
     });
 
-    // Wait for loading to complete and verify final state
     await waitFor(() => {
       expect(screen.queryByText('keep loading events')).not.toBeInTheDocument();
     });
@@ -239,17 +236,16 @@ async function setup({
 
             if (requestIndex > 0 && resolveLoadMoreManually) {
               return await new Promise((resolve, reject) => {
-                requestResolver = (result: GetWorkflowHistoryResponse) => {
+                requestResolver = (result: GetWorkflowHistoryResponse) =>
                   resolve(HttpResponse.json(result, { status: 200 }));
-                };
-                requestRejector = () => {
+
+                requestRejector = () =>
                   reject(
                     HttpResponse.json(
                       { message: 'Failed to fetch workflow history' },
                       { status: 500 }
                     )
                   );
-                };
               });
             } else {
               if (error) {

@@ -34,7 +34,7 @@ COPY . .
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.
 ENV NEXT_TELEMETRY_DISABLED 1
-# optimize Build size by inclduding only required resources
+# optimize Build size by including only required resources
 
 RUN npm run generate:idl
 RUN npm run build
