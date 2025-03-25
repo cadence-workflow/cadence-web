@@ -3,6 +3,7 @@ import { MdHighlightOff, MdPowerSettingsNew } from 'react-icons/md';
 import { type CancelWorkflowResponse } from '@/route-handlers/cancel-workflow/cancel-workflow.types';
 import { type TerminateWorkflowResponse } from '@/route-handlers/terminate-workflow/terminate-workflow.types';
 
+import { WORKFLOW_ACTION_RUN_STATUSES } from '../workflow-actions.constants';
 import { type WorkflowAction } from '../workflow-actions.types';
 
 export const mockWorkflowActionsConfig: [
@@ -21,7 +22,7 @@ export const mockWorkflowActionsConfig: [
       },
     },
     icon: MdHighlightOff,
-    getIsRunnable: () => true,
+    getRunStatus: () => WORKFLOW_ACTION_RUN_STATUSES.runnable,
     apiRoute: 'cancel',
     renderSuccessMessage: () => 'Mock cancel notification',
   },
@@ -37,7 +38,7 @@ export const mockWorkflowActionsConfig: [
       },
     },
     icon: MdPowerSettingsNew,
-    getIsRunnable: () => false,
+    getRunStatus: () => WORKFLOW_ACTION_RUN_STATUSES.runnable,
     apiRoute: 'terminate',
     renderSuccessMessage: () => 'Mock terminate notification',
   },

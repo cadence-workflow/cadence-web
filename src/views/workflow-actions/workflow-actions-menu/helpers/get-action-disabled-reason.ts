@@ -1,28 +1,28 @@
-import { type WorkflowActionsEnabledConfig } from '@/config/dynamic/resolvers/workflow-actions-enabled.types';
+import { type WorkflowActionEnabledConfigValue } from '@/config/dynamic/resolvers/workflow-actions-enabled.types';
 
-import { type WorkflowActionID } from '../../workflow-actions.types';
-import { WORKFLOW_ACTIONS_DISABLED_LABELS } from '../workflow-actions-menu.constants';
+import { type WorkflowActionRunStatus } from '../../workflow-actions.types';
+import {
+  WORKFLOW_ACTION_DISABLED_LABELS,
+  WORKFLOW_ACTION_RUN_STATUS_LABELS,
+} from '../workflow-actions-menu.constants';
 
 export default function getActionDisabledReason({
-  actionsEnabledConfig,
-  actionId,
-  isActionRunnable,
+  actionEnabledConfig,
+  actionRunStatus,
 }: {
-  actionsEnabledConfig?: WorkflowActionsEnabledConfig;
-  actionId: WorkflowActionID;
-  isActionRunnable: boolean;
+  actionEnabledConfig?: WorkflowActionEnabledConfigValue;
+  actionRunStatus: WorkflowActionRunStatus;
 }): string | undefined {
-  if (!actionsEnabledConfig) {
+  if (!actionEnabledConfig) {
     return 'Workflow actions config has not loaded yet';
   }
 
-  const actionEnabledConfig = actionsEnabledConfig[actionId];
   if (actionEnabledConfig !== 'ENABLED') {
-    return WORKFLOW_ACTIONS_DISABLED_LABELS[actionEnabledConfig];
+    return WORKFLOW_ACTION_DISABLED_LABELS[actionEnabledConfig];
   }
 
-  if (!isActionRunnable) {
-    return 'Workflow action is not currently runnable';
+  if (actionRunStatus !== 'RUNNABLE') {
+    return WORKFLOW_ACTION_RUN_STATUS_LABELS[actionRunStatus];
   }
 
   return undefined;

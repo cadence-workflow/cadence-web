@@ -13,7 +13,7 @@ export default async function workflowActionsEnabled(
 ): Promise<WorkflowActionsEnabledConfig> {
   return {
     terminate: WORKFLOW_ACTIONS_ENABLED_CONFIG_VALUES.enabled,
-    cancel: WORKFLOW_ACTIONS_ENABLED_CONFIG_VALUES.disabled_unknown,
+    cancel: WORKFLOW_ACTIONS_ENABLED_CONFIG_VALUES.enabled,
     restart: WORKFLOW_ACTIONS_ENABLED_CONFIG_VALUES.enabled,
   };
 }

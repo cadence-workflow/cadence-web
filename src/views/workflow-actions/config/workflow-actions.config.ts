@@ -12,6 +12,7 @@ import { type TerminateWorkflowResponse } from '@/route-handlers/terminate-workf
 
 import getWorkflowIsCompleted from '../../workflow-page/helpers/get-workflow-is-completed';
 import WorkflowActionRestartSuccessMsg from '../workflow-action-restart-success-msg/workflow-action-restart-success-msg';
+import { WORKFLOW_ACTION_RUN_STATUSES } from '../workflow-actions.constants';
 import { type WorkflowAction } from '../workflow-actions.types';
 
 const workflowActionsConfig: [
@@ -31,10 +32,12 @@ const workflowActionsConfig: [
       },
     },
     icon: MdHighlightOff,
-    getIsRunnable: (workflow) =>
-      !getWorkflowIsCompleted(
+    getRunStatus: (workflow) =>
+      getWorkflowIsCompleted(
         workflow.workflowExecutionInfo?.closeEvent?.attributes ?? ''
-      ),
+      )
+        ? WORKFLOW_ACTION_RUN_STATUSES.not_runnable_workflow_closed
+        : WORKFLOW_ACTION_RUN_STATUSES.runnable,
     apiRoute: 'cancel',
     renderSuccessMessage: () => 'Workflow cancellation has been requested.',
   },
@@ -50,10 +53,12 @@ const workflowActionsConfig: [
       },
     },
     icon: MdPowerSettingsNew,
-    getIsRunnable: (workflow) =>
-      !getWorkflowIsCompleted(
+    getRunStatus: (workflow) =>
+      getWorkflowIsCompleted(
         workflow.workflowExecutionInfo?.closeEvent?.attributes ?? ''
-      ),
+      )
+        ? WORKFLOW_ACTION_RUN_STATUSES.not_runnable_workflow_closed
+        : WORKFLOW_ACTION_RUN_STATUSES.runnable,
     apiRoute: 'terminate',
     renderSuccessMessage: () => 'Workflow has been terminated.',
   },
@@ -68,7 +73,7 @@ const workflowActionsConfig: [
       ],
     },
     icon: MdOutlineRestartAlt,
-    getIsRunnable: () => true,
+    getRunStatus: () => WORKFLOW_ACTION_RUN_STATUSES.runnable,
     apiRoute: 'restart',
     renderSuccessMessage: (props) =>
       createElement(WorkflowActionRestartSuccessMsg, props),
