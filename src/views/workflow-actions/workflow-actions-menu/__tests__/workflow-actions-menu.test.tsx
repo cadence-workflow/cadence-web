@@ -61,8 +61,8 @@ describe(WorkflowActionsMenu.name, () => {
   it('disables menu items and shows popover if they are disabled from config', async () => {
     const { user } = setup({
       actionsEnabledConfig: {
-        cancel: 'DISABLED_UNKNOWN',
-        terminate: 'DISABLED_UNKNOWN',
+        cancel: 'DISABLED_DEFAULT',
+        terminate: 'DISABLED_DEFAULT',
         restart: 'ENABLED',
       },
     });

@@ -25,7 +25,7 @@ export default function WorkflowActionsMenu({
             key={action.id}
             content={actionDisabledReason ?? null}
             ignoreBoundary
-            placement={PLACEMENT.left}
+            placement={PLACEMENT.auto}
             showArrow
           >
             {/* The Baseweb button needs a wrapper div so that it works with tooltips */}
