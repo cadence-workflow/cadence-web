@@ -11,12 +11,10 @@ export default function getActionDisabledReason({
   actionEnabledConfig?: WorkflowActionEnabledConfigValue;
   actionRunnableStatus: WorkflowActionRunnableStatus;
 }): string | undefined {
-  if (!actionEnabledConfig) {
-    return 'Workflow actions config has not loaded yet';
-  }
-
   if (actionEnabledConfig !== 'ENABLED') {
-    return WORKFLOW_ACTIONS_DISABLED_REASONS_CONFIG[actionEnabledConfig];
+    return WORKFLOW_ACTIONS_DISABLED_REASONS_CONFIG[
+      actionEnabledConfig ?? 'DISABLED_DEFAULT'
+    ];
   }
 
   if (actionRunnableStatus !== 'RUNNABLE') {

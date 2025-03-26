@@ -12,13 +12,15 @@ describe(getActionDisabledReason.name, () => {
     expect(result).toBeUndefined();
   });
 
-  it('returns loading message when config is not loaded', () => {
+  it('returns disabled message when config is not loaded', () => {
     const result = getActionDisabledReason({
       actionEnabledConfig: undefined,
       actionRunnableStatus: 'RUNNABLE',
     });
 
-    expect(result).toBe('Workflow actions config has not loaded yet');
+    expect(result).toBe(
+      WORKFLOW_ACTIONS_DISABLED_REASONS_CONFIG.DISABLED_DEFAULT
+    );
   });
 
   it('returns disabled label when action is disabled from config', () => {

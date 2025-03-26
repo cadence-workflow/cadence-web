@@ -2,9 +2,13 @@ import { type ReactNode } from 'react';
 
 import { type IconProps } from 'baseui/icon';
 
+import { type WorkflowActionID as WorkflowActionIDFromConfig } from '@/config/dynamic/resolvers/workflow-actions-enabled.types';
 import { type DescribeWorkflowResponse } from '@/route-handlers/describe-workflow/describe-workflow.types';
 
 import type WORKFLOW_ACTIONS_NON_RUNNABLE_STATUSES_CONFIG from './config/workflow-actions-non-runnable-statuses.config';
+
+// TODO: move this to a shared types folder
+export type WorkflowActionID = WorkflowActionIDFromConfig;
 
 export type WorkflowActionInputParams = {
   domain: string;
@@ -13,8 +17,6 @@ export type WorkflowActionInputParams = {
   runId: string;
   // TODO: add input here for extended workflow actions
 };
-
-export type WorkflowActionID = 'cancel' | 'terminate' | 'restart';
 
 export type WorkflowActionSuccessMessageProps<R> = {
   result: R;
