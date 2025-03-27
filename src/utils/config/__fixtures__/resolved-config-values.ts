@@ -32,5 +32,9 @@ const mockResolvedConfigValues: LoadedConfigResolvedValues = {
     cancel: 'ENABLED',
     restart: 'ENABLED',
   },
+  EXTENDED_DOMAIN_INFO_ENABLED: {
+    metadata: false,
+    issues: false,
+  },
 };
 export default mockResolvedConfigValues;
