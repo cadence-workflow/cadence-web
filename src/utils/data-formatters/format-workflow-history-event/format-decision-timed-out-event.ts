@@ -1,3 +1,5 @@
+import formatEnum from '../format-enum';
+
 import formatWorkflowCommonEventFields from './format-workflow-common-event-fields';
 import { type DecisionTaskTimedOutEvent } from './format-workflow-history-event.type';
 
@@ -6,6 +8,7 @@ const formatDecisionTaskTimedOutEvent = ({
     forkEventVersion,
     scheduledEventId,
     startedEventId,
+    cause,
     ...eventAttributes
   },
   ...eventFields
@@ -13,6 +16,7 @@ const formatDecisionTaskTimedOutEvent = ({
   return {
     ...formatWorkflowCommonEventFields(eventFields),
     ...eventAttributes,
+    cause: formatEnum(cause, 'DECISION_TASK_TIMED_OUT_CAUSE'),
     forkEventVersion: parseInt(forkEventVersion),
     scheduledEventId: parseInt(scheduledEventId),
     startedEventId: parseInt(startedEventId),
