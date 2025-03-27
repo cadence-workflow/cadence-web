@@ -2,7 +2,11 @@ import React from 'react';
 
 import { render, screen, userEvent, within } from '@/test-utils/rtl';
 
-import { type WorkflowActionsEnabledConfig } from '@/config/dynamic/resolvers/workflow-actions-enabled.types';
+import {
+  type WorkflowActionEnabledConfigValue,
+  type WorkflowActionsEnabledConfig,
+} from '@/config/dynamic/resolvers/workflow-actions-enabled.types';
+import mockResolvedConfigValues from '@/utils/config/__fixtures__/resolved-config-values';
 import { describeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
 
 import { mockWorkflowActionsConfig } from '../../__fixtures__/workflow-actions-config';
@@ -13,6 +17,19 @@ jest.mock(
   () => mockWorkflowActionsConfig
 );
 
+jest.mock('../helpers/get-action-disabled-reason', () =>
+  jest.fn(
+    ({
+      actionEnabledConfig,
+    }: {
+      actionEnabledConfig?: WorkflowActionEnabledConfigValue;
+    }) =>
+      actionEnabledConfig === 'ENABLED'
+        ? undefined
+        : 'Mock workflow action disabled reason'
+  )
+);
+
 describe(WorkflowActionsMenu.name, () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -20,7 +37,7 @@ describe(WorkflowActionsMenu.name, () => {
 
   it('renders the menu items correctly', () => {
     setup({
-      actionsEnabledConfig: { terminate: true, cancel: true, restart: true },
+      actionsEnabledConfig: mockResolvedConfigValues.WORKFLOW_ACTIONS_ENABLED,
     });
 
     const menuButtons = screen.getAllByRole('button');
@@ -38,12 +55,16 @@ describe(WorkflowActionsMenu.name, () => {
     expect(
       within(menuButtons[1]).getByText('Mock terminate a workflow execution')
     ).toBeInTheDocument();
-    expect(menuButtons[1]).toBeDisabled();
+    expect(menuButtons[1]).not.toBeDisabled();
   });
 
-  it('disables menu items if they are disabled from config', () => {
-    setup({
-      actionsEnabledConfig: { terminate: true, cancel: false, restart: true },
+  it('disables menu items and shows popover if they are disabled from config', async () => {
+    const { user } = setup({
+      actionsEnabledConfig: {
+        cancel: 'DISABLED_DEFAULT',
+        terminate: 'DISABLED_DEFAULT',
+        restart: 'ENABLED',
+      },
     });
 
     const menuButtons = screen.getAllByRole('button');
@@ -62,6 +83,11 @@ describe(WorkflowActionsMenu.name, () => {
       within(menuButtons[1]).getByText('Mock terminate a workflow execution')
     ).toBeInTheDocument();
     expect(menuButtons[1]).toBeDisabled();
+
+    await user.hover(menuButtons[0]);
+    expect(
+      await screen.findByText('Mock workflow action disabled reason')
+    ).toBeInTheDocument();
   });
 
   it('disables menu items if no config is passed', () => {
@@ -89,7 +115,7 @@ describe(WorkflowActionsMenu.name, () => {
 
   it('calls onActionSelect when the action button is clicked', async () => {
     const { user, mockOnActionSelect } = setup({
-      actionsEnabledConfig: { terminate: true, cancel: true, restart: true },
+      actionsEnabledConfig: mockResolvedConfigValues.WORKFLOW_ACTIONS_ENABLED,
     });
 
     const menuButtons = screen.getAllByRole('button');

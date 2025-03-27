@@ -31,10 +31,12 @@ const workflowActionsConfig: [
       },
     },
     icon: MdHighlightOff,
-    getIsRunnable: (workflow) =>
-      !getWorkflowIsCompleted(
+    getRunnableStatus: (workflow) =>
+      getWorkflowIsCompleted(
         workflow.workflowExecutionInfo?.closeEvent?.attributes ?? ''
-      ),
+      )
+        ? 'NOT_RUNNABLE_WORKFLOW_CLOSED'
+        : 'RUNNABLE',
     apiRoute: 'cancel',
     renderSuccessMessage: () => 'Workflow cancellation has been requested.',
   },
@@ -50,10 +52,12 @@ const workflowActionsConfig: [
       },
     },
     icon: MdPowerSettingsNew,
-    getIsRunnable: (workflow) =>
-      !getWorkflowIsCompleted(
+    getRunnableStatus: (workflow) =>
+      getWorkflowIsCompleted(
         workflow.workflowExecutionInfo?.closeEvent?.attributes ?? ''
-      ),
+      )
+        ? 'NOT_RUNNABLE_WORKFLOW_CLOSED'
+        : 'RUNNABLE',
     apiRoute: 'terminate',
     renderSuccessMessage: () => 'Workflow has been terminated.',
   },
@@ -68,7 +72,7 @@ const workflowActionsConfig: [
       ],
     },
     icon: MdOutlineRestartAlt,
-    getIsRunnable: () => true,
+    getRunnableStatus: () => 'RUNNABLE',
     apiRoute: 'restart',
     renderSuccessMessage: (props) =>
       createElement(WorkflowActionRestartSuccessMsg, props),

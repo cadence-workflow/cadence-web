@@ -11,8 +11,8 @@ export default async function workflowActionsEnabled(
   _: WorkflowActionsEnabledResolverParams
 ): Promise<WorkflowActionsEnabledConfig> {
   return {
-    terminate: true,
-    cancel: true,
-    restart: true,
+    terminate: 'ENABLED',
+    cancel: 'ENABLED',
+    restart: 'ENABLED',
   };
 }

@@ -2,7 +2,13 @@ import { type ReactNode } from 'react';
 
 import { type IconProps } from 'baseui/icon';
 
+import { type WorkflowActionID as WorkflowActionIDFromConfig } from '@/config/dynamic/resolvers/workflow-actions-enabled.types';
 import { type DescribeWorkflowResponse } from '@/route-handlers/describe-workflow/describe-workflow.types';
+
+import type WORKFLOW_ACTIONS_NON_RUNNABLE_STATUSES_CONFIG from './config/workflow-actions-non-runnable-statuses.config';
+
+// TODO: move this to a shared types folder
+export type WorkflowActionID = WorkflowActionIDFromConfig;
 
 export type WorkflowActionInputParams = {
   domain: string;
@@ -12,12 +18,17 @@ export type WorkflowActionInputParams = {
   // TODO: add input here for extended workflow actions
 };
 
-export type WorkflowActionID = 'cancel' | 'terminate' | 'restart';
-
 export type WorkflowActionSuccessMessageProps<R> = {
   result: R;
   inputParams: WorkflowActionInputParams;
 };
+
+export type WorkflowActionNonRunnableStatus =
+  (typeof WORKFLOW_ACTIONS_NON_RUNNABLE_STATUSES_CONFIG)[number];
+
+export type WorkflowActionRunnableStatus =
+  | 'RUNNABLE'
+  | WorkflowActionNonRunnableStatus;
 
 export type WorkflowAction<R> = {
   id: WorkflowActionID;
@@ -34,7 +45,9 @@ export type WorkflowAction<R> = {
     size?: IconProps['size'];
     color?: IconProps['color'];
   }>;
-  getIsRunnable: (workflow: DescribeWorkflowResponse) => boolean;
+  getRunnableStatus: (
+    workflow: DescribeWorkflowResponse
+  ) => WorkflowActionRunnableStatus;
   apiRoute: string;
   renderSuccessMessage: (
     props: WorkflowActionSuccessMessageProps<R>
