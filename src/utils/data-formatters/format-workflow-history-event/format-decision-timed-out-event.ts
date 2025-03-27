@@ -1,4 +1,5 @@
 import formatEnum from '../format-enum';
+
 import formatWorkflowCommonEventFields from './format-workflow-common-event-fields';
 import { type DecisionTaskTimedOutEvent } from './format-workflow-history-event.type';
 
