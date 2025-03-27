@@ -283,7 +283,7 @@ exports[`formatWorkflowHistoryEvent should format workflow decisionTaskFailedEve
 {
   "baseRunId": "",
   "binaryChecksum": "ffc875a4c3571872881f79c939921e00398ab360",
-  "cause": "DECISION_TASK_FAILED_CAUSE_BAD_START_CHILD_EXECUTION_ATTRIBUTES",
+  "cause": "BAD_START_CHILD_EXECUTION_ATTRIBUTES",
   "details": "WorkflowId exceeds length limit.",
   "eventId": 5,
   "eventType": "DecisionTaskFailed",
@@ -332,7 +332,7 @@ exports[`formatWorkflowHistoryEvent should format workflow decisionTaskStartedEv
 exports[`formatWorkflowHistoryEvent should format workflow decisionTaskTimedOutEventAttributes to match snapshot 1`] = `
 {
   "baseRunId": "",
-  "cause": "DECISION_TASK_TIMED_OUT_CAUSE_TIMEOUT",
+  "cause": "TIMEOUT",
   "eventId": 6,
   "eventType": "DecisionTaskTimedOut",
   "forkEventVersion": 0,

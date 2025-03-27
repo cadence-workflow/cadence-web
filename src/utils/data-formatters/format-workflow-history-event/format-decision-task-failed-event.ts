@@ -1,3 +1,4 @@
+import formatEnum from '../format-enum';
 import formatFailureDetails from '../format-failure-details';
 
 import formatWorkflowCommonEventFields from './format-workflow-common-event-fields';
@@ -9,6 +10,7 @@ const formatDecisionTaskFailedEvent = ({
     forkEventVersion,
     scheduledEventId,
     startedEventId,
+    cause,
     ...eventAttributes
   },
   ...eventFields
@@ -19,6 +21,7 @@ const formatDecisionTaskFailedEvent = ({
     details: formatFailureDetails(failure),
     forkEventVersion: parseInt(forkEventVersion),
     reason: failure?.reason || '',
+    cause: formatEnum(cause, 'DECISION_TASK_FAILED_CAUSE'),
     scheduledEventId: parseInt(scheduledEventId),
     startedEventId: parseInt(startedEventId),
   };
