@@ -10,6 +10,11 @@ import clusters from './resolvers/clusters';
 import clustersPublic from './resolvers/clusters-public';
 import { type PublicClustersConfigs } from './resolvers/clusters-public.types';
 import { type ClustersConfigs } from './resolvers/clusters.types';
+import extendedDomainInfoEnabled from './resolvers/extended-domain-info-enabled';
+import {
+  type ExtendedDomainInfoEnabledConfig,
+  type ExtendedDomainInfoEnabledResolverParams,
+} from './resolvers/extended-domain-info-enabled.types';
 import workflowActionsEnabled from './resolvers/workflow-actions-enabled';
 import {
   type WorkflowActionsEnabledResolverParams,
@@ -36,6 +41,12 @@ const dynamicConfigs: {
     'request',
     true
   >;
+  EXTENDED_DOMAIN_INFO_ENABLED: ConfigAsyncResolverDefinition<
+    ExtendedDomainInfoEnabledResolverParams,
+    ExtendedDomainInfoEnabledConfig,
+    'request',
+    true
+  >;
 } = {
   CADENCE_WEB_PORT: {
     env: 'CADENCE_WEB_PORT',
@@ -57,6 +68,11 @@ const dynamicConfigs: {
   },
   WORKFLOW_ACTIONS_ENABLED: {
     resolver: workflowActionsEnabled,
+    evaluateOn: 'request',
+    isPublic: true,
+  },
+  EXTENDED_DOMAIN_INFO_ENABLED: {
+    resolver: extendedDomainInfoEnabled,
     evaluateOn: 'request',
     isPublic: true,
   },

@@ -41,6 +41,13 @@ const resolverSchemas: ResolverSchemas = {
       restart: workflowActionsEnabledValueSchema,
     }),
   },
+  EXTENDED_DOMAIN_INFO_ENABLED: {
+    args: z.record(z.string(), z.any()),
+    returnType: z.object({
+      metadata: z.boolean(),
+      issues: z.boolean(),
+    }),
+  },
 };
 
 export default resolverSchemas;
