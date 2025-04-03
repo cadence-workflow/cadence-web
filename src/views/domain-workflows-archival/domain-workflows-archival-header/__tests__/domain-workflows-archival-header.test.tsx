@@ -32,18 +32,4 @@ describe(DomainWorkflowsArchivalHeader.name, () => {
 
     expect(screen.getByText('Workflows Header')).toBeInTheDocument();
   });
-
-  it('pre-fills default start and end dates if not present in query params', async () => {
-    render(
-      <DomainWorkflowsArchivalHeader
-        domain="mock_domain"
-        cluster="mock_cluster"
-      />
-    );
-
-    expect(mockSetQueryParams).toHaveBeenCalledWith({
-      timeRangeStartArchival: '2023-05-15T00:00:00.000Z',
-      timeRangeEndArchival: '2023-05-25T00:00:00.000Z',
-    });
-  });
 });

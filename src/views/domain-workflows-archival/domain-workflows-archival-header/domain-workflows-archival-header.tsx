@@ -36,25 +36,6 @@ export default function DomainWorkflowsArchivalHeader({
     query: queryParams.queryArchival,
   });
 
-  useEffect(() => {
-    if (
-      !queryParams.timeRangeStartArchival &&
-      !queryParams.timeRangeEndArchival
-    ) {
-      const now = dayjs();
-      setQueryParams({
-        timeRangeStartArchival: now
-          .subtract(DOMAIN_WORKFLOWS_ARCHIVAL_START_DAYS_CONFIG, 'days')
-          .toISOString(),
-        timeRangeEndArchival: now.toISOString(),
-      });
-    }
-  }, [
-    queryParams.timeRangeStartArchival,
-    queryParams.timeRangeEndArchival,
-    setQueryParams,
-  ]);
-
   return (
     <WorkflowsHeader
       pageQueryParamsConfig={domainPageQueryParamsConfig}
