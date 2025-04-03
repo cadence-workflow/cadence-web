@@ -4,10 +4,14 @@ import { GRPCError } from '@/utils/grpc/grpc-error';
 import { mockGrpcClusterMethods } from '@/utils/route-handlers-middleware/middlewares/__mocks__/grpc-cluster-methods';
 
 import { resetWorkflow } from '../reset-workflow';
-import {
-  type ResetWorkflowResponse,
-  type Context,
-} from '../reset-workflow.types';
+import { type Context } from '../reset-workflow.types';
+
+const defaultRequestBody = {
+  reason: 'Resetting workflow from cadence-web UI',
+  decisionFinishEventId: 4,
+  requestId: '',
+  skipSignalReapply: false,
+};
 
 describe(resetWorkflow.name, () => {
   beforeEach(() => {
@@ -23,10 +27,7 @@ describe(resetWorkflow.name, () => {
         workflowId: 'mock-wfid',
         runId: 'mock-runid',
       },
-      reason: 'Resetting workflow from cadence-web UI',
-      decisionFinishEventId: 4,
-      requestId: '',
-      skipSignalReapply: false,
+      ...defaultRequestBody,
     });
 
     const responseJson = await res.json();
@@ -89,7 +90,7 @@ describe(resetWorkflow.name, () => {
 });
 
 async function setup({
-  requestBody,
+  requestBody = JSON.stringify(defaultRequestBody),
   error,
 }: {
   requestBody?: string;
@@ -101,7 +102,7 @@ async function setup({
       if (error) {
         throw new GRPCError('Could not reset workflow');
       }
-      return { runId: 'mock-runid-new' } satisfies ResetWorkflowResponse;
+      return { runId: 'mock-runid-new' };
     });
 
   const res = await resetWorkflow(
