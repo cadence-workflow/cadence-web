@@ -69,8 +69,15 @@ describe(DomainPageClusterSelector.name, () => {
   });
 });
 
-function setup({ domainDescription }: { domainDescription: DomainDescription }) {
+function setup({
+  domainDescription,
+}: {
+  domainDescription: DomainDescription;
+}) {
   render(
-    <DomainPageClusterSelector cluster="cluster_1" domainDescription={domainDescription} />
+    <DomainPageClusterSelector
+      cluster="cluster_1"
+      domainDescription={domainDescription}
+    />
   );
 }
