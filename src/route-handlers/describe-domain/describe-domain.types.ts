@@ -1,5 +1,5 @@
+import { type Domain } from '@/__generated__/proto-ts/uber/cadence/api/v1/Domain';
 import { type DefaultMiddlewaresContext } from '@/utils/route-handlers-middleware';
-import { type DomainInfo } from '@/views/domain-page/domain-page.types';
 
 export type RouteParams = {
   domain: string;
@@ -11,4 +11,4 @@ export type RequestParams = {
 };
 
 export type Context = DefaultMiddlewaresContext;
-export type DescribeDomainResponse = DomainInfo;
+export type DescribeDomainResponse = Domain;

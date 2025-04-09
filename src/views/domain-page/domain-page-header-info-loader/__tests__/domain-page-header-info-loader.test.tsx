@@ -4,16 +4,22 @@ import { render, screen, act } from '@/test-utils/rtl';
 
 import * as requestModule from '@/utils/request';
 
-import { mockDomainInfo } from '../../__fixtures__/domain-info';
-import { type DomainInfo } from '../../domain-page.types';
+import { mockDomainDescription } from '../../__fixtures__/domain-description';
+import { type DomainDescription } from '../../domain-page.types';
 import DomainPageHeaderInfoLoader from '../domain-page-header-info-loader';
 
 jest.mock('../../domain-page-header-info/domain-page-header-info', () =>
   jest.fn(
-    ({ domainInfo, cluster }: { domainInfo: DomainInfo; cluster: string }) => (
+    ({
+      domainDescription,
+      cluster,
+    }: {
+      domainDescription: DomainDescription;
+      cluster: string;
+    }) => (
       <div>
-        Mock domain info for Domain {domainInfo.name} in {cluster}
-        <div>Domain ID: {domainInfo.id}</div>
+        Mock domain info for Domain {domainDescription.name} in {cluster}
+        <div>Domain ID: {domainDescription.id}</div>
       </div>
     )
   )
@@ -59,7 +65,7 @@ async function setup({ error }: { error?: boolean }) {
     requestMock.mockRejectedValue(new Error('Failed to fetch domain info'));
   } else {
     requestMock.mockResolvedValue({
-      json: () => Promise.resolve(mockDomainInfo),
+      json: () => Promise.resolve(mockDomainDescription),
     });
   }
 

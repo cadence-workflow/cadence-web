@@ -1,16 +1,13 @@
 'use client';
 import React from 'react';
 
-import {
-  useMutation,
-  useQueryClient,
-  useSuspenseQuery,
-} from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toaster, ToasterContainer, PLACEMENT } from 'baseui/toast';
 
 import { type UpdateDomainFields } from '@/route-handlers/update-domain/update-domain.types';
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
+import useSuspenseDomainDescription from '@/views/shared/hooks/use-suspense-domain-description';
 import SettingsForm from '@/views/shared/settings-form/settings-form';
 
 import {
@@ -18,7 +15,7 @@ import {
   domainPageSettingsFormSchema,
 } from '../config/domain-page-settings-form.config';
 import { type DomainPageTabContentProps } from '../domain-page-content/domain-page-content.types';
-import { type DomainInfo } from '../domain-page.types';
+import { type DomainDescription } from '../domain-page.types';
 
 import { SETTINGS_UPDATE_TOAST_DURATION_MS } from './domain-page-settings.constants';
 import { overrides, styled } from './domain-page-settings.styles';
@@ -27,18 +24,13 @@ import { type SettingsValues } from './domain-page-settings.types';
 export default function DomainPageSettings(props: DomainPageTabContentProps) {
   const queryClient = useQueryClient();
 
-  const { data: domainInfo } = useSuspenseQuery<DomainInfo>(
-    {
-      queryKey: ['describeDomain', props],
-      queryFn: () =>
-        request(`/api/domains/${props.domain}/${props.cluster}`).then((res) =>
-          res.json()
-        ),
-    },
-    queryClient
-  );
+  const { data: domainDescription } = useSuspenseDomainDescription(props);
 
-  const saveSettings = useMutation<DomainInfo, RequestError, SettingsValues>(
+  const saveSettings = useMutation<
+    DomainDescription,
+    RequestError,
+    SettingsValues
+  >(
     {
       mutationFn: (data: SettingsValues) =>
         request(`/api/domains/${props.domain}/${props.cluster}/update`, {
@@ -68,7 +60,7 @@ export default function DomainPageSettings(props: DomainPageTabContentProps) {
     >
       <styled.SettingsContainer>
         <SettingsForm
-          data={domainInfo}
+          data={domainDescription}
           zodSchema={domainPageSettingsFormSchema}
           formConfig={domainPageSettingsFormConfig}
           onSubmit={async (data) =>

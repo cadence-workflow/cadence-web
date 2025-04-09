@@ -1,4 +1,4 @@
-import { type Domain } from '@/__generated__/proto-ts/uber/cadence/api/v1/Domain';
+import { type DescribeDomainResponse } from '@/route-handlers/describe-domain/describe-domain.types';
 import type { WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
 
 export type Props = {
@@ -6,7 +6,7 @@ export type Props = {
   children: React.ReactNode;
 };
 
-export type DomainInfo = Domain;
+export type DomainDescription = DescribeDomainResponse;
 
 export type ClusterReplicationConfiguration = {
   clusterName: string;

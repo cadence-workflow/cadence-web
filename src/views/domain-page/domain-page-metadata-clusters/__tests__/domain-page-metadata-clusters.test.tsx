@@ -1,14 +1,16 @@
 import { render, screen } from '@/test-utils/rtl';
 
 import {
-  mockDomainInfo,
-  mockDomainInfoSingleCluster,
-} from '../../__fixtures__/domain-info';
+  mockDomainDescription,
+  mockDomainDescriptionSingleCluster,
+} from '../../__fixtures__/domain-description';
 import DomainPageMetadataClusters from '../domain-page-metadata-clusters';
 
 describe(DomainPageMetadataClusters.name, () => {
   it('renders plain text for single cluster', async () => {
-    render(<DomainPageMetadataClusters {...mockDomainInfoSingleCluster} />);
+    render(
+      <DomainPageMetadataClusters {...mockDomainDescriptionSingleCluster} />
+    );
 
     expect(screen.getByText('cluster_1')).toBeInTheDocument();
     expect(screen.queryAllByRole('link')).toHaveLength(0);
@@ -16,7 +18,7 @@ describe(DomainPageMetadataClusters.name, () => {
 
   it('renders active/passive labels and links for multiple clusters', () => {
     const { container } = render(
-      <DomainPageMetadataClusters {...mockDomainInfo} />
+      <DomainPageMetadataClusters {...mockDomainDescription} />
     );
 
     expect(container).toHaveTextContent(
@@ -27,10 +29,12 @@ describe(DomainPageMetadataClusters.name, () => {
     expect(links).toHaveLength(2);
 
     links.forEach((link, i) => {
-      expect(link.innerHTML).toBe(mockDomainInfo.clusters[i].clusterName);
+      expect(link.innerHTML).toBe(
+        mockDomainDescription.clusters[i].clusterName
+      );
       expect(link).toHaveAttribute(
         'href',
-        `/domains/${mockDomainInfo.name}/${mockDomainInfo.clusters[i].clusterName}`
+        `/domains/${mockDomainDescription.name}/${mockDomainDescription.clusters[i].clusterName}`
       );
     });
   });

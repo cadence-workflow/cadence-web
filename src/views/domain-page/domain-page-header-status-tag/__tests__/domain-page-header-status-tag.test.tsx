@@ -19,7 +19,7 @@ jest.mock('@/utils/request');
 describe(DomainPageHeaderStatusTag.name, () => {
   it('renders domain status tag for non-registered status', async () => {
     await setup({
-      domainInfo: { ...mockDomainInfo, status: 'DOMAIN_STATUS_DEPRECATED' },
+      domainDescription: { ...mockDomainInfo, status: 'DOMAIN_STATUS_DEPRECATED' },
     });
 
     expect(await screen.findByTestId('mock-status-tag')).toBeInTheDocument();
@@ -29,7 +29,7 @@ describe(DomainPageHeaderStatusTag.name, () => {
   });
 
   it('renders nothing for registered status', async () => {
-    await setup({ domainInfo: mockDomainInfo });
+    await setup({ domainDescription: mockDomainInfo });
 
     waitFor(() => {
       expect(screen.queryByTestId('mock-status-tag')).toBeNull();
@@ -40,7 +40,7 @@ describe(DomainPageHeaderStatusTag.name, () => {
     let renderErrorMessage;
     try {
       await act(async () => {
-        await setup({ domainInfo: undefined });
+        await setup({ domainDescription: undefined });
       });
     } catch (error) {
       if (error instanceof Error) {
@@ -52,15 +52,15 @@ describe(DomainPageHeaderStatusTag.name, () => {
   });
 });
 
-async function setup({ domainInfo }: { domainInfo: DomainInfo | undefined }) {
+async function setup({ domainDescription }: { domainDescription: DomainInfo | undefined }) {
   // TODO: @adhitya.mamallan - This is not type-safe, explore using a library such as nock or msw
   const requestMock = jest.spyOn(requestModule, 'default') as jest.Mock;
 
-  if (!domainInfo) {
+  if (!domainDescription) {
     requestMock.mockRejectedValue(new Error('Failed to fetch domain info'));
   } else {
     requestMock.mockResolvedValue({
-      json: () => Promise.resolve(domainInfo),
+      json: () => Promise.resolve(domainDescription),
     });
   }
 

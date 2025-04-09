@@ -8,7 +8,7 @@ import { type DomainInfo } from '../domain-page.types';
 import { type Props } from './domain-page-header-status-tag.types';
 
 export default function DomainPageHeaderStatusTag(props: Props) {
-  const { data: domainInfo } = useSuspenseQuery<DomainInfo>({
+  const { data: domainDescription } = useSuspenseQuery<DomainInfo>({
     queryKey: ['describeDomain', props],
     queryFn: () =>
       request(`/api/domains/${props.domain}/${props.cluster}`).then((res) =>
@@ -16,9 +16,9 @@ export default function DomainPageHeaderStatusTag(props: Props) {
       ),
   });
 
-  if (domainInfo.status === 'DOMAIN_STATUS_REGISTERED') {
+  if (domainDescription.status === 'DOMAIN_STATUS_REGISTERED') {
     return null;
   }
 
-  return <DomainStatusTag status={domainInfo.status} />;
+  return <DomainStatusTag status={domainDescription.status} />;
 }
