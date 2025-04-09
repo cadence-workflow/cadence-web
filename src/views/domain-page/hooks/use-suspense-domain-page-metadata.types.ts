@@ -1,6 +1,6 @@
 import { type DomainDescription } from '../domain-page.types';
 
-export type UseDomainPageMetadataParams = {
+export type UseSuspenseDomainPageMetadataParams = {
   domain: string;
   cluster: string;
 };
