@@ -4,8 +4,8 @@ import { render, screen, act, waitFor } from '@/test-utils/rtl';
 
 import * as requestModule from '@/utils/request';
 
-import { mockDomainInfo } from '../../__fixtures__/domain-info';
-import { type DomainInfo } from '../../domain-page.types';
+import { mockDomainDescription } from '../../__fixtures__/domain-description';
+import { type DomainDescription } from '../../domain-page.types';
 import DomainPageHeaderStatusTag from '../domain-page-header-status-tag';
 
 jest.mock('@/views/shared/domain-status-tag/domain-status-tag', () =>
@@ -19,7 +19,10 @@ jest.mock('@/utils/request');
 describe(DomainPageHeaderStatusTag.name, () => {
   it('renders domain status tag for non-registered status', async () => {
     await setup({
-      domainDescription: { ...mockDomainInfo, status: 'DOMAIN_STATUS_DEPRECATED' },
+      domainDescription: {
+        ...mockDomainDescription,
+        status: 'DOMAIN_STATUS_DEPRECATED',
+      },
     });
 
     expect(await screen.findByTestId('mock-status-tag')).toBeInTheDocument();
@@ -29,7 +32,7 @@ describe(DomainPageHeaderStatusTag.name, () => {
   });
 
   it('renders nothing for registered status', async () => {
-    await setup({ domainDescription: mockDomainInfo });
+    await setup({ domainDescription: mockDomainDescription });
 
     waitFor(() => {
       expect(screen.queryByTestId('mock-status-tag')).toBeNull();
@@ -52,7 +55,11 @@ describe(DomainPageHeaderStatusTag.name, () => {
   });
 });
 
-async function setup({ domainDescription }: { domainDescription: DomainInfo | undefined }) {
+async function setup({
+  domainDescription,
+}: {
+  domainDescription: DomainDescription | undefined;
+}) {
   // TODO: @adhitya.mamallan - This is not type-safe, explore using a library such as nock or msw
   const requestMock = jest.spyOn(requestModule, 'default') as jest.Mock;
 
