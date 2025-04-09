@@ -19,10 +19,14 @@ jest.mock('@/utils/request');
 describe(DomainPageHeaderStatusTag.name, () => {
   it('renders domain status tag for non-registered status', async () => {
     await setup({
+<<<<<<< HEAD
       domainDescription: {
         ...mockDomainDescription,
         status: 'DOMAIN_STATUS_DEPRECATED',
       },
+=======
+      domainDescription: { ...mockDomainInfo, status: 'DOMAIN_STATUS_DEPRECATED' },
+>>>>>>> e81dc5da (Rename DomainInfo to DomainDescription)
     });
 
     expect(await screen.findByTestId('mock-status-tag')).toBeInTheDocument();
@@ -32,7 +36,11 @@ describe(DomainPageHeaderStatusTag.name, () => {
   });
 
   it('renders nothing for registered status', async () => {
+<<<<<<< HEAD
     await setup({ domainDescription: mockDomainDescription });
+=======
+    await setup({ domainDescription: mockDomainInfo });
+>>>>>>> e81dc5da (Rename DomainInfo to DomainDescription)
 
     waitFor(() => {
       expect(screen.queryByTestId('mock-status-tag')).toBeNull();
