@@ -11,8 +11,8 @@ describe('WorkflowActionResetForm', () => {
   it('renders all form fields correctly', async () => {
     await setup({});
 
-    expect(screen.getByPlaceholderText('Find Event Id')).toBeInTheDocument();
-    expect(screen.getByText('Skip signal reapply')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Find Event ID')).toBeInTheDocument();
+    expect(screen.getByText('Skip signal re-apply')).toBeInTheDocument();
     expect(
       screen.getByPlaceholderText('Enter reason for reset')
     ).toBeInTheDocument();
@@ -29,7 +29,7 @@ describe('WorkflowActionResetForm', () => {
 
     await setup({ formErrors });
 
-    const eventIdInput = screen.getByPlaceholderText('Find Event Id');
+    const eventIdInput = screen.getByPlaceholderText('Find Event ID');
     expect(eventIdInput).toHaveAttribute('aria-invalid', 'true');
 
     const reasonInput = screen.getByPlaceholderText('Enter reason for reset');
@@ -39,7 +39,7 @@ describe('WorkflowActionResetForm', () => {
   it('handles input changes correctly', async () => {
     const { user } = await setup({});
 
-    const eventIdInput = screen.getByPlaceholderText('Find Event Id');
+    const eventIdInput = screen.getByPlaceholderText('Find Event ID');
     await user.type(eventIdInput, '123');
     expect(eventIdInput).toHaveValue(123);
 
@@ -48,7 +48,7 @@ describe('WorkflowActionResetForm', () => {
     expect(reasonInput).toHaveValue('Test reason');
 
     const skipSignalCheckbox = screen.getByRole('checkbox', {
-      name: /skip signal reapply/i,
+      name: /skip signal re-apply/i,
     });
     await user.click(skipSignalCheckbox);
     expect(skipSignalCheckbox).toBeChecked();
@@ -57,14 +57,14 @@ describe('WorkflowActionResetForm', () => {
   it('renders with default values', async () => {
     await setup({});
 
-    const eventIdInput = screen.getByPlaceholderText('Find Event Id');
+    const eventIdInput = screen.getByPlaceholderText('Find Event ID');
     expect(eventIdInput).toHaveValue(null);
 
     const reasonInput = screen.getByPlaceholderText('Enter reason for reset');
     expect(reasonInput).toHaveValue('');
 
     const skipSignalCheckbox = screen.getByRole('checkbox', {
-      name: /skip signal reapply/i,
+      name: /skip signal re-apply/i,
     });
     expect(skipSignalCheckbox).not.toBeChecked();
   });
