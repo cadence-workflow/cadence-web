@@ -2,9 +2,9 @@ import { render, screen } from '@testing-library/react';
 
 import { type RestartWorkflowResponse } from '@/route-handlers/restart-workflow/restart-workflow.types';
 
-import WorkflowActionRestartSuccessMsg from '../workflow-action-restart-success-msg';
+import WorkflowActionNewRunSuccessMsg from '../workflow-action-new-run-success-msg';
 
-describe('WorkflowActionRestartSuccessMsg', () => {
+describe('WorkflowActionNewRunSuccessMsg', () => {
   const mockProps = {
     result: {
       runId: 'test-run-id',
@@ -15,13 +15,14 @@ describe('WorkflowActionRestartSuccessMsg', () => {
       workflowId: 'test-workflow-id',
       runId: 'test-run-id',
     },
+    successMessage: 'Workflow has been restarted.',
   };
 
   it('renders the success message with a link', () => {
-    render(<WorkflowActionRestartSuccessMsg {...mockProps} />);
+    render(<WorkflowActionNewRunSuccessMsg {...mockProps} />);
 
     expect(
-      screen.getByText(/Workflow has been restarted[\.]/)
+      screen.getByText(new RegExp(mockProps.successMessage))
     ).toBeInTheDocument();
     expect(screen.getByText('Click here')).toBeInTheDocument();
     expect(
@@ -30,7 +31,7 @@ describe('WorkflowActionRestartSuccessMsg', () => {
   });
 
   it('renders the link with the correct href', () => {
-    render(<WorkflowActionRestartSuccessMsg {...mockProps} />);
+    render(<WorkflowActionNewRunSuccessMsg {...mockProps} />);
     const { domain, cluster, workflowId, runId } = mockProps.inputParams;
     const link = screen.getByText('Click here');
     expect(link).toHaveAttribute(
