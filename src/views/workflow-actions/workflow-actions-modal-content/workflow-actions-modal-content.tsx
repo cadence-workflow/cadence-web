@@ -102,57 +102,60 @@ export default function WorkflowActionsModalContent<
   return (
     <>
       <styled.ModalHeader>{action.label} workflow</styled.ModalHeader>
-      <styled.ModalBody>
-        {modalText}
-        {action.modal.docsLink && (
-          <styled.Link
-            href={action.modal.docsLink.href}
-            target="_blank"
-            rel="noreferrer"
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <styled.ModalBody>
+          {modalText}
+          {action.modal.docsLink && (
+            <styled.Link
+              href={action.modal.docsLink.href}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {action.modal.docsLink.text}
+              <MdOpenInNew />
+            </styled.Link>
+          )}
+          {Form && (
+            <Form
+              formData={watch()}
+              fieldErrors={validationErrors}
+              control={control as Control<FieldValues>}
+            />
+          )}
+          {error && (
+            <Banner
+              hierarchy={HIERARCHY.low}
+              kind={BANNER_KIND.negative}
+              overrides={overrides.banner}
+              artwork={{
+                icon: MdErrorOutline,
+              }}
+            >
+              {error.message}
+            </Banner>
+          )}
+        </styled.ModalBody>
+        <styled.ModalFooter>
+          <ModalButton
+            autoFocus={!action.modal.form}
+            size={SIZE.compact}
+            type="button"
+            kind={BUTTON_KIND.secondary}
+            onClick={onCloseModal}
           >
-            {action.modal.docsLink.text}
-            <MdOpenInNew />
-          </styled.Link>
-        )}
-        {Form && (
-          <Form
-            formData={watch()}
-            fieldErrors={validationErrors}
-            control={control as Control<FieldValues>}
-          />
-        )}
-        {error && (
-          <Banner
-            hierarchy={HIERARCHY.low}
-            kind={BANNER_KIND.negative}
-            overrides={overrides.banner}
-            artwork={{
-              icon: MdErrorOutline,
-            }}
+            Cancel
+          </ModalButton>
+          <ModalButton
+            size={SIZE.compact}
+            kind={BUTTON_KIND.primary}
+            type="submit"
+            isLoading={isPending || isSubmitting}
+            disabled={isSubmitDisabled}
           >
-            {error.message}
-          </Banner>
-        )}
-      </styled.ModalBody>
-      <styled.ModalFooter>
-        <ModalButton
-          autoFocus={!action.modal.form}
-          size={SIZE.compact}
-          kind={BUTTON_KIND.secondary}
-          onClick={onCloseModal}
-        >
-          Cancel
-        </ModalButton>
-        <ModalButton
-          size={SIZE.compact}
-          kind={BUTTON_KIND.primary}
-          onClick={handleSubmit(onSubmit)}
-          isLoading={isPending || isSubmitting}
-          disabled={isSubmitDisabled}
-        >
-          {action.label} workflow
-        </ModalButton>
-      </styled.ModalFooter>
+            {action.label} workflow
+          </ModalButton>
+        </styled.ModalFooter>
+      </form>
     </>
   );
 }
