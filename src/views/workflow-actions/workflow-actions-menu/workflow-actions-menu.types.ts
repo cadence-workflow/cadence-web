@@ -6,5 +6,5 @@ import { type WorkflowAction } from '../workflow-actions.types';
 export type Props = {
   workflow: DescribeWorkflowResponse;
   actionsEnabledConfig?: WorkflowActionsEnabledConfig;
-  onActionSelect: (action: WorkflowAction<any>) => void;
+  onActionSelect: (action: WorkflowAction<any, any, any>) => void;
 };

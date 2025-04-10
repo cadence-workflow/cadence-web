@@ -47,7 +47,7 @@ export default function WorkflowActions() {
   );
 
   const [selectedAction, setSelectedAction] = useState<
-    WorkflowAction<unknown> | undefined
+    WorkflowAction<any, any, any> | undefined
   >(undefined);
 
   return (

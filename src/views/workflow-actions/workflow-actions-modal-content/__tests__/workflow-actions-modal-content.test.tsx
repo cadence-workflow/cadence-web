@@ -3,8 +3,6 @@ import { HttpResponse } from 'msw';
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import { type CancelWorkflowResponse } from '@/route-handlers/cancel-workflow/cancel-workflow.types';
-import { type RestartWorkflowResponse } from '@/route-handlers/restart-workflow/restart-workflow.types';
-import { type TerminateWorkflowResponse } from '@/route-handlers/terminate-workflow/terminate-workflow.types';
 import { mockWorkflowDetailsParams } from '@/views/workflow-page/__fixtures__/workflow-details-params';
 
 import { mockWorkflowActionsConfig } from '../../__fixtures__/workflow-actions-config';
@@ -41,11 +39,11 @@ describe(WorkflowActionsModalContent.name, () => {
     expect(docsLink).toHaveAttribute('href', 'https://mock.docs.link');
   });
 
-  it('calls onCloseModal when the Go Back button is clicked', async () => {
+  it('calls onCloseModal when the Cancel button is clicked', async () => {
     const { user, mockOnClose } = setup({});
 
-    const goBackButton = await screen.findByText('Go back');
-    await user.click(goBackButton);
+    const cancelButton = await screen.findByText('Cancel');
+    await user.click(cancelButton);
 
     expect(mockOnClose).toHaveBeenCalled();
   });
@@ -100,9 +98,7 @@ function setup({
   actionConfig,
 }: {
   error?: boolean;
-  actionConfig?: WorkflowAction<
-    CancelWorkflowResponse | TerminateWorkflowResponse | RestartWorkflowResponse
-  >;
+  actionConfig?: WorkflowAction<any, any, any>;
 }) {
   const user = userEvent.setup();
   const mockOnClose = jest.fn();
