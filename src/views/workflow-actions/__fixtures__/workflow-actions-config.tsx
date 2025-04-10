@@ -49,7 +49,7 @@ export const mockWorkflowActionsConfig: [
     renderSuccessMessage: () => 'Mock terminate notification',
   },
   {
-    id: 'restart', // TODO: rename to reset
+    id: 'reset',
     label: 'Mock reset',
     subtitle: 'Mock reset a workflow execution',
     modal: {
