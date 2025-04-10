@@ -15,7 +15,7 @@ export default function WorkflowActionResetForm({
 }: Props) {
   return (
     <div>
-      <FormControl label="Event Id">
+      <FormControl label="Event ID">
         <Controller
           name="decisionFinishEventId"
           control={control}
@@ -31,7 +31,7 @@ export default function WorkflowActionResetForm({
               onBlur={field.onBlur}
               error={Boolean(fieldErrors.decisionFinishEventId?.message)}
               type="number"
-              placeholder="Find Event Id"
+              placeholder="Find Event ID"
             />
           )}
         />
@@ -53,7 +53,7 @@ export default function WorkflowActionResetForm({
               error={Boolean(fieldErrors.skipSignalReapply?.message)}
               onChange={(e) => onChange(e.currentTarget.checked)}
             >
-              Skip signal reapply
+              Skip signal re-apply
             </Checkbox>
           )}
         />
