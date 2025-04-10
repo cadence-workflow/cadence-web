@@ -6,8 +6,8 @@ import { type TerminateWorkflowResponse } from '@/route-handlers/terminate-workf
 import { type WorkflowAction } from '../workflow-actions.types';
 
 export const mockWorkflowActionsConfig: [
-  WorkflowAction<null, null, CancelWorkflowResponse>,
-  WorkflowAction<null, null, TerminateWorkflowResponse>,
+  WorkflowAction<any, any, CancelWorkflowResponse>,
+  WorkflowAction<any, any, TerminateWorkflowResponse>,
 ] = [
   {
     id: 'cancel',
