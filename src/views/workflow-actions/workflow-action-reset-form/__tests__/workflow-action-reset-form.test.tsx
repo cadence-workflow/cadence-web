@@ -11,7 +11,6 @@ describe('WorkflowActionResetForm', () => {
   it('renders all form fields correctly', async () => {
     await setup({});
 
-    // Check if all form fields are rendered
     expect(screen.getByPlaceholderText('Find Event Id')).toBeInTheDocument();
     expect(screen.getByText('Skip signal reapply')).toBeInTheDocument();
     expect(
@@ -19,7 +18,7 @@ describe('WorkflowActionResetForm', () => {
     ).toBeInTheDocument();
   });
 
-  it('displays error messages when form has errors', async () => {
+  it('displays error when form has errors', async () => {
     const formErrors = {
       decisionFinishEventId: {
         message: 'Event ID is required',
@@ -30,9 +29,6 @@ describe('WorkflowActionResetForm', () => {
 
     await setup({ formErrors });
 
-    // Check if error messages are displayed
-    // Note: The error messages might not be directly visible in the DOM
-    // We'll check for the error state instead
     const eventIdInput = screen.getByPlaceholderText('Find Event Id');
     expect(eventIdInput).toHaveAttribute('aria-invalid', 'true');
 
@@ -43,17 +39,14 @@ describe('WorkflowActionResetForm', () => {
   it('handles input changes correctly', async () => {
     const { user } = await setup({});
 
-    // Test Event ID input
     const eventIdInput = screen.getByPlaceholderText('Find Event Id');
     await user.type(eventIdInput, '123');
     expect(eventIdInput).toHaveValue(123);
 
-    // Test Reason textarea
     const reasonInput = screen.getByPlaceholderText('Enter reason for reset');
     await user.type(reasonInput, 'Test reason');
     expect(reasonInput).toHaveValue('Test reason');
 
-    // Test Skip signal reapply checkbox
     const skipSignalCheckbox = screen.getByRole('checkbox', {
       name: /skip signal reapply/i,
     });
@@ -64,7 +57,6 @@ describe('WorkflowActionResetForm', () => {
   it('renders with default values', async () => {
     await setup({});
 
-    // Check default values
     const eventIdInput = screen.getByPlaceholderText('Find Event Id');
     expect(eventIdInput).toHaveValue(null);
 
@@ -78,13 +70,12 @@ describe('WorkflowActionResetForm', () => {
   });
 });
 
-function TestWrapper({
-  formErrors,
-  formData,
-}: {
+type TestProps = {
   formErrors: FieldErrors<ResetWorkflowFormData>;
   formData: ResetWorkflowFormData;
-}) {
+};
+
+function TestWrapper({ formErrors, formData }: TestProps) {
   const methods = useForm<ResetWorkflowFormData>({
     defaultValues: formData,
   });
@@ -105,10 +96,7 @@ async function setup({
     reason: '',
     skipSignalReapply: false,
   },
-}: {
-  formErrors?: FieldErrors<ResetWorkflowFormData>;
-  formData?: ResetWorkflowFormData;
-} = {}) {
+}: Partial<TestProps>) {
   const user = userEvent.setup();
 
   render(<TestWrapper formErrors={formErrors} formData={formData} />);
