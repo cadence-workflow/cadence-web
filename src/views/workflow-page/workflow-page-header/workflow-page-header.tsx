@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { Suspense } from 'react';
 
 import { Breadcrumbs } from 'baseui/breadcrumbs';
 import { StyledLink } from 'baseui/link';
@@ -8,7 +8,6 @@ import Link from 'next/link';
 import queryString from 'query-string';
 
 import cadenceLogoBlack from '@/assets/cadence-logo-black.svg';
-import ErrorBoundary from '@/components/error-boundary/error-boundary';
 import PageSection from '@/components/page-section/page-section';
 import { type PageQueryParamSetterValues } from '@/hooks/use-page-query-params/use-page-query-params.types';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
@@ -66,9 +65,9 @@ export default function WorkflowPageHeader({
         </StyledLink>
         <div className={cls.breadcrumbItemContainer}>
           {runId}
-          <ErrorBoundary fallbackRender={() => null} omitLogging={true}>
+          <Suspense fallback={null}>
             <WorkflowPageStatusTag />
-          </ErrorBoundary>
+          </Suspense>
         </div>
       </Breadcrumbs>
     </PageSection>
