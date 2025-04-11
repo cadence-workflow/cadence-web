@@ -8,11 +8,11 @@ interface MetadataItem<T> {
   getValue: (metadata: DomainMetadata) => T;
 }
 
-export interface MetadataTextItem extends MetadataItem<string> {
+interface MetadataTextItem extends MetadataItem<string> {
   kind: 'text';
 }
 
-export interface MetadataCustomItem extends MetadataItem<React.ReactNode> {
+interface MetadataCustomItem extends MetadataItem<React.ReactNode> {
   kind: 'custom';
 }
 
