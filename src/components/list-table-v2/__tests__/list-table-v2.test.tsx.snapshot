@@ -3,53 +3,151 @@
 exports[`ListTableV2 renders correctly 1`] = `
 <div>
   <div
-    class="css-fWeknQ"
+    class="style={
+  '*, *::before, *::after': {
+    '-moz-animation': 'none !important',
+    '-moz-transition': ' none !important',
+    animation: 'none !important',
+    'caret-color': ' transparent !important',
+    transition: ' none !important',
+  },
+}
+"
   >
     <div
-      class="css-dsGSuc"
+      class="style={
+  display: 'flex',
+  flexDirection: 'column',
+  maxWidth: '1050px',
+}
+"
     >
       <div
-        class="css-hDdoPa"
+        class="style={
+  ':not(:last-child)': {
+    borderBottom: '1px solid #F3F3F3',
+  },
+  '@media screen and (min-width: 600px)': {
+    flexDirection: 'row',
+    gap: '48px',
+  },
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '12px',
+  paddingBottom: '14px',
+  paddingTop: '14px',
+}
+"
       >
         <div
-          class="css-jCRiuN"
+          class="style={
+  '@media screen and (min-width: 600px)': {
+    maxWidth: '240px',
+    minWidth: '240px',
+  },
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '4px',
+}
+"
         >
           <div
-            class="css-kEVCUC"
+            class="style={
+  fontFamily: 'UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif',
+  fontSize: '14px',
+  fontWeight: '700',
+  lineHeight: '16px',
+}
+"
           >
             Key 1
           </div>
           <div
-            class="css-gTcjqN"
+            class="style={
+  color: '#6B6B6B',
+  fontFamily: 'UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif',
+  fontSize: '12px',
+  fontWeight: 'normal',
+  lineHeight: '20px',
+}
+"
           >
             Description for Key 1
           </div>
         </div>
         <div
-          class="css-iKDEwj"
+          class="style={
+  fontFamily: 'UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif',
+  fontSize: '14px',
+  fontWeight: 'normal',
+  lineHeight: '20px',
+}
+"
         >
           mock-value
         </div>
       </div>
       <div
-        class="css-hDdoPa"
+        class="style={
+  ':not(:last-child)': {
+    borderBottom: '1px solid #F3F3F3',
+  },
+  '@media screen and (min-width: 600px)': {
+    flexDirection: 'row',
+    gap: '48px',
+  },
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '12px',
+  paddingBottom: '14px',
+  paddingTop: '14px',
+}
+"
       >
         <div
-          class="css-jCRiuN"
+          class="style={
+  '@media screen and (min-width: 600px)': {
+    maxWidth: '240px',
+    minWidth: '240px',
+  },
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '4px',
+}
+"
         >
           <div
-            class="css-kEVCUC"
+            class="style={
+  fontFamily: 'UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif',
+  fontSize: '14px',
+  fontWeight: '700',
+  lineHeight: '16px',
+}
+"
           >
             Key 2
           </div>
           <div
-            class="css-gTcjqN"
+            class="style={
+  color: '#6B6B6B',
+  fontFamily: 'UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif',
+  fontSize: '12px',
+  fontWeight: 'normal',
+  lineHeight: '20px',
+}
+"
           >
             Description for Key 2
           </div>
         </div>
         <div
-          class="css-iKDEwj"
+          class="style={
+  fontFamily: 'UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif',
+  fontSize: '14px',
+  fontWeight: 'normal',
+  lineHeight: '20px',
+}
+"
         >
           <div>
             <div
@@ -62,46 +160,147 @@ exports[`ListTableV2 renders correctly 1`] = `
         </div>
       </div>
       <div
-        class="css-hDdoPa"
+        class="style={
+  ':not(:last-child)': {
+    borderBottom: '1px solid #F3F3F3',
+  },
+  '@media screen and (min-width: 600px)': {
+    flexDirection: 'row',
+    gap: '48px',
+  },
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '12px',
+  paddingBottom: '14px',
+  paddingTop: '14px',
+}
+"
       >
         <div
-          class="css-jCRiuN"
+          class="style={
+  '@media screen and (min-width: 600px)': {
+    maxWidth: '240px',
+    minWidth: '240px',
+  },
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '4px',
+}
+"
         >
           <div
-            class="css-kEVCUC"
+            class="style={
+  fontFamily: 'UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif',
+  fontSize: '14px',
+  fontWeight: '700',
+  lineHeight: '16px',
+}
+"
           >
             Key 3
           </div>
         </div>
         <div
-          class="css-hozGnH"
+          class="style={
+  '@media screen and (min-width: 600px)': {
+    rowGap: 0,
+  },
+  alignItems: 'stretch',
+  display: 'flex',
+  flexDirection: 'column',
+  flexGrow: 1,
+  rowGap: '10px',
+}
+"
         >
           <div
-            class="css-kJUoaQ"
+            class="style={
+  '@media screen and (min-width: 600px)': {
+    ':not(:last-child)': {
+      borderBottom: '1px solid #F3F3F3',
+    },
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  alignItems: 'start',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '6px',
+  paddingBottom: '4px',
+  paddingTop: '4px',
+}
+"
           >
             <div
-              class="css-lSAgg"
+              class="style={
+  '@media screen and (min-width: 600px)': {
+    minWidth: '120px',
+  },
+  fontFamily: 'UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif',
+  fontSize: '14px',
+  fontWeight: 500,
+  lineHeight: '16px',
+}
+"
             >
               Sub Key 1
               :
             </div>
             <div
-              class="css-iKDEwj"
+              class="style={
+  fontFamily: 'UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif',
+  fontSize: '14px',
+  fontWeight: 'normal',
+  lineHeight: '20px',
+}
+"
             >
               mock-value-1
             </div>
           </div>
           <div
-            class="css-kJUoaQ"
+            class="style={
+  '@media screen and (min-width: 600px)': {
+    ':not(:last-child)': {
+      borderBottom: '1px solid #F3F3F3',
+    },
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  alignItems: 'start',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '6px',
+  paddingBottom: '4px',
+  paddingTop: '4px',
+}
+"
           >
             <div
-              class="css-lSAgg"
+              class="style={
+  '@media screen and (min-width: 600px)': {
+    minWidth: '120px',
+  },
+  fontFamily: 'UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif',
+  fontSize: '14px',
+  fontWeight: 500,
+  lineHeight: '16px',
+}
+"
             >
               Sub Key 2
               :
             </div>
             <div
-              class="css-iKDEwj"
+              class="style={
+  fontFamily: 'UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif',
+  fontSize: '14px',
+  fontWeight: 'normal',
+  lineHeight: '20px',
+}
+"
             >
               mock-value-2
             </div>
@@ -111,7 +310,8 @@ exports[`ListTableV2 renders correctly 1`] = `
     </div>
   </div>
   <div
-    class="css-PKJb"
+    class="style={}
+"
   />
 </div>
 `;

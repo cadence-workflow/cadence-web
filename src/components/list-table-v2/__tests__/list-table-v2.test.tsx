@@ -48,7 +48,8 @@ const mockListTableV2ItemsConfig: Array<ListTableV2Item> = [
 describe(ListTableV2.name, () => {
   it('renders correctly', () => {
     const { container } = render(
-      <ListTableV2 items={mockListTableV2ItemsConfig} />
+      <ListTableV2 items={mockListTableV2ItemsConfig} />,
+      { isSnapshotTest: true }
     );
 
     expect(container).toMatchSnapshot();
