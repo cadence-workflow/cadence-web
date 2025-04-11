@@ -19,7 +19,7 @@ export default function ListTableV2({ items }: Props) {
               {item.items.map((sublistItem) => (
                 <styled.SublistItem key={sublistItem.key}>
                   <styled.SublistItemLabel>
-                    {sublistItem.label}
+                    {sublistItem.label}:
                   </styled.SublistItemLabel>
                   <styled.SublistItemValue>
                     {sublistItem.value}
