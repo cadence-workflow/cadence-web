@@ -1,4 +1,5 @@
-import { styled as createStyled, type Theme } from 'baseui';
+import { styled as createStyled, withStyle, type Theme } from 'baseui';
+import { StyledLink } from 'baseui/link';
 
 export const styled = {
   ClusterTextContainer: createStyled(
@@ -7,4 +8,7 @@ export const styled = {
       ...$theme.typography.ParagraphSmall,
     })
   ),
+  Link: withStyle(StyledLink, ({ $theme }) => ({
+    ...$theme.typography.ParagraphSmall,
+  })),
 };
