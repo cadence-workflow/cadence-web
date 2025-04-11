@@ -11,7 +11,7 @@ import { type RestartWorkflowResponse } from '@/route-handlers/restart-workflow/
 import { type TerminateWorkflowResponse } from '@/route-handlers/terminate-workflow/terminate-workflow.types';
 
 import getWorkflowIsCompleted from '../../workflow-page/helpers/get-workflow-is-completed';
-import WorkflowActionRestartSuccessMsg from '../workflow-action-restart-success-msg/workflow-action-restart-success-msg';
+import WorkflowActionNewRunSuccessMsg from '../workflow-action-new-run-success-msg/workflow-action-new-run-success-msg';
 import { type WorkflowAction } from '../workflow-actions.types';
 
 const workflowActionsConfig: [
@@ -75,7 +75,10 @@ const workflowActionsConfig: [
     getRunnableStatus: () => 'RUNNABLE',
     apiRoute: 'restart',
     renderSuccessMessage: (props) =>
-      createElement(WorkflowActionRestartSuccessMsg, props),
+      createElement(WorkflowActionNewRunSuccessMsg, {
+        ...props,
+        successMessage: 'Workflow has been restarted.',
+      }),
   },
 ] as const;
 

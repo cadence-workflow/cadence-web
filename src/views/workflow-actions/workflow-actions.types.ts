@@ -1,6 +1,11 @@
 import { type ReactNode } from 'react';
 
 import { type IconProps } from 'baseui/icon';
+import {
+  type Control,
+  type FieldValues,
+  type FieldErrors,
+} from 'react-hook-form';
 
 import { type WorkflowActionID as WorkflowActionIDFromConfig } from '@/config/dynamic/resolvers/workflow-actions-enabled.types';
 import { type DescribeWorkflowResponse } from '@/route-handlers/describe-workflow/describe-workflow.types';
@@ -21,6 +26,12 @@ export type WorkflowActionInputParams = {
 export type WorkflowActionSuccessMessageProps<R> = {
   result: R;
   inputParams: WorkflowActionInputParams;
+};
+
+export type WorkflowActionFormProps<FormData extends FieldValues> = {
+  formData: FormData;
+  fieldErrors: FieldErrors<FormData>;
+  control: Control<FormData>;
 };
 
 export type WorkflowActionNonRunnableStatus =
