@@ -7,7 +7,7 @@ export default async function extendedDomainInfoEnabled(
   _: ExtendedDomainInfoEnabledResolverParams
 ): Promise<ExtendedDomainInfoEnabledConfig> {
   return {
-    metadata: false,
+    metadata: true,
     issues: false,
   };
 }

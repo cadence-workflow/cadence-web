@@ -1,10 +1,11 @@
 import React from 'react';
 
+import { styled } from './list-table-v2.styles';
 import type { Props } from './list-table-v2.types';
 
 export default function ListTableV2({ items }: Props) {
   return (
-    <div>
+    <styled.Table>
       {items.map((item) => (
         <styled.TableRow key={item.key}>
           <styled.TitleBlock>
@@ -12,27 +13,25 @@ export default function ListTableV2({ items }: Props) {
             {item.description && (
               <styled.Description>{item.description}</styled.Description>
             )}
-            <styled.ContentContainer>
-              {item.kind === 'group' ? (
-                <styled.Sublist>
-                  {item.items.map((sublistItem) => (
-                    <styled.SublistItem key={sublistItem.key}>
-                      <styled.SublistItemLabel>
-                        {sublistItem.label}
-                      </styled.SublistItemLabel>
-                      <styled.SublistItemValue>
-                        {sublistItem.value}
-                      </styled.SublistItemValue>
-                    </styled.SublistItem>
-                  ))}
-                </styled.Sublist>
-              ) : (
-                item.value
-              )}
-            </styled.ContentContainer>
           </styled.TitleBlock>
+          {item.kind === 'group' ? (
+            <styled.Sublist>
+              {item.items.map((sublistItem) => (
+                <styled.SublistItem key={sublistItem.key}>
+                  <styled.SublistItemLabel>
+                    {sublistItem.label}
+                  </styled.SublistItemLabel>
+                  <styled.SublistItemValue>
+                    {sublistItem.value}
+                  </styled.SublistItemValue>
+                </styled.SublistItem>
+              ))}
+            </styled.Sublist>
+          ) : (
+            <styled.ContentContainer>{item.value}</styled.ContentContainer>
+          )}
         </styled.TableRow>
       ))}
-    </div>
+    </styled.Table>
   );
 }

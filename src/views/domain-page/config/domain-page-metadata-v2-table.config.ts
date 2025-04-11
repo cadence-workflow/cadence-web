@@ -1,25 +1,29 @@
+import { createElement } from 'react';
+
+import { type MetadataField } from '../domain-page-metadata/domain-page-metadata.types';
 import DomainPageMetadataClusters from '../domain-page-metadata-clusters/domain-page-metadata-clusters';
-import { type MetadataField } from '../domain-page-metadata-v2/domain-page-metadata-v2.types';
 
 const domainPageMetadataV2TableConfig = [
   {
     key: 'domainId',
     label: 'Domain ID',
     kind: 'text',
-    getValue: (domainInfo) => domainInfo.id,
+    getValue: ({ domainDescription }) => domainDescription.id,
   },
   {
     key: 'description',
     label: 'Description',
     kind: 'custom',
-    // TODO: create a desc component
-    getValue: DomainPageMetadataClusters,
+    // TODO: create a Domain Description component that opens settings to edit
+    getValue: ({ domainDescription }) =>
+      createElement('div', {}, domainDescription.description),
   },
   {
     key: 'owner',
     label: 'Owner',
     kind: 'text',
-    getValue: (domainInfo) => domainInfo.ownerEmail,
+    getValue: ({ domainDescription }) =>
+      domainDescription.ownerEmail || 'Unknown',
   },
   {
     key: 'environment',
@@ -30,14 +34,22 @@ const domainPageMetadataV2TableConfig = [
         key: 'clusters',
         label: 'Clusters',
         kind: 'custom',
-        getValue: DomainPageMetadataClusters,
+        getValue: ({ domainDescription }) =>
+          createElement(DomainPageMetadataClusters, domainDescription),
       },
       {
         key: 'globalOrLocal',
         label: 'Global/Local',
         kind: 'text',
-        getValue: (domainInfo) =>
-          domainInfo.isGlobalDomain ? 'Global' : 'Local',
+        getValue: ({ domainDescription }) =>
+          domainDescription.isGlobalDomain ? 'Global' : 'Local',
+      },
+      {
+        key: 'clusters2',
+        label: 'Clusters (again)',
+        kind: 'custom',
+        getValue: ({ domainDescription }) =>
+          createElement(DomainPageMetadataClusters, domainDescription),
       },
     ],
   },
@@ -45,14 +57,14 @@ const domainPageMetadataV2TableConfig = [
     key: 'failoverVersion',
     label: 'Failover version',
     kind: 'text',
-    getValue: (domainInfo) => domainInfo.failoverVersion,
+    getValue: ({ domainDescription }) => domainDescription.failoverVersion,
   },
   {
     key: 'describeDomainJson',
     label: 'DescribeDomain response',
     kind: 'custom',
-    // TODO: create a JSON viewer component
-    getValue: DomainPageMetadataClusters,
+    // TODO: create a JSON modal component
+    getValue: () => createElement('div', {}, 'Placeholder for JSON button'),
   },
 ] as const satisfies Array<MetadataField>;
 

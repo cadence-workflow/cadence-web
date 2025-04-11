@@ -11,7 +11,7 @@ interface ListTableV2Field {
   kind: 'simple' | 'group';
 }
 
-interface ListTableV2Item extends ListTableV2Field {
+interface ListTableV2SimpleItem extends ListTableV2Field {
   kind: 'simple';
   value: React.ReactNode;
 }
@@ -21,14 +21,8 @@ interface ListTableV2Group extends ListTableV2Field {
   items: Array<ListTableV2SublistItem>;
 }
 
-// export type ListTableV2Item = {
-//   key: string;
-//   label: string;
-//   kind: K;
-//   description?: string;
-//   value: K extends 'group' ? Array<ListTableV2SublistItem> : React.ReactNode;
-// };
+export type ListTableV2Item = ListTableV2SimpleItem | ListTableV2Group;
 
 export type Props = {
-  items: Array<ListTableV2Item | ListTableV2Group>;
+  items: Array<ListTableV2Item>;
 };

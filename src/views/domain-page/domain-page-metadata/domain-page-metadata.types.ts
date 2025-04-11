@@ -1,36 +1,23 @@
-import { type DomainDescription } from '../domain-page.types';
-
-export type GetMetadataValueProps = {
-  domainDescription: DomainDescription;
-};
-
-type MetadataLinkValue = {
-  text: string;
-  href: string;
-};
+import { type DomainMetadata } from '../hooks/use-suspense-domain-page-metadata.types';
 
 interface MetadataItem<T> {
   key: string;
   label: string;
-  kind: 'text' | 'link' | 'custom';
+  kind: 'text' | 'custom';
   description?: string;
-  getValue: (domainDescription: DomainDescription) => T;
+  getValue: (metadata: DomainMetadata) => T;
 }
 
-interface MetadataTextItem extends MetadataItem<string> {
+export interface MetadataTextItem extends MetadataItem<string> {
   kind: 'text';
 }
 
-interface MetadataLinkItem extends MetadataItem<MetadataLinkValue> {
-  kind: 'link';
-}
-
-interface MetadataCustomItem extends MetadataItem<React.ReactNode> {
+export interface MetadataCustomItem extends MetadataItem<React.ReactNode> {
   kind: 'custom';
 }
 
 type MetadataGroupItem = Omit<
-  MetadataTextItem | MetadataLinkItem | MetadataCustomItem,
+  MetadataTextItem | MetadataCustomItem,
   'description'
 >;
 
@@ -44,6 +31,5 @@ export type MetadataGroup = {
 
 export type MetadataField =
   | MetadataTextItem
-  | MetadataLinkItem
   | MetadataCustomItem
   | MetadataGroup;
