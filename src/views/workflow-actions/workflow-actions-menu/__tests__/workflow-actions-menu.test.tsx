@@ -41,7 +41,7 @@ describe(WorkflowActionsMenu.name, () => {
     });
 
     const menuButtons = screen.getAllByRole('button');
-    expect(menuButtons).toHaveLength(2);
+    expect(menuButtons).toHaveLength(3);
 
     expect(within(menuButtons[0]).getByText('Mock cancel')).toBeInTheDocument();
     expect(
@@ -64,11 +64,12 @@ describe(WorkflowActionsMenu.name, () => {
         cancel: 'DISABLED_DEFAULT',
         terminate: 'DISABLED_DEFAULT',
         restart: 'ENABLED',
+        reset: 'ENABLED',
       },
     });
 
     const menuButtons = screen.getAllByRole('button');
-    expect(menuButtons).toHaveLength(2);
+    expect(menuButtons).toHaveLength(3);
 
     expect(within(menuButtons[0]).getByText('Mock cancel')).toBeInTheDocument();
     expect(
@@ -96,7 +97,7 @@ describe(WorkflowActionsMenu.name, () => {
     });
 
     const menuButtons = screen.getAllByRole('button');
-    expect(menuButtons).toHaveLength(2);
+    expect(menuButtons).toHaveLength(3);
 
     expect(within(menuButtons[0]).getByText('Mock cancel')).toBeInTheDocument();
     expect(
@@ -119,7 +120,7 @@ describe(WorkflowActionsMenu.name, () => {
     });
 
     const menuButtons = screen.getAllByRole('button');
-    expect(menuButtons).toHaveLength(2);
+    expect(menuButtons).toHaveLength(3);
 
     await user.click(menuButtons[0]);
     expect(mockOnActionSelect).toHaveBeenCalledWith(
