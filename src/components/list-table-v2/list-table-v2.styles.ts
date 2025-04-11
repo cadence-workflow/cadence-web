@@ -16,9 +16,10 @@ export const styled = {
       display: 'flex',
       [$theme.mediaQuery.medium]: {
         flexDirection: 'row',
+        gap: $theme.sizing.scale1200,
       },
       flexDirection: 'column',
-      gap: $theme.sizing.scale300,
+      gap: $theme.sizing.scale500,
       paddingTop: $theme.sizing.scale550,
       paddingBottom: $theme.sizing.scale550,
     })
@@ -28,6 +29,7 @@ export const styled = {
     ({ $theme }: { $theme: Theme }): StyleObject => ({
       [$theme.mediaQuery.medium]: {
         minWidth: '240px',
+        maxWidth: '240px',
       },
       display: 'flex',
       flexDirection: 'column',
@@ -38,6 +40,10 @@ export const styled = {
     'div',
     ({ $theme }: { $theme: Theme }): StyleObject => ({
       ...$theme.typography.LabelSmall,
+      fontWeight: '700',
+      // [$theme.mediaQuery.medium]: {
+      //   fontWeight: '500',
+      // },
     })
   ),
   Description: createStyled(

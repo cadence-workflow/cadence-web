@@ -23,12 +23,12 @@ export default function DomainPageMetadataClusters(
             : 'passive';
         return (
           <React.Fragment key={cluster.clusterName}>
-            <styled.Link
-              $as={Link}
+            <Link
               href={`/domains/${domainDescription.name}/${cluster.clusterName}`}
+              style={{ fontWeight: 'inherit' }}
             >
               {cluster.clusterName}
-            </styled.Link>
+            </Link>
             {` (${replicationStatusLabel})`}
             {index < numClusters - 1 ? ', ' : ''}
           </React.Fragment>
