@@ -12,6 +12,15 @@ describe(getActionDisabledReason.name, () => {
     expect(result).toBeUndefined();
   });
 
+  it('returns undefined when workflow status is not loaded', () => {
+    const result = getActionDisabledReason({
+      actionEnabledConfig: 'ENABLED',
+      actionRunnableStatus: undefined,
+    });
+
+    expect(result).toBeUndefined();
+  });
+
   it('returns disabled message when config is not loaded', () => {
     const result = getActionDisabledReason({
       actionEnabledConfig: undefined,

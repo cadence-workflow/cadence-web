@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 
 import { HttpResponse } from 'msw';
 
@@ -48,7 +48,7 @@ describe(WorkflowActions.name, () => {
   });
 
   it('renders the button with the correct text', async () => {
-    await setup({});
+    setup({});
 
     const actionsButton = await screen.findByRole('button');
     expect(actionsButton).toHaveAttribute(
@@ -67,7 +67,7 @@ describe(WorkflowActions.name, () => {
   });
 
   it('renders the menu when the button is clicked', async () => {
-    const { user } = await setup({});
+    const { user } = setup({});
 
     const actionsButton = await screen.findByRole('button');
     await user.click(actionsButton);
@@ -76,7 +76,7 @@ describe(WorkflowActions.name, () => {
   });
 
   it('renders the button with disabled configs if config fetching fails', async () => {
-    const { user } = await setup({ isConfigError: true });
+    const { user } = setup({ isConfigError: true });
 
     const actionsButton = await screen.findByRole('button');
     await user.click(actionsButton);
@@ -87,7 +87,7 @@ describe(WorkflowActions.name, () => {
   });
 
   it('shows the modal when a menu option is clicked', async () => {
-    const { user } = await setup({});
+    const { user } = setup({});
 
     const actionsButton = await screen.findByRole('button');
     await user.click(actionsButton);
@@ -97,22 +97,15 @@ describe(WorkflowActions.name, () => {
   });
 
   it('renders nothing if describeWorkflow fails', async () => {
-    let renderErrorMessage;
-    try {
-      await act(async () => {
-        await setup({ isError: true });
-      });
-    } catch (error) {
-      if (error instanceof Error) {
-        renderErrorMessage = error.message;
-      }
-    }
+    setup({ isError: true });
 
-    expect(renderErrorMessage).toEqual('Failed to fetch workflow summary');
+    await waitFor(() => {
+      expect(screen.queryByRole('button')).not.toBeInTheDocument();
+    });
   });
 });
 
-async function setup({
+function setup({
   isError,
   isConfigError,
 }: {
@@ -121,53 +114,48 @@ async function setup({
 }) {
   const user = userEvent.setup();
 
-  const renderResult = render(
-    <Suspense>
-      <WorkflowActions />
-    </Suspense>,
-    {
-      endpointsMocks: [
-        {
-          path: '/api/domains/:domain/:cluster/workflows/:workflowId/:runId',
-          httpMethod: 'GET',
-          httpResolver: () => {
-            if (isError) {
-              return HttpResponse.json(
-                { message: 'Failed to fetch workflow summary' },
-                { status: 500 }
-              );
-            } else {
-              return HttpResponse.json(describeWorkflowResponse, {
+  const renderResult = render(<WorkflowActions />, {
+    endpointsMocks: [
+      {
+        path: '/api/domains/:domain/:cluster/workflows/:workflowId/:runId',
+        httpMethod: 'GET',
+        httpResolver: () => {
+          if (isError) {
+            return HttpResponse.json(
+              { message: 'Failed to fetch workflow summary' },
+              { status: 500 }
+            );
+          } else {
+            return HttpResponse.json(describeWorkflowResponse, {
+              status: 200,
+            });
+          }
+        },
+      },
+      {
+        path: '/api/config',
+        httpMethod: 'GET',
+        httpResolver: () => {
+          if (isConfigError) {
+            return HttpResponse.json(
+              { message: 'Failed to fetch config' },
+              { status: 500 }
+            );
+          } else {
+            return HttpResponse.json(
+              {
+                terminate: true,
+                cancel: true,
+              },
+              {
                 status: 200,
-              });
-            }
-          },
+              }
+            );
+          }
         },
-        {
-          path: '/api/config',
-          httpMethod: 'GET',
-          httpResolver: () => {
-            if (isConfigError) {
-              return HttpResponse.json(
-                { message: 'Failed to fetch config' },
-                { status: 500 }
-              );
-            } else {
-              return HttpResponse.json(
-                {
-                  terminate: true,
-                  cancel: true,
-                },
-                {
-                  status: 200,
-                }
-              );
-            }
-          },
-        },
-      ],
-    }
-  );
+      },
+    ],
+  });
 
   return { user, renderResult };
 }
