@@ -1,0 +1,117 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ListTableV2 renders correctly 1`] = `
+<div>
+  <div
+    class="css-fWeknQ"
+  >
+    <div
+      class="css-dsGSuc"
+    >
+      <div
+        class="css-hDdoPa"
+      >
+        <div
+          class="css-jCRiuN"
+        >
+          <div
+            class="css-kEVCUC"
+          >
+            Key 1
+          </div>
+          <div
+            class="css-gTcjqN"
+          >
+            Description for Key 1
+          </div>
+        </div>
+        <div
+          class="css-iKDEwj"
+        >
+          mock-value
+        </div>
+      </div>
+      <div
+        class="css-hDdoPa"
+      >
+        <div
+          class="css-jCRiuN"
+        >
+          <div
+            class="css-kEVCUC"
+          >
+            Key 2
+          </div>
+          <div
+            class="css-gTcjqN"
+          >
+            Description for Key 2
+          </div>
+        </div>
+        <div
+          class="css-iKDEwj"
+        >
+          <div>
+            <div
+              data-testid="mock-value-c1"
+            />
+            <div
+              data-testid="mock-value-c2"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        class="css-hDdoPa"
+      >
+        <div
+          class="css-jCRiuN"
+        >
+          <div
+            class="css-kEVCUC"
+          >
+            Key 3
+          </div>
+        </div>
+        <div
+          class="css-hozGnH"
+        >
+          <div
+            class="css-kJUoaQ"
+          >
+            <div
+              class="css-lSAgg"
+            >
+              Sub Key 1
+              :
+            </div>
+            <div
+              class="css-iKDEwj"
+            >
+              mock-value-1
+            </div>
+          </div>
+          <div
+            class="css-kJUoaQ"
+          >
+            <div
+              class="css-lSAgg"
+            >
+              Sub Key 2
+              :
+            </div>
+            <div
+              class="css-iKDEwj"
+            >
+              mock-value-2
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="css-PKJb"
+  />
+</div>
+`;
