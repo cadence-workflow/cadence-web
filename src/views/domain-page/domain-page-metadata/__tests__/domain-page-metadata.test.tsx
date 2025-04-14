@@ -4,12 +4,12 @@ import { render, screen, act } from '@/test-utils/rtl';
 
 import * as requestModule from '@/utils/request';
 
-import { mockDomainInfo } from '../../__fixtures__/domain-info';
-import { type DomainInfo } from '../../domain-page.types';
+import { mockDomainDescription } from '../../__fixtures__/domain-description';
+import { type DomainDescription } from '../../domain-page.types';
 import DomainPageMetadata from '../domain-page-metadata';
 
 jest.mock('@/components/list-table/list-table', () =>
-  jest.fn(({ data }: { data: DomainInfo }) => (
+  jest.fn(({ data }: { data: DomainDescription }) => (
     <div>
       Mock metadata table
       <div>Domain ID: {data.id}</div>
@@ -55,7 +55,7 @@ async function setup({ error }: { error?: boolean }) {
     requestMock.mockRejectedValue(new Error('Failed to fetch domain metadata'));
   } else {
     requestMock.mockResolvedValue({
-      json: () => Promise.resolve(mockDomainInfo),
+      json: () => Promise.resolve(mockDomainDescription),
     });
   }
 

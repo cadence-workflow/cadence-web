@@ -15,14 +15,14 @@ export default function DomainPageClusterSelector(
   const router = useRouter();
   const { domain: encodedDomain, domainTab: encodedDomainTab } = useParams();
 
-  if (props.domainInfo.clusters?.length === 1) {
+  if (props.domainDescription.clusters?.length === 1) {
     return <styled.ItemLabel>{props.cluster}</styled.ItemLabel>;
   }
 
   return (
     <Select
       overrides={overrides.select}
-      options={props.domainInfo.clusters.map((cluster) => ({
+      options={props.domainDescription.clusters.map((cluster) => ({
         id: cluster.clusterName,
         label: cluster.clusterName,
       }))}

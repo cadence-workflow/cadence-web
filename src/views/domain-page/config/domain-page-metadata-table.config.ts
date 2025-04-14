@@ -1,37 +1,36 @@
-import { createElement } from 'react';
-
 import type { ListTableItem } from '@/components/list-table/list-table.types';
 
 import DomainPageMetadataClusters from '../domain-page-metadata-clusters/domain-page-metadata-clusters';
-import { type DomainInfo } from '../domain-page.types';
+import { type DomainDescription } from '../domain-page.types';
 
-const domainPageMetadataTableConfig: Array<ListTableItem<DomainInfo>> = [
+const domainPageMetadataTableConfig: Array<ListTableItem<DomainDescription>> = [
   {
     key: 'domainId',
     label: 'Domain ID',
-    renderValue: (domainInfo: DomainInfo) => domainInfo.id,
+    renderValue: (domainDescription: DomainDescription) => domainDescription.id,
   },
   {
     key: 'owner',
     label: 'Owner',
-    renderValue: (domainInfo: DomainInfo) => domainInfo.ownerEmail,
+    renderValue: (domainDescription: DomainDescription) =>
+      domainDescription.ownerEmail,
   },
   {
     key: 'clusters',
     label: 'Clusters',
-    renderValue: (domainInfo: DomainInfo) =>
-      createElement(DomainPageMetadataClusters, domainInfo),
+    renderValue: DomainPageMetadataClusters,
   },
   {
     key: 'globalOrLocal',
     label: 'Global/Local',
-    renderValue: (domainInfo: DomainInfo) =>
-      domainInfo.isGlobalDomain ? 'Global' : 'Local',
+    renderValue: (domainDescription: DomainDescription) =>
+      domainDescription.isGlobalDomain ? 'Global' : 'Local',
   },
   {
     key: 'failoverVersion',
     label: 'Failover version',
-    renderValue: (domainInfo: DomainInfo) => domainInfo.failoverVersion,
+    renderValue: (domainDescription: DomainDescription) =>
+      domainDescription.failoverVersion,
   },
 ];
 

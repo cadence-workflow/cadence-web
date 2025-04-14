@@ -13,12 +13,13 @@ const domainPageHeaderInfoItemsConfig = [
   {
     title: 'Global/Local',
     getLabel: (props: DomainHeaderInfoItemContentProps) =>
-      props.domainInfo.isGlobalDomain ? 'Global' : 'Local',
+      props.domainDescription.isGlobalDomain ? 'Global' : 'Local',
     placeholderSize: '64px',
   },
   {
     title: 'Domain ID',
-    getLabel: (props: DomainHeaderInfoItemContentProps) => props.domainInfo.id,
+    getLabel: (props: DomainHeaderInfoItemContentProps) =>
+      props.domainDescription.id,
     placeholderSize: '256px',
   },
 ] as const satisfies DomainPageHeaderInfoItemsConfig;

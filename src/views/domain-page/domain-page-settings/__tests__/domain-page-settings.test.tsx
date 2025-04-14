@@ -9,8 +9,8 @@ import { type DescribeDomainResponse } from '@/route-handlers/describe-domain/de
 import { type UpdateDomainResponse } from '@/route-handlers/update-domain/update-domain.types';
 import type { Props as MSWMocksHandlersProps } from '@/test-utils/msw-mock-handlers/msw-mock-handlers.types';
 
-import { mockDomainInfo } from '../../__fixtures__/domain-info';
-import { type DomainInfo } from '../../domain-page.types';
+import { mockDomainDescription } from '../../__fixtures__/domain-description';
+import { type DomainDescription } from '../../domain-page.types';
 import DomainPageSettings from '../domain-page-settings';
 import { type SettingsValues } from '../domain-page-settings.types';
 
@@ -28,7 +28,7 @@ jest.mock('@/views/shared/settings-form/settings-form', () =>
       onSubmit,
       onSubmitError,
     }: {
-      data: DomainInfo;
+      data: DomainDescription;
       onSubmit: (v: any) => Promise<void>;
       onSubmitError: (e: any) => void;
     }) => (
@@ -171,8 +171,9 @@ async function setup({
               );
             } else {
               return HttpResponse.json({
-                ...mockDomainInfo,
-                description: mockDomainInfo.description + ` (Update ${index})`,
+                ...mockDomainDescription,
+                description:
+                  mockDomainDescription.description + ` (Update ${index})`,
               } satisfies DescribeDomainResponse);
             }
           },
@@ -196,9 +197,9 @@ async function setup({
               );
             }
             return HttpResponse.json({
-              ...mockDomainInfo,
+              ...mockDomainDescription,
               description:
-                mockDomainInfo.description +
+                mockDomainDescription.description +
                 ` (Update ${currentEventIndex + 1})`,
             } satisfies UpdateDomainResponse);
           },

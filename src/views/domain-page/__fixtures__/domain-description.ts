@@ -1,6 +1,6 @@
-import { type DomainInfo } from '../domain-page.types';
+import { type DomainDescription } from '../domain-page.types';
 
-export const mockDomainInfo: DomainInfo = {
+export const mockDomainDescription: DomainDescription = {
   activeClusterName: 'cluster_1',
   clusters: [{ clusterName: 'cluster_1' }, { clusterName: 'cluster_2' }],
   data: { Tier: '5', IsManagedByCadence: 'true' },
@@ -25,7 +25,7 @@ export const mockDomainInfo: DomainInfo = {
   failoverVersion: '123456',
 };
 
-export const mockDomainInfoSingleCluster: DomainInfo = {
+export const mockDomainDescriptionSingleCluster: DomainDescription = {
   activeClusterName: 'cluster_1',
   clusters: [{ clusterName: 'cluster_1' }],
   data: { Tier: '5', IsManagedByCadence: 'true' },

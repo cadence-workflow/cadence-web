@@ -23,16 +23,16 @@ export default function DomainPageHeaderInfo(props: Props) {
             loading={props.loading}
             content={
               !props.loading &&
-              !!props.domainInfo &&
+              !!props.domainDescription &&
               (configItem.component ? (
                 <configItem.component
-                  domainInfo={props.domainInfo}
+                  domainDescription={props.domainDescription}
                   cluster={props.cluster}
                 />
               ) : (
                 configItem.getLabel(
                   {
-                    domainInfo: props.domainInfo,
+                    domainDescription: props.domainDescription,
                     cluster: props.cluster,
                   },
                   pageCtx

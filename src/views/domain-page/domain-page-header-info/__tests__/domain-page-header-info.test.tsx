@@ -2,7 +2,7 @@ import React from 'react';
 
 import { render, screen } from '@/test-utils/rtl';
 
-import { mockDomainInfo } from '../../__fixtures__/domain-info';
+import { mockDomainDescription } from '../../__fixtures__/domain-description';
 import domainPageHeaderInfoItemsConfig from '../../config/domain-page-header-info-items.config';
 import { DomainPageContext } from '../../domain-page-context-provider/domain-page-context-provider';
 import { type Props } from '../../domain-page-header-info-item/domain-page-header-info-item.types';
@@ -60,7 +60,7 @@ describe(DomainPageHeaderInfo.name, () => {
         <DomainPageHeaderInfo
           loading={false}
           cluster="cluster_1"
-          domainInfo={mockDomainInfo}
+          domainDescription={mockDomainDescription}
         />
       </DomainPageContext.Provider>
     );
