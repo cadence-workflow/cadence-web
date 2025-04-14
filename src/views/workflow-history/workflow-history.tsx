@@ -25,7 +25,7 @@ import { type RequestError } from '@/utils/request/request-error';
 import sortBy from '@/utils/sort-by';
 
 import workflowPageQueryParamsConfig from '../workflow-page/config/workflow-page-query-params.config';
-import { useDescribeWorkflowSuspense } from '../workflow-page/hooks/use-describe-workflow';
+import { useSuspenseDescribeWorkflow } from '../workflow-page/hooks/use-describe-workflow';
 
 import workflowHistoryFiltersConfig from './config/workflow-history-filters.config';
 import getVisibleGroupsHasMissingEvents from './helpers/get-visible-groups-has-missing-events';
@@ -69,7 +69,7 @@ export default function WorkflowHistory({ params }: Props) {
     pageFiltersConfig: workflowHistoryFiltersConfig,
   });
 
-  const { data: wfExecutionDescription } = useDescribeWorkflowSuspense({
+  const { data: wfExecutionDescription } = useSuspenseDescribeWorkflow({
     ...params,
   });
   const { workflowExecutionInfo } = wfExecutionDescription;

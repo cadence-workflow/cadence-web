@@ -46,7 +46,7 @@ export function useDescribeWorkflow({
   >(getDefaultConfigurations({ refetchInterval, ...params }));
 }
 
-export function useDescribeWorkflowSuspense({
+export function useSuspenseDescribeWorkflow({
   refetchInterval = WORKFLOW_PAGE_STATUS_REFETCH_INTERVAL,
   ...params
 }: UseDescribeWorkflowParams) {
