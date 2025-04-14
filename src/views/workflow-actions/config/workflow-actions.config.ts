@@ -105,7 +105,7 @@ const workflowActionsConfig: [
         text: 'Read more about resetting workflows',
         href: 'https://cadenceworkflow.io/docs/cli#workflow-reset',
       },
-      form: (props) => createElement(WorkflowActionResetForm, props),
+      form: WorkflowActionResetForm,
       formSchema: resetWorkflowFormSchema,
       transformFormDataToSubmission: (v) => v,
     },
