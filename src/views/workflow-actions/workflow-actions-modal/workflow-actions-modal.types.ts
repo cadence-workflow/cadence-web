@@ -1,10 +1,10 @@
 import { type WorkflowAction } from '../workflow-actions.types';
 
-export type Props<R> = {
+export type Props<FormData, SubmissionData, Result> = {
   domain: string;
   cluster: string;
   workflowId: string;
   runId: string;
-  action: WorkflowAction<R> | undefined;
+  action: WorkflowAction<FormData, SubmissionData, Result> | undefined;
   onClose: () => void;
 };

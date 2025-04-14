@@ -15,9 +15,9 @@ import WorkflowActionNewRunSuccessMsg from '../workflow-action-new-run-success-m
 import { type WorkflowAction } from '../workflow-actions.types';
 
 const workflowActionsConfig: [
-  WorkflowAction<CancelWorkflowResponse>,
-  WorkflowAction<TerminateWorkflowResponse>,
-  WorkflowAction<RestartWorkflowResponse>,
+  WorkflowAction<any, any, CancelWorkflowResponse>,
+  WorkflowAction<any, any, TerminateWorkflowResponse>,
+  WorkflowAction<any, any, RestartWorkflowResponse>,
 ] = [
   {
     id: 'cancel',

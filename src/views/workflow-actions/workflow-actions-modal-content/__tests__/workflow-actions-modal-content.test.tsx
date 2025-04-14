@@ -1,10 +1,9 @@
 import { HttpResponse } from 'msw';
 
-import { render, screen, userEvent } from '@/test-utils/rtl';
+import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
 import { type CancelWorkflowResponse } from '@/route-handlers/cancel-workflow/cancel-workflow.types';
-import { type RestartWorkflowResponse } from '@/route-handlers/restart-workflow/restart-workflow.types';
-import { type TerminateWorkflowResponse } from '@/route-handlers/terminate-workflow/terminate-workflow.types';
+import { type ResetWorkflowResponse } from '@/route-handlers/reset-workflow/reset-workflow.types';
 import { mockWorkflowDetailsParams } from '@/views/workflow-page/__fixtures__/workflow-details-params';
 
 import { mockWorkflowActionsConfig } from '../../__fixtures__/workflow-actions-config';
@@ -20,6 +19,8 @@ jest.mock('baseui/snackbar', () => ({
     dequeue: mockDequeue,
   }),
 }));
+
+const mockResetAction = mockWorkflowActionsConfig[2];
 
 describe(WorkflowActionsModalContent.name, () => {
   beforeEach(() => {
@@ -41,11 +42,11 @@ describe(WorkflowActionsModalContent.name, () => {
     expect(docsLink).toHaveAttribute('href', 'https://mock.docs.link');
   });
 
-  it('calls onCloseModal when the Go Back button is clicked', async () => {
+  it('calls onCloseModal when the Cancel button is clicked', async () => {
     const { user, mockOnClose } = setup({});
 
-    const goBackButton = await screen.findByText('Go back');
-    await user.click(goBackButton);
+    const cancelButton = await screen.findByText('Cancel');
+    await user.click(cancelButton);
 
     expect(mockOnClose).toHaveBeenCalled();
   });
@@ -58,11 +59,13 @@ describe(WorkflowActionsModalContent.name, () => {
     });
     await user.click(cancelButton);
 
-    expect(mockEnqueue).toHaveBeenCalledWith(
-      expect.objectContaining({
-        message: 'Mock cancel notification',
-      })
-    );
+    await waitFor(() => {
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'Mock cancel notification',
+        })
+      );
+    });
     expect(mockOnClose).toHaveBeenCalled();
   });
 
@@ -74,9 +77,9 @@ describe(WorkflowActionsModalContent.name, () => {
     });
     await user.click(cancelButton);
 
-    expect(
-      await screen.findByText('Failed to cancel workflow')
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Failed to cancel workflow')).toBeInTheDocument();
+    });
     expect(mockOnClose).not.toHaveBeenCalled();
   });
 
@@ -93,6 +96,58 @@ describe(WorkflowActionsModalContent.name, () => {
     expect(screen.getByText('First line of array text')).toBeInTheDocument();
     expect(screen.getByText('Second line of array text')).toBeInTheDocument();
   });
+
+  describe('form handling', () => {
+    it('renders form when provided in action config', () => {
+      setup({ actionConfig: mockResetAction });
+
+      expect(screen.getByTestId('mock-form')).toBeInTheDocument();
+      expect(screen.getByTestId('test-input')).toBeInTheDocument();
+    });
+
+    it('disables submit button when form has validation errors', async () => {
+      const { user } = setup({ actionConfig: mockResetAction });
+
+      const submitButton = screen.getByRole('button', {
+        name: 'Mock reset workflow',
+      });
+      await user.click(submitButton);
+
+      expect(submitButton).toHaveAttribute('disabled');
+    });
+
+    it('forms recieves validation error message when field is invalid', async () => {
+      const { user } = setup({ actionConfig: mockResetAction });
+
+      const submitButton = screen.getByRole('button', {
+        name: 'Mock reset workflow',
+      });
+      await user.click(submitButton);
+
+      expect(screen.getByTestId('test-input')).toHaveAttribute(
+        'aria-invalid',
+        'true'
+      );
+    });
+
+    it('transforms form data before submission', async () => {
+      const { user, getLatestRequestBody, waitForRequest } = setup({
+        actionConfig: mockResetAction,
+      });
+
+      const input = screen.getByTestId('test-input');
+      await user.type(input, 'test value');
+
+      const submitButton = screen.getByRole('button', {
+        name: 'Mock reset workflow',
+      });
+      await user.click(submitButton);
+
+      await waitForRequest();
+
+      expect(getLatestRequestBody()).toEqual({ transformed: 'test value' });
+    });
+  });
 });
 
 function setup({
@@ -100,12 +155,15 @@ function setup({
   actionConfig,
 }: {
   error?: boolean;
-  actionConfig?: WorkflowAction<
-    CancelWorkflowResponse | TerminateWorkflowResponse | RestartWorkflowResponse
-  >;
+  actionConfig?: WorkflowAction<any, any, any>;
 }) {
   const user = userEvent.setup();
   const mockOnClose = jest.fn();
+  let latestRequestBody: any = null;
+  let requestPromiseResolve = (v: unknown) => v;
+  const requestPromise = new Promise((resolve) => {
+    requestPromiseResolve = resolve;
+  });
 
   render(
     <WorkflowActionsModalContent
@@ -116,15 +174,26 @@ function setup({
     {
       endpointsMocks: [
         {
-          path: '/api/domains/:domain/:cluster/workflows/:workflowId/:runId/cancel',
+          path: '/api/domains/:domain/:cluster/workflows/:workflowId/:runId/:action',
           httpMethod: 'POST',
           mockOnce: false,
-          httpResolver: () => {
+          httpResolver: async ({ request }) => {
+            // Capture the request body
+            const text = await request.text();
+            latestRequestBody = text ? JSON.parse(text) : null;
+            requestPromiseResolve(null);
+
             if (error) {
               return HttpResponse.json(
                 { message: 'Failed to cancel workflow' },
                 { status: 500 }
               );
+            }
+
+            if (request.url.endsWith('/reset')) {
+              return HttpResponse.json({
+                runId: 'new-run-id',
+              } satisfies ResetWorkflowResponse);
             }
             return HttpResponse.json({} satisfies CancelWorkflowResponse);
           },
@@ -133,5 +202,10 @@ function setup({
     }
   );
 
-  return { user, mockOnClose };
+  return {
+    user,
+    mockOnClose,
+    getLatestRequestBody: () => latestRequestBody,
+    waitForRequest: () => requestPromise,
+  };
 }

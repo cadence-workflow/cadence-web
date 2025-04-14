@@ -14,6 +14,7 @@ describe('WorkflowActionNewRunSuccessMsg', () => {
       cluster: 'test-cluster',
       workflowId: 'test-workflow-id',
       runId: 'test-run-id',
+      submissionData: null,
     },
     successMessage: 'Workflow has been restarted.',
   };
