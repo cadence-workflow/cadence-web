@@ -23,6 +23,7 @@ export default function WorkflowHistoryExportJsonButton(props: Props) {
     'loading' | 'error' | 'idle'
   >('idle');
 
+  // TODO: replace this with the downloadJson util
   const downloadJSON = (jsonData: any) => {
     const blob = new Blob([losslessJsonStringify(jsonData, null, '\t')], {
       type: 'application/json',

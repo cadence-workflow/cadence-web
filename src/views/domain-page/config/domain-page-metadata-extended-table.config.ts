@@ -2,6 +2,7 @@ import { createElement } from 'react';
 
 import { type MetadataItem } from '../domain-page-metadata/domain-page-metadata.types';
 import DomainPageMetadataClusters from '../domain-page-metadata-clusters/domain-page-metadata-clusters';
+import DomainPageMetadataViewJson from '../domain-page-metadata-view-json/domain-page-metadata-view-json';
 
 const domainPageMetadataExtendedTableConfig = [
   {
@@ -57,8 +58,8 @@ const domainPageMetadataExtendedTableConfig = [
     label: 'DescribeDomain response',
     description: 'View raw DescribeDomain response as JSON',
     kind: 'simple',
-    // TODO: create a JSON modal component
-    getValue: () => createElement('div', {}, 'Placeholder for JSON button'),
+    getValue: ({ domainDescription }) =>
+      createElement(DomainPageMetadataViewJson, { domainDescription }),
   },
 ] as const satisfies Array<MetadataItem>;
 
