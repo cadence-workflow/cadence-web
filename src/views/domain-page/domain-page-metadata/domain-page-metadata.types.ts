@@ -1,35 +1,21 @@
+import {
+  type ListTableV2SimpleItem,
+  type ListTableV2SublistItem,
+  type ListTableV2Group,
+} from '@/components/list-table-v2/list-table-v2.types';
+
 import { type DomainMetadata } from '../hooks/use-suspense-domain-page-metadata.types';
 
-interface MetadataItem<T> {
-  key: string;
-  label: string;
-  kind: 'text' | 'custom';
-  description?: string;
-  getValue: (metadata: DomainMetadata) => T;
-}
-
-interface MetadataTextItem extends MetadataItem<string> {
-  kind: 'text';
-}
-
-interface MetadataCustomItem extends MetadataItem<React.ReactNode> {
-  kind: 'custom';
-}
-
-type MetadataGroupItem = Omit<
-  MetadataTextItem | MetadataCustomItem,
-  'description'
->;
-
-export type MetadataGroup = {
-  kind: 'group';
-  key: string;
-  label: string;
-  description?: string;
-  items: Array<MetadataGroupItem>;
+type MetadataSimpleItem = Omit<ListTableV2SimpleItem, 'value'> & {
+  getValue: (metadata: DomainMetadata) => React.ReactNode;
 };
 
-export type MetadataField =
-  | MetadataTextItem
-  | MetadataCustomItem
-  | MetadataGroup;
+type MetadataSublistItem = Omit<ListTableV2SublistItem, 'value'> & {
+  getValue: (metadata: DomainMetadata) => React.ReactNode;
+};
+
+type MetadataGroup = Omit<ListTableV2Group, 'items'> & {
+  items: Array<MetadataSublistItem>;
+};
+
+export type MetadataItem = MetadataSimpleItem | MetadataGroup;

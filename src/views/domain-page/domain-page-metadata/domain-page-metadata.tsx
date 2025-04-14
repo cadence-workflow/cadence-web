@@ -10,20 +10,19 @@ import { type DomainPageTabContentProps } from '../domain-page-content/domain-pa
 import useSuspenseDomainPageMetadata from '../hooks/use-suspense-domain-page-metadata';
 
 import { styled } from './domain-page-metadata.styles';
-import { type MetadataField } from './domain-page-metadata.types';
+import { type MetadataItem } from './domain-page-metadata.types';
 
 export default function DomainPageMetadata(props: DomainPageTabContentProps) {
-  const { domainDescription, isExtendedMetadataEnabled } =
-    useSuspenseDomainPageMetadata({
-      domain: props.domain,
-      cluster: props.cluster,
-    });
+  const domainMetadata = useSuspenseDomainPageMetadata({
+    domain: props.domain,
+    cluster: props.cluster,
+  });
 
   return (
     <styled.MetadataContainer>
-      {isExtendedMetadataEnabled ? (
+      {domainMetadata.isExtendedMetadataEnabled ? (
         <ListTableV2
-          items={domainPageMetadataV2TableConfig.map((row: MetadataField) => ({
+          items={domainPageMetadataV2TableConfig.map((row: MetadataItem) => ({
             key: row.key,
             label: row.label,
             description: row.description,
@@ -33,18 +32,18 @@ export default function DomainPageMetadata(props: DomainPageTabContentProps) {
                   items: row.items.map((item) => ({
                     key: item.key,
                     label: item.label,
-                    value: item.getValue({ domainDescription }),
+                    value: item.getValue(domainMetadata),
                   })),
                 }
               : {
                   kind: 'simple',
-                  value: row.getValue({ domainDescription }),
+                  value: row.getValue(domainMetadata),
                 }),
           }))}
         />
       ) : (
         <ListTable
-          data={domainDescription}
+          data={domainMetadata.domainDescription}
           listTableConfig={domainPageMetadataTableConfig}
         />
       )}

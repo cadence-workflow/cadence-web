@@ -7,4 +7,5 @@ export type UseSuspenseDomainPageMetadataParams = {
 
 export type DomainMetadata = {
   domainDescription: DomainDescription;
+  isExtendedMetadataEnabled: boolean;
 };

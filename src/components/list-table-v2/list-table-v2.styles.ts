@@ -41,15 +41,13 @@ export const styled = {
     ({ $theme }: { $theme: Theme }): StyleObject => ({
       ...$theme.typography.LabelSmall,
       fontWeight: '700',
-      // [$theme.mediaQuery.medium]: {
-      //   fontWeight: '500',
-      // },
     })
   ),
   Description: createStyled(
     'div',
     ({ $theme }: { $theme: Theme }): StyleObject => ({
       ...$theme.typography.ParagraphXSmall,
+      lineHeight: '16px',
       color: $theme.colors.contentTertiary,
     })
   ),

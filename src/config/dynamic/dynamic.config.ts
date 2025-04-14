@@ -11,10 +11,7 @@ import clustersPublic from './resolvers/clusters-public';
 import { type PublicClustersConfigs } from './resolvers/clusters-public.types';
 import { type ClustersConfigs } from './resolvers/clusters.types';
 import extendedDomainInfoEnabled from './resolvers/extended-domain-info-enabled';
-import {
-  type ExtendedDomainInfoEnabledConfig,
-  type ExtendedDomainInfoEnabledResolverParams,
-} from './resolvers/extended-domain-info-enabled.types';
+import { type ExtendedDomainInfoEnabledConfig } from './resolvers/extended-domain-info-enabled.types';
 import workflowActionsEnabled from './resolvers/workflow-actions-enabled';
 import {
   type WorkflowActionsEnabledResolverParams,
@@ -42,7 +39,7 @@ const dynamicConfigs: {
     true
   >;
   EXTENDED_DOMAIN_INFO_ENABLED: ConfigAsyncResolverDefinition<
-    ExtendedDomainInfoEnabledResolverParams,
+    undefined,
     ExtendedDomainInfoEnabledConfig,
     'request',
     true

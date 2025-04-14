@@ -6,11 +6,14 @@ import request from '@/utils/request';
 
 import { type DomainDescription } from '../domain-page.types';
 
-import { type UseSuspenseDomainPageMetadataParams } from './use-suspense-domain-page-metadata.types';
+import {
+  type DomainMetadata,
+  type UseSuspenseDomainPageMetadataParams,
+} from './use-suspense-domain-page-metadata.types';
 
 export default function useSuspenseDomainPageMetadata(
   params: UseSuspenseDomainPageMetadataParams
-) {
+): DomainMetadata {
   const [
     { data: domainDescription },
     {
@@ -44,12 +47,8 @@ export default function useSuspenseDomainPageMetadata(
               url: '/api/config',
               query: {
                 configKey,
-                jsonArgs: JSON.stringify({}),
               },
-            }),
-            {
-              method: 'GET',
-            }
+            })
           ).then((res) => res.json()),
       },
     ],

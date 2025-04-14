@@ -1,6 +1,6 @@
 import { createElement } from 'react';
 
-import { type MetadataField } from '../domain-page-metadata/domain-page-metadata.types';
+import { type MetadataItem } from '../domain-page-metadata/domain-page-metadata.types';
 import DomainPageMetadataClusters from '../domain-page-metadata-clusters/domain-page-metadata-clusters';
 
 const domainPageMetadataV2TableConfig = [
@@ -8,14 +8,14 @@ const domainPageMetadataV2TableConfig = [
     key: 'domainId',
     label: 'Domain ID',
     description: 'The UUID of the Cadence domain',
-    kind: 'text',
+    kind: 'simple',
     getValue: ({ domainDescription }) => domainDescription.id,
   },
   {
     key: 'description',
     label: 'Description',
-    description: 'A short description of the domain',
-    kind: 'custom',
+    description: 'Brief, high-level description of the Cadence domain',
+    kind: 'simple',
     // TODO: create a Domain Description component that opens settings to edit
     getValue: ({ domainDescription }) =>
       createElement('div', {}, domainDescription.description),
@@ -24,7 +24,7 @@ const domainPageMetadataV2TableConfig = [
     key: 'owner',
     label: 'Owner',
     description: 'E-mail of the domain owner',
-    kind: 'text',
+    kind: 'simple',
     getValue: ({ domainDescription }) =>
       domainDescription.ownerEmail || 'Unknown',
   },
@@ -32,7 +32,7 @@ const domainPageMetadataV2TableConfig = [
     key: 'clusters',
     label: 'Clusters',
     description: 'Clusters that the domain runs in',
-    kind: 'custom',
+    kind: 'simple',
     getValue: ({ domainDescription }) =>
       createElement(DomainPageMetadataClusters, domainDescription),
   },
@@ -41,7 +41,7 @@ const domainPageMetadataV2TableConfig = [
     label: 'Global/Local',
     description:
       'Whether the domain is global (operates in multiple clusters) or not',
-    kind: 'text',
+    kind: 'simple',
     getValue: ({ domainDescription }) =>
       domainDescription.isGlobalDomain ? 'Global' : 'Local',
   },
@@ -49,17 +49,17 @@ const domainPageMetadataV2TableConfig = [
     key: 'failoverVersion',
     label: 'Failover version',
     description: 'The failover version of the domain',
-    kind: 'text',
+    kind: 'simple',
     getValue: ({ domainDescription }) => domainDescription.failoverVersion,
   },
   {
     key: 'describeDomainJson',
     label: 'DescribeDomain response',
     description: 'View raw DescribeDomain response as JSON',
-    kind: 'custom',
+    kind: 'simple',
     // TODO: create a JSON modal component
     getValue: () => createElement('div', {}, 'Placeholder for JSON button'),
   },
-] as const satisfies Array<MetadataField>;
+] as const satisfies Array<MetadataItem>;
 
 export default domainPageMetadataV2TableConfig;
