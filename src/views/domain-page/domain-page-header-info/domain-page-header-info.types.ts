@@ -1,7 +1,7 @@
 import type React from 'react';
 
 import { type DomainPageContextType } from '../domain-page-context-provider/domain-page-context-provider.types';
-import type { DomainInfo } from '../domain-page.types';
+import type { DomainDescription } from '../domain-page.types';
 
 type LoadingProps = {
   loading: true;
@@ -9,14 +9,14 @@ type LoadingProps = {
 
 type LoadedProps = {
   loading: false;
-  domainInfo: DomainInfo | null;
+  domainDescription: DomainDescription | null;
   cluster: string;
 };
 
 export type Props = LoadingProps | LoadedProps;
 
 export type DomainHeaderInfoItemContentProps = {
-  domainInfo: DomainInfo;
+  domainDescription: DomainDescription;
   cluster: string;
 };
 

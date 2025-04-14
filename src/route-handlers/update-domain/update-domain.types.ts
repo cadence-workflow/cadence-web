@@ -1,6 +1,6 @@
+import { type Domain } from '@/__generated__/proto-ts/uber/cadence/api/v1/Domain';
 import { type UpdateDomainRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/UpdateDomainRequest';
 import { type DefaultMiddlewaresContext } from '@/utils/route-handlers-middleware';
-import { type DomainInfo } from '@/views/domain-page/domain-page.types';
 
 export type RouteParams = {
   domain: string;
@@ -16,6 +16,6 @@ export type UpdateDomainFields = Omit<
   'securityToken' | 'name' | 'updateMask'
 >;
 
-export type UpdateDomainResponse = DomainInfo;
+export type UpdateDomainResponse = Domain;
 
 export type Context = DefaultMiddlewaresContext;

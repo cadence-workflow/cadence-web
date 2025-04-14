@@ -8,7 +8,7 @@ import formatDurationToSeconds from '@/utils/data-formatters/format-duration-to-
 import { type SettingsFormField } from '@/views/shared/settings-form/settings-form.types';
 
 import DomainPageSettingsRetentionPeriod from '../domain-page-settings-retention-period/domain-page-settings-retention-period';
-import { type DomainInfo } from '../domain-page.types';
+import { type DomainDescription } from '../domain-page.types';
 
 export const domainPageSettingsFormSchema = z.object({
   description: z.string(),
@@ -21,22 +21,22 @@ export const domainPageSettingsFormSchema = z.object({
 
 export const domainPageSettingsFormConfig: [
   SettingsFormField<
-    DomainInfo,
+    DomainDescription,
     typeof domainPageSettingsFormSchema,
     'description'
   >,
   SettingsFormField<
-    DomainInfo,
+    DomainDescription,
     typeof domainPageSettingsFormSchema,
     'retentionPeriodSeconds'
   >,
   SettingsFormField<
-    DomainInfo,
+    DomainDescription,
     typeof domainPageSettingsFormSchema,
     'visibilityArchival'
   >,
   SettingsFormField<
-    DomainInfo,
+    DomainDescription,
     typeof domainPageSettingsFormSchema,
     'historyArchival'
   >,

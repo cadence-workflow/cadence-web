@@ -5,7 +5,7 @@ import { HttpResponse } from 'msw';
 import { render, screen, act } from '@/test-utils/rtl';
 
 import { type DescribeDomainResponse } from '@/route-handlers/describe-domain/describe-domain.types';
-import { mockDomainInfo } from '@/views/domain-page/__fixtures__/domain-info';
+import { mockDomainDescription } from '@/views/domain-page/__fixtures__/domain-description';
 
 import DomainWorkflowsArchival from '../domain-workflows-archival';
 
@@ -83,7 +83,7 @@ async function setup({
               }
             : {
                 jsonResponse: {
-                  ...mockDomainInfo,
+                  ...mockDomainDescription,
                   ...(isArchivalEnabled
                     ? {
                         historyArchivalStatus: 'ARCHIVAL_STATUS_ENABLED',

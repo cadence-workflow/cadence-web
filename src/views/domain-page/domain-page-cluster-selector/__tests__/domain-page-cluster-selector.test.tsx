@@ -3,10 +3,10 @@ import React from 'react';
 import { render, screen, fireEvent, act, within } from '@/test-utils/rtl';
 
 import {
-  mockDomainInfo,
-  mockDomainInfoSingleCluster,
-} from '../../__fixtures__/domain-info';
-import { type DomainInfo } from '../../domain-page.types';
+  mockDomainDescription,
+  mockDomainDescriptionSingleCluster,
+} from '../../__fixtures__/domain-description';
+import { type DomainDescription } from '../../domain-page.types';
 import DomainPageClusterSelector from '../domain-page-cluster-selector';
 
 const mockPushFn = jest.fn();
@@ -33,21 +33,21 @@ describe(DomainPageClusterSelector.name, () => {
   });
 
   it('Should render current cluster correctly', () => {
-    setup({ domainInfo: mockDomainInfo });
+    setup({ domainDescription: mockDomainDescription });
 
     expect(screen.getByText('cluster_1')).toBeInTheDocument();
     expect(screen.getByRole('combobox')).toBeInTheDocument();
   });
 
   it('Should render only a label for single cluster', () => {
-    setup({ domainInfo: mockDomainInfoSingleCluster });
+    setup({ domainDescription: mockDomainDescriptionSingleCluster });
 
     expect(screen.getByText('cluster_1')).toBeInTheDocument();
     expect(screen.queryByRole('combobox')).toBeNull();
   });
 
   it('Should show available clusters and redirect when one is selected', () => {
-    setup({ domainInfo: mockDomainInfo });
+    setup({ domainDescription: mockDomainDescription });
 
     expect(screen.getByText('cluster_1')).toBeInTheDocument();
     const clusterSelect = screen.getByRole('combobox');
@@ -69,8 +69,15 @@ describe(DomainPageClusterSelector.name, () => {
   });
 });
 
-function setup({ domainInfo }: { domainInfo: DomainInfo }) {
+function setup({
+  domainDescription,
+}: {
+  domainDescription: DomainDescription;
+}) {
   render(
-    <DomainPageClusterSelector cluster="cluster_1" domainInfo={domainInfo} />
+    <DomainPageClusterSelector
+      cluster="cluster_1"
+      domainDescription={domainDescription}
+    />
   );
 }

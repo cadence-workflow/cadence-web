@@ -1,11 +1,8 @@
 import React from 'react';
 
-import { useSuspenseQuery } from '@tanstack/react-query';
-
-import request from '@/utils/request';
 import { type DomainPageTabContentProps } from '@/views/domain-page/domain-page-content/domain-page-content.types';
 
-import { type DomainInfo } from '../domain-page/domain-page.types';
+import useSuspenseDomainDescription from '../shared/hooks/use-suspense-domain-description';
 
 import DomainWorkflowsArchivalDisabledPanel from './domain-workflows-archival-disabled-panel/domain-workflows-archival-disabled-panel';
 import DomainWorkflowsArchivalHeader from './domain-workflows-archival-header/domain-workflows-archival-header';
@@ -16,13 +13,7 @@ export default function DomainWorkflowsArchival(
 ) {
   const {
     data: { historyArchivalStatus, visibilityArchivalStatus },
-  } = useSuspenseQuery<DomainInfo>({
-    queryKey: ['describeDomain', props],
-    queryFn: () =>
-      request(`/api/domains/${props.domain}/${props.cluster}`).then((res) =>
-        res.json()
-      ),
-  });
+  } = useSuspenseDomainDescription(props);
 
   if (
     historyArchivalStatus !== 'ARCHIVAL_STATUS_ENABLED' ||

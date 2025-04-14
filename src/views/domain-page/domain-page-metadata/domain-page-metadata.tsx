@@ -1,30 +1,24 @@
 'use client';
 import React from 'react';
 
-import { useSuspenseQuery } from '@tanstack/react-query';
-
 import ListTable from '@/components/list-table/list-table';
-import request from '@/utils/request';
 
 import domainPageMetadataTableConfig from '../config/domain-page-metadata-table.config';
 import { type DomainPageTabContentProps } from '../domain-page-content/domain-page-content.types';
-import { type DomainInfo } from '../domain-page.types';
+import useSuspenseDomainPageMetadata from '../hooks/use-suspense-domain-page-metadata';
 
 import { styled } from './domain-page-metadata.styles';
 
 export default function DomainPageMetadata(props: DomainPageTabContentProps) {
-  const { data: domainInfo } = useSuspenseQuery<DomainInfo>({
-    queryKey: ['describeDomain', props],
-    queryFn: () =>
-      request(`/api/domains/${props.domain}/${props.cluster}`).then((res) =>
-        res.json()
-      ),
+  const { domainDescription } = useSuspenseDomainPageMetadata({
+    domain: props.domain,
+    cluster: props.cluster,
   });
 
   return (
     <styled.MetadataContainer>
       <ListTable
-        data={domainInfo}
+        data={domainDescription}
         listTableConfig={domainPageMetadataTableConfig}
       />
     </styled.MetadataContainer>
