@@ -4,7 +4,7 @@ import { type DescribeWorkflowResponse } from '@/route-handlers/describe-workflo
 import { type WorkflowAction } from '../workflow-actions.types';
 
 export type Props = {
-  workflow: DescribeWorkflowResponse;
+  workflow?: DescribeWorkflowResponse;
   actionsEnabledConfig?: WorkflowActionsEnabledConfig;
   onActionSelect: (action: WorkflowAction<any, any, any>) => void;
 };

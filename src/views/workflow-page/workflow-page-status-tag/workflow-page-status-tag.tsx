@@ -7,7 +7,7 @@ import { useParams } from 'next/navigation';
 import WorkflowStatusTag from '@/views/shared/workflow-status-tag/workflow-status-tag';
 
 import getWorkflowStatusTagProps from '../helpers/get-workflow-status-tag-props';
-import useDescribeWorkflow from '../hooks/use-describe-workflow';
+import { useSuspenseDescribeWorkflow } from '../hooks/use-describe-workflow';
 import type { WorkflowPageParams } from '../workflow-page.types';
 
 export default function WorkflowPageStatusTag() {
@@ -20,7 +20,7 @@ export default function WorkflowPageStatusTag() {
     'domain'
   );
 
-  const { data: workflowDetails, isError } = useDescribeWorkflow({
+  const { data: workflowDetails, isError } = useSuspenseDescribeWorkflow({
     ...workflowDetailsParams,
   });
 
