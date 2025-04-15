@@ -1,11 +1,13 @@
 import type { Metadata } from 'next';
 import { Rubik } from 'next/font/google';
 
+import SnackbarProvider from '@/components/snackbar-provider/snackbar-provider';
 import ReactQueryProvider from '@/providers/react-query-provider';
 
 import StyletronProvider from '../providers/styletron-provider';
 
 import StyledJsxRegistry from './registry';
+
 import './globals.css';
 
 const inter = Rubik({ subsets: ['latin'] });
@@ -26,7 +28,9 @@ export default function RootLayout({
       <StyledJsxRegistry />
       <body className={inter.className}>
         <ReactQueryProvider>
-          <StyletronProvider>{children}</StyletronProvider>
+          <StyletronProvider>
+            <SnackbarProvider>{children}</SnackbarProvider>
+          </StyletronProvider>
         </ReactQueryProvider>
       </body>
     </html>

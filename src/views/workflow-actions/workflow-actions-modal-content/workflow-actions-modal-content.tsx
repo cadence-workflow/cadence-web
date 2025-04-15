@@ -70,6 +70,7 @@ export default function WorkflowActionsModalContent<
           message: action.renderSuccessMessage?.({
             result,
             inputParams: params,
+            onDismissMessage: () => dequeue(),
           }),
           startEnhancer: MdCheckCircle,
           actionMessage: 'OK',

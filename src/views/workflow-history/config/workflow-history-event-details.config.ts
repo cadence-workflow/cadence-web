@@ -73,7 +73,7 @@ const workflowHistoryEventDetailsConfig = [
   {
     name: 'RunIds as link',
     pathRegex:
-      '(firstExecutionRunId|originalExecutionRunId|newExecutionRunId)$',
+      '(firstExecutionRunId|originalExecutionRunId|newExecutionRunId|continuedExecutionRunId)$',
     valueComponent: ({ entryValue, domain, cluster, workflowId }) => {
       return createElement(WorkflowEventDetailsExecutionLink, {
         domain,
