@@ -9,7 +9,6 @@ import { MemoryRouterProvider } from 'next-router-mock/MemoryRouterProvider';
 // @ts-expect-error Could not find a declaration file for module 'styletron-engine-snapshot'
 import { StyletronSnapshotEngine } from 'styletron-engine-snapshot';
 
-import SnackbarProvider from '@/components/snackbar-provider/snackbar-provider';
 import themeProviderOverrides from '@/config/theme/theme-provider-overrides.config';
 import StyletronProvider from '@/providers/styletron-provider';
 
@@ -76,12 +75,10 @@ export const TestProvider = ({
         styletronEngine: snapshotEngine,
       })}
     >
-      <SnackbarProvider>
-        <MSWMockHandlers endpointsMocks={endpointsMocks} />
-        <MemoryRouterProvider url={router.initialUrl}>
-          <QueryClientProvider client={client}>{children}</QueryClientProvider>
-        </MemoryRouterProvider>
-      </SnackbarProvider>
+      <MSWMockHandlers endpointsMocks={endpointsMocks} />
+      <MemoryRouterProvider url={router.initialUrl}>
+        <QueryClientProvider client={client}>{children}</QueryClientProvider>
+      </MemoryRouterProvider>
     </StyletronProvider>
   );
 };
