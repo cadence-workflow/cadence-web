@@ -4,20 +4,33 @@ import {
   MdHighlightOff,
   MdPowerSettingsNew,
   MdOutlineRestartAlt,
+  MdRefresh,
 } from 'react-icons/md';
 
 import { type CancelWorkflowResponse } from '@/route-handlers/cancel-workflow/cancel-workflow.types';
+import { type ResetWorkflowResponse } from '@/route-handlers/reset-workflow/reset-workflow.types';
 import { type RestartWorkflowResponse } from '@/route-handlers/restart-workflow/restart-workflow.types';
 import { type TerminateWorkflowResponse } from '@/route-handlers/terminate-workflow/terminate-workflow.types';
 
 import getWorkflowIsCompleted from '../../workflow-page/helpers/get-workflow-is-completed';
 import WorkflowActionNewRunSuccessMsg from '../workflow-action-new-run-success-msg/workflow-action-new-run-success-msg';
+import { resetWorkflowFormSchema } from '../workflow-action-reset-form/schemas/reset-workflow-form-schema';
+import WorkflowActionResetForm from '../workflow-action-reset-form/workflow-action-reset-form';
+import {
+  type ResetWorkflowSubmissionData,
+  type ResetWorkflowFormData,
+} from '../workflow-action-reset-form/workflow-action-reset-form.types';
 import { type WorkflowAction } from '../workflow-actions.types';
 
 const workflowActionsConfig: [
   WorkflowAction<any, any, CancelWorkflowResponse>,
   WorkflowAction<any, any, TerminateWorkflowResponse>,
   WorkflowAction<any, any, RestartWorkflowResponse>,
+  WorkflowAction<
+    ResetWorkflowFormData,
+    ResetWorkflowSubmissionData,
+    ResetWorkflowResponse
+  >,
 ] = [
   {
     id: 'cancel',
@@ -78,6 +91,31 @@ const workflowActionsConfig: [
       createElement(WorkflowActionNewRunSuccessMsg, {
         ...props,
         successMessage: 'Workflow has been restarted.',
+      }),
+  },
+  {
+    id: 'reset',
+    label: 'Reset',
+    subtitle: 'Reset a workflow execution',
+    modal: {
+      text: [
+        'Resets a workflow by creating a new execution with a fresh Run ID starting from a specific decision completion event.',
+      ],
+      docsLink: {
+        text: 'Read more about resetting workflows',
+        href: 'https://cadenceworkflow.io/docs/cli#workflow-reset',
+      },
+      form: WorkflowActionResetForm,
+      formSchema: resetWorkflowFormSchema,
+      transformFormDataToSubmission: (v) => v,
+    },
+    icon: MdRefresh,
+    getRunnableStatus: () => 'RUNNABLE',
+    apiRoute: 'reset',
+    renderSuccessMessage: (props) =>
+      createElement(WorkflowActionNewRunSuccessMsg, {
+        ...props,
+        successMessage: 'Workflow has been reset.',
       }),
   },
 ] as const;

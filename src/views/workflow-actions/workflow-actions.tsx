@@ -16,7 +16,7 @@ import { useParams } from 'next/navigation';
 import { MdArrowDropDown } from 'react-icons/md';
 
 import useConfigValue from '@/hooks/use-config-value/use-config-value';
-import useDescribeWorkflow from '@/views/workflow-page/hooks/use-describe-workflow';
+import { useDescribeWorkflow } from '@/views/workflow-page/hooks/use-describe-workflow';
 import { type WorkflowPageParams } from '@/views/workflow-page/workflow-page.types';
 
 import WorkflowActionsMenu from './workflow-actions-menu/workflow-actions-menu';
@@ -34,21 +34,27 @@ export default function WorkflowActions() {
     'domain'
   );
 
-  const { data: workflow } = useDescribeWorkflow({
+  const {
+    data: workflow,
+    isLoading: isWorkflowLoading,
+    error: workflowError,
+  } = useDescribeWorkflow({
     ...workflowDetailsParams,
   });
 
-  const { data: actionsEnabledConfig, isLoading } = useConfigValue(
-    'WORKFLOW_ACTIONS_ENABLED',
-    {
+  const { data: actionsEnabledConfig, isLoading: isActionsEnabledLoading } =
+    useConfigValue('WORKFLOW_ACTIONS_ENABLED', {
       domain: params.domain,
       cluster: params.cluster,
-    }
-  );
+    });
 
   const [selectedAction, setSelectedAction] = useState<
     WorkflowAction<any, any, any> | undefined
   >(undefined);
+
+  if (workflowError) {
+    return null;
+  }
 
   return (
     <SnackbarProvider
@@ -77,7 +83,7 @@ export default function WorkflowActions() {
           kind={KIND.secondary}
           overrides={overrides.button}
           endEnhancer={<MdArrowDropDown size={20} />}
-          isLoading={isLoading}
+          isLoading={isWorkflowLoading || isActionsEnabledLoading}
         >
           Workflow Actions
         </Button>

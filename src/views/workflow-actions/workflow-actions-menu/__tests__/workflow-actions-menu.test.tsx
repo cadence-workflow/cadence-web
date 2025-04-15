@@ -64,6 +64,7 @@ describe(WorkflowActionsMenu.name, () => {
         cancel: 'DISABLED_DEFAULT',
         terminate: 'DISABLED_DEFAULT',
         restart: 'ENABLED',
+        reset: 'ENABLED',
       },
     });
 

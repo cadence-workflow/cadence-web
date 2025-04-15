@@ -17,7 +17,7 @@ import { type RequestError } from '@/utils/request/request-error';
 import type { WorkflowPageTabContentProps } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
 import getWorkflowIsCompleted from '../workflow-page/helpers/get-workflow-is-completed';
-import useDescribeWorkflow from '../workflow-page/hooks/use-describe-workflow';
+import { useSuspenseDescribeWorkflow } from '../workflow-page/hooks/use-describe-workflow';
 
 import getWorkflowResultJson from './helpers/get-workflow-result-json';
 import WorkflowSummaryTabDetails from './workflow-summary-tab-details/workflow-summary-tab-details';
@@ -45,7 +45,7 @@ export default function WorkflowSummaryTab({
       ).then((res) => res.json()),
   });
 
-  const { data: workflowDetails } = useDescribeWorkflow({
+  const { data: workflowDetails } = useSuspenseDescribeWorkflow({
     ...paramsWithoutTab,
   });
 

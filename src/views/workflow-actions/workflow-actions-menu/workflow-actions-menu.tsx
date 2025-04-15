@@ -17,7 +17,9 @@ export default function WorkflowActionsMenu({
       {workflowActionsConfig.map((action) => {
         const actionDisabledReason = getActionDisabledReason({
           actionEnabledConfig: actionsEnabledConfig?.[action.id],
-          actionRunnableStatus: action.getRunnableStatus(workflow),
+          actionRunnableStatus: workflow
+            ? action.getRunnableStatus(workflow)
+            : undefined,
         });
 
         return (

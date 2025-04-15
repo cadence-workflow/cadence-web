@@ -1,6 +1,6 @@
 import type WORKFLOW_ACTIONS_DISABLED_VALUES_CONFIG from './workflow-actions-disabled-values.config';
 
-export type WorkflowActionID = 'cancel' | 'terminate' | 'restart';
+export type WorkflowActionID = 'cancel' | 'terminate' | 'restart' | 'reset';
 
 export type WorkflowActionsEnabledResolverParams = {
   domain: string;
