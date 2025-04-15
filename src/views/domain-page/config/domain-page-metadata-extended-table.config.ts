@@ -3,7 +3,7 @@ import { createElement } from 'react';
 import { type MetadataItem } from '../domain-page-metadata/domain-page-metadata.types';
 import DomainPageMetadataClusters from '../domain-page-metadata-clusters/domain-page-metadata-clusters';
 
-const domainPageMetadataV2TableConfig = [
+const domainPageMetadataExtendedTableConfig = [
   {
     key: 'domainId',
     label: 'Domain ID',
@@ -62,4 +62,4 @@ const domainPageMetadataV2TableConfig = [
   },
 ] as const satisfies Array<MetadataItem>;
 
-export default domainPageMetadataV2TableConfig;
+export default domainPageMetadataExtendedTableConfig;
