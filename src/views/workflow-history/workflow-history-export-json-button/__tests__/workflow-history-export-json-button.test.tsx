@@ -19,14 +19,12 @@ jest.mock('baseui/toast', () => ({
   },
 }));
 
+const mockDownloadJson = jest.fn();
+jest.mock('@/utils/download-json', () =>
+  jest.fn((json, filename) => mockDownloadJson(json, filename))
+);
+
 describe('WorkflowHistoryExportJsonButton', () => {
-  const originalCreateObjectURL = window.URL.createObjectURL;
-
-  afterEach(() => {
-    jest.clearAllMocks();
-    window.URL.createObjectURL = originalCreateObjectURL;
-  });
-
   it('should render the button with "Export JSON"', () => {
     setup({});
     expect(screen.getByText('Export JSON')).toBeInTheDocument();
@@ -45,15 +43,12 @@ describe('WorkflowHistoryExportJsonButton', () => {
   });
 
   it('should call request API and download JSON file', async () => {
-    const createObjectURLMock: jest.Mock = jest.fn();
-    window.URL.createObjectURL = createObjectURLMock;
-
     setup({});
 
     fireEvent.click(screen.getByText('Export JSON'));
 
     await waitFor(() => {
-      expect(createObjectURLMock).toHaveBeenCalledWith(expect.any(Blob));
+      expect(mockDownloadJson).toHaveBeenCalled();
     });
   });
 

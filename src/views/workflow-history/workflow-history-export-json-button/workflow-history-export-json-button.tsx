@@ -10,8 +10,8 @@ import { MdOutlineCloudDownload } from 'react-icons/md';
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
 import formatWorkflowHistoryEvent from '@/utils/data-formatters/format-workflow-history-event';
 import { type FormattedHistoryEvent } from '@/utils/data-formatters/schema/format-history-event-schema';
+import downloadJson from '@/utils/download-json';
 import logger from '@/utils/logger';
-import losslessJsonStringify from '@/utils/lossless-json-stringify';
 import request from '@/utils/request';
 import { RequestError } from '@/utils/request/request-error';
 
@@ -23,27 +23,19 @@ export default function WorkflowHistoryExportJsonButton(props: Props) {
     'loading' | 'error' | 'idle'
   >('idle');
 
-  // TODO: replace this with the downloadJson util
-  const downloadJSON = (jsonData: any) => {
-    const blob = new Blob([losslessJsonStringify(jsonData, null, '\t')], {
-      type: 'application/json',
-    });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `history-${props.workflowId}-${props.runId}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  };
-
   const handleExport = async () => {
     try {
       const eventsToExport: (FormattedHistoryEvent | null)[] = [];
       setLoadingState('loading');
       do {
         const res = await request(
-          `/api/domains/${props.domain}/${props.cluster}/workflows/${props.workflowId}/${props.runId}/history?${queryString.stringify({ pageSize: 500, nextPage: nextPage.current }, { skipEmptyString: true })}`
+          queryString.stringifyUrl(
+            {
+              url: `/api/domains/${props.domain}/${props.cluster}/workflows/${props.workflowId}/${props.runId}/history`,
+              query: { pageSize: 500, nextPage: nextPage.current },
+            },
+            { skipEmptyString: true }
+          )
         );
         const data: GetWorkflowHistoryResponse = await res.json();
         nextPage.current = data.nextPageToken;
@@ -53,7 +45,10 @@ export default function WorkflowHistoryExportJsonButton(props: Props) {
       } while (nextPage.current);
 
       setLoadingState('idle');
-      downloadJSON(eventsToExport);
+      downloadJson(
+        eventsToExport,
+        `history-${props.workflowId}-${props.runId}`
+      );
     } catch (e) {
       if (!(e instanceof RequestError)) {
         logger.error(e, 'Failed to export workflow');
