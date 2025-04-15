@@ -294,7 +294,7 @@ export const decisionTaskTimedOutEventSchema = historyEventBaseSchema.extend({
   attributes: z.literal('decisionTaskTimedOutEventAttributes'),
   decisionTaskTimedOutEventAttributes: z.object({
     scheduledEventId: z.string(),
-    startedEventId: z.coerce.string(), // coerce to string to avoid protoLoader issue of 0 as a number, this happens when reset workflow to decisiion started event.
+    startedEventId: z.coerce.string(), // coerce to string to avoid protoLoader issue of 0 as a number, this happens when reset workflow to decision started event.
     timeoutType: timeoutTypeSchema,
     baseRunId: z.string(),
     newRunId: z.string(),
