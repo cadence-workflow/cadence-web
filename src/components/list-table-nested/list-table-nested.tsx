@@ -1,9 +1,13 @@
 import React from 'react';
 
-import { styled } from './list-table-v2.styles';
-import type { Props } from './list-table-v2.types';
+import { styled } from './list-table-nested.styles';
+import type { Props } from './list-table-nested.types';
 
-export default function ListTableV2({ items }: Props) {
+/**
+ * Renders a responsive table for displaying items as label-value pairs, or groups of label-value pairs.
+ * Suitable for presenting grouped key-value data.
+ */
+export default function ListTableNested({ items }: Props) {
   return (
     <styled.Table>
       {items.map((item) => (

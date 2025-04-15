@@ -4,7 +4,7 @@ import { HttpResponse } from 'msw';
 
 import { render, screen, act } from '@/test-utils/rtl';
 
-import { type ListTableV2Item } from '@/components/list-table-v2/list-table-v2.types';
+import { type ListTableNestedItem } from '@/components/list-table-nested/list-table-nested.types';
 import { type GetConfigResponse } from '@/route-handlers/get-config/get-config.types';
 
 import { mockDomainDescription } from '../../__fixtures__/domain-description';
@@ -21,8 +21,8 @@ jest.mock('@/components/list-table/list-table', () =>
   ))
 );
 
-jest.mock('@/components/list-table-v2/list-table-v2', () =>
-  jest.fn(({ items }: { items: Array<ListTableV2Item> }) => (
+jest.mock('@/components/list-table-nested/list-table-nested', () =>
+  jest.fn(({ items }: { items: Array<ListTableNestedItem> }) => (
     <div>
       Mock items table
       {items.map((item) => (

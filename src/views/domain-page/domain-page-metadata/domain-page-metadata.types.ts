@@ -1,20 +1,20 @@
 import {
-  type ListTableV2SimpleItem,
-  type ListTableV2SublistItem,
-  type ListTableV2Group,
-} from '@/components/list-table-v2/list-table-v2.types';
+  type ListTableNestedSimpleItem,
+  type ListTableNestedSublistItem,
+  type ListTableNestedGroup,
+} from '@/components/list-table-nested/list-table-nested.types';
 
 import { type DomainMetadata } from '../hooks/use-suspense-domain-page-metadata.types';
 
-type MetadataSimpleItem = Omit<ListTableV2SimpleItem, 'value'> & {
+type MetadataSimpleItem = Omit<ListTableNestedSimpleItem, 'value'> & {
   getValue: (metadata: DomainMetadata) => React.ReactNode;
 };
 
-type MetadataSublistItem = Omit<ListTableV2SublistItem, 'value'> & {
+type MetadataSublistItem = Omit<ListTableNestedSublistItem, 'value'> & {
   getValue: (metadata: DomainMetadata) => React.ReactNode;
 };
 
-type MetadataGroup = Omit<ListTableV2Group, 'items'> & {
+type MetadataGroup = Omit<ListTableNestedGroup, 'items'> & {
   items: Array<MetadataSublistItem>;
 };
 

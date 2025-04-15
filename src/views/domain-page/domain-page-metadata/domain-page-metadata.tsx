@@ -2,7 +2,7 @@
 import React from 'react';
 
 import ListTable from '@/components/list-table/list-table';
-import ListTableV2 from '@/components/list-table-v2/list-table-v2';
+import ListTableNested from '@/components/list-table-nested/list-table-nested';
 
 import domainPageMetadataTableConfig from '../config/domain-page-metadata-table.config';
 import domainPageMetadataV2TableConfig from '../config/domain-page-metadata-v2-table.config';
@@ -21,7 +21,7 @@ export default function DomainPageMetadata(props: DomainPageTabContentProps) {
   return (
     <styled.MetadataContainer>
       {domainMetadata.isExtendedMetadataEnabled ? (
-        <ListTableV2
+        <ListTableNested
           items={domainPageMetadataV2TableConfig.map((row: MetadataItem) => ({
             key: row.key,
             label: row.label,
