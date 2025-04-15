@@ -5,4 +5,5 @@ export type Props = WorkflowActionSuccessMessageProps<
   { runId: string }
 > & {
   successMessage: string;
+  onDismissMessage: () => void;
 };

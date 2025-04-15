@@ -36,6 +36,7 @@ export type WorkflowActionFormProps<FormData extends FieldValues> = {
 export type WorkflowActionSuccessMessageProps<SubmissionData, Result> = {
   result: Result;
   inputParams: WorkflowActionInput<SubmissionData>;
+  onDismissMessage: () => void;
 };
 
 export type WorkflowActionNonRunnableStatus =

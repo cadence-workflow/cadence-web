@@ -17,6 +17,7 @@ describe('WorkflowActionNewRunSuccessMsg', () => {
       submissionData: null,
     },
     successMessage: 'Workflow has been restarted.',
+    onDismissMessage: jest.fn(),
   };
 
   it('renders the success message with a link', () => {
@@ -39,5 +40,12 @@ describe('WorkflowActionNewRunSuccessMsg', () => {
       'href',
       `/domains/${domain}/${cluster}/workflows/${workflowId}/${runId}`
     );
+  });
+
+  it('calls the onDismissMessage function when the link is clicked', () => {
+    render(<WorkflowActionNewRunSuccessMsg {...mockProps} />);
+    const link = screen.getByText('Click here');
+    link.click();
+    expect(mockProps.onDismissMessage).toHaveBeenCalled();
   });
 });

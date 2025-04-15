@@ -6,6 +6,7 @@ const WorkflowActionNewRunSuccessMsg = ({
   result: { runId },
   inputParams: { workflowId, cluster, domain },
   successMessage,
+  onDismissMessage,
 }: Props) => {
   return (
     <>
@@ -13,6 +14,7 @@ const WorkflowActionNewRunSuccessMsg = ({
       <Link
         color="contentInversePrimary"
         href={`/domains/${domain}/${cluster}/workflows/${workflowId}/${runId}`}
+        onClick={onDismissMessage}
       >
         Click here
       </Link>{' '}
