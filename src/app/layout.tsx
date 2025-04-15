@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Rubik } from 'next/font/google';
 
+import SnackbarProvider from '@/components/snackbar-provider/snackbar-provider';
 import ReactQueryProvider from '@/providers/react-query-provider';
 
 import StyletronProvider from '../providers/styletron-provider';
@@ -8,7 +9,6 @@ import StyletronProvider from '../providers/styletron-provider';
 import StyledJsxRegistry from './registry';
 
 import './globals.css';
-import SnackbarProvider from '@/components/snackbar-provider/snackbar-provider';
 
 const inter = Rubik({ subsets: ['latin'] });
 
