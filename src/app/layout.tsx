@@ -6,7 +6,9 @@ import ReactQueryProvider from '@/providers/react-query-provider';
 import StyletronProvider from '../providers/styletron-provider';
 
 import StyledJsxRegistry from './registry';
+
 import './globals.css';
+import SnackbarProvider from '@/components/snackbar-provider/snackbar-provider';
 
 const inter = Rubik({ subsets: ['latin'] });
 
@@ -26,7 +28,9 @@ export default function RootLayout({
       <StyledJsxRegistry />
       <body className={inter.className}>
         <ReactQueryProvider>
-          <StyletronProvider>{children}</StyletronProvider>
+          <StyletronProvider>
+            <SnackbarProvider>{children}</SnackbarProvider>
+          </StyletronProvider>
         </ReactQueryProvider>
       </body>
     </html>
