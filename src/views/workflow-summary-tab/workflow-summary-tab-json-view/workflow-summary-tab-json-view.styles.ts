@@ -1,3 +1,5 @@
+import { type ButtonOverrides } from 'baseui/button';
+
 import type {
   StyletronCSSObject,
   StyletronCSSObjectOf,
@@ -19,3 +21,13 @@ const cssStylesObj = {
 
 export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> =
   cssStylesObj;
+
+export const overrides = {
+  copyButton: {
+    BaseButton: {
+      style: {
+        backgroundColor: 'rgba(0, 0, 0, 0)',
+      },
+    },
+  } satisfies ButtonOverrides,
+};
