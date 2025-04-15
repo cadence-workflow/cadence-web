@@ -1,49 +1,21 @@
-import { type DomainDescription } from '../domain-page.types';
+import {
+  type ListTableNestedSimpleItem,
+  type ListTableNestedSublistItem,
+  type ListTableNestedGroup,
+} from '@/components/list-table-nested/list-table-nested.types';
 
-export type GetMetadataValueProps = {
-  domainDescription: DomainDescription;
+import { type DomainMetadata } from '../hooks/use-suspense-domain-page-metadata.types';
+
+type MetadataSimpleItem = Omit<ListTableNestedSimpleItem, 'value'> & {
+  getValue: (metadata: DomainMetadata) => React.ReactNode;
 };
 
-type MetadataLinkValue = {
-  text: string;
-  href: string;
+type MetadataSublistItem = Omit<ListTableNestedSublistItem, 'value'> & {
+  getValue: (metadata: DomainMetadata) => React.ReactNode;
 };
 
-interface MetadataItem<T> {
-  key: string;
-  label: string;
-  kind: 'text' | 'link' | 'custom';
-  description?: string;
-  getValue: (domainDescription: DomainDescription) => T;
-}
-
-interface MetadataTextItem extends MetadataItem<string> {
-  kind: 'text';
-}
-
-interface MetadataLinkItem extends MetadataItem<MetadataLinkValue> {
-  kind: 'link';
-}
-
-interface MetadataCustomItem extends MetadataItem<React.ReactNode> {
-  kind: 'custom';
-}
-
-type MetadataGroupItem = Omit<
-  MetadataTextItem | MetadataLinkItem | MetadataCustomItem,
-  'description'
->;
-
-export type MetadataGroup = {
-  kind: 'group';
-  key: string;
-  label: string;
-  description?: string;
-  items: Array<MetadataGroupItem>;
+type MetadataGroup = Omit<ListTableNestedGroup, 'items'> & {
+  items: Array<MetadataSublistItem>;
 };
 
-export type MetadataField =
-  | MetadataTextItem
-  | MetadataLinkItem
-  | MetadataCustomItem
-  | MetadataGroup;
+export type MetadataItem = MetadataSimpleItem | MetadataGroup;

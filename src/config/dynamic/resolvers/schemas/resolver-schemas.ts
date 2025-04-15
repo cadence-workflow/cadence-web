@@ -43,7 +43,7 @@ const resolverSchemas: ResolverSchemas = {
     }),
   },
   EXTENDED_DOMAIN_INFO_ENABLED: {
-    args: z.record(z.string(), z.any()),
+    args: z.undefined(),
     returnType: z.object({
       metadata: z.boolean(),
       issues: z.boolean(),

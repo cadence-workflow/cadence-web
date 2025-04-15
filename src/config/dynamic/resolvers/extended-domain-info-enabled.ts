@@ -1,13 +1,8 @@
-import {
-  type ExtendedDomainInfoEnabledConfig,
-  type ExtendedDomainInfoEnabledResolverParams,
-} from './extended-domain-info-enabled.types';
+import { type ExtendedDomainInfoEnabledConfig } from './extended-domain-info-enabled.types';
 
-export default async function extendedDomainInfoEnabled(
-  _: ExtendedDomainInfoEnabledResolverParams
-): Promise<ExtendedDomainInfoEnabledConfig> {
+export default async function extendedDomainInfoEnabled(): Promise<ExtendedDomainInfoEnabledConfig> {
   return {
-    metadata: false,
+    metadata: true,
     issues: false,
   };
 }

@@ -25,6 +25,7 @@ export default function DomainPageMetadataClusters(
           <React.Fragment key={cluster.clusterName}>
             <Link
               href={`/domains/${domainDescription.name}/${cluster.clusterName}`}
+              style={{ fontWeight: 'inherit' }}
             >
               {cluster.clusterName}
             </Link>
