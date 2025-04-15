@@ -30,7 +30,7 @@ export const overrides = {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
         width: $theme.sizing.scale950,
         height: $theme.sizing.scale950,
-        backgroundColor: $theme.colors.backgroundSecondary,
+        backgroundColor: 'rgba(0, 0, 0, 0)',
       }),
     },
   } satisfies ButtonOverrides,
@@ -38,21 +38,16 @@ export const overrides = {
 
 export const styled = {
   ViewContainer: createStyled('div', ({ $theme }) => ({
-    flex: '1 0 150px',
-    alignSelf: 'stretch',
-    display: 'flex',
-    flexDirection: 'column-reverse',
-    [$theme.mediaQuery.medium]: {
-      flexDirection: 'row',
-    },
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
+    position: 'relative',
     gap: $theme.sizing.scale600,
     padding: $theme.sizing.scale600,
     backgroundColor: $theme.colors.backgroundSecondary,
     borderRadius: $theme.borders.radius300,
   })),
   ButtonsContainer: createStyled('div', {
+    position: 'absolute',
+    top: '10px',
+    right: '10px',
     display: 'flex',
   }),
   ModalHeader: withStyle(ModalHeader, ({ $theme }: { $theme: Theme }) => ({
