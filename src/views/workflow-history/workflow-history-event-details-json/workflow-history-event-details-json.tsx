@@ -6,7 +6,10 @@ import PrettyJson from '@/components/pretty-json/pretty-json';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import losslessJsonStringify from '@/utils/lossless-json-stringify';
 
-import { cssStyles } from './workflow-history-event-details-json.styles';
+import {
+  cssStyles,
+  overrides,
+} from './workflow-history-event-details-json.styles';
 import type { Props } from './workflow-history-event-details-json.types';
 
 export default function WorkflowHistoryEventDetailsJson({ entryValue }: Props) {
@@ -19,7 +22,10 @@ export default function WorkflowHistoryEventDetailsJson({ entryValue }: Props) {
     <div className={cls.jsonViewWrapper}>
       <div className={cls.jsonViewContainer}>
         <div className={cls.jsonViewHeader}>
-          <CopyTextButton textToCopy={textToCopy} />
+          <CopyTextButton
+            textToCopy={textToCopy}
+            overrides={overrides.copyButton}
+          />
         </div>
         <PrettyJson json={entryValue} />
       </div>
