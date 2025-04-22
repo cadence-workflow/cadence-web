@@ -6,7 +6,7 @@ import * as grpcClient from '@/utils/grpc/grpc-client';
 import { GRPCError } from '@/utils/grpc/grpc-error';
 import logger from '@/utils/logger';
 
-import filterDomainsIrrelevantToCluster from './filter-domains-irrelevant-to-cluster';
+import filterIrrelevantDomains from './filter-irrelevant-domains';
 import getUniqueDomains from './get-unique-domains';
 
 const MAX_DOMAINS_TO_FETCH = 2000;
@@ -30,7 +30,7 @@ export const getAllDomains = async () => {
                 'Number of domains in cluster approaching/exceeds max number of domains that can be fetched'
               );
             }
-            return filterDomainsIrrelevantToCluster(clusterName, domains);
+            return filterIrrelevantDomains(clusterName, domains);
           },
           (reason) => {
             logger.error(

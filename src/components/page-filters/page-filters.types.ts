@@ -25,6 +25,7 @@ export type PageFilterConfig<
     keyof V extends string ? keyof V : never
   >;
   component: React.ComponentType<PageFilterComponentProps<V>>;
+  mini?: boolean;
 };
 
 export type Props<
