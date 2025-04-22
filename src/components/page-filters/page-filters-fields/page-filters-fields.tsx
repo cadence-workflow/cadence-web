@@ -20,7 +20,6 @@ export default function PageFiltersFields<P extends PageQueryParams>({
         return (
           <styled.SearchFilterContainer key={filter.id} $mini={filter.mini}>
             <filter.component
-              key={filter.id}
               value={filter.getValue(queryParams)}
               setValue={(newValue) =>
                 setQueryParams(filter.formatValue(newValue))
