@@ -10,7 +10,7 @@ import useStyletronClasses from '@/hooks/use-styletron-classes';
 import losslessJsonStringify from '@/utils/lossless-json-stringify';
 
 import { jsonViewTabsOptions } from './workflow-summary-tab-json-view.constants';
-import { cssStyles } from './workflow-summary-tab-json-view.styles';
+import { cssStyles, overrides } from './workflow-summary-tab-json-view.styles';
 import type { Props } from './workflow-summary-tab-json-view.types';
 
 export default function WorkflowSummaryTabJsonView({
@@ -42,7 +42,10 @@ export default function WorkflowSummaryTabJsonView({
           options={jsonViewTabsOptions}
           onChange={({ activeKey }) => setActiveTab(activeKey.toString())}
         />
-        <CopyTextButton textToCopy={textToCopy} />
+        <CopyTextButton
+          textToCopy={textToCopy}
+          overrides={overrides.copyButton}
+        />
       </div>
       {activeTab === 'result' && isWorkflowRunning ? (
         <PrettyJsonSkeleton width="200px" />

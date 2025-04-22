@@ -1,4 +1,5 @@
 import { styled as createStyled } from 'baseui';
+import { type ButtonOverrides } from 'baseui/button';
 
 export const styled = {
   ViewContainer: createStyled<'div', { $isError: boolean }>(
@@ -23,4 +24,14 @@ export const styled = {
       }),
     })
   ),
+};
+
+export const overrides = {
+  copyButton: {
+    BaseButton: {
+      style: {
+        backgroundColor: 'rgba(0, 0, 0, 0)',
+      },
+    },
+  } satisfies ButtonOverrides,
 };
