@@ -1,8 +1,8 @@
 import { createElement } from 'react';
 
-import { type MetadataItem } from '../domain-page-metadata/domain-page-metadata.types';
 import DomainPageMetadataClusters from '../domain-page-metadata-clusters/domain-page-metadata-clusters';
 import DomainPageMetadataDescription from '../domain-page-metadata-description/domain-page-metadata-description';
+import { type MetadataItem } from '../domain-page-metadata-table/domain-page-metadata-table.types';
 import DomainPageMetadataViewJson from '../domain-page-metadata-view-json/domain-page-metadata-view-json';
 
 const domainPageMetadataExtendedTableConfig = [

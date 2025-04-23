@@ -4,32 +4,24 @@ import { HttpResponse } from 'msw';
 
 import { render, screen, act } from '@/test-utils/rtl';
 
-import { type ListTableNestedItem } from '@/components/list-table-nested/list-table-nested.types';
 import { type GetConfigResponse } from '@/route-handlers/get-config/get-config.types';
 
 import { mockDomainDescription } from '../../__fixtures__/domain-description';
-import { type DomainDescription } from '../../domain-page.types';
+import { type DomainMetadata } from '../../hooks/use-suspense-domain-page-metadata.types';
 import DomainPageMetadata from '../domain-page-metadata';
 
-jest.mock('@/components/list-table/list-table', () =>
-  jest.fn(({ data }: { data: DomainDescription }) => (
-    <div>
-      Mock metadata table
-      <div>Domain ID: {data.id}</div>
-      <div>Active cluster: {data.activeClusterName}</div>
-    </div>
-  ))
-);
-
-jest.mock('@/components/list-table-nested/list-table-nested', () =>
-  jest.fn(({ items }: { items: Array<ListTableNestedItem> }) => (
-    <div>
-      Mock items table
-      {items.map((item) => (
-        <div key={item.key}>{item.label}</div>
-      ))}
-    </div>
-  ))
+jest.mock('../../domain-page-metadata-table/domain-page-metadata-table', () =>
+  jest.fn(
+    ({ domainDescription, isExtendedMetadataEnabled }: DomainMetadata) => (
+      <div>
+        {isExtendedMetadataEnabled
+          ? 'Mock extended metadata table'
+          : 'Mock metadata table'}
+        <div>Domain ID: {domainDescription.id}</div>
+        <div>Active cluster: {domainDescription.activeClusterName}</div>
+      </div>
+    )
+  )
 );
 
 describe(DomainPageMetadata.name, () => {
@@ -46,9 +38,13 @@ describe(DomainPageMetadata.name, () => {
   it('renders extended metadata without error', async () => {
     await setup({ enableExtendedMetadata: true });
 
-    expect(await screen.findByText('Mock items table')).toBeInTheDocument();
-    expect(screen.getByText('Domain ID')).toBeInTheDocument();
-    expect(screen.getByText('Clusters')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Mock extended metadata table')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('Domain ID: mock-domain-staging-uuid')
+    ).toBeInTheDocument();
+    expect(screen.getByText('Active cluster: cluster_1')).toBeInTheDocument();
   });
 
   it('does not render if the initial call fails', async () => {
