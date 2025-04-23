@@ -49,33 +49,35 @@ export default function WorkflowHistoryTimelineGroup({
           statusReady={!hasMissingEvents}
           size="medium"
         />
-        <div className={cls.timelineEventLabelAndTime}>
+        <div className={cls.timelineEventLabelAndSecondaryDetails}>
           <div className={cls.timelineEventsLabel}>{label}</div>
-          {hasBadges && (
-            <div>
-              {badges.map((badge) => (
-                <Badge
-                  key={badge.content}
-                  overrides={overrides.headerBadge}
-                  content={badge.content}
-                  shape="rectangle"
-                  color="primary"
-                />
-              ))}
+          <div className={cls.timelineEventSecondaryDetails}>
+            {hasBadges && (
+              <>
+                {badges.map((badge) => (
+                  <Badge
+                    key={badge.content}
+                    overrides={overrides.headerBadge}
+                    content={badge.content}
+                    shape="rectangle"
+                    color="primary"
+                  />
+                ))}
+              </>
+            )}
+            <div suppressHydrationWarning className={cls.timelineEventsTime}>
+              {timeLabel}
             </div>
-          )}
-          <div suppressHydrationWarning className={cls.timelineEventsTime}>
-            {timeLabel}
+            {!isNil(resetToDecisionEventId) && (
+              <WorkflowHistoryTimelineResetButton
+                workflowId={decodedPageUrlParams.workflowId}
+                runId={decodedPageUrlParams.runId}
+                domain={decodedPageUrlParams.domain}
+                cluster={decodedPageUrlParams.cluster}
+                onReset={handleReset}
+              />
+            )}
           </div>
-          {!isNil(resetToDecisionEventId) && (
-            <WorkflowHistoryTimelineResetButton
-              workflowId={decodedPageUrlParams.workflowId}
-              runId={decodedPageUrlParams.runId}
-              domain={decodedPageUrlParams.domain}
-              cluster={decodedPageUrlParams.cluster}
-              onReset={handleReset}
-            />
-          )}
         </div>
       </div>
       <div className={cls.timelineEventCardContainer}>

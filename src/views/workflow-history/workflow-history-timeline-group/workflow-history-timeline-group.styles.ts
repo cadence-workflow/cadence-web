@@ -15,8 +15,7 @@ export const overrides = {
         color: $theme.colors.contentSecondary,
         ...$theme.typography.LabelXSmall,
         whiteSpace: 'nowrap',
-        marginTop: $theme.sizing.scale100,
-        marginBottom: $theme.sizing.scale100,
+
         [$theme.mediaQuery.medium]: {
           marginTop: 0,
           marginBottom: 0,
@@ -51,7 +50,7 @@ const cssStylesObj = {
     gap: theme.sizing.scale600,
     padding: `${theme.sizing.scale500} 0`,
   }),
-  timelineEventLabelAndTime: (theme) => ({
+  timelineEventLabelAndSecondaryDetails: (theme) => ({
     display: 'flex',
     flexDirection: 'column',
     gap: 0,
@@ -63,6 +62,12 @@ const cssStylesObj = {
       gap: theme.sizing.scale200,
     },
     flex: 1,
+  }),
+  timelineEventSecondaryDetails: (theme) => ({
+    display: 'flex',
+    gap: theme.sizing.scale200,
+    alignItems: 'center',
+    flexWrap: 'wrap',
   }),
   timelineEventsLabel: (theme) => ({
     ...theme.typography.LabelMedium,
