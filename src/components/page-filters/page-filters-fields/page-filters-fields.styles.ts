@@ -13,13 +13,17 @@ export const styled = {
       marginBottom: $theme.sizing.scale700,
       [$theme.mediaQuery.medium]: {
         flexDirection: 'row',
+        alignItems: 'flex-end',
       },
     })
   ),
-  SearchFilterContainer: createStyled('div', {
-    flexGrow: 2,
-    flexBasis: 0,
-  }),
+  SearchFilterContainer: createStyled<'div', { $mini: boolean | undefined }>(
+    'div',
+    ({ $mini }) => ({
+      flexGrow: $mini ? 0 : 2,
+      flexBasis: 'fit-content',
+    })
+  ),
 };
 
 export const overrides = {
@@ -31,8 +35,6 @@ export const overrides = {
         height: $theme.sizing.scale950,
         [$theme.mediaQuery.medium]: {
           flexGrow: 0,
-          alignSelf: 'flex-end',
-          marginTop: $theme.sizing.scale700,
         },
       }),
     },

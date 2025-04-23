@@ -6,6 +6,7 @@ const domainsPageQueryParamsConfig: [
   PageQueryParam<'clusterName', string | undefined>,
   PageQueryParam<'sortColumn', string | undefined>,
   PageQueryParam<'sortOrder', SortOrder | undefined>,
+  PageQueryParam<'showDeprecated', boolean>,
 ] = [
   {
     key: 'searchText',
@@ -29,6 +30,12 @@ const domainsPageQueryParamsConfig: [
       }
       return undefined;
     },
+  },
+  {
+    key: 'showDeprecated',
+    queryParamKey: 'd',
+    defaultValue: false,
+    parseValue: (value) => value === 'true',
   },
 ] as const;
 
