@@ -1,6 +1,6 @@
 import { type DescribeWorkflowResponse } from '@/route-handlers/describe-workflow/describe-workflow.types';
 
-export const describeWorkflowResponse: DescribeWorkflowResponse = {
+export const describeWorkflowResponse = {
   pendingActivities: [
     {
       activityId: 'test-activity-2',
@@ -152,4 +152,4 @@ export const describeWorkflowResponse: DescribeWorkflowResponse = {
     isArchived: false,
   },
   pendingDecision: null,
-};
+} as const satisfies DescribeWorkflowResponse;
