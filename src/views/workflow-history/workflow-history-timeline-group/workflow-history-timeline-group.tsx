@@ -2,11 +2,13 @@
 import React from 'react';
 
 import { Badge } from 'baseui/badge';
+import { isNil } from 'lodash';
 
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 
 import WorkflowHistoryEventStatusBadge from '../workflow-history-event-status-badge/workflow-history-event-status-badge';
 import WorkflowHistoryEventsCard from '../workflow-history-events-card/workflow-history-events-card';
+import WorkflowHistoryTimelineResetButton from '../workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 
 import {
   cssStyles,
@@ -25,11 +27,20 @@ export default function WorkflowHistoryTimelineGroup({
   hasMissingEvents,
   decodedPageUrlParams,
   badges,
+  resetToDecisionEventId,
   getIsEventExpanded,
   onEventToggle,
+  onReset,
 }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
   const hasBadges = badges !== undefined && badges.length > 0;
+
+  const handleReset = () => {
+    if (onReset) {
+      onReset();
+    }
+  };
+
   return (
     <div className={cls.groupContainer}>
       <div className={cls.timelineEventHeader}>
@@ -56,6 +67,15 @@ export default function WorkflowHistoryTimelineGroup({
           <div suppressHydrationWarning className={cls.timelineEventsTime}>
             {timeLabel}
           </div>
+          {!isNil(resetToDecisionEventId) && (
+            <WorkflowHistoryTimelineResetButton
+              workflowId={decodedPageUrlParams.workflowId}
+              runId={decodedPageUrlParams.runId}
+              domain={decodedPageUrlParams.domain}
+              cluster={decodedPageUrlParams.cluster}
+              onReset={handleReset}
+            />
+          )}
         </div>
       </div>
       <div className={cls.timelineEventCardContainer}>

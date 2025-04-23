@@ -62,9 +62,11 @@ const cssStylesObj = {
       alignItems: 'center',
       gap: theme.sizing.scale200,
     },
+    flex: 1,
   }),
   timelineEventsLabel: (theme) => ({
-    ...theme.typography.LabelLarge,
+    ...theme.typography.LabelMedium,
+    flex: 1,
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
     overflow: 'hidden',

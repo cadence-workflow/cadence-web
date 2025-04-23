@@ -24,6 +24,8 @@ import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
 import sortBy from '@/utils/sort-by';
 
+import { resetWorkflowActionConfig } from '../workflow-actions/config/workflow-actions.config';
+import WorkflowActionsModal from '../workflow-actions/workflow-actions-modal/workflow-actions-modal';
 import workflowPageQueryParamsConfig from '../workflow-page/config/workflow-page-query-params.config';
 import { useSuspenseDescribeWorkflow } from '../workflow-page/hooks/use-describe-workflow';
 
@@ -58,6 +60,9 @@ export default function WorkflowHistory({ params }: Props) {
     pageSize: 200,
     waitForNewEvent: 'true',
   };
+  const [resetToDecisionEventId, setResetToDecisionEventId] = useState<
+    string | undefined
+  >(undefined);
 
   const {
     activeFiltersCount,
@@ -407,10 +412,16 @@ export default function WorkflowHistory({ params }: Props) {
                   hasMissingEvents={
                     group.hasMissingEvents && !reachedAvailableHistoryEnd
                   }
+                  resetToDecisionEventId={group.resetToDecisionEventId}
                   isLastEvent={index === filteredEventGroupsEntries.length - 1}
                   decodedPageUrlParams={decodedParams}
                   getIsEventExpanded={getIsEventExpanded}
                   onEventToggle={toggleIsEventExpanded}
+                  onReset={() => {
+                    if (group.resetToDecisionEventId) {
+                      setResetToDecisionEventId(group.resetToDecisionEventId);
+                    }
+                  }}
                 />
               )}
               components={{
@@ -429,6 +440,18 @@ export default function WorkflowHistory({ params }: Props) {
       )}
       {filteredEventGroupsEntries.length === 0 && (
         <div className={cls.noResultsContainer}>No Results</div>
+      )}
+      {resetToDecisionEventId && (
+        <WorkflowActionsModal
+          {...decodedParams}
+          initialFormValues={{
+            decisionFinishEventId: resetToDecisionEventId,
+          }}
+          action={resetWorkflowActionConfig}
+          onClose={() => {
+            setResetToDecisionEventId(undefined);
+          }}
+        />
       )}
     </PageSection>
   );

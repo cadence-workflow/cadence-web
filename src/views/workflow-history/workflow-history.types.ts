@@ -52,6 +52,7 @@ type BaseHistoryGroup = {
   timeMs: number | null;
   timeLabel: string;
   badges?: HistoryGroupBadge[];
+  resetToDecisionEventId?: string | null;
 };
 export type PendingDecisionScheduleInfo = Omit<PendingDecisionInfo, 'state'> & {
   state: 'PENDING_DECISION_STATE_SCHEDULED' | 'PENDING_DECISION_STATE_STARTED';
