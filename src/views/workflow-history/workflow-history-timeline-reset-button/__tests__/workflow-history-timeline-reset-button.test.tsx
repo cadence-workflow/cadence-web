@@ -1,6 +1,6 @@
 import { HttpResponse } from 'msw';
 
-import { render, screen, fireEvent } from '@/test-utils/rtl';
+import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import { type WorkflowExecutionCloseStatus } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionCloseStatus';
 import { type DescribeWorkflowResponse } from '@/route-handlers/describe-workflow/describe-workflow.types';
@@ -35,10 +35,10 @@ describe('WorkflowHistoryTimelineResetButton', () => {
   });
 
   it('calls onReset when button is clicked', async () => {
-    const { mockOnReset } = setup({});
+    const { mockOnReset, user } = setup({});
 
     const resetButton = await screen.findByText('Reset');
-    fireEvent.click(resetButton);
+    await user.click(resetButton);
 
     expect(mockOnReset).toHaveBeenCalledTimes(1);
   });
@@ -110,6 +110,7 @@ function setup({
   isResetRunnable?: boolean;
 }) {
   const mockOnReset = jest.fn();
+  const user = userEvent.setup();
   (resetWorkflowActionConfig.getRunnableStatus as jest.Mock).mockReturnValue(
     isResetRunnable ? 'RUNNABLE' : 'NOT_RUNNABLE'
   );
@@ -175,5 +176,5 @@ function setup({
       ],
     }
   );
-  return { mockOnReset };
+  return { mockOnReset, user };
 }
