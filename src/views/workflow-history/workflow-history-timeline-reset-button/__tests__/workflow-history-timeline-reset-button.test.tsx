@@ -10,13 +10,12 @@ import { resetWorkflowActionConfig } from '@/views/workflow-actions/config/workf
 import { describeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
 
 import WorkflowHistoryTimelineResetButton from '../workflow-history-timeline-reset-button';
-import type Props from '../workflow-history-timeline-reset-button.types';
+
 jest.mock('@/views/workflow-actions/config/workflow-actions.config', () => {
-  const originalModule = jest.requireActual(
-    '@/views/workflow-actions/config/workflow-actions.config'
-  );
   return {
-    ...originalModule,
+    ...jest.requireActual(
+      '@/views/workflow-actions/config/workflow-actions.config'
+    ),
     resetWorkflowActionConfig: {
       ...mockResetActionConfig,
       getRunnableStatus: jest.fn(),
@@ -32,17 +31,12 @@ describe('WorkflowHistoryTimelineResetButton', () => {
   it('renders reset button when all conditions are met', async () => {
     setup({});
 
-    // Wait for any async operations to complete
-    await screen.findByText('Reset');
-
-    const resetButton = screen.getByText('Reset');
-    expect(resetButton).toBeInTheDocument();
+    expect(await screen.findByText('Reset')).toBeInTheDocument();
   });
 
   it('calls onReset when button is clicked', async () => {
     const { mockOnReset } = setup({});
 
-    // Wait for any async operations to complete
     const resetButton = await screen.findByText('Reset');
     fireEvent.click(resetButton);
 
@@ -99,10 +93,6 @@ describe('WorkflowHistoryTimelineResetButton', () => {
 });
 
 function setup({
-  workflowId = 'test-workflow-id',
-  runId = 'test-run-id',
-  domain = 'test-domain',
-  cluster = 'test-cluster',
   workflowCloseStatus = 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
   isWorkflowLoading = false,
   isWorkflowError = false,
@@ -110,7 +100,7 @@ function setup({
   isActionsEnabledLoading = false,
   isActionsEnabledError = false,
   isResetRunnable = true,
-}: Partial<Omit<Props, 'onReset'>> & {
+}: {
   workflowCloseStatus?: WorkflowExecutionCloseStatus;
   isWorkflowLoading?: boolean;
   isWorkflowError?: boolean;
@@ -126,18 +116,17 @@ function setup({
 
   render(
     <WorkflowHistoryTimelineResetButton
-      workflowId={workflowId}
-      runId={runId}
-      domain={domain}
-      cluster={cluster}
+      workflowId="test-workflow-id"
+      runId="test-run-id"
+      domain="test-domain"
+      cluster="test-cluster"
       onReset={mockOnReset}
     />,
     {
       endpointsMocks: [
         {
-          path: `/api/domains/${domain}/${cluster}/workflows/${workflowId}/${runId}`,
+          path: `/api/domains/:domain/:cluster/workflows/:workflowId/:runId`,
           httpMethod: 'GET',
-          mockOnce: false,
           httpResolver: async () => {
             if (isWorkflowError) {
               return HttpResponse.json(
