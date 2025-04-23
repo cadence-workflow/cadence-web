@@ -16,6 +16,9 @@ const themeLight = {
     backgroundWarningLight: '#FDF2DC',
     backgroundPositive: '#0E8345',
   },
+  borders: {
+    buttonBorderRadiusMini: '8px',
+  },
 } satisfies DeepPartial<MakeExtendable<Theme>>;
 
 export default themeLight;
