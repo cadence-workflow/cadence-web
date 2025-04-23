@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@/test-utils/rtl';
+import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import { startWorkflowExecutionEvent } from '../../__fixtures__/workflow-history-single-events';
 import type WorkflowHistoryEventStatusBadge from '../../workflow-history-event-status-badge/workflow-history-event-status-badge';
@@ -98,13 +98,13 @@ describe('WorkflowHistoryTimelineGroup', () => {
     expect(screen.queryByTestId('reset-button')).not.toBeInTheDocument();
   });
 
-  it('calls onReset when reset button is clicked', () => {
-    const { mockOnReset } = setup({
+  it('calls onReset when reset button is clicked', async () => {
+    const { mockOnReset, user } = setup({
       resetToDecisionEventId: 'decision-event-id',
     });
 
     const resetButton = screen.getByTestId('reset-button');
-    fireEvent.click(resetButton);
+    await user.click(resetButton);
 
     expect(mockOnReset).toHaveBeenCalledTimes(1);
   });
@@ -136,7 +136,7 @@ function setup({
   resetToDecisionEventId,
 }: Partial<Props>) {
   const mockOnReset = jest.fn();
-
+  const user = userEvent.setup();
   render(
     <WorkflowHistoryTimelineGroup
       events={events}
@@ -154,5 +154,5 @@ function setup({
       onReset={mockOnReset}
     />
   );
-  return { mockOnReset };
+  return { mockOnReset, user };
 }
