@@ -7,22 +7,27 @@ export const overrides = {
     Root: {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
         alignItems: 'center',
+        gap: $theme.sizing.scale500,
         paddingTop: $theme.sizing.scale400,
         paddingBottom: $theme.sizing.scale400,
-        paddingLeft: $theme.sizing.scale300,
-        paddingRight: $theme.sizing.scale700,
+        [$theme.mediaQuery.medium]: {
+          paddingLeft: $theme.sizing.scale300,
+          paddingRight: $theme.sizing.scale700,
+        },
       }),
     },
     ToggleTrack: {
       style: {
         marginTop: 0,
         marginBottom: 0,
+        marginLeft: 0,
+        marginRight: 0,
       },
     },
     Label: {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
         ...$theme.typography.LabelXSmall,
-        paddingLeft: $theme.sizing.scale400,
+        paddingLeft: 0,
       }),
     },
   } satisfies CheckboxOverrides,
