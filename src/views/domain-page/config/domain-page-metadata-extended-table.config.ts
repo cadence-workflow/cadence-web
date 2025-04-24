@@ -2,6 +2,7 @@ import { createElement } from 'react';
 
 import { type MetadataItem } from '../domain-page-metadata/domain-page-metadata.types';
 import DomainPageMetadataClusters from '../domain-page-metadata-clusters/domain-page-metadata-clusters';
+import DomainPageMetadataDescription from '../domain-page-metadata-description/domain-page-metadata-description';
 import DomainPageMetadataViewJson from '../domain-page-metadata-view-json/domain-page-metadata-view-json';
 
 const domainPageMetadataExtendedTableConfig = [
@@ -17,9 +18,10 @@ const domainPageMetadataExtendedTableConfig = [
     label: 'Description',
     description: 'Brief, high-level description of the Cadence domain',
     kind: 'simple',
-    // TODO: create a Domain Description component that opens settings to edit
     getValue: ({ domainDescription }) =>
-      createElement('div', {}, domainDescription.description),
+      createElement(DomainPageMetadataDescription, {
+        description: domainDescription.description,
+      }),
   },
   {
     key: 'owner',
