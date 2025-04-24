@@ -13,7 +13,7 @@ export default function getDomainDescriptionQueryOptions({
   DomainDescription,
   RequestError,
   DomainDescription,
-  [string, { domain: string; cluster: string }]
+  [string, UseDomainDescriptionParams]
 > {
   return {
     queryKey: ['describeDomain', { domain, cluster }],
