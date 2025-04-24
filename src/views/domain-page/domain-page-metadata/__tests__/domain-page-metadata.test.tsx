@@ -7,8 +7,8 @@ import { render, screen, act } from '@/test-utils/rtl';
 import { type GetConfigResponse } from '@/route-handlers/get-config/get-config.types';
 
 import { mockDomainDescription } from '../../__fixtures__/domain-description';
-import { type DomainMetadata } from '../../hooks/use-suspense-domain-page-metadata.types';
 import DomainPageMetadata from '../domain-page-metadata';
+import { type DomainMetadata } from '../domain-page-metadata.types';
 
 jest.mock('../../domain-page-metadata-table/domain-page-metadata-table', () =>
   jest.fn(

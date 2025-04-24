@@ -1,4 +1,4 @@
-import { type DomainMetadata } from '../hooks/use-suspense-domain-page-metadata.types';
+import { type DomainMetadata } from '../domain-page-metadata/domain-page-metadata.types';
 
 import { mockDomainDescription } from './domain-description';
 

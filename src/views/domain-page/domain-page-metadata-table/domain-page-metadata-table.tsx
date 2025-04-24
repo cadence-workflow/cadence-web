@@ -5,7 +5,7 @@ import ListTableNested from '@/components/list-table-nested/list-table-nested';
 
 import domainPageMetadataExtendedTableConfig from '../config/domain-page-metadata-extended-table.config';
 import domainPageMetadataTableConfig from '../config/domain-page-metadata-table.config';
-import { type DomainMetadata } from '../hooks/use-suspense-domain-page-metadata.types';
+import { type DomainMetadata } from '../domain-page-metadata/domain-page-metadata.types';
 
 import { styled } from './domain-page-metadata-table.styles';
 import { type MetadataItem } from './domain-page-metadata-table.types';

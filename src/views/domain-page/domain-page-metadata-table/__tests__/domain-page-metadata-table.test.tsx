@@ -4,8 +4,8 @@ import { type Props as ListTableProps } from '@/components/list-table/list-table
 import { type Props as ListTableNestedProps } from '@/components/list-table-nested/list-table-nested.types';
 
 import { mockDomainMetadata } from '../../__fixtures__/domain-metadata';
+import { type DomainMetadata } from '../../domain-page-metadata/domain-page-metadata.types';
 import { type DomainDescription } from '../../domain-page.types';
-import { type DomainMetadata } from '../../hooks/use-suspense-domain-page-metadata.types';
 import DomainPageMetadataTable from '../domain-page-metadata-table';
 
 jest.mock('../../config/domain-page-metadata-table.config', () => [
