@@ -1,8 +1,9 @@
-import { render, screen } from '@/test-utils/rtl';
+import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import { startWorkflowExecutionEvent } from '../../__fixtures__/workflow-history-single-events';
 import type WorkflowHistoryEventStatusBadge from '../../workflow-history-event-status-badge/workflow-history-event-status-badge';
 import type WorkflowHistoryEventsCard from '../../workflow-history-events-card/workflow-history-events-card';
+import type WorkflowHistoryTimelineResetButton from '../../workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 import WorkflowHistoryTimelineGroup from '../workflow-history-timeline-group';
 import { type styled } from '../workflow-history-timeline-group.styles';
 import type { Props } from '../workflow-history-timeline-group.types';
@@ -15,6 +16,16 @@ jest.mock<typeof WorkflowHistoryEventStatusBadge>(
 jest.mock<typeof WorkflowHistoryEventsCard>(
   '../../workflow-history-events-card/workflow-history-events-card',
   () => jest.fn(() => <div>Events Card</div>)
+);
+
+jest.mock<typeof WorkflowHistoryTimelineResetButton>(
+  '../../workflow-history-timeline-reset-button/workflow-history-timeline-reset-button',
+  () =>
+    jest.fn((props) => (
+      <button onClick={props.onReset} data-testid="reset-button">
+        Reset Button
+      </button>
+    ))
 );
 
 jest.mock('../workflow-history-timeline-group.styles', () => {
@@ -76,6 +87,27 @@ describe('WorkflowHistoryTimelineGroup', () => {
     setup({ isLastEvent: true });
     expect(screen.getByText('Divider hidden')).toBeInTheDocument();
   });
+
+  it('renders reset button when resetToDecisionEventId is provided', () => {
+    setup({ resetToDecisionEventId: 'decision-event-id' });
+    expect(screen.getByTestId('reset-button')).toBeInTheDocument();
+  });
+
+  it('does not render reset button when resetToDecisionEventId is not provided', () => {
+    setup({ resetToDecisionEventId: undefined });
+    expect(screen.queryByTestId('reset-button')).not.toBeInTheDocument();
+  });
+
+  it('calls onReset when reset button is clicked', async () => {
+    const { mockOnReset, user } = setup({
+      resetToDecisionEventId: 'decision-event-id',
+    });
+
+    const resetButton = screen.getByTestId('reset-button');
+    await user.click(resetButton);
+
+    expect(mockOnReset).toHaveBeenCalledTimes(1);
+  });
 });
 
 function setup({
@@ -101,8 +133,11 @@ function setup({
     workflowTab: 'history',
   },
   badges,
+  resetToDecisionEventId,
 }: Partial<Props>) {
-  return render(
+  const mockOnReset = jest.fn();
+  const user = userEvent.setup();
+  render(
     <WorkflowHistoryTimelineGroup
       events={events}
       eventsMetadata={eventsMetadata}
@@ -115,6 +150,9 @@ function setup({
       getIsEventExpanded={jest.fn()}
       onEventToggle={jest.fn()}
       badges={badges}
+      resetToDecisionEventId={resetToDecisionEventId}
+      onReset={mockOnReset}
     />
   );
+  return { mockOnReset, user };
 }

@@ -15,8 +15,7 @@ export const overrides = {
         color: $theme.colors.contentSecondary,
         ...$theme.typography.LabelXSmall,
         whiteSpace: 'nowrap',
-        marginTop: $theme.sizing.scale100,
-        marginBottom: $theme.sizing.scale100,
+
         [$theme.mediaQuery.medium]: {
           marginTop: 0,
           marginBottom: 0,
@@ -45,13 +44,13 @@ const cssStylesObj = {
     display: 'flex',
     flexDirection: 'column',
   },
-  timelineEventHeader: (theme) => ({
+  eventHeader: (theme) => ({
     display: 'flex',
     alignItems: 'center',
     gap: theme.sizing.scale600,
     padding: `${theme.sizing.scale500} 0`,
   }),
-  timelineEventLabelAndTime: (theme) => ({
+  eventLabelAndSecondaryDetails: (theme) => ({
     display: 'flex',
     flexDirection: 'column',
     gap: 0,
@@ -62,19 +61,27 @@ const cssStylesObj = {
       alignItems: 'center',
       gap: theme.sizing.scale200,
     },
+    flex: 1,
   }),
-  timelineEventsLabel: (theme) => ({
-    ...theme.typography.LabelLarge,
+  eventSecondaryDetails: (theme) => ({
+    display: 'flex',
+    gap: theme.sizing.scale200,
+    alignItems: 'center',
+    flexWrap: 'wrap',
+  }),
+  eventsLabel: (theme) => ({
+    ...theme.typography.LabelMedium,
+    flex: 1,
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
     overflow: 'hidden',
   }),
-  timelineEventsTime: (theme) => ({
+  eventsTime: (theme) => ({
     ...theme.typography.LabelXSmall,
     color: theme.colors.contentTertiary,
     wordBreak: 'break-word',
   }),
-  timelineEventCardContainer: {
+  eventCardContainer: {
     display: 'flex',
     gap: '28px',
   },

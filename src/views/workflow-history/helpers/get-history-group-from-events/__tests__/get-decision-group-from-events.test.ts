@@ -259,4 +259,34 @@ describe('getDecisionGroupFromEvents', () => {
     const group = getDecisionGroupFromEvents(events);
     expect(group.badges).toEqual([{ content: '1 Retry' }]);
   });
+
+  it('should set resetToDecisionEventId to null when no close or timeout events are present', () => {
+    const events: ExtendedDecisionHistoryEvent[] = [
+      scheduleDecisionTaskEvent,
+      startDecisionTaskEvent,
+    ];
+    const group = getDecisionGroupFromEvents(events);
+    expect(group.resetToDecisionEventId).toBeNull();
+  });
+
+  it('should set resetToDecisionEventId to the close event ID when a close event is present', () => {
+    const events: ExtendedDecisionHistoryEvent[] = [
+      scheduleDecisionTaskEvent,
+      startDecisionTaskEvent,
+      completeDecisionTaskEvent,
+    ];
+    const group = getDecisionGroupFromEvents(events);
+    expect(group.resetToDecisionEventId).toBe(
+      completeDecisionTaskEvent.eventId
+    );
+  });
+
+  it('should be set to the timeout event ID when only a timeout event is present', () => {
+    const events: ExtendedDecisionHistoryEvent[] = [
+      scheduleDecisionTaskEvent,
+      timeoutDecisionTaskEvent,
+    ];
+    const group = getDecisionGroupFromEvents(events);
+    expect(group.resetToDecisionEventId).toBe(timeoutDecisionTaskEvent.eventId);
+  });
 });

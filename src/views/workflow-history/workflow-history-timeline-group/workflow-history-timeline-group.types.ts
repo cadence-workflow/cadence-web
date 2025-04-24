@@ -16,9 +16,11 @@ export type Props = Pick<
   | 'hasMissingEvents'
   | 'status'
   | 'badges'
+  | 'resetToDecisionEventId'
 > & {
   isLastEvent: boolean;
   decodedPageUrlParams: WorkflowHistoryProps['params'];
   getIsEventExpanded: GetIsEventExpanded;
   onEventToggle: ToggleIsEventExpanded;
+  onReset?: () => void;
 };

@@ -41,7 +41,9 @@ export default function getDecisionGroupFromEvents(
   const hasAllCloseEvents = scheduleEvent && startEvent && closeEvent;
   const hasMissingEvents = !hasAllTimeoutEvents && !hasAllCloseEvents;
 
+  // Retry attempts calculation
   let retryAttemptNumber = 0;
+
   if (
     pendingStartEvent &&
     pendingStartAttr in pendingStartEvent &&
@@ -64,6 +66,17 @@ export default function getDecisionGroupFromEvents(
         retryAttemptNumber === 1 ? '1 Retry' : `${retryAttemptNumber} Retries`,
     });
   }
+
+  // set resetToDecisionEventId to close/timeout decision event id
+  let resetToDecisionEventId: string | null = null;
+
+  if (closeEvent && closeEvent.eventId) {
+    resetToDecisionEventId = closeEvent.eventId;
+  } else if (timeoutEvent && timeoutEvent.eventId) {
+    resetToDecisionEventId = timeoutEvent.eventId;
+  }
+
+  // populate event to label and status maps
   const eventToLabel: HistoryGroupEventToStringMap<DecisionHistoryGroup> = {
     decisionTaskScheduledEventAttributes: 'Scheduled',
     pendingDecisionTaskStartEventAttributes: 'Starting',
@@ -93,6 +106,7 @@ export default function getDecisionGroupFromEvents(
     hasMissingEvents,
     groupType,
     badges,
+    resetToDecisionEventId,
     ...getCommonHistoryGroupFields<DecisionHistoryGroup>(
       events,
       eventToStatus,

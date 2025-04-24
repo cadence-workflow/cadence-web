@@ -24,7 +24,12 @@ export default function WorkflowActionsModalContent<
   FormData extends FieldValues,
   SubmissionData,
   Result,
->({ action, params, onCloseModal }: Props<FormData, SubmissionData, Result>) {
+>({
+  action,
+  params,
+  onCloseModal,
+  initialFormValues,
+}: Props<FormData, SubmissionData, Result>) {
   const queryClient = useQueryClient();
   const { enqueue, dequeue } = useSnackbar();
 
@@ -37,7 +42,7 @@ export default function WorkflowActionsModalContent<
     resolver: action.modal.formSchema
       ? zodResolver(action.modal.formSchema)
       : undefined,
-    defaultValues: {} as DefaultValues<FormData>,
+    defaultValues: initialFormValues,
   });
 
   const { mutate, isPending, error } = useMutation<

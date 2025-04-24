@@ -1,3 +1,5 @@
+import { type DefaultValues } from 'react-hook-form';
+
 import {
   type WorkflowAction,
   type WorkflowActionInputParams,
@@ -7,4 +9,5 @@ export type Props<FormData, SubmissionData, Result> = {
   action: WorkflowAction<FormData, SubmissionData, Result>;
   params: WorkflowActionInputParams;
   onCloseModal: () => void;
+  initialFormValues?: DefaultValues<FormData>;
 };

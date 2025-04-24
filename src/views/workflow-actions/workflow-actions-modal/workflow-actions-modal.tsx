@@ -13,6 +13,7 @@ export default function WorkflowActionsModal<
 >({
   action,
   onClose,
+  initialFormValues,
   ...workflowDetailsParams
 }: Props<FormData, SubmissionData, Result>) {
   return (
@@ -28,6 +29,7 @@ export default function WorkflowActionsModal<
           params={{
             ...workflowDetailsParams,
           }}
+          initialFormValues={initialFormValues}
           onCloseModal={onClose}
         />
       )}
