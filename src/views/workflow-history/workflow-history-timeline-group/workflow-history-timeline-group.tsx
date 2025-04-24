@@ -2,7 +2,6 @@
 import React from 'react';
 
 import { Badge } from 'baseui/badge';
-import { isNil } from 'lodash';
 
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 
@@ -43,15 +42,15 @@ export default function WorkflowHistoryTimelineGroup({
 
   return (
     <div className={cls.groupContainer}>
-      <div className={cls.timelineEventHeader}>
+      <div className={cls.eventHeader}>
         <WorkflowHistoryEventStatusBadge
           status={status}
           statusReady={!hasMissingEvents}
           size="medium"
         />
-        <div className={cls.timelineEventLabelAndSecondaryDetails}>
-          <div className={cls.timelineEventsLabel}>{label}</div>
-          <div className={cls.timelineEventSecondaryDetails}>
+        <div className={cls.eventLabelAndSecondaryDetails}>
+          <div className={cls.eventsLabel}>{label}</div>
+          <div className={cls.eventSecondaryDetails}>
             {hasBadges && (
               <>
                 {badges.map((badge) => (
@@ -65,10 +64,10 @@ export default function WorkflowHistoryTimelineGroup({
                 ))}
               </>
             )}
-            <div suppressHydrationWarning className={cls.timelineEventsTime}>
+            <div suppressHydrationWarning className={cls.eventsTime}>
               {timeLabel}
             </div>
-            {!isNil(resetToDecisionEventId) && (
+            {resetToDecisionEventId && (
               <WorkflowHistoryTimelineResetButton
                 workflowId={decodedPageUrlParams.workflowId}
                 runId={decodedPageUrlParams.runId}
@@ -80,7 +79,7 @@ export default function WorkflowHistoryTimelineGroup({
           </div>
         </div>
       </div>
-      <div className={cls.timelineEventCardContainer}>
+      <div className={cls.eventCardContainer}>
         <styled.VerticalDivider $hidden={isLastEvent} />
         <WorkflowHistoryEventsCard
           events={events}

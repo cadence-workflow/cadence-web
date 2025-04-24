@@ -44,13 +44,13 @@ const cssStylesObj = {
     display: 'flex',
     flexDirection: 'column',
   },
-  timelineEventHeader: (theme) => ({
+  eventHeader: (theme) => ({
     display: 'flex',
     alignItems: 'center',
     gap: theme.sizing.scale600,
     padding: `${theme.sizing.scale500} 0`,
   }),
-  timelineEventLabelAndSecondaryDetails: (theme) => ({
+  eventLabelAndSecondaryDetails: (theme) => ({
     display: 'flex',
     flexDirection: 'column',
     gap: 0,
@@ -63,25 +63,25 @@ const cssStylesObj = {
     },
     flex: 1,
   }),
-  timelineEventSecondaryDetails: (theme) => ({
+  eventSecondaryDetails: (theme) => ({
     display: 'flex',
     gap: theme.sizing.scale200,
     alignItems: 'center',
     flexWrap: 'wrap',
   }),
-  timelineEventsLabel: (theme) => ({
+  eventsLabel: (theme) => ({
     ...theme.typography.LabelMedium,
     flex: 1,
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
     overflow: 'hidden',
   }),
-  timelineEventsTime: (theme) => ({
+  eventsTime: (theme) => ({
     ...theme.typography.LabelXSmall,
     color: theme.colors.contentTertiary,
     wordBreak: 'break-word',
   }),
-  timelineEventCardContainer: {
+  eventCardContainer: {
     display: 'flex',
     gap: '28px',
   },
