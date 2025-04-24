@@ -2,7 +2,7 @@ import React from 'react';
 
 import { type DomainPageTabContentProps } from '@/views/domain-page/domain-page-content/domain-page-content.types';
 
-import useSuspenseDomainDescription from '../shared/hooks/use-suspense-domain-description';
+import useSuspenseDomainDescription from '../shared/hooks/use-domain-description/use-suspense-domain-description';
 
 import DomainWorkflowsArchivalDisabledPanel from './domain-workflows-archival-disabled-panel/domain-workflows-archival-disabled-panel';
 import DomainWorkflowsArchivalHeader from './domain-workflows-archival-header/domain-workflows-archival-header';

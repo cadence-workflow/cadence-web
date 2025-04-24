@@ -4,7 +4,7 @@ import {
   type ListTableNestedGroup,
 } from '@/components/list-table-nested/list-table-nested.types';
 
-import { type DomainMetadata } from '../hooks/use-suspense-domain-page-metadata.types';
+import { type DomainMetadata } from '../domain-page-metadata/domain-page-metadata.types';
 
 type MetadataSimpleItem = Omit<ListTableNestedSimpleItem, 'value'> & {
   getValue: (metadata: DomainMetadata) => React.ReactNode;

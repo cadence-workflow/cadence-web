@@ -7,7 +7,7 @@ import { toaster, ToasterContainer, PLACEMENT } from 'baseui/toast';
 import { type UpdateDomainFields } from '@/route-handlers/update-domain/update-domain.types';
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
-import useSuspenseDomainDescription from '@/views/shared/hooks/use-suspense-domain-description';
+import useSuspenseDomainDescription from '@/views/shared/hooks/use-domain-description/use-suspense-domain-description';
 import SettingsForm from '@/views/shared/settings-form/settings-form';
 
 import {

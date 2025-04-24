@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 
-import useSuspenseDomainDescription from '@/views/shared/hooks/use-suspense-domain-description';
+import useSuspenseDomainDescription from '@/views/shared/hooks/use-domain-description/use-suspense-domain-description';
 
 import DomainPageHeaderInfo from '../domain-page-header-info/domain-page-header-info';
 
