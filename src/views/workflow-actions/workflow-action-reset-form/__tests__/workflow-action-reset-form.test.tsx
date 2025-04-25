@@ -82,7 +82,7 @@ function TestWrapper({ formErrors, formData }: TestProps) {
 
   return (
     <WorkflowActionResetForm
-      control={methods.control as Control<ResetWorkflowFormData>}
+      control={methods.control}
       fieldErrors={formErrors}
       formData={formData}
       cluster="test-cluster"
