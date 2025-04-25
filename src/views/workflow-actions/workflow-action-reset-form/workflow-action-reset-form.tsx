@@ -68,9 +68,11 @@ export default function WorkflowActionResetForm({
           name="resetType"
           control={control}
           defaultValue={defaultResetTo}
-          render={({ field: { value, onChange, ...field } }) => (
+          render={({ field: { value, onChange, ref, ...field } }) => (
             <RadioGroup
               {...field}
+              // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
+              inputRef={ref}
               value={value}
               onChange={(e) => {
                 clearErrors('decisionFinishEventId');
@@ -117,9 +119,10 @@ export default function WorkflowActionResetForm({
             name="binaryChecksumFirstDecisionCompletedId"
             control={control}
             defaultValue=""
-            render={({ field: { value, onChange, ...field } }) => (
+            render={({ field: { value, onChange, ref, ...field } }) => (
               <Select
                 {...field}
+                inputRef={ref}
                 aria-label="Select binary checksum"
                 options={binaryChecksumOptions}
                 value={value ? [{ id: value, label: value }] : []}
