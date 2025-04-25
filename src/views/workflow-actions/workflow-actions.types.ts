@@ -2,6 +2,7 @@ import { type ReactNode } from 'react';
 
 import { type IconProps } from 'baseui/icon';
 import {
+  type UseFormClearErrors,
   type Control,
   type FieldErrors,
   type FieldValues,
@@ -31,6 +32,7 @@ export type WorkflowActionFormProps<FormData extends FieldValues> = {
   formData: FormData;
   fieldErrors: FieldErrors<FormData>;
   control: Control<FormData>;
+  clearErrors: UseFormClearErrors<FormData>;
   cluster: string;
   domain: string;
   workflowId: string;

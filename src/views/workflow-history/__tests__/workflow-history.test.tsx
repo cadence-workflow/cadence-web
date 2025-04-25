@@ -15,7 +15,7 @@ import {
 import * as usePageFiltersModule from '@/components/page-filters/hooks/use-page-filters';
 import { type Props as PageFiltersToggleProps } from '@/components/page-filters/page-filters-toggle/page-filters-toggle.types';
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
-import { describeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
+import { mockDescribeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
 
 import { completedActivityTaskEvents } from '../__fixtures__/workflow-history-activity-events';
 import { completedDecisionTaskEvents } from '../__fixtures__/workflow-history-decision-events';
@@ -282,7 +282,7 @@ async function setup({
                 },
               }
             : {
-                jsonResponse: describeWorkflowResponse,
+                jsonResponse: mockDescribeWorkflowResponse,
               }),
         },
       ],

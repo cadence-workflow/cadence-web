@@ -1,6 +1,6 @@
 import { type DescribeWorkflowResponse } from '@/route-handlers/describe-workflow/describe-workflow.types';
 
-export const describeWorkflowResponse = {
+export const mockDescribeWorkflowResponse = {
   pendingActivities: [
     {
       activityId: 'test-activity-2',

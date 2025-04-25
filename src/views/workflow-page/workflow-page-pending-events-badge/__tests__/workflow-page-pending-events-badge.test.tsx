@@ -4,7 +4,8 @@ import { HttpResponse } from 'msw';
 
 import { render, screen } from '@/test-utils/rtl';
 
-import { describeWorkflowResponse } from '../../__fixtures__/describe-workflow-response';
+import { mockDescribeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
+
 import WorkflowPagePendingEventsBadge from '../workflow-page-pending-events-badge';
 
 jest.mock('next/navigation', () => ({
@@ -56,7 +57,7 @@ function setup({ isError }: { isError?: boolean }) {
                 },
               }
             : {
-                jsonResponse: describeWorkflowResponse,
+                jsonResponse: mockDescribeWorkflowResponse,
               }),
         },
       ],

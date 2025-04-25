@@ -109,7 +109,19 @@ export const resetWorkflowActionConfig: WorkflowAction<
     withForm: true,
     form: WorkflowActionResetForm,
     formSchema: resetWorkflowFormSchema,
-    transformFormDataToSubmission: (v) => v,
+    transformFormDataToSubmission: (
+      formData: ResetWorkflowFormData
+    ): ResetWorkflowSubmissionData => {
+      const decisionFinishEventId =
+        formData.resetType === 'BinaryChecksum'
+          ? formData.badBinaryFirstDecisionCompletedId
+          : formData.decisionFinishEventId;
+      return {
+        reason: formData.reason,
+        decisionFinishEventId,
+        skipSignalReapply: formData.skipSignalReapply,
+      };
+    },
   },
   icon: MdRefresh,
   getRunnableStatus: () => 'RUNNABLE',

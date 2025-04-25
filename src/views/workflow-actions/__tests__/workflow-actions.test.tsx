@@ -2,9 +2,9 @@ import React from 'react';
 
 import { HttpResponse } from 'msw';
 
-import { act, render, screen, userEvent, waitFor } from '@/test-utils/rtl';
+import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
-import { describeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
+import { mockDescribeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
 
 import { mockWorkflowDetailsParams } from '../../workflow-page/__fixtures__/workflow-details-params';
 import { mockWorkflowActionsConfig } from '../__fixtures__/workflow-actions-config';
@@ -126,7 +126,7 @@ function setup({
               { status: 500 }
             );
           } else {
-            return HttpResponse.json(describeWorkflowResponse, {
+            return HttpResponse.json(mockDescribeWorkflowResponse, {
               status: 200,
             });
           }
