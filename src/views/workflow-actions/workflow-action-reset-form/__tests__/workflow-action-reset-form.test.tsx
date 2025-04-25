@@ -104,10 +104,10 @@ describe('WorkflowActionResetForm', () => {
   it('switches between Event ID and Binary Checksum reset types', async () => {
     const { user } = await setup({});
 
-    const badBinaryRadio = screen.getByRole('radio', {
+    const binaryChecksumRadio = screen.getByRole('radio', {
       name: 'Binary Checksum',
     });
-    await user.click(badBinaryRadio);
+    await user.click(binaryChecksumRadio);
 
     expect(
       screen.queryByPlaceholderText('Find Event ID')
@@ -128,15 +128,15 @@ describe('WorkflowActionResetForm', () => {
   it('lists only resettable points', async () => {
     const { user } = await setup({ resetPoints });
 
-    const badBinaryRadio = screen.getByRole('radio', {
+    const binaryChecksumRadio = screen.getByRole('radio', {
       name: 'Binary Checksum',
     });
-    await user.click(badBinaryRadio);
+    await user.click(binaryChecksumRadio);
 
-    const badBinarySelect = screen.getByRole('combobox', {
+    const binaryChecksumSelect = screen.getByRole('combobox', {
       name: 'Select binary checksum',
     });
-    await user.click(badBinarySelect);
+    await user.click(binaryChecksumSelect);
 
     expect((await screen.findAllByRole('option')).length).toBe(2);
     expect(screen.getByText('test-binary-checksum-2')).toBeInTheDocument();
@@ -146,16 +146,16 @@ describe('WorkflowActionResetForm', () => {
   it('handles error state for bad binary fetch', async () => {
     const { user } = await setup({ isError: true });
 
-    const badBinaryRadio = screen.getByRole('radio', {
+    const binaryChecksumRadio = screen.getByRole('radio', {
       name: 'Binary Checksum',
     });
-    await user.click(badBinaryRadio);
+    await user.click(binaryChecksumRadio);
 
-    const badBinarySelect = screen.getByRole('combobox', {
+    const binaryChecksumSelect = screen.getByRole('combobox', {
       name: 'Select binary checksum',
     });
 
-    await user.click(badBinarySelect);
+    await user.click(binaryChecksumSelect);
 
     expect(
       await screen.findByText('Failed to load binary checksums')
@@ -165,16 +165,16 @@ describe('WorkflowActionResetForm', () => {
   it('handles empty state', async () => {
     const { user } = await setup({ resetPoints: { points: [] } });
 
-    const badBinaryRadio = screen.getByRole('radio', {
+    const binaryChecksumRadio = screen.getByRole('radio', {
       name: 'Binary Checksum',
     });
-    await user.click(badBinaryRadio);
+    await user.click(binaryChecksumRadio);
 
-    const badBinarySelect = screen.getByRole('combobox', {
+    const binaryChecksumSelect = screen.getByRole('combobox', {
       name: 'Select binary checksum',
     });
 
-    await user.click(badBinarySelect);
+    await user.click(binaryChecksumSelect);
 
     expect(await screen.findByText('No results found')).toBeInTheDocument();
   });

@@ -114,7 +114,7 @@ export const resetWorkflowActionConfig: WorkflowAction<
     ): ResetWorkflowSubmissionData => {
       const decisionFinishEventId =
         formData.resetType === 'BinaryChecksum'
-          ? formData.badBinaryFirstDecisionCompletedId
+          ? formData.binaryChecksumFirstDecisionCompletedId
           : formData.decisionFinishEventId;
       return {
         reason: formData.reason,

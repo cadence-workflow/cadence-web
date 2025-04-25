@@ -4,7 +4,7 @@ const baseSchema = z.object({
   reason: z.string().min(1),
   skipSignalReapply: z.boolean().optional(),
   decisionFinishEventId: z.any().optional(),
-  badBinaryFirstDecisionCompletedId: z.any().optional(),
+  binaryChecksumFirstDecisionCompletedId: z.any().optional(),
 });
 
 const eventIdSchema = baseSchema.extend({
@@ -12,12 +12,12 @@ const eventIdSchema = baseSchema.extend({
   decisionFinishEventId: z.string().min(1),
 });
 
-const badBinarySchema = baseSchema.extend({
+const binaryChecksumSchema = baseSchema.extend({
   resetType: z.literal('BinaryChecksum'),
-  badBinaryFirstDecisionCompletedId: z.string().min(1),
+  binaryChecksumFirstDecisionCompletedId: z.string().min(1),
 });
 
 export const resetWorkflowFormSchema = z.discriminatedUnion('resetType', [
   eventIdSchema,
-  badBinarySchema,
+  binaryChecksumSchema,
 ]);

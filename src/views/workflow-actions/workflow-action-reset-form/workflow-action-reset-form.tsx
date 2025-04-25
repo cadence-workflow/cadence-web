@@ -44,7 +44,7 @@ export default function WorkflowActionResetForm({
     domain,
   });
 
-  const badBinaryOptions = useMemo(() => {
+  const binaryChecksumOptions = useMemo(() => {
     const points =
       workflow?.workflowExecutionInfo?.autoResetPoints?.points || [];
     return points
@@ -74,7 +74,7 @@ export default function WorkflowActionResetForm({
               value={value}
               onChange={(e) => {
                 clearErrors('decisionFinishEventId');
-                clearErrors('badBinaryFirstDecisionCompletedId');
+                clearErrors('binaryChecksumFirstDecisionCompletedId');
                 onChange(e.currentTarget.value);
               }}
               error={Boolean(fieldErrors.resetType?.message)}
@@ -114,14 +114,14 @@ export default function WorkflowActionResetForm({
       {resetType === 'BinaryChecksum' && (
         <FormControl label="Binary Checksum">
           <Controller
-            name="badBinaryFirstDecisionCompletedId"
+            name="binaryChecksumFirstDecisionCompletedId"
             control={control}
             defaultValue=""
             render={({ field: { value, onChange, ...field } }) => (
               <Select
                 {...field}
                 aria-label="Select binary checksum"
-                options={badBinaryOptions}
+                options={binaryChecksumOptions}
                 value={value ? [{ id: value, label: value }] : []}
                 onChange={({ value }) => {
                   onChange(value[0]?.id || '');
@@ -131,7 +131,7 @@ export default function WorkflowActionResetForm({
                 }}
                 isLoading={isLoading}
                 error={Boolean(
-                  getErrorMessage('badBinaryFirstDecisionCompletedId')
+                  getErrorMessage('binaryChecksumFirstDecisionCompletedId')
                 )}
                 placeholder="Select binary checksum"
                 noResultsMsg={
