@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { type FieldErrors, useForm, type Control } from 'react-hook-form';
+import { type FieldErrors, useForm } from 'react-hook-form';
 
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
