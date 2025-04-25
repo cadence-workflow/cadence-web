@@ -22,11 +22,7 @@ import {
 } from '../workflow-action-reset-form/workflow-action-reset-form.types';
 import { type WorkflowAction } from '../workflow-actions.types';
 
-const cancelWorkflowActionConfig: WorkflowAction<
-  any,
-  any,
-  CancelWorkflowResponse
-> = {
+const cancelWorkflowActionConfig: WorkflowAction<CancelWorkflowResponse> = {
   id: 'cancel',
   label: 'Cancel',
   subtitle: 'Cancel a workflow execution',
@@ -36,6 +32,7 @@ const cancelWorkflowActionConfig: WorkflowAction<
       text: 'Read more about cancelling workflows',
       href: 'https://cadenceworkflow.io/docs/cli#signal-cancel-terminate-workflow',
     },
+    withForm: false,
   },
   icon: MdHighlightOff,
   getRunnableStatus: (workflow) =>
@@ -48,37 +45,31 @@ const cancelWorkflowActionConfig: WorkflowAction<
   renderSuccessMessage: () => 'Workflow cancellation has been requested.',
 };
 
-const terminateWorkflowActionConfig: WorkflowAction<
-  any,
-  any,
-  TerminateWorkflowResponse
-> = {
-  id: 'terminate',
-  label: 'Terminate',
-  subtitle: 'Terminate a workflow execution',
-  modal: {
-    text: 'Terminates a running workflow immediately. Please terminate a workflow only if you know what you are doing.',
-    docsLink: {
-      text: 'Read more about terminating workflows',
-      href: 'https://cadenceworkflow.io/docs/cli#signal-cancel-terminate-workflow',
+const terminateWorkflowActionConfig: WorkflowAction<TerminateWorkflowResponse> =
+  {
+    id: 'terminate',
+    label: 'Terminate',
+    subtitle: 'Terminate a workflow execution',
+    modal: {
+      text: 'Terminates a running workflow immediately. Please terminate a workflow only if you know what you are doing.',
+      docsLink: {
+        text: 'Read more about terminating workflows',
+        href: 'https://cadenceworkflow.io/docs/cli#signal-cancel-terminate-workflow',
+      },
+      withForm: false,
     },
-  },
-  icon: MdPowerSettingsNew,
-  getRunnableStatus: (workflow) =>
-    getWorkflowIsCompleted(
-      workflow.workflowExecutionInfo?.closeEvent?.attributes ?? ''
-    )
-      ? 'NOT_RUNNABLE_WORKFLOW_CLOSED'
-      : 'RUNNABLE',
-  apiRoute: 'terminate',
-  renderSuccessMessage: () => 'Workflow has been terminated.',
-};
+    icon: MdPowerSettingsNew,
+    getRunnableStatus: (workflow) =>
+      getWorkflowIsCompleted(
+        workflow.workflowExecutionInfo?.closeEvent?.attributes ?? ''
+      )
+        ? 'NOT_RUNNABLE_WORKFLOW_CLOSED'
+        : 'RUNNABLE',
+    apiRoute: 'terminate',
+    renderSuccessMessage: () => 'Workflow has been terminated.',
+  };
 
-const restartWorkflowActionConfig: WorkflowAction<
-  any,
-  any,
-  RestartWorkflowResponse
-> = {
+const restartWorkflowActionConfig: WorkflowAction<RestartWorkflowResponse> = {
   id: 'restart',
   label: 'Restart',
   subtitle: 'Restart a workflow execution',
@@ -87,6 +78,7 @@ const restartWorkflowActionConfig: WorkflowAction<
       'Restarts a workflow by creating a new execution with a fresh Run ID while using the existing input. If the previous execution is still running, it will be terminated.',
       'What differentiates Restart from Reset is that the restarted workflow is not aware of the previous workflow execution.',
     ],
+    withForm: false,
   },
   icon: MdOutlineRestartAlt,
   getRunnableStatus: () => 'RUNNABLE',
@@ -99,9 +91,9 @@ const restartWorkflowActionConfig: WorkflowAction<
 };
 
 export const resetWorkflowActionConfig: WorkflowAction<
+  ResetWorkflowResponse,
   ResetWorkflowFormData,
-  ResetWorkflowSubmissionData,
-  ResetWorkflowResponse
+  ResetWorkflowSubmissionData
 > = {
   id: 'reset',
   label: 'Reset',
@@ -114,6 +106,7 @@ export const resetWorkflowActionConfig: WorkflowAction<
       text: 'Read more about resetting workflows',
       href: 'https://cadenceworkflow.io/docs/cli#workflow-reset',
     },
+    withForm: true,
     form: WorkflowActionResetForm,
     formSchema: resetWorkflowFormSchema,
     transformFormDataToSubmission: (v) => v,
@@ -133,6 +126,6 @@ const workflowActionsConfig = [
   terminateWorkflowActionConfig,
   restartWorkflowActionConfig,
   resetWorkflowActionConfig,
-] as const;
+] as const satisfies WorkflowAction<any, any, any>[];
 
 export default workflowActionsConfig;

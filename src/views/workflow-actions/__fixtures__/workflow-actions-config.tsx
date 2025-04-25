@@ -8,9 +8,9 @@ import { type TerminateWorkflowResponse } from '@/route-handlers/terminate-workf
 import { type WorkflowAction } from '../workflow-actions.types';
 
 export const mockResetActionConfig: WorkflowAction<
+  ResetWorkflowResponse,
   { testField: string },
-  { transformed: string },
-  ResetWorkflowResponse
+  { transformed: string }
 > = {
   id: 'reset',
   label: 'Mock reset',
@@ -21,6 +21,7 @@ export const mockResetActionConfig: WorkflowAction<
       text: 'Mock docs link',
       href: 'https://mock.docs.link',
     },
+    withForm: true,
     form: ({ control, fieldErrors }) => (
       <div data-testid="mock-form">
         <input
@@ -44,52 +45,54 @@ export const mockResetActionConfig: WorkflowAction<
     `Mock reset notification (Run ID: ${result.runId})`,
 };
 
-const mockCancelActionConfig: WorkflowAction<any, any, CancelWorkflowResponse> =
-  {
-    id: 'cancel',
-    label: 'Mock cancel',
-    subtitle: 'Mock cancel a workflow execution',
-    modal: {
-      text: 'Mock modal text to cancel a workflow execution',
-      docsLink: {
-        text: 'Mock docs link',
-        href: 'https://mock.docs.link',
-      },
-    },
-    icon: MdHighlightOff,
-    getRunnableStatus: () => 'RUNNABLE',
-    apiRoute: 'cancel',
-    renderSuccessMessage: () => 'Mock cancel notification',
-  };
-
-const mockTerminateActionConfig: WorkflowAction<
-  any,
-  any,
-  TerminateWorkflowResponse
+export const mockCancelActionConfig: WorkflowAction<
+  CancelWorkflowResponse,
+  undefined,
+  undefined
 > = {
-  id: 'terminate',
-  label: 'Mock terminate',
-  subtitle: 'Mock terminate a workflow execution',
+  id: 'cancel',
+  label: 'Mock cancel',
+  subtitle: 'Mock cancel a workflow execution',
   modal: {
-    text: 'Mock modal text to terminate a workflow execution',
+    text: 'Mock modal text to cancel a workflow execution',
     docsLink: {
       text: 'Mock docs link',
       href: 'https://mock.docs.link',
     },
+    withForm: false,
   },
-  icon: MdPowerSettingsNew,
+  icon: MdHighlightOff,
   getRunnableStatus: () => 'RUNNABLE',
-  apiRoute: 'terminate',
-  renderSuccessMessage: () => 'Mock terminate notification',
+  apiRoute: 'cancel',
+  renderSuccessMessage: () => 'Mock cancel notification',
 };
 
+export const mockTerminateActionConfig: WorkflowAction<TerminateWorkflowResponse> =
+  {
+    id: 'terminate',
+    label: 'Mock terminate',
+    subtitle: 'Mock terminate a workflow execution',
+    modal: {
+      text: 'Mock modal text to terminate a workflow execution',
+      docsLink: {
+        text: 'Mock docs link',
+        href: 'https://mock.docs.link',
+      },
+      withForm: false,
+    },
+    icon: MdPowerSettingsNew,
+    getRunnableStatus: () => 'RUNNABLE',
+    apiRoute: 'terminate',
+    renderSuccessMessage: () => 'Mock terminate notification',
+  };
+
 export const mockWorkflowActionsConfig: [
-  WorkflowAction<any, any, CancelWorkflowResponse>,
-  WorkflowAction<any, any, TerminateWorkflowResponse>,
+  WorkflowAction<CancelWorkflowResponse>,
+  WorkflowAction<TerminateWorkflowResponse>,
   WorkflowAction<
+    ResetWorkflowResponse,
     { testField: string },
-    { transformed: string },
-    ResetWorkflowResponse
+    { transformed: string }
   >,
 ] = [
   mockCancelActionConfig,

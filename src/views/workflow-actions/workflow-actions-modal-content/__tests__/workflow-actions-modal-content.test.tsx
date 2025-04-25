@@ -6,7 +6,10 @@ import { type CancelWorkflowResponse } from '@/route-handlers/cancel-workflow/ca
 import { type ResetWorkflowResponse } from '@/route-handlers/reset-workflow/reset-workflow.types';
 import { mockWorkflowDetailsParams } from '@/views/workflow-page/__fixtures__/workflow-details-params';
 
-import { mockWorkflowActionsConfig } from '../../__fixtures__/workflow-actions-config';
+import {
+  mockCancelActionConfig,
+  mockWorkflowActionsConfig,
+} from '../../__fixtures__/workflow-actions-config';
 import { type WorkflowAction } from '../../workflow-actions.types';
 import WorkflowActionsModalContent from '../workflow-actions-modal-content';
 
@@ -85,8 +88,9 @@ describe(WorkflowActionsModalContent.name, () => {
 
   it('renders array text correctly in modal content', () => {
     const cancelAction = {
-      ...mockWorkflowActionsConfig[0],
+      ...mockCancelActionConfig,
       modal: {
+        ...mockCancelActionConfig.modal,
         text: ['First line of array text', 'Second line of array text'],
       },
     };

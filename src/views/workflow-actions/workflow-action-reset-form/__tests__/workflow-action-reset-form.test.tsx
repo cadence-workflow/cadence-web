@@ -85,6 +85,10 @@ function TestWrapper({ formErrors, formData }: TestProps) {
       control={methods.control as Control<ResetWorkflowFormData>}
       fieldErrors={formErrors}
       formData={formData}
+      cluster="test-cluster"
+      domain="test-domain"
+      workflowId="test-workflow-id"
+      runId="test-run-id"
     />
   );
 }

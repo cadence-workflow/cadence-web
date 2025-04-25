@@ -1,21 +1,16 @@
 import { Modal } from 'baseui/modal';
-import { type FieldValues } from 'react-hook-form';
 
 import WorkflowActionsModalContent from '../workflow-actions-modal-content/workflow-actions-modal-content';
 
 import { overrides } from './workflow-actions-modal.styles';
 import { type Props } from './workflow-actions-modal.types';
 
-export default function WorkflowActionsModal<
-  FormData extends FieldValues,
-  SubmissionData,
-  Result,
->({
+export default function WorkflowActionsModal<Result, FormData, SubmissionData>({
   action,
   onClose,
   initialFormValues,
   ...workflowDetailsParams
-}: Props<FormData, SubmissionData, Result>) {
+}: Props<Result, FormData, SubmissionData>) {
   return (
     <Modal
       isOpen={Boolean(action)}
