@@ -3,8 +3,6 @@ import { z } from 'zod';
 const baseSchema = z.object({
   reason: z.string().min(1),
   skipSignalReapply: z.boolean().optional(),
-  decisionFinishEventId: z.any().optional(),
-  binaryChecksumFirstDecisionCompletedId: z.any().optional(),
 });
 
 const eventIdSchema = baseSchema.extend({
