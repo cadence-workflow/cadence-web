@@ -64,7 +64,7 @@ export default function WorkflowSummaryTab({
 
   const historyEvents = workflowHistory?.history?.events || [];
   const firstEvent = historyEvents[0];
-  const closeEvent = workflowDetails?.workflowExecutionInfo?.closeEvent || null;
+  const closeEvent = workflowDetails.workflowExecutionInfo?.closeEvent || null;
   const formattedWorkflowHistory = formatWorkflowHistory(workflowHistory);
   const formattedStartEvent = formattedWorkflowHistory?.history
     ?.events?.[0] as FormattedHistoryEventForType<'WorkflowExecutionStarted'>;
