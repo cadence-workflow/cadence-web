@@ -1,62 +1,96 @@
 import logger from '@/utils/logger';
 
 import losslessJsonParse from '../lossless-json-parse';
+
+const separators = ['\n', ' '];
+
 const formatInputPayload = (
   payload: { data?: string | null } | null | undefined
 ) => {
   const data = payload?.data;
-
   if (!data) {
     return null;
   }
 
   const parsedData = atob(data);
-  return parseJsonLines(parsedData);
+  return parseMultipleInputs(parsedData);
 };
 
-function parseJsonLines(input: string) {
-  const jsonArray = [];
-  let currentJson = '';
-  const separators = ['\n', ' '];
+const extractJsonValue = (input: string, startIndex: number) => {
+  let endIndex = startIndex;
+  let openBrackets = 0;
+  let openBraces = 0;
+  let inString = false;
+  let escapeNext = false; // used to handle escaped quotes
 
-  for (let i = 0; i < input.length; i++) {
-    const char = input[i];
-    if (separators.includes(char)) {
-      // Try to parse the current JSON string
-      if (currentJson) {
-        try {
-          const jsonObject = losslessJsonParse(currentJson);
-          // If successful, add the object to the array
-          jsonArray.push(jsonObject);
-          // Reset currentJson for the next JSON object
-          currentJson = '';
-        } catch {
-          // If parsing fails, treat the separator as part of the currentJson and continue with the next char
-          currentJson += char;
-        }
+  while (endIndex < input.length) {
+    const char = input[endIndex];
+
+    if (escapeNext) {
+      escapeNext = false;
+    } else if (char === '\\') {
+      escapeNext = true;
+    } else if (char === '"' && !inString) {
+      inString = true;
+    } else if (char === '"' && inString) {
+      inString = false;
+    } else if (!inString) {
+      if (char === '[') openBrackets++;
+      if (char === ']') openBrackets--;
+      if (char === '{') openBraces++;
+      if (char === '}') openBraces--;
+
+      // When a separator is found, this indicates the end of a JSON value if we are not inside any array or object
+      if (separators.includes(char) && openBrackets === 0 && openBraces === 0) {
+        break;
       }
-    } else {
-      currentJson += char;
     }
+    endIndex++;
   }
 
-  // Handle case where the last JSON object might be malformed
-  if (currentJson.trim() !== '') {
+  return {
+    startIndex,
+    endIndex,
+    jsonString: input.slice(startIndex, endIndex),
+  };
+};
+
+const parseMultipleInputs = (input: string) => {
+  const results = [];
+  let currentIndex = 0;
+
+  while (currentIndex < input.length) {
+    while (separators.includes(input[currentIndex])) {
+      currentIndex++;
+    }
+    if (currentIndex >= input.length) break;
+
     try {
-      const jsonObject = losslessJsonParse(currentJson);
-      jsonArray.push(jsonObject);
-    } catch {
+      const { startIndex, endIndex, jsonString } = extractJsonValue(
+        input,
+        currentIndex
+      );
+
+      if (endIndex > startIndex) {
+        // move to the end of the string before parsing to avoid parsing the same string if the parsing fails
+        currentIndex = endIndex;
+        results.push(losslessJsonParse(jsonString));
+      } else {
+        currentIndex++;
+      }
+    } catch (error) {
       logger.error(
         {
           input,
-          currentJson,
+          currentIndex,
+          error,
         },
         'Error parsing JSON string'
       );
     }
   }
 
-  return jsonArray;
-}
+  return results;
+};
 
 export default formatInputPayload;
