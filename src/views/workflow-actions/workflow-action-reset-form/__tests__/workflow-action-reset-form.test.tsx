@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { type FieldErrors, useForm, type Control } from 'react-hook-form';
+import { type FieldErrors, useForm } from 'react-hook-form';
 
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
@@ -82,9 +82,13 @@ function TestWrapper({ formErrors, formData }: TestProps) {
 
   return (
     <WorkflowActionResetForm
-      control={methods.control as Control<ResetWorkflowFormData>}
+      control={methods.control}
       fieldErrors={formErrors}
       formData={formData}
+      cluster="test-cluster"
+      domain="test-domain"
+      workflowId="test-workflow-id"
+      runId="test-run-id"
     />
   );
 }
