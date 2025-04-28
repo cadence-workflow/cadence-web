@@ -1,6 +1,10 @@
-import { type Theme } from 'baseui';
-import { type AccordionOverrides } from 'baseui/accordion';
+import { type Theme, withStyle } from 'baseui';
+import {
+  type StatelessAccordion,
+  type AccordionOverrides,
+} from 'baseui/accordion';
 import { type SkeletonOverrides } from 'baseui/skeleton/types';
+import { StyledTableHeadCell } from 'baseui/table-semantic';
 import { type StyleObject } from 'styletron-react';
 
 import type {
@@ -10,7 +14,7 @@ import type {
 
 import getBadgeContainerSize from '../workflow-history-event-status-badge/helpers/get-badge-container-size';
 
-export const overrides = {
+export const overrides = (animateBorderOnEnter?: boolean) => ({
   circularSkeleton: {
     Root: {
       style: {
@@ -23,6 +27,17 @@ export const overrides = {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
         ...$theme.borders.border100,
         borderRadius: $theme.borders.radius300,
+        animationDuration: '2s',
+        ...(animateBorderOnEnter && {
+          animationName: {
+            from: {
+              boxShadow: `0px 0px 0px 2px ${$theme.colors.primary}`,
+            },
+            to: {
+              boxShadow: `0px 0px 0px 0px rgba(0, 0, 0, 0)`,
+            },
+          },
+        }),
         overflow: 'hidden',
       }),
     },
@@ -66,7 +81,7 @@ export const overrides = {
       }),
     },
   } satisfies AccordionOverrides,
-};
+});
 
 const cssStylesObj = {
   eventLabel: ($theme: Theme) => ({

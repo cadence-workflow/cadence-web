@@ -422,6 +422,10 @@ export default function WorkflowHistory({ params }: Props) {
                       setResetToDecisionEventId(group.resetToDecisionEventId);
                     }
                   }}
+                  selected={
+                    queryParams.historySelectedEventId ===
+                    group.events[0].eventId
+                  }
                 />
               )}
               components={{

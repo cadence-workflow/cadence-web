@@ -10,7 +10,10 @@ import WorkflowHistoryEventDetails from '../workflow-history-event-details/workf
 import getBadgeContainerSize from '../workflow-history-event-status-badge/helpers/get-badge-container-size';
 import WorkflowHistoryEventStatusBadge from '../workflow-history-event-status-badge/workflow-history-event-status-badge';
 
-import { cssStyles, overrides } from './workflow-history-events-card.styles';
+import {
+  cssStyles,
+  overrides as getOverrides,
+} from './workflow-history-events-card.styles';
 import { type Props } from './workflow-history-events-card.types';
 
 export default function WorkflowHistoryEventsCard({
@@ -20,6 +23,7 @@ export default function WorkflowHistoryEventsCard({
   decodedPageUrlParams,
   getIsEventExpanded,
   onEventToggle,
+  animateBorderOnEnter,
 }: Props) {
   const { cls, theme } = useStyletronClasses(cssStyles);
 
@@ -29,6 +33,7 @@ export default function WorkflowHistoryEventsCard({
     if (getIsEventExpanded(id)) result.push(id);
     return result;
   }, [] as string[]);
+  const overrides = getOverrides(animateBorderOnEnter);
 
   return (
     <StatelessAccordion overrides={overrides.accordion} expanded={expanded}>

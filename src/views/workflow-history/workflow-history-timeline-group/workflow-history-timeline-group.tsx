@@ -30,6 +30,7 @@ export default function WorkflowHistoryTimelineGroup({
   getIsEventExpanded,
   onEventToggle,
   onReset,
+  selected,
 }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
   const hasBadges = badges !== undefined && badges.length > 0;
@@ -88,6 +89,7 @@ export default function WorkflowHistoryTimelineGroup({
           decodedPageUrlParams={decodedPageUrlParams}
           getIsEventExpanded={getIsEventExpanded}
           onEventToggle={onEventToggle}
+          animateBorderOnEnter={selected}
         />
       </div>
     </div>

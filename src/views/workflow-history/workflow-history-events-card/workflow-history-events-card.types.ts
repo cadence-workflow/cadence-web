@@ -15,4 +15,5 @@ export type Props = {
   decodedPageUrlParams: WorfklowHistoryProps['params'];
   getIsEventExpanded: GetIsEventExpanded;
   onEventToggle: ToggleIsEventExpanded;
+  animateBorderOnEnter?: boolean;
 };

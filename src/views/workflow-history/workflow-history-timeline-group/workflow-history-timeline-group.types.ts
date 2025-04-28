@@ -23,4 +23,5 @@ export type Props = Pick<
   getIsEventExpanded: GetIsEventExpanded;
   onEventToggle: ToggleIsEventExpanded;
   onReset?: () => void;
+  selected?: boolean;
 };
