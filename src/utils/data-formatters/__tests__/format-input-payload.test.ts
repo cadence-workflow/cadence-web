@@ -32,7 +32,6 @@ describe('formatInputPayload', () => {
     expect(formatInputPayload(input)).toEqual(expected);
   });
   // end of empty data checks
-
   test('should handle base64 encoded JSON with boolean value', () => {
     const input = { data: btoa(`true`) };
     const expected = [true];
