@@ -9,15 +9,25 @@ import { type RequestError } from '@/utils/request/request-error';
 import WORKFLOW_PAGE_STATUS_REFETCH_INTERVAL from '../config/workflow-page-status-refetch-interval.config';
 
 import {
+  type UseSuspenseQueryDescribeWorkflowParams,
   type DescribeWorkflowQueryKey,
   type UseDescribeWorkflowParams,
+  type UseQueryDescribeWorkflowParams,
+  type UseDescribeWorkflowQueryOptions,
 } from './use-describe-workflow.types';
 
 const getDefaultConfigurations = ({
+  domain,
+  cluster,
+  workflowId,
+  runId,
   refetchInterval = WORKFLOW_PAGE_STATUS_REFETCH_INTERVAL,
-  ...params
-}: UseDescribeWorkflowParams) => ({
-  queryKey: ['describe_workflow', params] as DescribeWorkflowQueryKey,
+  ...queryOptions
+}: UseDescribeWorkflowParams): UseDescribeWorkflowQueryOptions => ({
+  queryKey: [
+    'describe_workflow',
+    { domain, cluster, workflowId, runId },
+  ] as DescribeWorkflowQueryKey,
   queryFn: ({ queryKey: [_, p] }: { queryKey: DescribeWorkflowQueryKey }) =>
     request(
       `/api/domains/${p.domain}/${p.cluster}/workflows/${p.workflowId}/${p.runId}`
@@ -32,28 +42,25 @@ const getDefaultConfigurations = ({
 
     return false;
   },
+  ...queryOptions,
 });
 
-export function useDescribeWorkflow({
-  refetchInterval = WORKFLOW_PAGE_STATUS_REFETCH_INTERVAL,
-  ...params
-}: UseDescribeWorkflowParams) {
+export function useDescribeWorkflow(params: UseQueryDescribeWorkflowParams) {
   return useQuery<
     DescribeWorkflowResponse,
     RequestError,
     DescribeWorkflowResponse,
     DescribeWorkflowQueryKey
-  >(getDefaultConfigurations({ refetchInterval, ...params }));
+  >(getDefaultConfigurations(params));
 }
 
-export function useSuspenseDescribeWorkflow({
-  refetchInterval = WORKFLOW_PAGE_STATUS_REFETCH_INTERVAL,
-  ...params
-}: UseDescribeWorkflowParams) {
+export function useSuspenseDescribeWorkflow(
+  params: UseSuspenseQueryDescribeWorkflowParams
+) {
   return useSuspenseQuery<
     DescribeWorkflowResponse,
     RequestError,
     DescribeWorkflowResponse,
     DescribeWorkflowQueryKey
-  >(getDefaultConfigurations({ refetchInterval, ...params }));
+  >(getDefaultConfigurations(params));
 }
