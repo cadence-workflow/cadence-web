@@ -7,7 +7,7 @@ import {
   type WorkflowActionsEnabledConfig,
 } from '@/config/dynamic/resolvers/workflow-actions-enabled.types';
 import mockResolvedConfigValues from '@/utils/config/__fixtures__/resolved-config-values';
-import { describeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
+import { mockDescribeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
 
 import { mockWorkflowActionsConfig } from '../../__fixtures__/workflow-actions-config';
 import WorkflowActionsMenu from '../workflow-actions-menu';
@@ -139,7 +139,7 @@ function setup({
 
   const renderResult = render(
     <WorkflowActionsMenu
-      workflow={describeWorkflowResponse}
+      workflow={mockDescribeWorkflowResponse}
       {...(actionsEnabledConfig && { actionsEnabledConfig })}
       onActionSelect={mockOnActionSelect}
     />

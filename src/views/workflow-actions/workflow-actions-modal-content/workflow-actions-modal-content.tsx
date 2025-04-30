@@ -36,6 +36,7 @@ export default function WorkflowActionsModalContent<
     formState: { errors: validationErrors, isSubmitting },
     control,
     watch,
+    clearErrors,
   } = useForm<OptionalFormData>({
     resolver: action.modal.formSchema
       ? zodResolver(action.modal.formSchema)
@@ -122,6 +123,7 @@ export default function WorkflowActionsModalContent<
             <Form
               formData={watch()}
               fieldErrors={validationErrors}
+              clearErrors={clearErrors}
               control={control}
               cluster={params.cluster}
               domain={params.domain}

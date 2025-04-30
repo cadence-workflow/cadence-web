@@ -32,6 +32,11 @@ describe('formatInputPayload', () => {
     expect(formatInputPayload(input)).toEqual(expected);
   });
   // end of empty data checks
+  test('should handle base64 encoded JSON with boolean value', () => {
+    const input = { data: btoa(`true`) };
+    const expected = [true];
+    expect(formatInputPayload(input)).toEqual(expected);
+  });
 
   test('should parse base64 encoded JSON lines separated by \n correctly', () => {
     const input = {
@@ -106,17 +111,44 @@ describe('formatInputPayload', () => {
     expect(formatInputPayload(input)).toEqual(expected);
   });
 
+  test('should handle base64 encoded JSON with exponential numbers', () => {
+    const input = {
+      data: btoa(`[333e-10]\n{"number": 1.23e-10} -1.23e+10\n1e20`),
+    };
+    const expected = [[333e-10], { number: 1.23e-10 }, -1.23e10, 1e20];
+    expect(formatInputPayload(input)).toEqual(expected);
+  });
+
   test('should handle base64 encoded multiple mixed JSON objects', () => {
     const input = {
       data: btoa(
-        `{"a": 1, "b": "text"}\n{"c": [1, 2, 3], "d": null}\n42\n"Hello"`
+        `{"a": 1, "b": "text"} 0\n{"c": [1, 2, 3], "d": null}\n42\n"Hello"\ntrue`
       ),
     };
     const expected = [
       { a: 1, b: 'text' },
+      0,
       { c: [1, 2, 3], d: null },
       42,
       'Hello',
+      true,
+    ];
+    expect(formatInputPayload(input)).toEqual(expected);
+  });
+
+  test('should handle base64 encoded JSON with nested json string', () => {
+    const stringifiedJson = JSON.stringify(
+      `{ street: ['Hello', 1, { a: 'b' }] }`
+    );
+    const input = {
+      data: btoa(`{"name": "John", "age": 30, "address": ${stringifiedJson}}`),
+    };
+    const expected = [
+      {
+        name: 'John',
+        age: 30,
+        address: `{ street: ['Hello', 1, { a: 'b' }] }`,
+      },
     ];
     expect(formatInputPayload(input)).toEqual(expected);
   });

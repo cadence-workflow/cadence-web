@@ -7,7 +7,7 @@ import { type DescribeWorkflowResponse } from '@/route-handlers/describe-workflo
 import mockResolvedConfigValues from '@/utils/config/__fixtures__/resolved-config-values';
 import { mockResetActionConfig } from '@/views/workflow-actions/__fixtures__/workflow-actions-config';
 import { resetWorkflowActionConfig } from '@/views/workflow-actions/config/workflow-actions.config';
-import { describeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
+import { mockDescribeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
 
 import WorkflowHistoryTimelineResetButton from '../workflow-history-timeline-reset-button';
 
@@ -140,9 +140,9 @@ function setup({
             }
 
             const response: DescribeWorkflowResponse = {
-              ...describeWorkflowResponse,
+              ...mockDescribeWorkflowResponse,
               workflowExecutionInfo: {
-                ...describeWorkflowResponse.workflowExecutionInfo,
+                ...mockDescribeWorkflowResponse.workflowExecutionInfo,
                 closeStatus: workflowCloseStatus,
               },
             };
