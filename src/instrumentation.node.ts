@@ -9,7 +9,6 @@ import { setLoadedGlobalConfigs } from './utils/config/global-configs-ref';
 import logger from './utils/logger';
 
 export async function register() {
-
   registerOTel({
     serviceName: 'cadence-web',
     instrumentations: [
