@@ -14,6 +14,7 @@ const BUILD_OUTPUT =
 
 const nextConfig = {
   webpack: (config) => {
+    config.externals.push('@grpc/grpc-js','require-in-the-middle');
     config.resolve.alias = {
       ...config.resolve.alias,
       '@': path.resolve(__dirname, './src'),
