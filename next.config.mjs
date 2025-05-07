@@ -13,12 +13,14 @@ const BUILD_OUTPUT =
     : undefined;
 
 const nextConfig = {
-  webpack: (config) => {
-    config.externals.push('@grpc/grpc-js','require-in-the-middle','@opentelemetry/exporter-jaeger');
+  webpack: (config, options) => {
     config.resolve.alias = {
       ...config.resolve.alias,
       '@': path.resolve(__dirname, './src'),
     };
+    if (options.isServer) {
+      config.externals.push('@grpc/grpc-js', 'require-in-the-middle', '@opentelemetry/exporter-jaeger');
+    }
     return config;
   },
   redirects: async () => {
