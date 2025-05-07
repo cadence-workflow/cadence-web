@@ -2,6 +2,7 @@ import React from 'react';
 
 import { styled } from './list-table-nested.styles';
 import type { Props } from './list-table-nested.types';
+import SublistTable from './sublist-table/sublist-table';
 
 /**
  * Renders a responsive table for displaying items as label-value pairs, or groups of label-value pairs.
@@ -19,18 +20,7 @@ export default function ListTableNested({ items }: Props) {
             )}
           </styled.TitleBlock>
           {item.kind === 'group' ? (
-            <styled.Sublist>
-              {item.items.map((sublistItem) => (
-                <styled.SublistItem key={sublistItem.key}>
-                  <styled.SublistItemLabel>
-                    {sublistItem.label}:
-                  </styled.SublistItemLabel>
-                  <styled.SublistItemValue>
-                    {sublistItem.value}
-                  </styled.SublistItemValue>
-                </styled.SublistItem>
-              ))}
-            </styled.Sublist>
+            <SublistTable items={item.items} />
           ) : (
             <styled.ContentContainer>{item.value}</styled.ContentContainer>
           )}
