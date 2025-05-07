@@ -12,13 +12,12 @@ import PageSection from '@/components/page-section/page-section';
 import { type PageQueryParamSetterValues } from '@/hooks/use-page-query-params/use-page-query-params.types';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import type domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
-import type domainPageTabsConfig from '@/views/domain-page/config/domain-page-tabs.config';
+import { type DomainPageTabName } from '@/views/domain-page/domain-page-tabs/domain-page-tabs.types';
 
 import WorkflowPageStatusTag from '../workflow-page-status-tag/workflow-page-status-tag';
 
 import { cssStyles, overrides } from './workflow-page-header.styles';
 import type { Props } from './workflow-page-header.types';
-import { DomainPageTabName } from '@/views/domain-page/domain-page-tabs/domain-page-tabs.types';
 
 export default function WorkflowPageHeader({
   domain,
