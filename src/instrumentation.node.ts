@@ -22,7 +22,7 @@ export async function register() {
     ],
     propagators: [new JaegerPropagator()],
     traceExporter: new OTLPTraceExporter({
-      url: 'http://host.docker.internal:24317',
+      url: 'http://localhost:24317',
     }),
   });
   try {
