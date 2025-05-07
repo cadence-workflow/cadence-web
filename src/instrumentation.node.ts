@@ -2,13 +2,15 @@ import { GrpcInstrumentation } from '@opentelemetry/instrumentation-grpc';
 import { HttpInstrumentation } from '@opentelemetry/instrumentation-http';
 import { UndiciInstrumentation } from '@opentelemetry/instrumentation-undici';
 import { JaegerPropagator } from '@opentelemetry/propagator-jaeger';
+import { JaegerExporter } from '@opentelemetry/exporter-jaeger';
 import { registerOTel } from '@vercel/otel';
-
+import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base'
 import getTransformedConfigs from './utils/config/get-transformed-configs';
 import { setLoadedGlobalConfigs } from './utils/config/global-configs-ref';
 import logger from './utils/logger';
 
 export async function register() {
+
   registerOTel({
     serviceName: 'cadence-web',
     instrumentations: [
@@ -17,8 +19,12 @@ export async function register() {
       new UndiciInstrumentation(),
     ],
     propagators:
-      process.env.OTEL_PROPAGATORS?.trim() === 'jeager'
+      process.env.OTEL_PROPAGATORS?.trim() === 'jaeger'
         ? [new JaegerPropagator()]
+        : undefined,
+    spanProcessors:
+      process.env.OTEL_TRACES_EXPORTER?.trim() === 'jaeger'
+        ? [new BatchSpanProcessor(new JaegerExporter())]
         : undefined,
   });
   try {
