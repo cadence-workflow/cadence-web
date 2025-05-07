@@ -18,6 +18,7 @@ import WorkflowPageStatusTag from '../workflow-page-status-tag/workflow-page-sta
 
 import { cssStyles, overrides } from './workflow-page-header.styles';
 import type { Props } from './workflow-page-header.types';
+import { DomainPageTabName } from '@/views/domain-page/domain-page-tabs/domain-page-tabs.types';
 
 export default function WorkflowPageHeader({
   domain,
@@ -51,7 +52,7 @@ export default function WorkflowPageHeader({
               domainLink +
               '/' +
               // ensuring that this tab exists in config
-              ('workflows' satisfies (typeof domainPageTabsConfig)[number]['key']),
+              ('workflows' satisfies DomainPageTabName),
             // ensuring that these query params exist in config
             query: {
               // TODO @assem.hafez: fix this; this is incorrect because we need to be asserting on query key

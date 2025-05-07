@@ -13,9 +13,9 @@ import {
 
 export default function DomainPageTabsError({ error, reset }: Props) {
   const { domainTab } = useParams<DomainPageContentParams>();
-  const getConfig = domainPageTabsConfig[domainTab].error;
+  const tabConfig = domainPageTabsConfig[domainTab];
 
-  if (typeof getConfig !== 'function') {
+  if (!tabConfig) {
     return (
       <PanelSection>
         <ErrorPanel
@@ -27,7 +27,7 @@ export default function DomainPageTabsError({ error, reset }: Props) {
     );
   }
 
-  const errorConfig: DomainPageTabErrorConfig = getConfig(error);
+  const errorConfig: DomainPageTabErrorConfig = tabConfig.error(error);
 
   return (
     <PanelSection>

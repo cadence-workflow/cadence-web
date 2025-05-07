@@ -17,15 +17,15 @@ export default function DomainPageContent(props: Props) {
   const decodedParams = decodeUrlParams(
     props.params
   ) as DomainPageContentParams;
-  const TabContent = domainPageTabsConfig[decodedParams.domainTab].content;
+  const tabConfig = domainPageTabsConfig[decodedParams.domainTab];
 
-  if (!TabContent) {
+  if (!tabConfig) {
     return notFound();
   }
 
   return (
     <styled.PageSection>
-      <TabContent
+      <tabConfig.content
         domain={decodedParams.domain}
         cluster={decodedParams.cluster}
       />
