@@ -6,7 +6,6 @@ Cadence is a distributed, scalable, durable, and highly available orchestration 
 
 This web UI is used to view workflows from [Cadence][cadence], see what's running, and explore and debug workflow executions.
 
-
 ## Getting Started
 
 ### Configuration
@@ -26,16 +25,17 @@ Set these environment variables if you need to change their defaults
 Note: To connect `cadence-web` to multiple clusters, you will need to add comma-delimted entries for `CADENCE_GRPC_PEERS`, `CADENCE_GRPC_SERVICES_NAMES` & `CADENCE_CLUSTERS_NAMES` for each cluster (each cluster values are grouped by their index within the Comma-delimited lists).
 
 Example:
+
 ```
 CADENCE_GRPC_PEERS=127.0.0.1:3000,127.0.0.1:5000 
 CADENCE_GRPC_SERVICES_NAMES=cadence-frontend-cluster0,cadence-frontend-cluster1
 CADENCE_CLUSTERS_NAMES=cluster0,cluster1
 ```
 
-
 ### Using cadence-web
 
 The latest version of `cadence-web` is included in the `cadence` composed docker containers in the [main Cadence repository][cadence]. Follow the instructions there to get started.
+
 ```
 docker-compose -f docker/docker-compose.yml up
 ```
@@ -67,7 +67,7 @@ docker run -it --rm \
 - Replace `/path/on/host/ca.pem` with the actual location of your CA certificate on the host system.
 - `CADENCE_GRPC_TLS_CA_FILE` must point to the path inside the container where the certificate is mounted.
 
-### Building & developing cadence-web 
+### Building & developing cadence-web
 
 `cadence-web` requires node `v18` or greater to be able to run correctly.
 
@@ -76,17 +76,23 @@ docker run -it --rm \
 To create a production build, follow these steps:
 
 1. Install npm packages and download idls
+
 ```
 npm install && npm run install-idl && npm run generate:idl
 ```
+
 2. Build the project files
+
 ```
 npm run build
 ```
+
 3. After building the code, start the server by running this command from the same directory as the build
+
 ```
 npm start
 ```
+
 4. Once the webapp is ready, access it through `localhost:8088` (port can be changed using `CADENCE_WEB_PORT` environment variable)
 
 #### Running development environment
@@ -94,13 +100,17 @@ npm start
 To run the development server, follow these steps:
 
 1. Install npm packages and download idls
+
 ```
 npm install && npm run install-idl && npm run generate:idl
 ```
+
 2. Run the development server using
+
 ```
 npm run dev
 ```
+
 3. Once the webapp is ready, access it through `localhost:8088` (port can be changed using `CADENCE_WEB_PORT` environment variable)
 
 Note: For contribution we recommend using dev containers, check [VSCode Dev Containers](#using-vscode-dev-containers) section for more information
@@ -113,10 +123,10 @@ Note: For contribution we recommend using dev containers, check [VSCode Dev Cont
 4. Use the Command Palette to select the 'Reopen folder in Container' option
 5. Follow same commands listed in [Running development environment](#running-development-environment) section.
 
-
 #### Developing cadence-web against cadence composed docker
 
 To start development against dockerized cadence services, run the following command from the root of the project
+
 ```
 docker-compose -f docker-compose-backend-services.yml up
 ```
@@ -125,10 +135,7 @@ You can customize the YAML file or reuse configurations from the [cadence reposi
 
 After running `cadence`, start `cadence-web` for development using one of the previous methods ([Running development environment](#running-development-environment), [VSCode Dev Containers](#using-vscode-dev-containers))
 
-
-
 #### NPM scripts
-
 
 | script            | Description                                                                                     |
 | ----------------- | ----------------------------------------------------------------------------------------------- |
@@ -144,11 +151,8 @@ After running `cadence`, start `cadence-web` for development using one of the pr
 | lint              | Run eslint                                                                                      |
 | typecheck         | Run typescript checks                                                                           |
 
-
-
-
 ## License
 
-MIT License, please see [LICENSE](https://github.com/cadence-workflow/cadence-web/blob/master/LICENSE) for details.
+Apache 2.0 License, please see [LICENSE](https://github.com/cadence-workflow/cadence-web/blob/master/LICENSE) for details.
 
 [cadence]: https://github.com/cadence-workflow/cadence
