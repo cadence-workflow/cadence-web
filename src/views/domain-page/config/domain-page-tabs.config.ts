@@ -12,7 +12,7 @@ const domainPageTabsConfig = {
     title: 'Workflows',
     artwork: MdSort,
     content: DomainWorkflows,
-    error: (_) => ({
+    getErrorConfig: (_) => ({
       message: 'Failed to load workflows',
       actions: [{ kind: 'retry', label: 'Retry' }],
     }),
@@ -21,7 +21,7 @@ const domainPageTabsConfig = {
     title: 'Metadata',
     artwork: MdListAlt,
     content: DomainPageMetadata,
-    error: (_) => ({
+    getErrorConfig: (_) => ({
       message: 'Failed to load metadata',
       actions: [{ kind: 'retry', label: 'Retry' }],
     }),
@@ -30,7 +30,7 @@ const domainPageTabsConfig = {
     title: 'Settings',
     artwork: MdSettings,
     content: DomainPageSettings,
-    error: (_) => ({
+    getErrorConfig: (_) => ({
       message: 'Failed to load settings',
       actions: [{ kind: 'retry', label: 'Retry' }],
     }),
@@ -39,7 +39,7 @@ const domainPageTabsConfig = {
     title: 'Archival',
     artwork: MdArchive,
     content: DomainWorkflowsArchival,
-    error: (_) => ({
+    getErrorConfig: (_) => ({
       message: 'Failed to load archival workflows',
       actions: [{ kind: 'retry', label: 'Retry' }],
     }),

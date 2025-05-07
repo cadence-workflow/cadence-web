@@ -27,7 +27,7 @@ export default function DomainPageTabsError({ error, reset }: Props) {
     );
   }
 
-  const errorConfig: DomainPageTabErrorConfig = tabConfig.error(error);
+  const errorConfig: DomainPageTabErrorConfig = tabConfig.getErrorConfig(error);
 
   return (
     <PanelSection>

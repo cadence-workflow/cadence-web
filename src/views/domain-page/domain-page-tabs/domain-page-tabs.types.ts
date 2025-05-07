@@ -10,7 +10,7 @@ export type DomainPageTabsConfig = Record<
     title: string;
     artwork: PageTab['artwork'];
     content: React.ComponentType<DomainPageTabContentProps>;
-    error: (err: Error) => DomainPageTabErrorConfig;
+    getErrorConfig: (err: Error) => DomainPageTabErrorConfig;
   }
 >;
 

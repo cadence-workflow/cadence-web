@@ -24,22 +24,22 @@ jest.mock(
   () =>
     ({
       workflows: {
-        error: () => ({
+        getErrorConfig: () => ({
           message: 'workflow error',
         }),
       },
       metadata: {
-        error: () => ({
+        getErrorConfig: () => ({
           message: 'metadata error',
         }),
       },
       settings: {
-        error: () => ({
+        getErrorConfig: () => ({
           message: 'settings error',
         }),
       },
       archival: {
-        error: () => ({
+        getErrorConfig: () => ({
           message: 'archival error',
         }),
       },
