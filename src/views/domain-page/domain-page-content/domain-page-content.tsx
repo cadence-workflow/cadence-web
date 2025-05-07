@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation';
 
 import decodeUrlParams from '@/utils/decode-url-params';
 
-import domainPageTabsContentConfig from '../config/domain-page-tabs-content.config';
+import domainPageTabsConfig from '../config/domain-page-tabs.config';
 
 import { styled } from './domain-page-content.styles';
 import {
@@ -17,7 +17,7 @@ export default function DomainPageContent(props: Props) {
   const decodedParams = decodeUrlParams(
     props.params
   ) as DomainPageContentParams;
-  const TabContent = domainPageTabsContentConfig[decodedParams.domainTab];
+  const TabContent = domainPageTabsConfig[decodedParams.domainTab].content;
 
   if (!TabContent) {
     return notFound();
