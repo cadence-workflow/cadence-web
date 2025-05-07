@@ -1,32 +1,39 @@
+import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
 import { GrpcInstrumentation } from '@opentelemetry/instrumentation-grpc';
 import { HttpInstrumentation } from '@opentelemetry/instrumentation-http';
 import { UndiciInstrumentation } from '@opentelemetry/instrumentation-undici';
 import { JaegerPropagator } from '@opentelemetry/propagator-jaeger';
-import { JaegerExporter } from '@opentelemetry/exporter-jaeger';
-import { registerOTel } from '@vercel/otel';
-import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base'
+import { resourceFromAttributes } from '@opentelemetry/resources';
+import { NodeSDK } from '@opentelemetry/sdk-node';
+import { ATTR_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
+
 import getTransformedConfigs from './utils/config/get-transformed-configs';
 import { setLoadedGlobalConfigs } from './utils/config/global-configs-ref';
 import logger from './utils/logger';
-
 export async function register() {
-
-  registerOTel({
-    serviceName: 'cadence-web',
+  const sdk = new NodeSDK({
+    resource: resourceFromAttributes({
+      [ATTR_SERVICE_NAME]: 'cadence-web',
+    }),
     instrumentations: [
       new GrpcInstrumentation(),
       new HttpInstrumentation(),
       new UndiciInstrumentation(),
     ],
-    propagators:
-      process.env.OTEL_PROPAGATORS?.trim() === 'jaeger'
-        ? [new JaegerPropagator()]
-        : undefined,
-    spanProcessors:
-      process.env.OTEL_TRACES_EXPORTER?.trim() === 'jaeger'
-        ? [new BatchSpanProcessor(new JaegerExporter())]
-        : undefined,
+    propagators: [new JaegerPropagator()],
+    traceExporter: new OTLPTraceExporter({
+      url: 'http://host.docker.internal:24317',
+    }),
   });
+  try {
+    await sdk.start();
+  } catch (e) {
+    logger.error({
+      message: 'Failed to start OpenTelemetry SDK',
+      error: e,
+    });
+  }
+
   try {
     const configs = await getTransformedConfigs();
     setLoadedGlobalConfigs(configs);
