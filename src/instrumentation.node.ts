@@ -1,4 +1,4 @@
-import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
+import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 import { GrpcInstrumentation } from '@opentelemetry/instrumentation-grpc';
 import { HttpInstrumentation } from '@opentelemetry/instrumentation-http';
 import { UndiciInstrumentation } from '@opentelemetry/instrumentation-undici';
@@ -22,7 +22,7 @@ export async function register() {
     ],
     propagators: [new JaegerPropagator()],
     traceExporter: new OTLPTraceExporter({
-      url: '127.0.0.1:24317',
+      url: 'http://127.0.0.1:24318',
     }),
   });
   try {
