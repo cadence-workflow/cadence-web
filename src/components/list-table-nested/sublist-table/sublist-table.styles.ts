@@ -37,8 +37,11 @@ export const styled = {
     'div',
     ({ $theme }: { $theme: Theme }): StyleObject => ({
       ...$theme.typography.LabelSmall,
+      overflow: 'hidden',
+      overflowWrap: 'anywhere',
       [$theme.mediaQuery.medium]: {
         minWidth: '120px',
+        maxWidth: '120px',
       },
     })
   ),
@@ -46,6 +49,8 @@ export const styled = {
     'div',
     ({ $theme }: { $theme: Theme }): StyleObject => ({
       ...$theme.typography.ParagraphSmall,
+      overflow: 'hidden',
+      overflowWrap: 'anywhere',
     })
   ),
 };
