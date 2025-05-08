@@ -7,10 +7,13 @@ import { resourceFromAttributes } from '@opentelemetry/resources';
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { ATTR_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
 
-import getTransformedConfigs from './utils/config/get-transformed-configs';
-import { setLoadedGlobalConfigs } from './utils/config/global-configs-ref';
-import logger from './utils/logger';
-export async function register() {
+import logger from '@/utils/logger';
+
+import { diag, DiagConsoleLogger} from '@opentelemetry/api';
+import { OtelRegisterConfig } from './otel.types';
+
+export async function register(config?: OtelRegisterConfig) {
+  diag.setLogger(new DiagConsoleLogger(),'debug');
   const sdk = new NodeSDK({
     resource: resourceFromAttributes({
       [ATTR_SERVICE_NAME]: 'cadence-web',
@@ -22,8 +25,9 @@ export async function register() {
     ],
     propagators: [new JaegerPropagator()],
     traceExporter: new OTLPTraceExporter({
-      url: 'http://127.0.0.1:24318/v1/traces',
+      url: 'http://host.docker.internal:4318/v1/traces',
     }),
+    sampler: config?.sampler,
   });
   try {
     await sdk.start();
@@ -32,18 +36,5 @@ export async function register() {
       message: 'Failed to start OpenTelemetry SDK',
       error: e,
     });
-  }
-
-  try {
-    const configs = await getTransformedConfigs();
-    setLoadedGlobalConfigs(configs);
-  } catch (e) {
-    // manually catching and logging the error to prevent the error being replaced
-    // by "Cannot set property message of [object Object] which has only a getter"
-    logger.error({
-      message: 'Failed to load configs',
-      error: e,
-    });
-    process.exit(1); // use process.exit to exit without an extra error log from instrumentation
   }
 }
