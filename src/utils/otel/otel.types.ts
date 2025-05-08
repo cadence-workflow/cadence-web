@@ -1,5 +1,5 @@
-import { Sampler } from "@opentelemetry/api";
+import { type Sampler } from '@opentelemetry/api';
 
 export type OtelRegisterConfig = {
-  sampler?: Sampler
-}
+  sampler?: Sampler;
+};
