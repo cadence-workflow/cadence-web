@@ -55,6 +55,8 @@ export const styled = {
     'div',
     ({ $theme }: { $theme: Theme }): StyleObject => ({
       flexGrow: 1,
+      overflow: 'hidden',
+      overflowWrap: 'anywhere',
       ...$theme.typography.ParagraphSmall,
     })
   ),

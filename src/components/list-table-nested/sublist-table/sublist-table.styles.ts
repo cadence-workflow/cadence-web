@@ -22,13 +22,14 @@ export const styled = {
       [$theme.mediaQuery.medium]: {
         flexDirection: 'row',
         alignItems: 'baseline',
+        columnGap: $theme.sizing.scale700,
         ':not(:last-child)': {
           borderBottom: `1px solid ${$theme.colors.borderOpaque}`,
         },
       },
       flexDirection: 'column',
       alignItems: 'start',
-      gap: $theme.sizing.scale200,
+      rowGap: $theme.sizing.scale200,
       paddingTop: $theme.sizing.scale100,
       paddingBottom: $theme.sizing.scale100,
     })
