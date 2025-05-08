@@ -6,10 +6,7 @@ import PanelSection from '@/components/panel-section/panel-section';
 import domainPageTabsConfig from '../config/domain-page-tabs.config';
 import { type DomainPageContentParams } from '../domain-page-content/domain-page-content.types';
 
-import {
-  type DomainPageTabErrorConfig,
-  type Props,
-} from './domain-page-tabs-error.types';
+import { type Props } from './domain-page-tabs-error.types';
 
 export default function DomainPageTabsError({ error, reset }: Props) {
   const { domainTab } = useParams<DomainPageContentParams>();
@@ -27,7 +24,7 @@ export default function DomainPageTabsError({ error, reset }: Props) {
     );
   }
 
-  const errorConfig: DomainPageTabErrorConfig = tabConfig.getErrorConfig(error);
+  const errorConfig = tabConfig.getErrorConfig(error);
 
   return (
     <PanelSection>

@@ -7,12 +7,14 @@ import DomainPageMetadata from '../domain-page-metadata/domain-page-metadata';
 import DomainPageSettings from '../domain-page-settings/domain-page-settings';
 import type { DomainPageTabsConfig } from '../domain-page-tabs/domain-page-tabs.types';
 
-const domainPageTabsConfig = {
+const domainPageTabsConfig: DomainPageTabsConfig<
+  'workflows' | 'metadata' | 'settings' | 'archival'
+> = {
   workflows: {
     title: 'Workflows',
     artwork: MdSort,
     content: DomainWorkflows,
-    getErrorConfig: (_) => ({
+    getErrorConfig: () => ({
       message: 'Failed to load workflows',
       actions: [{ kind: 'retry', label: 'Retry' }],
     }),
@@ -21,7 +23,7 @@ const domainPageTabsConfig = {
     title: 'Metadata',
     artwork: MdListAlt,
     content: DomainPageMetadata,
-    getErrorConfig: (_) => ({
+    getErrorConfig: () => ({
       message: 'Failed to load metadata',
       actions: [{ kind: 'retry', label: 'Retry' }],
     }),
@@ -30,7 +32,7 @@ const domainPageTabsConfig = {
     title: 'Settings',
     artwork: MdSettings,
     content: DomainPageSettings,
-    getErrorConfig: (_) => ({
+    getErrorConfig: () => ({
       message: 'Failed to load settings',
       actions: [{ kind: 'retry', label: 'Retry' }],
     }),
@@ -39,11 +41,11 @@ const domainPageTabsConfig = {
     title: 'Archival',
     artwork: MdArchive,
     content: DomainWorkflowsArchival,
-    getErrorConfig: (_) => ({
+    getErrorConfig: () => ({
       message: 'Failed to load archival workflows',
       actions: [{ kind: 'retry', label: 'Retry' }],
     }),
   },
-} as const satisfies DomainPageTabsConfig;
+} as const;
 
 export default domainPageTabsConfig;
