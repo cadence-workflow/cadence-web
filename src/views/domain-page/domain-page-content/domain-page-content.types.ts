@@ -1,11 +1,9 @@
-import type domainPageTabsConfig from '../config/domain-page-tabs.config';
-
-export type DomainTabName = (typeof domainPageTabsConfig)[number]['key'];
+import { type DomainPageTabName } from '../domain-page-tabs/domain-page-tabs.types';
 
 export type DomainPageContentParams = {
   domain: string;
   cluster: string;
-  domainTab: DomainTabName;
+  domainTab: DomainPageTabName;
 };
 
 export type Props = {
@@ -16,8 +14,3 @@ export type DomainPageTabContentProps = {
   domain: string;
   cluster: string;
 };
-
-export type DomainPageTabsContentConfig = Record<
-  DomainTabName,
-  React.ComponentType<DomainPageTabContentProps>
->;

@@ -6,7 +6,6 @@ import DomainPageContent from '../domain-page-content';
 import type {
   DomainPageContentParams,
   DomainPageTabContentProps,
-  DomainPageTabsContentConfig,
 } from '../domain-page-content.types';
 
 const mockNotFound = jest.fn();
@@ -25,16 +24,28 @@ const MockedTabContent = ({
   </div>
 );
 
-jest.mock(
-  '../../config/domain-page-tabs-content.config',
-  () =>
-    ({
-      workflows: (props) => <MockedTabContent {...props} tab="workflows" />,
-      metadata: (props) => <MockedTabContent {...props} tab="metadata" />,
-      settings: (props) => <MockedTabContent {...props} tab="settings" />,
-      archival: (props) => <MockedTabContent {...props} tab="archival" />,
-    }) as const satisfies DomainPageTabsContentConfig
-);
+jest.mock('../../config/domain-page-tabs.config', () => ({
+  workflows: {
+    content: (props: DomainPageTabContentProps) => (
+      <MockedTabContent {...props} tab="workflows" />
+    ),
+  },
+  metadata: {
+    content: (props: DomainPageTabContentProps) => (
+      <MockedTabContent {...props} tab="metadata" />
+    ),
+  },
+  settings: {
+    content: (props: DomainPageTabContentProps) => (
+      <MockedTabContent {...props} tab="settings" />
+    ),
+  },
+  archival: {
+    content: (props: DomainPageTabContentProps) => (
+      <MockedTabContent {...props} tab="archival" />
+    ),
+  },
+}));
 
 const mockParams: DomainPageContentParams = {
   domain: 'mock-domain',

@@ -20,7 +20,13 @@ export default function DomainPageTabs() {
     <styled.PageTabsContainer>
       <PageTabs
         selectedTab={decodedParams.domainTab}
-        tabList={domainPageTabsConfig}
+        tabList={Object.entries(domainPageTabsConfig).map(
+          ([key, tabConfig]) => ({
+            key,
+            title: tabConfig.title,
+            artwork: tabConfig.artwork,
+          })
+        )}
         setSelectedTab={(newTab) => {
           router.push(
             `${encodeURIComponent(newTab.toString())}${window.location.search}`
