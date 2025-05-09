@@ -1,4 +1,5 @@
 'use client';
+import parseDateValue from '@/components/date-filter-v2/helpers/parse-date-value';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
 import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
@@ -20,8 +21,8 @@ export default function DomainWorkflowsHeader({ domain, cluster }: Props) {
     inputType: queryParams.inputType,
     search: queryParams.search,
     statuses: queryParams.statuses,
-    timeRangeStart: queryParams.timeRangeStart,
-    timeRangeEnd: queryParams.timeRangeEnd,
+    timeRangeStart: parseDateValue(queryParams.timeRangeStart).toDate(),
+    timeRangeEnd: parseDateValue(queryParams.timeRangeEnd).toDate(),
     sortColumn: queryParams.sortColumn,
     sortOrder: queryParams.sortOrder,
     query: queryParams.query,
