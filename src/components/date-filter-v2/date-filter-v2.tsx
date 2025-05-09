@@ -1,22 +1,23 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Button } from 'baseui/button';
-import { StatefulCalendar } from 'baseui/datepicker';
+import { StatefulCalendar, TimePicker } from 'baseui/datepicker';
 import { FormControl } from 'baseui/form-control';
 import { Input } from 'baseui/input';
-import { StatefulMenu } from 'baseui/menu';
-import { Popover } from 'baseui/popover';
+import { StatefulPopover } from 'baseui/popover';
+import { MdClose } from 'react-icons/md';
 
 import dayjs from '@/utils/datetime/dayjs';
 
 import { DATE_FILTER_RELATIVE_VALUES } from './date-filter-v2.constants';
+import { overrides, styled } from './date-filter-v2.styles';
 import {
-  type DateValue,
-  type DateRangeV2,
+  type RelativeDateValue,
   type Props,
+  type DateRangeV2,
 } from './date-filter-v2.types';
 import isRelativeDateValue from './helpers/is-relative-date-value';
-import { overrides } from './date-filter-v2.styles';
+import stringifyDateValue from './helpers/stringify-date-value';
 
 export default function DateFilterV2({
   label,
@@ -24,131 +25,194 @@ export default function DateFilterV2({
   dates,
   onChangeDates,
 }: Props) {
-  /**
-   * <Popover content={Calendars with quick select}>
-   *    <Input>
-   * </Popover>
-   */
-  const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
-  const [isCustomRangeEnabled, setIsCustomRangeEnabled] =
-    useState<boolean>(false);
+  const [tempDates, setTempDates] = useState<{
+    start: dayjs.Dayjs | undefined;
+    end: dayjs.Dayjs | undefined;
+  }>({
+    start: undefined,
+    end: undefined,
+  });
 
-  const [internalStart, setInternalStart] = useState<DateValue | undefined>(
-    undefined
-  );
   useEffect(() => {
-    setInternalStart(Boolean(dates.start) ? dates.start : undefined);
-  }, [dates.start]);
+    if (dayjs.isDayjs(dates.start) && dayjs.isDayjs(dates.end))
+      setTempDates({
+        start: dates.start,
+        end: dates.end,
+      });
+  }, [dates]);
 
-  const [internalEnd, setInternalEnd] = useState<DateValue | undefined>(
-    undefined
+  const [isDateSaveable, setIsDateSaveable] = useState<boolean>(false);
+
+  const saveDates = useCallback(
+    (dates: DateRangeV2) => {
+      onChangeDates(dates);
+      setIsDateSaveable(false);
+    },
+    [onChangeDates]
   );
-  useEffect(() => {
-    setInternalEnd(Boolean(dates.end) ? dates.end : undefined);
-  }, [dates.end]);
 
   const displayValue = useMemo<string>(() => {
     if (!dates.end || !dates.start) return 'Unknown';
     if (dates.end === 'now' && isRelativeDateValue(dates.start))
       return DATE_FILTER_RELATIVE_VALUES[dates.start].label;
-    return `${dates.start} - ${dates.end}`;
-  }, [dates]);
 
-  const onChangeDatesAndClose = useCallback(
-    (range: DateRangeV2) => {
-      onChangeDates(range);
-      setIsPopoverOpen(false);
-    },
-    [onChangeDates]
-  );
-
-  useEffect(() => {
-    if (
-      dates.end instanceof dayjs.Dayjs &&
-      dates.start instanceof dayjs.Dayjs
-    ) {
-      setIsCustomRangeEnabled(true);
-    }
+    return `${stringifyDateValue(dates.start, true)} - ${stringifyDateValue(dates.end, true)}`;
   }, [dates]);
 
   return (
     <FormControl label={label} overrides={overrides.dateFormControl}>
-      <Popover
-        isOpen={isPopoverOpen}
-        content={
-          <div>
-            <div data-testid="quick select options">
-              <div>Quick Range</div>
-              <StatefulMenu
-                items={[
-                  ...Object.entries(DATE_FILTER_RELATIVE_VALUES).map(
-                    ([key, { label }]) => ({
-                      key,
-                      label,
-                    })
-                  ),
-                  { key: 'custom', label: 'Custom Range' },
-                ]}
-                onItemSelect={({
-                  item,
-                }: {
-                  item: { key: string; label: string };
-                }) => {
-                  if (item.key === 'custom') {
-                    setIsCustomRangeEnabled(true);
-                  } else if (isRelativeDateValue(item.key)) {
-                    onChangeDatesAndClose({
-                      start: item.key,
-                      end: 'now',
+      <StatefulPopover
+        overrides={overrides.popover}
+        triggerType="click"
+        dismissOnClickOutside={!isDateSaveable}
+        content={({ close }) => (
+          <styled.PopoverContentContainer>
+            <styled.ContentColumn>
+              <styled.ContentHeader>Quick Range</styled.ContentHeader>
+              <styled.MenuContainer>
+                <styled.MenuItemsContainer>
+                  {Object.entries(DATE_FILTER_RELATIVE_VALUES).map(
+                    ([key, { label }]) => (
+                      <Button
+                        size="compact"
+                        key={key}
+                        kind={
+                          dates.end === 'now' && dates.start === key
+                            ? 'secondary'
+                            : 'tertiary'
+                        }
+                        overrides={overrides.menuItemButton}
+                        onClick={() => {
+                          saveDates({
+                            start: key as RelativeDateValue,
+                            end: 'now',
+                          });
+                          close();
+                        }}
+                      >
+                        {label}
+                      </Button>
+                    )
+                  )}
+                </styled.MenuItemsContainer>
+                <styled.MenuButtonsContainer>
+                  <Button
+                    size="mini"
+                    disabled={!isDateSaveable}
+                    overrides={overrides.actionButton}
+                    onClick={() => {
+                      if (!isDateSaveable) return;
+                      saveDates(tempDates);
+                      close();
+                    }}
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    size="mini"
+                    kind="secondary"
+                    overrides={overrides.actionButton}
+                    disabled={
+                      dates.start === undefined && dates.end === undefined
+                    }
+                    onClick={() => {
+                      saveDates({ start: undefined, end: undefined });
+                      close();
+                    }}
+                  >
+                    Reset
+                  </Button>
+                </styled.MenuButtonsContainer>
+              </styled.MenuContainer>
+            </styled.ContentColumn>
+            <styled.ContentColumn>
+              <styled.ContentHeader>Custom Range</styled.ContentHeader>
+              <StatefulCalendar
+                density="high"
+                overrides={overrides.calendar}
+                onChange={({ date: newDates }) => {
+                  if (!newDates || !Array.isArray(newDates)) {
+                    return;
+                  }
+
+                  if (newDates.length === 2 && newDates[0] && newDates[1]) {
+                    setTempDates({
+                      start: dayjs(newDates[0]),
+                      end:
+                        newDates[0].getTime() === newDates[1].getTime()
+                          ? dayjs(newDates[1]).endOf('day')
+                          : dayjs(newDates[1]),
                     });
+                    setIsDateSaveable(true);
                   }
                 }}
+                range
               />
+              <styled.TimeInputsContainer>
+                <styled.TimeInputContainer>
+                  <FormControl
+                    label="Start time"
+                    overrides={overrides.timeFormControl}
+                  >
+                    <TimePicker
+                      size="compact"
+                      disabled={!isDateSaveable}
+                      value={tempDates.start?.toDate()}
+                      onChange={(newStart) =>
+                        setTempDates((oldDates) => ({
+                          ...oldDates,
+                          start: dayjs(newStart),
+                        }))
+                      }
+                    />
+                  </FormControl>
+                </styled.TimeInputContainer>
+                <styled.TimeInputContainer>
+                  <FormControl
+                    label="End time"
+                    overrides={overrides.timeFormControl}
+                  >
+                    <TimePicker
+                      size="compact"
+                      disabled={!isDateSaveable}
+                      value={tempDates.end?.toDate()}
+                      onChange={(newEnd) =>
+                        setTempDates((oldDates) => ({
+                          ...oldDates,
+                          end: dayjs(newEnd),
+                        }))
+                      }
+                      minTime={tempDates.start?.toDate()}
+                    />
+                  </FormControl>
+                </styled.TimeInputContainer>
+              </styled.TimeInputsContainer>
+            </styled.ContentColumn>
+            <styled.CloseButtonContainer>
               <Button
-                disabled={!internalStart || !internalEnd}
+                size="compact"
+                kind="tertiary"
+                shape="circle"
                 onClick={() => {
-                  if (!internalStart || !internalEnd) return;
-                  onChangeDatesAndClose({
-                    start: internalStart,
-                    end: internalEnd,
-                  });
+                  setIsDateSaveable(false);
+                  close();
                 }}
               >
-                Save dates
+                <MdClose />
               </Button>
-            </div>
-            <div data-testid="date selectors">
-              <div data-testid="one date selector">
-                <StatefulCalendar
-                  onChange={({ date }) => {
-                    if (date instanceof Date) {
-                      setInternalStart(dayjs(date));
-                    }
-                  }}
-                  timeSelectStart
-                />
-              </div>
-              <div data-testid="the other date selector">
-                <StatefulCalendar
-                  onChange={({ date }) => {
-                    if (date instanceof Date) {
-                      setInternalEnd(dayjs(date));
-                    }
-                  }}
-                  timeSelectEnd
-                />
-              </div>
-            </div>
-          </div>
-        }
+            </styled.CloseButtonContainer>
+          </styled.PopoverContentContainer>
+        )}
       >
-        <Input
-          readOnly
-          placeholder={placeholder}
-          value={displayValue}
-          onFocus={() => setIsPopoverOpen(true)}
-        />
-      </Popover>
+        <div>
+          <Input
+            readOnly
+            size="compact"
+            placeholder={placeholder}
+            value={displayValue}
+          />
+        </div>
+      </StatefulPopover>
     </FormControl>
   );
 }

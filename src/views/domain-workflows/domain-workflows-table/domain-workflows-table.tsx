@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 
+import parseDateValue from '@/components/date-filter-v2/helpers/parse-date-value';
 import ErrorPanel from '@/components/error-panel/error-panel';
 import PanelSection from '@/components/panel-section/panel-section';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
@@ -36,8 +37,8 @@ export default function DomainWorkflowsTable({ domain, cluster }: Props) {
     inputType: queryParams.inputType,
     search: queryParams.search,
     statuses: queryParams.statuses,
-    timeRangeStart: queryParams.timeRangeStart,
-    timeRangeEnd: queryParams.timeRangeEnd,
+    timeRangeStart: parseDateValue(queryParams.timeRangeStart).toDate(),
+    timeRangeEnd: parseDateValue(queryParams.timeRangeEnd).toDate(),
     sortColumn: queryParams.sortColumn,
     sortOrder: queryParams.sortOrder,
     query: queryParams.query,

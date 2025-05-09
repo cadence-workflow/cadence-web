@@ -1,3 +1,5 @@
+import { type DateValue } from '@/components/date-filter-v2/date-filter-v2.types';
+import parseMaybeDateValue from '@/components/date-filter-v2/helpers/parse-maybe-date-value';
 import {
   type PageQueryParamMultiValue,
   type PageQueryParam,
@@ -21,8 +23,8 @@ const domainPageQueryParamsConfig: [
   // Search input
   PageQueryParam<'search', string>,
   PageQueryParamMultiValue<'statuses', Array<WorkflowStatus> | undefined>,
-  PageQueryParam<'timeRangeStart', Date | undefined>,
-  PageQueryParam<'timeRangeEnd', Date>,
+  PageQueryParam<'timeRangeStart', DateValue>,
+  PageQueryParam<'timeRangeEnd', DateValue>,
   PageQueryParam<'sortColumn', string>,
   PageQueryParam<'sortOrder', SortOrder>,
   // Query input
@@ -31,8 +33,8 @@ const domainPageQueryParamsConfig: [
   PageQueryParam<'workflowId', string>,
   PageQueryParam<'workflowType', string>,
   PageQueryParam<'statusBasic', WorkflowStatusBasicVisibility | undefined>,
-  PageQueryParam<'timeRangeStartBasic', Date>,
-  PageQueryParam<'timeRangeEndBasic', Date>,
+  PageQueryParam<'timeRangeStartBasic', DateValue>,
+  PageQueryParam<'timeRangeEndBasic', DateValue>,
   // Archival inputs
   PageQueryParam<'inputTypeArchival', WorkflowsHeaderInputType>,
   PageQueryParam<'searchArchival', string>,
@@ -66,13 +68,14 @@ const domainPageQueryParamsConfig: [
   {
     key: 'timeRangeStart',
     queryParamKey: 'start',
-    parseValue: parseDateQueryParam,
+    defaultValue: 'now-7d',
+    parseValue: (v) => parseMaybeDateValue(v, 'now-7d'),
   },
   {
     key: 'timeRangeEnd',
     queryParamKey: 'end',
-    defaultValue: now.toDate(),
-    parseValue: (v) => parseDateQueryParam(v) ?? now.toDate(),
+    defaultValue: 'now',
+    parseValue: (v) => parseMaybeDateValue(v, 'now'),
   },
   {
     key: 'sortColumn',
@@ -106,18 +109,14 @@ const domainPageQueryParamsConfig: [
   {
     key: 'timeRangeStartBasic',
     queryParamKey: 'start',
-    defaultValue: now
-      .subtract(DOMAIN_WORKFLOWS_BASIC_START_DAYS_CONFIG, 'days')
-      .toDate(),
-    parseValue: (v) =>
-      parseDateQueryParam(v) ??
-      now.subtract(DOMAIN_WORKFLOWS_BASIC_START_DAYS_CONFIG, 'days').toDate(),
+    defaultValue: 'now-7d',
+    parseValue: (v) => parseMaybeDateValue(v, 'now-7d'),
   },
   {
     key: 'timeRangeEndBasic',
     queryParamKey: 'end',
-    defaultValue: now.toDate(),
-    parseValue: (v) => parseDateQueryParam(v) ?? now.toDate(),
+    defaultValue: 'now',
+    parseValue: (v) => parseMaybeDateValue(v, 'now'),
   },
   {
     key: 'inputTypeArchival',
