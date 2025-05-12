@@ -1,4 +1,4 @@
-import { diag, DiagConsoleLogger } from '@opentelemetry/api';
+import { CompositePropagator, W3CBaggagePropagator } from '@opentelemetry/core';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 import { GrpcInstrumentation } from '@opentelemetry/instrumentation-grpc';
 import { HttpInstrumentation } from '@opentelemetry/instrumentation-http';
@@ -13,7 +13,6 @@ import logger from '@/utils/logger';
 import { type OtelRegisterConfig } from './otel.types';
 
 export async function register(config?: OtelRegisterConfig) {
-  diag.setLogger(new DiagConsoleLogger(), 'debug');
   const sdk = new NodeSDK({
     resource: resourceFromAttributes({
       [ATTR_SERVICE_NAME]: 'cadence-web',
@@ -23,11 +22,11 @@ export async function register(config?: OtelRegisterConfig) {
       new HttpInstrumentation(),
       new UndiciInstrumentation(),
     ],
-    textMapPropagator: new JaegerPropagator(),
-    traceExporter: new OTLPTraceExporter({
-      url: 'http://host.docker.internal:4318/v1/traces',
+    textMapPropagator: new CompositePropagator({
+      propagators: [new JaegerPropagator(), new W3CBaggagePropagator()],
     }),
-    sampler: config?.sampler,
+    traceExporter: new OTLPTraceExporter(),
+    ...config,
   });
   try {
     await sdk.start();

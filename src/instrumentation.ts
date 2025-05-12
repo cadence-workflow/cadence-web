@@ -1,11 +1,11 @@
-import { registerLoggers } from './utils/logger';
+import logger, { registerLoggers } from '@/utils/logger';
+
 import getTransformedConfigs from './utils/config/get-transformed-configs';
 import { setLoadedGlobalConfigs } from './utils/config/global-configs-ref';
-import logger from '@/utils/logger';
 
 export async function register() {
   registerLoggers();
-  if (process.env.NEXT_RUNTIME === 'nodejs') {
+  if (process.env.NEXT_RUNTIME === 'nodejs' && process.env.OTEL_SDK_DISABLED === 'false') {
     (await import('@/utils/otel/otel-register')).register();
 
     try {
@@ -21,6 +21,4 @@ export async function register() {
       process.exit(1); // use process.exit to exit without an extra error log from instrumentation
     }
   }
-
-  
 }

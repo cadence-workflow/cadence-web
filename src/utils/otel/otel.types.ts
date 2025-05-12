@@ -1,5 +1,3 @@
-import { type Sampler } from '@opentelemetry/api';
+import { type NodeSDKConfiguration } from '@opentelemetry/sdk-node';
 
-export type OtelRegisterConfig = {
-  sampler?: Sampler;
-};
+export type OtelRegisterConfig = Partial<NodeSDKConfiguration>;
