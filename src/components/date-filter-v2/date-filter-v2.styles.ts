@@ -104,12 +104,12 @@ export const styled = {
   TimeInputsContainer: createStyled('div', ({ $theme }) => ({
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'stretch',
+    justifyContent: 'space-evenly',
     gap: $theme.sizing.scale300,
   })),
   TimeInputContainer: createStyled('div', {
     display: 'flex',
     flexDirection: 'column',
-    flexGrow: 1,
+    flexBasis: '50%',
   }),
 };
