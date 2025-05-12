@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 
-import parseDateValue from '@/components/date-filter-v2/helpers/parse-date-value';
+import parseDateValue from '@/components/date-filter-v2/helpers/get-dayjs-from-date-filter-value';
 import useMergedInfiniteQueries from '@/hooks/use-merged-infinite-queries/use-merged-infinite-queries';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import { type ListWorkflowsBasicRequestQueryParams } from '@/route-handlers/list-workflows-basic/list-workflows-basic.types';
@@ -29,6 +29,7 @@ export default function useListWorkflowsBasic({
     queryParams.statusBasic === undefined ||
     queryParams.statusBasic !== 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID';
 
+  // This memo does not recompute time unless one of the deps changes
   const queryConfigs = useMemo(() => {
     const requestQueryParamsBase = {
       workflowId: queryParams.workflowId,
