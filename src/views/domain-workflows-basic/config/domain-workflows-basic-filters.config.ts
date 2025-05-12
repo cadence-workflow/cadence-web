@@ -1,8 +1,8 @@
 import { createElement } from 'react';
 
 import DateFilterV2 from '@/components/date-filter-v2/date-filter-v2';
-import { type DateValue } from '@/components/date-filter-v2/date-filter-v2.types';
-import stringifyDateValue from '@/components/date-filter-v2/helpers/stringify-date-value';
+import { type DateFilterValue } from '@/components/date-filter-v2/date-filter-v2.types';
+import stringifyDateFilterValue from '@/components/date-filter-v2/helpers/stringify-date-filter-value';
 import ListFilter from '@/components/list-filter/list-filter';
 import { type PageFilterConfig } from '@/components/page-filters/page-filters.types';
 import type domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
@@ -18,8 +18,8 @@ const domainWorkflowsBasicFiltersConfig: [
   PageFilterConfig<
     typeof domainPageQueryParamsConfig,
     {
-      timeRangeStartBasic: DateValue | undefined;
-      timeRangeEndBasic: DateValue | undefined;
+      timeRangeStartBasic: DateFilterValue | undefined;
+      timeRangeEndBasic: DateFilterValue | undefined;
     }
   >,
 ] = [
@@ -44,15 +44,15 @@ const domainWorkflowsBasicFiltersConfig: [
     }),
     formatValue: (v) => ({
       timeRangeStartBasic: v.timeRangeStartBasic
-        ? stringifyDateValue(v.timeRangeStartBasic)
+        ? stringifyDateFilterValue(v.timeRangeStartBasic)
         : undefined,
       timeRangeEndBasic: v.timeRangeEndBasic
-        ? stringifyDateValue(v.timeRangeEndBasic)
+        ? stringifyDateFilterValue(v.timeRangeEndBasic)
         : undefined,
     }),
     component: ({ value, setValue }) =>
       createElement(DateFilterV2, {
-        label: 'Dates',
+        label: 'Time range',
         placeholder: 'Select time range',
         dates: {
           start: value.timeRangeStartBasic,

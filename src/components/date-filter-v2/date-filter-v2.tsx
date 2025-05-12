@@ -12,12 +12,12 @@ import dayjs from '@/utils/datetime/dayjs';
 import { DATE_FILTER_RELATIVE_VALUES } from './date-filter-v2.constants';
 import { overrides, styled } from './date-filter-v2.styles';
 import {
-  type RelativeDateValue,
   type Props,
-  type DateRangeV2,
+  type DateFilterRange,
+  type RelativeDateFilterValue,
 } from './date-filter-v2.types';
-import isRelativeDateValue from './helpers/is-relative-date-value';
-import stringifyDateValue from './helpers/stringify-date-value';
+import isRelativeDateValue from './helpers/is-relative-date-filter-value';
+import stringifyDateValue from './helpers/stringify-date-filter-value';
 
 export default function DateFilterV2({
   label,
@@ -41,12 +41,12 @@ export default function DateFilterV2({
       });
   }, [dates]);
 
-  const [isDateSaveable, setIsDateSaveable] = useState<boolean>(false);
+  const [canSaveDate, setCanSaveDate] = useState<boolean>(false);
 
   const saveDates = useCallback(
-    (dates: DateRangeV2) => {
+    (dates: DateFilterRange) => {
       onChangeDates(dates);
-      setIsDateSaveable(false);
+      setCanSaveDate(false);
     },
     [onChangeDates]
   );
@@ -56,7 +56,7 @@ export default function DateFilterV2({
     if (dates.end === 'now' && isRelativeDateValue(dates.start))
       return DATE_FILTER_RELATIVE_VALUES[dates.start].label;
 
-    return `${stringifyDateValue(dates.start, true)} - ${stringifyDateValue(dates.end, true)}`;
+    return `${stringifyDateValue(dates.start, 'pretty')} - ${stringifyDateValue(dates.end, 'pretty')}`;
   }, [dates]);
 
   return (
@@ -64,7 +64,7 @@ export default function DateFilterV2({
       <StatefulPopover
         overrides={overrides.popover}
         triggerType="click"
-        dismissOnClickOutside={!isDateSaveable}
+        dismissOnClickOutside={!canSaveDate}
         content={({ close }) => (
           <styled.PopoverContentContainer>
             <styled.ContentColumn>
@@ -84,7 +84,7 @@ export default function DateFilterV2({
                         overrides={overrides.menuItemButton}
                         onClick={() => {
                           saveDates({
-                            start: key as RelativeDateValue,
+                            start: key as RelativeDateFilterValue,
                             end: 'now',
                           });
                           close();
@@ -98,10 +98,10 @@ export default function DateFilterV2({
                 <styled.MenuButtonsContainer>
                   <Button
                     size="mini"
-                    disabled={!isDateSaveable}
+                    disabled={!canSaveDate}
                     overrides={overrides.actionButton}
                     onClick={() => {
-                      if (!isDateSaveable) return;
+                      if (!canSaveDate) return;
                       saveDates(tempDates);
                       close();
                     }}
@@ -143,7 +143,7 @@ export default function DateFilterV2({
                           ? dayjs(newDates[1]).endOf('day')
                           : dayjs(newDates[1]),
                     });
-                    setIsDateSaveable(true);
+                    setCanSaveDate(true);
                   }
                 }}
                 range
@@ -156,7 +156,7 @@ export default function DateFilterV2({
                   >
                     <TimePicker
                       size="compact"
-                      disabled={!isDateSaveable}
+                      disabled={!canSaveDate}
                       value={tempDates.start?.toDate()}
                       onChange={(newStart) =>
                         setTempDates((oldDates) => ({
@@ -174,7 +174,7 @@ export default function DateFilterV2({
                   >
                     <TimePicker
                       size="compact"
-                      disabled={!isDateSaveable}
+                      disabled={!canSaveDate}
                       value={tempDates.end?.toDate()}
                       onChange={(newEnd) =>
                         setTempDates((oldDates) => ({
@@ -194,7 +194,7 @@ export default function DateFilterV2({
                 kind="tertiary"
                 shape="circle"
                 onClick={() => {
-                  setIsDateSaveable(false);
+                  setCanSaveDate(false);
                   close();
                 }}
               >

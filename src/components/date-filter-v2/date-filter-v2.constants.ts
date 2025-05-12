@@ -8,4 +8,5 @@ export const DATE_FILTER_RELATIVE_VALUES = {
   'now-12h': { label: 'Last 12 hours', durationSeconds: 12 * 60 * 60 },
   'now-1d': { label: 'Last 1 day', durationSeconds: 1 * 24 * 60 * 60 },
   'now-7d': { label: 'Last 7 days', durationSeconds: 7 * 24 * 60 * 60 },
+  'now-30d': { label: 'Last 30 days', durationSeconds: 30 * 24 * 60 * 60 },
 } as const satisfies Record<`now-${string}`, RelativeDurationConfig>;

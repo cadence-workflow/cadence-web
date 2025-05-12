@@ -37,6 +37,7 @@ export default function getListWorkflowsBasicQueryOptions({
       return lastPage.nextPage;
     },
     retry: false,
+    refetchInterval: 10000,
     refetchOnWindowFocus: (query) => query.state.status !== 'error',
   };
 }

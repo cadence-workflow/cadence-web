@@ -7,18 +7,18 @@ export type RelativeDurationConfig = {
   durationSeconds: number;
 };
 
-export type RelativeDateValue = keyof typeof DATE_FILTER_RELATIVE_VALUES;
+export type RelativeDateFilterValue = keyof typeof DATE_FILTER_RELATIVE_VALUES;
 
-export type DateValue = Dayjs | 'now' | RelativeDateValue;
+export type DateFilterValue = Dayjs | 'now' | RelativeDateFilterValue;
 
-export type DateRangeV2 = {
-  start: DateValue | undefined;
-  end: DateValue | undefined;
+export type DateFilterRange = {
+  start: DateFilterValue | undefined;
+  end: DateFilterValue | undefined;
 };
 
 export type Props = {
   label: string;
   placeholder: string;
-  dates: DateRangeV2;
-  onChangeDates: (v: DateRangeV2) => void;
+  dates: DateFilterRange;
+  onChangeDates: (v: DateFilterRange) => void;
 };
