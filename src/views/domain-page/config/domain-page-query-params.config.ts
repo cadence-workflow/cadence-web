@@ -9,7 +9,6 @@ import parseDateQueryParam from '@/utils/datetime/parse-date-query-param';
 import { type SortOrder } from '@/utils/sort-by';
 import DOMAIN_WORKFLOWS_ARCHIVAL_START_DAYS_CONFIG from '@/views/domain-workflows-archival/config/domain-workflows-archival-start-days.config';
 import { type WorkflowStatusClosed } from '@/views/domain-workflows-archival/domain-workflows-archival-header/domain-workflows-archival-header.types';
-import DOMAIN_WORKFLOWS_BASIC_START_DAYS_CONFIG from '@/views/domain-workflows-basic/config/domain-workflows-basic-start-days.config';
 import { type WorkflowStatusBasicVisibility } from '@/views/domain-workflows-basic/domain-workflows-basic-filters/domain-workflows-basic-filters.types';
 import isWorkflowStatusBasicVisibility from '@/views/domain-workflows-basic/domain-workflows-basic-filters/helpers/is-workflow-status-basic-visibility';
 import isWorkflowStatus from '@/views/shared/workflow-status-tag/helpers/is-workflow-status';
@@ -109,8 +108,7 @@ const domainPageQueryParamsConfig: [
     key: 'timeRangeStartBasic',
     queryParamKey: 'start',
     defaultValue: 'now-7d',
-    parseValue: (v) =>
-      parseDateFilterValue(v, DOMAIN_WORKFLOWS_BASIC_START_DAYS_CONFIG),
+    parseValue: (v) => parseDateFilterValue(v, 'now-7d'),
   },
   {
     key: 'timeRangeEndBasic',

@@ -51,13 +51,6 @@ export const overrides = {
       }),
     },
   } satisfies ButtonOverrides,
-  actionButton: {
-    Root: {
-      style: {
-        flexGrow: 1,
-      },
-    },
-  } satisfies ButtonOverrides,
   calendar: {
     Root: {
       style: {
@@ -107,12 +100,6 @@ export const styled = {
     display: 'flex',
     flexDirection: 'column',
     gap: $theme.sizing.scale100,
-  })),
-  MenuButtonsContainer: createStyled('div', ({ $theme }) => ({
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'stretch',
-    gap: $theme.sizing.scale300,
   })),
   TimeInputsContainer: createStyled('div', ({ $theme }) => ({
     display: 'flex',
