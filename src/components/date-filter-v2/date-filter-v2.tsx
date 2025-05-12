@@ -32,6 +32,10 @@ export default function DateFilterV2({
     start: undefined,
     end: undefined,
   });
+  const areTempDatesInvalid = useMemo(
+    () => Boolean(tempDates.end?.isBefore(tempDates.start)),
+    [tempDates]
+  );
 
   useEffect(() => {
     if (dayjs.isDayjs(dates.start) && dayjs.isDayjs(dates.end))
@@ -97,9 +101,9 @@ export default function DateFilterV2({
                 </styled.MenuItemsContainer>
                 <Button
                   size="mini"
-                  disabled={!canSaveDate}
+                  disabled={!canSaveDate || areTempDatesInvalid}
                   onClick={() => {
-                    if (!canSaveDate) return;
+                    if (!canSaveDate || areTempDatesInvalid) return;
                     saveDates(tempDates);
                     close();
                   }}
@@ -139,10 +143,11 @@ export default function DateFilterV2({
                   >
                     <TimePicker
                       size="compact"
+                      creatable
                       disabled={!canSaveDate}
                       value={tempDates.start?.toDate()}
                       maxTime={tempDates.end?.toDate()}
-                      error={tempDates.end?.isBefore(tempDates.start)}
+                      error={areTempDatesInvalid}
                       onChange={(newStart) =>
                         setTempDates((oldDates) => ({
                           ...oldDates,
@@ -159,10 +164,11 @@ export default function DateFilterV2({
                   >
                     <TimePicker
                       size="compact"
+                      creatable
                       disabled={!canSaveDate}
                       value={tempDates.end?.toDate()}
                       minTime={tempDates.start?.toDate()}
-                      error={tempDates.end?.isBefore(tempDates.start)}
+                      error={areTempDatesInvalid}
                       onChange={(newEnd) =>
                         setTempDates((oldDates) => ({
                           ...oldDates,
