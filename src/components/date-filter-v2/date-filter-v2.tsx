@@ -17,7 +17,7 @@ import {
   type RelativeDateFilterValue,
 } from './date-filter-v2.types';
 import isRelativeDateValue from './helpers/is-relative-date-filter-value';
-import stringifyDateValue from './helpers/stringify-date-filter-value';
+import stringifyDateValue from './helpers/stringify-date-value';
 
 export default function DateFilterV2({
   label,
@@ -95,34 +95,17 @@ export default function DateFilterV2({
                     )
                   )}
                 </styled.MenuItemsContainer>
-                <styled.MenuButtonsContainer>
-                  <Button
-                    size="mini"
-                    disabled={!canSaveDate}
-                    overrides={overrides.actionButton}
-                    onClick={() => {
-                      if (!canSaveDate) return;
-                      saveDates(tempDates);
-                      close();
-                    }}
-                  >
-                    Save
-                  </Button>
-                  <Button
-                    size="mini"
-                    kind="secondary"
-                    overrides={overrides.actionButton}
-                    disabled={
-                      dates.start === undefined && dates.end === undefined
-                    }
-                    onClick={() => {
-                      saveDates({ start: undefined, end: undefined });
-                      close();
-                    }}
-                  >
-                    Reset
-                  </Button>
-                </styled.MenuButtonsContainer>
+                <Button
+                  size="mini"
+                  disabled={!canSaveDate}
+                  onClick={() => {
+                    if (!canSaveDate) return;
+                    saveDates(tempDates);
+                    close();
+                  }}
+                >
+                  Save
+                </Button>
               </styled.MenuContainer>
             </styled.ContentColumn>
             <styled.ContentColumn>
@@ -158,6 +141,8 @@ export default function DateFilterV2({
                       size="compact"
                       disabled={!canSaveDate}
                       value={tempDates.start?.toDate()}
+                      maxTime={tempDates.end?.toDate()}
+                      error={tempDates.end?.isBefore(tempDates.start)}
                       onChange={(newStart) =>
                         setTempDates((oldDates) => ({
                           ...oldDates,
@@ -176,13 +161,14 @@ export default function DateFilterV2({
                       size="compact"
                       disabled={!canSaveDate}
                       value={tempDates.end?.toDate()}
+                      minTime={tempDates.start?.toDate()}
+                      error={tempDates.end?.isBefore(tempDates.start)}
                       onChange={(newEnd) =>
                         setTempDates((oldDates) => ({
                           ...oldDates,
                           end: dayjs(newEnd),
                         }))
                       }
-                      minTime={tempDates.start?.toDate()}
                     />
                   </FormControl>
                 </styled.TimeInputContainer>
@@ -193,6 +179,7 @@ export default function DateFilterV2({
                 size="compact"
                 kind="tertiary"
                 shape="circle"
+                data-testid="close-button"
                 onClick={() => {
                   setCanSaveDate(false);
                   close();

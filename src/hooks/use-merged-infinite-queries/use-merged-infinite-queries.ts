@@ -1,6 +1,10 @@
 import { useMemo, useState, useEffect, useCallback } from 'react';
 
-import { InfiniteQueryObserver, useQueryClient } from '@tanstack/react-query';
+import {
+  InfiniteQueryObserver,
+  type QueryKey,
+  useQueryClient,
+} from '@tanstack/react-query';
 
 import mergeSortedArrays from '@/utils/merge-sorted-arrays';
 
@@ -35,12 +39,17 @@ import {
  *   - `mergedQueryResults`: The merged and sorted results from all queries.
  *   - `queryResults`: An array containing individual results from each query.
  */
-export default function useMergedInfiniteQueries<TData, TResponse, TPageParam>({
+export default function useMergedInfiniteQueries<
+  TData,
+  TResponse,
+  TPageParam,
+  TQueryKey extends QueryKey,
+>({
   queries,
   pageSize,
   flattenResponse,
   compare,
-}: Props<TData, TResponse, TPageParam>): [
+}: Props<TData, TResponse, TPageParam, TQueryKey>): [
   MergedQueriesResults<TData>,
   Array<SingleInfiniteQueryResult<TResponse>>,
 ] {

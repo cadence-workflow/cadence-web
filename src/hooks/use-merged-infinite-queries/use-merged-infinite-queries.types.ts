@@ -21,22 +21,25 @@ export type MergedQueriesResults<TData> = {
   refetch: () => void;
 };
 
-export type SingleInfiniteQueryOptions<TResponse, TPageParam> =
-  UseInfiniteQueryOptions<
-    TResponse,
-    Error,
-    InfiniteData<TResponse, TPageParam>,
-    TResponse,
-    QueryKey,
-    TPageParam
-  >;
+export type SingleInfiniteQueryOptions<
+  TResponse,
+  TPageParam,
+  TQueryKey extends QueryKey,
+> = UseInfiniteQueryOptions<
+  TResponse,
+  Error,
+  InfiniteData<TResponse, TPageParam>,
+  TResponse,
+  TQueryKey,
+  TPageParam
+>;
 
 export type SingleInfiniteQueryResult<TResponse> = ReturnType<
   typeof useInfiniteQuery<TResponse>
 >;
 
-export type Props<TData, TResponse, TPageParam> = {
-  queries: Array<SingleInfiniteQueryOptions<TResponse, TPageParam>>;
+export type Props<TData, TResponse, TPageParam, TQueryKey extends QueryKey> = {
+  queries: Array<SingleInfiniteQueryOptions<TResponse, TPageParam, TQueryKey>>;
   pageSize: number;
   flattenResponse: (queryResult: TResponse) => Array<TData>;
   compare: (a: TData, b: TData) => number;
