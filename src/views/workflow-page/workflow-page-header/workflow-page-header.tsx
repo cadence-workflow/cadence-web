@@ -12,7 +12,7 @@ import PageSection from '@/components/page-section/page-section';
 import { type PageQueryParamSetterValues } from '@/hooks/use-page-query-params/use-page-query-params.types';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import type domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
-import type domainPageTabsConfig from '@/views/domain-page/config/domain-page-tabs.config';
+import { type DomainPageTabName } from '@/views/domain-page/domain-page-tabs/domain-page-tabs.types';
 
 import WorkflowPageStatusTag from '../workflow-page-status-tag/workflow-page-status-tag';
 
@@ -51,7 +51,7 @@ export default function WorkflowPageHeader({
               domainLink +
               '/' +
               // ensuring that this tab exists in config
-              ('workflows' satisfies (typeof domainPageTabsConfig)[number]['key']),
+              ('workflows' satisfies DomainPageTabName),
             // ensuring that these query params exist in config
             query: {
               // TODO @assem.hafez: fix this; this is incorrect because we need to be asserting on query key

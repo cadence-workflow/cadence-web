@@ -2,8 +2,6 @@ import React from 'react';
 
 import { render, screen, act, fireEvent } from '@/test-utils/rtl';
 
-import { type PageTab } from '@/components/page-tabs/page-tabs.types';
-
 import domainPageTabsConfig from '../../config/domain-page-tabs.config';
 import DomainPageTabs from '../domain-page-tabs';
 
@@ -25,17 +23,15 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
-jest.mock('../../config/domain-page-tabs.config', () => [
-  {
-    key: 'workflows',
+jest.mock('../../config/domain-page-tabs.config', () => ({
+  workflows: {
     title: 'Workflows',
     artwork: () => <div data-testid="workflows-artwork" />,
   },
-  {
-    key: 'page-2',
+  'page-2': {
     title: 'Page 2',
   },
-]);
+}));
 
 describe('DomainPageTabs', () => {
   afterEach(() => {
@@ -45,7 +41,7 @@ describe('DomainPageTabs', () => {
   it('renders tabs titles correctly', () => {
     render(<DomainPageTabs />);
 
-    domainPageTabsConfig.forEach(({ title }) => {
+    Object.values(domainPageTabsConfig).forEach(({ title }) => {
       expect(screen.getByText(title)).toBeInTheDocument();
     });
   });
@@ -90,7 +86,7 @@ describe('DomainPageTabs', () => {
   it('renders tabs artworks correctly', () => {
     render(<DomainPageTabs />);
 
-    domainPageTabsConfig.forEach(({ key, artwork }: PageTab) => {
+    Object.entries(domainPageTabsConfig).forEach(([key, { artwork }]) => {
       if (typeof artwork !== 'undefined')
         expect(screen.getByTestId(`${key}-artwork`)).toBeInTheDocument();
       else

@@ -8,10 +8,6 @@ export type Props = {
 
 export type DomainDescription = DescribeDomainResponse;
 
-export type ClusterReplicationConfiguration = {
-  clusterName: string;
-};
-
 export type DomainWorkflow = {
   workflowID: string;
   runID: string;

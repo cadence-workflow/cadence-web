@@ -3,8 +3,10 @@ import type { ServiceClient } from '@grpc/grpc-js/build/src/make-client';
 import * as protoLoader from '@grpc/proto-loader';
 import get from 'lodash/get';
 import merge from 'lodash/merge';
+import * as fs from 'node:fs';
 
 import GRPC_PROTO_DIR_BASE_PATH from '@/config/grpc/grpc-proto-dir-base-path';
+import logger from '@/utils/logger';
 
 import { GRPCError, type GRPCInputError } from './grpc-error';
 
@@ -51,7 +53,7 @@ class GRPCService {
     );
     this.service = new ServiceDefinition(
       peer,
-      grpc.credentials.createInsecure(),
+      getChannelCredentials(),
       GRPC_OPTIONS
     );
     this.requestConfig = requestConfig;
@@ -134,6 +136,28 @@ class GRPCService {
 
     return meta;
   }
+}
+
+let cachedCredentials: grpc.ChannelCredentials | null = null;
+export function getChannelCredentials() {
+  if (cachedCredentials) {
+    return cachedCredentials;
+  }
+  const caRootPath = process.env.CADENCE_GRPC_TLS_CA_FILE?.trim();
+  if (caRootPath) {
+    try {
+      const rootCert = fs.readFileSync(caRootPath);
+      cachedCredentials = grpc.credentials.createSsl(rootCert);
+    } catch (e) {
+      logger.error({
+        message: `Failed to read GRPC TLS CA file`,
+        error: e,
+      });
+    }
+  } else {
+    cachedCredentials = grpc.credentials.createInsecure();
+  }
+  return cachedCredentials;
 }
 
 export default GRPCService;

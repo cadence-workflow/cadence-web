@@ -5,7 +5,6 @@ import * as navigationModule from 'next/navigation';
 import { render, screen } from '@/test-utils/rtl';
 
 import DomainPageTabsError from '../domain-page-tabs-error';
-import type { DomainPageTabsErrorConfig } from '../domain-page-tabs-error.types';
 
 jest.mock('@/components/error-panel/error-panel', () =>
   jest.fn(({ message }: { message: string }) => <div>{message}</div>)
@@ -21,22 +20,30 @@ jest.mock('next/navigation', () => ({
 }));
 
 jest.mock(
-  '../../config/domain-page-tabs-error.config',
+  '../../config/domain-page-tabs.config',
   () =>
     ({
-      workflows: () => ({
-        message: 'workflow error',
-      }),
-      metadata: () => ({
-        message: 'metadata error',
-      }),
-      settings: () => ({
-        message: 'settings error',
-      }),
-      archival: () => ({
-        message: 'archival error',
-      }),
-    }) as const satisfies DomainPageTabsErrorConfig
+      workflows: {
+        getErrorConfig: () => ({
+          message: 'workflow error',
+        }),
+      },
+      metadata: {
+        getErrorConfig: () => ({
+          message: 'metadata error',
+        }),
+      },
+      settings: {
+        getErrorConfig: () => ({
+          message: 'settings error',
+        }),
+      },
+      archival: {
+        getErrorConfig: () => ({
+          message: 'archival error',
+        }),
+      },
+    }) as const
 );
 
 describe(DomainPageTabsError.name, () => {
