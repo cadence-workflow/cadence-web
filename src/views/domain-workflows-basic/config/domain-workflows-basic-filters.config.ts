@@ -2,7 +2,7 @@ import { createElement } from 'react';
 
 import DateFilterV2 from '@/components/date-filter-v2/date-filter-v2';
 import { type DateFilterValue } from '@/components/date-filter-v2/date-filter-v2.types';
-import stringifyDateFilterValue from '@/components/date-filter-v2/helpers/stringify-date-value';
+import stringifyDateFilterValue from '@/components/date-filter-v2/helpers/stringify-date-filter-value';
 import ListFilter from '@/components/list-filter/list-filter';
 import { type PageFilterConfig } from '@/components/page-filters/page-filters.types';
 import type domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
