@@ -7,7 +7,6 @@ export async function register() {
   registerLoggers();
 
   if (process.env.NEXT_RUNTIME === 'nodejs') {
-
     if (process.env.OTEL_SDK_DISABLED === 'false') {
       (await import('@/utils/otel/otel-register')).register();
     }
