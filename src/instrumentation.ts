@@ -5,8 +5,12 @@ import { setLoadedGlobalConfigs } from './utils/config/global-configs-ref';
 
 export async function register() {
   registerLoggers();
-  if (process.env.NEXT_RUNTIME === 'nodejs' && process.env.OTEL_SDK_DISABLED === 'false') {
-    (await import('@/utils/otel/otel-register')).register();
+
+  if (process.env.NEXT_RUNTIME === 'nodejs') {
+
+    if (process.env.OTEL_SDK_DISABLED === 'false') {
+      (await import('@/utils/otel/otel-register')).register();
+    }
 
     try {
       const configs = await getTransformedConfigs();

@@ -1,4 +1,3 @@
-import { CompositePropagator, W3CBaggagePropagator } from '@opentelemetry/core';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 import { GrpcInstrumentation } from '@opentelemetry/instrumentation-grpc';
 import { HttpInstrumentation } from '@opentelemetry/instrumentation-http';
@@ -22,9 +21,7 @@ export async function register(config?: OtelRegisterConfig) {
       new HttpInstrumentation(),
       new UndiciInstrumentation(),
     ],
-    textMapPropagator: new CompositePropagator({
-      propagators: [new JaegerPropagator(), new W3CBaggagePropagator()],
-    }),
+    textMapPropagator: new JaegerPropagator(),
     traceExporter: new OTLPTraceExporter(),
     ...config,
   });
