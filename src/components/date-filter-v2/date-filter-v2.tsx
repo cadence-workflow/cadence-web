@@ -16,8 +16,8 @@ import {
   type DateFilterRange,
   type RelativeDateFilterValue,
 } from './date-filter-v2.types';
-import isRelativeDateValue from './helpers/is-relative-date-filter-value';
-import stringifyDateValue from './helpers/stringify-date-value';
+import isRelativeDateFilterValue from './helpers/is-relative-date-filter-value';
+import stringifyDateFilterValue from './helpers/stringify-date-value';
 
 export default function DateFilterV2({
   label,
@@ -57,10 +57,10 @@ export default function DateFilterV2({
 
   const displayValue = useMemo<string>(() => {
     if (!dates.end || !dates.start) return 'Unknown';
-    if (dates.end === 'now' && isRelativeDateValue(dates.start))
+    if (dates.end === 'now' && isRelativeDateFilterValue(dates.start))
       return DATE_FILTER_RELATIVE_VALUES[dates.start].label;
 
-    return `${stringifyDateValue(dates.start, 'pretty')} - ${stringifyDateValue(dates.end, 'pretty')}`;
+    return `${stringifyDateFilterValue(dates.start, 'pretty')} - ${stringifyDateFilterValue(dates.end, 'pretty')}`;
   }, [dates]);
 
   return (
