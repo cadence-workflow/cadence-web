@@ -17,7 +17,7 @@ import {
   type RelativeDateFilterValue,
 } from './date-filter-v2.types';
 import isRelativeDateFilterValue from './helpers/is-relative-date-filter-value';
-import stringifyDateFilterValue from './helpers/stringify-date-value';
+import stringifyDateFilterValue from './helpers/stringify-date-filter-value';
 
 export default function DateFilterV2({
   label,

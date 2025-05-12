@@ -1,6 +1,6 @@
 import dayjs from '@/utils/datetime/dayjs';
 
-import stringifyDateFilterValue from '../stringify-date-value';
+import stringifyDateFilterValue from '../stringify-date-filter-value';
 
 // Mock the current date to be fixed
 jest.useFakeTimers().setSystemTime(new Date('2023-05-25'));
