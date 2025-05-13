@@ -12,18 +12,19 @@ import logger from '@/utils/logger';
 import { type OtelRegisterConfig } from './otel.types';
 
 export async function register(config?: OtelRegisterConfig) {
+  const { grpcInstrumentationConfig, ...sdkConfig } = config || {};
   const sdk = new NodeSDK({
     resource: resourceFromAttributes({
       [ATTR_SERVICE_NAME]: 'cadence-web',
     }),
     instrumentations: [
-      new GrpcInstrumentation(),
+      new GrpcInstrumentation(grpcInstrumentationConfig),
       new HttpInstrumentation(),
       new UndiciInstrumentation(),
     ],
     textMapPropagator: new JaegerPropagator(),
     traceExporter: new OTLPTraceExporter(),
-    ...config,
+    ...sdkConfig,
   });
   try {
     await sdk.start();
