@@ -22,8 +22,8 @@ const domainPageQueryParamsConfig: [
   // Search input
   PageQueryParam<'search', string>,
   PageQueryParamMultiValue<'statuses', Array<WorkflowStatus> | undefined>,
-  PageQueryParam<'timeRangeStart', Date | undefined>,
-  PageQueryParam<'timeRangeEnd', Date>,
+  PageQueryParam<'timeRangeStart', DateFilterValue>,
+  PageQueryParam<'timeRangeEnd', DateFilterValue>,
   PageQueryParam<'sortColumn', string>,
   PageQueryParam<'sortOrder', SortOrder>,
   // Query input
@@ -67,13 +67,14 @@ const domainPageQueryParamsConfig: [
   {
     key: 'timeRangeStart',
     queryParamKey: 'start',
-    parseValue: parseDateQueryParam,
+    defaultValue: 'now-7d',
+    parseValue: (v) => parseDateFilterValue(v, 'now-7d'),
   },
   {
     key: 'timeRangeEnd',
     queryParamKey: 'end',
-    defaultValue: now.toDate(),
-    parseValue: (v) => parseDateQueryParam(v) ?? now.toDate(),
+    defaultValue: 'now',
+    parseValue: (v) => parseDateFilterValue(v, 'now'),
   },
   {
     key: 'sortColumn',

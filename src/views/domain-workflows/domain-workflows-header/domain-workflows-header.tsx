@@ -9,7 +9,12 @@ import DOMAIN_WORKFLOWS_PAGE_SIZE from '../config/domain-workflows-page-size.con
 
 import { type Props } from './domain-workflows-header.types';
 
-export default function DomainWorkflowsHeader({ domain, cluster }: Props) {
+export default function DomainWorkflowsHeader({
+  domain,
+  cluster,
+  timeRangeStart,
+  timeRangeEnd,
+}: Props) {
   const [queryParams] = usePageQueryParams(domainPageQueryParamsConfig);
 
   const { refetch, isFetching } = useListWorkflows({
@@ -20,8 +25,8 @@ export default function DomainWorkflowsHeader({ domain, cluster }: Props) {
     inputType: queryParams.inputType,
     search: queryParams.search,
     statuses: queryParams.statuses,
-    timeRangeStart: queryParams.timeRangeStart,
-    timeRangeEnd: queryParams.timeRangeEnd,
+    timeRangeStart,
+    timeRangeEnd,
     sortColumn: queryParams.sortColumn,
     sortOrder: queryParams.sortOrder,
     query: queryParams.query,
