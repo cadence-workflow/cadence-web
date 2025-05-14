@@ -9,8 +9,8 @@ import { SignalWorkflowSubmissionData } from '@/views/workflow-actions/workflow-
 
 const defaultRequestBody = {
   signalName: 'test-signal',
-  signalInput: { data: 'test-input' },
-};
+  signalInput: 'test-input' ,
+} satisfies SignalWorkflowSubmissionData;
 
 describe(signalWorkflow.name, () => {
   beforeEach(() => {
@@ -18,12 +18,7 @@ describe(signalWorkflow.name, () => {
   });
 
   it('calls signalWorkflow and returns valid response', async () => {
-    const { res, mockSignalWorkflow } = await setup({
-      requestBody: JSON.stringify({
-        signalName: 'custom-signal',
-        signalInput: 'custom-input',
-      }),
-    });
+    const { res, mockSignalWorkflow } = await setup({});
 
     expect(mockSignalWorkflow).toHaveBeenCalledWith({
       domain: 'mock-domain',
