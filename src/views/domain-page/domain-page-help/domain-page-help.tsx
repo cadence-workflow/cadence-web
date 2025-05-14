@@ -11,10 +11,10 @@ import { type DomainPageHelpGroup } from './domain-page-help.types';
 
 export default function DomainPageHelp() {
   const {
-    data: { metadata: shouldEnableHelpTab },
+    data: { metadata: isExtendedMetadataEnabled },
   } = useSuspenseIsExtendedMetadataEnabled();
 
-  if (!shouldEnableHelpTab) return null;
+  if (!isExtendedMetadataEnabled) return null;
 
   return (
     <StatefulPopover
