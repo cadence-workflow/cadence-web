@@ -38,6 +38,7 @@ const resolverSchemas: ResolverSchemas = {
     returnType: z.object({
       cancel: workflowActionsEnabledValueSchema,
       terminate: workflowActionsEnabledValueSchema,
+      signal: workflowActionsEnabledValueSchema,
       restart: workflowActionsEnabledValueSchema,
       reset: workflowActionsEnabledValueSchema,
     }),

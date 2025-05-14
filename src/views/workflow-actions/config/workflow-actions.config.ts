@@ -5,6 +5,7 @@ import {
   MdPowerSettingsNew,
   MdOutlineRestartAlt,
   MdRefresh,
+  MdOutlineWifiTethering,
 } from 'react-icons/md';
 
 import { type CancelWorkflowResponse } from '@/route-handlers/cancel-workflow/cancel-workflow.types';
@@ -20,6 +21,12 @@ import {
   type ResetWorkflowSubmissionData,
   type ResetWorkflowFormData,
 } from '../workflow-action-reset-form/workflow-action-reset-form.types';
+import { signalWorkflowFormSchema } from '../workflow-action-signal-form/schemas/signal-workflow-form-schema';
+import WorkflowActionSignalForm from '../workflow-action-signal-form/workflow-action-signal-form';
+import {
+  type SignalWorkflowSubmissionData,
+  type SignalWorkflowFormData,
+} from '../workflow-action-signal-form/workflow-action-signal-form.types';
 import { type WorkflowAction } from '../workflow-actions.types';
 
 const cancelWorkflowActionConfig: WorkflowAction<CancelWorkflowResponse> = {
@@ -68,6 +75,37 @@ const terminateWorkflowActionConfig: WorkflowAction<TerminateWorkflowResponse> =
     apiRoute: 'terminate',
     renderSuccessMessage: () => 'Workflow has been terminated.',
   };
+
+const signalWorkflowActionConfig: WorkflowAction<
+  unknown,
+  SignalWorkflowFormData,
+  SignalWorkflowSubmissionData
+> = {
+  id: 'signal',
+  label: 'Signal',
+  subtitle: 'Send a signal to the workflow',
+  modal: {
+    text: 'Provide data to running workflows using signals',
+    docsLink: {
+      text: 'Learn more about signals',
+      href: 'https://cadenceworkflow.io/docs/go-client/signals',
+    },
+    withForm: true,
+    form: WorkflowActionSignalForm,
+    formSchema: signalWorkflowFormSchema,
+    transformFormDataToSubmission: (formData) => formData,
+  },
+  icon: MdOutlineWifiTethering,
+  getRunnableStatus: (workflow) =>
+    getWorkflowIsCompleted(
+      workflow.workflowExecutionInfo?.closeEvent?.attributes ?? ''
+    )
+      ? 'NOT_RUNNABLE_WORKFLOW_CLOSED'
+      : 'RUNNABLE',
+  apiRoute: 'signal',
+  renderSuccessMessage: ({ inputParams }) =>
+    `Successfully sent signal "${inputParams.submissionData.signalName}"`,
+};
 
 const restartWorkflowActionConfig: WorkflowAction<RestartWorkflowResponse> = {
   id: 'restart',
@@ -136,6 +174,7 @@ export const resetWorkflowActionConfig: WorkflowAction<
 const workflowActionsConfig = [
   cancelWorkflowActionConfig,
   terminateWorkflowActionConfig,
+  signalWorkflowActionConfig,
   restartWorkflowActionConfig,
   resetWorkflowActionConfig,
 ] as const satisfies WorkflowAction<any, any, any>[];

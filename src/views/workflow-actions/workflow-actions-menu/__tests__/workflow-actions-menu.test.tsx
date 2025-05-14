@@ -63,6 +63,7 @@ describe(WorkflowActionsMenu.name, () => {
       actionsEnabledConfig: {
         cancel: 'DISABLED_DEFAULT',
         terminate: 'DISABLED_DEFAULT',
+        signal: 'DISABLED_DEFAULT',
         restart: 'ENABLED',
         reset: 'ENABLED',
       },
