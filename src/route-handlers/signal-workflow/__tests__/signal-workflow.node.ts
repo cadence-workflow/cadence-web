@@ -72,7 +72,7 @@ describe(signalWorkflow.name, () => {
       requestBody: JSON.stringify({
         signalName: 'test-signal',
         signalInput: 'not-an-object', // should be an object
-      } satisfies SignalWorkflowSubmissionData),
+      } satisfies SignalWorkflowRequestBody),
     });
 
     expect(mockSignalWorkflow).not.toHaveBeenCalled();
