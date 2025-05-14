@@ -14,7 +14,6 @@ const workflowPageCliCommandsConfig: CliCommandConfig[] = [
   },
   {
     label: 'Update domain active cluster',
-    description: 'Make sure the domain_data has UberIgnoringLisa:true',
     command:
       'cadence --domain {domain-name} domain update -active_cluster {cluster-name}',
     group: 'domain',
