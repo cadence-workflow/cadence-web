@@ -1,5 +1,6 @@
-import losslessJsonParse from "@/utils/lossless-json-parse";
-import { z } from "zod";
+import { z } from 'zod';
+
+import losslessJsonParse from '@/utils/lossless-json-parse';
 
 const signalWorkflowInputSchema = z.string().superRefine((str, ctx) => {
   if (!str) return undefined;

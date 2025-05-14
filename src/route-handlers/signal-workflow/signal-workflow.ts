@@ -4,8 +4,8 @@ import decodeUrlParams from '@/utils/decode-url-params';
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
-import { type Context, type RequestParams } from './signal-workflow.types';
 import signalWorkflowRequestBodySchema from './schemas/signal-workflow-request-body-schema';
+import { type Context, type RequestParams } from './signal-workflow.types';
 
 export async function signalWorkflow(
   request: NextRequest,
@@ -13,7 +13,8 @@ export async function signalWorkflow(
   ctx: Context
 ) {
   const requestBody = await request.json();
-  const { data, error } = signalWorkflowRequestBodySchema.safeParse(requestBody);
+  const { data, error } =
+    signalWorkflowRequestBodySchema.safeParse(requestBody);
 
   if (error) {
     return NextResponse.json(
@@ -35,7 +36,9 @@ export async function signalWorkflow(
         runId: decodedParams.runId,
       },
       signalName: data.signalName,
-      signalInput: data.signalInput ? { data: Buffer.from(data.signalInput) } : undefined,
+      signalInput: data.signalInput
+        ? { data: Buffer.from(data.signalInput) }
+        : undefined,
       // TODO: add user identity
     });
 
@@ -55,4 +58,4 @@ export async function signalWorkflow(
       { status: getHTTPStatusCode(e) }
     );
   }
-} 
+}

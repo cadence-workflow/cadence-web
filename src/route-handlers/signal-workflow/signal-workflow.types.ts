@@ -11,4 +11,4 @@ export type RequestParams = {
 
 export type Context = {
   grpcClusterMethods: GRPCClusterMethods;
-}; 
+};

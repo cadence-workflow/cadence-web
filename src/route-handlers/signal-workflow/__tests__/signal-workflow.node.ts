@@ -2,14 +2,14 @@ import { NextRequest } from 'next/server';
 
 import { GRPCError } from '@/utils/grpc/grpc-error';
 import { mockGrpcClusterMethods } from '@/utils/route-handlers-middleware/middlewares/__mocks__/grpc-cluster-methods';
+import { type SignalWorkflowSubmissionData } from '@/views/workflow-actions/workflow-action-signal-form/workflow-action-signal-form.types';
 
 import { signalWorkflow } from '../signal-workflow';
 import { type Context } from '../signal-workflow.types';
-import { SignalWorkflowSubmissionData } from '@/views/workflow-actions/workflow-action-signal-form/workflow-action-signal-form.types';
 
 const defaultRequestBody = {
   signalName: 'test-signal',
-  signalInput: 'test-input' ,
+  signalInput: 'test-input',
 } satisfies SignalWorkflowSubmissionData;
 
 describe(signalWorkflow.name, () => {
@@ -119,4 +119,4 @@ async function setup({
   );
 
   return { res, mockSignalWorkflow };
-} 
+}

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+
 import signalWorkflowInputSchema from './signal-workflow-input-schema';
 
 const signalWorkflowRequestBodySchema = z.object({
@@ -6,4 +7,4 @@ const signalWorkflowRequestBodySchema = z.object({
   signalInput: signalWorkflowInputSchema.optional(),
 });
 
-export default signalWorkflowRequestBodySchema; 
+export default signalWorkflowRequestBodySchema;
