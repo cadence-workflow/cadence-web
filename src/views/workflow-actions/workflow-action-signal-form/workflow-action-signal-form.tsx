@@ -55,7 +55,7 @@ export default function WorkflowActionSignalForm({
               }}
               onBlur={field.onBlur}
               error={Boolean(getErrorMessage('signalInput'))}
-              placeholder="Enter valid JSON input"
+              placeholder="Enter JSON input"
             />
           )}
         />
