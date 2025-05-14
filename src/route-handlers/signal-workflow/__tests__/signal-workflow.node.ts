@@ -11,7 +11,7 @@ import {
 
 const defaultRequestBody = {
   signalName: 'test-signal',
-  signalInput: 'test-input',
+  signalInput: '"test-input"',
 } satisfies SignalWorkflowRequestBody;
 
 describe(signalWorkflow.name, () => {
@@ -29,7 +29,7 @@ describe(signalWorkflow.name, () => {
         runId: 'mock-runid',
       },
       signalName: 'test-signal',
-      signalInput: { data: Buffer.from('test-input') },
+      signalInput: { data: Buffer.from('"test-input"') },
     });
 
     const responseJson = await res.json();
