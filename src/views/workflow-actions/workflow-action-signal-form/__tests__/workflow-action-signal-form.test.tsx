@@ -15,7 +15,7 @@ describe('WorkflowActionSignalForm', () => {
       screen.getByPlaceholderText('Enter signal name')
     ).toBeInTheDocument();
     expect(
-      screen.getByPlaceholderText('Enter valid JSON input')
+      screen.getByPlaceholderText('Enter JSON input')
     ).toBeInTheDocument();
   });
 
@@ -37,7 +37,7 @@ describe('WorkflowActionSignalForm', () => {
     expect(signalNameInput).toHaveAttribute('aria-invalid', 'true');
 
     const signalInputTextarea = screen.getByPlaceholderText(
-      'Enter valid JSON input'
+      'Enter JSON input'
     );
     expect(signalInputTextarea).toHaveAttribute('aria-invalid', 'true');
   });
@@ -50,7 +50,7 @@ describe('WorkflowActionSignalForm', () => {
     expect(signalNameInput).toHaveValue('test-signal');
 
     const signalInputTextarea = screen.getByPlaceholderText(
-      'Enter valid JSON input'
+      'Enter JSON input'
     );
     fireEvent.change(signalInputTextarea, {
       target: { value: '{"key": "value"}' },
@@ -70,7 +70,7 @@ describe('WorkflowActionSignalForm', () => {
     expect(signalNameInput).toHaveValue('test-signal');
 
     const signalInputTextarea = screen.getByPlaceholderText(
-      'Enter valid JSON input'
+      'Enter JSON input'
     );
     expect(signalInputTextarea).toHaveValue('{"key": "value"}');
   });
