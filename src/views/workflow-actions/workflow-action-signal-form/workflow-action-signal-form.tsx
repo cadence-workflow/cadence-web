@@ -10,7 +10,6 @@ import { type SignalWorkflowFormData } from './workflow-action-signal-form.types
 export default function WorkflowActionSignalForm({
   fieldErrors,
   control,
-  formData,
 }: WorkflowActionFormProps<SignalWorkflowFormData>) {
   const getErrorMessage = (field: string) => {
     return field in fieldErrors
