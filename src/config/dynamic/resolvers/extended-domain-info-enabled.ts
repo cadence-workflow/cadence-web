@@ -2,7 +2,7 @@ import { type ExtendedDomainInfoEnabledConfig } from './extended-domain-info-ena
 
 export default async function extendedDomainInfoEnabled(): Promise<ExtendedDomainInfoEnabledConfig> {
   return {
-    metadata: true,
+    metadata: false,
     issues: false,
   };
 }
