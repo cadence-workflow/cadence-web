@@ -2,22 +2,6 @@ import { styled as createStyled, type Theme } from 'baseui';
 import { type PopoverOverrides } from 'baseui/popover';
 import type { StyleObject } from 'styletron-react';
 
-// <styled.HelpMenuContainer>
-//           {domainPageHelpMenuConfig.map((group: DomainPageHelpGroup) => (
-//             <styled.HelpMenuGroup key={group.title}>
-//               <styled.HelpMenuGroupTitle>
-//                 {group.title}
-//               </styled.HelpMenuGroupTitle>
-//               <styled.HelpMenuGroupItemsContainer>
-//                 {group.items.map((item) => (
-//                   <DomainPageHelpItemButton key={item.text} {...item} />
-//                 ))}
-//               </styled.HelpMenuGroupItemsContainer>
-//             </styled.HelpMenuGroup>
-//           ))}
-//         </styled.HelpMenuContainer>
-//       }
-
 export const styled = {
   HelpMenuGroup: createStyled('div', ({ $theme }) => ({
     ':not(:first-child)': {
