@@ -15,4 +15,4 @@ export async function POST(
     options,
     routeHandlersDefaultMiddlewares
   );
-} 
+}
