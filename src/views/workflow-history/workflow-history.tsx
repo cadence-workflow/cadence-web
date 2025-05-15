@@ -246,7 +246,6 @@ export default function WorkflowHistory({ params }: Props) {
       shouldExpandInitialEventRef.current
     ) {
       toggleIsEventExpanded(queryParams.historySelectedEventId);
-    } else if (initialEventFound) {
       shouldExpandInitialEventRef.current = false;
     }
   }, [
