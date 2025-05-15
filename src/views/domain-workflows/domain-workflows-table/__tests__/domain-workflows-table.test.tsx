@@ -152,49 +152,57 @@ function setup({
   let currentEventIndex = 0;
   const user = userEvent.setup();
 
-  render(<DomainWorkflowsTable domain="mock-domain" cluster="mock-cluster" />, {
-    endpointsMocks: [
-      {
-        path: '/api/domains/:domain/:cluster/workflows',
-        httpMethod: 'GET',
-        mockOnce: false,
-        httpResolver: async () => {
-          const index = currentEventIndex;
-          currentEventIndex++;
+  render(
+    <DomainWorkflowsTable
+      domain="mock-domain"
+      cluster="mock-cluster"
+      timeRangeStart="mock-time-range-start"
+      timeRangeEnd="mock-time-range-end"
+    />,
+    {
+      endpointsMocks: [
+        {
+          path: '/api/domains/:domain/:cluster/workflows',
+          httpMethod: 'GET',
+          mockOnce: false,
+          httpResolver: async () => {
+            const index = currentEventIndex;
+            currentEventIndex++;
 
-          switch (errorCase) {
-            case 'no-workflows':
-              return HttpResponse.json({
-                workflows: [],
-                nextPage: undefined,
-              });
-            case 'initial-fetch-error':
-              return HttpResponse.json(
-                { message: 'Request failed' },
-                { status: 500 }
-              );
-            case 'subsequent-fetch-error':
-              if (index === 0) {
-                return HttpResponse.json(pages[0]);
-              } else if (index === 1) {
+            switch (errorCase) {
+              case 'no-workflows':
+                return HttpResponse.json({
+                  workflows: [],
+                  nextPage: undefined,
+                });
+              case 'initial-fetch-error':
                 return HttpResponse.json(
                   { message: 'Request failed' },
                   { status: 500 }
                 );
-              } else {
-                return HttpResponse.json(pages[1]);
-              }
-            default:
-              if (index === 0) {
-                return HttpResponse.json(pages[0]);
-              } else {
-                return HttpResponse.json(pages[1]);
-              }
-          }
+              case 'subsequent-fetch-error':
+                if (index === 0) {
+                  return HttpResponse.json(pages[0]);
+                } else if (index === 1) {
+                  return HttpResponse.json(
+                    { message: 'Request failed' },
+                    { status: 500 }
+                  );
+                } else {
+                  return HttpResponse.json(pages[1]);
+                }
+              default:
+                if (index === 0) {
+                  return HttpResponse.json(pages[0]);
+                } else {
+                  return HttpResponse.json(pages[1]);
+                }
+            }
+          },
         },
-      },
-    ] as MSWMocksHandlersProps['endpointsMocks'],
-  });
+      ] as MSWMocksHandlersProps['endpointsMocks'],
+    }
+  );
 
   return { user };
 }

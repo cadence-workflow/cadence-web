@@ -131,6 +131,8 @@ function setup({
     <DomainWorkflowsArchivalTable
       domain="mock-domain"
       cluster="mock-cluster"
+      timeRangeStart="mock-time-range-start"
+      timeRangeEnd="mock-time-range-end"
     />,
     {
       endpointsMocks: [

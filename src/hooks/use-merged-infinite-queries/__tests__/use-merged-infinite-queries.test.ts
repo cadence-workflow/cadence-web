@@ -12,7 +12,7 @@ type MockAPIResponse = {
 };
 
 const MOCK_QUERY_CONFIG: Array<
-  SingleInfiniteQueryOptions<MockAPIResponse, number>
+  SingleInfiniteQueryOptions<MockAPIResponse, number, [string]>
 > = [
   {
     queryKey: ['even-numbers'],
@@ -35,7 +35,7 @@ const MOCK_QUERY_CONFIG: Array<
 ];
 
 const MOCK_QUERY_CONFIG_WITH_ERROR: Array<
-  SingleInfiniteQueryOptions<MockAPIResponse, number>
+  SingleInfiniteQueryOptions<MockAPIResponse, number, [string]>
 > = [
   {
     queryKey: ['even-numbers'],

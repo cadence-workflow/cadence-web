@@ -14,6 +14,11 @@ jest.mock('@/components/error-panel/error-panel', () =>
   jest.fn(({ message }: { message: string }) => <div>{message}</div>)
 );
 
+jest.mock('../../config/domain-workflows-basic-page-size.config', () => ({
+  __esModule: true,
+  default: 5,
+}));
+
 jest.mock('../helpers/get-workflows-basic-error-panel-props', () =>
   jest.fn().mockImplementation(({ error }: { error: Error }) => {
     return {
@@ -52,13 +57,18 @@ describe(DomainWorkflowsBasicTable.name, () => {
   it('renders workflows without error', async () => {
     const { user } = setup({});
 
+    // Load 1 page of open workflows first
     expect(await screen.findByText('Mock end message: OK')).toBeInTheDocument();
-
     expect(screen.getByText(`mock-workflow-id-0-0-open`)).toBeInTheDocument();
     expect(screen.getByText(`mock-workflow-id-0-1-open`)).toBeInTheDocument();
     expect(screen.getByText(`mock-workflow-id-0-2-open`)).toBeInTheDocument();
     expect(screen.getByText(`mock-workflow-id-0-3-open`)).toBeInTheDocument();
     expect(screen.getByText(`mock-workflow-id-0-4-open`)).toBeInTheDocument();
+
+    await user.click(screen.getByTestId('mock-loader'));
+
+    // Load page 1 of closed workflows
+    expect(await screen.findByText('Mock end message: OK')).toBeInTheDocument();
     expect(screen.getByText(`mock-workflow-id-0-0-closed`)).toBeInTheDocument();
     expect(screen.getByText(`mock-workflow-id-0-1-closed`)).toBeInTheDocument();
     expect(screen.getByText(`mock-workflow-id-0-2-closed`)).toBeInTheDocument();
@@ -67,17 +77,12 @@ describe(DomainWorkflowsBasicTable.name, () => {
 
     await user.click(screen.getByTestId('mock-loader'));
 
-    expect(await screen.findByText('Mock end message: OK')).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-5-open`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-6-open`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-7-open`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-8-open`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-9-open`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-5-closed`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-6-closed`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-7-closed`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-8-closed`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-9-closed`)).toBeInTheDocument();
+    // Then load page 2 of closed workflows
+    expect(screen.getByText(`mock-workflow-id-1-0-closed`)).toBeInTheDocument();
+    expect(screen.getByText(`mock-workflow-id-1-1-closed`)).toBeInTheDocument();
+    expect(screen.getByText(`mock-workflow-id-1-2-closed`)).toBeInTheDocument();
+    expect(screen.getByText(`mock-workflow-id-1-3-closed`)).toBeInTheDocument();
+    expect(screen.getByText(`mock-workflow-id-1-4-closed`)).toBeInTheDocument();
   });
 
   it('renders error panel if the initial call fails', async () => {
@@ -92,42 +97,6 @@ describe(DomainWorkflowsBasicTable.name, () => {
     setup({ errorCase: 'no-workflows' });
 
     expect(await screen.findByText('No workflows found')).toBeInTheDocument();
-  });
-
-  it('renders workflows and allows the user to try again if there is an error', async () => {
-    const { user } = setup({ errorCase: 'subsequent-fetch-error' });
-
-    expect(await screen.findByText('Mock end message: OK')).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-0-open`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-1-open`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-2-open`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-3-open`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-4-open`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-0-closed`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-1-closed`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-2-closed`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-3-closed`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-4-closed`)).toBeInTheDocument();
-
-    await user.click(screen.getByTestId('mock-loader'));
-
-    expect(
-      await screen.findByText('Mock end message: Error')
-    ).toBeInTheDocument();
-
-    await user.click(screen.getByTestId('mock-loader'));
-
-    expect(await screen.findByText('Mock end message: OK')).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-5-open`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-6-open`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-7-open`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-8-open`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-9-open`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-5-closed`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-6-closed`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-7-closed`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-8-closed`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-9-closed`)).toBeInTheDocument();
   });
 
   it('calls only listOpen if Running status is selected', async () => {
@@ -147,11 +116,6 @@ describe(DomainWorkflowsBasicTable.name, () => {
     expect(screen.getByText(`mock-workflow-id-0-2-open`)).toBeInTheDocument();
     expect(screen.getByText(`mock-workflow-id-0-3-open`)).toBeInTheDocument();
     expect(screen.getByText(`mock-workflow-id-0-4-open`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-5-open`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-6-open`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-7-open`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-8-open`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-9-open`)).toBeInTheDocument();
   });
 
   it('calls only listClosed if a close status is selected', async () => {
@@ -172,11 +136,39 @@ describe(DomainWorkflowsBasicTable.name, () => {
     expect(screen.getByText(`mock-workflow-id-0-2-closed`)).toBeInTheDocument();
     expect(screen.getByText(`mock-workflow-id-0-3-closed`)).toBeInTheDocument();
     expect(screen.getByText(`mock-workflow-id-0-4-closed`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-5-closed`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-6-closed`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-7-closed`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-8-closed`)).toBeInTheDocument();
-    expect(screen.getByText(`mock-workflow-id-0-9-closed`)).toBeInTheDocument();
+  });
+
+  it('renders workflows and allows the user to try again if there is an error', async () => {
+    jest.spyOn(usePageQueryParamsModule, 'default').mockReturnValue([
+      {
+        ...mockDomainPageQueryParamsValues,
+        statusBasic: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
+      },
+      mockSetQueryParams,
+    ]);
+    const { user } = setup({ errorCase: 'subsequent-fetch-error' });
+
+    expect(await screen.findByText('Mock end message: OK')).toBeInTheDocument();
+    expect(screen.getByText(`mock-workflow-id-0-0-closed`)).toBeInTheDocument();
+    expect(screen.getByText(`mock-workflow-id-0-1-closed`)).toBeInTheDocument();
+    expect(screen.getByText(`mock-workflow-id-0-2-closed`)).toBeInTheDocument();
+    expect(screen.getByText(`mock-workflow-id-0-3-closed`)).toBeInTheDocument();
+    expect(screen.getByText(`mock-workflow-id-0-4-closed`)).toBeInTheDocument();
+
+    await user.click(screen.getByTestId('mock-loader'));
+
+    expect(
+      await screen.findByText('Mock end message: Error')
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByTestId('mock-loader'));
+
+    expect(await screen.findByText('Mock end message: OK')).toBeInTheDocument();
+    expect(screen.getByText(`mock-workflow-id-1-0-closed`)).toBeInTheDocument();
+    expect(screen.getByText(`mock-workflow-id-1-1-closed`)).toBeInTheDocument();
+    expect(screen.getByText(`mock-workflow-id-1-2-closed`)).toBeInTheDocument();
+    expect(screen.getByText(`mock-workflow-id-1-3-closed`)).toBeInTheDocument();
+    expect(screen.getByText(`mock-workflow-id-1-4-closed`)).toBeInTheDocument();
   });
 });
 
@@ -185,7 +177,7 @@ function setup({
 }: {
   errorCase?: 'initial-fetch-error' | 'subsequent-fetch-error' | 'no-workflows';
 }) {
-  const openPages = generateWorkflowPages(2, true);
+  const openPages = generateWorkflowPages(1, true);
   const closedPages = generateWorkflowPages(2);
 
   let currentEventIndexOpen = 0;
@@ -261,7 +253,7 @@ function generateWorkflowPages(
   const pages = Array.from(
     { length: count },
     (_, pageIndex): ListWorkflowsResponse => ({
-      workflows: Array.from({ length: 10 }, (_, index) => ({
+      workflows: Array.from({ length: 5 }, (_, index) => ({
         workflowID: `mock-workflow-id-${pageIndex}-${index}-${isOpen ? 'open' : 'closed'}`,
         runID: `mock-run-id-${pageIndex}-${index}`,
         workflowName: `mock-workflow-name-${pageIndex}-${index}`,

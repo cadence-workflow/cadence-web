@@ -3,6 +3,8 @@ import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow
 export type Props = {
   domain: string;
   cluster: string;
+  timeRangeStart: string;
+  timeRangeEnd: string;
 };
 
 export type WorkflowStatusClosed = Exclude<

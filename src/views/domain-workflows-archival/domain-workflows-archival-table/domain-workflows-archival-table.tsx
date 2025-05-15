@@ -18,6 +18,8 @@ import getArchivalErrorPanelProps from './helpers/get-archival-error-panel-props
 export default function DomainWorkflowsArchivalTable({
   domain,
   cluster,
+  timeRangeStart,
+  timeRangeEnd,
 }: Props) {
   const [queryParams, setQueryParams] = usePageQueryParams(
     domainPageQueryParamsConfig
@@ -39,8 +41,8 @@ export default function DomainWorkflowsArchivalTable({
     inputType: queryParams.inputTypeArchival,
     search: queryParams.searchArchival,
     statuses: queryParams.statusesArchival,
-    timeRangeStart: queryParams.timeRangeStartArchival,
-    timeRangeEnd: queryParams.timeRangeEndArchival,
+    timeRangeStart,
+    timeRangeEnd,
     sortColumn: queryParams.sortColumnArchival,
     sortOrder: queryParams.sortOrderArchival,
     query: queryParams.queryArchival,

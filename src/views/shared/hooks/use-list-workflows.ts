@@ -42,8 +42,8 @@ export default function useListWorkflows({
           statuses,
           sortColumn,
           sortOrder,
-          timeRangeStart: timeRangeStart?.toISOString(),
-          timeRangeEnd: timeRangeEnd?.toISOString(),
+          timeRangeStart,
+          timeRangeEnd,
         }),
   };
 
