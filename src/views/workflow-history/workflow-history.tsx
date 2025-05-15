@@ -1,5 +1,11 @@
 'use client';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import {
   useSuspenseInfiniteQuery,
@@ -232,6 +238,17 @@ export default function WorkflowHistory({ params }: Props) {
     visibleEvents: filteredEvents,
   });
 
+  const hasInitialEventExpandedRef = useRef<boolean>(false);
+  useEffect(() => {
+    if (
+      queryParams.historySelectedEventId &&
+      !hasInitialEventExpandedRef.current
+    ) {
+      hasInitialEventExpandedRef.current = true;
+      toggleIsEventExpanded(queryParams.historySelectedEventId);
+    }
+  }, [queryParams.historySelectedEventId, toggleIsEventExpanded]);
+
   const [isTimelineChartShown, setIsTimelineChartShown] = useState(false);
 
   const compactSectionListRef = useRef<VirtuosoHandle>(null);
@@ -422,10 +439,9 @@ export default function WorkflowHistory({ params }: Props) {
                       setResetToDecisionEventId(group.resetToDecisionEventId);
                     }
                   }}
-                  selected={
-                    queryParams.historySelectedEventId ===
-                    group.events[0].eventId
-                  }
+                  selected={group.events.some(
+                    (e) => e.eventId === queryParams.historySelectedEventId
+                  )}
                 />
               )}
               components={{

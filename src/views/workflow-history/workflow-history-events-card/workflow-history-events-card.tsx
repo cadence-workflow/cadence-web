@@ -1,10 +1,13 @@
 'use client';
-import React from 'react';
+import React, { useCallback, useEffect, useReducer, useRef } from 'react';
 
 import { StatelessAccordion, Panel } from 'baseui/accordion';
+import { Button } from 'baseui/button';
 import { Skeleton } from 'baseui/skeleton';
 
+import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
+import workflowPageQueryParamsConfig from '@/views/workflow-page/config/workflow-page-query-params.config';
 
 import WorkflowHistoryEventDetails from '../workflow-history-event-details/workflow-history-event-details';
 import getBadgeContainerSize from '../workflow-history-event-status-badge/helpers/get-badge-container-size';
@@ -26,6 +29,13 @@ export default function WorkflowHistoryEventsCard({
   animateBorderOnEnter,
 }: Props) {
   const { cls, theme } = useStyletronClasses(cssStyles);
+
+  const [_, setQueryParams] = usePageQueryParams(workflowPageQueryParamsConfig);
+
+  const setHistoryEventId = useCallback(
+    (eventId: string) => setQueryParams({ historySelectedEventId: eventId }),
+    [setQueryParams]
+  );
 
   if (!eventsMetadata?.length && !showEventPlaceholder) return null;
   const expanded = events.reduce((result, event) => {
@@ -51,7 +61,12 @@ export default function WorkflowHistoryEventsCard({
                   size="small"
                   status={eventMetadata.status}
                 />
-                <div className={cls.eventLabel}>{eventMetadata.label}</div>
+                <div
+                  className={cls.eventLabel}
+                  onClick={() => setHistoryEventId(id)}
+                >
+                  {eventMetadata.label}
+                </div>
               </>
             }
             onClick={() => onEventToggle(id)}
