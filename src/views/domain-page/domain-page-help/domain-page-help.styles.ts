@@ -30,7 +30,6 @@ export const overrides = {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
         minWidth: '250px',
         ...$theme.typography.LabelSmall,
-        borderRadius: $theme.borders.radius400,
         backgroundColor: $theme.colors.backgroundPrimary,
         padding: $theme.sizing.scale200,
       }),
