@@ -18,6 +18,7 @@ const themeLight = {
   },
   borders: {
     buttonBorderRadiusMini: '8px',
+    popoverBorderRadius: '12px',
   },
 } satisfies DeepPartial<MakeExtendable<Theme>>;
 
