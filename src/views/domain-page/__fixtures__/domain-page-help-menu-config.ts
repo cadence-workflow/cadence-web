@@ -9,7 +9,7 @@ export const mockDomainPageHelpMenuConfig = [
       {
         kind: 'link',
         text: 'Get started (docs)',
-        icon: () => createElement('span', {}, 'Icon'),
+        icon: () => createElement('span', {}, 'Docs Icon'),
         href: 'https://mock.docs.link',
       },
     ],
@@ -20,8 +20,9 @@ export const mockDomainPageHelpMenuConfig = [
       {
         kind: 'modal',
         text: 'Domain commands',
-        icon: () => createElement('span', {}, 'Icon'),
-        modal: jest.fn(),
+        icon: () => createElement('span', {}, 'Cmds Icon'),
+        modal: ({ isOpen }) =>
+          createElement('div', {}, isOpen ? 'Open modal' : 'Closed modal'),
       },
     ],
   },
@@ -31,7 +32,7 @@ export const mockDomainPageHelpMenuConfig = [
       {
         kind: 'other',
         text: 'Custom action',
-        icon: () => createElement('span', {}, 'Icon'),
+        icon: () => createElement('span', {}, 'Other Icon'),
         onClick: jest.fn(),
       },
     ],

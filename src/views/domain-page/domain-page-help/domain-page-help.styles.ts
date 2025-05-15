@@ -32,7 +32,6 @@ export const overrides = {
         ...$theme.typography.LabelSmall,
         borderRadius: $theme.borders.radius400,
         backgroundColor: $theme.colors.backgroundPrimary,
-        boxShadow: $theme.lighting.shallowBelow,
         padding: $theme.sizing.scale200,
       }),
     },

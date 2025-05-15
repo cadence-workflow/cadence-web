@@ -22,6 +22,8 @@ describe(DomainPageHelpItemButton.name, () => {
     expect(linkItemButton).toHaveAttribute('target', '_blank');
     expect(linkItemButton).toHaveAttribute('rel', 'noreferrer');
     expect(linkItemButton).toHaveAttribute('href', 'https://mock.docs.link');
+
+    expect(screen.getByText('Docs Icon')).toBeInTheDocument();
   });
 
   it('renders a modal button correctly and opens the modal on click', async () => {
@@ -31,15 +33,13 @@ describe(DomainPageHelpItemButton.name, () => {
     const buttonElement = screen.getByText('Domain commands');
     expect(buttonElement).toBeInTheDocument();
 
+    expect(screen.getByText('Cmds Icon')).toBeInTheDocument();
+
+    expect(screen.getByText('Closed modal')).toBeInTheDocument();
+
     await user.click(buttonElement);
 
-    expect(modalItem.modal).toHaveBeenCalledWith(
-      expect.objectContaining({
-        isOpen: true,
-        onClose: expect.any(Function),
-      }),
-      expect.anything()
-    );
+    expect(await screen.findByText('Open modal')).toBeInTheDocument();
   });
 
   it('renders an action button correctly and calls onClick handler', async () => {
@@ -48,6 +48,8 @@ describe(DomainPageHelpItemButton.name, () => {
 
     const button = screen.getByText('Custom action');
     expect(button).toBeInTheDocument();
+
+    expect(screen.getByText('Other Icon')).toBeInTheDocument();
 
     await user.click(button);
 
