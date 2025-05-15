@@ -1,10 +1,6 @@
-import { type Theme, withStyle } from 'baseui';
-import {
-  type StatelessAccordion,
-  type AccordionOverrides,
-} from 'baseui/accordion';
+import { type Theme } from 'baseui';
+import { type AccordionOverrides } from 'baseui/accordion';
 import { type SkeletonOverrides } from 'baseui/skeleton/types';
-import { StyledTableHeadCell } from 'baseui/table-semantic';
 import { type StyleObject } from 'styletron-react';
 
 import type {
@@ -87,14 +83,16 @@ const cssStylesObj = {
   eventLabel: ($theme: Theme) => ({
     ...$theme.typography.LabelSmall,
     color: $theme.colors.contentPrimary,
-    flex: 1,
   }),
   skeletonContainer: ($theme: Theme) => ({
     display: 'flex',
     alignItems: 'center',
     gap: $theme.sizing.scale500,
   }),
-
+  eventPanelTitle: (theme) => ({
+    display: 'flex',
+    gap: theme.sizing.scale500,
+  }),
   detailsRow: (theme) => ({
     display: 'flex',
     flexDirection: 'row',

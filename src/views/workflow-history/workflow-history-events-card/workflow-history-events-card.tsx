@@ -1,13 +1,13 @@
 'use client';
-import React, { useCallback, useEffect, useReducer, useRef } from 'react';
+import React, { useState } from 'react';
 
 import { StatelessAccordion, Panel } from 'baseui/accordion';
-import { Button } from 'baseui/button';
 import { Skeleton } from 'baseui/skeleton';
+import { StatefulTooltip } from 'baseui/tooltip';
+import copy from 'copy-to-clipboard';
+import queryString from 'query-string';
 
-import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
-import workflowPageQueryParamsConfig from '@/views/workflow-page/config/workflow-page-query-params.config';
 
 import WorkflowHistoryEventDetails from '../workflow-history-event-details/workflow-history-event-details';
 import getBadgeContainerSize from '../workflow-history-event-status-badge/helpers/get-badge-container-size';
@@ -30,12 +30,7 @@ export default function WorkflowHistoryEventsCard({
 }: Props) {
   const { cls, theme } = useStyletronClasses(cssStyles);
 
-  const [_, setQueryParams] = usePageQueryParams(workflowPageQueryParamsConfig);
-
-  const setHistoryEventId = useCallback(
-    (eventId: string) => setQueryParams({ historySelectedEventId: eventId }),
-    [setQueryParams]
-  );
+  const [isEventLinkCopied, setIsEventLinkCopied] = useState(false);
 
   if (!eventsMetadata?.length && !showEventPlaceholder) return null;
   const expanded = events.reduce((result, event) => {
@@ -55,19 +50,46 @@ export default function WorkflowHistoryEventsCard({
           <Panel
             key={id}
             title={
-              <>
+              <div className={cls.eventPanelTitle}>
                 <WorkflowHistoryEventStatusBadge
                   statusReady={true}
                   size="small"
                   status={eventMetadata.status}
                 />
-                <div
-                  className={cls.eventLabel}
-                  onClick={() => setHistoryEventId(id)}
+                <StatefulTooltip
+                  showArrow
+                  placement="right"
+                  popoverMargin={8}
+                  accessibilityType="tooltip"
+                  content={() =>
+                    isEventLinkCopied
+                      ? 'Copied link to event'
+                      : 'Copy link to event'
+                  }
+                  onMouseLeave={() => setIsEventLinkCopied(false)}
+                  returnFocus
+                  autoFocus
                 >
-                  {eventMetadata.label}
-                </div>
-              </>
+                  <div
+                    className={cls.eventLabel}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      copy(
+                        queryString.stringifyUrl({
+                          url:
+                            window.location.origin + window.location.pathname,
+                          query: {
+                            he: id,
+                          },
+                        })
+                      );
+                      setIsEventLinkCopied(true);
+                    }}
+                  >
+                    {eventMetadata.label}
+                  </div>
+                </StatefulTooltip>
+              </div>
             }
             onClick={() => onEventToggle(id)}
           >
