@@ -6,6 +6,7 @@ import { Controller } from 'react-hook-form';
 import { type WorkflowActionFormProps } from '../workflow-actions.types';
 
 import { type SignalWorkflowFormData } from './workflow-action-signal-form.types';
+import { overrides } from './workflow-action-signal-form.styles';
 
 export default function WorkflowActionSignalForm({
   fieldErrors,
@@ -39,7 +40,6 @@ export default function WorkflowActionSignalForm({
           )}
         />
       </FormControl>
-
       <FormControl label="JSON Input (optional)">
         <Controller
           name="signalInput"
@@ -48,6 +48,7 @@ export default function WorkflowActionSignalForm({
           render={({ field: { ref, ...field } }) => (
             <Textarea
               {...field}
+              overrides={overrides.jsonInput}
               // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
               inputRef={ref}
               onChange={(e) => {
