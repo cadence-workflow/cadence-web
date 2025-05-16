@@ -29,6 +29,7 @@ export default function WorkflowPageCliCommandsModal({
   onClose,
 }: Props) {
   const { cls, theme } = useStyletronClasses(cssStyles);
+
   const [selectedTab, setSelectedTab] = useState<CliCommandGroups>(
     workflowPageCliCommandsGroupsConfig[0].name
   );
@@ -37,13 +38,13 @@ export default function WorkflowPageCliCommandsModal({
       ({ group }) => group === selectedTab
     );
   }, [selectedTab]);
+
   return (
     <Modal size={SIZE.auto} isOpen={isOpen} onClose={onClose} closeable>
       <ModalHeader>
         CLI commands
         <ParagraphXSmall color={theme.colors.contentSecondary}>
-          Here are a some useful common CLI commands to get started with
-          Cadence.
+          Here are some useful common CLI commands to get started with Cadence.
         </ParagraphXSmall>
       </ModalHeader>
       <ModalBody>
