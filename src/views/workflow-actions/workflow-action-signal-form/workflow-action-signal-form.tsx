@@ -5,8 +5,8 @@ import { Controller } from 'react-hook-form';
 
 import { type WorkflowActionFormProps } from '../workflow-actions.types';
 
-import { type SignalWorkflowFormData } from './workflow-action-signal-form.types';
 import { overrides } from './workflow-action-signal-form.styles';
+import { type SignalWorkflowFormData } from './workflow-action-signal-form.types';
 
 export default function WorkflowActionSignalForm({
   fieldErrors,
@@ -33,7 +33,7 @@ export default function WorkflowActionSignalForm({
               onChange={(e) => {
                 field.onChange(e.target.value);
               }}
-              size='compact'
+              size="compact"
               onBlur={field.onBlur}
               error={Boolean(getErrorMessage('signalName'))}
               placeholder="Enter signal name"
@@ -55,7 +55,7 @@ export default function WorkflowActionSignalForm({
               onChange={(e) => {
                 field.onChange(e.target.value);
               }}
-              size='compact'
+              size="compact"
               onBlur={field.onBlur}
               error={Boolean(getErrorMessage('signalInput'))}
               placeholder="Enter JSON input"
