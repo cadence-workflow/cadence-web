@@ -1,7 +1,10 @@
 import { type Duration } from '@/__generated__/proto-ts/google/protobuf/Duration';
 import dayjs from '@/utils/datetime/dayjs';
 
-const formatDuration = (duration: Duration | null) => {
+const formatDuration = (
+  duration: Duration | null,
+  { separator = ', ' }: { separator?: string } = {}
+) => {
   const defaultReturn = '0s';
   if (!duration) {
     return defaultReturn;
@@ -30,7 +33,7 @@ const formatDuration = (duration: Duration | null) => {
   const result = units
     .filter((unit) => values[unit])
     .map((unit) => `${values[unit]}${unit}`)
-    .join(', ');
+    .join(separator);
 
   return result || defaultReturn;
 };

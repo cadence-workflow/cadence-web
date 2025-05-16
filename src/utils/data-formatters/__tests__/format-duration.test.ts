@@ -26,4 +26,9 @@ describe('formatDuration', () => {
     const duration: Duration = { seconds: '61', nanos: 123456789 };
     expect(formatDuration(duration)).toBe('1m, 1s, 123.456789ms');
   });
+
+  it('should format duration with custom separator', () => {
+    const duration: Duration = { seconds: '31556952', nanos: 0 };
+    expect(formatDuration(duration, { separator: ' ' })).toBe('1y 5h 49m 12s');
+  });
 });
