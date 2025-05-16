@@ -33,6 +33,7 @@ export default function WorkflowActionSignalForm({
               onChange={(e) => {
                 field.onChange(e.target.value);
               }}
+              size='compact'
               onBlur={field.onBlur}
               error={Boolean(getErrorMessage('signalName'))}
               placeholder="Enter signal name"
@@ -54,6 +55,7 @@ export default function WorkflowActionSignalForm({
               onChange={(e) => {
                 field.onChange(e.target.value);
               }}
+              size='compact'
               onBlur={field.onBlur}
               error={Boolean(getErrorMessage('signalInput'))}
               placeholder="Enter JSON input"
