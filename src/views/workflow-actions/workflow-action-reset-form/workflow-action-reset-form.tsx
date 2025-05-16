@@ -14,6 +14,7 @@ import { Controller, useWatch } from 'react-hook-form';
 
 import { useDescribeWorkflow } from '@/views/workflow-page/hooks/use-describe-workflow';
 
+import { overrides } from './workflow-action-reset-form.styles';
 import { type Props } from './workflow-action-reset-form.types';
 
 export default function WorkflowActionResetForm({
@@ -82,8 +83,12 @@ export default function WorkflowActionResetForm({
               error={Boolean(fieldErrors.resetType?.message)}
               align={ALIGN.horizontal}
             >
-              <Radio value="EventId">Event ID</Radio>
-              <Radio value="BinaryChecksum">Binary Checksum</Radio>
+              <Radio overrides={overrides.radio} value="EventId">
+                Event ID
+              </Radio>
+              <Radio overrides={overrides.radio} value="BinaryChecksum">
+                Binary Checksum
+              </Radio>
             </RadioGroup>
           )}
         />
@@ -106,6 +111,7 @@ export default function WorkflowActionResetForm({
                 onBlur={field.onBlur}
                 error={Boolean(getErrorMessage('decisionFinishEventId'))}
                 type="number"
+                size="compact"
                 placeholder="Find Event ID"
               />
             )}
@@ -136,6 +142,7 @@ export default function WorkflowActionResetForm({
                 error={Boolean(
                   getErrorMessage('binaryChecksumFirstDecisionCompletedId')
                 )}
+                size="compact"
                 placeholder="Select binary checksum"
                 noResultsMsg={
                   isError
@@ -156,6 +163,7 @@ export default function WorkflowActionResetForm({
           render={({ field: { value, onChange, ref, ...field } }) => (
             <Checkbox
               {...field}
+              overrides={overrides.checkbox}
               // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
               inputRef={ref}
               checkmarkType={CHECKBOX_STYLE_TYPE.toggle_round}
@@ -180,6 +188,7 @@ export default function WorkflowActionResetForm({
               {...field}
               // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
               inputRef={ref}
+              size="compact"
               onChange={(e) => {
                 field.onChange(e.target.value);
               }}
