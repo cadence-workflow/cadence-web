@@ -230,6 +230,13 @@ export default function WorkflowHistory({ params }: Props) {
     getIsEventExpanded,
   } = useEventExpansionToggle({
     visibleEvents: filteredEvents,
+    ...(queryParams.historySelectedEventId
+      ? {
+          initialState: {
+            [queryParams.historySelectedEventId]: true,
+          },
+        }
+      : {}),
   });
 
   const [isTimelineChartShown, setIsTimelineChartShown] = useState(false);
@@ -355,9 +362,9 @@ export default function WorkflowHistory({ params }: Props) {
                     secondaryLabel={timeLabel}
                     showLabelPlaceholder={!label}
                     badges={badges}
-                    selected={
-                      queryParams.historySelectedEventId === events[0].eventId
-                    }
+                    selected={events.some(
+                      (e) => e.eventId === queryParams.historySelectedEventId
+                    )}
                     disabled={!Boolean(events[0].eventId)}
                     onClick={() => {
                       if (events[0].eventId)
@@ -422,10 +429,9 @@ export default function WorkflowHistory({ params }: Props) {
                       setResetToDecisionEventId(group.resetToDecisionEventId);
                     }
                   }}
-                  selected={
-                    queryParams.historySelectedEventId ===
-                    group.events[0].eventId
-                  }
+                  selected={group.events.some(
+                    (e) => e.eventId === queryParams.historySelectedEventId
+                  )}
                 />
               )}
               components={{

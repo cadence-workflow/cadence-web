@@ -1,3 +1,5 @@
+import copy from 'copy-to-clipboard';
+
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import {
@@ -16,6 +18,8 @@ jest.mock(
   '../../workflow-history-event-details/workflow-history-event-details',
   () => jest.fn(({ event }) => <div>Details eventId: {event.eventId}</div>)
 );
+
+jest.mock('copy-to-clipboard', jest.fn);
 
 describe('WorkflowHistoryEventsCard', () => {
   it('shows events label and status correctly', () => {
@@ -66,7 +70,7 @@ describe('WorkflowHistoryEventsCard', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('render accordion expanded when get getIsEventExpanded returns faltruese', async () => {
+  it('render accordion expanded when get getIsEventExpanded returns true', async () => {
     const events: Props['events'] = [scheduleActivityTaskEvent];
     const eventsMetadata: Props['eventsMetadata'] = [
       {
@@ -102,17 +106,69 @@ describe('WorkflowHistoryEventsCard', () => {
         status: 'ONGOING',
       },
     ];
+
     const { user, mockedOnEventToggle } = setup({
       events,
       eventsMetadata,
     });
+
     expect(
       screen.queryByText(JSON.stringify(events[1]))
     ).not.toBeInTheDocument();
 
     await user.click(screen.getByText('Second event'));
 
-    expect(mockedOnEventToggle).toHaveBeenCalled();
+    expect(mockedOnEventToggle).toHaveBeenCalledWith('9');
+  });
+
+  it('should show copy event button when the accordion is expanded', async () => {
+    // TODO: this is a bit hacky, see if there is a better way to mock window properties
+    const originalWindow = window;
+    window = Object.create(window);
+    Object.defineProperty(window, 'location', {
+      value: {
+        ...window.location,
+        origin: 'http://localhost',
+        pathname: '/domains/mock-domain/workflows/wfid/runid/history',
+      },
+      writable: true,
+    });
+
+    const events: Props['events'] = [
+      scheduleActivityTaskEvent,
+      startActivityTaskEvent,
+    ];
+
+    const eventsMetadata: Props['eventsMetadata'] = [
+      {
+        label: 'First event',
+        status: 'COMPLETED',
+      },
+      {
+        label: 'Second event',
+        status: 'ONGOING',
+      },
+    ];
+
+    const { user } = setup({
+      events,
+      eventsMetadata,
+      getIsEventExpanded: jest.fn().mockReturnValue(true),
+    });
+
+    const shareButtons = await screen.findAllByTestId('share-button');
+    expect(shareButtons).toHaveLength(2);
+
+    await user.hover(shareButtons[0]);
+    expect(await screen.findByText('Copy link to event')).toBeInTheDocument();
+
+    await user.click(shareButtons[0]);
+    expect(copy).toHaveBeenCalledWith(
+      'http://localhost/domains/mock-domain/workflows/wfid/runid/history?he=7'
+    );
+    expect(await screen.findByText('Copied link to event')).toBeInTheDocument();
+
+    window = originalWindow;
   });
 
   it('should add placeholder event when showMissingEventPlaceholder is set to true', async () => {
