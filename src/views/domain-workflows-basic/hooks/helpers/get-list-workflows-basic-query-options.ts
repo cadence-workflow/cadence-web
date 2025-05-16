@@ -15,13 +15,26 @@ export default function getListWorkflowsBasicQueryOptions({
   domain: string;
   cluster: string;
   requestQueryParams: ListWorkflowsBasicRequestQueryParams;
-}): SingleInfiniteQueryOptions<ListWorkflowsBasicResponse, string | undefined> {
+}): SingleInfiniteQueryOptions<
+  ListWorkflowsBasicResponse,
+  string | undefined,
+  [
+    string,
+    {
+      domain: string;
+      cluster: string;
+    } & ListWorkflowsBasicRequestQueryParams,
+  ]
+> {
   return {
     queryKey: [
       'listWorkflowsBasic',
       { domain, cluster, ...requestQueryParams },
     ],
-    queryFn: async ({ pageParam }) =>
+    queryFn: async ({
+      pageParam,
+      queryKey: [_, { domain, cluster, ...requestQueryParams }],
+    }) =>
       request(
         queryString.stringifyUrl({
           url: `/api/domains/${domain}/${cluster}/workflows-basic`,
