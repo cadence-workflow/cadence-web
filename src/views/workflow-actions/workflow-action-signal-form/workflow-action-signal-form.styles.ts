@@ -6,7 +6,10 @@ export const overrides = {
   jsonInput: {
     Input: {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
-        ...$theme.typography.MonoParagraphXSmall,
+        ...$theme.typography.MonoParagraphSmall,
+        '::placeholder': {
+          ...$theme.typography.ParagraphSmall,
+        },
       }),
     },
   } satisfies TextareaOverrides,
