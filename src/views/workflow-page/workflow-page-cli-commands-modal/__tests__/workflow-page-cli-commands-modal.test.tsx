@@ -60,7 +60,7 @@ describe('WorkflowPageCliCommandsModal', () => {
     expect(screen.getByText('CLI commands')).toBeInTheDocument();
     expect(
       screen.getByText(
-        'Here are a some useful common CLI commands to get started with Cadence.'
+        'Here are some useful common CLI commands to get started with Cadence.'
       )
     ).toBeInTheDocument();
     expect(screen.getByText('Close')).toBeInTheDocument();

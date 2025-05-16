@@ -33,6 +33,10 @@ jest.mock('../../config/domain-page-tabs.config', () => ({
   },
 }));
 
+jest.mock('../../domain-page-help/domain-page-help', () =>
+  jest.fn(() => <button data-testid="domain-page-help">Help Button</button>)
+);
+
 describe('DomainPageTabs', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -92,5 +96,12 @@ describe('DomainPageTabs', () => {
       else
         expect(screen.queryByTestId(`${key}-artwork`)).not.toBeInTheDocument();
     });
+  });
+
+  it('renders the help button as endEnhancer', () => {
+    render(<DomainPageTabs />);
+
+    expect(screen.getByTestId('domain-page-help')).toBeInTheDocument();
+    expect(screen.getByText('Help Button')).toBeInTheDocument();
   });
 });
