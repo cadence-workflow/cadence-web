@@ -116,15 +116,12 @@ describe('WorkflowHistoryEventsCard', () => {
       screen.queryByText(JSON.stringify(events[1]))
     ).not.toBeInTheDocument();
 
-    const accordionExpandButtons = screen.getAllByTitle('Expand');
-    expect(accordionExpandButtons).toHaveLength(2);
-
-    await user.click(accordionExpandButtons[1]);
+    await user.click(screen.getByText('Second event'));
 
     expect(mockedOnEventToggle).toHaveBeenCalledWith('9');
   });
 
-  it('should call Copy function with link to event ID on title click', async () => {
+  it('should show copy event button when the accordion is expanded', async () => {
     // TODO: this is a bit hacky, see if there is a better way to mock window properties
     const originalWindow = window;
     window = Object.create(window);
@@ -156,17 +153,18 @@ describe('WorkflowHistoryEventsCard', () => {
     const { user } = setup({
       events,
       eventsMetadata,
+      getIsEventExpanded: jest.fn().mockReturnValue(true),
     });
 
-    const eventTitle = screen.getByText('Second event');
+    const shareButtons = await screen.findAllByTestId('share-button');
+    expect(shareButtons).toHaveLength(2);
 
-    await user.hover(eventTitle);
+    await user.hover(shareButtons[0]);
     expect(await screen.findByText('Copy link to event')).toBeInTheDocument();
 
-    await user.click(eventTitle);
-
+    await user.click(shareButtons[0]);
     expect(copy).toHaveBeenCalledWith(
-      'http://localhost/domains/mock-domain/workflows/wfid/runid/history?he=9'
+      'http://localhost/domains/mock-domain/workflows/wfid/runid/history?he=7'
     );
     expect(await screen.findByText('Copied link to event')).toBeInTheDocument();
 

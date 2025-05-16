@@ -1,5 +1,6 @@
 import { type Theme } from 'baseui';
 import { type AccordionOverrides } from 'baseui/accordion';
+import { type ButtonOverrides } from 'baseui/button';
 import { type SkeletonOverrides } from 'baseui/skeleton/types';
 import { type StyleObject } from 'styletron-react';
 
@@ -77,6 +78,14 @@ export const overrides = (animateBorderOnEnter?: boolean) => ({
       }),
     },
   } satisfies AccordionOverrides,
+  shareButton: {
+    BaseButton: {
+      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+        height: $theme.sizing.scale600,
+        width: $theme.sizing.scale600,
+      }),
+    },
+  } satisfies ButtonOverrides,
 });
 
 const cssStylesObj = {
@@ -92,6 +101,7 @@ const cssStylesObj = {
   eventPanelTitle: (theme) => ({
     display: 'flex',
     gap: theme.sizing.scale500,
+    alignItems: 'center',
   }),
   detailsRow: (theme) => ({
     display: 'flex',

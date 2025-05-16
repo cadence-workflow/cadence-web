@@ -1,11 +1,5 @@
 'use client';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 
 import {
   useSuspenseInfiniteQuery,
@@ -236,23 +230,14 @@ export default function WorkflowHistory({ params }: Props) {
     getIsEventExpanded,
   } = useEventExpansionToggle({
     visibleEvents: filteredEvents,
+    ...(queryParams.historySelectedEventId
+      ? {
+          initialState: {
+            [queryParams.historySelectedEventId]: true,
+          },
+        }
+      : {}),
   });
-
-  const shouldExpandInitialEventRef = useRef<boolean>(true);
-  useEffect(() => {
-    if (
-      queryParams.historySelectedEventId &&
-      initialEventFound &&
-      shouldExpandInitialEventRef.current
-    ) {
-      toggleIsEventExpanded(queryParams.historySelectedEventId);
-      shouldExpandInitialEventRef.current = false;
-    }
-  }, [
-    queryParams.historySelectedEventId,
-    toggleIsEventExpanded,
-    initialEventFound,
-  ]);
 
   const [isTimelineChartShown, setIsTimelineChartShown] = useState(false);
 
