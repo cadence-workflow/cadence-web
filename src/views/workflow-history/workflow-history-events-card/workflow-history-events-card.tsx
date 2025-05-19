@@ -60,46 +60,49 @@ export default function WorkflowHistoryEventsCard({
                   size="small"
                   status={eventMetadata.status}
                 />
-                <div className={cls.eventLabel}>{eventMetadata.label}</div>
-                {isPanelExpanded && (
-                  <StatefulTooltip
-                    showArrow
-                    placement="right"
-                    popoverMargin={8}
-                    accessibilityType="tooltip"
-                    content={() =>
-                      isEventLinkCopied
-                        ? 'Copied link to event'
-                        : 'Copy link to event'
-                    }
-                    onMouseLeave={() => setIsEventLinkCopied(false)}
-                    returnFocus
-                    autoFocus
-                  >
-                    <Button
-                      data-testid="share-button"
-                      size="mini"
-                      shape="circle"
-                      kind="tertiary"
-                      overrides={overrides.shareButton}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        copy(
-                          queryString.stringifyUrl({
-                            url:
-                              window.location.origin + window.location.pathname,
-                            query: {
-                              he: id,
-                            },
-                          })
-                        );
-                        setIsEventLinkCopied(true);
-                      }}
+                <div className={cls.eventLabel}>
+                  {eventMetadata.label}
+                  {isPanelExpanded && (
+                    <StatefulTooltip
+                      showArrow
+                      placement="right"
+                      popoverMargin={8}
+                      accessibilityType="tooltip"
+                      content={() =>
+                        isEventLinkCopied
+                          ? 'Copied link to event'
+                          : 'Copy link to event'
+                      }
+                      onMouseLeave={() => setIsEventLinkCopied(false)}
+                      returnFocus
+                      autoFocus
                     >
-                      <MdLink />
-                    </Button>
-                  </StatefulTooltip>
-                )}
+                      <Button
+                        data-testid="share-button"
+                        size="mini"
+                        shape="circle"
+                        kind="tertiary"
+                        overrides={overrides.shareButton}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          copy(
+                            queryString.stringifyUrl({
+                              url:
+                                window.location.origin +
+                                window.location.pathname,
+                              query: {
+                                he: id,
+                              },
+                            })
+                          );
+                          setIsEventLinkCopied(true);
+                        }}
+                      >
+                        <MdLink />
+                      </Button>
+                    </StatefulTooltip>
+                  )}
+                </div>
               </div>
             }
             onClick={() => onEventToggle(id)}

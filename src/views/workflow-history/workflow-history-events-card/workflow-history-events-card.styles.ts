@@ -89,9 +89,12 @@ export const overrides = (animateBorderOnEnter?: boolean) => ({
 });
 
 const cssStylesObj = {
-  eventLabel: ($theme: Theme) => ({
-    ...$theme.typography.LabelSmall,
-    color: $theme.colors.contentPrimary,
+  eventLabel: (theme: Theme) => ({
+    ...theme.typography.LabelSmall,
+    color: theme.colors.contentPrimary,
+    display: 'flex',
+    gap: theme.sizing.scale400,
+    alignItems: 'center',
   }),
   skeletonContainer: ($theme: Theme) => ({
     display: 'flex',
