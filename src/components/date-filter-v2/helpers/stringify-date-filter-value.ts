@@ -8,10 +8,11 @@ export default function stringifyDateFilterValue(
 ): string {
   const now = dayjs();
 
-  if (dayjs.isDayjs(v)) {
+  if (v instanceof Date) {
+    const dayValue = dayjs(v);
     return prettyPrint === 'pretty'
-      ? v.format(
-          v.isSame(now, 'year')
+      ? dayValue.format(
+          dayValue.isSame(now, 'year')
             ? 'DD MMM, HH:mm:ss z'
             : 'DD MMM YYYY, HH:mm:ss z'
         )

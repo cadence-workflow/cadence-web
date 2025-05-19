@@ -7,8 +7,8 @@ export default function getDayjsFromDateFilterValue(
   v: DateFilterValue,
   now: dayjs.Dayjs
 ) {
-  if (dayjs.isDayjs(v)) {
-    return v;
+  if (v instanceof Date) {
+    return dayjs(v);
   }
 
   if (v === 'now') {

@@ -1,5 +1,3 @@
-import dayjs from '@/utils/datetime/dayjs';
-
 import { type DateFilterValue } from '../../date-filter-v2.types';
 import parseDateFilterValue from '../parse-date-filter-value';
 
@@ -16,21 +14,21 @@ describe('parseDateFilterValue', () => {
     expect(parseDateFilterValue('now-1h', fallback)).toBe('now-1h');
   });
 
-  it('parses string dates into dayjs objects when format is valid', () => {
-    const fallback: DateFilterValue = 'now';
+  it('parses string dates into Date objects when format is valid', () => {
+    const fallback = 'now';
     const result = parseDateFilterValue('2023-05-23T10:30:00.000Z', fallback);
-    expect(dayjs.isDayjs(result)).toBe(true);
-    expect((result as dayjs.Dayjs).format('YYYY-MM-DD')).toBe('2023-05-23');
+    expect(result instanceof Date).toBe(true);
+    expect((result as Date).toISOString()).toBe('2023-05-23T10:30:00.000Z');
   });
 
   it('returns the fallback when date format is invalid', () => {
-    const fallback = dayjs('2023-01-01');
+    const fallback = 'now';
     const result = parseDateFilterValue('invalid-date', fallback);
     expect(result).toBe(fallback);
   });
 
   it('returns the fallback for empty strings', () => {
-    const fallback: DateFilterValue = 'now';
+    const fallback = 'now';
     expect(parseDateFilterValue('', fallback)).toBe(fallback);
   });
 });

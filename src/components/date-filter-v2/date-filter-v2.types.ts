@@ -1,5 +1,3 @@
-import { type Dayjs } from 'dayjs';
-
 import { type DATE_FILTER_RELATIVE_VALUES } from './date-filter-v2.constants';
 
 export type RelativeDurationConfig = {
@@ -9,7 +7,7 @@ export type RelativeDurationConfig = {
 
 export type RelativeDateFilterValue = keyof typeof DATE_FILTER_RELATIVE_VALUES;
 
-export type DateFilterValue = Dayjs | 'now' | RelativeDateFilterValue;
+export type DateFilterValue = Date | 'now' | RelativeDateFilterValue;
 
 export type DateFilterRange = {
   start: DateFilterValue | undefined;

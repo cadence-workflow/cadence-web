@@ -5,8 +5,6 @@ import { type TimePickerProps } from 'baseui/timepicker';
 
 import { render, screen, fireEvent, act, waitFor } from '@/test-utils/rtl';
 
-import dayjs from '@/utils/datetime/dayjs';
-
 import DateFilterV2 from '../date-filter-v2';
 import { type DateFilterRange } from '../date-filter-v2.types';
 
@@ -50,8 +48,8 @@ jest.mock('baseui/timepicker', () => ({
 }));
 
 const mockDateOverrides: DateFilterRange = {
-  start: dayjs('2023-05-23T00:00:00.000Z'),
-  end: dayjs('2023-05-24T00:00:00.000Z'),
+  start: new Date('2023-05-23T00:00:00.000Z'),
+  end: new Date('2023-05-24T00:00:00.000Z'),
 };
 
 describe(DateFilterV2.name, () => {
@@ -138,8 +136,8 @@ describe(DateFilterV2.name, () => {
     });
 
     expect(mockOnChangeDates).toHaveBeenCalledWith({
-      start: dayjs('2023-05-13'),
-      end: dayjs('2023-05-14'),
+      start: new Date('2023-05-13T00:00:00.000Z'),
+      end: new Date('2023-05-14T00:00:00.000Z'),
     });
   });
 
@@ -165,8 +163,8 @@ describe(DateFilterV2.name, () => {
     });
 
     expect(mockOnChangeDates).toHaveBeenCalledWith({
-      start: dayjs('2023-05-13'),
-      end: dayjs('2023-05-13').endOf('day'),
+      start: new Date('2023-05-13T00:00:00.000Z'),
+      end: new Date('2023-05-13T23:59:59.999Z'),
     });
   });
 
@@ -205,8 +203,8 @@ describe(DateFilterV2.name, () => {
 
     expect(mockOnChangeDates).toHaveBeenCalledWith(
       expect.objectContaining({
-        start: dayjs('2023-05-13 11:45'),
-        end: dayjs('2023-05-14 15:45'),
+        start: new Date('2023-05-13T11:45:00.000Z'),
+        end: new Date('2023-05-14T15:45:00.000Z'),
       })
     );
   });

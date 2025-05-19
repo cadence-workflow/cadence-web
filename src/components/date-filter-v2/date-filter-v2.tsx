@@ -26,33 +26,59 @@ export default function DateFilterV2({
   onChangeDates,
 }: Props) {
   const [tempDates, setTempDates] = useState<{
-    start: dayjs.Dayjs | undefined;
-    end: dayjs.Dayjs | undefined;
+    start: Date | undefined;
+    end: Date | undefined;
   }>({
     start: undefined,
     end: undefined,
   });
-  const areTempDatesInvalid = useMemo(
-    () => Boolean(tempDates.end?.isBefore(tempDates.start)),
-    [tempDates]
-  );
 
-  useEffect(() => {
-    if (dayjs.isDayjs(dates.start) && dayjs.isDayjs(dates.end))
-      setTempDates({
-        start: dates.start,
-        end: dates.end,
-      });
+  const resetTempDates = useCallback(() => {
+    setTempDates(
+      dates.start instanceof Date && dates.end instanceof Date
+        ? {
+            start: dates.start,
+            end: dates.end,
+          }
+        : { start: undefined, end: undefined }
+    );
   }, [dates]);
 
-  const [canSaveDate, setCanSaveDate] = useState<boolean>(false);
+  useEffect(() => {
+    resetTempDates();
+  }, [resetTempDates]);
+
+  const areTempDatesModified = useMemo(() => {
+    if (!tempDates.start || !tempDates.end) return false;
+
+    const originalStartTime =
+      dates.start instanceof Date ? dates.start.getTime() : undefined;
+
+    const originalEndTime =
+      dates.end instanceof Date ? dates.end.getTime() : undefined;
+
+    return (
+      originalStartTime !== tempDates.start.getTime() ||
+      originalEndTime !== tempDates.end.getTime()
+    );
+  }, [dates, tempDates.start, tempDates.end]);
+
+  const areTempDatesInvalid = useMemo(
+    () =>
+      Boolean(
+        tempDates.end &&
+          tempDates.start &&
+          dayjs(tempDates.end).isBefore(tempDates.start)
+      ),
+    [tempDates]
+  );
 
   const saveDates = useCallback(
     (dates: DateFilterRange) => {
       onChangeDates(dates);
-      setCanSaveDate(false);
+      resetTempDates();
     },
-    [onChangeDates]
+    [onChangeDates, resetTempDates]
   );
 
   const displayValue = useMemo<string>(() => {
@@ -68,7 +94,7 @@ export default function DateFilterV2({
       <StatefulPopover
         overrides={overrides.popover}
         triggerType="click"
-        dismissOnClickOutside={!canSaveDate}
+        dismissOnClickOutside={!areTempDatesModified}
         content={({ close }) => (
           <styled.PopoverContentContainer>
             <styled.ContentColumn>
@@ -101,9 +127,9 @@ export default function DateFilterV2({
                 </styled.MenuItemsContainer>
                 <Button
                   size="mini"
-                  disabled={!canSaveDate || areTempDatesInvalid}
+                  disabled={!areTempDatesModified || areTempDatesInvalid}
                   onClick={() => {
-                    if (!canSaveDate || areTempDatesInvalid) return;
+                    if (!areTempDatesModified || areTempDatesInvalid) return;
                     saveDates(tempDates);
                     close();
                   }}
@@ -117,6 +143,11 @@ export default function DateFilterV2({
               <StatefulCalendar
                 density="high"
                 overrides={overrides.calendar}
+                initialState={
+                  tempDates.start && tempDates.end
+                    ? { value: [tempDates.start, tempDates.end] }
+                    : undefined
+                }
                 onChange={({ date: newDates }) => {
                   if (!newDates || !Array.isArray(newDates)) {
                     return;
@@ -124,13 +155,12 @@ export default function DateFilterV2({
 
                   if (newDates.length === 2 && newDates[0] && newDates[1]) {
                     setTempDates({
-                      start: dayjs(newDates[0]),
+                      start: newDates[0],
                       end:
                         newDates[0].getTime() === newDates[1].getTime()
-                          ? dayjs(newDates[1]).endOf('day')
-                          : dayjs(newDates[1]),
+                          ? dayjs(newDates[1]).endOf('day').toDate()
+                          : newDates[1],
                     });
-                    setCanSaveDate(true);
                   }
                 }}
                 range
@@ -144,16 +174,17 @@ export default function DateFilterV2({
                     <TimePicker
                       size="compact"
                       creatable
-                      disabled={!canSaveDate}
-                      value={tempDates.start?.toDate()}
-                      maxTime={tempDates.end?.toDate()}
+                      nullable
+                      disabled={!tempDates.start || !tempDates.end}
+                      value={tempDates.start}
+                      maxTime={tempDates.end}
                       error={areTempDatesInvalid}
-                      onChange={(newStart) =>
+                      onChange={(newStart) => {
                         setTempDates((oldDates) => ({
                           ...oldDates,
-                          start: dayjs(newStart),
-                        }))
-                      }
+                          start: newStart || undefined,
+                        }));
+                      }}
                     />
                   </FormControl>
                 </styled.TimeInputContainer>
@@ -165,14 +196,15 @@ export default function DateFilterV2({
                     <TimePicker
                       size="compact"
                       creatable
-                      disabled={!canSaveDate}
-                      value={tempDates.end?.toDate()}
-                      minTime={tempDates.start?.toDate()}
+                      nullable
+                      disabled={!tempDates.start || !tempDates.end}
+                      value={tempDates.end}
+                      minTime={tempDates.start}
                       error={areTempDatesInvalid}
                       onChange={(newEnd) =>
                         setTempDates((oldDates) => ({
                           ...oldDates,
-                          end: dayjs(newEnd),
+                          end: newEnd || undefined,
                         }))
                       }
                     />
@@ -187,7 +219,7 @@ export default function DateFilterV2({
                 shape="circle"
                 data-testid="close-button"
                 onClick={() => {
-                  setCanSaveDate(false);
+                  resetTempDates();
                   close();
                 }}
               >

@@ -7,10 +7,10 @@ import getDayjsFromDateFilterValue from '../get-dayjs-from-date-filter-value';
 describe('getDayjsFromDateFilterValue', () => {
   const now = dayjs('2023-05-25T12:00:00.000Z');
 
-  it('returns the same dayjs object when input is a dayjs object', () => {
-    const date = dayjs('2023-05-23T10:30:00.000Z');
+  it('converts a Date object to a dayjs object', () => {
+    const date = new Date('2023-05-23T10:30:00.000Z');
     const result = getDayjsFromDateFilterValue(date, now);
-    expect(result).toBe(date);
+    expect(result.isSame(dayjs(date))).toBe(true);
   });
 
   it('returns the "now" value when input is "now"', () => {

@@ -10,5 +10,5 @@ export default function parseDateFilterValue(
 ): DateFilterValue {
   if (isRelativeDateFilterValue(v)) return v;
   const day = dayjs(v);
-  return day.isValid() ? day : fallback;
+  return day.isValid() ? day.toDate() : fallback;
 }
