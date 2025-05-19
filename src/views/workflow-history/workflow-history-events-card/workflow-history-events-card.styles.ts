@@ -1,10 +1,7 @@
-import { type Theme, withStyle } from 'baseui';
-import {
-  type StatelessAccordion,
-  type AccordionOverrides,
-} from 'baseui/accordion';
+import { type Theme } from 'baseui';
+import { type AccordionOverrides } from 'baseui/accordion';
+import { type ButtonOverrides } from 'baseui/button';
 import { type SkeletonOverrides } from 'baseui/skeleton/types';
-import { StyledTableHeadCell } from 'baseui/table-semantic';
 import { type StyleObject } from 'styletron-react';
 
 import type {
@@ -81,20 +78,34 @@ export const overrides = (animateBorderOnEnter?: boolean) => ({
       }),
     },
   } satisfies AccordionOverrides,
+  shareButton: {
+    BaseButton: {
+      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+        height: $theme.sizing.scale600,
+        width: $theme.sizing.scale600,
+      }),
+    },
+  } satisfies ButtonOverrides,
 });
 
 const cssStylesObj = {
-  eventLabel: ($theme: Theme) => ({
-    ...$theme.typography.LabelSmall,
-    color: $theme.colors.contentPrimary,
-    flex: 1,
+  eventLabel: (theme: Theme) => ({
+    ...theme.typography.LabelSmall,
+    color: theme.colors.contentPrimary,
+    display: 'flex',
+    gap: theme.sizing.scale400,
+    alignItems: 'center',
   }),
   skeletonContainer: ($theme: Theme) => ({
     display: 'flex',
     alignItems: 'center',
     gap: $theme.sizing.scale500,
   }),
-
+  eventPanelTitle: (theme) => ({
+    display: 'flex',
+    gap: theme.sizing.scale500,
+    alignItems: 'center',
+  }),
   detailsRow: (theme) => ({
     display: 'flex',
     flexDirection: 'row',
