@@ -15,5 +15,6 @@ export default async function workflowActionsEnabled(
     cancel: 'ENABLED',
     restart: 'ENABLED',
     reset: 'ENABLED',
+    signal: 'ENABLED',
   };
 }
