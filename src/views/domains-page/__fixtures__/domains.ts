@@ -19,6 +19,7 @@ export const getDomainObj = (
   historyArchivalUri: '',
   failoverVersion: '123456',
   activeClusterName: 'ClusterA',
+  activeClusters: null,
   clusters: [{ clusterName: 'clusterA' }, { clusterName: 'clusterB' }],
   ...overrides,
 });
