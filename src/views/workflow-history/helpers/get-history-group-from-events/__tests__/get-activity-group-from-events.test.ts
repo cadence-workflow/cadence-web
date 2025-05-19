@@ -236,7 +236,7 @@ describe('getActivityGroupFromEvents', () => {
   it('should return group with closeTimeMs equal to closeEvent or timeoutEvent timeMs', () => {
     const group = getActivityGroupFromEvents([
       scheduleActivityTaskEvent,
-      startActivityTaskEvent, 
+      startActivityTaskEvent,
       completeActivityTaskEvent,
     ]);
     expect(group.closeTimeMs).toEqual(1725747370632.0728);

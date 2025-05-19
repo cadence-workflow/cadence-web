@@ -122,9 +122,10 @@ describe('getRequestCancelExternalWorkflowExecutionGroupFromEvents', () => {
     ]);
     expect(group.closeTimeMs).toEqual(1725749570927.7693);
 
-    const groupWithMissingCloseEvent = getRequestCancelExternalWorkflowExecutionGroupFromEvents([
-      initiateRequestCancelExternalWorkflowEvent,
-    ]);
+    const groupWithMissingCloseEvent =
+      getRequestCancelExternalWorkflowExecutionGroupFromEvents([
+        initiateRequestCancelExternalWorkflowEvent,
+      ]);
     expect(groupWithMissingCloseEvent.closeTimeMs).toEqual(null);
   });
 });

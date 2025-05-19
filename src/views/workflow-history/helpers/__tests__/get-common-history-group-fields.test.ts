@@ -86,7 +86,7 @@ describe('getCommonHistoryGroupFields', () => {
     });
     expect(group.closeTimeMs).toEqual(1725748470005.1672);
   });
-  
+
   it('should return group with closeTimeMs equal to null if no closeEvent is passed', () => {
     const group = setup({});
     expect(group.closeTimeMs).toEqual(null);

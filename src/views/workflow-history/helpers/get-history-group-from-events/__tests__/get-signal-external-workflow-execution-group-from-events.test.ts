@@ -131,9 +131,10 @@ describe('getSignalExternalWorkflowExecutionGroupFromEvents', () => {
       signalExternalWorkflowEvent,
     ]);
     expect(group.closeTimeMs).toEqual(1725769570375.7908);
-    const groupWithMissingCloseEvent = getSignalExternalWorkflowExecutionGroupFromEvents([
-      initiateSignalExternalWorkflowEvent,
-    ]);
+    const groupWithMissingCloseEvent =
+      getSignalExternalWorkflowExecutionGroupFromEvents([
+        initiateSignalExternalWorkflowEvent,
+      ]);
     expect(groupWithMissingCloseEvent.closeTimeMs).toEqual(null);
   });
 });

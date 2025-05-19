@@ -223,11 +223,9 @@ describe('getChildWorkflowExecutionGroupFromEvents', () => {
     ]);
     expect(groupWithStartFailedEvent.closeTimeMs).toEqual(1725769672830.1233);
 
-    const groupWithMissingCloseEvent = getChildWorkflowExecutionGroupFromEvents([
-      initiateChildWorkflowEvent,
-      startChildWorkflowEvent,
-    ]);
+    const groupWithMissingCloseEvent = getChildWorkflowExecutionGroupFromEvents(
+      [initiateChildWorkflowEvent, startChildWorkflowEvent]
+    );
     expect(groupWithMissingCloseEvent.closeTimeMs).toEqual(null);
   });
-
 });
