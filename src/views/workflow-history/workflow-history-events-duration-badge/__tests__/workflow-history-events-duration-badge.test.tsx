@@ -27,6 +27,7 @@ describe('WorkflowHistoryEventsDurationBadge', () => {
   });
 
   afterEach(() => {
+    jest.clearAllMocks();
     jest.useRealTimers();
   });
 
