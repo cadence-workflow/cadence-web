@@ -100,7 +100,7 @@ describe('WorkflowHistoryEventsDurationBadge', () => {
     });
     expect(screen.getByText('Duration: 122')).toBeInTheDocument();
 
-    // check that getDuration is called 2 times for each update
+    // check that getFormattedEventsDuration is called once for each update
     expect(getFormattedEventsDuration).toHaveBeenCalledTimes(2);
   });
 
