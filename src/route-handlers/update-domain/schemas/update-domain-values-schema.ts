@@ -20,6 +20,15 @@ const updateDomainValuesSchema = (
     visibilityArchivalStatus: z.nativeEnum(ArchivalStatus),
     visibilityArchivalUri: z.string(),
     activeClusterName: z.string(),
+    activeClusters: z.object({
+      regionToCluster: z.record(
+        z.string(),
+        z.object({
+          activeClusterName: z.string(),
+          failoverVersion: z.string(),
+        })
+      ),
+    }),
     clusters: z.array(z.object({ clusterName: z.string() })),
     deleteBadBinary: z.string(),
     failoverTimeout: z.object({
