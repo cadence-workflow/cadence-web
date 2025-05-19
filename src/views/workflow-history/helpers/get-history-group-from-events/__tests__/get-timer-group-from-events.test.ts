@@ -114,4 +114,17 @@ describe('getTimerGroupFromEvents', () => {
       'Fired at 07 Sep, 22:34:30 UTC',
     ]);
   });
+
+  it('should return group with closeTimeMs equal to closeEvent timeMs', () => {
+    const group = getTimerGroupFromEvents([
+      startTimerTaskEvent,
+      fireTimerTaskEvent,
+    ]);
+    expect(group.closeTimeMs).toEqual(1725748470005.1672);
+
+    const groupWithMissingCloseEvent = getTimerGroupFromEvents([
+      startTimerTaskEvent,
+    ]);
+    expect(groupWithMissingCloseEvent.closeTimeMs).toEqual(null);
+  });
 });

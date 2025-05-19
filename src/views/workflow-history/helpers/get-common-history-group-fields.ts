@@ -14,10 +14,16 @@ export default function getCommonHistoryGroupFields<
   events: GroupT['events'],
   HistoryGroupEventToStatusMap: HistoryGroupEventToStatusMap<GroupT>,
   eventToLabelMap: HistoryGroupEventToStringMap<GroupT>,
-  eventToTimeLabelPrefixMap: Partial<HistoryGroupEventToStringMap<GroupT>>
+  eventToTimeLabelPrefixMap: Partial<HistoryGroupEventToStringMap<GroupT>>,
+  closeEvent: GroupT['events'][number] | null | undefined
 ): Pick<
   GroupT,
-  'eventsMetadata' | 'events' | 'status' | 'timeMs' | 'timeLabel'
+  | 'eventsMetadata'
+  | 'events'
+  | 'status'
+  | 'timeMs'
+  | 'timeLabel'
+  | 'closeTimeMs'
 > {
   const eventsMetadata = events.map((event, index) => {
     const attrs = event.attributes as GroupT['events'][number]['attributes'];
@@ -30,6 +36,7 @@ export default function getCommonHistoryGroupFields<
     const prefix = eventToTimeLabelPrefixMap.hasOwnProperty(attrs)
       ? eventToTimeLabelPrefixMap[attrs]
       : `${eventToLabelMap[attrs]} at`;
+
     return {
       label: eventToLabelMap[attrs],
       status: eventStatus,
@@ -41,12 +48,16 @@ export default function getCommonHistoryGroupFields<
   const groupStatus = eventsMetadata[eventsMetadata.length - 1].status;
   const groupTimeMs = eventsMetadata[eventsMetadata.length - 1].timeMs;
   const groupTimeLabel = eventsMetadata[eventsMetadata.length - 1].timeLabel;
+  const groupCloseTimeMs = closeEvent?.eventTime
+    ? parseGrpcTimestamp(closeEvent.eventTime)
+    : null;
 
   return {
     eventsMetadata,
     events,
     status: groupStatus,
     timeMs: groupTimeMs,
+    closeTimeMs: groupCloseTimeMs,
     timeLabel: groupTimeLabel,
   };
 }
