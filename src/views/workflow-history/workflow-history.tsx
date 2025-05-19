@@ -342,39 +342,28 @@ export default function WorkflowHistory({ params }: Props) {
                 : {
                     initialTopMostItemIndex: initialEventGroupIndex,
                   })}
-              itemContent={(
-                index,
-                [
-                  groupId,
-                  {
-                    label,
-                    status,
-                    timeLabel,
-                    badges,
-                    events,
-                    hasMissingEvents,
-                  },
-                ]
-              ) => (
+              itemContent={(index, [groupId, group]) => (
                 <div role="listitem" className={cls.compactCardContainer}>
                   <WorkflowHistoryCompactEventCard
                     key={groupId}
-                    status={status}
+                    {...group}
                     statusReady={
-                      !hasMissingEvents || reachedAvailableHistoryEnd
+                      !group.hasMissingEvents || reachedAvailableHistoryEnd
                     }
-                    label={label}
-                    secondaryLabel={timeLabel}
-                    showLabelPlaceholder={!label}
-                    badges={badges}
-                    selected={events.some(
+                    workflowCloseStatus={workflowExecutionInfo?.closeStatus}
+                    workflowIsArchived={
+                      workflowExecutionInfo?.isArchived || false
+                    }
+                    workflowCloseTimeMs={wokflowCloseTimeMs}
+                    showLabelPlaceholder={!group.label}
+                    selected={group.events.some(
                       (e) => e.eventId === queryParams.historySelectedEventId
                     )}
-                    disabled={!Boolean(events[0].eventId)}
+                    disabled={!Boolean(group.events[0].eventId)}
                     onClick={() => {
-                      if (events[0].eventId)
+                      if (group.events[0].eventId)
                         setQueryParams({
-                          historySelectedEventId: events[0].eventId,
+                          historySelectedEventId: group.events[0].eventId,
                         });
                       timelineSectionListRef.current?.scrollToIndex({
                         index,

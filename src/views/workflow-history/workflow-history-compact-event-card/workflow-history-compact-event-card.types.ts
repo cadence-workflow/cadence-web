@@ -1,16 +1,26 @@
 import { type TileProps } from 'baseui/tile';
 
-import { type WorkflowEventStatus } from '../workflow-history-event-status-badge/workflow-history-event-status-badge.types';
-import { type HistoryGroupBadge } from '../workflow-history.types';
+import { type WorkflowExecutionCloseStatus } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionCloseStatus';
 
-export type Props = {
-  status: WorkflowEventStatus;
+import { type HistoryEventsGroup } from '../workflow-history.types';
+
+export type Props = Pick<
+  HistoryEventsGroup,
+  | 'events'
+  | 'label'
+  | 'hasMissingEvents'
+  | 'status'
+  | 'badges'
+  | 'resetToDecisionEventId'
+  | 'timeMs'
+  | 'closeTimeMs'
+> & {
   statusReady: boolean;
-  label: string;
-  secondaryLabel: string;
   showLabelPlaceholder?: boolean;
-  badges?: HistoryGroupBadge[];
   onClick: TileProps['onClick'];
   selected?: boolean;
   disabled?: boolean;
+  workflowIsArchived: boolean;
+  workflowCloseTimeMs?: number | null;
+  workflowCloseStatus?: WorkflowExecutionCloseStatus | null;
 };

@@ -60,10 +60,6 @@ const cssStylesObj = {
     ...$theme.typography.LabelSmall,
     color: $theme.colors.contentPrimary,
   }),
-  secondaryLabel: ($theme: Theme) => ({
-    ...$theme.typography.LabelXSmall,
-    color: '#868686',
-  }),
 } satisfies StyletronCSSObject;
 
 export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> =

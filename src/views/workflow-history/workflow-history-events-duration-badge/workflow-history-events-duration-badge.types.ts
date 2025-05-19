@@ -8,4 +8,5 @@ export type Props = {
   eventsCount: number;
   hasMissingEvents: boolean;
   workflowCloseTime: Date | string | number | null | undefined;
+  showOngoingOnly?: boolean;
 };
