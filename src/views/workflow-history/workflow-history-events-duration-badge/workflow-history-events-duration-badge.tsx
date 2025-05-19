@@ -2,12 +2,9 @@ import React, { useEffect, useState } from 'react';
 
 import { Badge } from 'baseui/badge';
 
-import formatDuration from '@/utils/data-formatters/format-duration';
-import dayjs from '@/utils/datetime/dayjs';
-
+import getFormattedEventsDuration from './helpers/get-formatted-events-duration';
 import { overrides } from './workflow-history-events-duration-badge.styles';
 import { type Props } from './workflow-history-events-duration-badge.types';
-
 export default function WorkflowHistoryEventsDurationBadge({
   startTime,
   closeTime,
@@ -24,27 +21,15 @@ export default function WorkflowHistoryEventsDurationBadge({
   const singleEvent = eventsCount === 1 && !hasMissingEvents;
   const noDuration = singleEvent || (workflowEnded && !endTime);
 
-  const calculateDuration = () => {
-    const end = endTime ? dayjs(endTime) : dayjs();
-    const start = dayjs(startTime);
-    const diff = end.diff(start);
-    const durationObj = dayjs.duration(diff);
-    return formatDuration(
-      {
-        seconds: durationObj.asSeconds().toString(),
-        nanos: 0,
-      },
-      { separator: ' ' }
-    );
-  };
-
-  const [duration, setDuration] = useState<string>(() => calculateDuration());
+  const [duration, setDuration] = useState<string>(() =>
+    getFormattedEventsDuration(startTime, endTime)
+  );
 
   useEffect(() => {
-    setDuration(calculateDuration());
+    setDuration(getFormattedEventsDuration(startTime, endTime));
     if (!endTime && !noDuration) {
       const interval = setInterval(() => {
-        setDuration(calculateDuration());
+        setDuration(getFormattedEventsDuration(startTime, endTime));
       }, 1000);
 
       return () => clearInterval(interval);
