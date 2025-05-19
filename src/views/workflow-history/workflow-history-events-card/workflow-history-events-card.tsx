@@ -7,7 +7,7 @@ import { Skeleton } from 'baseui/skeleton';
 import { StatefulTooltip } from 'baseui/tooltip';
 import copy from 'copy-to-clipboard';
 import queryString from 'query-string';
-import { MdShare } from 'react-icons/md';
+import { MdLink } from 'react-icons/md';
 
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 
@@ -96,7 +96,7 @@ export default function WorkflowHistoryEventsCard({
                         setIsEventLinkCopied(true);
                       }}
                     >
-                      <MdShare />
+                      <MdLink />
                     </Button>
                   </StatefulTooltip>
                 )}
