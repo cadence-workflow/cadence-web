@@ -1,3 +1,5 @@
+import { type WorkflowExecutionCloseStatus } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionCloseStatus';
+
 import {
   type GetIsEventExpanded,
   type ToggleIsEventExpanded,
@@ -17,6 +19,8 @@ export type Props = Pick<
   | 'status'
   | 'badges'
   | 'resetToDecisionEventId'
+  | 'timeMs'
+  | 'closeTimeMs'
 > & {
   isLastEvent: boolean;
   decodedPageUrlParams: WorkflowHistoryProps['params'];
@@ -24,4 +28,7 @@ export type Props = Pick<
   onEventToggle: ToggleIsEventExpanded;
   onReset?: () => void;
   selected?: boolean;
+  workflowIsArchived: boolean;
+  workflowCloseStatus?: WorkflowExecutionCloseStatus | null;
+  workflowCloseTimeMs?: number | null;
 };

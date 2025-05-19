@@ -7,6 +7,7 @@ import useStyletronClasses from '@/hooks/use-styletron-classes';
 
 import WorkflowHistoryEventStatusBadge from '../workflow-history-event-status-badge/workflow-history-event-status-badge';
 import WorkflowHistoryEventsCard from '../workflow-history-events-card/workflow-history-events-card';
+import WorkflowHistoryEventsDurationBadge from '../workflow-history-events-duration-badge/workflow-history-events-duration-badge';
 import WorkflowHistoryTimelineResetButton from '../workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 
 import {
@@ -20,6 +21,11 @@ export default function WorkflowHistoryTimelineGroup({
   status,
   label,
   timeLabel,
+  timeMs,
+  closeTimeMs,
+  workflowCloseTimeMs,
+  workflowCloseStatus,
+  workflowIsArchived,
   events,
   isLastEvent,
   eventsMetadata,
@@ -64,6 +70,17 @@ export default function WorkflowHistoryTimelineGroup({
                   />
                 ))}
               </>
+            )}
+            {timeMs && (
+              <WorkflowHistoryEventsDurationBadge
+                startTime={timeMs}
+                closeTime={closeTimeMs}
+                eventsCount={events.length}
+                hasMissingEvents={hasMissingEvents}
+                workflowCloseTime={workflowCloseTimeMs}
+                workflowIsArchived={workflowIsArchived}
+                workflowCloseStatus={workflowCloseStatus}
+              />
             )}
             <div suppressHydrationWarning className={cls.eventsTime}>
               {timeLabel}
