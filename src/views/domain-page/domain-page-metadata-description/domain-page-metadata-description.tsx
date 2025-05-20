@@ -1,4 +1,4 @@
-import { Button, KIND, SHAPE, SIZE } from 'baseui/button';
+import { Button } from 'baseui/button';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { MdEdit } from 'react-icons/md';
@@ -14,11 +14,17 @@ export default function DomainPageMetadataDescription(props: Props) {
 
   return (
     <styled.DescriptionContainer>
-      {props.description}
+      {props.description !== '' ? (
+        props.description
+      ) : (
+        <styled.DescriptionPlaceholder>
+          No description
+        </styled.DescriptionPlaceholder>
+      )}
       <Button
-        kind={KIND.secondary}
-        shape={SHAPE.pill}
-        size={SIZE.mini}
+        kind="secondary"
+        shape="pill"
+        size="mini"
         startEnhancer={<MdEdit />}
         $as={Link}
         href={`/domains/${encodedDomain}/${encodedCluster}/settings`}
