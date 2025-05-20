@@ -21,8 +21,8 @@ export const overrides = {
         padding: $theme.sizing.scale550,
         ...($selected
           ? {
-            boxShadow: `inset 0px 0px 0px 2px ${$theme.colors.primary}`,
-          }
+              boxShadow: `inset 0px 0px 0px 2px ${$theme.colors.primary}`,
+            }
           : null),
       }),
     },
