@@ -7,4 +7,7 @@ export const styled = {
     alignItems: 'flex-start',
     gap: $theme.sizing.scale500,
   })),
+  DescriptionPlaceholder: createStyled('div', ({ $theme }) => ({
+    color: $theme.colors.contentTertiary,
+  })),
 };
