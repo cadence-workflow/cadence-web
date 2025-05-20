@@ -19,6 +19,7 @@ import SectionLoadingIndicator from '@/components/section-loading-indicator/sect
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import useThrottledState from '@/hooks/use-throttled-state';
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
+import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
 import decodeUrlParams from '@/utils/decode-url-params';
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
@@ -176,6 +177,10 @@ export default function WorkflowHistory({ params }: Props) {
       compactStartIndex: -1,
       compactEndIndex: -1,
     });
+
+  const wokflowCloseTimeMs = workflowExecutionInfo?.closeTime
+    ? parseGrpcTimestamp(workflowExecutionInfo?.closeTime)
+    : null;
 
   // search for the event selected in the URL on initial page load
   const {
@@ -410,12 +415,7 @@ export default function WorkflowHistory({ params }: Props) {
               itemContent={(index, [groupId, group]) => (
                 <WorkflowHistoryTimelineGroup
                   key={groupId}
-                  status={group.status}
-                  label={group.label}
-                  timeLabel={group.timeLabel}
-                  events={group.events}
-                  eventsMetadata={group.eventsMetadata}
-                  badges={group.badges}
+                  {...group}
                   hasMissingEvents={
                     group.hasMissingEvents && !reachedAvailableHistoryEnd
                   }
@@ -432,6 +432,11 @@ export default function WorkflowHistory({ params }: Props) {
                   selected={group.events.some(
                     (e) => e.eventId === queryParams.historySelectedEventId
                   )}
+                  workflowCloseStatus={workflowExecutionInfo?.closeStatus}
+                  workflowIsArchived={
+                    workflowExecutionInfo?.isArchived || false
+                  }
+                  workflowCloseTimeMs={wokflowCloseTimeMs}
                 />
               )}
               components={{
