@@ -1,5 +1,5 @@
 'use client';
-import React, { Fragment } from 'react';
+import React from 'react';
 
 import { Badge } from 'baseui/badge';
 import { Skeleton } from 'baseui/skeleton';
@@ -57,19 +57,16 @@ export default function WorkflowHistoryCompactEventCard({
             {label}
             {hasBadges &&
               badges.map((badge) => (
-                <Fragment key={badge.content}>
-                  {' '}
                   <Badge
+                    key={badge.content}
                     overrides={overrides.badge}
                     content={badge.content}
                     shape="rectangle"
                     color="primary"
                   />
-                </Fragment>
               ))}
             {timeMs && (
-              <>
-                {' '}
+              <span className={cls.durationContainer}>
                 <WorkflowHistoryEventsDurationBadge
                   startTime={timeMs}
                   closeTime={closeTimeMs}
@@ -80,7 +77,7 @@ export default function WorkflowHistoryCompactEventCard({
                   workflowCloseStatus={workflowCloseStatus}
                   showOngoingOnly={true}
                 />
-              </>
+              </span>
             )}
           </div>
         )}

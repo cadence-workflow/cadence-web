@@ -21,8 +21,8 @@ export const overrides = {
         padding: $theme.sizing.scale550,
         ...($selected
           ? {
-              boxShadow: `inset 0px 0px 0px 2px ${$theme.colors.primary}`,
-            }
+            boxShadow: `inset 0px 0px 0px 2px ${$theme.colors.primary}`,
+          }
           : null),
       }),
     },
@@ -42,6 +42,7 @@ export const overrides = {
         color: $theme.colors.contentSecondary,
         ...$theme.typography.LabelXSmall,
         whiteSpace: 'nowrap',
+        marginLeft: $theme.sizing.scale100,
       }),
     },
   } satisfies BadgeOverrides,
@@ -59,6 +60,9 @@ const cssStylesObj = {
   label: ($theme: Theme) => ({
     ...$theme.typography.LabelSmall,
     color: $theme.colors.contentPrimary,
+  }),
+  durationContainer: ($theme: Theme) => ({
+    marginLeft: $theme.sizing.scale100,
   }),
 } satisfies StyletronCSSObject;
 
