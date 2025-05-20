@@ -71,7 +71,7 @@ describe('WorkflowHistoryCompactEventCard', () => {
     expect(mockOnClick).toHaveBeenCalled();
   });
 
-  it('should render duration padge passing showOngoingOnly as true when timeMs is provided', () => {
+  it('should render duration badge passing showOngoingOnly as true when timeMs is provided', () => {
     setup({
       timeMs: 1726652232190.7927,
     });
