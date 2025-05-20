@@ -113,7 +113,8 @@ export default function getDecisionGroupFromEvents(
       eventToLabel,
       {
         pendingDecisionTaskStartEventAttributes: pendingStartEventTimePrefix,
-      }
+      },
+      closeEvent || timeoutEvent
     ),
   };
 }

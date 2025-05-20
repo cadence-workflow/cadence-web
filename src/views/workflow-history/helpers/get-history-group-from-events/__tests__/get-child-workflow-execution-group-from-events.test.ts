@@ -208,4 +208,24 @@ describe('getChildWorkflowExecutionGroupFromEvents', () => {
       'Canceled at 08 Sep, 04:27:55 UTC',
     ]);
   });
+
+  it('should return group with closeTimeMs equal to closeEvent or startFailedEvent timeMs', () => {
+    const group = getChildWorkflowExecutionGroupFromEvents([
+      initiateChildWorkflowEvent,
+      startChildWorkflowEvent,
+      completeChildWorkflowEvent,
+    ]);
+    expect(group.closeTimeMs).toEqual(1725769674218.1462);
+
+    const groupWithStartFailedEvent = getChildWorkflowExecutionGroupFromEvents([
+      initiateChildWorkflowEvent,
+      initiateFailureChildWorkflowEvent,
+    ]);
+    expect(groupWithStartFailedEvent.closeTimeMs).toEqual(1725769672830.1233);
+
+    const groupWithMissingCloseEvent = getChildWorkflowExecutionGroupFromEvents(
+      [initiateChildWorkflowEvent, startChildWorkflowEvent]
+    );
+    expect(groupWithMissingCloseEvent.closeTimeMs).toEqual(null);
+  });
 });

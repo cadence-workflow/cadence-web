@@ -104,7 +104,8 @@ export default function getActivityGroupFromEvents(
       events,
       eventToStatus,
       eventToLabel,
-      { pendingActivityTaskStartEventAttributes: pendingStartEventTimePrefix }
+      { pendingActivityTaskStartEventAttributes: pendingStartEventTimePrefix },
+      closeEvent || timeoutEvent
     ),
   };
 }

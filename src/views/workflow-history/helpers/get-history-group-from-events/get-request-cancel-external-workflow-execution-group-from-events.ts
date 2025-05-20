@@ -60,7 +60,8 @@ export default function getRequestCancelExternalWorkflowExecutionGroupFromEvents
       events,
       eventToStatus,
       eventToLabel,
-      {}
+      {},
+      closeEvent
     ),
   };
 }

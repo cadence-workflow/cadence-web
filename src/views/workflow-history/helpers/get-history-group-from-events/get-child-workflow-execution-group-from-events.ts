@@ -81,7 +81,8 @@ export default function getChildWorkflowExecutionGroupFromEvents(
       events,
       eventToStatus,
       eventToLabel,
-      {}
+      {},
+      closeEvent || startFailedEvent
     ),
   };
 }

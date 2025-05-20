@@ -124,4 +124,17 @@ describe('getSignalExternalWorkflowExecutionGroupFromEvents', () => {
       'Signaled at 08 Sep, 04:26:10 UTC',
     ]);
   });
+
+  it('should return group with closeTimeMs equal to closeEvent timeMs', () => {
+    const group = getSignalExternalWorkflowExecutionGroupFromEvents([
+      initiateSignalExternalWorkflowEvent,
+      signalExternalWorkflowEvent,
+    ]);
+    expect(group.closeTimeMs).toEqual(1725769570375.7908);
+    const groupWithMissingCloseEvent =
+      getSignalExternalWorkflowExecutionGroupFromEvents([
+        initiateSignalExternalWorkflowEvent,
+      ]);
+    expect(groupWithMissingCloseEvent.closeTimeMs).toEqual(null);
+  });
 });

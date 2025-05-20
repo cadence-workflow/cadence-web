@@ -114,4 +114,18 @@ describe('getRequestCancelExternalWorkflowExecutionGroupFromEvents', () => {
       'Requested at 07 Sep, 22:52:50 UTC',
     ]);
   });
+
+  it('should return group with closeTimeMs equal to closeEvent timeMs', () => {
+    const group = getRequestCancelExternalWorkflowExecutionGroupFromEvents([
+      initiateRequestCancelExternalWorkflowEvent,
+      requestCancelExternalWorkflowEvent,
+    ]);
+    expect(group.closeTimeMs).toEqual(1725749570927.7693);
+
+    const groupWithMissingCloseEvent =
+      getRequestCancelExternalWorkflowExecutionGroupFromEvents([
+        initiateRequestCancelExternalWorkflowEvent,
+      ]);
+    expect(groupWithMissingCloseEvent.closeTimeMs).toEqual(null);
+  });
 });

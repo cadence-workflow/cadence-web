@@ -59,7 +59,8 @@ export default function getSignalExternalWorkflowExecutionGroupFromEvents(
       events,
       eventToStatus,
       eventToLabel,
-      {}
+      {},
+      closeEvent
     ),
   };
 }
