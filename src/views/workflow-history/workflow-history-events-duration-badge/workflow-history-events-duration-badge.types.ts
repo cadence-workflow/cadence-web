@@ -2,7 +2,7 @@ import { type WorkflowExecutionCloseStatus } from '@/__generated__/proto-ts/uber
 
 export type Props = {
   startTime: Date | string | number;
-  closeTime?: Date | string | number | null;
+  closeTime: Date | string | number | null | undefined;
   workflowIsArchived: boolean;
   workflowCloseStatus: WorkflowExecutionCloseStatus | null | undefined;
   eventsCount: number;

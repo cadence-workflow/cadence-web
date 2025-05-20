@@ -21,7 +21,6 @@ export default function WorkflowHistoryEventsDurationBadge({
     workflowCloseStatus !== 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID';
   const singleEvent = eventsCount === 1 && !hasMissingEvents;
   const noDuration = singleEvent || (workflowEnded && !endTime);
-
   const hideDuration = (showOngoingOnly && endTime) || noDuration;
 
   const [duration, setDuration] = useState<string>(() =>
