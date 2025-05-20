@@ -30,7 +30,6 @@ export const styled = {
     'div',
     ({ $theme }: { $theme: Theme }): StyleObject => ({
       ...$theme.typography.LabelSmall,
-      fontWeight: '700',
       color: $theme.colors.contentPrimary,
     })
   ),
