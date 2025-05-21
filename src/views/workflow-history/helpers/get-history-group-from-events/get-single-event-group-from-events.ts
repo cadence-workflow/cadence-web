@@ -88,7 +88,8 @@ export default function getSingleEventGroupFromEvents(
       events,
       eventToStatus,
       eventToLabel,
-      {}
+      {},
+      undefined
     ),
   };
 }

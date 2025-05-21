@@ -131,4 +131,11 @@ describe('getSingleEventGroupFromEvents', () => {
       );
     }
   });
+
+  it('should return group with closeTimeMs equal to null', () => {
+    for (const event of events) {
+      const group = getSingleEventGroupFromEvents([event]);
+      expect(group.closeTimeMs).toEqual(null);
+    }
+  });
 });

@@ -289,4 +289,25 @@ describe('getDecisionGroupFromEvents', () => {
     const group = getDecisionGroupFromEvents(events);
     expect(group.resetToDecisionEventId).toBe(timeoutDecisionTaskEvent.eventId);
   });
+
+  it('should return group with closeTimeMs equal to closeEvent or timeoutEvent timeMs', () => {
+    const group = getDecisionGroupFromEvents([
+      scheduleDecisionTaskEvent,
+      startDecisionTaskEvent,
+      completeDecisionTaskEvent,
+    ]);
+    expect(group.closeTimeMs).toEqual(1725747370599.273);
+
+    const groupWithTimeoutEvent = getDecisionGroupFromEvents([
+      scheduleDecisionTaskEvent,
+      timeoutDecisionTaskEvent,
+    ]);
+    expect(groupWithTimeoutEvent.closeTimeMs).toEqual(1725747370599.273);
+
+    const groupWithMissingCloseEvent = getDecisionGroupFromEvents([
+      scheduleDecisionTaskEvent,
+      startDecisionTaskEvent,
+    ]);
+    expect(groupWithMissingCloseEvent.closeTimeMs).toEqual(null);
+  });
 });

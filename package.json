@@ -1,6 +1,9 @@
 {
   "name": "cadence-web",
   "private": true,
+  "config": {
+    "cadence_idl_version": "7b45e3095a5103b5f4709e6b0eb1771342693838"
+  },
   "scripts": {
     "dev": "next dev -p ${CADENCE_WEB_PORT:-8088} -H ${CADENCE_WEB_HOSTNAME:-0.0.0.0} | pino-pretty --messageKey message",
     "build": "NODE_ENV=production next build",
@@ -9,7 +12,7 @@
     "start": "next start -p ${CADENCE_WEB_PORT:-8088} -H ${CADENCE_WEB_HOSTNAME:-0.0.0.0}",
     "lint": "next lint",
     "typecheck": "tsc --noemit",
-    "install-idl": "mkdir -p node_modules && cd node_modules && npx --yes tiged https://github.com/cadence-workflow/cadence-idl cadence-idl --force",
+    "install-idl": "mkdir -p node_modules && cd node_modules && npx --yes github:Assem-Uber/tiged#release/v3.0.0-rc.01 https://github.com/cadence-workflow/cadence-idl#$npm_package_config_cadence_idl_version cadence-idl --force",
     "generate:idl": "mkdir -p src/__generated__/idl && npm run generate:idl:proto && npm run generate:idl:proto:types",
     "generate:idl:proto": "rm -rf src/__generated__/idl/proto && cp -R node_modules/cadence-idl/proto src/__generated__/idl/proto",
     "generate:idl:proto:types": "rm -rf src/__generated__/proto-ts &&  ./node_modules/.bin/proto-loader-gen-types  --includeDirs=src/__generated__/idl/proto/  --enums=String --longs=String --bytes=String --defaults --inputTemplate='%s__Input' --outputTemplate='%s' --oneofs --grpcLib=@grpc/grpc-js --outDir=src/__generated__/proto-ts/ $(npx glob --all --nodir --cwd=src/__generated__/idl/proto **/*.proto) ",

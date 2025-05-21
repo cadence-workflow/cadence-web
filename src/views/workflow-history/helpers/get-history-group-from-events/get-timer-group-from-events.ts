@@ -51,7 +51,8 @@ export default function getTimerGroupFromEvents(
       events,
       eventToStatus,
       eventToLabel,
-      {}
+      {},
+      closeEvent
     ),
   };
 }

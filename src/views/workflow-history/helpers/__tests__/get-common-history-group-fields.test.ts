@@ -80,6 +80,18 @@ describe('getCommonHistoryGroupFields', () => {
     );
   });
 
+  it('should return group with closeTimeMs equal to closeEvent timeMs', () => {
+    const group = setup({
+      closeEvent: fireTimerTaskEvent,
+    });
+    expect(group.closeTimeMs).toEqual(1725748470005.1672);
+  });
+
+  it('should return group with closeTimeMs equal to null if no closeEvent is passed', () => {
+    const group = setup({});
+    expect(group.closeTimeMs).toEqual(null);
+  });
+
   const groupFieldsExtractedFromEventsMetadaTests: {
     name: string;
     groupField: 'events' | 'eventsMetadata' | 'status' | 'timeMs' | 'timeLabel';
@@ -121,6 +133,7 @@ function setup({
   eventToTimeLabelPrefixMap = {},
   eventToLabel,
   eventToStatus,
+  closeEvent,
 }: {
   events?: TimerHistoryEvent[];
   eventToStatus?: HistoryGroupEventToStatusMap<TimerHistoryGroup>;
@@ -128,6 +141,7 @@ function setup({
   eventToTimeLabelPrefixMap?: Partial<
     HistoryGroupEventToStringMap<TimerHistoryGroup>
   >;
+  closeEvent?: TimerHistoryEvent;
 }) {
   const mockEvents: TimerHistoryEvent[] = events || [
     startTimerTaskEvent,
@@ -150,6 +164,7 @@ function setup({
     mockEvents,
     mockedEventToStatus,
     mockedEventToLabel,
-    eventToTimeLabelPrefixMap
+    eventToTimeLabelPrefixMap,
+    closeEvent
   );
 }

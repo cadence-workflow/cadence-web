@@ -8,6 +8,7 @@ import { ALIGNMENT, TILE_KIND, Tile } from 'baseui/tile';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 
 import WorkflowHistoryEventStatusBadge from '../workflow-history-event-status-badge/workflow-history-event-status-badge';
+import WorkflowHistoryEventsDurationBadge from '../workflow-history-events-duration-badge/workflow-history-events-duration-badge';
 
 import {
   cssStyles,
@@ -19,10 +20,17 @@ export default function WorkflowHistoryCompactEventCard({
   status,
   statusReady,
   label,
-  badges,
   showLabelPlaceholder,
   selected,
   disabled,
+  timeMs,
+  badges,
+  closeTimeMs,
+  events,
+  hasMissingEvents,
+  workflowCloseTimeMs,
+  workflowCloseStatus,
+  workflowIsArchived,
   onClick,
 }: Props) {
   const { cls, theme } = useStyletronClasses(cssStyles);
@@ -49,17 +57,28 @@ export default function WorkflowHistoryCompactEventCard({
             {label}
             {hasBadges &&
               badges.map((badge) => (
-                <>
-                  {' '}
-                  <Badge
-                    key={badge.content}
-                    overrides={overrides.badge}
-                    content={badge.content}
-                    shape="rectangle"
-                    color="primary"
-                  />
-                </>
+                <Badge
+                  key={badge.content}
+                  overrides={overrides.badge}
+                  content={badge.content}
+                  shape="rectangle"
+                  color="primary"
+                />
               ))}
+            {timeMs && (
+              <span className={cls.durationContainer}>
+                <WorkflowHistoryEventsDurationBadge
+                  startTime={timeMs}
+                  closeTime={closeTimeMs}
+                  eventsCount={events.length}
+                  hasMissingEvents={hasMissingEvents}
+                  workflowCloseTime={workflowCloseTimeMs}
+                  workflowIsArchived={workflowIsArchived}
+                  workflowCloseStatus={workflowCloseStatus}
+                  showOngoingOnly={true}
+                />
+              </span>
+            )}
           </div>
         )}
       </div>

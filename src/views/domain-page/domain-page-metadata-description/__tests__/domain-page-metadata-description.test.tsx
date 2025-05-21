@@ -14,6 +14,11 @@ describe(DomainPageMetadataDescription.name, () => {
     expect(screen.getByText('Test Description')).toBeInTheDocument();
   });
 
+  it('displays "No description" when description is empty', () => {
+    render(<DomainPageMetadataDescription description="" />);
+    expect(screen.getByText('No description')).toBeInTheDocument();
+  });
+
   it('renders the edit button with correct link', () => {
     render(<DomainPageMetadataDescription description="Test Description" />);
     const button = screen.getByText('Edit in Settings');

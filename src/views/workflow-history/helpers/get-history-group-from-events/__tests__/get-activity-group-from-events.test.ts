@@ -232,4 +232,26 @@ describe('getActivityGroupFromEvents', () => {
       /^Last started at/
     );
   });
+
+  it('should return group with closeTimeMs equal to closeEvent or timeoutEvent timeMs', () => {
+    const group = getActivityGroupFromEvents([
+      scheduleActivityTaskEvent,
+      startActivityTaskEvent,
+      completeActivityTaskEvent,
+    ]);
+    expect(group.closeTimeMs).toEqual(1725747370632.0728);
+
+    const groupWithTimeoutEvent = getActivityGroupFromEvents([
+      scheduleActivityTaskEvent,
+      startActivityTaskEvent,
+      timeoutActivityTaskEvent,
+    ]);
+    expect(groupWithTimeoutEvent.closeTimeMs).toEqual(1725747370632.0728);
+
+    const groupWithMissingCloseEvent = getActivityGroupFromEvents([
+      scheduleActivityTaskEvent,
+      startActivityTaskEvent,
+    ]);
+    expect(groupWithMissingCloseEvent.closeTimeMs).toEqual(null);
+  });
 });

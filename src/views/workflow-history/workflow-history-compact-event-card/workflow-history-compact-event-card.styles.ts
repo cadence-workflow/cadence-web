@@ -42,6 +42,7 @@ export const overrides = {
         color: $theme.colors.contentSecondary,
         ...$theme.typography.LabelXSmall,
         whiteSpace: 'nowrap',
+        marginLeft: $theme.sizing.scale100,
       }),
     },
   } satisfies BadgeOverrides,
@@ -60,9 +61,8 @@ const cssStylesObj = {
     ...$theme.typography.LabelSmall,
     color: $theme.colors.contentPrimary,
   }),
-  secondaryLabel: ($theme: Theme) => ({
-    ...$theme.typography.LabelXSmall,
-    color: '#868686',
+  durationContainer: ($theme: Theme) => ({
+    marginLeft: $theme.sizing.scale100,
   }),
 } satisfies StyletronCSSObject;
 

@@ -3,6 +3,7 @@ import { render, screen, userEvent } from '@/test-utils/rtl';
 import { startWorkflowExecutionEvent } from '../../__fixtures__/workflow-history-single-events';
 import type WorkflowHistoryEventStatusBadge from '../../workflow-history-event-status-badge/workflow-history-event-status-badge';
 import type WorkflowHistoryEventsCard from '../../workflow-history-events-card/workflow-history-events-card';
+import type WorkflowHistoryEventsDurationBadge from '../../workflow-history-events-duration-badge/workflow-history-events-duration-badge';
 import type WorkflowHistoryTimelineResetButton from '../../workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 import WorkflowHistoryTimelineGroup from '../workflow-history-timeline-group';
 import { type styled } from '../workflow-history-timeline-group.styles';
@@ -11,6 +12,11 @@ import type { Props } from '../workflow-history-timeline-group.types';
 jest.mock<typeof WorkflowHistoryEventStatusBadge>(
   '../../workflow-history-event-status-badge/workflow-history-event-status-badge',
   () => jest.fn((props) => <div>{props.status}</div>)
+);
+
+jest.mock<typeof WorkflowHistoryEventsDurationBadge>(
+  '../../workflow-history-events-duration-badge/workflow-history-events-duration-badge',
+  () => jest.fn(() => <div>Duration Badge</div>)
 );
 
 jest.mock<typeof WorkflowHistoryEventsCard>(
@@ -108,6 +114,16 @@ describe('WorkflowHistoryTimelineGroup', () => {
 
     expect(mockOnReset).toHaveBeenCalledTimes(1);
   });
+
+  it('renders duration badge when timeMs is provided', () => {
+    setup({ timeMs: 1726652232190.7927 });
+    expect(screen.getByText('Duration Badge')).toBeInTheDocument();
+  });
+
+  it('does not render duration badge when timeMs is not provided', () => {
+    setup({ timeMs: null });
+    expect(screen.queryByText('Duration Badge')).not.toBeInTheDocument();
+  });
 });
 
 function setup({
@@ -134,6 +150,10 @@ function setup({
   },
   badges,
   resetToDecisionEventId,
+  workflowCloseStatus,
+  workflowIsArchived = false,
+  workflowCloseTimeMs = null,
+  timeMs = null,
 }: Partial<Props>) {
   const mockOnReset = jest.fn();
   const user = userEvent.setup();
@@ -152,6 +172,10 @@ function setup({
       badges={badges}
       resetToDecisionEventId={resetToDecisionEventId}
       onReset={mockOnReset}
+      workflowCloseStatus={workflowCloseStatus}
+      workflowIsArchived={workflowIsArchived}
+      workflowCloseTimeMs={workflowCloseTimeMs}
+      timeMs={timeMs}
     />
   );
   return { mockOnReset, user };
