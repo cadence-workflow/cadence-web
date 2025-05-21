@@ -36,9 +36,7 @@ export const overrides = {
     Inner: {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
         ...$theme.typography.LabelSmall,
-        borderRadius: $theme.borders.radius400,
         background: $theme.colors.backgroundPrimary,
-        boxShadow: $theme.lighting.shallowBelow,
       }),
     },
   } satisfies PopoverOverrides,
