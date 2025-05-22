@@ -19,10 +19,11 @@ export type Props = Pick<
   | 'status'
   | 'badges'
   | 'resetToDecisionEventId'
-  | 'timeMs'
+  | 'startTimeMs'
   | 'closeTimeMs'
 > & {
   isLastEvent: boolean;
+  showLoadingMoreEvents: boolean;
   decodedPageUrlParams: WorkflowHistoryProps['params'];
   getIsEventExpanded: GetIsEventExpanded;
   onEventToggle: ToggleIsEventExpanded;

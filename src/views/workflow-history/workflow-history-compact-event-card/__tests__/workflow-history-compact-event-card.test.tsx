@@ -71,9 +71,9 @@ describe('WorkflowHistoryCompactEventCard', () => {
     expect(mockOnClick).toHaveBeenCalled();
   });
 
-  it('should render duration badge passing showOngoingOnly as true when timeMs is provided', () => {
+  it('should render duration badge passing showOngoingOnly as true when startTimeMs is provided', () => {
     setup({
-      timeMs: 1726652232190.7927,
+      startTimeMs: 1726652232190.7927,
     });
     expect(WorkflowHistoryEventsDurationBadge).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -83,11 +83,10 @@ describe('WorkflowHistoryCompactEventCard', () => {
     );
   });
 
-  it('does not render duration badge when timeMs is not provided', () => {
+  it('should not render duration badge when startTimeMs is not provided', () => {
     setup({
-      timeMs: null,
+      startTimeMs: null,
     });
-
     expect(screen.queryByText('Duration Badge')).not.toBeInTheDocument();
   });
 });
@@ -102,7 +101,7 @@ function setup(props: Partial<Props>) {
         status="COMPLETED"
         label="test label"
         onClick={mockOnClick}
-        timeMs={null}
+        startTimeMs={null}
         closeTimeMs={null}
         events={[startWorkflowExecutionEvent]}
         workflowCloseTimeMs={null}

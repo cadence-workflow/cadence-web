@@ -23,7 +23,7 @@ export default function WorkflowHistoryCompactEventCard({
   showLabelPlaceholder,
   selected,
   disabled,
-  timeMs,
+  startTimeMs,
   badges,
   closeTimeMs,
   events,
@@ -65,13 +65,14 @@ export default function WorkflowHistoryCompactEventCard({
                   color="primary"
                 />
               ))}
-            {timeMs && (
+            {startTimeMs && (
               <span className={cls.durationContainer}>
                 <WorkflowHistoryEventsDurationBadge
-                  startTime={timeMs}
+                  startTime={startTimeMs}
                   closeTime={closeTimeMs}
                   eventsCount={events.length}
                   hasMissingEvents={hasMissingEvents}
+                  loadingMoreEvents={!statusReady}
                   workflowCloseTime={workflowCloseTimeMs}
                   workflowIsArchived={workflowIsArchived}
                   workflowCloseStatus={workflowCloseStatus}

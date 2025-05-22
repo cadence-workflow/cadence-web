@@ -405,7 +405,7 @@ export default function WorkflowHistory({ params }: Props) {
                 <WorkflowHistoryTimelineGroup
                   key={groupId}
                   {...group}
-                  hasMissingEvents={
+                  showLoadingMoreEvents={
                     group.hasMissingEvents && !reachedAvailableHistoryEnd
                   }
                   resetToDecisionEventId={group.resetToDecisionEventId}

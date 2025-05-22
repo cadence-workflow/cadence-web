@@ -12,7 +12,7 @@ export type Props = Pick<
   | 'status'
   | 'badges'
   | 'resetToDecisionEventId'
-  | 'timeMs'
+  | 'startTimeMs'
   | 'closeTimeMs'
 > & {
   statusReady: boolean;

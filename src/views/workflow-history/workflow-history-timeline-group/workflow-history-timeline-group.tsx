@@ -21,7 +21,7 @@ export default function WorkflowHistoryTimelineGroup({
   status,
   label,
   timeLabel,
-  timeMs,
+  startTimeMs,
   closeTimeMs,
   workflowCloseTimeMs,
   workflowCloseStatus,
@@ -30,6 +30,7 @@ export default function WorkflowHistoryTimelineGroup({
   isLastEvent,
   eventsMetadata,
   hasMissingEvents,
+  showLoadingMoreEvents,
   decodedPageUrlParams,
   badges,
   resetToDecisionEventId,
@@ -52,7 +53,7 @@ export default function WorkflowHistoryTimelineGroup({
       <div className={cls.eventHeader}>
         <WorkflowHistoryEventStatusBadge
           status={status}
-          statusReady={!hasMissingEvents}
+          statusReady={!showLoadingMoreEvents}
           size="medium"
         />
         <div className={cls.eventLabelAndSecondaryDetails}>
@@ -71,11 +72,12 @@ export default function WorkflowHistoryTimelineGroup({
                 ))}
               </>
             )}
-            {timeMs && (
+            {startTimeMs && (
               <WorkflowHistoryEventsDurationBadge
-                startTime={timeMs}
+                startTime={startTimeMs}
                 closeTime={closeTimeMs}
                 eventsCount={events.length}
+                loadingMoreEvents={showLoadingMoreEvents}
                 hasMissingEvents={hasMissingEvents}
                 workflowCloseTime={workflowCloseTimeMs}
                 workflowIsArchived={workflowIsArchived}
@@ -102,7 +104,7 @@ export default function WorkflowHistoryTimelineGroup({
         <WorkflowHistoryEventsCard
           events={events}
           eventsMetadata={eventsMetadata}
-          showEventPlaceholder={hasMissingEvents}
+          showEventPlaceholder={showLoadingMoreEvents}
           decodedPageUrlParams={decodedPageUrlParams}
           getIsEventExpanded={getIsEventExpanded}
           onEventToggle={onEventToggle}

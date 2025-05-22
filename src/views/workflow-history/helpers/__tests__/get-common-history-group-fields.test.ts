@@ -92,6 +92,11 @@ describe('getCommonHistoryGroupFields', () => {
     expect(group.closeTimeMs).toEqual(null);
   });
 
+  it('should return group with startTimeMs equal to first event timeMs', () => {
+    const group = setup({});
+    expect(group.startTimeMs).toEqual(group.eventsMetadata[0].timeMs);
+  });
+
   const groupFieldsExtractedFromEventsMetadaTests: {
     name: string;
     groupField: 'events' | 'eventsMetadata' | 'status' | 'timeMs' | 'timeLabel';

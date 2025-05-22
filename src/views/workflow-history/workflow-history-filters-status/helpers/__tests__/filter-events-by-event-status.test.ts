@@ -8,6 +8,7 @@ const ACTIVITY_HISTORY_GROUP_COMPLETED: ActivityHistoryGroup = {
   status: 'COMPLETED',
   hasMissingEvents: false,
   timeMs: 123456789,
+  startTimeMs: 123456789,
   timeLabel: 'Mock time label',
   groupType: 'Activity',
   events: [],

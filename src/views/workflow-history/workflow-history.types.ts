@@ -50,6 +50,7 @@ type BaseHistoryGroup = {
   status: WorkflowEventStatus;
   hasMissingEvents: boolean;
   timeMs: number | null;
+  startTimeMs: number | null;
   closeTimeMs?: number | null;
   timeLabel: string;
   badges?: HistoryGroupBadge[];

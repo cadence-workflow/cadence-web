@@ -24,7 +24,7 @@ describe(convertEventGroupToTimelineItem.name, () => {
       id: 1,
       className: 'mock-class-name',
       content: 'Mock event',
-      end: new Date('2024-09-07T22:16:20.000Z'),
+      end: new Date('2024-09-07T22:16:10.632Z'),
       start: new Date('2024-09-07T22:16:10.599Z'),
       title: 'Mock event: Mock time label',
       type: 'range',

@@ -64,6 +64,14 @@ describe('WorkflowHistoryEventsDurationBadge', () => {
     expect(screen.getByText('Duration: 120')).toBeInTheDocument();
   });
 
+  it('does not render badge when loading more events', () => {
+    setup({
+      loadingMoreEvents: true,
+    });
+
+    expect(screen.queryByText(/Duration:/)).not.toBeInTheDocument();
+  });
+
   it('does not render badge when workflow is archived without close time', () => {
     setup({
       closeTime: null,
@@ -133,6 +141,7 @@ function setup({
   closeTime,
   eventsCount = 2,
   hasMissingEvents = false,
+  loadingMoreEvents = false,
   workflowIsArchived = false,
   workflowCloseStatus = WorkflowExecutionCloseStatus.WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID,
   workflowCloseTime = null,
@@ -143,6 +152,7 @@ function setup({
       closeTime={closeTime}
       eventsCount={eventsCount}
       hasMissingEvents={hasMissingEvents}
+      loadingMoreEvents={loadingMoreEvents}
       workflowIsArchived={workflowIsArchived}
       workflowCloseStatus={workflowCloseStatus}
       workflowCloseTime={workflowCloseTime}

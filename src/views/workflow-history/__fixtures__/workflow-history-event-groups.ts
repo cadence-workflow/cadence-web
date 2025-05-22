@@ -14,7 +14,8 @@ export const mockActivityEventGroup: ActivityHistoryGroup = {
   status: 'COMPLETED',
   eventsMetadata: [],
   hasMissingEvents: false,
-  timeMs: 1725747380000,
+  timeMs: 1725747370632,
+  startTimeMs: 1725747380000,
   timeLabel: 'Mock time label',
   events: completedActivityTaskEvents,
 };
@@ -26,6 +27,7 @@ export const mockTimerEventGroup: TimerHistoryGroup = {
   eventsMetadata: [],
   hasMissingEvents: false,
   timeMs: 1725747380000,
+  startTimeMs: 1725747380000,
   timeLabel: 'Mock time label',
   events: [startTimerTaskEvent],
 };
@@ -37,6 +39,7 @@ export const mockSingleEventGroup: SingleEventHistoryGroup = {
   eventsMetadata: [],
   hasMissingEvents: false,
   timeMs: 1725747380000,
+  startTimeMs: 1725747380000,
   timeLabel: 'Mock time label',
   events: [startWorkflowExecutionEvent],
 };

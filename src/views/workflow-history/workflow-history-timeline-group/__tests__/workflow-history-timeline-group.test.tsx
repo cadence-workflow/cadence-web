@@ -115,13 +115,17 @@ describe('WorkflowHistoryTimelineGroup', () => {
     expect(mockOnReset).toHaveBeenCalledTimes(1);
   });
 
-  it('renders duration badge when timeMs is provided', () => {
-    setup({ timeMs: 1726652232190.7927 });
+  it('should render duration badge when startTimeMs is provided', () => {
+    setup({
+      startTimeMs: 1726652232190.7927,
+    });
     expect(screen.getByText('Duration Badge')).toBeInTheDocument();
   });
 
-  it('does not render duration badge when timeMs is not provided', () => {
-    setup({ timeMs: null });
+  it('should not render duration badge when startTimeMs is not provided', () => {
+    setup({
+      startTimeMs: null,
+    });
     expect(screen.queryByText('Duration Badge')).not.toBeInTheDocument();
   });
 });
@@ -129,6 +133,7 @@ describe('WorkflowHistoryTimelineGroup', () => {
 function setup({
   label = 'Workflow Started',
   hasMissingEvents = false,
+  showLoadingMoreEvents = false,
   eventsMetadata = [
     {
       label: 'Started',
@@ -153,7 +158,7 @@ function setup({
   workflowCloseStatus,
   workflowIsArchived = false,
   workflowCloseTimeMs = null,
-  timeMs = null,
+  startTimeMs = 1726652232190.7927,
 }: Partial<Props>) {
   const mockOnReset = jest.fn();
   const user = userEvent.setup();
@@ -164,7 +169,9 @@ function setup({
       isLastEvent={isLastEvent}
       label={label}
       timeLabel={timeLabel}
+      startTimeMs={startTimeMs}
       hasMissingEvents={hasMissingEvents}
+      showLoadingMoreEvents={showLoadingMoreEvents}
       status={status}
       decodedPageUrlParams={decodedPageUrlParams}
       getIsEventExpanded={jest.fn()}
@@ -175,7 +182,6 @@ function setup({
       workflowCloseStatus={workflowCloseStatus}
       workflowIsArchived={workflowIsArchived}
       workflowCloseTimeMs={workflowCloseTimeMs}
-      timeMs={timeMs}
     />
   );
   return { mockOnReset, user };

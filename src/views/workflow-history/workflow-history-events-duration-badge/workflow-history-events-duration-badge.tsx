@@ -12,6 +12,7 @@ export default function WorkflowHistoryEventsDurationBadge({
   workflowCloseStatus,
   eventsCount,
   hasMissingEvents,
+  loadingMoreEvents,
   workflowCloseTime,
   showOngoingOnly,
 }: Props) {
@@ -20,23 +21,25 @@ export default function WorkflowHistoryEventsDurationBadge({
     workflowIsArchived ||
     workflowCloseStatus !== 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID';
   const singleEvent = eventsCount === 1 && !hasMissingEvents;
-  const noDuration = singleEvent || (workflowEnded && !endTime);
+  const noDuration =
+    loadingMoreEvents || singleEvent || (workflowEnded && !endTime);
   const hideDuration = (showOngoingOnly && endTime) || noDuration;
+  const isOngoing = !endTime && !hideDuration;
 
   const [duration, setDuration] = useState<string>(() =>
-    getFormattedEventsDuration(startTime, endTime)
+    getFormattedEventsDuration(startTime, endTime, isOngoing)
   );
 
   useEffect(() => {
-    setDuration(getFormattedEventsDuration(startTime, endTime));
-    if (!endTime && !hideDuration) {
+    setDuration(getFormattedEventsDuration(startTime, endTime, isOngoing));
+    if (isOngoing) {
       const interval = setInterval(() => {
-        setDuration(getFormattedEventsDuration(startTime, endTime));
+        setDuration(getFormattedEventsDuration(startTime, endTime, true));
       }, 1000);
 
       return () => clearInterval(interval);
     }
-  }, [startTime, endTime, hideDuration]);
+  }, [startTime, endTime, isOngoing]);
 
   if (hideDuration) {
     return null;
