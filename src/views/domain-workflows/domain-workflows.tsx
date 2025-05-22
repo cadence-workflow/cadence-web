@@ -13,12 +13,8 @@ const DomainWorkflowsBasic = dynamic(
   () => import('@/views/domain-workflows-basic/domain-workflows-basic')
 );
 
-const DomainWorkflowsHeader = dynamic(
-  () => import('./domain-workflows-header/domain-workflows-header')
-);
-
-const DomainWorkflowsTable = dynamic(
-  () => import('./domain-workflows-table/domain-workflows-table')
+const DomainWorkflowsAdvanced = dynamic(
+  () => import('./domain-workflows-advanced/domain-workflows-advanced')
 );
 
 export default function DomainWorkflows(props: DomainPageTabContentProps) {
@@ -32,16 +28,11 @@ export default function DomainWorkflows(props: DomainPageTabContentProps) {
     return isClusterAdvancedVisibilityEnabled(data);
   }, [data]);
 
-  if (!isAdvancedVisibilityEnabled) {
-    return (
-      <DomainWorkflowsBasic domain={props.domain} cluster={props.cluster} />
-    );
-  }
+  const DomainWorkflowsComponent = isAdvancedVisibilityEnabled
+    ? DomainWorkflowsAdvanced
+    : DomainWorkflowsBasic;
 
   return (
-    <>
-      <DomainWorkflowsHeader domain={props.domain} cluster={props.cluster} />
-      <DomainWorkflowsTable domain={props.domain} cluster={props.cluster} />
-    </>
+    <DomainWorkflowsComponent domain={props.domain} cluster={props.cluster} />
   );
 }
