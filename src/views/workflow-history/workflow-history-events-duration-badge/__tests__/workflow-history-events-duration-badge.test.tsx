@@ -130,7 +130,8 @@ describe('WorkflowHistoryEventsDurationBadge', () => {
 
     expect(getFormattedEventsDuration).toHaveBeenCalledWith(
       mockStartTime,
-      mockCloseTime
+      mockCloseTime,
+      expect.any(Boolean)
     );
     expect(screen.getByText('Duration: 60')).toBeInTheDocument();
   });

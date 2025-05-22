@@ -15,7 +15,8 @@ export const mockActivityEventGroup: ActivityHistoryGroup = {
   eventsMetadata: [],
   hasMissingEvents: false,
   timeMs: 1725747370632,
-  startTimeMs: 1725747380000,
+  startTimeMs: 1725747370599,
+ 
   timeLabel: 'Mock time label',
   events: completedActivityTaskEvents,
 };
