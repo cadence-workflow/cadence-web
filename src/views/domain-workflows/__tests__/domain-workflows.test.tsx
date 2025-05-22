@@ -13,28 +13,24 @@ import DomainWorkflows from '../domain-workflows';
 jest.mock('@/views/domain-workflows-basic/domain-workflows-basic', () =>
   jest.fn(() => <div>Basic Workflows</div>)
 );
-jest.mock('../domain-workflows-header/domain-workflows-header', () =>
-  jest.fn(() => <div>Workflows Header</div>)
-);
-jest.mock('../domain-workflows-table/domain-workflows-table', () =>
-  jest.fn(() => <div>Workflows Table</div>)
+jest.mock('../domain-workflows-advanced/domain-workflows-advanced', () =>
+  jest.fn(() => <div>Advanced Workflows</div>)
 );
 
 describe('DomainWorkflows', () => {
-  it('should render basic workflows when advanced visibility is disabled', async () => {
+  it('should render basic workflows table when advanced visibility is disabled', async () => {
     await setup({ isAdvancedVisibility: false });
 
     expect(await screen.findByText('Basic Workflows')).toBeInTheDocument();
   });
 
-  it('should render workflows header and table when advanced visibility is enabled', async () => {
+  it('should render advanced workflows table when advanced visibility is enabled', async () => {
     await setup({ isAdvancedVisibility: true });
 
-    expect(await screen.findByText('Workflows Header')).toBeInTheDocument();
-    expect(await screen.findByText('Workflows Table')).toBeInTheDocument();
+    expect(await screen.findByText('Advanced Workflows')).toBeInTheDocument();
   });
 
-  it('should render workflows header and table when advanced visibility is enabled', async () => {
+  it('should throw on error', async () => {
     let renderErrorMessage;
     try {
       await act(async () => {

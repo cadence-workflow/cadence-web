@@ -15,7 +15,12 @@ import DOMAIN_WORKFLOWS_PAGE_SIZE from '../config/domain-workflows-page-size.con
 import { type Props } from './domain-workflows-table.types';
 import getWorkflowsErrorPanelProps from './helpers/get-workflows-error-panel-props';
 
-export default function DomainWorkflowsTable({ domain, cluster }: Props) {
+export default function DomainWorkflowsTable({
+  domain,
+  cluster,
+  timeRangeStart,
+  timeRangeEnd,
+}: Props) {
   const [queryParams, setQueryParams] = usePageQueryParams(
     domainPageQueryParamsConfig
   );
@@ -36,8 +41,8 @@ export default function DomainWorkflowsTable({ domain, cluster }: Props) {
     inputType: queryParams.inputType,
     search: queryParams.search,
     statuses: queryParams.statuses,
-    timeRangeStart: queryParams.timeRangeStart,
-    timeRangeEnd: queryParams.timeRangeEnd,
+    timeRangeStart,
+    timeRangeEnd,
     sortColumn: queryParams.sortColumn,
     sortOrder: queryParams.sortOrder,
     query: queryParams.query,

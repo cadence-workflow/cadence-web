@@ -27,6 +27,8 @@ describe(DomainWorkflowsArchivalHeader.name, () => {
       <DomainWorkflowsArchivalHeader
         domain="mock_domain"
         cluster="mock_cluster"
+        timeRangeStart="mock-time-range-start"
+        timeRangeEnd="mock-time-range-end"
       />
     );
 

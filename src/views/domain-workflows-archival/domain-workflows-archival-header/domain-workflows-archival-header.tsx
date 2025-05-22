@@ -13,6 +13,8 @@ import { type Props } from './domain-workflows-archival-header.types';
 export default function DomainWorkflowsArchivalHeader({
   domain,
   cluster,
+  timeRangeStart,
+  timeRangeEnd,
 }: Props) {
   const [queryParams] = usePageQueryParams(domainPageQueryParamsConfig);
 
@@ -24,8 +26,8 @@ export default function DomainWorkflowsArchivalHeader({
     inputType: queryParams.inputTypeArchival,
     search: queryParams.searchArchival,
     statuses: queryParams.statusesArchival,
-    timeRangeStart: queryParams.timeRangeStartArchival,
-    timeRangeEnd: queryParams.timeRangeEndArchival,
+    timeRangeStart,
+    timeRangeEnd,
     sortColumn: queryParams.sortColumnArchival,
     sortOrder: queryParams.sortOrderArchival,
     query: queryParams.queryArchival,
