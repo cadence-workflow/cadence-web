@@ -139,8 +139,8 @@ const domainPageQueryParamsConfig: [
   {
     key: 'timeRangeStartArchival',
     queryParamKey: 'astart',
-    defaultValue: 'now-30d',
-    parseValue: (v) => parseDateFilterValue(v, 'now-30d'),
+    defaultValue: 'now-7d',
+    parseValue: (v) => parseDateFilterValue(v, 'now-7d'),
   },
   {
     key: 'timeRangeEndArchival',
