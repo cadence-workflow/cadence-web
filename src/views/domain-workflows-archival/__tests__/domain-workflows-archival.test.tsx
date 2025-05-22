@@ -6,6 +6,7 @@ import { render, screen, act } from '@/test-utils/rtl';
 
 import { type DescribeDomainResponse } from '@/route-handlers/describe-domain/describe-domain.types';
 import { mockDomainDescription } from '@/views/domain-page/__fixtures__/domain-description';
+import { mockDomainPageQueryParamsValues } from '@/views/domain-page/__fixtures__/domain-page-query-params';
 
 import DomainWorkflowsArchival from '../domain-workflows-archival';
 
@@ -22,6 +23,11 @@ jest.mock(
 jest.mock(
   '../domain-workflows-archival-table/domain-workflows-archival-table',
   () => jest.fn(() => <div>Mock archival table</div>)
+);
+
+const mockSetQueryParams = jest.fn();
+jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
+  jest.fn(() => [mockDomainPageQueryParamsValues, mockSetQueryParams])
 );
 
 describe(DomainWorkflowsArchival.name, () => {
