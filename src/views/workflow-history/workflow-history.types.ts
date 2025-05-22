@@ -46,6 +46,7 @@ export type HistoryGroupEventToStringMap<GroupT extends HistoryEventsGroup> =
 
 type BaseHistoryGroup = {
   label: string;
+  fullName?: string;
   eventsMetadata: HistoryGroupEventMetadata[];
   status: WorkflowEventStatus;
   hasMissingEvents: boolean;

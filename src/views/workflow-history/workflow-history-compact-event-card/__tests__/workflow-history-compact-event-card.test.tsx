@@ -18,6 +18,11 @@ jest.mock<typeof WorkflowHistoryEventsDurationBadge>(
   () => jest.fn(() => <div>Duration Badge</div>)
 );
 
+jest.mock(
+  '../../workflow-history-group-label/workflow-history-group-label',
+  () => jest.fn((props) => <>{props.label}</>)
+);
+
 describe('WorkflowHistoryCompactEventCard', () => {
   beforeEach(() => {
     jest.clearAllMocks();
