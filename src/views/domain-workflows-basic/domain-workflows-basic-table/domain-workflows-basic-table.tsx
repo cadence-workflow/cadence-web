@@ -39,9 +39,7 @@ export default function DomainWorkflowsBasicTable({ domain, cluster }: Props) {
       areSearchParamsAbsent:
         !queryParams.workflowId &&
         !queryParams.workflowType &&
-        !queryParams.statusBasic &&
-        !queryParams.timeRangeStart &&
-        !queryParams.timeRangeEnd,
+        !queryParams.statusBasic,
     });
 
     if (errorPanelProps) {

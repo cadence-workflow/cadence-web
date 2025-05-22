@@ -2,9 +2,11 @@
 
 import { useMemo } from 'react';
 
+import getDayjsFromDateFilterValue from '@/components/date-filter-v2/helpers/get-dayjs-from-date-filter-value';
 import useMergedInfiniteQueries from '@/hooks/use-merged-infinite-queries/use-merged-infinite-queries';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import { type ListWorkflowsBasicRequestQueryParams } from '@/route-handlers/list-workflows-basic/list-workflows-basic.types';
+import dayjs from '@/utils/datetime/dayjs';
 import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
 
 import DOMAIN_WORKFLOWS_BASIC_PAGE_SIZE from '../config/domain-workflows-basic-page-size.config';
@@ -28,12 +30,26 @@ export default function useListWorkflowsBasic({
     queryParams.statusBasic === undefined ||
     queryParams.statusBasic !== 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID';
 
+  const timeRangeParams = useMemo(() => {
+    const now = dayjs();
+
+    return {
+      timeRangeStart: getDayjsFromDateFilterValue(
+        queryParams.timeRangeStartBasic,
+        now
+      ).toISOString(),
+      timeRangeEnd: getDayjsFromDateFilterValue(
+        queryParams.timeRangeEndBasic,
+        now
+      ).toISOString(),
+    };
+  }, [queryParams.timeRangeStartBasic, queryParams.timeRangeEndBasic]);
+
   const queryConfigs = useMemo(() => {
     const requestQueryParamsBase = {
       workflowId: queryParams.workflowId,
       workflowType: queryParams.workflowType,
-      timeRangeStart: queryParams.timeRangeStartBasic.toISOString(),
-      timeRangeEnd: queryParams.timeRangeEndBasic.toISOString(),
+      ...timeRangeParams,
       pageSize: pageSize.toString(),
       ...(queryParams.statusBasic !== 'ALL_CLOSED' &&
       queryParams.statusBasic !== 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
@@ -77,8 +93,7 @@ export default function useListWorkflowsBasic({
     loadClosedWorkflows,
     queryParams.workflowId,
     queryParams.workflowType,
-    queryParams.timeRangeStartBasic,
-    queryParams.timeRangeEndBasic,
+    timeRangeParams,
     queryParams.statusBasic,
   ]);
 
