@@ -7,7 +7,18 @@ jest.mock('@/utils/data-formatters/format-duration', () => ({
   ),
 }));
 
+const mockNow = new Date('2024-01-01T10:02:00Z');
+
 describe('getFormattedEventsDuration', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(mockNow);
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it('should return 0s for identical start and end times', () => {
     const duration = getFormattedEventsDuration(
       '2021-01-01T00:00:00Z',
@@ -33,7 +44,7 @@ describe('getFormattedEventsDuration', () => {
   });
 
   it('should handle endTime as null (use current time)', () => {
-    const start = new Date(Date.now() - 60000).toISOString(); // 1 minute ago
+    const start = new Date(mockNow.getTime() - 60000).toISOString(); // 1 minute ago
     const duration = getFormattedEventsDuration(start, null);
     expect(duration).toEqual('mocked: 60s 0ms');
   });
