@@ -29,7 +29,7 @@ const parentExecutionInfoSchema = z.object({
   domainId: z.string(),
   domainName: z.string(),
   workflowExecution: workflowExecutionSchema.nullable(),
-  initiatedId: z.string(),
+  initiatedId: z.coerce.string(),
 });
 
 const taskListSchema = z.object({
@@ -178,7 +178,7 @@ const activityTypeSchema = z.object({
 
 const externalExecutionInfoSchema = z.object({
   workflowExecution: workflowExecutionSchema.nullable(),
-  initiatedId: z.string(),
+  initiatedId: z.coerce.string(),
 });
 
 const historyEventBaseSchema = z.object({
