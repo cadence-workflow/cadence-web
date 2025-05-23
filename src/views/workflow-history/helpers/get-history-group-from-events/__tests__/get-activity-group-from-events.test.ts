@@ -280,6 +280,7 @@ describe('getActivityGroupFromEvents', () => {
     const group = getActivityGroupFromEvents(events);
 
     expect(group.label).toBe('Activity 0: Start');
+    expect(group.fullName).toBe('activity.cron.Start');
   });
 
   it('should return a group with a full label when short names are disabled', () => {
@@ -292,5 +293,6 @@ describe('getActivityGroupFromEvents', () => {
     const group = getActivityGroupFromEvents(events);
 
     expect(group.label).toBe('Activity 0: activity.cron.Start');
+    expect(group.fullName).toBeUndefined();
   });
 });
