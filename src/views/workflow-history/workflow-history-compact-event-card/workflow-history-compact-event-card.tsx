@@ -9,6 +9,7 @@ import useStyletronClasses from '@/hooks/use-styletron-classes';
 
 import WorkflowHistoryEventStatusBadge from '../workflow-history-event-status-badge/workflow-history-event-status-badge';
 import WorkflowHistoryEventsDurationBadge from '../workflow-history-events-duration-badge/workflow-history-events-duration-badge';
+import WorkflowHistoryGroupLabel from '../workflow-history-group-label/workflow-history-group-label';
 
 import {
   cssStyles,
@@ -20,6 +21,7 @@ export default function WorkflowHistoryCompactEventCard({
   status,
   statusReady,
   label,
+  shortLabel,
   showLabelPlaceholder,
   selected,
   disabled,
@@ -54,7 +56,7 @@ export default function WorkflowHistoryCompactEventCard({
       <div className={cls.textContainer}>
         {label && !showLabelPlaceholder && (
           <div className={cls.label}>
-            {label}
+            <WorkflowHistoryGroupLabel label={label} shortLabel={shortLabel} />
             {hasBadges &&
               badges.map((badge) => (
                 <Badge

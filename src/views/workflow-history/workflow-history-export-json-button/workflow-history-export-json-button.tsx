@@ -66,7 +66,9 @@ export default function WorkflowHistoryExportJsonButton(props: Props) {
         kind="secondary"
         startEnhancer={<MdOutlineCloudDownload size={16} />}
         onClick={handleExport}
-        endEnhancer={loadingState === 'loading' && <Spinner $size={16} />}
+        endEnhancer={
+          loadingState === 'loading' ? <Spinner $size={16} /> : undefined
+        }
       >
         Export JSON
       </Button>

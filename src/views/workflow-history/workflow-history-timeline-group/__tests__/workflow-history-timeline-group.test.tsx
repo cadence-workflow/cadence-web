@@ -24,6 +24,11 @@ jest.mock<typeof WorkflowHistoryEventsCard>(
   () => jest.fn(() => <div>Events Card</div>)
 );
 
+jest.mock(
+  '../../workflow-history-group-label/workflow-history-group-label',
+  () => jest.fn((props) => <>{props.label}</>)
+);
+
 jest.mock<typeof WorkflowHistoryTimelineResetButton>(
   '../../workflow-history-timeline-reset-button/workflow-history-timeline-reset-button',
   () =>
