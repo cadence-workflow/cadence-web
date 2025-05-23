@@ -14,7 +14,7 @@ export type Props = Pick<
   | 'resetToDecisionEventId'
   | 'startTimeMs'
   | 'closeTimeMs'
-  | 'fullName'
+  | 'shortLabel'
 > & {
   statusReady: boolean;
   showLabelPlaceholder?: boolean;

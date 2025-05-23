@@ -12,7 +12,7 @@ export default function getActivityGroupFromEvents(
   events: ExtendedActivityHistoryEvent[]
 ): ActivityHistoryGroup {
   let label = '';
-  let fullName = undefined;
+  let shortLabel = undefined;
   const groupType = 'Activity';
   const badges = [];
 
@@ -47,12 +47,14 @@ export default function getActivityGroupFromEvents(
   // getting group label
   if (scheduleEvent && scheduleAttr in scheduleEvent) {
     const fullActivityName = scheduleEvent[scheduleAttr]?.activityType?.name;
+    label = `Activity ${scheduleEvent[scheduleAttr]?.activityId}: ${fullActivityName}`;
 
     if (WORKFLOW_HISTORY_SHOULD_SHORTEN_GROUP_LABELS_CONFIG) {
-      label = `Activity ${scheduleEvent[scheduleAttr]?.activityId}: ${(fullActivityName || '').split(/[./]/g).pop()}`;
-      fullName = fullActivityName;
-    } else {
-      label = `Activity ${scheduleEvent[scheduleAttr]?.activityId}: ${fullActivityName}`;
+      shortLabel = `Activity ${scheduleEvent[scheduleAttr]?.activityId}: ${(
+        fullActivityName || ''
+      )
+        .split(/[./]/g)
+        .pop()}`;
     }
   }
 
@@ -106,7 +108,7 @@ export default function getActivityGroupFromEvents(
 
   return {
     label,
-    fullName,
+    shortLabel,
     hasMissingEvents,
     groupType,
     badges,

@@ -21,7 +21,7 @@ export default function WorkflowHistoryCompactEventCard({
   status,
   statusReady,
   label,
-  fullName,
+  shortLabel,
   showLabelPlaceholder,
   selected,
   disabled,
@@ -56,7 +56,7 @@ export default function WorkflowHistoryCompactEventCard({
       <div className={cls.textContainer}>
         {label && !showLabelPlaceholder && (
           <div className={cls.label}>
-            <WorkflowHistoryGroupLabel label={label} fullName={fullName} />
+            <WorkflowHistoryGroupLabel label={label} shortLabel={shortLabel} />
             {hasBadges &&
               badges.map((badge) => (
                 <Badge

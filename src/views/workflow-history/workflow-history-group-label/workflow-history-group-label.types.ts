@@ -1,4 +1,4 @@
 export type Props = {
   label: string;
-  fullName?: string;
+  shortLabel?: string;
 };

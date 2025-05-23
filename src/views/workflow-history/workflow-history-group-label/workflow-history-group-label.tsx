@@ -2,8 +2,11 @@ import { StatefulTooltip } from 'baseui/tooltip';
 
 import { type Props } from './workflow-history-group-label.types';
 
-export default function WorkflowHistoryGroupLabel({ label, fullName }: Props) {
-  if (!fullName) return <>{label}</>;
+export default function WorkflowHistoryGroupLabel({
+  label,
+  shortLabel,
+}: Props) {
+  if (!shortLabel) return <>{label}</>;
 
   return (
     <StatefulTooltip
@@ -11,11 +14,11 @@ export default function WorkflowHistoryGroupLabel({ label, fullName }: Props) {
       placement="bottom"
       popoverMargin={8}
       accessibilityType="tooltip"
-      content={() => fullName}
+      content={() => label}
       returnFocus
       autoFocus
     >
-      {label}
+      {shortLabel}
     </StatefulTooltip>
   );
 }

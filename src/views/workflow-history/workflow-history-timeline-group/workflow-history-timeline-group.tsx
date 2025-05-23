@@ -21,7 +21,7 @@ import { type Props } from './workflow-history-timeline-group.types';
 export default function WorkflowHistoryTimelineGroup({
   status,
   label,
-  fullName,
+  shortLabel,
   timeLabel,
   startTimeMs,
   closeTimeMs,
@@ -60,7 +60,7 @@ export default function WorkflowHistoryTimelineGroup({
         />
         <div className={cls.eventLabelAndSecondaryDetails}>
           <div className={cls.eventsLabel}>
-            <WorkflowHistoryGroupLabel label={label} fullName={fullName} />
+            <WorkflowHistoryGroupLabel label={label} shortLabel={shortLabel} />
           </div>
           <div className={cls.eventSecondaryDetails}>
             {hasBadges && (

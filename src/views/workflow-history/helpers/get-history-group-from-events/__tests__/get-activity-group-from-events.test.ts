@@ -270,7 +270,7 @@ describe('getActivityGroupFromEvents', () => {
     expect(groupWithMissingCloseEvent.closeTimeMs).toEqual(null);
   });
 
-  it('should return a group with a shortened label when short names are enabled', () => {
+  it('should return a short label when short names are enabled', () => {
     jest
       .spyOn(shortenGroupLabelsConfigModule, 'default', 'get')
       .mockReturnValueOnce(true);
@@ -279,11 +279,10 @@ describe('getActivityGroupFromEvents', () => {
 
     const group = getActivityGroupFromEvents(events);
 
-    expect(group.label).toBe('Activity 0: Start');
-    expect(group.fullName).toBe('activity.cron.Start');
+    expect(group.shortLabel).toBe('Activity 0: Start');
   });
 
-  it('should return a group with a full label when short names are disabled', () => {
+  it('should return no short label when short names are disabled', () => {
     jest
       .spyOn(shortenGroupLabelsConfigModule, 'default', 'get')
       .mockReturnValueOnce(false);
@@ -292,7 +291,6 @@ describe('getActivityGroupFromEvents', () => {
 
     const group = getActivityGroupFromEvents(events);
 
-    expect(group.label).toBe('Activity 0: activity.cron.Start');
-    expect(group.fullName).toBeUndefined();
+    expect(group.shortLabel).toBeUndefined();
   });
 });

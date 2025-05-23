@@ -5,7 +5,7 @@ import { render, screen, userEvent } from '@/test-utils/rtl';
 import WorkflowHistoryGroupLabel from '../workflow-history-group-label';
 
 describe('WorkflowHistoryGroupLabel', () => {
-  it('renders just the label when fullName is not provided', () => {
+  it('renders just the label when shortLabel is not provided', () => {
     render(
       <WorkflowHistoryGroupLabel label="Activity 0: activity.cron.Start" />
     );
@@ -14,13 +14,13 @@ describe('WorkflowHistoryGroupLabel', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders label with tooltip when fullName is provided', async () => {
+  it('renders shortLabel with tooltip containing full label when shortLabel is provided', async () => {
     const user = userEvent.setup();
 
     render(
       <WorkflowHistoryGroupLabel
-        label="Activity 0: Start"
-        fullName="activity.cron.Start"
+        label="Activity 0: activity.cron.Start"
+        shortLabel="Activity 0: Start"
       />
     );
 
@@ -29,6 +29,8 @@ describe('WorkflowHistoryGroupLabel', () => {
 
     await user.hover(label);
 
-    expect(await screen.findByText('activity.cron.Start')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Activity 0: activity.cron.Start')
+    ).toBeInTheDocument();
   });
 });
