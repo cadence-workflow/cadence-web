@@ -1,3 +1,4 @@
+import WORKFLOW_HISTORY_SHOULD_SHORTEN_GROUP_LABELS_CONFIG from '../../config/workflow-history-should-shorten-group-labels.config';
 import type {
   ActivityHistoryGroup,
   ExtendedActivityHistoryEvent,
@@ -11,6 +12,7 @@ export default function getActivityGroupFromEvents(
   events: ExtendedActivityHistoryEvent[]
 ): ActivityHistoryGroup {
   let label = '';
+  let shortLabel = undefined;
   const groupType = 'Activity';
   const badges = [];
 
@@ -44,7 +46,18 @@ export default function getActivityGroupFromEvents(
 
   // getting group label
   if (scheduleEvent && scheduleAttr in scheduleEvent) {
-    label = `Activity ${scheduleEvent[scheduleAttr]?.activityId}: ${scheduleEvent[scheduleAttr]?.activityType?.name}`;
+    const activityName = scheduleEvent[scheduleAttr]?.activityType?.name;
+    const activityId = scheduleEvent[scheduleAttr]?.activityId;
+    label = `Activity ${activityId}: ${activityName}`;
+
+    if (
+      WORKFLOW_HISTORY_SHOULD_SHORTEN_GROUP_LABELS_CONFIG &&
+      activityName?.includes('.')
+    ) {
+      shortLabel = `Activity ${activityId}: ${(activityName || '')
+        .split(/[./]/g)
+        .pop()}`;
+    }
   }
 
   // getting retry badge
@@ -97,6 +110,7 @@ export default function getActivityGroupFromEvents(
 
   return {
     label,
+    shortLabel,
     hasMissingEvents,
     groupType,
     badges,

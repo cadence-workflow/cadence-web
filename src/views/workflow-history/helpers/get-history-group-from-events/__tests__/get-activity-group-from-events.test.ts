@@ -10,13 +10,28 @@ import {
   pendingActivityTaskStartEvent,
   pendingActivityTaskStartEventWithStartedState,
 } from '@/views/workflow-history/__fixtures__/workflow-history-pending-events';
+import * as shortenGroupLabelsConfigModule from '@/views/workflow-history/config/workflow-history-should-shorten-group-labels.config';
 
 import type { ExtendedActivityHistoryEvent } from '../../../workflow-history.types';
 import getActivityGroupFromEvents from '../get-activity-group-from-events';
 
 jest.useFakeTimers().setSystemTime(new Date('2024-05-25'));
 
+jest.mock(
+  '@/views/workflow-history/config/workflow-history-should-shorten-group-labels.config',
+  () => ({
+    __esModule: true,
+    get default() {
+      return false;
+    },
+  })
+);
+
 describe('getActivityGroupFromEvents', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should return a group with a proper label when scheduled event exists', () => {
     const events: ExtendedActivityHistoryEvent[] = [scheduleActivityTaskEvent];
 
@@ -253,5 +268,47 @@ describe('getActivityGroupFromEvents', () => {
       startActivityTaskEvent,
     ]);
     expect(groupWithMissingCloseEvent.closeTimeMs).toEqual(null);
+  });
+
+  it('should return a short label when short names are enabled and activityName contains a dot', () => {
+    jest
+      .spyOn(shortenGroupLabelsConfigModule, 'default', 'get')
+      .mockReturnValueOnce(true);
+
+    const events: ExtendedActivityHistoryEvent[] = [scheduleActivityTaskEvent];
+
+    const group = getActivityGroupFromEvents(events);
+
+    expect(group.shortLabel).toBe('Activity 0: Start');
+
+    const eventsWithoutDot: ExtendedActivityHistoryEvent[] = [
+      {
+        ...scheduleActivityTaskEvent,
+        activityTaskScheduledEventAttributes: {
+          ...scheduleActivityTaskEvent.activityTaskScheduledEventAttributes,
+          activityType: {
+            ...scheduleActivityTaskEvent.activityTaskScheduledEventAttributes
+              .activityType,
+            name: 'name-without-dot',
+          },
+        },
+      },
+    ];
+
+    const groupWithoutDot = getActivityGroupFromEvents(eventsWithoutDot);
+
+    expect(groupWithoutDot.shortLabel).toBeUndefined();
+  });
+
+  it('should return no short label when short names are disabled', () => {
+    jest
+      .spyOn(shortenGroupLabelsConfigModule, 'default', 'get')
+      .mockReturnValueOnce(false);
+
+    const events: ExtendedActivityHistoryEvent[] = [scheduleActivityTaskEvent];
+
+    const group = getActivityGroupFromEvents(events);
+
+    expect(group.shortLabel).toBeUndefined();
   });
 });

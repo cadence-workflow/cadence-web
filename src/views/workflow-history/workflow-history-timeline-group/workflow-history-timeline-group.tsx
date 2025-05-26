@@ -8,6 +8,7 @@ import useStyletronClasses from '@/hooks/use-styletron-classes';
 import WorkflowHistoryEventStatusBadge from '../workflow-history-event-status-badge/workflow-history-event-status-badge';
 import WorkflowHistoryEventsCard from '../workflow-history-events-card/workflow-history-events-card';
 import WorkflowHistoryEventsDurationBadge from '../workflow-history-events-duration-badge/workflow-history-events-duration-badge';
+import WorkflowHistoryGroupLabel from '../workflow-history-group-label/workflow-history-group-label';
 import WorkflowHistoryTimelineResetButton from '../workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 
 import {
@@ -20,6 +21,7 @@ import { type Props } from './workflow-history-timeline-group.types';
 export default function WorkflowHistoryTimelineGroup({
   status,
   label,
+  shortLabel,
   timeLabel,
   startTimeMs,
   closeTimeMs,
@@ -57,7 +59,9 @@ export default function WorkflowHistoryTimelineGroup({
           size="medium"
         />
         <div className={cls.eventLabelAndSecondaryDetails}>
-          <div className={cls.eventsLabel}>{label}</div>
+          <div className={cls.eventsLabel}>
+            <WorkflowHistoryGroupLabel label={label} shortLabel={shortLabel} />
+          </div>
           <div className={cls.eventSecondaryDetails}>
             {hasBadges && (
               <>
