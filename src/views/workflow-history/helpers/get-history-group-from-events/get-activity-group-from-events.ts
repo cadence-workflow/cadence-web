@@ -46,13 +46,15 @@ export default function getActivityGroupFromEvents(
 
   // getting group label
   if (scheduleEvent && scheduleAttr in scheduleEvent) {
-    const fullActivityName = scheduleEvent[scheduleAttr]?.activityType?.name;
-    label = `Activity ${scheduleEvent[scheduleAttr]?.activityId}: ${fullActivityName}`;
+    const activityName = scheduleEvent[scheduleAttr]?.activityType?.name;
+    const activityId = scheduleEvent[scheduleAttr]?.activityId;
+    label = `Activity ${activityId}: ${activityName}`;
 
-    if (WORKFLOW_HISTORY_SHOULD_SHORTEN_GROUP_LABELS_CONFIG) {
-      shortLabel = `Activity ${scheduleEvent[scheduleAttr]?.activityId}: ${(
-        fullActivityName || ''
-      )
+    if (
+      WORKFLOW_HISTORY_SHOULD_SHORTEN_GROUP_LABELS_CONFIG &&
+      activityName?.includes('.')
+    ) {
+      shortLabel = `Activity ${activityId}: ${(activityName || '')
         .split(/[./]/g)
         .pop()}`;
     }
