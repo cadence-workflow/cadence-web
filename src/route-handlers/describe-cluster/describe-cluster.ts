@@ -19,24 +19,6 @@ export async function describeCluster(
 ) {
   const decodedParams = decodeUrlParams(requestParams.params) as RouteParams;
 
-  // temporary solution to disable invoking describeCluster
-  if (process.env.CADENCE_ADVANCED_VISIBILITY) {
-    const res = {
-      persistenceInfo: {
-        visibilityStore: {
-          features: [
-            {
-              key: 'advancedVisibilityEnabled',
-              enabled: process.env.CADENCE_ADVANCED_VISIBILITY === 'true',
-            },
-          ],
-        },
-      },
-      supportedClientVersions: null,
-    };
-    return NextResponse.json(res);
-  }
-
   try {
     const res = await ctx.grpcClusterMethods.describeCluster({
       name: decodedParams.cluster,

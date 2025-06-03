@@ -38,42 +38,6 @@ describe('describeCluster', () => {
       })
     );
   });
-
-  it('returns static response with advancedVisibilityEnabled true when CADENCE_ADVANCED_VISIBILITY env value is true', async () => {
-    const originalEnvObj = globalThis.process.env;
-    globalThis.process.env = {
-      ...process.env,
-      CADENCE_ADVANCED_VISIBILITY: 'true',
-    };
-
-    const { res, mockDescribeCluster } = await setup({});
-
-    expect(mockDescribeCluster).not.toHaveBeenCalled();
-
-    const responseJson = await res.json();
-    expect(
-      responseJson.persistenceInfo.visibilityStore.features[0].enabled
-    ).toBe(true);
-    globalThis.process.env = originalEnvObj;
-  });
-
-  it('returns static response with advancedVisibilityEnabled false when CADENCE_ADVANCED_VISIBILITY env value is not true', async () => {
-    const originalEnvObj = globalThis.process.env;
-    globalThis.process.env = {
-      ...process.env,
-      CADENCE_ADVANCED_VISIBILITY: 'not true',
-    };
-
-    const { res, mockDescribeCluster } = await setup({});
-
-    expect(mockDescribeCluster).not.toHaveBeenCalled();
-
-    const responseJson = await res.json();
-    expect(
-      responseJson.persistenceInfo.visibilityStore.features[0].enabled
-    ).toBe(false);
-    globalThis.process.env = originalEnvObj;
-  });
 });
 
 async function setup({ error }: { error?: true }) {
