@@ -722,7 +722,9 @@ exports[`formatWorkflowHistoryEvent should format workflow workflowExecutionStar
   "firstExecutionRunId": "1d0e29d3-9c20-4eda-aeca-daed7f0ccb2e",
   "firstScheduledTimeNano": 1716246362895.4253,
   "header": {
-    "fields": {},
+    "fields": {
+      "test-header": "test-header-data",
+    },
   },
   "identity": null,
   "initiator": "CRON_SCHEDULE",

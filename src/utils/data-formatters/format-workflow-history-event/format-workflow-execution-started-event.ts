@@ -34,6 +34,7 @@ const formatWorkflowExecutionStartedEvent = ({
     searchAttributes,
     taskList,
     taskStartToCloseTimeout,
+    header,
     ...eventAttributes
   },
   ...eventFields
@@ -69,6 +70,7 @@ const formatWorkflowExecutionStartedEvent = ({
       : null,
     identity: identity || null,
     initiator: formatEnum(initiator, 'CONTINUE_AS_NEW_INITIATOR'),
+    header: formatPayloadMap(header, 'fields'),
     memo: formatPayloadMap(memo, 'fields'),
     originalExecutionRunId: originalExecutionRunId || null,
     parentInitiatedEventId: parentExecutionInfo?.initiatedId

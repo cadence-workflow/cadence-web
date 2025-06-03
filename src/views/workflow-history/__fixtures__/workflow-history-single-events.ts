@@ -52,7 +52,11 @@ export const startWorkflowExecutionEvent = {
       points: [],
     },
     header: {
-      fields: {},
+      fields: {
+        'test-header': {
+          data: 'dGVzdC1oZWFkZXItZGF0YQ==',
+        },
+      },
     },
     firstScheduledTime: {
       seconds: '1716246362',
