@@ -7,10 +7,10 @@ import Md from '@/components/markdown/md';
 import losslessJsonStringify from '@/utils/lossless-json-stringify';
 
 import getQueryJsonContent from './helpers/get-query-json-content';
-import { overrides, styled } from './workflow-queries-result-json.styles';
-import { Markdown, type Props } from './workflow-queries-result-json.types';
+import { overrides, styled } from './workflow-queries-result.styles';
+import { Markdown, type Props } from './workflow-queries-result.types';
 
-export default function WorkflowQueriesResultJson(props: Props) {
+export default function WorkflowQueriesResult(props: Props) {
   const { content, isError } = useMemo(
     () => getQueryJsonContent(props),
     [props]

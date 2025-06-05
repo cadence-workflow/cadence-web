@@ -1,7 +1,7 @@
 import {
   type QueryJsonContent,
   type Props,
-} from '../workflow-queries-result-json.types';
+} from '../workflow-queries-result.types';
 
 export default function getQueryJsonContent(props: Props): QueryJsonContent {
   if (props.loading) {

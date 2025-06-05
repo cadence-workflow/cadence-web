@@ -4,7 +4,7 @@ import { render, screen } from '@/test-utils/rtl';
 
 import { type QueryWorkflowResponse } from '@/route-handlers/query-workflow/query-workflow.types';
 
-import WorkflowQueriesResultJson from '../workflow-queries-result-json';
+import WorkflowQueriesResultJson from '../workflow-queries-result';
 
 jest.mock('../helpers/get-query-json-content', () => ({
   __esModule: true,

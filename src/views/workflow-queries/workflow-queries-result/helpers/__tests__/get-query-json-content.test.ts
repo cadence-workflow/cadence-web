@@ -3,7 +3,7 @@ import { RequestError } from '@/utils/request/request-error';
 import {
   type QueryJsonContent,
   type Props,
-} from '../../workflow-queries-result-json.types';
+} from '../../workflow-queries-result.types';
 import getQueryJsonContent from '../get-query-json-content';
 
 describe(getQueryJsonContent.name, () => {
