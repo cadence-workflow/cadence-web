@@ -26,6 +26,18 @@ export default function getQueryJsonContent(props: Props): QueryJsonContent {
       };
     }
 
+    if (
+      props.data.result.format &&
+      props.data.result.format === 'text/markdown'
+    ) {
+      return {
+        content: {
+          type: 'markdown',
+          content: props.data.result.data,
+        },
+        isError: false,
+      };
+    }
     return { content: props.data.result, isError: false };
   }
 
