@@ -2,13 +2,13 @@
 import React, { useMemo } from 'react';
 
 import CopyTextButton from '@/components/copy-text-button/copy-text-button';
-import PrettyJson from '@/components/pretty-json/pretty-json';
 import Md from '@/components/markdown/md';
+import PrettyJson from '@/components/pretty-json/pretty-json';
 import losslessJsonStringify from '@/utils/lossless-json-stringify';
 
 import getQueryJsonContent from './helpers/get-query-json-content';
 import { overrides, styled } from './workflow-queries-result.styles';
-import { Markdown, type Props } from './workflow-queries-result.types';
+import { type Markdown, type Props } from './workflow-queries-result.types';
 
 export default function WorkflowQueriesResult(props: Props) {
   const { content, isError } = useMemo(
@@ -21,9 +21,7 @@ export default function WorkflowQueriesResult(props: Props) {
   }, [content]);
 
   if (isContentMarkdown(content)) {
-    return (
-      <Md markdown={content.content} />
-    );
+    return <Md markdown={content.content} />;
   }
 
   return (

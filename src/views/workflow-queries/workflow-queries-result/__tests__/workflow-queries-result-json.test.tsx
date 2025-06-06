@@ -58,7 +58,5 @@ function setup({
   error?: any;
   loading?: boolean;
 }) {
-  render(
-    <WorkflowQueriesResult data={data} error={error} loading={loading} />
-  );
+  render(<WorkflowQueriesResult data={data} error={error} loading={loading} />);
 }
