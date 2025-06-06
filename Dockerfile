@@ -1,4 +1,4 @@
-FROM node:18-alpine AS base
+FROM node:18.20-alpine AS base
 
 RUN apk update
 RUN apk --no-cache add git

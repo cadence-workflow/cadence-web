@@ -27,6 +27,7 @@ export default function useConfigValue<K extends GetConfigKeys>(
   key: K,
   args?: GetConfigArgs<K>
 ): UseConfigValueResult<K> {
+  // @ts-expect-error Type issue with newer versions of react-query
   return useQuery<
     GetConfigResponse<K>,
     RequestError,
