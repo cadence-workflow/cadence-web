@@ -4,7 +4,7 @@ import { render, screen } from '@/test-utils/rtl';
 
 import { type QueryWorkflowResponse } from '@/route-handlers/query-workflow/query-workflow.types';
 
-import WorkflowQueriesResultJson from '../workflow-queries-result-json';
+import WorkflowQueriesResult from '../workflow-queries-result';
 
 jest.mock('../helpers/get-query-json-content', () => ({
   __esModule: true,
@@ -15,6 +15,10 @@ jest.mock('@/components/copy-text-button/copy-text-button', () =>
   jest.fn(({ textToCopy }) => <div>Copy Button: {textToCopy}</div>)
 );
 
+jest.mock('@/components/markdown/md', () =>
+  jest.fn(({ markdown }) => <div>Markdown Mock: {markdown}</div>)
+);
+
 jest.mock('@/components/pretty-json/pretty-json', () =>
   jest.fn(({ json }) => (
     <div>
@@ -23,7 +27,7 @@ jest.mock('@/components/pretty-json/pretty-json', () =>
   ))
 );
 
-describe(WorkflowQueriesResultJson.name, () => {
+describe(WorkflowQueriesResult.name, () => {
   it('renders correctly with initial props', () => {
     setup({});
 
@@ -54,7 +58,5 @@ function setup({
   error?: any;
   loading?: boolean;
 }) {
-  render(
-    <WorkflowQueriesResultJson data={data} error={error} loading={loading} />
-  );
+  render(<WorkflowQueriesResult data={data} error={error} loading={loading} />);
 }
