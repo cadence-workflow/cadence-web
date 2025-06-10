@@ -41,6 +41,7 @@ export default function DomainWorkflowsHeader({
       queryStringQueryParamKey="query"
       refetchQuery={refetch}
       isQueryRunning={isFetching}
+      expandFiltersByDefault={true}
     />
   );
 }
