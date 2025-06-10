@@ -62,8 +62,8 @@ const domainPageQueryParamsConfig: [
   {
     key: 'timeRangeStart',
     queryParamKey: 'start',
-    defaultValue: 'now-7d',
-    parseValue: (v) => parseDateFilterValue(v, 'now-7d'),
+    defaultValue: 'now-30d',
+    parseValue: (v) => parseDateFilterValue(v, 'now-30d'),
   },
   {
     key: 'timeRangeEnd',
@@ -103,8 +103,8 @@ const domainPageQueryParamsConfig: [
   {
     key: 'timeRangeStartBasic',
     queryParamKey: 'start',
-    defaultValue: 'now-7d',
-    parseValue: (v) => parseDateFilterValue(v, 'now-7d'),
+    defaultValue: 'now-30d',
+    parseValue: (v) => parseDateFilterValue(v, 'now-30d'),
   },
   {
     key: 'timeRangeEndBasic',
