@@ -32,8 +32,11 @@ export default function WorkflowsHeader<
   queryStringQueryParamKey,
   refetchQuery,
   isQueryRunning,
+  expandFiltersByDefault,
 }: Props<P, I, S, Q>) {
-  const [areFiltersShown, setAreFiltersShown] = useState(false);
+  const [areFiltersShown, setAreFiltersShown] = useState(
+    expandFiltersByDefault ?? false
+  );
 
   const { resetAllFilters, activeFiltersCount, queryParams, setQueryParams } =
     usePageFilters({
