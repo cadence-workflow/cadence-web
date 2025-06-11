@@ -20,8 +20,6 @@ export default function WorkflowQueriesResult(props: Props) {
     return losslessJsonStringify(content, null, '\t');
   }, [content]);
 
-
-
   return (
     <styled.ViewContainer $isError={isError}>
       {contentType === 'json' && content !== undefined && (

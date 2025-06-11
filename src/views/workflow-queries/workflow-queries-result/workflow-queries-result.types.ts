@@ -14,12 +14,12 @@ export type QueryJsonContent = {
   contentType: QueryContentTypes;
   isError: boolean;
 } & (
-    | {
+  | {
       contentType: 'json';
       content: PrettyJsonValue;
     }
-    | {
+  | {
       contentType: 'markdown';
       content: string;
     }
-  );
+);

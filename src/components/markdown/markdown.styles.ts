@@ -7,7 +7,7 @@ export const styled = {
     wordBreak: 'break-word',
     overflow: 'hidden',
     lineHeight: $theme.typography.ParagraphMedium.lineHeight,
-    
+
     // Headings
     '& h1': {
       ...$theme.typography.HeadingXXLarge,
@@ -179,7 +179,6 @@ export const styled = {
       border: `1px solid ${$theme.colors.backgroundTertiary}`,
     },
 
-    
     // Tables
     '& table': {
       width: '100%',

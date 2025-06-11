@@ -20,6 +20,7 @@ describe(getQueryResultContent.name, () => {
         error: undefined,
       },
       expected: {
+        contentType: 'json',
         content: undefined,
         isError: false,
       },
@@ -32,6 +33,7 @@ describe(getQueryResultContent.name, () => {
         error: new RequestError('Something went wrong', '/workflow', 500),
       },
       expected: {
+        contentType: 'json',
         content: { message: 'Something went wrong' },
         isError: true,
       },
@@ -49,6 +51,7 @@ describe(getQueryResultContent.name, () => {
         error: undefined,
       },
       expected: {
+        contentType: 'json',
         content:
           'Workflow is closed with status WORKFLOW_EXECUTION_CLOSE_STATUS_TERMINATED',
         isError: true,
@@ -67,9 +70,29 @@ describe(getQueryResultContent.name, () => {
         error: undefined,
       },
       expected: {
+        contentType: 'json',
         content: {
           test: 'test',
         },
+        isError: false,
+      },
+    },
+    {
+      name: 'returns markdown content and no error for result with format text/markdown',
+      props: {
+        data: {
+          result: {
+            format: 'text/markdown',
+            data: '# Heading 1',
+          },
+          rejected: null,
+        },
+        loading: false,
+        error: undefined,
+      },
+      expected: {
+        contentType: 'markdown',
+        content: '# Heading 1',
         isError: false,
       },
     },
@@ -81,6 +104,7 @@ describe(getQueryResultContent.name, () => {
         error: undefined,
       },
       expected: {
+        contentType: 'json',
         content: undefined,
         isError: false,
       },

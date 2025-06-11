@@ -22,10 +22,8 @@ export default function getQueryResultContent(props: Props): QueryJsonContent {
     if (props.data.rejected) {
       return {
         contentType: 'json',
-        content: {
-          message:
-            'Workflow is closed with status ' + props.data.rejected.closeStatus,
-        },
+        content:
+          'Workflow is closed with status ' + props.data.rejected.closeStatus,
         isError: true,
       };
     }

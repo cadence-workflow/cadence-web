@@ -1,5 +1,6 @@
 import { styled as createStyled, withStyle } from 'baseui';
-import { Theme } from 'baseui/theme';
+import { type Theme } from 'baseui/theme';
+
 import PageSection from '@/components/page-section/page-section';
 
 export const styled = {

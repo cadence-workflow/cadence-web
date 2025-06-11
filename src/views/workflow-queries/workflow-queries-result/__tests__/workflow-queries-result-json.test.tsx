@@ -4,11 +4,11 @@ import { render, screen } from '@/test-utils/rtl';
 
 import { type QueryWorkflowResponse } from '@/route-handlers/query-workflow/query-workflow.types';
 
-import WorkflowQueriesResult from '../workflow-queries-result';
 import getQueryResultContent from '../helpers/get-query-result-content';
-import { QueryJsonContent } from '../workflow-queries-result.types';
+import WorkflowQueriesResult from '../workflow-queries-result';
+import { type QueryJsonContent } from '../workflow-queries-result.types';
 
-jest.mock('../helpers/get-query-json-content');
+jest.mock('../helpers/get-query-result-content');
 
 jest.mock('@/components/copy-text-button/copy-text-button', () =>
   jest.fn(({ textToCopy }) => <div>Copy Button: {textToCopy}</div>)
@@ -29,7 +29,11 @@ jest.mock('@/components/pretty-json/pretty-json', () =>
 describe(WorkflowQueriesResult.name, () => {
   it('renders json when the content type is json', () => {
     setup({
-      content: { contentType: 'json', content: { test: 'dataJson' }, isError: false },
+      content: {
+        contentType: 'json',
+        content: { test: 'dataJson' },
+        isError: false,
+      },
     });
 
     expect(
@@ -41,7 +45,11 @@ describe(WorkflowQueriesResult.name, () => {
 
   it('renders copy text button when the content type is json and pass the correct text', () => {
     setup({
-      content: { contentType: 'json', content: { test: 'dataJson' }, isError: false },
+      content: {
+        contentType: 'json',
+        content: { test: 'dataJson' },
+        isError: false,
+      },
     });
 
     const copyButton = screen.getByText(/Copy Button/);
@@ -51,13 +59,18 @@ describe(WorkflowQueriesResult.name, () => {
     );
   });
 
-
   it('renders markdown when the content type is markdown', () => {
     setup({
-      content: { contentType: 'markdown', content: 'test-markdown', isError: false },
+      content: {
+        contentType: 'markdown',
+        content: 'test-markdown',
+        isError: false,
+      },
     });
 
-    expect(screen.getByText('Markdown Mock: test-markdown')).toBeInTheDocument();
+    expect(
+      screen.getByText('Markdown Mock: test-markdown')
+    ).toBeInTheDocument();
   });
 });
 
