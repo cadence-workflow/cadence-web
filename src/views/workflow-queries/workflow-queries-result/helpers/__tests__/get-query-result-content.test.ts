@@ -4,9 +4,9 @@ import {
   type QueryJsonContent,
   type Props,
 } from '../../workflow-queries-result.types';
-import getQueryJsonContent from '../get-query-json-content';
+import getQueryResultContent from '../get-query-result-content';
 
-describe(getQueryJsonContent.name, () => {
+describe(getQueryResultContent.name, () => {
   const tests: Array<{
     name: string;
     props: Props;
@@ -89,7 +89,7 @@ describe(getQueryJsonContent.name, () => {
 
   tests.forEach((test) => {
     it(test.name, () => {
-      expect(getQueryJsonContent(test.props)).toEqual(test.expected);
+      expect(getQueryResultContent(test.props)).toEqual(test.expected);
     });
   });
 });

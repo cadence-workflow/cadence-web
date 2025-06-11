@@ -8,12 +8,18 @@ export type Props = {
   loading?: boolean;
 };
 
-export type Markdown = {
-  type: 'markdown';
-  content: string;
-};
+export type QueryContentTypes = 'json' | 'markdown';
 
 export type QueryJsonContent = {
-  content: PrettyJsonValue | Markdown | undefined;
+  contentType: QueryContentTypes;
   isError: boolean;
-};
+} & (
+    | {
+      contentType: 'json';
+      content: PrettyJsonValue;
+    }
+    | {
+      contentType: 'markdown';
+      content: string;
+    }
+  );

@@ -2,17 +2,17 @@
 import React, { useMemo } from 'react';
 
 import CopyTextButton from '@/components/copy-text-button/copy-text-button';
-import Md from '@/components/markdown/md';
+import Markdown from '@/components/markdown/markdown';
 import PrettyJson from '@/components/pretty-json/pretty-json';
 import losslessJsonStringify from '@/utils/lossless-json-stringify';
 
-import getQueryJsonContent from './helpers/get-query-json-content';
+import getQueryResultContent from './helpers/get-query-result-content';
 import { overrides, styled } from './workflow-queries-result.styles';
-import { type Markdown, type Props } from './workflow-queries-result.types';
+import { type Props } from './workflow-queries-result.types';
 
 export default function WorkflowQueriesResult(props: Props) {
-  const { content, isError } = useMemo(
-    () => getQueryJsonContent(props),
+  const { content, contentType, isError } = useMemo(
+    () => getQueryResultContent(props),
     [props]
   );
 
@@ -20,13 +20,11 @@ export default function WorkflowQueriesResult(props: Props) {
     return losslessJsonStringify(content, null, '\t');
   }, [content]);
 
-  if (isContentMarkdown(content)) {
-    return <Md markdown={content.content} />;
-  }
+
 
   return (
     <styled.ViewContainer $isError={isError}>
-      {content !== undefined && (
+      {contentType === 'json' && content !== undefined && (
         <>
           <PrettyJson json={content} />
           <CopyTextButton
@@ -35,16 +33,9 @@ export default function WorkflowQueriesResult(props: Props) {
           />
         </>
       )}
+      {contentType === 'markdown' && content !== undefined && (
+        <Markdown markdown={content} />
+      )}
     </styled.ViewContainer>
   );
 }
-
-const isContentMarkdown = (content: any): content is Markdown => {
-  if (content === undefined) {
-    return false;
-  }
-  if (content.type === 'markdown') {
-    return true;
-  }
-  return false;
-};

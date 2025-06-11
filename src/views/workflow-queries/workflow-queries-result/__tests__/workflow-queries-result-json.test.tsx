@@ -5,17 +5,16 @@ import { render, screen } from '@/test-utils/rtl';
 import { type QueryWorkflowResponse } from '@/route-handlers/query-workflow/query-workflow.types';
 
 import WorkflowQueriesResult from '../workflow-queries-result';
+import getQueryResultContent from '../helpers/get-query-result-content';
+import { QueryJsonContent } from '../workflow-queries-result.types';
 
-jest.mock('../helpers/get-query-json-content', () => ({
-  __esModule: true,
-  default: jest.fn(({ data }) => ({ content: data.result, isError: false })),
-}));
+jest.mock('../helpers/get-query-json-content');
 
 jest.mock('@/components/copy-text-button/copy-text-button', () =>
   jest.fn(({ textToCopy }) => <div>Copy Button: {textToCopy}</div>)
 );
 
-jest.mock('@/components/markdown/md', () =>
+jest.mock('@/components/markdown/markdown', () =>
   jest.fn(({ markdown }) => <div>Markdown Mock: {markdown}</div>)
 );
 
@@ -28,8 +27,10 @@ jest.mock('@/components/pretty-json/pretty-json', () =>
 );
 
 describe(WorkflowQueriesResult.name, () => {
-  it('renders correctly with initial props', () => {
-    setup({});
+  it('renders json when the content type is json', () => {
+    setup({
+      content: { contentType: 'json', content: { test: 'dataJson' }, isError: false },
+    });
 
     expect(
       screen.getByText(
@@ -38,8 +39,10 @@ describe(WorkflowQueriesResult.name, () => {
     ).toBeInTheDocument();
   });
 
-  it('renders copy text button and pass the correct text', () => {
-    setup({});
+  it('renders copy text button when the content type is json and pass the correct text', () => {
+    setup({
+      content: { contentType: 'json', content: { test: 'dataJson' }, isError: false },
+    });
 
     const copyButton = screen.getByText(/Copy Button/);
     expect(copyButton).toBeInTheDocument();
@@ -47,16 +50,32 @@ describe(WorkflowQueriesResult.name, () => {
       JSON.stringify({ test: 'dataJson' }, null, '\t')
     );
   });
+
+
+  it('renders markdown when the content type is markdown', () => {
+    setup({
+      content: { contentType: 'markdown', content: 'test-markdown', isError: false },
+    });
+
+    expect(screen.getByText('Markdown Mock: test-markdown')).toBeInTheDocument();
+  });
 });
 
 function setup({
   data = { result: { test: 'dataJson' }, rejected: null },
   error = undefined,
   loading = false,
+  content = {
+    contentType: 'json',
+    content: { test: 'dataJson' },
+    isError: false,
+  },
 }: {
   data?: QueryWorkflowResponse;
   error?: any;
   loading?: boolean;
+  content?: QueryJsonContent;
 }) {
+  (getQueryResultContent as jest.Mock).mockImplementation(() => content);
   render(<WorkflowQueriesResult data={data} error={error} loading={loading} />);
 }
