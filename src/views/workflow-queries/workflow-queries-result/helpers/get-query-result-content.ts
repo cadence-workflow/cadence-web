@@ -29,7 +29,7 @@ export default function getQueryResultContent(props: Props): QueryJsonContent {
     }
 
     if (
-      props.data.result.format &&
+      props.data.result.cadenceResponseType === 'formattedData' &&
       props.data.result.format === 'text/markdown'
     ) {
       return {

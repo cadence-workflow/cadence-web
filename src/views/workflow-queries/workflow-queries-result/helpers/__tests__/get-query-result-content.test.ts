@@ -82,6 +82,7 @@ describe(getQueryResultContent.name, () => {
       props: {
         data: {
           result: {
+            cadenceResponseType: 'formattedData',
             format: 'text/markdown',
             data: '# Heading 1',
           },
