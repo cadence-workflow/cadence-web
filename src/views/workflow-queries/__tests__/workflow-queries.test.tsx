@@ -19,7 +19,7 @@ jest.mock('../workflow-queries-tile/workflow-queries-tile', () =>
   ))
 );
 
-jest.mock('../workflow-queries-result-json/workflow-queries-result-json', () =>
+jest.mock('../workflow-queries-result/workflow-queries-result', () =>
   jest.fn(({ data }) => (
     <div>
       <div>Mock JSON</div>
