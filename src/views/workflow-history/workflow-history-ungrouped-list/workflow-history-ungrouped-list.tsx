@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 
 import { Virtuoso } from 'react-virtuoso';
 
+import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
 import { type RequestError } from '@/utils/request/request-error';
 import { type WorkflowPageTabsParams } from '@/views/workflow-page/workflow-page-tabs/workflow-page-tabs.types';
 
@@ -45,11 +46,25 @@ export default function WorkflowHistoryUngroupedList({
               label: group.label,
               status: group.eventsMetadata[index].status,
               statusLabel: group.eventsMetadata[index].label,
-              id: event.eventId ?? event.computedEventId,
+              id: event.eventId ?? '',
             })),
           ])
           .flat(1)
-          .sort((eventA, eventB) => parseInt(eventA.id) - parseInt(eventB.id)),
+          .sort((eventA, eventB) => {
+            if (eventA.id && eventB.id) {
+              return parseInt(eventA.id) - parseInt(eventB.id);
+            }
+
+            if (eventA.id) return 1;
+            if (eventB.id) return -1;
+
+            if (!eventA.event.eventTime || !eventB.event.eventTime) return 0;
+
+            return (
+              parseGrpcTimestamp(eventA.event.eventTime) -
+              parseGrpcTimestamp(eventB.event.eventTime)
+            );
+          }),
       [groupedEvents]
     );
 

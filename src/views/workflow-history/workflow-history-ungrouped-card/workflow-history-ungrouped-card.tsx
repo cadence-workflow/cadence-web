@@ -1,5 +1,6 @@
 import { Panel } from 'baseui/accordion';
 import { Badge } from 'baseui/badge';
+import { Spinner } from 'baseui/spinner';
 
 import { type Timestamp } from '@/__generated__/proto-ts/google/protobuf/Timestamp';
 import formatDate from '@/utils/data-formatters/format-date';
@@ -35,7 +36,7 @@ export default function WorkflowHistoryUngroupedCard({
         overrides={overrides.panel}
         title={
           <styled.CardHeaderContainer>
-            <div>{cardDetails.id}</div>
+            <div>{cardDetails.id === '' ? <Spinner /> : cardDetails.id}</div>
             <div>{cardDetails.label}</div>
             <styled.CardStatusContainer>
               <WorkflowHistoryEventStatusBadge
