@@ -1,4 +1,5 @@
+// ID, event type, event, time, elapsed duration, badges
 const WORKFLOW_HISTORY_UNGROUPED_GRID_TEMPLATE_COLUMNS_CONFIG =
-  '24px 3fr 2fr 1.5fr 1fr 2fr';
+  '0.3fr 2fr 1.3fr 1.2fr 1fr 1fr';
 
 export default WORKFLOW_HISTORY_UNGROUPED_GRID_TEMPLATE_COLUMNS_CONFIG;
