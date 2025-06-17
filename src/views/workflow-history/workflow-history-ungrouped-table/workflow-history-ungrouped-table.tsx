@@ -19,7 +19,8 @@ export default function WorkflowHistoryUngroupedTable({
   onVisibleRangeChange,
   virtuosoRef,
 }: Props) {
-  const workflowStartTime = eventsInfo[0].event.eventTime;
+  const workflowStartTime =
+    eventsInfo.length > 0 ? eventsInfo[0].event.eventTime : null;
 
   return (
     <>
