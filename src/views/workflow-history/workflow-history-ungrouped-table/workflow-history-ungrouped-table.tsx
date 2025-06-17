@@ -1,6 +1,3 @@
-import { Suspense } from 'react';
-
-import { Spinner } from 'baseui/spinner';
 import { Virtuoso } from 'react-virtuoso';
 
 import WorkflowHistoryTimelineLoadMore from '../workflow-history-timeline-load-more/workflow-history-timeline-load-more';
@@ -25,7 +22,7 @@ export default function WorkflowHistoryUngroupedTable({
   const workflowStartTime = eventsInfo[0].event.eventTime;
 
   return (
-    <Suspense fallback={<Spinner />}>
+    <>
       <styled.TableHeader>
         <div>ID</div>
         <div>Type</div>
@@ -64,6 +61,6 @@ export default function WorkflowHistoryUngroupedTable({
           ),
         }}
       />
-    </Suspense>
+    </>
   );
 }
