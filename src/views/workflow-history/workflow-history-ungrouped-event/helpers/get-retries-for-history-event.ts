@@ -1,7 +1,7 @@
-import { type WorkflowHistoryUngroupedEventCardDetails } from '../workflow-history-ungrouped-card.types';
+import { type WorkflowHistoryUngroupedEventInfo } from '../workflow-history-ungrouped-event.types';
 
 export default function getRetriesForHistoryEvent(
-  event: WorkflowHistoryUngroupedEventCardDetails['event']
+  event: WorkflowHistoryUngroupedEventInfo['event']
 ): number | undefined {
   if (
     event.attributes === 'workflowExecutionStartedEventAttributes' &&

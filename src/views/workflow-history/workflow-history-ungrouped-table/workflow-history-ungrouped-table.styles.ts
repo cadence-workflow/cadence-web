@@ -4,8 +4,10 @@ import WORKFLOW_HISTORY_UNGROUPED_GRID_TEMPLATE_COLUMNS_CONFIG from '../config/w
 
 export const styled = {
   TableHeader: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
-    paddingLeft: '22px',
-    paddingRight: '46px',
+    // border thickness + accordion panel left padding
+    paddingLeft: `calc(2px + ${$theme.sizing.scale700})`,
+    // accordion panel expand icon size + accordion panel right padding + border thickness
+    paddingRight: `calc(${$theme.sizing.scale800} + ${$theme.sizing.scale700} + 2px)`,
     paddingBottom: '2px',
     ...$theme.typography.LabelXSmall,
     color: $theme.colors.contentSecondary,

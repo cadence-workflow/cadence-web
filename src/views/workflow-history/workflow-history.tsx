@@ -35,6 +35,8 @@ import workflowPageQueryParamsConfig from '../workflow-page/config/workflow-page
 import { useSuspenseDescribeWorkflow } from '../workflow-page/hooks/use-describe-workflow';
 
 import workflowHistoryFiltersConfig from './config/workflow-history-filters.config';
+import WORKFLOW_HISTORY_PAGE_SIZE_CONFIG from './config/workflow-history-page-size.config';
+import compareUngroupedEvents from './helpers/compare-ungrouped-events';
 import getVisibleGroupsHasMissingEvents from './helpers/get-visible-groups-has-missing-events';
 import { groupHistoryEvents } from './helpers/group-history-events';
 import pendingActivitiesInfoToEvents from './helpers/pending-activities-info-to-events';
@@ -48,7 +50,8 @@ import WorkflowHistoryExportJsonButton from './workflow-history-export-json-butt
 import WorkflowHistoryTimelineChart from './workflow-history-timeline-chart/workflow-history-timeline-chart';
 import WorkflowHistoryTimelineGroup from './workflow-history-timeline-group/workflow-history-timeline-group';
 import WorkflowHistoryTimelineLoadMore from './workflow-history-timeline-load-more/workflow-history-timeline-load-more';
-import WorkflowHistoryUngroupedList from './workflow-history-ungrouped-list/workflow-history-ungrouped-list';
+import { type WorkflowHistoryUngroupedEventInfo } from './workflow-history-ungrouped-event/workflow-history-ungrouped-event.types';
+import WorkflowHistoryUngroupedTable from './workflow-history-ungrouped-table/workflow-history-ungrouped-table';
 import { cssStyles, overrides } from './workflow-history.styles';
 import {
   type VisibleHistoryGroupRanges,
@@ -61,9 +64,9 @@ export default function WorkflowHistory({ params }: Props) {
   const decodedParams = decodeUrlParams<Props['params']>(params);
 
   const { workflowTab, ...historyQueryParams } = params;
-  const wfhistoryRequestArgs = {
+  const wfHistoryRequestArgs = {
     ...historyQueryParams,
-    pageSize: 200,
+    pageSize: WORKFLOW_HISTORY_PAGE_SIZE_CONFIG,
     waitForNewEvent: 'true',
   };
   const [resetToDecisionEventId, setResetToDecisionEventId] = useState<
@@ -95,10 +98,10 @@ export default function WorkflowHistory({ params }: Props) {
     GetWorkflowHistoryResponse,
     RequestError,
     InfiniteData<GetWorkflowHistoryResponse>,
-    [string, typeof wfhistoryRequestArgs],
+    [string, typeof wfHistoryRequestArgs],
     string | undefined
   >({
-    queryKey: ['workflow_history_paginated', wfhistoryRequestArgs] as const,
+    queryKey: ['workflow_history_paginated', wfHistoryRequestArgs] as const,
     queryFn: ({ queryKey: [_, qp], pageParam }) =>
       request(
         `/api/domains/${qp.domain}/${qp.cluster}/workflows/${qp.workflowId}/${qp.runId}/history?${queryString.stringify(
@@ -127,11 +130,15 @@ export default function WorkflowHistory({ params }: Props) {
   const shouldFilterEvent = useCallback(
     (event: ExtendedHistoryEvent) => {
       return workflowHistoryFiltersConfig.every((f) => {
-        if (f.filterTarget === 'event') return f.filterFunc(event, queryParams);
+        if (f.filterTarget === 'event')
+          return f.filterFunc(event, {
+            historyEventTypes: queryParams.historyEventTypes,
+            historyEventStatuses: queryParams.historyEventStatuses,
+          });
         return true;
       });
     },
-    [queryParams]
+    [queryParams.historyEventStatuses, queryParams.historyEventTypes]
   );
 
   const filteredEvents = useMemo(
@@ -175,15 +182,56 @@ export default function WorkflowHistory({ params }: Props) {
     [eventGroups, queryParams]
   );
 
+  const sortedUngroupedEvents: Array<WorkflowHistoryUngroupedEventInfo> =
+    useMemo(
+      () =>
+        filteredEventGroupsEntries
+          .map(([_, group]) => [
+            ...group.events.map((event, index) => ({
+              event,
+              label: group.label,
+              shortLabel: group.shortLabel,
+              status: group.eventsMetadata[index].status,
+              statusLabel: group.eventsMetadata[index].label,
+              id: event.eventId ?? event.computedEventId,
+            })),
+          ])
+          .flat(1)
+          .sort(compareUngroupedEvents),
+      [filteredEventGroupsEntries]
+    );
+
   const [visibleGroupsRange, setTimelineListVisibleRange] =
     useThrottledState<VisibleHistoryGroupRanges>({
       startIndex: -1,
       endIndex: -1,
       compactStartIndex: -1,
       compactEndIndex: -1,
+      ungroupedStartIndex: -1,
+      ungroupedEndIndex: -1,
     });
 
-  const wokflowCloseTimeMs = workflowExecutionInfo?.closeTime
+  const onClickGroupModeToggle = useCallback(() => {
+    setQueryParams({
+      ungroupedHistoryViewEnabled: queryParams.ungroupedHistoryViewEnabled
+        ? 'false'
+        : 'true',
+    });
+    setTimelineListVisibleRange(() => ({
+      startIndex: -1,
+      endIndex: -1,
+      compactStartIndex: -1,
+      compactEndIndex: -1,
+      ungroupedStartIndex: -1,
+      ungroupedEndIndex: -1,
+    }));
+  }, [
+    queryParams.ungroupedHistoryViewEnabled,
+    setQueryParams,
+    setTimelineListVisibleRange,
+  ]);
+
+  const workflowCloseTimeMs = workflowExecutionInfo?.closeTime
     ? parseGrpcTimestamp(workflowExecutionInfo?.closeTime)
     : null;
 
@@ -208,14 +256,29 @@ export default function WorkflowHistory({ params }: Props) {
     );
   }, [filteredEventGroupsEntries, visibleGroupsRange]);
 
+  const ungroupedViewShouldLoadMoreEvents = useMemo(
+    () =>
+      queryParams.ungroupedHistoryViewEnabled &&
+      // Pre-load more as we're approaching the end
+      events.length - visibleGroupsRange.ungroupedEndIndex <
+        WORKFLOW_HISTORY_PAGE_SIZE_CONFIG * 1,
+    [
+      queryParams.ungroupedHistoryViewEnabled,
+      events.length,
+      visibleGroupsRange.ungroupedEndIndex,
+    ]
+  );
+
   const keepLoadingMoreEvents = useMemo(() => {
     if (shouldSearchForInitialEvent && !initialEventFound) return true;
     if (visibleGroupsHasMissingEvents) return true;
+    if (ungroupedViewShouldLoadMoreEvents) return true;
     return false;
   }, [
     shouldSearchForInitialEvent,
     initialEventFound,
     visibleGroupsHasMissingEvents,
+    ungroupedViewShouldLoadMoreEvents,
   ]);
 
   const { isLoadingMore, reachedAvailableHistoryEnd } = useKeepLoadingEvents({
@@ -253,6 +316,7 @@ export default function WorkflowHistory({ params }: Props) {
 
   const compactSectionListRef = useRef<VirtuosoHandle>(null);
   const timelineSectionListRef = useRef<VirtuosoHandle>(null);
+  const ungroupedTableRef = useRef<VirtuosoHandle>(null);
 
   if (contentIsLoading) {
     return <SectionLoadingIndicator />;
@@ -267,7 +331,7 @@ export default function WorkflowHistory({ params }: Props) {
             isExpandAllEvents={isExpandAllEvents}
             toggleIsExpandAllEvents={toggleIsExpandAllEvents}
           />
-          <WorkflowHistoryExportJsonButton {...wfhistoryRequestArgs} />
+          <WorkflowHistoryExportJsonButton {...wfHistoryRequestArgs} />
           <PageFiltersToggle
             activeFiltersCount={activeFiltersCount}
             onClick={() => setAreFiltersShown((v) => !v)}
@@ -285,12 +349,7 @@ export default function WorkflowHistory({ params }: Props) {
           <Button
             $size="compact"
             kind="secondary"
-            onClick={() =>
-              setQueryParams({
-                ungroupedHistoryViewEnabled:
-                  queryParams.ungroupedHistoryViewEnabled ? 'false' : 'true',
-              })
-            }
+            onClick={onClickGroupModeToggle}
             startEnhancer={
               queryParams.ungroupedHistoryViewEnabled ? (
                 <MdOutlineViewStream size={16} />
@@ -329,23 +388,36 @@ export default function WorkflowHistory({ params }: Props) {
             const eventId =
               filteredEventGroupsEntries[eventGroupIndex][1].events[0]
                 .eventId || undefined;
+
             if (eventId) {
               setQueryParams({
                 historySelectedEventId: eventId,
               });
             }
 
-            compactSectionListRef.current?.scrollToIndex({
-              index: eventGroupIndex,
-              align: 'start',
-              behavior: 'smooth',
-            });
+            if (!queryParams.ungroupedHistoryViewEnabled) {
+              compactSectionListRef.current?.scrollToIndex({
+                index: eventGroupIndex,
+                align: 'start',
+                behavior: 'smooth',
+              });
 
-            timelineSectionListRef.current?.scrollToIndex({
-              index: eventGroupIndex,
-              align: 'start',
-              behavior: 'smooth',
-            });
+              timelineSectionListRef.current?.scrollToIndex({
+                index: eventGroupIndex,
+                align: 'start',
+                behavior: 'smooth',
+              });
+            } else {
+              const ungroupedEventIndex = sortedUngroupedEvents.findIndex(
+                (eventInfo) => eventInfo.id === eventId
+              );
+
+              ungroupedTableRef.current?.scrollToIndex({
+                index: ungroupedEventIndex,
+                align: 'start',
+                behavior: 'smooth',
+              });
+            }
           }}
         />
       )}
@@ -353,8 +425,9 @@ export default function WorkflowHistory({ params }: Props) {
         <>
           {queryParams.ungroupedHistoryViewEnabled ? (
             <section className={cls.ungroupedEventsContainer}>
-              <WorkflowHistoryUngroupedList
-                groupedEvents={filteredEventGroupsEntries}
+              <WorkflowHistoryUngroupedTable
+                eventsInfo={sortedUngroupedEvents}
+                selectedEventId={queryParams.historySelectedEventId}
                 decodedPageUrlParams={decodedParams}
                 error={error}
                 hasMoreEvents={hasNextPage}
@@ -362,6 +435,14 @@ export default function WorkflowHistory({ params }: Props) {
                 fetchMoreEvents={fetchNextPage}
                 getIsEventExpanded={getIsEventExpanded}
                 toggleIsEventExpanded={toggleIsEventExpanded}
+                onVisibleRangeChange={({ startIndex, endIndex }) =>
+                  setTimelineListVisibleRange((currentRanges) => ({
+                    ...currentRanges,
+                    ungroupedStartIndex: startIndex,
+                    ungroupedEndIndex: endIndex,
+                  }))
+                }
+                virtuosoRef={ungroupedTableRef}
               />
             </section>
           ) : (
@@ -394,7 +475,7 @@ export default function WorkflowHistory({ params }: Props) {
                         workflowIsArchived={
                           workflowExecutionInfo?.isArchived || false
                         }
-                        workflowCloseTimeMs={wokflowCloseTimeMs}
+                        workflowCloseTimeMs={workflowCloseTimeMs}
                         showLabelPlaceholder={!group.label}
                         selected={group.events.some(
                           (e) =>
@@ -470,7 +551,7 @@ export default function WorkflowHistory({ params }: Props) {
                       workflowIsArchived={
                         workflowExecutionInfo?.isArchived || false
                       }
-                      workflowCloseTimeMs={wokflowCloseTimeMs}
+                      workflowCloseTimeMs={workflowCloseTimeMs}
                     />
                   )}
                   components={{

@@ -16,40 +16,41 @@ export const styled = {
       WORKFLOW_HISTORY_UNGROUPED_GRID_TEMPLATE_COLUMNS_CONFIG,
     gap: $theme.sizing.scale600,
     width: '100%',
+    alignItems: 'center',
   })),
   CardStatusContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
+    alignItems: 'center',
     gap: $theme.sizing.scale500,
   })),
-  MenuItemLabel: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+  CardHeaderFieldContainer: createStyled('div', {
+    overflowWrap: 'anywhere',
+  }),
+  CardLabelContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    ...$theme.typography.LabelSmall,
-  })),
-  MenuItemSubtitle: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
-    ...$theme.typography.ParagraphXSmall,
+    alignItems: 'center',
+    gap: $theme.sizing.scale400,
   })),
 };
 
-export const overrides = {
+export const overrides = (animateBorderOnEnter?: boolean) => ({
   panel: {
     PanelContainer: {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
         ...$theme.borders.border100,
         borderRadius: $theme.borders.radius300,
         borderWidth: '2px',
-        // animationDuration: '2s',
-        // ...(animateBorderOnEnter && {
-        //   animationName: {
-        //     from: {
-        //       boxShadow: `0px 0px 0px 2px ${$theme.colors.primary}`,
-        //     },
-        //     to: {
-        //       boxShadow: `0px 0px 0px 0px rgba(0, 0, 0, 0)`,
-        //     },
-        //   },
-        // }),
+        animationDuration: '2s',
+        ...(animateBorderOnEnter && {
+          animationName: {
+            from: {
+              boxShadow: `0px 0px 0px 2px ${$theme.colors.primary}`,
+            },
+            to: {
+              boxShadow: `0px 0px 0px 0px rgba(0, 0, 0, 0)`,
+            },
+          },
+        }),
         overflow: 'hidden',
         marginBottom: $theme.sizing.scale300,
         ':last-child': {
@@ -79,4 +80,4 @@ export const overrides = {
       }),
     },
   } satisfies BadgeOverrides,
-};
+});
