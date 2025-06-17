@@ -27,8 +27,6 @@ jest.mock(
     ))
 );
 
-jest.mock('copy-to-clipboard', jest.fn);
-
 describe('WorkflowHistoryEventsCard', () => {
   it('shows events label and status correctly', () => {
     const events: Props['events'] = [

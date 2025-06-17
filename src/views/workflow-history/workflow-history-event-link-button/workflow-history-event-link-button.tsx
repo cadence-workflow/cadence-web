@@ -29,6 +29,7 @@ export default function WorkflowHistoryEventLinkButton({
       autoFocus
     >
       <Button
+        aria-label="Copy link to event"
         size="mini"
         shape="circle"
         kind="tertiary"

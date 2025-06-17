@@ -29,9 +29,11 @@ describe('WorkflowHistoryEventLinkButton', () => {
     jest.clearAllMocks();
   });
 
-  it('renders a button', () => {
+  it('renders correctly', () => {
     render(<WorkflowHistoryEventLinkButton historyEventId="123" />);
-    expect(screen.getByRole('button')).toBeInTheDocument();
+    const button = screen.getByRole('button');
+    expect(button).toBeInTheDocument();
+    expect(button).toHaveAccessibleName('Copy link to event');
   });
 
   it('shows tooltip with "Copy link to event" by default', async () => {
