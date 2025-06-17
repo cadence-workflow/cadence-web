@@ -29,7 +29,6 @@ export default function WorkflowHistoryEventLinkButton({
       autoFocus
     >
       <Button
-        data-testid="share-button"
         size="mini"
         shape="circle"
         kind="tertiary"

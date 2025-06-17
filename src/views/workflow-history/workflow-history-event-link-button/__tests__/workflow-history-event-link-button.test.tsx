@@ -29,15 +29,15 @@ describe('WorkflowHistoryEventLinkButton', () => {
     jest.clearAllMocks();
   });
 
-  it('renders a button with a link icon', () => {
+  it('renders a button', () => {
     render(<WorkflowHistoryEventLinkButton historyEventId="123" />);
-    expect(screen.getByTestId('share-button')).toBeInTheDocument();
+    expect(screen.getByRole('button')).toBeInTheDocument();
   });
 
   it('shows tooltip with "Copy link to event" by default', async () => {
     const user = userEvent.setup();
     render(<WorkflowHistoryEventLinkButton historyEventId="123" />);
-    const button = screen.getByTestId('share-button');
+    const button = screen.getByRole('button');
     await user.hover(button);
     expect(await screen.findByText('Copy link to event')).toBeInTheDocument();
   });
@@ -45,7 +45,7 @@ describe('WorkflowHistoryEventLinkButton', () => {
   it('copies the current URL with event ID when clicked', async () => {
     const user = userEvent.setup();
     render(<WorkflowHistoryEventLinkButton historyEventId="123" />);
-    const button = screen.getByTestId('share-button');
+    const button = screen.getByRole('button');
     await user.click(button);
     expect(copy).toHaveBeenCalledWith(
       'http://localhost/domains/test-domain/workflows/test-workflow/test-run/history?he=123'
@@ -55,7 +55,7 @@ describe('WorkflowHistoryEventLinkButton', () => {
   it('shows "Copied link to event" tooltip after clicking', async () => {
     const user = userEvent.setup();
     render(<WorkflowHistoryEventLinkButton historyEventId="123" />);
-    const button = screen.getByTestId('share-button');
+    const button = screen.getByRole('button');
     await user.click(button);
     expect(await screen.findByText('Copied link to event')).toBeInTheDocument();
   });
@@ -63,7 +63,7 @@ describe('WorkflowHistoryEventLinkButton', () => {
   it('resets tooltip text when mouse leaves', async () => {
     const user = userEvent.setup();
     render(<WorkflowHistoryEventLinkButton historyEventId="123" />);
-    const button = screen.getByTestId('share-button');
+    const button = screen.getByRole('button');
     await user.click(button);
 
     const copiedText = await screen.findByText('Copied link to event');
@@ -83,7 +83,7 @@ describe('WorkflowHistoryEventLinkButton', () => {
     render(
       <WorkflowHistoryEventLinkButton historyEventId="123" isUngroupedView />
     );
-    const button = screen.getByTestId('share-button');
+    const button = screen.getByRole('button');
     await user.click(button);
     expect(copy).toHaveBeenCalledWith(
       'http://localhost/domains/test-domain/workflows/test-workflow/test-run/history?he=123&u=true'
