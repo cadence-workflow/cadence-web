@@ -375,12 +375,7 @@ export default function WorkflowHistory({ params }: Props) {
           <Button
             $size="compact"
             kind="secondary"
-            onClick={() =>
-              setQueryParams({
-                ungroupedHistoryViewEnabled:
-                  queryParams.ungroupedHistoryViewEnabled ? 'false' : 'true',
-              })
-            }
+            onClick={onClickGroupModeToggle}
             startEnhancer={
               queryParams.ungroupedHistoryViewEnabled ? (
                 <MdOutlineViewStream size={16} />
