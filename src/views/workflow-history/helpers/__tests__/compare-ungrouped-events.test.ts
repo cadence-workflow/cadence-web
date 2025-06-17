@@ -75,8 +75,8 @@ describe(compareUngroupedEvents.name, () => {
       },
     };
 
-    expect(compareUngroupedEvents(pendingEventA, pendingEventB)).toBe(-1000);
-    expect(compareUngroupedEvents(pendingEventB, pendingEventA)).toBe(1000);
+    expect(compareUngroupedEvents(pendingEventA, pendingEventB)).toBe(-1000000);
+    expect(compareUngroupedEvents(pendingEventB, pendingEventA)).toBe(1000000);
     expect(compareUngroupedEvents(pendingEventA, pendingEventA)).toBe(0);
   });
 
