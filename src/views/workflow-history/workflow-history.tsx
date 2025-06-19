@@ -5,7 +5,7 @@ import {
   useSuspenseInfiniteQuery,
   type InfiniteData,
 } from '@tanstack/react-query';
-import { Button, KIND } from 'baseui/button';
+import { Button } from 'baseui/button';
 import { HeadingXSmall } from 'baseui/typography';
 import queryString from 'query-string';
 import {
@@ -339,7 +339,7 @@ export default function WorkflowHistory({ params }: Props) {
           />
           <Button
             $size="compact"
-            kind={isTimelineChartShown ? KIND.primary : KIND.secondary}
+            kind={isTimelineChartShown ? 'primary' : 'secondary'}
             onClick={() => setIsTimelineChartShown((v) => !v)}
             startEnhancer={<MdSchedule size={16} />}
             overrides={overrides.toggleButton}
