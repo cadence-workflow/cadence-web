@@ -18,15 +18,15 @@ export default function DomainWorkflowsAdvanced({ domain, cluster }: Props) {
 
     return {
       timeRangeStart: getDayjsFromDateFilterValue(
-        queryParams.timeRangeStartBasic,
+        queryParams.timeRangeStart,
         now
       ).toISOString(),
       timeRangeEnd: getDayjsFromDateFilterValue(
-        queryParams.timeRangeEndBasic,
+        queryParams.timeRangeEnd,
         now
       ).toISOString(),
     };
-  }, [queryParams.timeRangeStartBasic, queryParams.timeRangeEndBasic]);
+  }, [queryParams.timeRangeStart, queryParams.timeRangeEnd]);
 
   return (
     <>
