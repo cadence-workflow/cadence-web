@@ -269,11 +269,11 @@ export default function WorkflowHistory({ params }: Props) {
     () =>
       queryParams.ungroupedHistoryViewEnabled &&
       // Pre-load more as we're approaching the end
-      events.length - visibleGroupsRange.ungroupedEndIndex <
+      sortedUngroupedEvents.length - visibleGroupsRange.ungroupedEndIndex <
         WORKFLOW_HISTORY_PAGE_SIZE_CONFIG * 1,
     [
       queryParams.ungroupedHistoryViewEnabled,
-      events.length,
+      sortedUngroupedEvents.length,
       visibleGroupsRange.ungroupedEndIndex,
     ]
   );
