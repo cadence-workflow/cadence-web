@@ -22,6 +22,7 @@ export const styled = {
     display: 'flex',
     alignItems: 'center',
     gap: $theme.sizing.scale500,
+    overflowWrap: 'anywhere',
   })),
   CardHeaderFieldContainer: createStyled('div', {
     overflowWrap: 'anywhere',
