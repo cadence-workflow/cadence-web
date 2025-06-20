@@ -11,6 +11,7 @@ import WorkflowHistoryEventLinkButton from '../workflow-history-event-link-butto
 import WorkflowHistoryEventStatusBadge from '../workflow-history-event-status-badge/workflow-history-event-status-badge';
 import getFormattedEventsDuration from '../workflow-history-events-duration-badge/helpers/get-formatted-events-duration';
 import WorkflowHistoryGroupLabel from '../workflow-history-group-label/workflow-history-group-label';
+import WorkflowHistoryTimelineResetButton from '../workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 
 import getRetriesForHistoryEvent from './helpers/get-retries-for-history-event';
 import {
@@ -26,6 +27,7 @@ export default function WorkflowHistoryUngroupedEvent({
   isExpanded,
   toggleIsExpanded,
   animateBorderOnEnter,
+  onReset,
 }: Props) {
   const retries = getRetriesForHistoryEvent(eventInfo.event);
   const overrides = getOverrides(animateBorderOnEnter);
@@ -87,6 +89,19 @@ export default function WorkflowHistoryUngroupedEvent({
                   parseGrpcTimestamp(eventInfo.event.eventTime)
                 )}
               </styled.CardHeaderFieldContainer>
+            ) : (
+              <div />
+            )}
+            {typeof onReset === 'function' ? (
+              <styled.ResetButtonContainer>
+                <WorkflowHistoryTimelineResetButton
+                  domain={decodedPageUrlParams.domain}
+                  cluster={decodedPageUrlParams.cluster}
+                  workflowId={decodedPageUrlParams.workflowId}
+                  runId={decodedPageUrlParams.runId}
+                  onReset={onReset}
+                />
+              </styled.ResetButtonContainer>
             ) : (
               <div />
             )}

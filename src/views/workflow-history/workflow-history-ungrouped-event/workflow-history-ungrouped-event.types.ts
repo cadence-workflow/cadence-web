@@ -18,6 +18,7 @@ export type WorkflowHistoryUngroupedEventInfo = {
     | HistoryEvent
     | PendingDecisionTaskStartEvent
     | PendingActivityTaskStartEvent;
+  canReset: boolean;
 };
 
 export type Props = {
@@ -32,4 +33,5 @@ export type Props = {
 
   // UI behavior
   animateBorderOnEnter?: boolean;
+  onReset?: () => void;
 };

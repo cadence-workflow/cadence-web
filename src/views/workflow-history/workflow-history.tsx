@@ -205,6 +205,7 @@ export default function WorkflowHistory({ params }: Props) {
               status: group.eventsMetadata[index].status,
               statusLabel: group.eventsMetadata[index].label,
               id: event.eventId ?? event.computedEventId,
+              canReset: group.resetToDecisionEventId === event.eventId,
             })),
           ])
           .flat(1)
@@ -469,6 +470,7 @@ export default function WorkflowHistory({ params }: Props) {
                   }))
                 }
                 virtuosoRef={ungroupedTableRef}
+                onResetToEventId={setResetToDecisionEventId}
               />
             </section>
           ) : (

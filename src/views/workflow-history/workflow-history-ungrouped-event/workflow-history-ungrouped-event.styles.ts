@@ -31,6 +31,14 @@ export const styled = {
     alignItems: 'center',
     gap: $theme.sizing.scale400,
   })),
+  ResetButtonContainer: createStyled(
+    'div',
+    ({ $theme }: { $theme: Theme }) => ({
+      display: 'flex',
+      justifyContent: 'flex-end',
+      paddingRight: $theme.sizing.scale400,
+    })
+  ),
 };
 
 export const overrides = (animateBorderOnEnter?: boolean) => ({

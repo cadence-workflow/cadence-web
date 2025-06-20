@@ -10,6 +10,7 @@ export default function WorkflowHistoryUngroupedTable({
   eventsInfo,
   selectedEventId,
   decodedPageUrlParams,
+  onResetToEventId,
   error,
   hasMoreEvents,
   isFetchingMoreEvents,
@@ -43,6 +44,9 @@ export default function WorkflowHistoryUngroupedTable({
             isExpanded={getIsEventExpanded(eventInfo.id)}
             toggleIsExpanded={() => toggleIsEventExpanded(eventInfo.id)}
             animateBorderOnEnter={eventInfo.id === selectedEventId}
+            {...(eventInfo.canReset
+              ? { onReset: () => onResetToEventId(eventInfo.id) }
+              : {})}
           />
         )}
         {...(selectedEventId && {
