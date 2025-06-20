@@ -40,7 +40,7 @@ jest.mock('@/components/page-filters/hooks/use-page-filters', () =>
 
 describe(DomainWorkflowsBasicFilters.name, () => {
   it('renders page search and filters', async () => {
-    render(<DomainWorkflowsBasicFilters />);
+    setup();
 
     expect(
       await screen.findByText('Filter search: Workflow ID')
@@ -53,8 +53,7 @@ describe(DomainWorkflowsBasicFilters.name, () => {
   });
 
   it('hides page filters when filter toggle is clicked', async () => {
-    const user = userEvent.setup();
-    render(<DomainWorkflowsBasicFilters />);
+    const { user } = setup();
 
     expect(await screen.findByText('Filter fields')).toBeInTheDocument();
 
@@ -64,3 +63,21 @@ describe(DomainWorkflowsBasicFilters.name, () => {
     expect(screen.queryByText('Filter fields')).toBeNull();
   });
 });
+
+function setup() {
+  const mockSetQueryParams = jest.fn();
+  const mockResetAllFilters = jest.fn();
+  const mockActiveFiltersCount = 2;
+  const user = userEvent.setup();
+
+  render(
+    <DomainWorkflowsBasicFilters
+      resetAllFilters={mockResetAllFilters}
+      activeFiltersCount={mockActiveFiltersCount}
+      queryParams={mockDomainPageQueryParamsValues}
+      setQueryParams={mockSetQueryParams}
+    />
+  );
+
+  return { user };
+}

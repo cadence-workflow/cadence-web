@@ -185,7 +185,11 @@ function setup({
   const user = userEvent.setup();
 
   const renderResult = render(
-    <DomainWorkflowsBasicTable domain="mock-domain" cluster="mock-cluster" />,
+    <DomainWorkflowsBasicTable
+      domain="mock-domain"
+      cluster="mock-cluster"
+      areAnyFiltersActive={false}
+    />,
     {
       endpointsMocks: [
         {
