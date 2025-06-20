@@ -26,18 +26,6 @@ jest.mock(
     ))
 );
 
-const mockSetQueryParams = jest.fn();
-const mockResetAllFilters = jest.fn();
-const mockActiveFiltersCount = 2;
-jest.mock('@/components/page-filters/hooks/use-page-filters', () =>
-  jest.fn(() => ({
-    resetAllFilters: mockResetAllFilters,
-    activeFiltersCount: mockActiveFiltersCount,
-    queryParams: mockDomainPageQueryParamsValues,
-    setQueryParams: mockSetQueryParams,
-  }))
-);
-
 describe(DomainWorkflowsBasicFilters.name, () => {
   it('renders page search and filters', async () => {
     setup();
@@ -65,17 +53,14 @@ describe(DomainWorkflowsBasicFilters.name, () => {
 });
 
 function setup() {
-  const mockSetQueryParams = jest.fn();
-  const mockResetAllFilters = jest.fn();
-  const mockActiveFiltersCount = 2;
   const user = userEvent.setup();
 
   render(
     <DomainWorkflowsBasicFilters
-      resetAllFilters={mockResetAllFilters}
-      activeFiltersCount={mockActiveFiltersCount}
+      resetAllFilters={jest.fn()}
+      activeFiltersCount={2}
       queryParams={mockDomainPageQueryParamsValues}
-      setQueryParams={mockSetQueryParams}
+      setQueryParams={jest.fn()}
     />
   );
 
