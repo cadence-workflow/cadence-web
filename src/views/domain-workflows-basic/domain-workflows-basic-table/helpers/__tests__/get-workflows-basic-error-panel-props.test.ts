@@ -12,7 +12,7 @@ describe(getWorkflowsBasicErrorPanelProps.name, () => {
         error: new UseMergedInfiniteQueriesError('Test error', [
           new RequestError('Something went wrong', '/query1', 500),
         ]),
-        hasActiveSearchParams: true,
+        areSearchParamsAbsent: false,
       })
     ).toEqual({
       message: 'Failed to fetch workflows',
@@ -32,18 +32,18 @@ describe(getWorkflowsBasicErrorPanelProps.name, () => {
             },
           ]),
         ]),
-        hasActiveSearchParams: true,
+        areSearchParamsAbsent: false,
       })
     ).toEqual({
       message: 'Validation error: Incorrect field value',
     });
   });
 
-  it('returns "not found" error panel props when no filters are active', () => {
+  it('returns "not found" error panel props when search params are absent', () => {
     expect(
       getWorkflowsBasicErrorPanelProps({
         error: null,
-        hasActiveSearchParams: false,
+        areSearchParamsAbsent: true,
       })
     ).toEqual({
       message: 'No workflows found for this domain',
@@ -62,7 +62,7 @@ describe(getWorkflowsBasicErrorPanelProps.name, () => {
     expect(
       getWorkflowsBasicErrorPanelProps({
         error: null,
-        hasActiveSearchParams: true,
+        areSearchParamsAbsent: false,
       })
     ).toBeUndefined();
   });

@@ -6,10 +6,10 @@ import { RequestError } from '@/utils/request/request-error';
 
 export default function getWorkflowsBasicErrorPanelProps({
   error,
-  hasActiveSearchParams,
+  areSearchParamsAbsent,
 }: {
   error: UseMergedInfiniteQueriesError | null;
-  hasActiveSearchParams: boolean;
+  areSearchParamsAbsent: boolean;
 }): ErrorPanelProps | undefined {
   if (error) {
     if (
@@ -44,7 +44,7 @@ export default function getWorkflowsBasicErrorPanelProps({
     };
   }
 
-  if (!hasActiveSearchParams) {
+  if (areSearchParamsAbsent) {
     return {
       message: 'No workflows found for this domain',
       actions: [
