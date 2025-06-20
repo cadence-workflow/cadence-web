@@ -132,6 +132,8 @@ export default function WorkflowHistory({ params }: Props) {
       return workflowHistoryFiltersConfig.every((f) => {
         if (f.filterTarget === 'event')
           return f.filterFunc(event, {
+            // TODO @assem.hafez: Revert to passing all the query params once history page performance is fixed
+            // Test by switching between the Grouped & Ungrouped view
             historyEventTypes: queryParams.historyEventTypes,
             historyEventStatuses: queryParams.historyEventStatuses,
           });
