@@ -176,10 +176,19 @@ export default function WorkflowHistory({ params }: Props) {
         'ASC'
       ).filter(([_, g]) =>
         workflowHistoryFiltersConfig.every((f) =>
-          f.filterTarget === 'group' ? f.filterFunc(g, queryParams) : true
+          f.filterTarget === 'group'
+            ? f.filterFunc(g, {
+                historyEventTypes: queryParams.historyEventTypes,
+                historyEventStatuses: queryParams.historyEventStatuses,
+              })
+            : true
         )
       ),
-    [eventGroups, queryParams]
+    [
+      eventGroups,
+      queryParams.historyEventTypes,
+      queryParams.historyEventStatuses,
+    ]
   );
 
   const sortedUngroupedEvents: Array<WorkflowHistoryUngroupedEventInfo> =
