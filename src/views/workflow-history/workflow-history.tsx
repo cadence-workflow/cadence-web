@@ -340,21 +340,6 @@ export default function WorkflowHistory({ params }: Props) {
             isExpandAllEvents={isExpandAllEvents}
             toggleIsExpandAllEvents={toggleIsExpandAllEvents}
           />
-          <WorkflowHistoryExportJsonButton {...wfHistoryRequestArgs} />
-          <PageFiltersToggle
-            activeFiltersCount={activeFiltersCount}
-            onClick={() => setAreFiltersShown((v) => !v)}
-            isActive={areFiltersShown}
-          />
-          <Button
-            $size="compact"
-            kind={isTimelineChartShown ? 'primary' : 'secondary'}
-            onClick={() => setIsTimelineChartShown((v) => !v)}
-            startEnhancer={<MdSchedule size={16} />}
-            overrides={overrides.toggleButton}
-          >
-            Timeline
-          </Button>
           <Button
             $size="compact"
             kind="secondary"
@@ -369,6 +354,21 @@ export default function WorkflowHistory({ params }: Props) {
             overrides={overrides.toggleButton}
           >
             {queryParams.ungroupedHistoryViewEnabled ? 'Group' : 'Ungroup'}
+          </Button>
+          <WorkflowHistoryExportJsonButton {...wfHistoryRequestArgs} />
+          <PageFiltersToggle
+            activeFiltersCount={activeFiltersCount}
+            onClick={() => setAreFiltersShown((v) => !v)}
+            isActive={areFiltersShown}
+          />
+          <Button
+            $size="compact"
+            kind={isTimelineChartShown ? 'primary' : 'secondary'}
+            onClick={() => setIsTimelineChartShown((v) => !v)}
+            startEnhancer={<MdSchedule size={16} />}
+            overrides={overrides.toggleButton}
+          >
+            Timeline
           </Button>
         </div>
       </div>
