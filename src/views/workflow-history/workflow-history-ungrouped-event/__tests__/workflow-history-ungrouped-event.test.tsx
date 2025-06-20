@@ -98,6 +98,7 @@ const mockEventInfo: WorkflowHistoryUngroupedEventInfo = {
   status: 'COMPLETED',
   statusLabel: 'Completed',
   event: startWorkflowExecutionEvent,
+  canReset: false,
 };
 
 const mockPendingActivityEventInfo: WorkflowHistoryUngroupedEventInfo = {
@@ -106,6 +107,7 @@ const mockPendingActivityEventInfo: WorkflowHistoryUngroupedEventInfo = {
   status: 'WAITING',
   statusLabel: 'Pending',
   event: pendingActivityTaskStartEvent,
+  canReset: false,
 };
 
 const mockPendingDecisionEventInfo: WorkflowHistoryUngroupedEventInfo = {
@@ -114,6 +116,7 @@ const mockPendingDecisionEventInfo: WorkflowHistoryUngroupedEventInfo = {
   status: 'WAITING',
   statusLabel: 'Pending',
   event: pendingDecisionTaskStartEvent,
+  canReset: false,
 };
 
 const mockDecodedPageUrlParams: WorkflowPageTabsParams = {
