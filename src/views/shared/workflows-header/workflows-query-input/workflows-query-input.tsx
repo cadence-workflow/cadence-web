@@ -179,7 +179,7 @@ const idAttributes = ['WorkflowType', 'WorkflowID', 'DomainID', 'RolloutID', 'Ru
 const isIdAttribute = idAttributes.includes(prevToken);
 if (isIdAttribute && ['=', '!='].some(op => lastToken.startsWith(op))) {
   return [{ 
-    name: '<ID>',
+    name: '"<ID>"',
     type: 'ID'
   }];
 }
