@@ -188,7 +188,7 @@ function setup({
     <DomainWorkflowsBasicTable
       domain="mock-domain"
       cluster="mock-cluster"
-      areAnyFiltersActive={false}
+      hasActiveSearchParams={false}
     />,
     {
       endpointsMocks: [

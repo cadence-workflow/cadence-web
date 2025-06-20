@@ -4,7 +4,7 @@ import { type DomainWorkflow } from '@/views/domain-page/domain-page.types';
 export type Props = {
   domain: string;
   cluster: string;
-  areAnyFiltersActive: boolean;
+  hasActiveSearchParams: boolean;
 };
 
 export type DomainWorkflowsBasicTableConfig = Array<

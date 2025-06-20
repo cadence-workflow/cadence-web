@@ -28,7 +28,7 @@ export default function DomainWorkflowsBasic(props: DomainPageTabContentProps) {
       <DomainWorkflowsBasicTable
         domain={props.domain}
         cluster={props.cluster}
-        areAnyFiltersActive={Boolean(
+        hasActiveSearchParams={Boolean(
           activeFiltersCount > 0 ||
             queryParams.workflowId ||
             queryParams.workflowType

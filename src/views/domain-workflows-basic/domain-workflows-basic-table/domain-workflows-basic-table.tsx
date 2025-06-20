@@ -14,7 +14,7 @@ import getWorkflowsBasicErrorPanelProps from './helpers/get-workflows-basic-erro
 export default function DomainWorkflowsBasicTable({
   domain,
   cluster,
-  areAnyFiltersActive,
+  hasActiveSearchParams,
 }: Props) {
   const [
     {
@@ -36,7 +36,7 @@ export default function DomainWorkflowsBasicTable({
   if (data.length === 0) {
     const errorPanelProps = getWorkflowsBasicErrorPanelProps({
       error,
-      areAnyFiltersActive,
+      hasActiveSearchParams,
     });
 
     if (errorPanelProps) {
