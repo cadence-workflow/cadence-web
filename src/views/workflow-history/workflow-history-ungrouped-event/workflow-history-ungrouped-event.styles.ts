@@ -3,7 +3,7 @@ import { type PanelOverrides } from 'baseui/accordion';
 import { type BadgeOverrides } from 'baseui/badge';
 import { type StyleObject } from 'styletron-react';
 
-import WORKFLOW_HISTORY_UNGROUPED_GRID_TEMPLATE_COLUMNS_CONFIG from '../config/workflow-history-ungrouped-grid-template-columns.config';
+import { WORKFLOW_HISTORY_UNGROUPED_GRID_TEMPLATE_COLUMNS } from '../workflow-history-ungrouped-table/workflow-history-ungrouped-table.constants';
 
 export const styled = {
   CardContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
@@ -12,8 +12,7 @@ export const styled = {
   CardHeaderContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     ...$theme.typography.LabelSmall,
     display: 'grid',
-    gridTemplateColumns:
-      WORKFLOW_HISTORY_UNGROUPED_GRID_TEMPLATE_COLUMNS_CONFIG,
+    gridTemplateColumns: WORKFLOW_HISTORY_UNGROUPED_GRID_TEMPLATE_COLUMNS,
     gap: $theme.sizing.scale600,
     width: '100%',
     alignItems: 'center',
