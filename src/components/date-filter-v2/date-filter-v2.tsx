@@ -82,7 +82,7 @@ export default function DateFilterV2({
   );
 
   const displayValue = useMemo<string | undefined>(() => {
-    if (!dates.end || !dates.start) return undefined;
+    if (!dates.end || !dates.start) return '';
     if (dates.end === 'now' && isRelativeDateFilterValue(dates.start))
       return DATE_FILTER_RELATIVE_VALUES[dates.start].label;
 
