@@ -18,7 +18,7 @@ export type WorkflowHistoryUngroupedEventInfo = {
     | HistoryEvent
     | PendingDecisionTaskStartEvent
     | PendingActivityTaskStartEvent;
-  canReset: boolean;
+  canReset?: boolean;
 };
 
 export type Props = {

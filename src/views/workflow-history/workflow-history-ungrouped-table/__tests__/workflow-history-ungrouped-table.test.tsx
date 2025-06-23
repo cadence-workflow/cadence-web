@@ -42,7 +42,6 @@ const mockEventsInfo: WorkflowHistoryUngroupedEventInfo[] = [
     status: 'COMPLETED',
     statusLabel: 'Completed',
     event: startWorkflowExecutionEvent,
-    canReset: false,
   },
   {
     id: '2',
@@ -50,7 +49,6 @@ const mockEventsInfo: WorkflowHistoryUngroupedEventInfo[] = [
     status: 'COMPLETED',
     statusLabel: 'Completed',
     event: scheduleDecisionTaskEvent,
-    canReset: false,
   },
 ];
 
