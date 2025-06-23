@@ -373,21 +373,6 @@ export default function WorkflowHistory({ params }: Props) {
           >
             Timeline
           </Button>
-          <Button
-            $size="compact"
-            kind="secondary"
-            onClick={onClickGroupModeToggle}
-            startEnhancer={
-              queryParams.ungroupedHistoryViewEnabled ? (
-                <MdOutlineViewStream size={16} />
-              ) : (
-                <MdOutlineViewAgenda size={16} />
-              )
-            }
-            overrides={overrides.toggleButton}
-          >
-            {queryParams.ungroupedHistoryViewEnabled ? 'Group' : 'Ungroup'}
-          </Button>
         </div>
       </div>
       {areFiltersShown && (
