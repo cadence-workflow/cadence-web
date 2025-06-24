@@ -36,6 +36,10 @@ const cssStylesObj = {
     marginTop: theme.sizing.scale500,
     // gap: theme.sizing.scale400,
   }),
+  ungroupedEventsContainer: (theme) => ({
+    flex: 1,
+    marginTop: theme.sizing.scale500,
+  }),
   compactSection: (theme) => ({
     display: 'none',
     [theme.mediaQuery.large]: {
@@ -71,7 +75,7 @@ export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> =
   cssStylesObj;
 
 export const overrides = {
-  timelineToggleButton: {
+  toggleButton: {
     Root: {
       style: {
         whiteSpace: 'nowrap',

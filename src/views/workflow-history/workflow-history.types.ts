@@ -237,6 +237,8 @@ export type VisibleHistoryGroupRanges = {
   endIndex: number;
   compactStartIndex: number;
   compactEndIndex: number;
+  ungroupedStartIndex: number;
+  ungroupedEndIndex: number;
 };
 
 export type Props = WorkflowPageTabContentProps;

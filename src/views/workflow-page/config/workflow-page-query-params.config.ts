@@ -17,6 +17,7 @@ const workflowPageQueryParamsConfig: [
     HistoryEventFilterStatus[] | undefined
   >,
   PageQueryParam<'historySelectedEventId', string | undefined>,
+  PageQueryParam<'ungroupedHistoryViewEnabled', boolean>,
 ] = [
   {
     key: 'historyEventTypes',
@@ -49,6 +50,12 @@ const workflowPageQueryParamsConfig: [
   {
     key: 'historySelectedEventId',
     queryParamKey: 'he',
+  },
+  {
+    key: 'ungroupedHistoryViewEnabled',
+    queryParamKey: 'u',
+    defaultValue: false,
+    parseValue: (v) => v === 'true',
   },
 ] as const;
 
