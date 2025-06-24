@@ -2,27 +2,27 @@
 export const autocompletes = [
   {
     name: 'CloseStatus',
-    type: 'ATTRIBUTE'
+    type: 'ATTRIBUTE',
   },
   {
     name: 'CloseTime',
-    type: 'ATTRIBUTE'
+    type: 'ATTRIBUTE',
   },
   {
     name: 'DomainID',
-    type: 'ATTRIBUTE'
+    type: 'ATTRIBUTE',
   },
   {
     name: 'HistoryLength',
-    type: 'ATTRIBUTE'
+    type: 'ATTRIBUTE',
   }, 
   {
     name: 'IsCron',
-    type: 'ATTRIBUTE'
+    type: 'ATTRIBUTE',
   }, 
   {
     name: 'Passed',
-    type: 'ATTRIBUTE'
+    type: 'ATTRIBUTE',
   },
   {
     name: 'RolloutID',
@@ -30,23 +30,23 @@ export const autocompletes = [
   },
   {
     name: 'RunID',
-    type: 'ATTRIBUTE'
+    type: 'ATTRIBUTE',
   },
   {
     name: 'StartTime',
-    type: 'ATTRIBUTE'
+    type: 'ATTRIBUTE',
   },
   {
     name: 'TaskList',
-    type: 'ATTRIBUTE'
+    type: 'ATTRIBUTE',
   }, 
   {
     name: 'UpdateTime',
-    type: 'ATTRIBUTE'
+    type: 'ATTRIBUTE',
   },
   {
     name: 'WorkflowID',
-    type: 'ATTRIBUTE'
+    type: 'ATTRIBUTE',
   }, 
   {
     name: 'WorkflowType',
@@ -54,74 +54,74 @@ export const autocompletes = [
   }, 
   {
     name: 'AND',
-    type: 'OPERATOR'
+    type: 'OPERATOR',
   },
   {
     name: 'OR',
-    type: 'OPERATOR'
+    type: 'OPERATOR',
   },
   {
     name: '=',
-    type: 'OPERATOR'
+    type: 'OPERATOR',
   },
   {
     name: '!=',
-    type: 'OPERATOR'
+    type: 'OPERATOR',
   },
   {
     name: '>',
-    type: 'OPERATOR'
+    type: 'OPERATOR',
   },
   {
     name: '>=',
-    type: 'OPERATOR'
+    type: 'OPERATOR',
   },
   {
     name: '<',
-    type: 'OPERATOR'
+    type: 'OPERATOR',
   },
   {
     name: '<=',
-    type: 'OPERATOR'
+    type: 'OPERATOR',
   },
   {
     name: 'IN',
-    type: 'OPERATOR'
+    type: 'OPERATOR',
   },
   {
     name: 'BETWEEN ... AND...',
-    type: 'OPERATOR'
+    type: 'OPERATOR',
   },
   {
     name: '"completed"',
-    type: 'STATUS'
+    type: 'STATUS',
   },
   {
     name: '"failed"',
-    type: 'STATUS'
+    type: 'STATUS',
   },
   {
     name: '"canceled"',
-    type: 'STATUS'
+    type: 'STATUS',
   },
   {
     name: '"terminated"',
-    type: 'STATUS'
+    type: 'STATUS',
   },
   {
     name: '"continued_as_new"',
-    type: 'STATUS'
+    type: 'STATUS',
   },
   {
     name: '"timed_out"',
-    type: 'STATUS'
+    type: 'STATUS',
   },
   {
     name: 'TRUE',
-    type: 'VALUE'
+    type: 'VALUE',
   },
   {
     name: 'FALSE',
-    type: 'VALUE'
+    type: 'VALUE',
   },
 ];
