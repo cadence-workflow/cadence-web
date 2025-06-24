@@ -1,12 +1,16 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import Autosuggest from 'react-autosuggest';
+
 import { Button } from 'baseui/button';
 import { Input } from 'baseui/input';
-import { autocompletes } from './autocompletes';
+import * as AutosuggestNS from 'react-autosuggest';
+import type { RenderInputComponentProps } from 'react-autosuggest';
 import { MdPlayArrow, MdCode, MdRefresh } from 'react-icons/md';
 
+import { autocompletes } from './autocompletes';
 import { styled, overrides } from './workflows-query-input.styles';
 import { type Props } from './workflows-query-input.types';
+
+const Autosuggest = (AutosuggestNS as any).default || AutosuggestNS;
 
 const attributeNames = autocompletes
   .filter((x) => x.type !== 'OPERATOR' && x.type !== 'STATUS')
@@ -227,9 +231,7 @@ export default function WorkflowsQueryInput({
     setQueryText(newValue);
   };
 
-  const renderInputComponent = (
-    inputProps: Autosuggest.RenderInputComponentProps
-  ) => {
+  const renderInputComponent = (inputProps: RenderInputComponentProps) => {
     const { ref, onChange, ...rest } = inputProps;
     // Convert max, min, step to numbers if they are present as strings
     const inputCompatibleProps: Record<string, unknown> = { ...rest };

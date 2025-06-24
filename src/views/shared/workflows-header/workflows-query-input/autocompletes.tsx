@@ -15,11 +15,11 @@ export const autocompletes = [
   {
     name: 'HistoryLength',
     type: 'ATTRIBUTE',
-  }, 
+  },
   {
     name: 'IsCron',
     type: 'ATTRIBUTE',
-  }, 
+  },
   {
     name: 'Passed',
     type: 'ATTRIBUTE',
@@ -39,7 +39,7 @@ export const autocompletes = [
   {
     name: 'TaskList',
     type: 'ATTRIBUTE',
-  }, 
+  },
   {
     name: 'UpdateTime',
     type: 'ATTRIBUTE',
@@ -47,11 +47,11 @@ export const autocompletes = [
   {
     name: 'WorkflowID',
     type: 'ATTRIBUTE',
-  }, 
+  },
   {
     name: 'WorkflowType',
-    type: 'ATTRIBUTE'
-  }, 
+    type: 'ATTRIBUTE',
+  },
   {
     name: 'AND',
     type: 'OPERATOR',
