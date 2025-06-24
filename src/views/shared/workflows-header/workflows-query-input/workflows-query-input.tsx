@@ -2,139 +2,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 import Autosuggest from 'react-autosuggest';
 import { Button } from 'baseui/button';
 import { Input } from 'baseui/input';
+import {autocompletes} from './autocompletes';
 import { MdPlayArrow, MdCode, MdRefresh } from 'react-icons/md';
 
 import { styled, overrides } from './workflows-query-input.styles';
 import { type Props } from './workflows-query-input.types';
-
-//autocompletes suggestions array
-
-const autocompletes = [
-  {
-    name: 'CloseStatus',
-    type: 'ATTRIBUTE'
-  },
-  {
-    name: 'CloseTime',
-    type: 'ATTRIBUTE'
-  },
-  {
-    name: 'DomainID',
-    type: 'ATTRIBUTE'
-  },
-  {
-    name: 'HistoryLength',
-    type: 'ATTRIBUTE'
-  }, 
-  {
-    name: 'IsCron',
-    type: 'ATTRIBUTE'
-  }, 
-  {
-    name: 'Passed',
-    type: 'ATTRIBUTE'
-  },
-  {
-    name: 'RolloutID',
-    type: 'ATTRIBUTE',
-  },
-  {
-    name: 'RunID',
-    type: 'ATTRIBUTE'
-  },
-  {
-    name: 'StartTime',
-    type: 'ATTRIBUTE'
-  },
-  {
-    name: 'TaskList',
-    type: 'ATTRIBUTE'
-  }, 
-  {
-    name: 'UpdateTime',
-    type: 'ATTRIBUTE'
-  },
-  {
-    name: 'WorkflowID',
-    type: 'ATTRIBUTE'
-  }, 
-  {
-    name: 'WorkflowType',
-    type: 'ATTRIBUTE'
-  }, 
-  {
-    name: 'AND',
-    type: 'OPERATOR'
-  },
-  {
-    name: 'OR',
-    type: 'OPERATOR'
-  },
-  {
-    name: '=',
-    type: 'OPERATOR'
-  },
-  {
-    name: '!=',
-    type: 'OPERATOR'
-  },
-  {
-    name: '>',
-    type: 'OPERATOR'
-  },
-  {
-    name: '>=',
-    type: 'OPERATOR'
-  },
-  {
-    name: '<',
-    type: 'OPERATOR'
-  },
-  {
-    name: '<=',
-    type: 'OPERATOR'
-  },
-  {
-    name: 'IN',
-    type: 'OPERATOR'
-  },
-  {
-    name: 'BETWEEN ... AND...',
-    type: 'OPERATOR'
-  },
-  {
-    name: '"completed"',
-    type: 'STATUS'
-  },
-  {
-    name: '"failed"',
-    type: 'STATUS'
-  },
-  {
-    name: '"canceled"',
-    type: 'STATUS'
-  },
-  {
-    name: '"terminated"',
-    type: 'STATUS'
-  },
-  {
-    name: '"continued_as_new"',
-    type: 'STATUS'
-  },
-  {
-    name: '"timed_out"',
-    type: 'STATUS'
-  },
-  {
-    name: 'TRUE',
-    type: 'VALUE'
-  },
-  {
-    name: 'FALSE',
-    type: 'VALUE'
-  },
-];
 
 const attributeNames = autocompletes.filter(x => x.type !== 'OPERATOR' && x.type !== 'STATUS').map(x => x.name);
 const operators = autocompletes.filter(x => x.type === 'OPERATOR').map(x => x.name);
@@ -165,12 +37,12 @@ function getSuggestions(value: string) {
   // time attribute with comparison operator
   if (isTimeAttribute && ['=', '!=', '>', '>=', '<', '<='].some(op => lastToken.startsWith(op))) {
     return [{ 
-      name: '"YYYY-MM-DDThh:mm:ss±hh:mm"',
+      name: '"YYYY-MM-DDTHH:MM:SS±HH:MM"',
       type: 'TIME'
     }];
   } else if (isTimeAttribute && ['BETWEEN'].some(op => lastToken.startsWith(op))) {
     return [{ 
-      name: '"YYYY-MM-DDThh:mm:ss±hh:mm" AND "YYYY-MM-DDThh:mm:ss±hh:mm"',
+      name: '"YYYY-MM-DDTHH:MM:SS±HH:MM" AND "YYYY-MM-DDTHH:MM:SS±HH:MM"',
       type: 'TIME'
     }];
   }
@@ -304,15 +176,43 @@ export default function WorkflowsQueryInput({
     setQueryText(newValue);
   };
 
-  const renderInputComponent = (inputProps: any) => (
-    <Input
-      {...inputProps}
-      startEnhancer={() => <MdCode />}
-      overrides={overrides.input}
-      clearable
-      clearOnEscape
-    />
-  );
+  const renderInputComponent = (inputProps: Autosuggest.RenderInputComponentProps) => {
+    const { ref, onChange, ...rest } = inputProps;
+    // Convert max, min, step to numbers if they are present as strings
+    const inputCompatibleProps: Record<string, unknown> = { ...rest };
+    ['max', 'min', 'step'].forEach((key) => {
+      if (key in inputCompatibleProps && typeof inputCompatibleProps[key] === 'string') {
+        const num = Number(inputCompatibleProps[key]);
+        if (!isNaN(num)) {
+          inputCompatibleProps[key] = num;
+        } else {
+          delete inputCompatibleProps[key];
+        }
+      }
+    });
+    ['max', 'min', 'step'].forEach((key) => {
+      if (typeof inputCompatibleProps[key] === 'string') {
+        delete inputCompatibleProps[key];
+      }
+    });
+    return (
+      <Input
+        {...inputCompatibleProps}
+        onChange={e => {
+          if (onChange) {
+            (onChange as (event: React.FormEvent<HTMLElement>, params: { newValue: string }) => void)(
+              e as unknown as React.FormEvent<HTMLElement>,
+              { newValue: (e.target as HTMLInputElement).value }
+            );
+          }
+        }}
+        startEnhancer={() => <MdCode />}
+        overrides={overrides.input}
+        clearable
+        clearOnEscape
+      />
+    );
+  };
 
   const inputProps = {
     placeholder: "Filter workflows using a custom query",
