@@ -81,7 +81,7 @@ export default function DateFilterV2({
     [onChangeDates, resetTempDates]
   );
 
-  const displayValue = useMemo<string | undefined>(() => {
+  const displayValue = useMemo<string>(() => {
     if (!dates.end || !dates.start) return '';
     if (dates.end === 'now' && isRelativeDateFilterValue(dates.start))
       return DATE_FILTER_RELATIVE_VALUES[dates.start].label;
