@@ -24,7 +24,7 @@ describe(WorkflowsQueryInput.name, () => {
     setup({ isQueryRunning: true });
 
     expect(
-      await screen.findByLabelText('loading Run Query')
+      await screen.findByText('Running...')
     ).toBeInTheDocument();
   });
 
@@ -54,6 +54,43 @@ describe(WorkflowsQueryInput.name, () => {
     await user.click(await screen.findByText('Rerun Query'));
 
     expect(mockRefetch).toHaveBeenCalled();
+  });
+});
+
+describe('WorkflowsQueryInput Autocomplete', () => {
+  it('shows suggestions when typing a known attribute', async () => {
+    setup({});
+
+    const textbox = await screen.findByRole('textbox');
+    await userEvent.type(textbox, 'Cl'); // e.g., "CloseStatus" is a suggestion
+
+    // Wait for the suggestion to appear
+    expect(await screen.findByText('CloseStatus')).toBeInTheDocument();
+  });
+
+  it('updates input when a suggestion is clicked', async () => {
+    setup({});
+
+    const textbox = await screen.findByRole('textbox');
+    await userEvent.type(textbox, 'Cl');
+
+    const suggestion = await screen.findByText('CloseStatus');
+    await userEvent.click(suggestion);
+
+    // The input should now contain the suggestion
+    expect(textbox).toHaveValue(expect.stringContaining('CloseStatus'));
+  });
+
+  it('shows no suggestions for unknown input', async () => {
+    setup({});
+
+    const textbox = await screen.findByRole('textbox');
+    await userEvent.type(textbox, 'zzzzzz');
+
+    // Wait a bit for suggestions to update
+    await waitFor(() => {
+      expect(screen.queryByText('CloseStatus')).not.toBeInTheDocument();
+    });
   });
 });
 
