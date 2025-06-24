@@ -1,4 +1,4 @@
-//autocompletes suggestions array
+//autocompletes suggestions
 export const autocompletes = [
   {
     name: 'CloseStatus',

@@ -233,7 +233,7 @@ export default function WorkflowsQueryInput({
 
   const renderInputComponent = (inputProps: RenderInputComponentProps) => {
     const { ref, onChange, ...rest } = inputProps;
-    // Convert max, min, step to numbers if they are present as strings
+    // Convert max, min, step to numbers if strings
     const inputCompatibleProps: Record<string, unknown> = { ...rest };
     ['max', 'min', 'step'].forEach((key) => {
       if (
