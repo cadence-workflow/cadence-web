@@ -23,9 +23,7 @@ describe(WorkflowsQueryInput.name, () => {
   it('renders in loading state when query is running', async () => {
     setup({ isQueryRunning: true });
 
-    expect(
-      await screen.findByText('Running...')
-    ).toBeInTheDocument();
+    expect(await screen.findByText('Running...')).toBeInTheDocument();
   });
 
   it('calls setValue and changes text when the Run Query button is clicked', async () => {
