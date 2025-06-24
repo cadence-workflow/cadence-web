@@ -16,7 +16,6 @@ describe(compareUngroupedEvents.name, () => {
       status: 'COMPLETED' as WorkflowEventStatus,
       statusLabel: 'Completed',
       event: startWorkflowExecutionEvent,
-      canReset: false,
     };
     const eventB = {
       id: '2',
@@ -24,7 +23,6 @@ describe(compareUngroupedEvents.name, () => {
       status: 'COMPLETED' as WorkflowEventStatus,
       statusLabel: 'Completed',
       event: startWorkflowExecutionEvent,
-      canReset: false,
     };
 
     expect(compareUngroupedEvents(eventA, eventB)).toBe(-1);
@@ -39,7 +37,6 @@ describe(compareUngroupedEvents.name, () => {
       status: 'COMPLETED' as WorkflowEventStatus,
       statusLabel: 'Completed',
       event: startWorkflowExecutionEvent,
-      canReset: false,
     };
     const pendingEvent = {
       id: '1',
@@ -47,7 +44,6 @@ describe(compareUngroupedEvents.name, () => {
       status: 'WAITING' as WorkflowEventStatus,
       statusLabel: 'Waiting',
       event: pendingActivityTaskStartEvent,
-      canReset: false,
     };
 
     expect(compareUngroupedEvents(nonPendingEvent, pendingEvent)).toBe(-1);
@@ -67,7 +63,6 @@ describe(compareUngroupedEvents.name, () => {
         ...pendingActivityTaskStartEvent,
         eventTime: eventTimeA,
       },
-      canReset: false,
     };
     const pendingEventB = {
       id: '2',
@@ -78,7 +73,6 @@ describe(compareUngroupedEvents.name, () => {
         ...pendingDecisionTaskStartEvent,
         eventTime: eventTimeB,
       },
-      canReset: false,
     };
 
     expect(compareUngroupedEvents(pendingEventA, pendingEventB)).toBe(-1000000);
@@ -96,7 +90,6 @@ describe(compareUngroupedEvents.name, () => {
         ...pendingActivityTaskStartEvent,
         eventTime: null,
       },
-      canReset: false,
     };
     const pendingEventB = {
       id: '2',
@@ -107,7 +100,6 @@ describe(compareUngroupedEvents.name, () => {
         ...pendingDecisionTaskStartEvent,
         eventTime: null,
       },
-      canReset: false,
     };
 
     expect(compareUngroupedEvents(pendingEventA, pendingEventB)).toBe(0);
