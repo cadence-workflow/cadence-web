@@ -43,7 +43,7 @@ export default function WorkflowHistoryUngroupedTable({
             decodedPageUrlParams={decodedPageUrlParams}
             isExpanded={getIsEventExpanded(eventInfo.id)}
             toggleIsExpanded={() => toggleIsEventExpanded(eventInfo.id)}
-            animateBorderOnEnter={eventInfo.id === selectedEventId}
+            animateBackgroundOnEnter={eventInfo.id === selectedEventId}
             {...(eventInfo.canReset
               ? { onReset: () => onResetToEventId(eventInfo.id) }
               : {})}
