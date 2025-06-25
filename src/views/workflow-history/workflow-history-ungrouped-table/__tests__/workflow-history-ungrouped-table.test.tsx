@@ -14,10 +14,11 @@ import WorkflowHistoryUngroupedTable from '../workflow-history-ungrouped-table';
 jest.mock(
   '../../workflow-history-ungrouped-event/workflow-history-ungrouped-event',
   () =>
-    jest.fn(({ eventInfo, isExpanded, toggleIsExpanded }) => (
+    jest.fn(({ eventInfo, isExpanded, toggleIsExpanded, onReset }) => (
       <div data-testid="mock-event" data-expanded={isExpanded}>
         <button onClick={toggleIsExpanded}>Toggle Event</button>
         <div>Event ID: {eventInfo.id}</div>
+        {onReset && <button onClick={onReset}>Reset Event</button>}
       </div>
     ))
 );
@@ -116,6 +117,23 @@ describe(WorkflowHistoryUngroupedTable.name, () => {
       expect(events).toHaveLength(2);
     });
   });
+
+  it('calls onResetToEventId when reset button is clicked on resettable event', async () => {
+    const { user, mockOnResetToEventId } = setup({
+      eventsInfo: [
+        {
+          ...mockEventsInfo[0],
+          canReset: true,
+        },
+        mockEventsInfo[1],
+      ],
+    });
+
+    const resetButtons = screen.getAllByText('Reset Event');
+    await user.click(resetButtons[0]);
+
+    expect(mockOnResetToEventId).toHaveBeenCalledWith('1');
+  });
 });
 
 function setup({
@@ -135,6 +153,7 @@ function setup({
   const mockGetIsEventExpanded = jest.fn(() => false);
   const mockToggleIsEventExpanded = jest.fn();
   const mockOnVisibleRangeChange = jest.fn();
+  const mockOnResetToEventId = jest.fn();
 
   const props = {
     eventsInfo,
@@ -148,6 +167,7 @@ function setup({
     onVisibleRangeChange: mockOnVisibleRangeChange,
     virtuosoRef: { current: null },
     selectedEventId,
+    onResetToEventId: mockOnResetToEventId,
   };
 
   const user = userEvent.setup();
@@ -167,5 +187,6 @@ function setup({
     mockGetIsEventExpanded,
     mockToggleIsEventExpanded,
     mockOnVisibleRangeChange,
+    mockOnResetToEventId,
   };
 }

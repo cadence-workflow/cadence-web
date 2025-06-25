@@ -53,7 +53,10 @@ export default function WorkflowHistoryTimelineResetButton({
   return (
     <Button
       kind={KIND.secondary}
-      onClick={onReset}
+      onClick={(e) => {
+        e.stopPropagation();
+        onReset();
+      }}
       startEnhancer={<MdRefresh />}
       size="mini"
     >

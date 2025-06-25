@@ -14,6 +14,7 @@ export type Props = {
   eventsInfo: Array<WorkflowHistoryUngroupedEventInfo>;
   selectedEventId?: string;
   decodedPageUrlParams: WorkflowPageTabsParams;
+  onResetToEventId: (eventId: string) => void;
 
   // React Query props
   error: RequestError | null;

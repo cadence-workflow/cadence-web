@@ -80,6 +80,18 @@ jest.mock(
   })
 );
 
+jest.mock(
+  '../../workflow-history-timeline-reset-button/workflow-history-timeline-reset-button',
+  () => ({
+    __esModule: true,
+    default: ({ onReset }: { onReset: () => void }) => (
+      <button onClick={onReset} data-testid="reset-button">
+        Reset
+      </button>
+    ),
+  })
+);
+
 const mockEventInfo: WorkflowHistoryUngroupedEventInfo = {
   id: '1',
   label: 'Workflow Execution Started',
@@ -176,16 +188,42 @@ describe(WorkflowHistoryUngroupedEvent.name, () => {
 
     expect(screen.queryByText(/retry/)).not.toBeInTheDocument();
   });
+
+  it('renders reset button when onReset function is provided', async () => {
+    const mockOnReset = jest.fn();
+    setup({ onReset: mockOnReset });
+
+    expect(await screen.findByTestId('reset-button')).toBeInTheDocument();
+    expect(await screen.findByText('Reset')).toBeInTheDocument();
+  });
+
+  it('does not render reset button when onReset function is not provided', () => {
+    setup({ onReset: undefined });
+
+    expect(screen.queryByTestId('reset-button')).not.toBeInTheDocument();
+  });
+
+  it('calls onReset when reset button is clicked', async () => {
+    const mockOnReset = jest.fn();
+    const { user } = setup({ onReset: mockOnReset });
+
+    const resetButton = await screen.findByTestId('reset-button');
+    await user.click(resetButton);
+
+    expect(mockOnReset).toHaveBeenCalledTimes(1);
+  });
 });
 
 function setup({
   eventInfo = mockEventInfo,
   isExpanded = false,
   animateBorderOnEnter = false,
+  onReset,
 }: {
   eventInfo?: WorkflowHistoryUngroupedEventInfo;
   isExpanded?: boolean;
   animateBorderOnEnter?: boolean;
+  onReset?: (() => void) | undefined;
 } = {}) {
   const mockToggleIsExpanded = jest.fn();
 
@@ -199,6 +237,7 @@ function setup({
     isExpanded,
     toggleIsExpanded: mockToggleIsExpanded,
     animateBorderOnEnter,
+    onReset,
   };
 
   const user = userEvent.setup();

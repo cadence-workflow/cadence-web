@@ -18,6 +18,7 @@ export type WorkflowHistoryUngroupedEventInfo = {
     | HistoryEvent
     | PendingDecisionTaskStartEvent
     | PendingActivityTaskStartEvent;
+  canReset?: boolean;
 };
 
 export type Props = {
@@ -31,5 +32,6 @@ export type Props = {
   toggleIsExpanded: () => void;
 
   // UI behavior
-  animateBorderOnEnter?: boolean;
+  animateBackgroundOnEnter?: boolean;
+  onReset?: () => void;
 };
