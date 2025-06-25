@@ -38,18 +38,6 @@ export const styled = {
   ),
 };
 
-const backgroundAnimationOnEnter = ({ $theme }: { $theme: Theme }) => ({
-  animationDuration: '2s',
-  animationName: {
-    from: {
-      backgroundColor: $theme.colors.backgroundSecondary,
-    },
-    to: {
-      backgroundColor: $theme.colors.backgroundPrimary,
-    },
-  },
-});
-
 export const overrides = (animateBackgroundOnEnter?: boolean) => ({
   panel: {
     PanelContainer: {
@@ -59,7 +47,20 @@ export const overrides = (animateBackgroundOnEnter?: boolean) => ({
         borderWidth: '0px',
         marginTop: $theme.sizing.scale0,
         marginBottom: $theme.sizing.scale0,
-        ...(animateBackgroundOnEnter && backgroundAnimationOnEnter({ $theme })),
+        ':hover': {
+          backgroundColor: $theme.colors.backgroundSecondary,
+        },
+        ...(animateBackgroundOnEnter && {
+          animationDuration: '2s',
+          animationName: {
+            from: {
+              backgroundColor: $theme.colors.backgroundTertiary,
+            },
+            to: {
+              backgroundColor: $theme.colors.backgroundPrimary,
+            },
+          },
+        }),
         overflow: 'hidden',
       }),
     },
@@ -71,7 +72,7 @@ export const overrides = (animateBackgroundOnEnter?: boolean) => ({
         paddingBottom: $theme.sizing.scale200,
         paddingLeft: $theme.sizing.scale700,
         paddingRight: $theme.sizing.scale700,
-        ...(animateBackgroundOnEnter && backgroundAnimationOnEnter({ $theme })),
+        backgroundColor: 'inherit',
       }),
     },
     Content: {
@@ -82,7 +83,7 @@ export const overrides = (animateBackgroundOnEnter?: boolean) => ({
         paddingBottom: $theme.sizing.scale600,
         paddingLeft: $theme.sizing.scale700,
         paddingRight: $theme.sizing.scale700,
-        ...(animateBackgroundOnEnter && backgroundAnimationOnEnter({ $theme })),
+        backgroundColor: 'inherit',
       }),
     },
   } satisfies PanelOverrides,
