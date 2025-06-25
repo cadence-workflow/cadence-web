@@ -55,7 +55,9 @@ describe(WorkflowsQueryInput.name, () => {
   it('renders in loading state when query is running', async () => {
     setup({ isQueryRunning: true });
 
-    expect(await screen.findByText('Running...')).toBeInTheDocument();
+    expect(
+      await screen.findByRole('button', { name: /loading run query/i })
+    ).toBeInTheDocument();
   });
 
   // Skipped: These tests cannot be reliably run in jsdom/RTL due to incompatibility between BaseWeb Input/react-autosuggest and the controlled input pattern.
