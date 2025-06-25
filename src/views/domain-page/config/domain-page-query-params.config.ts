@@ -17,7 +17,7 @@ const domainPageQueryParamsConfig: [
   // Search input
   PageQueryParam<'search', string>,
   PageQueryParamMultiValue<'statuses', Array<WorkflowStatus> | undefined>,
-  PageQueryParam<'timeRangeStart', DateFilterValue>,
+  PageQueryParam<'timeRangeStart', DateFilterValue | undefined>,
   PageQueryParam<'timeRangeEnd', DateFilterValue>,
   PageQueryParam<'sortColumn', string>,
   PageQueryParam<'sortOrder', SortOrder>,
@@ -62,14 +62,13 @@ const domainPageQueryParamsConfig: [
   {
     key: 'timeRangeStart',
     queryParamKey: 'start',
-    defaultValue: 'now-30d',
-    parseValue: (v) => parseDateFilterValue(v, 'now-30d'),
+    parseValue: parseDateFilterValue,
   },
   {
     key: 'timeRangeEnd',
     queryParamKey: 'end',
     defaultValue: 'now',
-    parseValue: (v) => parseDateFilterValue(v, 'now'),
+    parseValue: (v) => parseDateFilterValue(v) ?? 'now',
   },
   {
     key: 'sortColumn',
@@ -104,13 +103,13 @@ const domainPageQueryParamsConfig: [
     key: 'timeRangeStartBasic',
     queryParamKey: 'start',
     defaultValue: 'now-30d',
-    parseValue: (v) => parseDateFilterValue(v, 'now-30d'),
+    parseValue: (v) => parseDateFilterValue(v) ?? 'now-30d',
   },
   {
     key: 'timeRangeEndBasic',
     queryParamKey: 'end',
     defaultValue: 'now',
-    parseValue: (v) => parseDateFilterValue(v, 'now'),
+    parseValue: (v) => parseDateFilterValue(v) ?? 'now',
   },
   {
     key: 'inputTypeArchival',
@@ -140,13 +139,13 @@ const domainPageQueryParamsConfig: [
     key: 'timeRangeStartArchival',
     queryParamKey: 'astart',
     defaultValue: 'now-7d',
-    parseValue: (v) => parseDateFilterValue(v, 'now-7d'),
+    parseValue: (v) => parseDateFilterValue(v) ?? 'now-7d',
   },
   {
     key: 'timeRangeEndArchival',
     queryParamKey: 'aend',
     defaultValue: 'now',
-    parseValue: (v) => parseDateFilterValue(v, 'now'),
+    parseValue: (v) => parseDateFilterValue(v) ?? 'now',
   },
   {
     key: 'sortColumnArchival',

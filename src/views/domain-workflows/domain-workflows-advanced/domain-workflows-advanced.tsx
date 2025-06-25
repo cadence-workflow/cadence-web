@@ -17,10 +17,12 @@ export default function DomainWorkflowsAdvanced({ domain, cluster }: Props) {
     const now = dayjs();
 
     return {
-      timeRangeStart: getDayjsFromDateFilterValue(
-        queryParams.timeRangeStart,
-        now
-      ).toISOString(),
+      timeRangeStart: queryParams.timeRangeStart
+        ? getDayjsFromDateFilterValue(
+            queryParams.timeRangeStart,
+            now
+          ).toISOString()
+        : undefined,
       timeRangeEnd: getDayjsFromDateFilterValue(
         queryParams.timeRangeEnd,
         now
