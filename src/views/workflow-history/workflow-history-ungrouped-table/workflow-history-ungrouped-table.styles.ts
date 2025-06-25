@@ -8,7 +8,7 @@ export const styled = {
     paddingLeft: `calc(2px + ${$theme.sizing.scale700})`,
     // accordion panel expand icon size + accordion panel right padding + border thickness
     paddingRight: `calc(${$theme.sizing.scale800} + ${$theme.sizing.scale700} + 2px)`,
-    paddingBottom: $theme.sizing.scale0,
+    paddingBottom: $theme.sizing.scale200,
     ...$theme.typography.LabelXSmall,
     color: $theme.colors.contentSecondary,
     display: 'grid',
