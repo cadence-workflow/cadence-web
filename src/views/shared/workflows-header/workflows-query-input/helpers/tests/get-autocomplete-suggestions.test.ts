@@ -1,8 +1,5 @@
 import type { Suggestion } from '../../workflows-query-input.types';
-import {
-  getAutocompleteSuggestions,
-  onSuggestionSelected,
-} from '../get-autocomplete-suggestions';
+import { getAutocompleteSuggestions } from '../get-autocomplete-suggestions';
 
 describe('getAutocompleteSuggestions', () => {
   it('suggests attributes at start', () => {
@@ -43,37 +40,5 @@ describe('getAutocompleteSuggestions', () => {
   it('returns empty array for unknown input', () => {
     const suggestions = getAutocompleteSuggestions('foobar');
     expect(suggestions.length).toBe(0);
-  });
-});
-
-describe('onSuggestionSelected', () => {
-  it('appends suggestion if last token is operator', () => {
-    const setQueryText = jest.fn();
-    onSuggestionSelected(
-      { suggestion: { name: 'WorkflowId' } },
-      'AND ',
-      setQueryText
-    );
-    expect(setQueryText).toHaveBeenCalledWith('AND WorkflowId ');
-  });
-
-  it('replaces last token if not operator or complete value', () => {
-    const setQueryText = jest.fn();
-    onSuggestionSelected(
-      { suggestion: { name: 'WorkflowId' } },
-      'Work',
-      setQueryText
-    );
-    expect(setQueryText).toHaveBeenCalledWith('WorkflowId ');
-  });
-
-  it('appends suggestion if last token is a complete value', () => {
-    const setQueryText = jest.fn();
-    onSuggestionSelected(
-      { suggestion: { name: 'AND' } },
-      'WorkflowId = "foo"',
-      setQueryText
-    );
-    expect(setQueryText).toHaveBeenCalledWith('WorkflowId = "foo" AND ');
   });
 });

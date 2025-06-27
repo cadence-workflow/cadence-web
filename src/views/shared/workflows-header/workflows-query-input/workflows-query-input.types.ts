@@ -1,3 +1,5 @@
+import type { OTHER_ATTRIBUTES } from './workflows-query-input.constants';
+
 export type Props = {
   value: string;
   setValue: (v: string | undefined) => void;
@@ -10,4 +12,4 @@ export type Suggestion = {
   type: string;
 };
 
-export type AttributeKey = 'CloseStatus' | 'Passed' | 'IsCron';
+export type OtherAttributeKey = (typeof OTHER_ATTRIBUTES)[number];

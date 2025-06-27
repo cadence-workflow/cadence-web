@@ -17,6 +17,42 @@ export const styled = {
       flexDirection: 'row',
     },
   })),
+  AutosuggestContainer: createStyled(
+    'div',
+    ({ $theme }: { $theme: Theme }) => ({
+      flexGrow: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      position: 'relative',
+    })
+  ),
+  SuggestionsContainer: createStyled(
+    'div',
+    ({ $theme }: { $theme: Theme }) => ({
+      background: $theme.colors.backgroundPrimary,
+      boxShadow: $theme.lighting.shadow400,
+      borderRadius: $theme.borders.radius200,
+      marginTop: $theme.sizing.scale100,
+      zIndex: 10,
+      position: 'absolute',
+      width: '100%',
+      maxHeight: '300px',
+      overflowY: 'auto',
+      left: 0,
+      right: 0,
+      top: '44px', // Consider using a theme value if possible
+    })
+  ),
+  Suggestion: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+    padding: `${$theme.sizing.scale200} ${$theme.sizing.scale600}`,
+    cursor: 'pointer',
+  })),
+  SuggestionHighlighted: createStyled(
+    'div',
+    ({ $theme }: { $theme: Theme }) => ({
+      background: $theme.colors.buttonTertiaryHover,
+    })
+  ),
 };
 
 export const overrides = {
@@ -42,36 +78,15 @@ export const overrides = {
       }),
     },
   } satisfies ButtonOverrides,
-};
-
-export const autosuggestStyles: Partial<
-  Record<string, string | CSSProperties>
-> = {
-  container: {
-    flexGrow: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    position: 'relative',
-  },
-  suggestionsContainer: {
-    background: '#fff',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-    borderRadius: '4px',
-    marginTop: '4px',
-    zIndex: 10,
-    position: 'absolute',
-    width: '100%',
-    maxHeight: '300px',
-    overflowY: 'auto',
-    left: 0,
-    right: 0,
-    top: '44px',
-  },
-  suggestion: {
-    padding: '8px 16px',
-    cursor: 'pointer',
-  },
-  suggestionHighlighted: {
-    background: '#f0f0f0',
+  suggestionButton: {
+    Root: {
+      style: ({ $theme, $isHighlighted }: any): StyleObject => ({
+        width: '100%',
+        justifyContent: 'flex-start',
+        backgroundColor: $isHighlighted
+          ? $theme.colors.buttonTertiaryHover
+          : 'transparent',
+      }),
+    },
   },
 };

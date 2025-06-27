@@ -6,41 +6,10 @@ import type { RenderInputComponentProps } from 'react-autosuggest';
 import Autosuggest from 'react-autosuggest';
 import { MdPlayArrow, MdCode, MdRefresh } from 'react-icons/md';
 
-import {
-  getAutocompleteSuggestions,
-  onSuggestionSelected,
-} from './helpers/get-autocomplete-suggestions';
-import {
-  styled,
-  overrides,
-  autosuggestStyles,
-} from './workflows-query-input.styles';
+import { getAutocompleteSuggestions } from './helpers/get-autocomplete-suggestions';
+import { updateQueryTextWithSuggestion } from './helpers/update-autocomplete-suggestions';
+import { styled, overrides } from './workflows-query-input.styles';
 import type { Props, Suggestion } from './workflows-query-input.types';
-
-const renderSuggestion = (
-  suggestion: Suggestion,
-  { isHighlighted }: { isHighlighted: boolean }
-) => (
-  <Button
-    kind="tertiary"
-    size="compact"
-    overrides={{
-      Root: {
-        style: ({ $theme }: any) => ({
-          width: '100%',
-          justifyContent: 'flex-start',
-          backgroundColor: isHighlighted
-            ? $theme.colors.buttonTertiaryHover
-            : 'transparent',
-        }),
-      },
-    }}
-    tabIndex={-1}
-    // Prevents button from being focusable by tab, as Autosuggest manages focus
-  >
-    {suggestion.name}
-  </Button>
-);
 
 export default function WorkflowsQueryInput({
   value,
@@ -73,64 +42,6 @@ export default function WorkflowsQueryInput({
     setSuggestions([]);
   };
 
-  const renderInputComponent = (inputProps: RenderInputComponentProps) => {
-    const inputPropsCleaned = Object.entries(inputProps).reduce(
-      (acc, [key, value]) => {
-        if (
-          key === 'ref' ||
-          key === 'onChange' ||
-          key === 'max' ||
-          key === 'min' ||
-          key === 'step'
-        ) {
-          return acc; // skip these
-        }
-        if (key === 'aria-haspopup') {
-          if (typeof value === 'string') {
-            acc[key] = value;
-          }
-          return acc;
-        }
-        acc[key] = value;
-        return acc;
-      },
-      {} as Record<string, unknown>
-    );
-    const { onChange } = inputProps;
-    return (
-      <Input
-        {...inputPropsCleaned}
-        onChange={(e) => {
-          if (onChange) {
-            (
-              onChange as (
-                event: React.FormEvent<HTMLElement>,
-                params: { newValue: string }
-              ) => void
-            )(e as unknown as React.FormEvent<HTMLElement>, {
-              newValue: (e.target as HTMLInputElement).value,
-            });
-          }
-        }}
-        startEnhancer={() => <MdCode />}
-        overrides={overrides.input}
-        clearable
-        clearOnEscape
-      />
-    );
-  };
-
-  const inputProps = {
-    placeholder: 'Filter workflows using a custom query',
-    value: queryText,
-    onChange: (
-      event: React.FormEvent<HTMLElement>,
-      { newValue }: { newValue: string }
-    ) => {
-      setQueryText(newValue);
-    },
-  };
-
   return (
     <styled.QueryForm
       onSubmit={(e: React.FormEvent) => {
@@ -138,28 +49,88 @@ export default function WorkflowsQueryInput({
         onSubmit();
       }}
     >
-      <Autosuggest
-        suggestions={suggestions}
-        onSuggestionsFetchRequested={onSuggestionsFetchRequested}
-        onSuggestionsClearRequested={onSuggestionsClearRequested}
-        onSuggestionSelected={(_, data) =>
-          onSuggestionSelected(data, queryText, setQueryText)
-        }
-        getSuggestionValue={(suggestion) => suggestion.name}
-        renderSuggestion={renderSuggestion}
-        renderInputComponent={renderInputComponent}
-        inputProps={inputProps}
-        theme={autosuggestStyles}
-      />
+      <styled.AutosuggestContainer>
+        <Autosuggest
+          suggestions={suggestions}
+          onSuggestionsFetchRequested={onSuggestionsFetchRequested}
+          onSuggestionsClearRequested={onSuggestionsClearRequested}
+          onSuggestionSelected={(_, data) =>
+            updateQueryTextWithSuggestion(data, queryText, setQueryText)
+          }
+          getSuggestionValue={(suggestion) => suggestion.name}
+          renderSuggestion={(suggestion, { isHighlighted }) => {
+            const SuggestionComponent = isHighlighted
+              ? styled.SuggestionHighlighted
+              : styled.Suggestion;
+            return (
+              <SuggestionComponent>
+                <Button
+                  kind="tertiary"
+                  size="compact"
+                  overrides={{
+                    ...overrides.suggestionButton,
+                    Root: {
+                      ...overrides.suggestionButton.Root,
+                      props: {
+                        $isHighlighted: isHighlighted,
+                      },
+                    },
+                  }}
+                  tabIndex={-1}
+                >
+                  {suggestion.name}
+                </Button>
+              </SuggestionComponent>
+            );
+          }}
+          renderInputComponent={(inputProps) => {
+            const {
+              onChange,
+              ref,
+              max,
+              min,
+              step,
+              ['aria-haspopup']: ariaHaspopup,
+              size,
+              ...restInputProps
+            } = inputProps;
+            return (
+              <Input
+                {...restInputProps}
+                onChange={(e) => {
+                  if (onChange) {
+                    (
+                      onChange as (
+                        event: React.FormEvent<HTMLElement>,
+                        params: { newValue: string }
+                      ) => void
+                    )(e as unknown as React.FormEvent<HTMLElement>, {
+                      newValue: (e.target as HTMLInputElement).value,
+                    });
+                  }
+                }}
+                startEnhancer={() => <MdCode />}
+                overrides={overrides.input}
+                clearable
+                clearOnEscape
+              />
+            );
+          }}
+          inputProps={{
+            placeholder: 'Filter workflows using a custom query',
+            value: queryText,
+            onChange: (
+              event: React.FormEvent<HTMLElement>,
+              { newValue }: { newValue: string }
+            ) => {
+              setQueryText(newValue);
+            },
+          }}
+        />
+      </styled.AutosuggestContainer>
       <Button
         type="submit"
-        onClick={onSubmit}
         isLoading={isQueryRunning}
-        startEnhancer={() => {
-          if (isQueryRunning) return null;
-          if (isQueryUnchanged) return <MdRefresh />;
-          return <MdPlayArrow />;
-        }}
         overrides={overrides.runButton}
       >
         {isQueryUnchanged ? 'Rerun Query' : 'Run Query'}

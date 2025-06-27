@@ -7,33 +7,11 @@ export const TIME_ATTRIBUTES = [
   'HistoryLength',
 ];
 
-export const ATTRIBUTES = [
-  'CloseTime',
-  'StartTime',
-  'UpdateTime',
-  'HistoryLength',
-  'CloseStatus',
-  'IsCron',
-  'Passed',
-  'WorkflowType',
-  'WorkflowID',
-  'DomainID',
-  'RolloutID',
-  'RunID',
-  'TaskList',
-];
-
-export const OPERATORS = [
-  '=',
-  '!=',
-  '>',
-  '>=',
-  '<',
-  '<=',
-  'BETWEEN ... AND...',
-];
+export const OTHER_ATTRIBUTES = ['CloseStatus', 'IsCron', 'Passed'];
 
 export const COMPARISON_OPERATORS = ['=', '!=', '>', '>=', '<', '<='];
+
+export const OPERATORS = [...COMPARISON_OPERATORS, 'BETWEEN ... AND...'];
 
 export const ID_ATTRIBUTES = [
   'WorkflowType',
@@ -42,6 +20,12 @@ export const ID_ATTRIBUTES = [
   'RolloutID',
   'RunID',
   'TaskList',
+];
+
+export const ATTRIBUTES = [
+  ...TIME_ATTRIBUTES,
+  ...OTHER_ATTRIBUTES,
+  ...ID_ATTRIBUTES,
 ];
 
 export const LOGICAL_OPERATORS = ['AND', 'OR', 'IN'];
@@ -65,12 +49,7 @@ export const TIME_FORMAT_BETWEEN =
 export const EQUALITY_OPERATORS = ['=', '!='];
 
 export const OPERATORS_TO_PRESERVE = [
-  '=',
-  '!=',
-  '>',
-  '>=',
-  '<',
-  '<=',
+  ...COMPARISON_OPERATORS,
   'BETWEEN',
   'AND',
 ];
