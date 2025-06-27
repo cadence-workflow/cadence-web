@@ -97,6 +97,23 @@ describe(WorkflowsQueryInput.name, () => {
 
     expect(mockRefetch).toHaveBeenCalled();
   });
+
+  it('calls input onChange and updates queryText', async () => {
+    setup({});
+    const textbox = await screen.findByRole('textbox');
+    fireEvent.change(textbox, { target: { value: 'new_query' } });
+    expect(textbox).toHaveValue('new_query');
+  });
+
+  it('shows "Rerun Query" when query is unchanged and "Run Query" otherwise', async () => {
+    setup({ startValue: 'foo' });
+    const textbox = await screen.findByRole('textbox');
+    // Should show Rerun Query when value matches queryText
+    expect(await screen.findByText('Rerun Query')).toBeInTheDocument();
+    // Change the value
+    fireEvent.change(textbox, { target: { value: 'bar' } });
+    expect(await screen.findByText('Run Query')).toBeInTheDocument();
+  });
 });
 
 function setup({

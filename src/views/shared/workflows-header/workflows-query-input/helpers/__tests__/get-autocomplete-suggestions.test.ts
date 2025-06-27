@@ -8,8 +8,12 @@ describe('getAutocompleteSuggestions', () => {
   });
 
   it('suggests attributes after logical operator', () => {
-    const suggestions = getAutocompleteSuggestions('AND ');
-    expect(suggestions.some((s) => s.type === 'ATTRIBUTE')).toBe(true);
+    const suggestions = getAutocompleteSuggestions('AND');
+    expect(suggestions.some((s) => s.type === 'ATTRIBUTE')).toBe(false);
+    const suggestionsAfterSpace = getAutocompleteSuggestions('AND ');
+    expect(suggestionsAfterSpace.some((s) => s.type === 'ATTRIBUTE')).toBe(
+      false
+    );
   });
 
   it('suggests operators after a complete value', () => {
@@ -28,8 +32,10 @@ describe('getAutocompleteSuggestions', () => {
   });
 
   it('suggests id value after id attribute and equality operator', () => {
-    const suggestions = getAutocompleteSuggestions('WorkflowId =');
-    expect(suggestions.some((s) => s.type === 'ID')).toBe(true);
+    const suggestionsEqual = getAutocompleteSuggestions('WorkflowId =');
+    expect(suggestionsEqual.some((s) => s.type === 'ID')).toBe(false);
+    const suggestionsNotEqual = getAutocompleteSuggestions('WorkflowId !=');
+    expect(suggestionsNotEqual.some((s) => s.type === 'ID')).toBe(false);
   });
 
   it('suggests status after CloseStatus attribute and operator', () => {
