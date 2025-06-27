@@ -6,9 +6,6 @@ import { type StyleObject } from 'styletron-react';
 import { WORKFLOW_HISTORY_UNGROUPED_GRID_TEMPLATE_COLUMNS } from '../workflow-history-ungrouped-table/workflow-history-ungrouped-table.constants';
 
 export const styled = {
-  CardContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
-    padding: `${$theme.sizing.scale200} 0`,
-  })),
   CardHeaderContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     ...$theme.typography.LabelSmall,
     display: 'grid',
@@ -41,29 +38,41 @@ export const styled = {
   ),
 };
 
-export const overrides = (animateBorderOnEnter?: boolean) => ({
+export const overrides = (animateBackgroundOnEnter?: boolean) => ({
   panel: {
     PanelContainer: {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
         ...$theme.borders.border100,
         borderRadius: $theme.borders.radius300,
-        borderWidth: '2px',
-        animationDuration: '2s',
-        ...(animateBorderOnEnter && {
+        borderWidth: '0px',
+        marginTop: $theme.sizing.scale0,
+        marginBottom: $theme.sizing.scale0,
+        ':hover': {
+          backgroundColor: $theme.colors.backgroundSecondary,
+        },
+        ...(animateBackgroundOnEnter && {
+          animationDuration: '2s',
           animationName: {
             from: {
-              boxShadow: `0px 0px 0px 2px ${$theme.colors.primary}`,
+              backgroundColor: $theme.colors.backgroundTertiary,
             },
             to: {
-              boxShadow: `0px 0px 0px 0px rgba(0, 0, 0, 0)`,
+              backgroundColor: $theme.colors.backgroundPrimary,
             },
           },
         }),
         overflow: 'hidden',
-        marginBottom: $theme.sizing.scale300,
-        ':last-child': {
-          marginBottom: 0,
-        },
+      }),
+    },
+    Header: {
+      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+        // https://github.com/uber/baseweb/blob/main/src/accordion/styled-components.ts#L50
+        // Since the original Panel uses longhand properties, we need to use longhand in overrides
+        paddingTop: $theme.sizing.scale200,
+        paddingBottom: $theme.sizing.scale200,
+        paddingLeft: $theme.sizing.scale700,
+        paddingRight: $theme.sizing.scale700,
+        backgroundColor: 'inherit',
       }),
     },
     Content: {
@@ -74,6 +83,7 @@ export const overrides = (animateBorderOnEnter?: boolean) => ({
         paddingBottom: $theme.sizing.scale600,
         paddingLeft: $theme.sizing.scale700,
         paddingRight: $theme.sizing.scale700,
+        backgroundColor: 'inherit',
       }),
     },
   } satisfies PanelOverrides,

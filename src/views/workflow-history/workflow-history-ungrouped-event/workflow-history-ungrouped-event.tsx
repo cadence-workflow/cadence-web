@@ -26,95 +26,93 @@ export default function WorkflowHistoryUngroupedEvent({
   decodedPageUrlParams,
   isExpanded,
   toggleIsExpanded,
-  animateBorderOnEnter,
+  animateBackgroundOnEnter,
   onReset,
 }: Props) {
   const retries = getRetriesForHistoryEvent(eventInfo.event);
-  const overrides = getOverrides(animateBorderOnEnter);
+  const overrides = getOverrides(animateBackgroundOnEnter);
 
   return (
-    <styled.CardContainer>
-      <Panel
-        overrides={overrides.panel}
-        title={
-          <styled.CardHeaderContainer>
+    <Panel
+      overrides={overrides.panel}
+      title={
+        <styled.CardHeaderContainer>
+          <styled.CardHeaderFieldContainer>
+            {isPendingHistoryEvent(eventInfo.event) ? (
+              <MdHourglassTop size={16} display="block" />
+            ) : (
+              eventInfo.id
+            )}
+          </styled.CardHeaderFieldContainer>
+          <styled.CardHeaderFieldContainer>
+            <styled.CardLabelContainer>
+              <WorkflowHistoryGroupLabel
+                label={eventInfo.label}
+                shortLabel={eventInfo.shortLabel}
+              />
+              {isExpanded && (
+                <WorkflowHistoryEventLinkButton
+                  historyEventId={eventInfo.id}
+                  isUngroupedView
+                />
+              )}
+            </styled.CardLabelContainer>
+          </styled.CardHeaderFieldContainer>
+          <styled.CardStatusContainer>
+            <WorkflowHistoryEventStatusBadge
+              statusReady={true}
+              size="small"
+              status={eventInfo.status}
+            />
+            {eventInfo.statusLabel}
+            {retries ? (
+              <Badge
+                overrides={overrides.badge}
+                content={retries === 1 ? '1 retry' : `${retries} retries`}
+                shape="rectangle"
+                color="primary"
+              />
+            ) : null}
+          </styled.CardStatusContainer>
+          {eventInfo.event.eventTime ? (
             <styled.CardHeaderFieldContainer>
-              {isPendingHistoryEvent(eventInfo.event) ? (
-                <MdHourglassTop size={16} display="block" />
-              ) : (
-                eventInfo.id
+              {formatDate(parseGrpcTimestamp(eventInfo.event.eventTime))}
+            </styled.CardHeaderFieldContainer>
+          ) : (
+            <div />
+          )}
+          {eventInfo.event.eventTime && workflowStartTime ? (
+            <styled.CardHeaderFieldContainer>
+              {getFormattedEventsDuration(
+                parseGrpcTimestamp(workflowStartTime),
+                parseGrpcTimestamp(eventInfo.event.eventTime)
               )}
             </styled.CardHeaderFieldContainer>
-            <styled.CardHeaderFieldContainer>
-              <styled.CardLabelContainer>
-                <WorkflowHistoryGroupLabel
-                  label={eventInfo.label}
-                  shortLabel={eventInfo.shortLabel}
-                />
-                {isExpanded && (
-                  <WorkflowHistoryEventLinkButton
-                    historyEventId={eventInfo.id}
-                    isUngroupedView
-                  />
-                )}
-              </styled.CardLabelContainer>
-            </styled.CardHeaderFieldContainer>
-            <styled.CardStatusContainer>
-              <WorkflowHistoryEventStatusBadge
-                statusReady={true}
-                size="small"
-                status={eventInfo.status}
+          ) : (
+            <div />
+          )}
+          {typeof onReset === 'function' ? (
+            <styled.ResetButtonContainer>
+              <WorkflowHistoryTimelineResetButton
+                domain={decodedPageUrlParams.domain}
+                cluster={decodedPageUrlParams.cluster}
+                workflowId={decodedPageUrlParams.workflowId}
+                runId={decodedPageUrlParams.runId}
+                onReset={onReset}
               />
-              {eventInfo.statusLabel}
-              {retries ? (
-                <Badge
-                  overrides={overrides.badge}
-                  content={retries === 1 ? '1 retry' : `${retries} retries`}
-                  shape="rectangle"
-                  color="primary"
-                />
-              ) : null}
-            </styled.CardStatusContainer>
-            {eventInfo.event.eventTime ? (
-              <styled.CardHeaderFieldContainer>
-                {formatDate(parseGrpcTimestamp(eventInfo.event.eventTime))}
-              </styled.CardHeaderFieldContainer>
-            ) : (
-              <div />
-            )}
-            {eventInfo.event.eventTime && workflowStartTime ? (
-              <styled.CardHeaderFieldContainer>
-                {getFormattedEventsDuration(
-                  parseGrpcTimestamp(workflowStartTime),
-                  parseGrpcTimestamp(eventInfo.event.eventTime)
-                )}
-              </styled.CardHeaderFieldContainer>
-            ) : (
-              <div />
-            )}
-            {typeof onReset === 'function' ? (
-              <styled.ResetButtonContainer>
-                <WorkflowHistoryTimelineResetButton
-                  domain={decodedPageUrlParams.domain}
-                  cluster={decodedPageUrlParams.cluster}
-                  workflowId={decodedPageUrlParams.workflowId}
-                  runId={decodedPageUrlParams.runId}
-                  onReset={onReset}
-                />
-              </styled.ResetButtonContainer>
-            ) : (
-              <div />
-            )}
-          </styled.CardHeaderContainer>
-        }
-        expanded={isExpanded}
-        onChange={() => toggleIsExpanded()}
-      >
-        <WorkflowHistoryEventDetails
-          event={eventInfo.event}
-          decodedPageUrlParams={decodedPageUrlParams}
-        />
-      </Panel>
-    </styled.CardContainer>
+            </styled.ResetButtonContainer>
+          ) : (
+            <div />
+          )}
+        </styled.CardHeaderContainer>
+      }
+      expanded={isExpanded}
+      onChange={() => toggleIsExpanded()}
+    >
+      <WorkflowHistoryEventDetails
+        event={eventInfo.event}
+        decodedPageUrlParams={decodedPageUrlParams}
+      />
+    </Panel>
   );
 }
