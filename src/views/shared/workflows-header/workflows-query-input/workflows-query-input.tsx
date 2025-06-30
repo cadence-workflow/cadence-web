@@ -1,9 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 
 import { Button } from 'baseui/button';
-import { Input } from 'baseui/input';
+import { Combobox } from 'baseui/combobox';
 import { MdPlayArrow, MdCode, MdRefresh } from 'react-icons/md';
 
+import useQueryTextWithAutocomplete from './hooks/use-query-text-with-autocomplete';
 import { styled, overrides } from './workflows-query-input.styles';
 import { type Props } from './workflows-query-input.types';
 
@@ -13,11 +14,8 @@ export default function WorkflowsQueryInput({
   refetchQuery,
   isQueryRunning,
 }: Props) {
-  const [queryText, setQueryText] = useState<string>('');
-
-  useEffect(() => {
-    setQueryText(value);
-  }, [value]);
+  const { queryText, setQueryText, nextSuggestions, onSuggestionSelect } =
+    useQueryTextWithAutocomplete({ initialValue: value });
 
   const isQueryUnchanged = value && value === queryText;
 
@@ -36,16 +34,32 @@ export default function WorkflowsQueryInput({
         onSubmit();
       }}
     >
-      <Input
+      <Combobox
         value={queryText}
-        onChange={(event) => {
-          setQueryText(event.target.value);
+        options={nextSuggestions}
+        mapOptionToString={(option) => option}
+        onChange={(value, suggestion) => {
+          if (suggestion) {
+            onSuggestionSelect(suggestion);
+          } else {
+            setQueryText(value);
+          }
         }}
-        startEnhancer={() => <MdCode />}
-        overrides={overrides.input}
-        placeholder="Filter workflows using a custom query"
+        overrides={{
+          ...overrides.combobox,
+          Input: {
+            props: {
+              overrides: overrides.input,
+              startEnhancer: () => <MdCode />,
+              placeholder: 'Filter workflows using a custom query',
+              clearOnEscape: true,
+            },
+          },
+        }}
         clearable
-        clearOnEscape
+        // "autocomplete" = true temporarily overwrites the Input content while
+        // a selection is being made, which can seem confusing to the end user
+        autocomplete={false}
       />
       <Button
         type="submit"
