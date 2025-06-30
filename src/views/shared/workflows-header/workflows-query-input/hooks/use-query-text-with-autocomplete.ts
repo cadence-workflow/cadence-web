@@ -15,7 +15,7 @@ export default function useQueryTextWithAutocomplete({
   }, [initialValue]);
 
   const nextSuggestions = useMemo(
-    () => getAutocompleteSuggestions(queryText),
+    () => (queryText ? getAutocompleteSuggestions(queryText) : []),
     [queryText]
   );
 
