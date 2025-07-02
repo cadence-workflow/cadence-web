@@ -1,35 +1,18 @@
 import { type HistoryEventsGroup } from '../../workflow-history.types';
-import {
-  type WorkflowHistoryEventFilteringType,
-  type WorkflowHistoryFiltersTypeValue,
-} from '../workflow-history-filters-type.types';
+import { WORKFLOW_HISTORY_GROUP_TYPE_TO_FILTERING_TYPE } from '../workflow-history-filters-type.constants';
+import { type WorkflowHistoryFiltersTypeValue } from '../workflow-history-filters-type.types';
 
 const filterEventsByEventType = function (
   group: HistoryEventsGroup,
   value: WorkflowHistoryFiltersTypeValue
-) {
-  const groupType = group.groupType;
-
-  let eventTypeToSearchFor: WorkflowHistoryEventFilteringType | undefined =
-    undefined;
-
-  switch (groupType) {
-    case 'Activity':
-      eventTypeToSearchFor = 'ACTIVITY';
-    case 'ChildWorkflowExecution':
-      eventTypeToSearchFor = 'CHILDWORKFLOW';
-    case 'Decision':
-      eventTypeToSearchFor = 'DECISION';
-    case 'SignalExternalWorkflowExecution':
-      eventTypeToSearchFor = 'SIGNAL';
-    case 'Timer':
-      eventTypeToSearchFor = 'TIMER';
-    case 'RequestCancelExternalWorkflowExecution':
-    case 'Event':
-      eventTypeToSearchFor = 'WORKFLOW';
+): boolean {
+  if (!value.historyEventTypes) {
+    return true;
   }
 
-  return value.historyEventTypes?.includes(eventTypeToSearchFor) ?? false;
+  return value.historyEventTypes.includes(
+    WORKFLOW_HISTORY_GROUP_TYPE_TO_FILTERING_TYPE[group.groupType]
+  );
 };
 
 export default filterEventsByEventType;
