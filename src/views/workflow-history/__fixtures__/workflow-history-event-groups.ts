@@ -12,7 +12,7 @@ import { completedActivityTaskEvents } from './workflow-history-activity-events'
 import { completedChildWorkflowEvents } from './workflow-history-child-workflow-events';
 import { completedDecisionTaskEvents } from './workflow-history-decision-events';
 import { requestedCancelExternalWorkflowEvents } from './workflow-history-request-cancel-external-workflow-events';
-import { signaledExternalWorkflowEvents } from './workflow-history-singal-external-workflow-events';
+import { signaledExternalWorkflowEvents } from './workflow-history-signal-external-workflow-events';
 import { startWorkflowExecutionEvent } from './workflow-history-single-events';
 import { startTimerTaskEvent } from './workflow-history-timer-events';
 
