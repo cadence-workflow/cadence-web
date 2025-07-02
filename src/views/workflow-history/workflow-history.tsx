@@ -154,12 +154,10 @@ export default function WorkflowHistory({ params }: Props) {
         'ASC'
       ).filter(([_, g]) =>
         workflowHistoryFiltersConfig.every((f) =>
-          f.filterTarget === 'group'
-            ? f.filterFunc(g, {
-                historyEventTypes: queryParams.historyEventTypes,
-                historyEventStatuses: queryParams.historyEventStatuses,
-              })
-            : true
+          f.filterFunc(g, {
+            historyEventTypes: queryParams.historyEventTypes,
+            historyEventStatuses: queryParams.historyEventStatuses,
+          })
         )
       ),
     [

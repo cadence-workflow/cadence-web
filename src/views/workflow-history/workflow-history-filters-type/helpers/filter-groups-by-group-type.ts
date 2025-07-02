@@ -2,7 +2,7 @@ import { type HistoryEventsGroup } from '../../workflow-history.types';
 import { WORKFLOW_HISTORY_GROUP_TYPE_TO_FILTERING_TYPE } from '../workflow-history-filters-type.constants';
 import { type WorkflowHistoryFiltersTypeValue } from '../workflow-history-filters-type.types';
 
-const filterEventsByEventType = function (
+const filterGroupsByGroupType = function (
   group: HistoryEventsGroup,
   value: WorkflowHistoryFiltersTypeValue
 ): boolean {
@@ -15,4 +15,4 @@ const filterEventsByEventType = function (
   );
 };
 
-export default filterEventsByEventType;
+export default filterGroupsByGroupType;
