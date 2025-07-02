@@ -16,7 +16,7 @@ const workflowHistoryFiltersConfig: [
     formatValue: (v) => v,
     component: WorkflowHistoryFiltersType,
     filterFunc: filterEventsByEventType,
-    filterTarget: 'event',
+    filterTarget: 'group',
   },
   {
     id: 'historyEventStatus',

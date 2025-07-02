@@ -55,7 +55,6 @@ import WorkflowHistoryUngroupedTable from './workflow-history-ungrouped-table/wo
 import { cssStyles, overrides } from './workflow-history.styles';
 import {
   type VisibleHistoryGroupRanges,
-  type ExtendedHistoryEvent,
   type Props,
 } from './workflow-history.types';
 
@@ -127,47 +126,24 @@ export default function WorkflowHistory({ params }: Props) {
         .flat(1),
     [result]
   );
-  const shouldFilterEvent = useCallback(
-    (event: ExtendedHistoryEvent) => {
-      return workflowHistoryFiltersConfig.every((f) => {
-        if (f.filterTarget === 'event')
-          return f.filterFunc(event, {
-            // TODO @assem.hafez: Revert to passing all the query params once history page performance is fixed
-            // Test by switching between the Grouped & Ungrouped view
-            historyEventTypes: queryParams.historyEventTypes,
-            historyEventStatuses: queryParams.historyEventStatuses,
-          });
-        return true;
-      });
-    },
-    [queryParams.historyEventStatuses, queryParams.historyEventTypes]
-  );
 
-  const filteredEvents = useMemo(
-    () => events.filter(shouldFilterEvent),
-    [shouldFilterEvent, events]
-  );
-
-  const filteredPendingHistoryEvents = useMemo(() => {
+  const pendingHistoryEvents = useMemo(() => {
     const pendingStartActivities = pendingActivitiesInfoToEvents(
       wfExecutionDescription.pendingActivities
-    ).filter(shouldFilterEvent);
-    let pendingStartDecision = wfExecutionDescription.pendingDecision
+    );
+    const pendingStartDecision = wfExecutionDescription.pendingDecision
       ? pendingDecisionInfoToEvent(wfExecutionDescription.pendingDecision)
       : null;
-    if (pendingStartDecision !== null) {
-      const decisionMatchesFilters = shouldFilterEvent(pendingStartDecision);
-      if (!decisionMatchesFilters) pendingStartDecision = null;
-    }
+
     return {
       pendingStartActivities,
       pendingStartDecision,
     };
-  }, [shouldFilterEvent, wfExecutionDescription]);
+  }, [wfExecutionDescription]);
 
   const eventGroups = useMemo(
-    () => groupHistoryEvents(filteredEvents, filteredPendingHistoryEvents),
-    [filteredEvents, filteredPendingHistoryEvents]
+    () => groupHistoryEvents(events, pendingHistoryEvents),
+    [events, pendingHistoryEvents]
   );
 
   const filteredEventGroupsEntries = useMemo(
@@ -314,7 +290,7 @@ export default function WorkflowHistory({ params }: Props) {
     toggleIsEventExpanded,
     getIsEventExpanded,
   } = useEventExpansionToggle({
-    visibleEvents: filteredEvents,
+    visibleEvents: events,
     ...(queryParams.historySelectedEventId
       ? {
           initialState: {
@@ -411,13 +387,13 @@ export default function WorkflowHistory({ params }: Props) {
               compactSectionListRef.current?.scrollToIndex({
                 index: eventGroupIndex,
                 align: 'start',
-                behavior: 'smooth',
+                behavior: 'auto',
               });
 
               timelineSectionListRef.current?.scrollToIndex({
                 index: eventGroupIndex,
                 align: 'start',
-                behavior: 'smooth',
+                behavior: 'auto',
               });
             } else {
               const ungroupedEventIndex = sortedUngroupedEvents.findIndex(
@@ -427,7 +403,7 @@ export default function WorkflowHistory({ params }: Props) {
               ungroupedTableRef.current?.scrollToIndex({
                 index: ungroupedEventIndex,
                 align: 'start',
-                behavior: 'smooth',
+                behavior: 'auto',
               });
             }
           }}
@@ -503,7 +479,7 @@ export default function WorkflowHistory({ params }: Props) {
                           timelineSectionListRef.current?.scrollToIndex({
                             index,
                             align: 'start',
-                            behavior: 'smooth',
+                            behavior: 'auto',
                           });
                         }}
                       />
@@ -533,7 +509,7 @@ export default function WorkflowHistory({ params }: Props) {
                         initialTopMostItemIndex: {
                           index: initialEventGroupIndex,
                           align: 'start',
-                          behavior: 'smooth',
+                          behavior: 'auto',
                         },
                       })}
                   itemContent={(index, [groupId, group]) => (
