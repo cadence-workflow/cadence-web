@@ -38,7 +38,7 @@ export const styled = {
   ),
 };
 
-export const overrides = (animateBackgroundOnEnter?: boolean) => ({
+export const overrides = (animateOnEnter?: boolean) => ({
   panel: {
     PanelContainer: {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
@@ -50,7 +50,7 @@ export const overrides = (animateBackgroundOnEnter?: boolean) => ({
         ':hover': {
           boxShadow: `0px 0px 0px 2px ${$theme.colors.borderTransparent}`,
         },
-        ...(animateBackgroundOnEnter && {
+        ...(animateOnEnter && {
           animationDuration: '2s',
           animationName: {
             from: {
