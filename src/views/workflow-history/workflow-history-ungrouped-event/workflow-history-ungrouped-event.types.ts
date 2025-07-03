@@ -32,6 +32,6 @@ export type Props = {
   toggleIsExpanded: () => void;
 
   // UI behavior
-  animateBackgroundOnEnter?: boolean;
+  animateOnEnter?: boolean;
   onReset?: () => void;
 };
