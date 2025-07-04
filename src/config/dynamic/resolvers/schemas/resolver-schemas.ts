@@ -50,6 +50,12 @@ const resolverSchemas: ResolverSchemas = {
       issues: z.boolean(),
     }),
   },
+  WORKFLOW_DIAGNOSTICS_ENABLED: {
+    args: z.undefined(),
+    returnType: z.object({
+      enabled: z.boolean(),
+    }),
+  },
 };
 
 export default resolverSchemas;
