@@ -54,11 +54,9 @@ export const overrides = (animateOnEnter?: boolean) => ({
           animationDuration: '2s',
           animationName: {
             from: {
-              backgroundColor: $theme.colors.backgroundTertiary,
               boxShadow: `0px 0px 0px 2px ${$theme.colors.primary}`,
             },
             to: {
-              backgroundColor: $theme.colors.backgroundPrimary,
               boxShadow: `0px 0px 0px 0px rgba(0, 0, 0, 0)`,
             },
           },
