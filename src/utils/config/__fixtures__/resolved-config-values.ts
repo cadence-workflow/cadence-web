@@ -38,8 +38,6 @@ const mockResolvedConfigValues: LoadedConfigResolvedValues = {
     metadata: false,
     issues: false,
   },
-  WORKFLOW_DIAGNOSTICS_ENABLED: {
-    enabled: false,
-  },
+  WORKFLOW_DIAGNOSTICS_ENABLED: false,
 };
 export default mockResolvedConfigValues;

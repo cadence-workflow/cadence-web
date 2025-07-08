@@ -52,9 +52,7 @@ const resolverSchemas: ResolverSchemas = {
   },
   WORKFLOW_DIAGNOSTICS_ENABLED: {
     args: z.undefined(),
-    returnType: z.object({
-      enabled: z.boolean(),
-    }),
+    returnType: z.boolean(),
   },
 };
 

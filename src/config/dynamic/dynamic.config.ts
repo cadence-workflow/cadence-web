@@ -18,7 +18,6 @@ import {
   type WorkflowActionsEnabledConfig,
 } from './resolvers/workflow-actions-enabled.types';
 import workflowDiagnosticsEnabled from './resolvers/workflow-diagnostics-enabled';
-import { type WorkflowDiagnosticsEnabledConfig } from './resolvers/workflow-diagnostics-enabled.types';
 
 const dynamicConfigs: {
   CADENCE_WEB_PORT: ConfigEnvDefinition;
@@ -48,7 +47,7 @@ const dynamicConfigs: {
   >;
   WORKFLOW_DIAGNOSTICS_ENABLED: ConfigAsyncResolverDefinition<
     undefined,
-    WorkflowDiagnosticsEnabledConfig,
+    boolean,
     'request',
     true
   >;
