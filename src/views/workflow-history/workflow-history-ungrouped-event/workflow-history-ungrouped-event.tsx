@@ -26,11 +26,11 @@ export default function WorkflowHistoryUngroupedEvent({
   decodedPageUrlParams,
   isExpanded,
   toggleIsExpanded,
-  animateBackgroundOnEnter,
+  animateOnEnter,
   onReset,
 }: Props) {
   const retries = getRetriesForHistoryEvent(eventInfo.event);
-  const overrides = getOverrides(animateBackgroundOnEnter);
+  const overrides = getOverrides(animateOnEnter);
 
   return (
     <Panel
