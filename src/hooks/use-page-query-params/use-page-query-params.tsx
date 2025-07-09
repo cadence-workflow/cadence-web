@@ -31,10 +31,14 @@ export default function usePageQueryParams<P extends PageQueryParams>(
   const prevSearchQueryParam = usePreviousValue(searchQueryParams);
 
   const search = useMemo(() => {
-    // get changed value from searchQueryParams if it was changed
+    // get changed value from searchQueryParams if it was changed or in case of server side rendering
     // otherwise change would be due history state change and search value is available in window.location.search
-    if (prevSearchQueryParam !== searchQueryParams)
+    if (
+      typeof window === 'undefined' ||
+      (prevSearchQueryParam && prevSearchQueryParam !== searchQueryParams)
+    )
       return searchQueryParams.toString();
+
     return window.location.search;
     // stateUrl is needed in deps to recalculate window.location.search
     // eslint-disable-next-line react-hooks/exhaustive-deps

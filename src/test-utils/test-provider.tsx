@@ -5,7 +5,7 @@ import {
   type QueryClientConfig,
   QueryClientProvider,
 } from '@tanstack/react-query';
-import { MemoryRouterProvider } from 'next-router-mock/MemoryRouterProvider';
+import { MemoryRouterProvider } from 'next-router-mock/MemoryRouterProvider/next-13.5'; // TODO: @assem.hafez remove the dependency on next-router-mock
 // @ts-expect-error Could not find a declaration file for module 'styletron-engine-snapshot'
 import { StyletronSnapshotEngine } from 'styletron-engine-snapshot';
 
@@ -15,7 +15,7 @@ import StyletronProvider from '@/providers/styletron-provider';
 import MSWMockHandlers from './msw-mock-handlers/msw-mock-handlers';
 import { type Props } from './test-provider.types';
 
-jest.mock('next/router', () => jest.requireActual('next-router-mock'));
+jest.mock('next/router', () => require('next-router-mock'));
 
 const snapshotEngine = new StyletronSnapshotEngine();
 
