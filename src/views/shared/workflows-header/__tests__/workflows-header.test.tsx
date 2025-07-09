@@ -108,9 +108,21 @@ describe(WorkflowsHeader.name, () => {
 
     expect(mockSetQueryParams).toHaveBeenCalledWith({ inputType: 'query' });
   });
+
+  it('shows filters by default when expandFiltersByDefault is true', async () => {
+    setup({ expandFiltersByDefault: true });
+
+    expect(await screen.findByText('Filter fields')).toBeInTheDocument();
+  });
 });
 
-function setup({ isQueryRunning }: { isQueryRunning?: boolean }) {
+function setup({
+  isQueryRunning,
+  expandFiltersByDefault,
+}: {
+  isQueryRunning?: boolean;
+  expandFiltersByDefault?: boolean;
+}) {
   const user = userEvent.setup();
   const renderResult = render(
     <WorkflowsHeader
@@ -121,6 +133,7 @@ function setup({ isQueryRunning }: { isQueryRunning?: boolean }) {
       queryStringQueryParamKey="query"
       refetchQuery={jest.fn()}
       isQueryRunning={isQueryRunning ?? false}
+      expandFiltersByDefault={expandFiltersByDefault}
     />
   );
 

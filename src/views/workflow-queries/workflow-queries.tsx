@@ -14,7 +14,7 @@ import { type WorkflowPageTabContentProps } from '@/views/workflow-page/workflow
 import workflowQueriesEmptyPanelConfig from './config/workflow-queries-empty-panel.config';
 import getWorkflowQueryStatus from './helpers/get-workflow-query-status';
 import useWorkflowQueries from './hooks/use-workflow-queries';
-import WorkflowQueriesResultJson from './workflow-queries-result-json/workflow-queries-result-json';
+import WorkflowQueriesResult from './workflow-queries-result/workflow-queries-result';
 import WorkflowQueriesTile from './workflow-queries-tile/workflow-queries-tile';
 import { EXCLUDED_QUERY_TYPES_SET } from './workflow-queries.constants';
 import { styled } from './workflow-queries.styles';
@@ -79,7 +79,7 @@ export default function WorkflowQueries(props: WorkflowPageTabContentProps) {
           ))}
         </styled.QueriesSidebar>
         <styled.QueryResultView>
-          <WorkflowQueriesResultJson
+          <WorkflowQueriesResult
             data={queries[selectedQueryIndex]?.data}
             error={queries[selectedQueryIndex]?.error ?? undefined}
             loading={queries[selectedQueryIndex]?.isFetching}

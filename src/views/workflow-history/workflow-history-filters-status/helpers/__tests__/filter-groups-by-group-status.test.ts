@@ -1,6 +1,6 @@
 import { type ActivityHistoryGroup } from '../../../workflow-history.types';
 import { type WorkflowHistoryFiltersStatusValue } from '../../workflow-history-filters-status.types';
-import filterEventsByEventStatus from '../filter-events-by-event-status';
+import filterGroupsByGroupStatus from '../filter-groups-by-group-status';
 
 const ACTIVITY_HISTORY_GROUP_COMPLETED: ActivityHistoryGroup = {
   label: 'Mock activity',
@@ -14,14 +14,14 @@ const ACTIVITY_HISTORY_GROUP_COMPLETED: ActivityHistoryGroup = {
   events: [],
 };
 
-describe(filterEventsByEventStatus.name, () => {
+describe(filterGroupsByGroupStatus.name, () => {
   it('should return true if historyEventStatuses is undefined', () => {
     const value: WorkflowHistoryFiltersStatusValue = {
       historyEventStatuses: undefined,
     };
 
     expect(
-      filterEventsByEventStatus(ACTIVITY_HISTORY_GROUP_COMPLETED, value)
+      filterGroupsByGroupStatus(ACTIVITY_HISTORY_GROUP_COMPLETED, value)
     ).toBe(true);
   });
 
@@ -31,7 +31,7 @@ describe(filterEventsByEventStatus.name, () => {
     };
 
     expect(
-      filterEventsByEventStatus(ACTIVITY_HISTORY_GROUP_COMPLETED, value)
+      filterGroupsByGroupStatus(ACTIVITY_HISTORY_GROUP_COMPLETED, value)
     ).toBe(true);
   });
 
@@ -41,7 +41,7 @@ describe(filterEventsByEventStatus.name, () => {
     };
 
     expect(
-      filterEventsByEventStatus(
+      filterGroupsByGroupStatus(
         {
           ...ACTIVITY_HISTORY_GROUP_COMPLETED,
           status: 'FAILED',
@@ -57,7 +57,7 @@ describe(filterEventsByEventStatus.name, () => {
     };
 
     expect(
-      filterEventsByEventStatus(
+      filterGroupsByGroupStatus(
         {
           ...ACTIVITY_HISTORY_GROUP_COMPLETED,
           status: 'ONGOING',
@@ -66,7 +66,7 @@ describe(filterEventsByEventStatus.name, () => {
       )
     ).toBe(true);
     expect(
-      filterEventsByEventStatus(
+      filterGroupsByGroupStatus(
         {
           ...ACTIVITY_HISTORY_GROUP_COMPLETED,
           status: 'WAITING',
@@ -82,7 +82,7 @@ describe(filterEventsByEventStatus.name, () => {
     };
 
     expect(
-      filterEventsByEventStatus(ACTIVITY_HISTORY_GROUP_COMPLETED, value)
+      filterGroupsByGroupStatus(ACTIVITY_HISTORY_GROUP_COMPLETED, value)
     ).toBe(false);
   });
 });

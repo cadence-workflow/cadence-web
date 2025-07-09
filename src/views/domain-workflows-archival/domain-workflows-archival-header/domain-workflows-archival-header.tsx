@@ -42,6 +42,7 @@ export default function DomainWorkflowsArchivalHeader({
       queryStringQueryParamKey="queryArchival"
       refetchQuery={refetch}
       isQueryRunning={isFetching}
+      expandFiltersByDefault={true}
     />
   );
 }

@@ -5,7 +5,7 @@ import {
   type WorkflowHistoryFiltersStatusValue,
 } from '../workflow-history-filters-status.types';
 
-export default function filterEventsByEventStatus(
+export default function filterGroupsByGroupStatus(
   group: HistoryEventsGroup,
   value: WorkflowHistoryFiltersStatusValue
 ) {

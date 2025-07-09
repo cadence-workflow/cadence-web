@@ -17,6 +17,7 @@ import {
   type WorkflowActionsEnabledResolverParams,
   type WorkflowActionsEnabledConfig,
 } from './resolvers/workflow-actions-enabled.types';
+import workflowDiagnosticsEnabled from './resolvers/workflow-diagnostics-enabled';
 
 const dynamicConfigs: {
   CADENCE_WEB_PORT: ConfigEnvDefinition;
@@ -41,6 +42,12 @@ const dynamicConfigs: {
   EXTENDED_DOMAIN_INFO_ENABLED: ConfigAsyncResolverDefinition<
     undefined,
     ExtendedDomainInfoEnabledConfig,
+    'request',
+    true
+  >;
+  WORKFLOW_DIAGNOSTICS_ENABLED: ConfigAsyncResolverDefinition<
+    undefined,
+    boolean,
     'request',
     true
   >;
@@ -70,6 +77,11 @@ const dynamicConfigs: {
   },
   EXTENDED_DOMAIN_INFO_ENABLED: {
     resolver: extendedDomainInfoEnabled,
+    evaluateOn: 'request',
+    isPublic: true,
+  },
+  WORKFLOW_DIAGNOSTICS_ENABLED: {
+    resolver: workflowDiagnosticsEnabled,
     evaluateOn: 'request',
     isPublic: true,
   },

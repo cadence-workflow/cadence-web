@@ -2,7 +2,7 @@ import {
   initiateSignalExternalWorkflowEvent,
   signalExternalWorkflowEvent,
   failSignalExternalWorkflowEvent,
-} from '@/views/workflow-history/__fixtures__/workflow-history-singal-external-workflow-events';
+} from '@/views/workflow-history/__fixtures__/workflow-history-signal-external-workflow-events';
 
 import type { SignalExternalWorkflowExecutionHistoryEvent } from '../../../workflow-history.types';
 import getSignalExternalWorkflowExecutionGroupFromEvents from '../get-signal-external-workflow-execution-group-from-events';
