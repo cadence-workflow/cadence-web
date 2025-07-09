@@ -36,7 +36,7 @@ import {
   signalExternalWorkflowEvent,
   failSignalExternalWorkflowEvent,
   initiateSignalExternalWorkflowEvent,
-} from './workflow-history-singal-external-workflow-events';
+} from './workflow-history-signal-external-workflow-events';
 import {
   startWorkflowExecutionEvent,
   cancelRequestActivityTaskEvent,

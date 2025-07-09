@@ -1,6 +1,7 @@
 import { type Theme } from 'baseui';
 import { styled as createStyled } from 'baseui';
 import { type ButtonOverrides } from 'baseui/button';
+import { type ComboboxOverrides } from 'baseui/combobox';
 import { type InputOverrides } from 'baseui/input';
 import { type StyleObject } from 'styletron-react';
 
@@ -17,10 +18,21 @@ export const styled = {
 };
 
 export const overrides = {
+  combobox: {
+    Root: {
+      style: {
+        flexGrow: 1,
+      },
+    },
+    ListItem: {
+      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+        ...$theme.typography.MonoParagraphXSmall,
+      }),
+    },
+  } satisfies ComboboxOverrides,
   input: {
     Root: {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
-        flexGrow: 1,
         height: $theme.sizing.scale950,
       }),
     },

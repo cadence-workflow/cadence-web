@@ -17,16 +17,18 @@ export default function DomainWorkflowsAdvanced({ domain, cluster }: Props) {
     const now = dayjs();
 
     return {
-      timeRangeStart: getDayjsFromDateFilterValue(
-        queryParams.timeRangeStartBasic,
-        now
-      ).toISOString(),
+      timeRangeStart: queryParams.timeRangeStart
+        ? getDayjsFromDateFilterValue(
+            queryParams.timeRangeStart,
+            now
+          ).toISOString()
+        : undefined,
       timeRangeEnd: getDayjsFromDateFilterValue(
-        queryParams.timeRangeEndBasic,
+        queryParams.timeRangeEnd,
         now
       ).toISOString(),
     };
-  }, [queryParams.timeRangeStartBasic, queryParams.timeRangeEndBasic]);
+  }, [queryParams.timeRangeStart, queryParams.timeRangeEnd]);
 
   return (
     <>

@@ -216,27 +216,19 @@ export type SingleHistoryEvent = HistoryEvent & {
     | 'upsertWorkflowSearchAttributesEventAttributes';
 };
 
-export type WorkflowHistoryFilterTarget = 'group' | 'event';
 export type WorkflowHistoryFilterConfig<
   V extends Partial<PageQueryParamValues<typeof workflowPageQueryParamsConfig>>,
 > = PageFilterConfig<typeof workflowPageQueryParamsConfig, V> & {
-  filterTarget: WorkflowHistoryFilterTarget;
-} & (
-    | {
-        filterFunc: (d: ExtendedHistoryEvent, value: V) => boolean;
-        filterTarget: 'event';
-      }
-    | {
-        filterFunc: (d: HistoryEventsGroup, value: V) => boolean;
-        filterTarget: 'group';
-      }
-  );
+  filterFunc: (d: HistoryEventsGroup, value: V) => boolean;
+};
 
 export type VisibleHistoryGroupRanges = {
   startIndex: number;
   endIndex: number;
   compactStartIndex: number;
   compactEndIndex: number;
+  ungroupedStartIndex: number;
+  ungroupedEndIndex: number;
 };
 
 export type Props = WorkflowPageTabContentProps;

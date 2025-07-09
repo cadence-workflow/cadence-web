@@ -26,7 +26,7 @@ export default function usePageFilters<P extends PageQueryParams>({
       pageQueryParamsConfig.map((c) => [c.key, c])
     );
     return pageFiltersConfig.filter((pageFilter) =>
-      Object.keys(pageFilter.getValue(queryParams)).every(
+      Object.keys(pageFilter.getValue(queryParams)).some(
         (queryParamKey: PageQueryParamKeys<P>) =>
           queryParams[queryParamKey] &&
           queryParams[queryParamKey] !==
