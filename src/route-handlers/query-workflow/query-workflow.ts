@@ -4,6 +4,7 @@ import decodeUrlParams from '@/utils/decode-url-params';
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
+import parseQueryResult from './helpers/parse-query-result';
 import {
   type Context,
   type QueryWorkflowResponse,
@@ -49,11 +50,7 @@ export async function queryWorkflow(
     // TODO @assem.hafez: we may loss numeric percision here as we are parsing a result from other languages that may include long numbers
     // one options is not to parse the result and return it as string and handle the parsing on the client side
     return NextResponse.json({
-      result: res.queryResult
-        ? JSON.parse(
-            Buffer.from(res.queryResult.data, 'base64').toString('utf-8')
-          )
-        : null,
+      result: res.queryResult ? parseQueryResult(res.queryResult) : null,
       rejected: res.queryRejected,
     } satisfies QueryWorkflowResponse);
   } catch (e) {
