@@ -3,7 +3,6 @@ import { type NextRequest, NextResponse } from 'next/server';
 import decodeUrlParams from '@/utils/decode-url-params';
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
-import { retry } from '@/utils/retry';
 
 import parseQueryResult from '../query-workflow/helpers/parse-query-result';
 
