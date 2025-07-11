@@ -46,6 +46,7 @@
     "lodash": "^4.17.21",
     "lossless-json": "^4.0.2",
     "next": "14.2.16",
+    "p-retry": "^6.2.1",
     "pino": "^9.3.2",
     "query-string": "^9.0.0",
     "react": "^18.2.0",
