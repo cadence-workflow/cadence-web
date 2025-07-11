@@ -6,6 +6,8 @@ import { type DescribeDomainResponse } from '@/__generated__/proto-ts/uber/caden
 import { type DescribeTaskListRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeTaskListRequest';
 import { type DescribeTaskListResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeTaskListResponse';
 import { type DescribeWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeWorkflowExecutionResponse';
+import { type DiagnoseWorkflowExecutionRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/DiagnoseWorkflowExecutionRequest';
+import { type DiagnoseWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/DiagnoseWorkflowExecutionResponse';
 import { type GetWorkflowExecutionHistoryRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/GetWorkflowExecutionHistoryRequest';
 import { type GetWorkflowExecutionHistoryResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/GetWorkflowExecutionHistoryResponse';
 import { type ListArchivedWorkflowExecutionsRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListArchivedWorkflowExecutionsRequest';
@@ -107,6 +109,9 @@ export type GRPCClusterMethods = {
   resetWorkflow: (
     payload: ResetWorkflowExecutionRequest__Input
   ) => Promise<ResetWorkflowExecutionResponse>;
+  getDiagnosticsWorkflow: (
+    payload: DiagnoseWorkflowExecutionRequest__Input
+  ) => Promise<DiagnoseWorkflowExecutionResponse>;
 };
 
 // cache services instances
@@ -305,6 +310,13 @@ const getClusterServicesMethods = async (
       ResetWorkflowExecutionResponse
     >({
       method: 'ResetWorkflowExecution',
+      metadata: metadata,
+    }),
+    getDiagnosticsWorkflow: workflowService.request<
+      DiagnoseWorkflowExecutionRequest__Input,
+      DiagnoseWorkflowExecutionResponse
+    >({
+      method: 'DiagnoseWorkflowExecution',
       metadata: metadata,
     }),
   };
