@@ -32,7 +32,7 @@ function DomainsTable({
     return domains.filter(
       (d) =>
         (!lowerCaseSearch ||
-          d.id.toLowerCase().includes(lowerCaseSearch) ||
+          d.id.toLowerCase() === lowerCaseSearch ||
           d.name.toLowerCase().includes(lowerCaseSearch)) &&
         domainsPageFiltersConfig.every((f) =>
           f.filterFunc(d, queryParams, pageCtx)
