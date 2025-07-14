@@ -1,10 +1,10 @@
-import { FaStethoscope } from 'react-icons/fa';
 import {
   MdListAlt,
   MdOutlineHistory,
   MdOutlineManageSearch,
   MdOutlineTerminal,
 } from 'react-icons/md';
+import { RiStethoscopeLine } from 'react-icons/ri';
 
 import WorkflowDiagnostics from '@/views/workflow-diagnostics/workflow-diagnostics';
 import WorkflowHistory from '@/views/workflow-history/workflow-history';
@@ -44,7 +44,7 @@ const workflowPageTabsConfig: WorkflowPageTabsConfig<
   },
   diagnostics: {
     title: 'Diagnostics',
-    artwork: FaStethoscope,
+    artwork: RiStethoscopeLine,
     content: WorkflowDiagnostics,
     getErrorConfig: (err) =>
       getWorkflowPageErrorConfig(
