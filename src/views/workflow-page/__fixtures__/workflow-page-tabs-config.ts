@@ -22,6 +22,14 @@ export const mockWorkflowPageTabsConfig: WorkflowPageTabsConfig<
       createElement('div', {}, JSON.stringify(params)),
     getErrorConfig: () => ({ message: 'history error' }),
   },
+  diagnostics: {
+    title: 'Diagnostics',
+    artwork: () =>
+      createElement('div', { 'data-testid': 'diagnostics-artwork' }),
+    content: ({ params }: WorkflowPageTabContentProps) =>
+      createElement('div', {}, JSON.stringify(params)),
+    getErrorConfig: () => ({ message: 'diagnostics error' }),
+  },
   queries: {
     title: 'Queries',
     artwork: () => createElement('div', { 'data-testid': 'queries-artwork' }),
@@ -36,13 +44,5 @@ export const mockWorkflowPageTabsConfig: WorkflowPageTabsConfig<
     content: ({ params }: WorkflowPageTabContentProps) =>
       createElement('div', {}, JSON.stringify(params)),
     getErrorConfig: () => ({ message: 'stack trace error' }),
-  },
-  diagnostics: {
-    title: 'Diagnostics',
-    artwork: () =>
-      createElement('div', { 'data-testid': 'diagnostics-artwork' }),
-    content: ({ params }: WorkflowPageTabContentProps) =>
-      createElement('div', {}, JSON.stringify(params)),
-    getErrorConfig: () => ({ message: 'diagnostics error' }),
   },
 } as const;
