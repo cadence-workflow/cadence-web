@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { useRouter, useParams } from 'next/navigation';
 
@@ -17,17 +17,21 @@ export default function DomainPageTabs() {
   const params = useParams<DomainPageTabsParams>();
   const decodedParams = decodeUrlParams(params) as DomainPageTabsParams;
 
+  const tabList = useMemo(
+    () =>
+      Object.entries(domainPageTabsConfig).map(([key, tabConfig]) => ({
+        key,
+        title: tabConfig.title,
+        artwork: tabConfig.artwork,
+      })),
+    []
+  );
+
   return (
     <styled.PageTabsContainer>
       <PageTabs
         selectedTab={decodedParams.domainTab}
-        tabList={Object.entries(domainPageTabsConfig).map(
-          ([key, tabConfig]) => ({
-            key,
-            title: tabConfig.title,
-            artwork: tabConfig.artwork,
-          })
-        )}
+        tabList={tabList}
         setSelectedTab={(newTab) => {
           router.push(
             `${encodeURIComponent(newTab.toString())}${window.location.search}`

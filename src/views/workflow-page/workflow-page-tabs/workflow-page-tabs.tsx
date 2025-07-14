@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { useRouter, useParams } from 'next/navigation';
 
@@ -18,17 +18,22 @@ export default function WorkflowPageTabs() {
   const router = useRouter();
   const params = useParams<WorkflowPageTabsParams>();
   const decodedParams = decodeUrlParams(params) as WorkflowPageTabsParams;
+
+  const tabList = useMemo(
+    () =>
+      Object.entries(workflowPageTabsConfig).map(([key, tabConfig]) => ({
+        key,
+        title: tabConfig.title,
+        artwork: tabConfig.artwork,
+        endEnhancer: tabConfig.endEnhancer,
+      })),
+    []
+  );
+
   return (
     <PageTabs
       selectedTab={decodedParams.workflowTab}
-      tabList={Object.entries(workflowPageTabsConfig).map(
-        ([key, tabConfig]) => ({
-          key,
-          title: tabConfig.title,
-          artwork: tabConfig.artwork,
-          endEnhancer: tabConfig.endEnhancer,
-        })
-      )}
+      tabList={tabList}
       setSelectedTab={(newTab) => {
         router.push(encodeURIComponent(newTab.toString()));
       }}

@@ -28,7 +28,7 @@ describe('WorkflowPageTabContent', () => {
   });
 
   it('does not return any tab content if workflowTab is not present in the config', () => {
-    const paramsWithoutTabContent = { ...params, workflowTab: 'unkown-tab' };
+    const paramsWithoutTabContent = { ...params, workflowTab: 'unknown-tab' };
     const { container } = render(
       // @ts-expect-error allow passing unknown workflowtab to test receiving wrong value as a param
       <WorkflowPageTabContent params={paramsWithoutTabContent} />
