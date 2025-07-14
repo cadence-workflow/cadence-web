@@ -2,6 +2,7 @@ import React from 'react';
 
 import { render, screen } from '@/test-utils/rtl';
 
+import { mockWorkflowPageTabsConfig } from '../../__fixtures__/workflow-page-tabs-config';
 import workflowPageTabsConfig from '../../config/workflow-page-tabs.config';
 import WorkflowPageTabs from '../workflow-page-tabs';
 
@@ -26,22 +27,10 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
-jest.mock('../../config/workflow-page-tabs.config', () => ({
-  summary: {
-    title: 'Summary',
-    artwork: () => <div data-testid="summary-artwork" />, // for artwork test
-    endEnhancer: undefined,
-    content: () => null,
-    getErrorConfig: () => ({}),
-  },
-  'page-2': {
-    title: 'Page 2',
-    artwork: undefined,
-    endEnhancer: undefined,
-    content: () => null,
-    getErrorConfig: () => ({}),
-  },
-}));
+jest.mock(
+  '../../config/workflow-page-tabs.config',
+  () => mockWorkflowPageTabsConfig
+);
 
 jest.mock(
   '../../workflow-page-cli-commands-button/workflow-page-cli-commands-button',
