@@ -9,7 +9,6 @@ export const mockWorkflowPageTabsConfig: WorkflowPageTabsConfig<
   summary: {
     title: 'Summary',
     artwork: () => createElement('div', { 'data-testid': 'summary-artwork' }),
-    endEnhancer: undefined,
     content: ({ params }: WorkflowPageTabContentProps) =>
       createElement('div', {}, JSON.stringify(params)),
     getErrorConfig: () => ({ message: 'summary error' }),
@@ -26,7 +25,6 @@ export const mockWorkflowPageTabsConfig: WorkflowPageTabsConfig<
   queries: {
     title: 'Queries',
     artwork: () => createElement('div', { 'data-testid': 'queries-artwork' }),
-    endEnhancer: undefined,
     content: ({ params }: WorkflowPageTabContentProps) =>
       createElement('div', {}, JSON.stringify(params)),
     getErrorConfig: () => ({ message: 'queries error' }),
@@ -35,7 +33,6 @@ export const mockWorkflowPageTabsConfig: WorkflowPageTabsConfig<
     title: 'Stack Trace',
     artwork: () =>
       createElement('div', { 'data-testid': 'stack-trace-artwork' }),
-    endEnhancer: undefined,
     content: ({ params }: WorkflowPageTabContentProps) =>
       createElement('div', {}, JSON.stringify(params)),
     getErrorConfig: () => ({ message: 'stack trace error' }),
