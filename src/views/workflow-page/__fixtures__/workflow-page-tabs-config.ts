@@ -1,8 +1,11 @@
 import { createElement } from 'react';
 
 import type { WorkflowPageTabContentProps } from '../workflow-page-tab-content/workflow-page-tab-content.types';
+import { type WorkflowPageTabsConfig } from '../workflow-page-tabs/workflow-page-tabs.types';
 
-export const mockWorkflowPageTabsConfig = {
+export const mockWorkflowPageTabsConfig: WorkflowPageTabsConfig<
+  'summary' | 'history' | 'queries' | 'stack-trace'
+> = {
   summary: {
     title: 'Summary',
     artwork: () => createElement('div', { 'data-testid': 'summary-artwork' }),
@@ -36,13 +39,5 @@ export const mockWorkflowPageTabsConfig = {
     content: ({ params }: WorkflowPageTabContentProps) =>
       createElement('div', {}, JSON.stringify(params)),
     getErrorConfig: () => ({ message: 'stack trace error' }),
-  },
-  'page-2': {
-    title: 'Page 2',
-    artwork: undefined,
-    endEnhancer: undefined,
-    content: ({ params }: WorkflowPageTabContentProps) =>
-      createElement('div', {}, JSON.stringify(params)),
-    getErrorConfig: () => ({ message: 'page 2 error' }),
   },
 } as const;
