@@ -1,6 +1,7 @@
 'use client';
 import React, { useMemo } from 'react';
 
+import omit from 'lodash/omit';
 import { useRouter, useParams } from 'next/navigation';
 
 import ErrorBoundary from '@/components/error-boundary/error-boundary';
@@ -9,6 +10,7 @@ import decodeUrlParams from '@/utils/decode-url-params';
 import WorkflowActions from '@/views/workflow-actions/workflow-actions';
 
 import workflowPageTabsConfig from '../config/workflow-page-tabs.config';
+import useSuspenseIsWorkflowDiagnosticsEnabled from '../hooks/use-is-workflow-diagnostics-enabled/use-suspense-is-workflow-diagnostics-enabled';
 import WorkflowPageCliCommandsButton from '../workflow-page-cli-commands-button/workflow-page-cli-commands-button';
 
 import { styled } from './workflow-page-tabs.styles';
@@ -19,15 +21,26 @@ export default function WorkflowPageTabs() {
   const params = useParams<WorkflowPageTabsParams>();
   const decodedParams = decodeUrlParams(params) as WorkflowPageTabsParams;
 
+  const { data: isWorkflowDiagnosticsEnabled } =
+    useSuspenseIsWorkflowDiagnosticsEnabled();
+
+  const filteredTabsConfig = useMemo(
+    () =>
+      isWorkflowDiagnosticsEnabled
+        ? workflowPageTabsConfig
+        : omit(workflowPageTabsConfig, 'diagnostics'),
+    [isWorkflowDiagnosticsEnabled]
+  );
+
   const tabList = useMemo(
     () =>
-      Object.entries(workflowPageTabsConfig).map(([key, tabConfig]) => ({
+      Object.entries(filteredTabsConfig).map(([key, tabConfig]) => ({
         key,
         title: tabConfig.title,
         artwork: tabConfig.artwork,
         endEnhancer: tabConfig.endEnhancer,
       })),
-    []
+    [filteredTabsConfig]
   );
 
   return (
