@@ -26,17 +26,22 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
-jest.mock('../../config/workflow-page-tabs.config', () => [
-  {
-    key: 'summary',
+jest.mock('../../config/workflow-page-tabs.config', () => ({
+  summary: {
     title: 'Summary',
-    artwork: () => <div data-testid="summary-artwork" />,
+    artwork: () => <div data-testid="summary-artwork" />, // for artwork test
+    endEnhancer: undefined,
+    content: () => null,
+    getErrorConfig: () => ({}),
   },
-  {
-    key: 'page-2',
+  'page-2': {
     title: 'Page 2',
+    artwork: undefined,
+    endEnhancer: undefined,
+    content: () => null,
+    getErrorConfig: () => ({}),
   },
-]);
+}));
 
 jest.mock(
   '../../workflow-page-cli-commands-button/workflow-page-cli-commands-button',
@@ -54,22 +59,20 @@ describe('WorkflowPageTabs', () => {
 
   it('renders tabs titles correctly', () => {
     setup();
-
-    workflowPageTabsConfig.forEach(({ title }) => {
+    Object.values(workflowPageTabsConfig).forEach(({ title }) => {
       expect(screen.getByText(title)).toBeInTheDocument();
     });
   });
 
   it('renders tabs buttons correctly', () => {
     setup();
-
     expect(screen.getByText('CLI Commands')).toBeInTheDocument();
     expect(screen.getByText('Actions')).toBeInTheDocument();
   });
 
   it('renders tabs artworks correctly', () => {
     setup();
-    workflowPageTabsConfig.forEach(({ key, artwork }) => {
+    Object.entries(workflowPageTabsConfig).forEach(([key, { artwork }]) => {
       if (typeof artwork !== 'undefined')
         expect(screen.getByTestId(`${key}-artwork`)).toBeInTheDocument();
       else

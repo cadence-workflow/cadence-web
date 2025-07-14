@@ -21,7 +21,14 @@ export default function WorkflowPageTabs() {
   return (
     <PageTabs
       selectedTab={decodedParams.workflowTab}
-      tabList={workflowPageTabsConfig}
+      tabList={Object.entries(workflowPageTabsConfig).map(
+        ([key, tabConfig]) => ({
+          key,
+          title: tabConfig.title,
+          artwork: tabConfig.artwork,
+          endEnhancer: tabConfig.endEnhancer,
+        })
+      )}
       setSelectedTab={(newTab) => {
         router.push(encodeURIComponent(newTab.toString()));
       }}

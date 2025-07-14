@@ -3,15 +3,15 @@ import { useParams } from 'next/navigation';
 import ErrorPanel from '@/components/error-panel/error-panel';
 import PanelSection from '@/components/panel-section/panel-section';
 
-import workflowPageTabsErrorConfig from '../config/workflow-page-tabs-error.config';
-import { type WorkflowPageTabName } from '../workflow-page-tab-content/workflow-page-tab-content.types';
+import workflowPageTabsConfig from '../config/workflow-page-tabs.config';
+import { type WorkflowPageTabName } from '../workflow-page-tabs/workflow-page-tabs.types';
 
 import { type Props } from './workflow-page-tabs-error.types';
 
 export default function WorkflowPageTabsError({ error, reset }: Props) {
   const { workflowTab } = useParams();
   const getConfig =
-    workflowPageTabsErrorConfig[workflowTab as WorkflowPageTabName];
+    workflowPageTabsConfig[workflowTab as WorkflowPageTabName]?.getErrorConfig;
 
   if (typeof getConfig !== 'function') {
     return (

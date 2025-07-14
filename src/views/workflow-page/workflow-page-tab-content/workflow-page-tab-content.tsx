@@ -3,7 +3,7 @@ import React from 'react';
 
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 
-import workflowPageTabsContentsMapConfig from '../config/workflow-page-tabs-contents-map.config';
+import workflowPageTabsConfig from '../config/workflow-page-tabs.config';
 
 import { cssStyles } from './workflow-page-tab-content.styles';
 import type { Props } from './workflow-page-tab-content.types';
@@ -11,7 +11,8 @@ import type { Props } from './workflow-page-tab-content.types';
 export default function WorkflowPageTabContent({ params }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
   const selectedWorkflowTabName = params.workflowTab;
-  const TabContent = workflowPageTabsContentsMapConfig[selectedWorkflowTabName];
+  const TabContent = workflowPageTabsConfig[selectedWorkflowTabName]?.content;
+
   if (TabContent)
     return (
       <div className={cls.tabContentContainer}>
