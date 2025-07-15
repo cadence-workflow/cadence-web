@@ -77,11 +77,12 @@ export async function diagnoseWorkflow(
     return NextResponse.json(
       (error
         ? {
-            parsingError: error,
             result: unparsedResult,
+            parsingError: error,
           }
         : {
             result: parsedResult,
+            parsingError: null,
           }) satisfies DiagnoseWorkflowResponse
     );
   } catch (e) {

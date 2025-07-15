@@ -22,6 +22,7 @@ export type WorkflowDiagnosticsResult = z.infer<
 export type DiagnoseWorkflowResponse =
   | {
       result: WorkflowDiagnosticsResult;
+      parsingError: null;
     }
   | {
       result: any;
