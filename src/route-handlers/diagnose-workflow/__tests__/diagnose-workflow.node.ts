@@ -78,6 +78,7 @@ describe(diagnoseWorkflow.name, () => {
     const responseJson = await res.json();
     expect(responseJson).toEqual({
       result: mockWorkflowDiagnosticsResult,
+      parsingError: null,
     });
   });
 
@@ -112,6 +113,7 @@ describe(diagnoseWorkflow.name, () => {
     const responseJson = await res.json();
     expect(responseJson).toEqual({
       result: mockWorkflowDiagnosticsResult,
+      parsingError: null,
     });
   });
 
