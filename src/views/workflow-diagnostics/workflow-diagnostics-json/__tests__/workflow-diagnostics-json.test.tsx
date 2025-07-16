@@ -13,7 +13,9 @@ jest.mock('@/utils/download-json', () =>
 );
 
 jest.mock('@/components/copy-text-button/copy-text-button', () =>
-  jest.fn(() => <div data-testid="copy-text-button" />)
+  jest.fn(({ textToCopy }) => (
+    <div data-testid="copy-text-button">{textToCopy}</div>
+  ))
 );
 
 jest.mock('@/components/pretty-json/pretty-json', () =>
@@ -40,10 +42,11 @@ describe(WorkflowDiagnosticsJson.name, () => {
     );
   });
 
-  it('renders copy text button', () => {
+  it('renders copy text button with text to copy', () => {
     setup({});
     const copyButton = screen.getByTestId('copy-text-button');
     expect(copyButton).toBeInTheDocument();
+    expect(copyButton).toHaveTextContent('"DiagnosticsResult"');
   });
 
   it('downloads JSON when download button is clicked', async () => {

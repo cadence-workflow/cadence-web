@@ -20,7 +20,7 @@ export default function WorkflowDiagnosticsJson({
   const diagnosticsResult = diagnosticsResponse.result;
 
   const textToCopy = useMemo(() => {
-    return losslessJsonStringify(diagnosticsResult.result, null, '\t');
+    return losslessJsonStringify(diagnosticsResult, null, '\t');
   }, [diagnosticsResult]);
 
   return (
