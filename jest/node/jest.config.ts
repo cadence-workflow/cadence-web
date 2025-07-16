@@ -1,11 +1,16 @@
 import type { Config } from 'jest';
 import nextJest from 'next/jest.js';
 
-const esModules = ['query-string', 'decode-uri-component','split-on-first','filter-obj']
+const esModules = [
+  'query-string',
+  'decode-uri-component',
+  'split-on-first',
+  'filter-obj',
+];
 
 const createJestConfig = nextJest({
   dir: './',
-})
+});
 const config: Config = {
   displayName: {
     color: 'cyan',
@@ -17,16 +22,19 @@ const config: Config = {
   },
   rootDir: '../../',
   preset: 'ts-jest',
-  setupFilesAfterEnv: ["<rootDir>/jest/node/jest.setup.ts"],
-  testEnvironment: "node",
-  testMatch: [
-    "**/__tests__/**/*.node.ts"
+  setupFilesAfterEnv: ['<rootDir>/jest/node/jest.setup.ts'],
+  testEnvironment: 'node',
+  testMatch: ['**/__tests__/**/*.node.ts'],
+  coveragePathIgnorePatterns: [
+    '/node_modules/',
+    'src/test-utils',
+    '/__fixtures__/',
+    '\\.config\\.ts$',
   ],
   transformIgnorePatterns: [`/node_modules/(?!(${esModules.join('|')})/)`],
 };
- 
 
-const getCustomizedConfig= async () => {
+const getCustomizedConfig = async () => {
   const jestConfig = await createJestConfig(config)();
   return {
     ...jestConfig,
@@ -35,7 +43,7 @@ const getCustomizedConfig= async () => {
     transformIgnorePatterns: jestConfig.transformIgnorePatterns?.filter(
       (ptn) => ptn !== '/node_modules/'
     ),
-  }
-}
+  };
+};
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
-export default getCustomizedConfig
+export default getCustomizedConfig;
