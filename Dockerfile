@@ -32,31 +32,35 @@ RUN npm run generate:idl
 RUN npm run build-standalone
 RUN npm run post-build-standalone
 
-# Production image, copy necessary files and run next
-FROM base AS runner
+# Production image as distroless, copy necessary files and run next.
+# The distroless nodejs24 nonroot image already runs as an unprivileged user
+# (uid 65532) and ships no shell or package manager, so the addgroup/adduser/
+# chown setup is no longer needed. Debian 13 runtime is glibc-compatible with
+# the Debian 12 (bookworm) builder above.
+FROM gcr.io/distroless/nodejs24-debian13:nonroot AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
 # Uncomment the following line in case you want to disable telemetry during runtime.
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
 
 COPY --from=builder /app/public ./public
 
 
-# Set the correct permission for prerender cache
-RUN mkdir .next
-RUN chown nextjs:nodejs .next
-
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder --chown=nextjs:nodejs /app/src/__generated__/ ./src/__generated__/
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder /app/src/__generated__/ ./src/__generated__/
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 
-USER nextjs
+# The distroless image has no shell to expand ${VAR:-default}, so the defaults
+# that were previously set inline in the `sh -c` CMD are baked in via ENV here.
+ENV CADENCE_WEB_PORT=8088
+ENV CADENCE_WEB_HOSTNAME=0.0.0.0
 
+EXPOSE 8088
 
-CMD  ["sh","-c", "CADENCE_WEB_PORT=${CADENCE_WEB_PORT:-8088} CADENCE_WEB_HOSTNAME=${CADENCE_WEB_HOSTNAME:-0.0.0.0} exec node server.js"]
+# The distroless nodejs image's ENTRYPOINT is `node`, so CMD only needs the
+# script to run (equivalent to `node server.js`).
+CMD ["server.js"]
