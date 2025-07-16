@@ -16,6 +16,12 @@ describe(compareUngroupedEvents.name, () => {
       status: 'COMPLETED' as WorkflowEventStatus,
       statusLabel: 'Completed',
       event: startWorkflowExecutionEvent,
+      eventMetadata: {
+        label: 'Completed',
+        status: 'COMPLETED' as WorkflowEventStatus,
+        timeMs: 1704067200000,
+        timeLabel: 'Completed at 2024-01-01 12:00:00',
+      },
     };
     const eventB = {
       id: '2',
@@ -23,6 +29,12 @@ describe(compareUngroupedEvents.name, () => {
       status: 'COMPLETED' as WorkflowEventStatus,
       statusLabel: 'Completed',
       event: startWorkflowExecutionEvent,
+      eventMetadata: {
+        label: 'Completed',
+        status: 'COMPLETED' as WorkflowEventStatus,
+        timeMs: 1704067200000,
+        timeLabel: 'Completed at 2024-01-01 12:00:00',
+      },
     };
 
     expect(compareUngroupedEvents(eventA, eventB)).toBe(-1);
@@ -37,6 +49,12 @@ describe(compareUngroupedEvents.name, () => {
       status: 'COMPLETED' as WorkflowEventStatus,
       statusLabel: 'Completed',
       event: startWorkflowExecutionEvent,
+      eventMetadata: {
+        label: 'Completed',
+        status: 'COMPLETED' as WorkflowEventStatus,
+        timeMs: 1704067200000,
+        timeLabel: 'Completed at 2024-01-01 12:00:00',
+      },
     };
     const pendingEvent = {
       id: '1',
@@ -44,6 +62,12 @@ describe(compareUngroupedEvents.name, () => {
       status: 'WAITING' as WorkflowEventStatus,
       statusLabel: 'Waiting',
       event: pendingActivityTaskStartEvent,
+      eventMetadata: {
+        label: 'Waiting',
+        status: 'WAITING' as WorkflowEventStatus,
+        timeMs: null,
+        timeLabel: 'Pending',
+      },
     };
 
     expect(compareUngroupedEvents(nonPendingEvent, pendingEvent)).toBe(-1);
@@ -63,6 +87,12 @@ describe(compareUngroupedEvents.name, () => {
         ...pendingActivityTaskStartEvent,
         eventTime: eventTimeA,
       },
+      eventMetadata: {
+        label: 'Waiting',
+        status: 'WAITING' as WorkflowEventStatus,
+        timeMs: 1000000,
+        timeLabel: 'Waiting at 1970-01-01 00:16:40',
+      },
     };
     const pendingEventB = {
       id: '2',
@@ -72,6 +102,12 @@ describe(compareUngroupedEvents.name, () => {
       event: {
         ...pendingDecisionTaskStartEvent,
         eventTime: eventTimeB,
+      },
+      eventMetadata: {
+        label: 'Waiting',
+        status: 'WAITING' as WorkflowEventStatus,
+        timeMs: 2000000,
+        timeLabel: 'Waiting at 1970-01-01 00:33:20',
       },
     };
 
@@ -90,6 +126,12 @@ describe(compareUngroupedEvents.name, () => {
         ...pendingActivityTaskStartEvent,
         eventTime: null,
       },
+      eventMetadata: {
+        label: 'Waiting',
+        status: 'WAITING' as WorkflowEventStatus,
+        timeMs: null,
+        timeLabel: 'Pending',
+      },
     };
     const pendingEventB = {
       id: '2',
@@ -99,6 +141,12 @@ describe(compareUngroupedEvents.name, () => {
       event: {
         ...pendingDecisionTaskStartEvent,
         eventTime: null,
+      },
+      eventMetadata: {
+        label: 'Waiting',
+        status: 'WAITING' as WorkflowEventStatus,
+        timeMs: null,
+        timeLabel: 'Pending',
       },
     };
 
