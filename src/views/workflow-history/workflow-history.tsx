@@ -174,10 +174,9 @@ export default function WorkflowHistory({ params }: Props) {
           .map(([_, group]) => [
             ...group.events.map((event, index) => ({
               event,
+              eventMetadata: group.eventsMetadata[index],
               label: group.label,
               shortLabel: group.shortLabel,
-              status: group.eventsMetadata[index].status,
-              statusLabel: group.eventsMetadata[index].label,
               id: event.eventId ?? event.computedEventId,
               canReset: group.resetToDecisionEventId === event.eventId,
             })),

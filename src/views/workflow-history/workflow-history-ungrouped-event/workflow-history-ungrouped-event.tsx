@@ -62,9 +62,9 @@ export default function WorkflowHistoryUngroupedEvent({
             <WorkflowHistoryEventStatusBadge
               statusReady={true}
               size="small"
-              status={eventInfo.status}
+              status={eventInfo.eventMetadata.status}
             />
-            {eventInfo.statusLabel}
+            {eventInfo.eventMetadata.label}
             {retries ? (
               <Badge
                 overrides={overrides.badge}
