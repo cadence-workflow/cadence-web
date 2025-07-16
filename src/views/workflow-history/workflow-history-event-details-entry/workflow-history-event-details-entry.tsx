@@ -5,6 +5,7 @@ export default function WorkflowHistoryEventDetailsEntry({
   entryPath,
   entryValue,
   renderConfig,
+  isNegative,
   ...decodedPageUrlParams
 }: Props) {
   const ValueComponent = renderConfig?.valueComponent;
@@ -15,6 +16,7 @@ export default function WorkflowHistoryEventDetailsEntry({
         entryKey={entryKey}
         entryPath={entryPath}
         entryValue={entryValue}
+        isNegative={isNegative}
         {...decodedPageUrlParams}
       />
     );
