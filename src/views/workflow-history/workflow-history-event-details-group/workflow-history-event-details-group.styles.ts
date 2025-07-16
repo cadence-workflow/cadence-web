@@ -1,5 +1,18 @@
 import { styled as createStyled, type Theme } from 'baseui';
 
+import { type EventDetailsLabelKind } from './workflow-history-event-details-group.types';
+
+const getLabelColor = ($theme: Theme, $labelKind: EventDetailsLabelKind) => {
+  switch ($labelKind) {
+    case 'negative':
+      return $theme.colors.red300;
+    case 'group':
+      return $theme.colors.contentPrimary;
+    default:
+      return $theme.colors.contentTertiary;
+  }
+};
+
 export const styled = {
   DetailsRow: createStyled<'div', { $forceWrap?: boolean }>(
     'div',
@@ -13,10 +26,23 @@ export const styled = {
       ...(!$forceWrap && { flexWrap: 'wrap' }),
     })
   ),
-  DetailsValue: createStyled<'div', { $forceWrap?: boolean }>(
+  DetailsValue: createStyled<
     'div',
-    ({ $theme, $forceWrap }: { $theme: Theme; $forceWrap?: boolean }) => ({
-      color: $theme.colors.contentPrimary,
+    { $forceWrap?: boolean; $isNegative?: boolean }
+  >(
+    'div',
+    ({
+      $theme,
+      $forceWrap,
+      $isNegative,
+    }: {
+      $theme: Theme;
+      $forceWrap?: boolean;
+      $isNegative?: boolean;
+    }) => ({
+      color: $isNegative
+        ? $theme.colors.contentNegative
+        : $theme.colors.contentPrimary,
       ...$theme.typography.LabelXSmall,
       display: 'flex',
       ...(!$forceWrap && { flex: '1 0 300px' }),
@@ -24,14 +50,12 @@ export const styled = {
   ),
   DetailsLabel: createStyled<
     'div',
-    { $forceWrap?: boolean; $useBlackText?: boolean }
-  >('div', ({ $theme, $forceWrap, $useBlackText }) => ({
+    { $forceWrap?: boolean; $labelKind?: EventDetailsLabelKind }
+  >('div', ({ $theme, $forceWrap, $labelKind = 'regular' }) => ({
     minWidth: '200px',
     maxWidth: '200px',
     display: 'flex',
-    color: $useBlackText
-      ? $theme.colors.contentPrimary
-      : $theme.colors.contentTertiary,
+    color: getLabelColor($theme, $labelKind),
     ...$theme.typography.LabelXSmall,
     ...($forceWrap && { whiteSpace: 'nowrap' }),
   })),
