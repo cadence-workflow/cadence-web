@@ -7,3 +7,5 @@ export type Props = {
   parentGroupPath?: string;
   decodedPageUrlParams: WorkflowPageTabsParams;
 };
+
+export type EventDetailsLabelKind = 'regular' | 'group' | 'negative';

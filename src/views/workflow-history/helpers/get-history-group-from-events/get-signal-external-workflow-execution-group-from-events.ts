@@ -40,6 +40,7 @@ export default function getSignalExternalWorkflowExecutionGroupFromEvents(
       signalExternalWorkflowExecutionFailedEventAttributes: 'Failed',
       externalWorkflowExecutionSignaledEventAttributes: 'Signaled',
     };
+
   const eventToStatus: HistoryGroupEventToStatusMap<SignalExternalWorkflowExecutionHistoryGroup> =
     {
       signalExternalWorkflowExecutionInitiatedEventAttributes: (

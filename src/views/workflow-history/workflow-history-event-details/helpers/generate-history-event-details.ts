@@ -10,9 +10,11 @@ import getHistoryEventFieldRenderConfig from './get-history-event-field-render-c
 
 export default function generateHistoryEventDetails({
   details,
+  negativeFields,
   parentPath = '',
 }: {
   details: object;
+  negativeFields?: Array<string>;
   parentPath?: string;
 }): WorkflowHistoryEventDetailsEntries {
   if (details === null || details === undefined) {
@@ -41,6 +43,7 @@ export default function generateHistoryEventDetails({
           ...generateHistoryEventDetails({
             details: value,
             parentPath: path,
+            negativeFields,
           })
         );
       } else {
@@ -51,6 +54,7 @@ export default function generateHistoryEventDetails({
           groupEntries: generateHistoryEventDetails({
             details: value,
             parentPath: path,
+            negativeFields,
           }),
           renderConfig,
         };
@@ -65,6 +69,9 @@ export default function generateHistoryEventDetails({
       value,
       renderConfig,
       isGroup: false,
+      ...(negativeFields && negativeFields.includes(path)
+        ? { isNegative: true }
+        : {}),
     };
     result.push(entry);
   });

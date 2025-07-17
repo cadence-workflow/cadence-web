@@ -138,4 +138,35 @@ describe('getSingleEventGroupFromEvents', () => {
       expect(group.closeTimeMs).toEqual(null);
     }
   });
+
+  it('should include negativeFields for failed workflow execution events', () => {
+    const group = getSingleEventGroupFromEvents([failWorkflowExecutionEvent]);
+    const eventMetadata = group.eventsMetadata[0];
+
+    expect(eventMetadata.status).toBe('FAILED');
+    expect(eventMetadata.negativeFields).toEqual(['details', 'reason']);
+  });
+
+  it('should include negativeFields for terminated workflow execution events', () => {
+    const group = getSingleEventGroupFromEvents([
+      terminateWorkflowExecutionEvent,
+    ]);
+    const eventMetadata = group.eventsMetadata[0];
+
+    expect(eventMetadata.status).toBe('FAILED');
+    expect(eventMetadata.negativeFields).toEqual(['details', 'reason']);
+  });
+
+  it('should include negativeFields for continued as new workflow execution events', () => {
+    const group = getSingleEventGroupFromEvents([
+      continueAsNewWorkflowExecutionEvent,
+    ]);
+    const eventMetadata = group.eventsMetadata[0];
+
+    expect(eventMetadata.status).toBe('COMPLETED');
+    expect(eventMetadata.negativeFields).toEqual([
+      'failureDetails',
+      'failureReason',
+    ]);
+  });
 });

@@ -130,6 +130,57 @@ describe('getCommonHistoryGroupFields', () => {
       });
     }
   );
+
+  it('should include negativeFields when eventStatusToNegativeFieldsMap is provided', () => {
+    const eventStatusToNegativeFieldsMap = {
+      timerStartedEventAttributes: ['startReason', 'startDetails'],
+      timerFiredEventAttributes: ['fireReason', 'fireDetails'],
+    };
+
+    const group = setup({
+      eventStatusToNegativeFieldsMap,
+    });
+
+    expect(group.eventsMetadata[0].negativeFields).toEqual([
+      'startReason',
+      'startDetails',
+    ]);
+    expect(group.eventsMetadata[1].negativeFields).toEqual([
+      'fireReason',
+      'fireDetails',
+    ]);
+  });
+
+  it('should not include negativeFields when eventStatusToNegativeFieldsMap is not provided', () => {
+    const group = setup({});
+
+    group.eventsMetadata.forEach((metadata) => {
+      expect(metadata.negativeFields).toBeUndefined();
+    });
+  });
+
+  it('should not include negativeFields when eventStatusToNegativeFieldsMap is empty', () => {
+    const group = setup({
+      eventStatusToNegativeFieldsMap: {},
+    });
+
+    group.eventsMetadata.forEach((metadata) => {
+      expect(metadata.negativeFields).toBeUndefined();
+    });
+  });
+
+  it('should only include negativeFields for events that have mappings', () => {
+    const eventStatusToNegativeFieldsMap = {
+      timerStartedEventAttributes: ['startReason'],
+    };
+
+    const group = setup({
+      eventStatusToNegativeFieldsMap,
+    });
+
+    expect(group.eventsMetadata[0].negativeFields).toEqual(['startReason']);
+    expect(group.eventsMetadata[1].negativeFields).toBeUndefined();
+  });
 });
 
 // using timer events for testing
@@ -139,6 +190,7 @@ function setup({
   eventToLabel,
   eventToStatus,
   closeEvent,
+  eventStatusToNegativeFieldsMap,
 }: {
   events?: TimerHistoryEvent[];
   eventToStatus?: HistoryGroupEventToStatusMap<TimerHistoryGroup>;
@@ -147,6 +199,7 @@ function setup({
     HistoryGroupEventToStringMap<TimerHistoryGroup>
   >;
   closeEvent?: TimerHistoryEvent;
+  eventStatusToNegativeFieldsMap?: any;
 }) {
   const mockEvents: TimerHistoryEvent[] = events || [
     startTimerTaskEvent,
@@ -170,6 +223,7 @@ function setup({
     mockedEventToStatus,
     mockedEventToLabel,
     eventToTimeLabelPrefixMap,
-    closeEvent
+    closeEvent,
+    eventStatusToNegativeFieldsMap
   );
 }

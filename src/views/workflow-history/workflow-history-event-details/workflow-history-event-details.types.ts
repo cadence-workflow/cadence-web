@@ -7,6 +7,7 @@ import type {
 
 export type Props = {
   event: ExtendedHistoryEvent;
+  negativeFields?: Array<string>;
   decodedPageUrlParams: WorfklowHistoryProps['params'];
 };
 
@@ -20,6 +21,7 @@ export type WorkflowHistoryEventDetailsValueComponentProps = {
   entryKey: string;
   entryPath: string;
   entryValue: any;
+  isNegative?: boolean;
 } & WorkflowPageTabsParams;
 
 export type WorkflowHistoryEventDetailsConfig = {
@@ -41,6 +43,7 @@ type WorkflowHistoryEventDetailsEntryBase = {
   key: string;
   path: string;
   isGroup?: boolean;
+  isNegative?: boolean;
   renderConfig: WorkflowHistoryEventDetailsConfig | null;
 };
 

@@ -2,6 +2,7 @@ import WORKFLOW_HISTORY_SHOULD_SHORTEN_GROUP_LABELS_CONFIG from '../../config/wo
 import type {
   ActivityHistoryGroup,
   ExtendedActivityHistoryEvent,
+  HistoryGroupEventStatusToNegativeFieldsMap,
   HistoryGroupEventToStatusMap,
   HistoryGroupEventToStringMap,
   PendingActivityTaskStartEvent,
@@ -103,6 +104,12 @@ export default function getActivityGroupFromEvents(
     activityTaskTimedOutEventAttributes: 'FAILED',
   };
 
+  const eventStatusToNegativeFields: HistoryGroupEventStatusToNegativeFieldsMap<ActivityHistoryGroup> =
+    {
+      activityTaskFailedEventAttributes: ['reason', 'details'],
+      activityTaskTimedOutEventAttributes: ['reason', 'details'],
+    };
+
   const pendingStartEventTimePrefix = pendingStartEvent?.[pendingStartAttr]
     .lastStartedTime
     ? 'Last started at'
@@ -119,7 +126,8 @@ export default function getActivityGroupFromEvents(
       eventToStatus,
       eventToLabel,
       { pendingActivityTaskStartEventAttributes: pendingStartEventTimePrefix },
-      closeEvent || timeoutEvent
+      closeEvent || timeoutEvent,
+      eventStatusToNegativeFields
     ),
   };
 }

@@ -4,7 +4,10 @@ import WorkflowHistoryEventDetailsEntry from '../workflow-history-event-details-
 
 import getDetailsFieldLabel from './helpers/get-details-field-label';
 import { styled } from './workflow-history-event-details-group.styles';
-import { type Props } from './workflow-history-event-details-group.types';
+import {
+  type EventDetailsLabelKind,
+  type Props,
+} from './workflow-history-event-details-group.types';
 
 export default function WorkflowHistoryEventDetailsGroup({
   entries,
@@ -16,6 +19,13 @@ export default function WorkflowHistoryEventDetailsGroup({
       {entries.map((entry, index) => {
         const forceWrap = entry.isGroup || entry.renderConfig?.forceWrap;
 
+        let labelKind: EventDetailsLabelKind = 'regular';
+        if (entry.isGroup) {
+          labelKind = 'group';
+        } else if (entry.isNegative) {
+          labelKind = 'negative';
+        }
+
         return (
           <styled.DetailsRow
             data-testid="details-row"
@@ -26,13 +36,13 @@ export default function WorkflowHistoryEventDetailsGroup({
                 : ''
             }`}
           >
-            <styled.DetailsLabel
-              $forceWrap={forceWrap}
-              $useBlackText={entry.isGroup}
-            >
+            <styled.DetailsLabel $forceWrap={forceWrap} $labelKind={labelKind}>
               {getDetailsFieldLabel(entry, parentGroupPath)}
             </styled.DetailsLabel>
-            <styled.DetailsValue $forceWrap={forceWrap}>
+            <styled.DetailsValue
+              $forceWrap={forceWrap}
+              $isNegative={entry.isNegative}
+            >
               {entry.isGroup ? (
                 <styled.IndentedDetails>
                   <WorkflowHistoryEventDetailsGroup
@@ -47,6 +57,7 @@ export default function WorkflowHistoryEventDetailsGroup({
                   entryPath={entry.path}
                   entryValue={entry.value}
                   renderConfig={entry.renderConfig}
+                  isNegative={entry.isNegative}
                   {...decodedPageUrlParams}
                 />
               )}

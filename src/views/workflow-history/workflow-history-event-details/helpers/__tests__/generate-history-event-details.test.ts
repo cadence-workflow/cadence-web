@@ -182,4 +182,130 @@ describe(generateHistoryEventDetails.name, () => {
     const result = generateHistoryEventDetails({ details });
     expect(result).toMatchObject(expected);
   });
+
+  it('should mark fields as negative when they are in negativeFields array', () => {
+    const details = {
+      reason: 'error reason',
+      details: 'error details',
+      success: 'success value',
+    };
+
+    const negativeFields = ['reason', 'details'];
+
+    const result = generateHistoryEventDetails({ details, negativeFields });
+
+    expect(result).toHaveLength(3);
+
+    const reasonEntry = result.find((entry) => entry.path === 'reason');
+    const detailsEntry = result.find((entry) => entry.path === 'details');
+    const successEntry = result.find((entry) => entry.path === 'success');
+
+    expect(reasonEntry?.isNegative).toBe(true);
+    expect(detailsEntry?.isNegative).toBe(true);
+    expect(successEntry?.isNegative).toBeUndefined();
+  });
+
+  it('should mark nested fields as negative when their full path is in negativeFields array', () => {
+    const details = {
+      error: {
+        reason: 'nested error reason',
+        details: 'nested error details',
+      },
+      success: 'success value',
+    };
+
+    const negativeFields = ['error.reason', 'error.details'];
+
+    const result = generateHistoryEventDetails({ details, negativeFields });
+
+    expect(result).toHaveLength(2);
+
+    const errorGroup = result.find((entry) => entry.path === 'error');
+    expect(errorGroup?.isGroup).toBe(true);
+    expect((errorGroup as any)?.groupEntries).toHaveLength(2);
+
+    const reasonEntry = (errorGroup as any)?.groupEntries?.find(
+      (entry: any) => entry.path === 'error.reason'
+    );
+    const detailsEntry = (errorGroup as any)?.groupEntries?.find(
+      (entry: any) => entry.path === 'error.details'
+    );
+
+    expect(reasonEntry?.isNegative).toBe(true);
+    expect(detailsEntry?.isNegative).toBe(true);
+  });
+
+  it('should not mark any fields as negative when negativeFields is not provided', () => {
+    const details = {
+      reason: 'error reason',
+      details: 'error details',
+    };
+
+    const result = generateHistoryEventDetails({ details });
+
+    expect(result).toHaveLength(2);
+
+    result.forEach((entry) => {
+      expect(entry.isNegative).toBeUndefined();
+    });
+  });
+
+  it('should not mark any fields as negative when negativeFields is empty', () => {
+    const details = {
+      reason: 'error reason',
+      details: 'error details',
+    };
+
+    const negativeFields: string[] = [];
+
+    const result = generateHistoryEventDetails({ details, negativeFields });
+
+    expect(result).toHaveLength(2);
+
+    result.forEach((entry) => {
+      expect(entry.isNegative).toBeUndefined();
+    });
+  });
+
+  it('should pass negativeFields to recursive calls for nested objects', () => {
+    const details = {
+      error: {
+        reason: 'nested error reason',
+        cause: 'nested error cause',
+      },
+      success: 'success value',
+    };
+
+    const negativeFields = ['error.reason'];
+
+    const result = generateHistoryEventDetails({ details, negativeFields });
+
+    expect(result).toHaveLength(2);
+
+    const errorGroup = result.find((entry) => entry.path === 'error');
+    expect(errorGroup).toBeDefined();
+    expect(errorGroup?.isGroup).toBe(true);
+    expect((errorGroup as any)?.groupEntries).toHaveLength(2);
+
+    const reasonEntry = (errorGroup as any)?.groupEntries?.[0];
+    expect(reasonEntry?.isNegative).toBe(true);
+  });
+
+  it('should handle single nested object with negative fields correctly', () => {
+    const details = {
+      error: {
+        reason: 'nested error reason',
+      },
+    };
+
+    const negativeFields = ['error.reason'];
+
+    const result = generateHistoryEventDetails({ details, negativeFields });
+
+    expect(result).toHaveLength(1);
+
+    const reasonEntry = result[0];
+    expect(reasonEntry.path).toBe('error.reason');
+    expect(reasonEntry.isNegative).toBe(true);
+  });
 });
