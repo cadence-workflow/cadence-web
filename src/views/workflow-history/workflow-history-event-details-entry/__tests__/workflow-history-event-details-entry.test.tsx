@@ -56,4 +56,69 @@ describe(WorkflowHistoryEventDetailsEntry.name, () => {
 
     expect(getByText('value2')).toBeInTheDocument();
   });
+
+  it('passes isNegative prop to custom ValueComponent when provided', () => {
+    const CustomComponent = ({
+      entryKey,
+      entryPath,
+      entryValue,
+      isNegative,
+    }: WorkflowHistoryEventDetailsValueComponentProps) => (
+      <div>
+        {entryKey} - {entryPath} - {entryValue} -{' '}
+        {isNegative ? 'negative' : 'positive'}
+      </div>
+    );
+
+    const props: Props = {
+      entryKey: 'key1',
+      entryPath: 'path1',
+      entryValue: 'value1',
+      isNegative: true,
+      renderConfig: {
+        name: 'Mock render config with custom component',
+        customMatcher: () => true,
+        valueComponent: CustomComponent,
+      },
+      ...workflowPageUrlParams,
+    };
+
+    const { getByText } = render(
+      <WorkflowHistoryEventDetailsEntry {...props} />
+    );
+
+    expect(getByText('key1 - path1 - value1 - negative')).toBeInTheDocument();
+  });
+
+  it('passes undefined isNegative prop to custom ValueComponent when not provided', () => {
+    const CustomComponent = ({
+      entryKey,
+      entryPath,
+      entryValue,
+      isNegative,
+    }: WorkflowHistoryEventDetailsValueComponentProps) => (
+      <div>
+        {entryKey} - {entryPath} - {entryValue} -{' '}
+        {isNegative ? 'negative' : 'positive'}
+      </div>
+    );
+
+    const props: Props = {
+      entryKey: 'key1',
+      entryPath: 'path1',
+      entryValue: 'value1',
+      renderConfig: {
+        name: 'Mock render config with custom component',
+        customMatcher: () => true,
+        valueComponent: CustomComponent,
+      },
+      ...workflowPageUrlParams,
+    };
+
+    const { getByText } = render(
+      <WorkflowHistoryEventDetailsEntry {...props} />
+    );
+
+    expect(getByText('key1 - path1 - value1 - positive')).toBeInTheDocument();
+  });
 });

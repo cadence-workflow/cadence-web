@@ -69,7 +69,9 @@ export default function generateHistoryEventDetails({
       value,
       renderConfig,
       isGroup: false,
-      ...(negativeFields ? { isNegative: negativeFields.includes(path) } : {}),
+      ...(negativeFields && negativeFields.includes(path)
+        ? { isNegative: true }
+        : {}),
     };
     result.push(entry);
   });
