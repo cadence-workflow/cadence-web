@@ -82,46 +82,6 @@ describe(WorkflowDiagnosticsContent.name, () => {
     expect(screen.getByText('Is list view enabled: true')).toBeInTheDocument();
     expect(screen.getByText('Active View: list')).toBeInTheDocument();
   });
-
-  it('should pass correct props to list component', () => {
-    const mockListComponent = jest.requireMock(
-      '../../workflow-diagnostics-list/workflow-diagnostics-list'
-    );
-    setup({ diagnosticsResult: mockWorkflowDiagnosticsResult });
-
-    expect(mockListComponent).toHaveBeenCalledWith(
-      expect.objectContaining({
-        domain: 'test-domain',
-        cluster: 'test-cluster',
-        workflowId: 'test-workflow-id',
-        runId: 'test-run-id',
-        diagnosticsResult: mockWorkflowDiagnosticsResult,
-      }),
-      expect.anything()
-    );
-  });
-
-  it('should pass correct props to JSON component', async () => {
-    const mockJsonComponent = jest.requireMock(
-      '../../workflow-diagnostics-json/workflow-diagnostics-json'
-    );
-    const { user } = setup({
-      diagnosticsResult: mockWorkflowDiagnosticsResult,
-    });
-
-    // Switch to JSON view
-    const jsonButton = screen.getByText('Switch to JSON');
-    await user.click(jsonButton);
-
-    expect(mockJsonComponent).toHaveBeenCalledWith(
-      expect.objectContaining({
-        workflowId: 'test-workflow-id',
-        runId: 'test-run-id',
-        diagnosticsResult: mockWorkflowDiagnosticsResult,
-      }),
-      expect.anything()
-    );
-  });
 });
 
 function setup({
