@@ -1,6 +1,7 @@
 import type {
   ChildWorkflowExecutionHistoryEvent,
   ChildWorkflowExecutionHistoryGroup,
+  HistoryGroupEventStatusToNegativeFieldsMap,
   HistoryGroupEventToStatusMap,
   HistoryGroupEventToStringMap,
 } from '../../workflow-history.types';
@@ -73,6 +74,12 @@ export default function getChildWorkflowExecutionGroupFromEvents(
       childWorkflowExecutionTerminatedEventAttributes: 'FAILED',
     };
 
+  const eventStatusToNegativeFields: HistoryGroupEventStatusToNegativeFieldsMap<ChildWorkflowExecutionHistoryGroup> =
+    {
+      childWorkflowExecutionFailedEventAttributes: ['details', 'reason'],
+      childWorkflowExecutionTimedOutEventAttributes: ['details', 'reason'],
+    };
+
   return {
     label,
     hasMissingEvents,
@@ -82,7 +89,8 @@ export default function getChildWorkflowExecutionGroupFromEvents(
       eventToStatus,
       eventToLabel,
       {},
-      closeEvent || startFailedEvent
+      closeEvent || startFailedEvent,
+      eventStatusToNegativeFields
     ),
   };
 }

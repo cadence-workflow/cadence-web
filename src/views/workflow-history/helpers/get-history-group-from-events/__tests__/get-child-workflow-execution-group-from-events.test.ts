@@ -228,4 +228,53 @@ describe('getChildWorkflowExecutionGroupFromEvents', () => {
     );
     expect(groupWithMissingCloseEvent.closeTimeMs).toEqual(null);
   });
+
+  it('should include negativeFields for failed child workflow events', () => {
+    const events: ChildWorkflowExecutionHistoryEvent[] = [
+      initiateChildWorkflowEvent,
+      startChildWorkflowEvent,
+      failChildWorkflowEvent,
+    ];
+    const group = getChildWorkflowExecutionGroupFromEvents(events);
+
+    // The failed event should have negativeFields
+    const failedEventMetadata = group.eventsMetadata.find(
+      (metadata) => metadata.status === 'FAILED'
+    );
+    expect(failedEventMetadata?.negativeFields).toEqual(['details', 'reason']);
+
+    // Other events should not have negativeFields
+    const otherEventsMetadata = group.eventsMetadata.filter(
+      (metadata) => metadata.status !== 'FAILED'
+    );
+    otherEventsMetadata.forEach((metadata) => {
+      expect(metadata.negativeFields).toBeUndefined();
+    });
+  });
+
+  it('should include negativeFields for timed out child workflow events', () => {
+    const events: ChildWorkflowExecutionHistoryEvent[] = [
+      initiateChildWorkflowEvent,
+      startChildWorkflowEvent,
+      timeoutChildWorkflowEvent,
+    ];
+    const group = getChildWorkflowExecutionGroupFromEvents(events);
+
+    // The timed out event should have negativeFields
+    const timedOutEventMetadata = group.eventsMetadata.find(
+      (metadata) => metadata.status === 'FAILED' // timeout events have FAILED status
+    );
+    expect(timedOutEventMetadata?.negativeFields).toEqual([
+      'details',
+      'reason',
+    ]);
+
+    // Other events should not have negativeFields
+    const otherEventsMetadata = group.eventsMetadata.filter(
+      (metadata) => metadata.status !== 'FAILED'
+    );
+    otherEventsMetadata.forEach((metadata) => {
+      expect(metadata.negativeFields).toBeUndefined();
+    });
+  });
 });
