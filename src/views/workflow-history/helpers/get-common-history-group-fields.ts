@@ -47,9 +47,7 @@ export default function getCommonHistoryGroupFields<
       status: eventStatus,
       timeMs,
       timeLabel: timeMs ? `${prefix} ${formatDate(timeMs)}` : '',
-      ...(negativeFields && negativeFields.length > 0
-        ? { negativeFields }
-        : {}),
+      ...(negativeFields?.length ? { negativeFields } : {}),
     };
   });
 
