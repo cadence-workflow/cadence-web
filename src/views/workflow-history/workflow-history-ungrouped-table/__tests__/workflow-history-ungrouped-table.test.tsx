@@ -39,16 +39,24 @@ const mockEventsInfo: WorkflowHistoryUngroupedEventInfo[] = [
   {
     id: '1',
     label: 'Workflow Execution Started',
-    status: 'COMPLETED',
-    statusLabel: 'Completed',
     event: startWorkflowExecutionEvent,
+    eventMetadata: {
+      label: 'Completed',
+      status: 'COMPLETED',
+      timeMs: 1704067200000,
+      timeLabel: 'Mock time label',
+    },
   },
   {
     id: '2',
     label: 'Decision Task Scheduled',
-    status: 'COMPLETED',
-    statusLabel: 'Completed',
     event: scheduleDecisionTaskEvent,
+    eventMetadata: {
+      label: 'Completed',
+      status: 'COMPLETED',
+      timeMs: 1704067200000,
+      timeLabel: 'Mock time label',
+    },
   },
 ];
 

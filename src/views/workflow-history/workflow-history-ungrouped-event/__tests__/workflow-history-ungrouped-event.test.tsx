@@ -95,25 +95,37 @@ jest.mock(
 const mockEventInfo: WorkflowHistoryUngroupedEventInfo = {
   id: '1',
   label: 'Workflow Execution Started',
-  status: 'COMPLETED',
-  statusLabel: 'Completed',
   event: startWorkflowExecutionEvent,
+  eventMetadata: {
+    label: 'Completed',
+    status: 'COMPLETED',
+    timeMs: 1704067200000,
+    timeLabel: 'Mock time label',
+  },
 };
 
 const mockPendingActivityEventInfo: WorkflowHistoryUngroupedEventInfo = {
   id: 'pending-7',
   label: 'Activity Task Started',
-  status: 'WAITING',
-  statusLabel: 'Pending',
   event: pendingActivityTaskStartEvent,
+  eventMetadata: {
+    label: 'Pending',
+    status: 'WAITING',
+    timeMs: null,
+    timeLabel: 'Pending',
+  },
 };
 
 const mockPendingDecisionEventInfo: WorkflowHistoryUngroupedEventInfo = {
   id: 'pending-7',
   label: 'Decision Task Started',
-  status: 'WAITING',
-  statusLabel: 'Pending',
   event: pendingDecisionTaskStartEvent,
+  eventMetadata: {
+    label: 'Pending',
+    status: 'WAITING',
+    timeMs: null,
+    timeLabel: 'Pending',
+  },
 };
 
 const mockDecodedPageUrlParams: WorkflowPageTabsParams = {
