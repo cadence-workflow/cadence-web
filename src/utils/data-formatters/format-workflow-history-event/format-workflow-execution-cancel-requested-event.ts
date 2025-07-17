@@ -4,17 +4,23 @@ import { type WorkflowExecutionCancelRequestedEvent } from './format-workflow-hi
 const formatWorkflowExecutionCancelRequestedEvent = ({
   workflowExecutionCancelRequestedEventAttributes: {
     externalExecutionInfo,
+    requestId,
+    cause,
+    identity,
     ...eventAttributes
   },
   ...eventFields
 }: WorkflowExecutionCancelRequestedEvent) => {
   return {
     ...formatWorkflowCommonEventFields(eventFields),
-    ...eventAttributes,
+    cause,
     externalInitiatedEventId: externalExecutionInfo?.initiatedId
       ? parseInt(externalExecutionInfo.initiatedId)
       : null,
     externalWorkflowExecution: externalExecutionInfo?.workflowExecution,
+    identity,
+    requestId,
+    ...eventAttributes,
   };
 };
 

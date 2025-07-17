@@ -10,8 +10,8 @@ const formatExternalWorkflowExecutionCancelRequestedEvent = ({
 }: ExternalWorkflowExecutionCancelRequestedEvent) => {
   return {
     ...formatWorkflowCommonEventFields(eventFields),
-    ...eventAttributes,
     initiatedEventId: parseInt(initiatedEventId),
+    ...eventAttributes,
   };
 };
 

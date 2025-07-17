@@ -14,11 +14,11 @@ const formatWorkflowExecutionCanceledEvent = ({
 }: WorkflowExecutionCanceledEvent) => {
   return {
     ...formatWorkflowCommonEventFields(eventFields),
-    ...eventAttributes,
+    details: formatPayload(details),
     decisionTaskCompletedEventId: formatWorkflowEventId(
       decisionTaskCompletedEventId
     ),
-    details: formatPayload(details),
+    ...eventAttributes,
   };
 };
 

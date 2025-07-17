@@ -4,6 +4,7 @@ import { type RequestCancelExternalWorkflowExecutionFailedEvent } from './format
 const formatRequestCancelExternalWorkflowExecutionFailedEvent = ({
   requestCancelExternalWorkflowExecutionFailedEventAttributes: {
     control,
+    cause,
     decisionTaskCompletedEventId,
     initiatedEventId,
     ...eventAttributes
@@ -12,10 +13,11 @@ const formatRequestCancelExternalWorkflowExecutionFailedEvent = ({
 }: RequestCancelExternalWorkflowExecutionFailedEvent) => {
   return {
     ...formatWorkflowCommonEventFields(eventFields),
-    ...eventAttributes,
+    cause,
     control: control ? parseInt(atob(control)) : null,
-    decisionTaskCompletedEventId: parseInt(decisionTaskCompletedEventId),
     initiatedEventId: parseInt(initiatedEventId),
+    ...eventAttributes,
+    decisionTaskCompletedEventId: parseInt(decisionTaskCompletedEventId),
   };
 };
 

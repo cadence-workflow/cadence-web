@@ -6,16 +6,18 @@ const formatStartChildWorkflowExecutionFailedEvent = ({
     control,
     decisionTaskCompletedEventId,
     initiatedEventId,
+    cause,
     ...eventAttributes
   },
   ...eventFields
 }: StartChildWorkflowExecutionFailedEvent) => {
   return {
     ...formatWorkflowCommonEventFields(eventFields),
+    cause,
     ...eventAttributes,
     control: control ? parseInt(atob(control)) : null,
-    decisionTaskCompletedEventId: parseInt(decisionTaskCompletedEventId),
     initiatedEventId: parseInt(initiatedEventId),
+    decisionTaskCompletedEventId: parseInt(decisionTaskCompletedEventId),
   };
 };
 

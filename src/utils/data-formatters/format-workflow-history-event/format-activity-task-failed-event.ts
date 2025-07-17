@@ -8,17 +8,19 @@ const formatActivityTaskFailedEvent = ({
     failure,
     scheduledEventId,
     startedEventId,
+    identity,
     ...eventAttributes
   },
   ...eventFields
 }: ActivityTaskFailedEvent) => {
   return {
     ...formatWorkflowCommonEventFields(eventFields),
-    ...eventAttributes,
     details: formatFailureDetails(failure),
     reason: failure?.reason || '',
+    identity,
     scheduledEventId: parseInt(scheduledEventId),
     startedEventId: parseInt(startedEventId),
+    ...eventAttributes,
   };
 };
 

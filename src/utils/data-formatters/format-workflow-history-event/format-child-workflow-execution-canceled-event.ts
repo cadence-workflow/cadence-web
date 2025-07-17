@@ -14,8 +14,8 @@ const formatChildWorkflowExecutionCanceledEvent = ({
 }: ChildWorkflowExecutionCanceledEvent) => {
   return {
     ...formatWorkflowCommonEventFields(eventFields),
-    ...eventAttributes,
     details: formatPayload(details),
+    ...eventAttributes,
     initiatedEventId: parseInt(initiatedEventId),
     startedEventId: parseInt(startedEventId),
   };

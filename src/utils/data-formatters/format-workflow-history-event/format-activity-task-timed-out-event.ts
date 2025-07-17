@@ -22,7 +22,7 @@ const formatActivityTaskTimedOutEvent = ({
     timeoutType: formatEnum(timeoutType, 'TIMEOUT_TYPE', 'pascal'),
     details: formatPayload(details),
     lastFailureDetails: formatFailureDetails(lastFailure),
-    lastFailureReason: lastFailure?.reason || '',
+    lastFailureReason: lastFailure?.reason || null,
     scheduledEventId: parseInt(scheduledEventId),
     startedEventId: parseInt(startedEventId),
   };

@@ -4,13 +4,18 @@ import formatWorkflowCommonEventFields from './format-workflow-common-event-fiel
 import { type WorkflowExecutionTerminatedEvent } from './format-workflow-history-event.type';
 
 const formatWorkflowExecutionTerminatedEvent = ({
-  workflowExecutionTerminatedEventAttributes: { details, ...eventAttributes },
+  workflowExecutionTerminatedEventAttributes: {
+    reason,
+    details,
+    ...eventAttributes
+  },
   ...eventFields
 }: WorkflowExecutionTerminatedEvent) => {
   return {
     ...formatWorkflowCommonEventFields(eventFields),
-    ...eventAttributes,
+    reason: reason || null,
     details: formatPayload(details),
+    ...eventAttributes,
   };
 };
 

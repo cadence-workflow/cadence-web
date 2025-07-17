@@ -11,8 +11,8 @@ const formatRequestCancelExternalWorkflowExecutionInitiatedEvent = ({
 }: RequestCancelExternalWorkflowExecutionInitiatedEvent) => {
   return {
     ...formatWorkflowCommonEventFields(eventFields),
-    ...eventAttributes,
     control: control ? parseInt(atob(control)) : null,
+    ...eventAttributes,
     decisionTaskCompletedEventId: parseInt(decisionTaskCompletedEventId),
   };
 };

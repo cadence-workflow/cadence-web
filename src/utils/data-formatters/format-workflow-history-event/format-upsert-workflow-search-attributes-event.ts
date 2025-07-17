@@ -13,9 +13,9 @@ const formatUpsertWorkflowSearchAttributesEvent = ({
 }: UpsertWorkflowSearchAttributesEvent) => {
   return {
     ...formatWorkflowCommonEventFields(eventFields),
-    ...eventAttributes,
     decisionTaskCompletedEventId: parseInt(decisionTaskCompletedEventId),
     searchAttributes: formatPayloadMap(searchAttributes, 'indexedFields'),
+    ...eventAttributes,
   };
 };
 

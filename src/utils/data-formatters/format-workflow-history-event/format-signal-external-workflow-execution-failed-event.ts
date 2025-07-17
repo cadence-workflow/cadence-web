@@ -4,6 +4,7 @@ import { type SignalExternalWorkflowExecutionFailedEvent } from './format-workfl
 const formatSignalExternalWorkflowExecutionFailedEvent = ({
   signalExternalWorkflowExecutionFailedEventAttributes: {
     control,
+    cause,
     decisionTaskCompletedEventId,
     initiatedEventId,
     ...eventAttributes
@@ -13,9 +14,10 @@ const formatSignalExternalWorkflowExecutionFailedEvent = ({
   return {
     ...formatWorkflowCommonEventFields(eventFields),
     ...eventAttributes,
+    cause,
     control: control ? parseInt(atob(control)) : null,
-    decisionTaskCompletedEventId: parseInt(decisionTaskCompletedEventId),
     initiatedEventId: parseInt(initiatedEventId),
+    decisionTaskCompletedEventId: parseInt(decisionTaskCompletedEventId),
   };
 };
 

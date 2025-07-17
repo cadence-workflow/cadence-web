@@ -17,13 +17,13 @@ const formatDecisionTaskFailedEvent = ({
 }: DecisionTaskFailedEvent) => {
   return {
     ...formatWorkflowCommonEventFields(eventFields),
-    ...eventAttributes,
     details: formatFailureDetails(failure),
     forkEventVersion: parseInt(forkEventVersion),
     reason: failure?.reason || '',
     cause: formatEnum(cause, 'DECISION_TASK_FAILED_CAUSE'),
     scheduledEventId: parseInt(scheduledEventId),
     startedEventId: parseInt(startedEventId),
+    ...eventAttributes,
   };
 };
 

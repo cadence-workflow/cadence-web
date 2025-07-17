@@ -15,11 +15,11 @@ const formatActivityTaskCanceledEvent = ({
 }: ActivityTaskCanceledEvent) => {
   return {
     ...formatWorkflowCommonEventFields(eventFields),
-    ...eventAttributes,
     details: formatPayload(details),
     latestCancelRequestedEventId: parseInt(latestCancelRequestedEventId),
     scheduledEventId: parseInt(scheduledEventId),
     startedEventId: parseInt(startedEventId),
+    ...eventAttributes,
   };
 };
 
