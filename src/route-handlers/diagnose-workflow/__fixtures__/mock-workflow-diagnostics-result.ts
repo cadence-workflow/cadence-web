@@ -1,3 +1,5 @@
+import { type WorkflowDiagnosticsResult } from '../diagnose-workflow.types';
+
 export const mockWorkflowDiagnosticsResult = {
   DiagnosticsResult: {
     Timeouts: null,
@@ -103,4 +105,4 @@ export const mockWorkflowDiagnosticsResult = {
     Retries: null,
   },
   DiagnosticsCompleted: true,
-};
+} as const satisfies WorkflowDiagnosticsResult;
