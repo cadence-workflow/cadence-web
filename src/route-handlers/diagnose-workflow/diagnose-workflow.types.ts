@@ -2,6 +2,7 @@ import { type ZodError, type z } from 'zod';
 
 import { type DefaultMiddlewaresContext } from '@/utils/route-handlers-middleware';
 
+import type workflowDiagnosticsIssuesGroupSchema from './schemas/workflow-diagnostics-issues-group-schema';
 import type workflowDiagnosticsResultSchema from './schemas/workflow-diagnostics-result-schema';
 
 export type RouteParams = {
@@ -17,6 +18,10 @@ export type RequestParams = {
 
 export type WorkflowDiagnosticsResult = z.infer<
   typeof workflowDiagnosticsResultSchema
+>;
+
+export type WorkflowDiagnosticsIssuesGroup = z.infer<
+  typeof workflowDiagnosticsIssuesGroupSchema
 >;
 
 export type DiagnoseWorkflowResponse =

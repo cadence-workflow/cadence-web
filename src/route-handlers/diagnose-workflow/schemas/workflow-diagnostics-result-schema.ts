@@ -1,28 +1,11 @@
 import { z } from 'zod';
 
+import workflowDiagnosticsIssuesGroupSchema from './workflow-diagnostics-issues-group-schema';
+
 const workflowDiagnosticsResultSchema = z.object({
   DiagnosticsResult: z.record(
     z.string(),
-    z
-      .object({
-        Issues: z.array(
-          z.object({
-            IssueID: z.number(),
-            InvariantType: z.string(),
-            Reason: z.string(),
-            Metadata: z.any(),
-          })
-        ),
-        RootCause: z.array(
-          z.object({
-            IssueID: z.number(),
-            RootCauseType: z.string(),
-            Metadata: z.any(),
-          })
-        ),
-        Runbooks: z.array(z.string()),
-      })
-      .or(z.null())
+    workflowDiagnosticsIssuesGroupSchema.or(z.null())
   ),
   DiagnosticsCompleted: z.literal(true),
 });
