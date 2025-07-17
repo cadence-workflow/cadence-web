@@ -61,6 +61,7 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
 ENV CADENCE_WEB_PORT=8088
+ENV CADENCE_WEB_HOSTNAME=0.0.0.0
 
 EXPOSE 8088
 
