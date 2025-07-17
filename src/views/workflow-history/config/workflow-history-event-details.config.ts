@@ -16,6 +16,11 @@ const workflowHistoryEventDetailsConfig = [
     hide: () => true,
   },
   {
+    name: 'Filter unuseful values',
+    pathRegex: '(version|taskId|eventType)$',
+    hide: () => true,
+  },
+  {
     name: 'Not set placeholder',
     customMatcher: ({ value, path }) => {
       return (

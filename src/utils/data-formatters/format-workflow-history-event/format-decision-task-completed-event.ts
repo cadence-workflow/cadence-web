@@ -2,11 +2,19 @@ import formatWorkflowCommonEventFields from './format-workflow-common-event-fiel
 import { type DecisionTaskCompletedEvent } from './format-workflow-history-event.type';
 
 const formatDecisionTaskCompletedEvent = ({
-  decisionTaskCompletedEventAttributes: { ...eventAttributes },
+  decisionTaskCompletedEventAttributes: {
+    executionContext,
+    identity,
+    binaryChecksum,
+    ...eventAttributes
+  },
   ...eventFields
 }: DecisionTaskCompletedEvent) => {
   return {
     ...formatWorkflowCommonEventFields(eventFields),
+    identity,
+    binaryChecksum,
+    executionContext: executionContext || null,
     ...eventAttributes,
   };
 };

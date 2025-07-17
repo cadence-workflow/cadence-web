@@ -14,10 +14,10 @@ const formatChildWorkflowExecutionFailedEvent = ({
 }: ChildWorkflowExecutionFailedEvent) => {
   return {
     ...formatWorkflowCommonEventFields(eventFields),
-    ...eventAttributes,
     details: formatFailureDetails(failure),
-    initiatedEventId: parseInt(initiatedEventId),
     reason: failure?.reason || '',
+    ...eventAttributes,
+    initiatedEventId: parseInt(initiatedEventId),
     startedEventId: parseInt(startedEventId),
   };
 };

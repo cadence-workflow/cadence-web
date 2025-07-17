@@ -22,6 +22,9 @@ const formatStartChildWorkflowExecutionInitiatedEvent = ({
     taskList,
     taskStartToCloseTimeout,
     workflowIdReusePolicy,
+    cronSchedule,
+    jitterStart,
+    firstRunAt,
     ...eventAttributes
   },
   ...eventFields
@@ -29,30 +32,33 @@ const formatStartChildWorkflowExecutionInitiatedEvent = ({
   return {
     ...formatWorkflowCommonEventFields(eventFields),
     ...eventAttributes,
-    control: control ? parseInt(atob(control)) : null,
-    decisionTaskCompletedEventId: parseInt(decisionTaskCompletedEventId),
-    delayStartSeconds: formatDurationToSeconds(delayStart),
-    executionStartToCloseTimeoutSeconds: formatDurationToSeconds(
-      executionStartToCloseTimeout
-    ),
-    header: formatPayloadMap(header, 'fields'),
-    input: formatInputPayload(input),
-    memo: formatPayloadMap(memo, 'fields'),
-    parentClosePolicy: formatEnum(parentClosePolicy, 'PARENT_CLOSE_POLICY'),
-    retryPolicy: formatRetryPolicy(retryPolicy),
-    searchAttributes: formatPayloadMap(searchAttributes, 'indexedFields'),
     taskList: {
       kind: formatEnum(taskList?.kind, 'TASK_LIST_KIND'),
       name: taskList?.name || null,
     },
+    input: formatInputPayload(input),
+    control: control ? parseInt(atob(control)) : null,
+    jitterStart,
+    delayStartSeconds: formatDurationToSeconds(delayStart),
+    firstRunAt,
+    executionStartToCloseTimeoutSeconds: formatDurationToSeconds(
+      executionStartToCloseTimeout
+    ),
     taskStartToCloseTimeoutSeconds: formatDurationToSeconds(
       taskStartToCloseTimeout
     ),
+    retryPolicy: formatRetryPolicy(retryPolicy),
+    parentClosePolicy: formatEnum(parentClosePolicy, 'PARENT_CLOSE_POLICY'),
     workflowIdReusePolicy: formatEnum(
       workflowIdReusePolicy,
       'WORKFLOW_ID_REUSE_POLICY',
       'pascal'
     ),
+    cronSchedule: cronSchedule || null,
+    decisionTaskCompletedEventId: parseInt(decisionTaskCompletedEventId),
+    header: formatPayloadMap(header, 'fields'),
+    memo: formatPayloadMap(memo, 'fields'),
+    searchAttributes: formatPayloadMap(searchAttributes, 'indexedFields'),
   };
 };
 

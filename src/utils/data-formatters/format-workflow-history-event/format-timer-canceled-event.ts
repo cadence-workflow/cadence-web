@@ -12,8 +12,8 @@ const formatTimerCanceledEvent = ({
   return {
     ...formatWorkflowCommonEventFields(eventFields),
     ...eventAttributes,
-    decisionTaskCompletedEventId: parseInt(decisionTaskCompletedEventId),
     startedEventId: parseInt(startedEventId),
+    decisionTaskCompletedEventId: parseInt(decisionTaskCompletedEventId),
   };
 };
 

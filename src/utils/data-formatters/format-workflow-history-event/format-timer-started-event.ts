@@ -14,8 +14,8 @@ const formatTimerStartedEvent = ({
   return {
     ...formatWorkflowCommonEventFields(eventFields),
     ...eventAttributes,
-    decisionTaskCompletedEventId: parseInt(decisionTaskCompletedEventId),
     startToFireTimeoutSeconds: formatDurationToSeconds(startToFireTimeout),
+    decisionTaskCompletedEventId: parseInt(decisionTaskCompletedEventId),
   };
 };
 
