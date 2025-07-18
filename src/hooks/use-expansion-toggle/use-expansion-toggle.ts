@@ -1,7 +1,5 @@
 import { useCallback, useState } from 'react';
 
-import { omit } from 'lodash';
-
 import {
   type UseExpansionToggleReturn,
   type Props,
@@ -37,19 +35,21 @@ export default function useExpansionToggle<T extends string>({
   const toggleIsItemExpanded = useCallback(
     (item: T) => {
       setExpandedItems((prev) => {
-        let newState: Record<string, boolean>;
+        let newState: Record<T, boolean>;
         if (prev === true) {
-          const retainedExpansion = items.reduce(
-            (result, item) => {
-              result[item] = true;
+          newState = items.reduce(
+            (result, i) => {
+              if (i !== item) {
+                result[i] = true;
+              }
               return result;
             },
-            {} as Record<string, boolean>
+            {} as Record<T, boolean>
           );
-          newState = omit(retainedExpansion, item);
         } else {
           if (prev[item] === true) {
-            newState = omit(prev, item);
+            newState = prev;
+            delete newState[item];
           } else {
             newState = {
               ...prev,
