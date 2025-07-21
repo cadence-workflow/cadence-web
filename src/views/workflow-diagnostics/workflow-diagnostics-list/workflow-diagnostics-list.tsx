@@ -20,9 +20,13 @@ export default function WorkflowDiagnosticsList({ diagnosticsResult }: Props) {
                 <WorkflowDiagnosticsIssue
                   key={`${issuesType}.${issue.IssueID}`}
                   issue={issue}
-                  rootCauses={RootCause.filter(
-                    (rootCause) => rootCause.IssueID === issue.IssueID
-                  )}
+                  rootCauses={
+                    RootCause
+                      ? RootCause.filter(
+                          (rootCause) => rootCause.IssueID === issue.IssueID
+                        )
+                      : []
+                  }
                 />
               ))}
             </styled.IssuesGroup>

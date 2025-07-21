@@ -1,5 +1,7 @@
-import { type WorkflowDiagnosticsIssuesGroup } from '@/route-handlers/diagnose-workflow/diagnose-workflow.types';
+import {
+  type WorkflowDiagnosticsRootCause,
+  type WorkflowDiagnosticsIssue,
+} from '@/route-handlers/diagnose-workflow/diagnose-workflow.types';
 
-export type DiagnosticsIssuesGroup = WorkflowDiagnosticsIssuesGroup;
-export type DiagnosticsIssue = DiagnosticsIssuesGroup['Issues'][number];
-export type DiagnosticsRootCause = DiagnosticsIssuesGroup['RootCause'][number];
+export type DiagnosticsIssue = WorkflowDiagnosticsIssue;
+export type DiagnosticsRootCause = WorkflowDiagnosticsRootCause;

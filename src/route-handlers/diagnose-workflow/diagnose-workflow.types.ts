@@ -2,8 +2,9 @@ import { type ZodError, type z } from 'zod';
 
 import { type DefaultMiddlewaresContext } from '@/utils/route-handlers-middleware';
 
-import type workflowDiagnosticsIssuesGroupSchema from './schemas/workflow-diagnostics-issues-group-schema';
+import type workflowDiagnosticsIssueSchema from './schemas/workflow-diagnostics-issue-schema';
 import type workflowDiagnosticsResultSchema from './schemas/workflow-diagnostics-result-schema';
+import type workflowDiagnosticsRootCauseSchema from './schemas/workflow-diagnostics-root-cause-schema';
 
 export type RouteParams = {
   domain: string;
@@ -20,8 +21,12 @@ export type WorkflowDiagnosticsResult = z.infer<
   typeof workflowDiagnosticsResultSchema
 >;
 
-export type WorkflowDiagnosticsIssuesGroup = z.infer<
-  typeof workflowDiagnosticsIssuesGroupSchema
+export type WorkflowDiagnosticsIssue = z.infer<
+  typeof workflowDiagnosticsIssueSchema
+>;
+
+export type WorkflowDiagnosticsRootCause = z.infer<
+  typeof workflowDiagnosticsRootCauseSchema
 >;
 
 export type DiagnoseWorkflowResponse =
