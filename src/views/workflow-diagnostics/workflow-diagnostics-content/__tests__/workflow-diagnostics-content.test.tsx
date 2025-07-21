@@ -82,6 +82,27 @@ describe(WorkflowDiagnosticsContent.name, () => {
     expect(screen.getByText('Is list view enabled: true')).toBeInTheDocument();
     expect(screen.getByText('Active View: list')).toBeInTheDocument();
   });
+
+  it('should handle empty diagnostics result', async () => {
+    setup({
+      diagnosticsResult: {
+        DiagnosticsResult: {
+          Timeouts: null,
+          Failures: {
+            Issues: [],
+            RootCause: [],
+            Runbooks: [],
+          },
+          Retries: null,
+        },
+        DiagnosticsCompleted: true,
+      },
+    });
+
+    expect(
+      await screen.findByText('No issues found with this workflow')
+    ).toBeInTheDocument();
+  });
 });
 
 function setup({

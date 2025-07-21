@@ -10,7 +10,7 @@ export default function WorkflowDiagnosticsList({ diagnosticsResult }: Props) {
     <styled.IssuesGroupsContainer>
       {Object.entries(diagnosticsResult.DiagnosticsResult).map(
         ([issuesType, issuesGroup]) => {
-          if (!issuesGroup) return null;
+          if (!issuesGroup || issuesGroup.Issues.length === 0) return null;
 
           const { Issues, RootCause } = issuesGroup;
           return (

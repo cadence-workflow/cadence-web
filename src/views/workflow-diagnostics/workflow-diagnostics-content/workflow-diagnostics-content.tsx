@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import WorkflowDiagnosticsJson from '../workflow-diagnostics-json/workflow-diagnostics-json';
 import WorkflowDiagnosticsList from '../workflow-diagnostics-list/workflow-diagnostics-list';
@@ -18,6 +18,23 @@ export default function WorkflowDiagnosticsContent({
   diagnosticsResult,
 }: Props) {
   const [activeView, setActiveView] = useState<DiagnosticsViewMode>('list');
+
+  const issuesGroupsWithEntries: Array<string> = useMemo(
+    () =>
+      Object.entries(diagnosticsResult.DiagnosticsResult)
+        .map(([name, issuesGroup]) => {
+          if (!issuesGroup) return null;
+          if (issuesGroup.Issues.length === 0) return null;
+          return name;
+        })
+        .filter((name) => name !== null),
+    [diagnosticsResult.DiagnosticsResult]
+  );
+
+  if (issuesGroupsWithEntries.length === 0) {
+    // TODO: Add a No Issues Found panel
+    return <div>No issues found with this workflow</div>;
+  }
 
   return (
     <>
