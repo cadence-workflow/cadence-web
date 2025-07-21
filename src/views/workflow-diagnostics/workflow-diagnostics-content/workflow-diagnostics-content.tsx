@@ -1,17 +1,13 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
-import { Segment, SegmentedControl } from 'baseui/segmented-control';
-import { MdCode, MdSort } from 'react-icons/md';
-
-import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
-
-import useDiagnoseWorkflow from '../hooks/use-diagnose-workflow/use-diagnose-workflow';
 import WorkflowDiagnosticsJson from '../workflow-diagnostics-json/workflow-diagnostics-json';
 import WorkflowDiagnosticsList from '../workflow-diagnostics-list/workflow-diagnostics-list';
+import WorkflowDiagnosticsViewToggle from '../workflow-diagnostics-view-toggle/workflow-diagnostics-view-toggle';
+import { type DiagnosticsViewMode } from '../workflow-diagnostics-view-toggle/workflow-diagnostics-view-toggle.types';
 
-import { overrides, styled } from './workflow-diagnostics-content.styles';
+import { styled } from './workflow-diagnostics-content.styles';
 import { type Props } from './workflow-diagnostics-content.types';
 
 export default function WorkflowDiagnosticsContent({
@@ -19,65 +15,35 @@ export default function WorkflowDiagnosticsContent({
   cluster,
   workflowId,
   runId,
+  diagnosticsResult,
 }: Props) {
-  const { data, error, status } = useDiagnoseWorkflow({
-    domain,
-    cluster,
-    workflowId,
-    runId,
-  });
-
-  const [activeView, setActiveView] = useState<'list' | 'json'>('list');
-  useEffect(() => {
-    if (data?.parsingError) {
-      setActiveView('json');
-    }
-  }, [data?.parsingError]);
-
-  if (status === 'pending') {
-    return <SectionLoadingIndicator />;
-  }
-
-  if (status === 'error') {
-    throw error;
-  }
-
-  const ViewComponent =
-    activeView === 'list' ? WorkflowDiagnosticsList : WorkflowDiagnosticsJson;
+  const [activeView, setActiveView] = useState<DiagnosticsViewMode>('list');
 
   return (
-    <styled.PageSection>
+    <>
       <styled.ButtonsContainer>
-        <SegmentedControl
-          activeKey={activeView}
-          onChange={({ activeKey }) => {
-            setActiveView(activeKey === 'list' ? 'list' : 'json');
-          }}
-          overrides={overrides.viewToggle}
-        >
-          <Segment
-            key="list"
-            disabled={Boolean(data.parsingError)}
-            artwork={() => <MdSort />}
-            label="List"
-            overrides={overrides.viewToggleSegment}
-          />
-          <Segment
-            key="json"
-            artwork={() => <MdCode />}
-            label="JSON"
-            overrides={overrides.viewToggleSegment}
-          />
-        </SegmentedControl>
-        {/* Add a button here to expand all diagnostics issues, hide in JSON mode ofc */}
+        <WorkflowDiagnosticsViewToggle
+          listEnabled
+          activeView={activeView}
+          setActiveView={setActiveView}
+        />
+        {/* TODO: Add a button here to expand all diagnostics issues, hide in JSON mode ofc */}
       </styled.ButtonsContainer>
-      <ViewComponent
-        domain={domain}
-        cluster={cluster}
-        workflowId={workflowId}
-        runId={runId}
-        diagnosticsResponse={data}
-      />
-    </styled.PageSection>
+      {activeView === 'list' ? (
+        <WorkflowDiagnosticsList
+          domain={domain}
+          cluster={cluster}
+          workflowId={workflowId}
+          runId={runId}
+          diagnosticsResult={diagnosticsResult}
+        />
+      ) : (
+        <WorkflowDiagnosticsJson
+          workflowId={workflowId}
+          runId={runId}
+          diagnosticsResult={diagnosticsResult}
+        />
+      )}
+    </>
   );
 }
