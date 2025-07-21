@@ -27,7 +27,7 @@ export default function WorkflowDiagnosticsContent({
           if (issuesGroup.Issues.length === 0) return null;
           return name;
         })
-        .filter((name) => name !== null),
+        .filter((name) => name !== null) as Array<string>,
     [diagnosticsResult.DiagnosticsResult]
   );
 
