@@ -16,7 +16,7 @@ const workflowHistoryEventDetailsConfig = [
     hide: () => true,
   },
   {
-    name: 'Filter unuseful values',
+    name: 'Filter unneeded values',
     pathRegex: '(version|taskId|eventType)$',
     hide: () => true,
   },

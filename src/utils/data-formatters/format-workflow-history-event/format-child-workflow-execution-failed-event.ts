@@ -15,7 +15,7 @@ const formatChildWorkflowExecutionFailedEvent = ({
   return {
     ...formatWorkflowCommonEventFields(eventFields),
     details: formatFailureDetails(failure),
-    reason: failure?.reason || '',
+    reason: failure?.reason || null,
     ...eventAttributes,
     initiatedEventId: parseInt(initiatedEventId),
     startedEventId: parseInt(startedEventId),

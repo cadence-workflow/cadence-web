@@ -16,7 +16,7 @@ const formatActivityTaskFailedEvent = ({
   return {
     ...formatWorkflowCommonEventFields(eventFields),
     details: formatFailureDetails(failure),
-    reason: failure?.reason || '',
+    reason: failure?.reason || null,
     identity,
     scheduledEventId: parseInt(scheduledEventId),
     startedEventId: parseInt(startedEventId),

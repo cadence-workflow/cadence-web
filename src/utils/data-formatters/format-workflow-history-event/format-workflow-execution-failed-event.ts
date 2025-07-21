@@ -14,7 +14,7 @@ const formatWorkflowExecutionFailedEvent = ({
 }: WorkflowExecutionFailedEvent) => {
   return {
     ...formatWorkflowCommonEventFields(eventFields),
-    reason: failure?.reason || '',
+    reason: failure?.reason || null,
     details: formatFailureDetails(failure),
     decisionTaskCompletedEventId: formatWorkflowEventId(
       decisionTaskCompletedEventId
