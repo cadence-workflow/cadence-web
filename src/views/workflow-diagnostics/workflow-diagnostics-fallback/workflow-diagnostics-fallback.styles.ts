@@ -2,4 +2,5 @@ import { styled as contentStyledComponents } from '../workflow-diagnostics-conte
 
 export const styled = {
   ButtonsContainer: contentStyledComponents.ButtonsContainer,
+  PageSection: contentStyledComponents.PageSection,
 };

@@ -13,7 +13,6 @@ import workflowDiagnosticsDisabledErrorPanelConfig from './config/workflow-diagn
 import useDiagnoseWorkflow from './hooks/use-diagnose-workflow/use-diagnose-workflow';
 import WorkflowDiagnosticsContent from './workflow-diagnostics-content/workflow-diagnostics-content';
 import WorkflowDiagnosticsFallback from './workflow-diagnostics-fallback/workflow-diagnostics-fallback';
-import { styled } from './workflow-diagnostics.styles';
 
 export default function WorkflowDiagnostics({
   params,
@@ -41,19 +40,9 @@ export default function WorkflowDiagnostics({
     throw error;
   }
 
-  return (
-    <styled.PageSection>
-      {data.parsingError ? (
-        <WorkflowDiagnosticsFallback
-          {...params}
-          diagnosticsResult={data.result}
-        />
-      ) : (
-        <WorkflowDiagnosticsContent
-          {...params}
-          diagnosticsResult={data.result}
-        />
-      )}
-    </styled.PageSection>
+  return data.parsingError ? (
+    <WorkflowDiagnosticsFallback {...params} diagnosticsResult={data.result} />
+  ) : (
+    <WorkflowDiagnosticsContent {...params} diagnosticsResult={data.result} />
   );
 }
