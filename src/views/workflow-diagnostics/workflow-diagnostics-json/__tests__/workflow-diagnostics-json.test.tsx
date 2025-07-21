@@ -1,9 +1,6 @@
-import { ZodError } from 'zod';
-
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import { mockWorkflowDiagnosticsResult } from '@/route-handlers/diagnose-workflow/__fixtures__/mock-workflow-diagnostics-result';
-import { type DiagnoseWorkflowResponse } from '@/route-handlers/diagnose-workflow/diagnose-workflow.types';
 
 import WorkflowDiagnosticsJson from '../workflow-diagnostics-json';
 
@@ -23,11 +20,6 @@ jest.mock('@/components/pretty-json/pretty-json', () =>
     <div data-testid="pretty-json">{JSON.stringify(json)}</div>
   ))
 );
-
-const mockDiagnosticsResponse = {
-  result: mockWorkflowDiagnosticsResult,
-  parsingError: null,
-};
 
 describe(WorkflowDiagnosticsJson.name, () => {
   beforeEach(() => {
@@ -55,19 +47,16 @@ describe(WorkflowDiagnosticsJson.name, () => {
     await user.click(downloadButton);
 
     expect(mockDownloadJson).toHaveBeenCalledWith(
-      mockDiagnosticsResponse.result,
+      mockWorkflowDiagnosticsResult,
       'diagnostics_test-workflow-id_test-run-id'
     );
   });
 
   it('renders with empty diagnostics result', () => {
     setup({
-      diagnosticsResponse: {
-        result: {
-          DiagnosticsResult: {},
-          DiagnosticsCompleted: true,
-        },
-        parsingError: null,
+      diagnosticsResult: {
+        DiagnosticsResult: {},
+        DiagnosticsCompleted: true,
       },
     });
 
@@ -77,16 +66,13 @@ describe(WorkflowDiagnosticsJson.name, () => {
     );
   });
 
-  it('renders JSON even if there is a parsing error', () => {
+  it('renders JSON with invalid data structure', () => {
     setup({
-      diagnosticsResponse: {
-        result: {
-          DiagnosticsResult: {
-            invalidParsedField: 'invalid-value',
-          },
-          DiagnosticsCompleted: true,
+      diagnosticsResult: {
+        DiagnosticsResult: {
+          invalidParsedField: 'invalid-value',
         },
-        parsingError: new ZodError([]),
+        DiagnosticsCompleted: true,
       },
     });
 
@@ -98,17 +84,15 @@ describe(WorkflowDiagnosticsJson.name, () => {
 });
 
 function setup({
-  diagnosticsResponse = mockDiagnosticsResponse,
+  diagnosticsResult = mockWorkflowDiagnosticsResult,
 }: {
-  diagnosticsResponse?: DiagnoseWorkflowResponse;
+  diagnosticsResult?: any;
 }) {
   const user = userEvent.setup();
   const defaultProps = {
-    domain: 'test-domain',
-    cluster: 'test-cluster',
     workflowId: 'test-workflow-id',
     runId: 'test-run-id',
-    diagnosticsResponse,
+    diagnosticsResult,
   };
 
   const view = render(<WorkflowDiagnosticsJson {...defaultProps} />);

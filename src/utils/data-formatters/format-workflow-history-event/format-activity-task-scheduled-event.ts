@@ -26,11 +26,12 @@ const formatActivityTaskScheduledEvent = ({
   return {
     ...formatWorkflowCommonEventFields(eventFields),
     ...eventAttributes,
-    decisionTaskCompletedEventId: parseInt(decisionTaskCompletedEventId),
-    domain: domain || null,
-    header: formatPayloadMap(header, 'fields'),
-    heartbeatTimeoutSeconds: formatDurationToSeconds(heartbeatTimeout),
+    taskList: {
+      kind: formatEnum(taskList?.kind, 'TASK_LIST_KIND'),
+      name: taskList?.name || null,
+    },
     input: formatInputPayload(input),
+    heartbeatTimeoutSeconds: formatDurationToSeconds(heartbeatTimeout),
     retryPolicy: formatRetryPolicy(retryPolicy),
     scheduleToCloseTimeoutSeconds: formatDurationToSeconds(
       scheduleToCloseTimeout
@@ -39,10 +40,9 @@ const formatActivityTaskScheduledEvent = ({
       scheduleToStartTimeout
     ),
     startToCloseTimeoutSeconds: formatDurationToSeconds(startToCloseTimeout),
-    taskList: {
-      kind: formatEnum(taskList?.kind, 'TASK_LIST_KIND'),
-      name: taskList?.name || null,
-    },
+    domain: domain || null,
+    decisionTaskCompletedEventId: parseInt(decisionTaskCompletedEventId),
+    header: formatPayloadMap(header, 'fields'),
   };
 };
 

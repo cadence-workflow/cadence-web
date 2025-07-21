@@ -14,9 +14,9 @@ const formatChildWorkflowExecutionCompletedEvent = ({
 }: ChildWorkflowExecutionCompletedEvent) => {
   return {
     ...formatWorkflowCommonEventFields(eventFields),
+    result: formatPayload(result),
     ...eventAttributes,
     initiatedEventId: parseInt(initiatedEventId),
-    result: formatPayload(result),
     startedEventId: parseInt(startedEventId),
   };
 };

@@ -14,8 +14,8 @@ const formatChildWorkflowExecutionStartedEvent = ({
   return {
     ...formatWorkflowCommonEventFields(eventFields),
     ...eventAttributes,
-    header: formatPayloadMap(header, 'fields'),
     initiatedEventId: parseInt(initiatedEventId),
+    header: formatPayloadMap(header, 'fields'),
   };
 };
 

@@ -8,16 +8,18 @@ const formatActivityTaskCompletedEvent = ({
     result,
     scheduledEventId,
     startedEventId,
+    identity,
     ...eventAttributes
   },
   ...eventFields
 }: ActivityTaskCompletedEvent) => {
   return {
     ...formatWorkflowCommonEventFields(eventFields),
-    ...eventAttributes,
     result: formatPayload(result),
+    identity,
     scheduledEventId: parseInt(scheduledEventId),
     startedEventId: parseInt(startedEventId),
+    ...eventAttributes,
   };
 };
 

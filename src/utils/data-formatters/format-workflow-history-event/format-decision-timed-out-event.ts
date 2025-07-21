@@ -9,17 +9,19 @@ const formatDecisionTaskTimedOutEvent = ({
     scheduledEventId,
     startedEventId,
     cause,
+    reason,
     ...eventAttributes
   },
   ...eventFields
 }: DecisionTaskTimedOutEvent) => {
   return {
     ...formatWorkflowCommonEventFields(eventFields),
-    ...eventAttributes,
     cause: formatEnum(cause, 'DECISION_TASK_TIMED_OUT_CAUSE'),
+    reason,
     forkEventVersion: parseInt(forkEventVersion),
     scheduledEventId: parseInt(scheduledEventId),
     startedEventId: parseInt(startedEventId),
+    ...eventAttributes,
   };
 };
 

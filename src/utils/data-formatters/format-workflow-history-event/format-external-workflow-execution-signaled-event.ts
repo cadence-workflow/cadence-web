@@ -11,9 +11,9 @@ const formatExternalWorkflowExecutionSignaledEvent = ({
 }: ExternalWorkflowExecutionSignaledEvent) => {
   return {
     ...formatWorkflowCommonEventFields(eventFields),
-    ...eventAttributes,
     control: control ? parseInt(atob(control)) : null,
     initiatedEventId: parseInt(initiatedEventId),
+    ...eventAttributes,
   };
 };
 

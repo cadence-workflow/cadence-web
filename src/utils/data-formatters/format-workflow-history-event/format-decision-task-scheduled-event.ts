@@ -14,12 +14,12 @@ const formatDecisionTaskScheduledEvent = ({
 }: DecisionTaskScheduledEvent) => {
   return {
     ...formatWorkflowCommonEventFields(eventFields),
-    ...eventAttributes,
     taskList: {
       kind: formatEnum(taskList?.kind, 'TASK_LIST_KIND'),
       name: taskList?.name || null,
     },
     startToCloseTimeoutSeconds: formatDurationToSeconds(startToCloseTimeout),
+    ...eventAttributes,
   };
 };
 
