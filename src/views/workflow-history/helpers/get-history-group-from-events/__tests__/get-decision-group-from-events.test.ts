@@ -310,4 +310,27 @@ describe('getDecisionGroupFromEvents', () => {
     ]);
     expect(groupWithMissingCloseEvent.closeTimeMs).toEqual(null);
   });
+
+  it('should include negativeFields for failed decision events', () => {
+    const events: ExtendedDecisionHistoryEvent[] = [
+      scheduleDecisionTaskEvent,
+      startDecisionTaskEvent,
+      failedDecisionTaskEvent,
+    ];
+    const group = getDecisionGroupFromEvents(events);
+
+    // The failed event should have negativeFields
+    const failedEventMetadata = group.eventsMetadata.find(
+      (metadata) => metadata.status === 'FAILED'
+    );
+    expect(failedEventMetadata?.negativeFields).toEqual(['reason', 'details']);
+
+    // Other events should not have negativeFields
+    const otherEventsMetadata = group.eventsMetadata.filter(
+      (metadata) => metadata.status !== 'FAILED'
+    );
+    otherEventsMetadata.forEach((metadata) => {
+      expect(metadata.negativeFields).toBeUndefined();
+    });
+  });
 });

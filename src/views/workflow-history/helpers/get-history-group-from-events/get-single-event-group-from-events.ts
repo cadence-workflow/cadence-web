@@ -1,4 +1,5 @@
 import type {
+  HistoryGroupEventStatusToNegativeFieldsMap,
   HistoryGroupEventToStatusMap,
   HistoryGroupEventToStringMap,
   SingleEventHistoryGroup,
@@ -79,6 +80,16 @@ export default function getSingleEventGroupFromEvents(
     workflowExecutionContinuedAsNewEventAttributes: 'COMPLETED',
   };
 
+  const eventStatusToNegativeFields: HistoryGroupEventStatusToNegativeFieldsMap<SingleEventHistoryGroup> =
+    {
+      workflowExecutionFailedEventAttributes: ['details', 'reason'],
+      workflowExecutionTerminatedEventAttributes: ['details', 'reason'],
+      workflowExecutionContinuedAsNewEventAttributes: [
+        'failureDetails',
+        'failureReason',
+      ],
+    };
+
   return {
     label,
     hasMissingEvents,
@@ -89,7 +100,8 @@ export default function getSingleEventGroupFromEvents(
       eventToStatus,
       eventToLabel,
       {},
-      undefined
+      undefined,
+      eventStatusToNegativeFields
     ),
   };
 }

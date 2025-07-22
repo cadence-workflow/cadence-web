@@ -311,4 +311,53 @@ describe('getActivityGroupFromEvents', () => {
 
     expect(group.shortLabel).toBeUndefined();
   });
+
+  it('should include negativeFields for failed activity events', () => {
+    const events: ExtendedActivityHistoryEvent[] = [
+      scheduleActivityTaskEvent,
+      startActivityTaskEvent,
+      failedActivityTaskEvent,
+    ];
+    const group = getActivityGroupFromEvents(events);
+
+    // The failed event should have negativeFields
+    const failedEventMetadata = group.eventsMetadata.find(
+      (metadata) => metadata.status === 'FAILED'
+    );
+    expect(failedEventMetadata?.negativeFields).toEqual(['reason', 'details']);
+
+    // Other events should not have negativeFields
+    const otherEventsMetadata = group.eventsMetadata.filter(
+      (metadata) => metadata.status !== 'FAILED'
+    );
+    otherEventsMetadata.forEach((metadata) => {
+      expect(metadata.negativeFields).toBeUndefined();
+    });
+  });
+
+  it('should include negativeFields for timed out activity events', () => {
+    const events: ExtendedActivityHistoryEvent[] = [
+      scheduleActivityTaskEvent,
+      startActivityTaskEvent,
+      timeoutActivityTaskEvent,
+    ];
+    const group = getActivityGroupFromEvents(events);
+
+    // The timed out event should have negativeFields
+    const timedOutEventMetadata = group.eventsMetadata.find(
+      (metadata) => metadata.status === 'FAILED' // timeout events have FAILED status
+    );
+    expect(timedOutEventMetadata?.negativeFields).toEqual([
+      'reason',
+      'details',
+    ]);
+
+    // Other events should not have negativeFields
+    const otherEventsMetadata = group.eventsMetadata.filter(
+      (metadata) => metadata.status !== 'FAILED'
+    );
+    otherEventsMetadata.forEach((metadata) => {
+      expect(metadata.negativeFields).toBeUndefined();
+    });
+  });
 });
