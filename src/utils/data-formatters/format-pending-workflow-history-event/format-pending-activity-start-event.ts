@@ -20,17 +20,17 @@ export default function formatPendingActivityTaskStartEvent({
   eventTime,
 }: PendingActivityTaskStartEvent) {
   return {
-    ...eventAttributes,
     eventTime: formatTimestampToDatetime(eventTime),
     eventType: 'PendingActivityTaskStart',
+    ...eventAttributes,
     state: formatEnum(state, 'PENDING_ACTIVITY_STATE', 'pascal'),
-    scheduleId: parseInt(scheduleId),
+    lastFailureDetails: formatFailureDetails(lastFailure),
+    lastFailureReason: lastFailure?.reason || null,
+    heartbeatDetails: formatPayload(heartbeatDetails),
+    scheduledTime: formatTimestampToDatetime(scheduledTime),
     lastHeartbeatTime: formatTimestampToDatetime(lastHeartbeatTime),
     lastStartedTime: formatTimestampToDatetime(lastStartedTime),
-    scheduledTime: formatTimestampToDatetime(scheduledTime),
     expirationTime: formatTimestampToDatetime(expirationTime),
-    heartbeatDetails: formatPayload(heartbeatDetails),
-    lastFailureDetails: formatFailureDetails(lastFailure),
-    lastFailureReason: lastFailure?.reason,
+    scheduleId: parseInt(scheduleId),
   };
 }

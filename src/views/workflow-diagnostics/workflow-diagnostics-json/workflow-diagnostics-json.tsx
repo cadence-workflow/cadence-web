@@ -8,17 +8,14 @@ import PrettyJson from '@/components/pretty-json/pretty-json';
 import downloadJson from '@/utils/download-json';
 import losslessJsonStringify from '@/utils/lossless-json-stringify';
 
-import { type ViewComponentProps } from '../workflow-diagnostics-content/workflow-diagnostics-content.types';
-
 import { styled, overrides } from './workflow-diagnostics-json.styles';
+import { type Props } from './workflow-diagnostics-json.types';
 
 export default function WorkflowDiagnosticsJson({
   workflowId,
   runId,
-  diagnosticsResponse,
-}: ViewComponentProps) {
-  const diagnosticsResult = diagnosticsResponse.result;
-
+  diagnosticsResult,
+}: Props) {
   const textToCopy = useMemo(() => {
     return losslessJsonStringify(diagnosticsResult, null, '\t');
   }, [diagnosticsResult]);

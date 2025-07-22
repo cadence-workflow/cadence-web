@@ -24,6 +24,7 @@ export type HistoryGroupEventMetadata = {
   status: WorkflowEventStatus;
   timeMs: number | null;
   timeLabel: string;
+  negativeFields?: Array<string>;
 };
 
 export type HistoryGroupBadge = {
@@ -43,6 +44,11 @@ export type HistoryGroupEventToStatusMap<GroupT extends HistoryEventsGroup> =
 
 export type HistoryGroupEventToStringMap<GroupT extends HistoryEventsGroup> =
   Record<GroupT['events'][number]['attributes'], string>;
+
+// TODO: It would be nice if we could map to an explicit fieldKey type instead of a plain string
+export type HistoryGroupEventStatusToNegativeFieldsMap<
+  GroupT extends HistoryEventsGroup,
+> = Partial<Record<GroupT['events'][number]['attributes'], Array<string>>>;
 
 type BaseHistoryGroup = {
   label: string;

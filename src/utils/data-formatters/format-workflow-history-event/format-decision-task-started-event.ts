@@ -2,13 +2,20 @@ import formatWorkflowCommonEventFields from './format-workflow-common-event-fiel
 import { type DecisionTaskStartedEvent } from './format-workflow-history-event.type';
 
 const formatDecisionTaskStartedEvent = ({
-  decisionTaskStartedEventAttributes: { scheduledEventId, ...eventAttributes },
+  decisionTaskStartedEventAttributes: {
+    scheduledEventId,
+    requestId,
+    identity,
+    ...eventAttributes
+  },
   ...eventFields
 }: DecisionTaskStartedEvent) => {
   return {
     ...formatWorkflowCommonEventFields(eventFields),
-    ...eventAttributes,
+    identity,
     scheduledEventId: parseInt(scheduledEventId),
+    requestId,
+    ...eventAttributes,
   };
 };
 

@@ -9,16 +9,18 @@ const formatMarkerRecordedEvent = ({
     decisionTaskCompletedEventId,
     details,
     header,
+    markerName,
     ...eventAttributes
   },
   ...eventFields
 }: MarkerRecordedEvent) => {
   return {
     ...formatWorkflowCommonEventFields(eventFields),
-    ...eventAttributes,
-    decisionTaskCompletedEventId: parseInt(decisionTaskCompletedEventId),
+    markerName,
     details: formatPayload(details),
+    decisionTaskCompletedEventId: parseInt(decisionTaskCompletedEventId),
     header: formatPayloadMap(header, 'fields'),
+    ...eventAttributes,
   };
 };
 

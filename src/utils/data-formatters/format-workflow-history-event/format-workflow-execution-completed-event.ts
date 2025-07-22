@@ -14,11 +14,11 @@ const formatWorkflowExecutionCompletedEvent = ({
 }: WorkflowExecutionCompletedEvent) => {
   return {
     ...formatWorkflowCommonEventFields(eventFields),
-    ...eventAttributes,
+    result: formatPayload(result),
     decisionTaskCompletedEventId: formatWorkflowEventId(
       decisionTaskCompletedEventId
     ),
-    result: formatPayload(result),
+    ...eventAttributes,
   };
 };
 

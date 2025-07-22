@@ -1,6 +1,7 @@
 import type {
   DecisionHistoryGroup,
   ExtendedDecisionHistoryEvent,
+  HistoryGroupEventStatusToNegativeFieldsMap,
   HistoryGroupEventToStatusMap,
   HistoryGroupEventToStringMap,
   PendingDecisionTaskStartEvent,
@@ -101,6 +102,11 @@ export default function getDecisionGroupFromEvents(
     ? 'Started at'
     : 'Scheduled at';
 
+  const eventStatusToNegativeFields: HistoryGroupEventStatusToNegativeFieldsMap<DecisionHistoryGroup> =
+    {
+      decisionTaskFailedEventAttributes: ['reason', 'details'],
+    };
+
   return {
     label,
     hasMissingEvents,
@@ -114,7 +120,8 @@ export default function getDecisionGroupFromEvents(
       {
         pendingDecisionTaskStartEventAttributes: pendingStartEventTimePrefix,
       },
-      closeEvent || timeoutEvent
+      closeEvent || timeoutEvent,
+      eventStatusToNegativeFields
     ),
   };
 }

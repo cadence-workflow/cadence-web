@@ -3,6 +3,7 @@ import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
 
 import { type WorkflowEventStatus } from '../workflow-history-event-status-badge/workflow-history-event-status-badge.types';
 import {
+  type HistoryGroupEventStatusToNegativeFieldsMap,
   type HistoryEventsGroup,
   type HistoryGroupEventToStatusMap,
   type HistoryGroupEventToStringMap,
@@ -12,10 +13,11 @@ export default function getCommonHistoryGroupFields<
   GroupT extends HistoryEventsGroup,
 >(
   events: GroupT['events'],
-  HistoryGroupEventToStatusMap: HistoryGroupEventToStatusMap<GroupT>,
+  historyGroupEventToStatusMap: HistoryGroupEventToStatusMap<GroupT>,
   eventToLabelMap: HistoryGroupEventToStringMap<GroupT>,
   eventToTimeLabelPrefixMap: Partial<HistoryGroupEventToStringMap<GroupT>>,
-  closeEvent: GroupT['events'][number] | null | undefined
+  closeEvent: GroupT['events'][number] | null | undefined,
+  eventStatusToNegativeFieldsMap?: HistoryGroupEventStatusToNegativeFieldsMap<GroupT>
 ): Pick<
   GroupT,
   | 'eventsMetadata'
@@ -28,7 +30,7 @@ export default function getCommonHistoryGroupFields<
 > {
   const eventsMetadata = events.map((event, index) => {
     const attrs = event.attributes as GroupT['events'][number]['attributes'];
-    const getEventStatus = HistoryGroupEventToStatusMap[attrs];
+    const getEventStatus = historyGroupEventToStatusMap[attrs];
     const eventStatus: WorkflowEventStatus =
       typeof getEventStatus === 'function'
         ? getEventStatus(event, events, index)
@@ -38,11 +40,14 @@ export default function getCommonHistoryGroupFields<
       ? eventToTimeLabelPrefixMap[attrs]
       : `${eventToLabelMap[attrs]} at`;
 
+    const negativeFields = eventStatusToNegativeFieldsMap?.[attrs];
+
     return {
       label: eventToLabelMap[attrs],
       status: eventStatus,
       timeMs,
       timeLabel: timeMs ? `${prefix} ${formatDate(timeMs)}` : '',
+      ...(negativeFields?.length ? { negativeFields } : {}),
     };
   });
 
