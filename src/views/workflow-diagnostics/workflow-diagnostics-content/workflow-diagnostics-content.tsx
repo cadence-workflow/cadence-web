@@ -24,7 +24,7 @@ export default function WorkflowDiagnosticsContent({
 }: Props) {
   const [activeView, setActiveView] = useState<DiagnosticsViewMode>('list');
 
-  const issuesGroupsWithEntries: Array<string> = useMemo(
+  const nonEmptyIssueGroups: Array<string> = useMemo(
     () =>
       Object.entries(diagnosticsResult.DiagnosticsResult)
         .map(([name, issuesGroup]) => {
@@ -36,7 +36,7 @@ export default function WorkflowDiagnosticsContent({
     [diagnosticsResult.DiagnosticsResult]
   );
 
-  if (issuesGroupsWithEntries.length === 0) {
+  if (nonEmptyIssueGroups.length === 0) {
     return (
       <PanelSection>
         <styled.NoIssuesContainer>
