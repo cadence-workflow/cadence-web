@@ -10,7 +10,10 @@ import type {
 
 export type Props = {
   events: ExtendedHistoryEvent[];
-  eventsMetadata: Pick<HistoryGroupEventMetadata, 'label' | 'status'>[];
+  eventsMetadata: Pick<
+    HistoryGroupEventMetadata,
+    'label' | 'status' | 'negativeFields'
+  >[];
   showEventPlaceholder?: boolean;
   decodedPageUrlParams: WorfklowHistoryProps['params'];
   getIsEventExpanded: GetIsEventExpanded;

@@ -12,7 +12,10 @@ jest.mock('../helpers/get-details-field-label', () =>
 
 jest.mock(
   '../../workflow-history-event-details-entry/workflow-history-event-details-entry',
-  () => jest.fn(({ entryValue }) => <div>{String(entryValue)}</div>)
+  () =>
+    jest.fn(({ entryValue, isNegative }) => (
+      <div>{`${String(entryValue)}${isNegative ? '-negative' : ''}`}</div>
+    ))
 );
 
 describe(WorkflowHistoryEventDetailsGroup.name, () => {
@@ -76,5 +79,26 @@ describe(WorkflowHistoryEventDetailsGroup.name, () => {
       'details-row'
     );
     expect(field3SubRows).toHaveLength(2);
+  });
+
+  it('passes isNegative prop to WorkflowHistoryEventDetailsEntry when entry has isNegative property', () => {
+    render(
+      <WorkflowHistoryEventDetailsGroup
+        entries={[
+          {
+            key: 'error',
+            path: 'error',
+            isGroup: false,
+            isNegative: true,
+            value: 'error value',
+            renderConfig: null,
+          },
+        ]}
+        decodedPageUrlParams={workflowPageUrlParams}
+      />
+    );
+
+    // The mock component should receive the isNegative prop
+    expect(screen.getByText('error value-negative')).toBeInTheDocument();
   });
 });

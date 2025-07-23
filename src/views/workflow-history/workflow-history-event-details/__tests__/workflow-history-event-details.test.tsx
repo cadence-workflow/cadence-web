@@ -87,4 +87,55 @@ describe(WorkflowHistoryEventDetails.name, () => {
 
     expect(screen.getByText(/"testValue"/)).toBeInTheDocument();
   });
+
+  it('passes negativeFields to generateHistoryEventDetails when provided', () => {
+    const negativeFields = ['reason', 'details'];
+    mockGenerateHistoryEventDetails.mockReturnValue([]);
+
+    render(
+      <WorkflowHistoryEventDetails
+        event={completeActivityTaskEvent}
+        decodedPageUrlParams={workflowPageUrlParams}
+        negativeFields={negativeFields}
+      />
+    );
+
+    expect(mockGenerateHistoryEventDetails).toHaveBeenCalledWith({
+      details: { mockFormatted: true },
+      negativeFields,
+    });
+  });
+
+  it('does not pass negativeFields to generateHistoryEventDetails when not provided', () => {
+    mockGenerateHistoryEventDetails.mockReturnValue([]);
+
+    render(
+      <WorkflowHistoryEventDetails
+        event={completeActivityTaskEvent}
+        decodedPageUrlParams={workflowPageUrlParams}
+      />
+    );
+
+    expect(mockGenerateHistoryEventDetails).toHaveBeenCalledWith({
+      details: { mockFormatted: true },
+    });
+  });
+
+  it('passes empty negativeFields array to generateHistoryEventDetails when provided as empty', () => {
+    const negativeFields: string[] = [];
+    mockGenerateHistoryEventDetails.mockReturnValue([]);
+
+    render(
+      <WorkflowHistoryEventDetails
+        event={completeActivityTaskEvent}
+        decodedPageUrlParams={workflowPageUrlParams}
+        negativeFields={negativeFields}
+      />
+    );
+
+    expect(mockGenerateHistoryEventDetails).toHaveBeenCalledWith({
+      details: { mockFormatted: true },
+      negativeFields,
+    });
+  });
 });
