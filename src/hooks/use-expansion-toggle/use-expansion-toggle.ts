@@ -36,10 +36,10 @@ export default function useExpansionToggle<T extends string>({
     (item: T) => {
       setExpandedItems((prev) => {
         let newState: Record<T, boolean>;
-        if (prev === true) {
+        if (prev === true || prev[item] === true) {
           newState = items.reduce(
             (result, i) => {
-              if (i !== item) {
+              if (i !== item && (prev === true || prev[i] === true)) {
                 result[i] = true;
               }
               return result;
@@ -47,16 +47,12 @@ export default function useExpansionToggle<T extends string>({
             {} as Record<T, boolean>
           );
         } else {
-          if (prev[item] === true) {
-            newState = prev;
-            delete newState[item];
-          } else {
-            newState = {
-              ...prev,
-              [item]: true,
-            };
-          }
+          newState = {
+            ...prev,
+            [item]: true,
+          };
         }
+
         if (items.every((item) => newState[item])) {
           return true;
         }
