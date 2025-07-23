@@ -5,4 +5,4 @@ export type Props = {
   diagnosticsResult: WorkflowDiagnosticsResult;
 } & WorkflowPageParams;
 
-export type IssueID = `${string}.${number}`;
+export type IssueExpansionID = `${string}.${number}`;

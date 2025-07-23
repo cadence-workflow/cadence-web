@@ -2,7 +2,7 @@ import { MdOpenInNew } from 'react-icons/md';
 
 import Link from '@/components/link/link';
 
-import { type IssueID } from '../workflow-diagnostics-content/workflow-diagnostics-content.types';
+import { type IssueExpansionID } from '../workflow-diagnostics-content/workflow-diagnostics-content.types';
 import WorkflowDiagnosticsIssue from '../workflow-diagnostics-issue/workflow-diagnostics-issue';
 
 import { styled } from './workflow-diagnostics-list.styles';
@@ -34,12 +34,12 @@ export default function WorkflowDiagnosticsList({
               )}
             </styled.IssuesTitle>
             {issues.map((issue) => {
-              const issueId: IssueID = `${issuesType}.${issue.issueId}`;
+              const issueExpansionId: IssueExpansionID = `${issuesType}.${issue.issueId}`;
 
               return (
                 <WorkflowDiagnosticsIssue
                   {...workflowPageParams}
-                  key={issueId}
+                  key={issueExpansionId}
                   issue={issue}
                   rootCauses={
                     rootCauses
@@ -48,8 +48,8 @@ export default function WorkflowDiagnosticsList({
                         )
                       : []
                   }
-                  isExpanded={getIsIssueExpanded(issueId)}
-                  onChangePanel={() => toggleIsIssueExpanded(issueId)}
+                  isExpanded={getIsIssueExpanded(issueExpansionId)}
+                  onChangePanel={() => toggleIsIssueExpanded(issueExpansionId)}
                 />
               );
             })}

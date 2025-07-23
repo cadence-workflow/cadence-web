@@ -16,7 +16,10 @@ import WorkflowDiagnosticsViewToggle from '../workflow-diagnostics-view-toggle/w
 import { type DiagnosticsViewMode } from '../workflow-diagnostics-view-toggle/workflow-diagnostics-view-toggle.types';
 
 import { styled } from './workflow-diagnostics-content.styles';
-import { type IssueID, type Props } from './workflow-diagnostics-content.types';
+import {
+  type IssueExpansionID,
+  type Props,
+} from './workflow-diagnostics-content.types';
 
 export default function WorkflowDiagnosticsContent({
   diagnosticsResult,
@@ -41,13 +44,13 @@ export default function WorkflowDiagnosticsContent({
     [diagnosticsResult.result]
   );
 
-  const allIssueIds = useMemo(
+  const allIssueExpansionIds = useMemo(
     () =>
       issuesGroups
         .map(
           ([groupName, issuesGroup]) =>
             issuesGroup?.issues.map(
-              ({ issueId }): IssueID => `${groupName}.${issueId}`
+              ({ issueId }): IssueExpansionID => `${groupName}.${issueId}`
             ) ?? []
         )
         .flat(1),
@@ -59,7 +62,10 @@ export default function WorkflowDiagnosticsContent({
     toggleAreAllItemsExpanded,
     getIsItemExpanded,
     toggleIsItemExpanded,
-  } = useExpansionToggle<IssueID>({ items: allIssueIds, initialState: {} });
+  } = useExpansionToggle<IssueExpansionID>({
+    items: allIssueExpansionIds,
+    initialState: {},
+  });
 
   if (nonEmptyIssuesGroups.length === 0) {
     return (
