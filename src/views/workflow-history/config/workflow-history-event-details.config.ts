@@ -53,8 +53,8 @@ const workflowHistoryEventDetailsConfig = [
     name: 'Json as PrettyJson',
     pathRegex:
       '(input|result|details|failureDetails|Error|lastCompletionResult)$',
-    valueComponent: ({ entryValue }) =>
-      createElement(PrettyJsonViewer, { value: entryValue }),
+    valueComponent: ({ entryValue, isNegative }) =>
+      createElement(PrettyJsonViewer, { value: entryValue, isNegative }),
     forceWrap: true,
   },
   {
