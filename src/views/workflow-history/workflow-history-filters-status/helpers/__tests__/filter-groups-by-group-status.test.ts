@@ -12,6 +12,7 @@ const ACTIVITY_HISTORY_GROUP_COMPLETED: ActivityHistoryGroup = {
   timeLabel: 'Mock time label',
   groupType: 'Activity',
   events: [],
+  firstEventId: null,
 };
 
 describe(filterGroupsByGroupStatus.name, () => {
