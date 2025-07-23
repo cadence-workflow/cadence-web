@@ -2,8 +2,7 @@ import React from 'react';
 
 import { render, screen, within } from '@/test-utils/rtl';
 
-import { mockWorkflowDiagnosticsResult } from '@/route-handlers/diagnose-workflow/__fixtures__/mock-workflow-diagnostics-result';
-
+import { mockWorkflowDiagnosticsIssueGroups } from '../../__fixtures__/mock-workflow-diagnostics-issue-groups';
 import { type Props as IssueProps } from '../../workflow-diagnostics-issue/workflow-diagnostics-issue.types';
 import WorkflowDiagnosticsList from '../workflow-diagnostics-list';
 import { type Props } from '../workflow-diagnostics-list.types';
@@ -110,10 +109,7 @@ describe(WorkflowDiagnosticsList.name, () => {
 
   it('handles empty diagnostics result', () => {
     setup({
-      diagnosticsResult: {
-        result: {},
-        completed: true,
-      },
+      diagnosticsIssuesGroups: [],
     });
 
     // Should render the container but no issue groups
@@ -124,17 +120,17 @@ describe(WorkflowDiagnosticsList.name, () => {
 
   it('hides issues groups with no issues', () => {
     setup({
-      diagnosticsResult: {
-        result: {
-          ...mockWorkflowDiagnosticsResult.result,
-          'Empty Issues Group': {
+      diagnosticsIssuesGroups: [
+        ...mockWorkflowDiagnosticsIssueGroups,
+        [
+          'Empty Issues Group',
+          {
             issues: [],
             rootCauses: [],
             runbook: '',
           },
-        },
-        completed: true,
-      },
+        ],
+      ],
     });
 
     expect(screen.getByText('Failures')).toBeInTheDocument();
@@ -148,7 +144,9 @@ function setup(overrides: Partial<Props>) {
     cluster: 'test-cluster',
     workflowId: 'test-workflow-id',
     runId: 'test-run-id',
-    diagnosticsResult: mockWorkflowDiagnosticsResult,
+    diagnosticsIssuesGroups: mockWorkflowDiagnosticsIssueGroups,
+    getIsIssueExpanded: jest.fn().mockReturnValue(false),
+    toggleIsIssueExpanded: jest.fn(),
     ...overrides,
   };
 
