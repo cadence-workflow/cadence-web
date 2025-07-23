@@ -19,17 +19,9 @@ jest.mock(
   }
 );
 
-<<<<<<< HEAD
 const mockIssue = mockWorkflowDiagnosticsIssueGroups[1][1].issues[0];
 const mockRootCauses =
   mockWorkflowDiagnosticsIssueGroups[1][1].rootCauses.slice(0, 1);
-=======
-const mockIssue = mockWorkflowDiagnosticsIssueGroups[1][1].Issues[0];
-const mockRootCauses = mockWorkflowDiagnosticsIssueGroups[1][1].RootCause.slice(
-  0,
-  1
-);
->>>>>>> 6233ab76 (Add tests)
 
 describe(WorkflowDiagnosticsIssue.name, () => {
   afterEach(() => {
@@ -67,11 +59,7 @@ describe(WorkflowDiagnosticsIssue.name, () => {
   it('renders multiple root causes with correct label', () => {
     const multipleRootCauses = [
       mockRootCauses[0],
-<<<<<<< HEAD
       { ...mockRootCauses[0], rootCauseType: 'Another root cause' },
-=======
-      { ...mockRootCauses[0], RootCauseType: 'Another root cause' },
->>>>>>> 6233ab76 (Add tests)
     ];
 
     setup({ rootCauses: multipleRootCauses, isExpanded: true });
