@@ -1,12 +1,12 @@
 import { createElement } from 'react';
 
+import PrettyJsonViewer from '@/components/pretty-json-viewer/pretty-json-viewer';
 import formatDate from '@/utils/data-formatters/format-date';
 import formatDuration from '@/utils/data-formatters/format-duration';
 import WorkflowEventDetailsExecutionLink from '@/views/shared/workflow-event-details-execution-link/workflow-event-details-execution-link';
 
 import WorkflowHistoryEventDetailsTaskListLink from '../../shared/workflow-history-event-details-task-list-link/workflow-history-event-details-task-list-link';
 import { type WorkflowHistoryEventDetailsConfig } from '../workflow-history-event-details/workflow-history-event-details.types';
-import WorkflowHistoryEventDetailsJson from '../workflow-history-event-details-json/workflow-history-event-details-json';
 import WorkflowHistoryEventDetailsPlaceholderText from '../workflow-history-event-details-placeholder-text/workflow-history-event-details-placeholder-text';
 
 const workflowHistoryEventDetailsConfig = [
@@ -53,7 +53,8 @@ const workflowHistoryEventDetailsConfig = [
     name: 'Json as PrettyJson',
     pathRegex:
       '(input|result|details|failureDetails|Error|lastCompletionResult)$',
-    valueComponent: WorkflowHistoryEventDetailsJson,
+    valueComponent: ({ entryValue }) =>
+      createElement(PrettyJsonViewer, { value: entryValue }),
     forceWrap: true,
   },
   {
