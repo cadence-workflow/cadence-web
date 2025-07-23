@@ -27,6 +27,7 @@ export default function getCommonHistoryGroupFields<
   | 'timeLabel'
   | 'closeTimeMs'
   | 'startTimeMs'
+  | 'firstEventId'
 > {
   const eventsMetadata = events.map((event, index) => {
     const attrs = event.attributes as GroupT['events'][number]['attributes'];
@@ -51,6 +52,7 @@ export default function getCommonHistoryGroupFields<
     };
   });
 
+  const groupFirstEventId = events[0].eventId;
   const groupStatus = eventsMetadata[eventsMetadata.length - 1].status;
   const groupTimeMs = eventsMetadata[eventsMetadata.length - 1].timeMs;
   const groupStartTimeMs = eventsMetadata[0].timeMs;
@@ -67,5 +69,6 @@ export default function getCommonHistoryGroupFields<
     startTimeMs: groupStartTimeMs,
     closeTimeMs: groupCloseTimeMs,
     timeLabel: groupTimeLabel,
+    firstEventId: groupFirstEventId,
   };
 }

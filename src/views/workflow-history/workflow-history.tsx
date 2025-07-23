@@ -37,6 +37,7 @@ import { useSuspenseDescribeWorkflow } from '../workflow-page/hooks/use-describe
 import workflowHistoryFiltersConfig from './config/workflow-history-filters.config';
 import WORKFLOW_HISTORY_PAGE_SIZE_CONFIG from './config/workflow-history-page-size.config';
 import compareUngroupedEvents from './helpers/compare-ungrouped-events';
+import getSortableEventId from './helpers/get-sortable-event-id';
 import getVisibleGroupsHasMissingEvents from './helpers/get-visible-groups-has-missing-events';
 import { groupHistoryEvents } from './helpers/group-history-events';
 import pendingActivitiesInfoToEvents from './helpers/pending-activities-info-to-events';
@@ -150,7 +151,7 @@ export default function WorkflowHistory({ params }: Props) {
     () =>
       sortBy(
         Object.entries(eventGroups),
-        ([_, { timeMs }]) => timeMs,
+        ([_, { firstEventId }]) => getSortableEventId(firstEventId),
         'ASC'
       ).filter(([_, g]) =>
         workflowHistoryFiltersConfig.every((f) =>
