@@ -8,6 +8,7 @@ import {
 } from '@/views/workflow-history/__fixtures__/workflow-history-activity-events';
 import {
   pendingActivityTaskStartEvent,
+  pendingActivityTaskStartEventWithCancelRequestedState,
   pendingActivityTaskStartEventWithStartedState,
 } from '@/views/workflow-history/__fixtures__/workflow-history-pending-events';
 import * as shortenGroupLabelsConfigModule from '@/views/workflow-history/config/workflow-history-should-shorten-group-labels.config';
@@ -118,6 +119,34 @@ describe('getActivityGroupFromEvents', () => {
     ];
     const group = getActivityGroupFromEvents(events);
     expect(group.groupType).toBe('Activity');
+  });
+
+  it('should return a group with correct label for pending activity event', () => {
+    const events: ExtendedActivityHistoryEvent[] = [
+      scheduleActivityTaskEvent,
+      pendingActivityTaskStartEvent,
+    ];
+    const group = getActivityGroupFromEvents(events);
+    expect(group.eventsMetadata[1].label).toBe('Starting');
+
+    const eventsWithStartedState = getActivityGroupFromEvents([
+      scheduleActivityTaskEvent,
+      pendingActivityTaskStartEventWithStartedState,
+    ]);
+    expect(eventsWithStartedState.eventsMetadata[1].label).toBe('Running');
+
+    const eventsWithCanceledState = getActivityGroupFromEvents([
+      scheduleActivityTaskEvent,
+      pendingActivityTaskStartEventWithCancelRequestedState,
+    ]);
+    expect(eventsWithCanceledState.eventsMetadata[1].label).toBe('Cancelling');
+
+    const eventsWithInvalidState = getActivityGroupFromEvents([
+      scheduleActivityTaskEvent,
+      // @ts-expect-error - state is not defined in the type
+      { ...pendingActivityTaskStartEvent, state: undefined },
+    ]);
+    expect(eventsWithInvalidState.eventsMetadata[1].label).toBe('Starting');
   });
 
   it('should return group eventsMetadata with correct labels', () => {
