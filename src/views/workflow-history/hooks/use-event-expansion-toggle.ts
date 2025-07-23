@@ -11,6 +11,7 @@ import {
   type ToggleIsExpandAllEvents,
 } from './use-event-expansion-toggle.types';
 
+// TODO @adhitya.mamallan - replace this with the generic useExpansionToggle hook
 export default function useEventExpansionToggle({
   initialState = {},
   visibleEvents,

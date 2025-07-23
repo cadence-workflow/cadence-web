@@ -67,6 +67,7 @@ export default function WorkflowHistoryEventsCard({
             <WorkflowHistoryEventDetails
               event={event}
               decodedPageUrlParams={decodedPageUrlParams}
+              negativeFields={eventMetadata.negativeFields}
             />
           </Panel>
         );
