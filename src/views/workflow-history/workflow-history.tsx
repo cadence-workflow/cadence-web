@@ -1,5 +1,11 @@
 'use client';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import {
   useSuspenseInfiniteQuery,
@@ -304,6 +310,33 @@ export default function WorkflowHistory({ params }: Props) {
   const timelineSectionListRef = useRef<VirtuosoHandle>(null);
   const ungroupedTableRef = useRef<VirtuosoHandle>(null);
 
+  useEffect(() => {
+    if (
+      queryParams.ungroupedHistoryViewEnabled ||
+      !shouldSearchForInitialEvent ||
+      !initialEventFound ||
+      !initialEventGroupIndex
+    )
+      return;
+
+    compactSectionListRef.current?.scrollToIndex({
+      index: initialEventGroupIndex,
+      align: 'start',
+      behavior: 'auto',
+    });
+
+    timelineSectionListRef.current?.scrollToIndex({
+      index: initialEventGroupIndex,
+      align: 'start',
+      behavior: 'auto',
+    });
+  }, [
+    shouldSearchForInitialEvent,
+    initialEventFound,
+    initialEventGroupIndex,
+    queryParams.ungroupedHistoryViewEnabled,
+  ]);
+
   if (contentIsLoading) {
     return <SectionLoadingIndicator />;
   }
@@ -445,11 +478,6 @@ export default function WorkflowHistory({ params }: Props) {
                       compactEndIndex: endIndex,
                     }))
                   }
-                  {...(initialEventGroupIndex === undefined
-                    ? {}
-                    : {
-                        initialTopMostItemIndex: initialEventGroupIndex,
-                      })}
                   itemContent={(index, [groupId, group]) => (
                     <div role="listitem" className={cls.compactCardContainer}>
                       <WorkflowHistoryCompactEventCard
@@ -501,15 +529,6 @@ export default function WorkflowHistory({ params }: Props) {
                       endIndex,
                     }))
                   }
-                  {...(initialEventGroupIndex === undefined
-                    ? {}
-                    : {
-                        initialTopMostItemIndex: {
-                          index: initialEventGroupIndex,
-                          align: 'start',
-                          behavior: 'auto',
-                        },
-                      })}
                   itemContent={(index, [groupId, group]) => (
                     <WorkflowHistoryTimelineGroup
                       key={groupId}
