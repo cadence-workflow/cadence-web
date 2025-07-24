@@ -60,6 +60,7 @@ type BaseHistoryGroup = {
   startTimeMs: number | null;
   closeTimeMs?: number | null;
   timeLabel: string;
+  firstEventId: string | null;
   badges?: HistoryGroupBadge[];
   resetToDecisionEventId?: string | null;
 };

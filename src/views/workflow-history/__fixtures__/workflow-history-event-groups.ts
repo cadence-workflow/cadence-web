@@ -26,6 +26,7 @@ export const mockActivityEventGroup: ActivityHistoryGroup = {
   startTimeMs: 1725747370599,
   timeLabel: 'Mock time label',
   events: completedActivityTaskEvents,
+  firstEventId: completedActivityTaskEvents[0].eventId,
 };
 
 export const mockDecisionEventGroup: DecisionHistoryGroup = {
@@ -38,6 +39,7 @@ export const mockDecisionEventGroup: DecisionHistoryGroup = {
   startTimeMs: 1725747370599,
   timeLabel: 'Mock time label',
   events: completedDecisionTaskEvents,
+  firstEventId: completedDecisionTaskEvents[0].eventId,
 };
 
 export const mockTimerEventGroup: TimerHistoryGroup = {
@@ -50,6 +52,7 @@ export const mockTimerEventGroup: TimerHistoryGroup = {
   startTimeMs: 1725747380000,
   timeLabel: 'Mock time label',
   events: [startTimerTaskEvent],
+  firstEventId: startTimerTaskEvent.eventId,
 };
 
 export const mockChildWorkflowEventGroup: ChildWorkflowExecutionHistoryGroup = {
@@ -62,6 +65,7 @@ export const mockChildWorkflowEventGroup: ChildWorkflowExecutionHistoryGroup = {
   startTimeMs: 1725769671830,
   timeLabel: 'Mock time label',
   events: completedChildWorkflowEvents,
+  firstEventId: completedChildWorkflowEvents[0].eventId,
 };
 
 export const mockSignalExternalWorkflowEventGroup: SignalExternalWorkflowExecutionHistoryGroup =
@@ -75,6 +79,7 @@ export const mockSignalExternalWorkflowEventGroup: SignalExternalWorkflowExecuti
     startTimeMs: 1725769470356,
     timeLabel: 'Mock time label',
     events: signaledExternalWorkflowEvents,
+    firstEventId: signaledExternalWorkflowEvents[0].eventId,
   };
 
 export const mockRequestCancelExternalWorkflowEventGroup: RequestCancelExternalWorkflowExecutionHistoryGroup =
@@ -88,6 +93,7 @@ export const mockRequestCancelExternalWorkflowEventGroup: RequestCancelExternalW
     startTimeMs: 1725749470886,
     timeLabel: 'Mock time label',
     events: requestedCancelExternalWorkflowEvents,
+    firstEventId: requestedCancelExternalWorkflowEvents[0].eventId,
   };
 
 export const mockSingleEventGroup: SingleEventHistoryGroup = {
@@ -100,4 +106,5 @@ export const mockSingleEventGroup: SingleEventHistoryGroup = {
   startTimeMs: 1725747380000,
   timeLabel: 'Mock time label',
   events: [startWorkflowExecutionEvent],
+  firstEventId: startWorkflowExecutionEvent.eventId,
 };
