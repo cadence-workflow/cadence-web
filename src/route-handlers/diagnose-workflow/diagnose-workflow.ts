@@ -77,7 +77,10 @@ export async function diagnoseWorkflow(
     return NextResponse.json(
       (error
         ? {
-            result: unparsedResult,
+            result: {
+              completed: unparsedResult.DiagnosticsCompleted,
+              result: unparsedResult.DiagnosticsResult,
+            },
             parsingError: error,
           }
         : {

@@ -86,16 +86,16 @@ describe(WorkflowDiagnosticsContent.name, () => {
   it('should handle empty diagnostics result', async () => {
     setup({
       diagnosticsResult: {
-        DiagnosticsResult: {
+        result: {
           Timeouts: null,
           Failures: {
-            Issues: [],
-            RootCause: [],
-            Runbooks: [],
+            issues: [],
+            rootCauses: [],
+            runbook: '',
           },
           Retries: null,
         },
-        DiagnosticsCompleted: true,
+        completed: true,
       },
     });
 

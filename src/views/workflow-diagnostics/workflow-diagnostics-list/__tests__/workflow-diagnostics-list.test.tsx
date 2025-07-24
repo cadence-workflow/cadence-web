@@ -4,16 +4,20 @@ import { render, screen, within } from '@/test-utils/rtl';
 
 import { mockWorkflowDiagnosticsResult } from '@/route-handlers/diagnose-workflow/__fixtures__/mock-workflow-diagnostics-result';
 
+import { type Props as IssueProps } from '../../workflow-diagnostics-issue/workflow-diagnostics-issue.types';
 import WorkflowDiagnosticsList from '../workflow-diagnostics-list';
 import { type Props } from '../workflow-diagnostics-list.types';
 
 jest.mock('../../workflow-diagnostics-issue/workflow-diagnostics-issue', () => {
-  return function MockWorkflowDiagnosticsIssue({ issue, rootCauses }: any) {
+  return function MockWorkflowDiagnosticsIssue({
+    issue,
+    rootCauses,
+  }: IssueProps) {
     return (
       <div data-testid="workflow-diagnostics-issue">
-        <div data-testid="issue-id">{issue.IssueID}</div>
-        <div data-testid="issue-type">{issue.InvariantType}</div>
-        <div data-testid="issue-reason">{issue.Reason}</div>
+        <div data-testid="issue-id">{issue.issueId}</div>
+        <div data-testid="issue-type">{issue.invariantType}</div>
+        <div data-testid="issue-reason">{issue.reason}</div>
         <div data-testid="root-causes-count">{rootCauses.length}</div>
       </div>
     );
@@ -107,8 +111,8 @@ describe(WorkflowDiagnosticsList.name, () => {
   it('handles empty diagnostics result', () => {
     setup({
       diagnosticsResult: {
-        DiagnosticsResult: {},
-        DiagnosticsCompleted: true,
+        result: {},
+        completed: true,
       },
     });
 
@@ -121,15 +125,15 @@ describe(WorkflowDiagnosticsList.name, () => {
   it('hides issues groups with no issues', () => {
     setup({
       diagnosticsResult: {
-        DiagnosticsResult: {
-          ...mockWorkflowDiagnosticsResult.DiagnosticsResult,
+        result: {
+          ...mockWorkflowDiagnosticsResult.result,
           'Empty Issues Group': {
-            Issues: [],
-            RootCause: [],
-            Runbooks: [],
+            issues: [],
+            rootCauses: [],
+            runbook: '',
           },
         },
-        DiagnosticsCompleted: true,
+        completed: true,
       },
     });
 

@@ -1,16 +1,18 @@
-import { type WorkflowDiagnosticsResult } from '../diagnose-workflow.types';
+import { type z } from 'zod';
 
-export const mockWorkflowDiagnosticsResult = {
-  result: {
+import type workflowDiagnosticsResultSchema from '../schemas/workflow-diagnostics-result-schema';
+
+export const mockDiagnosticsQueryResult = {
+  DiagnosticsResult: {
     Timeouts: null,
     Failures: {
-      issues: [
+      Issues: [
         {
-          issueId: 0,
-          invariantType: 'Activity Failed',
-          reason:
+          IssueID: 0,
+          InvariantType: 'Activity Failed',
+          Reason:
             'The failure is because of an error returned from the service code',
-          metadata: {
+          Metadata: {
             Identity: 'test-worker@test-host@test-domain@test-workflow@12345',
             ActivityType: 'main.helloWorldActivity',
             ActivityScheduledID: 43,
@@ -18,11 +20,11 @@ export const mockWorkflowDiagnosticsResult = {
           },
         },
         {
-          issueId: 1,
-          invariantType: 'Activity Failed',
-          reason:
+          IssueID: 1,
+          InvariantType: 'Activity Failed',
+          Reason:
             'The failure is because of an error returned from the service code',
-          metadata: {
+          Metadata: {
             Identity: 'test-worker@test-host@test-domain@test-workflow@12345',
             ActivityType: 'main.helloWorldActivity',
             ActivityScheduledID: 29,
@@ -30,11 +32,11 @@ export const mockWorkflowDiagnosticsResult = {
           },
         },
         {
-          issueId: 2,
-          invariantType: 'Activity Failed',
-          reason:
+          IssueID: 2,
+          InvariantType: 'Activity Failed',
+          Reason:
             'The failure is because of an error returned from the service code',
-          metadata: {
+          Metadata: {
             Identity: 'test-worker@test-host@test-domain@test-workflow@12345',
             ActivityType: 'main.helloWorldActivity',
             ActivityScheduledID: 82,
@@ -42,11 +44,11 @@ export const mockWorkflowDiagnosticsResult = {
           },
         },
         {
-          issueId: 3,
-          invariantType: 'Activity Failed',
-          reason:
+          IssueID: 3,
+          InvariantType: 'Activity Failed',
+          Reason:
             'The failure is because of an error returned from the service code',
-          metadata: {
+          Metadata: {
             Identity: 'test-worker@test-host@test-domain@test-workflow@12345',
             ActivityType: 'main.helloWorldActivity',
             ActivityScheduledID: 102,
@@ -54,11 +56,11 @@ export const mockWorkflowDiagnosticsResult = {
           },
         },
         {
-          issueId: 4,
-          invariantType: 'Workflow Failed',
-          reason:
+          IssueID: 4,
+          InvariantType: 'Workflow Failed',
+          Reason:
             'The failure is because of an error returned from the service code',
-          metadata: {
+          Metadata: {
             Identity: 'test-worker@test-host@test-domain@test-workflow@12345',
             ActivityType: '',
             ActivityScheduledID: 0,
@@ -66,42 +68,43 @@ export const mockWorkflowDiagnosticsResult = {
           },
         },
       ],
-      rootCauses: [
+      RootCause: [
         {
-          issueId: 0,
-          rootCauseType:
+          IssueID: 0,
+          RootCauseType:
             'There is an issue in the worker service that is causing a failure. Check identity for service logs',
-          metadata: null,
+          Metadata: null,
         },
         {
-          issueId: 1,
-          rootCauseType:
+          IssueID: 1,
+          RootCauseType:
             'There is an issue in the worker service that is causing a failure. Check identity for service logs',
-          metadata: null,
+          Metadata: null,
         },
         {
-          issueId: 2,
-          rootCauseType:
+          IssueID: 2,
+          RootCauseType:
             'There is an issue in the worker service that is causing a failure. Check identity for service logs',
-          metadata: null,
+          Metadata: null,
         },
         {
-          issueId: 3,
-          rootCauseType:
+          IssueID: 3,
+          RootCauseType:
             'There is an issue in the worker service that is causing a failure. Check identity for service logs',
-          metadata: null,
+          Metadata: null,
         },
         {
-          issueId: 4,
-          rootCauseType:
+          IssueID: 4,
+          RootCauseType:
             'There is an issue in the worker service that is causing a failure. Check identity for service logs',
-          metadata: null,
+          Metadata: null,
         },
       ],
-      runbook:
+      Runbooks: [
         'https://cadenceworkflow.io/docs/workflow-troubleshooting/activity-failures/',
+      ],
     },
     Retries: null,
   },
-  completed: true,
-} as const satisfies WorkflowDiagnosticsResult;
+  DiagnosticsCompleted: true,
+} as const satisfies z.input<typeof workflowDiagnosticsResultSchema>;

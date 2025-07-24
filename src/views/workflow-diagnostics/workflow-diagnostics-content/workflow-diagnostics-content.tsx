@@ -26,14 +26,14 @@ export default function WorkflowDiagnosticsContent({
 
   const nonEmptyIssueGroups: Array<string> = useMemo(
     () =>
-      Object.entries(diagnosticsResult.DiagnosticsResult)
+      Object.entries(diagnosticsResult.result)
         .map(([name, issuesGroup]) => {
           if (!issuesGroup) return null;
-          if (issuesGroup.Issues.length === 0) return null;
+          if (issuesGroup.issues.length === 0) return null;
           return name;
         })
         .filter((name) => name !== null) as Array<string>,
-    [diagnosticsResult.DiagnosticsResult]
+    [diagnosticsResult.result]
   );
 
   if (nonEmptyIssueGroups.length === 0) {

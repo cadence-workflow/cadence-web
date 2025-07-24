@@ -29,16 +29,14 @@ describe(WorkflowDiagnosticsJson.name, () => {
   it('renders the PrettyJson component with diagnostics result', () => {
     setup({});
     expect(screen.getByTestId('pretty-json')).toBeInTheDocument();
-    expect(screen.getByTestId('pretty-json')).toHaveTextContent(
-      '"DiagnosticsResult"'
-    );
+    expect(screen.getByTestId('pretty-json')).toHaveTextContent('"result"');
   });
 
   it('renders copy text button with text to copy', () => {
     setup({});
     const copyButton = screen.getByTestId('copy-text-button');
     expect(copyButton).toBeInTheDocument();
-    expect(copyButton).toHaveTextContent('"DiagnosticsResult"');
+    expect(copyButton).toHaveTextContent('"result"');
   });
 
   it('downloads JSON when download button is clicked', async () => {
@@ -55,24 +53,22 @@ describe(WorkflowDiagnosticsJson.name, () => {
   it('renders with empty diagnostics result', () => {
     setup({
       diagnosticsResult: {
-        DiagnosticsResult: {},
-        DiagnosticsCompleted: true,
+        result: {},
+        completed: true,
       },
     });
 
     expect(screen.getByTestId('pretty-json')).toBeInTheDocument();
-    expect(screen.getByTestId('pretty-json')).toHaveTextContent(
-      '"DiagnosticsResult"'
-    );
+    expect(screen.getByTestId('pretty-json')).toHaveTextContent('"result"');
   });
 
   it('renders JSON with invalid data structure', () => {
     setup({
       diagnosticsResult: {
-        DiagnosticsResult: {
+        result: {
           invalidParsedField: 'invalid-value',
         },
-        DiagnosticsCompleted: true,
+        completed: true,
       },
     });
 

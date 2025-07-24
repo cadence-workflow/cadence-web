@@ -8,22 +8,22 @@ export default function WorkflowDiagnosticsList({ diagnosticsResult }: Props) {
 
   return (
     <styled.IssuesGroupsContainer>
-      {Object.entries(diagnosticsResult.DiagnosticsResult).map(
+      {Object.entries(diagnosticsResult.result).map(
         ([issuesType, issuesGroup]) => {
-          if (!issuesGroup || issuesGroup.Issues.length === 0) return null;
+          if (!issuesGroup || issuesGroup.issues.length === 0) return null;
 
-          const { Issues, RootCause } = issuesGroup;
+          const { issues, rootCauses } = issuesGroup;
           return (
             <styled.IssuesGroup key={issuesType}>
               <styled.IssuesTitle>{issuesType}</styled.IssuesTitle>
-              {Issues.map((issue) => (
+              {issues.map((issue) => (
                 <WorkflowDiagnosticsIssue
-                  key={`${issuesType}.${issue.IssueID}`}
+                  key={`${issuesType}.${issue.issueId}`}
                   issue={issue}
                   rootCauses={
-                    RootCause
-                      ? RootCause.filter(
-                          (rootCause) => rootCause.IssueID === issue.IssueID
+                    rootCauses
+                      ? rootCauses.filter(
+                          (rootCause) => rootCause.issueId === issue.issueId
                         )
                       : []
                   }

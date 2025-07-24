@@ -6,6 +6,7 @@ import { type QueryWorkflowResponse } from '@/__generated__/proto-ts/uber/cadenc
 import { GRPCError } from '@/utils/grpc/grpc-error';
 import { mockGrpcClusterMethods } from '@/utils/route-handlers-middleware/middlewares/__mocks__/grpc-cluster-methods';
 
+import { mockDiagnosticsQueryResult } from '../__fixtures__/mock-diagnostics-query-result';
 import { mockWorkflowDiagnosticsResult } from '../__fixtures__/mock-workflow-diagnostics-result';
 import { diagnoseWorkflow } from '../diagnose-workflow';
 import {
@@ -97,7 +98,7 @@ describe(diagnoseWorkflow.name, () => {
       .mockResolvedValueOnce({
         queryResult: {
           data: Buffer.from(
-            JSON.stringify(mockWorkflowDiagnosticsResult)
+            JSON.stringify(mockDiagnosticsQueryResult)
           ).toString('base64'),
         },
       } as QueryWorkflowResponse);
@@ -207,8 +208,8 @@ describe(diagnoseWorkflow.name, () => {
     expect(responseJson).toEqual({
       parsingError: expect.objectContaining({ name: 'ZodError' }),
       result: {
-        DiagnosticsCompleted: true,
-        DiagnosticsResult: 'invalid-diagnostics',
+        completed: true,
+        result: 'invalid-diagnostics',
       },
     });
   });
@@ -289,7 +290,7 @@ function setup(options?: {
   } as Context;
 
   const mockQueryResultJson =
-    options?.queryResultData || mockWorkflowDiagnosticsResult;
+    options?.queryResultData || mockDiagnosticsQueryResult;
 
   const mockQueryResponse = {
     queryResult: {
