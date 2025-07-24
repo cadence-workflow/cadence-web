@@ -24,7 +24,7 @@ export default function WorkflowDiagnosticsIssue({
 }: Props) {
   return (
     <Panel
-      key={issue.IssueID}
+      key={issue.issueId}
       title={
         <styled.IssueHeader>
           <styled.IssueLabel>
@@ -35,7 +35,7 @@ export default function WorkflowDiagnosticsIssue({
                 <MdWarningAmber size={16} />
               )}
             </styled.IssueIcon>
-            {issue.InvariantType}
+            {issue.invariantType}
           </styled.IssueLabel>
           <styled.IssueActions></styled.IssueActions>
         </styled.IssueHeader>
@@ -59,7 +59,7 @@ export default function WorkflowDiagnosticsIssue({
     >
       <styled.DetailsRow>
         <styled.DetailsLabel>Reason</styled.DetailsLabel>
-        <styled.DetailsValue>{issue.Reason}</styled.DetailsValue>
+        <styled.DetailsValue>{issue.reason}</styled.DetailsValue>
       </styled.DetailsRow>
       {rootCauses.length > 0 && (
         <styled.DetailsRow>
@@ -69,11 +69,11 @@ export default function WorkflowDiagnosticsIssue({
           <styled.DetailsValue>
             <styled.RootCausesContainer>
               {rootCauses.map((rootCause) => (
-                <styled.RootCauseContainer key={rootCause.RootCauseType}>
-                  {rootCause.RootCauseType}
-                  {rootCause.Metadata && (
+                <styled.RootCauseContainer key={rootCause.rootCauseType}>
+                  {rootCause.rootCauseType}
+                  {rootCause.metadata && (
                     <WorkflowDiagnosticsMetadataTable
-                      metadata={rootCause.Metadata}
+                      metadata={rootCause.metadata}
                       {...workflowPageParams}
                     />
                   )}
@@ -83,12 +83,12 @@ export default function WorkflowDiagnosticsIssue({
           </styled.DetailsValue>
         </styled.DetailsRow>
       )}
-      {issue.Metadata && (
+      {issue.metadata && (
         <styled.DetailsRow>
           <styled.DetailsLabel>Metadata</styled.DetailsLabel>
           <styled.DetailsValue>
             <WorkflowDiagnosticsMetadataTable
-              metadata={issue.Metadata}
+              metadata={issue.metadata}
               {...workflowPageParams}
             />
           </styled.DetailsValue>

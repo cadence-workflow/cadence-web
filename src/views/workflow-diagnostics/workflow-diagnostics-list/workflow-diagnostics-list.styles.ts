@@ -30,7 +30,7 @@ export const styled = {
       },
     })
   ),
-  SingleRunbookLink: createStyled('div', ({ $theme }) => ({
+  RunbookLink: createStyled('div', ({ $theme }) => ({
     ...$theme.typography.LabelXSmall,
     display: 'flex',
     gap: $theme.sizing.scale200,

@@ -26,10 +26,10 @@ export default function WorkflowDiagnosticsList({
               {issuesType}
               {runbook && (
                 <Link href={runbook} target="_blank" rel="noreferrer">
-                  <styled.SingleRunbookLink>
+                  <styled.RunbookLink>
                     View runbook
                     <MdOpenInNew />
-                  </styled.SingleRunbookLink>
+                  </styled.RunbookLink>
                 </Link>
               )}
             </styled.IssuesTitle>

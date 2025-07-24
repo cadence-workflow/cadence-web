@@ -3,7 +3,7 @@ import { mockWorkflowDiagnosticsResult } from '@/route-handlers/diagnose-workflo
 import { type DiagnosticsIssuesGroup } from '../workflow-diagnostics.types';
 
 export const mockWorkflowDiagnosticsIssueGroups = [
-  ['Timeouts', mockWorkflowDiagnosticsResult.DiagnosticsResult.Timeouts],
-  ['Failures', mockWorkflowDiagnosticsResult.DiagnosticsResult.Failures],
-  ['Retries', mockWorkflowDiagnosticsResult.DiagnosticsResult.Retries],
+  ['Timeouts', mockWorkflowDiagnosticsResult.result.Timeouts],
+  ['Failures', mockWorkflowDiagnosticsResult.result.Failures],
+  ['Retries', mockWorkflowDiagnosticsResult.result.Retries],
 ] as const satisfies Array<[string, DiagnosticsIssuesGroup]>;

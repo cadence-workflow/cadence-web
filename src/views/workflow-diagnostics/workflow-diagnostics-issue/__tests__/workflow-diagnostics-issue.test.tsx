@@ -19,11 +19,9 @@ jest.mock(
   }
 );
 
-const mockIssue = mockWorkflowDiagnosticsIssueGroups[1][1].Issues[0];
-const mockRootCauses = mockWorkflowDiagnosticsIssueGroups[1][1].RootCause.slice(
-  0,
-  1
-);
+const mockIssue = mockWorkflowDiagnosticsIssueGroups[1][1].issues[0];
+const mockRootCauses =
+  mockWorkflowDiagnosticsIssueGroups[1][1].rootCauses.slice(0, 1);
 
 describe(WorkflowDiagnosticsIssue.name, () => {
   afterEach(() => {
@@ -61,7 +59,7 @@ describe(WorkflowDiagnosticsIssue.name, () => {
   it('renders multiple root causes with correct label', () => {
     const multipleRootCauses = [
       mockRootCauses[0],
-      { ...mockRootCauses[0], RootCauseType: 'Another root cause' },
+      { ...mockRootCauses[0], rootCauseType: 'Another root cause' },
     ];
 
     setup({ rootCauses: multipleRootCauses, isExpanded: true });
@@ -92,7 +90,7 @@ describe(WorkflowDiagnosticsIssue.name, () => {
   });
 
   it('does not render metadata section when issue has no metadata', () => {
-    const issueWithoutMetadata = { ...mockIssue, Metadata: null };
+    const issueWithoutMetadata = { ...mockIssue, metadata: null };
     setup({ issue: issueWithoutMetadata, isExpanded: true });
 
     expect(screen.queryByText('Metadata')).not.toBeInTheDocument();
@@ -104,7 +102,7 @@ describe(WorkflowDiagnosticsIssue.name, () => {
   it('renders root cause metadata when it exists', () => {
     const rootCauseWithMetadata = {
       ...mockRootCauses[0],
-      Metadata: { testKey: 'testValue' },
+      metadata: { testKey: 'testValue' },
     };
 
     setup({ rootCauses: [rootCauseWithMetadata], isExpanded: true });
