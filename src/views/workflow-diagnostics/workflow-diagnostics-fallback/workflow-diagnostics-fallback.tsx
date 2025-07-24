@@ -10,7 +10,7 @@ export default function WorkflowDiagnosticsFallback({
   diagnosticsResult,
 }: Props) {
   return (
-    <>
+    <styled.PageSection>
       <styled.ButtonsContainer>
         <WorkflowDiagnosticsViewToggle listEnabled={false} />
       </styled.ButtonsContainer>
@@ -19,6 +19,6 @@ export default function WorkflowDiagnosticsFallback({
         runId={runId}
         diagnosticsResult={diagnosticsResult}
       />
-    </>
+    </styled.PageSection>
   );
 }

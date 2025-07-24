@@ -2,6 +2,11 @@
 
 import React, { useMemo, useState } from 'react';
 
+import Image from 'next/image';
+
+import circleCheck from '@/assets/circle-check.svg';
+import PanelSection from '@/components/panel-section/panel-section';
+
 import WorkflowDiagnosticsJson from '../workflow-diagnostics-json/workflow-diagnostics-json';
 import WorkflowDiagnosticsList from '../workflow-diagnostics-list/workflow-diagnostics-list';
 import WorkflowDiagnosticsViewToggle from '../workflow-diagnostics-view-toggle/workflow-diagnostics-view-toggle';
@@ -19,7 +24,7 @@ export default function WorkflowDiagnosticsContent({
 }: Props) {
   const [activeView, setActiveView] = useState<DiagnosticsViewMode>('list');
 
-  const issuesGroupsWithEntries: Array<string> = useMemo(
+  const nonEmptyIssueGroups: Array<string> = useMemo(
     () =>
       Object.entries(diagnosticsResult.DiagnosticsResult)
         .map(([name, issuesGroup]) => {
@@ -31,13 +36,21 @@ export default function WorkflowDiagnosticsContent({
     [diagnosticsResult.DiagnosticsResult]
   );
 
-  if (issuesGroupsWithEntries.length === 0) {
-    // TODO: Add a No Issues Found panel
-    return <div>No issues found with this workflow</div>;
+  if (nonEmptyIssueGroups.length === 0) {
+    return (
+      <PanelSection>
+        <styled.NoIssuesContainer>
+          <Image width={64} height={64} alt="No issues" src={circleCheck} />
+          <styled.NoIssuesText>
+            No issues found with this workflow
+          </styled.NoIssuesText>
+        </styled.NoIssuesContainer>
+      </PanelSection>
+    );
   }
 
   return (
-    <>
+    <styled.PageSection>
       <styled.ButtonsContainer>
         <WorkflowDiagnosticsViewToggle
           listEnabled
@@ -61,6 +74,6 @@ export default function WorkflowDiagnosticsContent({
           diagnosticsResult={diagnosticsResult}
         />
       )}
-    </>
+    </styled.PageSection>
   );
 }
