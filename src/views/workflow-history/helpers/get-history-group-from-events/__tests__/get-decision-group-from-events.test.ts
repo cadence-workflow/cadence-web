@@ -85,6 +85,28 @@ describe('getDecisionGroupFromEvents', () => {
     expect(group.groupType).toBe('Decision');
   });
 
+  it('should return a group with correct label for pending decision event', () => {
+    const events: ExtendedDecisionHistoryEvent[] = [
+      scheduleDecisionTaskEvent,
+      pendingDecisionTaskStartEvent,
+    ];
+    const group = getDecisionGroupFromEvents(events);
+    expect(group.eventsMetadata[1].label).toBe('Starting');
+
+    const eventsWithStartedState = getDecisionGroupFromEvents([
+      scheduleDecisionTaskEvent,
+      pendingDecisionTaskStartEventWithStartedState,
+    ]);
+    expect(eventsWithStartedState.eventsMetadata[1].label).toBe('Running');
+
+    const eventsWithInvalidState = getDecisionGroupFromEvents([
+      scheduleDecisionTaskEvent,
+      // @ts-expect-error - state is not defined in the type
+      { ...pendingDecisionTaskStartEvent, state: undefined },
+    ]);
+    expect(eventsWithInvalidState.eventsMetadata[1].label).toBe('Starting');
+  });
+
   it('should return group eventsMetadata with correct labels', () => {
     const events: ExtendedDecisionHistoryEvent[] = [
       scheduleDecisionTaskEvent,

@@ -82,9 +82,23 @@ export default function getActivityGroupFromEvents(
     });
   }
 
+  const pendingStateToLabel: Record<
+    PendingActivityTaskStartEvent['pendingActivityTaskStartEventAttributes']['state'],
+    string
+  > = {
+    PENDING_ACTIVITY_STATE_SCHEDULED: 'Starting',
+    PENDING_ACTIVITY_STATE_STARTED: 'Running',
+    PENDING_ACTIVITY_STATE_CANCEL_REQUESTED: 'Cancelling',
+  };
+
+  const pendingState = pendingStartEvent?.[pendingStartAttr].state;
+
   const eventToLabel: HistoryGroupEventToStringMap<ActivityHistoryGroup> = {
     activityTaskScheduledEventAttributes: 'Scheduled',
-    pendingActivityTaskStartEventAttributes: 'Starting',
+    pendingActivityTaskStartEventAttributes:
+      pendingState && pendingStateToLabel[pendingState]
+        ? pendingStateToLabel[pendingState]
+        : pendingStateToLabel.PENDING_ACTIVITY_STATE_SCHEDULED,
     activityTaskStartedEventAttributes: 'Started',
     activityTaskCompletedEventAttributes: 'Completed',
     activityTaskFailedEventAttributes: 'Failed',
