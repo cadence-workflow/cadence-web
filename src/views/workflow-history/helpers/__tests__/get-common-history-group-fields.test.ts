@@ -181,6 +181,11 @@ describe('getCommonHistoryGroupFields', () => {
     expect(group.eventsMetadata[0].negativeFields).toEqual(['startReason']);
     expect(group.eventsMetadata[1].negativeFields).toBeUndefined();
   });
+
+  it('should return group with firstEventId equal to first event id', () => {
+    const group = setup({});
+    expect(group.firstEventId).toEqual(group.events[0].eventId);
+  });
 });
 
 // using timer events for testing

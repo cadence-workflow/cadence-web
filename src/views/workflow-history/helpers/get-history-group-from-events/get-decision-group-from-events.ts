@@ -1,3 +1,5 @@
+import { type PendingDecisionInfo } from '@/__generated__/proto-ts/uber/cadence/api/v1/PendingDecisionInfo';
+
 import type {
   DecisionHistoryGroup,
   ExtendedDecisionHistoryEvent,
@@ -77,10 +79,22 @@ export default function getDecisionGroupFromEvents(
     resetToDecisionEventId = timeoutEvent.eventId;
   }
 
+  const pendingStateToLabel: Record<
+    PendingDecisionTaskStartEvent['pendingDecisionTaskStartEventAttributes']['state'],
+    string
+  > = {
+    PENDING_DECISION_STATE_SCHEDULED: 'Starting',
+    PENDING_DECISION_STATE_STARTED: 'Running',
+  };
+  const pendingState = pendingStartEvent?.[pendingStartAttr].state;
+
   // populate event to label and status maps
   const eventToLabel: HistoryGroupEventToStringMap<DecisionHistoryGroup> = {
     decisionTaskScheduledEventAttributes: 'Scheduled',
-    pendingDecisionTaskStartEventAttributes: 'Starting',
+    pendingDecisionTaskStartEventAttributes:
+      pendingState && pendingStateToLabel[pendingState]
+        ? pendingStateToLabel[pendingState]
+        : pendingStateToLabel.PENDING_DECISION_STATE_SCHEDULED,
     decisionTaskStartedEventAttributes: 'Started',
     decisionTaskCompletedEventAttributes: 'Completed',
     decisionTaskFailedEventAttributes: 'Failed',
