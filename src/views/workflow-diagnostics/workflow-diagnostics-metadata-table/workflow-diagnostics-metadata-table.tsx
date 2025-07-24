@@ -1,9 +1,34 @@
-import parseWorkflowDiagnosticsMetadata from './helpers/parse-workflow-diagnostics-metadata';
+import { useMemo } from 'react';
+
+import workflowDiagnosticsMetadataParsersConfig from '../config/workflow-diagnostics-metadata-parsers.config';
+
 import { styled } from './workflow-diagnostics-metadata-table.styles';
 import { type Props } from './workflow-diagnostics-metadata-table.types';
 
-export default function WorkflowDiagnosticsMetadataTable(props: Props) {
-  const parsedMetadataItems = parseWorkflowDiagnosticsMetadata(props);
+export default function WorkflowDiagnosticsMetadataTable({
+  metadata,
+  ...workflowPageParams
+}: Props) {
+  const parsedMetadataItems = useMemo(
+    () =>
+      Object.entries(metadata).map(([key, value]) => {
+        const renderConfig = workflowDiagnosticsMetadataParsersConfig.find(
+          (c) => c.matcher(key, value)
+        );
+
+        return {
+          key,
+          label: key,
+          value: renderConfig ? (
+            <renderConfig.renderValue value={value} {...workflowPageParams} />
+          ) : (
+            String(value)
+          ),
+          forceWrap: renderConfig?.forceWrap,
+        };
+      }),
+    [metadata, workflowPageParams]
+  );
 
   return (
     <styled.MetadataTableContainer>
