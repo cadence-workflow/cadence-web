@@ -1,6 +1,6 @@
 import {
   Panel,
-  type SharedStylePropsArg as AcccordionStyledComponentProps,
+  type SharedStylePropsArg as AccordionStyledComponentProps,
 } from 'baseui/accordion';
 import { Button } from 'baseui/button';
 import {
@@ -43,7 +43,7 @@ export default function WorkflowDiagnosticsIssue({
       overrides={{
         ...overrides.panel,
         ToggleIcon: {
-          component: ({ $expanded }: AcccordionStyledComponentProps) => (
+          component: ({ $expanded }: AccordionStyledComponentProps) => (
             <Button
               size="mini"
               kind="secondary"
