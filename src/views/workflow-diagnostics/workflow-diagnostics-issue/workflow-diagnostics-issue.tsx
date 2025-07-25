@@ -69,12 +69,16 @@ export default function WorkflowDiagnosticsIssue({
             <styled.RootCausesContainer>
               {rootCauses.map((rootCause, index) => (
                 <styled.RootCauseContainer key={`rootCauses-${index}`}>
-                  {rootCause.rootCauseType}
-                  {rootCause.metadata && (
+                  {rootCause.metadata ? (
                     <WorkflowDiagnosticsMetadataTable
-                      metadata={rootCause.metadata}
+                      metadata={{
+                        Description: rootCause.rootCauseType,
+                        ...rootCause.metadata,
+                      }}
                       {...workflowPageParams}
                     />
+                  ) : (
+                    rootCause.rootCauseType
                   )}
                 </styled.RootCauseContainer>
               ))}
