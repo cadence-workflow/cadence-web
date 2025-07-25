@@ -2,10 +2,13 @@
 
 import React, { useMemo, useState } from 'react';
 
+import { Button } from 'baseui/button';
 import Image from 'next/image';
+import { MdUnfoldLess, MdUnfoldMore } from 'react-icons/md';
 
 import circleCheck from '@/assets/circle-check.svg';
 import PanelSection from '@/components/panel-section/panel-section';
+import useExpansionToggle from '@/hooks/use-expansion-toggle/use-expansion-toggle';
 
 import WorkflowDiagnosticsJson from '../workflow-diagnostics-json/workflow-diagnostics-json';
 import WorkflowDiagnosticsList from '../workflow-diagnostics-list/workflow-diagnostics-list';
@@ -13,18 +16,23 @@ import WorkflowDiagnosticsViewToggle from '../workflow-diagnostics-view-toggle/w
 import { type DiagnosticsViewMode } from '../workflow-diagnostics-view-toggle/workflow-diagnostics-view-toggle.types';
 
 import { styled } from './workflow-diagnostics-content.styles';
-import { type Props } from './workflow-diagnostics-content.types';
+import {
+  type IssueExpansionID,
+  type Props,
+} from './workflow-diagnostics-content.types';
 
 export default function WorkflowDiagnosticsContent({
-  domain,
-  cluster,
-  workflowId,
-  runId,
   diagnosticsResult,
+  ...workflowPageParams
 }: Props) {
   const [activeView, setActiveView] = useState<DiagnosticsViewMode>('list');
 
-  const nonEmptyIssueGroups: Array<string> = useMemo(
+  const issuesGroups = useMemo(
+    () => Object.entries(diagnosticsResult.result),
+    [diagnosticsResult.result]
+  );
+
+  const nonEmptyIssuesGroups: Array<string> = useMemo(
     () =>
       Object.entries(diagnosticsResult.result)
         .map(([name, issuesGroup]) => {
@@ -36,7 +44,30 @@ export default function WorkflowDiagnosticsContent({
     [diagnosticsResult.result]
   );
 
-  if (nonEmptyIssueGroups.length === 0) {
+  const allIssueExpansionIds = useMemo(
+    () =>
+      issuesGroups
+        .map(
+          ([groupName, issuesGroup]) =>
+            issuesGroup?.issues.map(
+              ({ issueId }): IssueExpansionID => `${groupName}.${issueId}`
+            ) ?? []
+        )
+        .flat(1),
+    [issuesGroups]
+  );
+
+  const {
+    areAllItemsExpanded,
+    toggleAreAllItemsExpanded,
+    getIsItemExpanded,
+    toggleIsItemExpanded,
+  } = useExpansionToggle<IssueExpansionID>({
+    items: allIssueExpansionIds,
+    initialState: {},
+  });
+
+  if (nonEmptyIssuesGroups.length === 0) {
     return (
       <PanelSection>
         <styled.NoIssuesContainer>
@@ -57,20 +88,32 @@ export default function WorkflowDiagnosticsContent({
           activeView={activeView}
           setActiveView={setActiveView}
         />
-        {/* TODO: Add a button here to expand all diagnostics issues, hide in JSON mode ofc */}
+        <Button
+          size="compact"
+          kind="secondary"
+          onClick={() => toggleAreAllItemsExpanded()}
+          endEnhancer={
+            areAllItemsExpanded ? (
+              <MdUnfoldLess size={16} />
+            ) : (
+              <MdUnfoldMore size={16} />
+            )
+          }
+        >
+          {areAllItemsExpanded ? 'Collapse all' : 'Expand all'}
+        </Button>
       </styled.ButtonsContainer>
       {activeView === 'list' ? (
         <WorkflowDiagnosticsList
-          domain={domain}
-          cluster={cluster}
-          workflowId={workflowId}
-          runId={runId}
-          diagnosticsResult={diagnosticsResult}
+          {...workflowPageParams}
+          diagnosticsIssuesGroups={issuesGroups}
+          getIsIssueExpanded={getIsItemExpanded}
+          toggleIsIssueExpanded={toggleIsItemExpanded}
         />
       ) : (
         <WorkflowDiagnosticsJson
-          workflowId={workflowId}
-          runId={runId}
+          workflowId={workflowPageParams.workflowId}
+          runId={workflowPageParams.runId}
           diagnosticsResult={diagnosticsResult}
         />
       )}

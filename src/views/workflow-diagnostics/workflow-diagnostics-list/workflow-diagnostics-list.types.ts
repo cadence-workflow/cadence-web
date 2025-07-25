@@ -1,9 +1,10 @@
-import { type WorkflowDiagnosticsResult } from '@/route-handlers/diagnose-workflow/diagnose-workflow.types';
+import { type WorkflowPageParams } from '@/views/workflow-page/workflow-page.types';
+
+import { type IssueExpansionID } from '../workflow-diagnostics-content/workflow-diagnostics-content.types';
+import { type DiagnosticsIssuesGroup } from '../workflow-diagnostics.types';
 
 export type Props = {
-  domain: string;
-  cluster: string;
-  workflowId: string;
-  runId: string;
-  diagnosticsResult: WorkflowDiagnosticsResult;
-};
+  diagnosticsIssuesGroups: Array<[string, DiagnosticsIssuesGroup]>;
+  getIsIssueExpanded: (issueExpansionId: IssueExpansionID) => boolean;
+  toggleIsIssueExpanded: (issueExpansionId: IssueExpansionID) => void;
+} & WorkflowPageParams;
