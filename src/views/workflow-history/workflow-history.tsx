@@ -1,5 +1,11 @@
 'use client';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import {
   useSuspenseInfiniteQuery,
@@ -20,6 +26,7 @@ import PageFiltersFields from '@/components/page-filters/page-filters-fields/pag
 import PageFiltersToggle from '@/components/page-filters/page-filters-toggle/page-filters-toggle';
 import PageSection from '@/components/page-section/page-section';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
+import useLocalStorageValue from '@/hooks/use-local-storage-value';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import useThrottledState from '@/hooks/use-throttled-state';
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
@@ -82,6 +89,26 @@ export default function WorkflowHistory({ params }: Props) {
     pageQueryParamsConfig: workflowPageQueryParamsConfig,
     pageFiltersConfig: workflowHistoryFiltersConfig,
   });
+
+  const { getValue: getIsUngroupedView, setValue: setIsUngroupedView } =
+    useLocalStorageValue<boolean>({
+      key: 'history-is-ungrouped-view',
+      encode: (val) => (val ? 'true' : 'false'),
+      decode: (val) => val === 'true',
+    });
+
+  useEffect(() => {
+    const storageIsUngroupedViewEnabled = getIsUngroupedView();
+
+    if (storageIsUngroupedViewEnabled !== null) {
+      setQueryParams({
+        ungroupedHistoryViewEnabled: String(storageIsUngroupedViewEnabled),
+      });
+    }
+
+    // We want to run this useEffect only on first render
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const { data: wfExecutionDescription } = useSuspenseDescribeWorkflow({
     ...params,
@@ -198,11 +225,14 @@ export default function WorkflowHistory({ params }: Props) {
     });
 
   const onClickGroupModeToggle = useCallback(() => {
+    setIsUngroupedView(!queryParams.ungroupedHistoryViewEnabled);
+
     setQueryParams({
       ungroupedHistoryViewEnabled: queryParams.ungroupedHistoryViewEnabled
         ? 'false'
         : 'true',
     });
+
     setTimelineListVisibleRange(() => ({
       startIndex: -1,
       endIndex: -1,
@@ -215,6 +245,7 @@ export default function WorkflowHistory({ params }: Props) {
     queryParams.ungroupedHistoryViewEnabled,
     setQueryParams,
     setTimelineListVisibleRange,
+    setIsUngroupedView,
   ]);
 
   const workflowCloseTimeMs = workflowExecutionInfo?.closeTime
