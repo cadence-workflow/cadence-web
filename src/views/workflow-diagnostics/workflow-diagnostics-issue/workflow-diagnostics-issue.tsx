@@ -24,7 +24,6 @@ export default function WorkflowDiagnosticsIssue({
 }: Props) {
   return (
     <Panel
-      key={issue.issueId}
       title={
         <styled.IssueHeader>
           <styled.IssueLabel>
@@ -68,8 +67,8 @@ export default function WorkflowDiagnosticsIssue({
           </styled.DetailsLabel>
           <styled.DetailsValue>
             <styled.RootCausesContainer>
-              {rootCauses.map((rootCause) => (
-                <styled.RootCauseContainer key={rootCause.rootCauseType}>
+              {rootCauses.map((rootCause, index) => (
+                <styled.RootCauseContainer key={`rootCauses-${index}`}>
                   {rootCause.rootCauseType}
                   {rootCause.metadata && (
                     <WorkflowDiagnosticsMetadataTable

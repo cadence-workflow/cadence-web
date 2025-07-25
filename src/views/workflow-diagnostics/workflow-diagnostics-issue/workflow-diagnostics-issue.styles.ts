@@ -81,6 +81,7 @@ export const styled = {
       rowGap: $theme.sizing.scale300,
       ':not(:last-child)': {
         borderBottom: `1px solid ${$theme.colors.borderOpaque}`,
+        paddingBottom: $theme.sizing.scale200,
       },
     })
   ),
