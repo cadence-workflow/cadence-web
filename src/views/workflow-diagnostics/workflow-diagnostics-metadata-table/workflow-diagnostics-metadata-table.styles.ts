@@ -32,9 +32,7 @@ export const styled = {
       minWidth: '140px',
       maxWidth: '140px',
       display: 'flex',
-      color: $forceWrap
-        ? $theme.colors.contentPrimary
-        : $theme.colors.contentSecondary,
+      color: $theme.colors.contentSecondary,
       ...$theme.typography.LabelXSmall,
       ...($forceWrap && { whiteSpace: 'nowrap' }),
     })
