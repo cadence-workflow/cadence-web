@@ -11,6 +11,8 @@ export const styled = {
     'div',
     ({ $theme }: { $theme: Theme }): StyleObject => ({
       ...$theme.typography.LabelLarge,
+      display: 'flex',
+      justifyContent: 'space-between',
     })
   ),
   IssuesGroup: createStyled(
@@ -28,4 +30,10 @@ export const styled = {
       },
     })
   ),
+  RunbookLink: createStyled('div', ({ $theme }) => ({
+    ...$theme.typography.LabelXSmall,
+    display: 'flex',
+    gap: $theme.sizing.scale200,
+    alignItems: 'center',
+  })),
 };
