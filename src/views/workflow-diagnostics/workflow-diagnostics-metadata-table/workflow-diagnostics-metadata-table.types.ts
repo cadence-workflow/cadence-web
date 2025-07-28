@@ -15,8 +15,8 @@ export type WorkflowDiagnosticsMetadataParser = {
   matcher: (key: string, value: unknown) => boolean;
   forceWrap?: boolean;
 } & (
-  | { hide: true; renderValue?: never }
   | { hide?: false; renderValue: ComponentType<MetadataValueComponentProps> }
+  | { hide: true; renderValue?: never }
 );
 
 export type ParsedWorkflowDiagnosticsMetadataField = {
