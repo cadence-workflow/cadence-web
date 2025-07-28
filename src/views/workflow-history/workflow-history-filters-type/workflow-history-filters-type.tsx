@@ -1,11 +1,12 @@
 'use client';
-import React, { useEffect } from 'react';
+import React, { useMemo } from 'react';
 
 import { FormControl } from 'baseui/form-control';
 import { Select, SIZE } from 'baseui/select';
 
 import { type PageFilterComponentProps } from '@/components/page-filters/page-filters.types';
-import useLocalStorageValue from '@/hooks/use-local-storage-value';
+
+import useHistoryEventTypesPreference from '../hooks/use-history-event-types-preference';
 
 import {
   DEFAULT_EVENT_FILTERING_TYPES,
@@ -21,19 +22,22 @@ export default function WorkflowHistoryFiltersType({
   value,
   setValue,
 }: PageFilterComponentProps<WorkflowHistoryFiltersTypeValue>) {
+  const {
+    getValue: getEventTypesPreference,
+    setValue: setEventTypesPreference,
+  } = useHistoryEventTypesPreference();
+
+  const historyEventTypes = useMemo(() => {
+    if (value.historyEventTypes !== undefined) return value.historyEventTypes;
+
+    return getEventTypesPreference() ?? DEFAULT_EVENT_FILTERING_TYPES;
+  }, [value.historyEventTypes, getEventTypesPreference]);
+
   const typeOptionsValue =
-    value.historyEventTypes?.map((type) => ({
+    historyEventTypes.map((type) => ({
       id: type,
       label: WORKFLOW_HISTORY_EVENT_FILTERING_TYPES_LABEL_MAP[type],
     })) ?? [];
-
-  // const { setValue: setHistoryEventTypes } = useLocalStorageValue<
-  //   Array<WorkflowHistoryEventFilteringType>
-  // >({
-  //   key: 'history-default-filters',
-  //   encode: (val) => JSON.stringify(val),
-  //   decode: (val) => JSON.parse(val),
-  // });
 
   return (
     <FormControl label="Type" overrides={overrides.selectFormControl}>
@@ -53,13 +57,13 @@ export default function WorkflowHistoryFiltersType({
                 )
               : undefined;
 
-          // setHistoryEventTypes(
-          //   newHistoryEventTypes ?? DEFAULT_EVENT_FILTERING_TYPES
-          // );
-
           setValue({
             historyEventTypes: newHistoryEventTypes,
           });
+
+          if (newHistoryEventTypes) {
+            setEventTypesPreference(newHistoryEventTypes);
+          }
         }}
         placeholder="All"
       />

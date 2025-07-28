@@ -1,11 +1,5 @@
 'use client';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 
 import {
   useSuspenseInfiniteQuery,
@@ -26,7 +20,6 @@ import PageFiltersFields from '@/components/page-filters/page-filters-fields/pag
 import PageFiltersToggle from '@/components/page-filters/page-filters-toggle/page-filters-toggle';
 import PageSection from '@/components/page-section/page-section';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
-import useLocalStorageValue from '@/hooks/use-local-storage-value';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import useThrottledState from '@/hooks/use-throttled-state';
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
@@ -50,12 +43,14 @@ import { groupHistoryEvents } from './helpers/group-history-events';
 import pendingActivitiesInfoToEvents from './helpers/pending-activities-info-to-events';
 import pendingDecisionInfoToEvent from './helpers/pending-decision-info-to-event';
 import useEventExpansionToggle from './hooks/use-event-expansion-toggle';
+import useHistoryEventTypesPreference from './hooks/use-history-event-types-preference';
+import useHistoryUngroupedViewPreference from './hooks/use-history-ungrouped-view-preference';
 import useInitialSelectedEvent from './hooks/use-initial-selected-event';
 import useKeepLoadingEvents from './hooks/use-keep-loading-events';
 import WorkflowHistoryCompactEventCard from './workflow-history-compact-event-card/workflow-history-compact-event-card';
 import WorkflowHistoryExpandAllEventsButton from './workflow-history-expand-all-events-button/workflow-history-expand-all-events-button';
 import WorkflowHistoryExportJsonButton from './workflow-history-export-json-button/workflow-history-export-json-button';
-import { type WorkflowHistoryEventFilteringType } from './workflow-history-filters-type/workflow-history-filters-type.types';
+import { DEFAULT_EVENT_FILTERING_TYPES } from './workflow-history-filters-type/workflow-history-filters-type.constants';
 import WorkflowHistoryTimelineChart from './workflow-history-timeline-chart/workflow-history-timeline-chart';
 import WorkflowHistoryTimelineGroup from './workflow-history-timeline-group/workflow-history-timeline-group';
 import WorkflowHistoryTimelineLoadMore from './workflow-history-timeline-load-more/workflow-history-timeline-load-more';
@@ -70,7 +65,6 @@ import {
 export default function WorkflowHistory({ params }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
   const decodedParams = decodeUrlParams<Props['params']>(params);
-  const [isFirstRenderCompleted, setIsFirstRenderCompleted] = useState(false);
 
   const { workflowTab, ...historyQueryParams } = params;
   const wfHistoryRequestArgs = {
@@ -82,63 +76,35 @@ export default function WorkflowHistory({ params }: Props) {
     string | undefined
   >(undefined);
 
-  const {
-    activeFiltersCount,
-    queryParams,
-    setQueryParams,
-    ...pageFiltersRest
-  } = usePageFilters({
-    pageQueryParamsConfig: workflowPageQueryParamsConfig,
-    pageFiltersConfig: workflowHistoryFiltersConfig,
-  });
-
-  const { getValue: getIsUngroupedView, setValue: setIsUngroupedView } =
-    useLocalStorageValue<boolean>({
-      key: 'history-is-ungrouped-view',
-      encode: (val) => (val ? 'true' : 'false'),
-      decode: (val) => val === 'true',
+  const { activeFiltersCount, queryParams, setQueryParams, resetAllFilters } =
+    usePageFilters({
+      pageQueryParamsConfig: workflowPageQueryParamsConfig,
+      pageFiltersConfig: workflowHistoryFiltersConfig,
     });
 
-  // const { getValue: getHistoryEventTypes } = useLocalStorageValue<
-  //   Array<WorkflowHistoryEventFilteringType>
-  // >({
-  //   key: 'history-default-filters',
-  //   encode: (val) => JSON.stringify(val),
-  //   decode: (val) => JSON.parse(val),
-  // });
+  const {
+    getValue: getUngroupedViewPreference,
+    setValue: setUngroupedViewPreference,
+  } = useHistoryUngroupedViewPreference();
 
-  useEffect(() => {
-    if (isFirstRenderCompleted) return;
+  const {
+    getValue: getHistoryEventTypesPreference,
+    clearValue: clearHistoryEventTypesPreference,
+  } = useHistoryEventTypesPreference();
 
-    setIsFirstRenderCompleted(true);
+  const isUngroupedHistoryViewEnabled = useMemo(() => {
+    if (queryParams.ungroupedHistoryViewEnabled !== undefined)
+      return queryParams.ungroupedHistoryViewEnabled;
 
-    const storageIsUngroupedViewEnabled = getIsUngroupedView();
-    // const storageHistoryTypesToFilter = getHistoryEventTypes();
+    return getUngroupedViewPreference() ?? false;
+  }, [queryParams.ungroupedHistoryViewEnabled, getUngroupedViewPreference]);
 
-    if (
-      storageIsUngroupedViewEnabled !== null
-      // ||
-      // storageHistoryTypesToFilter !== null
-    ) {
-      setQueryParams({
-        ...(storageIsUngroupedViewEnabled !== null
-          ? {
-              ungroupedHistoryViewEnabled: String(
-                storageIsUngroupedViewEnabled
-              ),
-            }
-          : {}),
-        // ...(storageHistoryTypesToFilter !== null
-        //   ? {
-        //       historyEventTypes: storageHistoryTypesToFilter,
-        //     }
-        //   : {}),
-      });
-    }
+  const historyEventTypes = useMemo(() => {
+    if (queryParams.historyEventTypes !== undefined)
+      return queryParams.historyEventTypes;
 
-    // We want to run this useEffect only on first render
-    // fdsfsd eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isFirstRenderCompleted, getIsUngroupedView, setQueryParams]);
+    return getHistoryEventTypesPreference() ?? DEFAULT_EVENT_FILTERING_TYPES;
+  }, [queryParams.historyEventTypes, getHistoryEventTypesPreference]);
 
   const { data: wfExecutionDescription } = useSuspenseDescribeWorkflow({
     ...params,
@@ -213,16 +179,12 @@ export default function WorkflowHistory({ params }: Props) {
       ).filter(([_, g]) =>
         workflowHistoryFiltersConfig.every((f) =>
           f.filterFunc(g, {
-            historyEventTypes: queryParams.historyEventTypes,
+            historyEventTypes,
             historyEventStatuses: queryParams.historyEventStatuses,
           })
         )
       ),
-    [
-      eventGroups,
-      queryParams.historyEventTypes,
-      queryParams.historyEventStatuses,
-    ]
+    [eventGroups, historyEventTypes, queryParams.historyEventStatuses]
   );
 
   const sortedUngroupedEvents: Array<WorkflowHistoryUngroupedEventInfo> =
@@ -255,10 +217,10 @@ export default function WorkflowHistory({ params }: Props) {
     });
 
   const onClickGroupModeToggle = useCallback(() => {
-    setIsUngroupedView(!queryParams.ungroupedHistoryViewEnabled);
+    setUngroupedViewPreference(!isUngroupedHistoryViewEnabled);
 
     setQueryParams({
-      ungroupedHistoryViewEnabled: queryParams.ungroupedHistoryViewEnabled
+      ungroupedHistoryViewEnabled: isUngroupedHistoryViewEnabled
         ? 'false'
         : 'true',
     });
@@ -272,10 +234,10 @@ export default function WorkflowHistory({ params }: Props) {
       ungroupedEndIndex: -1,
     }));
   }, [
-    queryParams.ungroupedHistoryViewEnabled,
+    isUngroupedHistoryViewEnabled,
     setQueryParams,
     setTimelineListVisibleRange,
-    setIsUngroupedView,
+    setUngroupedViewPreference,
   ]);
 
   const workflowCloseTimeMs = workflowExecutionInfo?.closeTime
@@ -305,12 +267,12 @@ export default function WorkflowHistory({ params }: Props) {
 
   const ungroupedViewShouldLoadMoreEvents = useMemo(
     () =>
-      queryParams.ungroupedHistoryViewEnabled &&
+      isUngroupedHistoryViewEnabled &&
       // Pre-load more as we're approaching the end
       sortedUngroupedEvents.length - visibleGroupsRange.ungroupedEndIndex <
         WORKFLOW_HISTORY_PAGE_SIZE_CONFIG * 1,
     [
-      queryParams.ungroupedHistoryViewEnabled,
+      isUngroupedHistoryViewEnabled,
       sortedUngroupedEvents.length,
       visibleGroupsRange.ungroupedEndIndex,
     ]
@@ -383,7 +345,7 @@ export default function WorkflowHistory({ params }: Props) {
             kind="secondary"
             onClick={onClickGroupModeToggle}
             startEnhancer={
-              queryParams.ungroupedHistoryViewEnabled ? (
+              isUngroupedHistoryViewEnabled ? (
                 <MdOutlineViewStream size={16} />
               ) : (
                 <MdOutlineViewAgenda size={16} />
@@ -391,7 +353,7 @@ export default function WorkflowHistory({ params }: Props) {
             }
             overrides={overrides.toggleButton}
           >
-            {queryParams.ungroupedHistoryViewEnabled ? 'Group' : 'Ungroup'}
+            {isUngroupedHistoryViewEnabled ? 'Group' : 'Ungroup'}
           </Button>
           <WorkflowHistoryExportJsonButton {...wfHistoryRequestArgs} />
           <PageFiltersToggle
@@ -415,7 +377,10 @@ export default function WorkflowHistory({ params }: Props) {
           pageFiltersConfig={workflowHistoryFiltersConfig}
           queryParams={queryParams}
           setQueryParams={setQueryParams}
-          {...pageFiltersRest}
+          resetAllFilters={() => {
+            resetAllFilters();
+            clearHistoryEventTypesPreference();
+          }}
         />
       )}
       {typeof window !== 'undefined' && isTimelineChartShown && (
@@ -442,7 +407,7 @@ export default function WorkflowHistory({ params }: Props) {
               });
             }
 
-            if (!queryParams.ungroupedHistoryViewEnabled) {
+            if (!isUngroupedHistoryViewEnabled) {
               compactSectionListRef.current?.scrollToIndex({
                 index: eventGroupIndex,
                 align: 'start',
@@ -470,7 +435,7 @@ export default function WorkflowHistory({ params }: Props) {
       )}
       {filteredEventGroupsEntries.length > 0 && (
         <>
-          {queryParams.ungroupedHistoryViewEnabled ? (
+          {isUngroupedHistoryViewEnabled ? (
             <section className={cls.ungroupedEventsContainer}>
               <WorkflowHistoryUngroupedTable
                 eventsInfo={sortedUngroupedEvents}

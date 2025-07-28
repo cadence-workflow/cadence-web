@@ -4,29 +4,25 @@ import {
 } from '@/hooks/use-page-query-params/use-page-query-params.types';
 import { HISTORY_EVENT_FILTER_STATUSES } from '@/views/workflow-history/workflow-history-filters-status/workflow-history-filters-status.constants';
 import { type HistoryEventFilterStatus } from '@/views/workflow-history/workflow-history-filters-status/workflow-history-filters-status.types';
-import {
-  DEFAULT_EVENT_FILTERING_TYPES,
-  WORKFLOW_HISTORY_EVENT_FILTERING_TYPES,
-} from '@/views/workflow-history/workflow-history-filters-type/workflow-history-filters-type.constants';
+import { WORKFLOW_HISTORY_EVENT_FILTERING_TYPES } from '@/views/workflow-history/workflow-history-filters-type/workflow-history-filters-type.constants';
 import { type WorkflowHistoryEventFilteringType } from '@/views/workflow-history/workflow-history-filters-type/workflow-history-filters-type.types';
 
 const workflowPageQueryParamsConfig: [
   PageQueryParamMultiValue<
     'historyEventTypes',
-    WorkflowHistoryEventFilteringType[]
+    WorkflowHistoryEventFilteringType[] | undefined
   >,
   PageQueryParamMultiValue<
     'historyEventStatuses',
     HistoryEventFilterStatus[] | undefined
   >,
   PageQueryParam<'historySelectedEventId', string | undefined>,
-  PageQueryParam<'ungroupedHistoryViewEnabled', boolean>,
+  PageQueryParam<'ungroupedHistoryViewEnabled', boolean | undefined>,
 ] = [
   {
     key: 'historyEventTypes',
     queryParamKey: 'ht',
     isMultiValue: true,
-    defaultValue: DEFAULT_EVENT_FILTERING_TYPES,
     parseValue: (v) => {
       if (
         v.every((t) =>
@@ -37,7 +33,7 @@ const workflowPageQueryParamsConfig: [
       ) {
         return v as WorkflowHistoryEventFilteringType[];
       }
-      return DEFAULT_EVENT_FILTERING_TYPES;
+      return undefined;
     },
   },
   {
@@ -58,8 +54,11 @@ const workflowPageQueryParamsConfig: [
   {
     key: 'ungroupedHistoryViewEnabled',
     queryParamKey: 'u',
-    defaultValue: false,
-    parseValue: (v) => v === 'true',
+    parseValue: (v) => {
+      if (v === 'true') return true;
+      if (v === 'false') return false;
+      return undefined;
+    },
   },
 ] as const;
 
