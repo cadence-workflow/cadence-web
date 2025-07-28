@@ -6,6 +6,7 @@ import {
 } from 'react-icons/md';
 import { RiStethoscopeLine } from 'react-icons/ri';
 
+import getWorkflowDiagnosticsErrorConfig from '@/views/workflow-diagnostics/helpers/get-workflow-diagnostics-error-config';
 import WorkflowDiagnostics from '@/views/workflow-diagnostics/workflow-diagnostics';
 import WorkflowHistory from '@/views/workflow-history/workflow-history';
 import WorkflowQueries from '@/views/workflow-queries/workflow-queries';
@@ -46,12 +47,7 @@ const workflowPageTabsConfig: WorkflowPageTabsConfig<
     title: 'Diagnostics',
     artwork: RiStethoscopeLine,
     content: WorkflowDiagnostics,
-    getErrorConfig: (err) =>
-      getWorkflowPageErrorConfig(
-        err,
-        'Failed to load workflow diagnostics',
-        'diagnostics'
-      ),
+    getErrorConfig: getWorkflowDiagnosticsErrorConfig,
   },
   queries: {
     title: 'Queries',

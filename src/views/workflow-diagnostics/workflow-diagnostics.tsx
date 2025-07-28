@@ -2,17 +2,19 @@
 
 import React from 'react';
 
-import ErrorPanel from '@/components/error-panel/error-panel';
-import PanelSection from '@/components/panel-section/panel-section';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import { type WorkflowPageTabContentProps } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
+import { useSuspenseDescribeWorkflow } from '../workflow-page/hooks/use-describe-workflow';
 import useSuspenseIsWorkflowDiagnosticsEnabled from '../workflow-page/hooks/use-is-workflow-diagnostics-enabled/use-suspense-is-workflow-diagnostics-enabled';
 
-import workflowDiagnosticsDisabledErrorPanelConfig from './config/workflow-diagnostics-disabled-error-panel.config';
 import useDiagnoseWorkflow from './hooks/use-diagnose-workflow/use-diagnose-workflow';
 import WorkflowDiagnosticsContent from './workflow-diagnostics-content/workflow-diagnostics-content';
 import WorkflowDiagnosticsFallback from './workflow-diagnostics-fallback/workflow-diagnostics-fallback';
+import {
+  DIAGNOSTICS_CONFIG_DISABLED_ERROR_MSG,
+  DIAGNOSTICS_RUNNING_WORKFLOW_ERROR_MSG,
+} from './workflow-diagnostics.constants';
 
 export default function WorkflowDiagnostics({
   params,
@@ -20,24 +22,34 @@ export default function WorkflowDiagnostics({
   const { data: isWorkflowDiagnosticsEnabled } =
     useSuspenseIsWorkflowDiagnosticsEnabled();
 
-  const { data, error, status } = useDiagnoseWorkflow(params, {
-    enabled: isWorkflowDiagnosticsEnabled,
+  // See if there's a better way to determine workflow close status
+  const {
+    data: { workflowExecutionInfo },
+  } = useSuspenseDescribeWorkflow(params);
+
+  const { data, status } = useDiagnoseWorkflow(params, {
+    enabled:
+      isWorkflowDiagnosticsEnabled &&
+      Boolean(workflowExecutionInfo?.closeStatus),
+    throwOnError: true,
   });
 
   if (!isWorkflowDiagnosticsEnabled) {
-    return (
-      <PanelSection>
-        <ErrorPanel {...workflowDiagnosticsDisabledErrorPanelConfig} />
-      </PanelSection>
-    );
+    throw new Error(DIAGNOSTICS_CONFIG_DISABLED_ERROR_MSG);
+  }
+
+  if (!Boolean(workflowExecutionInfo?.closeStatus)) {
+    throw new Error(DIAGNOSTICS_RUNNING_WORKFLOW_ERROR_MSG);
   }
 
   if (status === 'pending') {
     return <SectionLoadingIndicator />;
   }
 
-  if (status === 'error') {
-    throw error;
+  if (!data) {
+    throw new Error(
+      'Unreachable case, react-query should have thrown error above'
+    );
   }
 
   return data.parsingError ? (
