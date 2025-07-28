@@ -4,13 +4,16 @@ import {
 } from '@/hooks/use-page-query-params/use-page-query-params.types';
 import { HISTORY_EVENT_FILTER_STATUSES } from '@/views/workflow-history/workflow-history-filters-status/workflow-history-filters-status.constants';
 import { type HistoryEventFilterStatus } from '@/views/workflow-history/workflow-history-filters-status/workflow-history-filters-status.types';
-import { WORKFLOW_HISTORY_EVENT_FILTERING_TYPES } from '@/views/workflow-history/workflow-history-filters-type/workflow-history-filters-type.constants';
+import {
+  DEFAULT_EVENT_FILTERING_TYPES,
+  WORKFLOW_HISTORY_EVENT_FILTERING_TYPES,
+} from '@/views/workflow-history/workflow-history-filters-type/workflow-history-filters-type.constants';
 import { type WorkflowHistoryEventFilteringType } from '@/views/workflow-history/workflow-history-filters-type/workflow-history-filters-type.types';
 
 const workflowPageQueryParamsConfig: [
   PageQueryParamMultiValue<
     'historyEventTypes',
-    WorkflowHistoryEventFilteringType[] | undefined
+    WorkflowHistoryEventFilteringType[]
   >,
   PageQueryParamMultiValue<
     'historyEventStatuses',
@@ -23,6 +26,7 @@ const workflowPageQueryParamsConfig: [
     key: 'historyEventTypes',
     queryParamKey: 'ht',
     isMultiValue: true,
+    defaultValue: DEFAULT_EVENT_FILTERING_TYPES,
     parseValue: (v) => {
       if (
         v.every((t) =>
@@ -33,7 +37,7 @@ const workflowPageQueryParamsConfig: [
       ) {
         return v as WorkflowHistoryEventFilteringType[];
       }
-      return undefined;
+      return DEFAULT_EVENT_FILTERING_TYPES;
     },
   },
   {

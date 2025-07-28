@@ -55,6 +55,7 @@ import useKeepLoadingEvents from './hooks/use-keep-loading-events';
 import WorkflowHistoryCompactEventCard from './workflow-history-compact-event-card/workflow-history-compact-event-card';
 import WorkflowHistoryExpandAllEventsButton from './workflow-history-expand-all-events-button/workflow-history-expand-all-events-button';
 import WorkflowHistoryExportJsonButton from './workflow-history-export-json-button/workflow-history-export-json-button';
+import { type WorkflowHistoryEventFilteringType } from './workflow-history-filters-type/workflow-history-filters-type.types';
 import WorkflowHistoryTimelineChart from './workflow-history-timeline-chart/workflow-history-timeline-chart';
 import WorkflowHistoryTimelineGroup from './workflow-history-timeline-group/workflow-history-timeline-group';
 import WorkflowHistoryTimelineLoadMore from './workflow-history-timeline-load-more/workflow-history-timeline-load-more';
@@ -69,6 +70,7 @@ import {
 export default function WorkflowHistory({ params }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
   const decodedParams = decodeUrlParams<Props['params']>(params);
+  const [isFirstRenderCompleted, setIsFirstRenderCompleted] = useState(false);
 
   const { workflowTab, ...historyQueryParams } = params;
   const wfHistoryRequestArgs = {
@@ -97,18 +99,46 @@ export default function WorkflowHistory({ params }: Props) {
       decode: (val) => val === 'true',
     });
 
-  useEffect(() => {
-    const storageIsUngroupedViewEnabled = getIsUngroupedView();
+  // const { getValue: getHistoryEventTypes } = useLocalStorageValue<
+  //   Array<WorkflowHistoryEventFilteringType>
+  // >({
+  //   key: 'history-default-filters',
+  //   encode: (val) => JSON.stringify(val),
+  //   decode: (val) => JSON.parse(val),
+  // });
 
-    if (storageIsUngroupedViewEnabled !== null) {
+  useEffect(() => {
+    if (isFirstRenderCompleted) return;
+
+    setIsFirstRenderCompleted(true);
+
+    const storageIsUngroupedViewEnabled = getIsUngroupedView();
+    // const storageHistoryTypesToFilter = getHistoryEventTypes();
+
+    if (
+      storageIsUngroupedViewEnabled !== null
+      // ||
+      // storageHistoryTypesToFilter !== null
+    ) {
       setQueryParams({
-        ungroupedHistoryViewEnabled: String(storageIsUngroupedViewEnabled),
+        ...(storageIsUngroupedViewEnabled !== null
+          ? {
+              ungroupedHistoryViewEnabled: String(
+                storageIsUngroupedViewEnabled
+              ),
+            }
+          : {}),
+        // ...(storageHistoryTypesToFilter !== null
+        //   ? {
+        //       historyEventTypes: storageHistoryTypesToFilter,
+        //     }
+        //   : {}),
       });
     }
 
     // We want to run this useEffect only on first render
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    // fdsfsd eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFirstRenderCompleted, getIsUngroupedView, setQueryParams]);
 
   const { data: wfExecutionDescription } = useSuspenseDescribeWorkflow({
     ...params,
