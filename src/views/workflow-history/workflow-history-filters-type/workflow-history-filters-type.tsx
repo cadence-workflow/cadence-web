@@ -7,7 +7,10 @@ import { Select, SIZE } from 'baseui/select';
 import { type PageFilterComponentProps } from '@/components/page-filters/page-filters.types';
 import useLocalStorageValue from '@/hooks/use-local-storage-value';
 
-import { WORKFLOW_HISTORY_EVENT_FILTERING_TYPES_LABEL_MAP } from './workflow-history-filters-type.constants';
+import {
+  DEFAULT_EVENT_FILTERING_TYPES,
+  WORKFLOW_HISTORY_EVENT_FILTERING_TYPES_LABEL_MAP,
+} from './workflow-history-filters-type.constants';
 import { overrides } from './workflow-history-filters-type.styles';
 import {
   type WorkflowHistoryEventFilteringType,
@@ -24,30 +27,19 @@ export default function WorkflowHistoryFiltersType({
       label: WORKFLOW_HISTORY_EVENT_FILTERING_TYPES_LABEL_MAP[type],
     })) ?? [];
 
-  const { getValue: getHistoryEventTypes, setValue: setHistoryEventTypes } =
-    useLocalStorageValue<Array<WorkflowHistoryEventFilteringType> | undefined>({
-      key: 'history-default-filters',
-      encode: (val) => JSON.stringify(val),
-      decode: (val) => JSON.parse(val),
-    });
-
-  useEffect(() => {
-    const storageHistoryTypesToFilter = getHistoryEventTypes();
-
-    if (storageHistoryTypesToFilter !== null) {
-      setValue({
-        historyEventTypes: storageHistoryTypesToFilter,
-      });
-    }
-
-    // We want to run this useEffect only on first render
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // const { setValue: setHistoryEventTypes } = useLocalStorageValue<
+  //   Array<WorkflowHistoryEventFilteringType>
+  // >({
+  //   key: 'history-default-filters',
+  //   encode: (val) => JSON.stringify(val),
+  //   decode: (val) => JSON.parse(val),
+  // });
 
   return (
     <FormControl label="Type" overrides={overrides.selectFormControl}>
       <Select
         multi
+        clearable={false}
         size={SIZE.compact}
         value={typeOptionsValue}
         options={Object.entries(
@@ -61,7 +53,9 @@ export default function WorkflowHistoryFiltersType({
                 )
               : undefined;
 
-          setHistoryEventTypes(newHistoryEventTypes);
+          // setHistoryEventTypes(
+          //   newHistoryEventTypes ?? DEFAULT_EVENT_FILTERING_TYPES
+          // );
 
           setValue({
             historyEventTypes: newHistoryEventTypes,

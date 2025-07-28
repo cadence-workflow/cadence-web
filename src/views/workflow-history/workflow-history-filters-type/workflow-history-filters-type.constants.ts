@@ -5,6 +5,9 @@ import { type WorkflowHistoryEventFilteringType } from './workflow-history-filte
 export const WORKFLOW_HISTORY_EVENT_FILTERING_TYPES: WorkflowHistoryEventFilteringType[] =
   ['ACTIVITY', 'CHILDWORKFLOW', 'DECISION', 'SIGNAL', 'TIMER', 'WORKFLOW'];
 
+export const DEFAULT_EVENT_FILTERING_TYPES: WorkflowHistoryEventFilteringType[] =
+  WORKFLOW_HISTORY_EVENT_FILTERING_TYPES.filter((t) => t !== 'DECISION');
+
 export const WORKFLOW_HISTORY_EVENT_FILTERING_TYPES_LABEL_MAP = {
   DECISION: 'Decision',
   ACTIVITY: 'Activity',
