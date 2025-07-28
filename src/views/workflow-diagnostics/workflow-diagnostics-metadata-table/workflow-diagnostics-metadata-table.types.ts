@@ -13,9 +13,12 @@ export type MetadataValueComponentProps = {
 export type WorkflowDiagnosticsMetadataParser = {
   name: string;
   matcher: (key: string, value: unknown) => boolean;
-  renderValue: ComponentType<MetadataValueComponentProps>;
   forceWrap?: boolean;
-};
+  hide?: boolean;
+} & (
+  | { renderValue: ComponentType<MetadataValueComponentProps> }
+  | { hide: true }
+);
 
 export type ParsedWorkflowDiagnosticsMetadataField = {
   key: string;

@@ -32,6 +32,11 @@ jest.mock(
         matcher: (_, value) => value === '',
         renderValue: () => <span data-testid="empty-string">&quot;&quot;</span>,
       },
+      {
+        name: 'Test Null parser',
+        matcher: (_, value) => value === null,
+        hide: true,
+      },
     ] satisfies Array<WorkflowDiagnosticsMetadataParser>
 );
 
@@ -78,7 +83,29 @@ describe(WorkflowDiagnosticsMetadataTable.name, () => {
     expect(screen.getByTestId('empty-string')).toBeInTheDocument();
   });
 
-  it('handles null and undefined values gracefully', () => {
+  it('hides values when parser is configured with hide: true', () => {
+    const metadata = {
+      visibleKey: 'visible value',
+      nullKey: null,
+      anotherNullKey: null,
+      regularKey: 'regular value',
+    };
+
+    setup({ metadata });
+
+    // Null values should be hidden by the null parser
+    expect(screen.queryByText('nullKey')).not.toBeInTheDocument();
+    expect(screen.queryByText('anotherNullKey')).not.toBeInTheDocument();
+    expect(screen.queryByText('null')).not.toBeInTheDocument();
+
+    // Other values should still be visible
+    expect(screen.getByText('visibleKey')).toBeInTheDocument();
+    expect(screen.getByText('visible value')).toBeInTheDocument();
+    expect(screen.getByText('regularKey')).toBeInTheDocument();
+    expect(screen.getByText('regular value')).toBeInTheDocument();
+  });
+
+  it('handles undefined values gracefully', () => {
     const metadata = {
       nullKey: null,
       undefinedKey: undefined,
@@ -86,8 +113,6 @@ describe(WorkflowDiagnosticsMetadataTable.name, () => {
 
     setup({ metadata });
 
-    expect(screen.getByText('nullKey')).toBeInTheDocument();
-    expect(screen.getByText('null')).toBeInTheDocument();
     expect(screen.getByText('undefinedKey')).toBeInTheDocument();
     expect(screen.getByText('undefined')).toBeInTheDocument();
   });

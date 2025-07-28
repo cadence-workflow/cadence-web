@@ -3,7 +3,10 @@ import { useMemo } from 'react';
 import workflowDiagnosticsMetadataParsersConfig from '../config/workflow-diagnostics-metadata-parsers.config';
 
 import { styled } from './workflow-diagnostics-metadata-table.styles';
-import { type Props } from './workflow-diagnostics-metadata-table.types';
+import {
+  type ParsedWorkflowDiagnosticsMetadataField,
+  type Props,
+} from './workflow-diagnostics-metadata-table.types';
 
 export default function WorkflowDiagnosticsMetadataTable({
   metadata,
@@ -11,22 +14,30 @@ export default function WorkflowDiagnosticsMetadataTable({
 }: Props) {
   const parsedMetadataItems = useMemo(
     () =>
-      Object.entries(metadata).map(([key, value]) => {
-        const renderConfig = workflowDiagnosticsMetadataParsersConfig.find(
-          (c) => c.matcher(key, value)
-        );
+      Object.entries(metadata)
+        .map(([key, value]) => {
+          const renderConfig = workflowDiagnosticsMetadataParsersConfig.find(
+            (c) => c.matcher(key, value)
+          );
 
-        return {
-          key,
-          label: key,
-          value: renderConfig ? (
-            <renderConfig.renderValue value={value} {...workflowPageParams} />
-          ) : (
-            String(value)
-          ),
-          forceWrap: renderConfig?.forceWrap,
-        };
-      }),
+          if (renderConfig?.hide) {
+            return null;
+          }
+
+          return {
+            key,
+            label: key,
+            value: renderConfig ? (
+              <renderConfig.renderValue value={value} {...workflowPageParams} />
+            ) : (
+              String(value)
+            ),
+            forceWrap: renderConfig?.forceWrap,
+          };
+        })
+        .filter(
+          (field) => field !== null
+        ) as Array<ParsedWorkflowDiagnosticsMetadataField>,
     [metadata, workflowPageParams]
   );
 
