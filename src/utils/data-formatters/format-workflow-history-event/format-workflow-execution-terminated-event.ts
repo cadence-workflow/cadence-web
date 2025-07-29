@@ -11,11 +11,15 @@ const formatWorkflowExecutionTerminatedEvent = ({
   },
   ...eventFields
 }: WorkflowExecutionTerminatedEvent) => {
+  const { primaryCommonFields, secondaryCommonFields } =
+    formatWorkflowCommonEventFields(eventFields);
+
   return {
-    ...formatWorkflowCommonEventFields(eventFields),
+    ...primaryCommonFields,
     reason: reason || null,
     details: formatPayload(details),
     ...eventAttributes,
+    ...secondaryCommonFields,
   };
 };
 

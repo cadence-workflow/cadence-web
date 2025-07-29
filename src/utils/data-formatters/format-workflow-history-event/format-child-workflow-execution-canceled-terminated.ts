@@ -9,11 +9,14 @@ const formatChildWorkflowExecutionTerminatedEvent = ({
   },
   ...eventFields
 }: ChildWorkflowExecutionTerminatedEvent) => {
+  const { primaryCommonFields, secondaryCommonFields } =
+    formatWorkflowCommonEventFields(eventFields);
   return {
-    ...formatWorkflowCommonEventFields(eventFields),
+    ...primaryCommonFields,
     ...eventAttributes,
     initiatedEventId: parseInt(initiatedEventId),
     startedEventId: parseInt(startedEventId),
+    ...secondaryCommonFields,
   };
 };
 

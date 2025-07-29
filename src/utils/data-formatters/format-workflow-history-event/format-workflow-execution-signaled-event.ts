@@ -11,11 +11,15 @@ const formatWorkflowExecutionSignaledEvent = ({
   },
   ...eventFields
 }: WorkflowExecutionSignaledEvent) => {
+  const { primaryCommonFields, secondaryCommonFields } =
+    formatWorkflowCommonEventFields(eventFields);
+
   return {
-    ...formatWorkflowCommonEventFields(eventFields),
+    ...primaryCommonFields,
     input: formatInputPayload(input),
     ...eventAttributes,
     requestId,
+    ...secondaryCommonFields,
   };
 };
 

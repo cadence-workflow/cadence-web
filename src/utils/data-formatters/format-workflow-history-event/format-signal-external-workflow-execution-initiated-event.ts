@@ -13,13 +13,16 @@ const formatSignalExternalWorkflowExecutionInitiatedEvent = ({
   },
   ...eventFields
 }: SignalExternalWorkflowExecutionInitiatedEvent) => {
+  const { primaryCommonFields, secondaryCommonFields } =
+    formatWorkflowCommonEventFields(eventFields);
   return {
-    ...formatWorkflowCommonEventFields(eventFields),
+    ...primaryCommonFields,
     ...eventAttributes,
     input: formatInputPayload(input),
     signalName,
     control: control ? parseInt(atob(control)) : null,
     decisionTaskCompletedEventId: parseInt(decisionTaskCompletedEventId),
+    ...secondaryCommonFields,
   };
 };
 

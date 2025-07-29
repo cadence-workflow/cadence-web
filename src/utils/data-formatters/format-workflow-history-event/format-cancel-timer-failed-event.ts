@@ -8,10 +8,13 @@ const formatCancelTimerFailedEvent = ({
   },
   ...eventFields
 }: CancelTimerFailedEvent) => {
+  const { primaryCommonFields, secondaryCommonFields } =
+    formatWorkflowCommonEventFields(eventFields);
   return {
-    ...formatWorkflowCommonEventFields(eventFields),
+    ...primaryCommonFields,
     ...eventAttributes,
     decisionTaskCompletedEventId: parseInt(decisionTaskCompletedEventId),
+    ...secondaryCommonFields,
   };
 };
 

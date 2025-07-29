@@ -11,13 +11,16 @@ const formatSignalExternalWorkflowExecutionFailedEvent = ({
   },
   ...eventFields
 }: SignalExternalWorkflowExecutionFailedEvent) => {
+  const { primaryCommonFields, secondaryCommonFields } =
+    formatWorkflowCommonEventFields(eventFields);
   return {
-    ...formatWorkflowCommonEventFields(eventFields),
+    ...primaryCommonFields,
     ...eventAttributes,
     cause,
     control: control ? parseInt(atob(control)) : null,
     initiatedEventId: parseInt(initiatedEventId),
     decisionTaskCompletedEventId: parseInt(decisionTaskCompletedEventId),
+    ...secondaryCommonFields,
   };
 };
 

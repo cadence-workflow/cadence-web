@@ -15,8 +15,10 @@ const formatDecisionTaskFailedEvent = ({
   },
   ...eventFields
 }: DecisionTaskFailedEvent) => {
+  const { primaryCommonFields, secondaryCommonFields } =
+    formatWorkflowCommonEventFields(eventFields);
   return {
-    ...formatWorkflowCommonEventFields(eventFields),
+    ...primaryCommonFields,
     details: formatFailureDetails(failure),
     forkEventVersion: parseInt(forkEventVersion),
     reason: failure?.reason || null,
@@ -24,6 +26,7 @@ const formatDecisionTaskFailedEvent = ({
     scheduledEventId: parseInt(scheduledEventId),
     startedEventId: parseInt(startedEventId),
     ...eventAttributes,
+    ...secondaryCommonFields,
   };
 };
 

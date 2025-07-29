@@ -23,8 +23,10 @@ const formatActivityTaskScheduledEvent = ({
   },
   ...eventFields
 }: ActivityTaskScheduledEvent) => {
+  const { primaryCommonFields, secondaryCommonFields } =
+    formatWorkflowCommonEventFields(eventFields);
   return {
-    ...formatWorkflowCommonEventFields(eventFields),
+    ...primaryCommonFields,
     ...eventAttributes,
     taskList: {
       kind: formatEnum(taskList?.kind, 'TASK_LIST_KIND'),
@@ -43,6 +45,7 @@ const formatActivityTaskScheduledEvent = ({
     domain: domain || null,
     decisionTaskCompletedEventId: parseInt(decisionTaskCompletedEventId),
     header: formatPayloadMap(header, 'fields'),
+    ...secondaryCommonFields,
   };
 };
 

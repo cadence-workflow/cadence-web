@@ -12,13 +12,16 @@ const formatChildWorkflowExecutionFailedEvent = ({
   },
   ...eventFields
 }: ChildWorkflowExecutionFailedEvent) => {
+  const { primaryCommonFields, secondaryCommonFields } =
+    formatWorkflowCommonEventFields(eventFields);
   return {
-    ...formatWorkflowCommonEventFields(eventFields),
+    ...primaryCommonFields,
     details: formatFailureDetails(failure),
     reason: failure?.reason || null,
     ...eventAttributes,
     initiatedEventId: parseInt(initiatedEventId),
     startedEventId: parseInt(startedEventId),
+    ...secondaryCommonFields,
   };
 };
 

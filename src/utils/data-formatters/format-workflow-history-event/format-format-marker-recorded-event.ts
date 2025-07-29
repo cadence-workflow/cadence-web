@@ -14,13 +14,16 @@ const formatMarkerRecordedEvent = ({
   },
   ...eventFields
 }: MarkerRecordedEvent) => {
+  const { primaryCommonFields, secondaryCommonFields } =
+    formatWorkflowCommonEventFields(eventFields);
   return {
-    ...formatWorkflowCommonEventFields(eventFields),
+    ...primaryCommonFields,
     markerName,
     details: formatPayload(details),
     decisionTaskCompletedEventId: parseInt(decisionTaskCompletedEventId),
     header: formatPayloadMap(header, 'fields'),
     ...eventAttributes,
+    ...secondaryCommonFields,
   };
 };
 

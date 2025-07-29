@@ -13,13 +13,16 @@ const formatActivityTaskCanceledEvent = ({
   },
   ...eventFields
 }: ActivityTaskCanceledEvent) => {
+  const { primaryCommonFields, secondaryCommonFields } =
+    formatWorkflowCommonEventFields(eventFields);
   return {
-    ...formatWorkflowCommonEventFields(eventFields),
+    ...primaryCommonFields,
     details: formatPayload(details),
     latestCancelRequestedEventId: parseInt(latestCancelRequestedEventId),
     scheduledEventId: parseInt(scheduledEventId),
     startedEventId: parseInt(startedEventId),
     ...eventAttributes,
+    ...secondaryCommonFields,
   };
 };
 

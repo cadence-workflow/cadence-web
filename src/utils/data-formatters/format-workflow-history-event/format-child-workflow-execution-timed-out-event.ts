@@ -9,11 +9,14 @@ const formatChildWorkflowExecutionTimedOutEvent = ({
   },
   ...eventFields
 }: ChildWorkflowExecutionTimedOutEvent) => {
+  const { primaryCommonFields, secondaryCommonFields } =
+    formatWorkflowCommonEventFields(eventFields);
   return {
-    ...formatWorkflowCommonEventFields(eventFields),
+    ...primaryCommonFields,
     ...eventAttributes,
     initiatedEventId: parseInt(initiatedEventId),
     startedEventId: parseInt(startedEventId),
+    ...secondaryCommonFields,
   };
 };
 

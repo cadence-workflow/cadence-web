@@ -5,10 +5,14 @@ const formatTimerFiredEvent = ({
   timerFiredEventAttributes: { startedEventId, ...eventAttributes },
   ...eventFields
 }: TimerFiredEvent) => {
-  return {
-    ...formatWorkflowCommonEventFields(eventFields),
+  const { primaryCommonFields, secondaryCommonFields } =
+    formatWorkflowCommonEventFields(eventFields);
+    
+    return {
+    ...primaryCommonFields,
     ...eventAttributes,
     startedEventId: parseInt(startedEventId),
+    ...secondaryCommonFields,
   };
 };
 

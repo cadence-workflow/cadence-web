@@ -10,12 +10,15 @@ const formatDecisionTaskCompletedEvent = ({
   },
   ...eventFields
 }: DecisionTaskCompletedEvent) => {
+  const { primaryCommonFields, secondaryCommonFields } =
+    formatWorkflowCommonEventFields(eventFields);
   return {
-    ...formatWorkflowCommonEventFields(eventFields),
+    ...primaryCommonFields,
     identity,
     binaryChecksum,
     executionContext: executionContext || null,
     ...eventAttributes,
+    ...secondaryCommonFields,
   };
 };
 

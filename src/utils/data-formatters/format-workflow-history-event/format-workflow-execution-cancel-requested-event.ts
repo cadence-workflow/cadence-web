@@ -11,8 +11,11 @@ const formatWorkflowExecutionCancelRequestedEvent = ({
   },
   ...eventFields
 }: WorkflowExecutionCancelRequestedEvent) => {
+  const { primaryCommonFields, secondaryCommonFields } =
+    formatWorkflowCommonEventFields(eventFields);
+
   return {
-    ...formatWorkflowCommonEventFields(eventFields),
+    ...primaryCommonFields,
     cause,
     externalInitiatedEventId: externalExecutionInfo?.initiatedId
       ? parseInt(externalExecutionInfo.initiatedId)
@@ -21,6 +24,7 @@ const formatWorkflowExecutionCancelRequestedEvent = ({
     identity,
     requestId,
     ...eventAttributes,
+    ...secondaryCommonFields,
   };
 };
 

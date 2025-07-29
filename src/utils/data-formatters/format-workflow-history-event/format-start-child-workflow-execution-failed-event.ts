@@ -11,13 +11,16 @@ const formatStartChildWorkflowExecutionFailedEvent = ({
   },
   ...eventFields
 }: StartChildWorkflowExecutionFailedEvent) => {
+  const { primaryCommonFields, secondaryCommonFields } =
+    formatWorkflowCommonEventFields(eventFields);
   return {
-    ...formatWorkflowCommonEventFields(eventFields),
+    ...primaryCommonFields,
     cause,
     ...eventAttributes,
     control: control ? parseInt(atob(control)) : null,
     initiatedEventId: parseInt(initiatedEventId),
     decisionTaskCompletedEventId: parseInt(decisionTaskCompletedEventId),
+    ...secondaryCommonFields,
   };
 };
 

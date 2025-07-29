@@ -10,12 +10,15 @@ const formatDecisionTaskStartedEvent = ({
   },
   ...eventFields
 }: DecisionTaskStartedEvent) => {
+  const { primaryCommonFields, secondaryCommonFields } =
+    formatWorkflowCommonEventFields(eventFields);
   return {
-    ...formatWorkflowCommonEventFields(eventFields),
+    ...primaryCommonFields,
     identity,
     scheduledEventId: parseInt(scheduledEventId),
     requestId,
     ...eventAttributes,
+    ...secondaryCommonFields,
   };
 };
 

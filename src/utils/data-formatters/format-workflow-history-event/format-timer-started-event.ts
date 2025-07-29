@@ -11,11 +11,15 @@ const formatTimerStartedEvent = ({
   },
   ...eventFields
 }: TimerStartedEvent) => {
+  const { primaryCommonFields, secondaryCommonFields } =
+    formatWorkflowCommonEventFields(eventFields);
+
   return {
-    ...formatWorkflowCommonEventFields(eventFields),
+    ...primaryCommonFields,
     ...eventAttributes,
     startToFireTimeoutSeconds: formatDurationToSeconds(startToFireTimeout),
     decisionTaskCompletedEventId: parseInt(decisionTaskCompletedEventId),
+    ...secondaryCommonFields,
   };
 };
 

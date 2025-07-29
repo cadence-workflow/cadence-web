@@ -42,10 +42,13 @@ const formatWorkflowExecutionStartedEvent = ({
   },
   ...eventFields
 }: WorkflowExecutionStartedEvent) => {
-  return {
-    ...formatWorkflowCommonEventFields<'workflowExecutionStartedEventAttributes'>(
+  const { primaryCommonFields, secondaryCommonFields } =
+    formatWorkflowCommonEventFields<'workflowExecutionStartedEventAttributes'>(
       eventFields
-    ),
+    );
+
+  return {
+    ...primaryCommonFields,
     workflowType,
     taskList: {
       kind: formatEnum(taskList?.kind, 'TASK_LIST_KIND'),
@@ -86,6 +89,7 @@ const formatWorkflowExecutionStartedEvent = ({
     searchAttributes: formatPayloadMap(searchAttributes, 'indexedFields'),
     prevAutoResetPoints: formatPrevAutoResetPoints(prevAutoResetPoints),
     ...eventAttributes,
+    ...secondaryCommonFields,
   };
 };
 

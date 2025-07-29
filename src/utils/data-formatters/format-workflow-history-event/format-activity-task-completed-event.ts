@@ -13,13 +13,16 @@ const formatActivityTaskCompletedEvent = ({
   },
   ...eventFields
 }: ActivityTaskCompletedEvent) => {
+  const { primaryCommonFields, secondaryCommonFields } =
+    formatWorkflowCommonEventFields(eventFields);
   return {
-    ...formatWorkflowCommonEventFields(eventFields),
+    ...primaryCommonFields,
     result: formatPayload(result),
     identity,
     scheduledEventId: parseInt(scheduledEventId),
     startedEventId: parseInt(startedEventId),
     ...eventAttributes,
+    ...secondaryCommonFields,
   };
 };
 

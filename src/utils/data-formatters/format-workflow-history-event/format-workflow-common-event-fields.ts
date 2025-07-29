@@ -15,10 +15,16 @@ export default function formatWorkflowCommonEventFields<
   eventTime: HistoryEvent['eventTime'];
   attributes: T;
 }) {
-  return {
-    ...rest,
+  const primaryCommonFields = {
     eventId: parseInt(eventId),
     timestamp: formatTimestampToDatetime(eventTime),
     eventType: formatWorkflowHistoryEventType<T>(attributes),
+  };
+
+  const secondaryCommonFields = rest;
+
+  return {
+    primaryCommonFields,
+    secondaryCommonFields,
   };
 }

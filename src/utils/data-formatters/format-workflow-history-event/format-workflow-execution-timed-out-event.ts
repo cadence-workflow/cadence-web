@@ -5,9 +5,13 @@ const formatWorkflowExecutionTimedOutEvent = ({
   workflowExecutionTimedOutEventAttributes: { ...eventAttributes },
   ...eventFields
 }: WorkflowExecutionTimedOutEvent) => {
+  const { primaryCommonFields, secondaryCommonFields } =
+    formatWorkflowCommonEventFields(eventFields);
+
   return {
-    ...formatWorkflowCommonEventFields(eventFields),
+    ...primaryCommonFields,
     ...eventAttributes,
+    ...secondaryCommonFields,
   };
 };
 

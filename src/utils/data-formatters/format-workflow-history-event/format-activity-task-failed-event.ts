@@ -13,14 +13,17 @@ const formatActivityTaskFailedEvent = ({
   },
   ...eventFields
 }: ActivityTaskFailedEvent) => {
+  const { primaryCommonFields, secondaryCommonFields } =
+    formatWorkflowCommonEventFields(eventFields);
   return {
-    ...formatWorkflowCommonEventFields(eventFields),
+    ...primaryCommonFields,
     details: formatFailureDetails(failure),
     reason: failure?.reason || null,
     identity,
     scheduledEventId: parseInt(scheduledEventId),
     startedEventId: parseInt(startedEventId),
     ...eventAttributes,
+    ...secondaryCommonFields,
   };
 };
 
