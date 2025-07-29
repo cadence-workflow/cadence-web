@@ -18,6 +18,7 @@ const formatActivityTaskTimedOutEvent = ({
 }: ActivityTaskTimedOutEvent) => {
   const { primaryCommonFields, secondaryCommonFields } =
     formatWorkflowCommonEventFields(eventFields);
+
   return {
     ...primaryCommonFields,
     ...eventAttributes,

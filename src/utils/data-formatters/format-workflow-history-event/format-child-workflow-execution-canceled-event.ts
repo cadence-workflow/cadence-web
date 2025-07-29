@@ -14,6 +14,7 @@ const formatChildWorkflowExecutionCanceledEvent = ({
 }: ChildWorkflowExecutionCanceledEvent) => {
   const { primaryCommonFields, secondaryCommonFields } =
     formatWorkflowCommonEventFields(eventFields);
+
   return {
     ...primaryCommonFields,
     details: formatPayload(details),

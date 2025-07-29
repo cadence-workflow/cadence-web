@@ -15,6 +15,7 @@ const formatActivityTaskCompletedEvent = ({
 }: ActivityTaskCompletedEvent) => {
   const { primaryCommonFields, secondaryCommonFields } =
     formatWorkflowCommonEventFields(eventFields);
+
   return {
     ...primaryCommonFields,
     result: formatPayload(result),

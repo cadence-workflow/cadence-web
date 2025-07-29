@@ -16,6 +16,7 @@ const formatActivityTaskStartedEvent = ({
 }: ActivityTaskStartedEvent) => {
   const { primaryCommonFields, secondaryCommonFields } =
     formatWorkflowCommonEventFields(eventFields);
+
   return {
     ...primaryCommonFields,
     lastFailureDetails: formatFailureDetails(lastFailure),

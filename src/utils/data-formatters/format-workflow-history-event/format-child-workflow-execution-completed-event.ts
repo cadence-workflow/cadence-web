@@ -14,6 +14,7 @@ const formatChildWorkflowExecutionCompletedEvent = ({
 }: ChildWorkflowExecutionCompletedEvent) => {
   const { primaryCommonFields, secondaryCommonFields } =
     formatWorkflowCommonEventFields(eventFields);
+
   return {
     ...primaryCommonFields,
     result: formatPayload(result),

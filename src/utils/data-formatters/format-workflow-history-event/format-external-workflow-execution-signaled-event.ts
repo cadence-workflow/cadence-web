@@ -11,6 +11,7 @@ const formatExternalWorkflowExecutionSignaledEvent = ({
 }: ExternalWorkflowExecutionSignaledEvent) => {
   const { primaryCommonFields, secondaryCommonFields } =
     formatWorkflowCommonEventFields(eventFields);
+
   return {
     ...primaryCommonFields,
     control: control ? parseInt(atob(control)) : null,

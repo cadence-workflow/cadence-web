@@ -14,6 +14,7 @@ const formatDecisionTaskScheduledEvent = ({
 }: DecisionTaskScheduledEvent) => {
   const { primaryCommonFields, secondaryCommonFields } =
     formatWorkflowCommonEventFields(eventFields);
+
   return {
     ...primaryCommonFields,
     taskList: {

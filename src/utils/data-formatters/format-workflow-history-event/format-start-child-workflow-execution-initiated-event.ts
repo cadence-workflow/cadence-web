@@ -31,6 +31,7 @@ const formatStartChildWorkflowExecutionInitiatedEvent = ({
 }: StartChildWorkflowExecutionInitiatedEvent) => {
   const { primaryCommonFields, secondaryCommonFields } =
     formatWorkflowCommonEventFields(eventFields);
+
   return {
     ...primaryCommonFields,
     ...eventAttributes,

@@ -13,6 +13,7 @@ const formatRequestCancelExternalWorkflowExecutionFailedEvent = ({
 }: RequestCancelExternalWorkflowExecutionFailedEvent) => {
   const { primaryCommonFields, secondaryCommonFields } =
     formatWorkflowCommonEventFields(eventFields);
+
   return {
     ...primaryCommonFields,
     cause,

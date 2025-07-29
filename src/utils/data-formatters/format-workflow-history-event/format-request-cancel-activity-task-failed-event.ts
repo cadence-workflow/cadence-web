@@ -10,6 +10,7 @@ const formatRequestCancelActivityTaskFailedEvent = ({
 }: RequestCancelActivityTaskFailedEvent) => {
   const { primaryCommonFields, secondaryCommonFields } =
     formatWorkflowCommonEventFields(eventFields);
+
   return {
     ...primaryCommonFields,
     ...eventAttributes,

@@ -15,6 +15,7 @@ const formatActivityTaskCanceledEvent = ({
 }: ActivityTaskCanceledEvent) => {
   const { primaryCommonFields, secondaryCommonFields } =
     formatWorkflowCommonEventFields(eventFields);
+
   return {
     ...primaryCommonFields,
     details: formatPayload(details),

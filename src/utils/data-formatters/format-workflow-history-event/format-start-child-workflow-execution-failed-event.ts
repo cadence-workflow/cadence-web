@@ -13,6 +13,7 @@ const formatStartChildWorkflowExecutionFailedEvent = ({
 }: StartChildWorkflowExecutionFailedEvent) => {
   const { primaryCommonFields, secondaryCommonFields } =
     formatWorkflowCommonEventFields(eventFields);
+
   return {
     ...primaryCommonFields,
     cause,

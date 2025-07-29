@@ -16,6 +16,7 @@ const formatMarkerRecordedEvent = ({
 }: MarkerRecordedEvent) => {
   const { primaryCommonFields, secondaryCommonFields } =
     formatWorkflowCommonEventFields(eventFields);
+
   return {
     ...primaryCommonFields,
     markerName,

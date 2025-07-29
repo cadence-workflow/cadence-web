@@ -15,6 +15,7 @@ const formatSignalExternalWorkflowExecutionInitiatedEvent = ({
 }: SignalExternalWorkflowExecutionInitiatedEvent) => {
   const { primaryCommonFields, secondaryCommonFields } =
     formatWorkflowCommonEventFields(eventFields);
+
   return {
     ...primaryCommonFields,
     ...eventAttributes,

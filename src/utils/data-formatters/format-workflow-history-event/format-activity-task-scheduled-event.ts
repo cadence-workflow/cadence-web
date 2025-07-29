@@ -25,6 +25,7 @@ const formatActivityTaskScheduledEvent = ({
 }: ActivityTaskScheduledEvent) => {
   const { primaryCommonFields, secondaryCommonFields } =
     formatWorkflowCommonEventFields(eventFields);
+
   return {
     ...primaryCommonFields,
     ...eventAttributes,

@@ -10,6 +10,7 @@ const formatActivityTaskCancelRequestedEvent = ({
 }: ActivityTaskCancelRequestedEvent) => {
   const { primaryCommonFields, secondaryCommonFields } =
     formatWorkflowCommonEventFields(eventFields);
+
   return {
     ...primaryCommonFields,
     ...eventAttributes,

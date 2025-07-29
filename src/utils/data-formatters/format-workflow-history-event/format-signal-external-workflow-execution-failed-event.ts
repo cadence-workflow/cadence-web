@@ -13,6 +13,7 @@ const formatSignalExternalWorkflowExecutionFailedEvent = ({
 }: SignalExternalWorkflowExecutionFailedEvent) => {
   const { primaryCommonFields, secondaryCommonFields } =
     formatWorkflowCommonEventFields(eventFields);
+
   return {
     ...primaryCommonFields,
     ...eventAttributes,

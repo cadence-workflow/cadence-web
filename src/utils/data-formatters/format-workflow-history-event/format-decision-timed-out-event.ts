@@ -16,6 +16,7 @@ const formatDecisionTaskTimedOutEvent = ({
 }: DecisionTaskTimedOutEvent) => {
   const { primaryCommonFields, secondaryCommonFields } =
     formatWorkflowCommonEventFields(eventFields);
+
   return {
     ...primaryCommonFields,
     cause: formatEnum(cause, 'DECISION_TASK_TIMED_OUT_CAUSE'),

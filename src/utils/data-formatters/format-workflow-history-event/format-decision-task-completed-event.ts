@@ -12,6 +12,7 @@ const formatDecisionTaskCompletedEvent = ({
 }: DecisionTaskCompletedEvent) => {
   const { primaryCommonFields, secondaryCommonFields } =
     formatWorkflowCommonEventFields(eventFields);
+
   return {
     ...primaryCommonFields,
     identity,

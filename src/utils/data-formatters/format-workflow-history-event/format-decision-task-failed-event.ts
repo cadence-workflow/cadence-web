@@ -17,6 +17,7 @@ const formatDecisionTaskFailedEvent = ({
 }: DecisionTaskFailedEvent) => {
   const { primaryCommonFields, secondaryCommonFields } =
     formatWorkflowCommonEventFields(eventFields);
+
   return {
     ...primaryCommonFields,
     details: formatFailureDetails(failure),
