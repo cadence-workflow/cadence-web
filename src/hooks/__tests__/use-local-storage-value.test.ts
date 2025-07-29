@@ -70,24 +70,6 @@ describe(useLocalStorageValue.name, () => {
     expect(retrievedValue).toBeNull();
   });
 
-  //   const originalWindow = global.window;
-  //   // @ts-expect-error - intentionally setting window to undefined for SSR test
-  //   delete global.window;
-
-  //   const { result } = renderHook(() =>
-  //     useLocalStorageValue({
-  //       key: mockKey,
-  //       encode: mockEncode,
-  //       decode: mockDecode,
-  //     })
-  //   );
-
-  //   expect(result.current.getValue()).toBeNull();
-
-  //   // Restore window
-  //   global.window = originalWindow;
-  // });
-
   it('should handle encode errors gracefully', () => {
     const mockEncodeWithError = jest.fn(() => {
       throw new Error('Encode error');
