@@ -22,15 +22,18 @@ export default function WorkflowDiagnostics({
   const { data: isWorkflowDiagnosticsEnabled } =
     useSuspenseIsWorkflowDiagnosticsEnabled();
 
-  // See if there's a better way to determine workflow close status
   const {
     data: { workflowExecutionInfo },
   } = useSuspenseDescribeWorkflow(params);
 
+  const isWorkflowClosed = Boolean(
+    workflowExecutionInfo?.closeStatus &&
+      workflowExecutionInfo.closeStatus !==
+        'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
+  );
+
   const { data, status } = useDiagnoseWorkflow(params, {
-    enabled:
-      isWorkflowDiagnosticsEnabled &&
-      Boolean(workflowExecutionInfo?.closeStatus),
+    enabled: isWorkflowDiagnosticsEnabled && isWorkflowClosed,
     throwOnError: true,
   });
 
@@ -38,7 +41,7 @@ export default function WorkflowDiagnostics({
     throw new Error(DIAGNOSTICS_CONFIG_DISABLED_ERROR_MSG);
   }
 
-  if (!Boolean(workflowExecutionInfo?.closeStatus)) {
+  if (!isWorkflowClosed) {
     throw new Error(DIAGNOSTICS_RUNNING_WORKFLOW_ERROR_MSG);
   }
 

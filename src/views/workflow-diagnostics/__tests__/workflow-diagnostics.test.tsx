@@ -5,17 +5,11 @@ import { HttpResponse } from 'msw';
 import { render, screen } from '@/test-utils/rtl';
 
 import ErrorBoundary from '@/components/error-boundary/error-boundary';
+import { type DescribeWorkflowResponse } from '@/route-handlers/describe-workflow/describe-workflow.types';
 import { mockWorkflowDiagnosticsResult } from '@/route-handlers/diagnose-workflow/__fixtures__/mock-workflow-diagnostics-result';
+import { mockDescribeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
 
 import WorkflowDiagnostics from '../workflow-diagnostics';
-
-jest.mock('@/components/error-panel/error-panel', () =>
-  jest.fn(({ message }) => <div data-testid="error-panel">{message}</div>)
-);
-
-jest.mock('@/components/panel-section/panel-section', () =>
-  jest.fn(({ children }) => <div data-testid="panel-section">{children}</div>)
-);
 
 jest.mock(
   '@/components/section-loading-indicator/section-loading-indicator',
@@ -45,10 +39,6 @@ jest.mock(
       </div>
     ))
 );
-
-jest.mock('../config/workflow-diagnostics-disabled-error-panel.config', () => ({
-  message: 'Workflow Diagnostics is currently disabled',
-}));
 
 describe(WorkflowDiagnostics.name, () => {
   beforeEach(() => {
@@ -117,14 +107,13 @@ describe(WorkflowDiagnostics.name, () => {
     ).toBeInTheDocument();
   });
 
-  it('should render error panel when diagnostics is disabled', async () => {
+  it('should throw error when diagnostics is disabled', async () => {
     await setup({ isDiagnosticsEnabled: false });
 
-    await screen.findByTestId('error-panel');
-
-    expect(screen.getByTestId('panel-section')).toBeInTheDocument();
     expect(
-      screen.getByText('Workflow Diagnostics is currently disabled')
+      await screen.findByText(
+        'Error: Workflow diagnostics is currently disabled'
+      )
     ).toBeInTheDocument();
   });
 
@@ -135,16 +124,31 @@ describe(WorkflowDiagnostics.name, () => {
       await screen.findByText('Error: Failed to fetch config')
     ).toBeInTheDocument();
   });
+
+  it('should throw error when workflow is not closed', async () => {
+    await setup({
+      isDiagnosticsEnabled: true,
+      isWorkflowClosed: false,
+    });
+
+    expect(
+      await screen.findByText(
+        'Error: Cannot load diagnostics for a running workflow'
+      )
+    ).toBeInTheDocument();
+  });
 });
 
 async function setup({
   isDiagnosticsEnabled,
   error,
   diagnosticsResponse,
+  isWorkflowClosed = true,
 }: {
   isDiagnosticsEnabled: boolean;
   error?: boolean;
   diagnosticsResponse?: any;
+  isWorkflowClosed?: boolean;
 }) {
   render(
     <ErrorBoundary
@@ -177,6 +181,25 @@ async function setup({
             } else {
               return HttpResponse.json(isDiagnosticsEnabled ?? false);
             }
+          },
+        },
+        {
+          path: '/api/domains/:domain/:cluster/workflows/:workflowId/:runId',
+          httpMethod: 'GET',
+          mockOnce: false,
+          httpResolver: async () => {
+            return HttpResponse.json({
+              ...mockDescribeWorkflowResponse,
+              workflowExecutionInfo: {
+                ...mockDescribeWorkflowResponse.workflowExecutionInfo,
+                ...(isWorkflowClosed
+                  ? { closeStatus: 'WORKFLOW_EXECUTION_CLOSE_STATUS_FAILED' }
+                  : {
+                      closeStatus: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
+                      closeEvent: null,
+                    }),
+              },
+            } satisfies DescribeWorkflowResponse);
           },
         },
         ...(isDiagnosticsEnabled

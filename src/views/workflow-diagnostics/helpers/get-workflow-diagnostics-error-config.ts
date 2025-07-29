@@ -29,6 +29,10 @@ export default function getWorkflowDiagnosticsErrorConfig(
       omitLogging: true,
       actions: [
         {
+          kind: 'retry',
+          label: 'Retry',
+        },
+        {
           kind: 'link-internal',
           link: './summary',
           label: 'Go to workflow summary',
