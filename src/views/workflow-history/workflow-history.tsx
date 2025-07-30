@@ -25,6 +25,11 @@ import useThrottledState from '@/hooks/use-throttled-state';
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
 import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
 import decodeUrlParams from '@/utils/decode-url-params';
+import {
+  clearLocalStorageValue,
+  getLocalStorageValue,
+  setLocalStorageValue,
+} from '@/utils/local-storage';
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
 import sortBy from '@/utils/sort-by';
@@ -36,6 +41,7 @@ import { useSuspenseDescribeWorkflow } from '../workflow-page/hooks/use-describe
 
 import workflowHistoryFiltersConfig from './config/workflow-history-filters.config';
 import WORKFLOW_HISTORY_PAGE_SIZE_CONFIG from './config/workflow-history-page-size.config';
+import workflowHistoryUserPreferencesKeys from './config/workflow-history-user-preferences-keys.config';
 import compareUngroupedEvents from './helpers/compare-ungrouped-events';
 import getSortableEventId from './helpers/get-sortable-event-id';
 import getVisibleGroupsHasMissingEvents from './helpers/get-visible-groups-has-missing-events';
@@ -43,13 +49,12 @@ import { groupHistoryEvents } from './helpers/group-history-events';
 import pendingActivitiesInfoToEvents from './helpers/pending-activities-info-to-events';
 import pendingDecisionInfoToEvent from './helpers/pending-decision-info-to-event';
 import useEventExpansionToggle from './hooks/use-event-expansion-toggle';
-import useHistoryEventTypesPreference from './hooks/use-history-event-types-preference';
-import useHistoryUngroupedViewPreference from './hooks/use-history-ungrouped-view-preference';
 import useInitialSelectedEvent from './hooks/use-initial-selected-event';
 import useKeepLoadingEvents from './hooks/use-keep-loading-events';
 import WorkflowHistoryCompactEventCard from './workflow-history-compact-event-card/workflow-history-compact-event-card';
 import WorkflowHistoryExpandAllEventsButton from './workflow-history-expand-all-events-button/workflow-history-expand-all-events-button';
 import WorkflowHistoryExportJsonButton from './workflow-history-export-json-button/workflow-history-export-json-button';
+import parseEventFilteringTypes from './workflow-history-filters-type/helpers/parse-event-filtering-types';
 import { DEFAULT_EVENT_FILTERING_TYPES } from './workflow-history-filters-type/workflow-history-filters-type.constants';
 import WorkflowHistoryTimelineChart from './workflow-history-timeline-chart/workflow-history-timeline-chart';
 import WorkflowHistoryTimelineGroup from './workflow-history-timeline-group/workflow-history-timeline-group';
@@ -82,29 +87,30 @@ export default function WorkflowHistory({ params }: Props) {
       pageFiltersConfig: workflowHistoryFiltersConfig,
     });
 
-  const {
-    getValue: getUngroupedViewPreference,
-    setValue: setUngroupedViewPreference,
-  } = useHistoryUngroupedViewPreference();
-
-  const {
-    getValue: getHistoryEventTypesPreference,
-    clearValue: clearHistoryEventTypesPreference,
-  } = useHistoryEventTypesPreference();
-
   const isUngroupedHistoryViewEnabled = useMemo(() => {
     if (queryParams.ungroupedHistoryViewEnabled !== undefined)
       return queryParams.ungroupedHistoryViewEnabled;
 
-    return getUngroupedViewPreference() ?? false;
-  }, [queryParams.ungroupedHistoryViewEnabled, getUngroupedViewPreference]);
+    const ungroupedViewUserPreference = getLocalStorageValue(
+      workflowHistoryUserPreferencesKeys.UNGROUPED_VIEW_ENABLED
+    );
+
+    return ungroupedViewUserPreference === 'true';
+  }, [queryParams.ungroupedHistoryViewEnabled]);
 
   const historyEventTypes = useMemo(() => {
     if (queryParams.historyEventTypes !== undefined)
       return queryParams.historyEventTypes;
 
-    return getHistoryEventTypesPreference() ?? DEFAULT_EVENT_FILTERING_TYPES;
-  }, [queryParams.historyEventTypes, getHistoryEventTypesPreference]);
+    const historyEventTypesUserPreference = getLocalStorageValue(
+      workflowHistoryUserPreferencesKeys.HISTORY_EVENT_TYPES
+    );
+
+    return (
+      parseEventFilteringTypes(historyEventTypesUserPreference) ??
+      DEFAULT_EVENT_FILTERING_TYPES
+    );
+  }, [queryParams.historyEventTypes]);
 
   const { data: wfExecutionDescription } = useSuspenseDescribeWorkflow({
     ...params,
@@ -217,7 +223,10 @@ export default function WorkflowHistory({ params }: Props) {
     });
 
   const onClickGroupModeToggle = useCallback(() => {
-    setUngroupedViewPreference(!isUngroupedHistoryViewEnabled);
+    setLocalStorageValue(
+      workflowHistoryUserPreferencesKeys.UNGROUPED_VIEW_ENABLED,
+      String(!isUngroupedHistoryViewEnabled)
+    );
 
     setQueryParams({
       ungroupedHistoryViewEnabled: isUngroupedHistoryViewEnabled
@@ -237,7 +246,6 @@ export default function WorkflowHistory({ params }: Props) {
     isUngroupedHistoryViewEnabled,
     setQueryParams,
     setTimelineListVisibleRange,
-    setUngroupedViewPreference,
   ]);
 
   const workflowCloseTimeMs = workflowExecutionInfo?.closeTime
@@ -379,7 +387,9 @@ export default function WorkflowHistory({ params }: Props) {
           setQueryParams={setQueryParams}
           resetAllFilters={() => {
             resetAllFilters();
-            clearHistoryEventTypesPreference();
+            clearLocalStorageValue(
+              workflowHistoryUserPreferencesKeys.HISTORY_EVENT_TYPES
+            );
           }}
         />
       )}

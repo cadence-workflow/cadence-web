@@ -5,9 +5,14 @@ import { FormControl } from 'baseui/form-control';
 import { Select, SIZE } from 'baseui/select';
 
 import { type PageFilterComponentProps } from '@/components/page-filters/page-filters.types';
+import {
+  getLocalStorageValue,
+  setLocalStorageValue,
+} from '@/utils/local-storage';
 
-import useHistoryEventTypesPreference from '../hooks/use-history-event-types-preference';
+import workflowHistoryUserPreferencesKeys from '../config/workflow-history-user-preferences-keys.config';
 
+import parseEventFilteringTypes from './helpers/parse-event-filtering-types';
 import {
   DEFAULT_EVENT_FILTERING_TYPES,
   WORKFLOW_HISTORY_EVENT_FILTERING_TYPES_LABEL_MAP,
@@ -22,16 +27,18 @@ export default function WorkflowHistoryFiltersType({
   value,
   setValue,
 }: PageFilterComponentProps<WorkflowHistoryFiltersTypeValue>) {
-  const {
-    getValue: getEventTypesPreference,
-    setValue: setEventTypesPreference,
-  } = useHistoryEventTypesPreference();
-
   const historyEventTypes = useMemo(() => {
     if (value.historyEventTypes !== undefined) return value.historyEventTypes;
 
-    return getEventTypesPreference() ?? DEFAULT_EVENT_FILTERING_TYPES;
-  }, [value.historyEventTypes, getEventTypesPreference]);
+    const eventTypesPreference = getLocalStorageValue(
+      workflowHistoryUserPreferencesKeys.HISTORY_EVENT_TYPES
+    );
+
+    return (
+      parseEventFilteringTypes(eventTypesPreference) ??
+      DEFAULT_EVENT_FILTERING_TYPES
+    );
+  }, [value.historyEventTypes]);
 
   const typeOptionsValue =
     historyEventTypes.map((type) => ({
@@ -62,7 +69,10 @@ export default function WorkflowHistoryFiltersType({
           });
 
           if (newHistoryEventTypes) {
-            setEventTypesPreference(newHistoryEventTypes);
+            setLocalStorageValue(
+              workflowHistoryUserPreferencesKeys.HISTORY_EVENT_TYPES,
+              JSON.stringify(newHistoryEventTypes)
+            );
           }
         }}
         placeholder="All"
