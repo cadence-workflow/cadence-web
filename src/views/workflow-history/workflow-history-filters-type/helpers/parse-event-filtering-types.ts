@@ -2,7 +2,7 @@ import parsedEventFilteringTypesSchema from '../schemas/parsed-event-filtering-t
 import { type WorkflowHistoryEventFilteringType } from '../workflow-history-filters-type.types';
 
 export default function parseEventFilteringTypes(
-  maybeTypes: any
+  maybeTypes: string | null
 ): Array<WorkflowHistoryEventFilteringType> | undefined {
   const { data } = parsedEventFilteringTypesSchema.safeParse(maybeTypes);
   return data;

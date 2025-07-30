@@ -2,14 +2,25 @@ import React from 'react';
 
 import { render, screen, fireEvent, act } from '@/test-utils/rtl';
 
-import * as useHistoryEventTypesPreferenceModule from '@/views/workflow-history/hooks/use-history-event-types-preference';
+import * as localStorageModule from '@/utils/local-storage';
 
+import workflowHistoryUserPreferencesKeys from '../../config/workflow-history-user-preferences-keys.config';
 import WorkflowHistoryFiltersType from '../workflow-history-filters-type';
 import { WORKFLOW_HISTORY_EVENT_FILTERING_TYPES_LABEL_MAP } from '../workflow-history-filters-type.constants';
 import {
   type WorkflowHistoryFiltersTypeValue,
   type WorkflowHistoryEventFilteringType,
 } from '../workflow-history-filters-type.types';
+
+jest.mock('@/utils/local-storage', () => ({
+  getLocalStorageValue: jest.fn(),
+  setLocalStorageValue: jest.fn(),
+  clearLocalStorageValue: jest.fn(),
+}));
+
+jest.mock('../helpers/parse-event-filtering-types', () =>
+  jest.fn((val) => JSON.parse(val))
+);
 
 describe('WorkflowHistoryFiltersType', () => {
   it('renders without errors', () => {
@@ -40,126 +51,70 @@ describe('WorkflowHistoryFiltersType', () => {
       fireEvent.click(decisionOption);
     });
     expect(mockSetValue).toHaveBeenCalledWith({
-      historyEventTypes: ['DECISION'],
+      historyEventTypes: [
+        'ACTIVITY',
+        'CHILDWORKFLOW',
+        'SIGNAL',
+        'TIMER',
+        'WORKFLOW',
+        'DECISION',
+      ],
     });
-  });
-
-  it('calls the setQueryParams function when the filter is cleared', () => {
-    const { mockSetValue } = setup({
-      overrides: {
-        historyEventTypes: ['ACTIVITY'],
-      },
-    });
-    const clearButton = screen.getByLabelText('Clear all');
-    act(() => {
-      fireEvent.click(clearButton);
-    });
-    expect(mockSetValue).toHaveBeenCalledWith({ historyEventTypes: undefined });
   });
 
   it('should override preference when query param is set', () => {
-    const mockGetEventTypesPreference = jest.fn(
-      () => ['ACTIVITY', 'DECISION'] as WorkflowHistoryEventFilteringType[]
-    );
-    const mockSetEventTypesPreference = jest.fn();
-
-    const useHistoryEventTypesPreferenceSpy = jest
-      .spyOn(useHistoryEventTypesPreferenceModule, 'default')
-      .mockReturnValue({
-        getValue: mockGetEventTypesPreference,
-        setValue: mockSetEventTypesPreference,
-        clearValue: jest.fn(),
-      });
-
-    setup({
+    const { mockGetLocalStorageValue } = setup({
       overrides: {
-        historyEventTypes: ['TIMER', 'SIGNAL'], // Query param value
+        historyEventTypes: ['TIMER', 'SIGNAL'],
       },
     });
 
     // The component should use the query param values instead of preferences
     // We can verify this by checking that the selected values are from query params
-    const selectedValues = screen.getByRole('combobox').textContent;
-    expect(selectedValues).toContain('Timer');
-    expect(selectedValues).toContain('Signal');
+    expect(screen.getByText('Timer')).toBeInTheDocument();
+    expect(screen.getByText('Signal')).toBeInTheDocument();
+    expect(screen.queryByText('Activity')).toBeNull();
+    expect(screen.queryByText('Decision')).toBeNull();
 
-    useHistoryEventTypesPreferenceSpy.mockRestore();
+    // Should not call localStorage when query param is set
+    expect(mockGetLocalStorageValue).not.toHaveBeenCalled();
   });
 
   it('should use preference when query param is undefined', () => {
-    const mockGetEventTypesPreference = jest.fn(
-      () => ['TIMER', 'SIGNAL'] as WorkflowHistoryEventFilteringType[]
-    );
-    const mockSetEventTypesPreference = jest.fn();
-
-    const useHistoryEventTypesPreferenceSpy = jest
-      .spyOn(useHistoryEventTypesPreferenceModule, 'default')
-      .mockReturnValue({
-        getValue: mockGetEventTypesPreference,
-        setValue: mockSetEventTypesPreference,
-        clearValue: jest.fn(),
-      });
-
-    setup({
-      overrides: {
-        historyEventTypes: undefined, // No query param
-      },
+    const { mockGetLocalStorageValue } = setup({
+      historyEventTypesPreference: ['TIMER', 'SIGNAL'],
     });
 
-    // Should use preference when query param is undefined
-    const selectedValues = screen.getByRole('combobox').textContent;
-    expect(selectedValues).toContain('Timer');
-    expect(selectedValues).toContain('Signal');
+    expect(screen.getByText('Timer')).toBeInTheDocument();
+    expect(screen.getByText('Signal')).toBeInTheDocument();
+    expect(screen.queryByText('Activity')).toBeNull();
+    expect(screen.queryByText('Decision')).toBeNull();
 
-    useHistoryEventTypesPreferenceSpy.mockRestore();
+    expect(mockGetLocalStorageValue).toHaveBeenCalledWith(
+      workflowHistoryUserPreferencesKeys.HISTORY_EVENT_TYPES
+    );
   });
 
   it('should use default values when both query param and preference are undefined', () => {
-    const mockGetEventTypesPreference = jest.fn(() => null);
+    const { mockGetLocalStorageValue } = setup({});
 
-    const useHistoryEventTypesPreferenceSpy = jest
-      .spyOn(useHistoryEventTypesPreferenceModule, 'default')
-      .mockReturnValue({
-        getValue: mockGetEventTypesPreference,
-        setValue: jest.fn(),
-        clearValue: jest.fn(),
-      });
+    expect(screen.getByText('Activity')).toBeInTheDocument();
+    expect(screen.getByText('Timer')).toBeInTheDocument();
+    expect(screen.getByText('Signal')).toBeInTheDocument();
+    expect(screen.getByText('Child Workflow')).toBeInTheDocument();
+    expect(screen.getByText('Workflow')).toBeInTheDocument();
 
-    setup({
-      overrides: {
-        historyEventTypes: undefined, // No query param
-      },
-    });
+    expect(screen.queryByText('Decision')).toBeNull();
 
-    // Should use default values when both are undefined
-    // The component should show all options as selected (default behavior)
-    const selectedValues = screen.getByRole('combobox').textContent;
-    // Default should include all event types
-    expect(selectedValues).toContain('Activity');
-    expect(selectedValues).toContain('Decision');
-    expect(selectedValues).toContain('Timer');
-    expect(selectedValues).toContain('Signal');
-
-    useHistoryEventTypesPreferenceSpy.mockRestore();
+    expect(mockGetLocalStorageValue).toHaveBeenCalledWith(
+      workflowHistoryUserPreferencesKeys.HISTORY_EVENT_TYPES
+    );
   });
 
   it('should save preference when user changes selection', () => {
-    const mockGetEventTypesPreference = jest.fn(
-      () => ['ACTIVITY', 'DECISION'] as WorkflowHistoryEventFilteringType[]
-    );
-    const mockSetEventTypesPreference = jest.fn();
-
-    const useHistoryEventTypesPreferenceSpy = jest
-      .spyOn(useHistoryEventTypesPreferenceModule, 'default')
-      .mockReturnValue({
-        getValue: mockGetEventTypesPreference,
-        setValue: mockSetEventTypesPreference,
-        clearValue: jest.fn(),
-      });
-
-    const { mockSetValue } = setup({
+    const { mockSetValue, mockSetLocalStorageValue } = setup({
       overrides: {
-        historyEventTypes: ['TIMER'], // Query param value
+        historyEventTypes: ['TIMER'],
       },
     });
 
@@ -178,19 +133,40 @@ describe('WorkflowHistoryFiltersType', () => {
       historyEventTypes: ['TIMER', 'ACTIVITY'],
     });
 
-    // Should also save to preference
-    expect(mockSetEventTypesPreference).toHaveBeenCalledWith([
-      'TIMER',
-      'ACTIVITY',
-    ]);
-
-    useHistoryEventTypesPreferenceSpy.mockRestore();
+    // Should also save to localStorage
+    expect(mockSetLocalStorageValue).toHaveBeenCalledWith(
+      workflowHistoryUserPreferencesKeys.HISTORY_EVENT_TYPES,
+      JSON.stringify(['TIMER', 'ACTIVITY'])
+    );
   });
 });
 
-function setup({ overrides }: { overrides?: WorkflowHistoryFiltersTypeValue }) {
+function setup({
+  overrides,
+  historyEventTypesPreference,
+}: {
+  overrides?: WorkflowHistoryFiltersTypeValue;
+  historyEventTypesPreference?:
+    | Array<WorkflowHistoryEventFilteringType>
+    | undefined;
+}) {
   const mockSetValue = jest.fn();
-  render(
+
+  const mockGetLocalStorageValue = jest.fn(() => {
+    return historyEventTypesPreference
+      ? JSON.stringify(historyEventTypesPreference)
+      : null;
+  });
+  const mockSetLocalStorageValue = jest.fn();
+
+  jest
+    .spyOn(localStorageModule, 'getLocalStorageValue')
+    .mockImplementation(mockGetLocalStorageValue);
+  jest
+    .spyOn(localStorageModule, 'setLocalStorageValue')
+    .mockImplementation(mockSetLocalStorageValue);
+
+  const renderResult = render(
     <WorkflowHistoryFiltersType
       value={{
         historyEventTypes: undefined,
@@ -200,5 +176,10 @@ function setup({ overrides }: { overrides?: WorkflowHistoryFiltersTypeValue }) {
     />
   );
 
-  return { mockSetValue };
+  return {
+    mockSetValue,
+    mockGetLocalStorageValue,
+    mockSetLocalStorageValue,
+    ...renderResult,
+  };
 }
