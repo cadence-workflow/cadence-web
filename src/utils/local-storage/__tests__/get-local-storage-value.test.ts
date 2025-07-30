@@ -22,6 +22,18 @@ describe('getLocalStorageValue', () => {
     jest.spyOn(Storage.prototype, 'getItem').mockReturnValue(null);
 
     const result = getLocalStorageValue('test-key', testSchema);
+<<<<<<< HEAD
+=======
+
+    expect(result).toBeNull();
+  });
+
+  it('should return null if the value in localStorage does not match the schema', () => {
+    const mockValue = 'invalid-value';
+    jest.spyOn(Storage.prototype, 'getItem').mockReturnValue(mockValue);
+
+    const result = getLocalStorageValue('test-key', testSchema);
+>>>>>>> 6793a255 (Add Zod-based parsing to getValue)
 
     expect(result).toBeNull();
   });
