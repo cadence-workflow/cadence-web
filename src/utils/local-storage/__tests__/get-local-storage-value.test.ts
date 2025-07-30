@@ -1,4 +1,8 @@
+import { z } from 'zod';
+
 import getLocalStorageValue from '../get-local-storage-value';
+
+const testSchema = z.string().startsWith('test-');
 
 describe('getLocalStorageValue', () => {
   beforeEach(() => {
@@ -9,7 +13,7 @@ describe('getLocalStorageValue', () => {
     const mockValue = 'test-value';
     jest.spyOn(Storage.prototype, 'getItem').mockReturnValue(mockValue);
 
-    const result = getLocalStorageValue('test-key');
+    const result = getLocalStorageValue('test-key', testSchema);
 
     expect(result).toBe(mockValue);
   });
@@ -17,7 +21,16 @@ describe('getLocalStorageValue', () => {
   it('should return null when localStorage.getItem returns null', () => {
     jest.spyOn(Storage.prototype, 'getItem').mockReturnValue(null);
 
-    const result = getLocalStorageValue('test-key');
+    const result = getLocalStorageValue('test-key', testSchema);
+
+    expect(result).toBeNull();
+  });
+
+  it('should return null if the value in localStorage does not match the schema', () => {
+    const mockValue = 'invalid-value';
+    jest.spyOn(Storage.prototype, 'getItem').mockReturnValue(mockValue);
+
+    const result = getLocalStorageValue('test-key', testSchema);
 
     expect(result).toBeNull();
   });
