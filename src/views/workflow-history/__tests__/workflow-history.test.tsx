@@ -17,11 +17,13 @@ import * as usePageFiltersModule from '@/components/page-filters/hooks/use-page-
 import { type Props as PageFiltersToggleProps } from '@/components/page-filters/page-filters-toggle/page-filters-toggle.types';
 import { type PageQueryParamValues } from '@/hooks/use-page-query-params/use-page-query-params.types';
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
+import * as localStorageModule from '@/utils/local-storage';
 import { mockDescribeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
 import type workflowPageQueryParamsConfig from '@/views/workflow-page/config/workflow-page-query-params.config';
 
 import { completedActivityTaskEvents } from '../__fixtures__/workflow-history-activity-events';
 import { completedDecisionTaskEvents } from '../__fixtures__/workflow-history-decision-events';
+import workflowHistoryUserPreferencesKeys from '../config/workflow-history-user-preferences-keys.config';
 import WorkflowHistory from '../workflow-history';
 import { type WorkflowHistoryEventFilteringType } from '../workflow-history-filters-type/workflow-history-filters-type.types';
 
@@ -29,9 +31,20 @@ jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
   jest.fn(() => [{ historySelectedEventId: '1' }, jest.fn()])
 );
 
+jest.mock('@/utils/local-storage', () => ({
+  getLocalStorageValue: jest.fn(),
+  setLocalStorageValue: jest.fn(),
+  clearLocalStorageValue: jest.fn(),
+}));
+
 jest.mock(
   '../workflow-history-compact-event-card/workflow-history-compact-event-card',
   () => jest.fn(() => <div>Compact group Card</div>)
+);
+
+jest.mock(
+  '../workflow-history-filters-type/helpers/parse-event-filtering-types',
+  () => jest.fn((val) => JSON.parse(val))
 );
 
 jest.mock(
@@ -278,144 +291,52 @@ describe('WorkflowHistory', () => {
   });
 
   it('should override ungrouped view preference when query param is set to true', async () => {
-    const mockGetUngroupedViewPreference = jest.fn(() => false);
-    const mockGetHistoryEventTypesPreference = jest.fn(
-      () => ['ACTIVITY', 'DECISION'] as WorkflowHistoryEventFilteringType[]
-    );
-
-    const useHistoryUngroupedViewPreferenceSpy = jest
-      .spyOn(useHistoryUngroupedViewPreferenceModule, 'default')
-      .mockReturnValue({
-        getValue: mockGetUngroupedViewPreference,
-        setValue: jest.fn(),
-        clearValue: jest.fn(),
-      });
-
-    const useHistoryEventTypesPreferenceSpy = jest
-      .spyOn(useHistoryEventTypesPreferenceModule, 'default')
-      .mockReturnValue({
-        getValue: mockGetHistoryEventTypesPreference,
-        setValue: jest.fn(),
-        clearValue: jest.fn(),
-      });
-
     await setup({
       pageQueryParamsValues: { ungroupedHistoryViewEnabled: true },
+      ungroupedViewPreference: false,
     });
 
     // Should show ungrouped table even though preference is false
     expect(await screen.findByText('Ungrouped Table')).toBeInTheDocument();
     expect(screen.getByText('Group')).toBeInTheDocument();
-
-    useHistoryUngroupedViewPreferenceSpy.mockRestore();
-    useHistoryEventTypesPreferenceSpy.mockRestore();
   });
 
   it('should use preference when query param is undefined for ungrouped view', async () => {
-    const mockGetUngroupedViewPreference = jest.fn(() => true);
-    const mockGetHistoryEventTypesPreference = jest.fn(
-      () => ['ACTIVITY', 'DECISION'] as WorkflowHistoryEventFilteringType[]
-    );
-
-    const useHistoryUngroupedViewPreferenceSpy = jest
-      .spyOn(useHistoryUngroupedViewPreferenceModule, 'default')
-      .mockReturnValue({
-        getValue: mockGetUngroupedViewPreference,
-        setValue: jest.fn(),
-        clearValue: jest.fn(),
-      });
-
-    const useHistoryEventTypesPreferenceSpy = jest
-      .spyOn(useHistoryEventTypesPreferenceModule, 'default')
-      .mockReturnValue({
-        getValue: mockGetHistoryEventTypesPreference,
-        setValue: jest.fn(),
-        clearValue: jest.fn(),
-      });
-
     await setup({
       pageQueryParamsValues: { ungroupedHistoryViewEnabled: undefined },
+      ungroupedViewPreference: true,
     });
 
     // Should use preference (true) when query param is undefined
     expect(await screen.findByText('Ungrouped Table')).toBeInTheDocument();
     expect(screen.getByText('Group')).toBeInTheDocument();
-
-    useHistoryUngroupedViewPreferenceSpy.mockRestore();
-    useHistoryEventTypesPreferenceSpy.mockRestore();
   });
 
-  xit('should override history event types preference when query param is set', async () => {
-    const mockGetUngroupedViewPreference = jest.fn(() => false);
-    const mockGetHistoryEventTypesPreference = jest.fn(
-      () => ['ACTIVITY', 'DECISION'] as WorkflowHistoryEventFilteringType[]
-    );
-
-    const useHistoryUngroupedViewPreferenceSpy = jest
-      .spyOn(useHistoryUngroupedViewPreferenceModule, 'default')
-      .mockReturnValue({
-        getValue: mockGetUngroupedViewPreference,
-        setValue: jest.fn(),
-        clearValue: jest.fn(),
-      });
-
-    const useHistoryEventTypesPreferenceSpy = jest
-      .spyOn(useHistoryEventTypesPreferenceModule, 'default')
-      .mockReturnValue({
-        getValue: mockGetHistoryEventTypesPreference,
-        setValue: jest.fn(),
-        clearValue: jest.fn(),
-      });
-
-    await setup({
+  it('should override history event types preference when query param is set', async () => {
+    const { mockGetLocalStorageValue } = await setup({
       pageQueryParamsValues: {
         historyEventTypes: ['TIMER', 'SIGNAL'],
         ungroupedHistoryViewEnabled: false,
       },
+      historyEventTypesPreference: ['ACTIVITY', 'DECISION'],
     });
 
-    // The component should use the query param values instead of preferences
-    // We can verify this by checking that the filters are applied correctly
-    expect(screen.getByText('Ungrofsdfdsup')).toBeInTheDocument();
-
-    useHistoryUngroupedViewPreferenceSpy.mockRestore();
-    useHistoryEventTypesPreferenceSpy.mockRestore();
+    expect(mockGetLocalStorageValue).not.toHaveBeenCalled();
   });
 
-  xit('should use preference when history event types query param is undefined', async () => {
-    const mockGetUngroupedViewPreference = jest.fn(() => false);
-    const mockGetHistoryEventTypesPreference = jest.fn(
-      () => ['TIMER', 'SIGNAL'] as WorkflowHistoryEventFilteringType[]
-    );
-
-    const useHistoryUngroupedViewPreferenceSpy = jest
-      .spyOn(useHistoryUngroupedViewPreferenceModule, 'default')
-      .mockReturnValue({
-        getValue: mockGetUngroupedViewPreference,
-        setValue: jest.fn(),
-        clearValue: jest.fn(),
-      });
-
-    const useHistoryEventTypesPreferenceSpy = jest
-      .spyOn(useHistoryEventTypesPreferenceModule, 'default')
-      .mockReturnValue({
-        getValue: mockGetHistoryEventTypesPreference,
-        setValue: jest.fn(),
-        clearValue: jest.fn(),
-      });
-
-    await setup({
+  it('should use preference when history event types query param is undefined', async () => {
+    const { mockGetLocalStorageValue } = await setup({
       pageQueryParamsValues: {
         historyEventTypes: undefined,
         ungroupedHistoryViewEnabled: false,
       },
+      historyEventTypesPreference: ['TIMER', 'SIGNAL'],
     });
 
     // Should use preference when query param is undefined
-    expect(screen.getByText('Ungroufdsfdsp')).toBeInTheDocument();
-
-    useHistoryUngroupedViewPreferenceSpy.mockRestore();
-    useHistoryEventTypesPreferenceSpy.mockRestore();
+    expect(mockGetLocalStorageValue).toHaveBeenCalledWith(
+      'history-event-types'
+    );
   });
 });
 
@@ -427,6 +348,8 @@ async function setup({
   hasNextPage,
   emptyEvents,
   withResetModal,
+  ungroupedViewPreference,
+  historyEventTypesPreference,
 }: {
   error?: boolean;
   summaryError?: boolean;
@@ -437,6 +360,8 @@ async function setup({
   hasNextPage?: boolean;
   emptyEvents?: boolean;
   withResetModal?: boolean;
+  ungroupedViewPreference?: boolean;
+  historyEventTypesPreference?: Array<WorkflowHistoryEventFilteringType>;
 }) {
   const user = userEvent.setup();
 
@@ -449,6 +374,28 @@ async function setup({
       resetAllFilters: jest.fn(),
     });
   }
+
+  // Mock localStorage utility functions
+  const mockGetLocalStorageValue = jest.fn((key) => {
+    if (key === workflowHistoryUserPreferencesKeys.HISTORY_EVENT_TYPES)
+      return historyEventTypesPreference
+        ? JSON.stringify(historyEventTypesPreference)
+        : null;
+
+    return String(ungroupedViewPreference) ?? null;
+  });
+  const mockSetLocalStorageValue = jest.fn();
+  const mockClearLocalStorageValue = jest.fn();
+
+  jest
+    .spyOn(localStorageModule, 'getLocalStorageValue')
+    .mockImplementation(mockGetLocalStorageValue);
+  jest
+    .spyOn(localStorageModule, 'setLocalStorageValue')
+    .mockImplementation(mockSetLocalStorageValue);
+  jest
+    .spyOn(localStorageModule, 'clearLocalStorageValue')
+    .mockImplementation(mockClearLocalStorageValue);
 
   type ReqResolver = (r: GetWorkflowHistoryResponse) => void;
   let requestResolver: ReqResolver = () => {};
@@ -559,5 +506,8 @@ async function setup({
     getRequestRejector,
     ...renderResult,
     mockSetQueryParams,
+    mockGetLocalStorageValue,
+    mockSetLocalStorageValue,
+    mockClearLocalStorageValue,
   };
 }
