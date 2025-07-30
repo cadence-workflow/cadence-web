@@ -22,36 +22,11 @@ import type workflowPageQueryParamsConfig from '@/views/workflow-page/config/wor
 
 import { completedActivityTaskEvents } from '../__fixtures__/workflow-history-activity-events';
 import { completedDecisionTaskEvents } from '../__fixtures__/workflow-history-decision-events';
-import * as useHistoryEventTypesPreferenceModule from '../hooks/use-history-event-types-preference';
-import * as useHistoryUngroupedViewPreferenceModule from '../hooks/use-history-ungrouped-view-preference';
 import WorkflowHistory from '../workflow-history';
 import { type WorkflowHistoryEventFilteringType } from '../workflow-history-filters-type/workflow-history-filters-type.types';
 
 jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
   jest.fn(() => [{ historySelectedEventId: '1' }, jest.fn()])
-);
-
-jest.mock('../hooks/use-history-ungrouped-view-preference', () =>
-  jest.fn(() => ({
-    getValue: () => false,
-    setValue: jest.fn(),
-    clearValue: jest.fn(),
-  }))
-);
-
-jest.mock('../hooks/use-history-event-types-preference', () =>
-  jest.fn(() => ({
-    getValue: () => [
-      'ACTIVITY',
-      'CHILDWORKFLOW',
-      'DECISION',
-      'SIGNAL',
-      'TIMER',
-      'WORKFLOW',
-    ],
-    setValue: jest.fn(),
-    clearValue: jest.fn(),
-  }))
 );
 
 jest.mock(
