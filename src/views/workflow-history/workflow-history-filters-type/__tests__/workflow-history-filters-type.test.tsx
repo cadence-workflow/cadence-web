@@ -1,10 +1,12 @@
 import React from 'react';
 
+import { z } from 'zod';
+
 import { render, screen, fireEvent, act } from '@/test-utils/rtl';
 
 import * as localStorageModule from '@/utils/local-storage';
 
-import workflowHistoryUserPreferencesKeys from '../../config/workflow-history-user-preferences-keys.config';
+import workflowHistoryUserPreferencesConfig from '../../config/workflow-history-user-preferences.config';
 import WorkflowHistoryFiltersType from '../workflow-history-filters-type';
 import { WORKFLOW_HISTORY_EVENT_FILTERING_TYPES_LABEL_MAP } from '../workflow-history-filters-type.constants';
 import {
@@ -17,10 +19,6 @@ jest.mock('@/utils/local-storage', () => ({
   setLocalStorageValue: jest.fn(),
   clearLocalStorageValue: jest.fn(),
 }));
-
-jest.mock('../helpers/parse-event-filtering-types', () =>
-  jest.fn((val) => JSON.parse(val))
-);
 
 describe('WorkflowHistoryFiltersType', () => {
   it('renders without errors', () => {
@@ -91,7 +89,8 @@ describe('WorkflowHistoryFiltersType', () => {
     expect(screen.queryByText('Decision')).toBeNull();
 
     expect(mockGetLocalStorageValue).toHaveBeenCalledWith(
-      workflowHistoryUserPreferencesKeys.HISTORY_EVENT_TYPES
+      workflowHistoryUserPreferencesConfig.historyEventTypes.key,
+      expect.any(z.ZodSchema)
     );
   });
 
@@ -107,7 +106,8 @@ describe('WorkflowHistoryFiltersType', () => {
     expect(screen.queryByText('Decision')).toBeNull();
 
     expect(mockGetLocalStorageValue).toHaveBeenCalledWith(
-      workflowHistoryUserPreferencesKeys.HISTORY_EVENT_TYPES
+      workflowHistoryUserPreferencesConfig.historyEventTypes.key,
+      expect.any(z.ZodSchema)
     );
   });
 
@@ -135,7 +135,7 @@ describe('WorkflowHistoryFiltersType', () => {
 
     // Should also save to localStorage
     expect(mockSetLocalStorageValue).toHaveBeenCalledWith(
-      workflowHistoryUserPreferencesKeys.HISTORY_EVENT_TYPES,
+      workflowHistoryUserPreferencesConfig.historyEventTypes.key,
       JSON.stringify(['TIMER', 'ACTIVITY'])
     );
   });
@@ -153,9 +153,7 @@ function setup({
   const mockSetValue = jest.fn();
 
   const mockGetLocalStorageValue = jest.fn(() => {
-    return historyEventTypesPreference
-      ? JSON.stringify(historyEventTypesPreference)
-      : null;
+    return historyEventTypesPreference ?? null;
   });
   const mockSetLocalStorageValue = jest.fn();
 

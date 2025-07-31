@@ -41,7 +41,7 @@ import { useSuspenseDescribeWorkflow } from '../workflow-page/hooks/use-describe
 
 import workflowHistoryFiltersConfig from './config/workflow-history-filters.config';
 import WORKFLOW_HISTORY_PAGE_SIZE_CONFIG from './config/workflow-history-page-size.config';
-import workflowHistoryUserPreferencesKeys from './config/workflow-history-user-preferences-keys.config';
+import workflowHistoryUserPreferencesConfig from './config/workflow-history-user-preferences.config';
 import compareUngroupedEvents from './helpers/compare-ungrouped-events';
 import getSortableEventId from './helpers/get-sortable-event-id';
 import getVisibleGroupsHasMissingEvents from './helpers/get-visible-groups-has-missing-events';
@@ -54,7 +54,6 @@ import useKeepLoadingEvents from './hooks/use-keep-loading-events';
 import WorkflowHistoryCompactEventCard from './workflow-history-compact-event-card/workflow-history-compact-event-card';
 import WorkflowHistoryExpandAllEventsButton from './workflow-history-expand-all-events-button/workflow-history-expand-all-events-button';
 import WorkflowHistoryExportJsonButton from './workflow-history-export-json-button/workflow-history-export-json-button';
-import parseEventFilteringTypes from './workflow-history-filters-type/helpers/parse-event-filtering-types';
 import { DEFAULT_EVENT_FILTERING_TYPES } from './workflow-history-filters-type/workflow-history-filters-type.constants';
 import WorkflowHistoryTimelineChart from './workflow-history-timeline-chart/workflow-history-timeline-chart';
 import WorkflowHistoryTimelineGroup from './workflow-history-timeline-group/workflow-history-timeline-group';
@@ -92,10 +91,11 @@ export default function WorkflowHistory({ params }: Props) {
       return queryParams.ungroupedHistoryViewEnabled;
 
     const ungroupedViewUserPreference = getLocalStorageValue(
-      workflowHistoryUserPreferencesKeys.UNGROUPED_VIEW_ENABLED
+      workflowHistoryUserPreferencesConfig.ungroupedViewEnabled.key,
+      workflowHistoryUserPreferencesConfig.ungroupedViewEnabled.schema
     );
 
-    return ungroupedViewUserPreference === 'true';
+    return ungroupedViewUserPreference ?? false;
   }, [queryParams.ungroupedHistoryViewEnabled]);
 
   const historyEventTypes = useMemo(() => {
@@ -103,13 +103,11 @@ export default function WorkflowHistory({ params }: Props) {
       return queryParams.historyEventTypes;
 
     const historyEventTypesUserPreference = getLocalStorageValue(
-      workflowHistoryUserPreferencesKeys.HISTORY_EVENT_TYPES
+      workflowHistoryUserPreferencesConfig.historyEventTypes.key,
+      workflowHistoryUserPreferencesConfig.historyEventTypes.schema
     );
 
-    return (
-      parseEventFilteringTypes(historyEventTypesUserPreference) ??
-      DEFAULT_EVENT_FILTERING_TYPES
-    );
+    return historyEventTypesUserPreference ?? DEFAULT_EVENT_FILTERING_TYPES;
   }, [queryParams.historyEventTypes]);
 
   const { data: wfExecutionDescription } = useSuspenseDescribeWorkflow({
@@ -224,7 +222,7 @@ export default function WorkflowHistory({ params }: Props) {
 
   const onClickGroupModeToggle = useCallback(() => {
     setLocalStorageValue(
-      workflowHistoryUserPreferencesKeys.UNGROUPED_VIEW_ENABLED,
+      workflowHistoryUserPreferencesConfig.ungroupedViewEnabled.key,
       String(!isUngroupedHistoryViewEnabled)
     );
 
@@ -388,7 +386,7 @@ export default function WorkflowHistory({ params }: Props) {
           resetAllFilters={() => {
             resetAllFilters();
             clearLocalStorageValue(
-              workflowHistoryUserPreferencesKeys.HISTORY_EVENT_TYPES
+              workflowHistoryUserPreferencesConfig.historyEventTypes.key
             );
           }}
         />

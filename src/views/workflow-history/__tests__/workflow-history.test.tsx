@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 
 import { HttpResponse } from 'msw';
 import { VirtuosoMockContext } from 'react-virtuoso';
+import { z } from 'zod';
 
 import {
   act,
@@ -23,7 +24,7 @@ import type workflowPageQueryParamsConfig from '@/views/workflow-page/config/wor
 
 import { completedActivityTaskEvents } from '../__fixtures__/workflow-history-activity-events';
 import { completedDecisionTaskEvents } from '../__fixtures__/workflow-history-decision-events';
-import workflowHistoryUserPreferencesKeys from '../config/workflow-history-user-preferences-keys.config';
+import workflowHistoryUserPreferencesConfig from '../config/workflow-history-user-preferences.config';
 import WorkflowHistory from '../workflow-history';
 import { type WorkflowHistoryEventFilteringType } from '../workflow-history-filters-type/workflow-history-filters-type.types';
 
@@ -40,11 +41,6 @@ jest.mock('@/utils/local-storage', () => ({
 jest.mock(
   '../workflow-history-compact-event-card/workflow-history-compact-event-card',
   () => jest.fn(() => <div>Compact group Card</div>)
-);
-
-jest.mock(
-  '../workflow-history-filters-type/helpers/parse-event-filtering-types',
-  () => jest.fn((val) => JSON.parse(val))
 );
 
 jest.mock(
@@ -335,7 +331,8 @@ describe('WorkflowHistory', () => {
 
     // Should use preference when query param is undefined
     expect(mockGetLocalStorageValue).toHaveBeenCalledWith(
-      'history-event-types'
+      'history-event-types',
+      expect.any(z.ZodSchema)
     );
   });
 });
@@ -377,12 +374,10 @@ async function setup({
 
   // Mock localStorage utility functions
   const mockGetLocalStorageValue = jest.fn((key) => {
-    if (key === workflowHistoryUserPreferencesKeys.HISTORY_EVENT_TYPES)
-      return historyEventTypesPreference
-        ? JSON.stringify(historyEventTypesPreference)
-        : null;
+    if (key === workflowHistoryUserPreferencesConfig.historyEventTypes.key)
+      return historyEventTypesPreference ?? null;
 
-    return String(ungroupedViewPreference) ?? null;
+    return ungroupedViewPreference ?? null;
   });
   const mockSetLocalStorageValue = jest.fn();
   const mockClearLocalStorageValue = jest.fn();
