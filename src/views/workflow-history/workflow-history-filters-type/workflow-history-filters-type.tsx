@@ -1,16 +1,12 @@
 'use client';
-import React, { useMemo } from 'react';
+import React, { useContext, useMemo } from 'react';
 
 import { FormControl } from 'baseui/form-control';
 import { Select, SIZE } from 'baseui/select';
 
 import { type PageFilterComponentProps } from '@/components/page-filters/page-filters.types';
-import {
-  getLocalStorageValue,
-  setLocalStorageValue,
-} from '@/utils/local-storage';
 
-import workflowHistoryUserPreferencesConfig from '../config/workflow-history-user-preferences.config';
+import { WorkflowHistoryContext } from '../workflow-history-context-provider/workflow-history-context-provider';
 
 import {
   DEFAULT_EVENT_FILTERING_TYPES,
@@ -26,16 +22,16 @@ export default function WorkflowHistoryFiltersType({
   value,
   setValue,
 }: PageFilterComponentProps<WorkflowHistoryFiltersTypeValue>) {
-  const eventTypesPreference = getLocalStorageValue(
-    workflowHistoryUserPreferencesConfig.historyEventTypes.key,
-    workflowHistoryUserPreferencesConfig.historyEventTypes.schema
-  );
+  const {
+    historyEventTypesUserPreference,
+    setHistoryEventTypesUserPreference,
+  } = useContext(WorkflowHistoryContext);
 
   const historyEventTypes = useMemo(() => {
     if (value.historyEventTypes !== undefined) return value.historyEventTypes;
 
-    return eventTypesPreference ?? DEFAULT_EVENT_FILTERING_TYPES;
-  }, [value.historyEventTypes, eventTypesPreference]);
+    return historyEventTypesUserPreference ?? DEFAULT_EVENT_FILTERING_TYPES;
+  }, [value.historyEventTypes, historyEventTypesUserPreference]);
 
   const typeOptionsValue =
     historyEventTypes.map((type: WorkflowHistoryEventFilteringType) => ({
@@ -66,10 +62,7 @@ export default function WorkflowHistoryFiltersType({
           });
 
           if (newHistoryEventTypes) {
-            setLocalStorageValue(
-              workflowHistoryUserPreferencesConfig.historyEventTypes.key,
-              JSON.stringify(newHistoryEventTypes)
-            );
+            setHistoryEventTypesUserPreference(newHistoryEventTypes);
           }
         }}
         placeholder="All"

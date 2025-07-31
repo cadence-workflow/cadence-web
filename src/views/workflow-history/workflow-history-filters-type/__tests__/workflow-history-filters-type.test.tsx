@@ -1,24 +1,14 @@
 import React from 'react';
 
-import { z } from 'zod';
-
 import { render, screen, fireEvent, act } from '@/test-utils/rtl';
 
-import * as localStorageModule from '@/utils/local-storage';
-
-import workflowHistoryUserPreferencesConfig from '../../config/workflow-history-user-preferences.config';
+import { WorkflowHistoryContext } from '../../workflow-history-context-provider/workflow-history-context-provider';
 import WorkflowHistoryFiltersType from '../workflow-history-filters-type';
 import { WORKFLOW_HISTORY_EVENT_FILTERING_TYPES_LABEL_MAP } from '../workflow-history-filters-type.constants';
 import {
   type WorkflowHistoryFiltersTypeValue,
   type WorkflowHistoryEventFilteringType,
 } from '../workflow-history-filters-type.types';
-
-jest.mock('@/utils/local-storage', () => ({
-  getLocalStorageValue: jest.fn(),
-  setLocalStorageValue: jest.fn(),
-  clearLocalStorageValue: jest.fn(),
-}));
 
 describe('WorkflowHistoryFiltersType', () => {
   it('renders without errors', () => {
@@ -61,25 +51,22 @@ describe('WorkflowHistoryFiltersType', () => {
   });
 
   it('should override preference when query param is set', () => {
-    const { mockGetLocalStorageValue } = setup({
+    const { mockSetHistoryEventTypesUserPreference } = setup({
       overrides: {
         historyEventTypes: ['TIMER', 'SIGNAL'],
       },
     });
 
-    // The component should use the query param values instead of preferences
-    // We can verify this by checking that the selected values are from query params
     expect(screen.getByText('Timer')).toBeInTheDocument();
     expect(screen.getByText('Signal')).toBeInTheDocument();
     expect(screen.queryByText('Activity')).toBeNull();
     expect(screen.queryByText('Decision')).toBeNull();
 
-    // Should not call localStorage when query param is set
-    expect(mockGetLocalStorageValue).not.toHaveBeenCalled();
+    expect(mockSetHistoryEventTypesUserPreference).not.toHaveBeenCalled();
   });
 
   it('should use preference when query param is undefined', () => {
-    const { mockGetLocalStorageValue } = setup({
+    const { mockSetHistoryEventTypesUserPreference } = setup({
       historyEventTypesPreference: ['TIMER', 'SIGNAL'],
     });
 
@@ -88,14 +75,11 @@ describe('WorkflowHistoryFiltersType', () => {
     expect(screen.queryByText('Activity')).toBeNull();
     expect(screen.queryByText('Decision')).toBeNull();
 
-    expect(mockGetLocalStorageValue).toHaveBeenCalledWith(
-      workflowHistoryUserPreferencesConfig.historyEventTypes.key,
-      expect.any(z.ZodSchema)
-    );
+    expect(mockSetHistoryEventTypesUserPreference).not.toHaveBeenCalled();
   });
 
   it('should use default values when both query param and preference are undefined', () => {
-    const { mockGetLocalStorageValue } = setup({});
+    const { mockSetHistoryEventTypesUserPreference } = setup({});
 
     expect(screen.getByText('Activity')).toBeInTheDocument();
     expect(screen.getByText('Timer')).toBeInTheDocument();
@@ -105,14 +89,11 @@ describe('WorkflowHistoryFiltersType', () => {
 
     expect(screen.queryByText('Decision')).toBeNull();
 
-    expect(mockGetLocalStorageValue).toHaveBeenCalledWith(
-      workflowHistoryUserPreferencesConfig.historyEventTypes.key,
-      expect.any(z.ZodSchema)
-    );
+    expect(mockSetHistoryEventTypesUserPreference).not.toHaveBeenCalled();
   });
 
   it('should save preference when user changes selection', () => {
-    const { mockSetValue, mockSetLocalStorageValue } = setup({
+    const { mockSetValue, mockSetHistoryEventTypesUserPreference } = setup({
       overrides: {
         historyEventTypes: ['TIMER'],
       },
@@ -128,16 +109,14 @@ describe('WorkflowHistoryFiltersType', () => {
       fireEvent.click(activityOption);
     });
 
-    // Should call setValue with new query param value
     expect(mockSetValue).toHaveBeenCalledWith({
       historyEventTypes: ['TIMER', 'ACTIVITY'],
     });
 
-    // Should also save to localStorage
-    expect(mockSetLocalStorageValue).toHaveBeenCalledWith(
-      workflowHistoryUserPreferencesConfig.historyEventTypes.key,
-      JSON.stringify(['TIMER', 'ACTIVITY'])
-    );
+    expect(mockSetHistoryEventTypesUserPreference).toHaveBeenCalledWith([
+      'TIMER',
+      'ACTIVITY',
+    ]);
   });
 });
 
@@ -151,33 +130,32 @@ function setup({
     | undefined;
 }) {
   const mockSetValue = jest.fn();
-
-  const mockGetLocalStorageValue = jest.fn(() => {
-    return historyEventTypesPreference ?? null;
-  });
-  const mockSetLocalStorageValue = jest.fn();
-
-  jest
-    .spyOn(localStorageModule, 'getLocalStorageValue')
-    .mockImplementation(mockGetLocalStorageValue);
-  jest
-    .spyOn(localStorageModule, 'setLocalStorageValue')
-    .mockImplementation(mockSetLocalStorageValue);
+  const mockSetHistoryEventTypesUserPreference = jest.fn();
 
   const renderResult = render(
-    <WorkflowHistoryFiltersType
+    <WorkflowHistoryContext.Provider
       value={{
-        historyEventTypes: undefined,
-        ...overrides,
+        ungroupedViewUserPreference: null,
+        setUngroupedViewUserPreference: jest.fn(),
+        historyEventTypesUserPreference: historyEventTypesPreference ?? null,
+        setHistoryEventTypesUserPreference:
+          mockSetHistoryEventTypesUserPreference,
+        clearHistoryEventTypesUserPreference: jest.fn(),
       }}
-      setValue={mockSetValue}
-    />
+    >
+      <WorkflowHistoryFiltersType
+        value={{
+          historyEventTypes: undefined,
+          ...overrides,
+        }}
+        setValue={mockSetValue}
+      />
+    </WorkflowHistoryContext.Provider>
   );
 
   return {
     mockSetValue,
-    mockGetLocalStorageValue,
-    mockSetLocalStorageValue,
+    mockSetHistoryEventTypesUserPreference,
     ...renderResult,
   };
 }
