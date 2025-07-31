@@ -26,16 +26,16 @@ export default function WorkflowHistoryFiltersType({
   value,
   setValue,
 }: PageFilterComponentProps<WorkflowHistoryFiltersTypeValue>) {
+  const eventTypesPreference = getLocalStorageValue(
+    workflowHistoryUserPreferencesConfig.historyEventTypes.key,
+    workflowHistoryUserPreferencesConfig.historyEventTypes.schema
+  );
+
   const historyEventTypes = useMemo(() => {
     if (value.historyEventTypes !== undefined) return value.historyEventTypes;
 
-    const eventTypesPreference = getLocalStorageValue(
-      workflowHistoryUserPreferencesConfig.historyEventTypes.key,
-      workflowHistoryUserPreferencesConfig.historyEventTypes.schema
-    );
-
     return eventTypesPreference ?? DEFAULT_EVENT_FILTERING_TYPES;
-  }, [value.historyEventTypes]);
+  }, [value.historyEventTypes, eventTypesPreference]);
 
   const typeOptionsValue =
     historyEventTypes.map((type: WorkflowHistoryEventFilteringType) => ({
