@@ -1,3 +1,5 @@
+import { type z } from 'zod';
+
 import { type Timestamp } from '@/__generated__/proto-ts/google/protobuf/Timestamp';
 import type { HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
 import { type PendingActivityInfo } from '@/__generated__/proto-ts/uber/cadence/api/v1/PendingActivityInfo';
@@ -246,3 +248,8 @@ export type VisibleHistoryGroupRanges = {
 };
 
 export type Props = WorkflowPageTabContentProps;
+
+export type WorkflowHistoryUserPreferenceConfig<T> = {
+  key: string;
+  schema: z.ZodType<T, z.ZodTypeDef, string>;
+};

@@ -10,9 +10,8 @@ import {
   setLocalStorageValue,
 } from '@/utils/local-storage';
 
-import workflowHistoryUserPreferencesKeys from '../config/workflow-history-user-preferences-keys.config';
+import workflowHistoryUserPreferencesConfig from '../config/workflow-history-user-preferences.config';
 
-import parseEventFilteringTypes from './helpers/parse-event-filtering-types';
 import {
   DEFAULT_EVENT_FILTERING_TYPES,
   WORKFLOW_HISTORY_EVENT_FILTERING_TYPES_LABEL_MAP,
@@ -31,17 +30,15 @@ export default function WorkflowHistoryFiltersType({
     if (value.historyEventTypes !== undefined) return value.historyEventTypes;
 
     const eventTypesPreference = getLocalStorageValue(
-      workflowHistoryUserPreferencesKeys.HISTORY_EVENT_TYPES
+      workflowHistoryUserPreferencesConfig.historyEventTypes.key,
+      workflowHistoryUserPreferencesConfig.historyEventTypes.schema
     );
 
-    return (
-      parseEventFilteringTypes(eventTypesPreference) ??
-      DEFAULT_EVENT_FILTERING_TYPES
-    );
+    return eventTypesPreference ?? DEFAULT_EVENT_FILTERING_TYPES;
   }, [value.historyEventTypes]);
 
   const typeOptionsValue =
-    historyEventTypes.map((type) => ({
+    historyEventTypes.map((type: WorkflowHistoryEventFilteringType) => ({
       id: type,
       label: WORKFLOW_HISTORY_EVENT_FILTERING_TYPES_LABEL_MAP[type],
     })) ?? [];
@@ -70,7 +67,7 @@ export default function WorkflowHistoryFiltersType({
 
           if (newHistoryEventTypes) {
             setLocalStorageValue(
-              workflowHistoryUserPreferencesKeys.HISTORY_EVENT_TYPES,
+              workflowHistoryUserPreferencesConfig.historyEventTypes.key,
               JSON.stringify(newHistoryEventTypes)
             );
           }
