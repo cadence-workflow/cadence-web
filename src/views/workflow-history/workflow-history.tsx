@@ -86,29 +86,29 @@ export default function WorkflowHistory({ params }: Props) {
       pageFiltersConfig: workflowHistoryFiltersConfig,
     });
 
+  const ungroupedViewUserPreference = getLocalStorageValue(
+    workflowHistoryUserPreferencesConfig.ungroupedViewEnabled.key,
+    workflowHistoryUserPreferencesConfig.ungroupedViewEnabled.schema
+  );
+
   const isUngroupedHistoryViewEnabled = useMemo(() => {
     if (queryParams.ungroupedHistoryViewEnabled !== undefined)
       return queryParams.ungroupedHistoryViewEnabled;
 
-    const ungroupedViewUserPreference = getLocalStorageValue(
-      workflowHistoryUserPreferencesConfig.ungroupedViewEnabled.key,
-      workflowHistoryUserPreferencesConfig.ungroupedViewEnabled.schema
-    );
-
     return ungroupedViewUserPreference ?? false;
-  }, [queryParams.ungroupedHistoryViewEnabled]);
+  }, [queryParams.ungroupedHistoryViewEnabled, ungroupedViewUserPreference]);
+
+  const historyEventTypesUserPreference = getLocalStorageValue(
+    workflowHistoryUserPreferencesConfig.historyEventTypes.key,
+    workflowHistoryUserPreferencesConfig.historyEventTypes.schema
+  );
 
   const historyEventTypes = useMemo(() => {
     if (queryParams.historyEventTypes !== undefined)
       return queryParams.historyEventTypes;
 
-    const historyEventTypesUserPreference = getLocalStorageValue(
-      workflowHistoryUserPreferencesConfig.historyEventTypes.key,
-      workflowHistoryUserPreferencesConfig.historyEventTypes.schema
-    );
-
     return historyEventTypesUserPreference ?? DEFAULT_EVENT_FILTERING_TYPES;
-  }, [queryParams.historyEventTypes]);
+  }, [queryParams.historyEventTypes, historyEventTypesUserPreference]);
 
   const { data: wfExecutionDescription } = useSuspenseDescribeWorkflow({
     ...params,
@@ -384,10 +384,10 @@ export default function WorkflowHistory({ params }: Props) {
           queryParams={queryParams}
           setQueryParams={setQueryParams}
           resetAllFilters={() => {
-            resetAllFilters();
             clearLocalStorageValue(
               workflowHistoryUserPreferencesConfig.historyEventTypes.key
             );
+            resetAllFilters();
           }}
         />
       )}
