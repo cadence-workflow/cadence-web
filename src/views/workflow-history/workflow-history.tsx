@@ -1,5 +1,11 @@
 'use client';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import {
   useSuspenseInfiniteQuery,
@@ -25,11 +31,6 @@ import useThrottledState from '@/hooks/use-throttled-state';
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
 import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
 import decodeUrlParams from '@/utils/decode-url-params';
-import {
-  clearLocalStorageValue,
-  getLocalStorageValue,
-  setLocalStorageValue,
-} from '@/utils/local-storage';
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
 import sortBy from '@/utils/sort-by';
@@ -41,7 +42,6 @@ import { useSuspenseDescribeWorkflow } from '../workflow-page/hooks/use-describe
 
 import workflowHistoryFiltersConfig from './config/workflow-history-filters.config';
 import WORKFLOW_HISTORY_PAGE_SIZE_CONFIG from './config/workflow-history-page-size.config';
-import workflowHistoryUserPreferencesConfig from './config/workflow-history-user-preferences.config';
 import compareUngroupedEvents from './helpers/compare-ungrouped-events';
 import getSortableEventId from './helpers/get-sortable-event-id';
 import getVisibleGroupsHasMissingEvents from './helpers/get-visible-groups-has-missing-events';
@@ -52,6 +52,7 @@ import useEventExpansionToggle from './hooks/use-event-expansion-toggle';
 import useInitialSelectedEvent from './hooks/use-initial-selected-event';
 import useKeepLoadingEvents from './hooks/use-keep-loading-events';
 import WorkflowHistoryCompactEventCard from './workflow-history-compact-event-card/workflow-history-compact-event-card';
+import { WorkflowHistoryContext } from './workflow-history-context-provider/workflow-history-context-provider';
 import WorkflowHistoryExpandAllEventsButton from './workflow-history-expand-all-events-button/workflow-history-expand-all-events-button';
 import WorkflowHistoryExportJsonButton from './workflow-history-export-json-button/workflow-history-export-json-button';
 import { DEFAULT_EVENT_FILTERING_TYPES } from './workflow-history-filters-type/workflow-history-filters-type.constants';
@@ -86,10 +87,12 @@ export default function WorkflowHistory({ params }: Props) {
       pageFiltersConfig: workflowHistoryFiltersConfig,
     });
 
-  const ungroupedViewUserPreference = getLocalStorageValue(
-    workflowHistoryUserPreferencesConfig.ungroupedViewEnabled.key,
-    workflowHistoryUserPreferencesConfig.ungroupedViewEnabled.schema
-  );
+  const {
+    ungroupedViewUserPreference,
+    setUngroupedViewUserPreference,
+    historyEventTypesUserPreference,
+    clearHistoryEventTypesUserPreference,
+  } = useContext(WorkflowHistoryContext);
 
   const isUngroupedHistoryViewEnabled = useMemo(() => {
     if (queryParams.ungroupedHistoryViewEnabled !== undefined)
@@ -97,11 +100,6 @@ export default function WorkflowHistory({ params }: Props) {
 
     return ungroupedViewUserPreference ?? false;
   }, [queryParams.ungroupedHistoryViewEnabled, ungroupedViewUserPreference]);
-
-  const historyEventTypesUserPreference = getLocalStorageValue(
-    workflowHistoryUserPreferencesConfig.historyEventTypes.key,
-    workflowHistoryUserPreferencesConfig.historyEventTypes.schema
-  );
 
   const historyEventTypes = useMemo(() => {
     if (queryParams.historyEventTypes !== undefined)
@@ -221,10 +219,7 @@ export default function WorkflowHistory({ params }: Props) {
     });
 
   const onClickGroupModeToggle = useCallback(() => {
-    setLocalStorageValue(
-      workflowHistoryUserPreferencesConfig.ungroupedViewEnabled.key,
-      String(!isUngroupedHistoryViewEnabled)
-    );
+    setUngroupedViewUserPreference(!isUngroupedHistoryViewEnabled);
 
     setQueryParams({
       ungroupedHistoryViewEnabled: isUngroupedHistoryViewEnabled
@@ -244,6 +239,7 @@ export default function WorkflowHistory({ params }: Props) {
     isUngroupedHistoryViewEnabled,
     setQueryParams,
     setTimelineListVisibleRange,
+    setUngroupedViewUserPreference,
   ]);
 
   const workflowCloseTimeMs = workflowExecutionInfo?.closeTime
@@ -384,9 +380,7 @@ export default function WorkflowHistory({ params }: Props) {
           queryParams={queryParams}
           setQueryParams={setQueryParams}
           resetAllFilters={() => {
-            clearLocalStorageValue(
-              workflowHistoryUserPreferencesConfig.historyEventTypes.key
-            );
+            clearHistoryEventTypesUserPreference();
             resetAllFilters();
           }}
         />

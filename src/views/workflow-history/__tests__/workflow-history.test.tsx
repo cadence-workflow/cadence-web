@@ -2,7 +2,6 @@ import { Suspense } from 'react';
 
 import { HttpResponse } from 'msw';
 import { VirtuosoMockContext } from 'react-virtuoso';
-import { z } from 'zod';
 
 import {
   act,
@@ -18,25 +17,18 @@ import * as usePageFiltersModule from '@/components/page-filters/hooks/use-page-
 import { type Props as PageFiltersToggleProps } from '@/components/page-filters/page-filters-toggle/page-filters-toggle.types';
 import { type PageQueryParamValues } from '@/hooks/use-page-query-params/use-page-query-params.types';
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
-import * as localStorageModule from '@/utils/local-storage';
 import { mockDescribeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
 import type workflowPageQueryParamsConfig from '@/views/workflow-page/config/workflow-page-query-params.config';
 
 import { completedActivityTaskEvents } from '../__fixtures__/workflow-history-activity-events';
 import { completedDecisionTaskEvents } from '../__fixtures__/workflow-history-decision-events';
-import workflowHistoryUserPreferencesConfig from '../config/workflow-history-user-preferences.config';
 import WorkflowHistory from '../workflow-history';
+import { WorkflowHistoryContext } from '../workflow-history-context-provider/workflow-history-context-provider';
 import { type WorkflowHistoryEventFilteringType } from '../workflow-history-filters-type/workflow-history-filters-type.types';
 
 jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
   jest.fn(() => [{ historySelectedEventId: '1' }, jest.fn()])
 );
-
-jest.mock('@/utils/local-storage', () => ({
-  getLocalStorageValue: jest.fn(),
-  setLocalStorageValue: jest.fn(),
-  clearLocalStorageValue: jest.fn(),
-}));
 
 jest.mock(
   '../workflow-history-compact-event-card/workflow-history-compact-event-card',
@@ -309,7 +301,10 @@ describe('WorkflowHistory', () => {
   });
 
   it('should override history event types preference when query param is set', async () => {
-    const { mockGetLocalStorageValue } = await setup({
+    const {
+      mockSetUngroupedViewUserPreference,
+      mockSetHistoryEventTypesUserPreference,
+    } = await setup({
       pageQueryParamsValues: {
         historyEventTypes: ['TIMER', 'SIGNAL'],
         ungroupedHistoryViewEnabled: false,
@@ -317,11 +312,12 @@ describe('WorkflowHistory', () => {
       historyEventTypesPreference: ['ACTIVITY', 'DECISION'],
     });
 
-    expect(mockGetLocalStorageValue).not.toHaveBeenCalled();
+    expect(mockSetUngroupedViewUserPreference).not.toHaveBeenCalled();
+    expect(mockSetHistoryEventTypesUserPreference).not.toHaveBeenCalled();
   });
 
   it('should use preference when history event types query param is undefined', async () => {
-    const { mockGetLocalStorageValue } = await setup({
+    const { mockSetHistoryEventTypesUserPreference } = await setup({
       pageQueryParamsValues: {
         historyEventTypes: undefined,
         ungroupedHistoryViewEnabled: false,
@@ -329,11 +325,7 @@ describe('WorkflowHistory', () => {
       historyEventTypesPreference: ['TIMER', 'SIGNAL'],
     });
 
-    // Should use preference when query param is undefined
-    expect(mockGetLocalStorageValue).toHaveBeenCalledWith(
-      'history-event-types',
-      expect.any(z.ZodSchema)
-    );
+    expect(mockSetHistoryEventTypesUserPreference).not.toHaveBeenCalled();
   });
 });
 
@@ -372,25 +364,9 @@ async function setup({
     });
   }
 
-  // Mock localStorage utility functions
-  const mockGetLocalStorageValue = jest.fn((key) => {
-    if (key === workflowHistoryUserPreferencesConfig.historyEventTypes.key)
-      return historyEventTypesPreference ?? null;
-
-    return ungroupedViewPreference ?? null;
-  });
-  const mockSetLocalStorageValue = jest.fn();
-  const mockClearLocalStorageValue = jest.fn();
-
-  jest
-    .spyOn(localStorageModule, 'getLocalStorageValue')
-    .mockImplementation(mockGetLocalStorageValue);
-  jest
-    .spyOn(localStorageModule, 'setLocalStorageValue')
-    .mockImplementation(mockSetLocalStorageValue);
-  jest
-    .spyOn(localStorageModule, 'clearLocalStorageValue')
-    .mockImplementation(mockClearLocalStorageValue);
+  const mockSetUngroupedViewUserPreference = jest.fn();
+  const mockSetHistoryEventTypesUserPreference = jest.fn();
+  const mockClearHistoryEventTypesUserPreference = jest.fn();
 
   type ReqResolver = (r: GetWorkflowHistoryResponse) => void;
   let requestResolver: ReqResolver = () => {};
@@ -401,15 +377,27 @@ async function setup({
 
   const renderResult = render(
     <Suspense fallback={'Suspense placeholder'}>
-      <WorkflowHistory
-        params={{
-          domain: 'test-domain',
-          cluster: 'test-cluster',
-          runId: 'test-runid',
-          workflowId: 'test-workflowId',
-          workflowTab: 'history',
+      <WorkflowHistoryContext.Provider
+        value={{
+          ungroupedViewUserPreference: ungroupedViewPreference ?? null,
+          setUngroupedViewUserPreference: mockSetUngroupedViewUserPreference,
+          historyEventTypesUserPreference: historyEventTypesPreference ?? null,
+          setHistoryEventTypesUserPreference:
+            mockSetHistoryEventTypesUserPreference,
+          clearHistoryEventTypesUserPreference:
+            mockClearHistoryEventTypesUserPreference,
         }}
-      />
+      >
+        <WorkflowHistory
+          params={{
+            domain: 'test-domain',
+            cluster: 'test-cluster',
+            runId: 'test-runid',
+            workflowId: 'test-workflowId',
+            workflowTab: 'history',
+          }}
+        />
+      </WorkflowHistoryContext.Provider>
     </Suspense>,
     {
       endpointsMocks: [
@@ -501,8 +489,8 @@ async function setup({
     getRequestRejector,
     ...renderResult,
     mockSetQueryParams,
-    mockGetLocalStorageValue,
-    mockSetLocalStorageValue,
-    mockClearLocalStorageValue,
+    mockSetUngroupedViewUserPreference,
+    mockSetHistoryEventTypesUserPreference,
+    mockClearHistoryEventTypesUserPreference,
   };
 }
