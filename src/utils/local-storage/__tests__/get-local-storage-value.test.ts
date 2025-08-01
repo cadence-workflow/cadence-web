@@ -34,4 +34,22 @@ describe('getLocalStorageValue', () => {
 
     expect(result).toBeNull();
   });
+
+  it('should return plain string when a schema is not provided', () => {
+    const mockValue = 'mock-value';
+    jest.spyOn(Storage.prototype, 'getItem').mockReturnValue(mockValue);
+
+    const result = getLocalStorageValue('test-key');
+
+    expect(result).toBe('mock-value');
+  });
+
+  it('should return empty string when localStorage.getItem returns empty string', () => {
+    const mockValue = '';
+    jest.spyOn(Storage.prototype, 'getItem').mockReturnValue(mockValue);
+
+    const result = getLocalStorageValue('test-key');
+
+    expect(result).toBe('');
+  });
 });
