@@ -4,7 +4,7 @@ import logger from '../logger';
 
 export default function getLocalStorageValue<
   S extends z.ZodTypeAny = z.ZodString,
->(key: string, schema?: S): z.infer<S> | string | null {
+>(key: string, schema?: S): z.infer<S> | null {
   if (typeof window === 'undefined') return null;
 
   try {
