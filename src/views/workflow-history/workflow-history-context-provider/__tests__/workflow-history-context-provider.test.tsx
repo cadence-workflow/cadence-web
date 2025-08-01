@@ -54,7 +54,7 @@ describe(WorkflowHistoryContextProvider.name, () => {
     jest.restoreAllMocks();
   });
 
-  fit('should initialize with localStorage values', () => {
+  it('should initialize with localStorage values', () => {
     const { mockGetLocalStorageValue } = setup({
       localStorageValues: {
         [workflowHistoryUserPreferencesConfig.ungroupedViewEnabled.key]: true,
