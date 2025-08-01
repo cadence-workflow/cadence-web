@@ -115,13 +115,9 @@ export function groupHistoryEvents(
       );
     } else {
       const currentGroup = groupByFirstEventId[groupId];
-      // add pendingStart to group only if it is scheduled
       if (
         pa.eventTime &&
         currentGroup &&
-        currentGroup?.events.length === 1 &&
-        currentGroup.events[0].attributes ===
-          'activityTaskScheduledEventAttributes' &&
         currentGroup.events.every(isExtendedActivityEvent)
       ) {
         const updatedEventsArr: ExtendedActivityHistoryEvent[] = [

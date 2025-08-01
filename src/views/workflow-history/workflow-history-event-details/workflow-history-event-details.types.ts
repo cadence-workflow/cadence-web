@@ -8,6 +8,7 @@ import type {
 export type Props = {
   event: ExtendedHistoryEvent;
   negativeFields?: Array<string>;
+  additionalDetails?: Record<string, any>;
   decodedPageUrlParams: WorfklowHistoryProps['params'];
 };
 

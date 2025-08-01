@@ -25,6 +25,7 @@ export type HistoryGroupEventMetadata = {
   timeMs: number | null;
   timeLabel: string;
   negativeFields?: Array<string>;
+  additionalDetails?: Record<string, any>;
 };
 
 export type HistoryGroupBadge = {
@@ -49,6 +50,12 @@ export type HistoryGroupEventToStringMap<GroupT extends HistoryEventsGroup> =
 export type HistoryGroupEventStatusToNegativeFieldsMap<
   GroupT extends HistoryEventsGroup,
 > = Partial<Record<GroupT['events'][number]['attributes'], Array<string>>>;
+
+export type HistoryGroupEventToAdditionalDetailsMap<
+  GroupT extends HistoryEventsGroup,
+> = Partial<
+  Record<GroupT['events'][number]['attributes'], Record<string, any>>
+>;
 
 type BaseHistoryGroup = {
   label: string;

@@ -1,8 +1,12 @@
+import formatPayload from '@/utils/data-formatters/format-payload';
+import formatTimestampToDatetime from '@/utils/data-formatters/format-timestamp-to-datetime';
+
 import WORKFLOW_HISTORY_SHOULD_SHORTEN_GROUP_LABELS_CONFIG from '../../config/workflow-history-should-shorten-group-labels.config';
 import type {
   ActivityHistoryGroup,
   ExtendedActivityHistoryEvent,
   HistoryGroupEventStatusToNegativeFieldsMap,
+  HistoryGroupEventToAdditionalDetailsMap,
   HistoryGroupEventToStatusMap,
   HistoryGroupEventToStringMap,
   PendingActivityTaskStartEvent,
@@ -129,6 +133,35 @@ export default function getActivityGroupFromEvents(
     ? 'Last started at'
     : 'Scheduled at';
 
+  const eventToAdditionalDetails: HistoryGroupEventToAdditionalDetailsMap<ActivityHistoryGroup> =
+    {
+      ...(pendingStartEvent
+        ? {
+            activityTaskStartedEventAttributes: {
+              heartbeatDetails: formatPayload(
+                pendingStartEvent.pendingActivityTaskStartEventAttributes
+                  .heartbeatDetails
+              ),
+              lastHeartbeatTime: formatTimestampToDatetime(
+                pendingStartEvent.pendingActivityTaskStartEventAttributes
+                  .lastHeartbeatTime
+              ),
+            },
+          }
+        : {}),
+    };
+
+  // Hide pendingActivityStart if activityStart has already been written to history
+  // TODO: test if the pending activity start shows up correctly
+  const finalEvents =
+    events.length === 2 &&
+    events[0].attributes === 'activityTaskScheduledEventAttributes' &&
+    events[1].attributes === 'pendingActivityTaskStartEventAttributes'
+      ? events
+      : events.filter(
+          (e) => e.attributes !== 'pendingActivityTaskStartEventAttributes'
+        );
+
   return {
     label,
     shortLabel,
@@ -136,12 +169,13 @@ export default function getActivityGroupFromEvents(
     groupType,
     badges,
     ...getCommonHistoryGroupFields<ActivityHistoryGroup>(
-      events,
+      finalEvents,
       eventToStatus,
       eventToLabel,
       { pendingActivityTaskStartEventAttributes: pendingStartEventTimePrefix },
       closeEvent || timeoutEvent,
-      eventStatusToNegativeFields
+      eventStatusToNegativeFields,
+      eventToAdditionalDetails
     ),
   };
 }
