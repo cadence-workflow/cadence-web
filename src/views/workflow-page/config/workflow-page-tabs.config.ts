@@ -14,6 +14,7 @@ import WorkflowStackTrace from '@/views/workflow-stack-trace/workflow-stack-trac
 import WorkflowSummaryTab from '@/views/workflow-summary-tab/workflow-summary-tab';
 
 import getWorkflowPageErrorConfig from '../helpers/get-workflow-page-error-config';
+import WorkflowPageDiagnosticsBadge from '../workflow-page-diagnostics-badge/workflow-page-diagnostics-badge';
 import WorkflowPagePendingEventsBadge from '../workflow-page-pending-events-badge/workflow-page-pending-events-badge';
 import type { WorkflowPageTabsConfig } from '../workflow-page-tabs/workflow-page-tabs.types';
 
@@ -45,6 +46,7 @@ const workflowPageTabsConfig: WorkflowPageTabsConfig<
   },
   diagnostics: {
     title: 'Diagnostics',
+    endEnhancer: WorkflowPageDiagnosticsBadge,
     artwork: RiStethoscopeLine,
     content: WorkflowDiagnostics,
     getErrorConfig: getWorkflowDiagnosticsErrorConfig,
