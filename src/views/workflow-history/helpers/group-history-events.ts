@@ -120,6 +120,7 @@ export function groupHistoryEvents(
         currentGroup &&
         currentGroup.events.every(isExtendedActivityEvent)
       ) {
+        console.log('test', currentGroup.events, pa);
         const updatedEventsArr: ExtendedActivityHistoryEvent[] = [
           ...currentGroup.events,
           pa,
@@ -160,5 +161,6 @@ export function groupHistoryEvents(
     }
   }
 
+  console.log('groups', groupByFirstEventId);
   return groupByFirstEventId;
 }

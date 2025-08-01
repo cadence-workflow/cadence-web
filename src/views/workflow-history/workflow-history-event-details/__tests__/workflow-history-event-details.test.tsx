@@ -138,4 +138,29 @@ describe(WorkflowHistoryEventDetails.name, () => {
       negativeFields,
     });
   });
+
+  it('passes additionalDetails merged with formatted event details to generateHistoryEventDetails', () => {
+    const additionalDetails = {
+      key1: 'value1',
+      key2: {
+        value: 2,
+      },
+    };
+    mockGenerateHistoryEventDetails.mockReturnValue([]);
+
+    render(
+      <WorkflowHistoryEventDetails
+        event={completeActivityTaskEvent}
+        decodedPageUrlParams={workflowPageUrlParams}
+        additionalDetails={additionalDetails}
+      />
+    );
+
+    expect(mockGenerateHistoryEventDetails).toHaveBeenCalledWith({
+      details: {
+        mockFormatted: true,
+        ...additionalDetails,
+      },
+    });
+  });
 });

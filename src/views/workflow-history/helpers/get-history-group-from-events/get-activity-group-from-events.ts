@@ -152,7 +152,6 @@ export default function getActivityGroupFromEvents(
     };
 
   // Hide pendingActivityStart if activityStart has already been written to history
-  // TODO: test if the pending activity start shows up correctly
   const finalEvents =
     events.length === 2 &&
     events[0].attributes === 'activityTaskScheduledEventAttributes' &&
