@@ -17,14 +17,14 @@ import {
 } from './workflow-diagnostics.constants';
 
 export default function WorkflowDiagnostics({
-  params,
+  params: { domain, cluster, workflowId, runId },
 }: WorkflowPageTabContentProps) {
   const { data: isWorkflowDiagnosticsEnabled } =
     useSuspenseIsWorkflowDiagnosticsEnabled();
 
   const {
     data: { workflowExecutionInfo },
-  } = useSuspenseDescribeWorkflow(params);
+  } = useSuspenseDescribeWorkflow({ domain, cluster, workflowId, runId });
 
   const isWorkflowClosed = Boolean(
     workflowExecutionInfo?.closeStatus &&
@@ -32,10 +32,13 @@ export default function WorkflowDiagnostics({
         'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
   );
 
-  const { data, status } = useDiagnoseWorkflow(params, {
-    enabled: isWorkflowDiagnosticsEnabled && isWorkflowClosed,
-    throwOnError: true,
-  });
+  const { data, status } = useDiagnoseWorkflow(
+    { domain, cluster, workflowId, runId },
+    {
+      enabled: isWorkflowDiagnosticsEnabled && isWorkflowClosed,
+      throwOnError: true,
+    }
+  );
 
   if (!isWorkflowDiagnosticsEnabled) {
     throw new Error(DIAGNOSTICS_CONFIG_DISABLED_ERROR_MSG);
@@ -56,8 +59,18 @@ export default function WorkflowDiagnostics({
   }
 
   return data.parsingError ? (
-    <WorkflowDiagnosticsFallback {...params} diagnosticsResult={data.result} />
+    <WorkflowDiagnosticsFallback
+      workflowId={workflowId}
+      runId={runId}
+      diagnosticsResult={data.result}
+    />
   ) : (
-    <WorkflowDiagnosticsContent {...params} diagnosticsResult={data.result} />
+    <WorkflowDiagnosticsContent
+      domain={domain}
+      cluster={cluster}
+      workflowId={workflowId}
+      runId={runId}
+      diagnosticsResult={data.result}
+    />
   );
 }
