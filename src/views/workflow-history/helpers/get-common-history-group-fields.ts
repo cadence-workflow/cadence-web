@@ -7,6 +7,7 @@ import {
   type HistoryEventsGroup,
   type HistoryGroupEventToStatusMap,
   type HistoryGroupEventToStringMap,
+  type HistoryGroupEventToAdditionalDetailsMap,
 } from '../workflow-history.types';
 
 export default function getCommonHistoryGroupFields<
@@ -17,7 +18,8 @@ export default function getCommonHistoryGroupFields<
   eventToLabelMap: HistoryGroupEventToStringMap<GroupT>,
   eventToTimeLabelPrefixMap: Partial<HistoryGroupEventToStringMap<GroupT>>,
   closeEvent: GroupT['events'][number] | null | undefined,
-  eventStatusToNegativeFieldsMap?: HistoryGroupEventStatusToNegativeFieldsMap<GroupT>
+  eventStatusToNegativeFieldsMap?: HistoryGroupEventStatusToNegativeFieldsMap<GroupT>,
+  eventToAdditionalDetailsMap?: HistoryGroupEventToAdditionalDetailsMap<GroupT>
 ): Pick<
   GroupT,
   | 'eventsMetadata'
@@ -42,6 +44,7 @@ export default function getCommonHistoryGroupFields<
       : `${eventToLabelMap[attrs]} at`;
 
     const negativeFields = eventStatusToNegativeFieldsMap?.[attrs];
+    const additionalDetails = eventToAdditionalDetailsMap?.[attrs];
 
     return {
       label: eventToLabelMap[attrs],
@@ -49,6 +52,7 @@ export default function getCommonHistoryGroupFields<
       timeMs,
       timeLabel: timeMs ? `${prefix} ${formatDate(timeMs)}` : '',
       ...(negativeFields?.length ? { negativeFields } : {}),
+      ...(additionalDetails ? { additionalDetails } : {}),
     };
   });
 

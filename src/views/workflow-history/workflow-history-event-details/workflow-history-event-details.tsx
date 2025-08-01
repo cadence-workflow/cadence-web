@@ -16,6 +16,7 @@ export default function WorkflowHistoryEventDetails({
   event,
   decodedPageUrlParams,
   negativeFields,
+  additionalDetails,
 }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
 
@@ -25,9 +26,15 @@ export default function WorkflowHistoryEventDetails({
       : formatWorkflowHistoryEvent(event);
 
     return result
-      ? generateHistoryEventDetails({ details: result, negativeFields })
+      ? generateHistoryEventDetails({
+          details: {
+            ...result,
+            ...additionalDetails,
+          },
+          negativeFields,
+        })
       : [];
-  }, [event, negativeFields]);
+  }, [event, negativeFields, additionalDetails]);
 
   if (detailsEntries.length === 0)
     return <div className={cls.emptyDetails}>No Details</div>;

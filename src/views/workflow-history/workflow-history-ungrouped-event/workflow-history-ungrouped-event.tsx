@@ -113,6 +113,7 @@ export default function WorkflowHistoryUngroupedEvent({
         event={eventInfo.event}
         decodedPageUrlParams={decodedPageUrlParams}
         negativeFields={eventInfo.eventMetadata.negativeFields}
+        additionalDetails={eventInfo.eventMetadata.additionalDetails}
       />
     </Panel>
   );

@@ -152,7 +152,6 @@ describe('getActivityGroupFromEvents', () => {
   it('should return group eventsMetadata with correct labels', () => {
     const events: ExtendedActivityHistoryEvent[] = [
       scheduleActivityTaskEvent,
-      pendingActivityTaskStartEvent,
       startActivityTaskEvent,
       completeActivityTaskEvent,
       failedActivityTaskEvent,
@@ -162,7 +161,6 @@ describe('getActivityGroupFromEvents', () => {
     const group = getActivityGroupFromEvents(events);
     expect(group.eventsMetadata.map(({ label }) => label)).toEqual([
       'Scheduled',
-      'Starting',
       'Started',
       'Completed',
       'Failed',
@@ -388,5 +386,114 @@ describe('getActivityGroupFromEvents', () => {
     otherEventsMetadata.forEach((metadata) => {
       expect(metadata.negativeFields).toBeUndefined();
     });
+  });
+
+  it('should include heartbeat details in additionalDetails when pending activity start event is present', () => {
+    const events: ExtendedActivityHistoryEvent[] = [
+      scheduleActivityTaskEvent,
+      pendingActivityTaskStartEvent,
+      startActivityTaskEvent,
+    ];
+    const group = getActivityGroupFromEvents(events);
+
+    // The started event should have additionalDetails with heartbeat information
+    const startedEventMetadata = group.eventsMetadata.find(
+      (metadata) => metadata.label === 'Started'
+    );
+    expect(startedEventMetadata?.additionalDetails).toEqual({
+      heartbeatDetails: [
+        '1725747370575409843',
+        'gadence-canary-xdc',
+        'workflow.sanity',
+      ],
+      lastHeartbeatTime: null,
+    });
+
+    // Other events should not have additionalDetails
+    const otherEventsMetadata = group.eventsMetadata.filter(
+      (metadata) => metadata.label !== 'Started'
+    );
+    otherEventsMetadata.forEach((metadata) => {
+      expect(metadata.additionalDetails).toBeUndefined();
+    });
+  });
+
+  it('should include last heartbeat time when pending activity start event has lastHeartbeatTime', () => {
+    const pendingEventWithHeartbeatTime = {
+      ...pendingActivityTaskStartEvent,
+      pendingActivityTaskStartEventAttributes: {
+        ...pendingActivityTaskStartEvent.pendingActivityTaskStartEventAttributes,
+        lastHeartbeatTime: {
+          seconds: '1725747370',
+          nanos: 599547391,
+        },
+      },
+    };
+
+    const events: ExtendedActivityHistoryEvent[] = [
+      scheduleActivityTaskEvent,
+      pendingEventWithHeartbeatTime,
+      startActivityTaskEvent,
+    ];
+    const group = getActivityGroupFromEvents(events);
+
+    const startedEventMetadata = group.eventsMetadata.find(
+      (metadata) => metadata.label === 'Started'
+    );
+    expect(startedEventMetadata?.additionalDetails).toEqual({
+      heartbeatDetails: [
+        '1725747370575409843',
+        'gadence-canary-xdc',
+        'workflow.sanity',
+      ],
+      lastHeartbeatTime: new Date('2024-09-07T22:16:10.599Z'),
+    });
+  });
+
+  it('should not include additionalDetails when no pending activity start event is present', () => {
+    const events: ExtendedActivityHistoryEvent[] = [
+      scheduleActivityTaskEvent,
+      startActivityTaskEvent,
+      completeActivityTaskEvent,
+    ];
+    const group = getActivityGroupFromEvents(events);
+
+    // No events should have additionalDetails
+    group.eventsMetadata.forEach((metadata) => {
+      expect(metadata.additionalDetails).toBeUndefined();
+    });
+  });
+
+  it('should filter out pending activity start events when activity start event is present', () => {
+    const events: ExtendedActivityHistoryEvent[] = [
+      scheduleActivityTaskEvent,
+      pendingActivityTaskStartEvent,
+      startActivityTaskEvent,
+      completeActivityTaskEvent,
+    ];
+    const group = getActivityGroupFromEvents(events);
+
+    // Should only have 3 events (schedule, start, complete) - pending start should be filtered out
+    expect(group.eventsMetadata).toHaveLength(3);
+    expect(group.eventsMetadata.map(({ label }) => label)).toEqual([
+      'Scheduled',
+      'Started',
+      'Completed',
+    ]);
+  });
+
+  it('should include pending activity start events when only scheduled and pending events are present', () => {
+    const events: ExtendedActivityHistoryEvent[] = [
+      scheduleActivityTaskEvent,
+      pendingActivityTaskStartEvent,
+    ];
+    const group = getActivityGroupFromEvents(events);
+
+    // Should have both events when no activity start event is present
+    expect(group.eventsMetadata).toHaveLength(2);
+    expect(group.eventsMetadata.map(({ label }) => label)).toEqual([
+      'Scheduled',
+      'Starting',
+    ]);
   });
 });

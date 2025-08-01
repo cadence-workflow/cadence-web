@@ -12,7 +12,7 @@ export type Props = {
   events: ExtendedHistoryEvent[];
   eventsMetadata: Pick<
     HistoryGroupEventMetadata,
-    'label' | 'status' | 'negativeFields'
+    'label' | 'status' | 'negativeFields' | 'additionalDetails'
   >[];
   showEventPlaceholder?: boolean;
   decodedPageUrlParams: WorfklowHistoryProps['params'];
