@@ -22,7 +22,7 @@ export default function WorkflowPageDiagnosticsBadge() {
     runId,
   });
 
-  if (!issuesCount) return null;
+  if (issuesCount === undefined || issuesCount === 0) return null;
 
   return (
     <Badge
