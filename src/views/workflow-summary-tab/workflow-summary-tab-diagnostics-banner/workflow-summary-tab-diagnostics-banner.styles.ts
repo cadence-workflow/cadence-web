@@ -1,0 +1,25 @@
+import { styled as createStyled, type Theme } from 'baseui';
+import { type StyleObject } from 'styletron-react';
+
+export const styled = {
+  Banner: createStyled(
+    'div',
+    ({ $theme }: { $theme: Theme }): StyleObject => ({
+      display: 'flex',
+      backgroundColor: '#FDF2DC',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: `${$theme.sizing.scale300} ${$theme.sizing.scale600}`,
+      borderRadius: $theme.borders.radius400,
+    })
+  ),
+  BannerTextContainer: createStyled(
+    'div',
+    ({ $theme }: { $theme: Theme }): StyleObject => ({
+      ...$theme.typography.LabelSmall,
+      display: 'flex',
+      gap: $theme.sizing.scale600,
+      alignItems: 'center',
+    })
+  ),
+};

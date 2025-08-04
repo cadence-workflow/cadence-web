@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 
-import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import queryString from 'query-string';
 
 import PageSection from '@/components/page-section/page-section';
@@ -22,6 +22,7 @@ import { useDescribeWorkflow } from '../workflow-page/hooks/use-describe-workflo
 
 import getWorkflowResultJson from './helpers/get-workflow-result-json';
 import WorkflowSummaryTabDetails from './workflow-summary-tab-details/workflow-summary-tab-details';
+import WorkflowSummaryTabDiagnosticsBanner from './workflow-summary-tab-diagnostics-banner/workflow-summary-tab-diagnostics-banner';
 import WorkflowSummaryTabJsonView from './workflow-summary-tab-json-view/workflow-summary-tab-json-view';
 import { cssStyles } from './workflow-summary-tab.styles';
 
@@ -86,6 +87,7 @@ export default function WorkflowSummaryTab({
     <PageSection>
       <div className={cls.pageContainer}>
         <div className={cls.mainContent}>
+          <WorkflowSummaryTabDiagnosticsBanner {...params} />
           <WorkflowSummaryTabDetails
             firstHistoryEvent={firstEvent}
             closeHistoryEvent={closeEvent}
