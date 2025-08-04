@@ -19,7 +19,7 @@ export const WorkflowHistoryContext = createContext<WorkflowHistoryContextType>(
 export default function WorkflowHistoryContextProvider({
   children,
 }: {
-  children: any;
+  children: React.ReactNode;
 }) {
   const [ungroupedViewPreference, setUngroupedViewPreference] = useState(() =>
     getLocalStorageValue(
