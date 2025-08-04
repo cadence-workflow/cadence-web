@@ -3,6 +3,7 @@
 import React from 'react';
 
 import { Button } from 'baseui/button';
+import Link from 'next/link';
 import { RiStethoscopeLine } from 'react-icons/ri';
 
 import useWorkflowDiagnosticsIssuesCount from '@/views/shared/hooks/use-workflow-diagnostics-issues-count';
@@ -35,8 +36,7 @@ export default function WorkflowSummaryTabDiagnosticsBanner({
       </styled.BannerTextContainer>
       <Button
         size="mini"
-        $as="a"
-        shape="pill"
+        $as={Link}
         href={`/domains/${domain}/${cluster}/workflows/${workflowId}/${runId}/diagnostics`}
       >
         {`View ${issuesCount === 1 ? 'issue' : 'issues'}`}

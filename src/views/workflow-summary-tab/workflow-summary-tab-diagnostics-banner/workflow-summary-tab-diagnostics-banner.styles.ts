@@ -9,7 +9,7 @@ export const styled = {
       backgroundColor: '#FDF2DC',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: `${$theme.sizing.scale300} ${$theme.sizing.scale600}`,
+      padding: `${$theme.sizing.scale400} ${$theme.sizing.scale500}`,
       borderRadius: $theme.borders.radius400,
     })
   ),

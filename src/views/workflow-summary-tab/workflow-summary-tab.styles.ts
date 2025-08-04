@@ -13,7 +13,7 @@ const cssStylesObj = {
     flex: '1 0 300px',
     display: 'flex',
     flexDirection: 'column',
-    gap: theme.sizing.scale900,
+    gap: theme.sizing.scale800,
   }),
   jsonArea: {
     flex: '1 0 300px',
