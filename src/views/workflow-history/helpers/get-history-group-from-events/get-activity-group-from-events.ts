@@ -151,15 +151,17 @@ export default function getActivityGroupFromEvents(
         : {}),
     };
 
-  // Hide pendingActivityStart if activityStart has already been written to history
-  const finalEvents =
-    events.length === 2 &&
-    events[0].attributes === 'activityTaskScheduledEventAttributes' &&
-    events[1].attributes === 'pendingActivityTaskStartEventAttributes'
-      ? events
-      : events.filter(
-          (e) => e.attributes !== 'pendingActivityTaskStartEventAttributes'
-        );
+  const shouldShowPendingEvent = Boolean(
+    scheduleEvent &&
+      pendingStartEvent &&
+      !(startEvent || closeEvent || timeoutEvent)
+  );
+
+  const finalEvents = shouldShowPendingEvent
+    ? events
+    : events.filter(
+        (e) => e.attributes !== 'pendingActivityTaskStartEventAttributes'
+      );
 
   return {
     label,
