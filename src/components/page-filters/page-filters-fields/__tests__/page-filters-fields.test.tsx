@@ -63,12 +63,12 @@ export const mockFiltersConfig: [
 ];
 
 describe('PageFiltersFields', () => {
-  it('should reset filters when clear filters button is pressed', async () => {
+  it('should reset filters when reset filters button is pressed', async () => {
     const { mockedResetAllFilters } = setup({
       valuesOverrides: { paramA: 'valueA2', paramB: 'valueB2' },
     });
 
-    const clearFiltersButton = await screen.findByText('Clear filters');
+    const clearFiltersButton = await screen.findByText('Reset filters');
 
     act(() => {
       fireEvent.click(clearFiltersButton);

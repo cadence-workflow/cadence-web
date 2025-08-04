@@ -35,7 +35,7 @@ export default function PageFiltersFields<P extends PageQueryParams>({
         startEnhancer={Delete}
         overrides={overrides.clearFiltersButton}
       >
-        Clear filters
+        Reset filters
       </Button>
     </styled.SearchFiltersContainer>
   );
