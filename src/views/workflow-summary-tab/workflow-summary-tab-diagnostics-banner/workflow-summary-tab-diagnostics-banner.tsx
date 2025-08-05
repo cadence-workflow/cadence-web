@@ -24,7 +24,7 @@ export default function WorkflowSummaryTabDiagnosticsBanner({
     runId,
   });
 
-  if (!issuesCount) return null;
+  if (issuesCount === undefined || issuesCount === 0) return null;
 
   return (
     <styled.Banner>
