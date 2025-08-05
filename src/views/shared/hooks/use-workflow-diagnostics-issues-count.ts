@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import useDiagnoseWorkflow from '@/views/workflow-diagnostics/hooks/use-diagnose-workflow/use-diagnose-workflow';
 import { type UseDiagnoseWorkflowParams } from '@/views/workflow-diagnostics/hooks/use-diagnose-workflow/use-diagnose-workflow.types';
-import { useSuspenseDescribeWorkflow } from '@/views/workflow-page/hooks/use-describe-workflow';
+import { useDescribeWorkflow } from '@/views/workflow-page/hooks/use-describe-workflow';
 import useSuspenseIsWorkflowDiagnosticsEnabled from '@/views/workflow-page/hooks/use-is-workflow-diagnostics-enabled/use-suspense-is-workflow-diagnostics-enabled';
 
 export default function useWorkflowDiagnosticsIssuesCount(
@@ -11,37 +11,42 @@ export default function useWorkflowDiagnosticsIssuesCount(
   const { data: isWorkflowDiagnosticsEnabled } =
     useSuspenseIsWorkflowDiagnosticsEnabled();
 
-  const {
-    data: { workflowExecutionInfo },
-  } = useSuspenseDescribeWorkflow(params);
+  const { data: describeWorkflowResponse } = useDescribeWorkflow(params);
 
   const isWorkflowClosed = Boolean(
-    workflowExecutionInfo?.closeStatus &&
-      workflowExecutionInfo.closeStatus !==
+    describeWorkflowResponse?.workflowExecutionInfo &&
+      describeWorkflowResponse.workflowExecutionInfo?.closeStatus &&
+      describeWorkflowResponse.workflowExecutionInfo.closeStatus !==
         'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
   );
 
-  const { data } = useDiagnoseWorkflow(params, {
+  const { data: diagnoseWorkflowResponse } = useDiagnoseWorkflow(params, {
     enabled: isWorkflowDiagnosticsEnabled && isWorkflowClosed,
   });
 
   const totalIssuesCount = useMemo(() => {
     if (
       !isWorkflowDiagnosticsEnabled ||
+      !describeWorkflowResponse ||
       !isWorkflowClosed ||
-      !data ||
-      data?.parsingError
+      !diagnoseWorkflowResponse ||
+      diagnoseWorkflowResponse?.parsingError
     )
       return undefined;
 
-    return Object.values(data.result.result).reduce(
+    return Object.values(diagnoseWorkflowResponse.result.result).reduce(
       (numIssuesSoFar, issuesGroup) => {
         if (issuesGroup === null) return numIssuesSoFar;
         return numIssuesSoFar + issuesGroup.issues.length;
       },
       0
     );
-  }, [isWorkflowDiagnosticsEnabled, isWorkflowClosed, data]);
+  }, [
+    describeWorkflowResponse,
+    isWorkflowDiagnosticsEnabled,
+    isWorkflowClosed,
+    diagnoseWorkflowResponse,
+  ]);
 
   return totalIssuesCount;
 }
