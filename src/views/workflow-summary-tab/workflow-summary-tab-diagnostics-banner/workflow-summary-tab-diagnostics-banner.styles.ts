@@ -6,7 +6,7 @@ export const styled = {
     'div',
     ({ $theme }: { $theme: Theme }): StyleObject => ({
       display: 'flex',
-      backgroundColor: '#FDF2DC',
+      backgroundColor: $theme.colors.backgroundWarningLight,
       alignItems: 'center',
       justifyContent: 'space-between',
       padding: `${$theme.sizing.scale400} ${$theme.sizing.scale500}`,
