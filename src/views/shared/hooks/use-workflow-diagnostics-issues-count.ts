@@ -1,15 +1,18 @@
 import { useMemo } from 'react';
 
+import { useQuery } from '@tanstack/react-query';
+
 import useDiagnoseWorkflow from '@/views/workflow-diagnostics/hooks/use-diagnose-workflow/use-diagnose-workflow';
 import { type UseDiagnoseWorkflowParams } from '@/views/workflow-diagnostics/hooks/use-diagnose-workflow/use-diagnose-workflow.types';
 import { useDescribeWorkflow } from '@/views/workflow-page/hooks/use-describe-workflow';
-import useSuspenseIsWorkflowDiagnosticsEnabled from '@/views/workflow-page/hooks/use-is-workflow-diagnostics-enabled/use-suspense-is-workflow-diagnostics-enabled';
+import getIsWorkflowDiagnosticsEnabledQueryOptions from '@/views/workflow-page/hooks/use-is-workflow-diagnostics-enabled/get-is-workflow-diagnostics-enabled-query-options';
 
 export default function useWorkflowDiagnosticsIssuesCount(
   params: UseDiagnoseWorkflowParams
 ): number | undefined {
-  const { data: isWorkflowDiagnosticsEnabled } =
-    useSuspenseIsWorkflowDiagnosticsEnabled();
+  const { data: isWorkflowDiagnosticsEnabled } = useQuery(
+    getIsWorkflowDiagnosticsEnabledQueryOptions()
+  );
 
   const { data: describeWorkflowResponse } = useDescribeWorkflow(params);
 

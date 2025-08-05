@@ -1,3 +1,5 @@
+import { createElement, Suspense } from 'react';
+
 import { HttpResponse } from 'msw';
 import { ZodError } from 'zod';
 
@@ -11,31 +13,31 @@ import { mockDescribeWorkflowResponse } from '@/views/workflow-page/__fixtures__
 import useWorkflowDiagnosticsIssuesCount from '../use-workflow-diagnostics-issues-count';
 
 describe(useWorkflowDiagnosticsIssuesCount.name, () => {
-  it('should return total issues count when diagnostics is enabled and workflow is closed', () => {
+  it('should return total issues count when diagnostics is enabled and workflow is closed', async () => {
     const { result } = setup();
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(result.current).toBe(5); // 5 issues from mockWorkflowDiagnosticsResult
     });
   });
 
-  it('should return undefined when diagnostics is disabled', () => {
+  it('should return undefined when diagnostics is disabled', async () => {
     const { result } = setup({ isDiagnosticsEnabled: false });
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(result.current).toBeUndefined();
     });
   });
 
-  it('should return undefined when workflow is not closed', () => {
+  it('should return undefined when workflow is not closed', async () => {
     const { result } = setup({ isWorkflowClosed: false });
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(result.current).toBeUndefined();
     });
   });
 
-  it('should return undefined when diagnostics has parsing error', () => {
+  it('should return undefined when diagnostics has parsing error', async () => {
     const { result } = setup({
       diagnosticsResponse: {
         result: mockWorkflowDiagnosticsResult,
@@ -43,20 +45,20 @@ describe(useWorkflowDiagnosticsIssuesCount.name, () => {
       },
     });
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(result.current).toBeUndefined();
     });
   });
 
-  it('should return undefined when diagnostics data is undefined', () => {
+  it('should return undefined when diagnostics data is undefined', async () => {
     const { result } = setup({ diagnosticsResponse: undefined });
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(result.current).toBeUndefined();
     });
   });
 
-  it('should return 0 when diagnostics result has no issues', () => {
+  it('should return 0 when diagnostics result has no issues', async () => {
     const { result } = setup({
       diagnosticsResponse: {
         result: {
@@ -71,31 +73,31 @@ describe(useWorkflowDiagnosticsIssuesCount.name, () => {
       },
     });
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(result.current).toBe(0);
     });
   });
 
-  it('should handle config API errors gracefully', () => {
+  it('should handle config API errors gracefully', async () => {
     const { result } = setup({ configError: true });
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(result.current).toBeUndefined();
     });
   });
 
-  it('should handle describe workflow API errors gracefully', () => {
+  it('should handle describe workflow API errors gracefully', async () => {
     const { result } = setup({ describeWorkflowError: true });
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(result.current).toBeUndefined();
     });
   });
 
-  it('should handle diagnostics API errors gracefully', () => {
+  it('should handle diagnostics API errors gracefully', async () => {
     const { result } = setup({ diagnosticsError: true });
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(result.current).toBeUndefined();
     });
   });
@@ -187,6 +189,10 @@ function setup({
             ]
           : []),
       ],
+    },
+    {
+      wrapper: ({ children }) =>
+        createElement(Suspense, { fallback: 'Loading' }, children),
     }
   );
 }
