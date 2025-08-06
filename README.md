@@ -38,9 +38,8 @@ Feature flags in `cadence-web` are configured as separate resolvers in the dynam
 
 | Feature Flag | Description | Resolver |
 |-------------|-------------|----------|
-| `WORKFLOW_ACTIONS_ENABLED` | Controls whether users can access workflow actions (terminate, cancel, restart, reset, signal) in the UI | [`src/config/dynamic/resolvers/workflow-actions-enabled.ts`](src/config/dynamic/resolvers/workflow-actions-enabled.ts) |
-| `EXTENDED_DOMAIN_INFO_ENABLED` | Controls the display of extended domain information including metadata and issues sections | [`src/config/dynamic/resolvers/extended-domain-info-enabled.ts`](src/config/dynamic/resolvers/extended-domain-info-enabled.ts) |
-| `WORKFLOW_DIAGNOSTICS_ENABLED` | Controls the availability of workflow diagnostics features | [`src/config/dynamic/resolvers/workflow-diagnostics-enabled.ts`](src/config/dynamic/resolvers/workflow-diagnostics-enabled.ts) |
+| `EXTENDED_DOMAIN_INFO_ENABLED` | Controls the display of extended domain information including metadata and issues sections | [`extended-domain-info-enabled.ts`](src/config/dynamic/resolvers/extended-domain-info-enabled.ts) |
+| `WORKFLOW_DIAGNOSTICS_ENABLED` | Controls the availability of workflow diagnostics features | [`workflow-diagnostics-enabled.ts`](src/config/dynamic/resolvers/workflow-diagnostics-enabled.ts) |
 
 ### Using cadence-web
 
