@@ -15,7 +15,7 @@ export async function register() {
     ).otelRegisterInstrumentations({});
   }
 
-  // register loggers after instrumentations are registered to have instrumented pino with logs correlation
+  // import/register loggers after instrumentations are registered to have instrumented pino along with logs correlation
   const { registerLoggers, default: logger } = await import('@/utils/logger');
   registerLoggers();
 
