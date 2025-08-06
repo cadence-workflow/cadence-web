@@ -19,7 +19,12 @@ const nextConfig = {
       '@': path.resolve(__dirname, './src'),
     };
     if (options.isServer) {
-      config.externals.push('@grpc/grpc-js', 'require-in-the-middle', '@opentelemetry/exporter-jaeger');
+      config.externals.push(
+        '@grpc/grpc-js',
+        'require-in-the-middle',
+        'pino',
+        /^@opentelemetry\//
+      );
     }
     return config;
   },
