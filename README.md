@@ -34,12 +34,12 @@ CADENCE_CLUSTERS_NAMES=cluster0,cluster1
 
 #### Feature flags
 
-Feature flags in `cadence-web` are configured as separate resolvers in the dynamic config system (`src/config/dynamic/resolvers`). These flags control various UI features and functionality.
+Feature flags in `cadence-web` are configured as separate resolvers in the dynamic config system (`src/config/dynamic/resolvers`). These flags control various UI features and functionality. 
 
-| Feature Flag | Description | Resolver |
-|-------------|-------------|----------|
+| Feature Flag | Description | Configuration |
+|-------------|-------------|---------------|
 | `EXTENDED_DOMAIN_INFO_ENABLED` | Controls the display of extended domain information including metadata and issues sections | [`extended-domain-info-enabled.ts`](src/config/dynamic/resolvers/extended-domain-info-enabled.ts) |
-| `WORKFLOW_DIAGNOSTICS_ENABLED` | Controls the availability of workflow diagnostics features | [`workflow-diagnostics-enabled.ts`](src/config/dynamic/resolvers/workflow-diagnostics-enabled.ts) |
+| `WORKFLOW_DIAGNOSTICS_ENABLED` | Controls the availability of workflow diagnostics features | `CADENCE_WORKFLOW_DIAGNOSTICS_ENABLED` environment variable or [`workflow-diagnostics-enabled.ts`](src/config/dynamic/resolvers/workflow-diagnostics-enabled.ts) |
 
 ### Using cadence-web
 
