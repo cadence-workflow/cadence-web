@@ -1,7 +1,7 @@
 /**
  * Returns whether workflow diagnostics APIs and UI are enabled.
  *
- * To enable workflow diagnostics, change the return value of this resolver to "true".
+ * To enable workflow diagnostics, set the CADENCE_WORKFLOW_DIAGNOSTICS_ENABLED env variable to true.
  *
  * Server version behavior:
  * - \>= 1.3.1: Diagnostics APIs and UI will work as expected.
@@ -11,5 +11,5 @@
  * @returns {Promise<boolean>} Whether workflow diagnostics are enabled.
  */
 export default async function workflowDiagnosticsEnabled(): Promise<boolean> {
-  return false;
+  return process.env.CADENCE_WORKFLOW_DIAGNOSTICS_ENABLED === 'true';
 }
