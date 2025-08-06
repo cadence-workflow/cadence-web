@@ -56,7 +56,7 @@ export default function WorkflowHistoryEventsCard({
                 />
                 <div className={cls.eventLabel}>
                   {eventMetadata.label}
-                  {isPanelExpanded && (
+                  {event.eventId && isPanelExpanded && (
                     <WorkflowHistoryEventLinkButton historyEventId={id} />
                   )}
                 </div>

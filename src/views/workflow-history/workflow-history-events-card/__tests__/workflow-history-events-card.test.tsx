@@ -4,6 +4,7 @@ import {
   scheduleActivityTaskEvent,
   startActivityTaskEvent,
 } from '../../__fixtures__/workflow-history-activity-events';
+import { pendingActivityTaskStartEvent } from '../../__fixtures__/workflow-history-pending-events';
 import WorkflowHistoryEventsCard from '../workflow-history-events-card';
 import type { Props } from '../workflow-history-events-card.types';
 
@@ -101,6 +102,44 @@ describe('WorkflowHistoryEventsCard', () => {
       'data-event-id',
       scheduleActivityTaskEvent.eventId
     );
+  });
+
+  it('should show copy button when event is expanded', () => {
+    const events: Props['events'] = [scheduleActivityTaskEvent];
+    const eventsMetadata: Props['eventsMetadata'] = [
+      {
+        label: 'First event',
+        status: 'COMPLETED',
+      },
+    ];
+    setup({
+      events,
+      eventsMetadata,
+      getIsEventExpanded: jest.fn().mockReturnValue(true),
+    });
+
+    expect(screen.getByTestId('event-link-button')).toBeInTheDocument();
+    expect(screen.getByTestId('event-link-button')).toHaveAttribute(
+      'data-event-id',
+      scheduleActivityTaskEvent.eventId
+    );
+  });
+
+  it('should not show copy button for pending event even when expanded', () => {
+    const events: Props['events'] = [pendingActivityTaskStartEvent];
+    const eventsMetadata: Props['eventsMetadata'] = [
+      {
+        label: 'Pending event',
+        status: 'WAITING',
+      },
+    ];
+    setup({
+      events,
+      eventsMetadata,
+      getIsEventExpanded: jest.fn().mockReturnValue(true),
+    });
+
+    expect(screen.queryByTestId('event-link-button')).not.toBeInTheDocument();
   });
 
   it('should call onEventToggle callback on click', async () => {
