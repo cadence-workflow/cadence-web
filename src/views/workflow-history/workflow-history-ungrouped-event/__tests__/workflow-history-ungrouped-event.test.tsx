@@ -224,6 +224,29 @@ describe(WorkflowHistoryUngroupedEvent.name, () => {
 
     expect(mockOnReset).toHaveBeenCalledTimes(1);
   });
+
+  it('should show copy button for regular event when expanded', () => {
+    setup({ isExpanded: true });
+
+    expect(screen.getByTestId('event-link-button')).toBeInTheDocument();
+    expect(screen.getByTestId('event-link-button')).toHaveAttribute(
+      'data-event-id',
+      startWorkflowExecutionEvent.eventId
+    );
+    expect(screen.getByTestId('event-link-button')).toHaveAttribute(
+      'data-ungrouped',
+      'true'
+    );
+  });
+
+  it('should not show copy button for pending event even when expanded', () => {
+    setup({
+      eventInfo: mockPendingActivityEventInfo,
+      isExpanded: true,
+    });
+
+    expect(screen.queryByTestId('event-link-button')).not.toBeInTheDocument();
+  });
 });
 
 function setup({
