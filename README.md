@@ -32,6 +32,16 @@ CADENCE_GRPC_SERVICES_NAMES=cadence-frontend-cluster0,cadence-frontend-cluster1
 CADENCE_CLUSTERS_NAMES=cluster0,cluster1
 ```
 
+#### Feature flags
+
+Feature flags in `cadence-web` are configured as separate resolvers in the dynamic config system (`src/config/dynamic/resolvers`). These flags control various UI features and functionality.
+
+| Feature Flag | Description | Resolver |
+|-------------|-------------|----------|
+| `WORKFLOW_ACTIONS_ENABLED` | Controls whether users can access workflow actions (terminate, cancel, restart, reset, signal) in the UI | [`src/config/dynamic/resolvers/workflow-actions-enabled.ts`](src/config/dynamic/resolvers/workflow-actions-enabled.ts) |
+| `EXTENDED_DOMAIN_INFO_ENABLED` | Controls the display of extended domain information including metadata and issues sections | [`src/config/dynamic/resolvers/extended-domain-info-enabled.ts`](src/config/dynamic/resolvers/extended-domain-info-enabled.ts) |
+| `WORKFLOW_DIAGNOSTICS_ENABLED` | Controls the availability of workflow diagnostics features | [`src/config/dynamic/resolvers/workflow-diagnostics-enabled.ts`](src/config/dynamic/resolvers/workflow-diagnostics-enabled.ts) |
+
 ### Using cadence-web
 
 The latest version of `cadence-web` is included in the `cadence` composed docker containers in the [main Cadence repository][cadence]. Follow the instructions there to get started.
