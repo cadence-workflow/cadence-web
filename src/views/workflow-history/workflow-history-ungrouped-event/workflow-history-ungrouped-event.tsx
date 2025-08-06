@@ -50,7 +50,7 @@ export default function WorkflowHistoryUngroupedEvent({
                 label={eventInfo.label}
                 shortLabel={eventInfo.shortLabel}
               />
-              {isExpanded && (
+              {eventInfo.event.eventId && isExpanded && (
                 <WorkflowHistoryEventLinkButton
                   historyEventId={eventInfo.id}
                   isUngroupedView

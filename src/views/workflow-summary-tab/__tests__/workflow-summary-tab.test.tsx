@@ -12,9 +12,15 @@ import WorkflowSummaryTab from '../workflow-summary-tab';
 jest.mock('../workflow-summary-tab-details/workflow-summary-tab-details', () =>
   jest.fn(() => <div>MockWorkflowSummaryTabDetails</div>)
 );
+
 jest.mock(
   '../workflow-summary-tab-json-view/workflow-summary-tab-json-view',
   () => jest.fn(() => <div>MockWorkflowSummaryTabJsonView</div>)
+);
+
+jest.mock(
+  '../workflow-summary-tab-diagnostics-banner/workflow-summary-tab-diagnostics-banner',
+  () => jest.fn(() => <div>MockWorkflowSummaryTabDiagnosticsBanner</div>)
 );
 
 describe('WorkflowSummaryTab', () => {
@@ -30,7 +36,7 @@ describe('WorkflowSummaryTab', () => {
     workflowTab: 'summary',
   };
 
-  it('should render WorkflowSummaryTabDetails and WorkflowSummaryTabJsonView', async () => {
+  it('should render tab deatils, JSON view, and diagnostics banner', async () => {
     render(
       <Suspense>
         <WorkflowSummaryTab params={params} />
@@ -68,6 +74,9 @@ describe('WorkflowSummaryTab', () => {
     ).toBeInTheDocument();
     expect(
       await screen.findByText('MockWorkflowSummaryTabJsonView')
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText('MockWorkflowSummaryTabDiagnosticsBanner')
     ).toBeInTheDocument();
   });
 });
