@@ -26,10 +26,11 @@ const workflowHistoryEventDetailsConfig = [
       return (
         value === 0 &&
         new RegExp(
-          'retryPolicy.(maximumAttempts|expirationIntervalInSeconds)$'
+          '(heartbeatTimeoutSeconds|retryPolicy.(maximumAttempts|expirationIntervalInSeconds))$'
         ).test(path)
       );
     },
+    getLabel: ({ key }) => key.replace(/InSeconds|Seconds|$/, ''), // remove seconds suffix from label as formatted duration can be minutes/hours etc.
     valueComponent: () =>
       createElement(WorkflowHistoryEventDetailsPlaceholderText),
   },
@@ -57,9 +58,9 @@ const workflowHistoryEventDetailsConfig = [
     forceWrap: true,
   },
   {
-    name: 'Duration timeout & backoff seconds',
-    pathRegex: '(TimeoutSeconds|BackoffSeconds)$',
-    getLabel: ({ key }) => key.replace(/Seconds$/, ''), // remove seconds suffix from label as formatted duration can be minutes/hours etc.
+    name: 'Duration & interval seconds',
+    pathRegex: '(TimeoutSeconds|BackoffSeconds|InSeconds)$',
+    getLabel: ({ key }) => key.replace(/InSeconds|Seconds|$/, ''), // remove seconds suffix from label as formatted duration can be minutes/hours etc.
     valueComponent: ({ entryValue }) =>
       formatDuration({ seconds: entryValue > 0 ? entryValue : 0, nanos: 0 }),
   },
