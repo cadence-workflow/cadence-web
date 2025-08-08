@@ -1,11 +1,10 @@
 import { MdWarning } from 'react-icons/md';
 
-import { type Props } from '../domains-page-error-banner/domains-page-error-banner.types';
+import { getDomainsErrorMessage } from '../domains-page-error-banner/helpers/get-domains-error-message';
 
 const domainsPageErrorBannerConfig = {
   icon: MdWarning,
-  getErrorMessage: ({ failedClusters }: Props) =>
-    `Failed to fetch domains for following clusters: ${failedClusters.join(', ')}`,
+  getErrorMessage: getDomainsErrorMessage,
 };
 
 export default domainsPageErrorBannerConfig;

@@ -47,9 +47,18 @@ export const getAllDomains = async () => {
     domains: getUniqueDomains(
       results.flatMap((res) => (res.status === 'fulfilled' ? res.value : []))
     ),
-    failedClusters: CLUSTERS_CONFIGS.map((config) => config.clusterName).filter(
-      (_, index) => results[index].status === 'rejected'
-    ),
+    failedClusters: CLUSTERS_CONFIGS.map((config) => ({
+      clusterName: config.clusterName,
+      rejection: results.find((res) => res.status === 'rejected'),
+    }))
+      .filter((res) => res.rejection)
+      .map((res) => ({
+        clusterName: res.clusterName,
+        httpStatus:
+          res.rejection && 'reason' in res.rejection
+            ? res.rejection.reason.httpStatusCode
+            : undefined,
+      })),
   };
 };
 
