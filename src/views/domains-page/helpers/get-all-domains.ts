@@ -54,7 +54,10 @@ export const getAllDomains = async () => {
       .filter((res) => res.rejection)
       .map((res) => ({
         clusterName: res.clusterName,
-        httpStatus: res.rejection?.reason.httpStatusCode,
+        httpStatus:
+          res.rejection && 'reason' in res.rejection
+            ? res.rejection.reason.httpStatusCode
+            : undefined,
       })),
   };
 };
