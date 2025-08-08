@@ -13,7 +13,6 @@ export function getDomainsErrorMessage({
     .map((cluster) => cluster.clusterName)
     .join(', ');
 
-  // Check if all failures are service unavailable (503)
   const allServiceUnavailable = failedClusters.every(
     (cluster) => cluster.httpStatus === 503
   );
@@ -22,7 +21,6 @@ export function getDomainsErrorMessage({
     return `Failed to connect to the following clusters: ${clusterNames}`;
   }
 
-  // Check if all failures are API failures (not 503)
   const allApiFailures = failedClusters.every(
     (cluster) => cluster.httpStatus !== 503
   );
