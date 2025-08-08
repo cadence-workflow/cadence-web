@@ -2,7 +2,10 @@ import { type ExtendedDomainInfoEnabledConfig } from './extended-domain-info-ena
 
 export default async function extendedDomainInfoEnabled(): Promise<ExtendedDomainInfoEnabledConfig> {
   return {
-    metadata: false,
+    // TODO: @adhitya.mamallan - clean up this feature flag
+    metadata:
+      process.env.CADENCE_EXTENDED_DOMAIN_INFO_METADATA_ENABLED === 'true',
+    // Unused feature flag
     issues: false,
   };
 }
