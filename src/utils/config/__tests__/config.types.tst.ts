@@ -6,7 +6,6 @@ import type {
   ConfigEnvDefinition,
   PublicConfigsDefinitions,
   InferLoadedConfig,
-  ArgsOfLoadedConfigsResolvers,
   ArgsOfConfigsResolvers,
 } from '../config.types.js';
 
