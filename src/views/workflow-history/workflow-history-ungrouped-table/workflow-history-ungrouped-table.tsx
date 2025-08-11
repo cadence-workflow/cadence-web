@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 import { Virtuoso } from 'react-virtuoso';
 
 import WorkflowHistoryTimelineLoadMore from '../workflow-history-timeline-load-more/workflow-history-timeline-load-more';
@@ -22,6 +24,11 @@ export default function WorkflowHistoryUngroupedTable({
 }: Props) {
   const workflowStartTime =
     eventsInfo.length > 0 ? eventsInfo[0].event.eventTime : null;
+
+  const maybeHighlightedEventId = useMemo(
+    () => eventsInfo.findIndex((v) => v.id === selectedEventId),
+    [eventsInfo, selectedEventId]
+  );
 
   return (
     <>
@@ -49,10 +56,8 @@ export default function WorkflowHistoryUngroupedTable({
               : {})}
           />
         )}
-        {...(selectedEventId && {
-          initialTopMostItemIndex: eventsInfo.findIndex(
-            (v) => v.id === selectedEventId
-          ),
+        {...(maybeHighlightedEventId !== -1 && {
+          initialTopMostItemIndex: maybeHighlightedEventId,
         })}
         rangeChanged={onVisibleRangeChange}
         components={{

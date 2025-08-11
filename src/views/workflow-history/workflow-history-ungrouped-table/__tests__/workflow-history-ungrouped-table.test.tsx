@@ -14,13 +14,25 @@ import WorkflowHistoryUngroupedTable from '../workflow-history-ungrouped-table';
 jest.mock(
   '../../workflow-history-ungrouped-event/workflow-history-ungrouped-event',
   () =>
-    jest.fn(({ eventInfo, isExpanded, toggleIsExpanded, onReset }) => (
-      <div data-testid="mock-event" data-expanded={isExpanded}>
-        <button onClick={toggleIsExpanded}>Toggle Event</button>
-        <div>Event ID: {eventInfo.id}</div>
-        {onReset && <button onClick={onReset}>Reset Event</button>}
-      </div>
-    ))
+    jest.fn(
+      ({
+        eventInfo,
+        isExpanded,
+        toggleIsExpanded,
+        onReset,
+        animateOnEnter,
+      }) => (
+        <div
+          data-testid="mock-event"
+          data-expanded={isExpanded}
+          data-animate-on-enter={animateOnEnter}
+        >
+          <button onClick={toggleIsExpanded}>Toggle Event</button>
+          <div>Event ID: {eventInfo.id}</div>
+          {onReset && <button onClick={onReset}>Reset Event</button>}
+        </div>
+      )
+    )
 );
 
 jest.mock(
@@ -141,6 +153,32 @@ describe(WorkflowHistoryUngroupedTable.name, () => {
     await user.click(resetButtons[0]);
 
     expect(mockOnResetToEventId).toHaveBeenCalledWith('1');
+  });
+
+  it('renders correctly when selectedEventId is not found in eventsInfo', async () => {
+    setup({
+      selectedEventId: '3',
+    });
+
+    expect(screen.getByText('ID')).toBeInTheDocument();
+
+    const events = await screen.findAllByTestId('mock-event');
+    expect(events).toHaveLength(2);
+    events.forEach((e) =>
+      expect(e).toHaveAttribute('data-animate-on-enter', 'false')
+    );
+  });
+
+  it('renders correctly when selectedEventId is found in eventsInfo', async () => {
+    setup({
+      selectedEventId: '2',
+    });
+
+    expect(screen.getByText('ID')).toBeInTheDocument();
+    const events = await screen.findAllByTestId('mock-event');
+    expect(events).toHaveLength(2);
+    expect(screen.getByText('Event ID: 2')).toBeInTheDocument();
+    expect(events[1]).toHaveAttribute('data-animate-on-enter', 'true');
   });
 });
 
