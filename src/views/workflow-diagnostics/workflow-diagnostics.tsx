@@ -3,10 +3,10 @@
 import React from 'react';
 
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
+import useSuspenseConfigValue from '@/hooks/use-config-value/use-suspense-config-value';
 import { type WorkflowPageTabContentProps } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
 import { useSuspenseDescribeWorkflow } from '../workflow-page/hooks/use-describe-workflow';
-import useSuspenseIsWorkflowDiagnosticsEnabled from '../workflow-page/hooks/use-is-workflow-diagnostics-enabled/use-suspense-is-workflow-diagnostics-enabled';
 
 import useDiagnoseWorkflow from './hooks/use-diagnose-workflow/use-diagnose-workflow';
 import WorkflowDiagnosticsContent from './workflow-diagnostics-content/workflow-diagnostics-content';
@@ -19,8 +19,9 @@ import {
 export default function WorkflowDiagnostics({
   params: { domain, cluster, workflowId, runId },
 }: WorkflowPageTabContentProps) {
-  const { data: isWorkflowDiagnosticsEnabled } =
-    useSuspenseIsWorkflowDiagnosticsEnabled();
+  const { data: isWorkflowDiagnosticsEnabled } = useSuspenseConfigValue(
+    'WORKFLOW_DIAGNOSTICS_ENABLED'
+  );
 
   const {
     data: { workflowExecutionInfo },
