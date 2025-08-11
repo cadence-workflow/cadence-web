@@ -12,7 +12,7 @@ import { type UseSuspenseConfigValueResult } from './use-config-value.types';
 
 export default function useSuspenseConfigValue<
   K extends GetConfigKeysWithoutArgs,
->(key: K): UseSuspenseConfigValueResult<K>;
+>(key: K, args?: GetConfigArgs<K>): UseSuspenseConfigValueResult<K>;
 
 export default function useSuspenseConfigValue<K extends GetConfigKeysWithArgs>(
   key: K,
@@ -23,5 +23,7 @@ export default function useSuspenseConfigValue<K extends GetConfigKeys>(
   key: K,
   args?: GetConfigArgs<K>
 ): UseSuspenseConfigValueResult<K> {
-  return useSuspenseQuery(getConfigValueQueryOptions({ key, args }));
+  return useSuspenseQuery(
+    getConfigValueQueryOptions({ key, args: args as GetConfigArgs<K> })
+  );
 }

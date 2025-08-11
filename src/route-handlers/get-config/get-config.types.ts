@@ -10,7 +10,7 @@ export type GetConfigKeys = PublicDynamicConfigKeys;
 export type GetConfigKeysWithArgs = PublicConfigKeysWithArgs;
 export type GetConfigKeysWithoutArgs = PublicConfigKeysWithoutArgs;
 
-export type GetConfigArgs<K extends PublicDynamicConfigKeys> =
+export type GetConfigArgs<K extends GetConfigKeys> =
   ArgsOfLoadedConfigResolver<K>;
 
 export type GetConfigRequestQuery<K extends PublicDynamicConfigKeys> = {

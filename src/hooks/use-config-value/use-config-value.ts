@@ -11,7 +11,8 @@ import getConfigValueQueryOptions from './get-config-value-query-options';
 import { type UseConfigValueResult } from './use-config-value.types';
 
 export default function useConfigValue<K extends GetConfigKeysWithoutArgs>(
-  key: K
+  key: K,
+  args?: GetConfigArgs<K>
 ): UseConfigValueResult<K>;
 
 export default function useConfigValue<K extends GetConfigKeysWithArgs>(
@@ -23,5 +24,7 @@ export default function useConfigValue<K extends GetConfigKeys>(
   key: K,
   args?: GetConfigArgs<K>
 ): UseConfigValueResult<K> {
-  return useQuery(getConfigValueQueryOptions<K>({ key, args }));
+  return useQuery(
+    getConfigValueQueryOptions<K>({ key, args: args as GetConfigArgs<K> })
+  );
 }
