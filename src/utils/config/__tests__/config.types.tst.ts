@@ -6,6 +6,7 @@ import type {
   ConfigEnvDefinition,
   PublicConfigsDefinitions,
   InferLoadedConfig,
+  ArgsOfConfigsResolvers,
 } from '../config.types.js';
 
 describe('ConfigEnvDefinition', () => {
@@ -246,8 +247,8 @@ describe('InferLoadedConfig', () => {
       API_PORT: ConfigAsyncResolverDefinition<undefined, number, 'request'>;
     }>;
     expect<LoadedConfig>().type.toBe<{
-      API_URL: () => string;
-      API_PORT: () => Promise<number>;
+      API_URL: (args?: undefined) => string;
+      API_PORT: (args?: undefined) => Promise<number>;
     }>();
   });
 
@@ -261,6 +262,36 @@ describe('InferLoadedConfig', () => {
       DATABASE_URL: string;
       API_URL: string;
       API_PORT: number;
+    }>();
+  });
+});
+
+describe('ArgsOfLoadedConfigsResolvers', () => {
+  it('should have the type of the args of the loaded configs resolvers', () => {
+    type ArgsType = ArgsOfConfigsResolvers<
+      InferLoadedConfig<{
+        DATABASE_URL: ConfigEnvDefinition;
+        API_URL: ConfigSyncResolverDefinition<undefined, string, 'request'>;
+        API_URL_WITH_ARGS: ConfigAsyncResolverDefinition<
+          string,
+          string,
+          'request'
+        >;
+        API_PORT: ConfigAsyncResolverDefinition<undefined, number, 'request'>;
+        API_PORT_WITH_ARGS: ConfigAsyncResolverDefinition<
+          number,
+          number,
+          'request'
+        >;
+      }>
+    >;
+
+    expect<ArgsType>().type.toBe<{
+      DATABASE_URL: undefined;
+      API_URL: undefined;
+      API_URL_WITH_ARGS: string;
+      API_PORT: undefined;
+      API_PORT_WITH_ARGS: number;
     }>();
   });
 });
