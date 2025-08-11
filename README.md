@@ -32,6 +32,17 @@ CADENCE_GRPC_SERVICES_NAMES=cadence-frontend-cluster0,cadence-frontend-cluster1
 CADENCE_CLUSTERS_NAMES=cluster0,cluster1
 ```
 
+#### Feature flags
+
+Feature flags control various UI features and functionality in `cadence-web`. These can be configured using environment variables.
+
+| Feature | Description | Environment Variable Configuration | Minimum Cadence server Version |
+|---------|-------------|---------------------|------------------------|
+| Extended Domain Information | Enhanced domain metadata display and help menu UI | `CADENCE_EXTENDED_DOMAIN_INFO_METADATA_ENABLED=true` | N/A |
+| Workflow Diagnostics | Workflow diagnostics APIs and UI for debugging workflows | `CADENCE_WORKFLOW_DIAGNOSTICS_ENABLED=true` | 1.2.13+ (1.3.1+ for full functionality) |
+
+**Note:** For advanced customization, feature flags can be modified through resolvers in the dynamic config system ([`src/config/dynamic/resolvers`](src/config/dynamic/resolvers)).
+
 ### Using cadence-web
 
 The latest version of `cadence-web` is included in the `cadence` composed docker containers in the [main Cadence repository][cadence]. Follow the instructions there to get started.
