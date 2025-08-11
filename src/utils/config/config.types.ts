@@ -63,20 +63,20 @@ export type InferLoadedConfig<T extends Record<string, ConfigDefinition>> = {
     : T[K] extends ResolverType<any, infer ReturnType, infer EvalOn, any>
       ? EvalOn extends 'serverStart'
         ? ReturnType // If it's a sync resolver with evaluateOn serverStart, return the type directly
-        : T[K] extends ConfigSyncResolverDefinition<
+        : T[K] extends ConfigAsyncResolverDefinition<
               infer Args,
               infer ReturnType,
               any,
               any
             >
-          ? ConfigResolver<Args, ReturnType> // If it's a sync resolver, it's a function with matching signature
-          : T[K] extends ConfigAsyncResolverDefinition<
+          ? ConfigResolver<Args, Promise<ReturnType>> // If it's an async resolver, it's a promise-returning function
+          : T[K] extends ConfigSyncResolverDefinition<
                 infer Args,
                 infer ReturnType,
                 any,
                 any
               >
-            ? ConfigResolver<Args, Promise<ReturnType>> // If it's an async resolver, it's a promise-returning function
+            ? ConfigResolver<Args, ReturnType> // If it's a sync resolver, it's a function with matching signature
             : never // If it doesn't match any known type, it's never
       : never; //If it doesn't match any known type, it's never
 };
@@ -92,14 +92,15 @@ export type ServerStartEvaluatedConfigDefintions<
     : never]: T[K];
 };
 
-type PublicConfigsDefinitions<T extends ConfigDefinitionRecords> = OmitNever<{
-  [K in keyof T]: T[K] extends
-    | ConfigEnvDefinition<true>
-    | ConfigAsyncResolverDefinition<any, any, any, true>
-    | ConfigSyncResolverDefinition<any, any, any, true>
-    ? T[K]
-    : never;
-}>;
+export type PublicConfigsDefinitions<T extends ConfigDefinitionRecords> =
+  OmitNever<{
+    [K in keyof T]: T[K] extends
+      | ConfigEnvDefinition<true>
+      | ConfigAsyncResolverDefinition<any, any, any, true>
+      | ConfigSyncResolverDefinition<any, any, any, true>
+      ? T[K]
+      : never;
+  }>;
 
 type ConfigResolvedValues<T extends ConfigDefinitionRecords> = {
   [K in keyof T]: T[K] extends ResolverType<any, infer ReturnType, any, any>
