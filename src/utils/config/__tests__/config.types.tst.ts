@@ -246,8 +246,8 @@ describe('InferLoadedConfig', () => {
       API_PORT: ConfigAsyncResolverDefinition<undefined, number, 'request'>;
     }>;
     expect<LoadedConfig>().type.toBe<{
-      API_URL: () => string;
-      API_PORT: () => Promise<number>;
+      API_URL: (args?: undefined) => string;
+      API_PORT: (args?: undefined) => Promise<number>;
     }>();
   });
 
