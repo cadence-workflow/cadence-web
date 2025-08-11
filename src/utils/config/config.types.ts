@@ -5,7 +5,7 @@ import type dynamicConfigs from '@/config/dynamic/dynamic.config';
 type OmitNever<T> = { [K in keyof T as T[K] extends never ? never : K]: T[K] };
 
 type ConfigResolver<Args, ReturnType> = Args extends undefined
-  ? () => ReturnType
+  ? (args?: undefined) => ReturnType
   : (args: Args) => ReturnType;
 
 export type ConfigAsyncResolverDefinition<
