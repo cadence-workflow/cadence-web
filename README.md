@@ -36,10 +36,12 @@ CADENCE_CLUSTERS_NAMES=cluster0,cluster1
 
 Feature flags control various UI features and functionality in `cadence-web`. These can be configured using environment variables.
 
-| Feature | Description | Environment Variable Configuration | Minimum Cadence server Version |
-|---------|-------------|---------------------|------------------------|
-| Extended Domain Information | Enhanced domain metadata display and help menu UI | `CADENCE_EXTENDED_DOMAIN_INFO_METADATA_ENABLED=true` | N/A |
-| Workflow Diagnostics | Workflow diagnostics APIs and UI for debugging workflows | `CADENCE_WORKFLOW_DIAGNOSTICS_ENABLED=true` | 1.2.13+ (1.3.1+ for full functionality) |
+| Feature                        | Description                                                                                                                                                             | Environment Variable Configuration                   | Minimum Cadence server Version          |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | --------------------------------------- |
+| Extended Domain Information    | Enhanced domain metadata display and help menu UI                                                                                                                       | `CADENCE_EXTENDED_DOMAIN_INFO_METADATA_ENABLED=true` | N/A                                     |
+| Workflow Diagnostics           | Workflow diagnostics APIs and UI for debugging workflows                                                                                                                | `CADENCE_WORKFLOW_DIAGNOSTICS_ENABLED=true`          | 1.2.13+ (1.3.1+ for full functionality) |
+| Enable Default Archival Search | Shows the default workflow search input + query input for archival workflows page. Default search is disabled by default as it doesn't work well with S3 implementation | `CADENCE_ARCHIVAL_DEFAULT_SEARCH_ENABLED=true`       | N/A                                     |
+
 
 **Note:** For advanced customization, feature flags can be modified through resolvers in the dynamic config system ([`src/config/dynamic/resolvers`](src/config/dynamic/resolvers)).
 
