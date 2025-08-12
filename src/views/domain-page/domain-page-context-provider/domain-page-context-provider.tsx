@@ -1,6 +1,7 @@
 'use client';
 import { createContext, useMemo } from 'react';
 
+import useSuspenseConfigValue from '@/hooks/use-config-value/use-suspense-config-value';
 import useSuspenseClusterConfig from '@/views/shared/hooks/use-suspense-cluster-config';
 
 import { type DomainPageContextType } from './domain-page-context-provider.types';
@@ -14,7 +15,7 @@ export default function DomainPageContextProvider({
 }: {
   children: any;
 }) {
-  const { data: CLUSTERS_PUBLIC } = useSuspenseClusterConfig();
+  const { data: CLUSTERS_PUBLIC } = useSuspenseConfigValue('CLUSTERS_PUBLIC');
   const ctx = useMemo(() => {
     return { pageConfig: { CLUSTERS_PUBLIC } };
   }, [CLUSTERS_PUBLIC]);
