@@ -15,7 +15,10 @@ import {
 
 import WORKFLOWS_SEARCH_DEBOUNCE_MS from './config/workflows-search-debounce-ms.config';
 import { overrides, styled } from './workflows-header.styles';
-import { type Props } from './workflows-header.types';
+import {
+  type WorkflowsHeaderInputType,
+  type Props,
+} from './workflows-header.types';
 import WorkflowsQueryInput from './workflows-query-input/workflows-query-input';
 import WorkflowsQueryLabel from './workflows-query-label/workflows-query-label';
 
@@ -33,6 +36,7 @@ export default function WorkflowsHeader<
   refetchQuery,
   isQueryRunning,
   expandFiltersByDefault,
+  showQueryInputOnly,
 }: Props<P, I, S, Q>) {
   const [areFiltersShown, setAreFiltersShown] = useState(
     expandFiltersByDefault ?? false
@@ -44,7 +48,9 @@ export default function WorkflowsHeader<
       pageQueryParamsConfig,
     });
 
-  const inputType = queryParams[inputTypeQueryParamKey];
+  const inputType = showQueryInputOnly
+    ? ('query' satisfies WorkflowsHeaderInputType as WorkflowsHeaderInputType)
+    : queryParams[inputTypeQueryParamKey];
   const query = queryParams[queryStringQueryParamKey];
 
   return (
@@ -60,11 +66,13 @@ export default function WorkflowsHeader<
           }}
           overrides={overrides.inputToggle}
         >
-          <Segment
-            overrides={overrides.inputToggleSegment}
-            key="search"
-            label="Search"
-          />
+          {!showQueryInputOnly && (
+            <Segment
+              overrides={overrides.inputToggleSegment}
+              key="search"
+              label="Search"
+            />
+          )}
           <Segment
             overrides={overrides.inputToggleSegment}
             key="query"
