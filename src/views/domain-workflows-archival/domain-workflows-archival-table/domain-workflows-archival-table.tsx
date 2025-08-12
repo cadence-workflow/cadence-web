@@ -11,6 +11,7 @@ import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
 import WorkflowsTable from '@/views/shared/workflows-table/workflows-table';
 
 import DOMAIN_WORKFLOWS_ARCHIVAL_PAGE_SIZE from '../config/domain-workflows-archival-page-size.config';
+import useArchivalInputType from '../hooks/use-archival-input-type';
 
 import { type Props } from './domain-workflows-archival-table.types';
 import getArchivalErrorPanelProps from './helpers/get-archival-error-panel-props';
@@ -25,6 +26,8 @@ export default function DomainWorkflowsArchivalTable({
     domainPageQueryParamsConfig
   );
 
+  const { inputType } = useArchivalInputType();
+
   const {
     workflows,
     error,
@@ -38,7 +41,7 @@ export default function DomainWorkflowsArchivalTable({
     cluster,
     listType: 'archived',
     pageSize: DOMAIN_WORKFLOWS_ARCHIVAL_PAGE_SIZE,
-    inputType: queryParams.inputTypeArchival,
+    inputType,
     search: queryParams.searchArchival,
     statuses: queryParams.statusesArchival,
     timeRangeStart,
@@ -57,7 +60,7 @@ export default function DomainWorkflowsArchivalTable({
       <PanelSection>
         <ErrorPanel
           {...getArchivalErrorPanelProps({
-            inputType: queryParams.inputTypeArchival,
+            inputType,
             error,
             queryString: queryParams.queryArchival,
           })}

@@ -7,6 +7,7 @@ import WorkflowsHeader from '@/views/shared/workflows-header/workflows-header';
 
 import domainWorkflowsArchivalFiltersConfig from '../config/domain-workflows-archival-filters.config';
 import DOMAIN_WORKFLOWS_ARCHIVAL_PAGE_SIZE from '../config/domain-workflows-archival-page-size.config';
+import useArchivalInputType from '../hooks/use-archival-input-type';
 
 import { type Props } from './domain-workflows-archival-header.types';
 
@@ -17,13 +18,14 @@ export default function DomainWorkflowsArchivalHeader({
   timeRangeEnd,
 }: Props) {
   const [queryParams] = usePageQueryParams(domainPageQueryParamsConfig);
+  const { forceQueryInputOnly, inputType } = useArchivalInputType();
 
   const { refetch, isFetching } = useListWorkflows({
     domain,
     cluster,
     pageSize: DOMAIN_WORKFLOWS_ARCHIVAL_PAGE_SIZE,
     listType: 'archived',
-    inputType: queryParams.inputTypeArchival,
+    inputType,
     search: queryParams.searchArchival,
     statuses: queryParams.statusesArchival,
     timeRangeStart,
@@ -43,6 +45,7 @@ export default function DomainWorkflowsArchivalHeader({
       refetchQuery={refetch}
       isQueryRunning={isFetching}
       expandFiltersByDefault={true}
+      showQueryInputOnly={forceQueryInputOnly}
     />
   );
 }

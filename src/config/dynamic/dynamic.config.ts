@@ -6,6 +6,7 @@ import type {
   ConfigSyncResolverDefinition,
 } from '../../utils/config/config.types';
 
+import archivalDefaultSearchEnabled from './resolvers/archival-default-search-enabled';
 import clusters from './resolvers/clusters';
 import clustersPublic from './resolvers/clusters-public';
 import { type PublicClustersConfigs } from './resolvers/clusters-public.types';
@@ -51,6 +52,12 @@ const dynamicConfigs: {
     'request',
     true
   >;
+  ARCHIVAL_DEFAULT_SEARCH_ENABLED: ConfigAsyncResolverDefinition<
+    undefined,
+    boolean,
+    'request',
+    true
+  >;
 } = {
   CADENCE_WEB_PORT: {
     env: 'CADENCE_WEB_PORT',
@@ -82,6 +89,11 @@ const dynamicConfigs: {
   },
   WORKFLOW_DIAGNOSTICS_ENABLED: {
     resolver: workflowDiagnosticsEnabled,
+    evaluateOn: 'request',
+    isPublic: true,
+  },
+  ARCHIVAL_DEFAULT_SEARCH_ENABLED: {
+    resolver: archivalDefaultSearchEnabled,
     evaluateOn: 'request',
     isPublic: true,
   },

@@ -114,14 +114,34 @@ describe(WorkflowsHeader.name, () => {
 
     expect(await screen.findByText('Filter fields')).toBeInTheDocument();
   });
+
+  it('should hide search input when showQueryInputOnly is true', async () => {
+    setup({ showQueryInputOnly: true });
+
+    expect(await screen.findByText('Query')).toBeInTheDocument();
+    expect(screen.queryByText('Search')).not.toBeInTheDocument();
+  });
+
+  it('should change input type to query when showQueryInputOnly is true', async () => {
+    setup({ showQueryInputOnly: true });
+
+    expect(
+      screen.getByRole('option', {
+        name: 'Query',
+        selected: true,
+      })
+    ).toBeInTheDocument();
+  });
 });
 
 function setup({
   isQueryRunning,
   expandFiltersByDefault,
+  showQueryInputOnly,
 }: {
   isQueryRunning?: boolean;
   expandFiltersByDefault?: boolean;
+  showQueryInputOnly?: boolean;
 }) {
   const user = userEvent.setup();
   const renderResult = render(
@@ -134,6 +154,7 @@ function setup({
       refetchQuery={jest.fn()}
       isQueryRunning={isQueryRunning ?? false}
       expandFiltersByDefault={expandFiltersByDefault}
+      showQueryInputOnly={showQueryInputOnly}
     />
   );
 

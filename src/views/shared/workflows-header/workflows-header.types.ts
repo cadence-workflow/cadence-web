@@ -27,4 +27,5 @@ export type Props<
   refetchQuery: () => void;
   isQueryRunning: boolean;
   expandFiltersByDefault?: boolean;
+  showQueryInputOnly?: boolean;
 };

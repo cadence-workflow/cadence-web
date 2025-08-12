@@ -39,5 +39,6 @@ const mockResolvedConfigValues: LoadedConfigResolvedValues = {
     issues: false,
   },
   WORKFLOW_DIAGNOSTICS_ENABLED: false,
+  ARCHIVAL_DEFAULT_SEARCH_ENABLED: false,
 };
 export default mockResolvedConfigValues;
