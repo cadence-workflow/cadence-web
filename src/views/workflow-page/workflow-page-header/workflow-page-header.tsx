@@ -65,9 +65,7 @@ export default function WorkflowPageHeader({
         </StyledLink>
         <div className={cls.breadcrumbItemContainer}>
           {runId}
-          <Suspense fallback={null}>
-            <WorkflowPageStatusTag />
-          </Suspense>
+          <WorkflowPageStatusTag />
         </div>
       </Breadcrumbs>
     </PageSection>
