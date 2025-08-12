@@ -54,6 +54,10 @@ const resolverSchemas: ResolverSchemas = {
     args: z.undefined(),
     returnType: z.boolean(),
   },
+  ARCHIVAL_DEFAULT_SEARCH_ENABLED: {
+    args: z.undefined(),
+    returnType: z.boolean(),
+  },
 };
 
 export default resolverSchemas;
