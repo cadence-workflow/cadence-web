@@ -17,6 +17,12 @@ const cssStylesObj = {
     gap: theme.sizing.scale600,
     marginBottom: theme.sizing.scale700,
   }),
+  archivedResult: (theme) => ({
+    padding: theme.sizing.scale600,
+    color: theme.colors.contentTertiary,
+    textAlign: 'center',
+    ...theme.typography.ParagraphSmall,
+  }),
 } satisfies StyletronCSSObject;
 
 export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> =

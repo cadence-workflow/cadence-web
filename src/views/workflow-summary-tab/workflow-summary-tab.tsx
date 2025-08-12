@@ -66,6 +66,7 @@ export default function WorkflowSummaryTab({
   const historyEvents = workflowHistory?.history?.events || [];
   const firstEvent = historyEvents[0];
   const closeEvent = workflowDetails.workflowExecutionInfo?.closeEvent || null;
+  const isArchived = workflowDetails.workflowExecutionInfo?.isArchived || false;
   const formattedWorkflowHistory = formatWorkflowHistory(workflowHistory);
   const formattedStartEvent = formattedWorkflowHistory?.history
     ?.events?.[0] as FormattedHistoryEventForType<'WorkflowExecutionStarted'>;
@@ -107,6 +108,11 @@ export default function WorkflowSummaryTab({
             }
             resultJson={resultJson}
             isWorkflowRunning={isWorkflowRunning}
+            isArchived={isArchived}
+            domain={params.domain}
+            cluster={params.cluster}
+            runId={params.runId}
+            workflowId={params.workflowId}
           />
         </div>
       </div>

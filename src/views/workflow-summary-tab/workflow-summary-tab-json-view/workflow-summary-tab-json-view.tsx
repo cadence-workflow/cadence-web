@@ -2,6 +2,7 @@
 import React, { useMemo, useState } from 'react';
 
 import CopyTextButton from '@/components/copy-text-button/copy-text-button';
+import Link from '@/components/link/link';
 import PrettyJson from '@/components/pretty-json/pretty-json';
 import { type PrettyJsonValue } from '@/components/pretty-json/pretty-json.types';
 import PrettyJsonSkeleton from '@/components/pretty-json-skeleton/pretty-json-skeleton';
@@ -17,6 +18,11 @@ export default function WorkflowSummaryTabJsonView({
   inputJson,
   resultJson,
   isWorkflowRunning,
+  isArchived,
+  domain,
+  cluster,
+  runId,
+  workflowId,
 }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
   const jsonMap: Record<string, PrettyJsonValue> = useMemo(
@@ -47,10 +53,24 @@ export default function WorkflowSummaryTabJsonView({
           overrides={overrides.copyButton}
         />
       </div>
-      {activeTab === 'result' && isWorkflowRunning ? (
-        <PrettyJsonSkeleton width="200px" />
-      ) : (
-        <PrettyJson json={jsonMap[activeTab]} />
+      {activeTab === 'input' && <PrettyJson json={jsonMap[activeTab]} />}
+      {activeTab === 'result' && isArchived && (
+        <>
+          <div className={cls.archivedResult}>
+            Workflow is archived, result is only available through{' '}
+            <Link
+              href={`/domains/${domain}/${cluster}/workflows/${workflowId}/${runId}/history`}
+            >
+              history
+            </Link>
+          </div>
+        </>
+      )}
+      {activeTab === 'result' && !isArchived && (
+        <>
+          {isWorkflowRunning && <PrettyJsonSkeleton width="200px" />}
+          {!isWorkflowRunning && <PrettyJson json={jsonMap[activeTab]} />}
+        </>
       )}
     </div>
   );
