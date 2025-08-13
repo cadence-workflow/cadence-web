@@ -72,7 +72,7 @@ describe('WorkflowSummaryTabJsonView Component', () => {
     expect(getByRole('link', { name: 'history' })).toBeInTheDocument();
   });
 
-  it('should not render  loading skeleton when isArchived is true and isWorkflowRunning is true', () => {
+  it('should not render loading skeleton when isArchived is true and isWorkflowRunning is true', () => {
     const { queryByText, getByText } = setup({
       isArchived: true,
       isWorkflowRunning: true,
