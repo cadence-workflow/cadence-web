@@ -67,7 +67,7 @@ describe('WorkflowSummaryTabJsonView Component', () => {
     const segmentedControl = getByText('SegmentedControlRounded Mock');
     fireEvent.click(segmentedControl);
     expect(
-      getByText('Workflow is archived, result is only available through')
+      getByText('Workflow is archived, result is only available in')
     ).toBeInTheDocument();
     expect(getByRole('link', { name: 'history' })).toBeInTheDocument();
   });
@@ -81,7 +81,7 @@ describe('WorkflowSummaryTabJsonView Component', () => {
     fireEvent.click(segmentedControl);
     expect(queryByText('Mock JSON skeleton')).not.toBeInTheDocument();
     expect(
-      queryByText('Workflow is archived, result is only available through')
+      queryByText('Workflow is archived, result is only available in')
     ).toBeInTheDocument();
   });
 
@@ -94,7 +94,7 @@ describe('WorkflowSummaryTabJsonView Component', () => {
     fireEvent.click(segmentedControl);
     expect(queryByText('PrettyJson Mock')).not.toBeInTheDocument();
     expect(
-      queryByText('Workflow is archived, result is only available through')
+      queryByText('Workflow is archived, result is only available in')
     ).toBeInTheDocument();
   });
 });
