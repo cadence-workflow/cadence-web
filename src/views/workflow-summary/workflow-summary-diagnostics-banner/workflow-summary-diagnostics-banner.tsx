@@ -8,10 +8,10 @@ import { RiStethoscopeLine } from 'react-icons/ri';
 
 import useWorkflowDiagnosticsIssuesCount from '@/views/shared/hooks/use-workflow-diagnostics-issues-count';
 
-import { styled } from './workflow-summary-tab-diagnostics-banner.styles';
-import { type Props } from './workflow-summary-tab-diagnostics-banner.types';
+import { styled } from './workflow-summary-diagnostics-banner.styles';
+import { type Props } from './workflow-summary-diagnostics-banner.types';
 
-export default function WorkflowSummaryTabDiagnosticsBanner({
+export default function WorkflowSummaryDiagnosticsBanner({
   domain,
   cluster,
   workflowId,

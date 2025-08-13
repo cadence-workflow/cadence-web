@@ -7,23 +7,22 @@ import { type GetWorkflowExecutionHistoryResponse } from '@/__generated__/proto-
 import { startWorkflowExecutionEvent } from '@/views/workflow-history/__fixtures__/workflow-history-single-events';
 import { type WorkflowPageTabContentProps } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
-import WorkflowSummaryTab from '../workflow-summary-tab';
+import WorkflowSummary from '../workflow-summary';
 
-jest.mock('../workflow-summary-tab-details/workflow-summary-tab-details', () =>
-  jest.fn(() => <div>MockWorkflowSummaryTabDetails</div>)
+jest.mock('../workflow-summary-details/workflow-summary-details', () =>
+  jest.fn(() => <div>MockWorkflowSummaryDetails</div>)
+);
+
+jest.mock('../workflow-summary-json-view/workflow-summary-json-view', () =>
+  jest.fn(() => <div>MockWorkflowSummaryJsonView</div>)
 );
 
 jest.mock(
-  '../workflow-summary-tab-json-view/workflow-summary-tab-json-view',
-  () => jest.fn(() => <div>MockWorkflowSummaryTabJsonView</div>)
+  '../workflow-summary-diagnostics-banner/workflow-summary-diagnostics-banner',
+  () => jest.fn(() => <div>MockWorkflowSummaryDiagnosticsBanner</div>)
 );
 
-jest.mock(
-  '../workflow-summary-tab-diagnostics-banner/workflow-summary-tab-diagnostics-banner',
-  () => jest.fn(() => <div>MockWorkflowSummaryTabDiagnosticsBanner</div>)
-);
-
-describe('WorkflowSummaryTab', () => {
+describe('WorkflowSummary', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -39,7 +38,7 @@ describe('WorkflowSummaryTab', () => {
   it('should render tab deatils, JSON view, and diagnostics banner', async () => {
     render(
       <Suspense>
-        <WorkflowSummaryTab params={params} />
+        <WorkflowSummary params={params} />
       </Suspense>,
       {
         endpointsMocks: [
@@ -70,13 +69,13 @@ describe('WorkflowSummaryTab', () => {
       }
     );
     expect(
-      await screen.findByText('MockWorkflowSummaryTabDetails')
+      await screen.findByText('MockWorkflowSummaryDetails')
     ).toBeInTheDocument();
     expect(
-      await screen.findByText('MockWorkflowSummaryTabJsonView')
+      await screen.findByText('MockWorkflowSummaryJsonView')
     ).toBeInTheDocument();
     expect(
-      await screen.findByText('MockWorkflowSummaryTabDiagnosticsBanner')
+      await screen.findByText('MockWorkflowSummaryDiagnosticsBanner')
     ).toBeInTheDocument();
   });
 });

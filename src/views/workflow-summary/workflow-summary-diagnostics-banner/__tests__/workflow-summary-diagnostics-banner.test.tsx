@@ -4,13 +4,13 @@ import { render, screen } from '@/test-utils/rtl';
 
 import * as useWorkflowDiagnosticsIssuesCountModule from '@/views/shared/hooks/use-workflow-diagnostics-issues-count';
 
-import WorkflowSummaryTabDiagnosticsBanner from '../workflow-summary-tab-diagnostics-banner';
+import WorkflowSummaryDiagnosticsBanner from '../workflow-summary-diagnostics-banner';
 
 jest.mock('@/views/shared/hooks/use-workflow-diagnostics-issues-count', () =>
   jest.fn(() => undefined)
 );
 
-describe(WorkflowSummaryTabDiagnosticsBanner.name, () => {
+describe(WorkflowSummaryDiagnosticsBanner.name, () => {
   afterEach(() => {
     jest.restoreAllMocks();
   });
@@ -62,7 +62,7 @@ function setup({ mockIssuesCount }: { mockIssuesCount?: number }) {
     .mockReturnValue(mockIssuesCount);
 
   const result = render(
-    <WorkflowSummaryTabDiagnosticsBanner
+    <WorkflowSummaryDiagnosticsBanner
       domain="mock-domain"
       cluster="cluster_1"
       workflowId="mock-workflow-id"

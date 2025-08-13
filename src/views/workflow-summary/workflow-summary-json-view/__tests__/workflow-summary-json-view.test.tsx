@@ -4,7 +4,7 @@ import { render, fireEvent, screen } from '@/test-utils/rtl';
 
 import losslessJsonStringify from '@/utils/lossless-json-stringify';
 
-import WorkflowSummaryTabJsonView from '../workflow-summary-tab-json-view';
+import WorkflowSummaryJsonView from '../workflow-summary-json-view';
 
 jest.mock('@/components/copy-text-button/copy-text-button', () =>
   jest.fn(({ textToCopy }) => <div>Copy Button: {textToCopy}</div>)
@@ -26,7 +26,7 @@ jest.mock('@/components/pretty-json-skeleton/pretty-json-skeleton', () =>
   jest.fn(() => <div>Mock JSON skeleton</div>)
 );
 
-describe('WorkflowSummaryTabJsonView Component', () => {
+describe('WorkflowSummaryJsonView Component', () => {
   const losslessInputJson = {
     input: 'inputJson',
     long: BigInt('12345678901234567890'),
@@ -38,7 +38,7 @@ describe('WorkflowSummaryTabJsonView Component', () => {
 
   it('renders correctly with initial props', () => {
     const { getByText } = render(
-      <WorkflowSummaryTabJsonView
+      <WorkflowSummaryJsonView
         inputJson={losslessInputJson}
         resultJson={losselessResultJson}
         isWorkflowRunning={false}
@@ -51,7 +51,7 @@ describe('WorkflowSummaryTabJsonView Component', () => {
 
   it('handles tab change', () => {
     render(
-      <WorkflowSummaryTabJsonView
+      <WorkflowSummaryJsonView
         inputJson={losslessInputJson}
         resultJson={losselessResultJson}
         isWorkflowRunning={false}
@@ -66,7 +66,7 @@ describe('WorkflowSummaryTabJsonView Component', () => {
 
   it('renders loading state correctly', () => {
     const { getByText } = render(
-      <WorkflowSummaryTabJsonView
+      <WorkflowSummaryJsonView
         inputJson={losslessInputJson}
         resultJson={losselessResultJson}
         isWorkflowRunning={true}
@@ -81,7 +81,7 @@ describe('WorkflowSummaryTabJsonView Component', () => {
 
   it('renders copy text button and pass the correct text', () => {
     const { getByText } = render(
-      <WorkflowSummaryTabJsonView
+      <WorkflowSummaryJsonView
         inputJson={losslessInputJson}
         resultJson={losselessResultJson}
         isWorkflowRunning={true}

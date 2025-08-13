@@ -10,14 +10,14 @@ import {
   startWorkflowExecutionEvent,
 } from '@/views/workflow-history/__fixtures__/workflow-history-single-events';
 
-import WorkflowSummaryTabDetails from '../workflow-summary-tab-details';
+import WorkflowSummaryDetails from '../workflow-summary-details';
 import {
-  type WorkflowSummaryTabDetailsConfig,
+  type WorkflowSummaryDetailsConfig,
   type Props,
-} from '../workflow-summary-tab-details.types';
+} from '../workflow-summary-details.types';
 
 jest.mock(
-  '../../config/workflow-summary-tab-details.config',
+  '../../config/workflow-summary-details.config',
   () =>
     [
       {
@@ -37,7 +37,7 @@ jest.mock(
         getLabel: () => 'Hidden Label 3',
         valueComponent: () => <span>Hidden Value 3</span>,
       },
-    ] satisfies WorkflowSummaryTabDetailsConfig[]
+    ] satisfies WorkflowSummaryDetailsConfig[]
 );
 
 const params: Props['decodedPageUrlParams'] = {
@@ -56,7 +56,7 @@ const mockWorkflowDetails: DescribeWorkflowResponse = {
   workflowExecutionInfo: null,
 };
 
-describe('WorkflowSummaryTabDetails', () => {
+describe('WorkflowSummaryDetails', () => {
   // TODO @assem.hafez enhance typing for formattedFirstHistoryEvent
   //@ts-expect-error - TS is complaining about the type of formattedFirstHistoryEvent
   const formattedFirstHistoryEvent: FormattedHistoryEventForType<'WorkflowExecutionStarted'> =
@@ -66,7 +66,7 @@ describe('WorkflowSummaryTabDetails', () => {
   );
   it('should render workflow type name from firstHistoryEvent', () => {
     render(
-      <WorkflowSummaryTabDetails
+      <WorkflowSummaryDetails
         firstHistoryEvent={startWorkflowExecutionEvent}
         closeHistoryEvent={completeWorkflowExecutionEvent}
         formattedFirstHistoryEvent={formattedFirstHistoryEvent}
@@ -82,7 +82,7 @@ describe('WorkflowSummaryTabDetails', () => {
 
   it('should render all detail rows that are not hidden', () => {
     render(
-      <WorkflowSummaryTabDetails
+      <WorkflowSummaryDetails
         firstHistoryEvent={startWorkflowExecutionEvent}
         closeHistoryEvent={completeWorkflowExecutionEvent}
         formattedFirstHistoryEvent={formattedFirstHistoryEvent}
@@ -100,7 +100,7 @@ describe('WorkflowSummaryTabDetails', () => {
 
   it('should not render detail rows that are hidden', () => {
     render(
-      <WorkflowSummaryTabDetails
+      <WorkflowSummaryDetails
         firstHistoryEvent={startWorkflowExecutionEvent}
         closeHistoryEvent={completeWorkflowExecutionEvent}
         formattedFirstHistoryEvent={formattedFirstHistoryEvent}

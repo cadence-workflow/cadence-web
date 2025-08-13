@@ -21,12 +21,12 @@ import getWorkflowIsCompleted from '../workflow-page/helpers/get-workflow-is-com
 import { useDescribeWorkflow } from '../workflow-page/hooks/use-describe-workflow';
 
 import getWorkflowResultJson from './helpers/get-workflow-result-json';
-import WorkflowSummaryTabDetails from './workflow-summary-tab-details/workflow-summary-tab-details';
-import WorkflowSummaryTabDiagnosticsBanner from './workflow-summary-tab-diagnostics-banner/workflow-summary-tab-diagnostics-banner';
-import WorkflowSummaryTabJsonView from './workflow-summary-tab-json-view/workflow-summary-tab-json-view';
-import { cssStyles } from './workflow-summary-tab.styles';
+import WorkflowSummaryDetails from './workflow-summary-details/workflow-summary-details';
+import WorkflowSummaryDiagnosticsBanner from './workflow-summary-diagnostics-banner/workflow-summary-diagnostics-banner';
+import WorkflowSummaryJsonView from './workflow-summary-json-view/workflow-summary-json-view';
+import { cssStyles } from './workflow-summary.styles';
 
-export default function WorkflowSummaryTab({
+export default function WorkflowSummary({
   params,
 }: WorkflowPageTabContentProps) {
   const { cls } = useStyletronClasses(cssStyles);
@@ -87,8 +87,8 @@ export default function WorkflowSummaryTab({
     <PageSection>
       <div className={cls.pageContainer}>
         <div className={cls.mainContent}>
-          <WorkflowSummaryTabDiagnosticsBanner {...params} />
-          <WorkflowSummaryTabDetails
+          <WorkflowSummaryDiagnosticsBanner {...params} />
+          <WorkflowSummaryDetails
             firstHistoryEvent={firstEvent}
             closeHistoryEvent={closeEvent}
             formattedFirstHistoryEvent={formattedStartEvent}
@@ -99,7 +99,7 @@ export default function WorkflowSummaryTab({
           {/*  <div>Taskslist</div> */}
         </div>
         <div className={cls.jsonArea}>
-          <WorkflowSummaryTabJsonView
+          <WorkflowSummaryJsonView
             inputJson={
               formattedStartEvent && 'input' in formattedStartEvent
                 ? (formattedStartEvent?.input as PrettyJsonValue)
