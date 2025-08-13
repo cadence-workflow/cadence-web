@@ -17,11 +17,11 @@ export type Props = {
   decodedPageUrlParams: WorkflowPageTabContentProps['params'];
 };
 
-export type WorkflowSummaryTabDetailsComponent =
+export type WorkflowSummaryDetailsComponent =
   | keyof JSX.IntrinsicElements
   | React.JSXElementConstructor<any>;
 
-export type WorkflowSummaryTabDetailsConfig = {
+export type WorkflowSummaryDetailsConfig = {
   key: string;
   getLabel: () => string;
   valueComponent: React.ComponentType<{

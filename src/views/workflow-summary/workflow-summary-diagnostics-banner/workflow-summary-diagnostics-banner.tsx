@@ -11,7 +11,7 @@ import useWorkflowDiagnosticsIssuesCount from '@/views/shared/hooks/use-workflow
 import { styled } from './workflow-summary-diagnostics-banner.styles';
 import { type Props } from './workflow-summary-diagnostics-banner.types';
 
-export default function WorkflowSummaryTabDiagnosticsBanner({
+export default function WorkflowSummaryDiagnosticsBanner({
   domain,
   cluster,
   workflowId,

@@ -1,10 +1,10 @@
 import React from 'react';
 
-import { render, fireEvent, screen, queryByRole } from '@/test-utils/rtl';
+import { render, fireEvent, screen } from '@/test-utils/rtl';
 
 import losslessJsonStringify from '@/utils/lossless-json-stringify';
 
-import WorkflowSummaryTabJsonView from '../workflow-summary-json-view';
+import WorkflowSummaryJsonView from '../workflow-summary-json-view';
 import { type Props } from '../workflow-summary-json-view.types';
 
 jest.mock('@/components/copy-text-button/copy-text-button', () =>
@@ -27,7 +27,7 @@ jest.mock('@/components/pretty-json-skeleton/pretty-json-skeleton', () =>
   jest.fn(() => <div>Mock JSON skeleton</div>)
 );
 
-describe('WorkflowSummaryTabJsonView Component', () => {
+describe('WorkflowSummaryJsonView Component', () => {
   it('renders correctly with initial props', () => {
     const { getByText } = setup({});
 
@@ -115,7 +115,7 @@ const setup = ({
   isArchived = false,
 }: Partial<Props>) => {
   return render(
-    <WorkflowSummaryTabJsonView
+    <WorkflowSummaryJsonView
       inputJson={inputJson}
       resultJson={resultJson}
       isWorkflowRunning={isWorkflowRunning}

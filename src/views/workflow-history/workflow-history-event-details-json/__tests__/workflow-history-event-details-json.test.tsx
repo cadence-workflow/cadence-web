@@ -4,7 +4,7 @@ import { render } from '@/test-utils/rtl';
 
 import losslessJsonStringify from '@/utils/lossless-json-stringify';
 
-import WorkflowSummaryTabJsonView from '../workflow-history-event-details-json';
+import WorkflowHistoryEventDetailsJson from '../workflow-history-event-details-json';
 
 jest.mock('@/components/copy-text-button/copy-text-button', () =>
   jest.fn(({ textToCopy }) => <div>Copy Button: {textToCopy}</div>)
@@ -22,7 +22,7 @@ describe('WorkflowHistoryEventDetailsJson', () => {
 
   it('renders correctly with initial props', () => {
     const { getByText } = render(
-      <WorkflowSummaryTabJsonView entryValue={losslessInputJson} />
+      <WorkflowHistoryEventDetailsJson entryValue={losslessInputJson} />
     );
 
     expect(getByText('PrettyJson Mock')).toBeInTheDocument();
@@ -30,7 +30,7 @@ describe('WorkflowHistoryEventDetailsJson', () => {
 
   it('renders copy text button and pass the correct text', () => {
     const { getByText } = render(
-      <WorkflowSummaryTabJsonView entryValue={losslessInputJson} />
+      <WorkflowHistoryEventDetailsJson entryValue={losslessInputJson} />
     );
 
     const copyButton = getByText(/Copy Button/);
