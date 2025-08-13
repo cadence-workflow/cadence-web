@@ -5,10 +5,10 @@ import { LabelMedium } from 'baseui/typography';
 
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 
-import workflowSummaryTabDetailsConfig from '../config/workflow-summary-tab-details.config';
+import workflowSummaryTabDetailsConfig from '../config/workflow-summary-details.config';
 
-import { cssStyles } from './workflow-summary-tab-details.styles';
-import { type Props } from './workflow-summary-tab-details.types';
+import { cssStyles } from './workflow-summary-details.styles';
+import { type Props } from './workflow-summary-details.types';
 
 export default function WorkflowSummaryTabDetails({
   firstHistoryEvent,

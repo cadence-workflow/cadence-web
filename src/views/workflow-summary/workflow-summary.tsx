@@ -21,10 +21,10 @@ import getWorkflowIsCompleted from '../workflow-page/helpers/get-workflow-is-com
 import { useDescribeWorkflow } from '../workflow-page/hooks/use-describe-workflow';
 
 import getWorkflowResultJson from './helpers/get-workflow-result-json';
-import WorkflowSummaryTabDetails from './workflow-summary-tab-details/workflow-summary-tab-details';
-import WorkflowSummaryTabDiagnosticsBanner from './workflow-summary-tab-diagnostics-banner/workflow-summary-tab-diagnostics-banner';
-import WorkflowSummaryTabJsonView from './workflow-summary-tab-json-view/workflow-summary-tab-json-view';
-import { cssStyles } from './workflow-summary-tab.styles';
+import WorkflowSummaryTabDetails from './workflow-summary-details/workflow-summary-details';
+import WorkflowSummaryTabDiagnosticsBanner from './workflow-summary-diagnostics-banner/workflow-summary-diagnostics-banner';
+import WorkflowSummaryTabJsonView from './workflow-summary-json-view/workflow-summary-json-view';
+import { cssStyles } from './workflow-summary.styles';
 
 export default function WorkflowSummaryTab({
   params,

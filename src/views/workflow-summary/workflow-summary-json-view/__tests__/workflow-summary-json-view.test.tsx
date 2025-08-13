@@ -4,8 +4,8 @@ import { render, fireEvent, screen, queryByRole } from '@/test-utils/rtl';
 
 import losslessJsonStringify from '@/utils/lossless-json-stringify';
 
-import WorkflowSummaryTabJsonView from '../workflow-summary-tab-json-view';
-import { type Props } from '../workflow-summary-tab-json-view.types';
+import WorkflowSummaryTabJsonView from '../workflow-summary-json-view';
+import { type Props } from '../workflow-summary-json-view.types';
 
 jest.mock('@/components/copy-text-button/copy-text-button', () =>
   jest.fn(({ textToCopy }) => <div>Copy Button: {textToCopy}</div>)

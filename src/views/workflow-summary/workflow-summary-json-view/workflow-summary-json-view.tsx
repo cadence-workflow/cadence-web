@@ -10,9 +10,9 @@ import SegmentedControlRounded from '@/components/segmented-control-rounded/segm
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import losslessJsonStringify from '@/utils/lossless-json-stringify';
 
-import { jsonViewTabsOptions } from './workflow-summary-tab-json-view.constants';
-import { cssStyles, overrides } from './workflow-summary-tab-json-view.styles';
-import type { Props } from './workflow-summary-tab-json-view.types';
+import { jsonViewTabsOptions } from './workflow-summary-json-view.constants';
+import { cssStyles, overrides } from './workflow-summary-json-view.styles';
+import type { Props } from './workflow-summary-json-view.types';
 
 export default function WorkflowSummaryTabJsonView({
   inputJson,

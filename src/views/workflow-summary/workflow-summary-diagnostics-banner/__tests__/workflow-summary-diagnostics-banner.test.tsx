@@ -4,7 +4,7 @@ import { render, screen } from '@/test-utils/rtl';
 
 import * as useWorkflowDiagnosticsIssuesCountModule from '@/views/shared/hooks/use-workflow-diagnostics-issues-count';
 
-import WorkflowSummaryTabDiagnosticsBanner from '../workflow-summary-tab-diagnostics-banner';
+import WorkflowSummaryTabDiagnosticsBanner from '../workflow-summary-diagnostics-banner';
 
 jest.mock('@/views/shared/hooks/use-workflow-diagnostics-issues-count', () =>
   jest.fn(() => undefined)

@@ -11,7 +11,7 @@ import WorkflowDiagnostics from '@/views/workflow-diagnostics/workflow-diagnosti
 import WorkflowHistoryWrapper from '@/views/workflow-history/workflow-history-wrapper/workflow-history-wrapper';
 import WorkflowQueries from '@/views/workflow-queries/workflow-queries';
 import WorkflowStackTrace from '@/views/workflow-stack-trace/workflow-stack-trace';
-import WorkflowSummaryTab from '@/views/workflow-summary-tab/workflow-summary-tab';
+import WorkflowSummaryTab from '@/views/workflow-summary/workflow-summary';
 
 import getWorkflowPageErrorConfig from '../helpers/get-workflow-page-error-config';
 import WorkflowPageDiagnosticsBadge from '../workflow-page-diagnostics-badge/workflow-page-diagnostics-badge';

@@ -7,7 +7,7 @@ import { type GetWorkflowExecutionHistoryResponse } from '@/__generated__/proto-
 import { startWorkflowExecutionEvent } from '@/views/workflow-history/__fixtures__/workflow-history-single-events';
 import { type WorkflowPageTabContentProps } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
-import WorkflowSummaryTab from '../workflow-summary-tab';
+import WorkflowSummaryTab from '../workflow-summary';
 
 jest.mock('../workflow-summary-tab-details/workflow-summary-tab-details', () =>
   jest.fn(() => <div>MockWorkflowSummaryTabDetails</div>)

@@ -6,7 +6,7 @@ import WorkflowStatusTag from '@/views/shared/workflow-status-tag/workflow-statu
 import getWorkflowStatusTagProps from '@/views/workflow-page/helpers/get-workflow-status-tag-props';
 
 import WorkflowEventDetailsExecutionLink from '../../shared/workflow-event-details-execution-link/workflow-event-details-execution-link';
-import { type WorkflowSummaryTabDetailsConfig } from '../workflow-summary-tab-details/workflow-summary-tab-details.types';
+import { type WorkflowSummaryTabDetailsConfig } from '../workflow-summary-details/workflow-summary-details.types';
 
 const workflowSummaryTabDetailsConfig: WorkflowSummaryTabDetailsConfig[] = [
   {

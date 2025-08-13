@@ -10,11 +10,11 @@ import {
   startWorkflowExecutionEvent,
 } from '@/views/workflow-history/__fixtures__/workflow-history-single-events';
 
-import WorkflowSummaryTabDetails from '../workflow-summary-tab-details';
+import WorkflowSummaryTabDetails from '../workflow-summary-details';
 import {
   type WorkflowSummaryTabDetailsConfig,
   type Props,
-} from '../workflow-summary-tab-details.types';
+} from '../workflow-summary-details.types';
 
 jest.mock(
   '../../config/workflow-summary-tab-details.config',
