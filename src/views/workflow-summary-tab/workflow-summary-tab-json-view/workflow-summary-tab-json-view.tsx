@@ -57,7 +57,7 @@ export default function WorkflowSummaryTabJsonView({
       {activeTab === 'result' && isArchived && (
         <>
           <div className={cls.archivedResult}>
-            Workflow is archived, result is only available through{' '}
+            Workflow is archived, result is only available in{' '}
             <Link
               href={`/domains/${domain}/${cluster}/workflows/${workflowId}/${runId}/history`}
             >
