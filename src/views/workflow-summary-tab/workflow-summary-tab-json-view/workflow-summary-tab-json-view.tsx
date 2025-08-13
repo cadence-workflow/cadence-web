@@ -55,16 +55,14 @@ export default function WorkflowSummaryTabJsonView({
       </div>
       {activeTab === 'input' && <PrettyJson json={jsonMap[activeTab]} />}
       {activeTab === 'result' && isArchived && (
-        <>
-          <div className={cls.archivedResult}>
-            Workflow is archived, result is only available in{' '}
-            <Link
-              href={`/domains/${domain}/${cluster}/workflows/${workflowId}/${runId}/history`}
-            >
-              history
-            </Link>
-          </div>
-        </>
+        <div className={cls.archivedResult}>
+          Workflow is archived, result is only available in{' '}
+          <Link
+            href={`/domains/${domain}/${cluster}/workflows/${workflowId}/${runId}/history`}
+          >
+            history
+          </Link>
+        </div>
       )}
       {activeTab === 'result' && !isArchived && (
         <>
