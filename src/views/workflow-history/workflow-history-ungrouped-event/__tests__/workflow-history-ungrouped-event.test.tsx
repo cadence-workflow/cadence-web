@@ -92,6 +92,14 @@ jest.mock(
   })
 );
 
+jest.mock(
+  '../../workflow-history-event-summary/workflow-history-event-summary',
+  () => ({
+    __esModule: true,
+    default: () => <div>Event summary</div>,
+  })
+);
+
 const mockEventInfo: WorkflowHistoryUngroupedEventInfo = {
   id: '1',
   label: 'Workflow Execution Started',
@@ -101,6 +109,7 @@ const mockEventInfo: WorkflowHistoryUngroupedEventInfo = {
     status: 'COMPLETED',
     timeMs: 1704067200000,
     timeLabel: 'Mock time label',
+    summaryFields: ['field1', 'field2'],
   },
 };
 
@@ -246,6 +255,18 @@ describe(WorkflowHistoryUngroupedEvent.name, () => {
     });
 
     expect(screen.queryByTestId('event-link-button')).not.toBeInTheDocument();
+  });
+
+  it('should show summary when accordion is not expanded', () => {
+    setup({ isExpanded: false });
+
+    expect(screen.getByText('Event summary')).toBeInTheDocument();
+  });
+
+  it('should not show summary when accordion is expanded', () => {
+    setup({ isExpanded: true });
+
+    expect(screen.queryByText('Event summary')).not.toBeInTheDocument();
   });
 });
 

@@ -19,6 +19,11 @@ jest.mock(
 );
 
 jest.mock(
+  '../../workflow-history-event-summary/workflow-history-event-summary',
+  () => jest.fn(() => <div>Event summary</div>)
+);
+
+jest.mock(
   '../../workflow-history-event-link-button/workflow-history-event-link-button',
   () =>
     jest.fn(({ historyEventId }) => (
@@ -38,10 +43,14 @@ describe('WorkflowHistoryEventsCard', () => {
       {
         label: 'First event',
         status: 'COMPLETED',
+        timeMs: 1704067200000,
+        timeLabel: 'Mock time label',
       },
       {
         label: 'Second event',
         status: 'ONGOING',
+        timeMs: 1704067300000,
+        timeLabel: 'Mock time label 2',
       },
     ];
     setup({
@@ -62,6 +71,8 @@ describe('WorkflowHistoryEventsCard', () => {
       {
         label: 'First event',
         status: 'COMPLETED',
+        timeMs: 1704067200000,
+        timeLabel: 'Mock time label',
       },
     ];
     setup({
@@ -84,6 +95,8 @@ describe('WorkflowHistoryEventsCard', () => {
       {
         label: 'First event',
         status: 'COMPLETED',
+        timeMs: 1704067200000,
+        timeLabel: 'Mock time label',
       },
     ];
     setup({
@@ -110,6 +123,8 @@ describe('WorkflowHistoryEventsCard', () => {
       {
         label: 'First event',
         status: 'COMPLETED',
+        timeMs: 1704067200000,
+        timeLabel: 'Mock time label',
       },
     ];
     setup({
@@ -131,6 +146,8 @@ describe('WorkflowHistoryEventsCard', () => {
       {
         label: 'Pending event',
         status: 'WAITING',
+        timeMs: null,
+        timeLabel: 'Pending',
       },
     ];
     setup({
@@ -151,10 +168,14 @@ describe('WorkflowHistoryEventsCard', () => {
       {
         label: 'First event',
         status: 'COMPLETED',
+        timeMs: 1704067200000,
+        timeLabel: 'Mock time label',
       },
       {
         label: 'Second event',
         status: 'ONGOING',
+        timeMs: 1704067300000,
+        timeLabel: 'Mock time label 2',
       },
     ];
 
@@ -178,6 +199,8 @@ describe('WorkflowHistoryEventsCard', () => {
       {
         label: 'First event',
         status: 'COMPLETED',
+        timeMs: 1704067200000,
+        timeLabel: 'Mock time label',
       },
     ];
     const { container } = setup({
@@ -199,8 +222,46 @@ describe('WorkflowHistoryEventsCard', () => {
     expect(container.querySelector('[testid="loader"]')).toBeInTheDocument();
   });
 
-  it('should handle eventsMetadata set to null  gracefully', async () => {
-    //@ts-expect-error Type 'null' is not assignable to type 'Pick<HistoryGroupEventMetadata, "label" | "status">[]'
+  it('should show summary when accordion is not expanded', () => {
+    const events: Props['events'] = [scheduleActivityTaskEvent];
+    const eventsMetadata: Props['eventsMetadata'] = [
+      {
+        label: 'First event',
+        status: 'COMPLETED',
+        timeMs: 1704067200000,
+        timeLabel: 'Mock time label',
+      },
+    ];
+    setup({
+      events,
+      eventsMetadata,
+      getIsEventExpanded: jest.fn().mockReturnValue(false),
+    });
+
+    expect(screen.getByText('Event summary')).toBeInTheDocument();
+  });
+
+  it('should not show summary when accordion is expanded', () => {
+    const events: Props['events'] = [scheduleActivityTaskEvent];
+    const eventsMetadata: Props['eventsMetadata'] = [
+      {
+        label: 'First event',
+        status: 'COMPLETED',
+        timeMs: 1704067200000,
+        timeLabel: 'Mock time label',
+      },
+    ];
+    setup({
+      events,
+      eventsMetadata,
+      getIsEventExpanded: jest.fn().mockReturnValue(true),
+    });
+
+    expect(screen.queryByText('Event summary')).not.toBeInTheDocument();
+  });
+
+  it('should handle eventsMetadata set to null gracefully', async () => {
+    //@ts-expect-error Type 'null' is not assignable to type 'HistoryGroupEventMetadata[]'
     render(<WorkflowHistoryEventsCard events={null} eventsMetadata={null} />);
   });
 });

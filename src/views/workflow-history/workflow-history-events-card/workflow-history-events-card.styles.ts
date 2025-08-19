@@ -41,9 +41,9 @@ export const overrides = (animateBorderOnEnter?: boolean) => ({
     Header: {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
         gap: $theme.sizing.scale500,
-        paddingTop: $theme.sizing.scale400,
+        paddingTop: 0,
         paddingRight: $theme.sizing.scale600,
-        paddingBottom: $theme.sizing.scale400,
+        paddingBottom: 0,
         paddingLeft: $theme.sizing.scale500,
       }),
     },
@@ -96,15 +96,27 @@ const cssStylesObj = {
     gap: theme.sizing.scale400,
     alignItems: 'center',
   }),
-  skeletonContainer: ($theme: Theme) => ({
+  skeletonContainer: (theme: Theme) => ({
     display: 'flex',
     alignItems: 'center',
-    gap: $theme.sizing.scale500,
+    gap: theme.sizing.scale500,
+    paddingTop: theme.sizing.scale400,
+    paddingBottom: theme.sizing.scale400,
+  }),
+  eventPanelHeader: (theme) => ({
+    display: 'flex',
+    gap: theme.sizing.scale500,
+    alignItems: 'center',
+    flexGrow: 1,
+    justifyContent: 'space-between',
+    overflow: 'hidden',
   }),
   eventPanelTitle: (theme) => ({
     display: 'flex',
     gap: theme.sizing.scale500,
     alignItems: 'center',
+    paddingTop: theme.sizing.scale400,
+    paddingBottom: theme.sizing.scale400,
   }),
   detailsRow: (theme) => ({
     display: 'flex',
