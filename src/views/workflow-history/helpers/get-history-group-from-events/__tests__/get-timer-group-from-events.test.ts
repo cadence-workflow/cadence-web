@@ -127,4 +127,28 @@ describe('getTimerGroupFromEvents', () => {
     ]);
     expect(groupWithMissingCloseEvent.closeTimeMs).toEqual(null);
   });
+
+  it('should include summaryFields for started timer events', () => {
+    const events: TimerHistoryEvent[] = [
+      startTimerTaskEvent,
+      fireTimerTaskEvent,
+    ];
+    const group = getTimerGroupFromEvents(events);
+
+    // The started event should have summaryFields
+    const startedEventMetadata = group.eventsMetadata.find(
+      (metadata) => metadata.label === 'Started'
+    );
+    expect(startedEventMetadata?.summaryFields).toEqual([
+      'startToFireTimeoutSeconds',
+    ]);
+
+    // Other events should not have summaryFields
+    const otherEventsMetadata = group.eventsMetadata.filter(
+      (metadata) => metadata.label !== 'Started'
+    );
+    otherEventsMetadata.forEach((metadata) => {
+      expect(metadata.summaryFields).toBeUndefined();
+    });
+  });
 });

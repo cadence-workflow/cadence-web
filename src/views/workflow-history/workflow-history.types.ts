@@ -28,6 +28,7 @@ export type HistoryGroupEventMetadata = {
   timeLabel: string;
   negativeFields?: Array<string>;
   additionalDetails?: Record<string, any>;
+  summaryFields?: Array<string>;
 };
 
 export type HistoryGroupBadge = {
@@ -48,8 +49,11 @@ export type HistoryGroupEventToStatusMap<GroupT extends HistoryEventsGroup> =
 export type HistoryGroupEventToStringMap<GroupT extends HistoryEventsGroup> =
   Record<GroupT['events'][number]['attributes'], string>;
 
-// TODO: It would be nice if we could map to an explicit fieldKey type instead of a plain string
-export type HistoryGroupEventStatusToNegativeFieldsMap<
+export type HistoryGroupEventToNegativeFieldsMap<
+  GroupT extends HistoryEventsGroup,
+> = Partial<Record<GroupT['events'][number]['attributes'], Array<string>>>;
+
+export type HistoryGroupEventToSummaryFieldsMap<
   GroupT extends HistoryEventsGroup,
 > = Partial<Record<GroupT['events'][number]['attributes'], Array<string>>>;
 

@@ -1,6 +1,7 @@
 import type {
   HistoryGroupEventToStatusMap,
   HistoryGroupEventToStringMap,
+  HistoryGroupEventToSummaryFieldsMap,
   SignalExternalWorkflowExecutionHistoryEvent,
   SignalExternalWorkflowExecutionHistoryGroup,
 } from '../../workflow-history.types';
@@ -52,6 +53,14 @@ export default function getSignalExternalWorkflowExecutionGroupFromEvents(
       externalWorkflowExecutionSignaledEventAttributes: 'COMPLETED',
     };
 
+  const eventToSummaryFields: HistoryGroupEventToSummaryFieldsMap<SignalExternalWorkflowExecutionHistoryGroup> =
+    {
+      signalExternalWorkflowExecutionInitiatedEventAttributes: [
+        'input',
+        'signalName',
+      ],
+    };
+
   return {
     label,
     hasMissingEvents,
@@ -61,7 +70,10 @@ export default function getSignalExternalWorkflowExecutionGroupFromEvents(
       eventToStatus,
       eventToLabel,
       {},
-      closeEvent
+      closeEvent,
+      undefined,
+      undefined,
+      eventToSummaryFields
     ),
   };
 }

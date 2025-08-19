@@ -3,11 +3,12 @@ import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
 
 import { type WorkflowEventStatus } from '../workflow-history-event-status-badge/workflow-history-event-status-badge.types';
 import {
-  type HistoryGroupEventStatusToNegativeFieldsMap,
+  type HistoryGroupEventToNegativeFieldsMap,
   type HistoryEventsGroup,
   type HistoryGroupEventToStatusMap,
   type HistoryGroupEventToStringMap,
   type HistoryGroupEventToAdditionalDetailsMap,
+  type HistoryGroupEventToSummaryFieldsMap,
 } from '../workflow-history.types';
 
 export default function getCommonHistoryGroupFields<
@@ -18,8 +19,9 @@ export default function getCommonHistoryGroupFields<
   eventToLabelMap: HistoryGroupEventToStringMap<GroupT>,
   eventToTimeLabelPrefixMap: Partial<HistoryGroupEventToStringMap<GroupT>>,
   closeEvent: GroupT['events'][number] | null | undefined,
-  eventStatusToNegativeFieldsMap?: HistoryGroupEventStatusToNegativeFieldsMap<GroupT>,
-  eventToAdditionalDetailsMap?: HistoryGroupEventToAdditionalDetailsMap<GroupT>
+  eventToNegativeFieldsMap?: HistoryGroupEventToNegativeFieldsMap<GroupT>,
+  eventToAdditionalDetailsMap?: HistoryGroupEventToAdditionalDetailsMap<GroupT>,
+  eventToSummaryFieldsMap?: HistoryGroupEventToSummaryFieldsMap<GroupT>
 ): Pick<
   GroupT,
   | 'eventsMetadata'
@@ -43,8 +45,9 @@ export default function getCommonHistoryGroupFields<
       ? eventToTimeLabelPrefixMap[attrs]
       : `${eventToLabelMap[attrs]} at`;
 
-    const negativeFields = eventStatusToNegativeFieldsMap?.[attrs];
+    const negativeFields = eventToNegativeFieldsMap?.[attrs];
     const additionalDetails = eventToAdditionalDetailsMap?.[attrs];
+    const summaryFields = eventToSummaryFieldsMap?.[attrs];
 
     return {
       label: eventToLabelMap[attrs],
@@ -53,6 +56,7 @@ export default function getCommonHistoryGroupFields<
       timeLabel: timeMs ? `${prefix} ${formatDate(timeMs)}` : '',
       ...(negativeFields?.length ? { negativeFields } : {}),
       ...(additionalDetails ? { additionalDetails } : {}),
+      ...(summaryFields?.length ? { summaryFields } : {}),
     };
   });
 

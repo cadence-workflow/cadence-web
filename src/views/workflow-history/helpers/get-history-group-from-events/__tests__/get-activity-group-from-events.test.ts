@@ -388,6 +388,50 @@ describe('getActivityGroupFromEvents', () => {
     });
   });
 
+  it('should include summaryFields for activity events', () => {
+    const events: ExtendedActivityHistoryEvent[] = [
+      scheduleActivityTaskEvent,
+      startActivityTaskEvent,
+      completeActivityTaskEvent,
+    ];
+    const group = getActivityGroupFromEvents(events);
+
+    // The scheduled event should have summaryFields
+    const scheduledEventMetadata = group.eventsMetadata.find(
+      (metadata) => metadata.label === 'Scheduled'
+    );
+    expect(scheduledEventMetadata?.summaryFields).toEqual([
+      'input',
+      'scheduleToCloseTimeoutSeconds',
+    ]);
+
+    // The started event should also have summaryFields
+    const startedEventMetadata = group.eventsMetadata.find(
+      (metadata) => metadata.label === 'Started'
+    );
+    expect(startedEventMetadata?.summaryFields).toEqual([
+      'lastHeartbeatTime',
+      'heartbeatDetails',
+    ]);
+
+    // The completed event should also have summaryFields
+    const completedEventMetadata = group.eventsMetadata.find(
+      (metadata) => metadata.label === 'Completed'
+    );
+    expect(completedEventMetadata?.summaryFields).toEqual(['result']);
+  });
+
+  it('should include summaryFields for failed activity events', () => {
+    const events: ExtendedActivityHistoryEvent[] = [failedActivityTaskEvent];
+    const group = getActivityGroupFromEvents(events);
+
+    // The failed event should have summaryFields
+    const failedEventMetadata = group.eventsMetadata.find(
+      (metadata) => metadata.status === 'FAILED'
+    );
+    expect(failedEventMetadata?.summaryFields).toEqual(['details', 'reason']);
+  });
+
   it('should include heartbeat details in additionalDetails when pending activity start event is present', () => {
     const events: ExtendedActivityHistoryEvent[] = [
       scheduleActivityTaskEvent,
