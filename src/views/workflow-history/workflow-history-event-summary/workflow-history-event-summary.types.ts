@@ -10,28 +10,32 @@ import {
 } from '../workflow-history.types';
 
 export type EventSummaryValueComponentProps = {
-  name: string;
+  label: string;
   value: any;
   isNegative?: boolean;
 } & WorkflowPageParams;
 
-export type WorkflowHistoryEventSummaryField = {
+export type WorkflowHistoryEventSummaryFieldParser = {
   name: string;
-  value: any;
-  renderConfig: WorkflowHistoryEventSummaryRenderConfig;
+  matcher: (path: string, value: unknown) => boolean;
+  icon: React.ComponentType<{
+    size?: IconProps['size'];
+    color?: IconProps['color'];
+  }> | null;
+  customRenderValue?: ComponentType<EventSummaryValueComponentProps>;
+  hideDefaultTooltip?: boolean;
 };
 
-export type WorkflowHistoryEventSummaryRenderConfig = {
-  name: string;
-  matcher: (name: string, value: unknown) => boolean;
+export type WorkflowHistoryEventSummaryField = {
+  path: string;
+  label: string;
+  value: any;
   icon: React.ComponentType<{
     size?: IconProps['size'];
     color?: IconProps['color'];
   }> | null;
   renderValue: ComponentType<EventSummaryValueComponentProps>;
-  renderHoverContent?: ComponentType<EventSummaryValueComponentProps>;
-  invertPopoverColours?: boolean;
-  shouldHide?: (props: EventSummaryValueComponentProps) => boolean;
+  hideDefaultTooltip?: boolean;
 };
 
 export type Props = {

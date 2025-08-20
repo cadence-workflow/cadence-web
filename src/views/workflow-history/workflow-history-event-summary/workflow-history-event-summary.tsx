@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 import { StatefulTooltip } from 'baseui/tooltip';
 
@@ -8,7 +8,7 @@ import formatWorkflowHistoryEvent from '@/utils/data-formatters/format-workflow-
 import isPendingHistoryEvent from '../workflow-history-event-details/helpers/is-pending-history-event';
 
 import getHistoryEventSummaryFields from './helpers/get-history-event-summary-fields';
-import { overrides, styled } from './workflow-history-event-summary.styles';
+import { styled } from './workflow-history-event-summary.styles';
 import { type Props } from './workflow-history-event-summary.types';
 
 export default function WorkflowHistoryEventSummary({
@@ -38,56 +38,37 @@ export default function WorkflowHistoryEventSummary({
 
   return (
     <styled.SummaryFieldsContainer>
-      {summaryFields.map(({ name, value, renderConfig }) => {
+      {summaryFields.map((field) => {
         const isNegative = Boolean(
-          eventMetadata.negativeFields?.includes(name)
+          eventMetadata.negativeFields?.includes(field.path)
         );
 
-        if (
-          renderConfig.shouldHide?.({
-            name,
-            value,
-            isNegative,
-            ...workflowPageParams,
-          })
-        ) {
-          return null;
-        }
+        const Wrapper = ({ children }: { children: React.ReactNode }) =>
+          field.hideDefaultTooltip ? (
+            <>{children}</>
+          ) : (
+            <StatefulTooltip
+              content={field.label}
+              ignoreBoundary
+              placement="bottom"
+              showArrow
+            >
+              {children}
+            </StatefulTooltip>
+          );
 
         return (
-          <StatefulTooltip
-            key={name}
-            content={
-              renderConfig.renderHoverContent ? (
-                <renderConfig.renderHoverContent
-                  name={name}
-                  value={value}
-                  isNegative={isNegative}
-                  {...workflowPageParams}
-                />
-              ) : (
-                name
-              )
-            }
-            overrides={
-              renderConfig.invertPopoverColours
-                ? overrides.popoverLight
-                : overrides.popoverDark
-            }
-            ignoreBoundary
-            placement="bottom"
-            showArrow
-          >
+          <Wrapper key={field.path}>
             <styled.SummaryFieldContainer $isNegative={isNegative}>
-              {renderConfig.icon && <renderConfig.icon size={14} />}
-              <renderConfig.renderValue
-                name={name}
-                value={value}
+              {field.icon && <field.icon size={14} />}
+              <field.renderValue
+                label={field.label}
+                value={field.value}
                 isNegative={isNegative}
                 {...workflowPageParams}
               />
             </styled.SummaryFieldContainer>
-          </StatefulTooltip>
+          </Wrapper>
         );
       })}
     </styled.SummaryFieldsContainer>

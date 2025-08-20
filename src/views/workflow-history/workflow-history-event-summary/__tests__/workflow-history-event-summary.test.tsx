@@ -30,31 +30,18 @@ jest.mock('../helpers/get-history-event-summary-fields', () =>
     return summaryFields
       .filter((field: string) => details[field] !== undefined)
       .map((field: string, index: number) => ({
-        name: field,
+        path: field,
+        label: field,
         value: details[field],
-        renderConfig: {
-          name: field,
-          matcher: jest.fn(() => true),
-          icon: ({ size }: any) => (
-            <span data-testid={`icon-${field}`} data-size={size} />
-          ),
-          renderValue: ({ name, value, isNegative }: any) => (
-            <span data-testid={`field-${name}`} data-negative={isNegative}>
-              {value}
-            </span>
-          ),
-          ...(index === 0
-            ? {
-                renderHoverContent: ({ name, value }: any) => (
-                  <div data-testid="custom-tooltip">
-                    Custom tooltip for {name}: {value}
-                  </div>
-                ),
-              }
-            : {}),
-          invertPopoverColours: true,
-          shouldHide: undefined,
-        },
+        icon: ({ size }: any) => (
+          <span data-testid={`icon-${field}`} data-size={size} />
+        ),
+        renderValue: ({ value, isNegative }: any) => (
+          <span data-testid={`field-${field}`} data-negative={isNegative}>
+            {value}
+          </span>
+        ),
+        hideDefaultTooltip: index === 0, // First field hides default tooltip
       }));
   })
 );
@@ -140,7 +127,7 @@ describe(WorkflowHistoryEventSummary.name, () => {
     expect(field2).toHaveAttribute('data-negative', 'false');
   });
 
-  it('should render icons when provided in renderConfig', () => {
+  it('should render icons when provided in field config', () => {
     setup();
 
     expect(screen.getByTestId('icon-field1')).toBeInTheDocument();
@@ -148,28 +135,24 @@ describe(WorkflowHistoryEventSummary.name, () => {
     expect(screen.getByTestId('icon-field3')).toBeInTheDocument();
   });
 
-  it('should render custom tooltip when renderHoverContent is provided', async () => {
-    const { user } = setup();
-
-    const field1 = screen.getByTestId('field-field1');
-    await user.hover(field1);
-
-    // Only the first field should have custom tooltip content
-    const customTooltip = await screen.findByTestId('custom-tooltip');
-    expect(customTooltip).toBeInTheDocument();
-    expect(customTooltip).toHaveTextContent(
-      'Custom tooltip for field1: value1'
-    );
-  });
-
-  it('should render default tooltip when renderHoverContent is not provided', async () => {
+  it('should render tooltip for fields without hideDefaultTooltip', async () => {
     const { user } = setup();
 
     const field2 = screen.getByTestId('field-field2');
     await user.hover(field2);
 
-    // field2 should show default tooltip (field name as content)
+    // field2 should show default tooltip (field label as content)
     expect(await screen.findByText('field2')).toBeInTheDocument();
+  });
+
+  it('should not render tooltip for fields with hideDefaultTooltip', async () => {
+    const { user } = setup();
+
+    const field1 = screen.getByTestId('field-field1');
+    await user.hover(field1);
+
+    // field1 should not show tooltip since hideDefaultTooltip is true
+    expect(screen.queryByText('field1')).not.toBeInTheDocument();
   });
 });
 
