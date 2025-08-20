@@ -1,48 +1,143 @@
-import { type WorkflowHistoryEventSummaryRenderConfig } from '../../workflow-history-event-summary.types';
+import { type WorkflowHistoryEventDetailsEntries } from '@/views/workflow-history/workflow-history-event-details/workflow-history-event-details.types';
+
+import * as generateHistoryEventDetailsModule from '../../../workflow-history-event-details/helpers/generate-history-event-details';
+import { type WorkflowHistoryEventSummaryFieldParser } from '../../workflow-history-event-summary.types';
 import getHistoryEventSummaryFields from '../get-history-event-summary-fields';
 
-// Mock the config to avoid importing the real parsers
+// Mock the generateHistoryEventDetails module
 jest.mock(
-  '../../../config/workflow-history-event-summary-parsers.config',
+  '../../../workflow-history-event-details/helpers/generate-history-event-details',
+  () =>
+    jest.fn(
+      () =>
+        [
+          {
+            key: 'input',
+            path: 'input',
+            value: { data: 'test' },
+            renderConfig: {
+              name: 'Test Config',
+              key: 'test',
+              getLabel: ({ path }) => `Label: ${path}`,
+              valueComponent: jest.fn(),
+            },
+            isGroup: false,
+          },
+          {
+            key: 'result',
+            path: 'result',
+            value: 'success',
+            renderConfig: {
+              name: 'Test Config',
+              key: 'test',
+              getLabel: ({ path }) => `Label: ${path}`,
+              valueComponent: jest.fn(),
+            },
+            isGroup: false,
+          },
+          {
+            key: 'timeout',
+            path: 'timeout',
+            value: 30,
+            renderConfig: {
+              name: 'Test Config',
+              key: 'test',
+              getLabel: ({ path }) => `Label: ${path}`,
+              valueComponent: jest.fn(),
+            },
+            isGroup: false,
+          },
+          {
+            key: 'workflowExecution',
+            path: 'workflowExecution',
+            value: { workflowId: 'test-workflow' },
+            renderConfig: {
+              name: 'Test Config',
+              key: 'test',
+              getLabel: ({ path }) => `Label: ${path}`,
+              valueComponent: jest.fn(),
+            },
+            isGroup: false,
+          },
+          {
+            key: 'firstExecutionRunId',
+            path: 'firstExecutionRunId',
+            value: 'run-id-123',
+            renderConfig: {
+              name: 'Test Config',
+              key: 'test',
+              getLabel: ({ path }) => `Label: ${path}`,
+              valueComponent: jest.fn(),
+            },
+            isGroup: false,
+          },
+          {
+            key: 'groupField',
+            path: 'groupField',
+            renderConfig: {
+              name: 'Test Config',
+              key: 'test',
+            },
+            isGroup: true,
+            groupEntries: [],
+          },
+        ] satisfies WorkflowHistoryEventDetailsEntries
+    )
+);
+
+// Mock the parser config
+jest.mock(
+  '../../../config/workflow-history-event-summary-field-parsers.config',
   () =>
     [
       {
-        name: 'Test Json Parser',
-        matcher: (name) => name === 'input' || name === 'result',
+        name: 'Json Parser',
+        matcher: (path) => path === 'input' || path === 'result',
         icon: null,
-        renderValue: ({ value }) => `JSON: ${JSON.stringify(value)}`,
-        renderHoverContent: ({ value }) => `Preview: ${JSON.stringify(value)}`,
-        invertPopoverColours: true,
-        shouldHide: ({ value }) => value === null,
+        customRenderValue: jest.fn(),
+        hideDefaultTooltip: true,
       },
       {
-        name: 'Test Duration Parser',
-        matcher: (name) => name.endsWith('TimeoutSeconds'),
-        icon: null,
-        renderValue: ({ value }) => `Duration: ${value}s`,
+        name: 'Timeout Parser',
+        matcher: (path) => path.endsWith('TimeoutSeconds'),
+        icon: jest.fn(),
       },
       {
-        name: 'Test Workflow Execution Parser',
-        matcher: (name) => name === 'workflowExecution',
-        icon: null,
-        renderValue: ({ value }) => `Link: ${value?.workflowId}`,
+        name: 'Workflow Execution Parser',
+        matcher: (path) => path === 'workflowExecution',
+        icon: jest.fn(),
       },
       {
-        name: 'Test RunId Parser',
-        matcher: (name) => name === 'firstExecutionRunId',
-        icon: null,
-        renderValue: ({ value }) => `RunId: ${value}`,
+        name: 'RunId Parser',
+        matcher: (path) => path === 'firstExecutionRunId',
+        icon: jest.fn(),
       },
-    ] as Array<WorkflowHistoryEventSummaryRenderConfig>
+    ] satisfies Array<WorkflowHistoryEventSummaryFieldParser>
 );
 
 describe(getHistoryEventSummaryFields.name, () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('should return empty array when no summary fields match', () => {
-    const details = {
-      unrelatedField: 'value',
-      anotherField: 123,
-    };
+    const details = { unrelatedField: 'value' };
     const summaryFields = ['summaryField1', 'summaryField2'];
+
+    jest
+      .spyOn(generateHistoryEventDetailsModule, 'default')
+      .mockReturnValueOnce([
+        {
+          key: 'unrelatedField',
+          path: 'unrelatedField',
+          value: 'value',
+          renderConfig: {
+            name: 'Test Config',
+            key: 'test',
+          },
+          isGroup: false,
+        },
+      ]);
 
     const result = getHistoryEventSummaryFields({ details, summaryFields });
 
@@ -53,16 +148,21 @@ describe(getHistoryEventSummaryFields.name, () => {
     const details = {};
     const summaryFields = ['field1', 'field2'];
 
+    jest
+      .spyOn(generateHistoryEventDetailsModule, 'default')
+      .mockReturnValueOnce([]);
+
     const result = getHistoryEventSummaryFields({ details, summaryFields });
 
     expect(result).toEqual([]);
   });
 
   it('should return empty array when summary fields array is empty', () => {
-    const details = {
-      field1: 'value1',
-      field2: 'value2',
-    };
+    const details = { field1: 'value1' };
+
+    jest
+      .spyOn(generateHistoryEventDetailsModule, 'default')
+      .mockReturnValueOnce([]);
 
     const result = getHistoryEventSummaryFields({ details, summaryFields: [] });
 
@@ -70,25 +170,23 @@ describe(getHistoryEventSummaryFields.name, () => {
   });
 
   it('should filter fields that are not in summaryFields', () => {
-    const details = {
-      input: 'test-input',
-      firstExecutionRunId: 'run-id',
-    };
+    const details = { input: 'test-input', firstExecutionRunId: 'run-id' };
     const summaryFields = ['input'];
 
     const result = getHistoryEventSummaryFields({ details, summaryFields });
 
     expect(result).toHaveLength(1);
-    expect(result[0].name).toBe('input');
+    expect(result[0].path).toBe('input');
+    expect(result[0].label).toBe('Label: input');
+    expect(result[0].value).toEqual({ data: 'test' });
   });
 
-  it('should only include fields that have matching render configs', () => {
+  it('should only include fields that have matching parser configs', () => {
     const details = {
       input: { data: 'test' },
       unrelatedField: 'value',
       result: 'success',
     };
-
     const summaryFields = ['input', 'unrelatedField', 'result'];
 
     const result = getHistoryEventSummaryFields({ details, summaryFields });
@@ -96,36 +194,89 @@ describe(getHistoryEventSummaryFields.name, () => {
     // Should only include fields with matching parsers (input, result)
     expect(result).toHaveLength(2);
 
-    const fieldNames = result.map((field) => field.name);
-    expect(fieldNames).toContain('input');
-    expect(fieldNames).toContain('result');
-    expect(fieldNames).not.toContain('unrelatedField');
+    const fieldPaths = result.map((field) => field.path);
+    expect(fieldPaths).toContain('input');
+    expect(fieldPaths).toContain('result');
+    expect(fieldPaths).not.toContain('unrelatedField');
   });
 
-  it('should handle multiple matching parsers for the same field', () => {
-    const details = {
-      input: { data: 'test' },
-    };
+  it('should handle fields with custom render values from parser config', () => {
+    const details = { input: { data: 'test' } };
     const summaryFields = ['input'];
 
     const result = getHistoryEventSummaryFields({ details, summaryFields });
 
     expect(result).toHaveLength(1);
-    // Should use the first matching parser
-    expect(result[0].renderConfig.name).toBe('Test Json Parser');
+    expect(result[0].path).toBe('input');
+    expect(result[0].hideDefaultTooltip).toBe(true);
+  });
+
+  it('should handle fields with icons from parser config', () => {
+    const details = { timeout: 30 };
+    const summaryFields = ['timeout'];
+
+    const result = getHistoryEventSummaryFields({ details, summaryFields });
+
+    expect(result).toHaveLength(1);
+    expect(result[0].path).toBe('timeout');
+    expect(result[0].icon).toBeDefined();
+  });
+
+  it('should use default render value when no custom render value is available', () => {
+    const details = { unrelatedField: 'value' };
+    const summaryFields = ['unrelatedField'];
+
+    // Mock a field without a custom render value
+    jest
+      .spyOn(generateHistoryEventDetailsModule, 'default')
+      .mockReturnValueOnce([
+        {
+          key: 'unrelatedField',
+          path: 'unrelatedField',
+          value: 'value',
+          renderConfig: {
+            name: 'Test Config',
+            key: 'test',
+          },
+          isGroup: false,
+        },
+      ]);
+
+    const result = getHistoryEventSummaryFields({ details, summaryFields });
+
+    expect(result).toHaveLength(1);
+    expect(result[0].path).toBe('unrelatedField');
+    expect(result[0].renderValue).toBeDefined();
+  });
+
+  it('should skip group entries', () => {
+    const details = { groupField: { nested: 'value' } };
+    const summaryFields = ['groupField'];
+
+    const result = getHistoryEventSummaryFields({ details, summaryFields });
+
+    expect(result).toHaveLength(0);
   });
 
   it('should preserve order of fields as they appear in details', () => {
-    const details = {
-      firstExecutionRunId: 'run-id',
-      input: 'test-input',
-    };
-    const summaryFields = ['input', 'firstExecutionRunId'];
+    const details = { input: 'test-input', firstExecutionRunId: 'run-id' };
+    const summaryFields = ['firstExecutionRunId', 'input'];
 
     const result = getHistoryEventSummaryFields({ details, summaryFields });
 
     expect(result).toHaveLength(2);
-    expect(result[0].name).toBe('firstExecutionRunId');
-    expect(result[1].name).toBe('input');
+    expect(result[0].path).toBe('input');
+    expect(result[1].path).toBe('firstExecutionRunId');
+  });
+
+  it('should handle fields with renderConfig.valueComponent', () => {
+    const details = { workflowExecution: { workflowId: 'test-workflow' } };
+    const summaryFields = ['workflowExecution'];
+
+    const result = getHistoryEventSummaryFields({ details, summaryFields });
+
+    expect(result).toHaveLength(1);
+    expect(result[0].path).toBe('workflowExecution');
+    expect(result[0].renderValue).toBeDefined();
   });
 });

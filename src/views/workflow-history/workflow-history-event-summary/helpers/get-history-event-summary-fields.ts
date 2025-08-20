@@ -1,5 +1,11 @@
-import workflowHistoryEventSummaryParsersConfig from '../../config/workflow-history-event-summary-parsers.config';
-import { type WorkflowHistoryEventSummaryField } from '../workflow-history-event-summary.types';
+import { createElement, type ComponentType } from 'react';
+
+import workflowHistoryEventSummaryFieldParsersConfig from '../../config/workflow-history-event-summary-field-parsers.config';
+import generateHistoryEventDetails from '../../workflow-history-event-details/helpers/generate-history-event-details';
+import {
+  type EventSummaryValueComponentProps,
+  type WorkflowHistoryEventSummaryField,
+} from '../workflow-history-event-summary.types';
 
 export default function getHistoryEventSummaryFields({
   details,
@@ -8,23 +14,50 @@ export default function getHistoryEventSummaryFields({
   details: object;
   summaryFields: Array<string>;
 }): Array<WorkflowHistoryEventSummaryField> {
-  return Object.entries(details).reduce<
-    Array<WorkflowHistoryEventSummaryField>
-  >((acc, [key, value]) => {
-    if (!summaryFields.includes(key)) return acc;
+  const historyEventDetails = generateHistoryEventDetails({
+    details,
+  });
 
-    const renderConfig = workflowHistoryEventSummaryParsersConfig.find(
-      (config) => config.matcher(key, value)
-    );
+  return historyEventDetails.reduce<Array<WorkflowHistoryEventSummaryField>>(
+    (acc, detailsConfig) => {
+      if (detailsConfig.isGroup) return acc;
 
-    if (!renderConfig) return acc;
+      const { key, path, value, renderConfig } = detailsConfig;
+      if (!summaryFields.includes(path)) return acc;
 
-    acc.push({
-      name: key,
-      value,
-      renderConfig,
-    });
+      const summaryFieldParserConfig =
+        workflowHistoryEventSummaryFieldParsersConfig.find((config) =>
+          config.matcher(path, value)
+        );
 
-    return acc;
-  }, []);
+      let renderValue: ComponentType<EventSummaryValueComponentProps>;
+      if (summaryFieldParserConfig?.customRenderValue) {
+        renderValue = summaryFieldParserConfig.customRenderValue;
+      } else if (renderConfig?.valueComponent) {
+        const detailsRenderValue = renderConfig?.valueComponent;
+        renderValue = ({ value, label, isNegative, ...workflowPageParams }) =>
+          createElement(detailsRenderValue, {
+            entryKey: key,
+            entryPath: path,
+            entryValue: value,
+            isNegative,
+            ...workflowPageParams,
+          });
+      } else {
+        renderValue = ({ value }) => String(value);
+      }
+
+      acc.push({
+        path,
+        label: renderConfig?.getLabel?.({ key, path, value }) ?? path,
+        value,
+        icon: summaryFieldParserConfig?.icon ?? null,
+        renderValue,
+        hideDefaultTooltip: summaryFieldParserConfig?.hideDefaultTooltip,
+      });
+
+      return acc;
+    },
+    []
+  );
 }
