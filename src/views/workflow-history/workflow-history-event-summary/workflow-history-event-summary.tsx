@@ -43,32 +43,30 @@ export default function WorkflowHistoryEventSummary({
           eventMetadata.negativeFields?.includes(field.path)
         );
 
-        const Wrapper = ({ children }: { children: React.ReactNode }) =>
-          field.hideDefaultTooltip ? (
-            <>{children}</>
-          ) : (
-            <StatefulTooltip
-              content={field.label}
-              ignoreBoundary
-              placement="bottom"
-              showArrow
-            >
-              {children}
-            </StatefulTooltip>
-          );
+        const fieldContent = (
+          <styled.SummaryFieldContainer $isNegative={isNegative}>
+            {field.icon && <field.icon size={14} />}
+            <field.renderValue
+              label={field.label}
+              value={field.value}
+              isNegative={isNegative}
+              {...workflowPageParams}
+            />
+          </styled.SummaryFieldContainer>
+        );
 
-        return (
-          <Wrapper key={field.path}>
-            <styled.SummaryFieldContainer $isNegative={isNegative}>
-              {field.icon && <field.icon size={14} />}
-              <field.renderValue
-                label={field.label}
-                value={field.value}
-                isNegative={isNegative}
-                {...workflowPageParams}
-              />
-            </styled.SummaryFieldContainer>
-          </Wrapper>
+        return field.hideDefaultTooltip ? (
+          <React.Fragment key={field.path}>{fieldContent}</React.Fragment>
+        ) : (
+          <StatefulTooltip
+            key={field.path}
+            content={field.label}
+            ignoreBoundary
+            placement="bottom"
+            showArrow
+          >
+            {fieldContent}
+          </StatefulTooltip>
         );
       })}
     </styled.SummaryFieldsContainer>
