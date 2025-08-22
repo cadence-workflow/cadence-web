@@ -2,7 +2,7 @@ import { type WorkflowHistoryEventDetailsEntries } from '@/views/workflow-histor
 
 import * as generateHistoryEventDetailsModule from '../../../workflow-history-event-details/helpers/generate-history-event-details';
 import { type WorkflowHistoryEventSummaryFieldParser } from '../../workflow-history-event-summary.types';
-import getHistoryEventSummaryFields from '../get-history-event-summary-fields';
+import getHistoryEventSummaryItems from '../get-history-event-summary-items';
 
 // Mock the generateHistoryEventDetails module
 jest.mock(
@@ -115,7 +115,7 @@ jest.mock(
     ] satisfies Array<WorkflowHistoryEventSummaryFieldParser>
 );
 
-describe(getHistoryEventSummaryFields.name, () => {
+describe(getHistoryEventSummaryItems.name, () => {
   afterEach(() => {
     jest.restoreAllMocks();
   });
@@ -139,7 +139,7 @@ describe(getHistoryEventSummaryFields.name, () => {
         },
       ]);
 
-    const result = getHistoryEventSummaryFields({ details, summaryFields });
+    const result = getHistoryEventSummaryItems({ details, summaryFields });
 
     expect(result).toEqual([]);
   });
@@ -152,7 +152,7 @@ describe(getHistoryEventSummaryFields.name, () => {
       .spyOn(generateHistoryEventDetailsModule, 'default')
       .mockReturnValueOnce([]);
 
-    const result = getHistoryEventSummaryFields({ details, summaryFields });
+    const result = getHistoryEventSummaryItems({ details, summaryFields });
 
     expect(result).toEqual([]);
   });
@@ -164,7 +164,7 @@ describe(getHistoryEventSummaryFields.name, () => {
       .spyOn(generateHistoryEventDetailsModule, 'default')
       .mockReturnValueOnce([]);
 
-    const result = getHistoryEventSummaryFields({ details, summaryFields: [] });
+    const result = getHistoryEventSummaryItems({ details, summaryFields: [] });
 
     expect(result).toEqual([]);
   });
@@ -173,7 +173,7 @@ describe(getHistoryEventSummaryFields.name, () => {
     const details = { input: 'test-input', firstExecutionRunId: 'run-id' };
     const summaryFields = ['input'];
 
-    const result = getHistoryEventSummaryFields({ details, summaryFields });
+    const result = getHistoryEventSummaryItems({ details, summaryFields });
 
     expect(result).toHaveLength(1);
     expect(result[0].path).toBe('input');
@@ -189,7 +189,7 @@ describe(getHistoryEventSummaryFields.name, () => {
     };
     const summaryFields = ['input', 'unrelatedField', 'result'];
 
-    const result = getHistoryEventSummaryFields({ details, summaryFields });
+    const result = getHistoryEventSummaryItems({ details, summaryFields });
 
     // Should only include fields with matching parsers (input, result)
     expect(result).toHaveLength(2);
@@ -204,7 +204,7 @@ describe(getHistoryEventSummaryFields.name, () => {
     const details = { input: { data: 'test' } };
     const summaryFields = ['input'];
 
-    const result = getHistoryEventSummaryFields({ details, summaryFields });
+    const result = getHistoryEventSummaryItems({ details, summaryFields });
 
     expect(result).toHaveLength(1);
     expect(result[0].path).toBe('input');
@@ -215,7 +215,7 @@ describe(getHistoryEventSummaryFields.name, () => {
     const details = { timeout: 30 };
     const summaryFields = ['timeout'];
 
-    const result = getHistoryEventSummaryFields({ details, summaryFields });
+    const result = getHistoryEventSummaryItems({ details, summaryFields });
 
     expect(result).toHaveLength(1);
     expect(result[0].path).toBe('timeout');
@@ -242,7 +242,7 @@ describe(getHistoryEventSummaryFields.name, () => {
         },
       ]);
 
-    const result = getHistoryEventSummaryFields({ details, summaryFields });
+    const result = getHistoryEventSummaryItems({ details, summaryFields });
 
     expect(result).toHaveLength(1);
     expect(result[0].path).toBe('unrelatedField');
@@ -253,27 +253,27 @@ describe(getHistoryEventSummaryFields.name, () => {
     const details = { groupField: { nested: 'value' } };
     const summaryFields = ['groupField'];
 
-    const result = getHistoryEventSummaryFields({ details, summaryFields });
+    const result = getHistoryEventSummaryItems({ details, summaryFields });
 
     expect(result).toHaveLength(0);
   });
 
-  it('should preserve order of fields as they appear in details', () => {
+  it('should order summary fields based on field order in summaryFields', () => {
     const details = { input: 'test-input', firstExecutionRunId: 'run-id' };
     const summaryFields = ['firstExecutionRunId', 'input'];
 
-    const result = getHistoryEventSummaryFields({ details, summaryFields });
+    const result = getHistoryEventSummaryItems({ details, summaryFields });
 
     expect(result).toHaveLength(2);
-    expect(result[0].path).toBe('input');
-    expect(result[1].path).toBe('firstExecutionRunId');
+    expect(result[0].path).toBe('firstExecutionRunId');
+    expect(result[1].path).toBe('input');
   });
 
   it('should handle fields with renderConfig.valueComponent', () => {
     const details = { workflowExecution: { workflowId: 'test-workflow' } };
     const summaryFields = ['workflowExecution'];
 
-    const result = getHistoryEventSummaryFields({ details, summaryFields });
+    const result = getHistoryEventSummaryItems({ details, summaryFields });
 
     expect(result).toHaveLength(1);
     expect(result[0].path).toBe('workflowExecution');

@@ -26,7 +26,7 @@ export type WorkflowHistoryEventSummaryFieldParser = {
   hideDefaultTooltip?: boolean;
 };
 
-export type WorkflowHistoryEventSummaryField = {
+export type WorkflowHistoryEventSummaryItem = {
   path: string;
   label: string;
   value: any;

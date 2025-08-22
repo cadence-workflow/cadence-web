@@ -1,5 +1,7 @@
 import { StatefulTooltip } from 'baseui/tooltip';
 
+import losslessJsonStringify from '@/utils/lossless-json-stringify';
+
 import WorkflowHistoryEventDetailsJson from '../workflow-history-event-details-json/workflow-history-event-details-json';
 import { type EventSummaryValueComponentProps } from '../workflow-history-event-summary/workflow-history-event-summary.types';
 
@@ -30,7 +32,7 @@ export default function WorkflowHistoryEventSummaryJson({
       overrides={overrides.popover}
     >
       <styled.JsonViewContainer $isNegative={isNegative ?? false}>
-        {JSON.stringify(value)}
+        {losslessJsonStringify(value)}
       </styled.JsonViewContainer>
     </StatefulTooltip>
   );

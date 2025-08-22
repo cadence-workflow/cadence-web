@@ -7,7 +7,7 @@ import formatWorkflowHistoryEvent from '@/utils/data-formatters/format-workflow-
 
 import isPendingHistoryEvent from '../workflow-history-event-details/helpers/is-pending-history-event';
 
-import getHistoryEventSummaryFields from './helpers/get-history-event-summary-fields';
+import getHistoryEventSummaryItems from './helpers/get-history-event-summary-items';
 import { styled } from './workflow-history-event-summary.styles';
 import { type Props } from './workflow-history-event-summary.types';
 
@@ -16,7 +16,7 @@ export default function WorkflowHistoryEventSummary({
   eventMetadata,
   ...workflowPageParams
 }: Props) {
-  const summaryFields = useMemo(() => {
+  const summaryItems = useMemo(() => {
     if (!eventMetadata.summaryFields) return [];
 
     const result = isPendingHistoryEvent(event)
@@ -24,7 +24,7 @@ export default function WorkflowHistoryEventSummary({
       : formatWorkflowHistoryEvent(event);
 
     return result
-      ? getHistoryEventSummaryFields({
+      ? getHistoryEventSummaryItems({
           details: {
             ...result,
             ...eventMetadata.additionalDetails,
@@ -34,33 +34,33 @@ export default function WorkflowHistoryEventSummary({
       : [];
   }, [event, eventMetadata.summaryFields, eventMetadata.additionalDetails]);
 
-  if (summaryFields.length === 0) return null;
+  if (summaryItems.length === 0) return null;
 
   return (
     <styled.SummaryFieldsContainer>
-      {summaryFields.map((field) => {
+      {summaryItems.map((item) => {
         const isNegative = Boolean(
-          eventMetadata.negativeFields?.includes(field.path)
+          eventMetadata.negativeFields?.includes(item.path)
         );
 
         const fieldContent = (
           <styled.SummaryFieldContainer $isNegative={isNegative}>
-            {field.icon && <field.icon size={14} />}
-            <field.renderValue
-              label={field.label}
-              value={field.value}
+            {item.icon && <item.icon size={14} />}
+            <item.renderValue
+              label={item.label}
+              value={item.value}
               isNegative={isNegative}
               {...workflowPageParams}
             />
           </styled.SummaryFieldContainer>
         );
 
-        return field.hideDefaultTooltip ? (
-          <React.Fragment key={field.path}>{fieldContent}</React.Fragment>
+        return item.hideDefaultTooltip ? (
+          <React.Fragment key={item.path}>{fieldContent}</React.Fragment>
         ) : (
           <StatefulTooltip
-            key={field.path}
-            content={field.label}
+            key={item.path}
+            content={item.label}
             ignoreBoundary
             placement="bottom"
             showArrow
