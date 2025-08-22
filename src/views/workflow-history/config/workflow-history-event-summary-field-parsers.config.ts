@@ -1,9 +1,4 @@
-import {
-  MdLabelImportantOutline,
-  MdOutlineMonitorHeart,
-  MdOutlineTimer,
-  MdRadioButtonChecked,
-} from 'react-icons/md';
+import { MdOutlineMonitorHeart, MdOutlineTimer } from 'react-icons/md';
 
 import { type WorkflowHistoryEventSummaryFieldParser } from '../workflow-history-event-summary/workflow-history-event-summary.types';
 import WorkflowHistoryEventSummaryJson from '../workflow-history-event-summary-json/workflow-history-event-summary-json';
@@ -31,19 +26,6 @@ const workflowHistoryEventSummaryFieldParsersConfig: Array<WorkflowHistoryEventS
       matcher: (name) =>
         new RegExp('(TimeoutSeconds|BackoffSeconds|InSeconds)$').test(name),
       icon: MdOutlineTimer,
-    },
-    {
-      name: 'Reason with radio button icon',
-      matcher: (name) => new RegExp('(reason|failureReason)').test(name),
-      icon: MdRadioButtonChecked,
-    },
-    {
-      name: 'WorkflowExecution & RunIds as links',
-      matcher: (name) =>
-        new RegExp(
-          '(parentWorkflowExecution|externalWorkflowExecution|workflowExecution|firstExecutionRunId|originalExecutionRunId|newExecutionRunId|continuedExecutionRunId)$'
-        ).test(name),
-      icon: MdLabelImportantOutline,
     },
   ];
 

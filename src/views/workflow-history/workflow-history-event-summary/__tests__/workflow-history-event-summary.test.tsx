@@ -23,7 +23,7 @@ jest.mock('@/utils/data-formatters/format-pending-workflow-history-event', () =>
   )
 );
 
-jest.mock('../helpers/get-history-event-summary-fields', () =>
+jest.mock('../helpers/get-history-event-summary-items', () =>
   jest.fn(({ details, summaryFields }) => {
     if (!summaryFields || summaryFields.length === 0) return [];
 
