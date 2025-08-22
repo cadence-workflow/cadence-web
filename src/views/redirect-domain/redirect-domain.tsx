@@ -5,6 +5,8 @@ import getDefaultClusterForActiveActiveDomain from '@/views/shared/active-active
 import isActiveActiveDomain from '@/views/shared/active-active/helpers/is-active-active-domain';
 
 import { getCachedAllDomains } from '../domains-page/helpers/get-all-domains';
+import getDefaultClusterForActiveActiveDomain from '../shared/active-active/helpers/get-default-cluster-for-active-active-domain';
+import isActiveActiveDomain from '../shared/active-active/helpers/is-active-active-domain';
 
 import { type Props } from './redirect-domain.types';
 
