@@ -5,7 +5,7 @@ export default function getDefaultClusterForActiveActiveDomain(
 ): string {
   return Object.values(domain.activeClusters.regionToCluster).reduce<string>(
     (defaultClusterName, c) =>
-      c.activeClusterName < defaultClusterName
+      !defaultClusterName || c.activeClusterName < defaultClusterName
         ? c.activeClusterName
         : defaultClusterName,
     ''
