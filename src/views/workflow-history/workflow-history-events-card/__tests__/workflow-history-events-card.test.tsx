@@ -43,14 +43,10 @@ describe('WorkflowHistoryEventsCard', () => {
       {
         label: 'First event',
         status: 'COMPLETED',
-        timeMs: 1704067200000,
-        timeLabel: 'Mock time label',
       },
       {
         label: 'Second event',
         status: 'ONGOING',
-        timeMs: 1704067300000,
-        timeLabel: 'Mock time label 2',
       },
     ];
     setup({
@@ -71,8 +67,6 @@ describe('WorkflowHistoryEventsCard', () => {
       {
         label: 'First event',
         status: 'COMPLETED',
-        timeMs: 1704067200000,
-        timeLabel: 'Mock time label',
       },
     ];
     setup({
@@ -95,8 +89,6 @@ describe('WorkflowHistoryEventsCard', () => {
       {
         label: 'First event',
         status: 'COMPLETED',
-        timeMs: 1704067200000,
-        timeLabel: 'Mock time label',
       },
     ];
     setup({
@@ -123,8 +115,6 @@ describe('WorkflowHistoryEventsCard', () => {
       {
         label: 'First event',
         status: 'COMPLETED',
-        timeMs: 1704067200000,
-        timeLabel: 'Mock time label',
       },
     ];
     setup({
@@ -146,8 +136,6 @@ describe('WorkflowHistoryEventsCard', () => {
       {
         label: 'Pending event',
         status: 'WAITING',
-        timeMs: null,
-        timeLabel: 'Pending',
       },
     ];
     setup({
@@ -168,14 +156,10 @@ describe('WorkflowHistoryEventsCard', () => {
       {
         label: 'First event',
         status: 'COMPLETED',
-        timeMs: 1704067200000,
-        timeLabel: 'Mock time label',
       },
       {
         label: 'Second event',
         status: 'ONGOING',
-        timeMs: 1704067300000,
-        timeLabel: 'Mock time label 2',
       },
     ];
 
@@ -199,8 +183,6 @@ describe('WorkflowHistoryEventsCard', () => {
       {
         label: 'First event',
         status: 'COMPLETED',
-        timeMs: 1704067200000,
-        timeLabel: 'Mock time label',
       },
     ];
     const { container } = setup({
@@ -228,8 +210,6 @@ describe('WorkflowHistoryEventsCard', () => {
       {
         label: 'First event',
         status: 'COMPLETED',
-        timeMs: 1704067200000,
-        timeLabel: 'Mock time label',
       },
     ];
     setup({
@@ -247,8 +227,6 @@ describe('WorkflowHistoryEventsCard', () => {
       {
         label: 'First event',
         status: 'COMPLETED',
-        timeMs: 1704067200000,
-        timeLabel: 'Mock time label',
       },
     ];
     setup({
