@@ -40,5 +40,8 @@ export type WorkflowHistoryEventSummaryItem = {
 
 export type Props = {
   event: ExtendedHistoryEvent;
-  eventMetadata: HistoryGroupEventMetadata;
+  eventMetadata: Pick<
+    HistoryGroupEventMetadata,
+    'summaryFields' | 'additionalDetails' | 'negativeFields'
+  >;
 } & WorkflowPageParams;
