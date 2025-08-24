@@ -34,6 +34,7 @@
     "@opentelemetry/instrumentation-grpc": "^0.200.0",
     "@opentelemetry/instrumentation-http": "^0.200.0",
     "@opentelemetry/instrumentation-pino": "^0.50.0",
+    "@opentelemetry/instrumentation-runtime-node": "^0.17.1",
     "@opentelemetry/instrumentation-undici": "^0.11.0",
     "@opentelemetry/propagator-jaeger": "^2.0.0",
     "@opentelemetry/resources": "^2.0.0",
