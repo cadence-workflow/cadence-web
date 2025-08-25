@@ -277,4 +277,44 @@ describe('getChildWorkflowExecutionGroupFromEvents', () => {
       expect(metadata.negativeFields).toBeUndefined();
     });
   });
+
+  it('should include summaryFields for child workflow events', () => {
+    const events: ChildWorkflowExecutionHistoryEvent[] = [
+      initiateChildWorkflowEvent,
+      startChildWorkflowEvent,
+      completeChildWorkflowEvent,
+    ];
+    const group = getChildWorkflowExecutionGroupFromEvents(events);
+
+    // The initiated event should have summaryFields
+    const initiatedEventMetadata = group.eventsMetadata.find(
+      (metadata) => metadata.label === 'Initiated'
+    );
+    expect(initiatedEventMetadata?.summaryFields).toEqual(['input']);
+
+    // The started event should also have summaryFields
+    const startedEventMetadata = group.eventsMetadata.find(
+      (metadata) => metadata.label === 'Started'
+    );
+    expect(startedEventMetadata?.summaryFields).toEqual(['workflowExecution']);
+
+    // The completed event should also have summaryFields
+    const completedEventMetadata = group.eventsMetadata.find(
+      (metadata) => metadata.label === 'Completed'
+    );
+    expect(completedEventMetadata?.summaryFields).toEqual(['result']);
+  });
+
+  it('should include summaryFields for failed child workflow event', () => {
+    const events: ChildWorkflowExecutionHistoryEvent[] = [
+      failChildWorkflowEvent,
+    ];
+    const group = getChildWorkflowExecutionGroupFromEvents(events);
+
+    // The failed event should have summaryFields
+    const failedEventMetadata = group.eventsMetadata.find(
+      (metadata) => metadata.status === 'FAILED'
+    );
+    expect(failedEventMetadata?.summaryFields).toEqual(['details', 'reason']);
+  });
 });

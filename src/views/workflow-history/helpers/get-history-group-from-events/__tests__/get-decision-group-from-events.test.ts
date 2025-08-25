@@ -355,4 +355,29 @@ describe('getDecisionGroupFromEvents', () => {
       expect(metadata.negativeFields).toBeUndefined();
     });
   });
+
+  it('should include summaryFields for scheduled decision events', () => {
+    const events: ExtendedDecisionHistoryEvent[] = [
+      scheduleDecisionTaskEvent,
+      startDecisionTaskEvent,
+      completeDecisionTaskEvent,
+    ];
+    const group = getDecisionGroupFromEvents(events);
+
+    // The scheduled event should have summaryFields
+    const scheduledEventMetadata = group.eventsMetadata.find(
+      (metadata) => metadata.label === 'Scheduled'
+    );
+    expect(scheduledEventMetadata?.summaryFields).toEqual([
+      'startToCloseTimeoutSeconds',
+    ]);
+
+    // Other events should not have summaryFields
+    const otherEventsMetadata = group.eventsMetadata.filter(
+      (metadata) => metadata.label !== 'Scheduled'
+    );
+    otherEventsMetadata.forEach((metadata) => {
+      expect(metadata.summaryFields).toBeUndefined();
+    });
+  });
 });

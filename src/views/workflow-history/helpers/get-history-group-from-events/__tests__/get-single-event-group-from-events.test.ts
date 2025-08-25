@@ -169,4 +169,57 @@ describe('getSingleEventGroupFromEvents', () => {
       'failureReason',
     ]);
   });
+
+  it('should include summaryFields for started workflow execution events', () => {
+    const group = getSingleEventGroupFromEvents([startWorkflowExecutionEvent]);
+    const eventMetadata = group.eventsMetadata[0];
+
+    expect(eventMetadata.status).toBe('COMPLETED');
+    expect(eventMetadata.summaryFields).toEqual([
+      'input',
+      'executionStartToCloseTimeoutSeconds',
+    ]);
+  });
+
+  it('should include summaryFields for completed workflow execution events', () => {
+    const group = getSingleEventGroupFromEvents([
+      completeWorkflowExecutionEvent,
+    ]);
+    const eventMetadata = group.eventsMetadata[0];
+
+    expect(eventMetadata.status).toBe('COMPLETED');
+    expect(eventMetadata.summaryFields).toEqual(['result']);
+  });
+
+  it('should include summaryFields for failed workflow execution events', () => {
+    const group = getSingleEventGroupFromEvents([failWorkflowExecutionEvent]);
+    const eventMetadata = group.eventsMetadata[0];
+
+    expect(eventMetadata.status).toBe('FAILED');
+    expect(eventMetadata.summaryFields).toEqual(['details', 'reason']);
+  });
+
+  it('should include summaryFields for terminated workflow execution events', () => {
+    const group = getSingleEventGroupFromEvents([
+      terminateWorkflowExecutionEvent,
+    ]);
+    const eventMetadata = group.eventsMetadata[0];
+
+    expect(eventMetadata.status).toBe('FAILED');
+    expect(eventMetadata.summaryFields).toEqual(['details', 'reason']);
+  });
+
+  it('should include summaryFields for continued as new workflow execution events', () => {
+    const group = getSingleEventGroupFromEvents([
+      continueAsNewWorkflowExecutionEvent,
+    ]);
+    const eventMetadata = group.eventsMetadata[0];
+
+    expect(eventMetadata.status).toBe('COMPLETED');
+    expect(eventMetadata.summaryFields).toEqual([
+      'failureDetails',
+      'failureReason',
+      'newExecutionRunId',
+    ]);
+  });
 });

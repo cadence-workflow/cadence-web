@@ -1,7 +1,8 @@
 import type {
-  HistoryGroupEventStatusToNegativeFieldsMap,
+  HistoryGroupEventToNegativeFieldsMap,
   HistoryGroupEventToStatusMap,
   HistoryGroupEventToStringMap,
+  HistoryGroupEventToSummaryFieldsMap,
   SingleEventHistoryGroup,
   SingleHistoryEvent,
 } from '../../workflow-history.types';
@@ -80,13 +81,29 @@ export default function getSingleEventGroupFromEvents(
     workflowExecutionContinuedAsNewEventAttributes: 'COMPLETED',
   };
 
-  const eventStatusToNegativeFields: HistoryGroupEventStatusToNegativeFieldsMap<SingleEventHistoryGroup> =
+  const eventToNegativeFields: HistoryGroupEventToNegativeFieldsMap<SingleEventHistoryGroup> =
     {
       workflowExecutionFailedEventAttributes: ['details', 'reason'],
       workflowExecutionTerminatedEventAttributes: ['details', 'reason'],
       workflowExecutionContinuedAsNewEventAttributes: [
         'failureDetails',
         'failureReason',
+      ],
+    };
+
+  const eventToSummaryFields: HistoryGroupEventToSummaryFieldsMap<SingleEventHistoryGroup> =
+    {
+      workflowExecutionStartedEventAttributes: [
+        'input',
+        'executionStartToCloseTimeoutSeconds',
+      ],
+      workflowExecutionCompletedEventAttributes: ['result'],
+      workflowExecutionFailedEventAttributes: ['details', 'reason'],
+      workflowExecutionTerminatedEventAttributes: ['details', 'reason'],
+      workflowExecutionContinuedAsNewEventAttributes: [
+        'failureDetails',
+        'failureReason',
+        'newExecutionRunId',
       ],
     };
 
@@ -101,7 +118,9 @@ export default function getSingleEventGroupFromEvents(
       eventToLabel,
       {},
       undefined,
-      eventStatusToNegativeFields
+      eventToNegativeFields,
+      undefined,
+      eventToSummaryFields
     ),
   };
 }

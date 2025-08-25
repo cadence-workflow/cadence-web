@@ -131,14 +131,14 @@ describe('getCommonHistoryGroupFields', () => {
     }
   );
 
-  it('should include negativeFields when eventStatusToNegativeFieldsMap is provided', () => {
-    const eventStatusToNegativeFieldsMap = {
+  it('should include negativeFields when eventToNegativeFieldsMap is provided', () => {
+    const eventToNegativeFieldsMap = {
       timerStartedEventAttributes: ['startReason', 'startDetails'],
       timerFiredEventAttributes: ['fireReason', 'fireDetails'],
     };
 
     const group = setup({
-      eventStatusToNegativeFieldsMap,
+      eventToNegativeFieldsMap,
     });
 
     expect(group.eventsMetadata[0].negativeFields).toEqual([
@@ -151,7 +151,7 @@ describe('getCommonHistoryGroupFields', () => {
     ]);
   });
 
-  it('should not include negativeFields when eventStatusToNegativeFieldsMap is not provided', () => {
+  it('should not include negativeFields when eventToNegativeFieldsMap is not provided', () => {
     const group = setup({});
 
     group.eventsMetadata.forEach((metadata) => {
@@ -159,9 +159,9 @@ describe('getCommonHistoryGroupFields', () => {
     });
   });
 
-  it('should not include negativeFields when eventStatusToNegativeFieldsMap is empty', () => {
+  it('should not include negativeFields when eventToNegativeFieldsMap is empty', () => {
     const group = setup({
-      eventStatusToNegativeFieldsMap: {},
+      eventToNegativeFieldsMap: {},
     });
 
     group.eventsMetadata.forEach((metadata) => {
@@ -170,15 +170,86 @@ describe('getCommonHistoryGroupFields', () => {
   });
 
   it('should only include negativeFields for events that have mappings', () => {
-    const eventStatusToNegativeFieldsMap = {
+    const eventToNegativeFieldsMap = {
       timerStartedEventAttributes: ['startReason'],
     };
 
     const group = setup({
-      eventStatusToNegativeFieldsMap,
+      eventToNegativeFieldsMap,
     });
 
     expect(group.eventsMetadata[0].negativeFields).toEqual(['startReason']);
+    expect(group.eventsMetadata[1].negativeFields).toBeUndefined();
+  });
+
+  it('should include summaryFields when eventToSummaryFieldsMap is provided', () => {
+    const eventToSummaryFieldsMap = {
+      timerStartedEventAttributes: ['startReason', 'startDetails'],
+      timerFiredEventAttributes: ['fireReason', 'fireDetails'],
+    };
+
+    const group = setup({
+      eventToSummaryFieldsMap,
+    });
+
+    expect(group.eventsMetadata[0].summaryFields).toEqual([
+      'startReason',
+      'startDetails',
+    ]);
+    expect(group.eventsMetadata[1].summaryFields).toEqual([
+      'fireReason',
+      'fireDetails',
+    ]);
+  });
+
+  it('should not include summaryFields when eventToSummaryFieldsMap is not provided', () => {
+    const group = setup({});
+
+    group.eventsMetadata.forEach((metadata) => {
+      expect(metadata.summaryFields).toBeUndefined();
+    });
+  });
+
+  it('should not include summaryFields when eventToSummaryFieldsMap is empty', () => {
+    const group = setup({
+      eventToSummaryFieldsMap: {},
+    });
+
+    group.eventsMetadata.forEach((metadata) => {
+      expect(metadata.summaryFields).toBeUndefined();
+    });
+  });
+
+  it('should only include summaryFields for events that have mappings', () => {
+    const eventToSummaryFieldsMap = {
+      timerStartedEventAttributes: ['startReason'],
+    };
+
+    const group = setup({
+      eventToSummaryFieldsMap,
+    });
+
+    expect(group.eventsMetadata[0].summaryFields).toEqual(['startReason']);
+    expect(group.eventsMetadata[1].summaryFields).toBeUndefined();
+  });
+
+  it('should include both negativeFields and summaryFields when both maps are provided', () => {
+    const eventToNegativeFieldsMap = {
+      timerStartedEventAttributes: ['startReason'],
+    };
+    const eventToSummaryFieldsMap = {
+      timerStartedEventAttributes: ['startDetails'],
+      timerFiredEventAttributes: ['fireDetails'],
+    };
+
+    const group = setup({
+      eventToNegativeFieldsMap,
+      eventToSummaryFieldsMap,
+    });
+
+    expect(group.eventsMetadata[0].negativeFields).toEqual(['startReason']);
+    expect(group.eventsMetadata[0].summaryFields).toEqual(['startDetails']);
+    expect(group.eventsMetadata[1].summaryFields).toEqual(['fireDetails']);
     expect(group.eventsMetadata[1].negativeFields).toBeUndefined();
   });
 
@@ -195,7 +266,8 @@ function setup({
   eventToLabel,
   eventToStatus,
   closeEvent,
-  eventStatusToNegativeFieldsMap,
+  eventToNegativeFieldsMap,
+  eventToSummaryFieldsMap,
 }: {
   events?: TimerHistoryEvent[];
   eventToStatus?: HistoryGroupEventToStatusMap<TimerHistoryGroup>;
@@ -204,7 +276,8 @@ function setup({
     HistoryGroupEventToStringMap<TimerHistoryGroup>
   >;
   closeEvent?: TimerHistoryEvent;
-  eventStatusToNegativeFieldsMap?: any;
+  eventToNegativeFieldsMap?: any;
+  eventToSummaryFieldsMap?: any;
 }) {
   const mockEvents: TimerHistoryEvent[] = events || [
     startTimerTaskEvent,
@@ -229,6 +302,8 @@ function setup({
     mockedEventToLabel,
     eventToTimeLabelPrefixMap,
     closeEvent,
-    eventStatusToNegativeFieldsMap
+    eventToNegativeFieldsMap,
+    undefined,
+    eventToSummaryFieldsMap
   );
 }

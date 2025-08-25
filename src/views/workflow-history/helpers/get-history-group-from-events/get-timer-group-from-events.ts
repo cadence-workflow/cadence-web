@@ -1,6 +1,7 @@
 import type {
   HistoryGroupEventToStatusMap,
   HistoryGroupEventToStringMap,
+  HistoryGroupEventToSummaryFieldsMap,
   TimerHistoryEvent,
   TimerHistoryGroup,
 } from '../../workflow-history.types';
@@ -43,6 +44,11 @@ export default function getTimerGroupFromEvents(
     timerCanceledEventAttributes: 'CANCELED',
   };
 
+  const eventToSummaryFields: HistoryGroupEventToSummaryFieldsMap<TimerHistoryGroup> =
+    {
+      timerStartedEventAttributes: ['startToFireTimeoutSeconds'],
+    };
+
   return {
     label,
     hasMissingEvents,
@@ -52,7 +58,10 @@ export default function getTimerGroupFromEvents(
       eventToStatus,
       eventToLabel,
       {},
-      closeEvent
+      closeEvent,
+      undefined,
+      undefined,
+      eventToSummaryFields
     ),
   };
 }
