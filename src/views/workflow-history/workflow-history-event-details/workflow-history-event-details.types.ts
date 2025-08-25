@@ -1,4 +1,4 @@
-import { type WorkflowPageTabsParams } from '@/views/workflow-page/workflow-page-tabs/workflow-page-tabs.types';
+import { type WorkflowPageParams } from '@/views/workflow-page/workflow-page.types';
 
 import type {
   ExtendedHistoryEvent,
@@ -23,7 +23,7 @@ export type WorkflowHistoryEventDetailsValueComponentProps = {
   entryPath: string;
   entryValue: any;
   isNegative?: boolean;
-} & WorkflowPageTabsParams;
+} & WorkflowPageParams;
 
 export type WorkflowHistoryEventDetailsConfig = {
   name: string;

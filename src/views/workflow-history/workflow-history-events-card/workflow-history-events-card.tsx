@@ -10,6 +10,7 @@ import WorkflowHistoryEventDetails from '../workflow-history-event-details/workf
 import WorkflowHistoryEventLinkButton from '../workflow-history-event-link-button/workflow-history-event-link-button';
 import getBadgeContainerSize from '../workflow-history-event-status-badge/helpers/get-badge-container-size';
 import WorkflowHistoryEventStatusBadge from '../workflow-history-event-status-badge/workflow-history-event-status-badge';
+import WorkflowHistoryEventSummary from '../workflow-history-event-summary/workflow-history-event-summary';
 
 import {
   cssStyles,
@@ -48,18 +49,30 @@ export default function WorkflowHistoryEventsCard({
           <Panel
             key={id}
             title={
-              <div className={cls.eventPanelTitle}>
-                <WorkflowHistoryEventStatusBadge
-                  statusReady={true}
-                  size="small"
-                  status={eventMetadata.status}
-                />
-                <div className={cls.eventLabel}>
-                  {eventMetadata.label}
-                  {event.eventId && isPanelExpanded && (
-                    <WorkflowHistoryEventLinkButton historyEventId={id} />
-                  )}
+              <div className={cls.eventPanelHeader}>
+                <div className={cls.eventPanelTitle}>
+                  <WorkflowHistoryEventStatusBadge
+                    statusReady={true}
+                    size="small"
+                    status={eventMetadata.status}
+                  />
+                  <div className={cls.eventLabel}>
+                    {eventMetadata.label}
+                    {event.eventId && isPanelExpanded && (
+                      <WorkflowHistoryEventLinkButton historyEventId={id} />
+                    )}
+                  </div>
                 </div>
+                {!isPanelExpanded && (
+                  <WorkflowHistoryEventSummary
+                    event={event}
+                    eventMetadata={eventMetadata}
+                    domain={decodedPageUrlParams.domain}
+                    cluster={decodedPageUrlParams.cluster}
+                    workflowId={decodedPageUrlParams.workflowId}
+                    runId={decodedPageUrlParams.runId}
+                  />
+                )}
               </div>
             }
             onClick={() => onEventToggle(id)}
