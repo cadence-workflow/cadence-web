@@ -2,6 +2,8 @@ import React from 'react';
 
 import { render, screen } from '@/test-utils/rtl';
 
+import { mockActiveActiveDomain } from '@/views/shared/active-active/__fixtures__/active-active-domain';
+
 import { globalDomain } from '../../__fixtures__/domains';
 import DomainsTableDomainNameCell from '../domains-table-domain-name-cell';
 
@@ -9,6 +11,11 @@ jest.mock('@/views/shared/domain-status-tag/domain-status-tag', () =>
   jest.fn(({ status }: { status: string }) => (
     <div>Mock domain status: {status}</div>
   ))
+);
+
+jest.mock('@/views/shared/active-active/helpers/is-active-active-domain');
+jest.mock(
+  '@/views/shared/active-active/helpers/get-default-cluster-for-active-active-domain'
 );
 
 describe('DomainTableClusterCell', () => {
@@ -20,6 +27,18 @@ describe('DomainTableClusterCell', () => {
       expect(clusterLink).toHaveAttribute(
         'href',
         `/domains/${globalDomain.name}/${globalDomain.activeClusterName}`
+      );
+    });
+  });
+
+  it('should render link for domain if domain is active-active using default cluster', async () => {
+    render(<DomainsTableDomainNameCell {...mockActiveActiveDomain} />);
+    const clusterLinks = await screen.findAllByRole('link');
+    clusterLinks.forEach((clusterLink) => {
+      expect(clusterLink.innerHTML).toBe(mockActiveActiveDomain.name);
+      expect(clusterLink).toHaveAttribute(
+        'href',
+        `/domains/${mockActiveActiveDomain.name}/cluster0`
       );
     });
   });

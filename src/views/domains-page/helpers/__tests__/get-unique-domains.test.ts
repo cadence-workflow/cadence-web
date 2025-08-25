@@ -1,6 +1,14 @@
+import { mockActiveActiveDomain } from '@/views/shared/active-active/__fixtures__/active-active-domain';
+
 import { getDomainObj } from '../../__fixtures__/domains';
 import { type DomainData } from '../../domains-page.types';
 import getUniqueDomains from '../get-unique-domains';
+
+jest.mock('@/views/shared/active-active/helpers/is-active-active-domain');
+
+jest.mock(
+  '@/views/shared/active-active/helpers/get-default-cluster-for-active-active-domain'
+);
 
 describe('getUniqueDomains', () => {
   it('should return unique domains based on id-name-activeClusterName', () => {
@@ -62,5 +70,31 @@ describe('getUniqueDomains', () => {
         clusters: [],
       }),
     ]);
+  });
+
+  it('should handle active-active domains using their default cluster for uniqueness', () => {
+    const domains: DomainData[] = [
+      mockActiveActiveDomain,
+      getDomainObj({
+        id: mockActiveActiveDomain.id,
+        name: mockActiveActiveDomain.name,
+        activeClusterName: 'cluster0', // Same as default cluster from mock
+        clusters: [],
+      }),
+      getDomainObj({
+        id: '2',
+        name: 'Domain2',
+        activeClusterName: 'ClusterB',
+        clusters: [],
+      }),
+    ];
+
+    const uniqueDomains = getUniqueDomains(domains);
+
+    // Should return only 2 domains since the first two are duplicates
+    // (active-active domain and regular domain with same id-name-defaultCluster)
+    expect(uniqueDomains).toHaveLength(2);
+    expect(uniqueDomains).toContain(domains[0]); // mockActiveActiveDomain
+    expect(uniqueDomains).toContain(domains[2]); // Domain2
   });
 });
