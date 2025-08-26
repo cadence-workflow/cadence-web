@@ -39,7 +39,7 @@ export async function signalWorkflow(
       signalInput: data.signalInput
         ? { data: Buffer.from(data.signalInput) }
         : undefined,
-      // TODO: add user identity
+      identity: ctx.userInfo?.id,
     });
 
     return NextResponse.json(response);
