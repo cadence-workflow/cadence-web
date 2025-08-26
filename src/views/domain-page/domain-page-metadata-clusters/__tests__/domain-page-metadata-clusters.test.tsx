@@ -7,7 +7,6 @@ import {
 import * as isActiveClusterModule from '../../helpers/is-active-cluster';
 import DomainPageMetadataClusters from '../domain-page-metadata-clusters';
 
-// Mock the isActiveCluster utility
 jest.mock('../../helpers/is-active-cluster', () => ({
   __esModule: true,
   default: jest.fn().mockReturnValue(false),

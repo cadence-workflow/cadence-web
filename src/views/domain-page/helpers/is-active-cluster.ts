@@ -7,11 +7,11 @@ export default function isActiveCluster(
   cluster: string
 ) {
   if (isActiveActiveDomain(domain)) {
-    const activeClusters = Object.values(
-      domain.activeClusters.regionToCluster
-    ).map((activeClusterInfo) => activeClusterInfo.activeClusterName);
-
-    return activeClusters.includes(cluster);
+    return (
+      Object.values(domain.activeClusters.regionToCluster).find(
+        (activeClusterInfo) => activeClusterInfo.activeClusterName === cluster
+      ) !== undefined
+    );
   }
 
   return cluster === domain.activeClusterName;
