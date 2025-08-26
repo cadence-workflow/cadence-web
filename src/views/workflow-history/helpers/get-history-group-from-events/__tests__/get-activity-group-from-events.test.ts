@@ -410,8 +410,8 @@ describe('getActivityGroupFromEvents', () => {
       (metadata) => metadata.label === 'Started'
     );
     expect(startedEventMetadata?.summaryFields).toEqual([
-      'lastHeartbeatTime',
       'heartbeatDetails',
+      'lastHeartbeatTime',
     ]);
 
     // The completed event should also have summaryFields
