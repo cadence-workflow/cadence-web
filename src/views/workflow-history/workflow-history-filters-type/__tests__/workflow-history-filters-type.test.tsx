@@ -39,123 +39,35 @@ describe('WorkflowHistoryFiltersType', () => {
       fireEvent.click(decisionOption);
     });
     expect(mockSetValue).toHaveBeenCalledWith({
-      historyEventTypes: [
-        'ACTIVITY',
-        'CHILDWORKFLOW',
-        'SIGNAL',
-        'TIMER',
-        'WORKFLOW',
-        'DECISION',
-      ],
+      historyEventTypes: ['DECISION'],
     });
   });
 
-  it('should override preference when query param is set', () => {
-    const { mockSetHistoryEventTypesUserPreference } = setup({
+  it('calls the setQueryParams function when the filter is cleared', () => {
+    const { mockSetValue } = setup({
       overrides: {
-        historyEventTypes: ['TIMER', 'SIGNAL'],
+        historyEventTypes: ['ACTIVITY'],
       },
     });
-
-    expect(screen.getByText('Timer')).toBeInTheDocument();
-    expect(screen.getByText('Signal')).toBeInTheDocument();
-    expect(screen.queryByText('Activity')).toBeNull();
-    expect(screen.queryByText('Decision')).toBeNull();
-
-    expect(mockSetHistoryEventTypesUserPreference).not.toHaveBeenCalled();
-  });
-
-  it('should use preference when query param is undefined', () => {
-    const { mockSetHistoryEventTypesUserPreference } = setup({
-      historyEventTypesPreference: ['TIMER', 'SIGNAL'],
-    });
-
-    expect(screen.getByText('Timer')).toBeInTheDocument();
-    expect(screen.getByText('Signal')).toBeInTheDocument();
-    expect(screen.queryByText('Activity')).toBeNull();
-    expect(screen.queryByText('Decision')).toBeNull();
-
-    expect(mockSetHistoryEventTypesUserPreference).not.toHaveBeenCalled();
-  });
-
-  it('should use default values when both query param and preference are undefined', () => {
-    const { mockSetHistoryEventTypesUserPreference } = setup({});
-
-    expect(screen.getByText('Activity')).toBeInTheDocument();
-    expect(screen.getByText('Timer')).toBeInTheDocument();
-    expect(screen.getByText('Signal')).toBeInTheDocument();
-    expect(screen.getByText('Child Workflow')).toBeInTheDocument();
-    expect(screen.getByText('Workflow')).toBeInTheDocument();
-
-    expect(screen.queryByText('Decision')).toBeNull();
-
-    expect(mockSetHistoryEventTypesUserPreference).not.toHaveBeenCalled();
-  });
-
-  it('should save preference when user changes selection', () => {
-    const { mockSetValue, mockSetHistoryEventTypesUserPreference } = setup({
-      overrides: {
-        historyEventTypes: ['TIMER'],
-      },
-    });
-
-    const selectFilter = screen.getByRole('combobox');
+    const clearButton = screen.getByLabelText('Clear all');
     act(() => {
-      fireEvent.click(selectFilter);
+      fireEvent.click(clearButton);
     });
-
-    const activityOption = screen.getByText('Activity');
-    act(() => {
-      fireEvent.click(activityOption);
-    });
-
-    expect(mockSetValue).toHaveBeenCalledWith({
-      historyEventTypes: ['TIMER', 'ACTIVITY'],
-    });
-
-    expect(mockSetHistoryEventTypesUserPreference).toHaveBeenCalledWith([
-      'TIMER',
-      'ACTIVITY',
-    ]);
+    expect(mockSetValue).toHaveBeenCalledWith({ historyEventTypes: undefined });
   });
 });
 
-function setup({
-  overrides,
-  historyEventTypesPreference,
-}: {
-  overrides?: WorkflowHistoryFiltersTypeValue;
-  historyEventTypesPreference?:
-    | Array<WorkflowHistoryEventFilteringType>
-    | undefined;
-}) {
+function setup({ overrides }: { overrides?: WorkflowHistoryFiltersTypeValue }) {
   const mockSetValue = jest.fn();
-  const mockSetHistoryEventTypesUserPreference = jest.fn();
-
-  const renderResult = render(
-    <WorkflowHistoryContext.Provider
+  render(
+    <WorkflowHistoryFiltersType
       value={{
-        ungroupedViewUserPreference: null,
-        setUngroupedViewUserPreference: jest.fn(),
-        historyEventTypesUserPreference: historyEventTypesPreference ?? null,
-        setHistoryEventTypesUserPreference:
-          mockSetHistoryEventTypesUserPreference,
-        clearHistoryEventTypesUserPreference: jest.fn(),
+        historyEventTypes: undefined,
+        ...overrides,
       }}
-    >
-      <WorkflowHistoryFiltersType
-        value={{
-          historyEventTypes: undefined,
-          ...overrides,
-        }}
-        setValue={mockSetValue}
-      />
-    </WorkflowHistoryContext.Provider>
+      setValue={mockSetValue}
+    />
   );
 
-  return {
-    mockSetValue,
-    mockSetHistoryEventTypesUserPreference,
-    ...renderResult,
-  };
+  return { mockSetValue };
 }

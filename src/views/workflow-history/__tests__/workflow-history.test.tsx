@@ -24,7 +24,6 @@ import { completedActivityTaskEvents } from '../__fixtures__/workflow-history-ac
 import { completedDecisionTaskEvents } from '../__fixtures__/workflow-history-decision-events';
 import WorkflowHistory from '../workflow-history';
 import { WorkflowHistoryContext } from '../workflow-history-context-provider/workflow-history-context-provider';
-import { type WorkflowHistoryEventFilteringType } from '../workflow-history-filters-type/workflow-history-filters-type.types';
 
 jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
   jest.fn(() => [{ historySelectedEventId: '1' }, jest.fn()])
@@ -299,34 +298,6 @@ describe('WorkflowHistory', () => {
     expect(await screen.findByText('Ungrouped Table')).toBeInTheDocument();
     expect(screen.getByText('Group')).toBeInTheDocument();
   });
-
-  it('should override history event types preference when query param is set', async () => {
-    const {
-      mockSetUngroupedViewUserPreference,
-      mockSetHistoryEventTypesUserPreference,
-    } = await setup({
-      pageQueryParamsValues: {
-        historyEventTypes: ['TIMER', 'SIGNAL'],
-        ungroupedHistoryViewEnabled: false,
-      },
-      historyEventTypesPreference: ['ACTIVITY', 'DECISION'],
-    });
-
-    expect(mockSetUngroupedViewUserPreference).not.toHaveBeenCalled();
-    expect(mockSetHistoryEventTypesUserPreference).not.toHaveBeenCalled();
-  });
-
-  it('should use preference when history event types query param is undefined', async () => {
-    const { mockSetHistoryEventTypesUserPreference } = await setup({
-      pageQueryParamsValues: {
-        historyEventTypes: undefined,
-        ungroupedHistoryViewEnabled: false,
-      },
-      historyEventTypesPreference: ['TIMER', 'SIGNAL'],
-    });
-
-    expect(mockSetHistoryEventTypesUserPreference).not.toHaveBeenCalled();
-  });
 });
 
 async function setup({
@@ -338,7 +309,6 @@ async function setup({
   emptyEvents,
   withResetModal,
   ungroupedViewPreference,
-  historyEventTypesPreference,
 }: {
   error?: boolean;
   summaryError?: boolean;
@@ -350,7 +320,6 @@ async function setup({
   emptyEvents?: boolean;
   withResetModal?: boolean;
   ungroupedViewPreference?: boolean;
-  historyEventTypesPreference?: Array<WorkflowHistoryEventFilteringType>;
 }) {
   const user = userEvent.setup();
 
@@ -365,8 +334,6 @@ async function setup({
   }
 
   const mockSetUngroupedViewUserPreference = jest.fn();
-  const mockSetHistoryEventTypesUserPreference = jest.fn();
-  const mockClearHistoryEventTypesUserPreference = jest.fn();
 
   type ReqResolver = (r: GetWorkflowHistoryResponse) => void;
   let requestResolver: ReqResolver = () => {};
@@ -381,11 +348,6 @@ async function setup({
         value={{
           ungroupedViewUserPreference: ungroupedViewPreference ?? null,
           setUngroupedViewUserPreference: mockSetUngroupedViewUserPreference,
-          historyEventTypesUserPreference: historyEventTypesPreference ?? null,
-          setHistoryEventTypesUserPreference:
-            mockSetHistoryEventTypesUserPreference,
-          clearHistoryEventTypesUserPreference:
-            mockClearHistoryEventTypesUserPreference,
         }}
       >
         <WorkflowHistory
@@ -490,7 +452,5 @@ async function setup({
     ...renderResult,
     mockSetQueryParams,
     mockSetUngroupedViewUserPreference,
-    mockSetHistoryEventTypesUserPreference,
-    mockClearHistoryEventTypesUserPreference,
   };
 }

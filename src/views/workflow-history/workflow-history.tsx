@@ -55,7 +55,6 @@ import WorkflowHistoryCompactEventCard from './workflow-history-compact-event-ca
 import { WorkflowHistoryContext } from './workflow-history-context-provider/workflow-history-context-provider';
 import WorkflowHistoryExpandAllEventsButton from './workflow-history-expand-all-events-button/workflow-history-expand-all-events-button';
 import WorkflowHistoryExportJsonButton from './workflow-history-export-json-button/workflow-history-export-json-button';
-import { DEFAULT_EVENT_FILTERING_TYPES } from './workflow-history-filters-type/workflow-history-filters-type.constants';
 import WorkflowHistoryTimelineChart from './workflow-history-timeline-chart/workflow-history-timeline-chart';
 import WorkflowHistoryTimelineGroup from './workflow-history-timeline-group/workflow-history-timeline-group';
 import WorkflowHistoryTimelineLoadMore from './workflow-history-timeline-load-more/workflow-history-timeline-load-more';
@@ -81,18 +80,18 @@ export default function WorkflowHistory({ params }: Props) {
     string | undefined
   >(undefined);
 
-  const { activeFiltersCount, queryParams, setQueryParams, resetAllFilters } =
-    usePageFilters({
-      pageQueryParamsConfig: workflowPageQueryParamsConfig,
-      pageFiltersConfig: workflowHistoryFiltersConfig,
-    });
-
   const {
-    ungroupedViewUserPreference,
-    setUngroupedViewUserPreference,
-    historyEventTypesUserPreference,
-    clearHistoryEventTypesUserPreference,
-  } = useContext(WorkflowHistoryContext);
+    activeFiltersCount,
+    queryParams,
+    setQueryParams,
+    ...pageFiltersRest
+  } = usePageFilters({
+    pageQueryParamsConfig: workflowPageQueryParamsConfig,
+    pageFiltersConfig: workflowHistoryFiltersConfig,
+  });
+
+  const { ungroupedViewUserPreference, setUngroupedViewUserPreference } =
+    useContext(WorkflowHistoryContext);
 
   const isUngroupedHistoryViewEnabled = useMemo(() => {
     if (queryParams.ungroupedHistoryViewEnabled !== undefined)
@@ -100,13 +99,6 @@ export default function WorkflowHistory({ params }: Props) {
 
     return ungroupedViewUserPreference ?? false;
   }, [queryParams.ungroupedHistoryViewEnabled, ungroupedViewUserPreference]);
-
-  const historyEventTypes = useMemo(() => {
-    if (queryParams.historyEventTypes !== undefined)
-      return queryParams.historyEventTypes;
-
-    return historyEventTypesUserPreference ?? DEFAULT_EVENT_FILTERING_TYPES;
-  }, [queryParams.historyEventTypes, historyEventTypesUserPreference]);
 
   const { data: wfExecutionDescription } = useSuspenseDescribeWorkflow({
     ...params,
@@ -181,12 +173,16 @@ export default function WorkflowHistory({ params }: Props) {
       ).filter(([_, g]) =>
         workflowHistoryFiltersConfig.every((f) =>
           f.filterFunc(g, {
-            historyEventTypes,
+            historyEventTypes: queryParams.historyEventTypes,
             historyEventStatuses: queryParams.historyEventStatuses,
           })
         )
       ),
-    [eventGroups, historyEventTypes, queryParams.historyEventStatuses]
+    [
+      eventGroups,
+      queryParams.historyEventTypes,
+      queryParams.historyEventStatuses,
+    ]
   );
 
   const sortedUngroupedEvents: Array<WorkflowHistoryUngroupedEventInfo> =
@@ -379,10 +375,7 @@ export default function WorkflowHistory({ params }: Props) {
           pageFiltersConfig={workflowHistoryFiltersConfig}
           queryParams={queryParams}
           setQueryParams={setQueryParams}
-          resetAllFilters={() => {
-            clearHistoryEventTypesUserPreference();
-            resetAllFilters();
-          }}
+          {...pageFiltersRest}
         />
       )}
       {typeof window !== 'undefined' && isTimelineChartShown && (
