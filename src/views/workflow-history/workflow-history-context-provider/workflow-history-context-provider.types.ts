@@ -3,9 +3,4 @@ import { type WorkflowHistoryEventFilteringType } from '../workflow-history-filt
 export type WorkflowHistoryContextType = {
   ungroupedViewUserPreference: boolean | null;
   setUngroupedViewUserPreference: (v: boolean) => void;
-  historyEventTypesUserPreference: Array<WorkflowHistoryEventFilteringType> | null;
-  setHistoryEventTypesUserPreference: (
-    v: Array<WorkflowHistoryEventFilteringType>
-  ) => void;
-  clearHistoryEventTypesUserPreference: () => void;
 };
