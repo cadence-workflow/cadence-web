@@ -14,6 +14,7 @@ import { type Props } from './workflow-history-event-summary.types';
 export default function WorkflowHistoryEventSummary({
   event,
   eventMetadata,
+  shouldReverseRow,
   ...workflowPageParams
 }: Props) {
   const summaryItems = useMemo(() => {
@@ -37,7 +38,7 @@ export default function WorkflowHistoryEventSummary({
   if (summaryItems.length === 0) return null;
 
   return (
-    <styled.SummaryFieldsContainer>
+    <styled.SummaryFieldsContainer $reverse={shouldReverseRow}>
       {summaryItems.map((item) => {
         const isNegative = Boolean(
           eventMetadata.negativeFields?.includes(item.path)

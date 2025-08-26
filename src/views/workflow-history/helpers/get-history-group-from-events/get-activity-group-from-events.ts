@@ -159,8 +159,8 @@ export default function getActivityGroupFromEvents(
         'scheduleToCloseTimeoutSeconds',
       ],
       activityTaskStartedEventAttributes: [
-        'lastHeartbeatTime',
         'heartbeatDetails',
+        'lastHeartbeatTime',
       ],
       activityTaskCompletedEventAttributes: ['result'],
       activityTaskFailedEventAttributes: ['details', 'reason'],

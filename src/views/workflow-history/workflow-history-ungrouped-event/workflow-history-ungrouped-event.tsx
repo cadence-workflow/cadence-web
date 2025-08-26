@@ -97,6 +97,7 @@ export default function WorkflowHistoryUngroupedEvent({
               <WorkflowHistoryEventSummary
                 event={eventInfo.event}
                 eventMetadata={eventInfo.eventMetadata}
+                shouldReverseRow
                 domain={decodedPageUrlParams.domain}
                 cluster={decodedPageUrlParams.cluster}
                 workflowId={decodedPageUrlParams.workflowId}

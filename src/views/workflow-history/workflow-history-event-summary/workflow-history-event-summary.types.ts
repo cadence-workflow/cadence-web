@@ -44,4 +44,5 @@ export type Props = {
     HistoryGroupEventMetadata,
     'summaryFields' | 'additionalDetails' | 'negativeFields'
   >;
+  shouldReverseRow?: boolean;
 } & WorkflowPageParams;
