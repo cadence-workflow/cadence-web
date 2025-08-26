@@ -2,6 +2,7 @@ import { createElement } from 'react';
 
 import DomainPageMetadataClusters from '../domain-page-metadata-clusters/domain-page-metadata-clusters';
 import DomainPageMetadataDescription from '../domain-page-metadata-description/domain-page-metadata-description';
+import DomainPageMetadataMode from '../domain-page-metadata-mode/domain-page-metadata-mode';
 import { type MetadataItem } from '../domain-page-metadata-table/domain-page-metadata-table.types';
 import DomainPageMetadataViewJson from '../domain-page-metadata-view-json/domain-page-metadata-view-json';
 
@@ -40,13 +41,12 @@ const domainPageMetadataExtendedTableConfig = [
       createElement(DomainPageMetadataClusters, domainDescription),
   },
   {
-    key: 'globalOrLocal',
-    label: 'Global/Local',
-    description:
-      'Whether the domain is global (operates in multiple clusters) or not',
+    key: 'mode',
+    label: 'Mode',
+    description: 'Domain operation mode in multi-cluster setup',
     kind: 'simple',
     getValue: ({ domainDescription }) =>
-      domainDescription.isGlobalDomain ? 'Global' : 'Local',
+      createElement(DomainPageMetadataMode, domainDescription),
   },
   {
     key: 'failoverVersion',

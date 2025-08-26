@@ -4,9 +4,19 @@ import {
   mockDomainDescription,
   mockDomainDescriptionSingleCluster,
 } from '../../__fixtures__/domain-description';
+import * as isActiveClusterModule from '../../helpers/is-active-cluster';
 import DomainPageMetadataClusters from '../domain-page-metadata-clusters';
 
+jest.mock('../../helpers/is-active-cluster', () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue(false),
+}));
+
 describe(DomainPageMetadataClusters.name, () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('renders plain text for single cluster', async () => {
     render(
       <DomainPageMetadataClusters {...mockDomainDescriptionSingleCluster} />
@@ -17,6 +27,11 @@ describe(DomainPageMetadataClusters.name, () => {
   });
 
   it('renders active/passive labels and links for multiple clusters', () => {
+    jest
+      .spyOn(isActiveClusterModule, 'default')
+      .mockReturnValueOnce(true) // cluster_1 is active
+      .mockReturnValueOnce(false); // cluster_2 is passive
+
     const { container } = render(
       <DomainPageMetadataClusters {...mockDomainDescription} />
     );

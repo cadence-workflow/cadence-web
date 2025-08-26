@@ -9,6 +9,7 @@ import isPendingHistoryEvent from '../workflow-history-event-details/helpers/is-
 import WorkflowHistoryEventDetails from '../workflow-history-event-details/workflow-history-event-details';
 import WorkflowHistoryEventLinkButton from '../workflow-history-event-link-button/workflow-history-event-link-button';
 import WorkflowHistoryEventStatusBadge from '../workflow-history-event-status-badge/workflow-history-event-status-badge';
+import WorkflowHistoryEventSummary from '../workflow-history-event-summary/workflow-history-event-summary';
 import getFormattedEventsDuration from '../workflow-history-events-duration-badge/helpers/get-formatted-events-duration';
 import WorkflowHistoryGroupLabel from '../workflow-history-group-label/workflow-history-group-label';
 import WorkflowHistoryTimelineResetButton from '../workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
@@ -88,6 +89,21 @@ export default function WorkflowHistoryUngroupedEvent({
                 parseGrpcTimestamp(eventInfo.event.eventTime)
               )}
             </styled.CardHeaderFieldContainer>
+          ) : (
+            <div />
+          )}
+          {eventInfo.eventMetadata.summaryFields && !isExpanded ? (
+            <styled.EventSummaryContainer>
+              <WorkflowHistoryEventSummary
+                event={eventInfo.event}
+                eventMetadata={eventInfo.eventMetadata}
+                shouldReverseRow
+                domain={decodedPageUrlParams.domain}
+                cluster={decodedPageUrlParams.cluster}
+                workflowId={decodedPageUrlParams.workflowId}
+                runId={decodedPageUrlParams.runId}
+              />
+            </styled.EventSummaryContainer>
           ) : (
             <div />
           )}

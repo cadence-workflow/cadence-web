@@ -36,6 +36,9 @@ export const styled = {
       paddingRight: $theme.sizing.scale400,
     })
   ),
+  EventSummaryContainer: createStyled('div', {
+    overflow: 'hidden',
+  }),
 };
 
 export const overrides = (animateOnEnter?: boolean) => ({
