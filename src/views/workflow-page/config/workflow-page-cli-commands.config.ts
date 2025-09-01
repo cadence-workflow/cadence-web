@@ -86,6 +86,18 @@ const workflowPageCliCommandsConfig: CliCommandConfig[] = [
       'cadence workflow {list|listall} --query \'(CustomKeywordField = "keyword1" and CustomIntField >= 5) or CustomKeywordField = "keyword2" and CloseTime = missing\'',
     group: 'workflow',
   },
+  {
+    label: 'Cancel a workflow',
+    command:
+      'cadence --env {staging|prod|(others)} --proxy_region {dca|phx} --domain {domain-name} workflow cancel -w {workflow-id} -r {run-id} --reason {reason details}',
+    group: 'workflow',
+},
+{
+    label: 'Terminate a workflow',
+    command:
+      'cadence --env {staging|prod|(others)} --proxy_region {dca|phx} --domain {domain-name} workflow terminate -w {workflow-id} -r {run-id} --reason {reason details}',
+    group: 'workflow',
+},
 ];
 
 export default workflowPageCliCommandsConfig;
