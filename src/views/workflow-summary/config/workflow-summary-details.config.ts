@@ -6,6 +6,7 @@ import WorkflowStatusTag from '@/views/shared/workflow-status-tag/workflow-statu
 import getWorkflowStatusTagProps from '@/views/workflow-page/helpers/get-workflow-status-tag-props';
 
 import WorkflowEventDetailsExecutionLink from '../../shared/workflow-event-details-execution-link/workflow-event-details-execution-link';
+import getActiveClusterSelectionPolicyLabel from '../helpers/get-active-cluster-selection-policy-label';
 import { type WorkflowSummaryDetailsConfig } from '../workflow-summary-details/workflow-summary-details.types';
 
 const workflowSummaryDetailsConfig: WorkflowSummaryDetailsConfig[] = [
@@ -143,6 +144,12 @@ const workflowSummaryDetailsConfig: WorkflowSummaryDetailsConfig[] = [
       const domain = formattedFirstEvent?.parentWorkflowDomain;
       return !(runId && workflowId && domain && decodedPageUrlParams.cluster);
     },
+  },
+  {
+    key: 'activeClusterSelectionPolicy',
+    getLabel: () => 'Active Cluster Selection Policy',
+    valueComponent: (args) => getActiveClusterSelectionPolicyLabel(args) ?? '',
+    hide: (args) => getActiveClusterSelectionPolicyLabel(args) === null,
   },
 ];
 
