@@ -147,22 +147,28 @@ const activeClusterSelectionStrategySchema = z.enum([
   ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_EXTERNAL_ENTITY,
 ]);
 
-const activeClusterSelectionPolicySchema = z.object({
-  strategy: activeClusterSelectionStrategySchema,
-  activeClusterStickyRegionConfig: z
-    .object({
-      stickyRegion: z.string(),
-    })
-    .nullable(),
-  activeClusterExternalEntityConfig: z.object({
-    externalEntityType: z.string(),
-    externalEntityKey: z.string(),
-  }),
-  strategyConfig: z.enum([
-    'activeClusterStickyRegionConfig',
-    'activeClusterExternalEntityConfig',
-  ]),
-});
+const activeClusterSelectionPolicySchema = z.discriminatedUnion(
+  'strategyConfig',
+  [
+    z.object({
+      strategy: activeClusterSelectionStrategySchema,
+      strategyConfig: z.literal('activeClusterStickyRegionConfig'),
+      activeClusterStickyRegionConfig: z.object({
+        stickyRegion: z.string(),
+      }),
+      activeClusterExternalEntityConfig: z.nullable(z.undefined()),
+    }),
+    z.object({
+      strategy: activeClusterSelectionStrategySchema,
+      strategyConfig: z.literal('activeClusterExternalEntityConfig'),
+      activeClusterStickyRegionConfig: z.nullable(z.undefined()),
+      activeClusterExternalEntityConfig: z.object({
+        externalEntityType: z.string(),
+        externalEntityKey: z.string(),
+      }),
+    }),
+  ]
+);
 
 const failureSchema = z.object({
   reason: z.string(),
