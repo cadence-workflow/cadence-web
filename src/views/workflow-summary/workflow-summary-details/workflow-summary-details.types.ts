@@ -6,8 +6,9 @@ import {
 } from '@/utils/data-formatters/schema/format-history-event-schema';
 import type { WorkflowPageTabContentProps } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
-type FormattedFirstHistoryEvent =
+export type FormattedFirstHistoryEvent =
   FormattedHistoryEventForType<'WorkflowExecutionStarted'> | null;
+
 export type Props = {
   firstHistoryEvent: HistoryEvent;
   closeHistoryEvent: HistoryEvent | null;
