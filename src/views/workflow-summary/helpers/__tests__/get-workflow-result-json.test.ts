@@ -96,6 +96,8 @@ describe('getWorkflowResultJson', () => {
       failureDetails: 'Failure Details',
       failureReason: 'Failure Reason',
       lastCompletionResult: null,
+      cronOverlapPolicy: 'CRON_OVERLAP_POLICY_INVALID',
+      activeClusterSelectionPolicy: null,
     };
     expect(getWorkflowResultJson(formattedEvent)).toEqual({
       initiator: 'CRON_SCHEDULE',

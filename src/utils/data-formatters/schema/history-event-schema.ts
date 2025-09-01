@@ -1,8 +1,10 @@
 import { z } from 'zod';
 
+import { ActiveClusterSelectionStrategy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ActiveClusterSelectionStrategy';
 import { CancelExternalWorkflowExecutionFailedCause } from '@/__generated__/proto-ts/uber/cadence/api/v1/CancelExternalWorkflowExecutionFailedCause';
 import { ChildWorkflowExecutionFailedCause } from '@/__generated__/proto-ts/uber/cadence/api/v1/ChildWorkflowExecutionFailedCause';
 import { ContinueAsNewInitiator } from '@/__generated__/proto-ts/uber/cadence/api/v1/ContinueAsNewInitiator';
+import { CronOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/CronOverlapPolicy';
 import { DecisionTaskFailedCause } from '@/__generated__/proto-ts/uber/cadence/api/v1/DecisionTaskFailedCause';
 import { DecisionTaskTimedOutCause } from '@/__generated__/proto-ts/uber/cadence/api/v1/DecisionTaskTimedOutCause';
 import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
@@ -133,6 +135,35 @@ const signalExternalWorkflowExecutionFailedCauseSchema = z.enum([
   SignalExternalWorkflowExecutionFailedCause.SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_WORKFLOW_ALREADY_COMPLETED,
 ]);
 
+const cronOverlapPolicySchema = z.enum([
+  CronOverlapPolicy.CRON_OVERLAP_POLICY_INVALID,
+  CronOverlapPolicy.CRON_OVERLAP_POLICY_SKIPPED,
+  CronOverlapPolicy.CRON_OVERLAP_POLICY_BUFFER_ONE,
+]);
+
+const activeClusterSelectionStrategySchema = z.enum([
+  ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_INVALID,
+  ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_REGION_STICKY,
+  ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_EXTERNAL_ENTITY,
+]);
+
+const activeClusterSelectionPolicySchema = z.object({
+  strategy: activeClusterSelectionStrategySchema,
+  activeClusterStickyRegionConfig: z
+    .object({
+      stickyRegion: z.string(),
+    })
+    .nullable(),
+  activeClusterExternalEntityConfig: z.object({
+    externalEntityType: z.string(),
+    externalEntityKey: z.string(),
+  }),
+  strategyConfig: z.enum([
+    'activeClusterStickyRegionConfig',
+    'activeClusterExternalEntityConfig',
+  ]),
+});
+
 const failureSchema = z.object({
   reason: z.string(),
   details: z.string(),
@@ -220,6 +251,9 @@ export const workflowExecutionStartedEventSchema =
       firstScheduledTime: timestampSchema.nullable(),
       partitionConfig: z.record(z.string()),
       requestId: z.string(),
+      cronOverlapPolicy: cronOverlapPolicySchema,
+      activeClusterSelectionPolicy:
+        activeClusterSelectionPolicySchema.nullable(),
     }),
   });
 
@@ -536,6 +570,9 @@ export const workflowExecutionContinuedAsNewEventSchema =
       header: headerSchema.nullable(),
       memo: memoSchema.nullable(),
       searchAttributes: searchAttributesSchema.nullable(),
+      cronOverlapPolicy: cronOverlapPolicySchema,
+      activeClusterSelectionPolicy:
+        activeClusterSelectionPolicySchema.nullable(),
     }),
   });
 
@@ -575,6 +612,9 @@ export const startChildWorkflowExecutionInitiatedEventSchema =
       delayStart: durationSchema.nullable(),
       jitterStart: durationSchema.nullable(),
       firstRunAt: timestampSchema.nullable(),
+      cronOverlapPolicy: cronOverlapPolicySchema,
+      activeClusterSelectionPolicy:
+        activeClusterSelectionPolicySchema.nullable(),
     }),
   });
 

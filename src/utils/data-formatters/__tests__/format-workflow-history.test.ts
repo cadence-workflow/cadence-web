@@ -71,7 +71,7 @@ describe('formatWorkflowHistory', () => {
       rawHistory: null,
       nextPageToken: '',
     };
-    //@ts-expect-error testing missing archived field
+    // @ts-expect-error testing case where archived is not set
     expect(formatWorkflowHistory(input)).toEqual(expectedOutput);
   });
 
@@ -137,7 +137,7 @@ describe('formatWorkflowHistory', () => {
       rawHistory: null,
       nextPageToken: '',
     };
-    //@ts-expect-error testing null raw history
+    // @ts-expect-error testing null case
     expect(formatWorkflowHistory(input)).toEqual(expectedOutput);
   });
 });
