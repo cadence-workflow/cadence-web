@@ -28,14 +28,6 @@ export default function WorkflowHistoryContextProvider({
     )
   );
 
-  const [historyEventTypesPreference, setHistoryEventTypesPreference] =
-    useState(() =>
-      getLocalStorageValue(
-        workflowHistoryUserPreferencesConfig.historyEventTypes.key,
-        workflowHistoryUserPreferencesConfig.historyEventTypes.schema
-      )
-    );
-
   const setUngroupedViewUserPreference = useCallback(
     (isUngroupedHistoryViewEnabled: boolean) => {
       setLocalStorageValue(
@@ -47,32 +39,11 @@ export default function WorkflowHistoryContextProvider({
     []
   );
 
-  const setHistoryEventTypesUserPreference = useCallback(
-    (historyEventTypes: Array<WorkflowHistoryEventFilteringType>) => {
-      setLocalStorageValue(
-        workflowHistoryUserPreferencesConfig.historyEventTypes.key,
-        JSON.stringify(historyEventTypes)
-      );
-      setHistoryEventTypesPreference(historyEventTypes);
-    },
-    []
-  );
-
-  const clearHistoryEventTypesUserPreference = useCallback(() => {
-    clearLocalStorageValue(
-      workflowHistoryUserPreferencesConfig.historyEventTypes.key
-    );
-    setHistoryEventTypesPreference(null);
-  }, []);
-
   return (
     <WorkflowHistoryContext.Provider
       value={{
         ungroupedViewUserPreference: ungroupedViewPreference,
         setUngroupedViewUserPreference,
-        historyEventTypesUserPreference: historyEventTypesPreference,
-        setHistoryEventTypesUserPreference,
-        clearHistoryEventTypesUserPreference,
       }}
     >
       {children}
