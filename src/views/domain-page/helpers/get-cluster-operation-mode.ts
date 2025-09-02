@@ -2,9 +2,9 @@ import isActiveActiveDomain from '@/views/shared/active-active/helpers/is-active
 
 import { type DomainDescription } from '../domain-page.types';
 
-export default function DomainPageMetadataMode(
+export default function getClusterOperationMode(
   domainDescription: DomainDescription
-) {
+): string {
   if (isActiveActiveDomain(domainDescription)) {
     return 'Active-Active';
   }
