@@ -90,14 +90,18 @@ const workflowPageCliCommandsConfig: CliCommandConfig[] = [
     label: 'Cancel a workflow',
     command:
       'cadence --env {staging|prod|(others)} --proxy_region {dca|phx} --domain {domain-name} workflow cancel -w {workflow-id} -r {run-id} --reason {reason details}',
+    description:
+      'Cancel a workflow, recording WorkflowExecutionCancelRequested event and allowing for clean up work after cancellation',
     group: 'workflow',
-},
-{
+  },
+  {
     label: 'Terminate a workflow',
     command:
       'cadence --env {staging|prod|(others)} --proxy_region {dca|phx} --domain {domain-name} workflow terminate -w {workflow-id} -r {run-id} --reason {reason details}',
+    description:
+      'Terminate a workflow immediately, recording WorkflowExecutionTerminated event as the closing event in the history',
     group: 'workflow',
-},
+  },
 ];
 
 export default workflowPageCliCommandsConfig;

@@ -58,7 +58,7 @@ export default function WorkflowPageCliCommandsModal({
             <Tab key={name} title={title} />
           ))}
         </Tabs>
-        <div>
+        <div className={cls.commandsScrollContainer}>
           {currentTabCommands.map(({ label, command, description }) => (
             <div key={label} className={cls.rowContainer}>
               <div className={cls.rowLabel}>{label}</div>

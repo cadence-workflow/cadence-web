@@ -54,6 +54,11 @@ const cssStylesObj = {
     marginTop: theme.sizing.scale300,
     ...theme.typography.ParagraphXSmall,
   }),
+  commandsScrollContainer: (theme) => ({
+    maxHeight: '60vh',
+    overflowY: 'auto',
+    paddingRight: theme.sizing.scale300,
+  }),
 } satisfies StyletronCSSObject;
 
 export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> =
