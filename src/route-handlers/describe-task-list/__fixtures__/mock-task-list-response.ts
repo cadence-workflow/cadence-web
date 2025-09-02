@@ -21,6 +21,10 @@ export const mockDecisionTaskListResponse: DescribeTaskListResponse = {
   ],
   taskListStatus: null,
   partitionConfig: null,
+  taskList: {
+    name: 'mock-task-list',
+    kind: 'TASK_LIST_KIND_NORMAL',
+  },
 };
 
 export const mockActivityTaskListResponse: DescribeTaskListResponse = {
@@ -44,4 +48,8 @@ export const mockActivityTaskListResponse: DescribeTaskListResponse = {
   ],
   taskListStatus: null,
   partitionConfig: null,
+  taskList: {
+    name: 'mock-task-list',
+    kind: 'TASK_LIST_KIND_NORMAL',
+  },
 };
