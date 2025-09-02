@@ -72,7 +72,7 @@ describe(DomainPageHeaderInfo.name, () => {
     expect(
       screen.getByTestId('mock-domain-cluster-selector')
     ).toBeInTheDocument();
-    expect(screen.getByText('Global')).toBeInTheDocument();
+    expect(screen.getByText('Active-Passive')).toBeInTheDocument();
     expect(screen.getByText('mock-domain-staging-uuid')).toBeInTheDocument();
   });
 });
