@@ -3,9 +3,9 @@ import { createElement } from 'react';
 import DomainPageMetadataClusters from '../domain-page-metadata-clusters/domain-page-metadata-clusters';
 import DomainPageMetadataDescription from '../domain-page-metadata-description/domain-page-metadata-description';
 import DomainPageMetadataFailoverVersion from '../domain-page-metadata-failover-version/domain-page-metadata-failover-version';
-import DomainPageMetadataMode from '../domain-page-metadata-mode/domain-page-metadata-mode';
 import { type MetadataItem } from '../domain-page-metadata-table/domain-page-metadata-table.types';
 import DomainPageMetadataViewJson from '../domain-page-metadata-view-json/domain-page-metadata-view-json';
+import getClusterOperationMode from '../helpers/get-cluster-operation-mode';
 
 const domainPageMetadataExtendedTableConfig = [
   {
@@ -47,7 +47,7 @@ const domainPageMetadataExtendedTableConfig = [
     description: 'Domain operation mode in multi-cluster setup',
     kind: 'simple',
     getValue: ({ domainDescription }) =>
-      createElement(DomainPageMetadataMode, domainDescription),
+      getClusterOperationMode(domainDescription),
   },
   {
     key: 'failoverVersion',
