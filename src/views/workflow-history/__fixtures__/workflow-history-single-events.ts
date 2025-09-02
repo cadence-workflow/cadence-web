@@ -63,6 +63,8 @@ export const startWorkflowExecutionEvent = {
       nanos: 895425298,
     },
     requestId: '8b2d2b6f-996a-431e-96b3-17d19cf0e508',
+    activeClusterSelectionPolicy: null,
+    cronOverlapPolicy: 'CRON_OVERLAP_POLICY_INVALID',
   },
   attributes: 'workflowExecutionStartedEventAttributes',
 } as const satisfies SingleHistoryEvent;
@@ -258,6 +260,8 @@ export const continueAsNewWorkflowExecutionEvent = {
     },
     memo: null,
     searchAttributes: null,
+    activeClusterSelectionPolicy: null,
+    cronOverlapPolicy: 'CRON_OVERLAP_POLICY_INVALID',
   },
   attributes: 'workflowExecutionContinuedAsNewEventAttributes',
 } as const satisfies SingleHistoryEvent;

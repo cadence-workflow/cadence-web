@@ -24,6 +24,9 @@ const MOCK_WORKFLOW_EXECUTIONS: Array<WorkflowExecutionInfo> = [
     isCron: false,
     updateTime: null,
     partitionConfig: {},
+    taskListInfo: null,
+    activeClusterSelectionPolicy: null,
+    cronOverlapPolicy: 'CRON_OVERLAP_POLICY_INVALID',
   },
   {
     workflowExecution: {
@@ -44,6 +47,9 @@ const MOCK_WORKFLOW_EXECUTIONS: Array<WorkflowExecutionInfo> = [
     isCron: false,
     updateTime: null,
     partitionConfig: {},
+    taskListInfo: null,
+    activeClusterSelectionPolicy: null,
+    cronOverlapPolicy: 'CRON_OVERLAP_POLICY_INVALID',
   },
   // Invalid workflow executions
   {
@@ -62,6 +68,9 @@ const MOCK_WORKFLOW_EXECUTIONS: Array<WorkflowExecutionInfo> = [
     isCron: false,
     updateTime: null,
     partitionConfig: {},
+    taskListInfo: null,
+    activeClusterSelectionPolicy: null,
+    cronOverlapPolicy: 'CRON_OVERLAP_POLICY_INVALID',
   },
   {
     workflowExecution: {
@@ -82,6 +91,9 @@ const MOCK_WORKFLOW_EXECUTIONS: Array<WorkflowExecutionInfo> = [
     isCron: false,
     updateTime: null,
     partitionConfig: {},
+    taskListInfo: null,
+    activeClusterSelectionPolicy: null,
+    cronOverlapPolicy: 'CRON_OVERLAP_POLICY_INVALID',
   },
   {
     workflowExecution: {
@@ -102,6 +114,9 @@ const MOCK_WORKFLOW_EXECUTIONS: Array<WorkflowExecutionInfo> = [
     isCron: false,
     updateTime: null,
     partitionConfig: {},
+    taskListInfo: null,
+    activeClusterSelectionPolicy: null,
+    cronOverlapPolicy: 'CRON_OVERLAP_POLICY_INVALID',
   },
 ];
 

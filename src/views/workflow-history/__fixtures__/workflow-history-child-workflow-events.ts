@@ -43,6 +43,8 @@ export const initiateChildWorkflowEvent = {
     header: {
       fields: {},
     },
+    activeClusterSelectionPolicy: null,
+    cronOverlapPolicy: 'CRON_OVERLAP_POLICY_INVALID',
   },
   attributes: 'startChildWorkflowExecutionInitiatedEventAttributes',
 } as const satisfies ChildWorkflowExecutionHistoryEvent;

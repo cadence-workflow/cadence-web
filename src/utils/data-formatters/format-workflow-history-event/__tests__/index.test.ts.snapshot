@@ -510,7 +510,9 @@ exports[`formatWorkflowHistoryEvent should format workflow startChildWorkflowExe
 
 exports[`formatWorkflowHistoryEvent should format workflow startChildWorkflowExecutionInitiatedEventAttributes to match snapshot 1`] = `
 {
+  "activeClusterSelectionPolicy": null,
   "control": null,
+  "cronOverlapPolicy": "CRON_OVERLAP_POLICY_INVALID",
   "cronSchedule": null,
   "decisionTaskCompletedEventId": 4,
   "delayStartSeconds": null,
@@ -648,7 +650,9 @@ exports[`formatWorkflowHistoryEvent should format workflow workflowExecutionComp
 
 exports[`formatWorkflowHistoryEvent should format workflow workflowExecutionContinuedAsNewEventAttributes to match snapshot 1`] = `
 {
+  "activeClusterSelectionPolicy": null,
   "backoffStartIntervalInSeconds": 55,
+  "cronOverlapPolicy": "CRON_OVERLAP_POLICY_INVALID",
   "decisionTaskCompletedEventId": 17,
   "eventId": 55,
   "eventType": "WorkflowExecutionContinuedAsNew",
@@ -709,10 +713,12 @@ exports[`formatWorkflowHistoryEvent should format workflow workflowExecutionSign
 
 exports[`formatWorkflowHistoryEvent should format workflow workflowExecutionStartedEventAttributes to match snapshot 1`] = `
 {
+  "activeClusterSelectionPolicy": null,
   "attempt": null,
   "continuedExecutionRunId": "e8565005-a234-4077-a917-6e5992ccbe4a",
   "continuedFailureDetails": null,
   "continuedFailureReason": null,
+  "cronOverlapPolicy": "CRON_OVERLAP_POLICY_INVALID",
   "cronSchedule": "@every 1m",
   "eventId": 1,
   "eventType": "WorkflowExecutionStarted",
