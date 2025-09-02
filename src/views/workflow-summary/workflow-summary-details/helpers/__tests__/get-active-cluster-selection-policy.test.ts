@@ -50,15 +50,9 @@ describe(getActiveClusterSelectionPolicy.name, () => {
   });
 
   it('returns null when no policy is available in either source', () => {
-    const workflowDetails = {
-      workflowExecutionInfo: {},
-    } as any;
-
-    const formattedFirstEvent = {} as any;
-
     const result = getActiveClusterSelectionPolicy({
-      workflowDetails,
-      formattedFirstEvent,
+      workflowDetails: mockDescribeWorkflowResponse,
+      formattedFirstEvent: mockFormattedFirstEvent,
     });
 
     expect(result).toBeNull();
