@@ -64,7 +64,7 @@ export default function WorkflowDiagnosticsContent({
     toggleIsItemExpanded,
   } = useExpansionToggle<IssueExpansionID>({
     items: allIssueExpansionIds,
-    initialState: {},
+    initialState: true,
   });
 
   if (nonEmptyIssuesGroups.length === 0) {
