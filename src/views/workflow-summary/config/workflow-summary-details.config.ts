@@ -6,6 +6,8 @@ import WorkflowStatusTag from '@/views/shared/workflow-status-tag/workflow-statu
 import getWorkflowStatusTagProps from '@/views/workflow-page/helpers/get-workflow-status-tag-props';
 
 import WorkflowEventDetailsExecutionLink from '../../shared/workflow-event-details-execution-link/workflow-event-details-execution-link';
+import getActiveClusterSelectionPolicy from '../workflow-summary-details/helpers/get-active-cluster-selection-policy';
+import { ACTIVE_CLUSTER_SELECTION_STRATEGY_LABEL_MAP } from '../workflow-summary-details/workflow-summary-details.constants';
 import { type WorkflowSummaryDetailsConfig } from '../workflow-summary-details/workflow-summary-details.types';
 
 const workflowSummaryDetailsConfig: WorkflowSummaryDetailsConfig[] = [
@@ -143,6 +145,69 @@ const workflowSummaryDetailsConfig: WorkflowSummaryDetailsConfig[] = [
       const domain = formattedFirstEvent?.parentWorkflowDomain;
       return !(runId && workflowId && domain && decodedPageUrlParams.cluster);
     },
+  },
+  {
+    key: 'activeClusterSelectionStrategy',
+    getLabel: () => 'Cluster Strategy',
+    valueComponent: (args) => {
+      const policy = getActiveClusterSelectionPolicy(args);
+
+      return policy
+        ? ACTIVE_CLUSTER_SELECTION_STRATEGY_LABEL_MAP[policy.strategy]
+        : null;
+    },
+    hide: (args) => getActiveClusterSelectionPolicy(args) === null,
+  },
+  {
+    key: 'stickyRegion',
+    getLabel: () => 'Sticky Region',
+    valueComponent: (args) => {
+      const policy = getActiveClusterSelectionPolicy(args);
+
+      if (
+        policy?.strategy !== 'ACTIVE_CLUSTER_SELECTION_STRATEGY_REGION_STICKY'
+      )
+        return null;
+
+      return policy.activeClusterStickyRegionConfig?.stickyRegion;
+    },
+    hide: (args) =>
+      getActiveClusterSelectionPolicy(args)?.strategy !==
+      'ACTIVE_CLUSTER_SELECTION_STRATEGY_REGION_STICKY',
+  },
+  {
+    key: 'externalEntityType',
+    getLabel: () => 'Entity Type',
+    valueComponent: (args) => {
+      const policy = getActiveClusterSelectionPolicy(args);
+
+      if (
+        policy?.strategy !== 'ACTIVE_CLUSTER_SELECTION_STRATEGY_EXTERNAL_ENTITY'
+      )
+        return null;
+
+      return policy.activeClusterExternalEntityConfig?.externalEntityType;
+    },
+    hide: (args) =>
+      getActiveClusterSelectionPolicy(args)?.strategy !==
+      'ACTIVE_CLUSTER_SELECTION_STRATEGY_EXTERNAL_ENTITY',
+  },
+  {
+    key: 'externalEntityKey',
+    getLabel: () => 'Entity Key',
+    valueComponent: (args) => {
+      const policy = getActiveClusterSelectionPolicy(args);
+
+      if (
+        policy?.strategy !== 'ACTIVE_CLUSTER_SELECTION_STRATEGY_EXTERNAL_ENTITY'
+      )
+        return null;
+
+      return policy.activeClusterExternalEntityConfig?.externalEntityKey;
+    },
+    hide: (args) =>
+      getActiveClusterSelectionPolicy(args)?.strategy !==
+      'ACTIVE_CLUSTER_SELECTION_STRATEGY_EXTERNAL_ENTITY',
   },
 ];
 

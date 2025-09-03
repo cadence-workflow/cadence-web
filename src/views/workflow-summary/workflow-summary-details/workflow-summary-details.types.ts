@@ -6,8 +6,9 @@ import {
 } from '@/utils/data-formatters/schema/format-history-event-schema';
 import type { WorkflowPageTabContentProps } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
-type FormattedFirstHistoryEvent =
+export type FormattedFirstHistoryEvent =
   FormattedHistoryEventForType<'WorkflowExecutionStarted'> | null;
+
 export type Props = {
   firstHistoryEvent: HistoryEvent;
   closeHistoryEvent: HistoryEvent | null;
@@ -21,23 +22,18 @@ export type WorkflowSummaryDetailsComponent =
   | keyof JSX.IntrinsicElements
   | React.JSXElementConstructor<any>;
 
+export type WorkflowSummaryFieldArgs = {
+  firstEvent: HistoryEvent;
+  closeEvent: HistoryEvent | null;
+  formattedFirstEvent: FormattedFirstHistoryEvent;
+  formattedCloseEvent: FormattedHistoryEvent | null;
+  workflowDetails: DescribeWorkflowResponse;
+  decodedPageUrlParams: Props['decodedPageUrlParams'];
+};
+
 export type WorkflowSummaryDetailsConfig = {
   key: string;
   getLabel: () => string;
-  valueComponent: React.ComponentType<{
-    firstEvent: HistoryEvent;
-    closeEvent: HistoryEvent | null;
-    formattedFirstEvent: FormattedFirstHistoryEvent;
-    formattedCloseEvent: FormattedHistoryEvent | null;
-    workflowDetails: DescribeWorkflowResponse;
-    decodedPageUrlParams: Props['decodedPageUrlParams'];
-  }>;
-  hide?: (args: {
-    firstEvent: HistoryEvent;
-    closeEvent: HistoryEvent | null;
-    formattedFirstEvent: FormattedFirstHistoryEvent;
-    formattedCloseEvent: FormattedHistoryEvent | null;
-    workflowDetails: DescribeWorkflowResponse;
-    decodedPageUrlParams: Props['decodedPageUrlParams'];
-  }) => boolean;
+  valueComponent: React.ComponentType<WorkflowSummaryFieldArgs>;
+  hide?: (args: WorkflowSummaryFieldArgs) => boolean;
 };

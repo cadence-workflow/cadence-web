@@ -4,12 +4,12 @@ import { render, screen } from '@/test-utils/rtl';
 
 import { type DescribeWorkflowResponse } from '@/route-handlers/describe-workflow/describe-workflow.types';
 import formatWorkflowHistoryEvent from '@/utils/data-formatters/format-workflow-history-event';
-import { type FormattedHistoryEventForType } from '@/utils/data-formatters/schema/format-history-event-schema';
 import {
   completeWorkflowExecutionEvent,
   startWorkflowExecutionEvent,
 } from '@/views/workflow-history/__fixtures__/workflow-history-single-events';
 
+import { mockFormattedFirstEvent } from '../../__fixtures__/formatted-first-history-event';
 import WorkflowSummaryDetails from '../workflow-summary-details';
 import {
   type WorkflowSummaryDetailsConfig,
@@ -57,10 +57,6 @@ const mockWorkflowDetails: DescribeWorkflowResponse = {
 };
 
 describe('WorkflowSummaryDetails', () => {
-  // TODO @assem.hafez enhance typing for formattedFirstHistoryEvent
-  //@ts-expect-error - TS is complaining about the type of formattedFirstHistoryEvent
-  const formattedFirstHistoryEvent: FormattedHistoryEventForType<'WorkflowExecutionStarted'> =
-    formatWorkflowHistoryEvent(startWorkflowExecutionEvent);
   const formattedCloseHistoryEvent = formatWorkflowHistoryEvent(
     completeWorkflowExecutionEvent
   );
@@ -69,7 +65,7 @@ describe('WorkflowSummaryDetails', () => {
       <WorkflowSummaryDetails
         firstHistoryEvent={startWorkflowExecutionEvent}
         closeHistoryEvent={completeWorkflowExecutionEvent}
-        formattedFirstHistoryEvent={formattedFirstHistoryEvent}
+        formattedFirstHistoryEvent={mockFormattedFirstEvent}
         formattedCloseHistoryEvent={formattedCloseHistoryEvent}
         workflowDetails={mockWorkflowDetails}
         decodedPageUrlParams={params}
@@ -85,7 +81,7 @@ describe('WorkflowSummaryDetails', () => {
       <WorkflowSummaryDetails
         firstHistoryEvent={startWorkflowExecutionEvent}
         closeHistoryEvent={completeWorkflowExecutionEvent}
-        formattedFirstHistoryEvent={formattedFirstHistoryEvent}
+        formattedFirstHistoryEvent={mockFormattedFirstEvent}
         formattedCloseHistoryEvent={formattedCloseHistoryEvent}
         workflowDetails={mockWorkflowDetails}
         decodedPageUrlParams={params}
@@ -103,7 +99,7 @@ describe('WorkflowSummaryDetails', () => {
       <WorkflowSummaryDetails
         firstHistoryEvent={startWorkflowExecutionEvent}
         closeHistoryEvent={completeWorkflowExecutionEvent}
-        formattedFirstHistoryEvent={formattedFirstHistoryEvent}
+        formattedFirstHistoryEvent={mockFormattedFirstEvent}
         formattedCloseHistoryEvent={formattedCloseHistoryEvent}
         workflowDetails={mockWorkflowDetails}
         decodedPageUrlParams={params}
