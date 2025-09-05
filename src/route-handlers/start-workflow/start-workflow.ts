@@ -8,6 +8,7 @@ import { type RouteHandlerErrorPayload } from '@/utils/logger/logger.types';
 
 import processWorkflowInput from './helpers/process-workflow-input';
 import startWorkflowRequestBodySchema from './schemas/start-workflow-request-body-schema';
+import { DEFAULT_TASK_START_TO_CLOSE_TIMEOUT_SECONDS } from './start-workflow.constants';
 import { type Context, type RequestParams } from './start-workflow.types';
 
 export async function startWorkflow(
@@ -57,7 +58,11 @@ export async function startWorkflow(
       executionStartToCloseTimeout: {
         seconds: executionStartToCloseTimeoutSeconds,
       },
-      taskStartToCloseTimeout: { seconds: taskStartToCloseTimeoutSeconds },
+      taskStartToCloseTimeout: {
+        seconds:
+          taskStartToCloseTimeoutSeconds ||
+          DEFAULT_TASK_START_TO_CLOSE_TIMEOUT_SECONDS,
+      },
       firstRunAt: firstRunAt
         ? {
             seconds: firstRunAtMS / 1000,
