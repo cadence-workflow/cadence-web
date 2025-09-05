@@ -1,4 +1,4 @@
-import { processWorkflowInput } from '../process-workflow-input';
+import processWorkflowInput from '../process-workflow-input';
 
 describe('processWorkflowInput', () => {
   it('should return undefined when input is undefined', () => {

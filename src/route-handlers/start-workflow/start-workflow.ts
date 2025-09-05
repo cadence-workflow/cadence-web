@@ -6,7 +6,7 @@ import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger from '@/utils/logger';
 import { type RouteHandlerErrorPayload } from '@/utils/logger/logger.types';
 
-import { processWorkflowInput } from './helpers/process-workflow-input';
+import processWorkflowInput from './helpers/process-workflow-input';
 import startWorkflowRequestBodySchema from './schemas/start-workflow-request-body-schema';
 import { type Context, type RequestParams } from './start-workflow.types';
 

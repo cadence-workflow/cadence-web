@@ -1,6 +1,6 @@
 import { type ProcessWorkflowInputParams } from './process-workflow-input.types';
 
-export function processWorkflowInput({
+export default function processWorkflowInput({
   input,
   workerSDKLanguage,
 }: ProcessWorkflowInputParams): string | undefined {
