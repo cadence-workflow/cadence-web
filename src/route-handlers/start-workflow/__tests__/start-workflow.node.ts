@@ -1,0 +1,318 @@
+import { describe, expect, it, jest } from '@jest/globals';
+
+import { startWorkflow } from '../start-workflow';
+import { type StartWorkflowRequestBody } from '../start-workflow.types';
+
+const defaultRequestBody: StartWorkflowRequestBody = {
+  workflowId: 'test-workflow-id',
+  workflowType: {
+    name: 'TestWorkflow',
+  },
+  taskList: {
+    name: 'test-task-list',
+  },
+  input: ['test-input'],
+  workerSDKLanguage: 'GO',
+  executionStartToCloseTimeoutSeconds: 30,
+  taskStartToCloseTimeoutSeconds: 10,
+};
+
+describe(startWorkflow.name, () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('calls startWorkflow and returns valid response', async () => {
+    const { res, mockStartWorkflow } = await setup({});
+
+    expect(mockStartWorkflow).toHaveBeenCalledWith({
+      domain: 'test-domain',
+      workflowId: 'test-workflow-id',
+      workflowType: { name: 'TestWorkflow' },
+      taskList: { name: 'test-task-list' },
+      input: { data: Buffer.from('"test-input"', 'utf-8') },
+      executionStartToCloseTimeout: { seconds: 30 },
+      taskStartToCloseTimeout: { seconds: 10 },
+      firstRunAt: undefined,
+      cronSchedule: undefined,
+      identity: 'test-user-id',
+      requestId: expect.any(String),
+    });
+
+    const responseData = await res.json();
+    expect(responseData).toEqual({
+      runId: 'test-run-id',
+      workflowId: 'test-workflow-id',
+    });
+  });
+
+  it('handles missing optional fields correctly', async () => {
+    const minimalRequestBody: StartWorkflowRequestBody = {
+      workflowId: 'test-workflow-id',
+      workflowType: {
+        name: 'TestWorkflow',
+      },
+      taskList: {
+        name: 'test-task-list',
+      },
+      workerSDKLanguage: 'GO',
+      executionStartToCloseTimeoutSeconds: 30,
+    };
+
+    const { res, mockStartWorkflow } = await setup({
+      requestBody: minimalRequestBody,
+    });
+
+    expect(mockStartWorkflow).toHaveBeenCalledWith({
+      domain: 'test-domain',
+      workflowId: 'test-workflow-id',
+      workflowType: { name: 'TestWorkflow' },
+      taskList: { name: 'test-task-list' },
+      input: undefined,
+      executionStartToCloseTimeout: { seconds: 30 },
+      taskStartToCloseTimeout: { seconds: undefined },
+      firstRunAt: undefined,
+      cronSchedule: undefined,
+      identity: 'test-user-id',
+      requestId: expect.any(String),
+    });
+
+    const responseData = await res.json();
+    expect(responseData).toEqual({
+      runId: 'test-run-id',
+      workflowId: 'test-workflow-id',
+    });
+  });
+
+  it('returns error for invalid request body', async () => {
+    const invalidRequestBody = {
+      workflowType: {
+        name: '', // Invalid: empty string
+      },
+      taskList: {
+        name: '', // Invalid: empty string
+      },
+      workerSDKLanguage: 'GO' as const,
+      executionStartToCloseTimeoutSeconds: 30,
+    };
+
+    const { res, mockStartWorkflow } = await setup({
+      requestBody: invalidRequestBody,
+    });
+
+    expect(mockStartWorkflow).not.toHaveBeenCalled();
+    expect(res.status).toBe(400);
+    const responseData = await res.json();
+    expect(responseData.message).toBe(
+      'Invalid values provided for workflow start'
+    );
+    expect(responseData.validationErrors).toBeDefined();
+  });
+
+  it('handles GRPC errors correctly', async () => {
+    const { res, mockStartWorkflow } = await setup({
+      error: 'Internal server error',
+    });
+
+    expect(mockStartWorkflow).toHaveBeenCalled();
+    expect(res.status).toBe(500);
+    const responseData = await res.json();
+    expect(responseData.message).toBe('Internal server error');
+    expect(responseData.cause).toBeDefined();
+  });
+
+  it('handles unknown errors correctly', async () => {
+    const { res, mockStartWorkflow } = await setup({
+      error: new Error('Unknown error'),
+    });
+
+    expect(mockStartWorkflow).toHaveBeenCalled();
+    expect(res.status).toBe(500);
+    const responseData = await res.json();
+    expect(responseData.message).toBe('Error starting workflow');
+    expect(responseData.cause).toBeDefined();
+  });
+
+  it('generates workflowId when not provided', async () => {
+    const requestBodyWithoutWorkflowId: StartWorkflowRequestBody = {
+      workflowType: {
+        name: 'TestWorkflow',
+      },
+      taskList: {
+        name: 'test-task-list',
+      },
+      workerSDKLanguage: 'GO',
+      executionStartToCloseTimeoutSeconds: 30,
+    };
+
+    const { res, mockStartWorkflow } = await setup({
+      requestBody: requestBodyWithoutWorkflowId,
+    });
+
+    expect(mockStartWorkflow).toHaveBeenCalledWith(
+      expect.objectContaining({
+        workflowId: expect.stringMatching(
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+        ),
+      })
+    );
+
+    const responseData = await res.json();
+    expect(responseData.workflowId).toBeDefined();
+    expect(responseData.workflowId).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+    );
+  });
+
+  it('handles firstRunAt field correctly', async () => {
+    const requestBodyWithFirstRunAt: StartWorkflowRequestBody = {
+      workflowId: 'test-workflow-id',
+      workflowType: {
+        name: 'TestWorkflow',
+      },
+      taskList: {
+        name: 'test-task-list',
+      },
+      workerSDKLanguage: 'GO',
+      executionStartToCloseTimeoutSeconds: 30,
+      firstRunAt: '2024-01-01T10:00:00.000Z',
+    };
+
+    const { mockStartWorkflow } = await setup({
+      requestBody: requestBodyWithFirstRunAt,
+    });
+
+    expect(mockStartWorkflow).toHaveBeenCalledWith(
+      expect.objectContaining({
+        firstRunAt: {
+          seconds: expect.any(Number),
+          nanos: 0,
+        },
+      })
+    );
+  });
+
+  it('handles cronSchedule field correctly', async () => {
+    const requestBodyWithCronSchedule: StartWorkflowRequestBody = {
+      workflowId: 'test-workflow-id',
+      workflowType: {
+        name: 'TestWorkflow',
+      },
+      taskList: {
+        name: 'test-task-list',
+      },
+      workerSDKLanguage: 'GO',
+      executionStartToCloseTimeoutSeconds: 30,
+      cronSchedule: '0 0 * * *', // Daily at midnight
+    };
+
+    const { mockStartWorkflow } = await setup({
+      requestBody: requestBodyWithCronSchedule,
+    });
+
+    expect(mockStartWorkflow).toHaveBeenCalledWith(
+      expect.objectContaining({
+        cronSchedule: '0 0 * * *',
+      })
+    );
+  });
+
+  it('handles JAVA worker SDK language input processing', async () => {
+    const requestBodyWithJavaInput: StartWorkflowRequestBody = {
+      workflowId: 'test-workflow-id',
+      workflowType: {
+        name: 'TestWorkflow',
+      },
+      taskList: {
+        name: 'test-task-list',
+      },
+      workerSDKLanguage: 'JAVA',
+      executionStartToCloseTimeoutSeconds: 30,
+      input: ['arg1', 'arg2'],
+    };
+
+    const { mockStartWorkflow } = await setup({
+      requestBody: requestBodyWithJavaInput,
+    });
+
+    expect(mockStartWorkflow).toHaveBeenCalledWith(
+      expect.objectContaining({
+        input: { data: Buffer.from('["arg1","arg2"]', 'utf-8') },
+      })
+    );
+  });
+
+  it('handles GO worker SDK language input processing', async () => {
+    const requestBodyWithGoInput: StartWorkflowRequestBody = {
+      workflowId: 'test-workflow-id',
+      workflowType: {
+        name: 'TestWorkflow',
+      },
+      taskList: {
+        name: 'test-task-list',
+      },
+      workerSDKLanguage: 'GO',
+      executionStartToCloseTimeoutSeconds: 30,
+      input: ['arg1', 'arg2'],
+    };
+
+    const { mockStartWorkflow } = await setup({
+      requestBody: requestBodyWithGoInput,
+    });
+
+    expect(mockStartWorkflow).toHaveBeenCalledWith(
+      expect.objectContaining({
+        input: { data: Buffer.from('"arg1" "arg2"', 'utf-8') },
+      })
+    );
+  });
+});
+
+async function setup({
+  requestBody = defaultRequestBody,
+  error,
+}: {
+  requestBody?: StartWorkflowRequestBody;
+  error?: string | Error;
+}) {
+  const mockStartWorkflow = jest.fn() as jest.MockedFunction<any>;
+  const mockContext = {
+    grpcClusterMethods: {
+      startWorkflow: mockStartWorkflow,
+    },
+    userInfo: {
+      id: 'test-user-id',
+    },
+  };
+
+  const mockOptions = {
+    params: {
+      domain: 'test-domain',
+      cluster: 'test-cluster',
+    },
+  };
+
+  const mockRequest = {
+    json: jest.fn(),
+  } as any;
+
+  mockRequest.json.mockResolvedValue(requestBody);
+
+  if (error) {
+    if (typeof error === 'string') {
+      // Import the GRPCError class to create a proper mock
+      const { GRPCError } = await import('@/utils/grpc/grpc-error');
+      mockStartWorkflow.mockRejectedValue(new GRPCError(error));
+    } else {
+      mockStartWorkflow.mockRejectedValue(error);
+    }
+  } else {
+    mockStartWorkflow.mockResolvedValue({
+      runId: 'test-run-id',
+    });
+  }
+
+  const res = await startWorkflow(mockRequest, mockOptions, mockContext as any);
+
+  return { res, mockStartWorkflow };
+}
