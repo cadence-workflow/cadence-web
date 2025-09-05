@@ -70,7 +70,7 @@ describe(startWorkflow.name, () => {
       taskList: { name: 'test-task-list' },
       input: undefined,
       executionStartToCloseTimeout: { seconds: 30 },
-      taskStartToCloseTimeout: { seconds: undefined },
+      taskStartToCloseTimeout: { seconds: 10 },
       firstRunAt: undefined,
       cronSchedule: undefined,
       identity: 'test-user-id',
