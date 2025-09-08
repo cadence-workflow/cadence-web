@@ -8,7 +8,7 @@ import { MdDeleteOutline } from 'react-icons/md';
 
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 
-import { cssStyles } from './multi-json-input.styles';
+import { cssStyles, overrides } from './multi-json-input.styles';
 import type { Props } from './multi-json-input.types';
 
 export default function MultiJsonInput({
@@ -75,15 +75,6 @@ export default function MultiJsonInput({
     [displayValue, onChange]
   );
 
-  const handleClearInput = useCallback(
-    (index: number) => {
-      const newArray = [...displayValue];
-      newArray[index] = '';
-      onChange(newArray);
-    },
-    [displayValue, onChange]
-  );
-
   const isDeleteDisabled = useMemo(() => {
     return displayValue.length === 1 && displayValue[0].trim() === '';
   }, [displayValue]);
@@ -95,6 +86,7 @@ export default function MultiJsonInput({
           <div key={index} className={cls.inputRow}>
             <div className={cls.inputContainer}>
               <Textarea
+                overrides={overrides.jsonInput}
                 value={inputValue}
                 onChange={(e) => handleInputChange(index, e.target.value)}
                 placeholder={placeholder}
@@ -108,11 +100,7 @@ export default function MultiJsonInput({
                 kind="tertiary"
                 shape="circle"
                 onClick={() => {
-                  if (displayValue.length === 1) {
-                    handleClearInput(index);
-                  } else {
-                    handleDeleteInput(index);
-                  }
+                  handleDeleteInput(index);
                 }}
                 disabled={isDeleteDisabled}
                 className={cls.deleteButton}
