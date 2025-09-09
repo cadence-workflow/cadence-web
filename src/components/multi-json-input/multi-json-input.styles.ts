@@ -1,7 +1,24 @@
+import { type Theme } from 'baseui';
+import { type TextareaOverrides } from 'baseui/textarea';
+import { type StyleObject } from 'styletron-react';
+
 import type {
   StyletronCSSObject,
   StyletronCSSObjectOf,
 } from '@/hooks/use-styletron-classes';
+
+export const overrides = {
+  jsonInput: {
+    Input: {
+      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+        ...$theme.typography.MonoParagraphSmall,
+        '::placeholder': {
+          ...$theme.typography.ParagraphSmall,
+        },
+      }),
+    },
+  } satisfies TextareaOverrides,
+};
 
 const cssStylesObj = {
   container: (theme) => ({
@@ -18,9 +35,6 @@ const cssStylesObj = {
   },
   inputContainer: {
     flex: 1,
-  },
-  textarea: {
-    width: '100%',
   },
   buttonContainer: {
     display: 'flex',
