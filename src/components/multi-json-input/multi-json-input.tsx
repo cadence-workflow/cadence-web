@@ -76,7 +76,7 @@ export default function MultiJsonInput({
   );
 
   const isDeleteDisabled = useMemo(() => {
-    return displayValue.length === 1 && displayValue[0].trim() === '';
+    return displayValue.length === 1 && displayValue[0] === '';
   }, [displayValue]);
 
   return (
