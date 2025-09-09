@@ -1,4 +1,6 @@
-import { describe, expect, it, jest } from '@jest/globals';
+import crypto from 'crypto';
+
+import { GRPCError } from '@/utils/grpc/grpc-error';
 
 import { startWorkflow } from '../start-workflow';
 import { type StartWorkflowRequestBody } from '../start-workflow.types';
@@ -144,6 +146,8 @@ describe(startWorkflow.name, () => {
       workerSDKLanguage: 'GO',
       executionStartToCloseTimeoutSeconds: 30,
     };
+    const generateWorkflowId = 'test-uuid-123-456-789-101-112';
+    jest.spyOn(crypto, 'randomUUID').mockReturnValue(generateWorkflowId);
 
     const { res, mockStartWorkflow } = await setup({
       requestBody: requestBodyWithoutWorkflowId,
@@ -151,7 +155,7 @@ describe(startWorkflow.name, () => {
 
     expect(mockStartWorkflow).toHaveBeenCalledWith(
       expect.objectContaining({
-        workflowId: expect.any(String),
+        workflowId: generateWorkflowId,
       })
     );
 
@@ -220,8 +224,6 @@ async function setup({
 
   if (error) {
     if (typeof error === 'string') {
-      // Import the GRPCError class to create a proper mock
-      const { GRPCError } = await import('@/utils/grpc/grpc-error');
       mockStartWorkflow.mockRejectedValue(new GRPCError(error));
     } else {
       mockStartWorkflow.mockRejectedValue(error);
