@@ -18,20 +18,7 @@ const startWorkflowRequestBodySchema = z.object({
   taskStartToCloseTimeoutSeconds: z.number().positive().optional(),
   firstRunAt: z.string().datetime().optional(),
   cronSchedule: z.string().optional(),
-  /*   workflowIdReusePolicy: z.string().optional(),
-  retryPolicy: z
-    .object({
-      initialInterval: z.string().optional(),
-      backoffCoefficient: z.number().optional(),
-      maximumInterval: z.string().optional(),
-      maximumAttempts: z.number().optional(),
-      nonRetryableErrorReasons: z.array(z.string()).optional(),
-    })
-    .optional(),
-  enableRetryPolicy: z.boolean().optional(),
-  memo: z.record(z.string()).optional(),
-  searchAttributes: z.record(z.string()).optional(),
-  header: z.record(z.string()).optional(), */
+  // TODO: Add workflowIdReusePolicy, retryPolicy, enableRetryPolicy, memo, searchAttributes, and header fields if needed in the future.
 });
 
 export default startWorkflowRequestBodySchema;
