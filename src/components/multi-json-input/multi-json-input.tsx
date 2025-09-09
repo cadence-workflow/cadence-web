@@ -86,6 +86,7 @@ export default function MultiJsonInput({
           <div key={index} className={cls.inputRow}>
             <div className={cls.inputContainer}>
               <Textarea
+                aria-label={label}
                 overrides={overrides.jsonInput}
                 value={inputValue}
                 onChange={(e) => handleInputChange(index, e.target.value)}
