@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { WORKER_SDK_LANGUAGES } from '../start-workflow.constants';
 
-import jsonValueSchema from './json-value-schema';
+import { jsonValueSchema } from './json-value-schema';
 
 const startWorkflowRequestBodySchema = z.object({
   workflowType: z.object({
