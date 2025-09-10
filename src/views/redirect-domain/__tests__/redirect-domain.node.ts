@@ -107,7 +107,7 @@ describe(RedirectDomain.name, () => {
     {
       name: 'should redirect to All Domains page with search param if multiple domains exist',
       urlParams: ['mock-domain-shared-name'],
-      expectedRedirect: '/domains?s=mock-domain-shared-name',
+      expectedRedirect: '/domains?d=true&s=mock-domain-shared-name',
     },
     {
       name: 'should redirect to All Domains page with search param if multiple domains exist, for workflow link',
@@ -117,7 +117,7 @@ describe(RedirectDomain.name, () => {
         'mock-wfid',
         'mock-runid',
       ],
-      expectedRedirect: '/domains?s=mock-domain-shared-name',
+      expectedRedirect: '/domains?d=true&s=mock-domain-shared-name',
     },
     {
       name: 'should call notFound if no domain exists',
