@@ -24,7 +24,7 @@ describe(isWorkflowSignaledEvent.name, () => {
     });
   });
 
-  it('should return false for invalid timer events', () => {
+  it('should return false for invalid workflow signaled events', () => {
     invalidEvents.forEach((event) => {
       expect(isWorkflowSignaledEvent(event)).toBe(false);
     });
