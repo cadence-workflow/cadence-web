@@ -6,6 +6,7 @@ import {
   mockSignalExternalWorkflowEventGroup,
   mockRequestCancelExternalWorkflowEventGroup,
   mockSingleEventGroup,
+  mockWorkflowSignaledEventGroup,
 } from '../../../__fixtures__/workflow-history-event-groups';
 import { type WorkflowHistoryFiltersTypeValue } from '../../workflow-history-filters-type.types';
 import filterGroupsByGroupType from '../filter-groups-by-group-type';
@@ -71,14 +72,14 @@ describe(filterGroupsByGroupType.name, () => {
     );
   });
 
-  it('should return true if SignalExternalWorkflowExecution group type is included in historyEventTypes', () => {
+  it('should return true if WorkflowSignaled group type is included in historyEventTypes', () => {
     const value: WorkflowHistoryFiltersTypeValue = {
       historyEventTypes: ['SIGNAL'],
     };
 
-    expect(
-      filterGroupsByGroupType(mockSignalExternalWorkflowEventGroup, value)
-    ).toBe(true);
+    expect(filterGroupsByGroupType(mockWorkflowSignaledEventGroup, value)).toBe(
+      true
+    );
   });
 
   it('should return true if RequestCancelExternalWorkflowExecution group type maps to WORKFLOW and is included in historyEventTypes', () => {

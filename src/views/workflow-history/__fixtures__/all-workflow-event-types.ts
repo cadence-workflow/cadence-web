@@ -23,6 +23,7 @@ import {
   startDecisionTaskEvent,
   timeoutDecisionTaskEvent,
 } from './workflow-history-decision-events';
+import { workflowExecutionSignaledEvent } from './workflow-history-execution-signaled-event';
 import {
   pendingDecisionTaskStartEvent,
   pendingActivityTaskStartEvent,
@@ -48,7 +49,6 @@ import {
   failWorkflowExecutionEvent,
   recordMarkerExecutionEvent,
   requestCancelWorkflowExecutionEvent,
-  signalWorkflowExecutionEvent,
   terminateWorkflowExecutionEvent,
   timeoutWorkflowExecutionEvent,
   upsertWorkflowSearchAttributesEvent,
@@ -98,7 +98,7 @@ export const allWorkflowEvents = [
   failWorkflowExecutionEvent,
   recordMarkerExecutionEvent,
   requestCancelWorkflowExecutionEvent,
-  signalWorkflowExecutionEvent,
+  workflowExecutionSignaledEvent,
   terminateWorkflowExecutionEvent,
   timeoutWorkflowExecutionEvent,
   upsertWorkflowSearchAttributesEvent,

@@ -13,7 +13,6 @@ export default function isSingleEvent(event: {
     'workflowExecutionCompletedEventAttributes',
     'workflowExecutionFailedEventAttributes',
     'workflowExecutionTimedOutEventAttributes',
-    'workflowExecutionSignaledEventAttributes',
     'workflowExecutionTerminatedEventAttributes',
     'workflowExecutionCancelRequestedEventAttributes',
     'workflowExecutionCanceledEventAttributes',

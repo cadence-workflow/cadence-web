@@ -17,7 +17,6 @@ const validEvents: Pick<SingleHistoryEvent, 'attributes'>[] = [
   { attributes: 'workflowExecutionCompletedEventAttributes' },
   { attributes: 'workflowExecutionFailedEventAttributes' },
   { attributes: 'workflowExecutionTimedOutEventAttributes' },
-  { attributes: 'workflowExecutionSignaledEventAttributes' },
   { attributes: 'workflowExecutionTerminatedEventAttributes' },
   { attributes: 'workflowExecutionCancelRequestedEventAttributes' },
   { attributes: 'workflowExecutionCanceledEventAttributes' },
