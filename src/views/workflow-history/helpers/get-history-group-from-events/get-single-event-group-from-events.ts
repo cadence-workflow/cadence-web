@@ -93,6 +93,7 @@ export default function getSingleEventGroupFromEvents(
 
   const eventToSummaryFields: HistoryGroupEventToSummaryFieldsMap<SingleEventHistoryGroup> =
     {
+      workflowExecutionSignaledEventAttributes: ['signalName', 'input'],
       workflowExecutionStartedEventAttributes: [
         'input',
         'executionStartToCloseTimeoutSeconds',
