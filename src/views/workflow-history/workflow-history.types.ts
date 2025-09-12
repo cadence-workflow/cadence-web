@@ -154,18 +154,12 @@ export type SingleEventHistoryGroup = BaseHistoryGroup & {
   events: SingleHistoryEvent[];
 };
 
-export type WorkflowSignaledEventHistoryGroup = BaseHistoryGroup & {
-  groupType: 'WorkflowSignaled';
-  events: WorkflowSignaledHistoryEvent[];
-};
-
 export type HistoryEventsGroup =
   | ActivityHistoryGroup
   | DecisionHistoryGroup
   | TimerHistoryGroup
   | ChildWorkflowExecutionHistoryGroup
   | SignalExternalWorkflowExecutionHistoryGroup
-  | WorkflowSignaledEventHistoryGroup
   | RequestCancelExternalWorkflowExecutionHistoryGroup
   | SingleEventHistoryGroup;
 
@@ -234,15 +228,12 @@ export type SingleHistoryEvent = HistoryEvent & {
     | 'requestCancelActivityTaskFailedEventAttributes'
     | 'cancelTimerFailedEventAttributes'
     | 'markerRecordedEventAttributes'
+    | 'workflowExecutionSignaledEventAttributes'
     | 'workflowExecutionTerminatedEventAttributes'
     | 'workflowExecutionCancelRequestedEventAttributes'
     | 'workflowExecutionCanceledEventAttributes'
     | 'workflowExecutionContinuedAsNewEventAttributes'
     | 'upsertWorkflowSearchAttributesEventAttributes';
-};
-
-export type WorkflowSignaledHistoryEvent = HistoryEvent & {
-  attributes: 'workflowExecutionSignaledEventAttributes';
 };
 
 export type WorkflowHistoryFilterConfig<

@@ -1,5 +1,6 @@
 import {
   startWorkflowExecutionEvent,
+  signalWorkflowExecutionEvent,
   recordMarkerExecutionEvent,
   failWorkflowExecutionEvent,
   terminateWorkflowExecutionEvent,
@@ -25,6 +26,7 @@ import getSingleEventGroupFromEvents from '../get-single-event-group-from-events
 describe('getSingleEventGroupFromEvents', () => {
   const events: SingleHistoryEvent[] = [
     startWorkflowExecutionEvent,
+    signalWorkflowExecutionEvent,
     recordMarkerExecutionEvent,
     failWorkflowExecutionEvent,
     terminateWorkflowExecutionEvent,
@@ -50,6 +52,7 @@ describe('getSingleEventGroupFromEvents', () => {
       workflowExecutionCompletedEventAttributes: 'Workflow Completed',
       workflowExecutionFailedEventAttributes: 'Workflow Failed',
       workflowExecutionTimedOutEventAttributes: 'Workflow Timed out',
+      workflowExecutionSignaledEventAttributes: 'Workflow Signaled',
       workflowExecutionTerminatedEventAttributes: 'Workflow Terminated',
       workflowExecutionCancelRequestedEventAttributes:
         'Workflow Cancel Request',
@@ -89,6 +92,7 @@ describe('getSingleEventGroupFromEvents', () => {
         workflowExecutionCompletedEventAttributes: 'Completed',
         workflowExecutionFailedEventAttributes: 'Failed',
         workflowExecutionTimedOutEventAttributes: 'Timed out',
+        workflowExecutionSignaledEventAttributes: 'Signaled',
         workflowExecutionTerminatedEventAttributes: 'Terminated',
         workflowExecutionCancelRequestedEventAttributes: 'Requested',
         workflowExecutionCanceledEventAttributes: 'Canceled',
@@ -114,6 +118,7 @@ describe('getSingleEventGroupFromEvents', () => {
         workflowExecutionCompletedEventAttributes: 'COMPLETED',
         workflowExecutionFailedEventAttributes: 'FAILED',
         workflowExecutionTimedOutEventAttributes: 'FAILED',
+        workflowExecutionSignaledEventAttributes: 'COMPLETED',
         workflowExecutionTerminatedEventAttributes: 'FAILED',
         workflowExecutionCancelRequestedEventAttributes: 'COMPLETED',
         workflowExecutionCanceledEventAttributes: 'CANCELED',
