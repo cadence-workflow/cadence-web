@@ -10,7 +10,6 @@ export type WorkflowHistoryEventFilteringType =
   | 'ACTIVITY'
   | 'SIGNAL'
   | 'TIMER'
-  | 'DECISION'
   | 'CHILDWORKFLOW'
   | 'WORKFLOW';
 
