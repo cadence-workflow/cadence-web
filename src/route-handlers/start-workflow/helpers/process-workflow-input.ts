@@ -13,7 +13,7 @@ export default function processWorkflowInput({
       /**
        * Java accepts multiple arguments to be passed as items in an array. Single argument is passed as is.
        * In case of multiple arguments we parse the entire input as a JSON array with the already existing [] around it.
-       * In case of single argument we pase it without the surrounding [],
+       * In case of single argument we parse it without the surrounding [],
        * except if it is an array, in which case we parse it as a JSON array with the surrounding [] to prevent treating it as multiple arguments and a single item in the array.
        */
       return input.length > 1 || Array.isArray(input[0])
