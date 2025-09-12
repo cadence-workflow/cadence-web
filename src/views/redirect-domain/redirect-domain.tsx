@@ -31,11 +31,11 @@ export default async function RedirectDomain(props: Props) {
         query: {
           // TODO @assem.hafez: see if this type can be asserted
           s: domain,
+          d: 'true',
         },
       })
     );
   }
-
   const clusterToRedirectTo = isActiveActiveDomain(domainDetails)
     ? getDefaultClusterForActiveActiveDomain(domainDetails)
     : domainDetails.activeClusterName;

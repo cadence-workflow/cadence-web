@@ -32,6 +32,8 @@ import { type RestartWorkflowExecutionRequest__Input } from '@/__generated__/pro
 import { type RestartWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/RestartWorkflowExecutionResponse';
 import { type SignalWorkflowExecutionRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/SignalWorkflowExecutionRequest';
 import { type SignalWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/SignalWorkflowExecutionResponse';
+import { type StartWorkflowExecutionRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/StartWorkflowExecutionRequest';
+import { type StartWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/StartWorkflowExecutionResponse';
 import { type TerminateWorkflowExecutionRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/TerminateWorkflowExecutionRequest';
 import { type TerminateWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/TerminateWorkflowExecutionResponse';
 import { type UpdateDomainRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/UpdateDomainRequest';
@@ -109,6 +111,9 @@ export type GRPCClusterMethods = {
   resetWorkflow: (
     payload: ResetWorkflowExecutionRequest__Input
   ) => Promise<ResetWorkflowExecutionResponse>;
+  startWorkflow: (
+    payload: StartWorkflowExecutionRequest__Input
+  ) => Promise<StartWorkflowExecutionResponse>;
   getDiagnosticsWorkflow: (
     payload: DiagnoseWorkflowExecutionRequest__Input
   ) => Promise<DiagnoseWorkflowExecutionResponse>;
@@ -310,6 +315,13 @@ const getClusterServicesMethods = async (
       ResetWorkflowExecutionResponse
     >({
       method: 'ResetWorkflowExecution',
+      metadata: metadata,
+    }),
+    startWorkflow: workflowService.request<
+      StartWorkflowExecutionRequest__Input,
+      StartWorkflowExecutionResponse
+    >({
+      method: 'StartWorkflowExecution',
       metadata: metadata,
     }),
     getDiagnosticsWorkflow: workflowService.request<

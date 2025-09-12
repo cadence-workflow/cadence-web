@@ -1,0 +1,3 @@
+export const WORKER_SDK_LANGUAGES = ['GO', 'JAVA'] as const;
+
+export const DEFAULT_TASK_START_TO_CLOSE_TIMEOUT_SECONDS = 10;
