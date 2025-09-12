@@ -76,7 +76,7 @@ export default function MultiJsonInput({
   );
 
   const isDeleteDisabled = useMemo(() => {
-    return displayValue.length === 1 && displayValue[0].trim() === '';
+    return displayValue.length === 1 && displayValue[0] === '';
   }, [displayValue]);
 
   return (
@@ -86,6 +86,7 @@ export default function MultiJsonInput({
           <div key={index} className={cls.inputRow}>
             <div className={cls.inputContainer}>
               <Textarea
+                aria-label={label}
                 overrides={overrides.jsonInput}
                 value={inputValue}
                 onChange={(e) => handleInputChange(index, e.target.value)}
