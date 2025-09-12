@@ -98,7 +98,7 @@ export default function WorkflowActionStartForm({
               type="number"
               min={1}
               onChange={(e) => {
-                field.onChange(parseInt(e.target.value));
+                field.onChange(parseInt(e.target.value, 10));
               }}
               onBlur={field.onBlur}
               error={Boolean(
