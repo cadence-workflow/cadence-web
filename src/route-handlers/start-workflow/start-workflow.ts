@@ -1,4 +1,6 @@
+import { status } from '@grpc/grpc-js';
 import crypto from 'crypto';
+import { isEmpty } from 'lodash';
 import { NextResponse, type NextRequest } from 'next/server';
 
 import dayjs from '@/utils/datetime/dayjs';
@@ -40,6 +42,11 @@ export async function startWorkflow(
     taskStartToCloseTimeoutSeconds,
     firstRunAt,
     cronSchedule,
+    workflowIdReusePolicy,
+    retryPolicy,
+    memo,
+    searchAttributes,
+    header,
   } = data;
 
   const resolvedWorkflowId = workflowId || crypto.randomUUID();
@@ -70,6 +77,52 @@ export async function startWorkflow(
           }
         : undefined,
       cronSchedule,
+      workflowIdReusePolicy: workflowIdReusePolicy,
+      retryPolicy: !isEmpty(retryPolicy)
+        ? {
+            initialInterval: retryPolicy?.initialIntervalSeconds
+              ? { seconds: retryPolicy.initialIntervalSeconds }
+              : undefined,
+            backoffCoefficient: retryPolicy?.backoffCoefficient,
+            maximumInterval: retryPolicy?.maximumIntervalSeconds
+              ? { seconds: retryPolicy.maximumIntervalSeconds }
+              : undefined,
+            expirationInterval: retryPolicy?.expirationIntervalSeconds
+              ? { seconds: retryPolicy.expirationIntervalSeconds }
+              : undefined,
+            maximumAttempts: retryPolicy?.maximumAttempts,
+          }
+        : undefined,
+      memo: memo
+        ? {
+            fields: Object.fromEntries(
+              Object.entries(memo).map(([k, v]) => [
+                k,
+                { data: Buffer.from(JSON.stringify(v), 'utf-8') },
+              ])
+            ),
+          }
+        : undefined,
+      searchAttributes: searchAttributes
+        ? {
+            indexedFields: Object.fromEntries(
+              Object.entries(searchAttributes).map(([k, v]) => [
+                k,
+                { data: Buffer.from(JSON.stringify(v), 'utf-8') },
+              ])
+            ),
+          }
+        : undefined,
+      header: header
+        ? {
+            fields: Object.fromEntries(
+              Object.entries(header).map(([k, v]) => [
+                k,
+                { data: Buffer.from(v, 'utf-8') },
+              ])
+            ),
+          }
+        : undefined,
       identity: ctx.userInfo?.id,
       requestId: crypto.randomUUID(),
     });
@@ -79,7 +132,11 @@ export async function startWorkflow(
       workflowId: resolvedWorkflowId,
     });
   } catch (e) {
-    logger.error<RouteHandlerErrorPayload>(
+    const isDuplicateWorkflowError =
+      e instanceof GRPCError && e.grpcStatusCode === status.ALREADY_EXISTS;
+
+    const logMethod = isDuplicateWorkflowError ? 'info' : 'error';
+    logger[logMethod]<RouteHandlerErrorPayload>(
       { error: e },
       'Error starting workflow'
     );
