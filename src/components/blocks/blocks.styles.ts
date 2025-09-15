@@ -1,5 +1,9 @@
 import { styled as createStyled } from 'baseui';
 
+type ButtonProps = {
+  $isLoading?: boolean;
+};
+
 export const styled = {
   ViewContainer: createStyled('div', ({ $theme }) => ({
     display: 'flex',
@@ -28,7 +32,7 @@ export const styled = {
     alignItems: 'center',
   })),
   
-  Button: createStyled('button', ({ $theme, $isLoading }) => ({
+  Button: createStyled<'button', ButtonProps>('button', ({ $theme, $isLoading }) => ({
     ...$theme.typography.LabelMedium,
     backgroundColor: $theme.colors.buttonPrimaryFill,
     color: $theme.colors.buttonPrimaryText,
