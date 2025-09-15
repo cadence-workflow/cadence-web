@@ -92,7 +92,7 @@ export type WorkflowAction<
   getRunnableStatus: (
     workflow: DescribeWorkflowResponse
   ) => WorkflowActionRunnableStatus;
-  apiRoute: string;
+  apiRoute: (params: WorkflowActionInputParams) => string;
   renderSuccessMessage: (
     props: WorkflowActionSuccessMessageProps<SubmissionData, Result>
   ) => ReactNode;
