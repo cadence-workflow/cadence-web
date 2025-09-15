@@ -100,7 +100,6 @@ describe('Button', () => {
 
     expect(handleClick).not.toHaveBeenCalled();
   });
-  /// above are good tests
   it('passes isLoading to the button if loadingIndicatorType is not skeleton', async () => {
     const { mockBaseUIButton } = await setup({
       children: 'Loading button',
