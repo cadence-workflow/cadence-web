@@ -1,9 +1,8 @@
 import React from 'react';
 
-import { userEvent } from '@testing-library/user-event';
 import { Button as mockBaseUIButton } from 'baseui/button';
 
-import { render, screen } from '@/test-utils/rtl';
+import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import Button from '../button';
 import { type Props } from '../button.types';
