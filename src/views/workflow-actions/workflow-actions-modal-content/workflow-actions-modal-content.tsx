@@ -57,13 +57,10 @@ export default function WorkflowActionsModalContent<
         runId,
         submissionData,
       }: WorkflowActionInput<SubmissionData>) =>
-        request(
-          `/api/domains/${domain}/${cluster}/workflows/${workflowId}/${runId}/${action.apiRoute}`,
-          {
-            method: 'POST',
-            body: JSON.stringify(submissionData || {}),
-          }
-        ).then((res) => res.json() as Result),
+        request(action.apiRoute({ domain, cluster, workflowId, runId }), {
+          method: 'POST',
+          body: JSON.stringify(submissionData || {}),
+        }).then((res) => res.json() as Result),
       onSuccess: (result, params) => {
         queryClient.invalidateQueries({
           queryKey: ['describe_workflow', params],

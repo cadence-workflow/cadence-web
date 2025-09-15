@@ -8,6 +8,7 @@ import decodeUrlParams from '@/utils/decode-url-params';
 
 import domainPageTabsConfig from '../config/domain-page-tabs.config';
 import DomainPageHelp from '../domain-page-help/domain-page-help';
+import DomainPageStartWorkflowButton from '../domain-page-start-workflow-button/domain-page-start-workflow-button';
 
 import { styled } from './domain-page-tabs.styles';
 import type { DomainPageTabsParams } from './domain-page-tabs.types';
@@ -37,7 +38,12 @@ export default function DomainPageTabs() {
             `${encodeURIComponent(newTab.toString())}${window.location.search}`
           );
         }}
-        endEnhancer={<DomainPageHelp />}
+        endEnhancer={
+          <styled.EndButtonsContainer>
+            <DomainPageStartWorkflowButton {...decodedParams} />
+            <DomainPageHelp />
+          </styled.EndButtonsContainer>
+        }
       />
     </styled.PageTabsContainer>
   );

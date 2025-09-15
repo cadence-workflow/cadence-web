@@ -23,6 +23,14 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
+jest.mock(
+  '../../domain-page-start-workflow-button/domain-page-start-workflow-button',
+  () =>
+    jest.fn(() => (
+      <button data-testid="start-workflow-button">Start Workflow</button>
+    ))
+);
+
 jest.mock('../../config/domain-page-tabs.config', () => ({
   workflows: {
     title: 'Workflows',
@@ -103,5 +111,11 @@ describe('DomainPageTabs', () => {
 
     expect(screen.getByTestId('domain-page-help')).toBeInTheDocument();
     expect(screen.getByText('Help Button')).toBeInTheDocument();
+  });
+
+  it('renders the start workflow button', () => {
+    render(<DomainPageTabs />);
+
+    expect(screen.getByTestId('start-workflow-button')).toBeInTheDocument();
   });
 });

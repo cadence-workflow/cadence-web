@@ -1,7 +1,6 @@
 'use client';
 import React, { useState } from 'react';
 
-import { Button, KIND, SIZE } from 'baseui/button';
 import {
   StatefulPopover,
   PLACEMENT as POPOVER_PLACEMENT,
@@ -10,6 +9,7 @@ import { pick } from 'lodash';
 import { useParams } from 'next/navigation';
 import { MdArrowDropDown } from 'react-icons/md';
 
+import Button from '@/components/button/button';
 import useConfigValue from '@/hooks/use-config-value/use-config-value';
 import { useDescribeWorkflow } from '@/views/workflow-page/hooks/use-describe-workflow';
 import { type WorkflowPageParams } from '@/views/workflow-page/workflow-page.types';
@@ -70,10 +70,10 @@ export default function WorkflowActions() {
         autoFocus
       >
         <Button
-          size={SIZE.compact}
-          kind={KIND.secondary}
-          overrides={overrides.button}
+          size="compact"
+          kind="secondary"
           endEnhancer={<MdArrowDropDown size={20} />}
+          loadingIndicatorType="skeleton"
           isLoading={isWorkflowLoading || isActionsEnabledLoading}
         >
           Workflow Actions

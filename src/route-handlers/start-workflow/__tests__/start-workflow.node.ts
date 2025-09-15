@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 
+import { type StartWorkflowExecutionRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/StartWorkflowExecutionRequest';
 import { GRPCError } from '@/utils/grpc/grpc-error';
 
 import { startWorkflow } from '../start-workflow';
@@ -18,6 +19,124 @@ const defaultRequestBody: StartWorkflowRequestBody = {
   executionStartToCloseTimeoutSeconds: 30,
   taskStartToCloseTimeoutSeconds: 10,
 };
+
+type FieldsTestCase = {
+  name: string;
+  inputField: Partial<StartWorkflowRequestBody>;
+  expectedOutput: Partial<StartWorkflowExecutionRequest__Input>;
+};
+
+const fieldsTestCases: FieldsTestCase[] = [
+  {
+    name: 'handles firstRunAt field correctly',
+    inputField: { firstRunAt: '2024-01-01T10:00:00.000Z' },
+    expectedOutput: {
+      firstRunAt: {
+        seconds: 1704103200,
+        nanos: 0,
+      },
+    },
+  },
+  {
+    name: 'handles cronSchedule field correctly',
+    inputField: { cronSchedule: '0 0 * * *' },
+    expectedOutput: {
+      cronSchedule: '0 0 * * *',
+    },
+  },
+  {
+    name: 'handles workflowIdReusePolicy field correctly',
+    inputField: {
+      workflowIdReusePolicy: 'WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE',
+    },
+    expectedOutput: {
+      workflowIdReusePolicy: 'WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE',
+    },
+  },
+  {
+    name: 'handles retryPolicy field correctly',
+    inputField: {
+      retryPolicy: {
+        initialIntervalSeconds: 1,
+        backoffCoefficient: 2.0,
+        maximumIntervalSeconds: 100,
+        expirationIntervalSeconds: 1000,
+        maximumAttempts: 3,
+      },
+    },
+    expectedOutput: {
+      retryPolicy: {
+        initialInterval: { seconds: 1 },
+        backoffCoefficient: 2.0,
+        maximumInterval: { seconds: 100 },
+        expirationInterval: { seconds: 1000 },
+        maximumAttempts: 3,
+      },
+    },
+  },
+  {
+    name: 'handles empty retryPolicy correctly',
+    inputField: { retryPolicy: undefined },
+    expectedOutput: {
+      retryPolicy: undefined,
+    },
+  },
+  {
+    name: 'handles memo field correctly',
+    inputField: {
+      memo: {
+        key1: 'value1',
+        key2: { nested: 'object' },
+        key3: 123,
+      },
+    },
+    expectedOutput: {
+      memo: {
+        fields: {
+          key1: { data: Buffer.from('"value1"', 'utf-8') },
+          key2: { data: Buffer.from('{"nested":"object"}', 'utf-8') },
+          key3: { data: Buffer.from('123', 'utf-8') },
+        },
+      },
+    },
+  },
+  {
+    name: 'handles searchAttributes field correctly',
+    inputField: {
+      searchAttributes: {
+        CustomStringField: 'search-value',
+        CustomIntField: 42,
+        CustomBoolField: true,
+      },
+    },
+    expectedOutput: {
+      searchAttributes: {
+        indexedFields: {
+          CustomStringField: { data: Buffer.from('"search-value"', 'utf-8') },
+          CustomIntField: { data: Buffer.from('42', 'utf-8') },
+          CustomBoolField: { data: Buffer.from('true', 'utf-8') },
+        },
+      },
+    },
+  },
+  {
+    name: 'handles header field correctly',
+    inputField: {
+      header: {
+        'X-Custom-Header': 'custom-value',
+        'X-Another-Header': 'another-value',
+      },
+    },
+    expectedOutput: {
+      header: {
+        fields: {
+          'X-Custom-Header': { data: Buffer.from('custom-value', 'utf-8') },
+          'X-Another-Header': { data: Buffer.from('another-value', 'utf-8') },
+        },
+      },
+    },
+  },
+];
 
 describe(startWorkflow.name, () => {
   beforeEach(() => {
@@ -137,14 +256,8 @@ describe(startWorkflow.name, () => {
 
   it('generates workflowId when not provided', async () => {
     const requestBodyWithoutWorkflowId: StartWorkflowRequestBody = {
-      workflowType: {
-        name: 'TestWorkflow',
-      },
-      taskList: {
-        name: 'test-task-list',
-      },
-      workerSDKLanguage: 'GO',
-      executionStartToCloseTimeoutSeconds: 30,
+      ...defaultRequestBody,
+      workflowId: undefined,
     };
     const generateWorkflowId = 'test-uuid-123-456-789-101-112';
     jest.spyOn(crypto, 'randomUUID').mockReturnValue(generateWorkflowId);
@@ -163,32 +276,21 @@ describe(startWorkflow.name, () => {
     expect(typeof responseData.workflowId).toBe('string');
   });
 
-  it('handles firstRunAt field correctly', async () => {
-    const requestBodyWithFirstRunAt: StartWorkflowRequestBody = {
-      workflowId: 'test-workflow-id',
-      workflowType: {
-        name: 'TestWorkflow',
-      },
-      taskList: {
-        name: 'test-task-list',
-      },
-      workerSDKLanguage: 'GO',
-      executionStartToCloseTimeoutSeconds: 30,
-      firstRunAt: '2024-01-01T10:00:00.000Z',
-    };
+  fieldsTestCases.forEach(({ name, inputField, expectedOutput }) => {
+    it(name, async () => {
+      const requestBodyWithField: StartWorkflowRequestBody = {
+        ...defaultRequestBody,
+        ...inputField,
+      };
 
-    const { mockStartWorkflow } = await setup({
-      requestBody: requestBodyWithFirstRunAt,
+      const { mockStartWorkflow } = await setup({
+        requestBody: requestBodyWithField,
+      });
+
+      expect(mockStartWorkflow).toHaveBeenCalledWith(
+        expect.objectContaining(expectedOutput)
+      );
     });
-
-    expect(mockStartWorkflow).toHaveBeenCalledWith(
-      expect.objectContaining({
-        firstRunAt: expect.objectContaining({
-          seconds: 1704103200,
-          nanos: 0,
-        }),
-      })
-    );
   });
 });
 
