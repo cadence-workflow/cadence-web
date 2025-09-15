@@ -126,8 +126,9 @@ describe('WorkflowActionStartForm', () => {
     );
 
     await user.click(screen.getByRole('radio', { name: 'Cron' }));
-    // Check that the cron schedule input is rendered (it has individual field inputs)
-    expect(screen.getByText('Cron Schedule')).toBeInTheDocument();
+    expect(
+      screen.getByRole('textbox', { name: 'Cron Schedule (UTC)' })
+    ).toHaveAttribute('aria-invalid', 'true');
 
     await user.click(screen.getByText('Show Optional Configurations'));
 
