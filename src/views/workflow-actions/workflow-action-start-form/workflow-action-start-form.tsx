@@ -438,7 +438,7 @@ export default function WorkflowActionStartForm({
                       min={1}
                       onBlur={field.onBlur}
                       error={Boolean(
-                        getErrorMessage('retryPolicy.maximumInterval')
+                        getErrorMessage('retryPolicy.maximumIntervalSeconds')
                       )}
                       size="compact"
                       placeholder="Enter maximum interval in seconds"
