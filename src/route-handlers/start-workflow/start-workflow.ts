@@ -77,7 +77,7 @@ export async function startWorkflow(
           }
         : undefined,
       cronSchedule,
-      workflowIdReusePolicy: workflowIdReusePolicy,
+      workflowIdReusePolicy,
       retryPolicy: !isEmpty(retryPolicy)
         ? {
             initialInterval: retryPolicy?.initialIntervalSeconds
@@ -134,16 +134,16 @@ export async function startWorkflow(
   } catch (e) {
     const isDuplicateWorkflowError =
       e instanceof GRPCError && e.grpcStatusCode === status.ALREADY_EXISTS;
-
+    const errorMessage = isDuplicateWorkflowError
+      ? 'Error starting workflow: Duplicate workflow'
+      : 'Error starting workflow';
     const logMethod = isDuplicateWorkflowError ? 'info' : 'error';
-    logger[logMethod]<RouteHandlerErrorPayload>(
-      { error: e },
-      'Error starting workflow'
-    );
+
+    logger[logMethod]<RouteHandlerErrorPayload>({ error: e }, errorMessage);
 
     return NextResponse.json(
       {
-        message: e instanceof GRPCError ? e.message : 'Error starting workflow',
+        message: e instanceof GRPCError ? e.message : errorMessage,
         cause: e,
       },
       { status: getHTTPStatusCode(e) }
