@@ -81,7 +81,9 @@ jest.mock(
     })
 );
 
-jest.mock('@/views/workflow-actions/workflow-actions-menu/helpers/get-action-disabled-reason');
+jest.mock(
+  '@/views/workflow-actions/workflow-actions-menu/helpers/get-action-disabled-reason'
+);
 const mockGetActionDisabledReason = getActionDisabledReason as jest.Mock;
 
 describe('DomainPageStartWorkflowButton', () => {
