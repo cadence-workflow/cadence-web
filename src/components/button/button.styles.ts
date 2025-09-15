@@ -2,7 +2,7 @@ import { type Theme, styled as createStyled } from 'baseui';
 import { type ButtonOverrides } from 'baseui/button';
 
 export const styled = {
-  SkeletonLoader: createStyled('span', ({ $theme }: { $theme: Theme }) => ({
+  SkeletonLoader: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     position: 'absolute',
     top: 0,
     left: 0,
@@ -44,7 +44,6 @@ export const overrides = (isSkeletonLoading: boolean) => ({
   button: {
     BaseButton: {
       style: {
-        opacity: isSkeletonLoading ? 0 : 1,
         ...(isSkeletonLoading && {
           overflow: 'hidden',
           position: 'relative',
