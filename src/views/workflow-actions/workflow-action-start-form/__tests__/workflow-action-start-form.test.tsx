@@ -375,7 +375,7 @@ describe('WorkflowActionStartForm', () => {
 
     // Should change header
     const headerInput = screen.getByLabelText('Header');
-    // useEvent can has issue with typing { memo: 'test' } detail:https://stackoverflow.com/questions/76790750/ignore-braces-as-special-characters-in-userevent-type
+    // userEvent can have issues with typing { memo: 'test' } detail:https://stackoverflow.com/questions/76790750/ignore-braces-as-special-characters-in-userevent-type
     fireEvent.change(headerInput, {
       target: { value: JSON.stringify({ key: 'value' }) },
     });
