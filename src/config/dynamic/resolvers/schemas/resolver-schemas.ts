@@ -41,6 +41,7 @@ const resolverSchemas: ResolverSchemas = {
       signal: workflowActionsEnabledValueSchema,
       restart: workflowActionsEnabledValueSchema,
       reset: workflowActionsEnabledValueSchema,
+      start: workflowActionsEnabledValueSchema,
     }),
   },
   EXTENDED_DOMAIN_INFO_ENABLED: {
