@@ -23,7 +23,7 @@ export default function MultiSelectMenu<T extends string>({
     }
   }, [values]);
 
-  const areValuesUnsaved = useMemo(
+  const isUnchanged = useMemo(
     () => isEqual(new Set(values), new Set(tempValues)),
     [values, tempValues]
   );
@@ -87,7 +87,7 @@ export default function MultiSelectMenu<T extends string>({
         <Button
           kind="secondary"
           size="mini"
-          disabled={areValuesUnsaved}
+          disabled={isUnchanged}
           onClick={() => {
             resetTempValues();
             onCloseMenu();
@@ -98,7 +98,7 @@ export default function MultiSelectMenu<T extends string>({
         <Button
           kind="primary"
           size="mini"
-          disabled={areValuesUnsaved}
+          disabled={isUnchanged}
           onClick={() => {
             onChangeValues(tempValues);
             onCloseMenu();
