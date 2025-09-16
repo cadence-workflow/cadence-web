@@ -7,6 +7,13 @@ import {
 import getQueryResultContent from '../get-query-result-content';
 
 describe(getQueryResultContent.name, () => {
+  const mockWorkflowParams = {
+    domain: 'test-domain',
+    cluster: 'test-cluster',
+    workflowId: 'test-workflow-id',
+    runId: 'test-run-id',
+  };
+
   const tests: Array<{
     name: string;
     props: Props;
@@ -18,6 +25,7 @@ describe(getQueryResultContent.name, () => {
         data: undefined,
         loading: true,
         error: undefined,
+        ...mockWorkflowParams,
       },
       expected: {
         contentType: 'json',
@@ -31,6 +39,7 @@ describe(getQueryResultContent.name, () => {
         data: undefined,
         loading: false,
         error: new RequestError('Something went wrong', '/workflow', 500),
+        ...mockWorkflowParams,
       },
       expected: {
         contentType: 'json',
@@ -49,6 +58,7 @@ describe(getQueryResultContent.name, () => {
         },
         loading: false,
         error: undefined,
+        ...mockWorkflowParams,
       },
       expected: {
         contentType: 'json',
@@ -68,6 +78,7 @@ describe(getQueryResultContent.name, () => {
         },
         loading: false,
         error: undefined,
+        ...mockWorkflowParams,
       },
       expected: {
         contentType: 'json',
@@ -90,6 +101,7 @@ describe(getQueryResultContent.name, () => {
         },
         loading: false,
         error: undefined,
+        ...mockWorkflowParams,
       },
       expected: {
         contentType: 'markdown',
@@ -103,6 +115,7 @@ describe(getQueryResultContent.name, () => {
         data: undefined,
         loading: false,
         error: undefined,
+        ...mockWorkflowParams,
       },
       expected: {
         contentType: 'json',
