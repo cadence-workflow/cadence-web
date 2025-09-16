@@ -13,53 +13,53 @@ export default function MultiSelectMenu<T extends string>({
   onChangeValues,
   onCloseMenu,
 }: Props<T>) {
-  const [tempValue, setTempValue] = useState<Array<T>>(values);
+  const [tempValues, setTempValues] = useState<Array<T>>(values);
 
-  const resetTempValue = useCallback(() => {
+  const resetTempValues = useCallback(() => {
     if (values.length > 0) {
-      setTempValue(values);
+      setTempValues(values);
     } else {
-      setTempValue([]);
+      setTempValues([]);
     }
   }, [values]);
 
-  const isValueUnsaved = useMemo(
-    () => isEqual(values.toSorted(), tempValue.toSorted()),
-    [values, tempValue]
+  const areValuesUnsaved = useMemo(
+    () => isEqual(new Set(values), new Set(tempValues)),
+    [values, tempValues]
   );
 
   useEffect(() => {
-    resetTempValue();
-  }, [resetTempValue]);
+    resetTempValues();
+  }, [resetTempValues]);
 
   const onChangeCheckbox = useCallback(
     (id: T, checked: boolean) => {
-      let newValue: Array<T> = tempValue;
+      let newValue: Array<T> = tempValues;
 
       if (!checked) {
-        newValue = tempValue.filter((v) => v !== id);
-      } else if (checked && !tempValue.includes(id)) {
-        newValue = tempValue.concat(id);
+        newValue = tempValues.filter((v) => v !== id);
+      } else if (checked && !tempValues.includes(id)) {
+        newValue = tempValues.concat(id);
       }
 
-      setTempValue(newValue);
+      setTempValues(newValue);
     },
-    [tempValue]
+    [tempValues]
   );
 
   return (
     <styled.MenuContainer>
       <styled.SelectAllContainer>
         <Checkbox
-          checked={tempValue.length === options.length}
+          checked={tempValues.length === options.length}
           isIndeterminate={
-            tempValue.length > 0 && tempValue.length !== options.length
+            tempValues.length > 0 && tempValues.length !== options.length
           }
           onChange={(e) => {
             if (e.target.checked) {
-              setTempValue(options.map(({ id }) => id));
+              setTempValues(options.map(({ id }) => id));
             } else {
-              setTempValue([]);
+              setTempValues([]);
             }
           }}
           labelPlacement="right"
@@ -73,7 +73,7 @@ export default function MultiSelectMenu<T extends string>({
           return (
             <Fragment key={id}>
               <Checkbox
-                checked={tempValue.includes(id)}
+                checked={tempValues.includes(id)}
                 onChange={(e) => onChangeCheckbox(id, e.target.checked)}
                 overrides={overrides.checkbox}
               >
@@ -87,10 +87,10 @@ export default function MultiSelectMenu<T extends string>({
         <Button
           kind="secondary"
           size="mini"
-          disabled={isValueUnsaved}
+          disabled={areValuesUnsaved}
           onClick={() => {
-            resetTempValue();
-            // onCloseMenu();
+            resetTempValues();
+            onCloseMenu();
           }}
         >
           Cancel
@@ -98,9 +98,9 @@ export default function MultiSelectMenu<T extends string>({
         <Button
           kind="primary"
           size="mini"
-          disabled={isValueUnsaved}
+          disabled={areValuesUnsaved}
           onClick={() => {
-            onChangeValues(tempValue);
+            onChangeValues(tempValues);
             onCloseMenu();
           }}
         >

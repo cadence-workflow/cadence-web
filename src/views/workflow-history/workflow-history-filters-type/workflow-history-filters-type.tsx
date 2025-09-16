@@ -16,7 +16,11 @@ export default function WorkflowHistoryFiltersType({
       label="Type"
       placeholder="All"
       values={value.historyEventTypes ?? []}
-      onChangeValues={(newValues) => setValue({ historyEventTypes: newValues })}
+      onChangeValues={(newValues) =>
+        setValue({
+          historyEventTypes: newValues.length > 0 ? newValues : undefined,
+        })
+      }
       optionsLabelMap={WORKFLOW_HISTORY_EVENT_FILTERING_TYPES_LABEL_MAP}
     />
   );

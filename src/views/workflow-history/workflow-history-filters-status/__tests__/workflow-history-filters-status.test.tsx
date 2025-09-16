@@ -1,55 +1,59 @@
 import React from 'react';
 
-import { render, screen, fireEvent, act } from '@/test-utils/rtl';
+import { render, screen } from '@/test-utils/rtl';
 
-import WorkflowHistoryFiltersType from '../workflow-history-filters-status';
+import WorkflowHistoryFiltersStatus from '../workflow-history-filters-status';
 import { HISTORY_EVENT_FILTER_STATUS_LABELS_MAP } from '../workflow-history-filters-status.constants';
 import { type WorkflowHistoryFiltersStatusValue } from '../workflow-history-filters-status.types';
+
+// Mock the MultiSelectFilter component
+jest.mock('@/components/multi-select-filter/multi-select-filter', () => {
+  return jest.fn(({ label, values, onChangeValues, optionsLabelMap }) => (
+    <div data-testid="multi-select-filter">
+      <label>{label}</label>
+      <div data-testid="values">{JSON.stringify(values)}</div>
+      <div data-testid="options">{JSON.stringify(optionsLabelMap)}</div>
+      <button onClick={() => onChangeValues(['COMPLETED'])}>
+        Select Option
+      </button>
+      <button onClick={() => onChangeValues([])}>Clear</button>
+    </div>
+  ));
+});
 
 describe('WorkflowHistoryFiltersStatus', () => {
   it('renders without errors', () => {
     setup({});
-    expect(screen.getByRole('combobox')).toBeInTheDocument();
+    expect(screen.getByTestId('multi-select-filter')).toBeInTheDocument();
   });
 
-  it('displays all the options in the select component', () => {
-    setup({});
-    const selectFilter = screen.getByRole('combobox');
-    act(() => {
-      fireEvent.click(selectFilter);
-    });
-
-    Object.entries(HISTORY_EVENT_FILTER_STATUS_LABELS_MAP).forEach(
-      ([_, label]) => expect(screen.getByText(label)).toBeInTheDocument()
-    );
-  });
-
-  it('calls the setQueryParams function when an option is selected', () => {
-    const { mockSetValue } = setup({});
-    const selectFilter = screen.getByRole('combobox');
-
-    act(() => {
-      fireEvent.click(selectFilter);
-    });
-    const completedOption = screen.getByText('Completed');
-    act(() => {
-      fireEvent.click(completedOption);
-    });
-    expect(mockSetValue).toHaveBeenCalledWith({
-      historyEventStatuses: ['COMPLETED'],
-    } as WorkflowHistoryFiltersStatusValue);
-  });
-
-  it('calls the setQueryParams function when the filter is cleared', () => {
-    const { mockSetValue } = setup({
+  it('passes correct props to MultiSelectFilter', () => {
+    setup({
       overrides: {
         historyEventStatuses: ['COMPLETED'],
       },
     });
-    const clearButton = screen.getByLabelText('Clear all');
-    act(() => {
-      fireEvent.click(clearButton);
+
+    expect(screen.getByText('Status')).toBeInTheDocument();
+    expect(screen.getByTestId('values')).toHaveTextContent('["COMPLETED"]');
+    expect(screen.getByTestId('options')).toHaveTextContent(
+      JSON.stringify(HISTORY_EVENT_FILTER_STATUS_LABELS_MAP)
+    );
+  });
+
+  it('calls setValue when onChangeValues is triggered', () => {
+    const { mockSetValue } = setup({});
+
+    screen.getByText('Select Option').click();
+    expect(mockSetValue).toHaveBeenCalledWith({
+      historyEventStatuses: ['COMPLETED'],
     });
+  });
+
+  it('calls setValue with undefined when clearing values', () => {
+    const { mockSetValue } = setup({});
+
+    screen.getByText('Clear').click();
     expect(mockSetValue).toHaveBeenCalledWith({
       historyEventStatuses: undefined,
     });
@@ -63,7 +67,7 @@ function setup({
 }) {
   const mockSetValue = jest.fn();
   render(
-    <WorkflowHistoryFiltersType
+    <WorkflowHistoryFiltersStatus
       value={{
         historyEventStatuses: undefined,
         ...overrides,

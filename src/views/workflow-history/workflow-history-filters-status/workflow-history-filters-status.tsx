@@ -17,7 +17,9 @@ export default function WorkflowHistoryFiltersStatus({
       placeholder="All"
       values={value.historyEventStatuses ?? []}
       onChangeValues={(newValues) =>
-        setValue({ historyEventStatuses: newValues })
+        setValue({
+          historyEventStatuses: newValues.length > 0 ? newValues : undefined,
+        })
       }
       optionsLabelMap={HISTORY_EVENT_FILTER_STATUS_LABELS_MAP}
     />
