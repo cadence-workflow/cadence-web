@@ -6,31 +6,37 @@ import PrettyJson from '@/components/pretty-json/pretty-json';
 import losslessJsonStringify from '@/utils/lossless-json-stringify';
 
 import { styled } from './blocks.styles';
-import { 
-  type Props, 
-  type Block, 
-  type SectionBlock, 
-  type ActionsBlock, 
-  type ButtonElement 
+import {
+  type Props,
+  type Block,
+  type SectionBlock,
+  type ActionsBlock,
+  type ButtonElement,
 } from './blocks.types';
 
-export default function Blocks({ blocks, domain, cluster, workflowId, runId }: Props) {
+export default function Blocks({
+  blocks,
+  domain,
+  cluster,
+  workflowId,
+  runId,
+}: Props) {
   const [loadingButtons, setLoadingButtons] = useState<Set<string>>(new Set());
 
   const handleButtonClick = async (button: ButtonElement, index: number) => {
     const buttonKey = `${button.signal}-${index}`;
-    
+
     if (loadingButtons.has(buttonKey)) {
       return; // Prevent double clicks
     }
 
-    setLoadingButtons(prev => new Set(prev).add(buttonKey));
+    setLoadingButtons((prev) => new Set(prev).add(buttonKey));
 
     try {
       const targetWorkflowId = button.workflow_id || workflowId;
       const targetRunId = button.run_id || runId;
-      
-      const signalInput = button.signal_value 
+
+      const signalInput = button.signal_value
         ? losslessJsonStringify(button.signal_value)
         : undefined;
 
@@ -54,12 +60,10 @@ export default function Blocks({ blocks, domain, cluster, workflowId, runId }: P
       }
 
       // Optionally show success feedback here
-      console.log('Signal sent successfully');
-    } catch (error) {
-      console.error('Error signaling workflow:', error);
+    } catch {
       // Optionally show error feedback here
     } finally {
-      setLoadingButtons(prev => {
+      setLoadingButtons((prev) => {
         const newSet = new Set(prev);
         newSet.delete(buttonKey);
         return newSet;
@@ -69,15 +73,18 @@ export default function Blocks({ blocks, domain, cluster, workflowId, runId }: P
 
   const renderSection = (section: SectionBlock) => {
     const content = section.text.text;
-    
-    if (section.format === 'text/markdown' || section.text.type === 'text/markdown') {
+
+    if (
+      section.format === 'text/markdown' ||
+      section.text.type === 'text/markdown'
+    ) {
       return (
         <styled.SectionContainer>
           <Markdown markdown={content} />
         </styled.SectionContainer>
       );
     }
-    
+
     // Fallback to JSON rendering for other formats
     try {
       const jsonContent = JSON.parse(content);
@@ -103,7 +110,7 @@ export default function Blocks({ blocks, domain, cluster, workflowId, runId }: P
           if (element.type === 'button') {
             const buttonKey = `${element.signal}-${index}`;
             const isLoading = loadingButtons.has(buttonKey);
-            
+
             return (
               <styled.Button
                 key={buttonKey}
@@ -140,4 +147,3 @@ export default function Blocks({ blocks, domain, cluster, workflowId, runId }: P
     </styled.ViewContainer>
   );
 }
-
