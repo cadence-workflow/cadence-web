@@ -26,27 +26,30 @@ export default function WorkflowQueriesResult(props: Props) {
 
   return (
     <styled.ViewContainer $isError={queryResultContent.isError}>
-      {queryResultContent.contentType === 'json' && queryResultContent.content !== undefined && (
-        <>
-          <PrettyJson json={queryResultContent.content} />
-          <CopyTextButton
-            textToCopy={textToCopy}
-            overrides={overrides.copyButton}
+      {queryResultContent.contentType === 'json' &&
+        queryResultContent.content !== undefined && (
+          <>
+            <PrettyJson json={queryResultContent.content} />
+            <CopyTextButton
+              textToCopy={textToCopy}
+              overrides={overrides.copyButton}
+            />
+          </>
+        )}
+      {queryResultContent.contentType === 'markdown' &&
+        queryResultContent.content !== undefined && (
+          <Markdown markdown={queryResultContent.content} />
+        )}
+      {queryResultContent.contentType === 'blocks' &&
+        queryResultContent.content !== undefined && (
+          <Blocks
+            blocks={queryResultContent.content}
+            domain={queryResultContent.domain}
+            cluster={queryResultContent.cluster}
+            workflowId={queryResultContent.workflowId}
+            runId={queryResultContent.runId}
           />
-        </>
-      )}
-      {queryResultContent.contentType === 'markdown' && queryResultContent.content !== undefined && (
-        <Markdown markdown={queryResultContent.content} />
-      )}
-      {queryResultContent.contentType === 'blocks' && queryResultContent.content !== undefined && (
-        <Blocks
-          blocks={queryResultContent.content}
-          domain={queryResultContent.domain}
-          cluster={queryResultContent.cluster}
-          workflowId={queryResultContent.workflowId}
-          runId={queryResultContent.runId}
-        />
-      )}
+        )}
     </styled.ViewContainer>
   );
 }

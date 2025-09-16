@@ -24,7 +24,10 @@ jest.mock('../workflow-queries-result/workflow-queries-result', () =>
     <div>
       <div>Mock JSON</div>
       <div>{JSON.stringify(data)}</div>
-      <div>Domain: {domain}, Cluster: {cluster}, WorkflowId: {workflowId}, RunId: {runId}</div>
+      <div>
+        Domain: {domain}, Cluster: {cluster}, WorkflowId: {workflowId}, RunId:{' '}
+        {runId}
+      </div>
     </div>
   ))
 );

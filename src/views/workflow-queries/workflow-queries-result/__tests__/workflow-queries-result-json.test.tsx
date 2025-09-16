@@ -29,7 +29,8 @@ jest.mock('@/components/pretty-json/pretty-json', () =>
 jest.mock('@/components/blocks/blocks', () =>
   jest.fn(({ blocks, domain, cluster, workflowId, runId }) => (
     <div>
-      Blocks Mock: {domain}/{cluster}/{workflowId}/{runId} - {JSON.stringify(blocks)}
+      Blocks Mock: {domain}/{cluster}/{workflowId}/{runId} -{' '}
+      {JSON.stringify(blocks)}
     </div>
   ))
 );
@@ -91,10 +92,10 @@ describe(WorkflowQueriesResult.name, () => {
           format: 'text/markdown',
           text: {
             type: 'text/markdown',
-            text: '# Test'
-          }
-        }
-      ]
+            text: '# Test',
+          },
+        },
+      ],
     };
 
     setup({
@@ -110,7 +111,9 @@ describe(WorkflowQueriesResult.name, () => {
     });
 
     expect(
-      screen.getByText(/Blocks Mock: test-domain\/test-cluster\/test-workflow-id\/test-run-id/)
+      screen.getByText(
+        /Blocks Mock: test-domain\/test-cluster\/test-workflow-id\/test-run-id/
+      )
     ).toBeInTheDocument();
   });
 });
@@ -132,9 +135,9 @@ function setup({
 }) {
   (getQueryResultContent as jest.Mock).mockImplementation(() => content);
   render(
-    <WorkflowQueriesResult 
-      data={data} 
-      error={error} 
+    <WorkflowQueriesResult
+      data={data}
+      error={error}
       loading={loading}
       domain="test-domain"
       cluster="test-cluster"
