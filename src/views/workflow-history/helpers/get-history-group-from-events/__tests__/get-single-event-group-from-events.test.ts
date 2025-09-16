@@ -170,6 +170,14 @@ describe('getSingleEventGroupFromEvents', () => {
     ]);
   });
 
+  it('should include summaryFields for workflow execution signaled events', () => {
+    const group = getSingleEventGroupFromEvents([signalWorkflowExecutionEvent]);
+    const eventMetadata = group.eventsMetadata[0];
+
+    expect(eventMetadata.status).toBe('COMPLETED');
+    expect(eventMetadata.summaryFields).toEqual(['signalName', 'input']);
+  });
+
   it('should include summaryFields for started workflow execution events', () => {
     const group = getSingleEventGroupFromEvents([startWorkflowExecutionEvent]);
     const eventMetadata = group.eventsMetadata[0];
