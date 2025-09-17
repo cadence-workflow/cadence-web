@@ -520,8 +520,8 @@ describe('getActivityGroupFromEvents', () => {
     // The pending start event should have summaryFields
     const pendingStartEventMetadata = group.eventsMetadata[1];
     expect(pendingStartEventMetadata?.summaryFields).toEqual([
-      'heartbeatDetails',
-      'lastHeartbeatTime',
+      'lastFailureReason',
+      'lastFailureDetails',
     ]);
 
     // Other events should not have the same summaryFields
@@ -532,17 +532,18 @@ describe('getActivityGroupFromEvents', () => {
     ]);
   });
 
-  it('should include negativeFields for pending activity start events with cancel requested state', () => {
+  it('should include negativeFields for pending activity start events', () => {
     const events: ExtendedActivityHistoryEvent[] = [
       scheduleActivityTaskEvent,
-      pendingActivityTaskStartEventWithCancelRequestedState,
+      pendingActivityTaskStartEvent,
     ];
     const group = getActivityGroupFromEvents(events);
 
-    // The pending start event with cancel requested should have negativeFields
-    const pendingCancelEventMetadata = group.eventsMetadata[1];
-    expect(pendingCancelEventMetadata?.negativeFields).toEqual([
-      'cancelRequestedTime',
+    // The pending start event should have negativeFields
+    const pendingStartEventMetadata = group.eventsMetadata[1];
+    expect(pendingStartEventMetadata?.negativeFields).toEqual([
+      'lastFailureReason',
+      'lastFailureDetails',
     ]);
 
     // Other events should not have negativeFields
