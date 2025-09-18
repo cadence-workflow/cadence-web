@@ -6,11 +6,13 @@ import {
   MdOutlineRestartAlt,
   MdRefresh,
   MdOutlineWifiTethering,
+  MdOutlinePlayArrow,
 } from 'react-icons/md';
 
 import { type CancelWorkflowResponse } from '@/route-handlers/cancel-workflow/cancel-workflow.types';
 import { type ResetWorkflowResponse } from '@/route-handlers/reset-workflow/reset-workflow.types';
 import { type RestartWorkflowResponse } from '@/route-handlers/restart-workflow/restart-workflow.types';
+import { type StartWorkflowResponse } from '@/route-handlers/start-workflow/start-workflow.types';
 import { type TerminateWorkflowResponse } from '@/route-handlers/terminate-workflow/terminate-workflow.types';
 
 import getWorkflowIsCompleted from '../../workflow-page/helpers/get-workflow-is-completed';
@@ -27,6 +29,13 @@ import {
   type SignalWorkflowSubmissionData,
   type SignalWorkflowFormData,
 } from '../workflow-action-signal-form/workflow-action-signal-form.types';
+import transformStartWorkflowFormToSubmission from '../workflow-action-start-form/helpers/transform-start-workflow-form-to-submission';
+import { startWorkflowFormSchema } from '../workflow-action-start-form/schemas/start-workflow-form-schema';
+import WorkflowActionStartForm from '../workflow-action-start-form/workflow-action-start-form';
+import {
+  type StartWorkflowSubmissionData,
+  type StartWorkflowFormData,
+} from '../workflow-action-start-form/workflow-action-start-form.types';
 import { type WorkflowAction } from '../workflow-actions.types';
 
 const cancelWorkflowActionConfig: WorkflowAction<CancelWorkflowResponse> = {
@@ -48,7 +57,8 @@ const cancelWorkflowActionConfig: WorkflowAction<CancelWorkflowResponse> = {
     )
       ? 'NOT_RUNNABLE_WORKFLOW_CLOSED'
       : 'RUNNABLE',
-  apiRoute: 'cancel',
+  apiRoute: (params) =>
+    `/api/domains/${params.domain}/${params.cluster}/workflows/${params.workflowId}/${params.runId}/cancel`,
   renderSuccessMessage: () => 'Workflow cancellation has been requested.',
 };
 
@@ -72,7 +82,8 @@ const terminateWorkflowActionConfig: WorkflowAction<TerminateWorkflowResponse> =
       )
         ? 'NOT_RUNNABLE_WORKFLOW_CLOSED'
         : 'RUNNABLE',
-    apiRoute: 'terminate',
+    apiRoute: (params) =>
+      `/api/domains/${params.domain}/${params.cluster}/workflows/${params.workflowId}/${params.runId}/terminate`,
     renderSuccessMessage: () => 'Workflow has been terminated.',
   };
 
@@ -102,9 +113,44 @@ const signalWorkflowActionConfig: WorkflowAction<
     )
       ? 'NOT_RUNNABLE_WORKFLOW_CLOSED'
       : 'RUNNABLE',
-  apiRoute: 'signal',
+  apiRoute: (params) =>
+    `/api/domains/${params.domain}/${params.cluster}/workflows/${params.workflowId}/${params.runId}/signal`,
   renderSuccessMessage: ({ inputParams }) =>
     `Successfully sent signal "${inputParams.submissionData.signalName}"`,
+};
+
+export const startWorkflowActionConfig: WorkflowAction<
+  StartWorkflowResponse,
+  StartWorkflowFormData,
+  StartWorkflowSubmissionData
+> = {
+  id: 'start',
+  label: 'Start',
+  subtitle: 'Start a new workflow execution',
+  modal: {
+    text: 'Start a new workflow execution with the specified parameters and configuration.',
+    docsLink: {
+      text: 'Learn more about starting workflows',
+      href: 'https://cadenceworkflow.io/docs/cli#start-workflow',
+    },
+    withForm: true,
+    form: WorkflowActionStartForm,
+    formSchema: startWorkflowFormSchema,
+    transformFormDataToSubmission: transformStartWorkflowFormToSubmission,
+  },
+  icon: MdOutlinePlayArrow,
+  getRunnableStatus: () => 'RUNNABLE',
+  apiRoute: (params) =>
+    `/api/domains/${params.domain}/${params.cluster}/workflows/start`,
+  renderSuccessMessage: (props) =>
+    createElement(WorkflowActionNewRunSuccessMsg, {
+      ...props,
+      inputParams: {
+        ...props.inputParams,
+        workflowId: props.result.workflowId,
+      },
+      successMessage: 'Workflow has been started.',
+    }),
 };
 
 const restartWorkflowActionConfig: WorkflowAction<RestartWorkflowResponse> = {
@@ -120,7 +166,8 @@ const restartWorkflowActionConfig: WorkflowAction<RestartWorkflowResponse> = {
   },
   icon: MdOutlineRestartAlt,
   getRunnableStatus: () => 'RUNNABLE',
-  apiRoute: 'restart',
+  apiRoute: (params) =>
+    `/api/domains/${params.domain}/${params.cluster}/workflows/${params.workflowId}/${params.runId}/restart`,
   renderSuccessMessage: (props) =>
     createElement(WorkflowActionNewRunSuccessMsg, {
       ...props,
@@ -163,7 +210,8 @@ export const resetWorkflowActionConfig: WorkflowAction<
   },
   icon: MdRefresh,
   getRunnableStatus: () => 'RUNNABLE',
-  apiRoute: 'reset',
+  apiRoute: (params) =>
+    `/api/domains/${params.domain}/${params.cluster}/workflows/${params.workflowId}/${params.runId}/reset`,
   renderSuccessMessage: (props) =>
     createElement(WorkflowActionNewRunSuccessMsg, {
       ...props,
@@ -177,6 +225,7 @@ const workflowActionsConfig = [
   signalWorkflowActionConfig,
   restartWorkflowActionConfig,
   resetWorkflowActionConfig,
+  startWorkflowActionConfig,
 ] as const satisfies WorkflowAction<any, any, any>[];
 
 export default workflowActionsConfig;

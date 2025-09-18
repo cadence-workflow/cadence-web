@@ -33,6 +33,7 @@ const mockResolvedConfigValues: LoadedConfigResolvedValues = {
     signal: 'ENABLED',
     restart: 'ENABLED',
     reset: 'ENABLED',
+    start: 'ENABLED',
   },
   EXTENDED_DOMAIN_INFO_ENABLED: {
     metadata: false,

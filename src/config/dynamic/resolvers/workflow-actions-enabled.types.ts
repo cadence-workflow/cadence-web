@@ -5,7 +5,8 @@ export type WorkflowActionID =
   | 'terminate'
   | 'restart'
   | 'reset'
-  | 'signal';
+  | 'signal'
+  | 'start';
 
 export type WorkflowActionsEnabledResolverParams = {
   domain: string;
