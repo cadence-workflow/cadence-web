@@ -13,9 +13,6 @@ export const overrides = {
     Input: {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
         ...$theme.typography.MonoParagraphSmall,
-        '::placeholder': {
-          ...$theme.typography.ParagraphSmall,
-        },
       }),
     },
   } satisfies TextareaOverrides,
