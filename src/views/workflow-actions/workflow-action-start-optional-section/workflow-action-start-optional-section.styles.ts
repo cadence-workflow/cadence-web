@@ -46,12 +46,6 @@ export const overrides = {
 };
 
 const cssStylesObj = {
-  retryPolicySection: (theme) => ({
-    borderLeft: `2px solid ${theme.colors.borderOpaque}`,
-    paddingLeft: '16px',
-    display: 'flex',
-    flexDirection: 'column',
-  }),
   expandOptionalSectionHeader: () => ({
     display: 'flex',
     alignItems: 'center',
