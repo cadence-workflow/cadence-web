@@ -82,11 +82,7 @@ export default function Blocks({
 
   const renderSection = (section: SectionBlock) => {
     const content = section.componentOptions.text;
-
-    if (
-      section.format === 'text/markdown' ||
-      section.componentOptions.type === 'text/markdown'
-    ) {
+    if (section.format === 'text/markdown') {
       return (
         <styled.SectionContainer>
           <Markdown markdown={content} />

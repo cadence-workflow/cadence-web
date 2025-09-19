@@ -10,7 +10,6 @@ export type SectionBlock = {
   type: 'section';
   format: string;
   componentOptions: {
-    type: string;
     text: string;
   };
 };
