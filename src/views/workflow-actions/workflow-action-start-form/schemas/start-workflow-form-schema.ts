@@ -1,6 +1,9 @@
 import { z } from 'zod';
 
-import { WORKER_SDK_LANGUAGES } from '@/route-handlers/start-workflow/start-workflow.constants';
+import {
+  WORKER_SDK_LANGUAGES,
+  WORKFLOW_ID_REUSE_POLICIES,
+} from '@/route-handlers/start-workflow/start-workflow.constants';
 
 const baseSchema = z.object({
   workflowType: z.object({
@@ -35,10 +38,63 @@ const baseSchema = z.object({
   workflowId: z.string().optional(),
   executionStartToCloseTimeoutSeconds: z.number().positive(),
   taskStartToCloseTimeoutSeconds: z.number().positive().optional(),
+  workflowIdReusePolicy: z.enum(WORKFLOW_ID_REUSE_POLICIES).optional(),
+  memo: z
+    .string()
+    .optional()
+    .refine((val) => {
+      if (!val || val.trim() === '') return true;
+      try {
+        JSON.parse(val);
+        return true;
+      } catch {
+        return false;
+      }
+    }, 'Memo must be valid JSON Object'),
+  searchAttributes: z
+    .string()
+    .optional()
+    .refine((val) => {
+      if (!val || val.trim() === '') return true;
+      try {
+        JSON.parse(val);
+        return true;
+      } catch {
+        return false;
+      }
+    }, 'Search Attributes must be valid JSON Object'),
+  header: z
+    .string()
+    .optional()
+    .refine((val) => {
+      if (!val || val.trim() === '') return true;
+      try {
+        const parsed = JSON.parse(val);
+
+        return Object.entries(parsed).every(
+          (entry) => typeof entry[1] === 'string'
+        );
+      } catch {
+        return false;
+      }
+    }, 'Headers must be valid JSON Object, keys and values must be strings'),
   // Schedule type fields
   scheduleType: z.enum(['NOW', 'LATER', 'CRON']),
   firstRunAt: z.string().optional(),
   cronSchedule: z.string().optional(),
+
+  // Retry policy fields
+  enableRetryPolicy: z.boolean().optional(),
+  limitRetries: z.enum(['ATTEMPTS', 'DURATION']).optional(),
+  retryPolicy: z
+    .object({
+      initialIntervalSeconds: z.string().optional(),
+      backoffCoefficient: z.string().optional(),
+      maximumIntervalSeconds: z.string().optional(),
+      maximumAttempts: z.string().optional(),
+      expirationIntervalSeconds: z.string().optional(),
+    })
+    .optional(),
 });
 
 export const startWorkflowFormSchema = baseSchema.superRefine((data, ctx) => {
@@ -57,5 +113,49 @@ export const startWorkflowFormSchema = baseSchema.superRefine((data, ctx) => {
       message: 'Cron schedule is required when schedule type is CRON',
       path: ['cronSchedule'],
     });
+  }
+
+  // Validate retry policy configuration when enabled
+  if (data.enableRetryPolicy) {
+    // Check required fields for retry policy
+    if (!data.retryPolicy?.initialIntervalSeconds) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Initial interval is required when retry policy is enabled',
+        path: ['retryPolicy', 'initialIntervalSeconds'],
+      });
+    }
+
+    if (!data.retryPolicy?.backoffCoefficient) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Backoff coefficient is required when retry policy is enabled',
+        path: ['retryPolicy', 'backoffCoefficient'],
+      });
+    }
+
+    // Validate retry limit specific requirements
+    if (
+      data.limitRetries === 'ATTEMPTS' &&
+      !data.retryPolicy?.maximumAttempts
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Maximum attempts is required when retries limit is ATTEMPTS',
+        path: ['retryPolicy', 'maximumAttempts'],
+      });
+    }
+
+    if (
+      data.limitRetries === 'DURATION' &&
+      !data.retryPolicy?.expirationIntervalSeconds
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          'Expiration interval is required when retries limit is DURATION',
+        path: ['retryPolicy', 'expirationIntervalSeconds'],
+      });
+    }
   }
 });

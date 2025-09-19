@@ -8,6 +8,13 @@ import { type startWorkflowFormSchema } from './schemas/start-workflow-form-sche
 
 export type Props = WorkflowActionFormProps<StartWorkflowFormData>;
 
+export type SubFormProps = Pick<
+  Props,
+  'control' | 'clearErrors' | 'formData'
+> & {
+  getErrorMessage: (field: string) => string | undefined;
+};
+
 export type StartWorkflowFormData = z.infer<typeof startWorkflowFormSchema>;
 
 export type StartWorkflowSubmissionData = z.infer<

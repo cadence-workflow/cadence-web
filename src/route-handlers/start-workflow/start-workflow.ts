@@ -134,6 +134,7 @@ export async function startWorkflow(
   } catch (e) {
     const isDuplicateWorkflowError =
       e instanceof GRPCError && e.grpcStatusCode === status.ALREADY_EXISTS;
+
     const errorMessage = isDuplicateWorkflowError
       ? 'Error starting workflow: Duplicate workflow'
       : 'Error starting workflow';

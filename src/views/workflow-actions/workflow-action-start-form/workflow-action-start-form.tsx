@@ -4,10 +4,13 @@ import { DatePicker } from 'baseui/datepicker';
 import { FormControl } from 'baseui/form-control';
 import { Input } from 'baseui/input';
 import { RadioGroup, Radio } from 'baseui/radio';
+import { get } from 'lodash';
 import { Controller, useWatch } from 'react-hook-form';
 
 import MultiJsonInput from '@/components/multi-json-input/multi-json-input';
 import { WORKER_SDK_LANGUAGES } from '@/route-handlers/start-workflow/start-workflow.constants';
+
+import WorkflowActionStartOptionalSection from '../workflow-action-start-optional-section/workflow-action-start-optional-section';
 
 import { type Props } from './workflow-action-start-form.types';
 
@@ -20,17 +23,13 @@ export default function WorkflowActionStartForm({
   const now = useMemo(() => new Date(), []);
 
   const getErrorMessage = (field: string) => {
-    const error =
-      field in fieldErrors
-        ? fieldErrors[field as keyof typeof fieldErrors]
-        : undefined;
+    const error = get(fieldErrors, field);
     if (Array.isArray(error)) {
       return error.map((err) => err?.message);
     }
     return error?.message;
   };
 
-  // Watch schedule type to show/hide conditional fields
   const scheduleType = useWatch({
     control,
     name: 'scheduleType',
@@ -98,7 +97,9 @@ export default function WorkflowActionStartForm({
               type="number"
               min={1}
               onChange={(e) => {
-                field.onChange(parseInt(e.target.value, 10));
+                field.onChange(
+                  e.target.value ? parseInt(e.target.value, 10) : undefined
+                );
               }}
               onBlur={field.onBlur}
               error={Boolean(
@@ -154,6 +155,7 @@ export default function WorkflowActionStartForm({
           />
         )}
       />
+
       <FormControl label="Schedule Time">
         <Controller
           name="scheduleType"
@@ -238,6 +240,13 @@ export default function WorkflowActionStartForm({
           />
         </FormControl>
       )}
+
+      <WorkflowActionStartOptionalSection
+        control={control}
+        clearErrors={clearErrors}
+        formData={_formData}
+        getErrorMessage={getErrorMessage}
+      />
     </div>
   );
 }
