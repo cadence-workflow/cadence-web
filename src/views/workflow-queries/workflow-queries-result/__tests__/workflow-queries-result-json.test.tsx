@@ -90,7 +90,7 @@ describe(WorkflowQueriesResult.name, () => {
         {
           type: 'section' as const,
           format: 'text/markdown',
-          text: {
+          componentOptions: {
             type: 'text/markdown',
             text: '# Test',
           },

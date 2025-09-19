@@ -9,7 +9,7 @@ export type Block = SectionBlock | DividerBlock | ActionsBlock;
 export type SectionBlock = {
   type: 'section';
   format: string;
-  text: {
+  componentOptions: {
     type: string;
     text: string;
   };
@@ -26,14 +26,17 @@ export type ActionsBlock = {
 
 export type ButtonElement = {
   type: 'button';
-  text: {
+  componentOptions: {
     type: string;
     text: string;
   };
-  signal: string;
-  signal_value?: Record<string, any>;
-  workflow_id?: string;
-  run_id?: string;
+  action: {
+    type: 'signal';
+    signal_name: string;
+    signal_value?: Record<string, any>;
+    workflow_id?: string;
+    run_id?: string;
+  };
 };
 
 export type Props = {

@@ -24,7 +24,16 @@ export default function Blocks({
   const [loadingButtons, setLoadingButtons] = useState<Set<string>>(new Set());
 
   const handleButtonClick = async (button: ButtonElement, index: number) => {
-    const buttonKey = `${button.signal}-${index}`;
+    // Only handle signal actions
+    if (button.action.type !== 'signal') {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `Button action type '${button.action.type}' is not supported. Only 'signal' actions are currently handled.`
+      );
+      return;
+    }
+
+    const buttonKey = `${button.action.signal_name}-${index}`;
 
     if (loadingButtons.has(buttonKey)) {
       return; // Prevent double clicks
@@ -33,11 +42,11 @@ export default function Blocks({
     setLoadingButtons((prev) => new Set(prev).add(buttonKey));
 
     try {
-      const targetWorkflowId = button.workflow_id || workflowId;
-      const targetRunId = button.run_id || runId;
+      const targetWorkflowId = button.action.workflow_id || workflowId;
+      const targetRunId = button.action.run_id || runId;
 
-      const signalInput = button.signal_value
-        ? losslessJsonStringify(button.signal_value)
+      const signalInput = button.action.signal_value
+        ? losslessJsonStringify(button.action.signal_value)
         : undefined;
 
       const response = await fetch(
@@ -48,7 +57,7 @@ export default function Blocks({
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            signalName: button.signal,
+            signalName: button.action.signal_name,
             signalInput,
           }),
         }
@@ -72,11 +81,11 @@ export default function Blocks({
   };
 
   const renderSection = (section: SectionBlock) => {
-    const content = section.text.text;
+    const content = section.componentOptions.text;
 
     if (
       section.format === 'text/markdown' ||
-      section.text.type === 'text/markdown'
+      section.componentOptions.type === 'text/markdown'
     ) {
       return (
         <styled.SectionContainer>
@@ -108,7 +117,7 @@ export default function Blocks({
       <styled.ActionsContainer>
         {actions.elements.map((element, index) => {
           if (element.type === 'button') {
-            const buttonKey = `${element.signal}-${index}`;
+            const buttonKey = `${element.action.signal_name}-${index}`;
             const isLoading = loadingButtons.has(buttonKey);
 
             return (
@@ -118,7 +127,7 @@ export default function Blocks({
                 disabled={isLoading}
                 onClick={() => handleButtonClick(element, index)}
               >
-                {isLoading ? 'Sending...' : element.text.text}
+                {isLoading ? 'Sending...' : element.componentOptions.text}
               </styled.Button>
             );
           }
@@ -147,3 +156,4 @@ export default function Blocks({
     </styled.ViewContainer>
   );
 }
+
