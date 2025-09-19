@@ -15,7 +15,7 @@ const workflowHistoryEventSummaryFieldParsersConfig: Array<WorkflowHistoryEventS
       matcher: (name, value) =>
         value !== null &&
         new RegExp(
-          '(input|result|details|failureDetails|Error|lastCompletionResult|heartbeatDetails)$'
+          '(input|result|details|failureDetails|Error|lastCompletionResult|heartbeatDetails|lastFailureDetails)$'
         ).test(name),
       icon: null,
       customRenderValue: WorkflowHistoryEventSummaryJson,

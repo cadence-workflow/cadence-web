@@ -127,6 +127,10 @@ export default function getActivityGroupFromEvents(
     {
       activityTaskFailedEventAttributes: ['reason', 'details'],
       activityTaskTimedOutEventAttributes: ['reason', 'details'],
+      pendingActivityTaskStartEventAttributes: [
+        'lastFailureReason',
+        'lastFailureDetails',
+      ],
     };
 
   const pendingStartEventTimePrefix = pendingStartEvent?.[pendingStartAttr]
@@ -157,6 +161,10 @@ export default function getActivityGroupFromEvents(
       activityTaskScheduledEventAttributes: [
         'input',
         'scheduleToCloseTimeoutSeconds',
+      ],
+      pendingActivityTaskStartEventAttributes: [
+        'lastFailureReason',
+        'lastFailureDetails',
       ],
       activityTaskStartedEventAttributes: [
         'heartbeatDetails',
