@@ -83,6 +83,10 @@ export default function WorkflowQueries(props: WorkflowPageTabContentProps) {
             data={queries[selectedQueryIndex]?.data}
             error={queries[selectedQueryIndex]?.error ?? undefined}
             loading={queries[selectedQueryIndex]?.isFetching}
+            domain={props.params.domain}
+            cluster={props.params.cluster}
+            workflowId={props.params.workflowId}
+            runId={props.params.runId}
           />
         </styled.QueryResultView>
       </styled.PageContainer>

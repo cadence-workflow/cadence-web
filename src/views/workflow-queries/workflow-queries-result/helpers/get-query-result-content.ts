@@ -38,6 +38,22 @@ export default function getQueryResultContent(props: Props): QueryJsonContent {
         isError: false,
       };
     }
+
+    if (
+      props.data.result.cadenceResponseType === 'formattedData' &&
+      props.data.result.format === 'blocks'
+    ) {
+      return {
+        contentType: 'blocks',
+        content: props.data.result,
+        domain: props.domain,
+        cluster: props.cluster,
+        workflowId: props.workflowId,
+        runId: props.runId,
+        isError: false,
+      };
+    }
+
     return { contentType: 'json', content: props.data.result, isError: false };
   }
 
