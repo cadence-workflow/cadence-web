@@ -1,6 +1,9 @@
 import { z } from 'zod';
 
-import { WORKER_SDK_LANGUAGES } from '../start-workflow.constants';
+import {
+  WORKER_SDK_LANGUAGES,
+  WORKFLOW_ID_REUSE_POLICIES,
+} from '../start-workflow.constants';
 
 import { jsonValueSchema } from './json-value-schema';
 
@@ -18,7 +21,20 @@ const startWorkflowRequestBodySchema = z.object({
   taskStartToCloseTimeoutSeconds: z.number().positive().optional(),
   firstRunAt: z.string().datetime().optional(),
   cronSchedule: z.string().optional(),
-  // TODO: Add workflowIdReusePolicy, retryPolicy, enableRetryPolicy, memo, searchAttributes, and header fields if needed in the future.
+
+  workflowIdReusePolicy: z.enum(WORKFLOW_ID_REUSE_POLICIES).optional(),
+  retryPolicy: z
+    .object({
+      initialIntervalSeconds: z.number().optional(),
+      backoffCoefficient: z.number().optional(),
+      maximumIntervalSeconds: z.number().optional(),
+      expirationIntervalSeconds: z.number().optional(),
+      maximumAttempts: z.number().optional(),
+    })
+    .optional(),
+  memo: z.record(z.any()).optional(),
+  searchAttributes: z.record(z.any()).optional(),
+  header: z.record(z.string()).optional(),
 });
 
 export default startWorkflowRequestBodySchema;
