@@ -179,10 +179,8 @@ function setup({
   options,
 }: SetupOptions = {}) {
   const mockResult: Partial<CronValidateResult> = {
-    isValid: jest.fn(() => mockIsValid) satisfies CronValidateResult['isValid'],
-    isError: jest.fn(
-      () => !mockIsValid
-    ) satisfies CronValidateResult['isError'],
+    isValid: jest.fn(() => mockIsValid),
+    isError: jest.fn(() => !mockIsValid),
     getError: jest.fn(() => mockErrors),
     getValue: jest.fn(() => mockCronValue),
   };
