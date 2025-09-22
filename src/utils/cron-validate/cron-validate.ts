@@ -14,7 +14,7 @@ registerOptionPreset(
 
 export const cronValidate = (cronString: string, options?: InputOptions) => {
   return cron(cronString, {
-    ...options,
     preset: CRON_VALIDATE_CADENCE_PRESET_ID,
+    ...options,
   });
 };

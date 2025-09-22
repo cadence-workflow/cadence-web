@@ -1,5 +1,5 @@
 import cron, { type CronData } from 'cron-validate';
-import { type Err, type Valid, type Result } from 'cron-validate/lib/result';
+import { type Err, type Valid } from 'cron-validate/lib/result';
 import { type InputOptions } from 'cron-validate/lib/types';
 
 import { cronValidate } from '../cron-validate';
@@ -38,7 +38,6 @@ describe('cronValidate', () => {
       })
     );
   });
-
   it('should have correct field validation ranges in preset', () => {
     expect(CRON_VALIDATE_CADENCE_PRESET.minutes).toEqual({
       minValue: 0,
@@ -75,25 +74,25 @@ describe('cronValidate', () => {
   });
 
   it('should merge custom options with preset', () => {
-    const { mockResult, mockCron } = setup();
-
     const cronString = '0 12 * * *';
     const customOptions = {
       override: {
         minutes: {
-          minValue: 5,
-          maxValue: 55,
+          lowerLimit: 5,
+          upperLimit: 55,
         },
       },
-    } as any;
-
-    const result = cronValidate(cronString, customOptions);
+    };
+    const { mockResult, mockCron, result } = setup({
+      value: cronString,
+      options: customOptions,
+    });
 
     expect(mockCron).toHaveBeenCalledWith(cronString, {
       override: {
         minutes: {
-          minValue: 5,
-          maxValue: 55,
+          lowerLimit: 5,
+          upperLimit: 55,
         },
       },
       preset: CRON_VALIDATE_CADENCE_PRESET_ID,
