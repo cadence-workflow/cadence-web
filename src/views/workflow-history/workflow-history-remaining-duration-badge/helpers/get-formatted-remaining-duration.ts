@@ -9,17 +9,14 @@ export default function getFormattedRemainingDuration(
   const now = dayjs();
   const expectedEnd = start.add(expectedDurationMs, 'milliseconds');
 
-  // If we've already passed the expected end time, return null
   if (now.isAfter(expectedEnd)) {
     return null;
   }
 
-  // Calculate remaining time
-  const remaining = expectedEnd.diff(now);
-  const remainingDuration = dayjs.duration(remaining);
-  const seconds = Math.ceil(remainingDuration.asSeconds());
+  const remainingDurationMs = expectedEnd.diff(now);
 
-  // Don't show if less than 1 second remaining
+  // Round up, to compensate for the rounding-down in the events duration badge
+  const seconds = Math.ceil(remainingDurationMs / 1000);
   if (seconds < 1) {
     return null;
   }

@@ -18,7 +18,7 @@ export default function getFormattedEventsDuration(
       nanos: (durationObj.asMilliseconds() - seconds * 1000) * 1000000,
     },
     { separator: ' ' },
-    hideMs ? 's' : 'ms'
+    hideMs && seconds > 0 ? 's' : 'ms'
   );
 
   return duration;
