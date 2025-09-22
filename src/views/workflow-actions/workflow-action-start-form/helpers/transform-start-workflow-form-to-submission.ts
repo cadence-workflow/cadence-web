@@ -8,7 +8,7 @@ import {
 export default function transformStartWorkflowFormToSubmission(
   formData: StartWorkflowFormData
 ): StartWorkflowSubmissionData {
-  const readyFormData = {
+  const basicFormData = {
     taskList: formData.taskList,
     workflowType: formData.workflowType,
     workerSDKLanguage: formData.workerSDKLanguage,
@@ -51,7 +51,7 @@ export default function transformStartWorkflowFormToSubmission(
   };
 
   return {
-    ...readyFormData,
+    ...basicFormData,
     ...conditionalFormData,
     input: formData?.input
       ?.filter((v) => v !== '')
