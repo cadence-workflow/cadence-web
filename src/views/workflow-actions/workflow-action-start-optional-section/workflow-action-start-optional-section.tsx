@@ -131,7 +131,7 @@ export default function WorkflowActionStartOptionalSection({
                 onBlur={field.onBlur}
                 error={Boolean(getErrorMessage('header'))}
                 size="compact"
-                placeholder='{"key": "value"}'
+                placeholder='{"key":"value"}'
                 rows={3}
               />
             )}
@@ -156,7 +156,7 @@ export default function WorkflowActionStartOptionalSection({
                 onBlur={field.onBlur}
                 error={Boolean(getErrorMessage('memo'))}
                 size="compact"
-                placeholder='{"key": "value"}'
+                placeholder='{"key":"value"}'
                 rows={3}
               />
             )}
@@ -181,7 +181,7 @@ export default function WorkflowActionStartOptionalSection({
                 onBlur={field.onBlur}
                 error={Boolean(getErrorMessage('searchAttributes'))}
                 size="compact"
-                placeholder='{"key": "value"}'
+                placeholder='{"key":"value"}'
                 rows={3}
               />
             )}

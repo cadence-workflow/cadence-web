@@ -157,7 +157,7 @@ export default function WorkflowActionStartRetryPolicy({
                     clearErrors('retryPolicy.expirationIntervalSeconds');
                     onChange(e.currentTarget.value);
                   }}
-                  error={Boolean(getErrorMessage('retriesLimit'))}
+                  error={Boolean(getErrorMessage('limitRetries'))}
                   align="horizontal"
                 >
                   <Radio value="ATTEMPTS">Attempts</Radio>
