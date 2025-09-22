@@ -230,4 +230,39 @@ describe('getSingleEventGroupFromEvents', () => {
       'newExecutionRunId',
     ]);
   });
+
+  it('should calculate expectedDurationMs for workflow execution started events with firstDecisionTaskBackoff', () => {
+    const group = getSingleEventGroupFromEvents([startWorkflowExecutionEvent]);
+
+    // firstDecisionTaskBackoff has seconds: '55', nanos: 0
+    // Expected calculation: 55 * 1000 + 0 / 1000000 = 55000 ms
+    expect(group.expectedDurationMs).toBe(55000);
+  });
+
+  it('should not calculate expectedDurationMs for non-workflow-started events', () => {
+    const nonStartedEvents = [
+      signalWorkflowExecutionEvent,
+      recordMarkerExecutionEvent,
+      failWorkflowExecutionEvent,
+      completeWorkflowExecutionEvent,
+    ];
+
+    for (const event of nonStartedEvents) {
+      const group = getSingleEventGroupFromEvents([event]);
+      expect(group.expectedDurationMs).toBeUndefined();
+    }
+  });
+
+  it('should not calculate expectedDurationMs for workflow started events without firstDecisionTaskBackoff', () => {
+    const eventWithoutBackoff = {
+      ...startWorkflowExecutionEvent,
+      workflowExecutionStartedEventAttributes: {
+        ...startWorkflowExecutionEvent.workflowExecutionStartedEventAttributes,
+        firstDecisionTaskBackoff: null,
+      },
+    };
+
+    const group = getSingleEventGroupFromEvents([eventWithoutBackoff]);
+    expect(group.expectedDurationMs).toBeUndefined();
+  });
 });

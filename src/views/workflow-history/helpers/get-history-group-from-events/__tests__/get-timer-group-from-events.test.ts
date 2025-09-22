@@ -136,19 +136,54 @@ describe('getTimerGroupFromEvents', () => {
     const group = getTimerGroupFromEvents(events);
 
     // The started event should have summaryFields
-    const startedEventMetadata = group.eventsMetadata.find(
-      (metadata) => metadata.label === 'Started'
-    );
-    expect(startedEventMetadata?.summaryFields).toEqual([
+    const startedEventMetadata = group.eventsMetadata[0];
+    expect(startedEventMetadata.summaryFields).toEqual([
       'startToFireTimeoutSeconds',
     ]);
 
     // Other events should not have summaryFields
-    const otherEventsMetadata = group.eventsMetadata.filter(
-      (metadata) => metadata.label !== 'Started'
-    );
-    otherEventsMetadata.forEach((metadata) => {
-      expect(metadata.summaryFields).toBeUndefined();
-    });
+    const otherEventMetadata = group.eventsMetadata[1];
+    expect(otherEventMetadata.summaryFields).toBeUndefined();
+  });
+
+  it('should calculate expectedDurationMs for started timer events without close event', () => {
+    const eventsWithoutClose: TimerHistoryEvent[] = [startTimerTaskEvent];
+    const group = getTimerGroupFromEvents(eventsWithoutClose);
+
+    // startToFireTimeout has seconds: '5', nanos: 0
+    // Expected calculation: 5 * 1000 + 0 / 1000000 = 5000 ms
+    expect(group.expectedDurationMs).toBe(5000);
+  });
+
+  it('should not calculate expectedDurationMs for timer events with close event', () => {
+    const eventsWithClose: TimerHistoryEvent[] = [
+      startTimerTaskEvent,
+      fireTimerTaskEvent,
+    ];
+    const group = getTimerGroupFromEvents(eventsWithClose);
+
+    // Should not calculate expectedDurationMs when there's a close event
+    expect(group.expectedDurationMs).toBeUndefined();
+  });
+
+  it('should not calculate expectedDurationMs for timer events without started event', () => {
+    const eventsWithoutStart: TimerHistoryEvent[] = [fireTimerTaskEvent];
+    const group = getTimerGroupFromEvents(eventsWithoutStart);
+
+    // Should not calculate expectedDurationMs when there's no started event
+    expect(group.expectedDurationMs).toBeUndefined();
+  });
+
+  it('should not calculate expectedDurationMs for started timer events without startToFireTimeout', () => {
+    const eventWithoutTimeout = {
+      ...startTimerTaskEvent,
+      timerStartedEventAttributes: {
+        ...startTimerTaskEvent.timerStartedEventAttributes,
+        startToFireTimeout: null,
+      },
+    };
+
+    const group = getTimerGroupFromEvents([eventWithoutTimeout]);
+    expect(group.expectedDurationMs).toBeUndefined();
   });
 });
