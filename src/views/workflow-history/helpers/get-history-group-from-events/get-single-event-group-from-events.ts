@@ -110,7 +110,7 @@ export default function getSingleEventGroupFromEvents(
       ],
     };
 
-  let expectedDurationMs: number | undefined = undefined;
+  let expectedDurationMs: number | undefined;
   if (
     event.attributes === 'workflowExecutionStartedEventAttributes' &&
     event.workflowExecutionStartedEventAttributes?.firstDecisionTaskBackoff
