@@ -253,6 +253,22 @@ describe('getSingleEventGroupFromEvents', () => {
     }
   });
 
+  it('should not calculate expectedDurationMs for workflow started events with zero firstDecisionTaskBackoff', () => {
+    const eventWithoutBackoff = {
+      ...startWorkflowExecutionEvent,
+      workflowExecutionStartedEventAttributes: {
+        ...startWorkflowExecutionEvent.workflowExecutionStartedEventAttributes,
+        firstDecisionTaskBackoff: {
+          seconds: '0',
+          nanos: 0,
+        },
+      },
+    };
+
+    const group = getSingleEventGroupFromEvents([eventWithoutBackoff]);
+    expect(group.expectedDurationMs).toBeUndefined();
+  });
+
   it('should not calculate expectedDurationMs for workflow started events without firstDecisionTaskBackoff', () => {
     const eventWithoutBackoff = {
       ...startWorkflowExecutionEvent,

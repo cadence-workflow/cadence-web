@@ -115,9 +115,12 @@ export default function getSingleEventGroupFromEvents(
     event.attributes === 'workflowExecutionStartedEventAttributes' &&
     event.workflowExecutionStartedEventAttributes?.firstDecisionTaskBackoff
   ) {
-    expectedDurationMs = parseGrpcTimestamp(
+    const firstDecisionTaskBackoffMs = parseGrpcTimestamp(
       event.workflowExecutionStartedEventAttributes.firstDecisionTaskBackoff
     );
+
+    if (firstDecisionTaskBackoffMs > 0)
+      expectedDurationMs = firstDecisionTaskBackoffMs;
   }
 
   return {
