@@ -3,11 +3,11 @@ import dayjs from '@/utils/datetime/dayjs';
 
 export default function getFormattedRemainingDuration(
   startTime: Date | string | number,
-  expectedDurationMs: number
+  expectedWaitTimeMs: number
 ): string | null {
   const start = dayjs(startTime);
   const now = dayjs();
-  const expectedEnd = start.add(expectedDurationMs, 'milliseconds');
+  const expectedEnd = start.add(expectedWaitTimeMs, 'milliseconds');
 
   if (now.isAfter(expectedEnd)) {
     return null;
