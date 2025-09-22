@@ -1,3 +1,5 @@
+import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
+
 import type {
   HistoryGroupEventToStatusMap,
   HistoryGroupEventToStringMap,
@@ -49,6 +51,18 @@ export default function getTimerGroupFromEvents(
       timerStartedEventAttributes: ['startToFireTimeoutSeconds'],
     };
 
+  let expectedDurationMs: number | undefined = undefined;
+
+  if (
+    startedEvent &&
+    !closeEvent &&
+    startedEvent.timerStartedEventAttributes?.startToFireTimeout
+  ) {
+    expectedDurationMs = parseGrpcTimestamp(
+      startedEvent.timerStartedEventAttributes.startToFireTimeout
+    );
+  }
+
   return {
     label,
     hasMissingEvents,
@@ -63,5 +77,6 @@ export default function getTimerGroupFromEvents(
       undefined,
       eventToSummaryFields
     ),
+    expectedDurationMs,
   };
 }

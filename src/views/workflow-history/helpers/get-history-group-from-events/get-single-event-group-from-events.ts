@@ -1,3 +1,5 @@
+import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
+
 import type {
   HistoryGroupEventToNegativeFieldsMap,
   HistoryGroupEventToStatusMap,
@@ -108,6 +110,16 @@ export default function getSingleEventGroupFromEvents(
       ],
     };
 
+  let expectedDurationMs: number | undefined = undefined;
+  if (
+    event.attributes === 'workflowExecutionStartedEventAttributes' &&
+    event.workflowExecutionStartedEventAttributes?.firstDecisionTaskBackoff
+  ) {
+    expectedDurationMs = parseGrpcTimestamp(
+      event.workflowExecutionStartedEventAttributes.firstDecisionTaskBackoff
+    );
+  }
+
   return {
     label,
     hasMissingEvents,
@@ -123,5 +135,6 @@ export default function getSingleEventGroupFromEvents(
       undefined,
       eventToSummaryFields
     ),
+    expectedDurationMs,
   };
 }
