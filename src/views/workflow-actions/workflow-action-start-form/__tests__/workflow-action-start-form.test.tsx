@@ -2,7 +2,7 @@ import React from 'react';
 
 import { type FieldErrors, useForm } from 'react-hook-form';
 
-import { fireEvent, render, screen, userEvent } from '@/test-utils/rtl';
+import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import WorkflowActionStartForm from '../workflow-action-start-form';
 import { type StartWorkflowFormData } from '../workflow-action-start-form.types';
@@ -69,40 +69,6 @@ describe('WorkflowActionStartForm', () => {
         message: 'Cron schedule is required',
         type: 'required',
       },
-      header: {
-        message: 'Invalid JSON format',
-        type: 'invalid',
-      },
-      memo: {
-        message: 'Invalid JSON format',
-        type: 'invalid',
-      },
-      searchAttributes: {
-        message: 'Invalid JSON format',
-        type: 'invalid',
-      },
-      retryLimit: {
-        message: 'Invalid limit',
-        type: 'invalid',
-      },
-      retryPolicy: {
-        initialIntervalSeconds: {
-          message: 'Invalid initial interval',
-          type: 'invalid',
-        },
-        backoffCoefficient: {
-          message: 'Invalid backoff coefficient',
-          type: 'invalid',
-        },
-        maximumAttempts: {
-          message: 'Invalid maximum attempts',
-          type: 'invalid',
-        },
-        expirationIntervalSeconds: {
-          message: 'Invalid expiration interval',
-          type: 'invalid',
-        },
-      },
     };
 
     const { user } = await setup({ formErrors });
@@ -136,43 +102,6 @@ describe('WorkflowActionStartForm', () => {
     await user.click(screen.getByRole('radio', { name: 'Cron' }));
     expect(
       screen.getByRole('textbox', { name: 'Cron Schedule (UTC)' })
-    ).toHaveAttribute('aria-invalid', 'true');
-
-    await user.click(screen.getByText('Show Optional Configurations'));
-
-    expect(screen.getByRole('textbox', { name: 'Header' })).toHaveAttribute(
-      'aria-invalid',
-      'true'
-    );
-
-    expect(screen.getByRole('textbox', { name: 'Memo' })).toHaveAttribute(
-      'aria-invalid',
-      'true'
-    );
-
-    expect(
-      screen.getByRole('textbox', { name: 'Search Attributes' })
-    ).toHaveAttribute('aria-invalid', 'true');
-
-    await user.click(
-      screen.getByRole('checkbox', { name: 'Enable Retry Policy' })
-    );
-
-    expect(
-      screen.getByRole('spinbutton', { name: 'Initial Interval' })
-    ).toHaveAttribute('aria-invalid', 'true');
-
-    expect(
-      screen.getByRole('spinbutton', { name: 'Backoff Coefficient' })
-    ).toHaveAttribute('aria-invalid', 'true');
-
-    expect(
-      screen.getByRole('spinbutton', { name: 'Maximum Attempts' })
-    ).toHaveAttribute('aria-invalid', 'true');
-
-    await user.click(screen.getByRole('radio', { name: 'Duration' }));
-    expect(
-      screen.getByRole('spinbutton', { name: 'Expiration Interval' })
     ).toHaveAttribute('aria-invalid', 'true');
   });
 

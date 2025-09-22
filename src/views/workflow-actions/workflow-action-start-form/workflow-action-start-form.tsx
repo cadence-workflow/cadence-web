@@ -1,19 +1,13 @@
 import React, { useMemo } from 'react';
 
-import { StatefulPanel } from 'baseui/accordion';
-import { Button } from 'baseui/button';
-import { Checkbox } from 'baseui/checkbox';
 import { DatePicker } from 'baseui/datepicker';
 import { FormControl } from 'baseui/form-control';
-import { mergeOverrides } from 'baseui/helpers/overrides';
 import { Input } from 'baseui/input';
 import { RadioGroup, Radio } from 'baseui/radio';
 import { get } from 'lodash';
 import { Controller, useWatch } from 'react-hook-form';
-import { MdExpandMore, MdExpandLess } from 'react-icons/md';
 
 import MultiJsonInput from '@/components/multi-json-input/multi-json-input';
-import useStyletronClasses from '@/hooks/use-styletron-classes';
 import { WORKER_SDK_LANGUAGES } from '@/route-handlers/start-workflow/start-workflow.constants';
 
 import WorkflowActionStartOptionalSection from '../workflow-action-start-optional-section/workflow-action-start-optional-section';
@@ -40,18 +34,6 @@ export default function WorkflowActionStartForm({
     control,
     name: 'scheduleType',
     defaultValue: 'NOW',
-  });
-
-  const enableRetryPolicy = useWatch({
-    control,
-    name: 'enableRetryPolicy',
-    defaultValue: false,
-  });
-
-  const limitRetries = useWatch({
-    control,
-    name: 'limitRetries',
-    defaultValue: 'ATTEMPTS',
   });
 
   return (
