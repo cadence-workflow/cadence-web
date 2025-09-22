@@ -72,7 +72,10 @@ type BaseHistoryGroup = {
   timeMs: number | null;
   startTimeMs: number | null;
   closeTimeMs?: number | null;
-  expectedDurationMs?: number;
+  waitTimerInfo?: {
+    timeMs: number;
+    prefix: string;
+  };
   timeLabel: string;
   firstEventId: string | null;
   badges?: HistoryGroupBadge[];

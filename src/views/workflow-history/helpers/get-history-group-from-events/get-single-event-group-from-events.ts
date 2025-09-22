@@ -138,6 +138,13 @@ export default function getSingleEventGroupFromEvents(
       undefined,
       eventToSummaryFields
     ),
-    expectedDurationMs,
+    ...(expectedDurationMs
+      ? {
+          waitTimerInfo: {
+            timeMs: expectedDurationMs,
+            prefix: 'Starts in',
+          },
+        }
+      : {}),
   };
 }

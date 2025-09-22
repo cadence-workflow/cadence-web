@@ -39,6 +39,7 @@ export default function getTimerGroupFromEvents(
     timerFiredEventAttributes: 'Fired',
     timerCanceledEventAttributes: 'Canceled',
   };
+
   const eventToStatus: HistoryGroupEventToStatusMap<TimerHistoryGroup> = {
     timerStartedEventAttributes: (_, events, index) =>
       index < events.length - 1 ? 'COMPLETED' : 'ONGOING',
@@ -51,7 +52,7 @@ export default function getTimerGroupFromEvents(
       timerStartedEventAttributes: ['startToFireTimeoutSeconds'],
     };
 
-  let expectedDurationMs: number | undefined = undefined;
+  let expectedDurationMs: number | undefined;
 
   if (
     startedEvent &&
@@ -77,6 +78,13 @@ export default function getTimerGroupFromEvents(
       undefined,
       eventToSummaryFields
     ),
-    expectedDurationMs,
+    ...(expectedDurationMs
+      ? {
+          waitTimerInfo: {
+            timeMs: expectedDurationMs,
+            prefix: 'Fires in',
+          },
+        }
+      : {}),
   };
 }
