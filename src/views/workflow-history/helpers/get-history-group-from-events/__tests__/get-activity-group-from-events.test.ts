@@ -348,18 +348,14 @@ describe('getActivityGroupFromEvents', () => {
     const group = getActivityGroupFromEvents(events);
 
     // The failed event should have negativeFields
-    const failedEventMetadata = group.eventsMetadata.find(
-      (metadata) => metadata.status === 'FAILED'
-    );
-    expect(failedEventMetadata?.negativeFields).toEqual(['reason', 'details']);
+    expect(group.eventsMetadata[2].negativeFields).toEqual([
+      'reason',
+      'details',
+    ]);
 
     // Other events should not have negativeFields
-    const otherEventsMetadata = group.eventsMetadata.filter(
-      (metadata) => metadata.status !== 'FAILED'
-    );
-    otherEventsMetadata.forEach((metadata) => {
-      expect(metadata.negativeFields).toBeUndefined();
-    });
+    expect(group.eventsMetadata[0].negativeFields).toBeUndefined();
+    expect(group.eventsMetadata[1].negativeFields).toBeUndefined();
   });
 
   it('should include negativeFields for timed out activity events', () => {
@@ -371,21 +367,14 @@ describe('getActivityGroupFromEvents', () => {
     const group = getActivityGroupFromEvents(events);
 
     // The timed out event should have negativeFields
-    const timedOutEventMetadata = group.eventsMetadata.find(
-      (metadata) => metadata.status === 'FAILED' // timeout events have FAILED status
-    );
-    expect(timedOutEventMetadata?.negativeFields).toEqual([
+    expect(group.eventsMetadata[2].negativeFields).toEqual([
       'reason',
       'details',
     ]);
 
     // Other events should not have negativeFields
-    const otherEventsMetadata = group.eventsMetadata.filter(
-      (metadata) => metadata.status !== 'FAILED'
-    );
-    otherEventsMetadata.forEach((metadata) => {
-      expect(metadata.negativeFields).toBeUndefined();
-    });
+    expect(group.eventsMetadata[0].negativeFields).toBeUndefined();
+    expect(group.eventsMetadata[1].negativeFields).toBeUndefined();
   });
 
   it('should include summaryFields for activity events', () => {
@@ -397,28 +386,19 @@ describe('getActivityGroupFromEvents', () => {
     const group = getActivityGroupFromEvents(events);
 
     // The scheduled event should have summaryFields
-    const scheduledEventMetadata = group.eventsMetadata.find(
-      (metadata) => metadata.label === 'Scheduled'
-    );
-    expect(scheduledEventMetadata?.summaryFields).toEqual([
+    expect(group.eventsMetadata[0].summaryFields).toEqual([
       'input',
       'scheduleToCloseTimeoutSeconds',
     ]);
 
     // The started event should also have summaryFields
-    const startedEventMetadata = group.eventsMetadata.find(
-      (metadata) => metadata.label === 'Started'
-    );
-    expect(startedEventMetadata?.summaryFields).toEqual([
+    expect(group.eventsMetadata[1].summaryFields).toEqual([
       'heartbeatDetails',
       'lastHeartbeatTime',
     ]);
 
     // The completed event should also have summaryFields
-    const completedEventMetadata = group.eventsMetadata.find(
-      (metadata) => metadata.label === 'Completed'
-    );
-    expect(completedEventMetadata?.summaryFields).toEqual(['result']);
+    expect(group.eventsMetadata[2].summaryFields).toEqual(['result']);
   });
 
   it('should include summaryFields for failed activity events', () => {
@@ -426,10 +406,10 @@ describe('getActivityGroupFromEvents', () => {
     const group = getActivityGroupFromEvents(events);
 
     // The failed event should have summaryFields
-    const failedEventMetadata = group.eventsMetadata.find(
-      (metadata) => metadata.status === 'FAILED'
-    );
-    expect(failedEventMetadata?.summaryFields).toEqual(['details', 'reason']);
+    expect(group.eventsMetadata[0].summaryFields).toEqual([
+      'details',
+      'reason',
+    ]);
   });
 
   it('should include heartbeat details in additionalDetails when pending activity start event is present', () => {
@@ -441,10 +421,7 @@ describe('getActivityGroupFromEvents', () => {
     const group = getActivityGroupFromEvents(events);
 
     // The started event should have additionalDetails with heartbeat information
-    const startedEventMetadata = group.eventsMetadata.find(
-      (metadata) => metadata.label === 'Started'
-    );
-    expect(startedEventMetadata?.additionalDetails).toEqual({
+    expect(group.eventsMetadata[1].additionalDetails).toEqual({
       heartbeatDetails: [
         '1725747370575409843',
         'gadence-canary-xdc',
@@ -454,12 +431,7 @@ describe('getActivityGroupFromEvents', () => {
     });
 
     // Other events should not have additionalDetails
-    const otherEventsMetadata = group.eventsMetadata.filter(
-      (metadata) => metadata.label !== 'Started'
-    );
-    otherEventsMetadata.forEach((metadata) => {
-      expect(metadata.additionalDetails).toBeUndefined();
-    });
+    expect(group.eventsMetadata[0].additionalDetails).toBeUndefined();
   });
 
   it('should include last heartbeat time when pending activity start event has lastHeartbeatTime', () => {
@@ -481,10 +453,7 @@ describe('getActivityGroupFromEvents', () => {
     ];
     const group = getActivityGroupFromEvents(events);
 
-    const startedEventMetadata = group.eventsMetadata.find(
-      (metadata) => metadata.label === 'Started'
-    );
-    expect(startedEventMetadata?.additionalDetails).toEqual({
+    expect(group.eventsMetadata[1].additionalDetails).toEqual({
       heartbeatDetails: [
         '1725747370575409843',
         'gadence-canary-xdc',
@@ -539,5 +508,46 @@ describe('getActivityGroupFromEvents', () => {
       'Scheduled',
       'Starting',
     ]);
+  });
+
+  it('should include summaryFields for pending activity start events', () => {
+    const events: ExtendedActivityHistoryEvent[] = [
+      scheduleActivityTaskEvent,
+      pendingActivityTaskStartEvent,
+    ];
+    const group = getActivityGroupFromEvents(events);
+
+    // The pending start event should have summaryFields
+    const pendingStartEventMetadata = group.eventsMetadata[1];
+    expect(pendingStartEventMetadata?.summaryFields).toEqual([
+      'lastFailureReason',
+      'lastFailureDetails',
+    ]);
+
+    // Other events should not have the same summaryFields
+    const scheduledEventMetadata = group.eventsMetadata[0];
+    expect(scheduledEventMetadata?.summaryFields).toEqual([
+      'input',
+      'scheduleToCloseTimeoutSeconds',
+    ]);
+  });
+
+  it('should include negativeFields for pending activity start events', () => {
+    const events: ExtendedActivityHistoryEvent[] = [
+      scheduleActivityTaskEvent,
+      pendingActivityTaskStartEvent,
+    ];
+    const group = getActivityGroupFromEvents(events);
+
+    // The pending start event should have negativeFields
+    const pendingStartEventMetadata = group.eventsMetadata[1];
+    expect(pendingStartEventMetadata?.negativeFields).toEqual([
+      'lastFailureReason',
+      'lastFailureDetails',
+    ]);
+
+    // Other events should not have negativeFields
+    const scheduledEventMetadata = group.eventsMetadata[0];
+    expect(scheduledEventMetadata?.negativeFields).toBeUndefined();
   });
 });

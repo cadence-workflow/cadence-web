@@ -1,7 +1,5 @@
 import { z } from 'zod';
 
-import { WorkflowIdReusePolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowIdReusePolicy';
-
 import {
   WORKER_SDK_LANGUAGES,
   WORKFLOW_ID_REUSE_POLICIES,

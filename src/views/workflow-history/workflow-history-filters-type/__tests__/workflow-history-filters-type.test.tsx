@@ -1,59 +1,62 @@
 import React from 'react';
 
-import { render, screen, fireEvent, act } from '@/test-utils/rtl';
+import { render, screen } from '@/test-utils/rtl';
 
-import { WorkflowHistoryContext } from '../../workflow-history-context-provider/workflow-history-context-provider';
 import WorkflowHistoryFiltersType from '../workflow-history-filters-type';
 import { WORKFLOW_HISTORY_EVENT_FILTERING_TYPES_LABEL_MAP } from '../workflow-history-filters-type.constants';
-import {
-  type WorkflowHistoryFiltersTypeValue,
-  type WorkflowHistoryEventFilteringType,
-} from '../workflow-history-filters-type.types';
+import { type WorkflowHistoryFiltersTypeValue } from '../workflow-history-filters-type.types';
+
+// Mock the MultiSelectFilter component
+jest.mock('@/components/multi-select-filter/multi-select-filter', () => {
+  return jest.fn(({ label, values, onChangeValues, optionsLabelMap }) => (
+    <div data-testid="multi-select-filter">
+      <label>{label}</label>
+      <div data-testid="values">{JSON.stringify(values)}</div>
+      <div data-testid="options">{JSON.stringify(optionsLabelMap)}</div>
+      <button onClick={() => onChangeValues(['DECISION'])}>
+        Select Option
+      </button>
+      <button onClick={() => onChangeValues([])}>Clear</button>
+    </div>
+  ));
+});
 
 describe('WorkflowHistoryFiltersType', () => {
   it('renders without errors', () => {
     setup({});
-    expect(screen.getByRole('combobox')).toBeInTheDocument();
+    expect(screen.getByTestId('multi-select-filter')).toBeInTheDocument();
   });
 
-  it('displays all the options in the select component', () => {
-    setup({});
-    const selectFilter = screen.getByRole('combobox');
-    act(() => {
-      fireEvent.click(selectFilter);
+  it('passes correct props to MultiSelectFilter', () => {
+    setup({
+      overrides: {
+        historyEventTypes: ['ACTIVITY'],
+      },
     });
 
-    Object.entries(WORKFLOW_HISTORY_EVENT_FILTERING_TYPES_LABEL_MAP).forEach(
-      ([_, label]) => expect(screen.getByText(label)).toBeInTheDocument()
+    expect(screen.getByText('Type')).toBeInTheDocument();
+    expect(screen.getByTestId('values')).toHaveTextContent('["ACTIVITY"]');
+    expect(screen.getByTestId('options')).toHaveTextContent(
+      JSON.stringify(WORKFLOW_HISTORY_EVENT_FILTERING_TYPES_LABEL_MAP)
     );
   });
 
-  it('calls the setQueryParams function when an option is selected', () => {
+  it('calls setValue when onChangeValues is triggered', () => {
     const { mockSetValue } = setup({});
-    const selectFilter = screen.getByRole('combobox');
-    act(() => {
-      fireEvent.click(selectFilter);
-    });
-    const decisionOption = screen.getByText('Decision');
-    act(() => {
-      fireEvent.click(decisionOption);
-    });
+
+    screen.getByText('Select Option').click();
     expect(mockSetValue).toHaveBeenCalledWith({
       historyEventTypes: ['DECISION'],
     });
   });
 
-  it('calls the setQueryParams function when the filter is cleared', () => {
-    const { mockSetValue } = setup({
-      overrides: {
-        historyEventTypes: ['ACTIVITY'],
-      },
+  it('calls setValue with undefined when clearing values', () => {
+    const { mockSetValue } = setup({});
+
+    screen.getByText('Clear').click();
+    expect(mockSetValue).toHaveBeenCalledWith({
+      historyEventTypes: undefined,
     });
-    const clearButton = screen.getByLabelText('Clear all');
-    act(() => {
-      fireEvent.click(clearButton);
-    });
-    expect(mockSetValue).toHaveBeenCalledWith({ historyEventTypes: undefined });
   });
 });
 
