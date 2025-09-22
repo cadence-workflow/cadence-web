@@ -3,7 +3,8 @@ import dayjs from '@/utils/datetime/dayjs';
 
 const formatDuration = (
   duration: Duration | null,
-  { separator = ', ' }: { separator?: string } = {}
+  { separator = ', ' }: { separator?: string } = {},
+  minUnit: 'y' | 'M' | 'd' | 'h' | 'm' | 's' | 'ms' = 'ms'
 ) => {
   const defaultReturn = '0s';
   if (!duration) {
@@ -16,7 +17,16 @@ const formatDuration = (
   const intMillis = Math.floor(nanosAsMillis);
   const remainingNanosAsMillis = nanosAsMillis % 1;
   const milliseconds = secondsAsMillis + intMillis;
-  const units = ['y', 'M', 'd', 'h', 'm', 's', 'ms'] as const;
+  const allUnits: Array<dayjs.ManipulateType> = [
+    'y',
+    'M',
+    'd',
+    'h',
+    'm',
+    's',
+    'ms',
+  ];
+  const units = allUnits.slice(0, allUnits.indexOf(minUnit) + 1);
   const values: Partial<Record<(typeof units)[number], number>> = {};
   let d = dayjs.duration(milliseconds);
   units.forEach((unit) => {
