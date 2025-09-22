@@ -72,7 +72,11 @@ type BaseHistoryGroup = {
   timeMs: number | null;
   startTimeMs: number | null;
   closeTimeMs?: number | null;
+<<<<<<< HEAD
   expectedEndTimeInfo?: {
+=======
+  waitTimerInfo?: {
+>>>>>>> e02feb3e (Use wait timer info with label)
     timeMs: number;
     prefix: string;
   };
