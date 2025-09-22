@@ -140,6 +140,7 @@ export default function getSingleEventGroupFromEvents(
       undefined,
       eventToSummaryFields
     ),
+<<<<<<< HEAD
     ...(expectedFirstDecisionScheduleTimeMs
       ? {
           expectedEndTimeInfo: {
@@ -148,5 +149,8 @@ export default function getSingleEventGroupFromEvents(
           },
         }
       : {}),
+=======
+    expectedDurationMs,
+>>>>>>> 1a09cd90 (Add field for expected duration)
   };
 }
