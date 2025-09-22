@@ -11,6 +11,7 @@ import {
 // Mock the cron-validate library to test our wrapper behavior
 jest.mock('cron-validate');
 jest.mock('cron-validate/lib/option');
+jest.mock('cron-validate/lib/result');
 
 describe('cronValidate', () => {
   beforeEach(() => {
@@ -179,15 +180,12 @@ function setup({
   options,
 }: SetupOptions = {}) {
   const mockResult: Partial<CronValidateResult> = {
-    isValid(): this is Valid<CronData, string[]> {
-      return mockIsValid;
-    },
-    isError(): this is Err<CronData, string[]> {
-      return !mockIsValid;
-    },
+    isValid: jest.fn(() => mockIsValid),
+    isError: jest.fn(() => !mockIsValid),
     getError: jest.fn(() => mockErrors),
     getValue: jest.fn(() => mockCronValue),
   };
+
   const mockCron = cron as jest.MockedFunction<typeof cron>;
   mockCron.mockReturnValue(mockResult as CronValidateResult);
 
