@@ -82,7 +82,7 @@ describe('WorkflowSummary', () => {
     expect(
       await screen.findAllByText('MockWorkflowSummaryJsonView without toggle')
     ).toHaveLength(2);
-    
+
     expect(
       await screen.findByText('MockWorkflowSummaryDiagnosticsBanner')
     ).toBeInTheDocument();
