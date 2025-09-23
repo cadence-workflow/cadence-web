@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 
-import { StatefulTooltip, PLACEMENT } from 'baseui/tooltip';
+import { StatefulTooltip } from 'baseui/tooltip';
 
 import Button from '@/components/button/button';
 import useConfigValue from '@/hooks/use-config-value/use-config-value';
@@ -9,12 +9,12 @@ import { startWorkflowActionConfig } from '@/views/workflow-actions/config/workf
 import getActionDisabledReason from '@/views/workflow-actions/workflow-actions-menu/helpers/get-action-disabled-reason';
 import WorkflowActionsModal from '@/views/workflow-actions/workflow-actions-modal/workflow-actions-modal';
 
-import type { DomainPageStartWorkflowButtonProps } from './domain-page-start-workflow-button.types';
+import type { Props } from './domain-page-start-workflow-button.types';
 
 export default function DomainPageStartWorkflowButton({
   domain,
   cluster,
-}: DomainPageStartWorkflowButtonProps) {
+}: Props) {
   const [showStartNewWorkflowModal, setShowStartNewWorkflowModal] =
     useState(false);
 
@@ -37,7 +37,7 @@ export default function DomainPageStartWorkflowButton({
       <StatefulTooltip
         content={disabledReason ?? null}
         ignoreBoundary
-        placement={PLACEMENT.auto}
+        placement="auto"
         showArrow
       >
         <div>
