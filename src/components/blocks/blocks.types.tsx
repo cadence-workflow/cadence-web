@@ -1,9 +1,3 @@
-export type BlocksData = {
-  cadenceResponseType: 'formattedData';
-  format: 'blocks';
-  blocks: Block[];
-};
-
 export type Block = SectionBlock | DividerBlock | ActionsBlock;
 
 export type SectionBlock = {
@@ -39,7 +33,7 @@ export type ButtonElement = {
 };
 
 export type Props = {
-  blocks: BlocksData;
+  blocks: Block[];
   domain: string;
   cluster: string;
   workflowId: string;

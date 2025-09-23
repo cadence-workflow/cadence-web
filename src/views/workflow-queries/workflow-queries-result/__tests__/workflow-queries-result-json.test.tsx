@@ -83,28 +83,18 @@ describe(WorkflowQueriesResult.name, () => {
   });
 
   it('renders blocks when the content type is blocks', () => {
-    const blocksData = {
-      cadenceResponseType: 'formattedData' as const,
-      format: 'blocks' as const,
-      blocks: [
-        {
-          type: 'section' as const,
-          format: 'text/markdown',
-          componentOptions: {
-            text: '# Test',
-          },
-        },
-      ],
-    };
-
     setup({
       content: {
         contentType: 'blocks',
-        content: blocksData,
-        domain: 'test-domain',
-        cluster: 'test-cluster',
-        workflowId: 'test-workflow-id',
-        runId: 'test-run-id',
+        content: [
+          {
+            type: 'section' as const,
+            format: 'text/markdown',
+            componentOptions: {
+              text: '# Test',
+            },
+          },
+        ],
         isError: false,
       },
     });

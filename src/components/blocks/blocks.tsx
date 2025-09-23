@@ -1,9 +1,12 @@
 'use client';
 import React, { useState } from 'react';
 
+import { Button } from 'baseui/button';
+
 import Markdown from '@/components/markdown/markdown';
 import PrettyJson from '@/components/pretty-json/pretty-json';
 import losslessJsonStringify from '@/utils/lossless-json-stringify';
+import request from '@/utils/request';
 
 import { styled } from './blocks.styles';
 import {
@@ -49,13 +52,10 @@ export default function Blocks({
         ? losslessJsonStringify(button.action.signal_value)
         : undefined;
 
-      const response = await fetch(
+      const response = await request(
         `/api/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows/${encodeURIComponent(targetWorkflowId)}/${encodeURIComponent(targetRunId)}/signal`,
         {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
           body: JSON.stringify({
             signalName: button.action.signal_name,
             signalInput,
@@ -113,18 +113,18 @@ export default function Blocks({
       <styled.ActionsContainer>
         {actions.elements.map((element, index) => {
           if (element.type === 'button') {
-            const buttonKey = `${element.action.signal_name}-${index}`;
+            const buttonKey = `${element.action.type}-${element.action.signal_name}-${index}`;
             const isLoading = loadingButtons.has(buttonKey);
 
             return (
-              <styled.Button
+              <Button
                 key={buttonKey}
-                $isLoading={isLoading}
                 disabled={isLoading}
                 onClick={() => handleButtonClick(element, index)}
+                isLoading={isLoading}
               >
-                {isLoading ? 'Sending...' : element.componentOptions.text}
-              </styled.Button>
+                {element.componentOptions.text}
+              </Button>
             );
           }
           return null;
@@ -148,7 +148,7 @@ export default function Blocks({
 
   return (
     <styled.ViewContainer>
-      {blocks.blocks.map((block, index) => renderBlock(block, index))}
+      {blocks.map((block, index) => renderBlock(block, index))}
     </styled.ViewContainer>
   );
 }

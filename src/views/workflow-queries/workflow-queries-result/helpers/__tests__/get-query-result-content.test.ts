@@ -110,6 +110,45 @@ describe(getQueryResultContent.name, () => {
       },
     },
     {
+      name: 'returns blocks content and no error for result with format blocks',
+      props: {
+        data: {
+          result: {
+            cadenceResponseType: 'formattedData',
+            format: 'blocks',
+            data: {
+              blocks: [
+                {
+                  type: 'section',
+                  format: 'text/markdown',
+                  componentOptions: {
+                    text: 'Hello, world!',
+                  },
+                },
+              ],
+            },
+          },
+          rejected: null,
+        },
+        loading: false,
+        error: undefined,
+        ...mockWorkflowParams,
+      },
+      expected: {
+        contentType: 'blocks',
+        content: [
+          {
+            type: 'section',
+            format: 'text/markdown',
+            componentOptions: {
+              text: 'Hello, world!',
+            },
+          },
+        ],
+        isError: false,
+      },
+    },
+    {
       name: 'returns undefined for the empty state',
       props: {
         data: undefined,

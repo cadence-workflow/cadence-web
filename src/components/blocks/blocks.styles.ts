@@ -1,8 +1,4 @@
-import { styled as createStyled } from 'baseui';
-
-type ButtonProps = {
-  $isLoading?: boolean;
-};
+import { styled as createStyled, withStyle } from 'baseui';
 
 export const styled = {
   ViewContainer: createStyled('div', ({ $theme }) => ({
@@ -23,7 +19,6 @@ export const styled = {
     margin: `${$theme.sizing.scale400} 0`,
     width: '100%',
   })),
-
   ActionsContainer: createStyled('div', ({ $theme }) => ({
     display: 'flex',
     flexDirection: 'row',
@@ -31,36 +26,4 @@ export const styled = {
     flexWrap: 'wrap',
     alignItems: 'center',
   })),
-
-  Button: createStyled<'button', ButtonProps>(
-    'button',
-    ({ $theme, $isLoading }) => ({
-      ...$theme.typography.LabelMedium,
-      backgroundColor: $isLoading
-        ? $theme.colors.buttonPrimaryFill
-        : $theme.colors.buttonPrimaryFill,
-      color: $theme.colors.buttonPrimaryText,
-      border: 'none',
-      borderRadius: $theme.borders.radius300,
-      padding: `${$theme.sizing.scale300} ${$theme.sizing.scale500}`,
-      cursor: $isLoading ? 'not-allowed' : 'pointer',
-      opacity: $isLoading ? 0.6 : 1,
-      transition: 'all 0.2s ease',
-      ':hover': {
-        backgroundColor: $isLoading
-          ? $theme.colors.buttonPrimaryFill
-          : $theme.colors.buttonPrimaryHover,
-      },
-      ':active': {
-        backgroundColor: $isLoading
-          ? $theme.colors.buttonPrimaryFill
-          : $theme.colors.buttonPrimaryActive,
-      },
-      ':disabled': {
-        backgroundColor: $theme.colors.buttonDisabledFill,
-        color: $theme.colors.buttonDisabledText,
-        cursor: 'not-allowed',
-      },
-    })
-  ),
 };

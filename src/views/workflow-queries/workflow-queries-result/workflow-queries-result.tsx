@@ -44,10 +44,10 @@ export default function WorkflowQueriesResult(props: Props) {
         queryResultContent.content !== undefined && (
           <Blocks
             blocks={queryResultContent.content}
-            domain={queryResultContent.domain}
-            cluster={queryResultContent.cluster}
-            workflowId={queryResultContent.workflowId}
-            runId={queryResultContent.runId}
+            domain={props.domain}
+            cluster={props.cluster}
+            workflowId={props.workflowId}
+            runId={props.runId}
           />
         )}
     </styled.ViewContainer>

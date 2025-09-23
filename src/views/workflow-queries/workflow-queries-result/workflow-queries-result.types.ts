@@ -1,4 +1,4 @@
-import { type BlocksData } from '@/components/blocks/blocks.types';
+import { type Block } from '@/components/blocks/blocks.types';
 import { type PrettyJsonValue } from '@/components/pretty-json/pretty-json.types';
 import { type QueryWorkflowResponse } from '@/route-handlers/query-workflow/query-workflow.types';
 import { type RequestError } from '@/utils/request/request-error';
@@ -15,6 +15,8 @@ export type Props = {
 
 export type QueryContentTypes = 'json' | 'markdown' | 'blocks';
 
+export type GetQueryContentArgs = Pick<Props, 'data' | 'error' | 'loading'>;
+
 export type QueryJsonContent = {
   contentType: QueryContentTypes;
   isError: boolean;
@@ -29,10 +31,6 @@ export type QueryJsonContent = {
     }
   | {
       contentType: 'blocks';
-      content: BlocksData;
-      domain: string;
-      cluster: string;
-      workflowId: string;
-      runId: string;
+      content: Block[];
     }
 );
