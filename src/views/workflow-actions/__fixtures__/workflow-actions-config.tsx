@@ -3,9 +3,17 @@ import { z } from 'zod';
 
 import { type CancelWorkflowResponse } from '@/route-handlers/cancel-workflow/cancel-workflow.types';
 import { type ResetWorkflowResponse } from '@/route-handlers/reset-workflow/reset-workflow.types';
+import { type StartWorkflowResponse } from '@/route-handlers/start-workflow/start-workflow.types';
 import { type TerminateWorkflowResponse } from '@/route-handlers/terminate-workflow/terminate-workflow.types';
 
-import { type WorkflowAction } from '../workflow-actions.types';
+import {
+  type WorkflowActionInputParams,
+  type WorkflowAction,
+} from '../workflow-actions.types';
+
+const mockActionApiRoute =
+  (action: string) => (params: WorkflowActionInputParams) =>
+    `/api/domains/${params.domain}/${params.cluster}/workflows/${params.workflowId}/${params.runId}/${action}`;
 
 export const mockResetActionConfig: WorkflowAction<
   ResetWorkflowResponse,
@@ -40,7 +48,7 @@ export const mockResetActionConfig: WorkflowAction<
   },
   icon: MdRefresh,
   getRunnableStatus: () => 'RUNNABLE',
-  apiRoute: 'reset',
+  apiRoute: mockActionApiRoute('reset'),
   renderSuccessMessage: ({ result }) =>
     `Mock reset notification (Run ID: ${result.runId})`,
 };
@@ -63,7 +71,7 @@ export const mockCancelActionConfig: WorkflowAction<
   },
   icon: MdHighlightOff,
   getRunnableStatus: () => 'RUNNABLE',
-  apiRoute: 'cancel',
+  apiRoute: mockActionApiRoute('cancel'),
   renderSuccessMessage: () => 'Mock cancel notification',
 };
 
@@ -82,9 +90,28 @@ export const mockTerminateActionConfig: WorkflowAction<TerminateWorkflowResponse
     },
     icon: MdPowerSettingsNew,
     getRunnableStatus: () => 'RUNNABLE',
-    apiRoute: 'terminate',
+    apiRoute: mockActionApiRoute('terminate'),
     renderSuccessMessage: () => 'Mock terminate notification',
   };
+
+export const mockStartActionConfig: WorkflowAction<StartWorkflowResponse> = {
+  id: 'start',
+  label: 'Mock start',
+  subtitle: 'Mock start a new workflow execution',
+  modal: {
+    text: 'Mock modal text to start a new workflow execution',
+    docsLink: {
+      text: 'Mock docs link',
+      href: 'https://mock.docs.link',
+    },
+    withForm: false,
+  },
+  icon: MdPowerSettingsNew,
+  getRunnableStatus: () => 'RUNNABLE',
+  apiRoute: (params) =>
+    `/api/domains/${params.domain}/${params.cluster}/workflows/start`,
+  renderSuccessMessage: () => 'Mock start notification',
+};
 
 export const mockWorkflowActionsConfig: [
   WorkflowAction<CancelWorkflowResponse>,
@@ -94,8 +121,10 @@ export const mockWorkflowActionsConfig: [
     { testField: string },
     { transformed: string }
   >,
+  WorkflowAction<StartWorkflowResponse>,
 ] = [
   mockCancelActionConfig,
   mockTerminateActionConfig,
   mockResetActionConfig,
+  mockStartActionConfig,
 ] as const;

@@ -7,8 +7,16 @@ import { render, screen, userEvent } from '@/test-utils/rtl';
 import WorkflowActionStartForm from '../workflow-action-start-form';
 import { type StartWorkflowFormData } from '../workflow-action-start-form.types';
 
+jest.mock(
+  '../../workflow-action-start-optional-section/workflow-action-start-optional-section',
+  () =>
+    jest.fn(() => {
+      return <div>Optional Section Fields</div>;
+    })
+);
+
 describe('WorkflowActionStartForm', () => {
-  it('renders all form fields correctly', async () => {
+  it('renders essential form fields', async () => {
     await setup({});
 
     expect(
@@ -118,6 +126,7 @@ describe('WorkflowActionStartForm', () => {
     await user.type(timeoutInput, '300');
     expect(timeoutInput).toHaveValue(300);
   });
+
   it('renders with default values', async () => {
     await setup({});
 
@@ -171,6 +180,12 @@ describe('WorkflowActionStartForm', () => {
     const goRadio = screen.getByRole('radio', { name: 'GO' });
     await user.click(goRadio);
     expect(goRadio).toBeChecked();
+  });
+
+  it('shows optional section fields component', async () => {
+    await setup({});
+
+    expect(screen.getByText('Optional Section Fields')).toBeInTheDocument();
   });
 });
 
