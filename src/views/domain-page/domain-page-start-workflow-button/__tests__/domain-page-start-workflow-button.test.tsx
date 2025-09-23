@@ -15,7 +15,7 @@ import {
 import getActionDisabledReason from '@/views/workflow-actions/workflow-actions-menu/helpers/get-action-disabled-reason';
 
 import DomainPageStartWorkflowButton from '../domain-page-start-workflow-button';
-import type { DomainPageStartWorkflowButtonProps } from '../domain-page-start-workflow-button.types';
+import type { Props } from '../domain-page-start-workflow-button.types';
 
 jest.mock('../../../workflow-actions/config/workflow-actions.config', () => {
   return {
@@ -87,7 +87,7 @@ jest.mock(
 const mockGetActionDisabledReason = getActionDisabledReason as jest.Mock;
 
 describe('DomainPageStartWorkflowButton', () => {
-  const defaultProps: DomainPageStartWorkflowButtonProps = {
+  const defaultProps: Props = {
     domain: 'test-domain',
     cluster: 'test-cluster',
   };
@@ -183,7 +183,7 @@ describe('DomainPageStartWorkflowButton', () => {
 });
 
 function setup(
-  props: DomainPageStartWorkflowButtonProps,
+  props: Props,
   options: {
     startActionEnabledConfig?: string;
     isConfigLoading?: boolean;
