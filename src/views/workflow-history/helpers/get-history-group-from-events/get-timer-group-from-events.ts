@@ -52,16 +52,21 @@ export default function getTimerGroupFromEvents(
       timerStartedEventAttributes: ['startToFireTimeoutSeconds'],
     };
 
-  let expectedDurationMs: number | undefined;
+  let expectedTimerFireTimeMs: number | undefined;
 
   if (
     startedEvent &&
+    startedEvent.eventTime &&
     !closeEvent &&
     startedEvent.timerStartedEventAttributes?.startToFireTimeout
   ) {
-    expectedDurationMs = parseGrpcTimestamp(
+    const timeToFire = parseGrpcTimestamp(
       startedEvent.timerStartedEventAttributes.startToFireTimeout
     );
+
+    if (timeToFire > 0)
+      expectedTimerFireTimeMs =
+        parseGrpcTimestamp(startedEvent.eventTime) + timeToFire;
   }
 
   return {
@@ -78,10 +83,10 @@ export default function getTimerGroupFromEvents(
       undefined,
       eventToSummaryFields
     ),
-    ...(expectedDurationMs
+    ...(expectedTimerFireTimeMs
       ? {
-          waitTimerInfo: {
-            timeMs: expectedDurationMs,
+          expectedEndTimeInfo: {
+            timeMs: expectedTimerFireTimeMs,
             prefix: 'Fires in',
           },
         }

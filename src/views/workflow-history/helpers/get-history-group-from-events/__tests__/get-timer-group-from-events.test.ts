@@ -146,38 +146,39 @@ describe('getTimerGroupFromEvents', () => {
     expect(otherEventMetadata.summaryFields).toBeUndefined();
   });
 
-  it('should calculate waitTimerInfo for started timer events without close event', () => {
+  it('should calculate expectedEndTimeInfo for started timer events without close event', () => {
     const eventsWithoutClose: TimerHistoryEvent[] = [startTimerTaskEvent];
     const group = getTimerGroupFromEvents(eventsWithoutClose);
 
-    // startToFireTimeout has seconds: '5', nanos: 0
-    // Expected calculation: 5 * 1000 + 0 / 1000000 = 5000 ms
-    expect(group.waitTimerInfo).toEqual({
-      timeMs: 5000,
+    // eventTime: seconds: '1725748370', nanos: 632072806 = 1725748370632 ms
+    // startToFireTimeout: seconds: '5', nanos: 0 = 5000 ms
+    // Expected calculation: 1725748370632 + 5000 = 1725748375632 ms
+    expect(group.expectedEndTimeInfo).toEqual({
+      timeMs: 1725748375632,
       prefix: 'Fires in',
     });
   });
 
-  it('should not calculate waitTimerInfo for timer events with close event', () => {
+  it('should not calculate expectedEndTimeInfo for timer events with close event', () => {
     const eventsWithClose: TimerHistoryEvent[] = [
       startTimerTaskEvent,
       fireTimerTaskEvent,
     ];
     const group = getTimerGroupFromEvents(eventsWithClose);
 
-    // Should not calculate waitTimerInfo when there's a close event
-    expect(group.waitTimerInfo).toBeUndefined();
+    // Should not calculate expectedEndTimeInfo when there's a close event
+    expect(group.expectedEndTimeInfo).toBeUndefined();
   });
 
-  it('should not calculate waitTimerInfo for timer events without started event', () => {
+  it('should not calculate expectedEndTimeInfo for timer events without started event', () => {
     const eventsWithoutStart: TimerHistoryEvent[] = [fireTimerTaskEvent];
     const group = getTimerGroupFromEvents(eventsWithoutStart);
 
-    // Should not calculate waitTimerInfo when there's no started event
-    expect(group.waitTimerInfo).toBeUndefined();
+    // Should not calculate expectedEndTimeInfo when there's no started event
+    expect(group.expectedEndTimeInfo).toBeUndefined();
   });
 
-  it('should not calculate waitTimerInfo for started timer events without startToFireTimeout', () => {
+  it('should not calculate expectedEndTimeInfo for started timer events without startToFireTimeout', () => {
     const eventWithoutTimeout = {
       ...startTimerTaskEvent,
       timerStartedEventAttributes: {
@@ -187,6 +188,6 @@ describe('getTimerGroupFromEvents', () => {
     };
 
     const group = getTimerGroupFromEvents([eventWithoutTimeout]);
-    expect(group.waitTimerInfo).toBeUndefined();
+    expect(group.expectedEndTimeInfo).toBeUndefined();
   });
 });

@@ -110,17 +110,20 @@ export default function getSingleEventGroupFromEvents(
       ],
     };
 
-  let expectedDurationMs: number | undefined;
+  let expectedFirstDecisionScheduleTimeMs: number | undefined;
   if (
+    event.eventTime &&
     event.attributes === 'workflowExecutionStartedEventAttributes' &&
     event.workflowExecutionStartedEventAttributes?.firstDecisionTaskBackoff
   ) {
-    const firstDecisionTaskBackoffMs = parseGrpcTimestamp(
-      event.workflowExecutionStartedEventAttributes.firstDecisionTaskBackoff
-    );
+    const firstDecisionTaskBackoffMs =
+      parseGrpcTimestamp(event.eventTime) +
+      parseGrpcTimestamp(
+        event.workflowExecutionStartedEventAttributes.firstDecisionTaskBackoff
+      );
 
     if (firstDecisionTaskBackoffMs > 0)
-      expectedDurationMs = firstDecisionTaskBackoffMs;
+      expectedFirstDecisionScheduleTimeMs = firstDecisionTaskBackoffMs;
   }
 
   return {
@@ -138,10 +141,10 @@ export default function getSingleEventGroupFromEvents(
       undefined,
       eventToSummaryFields
     ),
-    ...(expectedDurationMs
+    ...(expectedFirstDecisionScheduleTimeMs
       ? {
-          waitTimerInfo: {
-            timeMs: expectedDurationMs,
+          expectedEndTimeInfo: {
+            timeMs: expectedFirstDecisionScheduleTimeMs,
             prefix: 'Starts in',
           },
         }

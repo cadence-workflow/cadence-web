@@ -231,18 +231,19 @@ describe('getSingleEventGroupFromEvents', () => {
     ]);
   });
 
-  it('should calculate waitTimerInfo for workflow execution started events with firstDecisionTaskBackoff', () => {
+  it('should calculate expectedEndTimeInfo for workflow execution started events with firstDecisionTaskBackoff', () => {
     const group = getSingleEventGroupFromEvents([startWorkflowExecutionEvent]);
 
-    // firstDecisionTaskBackoff has seconds: '55', nanos: 0
-    // Expected calculation: 55 * 1000 + 0 / 1000000 = 55000 ms
-    expect(group.waitTimerInfo).toEqual({
-      timeMs: 55000,
+    // eventTime: seconds: '1724747315', nanos: 549377718 = 1724747315549 ms
+    // firstDecisionTaskBackoff: seconds: '55', nanos: 0 = 55000 ms
+    // Expected calculation: 1724747315549 + 55000 = 1724747370549 ms
+    expect(group.expectedEndTimeInfo).toEqual({
+      timeMs: 1724747370549,
       prefix: 'Starts in',
     });
   });
 
-  it('should not calculate waitTimerInfo for non-workflow-started events', () => {
+  it('should not calculate expectedEndTimeInfo for non-workflow-started events', () => {
     const nonStartedEvents = [
       signalWorkflowExecutionEvent,
       recordMarkerExecutionEvent,
@@ -252,11 +253,11 @@ describe('getSingleEventGroupFromEvents', () => {
 
     for (const event of nonStartedEvents) {
       const group = getSingleEventGroupFromEvents([event]);
-      expect(group.waitTimerInfo).toBeUndefined();
+      expect(group.expectedEndTimeInfo).toBeUndefined();
     }
   });
 
-  it('should not calculate waitTimerInfo for workflow started events with zero firstDecisionTaskBackoff', () => {
+  it('should not calculate expectedEndTimeInfo for workflow started events with zero firstDecisionTaskBackoff', () => {
     const eventWithoutBackoff = {
       ...startWorkflowExecutionEvent,
       workflowExecutionStartedEventAttributes: {
@@ -269,10 +270,10 @@ describe('getSingleEventGroupFromEvents', () => {
     };
 
     const group = getSingleEventGroupFromEvents([eventWithoutBackoff]);
-    expect(group.waitTimerInfo).toBeUndefined();
+    expect(group.expectedEndTimeInfo).toBeUndefined();
   });
 
-  it('should not calculate waitTimerInfo for workflow started events without firstDecisionTaskBackoff', () => {
+  it('should not calculate expectedEndTimeInfo for workflow started events without firstDecisionTaskBackoff', () => {
     const eventWithoutBackoff = {
       ...startWorkflowExecutionEvent,
       workflowExecutionStartedEventAttributes: {
@@ -282,6 +283,6 @@ describe('getSingleEventGroupFromEvents', () => {
     };
 
     const group = getSingleEventGroupFromEvents([eventWithoutBackoff]);
-    expect(group.waitTimerInfo).toBeUndefined();
+    expect(group.expectedEndTimeInfo).toBeUndefined();
   });
 });

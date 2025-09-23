@@ -72,7 +72,7 @@ type BaseHistoryGroup = {
   timeMs: number | null;
   startTimeMs: number | null;
   closeTimeMs?: number | null;
-  waitTimerInfo?: {
+  expectedEndTimeInfo?: {
     timeMs: number;
     prefix: string;
   };
