@@ -13,7 +13,7 @@ const WorkflowActionNewRunSuccessMsg = ({
       {successMessage}{' '}
       <Link
         color="contentInversePrimary"
-        href={`/domains/${domain}/${cluster}/workflows/${workflowId}/${runId}`}
+        href={`/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows/${encodeURIComponent(workflowId)}/${encodeURIComponent(runId)}`}
         onClick={onDismissMessage}
       >
         Click here
