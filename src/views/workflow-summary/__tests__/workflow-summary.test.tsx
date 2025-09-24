@@ -14,7 +14,9 @@ jest.mock('../workflow-summary-details/workflow-summary-details', () =>
 );
 
 jest.mock('../workflow-summary-json-view/workflow-summary-json-view', () =>
-  jest.fn(() => <div>MockWorkflowSummaryJsonView</div>)
+  jest.fn(({ hideTabToggle }) => (
+    <div>{`MockWorkflowSummaryJsonView ${hideTabToggle ? 'without toggle' : 'with toggle'}`}</div>
+  ))
 );
 
 jest.mock(
@@ -35,7 +37,7 @@ describe('WorkflowSummary', () => {
     workflowTab: 'summary',
   };
 
-  it('should render tab deatils, JSON view, and diagnostics banner', async () => {
+  it('should render tab details, JSON view, and diagnostics banner', async () => {
     render(
       <Suspense>
         <WorkflowSummary params={params} />
@@ -71,9 +73,16 @@ describe('WorkflowSummary', () => {
     expect(
       await screen.findByText('MockWorkflowSummaryDetails')
     ).toBeInTheDocument();
+
+    // This will be hidden on wide screens
     expect(
-      await screen.findByText('MockWorkflowSummaryJsonView')
-    ).toBeInTheDocument();
+      await screen.findAllByText('MockWorkflowSummaryJsonView with toggle')
+    ).toHaveLength(1);
+    // These will be hidden on narrow screens
+    expect(
+      await screen.findAllByText('MockWorkflowSummaryJsonView without toggle')
+    ).toHaveLength(2);
+
     expect(
       await screen.findByText('MockWorkflowSummaryDiagnosticsBanner')
     ).toBeInTheDocument();
