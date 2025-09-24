@@ -150,11 +150,8 @@ describe('getTimerGroupFromEvents', () => {
     const eventsWithoutClose: TimerHistoryEvent[] = [startTimerTaskEvent];
     const group = getTimerGroupFromEvents(eventsWithoutClose);
 
-    // eventTime: seconds: '1725748370', nanos: 632072806 = 1725748370632 ms
-    // startToFireTimeout: seconds: '5', nanos: 0 = 5000 ms
-    // Expected calculation: 1725748370632 + 5000 = 1725748375632 ms
     expect(group.expectedEndTimeInfo).toEqual({
-      timeMs: 1725748375632,
+      timeMs: 1725748375632.0728,
       prefix: 'Fires in',
     });
   });

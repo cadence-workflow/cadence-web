@@ -234,11 +234,8 @@ describe('getSingleEventGroupFromEvents', () => {
   it('should calculate expectedEndTimeInfo for workflow execution started events with firstDecisionTaskBackoff', () => {
     const group = getSingleEventGroupFromEvents([startWorkflowExecutionEvent]);
 
-    // eventTime: seconds: '1724747315', nanos: 549377718 = 1724747315549 ms
-    // firstDecisionTaskBackoff: seconds: '55', nanos: 0 = 55000 ms
-    // Expected calculation: 1724747315549 + 55000 = 1724747370549 ms
     expect(group.expectedEndTimeInfo).toEqual({
-      timeMs: 1724747370549,
+      timeMs: 1724747370549.3777,
       prefix: 'Starts in',
     });
   });
