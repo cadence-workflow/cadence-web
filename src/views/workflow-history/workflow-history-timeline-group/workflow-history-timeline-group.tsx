@@ -26,7 +26,7 @@ export default function WorkflowHistoryTimelineGroup({
   timeLabel,
   startTimeMs,
   closeTimeMs,
-  waitTimerInfo,
+  expectedEndTimeInfo,
   workflowCloseTimeMs,
   workflowCloseStatus,
   workflowIsArchived,
@@ -90,11 +90,11 @@ export default function WorkflowHistoryTimelineGroup({
                 workflowCloseStatus={workflowCloseStatus}
               />
             )}
-            {waitTimerInfo && startTimeMs ? (
+            {expectedEndTimeInfo && startTimeMs ? (
               <WorkflowHistoryRemainingDurationBadge
                 startTime={startTimeMs}
-                expectedWaitTime={waitTimerInfo.timeMs}
-                prefix={waitTimerInfo.prefix}
+                expectedEndTime={expectedEndTimeInfo.timeMs}
+                prefix={expectedEndTimeInfo.prefix}
                 workflowIsArchived={workflowIsArchived}
                 workflowCloseStatus={workflowCloseStatus}
                 loadingMoreEvents={showLoadingMoreEvents}

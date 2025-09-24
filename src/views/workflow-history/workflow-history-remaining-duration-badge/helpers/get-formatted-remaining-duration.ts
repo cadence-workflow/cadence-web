@@ -2,12 +2,10 @@ import formatDuration from '@/utils/data-formatters/format-duration';
 import dayjs from '@/utils/datetime/dayjs';
 
 export default function getFormattedRemainingDuration(
-  startTime: Date | string | number,
-  expectedWaitTimeMs: number
+  expectedEndTimeMs: number
 ): string | null {
-  const start = dayjs(startTime);
   const now = dayjs();
-  const expectedEnd = start.add(expectedWaitTimeMs, 'milliseconds');
+  const expectedEnd = dayjs(expectedEndTimeMs);
 
   if (now.isAfter(expectedEnd)) {
     return null;

@@ -21,7 +21,7 @@ export type Props = Pick<
   | 'resetToDecisionEventId'
   | 'startTimeMs'
   | 'closeTimeMs'
-  | 'waitTimerInfo'
+  | 'expectedEndTimeInfo'
   | 'shortLabel'
 > & {
   isLastEvent: boolean;

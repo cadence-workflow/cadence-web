@@ -149,7 +149,7 @@ describe('WorkflowHistoryRemainingDurationBadge', () => {
     rerender(
       <WorkflowHistoryRemainingDurationBadge
         startTime={mockStartTime}
-        expectedWaitTime={300000}
+        expectedEndTime={new Date('2024-01-01T10:07:00Z').getTime()}
         prefix="Remaining:"
         workflowIsArchived={false}
         workflowCloseStatus={
@@ -165,7 +165,7 @@ describe('WorkflowHistoryRemainingDurationBadge', () => {
 
 function setup({
   startTime = mockStartTime,
-  expectedWaitTime = 5 * 60 * 1000,
+  expectedEndTime = new Date('2024-01-01T10:07:00Z').getTime(), // 5 minutes from mockNow
   prefix = 'Remaining:',
   workflowIsArchived = false,
   workflowCloseStatus = WorkflowExecutionCloseStatus.WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID,
@@ -174,7 +174,7 @@ function setup({
   return render(
     <WorkflowHistoryRemainingDurationBadge
       startTime={startTime}
-      expectedWaitTime={expectedWaitTime}
+      expectedEndTime={expectedEndTime}
       prefix={prefix}
       workflowIsArchived={workflowIsArchived}
       workflowCloseStatus={workflowCloseStatus}

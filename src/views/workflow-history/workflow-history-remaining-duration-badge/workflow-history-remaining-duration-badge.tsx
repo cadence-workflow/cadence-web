@@ -8,7 +8,7 @@ import { type Props } from './workflow-history-remaining-duration-badge.types';
 
 export default function WorkflowHistoryRemainingDurationBadge({
   startTime,
-  expectedWaitTime,
+  expectedEndTime,
   prefix,
   workflowIsArchived,
   workflowCloseStatus,
@@ -31,9 +31,7 @@ export default function WorkflowHistoryRemainingDurationBadge({
     }
 
     const updateRemainingDuration = () => {
-      setRemainingDuration(
-        getFormattedRemainingDuration(startTime, expectedWaitTime)
-      );
+      setRemainingDuration(getFormattedRemainingDuration(expectedEndTime));
     };
 
     updateRemainingDuration();
@@ -41,7 +39,7 @@ export default function WorkflowHistoryRemainingDurationBadge({
     const interval = setInterval(updateRemainingDuration, 1000);
 
     return () => clearInterval(interval);
-  }, [startTime, expectedWaitTime, workflowIsArchived, shouldHide]);
+  }, [startTime, expectedEndTime, workflowIsArchived, shouldHide]);
 
   if (shouldHide || !remainingDuration) {
     return null;

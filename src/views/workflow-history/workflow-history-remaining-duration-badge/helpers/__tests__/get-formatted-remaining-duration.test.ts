@@ -18,73 +18,57 @@ describe('getFormattedRemainingDuration', () => {
   });
 
   it('should return null when expected duration has passed', () => {
-    const startTime = new Date('2024-01-01T10:00:00Z'); // 2 minutes ago
-    const expectedDurationMs = 60 * 1000; // 1 minute expected duration
+    const expectedEndTimeMs = new Date('2024-01-01T10:01:00Z').getTime(); // 1 minute ago
 
-    const result = getFormattedRemainingDuration(startTime, expectedDurationMs);
+    const result = getFormattedRemainingDuration(expectedEndTimeMs);
 
     expect(result).toBeNull();
   });
 
   it('should return null when expected duration exactly matches current time', () => {
-    const startTime = new Date('2024-01-01T10:00:00Z'); // 2 minutes ago
-    const expectedDurationMs = 2 * 60 * 1000; // 2 minutes expected duration
+    const expectedEndTimeMs = new Date('2024-01-01T10:02:00Z').getTime(); // exactly now
 
-    const result = getFormattedRemainingDuration(startTime, expectedDurationMs);
+    const result = getFormattedRemainingDuration(expectedEndTimeMs);
 
     expect(result).toBeNull();
   });
 
   it('should return remaining time when duration has not passed', () => {
-    const startTime = new Date('2024-01-01T10:00:00Z'); // 2 minutes ago
-    const expectedDurationMs = 5 * 60 * 1000; // 5 minutes expected duration (3 minutes remaining)
+    const expectedEndTimeMs = new Date('2024-01-01T10:05:00Z').getTime(); // 3 minutes from now
 
-    const result = getFormattedRemainingDuration(startTime, expectedDurationMs);
+    const result = getFormattedRemainingDuration(expectedEndTimeMs);
 
     expect(result).toEqual('mocked: 180s'); // 3 minutes = 180 seconds
   });
 
   it('should return 1s when less than 1 second remaining', () => {
-    const startTime = new Date('2024-01-01T10:01:59.500Z'); // 0.5 seconds ago
-    const expectedDurationMs = 1000; // 1 second expected duration (0.5 seconds remaining)
+    const expectedEndTimeMs = new Date('2024-01-01T10:02:00.500Z').getTime(); // 0.5 seconds from now
 
-    const result = getFormattedRemainingDuration(startTime, expectedDurationMs);
+    const result = getFormattedRemainingDuration(expectedEndTimeMs);
 
     expect(result).toEqual('mocked: 1s');
   });
 
-  it('should handle string start times', () => {
-    const startTime = '2024-01-01T10:00:00Z'; // 2 minutes ago
-    const expectedDurationMs = 5 * 60 * 1000; // 5 minutes expected duration
+  it('should work with numeric timestamp for expected end time', () => {
+    const expectedEndTimeMs = new Date('2024-01-01T10:05:00Z').getTime(); // 3 minutes from now
 
-    const result = getFormattedRemainingDuration(startTime, expectedDurationMs);
-
-    expect(result).toEqual('mocked: 180s');
-  });
-
-  it('should handle numeric start times', () => {
-    const startTime = new Date('2024-01-01T10:00:00Z').getTime(); // 2 minutes ago
-    const expectedDurationMs = 5 * 60 * 1000; // 5 minutes expected duration
-
-    const result = getFormattedRemainingDuration(startTime, expectedDurationMs);
+    const result = getFormattedRemainingDuration(expectedEndTimeMs);
 
     expect(result).toEqual('mocked: 180s');
   });
 
   it('should round up partial seconds using Math.ceil', () => {
-    const startTime = new Date('2024-01-01T10:01:58.700Z'); // 1.3 seconds ago
-    const expectedDurationMs = 3000; // 3 seconds expected duration (1.3 seconds remaining)
+    const expectedEndTimeMs = new Date('2024-01-01T10:02:01.300Z').getTime(); // 1.3 seconds from now
 
-    const result = getFormattedRemainingDuration(startTime, expectedDurationMs);
+    const result = getFormattedRemainingDuration(expectedEndTimeMs);
 
     expect(result).toEqual('mocked: 2s'); // Math.ceil(1.3) = 2
   });
 
   it('should handle exactly 1 second remaining', () => {
-    const startTime = new Date('2024-01-01T10:01:59Z'); // 1 second ago
-    const expectedDurationMs = 2000; // 2 seconds expected duration (1 second remaining)
+    const expectedEndTimeMs = new Date('2024-01-01T10:02:01Z').getTime(); // exactly 1 second from now
 
-    const result = getFormattedRemainingDuration(startTime, expectedDurationMs);
+    const result = getFormattedRemainingDuration(expectedEndTimeMs);
 
     expect(result).toEqual('mocked: 1s');
   });
