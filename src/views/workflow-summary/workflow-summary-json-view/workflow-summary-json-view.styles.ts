@@ -6,6 +6,9 @@ import type {
 } from '@/hooks/use-styletron-classes';
 
 const cssStylesObj = {
+  jsonStaticTitle: (theme) => ({
+    ...theme.typography.LabelSmall,
+  }),
   jsonViewContainer: (theme) => ({
     padding: theme.sizing.scale600,
     backgroundColor: theme.colors.backgroundSecondary,

@@ -39,8 +39,8 @@ export default function DomainPageHelp() {
       <Button
         size="compact"
         kind="secondary"
-        startEnhancer={<MdSupport size={20} />}
-        endEnhancer={<MdArrowDropDown size={20} />}
+        startEnhancer={<MdSupport size={16} />}
+        endEnhancer={<MdArrowDropDown size={16} />}
       >
         Help
       </Button>

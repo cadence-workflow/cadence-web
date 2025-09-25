@@ -24,6 +24,7 @@ import getWorkflowResultJson from './helpers/get-workflow-result-json';
 import WorkflowSummaryDetails from './workflow-summary-details/workflow-summary-details';
 import WorkflowSummaryDiagnosticsBanner from './workflow-summary-diagnostics-banner/workflow-summary-diagnostics-banner';
 import WorkflowSummaryJsonView from './workflow-summary-json-view/workflow-summary-json-view';
+import { type Props as JsonViewProps } from './workflow-summary-json-view/workflow-summary-json-view.types';
 import { cssStyles } from './workflow-summary.styles';
 
 export default function WorkflowSummary({
@@ -84,6 +85,17 @@ export default function WorkflowSummary({
     !closeEvent.attributes ||
     !getWorkflowIsCompleted(closeEvent.attributes);
 
+  const baseJsonViewProps: JsonViewProps = {
+    inputJson:
+      formattedStartEvent && 'input' in formattedStartEvent
+        ? (formattedStartEvent?.input as PrettyJsonValue)
+        : [],
+    resultJson,
+    isWorkflowRunning,
+    isArchived,
+    ...params,
+  };
+
   return (
     <PageSection>
       <div className={cls.pageContainer}>
@@ -97,22 +109,27 @@ export default function WorkflowSummary({
             workflowDetails={workflowDetails}
             decodedPageUrlParams={decodedParams}
           />
-          {/*  <div>Taskslist</div> */}
         </div>
-        <div className={cls.jsonArea}>
+        {/* On narrow screens */}
+        <div className={cls.jsonPanel}>
           <WorkflowSummaryJsonView
-            inputJson={
-              formattedStartEvent && 'input' in formattedStartEvent
-                ? (formattedStartEvent?.input as PrettyJsonValue)
-                : []
-            }
-            resultJson={resultJson}
-            isWorkflowRunning={isWorkflowRunning}
-            isArchived={isArchived}
-            domain={params.domain}
-            cluster={params.cluster}
-            runId={params.runId}
-            workflowId={params.workflowId}
+            {...baseJsonViewProps}
+            defaultTab={isWorkflowRunning ? 'input' : 'result'}
+          />
+        </div>
+        {/* On wide screens */}
+        <div className={cls.jsonPanelWide}>
+          <WorkflowSummaryJsonView
+            {...baseJsonViewProps}
+            defaultTab="input"
+            hideTabToggle
+          />
+        </div>
+        <div className={cls.jsonPanelWide}>
+          <WorkflowSummaryJsonView
+            {...baseJsonViewProps}
+            defaultTab="result"
+            hideTabToggle
           />
         </div>
       </div>

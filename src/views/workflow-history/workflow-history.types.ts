@@ -72,6 +72,10 @@ type BaseHistoryGroup = {
   timeMs: number | null;
   startTimeMs: number | null;
   closeTimeMs?: number | null;
+  expectedEndTimeInfo?: {
+    timeMs: number;
+    prefix: string;
+  };
   timeLabel: string;
   firstEventId: string | null;
   badges?: HistoryGroupBadge[];
