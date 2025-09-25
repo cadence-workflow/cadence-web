@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 
 import { Button } from 'baseui/button';
+import { useSnackbar } from 'baseui/snackbar';
 
 import Markdown from '@/components/markdown/markdown';
 import PrettyJson from '@/components/pretty-json/pretty-json';
@@ -25,14 +26,15 @@ export default function Blocks({
   runId,
 }: Props) {
   const [loadingButtons, setLoadingButtons] = useState<Set<string>>(new Set());
+  const { enqueue } = useSnackbar();
 
   const handleButtonClick = async (button: ButtonElement, index: number) => {
     // Only handle signal actions
     if (button.action.type !== 'signal') {
-      // eslint-disable-next-line no-console
-      console.warn(
-        `Button action type '${button.action.type}' is not supported. Only 'signal' actions are currently handled.`
-      );
+      enqueue({
+        message: `Button action type '${button.action.type}' is not supported. Only 'signal' actions are currently handled.`,
+        actionMessage: 'OK',
+      });
       return;
     }
 
@@ -65,7 +67,11 @@ export default function Blocks({
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to signal workflow');
+        enqueue({
+          message: errorData.message || 'Failed to signal workflow',
+          actionMessage: 'OK',
+        });
+        return;
       }
 
       // Optionally show success feedback here
