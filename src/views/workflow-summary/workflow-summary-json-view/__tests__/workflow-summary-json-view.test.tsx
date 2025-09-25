@@ -97,6 +97,49 @@ describe('WorkflowSummaryJsonView Component', () => {
       queryByText('Workflow is archived, result is only available in')
     ).toBeInTheDocument();
   });
+
+  it('should default to input tab when defaultTab is not provided', () => {
+    const { getByText } = setup({});
+    // With the mocked copy button, we can check if the text contains input data
+    const copyButton = getByText(/Copy Button/);
+    expect(copyButton.innerHTML).toMatch(
+      losslessJsonStringify(losslessInputJson, null, '\t')
+    );
+  });
+
+  it('should initialize with input tab when defaultTab is "input"', () => {
+    const { getByText } = setup({ defaultTab: 'input' });
+    const copyButton = getByText(/Copy Button/);
+    expect(copyButton.innerHTML).toMatch(
+      losslessJsonStringify(losslessInputJson, null, '\t')
+    );
+  });
+
+  it('should initialize with result tab when defaultTab is "result"', () => {
+    const { getByText } = setup({ defaultTab: 'result' });
+    const copyButton = getByText(/Copy Button/);
+    expect(copyButton.innerHTML).toMatch(
+      losslessJsonStringify(losselessResultJson, null, '\t')
+    );
+  });
+
+  it('should hide segmented control and show static title when hideTabToggle is true with input tab', () => {
+    const { queryByText, getByText } = setup({
+      hideTabToggle: true,
+      defaultTab: 'input',
+    });
+    expect(queryByText('SegmentedControlRounded Mock')).not.toBeInTheDocument();
+    expect(getByText('Input')).toBeInTheDocument();
+  });
+
+  it('should hide segmented control and show static title when hideTabToggle is true with result tab', () => {
+    const { queryByText, getByText } = setup({
+      hideTabToggle: true,
+      defaultTab: 'result',
+    });
+    expect(queryByText('SegmentedControlRounded Mock')).not.toBeInTheDocument();
+    expect(getByText('Result')).toBeInTheDocument();
+  });
 });
 
 const losslessInputJson = {
@@ -113,6 +156,8 @@ const setup = ({
   resultJson = losselessResultJson,
   isWorkflowRunning = false,
   isArchived = false,
+  defaultTab,
+  hideTabToggle = false,
 }: Partial<Props>) => {
   return render(
     <WorkflowSummaryJsonView
@@ -120,6 +165,8 @@ const setup = ({
       resultJson={resultJson}
       isWorkflowRunning={isWorkflowRunning}
       isArchived={isArchived}
+      defaultTab={defaultTab}
+      hideTabToggle={hideTabToggle}
       domain="test-domain"
       cluster="test-cluster"
       runId="test-run-id"

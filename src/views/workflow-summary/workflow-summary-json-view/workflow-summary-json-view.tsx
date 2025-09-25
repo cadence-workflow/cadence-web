@@ -10,9 +10,12 @@ import SegmentedControlRounded from '@/components/segmented-control-rounded/segm
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import losslessJsonStringify from '@/utils/lossless-json-stringify';
 
-import { jsonViewTabsOptions } from './workflow-summary-json-view.constants';
+import { jsonTabLabelMap } from './workflow-summary-json-view.constants';
 import { cssStyles, overrides } from './workflow-summary-json-view.styles';
-import type { Props } from './workflow-summary-json-view.types';
+import type {
+  Props,
+  WorkflowSummaryJsonTab,
+} from './workflow-summary-json-view.types';
 
 export default function WorkflowSummaryJsonView({
   inputJson,
@@ -23,6 +26,8 @@ export default function WorkflowSummaryJsonView({
   cluster,
   runId,
   workflowId,
+  defaultTab = 'input',
+  hideTabToggle,
 }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
   const jsonMap: Record<string, PrettyJsonValue> = useMemo(
@@ -32,9 +37,8 @@ export default function WorkflowSummaryJsonView({
     }),
     [inputJson, resultJson]
   );
-  const [activeTab, setActiveTab] = useState<string>(
-    jsonViewTabsOptions[0].key
-  );
+  const [activeTab, setActiveTab] =
+    useState<WorkflowSummaryJsonTab>(defaultTab);
 
   const textToCopy = useMemo(() => {
     return losslessJsonStringify(jsonMap[activeTab], null, '\t');
@@ -43,11 +47,23 @@ export default function WorkflowSummaryJsonView({
   return (
     <div className={cls.jsonViewContainer}>
       <div className={cls.jsonViewHeader}>
-        <SegmentedControlRounded
-          activeKey={activeTab}
-          options={jsonViewTabsOptions}
-          onChange={({ activeKey }) => setActiveTab(activeKey.toString())}
-        />
+        {hideTabToggle ? (
+          <div className={cls.jsonStaticTitle}>
+            {jsonTabLabelMap[activeTab]}
+          </div>
+        ) : (
+          <SegmentedControlRounded
+            activeKey={activeTab}
+            options={Object.entries(jsonTabLabelMap).map(([key, label]) => ({
+              key,
+              label,
+            }))}
+            onChange={({ activeKey }) =>
+              setActiveTab(activeKey === 'result' ? 'result' : 'input')
+            }
+          />
+        )}
+
         <CopyTextButton
           textToCopy={textToCopy}
           overrides={overrides.copyButton}
