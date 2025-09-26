@@ -18,9 +18,6 @@ export default function WorkflowQueriesResult(props: Props) {
   );
 
   const textToCopy = useMemo(() => {
-    if (queryResultContent.contentType === 'blocks') {
-      return losslessJsonStringify(queryResultContent.content, null, '\t');
-    }
     return losslessJsonStringify(queryResultContent.content, null, '\t');
   }, [queryResultContent]);
 
