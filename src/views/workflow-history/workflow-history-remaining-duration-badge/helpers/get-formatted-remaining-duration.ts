@@ -24,8 +24,7 @@ export default function getFormattedRemainingDuration(
       seconds: seconds.toString(),
       nanos: 0,
     },
-    { separator: ' ' },
-    's'
+    { separator: ' ', minUnit: 's' }
   );
 
   return duration;

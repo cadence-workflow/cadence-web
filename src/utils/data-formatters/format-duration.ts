@@ -1,10 +1,14 @@
 import { type Duration } from '@/__generated__/proto-ts/google/protobuf/Duration';
 import dayjs from '@/utils/datetime/dayjs';
 
+export type FormatDurationUnitType = 'y' | 'M' | 'd' | 'h' | 'm' | 's' | 'ms';
+
 const formatDuration = (
   duration: Duration | null,
-  { separator = ', ' }: { separator?: string } = {},
-  minUnit: 'y' | 'M' | 'd' | 'h' | 'm' | 's' | 'ms' = 'ms'
+  {
+    separator = ', ',
+    minUnit = 'ms',
+  }: { separator?: string; minUnit?: FormatDurationUnitType } = {}
 ) => {
   const defaultReturn = '0s';
   if (!duration) {
@@ -17,7 +21,7 @@ const formatDuration = (
   const intMillis = Math.floor(nanosAsMillis);
   const remainingNanosAsMillis = nanosAsMillis % 1;
   const milliseconds = secondsAsMillis + intMillis;
-  const allUnits: Array<dayjs.ManipulateType> = [
+  const allUnits: Array<FormatDurationUnitType> = [
     'y',
     'M',
     'd',

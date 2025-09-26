@@ -8,7 +8,7 @@ import getFormattedRemainingDuration from '../helpers/get-formatted-remaining-du
 import WorkflowHistoryRemainingDurationBadge from '../workflow-history-remaining-duration-badge';
 import type { Props } from '../workflow-history-remaining-duration-badge.types';
 
-jest.mock('../helpers/get-formatted-remaining-duration', () => jest.fn());
+jest.mock('../helpers/get-formatted-remaining-duration');
 
 const mockStartTime = new Date('2024-01-01T10:00:00Z');
 const mockNow = new Date('2024-01-01T10:02:00Z');
