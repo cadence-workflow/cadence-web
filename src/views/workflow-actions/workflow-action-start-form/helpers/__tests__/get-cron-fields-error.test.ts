@@ -38,9 +38,9 @@ describe('getCronFieldsError', () => {
     });
 
     expect(result).toEqual({
-      minutes: 'Invalid value for minutes field: 70',
-      hours: 'Invalid value for hours field: 25',
-      daysOfWeek: 'Invalid value for daysOfWeek field: 8',
+      minutes: 'Invalid value for minutes field: x',
+      hours: 'Invalid value for hours field: x',
+      daysOfWeek: 'Invalid value for daysOfWeek field: x',
       daysOfMonth: 'Invalid value for daysOfMonth field: x',
       months: 'Invalid value for months field: x',
     });
