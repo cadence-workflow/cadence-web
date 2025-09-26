@@ -9,6 +9,7 @@ import WorkflowHistoryEventStatusBadge from '../workflow-history-event-status-ba
 import WorkflowHistoryEventsCard from '../workflow-history-events-card/workflow-history-events-card';
 import WorkflowHistoryEventsDurationBadge from '../workflow-history-events-duration-badge/workflow-history-events-duration-badge';
 import WorkflowHistoryGroupLabel from '../workflow-history-group-label/workflow-history-group-label';
+import WorkflowHistoryRemainingDurationBadge from '../workflow-history-remaining-duration-badge/workflow-history-remaining-duration-badge';
 import WorkflowHistoryTimelineResetButton from '../workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 
 import {
@@ -25,6 +26,7 @@ export default function WorkflowHistoryTimelineGroup({
   timeLabel,
   startTimeMs,
   closeTimeMs,
+  expectedEndTimeInfo,
   workflowCloseTimeMs,
   workflowCloseStatus,
   workflowIsArchived,
@@ -88,6 +90,16 @@ export default function WorkflowHistoryTimelineGroup({
                 workflowCloseStatus={workflowCloseStatus}
               />
             )}
+            {expectedEndTimeInfo && startTimeMs ? (
+              <WorkflowHistoryRemainingDurationBadge
+                startTime={startTimeMs}
+                expectedEndTime={expectedEndTimeInfo.timeMs}
+                prefix={expectedEndTimeInfo.prefix}
+                workflowIsArchived={workflowIsArchived}
+                workflowCloseStatus={workflowCloseStatus}
+                loadingMoreEvents={showLoadingMoreEvents}
+              />
+            ) : null}
             <div suppressHydrationWarning className={cls.eventsTime}>
               {timeLabel}
             </div>

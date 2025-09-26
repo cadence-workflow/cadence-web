@@ -31,4 +31,11 @@ describe('formatDuration', () => {
     const duration: Duration = { seconds: '31556952', nanos: 0 };
     expect(formatDuration(duration, { separator: ' ' })).toBe('1y 5h 49m 12s');
   });
+
+  it('should format duration with custom min unit', () => {
+    const duration: Duration = { seconds: '31556952', nanos: 0 };
+    expect(formatDuration(duration, { separator: ' ', minUnit: 'h' })).toBe(
+      '1y 5h'
+    );
+  });
 });
