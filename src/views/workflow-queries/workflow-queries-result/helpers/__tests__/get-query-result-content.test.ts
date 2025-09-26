@@ -116,17 +116,15 @@ describe(getQueryResultContent.name, () => {
           result: {
             cadenceResponseType: 'formattedData',
             format: 'blocks',
-            data: {
-              blocks: [
-                {
-                  type: 'section',
-                  format: 'text/markdown',
-                  componentOptions: {
-                    text: 'Hello, world!',
-                  },
+            blocks: [
+              {
+                type: 'section',
+                format: 'text/markdown',
+                componentOptions: {
+                  text: 'Hello, world!',
                 },
-              ],
-            },
+              },
+            ],
           },
           rejected: null,
         },

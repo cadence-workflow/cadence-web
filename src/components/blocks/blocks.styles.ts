@@ -1,4 +1,4 @@
-import { styled as createStyled, withStyle } from 'baseui';
+import { styled as createStyled } from 'baseui';
 
 export const styled = {
   ViewContainer: createStyled('div', ({ $theme }) => ({

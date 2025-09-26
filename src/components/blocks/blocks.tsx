@@ -77,9 +77,9 @@ export default function Blocks({
       // Optionally show success feedback here
     } catch (error: any) {
       enqueue({
-          message: error.message || 'Failed to signal workflow',
-          actionMessage: 'Dismiss',
-        });
+        message: error.message || 'Failed to signal workflow',
+        actionMessage: 'Dismiss',
+      });
     } finally {
       setLoadingButtons((prev) => {
         const newSet = new Set(prev);
