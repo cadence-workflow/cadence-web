@@ -37,6 +37,7 @@ export default function WorkflowActionsModalContent<
     control,
     watch,
     clearErrors,
+    trigger,
   } = useForm<OptionalFormData>({
     resolver: action.modal.formSchema
       ? zodResolver(action.modal.formSchema)
@@ -122,6 +123,7 @@ export default function WorkflowActionsModalContent<
               fieldErrors={validationErrors}
               clearErrors={clearErrors}
               control={control}
+              trigger={trigger}
               cluster={params.cluster}
               domain={params.domain}
               workflowId={params.workflowId}

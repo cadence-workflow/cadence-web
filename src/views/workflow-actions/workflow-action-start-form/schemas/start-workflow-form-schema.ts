@@ -1,9 +1,12 @@
 import { z } from 'zod';
 
+import { CRON_FIELD_ORDER } from '@/components/cron-schedule-input/cron-schedule-input.constants';
 import {
   WORKER_SDK_LANGUAGES,
   WORKFLOW_ID_REUSE_POLICIES,
 } from '@/route-handlers/start-workflow/start-workflow.constants';
+
+import { getCronFieldsError } from '../helpers/get-cron-fields-error';
 
 const baseSchema = z.object({
   workflowType: z.object({
@@ -81,8 +84,45 @@ const baseSchema = z.object({
   // Schedule type fields
   scheduleType: z.enum(['NOW', 'LATER', 'CRON']),
   firstRunAt: z.string().optional(),
-  cronSchedule: z.string().optional(),
+  cronSchedule: z
+    .object({
+      minutes: z.string().min(1, 'Minutes is required'),
+      hours: z.string().min(1, 'Hours is required'),
+      daysOfMonth: z.string().min(1, 'Days of month is required'),
+      months: z.string().min(1, 'Months is required'),
+      daysOfWeek: z.string().min(1, 'Days of week is required'),
+    })
+    .superRefine((data, ctx) => {
+      const allFieldsHasValue = Object.values(data).every((value) =>
+        Boolean(value)
+      );
 
+      // If there are missing fields, no need to validate the cron schedule format.
+      if (!allFieldsHasValue) {
+        return;
+      }
+
+      const cronString = CRON_FIELD_ORDER.map((key) => data[key]).join(' ');
+      const cronFieldsErrors = getCronFieldsError(cronString);
+
+      if (!cronFieldsErrors) return;
+
+      if (cronFieldsErrors?.general) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Invalid cron schedule format',
+        });
+      } else {
+        Object.entries(cronFieldsErrors).forEach(([errorKey, errorMessage]) => {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: errorMessage,
+            path: [errorKey],
+          });
+        });
+      }
+    })
+    .optional(),
   // Retry policy fields
   enableRetryPolicy: z.boolean().optional(),
   limitRetries: z.enum(['ATTEMPTS', 'DURATION']).optional(),

@@ -4,9 +4,10 @@ import { DatePicker } from 'baseui/datepicker';
 import { FormControl } from 'baseui/form-control';
 import { Input } from 'baseui/input';
 import { RadioGroup, Radio } from 'baseui/radio';
-import { get } from 'lodash';
+import { get, isObjectLike } from 'lodash';
 import { Controller, useWatch } from 'react-hook-form';
 
+import CronScheduleInput from '@/components/cron-schedule-input/cron-schedule-input';
 import MultiJsonInput from '@/components/multi-json-input/multi-json-input';
 import { WORKER_SDK_LANGUAGES } from '@/route-handlers/start-workflow/start-workflow.constants';
 
@@ -19,6 +20,7 @@ export default function WorkflowActionStartForm({
   control,
   clearErrors,
   formData: _formData,
+  trigger,
 }: Props) {
   const now = useMemo(() => new Date(), []);
 
@@ -26,6 +28,8 @@ export default function WorkflowActionStartForm({
     const error = get(fieldErrors, field);
     if (Array.isArray(error)) {
       return error.map((err) => err?.message);
+    } else if (isObjectLike(error) && !error.message) {
+      return error;
     }
     return error?.message;
   };
@@ -221,20 +225,15 @@ export default function WorkflowActionStartForm({
           <Controller
             name="cronSchedule"
             control={control}
-            defaultValue=""
-            render={({ field: { ref, ...field } }) => (
-              <Input
-                {...field}
-                // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
-                inputRef={ref}
-                aria-label="Cron Schedule (UTC)"
-                size="compact"
-                onChange={(e) => {
-                  field.onChange(e.target.value);
+            render={({ field }) => (
+              <CronScheduleInput
+                value={field.value}
+                onChange={(value) => {
+                  field.onChange(value);
+                  trigger('cronSchedule');
                 }}
                 onBlur={field.onBlur}
-                error={Boolean(getErrorMessage('cronSchedule'))}
-                placeholder="* * * * *"
+                error={getErrorMessage('cronSchedule')}
               />
             )}
           />
