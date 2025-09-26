@@ -1,3 +1,4 @@
+import { CRON_FIELD_ORDER } from '@/components/cron-schedule-input/cron-schedule-input.constants';
 import { type Json } from '@/route-handlers/start-workflow/start-workflow.types';
 
 import {
@@ -22,7 +23,9 @@ export default function transformStartWorkflowFormToSubmission(
       firstRunAt: formData.firstRunAt,
     }),
     ...(formData.scheduleType === 'CRON' && {
-      cronSchedule: formData.cronSchedule,
+      cronSchedule: CRON_FIELD_ORDER.map(
+        (key) => formData.cronSchedule?.[key]
+      ).join(' '),
     }),
     ...(formData.enableRetryPolicy && {
       retryPolicy: {

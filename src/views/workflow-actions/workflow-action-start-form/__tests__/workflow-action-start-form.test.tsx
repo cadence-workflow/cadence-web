@@ -100,9 +100,26 @@ describe('WorkflowActionStartForm', () => {
     );
 
     await user.click(screen.getByRole('radio', { name: 'Cron' }));
-    expect(
-      screen.getByRole('textbox', { name: 'Cron Schedule (UTC)' })
-    ).toHaveAttribute('aria-invalid', 'true');
+    expect(screen.getByLabelText('Minute')).toHaveAttribute(
+      'aria-invalid',
+      'true'
+    );
+    expect(screen.getByLabelText('Hour')).toHaveAttribute(
+      'aria-invalid',
+      'true'
+    );
+    expect(screen.getByLabelText('Day of Month')).toHaveAttribute(
+      'aria-invalid',
+      'true'
+    );
+    expect(screen.getByLabelText('Month')).toHaveAttribute(
+      'aria-invalid',
+      'true'
+    );
+    expect(screen.getByLabelText('Day of Week')).toHaveAttribute(
+      'aria-invalid',
+      'true'
+    );
   });
 
   it('handles input changes correctly', async () => {
@@ -201,6 +218,7 @@ function TestWrapper({ formErrors, formData }: TestProps) {
 
   return (
     <WorkflowActionStartForm
+      trigger={methods.trigger}
       control={methods.control}
       clearErrors={methods.clearErrors}
       fieldErrors={formErrors}

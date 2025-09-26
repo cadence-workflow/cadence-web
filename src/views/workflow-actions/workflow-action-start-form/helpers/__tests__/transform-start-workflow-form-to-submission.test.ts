@@ -37,7 +37,13 @@ describe('transformStartWorkflowFormToSubmission', () => {
     const formData: StartWorkflowFormData = {
       ...baseFormData,
       scheduleType: 'CRON',
-      cronSchedule: '0 9 * * 1-5',
+      cronSchedule: {
+        minutes: '0',
+        hours: '9',
+        daysOfMonth: '*',
+        months: '*',
+        daysOfWeek: '1-5',
+      },
     };
 
     const result = transformStartWorkflowFormToSubmission(formData);
@@ -50,7 +56,13 @@ describe('transformStartWorkflowFormToSubmission', () => {
       ...baseFormData,
       scheduleType: 'NOW',
       firstRunAt: '2024-01-01T10:00:00Z',
-      cronSchedule: '0 9 * * 1-5',
+      cronSchedule: {
+        minutes: '0',
+        hours: '9',
+        daysOfMonth: '*',
+        months: '*',
+        daysOfWeek: '1-5',
+      },
     };
 
     const result = transformStartWorkflowFormToSubmission(formData);

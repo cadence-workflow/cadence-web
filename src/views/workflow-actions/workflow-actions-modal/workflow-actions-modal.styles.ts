@@ -10,5 +10,10 @@ export const overrides = {
         right: $theme.sizing.scale800,
       }),
     },
+    Dialog: {
+      style: (): StyleObject => ({
+        width: '600px',
+      }),
+    },
   } satisfies ModalOverrides,
 };
