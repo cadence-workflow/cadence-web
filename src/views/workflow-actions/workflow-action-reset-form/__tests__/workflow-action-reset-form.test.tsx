@@ -192,6 +192,7 @@ function TestWrapper({ formErrors, formData }: TestProps) {
 
   return (
     <WorkflowActionResetForm
+      trigger={methods.trigger}
       control={methods.control}
       clearErrors={methods.clearErrors}
       fieldErrors={formErrors}
