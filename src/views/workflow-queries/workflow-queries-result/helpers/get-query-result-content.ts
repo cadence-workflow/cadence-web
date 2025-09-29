@@ -1,9 +1,11 @@
 import {
   type QueryJsonContent,
-  type Props,
+  type GetQueryContentArgs,
 } from '../workflow-queries-result.types';
 
-export default function getQueryResultContent(props: Props): QueryJsonContent {
+export default function getQueryResultContent(
+  props: GetQueryContentArgs
+): QueryJsonContent {
   if (props.loading) {
     return { contentType: 'json', content: undefined, isError: false };
   }
@@ -38,6 +40,18 @@ export default function getQueryResultContent(props: Props): QueryJsonContent {
         isError: false,
       };
     }
+
+    if (
+      props.data.result.cadenceResponseType === 'formattedData' &&
+      props.data.result.format === 'blocks'
+    ) {
+      return {
+        contentType: 'blocks',
+        content: props.data.result.blocks,
+        isError: false,
+      };
+    }
+
     return { contentType: 'json', content: props.data.result, isError: false };
   }
 

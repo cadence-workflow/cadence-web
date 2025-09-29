@@ -63,14 +63,4 @@ export const styled = {
       gap: $theme.sizing.scale100,
     })
   ),
-
-  FieldLabel: createStyled(
-    'div',
-    ({ $theme }: { $theme: Theme }): StyleObject => ({
-      ...$theme.typography.LabelXSmall,
-      color: $theme.colors.contentSecondary,
-      textAlign: 'center',
-      minHeight: '16px',
-    })
-  ),
 };

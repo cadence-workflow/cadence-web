@@ -1,3 +1,4 @@
+import formatBase64Payload from '../format-base64-payload';
 import formatDurationToSeconds from '../format-duration-to-seconds';
 import formatEnum from '../format-enum';
 import formatInputPayload from '../format-input-payload';
@@ -40,7 +41,7 @@ const formatStartChildWorkflowExecutionInitiatedEvent = ({
       name: taskList?.name || null,
     },
     input: formatInputPayload(input),
-    control: control ? parseInt(atob(control)) : null,
+    control: control ? parseInt(formatBase64Payload(control)) : null,
     jitterStart,
     delayStartSeconds: formatDurationToSeconds(delayStart),
     firstRunAt,

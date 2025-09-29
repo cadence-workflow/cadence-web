@@ -17,12 +17,8 @@ export default function getFormattedEventsDuration(
       seconds: seconds.toString(),
       nanos: (durationObj.asMilliseconds() - seconds * 1000) * 1000000,
     },
-    { separator: ' ' }
+    { separator: ' ', minUnit: hideMs && seconds > 0 ? 's' : 'ms' }
   );
-  // TODO: add this functionality to formatDuration in more reusable way
-  if (hideMs && seconds > 0) {
-    return duration.replace(/ \d+ms/i, '');
-  }
 
   return duration;
 }

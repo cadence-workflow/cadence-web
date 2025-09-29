@@ -57,6 +57,10 @@ describe(convertEventGroupToTimelineItem.name, () => {
           ...mockTimerEventGroup,
           timeMs: null,
           status: 'ONGOING',
+          expectedEndTimeInfo: {
+            timeMs: 1725748375632,
+            prefix: 'Starts in',
+          },
         },
         index: 1,
         classes: {} as any,

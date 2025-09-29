@@ -1,9 +1,14 @@
 import { type Duration } from '@/__generated__/proto-ts/google/protobuf/Duration';
 import dayjs from '@/utils/datetime/dayjs';
 
+export type FormatDurationUnitType = 'y' | 'M' | 'd' | 'h' | 'm' | 's' | 'ms';
+
 const formatDuration = (
   duration: Duration | null,
-  { separator = ', ' }: { separator?: string } = {}
+  {
+    separator = ', ',
+    minUnit = 'ms',
+  }: { separator?: string; minUnit?: FormatDurationUnitType } = {}
 ) => {
   const defaultReturn = '0s';
   if (!duration) {
@@ -16,7 +21,16 @@ const formatDuration = (
   const intMillis = Math.floor(nanosAsMillis);
   const remainingNanosAsMillis = nanosAsMillis % 1;
   const milliseconds = secondsAsMillis + intMillis;
-  const units = ['y', 'M', 'd', 'h', 'm', 's', 'ms'] as const;
+  const allUnits: Array<FormatDurationUnitType> = [
+    'y',
+    'M',
+    'd',
+    'h',
+    'm',
+    's',
+    'ms',
+  ];
+  const units = allUnits.slice(0, allUnits.indexOf(minUnit) + 1);
   const values: Partial<Record<(typeof units)[number], number>> = {};
   let d = dayjs.duration(milliseconds);
   units.forEach((unit) => {

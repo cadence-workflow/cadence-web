@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 
 import { FormControl } from 'baseui/form-control';
 import { Input } from 'baseui/input';
-import { Popover, PLACEMENT } from 'baseui/popover';
+import { Popover } from 'baseui/popover';
 
 import CronScheduleInputPopover from './cron-schedule-input-popover/cron-schedule-input-popover';
 import {
@@ -23,7 +23,6 @@ export default function CronScheduleInput({
   error,
   disabled = false,
 }: CronScheduleInputProps) {
-  const [_focusedField, setFocusedField] = useState<CronFieldType | null>(null);
   const [openPopover, setOpenPopover] = useState<CronFieldType | null>(null);
 
   const handleFieldChange = useCallback(
@@ -34,7 +33,6 @@ export default function CronScheduleInput({
   );
   const handleFieldBlur = useCallback(
     (e: React.FocusEvent) => {
-      setFocusedField(null);
       setOpenPopover(null);
       onBlur?.(e);
     },
@@ -43,7 +41,6 @@ export default function CronScheduleInput({
 
   const handleFieldFocus = useCallback(
     (fieldType: CronFieldType, e: React.FocusEvent) => {
-      setFocusedField(fieldType);
       setOpenPopover(fieldType);
       onFocus?.(e);
     },
@@ -62,42 +59,37 @@ export default function CronScheduleInput({
 
   return (
     <styled.Container>
-      {CRON_FIELD_ORDER.map((fieldType, _index) => {
+      {CRON_FIELD_ORDER.map((fieldType) => {
         const config = CRON_FIELD_CONFIGS[fieldType];
         const fieldValue = value?.[fieldType] || '';
 
         return (
-          <React.Fragment key={fieldType}>
-            <styled.FieldContainer>
-              <FormControl
-                label={config.label}
-                overrides={overrides.formControl}
+          <styled.FieldContainer key={fieldType}>
+            <FormControl label={config.label} overrides={overrides.formControl}>
+              <Popover
+                isOpen={openPopover === fieldType}
+                placement="bottom"
+                content={<CronScheduleInputPopover fieldType={fieldType} />}
+                overrides={overrides.popover}
               >
-                <Popover
-                  isOpen={openPopover === fieldType}
-                  placement={PLACEMENT.bottom}
-                  content={<CronScheduleInputPopover fieldType={fieldType} />}
-                  overrides={overrides.popover}
-                >
-                  <div>
-                    <Input
-                      value={fieldValue}
-                      aria-label={config.label}
-                      onChange={(e) =>
-                        handleFieldChange(fieldType, e.target.value)
-                      }
-                      onBlur={(e) => handleFieldBlur(e)}
-                      onFocus={(e) => handleFieldFocus(fieldType, e)}
-                      error={Boolean(getFieldError(fieldType))}
-                      disabled={disabled}
-                      overrides={overrides.input}
-                      size="compact"
-                    />
-                  </div>
-                </Popover>
-              </FormControl>
-            </styled.FieldContainer>
-          </React.Fragment>
+                <div>
+                  <Input
+                    value={fieldValue}
+                    aria-label={config.label}
+                    onChange={(e) =>
+                      handleFieldChange(fieldType, e.target.value)
+                    }
+                    onBlur={(e) => handleFieldBlur(e)}
+                    onFocus={(e) => handleFieldFocus(fieldType, e)}
+                    error={Boolean(getFieldError(fieldType))}
+                    disabled={disabled}
+                    overrides={overrides.input}
+                    size="compact"
+                  />
+                </div>
+              </Popover>
+            </FormControl>
+          </styled.FieldContainer>
         );
       })}
     </styled.Container>

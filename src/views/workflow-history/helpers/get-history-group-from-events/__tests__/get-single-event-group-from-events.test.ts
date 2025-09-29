@@ -230,4 +230,56 @@ describe('getSingleEventGroupFromEvents', () => {
       'newExecutionRunId',
     ]);
   });
+
+  it('should calculate expectedEndTimeInfo for workflow execution started events with firstDecisionTaskBackoff', () => {
+    const group = getSingleEventGroupFromEvents([startWorkflowExecutionEvent]);
+
+    expect(group.expectedEndTimeInfo).toEqual({
+      timeMs: 1724747370549.3777,
+      prefix: 'Starts in',
+    });
+  });
+
+  it('should not calculate expectedEndTimeInfo for non-workflow-started events', () => {
+    const nonStartedEvents = [
+      signalWorkflowExecutionEvent,
+      recordMarkerExecutionEvent,
+      failWorkflowExecutionEvent,
+      completeWorkflowExecutionEvent,
+    ];
+
+    for (const event of nonStartedEvents) {
+      const group = getSingleEventGroupFromEvents([event]);
+      expect(group.expectedEndTimeInfo).toBeUndefined();
+    }
+  });
+
+  it('should not calculate expectedEndTimeInfo for workflow started events with zero firstDecisionTaskBackoff', () => {
+    const eventWithoutBackoff = {
+      ...startWorkflowExecutionEvent,
+      workflowExecutionStartedEventAttributes: {
+        ...startWorkflowExecutionEvent.workflowExecutionStartedEventAttributes,
+        firstDecisionTaskBackoff: {
+          seconds: '0',
+          nanos: 0,
+        },
+      },
+    };
+
+    const group = getSingleEventGroupFromEvents([eventWithoutBackoff]);
+    expect(group.expectedEndTimeInfo).toBeUndefined();
+  });
+
+  it('should not calculate expectedEndTimeInfo for workflow started events without firstDecisionTaskBackoff', () => {
+    const eventWithoutBackoff = {
+      ...startWorkflowExecutionEvent,
+      workflowExecutionStartedEventAttributes: {
+        ...startWorkflowExecutionEvent.workflowExecutionStartedEventAttributes,
+        firstDecisionTaskBackoff: null,
+      },
+    };
+
+    const group = getSingleEventGroupFromEvents([eventWithoutBackoff]);
+    expect(group.expectedEndTimeInfo).toBeUndefined();
+  });
 });
