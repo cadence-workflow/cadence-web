@@ -2,7 +2,7 @@ import { type BadgeOverrides } from 'baseui/badge/types';
 import { type Theme } from 'baseui/theme';
 
 export const overrides = {
-  Badge: {
+  badge: {
     Badge: {
       style: ({
         $theme,

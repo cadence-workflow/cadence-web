@@ -26,6 +26,15 @@ jest.mock('@/components/pretty-json/pretty-json', () =>
   ))
 );
 
+jest.mock('@/components/blocks/blocks', () =>
+  jest.fn(({ blocks, domain, cluster, workflowId, runId }) => (
+    <div>
+      Blocks Mock: {domain}/{cluster}/{workflowId}/{runId} -{' '}
+      {JSON.stringify(blocks)}
+    </div>
+  ))
+);
+
 describe(WorkflowQueriesResult.name, () => {
   it('renders json when the content type is json', () => {
     setup({
@@ -72,6 +81,30 @@ describe(WorkflowQueriesResult.name, () => {
       screen.getByText('Markdown Mock: test-markdown')
     ).toBeInTheDocument();
   });
+
+  it('renders blocks when the content type is blocks', () => {
+    setup({
+      content: {
+        contentType: 'blocks',
+        content: [
+          {
+            type: 'section' as const,
+            format: 'text/markdown',
+            componentOptions: {
+              text: '# Test',
+            },
+          },
+        ],
+        isError: false,
+      },
+    });
+
+    expect(
+      screen.getByText(
+        /Blocks Mock: test-domain\/test-cluster\/test-workflow-id\/test-run-id/
+      )
+    ).toBeInTheDocument();
+  });
 });
 
 function setup({
@@ -90,5 +123,15 @@ function setup({
   content?: QueryJsonContent;
 }) {
   (getQueryResultContent as jest.Mock).mockImplementation(() => content);
-  render(<WorkflowQueriesResult data={data} error={error} loading={loading} />);
+  render(
+    <WorkflowQueriesResult
+      data={data}
+      error={error}
+      loading={loading}
+      domain="test-domain"
+      cluster="test-cluster"
+      workflowId="test-workflow-id"
+      runId="test-run-id"
+    />
+  );
 }

@@ -1,5 +1,7 @@
 import losslessJsonParse from '../lossless-json-parse';
 
+import formatBase64Payload from './format-base64-payload';
+
 const formatPayload = (
   payload: { data?: string | null } | null | undefined
 ) => {
@@ -9,7 +11,7 @@ const formatPayload = (
     return null;
   }
 
-  const parsedData = atob(data);
+  const parsedData = formatBase64Payload(data);
 
   // try parsing as JSON
   try {

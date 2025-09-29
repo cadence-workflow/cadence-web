@@ -1,10 +1,6 @@
-export const jsonViewTabsOptions = [
-  {
-    key: 'input',
-    label: 'Input',
-  },
-  {
-    key: 'result',
-    label: 'Result',
-  },
-];
+import { type WorkflowSummaryJsonTab } from './workflow-summary-json-view.types';
+
+export const jsonTabLabelMap: Record<WorkflowSummaryJsonTab, string> = {
+  input: 'Input',
+  result: 'Result',
+};

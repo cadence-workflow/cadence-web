@@ -15,9 +15,19 @@ const cssStylesObj = {
     flexDirection: 'column',
     gap: theme.sizing.scale800,
   }),
-  jsonArea: {
+  jsonPanel: (theme) => ({
     flex: '1 0 300px',
-  },
+    [theme.mediaQuery.large]: {
+      display: 'none',
+    },
+  }),
+  jsonPanelWide: (theme) => ({
+    display: 'none',
+    [theme.mediaQuery.large]: {
+      display: 'block',
+      flex: '1 0 300px',
+    },
+  }),
 } satisfies StyletronCSSObject;
 
 export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> =
