@@ -19,14 +19,6 @@ export const styled = {
     })
   ),
 
-  PopoverDescription: createStyled(
-    'div',
-    ({ $theme }: { $theme: Theme }): StyleObject => ({
-      ...$theme.typography.LabelXSmall,
-      color: $theme.colors.contentTertiary,
-    })
-  ),
-
   ExamplesContainer: createStyled(
     'div',
     ({ $theme }: { $theme: Theme }): StyleObject => ({

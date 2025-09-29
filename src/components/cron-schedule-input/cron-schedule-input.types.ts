@@ -11,7 +11,6 @@ export type CronScheduleInputProps = {
   onBlur?: (e: React.FocusEvent) => void;
   error?: string | Record<keyof CronScheduleValue, string>;
   disabled?: boolean;
-  placeholder?: string;
   onFocus?: (e: React.FocusEvent) => void;
 };
 
