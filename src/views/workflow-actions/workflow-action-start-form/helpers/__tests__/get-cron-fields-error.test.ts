@@ -1,8 +1,4 @@
-import { type Result } from 'cron-validate/lib/result';
-import { type Options } from 'cron-validate/lib/types';
-
 import { cronValidate } from '@/utils/cron-validate/cron-validate';
-import { type CronData } from '@/utils/cron-validate/cron-validate.types';
 
 import { getCronFieldsError } from '../get-cron-fields-error';
 
@@ -11,6 +7,8 @@ jest.mock('@/utils/cron-validate/cron-validate');
 const mockCronValidate = cronValidate as jest.MockedFunction<
   typeof cronValidate
 >;
+
+type CronValidateResult = ReturnType<typeof cronValidate>;
 
 describe('getCronFieldsError', () => {
   beforeEach(() => {
@@ -84,14 +82,12 @@ function setup({
   isValid?: boolean;
   errors?: string[];
 }) {
-  // Giving type for cron result is not straightforward, because of the conditional type within it
-  // So we make sure we are correctly creating partial mock and cast it to any
-  const mockCronResult = {
+  const mockCronResult: Partial<CronValidateResult> = {
     isValid: jest.fn(() => isValid),
     getError: jest.fn(() => errors),
-  } satisfies Partial<Result<Options | CronData, string[]>> as any;
+  };
 
-  mockCronValidate.mockReturnValue(mockCronResult);
+  mockCronValidate.mockReturnValue(mockCronResult as CronValidateResult);
 
   const result = getCronFieldsError(cronText);
 

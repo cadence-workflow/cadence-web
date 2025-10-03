@@ -2,9 +2,9 @@ import { CRON_FIELD_ORDER } from '@/components/cron-schedule-input/cron-schedule
 import { cronValidate } from '@/utils/cron-validate/cron-validate';
 import { type CronData } from '@/utils/cron-validate/cron-validate.types';
 
-export const getCronFieldsError = (
-  cronString: string
-): Partial<Record<keyof CronData | 'general', string>> | null => {
+import { type CronFieldsError } from '../workflow-action-start-form.types';
+
+export const getCronFieldsError = (cronString: string): CronFieldsError => {
   const cronObj = cronValidate(cronString);
 
   if (!cronObj.isValid()) {
