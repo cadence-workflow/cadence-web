@@ -82,8 +82,8 @@ describe(CronScheduleInputPopover.name, () => {
     const testCases = [
       { fieldType: 'minutes' as const, expectedRange: '0-59' },
       { fieldType: 'hours' as const, expectedRange: '0-23' },
-      { fieldType: 'daysOfMonth' as const, expectedRange: '0-31' },
-      { fieldType: 'months' as const, expectedRange: '0-12' },
+      { fieldType: 'daysOfMonth' as const, expectedRange: '1-31' },
+      { fieldType: 'months' as const, expectedRange: '1-12' },
       { fieldType: 'daysOfWeek' as const, expectedRange: '0-6' },
     ];
 
