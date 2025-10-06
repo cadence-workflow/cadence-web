@@ -48,11 +48,11 @@ describe('cronValidate', () => {
       maxValue: 23,
     });
     expect(CRON_VALIDATE_CADENCE_PRESET.daysOfMonth).toEqual({
-      minValue: 0,
+      minValue: 1,
       maxValue: 31,
     });
     expect(CRON_VALIDATE_CADENCE_PRESET.months).toEqual({
-      minValue: 0,
+      minValue: 1,
       maxValue: 12,
     });
     expect(CRON_VALIDATE_CADENCE_PRESET.daysOfWeek).toEqual({
