@@ -1,17 +1,8 @@
-import { type GetSearchAttributesResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/GetSearchAttributesResponse';
 import { type GRPCClusterMethods } from '@/utils/grpc/grpc-client';
 
-/**
- * Search attributes category types
- */
-export type SearchAttributesCategory = 'all' | 'system' | 'custom';
+export { type GetSearchAttributesResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/GetSearchAttributesResponse';
 
-/**
- * Search attributes response with category filtering applied to keys
- */
-export type SearchAttributesResponse = GetSearchAttributesResponse & {
-  category: SearchAttributesCategory;
-};
+export type SearchAttributesCategory = 'all' | 'system' | 'custom';
 
 export type Context = {
   grpcClusterMethods: GRPCClusterMethods;

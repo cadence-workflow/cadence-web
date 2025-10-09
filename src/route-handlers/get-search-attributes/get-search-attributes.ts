@@ -43,9 +43,11 @@ export default async function getSearchAttributes(
         )
       );
     }
-    // If category is 'all' or any other value, return all keys
 
-    return NextResponse.json(filteredKeys);
+    return NextResponse.json({
+      ...searchAttributesResponse,
+      keys: filteredKeys,
+    });
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
       { requestParams: decodedParams, error: e },
