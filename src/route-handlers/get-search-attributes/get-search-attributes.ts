@@ -6,10 +6,10 @@ import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
 import { SYSTEM_SEARCH_ATTRIBUTES } from './get-search-attributes.constants';
 import {
+  type GetSearchAttributesResponse,
   type Context,
   type RequestParams,
   type RouteParams,
-  type SearchAttributesCategory,
 } from './get-search-attributes.types';
 
 export default async function getSearchAttributes(
@@ -18,16 +18,11 @@ export default async function getSearchAttributes(
   ctx: Context
 ): Promise<Response> {
   const decodedParams = decodeUrlParams(requestParams.params) as RouteParams;
-  const { searchParams } = new URL(request.url);
-  const category = (searchParams.get('category') ||
-    'all') as SearchAttributesCategory;
-
+  const category = request.nextUrl.searchParams.get('category');
   try {
-    // Fetch search attributes from Cadence RPC service
     const searchAttributesResponse =
       await ctx.grpcClusterMethods.getSearchAttributes({});
 
-    // Filter the keys based on category parameter
     let filteredKeys = searchAttributesResponse.keys || {};
 
     if (category === 'system') {
@@ -47,7 +42,7 @@ export default async function getSearchAttributes(
     return NextResponse.json({
       ...searchAttributesResponse,
       keys: filteredKeys,
-    });
+    } satisfies GetSearchAttributesResponse);
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
       { requestParams: decodedParams, error: e },
