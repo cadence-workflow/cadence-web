@@ -3,7 +3,8 @@ import getFormattedEventsDuration from '../get-formatted-events-duration';
 jest.mock('@/utils/data-formatters/format-duration', () => ({
   __esModule: true,
   default: jest.fn(
-    (duration) => `mocked: ${duration.seconds}s ${duration.nanos / 1000000}ms`
+    (duration, { minUnit }) =>
+      `mocked: ${duration.seconds}s${minUnit === 'ms' ? ` ${duration.nanos / 1000000}ms` : ''}`
   ),
 }));
 

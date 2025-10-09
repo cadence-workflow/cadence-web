@@ -6,6 +6,7 @@ import {
   type Control,
   type FieldErrors,
   type FieldValues,
+  type UseFormTrigger,
 } from 'react-hook-form';
 import { type z } from 'zod';
 
@@ -33,6 +34,7 @@ export type WorkflowActionFormProps<FormData extends FieldValues> = {
   fieldErrors: FieldErrors<FormData>;
   control: Control<FormData>;
   clearErrors: UseFormClearErrors<FormData>;
+  trigger: UseFormTrigger<FormData>;
   cluster: string;
   domain: string;
   workflowId: string;

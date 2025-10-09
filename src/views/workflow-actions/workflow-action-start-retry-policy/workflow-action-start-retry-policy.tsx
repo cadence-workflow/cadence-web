@@ -17,8 +17,7 @@ import { type Props } from './workflow-action-start-retry-policy.types';
 export default function WorkflowActionStartRetryPolicy({
   control,
   clearErrors,
-  formData: _formData,
-  getErrorMessage,
+  getFieldErrorMessages,
 }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
   const enableRetryPolicy = useWatch({
@@ -58,7 +57,7 @@ export default function WorkflowActionStartRetryPolicy({
                 clearErrors('retryPolicy.expirationIntervalSeconds');
                 onChange(e.currentTarget.checked);
               }}
-              error={Boolean(getErrorMessage('enableRetryPolicy'))}
+              error={Boolean(getFieldErrorMessages('enableRetryPolicy'))}
             >
               Enable retry policy
             </Checkbox>
@@ -82,7 +81,7 @@ export default function WorkflowActionStartRetryPolicy({
                   type="number"
                   onBlur={field.onBlur}
                   error={Boolean(
-                    getErrorMessage('retryPolicy.initialIntervalSeconds')
+                    getFieldErrorMessages('retryPolicy.initialIntervalSeconds')
                   )}
                   size="compact"
                   placeholder="Enter initial interval in seconds"
@@ -107,7 +106,7 @@ export default function WorkflowActionStartRetryPolicy({
                   min={1}
                   onBlur={field.onBlur}
                   error={Boolean(
-                    getErrorMessage('retryPolicy.backoffCoefficient')
+                    getFieldErrorMessages('retryPolicy.backoffCoefficient')
                   )}
                   size="compact"
                   placeholder="Enter backoff coefficient"
@@ -131,7 +130,7 @@ export default function WorkflowActionStartRetryPolicy({
                   min={1}
                   onBlur={field.onBlur}
                   error={Boolean(
-                    getErrorMessage('retryPolicy.maximumIntervalSeconds')
+                    getFieldErrorMessages('retryPolicy.maximumIntervalSeconds')
                   )}
                   size="compact"
                   placeholder="Enter maximum interval in seconds"
@@ -157,7 +156,7 @@ export default function WorkflowActionStartRetryPolicy({
                     clearErrors('retryPolicy.expirationIntervalSeconds');
                     onChange(e.currentTarget.value);
                   }}
-                  error={Boolean(getErrorMessage('limitRetries'))}
+                  error={Boolean(getFieldErrorMessages('limitRetries'))}
                   align="horizontal"
                 >
                   <Radio value="ATTEMPTS">Attempts</Radio>
@@ -183,7 +182,9 @@ export default function WorkflowActionStartRetryPolicy({
                     min={1}
                     onBlur={field.onBlur}
                     error={Boolean(
-                      getErrorMessage('retryPolicy.expirationIntervalSeconds')
+                      getFieldErrorMessages(
+                        'retryPolicy.expirationIntervalSeconds'
+                      )
                     )}
                     size="compact"
                     placeholder="Enter expiration interval in seconds"
@@ -209,7 +210,7 @@ export default function WorkflowActionStartRetryPolicy({
                     min={1}
                     onBlur={field.onBlur}
                     error={Boolean(
-                      getErrorMessage('retryPolicy.maximumAttempts')
+                      getFieldErrorMessages('retryPolicy.maximumAttempts')
                     )}
                     size="compact"
                     placeholder="Enter maximum attempts"

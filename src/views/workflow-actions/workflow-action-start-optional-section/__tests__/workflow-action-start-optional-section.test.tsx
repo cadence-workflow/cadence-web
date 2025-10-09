@@ -34,7 +34,7 @@ describe('WorkflowActionStartForm', () => {
     };
 
     const { user } = await setup({
-      getErrorMessage: (key) => get(formErrors, key)?.message,
+      getFieldErrorMessages: (key) => get(formErrors, key)?.message,
     });
 
     await user.click(screen.getByText('Show Optional Configurations'));
@@ -125,10 +125,10 @@ describe('WorkflowActionStartForm', () => {
 
 type TestProps = {
   formData: Props['formData'];
-  getErrorMessage: Props['getErrorMessage'];
+  getFieldErrorMessages: Props['getFieldErrorMessages'];
 };
 
-function TestWrapper({ formData, getErrorMessage }: TestProps) {
+function TestWrapper({ formData, getFieldErrorMessages }: TestProps) {
   const methods = useForm<Props['formData']>({
     defaultValues: formData,
   });
@@ -138,7 +138,7 @@ function TestWrapper({ formData, getErrorMessage }: TestProps) {
       control={methods.control}
       clearErrors={methods.clearErrors}
       formData={formData}
-      getErrorMessage={getErrorMessage}
+      getFieldErrorMessages={getFieldErrorMessages}
     />
   );
 }
@@ -155,11 +155,16 @@ async function setup({
     enableRetryPolicy: false,
     retryPolicy: undefined,
   },
-  getErrorMessage = () => undefined,
+  getFieldErrorMessages = () => undefined,
 }: Partial<TestProps>) {
   const user = userEvent.setup();
 
-  render(<TestWrapper formData={formData} getErrorMessage={getErrorMessage} />);
+  render(
+    <TestWrapper
+      formData={formData}
+      getFieldErrorMessages={getFieldErrorMessages}
+    />
+  );
 
   return { user };
 }

@@ -26,11 +26,11 @@ export const CRON_VALIDATE_CADENCE_PRESET = {
     maxValue: 23,
   },
   daysOfMonth: {
-    minValue: 0,
+    minValue: 1, // starting from 1 instead of 0, 0 is not standard
     maxValue: 31,
   },
   months: {
-    minValue: 0,
+    minValue: 1, // starting from 1 instead of 0, 0 is not standard
     maxValue: 12,
   },
   daysOfWeek: {

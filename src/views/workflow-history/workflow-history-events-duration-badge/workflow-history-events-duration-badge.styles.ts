@@ -1,8 +1,6 @@
 import { type BadgeOverrides } from 'baseui/badge/types';
 import { type Theme } from 'baseui/theme';
 
-import themeLight from '@/config/theme/theme-light.config';
-
 export const overrides = {
   Badge: {
     Badge: {

@@ -1,6 +1,7 @@
 import { type z } from 'zod';
 
 import type startWorkflowRequestBodySchema from '@/route-handlers/start-workflow/schemas/start-workflow-request-body-schema';
+import { type CronData } from '@/utils/cron-validate/cron-validate.types';
 
 import { type WorkflowActionFormProps } from '../workflow-actions.types';
 
@@ -12,7 +13,9 @@ export type SubFormProps = Pick<
   Props,
   'control' | 'clearErrors' | 'formData'
 > & {
-  getErrorMessage: (field: string) => string | undefined;
+  getFieldErrorMessages: (
+    field: string
+  ) => string | string[] | Record<string, string> | undefined;
 };
 
 export type StartWorkflowFormData = z.infer<typeof startWorkflowFormSchema>;
@@ -20,3 +23,7 @@ export type StartWorkflowFormData = z.infer<typeof startWorkflowFormSchema>;
 export type StartWorkflowSubmissionData = z.infer<
   typeof startWorkflowRequestBodySchema
 >;
+
+export type CronFieldsError = Partial<
+  Record<keyof CronData | 'general', string>
+> | null;

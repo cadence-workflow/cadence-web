@@ -4,9 +4,10 @@ import { DatePicker } from 'baseui/datepicker';
 import { FormControl } from 'baseui/form-control';
 import { Input } from 'baseui/input';
 import { RadioGroup, Radio } from 'baseui/radio';
-import { get } from 'lodash';
-import { Controller, useWatch } from 'react-hook-form';
+import { get, isObjectLike } from 'lodash';
+import { Controller, type GlobalError, useWatch } from 'react-hook-form';
 
+import CronScheduleInput from '@/components/cron-schedule-input/cron-schedule-input';
 import MultiJsonInput from '@/components/multi-json-input/multi-json-input';
 import { WORKER_SDK_LANGUAGES } from '@/route-handlers/start-workflow/start-workflow.constants';
 
@@ -18,14 +19,25 @@ export default function WorkflowActionStartForm({
   fieldErrors,
   control,
   clearErrors,
-  formData: _formData,
+  formData,
+  trigger,
 }: Props) {
   const now = useMemo(() => new Date(), []);
 
-  const getErrorMessage = (field: string) => {
+  const getFieldErrorMessages = (field: string) => {
     const error = get(fieldErrors, field);
     if (Array.isArray(error)) {
       return error.map((err) => err?.message);
+    } else if (isObjectLike(error) && !error.message) {
+      return Object.entries<GlobalError>(error).reduce(
+        (acc, [key, err]) => {
+          if (err?.message) {
+            acc[key] = err?.message;
+          }
+          return acc;
+        },
+        {} as Record<string, string>
+      );
     }
     return error?.message;
   };
@@ -53,7 +65,7 @@ export default function WorkflowActionStartForm({
                 field.onChange(e.target.value);
               }}
               onBlur={field.onBlur}
-              error={Boolean(getErrorMessage('taskList.name'))}
+              error={Boolean(getFieldErrorMessages('taskList.name'))}
               size="compact"
               placeholder="Enter task list name"
             />
@@ -76,7 +88,7 @@ export default function WorkflowActionStartForm({
                 field.onChange(e.target.value);
               }}
               onBlur={field.onBlur}
-              error={Boolean(getErrorMessage('workflowType.name'))}
+              error={Boolean(getFieldErrorMessages('workflowType.name'))}
               size="compact"
               placeholder="Enter workflow type name"
             />
@@ -103,7 +115,7 @@ export default function WorkflowActionStartForm({
               }}
               onBlur={field.onBlur}
               error={Boolean(
-                getErrorMessage('executionStartToCloseTimeoutSeconds')
+                getFieldErrorMessages('executionStartToCloseTimeoutSeconds')
               )}
               placeholder="Enter timeout in seconds"
               size="compact"
@@ -127,7 +139,7 @@ export default function WorkflowActionStartForm({
               onChange={(e) => {
                 onChange(e.currentTarget.value);
               }}
-              error={Boolean(getErrorMessage('workerSDKLanguage'))}
+              error={Boolean(getFieldErrorMessages('workerSDKLanguage'))}
               align="horizontal"
             >
               {WORKER_SDK_LANGUAGES.map((language) => (
@@ -150,7 +162,7 @@ export default function WorkflowActionStartForm({
             placeholder="Enter JSON input"
             value={field.value}
             onChange={field.onChange}
-            error={getErrorMessage('input')}
+            error={getFieldErrorMessages('input')}
             addButtonText="Add argument"
           />
         )}
@@ -173,7 +185,7 @@ export default function WorkflowActionStartForm({
                 clearErrors('cronSchedule');
                 onChange(e.currentTarget.value);
               }}
-              error={Boolean(getErrorMessage('scheduleType'))}
+              error={Boolean(getFieldErrorMessages('scheduleType'))}
               align="horizontal"
             >
               <Radio value="NOW">Now</Radio>
@@ -205,7 +217,7 @@ export default function WorkflowActionStartForm({
                     onChange(undefined);
                   }
                 }}
-                error={Boolean(getErrorMessage('firstRunAt'))}
+                error={Boolean(getFieldErrorMessages('firstRunAt'))}
                 size="compact"
                 timeSelectStart
                 formatString="yyyy/MM/dd HH:mm"
@@ -221,20 +233,15 @@ export default function WorkflowActionStartForm({
           <Controller
             name="cronSchedule"
             control={control}
-            defaultValue=""
-            render={({ field: { ref, ...field } }) => (
-              <Input
-                {...field}
-                // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
-                inputRef={ref}
-                aria-label="Cron Schedule (UTC)"
-                size="compact"
-                onChange={(e) => {
-                  field.onChange(e.target.value);
+            render={({ field }) => (
+              <CronScheduleInput
+                value={field.value}
+                onChange={(value) => {
+                  field.onChange(value);
+                  trigger('cronSchedule');
                 }}
                 onBlur={field.onBlur}
-                error={Boolean(getErrorMessage('cronSchedule'))}
-                placeholder="* * * * *"
+                error={getFieldErrorMessages('cronSchedule')}
               />
             )}
           />
@@ -244,8 +251,8 @@ export default function WorkflowActionStartForm({
       <WorkflowActionStartOptionalSection
         control={control}
         clearErrors={clearErrors}
-        formData={_formData}
-        getErrorMessage={getErrorMessage}
+        formData={formData}
+        getFieldErrorMessages={getFieldErrorMessages}
       />
     </div>
   );
