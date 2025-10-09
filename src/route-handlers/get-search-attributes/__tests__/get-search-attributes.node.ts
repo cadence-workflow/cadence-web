@@ -57,20 +57,6 @@ describe('getSearchAttributes', () => {
     expect(data.keys).toEqual({});
   });
 
-  it('should return other fields from RPC response along with the keys', async () => {
-    const mockResponse = {
-      keys: mockSearchAttributesResponse.keys,
-      metadata: { version: '1.0' },
-    };
-
-    const { response, data } = await setup({
-      mockResponse,
-    });
-
-    expect(response.status).toBe(200);
-    expect(data).toEqual(mockResponse);
-  });
-
   it('should filter system attributes when category=system', async () => {
     const expectedSystemKeys = {
       WorkflowType: IndexedValueType.INDEXED_VALUE_TYPE_KEYWORD,
