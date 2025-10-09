@@ -19,6 +19,7 @@ export default async function getSearchAttributes(
 ): Promise<Response> {
   const decodedParams = decodeUrlParams(requestParams.params) as RouteParams;
   const category = request.nextUrl.searchParams.get('category');
+
   try {
     const searchAttributesResponse =
       await ctx.grpcClusterMethods.getSearchAttributes({});
@@ -40,7 +41,6 @@ export default async function getSearchAttributes(
     }
 
     return NextResponse.json({
-      ...searchAttributesResponse,
       keys: filteredKeys,
     } satisfies GetSearchAttributesResponse);
   } catch (e) {
