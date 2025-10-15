@@ -257,7 +257,9 @@ describe(SearchAttributesInput.name, () => {
       ],
       error: [
         undefined, // First field has no error
-        'Value is required',
+        {
+          value: 'Value is required',
+        },
       ],
     });
 

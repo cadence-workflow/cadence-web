@@ -47,10 +47,12 @@ export default function WorkflowActionsSearchAttributes({
   }, [searchAttributes, value]);
 
   const getFieldError = useCallback(
-    (index: number): boolean => {
-      if (typeof error === 'string') return true;
+    (index: number, field: 'key' | 'value'): boolean => {
+      if (typeof error === 'string') return true; // Global error affects all
       if (Array.isArray(error)) {
-        return Boolean(error[index]);
+        const fieldError = error[index];
+        if (!fieldError) return false;
+        return Boolean(fieldError[field]);
       }
       return false;
     },
@@ -164,7 +166,7 @@ export default function WorkflowActionsSearchAttributes({
   const renderValueInput = useCallback(
     (item: SearchAttributeItem, index: number) => {
       const selectedAttribute = selectedAttributes[index];
-      const inputError = getFieldError(index);
+      const inputError = getFieldError(index, 'value');
       const inputPlaceholder =
         INPUT_PLACEHOLDERS_FOR_VALUE_TYPE[selectedAttribute?.valueType] ||
         'Enter value';
@@ -278,7 +280,7 @@ export default function WorkflowActionsSearchAttributes({
                   }}
                   placeholder="Select attribute"
                   size={SIZE.compact}
-                  error={getFieldError(index)}
+                  error={getFieldError(index, 'key')}
                   overrides={overrides.keySelect}
                   searchable
                   clearable={false}

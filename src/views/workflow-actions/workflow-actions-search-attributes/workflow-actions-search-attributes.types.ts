@@ -17,7 +17,7 @@ export type Props = {
   isLoading?: boolean;
   value?: Array<SearchAttributeItem>;
   onChange: (value: Array<SearchAttributeItem>) => void;
-  error?: string | Array<string | undefined>;
+  error?: string | Array<Partial<Record<'key' | 'value', string>> | undefined>;
   searchAttributes: Array<SearchAttributeOption>;
   addButtonText?: string;
 };
