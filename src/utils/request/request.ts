@@ -18,11 +18,11 @@ export default async function request(
     // propagate user headers to interal APIs
     userHeaders = Object.fromEntries(await headers().entries());
   }
-
+  const requestHeaders = { ...userHeaders, ...(options?.headers || {}) };
   return fetch(absoluteUrl, {
     cache: 'no-cache',
     ...(options || {}),
-    headers: { ...userHeaders, ...(options?.headers || {}) },
+    headers: requestHeaders,
   }).then(async (res) => {
     if (!res.ok) {
       const error = await res.json();

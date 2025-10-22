@@ -2,6 +2,11 @@ import getConfigValue from '@/utils/config/get-config-value';
 
 import request from '../request';
 jest.mock('@/utils/config/get-config-value');
+jest.mock('next/headers', () => ({
+  headers: jest.fn().mockReturnValue({
+    entries: jest.fn().mockReturnValue([]),
+  }),
+}));
 
 describe('request on node env', () => {
   afterEach(() => {
@@ -24,6 +29,7 @@ describe('request on node env', () => {
     await request(url, options);
     expect(fetch).toHaveBeenCalledWith(`http://127.0.0.1:${port}` + url, {
       cache: 'no-cache',
+      headers: {},
       ...options,
     });
   });

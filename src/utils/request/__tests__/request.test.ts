@@ -1,6 +1,12 @@
 import request from '../request';
 import { RequestError } from '../request-error';
 
+jest.mock('next/headers', () => ({
+  headers: jest.fn().mockReturnValue({
+    entries: jest.fn().mockReturnValue([]),
+  }),
+}));
+
 describe('request on browser env', () => {
   afterEach(() => {
     const mockedFetch = global.fetch as jest.MockedFunction<
@@ -21,14 +27,22 @@ describe('request on browser env', () => {
     const url = 'http://example.com';
     const options = { method: 'GET' };
     await request(url, options);
-    expect(fetch).toHaveBeenCalledWith(url, { cache: 'no-cache', ...options });
+    expect(fetch).toHaveBeenCalledWith(url, {
+      cache: 'no-cache',
+      headers: {},
+      ...options,
+    });
   });
 
   it('should call fetch with relative URL on client and no-cache option', async () => {
     const url = '/api/data';
     const options = { method: 'POST' };
     await request(url, options);
-    expect(fetch).toHaveBeenCalledWith(url, { cache: 'no-cache', ...options });
+    expect(fetch).toHaveBeenCalledWith(url, {
+      cache: 'no-cache',
+      headers: {},
+      ...options,
+    });
   });
 
   it('should return error if request.ok is false', async () => {
