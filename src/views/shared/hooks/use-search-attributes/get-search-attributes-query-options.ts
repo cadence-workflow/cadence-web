@@ -19,11 +19,12 @@ export default function getSearchAttributesQueryOptions({
   return {
     queryKey: ['searchAttributes', { cluster, category }],
     queryFn: ({ queryKey: [_, params] }) => {
-      const url = `/api/clusters/${params.cluster}/search-attributes?${queryString.stringify(
-        {
+      const url = queryString.stringifyUrl({
+        url: `/api/clusters/${params.cluster}/search-attributes`,
+        query: {
           category: params.category,
-        }
-      )}`;
+        },
+      });
       return request(url).then((res) => res.json());
     },
   };
