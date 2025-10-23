@@ -4,7 +4,8 @@ import { DatePicker } from 'baseui/datepicker';
 import { FormControl } from 'baseui/form-control';
 import { Input } from 'baseui/input';
 import { RadioGroup, Radio } from 'baseui/radio';
-import { get, isObjectLike } from 'lodash';
+import get from 'lodash/get';
+import isObjectLike from 'lodash/isObjectLike';
 import { Controller, type GlobalError, useWatch } from 'react-hook-form';
 
 import CronScheduleInput from '@/components/cron-schedule-input/cron-schedule-input';

@@ -1,6 +1,6 @@
 import { createElement } from 'react';
 
-import { omit } from 'lodash';
+import omit from 'lodash/omit';
 
 import DateFilterV2 from '@/components/date-filter-v2/date-filter-v2';
 import { type DateFilterValue } from '@/components/date-filter-v2/date-filter-v2.types';

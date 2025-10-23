@@ -1,5 +1,4 @@
 import { type Theme } from 'baseui';
-import { type ButtonOverrides } from 'baseui/button';
 import { type PopoverOverrides } from 'baseui/popover';
 import { type StyleObject } from 'styletron-react';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { get } from 'lodash';
+import get from 'lodash/get';
 import { useForm } from 'react-hook-form';
 
 import { fireEvent, render, screen, userEvent } from '@/test-utils/rtl';

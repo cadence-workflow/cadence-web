@@ -1,6 +1,6 @@
 import { status } from '@grpc/grpc-js';
 import crypto from 'crypto';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import { NextResponse, type NextRequest } from 'next/server';
 
 import dayjs from '@/utils/datetime/dayjs';
