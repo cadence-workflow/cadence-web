@@ -2,13 +2,11 @@
 import { createContext, useCallback, useState } from 'react';
 
 import {
-  clearLocalStorageValue,
   getLocalStorageValue,
   setLocalStorageValue,
 } from '@/utils/local-storage';
 
 import workflowHistoryUserPreferencesConfig from '../config/workflow-history-user-preferences.config';
-import { type WorkflowHistoryEventFilteringType } from '../workflow-history-filters-type/workflow-history-filters-type.types';
 
 import { type WorkflowHistoryContextType } from './workflow-history-context-provider.types';
 
