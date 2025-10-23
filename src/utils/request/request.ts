@@ -1,3 +1,5 @@
+import { headers } from 'next/headers';
+
 import getConfigValue from '../config/get-config-value';
 
 import { RequestError } from './request-error';
@@ -13,10 +15,10 @@ export default async function request(
   if (isOnServer && isRelativeUrl) {
     const port = await getConfigValue('CADENCE_WEB_PORT');
     absoluteUrl = `http://127.0.0.1:${port}${url}`;
-    // propagate user headers to interal APIs
-    userHeaders = Object.fromEntries(
-      await (await import('next/headers')).headers().entries()
-    );
+    // propagate user headers from browser to internal APIs
+    userHeaders = Object.fromEntries(await headers().entries());
+    // eslint-disable-next-line no-console
+    console.log('userHeaders', Object.keys(userHeaders));
   }
   const requestHeaders = { ...userHeaders, ...(options?.headers || {}) };
   return fetch(absoluteUrl, {
