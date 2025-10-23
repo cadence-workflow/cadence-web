@@ -1,5 +1,3 @@
-import { headers } from 'next/headers';
-
 import getConfigValue from '../config/get-config-value';
 
 import { RequestError } from './request-error';
@@ -16,7 +14,9 @@ export default async function request(
     const port = await getConfigValue('CADENCE_WEB_PORT');
     absoluteUrl = `http://127.0.0.1:${port}${url}`;
     // propagate user headers from browser to server API calls
-    userHeaders = Object.fromEntries(await headers().entries());
+    userHeaders = Object.fromEntries(
+      await (await import('next/headers')).headers().entries()
+    );
   }
   const requestHeaders = { ...userHeaders, ...(options?.headers || {}) };
   return fetch(absoluteUrl, {
