@@ -26,13 +26,10 @@ export const styled = {
     })
   ),
 
-  ExamplesList: createStyled(
-    'div',
-    ({ $theme }: { $theme: Theme }): StyleObject => ({
-      display: 'flex',
-      flexDirection: 'column',
-    })
-  ),
+  ExamplesList: createStyled('div', {
+    display: 'flex',
+    flexDirection: 'column',
+  }),
 
   ExampleItem: createStyled(
     'div',
