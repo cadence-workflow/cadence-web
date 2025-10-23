@@ -17,3 +17,5 @@ export const INPUT_PLACEHOLDERS_FOR_VALUE_TYPE: Record<
   INDEXED_VALUE_TYPE_KEYWORD: 'Enter value',
   INDEXED_VALUE_TYPE_INVALID: 'Enter value',
 };
+
+export const DATE_TIME_FORMAT = 'yyyy-MM-dd HH:mm:ss';

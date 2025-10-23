@@ -1,18 +1,19 @@
 'use client';
 import React, { useCallback, useMemo } from 'react';
 
-import { Button, SHAPE, SIZE } from 'baseui/button';
+import { Button } from 'baseui/button';
 import { DatePicker } from 'baseui/datepicker';
 import { FormControl } from 'baseui/form-control';
 import { Input } from 'baseui/input';
 import { Select } from 'baseui/select';
-import { MdDeleteOutline } from 'react-icons/md';
+import { MdAdd, MdDeleteOutline } from 'react-icons/md';
 
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 
 import {
   INPUT_PLACEHOLDERS_FOR_VALUE_TYPE,
   BOOLEAN_OPTIONS,
+  DATE_TIME_FORMAT,
 } from './workflow-actions-search-attributes.constants';
 import {
   cssStyles,
@@ -36,7 +37,7 @@ export default function WorkflowActionsSearchAttributes({
   const { cls } = useStyletronClasses(cssStyles);
 
   const selectedAttributes = useMemo(() => {
-    // return attibutes sorted that exists in value in the same order
+    // return attributes sorted that exists in value in the same order
     return value.reduce((acc, item) => {
       const attribute = searchAttributes.find((attr) => attr.name === item.key);
       if (attribute) {
@@ -63,7 +64,6 @@ export default function WorkflowActionsSearchAttributes({
   const displayValue = useMemo((): SearchAttributeItem[] => {
     const items = value || [];
 
-    // Always show at least one empty row if no entries exist
     if (items.length === 0) {
       return [{ key: '', value: '' }];
     }
@@ -175,7 +175,7 @@ export default function WorkflowActionsSearchAttributes({
       const commonInputProps = {
         'aria-label': 'Search attribute value',
         placeholder: inputPlaceholder,
-        size: SIZE.compact,
+        size: 'compact',
         error: inputError,
         overrides: overrides.valueInput,
       };
@@ -187,7 +187,7 @@ export default function WorkflowActionsSearchAttributes({
               {...commonInputProps}
               options={BOOLEAN_OPTIONS}
               value={
-                item.value !== undefined || item.value !== null
+                item.value !== undefined && item.value !== null
                   ? BOOLEAN_OPTIONS.filter(
                       (option) => option.id === String(item.value)
                     )
@@ -218,7 +218,7 @@ export default function WorkflowActionsSearchAttributes({
                 }
               }}
               timeSelectStart
-              formatString="yyyy-MM-dd HH:mm:ss"
+              formatString={DATE_TIME_FORMAT}
             />
           );
 
@@ -279,7 +279,7 @@ export default function WorkflowActionsSearchAttributes({
                     handleKeyChange(index, newKey);
                   }}
                   placeholder="Select attribute"
-                  size={SIZE.compact}
+                  size="compact"
                   error={getFieldError(index, 'key')}
                   overrides={overrides.keySelect}
                   searchable
@@ -296,14 +296,13 @@ export default function WorkflowActionsSearchAttributes({
               <div className={cls.buttonContainer}>
                 <Button
                   type="button"
-                  size={SIZE.mini}
+                  size="mini"
                   kind="tertiary"
-                  shape={SHAPE.circle}
+                  shape="circle"
                   onClick={() => {
                     handleDeleteAttribute(index);
                   }}
                   disabled={!showDeleteButton}
-                  className={cls.deleteButton}
                   aria-label={deleteButtonLabel}
                 >
                   <MdDeleteOutline size={16} />
@@ -316,13 +315,12 @@ export default function WorkflowActionsSearchAttributes({
         <div className={cls.addButtonContainer}>
           <Button
             type="button"
-            size={SIZE.mini}
+            size="mini"
             kind="secondary"
-            shape={SHAPE.pill}
+            shape="pill"
             onClick={handleAddAttribute}
             disabled={!hasMoreSearchAttributes || !hasCompleteFields}
-            className={cls.addButton}
-            startEnhancer={<span className={cls.plusIcon}>+</span>}
+            startEnhancer={<MdAdd size={16} />}
           >
             {addButtonText}
           </Button>

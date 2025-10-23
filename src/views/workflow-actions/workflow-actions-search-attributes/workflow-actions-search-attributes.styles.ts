@@ -30,14 +30,14 @@ const cssStylesObj = {
   container: (theme: Theme) => ({
     display: 'flex',
     flexDirection: 'column',
-    gap: '16px',
+    gap: theme.sizing.scale600,
     borderLeft: `2px solid ${theme.colors.borderOpaque}`,
-    paddingLeft: '16px',
+    paddingLeft: theme.sizing.scale600,
   }),
-  attributeRow: () => ({
+  attributeRow: (theme: Theme) => ({
     display: 'flex',
     alignItems: 'flex-start',
-    gap: '8px',
+    gap: theme.sizing.scale300,
     width: '100%',
   }),
   keyContainer: () => ({
@@ -47,32 +47,17 @@ const cssStylesObj = {
     flex: '1',
     minWidth: '0', // Allow shrinking
   }),
-  buttonContainer: () => ({
+  buttonContainer: (theme: Theme) => ({
     display: 'flex',
     alignItems: 'flex-start',
     justifyContent: 'center',
     minWidth: '40px',
-    paddingTop: '4px',
-  }),
-  deleteButton: () => ({
-    padding: '8px',
-    borderRadius: '8px',
+    paddingTop: theme.sizing.scale100,
   }),
   addButtonContainer: () => ({
     display: 'flex',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
-  }),
-  addButton: () => ({
-    padding: '6px 12px',
-    fontSize: '12px',
-    fontWeight: '500',
-    lineHeight: '16px',
-  }),
-  plusIcon: () => ({
-    fontSize: '16px',
-    fontWeight: '500',
-    lineHeight: '1',
   }),
 } satisfies StyletronCSSObject;
 

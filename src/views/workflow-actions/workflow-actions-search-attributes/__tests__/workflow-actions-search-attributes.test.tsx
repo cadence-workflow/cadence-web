@@ -10,7 +10,7 @@ import type {
   SearchAttributeOption,
 } from '../workflow-actions-search-attributes.types';
 
-const mocksearchAttributes: Array<SearchAttributeOption> = [
+const mockSearchAttributes: Array<SearchAttributeOption> = [
   {
     name: 'WorkflowType',
     valueType: IndexedValueType.INDEXED_VALUE_TYPE_STRING,
@@ -142,7 +142,7 @@ describe(SearchAttributesInput.name, () => {
   });
 
   it('should render boolean input as dropdown', async () => {
-    const { user, mockOnChange } = setup({
+    const { user } = setup({
       value: [{ key: 'CustomBoolField', value: '' }],
     });
 
@@ -351,7 +351,7 @@ function setup(props: Partial<Props> = {}) {
 
   const defaultProps: Props = {
     onChange: mockOnChange,
-    searchAttributes: mocksearchAttributes,
+    searchAttributes: mockSearchAttributes,
     ...props,
   };
 
