@@ -47,7 +47,7 @@ describe(SearchAttributesInput.name, () => {
     expect(valueInputs).toHaveLength(1);
     expect(valueInputs[0]).toHaveValue('');
 
-    expect(screen.getByText('Add Search Attribute')).toBeInTheDocument();
+    expect(screen.getByText('Add search attribute')).toBeInTheDocument();
   });
 
   it('should render with custom label and button text', () => {
@@ -187,7 +187,7 @@ describe(SearchAttributesInput.name, () => {
       value: [{ key: 'WorkflowType', value: 'MyWorkflow' }],
     });
 
-    await user.click(screen.getByText('Add Search Attribute'));
+    await user.click(screen.getByText('Add search attribute'));
 
     expect(mockOnChange).toHaveBeenCalledWith([
       { key: 'WorkflowType', value: 'MyWorkflow' },
@@ -200,7 +200,7 @@ describe(SearchAttributesInput.name, () => {
       value: [{ key: 'WorkflowType', value: '' }],
     });
 
-    expect(screen.getByText('Add Search Attribute')).toBeDisabled();
+    expect(screen.getByText('Add search attribute')).toBeDisabled();
   });
 
   it('should delete attribute when delete button is clicked', async () => {
@@ -329,7 +329,7 @@ describe(SearchAttributesInput.name, () => {
     });
 
     // Add button should be disabled since all 4 available attributes are selected
-    expect(screen.getByText('Add Search Attribute')).toBeDisabled();
+    expect(screen.getByText('Add search attribute')).toBeDisabled();
   });
 
   it('should enable add button when not all attributes are selected and current fields are complete', () => {
@@ -341,7 +341,7 @@ describe(SearchAttributesInput.name, () => {
     });
 
     // Add button should be enabled since only 2 out of 4 available attributes are selected
-    expect(screen.getByText('Add Search Attribute')).not.toBeDisabled();
+    expect(screen.getByText('Add search attribute')).not.toBeDisabled();
   });
 });
 

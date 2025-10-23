@@ -32,7 +32,7 @@ export default function WorkflowActionsSearchAttributes({
   onChange,
   error,
   searchAttributes,
-  addButtonText = 'Add Search Attribute',
+  addButtonText = 'Add search attribute',
 }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
 
@@ -175,7 +175,7 @@ export default function WorkflowActionsSearchAttributes({
       const commonInputProps = {
         'aria-label': 'Search attribute value',
         placeholder: inputPlaceholder,
-        size: 'compact',
+        size: 'compact' as const,
         error: inputError,
         overrides: overrides.valueInput,
       };
