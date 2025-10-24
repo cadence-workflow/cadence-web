@@ -140,6 +140,8 @@ export default function WorkflowActionsSearchAttributes({
 
       if (valueType === 'INDEXED_VALUE_TYPE_INT') {
         processedValue = parseInt(newValue, 10);
+      } else if (valueType === 'INDEXED_VALUE_TYPE_DOUBLE') {
+        processedValue = parseFloat(newValue);
       } else if (valueType === 'INDEXED_VALUE_TYPE_BOOL') {
         processedValue = newValue === 'true';
       }
