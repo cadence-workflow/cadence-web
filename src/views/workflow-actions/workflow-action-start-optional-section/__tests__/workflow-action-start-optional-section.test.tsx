@@ -49,7 +49,7 @@ describe('WorkflowActionStartForm', () => {
     );
 
     expect(
-      screen.getByRole('textbox', { name: 'Search Attributes' })
+      screen.getByRole('textbox', { name: 'Search attribute value' })
     ).toHaveAttribute('aria-invalid', 'true');
   });
 
@@ -61,11 +61,18 @@ describe('WorkflowActionStartForm', () => {
     });
 
     await user.click(toggleButton);
+    const hideToggleButton = await screen.findByRole('button', {
+      name: /Hide Optional Configurations/i,
+    });
 
-    expect(toggleButton).toHaveTextContent('Hide Optional Configurations');
-    await user.click(toggleButton);
+    expect(hideToggleButton).toBeInTheDocument();
 
-    expect(toggleButton).toHaveTextContent('Show Optional Configurations');
+    await user.click(hideToggleButton);
+    expect(
+      await screen.findByRole('button', {
+        name: /Show Optional Configurations/i,
+      })
+    ).toBeInTheDocument();
   });
 
   it('handles fields changes', async () => {
@@ -110,15 +117,6 @@ describe('WorkflowActionStartForm', () => {
       target: { value: JSON.stringify({ memo: 'test' }) },
     });
     expect(memoInput).toHaveValue(JSON.stringify({ memo: 'test' }));
-
-    // Should change search attributes
-    const searchAttributesInput = screen.getByLabelText('Search Attributes');
-    fireEvent.change(searchAttributesInput, {
-      target: { value: JSON.stringify({ attr: 'value' }) },
-    });
-    expect(searchAttributesInput).toHaveValue(
-      JSON.stringify({ attr: 'value' })
-    );
   });
 });
 
@@ -138,6 +136,7 @@ function TestWrapper({ formData, fieldErrors }: TestProps) {
       clearErrors={methods.clearErrors}
       formData={formData}
       fieldErrors={fieldErrors}
+      cluster="test-cluster"
     />
   );
 }
