@@ -26,8 +26,8 @@ export const mockActiveActiveDomain: ActiveActiveDomain = {
   historyArchivalUri: '',
   visibilityArchivalStatus: 'ARCHIVAL_STATUS_DISABLED',
   visibilityArchivalUri: '',
-  activeClusterName: '',
-  failoverVersion: '-24',
+  activeClusterName: 'cluster0',
+  failoverVersion: '2',
   isGlobalDomain: true,
   failoverInfo: null,
   isolationGroups: {
@@ -40,15 +40,21 @@ export const mockActiveActiveDomain: ActiveActiveDomain = {
     queueConfig: null,
   },
   activeClusters: {
-    regionToCluster: {
-      region0: {
-        activeClusterName: 'cluster0',
-        failoverVersion: '0',
-      },
-      region1: {
-        activeClusterName: 'cluster1',
-        failoverVersion: '2',
+    activeClustersByClusterAttribute: {
+      region: {
+        clusterAttributes: {
+          region0: {
+            activeClusterName: 'cluster0',
+            failoverVersion: '0',
+          },
+          region1: {
+            activeClusterName: 'cluster1',
+            failoverVersion: '2',
+          },
+        },
       },
     },
+    // TODO @adhitya.mamallan: this needs to be removed when regionToCluster is removed from the IDL
+    regionToCluster: {},
   },
 };

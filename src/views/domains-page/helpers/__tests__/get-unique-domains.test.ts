@@ -6,10 +6,6 @@ import getUniqueDomains from '../get-unique-domains';
 
 jest.mock('@/views/shared/active-active/helpers/is-active-active-domain');
 
-jest.mock(
-  '@/views/shared/active-active/helpers/get-default-cluster-for-active-active-domain'
-);
-
 describe('getUniqueDomains', () => {
   it('should return unique domains based on id-name-activeClusterName', () => {
     const domains: DomainData[] = [

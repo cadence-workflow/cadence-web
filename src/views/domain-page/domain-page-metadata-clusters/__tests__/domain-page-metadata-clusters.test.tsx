@@ -1,22 +1,16 @@
 import { render, screen } from '@/test-utils/rtl';
 
+import { mockActiveActiveDomain } from '@/views/shared/active-active/__fixtures__/active-active-domain';
+
 import {
   mockDomainDescription,
   mockDomainDescriptionSingleCluster,
 } from '../../__fixtures__/domain-description';
-import * as isActiveClusterModule from '../../helpers/is-active-cluster';
 import DomainPageMetadataClusters from '../domain-page-metadata-clusters';
 
-jest.mock('../../helpers/is-active-cluster', () => ({
-  __esModule: true,
-  default: jest.fn().mockReturnValue(false),
-}));
+jest.mock('../../helpers/get-cluster-replication-status-label');
 
 describe(DomainPageMetadataClusters.name, () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   it('renders plain text for single cluster', async () => {
     render(
       <DomainPageMetadataClusters {...mockDomainDescriptionSingleCluster} />
@@ -26,12 +20,7 @@ describe(DomainPageMetadataClusters.name, () => {
     expect(screen.queryAllByRole('link')).toHaveLength(0);
   });
 
-  it('renders active/passive labels and links for multiple clusters', () => {
-    jest
-      .spyOn(isActiveClusterModule, 'default')
-      .mockReturnValueOnce(true) // cluster_1 is active
-      .mockReturnValueOnce(false); // cluster_2 is passive
-
+  it('renders active/passive labels and links for active-passive domains', () => {
     const { container } = render(
       <DomainPageMetadataClusters {...mockDomainDescription} />
     );
@@ -50,6 +39,27 @@ describe(DomainPageMetadataClusters.name, () => {
       expect(link).toHaveAttribute(
         'href',
         `/domains/${mockDomainDescription.name}/${mockDomainDescription.clusters[i].clusterName}`
+      );
+    });
+  });
+
+  it('renders primary label only for active cluster in active-active domains', () => {
+    const { container } = render(
+      <DomainPageMetadataClusters {...mockActiveActiveDomain} />
+    );
+
+    expect(container).toHaveTextContent('cluster0 (primary), cluster1');
+
+    const links = screen.queryAllByRole('link');
+    expect(links).toHaveLength(2);
+
+    links.forEach((link, i) => {
+      expect(link.innerHTML).toBe(
+        mockActiveActiveDomain.clusters[i].clusterName
+      );
+      expect(link).toHaveAttribute(
+        'href',
+        `/domains/${mockActiveActiveDomain.name}/${mockActiveActiveDomain.clusters[i].clusterName}`
       );
     });
   });
