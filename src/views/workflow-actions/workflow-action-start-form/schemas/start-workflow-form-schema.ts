@@ -55,17 +55,18 @@ const baseSchema = z.object({
       }
     }, 'Memo must be valid JSON Object'),
   searchAttributes: z
-    .string()
-    .optional()
-    .refine((val) => {
-      if (!val || val.trim() === '') return true;
-      try {
-        JSON.parse(val);
-        return true;
-      } catch {
-        return false;
-      }
-    }, 'Search Attributes must be valid JSON Object'),
+    .array(
+      z.object({
+        key: z.string().min(1, 'Attribute key is required'),
+        value: z.union([
+          z.string().min(1, 'Attribute value is required'),
+          z.number(),
+          z.boolean(),
+        ]),
+      })
+    )
+    .optional(),
+
   header: z
     .string()
     .optional()

@@ -1,5 +1,6 @@
 import { type Theme } from 'baseui';
-import { type TextareaOverrides } from 'baseui/textarea';
+import { type InputOverrides } from 'baseui/input';
+import { type SelectOverrides } from 'baseui/select';
 import { type StyleObject } from 'styletron-react';
 
 import type {
@@ -8,46 +9,56 @@ import type {
 } from '@/hooks/use-styletron-classes';
 
 export const overrides = {
-  jsonInput: {
-    Input: {
-      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
-        ...$theme.typography.MonoParagraphSmall,
-        '::placeholder': {
-          ...$theme.typography.ParagraphSmall,
-        },
+  keySelect: {
+    Root: {
+      style: (): StyleObject => ({
+        flex: '0 0 200px', // Fixed width, no grow/shrink
       }),
     },
-  } satisfies TextareaOverrides,
+  } satisfies SelectOverrides,
+  valueInput: {
+    Root: {
+      style: (): StyleObject => ({
+        flex: '1',
+        minWidth: '0', // Allow shrinking
+      }),
+    },
+  } satisfies InputOverrides,
 };
 
 const cssStylesObj = {
-  container: (theme) => ({
+  container: (theme: Theme) => ({
     display: 'flex',
     flexDirection: 'column',
     gap: theme.sizing.scale600,
     borderLeft: `2px solid ${theme.colors.borderOpaque}`,
     paddingLeft: theme.sizing.scale600,
   }),
-  inputRow: (theme) => ({
+  attributeRow: (theme: Theme) => ({
     display: 'flex',
-    gap: theme.sizing.scale300,
     alignItems: 'flex-start',
+    gap: theme.sizing.scale300,
+    width: '100%',
   }),
-  inputContainer: {
-    flex: 1,
-  },
-  buttonContainer: (theme) => ({
+  keyContainer: () => ({
+    flex: '0 0 200px', // Fixed width, no grow/shrink
+  }),
+  valueContainer: () => ({
+    flex: '1',
+    minWidth: '0', // Allow shrinking
+  }),
+  buttonContainer: (theme: Theme) => ({
     display: 'flex',
     alignItems: 'flex-start',
     justifyContent: 'center',
     minWidth: '40px',
     paddingTop: theme.sizing.scale100,
   }),
-  addButtonContainer: {
+  addButtonContainer: () => ({
     display: 'flex',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
-  },
+  }),
 } satisfies StyletronCSSObject;
 
 export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> =

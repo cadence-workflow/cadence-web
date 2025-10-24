@@ -53,6 +53,13 @@ export default function transformStartWorkflowFormToSubmission(
     }),
   };
 
+  const searchAttributesObject =
+    formData?.searchAttributes && formData.searchAttributes.length > 0
+      ? Object.fromEntries(
+          formData.searchAttributes.map((item) => [item.key, item.value])
+        )
+      : undefined;
+
   return {
     ...basicFormData,
     ...conditionalFormData,
@@ -60,9 +67,7 @@ export default function transformStartWorkflowFormToSubmission(
       ?.filter((v) => v !== '')
       .map((v) => JSON.parse(v) as Json),
     memo: formData?.memo ? JSON.parse(formData?.memo) : undefined,
-    searchAttributes: formData?.searchAttributes
-      ? JSON.parse(formData?.searchAttributes)
-      : undefined,
+    searchAttributes: searchAttributesObject,
     header: formData?.header ? JSON.parse(formData?.header) : undefined,
   };
 }

@@ -232,7 +232,10 @@ describe('transformStartWorkflowFormToSubmission', () => {
   it('should parse searchAttributes JSON', () => {
     const formData: StartWorkflowFormData = {
       ...baseFormData,
-      searchAttributes: '{"attr1": "value1", "attr2": 456}',
+      searchAttributes: [
+        { key: 'attr1', value: 'value1' },
+        { key: 'attr2', value: 456 },
+      ],
     };
 
     const result = transformStartWorkflowFormToSubmission(formData);
