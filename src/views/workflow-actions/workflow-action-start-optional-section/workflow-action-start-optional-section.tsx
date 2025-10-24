@@ -12,6 +12,7 @@ import { MdExpandMore, MdExpandLess } from 'react-icons/md';
 
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 
+import getFieldErrorMessage from '../workflow-action-start-form/helpers/get-field-error-message';
 import WorkflowActionStartRetryPolicy from '../workflow-action-start-retry-policy/workflow-action-start-retry-policy';
 
 import { workflowIdReusePolicyOptions } from './workflow-action-start-optional-section.constants';
@@ -25,7 +26,7 @@ export default function WorkflowActionStartOptionalSection({
   control,
   clearErrors,
   formData,
-  getFieldErrorMessages,
+  fieldErrors,
 }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
 
@@ -72,7 +73,7 @@ export default function WorkflowActionStartOptionalSection({
                   field.onChange(e.target.value);
                 }}
                 onBlur={field.onBlur}
-                error={Boolean(getFieldErrorMessages('workflowId'))}
+                error={Boolean(getFieldErrorMessage(fieldErrors, 'workflowId'))}
                 size="compact"
                 placeholder="Enter workflow ID"
               />
@@ -97,7 +98,7 @@ export default function WorkflowActionStartOptionalSection({
                     onChange(params.value[0]?.id || undefined);
                   }}
                   error={Boolean(
-                    getFieldErrorMessages('workflowIdReusePolicy')
+                    getFieldErrorMessage(fieldErrors, 'workflowIdReusePolicy')
                   )}
                   size="compact"
                   placeholder="Select reuse policy"
@@ -112,7 +113,7 @@ export default function WorkflowActionStartOptionalSection({
           control={control}
           clearErrors={clearErrors}
           formData={formData}
-          getFieldErrorMessages={getFieldErrorMessages}
+          fieldErrors={fieldErrors}
         />
 
         <FormControl label="Header (optional)">
@@ -131,7 +132,7 @@ export default function WorkflowActionStartOptionalSection({
                 }}
                 overrides={overrides.jsonInput}
                 onBlur={field.onBlur}
-                error={Boolean(getFieldErrorMessages('header'))}
+                error={Boolean(getFieldErrorMessage(fieldErrors, 'header'))}
                 size="compact"
                 placeholder='{"key":"value"}'
                 rows={3}
@@ -156,7 +157,7 @@ export default function WorkflowActionStartOptionalSection({
                 }}
                 overrides={overrides.jsonInput}
                 onBlur={field.onBlur}
-                error={Boolean(getFieldErrorMessages('memo'))}
+                error={Boolean(getFieldErrorMessage(fieldErrors, 'memo'))}
                 size="compact"
                 placeholder='{"key":"value"}'
                 rows={3}
@@ -181,7 +182,9 @@ export default function WorkflowActionStartOptionalSection({
                 }}
                 overrides={overrides.jsonInput}
                 onBlur={field.onBlur}
-                error={Boolean(getFieldErrorMessages('searchAttributes'))}
+                error={Boolean(
+                  getFieldErrorMessage(fieldErrors, 'searchAttributes')
+                )}
                 size="compact"
                 placeholder='{"key":"value"}'
                 rows={3}

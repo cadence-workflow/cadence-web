@@ -11,12 +11,8 @@ export type Props = WorkflowActionFormProps<StartWorkflowFormData>;
 
 export type SubFormProps = Pick<
   Props,
-  'control' | 'clearErrors' | 'formData'
-> & {
-  getFieldErrorMessages: (
-    field: string
-  ) => string | string[] | Record<string, string> | undefined;
-};
+  'control' | 'clearErrors' | 'formData' | 'fieldErrors'
+>;
 
 export type StartWorkflowFormData = z.infer<typeof startWorkflowFormSchema>;
 
