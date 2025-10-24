@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import get from 'lodash/get';
 
 /**
  * Extracts a simple error message from react-hook-form field errors.

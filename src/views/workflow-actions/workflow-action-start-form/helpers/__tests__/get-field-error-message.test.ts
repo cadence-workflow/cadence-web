@@ -1,5 +1,3 @@
-import { type FieldErrors } from 'react-hook-form';
-
 import getFieldErrorMessage from '../get-field-error-message';
 
 describe('getFieldErrorMessage', () => {

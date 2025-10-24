@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import get from 'lodash/get';
 
 /**
  * Extracts error messages from array field errors for multi-json-input components.
