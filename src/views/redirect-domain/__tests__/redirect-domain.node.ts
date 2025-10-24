@@ -6,10 +6,6 @@ import RedirectDomain from '../redirect-domain';
 
 jest.mock('@/views/shared/active-active/helpers/is-active-active-domain');
 
-jest.mock(
-  '@/views/shared/active-active/helpers/get-default-cluster-for-active-active-domain'
-);
-
 const MOCK_ALL_DOMAINS: Array<DomainData> = [
   getDomainObj({
     name: 'mock-domain-unique',
@@ -78,7 +74,7 @@ describe(RedirectDomain.name, () => {
       expectedRedirect: '/domains/mock-domain-unique/mock-cluster-1',
     },
     {
-      name: 'should redirect to domain page of default UI cluster for an active-active domain',
+      name: 'should redirect to domain page of active cluster for an active-active domain',
       urlParams: ['mock-domain-active-active'],
       expectedRedirect: '/domains/mock-domain-active-active/cluster0',
     },

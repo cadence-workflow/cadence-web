@@ -13,7 +13,9 @@ const domainWithEmptyActiveClusters = getDomainObj({
   id: 'test-empty-active-clusters-id',
   name: 'test-empty-active-clusters',
   activeClusters: {
+    // TODO @adhitya.mamallan: this needs to be removed when regionToCluster is removed from the IDL
     regionToCluster: {},
+    activeClustersByClusterAttribute: {},
   },
 });
 
@@ -30,7 +32,7 @@ const domainWithUndefinedActiveClusters = getDomainObj({
 });
 
 describe(isActiveActiveDomain.name, () => {
-  it('should return true for a domain with active clusters and non-empty regionToCluster', () => {
+  it('should return true for a domain with active clusters and non-empty cluster attributes', () => {
     const result = isActiveActiveDomain(mockActiveActiveDomain);
     expect(result).toBe(true);
   });
@@ -40,7 +42,7 @@ describe(isActiveActiveDomain.name, () => {
     expect(result).toBe(false);
   });
 
-  it('should return false for a domain with empty regionToCluster object', () => {
+  it('should return false for a domain with empty cluster attributes object', () => {
     const result = isActiveActiveDomain(domainWithEmptyActiveClusters);
     expect(result).toBe(false);
   });
@@ -53,22 +55,5 @@ describe(isActiveActiveDomain.name, () => {
   it('should return false for a domain with null activeClusters property', () => {
     const result = isActiveActiveDomain(domainWithNullActiveClusters);
     expect(result).toBe(false);
-  });
-
-  it('should return true for a domain with at least one region in regionToCluster', () => {
-    const domainWithSingleRegion = getDomainObj({
-      id: 'test-single-region-id',
-      name: 'test-single-region',
-      activeClusters: {
-        regionToCluster: {
-          region0: {
-            activeClusterName: 'cluster0',
-            failoverVersion: '0',
-          },
-        },
-      },
-    });
-    const result = isActiveActiveDomain(domainWithSingleRegion);
-    expect(result).toBe(true);
   });
 });
