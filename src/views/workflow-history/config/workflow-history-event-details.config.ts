@@ -21,6 +21,11 @@ const workflowHistoryEventDetailsConfig = [
     hide: () => true,
   },
   {
+    name: 'Filter invalid/unset CronOverlapPolicy',
+    path: 'cronOverlapPolicy',
+    hide: ({ value }) => !value || value === 'CRON_OVERLAP_POLICY_INVALID',
+  },
+  {
     name: 'Not set placeholder',
     customMatcher: ({ value, path }) => {
       return (
