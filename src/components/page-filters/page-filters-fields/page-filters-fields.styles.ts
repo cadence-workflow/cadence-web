@@ -10,7 +10,6 @@ export const styled = {
       flexDirection: 'column',
       flexWrap: 'wrap',
       gap: $theme.sizing.scale500,
-      marginBottom: $theme.sizing.scale700,
       [$theme.mediaQuery.medium]: {
         flexDirection: 'row',
         alignItems: 'flex-end',

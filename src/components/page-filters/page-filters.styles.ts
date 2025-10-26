@@ -7,10 +7,12 @@ export const styled = {
       display: 'flex',
       flexDirection: 'column',
       gap: $theme.sizing.scale500,
-      marginBottom: $theme.sizing.scale500,
       [$theme.mediaQuery.medium]: {
         flexDirection: 'row',
       },
     })
   ),
+  FiltersContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+    marginTop: $theme.sizing.scale500,
+  })),
 };
