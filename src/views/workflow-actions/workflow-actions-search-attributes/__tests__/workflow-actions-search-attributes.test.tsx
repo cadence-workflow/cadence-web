@@ -50,16 +50,6 @@ describe(SearchAttributesInput.name, () => {
     expect(screen.getByText('Add search attribute')).toBeInTheDocument();
   });
 
-  it('should render with custom label and button text', () => {
-    setup({
-      label: 'Custom Search Attributes',
-      addButtonText: 'Add Custom Attribute',
-    });
-
-    expect(screen.getByText('Custom Search Attributes')).toBeInTheDocument();
-    expect(screen.getByText('Add Custom Attribute')).toBeInTheDocument();
-  });
-
   it('should render existing values', () => {
     setup({
       value: [

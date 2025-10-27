@@ -183,24 +183,25 @@ export default function WorkflowActionStartOptionalSection({
           />
         </FormControl>
 
-        <Controller
-          name="searchAttributes"
-          control={control}
-          defaultValue={[]}
-          render={({ field }) => (
-            <WorkflowActionsSearchAttributes
-              label="Search Attributes (optional)"
-              value={field.value}
-              onChange={field.onChange}
-              searchAttributes={searchAttributesOptions}
-              isLoading={isLoadingSearchAttributes}
-              error={getSearchAttributesErrorMessage(
-                fieldErrors,
-                'searchAttributes'
-              )}
-            />
-          )}
-        />
+        <FormControl label="Search Attributes (optional)">
+          <Controller
+            name="searchAttributes"
+            control={control}
+            defaultValue={[]}
+            render={({ field }) => (
+              <WorkflowActionsSearchAttributes
+                value={field.value}
+                onChange={field.onChange}
+                searchAttributes={searchAttributesOptions}
+                isLoading={isLoadingSearchAttributes}
+                error={getSearchAttributesErrorMessage(
+                  fieldErrors,
+                  'searchAttributes'
+                )}
+              />
+            )}
+          />
+        </FormControl>
       </>
     </StatefulPanel>
   );
