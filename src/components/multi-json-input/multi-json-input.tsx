@@ -1,10 +1,10 @@
 'use client';
 import React, { useCallback, useMemo } from 'react';
 
-import { Button, SHAPE, SIZE } from 'baseui/button';
+import { Button } from 'baseui/button';
 import { FormControl } from 'baseui/form-control';
 import { Textarea } from 'baseui/textarea';
-import { MdDeleteOutline } from 'react-icons/md';
+import { MdAdd, MdDeleteOutline } from 'react-icons/md';
 
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 
@@ -91,20 +91,19 @@ export default function MultiJsonInput({
                 value={inputValue}
                 onChange={(e) => handleInputChange(index, e.target.value)}
                 placeholder={placeholder}
-                size={SIZE.compact}
+                size="compact"
                 error={getInputError(index)}
               />
             </div>
             <div className={cls.buttonContainer}>
               <Button
-                size={SIZE.mini}
+                size="mini"
                 kind="tertiary"
                 shape="circle"
                 onClick={() => {
                   handleDeleteInput(index);
                 }}
                 disabled={isDeleteDisabled}
-                className={cls.deleteButton}
                 aria-label={
                   displayValue.length === 1 ? 'Clear input' : 'Delete input'
                 }
@@ -116,13 +115,12 @@ export default function MultiJsonInput({
         ))}
         <div className={cls.addButtonContainer}>
           <Button
-            size={SIZE.mini}
+            size="mini"
             kind="secondary"
-            shape={SHAPE.pill}
+            shape="pill"
             onClick={handleAddInput}
             disabled={!canAddMore}
-            className={cls.addButton}
-            startEnhancer={<span className={cls.plusIcon}>+</span>}
+            startEnhancer={<MdAdd size={16} />}
           >
             {addButtonText}
           </Button>
