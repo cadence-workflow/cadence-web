@@ -33,8 +33,6 @@ describe(SearchAttributesInput.name, () => {
   it('should render with default empty state', () => {
     setup();
 
-    expect(screen.getByText('Search Attributes')).toBeInTheDocument();
-
     const keySelects = screen.getAllByRole('combobox', {
       name: 'Search attribute key',
     });

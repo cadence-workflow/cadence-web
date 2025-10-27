@@ -15,6 +15,21 @@ jest.mock(
     })
 );
 
+jest.mock(
+  '../../workflow-actions-search-attributes/workflow-actions-search-attributes',
+  () =>
+    jest.fn(({ error }) => {
+      return (
+        <input
+          type="text"
+          name="Search Attributes"
+          aria-label="Search Attributes"
+          aria-invalid={Boolean(error)}
+        />
+      );
+    })
+);
+
 describe('WorkflowActionStartForm', () => {
   it('displays error when form has errors', async () => {
     const formErrors = {
@@ -48,14 +63,10 @@ describe('WorkflowActionStartForm', () => {
       'true'
     );
 
-    const container = screen.getByText('Search Attributes').closest('div');
-    const allInputElements = container?.querySelectorAll(
-      'input, select, [role="combobox"], [role="textbox"]'
-    );
-
-    allInputElements?.forEach((input) => {
-      expect(input).toHaveAttribute('aria-invalid', 'true');
-    });
+    // Test if error is passed to the search attributes input/mock
+    expect(
+      screen.getByRole('textbox', { name: 'Search Attributes' })
+    ).toHaveAttribute('aria-invalid', 'true');
   });
 
   it('toggles content onClick', async () => {
@@ -122,6 +133,8 @@ describe('WorkflowActionStartForm', () => {
       target: { value: JSON.stringify({ memo: 'test' }) },
     });
     expect(memoInput).toHaveValue(JSON.stringify({ memo: 'test' }));
+
+    // Search attributes input checks are done in its own component test
   });
 });
 
