@@ -1,4 +1,7 @@
 import 'server-only';
+// cache is not present in stable React 18's type definitions
+// It is available only in their canary, or with Next.js
+// eslint-disable-next-line import/named
 import { cache } from 'react';
 
 import getConfigValue from '@/utils/config/get-config-value';

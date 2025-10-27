@@ -5,7 +5,7 @@ import {
   StatefulPopover,
   PLACEMENT as POPOVER_PLACEMENT,
 } from 'baseui/popover';
-import { pick } from 'lodash';
+import pick from 'lodash/pick';
 import { useParams } from 'next/navigation';
 import { MdArrowDropDown } from 'react-icons/md';
 
