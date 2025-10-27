@@ -21,6 +21,7 @@ Set these environment variables if you need to change their defaults
 | CADENCE_WEB_HOSTNAME         | Host name to serve on                                                         | 0.0.0.0          |
 | CADENCE_ADMIN_SECURITY_TOKEN | Admin token for accessing admin methods                                       | ''               |
 | CADENCE_GRPC_TLS_CA_FILE     | Path to root CA certificate file for enabling one-way TLS on gRPC connections | ''               |
+| CADENCE_WEB_SERVICE_NAME     | Name of the web service used as GRPC caller and OTEL resource name            | cadence-web      |
 
 Note: To connect `cadence-web` to multiple clusters, you will need to add comma-delimted entries for `CADENCE_GRPC_PEERS`, `CADENCE_GRPC_SERVICES_NAMES` & `CADENCE_CLUSTERS_NAMES` for each cluster (each cluster values are grouped by their index within the Comma-delimited lists).
 

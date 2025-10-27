@@ -1,6 +1,5 @@
 import React from 'react';
 
-import get from 'lodash/get';
 import { useForm } from 'react-hook-form';
 
 import { fireEvent, render, screen, userEvent } from '@/test-utils/rtl';
@@ -34,7 +33,7 @@ describe('WorkflowActionStartForm', () => {
     };
 
     const { user } = await setup({
-      getFieldErrorMessages: (key) => get(formErrors, key)?.message,
+      fieldErrors: formErrors,
     });
 
     await user.click(screen.getByText('Show Optional Configurations'));
@@ -125,10 +124,10 @@ describe('WorkflowActionStartForm', () => {
 
 type TestProps = {
   formData: Props['formData'];
-  getFieldErrorMessages: Props['getFieldErrorMessages'];
+  fieldErrors: Props['fieldErrors'];
 };
 
-function TestWrapper({ formData, getFieldErrorMessages }: TestProps) {
+function TestWrapper({ formData, fieldErrors }: TestProps) {
   const methods = useForm<Props['formData']>({
     defaultValues: formData,
   });
@@ -138,7 +137,7 @@ function TestWrapper({ formData, getFieldErrorMessages }: TestProps) {
       control={methods.control}
       clearErrors={methods.clearErrors}
       formData={formData}
-      getFieldErrorMessages={getFieldErrorMessages}
+      fieldErrors={fieldErrors}
     />
   );
 }
@@ -155,16 +154,11 @@ async function setup({
     enableRetryPolicy: false,
     retryPolicy: undefined,
   },
-  getFieldErrorMessages = () => undefined,
+  fieldErrors = {},
 }: Partial<TestProps>) {
   const user = userEvent.setup();
 
-  render(
-    <TestWrapper
-      formData={formData}
-      getFieldErrorMessages={getFieldErrorMessages}
-    />
-  );
+  render(<TestWrapper formData={formData} fieldErrors={fieldErrors} />);
 
   return { user };
 }
