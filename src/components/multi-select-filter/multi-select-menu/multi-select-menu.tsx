@@ -2,7 +2,7 @@ import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Button } from 'baseui/button';
 import { Checkbox } from 'baseui/checkbox';
-import { isEqual } from 'lodash';
+import isEqual from 'lodash/isEqual';
 
 import { overrides, styled } from './multi-select-menu.styles';
 import { type Props } from './multi-select-menu.types';

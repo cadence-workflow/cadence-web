@@ -1,10 +1,8 @@
-import { type FieldErrors } from 'react-hook-form';
-
 import getFieldObjectErrorMessages from '../get-field-object-error-messages';
 
 describe('getFieldObjectErrorMessages', () => {
   it('should return undefined when field has no error', () => {
-    const fieldErrors: FieldErrors = {};
+    const fieldErrors = {};
 
     const result = getFieldObjectErrorMessages(fieldErrors, 'cronSchedule');
 
@@ -12,7 +10,7 @@ describe('getFieldObjectErrorMessages', () => {
   });
 
   it('should return string message when field has a simple message error', () => {
-    const fieldErrors: FieldErrors = {
+    const fieldErrors = {
       cronSchedule: {
         message: 'Invalid cron schedule',
         type: 'invalid',
@@ -25,7 +23,7 @@ describe('getFieldObjectErrorMessages', () => {
   });
 
   it('should return Record<string, string> for object field errors without message', () => {
-    const fieldErrors: FieldErrors = {
+    const fieldErrors = {
       cronSchedule: {
         minute: {
           message: 'Must be a positive number',
@@ -47,7 +45,7 @@ describe('getFieldObjectErrorMessages', () => {
   });
 
   it('should handle object errors with some fields having no message', () => {
-    const fieldErrors: FieldErrors = {
+    const fieldErrors = {
       cronSchedule: {
         minute: {
           message: 'Invalid minute',
@@ -70,7 +68,7 @@ describe('getFieldObjectErrorMessages', () => {
   });
 
   it('should return undefined when object has no error messages', () => {
-    const fieldErrors: FieldErrors = {
+    const fieldErrors = {
       cronSchedule: {
         minute: undefined,
         hour: undefined,

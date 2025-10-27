@@ -1,5 +1,5 @@
 'use client';
-import React, { Suspense } from 'react';
+import React from 'react';
 
 import { Breadcrumbs } from 'baseui/breadcrumbs';
 import { StyledLink } from 'baseui/link';
