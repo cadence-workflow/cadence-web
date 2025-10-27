@@ -8,6 +8,8 @@ import { Controller, useWatch } from 'react-hook-form';
 
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 
+import getFieldErrorMessage from '../workflow-action-start-form/helpers/get-field-error-message';
+
 import {
   overrides,
   cssStyles,
@@ -17,7 +19,7 @@ import { type Props } from './workflow-action-start-retry-policy.types';
 export default function WorkflowActionStartRetryPolicy({
   control,
   clearErrors,
-  getFieldErrorMessages,
+  fieldErrors,
 }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
   const enableRetryPolicy = useWatch({
@@ -57,7 +59,9 @@ export default function WorkflowActionStartRetryPolicy({
                 clearErrors('retryPolicy.expirationIntervalSeconds');
                 onChange(e.currentTarget.checked);
               }}
-              error={Boolean(getFieldErrorMessages('enableRetryPolicy'))}
+              error={Boolean(
+                getFieldErrorMessage(fieldErrors, 'enableRetryPolicy')
+              )}
             >
               Enable retry policy
             </Checkbox>
@@ -81,7 +85,10 @@ export default function WorkflowActionStartRetryPolicy({
                   type="number"
                   onBlur={field.onBlur}
                   error={Boolean(
-                    getFieldErrorMessages('retryPolicy.initialIntervalSeconds')
+                    getFieldErrorMessage(
+                      fieldErrors,
+                      'retryPolicy.initialIntervalSeconds'
+                    )
                   )}
                   size="compact"
                   placeholder="Enter initial interval in seconds"
@@ -106,7 +113,10 @@ export default function WorkflowActionStartRetryPolicy({
                   min={1}
                   onBlur={field.onBlur}
                   error={Boolean(
-                    getFieldErrorMessages('retryPolicy.backoffCoefficient')
+                    getFieldErrorMessage(
+                      fieldErrors,
+                      'retryPolicy.backoffCoefficient'
+                    )
                   )}
                   size="compact"
                   placeholder="Enter backoff coefficient"
@@ -130,7 +140,10 @@ export default function WorkflowActionStartRetryPolicy({
                   min={1}
                   onBlur={field.onBlur}
                   error={Boolean(
-                    getFieldErrorMessages('retryPolicy.maximumIntervalSeconds')
+                    getFieldErrorMessage(
+                      fieldErrors,
+                      'retryPolicy.maximumIntervalSeconds'
+                    )
                   )}
                   size="compact"
                   placeholder="Enter maximum interval in seconds"
@@ -156,7 +169,9 @@ export default function WorkflowActionStartRetryPolicy({
                     clearErrors('retryPolicy.expirationIntervalSeconds');
                     onChange(e.currentTarget.value);
                   }}
-                  error={Boolean(getFieldErrorMessages('limitRetries'))}
+                  error={Boolean(
+                    getFieldErrorMessage(fieldErrors, 'limitRetries')
+                  )}
                   align="horizontal"
                 >
                   <Radio value="ATTEMPTS">Attempts</Radio>
@@ -182,7 +197,8 @@ export default function WorkflowActionStartRetryPolicy({
                     min={1}
                     onBlur={field.onBlur}
                     error={Boolean(
-                      getFieldErrorMessages(
+                      getFieldErrorMessage(
+                        fieldErrors,
                         'retryPolicy.expirationIntervalSeconds'
                       )
                     )}
@@ -210,7 +226,10 @@ export default function WorkflowActionStartRetryPolicy({
                     min={1}
                     onBlur={field.onBlur}
                     error={Boolean(
-                      getFieldErrorMessages('retryPolicy.maximumAttempts')
+                      getFieldErrorMessage(
+                        fieldErrors,
+                        'retryPolicy.maximumAttempts'
+                      )
                     )}
                     size="compact"
                     placeholder="Enter maximum attempts"
