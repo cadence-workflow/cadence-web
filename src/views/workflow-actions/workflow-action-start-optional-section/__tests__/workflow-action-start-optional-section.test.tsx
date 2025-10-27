@@ -48,9 +48,14 @@ describe('WorkflowActionStartForm', () => {
       'true'
     );
 
-    expect(
-      screen.getByRole('textbox', { name: 'Search attribute value' })
-    ).toHaveAttribute('aria-invalid', 'true');
+    const container = screen.getByText('Search Attributes').closest('div');
+    const allInputElements = container?.querySelectorAll(
+      'input, select, [role="combobox"], [role="textbox"]'
+    );
+
+    allInputElements?.forEach((input) => {
+      expect(input).toHaveAttribute('aria-invalid', 'true');
+    });
   });
 
   it('toggles content onClick', async () => {
