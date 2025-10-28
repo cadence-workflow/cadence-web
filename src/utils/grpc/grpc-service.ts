@@ -122,7 +122,7 @@ class GRPCService {
     const headers = merge(
       {
         'rpc-service': this.requestConfig.serviceName,
-        'rpc-caller': 'cadence-web',
+        'rpc-caller': process.env.CADENCE_WEB_SERVICE_NAME || 'cadence-web',
         'rpc-encoding': 'proto',
       },
       this.requestConfig.metadata,
