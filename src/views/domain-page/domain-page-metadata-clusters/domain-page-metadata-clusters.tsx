@@ -3,7 +3,6 @@ import React from 'react';
 import Link from '@/components/link/link';
 
 import { type DomainDescription } from '../domain-page.types';
-import isActiveCluster from '../helpers/is-active-cluster';
 
 import { styled } from './domain-page-metadata-clusters.styles';
 
@@ -18,12 +17,10 @@ export default function DomainPageMetadataClusters(
   return (
     <styled.ClusterTextContainer>
       {domainDescription.clusters.map((cluster, index) => {
-        const replicationStatusLabel = isActiveCluster(
-          domainDescription,
-          cluster.clusterName
-        )
-          ? 'active'
-          : 'passive';
+        const replicationStatusLabel =
+          cluster.clusterName === domainDescription.activeClusterName
+            ? 'active'
+            : 'passive';
 
         return (
           <React.Fragment key={cluster.clusterName}>

@@ -1,9 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
 import queryString from 'query-string';
 
-import getDefaultClusterForActiveActiveDomain from '@/views/shared/active-active/helpers/get-default-cluster-for-active-active-domain';
-import isActiveActiveDomain from '@/views/shared/active-active/helpers/is-active-active-domain';
-
 import { getCachedAllDomains } from '../domains-page/helpers/get-all-domains';
 
 import { type Props } from './redirect-domain.types';
@@ -36,11 +33,8 @@ export default async function RedirectDomain(props: Props) {
       })
     );
   }
-  const clusterToRedirectTo = isActiveActiveDomain(domainDetails)
-    ? getDefaultClusterForActiveActiveDomain(domainDetails)
-    : domainDetails.activeClusterName;
 
-  const baseUrl = `/domains/${encodeURIComponent(domain)}/${encodeURIComponent(clusterToRedirectTo)}`;
+  const baseUrl = `/domains/${encodeURIComponent(domain)}/${encodeURIComponent(domainDetails.activeClusterName)}`;
 
   redirect(
     queryString.stringifyUrl({
