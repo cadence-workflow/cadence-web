@@ -1,9 +1,11 @@
-import { styled as createStyled, type Theme } from 'baseui';
+import { styled as createStyled, withStyle, type Theme } from 'baseui';
 import { type StyleObject } from 'styletron-react';
 
+import PageSection from '@/components/page-section/page-section';
+
 export const styled = {
-  HeaderWrapper: createStyled<'div', { $isSticky?: boolean }>(
-    'div',
+  Container: withStyle<typeof PageSection, Record<string, never>>(
+    PageSection,
     ({ $theme }: { $theme: Theme }): StyleObject => ({
       paddingTop: $theme.sizing.scale600,
       paddingBottom: $theme.sizing.scale600,
@@ -15,17 +17,26 @@ export const styled = {
     'div',
     ({ $theme }: { $theme: Theme }): StyleObject => ({
       display: 'flex',
-      alignItems: 'center',
+      flexDirection: 'column',
       justifyContent: 'space-between',
+      flexWrap: 'wrap',
       gap: $theme.sizing.scale500,
+      [$theme.mediaQuery.medium]: {
+        alignItems: 'center',
+        flexDirection: 'row',
+      },
     })
   ),
   Actions: createStyled(
     'div',
     ({ $theme }: { $theme: Theme }): StyleObject => ({
       display: 'flex',
-      alignItems: 'center',
+      flexDirection: 'column',
+      flexWrap: 'wrap',
       gap: $theme.sizing.scale500,
+      [$theme.mediaQuery.medium]: {
+        flexDirection: 'row',
+      },
     })
   ),
 };

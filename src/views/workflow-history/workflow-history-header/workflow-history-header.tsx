@@ -40,61 +40,57 @@ export default function WorkflowHistoryHeader({
   } = pageFiltersProps;
 
   return (
-    <>
-      <styled.HeaderWrapper>
-        <PageSection>
-          <styled.Header>
-            <HeadingXSmall>Workflow history</HeadingXSmall>
-            <styled.Actions>
-              <WorkflowHistoryExpandAllEventsButton
-                isExpandAllEvents={isExpandAllEvents}
-                toggleIsExpandAllEvents={toggleIsExpandAllEvents}
-              />
-              <Button
-                $size="compact"
-                kind="secondary"
-                onClick={onClickGroupModeToggle}
-                startEnhancer={
-                  isUngroupedHistoryViewEnabled ? (
-                    <MdOutlineViewStream size={16} />
-                  ) : (
-                    <MdOutlineViewAgenda size={16} />
-                  )
-                }
-                overrides={overrides.toggleButton}
-              >
-                {isUngroupedHistoryViewEnabled ? 'Group' : 'Ungroup'}
-              </Button>
-              <WorkflowHistoryExportJsonButton {...wfHistoryRequestArgs} />
-              <PageFiltersToggle
-                activeFiltersCount={activeFiltersCount}
-                onClick={() => setAreFiltersShown((v) => !v)}
-                isActive={areFiltersShown}
-              />
-              <Button
-                $size="compact"
-                kind={isTimelineChartShown ? 'primary' : 'secondary'}
-                onClick={() => setIsTimelineChartShown((v) => !v)}
-                startEnhancer={<MdSchedule size={16} />}
-                overrides={overrides.toggleButton}
-              >
-                Timeline
-              </Button>
-            </styled.Actions>
-          </styled.Header>
-          {areFiltersShown && (
-            <PageFiltersFields
-              pageFiltersConfig={workflowHistoryFiltersConfig}
-              queryParams={queryParams}
-              setQueryParams={setQueryParams}
-              {...pageFiltersRest}
-            />
-          )}
-          {typeof window !== 'undefined' && isTimelineChartShown && (
-            <WorkflowHistoryTimelineChart {...timelineChartProps} />
-          )}
-        </PageSection>
-      </styled.HeaderWrapper>
-    </>
+    <styled.Container>
+      <styled.Header>
+        <HeadingXSmall>Workflow history</HeadingXSmall>
+        <styled.Actions>
+          <WorkflowHistoryExpandAllEventsButton
+            isExpandAllEvents={isExpandAllEvents}
+            toggleIsExpandAllEvents={toggleIsExpandAllEvents}
+          />
+          <Button
+            $size="compact"
+            kind="secondary"
+            onClick={onClickGroupModeToggle}
+            startEnhancer={
+              isUngroupedHistoryViewEnabled ? (
+                <MdOutlineViewStream size={16} />
+              ) : (
+                <MdOutlineViewAgenda size={16} />
+              )
+            }
+            overrides={overrides.toggleButton}
+          >
+            {isUngroupedHistoryViewEnabled ? 'Group' : 'Ungroup'}
+          </Button>
+          <WorkflowHistoryExportJsonButton {...wfHistoryRequestArgs} />
+          <PageFiltersToggle
+            activeFiltersCount={activeFiltersCount}
+            onClick={() => setAreFiltersShown((v) => !v)}
+            isActive={areFiltersShown}
+          />
+          <Button
+            $size="compact"
+            kind={isTimelineChartShown ? 'primary' : 'secondary'}
+            onClick={() => setIsTimelineChartShown((v) => !v)}
+            startEnhancer={<MdSchedule size={16} />}
+            overrides={overrides.toggleButton}
+          >
+            Timeline
+          </Button>
+        </styled.Actions>
+      </styled.Header>
+      {areFiltersShown && (
+        <PageFiltersFields
+          pageFiltersConfig={workflowHistoryFiltersConfig}
+          queryParams={queryParams}
+          setQueryParams={setQueryParams}
+          {...pageFiltersRest}
+        />
+      )}
+      {typeof window !== 'undefined' && isTimelineChartShown && (
+        <WorkflowHistoryTimelineChart {...timelineChartProps} />
+      )}
+    </styled.Container>
   );
 }
