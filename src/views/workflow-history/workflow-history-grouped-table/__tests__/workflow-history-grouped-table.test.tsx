@@ -22,7 +22,7 @@ describe(WorkflowHistoryGroupedTable.name, () => {
     const header = screen.getByText('Id').parentElement;
     expect(header).toHaveStyle({
       display: 'grid',
-      gridTemplateColumns: '0.3fr 2fr 1fr 1.2fr 1fr minmax(0, 3fr)',
+      gridTemplateColumns: '0.3fr 2fr 1fr 1.2fr 1fr 3fr minmax(0, 70px)',
     });
   });
 });
