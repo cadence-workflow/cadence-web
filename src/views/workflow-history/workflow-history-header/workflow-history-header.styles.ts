@@ -1,7 +1,5 @@
-import { styled as createStyled, withStyle, type Theme } from 'baseui';
+import { styled as createStyled, type Theme } from 'baseui';
 import { type StyleObject } from 'styletron-react';
-
-import PageSection from '@/components/page-section/page-section';
 
 export const styled = {
   Container: createStyled(
