@@ -4,8 +4,8 @@ import { type StyleObject } from 'styletron-react';
 import PageSection from '@/components/page-section/page-section';
 
 export const styled = {
-  Container: withStyle<typeof PageSection, Record<string, never>>(
-    PageSection,
+  Container: createStyled(
+    'div',
     ({ $theme }: { $theme: Theme }): StyleObject => ({
       paddingTop: $theme.sizing.scale600,
       paddingBottom: $theme.sizing.scale600,
