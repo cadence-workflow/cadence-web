@@ -7,6 +7,7 @@ export default function isActiveActiveDomain(
 ): domain is ActiveActiveDomain {
   return Boolean(
     domain.activeClusters &&
-      Object.entries(domain.activeClusters.regionToCluster).length > 0
+      Object.entries(domain.activeClusters.activeClustersByClusterAttribute)
+        .length > 0
   );
 }

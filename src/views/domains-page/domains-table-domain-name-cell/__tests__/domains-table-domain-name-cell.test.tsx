@@ -14,11 +14,8 @@ jest.mock('@/views/shared/domain-status-tag/domain-status-tag', () =>
 );
 
 jest.mock('@/views/shared/active-active/helpers/is-active-active-domain');
-jest.mock(
-  '@/views/shared/active-active/helpers/get-default-cluster-for-active-active-domain'
-);
 
-describe('DomainTableClusterCell', () => {
+describe(DomainsTableDomainNameCell.name, () => {
   it('should render link for domain if domain using the active cluster', async () => {
     render(<DomainsTableDomainNameCell {...globalDomain} />);
     const clusterLinks = await screen.findAllByRole('link');
