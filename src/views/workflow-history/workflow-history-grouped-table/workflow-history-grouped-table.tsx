@@ -1,7 +1,7 @@
 import { styled } from './workflow-history-grouped-table.styles';
 
 /**
- * TO be used in History v2
+ * To be used in History v2
  */
 export default function WorkflowHistoryGroupedTable() {
   return (
