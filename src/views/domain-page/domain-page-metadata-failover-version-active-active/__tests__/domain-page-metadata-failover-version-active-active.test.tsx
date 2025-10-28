@@ -1,5 +1,6 @@
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
+import { type ClusterAttributeScope } from '@/__generated__/proto-ts/uber/cadence/api/v1/ClusterAttributeScope';
 import { mockActiveActiveDomain } from '@/views/shared/active-active/__fixtures__/active-active-domain';
 import { type ActiveActiveDomain } from '@/views/shared/active-active/active-active.types';
 
@@ -125,7 +126,10 @@ function setup({
 } = {}) {
   const user = userEvent.setup();
 
-  const activeClustersByClusterAttribute: Record<string, any> = {};
+  const activeClustersByClusterAttribute: Record<
+    string,
+    ClusterAttributeScope
+  > = {};
 
   // Create additional attributes beyond the default one
   for (let i = 0; i < attributeCount; i++) {
