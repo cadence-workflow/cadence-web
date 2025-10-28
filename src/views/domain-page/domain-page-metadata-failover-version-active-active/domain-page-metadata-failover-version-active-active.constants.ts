@@ -1,0 +1,1 @@
+export const MAX_ATTRIBUTES_COUNT_TRUNCATED = 4;
