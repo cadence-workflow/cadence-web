@@ -1,5 +1,10 @@
 import React from 'react';
 
+import {
+  mockIsIntersecting,
+  intersectionMockInstance,
+} from 'react-intersection-observer/test-utils';
+
 import { act, render, screen, userEvent } from '@/test-utils/rtl';
 
 import WorkflowHistoryHeader from '../workflow-history-header';
@@ -161,61 +166,49 @@ describe(WorkflowHistoryHeader.name, () => {
     ).toBeInTheDocument();
   });
 
-  it('should disconnect IntersectionObserver on unmount', () => {
-    const { unmount, mockDisconnect } = setup({ isStickyEnabled: true });
-
-    expect(mockDisconnect).not.toHaveBeenCalled();
-
-    unmount();
-
-    expect(mockDisconnect).toHaveBeenCalledTimes(1);
-  });
-
-  it('should not show shadow initially when sentinel is intersecting', () => {
+  it('should set up intersection observer when sticky is enabled', () => {
     setup({ isStickyEnabled: true });
-    const wrapper = screen.getByTestId('workflow-history-header-wrapper');
-    expect(wrapper).toHaveAttribute('data-is-sticky', 'false');
+
+    const sentinel = screen.getByTestId('sentinel');
+    expect(sentinel).toBeInTheDocument();
+
+    const instance = intersectionMockInstance(sentinel);
+    expect(instance.observe).toHaveBeenCalledWith(sentinel);
   });
 
-  it('should show shadow when sentinel is not intersecting', () => {
-    const { simulateIntersection } = setup({ isStickyEnabled: true });
+  it('should render sentinel when sticky is enabled', () => {
+    setup({ isStickyEnabled: true });
 
-    const wrapper = screen.getByTestId('workflow-history-header-wrapper');
-
-    expect(wrapper).toHaveAttribute('data-is-sticky', 'false');
-    simulateIntersection(false);
-    expect(wrapper).toHaveAttribute('data-is-sticky', 'true');
+    const sentinel = screen.getByTestId('sentinel');
+    expect(sentinel).toBeInTheDocument();
   });
 
-  it('should toggle shadow on multiple scroll events', () => {
-    const { simulateIntersection } = setup({ isStickyEnabled: true });
+  it('should not render sentinel when sticky is disabled', () => {
+    setup({ isStickyEnabled: false });
 
-    const wrapper = screen.getByTestId('workflow-history-header-wrapper');
-
-    expect(wrapper).toHaveAttribute('data-is-sticky', 'false');
-
-    simulateIntersection(false);
-    expect(wrapper).toHaveAttribute('data-is-sticky', 'true');
-
-    simulateIntersection(true);
-    expect(wrapper).toHaveAttribute('data-is-sticky', 'false');
-
-    simulateIntersection(false);
-    expect(wrapper).toHaveAttribute('data-is-sticky', 'true');
+    const sentinel = screen.queryByTestId('sentinel');
+    expect(sentinel).not.toBeInTheDocument();
   });
 
-  it('should not show shadow when sticky is disabled', () => {
-    const { container } = setup({ isStickyEnabled: false });
+  it('should toggle shadow on toggling intersection', () => {
+    setup({ isStickyEnabled: true });
 
-    // When sticky is disabled, the wrapper shouldn't exist
-    // or if it does, $isSticky should remain false
-    const wrapper = container.querySelector(
-      '[data-testid="workflow-history-header-wrapper"]'
-    );
+    const wrapper = screen.getByTestId('workflow-history-header-wrapper');
+    const sentinel = screen.getByTestId('sentinel');
 
-    if (wrapper) {
-      expect(wrapper).toHaveAttribute('data-is-sticky', 'false');
-    }
+    expect(wrapper).toHaveAttribute('data-is-sticky', 'false');
+
+    act(() => {
+      mockIsIntersecting(sentinel, 0);
+    });
+
+    expect(wrapper).toHaveAttribute('data-is-sticky', 'true');
+
+    act(() => {
+      mockIsIntersecting(sentinel, 1);
+    });
+
+    expect(wrapper).toHaveAttribute('data-is-sticky', 'false');
   });
 });
 
@@ -223,21 +216,6 @@ function setup(props: Partial<Props> = {}) {
   const user = userEvent.setup();
   const mockToggleIsExpandAllEvents = jest.fn();
   const mockOnClickGroupModeToggle = jest.fn();
-
-  // Mock IntersectionObserver
-  const mockObserve = jest.fn();
-  const mockDisconnect = jest.fn();
-  const mockUnobserve = jest.fn();
-  let intersectionObserverCallback: IntersectionObserverCallback | null = null;
-
-  global.IntersectionObserver = jest.fn().mockImplementation((callback) => {
-    intersectionObserverCallback = callback;
-    return {
-      observe: mockObserve,
-      disconnect: mockDisconnect,
-      unobserve: mockUnobserve,
-    };
-  });
 
   const defaultProps: Props = {
     isExpandAllEvents: false,
@@ -277,39 +255,10 @@ function setup(props: Partial<Props> = {}) {
 
   const renderResult = render(<WorkflowHistoryHeader {...defaultProps} />);
 
-  // Helper function to simulate intersection
-  const simulateIntersection = (isIntersecting: boolean) => {
-    if (!intersectionObserverCallback) {
-      throw new Error('IntersectionObserver callback not initialized');
-    }
-
-    act(() => {
-      intersectionObserverCallback!(
-        [
-          {
-            isIntersecting,
-            intersectionRatio: isIntersecting ? 1 : 0,
-            rootBounds: isIntersecting ? ({} as DOMRectReadOnly) : null,
-            target: {} as Element,
-            boundingClientRect: {} as DOMRectReadOnly,
-            intersectionRect: {} as DOMRectReadOnly,
-            time: Date.now(),
-          },
-        ],
-        {} as IntersectionObserver
-      );
-    });
-  };
-
   return {
     user,
     mockToggleIsExpandAllEvents,
     mockOnClickGroupModeToggle,
-    mockObserve,
-    mockDisconnect,
-    mockUnobserve,
-    intersectionObserverCallback,
-    simulateIntersection,
     ...renderResult,
   };
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Button } from 'baseui/button';
 import { HeadingXSmall } from 'baseui/typography';
@@ -7,6 +7,7 @@ import {
   MdOutlineViewAgenda,
   MdSchedule,
 } from 'react-icons/md';
+import { useInView } from 'react-intersection-observer';
 
 import PageFiltersFields from '@/components/page-filters/page-filters-fields/page-filters-fields';
 import PageFiltersToggle from '@/components/page-filters/page-filters-toggle/page-filters-toggle';
@@ -33,7 +34,17 @@ export default function WorkflowHistoryHeader({
   const [areFiltersShown, setAreFiltersShown] = useState(true);
   const [isTimelineChartShown, setIsTimelineChartShown] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
-  const sentinelRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!isStickyEnabled && isSticky) setIsSticky(false);
+  }, [isStickyEnabled, isSticky]);
+
+  const { ref: sentinelRef } = useInView({
+    threshold: 1,
+    onChange: (inView) => {
+      setIsSticky(!inView);
+    },
+    skip: !isStickyEnabled,
+  });
 
   const {
     activeFiltersCount,
@@ -42,32 +53,15 @@ export default function WorkflowHistoryHeader({
     ...pageFiltersRest
   } = pageFiltersProps;
 
-  useEffect(() => {
-    if (!isStickyEnabled) return;
-
-    const sentinel = sentinelRef.current;
-    if (!sentinel) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        // When sentinel is not intersecting, the header is sticky and covering content
-        setIsSticky(!entry.isIntersecting);
-      },
-      { threshold: [1] }
-    );
-
-    observer.observe(sentinel);
-
-    return () => observer.disconnect();
-  }, [isStickyEnabled]);
-
   return (
     <>
-      {isStickyEnabled && <styled.Sentinel ref={sentinelRef} />}
+      {isStickyEnabled && (
+        <styled.Sentinel ref={sentinelRef} data-testid="sentinel" />
+      )}
       <styled.Container
         $isSticky={isSticky}
         $isStickyEnabled={isStickyEnabled}
-        //testing attributes
+        //testing attributes for testing
         data-testid="workflow-history-header-wrapper"
         data-is-sticky={isSticky}
       >
