@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { StatefulPanel } from 'baseui/accordion';
 import { Button } from 'baseui/button';
@@ -11,7 +11,11 @@ import { Controller } from 'react-hook-form';
 import { MdExpandMore, MdExpandLess } from 'react-icons/md';
 
 import useStyletronClasses from '@/hooks/use-styletron-classes';
+import useSearchAttributes from '@/views/shared/hooks/use-search-attributes/use-search-attributes';
+import WorkflowActionsSearchAttributes from '@/views/workflow-actions/workflow-actions-search-attributes/workflow-actions-search-attributes';
 
+import getFieldErrorMessage from '../workflow-action-start-form/helpers/get-field-error-message';
+import getSearchAttributesErrorMessage from '../workflow-action-start-form/helpers/get-search-attributes-error-message';
 import WorkflowActionStartRetryPolicy from '../workflow-action-start-retry-policy/workflow-action-start-retry-policy';
 
 import { workflowIdReusePolicyOptions } from './workflow-action-start-optional-section.constants';
@@ -25,9 +29,23 @@ export default function WorkflowActionStartOptionalSection({
   control,
   clearErrors,
   formData,
-  getFieldErrorMessages,
+  fieldErrors,
+  cluster,
 }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
+
+  // Fetch custom search attributes for the input component
+  const { data: searchAttributesData, isLoading: isLoadingSearchAttributes } =
+    useSearchAttributes({ cluster, category: 'custom' });
+
+  const searchAttributesOptions = useMemo(() => {
+    return Object.entries(searchAttributesData?.keys || {}).map(
+      ([name, valueType]) => ({
+        name,
+        valueType,
+      })
+    );
+  }, [searchAttributesData?.keys]);
 
   return (
     <StatefulPanel
@@ -72,7 +90,7 @@ export default function WorkflowActionStartOptionalSection({
                   field.onChange(e.target.value);
                 }}
                 onBlur={field.onBlur}
-                error={Boolean(getFieldErrorMessages('workflowId'))}
+                error={Boolean(getFieldErrorMessage(fieldErrors, 'workflowId'))}
                 size="compact"
                 placeholder="Enter workflow ID"
               />
@@ -97,7 +115,7 @@ export default function WorkflowActionStartOptionalSection({
                     onChange(params.value[0]?.id || undefined);
                   }}
                   error={Boolean(
-                    getFieldErrorMessages('workflowIdReusePolicy')
+                    getFieldErrorMessage(fieldErrors, 'workflowIdReusePolicy')
                   )}
                   size="compact"
                   placeholder="Select reuse policy"
@@ -112,7 +130,7 @@ export default function WorkflowActionStartOptionalSection({
           control={control}
           clearErrors={clearErrors}
           formData={formData}
-          getFieldErrorMessages={getFieldErrorMessages}
+          fieldErrors={fieldErrors}
         />
 
         <FormControl label="Header (optional)">
@@ -131,7 +149,7 @@ export default function WorkflowActionStartOptionalSection({
                 }}
                 overrides={overrides.jsonInput}
                 onBlur={field.onBlur}
-                error={Boolean(getFieldErrorMessages('header'))}
+                error={Boolean(getFieldErrorMessage(fieldErrors, 'header'))}
                 size="compact"
                 placeholder='{"key":"value"}'
                 rows={3}
@@ -156,7 +174,7 @@ export default function WorkflowActionStartOptionalSection({
                 }}
                 overrides={overrides.jsonInput}
                 onBlur={field.onBlur}
-                error={Boolean(getFieldErrorMessages('memo'))}
+                error={Boolean(getFieldErrorMessage(fieldErrors, 'memo'))}
                 size="compact"
                 placeholder='{"key":"value"}'
                 rows={3}
@@ -169,22 +187,17 @@ export default function WorkflowActionStartOptionalSection({
           <Controller
             name="searchAttributes"
             control={control}
-            defaultValue=""
-            render={({ field: { ref, ...field } }) => (
-              <Textarea
-                {...field}
-                // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
-                inputRef={ref}
-                aria-label="Search Attributes"
-                onChange={(e) => {
-                  field.onChange(e.target.value);
-                }}
-                overrides={overrides.jsonInput}
-                onBlur={field.onBlur}
-                error={Boolean(getFieldErrorMessages('searchAttributes'))}
-                size="compact"
-                placeholder='{"key":"value"}'
-                rows={3}
+            defaultValue={[]}
+            render={({ field }) => (
+              <WorkflowActionsSearchAttributes
+                value={field.value}
+                onChange={field.onChange}
+                searchAttributes={searchAttributesOptions}
+                isLoading={isLoadingSearchAttributes}
+                error={getSearchAttributesErrorMessage(
+                  fieldErrors,
+                  'searchAttributes'
+                )}
               />
             )}
           />

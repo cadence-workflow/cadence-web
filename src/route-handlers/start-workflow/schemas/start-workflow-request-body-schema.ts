@@ -33,7 +33,9 @@ const startWorkflowRequestBodySchema = z.object({
     })
     .optional(),
   memo: z.record(z.any()).optional(),
-  searchAttributes: z.record(z.any()).optional(),
+  searchAttributes: z
+    .record(z.union([z.string(), z.number(), z.boolean()]))
+    .optional(),
   header: z.record(z.string()).optional(),
 });
 

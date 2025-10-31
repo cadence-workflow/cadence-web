@@ -141,12 +141,20 @@ const cronOverlapPolicySchema = z.enum([
   CronOverlapPolicy.CRON_OVERLAP_POLICY_BUFFER_ONE,
 ]);
 
+const clusterAttributeSchema = z.object({
+  scope: z.string(),
+  name: z.string(),
+});
+
+// TODO @adhitya.mamallan - this needs to be removed as part of active-active's redesign
 const activeClusterSelectionStrategySchema = z.enum([
   ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_INVALID,
   ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_REGION_STICKY,
   ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_EXTERNAL_ENTITY,
 ]);
 
+// TODO @adhitya.mamallan - this needs to be modified as part of active-active's redesign,
+// so that we only check for clusterAttributes
 const activeClusterSelectionPolicySchema = z.discriminatedUnion(
   'strategyConfig',
   [
@@ -157,6 +165,7 @@ const activeClusterSelectionPolicySchema = z.discriminatedUnion(
         stickyRegion: z.string(),
       }),
       activeClusterExternalEntityConfig: z.nullable(z.undefined()),
+      clusterAttribute: clusterAttributeSchema.nullable(),
     }),
     z.object({
       strategy: activeClusterSelectionStrategySchema,
@@ -166,6 +175,7 @@ const activeClusterSelectionPolicySchema = z.discriminatedUnion(
         externalEntityType: z.string(),
         externalEntityKey: z.string(),
       }),
+      clusterAttribute: clusterAttributeSchema.nullable(),
     }),
   ]
 );
