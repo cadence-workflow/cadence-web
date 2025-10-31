@@ -7,7 +7,7 @@ export default function WorkflowHistoryGroupedTable() {
   return (
     <>
       <styled.TableHeader>
-        <div>Id</div>
+        <div>ID</div>
         <div>Event group</div>
         <div>Status</div>
         <div>Time</div>
