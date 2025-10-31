@@ -8,7 +8,7 @@ describe(WorkflowHistoryGroupedTable.name, () => {
   it('should render all column headers in correct order', () => {
     setup();
 
-    expect(screen.getByText('Id')).toBeInTheDocument();
+    expect(screen.getByText('ID')).toBeInTheDocument();
     expect(screen.getByText('Event group')).toBeInTheDocument();
     expect(screen.getByText('Status')).toBeInTheDocument();
     expect(screen.getByText('Time')).toBeInTheDocument();
@@ -19,7 +19,7 @@ describe(WorkflowHistoryGroupedTable.name, () => {
   it('should apply grid layout to table header', () => {
     setup();
 
-    const header = screen.getByText('Id').parentElement;
+    const header = screen.getByText('ID').parentElement;
     expect(header).toHaveStyle({
       display: 'grid',
       gridTemplateColumns: '0.3fr 2fr 1fr 1.2fr 1fr 3fr minmax(0, 70px)',
