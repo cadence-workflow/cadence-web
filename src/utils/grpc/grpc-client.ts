@@ -18,6 +18,8 @@ import { type ListClosedWorkflowExecutionsRequest__Input } from '@/__generated__
 import { type ListClosedWorkflowExecutionsResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListClosedWorkflowExecutionsResponse';
 import { type ListDomainsRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListDomainsRequest';
 import { type ListDomainsResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListDomainsResponse';
+import { type ListFailoverHistoryRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListFailoverHistoryRequest';
+import { type ListFailoverHistoryResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListFailoverHistoryResponse';
 import { type ListOpenWorkflowExecutionsRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListOpenWorkflowExecutionsRequest';
 import { type ListOpenWorkflowExecutionsResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListOpenWorkflowExecutionsResponse';
 import { type ListTaskListPartitionsRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListTaskListPartitionsRequest';
@@ -122,6 +124,9 @@ export type GRPCClusterMethods = {
   getDiagnosticsWorkflow: (
     payload: DiagnoseWorkflowExecutionRequest__Input
   ) => Promise<DiagnoseWorkflowExecutionResponse>;
+  listFailoverHistory: (
+    payload: ListFailoverHistoryRequest__Input
+  ) => Promise<ListFailoverHistoryResponse>;
 };
 
 // cache services instances
@@ -341,6 +346,13 @@ const getClusterServicesMethods = async (
       DiagnoseWorkflowExecutionResponse
     >({
       method: 'DiagnoseWorkflowExecution',
+      metadata: metadata,
+    }),
+    listFailoverHistory: domainService.request<
+      ListFailoverHistoryRequest__Input,
+      ListFailoverHistoryResponse
+    >({
+      method: 'ListFailoverHistory',
       metadata: metadata,
     }),
   };
