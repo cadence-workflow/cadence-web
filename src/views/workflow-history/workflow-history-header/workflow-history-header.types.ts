@@ -7,7 +7,7 @@ import type workflowPageQueryParamsConfig from '../../workflow-page/config/workf
 import { type Props as WorkflowHistoryExportJsonButtonProps } from '../workflow-history-export-json-button/workflow-history-export-json-button.types';
 import { type Props as WorkflowHistoryTimelineChartProps } from '../workflow-history-timeline-chart/workflow-history-timeline-chart.types';
 
-type PageQueryParamsConfig = typeof workflowPageQueryParamsConfig;
+type WorkflowPageQueryParamsConfig = typeof workflowPageQueryParamsConfig;
 type WorkflowHistoryRequestArgs = WorkflowHistoryExportJsonButtonProps & {
   pageSize: number;
   waitForNewEvent: string;
@@ -16,8 +16,8 @@ type WorkflowHistoryRequestArgs = WorkflowHistoryExportJsonButtonProps & {
 type PageFiltersProps = {
   resetAllFilters: () => void;
   activeFiltersCount: number;
-  queryParams: PageQueryParamValues<PageQueryParamsConfig>;
-  setQueryParams: PageQueryParamSetter<PageQueryParamsConfig>;
+  queryParams: PageQueryParamValues<WorkflowPageQueryParamsConfig>;
+  setQueryParams: PageQueryParamSetter<WorkflowPageQueryParamsConfig>;
 };
 
 export type Props = {
