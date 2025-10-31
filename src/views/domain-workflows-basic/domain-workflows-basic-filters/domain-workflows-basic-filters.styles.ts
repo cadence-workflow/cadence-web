@@ -23,4 +23,7 @@ export const styled = {
       flexDirection: 'row',
     },
   })),
+  FiltersContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+    marginTop: $theme.sizing.scale500,
+  })),
 };

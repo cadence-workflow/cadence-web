@@ -47,12 +47,14 @@ export default function DomainWorkflowsBasicFilters() {
         </styled.SearchContainer>
       </styled.InputContainer>
       {areFiltersShown && (
-        <PageFiltersFields
-          pageFiltersConfig={domainWorkflowsBasicFiltersConfig}
-          resetAllFilters={resetAllFilters}
-          queryParams={queryParams}
-          setQueryParams={setQueryParams}
-        />
+        <styled.FiltersContainer>
+          <PageFiltersFields
+            pageFiltersConfig={domainWorkflowsBasicFiltersConfig}
+            resetAllFilters={resetAllFilters}
+            queryParams={queryParams}
+            setQueryParams={setQueryParams}
+          />
+        </styled.FiltersContainer>
       )}
     </styled.HeaderContainer>
   );
