@@ -33,8 +33,6 @@ describe(SearchAttributesInput.name, () => {
   it('should render with default empty state', () => {
     setup();
 
-    expect(screen.getByText('Search Attributes')).toBeInTheDocument();
-
     const keySelects = screen.getAllByRole('combobox', {
       name: 'Search attribute key',
     });
@@ -48,16 +46,6 @@ describe(SearchAttributesInput.name, () => {
     expect(valueInputs[0]).toHaveValue('');
 
     expect(screen.getByText('Add search attribute')).toBeInTheDocument();
-  });
-
-  it('should render with custom label and button text', () => {
-    setup({
-      label: 'Custom Search Attributes',
-      addButtonText: 'Add Custom Attribute',
-    });
-
-    expect(screen.getByText('Custom Search Attributes')).toBeInTheDocument();
-    expect(screen.getByText('Add Custom Attribute')).toBeInTheDocument();
   });
 
   it('should render existing values', () => {

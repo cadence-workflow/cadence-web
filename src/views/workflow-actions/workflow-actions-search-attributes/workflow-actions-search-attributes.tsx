@@ -3,7 +3,6 @@ import React, { useCallback, useMemo } from 'react';
 
 import { Button } from 'baseui/button';
 import { DatePicker } from 'baseui/datepicker';
-import { FormControl } from 'baseui/form-control';
 import { Input } from 'baseui/input';
 import { Select } from 'baseui/select';
 import { MdAdd, MdDeleteOutline } from 'react-icons/md';
@@ -26,7 +25,6 @@ import type {
 } from './workflow-actions-search-attributes.types';
 
 export default function WorkflowActionsSearchAttributes({
-  label = 'Search Attributes',
   isLoading = false,
   value = [],
   onChange,
@@ -257,77 +255,72 @@ export default function WorkflowActionsSearchAttributes({
   );
 
   return (
-    <FormControl label={label}>
-      <div className={cls.container}>
-        {displayValue.map((item: SearchAttributeItem, index: number) => {
-          const isEmptyRow = !item.key && !item.value;
-          const isLastItem = displayValue.length === 1;
-          const showDeleteButton = !isEmptyRow || (value || []).length > 0;
-          const deleteButtonLabel =
-            isLastItem && !isEmptyRow ? 'Clear attribute' : 'Delete attribute';
+    <div className={cls.container}>
+      {displayValue.map((item: SearchAttributeItem, index: number) => {
+        const isEmptyRow = !item.key && !item.value;
+        const isLastItem = displayValue.length === 1;
+        const showDeleteButton = !isEmptyRow || (value || []).length > 0;
+        const deleteButtonLabel =
+          isLastItem && !isEmptyRow ? 'Clear attribute' : 'Delete attribute';
 
-          return (
-            <div
-              key={item.key || `empty-${index}`}
-              className={cls.attributeRow}
-            >
-              <div className={cls.keyContainer}>
-                <Select
-                  aria-label="Search attribute key"
-                  options={getAttributeOptionsForRow(item.key)}
-                  value={item.key ? [{ id: item.key, label: item.key }] : []}
-                  onChange={(params) => {
-                    const newKey = String(params.value[0]?.id || '');
-                    handleKeyChange(index, newKey);
-                  }}
-                  placeholder="Select attribute"
-                  size="compact"
-                  error={getFieldError(index, 'key')}
-                  overrides={overrides.keySelect}
-                  searchable
-                  clearable={false}
-                  disabled={isLoading}
-                  isLoading={isLoading}
-                />
-              </div>
-
-              <div className={cls.valueContainer}>
-                {renderValueInput(item, index)}
-              </div>
-
-              <div className={cls.buttonContainer}>
-                <Button
-                  type="button"
-                  size="mini"
-                  kind="tertiary"
-                  shape="circle"
-                  onClick={() => {
-                    handleDeleteAttribute(index);
-                  }}
-                  disabled={!showDeleteButton}
-                  aria-label={deleteButtonLabel}
-                >
-                  <MdDeleteOutline size={16} />
-                </Button>
-              </div>
+        return (
+          <div key={item.key || `empty-${index}`} className={cls.attributeRow}>
+            <div className={cls.keyContainer}>
+              <Select
+                aria-label="Search attribute key"
+                options={getAttributeOptionsForRow(item.key)}
+                value={item.key ? [{ id: item.key, label: item.key }] : []}
+                onChange={(params) => {
+                  const newKey = String(params.value[0]?.id || '');
+                  handleKeyChange(index, newKey);
+                }}
+                placeholder="Select attribute"
+                size="compact"
+                error={getFieldError(index, 'key')}
+                overrides={overrides.keySelect}
+                searchable
+                clearable={false}
+                disabled={isLoading}
+                isLoading={isLoading}
+              />
             </div>
-          );
-        })}
 
-        <div className={cls.addButtonContainer}>
-          <Button
-            type="button"
-            size="mini"
-            kind="secondary"
-            shape="pill"
-            onClick={handleAddAttribute}
-            disabled={!hasMoreSearchAttributes || !hasCompleteFields}
-            startEnhancer={<MdAdd size={16} />}
-          >
-            {addButtonText}
-          </Button>
-        </div>
+            <div className={cls.valueContainer}>
+              {renderValueInput(item, index)}
+            </div>
+
+            <div className={cls.buttonContainer}>
+              <Button
+                type="button"
+                size="mini"
+                kind="tertiary"
+                shape="circle"
+                onClick={() => {
+                  handleDeleteAttribute(index);
+                }}
+                disabled={!showDeleteButton}
+                aria-label={deleteButtonLabel}
+              >
+                <MdDeleteOutline size={16} />
+              </Button>
+            </div>
+          </div>
+        );
+      })}
+
+      <div className={cls.addButtonContainer}>
+        <Button
+          type="button"
+          size="mini"
+          kind="secondary"
+          shape="pill"
+          onClick={handleAddAttribute}
+          disabled={!hasMoreSearchAttributes || !hasCompleteFields}
+          startEnhancer={<MdAdd size={16} />}
+        >
+          {addButtonText}
+        </Button>
       </div>
-    </FormControl>
+    </div>
   );
 }

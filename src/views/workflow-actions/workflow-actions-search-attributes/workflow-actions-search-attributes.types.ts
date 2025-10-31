@@ -13,7 +13,6 @@ export type SearchAttributeItem = {
 };
 
 export type Props = {
-  label?: string;
   isLoading?: boolean;
   value?: Array<SearchAttributeItem>;
   onChange: (value: Array<SearchAttributeItem>) => void;
