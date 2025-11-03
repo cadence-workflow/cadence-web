@@ -179,7 +179,7 @@ describe(useWorkflowHistoryFetcher.name, () => {
 
     unmount();
 
-    expect(mockFetcherInstance.unmount).toHaveBeenCalledTimes(1);
+    expect(mockFetcherInstance.destroy).toHaveBeenCalledTimes(1);
   });
 
   it('should return all expected methods and state', () => {
