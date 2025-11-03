@@ -123,10 +123,7 @@ export default class WorkflowHistoryFetcher {
 
   private buildObserverOptions(params: WorkflowHistoryQueryParams) {
     return {
-      queryKey: [
-        'workflow_history_paginated',
-        params,
-      ] satisfies WorkflowHistoryQueryKey,
+      queryKey: ['workflow_history', params] satisfies WorkflowHistoryQueryKey,
       queryFn: ({ queryKey: [_, qp], pageParam }: any) =>
         request(
           queryString.stringifyUrl({
