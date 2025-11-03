@@ -15,6 +15,21 @@ jest.mock(
     })
 );
 
+jest.mock(
+  '../../workflow-actions-search-attributes/workflow-actions-search-attributes',
+  () =>
+    jest.fn(({ error }) => {
+      return (
+        <input
+          type="text"
+          name="Search Attributes"
+          aria-label="Search Attributes"
+          aria-invalid={Boolean(error)}
+        />
+      );
+    })
+);
+
 describe('WorkflowActionStartForm', () => {
   it('displays error when form has errors', async () => {
     const formErrors = {
@@ -48,6 +63,7 @@ describe('WorkflowActionStartForm', () => {
       'true'
     );
 
+    // Test if error is passed to the search attributes input/mock
     expect(
       screen.getByRole('textbox', { name: 'Search Attributes' })
     ).toHaveAttribute('aria-invalid', 'true');
@@ -61,11 +77,18 @@ describe('WorkflowActionStartForm', () => {
     });
 
     await user.click(toggleButton);
+    const hideToggleButton = await screen.findByRole('button', {
+      name: /Hide Optional Configurations/i,
+    });
 
-    expect(toggleButton).toHaveTextContent('Hide Optional Configurations');
-    await user.click(toggleButton);
+    expect(hideToggleButton).toBeInTheDocument();
 
-    expect(toggleButton).toHaveTextContent('Show Optional Configurations');
+    await user.click(hideToggleButton);
+    expect(
+      await screen.findByRole('button', {
+        name: /Show Optional Configurations/i,
+      })
+    ).toBeInTheDocument();
   });
 
   it('handles fields changes', async () => {
@@ -111,14 +134,7 @@ describe('WorkflowActionStartForm', () => {
     });
     expect(memoInput).toHaveValue(JSON.stringify({ memo: 'test' }));
 
-    // Should change search attributes
-    const searchAttributesInput = screen.getByLabelText('Search Attributes');
-    fireEvent.change(searchAttributesInput, {
-      target: { value: JSON.stringify({ attr: 'value' }) },
-    });
-    expect(searchAttributesInput).toHaveValue(
-      JSON.stringify({ attr: 'value' })
-    );
+    // Search attributes input checks are done in its own component test
   });
 });
 
@@ -138,6 +154,7 @@ function TestWrapper({ formData, fieldErrors }: TestProps) {
       clearErrors={methods.clearErrors}
       formData={formData}
       fieldErrors={fieldErrors}
+      cluster="test-cluster"
     />
   );
 }

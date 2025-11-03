@@ -23,6 +23,7 @@ export default function WorkflowActionStartForm({
   clearErrors,
   formData,
   trigger,
+  cluster,
 }: Props) {
   const now = useMemo(() => new Date(), []);
 
@@ -246,6 +247,7 @@ export default function WorkflowActionStartForm({
         clearErrors={clearErrors}
         formData={formData}
         fieldErrors={fieldErrors}
+        cluster={cluster}
       />
     </div>
   );

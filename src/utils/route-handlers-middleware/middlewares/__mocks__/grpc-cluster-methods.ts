@@ -13,6 +13,7 @@ export const mockGrpcClusterMethods: GRPCClusterMethods = {
   getDiagnosticsWorkflow: jest.fn(),
   getSearchAttributes: jest.fn(),
   listDomains: jest.fn(),
+  listFailoverHistory: jest.fn(),
   listTaskListPartitions: jest.fn(),
   listWorkflows: jest.fn(),
   openWorkflows: jest.fn(),
