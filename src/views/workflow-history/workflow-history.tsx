@@ -80,7 +80,6 @@ export default function WorkflowHistory({ params }: Props) {
       waitForNewEvent: wfHistoryRequestArgs.waitForNewEvent,
     },
     (events) => {
-      console.log('events', events);
       updateGrouperEvents(events);
     },
     2000
