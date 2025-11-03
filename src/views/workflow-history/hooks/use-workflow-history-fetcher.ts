@@ -57,7 +57,7 @@ export default function useWorkflowHistoryFetcher(
 
   useEffect(() => {
     return () => {
-      fetcherRef.current?.unmount();
+      fetcherRef.current?.destroy();
     };
   }, []);
 
