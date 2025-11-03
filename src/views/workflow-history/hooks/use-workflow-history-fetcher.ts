@@ -18,7 +18,8 @@ import WorkflowHistoryFetcher from '../helpers/workflow-history-fetcher';
 import { type ShouldContinueCallback } from '../helpers/workflow-history-fetcher.types';
 
 export default function useWorkflowHistoryFetcher(
-  params: WorkflowHistoryQueryParams & RouteParams
+  params: WorkflowHistoryQueryParams & RouteParams,
+  throttleMs: number = 2000
 ) {
   const queryClient = useQueryClient();
   const fetcherRef = useRef<WorkflowHistoryFetcher | null>(null);
@@ -32,7 +33,7 @@ export default function useWorkflowHistoryFetcher(
       InfiniteData<GetWorkflowHistoryResponse>,
       RequestError
     >
-  >(fetcherRef.current.getCurrentState(), 2000, {
+  >(fetcherRef.current.getCurrentState(), throttleMs, {
     leading: true,
     trailing: true,
   });
