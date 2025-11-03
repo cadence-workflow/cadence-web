@@ -2,16 +2,12 @@
 import React, {
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
 
-import {
-  useSuspenseInfiniteQuery,
-  type InfiniteData,
-} from '@tanstack/react-query';
-import queryString from 'query-string';
 import { Virtuoso, type VirtuosoHandle } from 'react-virtuoso';
 
 import usePageFilters from '@/components/page-filters/hooks/use-page-filters';
@@ -19,11 +15,8 @@ import PageSection from '@/components/page-section/page-section';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import useThrottledState from '@/hooks/use-throttled-state';
-import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
 import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
 import decodeUrlParams from '@/utils/decode-url-params';
-import request from '@/utils/request';
-import { type RequestError } from '@/utils/request/request-error';
 import sortBy from '@/utils/sort-by';
 
 import { resetWorkflowActionConfig } from '../workflow-actions/config/workflow-actions.config';
@@ -41,7 +34,7 @@ import pendingActivitiesInfoToEvents from './helpers/pending-activities-info-to-
 import pendingDecisionInfoToEvent from './helpers/pending-decision-info-to-event';
 import useEventExpansionToggle from './hooks/use-event-expansion-toggle';
 import useInitialSelectedEvent from './hooks/use-initial-selected-event';
-import useKeepLoadingEvents from './hooks/use-keep-loading-events';
+import useWorkflowHistoryFetcher from './hooks/use-workflow-history-fetcher';
 import WorkflowHistoryCompactEventCard from './workflow-history-compact-event-card/workflow-history-compact-event-card';
 import { WorkflowHistoryContext } from './workflow-history-context-provider/workflow-history-context-provider';
 import WorkflowHistoryHeader from './workflow-history-header/workflow-history-header';
@@ -63,8 +56,26 @@ export default function WorkflowHistory({ params }: Props) {
   const wfHistoryRequestArgs = {
     ...historyQueryParams,
     pageSize: WORKFLOW_HISTORY_PAGE_SIZE_CONFIG,
-    waitForNewEvent: 'true',
+    waitForNewEvent: true,
   };
+
+  const {
+    historyQuery,
+    startLoadingHistory,
+    stopLoadingHistory,
+    fetchSingleNextPage,
+  } = useWorkflowHistoryFetcher(
+    {
+      domain: wfHistoryRequestArgs.domain,
+      cluster: wfHistoryRequestArgs.cluster,
+      workflowId: wfHistoryRequestArgs.workflowId,
+      runId: wfHistoryRequestArgs.runId,
+      pageSize: wfHistoryRequestArgs.pageSize,
+      waitForNewEvent: wfHistoryRequestArgs.waitForNewEvent,
+    },
+    2000
+  );
+
   const [resetToDecisionEventId, setResetToDecisionEventId] = useState<
     string | undefined
   >(undefined);
@@ -96,38 +107,16 @@ export default function WorkflowHistory({ params }: Props) {
   const {
     data: result,
     hasNextPage,
-    fetchNextPage,
     isFetchingNextPage,
+    isLoading,
+    isPending,
     error,
     isFetchNextPageError,
-  } = useSuspenseInfiniteQuery<
-    GetWorkflowHistoryResponse,
-    RequestError,
-    InfiniteData<GetWorkflowHistoryResponse>,
-    [string, typeof wfHistoryRequestArgs],
-    string | undefined
-  >({
-    queryKey: ['workflow_history_paginated', wfHistoryRequestArgs] as const,
-    queryFn: ({ queryKey: [_, qp], pageParam }) =>
-      request(
-        `/api/domains/${qp.domain}/${qp.cluster}/workflows/${qp.workflowId}/${qp.runId}/history?${queryString.stringify(
-          {
-            nextPage: pageParam,
-            pageSize: qp.pageSize,
-            waitForNewEvent: qp.waitForNewEvent,
-          }
-        )}`
-      ).then((res) => res.json()),
-    initialPageParam: undefined,
-    getNextPageParam: (lastPage) => {
-      if (!lastPage?.nextPageToken) return undefined;
-      return lastPage?.nextPageToken;
-    },
-  });
+  } = historyQuery;
 
   const events = useMemo(
     () =>
-      (result.pages || [])
+      (result?.pages || [])
         .flat(1)
         .map(({ history }) => history?.events || [])
         .flat(1),
@@ -194,15 +183,21 @@ export default function WorkflowHistory({ params }: Props) {
     );
 
   const [visibleGroupsRange, setTimelineListVisibleRange] =
-    useThrottledState<VisibleHistoryGroupRanges>({
-      startIndex: -1,
-      endIndex: -1,
-      compactStartIndex: -1,
-      compactEndIndex: -1,
-      ungroupedStartIndex: -1,
-      ungroupedEndIndex: -1,
-    });
-
+    useThrottledState<VisibleHistoryGroupRanges>(
+      {
+        startIndex: -1,
+        endIndex: -1,
+        compactStartIndex: -1,
+        compactEndIndex: -1,
+        ungroupedStartIndex: -1,
+        ungroupedEndIndex: -1,
+      },
+      700,
+      {
+        leading: false,
+        trailing: true,
+      }
+    );
   const onClickGroupModeToggle = useCallback(() => {
     setUngroupedViewUserPreference(!isUngroupedHistoryViewEnabled);
 
@@ -243,7 +238,7 @@ export default function WorkflowHistory({ params }: Props) {
   });
 
   const isLastPageEmpty =
-    result.pages[result.pages.length - 1].history?.events.length === 0;
+    result?.pages?.[result?.pages?.length - 1]?.history?.events.length === 0;
 
   const visibleGroupsHasMissingEvents = useMemo(() => {
     return getVisibleGroupsHasMissingEvents(
@@ -277,19 +272,31 @@ export default function WorkflowHistory({ params }: Props) {
     ungroupedViewShouldLoadMoreEvents,
   ]);
 
-  const { isLoadingMore, reachedAvailableHistoryEnd } = useKeepLoadingEvents({
-    shouldKeepLoading: keepLoadingMoreEvents,
-    stopAfterEndReached: true,
-    continueLoadingAfterError: true,
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-    isLastPageEmpty,
-    isFetchNextPageError,
-  });
+  const manualFetchNextPage = useCallback(() => {
+    if (keepLoadingMoreEvents) {
+      startLoadingHistory();
+    } else {
+      fetchSingleNextPage();
+    }
+  }, [keepLoadingMoreEvents, startLoadingHistory, fetchSingleNextPage]);
+
+  useEffect(() => {
+    if (keepLoadingMoreEvents) {
+      startLoadingHistory();
+    } else {
+      stopLoadingHistory();
+    }
+  }, [keepLoadingMoreEvents, startLoadingHistory, stopLoadingHistory]);
+
+  const reachedEndOfAvailableHistory =
+    (!hasNextPage && !isPending) ||
+    (hasNextPage && isLastPageEmpty && !isFetchNextPageError);
 
   const contentIsLoading =
-    shouldSearchForInitialEvent && !initialEventFound && isLoadingMore;
+    isLoading ||
+    (shouldSearchForInitialEvent &&
+      !initialEventFound &&
+      !reachedEndOfAvailableHistory);
 
   const {
     isExpandAllEvents,
@@ -339,7 +346,7 @@ export default function WorkflowHistory({ params }: Props) {
               : hasNextPage,
           hasMoreEvents: hasNextPage,
           isFetchingMoreEvents: isFetchingNextPage,
-          fetchMoreEvents: fetchNextPage,
+          fetchMoreEvents: manualFetchNextPage,
           onClickEventGroup: (eventGroupIndex) => {
             const eventId =
               filteredEventGroupsEntries[eventGroupIndex][1].events[0]
@@ -389,7 +396,7 @@ export default function WorkflowHistory({ params }: Props) {
                   error={error}
                   hasMoreEvents={hasNextPage}
                   isFetchingMoreEvents={isFetchingNextPage}
-                  fetchMoreEvents={fetchNextPage}
+                  fetchMoreEvents={manualFetchNextPage}
                   getIsEventExpanded={getIsEventExpanded}
                   toggleIsEventExpanded={toggleIsEventExpanded}
                   onVisibleRangeChange={({ startIndex, endIndex }) =>
@@ -428,7 +435,7 @@ export default function WorkflowHistory({ params }: Props) {
                           {...group}
                           statusReady={
                             !group.hasMissingEvents ||
-                            reachedAvailableHistoryEnd
+                            reachedEndOfAvailableHistory
                           }
                           workflowCloseStatus={
                             workflowExecutionInfo?.closeStatus
@@ -458,7 +465,7 @@ export default function WorkflowHistory({ params }: Props) {
                       </div>
                     )}
                     endReached={() => {
-                      if (!isFetchingNextPage && hasNextPage) fetchNextPage();
+                      manualFetchNextPage();
                     }}
                   />
                 </div>
@@ -489,7 +496,8 @@ export default function WorkflowHistory({ params }: Props) {
                         key={groupId}
                         {...group}
                         showLoadingMoreEvents={
-                          group.hasMissingEvents && !reachedAvailableHistoryEnd
+                          group.hasMissingEvents &&
+                          !reachedEndOfAvailableHistory
                         }
                         resetToDecisionEventId={group.resetToDecisionEventId}
                         isLastEvent={
@@ -520,7 +528,7 @@ export default function WorkflowHistory({ params }: Props) {
                       Footer: () => (
                         <WorkflowHistoryTimelineLoadMore
                           error={error}
-                          fetchNextPage={fetchNextPage}
+                          fetchNextPage={manualFetchNextPage}
                           hasNextPage={hasNextPage}
                           isFetchingNextPage={isFetchingNextPage}
                         />
