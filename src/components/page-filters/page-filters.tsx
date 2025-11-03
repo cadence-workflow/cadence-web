@@ -41,12 +41,14 @@ export default function PageFilters<
         />
       </styled.SearchInputContainer>
       {areFiltersShown && (
-        <PageFiltersFields
-          pageFiltersConfig={pageFiltersConfig}
-          resetAllFilters={resetAllFilters}
-          queryParams={queryParams}
-          setQueryParams={setQueryParams}
-        />
+        <styled.FiltersContainer>
+          <PageFiltersFields
+            pageFiltersConfig={pageFiltersConfig}
+            resetAllFilters={resetAllFilters}
+            queryParams={queryParams}
+            setQueryParams={setQueryParams}
+          />
+        </styled.FiltersContainer>
       )}
     </>
   );
