@@ -1,6 +1,11 @@
 import React from 'react';
 
-import { render, screen, userEvent } from '@/test-utils/rtl';
+import {
+  mockIsIntersecting,
+  intersectionMockInstance,
+} from 'react-intersection-observer/test-utils';
+
+import { act, render, screen, userEvent } from '@/test-utils/rtl';
 
 import WorkflowHistoryHeader from '../workflow-history-header';
 import { type Props } from '../workflow-history-header.types';
@@ -45,6 +50,10 @@ jest.mock(
 );
 
 describe(WorkflowHistoryHeader.name, () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should render the header with title', () => {
     setup();
     expect(screen.getByText('Workflow history')).toBeInTheDocument();
@@ -156,6 +165,51 @@ describe(WorkflowHistoryHeader.name, () => {
       screen.getByTestId('workflow-history-timeline-chart')
     ).toBeInTheDocument();
   });
+
+  it('should set up intersection observer when sticky is enabled', () => {
+    setup({ isStickyEnabled: true });
+
+    const sentinel = screen.getByTestId('sentinel');
+    expect(sentinel).toBeInTheDocument();
+
+    const instance = intersectionMockInstance(sentinel);
+    expect(instance.observe).toHaveBeenCalledWith(sentinel);
+  });
+
+  it('should render sentinel when sticky is enabled', () => {
+    setup({ isStickyEnabled: true });
+
+    const sentinel = screen.getByTestId('sentinel');
+    expect(sentinel).toBeInTheDocument();
+  });
+
+  it('should not render sentinel when sticky is disabled', () => {
+    setup({ isStickyEnabled: false });
+
+    const sentinel = screen.queryByTestId('sentinel');
+    expect(sentinel).not.toBeInTheDocument();
+  });
+
+  it('should toggle shadow on toggling intersection', () => {
+    setup({ isStickyEnabled: true });
+
+    const wrapper = screen.getByTestId('workflow-history-header-wrapper');
+    const sentinel = screen.getByTestId('sentinel');
+
+    expect(wrapper).toHaveAttribute('data-is-sticky', 'false');
+
+    act(() => {
+      mockIsIntersecting(sentinel, 0);
+    });
+
+    expect(wrapper).toHaveAttribute('data-is-sticky', 'true');
+
+    act(() => {
+      mockIsIntersecting(sentinel, 1);
+    });
+
+    expect(wrapper).toHaveAttribute('data-is-sticky', 'false');
+  });
 });
 
 function setup(props: Partial<Props> = {}) {
@@ -199,11 +253,12 @@ function setup(props: Partial<Props> = {}) {
     ...props,
   };
 
-  render(<WorkflowHistoryHeader {...defaultProps} />);
+  const renderResult = render(<WorkflowHistoryHeader {...defaultProps} />);
 
   return {
     user,
     mockToggleIsExpandAllEvents,
     mockOnClickGroupModeToggle,
+    ...renderResult,
   };
 }
