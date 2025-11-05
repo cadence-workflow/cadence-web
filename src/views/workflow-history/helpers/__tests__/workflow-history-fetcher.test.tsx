@@ -9,9 +9,13 @@ import mswMockEndpoints from '@/test-utils/msw-mock-handlers/helper/msw-mock-end
 import workflowHistoryMultiPageFixture from '../../__fixtures__/workflow-history-multi-page-fixture';
 import WorkflowHistoryFetcher from '../workflow-history-fetcher';
 
-describe(WorkflowHistoryFetcher.name, () => {
-  let queryClient: QueryClient;
+const RETRY_DELAY = 3000;
+const RETRY_COUNT = 3;
 
+let queryClient: QueryClient;
+let hoistedFetcher: WorkflowHistoryFetcher;
+
+describe(WorkflowHistoryFetcher.name, () => {
   beforeEach(() => {
     queryClient = new QueryClient({
       defaultOptions: {
@@ -26,6 +30,7 @@ describe(WorkflowHistoryFetcher.name, () => {
 
   afterEach(() => {
     queryClient.clear();
+    hoistedFetcher?.unmount();
   });
 
   it('should return the current query state from getCurrentState', async () => {
@@ -34,8 +39,6 @@ describe(WorkflowHistoryFetcher.name, () => {
     const initialState = fetcher.getCurrentState();
     expect(initialState.data).toBeUndefined();
     expect(initialState.status).toBe('pending');
-
-    fetcher.unmount();
   });
 
   it('should call onChange callback on state changes', async () => {
@@ -50,7 +53,6 @@ describe(WorkflowHistoryFetcher.name, () => {
     await waitFor(() => {
       expect(callback.mock.calls.length).toBeGreaterThan(initialCallCount);
     });
-    fetcher.unmount();
   });
 
   it('should return unsubscribe function', async () => {
@@ -61,6 +63,7 @@ describe(WorkflowHistoryFetcher.name, () => {
     const unsubscribe1 = fetcher.onChange(callback1);
     fetcher.onChange(callback2);
 
+    // Fetch the first page
     fetcher.start((state) => !state?.data?.pages?.length);
 
     await waitFor(() => {
@@ -78,11 +81,9 @@ describe(WorkflowHistoryFetcher.name, () => {
         countBeforeUnsubscribe
       );
     });
-
-    fetcher.unmount();
   });
 
-  it('should respect shouldContinue callback', async () => {
+  it('should not fetch any pages if shouldContinue callback returns false', async () => {
     const { fetcher } = setup(queryClient);
     const shouldContinue = jest.fn(() => false);
 
@@ -95,8 +96,6 @@ describe(WorkflowHistoryFetcher.name, () => {
 
     const state = fetcher.getCurrentState();
     expect(state.data?.pages || []).toHaveLength(0);
-
-    fetcher.unmount();
   });
 
   it('should stop after shouldContinue returns false', async () => {
@@ -112,8 +111,6 @@ describe(WorkflowHistoryFetcher.name, () => {
       expect(state.isFetching).toBe(false);
       expect(state.data?.pages).toHaveLength(2);
     });
-
-    fetcher.unmount();
   });
 
   it('should load all pages and auto-stop when there are no more pages', async () => {
@@ -126,8 +123,6 @@ describe(WorkflowHistoryFetcher.name, () => {
       expect(state.hasNextPage).toBe(false);
       expect(state.data?.pages).toHaveLength(3);
     });
-
-    fetcher.unmount();
   });
 
   it('should auto-stop on error after initial success', async () => {
@@ -144,8 +139,8 @@ describe(WorkflowHistoryFetcher.name, () => {
         expect(state.data?.pages).toHaveLength(1);
       });
 
-      // Fast-forward through retry delays (3 retries * 3000ms each)
-      await jest.advanceTimersByTimeAsync(3 * 3000);
+      // Fast-forward through retry delays
+      await jest.advanceTimersByTimeAsync(RETRY_COUNT * RETRY_DELAY);
 
       await waitFor(() => {
         const state = fetcher.getCurrentState();
@@ -153,8 +148,6 @@ describe(WorkflowHistoryFetcher.name, () => {
         expect(state.isError).toBe(true);
         expect(state.data?.pages).toHaveLength(1);
       });
-
-      fetcher.unmount();
     } finally {
       jest.useRealTimers();
     }
@@ -178,8 +171,6 @@ describe(WorkflowHistoryFetcher.name, () => {
       expect(state.isFetching).toBe(false);
       expect(state.data?.pages).toHaveLength(1);
     });
-
-    fetcher.unmount();
   });
 
   it('should allow start again after stop', async () => {
@@ -210,7 +201,6 @@ describe(WorkflowHistoryFetcher.name, () => {
 
     const finalState = fetcher.getCurrentState();
     expect(finalState.data?.pages).toHaveLength(3);
-    fetcher.unmount();
   });
 
   it('should fetch next page when available', async () => {
@@ -230,8 +220,6 @@ describe(WorkflowHistoryFetcher.name, () => {
       const state = fetcher.getCurrentState();
       expect(state.data?.pages).toHaveLength(2);
     });
-
-    fetcher.unmount();
   });
 
   it('should not fetch when already fetching', async () => {
@@ -256,8 +244,6 @@ describe(WorkflowHistoryFetcher.name, () => {
 
     const state = fetcher.getCurrentState();
     expect(state.data?.pages).toHaveLength(2);
-
-    fetcher.unmount();
   });
 
   it('should not fetch when no next page available', async () => {
@@ -275,7 +261,6 @@ describe(WorkflowHistoryFetcher.name, () => {
 
     const state = fetcher.getCurrentState();
     expect(state.data?.pages.length).toBe(pageCountBefore);
-    fetcher.unmount();
   });
 });
 
@@ -289,8 +274,8 @@ function setup(client: QueryClient, options: { failOnPages?: number[] } = {}) {
   };
 
   mockHistoryEndpoint(workflowHistoryMultiPageFixture, options.failOnPages);
-
   const fetcher = new WorkflowHistoryFetcher(client, params);
+  hoistedFetcher = fetcher;
 
   const waitForData = async () => {
     let unsubscribe: (() => void) | undefined;
@@ -325,7 +310,7 @@ function mockHistoryEndpoint(
 
         // Determine current page number based on nextPage param
         let pageNumber = 1;
-        if (!nextPage || nextPage === 'null' || nextPage === 'undefined') {
+        if (!nextPage) {
           pageNumber = 1;
         } else if (nextPage === 'page2') {
           pageNumber = 2;
