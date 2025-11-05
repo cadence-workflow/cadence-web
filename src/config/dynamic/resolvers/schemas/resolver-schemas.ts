@@ -44,6 +44,10 @@ const resolverSchemas: ResolverSchemas = {
       start: workflowActionsEnabledValueSchema,
     }),
   },
+  CRON_LIST_ENABLED: {
+    args: z.undefined(),
+    returnType: z.boolean(),
+  },
   EXTENDED_DOMAIN_INFO_ENABLED: {
     args: z.undefined(),
     returnType: z.object({
