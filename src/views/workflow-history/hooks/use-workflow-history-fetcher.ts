@@ -44,7 +44,8 @@ export default function useWorkflowHistoryFetcher(
     const unsubscribe = fetcherRef.current.onChange((state) => {
       const pagesCount = state.data?.pages?.length || 0;
       // immediately set if there is the first page without throttling other wise throttle
-      setHistoryQuery(() => state, pagesCount <= 1);
+      const executeImmediately = pagesCount <= 1;
+      setHistoryQuery(() => state, executeImmediately);
     });
 
     // Fetch first page
