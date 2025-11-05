@@ -39,7 +39,7 @@ describe(useWorkflowHistoryFetcher.name, () => {
     mockFetcherInstance = {
       start: jest.fn(),
       stop: jest.fn(),
-      unmount: jest.fn(),
+      destroy: jest.fn(),
       fetchSingleNextPage: jest.fn(),
       onChange: jest.fn((callback) => {
         mockOnChangeCallback.mockImplementation(callback);
