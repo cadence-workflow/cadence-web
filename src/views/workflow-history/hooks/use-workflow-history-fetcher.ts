@@ -49,7 +49,8 @@ export default function useWorkflowHistoryFetcher(
         state.data?.pages?.flatMap((page) => page.history?.events || []) || []
       );
       // immediately set if there is the first page without throttling other wise throttle
-      setHistoryQuery(() => state, pagesCount <= 1);
+      const executeImmediately = pagesCount <= 1;
+      setHistoryQuery(() => state, executeImmediately);
     });
 
     return () => {
