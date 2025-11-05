@@ -30,7 +30,7 @@ describe(WorkflowHistoryFetcher.name, () => {
 
   afterEach(() => {
     queryClient.clear();
-    hoistedFetcher?.unmount();
+    hoistedFetcher?.destroy();
   });
 
   it('should return the current query state from getCurrentState', async () => {
