@@ -93,7 +93,7 @@ export default class WorkflowHistoryFetcher {
       this.unsubscribe = null;
     }
   }
-  unmount(): void {
+  destroy(): void {
     this.stop();
     this.observer.destroy();
   }
