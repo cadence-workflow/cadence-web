@@ -161,11 +161,8 @@ export default class WorkflowHistoryGrouper {
    * Schedules the next batch using the best available API.
    * Uses Scheduler API if available, otherwise falls back to Promise microtask.
    */
-  private scheduleNextBatch(): void {
-    // Check if Scheduler API is available
-    const useScheduler = true;
+  private scheduleNextBatch() {
     if (
-      useScheduler &&
       typeof window !== 'undefined' &&
       'scheduler' in window &&
       'postTask' in (window.scheduler as any)
@@ -187,7 +184,7 @@ export default class WorkflowHistoryGrouper {
    * Processes a single batch of events (or all remaining events if no batchSize).
    * This method handles the core grouping logic and schedules itself for the next batch.
    */
-  private async processBatch(): Promise<void> {
+  private processBatch(): void {
     // Check if there are events to process
     if (this.lastProcessedEventIndex >= this.allEvents.length - 1) {
       this.isProcessing = false;

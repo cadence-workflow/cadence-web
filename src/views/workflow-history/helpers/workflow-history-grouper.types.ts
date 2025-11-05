@@ -19,7 +19,7 @@ export type ProcessEventsResult = {
 /**
  * Processing status for incremental grouping operations.
  */
-export type ProcessingStatus = 'idle' | 'processing' | 'error';
+export type ProcessingStatus = 'idle' | 'processing';
 
 /**
  * State snapshot of the grouping process.
