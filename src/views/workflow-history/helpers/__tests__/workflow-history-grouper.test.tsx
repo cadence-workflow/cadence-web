@@ -587,6 +587,31 @@ describe(WorkflowHistoryGrouper.name, () => {
       )
     ).toBe(true);
   });
+
+  it('should clean up all resources when destroy is called', async () => {
+    const { grouper, handleStateChange, waitForProcessing } = setup();
+
+    // Process some events and verify onChange is called
+    grouper.updateEvents(completedActivityTaskEvents);
+    await waitForProcessing();
+
+    expect(handleStateChange).toHaveBeenCalled();
+    expect(Object.keys(grouper.getGroups()).length).toBeGreaterThan(0);
+
+    handleStateChange.mockClear();
+    // Destroy the grouper
+    grouper.destroy();
+
+    // Verify state is reset
+    expect(grouper.getGroups()).toEqual({});
+    expect(grouper.getLastProcessedEventIndex()).toBe(-1);
+
+    // Process new events - onChange should NOT be called anymore
+    grouper.updateEvents(completedActivityTaskEvents);
+
+    // Verify onChange was NOT called after destroy
+    expect(handleStateChange).not.toHaveBeenCalled();
+  });
 });
 
 function setup(options: Partial<Props> = {}) {
@@ -597,9 +622,9 @@ function setup(options: Partial<Props> = {}) {
     timeoutId: NodeJS.Timeout;
   }> = [];
 
-  // Create onChange mock that resolves pending promises when processing completes
-  const onChange: jest.MockedFunction<GroupingStateChangeCallback> = jest.fn(
-    (state) => {
+  // Create state change handler that resolves pending promises when processing completes
+  const handleStateChange: jest.MockedFunction<GroupingStateChangeCallback> =
+    jest.fn((state) => {
       if (state.status === 'idle') {
         // Resolve all pending promises at once
         pendingResolvers.forEach(({ timeoutId, resolve }) => {
@@ -608,14 +633,11 @@ function setup(options: Partial<Props> = {}) {
         });
         pendingResolvers.length = 0;
       }
-    }
-  );
+    });
 
-  // Create grouper with onChange and any additional options
-  const grouper = new WorkflowHistoryGrouper({
-    onChange,
-    ...options,
-  });
+  // Create grouper and subscribe to state changes
+  const grouper = new WorkflowHistoryGrouper(options);
+  grouper.onChange(handleStateChange);
 
   // Helper function to wait for next processing cycle
   const waitForProcessing = async (timeout = 1000): Promise<void> => {
@@ -635,14 +657,15 @@ function setup(options: Partial<Props> = {}) {
     });
   };
 
-  // Cleanup function to clear any pending timeouts
+  // Cleanup function to clear any pending timeouts and unsubscribe
   const cleanup = () => {
     pendingResolvers.forEach(({ timeoutId }) => clearTimeout(timeoutId));
     pendingResolvers.length = 0;
+    grouper.destroy();
   };
 
   // Register cleanup automatically
   allCleanups.push(cleanup);
 
-  return { grouper, onChange, waitForProcessing };
+  return { grouper, handleStateChange, waitForProcessing };
 }

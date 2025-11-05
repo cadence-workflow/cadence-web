@@ -42,13 +42,6 @@ export type GroupingStateChangeCallback = (state: GroupingProcessState) => void;
 
 export type Props = {
   /**
-   * Callback invoked when grouping state changes.
-   * Provides real-time updates on processing progress.
-   * Required to receive state updates.
-   */
-  onChange: GroupingStateChangeCallback;
-
-  /**
    * Batch size for incremental processing.
    * If specified, events will be processed in batches to allow progress updates.
    * If not specified, all events are processed at once.

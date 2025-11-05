@@ -46,7 +46,7 @@ export default class WorkflowHistoryGrouper {
   private groups: HistoryEventsGroups = {};
   private currentPendingActivities: PendingActivityTaskStartEvent[] = [];
   private currentPendingDecision: PendingDecisionTaskStartEvent | null = null;
-  private onChange: (state: GroupingProcessState) => void;
+  private subscribers: Set<(state: GroupingProcessState) => void> = new Set();
   private batchSize?: number;
   private isProcessing: boolean = false;
 
@@ -54,9 +54,19 @@ export default class WorkflowHistoryGrouper {
   private bufferedPendingActivities: PendingActivityTaskStartEvent[] = [];
   private bufferedPendingDecision: PendingDecisionTaskStartEvent | null = null;
 
-  constructor({ onChange, batchSize }: Props) {
-    this.onChange = onChange;
+  constructor({ batchSize }: Props = {}) {
     this.batchSize = batchSize;
+  }
+
+  /**
+   * Subscribe to state changes.
+   * Returns an unsubscribe function.
+   */
+  public onChange(callback: (state: GroupingProcessState) => void): () => void {
+    this.subscribers.add(callback);
+    return () => {
+      this.subscribers.delete(callback);
+    };
   }
 
   /**
@@ -116,6 +126,16 @@ export default class WorkflowHistoryGrouper {
     this.bufferedPendingActivities = [];
     this.bufferedPendingDecision = null;
     this.isProcessing = false;
+  }
+
+  /**
+   * Destroys the grouper, cleaning up all resources.
+   * Clears all subscribers and resets internal state.
+   * Call this when the grouper is no longer needed.
+   */
+  public destroy(): void {
+    this.subscribers.clear();
+    this.reset();
   }
 
   /**
@@ -212,13 +232,14 @@ export default class WorkflowHistoryGrouper {
     const processedEventsCount = this.lastProcessedEventIndex + 1;
     const remainingEventsCount = this.allEvents.length - processedEventsCount;
 
-    // Report progress
-    this.onChange({
+    // Report progress to all subscribers
+    const state: GroupingProcessState = {
       currentGroups: { ...this.groups },
       processedEventsCount,
       remainingEventsCount,
       status: remainingEventsCount > 0 ? 'processing' : 'idle',
-    });
+    };
+    this.subscribers.forEach((callback) => callback(state));
 
     // Check if there are more events to process
     if (this.lastProcessedEventIndex < this.allEvents.length - 1) {
