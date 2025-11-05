@@ -6,20 +6,18 @@ import {
   type GetWorkflowHistoryResponse,
 } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
 import request from '@/utils/request';
-import { type RequestError } from '@/utils/request/request-error';
 
 import {
   type WorkflowHistoryQueryResult,
   type QueryResultOnChangeCallback,
   type ShouldContinueCallback,
-  type WorkflowHistoryQueryKey,
+  type WorkflowHistoryReactQueryParams,
+  type WorkflowHistoryInfiniteQueryOptions,
+  type WorkflowHistoryInfiniteQueryObserver,
 } from './workflow-history-fetcher.types';
 
 export default class WorkflowHistoryFetcher {
-  private observer: InfiniteQueryObserver<
-    GetWorkflowHistoryResponse,
-    RequestError
-  >;
+  private observer: WorkflowHistoryInfiniteQueryObserver;
 
   private unsubscribe: (() => void) | null = null;
   private isStarted = false;
@@ -27,12 +25,9 @@ export default class WorkflowHistoryFetcher {
 
   constructor(
     private readonly queryClient: QueryClient,
-    private readonly params: WorkflowHistoryQueryParams
+    private readonly params: WorkflowHistoryReactQueryParams
   ) {
-    this.observer = new InfiniteQueryObserver<
-      GetWorkflowHistoryResponse,
-      RequestError
-    >(this.queryClient, {
+    this.observer = new InfiniteQueryObserver(this.queryClient, {
       ...this.buildObserverOptions(this.params),
     });
   }
@@ -40,7 +35,7 @@ export default class WorkflowHistoryFetcher {
   onChange(callback: QueryResultOnChangeCallback): () => void {
     const current = this.getCurrentState();
     if (current) callback(current);
-    return this.observer.subscribe((res: any) => {
+    return this.observer.subscribe((res) => {
       callback(res);
     });
   }
@@ -55,8 +50,7 @@ export default class WorkflowHistoryFetcher {
     let emitCount = 0;
     const currentState = this.observer.getCurrentResult();
     const fetchedFirstPage = currentState.status !== 'pending';
-    const shouldEnableQuery =
-      (!fetchedFirstPage && shouldContinue(currentState)) || fetchedFirstPage;
+    const shouldEnableQuery = !fetchedFirstPage && shouldContinue(currentState);
 
     if (shouldEnableQuery) {
       this.observer.setOptions({
@@ -68,7 +62,7 @@ export default class WorkflowHistoryFetcher {
     const emit = (res: WorkflowHistoryQueryResult) => {
       emitCount++;
 
-      // Auto stop when there are no more pages (end of history) or when there is a fresh error happens after the start.
+      // Auto stop when there are no more pages (end of history) or when there is an existing error from last start (emitCount === 1 means this is the first emit in the current start).
       // isError is true when the request failes and retries are exhausted.
       if (res.hasNextPage === false || (res.isError && emitCount > 1)) {
         this.stop();
@@ -81,15 +75,14 @@ export default class WorkflowHistoryFetcher {
       }
     };
 
-    // only start emit (fetching next pages) after the initial fetch is complete
-    // first page is already fetched on the first subscription below
+    // Manual emit is needed to fetch the first next page after start is called.
+    // While this manual emit is not needed for on the first history page as enabling the query will fetch it automatically.
     if (fetchedFirstPage) {
       emit(currentState);
     }
 
-    if (this.unsubscribe) {
-      this.unsubscribe();
-    }
+    // remove current listener (if exists) and add new one
+    this.unsubscribe?.();
     this.unsubscribe = this.observer.subscribe((res) => emit(res));
   }
 
@@ -107,7 +100,8 @@ export default class WorkflowHistoryFetcher {
 
   fetchSingleNextPage(): void {
     const state = this.getCurrentState();
-
+    // If the query is still pending, enable it to fetch the first page.
+    // Otherwise, fetch the next page if it is not already fetching and there are more pages.
     if (state.status === 'pending') {
       this.observer.setOptions({
         ...this.buildObserverOptions(this.params),
@@ -117,21 +111,23 @@ export default class WorkflowHistoryFetcher {
       state.fetchNextPage();
   }
 
-  getCurrentState(): WorkflowHistoryQueryResult {
+  getCurrentState() {
     return this.observer.getCurrentResult();
   }
 
-  private buildObserverOptions(params: WorkflowHistoryQueryParams) {
+  private buildObserverOptions(
+    queryParams: WorkflowHistoryReactQueryParams
+  ): WorkflowHistoryInfiniteQueryOptions {
     return {
-      queryKey: ['workflow_history', params] satisfies WorkflowHistoryQueryKey,
-      queryFn: ({ queryKey: [_, qp], pageParam }: any) =>
+      queryKey: ['workflow_history', queryParams],
+      queryFn: ({ queryKey: [_, params], pageParam }) =>
         request(
           queryString.stringifyUrl({
-            url: `/api/domains/${qp.domain}/${qp.cluster}/workflows/${qp.workflowId}/${qp.runId}/history`,
+            url: `/api/domains/${params.domain}/${params.cluster}/workflows/${params.workflowId}/${params.runId}/history`,
             query: {
               nextPage: pageParam,
-              pageSize: qp.pageSize,
-              waitForNewEvent: qp.waitForNewEvent ?? false,
+              pageSize: params.pageSize,
+              waitForNewEvent: params.waitForNewEvent ?? false,
             } satisfies WorkflowHistoryQueryParams,
           })
         ).then((res) => res.json()),
