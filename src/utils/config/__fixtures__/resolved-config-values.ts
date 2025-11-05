@@ -27,6 +27,7 @@ const mockResolvedConfigValues: LoadedConfigResolvedValues = {
       clusterName: 'mock-cluster2',
     },
   ],
+  CRON_LIST_ENABLED: false,
   WORKFLOW_ACTIONS_ENABLED: {
     terminate: 'ENABLED',
     cancel: 'ENABLED',
