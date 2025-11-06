@@ -8,10 +8,6 @@ import { type Props as WorkflowHistoryExportJsonButtonProps } from '../workflow-
 import { type Props as WorkflowHistoryTimelineChartProps } from '../workflow-history-timeline-chart/workflow-history-timeline-chart.types';
 
 type WorkflowPageQueryParamsConfig = typeof workflowPageQueryParamsConfig;
-type WorkflowHistoryRequestArgs = WorkflowHistoryExportJsonButtonProps & {
-  pageSize: number;
-  waitForNewEvent: string;
-};
 
 type PageFiltersProps = {
   resetAllFilters: () => void;
@@ -25,7 +21,7 @@ export type Props = {
   toggleIsExpandAllEvents: () => void;
   isUngroupedHistoryViewEnabled: boolean;
   onClickGroupModeToggle: () => void;
-  wfHistoryRequestArgs: WorkflowHistoryRequestArgs;
+  wfHistoryRequestArgs: WorkflowHistoryExportJsonButtonProps;
   pageFiltersProps: PageFiltersProps;
   timelineChartProps: WorkflowHistoryTimelineChartProps;
   isStickyEnabled?: boolean;
