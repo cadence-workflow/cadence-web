@@ -26,7 +26,11 @@ export default function useWorkflowHistoryGrouper(throttleMs = 2000) {
   const [groupingState, setGroupingState] =
     useThrottledState<GroupingProcessState>(
       grouperRef.current.getState(),
-      throttleMs
+      throttleMs,
+      {
+        leading: true,
+        trailing: true,
+      }
     );
 
   useEffect(() => {

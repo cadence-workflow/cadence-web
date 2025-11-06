@@ -6,6 +6,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 
+import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
 import useThrottledState from '@/hooks/use-throttled-state';
 import {
   type WorkflowHistoryQueryParams,
@@ -19,6 +20,7 @@ import { type ShouldContinueCallback } from '../helpers/workflow-history-fetcher
 
 export default function useWorkflowHistoryFetcher(
   params: WorkflowHistoryQueryParams & RouteParams,
+  onEventsChange: (events: HistoryEvent[]) => void,
   throttleMs: number = 2000
 ) {
   const queryClient = useQueryClient();
@@ -43,21 +45,25 @@ export default function useWorkflowHistoryFetcher(
 
     const unsubscribe = fetcherRef.current.onChange((state) => {
       const pagesCount = state.data?.pages?.length || 0;
+      onEventsChange(
+        state.data?.pages?.flatMap((page) => page.history?.events || []) || []
+      );
       // immediately set if there is the first page without throttling other wise throttle
       setHistoryQuery(() => state, pagesCount <= 1);
     });
 
-    // Fetch first page
-    fetcherRef.current.start((state) => !state?.data?.pages?.length);
-
     return () => {
       unsubscribe();
     };
-  }, [setHistoryQuery]);
+  }, [setHistoryQuery, onEventsChange]);
 
   useEffect(() => {
+    if (!fetcherRef.current) return;
+
+    // Fetch first page
+    fetcherRef.current.start((state) => !state?.data?.pages?.length);
     return () => {
-      fetcherRef.current?.unmount();
+      fetcherRef.current?.destroy();
     };
   }, []);
 
