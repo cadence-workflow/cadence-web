@@ -139,19 +139,24 @@ export default class WorkflowHistoryGrouper {
   }
 
   /**
-   * Gets the current groups without processing new events.
-   *
-   * @returns Current state of groups
-   */
-  public getGroups(): HistoryEventsGroups {
-    return this.groups;
-  }
-
-  /**
    * Gets the index of the last processed event.
    */
   public getLastProcessedEventIndex(): number {
     return this.lastProcessedEventIndex;
+  }
+
+  /**
+   * Gets the current state of the grouper.
+   * Returns current groups, processing status, and event counts.
+   */
+  public getState(): GroupingProcessState {
+    return {
+      groups: { ...this.groups },
+      processedEventsCount: this.lastProcessedEventIndex + 1,
+      remainingEventsCount:
+        this.allEvents.length - this.lastProcessedEventIndex - 1,
+      status: this.isProcessing ? 'processing' : 'idle',
+    };
   }
 
   // ============================================================================
@@ -228,25 +233,22 @@ export default class WorkflowHistoryGrouper {
     // Move pointer forward
     this.lastProcessedEventIndex = batchEnd - 1;
 
-    // Calculate progress
-    const processedEventsCount = this.lastProcessedEventIndex + 1;
-    const remainingEventsCount = this.allEvents.length - processedEventsCount;
+    // Check if there are more events to process
+    const hasMoreEvents =
+      this.lastProcessedEventIndex < this.allEvents.length - 1;
+
+    // Update processing state before reporting to subscribers
+    if (!hasMoreEvents) {
+      this.isProcessing = false;
+    }
 
     // Report progress to all subscribers
-    const state: GroupingProcessState = {
-      currentGroups: { ...this.groups },
-      processedEventsCount,
-      remainingEventsCount,
-      status: remainingEventsCount > 0 ? 'processing' : 'idle',
-    };
+    const state = this.getState();
     this.subscribers.forEach((callback) => callback(state));
 
-    // Check if there are more events to process
-    if (this.lastProcessedEventIndex < this.allEvents.length - 1) {
+    // Schedule next batch if needed
+    if (hasMoreEvents) {
       this.scheduleNextBatch();
-    } else {
-      // All done
-      this.isProcessing = false;
     }
   }
 

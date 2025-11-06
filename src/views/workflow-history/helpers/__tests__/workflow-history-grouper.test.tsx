@@ -37,7 +37,7 @@ describe(WorkflowHistoryGrouper.name, () => {
     grouper.updateEvents(completedActivityTaskEvents);
     await waitForProcessing();
 
-    const groups = grouper.getGroups();
+    const groups = grouper.getState().groups;
     expect(groups).toBeDefined();
     expect(groups['7']).toBeDefined();
     expect(groups['7'].groupType).toBe('Activity');
@@ -77,7 +77,7 @@ describe(WorkflowHistoryGrouper.name, () => {
       pendingStartDecision: null,
     });
 
-    const groups = grouper.getGroups();
+    const groups = grouper.getState().groups;
     const activityGroup = groups['7'];
     expect(activityGroup.events).toHaveLength(2);
     expect(activityGroup.events[1].attributes).toBe(
@@ -98,7 +98,7 @@ describe(WorkflowHistoryGrouper.name, () => {
       pendingStartDecision: createPendingDecision('2'),
     });
 
-    const decisionGroup = grouper.getGroups()['2'];
+    const decisionGroup = grouper.getState().groups['2'];
     expect(decisionGroup.groupType).toBe('Decision');
     expect(decisionGroup.events).toHaveLength(2);
   });
@@ -115,7 +115,7 @@ describe(WorkflowHistoryGrouper.name, () => {
       pendingStartDecision: null,
     });
 
-    const firstGroups = grouper.getGroups();
+    const firstGroups = grouper.getState().groups;
     const firstActivityGroup = firstGroups['7'];
     expect(firstActivityGroup.events).toHaveLength(2);
 
@@ -125,7 +125,7 @@ describe(WorkflowHistoryGrouper.name, () => {
       pendingStartDecision: null,
     });
 
-    const groups = grouper.getGroups();
+    const groups = grouper.getState().groups;
     const activityGroup = groups['7'];
     expect(activityGroup.events).toHaveLength(1);
     expect(activityGroup.events[0].attributes).toBe(
@@ -145,7 +145,7 @@ describe(WorkflowHistoryGrouper.name, () => {
       pendingStartDecision: createPendingDecision('2'),
     });
 
-    const firstGroups = grouper.getGroups();
+    const firstGroups = grouper.getState().groups;
     expect(firstGroups['2'].events).toHaveLength(2);
 
     // Second call without pending decision (it completed)
@@ -154,7 +154,7 @@ describe(WorkflowHistoryGrouper.name, () => {
       pendingStartDecision: null,
     });
 
-    const decisionGroup = grouper.getGroups()['2'];
+    const decisionGroup = grouper.getState().groups['2'];
     expect(decisionGroup.events).toHaveLength(1);
   });
 
@@ -183,7 +183,7 @@ describe(WorkflowHistoryGrouper.name, () => {
       pendingStartDecision: null,
     });
 
-    const activityGroup = grouper.getGroups()['7'];
+    const activityGroup = grouper.getState().groups['7'];
     expect(activityGroup.events).toHaveLength(2);
     expect(
       activityGroup.events.some(
@@ -195,7 +195,7 @@ describe(WorkflowHistoryGrouper.name, () => {
   it('should return current groups without processing', () => {
     const { grouper } = setup();
 
-    const groups = grouper.getGroups();
+    const groups = grouper.getState().groups;
 
     expect(groups).toEqual({});
   });
@@ -208,13 +208,13 @@ describe(WorkflowHistoryGrouper.name, () => {
     await waitForProcessing();
 
     expect(grouper.getLastProcessedEventIndex()).toBe(2);
-    expect(Object.keys(grouper.getGroups()).length).toBeGreaterThan(0);
+    expect(Object.keys(grouper.getState().groups).length).toBeGreaterThan(0);
 
     // Reset
     grouper.reset();
 
     expect(grouper.getLastProcessedEventIndex()).toBe(-1);
-    expect(grouper.getGroups()).toEqual({});
+    expect(grouper.getState().groups).toEqual({});
   });
 
   it('should reprocess events after reset', async () => {
@@ -224,16 +224,16 @@ describe(WorkflowHistoryGrouper.name, () => {
     grouper.updateEvents(completedActivityTaskEvents);
     await waitForProcessing();
 
-    const firstGroups = grouper.getGroups();
+    const firstGroups = grouper.getState().groups;
 
     // Reset and reprocess
     grouper.reset();
-    expect(grouper.getGroups()).toEqual({});
+    expect(grouper.getState().groups).toEqual({});
 
     grouper.updateEvents(completedActivityTaskEvents);
     await waitForProcessing();
 
-    expect(grouper.getGroups()).toEqual(firstGroups);
+    expect(grouper.getState().groups).toEqual(firstGroups);
   });
 
   it('should buffer pending activity when group does not exist yet', async () => {
@@ -246,7 +246,7 @@ describe(WorkflowHistoryGrouper.name, () => {
     });
 
     // Group should NOT exist yet (pending event is buffered)
-    let groups = grouper.getGroups();
+    let groups = grouper.getState().groups;
     expect(groups['7']).toBeUndefined();
 
     // Now add the scheduled event
@@ -254,7 +254,7 @@ describe(WorkflowHistoryGrouper.name, () => {
     await waitForProcessing();
 
     // Group should now exist with both scheduled and pending events
-    groups = grouper.getGroups();
+    groups = grouper.getState().groups;
     const activityGroup = groups['7'];
     expect(activityGroup).toBeDefined();
     expect(activityGroup.events).toHaveLength(2);
@@ -276,7 +276,7 @@ describe(WorkflowHistoryGrouper.name, () => {
     });
 
     // Group should NOT exist yet (pending event is buffered)
-    let groups = grouper.getGroups();
+    let groups = grouper.getState().groups;
     expect(groups['2']).toBeUndefined();
 
     // Now add the scheduled event
@@ -284,7 +284,7 @@ describe(WorkflowHistoryGrouper.name, () => {
     await waitForProcessing();
 
     // Group should now exist with both scheduled and pending events
-    groups = grouper.getGroups();
+    groups = grouper.getState().groups;
     const decisionGroup = groups['2'];
     expect(decisionGroup).toBeDefined();
     expect(decisionGroup.groupType).toBe('Decision');
@@ -304,14 +304,14 @@ describe(WorkflowHistoryGrouper.name, () => {
     });
 
     // No groups should exist yet
-    expect(Object.keys(grouper.getGroups()).length).toBe(0);
+    expect(Object.keys(grouper.getState().groups).length).toBe(0);
 
     // Add first scheduled event
     grouper.updateEvents([createScheduleActivityEvent('7')]);
     await waitForProcessing();
 
     // First group should now exist
-    let groups = grouper.getGroups();
+    let groups = grouper.getState().groups;
     expect(groups['7']).toBeDefined();
     expect(groups['10']).toBeUndefined();
 
@@ -323,7 +323,7 @@ describe(WorkflowHistoryGrouper.name, () => {
     await waitForProcessing();
 
     // Both groups should now exist
-    groups = grouper.getGroups();
+    groups = grouper.getState().groups;
     expect(groups['7']).toBeDefined();
     expect(groups['10']).toBeDefined();
     expect(groups['7'].events).toHaveLength(2);
@@ -348,7 +348,7 @@ describe(WorkflowHistoryGrouper.name, () => {
     });
 
     // No groups should exist yet (still buffered)
-    expect(Object.keys(grouper.getGroups()).length).toBe(0);
+    expect(Object.keys(grouper.getState().groups).length).toBe(0);
 
     // Now add scheduled events for both activities
     grouper.updateEvents([
@@ -357,7 +357,7 @@ describe(WorkflowHistoryGrouper.name, () => {
     ]);
     await waitForProcessing();
 
-    const groups = grouper.getGroups();
+    const groups = grouper.getState().groups;
 
     // Group '7' should only have scheduled event (pending was cleared from buffer)
     expect(groups['7']).toBeDefined();
@@ -395,7 +395,7 @@ describe(WorkflowHistoryGrouper.name, () => {
     await waitForProcessing();
 
     // Group should only have scheduled event (buffered pending was cleared)
-    const groups = grouper.getGroups();
+    const groups = grouper.getState().groups;
     const activityGroup = groups['7'];
     expect(activityGroup.events).toHaveLength(1);
     expect(activityGroup.events[0].attributes).toBe(
@@ -413,7 +413,7 @@ describe(WorkflowHistoryGrouper.name, () => {
     });
 
     // No group yet
-    expect(grouper.getGroups()['7']).toBeUndefined();
+    expect(grouper.getState().groups['7']).toBeUndefined();
 
     // Process scheduled event
     grouper.updateEvents([createScheduleActivityEvent('7')]);
@@ -427,7 +427,7 @@ describe(WorkflowHistoryGrouper.name, () => {
     });
 
     // Group should now have both events
-    const groups = grouper.getGroups();
+    const groups = grouper.getState().groups;
     const activityGroup = groups['7'];
     expect(activityGroup.events).toHaveLength(2);
   });
@@ -446,7 +446,7 @@ describe(WorkflowHistoryGrouper.name, () => {
     await waitForProcessing();
 
     // Should have complete group with both events
-    const groups = grouper.getGroups();
+    const groups = grouper.getState().groups;
     const activityGroup = groups['7'];
     expect(activityGroup).toBeDefined();
     expect(activityGroup.events).toHaveLength(2);
@@ -468,7 +468,7 @@ describe(WorkflowHistoryGrouper.name, () => {
     });
 
     // Group should NOT exist in the UI
-    const groups = grouper.getGroups();
+    const groups = grouper.getState().groups;
     expect(groups['7']).toBeUndefined();
     expect(Object.keys(groups).length).toBe(0);
   });
@@ -489,7 +489,7 @@ describe(WorkflowHistoryGrouper.name, () => {
     });
 
     // No groups should exist yet (still buffered)
-    expect(Object.keys(grouper.getGroups()).length).toBe(0);
+    expect(Object.keys(grouper.getState().groups).length).toBe(0);
 
     // Now add scheduled events for both decisions
     grouper.updateEvents([
@@ -498,7 +498,7 @@ describe(WorkflowHistoryGrouper.name, () => {
     ]);
     await waitForProcessing();
 
-    const groups = grouper.getGroups();
+    const groups = grouper.getState().groups;
 
     // Group '2' should only have scheduled event (pending was cleared from buffer)
     expect(groups['2']).toBeDefined();
@@ -532,7 +532,7 @@ describe(WorkflowHistoryGrouper.name, () => {
     });
 
     // Group should have 2 events (scheduled + pending)
-    let groups = grouper.getGroups();
+    let groups = grouper.getState().groups;
     expect(groups['2'].events).toHaveLength(2);
 
     // Now add started event (makes it 3 events total)
@@ -543,7 +543,7 @@ describe(WorkflowHistoryGrouper.name, () => {
     await waitForProcessing();
 
     // Pending decision should be filtered out when there are more than 2 events
-    groups = grouper.getGroups();
+    groups = grouper.getState().groups;
     expect(groups['2'].events).toHaveLength(2);
     expect(
       groups['2'].events.some(
@@ -557,7 +557,7 @@ describe(WorkflowHistoryGrouper.name, () => {
       pendingStartDecision: createPendingDecision('2'),
     });
 
-    groups = grouper.getGroups();
+    groups = grouper.getState().groups;
     expect(groups['2'].events).toHaveLength(2);
     expect(
       groups['2'].events.some(
@@ -579,7 +579,7 @@ describe(WorkflowHistoryGrouper.name, () => {
     });
 
     // Group should have 2 events (scheduled + pending)
-    const groups = grouper.getGroups();
+    const groups = grouper.getState().groups;
     expect(groups['2'].events).toHaveLength(2);
     expect(
       groups['2'].events.some(
@@ -596,14 +596,14 @@ describe(WorkflowHistoryGrouper.name, () => {
     await waitForProcessing();
 
     expect(handleStateChange).toHaveBeenCalled();
-    expect(Object.keys(grouper.getGroups()).length).toBeGreaterThan(0);
+    expect(Object.keys(grouper.getState().groups).length).toBeGreaterThan(0);
 
     handleStateChange.mockClear();
     // Destroy the grouper
     grouper.destroy();
 
     // Verify state is reset
-    expect(grouper.getGroups()).toEqual({});
+    expect(grouper.getState().groups).toEqual({});
     expect(grouper.getLastProcessedEventIndex()).toBe(-1);
 
     // Process new events - onChange should NOT be called anymore
@@ -611,6 +611,42 @@ describe(WorkflowHistoryGrouper.name, () => {
 
     // Verify onChange was NOT called after destroy
     expect(handleStateChange).not.toHaveBeenCalled();
+  });
+
+  it('should return current state via getState', async () => {
+    const { grouper, waitForProcessing } = setup();
+
+    // Initial state - no events processed
+    let state = grouper.getState();
+    expect(state).toEqual({
+      groups: {},
+      processedEventsCount: 0,
+      remainingEventsCount: 0,
+      status: 'idle',
+    });
+
+    // Add events but don't wait - status should be processing
+    grouper.updateEvents(completedActivityTaskEvents);
+    state = grouper.getState();
+    expect(state.status).toBe('processing');
+    expect(state.remainingEventsCount).toBeGreaterThan(0);
+
+    // Wait for processing to complete
+    await waitForProcessing();
+
+    // After processing - status should be idle
+    state = grouper.getState();
+    expect(state).toEqual({
+      groups: expect.any(Object),
+      processedEventsCount: completedActivityTaskEvents.length,
+      remainingEventsCount: 0,
+      status: 'idle',
+    });
+    expect(Object.keys(state.groups).length).toBeGreaterThan(0);
+
+    // Verify getState() returns consistent data
+    const anotherState = grouper.getState();
+    expect(anotherState.groups).toEqual(state.groups);
   });
 });
 
