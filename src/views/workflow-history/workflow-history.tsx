@@ -237,7 +237,7 @@ export default function WorkflowHistory({ params }: Props) {
     shouldSearchForInitialEvent,
   } = useInitialSelectedEvent({
     selectedEventId: queryParams.historySelectedEventId,
-    events,
+    eventGroups,
     filteredEventGroupsEntries,
   });
 

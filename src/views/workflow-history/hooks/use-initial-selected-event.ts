@@ -1,7 +1,5 @@
 import { useMemo, useState } from 'react';
 
-import getHistoryEventGroupId from '../helpers/get-history-event-group-id';
-
 import { type UseInitialSelectedEventParams } from './use-initial-selected-event.types';
 
 /*
@@ -12,27 +10,31 @@ import { type UseInitialSelectedEventParams } from './use-initial-selected-event
  */
 export default function useInitialSelectedEvent({
   selectedEventId,
-  events,
+  eventGroups,
   filteredEventGroupsEntries,
 }: UseInitialSelectedEventParams) {
+  // preserve initial event id even if prop changed.
   const [initialEventId] = useState(selectedEventId);
 
-  const initialEvent = useMemo(() => {
+  const initialEventGroupEntry = useMemo(() => {
     if (!initialEventId) return undefined;
-    return events.find((e) => e.eventId === initialEventId);
-  }, [events, initialEventId]);
+
+    return Object.entries(eventGroups).find(([_, group]) =>
+      group.events.find((e) => e.eventId === initialEventId)
+    );
+  }, [eventGroups, initialEventId]);
 
   const shouldSearchForInitialEvent = initialEventId !== undefined;
-  const initialEventFound = initialEvent !== undefined;
+  const initialEventFound = initialEventGroupEntry !== undefined;
 
   const initialEventGroupIndex = useMemo(() => {
-    if (!initialEvent) return undefined;
-    const groupId = getHistoryEventGroupId(initialEvent);
+    if (!initialEventGroupEntry) return undefined;
+    const groupId = initialEventGroupEntry[0];
     const index = filteredEventGroupsEntries.findIndex(
       ([id]) => id === groupId
     );
     return index > -1 ? index : undefined;
-  }, [initialEvent, filteredEventGroupsEntries]);
+  }, [initialEventGroupEntry, filteredEventGroupsEntries]);
 
   return {
     shouldSearchForInitialEvent,
