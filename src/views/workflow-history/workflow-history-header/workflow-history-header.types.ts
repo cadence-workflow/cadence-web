@@ -28,4 +28,5 @@ export type Props = {
   wfHistoryRequestArgs: WorkflowHistoryRequestArgs;
   pageFiltersProps: PageFiltersProps;
   timelineChartProps: WorkflowHistoryTimelineChartProps;
+  isStickyEnabled?: boolean;
 };

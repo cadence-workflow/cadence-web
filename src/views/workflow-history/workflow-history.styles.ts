@@ -8,6 +8,8 @@ const cssStylesObj = {
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
+    // This is to ensure the content section is behind the header
+    zIndex: -1,
   },
   eventsContainer: (theme) => ({
     display: 'flex',
