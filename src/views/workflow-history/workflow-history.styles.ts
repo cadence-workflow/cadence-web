@@ -9,7 +9,7 @@ const cssStylesObj = {
     flexDirection: 'column',
     flex: 1,
     // This is to ensure the header section z-index is relative to this container and do not
-    // show above external elements like popvers and modals
+    // show above external elements like popovers and modals
     position: 'relative',
     zIndex: 0,
   },
