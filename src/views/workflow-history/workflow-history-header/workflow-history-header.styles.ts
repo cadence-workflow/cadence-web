@@ -2,13 +2,32 @@ import { styled as createStyled, type Theme } from 'baseui';
 import { type StyleObject } from 'styletron-react';
 
 export const styled = {
-  Container: createStyled(
+  Sentinel: createStyled('div', {
+    height: '1px',
+    visibility: 'hidden',
+  }),
+  Container: createStyled<
     'div',
-    ({ $theme }: { $theme: Theme }): StyleObject => ({
+    { $isSticky?: boolean; $isStickyEnabled?: boolean }
+  >(
+    'div',
+    ({ $theme, $isSticky, $isStickyEnabled }): StyleObject => ({
       paddingTop: $theme.sizing.scale600,
       paddingBottom: $theme.sizing.scale600,
       marginTop: `-${$theme.sizing.scale600}`,
       backgroundColor: $theme.colors.backgroundPrimary,
+      transition: 'box-shadow 0.2s ease-in-out',
+      // Non-sticky by default or when disabled
+      position: 'static',
+      boxShadow: 'none',
+      // Sticky only on medium screens and up when enabled
+      ...($isStickyEnabled && {
+        [$theme.mediaQuery.medium]: {
+          position: 'sticky',
+          top: 0,
+          boxShadow: $isSticky ? $theme.lighting.shallowBelow : 'none',
+        },
+      }),
     })
   ),
   Header: createStyled(

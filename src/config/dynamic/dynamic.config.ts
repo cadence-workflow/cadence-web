@@ -11,6 +11,7 @@ import clusters from './resolvers/clusters';
 import clustersPublic from './resolvers/clusters-public';
 import { type PublicClustersConfigs } from './resolvers/clusters-public.types';
 import { type ClustersConfigs } from './resolvers/clusters.types';
+import cronListEnabled from './resolvers/cron-list-enabled';
 import extendedDomainInfoEnabled from './resolvers/extended-domain-info-enabled';
 import { type ExtendedDomainInfoEnabledConfig } from './resolvers/extended-domain-info-enabled.types';
 import workflowActionsEnabled from './resolvers/workflow-actions-enabled';
@@ -32,6 +33,12 @@ const dynamicConfigs: {
     undefined,
     PublicClustersConfigs,
     'serverStart',
+    true
+  >;
+  CRON_LIST_ENABLED: ConfigAsyncResolverDefinition<
+    undefined,
+    boolean,
+    'request',
     true
   >;
   WORKFLOW_ACTIONS_ENABLED: ConfigAsyncResolverDefinition<
@@ -75,6 +82,11 @@ const dynamicConfigs: {
   CLUSTERS_PUBLIC: {
     resolver: clustersPublic,
     evaluateOn: 'serverStart',
+    isPublic: true,
+  },
+  CRON_LIST_ENABLED: {
+    resolver: cronListEnabled,
+    evaluateOn: 'request',
     isPublic: true,
   },
   WORKFLOW_ACTIONS_ENABLED: {
