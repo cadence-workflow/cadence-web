@@ -316,7 +316,7 @@ export default function WorkflowHistory({ params }: Props) {
   }
 
   return (
-    <>
+    <div className={cls.container}>
       <WorkflowHistoryHeader
         isExpandAllEvents={isExpandAllEvents}
         toggleIsExpandAllEvents={toggleIsExpandAllEvents}
@@ -548,6 +548,6 @@ export default function WorkflowHistory({ params }: Props) {
           />
         )}
       </PageSection>
-    </>
+    </div>
   );
 }
