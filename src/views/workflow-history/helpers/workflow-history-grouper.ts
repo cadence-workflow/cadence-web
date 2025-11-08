@@ -187,20 +187,23 @@ export default class WorkflowHistoryGrouper {
    * Uses Scheduler API if available, otherwise falls back to Promise microtask.
    */
   private scheduleNextBatch() {
-    if (
+    // if first batch process immediately, this helps avoiding UI delays
+    if (this.lastProcessedEventIndex === -1) {
+      this.processBatch();
+    } else if (
       typeof window !== 'undefined' &&
       'scheduler' in window &&
       'postTask' in (window.scheduler as any)
     ) {
-      // Use Scheduler API with background priority for non-urgent work
+      // Use Scheduler API with background priority if available
       (window.scheduler as any)
         .postTask(() => this.processBatch(), { priority: 'background' })
         .catch(() => {
-          // Fallback if postTask fails
+          // Fallback to setTimeout if postTask fails
           setTimeout(() => this.processBatch(), 0);
         });
     } else {
-      // Fallback to Promise microtask
+      // Fallback to setTimeout
       setTimeout(() => this.processBatch(), 0);
     }
   }

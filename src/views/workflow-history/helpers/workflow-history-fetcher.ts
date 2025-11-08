@@ -126,7 +126,8 @@ export default class WorkflowHistoryFetcher {
             url: `/api/domains/${params.domain}/${params.cluster}/workflows/${params.workflowId}/${params.runId}/history`,
             query: {
               nextPage: pageParam,
-              pageSize: params.pageSize,
+              // TODO use constants/queryParams for page size
+              pageSize: pageParam ? 1000 : 200,
               waitForNewEvent: params.waitForNewEvent ?? false,
             } satisfies WorkflowHistoryQueryParams,
           })

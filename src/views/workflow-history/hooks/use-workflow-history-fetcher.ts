@@ -28,6 +28,8 @@ export default function useWorkflowHistoryFetcher(
 
   if (!fetcherRef.current) {
     fetcherRef.current = new WorkflowHistoryFetcher(queryClient, params);
+    // Fetch first page
+    fetcherRef.current.start((state) => !state?.data?.pages?.length);
   }
 
   const [historyQuery, setHistoryQuery] = useThrottledState<
@@ -61,8 +63,6 @@ export default function useWorkflowHistoryFetcher(
   useEffect(() => {
     if (!fetcherRef.current) return;
 
-    // Fetch first page
-    fetcherRef.current.start((state) => !state?.data?.pages?.length);
     return () => {
       fetcherRef.current?.destroy();
     };
