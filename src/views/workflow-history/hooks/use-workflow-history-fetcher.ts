@@ -28,6 +28,7 @@ export default function useWorkflowHistoryFetcher(
 
   if (!fetcherRef.current) {
     fetcherRef.current = new WorkflowHistoryFetcher(queryClient, params);
+
     // Fetch first page
     fetcherRef.current.start((state) => !state?.data?.pages?.length);
   }

@@ -28,7 +28,7 @@ jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
   jest.fn(() => [{ historySelectedEventId: '1' }, jest.fn()])
 );
 
-// Mock the hook to use minimal throttle delay for faster tests
+// Mock the hooks to use minimal throttle delay for faster tests
 jest.mock('../hooks/use-workflow-history-fetcher', () => {
   const actual = jest.requireActual('../hooks/use-workflow-history-fetcher');
   return {
@@ -36,6 +36,14 @@ jest.mock('../hooks/use-workflow-history-fetcher', () => {
     default: jest.fn((params, onEventsChange) =>
       actual.default(params, onEventsChange, 0)
     ), // 0ms throttle for tests
+  };
+});
+
+jest.mock('../hooks/use-workflow-history-grouper', () => {
+  const actual = jest.requireActual('../hooks/use-workflow-history-grouper');
+  return {
+    __esModule: true,
+    default: jest.fn(() => actual.default(0)), // 0ms throttle for tests
   };
 });
 
