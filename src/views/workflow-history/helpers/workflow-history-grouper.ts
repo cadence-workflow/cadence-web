@@ -92,9 +92,8 @@ export default class WorkflowHistoryGrouper {
   /**
    * Updates pending events (activities and decisions).
    * This should be called separately from updateEvents.
-   * Notifies subscribers after groups are updated.
    */
-  public updatePendingEvents(params: ProcessEventsParams) {
+  public async updatePendingEvents(params: ProcessEventsParams) {
     // Update pending events (add new ones, remove stale ones)
 
     const currentPendingActivities = this.currentPendingActivities;
@@ -112,10 +111,6 @@ export default class WorkflowHistoryGrouper {
       currentPendingDecision,
       params.pendingStartDecision
     );
-
-    // Notify subscribers after groups are updated
-    const state = this.getState();
-    this.subscribers.forEach((callback) => callback(state));
   }
 
   /**
@@ -189,15 +184,18 @@ export default class WorkflowHistoryGrouper {
 
   /**
    * Schedules the next batch using the best available API.
-   * Uses Scheduler API if available, otherwise falls back to setTimeout.
+   * Uses Scheduler API if available, otherwise falls back to Promise microtask.
    */
   private scheduleNextBatch() {
-    if (
+    // if first batch process immediately, this helps avoiding UI delays
+    if (this.lastProcessedEventIndex === -1) {
+      this.processBatch();
+    } else if (
       typeof window !== 'undefined' &&
       'scheduler' in window &&
       'postTask' in (window.scheduler as any)
     ) {
-      // Use Scheduler API with background priority for non-urgent work
+      // Use Scheduler API with background priority if available
       (window.scheduler as any)
         .postTask(() => this.processBatch(), { priority: 'background' })
         .catch(() => {

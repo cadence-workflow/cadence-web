@@ -625,11 +625,13 @@ describe(WorkflowHistoryGrouper.name, () => {
       status: 'idle',
     });
 
-    // Add events but don't wait - status should be processing
+    // Add events - with batchSize=1, first batch will be processed synchronously but subsequent batches will be async
     grouper.updateEvents(completedActivityTaskEvents);
+
+    // Check state after first batch (might be synchronous)
     state = grouper.getState();
-    expect(state.status).toBe('processing');
-    expect(state.remainingEventsCount).toBeGreaterThan(0);
+    // First batch is processed immediately, so processedEventsCount should be at least 1
+    expect(state.processedEventsCount).toBeGreaterThan(0);
 
     // Wait for processing to complete
     await waitForProcessing();
@@ -677,6 +679,11 @@ function setup(options: Partial<Props> = {}) {
 
   // Helper function to wait for next processing cycle
   const waitForProcessing = async (timeout = 1000): Promise<void> => {
+    // Check if already idle (processing completed synchronously)
+    if (grouper.getState().status === 'idle') {
+      return Promise.resolve();
+    }
+
     await new Promise<void>((resolve, reject) => {
       const timeoutId = setTimeout(() => {
         // Remove this resolver from queue if it times out
