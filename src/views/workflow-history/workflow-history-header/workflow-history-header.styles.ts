@@ -26,6 +26,7 @@ export const styled = {
           position: 'sticky',
           top: 0,
           boxShadow: $isSticky ? $theme.lighting.shallowBelow : 'none',
+          zIndex: 1,
         },
       }),
     })
