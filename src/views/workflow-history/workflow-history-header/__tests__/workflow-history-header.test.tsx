@@ -227,8 +227,6 @@ function setup(props: Partial<Props> = {}) {
       cluster: 'test-cluster',
       workflowId: 'test-workflowId',
       runId: 'test-runId',
-      pageSize: 100,
-      waitForNewEvent: 'true',
     },
     pageFiltersProps: {
       activeFiltersCount: 0,
