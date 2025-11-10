@@ -24,4 +24,5 @@ export type Props = {
   wfHistoryRequestArgs: WorkflowHistoryExportJsonButtonProps;
   pageFiltersProps: PageFiltersProps;
   timelineChartProps: WorkflowHistoryTimelineChartProps;
+  isStickyEnabled?: boolean;
 };
