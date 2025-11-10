@@ -4,12 +4,19 @@ import type {
 } from '@/hooks/use-styletron-classes';
 
 const cssStylesObj = {
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    flex: 1,
+    // This is to ensure the header section z-index is relative to this container and do not
+    // show above external elements like popovers and modals
+    position: 'relative',
+    zIndex: 0,
+  },
   contentSection: {
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
-    // This is to ensure the content section is behind the header
-    zIndex: -1,
   },
   eventsContainer: (theme) => ({
     display: 'flex',
