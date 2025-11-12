@@ -4,6 +4,7 @@ import React, { useMemo } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 
 import PageTabs from '@/components/page-tabs/page-tabs';
+import useSuspenseConfigValue from '@/hooks/use-config-value/use-suspense-config-value';
 import decodeUrlParams from '@/utils/decode-url-params';
 
 import domainPageTabsConfig from '../config/domain-page-tabs.config';
@@ -12,16 +13,14 @@ import DomainPageStartWorkflowButton from '../domain-page-start-workflow-button/
 
 import { styled } from './domain-page-tabs.styles';
 import type { DomainPageTabsParams } from './domain-page-tabs.types';
-import useSuspenseConfigValue from '@/hooks/use-config-value/use-suspense-config-value';
 
 export default function DomainPageTabs() {
   const router = useRouter();
   const params = useParams<DomainPageTabsParams>();
   const decodedParams = decodeUrlParams(params) as DomainPageTabsParams;
 
-  const { data: isCronListEnabled } = useSuspenseConfigValue(
-    'CRON_LIST_ENABLED'
-  );
+  const { data: isCronListEnabled } =
+    useSuspenseConfigValue('CRON_LIST_ENABLED');
 
   const tabList = useMemo(
     () =>
