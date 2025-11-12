@@ -12,20 +12,33 @@ import DomainPageStartWorkflowButton from '../domain-page-start-workflow-button/
 
 import { styled } from './domain-page-tabs.styles';
 import type { DomainPageTabsParams } from './domain-page-tabs.types';
+import useSuspenseConfigValue from '@/hooks/use-config-value/use-suspense-config-value';
 
 export default function DomainPageTabs() {
   const router = useRouter();
   const params = useParams<DomainPageTabsParams>();
   const decodedParams = decodeUrlParams(params) as DomainPageTabsParams;
 
+  const { data: isCronListEnabled } = useSuspenseConfigValue(
+    'CRON_LIST_ENABLED'
+  );
+
   const tabList = useMemo(
     () =>
-      Object.entries(domainPageTabsConfig).map(([key, tabConfig]) => ({
-        key,
-        title: tabConfig.title,
-        artwork: tabConfig.artwork,
-      })),
-    []
+      Object.entries(domainPageTabsConfig)
+        .filter(([key]) => {
+          // Include cron-list tab only when the feature flag is enabled.
+          if (key === 'cron-list') {
+            return isCronListEnabled;
+          }
+          return true;
+        })
+        .map(([key, tabConfig]) => ({
+          key,
+          title: tabConfig.title,
+          artwork: tabConfig.artwork,
+        })),
+    [isCronListEnabled]
   );
 
   return (

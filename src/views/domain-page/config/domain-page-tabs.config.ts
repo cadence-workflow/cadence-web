@@ -1,14 +1,15 @@
-import { MdArchive, MdListAlt, MdSettings, MdSort } from 'react-icons/md';
+import { MdArchive, MdListAlt, MdSettings, MdSort, MdSchedule } from 'react-icons/md';
 
 import DomainWorkflows from '@/views/domain-workflows/domain-workflows';
 import DomainWorkflowsArchival from '@/views/domain-workflows-archival/domain-workflows-archival';
 
 import DomainPageMetadata from '../domain-page-metadata/domain-page-metadata';
 import DomainPageSettings from '../domain-page-settings/domain-page-settings';
+import DomainCronList from '@/views/domain-cron-list/domain-cron-list';
 import type { DomainPageTabsConfig } from '../domain-page-tabs/domain-page-tabs.types';
 
 const domainPageTabsConfig: DomainPageTabsConfig<
-  'workflows' | 'metadata' | 'settings' | 'archival'
+  'workflows' | 'cron-list' | 'metadata' | 'settings' | 'archival'
 > = {
   workflows: {
     title: 'Workflows',
@@ -16,6 +17,15 @@ const domainPageTabsConfig: DomainPageTabsConfig<
     content: DomainWorkflows,
     getErrorConfig: () => ({
       message: 'Failed to load workflows',
+      actions: [{ kind: 'retry', label: 'Retry' }],
+    }),
+  },
+  'cron-list': {
+    title: 'Cron',
+    artwork: MdSchedule,
+    content: DomainCronList,
+    getErrorConfig: () => ({
+      message: 'Failed to load cron list',
       actions: [{ kind: 'retry', label: 'Retry' }],
     }),
   },
