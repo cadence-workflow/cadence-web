@@ -25,14 +25,14 @@ describe('getUpdatedQueryTextWithSuggestion', () => {
     expect(result).toBe('WorkflowID = "foo" AND ');
   });
 
-  it('appends suggestion after boolean value TRUE', () => {
-    const result = getUpdatedQueryTextWithSuggestion('IsCron = TRUE', 'AND');
-    expect(result).toBe('IsCron = TRUE AND ');
+  it('appends suggestion after boolean value "true"', () => {
+    const result = getUpdatedQueryTextWithSuggestion('IsCron = "true" ', 'AND');
+    expect(result).toBe('IsCron = "true" AND ');
   });
 
-  it('appends suggestion after boolean value FALSE', () => {
-    const result = getUpdatedQueryTextWithSuggestion('IsCron = FALSE', 'AND');
-    expect(result).toBe('IsCron = FALSE AND ');
+  it('appends suggestion after boolean value "false"', () => {
+    const result = getUpdatedQueryTextWithSuggestion('IsCron = "false"', 'AND');
+    expect(result).toBe('IsCron = "false" AND ');
   });
 
   it('appends suggestion after BETWEEN operator', () => {

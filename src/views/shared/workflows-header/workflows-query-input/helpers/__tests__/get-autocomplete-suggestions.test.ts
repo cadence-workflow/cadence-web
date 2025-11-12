@@ -32,7 +32,8 @@ describe('getAutocompleteSuggestions', () => {
   });
 
   it('suggests logical operators after a complete boolean value', () => {
-    const suggestionsAfterBoolean = getAutocompleteSuggestions('IsCron = TRUE');
+    const suggestionsAfterBoolean =
+      getAutocompleteSuggestions('IsCron = "true"');
     expect(suggestionsAfterBoolean).toEqual(LOGICAL_OPERATORS);
   });
 
