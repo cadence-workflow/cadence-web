@@ -16,8 +16,6 @@ import type {
   Props,
 } from '../workflow-history-grouper.types';
 
-// Commonly used mocks
-
 // Track all setups for cleanup
 const allCleanups: Array<() => void> = [];
 

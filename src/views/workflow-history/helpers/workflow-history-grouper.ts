@@ -93,7 +93,7 @@ export default class WorkflowHistoryGrouper {
    * Updates pending events (activities and decisions).
    * This should be called separately from updateEvents.
    */
-  public async updatePendingEvents(params: ProcessEventsParams) {
+  public updatePendingEvents(params: ProcessEventsParams) {
     // Update pending events (add new ones, remove stale ones)
 
     const currentPendingActivities = this.currentPendingActivities;
@@ -187,7 +187,7 @@ export default class WorkflowHistoryGrouper {
    * Uses Scheduler API if available, otherwise falls back to setTimeout.
    */
   private scheduleNextBatch() {
-    // if first batch process immediately, this helps avoiding UI delays
+    // If first batch, process immediately; this helps avoid UI delays
     if (this.lastProcessedEventIndex === -1) {
       this.processBatch();
     } else if (
@@ -200,6 +200,7 @@ export default class WorkflowHistoryGrouper {
         .postTask(() => this.processBatch(), { priority: 'background' })
         .catch(() => {
           // Fallback to setTimeout if postTask fails
+          // setTimeout adds the processBatch to Macro Task Queue (lowest priority queue) to allow current microtasks (UI updates) to complete first
           setTimeout(() => this.processBatch(), 0);
         });
     } else {
