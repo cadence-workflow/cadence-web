@@ -2,13 +2,17 @@
 import React from 'react';
 
 import Table from '@/components/table/table';
+import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import isActiveActiveDomain from '@/views/shared/active-active/helpers/is-active-active-domain';
 import useSuspenseDomainDescription from '@/views/shared/hooks/use-domain-description/use-suspense-domain-description';
 
 import domainPageFailoversTableActiveActiveConfig from '../config/domain-page-failovers-table-active-active.config';
 import domainPageFailoversTableConfig from '../config/domain-page-failovers-table.config';
+import domainPageQueryParamsConfig from '../config/domain-page-query-params.config';
 import { type DomainPageTabContentProps } from '../domain-page-content/domain-page-content.types';
 import useDomainFailoverHistory from '../hooks/use-domain-failover-history/use-domain-failover-history';
+
+import { styled } from './domain-page-failovers.styles';
 
 export default function DomainPageFailovers({
   domain,
@@ -18,6 +22,12 @@ export default function DomainPageFailovers({
     domain,
     cluster,
   });
+
+  const isActiveActive = isActiveActiveDomain(domainDescription);
+
+  const [{ clusterAttributeScope, clusterAttributeValue }] = usePageQueryParams(
+    domainPageQueryParamsConfig
+  );
 
   const {
     filteredFailoverEvents,
@@ -31,26 +41,33 @@ export default function DomainPageFailovers({
     domainName: domain,
     domainId: domainDescription.id,
     cluster,
-    // TODO: set and pass filters here, but only for AA domains
+    ...(isActiveActive
+      ? {
+          clusterAttributeScope,
+          clusterAttributeValue,
+        }
+      : {}),
   });
 
   return (
-    <Table
-      data={filteredFailoverEvents}
-      shouldShowResults={!isLoading && filteredFailoverEvents.length > 0}
-      endMessageProps={{
-        kind: 'infinite-scroll',
-        hasData: allFailoverEvents.length > 0,
-        error,
-        fetchNextPage,
-        hasNextPage,
-        isFetchingNextPage,
-      }}
-      columns={
-        isActiveActiveDomain(domainDescription)
-          ? domainPageFailoversTableActiveActiveConfig
-          : domainPageFailoversTableConfig
-      }
-    />
+    <styled.FailoversContainer>
+      <Table
+        data={filteredFailoverEvents}
+        shouldShowResults={!isLoading && filteredFailoverEvents.length > 0}
+        endMessageProps={{
+          kind: 'infinite-scroll',
+          hasData: allFailoverEvents.length > 0,
+          error,
+          fetchNextPage,
+          hasNextPage,
+          isFetchingNextPage,
+        }}
+        columns={
+          isActiveActive
+            ? domainPageFailoversTableActiveActiveConfig
+            : domainPageFailoversTableConfig
+        }
+      />
+    </styled.FailoversContainer>
   );
 }
