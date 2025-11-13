@@ -100,6 +100,11 @@ jest.mock(
   ]
 );
 
+jest.mock(
+  '../../domain-page-failovers-filters/domain-page-failovers-filters',
+  () => jest.fn(() => <div data-testid="domain-page-failovers-filters" />)
+);
+
 const mockFailoverEvent: FailoverEvent = {
   id: 'failover-1',
   createdTime: {
@@ -170,6 +175,20 @@ describe(DomainPageFailovers.name, () => {
     });
 
     expect(await screen.findByText('failover-1')).toBeInTheDocument();
+  });
+
+  it('renders filters when domain is active-active', async () => {
+    await setup({
+      domainDescription: mockActiveActiveDomain,
+      failoverResponse: {
+        failoverEvents: [],
+        nextPageToken: '',
+      },
+    });
+
+    expect(
+      await screen.findByTestId('domain-page-failovers-filters')
+    ).toBeInTheDocument();
   });
 });
 
