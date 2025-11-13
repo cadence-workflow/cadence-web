@@ -184,7 +184,7 @@ export default class WorkflowHistoryGrouper {
 
   /**
    * Schedules the next batch using the best available API.
-   * Uses Scheduler API if available, otherwise falls back to Promise microtask.
+   * Uses Scheduler API if available, otherwise falls back to setTimeout.
    */
   private scheduleNextBatch() {
     // if first batch process immediately, this helps avoiding UI delays
