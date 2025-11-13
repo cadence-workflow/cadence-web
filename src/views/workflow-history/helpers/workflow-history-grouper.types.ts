@@ -11,11 +11,6 @@ export type ProcessEventsParams = {
   pendingStartDecision: PendingDecisionTaskStartEvent | null;
 };
 
-export type ProcessEventsResult = {
-  groups: HistoryEventsGroups;
-  lastProcessedEventIndex: number;
-};
-
 /**
  * Processing status for incremental grouping operations.
  */
