@@ -28,6 +28,15 @@ jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
   jest.fn(() => [{ historySelectedEventId: '1' }, jest.fn()])
 );
 
+// Mock the hook to use minimal throttle delay for faster tests
+jest.mock('../hooks/use-workflow-history-fetcher', () => {
+  const actual = jest.requireActual('../hooks/use-workflow-history-fetcher');
+  return {
+    __esModule: true,
+    default: jest.fn((params) => actual.default(params, 0)), // 0ms throttle for tests
+  };
+});
+
 jest.mock(
   '../workflow-history-compact-event-card/workflow-history-compact-event-card',
   () => jest.fn(() => <div>Compact group Card</div>)
@@ -90,24 +99,24 @@ describe('WorkflowHistory', () => {
   });
 
   it('renders page header correctly', async () => {
-    setup({});
+    await setup({});
     expect(
       await screen.findByText('Workflow history Header')
     ).toBeInTheDocument();
   });
 
   it('renders compact group cards', async () => {
-    setup({});
+    await setup({});
     expect(await screen.findByText('Compact group Card')).toBeInTheDocument();
   });
 
   it('renders timeline group cards', async () => {
-    setup({});
+    await setup({});
     expect(await screen.findByText('Timeline group card')).toBeInTheDocument();
   });
 
   it('renders load more section', async () => {
-    setup({});
+    await setup({});
     expect(await screen.findByText('Load more')).toBeInTheDocument();
   });
 
@@ -180,7 +189,7 @@ describe('WorkflowHistory', () => {
   });
 
   it('should show no results when filtered events are empty', async () => {
-    setup({ emptyEvents: true });
+    await setup({ emptyEvents: true });
     expect(await screen.findByText('No Results')).toBeInTheDocument();
   });
 

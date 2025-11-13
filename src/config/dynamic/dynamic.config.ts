@@ -11,8 +11,10 @@ import clusters from './resolvers/clusters';
 import clustersPublic from './resolvers/clusters-public';
 import { type PublicClustersConfigs } from './resolvers/clusters-public.types';
 import { type ClustersConfigs } from './resolvers/clusters.types';
+import cronListEnabled from './resolvers/cron-list-enabled';
 import extendedDomainInfoEnabled from './resolvers/extended-domain-info-enabled';
 import { type ExtendedDomainInfoEnabledConfig } from './resolvers/extended-domain-info-enabled.types';
+import failoverHistoryEnabled from './resolvers/failover-history-enabled';
 import workflowActionsEnabled from './resolvers/workflow-actions-enabled';
 import {
   type WorkflowActionsEnabledResolverParams,
@@ -32,6 +34,12 @@ const dynamicConfigs: {
     undefined,
     PublicClustersConfigs,
     'serverStart',
+    true
+  >;
+  CRON_LIST_ENABLED: ConfigAsyncResolverDefinition<
+    undefined,
+    boolean,
+    'request',
     true
   >;
   WORKFLOW_ACTIONS_ENABLED: ConfigAsyncResolverDefinition<
@@ -58,6 +66,12 @@ const dynamicConfigs: {
     'request',
     true
   >;
+  FAILOVER_HISTORY_ENABLED: ConfigAsyncResolverDefinition<
+    undefined,
+    boolean,
+    'request',
+    true
+  >;
 } = {
   CADENCE_WEB_PORT: {
     env: 'CADENCE_WEB_PORT',
@@ -77,6 +91,11 @@ const dynamicConfigs: {
     evaluateOn: 'serverStart',
     isPublic: true,
   },
+  CRON_LIST_ENABLED: {
+    resolver: cronListEnabled,
+    evaluateOn: 'request',
+    isPublic: true,
+  },
   WORKFLOW_ACTIONS_ENABLED: {
     resolver: workflowActionsEnabled,
     evaluateOn: 'request',
@@ -94,6 +113,11 @@ const dynamicConfigs: {
   },
   ARCHIVAL_DEFAULT_SEARCH_ENABLED: {
     resolver: archivalDefaultSearchEnabled,
+    evaluateOn: 'request',
+    isPublic: true,
+  },
+  FAILOVER_HISTORY_ENABLED: {
+    resolver: failoverHistoryEnabled,
     evaluateOn: 'request',
     isPublic: true,
   },
