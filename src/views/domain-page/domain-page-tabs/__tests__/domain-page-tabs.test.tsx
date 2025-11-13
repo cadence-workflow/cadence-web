@@ -2,8 +2,17 @@ import React from 'react';
 
 import { render, screen, act, fireEvent } from '@/test-utils/rtl';
 
+import useSuspenseConfigValue from '@/hooks/use-config-value/use-suspense-config-value';
+
 import domainPageTabsConfig from '../../config/domain-page-tabs.config';
 import DomainPageTabs from '../domain-page-tabs';
+
+jest.mock('@/hooks/use-config-value/use-suspense-config-value', () =>
+  jest.fn()
+);
+
+const mockUseSuspenseConfigValue =
+  useSuspenseConfigValue as jest.MockedFunction<typeof useSuspenseConfigValue>;
 
 const mockPushFn = jest.fn();
 jest.mock('next/navigation', () => ({
@@ -36,6 +45,10 @@ jest.mock('../../config/domain-page-tabs.config', () => ({
     title: 'Workflows',
     artwork: () => <div data-testid="workflows-artwork" />,
   },
+  'cron-list': {
+    title: 'Cron',
+    artwork: () => <div data-testid="cron-list-artwork" />,
+  },
   'page-2': {
     title: 'Page 2',
   },
@@ -45,20 +58,42 @@ jest.mock('../../domain-page-help/domain-page-help', () =>
   jest.fn(() => <button data-testid="domain-page-help">Help Button</button>)
 );
 
+function setup(opts: { cronListEnabled?: boolean } = {}) {
+  const { cronListEnabled = false } = opts;
+
+  mockUseSuspenseConfigValue.mockReturnValue({
+    data: cronListEnabled,
+  } as any);
+}
+
 describe('DomainPageTabs', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   it('renders tabs titles correctly', () => {
+    setup();
+
     render(<DomainPageTabs />);
 
-    Object.values(domainPageTabsConfig).forEach(({ title }) => {
+    for (const title of ['Workflows', 'Page 2']) {
       expect(screen.getByText(title)).toBeInTheDocument();
-    });
+    }
+  });
+
+  it('renders cron tab correctly when feature flag is enabled', () => {
+    setup({ cronListEnabled: false });
+
+    render(<DomainPageTabs />);
+
+    for (const title of ['Workflows', 'Page 2']) {
+      expect(screen.getByText(title)).toBeInTheDocument();
+    }
   });
 
   it('reroutes when new tab is clicked', () => {
+    setup();
+
     render(<DomainPageTabs />);
 
     const page2Tab = screen.getByText('Page 2');
@@ -70,6 +105,8 @@ describe('DomainPageTabs', () => {
   });
 
   it('retains query params when new tab is clicked', () => {
+    setup();
+
     // TODO: this is a bit hacky, see if there is a better way to mock the window search property
     const originalWindow = window;
     window = Object.create(window);
@@ -96,9 +133,13 @@ describe('DomainPageTabs', () => {
   });
 
   it('renders tabs artworks correctly', () => {
+    setup();
+
     render(<DomainPageTabs />);
 
     Object.entries(domainPageTabsConfig).forEach(([key, { artwork }]) => {
+      if (key === 'cron-list') return;
+
       if (typeof artwork !== 'undefined')
         expect(screen.getByTestId(`${key}-artwork`)).toBeInTheDocument();
       else
@@ -107,6 +148,8 @@ describe('DomainPageTabs', () => {
   });
 
   it('renders the help button as endEnhancer', () => {
+    setup();
+
     render(<DomainPageTabs />);
 
     expect(screen.getByTestId('domain-page-help')).toBeInTheDocument();
@@ -114,6 +157,8 @@ describe('DomainPageTabs', () => {
   });
 
   it('renders the start workflow button', () => {
+    setup();
+
     render(<DomainPageTabs />);
 
     expect(screen.getByTestId('start-workflow-button')).toBeInTheDocument();
