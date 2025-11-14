@@ -39,8 +39,8 @@ const domainPageFailoversTableConfig = [
     width: '40%',
     renderCell: (event: FailoverEvent) =>
       createElement(DomainPageFailoverSingleCluster, {
-        fromCluster: event.clusterFailovers[0].fromCluster?.activeClusterName,
-        toCluster: event.clusterFailovers[0].toCluster?.activeClusterName,
+        fromCluster: event.clusterFailovers[0]?.fromCluster?.activeClusterName,
+        toCluster: event.clusterFailovers[0]?.toCluster?.activeClusterName,
       }),
   },
 ] as const satisfies TableConfig<FailoverEvent>;
