@@ -43,12 +43,12 @@ export default function DomainPageFailoverModal({
         clusters,
       };
     });
-  }, [failoverEvent]);
+  }, [failoverEvent.clusterFailovers]);
 
   const formattedTime = useMemo(() => {
     if (!failoverEvent.createdTime) return null;
     return parseGrpcTimestamp(failoverEvent.createdTime);
-  }, [failoverEvent]);
+  }, [failoverEvent.createdTime]);
 
   return (
     <Modal
