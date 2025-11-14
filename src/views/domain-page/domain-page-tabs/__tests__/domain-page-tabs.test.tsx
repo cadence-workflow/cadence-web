@@ -40,6 +40,10 @@ jest.mock('../../config/domain-page-tabs.config', () => ({
     title: 'Workflows',
     artwork: () => <div data-testid="workflows-artwork" />,
   },
+  'cron-list': {
+    title: 'Cron',
+    artwork: () => <div data-testid="cron-list-artwork" />,
+  },
   metadata: {
     title: 'Metadata',
     artwork: () => <div data-testid="metadata-artwork" />,
@@ -67,20 +71,26 @@ describe(DomainPageTabs.name, () => {
     jest.clearAllMocks();
   });
 
-  it('renders tabs titles correctly with failover history disabled', async () => {
-    await setup({ enableFailoverHistory: false });
+  it('renders tabs titles correctly', async () => {
+    await setup();
 
     expect(screen.getByText('Workflows')).toBeInTheDocument();
     expect(screen.getByText('Metadata')).toBeInTheDocument();
     expect(screen.getByText('Settings')).toBeInTheDocument();
     expect(screen.getByText('Archival')).toBeInTheDocument();
+
+    expect(screen.queryByText('Cron')).toBeNull();
     expect(screen.queryByText('Failovers')).toBeNull();
   });
 
-  it('renders tabs with failover history enabled', async () => {
-    await setup({ enableFailoverHistory: true });
+  it('renders tabs with cron and failover history enabled', async () => {
+    await setup({
+      enableFailoverHistory: true,
+      enableCronList: true,
+    });
 
     expect(screen.getByText('Workflows')).toBeInTheDocument();
+    expect(screen.getByText('Cron')).toBeInTheDocument();
     expect(screen.getByText('Metadata')).toBeInTheDocument();
     expect(screen.getByText('Failovers')).toBeInTheDocument();
     expect(screen.getByText('Settings')).toBeInTheDocument();
@@ -88,7 +98,7 @@ describe(DomainPageTabs.name, () => {
   });
 
   it('reroutes when new tab is clicked', async () => {
-    const { user } = await setup({ enableFailoverHistory: false });
+    const { user } = await setup();
 
     const metadataTab = await screen.findByText('Metadata');
     await user.click(metadataTab);
@@ -108,7 +118,7 @@ describe(DomainPageTabs.name, () => {
       writable: true,
     });
 
-    const { user } = await setup({ enableFailoverHistory: false });
+    const { user } = await setup();
 
     const metadataTab = await screen.findByText('Metadata');
     await user.click(metadataTab);
@@ -121,7 +131,7 @@ describe(DomainPageTabs.name, () => {
   });
 
   it('renders tabs artworks correctly', async () => {
-    await setup({ enableFailoverHistory: false });
+    await setup();
 
     expect(screen.getByTestId('workflows-artwork')).toBeInTheDocument();
     expect(screen.getByTestId('metadata-artwork')).toBeInTheDocument();
@@ -152,13 +162,12 @@ describe(DomainPageTabs.name, () => {
   });
 });
 
-async function setup({
-  error,
-  enableFailoverHistory,
-}: {
+async function setup(opts?: {
   error?: boolean;
   enableFailoverHistory?: boolean;
+  enableCronList?: boolean;
 }) {
+  const { error, enableFailoverHistory, enableCronList } = opts ?? {};
   const user = userEvent.setup();
 
   render(
@@ -183,8 +192,10 @@ async function setup({
               );
             } else {
               return HttpResponse.json(
-                (enableFailoverHistory ??
-                  false) satisfies GetConfigResponse<'FAILOVER_HISTORY_ENABLED'>
+                ((enableFailoverHistory ??
+                  false) satisfies GetConfigResponse<'FAILOVER_HISTORY_ENABLED'>) ||
+                  ((enableCronList ??
+                    false) satisfies GetConfigResponse<'CRON_LIST_ENABLED'>)
               );
             }
           },
