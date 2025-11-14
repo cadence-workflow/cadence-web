@@ -27,6 +27,9 @@ export default function DomainPageTabs() {
     'FAILOVER_HISTORY_ENABLED'
   );
 
+  const { data: isCronListEnabled } =
+    useSuspenseConfigValue('CRON_LIST_ENABLED');
+
   const tabsConfig = useMemo<Partial<typeof domainPageTabsConfig>>(() => {
     const tabsToHide: Array<DomainPageTabName> = [];
 
@@ -34,8 +37,12 @@ export default function DomainPageTabs() {
       tabsToHide.push('failovers');
     }
 
+    if (!isCronListEnabled) {
+      tabsToHide.push('cron-list');
+    }
+
     return omit(domainPageTabsConfig, tabsToHide);
-  }, [isFailoverHistoryEnabled]);
+  }, [isFailoverHistoryEnabled, isCronListEnabled]);
 
   const tabList = useMemo(
     () =>
