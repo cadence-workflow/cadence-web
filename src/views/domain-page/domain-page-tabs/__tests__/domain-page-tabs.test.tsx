@@ -6,10 +6,9 @@ import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import ErrorBoundary from '@/components/error-boundary/error-boundary';
 import { type GetConfigResponse } from '@/route-handlers/get-config/get-config.types';
+import { mockConsoleError } from '@/test-utils/mock-console-error';
 
 import DomainPageTabs from '../domain-page-tabs';
-
-import { mockConsoleError } from './mock-console-error';
 
 const mockPushFn = jest.fn();
 jest.mock('next/navigation', () => ({
