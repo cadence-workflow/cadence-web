@@ -1,5 +1,6 @@
 import { type z } from 'zod';
 
+import { type FailoverEvent as FailoverEventProto } from '@/__generated__/proto-ts/uber/cadence/api/v1/FailoverEvent';
 import { type ListFailoverHistoryResponse as ListFailoverHistoryResponseProto } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListFailoverHistoryResponse';
 import { type DefaultMiddlewaresContext } from '@/utils/route-handlers-middleware';
 
@@ -19,5 +20,7 @@ export type ListFailoverHistoryRequestQueryParams = z.input<
 >;
 
 export type ListFailoverHistoryResponse = ListFailoverHistoryResponseProto;
+
+export type FailoverEvent = FailoverEventProto;
 
 export type Context = DefaultMiddlewaresContext;

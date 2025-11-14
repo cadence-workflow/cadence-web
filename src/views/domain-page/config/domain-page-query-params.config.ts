@@ -41,6 +41,9 @@ const domainPageQueryParamsConfig: [
   PageQueryParam<'sortColumnArchival', string>,
   PageQueryParam<'sortOrderArchival', SortOrder>,
   PageQueryParam<'queryArchival', string>,
+  // Failovers Tab query params
+  PageQueryParam<'clusterAttributeScope', string | undefined>,
+  PageQueryParam<'clusterAttributeValue', string | undefined>,
 ] = [
   {
     key: 'inputType',
@@ -162,6 +165,14 @@ const domainPageQueryParamsConfig: [
     key: 'queryArchival',
     queryParamKey: 'aquery',
     defaultValue: '',
+  },
+  {
+    key: 'clusterAttributeScope',
+    queryParamKey: 'cs',
+  },
+  {
+    key: 'clusterAttributeValue',
+    queryParamKey: 'cv',
   },
 ] as const;
 
