@@ -22,6 +22,10 @@ jest.mock(
     ))
 );
 
+jest.mock('../../domain-page-failover-modal/domain-page-failover-modal', () =>
+  jest.fn(() => <div data-testid="mock-failover-modal">Modal</div>)
+);
+
 describe(DomainPageFailoverActiveActive.name, () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -61,6 +65,7 @@ describe(DomainPageFailoverActiveActive.name, () => {
     ).toBeInTheDocument();
     expect(screen.getByText('cluster-1 -> cluster-2')).toBeInTheDocument();
     expect(screen.getByText('See more')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-failover-modal')).toBeInTheDocument();
   });
 
   it('renders cluster failover when matching non-primary cluster failover is found', () => {
@@ -101,6 +106,7 @@ describe(DomainPageFailoverActiveActive.name, () => {
     ).toBeInTheDocument();
     expect(screen.getByText('cluster-1 -> cluster-2')).toBeInTheDocument();
     expect(screen.getByText('See more')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-failover-modal')).toBeInTheDocument();
   });
 
   it('does not render cluster failover section when clusterAttributeScope is set but clusterAttributeValue is undefined for non-primary scope', () => {
@@ -138,6 +144,7 @@ describe(DomainPageFailoverActiveActive.name, () => {
       screen.queryByTestId('mock-single-cluster-failover')
     ).not.toBeInTheDocument();
     expect(screen.getByText('See more')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-failover-modal')).toBeInTheDocument();
   });
 
   it('does not render cluster failover section when no matching cluster failover is found', () => {
@@ -177,6 +184,7 @@ describe(DomainPageFailoverActiveActive.name, () => {
       screen.queryByTestId('mock-single-cluster-failover')
     ).not.toBeInTheDocument();
     expect(screen.getByText('See more')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-failover-modal')).toBeInTheDocument();
   });
 
   it('does not render cluster failover section when clusterAttributeScope is undefined', () => {
@@ -211,6 +219,7 @@ describe(DomainPageFailoverActiveActive.name, () => {
       screen.queryByTestId('mock-single-cluster-failover')
     ).not.toBeInTheDocument();
     expect(screen.getByText('See more')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-failover-modal')).toBeInTheDocument();
   });
 
   it('renders "See more" button even when no matching cluster failover is found', () => {
@@ -233,6 +242,7 @@ describe(DomainPageFailoverActiveActive.name, () => {
       screen.queryByTestId('mock-single-cluster-failover')
     ).not.toBeInTheDocument();
     expect(screen.getByText('See more')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-failover-modal')).toBeInTheDocument();
   });
 
   it('selects the correct cluster failover when multiple cluster failovers exist', () => {
@@ -286,6 +296,7 @@ describe(DomainPageFailoverActiveActive.name, () => {
       screen.getByTestId('mock-single-cluster-failover')
     ).toBeInTheDocument();
     expect(screen.getByText('cluster-3 -> cluster-4')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-failover-modal')).toBeInTheDocument();
   });
 });
 
