@@ -1,12 +1,17 @@
-import { styled as createStyled, withStyle, type Theme } from 'baseui';
-import { ModalBody, ModalFooter, type ModalOverrides } from 'baseui/modal';
+import { styled as createStyled, withStyle } from 'baseui';
+import {
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  type ModalOverrides,
+} from 'baseui/modal';
 import { type TableOverrides } from 'baseui/table-semantic';
 import { type StyleObject } from 'styletron-react';
 
 export const overrides = {
   modal: {
     Close: {
-      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+      style: ({ $theme }): StyleObject => ({
         top: $theme.sizing.scale850,
         right: $theme.sizing.scale800,
       }),
@@ -19,16 +24,17 @@ export const overrides = {
   } satisfies ModalOverrides,
   table: {
     TableHeadCell: {
-      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+      style: ({ $theme }): StyleObject => ({
         ...$theme.typography.LabelXSmall,
         paddingTop: $theme.sizing.scale300,
         paddingBottom: $theme.sizing.scale300,
         paddingLeft: $theme.sizing.scale500,
         paddingRight: $theme.sizing.scale500,
+        color: $theme.colors.contentTertiary,
       }),
     },
     TableBodyCell: {
-      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+      style: ({ $theme }): StyleObject => ({
         ...$theme.typography.ParagraphXSmall,
         paddingTop: $theme.sizing.scale300,
         paddingBottom: $theme.sizing.scale300,
@@ -40,46 +46,37 @@ export const overrides = {
 };
 
 export const styled = {
-  ModalHeader: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
-    padding: $theme.sizing.scale600,
+  ModalHeader: withStyle(ModalHeader, ({ $theme }) => ({
+    marginTop: $theme.sizing.scale850,
   })),
-  Title: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
-    ...$theme.typography.HeadingSmall,
-  })),
-  ModalBody: withStyle(ModalBody, ({ $theme }: { $theme: Theme }) => ({
-    padding: $theme.sizing.scale600,
-  })),
-  InfoRow: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+  InfoRow: createStyled('div', ({ $theme }) => ({
     display: 'flex',
     gap: $theme.sizing.scale800,
-    marginBottom: $theme.sizing.scale500,
-    ':last-child': {
-      marginBottom: 0,
-    },
+    marginBottom: 0,
+    paddingLeft: $theme.sizing.scale500,
+    paddingRight: $theme.sizing.scale500,
   })),
-  InfoItem: createStyled('div', {
+  InfoItem: createStyled('div', ({ $theme }) => ({
     display: 'flex',
     flexDirection: 'column',
-  }),
-  InfoLabel: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
-    ...$theme.typography.LabelXSmall,
-    color: $theme.colors.contentSecondary,
-    marginBottom: $theme.sizing.scale200,
+    gap: $theme.sizing.scale200,
   })),
-  InfoValue: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+  InfoLabel: createStyled('div', ({ $theme }) => ({
+    ...$theme.typography.LabelXSmall,
+    color: $theme.colors.contentTertiary,
+  })),
+  InfoValue: createStyled('div', ({ $theme }) => ({
     ...$theme.typography.LabelXSmall,
     color: $theme.colors.contentPrimary,
   })),
-  TableContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+  TableContainer: createStyled('div', ({ $theme }) => ({
     marginTop: $theme.sizing.scale600,
     maxHeight: '50vh',
     overflowY: 'auto',
   })),
-  ModalFooter: withStyle(ModalFooter, ({ $theme }: { $theme: Theme }) => ({
-    padding: `${$theme.sizing.scale500} ${$theme.sizing.scale600}`,
-    borderTop: `1px solid ${$theme.colors.borderOpaque}`,
+  ModalFooter: withStyle(ModalFooter, {
     display: 'flex',
-    justifyContent: 'flex-end',
-    gap: $theme.sizing.scale400,
-  })),
+    flexDirection: 'row-reverse',
+    justifyContent: 'space-between',
+  }),
 };

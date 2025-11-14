@@ -1,7 +1,7 @@
 'use client';
 import { useMemo } from 'react';
 
-import { Modal, ModalButton } from 'baseui/modal';
+import { Modal, ModalBody, ModalButton } from 'baseui/modal';
 import { Table } from 'baseui/table-semantic';
 
 import FormattedDate from '@/components/formatted-date/formatted-date';
@@ -57,10 +57,8 @@ export default function DomainPageFailoverModal({
       closeable
       overrides={overrides.modal}
     >
-      <styled.ModalHeader>
-        <styled.Title>Failover Information</styled.Title>
-      </styled.ModalHeader>
-      <styled.ModalBody>
+      <styled.ModalHeader>Failover Information</styled.ModalHeader>
+      <ModalBody>
         <styled.InfoRow>
           <styled.InfoItem>
             <styled.InfoLabel>ID</styled.InfoLabel>
@@ -84,7 +82,7 @@ export default function DomainPageFailoverModal({
             />
           </styled.TableContainer>
         )}
-      </styled.ModalBody>
+      </ModalBody>
       <styled.ModalFooter>
         <ModalButton size="compact" kind="primary" onClick={onClose}>
           Close
