@@ -1,11 +1,14 @@
 import { styled as createStyled, type Theme } from 'baseui';
 
 export const styled = {
-  FailoverContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
-    display: 'flex',
-    gap: $theme.sizing.scale600,
-    alignItems: 'baseline',
-  })),
+  FailoverEventContainer: createStyled(
+    'div',
+    ({ $theme }: { $theme: Theme }) => ({
+      display: 'flex',
+      gap: $theme.sizing.scale600,
+      alignItems: 'baseline',
+    })
+  ),
   ClusterFailoverContainer: createStyled(
     'div',
     ({ $theme }: { $theme: Theme }) => ({

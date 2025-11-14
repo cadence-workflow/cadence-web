@@ -20,24 +20,29 @@ export default function DomainPageFailoverActiveActive({
     domainPageQueryParamsConfig
   );
 
-  const clusterFailoverForMaybeSelectedAttribute = useMemo(
-    () =>
-      failoverEvent.clusterFailovers.find((clusterFailover) =>
-        clusterFailoverMatchesAttribute(
-          clusterFailover,
-          clusterAttributeScope,
-          clusterAttributeValue
-        )
-      ),
-    [
-      clusterAttributeScope,
-      clusterAttributeValue,
-      failoverEvent.clusterFailovers,
-    ]
-  );
+  const clusterFailoverForMaybeSelectedAttribute = useMemo(() => {
+    if (
+      !clusterAttributeScope ||
+      (clusterAttributeScope !== PRIMARY_CLUSTER_SCOPE &&
+        !clusterAttributeValue)
+    )
+      return undefined;
+
+    return failoverEvent.clusterFailovers.find((clusterFailover) =>
+      clusterFailoverMatchesAttribute(
+        clusterFailover,
+        clusterAttributeScope,
+        clusterAttributeValue
+      )
+    );
+  }, [
+    clusterAttributeScope,
+    clusterAttributeValue,
+    failoverEvent.clusterFailovers,
+  ]);
 
   return (
-    <styled.FailoverContainer>
+    <styled.FailoverEventContainer>
       {clusterFailoverForMaybeSelectedAttribute && (
         <styled.ClusterFailoverContainer>
           <styled.ClusterAttributeLabel>
@@ -66,6 +71,6 @@ export default function DomainPageFailoverActiveActive({
       >
         See more
       </Button>
-    </styled.FailoverContainer>
+    </styled.FailoverEventContainer>
   );
 }

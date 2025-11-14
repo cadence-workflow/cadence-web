@@ -50,7 +50,7 @@ export default function DomainPageFailovers({
   });
 
   return (
-    <styled.FailoversContainer>
+    <styled.FailoversTableContainer>
       <Table
         data={filteredFailoverEvents}
         shouldShowResults={!isLoading && filteredFailoverEvents.length > 0}
@@ -68,6 +68,6 @@ export default function DomainPageFailovers({
             : domainPageFailoversTableConfig
         }
       />
-    </styled.FailoversContainer>
+    </styled.FailoversTableContainer>
   );
 }
