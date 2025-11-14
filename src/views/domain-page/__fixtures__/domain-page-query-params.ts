@@ -23,4 +23,6 @@ export const mockDomainPageQueryParamsValues = {
   sortColumnArchival: 'startTime',
   sortOrderArchival: 'DESC',
   queryArchival: '',
+  clusterAttributeScope: undefined,
+  clusterAttributeValue: undefined,
 } as const satisfies PageQueryParamValues<typeof domainPageQueryParamsConfig>;
