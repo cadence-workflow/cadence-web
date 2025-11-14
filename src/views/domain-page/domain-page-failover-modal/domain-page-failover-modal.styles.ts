@@ -1,10 +1,5 @@
 import { styled as createStyled, withStyle } from 'baseui';
-import {
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  type ModalOverrides,
-} from 'baseui/modal';
+import { ModalFooter, ModalHeader, type ModalOverrides } from 'baseui/modal';
 import { type TableOverrides } from 'baseui/table-semantic';
 import { type StyleObject } from 'styletron-react';
 
