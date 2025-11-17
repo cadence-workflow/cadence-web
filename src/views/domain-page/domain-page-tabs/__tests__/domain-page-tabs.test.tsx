@@ -6,6 +6,7 @@ import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import ErrorBoundary from '@/components/error-boundary/error-boundary';
 import { type GetConfigResponse } from '@/route-handlers/get-config/get-config.types';
+import { mockConsoleError } from '@/test-utils/mock-console-error';
 
 import DomainPageTabs from '../domain-page-tabs';
 
@@ -141,11 +142,25 @@ describe(DomainPageTabs.name, () => {
   });
 
   it('handles errors gracefully', async () => {
-    await setup({ error: true });
+    // Mute console.error to avoid polluting the test output.
+    const silencedErrorRegexes = [
+      /RequestError: Failed to fetch config/,
+      /The above error occurred in the <DomainPageTabs> component/,
+    ];
+    const { restore: restoreConsoleError } = mockConsoleError({
+      silencedErrorRegexes,
+    });
 
-    expect(
-      await screen.findByText('Error: Failed to fetch config')
-    ).toBeInTheDocument();
+    try {
+      await setup({ error: true });
+
+      expect(
+        await screen.findByText('Error: Failed to fetch config')
+      ).toBeInTheDocument();
+    } finally {
+      // Be sure to restore the console.error.
+      restoreConsoleError();
+    }
   });
 
   it('renders the help button as endEnhancer', async () => {
