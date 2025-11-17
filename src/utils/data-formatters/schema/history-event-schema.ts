@@ -155,30 +155,7 @@ const activeClusterSelectionStrategySchema = z.enum([
 
 // TODO @adhitya.mamallan - this needs to be modified as part of active-active's redesign,
 // so that we only check for clusterAttributes
-const activeClusterSelectionPolicySchema = z.discriminatedUnion(
-  'strategyConfig',
-  [
-    z.object({
-      strategy: activeClusterSelectionStrategySchema,
-      strategyConfig: z.literal('activeClusterStickyRegionConfig'),
-      activeClusterStickyRegionConfig: z.object({
-        stickyRegion: z.string(),
-      }),
-      activeClusterExternalEntityConfig: z.nullable(z.undefined()),
-      clusterAttribute: clusterAttributeSchema.nullable(),
-    }),
-    z.object({
-      strategy: activeClusterSelectionStrategySchema,
-      strategyConfig: z.literal('activeClusterExternalEntityConfig'),
-      activeClusterStickyRegionConfig: z.nullable(z.undefined()),
-      activeClusterExternalEntityConfig: z.object({
-        externalEntityType: z.string(),
-        externalEntityKey: z.string(),
-      }),
-      clusterAttribute: clusterAttributeSchema.nullable(),
-    }),
-  ]
-);
+const activeClusterSelectionPolicySchema = z.null();
 
 const failureSchema = z.object({
   reason: z.string(),
