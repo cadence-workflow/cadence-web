@@ -67,6 +67,10 @@ const resolverSchemas: ResolverSchemas = {
     args: z.undefined(),
     returnType: z.boolean(),
   },
+  HISTORY_PAGE_V2_ENABLED: {
+    args: z.undefined(),
+    returnType: z.boolean(),
+  },
 };
 
 export default resolverSchemas;
