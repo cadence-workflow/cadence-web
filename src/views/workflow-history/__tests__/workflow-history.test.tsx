@@ -15,6 +15,7 @@ import {
 import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
 import * as usePageFiltersModule from '@/components/page-filters/hooks/use-page-filters';
 import { type PageQueryParamValues } from '@/hooks/use-page-query-params/use-page-query-params.types';
+import { type GetConfigResponse } from '@/route-handlers/get-config/get-config.types';
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
 import { mockDescribeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
 import type workflowPageQueryParamsConfig from '@/views/workflow-page/config/workflow-page-query-params.config';
@@ -75,6 +76,16 @@ jest.mock('../workflow-history-header/workflow-history-header', () =>
       <div>Workflow history Header</div>
     </div>
   ))
+);
+
+jest.mock(
+  '../../workflow-history-v2/workflow-history-header/workflow-history-header',
+  () =>
+    jest.fn(() => (
+      <div>
+        <div>Workflow history V2 Header</div>
+      </div>
+    ))
 );
 
 jest.mock(
@@ -237,6 +248,7 @@ async function setup({
   emptyEvents,
   withResetModal,
   ungroupedViewPreference,
+  isHistoryPageV2Enabled = false,
 }: {
   error?: boolean;
   summaryError?: boolean;
@@ -248,6 +260,7 @@ async function setup({
   emptyEvents?: boolean;
   withResetModal?: boolean;
   ungroupedViewPreference?: boolean;
+  isHistoryPageV2Enabled?: boolean;
 }) {
   const user = userEvent.setup();
 
@@ -291,6 +304,16 @@ async function setup({
     </Suspense>,
     {
       endpointsMocks: [
+        {
+          path: '/api/config',
+          httpMethod: 'GET',
+          mockOnce: false,
+          httpResolver: async () =>
+            HttpResponse.json(
+              (isHistoryPageV2Enabled ??
+                false) satisfies GetConfigResponse<'HISTORY_PAGE_V2_ENABLED'>
+            ),
+        },
         {
           path: '/api/domains/:domain/:cluster/workflows/:workflowId/:runId/history',
           httpMethod: 'GET',

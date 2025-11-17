@@ -13,6 +13,7 @@ import { Virtuoso, type VirtuosoHandle } from 'react-virtuoso';
 import usePageFilters from '@/components/page-filters/hooks/use-page-filters';
 import PageSection from '@/components/page-section/page-section';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
+import useSuspenseConfigValue from '@/hooks/use-config-value/use-suspense-config-value';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import useThrottledState from '@/hooks/use-throttled-state';
 import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
@@ -21,6 +22,7 @@ import sortBy from '@/utils/sort-by';
 
 import { resetWorkflowActionConfig } from '../workflow-actions/config/workflow-actions.config';
 import WorkflowActionsModal from '../workflow-actions/workflow-actions-modal/workflow-actions-modal';
+import WorkflowHistoryV2Header from '../workflow-history-v2/workflow-history-header/workflow-history-header';
 import workflowPageQueryParamsConfig from '../workflow-page/config/workflow-page-query-params.config';
 import { useSuspenseDescribeWorkflow } from '../workflow-page/hooks/use-describe-workflow';
 
@@ -58,6 +60,10 @@ export default function WorkflowHistory({ params }: Props) {
     pageSize: WORKFLOW_HISTORY_PAGE_SIZE_CONFIG,
     waitForNewEvent: true,
   };
+
+  const { data: isHistoryPageV2Enabled } = useSuspenseConfigValue(
+    'HISTORY_PAGE_V2_ENABLED'
+  );
 
   const {
     historyQuery,
@@ -324,66 +330,83 @@ export default function WorkflowHistory({ params }: Props) {
 
   return (
     <div className={cls.container}>
-      <WorkflowHistoryHeader
-        isExpandAllEvents={isExpandAllEvents}
-        toggleIsExpandAllEvents={toggleIsExpandAllEvents}
-        isUngroupedHistoryViewEnabled={isUngroupedHistoryViewEnabled}
-        onClickGroupModeToggle={onClickGroupModeToggle}
-        wfHistoryRequestArgs={wfHistoryRequestArgs}
-        pageFiltersProps={{
-          activeFiltersCount,
-          queryParams,
-          setQueryParams,
-          ...pageFiltersRest,
-        }}
-        timelineChartProps={{
-          eventGroupsEntries: filteredEventGroupsEntries,
-          selectedEventId: queryParams.historySelectedEventId,
-          isLoading:
-            workflowExecutionInfo?.closeStatus ===
-            'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
-              ? !isLastPageEmpty
-              : hasNextPage,
-          hasMoreEvents: hasNextPage,
-          isFetchingMoreEvents: isFetchingNextPage,
-          fetchMoreEvents: manualFetchNextPage,
-          onClickEventGroup: (eventGroupIndex) => {
-            const eventId =
-              filteredEventGroupsEntries[eventGroupIndex][1].events[0]
-                .eventId || undefined;
+      {isHistoryPageV2Enabled ? (
+        <WorkflowHistoryV2Header
+          isExpandAllEvents={isExpandAllEvents}
+          toggleIsExpandAllEvents={toggleIsExpandAllEvents}
+          isUngroupedHistoryViewEnabled={isUngroupedHistoryViewEnabled}
+          onClickGroupModeToggle={onClickGroupModeToggle}
+          wfHistoryRequestArgs={wfHistoryRequestArgs}
+          pageFiltersProps={{
+            activeFiltersCount,
+            queryParams,
+            setQueryParams,
+            ...pageFiltersRest,
+          }}
+        />
+      ) : (
+        <WorkflowHistoryHeader
+          isExpandAllEvents={isExpandAllEvents}
+          toggleIsExpandAllEvents={toggleIsExpandAllEvents}
+          isUngroupedHistoryViewEnabled={isUngroupedHistoryViewEnabled}
+          onClickGroupModeToggle={onClickGroupModeToggle}
+          wfHistoryRequestArgs={wfHistoryRequestArgs}
+          pageFiltersProps={{
+            activeFiltersCount,
+            queryParams,
+            setQueryParams,
+            ...pageFiltersRest,
+          }}
+          timelineChartProps={{
+            eventGroupsEntries: filteredEventGroupsEntries,
+            selectedEventId: queryParams.historySelectedEventId,
+            isLoading:
+              workflowExecutionInfo?.closeStatus ===
+              'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
+                ? !isLastPageEmpty
+                : hasNextPage,
+            hasMoreEvents: hasNextPage,
+            isFetchingMoreEvents: isFetchingNextPage,
+            fetchMoreEvents: manualFetchNextPage,
+            onClickEventGroup: (eventGroupIndex) => {
+              const eventId =
+                filteredEventGroupsEntries[eventGroupIndex][1].events[0]
+                  .eventId || undefined;
 
-            if (eventId) {
-              setQueryParams({
-                historySelectedEventId: eventId,
-              });
-            }
+              if (eventId) {
+                setQueryParams({
+                  historySelectedEventId: eventId,
+                });
+              }
 
-            if (!isUngroupedHistoryViewEnabled) {
-              compactSectionListRef.current?.scrollToIndex({
-                index: eventGroupIndex,
-                align: 'start',
-                behavior: 'auto',
-              });
+              if (!isUngroupedHistoryViewEnabled) {
+                compactSectionListRef.current?.scrollToIndex({
+                  index: eventGroupIndex,
+                  align: 'start',
+                  behavior: 'auto',
+                });
 
-              timelineSectionListRef.current?.scrollToIndex({
-                index: eventGroupIndex,
-                align: 'start',
-                behavior: 'auto',
-              });
-            } else {
-              const ungroupedEventIndex = sortedUngroupedEvents.findIndex(
-                (eventInfo) => eventInfo.id === eventId
-              );
+                timelineSectionListRef.current?.scrollToIndex({
+                  index: eventGroupIndex,
+                  align: 'start',
+                  behavior: 'auto',
+                });
+              } else {
+                const ungroupedEventIndex = sortedUngroupedEvents.findIndex(
+                  (eventInfo) => eventInfo.id === eventId
+                );
 
-              ungroupedTableRef.current?.scrollToIndex({
-                index: ungroupedEventIndex,
-                align: 'start',
-                behavior: 'auto',
-              });
-            }
-          },
-        }}
-      />
+                ungroupedTableRef.current?.scrollToIndex({
+                  index: ungroupedEventIndex,
+                  align: 'start',
+                  behavior: 'auto',
+                });
+              }
+            },
+          }}
+        />
+      )}
+
       <PageSection className={cls.contentSection}>
         {filteredEventGroupsEntries.length > 0 && (
           <>
