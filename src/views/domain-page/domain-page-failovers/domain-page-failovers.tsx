@@ -10,9 +10,8 @@ import domainPageFailoversTableActiveActiveConfig from '../config/domain-page-fa
 import domainPageFailoversTableConfig from '../config/domain-page-failovers-table.config';
 import domainPageQueryParamsConfig from '../config/domain-page-query-params.config';
 import { type DomainPageTabContentProps } from '../domain-page-content/domain-page-content.types';
+import DomainPageFailoversFilters from '../domain-page-failovers-filters/domain-page-failovers-filters';
 import useDomainFailoverHistory from '../hooks/use-domain-failover-history/use-domain-failover-history';
-
-import { styled } from './domain-page-failovers.styles';
 
 export default function DomainPageFailovers({
   domain,
@@ -25,9 +24,11 @@ export default function DomainPageFailovers({
 
   const isActiveActive = isActiveActiveDomain(domainDescription);
 
-  const [{ clusterAttributeScope, clusterAttributeValue }] = usePageQueryParams(
+  const [queryParams, setQueryParams] = usePageQueryParams(
     domainPageQueryParamsConfig
   );
+
+  const { clusterAttributeScope, clusterAttributeValue } = queryParams;
 
   const {
     filteredFailoverEvents,
@@ -50,7 +51,14 @@ export default function DomainPageFailovers({
   });
 
   return (
-    <styled.FailoversTableContainer>
+    <div>
+      {isActiveActive && (
+        <DomainPageFailoversFilters
+          domainDescription={domainDescription}
+          queryParams={queryParams}
+          setQueryParams={setQueryParams}
+        />
+      )}
       <Table
         data={filteredFailoverEvents}
         shouldShowResults={!isLoading && filteredFailoverEvents.length > 0}
@@ -68,6 +76,6 @@ export default function DomainPageFailovers({
             : domainPageFailoversTableConfig
         }
       />
-    </styled.FailoversTableContainer>
+    </div>
   );
 }

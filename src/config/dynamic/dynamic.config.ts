@@ -15,6 +15,7 @@ import cronListEnabled from './resolvers/cron-list-enabled';
 import extendedDomainInfoEnabled from './resolvers/extended-domain-info-enabled';
 import { type ExtendedDomainInfoEnabledConfig } from './resolvers/extended-domain-info-enabled.types';
 import failoverHistoryEnabled from './resolvers/failover-history-enabled';
+import historyPageV2Enabled from './resolvers/history-page-v2-enabled';
 import workflowActionsEnabled from './resolvers/workflow-actions-enabled';
 import {
   type WorkflowActionsEnabledResolverParams,
@@ -72,6 +73,12 @@ const dynamicConfigs: {
     'request',
     true
   >;
+  HISTORY_PAGE_V2_ENABLED: ConfigAsyncResolverDefinition<
+    undefined,
+    boolean,
+    'request',
+    true
+  >;
 } = {
   CADENCE_WEB_PORT: {
     env: 'CADENCE_WEB_PORT',
@@ -118,6 +125,11 @@ const dynamicConfigs: {
   },
   FAILOVER_HISTORY_ENABLED: {
     resolver: failoverHistoryEnabled,
+    evaluateOn: 'request',
+    isPublic: true,
+  },
+  HISTORY_PAGE_V2_ENABLED: {
+    resolver: historyPageV2Enabled,
     evaluateOn: 'request',
     isPublic: true,
   },
