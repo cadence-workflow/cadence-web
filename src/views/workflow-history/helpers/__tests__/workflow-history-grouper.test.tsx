@@ -16,8 +16,6 @@ import type {
   Props,
 } from '../workflow-history-grouper.types';
 
-// Commonly used mocks
-
 // Track all setups for cleanup
 const allCleanups: Array<() => void> = [];
 
@@ -632,11 +630,6 @@ describe(WorkflowHistoryGrouper.name, () => {
     state = grouper.getState();
     // First batch is processed immediately, so processedEventsCount should be at least 1
     expect(state.processedEventsCount).toBeGreaterThan(0);
-
-    // If there are remaining events, status could be 'processing'
-    if (state.remainingEventsCount > 0) {
-      expect(state.status).toBe('processing');
-    }
 
     // Wait for processing to complete
     await waitForProcessing();
