@@ -68,6 +68,13 @@ export default function DomainPageFailoversFilters({
             size="compact"
             clearable
             value={clusterAttributeScope ?? ''}
+            overrides={{
+              Input: {
+                props: {
+                  placeholder: 'Scope of cluster attribute',
+                },
+              },
+            }}
             onChange={(nextValue) =>
               setQueryParams({
                 clusterAttributeScope: nextValue === '' ? undefined : nextValue,
@@ -91,6 +98,13 @@ export default function DomainPageFailoversFilters({
             clearable
             disabled={clusterAttributeScope === PRIMARY_CLUSTER_SCOPE}
             value={clusterAttributeValue ?? ''}
+            overrides={{
+              Input: {
+                props: {
+                  placeholder: 'Value/name of cluster attribute',
+                },
+              },
+            }}
             onChange={(nextValue) =>
               setQueryParams({
                 clusterAttributeValue: nextValue === '' ? undefined : nextValue,

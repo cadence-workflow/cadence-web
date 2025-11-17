@@ -21,8 +21,9 @@ describe(DomainPageFailoversFilters.name, () => {
   it('displays cluster attribute scope options including primary and domain scopes', async () => {
     const { user } = setup({});
 
-    const comboboxes = screen.getAllByRole('combobox');
-    const scopeCombobox = comboboxes[0];
+    const scopeCombobox = screen.getByPlaceholderText(
+      'Scope of cluster attribute'
+    );
     await user.click(scopeCombobox);
 
     expect(screen.getByText(PRIMARY_CLUSTER_SCOPE)).toBeInTheDocument();
@@ -36,8 +37,9 @@ describe(DomainPageFailoversFilters.name, () => {
       },
     });
 
-    const inputs = screen.getAllByRole('textbox');
-    expect(inputs[1]).toBeDisabled();
+    expect(
+      screen.getByPlaceholderText('Value/name of cluster attribute')
+    ).toBeDisabled();
   });
 
   it('enables cluster attribute value combobox when scope is not primary', () => {
@@ -47,8 +49,9 @@ describe(DomainPageFailoversFilters.name, () => {
       },
     });
 
-    const inputs = screen.getAllByRole('textbox');
-    expect(inputs[1]).not.toBeDisabled();
+    expect(
+      screen.getByPlaceholderText('Value/name of cluster attribute')
+    ).not.toBeDisabled();
   });
 
   it('displays cluster attribute values for selected scope', async () => {
@@ -58,8 +61,9 @@ describe(DomainPageFailoversFilters.name, () => {
       },
     });
 
-    const comboboxes = screen.getAllByRole('combobox');
-    const valueCombobox = comboboxes[1];
+    const valueCombobox = screen.getByPlaceholderText(
+      'Value/name of cluster attribute'
+    );
     await user.click(valueCombobox);
 
     expect(screen.getByText('region0')).toBeInTheDocument();
@@ -69,8 +73,9 @@ describe(DomainPageFailoversFilters.name, () => {
   it('calls setQueryParams with new scope and resets value when scope changes', async () => {
     const { user, mockSetQueryParams } = setup({});
 
-    const comboboxes = screen.getAllByRole('combobox');
-    const scopeCombobox = comboboxes[0];
+    const scopeCombobox = screen.getByPlaceholderText(
+      'Scope of cluster attribute'
+    );
     await user.click(scopeCombobox);
     await user.click(screen.getByText('region'));
 
@@ -87,8 +92,9 @@ describe(DomainPageFailoversFilters.name, () => {
       },
     });
 
-    const comboboxes = screen.getAllByRole('combobox');
-    const valueCombobox = comboboxes[1];
+    const valueCombobox = screen.getByPlaceholderText(
+      'Value/name of cluster attribute'
+    );
     await user.click(valueCombobox);
     await user.click(screen.getByText('region0'));
 
@@ -105,8 +111,9 @@ describe(DomainPageFailoversFilters.name, () => {
       },
     });
 
-    const comboboxes = screen.getAllByRole('combobox');
-    const scopeCombobox = comboboxes[0];
+    const scopeCombobox = screen.getByPlaceholderText(
+      'Scope of cluster attribute'
+    );
     await user.click(scopeCombobox);
 
     // Find and click the clear button (BaseUI Combobox clearable)
@@ -127,8 +134,9 @@ describe(DomainPageFailoversFilters.name, () => {
       },
     });
 
-    const comboboxes = screen.getAllByRole('combobox');
-    const valueCombobox = comboboxes[1];
+    const valueCombobox = screen.getByPlaceholderText(
+      'Value/name of cluster attribute'
+    );
     await user.click(valueCombobox);
 
     // Find and click the clear button
@@ -164,8 +172,9 @@ describe(DomainPageFailoversFilters.name, () => {
       },
     });
 
-    const inputs = screen.getAllByRole('textbox');
-    expect(inputs[0]).toHaveValue('region');
+    expect(
+      screen.getByPlaceholderText('Scope of cluster attribute')
+    ).toHaveValue('region');
   });
 
   it('displays current value in cluster attribute value combobox', () => {
@@ -176,8 +185,9 @@ describe(DomainPageFailoversFilters.name, () => {
       },
     });
 
-    const inputs = screen.getAllByRole('textbox');
-    expect(inputs[1]).toHaveValue('region0');
+    expect(
+      screen.getByPlaceholderText('Value/name of cluster attribute')
+    ).toHaveValue('region0');
   });
 });
 
