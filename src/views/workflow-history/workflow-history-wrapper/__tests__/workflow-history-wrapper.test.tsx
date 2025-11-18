@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 
 import { HttpResponse } from 'msw';
 
-import { render, screen } from '@/test-utils/rtl';
+import { render, screen, waitForElementToBeRemoved } from '@/test-utils/rtl';
 
 import { type GetConfigResponse } from '@/route-handlers/get-config/get-config.types';
 
@@ -69,8 +69,5 @@ async function setup({
     }
   );
 
-  // Wait for the component to load
-  await screen.findByTestId(
-    isHistoryPageV2Enabled ? 'workflow-history-v2' : 'workflow-history'
-  );
+  await waitForElementToBeRemoved(() => screen.queryAllByText('Loading...'));
 }
