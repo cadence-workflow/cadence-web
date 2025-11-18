@@ -146,16 +146,27 @@ const clusterAttributeSchema = z.object({
   name: z.string(),
 });
 
-// TODO @adhitya.mamallan - this needs to be removed as part of active-active's redesign
+// TODO @adhitya.mamallan - this needs to be removed as part of active-active's redesign, once the IDL has removed them
 const activeClusterSelectionStrategySchema = z.enum([
   ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_INVALID,
   ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_REGION_STICKY,
   ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_EXTERNAL_ENTITY,
 ]);
 
-// TODO @adhitya.mamallan - this needs to be modified as part of active-active's redesign,
-// so that we only check for clusterAttributes
-const activeClusterSelectionPolicySchema = z.null();
+const activeClusterSelectionPolicySchema = z.object({
+  clusterAttribute: clusterAttributeSchema,
+  // The IDL still contains the strategy and strategyConfig fields, but they are absent in the new active-active design.
+  // TODO @adhitya.mamallan - the below fields need to be removed once the IDL has removed them
+  strategy: activeClusterSelectionStrategySchema.catch(
+    'ACTIVE_CLUSTER_SELECTION_STRATEGY_INVALID'
+  ),
+  strategyConfig: z
+    .enum([
+      'activeClusterStickyRegionConfig',
+      'activeClusterExternalEntityConfig',
+    ])
+    .catch('activeClusterStickyRegionConfig'),
+});
 
 const failureSchema = z.object({
   reason: z.string(),
@@ -753,6 +764,7 @@ export const upsertWorkflowSearchAttributesEventSchema =
   });
 
 export const historyEventSchema = z.discriminatedUnion('attributes', [
+  // @ts-expect-error: The IDL still contains old fields from the previous active-active design, which need to be removed
   workflowExecutionStartedEventSchema,
   workflowExecutionCompletedEventSchema,
   workflowExecutionFailedEventSchema,
@@ -760,6 +772,7 @@ export const historyEventSchema = z.discriminatedUnion('attributes', [
   workflowExecutionSignaledEventSchema,
   workflowExecutionTerminatedEventSchema,
   workflowExecutionCanceledEventSchema,
+  // @ts-expect-error: The IDL still contains old fields from the previous active-active design, which need to be removed
   workflowExecutionContinuedAsNewEventSchema,
   workflowExecutionCancelRequestedEventAttributesSchema,
   decisionTaskScheduledEventSchema,
@@ -786,6 +799,7 @@ export const historyEventSchema = z.discriminatedUnion('attributes', [
   requestCancelExternalWorkflowExecutionFailedEventSchema,
   signalExternalWorkflowExecutionInitiatedEventSchema,
   signalExternalWorkflowExecutionFailedEventSchema,
+  // @ts-expect-error: The IDL still contains old fields from the previous active-active design, which need to be removed
   startChildWorkflowExecutionInitiatedEventSchema,
   startChildWorkflowExecutionFailedEventSchema,
   childWorkflowExecutionStartedEventSchema,
