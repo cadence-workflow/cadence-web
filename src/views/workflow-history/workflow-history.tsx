@@ -384,7 +384,6 @@ export default function WorkflowHistory({ params }: Props) {
           },
         }}
       />
-
       <PageSection className={cls.contentSection}>
         {filteredEventGroupsEntries.length > 0 && (
           <>

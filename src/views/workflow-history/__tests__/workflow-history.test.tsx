@@ -78,16 +78,6 @@ jest.mock('../workflow-history-header/workflow-history-header', () =>
 );
 
 jest.mock(
-  '../../workflow-history-v2/workflow-history-header/workflow-history-header',
-  () =>
-    jest.fn(() => (
-      <div>
-        <div>Workflow history V2 Header</div>
-      </div>
-    ))
-);
-
-jest.mock(
   '../workflow-history-ungrouped-table/workflow-history-ungrouped-table',
   () => jest.fn(() => <div>Ungrouped Table</div>)
 );
