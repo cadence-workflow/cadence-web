@@ -18,8 +18,6 @@ type PageFiltersProps = {
 };
 
 export type Props = {
-  isExpandAllEvents: boolean;
-  toggleIsExpandAllEvents: () => void;
   isUngroupedHistoryViewEnabled: boolean;
   onClickGroupModeToggle: () => void;
   wfHistoryRequestArgs: WorkflowHistoryExportJsonButtonProps;

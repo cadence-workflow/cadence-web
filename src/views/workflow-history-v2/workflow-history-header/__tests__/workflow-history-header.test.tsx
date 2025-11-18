@@ -215,8 +215,6 @@ function setup(props: Partial<Props> = {}) {
 
 function getDefaultProps(): Props {
   return {
-    isExpandAllEvents: false,
-    toggleIsExpandAllEvents: jest.fn(),
     isUngroupedHistoryViewEnabled: false,
     onClickGroupModeToggle: jest.fn(),
     wfHistoryRequestArgs: {
