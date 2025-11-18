@@ -62,8 +62,7 @@ async function setup({
           mockOnce: false,
           httpResolver: async () =>
             HttpResponse.json(
-              (isHistoryPageV2Enabled ??
-                false) satisfies GetConfigResponse<'HISTORY_PAGE_V2_ENABLED'>
+              isHistoryPageV2Enabled satisfies GetConfigResponse<'HISTORY_PAGE_V2_ENABLED'>
             ),
         },
       ],

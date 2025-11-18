@@ -43,7 +43,6 @@ export default function WorkflowHistoryHeader({
       <styled.Container
         $isSticky={isSticky}
         $isStickyEnabled={isStickyEnabled}
-        // testing attributes for testing
         data-testid="workflow-history-header-wrapper"
         data-is-sticky={isSticky}
       >
