@@ -53,7 +53,9 @@ export default function WorkflowHistoryV2({ params }: Props) {
         : 'true',
     });
 
-    // TODO: set timeline list visible range depending on what was visible before
+    // TODO: set timeline list visible range depending on what was visible before,
+    // once the grouped and ungrouped tables have been fully implemented.
+
     // History V1 code below for reference
 
     // setTimelineListVisibleRange(() => ({
