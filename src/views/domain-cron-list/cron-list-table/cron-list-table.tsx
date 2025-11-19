@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import Table from '@/components/table/table';
@@ -12,6 +12,8 @@ const CRON_LIST_PAGE_SIZE = 20;
 const CRON_LIST_QUERY = 'IsCron = "true" AND CloseTime = missing';
 
 export default function CronListTable({ domain, cluster }: Props) {
+  const timeRangeEnd = useMemo(() => new Date().toISOString(), []);
+
   const {
     workflows,
     error,
@@ -25,7 +27,7 @@ export default function CronListTable({ domain, cluster }: Props) {
     listType: 'default',
     pageSize: CRON_LIST_PAGE_SIZE,
     inputType: 'query',
-    timeRangeEnd: new Date().toISOString(),
+    timeRangeEnd,
     query: CRON_LIST_QUERY,
   });
 
