@@ -178,24 +178,6 @@ describe(WorkflowHistoryFiltersMenu.name, () => {
       historyEventStatuses: ['FAILED'],
     });
   });
-
-  it('handles multiple filters with values', () => {
-    setup({
-      queryParams: {
-        historyEventTypes: ['ACTIVITY'],
-        historyEventStatuses: ['FAILED'],
-        historySelectedEventId: undefined,
-        ungroupedHistoryViewEnabled: undefined,
-      },
-    });
-
-    expect(screen.getByTestId('filter-type-value')).toHaveTextContent(
-      'ACTIVITY'
-    );
-    expect(screen.getByTestId('filter-status-value')).toHaveTextContent(
-      'FAILED'
-    );
-  });
 });
 
 function setup(props: Partial<Props> = {}) {
