@@ -69,7 +69,7 @@ describe('CronListTable', () => {
     });
 
     expect(screen.getByText('Workflow ID')).toBeInTheDocument();
-    expect(screen.queryByText('mock-workflow-id-0-0')).not.toBeInTheDocument();
+    expect(screen.queryByText('mock-workflow-id')).not.toBeInTheDocument();
   });
 
   it('should allow the user to try again if there is an error', async () => {
