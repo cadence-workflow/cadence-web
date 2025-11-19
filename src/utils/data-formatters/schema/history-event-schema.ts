@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-import { ActiveClusterSelectionStrategy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ActiveClusterSelectionStrategy';
 import { CancelExternalWorkflowExecutionFailedCause } from '@/__generated__/proto-ts/uber/cadence/api/v1/CancelExternalWorkflowExecutionFailedCause';
 import { ChildWorkflowExecutionFailedCause } from '@/__generated__/proto-ts/uber/cadence/api/v1/ChildWorkflowExecutionFailedCause';
 import { ContinueAsNewInitiator } from '@/__generated__/proto-ts/uber/cadence/api/v1/ContinueAsNewInitiator';
@@ -146,26 +145,8 @@ const clusterAttributeSchema = z.object({
   name: z.string(),
 });
 
-// TODO @adhitya.mamallan - this needs to be removed as part of active-active's redesign, once the IDL has removed them
-const activeClusterSelectionStrategySchema = z.enum([
-  ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_INVALID,
-  ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_REGION_STICKY,
-  ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_EXTERNAL_ENTITY,
-]);
-
 const activeClusterSelectionPolicySchema = z.object({
   clusterAttribute: clusterAttributeSchema,
-  // The IDL still contains the strategy and strategyConfig fields, but they are absent in the new active-active design.
-  // TODO @adhitya.mamallan - the below fields need to be removed once the IDL has removed them
-  strategy: activeClusterSelectionStrategySchema.catch(
-    'ACTIVE_CLUSTER_SELECTION_STRATEGY_INVALID'
-  ),
-  strategyConfig: z
-    .enum([
-      'activeClusterStickyRegionConfig',
-      'activeClusterExternalEntityConfig',
-    ])
-    .catch('activeClusterStickyRegionConfig'),
 });
 
 const failureSchema = z.object({
