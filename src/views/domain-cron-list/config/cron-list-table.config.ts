@@ -4,7 +4,7 @@ import FormattedDate from '@/components/formatted-date/formatted-date';
 import { type DomainWorkflow } from '@/views/domain-page/domain-page.types';
 import WorkflowStatusTag from '@/views/shared/workflow-status-tag/workflow-status-tag';
 
-import { type CronListTableConfig } from '../cron-list-table.types';
+import { type CronListTableConfig } from '../cron-list-table/cron-list-table.types';
 
 const cronListTableConfig = [
   {
