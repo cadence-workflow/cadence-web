@@ -1,7 +1,6 @@
 import { createElement } from 'react';
 
 import FormattedDate from '@/components/formatted-date/formatted-date';
-import Link from '@/components/link/link';
 import { type DomainWorkflow } from '@/views/domain-page/domain-page.types';
 import WorkflowStatusTag from '@/views/shared/workflow-status-tag/workflow-status-tag';
 
@@ -23,7 +22,7 @@ const cronListTableConfig = [
   {
     name: 'Cron (UTC)',
     id: 'CronSchedule',
-    renderCell: (row: DomainWorkflow) => 'Coming soon',
+    renderCell: () => 'Coming soon',
     width: '10%',
   },
   {
