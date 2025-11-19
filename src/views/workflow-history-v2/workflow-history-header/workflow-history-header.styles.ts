@@ -1,4 +1,6 @@
 import { styled as createStyled, type Theme } from 'baseui';
+import { type ButtonOverrides } from 'baseui/button';
+import { type PopoverOverrides } from 'baseui/popover';
 import {
   type SegmentOverrides,
   type SegmentedControlOverrides,
@@ -99,4 +101,20 @@ export const overrides = {
       }),
     },
   } satisfies SegmentOverrides,
+  popover: {
+    Inner: {
+      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+        backgroundColor: $theme.colors.backgroundPrimary,
+        padding: $theme.sizing.scale600,
+        maxWidth: '400px',
+      }),
+    },
+  } satisfies PopoverOverrides,
+  filtersButton: {
+    Root: {
+      style: {
+        whiteSpace: 'nowrap',
+      },
+    },
+  } satisfies ButtonOverrides,
 };

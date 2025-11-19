@@ -16,12 +16,10 @@ jest.mock(
 );
 
 jest.mock(
-  '@/components/page-filters/page-filters-toggle/page-filters-toggle',
+  '@/views/workflow-history-v2/workflow-history-filters-menu/workflow-history-filters-menu',
   () =>
-    jest.fn(({ onClick, isActive, activeFiltersCount }) => (
-      <button onClick={onClick} data-testid="page-filters-toggle">
-        {isActive ? 'Hide Filters' : 'Show Filters'} ({activeFiltersCount})
-      </button>
+    jest.fn(() => (
+      <div data-testid="workflow-history-filters-menu">Filters Menu</div>
     ))
 );
 
@@ -51,33 +49,18 @@ describe(WorkflowHistoryHeader.name, () => {
     expect(mockOnClickGroupModeToggle).toHaveBeenCalledTimes(1);
   });
 
-  it('should render filters toggle button', () => {
+  it('should render filters button', () => {
     setup();
-    expect(screen.getByTestId('page-filters-toggle')).toBeInTheDocument();
+    expect(screen.getByText('Filters')).toBeInTheDocument();
   });
 
-  it('should show filters toggle as inactive by default', () => {
+  it('should show filters button without count when no filters are active', () => {
     setup();
-    const filtersToggle = screen.getByTestId('page-filters-toggle');
-    expect(filtersToggle).toHaveTextContent('Show Filters (0)');
+    expect(screen.getByText('Filters')).toBeInTheDocument();
+    expect(screen.queryByText('Filters (0)')).not.toBeInTheDocument();
   });
 
-  it('should toggle filters visibility when filter toggle is clicked', async () => {
-    const { user } = setup();
-    const filtersToggle = screen.getByTestId('page-filters-toggle');
-
-    expect(filtersToggle).toHaveTextContent('Show Filters (0)');
-
-    await user.click(filtersToggle);
-
-    expect(filtersToggle).toHaveTextContent('Hide Filters (0)');
-
-    await user.click(filtersToggle);
-
-    expect(filtersToggle).toHaveTextContent('Show Filters (0)');
-  });
-
-  it('should display active filters count in filters toggle', () => {
+  it('should display active filters count in filters button', () => {
     setup({
       pageFiltersProps: {
         activeFiltersCount: 3,
@@ -91,8 +74,7 @@ describe(WorkflowHistoryHeader.name, () => {
         resetAllFilters: jest.fn(),
       },
     });
-    const filtersToggle = screen.getByTestId('page-filters-toggle');
-    expect(filtersToggle).toHaveTextContent('Show Filters (3)');
+    expect(screen.getByText('Filters (3)')).toBeInTheDocument();
   });
 
   it('should render sentinel when sticky is enabled', () => {
