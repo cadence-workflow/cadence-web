@@ -7,10 +7,11 @@ import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
 
 import cronListTableConfig from '../config/cron-list-table.config';
 
+import {
+  CRON_LIST_PAGE_SIZE,
+  CRON_LIST_QUERY,
+} from './cron-list-table.constants';
 import { type Props } from './cron-list-table.types';
-
-const CRON_LIST_PAGE_SIZE = 20;
-const CRON_LIST_QUERY = 'IsCron = "true" AND CloseTime = missing';
 
 export default function CronListTable({ domain, cluster }: Props) {
   const timeRangeEnd = useMemo(() => new Date().toISOString(), []);
