@@ -5,7 +5,8 @@ import SectionLoadingIndicator from '@/components/section-loading-indicator/sect
 import Table from '@/components/table/table';
 import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
 
-import cronListTableConfig from './config/cron-list-table.config';
+import cronListTableConfig from '../config/cron-list-table.config';
+
 import { type Props } from './cron-list-table.types';
 
 const CRON_LIST_PAGE_SIZE = 20;
