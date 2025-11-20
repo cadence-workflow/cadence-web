@@ -145,8 +145,8 @@ describe(useWorkflowHistoryGrouper.name, () => {
       pendingStartDecision: pendingDecisionTaskStartEvent,
     };
 
-    await act(async () => {
-      await current.updatePendingEvents(params);
+    act(() => {
+      current.updatePendingEvents(params);
     });
 
     expect(mockGrouperInstance.updatePendingEvents).toHaveBeenCalledWith(
