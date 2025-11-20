@@ -13,7 +13,6 @@ import type {
  * Hook for grouping workflow history events using the HistoryEventsGrouper.
  */
 export default function useWorkflowHistoryGrouper(throttleMs = 2000) {
-  // Initialize the grouper once and persist across renders
   const grouperRef = useRef<HistoryEventsGrouper | null>(null);
 
   if (!grouperRef.current) {
@@ -22,7 +21,6 @@ export default function useWorkflowHistoryGrouper(throttleMs = 2000) {
     });
   }
 
-  // Track grouping state - updated internally during processing
   const [groupingState, setGroupingState] =
     useThrottledState<GroupingProcessState>(
       grouperRef.current.getState(),
@@ -50,7 +48,6 @@ export default function useWorkflowHistoryGrouper(throttleMs = 2000) {
     };
   }, []);
 
-  // Expose updateEvents method (usually called automatically by effect)
   const updateEvents = useCallback((newEvents: HistoryEvent[]) => {
     if (!grouperRef.current) {
       return;
@@ -59,7 +56,6 @@ export default function useWorkflowHistoryGrouper(throttleMs = 2000) {
     grouperRef.current.updateEvents(newEvents);
   }, []);
 
-  // Expose updatePendingEvents method
   const updatePendingEvents = useCallback((params: ProcessEventsParams) => {
     if (!grouperRef.current) {
       return;
