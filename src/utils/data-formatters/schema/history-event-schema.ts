@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { ActiveClusterSelectionStrategy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ActiveClusterSelectionStrategy';
 import { CancelExternalWorkflowExecutionFailedCause } from '@/__generated__/proto-ts/uber/cadence/api/v1/CancelExternalWorkflowExecutionFailedCause';
 import { ChildWorkflowExecutionFailedCause } from '@/__generated__/proto-ts/uber/cadence/api/v1/ChildWorkflowExecutionFailedCause';
 import { ContinueAsNewInitiator } from '@/__generated__/proto-ts/uber/cadence/api/v1/ContinueAsNewInitiator';
@@ -145,9 +146,46 @@ const clusterAttributeSchema = z.object({
   name: z.string(),
 });
 
-const activeClusterSelectionPolicySchema = z.object({
-  clusterAttribute: clusterAttributeSchema,
-});
+// The IDL still contains the strategy and strategyConfig fields, but they are absent
+// in the new active-active design. The preprocess step corrects this and allows us to
+// parse activeClusterSelectionPolicy even if the backend does not pass the deprecated fields.
+//
+// TODO @adhitya.mamallan - update this once the IDL has been updated
+const activeClusterSelectionPolicySchema = z.preprocess(
+  (val) => {
+    const emptyActiveClusterSelectionPolicy = {
+      strategy:
+        ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_INVALID,
+      strategyConfig: 'activeClusterStickyRegionConfig',
+      clusterAttribute: null,
+    };
+
+    if (
+      typeof val === 'object' &&
+      val !== null &&
+      Object.hasOwn(val, 'clusterAttribute')
+    ) {
+      // Object.hasOwn does not infer the type by itself, so we need to cast it
+      const { clusterAttribute } = val as {
+        clusterAttribute: any;
+      };
+
+      return {
+        ...emptyActiveClusterSelectionPolicy,
+        clusterAttribute,
+      };
+    }
+
+    return emptyActiveClusterSelectionPolicy;
+  },
+  z.object({
+    clusterAttribute: clusterAttributeSchema,
+    strategy: z.literal(
+      ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_INVALID
+    ),
+    strategyConfig: z.literal('activeClusterStickyRegionConfig'),
+  })
+);
 
 const failureSchema = z.object({
   reason: z.string(),
@@ -745,7 +783,7 @@ export const upsertWorkflowSearchAttributesEventSchema =
   });
 
 export const historyEventSchema = z.discriminatedUnion('attributes', [
-  // @ts-expect-error: The IDL still contains old fields from the previous active-active design, which need to be removed
+  // @ts-expect-error the current IDLs still expect the deprecated active-active fields to be passed
   workflowExecutionStartedEventSchema,
   workflowExecutionCompletedEventSchema,
   workflowExecutionFailedEventSchema,
@@ -753,7 +791,7 @@ export const historyEventSchema = z.discriminatedUnion('attributes', [
   workflowExecutionSignaledEventSchema,
   workflowExecutionTerminatedEventSchema,
   workflowExecutionCanceledEventSchema,
-  // @ts-expect-error: The IDL still contains old fields from the previous active-active design, which need to be removed
+  // @ts-expect-error the current IDLs still expect the deprecated active-active fields to be passed
   workflowExecutionContinuedAsNewEventSchema,
   workflowExecutionCancelRequestedEventAttributesSchema,
   decisionTaskScheduledEventSchema,
@@ -780,7 +818,7 @@ export const historyEventSchema = z.discriminatedUnion('attributes', [
   requestCancelExternalWorkflowExecutionFailedEventSchema,
   signalExternalWorkflowExecutionInitiatedEventSchema,
   signalExternalWorkflowExecutionFailedEventSchema,
-  // @ts-expect-error: The IDL still contains old fields from the previous active-active design, which need to be removed
+  // @ts-expect-error the current IDLs still expect the deprecated active-active fields to be passed
   startChildWorkflowExecutionInitiatedEventSchema,
   startChildWorkflowExecutionFailedEventSchema,
   childWorkflowExecutionStartedEventSchema,

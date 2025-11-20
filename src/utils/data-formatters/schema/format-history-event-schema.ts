@@ -92,7 +92,6 @@ import {
 
 export const formatWorkflowExecutionStartedEventSchema =
   workflowExecutionStartedEventSchema.transform(
-    // @ts-expect-error: The IDL still contains old fields from the previous active-active design, which need to be removed
     formatWorkflowExecutionStartedEvent
   );
 
@@ -128,7 +127,6 @@ export const formatWorkflowExecutionCanceledEventSchema =
 
 export const formatWorkflowExecutionContinuedAsNewEventSchema =
   workflowExecutionContinuedAsNewEventSchema.transform(
-    // @ts-expect-error: The IDL still contains old fields from the previous active-active design, which need to be removed
     formatWorkflowExecutionContinuedAsNewEvent
   );
 export const formatWorkflowExecutionCancelRequestedEventAttributesSchema =
@@ -228,7 +226,6 @@ export const formatSignalExternalWorkflowExecutionFailedEventSchema =
 
 export const formatStartChildWorkflowExecutionInitiatedEventSchema =
   startChildWorkflowExecutionInitiatedEventSchema.transform(
-    // @ts-expect-error: The IDL still contains old fields from the previous active-active design, which need to be removed
     formatStartChildWorkflowExecutionInitiatedEvent
   );
 
