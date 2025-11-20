@@ -19,6 +19,10 @@ import useWorkflowHistoryGrouper from '../use-workflow-history-grouper';
 
 jest.mock('../../helpers/workflow-history-grouper');
 
+jest.mock('../use-workflow-history-grouper.constants', () => ({
+  BATCH_SIZE: 100,
+}));
+
 describe(useWorkflowHistoryGrouper.name, () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -28,7 +32,7 @@ describe(useWorkflowHistoryGrouper.name, () => {
     setup();
 
     expect(HistoryEventsGrouper).toHaveBeenCalledWith({
-      batchSize: 300,
+      batchSize: 100, // called with the mocked BATCH_SIZE
     });
   });
 
