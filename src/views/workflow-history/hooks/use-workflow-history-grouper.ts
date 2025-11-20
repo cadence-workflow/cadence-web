@@ -60,15 +60,12 @@ export default function useWorkflowHistoryGrouper(throttleMs = 2000) {
   }, []);
 
   // Expose updatePendingEvents method
-  const updatePendingEvents = useCallback(
-    async (params: ProcessEventsParams) => {
-      if (!grouperRef.current) {
-        return;
-      }
-      grouperRef.current.updatePendingEvents(params);
-    },
-    []
-  );
+  const updatePendingEvents = useCallback((params: ProcessEventsParams) => {
+    if (!grouperRef.current) {
+      return;
+    }
+    grouperRef.current.updatePendingEvents(params);
+  }, []);
 
   return {
     eventGroups: groupingState?.groups ?? {},

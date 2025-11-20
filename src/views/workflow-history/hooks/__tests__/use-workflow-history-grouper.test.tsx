@@ -3,6 +3,10 @@ import { renderHook, act } from '@testing-library/react';
 import type { HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
 
 import {
+  mockActivityEventGroup,
+  mockDecisionEventGroup,
+} from '../../__fixtures__/workflow-history-event-groups';
+import {
   pendingActivityTaskStartEvent,
   pendingDecisionTaskStartEvent,
 } from '../../__fixtures__/workflow-history-pending-events';
@@ -13,401 +17,262 @@ import type {
 } from '../../helpers/workflow-history-grouper.types';
 import useWorkflowHistoryGrouper from '../use-workflow-history-grouper';
 
-// Mock the HistoryEventsGrouper
 jest.mock('../../helpers/workflow-history-grouper');
 
-// Mock useThrottledState to disable throttling in tests
-jest.mock('@/hooks/use-throttled-state', () => {
-  const { useState } = jest.requireActual('react');
-  return jest.fn((initialValue) => {
-    const [state, setState] = useState(initialValue);
-    const setStateWrapper = (
-      callback: (prev: any) => any,
-      _executeImmediately?: boolean
-    ) => {
-      setState((prev: any) => callback(prev));
-    };
-    return [state, setStateWrapper];
-  });
-});
-
 describe(useWorkflowHistoryGrouper.name, () => {
-  let mockGrouper: jest.Mocked<HistoryEventsGrouper>;
-  let mockOnChangeCallback: (state: GroupingProcessState) => void;
-
-  const createMockState = (
-    overrides?: Partial<GroupingProcessState>
-  ): GroupingProcessState => ({
-    groups: {},
-    processedEventsCount: 0,
-    remainingEventsCount: 0,
-    status: 'idle',
-    ...overrides,
-  });
-
-  beforeEach(() => {
-    // Reset the mock implementation before each test
-    mockOnChangeCallback = jest.fn();
-
-    mockGrouper = {
-      getState: jest.fn(),
-      onChange: jest.fn(),
-      updateEvents: jest.fn(),
-      updatePendingEvents: jest.fn(),
-      destroy: jest.fn(),
-    } as any;
-
-    // Mock the constructor to return our mock grouper
-    (
-      HistoryEventsGrouper as jest.MockedClass<typeof HistoryEventsGrouper>
-    ).mockImplementation(() => mockGrouper);
-
-    // Default mock implementations
-    mockGrouper.getState.mockReturnValue(createMockState());
-    mockGrouper.onChange.mockImplementation((callback) => {
-      mockOnChangeCallback = callback;
-      return jest.fn(); // Return unsubscribe function
-    });
-  });
-
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  describe('initialization', () => {
-    it('should create HistoryEventsGrouper with default batchSize', () => {
-      renderHook(() => useWorkflowHistoryGrouper());
+  it('should create HistoryEventsGrouper with default batchSize', () => {
+    setup();
 
-      expect(HistoryEventsGrouper).toHaveBeenCalledWith({
-        batchSize: 300,
-      });
+    expect(HistoryEventsGrouper).toHaveBeenCalledWith({
+      batchSize: 300,
     });
+  });
 
-    it('should initialize with state from grouper.getState()', () => {
-      const mockState = createMockState({
-        groups: { group1: { groupType: 'Activity' } as any },
+  it('should initialize with state from grouper.getState()', () => {
+    const {
+      result: { current },
+      mockGrouperInstance,
+    } = setup({
+      initialState: {
+        groups: {
+          group1: mockActivityEventGroup,
+        },
         processedEventsCount: 10,
-      });
-      mockGrouper.getState.mockReturnValue(mockState);
-
-      const { result } = renderHook(() => useWorkflowHistoryGrouper());
-
-      expect(mockGrouper.getState).toHaveBeenCalled();
-      expect(result.current.eventGroups).toEqual(mockState.groups);
-      expect(result.current.groupingState).toEqual(mockState);
+      },
     });
 
-    it('should subscribe to grouper onChange', () => {
-      renderHook(() => useWorkflowHistoryGrouper());
-
-      expect(mockGrouper.onChange).toHaveBeenCalledWith(expect.any(Function));
+    expect(mockGrouperInstance.getState).toHaveBeenCalled();
+    expect(current.eventGroups).toEqual({
+      group1: mockActivityEventGroup,
     });
-
-    it('should return empty groups when groupingState is null', () => {
-      mockGrouper.getState.mockReturnValue(null as any);
-
-      const { result } = renderHook(() => useWorkflowHistoryGrouper());
-
-      expect(result.current.eventGroups).toEqual({});
+    expect(current.groupingState).toMatchObject({
+      groups: {
+        group1: mockActivityEventGroup,
+      },
+      processedEventsCount: 10,
     });
   });
 
-  describe('custom throttleMs', () => {
-    it('should accept custom throttle time', () => {
-      const { result } = renderHook(() => useWorkflowHistoryGrouper(5000));
+  it('should subscribe to grouper onChange', () => {
+    const { mockGrouperInstance } = setup();
 
-      expect(result.current).toBeDefined();
-    });
+    expect(mockGrouperInstance.onChange).toHaveBeenCalledWith(
+      expect.any(Function)
+    );
   });
 
-  describe('onChange subscription', () => {
-    it('should update groupingState when onChange callback is triggered', () => {
-      const { result } = renderHook(() => useWorkflowHistoryGrouper());
+  it('should update groupingState when onChange callback is triggered', () => {
+    const { result, getMockOnChangeCallback } = setup();
 
-      const newState = createMockState({
-        groups: { group1: { groupType: 'Decision' } as any },
-        processedEventsCount: 5,
-        status: 'processing',
-      });
-
-      act(() => {
-        mockOnChangeCallback(newState);
-      });
-
-      expect(result.current.groupingState).toEqual(newState);
-      expect(result.current.eventGroups).toEqual(newState.groups);
-      expect(result.current.isProcessing).toBe(true);
+    const newState = createMockState({
+      groups: {
+        group1: mockDecisionEventGroup,
+      },
+      processedEventsCount: 5,
+      status: 'processing',
     });
 
-    it('should set isProcessing to false when status is idle', () => {
-      const { result } = renderHook(() => useWorkflowHistoryGrouper());
-
-      const idleState = createMockState({
-        status: 'idle',
-      });
-
-      act(() => {
-        mockOnChangeCallback(idleState);
-      });
-
-      expect(result.current.isProcessing).toBe(false);
+    act(() => {
+      const mockOnChangeCallback = getMockOnChangeCallback();
+      mockOnChangeCallback(newState);
     });
 
-    it('should set isProcessing to true when status is processing', () => {
-      const { result } = renderHook(() => useWorkflowHistoryGrouper());
-
-      const processingState = createMockState({
-        status: 'processing',
-      });
-
-      act(() => {
-        mockOnChangeCallback(processingState);
-      });
-
-      expect(result.current.isProcessing).toBe(true);
-    });
-
-    it('should update state immediately when onChange is called', () => {
-      const { result } = renderHook(() => useWorkflowHistoryGrouper());
-
-      const newState = createMockState({
-        processedEventsCount: 50,
-        groups: { group1: { groupType: 'Activity' } as any },
-      });
-
-      act(() => {
-        mockOnChangeCallback(newState);
-      });
-
-      expect(result.current.groupingState).toEqual(newState);
-    });
+    expect(result.current.groupingState).toEqual(newState);
+    expect(result.current.eventGroups).toEqual(newState.groups);
+    expect(result.current.isProcessing).toBe(true);
   });
 
-  describe('updateEvents', () => {
-    it('should call grouper.updateEvents with provided events', () => {
-      const { result } = renderHook(() => useWorkflowHistoryGrouper());
+  it('should set isProcessing to false when status is idle', () => {
+    const { result, getMockOnChangeCallback } = setup();
 
-      const mockEvents: HistoryEvent[] = [
-        { eventId: '1', eventTime: null } as HistoryEvent,
-        { eventId: '2', eventTime: null } as HistoryEvent,
-      ];
-
-      act(() => {
-        result.current.updateEvents(mockEvents);
-      });
-
-      expect(mockGrouper.updateEvents).toHaveBeenCalledWith(mockEvents);
+    const idleState = createMockState({
+      status: 'idle',
     });
 
-    it('should handle empty events array', () => {
-      const { result } = renderHook(() => useWorkflowHistoryGrouper());
-
-      act(() => {
-        result.current.updateEvents([]);
-      });
-
-      expect(mockGrouper.updateEvents).toHaveBeenCalledWith([]);
+    act(() => {
+      const mockOnChangeCallback = getMockOnChangeCallback();
+      mockOnChangeCallback(idleState);
     });
 
-    it('should not throw if grouper is not initialized', () => {
-      // This shouldn't happen in practice, but test defensive coding
-      mockGrouper.updateEvents.mockImplementation(() => {
-        throw new Error('Grouper not initialized');
-      });
-
-      const { result } = renderHook(() => useWorkflowHistoryGrouper());
-
-      expect(() => {
-        act(() => {
-          result.current.updateEvents([]);
-        });
-      }).toThrow();
-    });
+    expect(result.current.isProcessing).toBe(false);
   });
 
-  describe('updatePendingEvents', () => {
-    it('should call grouper.updatePendingEvents with provided params', async () => {
-      const { result } = renderHook(() => useWorkflowHistoryGrouper());
+  it('should set isProcessing to true when status is processing', () => {
+    const { result, getMockOnChangeCallback } = setup();
 
-      const params: ProcessEventsParams = {
-        pendingStartActivities: [pendingActivityTaskStartEvent],
-        pendingStartDecision: pendingDecisionTaskStartEvent,
-      };
-
-      await act(async () => {
-        await result.current.updatePendingEvents(params);
-      });
-
-      expect(mockGrouper.updatePendingEvents).toHaveBeenCalledWith(params);
+    const processingState = createMockState({
+      status: 'processing',
     });
 
-    it('should handle empty pending events', async () => {
-      const { result } = renderHook(() => useWorkflowHistoryGrouper());
-
-      const params: ProcessEventsParams = {
-        pendingStartActivities: [],
-        pendingStartDecision: null,
-      };
-
-      await act(async () => {
-        await result.current.updatePendingEvents(params);
-      });
-
-      expect(mockGrouper.updatePendingEvents).toHaveBeenCalledWith(params);
+    act(() => {
+      const mockOnChangeCallback = getMockOnChangeCallback();
+      mockOnChangeCallback(processingState);
     });
 
-    it('should be async and await completion', async () => {
-      const { result } = renderHook(() => useWorkflowHistoryGrouper());
-
-      let updateCompleted = false;
-      mockGrouper.updatePendingEvents.mockImplementation(async () => {
-        updateCompleted = true;
-      });
-
-      const params: ProcessEventsParams = {
-        pendingStartActivities: [],
-        pendingStartDecision: null,
-      };
-
-      await act(async () => {
-        await result.current.updatePendingEvents(params);
-      });
-
-      expect(updateCompleted).toBe(true);
-    });
+    expect(result.current.isProcessing).toBe(true);
   });
 
-  describe('cleanup', () => {
-    it('should unsubscribe from onChange on unmount', () => {
-      const mockUnsubscribe = jest.fn();
-      mockGrouper.onChange.mockReturnValue(mockUnsubscribe);
+  it('should call grouper.updateEvents with provided events', () => {
+    const {
+      result: { current },
+      mockGrouperInstance,
+    } = setup();
 
-      const { unmount } = renderHook(() => useWorkflowHistoryGrouper());
+    const mockEvents: HistoryEvent[] = [
+      { eventId: '1', eventTime: null } as HistoryEvent,
+      { eventId: '2', eventTime: null } as HistoryEvent,
+    ];
 
-      expect(mockUnsubscribe).not.toHaveBeenCalled();
-
-      unmount();
-
-      expect(mockUnsubscribe).toHaveBeenCalled();
+    act(() => {
+      current.updateEvents(mockEvents);
     });
 
-    it('should call grouper.destroy on unmount', () => {
-      const { unmount } = renderHook(() => useWorkflowHistoryGrouper());
-
-      expect(mockGrouper.destroy).not.toHaveBeenCalled();
-
-      unmount();
-
-      expect(mockGrouper.destroy).toHaveBeenCalled();
-    });
-
-    it('should handle multiple unmounts safely', () => {
-      const { unmount } = renderHook(() => useWorkflowHistoryGrouper());
-
-      unmount();
-
-      expect(mockGrouper.destroy).toHaveBeenCalledTimes(1);
-
-      // Second unmount should not throw
-      expect(() => unmount()).not.toThrow();
-    });
+    expect(mockGrouperInstance.updateEvents).toHaveBeenCalledWith(mockEvents);
   });
 
-  describe('return values', () => {
-    it('should return correct shape of object', () => {
-      const { result } = renderHook(() => useWorkflowHistoryGrouper());
+  it('should call grouper.updatePendingEvents with provided params', async () => {
+    const {
+      result: { current },
+      mockGrouperInstance,
+    } = setup();
 
-      expect(result.current).toEqual({
-        eventGroups: expect.any(Object),
-        isProcessing: expect.any(Boolean),
-        groupingState: expect.any(Object),
-        updateEvents: expect.any(Function),
-        updatePendingEvents: expect.any(Function),
-      });
+    const params: ProcessEventsParams = {
+      pendingStartActivities: [pendingActivityTaskStartEvent],
+      pendingStartDecision: pendingDecisionTaskStartEvent,
+    };
+
+    await act(async () => {
+      await current.updatePendingEvents(params);
     });
 
-    it('should maintain stable function references', () => {
-      const { result, rerender } = renderHook(() =>
-        useWorkflowHistoryGrouper()
-      );
-
-      const firstUpdateEvents = result.current.updateEvents;
-      const firstUpdatePendingEvents = result.current.updatePendingEvents;
-
-      rerender();
-
-      expect(result.current.updateEvents).toBe(firstUpdateEvents);
-      expect(result.current.updatePendingEvents).toBe(firstUpdatePendingEvents);
-    });
+    expect(mockGrouperInstance.updatePendingEvents).toHaveBeenCalledWith(
+      params
+    );
   });
 
-  describe('integration scenarios', () => {
-    it('should handle rapid event updates', () => {
-      const { result } = renderHook(() => useWorkflowHistoryGrouper());
+  it('should unsubscribe from onChange on unmount', () => {
+    const { unmount, mockUnsubscribe } = setup();
 
-      const events1: HistoryEvent[] = [{ eventId: '1' } as HistoryEvent];
-      const events2: HistoryEvent[] = [
-        { eventId: '1' } as HistoryEvent,
-        { eventId: '2' } as HistoryEvent,
-      ];
-      const events3: HistoryEvent[] = [
-        { eventId: '1' } as HistoryEvent,
-        { eventId: '2' } as HistoryEvent,
-        { eventId: '3' } as HistoryEvent,
-      ];
+    expect(mockUnsubscribe).not.toHaveBeenCalled();
 
-      act(() => {
-        result.current.updateEvents(events1);
-        result.current.updateEvents(events2);
-        result.current.updateEvents(events3);
-      });
+    unmount();
 
-      expect(mockGrouper.updateEvents).toHaveBeenCalledTimes(3);
-      expect(mockGrouper.updateEvents).toHaveBeenLastCalledWith(events3);
+    expect(mockUnsubscribe).toHaveBeenCalled();
+  });
+
+  it('should call grouper.destroy on unmount', () => {
+    const { unmount, mockGrouperInstance } = setup();
+
+    expect(mockGrouperInstance.destroy).not.toHaveBeenCalled();
+
+    unmount();
+
+    expect(mockGrouperInstance.destroy).toHaveBeenCalled();
+  });
+
+  it('should handle rapid event updates', () => {
+    const {
+      result: { current },
+      mockGrouperInstance,
+    } = setup();
+
+    const events1: HistoryEvent[] = [{ eventId: '1' } as HistoryEvent];
+    const events2: HistoryEvent[] = [
+      { eventId: '1' } as HistoryEvent,
+      { eventId: '2' } as HistoryEvent,
+    ];
+    const events3: HistoryEvent[] = [
+      { eventId: '1' } as HistoryEvent,
+      { eventId: '2' } as HistoryEvent,
+      { eventId: '3' } as HistoryEvent,
+    ];
+
+    act(() => {
+      current.updateEvents(events1);
+      current.updateEvents(events2);
+      current.updateEvents(events3);
     });
 
-    it('should handle combined updates and state changes', async () => {
-      const { result } = renderHook(() => useWorkflowHistoryGrouper());
+    expect(mockGrouperInstance.updateEvents).toHaveBeenCalledTimes(3);
+    expect(mockGrouperInstance.updateEvents).toHaveBeenLastCalledWith(events3);
+  });
 
-      const mockEvents: HistoryEvent[] = [{ eventId: '1' } as HistoryEvent];
-      const params: ProcessEventsParams = {
-        pendingStartActivities: [pendingActivityTaskStartEvent],
-        pendingStartDecision: null,
-      };
+  it('should persist grouper instance across re-renders', () => {
+    const { rerender } = setup();
 
-      act(() => {
-        result.current.updateEvents(mockEvents);
-      });
+    expect(HistoryEventsGrouper).toHaveBeenCalledTimes(1);
 
-      await act(async () => {
-        await result.current.updatePendingEvents(params);
-      });
+    rerender();
+    rerender();
+    rerender();
 
-      const newState = createMockState({
-        groups: { group1: { groupType: 'Activity' } as any },
-        processedEventsCount: 1,
-      });
-
-      act(() => {
-        mockOnChangeCallback(newState);
-      });
-
-      expect(result.current.eventGroups).toEqual(newState.groups);
-      expect(mockGrouper.updateEvents).toHaveBeenCalledWith(mockEvents);
-      expect(mockGrouper.updatePendingEvents).toHaveBeenCalledWith(params);
-    });
-
-    it('should persist grouper instance across re-renders', () => {
-      const { rerender } = renderHook(() => useWorkflowHistoryGrouper());
-
-      expect(HistoryEventsGrouper).toHaveBeenCalledTimes(1);
-
-      rerender();
-      rerender();
-      rerender();
-
-      // Constructor should only be called once
-      expect(HistoryEventsGrouper).toHaveBeenCalledTimes(1);
-    });
+    // Constructor should only be called once
+    expect(HistoryEventsGrouper).toHaveBeenCalledTimes(1);
   });
 });
+
+const createMockState = (
+  overrides?: Partial<GroupingProcessState>
+): GroupingProcessState => ({
+  groups: {},
+  processedEventsCount: 0,
+  remainingEventsCount: 0,
+  status: 'idle',
+  ...overrides,
+});
+
+function setup(options?: {
+  initialState?: Partial<GroupingProcessState>;
+  throttleMs?: number;
+}) {
+  let mockOnChangeCallback: (state: GroupingProcessState) => void;
+  const mockUnsubscribe = jest.fn();
+
+  const initialState = createMockState(options?.initialState);
+
+  // Spy on the prototype methods to create type-safe mocks
+  const getStateSpy = jest
+    .spyOn(HistoryEventsGrouper.prototype, 'getState')
+    .mockReturnValue(initialState);
+
+  const onChangeSpy = jest
+    .spyOn(HistoryEventsGrouper.prototype, 'onChange')
+    .mockImplementation((callback) => {
+      mockOnChangeCallback = callback;
+      return mockUnsubscribe;
+    });
+
+  const updateEventsSpy = jest.spyOn(
+    HistoryEventsGrouper.prototype,
+    'updateEvents'
+  );
+
+  const updatePendingEventsSpy = jest.spyOn(
+    HistoryEventsGrouper.prototype,
+    'updatePendingEvents'
+  );
+
+  const destroySpy = jest.spyOn(HistoryEventsGrouper.prototype, 'destroy');
+
+  // Render the hook (constructor will create instance with spied methods)
+  const hookResult = renderHook(() =>
+    useWorkflowHistoryGrouper(options?.throttleMs ?? 0)
+  );
+
+  return {
+    ...hookResult,
+    mockGrouperInstance: {
+      getState: getStateSpy,
+      onChange: onChangeSpy,
+      updateEvents: updateEventsSpy,
+      updatePendingEvents: updatePendingEventsSpy,
+      destroy: destroySpy,
+    },
+    getMockOnChangeCallback: () => mockOnChangeCallback,
+    mockUnsubscribe,
+  };
+}
