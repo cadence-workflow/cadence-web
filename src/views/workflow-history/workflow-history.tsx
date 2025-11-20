@@ -73,6 +73,8 @@ export default function WorkflowHistory({ params }: Props) {
       pageSize: wfHistoryRequestArgs.pageSize,
       waitForNewEvent: wfHistoryRequestArgs.waitForNewEvent,
     },
+    //TODO replace this with grouper callback
+    () => {},
     2000
   );
 
