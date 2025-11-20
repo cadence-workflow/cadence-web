@@ -45,12 +45,16 @@ export default function useWorkflowHistoryFetcher(
 
   useEffect(() => {
     if (!fetcherRef.current) return;
-
+    let lastFlattenedPagesCount: number = -1;
     const unsubscribe = fetcherRef.current.onChange((state) => {
       const pagesCount = state.data?.pages?.length || 0;
-      onEventsChange(
-        state.data?.pages?.flatMap((page) => page.history?.events || []) || []
-      );
+      // if the pages count is greater than the last flattened pages count, then we need to flatten the pages and call the onEventsChange callback
+      if (pagesCount > lastFlattenedPagesCount) {
+        lastFlattenedPagesCount = pagesCount;
+        onEventsChange(
+          state.data?.pages?.flatMap((page) => page.history?.events || []) || []
+        );
+      }
       // immediately set if there is the first page without throttling other wise throttle
       const executeImmediately = pagesCount <= 1;
       setHistoryQuery(() => state, executeImmediately);
@@ -62,8 +66,6 @@ export default function useWorkflowHistoryFetcher(
   }, [setHistoryQuery, onEventsChange]);
 
   useEffect(() => {
-    if (!fetcherRef.current) return;
-
     return () => {
       fetcherRef.current?.destroy();
     };
