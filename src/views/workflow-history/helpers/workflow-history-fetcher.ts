@@ -49,13 +49,17 @@ export default class WorkflowHistoryFetcher {
     if (shouldContinue) {
       this.shouldContinue = shouldContinue;
     }
-    // If already started, return
-    if (this.isStarted) return;
+
+    // remove current listener (if exists) to have fresh emits only
+    this.unsubscribe?.();
+    this.unsubscribe = null;
+
     this.isStarted = true;
     let emitCount = 0;
     const currentState = this.observer.getCurrentResult();
     const fetchedFirstPage = currentState.status !== 'pending';
-    const shouldEnableQuery = !fetchedFirstPage && shouldContinue(currentState);
+    const shouldEnableQuery =
+      !fetchedFirstPage && this.shouldContinue(currentState);
 
     if (shouldEnableQuery) {
       this.observer.setOptions({
@@ -86,8 +90,6 @@ export default class WorkflowHistoryFetcher {
       emit(currentState);
     }
 
-    // remove current listener (if exists) and add new one
-    this.unsubscribe?.();
     this.unsubscribe = this.observer.subscribe((res) => emit(res));
   }
 
