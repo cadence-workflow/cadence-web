@@ -4,7 +4,7 @@ import usePageFilters from '@/components/page-filters/hooks/use-page-filters';
 import decodeUrlParams from '@/utils/decode-url-params';
 
 import workflowHistoryFiltersConfig from '../workflow-history/config/workflow-history-filters.config';
-import WORKFLOW_HISTORY_PAGE_SIZE_CONFIG from '../workflow-history/config/workflow-history-page-size.config';
+import { WORKFLOW_HISTORY_PAGE_SIZE_CONFIG } from '../workflow-history/config/workflow-history-page-size.config';
 import { WorkflowHistoryContext } from '../workflow-history/workflow-history-context-provider/workflow-history-context-provider';
 import workflowPageQueryParamsConfig from '../workflow-page/config/workflow-page-query-params.config';
 import { type WorkflowPageTabContentParams } from '../workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';

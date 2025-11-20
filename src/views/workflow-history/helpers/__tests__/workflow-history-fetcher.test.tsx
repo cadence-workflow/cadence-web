@@ -262,6 +262,37 @@ describe(WorkflowHistoryFetcher.name, () => {
     const state = fetcher.getCurrentState();
     expect(state.data?.pages.length).toBe(pageCountBefore);
   });
+
+  it('should use WORKFLOW_HISTORY_FIRST_PAGE_SIZE_CONFIG for the first page', async () => {
+    const { fetcher, getCapturedPageSizes } = setup(queryClient);
+
+    fetcher.start((state) => !state?.data?.pages?.length);
+
+    await waitFor(() => {
+      const state = fetcher.getCurrentState();
+      expect(state.data?.pages).toHaveLength(1);
+    });
+
+    const pageSizes = getCapturedPageSizes();
+    expect(pageSizes).toHaveLength(1);
+    expect(pageSizes[0]).toBe('200');
+  });
+
+  it('should use WORKFLOW_HISTORY_PAGE_SIZE_CONFIG for subsequent pages', async () => {
+    const { fetcher, getCapturedPageSizes } = setup(queryClient);
+
+    fetcher.start((state) => (state.data?.pages.length || 0) < 2);
+
+    await waitFor(() => {
+      const state = fetcher.getCurrentState();
+      expect(state.data?.pages).toHaveLength(2);
+    });
+
+    const pageSizes = getCapturedPageSizes();
+    expect(pageSizes.length).toBeGreaterThanOrEqual(2);
+    expect(pageSizes[0]).toBe('200');
+    expect(pageSizes[1]).toBe('1000');
+  });
 });
 
 function setup(client: QueryClient, options: { failOnPages?: number[] } = {}) {
@@ -273,7 +304,10 @@ function setup(client: QueryClient, options: { failOnPages?: number[] } = {}) {
     pageSize: 10,
   };
 
-  mockHistoryEndpoint(workflowHistoryMultiPageFixture, options.failOnPages);
+  const { getCapturedPageSizes } = mockHistoryEndpoint(
+    workflowHistoryMultiPageFixture,
+    options.failOnPages
+  );
   const fetcher = new WorkflowHistoryFetcher(client, params);
   hoistedFetcher = fetcher;
 
@@ -292,6 +326,7 @@ function setup(client: QueryClient, options: { failOnPages?: number[] } = {}) {
     fetcher,
     params,
     waitForData,
+    getCapturedPageSizes,
   };
 }
 
@@ -299,6 +334,8 @@ function mockHistoryEndpoint(
   responses: GetWorkflowHistoryResponse[],
   failOnPages: number[] = []
 ) {
+  const capturedPageSizes: string[] = [];
+
   mswMockEndpoints([
     {
       path: '/api/domains/:domain/:cluster/workflows/:workflowId/:runId/history',
@@ -307,6 +344,9 @@ function mockHistoryEndpoint(
       httpResolver: async ({ request }) => {
         const url = new URL(request.url);
         const nextPage = url.searchParams.get('nextPage');
+        const pageSize = url.searchParams.get('pageSize');
+
+        capturedPageSizes.push(pageSize ?? '');
 
         // Determine current page number based on nextPage param
         let pageNumber = 1;
@@ -328,10 +368,13 @@ function mockHistoryEndpoint(
 
         // Map page number to response index (0-indexed)
         const responseIndex = pageNumber - 1;
-        const response =
-          responses[responseIndex] || responses[responses.length - 1];
+        const response = responses[responseIndex];
         return HttpResponse.json(response);
       },
     },
   ]);
+
+  return {
+    getCapturedPageSizes: () => capturedPageSizes,
+  };
 }

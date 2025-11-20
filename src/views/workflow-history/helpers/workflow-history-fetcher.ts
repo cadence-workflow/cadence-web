@@ -8,6 +8,11 @@ import {
 import request from '@/utils/request';
 
 import {
+  WORKFLOW_HISTORY_FIRST_PAGE_SIZE_CONFIG,
+  WORKFLOW_HISTORY_PAGE_SIZE_CONFIG,
+} from '../config/workflow-history-page-size.config';
+
+import {
   type WorkflowHistoryQueryResult,
   type QueryResultOnChangeCallback,
   type ShouldContinueCallback,
@@ -126,7 +131,9 @@ export default class WorkflowHistoryFetcher {
             url: `/api/domains/${params.domain}/${params.cluster}/workflows/${params.workflowId}/${params.runId}/history`,
             query: {
               nextPage: pageParam,
-              pageSize: params.pageSize,
+              pageSize: pageParam
+                ? WORKFLOW_HISTORY_PAGE_SIZE_CONFIG
+                : WORKFLOW_HISTORY_FIRST_PAGE_SIZE_CONFIG,
               waitForNewEvent: params.waitForNewEvent ?? false,
             } satisfies WorkflowHistoryQueryParams,
           })
