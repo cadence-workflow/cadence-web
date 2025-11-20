@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { type ActiveClusterSelectionPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ActiveClusterSelectionPolicy';
 import { ActiveClusterSelectionStrategy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ActiveClusterSelectionStrategy';
 import { CancelExternalWorkflowExecutionFailedCause } from '@/__generated__/proto-ts/uber/cadence/api/v1/CancelExternalWorkflowExecutionFailedCause';
 import { ChildWorkflowExecutionFailedCause } from '@/__generated__/proto-ts/uber/cadence/api/v1/ChildWorkflowExecutionFailedCause';
@@ -146,46 +147,46 @@ const clusterAttributeSchema = z.object({
   name: z.string(),
 });
 
+// TODO @adhitya.mamallan - this needs to be removed as part of active-active's redesign, once the IDL has removed them
+const activeClusterSelectionStrategySchema = z.enum([
+  ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_INVALID,
+  ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_REGION_STICKY,
+  ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_EXTERNAL_ENTITY,
+]);
+
 // The IDL still contains the strategy and strategyConfig fields, but they are absent
 // in the new active-active design. The preprocess step corrects this and allows us to
 // parse activeClusterSelectionPolicy even if the backend does not pass the deprecated fields.
 //
 // TODO @adhitya.mamallan - update this once the IDL has been updated
 const activeClusterSelectionPolicySchema = z.preprocess(
-  (val) => {
-    const emptyActiveClusterSelectionPolicy = {
-      strategy:
-        ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_INVALID,
-      strategyConfig: 'activeClusterStickyRegionConfig',
-      clusterAttribute: null,
-    };
-
-    if (
-      typeof val === 'object' &&
-      val !== null &&
-      Object.hasOwn(val, 'clusterAttribute')
-    ) {
-      // Object.hasOwn does not infer the type by itself, so we need to cast it
-      const { clusterAttribute } = val as {
-        clusterAttribute: any;
+  (data) => {
+    if (typeof data === 'object' && data !== null) {
+      const dataWithDefaults = {
+        ...data,
+        strategy:
+          'strategy' in data && data.strategy
+            ? data.strategy
+            : 'ACTIVE_CLUSTER_SELECTION_STRATEGY_INVALID',
+        strategyConfig:
+          'strategyConfig' in data && data.strategyConfig
+            ? data.strategyConfig
+            : 'activeClusterStickyRegionConfig',
       };
-
-      return {
-        ...emptyActiveClusterSelectionPolicy,
-        clusterAttribute,
-      };
+      return dataWithDefaults;
     }
-
-    return emptyActiveClusterSelectionPolicy;
+    return data;
   },
   z.object({
     clusterAttribute: clusterAttributeSchema,
-    strategy: z.literal(
-      ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_INVALID
-    ),
-    strategyConfig: z.literal('activeClusterStickyRegionConfig'),
+    // TODO: remove the below fields once the IDL has removed them
+    strategy: activeClusterSelectionStrategySchema,
+    strategyConfig: z.enum([
+      'activeClusterStickyRegionConfig',
+      'activeClusterExternalEntityConfig',
+    ]),
   })
-);
+) as z.ZodType<ActiveClusterSelectionPolicy>;
 
 const failureSchema = z.object({
   reason: z.string(),
@@ -783,7 +784,6 @@ export const upsertWorkflowSearchAttributesEventSchema =
   });
 
 export const historyEventSchema = z.discriminatedUnion('attributes', [
-  // @ts-expect-error the current IDLs still expect the deprecated active-active fields to be passed
   workflowExecutionStartedEventSchema,
   workflowExecutionCompletedEventSchema,
   workflowExecutionFailedEventSchema,
@@ -791,7 +791,6 @@ export const historyEventSchema = z.discriminatedUnion('attributes', [
   workflowExecutionSignaledEventSchema,
   workflowExecutionTerminatedEventSchema,
   workflowExecutionCanceledEventSchema,
-  // @ts-expect-error the current IDLs still expect the deprecated active-active fields to be passed
   workflowExecutionContinuedAsNewEventSchema,
   workflowExecutionCancelRequestedEventAttributesSchema,
   decisionTaskScheduledEventSchema,
@@ -818,7 +817,6 @@ export const historyEventSchema = z.discriminatedUnion('attributes', [
   requestCancelExternalWorkflowExecutionFailedEventSchema,
   signalExternalWorkflowExecutionInitiatedEventSchema,
   signalExternalWorkflowExecutionFailedEventSchema,
-  // @ts-expect-error the current IDLs still expect the deprecated active-active fields to be passed
   startChildWorkflowExecutionInitiatedEventSchema,
   startChildWorkflowExecutionFailedEventSchema,
   childWorkflowExecutionStartedEventSchema,
