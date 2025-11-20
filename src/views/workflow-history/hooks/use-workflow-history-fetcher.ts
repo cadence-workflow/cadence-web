@@ -45,7 +45,7 @@ export default function useWorkflowHistoryFetcher(
 
   useEffect(() => {
     if (!fetcherRef.current) return;
-    let lastFlattenedPagesCount: number = 0;
+    let lastFlattenedPagesCount: number = -1;
     const unsubscribe = fetcherRef.current.onChange((state) => {
       const pagesCount = state.data?.pages?.length || 0;
       // if the pages count is greater than the last flattened pages count, then we need to flatten the pages and call the onEventsChange callback
