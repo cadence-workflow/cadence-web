@@ -3,19 +3,6 @@ import { render, screen, userEvent } from '@/test-utils/rtl';
 import TagFilter from '../tag-filter';
 import { type TagFilterOptionConfig } from '../tag-filter.types';
 
-jest.mock('../selectable-tag/selectable-tag', () =>
-  jest.fn(({ value, onClick, children, startEnhancer }) => (
-    <button
-      data-testid={`selectable-tag-${children}`}
-      data-selected={value}
-      onClick={onClick}
-    >
-      {startEnhancer && startEnhancer()}
-      {children}
-    </button>
-  ))
-);
-
 const MOCK_OPTIONS_CONFIG = {
   opt1: {
     label: 'Option 1',
@@ -33,7 +20,7 @@ const MOCK_OPTIONS_CONFIG = {
 type MockOption = keyof typeof MOCK_OPTIONS_CONFIG;
 
 describe(TagFilter.name, () => {
-  it('renders without errors', () => {
+  it('renders label, "Show all" tag, and all tags from optionsConfig with enhancers', () => {
     setup({});
 
     expect(screen.getByText('Mock Label')).toBeInTheDocument();
@@ -41,23 +28,9 @@ describe(TagFilter.name, () => {
     expect(screen.getByText('Option 1')).toBeInTheDocument();
     expect(screen.getByText('Option 2')).toBeInTheDocument();
     expect(screen.getByText('Option 3')).toBeInTheDocument();
-  });
-
-  it('renders all tags from optionsConfig', () => {
-    setup({});
-
-    expect(screen.getByText('Option 1')).toBeInTheDocument();
-    expect(screen.getByText('Option 2')).toBeInTheDocument();
-    expect(screen.getByText('Option 3')).toBeInTheDocument();
     expect(screen.getByTestId('enhancer-opt1')).toBeInTheDocument();
     expect(screen.queryByTestId('enhancer-opt2')).not.toBeInTheDocument();
     expect(screen.getByTestId('enhancer-opt3')).toBeInTheDocument();
-  });
-
-  it('renders "Show all" tag', () => {
-    setup({});
-
-    expect(screen.getByText('Show all')).toBeInTheDocument();
   });
 
   it('calls onChangeValues when clicking an individual tag to select it', async () => {
@@ -82,7 +55,7 @@ describe(TagFilter.name, () => {
     expect(mockOnChangeValues).toHaveBeenCalledWith(['opt2']);
   });
 
-  it('calls onChangeValues with all tag keys when clicking "Show all" and no values are selected', async () => {
+  it('selects all tags when "Show all" is clicked and no values are currently selected', async () => {
     const { user, mockOnChangeValues } = setup({
       values: [],
     });
@@ -93,7 +66,7 @@ describe(TagFilter.name, () => {
     expect(mockOnChangeValues).toHaveBeenCalledWith(['opt1', 'opt2', 'opt3']);
   });
 
-  it('calls onChangeValues with empty array when clicking "Show all" and all values are selected', async () => {
+  it('deselects all tags when "Show all" is clicked and all values are currently selected', async () => {
     const { user, mockOnChangeValues } = setup({
       values: ['opt1', 'opt2', 'opt3'],
     });
@@ -104,7 +77,7 @@ describe(TagFilter.name, () => {
     expect(mockOnChangeValues).toHaveBeenCalledWith([]);
   });
 
-  it('calls onChangeValues with all tag keys when clicking "Show all" and only some values are selected', async () => {
+  it('selects all tags when "Show all" is clicked and only some values are currently selected', async () => {
     const { user, mockOnChangeValues } = setup({
       values: ['opt1'],
     });
@@ -113,39 +86,6 @@ describe(TagFilter.name, () => {
     await user.click(showAllTag);
 
     expect(mockOnChangeValues).toHaveBeenCalledWith(['opt1', 'opt2', 'opt3']);
-  });
-
-  it('handles empty values array', () => {
-    setup({
-      values: [],
-    });
-
-    expect(screen.getByText('Show all')).toBeInTheDocument();
-    expect(screen.getByText('Option 1')).toBeInTheDocument();
-    expect(screen.getByText('Option 2')).toBeInTheDocument();
-    expect(screen.getByText('Option 3')).toBeInTheDocument();
-  });
-
-  it('handles all values selected', () => {
-    setup({
-      values: ['opt1', 'opt2', 'opt3'],
-    });
-
-    expect(screen.getByText('Show all')).toBeInTheDocument();
-    expect(screen.getByText('Option 1')).toBeInTheDocument();
-    expect(screen.getByText('Option 2')).toBeInTheDocument();
-    expect(screen.getByText('Option 3')).toBeInTheDocument();
-  });
-
-  it('handles partial selection', () => {
-    setup({
-      values: ['opt1', 'opt3'],
-    });
-
-    expect(screen.getByText('Show all')).toBeInTheDocument();
-    expect(screen.getByText('Option 1')).toBeInTheDocument();
-    expect(screen.getByText('Option 2')).toBeInTheDocument();
-    expect(screen.getByText('Option 3')).toBeInTheDocument();
   });
 
   it('does not render "Show all" tag when hideShowAll is true', () => {
