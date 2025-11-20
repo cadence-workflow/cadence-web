@@ -368,7 +368,7 @@ function mockHistoryEndpoint(
 
         // Map page number to response index (0-indexed)
         const responseIndex = pageNumber - 1;
-        const response = responses[responseIndex];
+        const response = responses[responseIndex] || responses[responses.length - 1];
         return HttpResponse.json(response);
       },
     },
