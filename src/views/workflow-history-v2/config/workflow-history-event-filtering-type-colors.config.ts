@@ -15,23 +15,23 @@ const workflowHistoryEventFilteringTypeColorsConfig = {
   },
   SIGNAL: {
     content: '#C490F9',
-    background: '',
-    backgroundHighlighted: '',
+    background: '#F9F1FF',
+    backgroundHighlighted: '#F2E3FF',
   },
   TIMER: {
     content: '#F877D2',
-    background: '',
-    backgroundHighlighted: '',
+    background: '#FEEFF9',
+    backgroundHighlighted: '#FEDFF3',
   },
   CHILDWORKFLOW: {
     content: '#77D5E3',
-    background: '',
-    backgroundHighlighted: '',
+    background: '#E2F8FB',
+    backgroundHighlighted: '#CDEEF3',
   },
   WORKFLOW: {
-    content: '#77D5E3',
-    background: '',
-    backgroundHighlighted: '',
+    content: '#77B71C',
+    background: '#EEF6E3',
+    backgroundHighlighted: '#DEEEC6',
   },
 } as const satisfies Record<
   WorkflowHistoryEventFilteringType,
