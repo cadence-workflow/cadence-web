@@ -88,6 +88,7 @@ export default function WorkflowHistoryHeader({
                   size="compact"
                   kind="secondary"
                   startEnhancer={<Filter size={16} />}
+                  overrides={overrides.filtersButton}
                 >
                   {activeFiltersCount === 0
                     ? 'Filters'
