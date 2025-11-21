@@ -25,7 +25,7 @@ import workflowPageQueryParamsConfig from '../workflow-page/config/workflow-page
 import { useSuspenseDescribeWorkflow } from '../workflow-page/hooks/use-describe-workflow';
 
 import workflowHistoryFiltersConfig from './config/workflow-history-filters.config';
-import WORKFLOW_HISTORY_PAGE_SIZE_CONFIG from './config/workflow-history-page-size.config';
+import { WORKFLOW_HISTORY_PAGE_SIZE_CONFIG } from './config/workflow-history-page-size.config';
 import compareUngroupedEvents from './helpers/compare-ungrouped-events';
 import getSortableEventId from './helpers/get-sortable-event-id';
 import getVisibleGroupsHasMissingEvents from './helpers/get-visible-groups-has-missing-events';
@@ -73,6 +73,8 @@ export default function WorkflowHistory({ params }: Props) {
       pageSize: wfHistoryRequestArgs.pageSize,
       waitForNewEvent: wfHistoryRequestArgs.waitForNewEvent,
     },
+    //TODO: @assem.hafez replace this with grouper callback
+    () => {},
     2000
   );
 

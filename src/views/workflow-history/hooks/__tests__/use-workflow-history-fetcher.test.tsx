@@ -19,13 +19,17 @@ let mockOnChangeCallback: jest.Mock;
 let mockUnsubscribe: jest.Mock;
 
 function setup() {
-  const hookResult = renderHook(() => useWorkflowHistoryFetcher(mockParams));
+  const mockOnEventsChange = jest.fn();
+  const hookResult = renderHook(() =>
+    useWorkflowHistoryFetcher(mockParams, mockOnEventsChange)
+  );
 
   return {
     ...hookResult,
     mockFetcherInstance,
     mockOnChangeCallback,
     mockUnsubscribe,
+    mockOnEventsChange,
   };
 }
 

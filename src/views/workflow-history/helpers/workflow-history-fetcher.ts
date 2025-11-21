@@ -8,6 +8,11 @@ import {
 import request from '@/utils/request';
 
 import {
+  WORKFLOW_HISTORY_FIRST_PAGE_SIZE_CONFIG,
+  WORKFLOW_HISTORY_PAGE_SIZE_CONFIG,
+} from '../config/workflow-history-page-size.config';
+
+import {
   type WorkflowHistoryQueryResult,
   type QueryResultOnChangeCallback,
   type ShouldContinueCallback,
@@ -41,16 +46,18 @@ export default class WorkflowHistoryFetcher {
   }
 
   start(shouldContinue: ShouldContinueCallback = () => true): void {
-    if (shouldContinue) {
-      this.shouldContinue = shouldContinue;
-    }
-    // If already started, return
-    if (this.isStarted) return;
+    this.shouldContinue = shouldContinue;
+
+    // remove current listener (if exists) to have fresh emits only
+    this.unsubscribe?.();
+    this.unsubscribe = null;
+
     this.isStarted = true;
     let emitCount = 0;
     const currentState = this.observer.getCurrentResult();
     const fetchedFirstPage = currentState.status !== 'pending';
-    const shouldEnableQuery = !fetchedFirstPage && shouldContinue(currentState);
+    const shouldEnableQuery =
+      !fetchedFirstPage && this.shouldContinue(currentState);
 
     if (shouldEnableQuery) {
       this.observer.setOptions({
@@ -81,8 +88,6 @@ export default class WorkflowHistoryFetcher {
       emit(currentState);
     }
 
-    // remove current listener (if exists) and add new one
-    this.unsubscribe?.();
     this.unsubscribe = this.observer.subscribe((res) => emit(res));
   }
 
@@ -126,7 +131,9 @@ export default class WorkflowHistoryFetcher {
             url: `/api/domains/${params.domain}/${params.cluster}/workflows/${params.workflowId}/${params.runId}/history`,
             query: {
               nextPage: pageParam,
-              pageSize: params.pageSize,
+              pageSize: pageParam
+                ? WORKFLOW_HISTORY_PAGE_SIZE_CONFIG
+                : WORKFLOW_HISTORY_FIRST_PAGE_SIZE_CONFIG,
               waitForNewEvent: params.waitForNewEvent ?? false,
             } satisfies WorkflowHistoryQueryParams,
           })
