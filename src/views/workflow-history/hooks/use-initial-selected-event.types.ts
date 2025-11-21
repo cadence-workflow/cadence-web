@@ -1,7 +1,7 @@
-import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
+import { type HistoryEventsGroup } from '../workflow-history.types';
 
 export type UseInitialSelectedEventParams = {
-  events: HistoryEvent[];
+  eventGroups: Record<string, HistoryEventsGroup>;
   selectedEventId?: string;
-  filteredEventGroupsEntries: [string, any][];
+  filteredEventGroupsEntries: [string, HistoryEventsGroup][];
 };

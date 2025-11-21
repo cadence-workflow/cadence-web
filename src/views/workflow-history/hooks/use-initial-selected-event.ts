@@ -1,6 +1,4 @@
-import { useMemo, useState } from 'react';
-
-import getHistoryEventGroupId from '../helpers/get-history-event-group-id';
+import { useMemo, useRef, useState } from 'react';
 
 import { type UseInitialSelectedEventParams } from './use-initial-selected-event.types';
 
@@ -12,27 +10,42 @@ import { type UseInitialSelectedEventParams } from './use-initial-selected-event
  */
 export default function useInitialSelectedEvent({
   selectedEventId,
-  events,
+  eventGroups,
   filteredEventGroupsEntries,
 }: UseInitialSelectedEventParams) {
+  // preserve initial event id even if prop changed.
   const [initialEventId] = useState(selectedEventId);
+  const foundGroupIndexRef = useRef<number | undefined>(undefined);
 
-  const initialEvent = useMemo(() => {
+  const initialEventGroupEntry = useMemo(() => {
     if (!initialEventId) return undefined;
-    return events.find((e) => e.eventId === initialEventId);
-  }, [events, initialEventId]);
+
+    return Object.entries(eventGroups).find(([_, group]) =>
+      group.events.find((e) => e.eventId === initialEventId)
+    );
+  }, [eventGroups, initialEventId]);
 
   const shouldSearchForInitialEvent = initialEventId !== undefined;
-  const initialEventFound = initialEvent !== undefined;
+  const initialEventFound = initialEventGroupEntry !== undefined;
 
   const initialEventGroupIndex = useMemo(() => {
-    if (!initialEvent) return undefined;
-    const groupId = getHistoryEventGroupId(initialEvent);
+    if (!initialEventGroupEntry) return undefined;
+
+    const groupId = initialEventGroupEntry[0];
+    // If group index not change do not search again.
+    if (
+      foundGroupIndexRef.current &&
+      filteredEventGroupsEntries[foundGroupIndexRef.current][0] === groupId
+    )
+      return foundGroupIndexRef.current;
+
     const index = filteredEventGroupsEntries.findIndex(
       ([id]) => id === groupId
     );
-    return index > -1 ? index : undefined;
-  }, [initialEvent, filteredEventGroupsEntries]);
+    const foundGroupIndex = index > -1 ? index : undefined;
+    foundGroupIndexRef.current = foundGroupIndex;
+    return foundGroupIndex;
+  }, [initialEventGroupEntry, filteredEventGroupsEntries]);
 
   return {
     shouldSearchForInitialEvent,
