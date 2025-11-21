@@ -25,6 +25,7 @@ export default function useWorkflowHistoryFetcher(
 ) {
   const queryClient = useQueryClient();
   const fetcherRef = useRef<WorkflowHistoryFetcher | null>(null);
+  const lastFlattenedPagesCountRef = useRef<number>(-1);
 
   if (!fetcherRef.current) {
     fetcherRef.current = new WorkflowHistoryFetcher(queryClient, params);
@@ -45,12 +46,12 @@ export default function useWorkflowHistoryFetcher(
 
   useEffect(() => {
     if (!fetcherRef.current) return;
-    let lastFlattenedPagesCount: number = -1;
     const unsubscribe = fetcherRef.current.onChange((state) => {
       const pagesCount = state.data?.pages?.length || 0;
-      // if the pages count is greater than the last flattened pages count, then we need to flatten the pages and call the onEventsChange callback
-      if (pagesCount > lastFlattenedPagesCount) {
-        lastFlattenedPagesCount = pagesCount;
+      // If the pages count is greater than the last flattened pages count, then we need to flatten the pages and call the onEventsChange callback
+      // Depending on ref variable instead of historyQuery is because historyQuery is throttled.
+      if (pagesCount > lastFlattenedPagesCountRef.current) {
+        lastFlattenedPagesCountRef.current = pagesCount;
         onEventsChange(
           state.data?.pages?.flatMap((page) => page.history?.events || []) || []
         );

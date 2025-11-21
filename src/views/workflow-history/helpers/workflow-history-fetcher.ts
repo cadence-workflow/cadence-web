@@ -46,9 +46,7 @@ export default class WorkflowHistoryFetcher {
   }
 
   start(shouldContinue: ShouldContinueCallback = () => true): void {
-    if (shouldContinue) {
-      this.shouldContinue = shouldContinue;
-    }
+    this.shouldContinue = shouldContinue;
 
     // remove current listener (if exists) to have fresh emits only
     this.unsubscribe?.();

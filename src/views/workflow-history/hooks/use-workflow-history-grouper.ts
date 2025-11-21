@@ -9,6 +9,8 @@ import type {
   ProcessEventsParams,
 } from '../helpers/workflow-history-grouper.types';
 
+import { BATCH_SIZE } from './use-workflow-history-grouper.constants';
+
 /**
  * Hook for grouping workflow history events using the HistoryEventsGrouper.
  */
@@ -17,7 +19,7 @@ export default function useWorkflowHistoryGrouper(throttleMs = 2000) {
 
   if (!grouperRef.current) {
     grouperRef.current = new HistoryEventsGrouper({
-      batchSize: 300,
+      batchSize: BATCH_SIZE,
     });
   }
 
@@ -35,7 +37,7 @@ export default function useWorkflowHistoryGrouper(throttleMs = 2000) {
     if (!grouperRef.current) return;
 
     const unsubscribe = grouperRef.current.onChange((state) => {
-      const setImmediate = state.processedEventsCount < 300;
+      const setImmediate = state.processedEventsCount < BATCH_SIZE;
       setGroupingState(() => state, setImmediate);
     });
 

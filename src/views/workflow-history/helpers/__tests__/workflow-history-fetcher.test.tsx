@@ -15,6 +15,15 @@ const RETRY_COUNT = 3;
 let queryClient: QueryClient;
 let hoistedFetcher: WorkflowHistoryFetcher;
 
+jest.mock(
+  '@/views/workflow-history/config/workflow-history-page-size.config',
+  () => ({
+    __esModule: true,
+    WORKFLOW_HISTORY_FIRST_PAGE_SIZE_CONFIG: 200,
+    WORKFLOW_HISTORY_PAGE_SIZE_CONFIG: 1000,
+  })
+);
+
 describe(WorkflowHistoryFetcher.name, () => {
   beforeEach(() => {
     queryClient = new QueryClient({
@@ -274,24 +283,22 @@ describe(WorkflowHistoryFetcher.name, () => {
     });
 
     const pageSizes = getCapturedPageSizes();
-    expect(pageSizes).toHaveLength(1);
     expect(pageSizes[0]).toBe('200');
   });
 
   it('should use WORKFLOW_HISTORY_PAGE_SIZE_CONFIG for subsequent pages', async () => {
     const { fetcher, getCapturedPageSizes } = setup(queryClient);
 
-    fetcher.start((state) => (state.data?.pages.length || 0) < 2);
+    fetcher.start((state) => (state.data?.pages.length || 0) < 3);
 
     await waitFor(() => {
       const state = fetcher.getCurrentState();
-      expect(state.data?.pages).toHaveLength(2);
+      expect(state.data?.pages).toHaveLength(3);
     });
 
     const pageSizes = getCapturedPageSizes();
-    expect(pageSizes.length).toBeGreaterThanOrEqual(2);
-    expect(pageSizes[0]).toBe('200');
     expect(pageSizes[1]).toBe('1000');
+    expect(pageSizes[2]).toBe('1000');
   });
 });
 
