@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 
+import { Button } from 'baseui/button';
+import { Filter } from 'baseui/icon';
+import { StatefulPopover } from 'baseui/popover';
 import { SegmentedControl, Segment } from 'baseui/segmented-control';
 import { HeadingXSmall } from 'baseui/typography';
 import { useInView } from 'react-intersection-observer';
 
-import PageFiltersToggle from '@/components/page-filters/page-filters-toggle/page-filters-toggle';
 import PageSection from '@/components/page-section/page-section';
 import WorkflowHistoryExportJsonButton from '@/views/workflow-history/workflow-history-export-json-button/workflow-history-export-json-button';
+import WorkflowHistoryFiltersMenu from '@/views/workflow-history-v2/workflow-history-filters-menu/workflow-history-filters-menu';
 
 import { overrides, styled } from './workflow-history-header.styles';
 import { type Props } from './workflow-history-header.types';
@@ -18,8 +21,6 @@ export default function WorkflowHistoryHeader({
   pageFiltersProps,
   isStickyEnabled = true,
 }: Props) {
-  const [areFiltersShown, setAreFiltersShown] = useState(false);
-
   const [isSticky, setIsSticky] = useState(false);
   useEffect(() => {
     if (!isStickyEnabled && isSticky) setIsSticky(false);
@@ -69,12 +70,31 @@ export default function WorkflowHistoryHeader({
                   overrides={overrides.groupToggleSegment}
                 />
               </SegmentedControl>
-              <PageFiltersToggle
-                // TODO: add popover here for new filters
-                activeFiltersCount={activeFiltersCount}
-                onClick={() => setAreFiltersShown((v) => !v)}
-                isActive={areFiltersShown}
-              />
+              <StatefulPopover
+                placement="bottomRight"
+                overrides={overrides.popover}
+                content={() => (
+                  <WorkflowHistoryFiltersMenu
+                    activeFiltersCount={activeFiltersCount}
+                    queryParams={pageFiltersProps.queryParams}
+                    setQueryParams={pageFiltersProps.setQueryParams}
+                    resetAllFilters={pageFiltersProps.resetAllFilters}
+                  />
+                )}
+                returnFocus
+                autoFocus
+              >
+                <Button
+                  size="compact"
+                  kind="secondary"
+                  startEnhancer={<Filter size={16} />}
+                  overrides={overrides.filtersButton}
+                >
+                  {activeFiltersCount === 0
+                    ? 'Filters'
+                    : `Filters (${activeFiltersCount})`}
+                </Button>
+              </StatefulPopover>
             </styled.Actions>
           </styled.Header>
         </PageSection>
