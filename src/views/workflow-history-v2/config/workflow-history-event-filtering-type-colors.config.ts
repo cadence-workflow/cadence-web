@@ -9,7 +9,7 @@ const workflowHistoryEventFilteringTypeColorsConfig = {
     backgroundHighlighted: '#DEE9FE',
   },
   DECISION: {
-    content: '#FC823A',
+    content: '#FFB48C',
     background: '#FFF0E9',
     backgroundHighlighted: '#FEE2D4',
   },
