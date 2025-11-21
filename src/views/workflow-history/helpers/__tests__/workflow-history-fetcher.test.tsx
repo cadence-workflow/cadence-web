@@ -15,6 +15,15 @@ const RETRY_COUNT = 3;
 let queryClient: QueryClient;
 let hoistedFetcher: WorkflowHistoryFetcher;
 
+jest.mock(
+  '@/views/workflow-history/config/workflow-history-page-size.config',
+  () => ({
+    __esModule: true,
+    WORKFLOW_HISTORY_FIRST_PAGE_SIZE_CONFIG: 200,
+    WORKFLOW_HISTORY_PAGE_SIZE_CONFIG: 1000,
+  })
+);
+
 describe(WorkflowHistoryFetcher.name, () => {
   beforeEach(() => {
     queryClient = new QueryClient({

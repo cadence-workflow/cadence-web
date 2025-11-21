@@ -49,7 +49,7 @@ export default function useWorkflowHistoryFetcher(
     const unsubscribe = fetcherRef.current.onChange((state) => {
       const pagesCount = state.data?.pages?.length || 0;
       // If the pages count is greater than the last flattened pages count, then we need to flatten the pages and call the onEventsChange callback
-      // Depending on ref variable instead of historyQueue is because historyQueue is throttled.
+      // Depending on ref variable instead of historyQuery is because historyQuery is throttled.
       if (pagesCount > lastFlattenedPagesCountRef.current) {
         lastFlattenedPagesCountRef.current = pagesCount;
         onEventsChange(
