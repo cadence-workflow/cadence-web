@@ -2,7 +2,7 @@
   "name": "cadence-web",
   "private": true,
   "config": {
-    "cadence_idl_version": "7b9d8a31de8c2af607176c2494b1ebbe5250b312"
+    "cadence_idl_version": "ac43ecefe36469b88f4efd41e2a067fdcf7a8506"
   },
   "scripts": {
     "dev": "next dev -p ${CADENCE_WEB_PORT:-8088} -H ${CADENCE_WEB_HOSTNAME:-0.0.0.0} | pino-pretty --messageKey message",
