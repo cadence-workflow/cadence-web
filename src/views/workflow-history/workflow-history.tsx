@@ -79,9 +79,7 @@ export default function WorkflowHistory({ params }: Props) {
       pageSize: wfHistoryRequestArgs.pageSize,
       waitForNewEvent: wfHistoryRequestArgs.waitForNewEvent,
     },
-    (events) => {
-      updateGrouperEvents(events);
-    },
+    updateGrouperEvents,
     2000
   );
 

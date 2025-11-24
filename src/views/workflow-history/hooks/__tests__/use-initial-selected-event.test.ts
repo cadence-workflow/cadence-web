@@ -76,7 +76,7 @@ describe('useInitialSelectedEvent', () => {
     expect(result.current.initialEventFound).toBe(true);
   });
 
-  it('should return initialEventGroupIndex as undefined when selectedEventId is defined & group is not found in filtered entries', () => {
+  it('should return initialEventGroupIndex as undefined when selectedEventId is defined & event is not found in filtered entries', () => {
     // Group '2' exists in mockEventGroups but is filtered out from the visible list
     const filteredEventGroupsEntries: [string, HistoryEventsGroup][] = [
       ['1', mockEventGroups['1']],
