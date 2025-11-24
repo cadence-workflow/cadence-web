@@ -29,12 +29,12 @@ import { WORKFLOW_HISTORY_PAGE_SIZE_CONFIG } from './config/workflow-history-pag
 import compareUngroupedEvents from './helpers/compare-ungrouped-events';
 import getSortableEventId from './helpers/get-sortable-event-id';
 import getVisibleGroupsHasMissingEvents from './helpers/get-visible-groups-has-missing-events';
-import { groupHistoryEvents } from './helpers/group-history-events';
 import pendingActivitiesInfoToEvents from './helpers/pending-activities-info-to-events';
 import pendingDecisionInfoToEvent from './helpers/pending-decision-info-to-event';
 import useEventExpansionToggle from './hooks/use-event-expansion-toggle';
 import useInitialSelectedEvent from './hooks/use-initial-selected-event';
 import useWorkflowHistoryFetcher from './hooks/use-workflow-history-fetcher';
+import useWorkflowHistoryGrouper from './hooks/use-workflow-history-grouper';
 import WorkflowHistoryCompactEventCard from './workflow-history-compact-event-card/workflow-history-compact-event-card';
 import { WorkflowHistoryContext } from './workflow-history-context-provider/workflow-history-context-provider';
 import WorkflowHistoryHeader from './workflow-history-header/workflow-history-header';
@@ -60,6 +60,12 @@ export default function WorkflowHistory({ params }: Props) {
   };
 
   const {
+    eventGroups,
+    updateEvents: updateGrouperEvents,
+    updatePendingEvents: updateGrouperPendingEvents,
+  } = useWorkflowHistoryGrouper();
+
+  const {
     historyQuery,
     startLoadingHistory,
     stopLoadingHistory,
@@ -73,8 +79,7 @@ export default function WorkflowHistory({ params }: Props) {
       pageSize: wfHistoryRequestArgs.pageSize,
       waitForNewEvent: wfHistoryRequestArgs.waitForNewEvent,
     },
-    //TODO: @assem.hafez replace this with grouper callback
-    () => {},
+    updateGrouperEvents,
     2000
   );
 
@@ -125,7 +130,7 @@ export default function WorkflowHistory({ params }: Props) {
     [result]
   );
 
-  const pendingHistoryEvents = useMemo(() => {
+  useEffect(() => {
     const pendingStartActivities = pendingActivitiesInfoToEvents(
       wfExecutionDescription.pendingActivities
     );
@@ -133,16 +138,11 @@ export default function WorkflowHistory({ params }: Props) {
       ? pendingDecisionInfoToEvent(wfExecutionDescription.pendingDecision)
       : null;
 
-    return {
+    updateGrouperPendingEvents({
       pendingStartActivities,
       pendingStartDecision,
-    };
-  }, [wfExecutionDescription]);
-
-  const eventGroups = useMemo(
-    () => groupHistoryEvents(events, pendingHistoryEvents),
-    [events, pendingHistoryEvents]
-  );
+    });
+  }, [wfExecutionDescription, updateGrouperPendingEvents]);
 
   const filteredEventGroupsEntries = useMemo(
     () =>
@@ -235,7 +235,7 @@ export default function WorkflowHistory({ params }: Props) {
     shouldSearchForInitialEvent,
   } = useInitialSelectedEvent({
     selectedEventId: queryParams.historySelectedEventId,
-    events,
+    eventGroups,
     filteredEventGroupsEntries,
   });
 

@@ -1,5 +1,3 @@
-import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
-
 import type {
   HistoryEventsGroups,
   PendingActivityTaskStartEvent,
