@@ -9,7 +9,6 @@ import decodeUrlParams from '@/utils/decode-url-params';
 import sortBy from '@/utils/sort-by';
 
 import { WORKFLOW_HISTORY_PAGE_SIZE_CONFIG } from '../workflow-history/config/workflow-history-page-size.config';
-import compareUngroupedEvents from '../workflow-history/helpers/compare-ungrouped-events';
 import getSortableEventId from '../workflow-history/helpers/get-sortable-event-id';
 import pendingActivitiesInfoToEvents from '../workflow-history/helpers/pending-activities-info-to-events';
 import pendingDecisionInfoToEvent from '../workflow-history/helpers/pending-decision-info-to-event';
@@ -17,12 +16,12 @@ import useInitialSelectedEvent from '../workflow-history/hooks/use-initial-selec
 import useWorkflowHistoryFetcher from '../workflow-history/hooks/use-workflow-history-fetcher';
 import useWorkflowHistoryGrouper from '../workflow-history/hooks/use-workflow-history-grouper';
 import { WorkflowHistoryContext } from '../workflow-history/workflow-history-context-provider/workflow-history-context-provider';
-import { type WorkflowHistoryUngroupedEventInfo } from '../workflow-history/workflow-history-ungrouped-event/workflow-history-ungrouped-event.types';
 import workflowPageQueryParamsConfig from '../workflow-page/config/workflow-page-query-params.config';
 import { useSuspenseDescribeWorkflow } from '../workflow-page/hooks/use-describe-workflow';
 import { type WorkflowPageTabContentParams } from '../workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
 import workflowHistoryFiltersConfig from './config/workflow-history-filters.config';
+import WORKFLOW_HISTORY_SET_RANGE_THROTTLE_MS_CONFIG from './config/workflow-history-set-range-throttle-ms.config';
 import WorkflowHistoryGroupedTable from './workflow-history-grouped-table/workflow-history-grouped-table';
 import WorkflowHistoryHeader from './workflow-history-header/workflow-history-header';
 import { styled } from './workflow-history-v2.styles';
@@ -123,24 +122,13 @@ export default function WorkflowHistoryV2({ params }: Props) {
     ]
   );
 
-  const sortedUngroupedEvents: Array<WorkflowHistoryUngroupedEventInfo> =
-    useMemo(
-      () =>
-        filteredEventGroupsById
-          .map(([_, group]) => [
-            ...group.events.map((event, index) => ({
-              event,
-              eventMetadata: group.eventsMetadata[index],
-              label: group.label,
-              shortLabel: group.shortLabel,
-              id: event.eventId ?? event.computedEventId,
-              canReset: group.resetToDecisionEventId === event.eventId,
-            })),
-          ])
-          .flat(1)
-          .sort(compareUngroupedEvents),
-      [filteredEventGroupsById]
-    );
+  const filteredEventsCount = useMemo(
+    () =>
+      filteredEventGroupsById.reduce((acc, [_, group]) => {
+        return acc + group.events.length;
+      }, 0),
+    [filteredEventGroupsById]
+  );
 
   const { ungroupedViewUserPreference, setUngroupedViewUserPreference } =
     useContext(WorkflowHistoryContext);
@@ -188,7 +176,7 @@ export default function WorkflowHistoryV2({ params }: Props) {
         ungroupedStartIndex: -1,
         ungroupedEndIndex: -1,
       },
-      700,
+      WORKFLOW_HISTORY_SET_RANGE_THROTTLE_MS_CONFIG,
       {
         leading: false,
         trailing: true,
@@ -224,11 +212,11 @@ export default function WorkflowHistoryV2({ params }: Props) {
     () =>
       isUngroupedHistoryViewEnabled &&
       // Pre-load more as we're approaching the end
-      sortedUngroupedEvents.length - visibleGroupsRange.ungroupedEndIndex <
+      filteredEventsCount - visibleGroupsRange.ungroupedEndIndex <
         WORKFLOW_HISTORY_PAGE_SIZE_CONFIG * 1,
     [
       isUngroupedHistoryViewEnabled,
-      sortedUngroupedEvents.length,
+      filteredEventsCount,
       visibleGroupsRange.ungroupedEndIndex,
     ]
   );

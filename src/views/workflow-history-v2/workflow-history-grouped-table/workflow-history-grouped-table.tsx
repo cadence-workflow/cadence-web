@@ -40,32 +40,8 @@ export default function WorkflowHistoryGroupedTable({
                 behavior: 'auto',
               },
             })}
-        itemContent={(_, [__, group]) => (
-          <div>{JSON.stringify(group)}</div>
-          // <WorkflowHistoryTimelineGroup
-          //   key={groupId}
-          //   {...group}
-          //   showLoadingMoreEvents={
-          //     group.hasMissingEvents && !reachedEndOfAvailableHistory
-          //   }
-          //   resetToDecisionEventId={group.resetToDecisionEventId}
-          //   isLastEvent={index === filteredEventGroupsEntries.length - 1}
-          //   decodedPageUrlParams={decodedParams}
-          //   getIsEventExpanded={getIsEventExpanded}
-          //   onEventToggle={toggleIsEventExpanded}
-          //   onReset={() => {
-          //     if (group.resetToDecisionEventId) {
-          //       setResetToDecisionEventId(group.resetToDecisionEventId);
-          //     }
-          //   }}
-          //   selected={group.events.some(
-          //     (e) => e.eventId === queryParams.historySelectedEventId
-          //   )}
-          //   workflowCloseStatus={workflowExecutionInfo?.closeStatus}
-          //   workflowIsArchived={workflowExecutionInfo?.isArchived || false}
-          //   workflowCloseTimeMs={workflowCloseTimeMs}
-          // />
-        )}
+        // TODO: update this with the actual implementation for groupedEntry
+        itemContent={(_, [__, group]) => <div>{JSON.stringify(group)}</div>}
         components={{
           Footer: () => (
             <WorkflowHistoryTimelineLoadMore
