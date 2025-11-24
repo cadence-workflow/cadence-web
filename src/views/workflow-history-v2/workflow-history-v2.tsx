@@ -20,6 +20,7 @@ import workflowPageQueryParamsConfig from '../workflow-page/config/workflow-page
 import { useSuspenseDescribeWorkflow } from '../workflow-page/hooks/use-describe-workflow';
 import { type WorkflowPageTabContentParams } from '../workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
+import WORKFLOW_HISTORY_FETCH_EVENTS_THROTTLE_MS_CONFIG from './config/workflow-history-fetch-events-throttle-ms.config';
 import workflowHistoryFiltersConfig from './config/workflow-history-filters.config';
 import WORKFLOW_HISTORY_SET_RANGE_THROTTLE_MS_CONFIG from './config/workflow-history-set-range-throttle-ms.config';
 import WorkflowHistoryGroupedTable from './workflow-history-grouped-table/workflow-history-grouped-table';
@@ -71,7 +72,7 @@ export default function WorkflowHistoryV2({ params }: Props) {
       waitForNewEvent: wfHistoryRequestArgs.waitForNewEvent,
     },
     updateGrouperEvents,
-    2000
+    WORKFLOW_HISTORY_FETCH_EVENTS_THROTTLE_MS_CONFIG
   );
 
   const { data: wfExecutionDescription } = useSuspenseDescribeWorkflow({
