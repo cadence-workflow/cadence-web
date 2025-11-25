@@ -23,7 +23,7 @@ describe('getAutocompleteSuggestions', () => {
     const suggestionsAfterSpace = getAutocompleteSuggestions(
       'WorkflowID = "test" AND c'
     );
-    expect(suggestionsAfterSpace).toEqual(['CloseTime', 'CloseStatus']);
+    expect(suggestionsAfterSpace).toEqual(['CloseTime', 'ClusterAttributeScope', 'ClusterAttributeName', 'CloseStatus']);
   });
 
   it('suggests logical operators after a complete WorkflowID value', () => {
@@ -116,6 +116,6 @@ describe('getAutocompleteSuggestions', () => {
     const complexQuery =
       'WorkflowID = "test" AND StartTime >= "2023-01-01T00:00:00Z" AND c';
     const suggestions = getAutocompleteSuggestions(complexQuery);
-    expect(suggestions).toEqual(['CloseTime', 'CloseStatus']);
+    expect(suggestions).toEqual(['CloseTime', 'ClusterAttributeScope', 'ClusterAttributeName', 'CloseStatus']);
   });
 });
