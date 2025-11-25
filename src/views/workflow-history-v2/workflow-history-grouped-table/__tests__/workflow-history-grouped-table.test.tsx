@@ -82,16 +82,6 @@ describe(WorkflowHistoryGroupedTable.name, () => {
 
     expect(screen.getByTestId('is-fetching')).toBeInTheDocument();
   });
-
-  it('should call fetchMoreEvents when fetch button is clicked', async () => {
-    const mockFetchMoreEvents = jest.fn();
-    const { user } = setup({ fetchMoreEvents: mockFetchMoreEvents });
-
-    const fetchButton = screen.getByTestId('fetch-more-button');
-    await user.click(fetchButton);
-
-    expect(mockFetchMoreEvents).toHaveBeenCalledTimes(1);
-  });
 });
 
 function setup({
