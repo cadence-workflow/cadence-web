@@ -5,6 +5,7 @@ import { type VirtuosoHandle } from 'react-virtuoso';
 import usePageFilters from '@/components/page-filters/hooks/use-page-filters';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import useThrottledState from '@/hooks/use-throttled-state';
+import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
 import decodeUrlParams from '@/utils/decode-url-params';
 import sortBy from '@/utils/sort-by';
 
@@ -78,6 +79,7 @@ export default function WorkflowHistoryV2({ params }: Props) {
   const { data: wfExecutionDescription } = useSuspenseDescribeWorkflow({
     ...params,
   });
+  const { workflowExecutionInfo } = wfExecutionDescription;
   const {
     data: result,
     hasNextPage,
@@ -262,6 +264,10 @@ export default function WorkflowHistoryV2({ params }: Props) {
 
   const groupedTableVirtuosoRef = useRef<VirtuosoHandle>(null);
 
+  const workflowCloseTimeMs = workflowExecutionInfo?.closeTime
+    ? parseGrpcTimestamp(workflowExecutionInfo?.closeTime)
+    : null;
+
   if (contentIsLoading) {
     return <SectionLoadingIndicator />;
   }
@@ -298,6 +304,12 @@ export default function WorkflowHistoryV2({ params }: Props) {
             hasMoreEvents={hasNextPage}
             fetchMoreEvents={manualFetchNextPage}
             isFetchingMoreEvents={isFetchingNextPage}
+            decodedPageUrlParams={decodedParams}
+            reachedEndOfAvailableHistory={reachedEndOfAvailableHistory}
+            workflowCloseStatus={workflowExecutionInfo?.closeStatus}
+            workflowIsArchived={workflowExecutionInfo?.isArchived || false}
+            workflowCloseTimeMs={workflowCloseTimeMs}
+            selectedEventId={queryParams.historySelectedEventId}
           />
         )}
       </styled.ContentSection>

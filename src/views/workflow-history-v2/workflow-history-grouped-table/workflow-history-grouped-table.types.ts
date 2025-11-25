@@ -2,8 +2,10 @@ import { type RefObject } from 'react';
 
 import { type VirtuosoHandle } from 'react-virtuoso';
 
+import { type WorkflowExecutionCloseStatus } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionCloseStatus';
 import { type RequestError } from '@/utils/request/request-error';
 import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-history.types';
+import { type Props as WorkflowHistoryV2Props } from '../workflow-history-v2.types';
 
 export type Props = {
   eventGroupsById: Array<[string, HistoryEventsGroup]>;
@@ -21,4 +23,10 @@ export type Props = {
   hasMoreEvents: boolean;
   fetchMoreEvents: () => void;
   isFetchingMoreEvents: boolean;
+  decodedPageUrlParams: WorkflowHistoryV2Props['params'];
+  reachedEndOfAvailableHistory: boolean;
+  workflowCloseStatus?: WorkflowExecutionCloseStatus | null;
+  workflowIsArchived: boolean;
+  workflowCloseTimeMs?: number | null;
+  selectedEventId?: string;
 };
