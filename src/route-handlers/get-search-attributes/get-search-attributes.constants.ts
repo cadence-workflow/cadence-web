@@ -17,4 +17,6 @@ export const SYSTEM_SEARCH_ATTRIBUTES: Set<string> = new Set([
   'IsCron',
   'NumClusters',
   'UpdateTime',
+  'ClusterAttributeScope',
+  'ClusterAttributeName',
 ]);
