@@ -3,22 +3,10 @@ import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-histo
 
 import { type Props as WorkflowHistoryProps } from '../workflow-history-v2.types';
 
-export type Props = Pick<
-  HistoryEventsGroup,
-  | 'events'
-  | 'eventsMetadata'
-  | 'timeLabel'
-  | 'label'
-  | 'hasMissingEvents'
-  | 'status'
-  | 'badges'
-  | 'resetToDecisionEventId'
-  | 'startTimeMs'
-  | 'closeTimeMs'
-  | 'expectedEndTimeInfo'
-  | 'shortLabel'
-> & {
-  isLastEvent: boolean;
+export type Props = {
+  eventGroup: HistoryEventsGroup;
+  getIsEventExpanded: (eventId: string) => void;
+  toggleIsEventExpanded: (eventId: string) => void;
   showLoadingMoreEvents: boolean;
   decodedPageUrlParams: WorkflowHistoryProps['params'];
   onReset?: () => void;

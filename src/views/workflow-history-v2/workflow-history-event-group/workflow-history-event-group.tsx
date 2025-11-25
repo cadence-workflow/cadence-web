@@ -1,16 +1,17 @@
+import { useCallback } from 'react';
+
 import { Panel } from 'baseui/accordion';
-import { Badge } from 'baseui/badge';
 import { MdCircle } from 'react-icons/md';
 
+import formatDate from '@/utils/data-formatters/format-date';
 import WorkflowHistoryEventStatusBadge from '@/views/workflow-history/workflow-history-event-status-badge/workflow-history-event-status-badge';
-import WorkflowHistoryEventsDurationBadge from '@/views/workflow-history/workflow-history-events-duration-badge/workflow-history-events-duration-badge';
 import WorkflowHistoryGroupLabel from '@/views/workflow-history/workflow-history-group-label/workflow-history-group-label';
-import WorkflowHistoryRemainingDurationBadge from '@/views/workflow-history/workflow-history-remaining-duration-badge/workflow-history-remaining-duration-badge';
+import WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 
 import workflowHistoryEventFilteringTypeColorsConfig from '../config/workflow-history-event-filtering-type-colors.config';
 import useEventGroupDuration from '../hooks/use-event-group-duration';
 
-import getEventFilteringType from './helpers/get-event-filtering-type';
+import getEventGroupFilteringType from './helpers/get-event-group-filtering-type';
 import {
   overrides as getOverrides,
   styled,
@@ -18,32 +19,40 @@ import {
 import { type Props } from './workflow-history-event-group.types';
 
 export default function WorkflowHistoryEventGroup({
-  status,
-  label,
-  shortLabel,
-  timeLabel,
-  startTimeMs,
-  closeTimeMs,
-  expectedEndTimeInfo,
+  eventGroup,
+  selected,
   workflowCloseTimeMs,
   workflowCloseStatus,
   workflowIsArchived,
-  events,
-  isLastEvent,
-  eventsMetadata,
-  hasMissingEvents,
   showLoadingMoreEvents,
   decodedPageUrlParams,
-  badges,
-  resetToDecisionEventId,
   onReset,
-  selected,
+  getIsEventExpanded,
+  toggleIsEventExpanded,
 }: Props) {
-  // Check each filter function against the event and return the one that matches, and OTHER otherwise
-  const eventFilteringType = getEventFilteringType(events);
+  const {
+    status,
+    label,
+    shortLabel,
+    startTimeMs,
+    closeTimeMs,
+    // expectedEndTimeInfo,
+    events,
+    eventsMetadata,
+    hasMissingEvents,
+    // badges,
+    resetToDecisionEventId,
+  } = eventGroup;
 
-  const overrides = getOverrides(eventFilteringType);
-  const hasBadges = badges !== undefined && badges.length > 0;
+  const eventFilteringType = getEventGroupFilteringType(eventGroup);
+
+  const overrides = getOverrides(eventFilteringType, selected);
+
+  const handleReset = useCallback(() => {
+    if (onReset) {
+      onReset();
+    }
+  }, [onReset]);
 
   const eventGroupDuration = useEventGroupDuration({
     startTime: startTimeMs,
@@ -55,6 +64,8 @@ export default function WorkflowHistoryEventGroup({
     hasMissingEvents,
     workflowCloseTime: workflowCloseTimeMs,
   });
+
+  const lastEventTimeMs = eventsMetadata[eventsMetadata.length - 1].timeMs;
 
   return (
     <Panel
@@ -69,21 +80,46 @@ export default function WorkflowHistoryEventGroup({
           <styled.HeaderLabel>
             <WorkflowHistoryGroupLabel label={label} shortLabel={shortLabel} />
           </styled.HeaderLabel>
-          <styled.HeaderStatus>
+          <styled.StatusContainer>
             <WorkflowHistoryEventStatusBadge
               status={status}
               statusReady={!showLoadingMoreEvents}
-              size="medium"
+              size="small"
             />
             {eventsMetadata[eventsMetadata.length - 1].label}
-          </styled.HeaderStatus>
-          <div>{timeLabel}</div>
+          </styled.StatusContainer>
+          <div>{lastEventTimeMs ? formatDate(lastEventTimeMs) : null}</div>
           <div>{eventGroupDuration}</div>
+          {/* TODO: add as event details:
+              - Existing event details
+              - Badges
+              - Expected end time info
+          */}
+          <styled.SummarizedDetailsContainer>
+            Placeholder for event details
+          </styled.SummarizedDetailsContainer>
+          <styled.ActionsContainer>
+            {resetToDecisionEventId && (
+              <WorkflowHistoryTimelineResetButton
+                workflowId={decodedPageUrlParams.workflowId}
+                runId={decodedPageUrlParams.runId}
+                domain={decodedPageUrlParams.domain}
+                cluster={decodedPageUrlParams.cluster}
+                onReset={handleReset}
+              />
+            )}
+          </styled.ActionsContainer>
         </styled.HeaderContent>
+      }
+      expanded={events.some(
+        ({ eventId }) => eventId && getIsEventExpanded(eventId)
+      )}
+      onChange={() =>
+        events[0].eventId && toggleIsEventExpanded(events[0].eventId)
       }
       overrides={overrides.panel}
     >
-      <div>TODO</div>
+      <div>TODO: Full event details</div>
     </Panel>
   );
 }

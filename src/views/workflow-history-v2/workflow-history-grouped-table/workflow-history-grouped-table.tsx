@@ -12,16 +12,19 @@ export default function WorkflowHistoryGroupedTable({
   virtuosoRef,
   initialStartIndex,
   setVisibleRange,
-  error,
-  hasMoreEvents,
-  fetchMoreEvents,
-  isFetchingMoreEvents,
   decodedPageUrlParams,
   reachedEndOfAvailableHistory,
   workflowCloseStatus,
   workflowIsArchived,
   workflowCloseTimeMs,
   selectedEventId,
+  getIsEventExpanded,
+  toggleIsEventExpanded,
+  resetToDecisionEventId,
+  error,
+  hasMoreEvents,
+  fetchMoreEvents,
+  isFetchingMoreEvents,
 }: Props) {
   return (
     <>
@@ -37,7 +40,7 @@ export default function WorkflowHistoryGroupedTable({
         useWindowScroll
         data={eventGroupsById}
         ref={virtuosoRef}
-        defaultItemHeight={160}
+        defaultItemHeight={36}
         rangeChanged={setVisibleRange}
         {...(initialStartIndex === undefined
           ? {}
@@ -48,20 +51,25 @@ export default function WorkflowHistoryGroupedTable({
                 behavior: 'auto',
               },
             })}
-        itemContent={(index, [groupId, group]) => (
+        itemContent={(_, [groupId, group]) => (
           <WorkflowHistoryEventGroup
             key={groupId}
-            {...group}
+            eventGroup={group}
+            getIsEventExpanded={getIsEventExpanded}
+            toggleIsEventExpanded={toggleIsEventExpanded}
             showLoadingMoreEvents={
               group.hasMissingEvents && !reachedEndOfAvailableHistory
             }
-            resetToDecisionEventId={group.resetToDecisionEventId}
-            isLastEvent={index === eventGroupsById.length - 1}
             decodedPageUrlParams={decodedPageUrlParams}
             selected={group.events.some((e) => e.eventId === selectedEventId)}
             workflowCloseStatus={workflowCloseStatus}
             workflowIsArchived={workflowIsArchived}
             workflowCloseTimeMs={workflowCloseTimeMs}
+            onReset={() => {
+              if (group.resetToDecisionEventId) {
+                resetToDecisionEventId(group.resetToDecisionEventId);
+              }
+            }}
           />
         )}
         components={{
