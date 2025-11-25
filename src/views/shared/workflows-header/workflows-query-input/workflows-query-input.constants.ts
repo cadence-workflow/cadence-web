@@ -12,6 +12,8 @@ export const ID_ATTRIBUTES = [
   'RolloutID',
   'RunID',
   'TaskList',
+  'ClusterAttributeScope',
+  'ClusterAttributeName',
 ];
 
 export const CLOSE_STATUS_ATTRIBUTE = 'CloseStatus';
