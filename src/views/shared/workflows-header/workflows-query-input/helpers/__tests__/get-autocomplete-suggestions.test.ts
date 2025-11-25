@@ -23,7 +23,12 @@ describe('getAutocompleteSuggestions', () => {
     const suggestionsAfterSpace = getAutocompleteSuggestions(
       'WorkflowID = "test" AND c'
     );
-    expect(suggestionsAfterSpace).toEqual(['CloseTime', 'ClusterAttributeScope', 'ClusterAttributeName', 'CloseStatus']);
+    expect(suggestionsAfterSpace).toEqual([
+      'CloseTime',
+      'ClusterAttributeScope',
+      'ClusterAttributeName',
+      'CloseStatus',
+    ]);
   });
 
   it('suggests logical operators after a complete WorkflowID value', () => {
@@ -67,6 +72,16 @@ describe('getAutocompleteSuggestions', () => {
     expect(suggestionsRunID).toEqual(['""']);
   });
 
+  it('suggests empty quotes after ClusterAttributeScope', () => {
+    const suggestions = getAutocompleteSuggestions('ClusterAttributeScope =');
+    expect(suggestions).toEqual(['""']);
+  });
+
+  it('suggests empty quotes after ClusterAttributeName', () => {
+    const suggestions = getAutocompleteSuggestions('ClusterAttributeName !=');
+    expect(suggestions).toEqual(['""']);
+  });
+
   it('suggests status values after CloseStatus', () => {
     const suggestions = getAutocompleteSuggestions('CloseStatus =');
     expect(suggestions).toEqual(STATUSES);
@@ -105,6 +120,12 @@ describe('getAutocompleteSuggestions', () => {
     expect(suggestionsCase).toContain('CloseTime');
   });
 
+  it('handles partial attribute matching for Cluster attributes', () => {
+    const suggestions = getAutocompleteSuggestions('Cluster');
+    expect(suggestions).toContain('ClusterAttributeScope');
+    expect(suggestions).toContain('ClusterAttributeName');
+  });
+
   it('suggests logical operators after complete complex query', () => {
     const complexQuery =
       'WorkflowID = "test" AND StartTime >= "2023-01-01T00:00:00Z"';
@@ -116,6 +137,11 @@ describe('getAutocompleteSuggestions', () => {
     const complexQuery =
       'WorkflowID = "test" AND StartTime >= "2023-01-01T00:00:00Z" AND c';
     const suggestions = getAutocompleteSuggestions(complexQuery);
-    expect(suggestions).toEqual(['CloseTime', 'ClusterAttributeScope', 'ClusterAttributeName', 'CloseStatus']);
+    expect(suggestions).toEqual([
+      'CloseTime',
+      'ClusterAttributeScope',
+      'ClusterAttributeName',
+      'CloseStatus',
+    ]);
   });
 });
