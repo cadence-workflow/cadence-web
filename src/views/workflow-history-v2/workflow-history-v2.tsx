@@ -1,13 +1,24 @@
-import { useCallback, useContext, useEffect, useMemo, useRef } from 'react';
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import { type VirtuosoHandle } from 'react-virtuoso';
 
 import usePageFilters from '@/components/page-filters/hooks/use-page-filters';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
+import useExpansionToggle from '@/hooks/use-expansion-toggle/use-expansion-toggle';
 import useThrottledState from '@/hooks/use-throttled-state';
+import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
 import decodeUrlParams from '@/utils/decode-url-params';
 import sortBy from '@/utils/sort-by';
 
+import { resetWorkflowActionConfig } from '../workflow-actions/config/workflow-actions.config';
+import WorkflowActionsModal from '../workflow-actions/workflow-actions-modal/workflow-actions-modal';
 import { WORKFLOW_HISTORY_PAGE_SIZE_CONFIG } from '../workflow-history/config/workflow-history-page-size.config';
 import getSortableEventId from '../workflow-history/helpers/get-sortable-event-id';
 import pendingActivitiesInfoToEvents from '../workflow-history/helpers/pending-activities-info-to-events';
@@ -78,6 +89,7 @@ export default function WorkflowHistoryV2({ params }: Props) {
   const { data: wfExecutionDescription } = useSuspenseDescribeWorkflow({
     ...params,
   });
+  const { workflowExecutionInfo } = wfExecutionDescription;
   const {
     data: result,
     hasNextPage,
@@ -87,6 +99,16 @@ export default function WorkflowHistoryV2({ params }: Props) {
     error,
     isFetchNextPageError,
   } = historyQuery;
+
+  const allEventIds = useMemo(
+    () =>
+      (result?.pages || [])
+        .flat(1)
+        .map(({ history }) => history?.events || [])
+        .flat(1)
+        .map(({ eventId }) => eventId),
+    [result]
+  );
 
   useEffect(() => {
     const pendingStartActivities = pendingActivitiesInfoToEvents(
@@ -262,6 +284,23 @@ export default function WorkflowHistoryV2({ params }: Props) {
 
   const groupedTableVirtuosoRef = useRef<VirtuosoHandle>(null);
 
+  const workflowCloseTimeMs = workflowExecutionInfo?.closeTime
+    ? parseGrpcTimestamp(workflowExecutionInfo?.closeTime)
+    : null;
+
+  const [resetToDecisionEventId, setResetToDecisionEventId] = useState<
+    string | undefined
+  >(undefined);
+
+  const { getIsItemExpanded, toggleIsItemExpanded } = useExpansionToggle({
+    items: allEventIds,
+    initialState: queryParams.historySelectedEventId
+      ? {
+          [queryParams.historySelectedEventId]: true,
+        }
+      : {},
+  });
+
   if (contentIsLoading) {
     return <SectionLoadingIndicator />;
   }
@@ -294,6 +333,15 @@ export default function WorkflowHistoryV2({ params }: Props) {
                 groupedEndIndex: endIndex,
               }))
             }
+            decodedPageUrlParams={decodedParams}
+            reachedEndOfAvailableHistory={reachedEndOfAvailableHistory}
+            workflowCloseStatus={workflowExecutionInfo?.closeStatus}
+            workflowIsArchived={workflowExecutionInfo?.isArchived || false}
+            workflowCloseTimeMs={workflowCloseTimeMs}
+            selectedEventId={queryParams.historySelectedEventId}
+            resetToDecisionEventId={setResetToDecisionEventId}
+            getIsEventExpanded={getIsItemExpanded}
+            toggleIsEventExpanded={toggleIsItemExpanded}
             error={error}
             hasMoreEvents={hasNextPage}
             fetchMoreEvents={manualFetchNextPage}
@@ -301,6 +349,18 @@ export default function WorkflowHistoryV2({ params }: Props) {
           />
         )}
       </styled.ContentSection>
+      {resetToDecisionEventId && (
+        <WorkflowActionsModal
+          {...decodedParams}
+          initialFormValues={{
+            decisionFinishEventId: resetToDecisionEventId,
+          }}
+          action={resetWorkflowActionConfig}
+          onClose={() => {
+            setResetToDecisionEventId(undefined);
+          }}
+        />
+      )}
     </styled.Container>
   );
 }

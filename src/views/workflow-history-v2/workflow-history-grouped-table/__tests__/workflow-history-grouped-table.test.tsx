@@ -4,9 +4,11 @@ import { VirtuosoMockContext } from 'react-virtuoso';
 
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
+import { type WorkflowExecutionCloseStatus } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionCloseStatus';
 import { RequestError } from '@/utils/request/request-error';
 import { mockActivityEventGroup } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
 import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-history.types';
+import { type WorkflowPageTabContentParams } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
 import WorkflowHistoryGroupedTable from '../workflow-history-grouped-table';
 
@@ -25,6 +27,14 @@ jest.mock(
     ))
 );
 
+jest.mock(
+  '../../workflow-history-event-group/workflow-history-event-group',
+  () =>
+    jest.fn(({ eventGroup }: { eventGroup: HistoryEventsGroup }) => (
+      <div data-testid="workflow-history-event-group">{eventGroup.label}</div>
+    ))
+);
+
 describe(WorkflowHistoryGroupedTable.name, () => {
   it('should render all column headers in correct order', () => {
     setup();
@@ -36,25 +46,13 @@ describe(WorkflowHistoryGroupedTable.name, () => {
     expect(screen.getByText('Details')).toBeInTheDocument();
   });
 
-  it('should apply grid layout to table header', () => {
-    setup();
-
-    const header = screen.getByText('Event group').parentElement;
-    expect(header).toHaveStyle({
-      display: 'grid',
-      gridTemplateColumns: '0.3fr 2fr 1fr 1.2fr 1fr 3fr minmax(0, 70px)',
-    });
-  });
-
-  it('should render event groups data', () => {
+  it('should render event group labels', () => {
     const mockEventGroups: Array<[string, HistoryEventsGroup]> = [
       ['group-1', mockActivityEventGroup],
     ];
     setup({ eventGroupsById: mockEventGroups });
 
-    expect(
-      screen.getByText(JSON.stringify(mockActivityEventGroup))
-    ).toBeInTheDocument();
+    expect(screen.getByText('Mock event')).toBeInTheDocument();
   });
 
   it('should render timeline load more component with correct props', () => {
@@ -92,6 +90,21 @@ function setup({
   fetchMoreEvents = jest.fn(),
   setVisibleRange = jest.fn(),
   initialStartIndex,
+  decodedPageUrlParams = {
+    domain: 'test-domain',
+    cluster: 'test-cluster',
+    workflowId: 'test-workflow-id',
+    runId: 'test-run-id',
+    workflowTab: 'history',
+  },
+  reachedEndOfAvailableHistory = false,
+  workflowCloseStatus = null,
+  workflowIsArchived = false,
+  workflowCloseTimeMs = null,
+  selectedEventId,
+  getIsEventExpanded = jest.fn(() => false),
+  toggleIsEventExpanded = jest.fn(),
+  resetToDecisionEventId = jest.fn(),
 }: {
   eventGroupsById?: Array<[string, HistoryEventsGroup]>;
   error?: RequestError | null;
@@ -106,19 +119,37 @@ function setup({
     endIndex: number;
   }) => void;
   initialStartIndex?: number;
+  decodedPageUrlParams?: WorkflowPageTabContentParams;
+  reachedEndOfAvailableHistory?: boolean;
+  workflowCloseStatus?: WorkflowExecutionCloseStatus | null;
+  workflowIsArchived?: boolean;
+  workflowCloseTimeMs?: number | null;
+  selectedEventId?: string;
+  getIsEventExpanded?: (eventId: string) => boolean;
+  toggleIsEventExpanded?: (eventId: string) => void;
+  resetToDecisionEventId?: (decisionEventId: string) => void;
 } = {}) {
   const virtuosoRef = { current: null };
   const user = userEvent.setup();
 
   render(
     <VirtuosoMockContext.Provider
-      value={{ viewportHeight: 1000, itemHeight: 160 }}
+      value={{ viewportHeight: 1000, itemHeight: 36 }}
     >
       <WorkflowHistoryGroupedTable
         eventGroupsById={eventGroupsById}
         virtuosoRef={virtuosoRef}
         initialStartIndex={initialStartIndex}
         setVisibleRange={setVisibleRange}
+        decodedPageUrlParams={decodedPageUrlParams}
+        reachedEndOfAvailableHistory={reachedEndOfAvailableHistory}
+        workflowCloseStatus={workflowCloseStatus}
+        workflowIsArchived={workflowIsArchived}
+        workflowCloseTimeMs={workflowCloseTimeMs}
+        selectedEventId={selectedEventId}
+        getIsEventExpanded={getIsEventExpanded}
+        toggleIsEventExpanded={toggleIsEventExpanded}
+        resetToDecisionEventId={resetToDecisionEventId}
         error={error}
         hasMoreEvents={hasMoreEvents}
         fetchMoreEvents={fetchMoreEvents}

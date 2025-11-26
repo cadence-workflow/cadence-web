@@ -5,9 +5,9 @@ import { WORKFLOW_HISTORY_GROUPED_GRID_TEMPLATE_COLUMNS } from './workflow-histo
 export const styled = {
   TableHeader: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     // border thickness + accordion panel left padding
-    paddingLeft: `calc(2px + ${$theme.sizing.scale700})`,
-    // accordion panel expand icon size + accordion panel right padding + border thickness
-    paddingRight: `calc(${$theme.sizing.scale800} + ${$theme.sizing.scale700} + 2px)`,
+    paddingLeft: `calc(2px + ${$theme.sizing.scale300})`,
+    // accordion panel right padding + border thickness
+    paddingRight: `calc(${$theme.sizing.scale300} + 2px)`,
     paddingBottom: $theme.sizing.scale200,
     ...$theme.typography.LabelXSmall,
     color: $theme.colors.contentSecondary,

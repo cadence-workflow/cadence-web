@@ -2,6 +2,8 @@ import { Virtuoso } from 'react-virtuoso';
 
 import WorkflowHistoryTimelineLoadMore from '@/views/workflow-history/workflow-history-timeline-load-more/workflow-history-timeline-load-more';
 
+import WorkflowHistoryEventGroup from '../workflow-history-event-group/workflow-history-event-group';
+
 import { styled } from './workflow-history-grouped-table.styles';
 import { type Props } from './workflow-history-grouped-table.types';
 
@@ -10,6 +12,15 @@ export default function WorkflowHistoryGroupedTable({
   virtuosoRef,
   initialStartIndex,
   setVisibleRange,
+  decodedPageUrlParams,
+  reachedEndOfAvailableHistory,
+  workflowCloseStatus,
+  workflowIsArchived,
+  workflowCloseTimeMs,
+  selectedEventId,
+  getIsEventExpanded,
+  toggleIsEventExpanded,
+  resetToDecisionEventId,
   error,
   hasMoreEvents,
   fetchMoreEvents,
@@ -29,7 +40,7 @@ export default function WorkflowHistoryGroupedTable({
         useWindowScroll
         data={eventGroupsById}
         ref={virtuosoRef}
-        defaultItemHeight={160}
+        defaultItemHeight={36}
         rangeChanged={setVisibleRange}
         {...(initialStartIndex === undefined
           ? {}
@@ -40,8 +51,27 @@ export default function WorkflowHistoryGroupedTable({
                 behavior: 'auto',
               },
             })}
-        // TODO: update this with the actual implementation for groupedEntry
-        itemContent={(_, [__, group]) => <div>{JSON.stringify(group)}</div>}
+        itemContent={(_, [groupId, group]) => (
+          <WorkflowHistoryEventGroup
+            key={groupId}
+            eventGroup={group}
+            getIsEventExpanded={getIsEventExpanded}
+            toggleIsEventExpanded={toggleIsEventExpanded}
+            showLoadingMoreEvents={
+              group.hasMissingEvents && !reachedEndOfAvailableHistory
+            }
+            decodedPageUrlParams={decodedPageUrlParams}
+            selected={group.events.some((e) => e.eventId === selectedEventId)}
+            workflowCloseStatus={workflowCloseStatus}
+            workflowIsArchived={workflowIsArchived}
+            workflowCloseTimeMs={workflowCloseTimeMs}
+            onReset={() => {
+              if (group.resetToDecisionEventId) {
+                resetToDecisionEventId(group.resetToDecisionEventId);
+              }
+            }}
+          />
+        )}
         components={{
           Footer: () => (
             <WorkflowHistoryTimelineLoadMore
