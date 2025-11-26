@@ -45,8 +45,9 @@ jest.mock<typeof WorkflowHistoryTimelineResetButton>(
     ))
 );
 
-jest.mock('../../hooks/use-event-group-duration', () =>
-  jest.fn(() => '1m 30s')
+jest.mock(
+  '../../workflow-history-event-group-duration/workflow-history-event-group-duration',
+  () => jest.fn(() => <span>1m 30s</span>)
 );
 
 jest.mock('../helpers/get-event-group-filtering-type', () =>

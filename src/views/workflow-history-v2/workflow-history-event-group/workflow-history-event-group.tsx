@@ -9,7 +9,7 @@ import WorkflowHistoryGroupLabel from '@/views/workflow-history/workflow-history
 import WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 
 import workflowHistoryEventFilteringTypeColorsConfig from '../config/workflow-history-event-filtering-type-colors.config';
-import useEventGroupDuration from '../hooks/use-event-group-duration';
+import WorkflowHistoryEventGroupDuration from '../workflow-history-event-group-duration/workflow-history-event-group-duration';
 
 import getEventGroupFilteringType from './helpers/get-event-group-filtering-type';
 import {
@@ -54,17 +54,6 @@ export default function WorkflowHistoryEventGroup({
     }
   }, [onReset]);
 
-  const eventGroupDuration = useEventGroupDuration({
-    startTime: startTimeMs,
-    closeTime: closeTimeMs,
-    workflowIsArchived,
-    eventsCount: events.length,
-    workflowCloseStatus,
-    loadingMoreEvents: showLoadingMoreEvents,
-    hasMissingEvents,
-    workflowCloseTime: workflowCloseTimeMs,
-  });
-
   return (
     <Panel
       title={
@@ -87,7 +76,16 @@ export default function WorkflowHistoryEventGroup({
             {eventsMetadata[eventsMetadata.length - 1].label}
           </styled.StatusContainer>
           <div>{eventGroup.timeMs ? formatDate(eventGroup.timeMs) : null}</div>
-          <div>{eventGroupDuration}</div>
+          <WorkflowHistoryEventGroupDuration
+            startTime={startTimeMs}
+            closeTime={closeTimeMs}
+            workflowIsArchived={workflowIsArchived}
+            eventsCount={events.length}
+            workflowCloseStatus={workflowCloseStatus}
+            loadingMoreEvents={showLoadingMoreEvents}
+            hasMissingEvents={hasMissingEvents}
+            workflowCloseTime={workflowCloseTimeMs}
+          />
           {/* TODO: add as event details:
               - Existing event details
               - Badges

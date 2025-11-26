@@ -1,27 +1,18 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { type WorkflowExecutionCloseStatus } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionCloseStatus';
-import getFormattedEventsDuration from '@/views/workflow-history/workflow-history-events-duration-badge/helpers/get-formatted-events-duration';
+import getFormattedEventsDuration from './helpers/get-formatted-events-duration';
+import { type Props } from './workflow-history-event-group-duration.types';
 
-export default function useEventGroupDuration({
+export default function WorkflowHistoryEventGroupDuration({
   startTime,
   closeTime,
   workflowIsArchived,
   workflowCloseStatus,
   eventsCount,
-  loadingMoreEvents,
   hasMissingEvents,
+  loadingMoreEvents,
   workflowCloseTime,
-}: {
-  startTime: number | null | undefined;
-  closeTime: number | null | undefined;
-  workflowIsArchived: boolean;
-  workflowCloseStatus: WorkflowExecutionCloseStatus | null | undefined;
-  eventsCount: number;
-  loadingMoreEvents: boolean;
-  hasMissingEvents: boolean;
-  workflowCloseTime: number | null | undefined;
-}) {
+}: Props) {
   const endTime = closeTime || workflowCloseTime;
   const workflowEnded =
     workflowIsArchived ||
@@ -55,5 +46,5 @@ export default function useEventGroupDuration({
     return null;
   }
 
-  return duration;
+  return <>{duration}</>;
 }
