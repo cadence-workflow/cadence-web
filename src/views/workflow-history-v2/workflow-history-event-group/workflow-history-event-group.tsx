@@ -73,7 +73,7 @@ export default function WorkflowHistoryEventGroup({
               statusReady={!showLoadingMoreEvents}
               size="small"
             />
-            {eventsMetadata[eventsMetadata.length - 1].label}
+            {eventsMetadata.at(-1)?.label}
           </styled.StatusContainer>
           <div>{eventGroup.timeMs ? formatDate(eventGroup.timeMs) : null}</div>
           <WorkflowHistoryEventGroupDuration
@@ -110,9 +110,10 @@ export default function WorkflowHistoryEventGroup({
       expanded={events.some(
         ({ eventId }) => eventId && getIsEventExpanded(eventId)
       )}
-      onChange={() =>
-        events[0].eventId && toggleIsEventExpanded(events[0].eventId)
-      }
+      onChange={() => {
+        if (events.length > 0 && events[0].eventId)
+          toggleIsEventExpanded(events[0].eventId);
+      }}
       overrides={overrides.panel}
     >
       <div>TODO: Full event details</div>

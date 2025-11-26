@@ -5,7 +5,7 @@ import { type Props as WorkflowHistoryProps } from '../workflow-history-v2.types
 
 export type Props = {
   eventGroup: HistoryEventsGroup;
-  getIsEventExpanded: (eventId: string) => void;
+  getIsEventExpanded: (eventId: string) => boolean;
   toggleIsEventExpanded: (eventId: string) => void;
   showLoadingMoreEvents: boolean;
   decodedPageUrlParams: WorkflowHistoryProps['params'];
