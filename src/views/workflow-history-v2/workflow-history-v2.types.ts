@@ -14,10 +14,3 @@ export type VisibleHistoryRanges = {
   ungroupedStartIndex: number;
   ungroupedEndIndex: number;
 };
-
-export type VisibleHistoryRanges = {
-  groupedStartIndex: number;
-  groupedEndIndex: number;
-  ungroupedStartIndex: number;
-  ungroupedEndIndex: number;
-};

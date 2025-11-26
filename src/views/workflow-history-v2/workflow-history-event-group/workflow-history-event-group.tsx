@@ -65,8 +65,6 @@ export default function WorkflowHistoryEventGroup({
     workflowCloseTime: workflowCloseTimeMs,
   });
 
-  const lastEventTimeMs = eventsMetadata[eventsMetadata.length - 1].timeMs;
-
   return (
     <Panel
       title={
@@ -88,7 +86,7 @@ export default function WorkflowHistoryEventGroup({
             />
             {eventsMetadata[eventsMetadata.length - 1].label}
           </styled.StatusContainer>
-          <div>{lastEventTimeMs ? formatDate(lastEventTimeMs) : null}</div>
+          <div>{eventGroup.timeMs ? formatDate(eventGroup.timeMs) : null}</div>
           <div>{eventGroupDuration}</div>
           {/* TODO: add as event details:
               - Existing event details
