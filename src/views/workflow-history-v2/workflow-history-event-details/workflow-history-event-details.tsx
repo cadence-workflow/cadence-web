@@ -47,7 +47,7 @@ export default function WorkflowHistoryEventDetails({
         <styled.PanelDetails>
           {panelDetails.map((detail) => (
             <WorkflowHistoryGroupDetailsJson
-              key={detail.key}
+              key={detail.path}
               entryPath={detail.path}
               entryValue={detail.value}
               isNegative={detail.isNegative}

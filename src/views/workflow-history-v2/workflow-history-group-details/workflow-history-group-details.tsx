@@ -59,7 +59,7 @@ export default function WorkflowHistoryGroupDetails({
             <Button
               kind="tertiary"
               size="compact"
-              data-testid="close-details-button"
+              aria-label="Close event details"
               onClick={onClose}
             >
               <MdClose />

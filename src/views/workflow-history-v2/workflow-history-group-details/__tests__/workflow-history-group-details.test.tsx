@@ -15,7 +15,7 @@ jest.mock(
         eventDetails: Array<unknown>;
         workflowPageParams: WorkflowPageParams;
       }) => (
-        <div data-testid="workflow-history-event-details">
+        <div aria-label="Workflow history event details">
           Event Details ({eventDetails.length} entries)
         </div>
       )
@@ -74,7 +74,7 @@ describe(WorkflowHistoryGroupDetails.name, () => {
     setup({ groupDetails: mockGroupDetails });
 
     expect(
-      screen.getByTestId('workflow-history-event-details')
+      screen.getByLabelText('Workflow history event details')
     ).toBeInTheDocument();
     expect(screen.getByText('Event Details (1 entries)')).toBeInTheDocument();
   });
@@ -85,7 +85,9 @@ describe(WorkflowHistoryGroupDetails.name, () => {
       initialEventId: 'event-2',
     });
 
-    const eventDetails = screen.getByTestId('workflow-history-event-details');
+    const eventDetails = screen.getByLabelText(
+      'Workflow history event details'
+    );
     expect(eventDetails).toBeInTheDocument();
     expect(screen.getByText('Event Details (1 entries)')).toBeInTheDocument();
   });
@@ -93,7 +95,9 @@ describe(WorkflowHistoryGroupDetails.name, () => {
   it('defaults to first event when initialEventId is not provided', () => {
     setup({ groupDetails: mockGroupDetails });
 
-    const eventDetails = screen.getByTestId('workflow-history-event-details');
+    const eventDetails = screen.getByLabelText(
+      'Workflow history event details'
+    );
     expect(eventDetails).toBeInTheDocument();
   });
 
@@ -103,7 +107,9 @@ describe(WorkflowHistoryGroupDetails.name, () => {
       initialEventId: 'non-existent-event',
     });
 
-    const eventDetails = screen.getByTestId('workflow-history-event-details');
+    const eventDetails = screen.getByLabelText(
+      'Workflow history event details'
+    );
     expect(eventDetails).toBeInTheDocument();
   });
 
@@ -119,7 +125,7 @@ describe(WorkflowHistoryGroupDetails.name, () => {
 
     // Should still show event details (the mock returns same format)
     expect(
-      screen.getByTestId('workflow-history-event-details')
+      screen.getByLabelText('Workflow history event details')
     ).toBeInTheDocument();
   });
 
@@ -130,7 +136,7 @@ describe(WorkflowHistoryGroupDetails.name, () => {
       onClose: mockOnClose,
     });
 
-    const closeButton = screen.getByTestId('close-details-button');
+    const closeButton = screen.getByLabelText('Close event details');
     await user.click(closeButton);
 
     expect(mockOnClose).toHaveBeenCalledTimes(1);
@@ -142,7 +148,7 @@ describe(WorkflowHistoryGroupDetails.name, () => {
       onClose: undefined,
     });
 
-    const closeButton = screen.queryByTestId('close-details-button');
+    const closeButton = screen.queryByLabelText('Close event details');
     expect(closeButton).not.toBeInTheDocument();
   });
 
@@ -166,7 +172,7 @@ describe(WorkflowHistoryGroupDetails.name, () => {
 
     expect(screen.getByText('Single Event')).toBeInTheDocument();
     expect(
-      screen.getByTestId('workflow-history-event-details')
+      screen.getByLabelText('Workflow history event details')
     ).toBeInTheDocument();
   });
 });

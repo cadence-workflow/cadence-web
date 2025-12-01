@@ -34,10 +34,6 @@ export const styled = {
       ...$theme.typography.LabelSmall,
     })
   ),
-  ViewerActions: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
-    display: 'flex',
-    gap: $theme.sizing.scale600,
-  })),
   JsonContainer: createStyled('div', {
     maxHeight: '30vh',
     overflow: 'auto',

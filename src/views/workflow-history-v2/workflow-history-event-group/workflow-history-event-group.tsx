@@ -160,7 +160,7 @@ export default function WorkflowHistoryEventGroup({
             }
             workflowPageParams={decodedPageUrlParams}
             onClose={() =>
-              eventGroup.events.map(({ eventId }) => {
+              eventGroup.events.forEach(({ eventId }) => {
                 if (eventId && getIsEventExpanded(eventId))
                   toggleIsEventExpanded(eventId);
               })
