@@ -25,7 +25,7 @@ const workflowHistoryEventGroupDetailsConfig = [
       return (
         value === 0 &&
         new RegExp(
-          '(heartbeatTimeoutSeconds|retryPolicy.(maximumAttempts|expirationIntervalInSeconds))$'
+          '(heartbeatTimeoutSeconds|retryPolicy\\.(maximumAttempts|expirationIntervalInSeconds))$'
         ).test(path)
       );
     },
