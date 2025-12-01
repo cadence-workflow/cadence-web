@@ -1,15 +1,21 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { Panel } from 'baseui/accordion';
 import { MdCircle } from 'react-icons/md';
 
 import formatDate from '@/utils/data-formatters/format-date';
+import formatPendingWorkflowHistoryEvent from '@/utils/data-formatters/format-pending-workflow-history-event';
+import formatWorkflowHistoryEvent from '@/utils/data-formatters/format-workflow-history-event';
+import isPendingHistoryEvent from '@/views/workflow-history/workflow-history-event-details/helpers/is-pending-history-event';
 import WorkflowHistoryEventStatusBadge from '@/views/workflow-history/workflow-history-event-status-badge/workflow-history-event-status-badge';
 import WorkflowHistoryGroupLabel from '@/views/workflow-history/workflow-history-group-label/workflow-history-group-label';
 import WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 
 import workflowHistoryEventFilteringTypeColorsConfig from '../config/workflow-history-event-filtering-type-colors.config';
+import generateHistoryEventDetails from '../helpers/generate-history-event-details';
 import WorkflowHistoryEventGroupDuration from '../workflow-history-event-group-duration/workflow-history-event-group-duration';
+import WorkflowHistoryGroupDetails from '../workflow-history-group-details/workflow-history-group-details';
+import { type GroupDetails } from '../workflow-history-group-details/workflow-history-group-details.types';
 
 import getEventGroupFilteringType from './helpers/get-event-group-filtering-type';
 import {
@@ -54,6 +60,36 @@ export default function WorkflowHistoryEventGroup({
     }
   }, [onReset]);
 
+  const eventGroupDetails: GroupDetails = useMemo(() => {
+    return Object.fromEntries(
+      eventGroup.events.map((event, index) => {
+        const eventMetadata = eventGroup.eventsMetadata[index];
+
+        const result = isPendingHistoryEvent(event)
+          ? formatPendingWorkflowHistoryEvent(event)
+          : formatWorkflowHistoryEvent(event);
+
+        const eventDetails = result
+          ? generateHistoryEventDetails({
+              details: {
+                ...result,
+                ...eventMetadata.additionalDetails,
+              },
+              negativeFields: eventMetadata.negativeFields,
+            })
+          : [];
+
+        return [
+          event.eventId,
+          {
+            eventLabel: eventMetadata.label,
+            eventDetails,
+          } satisfies GroupDetails[string],
+        ];
+      })
+    );
+  }, [eventGroup.events, eventGroup.eventsMetadata]);
+
   return (
     <Panel
       title={
@@ -85,12 +121,8 @@ export default function WorkflowHistoryEventGroup({
             loadingMoreEvents={showLoadingMoreEvents}
             hasMissingEvents={hasMissingEvents}
             workflowCloseTime={workflowCloseTimeMs}
+            expectedEndTimeInfo={eventGroup.expectedEndTimeInfo}
           />
-          {/* TODO: add as event details:
-              - Existing event details
-              - Badges
-              - Expected end time info
-          */}
           <styled.SummarizedDetailsContainer>
             Placeholder for event details
           </styled.SummarizedDetailsContainer>
@@ -116,7 +148,26 @@ export default function WorkflowHistoryEventGroup({
       }}
       overrides={overrides.panel}
     >
-      <div>TODO: Full event details</div>
+      <styled.GroupDetailsGridContainer>
+        <styled.GroupDetailsNameSpacer />
+        <styled.GroupDetailsContainer>
+          <WorkflowHistoryGroupDetails
+            groupDetails={eventGroupDetails}
+            initialEventId={
+              events.find(
+                ({ eventId }) => eventId && getIsEventExpanded(eventId)
+              )?.eventId ?? undefined
+            }
+            workflowPageParams={decodedPageUrlParams}
+            onClose={() =>
+              eventGroup.events.map(({ eventId }) => {
+                if (eventId && getIsEventExpanded(eventId))
+                  toggleIsEventExpanded(eventId);
+              })
+            }
+          />
+        </styled.GroupDetailsContainer>
+      </styled.GroupDetailsGridContainer>
     </Panel>
   );
 }

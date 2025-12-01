@@ -1,0 +1,202 @@
+import { render, screen, userEvent } from '@/test-utils/rtl';
+
+import { type WorkflowPageParams } from '@/views/workflow-page/workflow-page.types';
+
+import WorkflowHistoryGroupDetails from '../workflow-history-group-details';
+import { type GroupDetails } from '../workflow-history-group-details.types';
+
+jest.mock(
+  '../../workflow-history-event-details/workflow-history-event-details',
+  () =>
+    jest.fn(
+      ({
+        eventDetails,
+      }: {
+        eventDetails: Array<unknown>;
+        workflowPageParams: WorkflowPageParams;
+      }) => (
+        <div data-testid="workflow-history-event-details">
+          Event Details ({eventDetails.length} entries)
+        </div>
+      )
+    )
+);
+
+describe(WorkflowHistoryGroupDetails.name, () => {
+  const mockGroupDetails: GroupDetails = {
+    'event-1': {
+      eventLabel: 'Event 1 Label',
+      eventDetails: [
+        {
+          key: 'key1',
+          path: 'path1',
+          value: 'value1',
+          isGroup: false,
+          renderConfig: null,
+        },
+      ],
+    },
+    'event-2': {
+      eventLabel: 'Event 2 Label',
+      eventDetails: [
+        {
+          key: 'key2',
+          path: 'path2',
+          value: 'value2',
+          isGroup: false,
+          renderConfig: null,
+        },
+      ],
+    },
+    'event-3': {
+      eventLabel: 'Event 3 Label',
+      eventDetails: [
+        {
+          key: 'key3',
+          path: 'path3',
+          value: 'value3',
+          isGroup: false,
+          renderConfig: null,
+        },
+      ],
+    },
+  };
+
+  it('renders all event labels as buttons', () => {
+    setup({ groupDetails: mockGroupDetails });
+
+    expect(screen.getByText('Event 1 Label')).toBeInTheDocument();
+    expect(screen.getByText('Event 2 Label')).toBeInTheDocument();
+    expect(screen.getByText('Event 3 Label')).toBeInTheDocument();
+  });
+
+  it('renders WorkflowHistoryEventDetails with first event details by default', () => {
+    setup({ groupDetails: mockGroupDetails });
+
+    expect(
+      screen.getByTestId('workflow-history-event-details')
+    ).toBeInTheDocument();
+    expect(screen.getByText('Event Details (1 entries)')).toBeInTheDocument();
+  });
+
+  it('selects the event matching initialEventId', () => {
+    setup({
+      groupDetails: mockGroupDetails,
+      initialEventId: 'event-2',
+    });
+
+    const eventDetails = screen.getByTestId('workflow-history-event-details');
+    expect(eventDetails).toBeInTheDocument();
+    expect(screen.getByText('Event Details (1 entries)')).toBeInTheDocument();
+  });
+
+  it('defaults to first event when initialEventId is not provided', () => {
+    setup({ groupDetails: mockGroupDetails });
+
+    const eventDetails = screen.getByTestId('workflow-history-event-details');
+    expect(eventDetails).toBeInTheDocument();
+  });
+
+  it('defaults to first event when initialEventId is not found', () => {
+    setup({
+      groupDetails: mockGroupDetails,
+      initialEventId: 'non-existent-event',
+    });
+
+    const eventDetails = screen.getByTestId('workflow-history-event-details');
+    expect(eventDetails).toBeInTheDocument();
+  });
+
+  it('changes selected event when a button is clicked', async () => {
+    const { user } = setup({ groupDetails: mockGroupDetails });
+
+    // Initially should show first event
+    expect(screen.getByText('Event Details (1 entries)')).toBeInTheDocument();
+
+    // Click on second event button
+    const event2Button = screen.getByText('Event 2 Label');
+    await user.click(event2Button);
+
+    // Should still show event details (the mock returns same format)
+    expect(
+      screen.getByTestId('workflow-history-event-details')
+    ).toBeInTheDocument();
+  });
+
+  it('calls onClose when close button is clicked', async () => {
+    const mockOnClose = jest.fn();
+    const { user } = setup({
+      groupDetails: mockGroupDetails,
+      onClose: mockOnClose,
+    });
+
+    const closeButton = screen.getByTestId('close-details-button');
+    await user.click(closeButton);
+
+    expect(mockOnClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not render the close button when onClose is not provided', () => {
+    setup({
+      groupDetails: mockGroupDetails,
+      onClose: undefined,
+    });
+
+    const closeButton = screen.queryByTestId('close-details-button');
+    expect(closeButton).not.toBeInTheDocument();
+  });
+
+  it('handles single event in groupDetails', () => {
+    const singleEventGroupDetails: GroupDetails = {
+      'event-1': {
+        eventLabel: 'Single Event',
+        eventDetails: [
+          {
+            key: 'key1',
+            path: 'path1',
+            value: 'value1',
+            isGroup: false,
+            renderConfig: null,
+          },
+        ],
+      },
+    };
+
+    setup({ groupDetails: singleEventGroupDetails });
+
+    expect(screen.getByText('Single Event')).toBeInTheDocument();
+    expect(
+      screen.getByTestId('workflow-history-event-details')
+    ).toBeInTheDocument();
+  });
+});
+
+function setup({
+  groupDetails,
+  initialEventId,
+  workflowPageParams = {
+    domain: 'test-domain',
+    cluster: 'test-cluster',
+    workflowId: 'test-workflow-id',
+    runId: 'test-run-id',
+  },
+  onClose,
+}: {
+  groupDetails: GroupDetails;
+  initialEventId?: string;
+  workflowPageParams?: WorkflowPageParams;
+  onClose?: () => void;
+}) {
+  const user = userEvent.setup();
+
+  render(
+    <WorkflowHistoryGroupDetails
+      groupDetails={groupDetails}
+      initialEventId={initialEventId}
+      workflowPageParams={workflowPageParams}
+      onClose={onClose}
+    />
+  );
+
+  return { user };
+}
