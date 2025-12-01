@@ -11,11 +11,18 @@ import { WORKFLOW_HISTORY_GROUPED_GRID_TEMPLATE_COLUMNS } from '../workflow-hist
 export const styled = {
   HeaderContent: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     ...$theme.typography.ParagraphSmall,
-    display: 'grid',
-    gridTemplateColumns: WORKFLOW_HISTORY_GROUPED_GRID_TEMPLATE_COLUMNS,
-    gap: $theme.sizing.scale600,
-    width: '100%',
-    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: $theme.sizing.scale200,
+    paddingBottom: $theme.sizing.scale300,
+    [$theme.mediaQuery.medium]: {
+      display: 'grid',
+      gridTemplateColumns: WORKFLOW_HISTORY_GROUPED_GRID_TEMPLATE_COLUMNS,
+      width: '100%',
+      alignItems: 'center',
+      gap: $theme.sizing.scale600,
+      paddingBottom: 0,
+    },
   })),
   HeaderLabel: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     ...$theme.typography.LabelSmall,

@@ -31,7 +31,9 @@ jest.mock(
   '../../workflow-history-event-group/workflow-history-event-group',
   () =>
     jest.fn(({ eventGroup }: { eventGroup: HistoryEventsGroup }) => (
-      <div data-testid="workflow-history-event-group">{eventGroup.label}</div>
+      <div data-testid="workflow-history-event-group">
+        {JSON.stringify(eventGroup)}
+      </div>
     ))
 );
 
@@ -46,13 +48,15 @@ describe(WorkflowHistoryGroupedTable.name, () => {
     expect(screen.getByText('Details')).toBeInTheDocument();
   });
 
-  it('should render event group labels', () => {
+  it('should render event groups data', () => {
     const mockEventGroups: Array<[string, HistoryEventsGroup]> = [
       ['group-1', mockActivityEventGroup],
     ];
     setup({ eventGroupsById: mockEventGroups });
 
-    expect(screen.getByText('Mock event')).toBeInTheDocument();
+    expect(
+      screen.getByText(JSON.stringify(mockActivityEventGroup))
+    ).toBeInTheDocument();
   });
 
   it('should render timeline load more component with correct props', () => {
