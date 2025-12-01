@@ -2,6 +2,7 @@ import workflowHistoryFiltersTypeConfig from '@/views/workflow-history/config/wo
 import { type WorkflowHistoryEventFilteringType } from '@/views/workflow-history/workflow-history-filters-type/workflow-history-filters-type.types';
 import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-history.types';
 
+// TODO @adhitya.mamallan - revisit this when we write the new grouping logic
 function getEventGroupFilteringType(
   group: HistoryEventsGroup
 ): WorkflowHistoryEventFilteringType {
