@@ -51,9 +51,10 @@ export default function WorkflowHistoryGroupedTable({
                 behavior: 'auto',
               },
             })}
-        itemContent={(_, [__, group]) => (
+        itemContent={(_, [groupId, group]) => (
           <WorkflowHistoryEventGroup
             eventGroup={group}
+            groupId={groupId}
             getIsEventExpanded={getIsEventExpanded}
             toggleIsEventExpanded={toggleIsEventExpanded}
             showLoadingMoreEvents={
