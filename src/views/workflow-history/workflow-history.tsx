@@ -324,6 +324,9 @@ export default function WorkflowHistory({ params }: Props) {
     return <SectionLoadingIndicator />;
   }
 
+  const showHasNoResults =
+    filteredEventGroupsEntries.length === 0 && !hasNextPage;
+
   return (
     <div className={cls.container}>
       <WorkflowHistoryHeader
@@ -387,7 +390,7 @@ export default function WorkflowHistory({ params }: Props) {
         }}
       />
       <PageSection className={cls.contentSection}>
-        {filteredEventGroupsEntries.length > 0 && (
+        {!showHasNoResults && (
           <>
             {isUngroupedHistoryViewEnabled ? (
               <section className={cls.ungroupedEventsContainer}>
@@ -414,63 +417,69 @@ export default function WorkflowHistory({ params }: Props) {
               </section>
             ) : (
               <div className={cls.eventsContainer}>
-                <div role="list" className={cls.compactSection}>
-                  <Virtuoso
-                    data={filteredEventGroupsEntries}
-                    ref={compactSectionListRef}
-                    rangeChanged={({ startIndex, endIndex }) =>
-                      setTimelineListVisibleRange((currentRanges) => ({
-                        ...currentRanges,
-                        compactStartIndex: startIndex,
-                        compactEndIndex: endIndex,
-                      }))
-                    }
-                    {...(initialEventGroupIndex === undefined
-                      ? {}
-                      : {
-                          initialTopMostItemIndex: initialEventGroupIndex,
-                        })}
-                    itemContent={(index, [groupId, group]) => (
-                      <div role="listitem" className={cls.compactCardContainer}>
-                        <WorkflowHistoryCompactEventCard
-                          key={groupId}
-                          {...group}
-                          statusReady={
-                            !group.hasMissingEvents ||
-                            reachedEndOfAvailableHistory
-                          }
-                          workflowCloseStatus={
-                            workflowExecutionInfo?.closeStatus
-                          }
-                          workflowIsArchived={
-                            workflowExecutionInfo?.isArchived || false
-                          }
-                          workflowCloseTimeMs={workflowCloseTimeMs}
-                          showLabelPlaceholder={!group.label}
-                          selected={group.events.some(
-                            (e) =>
-                              e.eventId === queryParams.historySelectedEventId
-                          )}
-                          disabled={!Boolean(group.events[0].eventId)}
-                          onClick={() => {
-                            if (group.events[0].eventId)
-                              setQueryParams({
-                                historySelectedEventId: group.events[0].eventId,
+                {filteredEventGroupsEntries.length > 0 && (
+                  <div role="list" className={cls.compactSection}>
+                    <Virtuoso
+                      data={filteredEventGroupsEntries}
+                      ref={compactSectionListRef}
+                      rangeChanged={({ startIndex, endIndex }) =>
+                        setTimelineListVisibleRange((currentRanges) => ({
+                          ...currentRanges,
+                          compactStartIndex: startIndex,
+                          compactEndIndex: endIndex,
+                        }))
+                      }
+                      {...(initialEventGroupIndex === undefined
+                        ? {}
+                        : {
+                            initialTopMostItemIndex: initialEventGroupIndex,
+                          })}
+                      itemContent={(index, [groupId, group]) => (
+                        <div
+                          role="listitem"
+                          className={cls.compactCardContainer}
+                        >
+                          <WorkflowHistoryCompactEventCard
+                            key={groupId}
+                            {...group}
+                            statusReady={
+                              !group.hasMissingEvents ||
+                              reachedEndOfAvailableHistory
+                            }
+                            workflowCloseStatus={
+                              workflowExecutionInfo?.closeStatus
+                            }
+                            workflowIsArchived={
+                              workflowExecutionInfo?.isArchived || false
+                            }
+                            workflowCloseTimeMs={workflowCloseTimeMs}
+                            showLabelPlaceholder={!group.label}
+                            selected={group.events.some(
+                              (e) =>
+                                e.eventId === queryParams.historySelectedEventId
+                            )}
+                            disabled={!Boolean(group.events[0].eventId)}
+                            onClick={() => {
+                              if (group.events[0].eventId)
+                                setQueryParams({
+                                  historySelectedEventId:
+                                    group.events[0].eventId,
+                                });
+                              timelineSectionListRef.current?.scrollToIndex({
+                                index,
+                                align: 'start',
+                                behavior: 'auto',
                               });
-                            timelineSectionListRef.current?.scrollToIndex({
-                              index,
-                              align: 'start',
-                              behavior: 'auto',
-                            });
-                          }}
-                        />
-                      </div>
-                    )}
-                    endReached={() => {
-                      manualFetchNextPage();
-                    }}
-                  />
-                </div>
+                            }}
+                          />
+                        </div>
+                      )}
+                      endReached={() => {
+                        manualFetchNextPage();
+                      }}
+                    />
+                  </div>
+                )}
                 <section className={cls.timelineSection}>
                   <Virtuoso
                     useWindowScroll
@@ -542,7 +551,7 @@ export default function WorkflowHistory({ params }: Props) {
             )}
           </>
         )}
-        {filteredEventGroupsEntries.length === 0 && (
+        {showHasNoResults && (
           <div className={cls.noResultsContainer}>No Results</div>
         )}
         {resetToDecisionEventId && (
