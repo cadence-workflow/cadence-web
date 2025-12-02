@@ -190,4 +190,34 @@ describe('useInitialSelectedEvent', () => {
     expect(result.current.initialEventFound).toBe(true);
     expect(result.current.initialEventGroupIndex).toBe(3);
   });
+
+  // add test cases for filteredEventGroupsEntries being empty after filtering
+  it.only('should return initialEventGroupIndex as undefined when filteredEventGroupsEntries no longer contains the event', () => {
+    const initialFilteredEventGroupsEntries: [string, HistoryEventsGroup][] = [
+      ['2', mockEventGroups['2']],
+    ];
+
+    // initial render with filteredEventGroupsEntries containing the event
+    const { result, rerender } = renderHook(
+      ({
+        filteredEventGroupsEntries = initialFilteredEventGroupsEntries,
+      }: {
+        filteredEventGroupsEntries?: [string, HistoryEventsGroup][];
+      } = {}) =>
+        useInitialSelectedEvent({
+          selectedEventId: '2',
+          eventGroups: mockEventGroups,
+          filteredEventGroupsEntries: filteredEventGroupsEntries,
+        })
+    );
+    expect(result.current.initialEventFound).toBe(true);
+    expect(result.current.initialEventGroupIndex).toBe(0);
+
+    //rerender with empty filteredEventGroupsEntries no longer containing the event
+    rerender({
+      filteredEventGroupsEntries: [],
+    });
+    expect(result.current.initialEventGroupIndex).toBe(undefined);
+    expect(result.current.initialEventFound).toBe(true);
+  });
 });
