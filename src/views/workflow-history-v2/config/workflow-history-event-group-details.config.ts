@@ -55,7 +55,10 @@ const workflowHistoryEventGroupDetailsConfig = [
     pathRegex:
       '(input|result|details|failureDetails|Error|lastCompletionResult|heartbeatDetails|lastFailureDetails)$',
     showInPanels: true,
+<<<<<<< HEAD
     valueComponent: WorkflowHistoryGroupDetailsJson,
+=======
+>>>>>>> e99f9e96 (Copy utils from v1 to v2)
   },
   {
     name: 'Duration & interval seconds',
