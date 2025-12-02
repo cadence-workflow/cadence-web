@@ -471,7 +471,7 @@ describe(WorkflowHistoryGrouper.name, () => {
     expect(Object.keys(groups).length).toBe(0);
   });
 
-  it.only('should notify subscribers after pending events are processed', async () => {
+  it('should notify subscribers after pending events are processed', async () => {
     const { grouper, waitForProcessing } = setup();
     const scheduledEvent = createScheduleActivityEvent('7');
     grouper.updateEvents([scheduledEvent]);
