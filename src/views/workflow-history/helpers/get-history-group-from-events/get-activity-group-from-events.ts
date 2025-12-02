@@ -165,10 +165,12 @@ export default function getActivityGroupFromEvents(
       pendingActivityTaskStartEventAttributes: [
         'lastFailureReason',
         'lastFailureDetails',
+        'attempt',
       ],
       activityTaskStartedEventAttributes: [
         'heartbeatDetails',
         'lastHeartbeatTime',
+        'attempt',
       ],
       activityTaskCompletedEventAttributes: ['result'],
       activityTaskFailedEventAttributes: ['details', 'reason'],

@@ -99,6 +99,7 @@ export default function getSingleEventGroupFromEvents(
       workflowExecutionStartedEventAttributes: [
         'input',
         'executionStartToCloseTimeoutSeconds',
+        'attempt',
       ],
       workflowExecutionCompletedEventAttributes: ['result'],
       workflowExecutionFailedEventAttributes: ['details', 'reason'],

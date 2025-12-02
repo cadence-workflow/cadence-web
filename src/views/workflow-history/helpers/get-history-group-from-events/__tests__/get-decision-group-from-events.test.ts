@@ -370,6 +370,7 @@ describe('getDecisionGroupFromEvents', () => {
     );
     expect(scheduledEventMetadata?.summaryFields).toEqual([
       'startToCloseTimeoutSeconds',
+      'attempt',
     ]);
 
     // Other events should not have summaryFields
@@ -379,5 +380,28 @@ describe('getDecisionGroupFromEvents', () => {
     otherEventsMetadata.forEach((metadata) => {
       expect(metadata.summaryFields).toBeUndefined();
     });
+  });
+
+  it('should include summaryFields for pending decision start events', () => {
+    const events: ExtendedDecisionHistoryEvent[] = [
+      scheduleDecisionTaskEvent,
+      pendingDecisionTaskStartEvent,
+    ];
+    const group = getDecisionGroupFromEvents(events);
+
+    // The pending start event should have summaryFields
+    const pendingStartEventMetadata = group.eventsMetadata.find(
+      (metadata) => metadata.label === 'Starting'
+    );
+    expect(pendingStartEventMetadata?.summaryFields).toEqual(['attempt']);
+
+    // Other events should not have the same summaryFields
+    const scheduledEventMetadata = group.eventsMetadata.find(
+      (metadata) => metadata.label === 'Scheduled'
+    );
+    expect(scheduledEventMetadata?.summaryFields).toEqual([
+      'startToCloseTimeoutSeconds',
+      'attempt',
+    ]);
   });
 });

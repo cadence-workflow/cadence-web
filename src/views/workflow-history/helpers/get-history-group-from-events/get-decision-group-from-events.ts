@@ -122,7 +122,11 @@ export default function getDecisionGroupFromEvents(
 
   const eventToSummaryFields: HistoryGroupEventToSummaryFieldsMap<DecisionHistoryGroup> =
     {
-      decisionTaskScheduledEventAttributes: ['startToCloseTimeoutSeconds'],
+      decisionTaskScheduledEventAttributes: [
+        'startToCloseTimeoutSeconds',
+        'attempt',
+      ],
+      pendingDecisionTaskStartEventAttributes: ['attempt'],
     };
 
   return {

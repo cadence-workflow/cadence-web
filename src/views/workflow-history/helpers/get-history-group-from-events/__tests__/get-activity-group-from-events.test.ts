@@ -395,6 +395,7 @@ describe('getActivityGroupFromEvents', () => {
     expect(group.eventsMetadata[1].summaryFields).toEqual([
       'heartbeatDetails',
       'lastHeartbeatTime',
+      'attempt',
     ]);
 
     // The completed event should also have summaryFields
@@ -522,6 +523,7 @@ describe('getActivityGroupFromEvents', () => {
     expect(pendingStartEventMetadata?.summaryFields).toEqual([
       'lastFailureReason',
       'lastFailureDetails',
+      'attempt',
     ]);
 
     // Other events should not have the same summaryFields

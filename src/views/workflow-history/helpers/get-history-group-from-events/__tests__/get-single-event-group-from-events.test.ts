@@ -186,6 +186,7 @@ describe('getSingleEventGroupFromEvents', () => {
     expect(eventMetadata.summaryFields).toEqual([
       'input',
       'executionStartToCloseTimeoutSeconds',
+      'attempt',
     ]);
   });
 
