@@ -413,6 +413,10 @@ export default class WorkflowHistoryGrouper {
     );
 
     this.updatePendingDecision(currentPendingDecision, newPendingDecision);
+
+    // Report progress to all subscribers
+    const state = this.getState();
+    this.subscribers.forEach((callback) => callback(state));
   }
 
   /**
