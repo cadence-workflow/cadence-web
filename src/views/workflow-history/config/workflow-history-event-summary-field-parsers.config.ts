@@ -32,11 +32,10 @@ const workflowHistoryEventSummaryFieldParsersConfig: Array<WorkflowHistoryEventS
       icon: MdHourglassBottom,
     },
     {
-      name: 'Retries with retry icon',
+      name: 'Hide retryAttempt from summary in History V1',
       matcher: (name) => name === 'attempt',
-      shouldHide: (_, value) => typeof value === 'number' && value <= 0,
-      icon: MdReplay,
-      tooltipLabel: 'retries',
+      shouldHide: () => true,
+      icon: null,
     },
   ];
 
