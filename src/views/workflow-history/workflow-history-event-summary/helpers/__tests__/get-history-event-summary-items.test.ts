@@ -81,6 +81,38 @@ jest.mock(
             isGroup: true,
             groupEntries: [],
           },
+          {
+            key: 'hiddenField',
+            path: 'hiddenField',
+            value: 'hide-me',
+            renderConfig: {
+              name: 'Test Config',
+              key: 'test',
+              getLabel: ({ path }) => `Label: ${path}`,
+            },
+            isGroup: false,
+          },
+          {
+            key: 'tooltipField',
+            path: 'tooltipField',
+            value: 'test-value',
+            renderConfig: {
+              name: 'Test Config',
+              key: 'test',
+              getLabel: ({ path }) => `Label: ${path}`,
+            },
+            isGroup: false,
+          },
+          {
+            key: 'defaultPathField',
+            path: 'defaultPathField',
+            value: 'test-value',
+            renderConfig: {
+              name: 'Test Config',
+              key: 'test',
+            },
+            isGroup: false,
+          },
         ] satisfies WorkflowHistoryEventDetailsEntries
     )
 );
@@ -111,6 +143,18 @@ jest.mock(
         name: 'RunId Parser',
         matcher: (path) => path === 'firstExecutionRunId',
         icon: jest.fn(),
+      },
+      {
+        name: 'Hidden Field Parser',
+        matcher: (path) => path === 'hiddenField',
+        icon: jest.fn(),
+        shouldHide: jest.fn((_, value) => value === 'hide-me'),
+      },
+      {
+        name: 'Tooltip Label Parser',
+        matcher: (path) => path === 'tooltipField',
+        icon: jest.fn(),
+        tooltipLabel: 'Custom Tooltip Label',
       },
     ] satisfies Array<WorkflowHistoryEventSummaryFieldParser>
 );
@@ -278,5 +322,47 @@ describe(getHistoryEventSummaryItems.name, () => {
     expect(result).toHaveLength(1);
     expect(result[0].path).toBe('workflowExecution');
     expect(result[0].renderValue).toBeDefined();
+  });
+
+  it('should exclude fields when shouldHide returns true', () => {
+    const details = { hiddenField: 'hide-me' };
+    const summaryFields = ['hiddenField'];
+
+    const result = getHistoryEventSummaryItems({ details, summaryFields });
+
+    expect(result).toHaveLength(0);
+  });
+
+  it('should use tooltipLabel from parser config when set', () => {
+    const details = { tooltipField: 'test-value' };
+    const summaryFields = ['tooltipField'];
+
+    const result = getHistoryEventSummaryItems({ details, summaryFields });
+
+    expect(result).toHaveLength(1);
+    expect(result[0].path).toBe('tooltipField');
+    expect(result[0].label).toBe('Custom Tooltip Label');
+  });
+
+  it('should use getLabel from renderConfig when tooltipLabel is not set in parser config', () => {
+    const details = { input: { data: 'test' } };
+    const summaryFields = ['input'];
+
+    const result = getHistoryEventSummaryItems({ details, summaryFields });
+
+    expect(result).toHaveLength(1);
+    expect(result[0].path).toBe('input');
+    expect(result[0].label).toBe('Label: input');
+  });
+
+  it('should default to path when neither tooltipLabel nor getLabel is available', () => {
+    const details = { defaultPathField: 'test-value' };
+    const summaryFields = ['defaultPathField'];
+
+    const result = getHistoryEventSummaryItems({ details, summaryFields });
+
+    expect(result).toHaveLength(1);
+    expect(result[0].path).toBe('defaultPathField');
+    expect(result[0].label).toBe('defaultPathField');
   });
 });

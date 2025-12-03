@@ -22,6 +22,8 @@ export type WorkflowHistoryEventSummaryFieldParser = {
     size?: IconProps['size'];
     color?: IconProps['color'];
   }> | null;
+  shouldHide?: (path: string, value: unknown) => boolean;
+  tooltipLabel?: string;
   customRenderValue?: ComponentType<EventSummaryValueComponentProps>;
   hideDefaultTooltip?: boolean;
 };

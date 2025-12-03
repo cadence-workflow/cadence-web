@@ -33,7 +33,9 @@ export default function getHistoryEventSummaryItems({
       );
 
     let renderValue: ComponentType<EventSummaryValueComponentProps>;
-    if (summaryFieldParserConfig?.customRenderValue) {
+    if (summaryFieldParserConfig?.shouldHide?.(path, value)) {
+      return acc;
+    } else if (summaryFieldParserConfig?.customRenderValue) {
       renderValue = summaryFieldParserConfig.customRenderValue;
     } else if (renderConfig?.valueComponent) {
       const detailsRenderValue = renderConfig?.valueComponent;
@@ -49,9 +51,15 @@ export default function getHistoryEventSummaryItems({
       renderValue = ({ value }) => String(value);
     }
 
+    let tooltipLabel = path;
+    if (summaryFieldParserConfig?.tooltipLabel) {
+      tooltipLabel = summaryFieldParserConfig.tooltipLabel;
+    } else if (renderConfig?.getLabel)
+      tooltipLabel = renderConfig.getLabel({ key, path, value });
+
     acc.push({
       path,
-      label: renderConfig?.getLabel?.({ key, path, value }) ?? path,
+      label: tooltipLabel,
       value,
       icon: summaryFieldParserConfig?.icon ?? null,
       renderValue,
