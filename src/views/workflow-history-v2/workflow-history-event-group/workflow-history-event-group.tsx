@@ -75,6 +75,7 @@ export default function WorkflowHistoryEventGroup({
       if (!event.eventId) return;
 
       const eventMetadata = eventsMetadata[index];
+      if (!eventMetadata) return;
 
       const result = isPendingHistoryEvent(event)
         ? formatPendingWorkflowHistoryEvent(event)
@@ -157,16 +158,18 @@ export default function WorkflowHistoryEventGroup({
             {eventsMetadata.at(-1)?.label}
           </styled.StatusContainer>
           <div>{timeMs ? formatDate(timeMs) : null}</div>
-          <WorkflowHistoryEventGroupDuration
-            startTime={startTimeMs}
-            closeTime={closeTimeMs}
-            workflowIsArchived={workflowIsArchived}
-            eventsCount={events.length}
-            workflowCloseStatus={workflowCloseStatus}
-            loadingMoreEvents={showLoadingMoreEvents}
-            hasMissingEvents={hasMissingEvents}
-            workflowCloseTime={workflowCloseTimeMs}
-          />
+          <div>
+            <WorkflowHistoryEventGroupDuration
+              startTime={startTimeMs}
+              closeTime={closeTimeMs}
+              workflowIsArchived={workflowIsArchived}
+              eventsCount={events.length}
+              workflowCloseStatus={workflowCloseStatus}
+              loadingMoreEvents={showLoadingMoreEvents}
+              hasMissingEvents={hasMissingEvents}
+              workflowCloseTime={workflowCloseTimeMs}
+            />
+          </div>
           <styled.SummarizedDetailsContainer>
             Placeholder for event details
           </styled.SummarizedDetailsContainer>
