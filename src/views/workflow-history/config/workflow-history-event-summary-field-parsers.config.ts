@@ -1,8 +1,4 @@
-import {
-  MdHourglassBottom,
-  MdOutlineMonitorHeart,
-  MdReplay,
-} from 'react-icons/md';
+import { MdHourglassBottom, MdOutlineMonitorHeart } from 'react-icons/md';
 
 import { type WorkflowHistoryEventSummaryFieldParser } from '../workflow-history-event-summary/workflow-history-event-summary.types';
 import WorkflowHistoryEventSummaryJson from '../workflow-history-event-summary-json/workflow-history-event-summary-json';
