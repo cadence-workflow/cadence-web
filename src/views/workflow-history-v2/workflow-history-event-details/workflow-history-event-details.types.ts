@@ -1,5 +1,10 @@
 import { type WorkflowPageParams } from '@/views/workflow-page/workflow-page.types';
 
+export type Props = {
+  eventDetails: EventDetailsEntries;
+  workflowPageParams: WorkflowPageParams;
+};
+
 export type EventDetailsFuncArgs = {
   path: string;
   key: string;

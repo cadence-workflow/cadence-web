@@ -9,32 +9,17 @@ import { type WorkflowHistoryEventDetailsConfig } from '../workflow-history-even
 import WorkflowHistoryEventDetailsJson from '../workflow-history-event-details-json/workflow-history-event-details-json';
 import WorkflowHistoryEventDetailsPlaceholderText from '../workflow-history-event-details-placeholder-text/workflow-history-event-details-placeholder-text';
 
-/**
- * Configuration array for customizing how workflow history event details are rendered.
- * Each config entry defines matching criteria and rendering behavior for specific event fields.
- * Configs are evaluated in order, and the first matching config is applied to each field.
- */
 const workflowHistoryEventDetailsConfig = [
-  /**
-   * Hides fields with null or undefined values from the event details display.
-   */
   {
     name: 'Filter empty value',
     customMatcher: ({ value }) => value === null || value === undefined,
     hide: () => true,
   },
-  /**
-   * Hides internal fields (taskId, eventType) that are not useful for display.
-   */
   {
     name: 'Filter unneeded values',
     pathRegex: '(taskId|eventType)$',
     hide: () => true,
   },
-  /**
-   * Displays a placeholder text for timeout/retry fields that are set to 0 (not configured).
-   * Also removes the "Seconds" suffix from labels since formatted durations may be in minutes/hours.
-   */
   {
     name: 'Not set placeholder',
     customMatcher: ({ value, path }) => {
@@ -49,17 +34,11 @@ const workflowHistoryEventDetailsConfig = [
     valueComponent: () =>
       createElement(WorkflowHistoryEventDetailsPlaceholderText),
   },
-  /**
-   * Formats Date objects as human-readable time strings.
-   */
   {
     name: 'Date object as time string',
     customMatcher: ({ value }) => value instanceof Date,
     valueComponent: ({ entryValue }) => formatDate(entryValue),
   },
-  /**
-   * Renders task list names as clickable links that navigate to the task list view.
-   */
   {
     name: 'Tasklists as links',
     key: 'taskList',
@@ -71,10 +50,6 @@ const workflowHistoryEventDetailsConfig = [
       });
     },
   },
-  /**
-   * Renders JSON fields (input, result, details, etc.) as formatted PrettyJson components.
-   * Uses forceWrap to ensure proper wrapping of long JSON content.
-   */
   {
     name: 'Json as PrettyJson',
     pathRegex:
@@ -82,10 +57,6 @@ const workflowHistoryEventDetailsConfig = [
     valueComponent: WorkflowHistoryEventDetailsJson,
     forceWrap: true,
   },
-  /**
-   * Formats duration fields (ending in TimeoutSeconds, BackoffSeconds, or InSeconds) as human-readable durations.
-   * Removes the "Seconds" suffix from labels since formatted durations may be in minutes/hours.
-   */
   {
     name: 'Duration & interval seconds',
     pathRegex: '(TimeoutSeconds|BackoffSeconds|InSeconds)$',
@@ -93,10 +64,6 @@ const workflowHistoryEventDetailsConfig = [
     valueComponent: ({ entryValue }) =>
       formatDuration({ seconds: entryValue > 0 ? entryValue : 0, nanos: 0 }),
   },
-  /**
-   * Renders workflow execution objects as clickable links that navigate to the workflow view.
-   * Applies to parentWorkflowExecution, externalWorkflowExecution, and workflowExecution fields.
-   */
   {
     name: 'WorkflowExecution as link',
     pathRegex:
@@ -110,10 +77,6 @@ const workflowHistoryEventDetailsConfig = [
       });
     },
   },
-  /**
-   * Renders run ID fields as clickable links that navigate to the corresponding workflow run.
-   * Applies to firstExecutionRunId, originalExecutionRunId, newExecutionRunId, and continuedExecutionRunId.
-   */
   {
     name: 'RunIds as link',
     pathRegex:
@@ -127,9 +90,6 @@ const workflowHistoryEventDetailsConfig = [
       });
     },
   },
-  /**
-   * Renames the "attempt" field label to "retryAttempt" for better clarity.
-   */
   {
     name: 'Retry config attempt as retryAttempt',
     key: 'attempt',

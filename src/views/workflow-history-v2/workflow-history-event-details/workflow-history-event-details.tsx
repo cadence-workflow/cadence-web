@@ -1,20 +1,19 @@
 import { useMemo } from 'react';
 
 import WorkflowHistoryEventDetailsGroup from '@/views/workflow-history/workflow-history-event-details-group/workflow-history-event-details-group';
-import { type WorkflowPageParams } from '@/views/workflow-page/workflow-page.types';
 
 import WorkflowHistoryPanelDetailsEntry from '../workflow-history-panel-details-entry/workflow-history-panel-details-entry';
 
 import { styled } from './workflow-history-event-details.styles';
-import { type EventDetailsEntries } from './workflow-history-event-details.types';
+import {
+  type Props,
+  type EventDetailsEntries,
+} from './workflow-history-event-details.types';
 
 export default function WorkflowHistoryEventDetails({
   eventDetails,
   workflowPageParams,
-}: {
-  eventDetails: EventDetailsEntries;
-  workflowPageParams: WorkflowPageParams;
-}) {
+}: Props) {
   const [panelDetails, restDetails] = useMemo(
     () =>
       eventDetails.reduce<[EventDetailsEntries, EventDetailsEntries]>(

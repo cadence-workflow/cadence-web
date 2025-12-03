@@ -4,24 +4,17 @@ import { Button } from 'baseui/button';
 import { ButtonGroup } from 'baseui/button-group';
 import { MdClose } from 'react-icons/md';
 
-import { type WorkflowPageParams } from '@/views/workflow-page/workflow-page.types';
-
 import WorkflowHistoryEventDetails from '../workflow-history-event-details/workflow-history-event-details';
 
 import { overrides, styled } from './workflow-history-group-details.styles';
-import { type GroupDetailsEntries } from './workflow-history-group-details.types';
+import { type Props } from './workflow-history-group-details.types';
 
 export default function WorkflowHistoryGroupDetails({
   groupDetailsEntries,
   initialEventId,
   workflowPageParams,
   onClose,
-}: {
-  groupDetailsEntries: GroupDetailsEntries;
-  initialEventId: string | undefined;
-  workflowPageParams: WorkflowPageParams;
-  onClose?: () => void;
-}) {
+}: Props) {
   const [selectedIndex, setSelectedIndex] = useState<number>(
     (() => {
       const selectedIdx = groupDetailsEntries.findIndex(
