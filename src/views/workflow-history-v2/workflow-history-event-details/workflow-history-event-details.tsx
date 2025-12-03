@@ -1,15 +1,11 @@
 import { useMemo } from 'react';
 
+import WorkflowHistoryEventDetailsEntry from '@/views/workflow-history/workflow-history-event-details-entry/workflow-history-event-details-entry';
 import WorkflowHistoryEventDetailsGroup from '@/views/workflow-history/workflow-history-event-details-group/workflow-history-event-details-group';
 import { type WorkflowPageParams } from '@/views/workflow-page/workflow-page.types';
 
-import WorkflowHistoryGroupDetailsJson from '../workflow-history-group-details-json/workflow-history-group-details-json';
-
 import { styled } from './workflow-history-event-details.styles';
-import {
-  type EventDetailsEntries,
-  type EventDetailsSingleEntry,
-} from './workflow-history-event-details.types';
+import { type EventDetailsEntries } from './workflow-history-event-details.types';
 
 export default function WorkflowHistoryEventDetails({
   eventDetails,
@@ -20,9 +16,7 @@ export default function WorkflowHistoryEventDetails({
 }) {
   const [panelDetails, restDetails] = useMemo(
     () =>
-      eventDetails.reduce<
-        [Array<EventDetailsSingleEntry>, EventDetailsEntries]
-      >(
+      eventDetails.reduce<[EventDetailsEntries, EventDetailsEntries]>(
         ([panels, rest], entry) => {
           if (entry.renderConfig?.showInPanels && !entry.isGroup) {
             panels.push(entry);
@@ -45,16 +39,30 @@ export default function WorkflowHistoryEventDetails({
     <styled.EventDetailsContainer>
       {panelDetails.length > 0 && (
         <styled.PanelDetails>
-          {panelDetails.map((detail) => (
-            <styled.PanelContainer key={detail.path}>
-              <WorkflowHistoryGroupDetailsJson
-                entryPath={detail.path}
-                entryValue={detail.value}
-                isNegative={detail.isNegative}
-                {...workflowPageParams}
-              />
-            </styled.PanelContainer>
-          ))}
+          {panelDetails.map((detail) => {
+            return (
+              <styled.PanelContainer key={detail.path}>
+                {!detail.isGroup ? (
+                  <WorkflowHistoryEventDetailsEntry
+                    entryKey={detail.key}
+                    entryPath={detail.path}
+                    entryValue={detail.value}
+                    isNegative={detail.isNegative}
+                    renderConfig={detail.renderConfig}
+                    {...workflowPageParams}
+                  />
+                ) : (
+                  <WorkflowHistoryEventDetailsGroup
+                    entries={restDetails}
+                    decodedPageUrlParams={{
+                      ...workflowPageParams,
+                      workflowTab: 'history',
+                    }}
+                  />
+                )}
+              </styled.PanelContainer>
+            );
+          })}
         </styled.PanelDetails>
       )}
       <styled.RestDetails>
