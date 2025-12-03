@@ -1,8 +1,10 @@
+import { type WorkflowPageParams } from '@/views/workflow-page/workflow-page.types';
+
 import {
-  type EventDetailsConfig,
-  type EventDetailsValueComponentProps,
+  type EventDetailsGroupEntry,
+  type EventDetailsSingleEntry,
 } from '../workflow-history-event-details/workflow-history-event-details.types';
 
-export type Props = EventDetailsValueComponentProps & {
-  renderConfig: EventDetailsConfig | null;
-};
+export type Props = {
+  detail: EventDetailsSingleEntry | EventDetailsGroupEntry;
+} & WorkflowPageParams;

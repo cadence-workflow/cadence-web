@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
 
-import WorkflowHistoryEventDetailsEntry from '@/views/workflow-history/workflow-history-event-details-entry/workflow-history-event-details-entry';
 import WorkflowHistoryEventDetailsGroup from '@/views/workflow-history/workflow-history-event-details-group/workflow-history-event-details-group';
 import { type WorkflowPageParams } from '@/views/workflow-page/workflow-page.types';
+
+import WorkflowHistoryPanelDetailsEntry from '../workflow-history-panel-details-entry/workflow-history-panel-details-entry';
 
 import { styled } from './workflow-history-event-details.styles';
 import { type EventDetailsEntries } from './workflow-history-event-details.types';
@@ -18,7 +19,7 @@ export default function WorkflowHistoryEventDetails({
     () =>
       eventDetails.reduce<[EventDetailsEntries, EventDetailsEntries]>(
         ([panels, rest], entry) => {
-          if (entry.renderConfig?.showInPanels && !entry.isGroup) {
+          if (entry.renderConfig?.showInPanels) {
             panels.push(entry);
           } else {
             rest.push(entry);
@@ -42,24 +43,10 @@ export default function WorkflowHistoryEventDetails({
           {panelDetails.map((detail) => {
             return (
               <styled.PanelContainer key={detail.path}>
-                {!detail.isGroup ? (
-                  <WorkflowHistoryEventDetailsEntry
-                    entryKey={detail.key}
-                    entryPath={detail.path}
-                    entryValue={detail.value}
-                    isNegative={detail.isNegative}
-                    renderConfig={detail.renderConfig}
-                    {...workflowPageParams}
-                  />
-                ) : (
-                  <WorkflowHistoryEventDetailsGroup
-                    entries={restDetails}
-                    decodedPageUrlParams={{
-                      ...workflowPageParams,
-                      workflowTab: 'history',
-                    }}
-                  />
-                )}
+                <WorkflowHistoryPanelDetailsEntry
+                  detail={detail}
+                  {...workflowPageParams}
+                />
               </styled.PanelContainer>
             );
           })}

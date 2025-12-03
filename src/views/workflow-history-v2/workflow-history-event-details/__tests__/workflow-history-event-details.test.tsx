@@ -2,28 +2,20 @@ import { render, screen } from '@/test-utils/rtl';
 
 import { type WorkflowPageParams } from '@/views/workflow-page/workflow-page.types';
 
+import type WorkflowHistoryPanelDetailsEntry from '../../workflow-history-panel-details-entry/workflow-history-panel-details-entry';
 import WorkflowHistoryEventDetails from '../workflow-history-event-details';
 import { type EventDetailsEntries } from '../workflow-history-event-details.types';
 
-jest.mock(
-  '../../workflow-history-group-details-json/workflow-history-group-details-json',
+jest.mock<typeof WorkflowHistoryPanelDetailsEntry>(
+  '../../workflow-history-panel-details-entry/workflow-history-panel-details-entry',
   () =>
-    jest.fn(
-      ({
-        entryPath,
-        entryValue,
-        isNegative,
-      }: {
-        entryPath: string;
-        entryValue: any;
-        isNegative?: boolean;
-      }) => (
-        <div data-testid="group-details-json">
-          JSON: {entryPath} = {JSON.stringify(entryValue)}
-          {isNegative && ' (negative)'}
-        </div>
-      )
-    )
+    jest.fn(({ detail }) => (
+      <div data-testid="panel-details-entry">
+        Panel Entry: {detail.path} ={' '}
+        {JSON.stringify(detail.isGroup ? detail.groupEntries : detail.value)}
+        {detail.isNegative && ' (negative)'}
+      </div>
+    ))
 );
 
 jest.mock(
@@ -41,7 +33,7 @@ describe(WorkflowHistoryEventDetails.name, () => {
     setup({ eventDetails: [] });
 
     expect(screen.getByText('No Details')).toBeInTheDocument();
-    expect(screen.queryByTestId('group-details-json')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('panel-details-entry')).not.toBeInTheDocument();
     expect(screen.queryByTestId('event-details-group')).not.toBeInTheDocument();
   });
 
@@ -68,7 +60,7 @@ describe(WorkflowHistoryEventDetails.name, () => {
 
     setup({ eventDetails });
 
-    expect(screen.queryByTestId('group-details-json')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('panel-details-entry')).not.toBeInTheDocument();
     expect(screen.getByTestId('event-details-group')).toBeInTheDocument();
     expect(
       screen.getByText('Event Details Group (2 entries)')
@@ -102,8 +94,10 @@ describe(WorkflowHistoryEventDetails.name, () => {
 
     setup({ eventDetails });
 
-    expect(screen.getByTestId('group-details-json')).toBeInTheDocument();
-    expect(screen.getByText(/JSON: path1 = "value1"/)).toBeInTheDocument();
+    expect(screen.getByTestId('panel-details-entry')).toBeInTheDocument();
+    expect(
+      screen.getByText(/Panel Entry: path1 = "value1"/)
+    ).toBeInTheDocument();
     expect(screen.getByTestId('event-details-group')).toBeInTheDocument();
     expect(
       screen.getByText('Event Details Group (1 entries)')
@@ -148,11 +142,13 @@ describe(WorkflowHistoryEventDetails.name, () => {
 
     setup({ eventDetails });
 
-    const jsonComponents = screen.getAllByTestId('group-details-json');
-    expect(jsonComponents).toHaveLength(2);
-    expect(screen.getByText(/JSON: path1 = "value1"/)).toBeInTheDocument();
+    const panelEntries = screen.getAllByTestId('panel-details-entry');
+    expect(panelEntries).toHaveLength(2);
     expect(
-      screen.getByText(/JSON: path2 = \{"nested":"value2"\}/)
+      screen.getByText(/Panel Entry: path1 = "value1"/)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Panel Entry: path2 = \{"nested":"value2"\}/)
     ).toBeInTheDocument();
     expect(screen.getByTestId('event-details-group')).toBeInTheDocument();
     expect(
@@ -160,7 +156,7 @@ describe(WorkflowHistoryEventDetails.name, () => {
     ).toBeInTheDocument();
   });
 
-  it('passes correct props to WorkflowHistoryGroupDetailsJson', () => {
+  it('passes correct props to WorkflowHistoryPanelDetailsEntry', () => {
     const eventDetails: EventDetailsEntries = [
       {
         key: 'key1',
@@ -178,7 +174,9 @@ describe(WorkflowHistoryEventDetails.name, () => {
 
     setup({ eventDetails });
 
-    expect(screen.getByText(/JSON: path1 = "value1"/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Panel Entry: path1 = "value1"/)
+    ).toBeInTheDocument();
     expect(screen.getByText(/\(negative\)/)).toBeInTheDocument();
   });
 });
