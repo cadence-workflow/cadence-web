@@ -36,11 +36,7 @@ export default function generateHistoryEventDetails({
       return;
     }
 
-    if (
-      !renderConfig?.valueComponent &&
-      !renderConfig?.showInPanels &&
-      isObjectLike(value)
-    ) {
+    if (!renderConfig?.valueComponent && isObjectLike(value)) {
       const entries = Object.entries(value);
       if (entries.length === 1) {
         result.push(
