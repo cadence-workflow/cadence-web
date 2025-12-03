@@ -35,14 +35,22 @@ export const styled = {
     gap: $theme.sizing.scale300,
     alignItems: 'center',
   })),
-  SummarizedDetailsContainer: createStyled('div', {
-    overflow: 'hidden',
-  }),
+  SummarizedDetailsContainer: createStyled(
+    'div',
+    ({ $theme }: { $theme: Theme }) => ({
+      overflow: 'hidden',
+      [$theme.mediaQuery.medium]: {
+        margin: `-${$theme.sizing.scale200} 0`,
+      },
+    })
+  ),
   ActionsContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
     gap: $theme.sizing.scale300,
     alignItems: 'center',
-    margin: `-${$theme.sizing.scale200} 0`,
+    [$theme.mediaQuery.medium]: {
+      margin: `-${$theme.sizing.scale200} 0`,
+    },
   })),
   GroupDetailsGridContainer: createStyled('div', {
     display: 'grid',

@@ -10,6 +10,7 @@ import WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflo
 
 import workflowHistoryEventFilteringTypeColorsConfig from '../config/workflow-history-event-filtering-type-colors.config';
 import generateHistoryGroupDetails from '../helpers/generate-history-group-details';
+import WorkflowHistoryDetailsRow from '../workflow-history-details-row/workflow-history-details-row';
 import WorkflowHistoryEventGroupDuration from '../workflow-history-event-group-duration/workflow-history-event-group-duration';
 import WorkflowHistoryGroupDetails from '../workflow-history-group-details/workflow-history-group-details';
 
@@ -72,9 +73,15 @@ export default function WorkflowHistoryEventGroup({
     [events, getIsEventExpanded, toggleIsEventExpanded]
   );
 
+  const groupSummaryDetails = useMemo(
+    () =>
+      summaryDetailsEntries.flatMap(([_, { eventDetails }]) => eventDetails),
+    [summaryDetailsEntries]
+  );
+
   const groupDetailsEntriesWithSummary = useMemo(
     () => [
-      ...(summaryDetailsEntries.length > 0
+      ...(groupSummaryDetails.length > 0 && groupDetailsEntries.length > 1
         ? [
             getSummaryTabContentEntry({
               groupId: eventGroup.firstEventId ?? 'unknown',
@@ -86,7 +93,12 @@ export default function WorkflowHistoryEventGroup({
         : []),
       ...groupDetailsEntries,
     ],
-    [eventGroup.firstEventId, groupDetailsEntries, summaryDetailsEntries]
+    [
+      eventGroup.firstEventId,
+      groupDetailsEntries,
+      summaryDetailsEntries,
+      groupSummaryDetails.length,
+    ]
   );
 
   return (
@@ -124,7 +136,10 @@ export default function WorkflowHistoryEventGroup({
             />
           </div>
           <styled.SummarizedDetailsContainer>
-            Placeholder for event details
+            <WorkflowHistoryDetailsRow
+              detailsEntries={groupSummaryDetails}
+              {...decodedPageUrlParams}
+            />
           </styled.SummarizedDetailsContainer>
           <styled.ActionsContainer>
             {resetToDecisionEventId && (
