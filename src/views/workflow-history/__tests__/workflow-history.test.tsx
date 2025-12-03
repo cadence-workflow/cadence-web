@@ -190,9 +190,29 @@ describe('WorkflowHistory', () => {
     });
   });
 
-  it('should show no results when filtered events are empty', async () => {
-    await setup({ emptyEvents: true });
+  it('should show no results when filtered events are empty and no next page', async () => {
+    await setup({ emptyEvents: true, hasNextPage: false });
     expect(await screen.findByText('No Results')).toBeInTheDocument();
+  });
+
+  it('should not show no results when filtered events are empty but has next page', async () => {
+    await setup({
+      emptyEvents: true,
+      hasNextPage: true,
+    });
+
+    // Should not show "No Results" when there's a next page
+    expect(screen.queryByText('No Results')).not.toBeInTheDocument();
+
+    // Should show the load more footer component instead
+    expect(screen.getByText('Load more')).toBeInTheDocument();
+  });
+
+  it('should not show no results when there are filtered events', async () => {
+    await setup({});
+    await waitFor(() => {
+      expect(screen.queryByText('No Results')).not.toBeInTheDocument();
+    });
   });
 
   it('should show ungrouped table when ungrouped view is enabled', async () => {

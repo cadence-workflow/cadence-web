@@ -3,10 +3,9 @@ import { useMemo, useRef, useState } from 'react';
 import { type UseInitialSelectedEventParams } from './use-initial-selected-event.types';
 
 /*
- * This hook is used to search for the event and the group of the event that
- * was selected when the component is mounted. It returns a boolean indicating if the
- * initial event should be searched for, a boolean indicating if the initial
- * event was found, and the index of the group that contains the event.
+ * This hook is used to search for the event within event groups. It captures the first selected event when the component is mounted
+ * and keeps searching for the event in all event groups until it is found.
+ * Afterwards it return the index of the group in the filtered set of event groups that is presented on the UI and retrun undefined if filtered groups do not contain the event/group.
  */
 export default function useInitialSelectedEvent({
   selectedEventId,
@@ -35,7 +34,7 @@ export default function useInitialSelectedEvent({
     // If group index not change do not search again.
     if (
       foundGroupIndexRef.current &&
-      filteredEventGroupsEntries[foundGroupIndexRef.current][0] === groupId
+      filteredEventGroupsEntries[foundGroupIndexRef.current]?.[0] === groupId
     )
       return foundGroupIndexRef.current;
 

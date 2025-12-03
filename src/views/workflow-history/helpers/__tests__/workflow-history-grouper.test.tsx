@@ -471,6 +471,31 @@ describe(WorkflowHistoryGrouper.name, () => {
     expect(Object.keys(groups).length).toBe(0);
   });
 
+  it('should notify subscribers after pending events are processed', async () => {
+    const { grouper, waitForProcessing } = setup();
+    const scheduledEvent = createScheduleActivityEvent('7');
+    grouper.updateEvents([scheduledEvent]);
+    await waitForProcessing();
+    // subscribe to state changes
+    const mockOnChange = jest.fn();
+    grouper.onChange(mockOnChange);
+    // add pending event on history after scheduled event is processed and onChange is subscribed
+    await grouper.updatePendingEvents({
+      pendingStartActivities: [pendingActivityTaskStartEvent],
+      pendingStartDecision: null,
+    });
+
+    await waitForProcessing();
+    expect(mockOnChange).toHaveBeenCalled();
+
+    const callArgs = mockOnChange.mock.calls[0][0];
+    expect(callArgs.groups['7']).toBeDefined();
+    expect(callArgs.groups['7'].events).toEqual([
+      scheduledEvent,
+      pendingActivityTaskStartEvent,
+    ]);
+  });
+
   it('should handle pending decision buffer clearing when decision changes', async () => {
     const { grouper, waitForProcessing } = setup();
 
