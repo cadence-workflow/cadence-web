@@ -4,29 +4,36 @@ import type { WorkflowPageParams } from '@/views/workflow-page/workflow-page.typ
 
 import { type EventDetailsEntries } from '../../workflow-history-event-details/workflow-history-event-details.types';
 import WorkflowHistoryDetailsRow from '../workflow-history-details-row';
+import { type DetailsRowItem } from '../workflow-history-details-row.types';
 
 jest.mock('../helpers/get-parsed-details-row-items', () =>
   jest.fn((detailsEntries: EventDetailsEntries) =>
-    detailsEntries
-      .filter((entry) => !entry.isGroup)
-      .map((entry, index) => ({
-        path: entry.path,
-        label: entry.path,
-        value: entry.value,
-        icon: ({ size }: any) => (
-          <span data-testid={`icon-${entry.path}`} data-size={size} />
-        ),
-        renderValue: ({ value, isNegative }: any) => (
-          <span data-testid={`field-${entry.path}`} data-negative={isNegative}>
-            {value}
-          </span>
-        ),
-        renderTooltip: ({ label }: any) => (
-          <span data-testid={`tooltip-${entry.path}`}>{label}</span>
-        ),
-        invertTooltipColors: index === 1, // Second item has inverted tooltip
-        omitWrapping: index === 2, // Third item omits wrapping
-      }))
+    detailsEntries.reduce<Array<DetailsRowItem>>((acc, entry) => {
+      if (!entry.isGroup) {
+        acc.push({
+          path: entry.path,
+          label: entry.path,
+          value: entry.value,
+          icon: ({ size }: any) => (
+            <span data-testid={`icon-${entry.path}`} data-size={size} />
+          ),
+          renderValue: ({ value, isNegative }: any) => (
+            <span
+              data-testid={`field-${entry.path}`}
+              data-negative={isNegative}
+            >
+              {value}
+            </span>
+          ),
+          renderTooltip: ({ label }: any) => (
+            <span data-testid={`tooltip-${entry.path}`}>{label}</span>
+          ),
+          invertTooltipColors: acc.length === 1, // Second item has inverted tooltip
+          omitWrapping: acc.length === 2, // Third item omits wrapping
+        });
+      }
+      return acc;
+    }, [])
   )
 );
 
