@@ -2,18 +2,11 @@ import { useMemo } from 'react';
 
 import { Virtuoso } from 'react-virtuoso';
 
-<<<<<<< HEAD
-=======
-import compareUngroupedEvents from '@/views/workflow-history/helpers/compare-ungrouped-events';
->>>>>>> d60602c5 (Add basic ungrouped table)
 import WorkflowHistoryTimelineLoadMore from '@/views/workflow-history/workflow-history-timeline-load-more/workflow-history-timeline-load-more';
 
 import WorkflowHistoryUngroupedEvent from '../workflow-history-ungrouped-event/workflow-history-ungrouped-event';
 
-<<<<<<< HEAD
 import compareUngroupedEvents from './helpers/compare-ungrouped-events';
-=======
->>>>>>> d60602c5 (Add basic ungrouped table)
 import { styled } from './workflow-history-ungrouped-table.styles';
 import {
   type UngroupedEventInfo,
