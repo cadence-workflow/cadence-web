@@ -2,11 +2,11 @@ import { useMemo } from 'react';
 
 import { Virtuoso } from 'react-virtuoso';
 
-import compareUngroupedEvents from '@/views/workflow-history/helpers/compare-ungrouped-events';
 import WorkflowHistoryTimelineLoadMore from '@/views/workflow-history/workflow-history-timeline-load-more/workflow-history-timeline-load-more';
 
 import WorkflowHistoryUngroupedEvent from '../workflow-history-ungrouped-event/workflow-history-ungrouped-event';
 
+import compareUngroupedEvents from './helpers/compare-ungrouped-events';
 import { styled } from './workflow-history-ungrouped-table.styles';
 import {
   type UngroupedEventInfo,
@@ -32,12 +32,12 @@ export default function WorkflowHistoryUngroupedTable({
     () =>
       eventGroupsById
         .map(([_, group]) => [
-          ...group.events.map((event, index) => ({
+          ...group.events.map((event) => ({
+            id: event.eventId ?? event.computedEventId,
             event,
-            eventMetadata: group.eventsMetadata[index],
+            eventGroup: group,
             label: group.label,
             shortLabel: group.shortLabel,
-            id: event.eventId ?? event.computedEventId,
             canReset: group.resetToDecisionEventId === event.eventId,
           })),
         ])
@@ -46,12 +46,10 @@ export default function WorkflowHistoryUngroupedTable({
     [eventGroupsById]
   );
 
-  const workflowStartTime = useMemo(
+  const workflowStartTimeMs = useMemo(
     () =>
-      eventsInfoFromGroups.length > 0
-        ? eventsInfoFromGroups[0].event.eventTime
-        : null,
-    [eventsInfoFromGroups]
+      eventGroupsById.length > 0 ? eventGroupsById[0][1].startTimeMs : null,
+    [eventGroupsById]
   );
 
   const maybeHighlightedEventId = useMemo(
@@ -88,7 +86,7 @@ export default function WorkflowHistoryUngroupedTable({
         itemContent={(_, eventInfo) => (
           <WorkflowHistoryUngroupedEvent
             eventInfo={eventInfo}
-            workflowStartTime={workflowStartTime}
+            workflowStartTimeMs={workflowStartTimeMs}
             decodedPageUrlParams={decodedPageUrlParams}
             isExpanded={getIsEventExpanded(eventInfo.id)}
             toggleIsExpanded={() => toggleIsEventExpanded(eventInfo.id)}
