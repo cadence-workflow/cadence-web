@@ -3,6 +3,7 @@ import { render, screen, userEvent } from '@/test-utils/rtl';
 import {
   completedActivityTaskEvents,
   scheduleActivityTaskEvent,
+  startActivityTaskEvent,
 } from '@/views/workflow-history/__fixtures__/workflow-history-activity-events';
 import {
   mockActivityEventGroup,
@@ -204,10 +205,10 @@ describe(WorkflowHistoryEventGroup.name, () => {
     );
   });
 
-  it('calls toggleIsEventExpanded when panel is toggled', async () => {
+  it('calls toggleIsEventExpanded for each event when panel is toggled', async () => {
     const eventGroup: HistoryEventsGroup = {
       ...mockActivityEventGroupWithMetadata,
-      events: [scheduleActivityTaskEvent],
+      events: [scheduleActivityTaskEvent, startActivityTaskEvent],
     };
 
     const toggleIsEventExpanded = jest.fn();
@@ -217,9 +218,7 @@ describe(WorkflowHistoryEventGroup.name, () => {
     const headerLabel = screen.getByText('Mock event');
     await user.click(headerLabel);
 
-    expect(toggleIsEventExpanded).toHaveBeenCalledWith(
-      scheduleActivityTaskEvent.eventId
-    );
+    expect(toggleIsEventExpanded).toHaveBeenCalledTimes(2);
   });
 
   it('handles missing event group time gracefully', () => {
