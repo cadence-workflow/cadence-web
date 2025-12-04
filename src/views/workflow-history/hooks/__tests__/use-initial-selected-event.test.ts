@@ -192,7 +192,7 @@ describe('useInitialSelectedEvent', () => {
   });
 
   // add test cases for filteredEventGroupsEntries being empty after filtering
-  it.only('should return initialEventGroupIndex as undefined when filteredEventGroupsEntries no longer contains the event', () => {
+  it('should return initialEventGroupIndex as undefined when filteredEventGroupsEntries no longer contains the event', () => {
     const initialFilteredEventGroupsEntries: [string, HistoryEventsGroup][] = [
       ['2', mockEventGroups['2']],
     ];
