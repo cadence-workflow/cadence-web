@@ -77,9 +77,9 @@ export default function WorkflowHistoryEventGroup({
       ...(summaryDetailsEntries.length > 0
         ? [
             getSummaryTabContentEntry({
-              groupId: eventGroup.firstEventId ?? '',
+              groupId: eventGroup.firstEventId ?? 'unknown',
               summaryDetails: summaryDetailsEntries.flatMap(
-                ([_, { eventDetails }]) => eventDetails
+                ([_eventId, { eventDetails }]) => eventDetails
               ),
             }),
           ]

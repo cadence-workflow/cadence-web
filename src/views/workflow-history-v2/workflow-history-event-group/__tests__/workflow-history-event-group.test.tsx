@@ -394,7 +394,7 @@ describe(WorkflowHistoryEventGroup.name, () => {
     expect(screen.getByText('Summary')).toBeInTheDocument();
   });
 
-  it('does not show summary tab when summaryDetailsEntries is empty', () => {
+  it('does not show summary tab when only one event is present in the group', () => {
     const mockEventDetails: EventDetailsEntries = [
       {
         key: 'input',
@@ -431,11 +431,19 @@ describe(WorkflowHistoryEventGroup.name, () => {
             },
           ],
         ],
-        summaryDetailsEntries: [],
+        summaryDetailsEntries: [
+          [
+            scheduleActivityTaskEvent.eventId!,
+            {
+              eventLabel: 'Scheduled',
+              eventDetails: mockEventDetails,
+            },
+          ],
+        ],
       },
     });
 
-    // Summary tab should not appear when summaryDetailsEntries is empty
+    // Summary tab should not appear when there is only one event
     expect(screen.queryByText('Summary')).not.toBeInTheDocument();
   });
 
