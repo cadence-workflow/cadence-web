@@ -582,7 +582,6 @@ function setup({
   render(
     <WorkflowHistoryEventGroup
       eventGroup={eventGroup}
-      groupId={eventGroup.firstEventId ?? ''}
       selected={selected}
       workflowCloseTimeMs={workflowCloseTimeMs}
       workflowCloseStatus={workflowCloseStatus}
