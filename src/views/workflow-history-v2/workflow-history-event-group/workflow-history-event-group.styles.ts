@@ -35,15 +35,49 @@ export const styled = {
     gap: $theme.sizing.scale300,
     alignItems: 'center',
   })),
-  SummarizedDetailsContainer: createStyled('div', {
-    overflow: 'hidden',
-  }),
+  SummarizedDetailsContainer: createStyled(
+    'div',
+    ({ $theme }: { $theme: Theme }) => ({
+      overflow: 'hidden',
+      [$theme.mediaQuery.medium]: {
+        margin: `-${$theme.sizing.scale200} 0`,
+      },
+    })
+  ),
   ActionsContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
     gap: $theme.sizing.scale300,
     alignItems: 'center',
-    margin: `-${$theme.sizing.scale200} 0`,
+    [$theme.mediaQuery.medium]: {
+      margin: `-${$theme.sizing.scale200} 0`,
+    },
   })),
+  GroupDetailsGridContainer: createStyled('div', {
+    display: 'grid',
+    gridTemplateColumns: WORKFLOW_HISTORY_GROUPED_GRID_TEMPLATE_COLUMNS,
+  }),
+  GroupDetailsNameSpacer: createStyled(
+    'div',
+    ({ $theme }: { $theme: Theme }) => ({
+      display: 'none',
+      [$theme.mediaQuery.medium]: {
+        gridColumn: '1 / span 2',
+      },
+    })
+  ),
+  GroupDetailsContainer: createStyled(
+    'div',
+    ({ $theme }: { $theme: Theme }) => ({
+      gridColumn: '1 / -1',
+      [$theme.mediaQuery.medium]: {
+        gridColumn: '3 / -1',
+      },
+      border: `2px solid ${$theme.colors.borderOpaque}`,
+      borderRadius: $theme.borders.radius400,
+      padding: $theme.sizing.scale500,
+      backgroundColor: $theme.colors.backgroundPrimary,
+    })
+  ),
 };
 
 export const overrides = (
@@ -103,8 +137,12 @@ export const overrides = (
         // Since the original Panel uses longhand properties, we need to use longhand in overrides
         paddingTop: 0,
         paddingBottom: $theme.sizing.scale600,
-        paddingLeft: $theme.sizing.scale700,
-        paddingRight: $theme.sizing.scale700,
+        paddingLeft: 0,
+        paddingRight: 0,
+        [$theme.mediaQuery.medium]: {
+          paddingLeft: $theme.sizing.scale700,
+          paddingRight: $theme.sizing.scale700,
+        },
         backgroundColor: 'inherit',
       }),
     },
