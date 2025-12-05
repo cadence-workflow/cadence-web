@@ -42,10 +42,7 @@ export default function WorkflowHistoryEventDetails({
       <styled.RestDetails>
         <WorkflowHistoryEventDetailsGroup
           entries={restDetails}
-          decodedPageUrlParams={{
-            ...workflowPageParams,
-            workflowTab: 'history',
-          }}
+          decodedPageUrlParams={workflowPageParams}
         />
       </styled.RestDetails>
     </styled.EventDetailsContainer>

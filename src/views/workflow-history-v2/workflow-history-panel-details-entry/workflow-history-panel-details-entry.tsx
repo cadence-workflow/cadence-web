@@ -31,10 +31,7 @@ export default function WorkflowHistoryPanelDetailsEntry({
           <WorkflowHistoryEventDetailsGroup
             entries={detail.groupEntries}
             parentGroupPath={detail.path}
-            decodedPageUrlParams={{
-              ...workflowPageParams,
-              workflowTab: 'history',
-            }}
+            decodedPageUrlParams={workflowPageParams}
           />
         ) : (
           detail.value
