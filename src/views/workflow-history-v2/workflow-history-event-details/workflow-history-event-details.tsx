@@ -1,14 +1,13 @@
 import { useMemo } from 'react';
 
+import partition from 'lodash/partition';
+
 import WorkflowHistoryEventDetailsGroup from '@/views/workflow-history/workflow-history-event-details-group/workflow-history-event-details-group';
 
 import WorkflowHistoryPanelDetailsEntry from '../workflow-history-panel-details-entry/workflow-history-panel-details-entry';
 
 import { styled } from './workflow-history-event-details.styles';
-import {
-  type Props,
-  type EventDetailsEntries,
-} from './workflow-history-event-details.types';
+import { type Props } from './workflow-history-event-details.types';
 
 export default function WorkflowHistoryEventDetails({
   eventDetails,
@@ -16,18 +15,7 @@ export default function WorkflowHistoryEventDetails({
 }: Props) {
   const [panelDetails, restDetails] = useMemo(
     () =>
-      eventDetails.reduce<[EventDetailsEntries, EventDetailsEntries]>(
-        ([panels, rest], entry) => {
-          if (entry.renderConfig?.showInPanels) {
-            panels.push(entry);
-          } else {
-            rest.push(entry);
-          }
-
-          return [panels, rest];
-        },
-        [[], []]
-      ),
+      partition(eventDetails, (detail) => detail.renderConfig?.showInPanels),
     [eventDetails]
   );
 

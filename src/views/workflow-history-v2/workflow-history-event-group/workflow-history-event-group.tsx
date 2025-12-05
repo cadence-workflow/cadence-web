@@ -4,20 +4,17 @@ import { Panel } from 'baseui/accordion';
 import { MdCircle } from 'react-icons/md';
 
 import formatDate from '@/utils/data-formatters/format-date';
-import formatPendingWorkflowHistoryEvent from '@/utils/data-formatters/format-pending-workflow-history-event';
-import formatWorkflowHistoryEvent from '@/utils/data-formatters/format-workflow-history-event';
-import isPendingHistoryEvent from '@/views/workflow-history/workflow-history-event-details/helpers/is-pending-history-event';
 import WorkflowHistoryEventStatusBadge from '@/views/workflow-history/workflow-history-event-status-badge/workflow-history-event-status-badge';
 import WorkflowHistoryGroupLabel from '@/views/workflow-history/workflow-history-group-label/workflow-history-group-label';
 import WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 
 import workflowHistoryEventFilteringTypeColorsConfig from '../config/workflow-history-event-filtering-type-colors.config';
-import generateHistoryEventDetails from '../helpers/generate-history-event-details';
+import generateHistoryGroupDetails from '../helpers/generate-history-group-details';
 import WorkflowHistoryEventGroupDuration from '../workflow-history-event-group-duration/workflow-history-event-group-duration';
 import WorkflowHistoryGroupDetails from '../workflow-history-group-details/workflow-history-group-details';
-import { type EventDetailsTabContent } from '../workflow-history-group-details/workflow-history-group-details.types';
 
 import getEventGroupFilteringType from './helpers/get-event-group-filtering-type';
+import getSummaryTabContentEntry from './helpers/get-summary-tab-content-entry';
 import {
   overrides as getOverrides,
   styled,
@@ -26,7 +23,6 @@ import { type Props } from './workflow-history-event-group.types';
 
 export default function WorkflowHistoryEventGroup({
   eventGroup,
-  groupId,
   selected,
   workflowCloseTimeMs,
   workflowCloseStatus,
@@ -61,79 +57,36 @@ export default function WorkflowHistoryEventGroup({
     }
   }, [onReset]);
 
-  const { groupDetailsEntries } = useMemo(() => {
-    const eventsEntries: Array<[string, EventDetailsTabContent]> = [],
-      summaryEntry: [string, EventDetailsTabContent] = [
-        `summary_${groupId}`,
-        {
-          eventLabel: 'Summary',
-          eventDetails: [],
-        },
-      ];
+  const { groupDetailsEntries, summaryDetailsEntries } = useMemo(
+    () => generateHistoryGroupDetails(eventGroup),
+    [eventGroup]
+  );
 
-    events.forEach((event, index) => {
-      if (!event.eventId) return;
-
-      const eventMetadata = eventsMetadata[index];
-      if (!eventMetadata) return;
-
-      const result = isPendingHistoryEvent(event)
-        ? formatPendingWorkflowHistoryEvent(event)
-        : formatWorkflowHistoryEvent(event);
-
-      const eventDetails = result
-        ? generateHistoryEventDetails({
-            details: {
-              ...result,
-              ...eventMetadata.additionalDetails,
-            },
-            negativeFields: eventMetadata.negativeFields,
-          })
-        : [];
-
-      eventsEntries.push([
-        event.eventId,
-        {
-          eventLabel: eventMetadata.label,
-          eventDetails,
-        } satisfies EventDetailsTabContent,
-      ]);
-
-      summaryEntry[1].eventDetails.push(
-        ...eventDetails.filter((detail) =>
-          eventMetadata.summaryFields?.includes(detail.path)
-        )
-      );
-    });
-
-    const shouldShowSummaryTab =
-      events.length > 1 && summaryEntry[1].eventDetails.length > 0;
-
-    return {
-      groupDetailsEntries: [
-        ...(shouldShowSummaryTab ? [summaryEntry] : []),
-        ...eventsEntries,
-      ],
-      // To be used for rendering one-line summaries
-      summaryDetails: summaryEntry[1].eventDetails,
-    };
-  }, [events, eventsMetadata, groupId]);
-
-  const onChangeGroupExpansionState = useCallback(
+  const handleGroupExpansionStateChange = useCallback(
     (newExpanded: boolean) => {
-      if (newExpanded) {
-        events.forEach(({ eventId }) => {
-          if (eventId && !getIsEventExpanded(eventId))
-            toggleIsEventExpanded(eventId);
-        });
-      } else {
-        events.forEach(({ eventId }) => {
-          if (eventId && getIsEventExpanded(eventId))
-            toggleIsEventExpanded(eventId);
-        });
-      }
+      events.forEach(({ eventId }) => {
+        if (eventId && getIsEventExpanded(eventId) !== newExpanded)
+          toggleIsEventExpanded(eventId);
+      });
     },
     [events, getIsEventExpanded, toggleIsEventExpanded]
+  );
+
+  const groupDetailsEntriesWithSummary = useMemo(
+    () => [
+      ...(summaryDetailsEntries.length > 0
+        ? [
+            getSummaryTabContentEntry({
+              groupId: eventGroup.firstEventId ?? '',
+              summaryDetails: summaryDetailsEntries.flatMap(
+                ([_, { eventDetails }]) => eventDetails
+              ),
+            }),
+          ]
+        : []),
+      ...groupDetailsEntries,
+    ],
+    [eventGroup.firstEventId, groupDetailsEntries, summaryDetailsEntries]
   );
 
   return (
@@ -189,18 +142,18 @@ export default function WorkflowHistoryEventGroup({
       expanded={events.some(
         ({ eventId }) => eventId && getIsEventExpanded(eventId)
       )}
-      onChange={({ expanded }) => onChangeGroupExpansionState(expanded)}
+      onChange={({ expanded }) => handleGroupExpansionStateChange(expanded)}
       overrides={overrides.panel}
     >
       <styled.GroupDetailsGridContainer>
         <styled.GroupDetailsNameSpacer />
         <styled.GroupDetailsContainer>
           <WorkflowHistoryGroupDetails
-            groupDetailsEntries={groupDetailsEntries}
+            groupDetailsEntries={groupDetailsEntriesWithSummary}
             // TODO @adhitya.mamallan - pass initial selected event ID here
             initialEventId={undefined}
             workflowPageParams={decodedPageUrlParams}
-            onClose={() => onChangeGroupExpansionState(false)}
+            onClose={() => handleGroupExpansionStateChange(false)}
           />
         </styled.GroupDetailsContainer>
       </styled.GroupDetailsGridContainer>

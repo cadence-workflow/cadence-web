@@ -156,7 +156,7 @@ describe(WorkflowHistoryEventDetails.name, () => {
     ).toBeInTheDocument();
   });
 
-  it('passes correct props to WorkflowHistoryPanelDetailsEntry', () => {
+  it('correctly renders panel details entry', () => {
     const eventDetails: EventDetailsEntries = [
       {
         key: 'key1',

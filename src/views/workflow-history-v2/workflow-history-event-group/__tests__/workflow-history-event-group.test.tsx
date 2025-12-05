@@ -14,8 +14,10 @@ import type WorkflowHistoryGroupLabel from '@/views/workflow-history/workflow-hi
 import type WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-history.types';
 
+import * as generateHistoryGroupDetailsModule from '../../helpers/generate-history-group-details';
 import type { EventDetailsEntries } from '../../workflow-history-event-details/workflow-history-event-details.types';
 import type WorkflowHistoryGroupDetails from '../../workflow-history-group-details/workflow-history-group-details';
+import type { GroupDetailsEntries } from '../../workflow-history-group-details/workflow-history-group-details.types';
 import WorkflowHistoryEventGroup from '../workflow-history-event-group';
 import type { Props } from '../workflow-history-event-group.types';
 
@@ -23,19 +25,7 @@ jest.mock('@/utils/data-formatters/format-date', () =>
   jest.fn((timeMs: number) => `Formatted: ${timeMs}`)
 );
 
-jest.mock('@/utils/data-formatters/format-pending-workflow-history-event', () =>
-  jest.fn(() => ({ mockFormatted: true }))
-);
-
-jest.mock('@/utils/data-formatters/format-workflow-history-event', () =>
-  jest.fn(() => ({ mockFormatted: true }))
-);
-
-const mockGenerateHistoryEventDetails = jest.fn<EventDetailsEntries, any[]>();
-
-jest.mock('../../helpers/generate-history-event-details', () =>
-  jest.fn(() => mockGenerateHistoryEventDetails())
-);
+jest.mock('../../helpers/generate-history-group-details', () => jest.fn());
 
 jest.mock<typeof WorkflowHistoryGroupDetails>(
   '../../workflow-history-group-details/workflow-history-group-details',
@@ -145,6 +135,10 @@ const mockDecisionEventGroupWithMetadata: HistoryEventsGroup = {
 };
 
 describe(WorkflowHistoryEventGroup.name, () => {
+  beforeEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('renders group correctly', () => {
     setup({ eventGroup: mockActivityEventGroupWithMetadata });
 
@@ -283,7 +277,7 @@ describe(WorkflowHistoryEventGroup.name, () => {
     });
   });
 
-  it('shows summary tab when summaryFields are available to show', () => {
+  it('shows summary tab when summaryDetailsEntries are available', () => {
     const mockEventDetails: EventDetailsEntries = [
       {
         key: 'input',
@@ -299,10 +293,20 @@ describe(WorkflowHistoryEventGroup.name, () => {
         isGroup: false,
         renderConfig: null,
       },
+    ];
+
+    const mockSummaryDetails: EventDetailsEntries = [
       {
-        key: 'result',
-        path: 'result',
-        value: 'test result',
+        key: 'input',
+        path: 'input',
+        value: 'test input value',
+        isGroup: false,
+        renderConfig: null,
+      },
+      {
+        key: 'activityType',
+        path: 'activityType',
+        value: 'TestActivity',
         isGroup: false,
         renderConfig: null,
       },
@@ -340,13 +344,57 @@ describe(WorkflowHistoryEventGroup.name, () => {
       (eventId: string) => eventId === completedActivityTaskEvents[0].eventId
     );
 
-    setup({ eventGroup, getIsEventExpanded, mockEventDetails });
+    setup({
+      eventGroup,
+      getIsEventExpanded,
+      mockGroupDetails: {
+        groupDetailsEntries: [
+          [
+            completedActivityTaskEvents[0].eventId!,
+            {
+              eventLabel: 'Scheduled',
+              eventDetails: mockEventDetails,
+            },
+          ],
+          [
+            completedActivityTaskEvents[1].eventId!,
+            {
+              eventLabel: 'Started',
+              eventDetails: mockEventDetails,
+            },
+          ],
+          [
+            completedActivityTaskEvents[2].eventId!,
+            {
+              eventLabel: 'Completed',
+              eventDetails: mockEventDetails,
+            },
+          ],
+        ],
+        summaryDetailsEntries: [
+          [
+            completedActivityTaskEvents[0].eventId!,
+            {
+              eventLabel: 'Scheduled',
+              eventDetails: mockSummaryDetails,
+            },
+          ],
+          [
+            completedActivityTaskEvents[1].eventId!,
+            {
+              eventLabel: 'Started',
+              eventDetails: mockSummaryDetails,
+            },
+          ],
+        ],
+      },
+    });
 
-    // Summary tab should appear in groupDetailsEntries when there are multiple events and summary details
+    // Summary tab should appear in groupDetailsEntries when there are summary details
     expect(screen.getByText('Summary')).toBeInTheDocument();
   });
 
-  it('does not show summary tab when there is only one event', () => {
+  it('does not show summary tab when summaryDetailsEntries is empty', () => {
     const mockEventDetails: EventDetailsEntries = [
       {
         key: 'input',
@@ -371,14 +419,27 @@ describe(WorkflowHistoryEventGroup.name, () => {
       ],
     };
 
-    setup({ eventGroup, mockEventDetails });
+    setup({
+      eventGroup,
+      mockGroupDetails: {
+        groupDetailsEntries: [
+          [
+            scheduleActivityTaskEvent.eventId!,
+            {
+              eventLabel: 'Scheduled',
+              eventDetails: mockEventDetails,
+            },
+          ],
+        ],
+        summaryDetailsEntries: [],
+      },
+    });
 
-    // Summary tab should not appear when there's only one event
-    expect(screen.queryByTestId('event-summary_7')).not.toBeInTheDocument();
+    // Summary tab should not appear when summaryDetailsEntries is empty
     expect(screen.queryByText('Summary')).not.toBeInTheDocument();
   });
 
-  it('does not show summary tab when summaryFields do not match any event details', () => {
+  it('does not show summary tab when summaryDetailsEntries is empty', () => {
     const mockEventDetails: EventDetailsEntries = [
       {
         key: 'input',
@@ -416,9 +477,37 @@ describe(WorkflowHistoryEventGroup.name, () => {
       ],
     };
 
-    setup({ eventGroup, mockEventDetails });
+    setup({
+      eventGroup,
+      mockGroupDetails: {
+        groupDetailsEntries: [
+          [
+            completedActivityTaskEvents[0].eventId!,
+            {
+              eventLabel: 'Scheduled',
+              eventDetails: mockEventDetails,
+            },
+          ],
+          [
+            completedActivityTaskEvents[1].eventId!,
+            {
+              eventLabel: 'Started',
+              eventDetails: mockEventDetails,
+            },
+          ],
+          [
+            completedActivityTaskEvents[2].eventId!,
+            {
+              eventLabel: 'Completed',
+              eventDetails: mockEventDetails,
+            },
+          ],
+        ],
+        summaryDetailsEntries: [],
+      },
+    });
 
-    // Summary tab should not appear when no summary details match
+    // Summary tab should not appear when summaryDetailsEntries is empty
     expect(screen.queryByText('Summary')).not.toBeInTheDocument();
   });
 });
@@ -440,12 +529,22 @@ function setup({
   onReset = jest.fn(),
   getIsEventExpanded = jest.fn(() => false),
   toggleIsEventExpanded = jest.fn(),
-  mockEventDetails,
+  mockGroupDetails,
 }: Partial<Props> & {
-  mockEventDetails?: EventDetailsEntries;
+  mockGroupDetails?: {
+    groupDetailsEntries: GroupDetailsEntries;
+    summaryDetailsEntries: GroupDetailsEntries;
+  };
 } = {}) {
-  mockGenerateHistoryEventDetails.mockReturnValue(
-    mockEventDetails ?? [
+  const mockGenerateHistoryGroupDetails = jest.spyOn(
+    generateHistoryGroupDetailsModule,
+    'default'
+  );
+
+  if (mockGroupDetails) {
+    mockGenerateHistoryGroupDetails.mockReturnValue(mockGroupDetails);
+  } else {
+    const defaultMockEventDetails: EventDetailsEntries = [
       {
         key: 'testKey',
         path: 'testPath',
@@ -453,8 +552,21 @@ function setup({
         isGroup: false,
         renderConfig: null,
       },
-    ]
-  );
+    ];
+
+    mockGenerateHistoryGroupDetails.mockReturnValue({
+      groupDetailsEntries: eventGroup.events
+        .filter((event) => event.eventId)
+        .map((event, index) => [
+          event.eventId!,
+          {
+            eventLabel: eventGroup.eventsMetadata[index]?.label ?? 'Unknown',
+            eventDetails: defaultMockEventDetails,
+          },
+        ]),
+      summaryDetailsEntries: [],
+    });
+  }
 
   const mockOnReset = onReset || jest.fn();
   const user = userEvent.setup();
@@ -462,7 +574,6 @@ function setup({
   render(
     <WorkflowHistoryEventGroup
       eventGroup={eventGroup}
-      groupId={eventGroup.firstEventId ?? ''}
       selected={selected}
       workflowCloseTimeMs={workflowCloseTimeMs}
       workflowCloseStatus={workflowCloseStatus}
