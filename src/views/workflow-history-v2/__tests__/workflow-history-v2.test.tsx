@@ -53,17 +53,29 @@ jest.mock(
 );
 
 jest.mock('../workflow-history-header/workflow-history-header', () =>
-  jest.fn(({ isUngroupedHistoryViewEnabled, onClickGroupModeToggle }) => (
-    <div data-testid="workflow-history-header">
-      <div>Workflow history Header</div>
-      <div data-testid="is-ungrouped-enabled">
-        {String(isUngroupedHistoryViewEnabled)}
+  jest.fn(
+    ({
+      isUngroupedHistoryViewEnabled,
+      onClickGroupModeToggle,
+      pageFiltersProps,
+    }) => (
+      <div data-testid="workflow-history-header">
+        <div>Workflow history Header</div>
+        <div data-testid="is-ungrouped-enabled">
+          {String(isUngroupedHistoryViewEnabled)}
+        </div>
+        <div data-testid="active-filters-count">
+          {pageFiltersProps.activeFiltersCount}
+        </div>
+        <button
+          data-testid="toggle-group-mode"
+          onClick={onClickGroupModeToggle}
+        >
+          Toggle Group Mode
+        </button>
       </div>
-      <button data-testid="toggle-group-mode" onClick={onClickGroupModeToggle}>
-        Toggle Group Mode
-      </button>
-    </div>
-  ))
+    )
+  )
 );
 
 jest.mock(
@@ -265,6 +277,48 @@ describe(WorkflowHistoryV2.name, () => {
     expect(mockSetQueryParams).toHaveBeenCalledWith({
       ungroupedHistoryViewEnabled: 'false',
     });
+  });
+
+  it('should calculate activeFiltersCount as 0 when both filter arrays are empty', async () => {
+    await setup({
+      pageQueryParamsValues: {
+        historyEventStatuses: [],
+        historyEventTypes: [],
+      },
+    });
+
+    const activeFiltersCountElement = await screen.findByTestId(
+      'active-filters-count'
+    );
+    expect(activeFiltersCountElement).toHaveTextContent('0');
+  });
+
+  it('should calculate activeFiltersCount as 0 when both filter arrays are undefined', async () => {
+    await setup({
+      pageQueryParamsValues: {
+        historyEventStatuses: undefined,
+        historyEventTypes: undefined,
+      },
+    });
+
+    const activeFiltersCountElement = await screen.findByTestId(
+      'active-filters-count'
+    );
+    expect(activeFiltersCountElement).toHaveTextContent('0');
+  });
+
+  it('should calculate activeFiltersCount as sum of both filter arrays', async () => {
+    await setup({
+      pageQueryParamsValues: {
+        historyEventStatuses: ['COMPLETED', 'FAILED'],
+        historyEventTypes: ['DECISION', 'ACTIVITY', 'SIGNAL'],
+      },
+    });
+
+    const activeFiltersCountElement = await screen.findByTestId(
+      'active-filters-count'
+    );
+    expect(activeFiltersCountElement).toHaveTextContent('5');
   });
 });
 
