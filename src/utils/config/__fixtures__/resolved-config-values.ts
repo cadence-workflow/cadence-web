@@ -3,6 +3,8 @@ import { type LoadedConfigResolvedValues } from '../config.types';
 const mockResolvedConfigValues: LoadedConfigResolvedValues = {
   ADMIN_SECURITY_TOKEN: 'mock-secret',
   CADENCE_WEB_PORT: '3000',
+  CADENCE_WEB_RBAC_ENABLED: 'false',
+  CADENCE_WEB_JWT_TOKEN: 'mock-rbac-token',
   CLUSTERS: [
     {
       clusterName: 'mock-cluster1',

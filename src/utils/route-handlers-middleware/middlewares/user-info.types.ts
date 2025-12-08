@@ -1,3 +1,3 @@
-export type UserInfoMiddlewareContext = {
-  id: string;
-} | null;
+import { type UserAuthContext } from '@/utils/auth/auth-context';
+
+export type UserInfoMiddlewareContext = UserAuthContext;
