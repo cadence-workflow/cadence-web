@@ -4,7 +4,10 @@ import {
   pendingDecisionTaskStartEvent,
 } from '@/views/workflow-history/__fixtures__/workflow-history-pending-events';
 import { startWorkflowExecutionEvent } from '@/views/workflow-history/__fixtures__/workflow-history-single-events';
-import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-history.types';
+import {
+  type HistoryEventsGroup,
+  type HistoryGroupEventMetadata,
+} from '@/views/workflow-history/workflow-history.types';
 
 import { type UngroupedEventInfo } from '../../workflow-history-ungrouped-table.types';
 import compareUngroupedEvents from '../compare-ungrouped-events';
@@ -27,18 +30,29 @@ function createMockEventGroup(
   } as HistoryEventsGroup;
 }
 
+function createMockEventMetadata(label: string): HistoryGroupEventMetadata {
+  return {
+    label,
+    status: 'COMPLETED',
+    timeMs: null,
+    timeLabel: '',
+  };
+}
+
 describe(compareUngroupedEvents.name, () => {
   it('orders non-pending events by event ID', () => {
     const eventA: UngroupedEventInfo = {
       id: '1',
       label: 'Event A',
       event: startWorkflowExecutionEvent,
+      eventMetadata: createMockEventMetadata('Event A'),
       eventGroup: createMockEventGroup('Event A', startWorkflowExecutionEvent),
     };
     const eventB: UngroupedEventInfo = {
       id: '2',
       label: 'Event B',
       event: startWorkflowExecutionEvent,
+      eventMetadata: createMockEventMetadata('Event B'),
       eventGroup: createMockEventGroup('Event B', startWorkflowExecutionEvent),
     };
 
@@ -52,6 +66,7 @@ describe(compareUngroupedEvents.name, () => {
       id: '2',
       label: 'Non-pending Event',
       event: startWorkflowExecutionEvent,
+      eventMetadata: createMockEventMetadata('Non-pending Event'),
       eventGroup: createMockEventGroup(
         'Non-pending Event',
         startWorkflowExecutionEvent
@@ -61,6 +76,7 @@ describe(compareUngroupedEvents.name, () => {
       id: '1',
       label: 'Pending Event',
       event: pendingActivityTaskStartEvent,
+      eventMetadata: createMockEventMetadata('Pending Event'),
       eventGroup: createMockEventGroup(
         'Pending Event',
         pendingActivityTaskStartEvent
@@ -88,12 +104,14 @@ describe(compareUngroupedEvents.name, () => {
       id: '1',
       label: 'Pending Event A',
       event: eventA,
+      eventMetadata: createMockEventMetadata('Pending Event A'),
       eventGroup: createMockEventGroup('Pending Event A', eventA),
     };
     const pendingEventB: UngroupedEventInfo = {
       id: '2',
       label: 'Pending Event B',
       event: eventB,
+      eventMetadata: createMockEventMetadata('Pending Event B'),
       eventGroup: createMockEventGroup('Pending Event B', eventB),
     };
 
@@ -116,12 +134,14 @@ describe(compareUngroupedEvents.name, () => {
       id: '1',
       label: 'Pending Event A',
       event: eventA,
+      eventMetadata: createMockEventMetadata('Pending Event A'),
       eventGroup: createMockEventGroup('Pending Event A', eventA),
     };
     const pendingEventB: UngroupedEventInfo = {
       id: '2',
       label: 'Pending Event B',
       event: eventB,
+      eventMetadata: createMockEventMetadata('Pending Event B'),
       eventGroup: createMockEventGroup('Pending Event B', eventB),
     };
 
