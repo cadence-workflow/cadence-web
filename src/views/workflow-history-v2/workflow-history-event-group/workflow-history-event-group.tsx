@@ -75,7 +75,9 @@ export default function WorkflowHistoryEventGroup({
 
   const groupSummaryDetails = useMemo(
     () =>
-      summaryDetailsEntries.flatMap(([_, { eventDetails }]) => eventDetails),
+      summaryDetailsEntries.flatMap(
+        ([_eventId, { eventDetails }]) => eventDetails
+      ),
     [summaryDetailsEntries]
   );
 

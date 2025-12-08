@@ -18,14 +18,22 @@ export default function WorkflowHistoryDetailsRow({
     return getParsedDetailsRowItems(detailsEntries);
   }, [detailsEntries]);
 
+  const negativePathsSet = useMemo(
+    () =>
+      new Set(
+        detailsEntries
+          .filter((entry) => entry.isNegative)
+          .map((entry) => entry.path)
+      ),
+    [detailsEntries]
+  );
+
   if (rowItems.length === 0) return <div />;
 
   return (
     <styled.DetailsRowContainer>
       {rowItems.map((item) => {
-        const isNegative = detailsEntries.some(
-          (detail) => detail.path === item.path && detail.isNegative
-        );
+        const isNegative = negativePathsSet.has(item.path);
 
         return (
           <StatefulTooltip

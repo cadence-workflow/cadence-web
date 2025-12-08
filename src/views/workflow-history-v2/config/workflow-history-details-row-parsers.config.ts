@@ -33,7 +33,7 @@ const workflowHistoryDetailsRowParsersConfig: Array<DetailsRowItemParser> = [
     icon: MdHourglassBottom,
   },
   {
-    name: '"attempt" greater than 1, as "retries"',
+    name: '"attempt" greater than 0, as "retries"',
     matcher: (name) => name === 'attempt',
     hide: (_, value) => typeof value === 'number' && value <= 0,
     icon: MdReplay,
