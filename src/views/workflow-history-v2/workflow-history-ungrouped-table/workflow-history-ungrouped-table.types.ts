@@ -4,6 +4,7 @@ import { type VirtuosoHandle } from 'react-virtuoso';
 
 import { type RequestError } from '@/utils/request/request-error';
 import {
+  type HistoryGroupEventMetadata,
   type ExtendedHistoryEvent,
   type HistoryEventsGroup,
 } from '@/views/workflow-history/workflow-history.types';
@@ -41,6 +42,7 @@ export type Props = {
 export type UngroupedEventInfo = {
   id: string;
   event: ExtendedHistoryEvent;
+  eventMetadata: HistoryGroupEventMetadata;
   eventGroup: HistoryEventsGroup;
   label: string;
   shortLabel?: string;

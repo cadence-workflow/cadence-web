@@ -32,9 +32,10 @@ export default function WorkflowHistoryUngroupedTable({
     () =>
       eventGroupsById
         .map(([_, group]) => [
-          ...group.events.map((event) => ({
+          ...group.events.map((event, index) => ({
             id: event.eventId ?? event.computedEventId,
             event,
+            eventMetadata: group.eventsMetadata[index],
             eventGroup: group,
             label: group.label,
             shortLabel: group.shortLabel,

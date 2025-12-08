@@ -325,7 +325,6 @@ export default function WorkflowHistoryV2({ params }: Props) {
           <WorkflowHistoryUngroupedTable
             eventGroupsById={filteredEventGroupsById}
             virtuosoRef={ungroupedTableVirtuosoRef}
-            initialStartIndex={initialEventGroupIndex}
             setVisibleRange={({ startIndex, endIndex }) =>
               setVisibleGroupsRange((prevRange) => ({
                 ...prevRange,
