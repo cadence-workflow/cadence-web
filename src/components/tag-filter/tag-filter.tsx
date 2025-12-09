@@ -24,18 +24,13 @@ export default function TagFilter<T extends string>({
   const isShowAll = useMemo(() => values.length === 0, [values]);
 
   const onChangeSingleValue = useCallback(
-    (value: T) => {
-      const newValues = values.includes(value)
-        ? values.filter((v) => v !== value)
-        : [...values, value];
-
-      // If all tags are selected, automatically toggle to "show all" (empty array)
-      const areAllTagsSelected = tagKeys.every((key) =>
-        newValues.includes(key)
-      );
-      onChangeValues(areAllTagsSelected ? [] : newValues);
-    },
-    [values, onChangeValues, tagKeys]
+    (value: T) =>
+      onChangeValues(
+        values.includes(value)
+          ? values.filter((v) => v !== value)
+          : [...values, value]
+      ),
+    [values, onChangeValues]
   );
 
   return (
