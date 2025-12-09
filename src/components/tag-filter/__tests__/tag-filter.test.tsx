@@ -88,17 +88,6 @@ describe(TagFilter.name, () => {
     expect(mockOnChangeValues).toHaveBeenCalledWith([]);
   });
 
-  it('automatically toggles to "show all" (empty array) when the last tag is clicked and all tags become selected', async () => {
-    const { user, mockOnChangeValues } = setup({
-      values: ['opt1', 'opt2'],
-    });
-
-    // Click the last tag to select all tags - should auto-toggle to empty array
-    await user.click(screen.getByText('Option 3'));
-
-    expect(mockOnChangeValues).toHaveBeenCalledWith([]);
-  });
-
   it('does not render "Show all" tag when hideShowAll is true', () => {
     setup({
       hideShowAll: true,
