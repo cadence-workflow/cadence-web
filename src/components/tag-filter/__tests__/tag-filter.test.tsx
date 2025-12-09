@@ -55,7 +55,7 @@ describe(TagFilter.name, () => {
     expect(mockOnChangeValues).toHaveBeenCalledWith(['opt2']);
   });
 
-  it('selects all tags when "Show all" is clicked and no values are currently selected', async () => {
+  it('clears all selections when "Show all" is clicked and no values are currently selected', async () => {
     const { user, mockOnChangeValues } = setup({
       values: [],
     });
@@ -63,10 +63,10 @@ describe(TagFilter.name, () => {
     const showAllTag = screen.getByText('Show all');
     await user.click(showAllTag);
 
-    expect(mockOnChangeValues).toHaveBeenCalledWith(['opt1', 'opt2', 'opt3']);
+    expect(mockOnChangeValues).toHaveBeenCalledWith([]);
   });
 
-  it('deselects all tags when "Show all" is clicked and all values are currently selected', async () => {
+  it('clears all selections when "Show all" is clicked and all values are currently selected', async () => {
     const { user, mockOnChangeValues } = setup({
       values: ['opt1', 'opt2', 'opt3'],
     });
@@ -77,7 +77,7 @@ describe(TagFilter.name, () => {
     expect(mockOnChangeValues).toHaveBeenCalledWith([]);
   });
 
-  it('selects all tags when "Show all" is clicked and only some values are currently selected', async () => {
+  it('clears all selections when "Show all" is clicked and only some values are currently selected', async () => {
     const { user, mockOnChangeValues } = setup({
       values: ['opt1'],
     });
@@ -85,7 +85,18 @@ describe(TagFilter.name, () => {
     const showAllTag = screen.getByText('Show all');
     await user.click(showAllTag);
 
-    expect(mockOnChangeValues).toHaveBeenCalledWith(['opt1', 'opt2', 'opt3']);
+    expect(mockOnChangeValues).toHaveBeenCalledWith([]);
+  });
+
+  it('automatically toggles to "show all" (empty array) when the last tag is clicked and all tags become selected', async () => {
+    const { user, mockOnChangeValues } = setup({
+      values: ['opt1', 'opt2'],
+    });
+
+    // Click the last tag to select all tags - should auto-toggle to empty array
+    await user.click(screen.getByText('Option 3'));
+
+    expect(mockOnChangeValues).toHaveBeenCalledWith([]);
   });
 
   it('does not render "Show all" tag when hideShowAll is true', () => {

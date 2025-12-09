@@ -53,7 +53,7 @@ export default function WorkflowHistoryV2({ params }: Props) {
   };
 
   const {
-    activeFiltersCount,
+    activeFiltersCount: _unusedActiveFiltersCount,
     queryParams,
     setQueryParams,
     ...pageFiltersRest
@@ -61,6 +61,13 @@ export default function WorkflowHistoryV2({ params }: Props) {
     pageQueryParamsConfig: workflowPageQueryParamsConfig,
     pageFiltersConfig: workflowHistoryFiltersConfig,
   });
+
+  const activeFiltersCount = useMemo(
+    () =>
+      (queryParams.historyEventStatuses?.length ?? 0) +
+      (queryParams.historyEventTypes?.length ?? 0),
+    [queryParams.historyEventStatuses, queryParams.historyEventTypes]
+  );
 
   const {
     eventGroups,
