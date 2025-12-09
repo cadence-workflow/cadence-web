@@ -36,6 +36,7 @@ import workflowHistoryFiltersConfig from './config/workflow-history-filters.conf
 import WORKFLOW_HISTORY_SET_RANGE_THROTTLE_MS_CONFIG from './config/workflow-history-set-range-throttle-ms.config';
 import WorkflowHistoryGroupedTable from './workflow-history-grouped-table/workflow-history-grouped-table';
 import WorkflowHistoryHeader from './workflow-history-header/workflow-history-header';
+import WorkflowHistoryUngroupedTable from './workflow-history-ungrouped-table/workflow-history-ungrouped-table';
 import { styled } from './workflow-history-v2.styles';
 import {
   type VisibleHistoryRanges,
@@ -290,6 +291,7 @@ export default function WorkflowHistoryV2({ params }: Props) {
       !reachedEndOfAvailableHistory);
 
   const groupedTableVirtuosoRef = useRef<VirtuosoHandle>(null);
+  const ungroupedTableVirtuosoRef = useRef<VirtuosoHandle>(null);
 
   const workflowCloseTimeMs = workflowExecutionInfo?.closeTime
     ? parseGrpcTimestamp(workflowExecutionInfo?.closeTime)
@@ -327,7 +329,26 @@ export default function WorkflowHistoryV2({ params }: Props) {
       />
       <styled.ContentSection>
         {isUngroupedHistoryViewEnabled ? (
-          <div>WIP: ungrouped table</div>
+          <WorkflowHistoryUngroupedTable
+            eventGroupsById={filteredEventGroupsById}
+            virtuosoRef={ungroupedTableVirtuosoRef}
+            setVisibleRange={({ startIndex, endIndex }) =>
+              setVisibleGroupsRange((prevRange) => ({
+                ...prevRange,
+                ungroupedStartIndex: startIndex,
+                ungroupedEndIndex: endIndex,
+              }))
+            }
+            decodedPageUrlParams={decodedParams}
+            selectedEventId={queryParams.historySelectedEventId}
+            resetToDecisionEventId={setResetToDecisionEventId}
+            getIsEventExpanded={getIsItemExpanded}
+            toggleIsEventExpanded={toggleIsItemExpanded}
+            error={error}
+            hasMoreEvents={hasNextPage}
+            fetchMoreEvents={manualFetchNextPage}
+            isFetchingMoreEvents={isFetchingNextPage}
+          />
         ) : (
           <WorkflowHistoryGroupedTable
             eventGroupsById={filteredEventGroupsById}

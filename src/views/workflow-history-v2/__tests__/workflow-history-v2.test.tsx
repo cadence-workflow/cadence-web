@@ -86,6 +86,14 @@ jest.mock(
     ))
 );
 
+jest.mock(
+  '../workflow-history-ungrouped-table/workflow-history-ungrouped-table',
+  () =>
+    jest.fn(() => (
+      <div data-testid="workflow-history-ungrouped-table">Ungrouped Table</div>
+    ))
+);
+
 jest.mock('@/utils/decode-url-params', () => jest.fn((params) => params));
 
 const mockResetAllFilters = jest.fn();
@@ -182,7 +190,9 @@ describe(WorkflowHistoryV2.name, () => {
     expect(
       await screen.findByTestId('workflow-history-grouped-table')
     ).toBeInTheDocument();
-    expect(screen.queryByText('WIP: ungrouped table')).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId('workflow-history-ungrouped-table')
+    ).not.toBeInTheDocument();
   });
 
   it('should render grouped table by default when ungroupedHistoryViewEnabled is not set and user preference is null', async () => {
@@ -190,7 +200,9 @@ describe(WorkflowHistoryV2.name, () => {
     expect(
       await screen.findByTestId('workflow-history-grouped-table')
     ).toBeInTheDocument();
-    expect(screen.queryByText('WIP: ungrouped table')).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId('workflow-history-ungrouped-table')
+    ).not.toBeInTheDocument();
   });
 
   it('should render ungrouped table when ungroupedHistoryViewEnabled query param is true', async () => {
@@ -199,7 +211,9 @@ describe(WorkflowHistoryV2.name, () => {
         ungroupedHistoryViewEnabled: true,
       },
     });
-    expect(await screen.findByText('WIP: ungrouped table')).toBeInTheDocument();
+    expect(
+      await screen.findByTestId('workflow-history-ungrouped-table')
+    ).toBeInTheDocument();
     expect(
       screen.queryByTestId('workflow-history-grouped-table')
     ).not.toBeInTheDocument();
@@ -214,12 +228,16 @@ describe(WorkflowHistoryV2.name, () => {
     expect(
       await screen.findByTestId('workflow-history-grouped-table')
     ).toBeInTheDocument();
-    expect(screen.queryByText('WIP: ungrouped table')).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId('workflow-history-ungrouped-table')
+    ).not.toBeInTheDocument();
   });
 
   it('should render ungrouped table when user preference is true and query param is not set', async () => {
     await setup({ ungroupedViewPreference: true });
-    expect(await screen.findByText('WIP: ungrouped table')).toBeInTheDocument();
+    expect(
+      await screen.findByTestId('workflow-history-ungrouped-table')
+    ).toBeInTheDocument();
     expect(
       screen.queryByTestId('workflow-history-grouped-table')
     ).not.toBeInTheDocument();
@@ -232,7 +250,9 @@ describe(WorkflowHistoryV2.name, () => {
     });
 
     // Should show ungrouped table even though preference is false
-    expect(await screen.findByText('WIP: ungrouped table')).toBeInTheDocument();
+    expect(
+      await screen.findByTestId('workflow-history-ungrouped-table')
+    ).toBeInTheDocument();
   });
 
   it('should use user preference when query param is undefined for ungrouped view', async () => {
@@ -242,7 +262,9 @@ describe(WorkflowHistoryV2.name, () => {
     });
 
     // Should use preference (true) when query param is undefined
-    expect(await screen.findByText('WIP: ungrouped table')).toBeInTheDocument();
+    expect(
+      await screen.findByTestId('workflow-history-ungrouped-table')
+    ).toBeInTheDocument();
   });
 
   it('should call setUngroupedViewUserPreference and setQueryParams when toggle is clicked from grouped to ungrouped', async () => {
