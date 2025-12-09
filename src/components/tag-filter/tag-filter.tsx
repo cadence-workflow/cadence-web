@@ -21,24 +21,21 @@ export default function TagFilter<T extends string>({
     [optionsConfig]
   );
 
-  const areAllValuesSet = useMemo(
-    () => tagKeys.every((key) => values.includes(key)),
-    [tagKeys, values]
-  );
-
-  const toggleAllValues = useCallback(
-    () => onChangeValues(areAllValuesSet ? [] : tagKeys),
-    [tagKeys, areAllValuesSet, onChangeValues]
-  );
+  const isShowAll = useMemo(() => values.length === 0, [values]);
 
   const onChangeSingleValue = useCallback(
-    (value: T) =>
-      onChangeValues(
-        values.includes(value)
-          ? values.filter((v) => v !== value)
-          : [...values, value]
-      ),
-    [values, onChangeValues]
+    (value: T) => {
+      const newValues = values.includes(value)
+        ? values.filter((v) => v !== value)
+        : [...values, value];
+
+      // If all tags are selected, automatically toggle to "show all" (empty array)
+      const areAllTagsSelected = tagKeys.every((key) =>
+        newValues.includes(key)
+      );
+      onChangeValues(areAllTagsSelected ? [] : newValues);
+    },
+    [values, onChangeValues, tagKeys]
   );
 
   return (
@@ -46,10 +43,7 @@ export default function TagFilter<T extends string>({
       <FormControl label={label} overrides={overrides.formControl}>
         <styled.TagsContainer>
           {!hideShowAll && (
-            <SelectableTag
-              value={areAllValuesSet}
-              onClick={() => toggleAllValues()}
-            >
+            <SelectableTag value={isShowAll} onClick={() => onChangeValues([])}>
               Show all
             </SelectableTag>
           )}
