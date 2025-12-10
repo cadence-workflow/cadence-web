@@ -42,7 +42,9 @@ export const styled = {
     display: 'flex',
     gap: $theme.sizing.scale300,
     alignItems: 'center',
-    margin: `-${$theme.sizing.scale200} 0`,
+    [$theme.mediaQuery.medium]: {
+      margin: `-${$theme.sizing.scale200} 0`,
+    },
   })),
   GroupDetailsGridContainer: createStyled('div', {
     display: 'grid',
