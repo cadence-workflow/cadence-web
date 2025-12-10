@@ -13,6 +13,7 @@ import workflowHistoryEventFilteringTypeColorsConfig from '../config/workflow-hi
 import generateHistoryGroupDetails from '../helpers/generate-history-group-details';
 import WorkflowHistoryDetailsRow from '../workflow-history-details-row/workflow-history-details-row';
 import getEventGroupFilteringType from '../workflow-history-event-group/helpers/get-event-group-filtering-type';
+import getSummaryTabContentEntry from '../workflow-history-event-group/helpers/get-summary-tab-content-entry';
 import getFormattedEventsDuration from '../workflow-history-event-group-duration/helpers/get-formatted-events-duration';
 import WorkflowHistoryGroupDetails from '../workflow-history-group-details/workflow-history-group-details';
 
@@ -49,6 +50,33 @@ export default function WorkflowHistoryUngroupedEvent({
   const eventSummaryDetails = summaryDetailsEntries.find(
     ([eventId]) => eventId === eventInfo.id
   )?.[1].eventDetails;
+
+  const groupSummaryDetails = useMemo(
+    () =>
+      summaryDetailsEntries.flatMap(
+        ([_eventId, { eventDetails }]) => eventDetails
+      ),
+    [summaryDetailsEntries]
+  );
+
+  const groupDetailsEntriesWithSummary = useMemo(
+    () => [
+      ...(groupSummaryDetails.length > 0 && groupDetailsEntries.length > 1
+        ? [
+            getSummaryTabContentEntry({
+              groupId: eventInfo.eventGroup.firstEventId ?? 'unknown',
+              summaryDetails: groupSummaryDetails,
+            }),
+          ]
+        : []),
+      ...groupDetailsEntries,
+    ],
+    [
+      eventInfo.eventGroup.firstEventId,
+      groupDetailsEntries,
+      groupSummaryDetails,
+    ]
+  );
 
   return (
     <Panel
@@ -119,19 +147,7 @@ export default function WorkflowHistoryUngroupedEvent({
         <styled.GroupDetailsNameSpacer />
         <styled.GroupDetailsContainer>
           <WorkflowHistoryGroupDetails
-            groupDetailsEntries={[
-              [
-                `summary_${eventInfo.eventGroup.firstEventId}`,
-                {
-                  eventDetails: summaryDetailsEntries.flatMap(
-                    ([_, eventSummaryDetails]) =>
-                      eventSummaryDetails.eventDetails
-                  ),
-                  eventLabel: 'Summary',
-                },
-              ],
-              ...groupDetailsEntries,
-            ]}
+            groupDetailsEntries={groupDetailsEntriesWithSummary}
             initialEventId={eventInfo.id}
             workflowPageParams={decodedPageUrlParams}
             onClose={() => toggleIsExpanded()}
