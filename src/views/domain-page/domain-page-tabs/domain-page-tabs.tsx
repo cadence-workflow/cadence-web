@@ -27,8 +27,13 @@ export default function DomainPageTabs() {
     'FAILOVER_HISTORY_ENABLED'
   );
 
-  const { data: isCronListEnabled } =
-    useSuspenseConfigValue('CRON_LIST_ENABLED');
+  const { data: isCronListEnabled } = useSuspenseConfigValue(
+    'CRON_LIST_ENABLED',
+    {
+      domain: decodedParams.domain,
+      cluster: decodedParams.cluster,
+    }
+  );
 
   const tabsConfig = useMemo<Partial<typeof domainPageTabsConfig>>(() => {
     const tabsToHide: Array<DomainPageTabName> = [];

@@ -45,7 +45,10 @@ const resolverSchemas: ResolverSchemas = {
     }),
   },
   CRON_LIST_ENABLED: {
-    args: z.undefined(),
+    args: z.object({
+      cluster: z.string(),
+      domain: z.string(),
+    }),
     returnType: z.boolean(),
   },
   EXTENDED_DOMAIN_INFO_ENABLED: {
