@@ -27,7 +27,7 @@ export default function getDomainFailoverHistoryQueryOptions(
         })
       ).then((res) => res.json()),
     initialPageParam: undefined,
-    getNextPageParam: (res) => res.nextPageToken,
+    getNextPageParam: (res) => res.nextPageToken || undefined,
     retry: false,
   };
 }

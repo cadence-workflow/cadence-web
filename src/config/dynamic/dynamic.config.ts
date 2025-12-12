@@ -12,6 +12,7 @@ import clustersPublic from './resolvers/clusters-public';
 import { type PublicClustersConfigs } from './resolvers/clusters-public.types';
 import { type ClustersConfigs } from './resolvers/clusters.types';
 import cronListEnabled from './resolvers/cron-list-enabled';
+import { type CronListEnabledResolverParams } from './resolvers/cron-list-enabled.types';
 import extendedDomainInfoEnabled from './resolvers/extended-domain-info-enabled';
 import { type ExtendedDomainInfoEnabledConfig } from './resolvers/extended-domain-info-enabled.types';
 import failoverHistoryEnabled from './resolvers/failover-history-enabled';
@@ -38,7 +39,7 @@ const dynamicConfigs: {
     true
   >;
   CRON_LIST_ENABLED: ConfigAsyncResolverDefinition<
-    undefined,
+    CronListEnabledResolverParams,
     boolean,
     'request',
     true
