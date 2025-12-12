@@ -128,6 +128,7 @@ export default function WorkflowHistoryEventGroup({
               loadingMoreEvents={showLoadingMoreEvents}
               hasMissingEvents={hasMissingEvents}
               workflowCloseTime={workflowCloseTimeMs}
+              expectedEndTimeInfo={eventGroup.expectedEndTimeInfo}
             />
           </div>
           <styled.SummarizedDetailsContainer>

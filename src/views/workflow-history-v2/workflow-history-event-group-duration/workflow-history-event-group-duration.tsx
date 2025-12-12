@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
 
+import WorkflowHistoryRemainingDurationBadge from '@/views/workflow-history/workflow-history-remaining-duration-badge/workflow-history-remaining-duration-badge';
+
 import getFormattedEventsDuration from './helpers/get-formatted-events-duration';
+import { styled } from './workflow-history-event-group-duration.styles';
 import { type Props } from './workflow-history-event-group-duration.types';
 
 export default function WorkflowHistoryEventGroupDuration({
   startTime,
   closeTime,
+  expectedEndTimeInfo,
   workflowIsArchived,
   workflowCloseStatus,
   eventsCount,
@@ -42,9 +46,23 @@ export default function WorkflowHistoryEventGroupDuration({
     }
   }, [startTime, endTime, isOngoing]);
 
-  if (!startTime || hideDuration) {
+  if (!startTime) {
     return null;
   }
 
-  return <>{duration}</>;
+  return (
+    <styled.DurationContainer>
+      {!hideDuration && duration}
+      {expectedEndTimeInfo ? (
+        <WorkflowHistoryRemainingDurationBadge
+          startTime={startTime}
+          expectedEndTime={expectedEndTimeInfo.timeMs}
+          prefix={expectedEndTimeInfo.prefix}
+          workflowIsArchived={workflowIsArchived}
+          workflowCloseStatus={workflowCloseStatus}
+          loadingMoreEvents={loadingMoreEvents}
+        />
+      ) : null}
+    </styled.DurationContainer>
+  );
 }
