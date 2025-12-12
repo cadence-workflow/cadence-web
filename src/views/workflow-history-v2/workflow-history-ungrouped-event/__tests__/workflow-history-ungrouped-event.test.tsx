@@ -1,6 +1,9 @@
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
-import { scheduleActivityTaskEvent } from '@/views/workflow-history/__fixtures__/workflow-history-activity-events';
+import {
+  scheduleActivityTaskEvent,
+  startActivityTaskEvent,
+} from '@/views/workflow-history/__fixtures__/workflow-history-activity-events';
 import { mockActivityEventGroup } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
 import type WorkflowHistoryEventStatusBadge from '@/views/workflow-history/workflow-history-event-status-badge/workflow-history-event-status-badge';
 import type WorkflowHistoryGroupLabel from '@/views/workflow-history/workflow-history-group-label/workflow-history-group-label';
@@ -330,6 +333,71 @@ describe(WorkflowHistoryUngroupedEvent.name, () => {
     ];
 
     const eventInfo = createMockEventInfo();
+    const secondEventInfo = createMockEventInfo(startActivityTaskEvent, 1);
+    setup({
+      eventInfo,
+      isExpanded: true,
+      mockGroupDetails: {
+        groupDetailsEntries: [
+          [
+            eventInfo.id,
+            {
+              eventLabel: 'Scheduled',
+              eventDetails: mockEventDetails,
+            },
+          ],
+          [
+            secondEventInfo.id,
+            {
+              eventLabel: 'Started',
+              eventDetails: mockEventDetails,
+            },
+          ],
+        ],
+        summaryDetailsEntries: [
+          [
+            eventInfo.id,
+            {
+              eventLabel: 'Scheduled',
+              eventDetails: mockSummaryDetails,
+            },
+          ],
+          [
+            secondEventInfo.id,
+            {
+              eventLabel: 'Started',
+              eventDetails: mockSummaryDetails,
+            },
+          ],
+        ],
+      },
+    });
+
+    expect(screen.getByText('Summary')).toBeInTheDocument();
+  });
+
+  it('does not include summary tab in groupDetailsEntries when there is only one entry', () => {
+    const mockEventDetails: EventDetailsEntries = [
+      {
+        key: 'input',
+        path: 'input',
+        value: 'test input value',
+        isGroup: false,
+        renderConfig: null,
+      },
+    ];
+
+    const mockSummaryDetails: EventDetailsEntries = [
+      {
+        key: 'activityType',
+        path: 'activityType',
+        value: 'TestActivity',
+        isGroup: false,
+        renderConfig: null,
+      },
+    ];
+
+    const eventInfo = createMockEventInfo();
     setup({
       eventInfo,
       isExpanded: true,
@@ -355,8 +423,7 @@ describe(WorkflowHistoryUngroupedEvent.name, () => {
       },
     });
 
-    // Summary tab should appear in groupDetailsEntries
-    expect(screen.getByText('Summary')).toBeInTheDocument();
+    expect(screen.queryByText('Summary')).not.toBeInTheDocument();
   });
 
   it('renders status badge with correct status', () => {
