@@ -10,16 +10,24 @@ describe(DomainPageFailoverSingleCluster.name, () => {
     expect(screen.getByText(/cluster-2/)).toBeInTheDocument();
   });
 
-  it('returns null when fromCluster is missing', () => {
+  it('renders a placeholder when fromCluster is missing', () => {
     setup({ toCluster: 'cluster-2' });
 
-    expect(screen.queryByText(/cluster-2/)).not.toBeInTheDocument();
+    expect(screen.getByText('None')).toBeInTheDocument();
+    expect(screen.getByText(/cluster-2/)).toBeInTheDocument();
   });
 
-  it('returns null when toCluster is missing', () => {
+  it('renders a placeholder when toCluster is missing', () => {
     setup({ fromCluster: 'cluster-1' });
 
-    expect(screen.queryByText(/cluster-1/)).not.toBeInTheDocument();
+    expect(screen.getByText(/cluster-1/)).toBeInTheDocument();
+    expect(screen.getByText('None')).toBeInTheDocument();
+  });
+
+  it('renders null (and not the None placeholders) when both clusters are missing', () => {
+    setup({});
+
+    expect(screen.queryByText('None')).not.toBeInTheDocument();
   });
 });
 

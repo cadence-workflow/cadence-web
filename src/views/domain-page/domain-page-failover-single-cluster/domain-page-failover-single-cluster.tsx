@@ -11,13 +11,13 @@ export default function DomainPageFailoverSingleCluster({
 }: Props) {
   const { cls, theme } = useStyletronClasses(cssStyles);
 
-  if (!fromCluster || !toCluster) return null;
+  if (!fromCluster && !toCluster) return null;
 
   return (
     <div className={cls.failoverContainer}>
-      {fromCluster}
+      {fromCluster ?? <div className={cls.noClusterContainer}>None</div>}
       <MdArrowForward color={theme.colors.contentSecondary} />
-      {toCluster}
+      {toCluster ?? <div className={cls.noClusterContainer}>None</div>}
     </div>
   );
 }
