@@ -30,7 +30,7 @@ describe(DomainPageFailoversFilters.name, () => {
     expect(screen.getByText('region')).toBeInTheDocument();
   });
 
-  it('disables cluster attribute value combobox when scope is primary', () => {
+  it('disables cluster attribute value combobox when scope is default', () => {
     setup({
       queryParamsOverrides: {
         clusterAttributeScope: DEFAULT_CLUSTER_SCOPE,
