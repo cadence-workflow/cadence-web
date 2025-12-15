@@ -6,7 +6,6 @@ import { type FailoverEvent } from '@/route-handlers/list-failover-history/list-
 import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
 
 import DomainPageFailoverSingleCluster from '../domain-page-failover-single-cluster/domain-page-failover-single-cluster';
-import { FAILOVER_TYPE_LABEL_MAP } from '../domain-page-failovers/domain-page-failovers.constants';
 
 const domainPageFailoversTableConfig = [
   {
@@ -27,16 +26,9 @@ const domainPageFailoversTableConfig = [
       }),
   },
   {
-    name: 'Type',
-    id: 'type',
-    width: '10%',
-    renderCell: (event: FailoverEvent) =>
-      FAILOVER_TYPE_LABEL_MAP[event.failoverType],
-  },
-  {
     name: 'Failover Information',
     id: 'failoverInfo',
-    width: '40%',
+    width: '50%',
     renderCell: (event: FailoverEvent) =>
       createElement(DomainPageFailoverSingleCluster, {
         fromCluster: event.clusterFailovers[0]?.fromCluster?.activeClusterName,

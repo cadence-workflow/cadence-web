@@ -7,9 +7,9 @@ import DomainPageFailoverActiveActive from '../domain-page-failover-active-activ
 import domainPageFailoversTableConfig from './domain-page-failovers-table.config';
 
 const domainPageFailoversTableActiveActiveConfig = [
-  ...domainPageFailoversTableConfig.slice(0, 3),
+  ...domainPageFailoversTableConfig.slice(0, 2),
   {
-    ...domainPageFailoversTableConfig[3],
+    ...domainPageFailoversTableConfig[2],
     renderCell: (event: FailoverEvent) =>
       createElement(DomainPageFailoverActiveActive, { failoverEvent: event }),
   },
