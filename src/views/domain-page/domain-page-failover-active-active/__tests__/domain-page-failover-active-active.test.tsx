@@ -3,7 +3,7 @@ import { render, screen } from '@/test-utils/rtl';
 import * as usePageQueryParamsModule from '@/hooks/use-page-query-params/use-page-query-params';
 import { type FailoverEvent } from '@/route-handlers/list-failover-history/list-failover-history.types';
 import { mockDomainPageQueryParamsValues } from '@/views/domain-page/__fixtures__/domain-page-query-params';
-import { PRIMARY_CLUSTER_SCOPE } from '@/views/domain-page/domain-page-failovers/domain-page-failovers.constants';
+import { DEFAULT_CLUSTER_SCOPE } from '@/views/domain-page/domain-page-failovers/domain-page-failovers.constants';
 
 import DomainPageFailoverActiveActive from '../domain-page-failover-active-active';
 
@@ -31,7 +31,7 @@ describe(DomainPageFailoverActiveActive.name, () => {
     jest.clearAllMocks();
   });
 
-  it('renders cluster failover when matching primary cluster failover is found', () => {
+  it('renders cluster failover when matching default cluster failover is found', () => {
     const failoverEvent: FailoverEvent = {
       id: 'failover-1',
       createdTime: {
@@ -56,10 +56,10 @@ describe(DomainPageFailoverActiveActive.name, () => {
 
     setup({
       failoverEvent,
-      clusterAttributeScope: PRIMARY_CLUSTER_SCOPE,
+      clusterAttributeScope: DEFAULT_CLUSTER_SCOPE,
     });
 
-    expect(screen.getByText('Primary:')).toBeInTheDocument();
+    expect(screen.getByText('Default:')).toBeInTheDocument();
     expect(
       screen.getByTestId('mock-single-cluster-failover')
     ).toBeInTheDocument();
@@ -68,7 +68,7 @@ describe(DomainPageFailoverActiveActive.name, () => {
     expect(screen.getByTestId('mock-failover-modal')).toBeInTheDocument();
   });
 
-  it('renders cluster failover when matching non-primary cluster failover is found', () => {
+  it('renders cluster failover when matching non-default cluster failover is found', () => {
     const failoverEvent: FailoverEvent = {
       id: 'failover-1',
       createdTime: {
@@ -109,7 +109,7 @@ describe(DomainPageFailoverActiveActive.name, () => {
     expect(screen.getByTestId('mock-failover-modal')).toBeInTheDocument();
   });
 
-  it('does not render cluster failover section when clusterAttributeScope is set but clusterAttributeValue is undefined for non-primary scope', () => {
+  it('does not render cluster failover section when clusterAttributeScope is set but clusterAttributeValue is undefined for non-default scope', () => {
     const failoverEvent: FailoverEvent = {
       id: 'failover-1',
       createdTime: {
@@ -235,7 +235,7 @@ describe(DomainPageFailoverActiveActive.name, () => {
 
     setup({
       failoverEvent,
-      clusterAttributeScope: PRIMARY_CLUSTER_SCOPE,
+      clusterAttributeScope: DEFAULT_CLUSTER_SCOPE,
     });
 
     expect(

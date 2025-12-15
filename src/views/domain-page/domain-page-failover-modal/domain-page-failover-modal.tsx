@@ -1,4 +1,3 @@
-'use client';
 import { useMemo } from 'react';
 
 import { Modal, ModalBody, ModalButton } from 'baseui/modal';
@@ -31,7 +30,7 @@ export default function DomainPageFailoverModal({
       const attribute = clusterFailover.clusterAttribute;
       if (attribute === null) {
         return {
-          scope: 'Primary',
+          scope: 'Default',
           attribute: '-',
           clusters,
         };

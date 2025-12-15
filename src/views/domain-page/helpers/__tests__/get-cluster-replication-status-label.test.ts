@@ -33,16 +33,16 @@ describe(getClusterReplicationStatusLabel.name, () => {
     ).toBe('active');
   });
 
-  it('returns "primary" for the active cluster in Active-Active domains', () => {
+  it('returns "default" for the active cluster in Active-Active domains', () => {
     expect(
       getClusterReplicationStatusLabel(
         mockActiveActiveDomain,
         mockActiveActiveDomain.activeClusterName
       )
-    ).toBe('primary');
+    ).toBe('default');
   });
 
-  it('returns undefined for non-primary clusters in Active-Active domains', () => {
+  it('returns undefined for non-default clusters in Active-Active domains', () => {
     expect(
       getClusterReplicationStatusLabel(mockActiveActiveDomain, 'cluster1')
     ).toBeUndefined();

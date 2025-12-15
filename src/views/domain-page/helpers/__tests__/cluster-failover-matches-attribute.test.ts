@@ -1,4 +1,4 @@
-import { PRIMARY_CLUSTER_SCOPE } from '../../domain-page-failovers/domain-page-failovers.constants';
+import { DEFAULT_CLUSTER_SCOPE } from '../../domain-page-failovers/domain-page-failovers.constants';
 import { type ClusterFailover } from '../../domain-page-failovers/domain-page-failovers.types';
 import clusterFailoverMatchesAttribute from '../cluster-failover-matches-attribute';
 
@@ -17,7 +17,7 @@ describe(clusterFailoverMatchesAttribute.name, () => {
     };
 
     expect(
-      clusterFailoverMatchesAttribute(clusterFailover, PRIMARY_CLUSTER_SCOPE)
+      clusterFailoverMatchesAttribute(clusterFailover, DEFAULT_CLUSTER_SCOPE)
     ).toBe(true);
   });
 

@@ -8,7 +8,10 @@ import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-par
 import domainPageQueryParamsConfig from '../config/domain-page-query-params.config';
 import DomainPageFailoverModal from '../domain-page-failover-modal/domain-page-failover-modal';
 import DomainPageFailoverSingleCluster from '../domain-page-failover-single-cluster/domain-page-failover-single-cluster';
-import { PRIMARY_CLUSTER_SCOPE } from '../domain-page-failovers/domain-page-failovers.constants';
+import {
+  DEFAULT_CLUSTER_SCOPE,
+  DEFAULT_CLUSTER_SCOPE_LABEL,
+} from '../domain-page-failovers/domain-page-failovers.constants';
 import clusterFailoverMatchesAttribute from '../helpers/cluster-failover-matches-attribute';
 
 import { styled } from './domain-page-failover-active-active.styles';
@@ -25,7 +28,7 @@ export default function DomainPageFailoverActiveActive({
   const clusterFailoverForMaybeSelectedAttribute = useMemo(() => {
     if (
       !clusterAttributeScope ||
-      (clusterAttributeScope !== PRIMARY_CLUSTER_SCOPE &&
+      (clusterAttributeScope !== DEFAULT_CLUSTER_SCOPE &&
         !clusterAttributeValue)
     )
       return undefined;
@@ -49,8 +52,8 @@ export default function DomainPageFailoverActiveActive({
         {clusterFailoverForMaybeSelectedAttribute && (
           <styled.ClusterFailoverContainer>
             <styled.ClusterAttributeLabel>
-              {clusterAttributeScope === PRIMARY_CLUSTER_SCOPE
-                ? 'Primary:'
+              {clusterAttributeScope === DEFAULT_CLUSTER_SCOPE
+                ? `${DEFAULT_CLUSTER_SCOPE_LABEL}:`
                 : `${clusterAttributeScope} (${clusterAttributeValue}):`}
             </styled.ClusterAttributeLabel>
             <DomainPageFailoverSingleCluster

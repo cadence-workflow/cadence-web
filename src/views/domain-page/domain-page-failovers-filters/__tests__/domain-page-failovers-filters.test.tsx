@@ -6,7 +6,7 @@ import type domainPageQueryParamsConfig from '@/views/domain-page/config/domain-
 import { mockActiveActiveDomain } from '@/views/shared/active-active/__fixtures__/active-active-domain';
 import { type ActiveActiveDomain } from '@/views/shared/active-active/active-active.types';
 
-import { PRIMARY_CLUSTER_SCOPE } from '../../domain-page-failovers/domain-page-failovers.constants';
+import { DEFAULT_CLUSTER_SCOPE } from '../../domain-page-failovers/domain-page-failovers.constants';
 import DomainPageFailoversFilters from '../domain-page-failovers-filters';
 
 describe(DomainPageFailoversFilters.name, () => {
@@ -26,14 +26,14 @@ describe(DomainPageFailoversFilters.name, () => {
     );
     await user.click(scopeCombobox);
 
-    expect(screen.getByText(PRIMARY_CLUSTER_SCOPE)).toBeInTheDocument();
+    expect(screen.getByText(DEFAULT_CLUSTER_SCOPE)).toBeInTheDocument();
     expect(screen.getByText('region')).toBeInTheDocument();
   });
 
   it('disables cluster attribute value combobox when scope is primary', () => {
     setup({
       queryParamsOverrides: {
-        clusterAttributeScope: PRIMARY_CLUSTER_SCOPE,
+        clusterAttributeScope: DEFAULT_CLUSTER_SCOPE,
       },
     });
 

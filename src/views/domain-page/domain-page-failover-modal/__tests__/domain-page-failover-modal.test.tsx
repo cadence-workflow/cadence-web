@@ -149,7 +149,7 @@ describe(DomainPageFailoverModal.name, () => {
     expect(screen.getByText('Scope')).toBeInTheDocument();
     expect(screen.getByText('Attribute')).toBeInTheDocument();
     expect(screen.getByText('Clusters')).toBeInTheDocument();
-    expect(screen.getByText('Primary')).toBeInTheDocument();
+    expect(screen.getByText('Default')).toBeInTheDocument();
     expect(screen.getByText('-')).toBeInTheDocument();
     expect(
       screen.getByTestId('mock-single-cluster-failover')
@@ -174,7 +174,7 @@ describe(DomainPageFailoverModal.name, () => {
     expect(screen.queryByText('Clusters')).not.toBeInTheDocument();
   });
 
-  it('displays Primary scope and dash for attribute when clusterAttribute is null', () => {
+  it('displays Default scope and dash for attribute when clusterAttribute is null', () => {
     const failoverEvent: FailoverEvent = {
       id: 'failover-1',
       createdTime: {
@@ -199,7 +199,7 @@ describe(DomainPageFailoverModal.name, () => {
 
     setup({ failoverEvent, isOpen: true });
 
-    expect(screen.getByText('Primary')).toBeInTheDocument();
+    expect(screen.getByText('Default')).toBeInTheDocument();
     expect(screen.getByText('-')).toBeInTheDocument();
   });
 
@@ -274,7 +274,7 @@ describe(DomainPageFailoverModal.name, () => {
 
     setup({ failoverEvent, isOpen: true });
 
-    expect(screen.getByText('Primary')).toBeInTheDocument();
+    expect(screen.getByText('Default')).toBeInTheDocument();
     expect(screen.getByText('region')).toBeInTheDocument();
     expect(screen.getByText('us-east')).toBeInTheDocument();
     const clusterComponents = screen.getAllByTestId(

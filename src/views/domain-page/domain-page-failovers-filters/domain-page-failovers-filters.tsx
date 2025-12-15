@@ -12,7 +12,7 @@ import {
 import { type ActiveActiveDomain } from '@/views/shared/active-active/active-active.types';
 
 import type domainPageQueryParamsConfig from '../config/domain-page-query-params.config';
-import { PRIMARY_CLUSTER_SCOPE } from '../domain-page-failovers/domain-page-failovers.constants';
+import { DEFAULT_CLUSTER_SCOPE } from '../domain-page-failovers/domain-page-failovers.constants';
 
 import { styled, overrides } from './domain-page-failovers-filters.styles';
 
@@ -29,7 +29,7 @@ export default function DomainPageFailoversFilters({
 
   const clusterAttributeScopes = useMemo(
     () => [
-      PRIMARY_CLUSTER_SCOPE,
+      DEFAULT_CLUSTER_SCOPE,
       ...Object.keys(
         domainDescription.activeClusters.activeClustersByClusterAttribute
       ),
@@ -40,7 +40,7 @@ export default function DomainPageFailoversFilters({
   const clusterAttributeValuesForScope = useMemo(() => {
     if (
       !clusterAttributeScope ||
-      clusterAttributeScope === PRIMARY_CLUSTER_SCOPE
+      clusterAttributeScope === DEFAULT_CLUSTER_SCOPE
     )
       return [];
 
@@ -96,7 +96,7 @@ export default function DomainPageFailoversFilters({
           <Combobox
             size="compact"
             clearable
-            disabled={clusterAttributeScope === PRIMARY_CLUSTER_SCOPE}
+            disabled={clusterAttributeScope === DEFAULT_CLUSTER_SCOPE}
             value={clusterAttributeValue ?? ''}
             overrides={{
               Input: {

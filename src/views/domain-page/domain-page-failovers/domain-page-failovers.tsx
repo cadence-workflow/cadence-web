@@ -13,6 +13,8 @@ import { type DomainPageTabContentProps } from '../domain-page-content/domain-pa
 import DomainPageFailoversFilters from '../domain-page-failovers-filters/domain-page-failovers-filters';
 import useDomainFailoverHistory from '../hooks/use-domain-failover-history/use-domain-failover-history';
 
+import { styled } from './domain-page-failovers.styles';
+
 export default function DomainPageFailovers({
   domain,
   cluster,
@@ -52,12 +54,14 @@ export default function DomainPageFailovers({
 
   return (
     <div>
-      {isActiveActive && (
+      {isActiveActive ? (
         <DomainPageFailoversFilters
           domainDescription={domainDescription}
           queryParams={queryParams}
           setQueryParams={setQueryParams}
         />
+      ) : (
+        <styled.TableTopSpacer />
       )}
       <Table
         data={filteredFailoverEvents}
