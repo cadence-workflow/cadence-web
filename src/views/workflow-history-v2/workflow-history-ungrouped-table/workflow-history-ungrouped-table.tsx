@@ -80,7 +80,7 @@ export default function WorkflowHistoryUngroupedTable({
           : {
               initialTopMostItemIndex: {
                 index: initialStartIndex,
-                align: 'start',
+                align: 'center',
                 behavior: 'auto',
               },
             })}

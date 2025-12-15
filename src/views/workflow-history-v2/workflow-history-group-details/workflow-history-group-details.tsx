@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { Button } from 'baseui/button';
 import { ButtonGroup } from 'baseui/button-group';
 import { MdClose } from 'react-icons/md';
 
 import WorkflowHistoryEventDetails from '../workflow-history-event-details/workflow-history-event-details';
+import WorkflowHistoryEventLinkButton from '../workflow-history-event-link-button/workflow-history-event-link-button';
 
 import { overrides, styled } from './workflow-history-group-details.styles';
 import { type Props } from './workflow-history-group-details.types';
@@ -22,6 +23,11 @@ export default function WorkflowHistoryGroupDetails({
       );
       return selectedIdx >= 0 ? selectedIdx : 0;
     })()
+  );
+
+  const [selectedEventId, selectedEventTabContent] = useMemo(
+    () => groupDetailsEntries[selectedIndex],
+    [groupDetailsEntries, selectedIndex]
   );
 
   return (
@@ -42,7 +48,7 @@ export default function WorkflowHistoryGroupDetails({
           ))}
         </ButtonGroup>
         <styled.ExtraActions>
-          {/* Copy Link Button */}
+          <WorkflowHistoryEventLinkButton historyEventId={selectedEventId} />
           {onClose && (
             <Button
               kind="tertiary"
@@ -56,9 +62,7 @@ export default function WorkflowHistoryGroupDetails({
         </styled.ExtraActions>
       </styled.ActionsRow>
       <WorkflowHistoryEventDetails
-        eventDetails={
-          groupDetailsEntries[selectedIndex]?.[1].eventDetails ?? []
-        }
+        eventDetails={selectedEventTabContent.eventDetails ?? []}
         workflowPageParams={workflowPageParams}
       />
     </styled.GroupDetailsContainer>

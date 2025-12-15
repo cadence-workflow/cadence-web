@@ -214,12 +214,20 @@ export default function WorkflowHistoryV2({ params }: Props) {
       }
     );
 
+  const selectedEventIdWithinGroup = useMemo(
+    () =>
+      queryParams.historySelectedEventId?.startsWith('summary_')
+        ? queryParams.historySelectedEventId.replace(/^summary_/, '')
+        : queryParams.historySelectedEventId,
+    [queryParams.historySelectedEventId]
+  );
+
   const {
     initialEventFound,
     initialEventGroupIndex,
     shouldSearchForInitialEvent,
   } = useInitialSelectedEvent({
-    selectedEventId: queryParams.historySelectedEventId,
+    selectedEventId: selectedEventIdWithinGroup,
     eventGroups,
     filteredEventGroupsEntries: filteredEventGroupsById,
   });
@@ -303,9 +311,9 @@ export default function WorkflowHistoryV2({ params }: Props) {
 
   const { getIsItemExpanded, toggleIsItemExpanded } = useExpansionToggle({
     items: allEventIds,
-    initialState: queryParams.historySelectedEventId
+    initialState: selectedEventIdWithinGroup
       ? {
-          [queryParams.historySelectedEventId]: true,
+          [selectedEventIdWithinGroup]: true,
         }
       : {},
   });
@@ -340,7 +348,7 @@ export default function WorkflowHistoryV2({ params }: Props) {
               }))
             }
             decodedPageUrlParams={decodedParams}
-            selectedEventId={queryParams.historySelectedEventId}
+            selectedEventId={selectedEventIdWithinGroup}
             resetToDecisionEventId={setResetToDecisionEventId}
             getIsEventExpanded={getIsItemExpanded}
             toggleIsEventExpanded={toggleIsItemExpanded}

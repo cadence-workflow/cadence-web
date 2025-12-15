@@ -47,7 +47,7 @@ export default function WorkflowHistoryGroupedTable({
           : {
               initialTopMostItemIndex: {
                 index: initialStartIndex,
-                align: 'start',
+                align: 'center',
                 behavior: 'auto',
               },
             })}
@@ -60,7 +60,7 @@ export default function WorkflowHistoryGroupedTable({
               group.hasMissingEvents && !reachedEndOfAvailableHistory
             }
             decodedPageUrlParams={decodedPageUrlParams}
-            selected={group.events.some((e) => e.eventId === selectedEventId)}
+            selectedEventId={selectedEventId}
             workflowCloseStatus={workflowCloseStatus}
             workflowIsArchived={workflowIsArchived}
             workflowCloseTimeMs={workflowCloseTimeMs}

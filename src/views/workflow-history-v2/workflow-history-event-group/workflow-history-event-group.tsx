@@ -24,7 +24,7 @@ import { type Props } from './workflow-history-event-group.types';
 
 export default function WorkflowHistoryEventGroup({
   eventGroup,
-  selected,
+  selectedEventId,
   workflowCloseTimeMs,
   workflowCloseStatus,
   workflowIsArchived,
@@ -50,8 +50,6 @@ export default function WorkflowHistoryEventGroup({
   } = eventGroup;
 
   const eventFilteringType = getEventGroupFilteringType(eventGroup);
-
-  const overrides = getOverrides(eventFilteringType, selected);
 
   const handleReset = useCallback(() => {
     if (onReset) {
@@ -96,6 +94,16 @@ export default function WorkflowHistoryEventGroup({
     ],
     [firstEventId, groupDetailsEntries, groupSummaryDetails]
   );
+
+  const animateOnEnter = useMemo(
+    () =>
+      groupDetailsEntriesWithSummary.some(
+        ([eventId]) => eventId === selectedEventId
+      ),
+    [groupDetailsEntriesWithSummary, selectedEventId]
+  );
+
+  const overrides = getOverrides(eventFilteringType, animateOnEnter);
 
   return (
     <Panel
@@ -162,8 +170,7 @@ export default function WorkflowHistoryEventGroup({
         <styled.GroupDetailsContainer>
           <WorkflowHistoryGroupDetails
             groupDetailsEntries={groupDetailsEntriesWithSummary}
-            // TODO @adhitya.mamallan - pass initial selected event ID here
-            initialEventId={undefined}
+            initialEventId={selectedEventId}
             workflowPageParams={decodedPageUrlParams}
             onClose={() => handleGroupExpansionStateChange(false)}
           />

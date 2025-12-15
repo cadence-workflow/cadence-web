@@ -4,14 +4,19 @@ import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-histo
 import { type Props as WorkflowHistoryProps } from '../workflow-history-v2.types';
 
 export type Props = {
-  eventGroup: HistoryEventsGroup;
-  getIsEventExpanded: (eventId: string) => boolean;
-  toggleIsEventExpanded: (eventId: string) => void;
-  showLoadingMoreEvents: boolean;
+  // Core data props
   decodedPageUrlParams: WorkflowHistoryProps['params'];
-  onReset?: () => void;
-  selected?: boolean;
-  workflowIsArchived: boolean;
+  eventGroup: HistoryEventsGroup;
   workflowCloseStatus?: WorkflowExecutionCloseStatus | null;
   workflowCloseTimeMs?: number | null;
+  workflowIsArchived: boolean;
+
+  // Expansion state
+  getIsEventExpanded: (eventId: string) => boolean;
+  toggleIsEventExpanded: (eventId: string) => void;
+  selectedEventId?: string;
+
+  // UI behavior
+  onReset?: () => void;
+  showLoadingMoreEvents: boolean;
 };
