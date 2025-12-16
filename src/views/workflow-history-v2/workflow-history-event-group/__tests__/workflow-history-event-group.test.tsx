@@ -199,6 +199,29 @@ describe(WorkflowHistoryEventGroup.name, () => {
     );
   });
 
+  it('passes initialEventId to WorkflowHistoryGroupDetails when selectedEventId is provided', () => {
+    const eventGroup: HistoryEventsGroup = {
+      ...mockActivityEventGroupWithMetadata,
+      events: completedActivityTaskEvents,
+    };
+
+    const selectedEventId = completedActivityTaskEvents[0].eventId;
+    const getIsEventExpanded = jest.fn(
+      (eventId: string) => eventId === completedActivityTaskEvents[0].eventId
+    );
+
+    setup({ eventGroup, selectedEventId, getIsEventExpanded });
+
+    // Panel should be expanded, showing WorkflowHistoryGroupDetails
+    expect(
+      screen.getByTestId('workflow-history-group-details')
+    ).toBeInTheDocument();
+    // initialEventId should be passed and rendered
+    expect(screen.getByTestId('initial-event-id')).toHaveTextContent(
+      selectedEventId!
+    );
+  });
+
   it('calls toggleIsEventExpanded for each event when panel is toggled', async () => {
     const eventGroup: HistoryEventsGroup = {
       ...mockActivityEventGroupWithMetadata,
@@ -522,7 +545,7 @@ describe(WorkflowHistoryEventGroup.name, () => {
 
 function setup({
   eventGroup = mockActivityEventGroupWithMetadata,
-  selected = false,
+  selectedEventId = undefined,
   workflowCloseTimeMs = null,
   workflowCloseStatus = null,
   workflowIsArchived = false,
@@ -582,7 +605,7 @@ function setup({
   render(
     <WorkflowHistoryEventGroup
       eventGroup={eventGroup}
-      selected={selected}
+      selectedEventId={selectedEventId}
       workflowCloseTimeMs={workflowCloseTimeMs}
       workflowCloseStatus={workflowCloseStatus}
       workflowIsArchived={workflowIsArchived}
