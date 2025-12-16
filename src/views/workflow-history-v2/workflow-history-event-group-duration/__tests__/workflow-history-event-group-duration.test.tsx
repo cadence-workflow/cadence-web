@@ -16,6 +16,23 @@ jest.mock('../helpers/get-formatted-events-duration', () =>
   )
 );
 
+jest.mock(
+  '@/views/workflow-history/workflow-history-remaining-duration-badge/workflow-history-remaining-duration-badge',
+  () => {
+    return function MockWorkflowHistoryRemainingDurationBadge({
+      prefix,
+      expectedEndTime,
+    }: {
+      prefix: string;
+      expectedEndTime: number;
+    }) {
+      return (
+        <div data-testid="end-time-badge">{`${prefix} ${expectedEndTime}`}</div>
+      );
+    };
+  }
+);
+
 const mockStartTime = new Date('2024-01-01T10:00:00Z').getTime();
 const mockCloseTime = new Date('2024-01-01T10:01:00Z').getTime();
 const mockNow = new Date('2024-01-01T10:02:00Z').getTime();
@@ -111,15 +128,6 @@ describe('WorkflowHistoryEventGroupDuration', () => {
     expect(getFormattedEventsDuration).toHaveBeenCalledTimes(2);
   });
 
-  it('cleans up interval when component unmounts', () => {
-    const { unmount } = setup();
-
-    const clearIntervalSpy = jest.spyOn(global, 'clearInterval');
-    unmount();
-
-    expect(clearIntervalSpy).toHaveBeenCalled();
-  });
-
   it('uses workflow close time when close time is not provided', () => {
     setup({
       closeTime: null,
@@ -133,6 +141,28 @@ describe('WorkflowHistoryEventGroupDuration', () => {
     );
     expect(screen.getByText('60')).toBeInTheDocument();
   });
+
+  it('renders end time badge when expectedEndTimeInfo is provided', () => {
+    const expectedEndTime = new Date('2024-01-01T10:05:00Z').getTime();
+    setup({
+      expectedEndTimeInfo: {
+        timeMs: expectedEndTime,
+        prefix: 'Fires in',
+      },
+    });
+
+    expect(screen.getByTestId('end-time-badge')).toBeInTheDocument();
+    expect(screen.getByText(`Fires in ${expectedEndTime}`)).toBeInTheDocument();
+  });
+
+  it('cleans up interval when component unmounts', () => {
+    const { unmount } = setup();
+
+    const clearIntervalSpy = jest.spyOn(global, 'clearInterval');
+    unmount();
+
+    expect(clearIntervalSpy).toHaveBeenCalled();
+  });
 });
 
 function setup({
@@ -144,6 +174,7 @@ function setup({
   workflowIsArchived = false,
   workflowCloseStatus = WorkflowExecutionCloseStatus.WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID,
   workflowCloseTime = null,
+  expectedEndTimeInfo,
 }: Partial<Props> = {}) {
   return render(
     <WorkflowHistoryEventGroupDuration
@@ -155,6 +186,7 @@ function setup({
       workflowIsArchived={workflowIsArchived}
       workflowCloseStatus={workflowCloseStatus}
       workflowCloseTime={workflowCloseTime}
+      expectedEndTimeInfo={expectedEndTimeInfo}
     />
   );
 }

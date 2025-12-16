@@ -36,12 +36,13 @@ export default function WorkflowHistoryEventGroup({
 }: Props) {
   const {
     status,
+    firstEventId,
     label,
     shortLabel,
     timeMs,
     startTimeMs,
     closeTimeMs,
-    // expectedEndTimeInfo,
+    expectedEndTimeInfo,
     events,
     eventsMetadata,
     hasMissingEvents,
@@ -86,14 +87,14 @@ export default function WorkflowHistoryEventGroup({
       ...(groupSummaryDetails.length > 0 && groupDetailsEntries.length > 1
         ? [
             getSummaryTabContentEntry({
-              groupId: eventGroup.firstEventId ?? 'unknown',
+              groupId: firstEventId ?? 'unknown',
               summaryDetails: groupSummaryDetails,
             }),
           ]
         : []),
       ...groupDetailsEntries,
     ],
-    [eventGroup.firstEventId, groupDetailsEntries, groupSummaryDetails]
+    [firstEventId, groupDetailsEntries, groupSummaryDetails]
   );
 
   return (
@@ -128,6 +129,7 @@ export default function WorkflowHistoryEventGroup({
               loadingMoreEvents={showLoadingMoreEvents}
               hasMissingEvents={hasMissingEvents}
               workflowCloseTime={workflowCloseTimeMs}
+              expectedEndTimeInfo={expectedEndTimeInfo}
             />
           </div>
           <styled.SummarizedDetailsContainer>
