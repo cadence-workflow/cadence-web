@@ -1,6 +1,6 @@
 import copy from 'copy-to-clipboard';
 
-import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
+import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import { type WorkflowPageParams } from '@/views/workflow-page/workflow-page.types';
 
@@ -27,25 +27,7 @@ jest.mock(
 );
 
 describe(WorkflowHistoryGroupDetails.name, () => {
-  let originalWindow: Window & typeof globalThis;
-
-  beforeEach(() => {
-    // Mock window.location
-    originalWindow = window;
-    window = Object.create(window);
-    Object.defineProperty(window, 'location', {
-      value: {
-        ...window.location,
-        origin: 'http://localhost',
-        pathname:
-          '/domains/test-domain/workflows/test-workflow/test-run/history',
-      },
-      writable: true,
-    });
-  });
-
   afterEach(() => {
-    window = originalWindow;
     jest.clearAllMocks();
   });
 
@@ -222,6 +204,19 @@ describe(WorkflowHistoryGroupDetails.name, () => {
   });
 
   it('copies link with event ID when link button is clicked', async () => {
+    // TODO: this is a bit hacky, see if there is a better way to mock the window location property
+    const originalWindow = window;
+    window = Object.create(window);
+    Object.defineProperty(window, 'location', {
+      value: {
+        ...window.location,
+        origin: 'http://localhost',
+        pathname:
+          '/domains/test-domain/workflows/test-workflow/test-run/history',
+      },
+      writable: true,
+    });
+
     const { user } = setup({
       groupDetailsEntries: mockGroupDetails,
       initialEventId: 'event-2',
@@ -233,9 +228,24 @@ describe(WorkflowHistoryGroupDetails.name, () => {
     expect(copy).toHaveBeenCalledWith(
       'http://localhost/domains/test-domain/workflows/test-workflow/test-run/history?he=event-2'
     );
+
+    window = originalWindow;
   });
 
   it('updates link when different event is selected', async () => {
+    // TODO: this is a bit hacky, see if there is a better way to mock the window location property
+    const originalWindow = window;
+    window = Object.create(window);
+    Object.defineProperty(window, 'location', {
+      value: {
+        ...window.location,
+        origin: 'http://localhost',
+        pathname:
+          '/domains/test-domain/workflows/test-workflow/test-run/history',
+      },
+      writable: true,
+    });
+
     const { user } = setup({ groupDetailsEntries: mockGroupDetails });
 
     // Click on second event button
@@ -249,6 +259,8 @@ describe(WorkflowHistoryGroupDetails.name, () => {
     expect(copy).toHaveBeenCalledWith(
       'http://localhost/domains/test-domain/workflows/test-workflow/test-run/history?he=event-2'
     );
+
+    window = originalWindow;
   });
 
   it('shows "Copied link to event" tooltip after clicking link button', async () => {

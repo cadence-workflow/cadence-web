@@ -7,25 +7,7 @@ import WorkflowHistoryEventLinkButton from '../workflow-history-event-link-butto
 jest.mock('copy-to-clipboard', jest.fn);
 
 describe('WorkflowHistoryEventLinkButton', () => {
-  let originalWindow: Window & typeof globalThis;
-
-  beforeEach(() => {
-    // Mock window.location
-    originalWindow = window;
-    window = Object.create(window);
-    Object.defineProperty(window, 'location', {
-      value: {
-        ...window.location,
-        origin: 'http://localhost',
-        pathname:
-          '/domains/test-domain/workflows/test-workflow/test-run/history',
-      },
-      writable: true,
-    });
-  });
-
   afterEach(() => {
-    window = originalWindow;
     jest.clearAllMocks();
   });
 
@@ -45,6 +27,19 @@ describe('WorkflowHistoryEventLinkButton', () => {
   });
 
   it('copies the current URL with event ID when clicked', async () => {
+    // TODO: this is a bit hacky, see if there is a better way to mock the window location property
+    const originalWindow = window;
+    window = Object.create(window);
+    Object.defineProperty(window, 'location', {
+      value: {
+        ...window.location,
+        origin: 'http://localhost',
+        pathname:
+          '/domains/test-domain/workflows/test-workflow/test-run/history',
+      },
+      writable: true,
+    });
+
     const user = userEvent.setup();
     render(<WorkflowHistoryEventLinkButton historyEventId="123" />);
     const button = screen.getByRole('button');
@@ -52,6 +47,8 @@ describe('WorkflowHistoryEventLinkButton', () => {
     expect(copy).toHaveBeenCalledWith(
       'http://localhost/domains/test-domain/workflows/test-workflow/test-run/history?he=123'
     );
+
+    window = originalWindow;
   });
 
   it('shows "Copied link to event" tooltip after clicking', async () => {
@@ -81,6 +78,19 @@ describe('WorkflowHistoryEventLinkButton', () => {
   });
 
   it('adds ungrouped view parameter when isUngroupedView is true', async () => {
+    // TODO: this is a bit hacky, see if there is a better way to mock the window location property
+    const originalWindow = window;
+    window = Object.create(window);
+    Object.defineProperty(window, 'location', {
+      value: {
+        ...window.location,
+        origin: 'http://localhost',
+        pathname:
+          '/domains/test-domain/workflows/test-workflow/test-run/history',
+      },
+      writable: true,
+    });
+
     const user = userEvent.setup();
     render(
       <WorkflowHistoryEventLinkButton historyEventId="123" isUngroupedView />
@@ -90,5 +100,7 @@ describe('WorkflowHistoryEventLinkButton', () => {
     expect(copy).toHaveBeenCalledWith(
       'http://localhost/domains/test-domain/workflows/test-workflow/test-run/history?he=123&u=true'
     );
+
+    window = originalWindow;
   });
 });
