@@ -197,7 +197,6 @@ function setup({
   isFetchingMoreEvents = false,
   fetchMoreEvents = jest.fn(),
   setVisibleRange = jest.fn(),
-  initialStartIndex,
   decodedPageUrlParams = {
     domain: 'test-domain',
     cluster: 'test-cluster',
@@ -239,7 +238,6 @@ function setup({
       <WorkflowHistoryUngroupedTable
         eventGroupsById={eventGroupsById}
         virtuosoRef={virtuosoRef}
-        initialStartIndex={initialStartIndex}
         setVisibleRange={setVisibleRange}
         decodedPageUrlParams={decodedPageUrlParams}
         selectedEventId={selectedEventId}
