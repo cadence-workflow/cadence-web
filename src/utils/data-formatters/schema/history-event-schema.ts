@@ -1,8 +1,11 @@
 import { z } from 'zod';
 
+import { type ActiveClusterSelectionPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ActiveClusterSelectionPolicy';
+import { ActiveClusterSelectionStrategy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ActiveClusterSelectionStrategy';
 import { CancelExternalWorkflowExecutionFailedCause } from '@/__generated__/proto-ts/uber/cadence/api/v1/CancelExternalWorkflowExecutionFailedCause';
 import { ChildWorkflowExecutionFailedCause } from '@/__generated__/proto-ts/uber/cadence/api/v1/ChildWorkflowExecutionFailedCause';
 import { ContinueAsNewInitiator } from '@/__generated__/proto-ts/uber/cadence/api/v1/ContinueAsNewInitiator';
+import { CronOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/CronOverlapPolicy';
 import { DecisionTaskFailedCause } from '@/__generated__/proto-ts/uber/cadence/api/v1/DecisionTaskFailedCause';
 import { DecisionTaskTimedOutCause } from '@/__generated__/proto-ts/uber/cadence/api/v1/DecisionTaskTimedOutCause';
 import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
@@ -133,6 +136,58 @@ const signalExternalWorkflowExecutionFailedCauseSchema = z.enum([
   SignalExternalWorkflowExecutionFailedCause.SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_WORKFLOW_ALREADY_COMPLETED,
 ]);
 
+const cronOverlapPolicySchema = z.enum([
+  CronOverlapPolicy.CRON_OVERLAP_POLICY_INVALID,
+  CronOverlapPolicy.CRON_OVERLAP_POLICY_SKIPPED,
+  CronOverlapPolicy.CRON_OVERLAP_POLICY_BUFFER_ONE,
+]);
+
+const clusterAttributeSchema = z.object({
+  scope: z.string(),
+  name: z.string(),
+});
+
+// TODO @adhitya.mamallan - this needs to be removed as part of active-active's redesign, once the IDL has removed them
+const activeClusterSelectionStrategySchema = z.enum([
+  ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_INVALID,
+  ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_REGION_STICKY,
+  ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_EXTERNAL_ENTITY,
+]);
+
+// The IDL still contains the strategy and strategyConfig fields, but they are absent
+// in the new active-active design. The preprocess step corrects this and allows us to
+// parse activeClusterSelectionPolicy even if the backend does not pass the deprecated fields.
+//
+// TODO @adhitya.mamallan - update this once the IDL has been updated
+const activeClusterSelectionPolicySchema = z.preprocess(
+  (data) => {
+    if (typeof data === 'object' && data !== null) {
+      const dataWithDefaults = {
+        ...data,
+        strategy:
+          'strategy' in data && data.strategy
+            ? data.strategy
+            : 'ACTIVE_CLUSTER_SELECTION_STRATEGY_INVALID',
+        strategyConfig:
+          'strategyConfig' in data && data.strategyConfig
+            ? data.strategyConfig
+            : 'activeClusterStickyRegionConfig',
+      };
+      return dataWithDefaults;
+    }
+    return data;
+  },
+  z.object({
+    clusterAttribute: clusterAttributeSchema,
+    // TODO: remove the below fields once the IDL has removed them
+    strategy: activeClusterSelectionStrategySchema,
+    strategyConfig: z.enum([
+      'activeClusterStickyRegionConfig',
+      'activeClusterExternalEntityConfig',
+    ]),
+  })
+) as z.ZodType<ActiveClusterSelectionPolicy>;
+
 const failureSchema = z.object({
   reason: z.string(),
   details: z.string(),
@@ -220,6 +275,9 @@ export const workflowExecutionStartedEventSchema =
       firstScheduledTime: timestampSchema.nullable(),
       partitionConfig: z.record(z.string()),
       requestId: z.string(),
+      cronOverlapPolicy: cronOverlapPolicySchema,
+      activeClusterSelectionPolicy:
+        activeClusterSelectionPolicySchema.nullable(),
     }),
   });
 
@@ -536,6 +594,9 @@ export const workflowExecutionContinuedAsNewEventSchema =
       header: headerSchema.nullable(),
       memo: memoSchema.nullable(),
       searchAttributes: searchAttributesSchema.nullable(),
+      cronOverlapPolicy: cronOverlapPolicySchema,
+      activeClusterSelectionPolicy:
+        activeClusterSelectionPolicySchema.nullable(),
     }),
   });
 
@@ -575,6 +636,9 @@ export const startChildWorkflowExecutionInitiatedEventSchema =
       delayStart: durationSchema.nullable(),
       jitterStart: durationSchema.nullable(),
       firstRunAt: timestampSchema.nullable(),
+      cronOverlapPolicy: cronOverlapPolicySchema,
+      activeClusterSelectionPolicy:
+        activeClusterSelectionPolicySchema.nullable(),
     }),
   });
 

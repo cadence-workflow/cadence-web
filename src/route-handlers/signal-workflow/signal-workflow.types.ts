@@ -1,6 +1,6 @@
 import { type z } from 'zod';
 
-import { type GRPCClusterMethods } from '@/utils/grpc/grpc-client';
+import { type DefaultMiddlewaresContext } from '@/utils/route-handlers-middleware';
 
 import type signalWorkflowRequestBodySchema from './schemas/signal-workflow-request-body-schema';
 
@@ -17,6 +17,4 @@ export type SignalWorkflowRequestBody = z.infer<
   typeof signalWorkflowRequestBodySchema
 >;
 
-export type Context = {
-  grpcClusterMethods: GRPCClusterMethods;
-};
+export type Context = DefaultMiddlewaresContext;

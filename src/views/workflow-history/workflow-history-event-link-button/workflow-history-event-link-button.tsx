@@ -30,7 +30,7 @@ export default function WorkflowHistoryEventLinkButton({
     >
       <Button
         aria-label="Copy link to event"
-        size="mini"
+        size="large"
         shape="circle"
         kind="tertiary"
         overrides={overrides.copyButton}

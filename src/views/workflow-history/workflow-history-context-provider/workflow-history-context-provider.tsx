@@ -2,13 +2,11 @@
 import { createContext, useCallback, useState } from 'react';
 
 import {
-  clearLocalStorageValue,
   getLocalStorageValue,
   setLocalStorageValue,
 } from '@/utils/local-storage';
 
 import workflowHistoryUserPreferencesConfig from '../config/workflow-history-user-preferences.config';
-import { type WorkflowHistoryEventFilteringType } from '../workflow-history-filters-type/workflow-history-filters-type.types';
 
 import { type WorkflowHistoryContextType } from './workflow-history-context-provider.types';
 
@@ -28,14 +26,6 @@ export default function WorkflowHistoryContextProvider({
     )
   );
 
-  const [historyEventTypesPreference, setHistoryEventTypesPreference] =
-    useState(() =>
-      getLocalStorageValue(
-        workflowHistoryUserPreferencesConfig.historyEventTypes.key,
-        workflowHistoryUserPreferencesConfig.historyEventTypes.schema
-      )
-    );
-
   const setUngroupedViewUserPreference = useCallback(
     (isUngroupedHistoryViewEnabled: boolean) => {
       setLocalStorageValue(
@@ -47,32 +37,11 @@ export default function WorkflowHistoryContextProvider({
     []
   );
 
-  const setHistoryEventTypesUserPreference = useCallback(
-    (historyEventTypes: Array<WorkflowHistoryEventFilteringType>) => {
-      setLocalStorageValue(
-        workflowHistoryUserPreferencesConfig.historyEventTypes.key,
-        JSON.stringify(historyEventTypes)
-      );
-      setHistoryEventTypesPreference(historyEventTypes);
-    },
-    []
-  );
-
-  const clearHistoryEventTypesUserPreference = useCallback(() => {
-    clearLocalStorageValue(
-      workflowHistoryUserPreferencesConfig.historyEventTypes.key
-    );
-    setHistoryEventTypesPreference(null);
-  }, []);
-
   return (
     <WorkflowHistoryContext.Provider
       value={{
         ungroupedViewUserPreference: ungroupedViewPreference,
         setUngroupedViewUserPreference,
-        historyEventTypesUserPreference: historyEventTypesPreference,
-        setHistoryEventTypesUserPreference,
-        clearHistoryEventTypesUserPreference,
       }}
     >
       {children}

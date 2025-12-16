@@ -3,6 +3,7 @@ import {
   type DomainHeaderInfoItemContentProps,
   type DomainPageHeaderInfoItemsConfig,
 } from '../domain-page-header-info/domain-page-header-info.types';
+import getClusterOperationMode from '../helpers/get-cluster-operation-mode';
 
 const domainPageHeaderInfoItemsConfig = [
   {
@@ -11,9 +12,9 @@ const domainPageHeaderInfoItemsConfig = [
     placeholderSize: '120px',
   },
   {
-    title: 'Global/Local',
+    title: 'Mode',
     getLabel: (props: DomainHeaderInfoItemContentProps) =>
-      props.domainDescription.isGlobalDomain ? 'Global' : 'Local',
+      getClusterOperationMode(props.domainDescription),
     placeholderSize: '64px',
   },
   {

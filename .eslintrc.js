@@ -33,6 +33,7 @@ module.exports = {
     // Import rules
     'import/no-unresolved': 'error',
     'import/no-duplicates': 'error',
+    'import/named': 'error',
     'import/order': [
       'error',
       {

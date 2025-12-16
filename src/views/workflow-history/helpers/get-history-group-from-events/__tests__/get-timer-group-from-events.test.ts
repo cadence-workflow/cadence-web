@@ -127,4 +127,64 @@ describe('getTimerGroupFromEvents', () => {
     ]);
     expect(groupWithMissingCloseEvent.closeTimeMs).toEqual(null);
   });
+
+  it('should include summaryFields for started timer events', () => {
+    const events: TimerHistoryEvent[] = [
+      startTimerTaskEvent,
+      fireTimerTaskEvent,
+    ];
+    const group = getTimerGroupFromEvents(events);
+
+    // The started event should have summaryFields
+    const startedEventMetadata = group.eventsMetadata[0];
+    expect(startedEventMetadata.summaryFields).toEqual([
+      'startToFireTimeoutSeconds',
+    ]);
+
+    // Other events should not have summaryFields
+    const otherEventMetadata = group.eventsMetadata[1];
+    expect(otherEventMetadata.summaryFields).toBeUndefined();
+  });
+
+  it('should calculate expectedEndTimeInfo for started timer events without close event', () => {
+    const eventsWithoutClose: TimerHistoryEvent[] = [startTimerTaskEvent];
+    const group = getTimerGroupFromEvents(eventsWithoutClose);
+
+    expect(group.expectedEndTimeInfo).toEqual({
+      timeMs: 1725748375632.0728,
+      prefix: 'Fires in',
+    });
+  });
+
+  it('should not calculate expectedEndTimeInfo for timer events with close event', () => {
+    const eventsWithClose: TimerHistoryEvent[] = [
+      startTimerTaskEvent,
+      fireTimerTaskEvent,
+    ];
+    const group = getTimerGroupFromEvents(eventsWithClose);
+
+    // Should not calculate expectedEndTimeInfo when there's a close event
+    expect(group.expectedEndTimeInfo).toBeUndefined();
+  });
+
+  it('should not calculate expectedEndTimeInfo for timer events without started event', () => {
+    const eventsWithoutStart: TimerHistoryEvent[] = [fireTimerTaskEvent];
+    const group = getTimerGroupFromEvents(eventsWithoutStart);
+
+    // Should not calculate expectedEndTimeInfo when there's no started event
+    expect(group.expectedEndTimeInfo).toBeUndefined();
+  });
+
+  it('should not calculate expectedEndTimeInfo for started timer events without startToFireTimeout', () => {
+    const eventWithoutTimeout = {
+      ...startTimerTaskEvent,
+      timerStartedEventAttributes: {
+        ...startTimerTaskEvent.timerStartedEventAttributes,
+        startToFireTimeout: null,
+      },
+    };
+
+    const group = getTimerGroupFromEvents([eventWithoutTimeout]);
+    expect(group.expectedEndTimeInfo).toBeUndefined();
+  });
 });

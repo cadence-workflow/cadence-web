@@ -3,6 +3,9 @@ import type {
   PendingDecisionTaskStartEvent,
 } from '../workflow-history.types';
 
+import { scheduleActivityTaskEvent } from './workflow-history-activity-events';
+import { scheduleDecisionTaskEvent } from './workflow-history-decision-events';
+
 export const pendingActivityTaskStartEvent = {
   eventId: null,
   computedEventId: 'pending-7',
@@ -94,3 +97,54 @@ export const pendingDecisionTaskStartEventWithStartedState = {
     },
   },
 } as const satisfies PendingDecisionTaskStartEvent;
+
+// Factory functions for creating test data dynamically
+
+export function createPendingActivity(
+  scheduleId: string,
+  options?: { activityId?: string }
+): PendingActivityTaskStartEvent {
+  return {
+    ...pendingActivityTaskStartEvent,
+    computedEventId: `pending-${scheduleId}`,
+    pendingActivityTaskStartEventAttributes: {
+      ...pendingActivityTaskStartEvent.pendingActivityTaskStartEventAttributes,
+      scheduleId,
+      ...(options?.activityId && { activityId: options.activityId }),
+    },
+  } as PendingActivityTaskStartEvent;
+}
+
+export function createPendingDecision(
+  scheduleId: string
+): PendingDecisionTaskStartEvent {
+  return {
+    ...pendingDecisionTaskStartEvent,
+    computedEventId: `pending-${scheduleId}`,
+    pendingDecisionTaskStartEventAttributes: {
+      ...pendingDecisionTaskStartEvent.pendingDecisionTaskStartEventAttributes,
+      scheduleId,
+    },
+  } as PendingDecisionTaskStartEvent;
+}
+
+export function createScheduleActivityEvent(
+  eventId: string,
+  options?: { activityId?: string }
+) {
+  return {
+    ...scheduleActivityTaskEvent,
+    eventId,
+    activityTaskScheduledEventAttributes: {
+      ...scheduleActivityTaskEvent.activityTaskScheduledEventAttributes,
+      ...(options?.activityId && { activityId: options.activityId }),
+    },
+  };
+}
+
+export function createScheduleDecisionEvent(eventId: string) {
+  return {
+    ...scheduleDecisionTaskEvent,
+    eventId,
+  };
+}

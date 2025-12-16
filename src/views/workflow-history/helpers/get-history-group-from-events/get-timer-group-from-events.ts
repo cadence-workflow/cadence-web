@@ -1,6 +1,9 @@
+import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
+
 import type {
   HistoryGroupEventToStatusMap,
   HistoryGroupEventToStringMap,
+  HistoryGroupEventToSummaryFieldsMap,
   TimerHistoryEvent,
   TimerHistoryGroup,
 } from '../../workflow-history.types';
@@ -36,12 +39,35 @@ export default function getTimerGroupFromEvents(
     timerFiredEventAttributes: 'Fired',
     timerCanceledEventAttributes: 'Canceled',
   };
+
   const eventToStatus: HistoryGroupEventToStatusMap<TimerHistoryGroup> = {
     timerStartedEventAttributes: (_, events, index) =>
       index < events.length - 1 ? 'COMPLETED' : 'ONGOING',
     timerFiredEventAttributes: 'COMPLETED',
     timerCanceledEventAttributes: 'CANCELED',
   };
+
+  const eventToSummaryFields: HistoryGroupEventToSummaryFieldsMap<TimerHistoryGroup> =
+    {
+      timerStartedEventAttributes: ['startToFireTimeoutSeconds'],
+    };
+
+  let expectedTimerFireTimeMs: number | undefined;
+
+  if (
+    startedEvent &&
+    startedEvent.eventTime &&
+    !closeEvent &&
+    startedEvent.timerStartedEventAttributes?.startToFireTimeout
+  ) {
+    const timeToFire = parseGrpcTimestamp(
+      startedEvent.timerStartedEventAttributes.startToFireTimeout
+    );
+
+    if (timeToFire > 0)
+      expectedTimerFireTimeMs =
+        parseGrpcTimestamp(startedEvent.eventTime) + timeToFire;
+  }
 
   return {
     label,
@@ -52,7 +78,18 @@ export default function getTimerGroupFromEvents(
       eventToStatus,
       eventToLabel,
       {},
-      closeEvent
+      closeEvent,
+      undefined,
+      undefined,
+      eventToSummaryFields
     ),
+    ...(expectedTimerFireTimeMs
+      ? {
+          expectedEndTimeInfo: {
+            timeMs: expectedTimerFireTimeMs,
+            prefix: 'Fires in',
+          },
+        }
+      : {}),
   };
 }

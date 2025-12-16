@@ -58,6 +58,13 @@ jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
   jest.fn(() => [mockDomainPageQueryParamsValues, mockSetQueryParams])
 );
 
+jest.mock('../../hooks/use-archival-input-type', () =>
+  jest.fn(() => ({
+    forceQueryInputOnly: false,
+    inputType: mockDomainPageQueryParamsValues.inputTypeArchival,
+  }))
+);
+
 describe(DomainWorkflowsArchivalTable.name, () => {
   beforeEach(() => {
     jest.clearAllMocks();

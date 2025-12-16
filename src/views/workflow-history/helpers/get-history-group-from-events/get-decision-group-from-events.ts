@@ -1,11 +1,10 @@
-import { type PendingDecisionInfo } from '@/__generated__/proto-ts/uber/cadence/api/v1/PendingDecisionInfo';
-
 import type {
   DecisionHistoryGroup,
   ExtendedDecisionHistoryEvent,
-  HistoryGroupEventStatusToNegativeFieldsMap,
+  HistoryGroupEventToNegativeFieldsMap,
   HistoryGroupEventToStatusMap,
   HistoryGroupEventToStringMap,
+  HistoryGroupEventToSummaryFieldsMap,
   PendingDecisionTaskStartEvent,
 } from '../../workflow-history.types';
 import getCommonHistoryGroupFields from '../get-common-history-group-fields';
@@ -116,9 +115,18 @@ export default function getDecisionGroupFromEvents(
     ? 'Started at'
     : 'Scheduled at';
 
-  const eventStatusToNegativeFields: HistoryGroupEventStatusToNegativeFieldsMap<DecisionHistoryGroup> =
+  const eventToNegativeFields: HistoryGroupEventToNegativeFieldsMap<DecisionHistoryGroup> =
     {
       decisionTaskFailedEventAttributes: ['reason', 'details'],
+    };
+
+  const eventToSummaryFields: HistoryGroupEventToSummaryFieldsMap<DecisionHistoryGroup> =
+    {
+      decisionTaskScheduledEventAttributes: [
+        'startToCloseTimeoutSeconds',
+        'attempt',
+      ],
+      pendingDecisionTaskStartEventAttributes: ['attempt'],
     };
 
   return {
@@ -135,7 +143,9 @@ export default function getDecisionGroupFromEvents(
         pendingDecisionTaskStartEventAttributes: pendingStartEventTimePrefix,
       },
       closeEvent || timeoutEvent,
-      eventStatusToNegativeFields
+      eventToNegativeFields,
+      undefined,
+      eventToSummaryFields
     ),
   };
 }

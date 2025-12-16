@@ -6,12 +6,17 @@ import type {
   ConfigSyncResolverDefinition,
 } from '../../utils/config/config.types';
 
+import archivalDefaultSearchEnabled from './resolvers/archival-default-search-enabled';
 import clusters from './resolvers/clusters';
 import clustersPublic from './resolvers/clusters-public';
 import { type PublicClustersConfigs } from './resolvers/clusters-public.types';
 import { type ClustersConfigs } from './resolvers/clusters.types';
+import cronListEnabled from './resolvers/cron-list-enabled';
+import { type CronListEnabledResolverParams } from './resolvers/cron-list-enabled.types';
 import extendedDomainInfoEnabled from './resolvers/extended-domain-info-enabled';
 import { type ExtendedDomainInfoEnabledConfig } from './resolvers/extended-domain-info-enabled.types';
+import failoverHistoryEnabled from './resolvers/failover-history-enabled';
+import historyPageV2Enabled from './resolvers/history-page-v2-enabled';
 import workflowActionsEnabled from './resolvers/workflow-actions-enabled';
 import {
   type WorkflowActionsEnabledResolverParams,
@@ -33,6 +38,12 @@ const dynamicConfigs: {
     'serverStart',
     true
   >;
+  CRON_LIST_ENABLED: ConfigAsyncResolverDefinition<
+    CronListEnabledResolverParams,
+    boolean,
+    'request',
+    true
+  >;
   WORKFLOW_ACTIONS_ENABLED: ConfigAsyncResolverDefinition<
     WorkflowActionsEnabledResolverParams,
     WorkflowActionsEnabledConfig,
@@ -46,6 +57,24 @@ const dynamicConfigs: {
     true
   >;
   WORKFLOW_DIAGNOSTICS_ENABLED: ConfigAsyncResolverDefinition<
+    undefined,
+    boolean,
+    'request',
+    true
+  >;
+  ARCHIVAL_DEFAULT_SEARCH_ENABLED: ConfigAsyncResolverDefinition<
+    undefined,
+    boolean,
+    'request',
+    true
+  >;
+  FAILOVER_HISTORY_ENABLED: ConfigAsyncResolverDefinition<
+    undefined,
+    boolean,
+    'request',
+    true
+  >;
+  HISTORY_PAGE_V2_ENABLED: ConfigAsyncResolverDefinition<
     undefined,
     boolean,
     'request',
@@ -70,6 +99,11 @@ const dynamicConfigs: {
     evaluateOn: 'serverStart',
     isPublic: true,
   },
+  CRON_LIST_ENABLED: {
+    resolver: cronListEnabled,
+    evaluateOn: 'request',
+    isPublic: true,
+  },
   WORKFLOW_ACTIONS_ENABLED: {
     resolver: workflowActionsEnabled,
     evaluateOn: 'request',
@@ -82,6 +116,21 @@ const dynamicConfigs: {
   },
   WORKFLOW_DIAGNOSTICS_ENABLED: {
     resolver: workflowDiagnosticsEnabled,
+    evaluateOn: 'request',
+    isPublic: true,
+  },
+  ARCHIVAL_DEFAULT_SEARCH_ENABLED: {
+    resolver: archivalDefaultSearchEnabled,
+    evaluateOn: 'request',
+    isPublic: true,
+  },
+  FAILOVER_HISTORY_ENABLED: {
+    resolver: failoverHistoryEnabled,
+    evaluateOn: 'request',
+    isPublic: true,
+  },
+  HISTORY_PAGE_V2_ENABLED: {
+    resolver: historyPageV2Enabled,
     evaluateOn: 'request',
     isPublic: true,
   },

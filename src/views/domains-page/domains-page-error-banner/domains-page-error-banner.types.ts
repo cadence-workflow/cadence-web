@@ -1,3 +1,8 @@
 export type Props = {
-  failedClusters: Array<string>;
+  failedClusters: DomainsListingFailedCluster[];
+};
+
+export type DomainsListingFailedCluster = {
+  clusterName: string;
+  httpStatus: number;
 };

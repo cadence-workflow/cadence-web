@@ -12,6 +12,8 @@ export const ID_ATTRIBUTES = [
   'RolloutID',
   'RunID',
   'TaskList',
+  'ClusterAttributeScope',
+  'ClusterAttributeName',
 ];
 
 export const CLOSE_STATUS_ATTRIBUTE = 'CloseStatus';
@@ -47,7 +49,7 @@ export const STATUSES = [
   '"timed_out"',
 ];
 
-export const BOOLEAN_VALUES = ['TRUE', 'FALSE'];
+export const BOOLEAN_VALUES = ['"true"', '"false"'];
 
 export const TIME_FORMAT = '"YYYY-MM-DDTHH:MM:SS±HH:MM"';
 

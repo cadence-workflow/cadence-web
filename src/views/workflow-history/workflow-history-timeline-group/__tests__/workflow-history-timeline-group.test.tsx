@@ -4,6 +4,7 @@ import { startWorkflowExecutionEvent } from '../../__fixtures__/workflow-history
 import type WorkflowHistoryEventStatusBadge from '../../workflow-history-event-status-badge/workflow-history-event-status-badge';
 import type WorkflowHistoryEventsCard from '../../workflow-history-events-card/workflow-history-events-card';
 import type WorkflowHistoryEventsDurationBadge from '../../workflow-history-events-duration-badge/workflow-history-events-duration-badge';
+import type WorkflowHistoryRemainingDurationBadge from '../../workflow-history-remaining-duration-badge/workflow-history-remaining-duration-badge';
 import type WorkflowHistoryTimelineResetButton from '../../workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 import WorkflowHistoryTimelineGroup from '../workflow-history-timeline-group';
 import { type styled } from '../workflow-history-timeline-group.styles';
@@ -16,7 +17,12 @@ jest.mock<typeof WorkflowHistoryEventStatusBadge>(
 
 jest.mock<typeof WorkflowHistoryEventsDurationBadge>(
   '../../workflow-history-events-duration-badge/workflow-history-events-duration-badge',
-  () => jest.fn(() => <div>Duration Badge</div>)
+  () => jest.fn(() => <div>Events Duration Badge</div>)
+);
+
+jest.mock<typeof WorkflowHistoryRemainingDurationBadge>(
+  '../../workflow-history-remaining-duration-badge/workflow-history-remaining-duration-badge',
+  () => jest.fn(() => <div>Remaining Duration Badge</div>)
 );
 
 jest.mock<typeof WorkflowHistoryEventsCard>(
@@ -120,18 +126,52 @@ describe('WorkflowHistoryTimelineGroup', () => {
     expect(mockOnReset).toHaveBeenCalledTimes(1);
   });
 
-  it('should render duration badge when startTimeMs is provided', () => {
+  it('should render events duration badge when startTimeMs is provided', () => {
     setup({
       startTimeMs: 1726652232190.7927,
     });
-    expect(screen.getByText('Duration Badge')).toBeInTheDocument();
+    expect(screen.getByText('Events Duration Badge')).toBeInTheDocument();
   });
 
-  it('should not render duration badge when startTimeMs is not provided', () => {
+  it('should not render events duration badge when startTimeMs is not provided', () => {
     setup({
       startTimeMs: null,
     });
-    expect(screen.queryByText('Duration Badge')).not.toBeInTheDocument();
+    expect(screen.queryByText('Events Duration Badge')).not.toBeInTheDocument();
+  });
+
+  it('should render remaining duration badge when expectedEndTimeInfo and startTimeMs are provided', () => {
+    setup({
+      expectedEndTimeInfo: {
+        timeMs: Date.now() + 300000, // 5 minutes from now
+        prefix: 'Timer expires in:',
+      },
+      startTimeMs: 1726652232190.7927,
+    });
+    expect(screen.getByText('Remaining Duration Badge')).toBeInTheDocument();
+  });
+
+  it('should not render remaining duration badge when expectedEndTimeInfo is not provided', () => {
+    setup({
+      expectedEndTimeInfo: undefined,
+      startTimeMs: 1726652232190.7927,
+    });
+    expect(
+      screen.queryByText('Remaining Duration Badge')
+    ).not.toBeInTheDocument();
+  });
+
+  it('should not render remaining duration badge when startTimeMs is not provided', () => {
+    setup({
+      expectedEndTimeInfo: {
+        timeMs: Date.now() + 300000,
+        prefix: 'Timer expires in:',
+      },
+      startTimeMs: null,
+    });
+    expect(
+      screen.queryByText('Remaining Duration Badge')
+    ).not.toBeInTheDocument();
   });
 });
 
@@ -164,6 +204,7 @@ function setup({
   workflowIsArchived = false,
   workflowCloseTimeMs = null,
   startTimeMs = 1726652232190.7927,
+  expectedEndTimeInfo,
 }: Partial<Props>) {
   const mockOnReset = jest.fn();
   const user = userEvent.setup();
@@ -187,6 +228,7 @@ function setup({
       workflowCloseStatus={workflowCloseStatus}
       workflowIsArchived={workflowIsArchived}
       workflowCloseTimeMs={workflowCloseTimeMs}
+      expectedEndTimeInfo={expectedEndTimeInfo}
     />
   );
   return { mockOnReset, user };

@@ -37,6 +37,7 @@ export default function WorkflowActionsModalContent<
     control,
     watch,
     clearErrors,
+    trigger,
   } = useForm<OptionalFormData>({
     resolver: action.modal.formSchema
       ? zodResolver(action.modal.formSchema)
@@ -57,13 +58,10 @@ export default function WorkflowActionsModalContent<
         runId,
         submissionData,
       }: WorkflowActionInput<SubmissionData>) =>
-        request(
-          `/api/domains/${domain}/${cluster}/workflows/${workflowId}/${runId}/${action.apiRoute}`,
-          {
-            method: 'POST',
-            body: JSON.stringify(submissionData || {}),
-          }
-        ).then((res) => res.json() as Result),
+        request(action.apiRoute({ domain, cluster, workflowId, runId }), {
+          method: 'POST',
+          body: JSON.stringify(submissionData || {}),
+        }).then((res) => res.json() as Result),
       onSuccess: (result, params) => {
         queryClient.invalidateQueries({
           queryKey: ['describe_workflow', params],
@@ -125,6 +123,7 @@ export default function WorkflowActionsModalContent<
               fieldErrors={validationErrors}
               clearErrors={clearErrors}
               control={control}
+              trigger={trigger}
               cluster={params.cluster}
               domain={params.domain}
               workflowId={params.workflowId}

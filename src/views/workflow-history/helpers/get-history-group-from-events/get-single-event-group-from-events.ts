@@ -1,7 +1,10 @@
+import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
+
 import type {
-  HistoryGroupEventStatusToNegativeFieldsMap,
+  HistoryGroupEventToNegativeFieldsMap,
   HistoryGroupEventToStatusMap,
   HistoryGroupEventToStringMap,
+  HistoryGroupEventToSummaryFieldsMap,
   SingleEventHistoryGroup,
   SingleHistoryEvent,
 } from '../../workflow-history.types';
@@ -80,7 +83,7 @@ export default function getSingleEventGroupFromEvents(
     workflowExecutionContinuedAsNewEventAttributes: 'COMPLETED',
   };
 
-  const eventStatusToNegativeFields: HistoryGroupEventStatusToNegativeFieldsMap<SingleEventHistoryGroup> =
+  const eventToNegativeFields: HistoryGroupEventToNegativeFieldsMap<SingleEventHistoryGroup> =
     {
       workflowExecutionFailedEventAttributes: ['details', 'reason'],
       workflowExecutionTerminatedEventAttributes: ['details', 'reason'],
@@ -89,6 +92,39 @@ export default function getSingleEventGroupFromEvents(
         'failureReason',
       ],
     };
+
+  const eventToSummaryFields: HistoryGroupEventToSummaryFieldsMap<SingleEventHistoryGroup> =
+    {
+      workflowExecutionSignaledEventAttributes: ['signalName', 'input'],
+      workflowExecutionStartedEventAttributes: [
+        'input',
+        'executionStartToCloseTimeoutSeconds',
+        'attempt',
+      ],
+      workflowExecutionCompletedEventAttributes: ['result'],
+      workflowExecutionFailedEventAttributes: ['details', 'reason'],
+      workflowExecutionTerminatedEventAttributes: ['details', 'reason'],
+      workflowExecutionContinuedAsNewEventAttributes: [
+        'failureDetails',
+        'failureReason',
+        'newExecutionRunId',
+      ],
+    };
+
+  let expectedFirstDecisionScheduleTimeMs: number | undefined;
+  if (
+    event.eventTime &&
+    event.attributes === 'workflowExecutionStartedEventAttributes' &&
+    event.workflowExecutionStartedEventAttributes?.firstDecisionTaskBackoff
+  ) {
+    const firstDecisionTaskBackoffMs = parseGrpcTimestamp(
+      event.workflowExecutionStartedEventAttributes.firstDecisionTaskBackoff
+    );
+
+    if (firstDecisionTaskBackoffMs > 0)
+      expectedFirstDecisionScheduleTimeMs =
+        parseGrpcTimestamp(event.eventTime) + firstDecisionTaskBackoffMs;
+  }
 
   return {
     label,
@@ -101,7 +137,17 @@ export default function getSingleEventGroupFromEvents(
       eventToLabel,
       {},
       undefined,
-      eventStatusToNegativeFields
+      eventToNegativeFields,
+      undefined,
+      eventToSummaryFields
     ),
+    ...(expectedFirstDecisionScheduleTimeMs
+      ? {
+          expectedEndTimeInfo: {
+            timeMs: expectedFirstDecisionScheduleTimeMs,
+            prefix: 'Starts in',
+          },
+        }
+      : {}),
   };
 }

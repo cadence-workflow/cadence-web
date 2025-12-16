@@ -1,7 +1,12 @@
+import { createElement } from 'react';
+
 import type { ListTableItem } from '@/components/list-table/list-table.types';
+import isActiveActiveDomain from '@/views/shared/active-active/helpers/is-active-active-domain';
 
 import DomainPageMetadataClusters from '../domain-page-metadata-clusters/domain-page-metadata-clusters';
+import DomainPageMetadataFailoverVersionActiveActive from '../domain-page-metadata-failover-version-active-active/domain-page-metadata-failover-version-active-active';
 import { type DomainDescription } from '../domain-page.types';
+import getClusterOperationMode from '../helpers/get-cluster-operation-mode';
 
 const domainPageMetadataTableConfig: Array<ListTableItem<DomainDescription>> = [
   {
@@ -21,16 +26,21 @@ const domainPageMetadataTableConfig: Array<ListTableItem<DomainDescription>> = [
     renderValue: DomainPageMetadataClusters,
   },
   {
-    key: 'globalOrLocal',
-    label: 'Global/Local',
+    key: 'mode',
+    label: 'Mode',
     renderValue: (domainDescription: DomainDescription) =>
-      domainDescription.isGlobalDomain ? 'Global' : 'Local',
+      getClusterOperationMode(domainDescription),
   },
   {
     key: 'failoverVersion',
     label: 'Failover version',
     renderValue: (domainDescription: DomainDescription) =>
-      domainDescription.failoverVersion,
+      isActiveActiveDomain(domainDescription)
+        ? createElement(
+            DomainPageMetadataFailoverVersionActiveActive,
+            domainDescription
+          )
+        : domainDescription.failoverVersion,
   },
 ];
 

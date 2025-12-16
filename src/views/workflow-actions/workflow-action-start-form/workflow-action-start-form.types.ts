@@ -1,0 +1,25 @@
+import { type z } from 'zod';
+
+import type startWorkflowRequestBodySchema from '@/route-handlers/start-workflow/schemas/start-workflow-request-body-schema';
+import { type CronData } from '@/utils/cron-validate/cron-validate.types';
+
+import { type WorkflowActionFormProps } from '../workflow-actions.types';
+
+import { type startWorkflowFormSchema } from './schemas/start-workflow-form-schema';
+
+export type Props = WorkflowActionFormProps<StartWorkflowFormData>;
+
+export type SubFormProps = Pick<
+  Props,
+  'control' | 'clearErrors' | 'formData' | 'fieldErrors'
+>;
+
+export type StartWorkflowFormData = z.infer<typeof startWorkflowFormSchema>;
+
+export type StartWorkflowSubmissionData = z.infer<
+  typeof startWorkflowRequestBodySchema
+>;
+
+export type CronFieldsError = Partial<
+  Record<keyof CronData | 'general', string>
+> | null;

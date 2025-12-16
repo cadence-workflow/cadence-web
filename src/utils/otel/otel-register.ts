@@ -11,7 +11,8 @@ import { type OtelRegisterConfig } from './otel.types';
 export async function otelRegister(config?: OtelRegisterConfig) {
   const sdk = new NodeSDK({
     resource: resourceFromAttributes({
-      [ATTR_SERVICE_NAME]: 'cadence-web',
+      [ATTR_SERVICE_NAME]:
+        process.env.CADENCE_WEB_SERVICE_NAME || 'cadence-web',
     }),
     textMapPropagator: new JaegerPropagator(),
     traceExporter: new OTLPTraceExporter(),

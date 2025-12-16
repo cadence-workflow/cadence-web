@@ -27,17 +27,22 @@ const mockResolvedConfigValues: LoadedConfigResolvedValues = {
       clusterName: 'mock-cluster2',
     },
   ],
+  CRON_LIST_ENABLED: false,
   WORKFLOW_ACTIONS_ENABLED: {
     terminate: 'ENABLED',
     cancel: 'ENABLED',
     signal: 'ENABLED',
     restart: 'ENABLED',
     reset: 'ENABLED',
+    start: 'ENABLED',
   },
   EXTENDED_DOMAIN_INFO_ENABLED: {
     metadata: false,
     issues: false,
   },
   WORKFLOW_DIAGNOSTICS_ENABLED: false,
+  ARCHIVAL_DEFAULT_SEARCH_ENABLED: false,
+  FAILOVER_HISTORY_ENABLED: false,
+  HISTORY_PAGE_V2_ENABLED: false,
 };
 export default mockResolvedConfigValues;

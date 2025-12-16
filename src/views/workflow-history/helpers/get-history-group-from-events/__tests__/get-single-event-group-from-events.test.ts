@@ -169,4 +169,118 @@ describe('getSingleEventGroupFromEvents', () => {
       'failureReason',
     ]);
   });
+
+  it('should include summaryFields for workflow execution signaled events', () => {
+    const group = getSingleEventGroupFromEvents([signalWorkflowExecutionEvent]);
+    const eventMetadata = group.eventsMetadata[0];
+
+    expect(eventMetadata.status).toBe('COMPLETED');
+    expect(eventMetadata.summaryFields).toEqual(['signalName', 'input']);
+  });
+
+  it('should include summaryFields for started workflow execution events', () => {
+    const group = getSingleEventGroupFromEvents([startWorkflowExecutionEvent]);
+    const eventMetadata = group.eventsMetadata[0];
+
+    expect(eventMetadata.status).toBe('COMPLETED');
+    expect(eventMetadata.summaryFields).toEqual([
+      'input',
+      'executionStartToCloseTimeoutSeconds',
+      'attempt',
+    ]);
+  });
+
+  it('should include summaryFields for completed workflow execution events', () => {
+    const group = getSingleEventGroupFromEvents([
+      completeWorkflowExecutionEvent,
+    ]);
+    const eventMetadata = group.eventsMetadata[0];
+
+    expect(eventMetadata.status).toBe('COMPLETED');
+    expect(eventMetadata.summaryFields).toEqual(['result']);
+  });
+
+  it('should include summaryFields for failed workflow execution events', () => {
+    const group = getSingleEventGroupFromEvents([failWorkflowExecutionEvent]);
+    const eventMetadata = group.eventsMetadata[0];
+
+    expect(eventMetadata.status).toBe('FAILED');
+    expect(eventMetadata.summaryFields).toEqual(['details', 'reason']);
+  });
+
+  it('should include summaryFields for terminated workflow execution events', () => {
+    const group = getSingleEventGroupFromEvents([
+      terminateWorkflowExecutionEvent,
+    ]);
+    const eventMetadata = group.eventsMetadata[0];
+
+    expect(eventMetadata.status).toBe('FAILED');
+    expect(eventMetadata.summaryFields).toEqual(['details', 'reason']);
+  });
+
+  it('should include summaryFields for continued as new workflow execution events', () => {
+    const group = getSingleEventGroupFromEvents([
+      continueAsNewWorkflowExecutionEvent,
+    ]);
+    const eventMetadata = group.eventsMetadata[0];
+
+    expect(eventMetadata.status).toBe('COMPLETED');
+    expect(eventMetadata.summaryFields).toEqual([
+      'failureDetails',
+      'failureReason',
+      'newExecutionRunId',
+    ]);
+  });
+
+  it('should calculate expectedEndTimeInfo for workflow execution started events with firstDecisionTaskBackoff', () => {
+    const group = getSingleEventGroupFromEvents([startWorkflowExecutionEvent]);
+
+    expect(group.expectedEndTimeInfo).toEqual({
+      timeMs: 1724747370549.3777,
+      prefix: 'Starts in',
+    });
+  });
+
+  it('should not calculate expectedEndTimeInfo for non-workflow-started events', () => {
+    const nonStartedEvents = [
+      signalWorkflowExecutionEvent,
+      recordMarkerExecutionEvent,
+      failWorkflowExecutionEvent,
+      completeWorkflowExecutionEvent,
+    ];
+
+    for (const event of nonStartedEvents) {
+      const group = getSingleEventGroupFromEvents([event]);
+      expect(group.expectedEndTimeInfo).toBeUndefined();
+    }
+  });
+
+  it('should not calculate expectedEndTimeInfo for workflow started events with zero firstDecisionTaskBackoff', () => {
+    const eventWithoutBackoff = {
+      ...startWorkflowExecutionEvent,
+      workflowExecutionStartedEventAttributes: {
+        ...startWorkflowExecutionEvent.workflowExecutionStartedEventAttributes,
+        firstDecisionTaskBackoff: {
+          seconds: '0',
+          nanos: 0,
+        },
+      },
+    };
+
+    const group = getSingleEventGroupFromEvents([eventWithoutBackoff]);
+    expect(group.expectedEndTimeInfo).toBeUndefined();
+  });
+
+  it('should not calculate expectedEndTimeInfo for workflow started events without firstDecisionTaskBackoff', () => {
+    const eventWithoutBackoff = {
+      ...startWorkflowExecutionEvent,
+      workflowExecutionStartedEventAttributes: {
+        ...startWorkflowExecutionEvent.workflowExecutionStartedEventAttributes,
+        firstDecisionTaskBackoff: null,
+      },
+    };
+
+    const group = getSingleEventGroupFromEvents([eventWithoutBackoff]);
+    expect(group.expectedEndTimeInfo).toBeUndefined();
+  });
 });

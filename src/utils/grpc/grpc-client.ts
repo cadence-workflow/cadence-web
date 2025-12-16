@@ -8,6 +8,8 @@ import { type DescribeTaskListResponse } from '@/__generated__/proto-ts/uber/cad
 import { type DescribeWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeWorkflowExecutionResponse';
 import { type DiagnoseWorkflowExecutionRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/DiagnoseWorkflowExecutionRequest';
 import { type DiagnoseWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/DiagnoseWorkflowExecutionResponse';
+import { type GetSearchAttributesRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/GetSearchAttributesRequest';
+import { type GetSearchAttributesResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/GetSearchAttributesResponse';
 import { type GetWorkflowExecutionHistoryRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/GetWorkflowExecutionHistoryRequest';
 import { type GetWorkflowExecutionHistoryResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/GetWorkflowExecutionHistoryResponse';
 import { type ListArchivedWorkflowExecutionsRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListArchivedWorkflowExecutionsRequest';
@@ -16,6 +18,8 @@ import { type ListClosedWorkflowExecutionsRequest__Input } from '@/__generated__
 import { type ListClosedWorkflowExecutionsResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListClosedWorkflowExecutionsResponse';
 import { type ListDomainsRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListDomainsRequest';
 import { type ListDomainsResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListDomainsResponse';
+import { type ListFailoverHistoryRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListFailoverHistoryRequest';
+import { type ListFailoverHistoryResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListFailoverHistoryResponse';
 import { type ListOpenWorkflowExecutionsRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListOpenWorkflowExecutionsRequest';
 import { type ListOpenWorkflowExecutionsResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListOpenWorkflowExecutionsResponse';
 import { type ListTaskListPartitionsRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListTaskListPartitionsRequest';
@@ -32,6 +36,8 @@ import { type RestartWorkflowExecutionRequest__Input } from '@/__generated__/pro
 import { type RestartWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/RestartWorkflowExecutionResponse';
 import { type SignalWorkflowExecutionRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/SignalWorkflowExecutionRequest';
 import { type SignalWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/SignalWorkflowExecutionResponse';
+import { type StartWorkflowExecutionRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/StartWorkflowExecutionRequest';
+import { type StartWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/StartWorkflowExecutionResponse';
 import { type TerminateWorkflowExecutionRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/TerminateWorkflowExecutionRequest';
 import { type TerminateWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/TerminateWorkflowExecutionResponse';
 import { type UpdateDomainRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/UpdateDomainRequest';
@@ -79,6 +85,9 @@ export type GRPCClusterMethods = {
   getHistory: (
     payload: GetWorkflowExecutionHistoryRequest__Input
   ) => Promise<GetWorkflowExecutionHistoryResponse>;
+  getSearchAttributes: (
+    payload: GetSearchAttributesRequest__Input
+  ) => Promise<GetSearchAttributesResponse>;
   listDomains: (
     payload: ListDomainsRequest__Input
   ) => Promise<ListDomainsResponse>;
@@ -109,9 +118,15 @@ export type GRPCClusterMethods = {
   resetWorkflow: (
     payload: ResetWorkflowExecutionRequest__Input
   ) => Promise<ResetWorkflowExecutionResponse>;
+  startWorkflow: (
+    payload: StartWorkflowExecutionRequest__Input
+  ) => Promise<StartWorkflowExecutionResponse>;
   getDiagnosticsWorkflow: (
     payload: DiagnoseWorkflowExecutionRequest__Input
   ) => Promise<DiagnoseWorkflowExecutionResponse>;
+  listFailoverHistory: (
+    payload: ListFailoverHistoryRequest__Input
+  ) => Promise<ListFailoverHistoryResponse>;
 };
 
 // cache services instances
@@ -242,6 +257,13 @@ const getClusterServicesMethods = async (
       method: 'GetWorkflowExecutionHistory',
       metadata: metadata,
     }),
+    getSearchAttributes: visibilityService.request<
+      GetSearchAttributesRequest__Input,
+      GetSearchAttributesResponse
+    >({
+      method: 'GetSearchAttributes',
+      metadata: metadata,
+    }),
     listDomains: domainService.request<
       ListDomainsRequest__Input,
       ListDomainsResponse
@@ -312,11 +334,25 @@ const getClusterServicesMethods = async (
       method: 'ResetWorkflowExecution',
       metadata: metadata,
     }),
+    startWorkflow: workflowService.request<
+      StartWorkflowExecutionRequest__Input,
+      StartWorkflowExecutionResponse
+    >({
+      method: 'StartWorkflowExecution',
+      metadata: metadata,
+    }),
     getDiagnosticsWorkflow: workflowService.request<
       DiagnoseWorkflowExecutionRequest__Input,
       DiagnoseWorkflowExecutionResponse
     >({
       method: 'DiagnoseWorkflowExecution',
+      metadata: metadata,
+    }),
+    listFailoverHistory: domainService.request<
+      ListFailoverHistoryRequest__Input,
+      ListFailoverHistoryResponse
+    >({
+      method: 'ListFailoverHistory',
       metadata: metadata,
     }),
   };

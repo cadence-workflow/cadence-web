@@ -38,7 +38,6 @@ export async function resetWorkflow(
       decisionFinishEventId: data.decisionFinishEventId,
       requestId: data.requestId,
       skipSignalReapply: data.skipSignalReapply,
-      // TODO: add user identity
     });
 
     return NextResponse.json(response);

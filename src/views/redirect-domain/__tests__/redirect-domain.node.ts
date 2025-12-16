@@ -1,7 +1,10 @@
 import { getDomainObj } from '@/views/domains-page/__fixtures__/domains';
 import { type DomainData } from '@/views/domains-page/domains-page.types';
+import { mockActiveActiveDomain } from '@/views/shared/active-active/__fixtures__/active-active-domain';
 
 import RedirectDomain from '../redirect-domain';
+
+jest.mock('@/views/shared/active-active/helpers/is-active-active-domain');
 
 const MOCK_ALL_DOMAINS: Array<DomainData> = [
   getDomainObj({
@@ -31,6 +34,7 @@ const MOCK_ALL_DOMAINS: Array<DomainData> = [
       { clusterName: 'mock-cluster-4' },
     ],
   }),
+  mockActiveActiveDomain,
 ];
 
 const mockRedirect = jest.fn();
@@ -70,6 +74,11 @@ describe(RedirectDomain.name, () => {
       expectedRedirect: '/domains/mock-domain-unique/mock-cluster-1',
     },
     {
+      name: 'should redirect to domain page of active cluster for an active-active domain',
+      urlParams: ['mock-domain-active-active'],
+      expectedRedirect: '/domains/mock-domain-active-active/cluster0',
+    },
+    {
       name: 'should redirect to workflow page of active cluster',
       urlParams: ['mock-domain-unique', 'workflows', 'mock-wfid', 'mock-runid'],
       expectedRedirect:
@@ -85,16 +94,16 @@ describe(RedirectDomain.name, () => {
         'history',
       ],
       queryParams: {
-        ht: 'ACTIVITY',
         hs: 'COMPLETED',
+        ht: 'ACTIVITY',
       },
       expectedRedirect:
-        '/domains/mock-domain-unique/mock-cluster-1/workflows/mock-wfid/mock-runid/history?ht=ACTIVITY&hs=COMPLETED',
+        '/domains/mock-domain-unique/mock-cluster-1/workflows/mock-wfid/mock-runid/history?hs=COMPLETED&ht=ACTIVITY',
     },
     {
       name: 'should redirect to All Domains page with search param if multiple domains exist',
       urlParams: ['mock-domain-shared-name'],
-      expectedRedirect: '/domains?s=mock-domain-shared-name',
+      expectedRedirect: '/domains?d=true&s=mock-domain-shared-name',
     },
     {
       name: 'should redirect to All Domains page with search param if multiple domains exist, for workflow link',
@@ -104,7 +113,7 @@ describe(RedirectDomain.name, () => {
         'mock-wfid',
         'mock-runid',
       ],
-      expectedRedirect: '/domains?s=mock-domain-shared-name',
+      expectedRedirect: '/domains?d=true&s=mock-domain-shared-name',
     },
     {
       name: 'should call notFound if no domain exists',
@@ -127,13 +136,14 @@ describe(RedirectDomain.name, () => {
       try {
         await RedirectDomain({
           params: { domainParams: test.urlParams },
+          searchParams: test.queryParams ?? undefined,
         });
-
-        expect(mockRedirect).toHaveBeenCalledWith(test.expectedRedirect);
       } catch (e) {
         if (e instanceof Error && e.message !== 'Redirected') {
           expect(test.assertOnError).toBeDefined();
           test.assertOnError?.(e);
+        } else if (e instanceof Error && e.message === 'Redirected') {
+          expect(mockRedirect).toHaveBeenCalledWith(test.expectedRedirect);
         }
       }
     })

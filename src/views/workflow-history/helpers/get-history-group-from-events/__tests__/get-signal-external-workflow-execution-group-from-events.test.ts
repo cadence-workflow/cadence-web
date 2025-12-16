@@ -137,4 +137,29 @@ describe('getSignalExternalWorkflowExecutionGroupFromEvents', () => {
       ]);
     expect(groupWithMissingCloseEvent.closeTimeMs).toEqual(null);
   });
+
+  it('should include summaryFields for initiated signal external workflow events', () => {
+    const events: SignalExternalWorkflowExecutionHistoryEvent[] = [
+      initiateSignalExternalWorkflowEvent,
+      signalExternalWorkflowEvent,
+    ];
+    const group = getSignalExternalWorkflowExecutionGroupFromEvents(events);
+
+    // The initiated event should have summaryFields
+    const initiatedEventMetadata = group.eventsMetadata.find(
+      (metadata) => metadata.label === 'Initiated'
+    );
+    expect(initiatedEventMetadata?.summaryFields).toEqual([
+      'input',
+      'signalName',
+    ]);
+
+    // Other events should not have summaryFields
+    const otherEventsMetadata = group.eventsMetadata.filter(
+      (metadata) => metadata.label !== 'Initiated'
+    );
+    otherEventsMetadata.forEach((metadata) => {
+      expect(metadata.summaryFields).toBeUndefined();
+    });
+  });
 });

@@ -11,7 +11,9 @@ export const mockGrpcClusterMethods: GRPCClusterMethods = {
   exportHistory: jest.fn(),
   getHistory: jest.fn(),
   getDiagnosticsWorkflow: jest.fn(),
+  getSearchAttributes: jest.fn(),
   listDomains: jest.fn(),
+  listFailoverHistory: jest.fn(),
   listTaskListPartitions: jest.fn(),
   listWorkflows: jest.fn(),
   openWorkflows: jest.fn(),
@@ -21,4 +23,5 @@ export const mockGrpcClusterMethods: GRPCClusterMethods = {
   requestCancelWorkflow: jest.fn(),
   restartWorkflow: jest.fn(),
   resetWorkflow: jest.fn(),
+  startWorkflow: jest.fn(),
 };

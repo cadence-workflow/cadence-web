@@ -36,7 +36,7 @@ export async function restartWorkflow(
         runId: decodedParams.runId,
       },
       reason: data.reason,
-      // TODO: add user identity
+      identity: ctx.userInfo?.id,
     });
 
     return NextResponse.json(response);

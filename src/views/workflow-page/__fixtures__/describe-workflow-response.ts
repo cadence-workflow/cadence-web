@@ -150,6 +150,9 @@ export const mockDescribeWorkflowResponse = {
       attributes: 'workflowExecutionTerminatedEventAttributes',
     },
     isArchived: false,
+    cronOverlapPolicy: 'CRON_OVERLAP_POLICY_INVALID',
+    activeClusterSelectionPolicy: null,
+    taskListInfo: null,
   },
   pendingDecision: null,
 } as const satisfies DescribeWorkflowResponse;

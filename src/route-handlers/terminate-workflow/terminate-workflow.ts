@@ -40,6 +40,7 @@ export async function terminateWorkflow(
         runId: decodedParams.runId,
       },
       reason: data.reason,
+      identity: ctx.userInfo?.id,
     });
 
     return NextResponse.json({} satisfies TerminateWorkflowResponse);

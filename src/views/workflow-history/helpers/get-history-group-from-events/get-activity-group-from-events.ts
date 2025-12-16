@@ -5,7 +5,8 @@ import WORKFLOW_HISTORY_SHOULD_SHORTEN_GROUP_LABELS_CONFIG from '../../config/wo
 import type {
   ActivityHistoryGroup,
   ExtendedActivityHistoryEvent,
-  HistoryGroupEventStatusToNegativeFieldsMap,
+  HistoryGroupEventToNegativeFieldsMap,
+  HistoryGroupEventToSummaryFieldsMap,
   HistoryGroupEventToAdditionalDetailsMap,
   HistoryGroupEventToStatusMap,
   HistoryGroupEventToStringMap,
@@ -122,10 +123,14 @@ export default function getActivityGroupFromEvents(
     activityTaskTimedOutEventAttributes: 'FAILED',
   };
 
-  const eventStatusToNegativeFields: HistoryGroupEventStatusToNegativeFieldsMap<ActivityHistoryGroup> =
+  const eventToNegativeFields: HistoryGroupEventToNegativeFieldsMap<ActivityHistoryGroup> =
     {
       activityTaskFailedEventAttributes: ['reason', 'details'],
       activityTaskTimedOutEventAttributes: ['reason', 'details'],
+      pendingActivityTaskStartEventAttributes: [
+        'lastFailureReason',
+        'lastFailureDetails',
+      ],
     };
 
   const pendingStartEventTimePrefix = pendingStartEvent?.[pendingStartAttr]
@@ -138,17 +143,37 @@ export default function getActivityGroupFromEvents(
       ...(pendingStartEvent
         ? {
             activityTaskStartedEventAttributes: {
-              heartbeatDetails: formatPayload(
-                pendingStartEvent.pendingActivityTaskStartEventAttributes
-                  .heartbeatDetails
-              ),
               lastHeartbeatTime: formatTimestampToDatetime(
                 pendingStartEvent.pendingActivityTaskStartEventAttributes
                   .lastHeartbeatTime
               ),
+              heartbeatDetails: formatPayload(
+                pendingStartEvent.pendingActivityTaskStartEventAttributes
+                  .heartbeatDetails
+              ),
             },
           }
         : {}),
+    };
+
+  const eventToSummaryFields: HistoryGroupEventToSummaryFieldsMap<ActivityHistoryGroup> =
+    {
+      activityTaskScheduledEventAttributes: [
+        'input',
+        'scheduleToCloseTimeoutSeconds',
+      ],
+      pendingActivityTaskStartEventAttributes: [
+        'lastFailureReason',
+        'lastFailureDetails',
+        'attempt',
+      ],
+      activityTaskStartedEventAttributes: [
+        'heartbeatDetails',
+        'lastHeartbeatTime',
+        'attempt',
+      ],
+      activityTaskCompletedEventAttributes: ['result'],
+      activityTaskFailedEventAttributes: ['details', 'reason'],
     };
 
   const shouldShowPendingEvent = Boolean(
@@ -175,8 +200,9 @@ export default function getActivityGroupFromEvents(
       eventToLabel,
       { pendingActivityTaskStartEventAttributes: pendingStartEventTimePrefix },
       closeEvent || timeoutEvent,
-      eventStatusToNegativeFields,
-      eventToAdditionalDetails
+      eventToNegativeFields,
+      eventToAdditionalDetails,
+      eventToSummaryFields
     ),
   };
 }

@@ -10,7 +10,6 @@ export const styled = {
       flexDirection: 'column',
       flexWrap: 'wrap',
       gap: $theme.sizing.scale500,
-      marginBottom: $theme.sizing.scale700,
       [$theme.mediaQuery.medium]: {
         flexDirection: 'row',
         alignItems: 'flex-end',
@@ -19,9 +18,13 @@ export const styled = {
   ),
   SearchFilterContainer: createStyled<'div', { $mini: boolean | undefined }>(
     'div',
-    ({ $mini }) => ({
-      flexGrow: $mini ? 0 : 2,
-      flexBasis: 'fit-content',
+    ({ $theme, $mini }) => ({
+      flexGrow: $mini ? 0 : 1,
+      flexShrink: $mini ? 0 : 1,
+      flexBasis: $mini ? 'auto' : '0',
+      [$theme.mediaQuery.medium]: {
+        alignSelf: $mini ? 'flex-end' : 'flex-start',
+      },
     })
   ),
 };
@@ -35,6 +38,7 @@ export const overrides = {
         height: $theme.sizing.scale950,
         [$theme.mediaQuery.medium]: {
           flexGrow: 0,
+          alignSelf: 'flex-end',
         },
       }),
     },

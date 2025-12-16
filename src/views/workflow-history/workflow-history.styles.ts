@@ -1,40 +1,26 @@
-import type { ButtonOverrides } from 'baseui/button';
-
 import type {
   StyletronCSSObject,
   StyletronCSSObjectOf,
 } from '@/hooks/use-styletron-classes';
 
 const cssStylesObj = {
-  pageContainer: {
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    flex: 1,
+    // This is to ensure the header section z-index is relative to this container and do not
+    // show above external elements like popovers and modals
+    position: 'relative',
+    zIndex: 0,
+  },
+  contentSection: {
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
   },
-  pageHeader: (theme) => ({
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    flexWrap: 'wrap',
-    gap: theme.sizing.scale500,
-    [theme.mediaQuery.medium]: {
-      alignItems: 'center',
-      flexDirection: 'row',
-    },
-  }),
-  headerActions: (theme) => ({
-    display: 'flex',
-    flexDirection: 'column',
-    flexWrap: 'wrap',
-    gap: theme.sizing.scale500,
-    [theme.mediaQuery.medium]: {
-      flexDirection: 'row',
-    },
-  }),
   eventsContainer: (theme) => ({
     display: 'flex',
-    marginTop: theme.sizing.scale500,
-    // gap: theme.sizing.scale400,
+    marginTop: theme.sizing.scale600,
   }),
   ungroupedEventsContainer: (theme) => ({
     flex: 1,
@@ -73,13 +59,3 @@ const cssStylesObj = {
 
 export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> =
   cssStylesObj;
-
-export const overrides = {
-  toggleButton: {
-    Root: {
-      style: {
-        whiteSpace: 'nowrap',
-      },
-    },
-  } satisfies ButtonOverrides,
-};

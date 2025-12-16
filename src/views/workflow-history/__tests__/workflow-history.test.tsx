@@ -14,7 +14,6 @@ import {
 
 import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
 import * as usePageFiltersModule from '@/components/page-filters/hooks/use-page-filters';
-import { type Props as PageFiltersToggleProps } from '@/components/page-filters/page-filters-toggle/page-filters-toggle.types';
 import { type PageQueryParamValues } from '@/hooks/use-page-query-params/use-page-query-params.types';
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
 import { mockDescribeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
@@ -24,11 +23,21 @@ import { completedActivityTaskEvents } from '../__fixtures__/workflow-history-ac
 import { completedDecisionTaskEvents } from '../__fixtures__/workflow-history-decision-events';
 import WorkflowHistory from '../workflow-history';
 import { WorkflowHistoryContext } from '../workflow-history-context-provider/workflow-history-context-provider';
-import { type WorkflowHistoryEventFilteringType } from '../workflow-history-filters-type/workflow-history-filters-type.types';
 
 jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
   jest.fn(() => [{ historySelectedEventId: '1' }, jest.fn()])
 );
+
+// Mock the hook to use minimal throttle delay for faster tests
+jest.mock('../hooks/use-workflow-history-fetcher', () => {
+  const actual = jest.requireActual('../hooks/use-workflow-history-fetcher');
+  return {
+    __esModule: true,
+    default: jest.fn((params, onEventsChange) =>
+      actual.default(params, onEventsChange, 0)
+    ), // 0ms throttle for tests
+  };
+});
 
 jest.mock(
   '../workflow-history-compact-event-card/workflow-history-compact-event-card',
@@ -47,26 +56,8 @@ jest.mock(
 );
 
 jest.mock(
-  '../workflow-history-timeline-chart/workflow-history-timeline-chart',
-  () => jest.fn(() => <div>Timeline chart</div>)
-);
-
-jest.mock(
   '../workflow-history-timeline-load-more/workflow-history-timeline-load-more',
   () => jest.fn(() => <div>Load more</div>)
-);
-
-jest.mock(
-  '@/components/page-filters/page-filters-toggle/page-filters-toggle',
-  () =>
-    jest.fn((props: PageFiltersToggleProps) => (
-      <button onClick={props.onClick}>Filter Toggle</button>
-    ))
-);
-
-jest.mock(
-  '@/components/page-filters/page-filters-fields/page-filters-fields',
-  () => jest.fn(() => <div>Filter Fields</div>)
 );
 
 jest.mock('@/components/page-filters/hooks/use-page-filters', () =>
@@ -80,19 +71,12 @@ jest.mock(
   () => jest.fn(() => <div>keep loading events</div>)
 );
 
-jest.mock(
-  '../workflow-history-expand-all-events-button/workflow-history-expand-all-events-button',
-  () =>
-    jest.fn(({ isExpandAllEvents, toggleIsExpandAllEvents }) => (
-      <button onClick={toggleIsExpandAllEvents}>
-        {isExpandAllEvents ? 'Collapse All' : 'Expand All'}
-      </button>
-    ))
-);
-
-jest.mock(
-  '../workflow-history-export-json-button/workflow-history-export-json-button',
-  () => jest.fn(() => <button>Export JSON</button>)
+jest.mock('../workflow-history-header/workflow-history-header', () =>
+  jest.fn(() => (
+    <div>
+      <div>Workflow history Header</div>
+    </div>
+  ))
 );
 
 jest.mock(
@@ -116,23 +100,25 @@ describe('WorkflowHistory', () => {
     jest.restoreAllMocks();
   });
 
-  it('renders page correctly', async () => {
-    setup({});
-    expect(await screen.findByText('Workflow history')).toBeInTheDocument();
+  it('renders page header correctly', async () => {
+    await setup({});
+    expect(
+      await screen.findByText('Workflow history Header')
+    ).toBeInTheDocument();
   });
 
   it('renders compact group cards', async () => {
-    setup({});
+    await setup({});
     expect(await screen.findByText('Compact group Card')).toBeInTheDocument();
   });
 
   it('renders timeline group cards', async () => {
-    setup({});
+    await setup({});
     expect(await screen.findByText('Timeline group card')).toBeInTheDocument();
   });
 
   it('renders load more section', async () => {
-    setup({});
+    await setup({});
     expect(await screen.findByText('Load more')).toBeInTheDocument();
   });
 
@@ -154,29 +140,6 @@ describe('WorkflowHistory', () => {
         'Failed to fetch workflow summary'
       );
     }
-  });
-
-  it('should render the page initially with filters shown', async () => {
-    setup({});
-    expect(await screen.findByText('Filter Fields')).toBeInTheDocument();
-  });
-
-  it('should hide filters on executing toggle button onClick', async () => {
-    const { user } = await setup({});
-    const toggleButton = await screen.findByText('Filter Toggle');
-
-    await user.click(toggleButton);
-
-    expect(screen.queryByText('Filter Fields')).not.toBeInTheDocument();
-  });
-
-  it('should show timeline when the Timeline button is clicked', async () => {
-    const { user } = await setup({});
-    const timelineButton = await screen.findByText('Timeline');
-
-    await user.click(timelineButton);
-
-    expect(screen.queryByText('Timeline chart')).toBeInTheDocument();
   });
 
   it('should show loading while searching for initial selectedEventId', async () => {
@@ -227,41 +190,29 @@ describe('WorkflowHistory', () => {
     });
   });
 
-  it('should show no results when filtered events are empty', async () => {
-    setup({ emptyEvents: true });
+  it('should show no results when filtered events are empty and no next page', async () => {
+    await setup({ emptyEvents: true, hasNextPage: false });
     expect(await screen.findByText('No Results')).toBeInTheDocument();
   });
 
-  it('should render expand all events button', async () => {
-    setup({});
-    expect(await screen.findByText('Expand All')).toBeInTheDocument();
-  });
-
-  it('should render export JSON button', async () => {
-    setup({});
-    expect(await screen.findByText('Export JSON')).toBeInTheDocument();
-  });
-
-  it('should show "Ungroup" button in grouped view and call setQueryParams when clicked', async () => {
-    const { user, mockSetQueryParams } = await setup({
-      pageQueryParamsValues: { ungroupedHistoryViewEnabled: false },
-    });
-
-    const ungroupButton = await screen.findByText('Ungroup');
-    expect(ungroupButton).toBeInTheDocument();
-
-    await user.click(ungroupButton);
-    expect(mockSetQueryParams).toHaveBeenCalledWith({
-      ungroupedHistoryViewEnabled: 'true',
-    });
-  });
-
-  it('should show "Group" button when in ungrouped view', async () => {
+  it('should not show no results when filtered events are empty but has next page', async () => {
     await setup({
-      pageQueryParamsValues: { ungroupedHistoryViewEnabled: true },
+      emptyEvents: true,
+      hasNextPage: true,
     });
 
-    expect(await screen.findByText('Group')).toBeInTheDocument();
+    // Should not show "No Results" when there's a next page
+    expect(screen.queryByText('No Results')).not.toBeInTheDocument();
+
+    // Should show the load more footer component instead
+    expect(screen.getByText('Load more')).toBeInTheDocument();
+  });
+
+  it('should not show no results when there are filtered events', async () => {
+    await setup({});
+    await waitFor(() => {
+      expect(screen.queryByText('No Results')).not.toBeInTheDocument();
+    });
   });
 
   it('should show ungrouped table when ungrouped view is enabled', async () => {
@@ -278,7 +229,7 @@ describe('WorkflowHistory', () => {
     expect(screen.getByText('Workflow Actions')).toBeInTheDocument();
   });
 
-  it('should override ungrouped view preference when query param is set to true', async () => {
+  it('should show ungrouped table when query param overrides preference', async () => {
     await setup({
       pageQueryParamsValues: { ungroupedHistoryViewEnabled: true },
       ungroupedViewPreference: false,
@@ -286,10 +237,9 @@ describe('WorkflowHistory', () => {
 
     // Should show ungrouped table even though preference is false
     expect(await screen.findByText('Ungrouped Table')).toBeInTheDocument();
-    expect(screen.getByText('Group')).toBeInTheDocument();
   });
 
-  it('should use preference when query param is undefined for ungrouped view', async () => {
+  it('should use user preference when query param is undefined for ungrouped view', async () => {
     await setup({
       pageQueryParamsValues: { ungroupedHistoryViewEnabled: undefined },
       ungroupedViewPreference: true,
@@ -297,35 +247,6 @@ describe('WorkflowHistory', () => {
 
     // Should use preference (true) when query param is undefined
     expect(await screen.findByText('Ungrouped Table')).toBeInTheDocument();
-    expect(screen.getByText('Group')).toBeInTheDocument();
-  });
-
-  it('should override history event types preference when query param is set', async () => {
-    const {
-      mockSetUngroupedViewUserPreference,
-      mockSetHistoryEventTypesUserPreference,
-    } = await setup({
-      pageQueryParamsValues: {
-        historyEventTypes: ['TIMER', 'SIGNAL'],
-        ungroupedHistoryViewEnabled: false,
-      },
-      historyEventTypesPreference: ['ACTIVITY', 'DECISION'],
-    });
-
-    expect(mockSetUngroupedViewUserPreference).not.toHaveBeenCalled();
-    expect(mockSetHistoryEventTypesUserPreference).not.toHaveBeenCalled();
-  });
-
-  it('should use preference when history event types query param is undefined', async () => {
-    const { mockSetHistoryEventTypesUserPreference } = await setup({
-      pageQueryParamsValues: {
-        historyEventTypes: undefined,
-        ungroupedHistoryViewEnabled: false,
-      },
-      historyEventTypesPreference: ['TIMER', 'SIGNAL'],
-    });
-
-    expect(mockSetHistoryEventTypesUserPreference).not.toHaveBeenCalled();
   });
 });
 
@@ -338,7 +259,6 @@ async function setup({
   emptyEvents,
   withResetModal,
   ungroupedViewPreference,
-  historyEventTypesPreference,
 }: {
   error?: boolean;
   summaryError?: boolean;
@@ -350,7 +270,6 @@ async function setup({
   emptyEvents?: boolean;
   withResetModal?: boolean;
   ungroupedViewPreference?: boolean;
-  historyEventTypesPreference?: Array<WorkflowHistoryEventFilteringType>;
 }) {
   const user = userEvent.setup();
 
@@ -365,8 +284,6 @@ async function setup({
   }
 
   const mockSetUngroupedViewUserPreference = jest.fn();
-  const mockSetHistoryEventTypesUserPreference = jest.fn();
-  const mockClearHistoryEventTypesUserPreference = jest.fn();
 
   type ReqResolver = (r: GetWorkflowHistoryResponse) => void;
   let requestResolver: ReqResolver = () => {};
@@ -381,11 +298,6 @@ async function setup({
         value={{
           ungroupedViewUserPreference: ungroupedViewPreference ?? null,
           setUngroupedViewUserPreference: mockSetUngroupedViewUserPreference,
-          historyEventTypesUserPreference: historyEventTypesPreference ?? null,
-          setHistoryEventTypesUserPreference:
-            mockSetHistoryEventTypesUserPreference,
-          clearHistoryEventTypesUserPreference:
-            mockClearHistoryEventTypesUserPreference,
         }}
       >
         <WorkflowHistory
@@ -490,7 +402,5 @@ async function setup({
     ...renderResult,
     mockSetQueryParams,
     mockSetUngroupedViewUserPreference,
-    mockSetHistoryEventTypesUserPreference,
-    mockClearHistoryEventTypesUserPreference,
   };
 }

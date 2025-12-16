@@ -1,5 +1,16 @@
+import { headers } from 'next/headers';
+
 import request from '../request';
 import { RequestError } from '../request-error';
+
+jest.mock('next/headers', () => ({
+  headers: jest.fn().mockReturnValue({
+    entries: jest.fn().mockReturnValue([
+      ['x-user-id', 'user123'],
+      ['authorization', 'Bearer user-token'],
+    ]),
+  }),
+}));
 
 describe('request on browser env', () => {
   afterEach(() => {
@@ -21,14 +32,42 @@ describe('request on browser env', () => {
     const url = 'http://example.com';
     const options = { method: 'GET' };
     await request(url, options);
-    expect(fetch).toHaveBeenCalledWith(url, { cache: 'no-cache', ...options });
+    expect(fetch).toHaveBeenCalledWith(url, {
+      cache: 'no-cache',
+      headers: {},
+      ...options,
+    });
   });
 
   it('should call fetch with relative URL on client and no-cache option', async () => {
     const url = '/api/data';
     const options = { method: 'POST' };
     await request(url, options);
-    expect(fetch).toHaveBeenCalledWith(url, { cache: 'no-cache', ...options });
+    expect(fetch).toHaveBeenCalledWith(url, {
+      cache: 'no-cache',
+      headers: {},
+      ...options,
+    });
+  });
+
+  it('should not call headers() or use user headers in client environment', async () => {
+    const url = '/api/data';
+    const options = {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+    };
+
+    await request(url, options);
+
+    // Verify headers() was never called in browser environment
+    expect(headers).not.toHaveBeenCalled();
+
+    // Verify only the provided headers are used, not user headers
+    expect(fetch).toHaveBeenCalledWith(url, {
+      cache: 'no-cache',
+      headers: { 'content-type': 'application/json' },
+      method: 'POST',
+    });
   });
 
   it('should return error if request.ok is false', async () => {

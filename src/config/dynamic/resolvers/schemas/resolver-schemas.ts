@@ -41,7 +41,15 @@ const resolverSchemas: ResolverSchemas = {
       signal: workflowActionsEnabledValueSchema,
       restart: workflowActionsEnabledValueSchema,
       reset: workflowActionsEnabledValueSchema,
+      start: workflowActionsEnabledValueSchema,
     }),
+  },
+  CRON_LIST_ENABLED: {
+    args: z.object({
+      cluster: z.string(),
+      domain: z.string(),
+    }),
+    returnType: z.boolean(),
   },
   EXTENDED_DOMAIN_INFO_ENABLED: {
     args: z.undefined(),
@@ -51,6 +59,18 @@ const resolverSchemas: ResolverSchemas = {
     }),
   },
   WORKFLOW_DIAGNOSTICS_ENABLED: {
+    args: z.undefined(),
+    returnType: z.boolean(),
+  },
+  ARCHIVAL_DEFAULT_SEARCH_ENABLED: {
+    args: z.undefined(),
+    returnType: z.boolean(),
+  },
+  FAILOVER_HISTORY_ENABLED: {
+    args: z.undefined(),
+    returnType: z.boolean(),
+  },
+  HISTORY_PAGE_V2_ENABLED: {
     args: z.undefined(),
     returnType: z.boolean(),
   },

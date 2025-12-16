@@ -1,6 +1,7 @@
 # Cadence Web UI
 
 [![Build Status](https://github.com/uber/cadence-web/actions/workflows/build.yml/badge.svg)](https://github.com/uber/cadence-web/actions/workflows/build.yml) [![Docker Status](https://github.com/uber/cadence-web/actions/workflows/docker_publish.yml/badge.svg)](https://hub.docker.com/r/ubercadence/web/tags)
+[![Slack Status](https://img.shields.io/badge/slack-join_chat-white.svg?logo=slack&style=social)](https://communityinviter.com/apps/cloud-native/cncf)
 
 Cadence is a distributed, scalable, durable, and highly available orchestration engine we developed at Uber Engineering to execute asynchronous long-running business logic in a scalable and resilient way.
 
@@ -21,6 +22,7 @@ Set these environment variables if you need to change their defaults
 | CADENCE_WEB_HOSTNAME         | Host name to serve on                                                         | 0.0.0.0          |
 | CADENCE_ADMIN_SECURITY_TOKEN | Admin token for accessing admin methods                                       | ''               |
 | CADENCE_GRPC_TLS_CA_FILE     | Path to root CA certificate file for enabling one-way TLS on gRPC connections | ''               |
+| CADENCE_WEB_SERVICE_NAME     | Name of the web service used as GRPC caller and OTEL resource name            | cadence-web      |
 
 Note: To connect `cadence-web` to multiple clusters, you will need to add comma-delimted entries for `CADENCE_GRPC_PEERS`, `CADENCE_GRPC_SERVICES_NAMES` & `CADENCE_CLUSTERS_NAMES` for each cluster (each cluster values are grouped by their index within the Comma-delimited lists).
 
@@ -31,6 +33,19 @@ CADENCE_GRPC_PEERS=127.0.0.1:3000,127.0.0.1:5000
 CADENCE_GRPC_SERVICES_NAMES=cadence-frontend-cluster0,cadence-frontend-cluster1
 CADENCE_CLUSTERS_NAMES=cluster0,cluster1
 ```
+
+#### Feature flags
+
+Feature flags control various UI features and functionality in `cadence-web`. These can be configured using environment variables.
+
+| Feature                        | Description                                                                                                                                                             | Environment Variable Configuration                   | Minimum Cadence server Version          |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | --------------------------------------- |
+| Extended Domain Information    | Enhanced domain metadata display and help menu UI                                                                                                                       | `CADENCE_EXTENDED_DOMAIN_INFO_METADATA_ENABLED=true` | N/A                                     |
+| Workflow Diagnostics           | Workflow diagnostics APIs and UI for debugging workflows                                                                                                                | `CADENCE_WORKFLOW_DIAGNOSTICS_ENABLED=true`          | 1.2.13+ (1.3.1+ for full functionality) |
+| Enable Default Archival Search | Shows the default workflow search input + query input for archival workflows page. Default search is disabled by default as it doesn't work well with S3 implementation | `CADENCE_ARCHIVAL_DEFAULT_SEARCH_ENABLED=true`       | N/A                                     |
+
+
+**Note:** For advanced customization, feature flags can be modified through resolvers in the dynamic config system ([`src/config/dynamic/resolvers`](src/config/dynamic/resolvers)).
 
 ### Using cadence-web
 
@@ -150,6 +165,12 @@ After running `cadence`, start `cadence-web` for development using one of the pr
 | test:unit:node    | Run only node unit tests                                                                        |
 | lint              | Run eslint                                                                                      |
 | typecheck         | Run typescript checks                                                                           |
+
+## Contributing
+
+We'd love your help in making the Cadence Web UI great. Please review our [contribution guidelines](CONTRIBUTING.md).
+
+If you'd like to propose a new feature or discuss issues, join the [CNCF Slack workspace](https://communityinviter.com/apps/cloud-native/cncf) in the **#cadence-users** channel to start a discussion.
 
 ## License
 
