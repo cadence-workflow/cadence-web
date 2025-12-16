@@ -12,6 +12,7 @@ export type GroupDetailsEntries = Array<[string, EventDetailsTabContent]>;
 export type Props = {
   groupDetailsEntries: GroupDetailsEntries;
   initialEventId: string | undefined;
+  isUngroupedView?: boolean;
   workflowPageParams: WorkflowPageParams;
   onClose?: () => void;
 };

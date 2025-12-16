@@ -16,7 +16,6 @@ import {
 export default function WorkflowHistoryUngroupedTable({
   eventGroupsById,
   virtuosoRef,
-  initialStartIndex,
   setVisibleRange,
   decodedPageUrlParams,
   selectedEventId,
@@ -75,15 +74,6 @@ export default function WorkflowHistoryUngroupedTable({
         ref={virtuosoRef}
         defaultItemHeight={36}
         rangeChanged={setVisibleRange}
-        {...(initialStartIndex === undefined
-          ? {}
-          : {
-              initialTopMostItemIndex: {
-                index: initialStartIndex,
-                align: 'center',
-                behavior: 'auto',
-              },
-            })}
         itemContent={(_, eventInfo) => (
           <WorkflowHistoryUngroupedEvent
             eventInfo={eventInfo}
@@ -98,7 +88,11 @@ export default function WorkflowHistoryUngroupedTable({
           />
         )}
         {...(maybeHighlightedEventId !== -1 && {
-          initialTopMostItemIndex: maybeHighlightedEventId,
+          initialTopMostItemIndex: {
+            index: maybeHighlightedEventId,
+            align: 'center',
+            behavior: 'auto',
+          },
         })}
         components={{
           Footer: () => (

@@ -149,6 +149,7 @@ export default function WorkflowHistoryUngroupedEvent({
           <WorkflowHistoryGroupDetails
             groupDetailsEntries={groupDetailsEntriesWithSummary}
             initialEventId={eventInfo.id}
+            isUngroupedView={true}
             workflowPageParams={decodedPageUrlParams}
             onClose={() => toggleIsExpanded()}
           />

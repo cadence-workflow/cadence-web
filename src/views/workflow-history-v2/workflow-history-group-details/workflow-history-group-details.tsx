@@ -13,6 +13,7 @@ import { type Props } from './workflow-history-group-details.types';
 export default function WorkflowHistoryGroupDetails({
   groupDetailsEntries,
   initialEventId,
+  isUngroupedView,
   workflowPageParams,
   onClose,
 }: Props) {
@@ -48,7 +49,10 @@ export default function WorkflowHistoryGroupDetails({
           ))}
         </ButtonGroup>
         <styled.ExtraActions>
-          <WorkflowHistoryEventLinkButton historyEventId={selectedEventId} />
+          <WorkflowHistoryEventLinkButton
+            historyEventId={selectedEventId}
+            isUngroupedView={isUngroupedView}
+          />
           {onClose && (
             <Button
               kind="tertiary"

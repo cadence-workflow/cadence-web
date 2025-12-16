@@ -35,7 +35,6 @@ export type Props = {
     startIndex: number;
     endIndex: number;
   }) => void;
-  initialStartIndex?: number;
   virtuosoRef: RefObject<VirtuosoHandle>;
 };
 
