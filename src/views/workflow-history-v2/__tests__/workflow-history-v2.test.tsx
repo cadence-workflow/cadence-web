@@ -360,7 +360,6 @@ describe(WorkflowHistoryV2.name, () => {
       },
     });
 
-    // Should strip the prefix and pass the event ID without it
     expect(
       await screen.findByTestId('grouped-selected-event-id')
     ).toHaveTextContent('test-event-id');
@@ -373,7 +372,6 @@ describe(WorkflowHistoryV2.name, () => {
       },
     });
 
-    // Should pass the event ID as-is
     expect(
       await screen.findByTestId('grouped-selected-event-id')
     ).toHaveTextContent('test-event-id');
@@ -387,7 +385,6 @@ describe(WorkflowHistoryV2.name, () => {
       },
     });
 
-    // Should strip the prefix and pass the event ID without it
     expect(
       await screen.findByTestId('ungrouped-selected-event-id')
     ).toHaveTextContent('test-event-id');

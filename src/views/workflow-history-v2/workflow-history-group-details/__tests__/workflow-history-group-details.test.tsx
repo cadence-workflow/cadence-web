@@ -248,11 +248,9 @@ describe(WorkflowHistoryGroupDetails.name, () => {
 
     const { user } = setup({ groupDetailsEntries: mockGroupDetails });
 
-    // Click on second event button
     const event2Button = screen.getByText('Event 2 Label');
     await user.click(event2Button);
 
-    // Click link button - should copy link with event-2
     const linkButton = screen.getByLabelText('Copy link to event');
     await user.click(linkButton);
 
