@@ -1,9 +1,13 @@
-import { render, screen, userEvent } from '@/test-utils/rtl';
+import copy from 'copy-to-clipboard';
+
+import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
 import { type WorkflowPageParams } from '@/views/workflow-page/workflow-page.types';
 
 import WorkflowHistoryGroupDetails from '../workflow-history-group-details';
 import { type GroupDetailsEntries } from '../workflow-history-group-details.types';
+
+jest.mock('copy-to-clipboard', jest.fn);
 
 jest.mock(
   '../../workflow-history-event-details/workflow-history-event-details',
@@ -23,6 +27,28 @@ jest.mock(
 );
 
 describe(WorkflowHistoryGroupDetails.name, () => {
+  let originalWindow: Window & typeof globalThis;
+
+  beforeEach(() => {
+    // Mock window.location
+    originalWindow = window;
+    window = Object.create(window);
+    Object.defineProperty(window, 'location', {
+      value: {
+        ...window.location,
+        origin: 'http://localhost',
+        pathname:
+          '/domains/test-domain/workflows/test-workflow/test-run/history',
+      },
+      writable: true,
+    });
+  });
+
+  afterEach(() => {
+    window = originalWindow;
+    jest.clearAllMocks();
+  });
+
   const mockGroupDetails: GroupDetailsEntries = [
     [
       'event-1',
@@ -186,6 +212,52 @@ describe(WorkflowHistoryGroupDetails.name, () => {
     expect(
       screen.getByLabelText('Workflow history event details')
     ).toBeInTheDocument();
+  });
+
+  it('renders link button for copying event link', () => {
+    setup({ groupDetailsEntries: mockGroupDetails });
+
+    const linkButton = screen.getByLabelText('Copy link to event');
+    expect(linkButton).toBeInTheDocument();
+  });
+
+  it('copies link with event ID when link button is clicked', async () => {
+    const { user } = setup({
+      groupDetailsEntries: mockGroupDetails,
+      initialEventId: 'event-2',
+    });
+
+    const linkButton = screen.getByLabelText('Copy link to event');
+    await user.click(linkButton);
+
+    expect(copy).toHaveBeenCalledWith(
+      'http://localhost/domains/test-domain/workflows/test-workflow/test-run/history?he=event-2'
+    );
+  });
+
+  it('updates link when different event is selected', async () => {
+    const { user } = setup({ groupDetailsEntries: mockGroupDetails });
+
+    // Click on second event button
+    const event2Button = screen.getByText('Event 2 Label');
+    await user.click(event2Button);
+
+    // Click link button - should copy link with event-2
+    const linkButton = screen.getByLabelText('Copy link to event');
+    await user.click(linkButton);
+
+    expect(copy).toHaveBeenCalledWith(
+      'http://localhost/domains/test-domain/workflows/test-workflow/test-run/history?he=event-2'
+    );
+  });
+
+  it('shows "Copied link to event" tooltip after clicking link button', async () => {
+    const { user } = setup({ groupDetailsEntries: mockGroupDetails });
+
+    const linkButton = screen.getByLabelText('Copy link to event');
+    await user.click(linkButton);
+
+    expect(await screen.findByText('Copied link to event')).toBeInTheDocument();
   });
 });
 

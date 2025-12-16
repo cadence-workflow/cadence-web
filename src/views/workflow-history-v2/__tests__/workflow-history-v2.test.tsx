@@ -81,16 +81,26 @@ jest.mock('../workflow-history-header/workflow-history-header', () =>
 jest.mock(
   '../workflow-history-grouped-table/workflow-history-grouped-table',
   () =>
-    jest.fn(() => (
-      <div data-testid="workflow-history-grouped-table">Grouped Table</div>
+    jest.fn(({ selectedEventId }: { selectedEventId?: string }) => (
+      <div data-testid="workflow-history-grouped-table">
+        Grouped Table
+        {selectedEventId && (
+          <div data-testid="grouped-selected-event-id">{selectedEventId}</div>
+        )}
+      </div>
     ))
 );
 
 jest.mock(
   '../workflow-history-ungrouped-table/workflow-history-ungrouped-table',
   () =>
-    jest.fn(() => (
-      <div data-testid="workflow-history-ungrouped-table">Ungrouped Table</div>
+    jest.fn(({ selectedEventId }: { selectedEventId?: string }) => (
+      <div data-testid="workflow-history-ungrouped-table">
+        Ungrouped Table
+        {selectedEventId && (
+          <div data-testid="ungrouped-selected-event-id">{selectedEventId}</div>
+        )}
+      </div>
     ))
 );
 
@@ -341,6 +351,46 @@ describe(WorkflowHistoryV2.name, () => {
       'active-filters-count'
     );
     expect(activeFiltersCountElement).toHaveTextContent('5');
+  });
+
+  it('strips summary_ prefix from historySelectedEventId when present', async () => {
+    await setup({
+      pageQueryParamsValues: {
+        historySelectedEventId: 'summary_test-event-id',
+      },
+    });
+
+    // Should strip the prefix and pass the event ID without it
+    expect(
+      await screen.findByTestId('grouped-selected-event-id')
+    ).toHaveTextContent('test-event-id');
+  });
+
+  it('passes historySelectedEventId as-is when it does not start with summary_', async () => {
+    await setup({
+      pageQueryParamsValues: {
+        historySelectedEventId: 'test-event-id',
+      },
+    });
+
+    // Should pass the event ID as-is
+    expect(
+      await screen.findByTestId('grouped-selected-event-id')
+    ).toHaveTextContent('test-event-id');
+  });
+
+  it('passes stripped event ID to ungrouped table when summary_ prefix is present', async () => {
+    await setup({
+      pageQueryParamsValues: {
+        historySelectedEventId: 'summary_test-event-id',
+        ungroupedHistoryViewEnabled: true,
+      },
+    });
+
+    // Should strip the prefix and pass the event ID without it
+    expect(
+      await screen.findByTestId('ungrouped-selected-event-id')
+    ).toHaveTextContent('test-event-id');
   });
 });
 

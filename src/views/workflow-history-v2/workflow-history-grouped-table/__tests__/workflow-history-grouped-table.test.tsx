@@ -30,11 +30,22 @@ jest.mock(
 jest.mock(
   '../../workflow-history-event-group/workflow-history-event-group',
   () =>
-    jest.fn(({ eventGroup }: { eventGroup: HistoryEventsGroup }) => (
-      <div data-testid="workflow-history-event-group">
-        {JSON.stringify(eventGroup)}
-      </div>
-    ))
+    jest.fn(
+      ({
+        eventGroup,
+        selectedEventId,
+      }: {
+        eventGroup: HistoryEventsGroup;
+        selectedEventId?: string;
+      }) => (
+        <div data-testid="workflow-history-event-group">
+          {JSON.stringify(eventGroup)}
+          {selectedEventId && (
+            <div data-testid="selected-event-id">{selectedEventId}</div>
+          )}
+        </div>
+      )
+    )
 );
 
 describe(WorkflowHistoryGroupedTable.name, () => {
@@ -83,6 +94,29 @@ describe(WorkflowHistoryGroupedTable.name, () => {
     setup({ isFetchingMoreEvents: true });
 
     expect(screen.getByTestId('is-fetching')).toBeInTheDocument();
+  });
+
+  it('should pass selectedEventId to WorkflowHistoryEventGroup', () => {
+    const mockEventGroups: Array<[string, HistoryEventsGroup]> = [
+      ['group-1', mockActivityEventGroup],
+    ];
+    const selectedEventId = 'test-event-id';
+
+    setup({ eventGroupsById: mockEventGroups, selectedEventId });
+
+    expect(screen.getByTestId('selected-event-id')).toHaveTextContent(
+      selectedEventId
+    );
+  });
+
+  it('should not pass selectedEventId when it is undefined', () => {
+    const mockEventGroups: Array<[string, HistoryEventsGroup]> = [
+      ['group-1', mockActivityEventGroup],
+    ];
+
+    setup({ eventGroupsById: mockEventGroups, selectedEventId: undefined });
+
+    expect(screen.queryByTestId('selected-event-id')).not.toBeInTheDocument();
   });
 });
 
