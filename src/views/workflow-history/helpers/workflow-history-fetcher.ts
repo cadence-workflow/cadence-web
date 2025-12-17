@@ -72,6 +72,8 @@ export default class WorkflowHistoryFetcher {
    * @param shouldContinue - Callback that determines whether to continue fetching pages.
    *   Receives the current query state and should return true to continue, false to stop.
    *   Defaults to always returning true.
+   * @param throttleMs - Optional throttle delay (ms) for fetching next pages.
+   *   If greater than 0, page fetches will be throttled by this amount.
    */
   start(
     shouldContinue: ShouldContinueCallback = () => true,
@@ -116,6 +118,7 @@ export default class WorkflowHistoryFetcher {
       // to cleanup the throttledFetch fn only after the subscription has been fully established.
       this.cleanupThrottledFetch();
     }
+    this.cleanupThrottledFetch();
   }
 
   /**
