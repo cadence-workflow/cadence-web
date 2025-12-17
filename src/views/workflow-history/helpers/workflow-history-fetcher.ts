@@ -123,8 +123,6 @@ export default class WorkflowHistoryFetcher {
    */
   fetchSingleNextPage(): void {
     const state = this.getCurrentState();
-    // If the query is still pending, enable it to fetch the first page.
-    // Otherwise, fetch the next page if it is not already fetching and there are more pages.
     if (state.status === 'pending') {
       this.enableQuery();
     } else if (!state.isFetchingNextPage && state.hasNextPage)
