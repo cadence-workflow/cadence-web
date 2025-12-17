@@ -8,12 +8,10 @@ import {
   type GetWorkflowHistoryResponse,
 } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
 import request from '@/utils/request';
-
 import {
   WORKFLOW_HISTORY_FIRST_PAGE_SIZE_CONFIG,
   WORKFLOW_HISTORY_PAGE_SIZE_CONFIG,
-} from '../config/workflow-history-page-size.config';
-
+} from '@/views/workflow-history/config/workflow-history-page-size.config';
 import {
   type WorkflowHistoryQueryResult,
   type QueryResultOnChangeCallback,
@@ -21,7 +19,7 @@ import {
   type WorkflowHistoryReactQueryParams,
   type WorkflowHistoryInfiniteQueryOptions,
   type WorkflowHistoryInfiniteQueryObserver,
-} from './workflow-history-fetcher.types';
+} from '@/views/workflow-history/helpers/workflow-history-fetcher.types';
 
 export default class WorkflowHistoryFetcher {
   private observer: WorkflowHistoryInfiniteQueryObserver;
