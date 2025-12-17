@@ -52,7 +52,6 @@ describe('auth-context utilities', () => {
       });
       mockGetConfigValue.mockImplementation(async (key: string) => {
         if (key === 'CADENCE_WEB_RBAC_ENABLED') return 'true';
-        if (key === 'CADENCE_WEB_JWT_TOKEN') return 'env-token';
         return '';
       });
 
@@ -65,20 +64,14 @@ describe('auth-context utilities', () => {
         rbacEnabled: true,
         isAdmin: true,
         token,
-        tokenSource: 'cookie',
         groups: ['worker'],
         userName: 'cookie-user',
       });
     });
 
-    it('falls back to env token when cookie is missing', async () => {
-      const envToken = buildToken({
-        sub: 'env-user',
-        groups: ['reader'],
-      });
+    it('returns unauthenticated context when cookie is missing', async () => {
       mockGetConfigValue.mockImplementation(async (key: string) => {
         if (key === 'CADENCE_WEB_RBAC_ENABLED') return 'true';
-        if (key === 'CADENCE_WEB_JWT_TOKEN') return envToken;
         return '';
       });
 
@@ -88,12 +81,64 @@ describe('auth-context utilities', () => {
 
       expect(authContext).toMatchObject({
         rbacEnabled: true,
-        token: envToken,
-        tokenSource: 'env',
-        groups: ['reader'],
-        isAdmin: false,
-        userName: 'env-user',
+        token: undefined,
       });
+    });
+
+    it('treats expired tokens as unauthenticated', async () => {
+      const nowMs = 1_700_000_000_000;
+      const dateNowSpy = jest.spyOn(Date, 'now').mockReturnValue(nowMs);
+
+      const token = buildToken({
+        sub: 'expired-user',
+        groups: ['worker'],
+        Admin: true,
+        exp: Math.floor(nowMs / 1000) - 10,
+      });
+      mockGetConfigValue.mockImplementation(async (key: string) => {
+        if (key === 'CADENCE_WEB_RBAC_ENABLED') return 'true';
+        return '';
+      });
+
+      const authContext = await resolveAuthContext({
+        get: (name: string) =>
+          name === CADENCE_AUTH_COOKIE_NAME ? { value: token } : undefined,
+      });
+
+      expect(authContext).toMatchObject({
+        rbacEnabled: true,
+        token: undefined,
+        isAdmin: false,
+        groups: [],
+        userName: undefined,
+        expiresAtMs: undefined,
+      });
+
+      dateNowSpy.mockRestore();
+    });
+
+    it('exposes expiresAtMs for valid tokens', async () => {
+      const nowMs = 1_700_000_000_000;
+      const dateNowSpy = jest.spyOn(Date, 'now').mockReturnValue(nowMs);
+      const expSeconds = Math.floor(nowMs / 1000) + 60;
+
+      const token = buildToken({
+        sub: 'exp-user',
+        exp: expSeconds,
+      });
+      mockGetConfigValue.mockImplementation(async (key: string) => {
+        if (key === 'CADENCE_WEB_RBAC_ENABLED') return 'true';
+        return '';
+      });
+
+      const authContext = await resolveAuthContext({
+        get: (name: string) =>
+          name === CADENCE_AUTH_COOKIE_NAME ? { value: token } : undefined,
+      });
+
+      expect(authContext.expiresAtMs).toBe(expSeconds * 1000);
+
+      dateNowSpy.mockRestore();
     });
 
     it('handles capitalized Groups claim with comma-separated string', async () => {
@@ -104,12 +149,12 @@ describe('auth-context utilities', () => {
       });
       mockGetConfigValue.mockImplementation(async (key: string) => {
         if (key === 'CADENCE_WEB_RBAC_ENABLED') return 'true';
-        if (key === 'CADENCE_WEB_JWT_TOKEN') return token;
         return '';
       });
 
       const authContext = await resolveAuthContext({
-        get: () => undefined,
+        get: (name: string) =>
+          name === CADENCE_AUTH_COOKIE_NAME ? { value: token } : undefined,
       });
 
       expect(authContext.groups).toEqual(['readers', 'auditors']);
@@ -124,31 +169,31 @@ describe('auth-context utilities', () => {
       });
       mockGetConfigValue.mockImplementation(async (key: string) => {
         if (key === 'CADENCE_WEB_RBAC_ENABLED') return 'true';
-        if (key === 'CADENCE_WEB_JWT_TOKEN') return token;
         return '';
       });
 
       const authContext = await resolveAuthContext({
-        get: () => undefined,
+        get: (name: string) =>
+          name === CADENCE_AUTH_COOKIE_NAME ? { value: token } : undefined,
       });
 
       expect(authContext.groups).toEqual(['readers', 'auditors']);
       expect(authContext.isAdmin).toBe(false);
     });
 
-    it('still forwards env token when RBAC is disabled', async () => {
+    it('still forwards cookie token when RBAC is disabled', async () => {
       const token = buildToken({
         sub: 'legacy-admin',
         Admin: true,
       });
       mockGetConfigValue.mockImplementation(async (key: string) => {
         if (key === 'CADENCE_WEB_RBAC_ENABLED') return 'false';
-        if (key === 'CADENCE_WEB_JWT_TOKEN') return token;
         return '';
       });
 
       const authContext = await resolveAuthContext({
-        get: () => undefined,
+        get: (name: string) =>
+          name === CADENCE_AUTH_COOKIE_NAME ? { value: token } : undefined,
       });
 
       expect(authContext.token).toBe(token);
@@ -398,12 +443,10 @@ describe('auth-context utilities', () => {
   });
 
   describe(getPublicAuthContext.name, () => {
-    it('omits the token but preserves flags', () => {
+    it('omits private fields but preserves flags', () => {
       const authContext = {
         rbacEnabled: true,
         token: 'secret',
-        tokenSource: 'cookie' as const,
-        claims: { Admin: true },
         groups: ['worker'],
         isAdmin: true,
         userName: 'worker',
@@ -412,8 +455,6 @@ describe('auth-context utilities', () => {
 
       expect(getPublicAuthContext(authContext)).toEqual({
         rbacEnabled: true,
-        tokenSource: 'cookie',
-        claims: { Admin: true },
         groups: ['worker'],
         isAdmin: true,
         userName: 'worker',

@@ -13,7 +13,7 @@ export default function SnackbarProvider({ children }: Props) {
     <BaseSnackbarProvider
       placement={PLACEMENT.bottom}
       overrides={overrides.snackbar}
-      defaultDuration={DURATION.infinite}
+      defaultDuration={DURATION.medium}
     >
       {children}
     </BaseSnackbarProvider>

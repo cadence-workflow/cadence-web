@@ -29,7 +29,6 @@ const dynamicConfigs: {
   CADENCE_WEB_PORT: ConfigEnvDefinition;
   ADMIN_SECURITY_TOKEN: ConfigEnvDefinition;
   CADENCE_WEB_RBAC_ENABLED: ConfigEnvDefinition;
-  CADENCE_WEB_JWT_TOKEN: ConfigEnvDefinition;
   CLUSTERS: ConfigSyncResolverDefinition<
     undefined,
     ClustersConfigs,
@@ -96,10 +95,6 @@ const dynamicConfigs: {
   CADENCE_WEB_RBAC_ENABLED: {
     env: 'CADENCE_WEB_RBAC_ENABLED',
     default: 'false',
-  },
-  CADENCE_WEB_JWT_TOKEN: {
-    env: 'CADENCE_WEB_JWT_TOKEN',
-    default: process.env.CADENCE_WEB_RBAC_TOKEN || '',
   },
   CLUSTERS: {
     resolver: clusters,

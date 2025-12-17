@@ -7,7 +7,7 @@ import { type GRPCMetadata } from '@/utils/grpc/grpc-service';
 import getConfigValue from '../config/get-config-value';
 
 import {
-  type AuthTokenSource,
+  splitGroupList,
   type CadenceJwtClaims,
   type PublicAuthContext,
   type UserAuthContext,
@@ -21,12 +21,6 @@ type CookieReader = {
 
 const parseBooleanFlag = (value: string) =>
   value?.toLowerCase() === 'true' || value === '1';
-
-const splitGroupList = (raw: string) =>
-  raw
-    .split(/[,\s]+/g)
-    .map((g) => g.trim())
-    .filter(Boolean);
 
 export function decodeCadenceJwtClaims(
   token: string
@@ -59,20 +53,19 @@ export async function resolveAuthContext(
 
   const cookies = cookieStore ?? getRequestCookies();
   const tokenFromCookie = cookies.get(CADENCE_AUTH_COOKIE_NAME)?.value?.trim();
-  const envToken = (await getConfigValue('CADENCE_WEB_JWT_TOKEN'))?.trim();
-
-  const token = tokenFromCookie || envToken || undefined;
-  const tokenSource: AuthTokenSource | undefined = tokenFromCookie
-    ? 'cookie'
-    : envToken
-      ? 'env'
-      : undefined;
+  const token = tokenFromCookie || undefined;
 
   const claims = token ? decodeCadenceJwtClaims(token) : undefined;
+  const expiresAtMsRaw =
+    typeof claims?.exp === 'number' ? claims.exp * 1000 : undefined;
+  const isExpired =
+    expiresAtMsRaw !== undefined && Date.now() >= expiresAtMsRaw;
+  const effectiveClaims = isExpired ? undefined : claims;
+  const expiresAtMs = isExpired ? undefined : expiresAtMsRaw;
+  const effectiveToken = isExpired ? undefined : token;
+
   const normalizeGroups = (): string[] => {
-    const raw =
-      (claims as Record<string, unknown> | undefined)?.groups ??
-      (claims as Record<string, unknown> | undefined)?.Groups;
+    const raw = effectiveClaims?.groups ?? effectiveClaims?.Groups;
     if (!raw) return [];
     if (Array.isArray(raw)) {
       return raw
@@ -86,20 +79,19 @@ export async function resolveAuthContext(
   };
   const groups = normalizeGroups();
   const userName =
-    (claims?.name && typeof claims.name === 'string' && claims.name) ||
-    (claims?.sub && typeof claims.sub === 'string' && claims.sub) ||
+    (typeof effectiveClaims?.name === 'string' && effectiveClaims.name) ||
+    (typeof effectiveClaims?.sub === 'string' && effectiveClaims.sub) ||
     undefined;
-  const isAdmin = claims?.Admin === true;
+  const isAdmin = effectiveClaims?.Admin === true;
 
   return {
     rbacEnabled,
-    token,
-    tokenSource,
-    claims,
+    token: effectiveToken,
     groups,
     isAdmin,
     userName,
     id: userName,
+    expiresAtMs,
   };
 }
 
@@ -119,18 +111,18 @@ export const getPublicAuthContext = (
   authContext: UserAuthContext
 ): PublicAuthContext => ({
   rbacEnabled: authContext.rbacEnabled,
-  tokenSource: authContext.tokenSource,
-  claims: authContext.claims,
   groups: authContext.groups,
   isAdmin: authContext.isAdmin,
   userName: authContext.userName,
   id: authContext.id,
+  ...(typeof authContext.expiresAtMs === 'number'
+    ? { expiresAtMs: authContext.expiresAtMs }
+    : {}),
   isAuthenticated: Boolean(authContext.token),
 });
 
 export { getDomainAccessForUser } from './auth-shared';
 export type {
-  AuthTokenSource,
   CadenceJwtClaims,
   PublicAuthContext,
   UserAuthContext,

@@ -1,10 +1,16 @@
 'use client';
-import React, { useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import { AppNavBar as BaseAppNavBar } from 'baseui/app-nav-bar';
 import { useSnackbar } from 'baseui/snackbar';
 import NextLink from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import useUserInfo from '@/hooks/use-user-info/use-user-info';
@@ -20,40 +26,52 @@ const LOGOUT_ITEM = 'logout';
 export default function AppNavBar() {
   const { cls } = useStyletronClasses(cssStyles);
   const router = useRouter();
+  const pathname = usePathname();
   const { enqueue } = useSnackbar();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data: authInfo, isLoading: isAuthLoading, refetch } = useUserInfo();
+  const isRbacEnabled = authInfo?.rbacEnabled === true;
+  const isAuthenticated = authInfo?.isAuthenticated === true;
+  const isAdmin = authInfo?.isAdmin === true;
+  const expiresAtMs =
+    typeof authInfo?.expiresAtMs === 'number'
+      ? authInfo.expiresAtMs
+      : undefined;
+  const logoutInFlightRef = useRef(false);
+  const prevIsAuthenticatedRef = useRef<boolean | null>(null);
+  const logoutReasonRef = useRef<'manual' | 'expired' | null>(null);
+
   const userItems = useMemo(() => {
-    if (!authInfo?.rbacEnabled) return undefined;
-    if (!authInfo.isAuthenticated) {
+    if (!isRbacEnabled) return undefined;
+    if (!isAuthenticated) {
       return [{ label: 'Login with JWT', info: LOGIN_ITEM }];
     }
     return [
       { label: 'Switch token', info: LOGIN_ITEM },
       { label: 'Logout', info: LOGOUT_ITEM },
     ];
-  }, [authInfo]);
+  }, [isAuthenticated, isRbacEnabled]);
 
   const username = useMemo(() => {
-    if (!authInfo?.rbacEnabled) {
+    if (!isRbacEnabled) {
       return undefined;
     }
     if (isAuthLoading || !authInfo) {
       return 'Checking access...';
     }
-    return authInfo.isAuthenticated
-      ? authInfo.userName || 'Authenticated user'
+    return isAuthenticated
+      ? authInfo.userName || 'Authenticated user (unknown username)'
       : 'Authenticate';
-  }, [authInfo, isAuthLoading]);
+  }, [authInfo, isAuthLoading, isAuthenticated, isRbacEnabled]);
 
   const usernameSubtitle =
-    authInfo?.rbacEnabled && authInfo.isAuthenticated
-      ? authInfo.isAdmin
+    isRbacEnabled && isAuthenticated
+      ? isAdmin
         ? 'Admin'
-        : 'Authenticated'
-      : authInfo?.rbacEnabled
-        ? 'Paste a Cadence JWT'
+        : undefined
+      : isRbacEnabled
+        ? 'Provide a Cadence JWT'
         : undefined;
 
   const saveToken = async (token: string) => {
@@ -75,19 +93,74 @@ export default function AppNavBar() {
     }
   };
 
-  const logout = async () => {
-    try {
-      await request('/api/auth/token', { method: 'DELETE' });
-      enqueue({ message: 'Signed out' });
-    } catch (e) {
-      const message = e instanceof Error ? e.message : 'Failed to sign out';
-      enqueue({ message });
-    } finally {
-      setIsModalOpen(false);
-      await refetch();
-      router.refresh();
+  const logout = useCallback(
+    async (reason: 'manual' | 'expired') => {
+      if (logoutInFlightRef.current) return;
+      logoutInFlightRef.current = true;
+      logoutReasonRef.current = reason;
+      try {
+        await request('/api/auth/token', { method: 'DELETE' });
+      } catch (e) {
+        logoutReasonRef.current = null;
+        const message = e instanceof Error ? e.message : 'Failed to sign out';
+        enqueue({ message });
+      } finally {
+        setIsModalOpen(false);
+        await refetch();
+        router.refresh();
+        router.replace('/domains');
+        logoutInFlightRef.current = false;
+      }
+    },
+    [enqueue, refetch, router]
+  );
+
+  useEffect(() => {
+    if (!isRbacEnabled || isAuthLoading || !authInfo) return;
+    const prevIsAuthenticated = prevIsAuthenticatedRef.current;
+    prevIsAuthenticatedRef.current = isAuthenticated;
+
+    if (prevIsAuthenticated === true && !isAuthenticated) {
+      const reason = logoutReasonRef.current;
+      logoutReasonRef.current = null;
+      enqueue({
+        message:
+          reason === 'manual'
+            ? 'Signed out'
+            : 'Session expired. Please sign in again.',
+      });
+      if (pathname === '/domains') {
+        router.refresh();
+      } else {
+        router.replace('/domains');
+      }
     }
-  };
+  }, [
+    authInfo,
+    enqueue,
+    isAuthenticated,
+    isAuthLoading,
+    isRbacEnabled,
+    pathname,
+    router,
+  ]);
+
+  useEffect(() => {
+    if (!isRbacEnabled || !isAuthenticated || expiresAtMs === undefined) return;
+    const timeoutMs = expiresAtMs - Date.now();
+    if (timeoutMs <= 0) {
+      void logout('expired');
+      return;
+    }
+
+    const id = window.setTimeout(() => {
+      void logout('expired');
+    }, timeoutMs);
+
+    return () => {
+      window.clearTimeout(id);
+    };
+  }, [expiresAtMs, isAuthenticated, isRbacEnabled, logout]);
 
   return (
     <>
@@ -113,11 +186,11 @@ export default function AppNavBar() {
           if (item.info === LOGIN_ITEM) {
             setIsModalOpen(true);
           } else if (item.info === LOGOUT_ITEM) {
-            void logout();
+            void logout('manual');
           }
         }}
       />
-      {authInfo?.rbacEnabled && (
+      {isRbacEnabled && (
         <AuthTokenModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}

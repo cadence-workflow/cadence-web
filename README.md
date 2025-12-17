@@ -30,7 +30,6 @@ Set these environment variables if you need to change their defaults.
 | CADENCE_WEB_HOSTNAME         | Host name to serve on                                                         | 0.0.0.0          |
 | CADENCE_ADMIN_SECURITY_TOKEN | Admin token for accessing admin methods                                       | ''               |
 | CADENCE_WEB_RBAC_ENABLED     | Enables RBAC-aware UI (login/logout).                                         | false            |
-| CADENCE_WEB_JWT_TOKEN        | Static Cadence JWT forwarded when no request token exists                     | ''               |
 | CADENCE_GRPC_TLS_CA_FILE     | Path to root CA certificate file for enabling one-way TLS on gRPC connections | ''               |
 | CADENCE_WEB_SERVICE_NAME     | Name of the web service used as GRPC caller and OTEL resource name            | cadence-web      |
 

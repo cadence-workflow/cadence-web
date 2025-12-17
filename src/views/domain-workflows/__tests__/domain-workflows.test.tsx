@@ -43,7 +43,7 @@ describe('DomainWorkflows', () => {
       await setup({
         rbacEnabled: false,
         isAuthenticated: true,
-        claims: { Admin: false },
+        isAdmin: false,
         skipClusterRequest: true,
       });
     });
@@ -57,14 +57,14 @@ async function setup({
   error,
   rbacEnabled = false,
   isAuthenticated = false,
-  claims,
+  isAdmin = false,
   skipClusterRequest = false,
 }: {
   error?: boolean;
   isAdvancedVisibility?: boolean;
   rbacEnabled?: boolean;
   isAuthenticated?: boolean;
-  claims?: Record<string, unknown>;
+  isAdmin?: boolean;
   skipClusterRequest?: boolean;
 }) {
   const props: DomainPageTabContentProps = {
@@ -85,8 +85,7 @@ async function setup({
           jsonResponse: {
             rbacEnabled,
             isAuthenticated,
-            isAdmin: Boolean(claims?.Admin),
-            claims,
+            isAdmin,
             groups: [],
           },
         },
