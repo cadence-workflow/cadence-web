@@ -92,8 +92,8 @@ export default class WorkflowHistoryFetcher {
   }
 
   /**
-   * Stops automatic pagination. This will cancel any ongoing subscriptions and
-   * clean up throttled functions, but will not destroy the fetcher instance.
+   * Stops automatic pagination. This will cancel any ongoing subscriptions,
+   * but will not destroy the fetcher instance.
    * Use `destroy()` to fully clean up the fetcher.
    */
   stop(): void {
