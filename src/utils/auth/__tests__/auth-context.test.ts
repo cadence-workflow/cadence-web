@@ -20,6 +20,11 @@ const buildToken = (claims: Record<string, unknown>) => {
   return ['header', payload, 'signature'].join('.');
 };
 
+const buildTokenWithNonJsonPayload = (payloadText: string) => {
+  const payload = Buffer.from(payloadText).toString('base64url');
+  return ['header', payload, 'signature'].join('.');
+};
+
 describe('auth-context utilities', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -82,6 +87,27 @@ describe('auth-context utilities', () => {
       expect(authContext).toMatchObject({
         rbacEnabled: true,
         token: undefined,
+      });
+    });
+
+    it('treats undecodable tokens as unauthenticated', async () => {
+      const token = buildTokenWithNonJsonPayload('not-json');
+      mockGetConfigValue.mockImplementation(async (key: string) => {
+        if (key === 'CADENCE_WEB_RBAC_ENABLED') return 'true';
+        return '';
+      });
+
+      const authContext = await resolveAuthContext({
+        get: (name: string) =>
+          name === CADENCE_AUTH_COOKIE_NAME ? { value: token } : undefined,
+      });
+
+      expect(authContext).toMatchObject({
+        rbacEnabled: true,
+        token: undefined,
+        groups: [],
+        isAdmin: false,
+        userName: undefined,
       });
     });
 

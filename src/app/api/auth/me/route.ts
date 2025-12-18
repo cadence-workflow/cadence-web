@@ -7,5 +7,7 @@ import {
 
 export async function GET(request: NextRequest) {
   const authContext = await resolveAuthContext(request.cookies);
-  return NextResponse.json(getPublicAuthContext(authContext));
+  return NextResponse.json(getPublicAuthContext(authContext), {
+    headers: { 'Cache-Control': 'no-store' },
+  });
 }

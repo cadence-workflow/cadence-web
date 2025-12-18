@@ -11,11 +11,11 @@ import useUserInfo from '../use-user-info/use-user-info';
 
 export default function useDomainAccess(params: UseDomainDescriptionParams) {
   const userInfoQuery = useUserInfo();
-  const shouldLoadDomain = Boolean(userInfoQuery.data);
+  const isRbacEnabled = userInfoQuery.data?.rbacEnabled === true;
 
   const domainQuery = useQuery({
     ...getDomainDescriptionQueryOptions(params),
-    enabled: shouldLoadDomain,
+    enabled: isRbacEnabled,
   });
 
   const access = useMemo(() => {
@@ -25,6 +25,10 @@ export default function useDomainAccess(params: UseDomainDescriptionParams) {
 
     if (!userInfoQuery.data) {
       return undefined;
+    }
+
+    if (!userInfoQuery.data.rbacEnabled) {
+      return { canRead: true, canWrite: true };
     }
 
     if (domainQuery.data) {
@@ -44,7 +48,7 @@ export default function useDomainAccess(params: UseDomainDescriptionParams) {
   ]);
 
   const isLoading =
-    userInfoQuery.isLoading || (shouldLoadDomain && domainQuery.isLoading);
+    userInfoQuery.isLoading || (isRbacEnabled && domainQuery.isLoading);
 
   return {
     access,

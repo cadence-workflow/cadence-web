@@ -56,13 +56,15 @@ export async function resolveAuthContext(
   const token = tokenFromCookie || undefined;
 
   const claims = token ? decodeCadenceJwtClaims(token) : undefined;
+  const isInvalidToken = token !== undefined && claims === undefined;
   const expiresAtMsRaw =
     typeof claims?.exp === 'number' ? claims.exp * 1000 : undefined;
   const isExpired =
     expiresAtMsRaw !== undefined && Date.now() >= expiresAtMsRaw;
-  const effectiveClaims = isExpired ? undefined : claims;
-  const expiresAtMs = isExpired ? undefined : expiresAtMsRaw;
-  const effectiveToken = isExpired ? undefined : token;
+  const shouldDropToken = isInvalidToken || isExpired;
+  const effectiveClaims = shouldDropToken ? undefined : claims;
+  const expiresAtMs = shouldDropToken ? undefined : expiresAtMsRaw;
+  const effectiveToken = shouldDropToken ? undefined : token;
 
   const normalizeGroups = (): string[] => {
     const raw = effectiveClaims?.groups ?? effectiveClaims?.Groups;
