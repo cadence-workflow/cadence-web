@@ -43,6 +43,20 @@ CADENCE_GRPC_SERVICES_NAMES=cadence-frontend-cluster0,cadence-frontend-cluster1
 CADENCE_CLUSTERS_NAMES=cluster0,cluster1
 ```
 
+#### RBAC Authentication (JWT cookie)
+
+When `CADENCE_WEB_RBAC_ENABLED=true`, cadence-web authenticates using a cookie:
+
+- Cookie name: `cadence-authorization`
+- Cookie value: raw JWT string
+
+To integrate an upstream proxy / IdP, set the cookie for the cadence-web origin:
+
+```
+Set-Cookie: cadence-authorization=<JWT>; Path=/; HttpOnly; SameSite=Lax; Secure
+```
+You can also set/clear the cookie via `POST /api/auth/token` and `DELETE /api/auth/token`; or use `Login with JWT` button in the UI.
+
 #### Feature flags
 
 Feature flags control various UI features and functionality in `cadence-web`. These can be configured using environment variables.
