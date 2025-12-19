@@ -300,6 +300,35 @@ describe(WorkflowHistoryFetcher.name, () => {
     expect(pageSizes[1]).toBe('1000');
     expect(pageSizes[2]).toBe('1000');
   });
+
+  fit('should use throttled callback when throttle is passed to start', async () => {
+    jest.useFakeTimers({ now: 0 });
+
+    try {
+      const throttleDelay = 1000;
+      const { fetcher } = setup(queryClient);
+
+      // First page of history is fetched when the query is enabled
+      // Subsequent pages will be fetched at the trailing end of the throttle delay
+      fetcher.start(() => true, throttleDelay);
+      await jest.advanceTimersByTimeAsync(throttleDelay - 20);
+
+      const stateAt980ms = fetcher.getCurrentState();
+      expect(stateAt980ms.data?.pages).toHaveLength(1);
+
+      await jest.advanceTimersByTimeAsync(20);
+
+      const stateAt1000ms = fetcher.getCurrentState();
+      expect(stateAt1000ms.data?.pages).toHaveLength(2);
+
+      await jest.advanceTimersByTimeAsync(throttleDelay);
+
+      const stateAt2000ms = fetcher.getCurrentState();
+      expect(stateAt2000ms.data?.pages).toHaveLength(3);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
 });
 
 function setup(client: QueryClient, options: { failOnPages?: number[] } = {}) {

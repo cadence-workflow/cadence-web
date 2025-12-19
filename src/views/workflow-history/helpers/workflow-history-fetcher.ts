@@ -1,4 +1,6 @@
 import { InfiniteQueryObserver, type QueryClient } from '@tanstack/react-query';
+import { type DebouncedFunc } from 'lodash';
+import throttle from 'lodash/throttle';
 import queryString from 'query-string';
 
 import {
@@ -24,6 +26,9 @@ import {
 export default class WorkflowHistoryFetcher {
   private observer: WorkflowHistoryInfiniteQueryObserver;
   private unsubscribe: (() => void) | null = null;
+  private throttledFetchNextPage: DebouncedFunc<
+    (res: WorkflowHistoryQueryResult) => void
+  > | null = null;
   private shouldContinue: ShouldContinueCallback = () => true;
 
   /**
@@ -67,12 +72,20 @@ export default class WorkflowHistoryFetcher {
    * @param shouldContinue - Callback that determines whether to continue fetching pages.
    *   Receives the current query state and should return true to continue, false to stop.
    *   Defaults to always returning true.
+   * @param throttleMs - Optional throttle delay (ms) for fetching next pages.
+   *   If greater than 0, page fetches will be throttled by this amount.
    */
-  start(shouldContinue: ShouldContinueCallback = () => true): void {
+  start(
+    shouldContinue: ShouldContinueCallback = () => true,
+    throttleMs?: number
+  ): void {
     this.shouldContinue = shouldContinue;
 
     this.unsubscribe?.();
     this.unsubscribe = null;
+
+    this.cleanupThrottledFetch();
+    this.setupThrottledFetch(throttleMs);
 
     const currentState = this.observer.getCurrentResult();
     const hasFetchedFirstPage = currentState.status !== 'pending';
@@ -92,8 +105,8 @@ export default class WorkflowHistoryFetcher {
   }
 
   /**
-   * Stops automatic pagination. This will cancel any ongoing subscriptions,
-   * but will not destroy the fetcher instance.
+   * Stops automatic pagination. This will cancel any ongoing subscriptions
+   * and clean up throttled fetches, but will not destroy the fetcher instance.
    * Use `destroy()` to fully clean up the fetcher.
    */
   stop(): void {
@@ -101,12 +114,13 @@ export default class WorkflowHistoryFetcher {
       this.unsubscribe();
       this.unsubscribe = null;
     }
+    this.cleanupThrottledFetch();
   }
 
   /**
-   * Destroys the fetcher instance. This calls `stop()` to clean up subscriptions
-   * and then destroys the underlying React Query observer. After calling this,
-   * the fetcher instance should not be used.
+   * Destroys the fetcher instance. This method calls `stop()` to stop subscriptions,
+   * cleans up any throttled functions, and destroys the React Query observer.
+   * After calling this, the fetcher instance should not be used.
    */
   destroy(): void {
     this.stop();
@@ -146,6 +160,28 @@ export default class WorkflowHistoryFetcher {
     });
   }
 
+  private setupThrottledFetch(throttleMs?: number): void {
+    const fetchNextPageFn = (res: WorkflowHistoryQueryResult) => {
+      if (this.shouldContinue(res) && !res.isFetchingNextPage) {
+        res.fetchNextPage();
+      }
+    };
+
+    if (throttleMs && throttleMs > 0) {
+      this.throttledFetchNextPage = throttle(fetchNextPageFn, throttleMs, {
+        leading: false,
+        trailing: true,
+      });
+    }
+  }
+
+  private cleanupThrottledFetch(): void {
+    if (this.throttledFetchNextPage) {
+      this.throttledFetchNextPage.cancel();
+      this.throttledFetchNextPage = null;
+    }
+  }
+
   private createStateChangeHandler(): (
     res: WorkflowHistoryQueryResult
   ) => void {
@@ -154,13 +190,21 @@ export default class WorkflowHistoryFetcher {
     return (res: WorkflowHistoryQueryResult) => {
       stateChangeCount++;
 
-      if (res.hasNextPage === false || (res.isError && stateChangeCount > 1)) {
+      if (
+        (!res.isLoading && !res.hasNextPage) ||
+        (res.isError && stateChangeCount > 1)
+      ) {
         this.stop();
         return;
       }
 
       if (!this.shouldContinue(res) || res.isFetchingNextPage) return;
-      res.fetchNextPage();
+
+      if (this.throttledFetchNextPage) {
+        this.throttledFetchNextPage(res);
+      } else {
+        res.fetchNextPage();
+      }
     };
   }
 
