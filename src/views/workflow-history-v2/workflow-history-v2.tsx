@@ -32,6 +32,7 @@ import { type WorkflowPageTabContentParams } from '../workflow-page/workflow-pag
 
 import WORKFLOW_HISTORY_FETCH_EVENTS_THROTTLE_MS_CONFIG from './config/workflow-history-fetch-events-throttle-ms.config';
 import workflowHistoryFiltersConfig from './config/workflow-history-filters.config';
+import WORKFLOW_HISTORY_RENDER_FETCHED_EVENTS_THROTTLE_MS_CONFIG from './config/workflow-history-render-fetched-events-throttle-ms.config';
 import WORKFLOW_HISTORY_SET_RANGE_THROTTLE_MS_CONFIG from './config/workflow-history-set-range-throttle-ms.config';
 import useWorkflowHistoryFetcher from './hooks/use-workflow-history-fetcher';
 import WorkflowHistoryGroupedTable from './workflow-history-grouped-table/workflow-history-grouped-table';
@@ -81,6 +82,11 @@ export default function WorkflowHistoryV2({ params }: Props) {
     updatePendingEvents: updateGrouperPendingEvents,
   } = useWorkflowHistoryGrouper();
 
+  const isWorkflowRunning =
+    !workflowExecutionInfo?.closeStatus ||
+    workflowExecutionInfo.closeStatus ===
+      'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID';
+
   const { historyQuery, startLoadingHistory } = useWorkflowHistoryFetcher(
     {
       domain: wfHistoryRequestArgs.domain,
@@ -92,13 +98,11 @@ export default function WorkflowHistoryV2({ params }: Props) {
     },
     {
       onEventsChange: updateGrouperEvents,
-      renderThrottleMs: WORKFLOW_HISTORY_FETCH_EVENTS_THROTTLE_MS_CONFIG,
-      fetchThrottleMs:
-        workflowExecutionInfo?.closeStatus &&
-        workflowExecutionInfo.closeStatus !==
-          'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
-          ? undefined
-          : 1000,
+      renderThrottleMs:
+        WORKFLOW_HISTORY_RENDER_FETCHED_EVENTS_THROTTLE_MS_CONFIG,
+      fetchThrottleMs: isWorkflowRunning
+        ? WORKFLOW_HISTORY_FETCH_EVENTS_THROTTLE_MS_CONFIG
+        : undefined,
     }
   );
 
