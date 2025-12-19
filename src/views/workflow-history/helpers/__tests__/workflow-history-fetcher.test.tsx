@@ -301,7 +301,7 @@ describe(WorkflowHistoryFetcher.name, () => {
     expect(pageSizes[2]).toBe('1000');
   });
 
-  fit('should use throttled callback when throttle is passed to start', async () => {
+  it('should use throttled callback when throttle is passed to start', async () => {
     jest.useFakeTimers({ now: 0 });
 
     try {

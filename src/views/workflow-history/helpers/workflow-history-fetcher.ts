@@ -113,8 +113,11 @@ export default class WorkflowHistoryFetcher {
     if (this.unsubscribe) {
       this.unsubscribe();
       this.unsubscribe = null;
+      // When the query is first enabled, the subscription callback receives the current state
+      // update synchronously during subscribe(), but before this.unsubscribe is assigned. We want
+      // to cleanup the throttledFetch fn only after the subscription has been fully established.
+      this.cleanupThrottledFetch();
     }
-    this.cleanupThrottledFetch();
   }
 
   /**
@@ -190,10 +193,7 @@ export default class WorkflowHistoryFetcher {
     return (res: WorkflowHistoryQueryResult) => {
       stateChangeCount++;
 
-      if (
-        (!res.isLoading && !res.hasNextPage) ||
-        (res.isError && stateChangeCount > 1)
-      ) {
+      if (!res.hasNextPage || (res.isError && stateChangeCount > 1)) {
         this.stop();
         return;
       }
