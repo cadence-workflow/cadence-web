@@ -79,8 +79,7 @@ export default function WorkflowHistory({ params }: Props) {
       pageSize: wfHistoryRequestArgs.pageSize,
       waitForNewEvent: wfHistoryRequestArgs.waitForNewEvent,
     },
-    updateGrouperEvents,
-    2000
+    { onEventsChange: updateGrouperEvents, renderThrottleMs: 2000 }
   );
 
   const [resetToDecisionEventId, setResetToDecisionEventId] = useState<

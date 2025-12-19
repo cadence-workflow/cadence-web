@@ -33,8 +33,8 @@ jest.mock('../hooks/use-workflow-history-fetcher', () => {
   const actual = jest.requireActual('../hooks/use-workflow-history-fetcher');
   return {
     __esModule: true,
-    default: jest.fn((params, onEventsChange) =>
-      actual.default(params, onEventsChange, 0)
+    default: jest.fn((params, { onEventsChange }) =>
+      actual.default(params, { onEventsChange, renderThrottleMs: 0 })
     ), // 0ms throttle for tests
   };
 });

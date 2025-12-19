@@ -21,7 +21,9 @@ let mockUnsubscribe: jest.Mock;
 function setup() {
   const mockOnEventsChange = jest.fn();
   const hookResult = renderHook(() =>
-    useWorkflowHistoryFetcher(mockParams, mockOnEventsChange)
+    useWorkflowHistoryFetcher(mockParams, {
+      onEventsChange: mockOnEventsChange,
+    })
   );
 
   return {
@@ -99,7 +101,8 @@ describe(useWorkflowHistoryFetcher.name, () => {
     setup();
 
     expect(mockFetcherInstance.start).toHaveBeenCalledWith(
-      expect.any(Function)
+      expect.any(Function),
+      undefined
     );
     expect(mockFetcherInstance.start).toHaveBeenCalledTimes(1);
   });
@@ -146,7 +149,8 @@ describe(useWorkflowHistoryFetcher.name, () => {
     });
 
     expect(mockFetcherInstance.start).toHaveBeenCalledWith(
-      customShouldContinue
+      customShouldContinue,
+      undefined
     );
   });
 

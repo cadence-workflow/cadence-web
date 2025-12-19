@@ -29,8 +29,10 @@ jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
 );
 
 // Mock the hook to use minimal throttle delay for faster tests
-jest.mock('../hooks/use-workflow-history-fetcher', () => {
-  const actual = jest.requireActual('../hooks/use-workflow-history-fetcher');
+jest.mock('@/views/workflow-history/hooks/use-workflow-history-fetcher', () => {
+  const actual = jest.requireActual(
+    '@/views/workflow-history/hooks/use-workflow-history-fetcher'
+  );
   return {
     __esModule: true,
     default: jest.fn((params, options) =>
