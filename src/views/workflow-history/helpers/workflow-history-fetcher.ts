@@ -118,6 +118,7 @@ export default class WorkflowHistoryFetcher {
       // to cleanup the throttledFetch fn only after the subscription has been fully established.
       this.cleanupThrottledFetch();
     }
+    this.cleanupThrottledFetch();
   }
 
   /**
