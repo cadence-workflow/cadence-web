@@ -29,14 +29,16 @@ jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
 );
 
 // Mock the hook to use minimal throttle delay for faster tests
-jest.mock('../../workflow-history/hooks/use-workflow-history-fetcher', () => {
-  const actual = jest.requireActual(
-    '../../workflow-history/hooks/use-workflow-history-fetcher'
-  );
+jest.mock('../hooks/use-workflow-history-fetcher', () => {
+  const actual = jest.requireActual('../hooks/use-workflow-history-fetcher');
   return {
     __esModule: true,
-    default: jest.fn((params, onEventsChange) =>
-      actual.default(params, onEventsChange, 0)
+    default: jest.fn((params, options) =>
+      actual.default(params, {
+        ...options,
+        renderThrottleMs: 0,
+        fetchThrottleMs: 0,
+      })
     ), // 0ms throttle for tests
   };
 });
@@ -285,7 +287,7 @@ describe(WorkflowHistoryV2.name, () => {
         },
       });
 
-    const toggleButton = screen.getByTestId('toggle-group-mode');
+    const toggleButton = await screen.findByTestId('toggle-group-mode');
     await user.click(toggleButton);
 
     expect(mockSetUngroupedViewUserPreference).toHaveBeenCalledWith(true);
@@ -302,7 +304,7 @@ describe(WorkflowHistoryV2.name, () => {
         },
       });
 
-    const toggleButton = screen.getByTestId('toggle-group-mode');
+    const toggleButton = await screen.findByTestId('toggle-group-mode');
     await user.click(toggleButton);
 
     expect(mockSetUngroupedViewUserPreference).toHaveBeenCalledWith(false);

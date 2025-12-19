@@ -1,8 +1,7 @@
 import { Virtuoso } from 'react-virtuoso';
 
-import WorkflowHistoryTimelineLoadMore from '@/views/workflow-history/workflow-history-timeline-load-more/workflow-history-timeline-load-more';
-
 import WorkflowHistoryEventGroup from '../workflow-history-event-group/workflow-history-event-group';
+import WorkflowHistoryTableFooter from '../workflow-history-table-footer/workflow-history-table-footer';
 
 import { styled } from './workflow-history-grouped-table.styles';
 import { type Props } from './workflow-history-grouped-table.types';
@@ -73,11 +72,11 @@ export default function WorkflowHistoryGroupedTable({
         )}
         components={{
           Footer: () => (
-            <WorkflowHistoryTimelineLoadMore
+            <WorkflowHistoryTableFooter
               error={error}
-              fetchNextPage={fetchMoreEvents}
-              hasNextPage={hasMoreEvents}
-              isFetchingNextPage={isFetchingMoreEvents}
+              hasMoreEvents={hasMoreEvents}
+              fetchMoreEvents={fetchMoreEvents}
+              isFetchingMoreEvents={isFetchingMoreEvents}
             />
           ),
         }}

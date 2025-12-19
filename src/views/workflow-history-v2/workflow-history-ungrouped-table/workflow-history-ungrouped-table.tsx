@@ -2,8 +2,7 @@ import { useMemo } from 'react';
 
 import { Virtuoso } from 'react-virtuoso';
 
-import WorkflowHistoryTimelineLoadMore from '@/views/workflow-history/workflow-history-timeline-load-more/workflow-history-timeline-load-more';
-
+import WorkflowHistoryTableFooter from '../workflow-history-table-footer/workflow-history-table-footer';
 import WorkflowHistoryUngroupedEvent from '../workflow-history-ungrouped-event/workflow-history-ungrouped-event';
 
 import compareUngroupedEvents from './helpers/compare-ungrouped-events';
@@ -96,11 +95,11 @@ export default function WorkflowHistoryUngroupedTable({
         })}
         components={{
           Footer: () => (
-            <WorkflowHistoryTimelineLoadMore
+            <WorkflowHistoryTableFooter
               error={error}
-              fetchNextPage={fetchMoreEvents}
-              hasNextPage={hasMoreEvents}
-              isFetchingNextPage={isFetchingMoreEvents}
+              hasMoreEvents={hasMoreEvents}
+              fetchMoreEvents={fetchMoreEvents}
+              isFetchingMoreEvents={isFetchingMoreEvents}
             />
           ),
         }}

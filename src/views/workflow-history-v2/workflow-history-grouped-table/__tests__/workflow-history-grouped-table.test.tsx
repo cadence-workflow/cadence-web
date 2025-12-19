@@ -13,18 +13,22 @@ import { type WorkflowPageTabContentParams } from '@/views/workflow-page/workflo
 import WorkflowHistoryGroupedTable from '../workflow-history-grouped-table';
 
 jest.mock(
-  '@/views/workflow-history/workflow-history-timeline-load-more/workflow-history-timeline-load-more',
+  '../../workflow-history-table-footer/workflow-history-table-footer',
   () =>
-    jest.fn(({ error, hasNextPage, isFetchingNextPage, fetchNextPage }) => (
-      <div data-testid="timeline-load-more">
-        {error && <div data-testid="load-more-error">Error loading more</div>}
-        {hasNextPage && <div data-testid="has-next-page">Has more</div>}
-        {isFetchingNextPage && <div data-testid="is-fetching">Fetching...</div>}
-        <button onClick={fetchNextPage} data-testid="fetch-more-button">
-          Fetch More
-        </button>
-      </div>
-    ))
+    jest.fn(
+      ({ error, hasMoreEvents, isFetchingMoreEvents, fetchMoreEvents }) => (
+        <div data-testid="timeline-load-more">
+          {error && <div data-testid="load-more-error">Error loading more</div>}
+          {hasMoreEvents && <div data-testid="has-next-page">Has more</div>}
+          {isFetchingMoreEvents && (
+            <div data-testid="is-fetching">Fetching...</div>
+          )}
+          <button onClick={fetchMoreEvents} data-testid="fetch-more-button">
+            Fetch More
+          </button>
+        </div>
+      )
+    )
 );
 
 jest.mock(
