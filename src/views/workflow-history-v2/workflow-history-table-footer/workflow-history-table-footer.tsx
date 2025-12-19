@@ -10,11 +10,7 @@ export default function WorkflowHistoryTableFooter(props: Props) {
     return (
       <styled.EndMessageContainer $isError={true}>
         Failed to load more items.{' '}
-        <styled.RetryLink
-          onClick={() => props.fetchMoreEvents()}
-          target="_blank"
-          rel="noreferrer"
-        >
+        <styled.RetryLink onClick={() => props.fetchMoreEvents()}>
           Retry manually
         </styled.RetryLink>
       </styled.EndMessageContainer>
