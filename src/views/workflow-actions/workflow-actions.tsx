@@ -11,6 +11,7 @@ import { MdArrowDropDown } from 'react-icons/md';
 
 import Button from '@/components/button/button';
 import useConfigValue from '@/hooks/use-config-value/use-config-value';
+import useDomainAccess from '@/hooks/use-domain-access/use-domain-access';
 import { useDescribeWorkflow } from '@/views/workflow-page/hooks/use-describe-workflow';
 import { type WorkflowPageParams } from '@/views/workflow-page/workflow-page.types';
 
@@ -42,6 +43,10 @@ export default function WorkflowActions() {
       domain: params.domain,
       cluster: params.cluster,
     });
+  const { access, isLoading: isAccessLoading } = useDomainAccess({
+    domain: params.domain,
+    cluster: params.cluster,
+  });
 
   const [selectedAction, setSelectedAction] = useState<
     WorkflowAction<any, any, any> | undefined
@@ -60,6 +65,7 @@ export default function WorkflowActions() {
           <WorkflowActionsMenu
             workflow={workflow}
             actionsEnabledConfig={actionsEnabledConfig}
+            isWriteAuthorized={access?.canWrite !== false}
             onActionSelect={(action) => {
               setSelectedAction(action);
               close();
@@ -74,7 +80,9 @@ export default function WorkflowActions() {
           kind="secondary"
           endEnhancer={<MdArrowDropDown size={20} />}
           loadingIndicatorType="skeleton"
-          isLoading={isWorkflowLoading || isActionsEnabledLoading}
+          isLoading={
+            isWorkflowLoading || isActionsEnabledLoading || isAccessLoading
+          }
         >
           Workflow Actions
         </Button>

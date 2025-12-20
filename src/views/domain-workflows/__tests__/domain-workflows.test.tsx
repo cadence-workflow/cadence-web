@@ -30,28 +30,42 @@ describe('DomainWorkflows', () => {
     expect(await screen.findByText('Advanced Workflows')).toBeInTheDocument();
   });
 
-  it('should throw on error', async () => {
-    let renderErrorMessage;
-    try {
-      await act(async () => {
-        await setup({ error: true });
-      });
-    } catch (error) {
-      if (error instanceof Error) {
-        renderErrorMessage = error.message;
-      }
-    }
+  it('should fall back to basic workflows when cluster info fails', async () => {
+    await act(async () => {
+      await setup({ error: true });
+    });
 
-    expect(renderErrorMessage).toEqual('Failed to fetch cluster info');
+    expect(await screen.findByText('Basic Workflows')).toBeInTheDocument();
+  });
+
+  it('skips cluster fetch for non-admin token when RBAC is disabled', async () => {
+    await act(async () => {
+      await setup({
+        rbacEnabled: false,
+        isAuthenticated: true,
+        isAdmin: false,
+        skipClusterRequest: true,
+      });
+    });
+
+    expect(await screen.findByText('Basic Workflows')).toBeInTheDocument();
   });
 });
 
 async function setup({
   isAdvancedVisibility = false,
   error,
+  rbacEnabled = false,
+  isAuthenticated = false,
+  isAdmin = false,
+  skipClusterRequest = false,
 }: {
   error?: boolean;
   isAdvancedVisibility?: boolean;
+  rbacEnabled?: boolean;
+  isAuthenticated?: boolean;
+  isAdmin?: boolean;
+  skipClusterRequest?: boolean;
 }) {
   const props: DomainPageTabContentProps = {
     domain: 'test-domain',
@@ -65,6 +79,17 @@ async function setup({
     {
       endpointsMocks: [
         {
+          path: '/api/auth/me',
+          httpMethod: 'GET',
+          mockOnce: false,
+          jsonResponse: {
+            rbacEnabled,
+            isAuthenticated,
+            isAdmin,
+            groups: [],
+          },
+        },
+        !skipClusterRequest && {
           path: '/api/clusters/test-cluster',
           httpMethod: 'GET',
           mockOnce: false,
@@ -95,7 +120,7 @@ async function setup({
                 } satisfies DescribeClusterResponse,
               }),
         },
-      ],
+      ].filter(Boolean) as any,
     }
   );
 }
