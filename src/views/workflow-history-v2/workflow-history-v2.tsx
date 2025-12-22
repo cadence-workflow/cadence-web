@@ -282,6 +282,7 @@ export default function WorkflowHistoryV2({ params }: Props) {
 
     ref.current.scrollToIndex({
       index: 0,
+      // Position the start item as low as possible
       align: 'end',
     });
   }, [isUngroupedHistoryViewEnabled]);
@@ -294,6 +295,7 @@ export default function WorkflowHistoryV2({ params }: Props) {
 
     ref.current.scrollToIndex({
       index: 'LAST',
+      // Position the start item as high as possible
       align: 'start',
     });
   }, [isUngroupedHistoryViewEnabled]);
