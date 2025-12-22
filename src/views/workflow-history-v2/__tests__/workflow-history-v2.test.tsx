@@ -108,6 +108,14 @@ jest.mock(
     ))
 );
 
+jest.mock(
+  '../workflow-history-navigation-bar/workflow-history-navigation-bar',
+  () =>
+    jest.fn(() => (
+      <div data-testid="workflow-history-navigation-bar">Navigation Bar</div>
+    ))
+);
+
 jest.mock('@/utils/decode-url-params', () => jest.fn((params) => params));
 
 const mockResetAllFilters = jest.fn();
@@ -128,6 +136,13 @@ describe(WorkflowHistoryV2.name, () => {
     await setup({});
     expect(
       await screen.findByTestId('workflow-history-grouped-table')
+    ).toBeInTheDocument();
+  });
+
+  it('renders navigation bar', async () => {
+    await setup({});
+    expect(
+      await screen.findByTestId('workflow-history-navigation-bar')
     ).toBeInTheDocument();
   });
 

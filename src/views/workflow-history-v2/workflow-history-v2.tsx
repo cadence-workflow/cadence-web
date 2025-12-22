@@ -37,6 +37,7 @@ import WORKFLOW_HISTORY_RENDER_FETCHED_EVENTS_THROTTLE_MS_CONFIG from './config/
 import WORKFLOW_HISTORY_SET_RANGE_THROTTLE_MS_CONFIG from './config/workflow-history-set-range-throttle-ms.config';
 import WorkflowHistoryGroupedTable from './workflow-history-grouped-table/workflow-history-grouped-table';
 import WorkflowHistoryHeader from './workflow-history-header/workflow-history-header';
+import WorkflowHistoryNavigationBar from './workflow-history-navigation-bar/workflow-history-navigation-bar';
 import WorkflowHistoryUngroupedTable from './workflow-history-ungrouped-table/workflow-history-ungrouped-table';
 import { styled } from './workflow-history-v2.styles';
 import {
@@ -259,7 +260,12 @@ export default function WorkflowHistoryV2({ params }: Props) {
     string | undefined
   >(undefined);
 
-  const { getIsItemExpanded, toggleIsItemExpanded } = useExpansionToggle({
+  const {
+    areAllItemsExpanded,
+    toggleAreAllItemsExpanded,
+    getIsItemExpanded,
+    toggleIsItemExpanded,
+  } = useExpansionToggle({
     items: allEventIds,
     initialState: selectedEventIdWithinGroup
       ? {
@@ -267,6 +273,30 @@ export default function WorkflowHistoryV2({ params }: Props) {
         }
       : {},
   });
+
+  const handleScrollUp = useCallback(() => {
+    const ref = isUngroupedHistoryViewEnabled
+      ? ungroupedTableVirtuosoRef
+      : groupedTableVirtuosoRef;
+    if (!ref.current) return;
+
+    ref.current.scrollToIndex({
+      index: 0,
+      align: 'end',
+    });
+  }, [isUngroupedHistoryViewEnabled]);
+
+  const handleScrollDown = useCallback(() => {
+    const ref = isUngroupedHistoryViewEnabled
+      ? ungroupedTableVirtuosoRef
+      : groupedTableVirtuosoRef;
+    if (!ref.current) return;
+
+    ref.current.scrollToIndex({
+      index: 'LAST',
+      align: 'start',
+    });
+  }, [isUngroupedHistoryViewEnabled]);
 
   if (contentIsLoading) {
     return <SectionLoadingIndicator />;
@@ -347,6 +377,12 @@ export default function WorkflowHistoryV2({ params }: Props) {
           }}
         />
       )}
+      <WorkflowHistoryNavigationBar
+        onScrollUp={handleScrollUp}
+        onScrollDown={handleScrollDown}
+        areAllItemsExpanded={areAllItemsExpanded}
+        onToggleAllItemsExpanded={toggleAreAllItemsExpanded}
+      />
     </styled.Container>
   );
 }
