@@ -1,0 +1,80 @@
+# Sample MDX Page
+
+Use this page to verify Cadence MDX components work.
+
+## What is MDX?
+
+MDX allows you to write JSX directly in markdown files. You can use React components alongside markdown content.
+
+## Text Formatting
+
+Text can be **bold**, *italic*, or `inline code`. You can also create lists:
+
+- First item
+- Second item
+- Third item
+
+And numbered lists:
+
+1. First item with **bold text**
+2. Second item with *italic text*
+3. Third item with `inline code`
+
+## Inline JSX
+
+MDX supports inline JSX elements with custom styling:
+
+<div style={{ padding: '20px', background: '#f0f0f0', borderRadius: '8px', margin: '20px 0' }}>
+  <div style={{ fontWeight: 'bold' }}>💡 Pro Tip</div>
+  <div style={{ marginTop: '10px' }}>
+    You can combine markdown syntax with JSX elements for rich content!
+  </div>
+</div>
+
+## Code Examples
+
+TypeScript example:
+
+```typescript
+interface Workflow {
+  id: string;
+  name: string;
+  status: 'running' | 'completed' | 'failed';
+}
+
+const workflow: Workflow = {
+  id: 'wf-123',
+  name: 'Sample Workflow',
+  status: 'running',
+};
+```
+
+JSON example:
+
+```json
+{
+  "workflowId": "sample-workflow-123",
+  "domain": "cadence-samples",
+  "status": "running",
+  "startTime": "2025-12-24T10:00:00Z"
+}
+```
+
+## Tables
+
+| Feature | Supported |
+|---------|-----------|
+| Markdown | ✅ |
+| JSX Components | ✅ |
+| Syntax Highlighting | ✅ |
+| Tables | ✅ |
+
+## Blockquote
+
+> MDX combines the simplicity of Markdown with the flexibility of JSX.
+> Perfect for documentation and content pages.
+
+---
+
+You can import and use React components from your project in MDX files. For more information, visit [mdxjs.com](https://mdxjs.com).
+
