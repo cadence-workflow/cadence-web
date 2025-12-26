@@ -19,6 +19,48 @@ You can use the following components to operate your workflows. MDX files with t
 
 ### Start Workflow
 
+Start a new workflow execution with specified parameters.
+
+**Usage:**
+
+```tsx
+<Start
+  domain="<domain>"
+  workflow-type="<workflow-type-name>"
+  task-list="<task-list-name>"
+  wf-id="<optional-workflow-id>"
+  input={{
+    "key": "value"
+  }}
+  timeout-seconds={3600}
+>
+  Start Workflow
+</Start>
+```
+
+**Props:**
+- `domain`: Domain name
+- `workflow-type`: Name of the workflow type to start
+- `task-list`: Task list name where the workflow will be scheduled
+- `wf-id`: Workflow ID - if omitted, a random UUID will be generated
+- `input`: Array of input values for the workflow
+- `timeout-seconds`: Execution timeout in seconds, defaults to 3600 (1 hour)
+
+**Example:**
+
+<Start
+  domain="cadence-samples"
+  workflow-type="cadence_samples.HelloWorldWorkflow"
+  task-list="cadence-samples-worker"
+  wf-id={"hello-" + Math.floor(Math.random() * 10000000)}
+  input={[{"message":"Cadence"}]}
+  timeout-seconds={7200}
+>
+  Start a HelloWorld Workflow
+</Start>
+
+Use curly braces instead of `"`, double quotes, to wrap your JSON values, to avoid JSON serialization issues and to support more types and no workflow input (`input={undefined}`).
+
 ### Signal Workflow
 
 Send a signal to a running workflow with custom input data.
@@ -32,22 +74,22 @@ Send a signal to a running workflow with custom input data.
   run-id="<run-id>"
   name="<signal-name>"
   input={{
-    key1: "value1",
-    key2: 123,
-    key3: ["a", "b", "c"]
+    "key": "value"
   }}
 >
   Send Signal
 </Signal>
 ```
 
+Use curly braces instead of `"`, double quotes, to wrap your JSON values, to avoid JSON serialization issues and to support more types like integers (`input={2}`) and booleans (`input={true}`).
+
 **Props:**
-- `domain` (required): Domain name
-- `wf-id` (required): Workflow ID
-- `run-id` (required): Run ID of the workflow execution
-- `name` (required): Signal name
-- `input` (optional): JSON object or array to pass as signal input
-- `cluster` (optional): Cluster name
+- `domain`: Domain name
+- `wf-id`: Workflow ID
+- `run-id`: Run ID of the workflow execution
+- `name`: Signal name
+- `input`: JSON object or array to pass as signal input
+- `cluster`: Cluster name
 
 **Example:**
 
@@ -58,7 +100,7 @@ Try clicking the button below to send a signal (note: this will only work if the
   cluster="cluster0"
   wf-id="7a9a1183-1a19-466d-89ee-7124297a874b"
   run-id="3827dd73-66f9-43a7-b14b-aff9d2149dc2"
-  name="complete"
+  name="signal"
   input={true}
 >
   Complete
@@ -68,17 +110,9 @@ Try clicking the button below to send a signal (note: this will only work if the
 
 *Coming soon...*
 
-### Terminate Workflow
-
-*Coming soon...*
-
-### Cancel Workflow
-
-*Coming soon...*
-
 ---
 
-## Additional Information
+## References
 
 For more details about MDX and creating interactive documentation, visit [mdxjs.com](https://mdxjs.com).
 
