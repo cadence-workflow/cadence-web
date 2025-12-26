@@ -6,75 +6,81 @@ Use this page to verify Cadence MDX components work.
 
 MDX allows you to write JSX directly in markdown files. You can use React components alongside markdown content.
 
-## Text Formatting
+To learn more about MDX, you can visit [https://mdxjs.com/](https://mdxjs.com/).
 
-Text can be **bold**, *italic*, or `inline code`. You can also create lists:
+## Cadence MDX Components
 
-- First item
-- Second item
-- Third item
+You can use the following components to operate your workflows. MDX files with these components will work as actionable documentation, which would be ideal for 
 
-And numbered lists:
+* creating oncall runbooks, 
+* building UI for internal tools, 
+* automating common operations, 
+* and anything more you can think of ...
 
-1. First item with **bold text**
-2. Second item with *italic text*
-3. Third item with `inline code`
+### Start Workflow
 
-## Inline JSX
+### Signal Workflow
 
-MDX supports inline JSX elements with custom styling:
+Send a signal to a running workflow with custom input data.
 
-<div style={{ padding: '20px', background: '#f0f0f0', borderRadius: '8px', margin: '20px 0' }}>
-  <div style={{ fontWeight: 'bold' }}>💡 Pro Tip</div>
-  <div style={{ marginTop: '10px' }}>
-    You can combine markdown syntax with JSX elements for rich content!
-  </div>
-</div>
+**Usage:**
 
-## Code Examples
-
-TypeScript example:
-
-```typescript
-interface Workflow {
-  id: string;
-  name: string;
-  status: 'running' | 'completed' | 'failed';
-}
-
-const workflow: Workflow = {
-  id: 'wf-123',
-  name: 'Sample Workflow',
-  status: 'running',
-};
+```tsx
+<Signal
+  domain="<domain>"
+  wf-id="<wf-id>"
+  run-id="<run-id>"
+  name="<signal-name>"
+  input={{
+    key1: "value1",
+    key2: 123,
+    key3: ["a", "b", "c"]
+  }}
+>
+  Send Signal
+</Signal>
 ```
 
-JSON example:
+**Props:**
+- `domain` (required): Domain name
+- `wf-id` (required): Workflow ID
+- `run-id` (required): Run ID of the workflow execution
+- `name` (required): Signal name
+- `input` (optional): JSON object or array to pass as signal input
+- `cluster` (optional): Cluster name
 
-```json
-{
-  "workflowId": "sample-workflow-123",
-  "domain": "cadence-samples",
-  "status": "running",
-  "startTime": "2025-12-24T10:00:00Z"
-}
-```
+**Example:**
 
-## Tables
+Try clicking the button below to send a signal (note: this will only work if the workflow exists):
 
-| Feature | Supported |
-|---------|-----------|
-| Markdown | ✅ |
-| JSX Components | ✅ |
-| Syntax Highlighting | ✅ |
-| Tables | ✅ |
+<Signal
+  domain="cadence-samples"
+  cluster="cluster0"
+  wf-id="7a9a1183-1a19-466d-89ee-7124297a874b"
+  run-id="3827dd73-66f9-43a7-b14b-aff9d2149dc2"
+  name="complete"
+  input={true}
+>
+  Complete
+</Signal>
 
-## Blockquote
+### Start Workflow
 
-> MDX combines the simplicity of Markdown with the flexibility of JSX.
-> Perfect for documentation and content pages.
+*Coming soon...*
+
+### Terminate Workflow
+
+*Coming soon...*
+
+### Cancel Workflow
+
+*Coming soon...*
 
 ---
 
-You can import and use React components from your project in MDX files. For more information, visit [mdxjs.com](https://mdxjs.com).
+## Additional Information
+
+For more details about MDX and creating interactive documentation, visit [mdxjs.com](https://mdxjs.com).
+
+To learn more about Cadence workflows, check out the [Cadence documentation](https://cadenceworkflow.io/docs/).
 
