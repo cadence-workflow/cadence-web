@@ -2,8 +2,6 @@ import { styled as createStyled } from 'baseui';
 
 export const styled = {
   ViewContainer: createStyled('div', ({ $theme }) => ({
-    display: 'flex',
-    flexDirection: 'column',
     wordBreak: 'break-word',
     overflow: 'hidden',
     lineHeight: $theme.typography.ParagraphMedium.lineHeight,
@@ -55,6 +53,13 @@ export const styled = {
       '&:last-child': {
         marginBottom: 0,
       },
+    },
+
+    // Remove paragraph styling inside buttons
+    '& button p': {
+      margin: '0 !important',
+      padding: '0 !important',
+      display: 'inline',
     },
 
     // Lists

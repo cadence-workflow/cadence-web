@@ -1,0 +1,116 @@
+# Sample MDX Page
+
+Use this page to verify Cadence MDX components work.
+
+## What is MDX?
+
+MDX allows you to write JSX directly in markdown files. You can use React components alongside markdown content.
+
+To learn more about MDX, you can visit [https://mdxjs.com/](https://mdxjs.com/).
+
+## Cadence MDX Components
+
+You can use the following components to operate your workflows. MDX files with these components will work as actionable documentation, which would be ideal for 
+
+* creating oncall runbooks, 
+* building UI for internal tools, 
+* automating common operations, 
+* and anything more you can think of ...
+
+### Start Workflow
+
+Start a new workflow execution with specified parameters.
+
+**Usage:**
+
+```tsx
+<Start
+  domain="<domain>"
+  workflow-type="<workflow-type-name>"
+  task-list="<task-list-name>"
+  wf-id="<workflow-id>"
+  input={{
+    "key": "value"
+  }}
+  timeout-seconds={3600}
+>
+  Start Workflow
+</Start>
+```
+
+**Props:**
+- `domain`: Domain name
+- `workflow-type`: Name of the workflow type to start
+- `task-list`: Task list name where the workflow will be scheduled
+- `wf-id`: Workflow ID - if omitted, a random UUID will be generated
+- `input`: Array of input values for the workflow
+- `timeout-seconds`: Execution timeout in seconds, defaults to 3600 (1 hour)
+
+**Example:**
+
+<Start
+  domain="cadence-samples"
+  workflow-type="cadence_samples.HelloWorldWorkflow"
+  task-list="cadence-samples-worker"
+  wf-id={"hello-" + Math.floor(Math.random() * 10000000)}
+  input={[{"message":"Cadence"}]}
+  timeout-seconds={7200}
+>
+  Start a HelloWorld Workflow
+</Start>
+
+Use curly braces instead of `"`, double quotes, to wrap your JSON values, to avoid JSON serialization issues and to support more types and no workflow input (`input={undefined}`).
+
+### Signal Workflow
+
+Send a signal to a running workflow with custom input data.
+
+**Usage:**
+
+```tsx
+<Signal
+  domain="<domain>"
+  wf-id="<wf-id>"
+  run-id="<run-id>"
+  name="<signal-name>"
+  input={{
+    "key": "value"
+  }}
+>
+  Send Signal
+</Signal>
+```
+
+Use curly braces instead of `"`, double quotes, to wrap your JSON values, to avoid JSON serialization issues and to support more types like integers (`input={2}`) and booleans (`input={true}`).
+
+**Props:**
+- `domain`: Domain name
+- `wf-id`: Workflow ID
+- `run-id`: Run ID of the workflow execution
+- `name`: Signal name
+- `input`: JSON object or array to pass as signal input
+- `cluster`: Cluster name
+
+**Example:**
+
+Try clicking the button below to send a signal (note: this will only work if the workflow exists):
+
+<Signal
+  domain="cadence-samples"
+  cluster="cluster0"
+  wf-id="7a9a1183-1a19-466d-89ee-7124297a874b"
+  run-id="3827dd73-66f9-43a7-b14b-aff9d2149dc2"
+  name="signal"
+  input={true}
+>
+  Signal
+</Signal>
+
+---
+
+## References
+
+For more details about MDX and creating interactive documentation, visit [mdxjs.com](https://mdxjs.com).
+
+To learn more about Cadence workflows, check out the [Cadence documentation](https://cadenceworkflow.io/docs/).
+
