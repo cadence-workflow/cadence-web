@@ -35,7 +35,7 @@ export default function WorkflowQueriesResult(props: Props) {
         )}
       {queryResultContent.contentType === 'markdown' &&
         queryResultContent.content !== undefined && (
-          <Markdown markdown={queryResultContent.content} />
+          <Markdown markdown={queryResultContent.content} useMarkdoc={true} />
         )}
       {queryResultContent.contentType === 'blocks' &&
         queryResultContent.content !== undefined && (
