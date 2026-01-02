@@ -36,7 +36,7 @@ const signalButtonSchema = {
 
 export const markdocConfig: Config = {
   tags: {
-    'signal-button': signalButtonSchema,
+    signal: signalButtonSchema,
   },
   nodes: {
     // You can customize node rendering here if needed
