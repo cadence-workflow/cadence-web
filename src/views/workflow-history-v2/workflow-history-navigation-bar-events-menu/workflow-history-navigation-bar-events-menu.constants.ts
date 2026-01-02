@@ -1,0 +1,1 @@
+export const NAVBAR_MENU_ITEMS_PER_PAGE = 10;

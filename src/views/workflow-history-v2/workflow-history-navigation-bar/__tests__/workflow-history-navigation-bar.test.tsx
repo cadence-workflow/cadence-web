@@ -3,6 +3,14 @@ import { render, screen, userEvent } from '@/test-utils/rtl';
 import WorkflowHistoryNavigationBar from '../workflow-history-navigation-bar';
 import { type Props } from '../workflow-history-navigation-bar.types';
 
+jest.mock(
+  '../../workflow-history-navigation-bar-events-menu/workflow-history-navigation-bar-events-menu',
+  () =>
+    jest.fn(({ children }: { children: React.ReactNode }) => {
+      return <div>{children}</div>;
+    })
+);
+
 describe(WorkflowHistoryNavigationBar.name, () => {
   it('renders all navigation buttons', () => {
     setup();
@@ -54,6 +62,74 @@ describe(WorkflowHistoryNavigationBar.name, () => {
 
     expect(mockOnScrollUp).toHaveBeenCalledTimes(1);
   });
+
+  it('renders failed events button when failedEventsMenuItems is not empty', () => {
+    setup({
+      failedEventsMenuItems: [
+        {
+          eventId: 'event-1',
+          label: 'Failed Event 1',
+          type: 'ACTIVITY',
+        },
+      ],
+    });
+
+    expect(screen.getByLabelText('Failed events')).toBeInTheDocument();
+    expect(screen.getByText('1 failed event')).toBeInTheDocument();
+  });
+
+  it('renders plural failed events text when multiple failed events exist', () => {
+    setup({
+      failedEventsMenuItems: [
+        {
+          eventId: 'event-1',
+          label: 'Failed Event 1',
+          type: 'ACTIVITY',
+        },
+        {
+          eventId: 'event-2',
+          label: 'Failed Event 2',
+          type: 'DECISION',
+        },
+      ],
+    });
+
+    expect(screen.getByText('2 failed events')).toBeInTheDocument();
+  });
+
+  it('renders pending events button when pendingEventsMenuItems is not empty', () => {
+    setup({
+      pendingEventsMenuItems: [
+        {
+          eventId: 'event-1',
+          label: 'Pending Event 1',
+          type: 'ACTIVITY',
+        },
+      ],
+    });
+
+    expect(screen.getByLabelText('Pending events')).toBeInTheDocument();
+    expect(screen.getByText('1 pending event')).toBeInTheDocument();
+  });
+
+  it('renders plural pending events text when multiple pending events exist', () => {
+    setup({
+      pendingEventsMenuItems: [
+        {
+          eventId: 'event-1',
+          label: 'Pending Event 1',
+          type: 'ACTIVITY',
+        },
+        {
+          eventId: 'event-2',
+          label: 'Pending Event 2',
+          type: 'DECISION',
+        },
+      ],
+    });
+
+    expect(screen.getByText('2 pending events')).toBeInTheDocument();
+  });
 });
 
 function setup(overrides: Partial<Props> = {}) {
@@ -61,6 +137,7 @@ function setup(overrides: Partial<Props> = {}) {
   const mockOnScrollUp = jest.fn();
   const mockOnScrollDown = jest.fn();
   const mockOnToggleAllItemsExpanded = jest.fn();
+  const mockOnClickEvent = jest.fn();
 
   render(
     <WorkflowHistoryNavigationBar
@@ -68,6 +145,10 @@ function setup(overrides: Partial<Props> = {}) {
       onScrollDown={mockOnScrollDown}
       areAllItemsExpanded={false}
       onToggleAllItemsExpanded={mockOnToggleAllItemsExpanded}
+      isUngroupedView={false}
+      failedEventsMenuItems={[]}
+      pendingEventsMenuItems={[]}
+      onClickEvent={mockOnClickEvent}
       {...overrides}
     />
   );
@@ -77,5 +158,6 @@ function setup(overrides: Partial<Props> = {}) {
     mockOnScrollUp,
     mockOnScrollDown,
     mockOnToggleAllItemsExpanded,
+    mockOnClickEvent,
   };
 }

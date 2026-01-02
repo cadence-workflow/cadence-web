@@ -3,42 +3,40 @@ import { useState, useMemo } from 'react';
 import { Button } from 'baseui/button';
 import { Pagination } from 'baseui/pagination';
 import { StatefulPopover } from 'baseui/popover';
+import { MdCircle, MdOutlineCircle } from 'react-icons/md';
 
-import { type NavigationBarEventsMenuItem } from '../workflow-history-navigation-bar/workflow-history-navigation-bar.types';
+import workflowHistoryEventFilteringTypeColorsConfig from '../config/workflow-history-event-filtering-type-colors.config';
 
+import { NAVBAR_MENU_ITEMS_PER_PAGE } from './workflow-history-navigation-bar-events-menu.constants';
 import {
   styled,
   overrides,
 } from './workflow-history-navigation-bar-events-menu.styles';
-
-const ITEMS_PER_PAGE = 10;
+import { type Props } from './workflow-history-navigation-bar-events-menu.types';
 
 export default function WorkflowHistoryNavigationBarEventsMenu({
   children,
   isUngroupedHistoryView,
   menuItems,
   onClickEvent,
-}: {
-  children: React.ReactNode;
-  isUngroupedHistoryView: boolean;
-  menuItems: Array<NavigationBarEventsMenuItem>;
-  onClickEvent: (eventId: string) => void;
-}) {
+}: Props) {
   const [currentPage, setCurrentPage] = useState(1);
 
-  const totalPages = Math.ceil(menuItems.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(menuItems.length / NAVBAR_MENU_ITEMS_PER_PAGE);
 
   const paginatedItems = useMemo(() => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const endIndex = startIndex + ITEMS_PER_PAGE;
+    const startIndex = (currentPage - 1) * NAVBAR_MENU_ITEMS_PER_PAGE;
+    const endIndex = startIndex + NAVBAR_MENU_ITEMS_PER_PAGE;
     return menuItems.slice(startIndex, endIndex);
   }, [menuItems, currentPage]);
+
+  const MenuItemIcon = isUngroupedHistoryView ? MdOutlineCircle : MdCircle;
 
   return (
     <StatefulPopover
       content={({ close }) => (
         <styled.MenuItemsContainer>
-          {paginatedItems.map(({ eventId, label }) => (
+          {paginatedItems.map(({ eventId, label, type }) => (
             <styled.MenuItemContainer key={eventId}>
               <Button
                 onClick={() => {
@@ -47,13 +45,21 @@ export default function WorkflowHistoryNavigationBarEventsMenu({
                 }}
                 size="compact"
                 kind="tertiary"
+                startEnhancer={
+                  <MenuItemIcon
+                    color={
+                      workflowHistoryEventFilteringTypeColorsConfig[type]
+                        .content
+                    }
+                  />
+                }
               >
                 {label}
               </Button>
             </styled.MenuItemContainer>
           ))}
           {totalPages > 1 && (
-            <styled.PaginationContainer>
+            <styled.PaginationContainer data-testid="pagination-container">
               <Pagination
                 numPages={totalPages}
                 currentPage={currentPage}

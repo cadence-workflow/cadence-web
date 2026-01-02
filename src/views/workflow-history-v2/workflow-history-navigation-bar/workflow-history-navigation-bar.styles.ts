@@ -31,14 +31,38 @@ export const styled = {
   ),
 };
 
+const buttonRootOverrides = {
+  style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+    paddingTop: $theme.sizing.scale200,
+    paddingBottom: $theme.sizing.scale200,
+    paddingLeft: $theme.sizing.scale200,
+    paddingRight: $theme.sizing.scale200,
+  }),
+};
+
 export const overrides = {
   navActionButton: {
-    Root: {
+    Root: buttonRootOverrides,
+  } satisfies ButtonOverrides,
+  failedEventsButton: {
+    Root: buttonRootOverrides,
+    BaseButton: {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
-        paddingTop: $theme.sizing.scale200,
-        paddingBottom: $theme.sizing.scale200,
-        paddingLeft: $theme.sizing.scale200,
-        paddingRight: $theme.sizing.scale200,
+        backgroundColor: $theme.colors.backgroundNegative,
+        ':hover': {
+          backgroundColor: $theme.colors.backgroundNegative,
+        },
+      }),
+    },
+  } satisfies ButtonOverrides,
+  pendingEventsButton: {
+    Root: buttonRootOverrides,
+    BaseButton: {
+      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+        backgroundColor: $theme.colors.backgroundAccent,
+        ':hover': {
+          backgroundColor: $theme.colors.backgroundAccent,
+        },
       }),
     },
   } satisfies ButtonOverrides,

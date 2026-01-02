@@ -1,6 +1,7 @@
 import {
   MdArrowDownward,
   MdArrowUpward,
+  MdErrorOutline,
   MdUnfoldLess,
   MdUnfoldMore,
 } from 'react-icons/md';
@@ -69,12 +70,14 @@ export default function WorkflowHistoryNavigationBar({
           >
             <Button
               size="mini"
-              kind="tertiary"
               shape="pill"
-              overrides={overrides.navActionButton}
+              overrides={overrides.failedEventsButton}
+              startEnhancer={<MdErrorOutline size={12} />}
               aria-label="Failed events"
             >
-              Failed
+              {failedEventsMenuItems.length === 1
+                ? '1 failed event'
+                : `${failedEventsMenuItems.length} failed events`}
             </Button>
           </WorkflowHistoryNavigationBarEventsMenu>
         </>
@@ -89,12 +92,13 @@ export default function WorkflowHistoryNavigationBar({
           >
             <Button
               size="mini"
-              kind="tertiary"
               shape="pill"
-              overrides={overrides.navActionButton}
+              overrides={overrides.pendingEventsButton}
               aria-label="Pending events"
             >
-              Pending
+              {pendingEventsMenuItems.length === 1
+                ? '1 pending event'
+                : `${pendingEventsMenuItems.length} pending events`}
             </Button>
           </WorkflowHistoryNavigationBarEventsMenu>
         </>
