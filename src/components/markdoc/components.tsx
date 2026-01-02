@@ -7,12 +7,14 @@ import StartWorkflowButton from '@/components/start-workflow-button/start-workfl
 export function Heading({
   level,
   children,
+  ...rest
 }: {
   level: number;
-  children: ReactNode;
+  children?: ReactNode;
+  [key: string]: any;
 }) {
   const Tag = `h${level}` as keyof JSX.IntrinsicElements;
-  return <Tag>{children}</Tag>;
+  return <Tag {...rest}>{children}</Tag>;
 }
 
 // Custom list component
@@ -31,17 +33,36 @@ export function List({
 export function CodeBlock({
   content,
   language,
+  children,
 }: {
-  content: string;
+  content?: string;
   language?: string;
+  children?: any;
 }) {
+  // Use content if provided, otherwise use children
+  const codeContent = content || children;
+
   return (
     <pre>
       <code className={language ? `language-${language}` : undefined}>
-        {content}
+        {codeContent}
       </code>
     </pre>
   );
+}
+
+// Custom inline code component
+export function InlineCode({
+  content,
+  children,
+}: {
+  content?: string;
+  children?: any;
+}) {
+  // Use content if provided, otherwise use children
+  const codeContent = content || children;
+
+  return <code>{codeContent}</code>;
 }
 
 // Export all components that Markdoc can use
@@ -51,6 +72,7 @@ export const markdocComponents = {
   Heading,
   List,
   CodeBlock,
+  InlineCode,
 };
 
 export type MarkdocComponents = typeof markdocComponents;

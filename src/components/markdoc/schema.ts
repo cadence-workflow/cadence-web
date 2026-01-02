@@ -111,14 +111,14 @@ export const markdocConfig: Config = {
     fence: {
       render: 'CodeBlock',
       attributes: {
-        content: { type: String, render: false, required: true },
+        content: { type: String },
         language: { type: String },
       },
     },
     code: {
-      render: 'code',
+      render: 'InlineCode',
       attributes: {
-        content: { type: String, render: false, required: true },
+        content: { type: String },
       },
     },
     strong: {

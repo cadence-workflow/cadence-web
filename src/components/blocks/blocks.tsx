@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Button } from 'baseui/button';
 import { useSnackbar } from 'baseui/snackbar';
 
-import Markdown from '@/components/markdown/markdown';
+import MarkdocRenderer from '@/components/markdoc/markdoc';
 import PrettyJson from '@/components/pretty-json/pretty-json';
 import losslessJsonStringify from '@/utils/lossless-json-stringify';
 import request from '@/utils/request';
@@ -94,7 +94,7 @@ export default function Blocks({
     if (section.format === 'text/markdown') {
       return (
         <styled.SectionContainer>
-          <Markdown markdown={content} />
+          <MarkdocRenderer content={content} />
         </styled.SectionContainer>
       );
     }
