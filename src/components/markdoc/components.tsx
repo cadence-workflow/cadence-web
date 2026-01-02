@@ -1,6 +1,7 @@
 import { type ReactNode } from 'react';
 
 import SignalButton from '@/components/signal-button/signal-button';
+import StartWorkflowButton from '@/components/start-workflow-button/start-workflow-button';
 
 // Custom heading component with proper anchor support
 export function Heading({
@@ -46,6 +47,7 @@ export function CodeBlock({
 // Export all components that Markdoc can use
 export const markdocComponents = {
   SignalButton,
+  StartWorkflowButton,
   Heading,
   List,
   CodeBlock,

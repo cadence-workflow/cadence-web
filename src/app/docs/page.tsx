@@ -5,7 +5,7 @@ import Link from 'next/link';
 import MarkdocRenderer from '@/components/markdoc/markdoc';
 import PageSection from '@/components/page-section/page-section';
 
-import { signalButtonGuide } from './content';
+import content from './content/markdown-guide';
 import { styled } from './page.styles';
 
 export default function DocsPage() {
@@ -18,7 +18,7 @@ export default function DocsPage() {
       </styled.Header>
 
       <styled.ContentContainer>
-        <MarkdocRenderer content={signalButtonGuide} />
+        <MarkdocRenderer content={content} />
       </styled.ContentContainer>
     </PageSection>
   );
