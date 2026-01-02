@@ -11,7 +11,7 @@ const signalButtonSchema = {
       type: String,
       required: true,
     },
-    signalValue: {
+    input: {
       type: Object,
       required: false,
     },

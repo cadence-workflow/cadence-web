@@ -10,33 +10,29 @@ import request from '@/utils/request';
 export type SignalButtonProps = {
   signalName: string;
   label: string;
-  signalValue?: Record<string, any>;
+  input?: Record<string, any>;
   domain?: string;
   cluster?: string;
   workflowId?: string;
   runId?: string;
-  contextWorkflowId?: string;
-  contextRunId?: string;
 };
 
 export default function SignalButton({
   signalName,
   label,
-  signalValue,
+  input,
   workflowId,
   runId,
   domain,
   cluster,
-  contextWorkflowId,
-  contextRunId,
 }: SignalButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { enqueue } = useSnackbar();
 
   const targetDomain = domain;
   const targetCluster = cluster;
-  const targetWorkflowId = workflowId || contextWorkflowId;
-  const targetRunId = runId || contextRunId;
+  const targetWorkflowId = workflowId;
+  const targetRunId = runId;
 
   const isDisabled =
     !targetDomain || !targetCluster || !targetWorkflowId || !targetRunId;
@@ -58,8 +54,8 @@ export default function SignalButton({
     setIsLoading(true);
 
     try {
-      console.log('signalValue', signalValue);
-      const signalInput = signalValue == undefined ? undefined : losslessJsonStringify(signalValue);
+      const signalInput =
+        input == undefined ? undefined : losslessJsonStringify(input);
 
       const response = await request(
         `/api/domains/${encodeURIComponent(targetDomain)}/${encodeURIComponent(targetCluster)}/workflows/${encodeURIComponent(targetWorkflowId)}/${encodeURIComponent(targetRunId)}/signal`,
@@ -100,6 +96,13 @@ export default function SignalButton({
       disabled={isLoading || isDisabled}
       onClick={handleClick}
       isLoading={isLoading}
+      overrides={{
+        BaseButton: {
+          style: {
+            margin: '2px',
+          },
+        },
+      }}
     >
       {label}
     </Button>

@@ -94,7 +94,7 @@ export default function Blocks({
     if (section.format === 'text/markdown') {
       return (
         <styled.SectionContainer>
-          <Markdown markdown={content} useMarkdoc={true} />
+          <Markdown markdown={content} />
         </styled.SectionContainer>
       );
     }
