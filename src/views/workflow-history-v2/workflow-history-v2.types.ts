@@ -1,6 +1,9 @@
+import { type HistoryEventsGroup } from '../workflow-history/workflow-history.types';
 import { type WorkflowPageTabContentProps } from '../workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
 export type Props = WorkflowPageTabContentProps;
+
+export type EventGroupEntry = [string, HistoryEventsGroup];
 
 export type WorkflowHistoryEventFilteringTypeColors = {
   content: string;

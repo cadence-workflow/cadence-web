@@ -7,6 +7,8 @@ import {
 
 import Button from '@/components/button/button';
 
+import WorkflowHistoryNavigationBarEventsMenu from '../workflow-history-navigation-bar-events-menu/workflow-history-navigation-bar-events-menu';
+
 import { styled, overrides } from './workflow-history-navigation-bar.styles';
 import { type Props } from './workflow-history-navigation-bar.types';
 
@@ -15,6 +17,10 @@ export default function WorkflowHistoryNavigationBar({
   onScrollDown,
   areAllItemsExpanded,
   onToggleAllItemsExpanded,
+  isUngroupedView,
+  failedEventsMenuItems,
+  pendingEventsMenuItems,
+  onClickEvent,
 }: Props) {
   return (
     <styled.NavBarContainer>
@@ -53,6 +59,46 @@ export default function WorkflowHistoryNavigationBar({
       >
         <MdArrowUpward size={16} />
       </Button>
+      {failedEventsMenuItems.length > 0 && (
+        <>
+          <styled.SectionDivider />
+          <WorkflowHistoryNavigationBarEventsMenu
+            menuItems={failedEventsMenuItems}
+            onClickEvent={onClickEvent}
+            isUngroupedHistoryView={isUngroupedView}
+          >
+            <Button
+              size="mini"
+              kind="tertiary"
+              shape="pill"
+              overrides={overrides.navActionButton}
+              aria-label="Failed events"
+            >
+              Failed
+            </Button>
+          </WorkflowHistoryNavigationBarEventsMenu>
+        </>
+      )}
+      {pendingEventsMenuItems.length > 0 && (
+        <>
+          <styled.SectionDivider />
+          <WorkflowHistoryNavigationBarEventsMenu
+            menuItems={pendingEventsMenuItems}
+            onClickEvent={onClickEvent}
+            isUngroupedHistoryView={isUngroupedView}
+          >
+            <Button
+              size="mini"
+              kind="tertiary"
+              shape="pill"
+              overrides={overrides.navActionButton}
+              aria-label="Pending events"
+            >
+              Pending
+            </Button>
+          </WorkflowHistoryNavigationBarEventsMenu>
+        </>
+      )}
     </styled.NavBarContainer>
   );
 }
