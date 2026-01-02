@@ -16,10 +16,7 @@ export default function DocsPage() {
           <HeadingMedium>Cadence</HeadingMedium>
         </Link>
       </styled.Header>
-
-      <styled.ContentContainer>
-        <MarkdocRenderer content={content} />
-      </styled.ContentContainer>
+      <MarkdocRenderer content={content} />
     </PageSection>
   );
 }

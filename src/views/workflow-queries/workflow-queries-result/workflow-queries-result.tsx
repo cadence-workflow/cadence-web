@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 
 import Blocks from '@/components/blocks/blocks';
 import CopyTextButton from '@/components/copy-text-button/copy-text-button';
-import Markdown from '@/components/markdown/markdown';
+import MarkdocRenderer from '@/components/markdoc/markdoc';
 import PrettyJson from '@/components/pretty-json/pretty-json';
 import losslessJsonStringify from '@/utils/lossless-json-stringify';
 
@@ -35,7 +35,7 @@ export default function WorkflowQueriesResult(props: Props) {
         )}
       {queryResultContent.contentType === 'markdown' &&
         queryResultContent.content !== undefined && (
-          <Markdown markdown={queryResultContent.content} useMarkdoc={true} />
+          <MarkdocRenderer content={queryResultContent.content} />
         )}
       {queryResultContent.contentType === 'blocks' &&
         queryResultContent.content !== undefined && (
