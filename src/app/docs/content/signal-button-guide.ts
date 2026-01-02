@@ -1,6 +1,6 @@
 const content = `# Signal Button Guide
 
-Signal buttons allow you to send signals to workflows directly from markdown content.
+Signal buttons allow you to send signals to workflows directly from markdown content..
 
 ---
 
@@ -26,25 +26,16 @@ Signal buttons allow you to send signals to workflows directly from markdown con
 - **\`workflowId\`** - The target workflow ID
 - **\`runId\`** - The target run ID
 
-### Try it
+### Example
 
 {% signal-button 
   signalName="complete" 
   label="Send Signal!"
   domain="cadence-samples"
   cluster="cluster0"
-  workflowId="c59642fd-ba5b-42b2-abc0-03e4e6cb34b4"
-  runId="ab1d37e4-29d9-44d1-87f9-576b21669422"
-  signalValue=false
-/%}
-
-{% signal-button 
-  signalName="test_basic" 
-  label="Click Me!"
-  domain="demo-domain"
-  cluster="demo-cluster"
-  workflowId="demo-workflow-123"
-  runId="demo-run-456"
+  workflowId="0c4a8579-33e8-4b58-984a-89d5aeac980f"
+  runId="3d001c7a-793e-4efd-be3d-70dc0b0bdf20"
+  input=false
 /%}
 
 ---
@@ -61,7 +52,7 @@ Send data along with your signal:
   cluster="my-cluster"
   workflowId="my-workflow-123"
   runId="my-run-456"
-  signalValue={status: "approved", user: "john"} 
+  input={status: "approved", user: "john"} 
 /%}
 \`\`\`
 
@@ -74,7 +65,7 @@ Send data along with your signal:
   cluster="demo-cluster"
   workflowId="demo-workflow-123"
   runId="demo-run-456"
-  signalValue={status: "approved", timestamp: "2024-01-01", user: "demo"} 
+  input={status: "approved", timestamp: "2024-01-01", user: "demo"} 
 /%}
 
 ---
@@ -193,13 +184,13 @@ public String getStatus(String domain, String cluster, String workflowId, String
 {% signal-button 
   signalName="approve_order" 
   label="Approve Order"
-  signalValue={order_id: "12345", amount: 5000} 
+  input={order_id: "12345", amount: 5000} 
 /%}
 
 {% signal-button 
   signalName="reject_order" 
   label="Reject Order"
-  signalValue={order_id: "12345", reason: "declined"} 
+  input={order_id: "12345", reason: "declined"} 
 /%}
 \`\`\`
 
@@ -217,7 +208,7 @@ public String getStatus(String domain, String cluster, String workflowId, String
   cluster="demo-cluster"
   workflowId="demo-workflow-123"
   runId="demo-run-456"
-  signalValue={order_id: "12345", amount: 5000} 
+  input={order_id: "12345", amount: 5000} 
 /%}
 
 {% signal-button 
@@ -227,7 +218,7 @@ public String getStatus(String domain, String cluster, String workflowId, String
   cluster="demo-cluster"
   workflowId="demo-workflow-123"
   runId="demo-run-456"
-  signalValue={order_id: "12345", reason: "declined"} 
+  input={order_id: "12345", reason: "declined"} 
 /%}
 
 ---
@@ -237,20 +228,20 @@ public String getStatus(String domain, String cluster, String workflowId, String
 \`\`\`markdown
 # Set Priority
 
-{% signal-button signalName="set_priority" label="Low" signalValue={priority: 1} /%}
-{% signal-button signalName="set_priority" label="Medium" signalValue={priority: 2} /%}
-{% signal-button signalName="set_priority" label="High" signalValue={priority: 3} /%}
-{% signal-button signalName="set_priority" label="Critical" signalValue={priority: 4} /%}
+{% signal-button signalName="set_priority" label="Low" input={priority: 1} /%}
+{% signal-button signalName="set_priority" label="Medium" input={priority: 2} /%}
+{% signal-button signalName="set_priority" label="High" input={priority: 3} /%}
+{% signal-button signalName="set_priority" label="Critical" input={priority: 4} /%}
 \`\`\`
 
 ### Try it
 
 **Set Priority:**
 
-{% signal-button signalName="set_priority" label="P4 - Low" domain="demo-domain" cluster="demo-cluster" workflowId="demo-workflow-123" runId="demo-run-456" signalValue={priority: 1} /%}
-{% signal-button signalName="set_priority" label="P3 - Medium" domain="demo-domain" cluster="demo-cluster" workflowId="demo-workflow-123" runId="demo-run-456" signalValue={priority: 2} /%}
-{% signal-button signalName="set_priority" label="P2 - High" domain="demo-domain" cluster="demo-cluster" workflowId="demo-workflow-123" runId="demo-run-456" signalValue={priority: 3} /%}
-{% signal-button signalName="set_priority" label="P1 - Critical" domain="demo-domain" cluster="demo-cluster" workflowId="demo-workflow-123" runId="demo-run-456" signalValue={priority: 4} /%}
+{% signal-button signalName="set_priority" label="P4 - Low" domain="demo-domain" cluster="demo-cluster" workflowId="demo-workflow-123" runId="demo-run-456" input={priority: 1} /%}
+{% signal-button signalName="set_priority" label="P3 - Medium" domain="demo-domain" cluster="demo-cluster" workflowId="demo-workflow-123" runId="demo-run-456" input={priority: 2} /%}
+{% signal-button signalName="set_priority" label="P2 - High" domain="demo-domain" cluster="demo-cluster" workflowId="demo-workflow-123" runId="demo-run-456" input={priority: 3} /%}
+{% signal-button signalName="set_priority" label="P1 - Critical" domain="demo-domain" cluster="demo-cluster" workflowId="demo-workflow-123" runId="demo-run-456" input={priority: 4} /%}
 
 ---
 
@@ -264,13 +255,13 @@ public String getStatus(String domain, String cluster, String workflowId, String
 {% signal-button 
   signalName="deploy" 
   label="🚀 Deploy Now"
-  signalValue={environment: "production", version: "v2.5.0"} 
+  input={environment: "production", version: "v2.5.0"} 
 /%}
 
 {% signal-button 
   signalName="schedule" 
   label="📅 Schedule"
-  signalValue={delay_hours: 24} 
+  input={delay_hours: 24} 
 /%}
 
 {% signal-button 
@@ -292,7 +283,7 @@ public String getStatus(String domain, String cluster, String workflowId, String
   cluster="demo-cluster"
   workflowId="demo-workflow-123"
   runId="demo-run-456"
-  signalValue={environment: "production", version: "v2.5.0"} 
+  input={environment: "production", version: "v2.5.0"} 
 /%}
 
 {% signal-button 
@@ -302,7 +293,7 @@ public String getStatus(String domain, String cluster, String workflowId, String
   cluster="demo-cluster"
   workflowId="demo-workflow-123"
   runId="demo-run-456"
-  signalValue={delay_hours: 24} 
+  input={delay_hours: 24} 
 /%}
 
 {% signal-button 
@@ -321,22 +312,22 @@ public String getStatus(String domain, String cluster, String workflowId, String
 \`\`\`markdown
 # How was your experience?
 
-{% signal-button signalName="feedback" label="⭐" signalValue={rating: 1} /%}
-{% signal-button signalName="feedback" label="⭐⭐" signalValue={rating: 2} /%}
-{% signal-button signalName="feedback" label="⭐⭐⭐" signalValue={rating: 3} /%}
-{% signal-button signalName="feedback" label="⭐⭐⭐⭐" signalValue={rating: 4} /%}
-{% signal-button signalName="feedback" label="⭐⭐⭐⭐⭐" signalValue={rating: 5} /%}
+{% signal-button signalName="feedback" label="⭐" input={rating: 1} /%}
+{% signal-button signalName="feedback" label="⭐⭐" input={rating: 2} /%}
+{% signal-button signalName="feedback" label="⭐⭐⭐" input={rating: 3} /%}
+{% signal-button signalName="feedback" label="⭐⭐⭐⭐" input={rating: 4} /%}
+{% signal-button signalName="feedback" label="⭐⭐⭐⭐⭐" input={rating: 5} /%}
 \`\`\`
 
 ### Try it
 
 **How was your experience?**
 
-{% signal-button signalName="feedback" label="⭐" domain="demo-domain" cluster="demo-cluster" workflowId="demo-workflow-123" runId="demo-run-456" signalValue={rating: 1} /%}
-{% signal-button signalName="feedback" label="⭐⭐" domain="demo-domain" cluster="demo-cluster" workflowId="demo-workflow-123" runId="demo-run-456" signalValue={rating: 2} /%}
-{% signal-button signalName="feedback" label="⭐⭐⭐" domain="demo-domain" cluster="demo-cluster" workflowId="demo-workflow-123" runId="demo-run-456" signalValue={rating: 3} /%}
-{% signal-button signalName="feedback" label="⭐⭐⭐⭐" domain="demo-domain" cluster="demo-cluster" workflowId="demo-workflow-123" runId="demo-run-456" signalValue={rating: 4} /%}
-{% signal-button signalName="feedback" label="⭐⭐⭐⭐⭐" domain="demo-domain" cluster="demo-cluster" workflowId="demo-workflow-123" runId="demo-run-456" signalValue={rating: 5} /%}
+{% signal-button signalName="feedback" label="⭐" domain="demo-domain" cluster="demo-cluster" workflowId="demo-workflow-123" runId="demo-run-456" input={rating: 1} /%}
+{% signal-button signalName="feedback" label="⭐⭐" domain="demo-domain" cluster="demo-cluster" workflowId="demo-workflow-123" runId="demo-run-456" input={rating: 2} /%}
+{% signal-button signalName="feedback" label="⭐⭐⭐" domain="demo-domain" cluster="demo-cluster" workflowId="demo-workflow-123" runId="demo-run-456" input={rating: 3} /%}
+{% signal-button signalName="feedback" label="⭐⭐⭐⭐" domain="demo-domain" cluster="demo-cluster" workflowId="demo-workflow-123" runId="demo-run-456" input={rating: 4} /%}
+{% signal-button signalName="feedback" label="⭐⭐⭐⭐⭐" domain="demo-domain" cluster="demo-cluster" workflowId="demo-workflow-123" runId="demo-run-456" input={rating: 5} /%}
 
 ---
 
@@ -353,7 +344,7 @@ public String getStatus(String domain, String cluster, String workflowId, String
 
 ### Optional Attributes
 
-- **\`signalValue\`** - JSON object to send with the signal
+- **\`input\`** - JSON object to send with the signal
 
 ---
 
@@ -392,7 +383,7 @@ Please review the document and take one of the following actions:
 {% signal-button 
   signalName="approve_document" 
   label="✓ Approve & Publish"
-  signalValue={
+  input={
     document_id: "fin-q4-2024",
     decision: "approved",
     reviewer: "executive"
@@ -402,7 +393,7 @@ Please review the document and take one of the following actions:
 {% signal-button 
   signalName="request_revision" 
   label="📝 Request Revision"
-  signalValue={
+  input={
     document_id: "fin-q4-2024",
     decision: "revision_needed"
   } 
@@ -411,7 +402,7 @@ Please review the document and take one of the following actions:
 {% signal-button 
   signalName="reject_document" 
   label="✗ Reject"
-  signalValue={
+  input={
     document_id: "fin-q4-2024",
     decision: "rejected"
   } 
@@ -441,7 +432,7 @@ Please review the document and take one of the following actions:
   cluster="demo-cluster"
   workflowId="demo-workflow-123"
   runId="demo-run-456"
-  signalValue={
+  input={
     document_id: "fin-q4-2024",
     decision: "approved",
     reviewer: "executive"
@@ -455,7 +446,7 @@ Please review the document and take one of the following actions:
   cluster="demo-cluster"
   workflowId="demo-workflow-123"
   runId="demo-run-456"
-  signalValue={
+  input={
     document_id: "fin-q4-2024",
     decision: "revision_needed"
   } 
@@ -468,7 +459,7 @@ Please review the document and take one of the following actions:
   cluster="demo-cluster"
   workflowId="demo-workflow-123"
   runId="demo-run-456"
-  signalValue={
+  input={
     document_id: "fin-q4-2024",
     decision: "rejected"
   } 
