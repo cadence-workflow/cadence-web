@@ -5,15 +5,12 @@ import { Virtuoso } from 'react-virtuoso';
 import WorkflowHistoryTableFooter from '../workflow-history-table-footer/workflow-history-table-footer';
 import WorkflowHistoryUngroupedEvent from '../workflow-history-ungrouped-event/workflow-history-ungrouped-event';
 
-import compareUngroupedEvents from './helpers/compare-ungrouped-events';
 import { styled } from './workflow-history-ungrouped-table.styles';
-import {
-  type UngroupedEventInfo,
-  type Props,
-} from './workflow-history-ungrouped-table.types';
+import { type Props } from './workflow-history-ungrouped-table.types';
 
 export default function WorkflowHistoryUngroupedTable({
-  eventGroupsById,
+  ungroupedEventsInfo,
+  workflowStartTimeMs,
   virtuosoRef,
   setVisibleRange,
   decodedPageUrlParams,
@@ -26,34 +23,9 @@ export default function WorkflowHistoryUngroupedTable({
   fetchMoreEvents,
   isFetchingMoreEvents,
 }: Props) {
-  const eventsInfoFromGroups = useMemo<Array<UngroupedEventInfo>>(
-    () =>
-      eventGroupsById
-        .map(([_, group]) => [
-          ...group.events.map((event, index) => ({
-            id: event.eventId ?? event.computedEventId,
-            event,
-            eventMetadata: group.eventsMetadata[index],
-            eventGroup: group,
-            label: group.label,
-            shortLabel: group.shortLabel,
-            canReset: group.resetToDecisionEventId === event.eventId,
-          })),
-        ])
-        .flat(1)
-        .sort(compareUngroupedEvents),
-    [eventGroupsById]
-  );
-
-  const workflowStartTimeMs = useMemo(
-    () =>
-      eventGroupsById.length > 0 ? eventGroupsById[0][1].startTimeMs : null,
-    [eventGroupsById]
-  );
-
-  const maybeHighlightedEventId = useMemo(
-    () => eventsInfoFromGroups.findIndex((v) => v.id === selectedEventId),
-    [eventsInfoFromGroups, selectedEventId]
+  const maybeHighlightedEventIndex = useMemo(
+    () => ungroupedEventsInfo.findIndex((v) => v.id === selectedEventId),
+    [ungroupedEventsInfo, selectedEventId]
   );
 
   return (
@@ -69,7 +41,7 @@ export default function WorkflowHistoryUngroupedTable({
       </styled.TableHeader>
       <Virtuoso
         useWindowScroll
-        data={eventsInfoFromGroups}
+        data={ungroupedEventsInfo}
         ref={virtuosoRef}
         defaultItemHeight={36}
         rangeChanged={setVisibleRange}
@@ -86,9 +58,9 @@ export default function WorkflowHistoryUngroupedTable({
               : {})}
           />
         )}
-        {...(maybeHighlightedEventId !== -1 && {
+        {...(maybeHighlightedEventIndex !== -1 && {
           initialTopMostItemIndex: {
-            index: maybeHighlightedEventId,
+            index: maybeHighlightedEventIndex,
             align: 'center',
             behavior: 'auto',
           },

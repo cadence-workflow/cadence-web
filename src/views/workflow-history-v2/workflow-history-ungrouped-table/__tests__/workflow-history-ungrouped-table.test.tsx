@@ -9,7 +9,9 @@ import { mockActivityEventGroup } from '@/views/workflow-history/__fixtures__/wo
 import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-history.types';
 import { type WorkflowPageTabsParams } from '@/views/workflow-page/workflow-page-tabs/workflow-page-tabs.types';
 
+import compareUngroupedEvents from '../helpers/compare-ungrouped-events';
 import WorkflowHistoryUngroupedTable from '../workflow-history-ungrouped-table';
+import { type UngroupedEventInfo } from '../workflow-history-ungrouped-table.types';
 
 jest.mock(
   '../../workflow-history-table-footer/workflow-history-table-footer',
@@ -69,10 +71,10 @@ describe(WorkflowHistoryUngroupedTable.name, () => {
   });
 
   it('should render events from event groups', () => {
-    const mockEventGroups: Array<[string, HistoryEventsGroup]> = [
+    const ungroupedEventsInfo = createUngroupedEventsInfo([
       ['group-1', mockActivityEventGroup],
-    ];
-    setup({ eventGroupsById: mockEventGroups });
+    ]);
+    setup({ ungroupedEventsInfo });
 
     const events = screen.getAllByTestId('workflow-history-ungrouped-event');
     expect(events.length).toBeGreaterThan(0);
@@ -80,10 +82,10 @@ describe(WorkflowHistoryUngroupedTable.name, () => {
   });
 
   it('should render events with correct labels from groups', () => {
-    const mockEventGroups: Array<[string, HistoryEventsGroup]> = [
+    const ungroupedEventsInfo = createUngroupedEventsInfo([
       ['group-1', mockActivityEventGroup],
-    ];
-    setup({ eventGroupsById: mockEventGroups });
+    ]);
+    setup({ ungroupedEventsInfo });
 
     const events = screen.getAllByTestId('workflow-history-ungrouped-event');
     expect(events[0]).toHaveTextContent(
@@ -92,8 +94,11 @@ describe(WorkflowHistoryUngroupedTable.name, () => {
   });
 
   it('should handle event expansion toggle', async () => {
+    const ungroupedEventsInfo = createUngroupedEventsInfo([
+      ['group-1', mockActivityEventGroup],
+    ]);
     const { user, mockToggleIsEventExpanded } = setup({
-      eventGroupsById: [['group-1', mockActivityEventGroup]],
+      ungroupedEventsInfo,
     });
 
     const toggleButtons = screen.getAllByText('Toggle Event');
@@ -106,15 +111,15 @@ describe(WorkflowHistoryUngroupedTable.name, () => {
   });
 
   it('should pass isExpanded state to events', () => {
-    const mockEventGroups: Array<[string, HistoryEventsGroup]> = [
+    const ungroupedEventsInfo = createUngroupedEventsInfo([
       ['group-1', mockActivityEventGroup],
-    ];
+    ]);
     const firstEventId =
       mockActivityEventGroup.events[0].eventId ??
       mockActivityEventGroup.events[0].computedEventId;
 
     setup({
-      eventGroupsById: mockEventGroups,
+      ungroupedEventsInfo,
       getIsEventExpanded: jest.fn((id) => id === firstEventId),
     });
 
@@ -137,15 +142,15 @@ describe(WorkflowHistoryUngroupedTable.name, () => {
   });
 
   it('should pass animateOnEnter for selectedEventId', async () => {
-    const mockEventGroups: Array<[string, HistoryEventsGroup]> = [
+    const ungroupedEventsInfo = createUngroupedEventsInfo([
       ['group-1', mockActivityEventGroup],
-    ];
+    ]);
     const firstEventId =
       mockActivityEventGroup.events[0].eventId ??
       mockActivityEventGroup.events[0].computedEventId;
 
     setup({
-      eventGroupsById: mockEventGroups,
+      ungroupedEventsInfo,
       selectedEventId: firstEventId,
     });
 
@@ -156,7 +161,7 @@ describe(WorkflowHistoryUngroupedTable.name, () => {
   });
 
   it('should call resetToDecisionEventId when reset button is clicked on resettable event', async () => {
-    const mockEventGroups: Array<[string, HistoryEventsGroup]> = [
+    const ungroupedEventsInfo = createUngroupedEventsInfo([
       [
         'group-1',
         {
@@ -164,9 +169,9 @@ describe(WorkflowHistoryUngroupedTable.name, () => {
           resetToDecisionEventId: mockActivityEventGroup.events[0].eventId,
         },
       ],
-    ];
+    ]);
     const { user, mockResetToDecisionEventId } = setup({
-      eventGroupsById: mockEventGroups,
+      ungroupedEventsInfo,
     });
 
     const resetButtons = screen.getAllByText('Reset Event');
@@ -179,7 +184,7 @@ describe(WorkflowHistoryUngroupedTable.name, () => {
   });
 
   it('should not show reset button for non-resettable events', () => {
-    const mockEventGroups: Array<[string, HistoryEventsGroup]> = [
+    const ungroupedEventsInfo = createUngroupedEventsInfo([
       [
         'group-1',
         {
@@ -187,15 +192,35 @@ describe(WorkflowHistoryUngroupedTable.name, () => {
           resetToDecisionEventId: undefined,
         },
       ],
-    ];
-    setup({ eventGroupsById: mockEventGroups });
+    ]);
+    setup({ ungroupedEventsInfo });
 
     expect(screen.queryByText('Reset Event')).not.toBeInTheDocument();
   });
 });
 
+function createUngroupedEventsInfo(
+  eventGroupsById: Array<[string, HistoryEventsGroup]>
+): Array<UngroupedEventInfo> {
+  return eventGroupsById
+    .map(([_, group]) => [
+      ...group.events.map((event, index) => ({
+        id: event.eventId ?? event.computedEventId,
+        event,
+        eventMetadata: group.eventsMetadata[index],
+        eventGroup: group,
+        label: group.label,
+        shortLabel: group.shortLabel,
+        canReset: group.resetToDecisionEventId === event.eventId,
+      })),
+    ])
+    .flat(1)
+    .sort(compareUngroupedEvents);
+}
+
 function setup({
-  eventGroupsById = [],
+  ungroupedEventsInfo = [],
+  workflowStartTimeMs = null,
   error = null,
   hasMoreEvents = false,
   isFetchingMoreEvents = false,
@@ -213,7 +238,8 @@ function setup({
   toggleIsEventExpanded = jest.fn(),
   resetToDecisionEventId = jest.fn(),
 }: {
-  eventGroupsById?: Array<[string, HistoryEventsGroup]>;
+  ungroupedEventsInfo?: Array<UngroupedEventInfo>;
+  workflowStartTimeMs?: number | null;
   error?: RequestError | null;
   hasMoreEvents?: boolean;
   isFetchingMoreEvents?: boolean;
@@ -240,7 +266,8 @@ function setup({
       value={{ viewportHeight: 1000, itemHeight: 36 }}
     >
       <WorkflowHistoryUngroupedTable
-        eventGroupsById={eventGroupsById}
+        ungroupedEventsInfo={ungroupedEventsInfo}
+        workflowStartTimeMs={workflowStartTimeMs}
         virtuosoRef={virtuosoRef}
         setVisibleRange={setVisibleRange}
         decodedPageUrlParams={decodedPageUrlParams}

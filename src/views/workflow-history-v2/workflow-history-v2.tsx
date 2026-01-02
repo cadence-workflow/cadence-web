@@ -38,7 +38,9 @@ import WORKFLOW_HISTORY_SET_RANGE_THROTTLE_MS_CONFIG from './config/workflow-his
 import WorkflowHistoryGroupedTable from './workflow-history-grouped-table/workflow-history-grouped-table';
 import WorkflowHistoryHeader from './workflow-history-header/workflow-history-header';
 import WorkflowHistoryNavigationBar from './workflow-history-navigation-bar/workflow-history-navigation-bar';
+import compareUngroupedEvents from './workflow-history-ungrouped-table/helpers/compare-ungrouped-events';
 import WorkflowHistoryUngroupedTable from './workflow-history-ungrouped-table/workflow-history-ungrouped-table';
+import { type UngroupedEventInfo } from './workflow-history-ungrouped-table/workflow-history-ungrouped-table.types';
 import { styled } from './workflow-history-v2.styles';
 import {
   type VisibleHistoryRanges,
@@ -75,6 +77,7 @@ export default function WorkflowHistoryV2({ params }: Props) {
   const { data: wfExecutionDescription } = useSuspenseDescribeWorkflow({
     ...params,
   });
+
   const { workflowExecutionInfo } = wfExecutionDescription;
 
   const {
@@ -200,6 +203,25 @@ export default function WorkflowHistoryV2({ params }: Props) {
     setUngroupedViewUserPreference,
   ]);
 
+  const ungroupedEventsInfo = useMemo<Array<UngroupedEventInfo>>(
+    () =>
+      filteredEventGroupsById
+        .map(([_, group]) => [
+          ...group.events.map((event, index) => ({
+            id: event.eventId ?? event.computedEventId,
+            event,
+            eventMetadata: group.eventsMetadata[index],
+            eventGroup: group,
+            label: group.label,
+            shortLabel: group.shortLabel,
+            canReset: group.resetToDecisionEventId === event.eventId,
+          })),
+        ])
+        .flat(1)
+        .sort(compareUngroupedEvents),
+    [filteredEventGroupsById]
+  );
+
   const [_, setVisibleGroupsRange] = useThrottledState<VisibleHistoryRanges>(
     {
       groupedStartIndex: -1,
@@ -252,8 +274,12 @@ export default function WorkflowHistoryV2({ params }: Props) {
   const groupedTableVirtuosoRef = useRef<VirtuosoHandle>(null);
   const ungroupedTableVirtuosoRef = useRef<VirtuosoHandle>(null);
 
+  const workflowStartTimeMs = workflowExecutionInfo?.startTime
+    ? parseGrpcTimestamp(workflowExecutionInfo.startTime)
+    : null;
+
   const workflowCloseTimeMs = workflowExecutionInfo?.closeTime
-    ? parseGrpcTimestamp(workflowExecutionInfo?.closeTime)
+    ? parseGrpcTimestamp(workflowExecutionInfo.closeTime)
     : null;
 
   const [resetToDecisionEventId, setResetToDecisionEventId] = useState<
@@ -295,7 +321,7 @@ export default function WorkflowHistoryV2({ params }: Props) {
 
     ref.current.scrollToIndex({
       index: 'LAST',
-      // Position the start item as high as possible
+      // Position the end item as high as possible
       align: 'start',
     });
   }, [isUngroupedHistoryViewEnabled]);
@@ -320,7 +346,8 @@ export default function WorkflowHistoryV2({ params }: Props) {
       <styled.ContentSection>
         {isUngroupedHistoryViewEnabled ? (
           <WorkflowHistoryUngroupedTable
-            eventGroupsById={filteredEventGroupsById}
+            ungroupedEventsInfo={ungroupedEventsInfo}
+            workflowStartTimeMs={workflowStartTimeMs}
             virtuosoRef={ungroupedTableVirtuosoRef}
             setVisibleRange={({ startIndex, endIndex }) =>
               setVisibleGroupsRange((prevRange) => ({

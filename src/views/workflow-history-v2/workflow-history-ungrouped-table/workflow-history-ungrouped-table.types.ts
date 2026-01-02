@@ -12,7 +12,8 @@ import { type WorkflowPageTabsParams } from '@/views/workflow-page/workflow-page
 
 export type Props = {
   // Data and state props
-  eventGroupsById: Array<[string, HistoryEventsGroup]>;
+  ungroupedEventsInfo: Array<UngroupedEventInfo>;
+  workflowStartTimeMs: number | null;
   selectedEventId?: string;
   decodedPageUrlParams: WorkflowPageTabsParams;
   resetToDecisionEventId: (decisionEventId: string) => void;
