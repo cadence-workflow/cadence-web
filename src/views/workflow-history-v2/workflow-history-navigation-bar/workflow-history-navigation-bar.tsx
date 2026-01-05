@@ -95,7 +95,7 @@ export default function WorkflowHistoryNavigationBar({
               size="mini"
               shape="pill"
               overrides={overrides.pendingEventsButton}
-              startEnhancer={<MdHourglassTop size={16} />}
+              startEnhancer={<MdHourglassTop size={12} />}
               aria-label="Pending events"
             >
               {pendingEventsMenuItems.length === 1

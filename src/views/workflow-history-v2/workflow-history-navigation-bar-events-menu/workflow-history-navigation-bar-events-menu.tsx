@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 
 import { Button } from 'baseui/button';
 import { Pagination } from 'baseui/pagination';
@@ -21,6 +21,10 @@ export default function WorkflowHistoryNavigationBarEventsMenu({
   onClickEvent,
 }: Props) {
   const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [menuItems.length]);
 
   const totalPages = Math.ceil(menuItems.length / NAVBAR_MENU_ITEMS_PER_PAGE);
 

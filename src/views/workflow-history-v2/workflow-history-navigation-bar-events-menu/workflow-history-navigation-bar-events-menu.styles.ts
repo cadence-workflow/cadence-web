@@ -1,5 +1,4 @@
 import { styled as createStyled, type Theme } from 'baseui';
-import { type ButtonOverrides } from 'baseui/button';
 import { type PaginationOverrides } from 'baseui/pagination';
 import { type StyleObject } from 'styletron-react';
 
@@ -27,16 +26,6 @@ export const styled = {
 };
 
 export const overrides = {
-  navActionButton: {
-    Root: {
-      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
-        paddingTop: $theme.sizing.scale200,
-        paddingBottom: $theme.sizing.scale200,
-        paddingLeft: $theme.sizing.scale200,
-        paddingRight: $theme.sizing.scale200,
-      }),
-    },
-  } satisfies ButtonOverrides,
   pagination: {
     Select: {
       props: {

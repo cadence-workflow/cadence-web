@@ -362,9 +362,13 @@ export default function WorkflowHistoryV2({ params }: Props) {
       });
     }
 
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       setScrollToEventId(undefined);
     }, WORKFLOW_HISTORY_CLEAR_SCROLL_EVENT_TIMEOUT_MS_CONFIG);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [
     scrollToEventId,
     isUngroupedHistoryViewEnabled,
