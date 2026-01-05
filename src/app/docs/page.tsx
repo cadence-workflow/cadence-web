@@ -2,7 +2,7 @@
 import { HeadingMedium } from 'baseui/typography';
 import Link from 'next/link';
 
-import MarkdocRenderer from '@/components/markdoc/markdoc';
+import Markdown from '@/components/markdown/markdown';
 import PageSection from '@/components/page-section/page-section';
 
 import content from './content/markdown-guide';
@@ -16,7 +16,7 @@ export default function DocsPage() {
           <HeadingMedium>Cadence</HeadingMedium>
         </Link>
       </styled.Header>
-      <MarkdocRenderer content={content} />
+      <Markdown markdown={content} />
     </PageSection>
   );
 }

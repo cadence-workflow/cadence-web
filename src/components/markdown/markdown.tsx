@@ -3,17 +3,14 @@ import React from 'react';
 
 import { parse, renderers, transform } from '@markdoc/markdoc';
 
-import { styled } from '@/components/markdown/markdown.styles';
+import { markdocComponents } from '@/components/markdoc/components';
+import { markdocConfig } from '@/components/markdoc/schema';
 
-import { markdocComponents } from './components';
-import { markdocConfig } from './schema';
+import { styled } from './markdown.styles';
+import { type Props } from './markdown.types';
 
-export type MarkdocRendererProps = {
-  content: string;
-};
-
-export default function MarkdocRenderer({ content }: MarkdocRendererProps) {
-  let normalizedContent = content || '';
+export default function Markdown({ markdown }: Props) {
+  let normalizedContent = markdown || '';
 
   // Remove base indentation from the first non-empty line
   const lines = normalizedContent.split('\n');
