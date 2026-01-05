@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { parse, renderers, transform } from '@markdoc/markdoc';
 
@@ -44,11 +44,11 @@ export default function Markdown({ markdown }: Props) {
     normalizedContent = normalizedContent.trim();
   }
 
-  // Parse the markdown content
-  const ast = parse(normalizedContent);
-
-  // Transform the AST with our schema
-  const renderableTree = transform(ast, markdocConfig);
+  // Parse and transform the markdown content (memoized to prevent unnecessary recalculations)
+  const renderableTree = useMemo(() => {
+    const ast = parse(normalizedContent);
+    return transform(ast, markdocConfig);
+  }, [normalizedContent]);
 
   // Render to React with our custom components
   return (
