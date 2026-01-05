@@ -78,13 +78,13 @@ Send signals to running workflows.
 \`\`\`
 
 {% signal 
-  signalName="test_payload" 
+  signalName="complete" 
   label="Signal with Payload Example"
   domain="cadence-samples"
   cluster="cluster0"
-  workflowId="0c4a8579-33e8-4b58-984a-89d5aeac980f"
-  runId="3d001c7a-793e-4efd-be3d-70dc0b0bdf20"
-  input={status: "approved", timestamp: "2024-01-01"} 
+  workflowId="70c01979-28b6-4eab-87b9-47261fd3dc93"
+  runId="3ec240fb-7079-4845-9d78-a29d0c288bfa"
+  input=true
 /%}
 
 ### Signal Attributes

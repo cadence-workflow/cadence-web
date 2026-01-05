@@ -2,7 +2,7 @@ import React from 'react';
 
 import { render, screen } from '@testing-library/react';
 
-import MarkdocRenderer from '../markdoc';
+import Markdown from '@/components/markdown/markdown';
 
 // Mock the signal button to avoid needing full workflow context
 jest.mock('@/components/signal-button/signal-button', () => {
@@ -11,10 +11,10 @@ jest.mock('@/components/signal-button/signal-button', () => {
   };
 });
 
-describe('MarkdocRenderer', () => {
+describe('Markdown with Markdoc', () => {
   it('renders basic markdown', () => {
     const content = '# Hello World\n\nThis is a test.';
-    render(<MarkdocRenderer content={content} />);
+    render(<Markdown markdown={content} />);
 
     expect(screen.getByText('Hello World')).toBeInTheDocument();
     expect(screen.getByText('This is a test.')).toBeInTheDocument();
@@ -26,7 +26,7 @@ describe('MarkdocRenderer', () => {
 
 {% signal signalName="test" label="Click Me" /%}
     `;
-    render(<MarkdocRenderer content={content} />);
+    render(<Markdown markdown={content} />);
 
     expect(screen.getByText('Test')).toBeInTheDocument();
     expect(screen.getByTestId('signal-button')).toBeInTheDocument();
@@ -40,7 +40,7 @@ describe('MarkdocRenderer', () => {
 {% signal signalName="approve" label="Approve" /%}
 {% signal signalName="reject" label="Reject" /%}
     `;
-    render(<MarkdocRenderer content={content} />);
+    render(<Markdown markdown={content} />);
 
     const buttons = screen.getAllByTestId('signal-button');
     expect(buttons).toHaveLength(2);
@@ -60,7 +60,7 @@ Please review the following:
 
 {% signal signalName="approve" label="Approve All" /%}
     `;
-    render(<MarkdocRenderer content={content} />);
+    render(<Markdown markdown={content} />);
 
     expect(screen.getByText('Approval Required')).toBeInTheDocument();
     expect(
@@ -78,7 +78,7 @@ Please review the following:
 console.log('Hello');
 \`\`\`
     `;
-    render(<MarkdocRenderer content={content} />);
+    render(<Markdown markdown={content} />);
 
     expect(screen.getByText('Code Example')).toBeInTheDocument();
     expect(screen.getByText("console.log('Hello');")).toBeInTheDocument();
@@ -86,14 +86,14 @@ console.log('Hello');
 
   it('renders inline code', () => {
     const content = 'Use the `signal` tag.';
-    render(<MarkdocRenderer content={content} />);
+    render(<Markdown markdown={content} />);
 
     expect(screen.getByText('signal')).toBeInTheDocument();
   });
 
   it('renders links', () => {
     const content = '[Click here](https://example.com)';
-    render(<MarkdocRenderer content={content} />);
+    render(<Markdown markdown={content} />);
 
     const link = screen.getByText('Click here');
     expect(link).toBeInTheDocument();
@@ -106,7 +106,7 @@ console.log('Hello');
 - Second item
 - Third item
     `;
-    render(<MarkdocRenderer content={content} />);
+    render(<Markdown markdown={content} />);
 
     expect(screen.getByText('First item')).toBeInTheDocument();
     expect(screen.getByText('Second item')).toBeInTheDocument();
@@ -115,7 +115,7 @@ console.log('Hello');
 
   it('renders emphasis and strong', () => {
     const content = '**Bold text** and *italic text*';
-    render(<MarkdocRenderer content={content} />);
+    render(<Markdown markdown={content} />);
 
     expect(screen.getByText('Bold text')).toBeInTheDocument();
     expect(screen.getByText('italic text')).toBeInTheDocument();
