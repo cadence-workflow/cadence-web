@@ -2,6 +2,7 @@ import {
   MdArrowDownward,
   MdArrowUpward,
   MdErrorOutline,
+  MdHourglassTop,
   MdUnfoldLess,
   MdUnfoldMore,
 } from 'react-icons/md';
@@ -94,6 +95,7 @@ export default function WorkflowHistoryNavigationBar({
               size="mini"
               shape="pill"
               overrides={overrides.pendingEventsButton}
+              startEnhancer={<MdHourglassTop size={16} />}
               aria-label="Pending events"
             >
               {pendingEventsMenuItems.length === 1
