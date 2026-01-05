@@ -1,80 +1,11 @@
 import { type Config } from '@markdoc/markdoc';
 
-const signalButtonSchema = {
-  render: 'SignalButton',
-  attributes: {
-    signalName: {
-      type: String,
-      required: true,
-    },
-    label: {
-      type: String,
-      required: true,
-    },
-    input: {
-      type: Object,
-      required: false,
-    },
-    domain: {
-      type: String,
-      required: false,
-    },
-    cluster: {
-      type: String,
-      required: false,
-    },
-    workflowId: {
-      type: String,
-      required: false,
-    },
-    runId: {
-      type: String,
-      required: false,
-    },
-  },
-};
-
-const startWorkflowButtonSchema = {
-  render: 'StartWorkflowButton',
-  attributes: {
-    workflowType: {
-      type: String,
-      required: true,
-    },
-    label: {
-      type: String,
-      required: true,
-    },
-    domain: {
-      type: String,
-      required: true,
-    },
-    cluster: {
-      type: String,
-      required: true,
-    },
-    taskList: {
-      type: String,
-      required: true,
-    },
-    wfId: {
-      type: String,
-      required: false,
-    },
-    input: {
-      type: Object,
-      required: false,
-    },
-    timeoutSeconds: {
-      type: Number,
-      required: false,
-    },
-    sdkLanguage: {
-      type: String,
-      required: false,
-    },
-  },
-};
+import { codeBlockSchema } from '@/components/markdoc/components/code-block/code-block.markdoc';
+import { headingSchema } from '@/components/markdoc/components/heading/heading.markdoc';
+import { inlineCodeSchema } from '@/components/markdoc/components/inline-code/inline-code.markdoc';
+import { listSchema } from '@/components/markdoc/components/list/list.markdoc';
+import { signalButtonSchema } from '@/components/signal-button/signal-button.markdoc';
+import { startWorkflowButtonSchema } from '@/components/start-workflow-button/start-workflow-button.markdoc';
 
 export const markdocConfig: Config = {
   tags: {
@@ -82,15 +13,9 @@ export const markdocConfig: Config = {
     start: startWorkflowButtonSchema,
   },
   nodes: {
-    // You can customize node rendering here if needed
+    // Standard HTML nodes
     paragraph: {
       render: 'p',
-    },
-    heading: {
-      render: 'Heading',
-      attributes: {
-        level: { type: Number, required: true },
-      },
     },
     link: {
       render: 'a',
@@ -99,27 +24,8 @@ export const markdocConfig: Config = {
         title: { type: String },
       },
     },
-    list: {
-      render: 'List',
-      attributes: {
-        ordered: { type: Boolean },
-      },
-    },
     item: {
       render: 'li',
-    },
-    fence: {
-      render: 'CodeBlock',
-      attributes: {
-        content: { type: String },
-        language: { type: String },
-      },
-    },
-    code: {
-      render: 'InlineCode',
-      attributes: {
-        content: { type: String },
-      },
     },
     strong: {
       render: 'strong',
@@ -165,5 +71,11 @@ export const markdocConfig: Config = {
         align: { type: String },
       },
     },
+
+    // Custom component nodes
+    heading: headingSchema,
+    list: listSchema,
+    fence: codeBlockSchema,
+    code: inlineCodeSchema,
   },
 };
