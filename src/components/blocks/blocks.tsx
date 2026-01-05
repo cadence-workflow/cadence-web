@@ -68,7 +68,7 @@ export default function Blocks({
       if (!response.ok) {
         const errorData = await response.json();
         enqueue({
-          message: errorData.message || 'Failed to signal workflow',
+          message: errorData.message ?? 'Failed to signal workflow',
           actionMessage: 'OK',
         });
         return;
