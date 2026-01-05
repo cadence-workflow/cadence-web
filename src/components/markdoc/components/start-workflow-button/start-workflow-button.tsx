@@ -1,22 +1,17 @@
 'use client';
-import { useState } from 'react';
-
+import { useMutation } from '@tanstack/react-query';
 import { Button } from 'baseui/button';
 import { useSnackbar } from 'baseui/snackbar';
 import { useRouter } from 'next/navigation';
 
 import request from '@/utils/request';
 
-export type StartWorkflowButtonProps = {
-  workflowType: string;
-  label: string;
-  domain: string;
-  cluster: string;
-  taskList: string;
-  wfId?: string;
-  input?: Record<string, any>;
-  timeoutSeconds?: number;
-  sdkLanguage?: string;
+import { overrides } from './start-workflow-button.styles';
+import { type StartWorkflowButtonProps } from './start-workflow-button.types';
+
+type StartWorkflowResult = {
+  workflowId?: string;
+  runId?: string;
 };
 
 export default function StartWorkflowButton({
@@ -30,29 +25,17 @@ export default function StartWorkflowButton({
   timeoutSeconds = 60,
   sdkLanguage = 'GO',
 }: StartWorkflowButtonProps) {
-  const [isLoading, setIsLoading] = useState(false);
   const { enqueue } = useSnackbar();
   const router = useRouter();
 
-  const isDisabled = !domain || !cluster || !workflowType || !taskList;
+  const { mutate, isPending } = useMutation<StartWorkflowResult>({
+    mutationFn: async () => {
+      if (!domain || !cluster || !workflowType || !taskList) {
+        throw new Error(
+          'Missing required parameters. Please specify domain, cluster, workflowType, and taskList.'
+        );
+      }
 
-  const handleClick = async () => {
-    if (isLoading || isDisabled) {
-      return;
-    }
-
-    if (!domain || !cluster || !workflowType || !taskList) {
-      enqueue({
-        message:
-          'Missing required parameters. Please specify domain, cluster, workflowType, and taskList.',
-        actionMessage: 'OK',
-      });
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
       const workflowInput = input ? [input] : undefined;
 
       const response = await request(
@@ -72,14 +55,12 @@ export default function StartWorkflowButton({
 
       if (!response.ok) {
         const errorData = await response.json();
-        enqueue({
-          message: errorData.message || 'Failed to start workflow',
-          actionMessage: 'OK',
-        });
-        return;
+        throw new Error(errorData.message ?? 'Failed to start workflow');
       }
 
-      const result = await response.json();
+      return response.json();
+    },
+    onSuccess: (result) => {
       const startedWorkflowId = result.workflowId || wfId;
       const runId = result.runId;
 
@@ -94,28 +75,29 @@ export default function StartWorkflowButton({
           }
         },
       });
-    } catch (error: any) {
+    },
+    onError: (error: Error) => {
       enqueue({
         message: error.message || 'Failed to start workflow',
         actionMessage: 'Dismiss',
       });
-    } finally {
-      setIsLoading(false);
+    },
+  });
+
+  const isDisabled = !domain || !cluster || !workflowType || !taskList;
+
+  const handleClick = () => {
+    if (!isDisabled) {
+      mutate();
     }
   };
 
   return (
     <Button
-      disabled={isLoading || isDisabled}
+      disabled={isPending || isDisabled}
       onClick={handleClick}
-      isLoading={isLoading}
-      overrides={{
-        BaseButton: {
-          style: {
-            margin: '2px',
-          },
-        },
-      }}
+      isLoading={isPending}
+      overrides={overrides}
     >
       {label}
     </Button>

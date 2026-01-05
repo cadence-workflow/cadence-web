@@ -1,11 +1,11 @@
 import { type Config } from '@markdoc/markdoc';
 
-import { codeBlockSchema } from '@/components/markdoc/components/code-block/code-block.markdoc';
-import { headingSchema } from '@/components/markdoc/components/heading/heading.markdoc';
-import { inlineCodeSchema } from '@/components/markdoc/components/inline-code/inline-code.markdoc';
-import { listSchema } from '@/components/markdoc/components/list/list.markdoc';
-import { signalButtonSchema } from '@/components/signal-button/signal-button.markdoc';
-import { startWorkflowButtonSchema } from '@/components/start-workflow-button/start-workflow-button.markdoc';
+import { codeBlockSchema } from './components/code-block/code-block.markdoc';
+import { headingSchema } from './components/heading/heading.markdoc';
+import { inlineCodeSchema } from './components/inline-code/inline-code.markdoc';
+import { listSchema } from './components/list/list.markdoc';
+import { signalButtonSchema } from './components/signal-button/signal-button.markdoc';
+import { startWorkflowButtonSchema } from './components/start-workflow-button/start-workflow-button.markdoc';
 
 export const markdocConfig: Config = {
   tags: {
