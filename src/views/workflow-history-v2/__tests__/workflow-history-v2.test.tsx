@@ -16,12 +16,29 @@ import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/
 import * as usePageFiltersModule from '@/components/page-filters/hooks/use-page-filters';
 import { type PageQueryParamValues } from '@/hooks/use-page-query-params/use-page-query-params.types';
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
+import {
+  type PendingActivityTaskStartEvent,
+  type PendingDecisionTaskStartEvent,
+} from '@/views/workflow-history/workflow-history.types';
 import { mockDescribeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
 import type workflowPageQueryParamsConfig from '@/views/workflow-page/config/workflow-page-query-params.config';
 
-import { completedActivityTaskEvents } from '../../workflow-history/__fixtures__/workflow-history-activity-events';
-import { completedDecisionTaskEvents } from '../../workflow-history/__fixtures__/workflow-history-decision-events';
+import {
+  completedActivityTaskEvents,
+  failedActivityTaskEvents,
+  scheduleActivityTaskEvent,
+} from '../../workflow-history/__fixtures__/workflow-history-activity-events';
+import {
+  completedDecisionTaskEvents,
+  failedDecisionTaskEvents,
+  scheduleDecisionTaskEvent,
+} from '../../workflow-history/__fixtures__/workflow-history-decision-events';
+import {
+  pendingActivityTaskStartEvent,
+  pendingDecisionTaskStartEvent,
+} from '../../workflow-history/__fixtures__/workflow-history-pending-events';
 import { WorkflowHistoryContext } from '../../workflow-history/workflow-history-context-provider/workflow-history-context-provider';
+import { type Props as NavbarProps } from '../workflow-history-navigation-bar/workflow-history-navigation-bar.types';
 import WorkflowHistoryV2 from '../workflow-history-v2';
 
 jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
@@ -111,9 +128,22 @@ jest.mock(
 jest.mock(
   '../workflow-history-navigation-bar/workflow-history-navigation-bar',
   () =>
-    jest.fn(() => (
-      <div data-testid="workflow-history-navigation-bar">Navigation Bar</div>
-    ))
+    jest.fn(
+      ({ failedEventsMenuItems, pendingEventsMenuItems }: NavbarProps) => (
+        <div data-testid="workflow-history-navigation-bar">
+          {failedEventsMenuItems && failedEventsMenuItems.length > 0 && (
+            <div data-testid="failed-events-menu-items-count">
+              {failedEventsMenuItems.length} failed events
+            </div>
+          )}
+          {pendingEventsMenuItems && pendingEventsMenuItems.length > 0 && (
+            <div data-testid="pending-events-menu-items-count">
+              {pendingEventsMenuItems.length} pending events
+            </div>
+          )}
+        </div>
+      )
+    )
 );
 
 jest.mock('@/utils/decode-url-params', () => jest.fn((params) => params));
@@ -408,6 +438,30 @@ describe(WorkflowHistoryV2.name, () => {
       await screen.findByTestId('ungrouped-selected-event-id')
     ).toHaveTextContent('test-event-id');
   });
+
+  it('passes failed events menu items to navigation bar when failed events exist', async () => {
+    await setup({
+      historyEvents: [...failedActivityTaskEvents, ...failedDecisionTaskEvents],
+    });
+
+    const failedItemsCounter = await screen.findByTestId(
+      'failed-events-menu-items-count'
+    );
+    expect(failedItemsCounter).toHaveTextContent('2 failed events');
+  });
+
+  it('passes pending events menu items to navigation bar when pending events exist', async () => {
+    await setup({
+      historyEvents: [scheduleActivityTaskEvent, scheduleDecisionTaskEvent],
+      pendingActivities: [pendingActivityTaskStartEvent],
+      pendingDecision: pendingDecisionTaskStartEvent,
+    });
+
+    const pendingItemsCounter = await screen.findByTestId(
+      'pending-events-menu-items-count'
+    );
+    expect(pendingItemsCounter).toHaveTextContent('2 pending events');
+  });
 });
 
 async function setup({
@@ -417,6 +471,9 @@ async function setup({
   pageQueryParamsValues = {},
   hasNextPage,
   ungroupedViewPreference,
+  historyEvents,
+  pendingActivities,
+  pendingDecision,
 }: {
   error?: boolean;
   summaryError?: boolean;
@@ -426,7 +483,10 @@ async function setup({
   >;
   hasNextPage?: boolean;
   ungroupedViewPreference?: boolean | null;
-}) {
+  historyEvents?: Array<HistoryEvent>;
+  pendingActivities?: Array<PendingActivityTaskStartEvent>;
+  pendingDecision?: PendingDecisionTaskStartEvent | null;
+} = {}) {
   const user = userEvent.setup();
 
   const mockSetQueryParams = jest.fn();
@@ -497,7 +557,8 @@ async function setup({
                 );
               }
 
-              const events: Array<HistoryEvent> = completedActivityTaskEvents;
+              const events: Array<HistoryEvent> =
+                historyEvents ?? completedActivityTaskEvents;
 
               return HttpResponse.json(
                 {
@@ -526,7 +587,18 @@ async function setup({
                 },
               }
             : {
-                jsonResponse: mockDescribeWorkflowResponse,
+                httpResolver: () => {
+                  const describeResponse = {
+                    ...mockDescribeWorkflowResponse,
+                    ...(pendingActivities && pendingActivities.length > 0
+                      ? {
+                          pendingActivities,
+                        }
+                      : {}),
+                    ...(pendingDecision ? { pendingDecision } : {}),
+                  };
+                  return HttpResponse.json(describeResponse, { status: 200 });
+                },
               }),
         },
       ],
