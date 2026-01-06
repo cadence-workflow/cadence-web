@@ -1,4 +1,4 @@
-export default `# Cadence Markdown Guide
+const content = `# Cadence Markdown Guide
 
 This guide provides examples of how to use markdown to interact with Cadence workflows. 
 You can use markdown format in your workflow queries to return actionable content. 
@@ -10,40 +10,6 @@ If you see buttons for workflow start and signal, then the markdown rendering is
 
 Cadence markdown support is implemented using [Markdoc](https://markdoc.io/). 
 Markdoc is a markdown parser and renderer that is used to safely render the markdown content.
-
-## Signal Workflow
-
-Send a signal to a running workflow using the \`signal\` tag.
-
-### Example:
-
-\`\`\`
-{% signal 
-  signalName="approve"
-  label="Approve"
-  input={status: "approved", user: "john"}
-  domain="my-domain"
-  cluster="my-cluster"
-  workflowId="workflow-123"
-  runId="run-456"
-/%}
-\`\`\`
-
-Note that input field is optional and can be omitted. For different value types, you can use the following syntax: 
-
-- For booleans, use \`input=true\` or \`input=false\`
-- For json objects, use \`input={"key": "value"}\`
-- For strings, use \`input="string"\`
-
-{% signal 
-  signalName="approve"
-  label="Signal Workflow"
-  input={status: "approved", user: "john"}
-  domain="cadence-samples"
-  cluster="cadence-samples"
-  workflowId="sample-workflow"
-  runId="sample-run"
-/%}
 
 
 ## Start Workflow
@@ -97,4 +63,41 @@ Start a new workflow execution using the \`start\` tag.
   timeoutSeconds=120
   sdkLanguage="GO"
 /%}
+
+
+## Signal Workflow
+
+Send a signal to a running workflow using the \`signal\` tag.
+
+### Example:
+
+\`\`\`
+{% signal 
+  signalName="approve"
+  label="Approve"
+  input={status: "approved", user: "john"}
+  domain="my-domain"
+  cluster="my-cluster"
+  workflowId="workflow-123"
+  runId="run-456"
+/%}
+\`\`\`
+
+Note that input field is optional and can be omitted. For different value types, you can use the following syntax: 
+
+- For booleans, use \`input=true\` or \`input=false\`
+- For json objects, use \`input={"key": "value"}\`
+- For strings, use \`input="string"\`
+
+{% signal 
+  signalName="approve"
+  label="Signal Workflow"
+  input={status: "approved", user: "john"}
+  domain="cadence-samples"
+  cluster="cadence-samples"
+  workflowId="sample-workflow"
+  runId="sample-run"
+/%}
 `;
+
+export default content;
