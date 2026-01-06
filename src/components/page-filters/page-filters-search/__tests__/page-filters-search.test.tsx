@@ -38,10 +38,10 @@ describe(PageFiltersSearch.name, () => {
 
     const searchInput = await screen.findByRole('textbox');
 
-    await user.type(searchInput, ` "test search' `);
+    await user.type(searchInput, ` "test search" `);
 
     expect(mockSetQueryParams).toHaveBeenCalledWith({
-      search: `"test search' `,
+      search: `"test search" `,
     });
   });
 

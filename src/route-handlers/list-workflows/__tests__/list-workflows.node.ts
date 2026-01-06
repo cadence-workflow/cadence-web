@@ -1,43 +1,18 @@
 import { status } from '@grpc/grpc-js';
 import { NextRequest } from 'next/server';
+import queryString from 'query-string';
 
-import { type WorkflowExecutionInfo } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionInfo';
 import { GRPCError } from '@/utils/grpc/grpc-error';
 import logger from '@/utils/logger';
 import { mockGrpcClusterMethods } from '@/utils/route-handlers-middleware/middlewares/__mocks__/grpc-cluster-methods';
 
+import { mockWorkflowExecutions } from '../__fixtures__/mock-workflow-executions';
 import * as getListWorkflowExecutionsQueryModule from '../helpers/get-list-workflow-executions-query';
 import { listWorkflows } from '../list-workflows';
 import type { Context } from '../list-workflows.types';
 
 jest.mock('@/utils/logger');
 jest.mock('../helpers/get-list-workflow-executions-query');
-
-const MOCK_EXECUTIONS: Array<WorkflowExecutionInfo> = [
-  {
-    workflowExecution: {
-      workflowId: 'mock-wf-uuid-1',
-      runId: 'mock-run-uuid-1',
-    },
-    type: { name: 'mock-workflow-name' },
-    startTime: { seconds: '1717408148', nanos: 258000000 },
-    closeTime: { seconds: '1717409148', nanos: 258000000 },
-    closeStatus: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
-    historyLength: '100',
-    parentExecutionInfo: null,
-    executionTime: null,
-    memo: null,
-    searchAttributes: null,
-    autoResetPoints: null,
-    taskList: '',
-    isCron: false,
-    updateTime: null,
-    partitionConfig: {},
-    taskListInfo: null,
-    activeClusterSelectionPolicy: null,
-    cronOverlapPolicy: 'CRON_OVERLAP_POLICY_INVALID',
-  },
-];
 
 describe(listWorkflows.name, () => {
   beforeEach(() => {
@@ -126,7 +101,7 @@ describe(listWorkflows.name, () => {
 
     expect(mockGetListWorkflowExecutionsQuery).toHaveBeenCalledWith(
       expect.objectContaining({
-        search: 'test\\"workflow\\\'name',
+        search: `test\\"workflow\\'name`,
       })
     );
   });
@@ -316,7 +291,7 @@ async function setup({
         throw error;
       }
       return {
-        executions: MOCK_EXECUTIONS,
+        executions: mockWorkflowExecutions,
         nextPageToken: 'mock-next-page-token',
       };
     });
@@ -328,25 +303,13 @@ async function setup({
         throw error;
       }
       return {
-        executions: MOCK_EXECUTIONS,
+        executions: mockWorkflowExecutions,
         nextPageToken: 'mock-next-page-token',
       };
     });
 
-  const searchParams = new URLSearchParams();
-  Object.entries(queryParams).forEach(([key, value]) => {
-    if (value !== undefined) {
-      if (Array.isArray(value)) {
-        value.forEach((v) => searchParams.append(key, v));
-      } else {
-        searchParams.append(key, value);
-      }
-    }
-  });
-
-  const url = `http://localhost?${searchParams.toString()}`;
   const res = await listWorkflows(
-    new NextRequest(url),
+    new NextRequest(`http://localhost?${queryString.stringify(queryParams)}`),
     {
       params: {
         domain: 'mock-domain',
