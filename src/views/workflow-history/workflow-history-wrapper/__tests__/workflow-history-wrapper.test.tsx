@@ -3,11 +3,11 @@ import { render, screen } from '@/test-utils/rtl';
 import { type Props } from '../../workflow-history.types';
 import WorkflowHistoryWrapper from '../workflow-history-wrapper';
 
-const mockUseIsWorkflowHistoryV2Enabled = jest.fn();
+const mockUseSuspenseIsWorkflowHistoryV2Enabled = jest.fn();
 
 jest.mock(
-  '@/views/workflow-history-v2/hooks/use-is-workflow-history-v2-enabled',
-  () => jest.fn(() => mockUseIsWorkflowHistoryV2Enabled())
+  '@/views/workflow-history-v2/hooks/use-suspense-is-workflow-history-v2-enabled',
+  () => jest.fn(() => mockUseSuspenseIsWorkflowHistoryV2Enabled())
 );
 
 jest.mock('../../../workflow-history-v2/workflow-history-v2', () =>
@@ -21,16 +21,16 @@ jest.mock('../../workflow-history', () =>
 );
 
 describe(WorkflowHistoryWrapper.name, () => {
-  it('should render WorkflowHistoryV2 when useIsWorkflowHistoryV2Enabled returns true', () => {
-    mockUseIsWorkflowHistoryV2Enabled.mockReturnValue(true);
+  it('should render WorkflowHistoryV2 when useSuspenseIsWorkflowHistoryV2Enabled returns true', () => {
+    mockUseSuspenseIsWorkflowHistoryV2Enabled.mockReturnValue(true);
     setup();
 
     expect(screen.getByTestId('workflow-history-v2')).toBeInTheDocument();
     expect(screen.queryByTestId('workflow-history')).not.toBeInTheDocument();
   });
 
-  it('should render WorkflowHistory when useIsWorkflowHistoryV2Enabled returns false', () => {
-    mockUseIsWorkflowHistoryV2Enabled.mockReturnValue(false);
+  it('should render WorkflowHistory when useSuspenseIsWorkflowHistoryV2Enabled returns false', () => {
+    mockUseSuspenseIsWorkflowHistoryV2Enabled.mockReturnValue(false);
     setup();
 
     expect(screen.getByTestId('workflow-history')).toBeInTheDocument();

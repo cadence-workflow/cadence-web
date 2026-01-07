@@ -1,7 +1,7 @@
 const HISTORY_PAGE_V2_ENABLED_VALUES_CONFIG = [
   'DISABLED',
-  'OPT-IN',
-  'OPT-OUT',
+  'OPT_IN',
+  'OPT_OUT',
   'ENABLED',
 ] as const;
 
