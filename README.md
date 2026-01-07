@@ -175,7 +175,7 @@ npm run lint && npm run typecheck && npm run test
 
 5. Run cadence-web locally to sanity-check if everything works as expected (see [Running development environment](#running-development-environment))
 
-6. Fix any errors that arise from the updated IDL files. 
+6. Fix any errors that arise from the updated IDL files.
 
 ### NPM scripts
 
