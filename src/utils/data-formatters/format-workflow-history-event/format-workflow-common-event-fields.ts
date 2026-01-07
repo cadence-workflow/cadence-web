@@ -4,7 +4,7 @@ import formatTimestampToDatetime from '../format-timestamp-to-datetime';
 import formatWorkflowHistoryEventType from '../format-workflow-history-event-type';
 
 export default function formatWorkflowCommonEventFields<
-  T extends HistoryEvent['attributes'],
+  T extends Exclude<HistoryEvent['attributes'], undefined>,
 >({
   eventId,
   eventTime,

@@ -3,17 +3,23 @@ import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/
 import { type ExtendedHistoryEvent } from '../workflow-history.types';
 
 // validates that each all attributes exists in the provided array
-const arrayOfAllAttrs = <T extends HistoryEvent['attributes'][]>(
+const arrayOfAllAttrs = <
+  T extends Exclude<HistoryEvent['attributes'], undefined>[],
+>(
   array: T &
-    ([HistoryEvent['attributes']] extends [T[number]] ? unknown : 'Invalid')
+    ([Exclude<HistoryEvent['attributes'], undefined>] extends [T[number]]
+      ? unknown
+      : 'Invalid')
 ) => array;
 
 // validates that each all attributes exists in the provided array
 const arrayOfAllAttrsExtended = <
-  T extends ExtendedHistoryEvent['attributes'][],
+  T extends Exclude<ExtendedHistoryEvent['attributes'], undefined>[],
 >(
   array: T &
-    ([ExtendedHistoryEvent['attributes']] extends [T[number]]
+    ([Exclude<ExtendedHistoryEvent['attributes'], undefined>] extends [
+      T[number],
+    ]
       ? unknown
       : 'Invalid')
 ) => array;

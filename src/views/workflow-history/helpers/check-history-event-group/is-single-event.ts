@@ -1,7 +1,7 @@
 import type { SingleHistoryEvent } from '../../workflow-history.types';
 
 export default function isSingleEvent(event: {
-  attributes: string;
+  attributes?: string;
 }): event is SingleHistoryEvent {
   return [
     'activityTaskCancelRequestedEventAttributes',
@@ -18,5 +18,5 @@ export default function isSingleEvent(event: {
     'workflowExecutionCancelRequestedEventAttributes',
     'workflowExecutionCanceledEventAttributes',
     'workflowExecutionContinuedAsNewEventAttributes',
-  ].includes(event?.attributes);
+  ].includes(event?.attributes as string);
 }

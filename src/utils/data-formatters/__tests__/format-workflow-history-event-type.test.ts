@@ -31,7 +31,7 @@ describe('formatWorkflowHistoryEventType', () => {
   it('should handle undefined input correctly', () => {
     const input = undefined;
     const expectedOutput = undefined;
-    // @ts-expect-error Testing null
+    // @ts-expect-error Testing undefined
     expect(formatWorkflowHistoryEventType(input)).toEqual(expectedOutput);
   });
 

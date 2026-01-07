@@ -1,7 +1,7 @@
 import type { ChildWorkflowExecutionHistoryEvent } from '../../workflow-history.types';
 
 export default function isChildWorkflowExecutionEvent(event: {
-  attributes: string;
+  attributes?: string;
 }): event is ChildWorkflowExecutionHistoryEvent {
   return [
     'startChildWorkflowExecutionInitiatedEventAttributes',
@@ -12,5 +12,5 @@ export default function isChildWorkflowExecutionEvent(event: {
     'childWorkflowExecutionCanceledEventAttributes',
     'childWorkflowExecutionTimedOutEventAttributes',
     'childWorkflowExecutionTerminatedEventAttributes',
-  ].includes(event?.attributes);
+  ].includes(event?.attributes as string);
 }
