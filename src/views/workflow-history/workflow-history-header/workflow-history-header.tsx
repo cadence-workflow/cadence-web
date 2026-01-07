@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
 import { Button } from 'baseui/button';
-import { HeadingXSmall } from 'baseui/typography';
 import {
   MdOutlineViewStream,
   MdOutlineViewAgenda,
@@ -16,6 +15,7 @@ import PageSection from '@/components/page-section/page-section';
 import workflowHistoryFiltersConfig from '../config/workflow-history-filters.config';
 import WorkflowHistoryExpandAllEventsButton from '../workflow-history-expand-all-events-button/workflow-history-expand-all-events-button';
 import WorkflowHistoryExportJsonButton from '../workflow-history-export-json-button/workflow-history-export-json-button';
+import WorkflowHistorySwitchToV2Button from '../workflow-history-switch-to-v2-button/workflow-history-switch-to-v2-button';
 import WorkflowHistoryTimelineChart from '../workflow-history-timeline-chart/workflow-history-timeline-chart';
 
 import { styled, overrides } from './workflow-history-header.styles';
@@ -67,7 +67,10 @@ export default function WorkflowHistoryHeader({
       >
         <PageSection>
           <styled.Header>
-            <HeadingXSmall>Workflow history</HeadingXSmall>
+            <styled.Heading>
+              Workflow history
+              <WorkflowHistorySwitchToV2Button />
+            </styled.Heading>
             <styled.Actions>
               <WorkflowHistoryExpandAllEventsButton
                 isExpandAllEvents={isExpandAllEvents}

@@ -4,12 +4,13 @@ import { Button } from 'baseui/button';
 import { Filter } from 'baseui/icon';
 import { StatefulPopover } from 'baseui/popover';
 import { SegmentedControl, Segment } from 'baseui/segmented-control';
-import { HeadingXSmall } from 'baseui/typography';
 import { useInView } from 'react-intersection-observer';
 
 import PageSection from '@/components/page-section/page-section';
 import WorkflowHistoryExportJsonButton from '@/views/workflow-history/workflow-history-export-json-button/workflow-history-export-json-button';
 import WorkflowHistoryFiltersMenu from '@/views/workflow-history-v2/workflow-history-filters-menu/workflow-history-filters-menu';
+
+import WorkflowHistorySwitchToV1Button from '../workflow-history-switch-to-v1-button/workflow-history-switch-to-v1-button';
 
 import { overrides, styled } from './workflow-history-header.styles';
 import { type Props } from './workflow-history-header.types';
@@ -49,7 +50,10 @@ export default function WorkflowHistoryHeader({
       >
         <PageSection>
           <styled.Header>
-            <HeadingXSmall>Workflow history</HeadingXSmall>
+            <styled.Heading>
+              Workflow history
+              <WorkflowHistorySwitchToV1Button />
+            </styled.Heading>
             <styled.Actions>
               <WorkflowHistoryExportJsonButton {...wfHistoryRequestArgs} />
               <SegmentedControl
