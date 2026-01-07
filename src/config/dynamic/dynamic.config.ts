@@ -17,6 +17,7 @@ import extendedDomainInfoEnabled from './resolvers/extended-domain-info-enabled'
 import { type ExtendedDomainInfoEnabledConfig } from './resolvers/extended-domain-info-enabled.types';
 import failoverHistoryEnabled from './resolvers/failover-history-enabled';
 import historyPageV2Enabled from './resolvers/history-page-v2-enabled';
+import { type HistoryPageV2EnabledConfigValue } from './resolvers/history-page-v2-enabled.types';
 import workflowActionsEnabled from './resolvers/workflow-actions-enabled';
 import {
   type WorkflowActionsEnabledResolverParams,
@@ -76,7 +77,7 @@ const dynamicConfigs: {
   >;
   HISTORY_PAGE_V2_ENABLED: ConfigAsyncResolverDefinition<
     undefined,
-    boolean,
+    HistoryPageV2EnabledConfigValue,
     'request',
     true
   >;

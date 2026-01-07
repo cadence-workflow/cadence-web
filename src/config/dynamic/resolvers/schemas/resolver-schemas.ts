@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { type ResolverSchemas } from '../../../../utils/config/config.types';
+import HISTORY_PAGE_V2_ENABLED_VALUES_CONFIG from '../history-page-v2-enabled-values.config';
 import WORKFLOW_ACTIONS_DISABLED_VALUES_CONFIG from '../workflow-actions-disabled-values.config';
 
 const workflowActionsEnabledValueSchema = z.enum([
@@ -72,7 +73,7 @@ const resolverSchemas: ResolverSchemas = {
   },
   HISTORY_PAGE_V2_ENABLED: {
     args: z.undefined(),
-    returnType: z.boolean(),
+    returnType: z.enum(HISTORY_PAGE_V2_ENABLED_VALUES_CONFIG),
   },
 };
 
