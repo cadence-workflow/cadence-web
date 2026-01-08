@@ -9,9 +9,17 @@ This web UI is used to view workflows from [Cadence][cadence], see what's runnin
 
 ## Getting Started
 
+### Using cadence-web
+
+The latest version of `cadence-web` is included in the `cadence` composed docker containers in the [main Cadence repository][cadence]. Follow the instructions there to get started.
+
+```
+docker-compose -f docker/docker-compose.yml up
+```
+
 ### Configuration
 
-Set these environment variables if you need to change their defaults
+Set these environment variables if you need to change their defaults.
 
 | Variable                     | Description                                                                   | Default          |
 | ---------------------------- | ----------------------------------------------------------------------------- | ---------------- |
@@ -47,13 +55,7 @@ Feature flags control various UI features and functionality in `cadence-web`. Th
 
 **Note:** For advanced customization, feature flags can be modified through resolvers in the dynamic config system ([`src/config/dynamic/resolvers`](src/config/dynamic/resolvers)).
 
-### Using cadence-web
 
-The latest version of `cadence-web` is included in the `cadence` composed docker containers in the [main Cadence repository][cadence]. Follow the instructions there to get started.
-
-```
-docker-compose -f docker/docker-compose.yml up
-```
 
 ### Using TLS for gRPC
 
@@ -82,11 +84,11 @@ docker run -it --rm \
 - Replace `/path/on/host/ca.pem` with the actual location of your CA certificate on the host system.
 - `CADENCE_GRPC_TLS_CA_FILE` must point to the path inside the container where the certificate is mounted.
 
-### Building & developing cadence-web
+## Building & developing cadence-web
 
 `cadence-web` requires node `v18` or greater to be able to run correctly.
 
-#### Creating a production build
+### Creating a production build
 
 To create a production build, follow these steps:
 
@@ -110,7 +112,7 @@ npm start
 
 4. Once the webapp is ready, access it through `localhost:8088` (port can be changed using `CADENCE_WEB_PORT` environment variable)
 
-#### Running development environment
+### Running development environment
 
 To run the development server, follow these steps:
 
@@ -128,7 +130,7 @@ npm run dev
 
 3. Once the webapp is ready, access it through `localhost:8088` (port can be changed using `CADENCE_WEB_PORT` environment variable)
 
-Note: For contribution we recommend using dev containers, check [VSCode Dev Containers](#using-vscode-dev-containers) section for more information
+Note: For contribution we recommend using dev containers, check [VSCode Dev Containers](#using-vscode-dev-containers) for more information
 
 #### Using VSCode Dev Containers
 
@@ -136,7 +138,7 @@ Note: For contribution we recommend using dev containers, check [VSCode Dev Cont
 2. Open the cadence-web directory in VSCode.
 3. Make sure to update `CADENCE_GRPC_PEERS` with the correct host. (If you are connecting to a server on a container host machine use `host.docker.internal:7833`, where `7833` is the gRPC port for a running [cadence-frontend](https://github.com/cadence-workflow/cadence/tree/master/service/frontend) service)
 4. Use the Command Palette to select the 'Reopen folder in Container' option
-5. Follow same commands listed in [Running development environment](#running-development-environment) section.
+5. Follow the same commands listed in [Running development environment](#running-development-environment).
 
 #### Developing cadence-web against cadence composed docker
 
@@ -146,11 +148,36 @@ To start development against dockerized cadence services, run the following comm
 docker-compose -f docker-compose-backend-services.yml up
 ```
 
-You can customize the YAML file or reuse configurations from the [cadence repository](https://github.com/cadence-workflow/cadence/tree/master/docker). (In case of reusing exsisting files: ensure that cadence-web is not included in the composed container services, or just remove it)
+You can customize the YAML file or reuse configurations from the [cadence repository](https://github.com/cadence-workflow/cadence/tree/master/docker). (In case of reusing existing files: ensure that cadence-web is not included in the composed container services, or just remove it)
 
 After running `cadence`, start `cadence-web` for development using one of the previous methods ([Running development environment](#running-development-environment), [VSCode Dev Containers](#using-vscode-dev-containers))
 
-#### NPM scripts
+### Updating IDLs
+
+To update the Cadence IDL files:
+
+1. Update the commit hash in `package.json` under `config.cadence_idl_version` to the latest commit hash from the [cadence-idl repository](https://github.com/cadence-workflow/cadence-idl).
+
+2. Download the new IDL files:
+```
+npm run install-idl
+```
+
+3. Generate TypeScript types from the IDL files:
+```
+npm run generate:idl
+```
+
+4. Check for errors:
+```
+npm run lint && npm run typecheck && npm run test
+```
+
+5. Run cadence-web locally to sanity-check if everything works as expected (see [Running development environment](#running-development-environment))
+
+6. Fix any errors that arise from the updated IDL files.
+
+### NPM scripts
 
 | script            | Description                                                                                     |
 | ----------------- | ----------------------------------------------------------------------------------------------- |

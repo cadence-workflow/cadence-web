@@ -19,7 +19,15 @@ const listWorkflowsQueryParamSchema = z
       ),
     listType: z.enum(['default', 'archived']),
     inputType: z.enum(['search', 'query']),
-    search: z.string().trim().optional(),
+    search: z
+      .string()
+      .trim()
+      .optional()
+      .transform((search) =>
+        search === undefined
+          ? undefined
+          : search.replace(/['"]/g, (match) => `\\${match}`)
+      ),
     query: z.string().optional(),
     statuses: z
       .union([
