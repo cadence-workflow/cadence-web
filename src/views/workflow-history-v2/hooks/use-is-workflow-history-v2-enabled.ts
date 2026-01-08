@@ -7,6 +7,19 @@ import {
 } from '@/utils/local-storage';
 import workflowHistoryUserPreferencesConfig from '@/views/workflow-history/config/workflow-history-user-preferences.config';
 
+/**
+ * Manages Workflow History V2 enabled state based on config and localStorage.
+ *
+ * @returns A tuple containing:
+ *   - `isWorkflowHistoryV2Enabled`: boolean indicating whether Workflow History V2 is enabled
+ *   - `setIsWorkflowHistoryV2Enabled`: function to update the enabled state
+ *
+ * Behavior by config mode:
+ * - `DISABLED`: Always returns `false`. Setter has no effect.
+ * - `ENABLED`: Always returns `true`. Setter has no effect.
+ * - `OPT_OUT`: Always starts with `true`. Setter updates state but does not persist to localStorage.
+ * - `OPT_IN`: Reads initial state from localStorage (defaults to `false`). Setter updates both state and localStorage.
+ */
 export default function useIsWorkflowHistoryV2Enabled(): [
   boolean,
   (v: boolean) => void,
