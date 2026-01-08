@@ -13,7 +13,9 @@ export default function WorkflowHistorySwitchToV2Button() {
 
   const { setIsWorkflowHistoryV2Enabled } = useContext(WorkflowHistoryContext);
 
-  if (historyPageV2Config === 'DISABLED') return null;
+  if (historyPageV2Config === 'DISABLED' || historyPageV2Config === 'ENABLED') {
+    return null;
+  }
 
   return (
     <WorkflowHistoryViewToggleButton

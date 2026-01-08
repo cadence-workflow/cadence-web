@@ -49,6 +49,11 @@ jest.mock(
     ))
 );
 
+jest.mock(
+  '../../workflow-history-switch-to-v2-button/workflow-history-switch-to-v2-button',
+  () => jest.fn(() => <button>Switch to V2</button>)
+);
+
 describe(WorkflowHistoryHeader.name, () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -67,6 +72,11 @@ describe(WorkflowHistoryHeader.name, () => {
   it('should render export JSON button', () => {
     setup();
     expect(screen.getByText('Export JSON')).toBeInTheDocument();
+  });
+
+  it('should render switch to V2 button', () => {
+    setup();
+    expect(screen.getByText('Switch to V2')).toBeInTheDocument();
   });
 
   it('should call toggleIsExpandAllEvents when expand button is clicked', async () => {
