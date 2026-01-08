@@ -3,9 +3,10 @@ import { type ViewToggleTooltipContentConfig } from '@/views/workflow-history-v2
 const workflowHistorySwitchToV2ButtonTooltipContentConfig: ViewToggleTooltipContentConfig =
   {
     content: [
-      `The new Workflow History UI provides a more compact and informative
-           overview of your workflow's history, with several enhancements for
-          improved navigation and usability.`,
+      `The new Workflow History UI provides a table-based layout with a more compact
+          overview of your workflow's history, including aggregated event summaries (shown 
+          inline and in a Summary tab), color codes for different event types, a floating 
+          navigation bar for quick event discovery, and a sticky header.`,
       `Click to try it out!`,
     ],
   };

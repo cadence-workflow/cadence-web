@@ -5,10 +5,9 @@ import { type ViewToggleTooltipContentConfig } from '../workflow-history-view-to
 const workflowHistorySwitchToV1ButtonTooltipContentConfig: ViewToggleTooltipContentConfig =
   {
     content: [
-      `The purpose of the new History view is to provide a more compact and 
-          informative overview, including previews, flexible grouped and ungrouped 
-          layouts, deeplinking, and several additional enhancements for 
-          improved navigation and usability.`,
+      `The new History view provides a more compact overview with a table-based 
+          format designed for information density and easier scanning, helping you 
+          find important events faster.`,
       `Please feel free to share any feedback if you encounter anything 
           that seems suboptimal in the new History view.`,
     ],

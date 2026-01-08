@@ -57,6 +57,11 @@ export const styled = {
       display: 'flex',
       gap: $theme.sizing.scale600,
       ...$theme.typography.HeadingXSmall,
+      flexDirection: 'column',
+      [$theme.mediaQuery.medium]: {
+        alignItems: 'center',
+        flexDirection: 'row',
+      },
     })
   ),
   Actions: createStyled(
