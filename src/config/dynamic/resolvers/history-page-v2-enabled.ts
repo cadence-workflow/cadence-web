@@ -17,10 +17,7 @@ import { type HistoryPageV2EnabledConfigValue } from './history-page-v2-enabled.
 export default async function historyPageV2Enabled(): Promise<HistoryPageV2EnabledConfigValue> {
   const envValue = process.env.CADENCE_HISTORY_PAGE_V2_ENABLED;
 
-  if (
-    HISTORY_PAGE_V2_ENABLED_VALUES_CONFIG.find((v) => v === envValue) !==
-    undefined
-  ) {
+  if (HISTORY_PAGE_V2_ENABLED_VALUES_CONFIG.includes(envValue as any)) {
     return envValue as HistoryPageV2EnabledConfigValue;
   }
 
