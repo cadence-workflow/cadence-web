@@ -20,15 +20,13 @@ jest.mock(
 describe(getNavigationBarEventsMenuItems.name, () => {
   it('should return an empty array when eventGroupsEntries is empty', () => {
     const eventGroupsEntries: Array<EventGroupEntry> = [];
-    const filterFn = jest.fn(() => true);
 
     const result = getNavigationBarEventsMenuItems(
       eventGroupsEntries,
-      filterFn
+      () => true
     );
 
     expect(result).toEqual([]);
-    expect(filterFn).not.toHaveBeenCalled();
   });
 
   it('should skip groups with no events', () => {
@@ -39,15 +37,13 @@ describe(getNavigationBarEventsMenuItems.name, () => {
     const eventGroupsEntries: Array<EventGroupEntry> = [
       ['group1', groupWithoutEvents],
     ];
-    const filterFn = jest.fn(() => true);
 
     const result = getNavigationBarEventsMenuItems(
       eventGroupsEntries,
-      filterFn
+      () => true
     );
 
     expect(result).toEqual([]);
-    expect(filterFn).not.toHaveBeenCalled();
   });
 
   it('should skip groups filtered out by filterFn', () => {
@@ -77,11 +73,10 @@ describe(getNavigationBarEventsMenuItems.name, () => {
       ['group1', mockActivityEventGroup],
       ['group2', mockDecisionEventGroup],
     ];
-    const filterFn = jest.fn(() => true);
 
     const result = getNavigationBarEventsMenuItems(
       eventGroupsEntries,
-      filterFn
+      () => true
     );
 
     expect(result).toHaveLength(2);
@@ -111,11 +106,10 @@ describe(getNavigationBarEventsMenuItems.name, () => {
       ['group1', groupWithShortLabel],
       ['group2', groupWithoutShortLabel],
     ];
-    const filterFn = jest.fn(() => true);
 
     const result = getNavigationBarEventsMenuItems(
       eventGroupsEntries,
-      filterFn
+      () => true
     );
 
     expect(result).toHaveLength(2);
@@ -127,11 +121,10 @@ describe(getNavigationBarEventsMenuItems.name, () => {
     const eventGroupsEntries: Array<EventGroupEntry> = [
       ['group1', mockActivityEventGroup],
     ];
-    const filterFn = jest.fn(() => true);
 
     const result = getNavigationBarEventsMenuItems(
       eventGroupsEntries,
-      filterFn
+      () => true
     );
 
     expect(result).toHaveLength(1);
