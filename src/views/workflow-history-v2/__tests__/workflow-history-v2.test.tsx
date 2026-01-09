@@ -471,7 +471,7 @@ async function setup({
   pageQueryParamsValues = {},
   hasNextPage,
   ungroupedViewPreference,
-  historyEvents,
+  historyEvents = completedActivityTaskEvents,
   pendingActivities,
   pendingDecision,
 }: {
@@ -557,13 +557,10 @@ async function setup({
                 );
               }
 
-              const events: Array<HistoryEvent> =
-                historyEvents ?? completedActivityTaskEvents;
-
               return HttpResponse.json(
                 {
                   history: {
-                    events,
+                    events: historyEvents,
                   },
                   archived: false,
                   nextPageToken: hasNextPage ? 'mock-next-page-token' : '',

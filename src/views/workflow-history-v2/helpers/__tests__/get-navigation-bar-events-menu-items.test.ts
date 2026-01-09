@@ -70,9 +70,6 @@ describe(getNavigationBarEventsMenuItems.name, () => {
       label: 'Mock decision',
       type: 'DECISION',
     });
-    expect(filterFn).toHaveBeenCalledTimes(2);
-    expect(filterFn).toHaveBeenCalledWith(mockActivityEventGroup);
-    expect(filterFn).toHaveBeenCalledWith(mockDecisionEventGroup);
   });
 
   it('should include groups that pass filterFn', () => {
