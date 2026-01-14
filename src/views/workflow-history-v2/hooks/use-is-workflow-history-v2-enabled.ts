@@ -55,6 +55,8 @@ export default function useIsWorkflowHistoryV2Enabled(): [
 
       setIsEnabled(v);
 
+      // We persist user preference only for opt-ins and not opt-outs, to allow
+      // us to collect feedback from users who prefer the older history view
       if (historyPageV2Config === 'OPT_IN') {
         setLocalStorageValue(
           workflowHistoryUserPreferencesConfig.historyV2ViewEnabled.key,
