@@ -410,10 +410,8 @@ export default function WorkflowHistoryV2({ params }: Props) {
         );
       }
 
-      setTimeout(() => {
-        setScrollToEventId(eventId);
-        if (!getIsItemExpanded(eventId)) toggleIsItemExpanded(eventId);
-      }, 0);
+      setScrollToEventId(eventId);
+      if (!getIsItemExpanded(eventId)) toggleIsItemExpanded(eventId);
     },
     [
       filteredEventGroupsEntries,
