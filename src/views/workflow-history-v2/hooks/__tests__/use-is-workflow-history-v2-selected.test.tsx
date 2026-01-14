@@ -208,4 +208,3 @@ function setup({
 
   return { result, mockGetLocalStorageValue, mockSetLocalStorageValue };
 }
-
