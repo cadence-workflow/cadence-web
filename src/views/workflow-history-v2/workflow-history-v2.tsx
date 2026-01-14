@@ -338,43 +338,38 @@ export default function WorkflowHistoryV2({ params }: Props) {
     undefined
   );
 
-  useEffect(() => {
-    if (!scrollToEventId) return;
+  const scrollToEventIndex = useMemo(() => {
+    if (!scrollToEventId) return undefined;
 
-    const ref = isUngroupedHistoryViewEnabled
-      ? ungroupedTableVirtuosoRef
-      : groupedTableVirtuosoRef;
-
-    if (!ref.current) return;
-
-    const indexToScrollTo = isUngroupedHistoryViewEnabled
+    return isUngroupedHistoryViewEnabled
       ? ungroupedEventsInfo.findIndex((e) => e.id === scrollToEventId)
       : filteredEventGroupsEntries.findIndex(([_, group]) =>
           group.events.some((e) => e.eventId === scrollToEventId)
         );
-
-    if (indexToScrollTo !== -1) {
-      ref.current.scrollToIndex({
-        index: indexToScrollTo,
-        behavior: 'auto',
-        align: 'center',
-      });
-    }
-
-    const timeoutId = setTimeout(() => {
-      setScrollToEventId(undefined);
-      // We clear scrollToEventId after 2s to allow the fade-in animation to complete
-    }, 2000);
-
-    return () => {
-      clearTimeout(timeoutId);
-    };
   }, [
     scrollToEventId,
     isUngroupedHistoryViewEnabled,
     ungroupedEventsInfo,
     filteredEventGroupsEntries,
   ]);
+
+  useEffect(() => {
+    const ref = isUngroupedHistoryViewEnabled
+      ? ungroupedTableVirtuosoRef
+      : groupedTableVirtuosoRef;
+
+    if (!ref.current) return;
+
+    if (scrollToEventIndex && scrollToEventIndex !== -1) {
+      ref.current.scrollToIndex({
+        index: scrollToEventIndex,
+        behavior: 'auto',
+        align: 'center',
+      });
+    }
+
+    setTimeout(() => setScrollToEventId(undefined), 2000);
+  }, [scrollToEventIndex, isUngroupedHistoryViewEnabled]);
 
   const failedEventsMenuItems = useMemo(
     () =>
