@@ -32,7 +32,6 @@ import workflowPageQueryParamsConfig from '../workflow-page/config/workflow-page
 import { useSuspenseDescribeWorkflow } from '../workflow-page/hooks/use-describe-workflow';
 import { type WorkflowPageTabContentParams } from '../workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
-import WORKFLOW_HISTORY_CLEAR_SCROLL_EVENT_TIMEOUT_MS_CONFIG from './config/workflow-history-clear-scroll-event-timeout-ms.config';
 import WORKFLOW_HISTORY_FETCH_EVENTS_THROTTLE_MS_CONFIG from './config/workflow-history-fetch-events-throttle-ms.config';
 import workflowHistoryFiltersConfig from './config/workflow-history-filters.config';
 import WORKFLOW_HISTORY_RENDER_FETCHED_EVENTS_THROTTLE_MS_CONFIG from './config/workflow-history-render-fetched-events-throttle-ms.config';
@@ -364,7 +363,8 @@ export default function WorkflowHistoryV2({ params }: Props) {
 
     const timeoutId = setTimeout(() => {
       setScrollToEventId(undefined);
-    }, WORKFLOW_HISTORY_CLEAR_SCROLL_EVENT_TIMEOUT_MS_CONFIG);
+      // We clear scrollToEventId after 2s to allow the fade-in animation to complete
+    }, 2000);
 
     return () => {
       clearTimeout(timeoutId);
