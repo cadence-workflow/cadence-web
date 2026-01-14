@@ -11,7 +11,7 @@ export default function WorkflowHistorySwitchToV2Button() {
     'HISTORY_PAGE_V2_ENABLED'
   );
 
-  const { setIsWorkflowHistoryV2Enabled } = useContext(WorkflowHistoryContext);
+  const { setIsWorkflowHistoryV2Selected } = useContext(WorkflowHistoryContext);
 
   if (historyPageV2Config === 'DISABLED' || historyPageV2Config === 'ENABLED') {
     return null;
@@ -21,7 +21,7 @@ export default function WorkflowHistorySwitchToV2Button() {
     <WorkflowHistoryViewToggleButton
       kind="primary"
       label="Switch to the new History view"
-      onClick={() => setIsWorkflowHistoryV2Enabled(true)}
+      onClick={() => setIsWorkflowHistoryV2Selected(true)}
       tooltipContent={workflowHistorySwitchToV2ButtonTooltipContentConfig}
     />
   );

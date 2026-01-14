@@ -51,28 +51,28 @@ describe(WorkflowHistorySwitchToV1Button.name, () => {
     });
   });
 
-  it('should call setIsWorkflowHistoryV2Enabled with false when button is clicked', async () => {
-    const { user, mockSetIsWorkflowHistoryV2Enabled } = setup({
+  it('should call setIsWorkflowHistoryV2Selected with false when button is clicked', async () => {
+    const { user, mockSetIsWorkflowHistoryV2Selected } = setup({
       configValue: 'OPT_OUT',
     });
 
     const button = await screen.findByText('Switch to the legacy History view');
     await user.click(button);
 
-    expect(mockSetIsWorkflowHistoryV2Enabled).toHaveBeenCalledTimes(1);
-    expect(mockSetIsWorkflowHistoryV2Enabled).toHaveBeenCalledWith(false);
+    expect(mockSetIsWorkflowHistoryV2Selected).toHaveBeenCalledTimes(1);
+    expect(mockSetIsWorkflowHistoryV2Selected).toHaveBeenCalledWith(false);
   });
 });
 
 function setup({ configValue }: { configValue: string }) {
   const user = userEvent.setup();
-  const mockSetIsWorkflowHistoryV2Enabled = jest.fn();
+  const mockSetIsWorkflowHistoryV2Selected = jest.fn();
 
   const contextValue = {
     ungroupedViewUserPreference: null,
     setUngroupedViewUserPreference: jest.fn(),
-    isWorkflowHistoryV2Enabled: true,
-    setIsWorkflowHistoryV2Enabled: mockSetIsWorkflowHistoryV2Enabled,
+    isWorkflowHistoryV2Selected: true,
+    setIsWorkflowHistoryV2Selected: mockSetIsWorkflowHistoryV2Selected,
   };
 
   const renderResult = render(
@@ -95,7 +95,7 @@ function setup({ configValue }: { configValue: string }) {
 
   return {
     user,
-    mockSetIsWorkflowHistoryV2Enabled,
+    mockSetIsWorkflowHistoryV2Selected,
     ...renderResult,
   };
 }
