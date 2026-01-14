@@ -7,7 +7,7 @@ import useSuspenseConfigValue from '@/hooks/use-config-value/use-suspense-config
 import * as localStorageModule from '@/utils/local-storage';
 import workflowHistoryUserPreferencesConfig from '@/views/workflow-history/config/workflow-history-user-preferences.config';
 
-import useIsWorkflowHistoryV2Enabled from '../use-is-workflow-history-v2-enabled';
+import useIsWorkflowHistoryV2Selected from '../use-is-workflow-history-v2-selected';
 
 jest.mock('@/hooks/use-config-value/use-suspense-config-value');
 jest.mock('@/utils/local-storage', () => ({
@@ -19,7 +19,7 @@ jest.mock('@/utils/local-storage', () => ({
 const mockUseSuspenseConfigValue =
   useSuspenseConfigValue as jest.MockedFunction<any>;
 
-describe(useIsWorkflowHistoryV2Enabled.name, () => {
+describe(useIsWorkflowHistoryV2Selected.name, () => {
   afterEach(() => {
     jest.restoreAllMocks();
   });
@@ -197,7 +197,7 @@ function setup({
     .mockImplementation(mockSetLocalStorageValue);
 
   const { result } = renderHook(
-    () => useIsWorkflowHistoryV2Enabled(),
+    () => useIsWorkflowHistoryV2Selected(),
     undefined,
     {
       wrapper: ({ children }: { children: React.ReactNode }) => (
@@ -208,3 +208,4 @@ function setup({
 
   return { result, mockGetLocalStorageValue, mockSetLocalStorageValue };
 }
+

@@ -8,11 +8,11 @@ import {
 import workflowHistoryUserPreferencesConfig from '@/views/workflow-history/config/workflow-history-user-preferences.config';
 
 /**
- * Manages Workflow History V2 enabled state based on config and localStorage.
+ * Manages Workflow History V2 selected state based on config and localStorage.
  *
  * @returns A tuple containing:
- *   - `isWorkflowHistoryV2Enabled`: boolean indicating whether Workflow History V2 is enabled
- *   - `setIsWorkflowHistoryV2Enabled`: function to update the enabled state
+ *   - `isWorkflowHistoryV2Selected`: boolean indicating whether Workflow History V2 is selected
+ *   - `setIsWorkflowHistoryV2Selected`: function to update the selected state
  *
  * Behavior by config mode:
  * - `DISABLED`: Always returns `false`. Setter has no effect.
@@ -20,7 +20,7 @@ import workflowHistoryUserPreferencesConfig from '@/views/workflow-history/confi
  * - `OPT_OUT`: Always starts with `true`. Setter updates state but does not persist to localStorage.
  * - `OPT_IN`: Reads initial state from localStorage (defaults to `false`). Setter updates both state and localStorage.
  */
-export default function useIsWorkflowHistoryV2Enabled(): [
+export default function useIsWorkflowHistoryV2Selected(): [
   boolean,
   (v: boolean) => void,
 ] {
@@ -28,7 +28,7 @@ export default function useIsWorkflowHistoryV2Enabled(): [
     'HISTORY_PAGE_V2_ENABLED'
   );
 
-  const [isEnabled, setIsEnabled] = useState(() => {
+  const [isSelected, setIsSelected] = useState(() => {
     switch (historyPageV2Config) {
       case 'DISABLED':
         return false;
@@ -44,7 +44,7 @@ export default function useIsWorkflowHistoryV2Enabled(): [
     }
   });
 
-  const setIsWorkflowHistoryV2Enabled = useCallback(
+  const setIsWorkflowHistoryV2Selected = useCallback(
     (v: boolean) => {
       if (
         historyPageV2Config === 'DISABLED' ||
@@ -53,10 +53,11 @@ export default function useIsWorkflowHistoryV2Enabled(): [
         return;
       }
 
-      setIsEnabled(v);
+      setIsSelected(v);
 
-      // We persist user preference only for opt-ins and not opt-outs, to allow
-      // us to collect feedback from users who prefer the older history view
+      // We only save user preferences to localStorage for OPT_IN mode, not for OPT_OUT,
+      // so that we can learn when users explicitly choose to stick with the old workflow history view.
+      // This helps us gather feedback from those who opt to not try the new experience.
       if (historyPageV2Config === 'OPT_IN') {
         setLocalStorageValue(
           workflowHistoryUserPreferencesConfig.historyV2ViewEnabled.key,
@@ -67,5 +68,5 @@ export default function useIsWorkflowHistoryV2Enabled(): [
     [historyPageV2Config]
   );
 
-  return [isEnabled, setIsWorkflowHistoryV2Enabled];
+  return [isSelected, setIsWorkflowHistoryV2Selected];
 }

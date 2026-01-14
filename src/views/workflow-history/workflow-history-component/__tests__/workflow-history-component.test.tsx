@@ -15,15 +15,15 @@ jest.mock('../../workflow-history', () =>
 );
 
 describe(WorkflowHistoryComponent.name, () => {
-  it('should render WorkflowHistoryV2 when isWorkflowHistoryV2Enabled is true', () => {
-    setup({ isWorkflowHistoryV2Enabled: true });
+  it('should render WorkflowHistoryV2 when isWorkflowHistoryV2Selected is true', () => {
+    setup({ isWorkflowHistoryV2Selected: true });
 
     expect(screen.getByTestId('workflow-history-v2')).toBeInTheDocument();
     expect(screen.queryByTestId('workflow-history')).not.toBeInTheDocument();
   });
 
-  it('should render WorkflowHistory when isWorkflowHistoryV2Enabled is false', () => {
-    setup({ isWorkflowHistoryV2Enabled: false });
+  it('should render WorkflowHistory when isWorkflowHistoryV2Selected is false', () => {
+    setup({ isWorkflowHistoryV2Selected: false });
 
     expect(screen.getByTestId('workflow-history')).toBeInTheDocument();
     expect(screen.queryByTestId('workflow-history-v2')).not.toBeInTheDocument();
@@ -31,7 +31,7 @@ describe(WorkflowHistoryComponent.name, () => {
 });
 
 function setup({
-  isWorkflowHistoryV2Enabled = false,
+  isWorkflowHistoryV2Selected = false,
   props = {
     params: {
       cluster: 'test-cluster',
@@ -42,7 +42,7 @@ function setup({
     },
   },
 }: {
-  isWorkflowHistoryV2Enabled?: boolean;
+  isWorkflowHistoryV2Selected?: boolean;
   props?: Props;
 } = {}) {
   render(
@@ -50,8 +50,8 @@ function setup({
       value={{
         ungroupedViewUserPreference: null,
         setUngroupedViewUserPreference: jest.fn(),
-        isWorkflowHistoryV2Enabled,
-        setIsWorkflowHistoryV2Enabled: jest.fn(),
+        isWorkflowHistoryV2Selected,
+        setIsWorkflowHistoryV2Selected: jest.fn(),
       }}
     >
       <WorkflowHistoryComponent {...props} />

@@ -7,9 +7,9 @@ import { WorkflowHistoryContext } from '../workflow-history-context-provider/wor
 import { type Props } from '../workflow-history.types';
 
 export default function WorkflowHistoryComponent(props: Props) {
-  const { isWorkflowHistoryV2Enabled } = useContext(WorkflowHistoryContext);
+  const { isWorkflowHistoryV2Selected } = useContext(WorkflowHistoryContext);
 
-  return isWorkflowHistoryV2Enabled ? (
+  return isWorkflowHistoryV2Selected ? (
     <WorkflowHistoryV2 {...props} />
   ) : (
     <WorkflowHistory {...props} />

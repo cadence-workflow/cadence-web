@@ -35,7 +35,7 @@ jest.mock('@/utils/local-storage', () => ({
 }));
 
 jest.mock(
-  '@/views/workflow-history-v2/hooks/use-is-workflow-history-v2-enabled',
+  '@/views/workflow-history-v2/hooks/use-is-workflow-history-v2-selected',
   () => ({
     __esModule: true,
     default: jest.fn(() => [false, jest.fn()]),
