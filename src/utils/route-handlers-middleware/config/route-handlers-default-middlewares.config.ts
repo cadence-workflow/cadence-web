@@ -6,8 +6,8 @@ import { type UserInfoMiddlewareContext } from '../middlewares/user-info.types';
 import { type MiddlewareFunction } from '../route-handlers-middleware.types';
 
 const routeHandlersDefaultMiddlewares: [
-  MiddlewareFunction<['grpcClusterMethods', GRPCClusterMethods]>,
   MiddlewareFunction<['userInfo', UserInfoMiddlewareContext]>,
-] = [grpcClusterMethodsMiddleware, userInfoMiddleware];
+  MiddlewareFunction<['grpcClusterMethods', GRPCClusterMethods]>,
+] = [userInfoMiddleware, grpcClusterMethodsMiddleware];
 
 export default routeHandlersDefaultMiddlewares;
