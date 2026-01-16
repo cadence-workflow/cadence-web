@@ -97,10 +97,10 @@ export const styled = {
     // Links
     '& a': {
       color: $theme.colors.linkText,
-      textDecoration: 'underline',
+      textDecoration: 'underline !important',
       ':hover': {
         color: $theme.colors.linkHover,
-        textDecoration: 'none',
+        textDecoration: 'underline !important',
       },
       ':visited': {
         color: $theme.colors.linkVisited,
