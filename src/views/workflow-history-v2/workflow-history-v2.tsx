@@ -52,9 +52,9 @@ import {
 export default function WorkflowHistoryV2({ params }: Props) {
   const decodedParams = decodeUrlParams<WorkflowPageTabContentParams>(params);
 
-  const { workflowTab, ...historyQueryParams } = decodedParams;
+  const { workflowTab, ...encodedHistoryQueryParams } = params;
   const wfHistoryRequestArgs = {
-    ...historyQueryParams,
+    ...encodedHistoryQueryParams,
     pageSize: WORKFLOW_HISTORY_PAGE_SIZE_CONFIG,
     waitForNewEvent: true,
   };
