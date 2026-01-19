@@ -45,6 +45,19 @@ export const styled = {
       },
     })
   ),
+  Heading: createStyled(
+    'div',
+    ({ $theme }: { $theme: Theme }): StyleObject => ({
+      display: 'flex',
+      gap: $theme.sizing.scale600,
+      ...$theme.typography.HeadingXSmall,
+      flexDirection: 'column',
+      [$theme.mediaQuery.medium]: {
+        alignItems: 'center',
+        flexDirection: 'row',
+      },
+    })
+  ),
   Actions: createStyled(
     'div',
     ({ $theme }: { $theme: Theme }): StyleObject => ({

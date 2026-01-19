@@ -23,6 +23,11 @@ jest.mock(
     ))
 );
 
+jest.mock(
+  '../../workflow-history-switch-to-v1-button/workflow-history-switch-to-v1-button',
+  () => jest.fn(() => <button>Switch to V1</button>)
+);
+
 describe(WorkflowHistoryHeader.name, () => {
   it('should render the header with title', () => {
     setup();
@@ -32,6 +37,11 @@ describe(WorkflowHistoryHeader.name, () => {
   it('should render export JSON button', () => {
     setup();
     expect(screen.getByText('Export JSON')).toBeInTheDocument();
+  });
+
+  it('should render switch to V1 button', () => {
+    setup();
+    expect(screen.getByText('Switch to V1')).toBeInTheDocument();
   });
 
   it('should render segmented control with grouped and ungrouped segments', () => {
