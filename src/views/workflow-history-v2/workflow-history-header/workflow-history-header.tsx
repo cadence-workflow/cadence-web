@@ -4,6 +4,7 @@ import { Button } from 'baseui/button';
 import { Filter } from 'baseui/icon';
 import { StatefulPopover } from 'baseui/popover';
 import { SegmentedControl, Segment } from 'baseui/segmented-control';
+import { MdSchedule } from 'react-icons/md';
 import { useInView } from 'react-intersection-observer';
 
 import PageSection from '@/components/page-section/page-section';
@@ -11,6 +12,7 @@ import WorkflowHistoryExportJsonButton from '@/views/workflow-history/workflow-h
 import WorkflowHistoryFiltersMenu from '@/views/workflow-history-v2/workflow-history-filters-menu/workflow-history-filters-menu';
 
 import WorkflowHistorySwitchToV1Button from '../workflow-history-switch-to-v1-button/workflow-history-switch-to-v1-button';
+import WorkflowHistoryTimeline from '../workflow-history-timeline/workflow-history-timeline';
 
 import { overrides, styled } from './workflow-history-header.styles';
 import { type Props } from './workflow-history-header.types';
@@ -21,11 +23,18 @@ export default function WorkflowHistoryHeader({
   wfHistoryRequestArgs,
   pageFiltersProps,
   isStickyEnabled = true,
+  eventGroupsEntries,
+  workflowStartTimeMs,
+  workflowCloseTimeMs,
+  selectedEventId,
+  onClickEvent,
 }: Props) {
   const [isSticky, setIsSticky] = useState(false);
   useEffect(() => {
     if (!isStickyEnabled && isSticky) setIsSticky(false);
   }, [isStickyEnabled, isSticky]);
+
+  const [isTimelineShown, setIsTimelineShown] = useState(false);
 
   const { ref: sentinelRef } = useInView({
     threshold: 1,
@@ -99,8 +108,28 @@ export default function WorkflowHistoryHeader({
                     : `Filters (${activeFiltersCount})`}
                 </Button>
               </StatefulPopover>
+              {workflowStartTimeMs && (
+                <Button
+                  size="compact"
+                  kind={isTimelineShown ? 'primary' : 'secondary'}
+                  startEnhancer={<MdSchedule size={16} />}
+                  overrides={overrides.filtersButton}
+                  onClick={() => setIsTimelineShown((v) => !v)}
+                >
+                  Timeline
+                </Button>
+              )}
             </styled.Actions>
           </styled.Header>
+          {isTimelineShown && workflowStartTimeMs && (
+            <WorkflowHistoryTimeline
+              eventGroupsEntries={eventGroupsEntries}
+              workflowStartTimeMs={workflowStartTimeMs}
+              workflowCloseTimeMs={workflowCloseTimeMs}
+              selectedEventId={selectedEventId}
+              onClickEvent={onClickEvent}
+            />
+          )}
         </PageSection>
       </styled.Container>
     </>

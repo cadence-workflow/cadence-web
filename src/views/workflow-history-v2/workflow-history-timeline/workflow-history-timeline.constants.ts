@@ -1,0 +1,4 @@
+export const TIMELINE_LABEL_COLUMN_WIDTH = 300;
+export const ROW_HEIGHT_PX = 24;
+export const TIMELINE_HEIGHT = 250;
+export const TIMELINE_SIDE_PADDING = 0.04;

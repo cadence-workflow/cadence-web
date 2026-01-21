@@ -432,6 +432,13 @@ export default function WorkflowHistoryV2({ params }: Props) {
           setQueryParams,
           ...pageFiltersRest,
         }}
+        eventGroupsEntries={filteredEventGroupsEntries}
+        workflowStartTimeMs={workflowStartTimeMs}
+        workflowCloseTimeMs={workflowCloseTimeMs}
+        selectedEventId={queryParams.historySelectedEventId}
+        onClickEvent={(eventId) => {
+          setScrollToEventId(eventId);
+        }}
       />
       <styled.ContentSection>
         {isUngroupedHistoryViewEnabled ? (

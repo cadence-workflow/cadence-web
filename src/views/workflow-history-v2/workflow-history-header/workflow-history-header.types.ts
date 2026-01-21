@@ -3,6 +3,7 @@ import {
   type PageQueryParamValues,
 } from '@/hooks/use-page-query-params/use-page-query-params.types';
 import { type Props as WorkflowHistoryExportJsonButtonProps } from '@/views/workflow-history/workflow-history-export-json-button/workflow-history-export-json-button.types';
+import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-history.types';
 
 import type workflowPageQueryParamsConfig from '../../workflow-page/config/workflow-page-query-params.config';
 
@@ -23,4 +24,9 @@ export type Props = {
   wfHistoryRequestArgs: WorkflowHistoryExportJsonButtonProps;
   pageFiltersProps: PageFiltersProps;
   isStickyEnabled?: boolean;
+  eventGroupsEntries: Array<[string, HistoryEventsGroup]>;
+  workflowStartTimeMs: number | null;
+  workflowCloseTimeMs?: number | null;
+  selectedEventId?: string;
+  onClickEvent: (eventId: string) => void;
 };
