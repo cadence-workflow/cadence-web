@@ -28,6 +28,12 @@ jest.mock(
   () => jest.fn(() => <button>Switch to V1</button>)
 );
 
+jest.mock('../../workflow-history-timeline/workflow-history-timeline', () =>
+  jest.fn(() => (
+    <div data-testid="workflow-history-timeline">Mock Timeline</div>
+  ))
+);
+
 describe(WorkflowHistoryHeader.name, () => {
   it('should render the header with title', () => {
     setup();
@@ -183,6 +189,39 @@ describe(WorkflowHistoryHeader.name, () => {
     const newWrapper = screen.getByTestId('workflow-history-header-wrapper');
     expect(newWrapper).toHaveAttribute('data-is-sticky', 'false');
   });
+
+  it('should show Timeline button when workflowStartTimeMs is provided', () => {
+    setup({ workflowStartTimeMs: 1000 });
+    expect(screen.getByText('Timeline')).toBeInTheDocument();
+  });
+
+  it('should not show Timeline button when workflowStartTimeMs is null', () => {
+    setup({ workflowStartTimeMs: null });
+    expect(screen.queryByText('Timeline')).not.toBeInTheDocument();
+  });
+
+  it('should not show timeline by default', () => {
+    setup({ workflowStartTimeMs: 1000 });
+    expect(
+      screen.queryByTestId('workflow-history-timeline')
+    ).not.toBeInTheDocument();
+  });
+
+  it('should toggle timeline visibility when Timeline button is clicked', async () => {
+    const { user } = setup({
+      workflowStartTimeMs: 1000,
+      eventGroupsEntries: [['group1', {} as any]],
+    });
+
+    expect(
+      screen.queryByTestId('workflow-history-timeline')
+    ).not.toBeInTheDocument();
+
+    const timelineButton = screen.getByText('Timeline');
+    await user.click(timelineButton);
+
+    expect(screen.getByTestId('workflow-history-timeline')).toBeInTheDocument();
+  });
 });
 
 function setup(props: Partial<Props> = {}) {
@@ -227,5 +266,10 @@ function getDefaultProps(): Props {
       resetAllFilters: jest.fn(),
     },
     isStickyEnabled: true,
+    eventGroupsEntries: [],
+    workflowStartTimeMs: null,
+    workflowCloseTimeMs: null,
+    selectedEventId: undefined,
+    onClickEvent: jest.fn(),
   };
 }

@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 
 import { AxisTop } from '@visx/axis';
 import { Group } from '@visx/group';
@@ -31,12 +31,9 @@ export default function WorkflowHistoryTimeline({
   eventGroupsEntries,
   workflowStartTimeMs,
   workflowCloseTimeMs,
-  selectedEventId: _selectedEventId,
   onClickEvent,
 }: Props) {
   const { cls, theme } = useStyletronClasses(cssStyles);
-
-  const headerTimelineViewportRef = useRef<HTMLDivElement>(null);
 
   const timelineRows = useMemo(
     () =>
@@ -81,7 +78,7 @@ export default function WorkflowHistoryTimeline({
             <styled.HeaderRow>
               <styled.HeaderLabelCell>Event group</styled.HeaderLabelCell>
               <styled.HeaderTimelineCell>
-                <styled.HeaderTimelineViewport ref={headerTimelineViewportRef}>
+                <styled.HeaderTimelineViewport>
                   <styled.HeaderTimelineContent $widthPx={contentWidth}>
                     <styled.AxisSvg
                       width={contentWidth}
@@ -99,7 +96,7 @@ export default function WorkflowHistoryTimeline({
                             formatTickDuration(Number(value))
                           }
                           tickLabelProps={() => ({
-                            fill: '#333',
+                            fill: theme.colors.contentSecondary,
                             fontSize: 10,
                             fontWeight: 500,
                             fontFamily: theme.typography.LabelXSmall.fontFamily,
@@ -129,12 +126,7 @@ export default function WorkflowHistoryTimeline({
                 const rowEnd = xScale(row.endTimeMs - workflowStartTimeMs);
 
                 return (
-                  <styled.RowContainer
-                    $isEven={isEven}
-                    onClick={() => {
-                      onClickEvent(row.id);
-                    }}
-                  >
+                  <styled.RowContainer $isEven={isEven}>
                     <styled.LabelCell $isEven={isEven}>
                       <styled.LabelText>{row.label}</styled.LabelText>
                       <WorkflowHistoryEventStatusBadge

@@ -8,7 +8,7 @@ export default function getTimelineRowFromEventGroup(
   group: HistoryEventsGroup,
   workflowStartTimeMs: number | null
 ): TimelineRow | undefined {
-  if (!workflowStartTimeMs) {
+  if (workflowStartTimeMs === null) {
     return undefined;
   }
 

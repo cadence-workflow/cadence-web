@@ -21,10 +21,18 @@ describe(getTimelineRowFromEventGroup.name, () => {
     expect(result).toBeUndefined();
   });
 
-  it('should return undefined when workflowStartTimeMs is 0', () => {
+  it('should return a valid timeline row when workflowStartTimeMs is 0', () => {
     const result = getTimelineRowFromEventGroup(mockActivityEventGroup, 0);
 
-    expect(result).toBeUndefined();
+    expect(result).toEqual(
+      expect.objectContaining({
+        id: mockActivityEventGroup.firstEventId,
+        label: mockActivityEventGroup.label,
+        groupType: 'ACTIVITY',
+        status: mockActivityEventGroup.status,
+        group: mockActivityEventGroup,
+      })
+    );
   });
 
   it('should return undefined when group.events is empty', () => {

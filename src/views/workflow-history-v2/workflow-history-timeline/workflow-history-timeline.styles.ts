@@ -144,12 +144,6 @@ const cssStylesObj = {
       animation: 'stripeMove 1s linear infinite',
     },
   },
-  tick: (theme: Theme) => ({
-    fontSize: '10px',
-    fontWeight: 500,
-    fontFamily: theme.typography.LabelXSmall.fontFamily,
-    overflow: 'visible',
-  }),
 } satisfies StyletronCSSObject;
 
 export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> =
