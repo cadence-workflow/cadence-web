@@ -76,6 +76,24 @@ export const styled = {
       },
     })
   ),
+  TimelineContainer: createStyled(
+    'div',
+    ({ $theme }: { $theme: Theme }): StyleObject => ({
+      display: 'none',
+      [$theme.mediaQuery.medium]: {
+        display: 'block',
+      },
+    })
+  ),
+  TimelineButtonContainer: createStyled(
+    'div',
+    ({ $theme }: { $theme: Theme }): StyleObject => ({
+      display: 'none',
+      [$theme.mediaQuery.medium]: {
+        display: 'block',
+      },
+    })
+  ),
 };
 
 export const overrides = {

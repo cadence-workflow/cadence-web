@@ -109,26 +109,30 @@ export default function WorkflowHistoryHeader({
                 </Button>
               </StatefulPopover>
               {workflowStartTimeMs && (
-                <Button
-                  size="compact"
-                  kind={isTimelineShown ? 'primary' : 'secondary'}
-                  startEnhancer={<MdSchedule size={16} />}
-                  overrides={overrides.filtersButton}
-                  onClick={() => setIsTimelineShown((v) => !v)}
-                >
-                  Timeline
-                </Button>
+                <styled.TimelineButtonContainer>
+                  <Button
+                    size="compact"
+                    kind={isTimelineShown ? 'primary' : 'secondary'}
+                    startEnhancer={<MdSchedule size={16} />}
+                    overrides={overrides.filtersButton}
+                    onClick={() => setIsTimelineShown((v) => !v)}
+                  >
+                    Timeline
+                  </Button>
+                </styled.TimelineButtonContainer>
               )}
             </styled.Actions>
           </styled.Header>
           {isTimelineShown && workflowStartTimeMs && (
-            <WorkflowHistoryTimeline
-              eventGroupsEntries={eventGroupsEntries}
-              workflowStartTimeMs={workflowStartTimeMs}
-              workflowCloseTimeMs={workflowCloseTimeMs}
-              selectedEventId={selectedEventId}
-              onClickEvent={onClickEvent}
-            />
+            <styled.TimelineContainer>
+              <WorkflowHistoryTimeline
+                eventGroupsEntries={eventGroupsEntries}
+                workflowStartTimeMs={workflowStartTimeMs}
+                workflowCloseTimeMs={workflowCloseTimeMs}
+                selectedEventId={selectedEventId}
+                onClickEvent={onClickEvent}
+              />
+            </styled.TimelineContainer>
           )}
         </PageSection>
       </styled.Container>

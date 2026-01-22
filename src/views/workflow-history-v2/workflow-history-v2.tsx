@@ -438,7 +438,6 @@ export default function WorkflowHistoryV2({ params }: Props) {
         selectedEventId={queryParams.historySelectedEventId}
         onClickEvent={(eventId) => {
           setScrollToEventId(eventId);
-          if (!getIsItemExpanded(eventId)) toggleIsItemExpanded(eventId);
         }}
       />
       <styled.ContentSection>
