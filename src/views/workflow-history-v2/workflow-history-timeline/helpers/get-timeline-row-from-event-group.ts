@@ -39,14 +39,12 @@ export default function getTimelineRowFromEventGroup(
   }
 
   const groupType = getEventGroupFilteringType(group);
-  const durationMs = groupEndMs - groupStartMs;
 
   return {
     id: group.firstEventId ?? 'unknown',
     label: group.label,
     startTimeMs: groupStartMs,
     endTimeMs: groupEndMs,
-    durationMs,
     groupType,
     status: group.status,
     group,

@@ -16,7 +16,7 @@ export default function formatTickDuration(relativeTimeMs: number): string {
   }
 
   if (seconds > 0) {
-    return `${seconds}s ${milliseconds}ms`;
+    return `${seconds}s${milliseconds > 0 ? ` ${milliseconds}ms` : ''}`;
   }
 
   return `${milliseconds}ms`;

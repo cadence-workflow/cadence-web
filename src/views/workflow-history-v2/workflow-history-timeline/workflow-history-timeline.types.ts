@@ -8,7 +8,6 @@ export type TimelineRow = {
   label: string;
   startTimeMs: number;
   endTimeMs: number;
-  durationMs: number;
   groupType: WorkflowHistoryEventFilteringType;
   status: HistoryEventsGroup['status'];
   group: HistoryEventsGroup;
