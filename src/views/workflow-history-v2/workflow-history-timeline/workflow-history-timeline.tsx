@@ -16,7 +16,6 @@ import workflowHistoryEventFilteringTypeColorsConfig from '../config/workflow-hi
 import formatTickDuration from './helpers/format-tick-duration';
 import getTimelineMaxTimeMs from './helpers/get-timeline-max-time-ms';
 import getTimelineRowFromEventGroup from './helpers/get-timeline-row-from-event-group';
-import useSyncHorizontalScroll from './hooks/use-sync-horizontal-scroll';
 import {
   ROW_HEIGHT_PX,
   TIMELINE_LABEL_COLUMN_WIDTH,
@@ -38,19 +37,15 @@ export default function WorkflowHistoryTimeline({
   const { cls, theme } = useStyletronClasses(cssStyles);
 
   const headerTimelineViewportRef = useRef<HTMLDivElement>(null);
-  const headerTimelineContentRef = useRef<HTMLDivElement>(null);
 
-  const timelineRows = useMemo(() => {
-    const workflowStartTime = workflowStartTimeMs ?? null;
-    return eventGroupsEntries
-      .map(([_, group]) =>
-        getTimelineRowFromEventGroup(group, workflowStartTime)
-      )
-      .filter((row): row is TimelineRow => row !== undefined);
-  }, [eventGroupsEntries, workflowStartTimeMs]);
-
-  const { handleScroll, getRowRefCallback } = useSyncHorizontalScroll(
-    headerTimelineViewportRef
+  const timelineRows = useMemo(
+    () =>
+      eventGroupsEntries
+        .map(([_, group]) =>
+          getTimelineRowFromEventGroup(group, workflowStartTimeMs)
+        )
+        .filter((row): row is TimelineRow => row !== undefined),
+    [eventGroupsEntries, workflowStartTimeMs]
   );
 
   return (
@@ -86,14 +81,8 @@ export default function WorkflowHistoryTimeline({
             <styled.HeaderRow>
               <styled.HeaderLabelCell>Event group</styled.HeaderLabelCell>
               <styled.HeaderTimelineCell>
-                <styled.HeaderTimelineViewport
-                  ref={headerTimelineViewportRef}
-                  onScroll={handleScroll}
-                >
-                  <styled.HeaderTimelineContent
-                    ref={headerTimelineContentRef}
-                    $widthPx={contentWidth}
-                  >
+                <styled.HeaderTimelineViewport ref={headerTimelineViewportRef}>
+                  <styled.HeaderTimelineContent $widthPx={contentWidth}>
                     <styled.AxisSvg
                       width={contentWidth}
                       height={20}
@@ -155,10 +144,7 @@ export default function WorkflowHistoryTimeline({
                       />
                     </styled.LabelCell>
                     <styled.TimelineCell>
-                      <styled.TimelineViewport
-                        ref={getRowRefCallback(index)}
-                        onScroll={handleScroll}
-                      >
+                      <styled.TimelineViewport>
                         <styled.TimelineContent $widthPx={contentWidth}>
                           <styled.TimelineSvg
                             width={contentWidth}
