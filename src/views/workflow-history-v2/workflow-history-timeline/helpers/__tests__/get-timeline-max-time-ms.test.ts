@@ -12,13 +12,13 @@ jest.useFakeTimers({ now: mockNow });
 
 describe(getTimelineMaxTimeMs.name, () => {
   it('should return workflowCloseTimeMs when it is not null or undefined', () => {
-    const workflowCloseTimeMs = mockNow - 60000; // 1 minute before base
+    const workflowCloseTimeMs = mockNow - 60000; // 1 minute before now
     const timelineRows: Array<TimelineRow> = [
       {
         id: '1',
         label: 'Test',
         startTimeMs: mockNow,
-        endTimeMs: mockNow + 1000, // 1 second after base
+        endTimeMs: mockNow + 1000, // 1 second after now
         groupType: 'ACTIVITY',
         status: 'COMPLETED',
         group: mockActivityEventGroup,
@@ -56,8 +56,8 @@ describe(getTimelineMaxTimeMs.name, () => {
       {
         id: '1',
         label: 'Test',
-        startTimeMs: mockNow - 5000, // 5 seconds before base
-        endTimeMs: mockNow - 1000, // 1 second before base
+        startTimeMs: mockNow - 5000, // 5 seconds before now
+        endTimeMs: mockNow - 1000, // 1 second before now
         groupType: 'ACTIVITY',
         status: 'COMPLETED',
         group: mockActivityEventGroup,
@@ -70,7 +70,7 @@ describe(getTimelineMaxTimeMs.name, () => {
   });
 
   it('should return maxRowEndTime when timelineRows has one row with endTimeMs greater than current time', () => {
-    const futureTime = mockNow + 5000; // 5 seconds after base
+    const futureTime = mockNow + 5000; // 5 seconds after now
     const timelineRows: Array<TimelineRow> = [
       {
         id: '1',
@@ -89,13 +89,13 @@ describe(getTimelineMaxTimeMs.name, () => {
   });
 
   it('should return max endTimeMs from multiple timelineRows when it is greater than current time', () => {
-    const maxEndTime = mockNow + 10000; // 10 seconds after base
+    const maxEndTime = mockNow + 10000; // 10 seconds after now
     const timelineRows: Array<TimelineRow> = [
       {
         id: '1',
         label: 'Test 1',
-        startTimeMs: mockNow - 5000, // 5 seconds before base
-        endTimeMs: mockNow - 1000, // 1 second before base
+        startTimeMs: mockNow - 5000, // 5 seconds before now
+        endTimeMs: mockNow - 1000, // 1 second before now
         groupType: 'ACTIVITY',
         status: 'COMPLETED',
         group: mockActivityEventGroup,
@@ -112,8 +112,8 @@ describe(getTimelineMaxTimeMs.name, () => {
       {
         id: '3',
         label: 'Test 3',
-        startTimeMs: mockNow - 3000, // 3 seconds before base
-        endTimeMs: mockNow + 5000, // 5 seconds after base
+        startTimeMs: mockNow - 3000, // 3 seconds before now
+        endTimeMs: mockNow + 5000, // 5 seconds after now
         groupType: 'TIMER',
         status: 'COMPLETED',
         group: mockTimerEventGroup,
@@ -130,8 +130,8 @@ describe(getTimelineMaxTimeMs.name, () => {
       {
         id: '1',
         label: 'Test 1',
-        startTimeMs: mockNow - 10000, // 10 seconds before base
-        endTimeMs: mockNow - 5000, // 5 seconds before base
+        startTimeMs: mockNow - 10000, // 10 seconds before now
+        endTimeMs: mockNow - 5000, // 5 seconds before now
         groupType: 'ACTIVITY',
         status: 'COMPLETED',
         group: mockActivityEventGroup,
@@ -139,8 +139,8 @@ describe(getTimelineMaxTimeMs.name, () => {
       {
         id: '2',
         label: 'Test 2',
-        startTimeMs: mockNow - 8000, // 8 seconds before base
-        endTimeMs: mockNow - 2000, // 2 seconds before base
+        startTimeMs: mockNow - 8000, // 8 seconds before now
+        endTimeMs: mockNow - 2000, // 2 seconds before now
         groupType: 'DECISION',
         status: 'COMPLETED',
         group: mockDecisionEventGroup,
