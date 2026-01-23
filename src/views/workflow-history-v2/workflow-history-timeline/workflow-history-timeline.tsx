@@ -127,7 +127,7 @@ export default function WorkflowHistoryTimeline({
 
                 return (
                   <styled.RowContainer $isEven={isEven}>
-                    <styled.LabelCell $isEven={isEven}>
+                    <styled.LabelCell>
                       <styled.LabelText>{row.label}</styled.LabelText>
                       <WorkflowHistoryEventStatusBadge
                         status={row.status}

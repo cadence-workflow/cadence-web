@@ -71,25 +71,24 @@ export const styled = {
       display: 'flex',
       width: '100%',
       height: `${ROW_HEIGHT_PX}px`,
-      backgroundColor: $isEven ? undefined : $theme.colors.backgroundSecondary,
+      backgroundColor: $isEven ? undefined : '#F8F8F8',
+      ':hover': {
+        backgroundColor: $theme.colors.backgroundTertiary,
+      },
     })
   ),
-  LabelCell: createStyled<'div', { $isEven?: boolean }>(
-    'div',
-    ({ $theme, $isEven }: { $theme: Theme; $isEven?: boolean }) => ({
-      width: `${TIMELINE_LABEL_COLUMN_WIDTH}px`,
-      flexShrink: 0,
-      position: 'sticky',
-      left: 0,
-      zIndex: 10,
-      backgroundColor: $isEven ? undefined : $theme.colors.backgroundSecondary,
-      padding: $theme.sizing.scale300,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      borderRight: `1px solid ${$theme.colors.borderOpaque}`,
-    })
-  ),
+  LabelCell: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+    width: `${TIMELINE_LABEL_COLUMN_WIDTH}px`,
+    flexShrink: 0,
+    position: 'sticky',
+    left: 0,
+    zIndex: 10,
+    padding: $theme.sizing.scale300,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderRight: `1px solid ${$theme.colors.borderOpaque}`,
+  })),
   LabelText: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     ...$theme.typography.LabelXSmall,
     whiteSpace: 'nowrap',
