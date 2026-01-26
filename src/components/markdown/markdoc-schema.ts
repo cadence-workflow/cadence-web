@@ -1,16 +1,16 @@
 import { type Config } from '@markdoc/markdoc';
 
-import { codeBlockSchema } from './components/code-block/code-block.markdoc';
-import { headingSchema } from './components/heading/heading.markdoc';
-import { inlineCodeSchema } from './components/inline-code/inline-code.markdoc';
-import { listSchema } from './components/list/list.markdoc';
-import { signalButtonSchema } from './components/signal-button/signal-button.markdoc';
-import { startWorkflowButtonSchema } from './components/start-workflow-button/start-workflow-button.markdoc';
+import { codeBlockMarkdocSchema } from './markdoc-components/code-block/code-block.markdoc';
+import { headingMarkdocSchema } from './markdoc-components/heading/heading.markdoc';
+import { inlineCodeMarkdocSchema } from './markdoc-components/inline-code/inline-code.markdoc';
+import { listMarkdocSchema } from './markdoc-components/list/list.markdoc';
+import { signalButtonMarkdocSchema } from './markdoc-components/signal-button/signal-button.markdoc';
+import { startWorkflowButtonMarkdocSchema } from './markdoc-components/start-workflow-button/start-workflow-button.markdoc';
 
 export const markdocConfig: Config = {
   tags: {
-    signal: signalButtonSchema,
-    start: startWorkflowButtonSchema,
+    signal: signalButtonMarkdocSchema,
+    start: startWorkflowButtonMarkdocSchema,
   },
   nodes: {
     // Standard HTML nodes
@@ -73,9 +73,9 @@ export const markdocConfig: Config = {
     },
 
     // Custom component nodes
-    heading: headingSchema,
-    list: listSchema,
-    fence: codeBlockSchema,
-    code: inlineCodeSchema,
+    heading: headingMarkdocSchema,
+    list: listMarkdocSchema,
+    fence: codeBlockMarkdocSchema,
+    code: inlineCodeMarkdocSchema,
   },
 };

@@ -3,9 +3,8 @@ import React, { useMemo } from 'react';
 
 import { parse, renderers, transform } from '@markdoc/markdoc';
 
-import { markdocComponents } from '@/components/markdoc/components';
-import { markdocConfig } from '@/components/markdoc/schema';
-
+import { markdocComponents } from './markdoc-components';
+import { markdocConfig } from './markdoc-schema';
 import { styled } from './markdown.styles';
 import { type Props } from './markdown.types';
 

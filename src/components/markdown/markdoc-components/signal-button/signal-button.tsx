@@ -42,11 +42,6 @@ export default function SignalButton({
         }
       );
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message ?? 'Failed to signal workflow');
-      }
-
       return response.json();
     },
     onSuccess: () => {
@@ -73,7 +68,7 @@ export default function SignalButton({
 
   return (
     <Button
-      disabled={isPending || isDisabled}
+      disabled={isDisabled}
       onClick={handleClick}
       isLoading={isPending}
       overrides={overrides}

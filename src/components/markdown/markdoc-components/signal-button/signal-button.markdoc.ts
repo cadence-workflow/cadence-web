@@ -1,4 +1,4 @@
-export const signalButtonSchema = {
+export const signalButtonMarkdocSchema = {
   render: 'SignalButton',
   attributes: {
     signalName: {

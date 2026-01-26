@@ -5,11 +5,14 @@ import { render, screen } from '@testing-library/react';
 import Markdown from '@/components/markdown/markdown';
 
 // Mock the signal button to avoid needing full workflow context
-jest.mock('@/components/markdoc/components/signal-button/signal-button', () => {
-  return function MockSignalButton({ label }: { label: string }) {
-    return <button data-testid="signal-button">{label}</button>;
-  };
-});
+jest.mock(
+  '@/components/markdown/markdoc-components/signal-button/signal-button',
+  () => {
+    return function MockSignalButton({ label }: { label: string }) {
+      return <button data-testid="signal-button">{label}</button>;
+    };
+  }
+);
 
 describe('Markdown with Markdoc', () => {
   it('renders basic markdown', () => {

@@ -1,4 +1,4 @@
-export const startWorkflowButtonSchema = {
+export const startWorkflowButtonMarkdocSchema = {
   render: 'StartWorkflowButton',
   attributes: {
     workflowType: {

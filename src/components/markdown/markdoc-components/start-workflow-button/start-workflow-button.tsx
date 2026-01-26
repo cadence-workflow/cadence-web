@@ -53,11 +53,6 @@ export default function StartWorkflowButton({
         }
       );
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message ?? 'Failed to start workflow');
-      }
-
       return response.json();
     },
     onSuccess: (result) => {
@@ -94,7 +89,7 @@ export default function StartWorkflowButton({
 
   return (
     <Button
-      disabled={isPending || isDisabled}
+      disabled={isDisabled}
       onClick={handleClick}
       isLoading={isPending}
       overrides={overrides}

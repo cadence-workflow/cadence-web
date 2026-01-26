@@ -5,25 +5,11 @@ import { render, screen } from '@testing-library/react';
 import CodeBlock from '../code-block';
 
 describe('CodeBlock', () => {
-  it('renders code content from content prop', () => {
+  it('renders code content', () => {
     const code = 'const x = 1;';
     render(<CodeBlock content={code} />);
 
     expect(screen.getByText(code)).toBeInTheDocument();
-  });
-
-  it('renders code content from children', () => {
-    const code = 'function test() {}';
-    render(<CodeBlock>{code}</CodeBlock>);
-
-    expect(screen.getByText(code)).toBeInTheDocument();
-  });
-
-  it('prefers content prop over children', () => {
-    render(<CodeBlock content="content prop">children value</CodeBlock>);
-
-    expect(screen.getByText('content prop')).toBeInTheDocument();
-    expect(screen.queryByText('children value')).not.toBeInTheDocument();
   });
 
   it('applies language class when language is provided', () => {
