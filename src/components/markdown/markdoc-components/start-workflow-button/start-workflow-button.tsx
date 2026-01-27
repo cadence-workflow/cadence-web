@@ -92,7 +92,7 @@ export default function StartWorkflowButton({
       disabled={isDisabled}
       onClick={handleClick}
       isLoading={isPending}
-      overrides={overrides}
+      overrides={overrides.button}
     >
       {label}
     </Button>
