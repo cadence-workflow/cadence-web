@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-history.types';
 
 import generateHistoryGroupDetails from '../helpers/generate-history-group-details';
-import getSummaryTabContentEntry from '../workflow-history-event-group/helpers/get-summary-tab-content-entry';
+import getSummaryTabContentEntry from '../helpers/get-summary-tab-content-entry';
 
 export default function useGroupDetailsEntries(eventGroup: HistoryEventsGroup) {
   const { groupDetailsEntries, summaryDetailsEntries } = useMemo(
