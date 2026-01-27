@@ -9,13 +9,12 @@ import WorkflowHistoryGroupLabel from '@/views/workflow-history/workflow-history
 import WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 
 import workflowHistoryEventFilteringTypeColorsConfig from '../config/workflow-history-event-filtering-type-colors.config';
-import generateHistoryGroupDetails from '../helpers/generate-history-group-details';
+import useGroupDetailsEntries from '../hooks/use-group-details-entries';
 import WorkflowHistoryDetailsRow from '../workflow-history-details-row/workflow-history-details-row';
 import WorkflowHistoryEventGroupDuration from '../workflow-history-event-group-duration/workflow-history-event-group-duration';
 import WorkflowHistoryGroupDetails from '../workflow-history-group-details/workflow-history-group-details';
 
 import getEventGroupFilteringType from './helpers/get-event-group-filtering-type';
-import getSummaryTabContentEntry from './helpers/get-summary-tab-content-entry';
 import {
   overrides as getOverrides,
   styled,
@@ -36,7 +35,6 @@ export default function WorkflowHistoryEventGroup({
 }: Props) {
   const {
     status,
-    firstEventId,
     label,
     shortLabel,
     timeMs,
@@ -57,10 +55,8 @@ export default function WorkflowHistoryEventGroup({
     }
   }, [onReset]);
 
-  const { groupDetailsEntries, summaryDetailsEntries } = useMemo(
-    () => generateHistoryGroupDetails(eventGroup),
-    [eventGroup]
-  );
+  const { groupSummaryDetails, groupDetailsEntriesWithSummary } =
+    useGroupDetailsEntries(eventGroup);
 
   const handleGroupExpansionStateChange = useCallback(
     (newExpanded: boolean) => {
@@ -70,29 +66,6 @@ export default function WorkflowHistoryEventGroup({
       });
     },
     [events, getIsEventExpanded, toggleIsEventExpanded]
-  );
-
-  const groupSummaryDetails = useMemo(
-    () =>
-      summaryDetailsEntries.flatMap(
-        ([_eventId, { eventDetails }]) => eventDetails
-      ),
-    [summaryDetailsEntries]
-  );
-
-  const groupDetailsEntriesWithSummary = useMemo(
-    () => [
-      ...(groupSummaryDetails.length > 0 && groupDetailsEntries.length > 1
-        ? [
-            getSummaryTabContentEntry({
-              groupId: firstEventId ?? 'unknown',
-              summaryDetails: groupSummaryDetails,
-            }),
-          ]
-        : []),
-      ...groupDetailsEntries,
-    ],
-    [firstEventId, groupDetailsEntries, groupSummaryDetails]
   );
 
   const animateOnEnter = useMemo(

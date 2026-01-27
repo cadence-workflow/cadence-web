@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 
 import { Panel } from 'baseui/accordion';
 import { MdOutlineCircle } from 'react-icons/md';
@@ -10,10 +10,9 @@ import WorkflowHistoryGroupLabel from '@/views/workflow-history/workflow-history
 import WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 
 import workflowHistoryEventFilteringTypeColorsConfig from '../config/workflow-history-event-filtering-type-colors.config';
-import generateHistoryGroupDetails from '../helpers/generate-history-group-details';
+import useGroupDetailsEntries from '../hooks/use-group-details-entries';
 import WorkflowHistoryDetailsRow from '../workflow-history-details-row/workflow-history-details-row';
 import getEventGroupFilteringType from '../workflow-history-event-group/helpers/get-event-group-filtering-type';
-import getSummaryTabContentEntry from '../workflow-history-event-group/helpers/get-summary-tab-content-entry';
 import getFormattedEventsDuration from '../workflow-history-event-group-duration/helpers/get-formatted-events-duration';
 import WorkflowHistoryGroupDetails from '../workflow-history-group-details/workflow-history-group-details';
 
@@ -42,41 +41,12 @@ export default function WorkflowHistoryUngroupedEvent({
     }
   }, [onReset]);
 
-  const { groupDetailsEntries, summaryDetailsEntries } = useMemo(
-    () => generateHistoryGroupDetails(eventInfo.eventGroup),
-    [eventInfo.eventGroup]
-  );
+  const { summaryDetailsEntries, groupDetailsEntriesWithSummary } =
+    useGroupDetailsEntries(eventInfo.eventGroup);
 
   const eventSummaryDetails = summaryDetailsEntries.find(
     ([eventId]) => eventId === eventInfo.id
   )?.[1].eventDetails;
-
-  const groupSummaryDetails = useMemo(
-    () =>
-      summaryDetailsEntries.flatMap(
-        ([_eventId, { eventDetails }]) => eventDetails
-      ),
-    [summaryDetailsEntries]
-  );
-
-  const groupDetailsEntriesWithSummary = useMemo(
-    () => [
-      ...(groupSummaryDetails.length > 0 && groupDetailsEntries.length > 1
-        ? [
-            getSummaryTabContentEntry({
-              groupId: eventInfo.eventGroup.firstEventId ?? 'unknown',
-              summaryDetails: groupSummaryDetails,
-            }),
-          ]
-        : []),
-      ...groupDetailsEntries,
-    ],
-    [
-      eventInfo.eventGroup.firstEventId,
-      groupDetailsEntries,
-      groupSummaryDetails,
-    ]
-  );
 
   return (
     <Panel

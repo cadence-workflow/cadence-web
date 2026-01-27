@@ -1,0 +1,43 @@
+import { useMemo } from 'react';
+
+import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-history.types';
+
+import generateHistoryGroupDetails from '../helpers/generate-history-group-details';
+import getSummaryTabContentEntry from '../workflow-history-event-group/helpers/get-summary-tab-content-entry';
+
+export default function useGroupDetailsEntries(eventGroup: HistoryEventsGroup) {
+  const { groupDetailsEntries, summaryDetailsEntries } = useMemo(
+    () => generateHistoryGroupDetails(eventGroup),
+    [eventGroup]
+  );
+
+  const groupSummaryDetails = useMemo(
+    () =>
+      summaryDetailsEntries.flatMap(
+        ([_eventId, { eventDetails }]) => eventDetails
+      ),
+    [summaryDetailsEntries]
+  );
+
+  const groupDetailsEntriesWithSummary = useMemo(
+    () => [
+      ...(groupSummaryDetails.length > 0 && groupDetailsEntries.length > 1
+        ? [
+            getSummaryTabContentEntry({
+              groupId: eventGroup.firstEventId ?? 'unknown',
+              summaryDetails: groupSummaryDetails,
+            }),
+          ]
+        : []),
+      ...groupDetailsEntries,
+    ],
+    [eventGroup.firstEventId, groupDetailsEntries, groupSummaryDetails]
+  );
+
+  return {
+    groupDetailsEntries,
+    summaryDetailsEntries,
+    groupSummaryDetails,
+    groupDetailsEntriesWithSummary,
+  };
+}
