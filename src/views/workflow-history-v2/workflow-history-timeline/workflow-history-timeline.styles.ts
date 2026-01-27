@@ -71,7 +71,9 @@ export const styled = {
       display: 'flex',
       width: '100%',
       height: `${ROW_HEIGHT_PX}px`,
-      backgroundColor: $isEven ? undefined : '#F8F8F8',
+      backgroundColor: $isEven
+        ? undefined
+        : $theme.colors.backgroundTableStriped,
       ':hover': {
         backgroundColor: $theme.colors.backgroundTertiary,
       },
