@@ -6,6 +6,7 @@ import { type Props as WorkflowHistoryExportJsonButtonProps } from '@/views/work
 import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-history.types';
 
 import type workflowPageQueryParamsConfig from '../../workflow-page/config/workflow-page-query-params.config';
+import { type Props as WorkflowHistoryProps } from '../workflow-history-v2.types';
 
 type WorkflowPageQueryParamsConfig = typeof workflowPageQueryParamsConfig;
 
@@ -29,4 +30,5 @@ export type Props = {
   workflowCloseTimeMs?: number | null;
   selectedEventId?: string;
   onClickEvent: (eventId: string) => void;
+  decodedPageUrlParams: WorkflowHistoryProps['params'];
 };

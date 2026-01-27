@@ -28,6 +28,7 @@ export default function WorkflowHistoryHeader({
   workflowCloseTimeMs,
   selectedEventId,
   onClickEvent,
+  decodedPageUrlParams,
 }: Props) {
   const [isSticky, setIsSticky] = useState(false);
   useEffect(() => {
@@ -131,6 +132,7 @@ export default function WorkflowHistoryHeader({
                 workflowCloseTimeMs={workflowCloseTimeMs}
                 selectedEventId={selectedEventId}
                 onClickEvent={onClickEvent}
+                decodedPageUrlParams={decodedPageUrlParams}
               />
             </styled.TimelineContainer>
           )}

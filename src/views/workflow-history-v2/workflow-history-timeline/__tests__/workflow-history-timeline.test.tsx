@@ -246,11 +246,25 @@ function setup({
   workflowStartTimeMs,
   workflowCloseTimeMs,
   onClickEvent = jest.fn(),
+  decodedPageUrlParams = {
+    domain: 'test-domain',
+    cluster: 'test-cluster',
+    workflowId: 'test-workflow-id',
+    runId: 'test-run-id',
+    workflowTab: 'history',
+  },
 }: {
   eventGroupsEntries: Array<EventGroupEntry>;
   workflowStartTimeMs: number;
   workflowCloseTimeMs?: number | null;
   onClickEvent?: (eventId: string) => void;
+  decodedPageUrlParams?: {
+    domain: string;
+    cluster: string;
+    workflowId: string;
+    runId: string;
+    workflowTab: 'history';
+  };
 }) {
   const renderResult = render(
     <VirtuosoMockContext.Provider
@@ -261,6 +275,7 @@ function setup({
         workflowStartTimeMs={workflowStartTimeMs}
         workflowCloseTimeMs={workflowCloseTimeMs}
         onClickEvent={onClickEvent}
+        decodedPageUrlParams={decodedPageUrlParams}
       />
     </VirtuosoMockContext.Provider>
   );
