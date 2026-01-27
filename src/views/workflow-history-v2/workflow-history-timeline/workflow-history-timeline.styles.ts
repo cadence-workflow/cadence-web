@@ -162,10 +162,5 @@ export const overrides = {
         padding: $theme.sizing.scale400,
       }),
     },
-    Arrow: {
-      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
-        backgroundColor: $theme.colors.backgroundPrimary,
-      }),
-    },
   } satisfies PopoverOverrides,
 };
