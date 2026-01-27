@@ -2,7 +2,7 @@ import React from 'react';
 
 import { VirtuosoMockContext } from 'react-virtuoso';
 
-import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
+import { render, screen, userEvent, waitFor, within } from '@/test-utils/rtl';
 
 import {
   mockActivityEventGroup,
@@ -214,6 +214,30 @@ describe(WorkflowHistoryTimeline.name, () => {
     expect(svgs.length).toBeGreaterThan(0);
     // Content width should be 1000 - 300 = 700
     expect(svgs[0]?.getAttribute('width')).toBe('700');
+  });
+
+  it('should display label in tooltip when hovering over timeline bar', async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    const eventGroupsEntries: Array<EventGroupEntry> = [
+      ['group1', mockActivityEventGroup],
+    ];
+    const workflowStartTimeMs = mockNow - 1000000;
+
+    const { container } = setup({
+      eventGroupsEntries,
+      workflowStartTimeMs,
+    });
+
+    const bar = container.querySelector('rect');
+    expect(bar).toBeInTheDocument();
+
+    // If bar is null, the test would fail above
+    await user.hover(bar!);
+
+    const tooltip = await screen.findByRole('tooltip');
+    expect(
+      within(tooltip).getByText(mockActivityEventGroup.label)
+    ).toBeInTheDocument();
   });
 });
 
