@@ -6,8 +6,7 @@ import { PatternLines } from '@visx/pattern';
 import { ParentSize } from '@visx/responsive';
 import { scaleLinear } from '@visx/scale';
 import { Bar } from '@visx/shape';
-import { mergeOverrides } from 'baseui';
-import { type PopoverOverrides, StatefulPopover } from 'baseui/popover';
+import { StatefulPopover } from 'baseui/popover';
 import { Virtuoso } from 'react-virtuoso';
 
 import useStyletronClasses from '@/hooks/use-styletron-classes';
@@ -131,6 +130,8 @@ export default function WorkflowHistoryTimeline({
                 const rowStart = xScale(row.startTimeMs - workflowStartTimeMs);
                 const rowEnd = xScale(row.endTimeMs - workflowStartTimeMs);
 
+                const popoverOffset = (rowStart + rowEnd - contentWidth) / 2;
+
                 return (
                   <styled.RowContainer $isEven={isEven}>
                     <styled.LabelCell>
@@ -146,10 +147,18 @@ export default function WorkflowHistoryTimeline({
                         triggerType="hover"
                         accessibilityType="tooltip"
                         content={row.label}
-                        showArrow
                         placement="bottom"
                         ignoreBoundary
                         overrides={overrides.popover}
+                        popoverMargin={0}
+                        popperOptions={{
+                          modifiers: {
+                            offset: {
+                              offset: `${popoverOffset}, 0`,
+                              enabled: true,
+                            },
+                          },
+                        }}
                       >
                         <styled.TimelineViewport>
                           <styled.TimelineContent $widthPx={contentWidth}>

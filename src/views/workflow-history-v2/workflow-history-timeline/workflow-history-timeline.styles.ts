@@ -152,8 +152,6 @@ const cssStylesObj = {
 export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> =
   cssStylesObj;
 
-export type OverridesArgs = Record<string, never>;
-
 export const overrides = {
   popover: {
     Inner: {
