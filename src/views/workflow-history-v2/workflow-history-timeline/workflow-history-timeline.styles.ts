@@ -1,4 +1,6 @@
 import { styled as createStyled, type Theme } from 'baseui';
+import { type PopoverOverrides } from 'baseui/popover';
+import { type StyleObject } from 'styletron-react';
 
 import type {
   StyletronCSSObject,
@@ -149,3 +151,23 @@ const cssStylesObj = {
 
 export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> =
   cssStylesObj;
+
+export type OverridesArgs = Record<string, never>;
+
+export const overrides = {
+  popover: {
+    Inner: {
+      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+        backgroundColor: $theme.colors.backgroundPrimary,
+        color: $theme.colors.contentPrimary,
+        ...$theme.typography.LabelSmall,
+        padding: $theme.sizing.scale400,
+      }),
+    },
+    Arrow: {
+      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+        backgroundColor: $theme.colors.backgroundPrimary,
+      }),
+    },
+  } satisfies PopoverOverrides,
+};
