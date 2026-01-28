@@ -7,12 +7,7 @@ import type { EventDetailsTabContent } from '@/views/workflow-history-v2/workflo
 import * as generateHistoryGroupDetailsModule from '../../helpers/generate-history-group-details';
 import useGroupDetailsEntries from '../use-group-details-entries';
 
-jest.mock('../../helpers/generate-history-group-details', () => jest.fn());
-
-const mockGenerateHistoryGroupDetails =
-  generateHistoryGroupDetailsModule.default as jest.MockedFunction<
-    typeof generateHistoryGroupDetailsModule.default
-  >;
+jest.mock('../../helpers/generate-history-group-details');
 
 describe(useGroupDetailsEntries.name, () => {
   beforeEach(() => {
@@ -71,17 +66,18 @@ describe(useGroupDetailsEntries.name, () => {
       ],
     ];
 
-    mockGenerateHistoryGroupDetails.mockReturnValue({
-      groupDetailsEntries: mockGroupDetailsEntries,
-      summaryDetailsEntries: mockSummaryDetailsEntries,
-    });
-
     const eventGroup: HistoryEventsGroup = {
       ...mockActivityEventGroup,
       firstEventId: 'event-1',
     };
 
-    const { result } = renderHook(() => useGroupDetailsEntries(eventGroup));
+    const { result } = setup({
+      eventGroup,
+      mockGroupDetails: {
+        groupDetailsEntries: mockGroupDetailsEntries,
+        summaryDetailsEntries: mockSummaryDetailsEntries,
+      },
+    });
 
     expect(result.current.groupDetailsEntries).toEqual(mockGroupDetailsEntries);
     expect(result.current.summaryDetailsEntries).toEqual(
@@ -130,20 +126,21 @@ describe(useGroupDetailsEntries.name, () => {
       ],
     ];
 
-    mockGenerateHistoryGroupDetails.mockReturnValue({
-      groupDetailsEntries: [
-        ['event-1', { eventLabel: 'Event 1', eventDetails: [] }],
-        ['event-2', { eventLabel: 'Event 2', eventDetails: [] }],
-      ],
-      summaryDetailsEntries: mockSummaryDetailsEntries,
-    });
-
     const eventGroup: HistoryEventsGroup = {
       ...mockActivityEventGroup,
       firstEventId: 'event-1',
     };
 
-    const { result } = renderHook(() => useGroupDetailsEntries(eventGroup));
+    const { result } = setup({
+      eventGroup,
+      mockGroupDetails: {
+        groupDetailsEntries: [
+          ['event-1', { eventLabel: 'Event 1', eventDetails: [] }],
+          ['event-2', { eventLabel: 'Event 2', eventDetails: [] }],
+        ],
+        summaryDetailsEntries: mockSummaryDetailsEntries,
+      },
+    });
 
     expect(result.current.groupSummaryDetails).toEqual([
       {
@@ -206,17 +203,18 @@ describe(useGroupDetailsEntries.name, () => {
       ],
     ];
 
-    mockGenerateHistoryGroupDetails.mockReturnValue({
-      groupDetailsEntries: mockGroupDetailsEntries,
-      summaryDetailsEntries: mockSummaryDetailsEntries,
-    });
-
     const eventGroup: HistoryEventsGroup = {
       ...mockActivityEventGroup,
       firstEventId: 'event-1',
     };
 
-    const { result } = renderHook(() => useGroupDetailsEntries(eventGroup));
+    const { result } = setup({
+      eventGroup,
+      mockGroupDetails: {
+        groupDetailsEntries: mockGroupDetailsEntries,
+        summaryDetailsEntries: mockSummaryDetailsEntries,
+      },
+    });
 
     expect(result.current.groupDetailsEntriesWithSummary).toHaveLength(3);
     expect(result.current.groupDetailsEntriesWithSummary[0][0]).toBe(
@@ -240,20 +238,21 @@ describe(useGroupDetailsEntries.name, () => {
   });
 
   it('should not include summary entry when groupSummaryDetails.length is 0', () => {
-    mockGenerateHistoryGroupDetails.mockReturnValue({
-      groupDetailsEntries: [
-        ['event-1', { eventLabel: 'Event 1', eventDetails: [] }],
-        ['event-2', { eventLabel: 'Event 2', eventDetails: [] }],
-      ],
-      summaryDetailsEntries: [],
-    });
-
     const eventGroup: HistoryEventsGroup = {
       ...mockActivityEventGroup,
       firstEventId: 'event-1',
     };
 
-    const { result } = renderHook(() => useGroupDetailsEntries(eventGroup));
+    const { result } = setup({
+      eventGroup,
+      mockGroupDetails: {
+        groupDetailsEntries: [
+          ['event-1', { eventLabel: 'Event 1', eventDetails: [] }],
+          ['event-2', { eventLabel: 'Event 2', eventDetails: [] }],
+        ],
+        summaryDetailsEntries: [],
+      },
+    });
 
     expect(result.current.groupDetailsEntriesWithSummary).toHaveLength(2);
     expect(result.current.groupDetailsEntriesWithSummary[0][0]).toBe('event-1');
@@ -278,19 +277,20 @@ describe(useGroupDetailsEntries.name, () => {
       ],
     ];
 
-    mockGenerateHistoryGroupDetails.mockReturnValue({
-      groupDetailsEntries: [
-        ['event-1', { eventLabel: 'Event 1', eventDetails: [] }],
-      ],
-      summaryDetailsEntries: mockSummaryDetailsEntries,
-    });
-
     const eventGroup: HistoryEventsGroup = {
       ...mockActivityEventGroup,
       firstEventId: 'event-1',
     };
 
-    const { result } = renderHook(() => useGroupDetailsEntries(eventGroup));
+    const { result } = setup({
+      eventGroup,
+      mockGroupDetails: {
+        groupDetailsEntries: [
+          ['event-1', { eventLabel: 'Event 1', eventDetails: [] }],
+        ],
+        summaryDetailsEntries: mockSummaryDetailsEntries,
+      },
+    });
 
     expect(result.current.groupDetailsEntriesWithSummary).toHaveLength(1);
     expect(result.current.groupDetailsEntriesWithSummary[0][0]).toBe('event-1');
@@ -332,20 +332,46 @@ describe(useGroupDetailsEntries.name, () => {
       ],
     ];
 
-    mockGenerateHistoryGroupDetails.mockReturnValue({
-      groupDetailsEntries: mockGroupDetailsEntries,
-      summaryDetailsEntries: mockSummaryDetailsEntries,
-    });
-
     const eventGroup: HistoryEventsGroup = {
       ...mockActivityEventGroup,
       firstEventId: null,
     };
 
-    const { result } = renderHook(() => useGroupDetailsEntries(eventGroup));
+    const { result } = setup({
+      eventGroup,
+      mockGroupDetails: {
+        groupDetailsEntries: mockGroupDetailsEntries,
+        summaryDetailsEntries: mockSummaryDetailsEntries,
+      },
+    });
 
     expect(result.current.groupDetailsEntriesWithSummary[0][0]).toBe(
       'summary_unknown'
     );
   });
 });
+
+function setup({
+  eventGroup,
+  mockGroupDetails,
+}: {
+  eventGroup: HistoryEventsGroup;
+  mockGroupDetails: {
+    groupDetailsEntries: Array<[string, EventDetailsTabContent]>;
+    summaryDetailsEntries: Array<[string, EventDetailsTabContent]>;
+  };
+}) {
+  const mockGenerateHistoryGroupDetails = jest.spyOn(
+    generateHistoryGroupDetailsModule,
+    'default'
+  );
+
+  mockGenerateHistoryGroupDetails.mockReturnValue(mockGroupDetails);
+
+  const { result } = renderHook(() => useGroupDetailsEntries(eventGroup));
+
+  return {
+    mockGenerateHistoryGroupDetails,
+    result,
+  };
+}
