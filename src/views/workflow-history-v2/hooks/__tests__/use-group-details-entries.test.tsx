@@ -296,7 +296,7 @@ describe(useGroupDetailsEntries.name, () => {
     expect(result.current.groupDetailsEntriesWithSummary[0][0]).toBe('event-1');
   });
 
-  it('should use "unknown" as groupId when firstEventId is null', () => {
+  it('should hide summary when firstEventId is null', () => {
     const mockGroupDetailsEntries: Array<[string, EventDetailsTabContent]> = [
       [
         'event-1',
@@ -345,9 +345,8 @@ describe(useGroupDetailsEntries.name, () => {
       },
     });
 
-    expect(result.current.groupDetailsEntriesWithSummary[0][0]).toBe(
-      'summary_unknown'
-    );
+    expect(result.current.groupDetailsEntriesWithSummary[0][0]).toBe('event-1');
+    expect(result.current.groupDetailsEntriesWithSummary[1][0]).toBe('event-2');
   });
 });
 

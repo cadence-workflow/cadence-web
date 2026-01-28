@@ -21,10 +21,12 @@ export default function useGroupDetailsEntries(eventGroup: HistoryEventsGroup) {
 
   const groupDetailsEntriesWithSummary = useMemo(
     () => [
-      ...(groupSummaryDetails.length > 0 && groupDetailsEntries.length > 1
+      ...(groupSummaryDetails.length > 0 &&
+      groupDetailsEntries.length > 1 &&
+      eventGroup.firstEventId
         ? [
             getSummaryTabContentEntry({
-              groupId: eventGroup.firstEventId ?? 'unknown',
+              groupId: eventGroup.firstEventId,
               summaryDetails: groupSummaryDetails,
             }),
           ]
