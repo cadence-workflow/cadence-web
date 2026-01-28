@@ -4,6 +4,11 @@ import 'server-only';
 // eslint-disable-next-line import/named
 import { cache } from 'react';
 
+import {
+  getDomainAccessForUser,
+  getGrpcMetadataFromAuth,
+  type UserAuthContext,
+} from '@/utils/auth/auth-context';
 import getConfigValue from '@/utils/config/get-config-value';
 import * as grpcClient from '@/utils/grpc/grpc-client';
 import { GRPCError } from '@/utils/grpc/grpc-error';
@@ -14,11 +19,14 @@ import getUniqueDomains from './get-unique-domains';
 
 const MAX_DOMAINS_TO_FETCH = 2000;
 
-export const getAllDomains = async () => {
+export const getAllDomains = async (authContext: UserAuthContext) => {
   const CLUSTERS_CONFIGS = await getConfigValue('CLUSTERS');
   const results = await Promise.allSettled(
     CLUSTERS_CONFIGS.map(async ({ clusterName }) => {
-      const clusterMethods = await grpcClient.getClusterMethods(clusterName);
+      const clusterMethods = await grpcClient.getClusterMethods(
+        clusterName,
+        getGrpcMetadataFromAuth(authContext)
+      );
 
       return clusterMethods
         .listDomains({ pageSize: MAX_DOMAINS_TO_FETCH })
@@ -46,9 +54,14 @@ export const getAllDomains = async () => {
         );
     })
   );
+
+  const uniqueDomains = getUniqueDomains(
+    results.flatMap((res) => (res.status === 'fulfilled' ? res.value : []))
+  );
+
   return {
-    domains: getUniqueDomains(
-      results.flatMap((res) => (res.status === 'fulfilled' ? res.value : []))
+    domains: uniqueDomains.filter(
+      (domain) => getDomainAccessForUser(domain, authContext).canRead
     ),
     failedClusters: CLUSTERS_CONFIGS.map((config) => ({
       clusterName: config.clusterName,
