@@ -156,7 +156,6 @@ export default function WorkflowHistoryTimeline({
                           />
                         )}
                         placement="bottom"
-                        ignoreBoundary
                         overrides={overrides.popover}
                         popoverMargin={0}
                         onMouseEnterDelay={400}
