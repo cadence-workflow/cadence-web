@@ -1,18 +1,13 @@
-import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-history.types';
-
 import useGroupDetailsEntries from '../hooks/use-group-details-entries';
 import WorkflowHistoryGroupDetails from '../workflow-history-group-details/workflow-history-group-details';
-import { type Props as WorkflowHistoryProps } from '../workflow-history-v2.types';
+
+import { type Props } from './workflow-history-timeline-event-group.types';
 
 export default function WorkflowHistoryTimelineEventGroup({
   eventGroup,
   decodedPageUrlParams,
   onClose,
-}: {
-  eventGroup: HistoryEventsGroup;
-  decodedPageUrlParams: WorkflowHistoryProps['params'];
-  onClose: () => void;
-}) {
+}: Props) {
   const { groupDetailsEntriesWithSummary } = useGroupDetailsEntries(eventGroup);
 
   return (
