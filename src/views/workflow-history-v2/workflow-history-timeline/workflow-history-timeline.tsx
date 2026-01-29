@@ -13,6 +13,7 @@ import useStyletronClasses from '@/hooks/use-styletron-classes';
 import WorkflowHistoryEventStatusBadge from '@/views/workflow-history/workflow-history-event-status-badge/workflow-history-event-status-badge';
 
 import workflowHistoryEventFilteringTypeColorsConfig from '../config/workflow-history-event-filtering-type-colors.config';
+import WorkflowHistoryTimelineEventGroup from '../workflow-history-timeline-event-group/workflow-history-timeline-event-group';
 
 import formatTickDuration from './helpers/format-tick-duration';
 import getTimelineMaxTimeMs from './helpers/get-timeline-max-time-ms';
@@ -37,6 +38,7 @@ export default function WorkflowHistoryTimeline({
   workflowStartTimeMs,
   workflowCloseTimeMs,
   onClickEvent,
+  decodedPageUrlParams,
 }: Props) {
   const { cls, theme } = useStyletronClasses(cssStyles);
 
@@ -146,16 +148,26 @@ export default function WorkflowHistoryTimeline({
                       <StatefulPopover
                         triggerType="hover"
                         accessibilityType="tooltip"
-                        content={row.label}
+                        content={({ close }) => (
+                          <WorkflowHistoryTimelineEventGroup
+                            eventGroup={row.group}
+                            decodedPageUrlParams={decodedPageUrlParams}
+                            onClose={() => close()}
+                          />
+                        )}
                         placement="bottom"
-                        ignoreBoundary
                         overrides={overrides.popover}
                         popoverMargin={0}
+                        onMouseEnterDelay={400}
                         popperOptions={{
                           modifiers: {
                             offset: {
-                              offset: `${popoverOffset}, 0`,
+                              offset: `${popoverOffset}, 4`,
                               enabled: true,
+                            },
+                            preventOverflow: {
+                              enabled: true,
+                              priority: ['left', 'right', 'top'],
                             },
                           },
                         }}

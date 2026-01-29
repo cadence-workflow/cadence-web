@@ -271,5 +271,12 @@ function getDefaultProps(): Props {
     workflowCloseTimeMs: null,
     selectedEventId: undefined,
     onClickEvent: jest.fn(),
+    decodedPageUrlParams: {
+      domain: 'test-domain',
+      cluster: 'test-cluster',
+      workflowId: 'test-workflowId',
+      runId: 'test-runId',
+      workflowTab: 'history',
+    },
   };
 }

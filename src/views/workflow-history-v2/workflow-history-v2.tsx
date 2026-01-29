@@ -439,6 +439,7 @@ export default function WorkflowHistoryV2({ params }: Props) {
         onClickEvent={(eventId) => {
           setScrollToEventId(eventId);
         }}
+        decodedPageUrlParams={decodedParams}
       />
       <styled.ContentSection>
         {isUngroupedHistoryViewEnabled ? (

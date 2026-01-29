@@ -19,6 +19,14 @@ jest.mock(
 );
 
 jest.mock(
+  '../../workflow-history-timeline-event-group/workflow-history-timeline-event-group',
+  () =>
+    jest.fn(({ eventGroup }: { eventGroup: { label: string } }) => (
+      <div data-testid="timeline-event-group">{eventGroup.label}</div>
+    ))
+);
+
+jest.mock(
   '@/views/workflow-history/workflow-history-event-status-badge/workflow-history-event-status-badge',
   () =>
     jest.fn((props: { status: string; statusReady: boolean; size: string }) => (
@@ -216,7 +224,7 @@ describe(WorkflowHistoryTimeline.name, () => {
     expect(svgs[0]?.getAttribute('width')).toBe('700');
   });
 
-  it('should display label in tooltip when hovering over timeline bar', async () => {
+  it('should display timeline event group in tooltip when hovering over timeline bar', async () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     const eventGroupsEntries: Array<EventGroupEntry> = [
       ['group1', mockActivityEventGroup],
@@ -236,6 +244,9 @@ describe(WorkflowHistoryTimeline.name, () => {
 
     const tooltip = await screen.findByRole('tooltip');
     expect(
+      within(tooltip).getByTestId('timeline-event-group')
+    ).toBeInTheDocument();
+    expect(
       within(tooltip).getByText(mockActivityEventGroup.label)
     ).toBeInTheDocument();
   });
@@ -246,11 +257,25 @@ function setup({
   workflowStartTimeMs,
   workflowCloseTimeMs,
   onClickEvent = jest.fn(),
+  decodedPageUrlParams = {
+    domain: 'test-domain',
+    cluster: 'test-cluster',
+    workflowId: 'test-workflow-id',
+    runId: 'test-run-id',
+    workflowTab: 'history',
+  },
 }: {
   eventGroupsEntries: Array<EventGroupEntry>;
   workflowStartTimeMs: number;
   workflowCloseTimeMs?: number | null;
   onClickEvent?: (eventId: string) => void;
+  decodedPageUrlParams?: {
+    domain: string;
+    cluster: string;
+    workflowId: string;
+    runId: string;
+    workflowTab: 'history';
+  };
 }) {
   const renderResult = render(
     <VirtuosoMockContext.Provider
@@ -261,6 +286,7 @@ function setup({
         workflowStartTimeMs={workflowStartTimeMs}
         workflowCloseTimeMs={workflowCloseTimeMs}
         onClickEvent={onClickEvent}
+        decodedPageUrlParams={decodedPageUrlParams}
       />
     </VirtuosoMockContext.Provider>
   );
