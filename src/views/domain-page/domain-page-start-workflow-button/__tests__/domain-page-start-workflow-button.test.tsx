@@ -201,6 +201,20 @@ function setup(
   const renderResult = render(<DomainPageStartWorkflowButton {...props} />, {
     endpointsMocks: [
       {
+        path: '/api/auth/me',
+        httpMethod: 'GET',
+        httpResolver: async () =>
+          HttpResponse.json(
+            {
+              rbacEnabled: false,
+              isAuthenticated: false,
+              isAdmin: false,
+              groups: [],
+            },
+            { status: 200 }
+          ),
+      },
+      {
         path: '/api/config',
         httpMethod: 'GET',
         mockOnce: true,

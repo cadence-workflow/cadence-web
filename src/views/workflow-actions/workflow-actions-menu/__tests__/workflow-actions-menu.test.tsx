@@ -129,12 +129,25 @@ describe(WorkflowActionsMenu.name, () => {
       expect.objectContaining({ id: 'cancel' })
     );
   });
+
+  it('disables actions when write access is blocked', () => {
+    setup({
+      actionsEnabledConfig: mockResolvedConfigValues.WORKFLOW_ACTIONS_ENABLED,
+      isWriteAuthorized: false,
+    });
+
+    const menuButtons = screen.getAllByRole('button');
+    expect(menuButtons[0]).toBeDisabled();
+    expect(menuButtons[1]).toBeDisabled();
+  });
 });
 
 function setup({
   actionsEnabledConfig,
+  isWriteAuthorized = true,
 }: {
   actionsEnabledConfig?: WorkflowActionsEnabledConfig;
+  isWriteAuthorized?: boolean;
 }) {
   const user = userEvent.setup();
   const mockOnActionSelect = jest.fn();
@@ -143,6 +156,7 @@ function setup({
     <WorkflowActionsMenu
       workflow={mockDescribeWorkflowResponse}
       {...(actionsEnabledConfig && { actionsEnabledConfig })}
+      isWriteAuthorized={isWriteAuthorized}
       onActionSelect={mockOnActionSelect}
     />
   );
