@@ -1,5 +1,6 @@
 import CodeBlock from './code-block/code-block';
 import Heading from './heading/heading';
+import Image from './image/image';
 import InlineCode from './inline-code/inline-code';
 import List from './list/list';
 import SignalButton from './signal-button/signal-button';
@@ -13,6 +14,7 @@ export const markdocComponents = {
   List,
   CodeBlock,
   InlineCode,
+  Image,
 };
 
 export type MarkdocComponents = typeof markdocComponents;
