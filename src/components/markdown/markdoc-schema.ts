@@ -1,5 +1,6 @@
 import { type Config } from '@markdoc/markdoc';
 
+import { brSchema } from './markdoc-components/br/br.markdoc';
 import { codeBlockMarkdocSchema } from './markdoc-components/code-block/code-block.markdoc';
 import { headingMarkdocSchema } from './markdoc-components/heading/heading.markdoc';
 import { imageSchema } from './markdoc-components/image/image.markdoc';
@@ -13,6 +14,7 @@ export const markdocConfig: Config = {
     signal: signalButtonMarkdocSchema,
     start: startWorkflowButtonMarkdocSchema,
     image: imageSchema,
+    br: brSchema,
   },
   nodes: {
     // Standard HTML nodes

@@ -1,3 +1,4 @@
+import Br from './br/br';
 import CodeBlock from './code-block/code-block';
 import Heading from './heading/heading';
 import Image from './image/image';
@@ -15,6 +16,7 @@ export const markdocComponents = {
   CodeBlock,
   InlineCode,
   Image,
+  Br,
 };
 
 export type MarkdocComponents = typeof markdocComponents;
