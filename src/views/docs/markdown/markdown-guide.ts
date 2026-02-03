@@ -98,6 +98,35 @@ Note that input field is optional and can be omitted. For different value types,
   workflowId="sample-workflow"
   runId="sample-run"
 /%}
+
+## Images
+
+You can render images in your markdown using either the standard markdown syntax or the Markdoc \`{% image %}\` tag for more control.
+
+### Standard Markdown Images
+
+\`\`\`
+![Alt text](https://example.com/image.png)
+\`\`\`
+
+### Sized Images with Markdoc Tag
+
+Use the \`{% image %}\` tag to specify custom width or height:
+
+\`\`\`
+{% image src="https://example.com/image.png" alt="My Image" width="250" /%}
+{% image src="https://example.com/image.png" alt="My Image" height="100" /%}
+\`\`\`
+
+Image with 250px width:
+{% image src="https://cadenceworkflow.io/assets/images/workflow-84ef76d93c7ff138714a0aa7c9b92841.png" alt="Image with 250px width" width="250" /%}
+
+Image with 100px height:
+{% image src="https://cadenceworkflow.io/assets/images/workflow-84ef76d93c7ff138714a0aa7c9b92841.png" alt="Image with 100px height" height="100" /%}
+ 
+Image with 100px width and 100px height:
+{% image src="https://cadenceworkflow.io/assets/images/workflow-84ef76d93c7ff138714a0aa7c9b92841.png" alt="Image with 100px width and 100px height" width="100" height="100" /%}
+
 `;
 
 export default content;
