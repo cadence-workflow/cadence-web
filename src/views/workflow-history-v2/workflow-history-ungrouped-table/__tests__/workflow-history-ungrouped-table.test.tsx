@@ -9,18 +9,26 @@ import { mockActivityEventGroup } from '@/views/workflow-history/__fixtures__/wo
 import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-history.types';
 import { type WorkflowPageTabsParams } from '@/views/workflow-page/workflow-page-tabs/workflow-page-tabs.types';
 
+import type WorkflowHistoryTableFooter from '../../workflow-history-table-footer/workflow-history-table-footer';
 import compareUngroupedEvents from '../helpers/compare-ungrouped-events';
 import WorkflowHistoryUngroupedTable from '../workflow-history-ungrouped-table';
 import { type UngroupedEventInfo } from '../workflow-history-ungrouped-table.types';
 
-jest.mock(
+jest.mock<typeof WorkflowHistoryTableFooter>(
   '../../workflow-history-table-footer/workflow-history-table-footer',
   () =>
     jest.fn(
-      ({ error, hasMoreEvents, isFetchingMoreEvents, fetchMoreEvents }) => (
+      ({
+        error,
+        canFetchMoreEvents,
+        isFetchingMoreEvents,
+        fetchMoreEvents,
+      }) => (
         <div data-testid="timeline-load-more">
           {error && <div data-testid="load-more-error">Error loading more</div>}
-          {hasMoreEvents && <div data-testid="has-next-page">Has more</div>}
+          {canFetchMoreEvents && (
+            <div data-testid="has-next-page">Has more</div>
+          )}
           {isFetchingMoreEvents && (
             <div data-testid="is-fetching">Fetching...</div>
           )}
