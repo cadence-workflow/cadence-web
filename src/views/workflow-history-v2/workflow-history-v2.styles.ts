@@ -12,9 +12,10 @@ export const styled = {
     position: 'relative',
     zIndex: 0,
   }),
-  ContentSection: withStyle(PageSection, {
+  ContentSection: withStyle(PageSection, ({ $theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
-  }),
+    paddingBottom: $theme.sizing.scale950,
+  })),
 };
