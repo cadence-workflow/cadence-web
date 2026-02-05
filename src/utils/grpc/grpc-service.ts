@@ -124,6 +124,7 @@ class GRPCService {
         'rpc-service': this.requestConfig.serviceName,
         'rpc-caller': process.env.CADENCE_WEB_SERVICE_NAME || 'cadence-web',
         'rpc-encoding': 'proto',
+        'cadence-caller-type': 'ui',
       },
       this.requestConfig.metadata,
       reqMetadata

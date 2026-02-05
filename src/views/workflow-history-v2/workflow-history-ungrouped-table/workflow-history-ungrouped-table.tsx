@@ -28,6 +28,8 @@ export default function WorkflowHistoryUngroupedTable({
     [ungroupedEventsInfo, selectedEventId]
   );
 
+  const noEventsToDisplay = ungroupedEventsInfo.length === 0;
+
   return (
     <>
       <styled.TableHeader>
@@ -69,7 +71,8 @@ export default function WorkflowHistoryUngroupedTable({
           Footer: () => (
             <WorkflowHistoryTableFooter
               error={error}
-              hasMoreEvents={hasMoreEvents}
+              noEventsToDisplay={noEventsToDisplay}
+              canFetchMoreEvents={hasMoreEvents}
               fetchMoreEvents={fetchMoreEvents}
               isFetchingMoreEvents={isFetchingMoreEvents}
             />
