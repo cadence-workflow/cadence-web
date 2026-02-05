@@ -30,7 +30,7 @@ const cssStylesObj = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    padding: `0px ${theme.sizing.scale600}`,
+    padding: `0px ${theme.sizing.scale600} ${theme.sizing.scale600} ${theme.sizing.scale600}`,
     color: theme.colors.contentTertiary,
     textAlign: 'center',
     ...theme.typography.ParagraphSmall,
