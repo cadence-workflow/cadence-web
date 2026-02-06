@@ -2,6 +2,7 @@ import { createElement } from 'react';
 
 import formatDate from '@/utils/data-formatters/format-date';
 import formatDuration from '@/utils/data-formatters/format-duration';
+import CronScheduleWithDescription from '@/views/shared/cron-schedule-with-description/cron-schedule-with-description';
 import WorkflowEventDetailsExecutionLink from '@/views/shared/workflow-event-details-execution-link/workflow-event-details-execution-link';
 
 import WorkflowHistoryEventDetailsTaskListLink from '../../shared/workflow-history-event-details-task-list-link/workflow-history-event-details-task-list-link';
@@ -94,6 +95,12 @@ const workflowHistoryEventDetailsConfig = [
     name: 'Retry config attempt as retryAttempt',
     key: 'attempt',
     getLabel: () => 'retryAttempt',
+  },
+  {
+    name: 'Cron schedule with description',
+    key: 'cronSchedule',
+    valueComponent: ({ entryValue }) =>
+      createElement(CronScheduleWithDescription, { cronSchedule: entryValue }),
   },
 ] as const satisfies WorkflowHistoryEventDetailsConfig[];
 
