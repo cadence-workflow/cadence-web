@@ -1,11 +1,12 @@
 'use client';
 import React, { useMemo, useState } from 'react';
 
+import { Spinner } from 'baseui/icon';
+
 import CopyTextButton from '@/components/copy-text-button/copy-text-button';
 import Link from '@/components/link/link';
 import PrettyJson from '@/components/pretty-json/pretty-json';
 import { type PrettyJsonValue } from '@/components/pretty-json/pretty-json.types';
-import PrettyJsonSkeleton from '@/components/pretty-json-skeleton/pretty-json-skeleton';
 import SegmentedControlRounded from '@/components/segmented-control-rounded/segmented-control-rounded';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import losslessJsonStringify from '@/utils/lossless-json-stringify';
@@ -82,7 +83,14 @@ export default function WorkflowSummaryJsonView({
       )}
       {activeTab === 'result' && !isArchived && (
         <>
-          {isWorkflowRunning && <PrettyJsonSkeleton width="200px" />}
+          {isWorkflowRunning && (
+            <div className={cls.noResultPlaceholder}>
+              <div className={cls.noResultPlaceholderFirstLine}>
+                Workflow in progress <Spinner />
+              </div>
+              <div>Result is not available yet</div>
+            </div>
+          )}
           {!isWorkflowRunning && <PrettyJson json={jsonMap[activeTab]} />}
         </>
       )}

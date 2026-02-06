@@ -23,9 +23,10 @@ jest.mock(
 jest.mock('@/components/pretty-json/pretty-json', () =>
   jest.fn(() => <div>PrettyJson Mock</div>)
 );
-jest.mock('@/components/pretty-json-skeleton/pretty-json-skeleton', () =>
-  jest.fn(() => <div>Mock JSON skeleton</div>)
-);
+
+jest.mock('baseui/icon', () => ({
+  Spinner: jest.fn(() => <div>Spinner Mock</div>),
+}));
 
 describe('WorkflowSummaryJsonView Component', () => {
   it('renders correctly with initial props', () => {
@@ -44,13 +45,15 @@ describe('WorkflowSummaryJsonView Component', () => {
     expect(segmentedControl).toBeInTheDocument();
   });
 
-  it('renders loading state correctly', () => {
+  it('renders no result placeholder when workflow is running', () => {
     const { getByText } = setup({ isWorkflowRunning: true });
 
     // Mock the onChange event for SegmentedControlRounded
     const segmentedControl = screen.getByText('SegmentedControlRounded Mock');
     fireEvent.click(segmentedControl);
-    expect(getByText('Mock JSON skeleton')).toBeInTheDocument();
+    expect(getByText('Workflow in progress')).toBeInTheDocument();
+    expect(getByText('Result is not available yet')).toBeInTheDocument();
+    expect(getByText('Spinner Mock')).toBeInTheDocument();
   });
 
   it('renders copy text button and pass the correct text', () => {
@@ -72,14 +75,15 @@ describe('WorkflowSummaryJsonView Component', () => {
     expect(getByRole('link', { name: 'history' })).toBeInTheDocument();
   });
 
-  it('should not render loading skeleton when isArchived is true and isWorkflowRunning is true', () => {
+  it('should not render no result placeholder when isArchived is true and isWorkflowRunning is true', () => {
     const { queryByText, getByText } = setup({
       isArchived: true,
       isWorkflowRunning: true,
     });
     const segmentedControl = getByText('SegmentedControlRounded Mock');
     fireEvent.click(segmentedControl);
-    expect(queryByText('Mock JSON skeleton')).not.toBeInTheDocument();
+    expect(queryByText('Workflow in progress')).not.toBeInTheDocument();
+    expect(queryByText('Result is not available yet')).not.toBeInTheDocument();
     expect(
       queryByText('Workflow is archived, result is only available in')
     ).toBeInTheDocument();
