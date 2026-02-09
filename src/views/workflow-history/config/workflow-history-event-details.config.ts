@@ -8,6 +8,7 @@ import WorkflowHistoryEventDetailsTaskListLink from '../../shared/workflow-histo
 import { type WorkflowHistoryEventDetailsConfig } from '../workflow-history-event-details/workflow-history-event-details.types';
 import WorkflowHistoryEventDetailsJson from '../workflow-history-event-details-json/workflow-history-event-details-json';
 import WorkflowHistoryEventDetailsPlaceholderText from '../workflow-history-event-details-placeholder-text/workflow-history-event-details-placeholder-text';
+import CronScheduleWithDescription from '@/views/shared/cron-schedule-description/cron-schedule-description';
 
 const workflowHistoryEventDetailsConfig = [
   {
@@ -94,6 +95,12 @@ const workflowHistoryEventDetailsConfig = [
     name: 'Retry config attempt as retryAttempt',
     key: 'attempt',
     getLabel: () => 'retryAttempt',
+  },
+  {
+    name: 'Cron schedule with description',
+    key: 'cronSchedule',
+    valueComponent: ({ entryValue }) =>
+      createElement(CronScheduleWithDescription, { cronSchedule: entryValue }),
   },
 ] as const satisfies WorkflowHistoryEventDetailsConfig[];
 

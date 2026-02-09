@@ -7,6 +7,7 @@ import getWorkflowStatusTagProps from '@/views/workflow-page/helpers/get-workflo
 
 import WorkflowEventDetailsExecutionLink from '../../shared/workflow-event-details-execution-link/workflow-event-details-execution-link';
 import { type WorkflowSummaryDetailsConfig } from '../workflow-summary-details/workflow-summary-details.types';
+import CronScheduleWithDescription from '@/views/shared/cron-schedule-description/cron-schedule-description';
 
 const workflowSummaryDetailsConfig: WorkflowSummaryDetailsConfig[] = [
   {
@@ -93,10 +94,14 @@ const workflowSummaryDetailsConfig: WorkflowSummaryDetailsConfig[] = [
   {
     key: 'cronSchedule',
     getLabel: () => 'CRON schedule',
-    valueComponent: ({ firstEvent }) =>
-      firstEvent?.workflowExecutionStartedEventAttributes?.cronSchedule,
-    hide: ({ firstEvent }) =>
-      !firstEvent?.workflowExecutionStartedEventAttributes?.cronSchedule,
+    valueComponent: ({ firstEvent }) => {
+      const cronSchedule =
+        firstEvent?.workflowExecutionStartedEventAttributes?.cronSchedule;
+      if (cronSchedule) {
+        return createElement(CronScheduleWithDescription, { cronSchedule });
+      }
+      return null;
+    },
   },
   {
     key: 'historyEventsCount',
