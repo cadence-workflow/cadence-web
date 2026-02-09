@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import { FormControl } from 'baseui/form-control';
 import { Input } from 'baseui/input';
@@ -58,7 +58,7 @@ export default function CronScheduleInput({
     [error]
   );
 
-  const getCronDescription = useCallback(() => {
+  const cronDescription = useMemo(() => {
     const cronExpression = CRON_FIELD_ORDER.map(
       (field) => value?.[field] || ''
     ).join(' ');
@@ -72,8 +72,6 @@ export default function CronScheduleInput({
       return null;
     }
   }, [value]);
-
-  const cronDescription = getCronDescription();
 
   return (
     <styled.Container>

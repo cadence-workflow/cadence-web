@@ -350,6 +350,7 @@ describe(CronScheduleInput.name, () => {
       });
 
       expect(screen.queryByText(/^At /)).not.toBeInTheDocument();
+      expect(screen.queryByText(/^Every /)).not.toBeInTheDocument();
     });
 
     it('should not display description for invalid cron expression', () => {
