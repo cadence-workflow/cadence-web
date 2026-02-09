@@ -3,7 +3,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { FormControl } from 'baseui/form-control';
 import { Input } from 'baseui/input';
 import { Popover } from 'baseui/popover';
-import cronstrue from 'cronstrue';
+import { toString as cronToString } from 'cronstrue';
 
 import CronScheduleInputPopover from './cron-schedule-input-popover/cron-schedule-input-popover';
 import {
@@ -67,7 +67,7 @@ export default function CronScheduleInput({
     if (!hasAllFields) return null;
 
     try {
-      return cronstrue.toString(cronExpression);
+      return cronToString(cronExpression);
     } catch {
       return null;
     }

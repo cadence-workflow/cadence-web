@@ -2,13 +2,13 @@ import { createElement } from 'react';
 
 import formatDate from '@/utils/data-formatters/format-date';
 import formatDuration from '@/utils/data-formatters/format-duration';
+import CronScheduleWithDescription from '@/views/shared/cron-schedule-description/cron-schedule-description';
 import WorkflowEventDetailsExecutionLink from '@/views/shared/workflow-event-details-execution-link/workflow-event-details-execution-link';
 
 import WorkflowHistoryEventDetailsTaskListLink from '../../shared/workflow-history-event-details-task-list-link/workflow-history-event-details-task-list-link';
 import { type WorkflowHistoryEventDetailsConfig } from '../workflow-history-event-details/workflow-history-event-details.types';
 import WorkflowHistoryEventDetailsJson from '../workflow-history-event-details-json/workflow-history-event-details-json';
 import WorkflowHistoryEventDetailsPlaceholderText from '../workflow-history-event-details-placeholder-text/workflow-history-event-details-placeholder-text';
-import CronScheduleWithDescription from '@/views/shared/cron-schedule-description/cron-schedule-description';
 
 const workflowHistoryEventDetailsConfig = [
   {
