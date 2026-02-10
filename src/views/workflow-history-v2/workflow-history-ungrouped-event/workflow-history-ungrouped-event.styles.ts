@@ -26,9 +26,9 @@ export const styled = {
   })),
   HeaderLabel: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     ...$theme.typography.LabelSmall,
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis',
-    overflow: 'hidden',
+    minWidth: 0,
+    whiteSpace: 'wrap',
+    wordBreak: 'break-all',
   })),
   StatusContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
