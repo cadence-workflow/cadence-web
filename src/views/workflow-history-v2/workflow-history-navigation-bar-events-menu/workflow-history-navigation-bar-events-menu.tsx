@@ -47,6 +47,7 @@ export default function WorkflowHistoryNavigationBarEventsMenu({
                   onClickEvent(eventId);
                   close();
                 }}
+                overrides={overrides.button}
                 size="compact"
                 kind="tertiary"
                 startEnhancer={

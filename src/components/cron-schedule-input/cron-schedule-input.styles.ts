@@ -63,4 +63,13 @@ export const styled = {
       gap: $theme.sizing.scale100,
     })
   ),
+  Description: createStyled(
+    'div',
+    ({ $theme }: { $theme: Theme }): StyleObject => ({
+      ...$theme.typography.LabelXSmall,
+      color: $theme.colors.contentSecondary,
+      width: '100%',
+      marginTop: $theme.sizing.scale300,
+    })
+  ),
 };

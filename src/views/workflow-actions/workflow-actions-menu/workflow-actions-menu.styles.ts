@@ -29,6 +29,7 @@ export const overrides = {
   button: {
     BaseButton: {
       style: {
+        width: '100%',
         justifyContent: 'flex-start',
       } satisfies StyleObject,
     },

@@ -320,6 +320,54 @@ describe(CronScheduleInput.name, () => {
     await user.tab();
     expect(hoursInput).toHaveFocus();
   });
+
+  describe('cron description', () => {
+    it('should display human-readable description when all fields are valid', () => {
+      setup({
+        value: {
+          minutes: '0',
+          hours: '9',
+          daysOfMonth: '*',
+          months: '*',
+          daysOfWeek: '1-5',
+        },
+      });
+
+      expect(
+        screen.getByText('At 09:00 AM, Monday through Friday')
+      ).toBeInTheDocument();
+    });
+
+    it('should not display description when some fields are empty', () => {
+      setup({
+        value: {
+          minutes: '0',
+          hours: '',
+          daysOfMonth: '*',
+          months: '*',
+          daysOfWeek: '*',
+        },
+      });
+
+      expect(screen.queryByText(/^At /)).not.toBeInTheDocument();
+      expect(screen.queryByText(/^Every /)).not.toBeInTheDocument();
+    });
+
+    it('should not display description for invalid cron expression', () => {
+      setup({
+        value: {
+          minutes: 'invalid',
+          hours: 'invalid',
+          daysOfMonth: 'invalid',
+          months: 'invalid',
+          daysOfWeek: 'invalid',
+        },
+      });
+
+      expect(screen.queryByText(/^At /)).not.toBeInTheDocument();
+      expect(screen.queryByText(/^Every /)).not.toBeInTheDocument();
+    });
+  });
 });
 
 function setup(props: Partial<CronScheduleInputProps> = {}) {
