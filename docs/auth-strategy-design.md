@@ -49,12 +49,12 @@ User 2: Ben (payer — read + write)
 
 We can have those roles respectively:
 
-* Cadence Admin - Full access to all domains (read and write) - a superuser role with no restrictions.
-We can have in JWT Claims the Admin:true without adding any group (+ it aligns with backend validation);
-* Domain Admin – Full access (read/write) only to specific authorized domain(s) - the Admin value is false, and groups must match the domain’s WRITE_GROUPS/READ_GROUPS metadata.
+* Cadence admin - Full access to all domains (read and write) - a superuser role with no restrictions.
+We can have in JWT Claims the admin:true without adding any group (+ it aligns with backend validation);
+* Domain admin – Full access (read/write) only to specific authorized domain(s) - the admin value is false, and groups must match the domain’s WRITE_GROUPS/READ_GROUPS metadata.
 * Domain Viewer - Read-only access to specific authorized domain(s). They can view workflows and histories in those domains but
-cannot mutate state (no workflow start/terminate, etc.) – the Admin value is false, and groups must match the domain’s READ_GROUPS metadata.
-* Public (a user without any authorization other than access to Cadence-web) - when RBAC is enabled, unauthenticated users are denied access.
+cannot mutate state (no workflow start/terminate, etc.) – the admin value is false, and groups must match the domain’s READ_GROUPS metadata.
+* Public (a user without any authorization other than access to Cadence-web) - when auth is enabled, unauthenticated users are denied access.
 
 The scope: add UI-layer awareness of Cadence backend auth without inventing new policy surfaces. The Web should only propagate tokens, 
 reflect capabilities in UX (enable/disable/hide). Backend remains the source of truth; Cadence authorizes every GRPC call.
@@ -70,13 +70,13 @@ UI enforcement:
 * Login button to paste jwt token.
 * Workflow actions use access to enable/disable with “Not authorized” (for read-only users).
 * Domain list hides domains without read access.
-* Unauthenticated: when RBAC is enabled, access is denied.
+* Unauthenticated: when auth is enabled, access is denied.
 
-Configurable RBAC: If turned off, Cadence-Web behaves as no login required, with full access as before.
+Configurable auth: If turned off, Cadence-Web behaves as no login required, with full access as before.
 
 Additional feature:
 
-• Each authenticated user is associated with one or more roles (from the four above). For example, a user could be a Domain Admin for domain X and a Domain Viewer for domain Y.
+• Each authenticated user is associated with one or more roles (from the four above). For example, a user could be a Domain admin for domain X and a Domain Viewer for domain Y.
 
 ## Goals
 
@@ -125,7 +125,7 @@ Lifecycle (simplified):
 Key components:
 - `resolveAuthContext` (server) decodes claims and derives auth state.
 - `AppNavBar` handles login/switch/logout and expiry UX.
-- `useUserInfo` / `useDomainAccess` provide RBAC gating for UI components.
+- `useUserInfo` / `useDomainAccess` provide auth gating for UI components.
 
 ## Behavior in different setups
 
@@ -133,7 +133,7 @@ Reference: https://github.com/cadence-workflow/cadence/discussions/7508#discussi
 
 ### 1 Disabled Auth (Default Mode)
 
-* `CADENCE_WEB_AUTH_STRATEGY=false`
+* `CADENCE_WEB_AUTH_STRATEGY=disabled`
 * No authentication required.
 * All users have full access.
 * No permission indicators.
@@ -220,9 +220,9 @@ JWT contains:
 
 ```
 groups: [string]
-Admin: boolean
+admin: boolean
 ```
-Admin bypasses all checks
+admin bypasses all checks
 
 
 ## Security considerations
@@ -232,6 +232,7 @@ Measures taken:
 - SameSite=Lax to mitigate CSRF while allowing top-level navigation.
 - Secure cookie on HTTPS.
 - No tokens in localStorage/sessionStorage
+- Raw JWT is kept server-side only (`UserAuthContext`); `/api/auth/me` exposes only derived public fields and never returns the token.
 - No-store on auth endpoints to prevent caching.
 - Client-side expiry handling for better UX.
 
@@ -241,10 +242,10 @@ Notes:
 
 ## Usage / getting started
 
-### Enable RBAC
+### Enable Auth (JWT)
 
 ```
-CADENCE_WEB_AUTH_STRATEGY=true
+CADENCE_WEB_AUTH_STRATEGY=jwt
 ```
 
 ### Production (upstream proxy / IdP)
@@ -271,7 +272,7 @@ or use button in UI
   "sub": "alice",
   "name": "Alice Example",
   "groups": "readers auditors",
-  "Admin": false,
+  "admin": false,
   "iat": 1766080179,
   "exp": 1766083779
 }

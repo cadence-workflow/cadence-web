@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { cookies as getRequestCookies } from 'next/headers';
+import { z } from 'zod';
 
 import { type GRPCMetadata } from '@/utils/grpc/grpc-service';
 
@@ -19,8 +20,15 @@ type CookieReader = {
   get: (name: string) => { value: string } | undefined;
 };
 
-const parseBooleanFlag = (value: string) =>
-  value?.toLowerCase() === 'true' || value === '1';
+const cadenceJwtClaimsSchema = z
+  .object({
+    admin: z.boolean().optional(),
+    exp: z.number().optional(),
+    groups: z.unknown().optional(),
+    name: z.string().optional(),
+    sub: z.string().optional(),
+  })
+  .passthrough();
 
 export function decodeCadenceJwtClaims(
   token: string
@@ -38,7 +46,12 @@ export function decodeCadenceJwtClaims(
       'utf8'
     );
 
-    return JSON.parse(decodedPayload) as CadenceJwtClaims;
+    const parsed = JSON.parse(decodedPayload);
+    const result = cadenceJwtClaimsSchema.safeParse(parsed);
+    if (!result.success) {
+      return undefined;
+    }
+    return result.data as CadenceJwtClaims;
   } catch {
     return undefined;
   }
@@ -47,9 +60,9 @@ export function decodeCadenceJwtClaims(
 export async function resolveAuthContext(
   cookieStore?: CookieReader
 ): Promise<UserAuthContext> {
-  const rbacEnabled = parseBooleanFlag(
-    (await getConfigValue('CADENCE_WEB_RBAC_ENABLED')) ?? 'false'
-  );
+  const authStrategy =
+    (await getConfigValue('CADENCE_WEB_AUTH_STRATEGY')) ?? 'disabled';
+  const authEnabled = authStrategy.toLowerCase() === 'jwt';
 
   const cookies = cookieStore ?? getRequestCookies();
   const tokenFromCookie = cookies.get(CADENCE_AUTH_COOKIE_NAME)?.value?.trim();
@@ -67,7 +80,7 @@ export async function resolveAuthContext(
   const effectiveToken = shouldDropToken ? undefined : token;
 
   const normalizeGroups = (): string[] => {
-    const raw = effectiveClaims?.groups ?? effectiveClaims?.Groups;
+    const raw = effectiveClaims?.groups;
     if (!raw) return [];
     if (Array.isArray(raw)) {
       return raw
@@ -80,19 +93,23 @@ export async function resolveAuthContext(
     return [];
   };
   const groups = normalizeGroups();
+  const id =
+    (typeof effectiveClaims?.sub === 'string' && effectiveClaims.sub) ||
+    (typeof effectiveClaims?.name === 'string' && effectiveClaims.name) ||
+    undefined;
   const userName =
     (typeof effectiveClaims?.name === 'string' && effectiveClaims.name) ||
     (typeof effectiveClaims?.sub === 'string' && effectiveClaims.sub) ||
     undefined;
-  const isAdmin = effectiveClaims?.Admin === true;
+  const isAdmin = effectiveClaims?.admin === true;
 
   return {
-    rbacEnabled,
+    authEnabled,
     token: effectiveToken,
     groups,
     isAdmin,
     userName,
-    id: userName,
+    id,
     expiresAtMs,
   };
 }
@@ -112,7 +129,7 @@ export function getGrpcMetadataFromAuth(
 export const getPublicAuthContext = (
   authContext: UserAuthContext
 ): PublicAuthContext => ({
-  rbacEnabled: authContext.rbacEnabled,
+  authEnabled: authContext.authEnabled,
   groups: authContext.groups,
   isAdmin: authContext.isAdmin,
   userName: authContext.userName,

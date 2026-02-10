@@ -1,5 +1,4 @@
-'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { FormControl } from 'baseui/form-control';
 import {
@@ -21,6 +20,14 @@ export default function AuthTokenModal({ isOpen, onClose, onSubmit }: Props) {
   const [token, setToken] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setToken('');
+      setError(null);
+      setIsSubmitting(false);
+    }
+  }, [isOpen]);
 
   const handleSubmit = async () => {
     if (!token.trim()) {

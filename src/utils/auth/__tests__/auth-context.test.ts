@@ -31,9 +31,9 @@ describe('auth-context utilities', () => {
   });
 
   describe(resolveAuthContext.name, () => {
-    it('returns unauthenticated context when RBAC is disabled', async () => {
+    it('returns unauthenticated context when auth is disabled', async () => {
       mockGetConfigValue.mockImplementation(async (key: string) => {
-        if (key === 'CADENCE_WEB_RBAC_ENABLED') return 'false';
+        if (key === 'CADENCE_WEB_AUTH_STRATEGY') return 'disabled';
         return '';
       });
 
@@ -42,21 +42,22 @@ describe('auth-context utilities', () => {
       });
 
       expect(authContext).toMatchObject({
-        rbacEnabled: false,
+        authEnabled: false,
         isAdmin: false,
         token: undefined,
         groups: [],
       });
     });
 
-    it('prefers cookie token when RBAC is enabled', async () => {
+    it('prefers cookie token when auth is enabled', async () => {
       const token = buildToken({
+        sub: 'cookie-user-id',
         name: 'cookie-user',
         groups: ['worker'],
-        Admin: true,
+        admin: true,
       });
       mockGetConfigValue.mockImplementation(async (key: string) => {
-        if (key === 'CADENCE_WEB_RBAC_ENABLED') return 'true';
+        if (key === 'CADENCE_WEB_AUTH_STRATEGY') return 'jwt';
         return '';
       });
 
@@ -66,17 +67,18 @@ describe('auth-context utilities', () => {
       });
 
       expect(authContext).toMatchObject({
-        rbacEnabled: true,
+        authEnabled: true,
         isAdmin: true,
         token,
         groups: ['worker'],
         userName: 'cookie-user',
+        id: 'cookie-user-id',
       });
     });
 
     it('returns unauthenticated context when cookie is missing', async () => {
       mockGetConfigValue.mockImplementation(async (key: string) => {
-        if (key === 'CADENCE_WEB_RBAC_ENABLED') return 'true';
+        if (key === 'CADENCE_WEB_AUTH_STRATEGY') return 'jwt';
         return '';
       });
 
@@ -85,7 +87,7 @@ describe('auth-context utilities', () => {
       });
 
       expect(authContext).toMatchObject({
-        rbacEnabled: true,
+        authEnabled: true,
         token: undefined,
       });
     });
@@ -93,7 +95,7 @@ describe('auth-context utilities', () => {
     it('treats undecodable tokens as unauthenticated', async () => {
       const token = buildTokenWithNonJsonPayload('not-json');
       mockGetConfigValue.mockImplementation(async (key: string) => {
-        if (key === 'CADENCE_WEB_RBAC_ENABLED') return 'true';
+        if (key === 'CADENCE_WEB_AUTH_STRATEGY') return 'jwt';
         return '';
       });
 
@@ -103,7 +105,7 @@ describe('auth-context utilities', () => {
       });
 
       expect(authContext).toMatchObject({
-        rbacEnabled: true,
+        authEnabled: true,
         token: undefined,
         groups: [],
         isAdmin: false,
@@ -118,11 +120,11 @@ describe('auth-context utilities', () => {
       const token = buildToken({
         sub: 'expired-user',
         groups: ['worker'],
-        Admin: true,
+        admin: true,
         exp: Math.floor(nowMs / 1000) - 10,
       });
       mockGetConfigValue.mockImplementation(async (key: string) => {
-        if (key === 'CADENCE_WEB_RBAC_ENABLED') return 'true';
+        if (key === 'CADENCE_WEB_AUTH_STRATEGY') return 'jwt';
         return '';
       });
 
@@ -132,7 +134,7 @@ describe('auth-context utilities', () => {
       });
 
       expect(authContext).toMatchObject({
-        rbacEnabled: true,
+        authEnabled: true,
         token: undefined,
         isAdmin: false,
         groups: [],
@@ -153,7 +155,7 @@ describe('auth-context utilities', () => {
         exp: expSeconds,
       });
       mockGetConfigValue.mockImplementation(async (key: string) => {
-        if (key === 'CADENCE_WEB_RBAC_ENABLED') return 'true';
+        if (key === 'CADENCE_WEB_AUTH_STRATEGY') return 'jwt';
         return '';
       });
 
@@ -167,53 +169,13 @@ describe('auth-context utilities', () => {
       dateNowSpy.mockRestore();
     });
 
-    it('handles capitalized Groups claim with comma-separated string', async () => {
-      const token = buildToken({
-        sub: 'reader',
-        Groups: 'readers, auditors',
-        Admin: false,
-      });
-      mockGetConfigValue.mockImplementation(async (key: string) => {
-        if (key === 'CADENCE_WEB_RBAC_ENABLED') return 'true';
-        return '';
-      });
-
-      const authContext = await resolveAuthContext({
-        get: (name: string) =>
-          name === CADENCE_AUTH_COOKIE_NAME ? { value: token } : undefined,
-      });
-
-      expect(authContext.groups).toEqual(['readers', 'auditors']);
-      expect(authContext.isAdmin).toBe(false);
-    });
-
-    it('handles capitalized Groups claim with space-separated string', async () => {
-      const token = buildToken({
-        sub: 'reader',
-        Groups: 'readers auditors',
-        Admin: false,
-      });
-      mockGetConfigValue.mockImplementation(async (key: string) => {
-        if (key === 'CADENCE_WEB_RBAC_ENABLED') return 'true';
-        return '';
-      });
-
-      const authContext = await resolveAuthContext({
-        get: (name: string) =>
-          name === CADENCE_AUTH_COOKIE_NAME ? { value: token } : undefined,
-      });
-
-      expect(authContext.groups).toEqual(['readers', 'auditors']);
-      expect(authContext.isAdmin).toBe(false);
-    });
-
-    it('still forwards cookie token when RBAC is disabled', async () => {
+    it('still forwards cookie token when auth is disabled', async () => {
       const token = buildToken({
         sub: 'legacy-admin',
-        Admin: true,
+        admin: true,
       });
       mockGetConfigValue.mockImplementation(async (key: string) => {
-        if (key === 'CADENCE_WEB_RBAC_ENABLED') return 'false';
+        if (key === 'CADENCE_WEB_AUTH_STRATEGY') return 'disabled';
         return '';
       });
 
@@ -233,10 +195,19 @@ describe('auth-context utilities', () => {
     });
 
     it('decodes valid payloads', () => {
-      const claims = { name: 'ben', groups: ['payer'], Admin: true };
+      const claims = { name: 'test-user', groups: ['group-a'], admin: true };
       const token = buildToken(claims);
 
       expect(decodeCadenceJwtClaims(token)).toMatchObject(claims);
+    });
+
+    it('returns undefined when claim types are invalid', () => {
+      const token = buildToken({
+        name: 123,
+        admin: 'true',
+      });
+
+      expect(decodeCadenceJwtClaims(token)).toBeUndefined();
     });
   });
 
@@ -264,12 +235,11 @@ describe('auth-context utilities', () => {
       activeClusters: null,
     };
 
-    it('allows open domains when RBAC is disabled', () => {
+    it('allows open domains when auth is disabled', () => {
       const access = getDomainAccessForUser(baseDomain, {
-        rbacEnabled: false,
+        authEnabled: false,
         isAdmin: false,
         groups: [],
-        token: 'abc',
       });
 
       expect(access).toEqual({ canRead: true, canWrite: true });
@@ -279,7 +249,7 @@ describe('auth-context utilities', () => {
       const access = getDomainAccessForUser(
         { ...baseDomain, data: { READ_GROUPS: '["worker"]' } },
         {
-          rbacEnabled: true,
+          authEnabled: true,
           isAdmin: true,
           groups: [],
         }
@@ -298,7 +268,7 @@ describe('auth-context utilities', () => {
           },
         },
         {
-          rbacEnabled: true,
+          authEnabled: true,
           isAdmin: false,
           groups: ['reader'],
           token: 'abc',
@@ -308,7 +278,7 @@ describe('auth-context utilities', () => {
       expect(access).toEqual({ canRead: true, canWrite: false });
     });
 
-    it('requires group membership for restricted domains even when RBAC is disabled', () => {
+    it('allows full access for restricted domains when auth is disabled', () => {
       const access = getDomainAccessForUser(
         {
           ...baseDomain,
@@ -318,7 +288,7 @@ describe('auth-context utilities', () => {
           },
         },
         {
-          rbacEnabled: false,
+          authEnabled: false,
           isAdmin: false,
           groups: [],
           token: 'abc',
@@ -338,7 +308,7 @@ describe('auth-context utilities', () => {
           },
         },
         {
-          rbacEnabled: true,
+          authEnabled: true,
           isAdmin: false,
           groups: ['writer'],
           token: 'abc',
@@ -357,7 +327,7 @@ describe('auth-context utilities', () => {
           },
         },
         {
-          rbacEnabled: true,
+          authEnabled: true,
           isAdmin: false,
           groups: [],
           token: 'abc',
@@ -376,7 +346,7 @@ describe('auth-context utilities', () => {
           },
         },
         {
-          rbacEnabled: true,
+          authEnabled: true,
           isAdmin: false,
           groups: ['writer'],
           token: 'abc',
@@ -395,7 +365,7 @@ describe('auth-context utilities', () => {
           },
         },
         {
-          rbacEnabled: true,
+          authEnabled: true,
           isAdmin: false,
           groups: ['viewer'],
           token: 'abc',
@@ -415,7 +385,7 @@ describe('auth-context utilities', () => {
           },
         },
         {
-          rbacEnabled: true,
+          authEnabled: true,
           isAdmin: false,
           groups: ['writer'],
           isAuthenticated: true,
@@ -431,34 +401,22 @@ describe('auth-context utilities', () => {
           ...baseDomain,
           data: {
             READ_GROUPS: 'reader viewer',
-            WRITE_GROUPS: 'writer',
           },
         },
         {
-          rbacEnabled: true,
+          authEnabled: true,
           isAdmin: false,
-          groups: ['writer'],
+          groups: ['viewer'],
           token: 'abc',
         }
       );
 
-      expect(access).toEqual({ canRead: true, canWrite: true });
+      expect(access).toEqual({ canRead: true, canWrite: false });
     });
 
     it('denies unauthenticated users even for open domains', () => {
       const access = getDomainAccessForUser(baseDomain, {
-        rbacEnabled: true,
-        isAdmin: false,
-        groups: [],
-        token: undefined,
-      });
-
-      expect(access).toEqual({ canRead: false, canWrite: false });
-    });
-
-    it('denies open domains when RBAC is enabled and not authenticated', () => {
-      const access = getDomainAccessForUser(baseDomain, {
-        rbacEnabled: true,
+        authEnabled: true,
         isAdmin: false,
         groups: [],
         token: undefined,
@@ -471,7 +429,7 @@ describe('auth-context utilities', () => {
   describe(getPublicAuthContext.name, () => {
     it('omits private fields but preserves flags', () => {
       const authContext = {
-        rbacEnabled: true,
+        authEnabled: true,
         token: 'secret',
         groups: ['worker'],
         isAdmin: true,
@@ -480,12 +438,13 @@ describe('auth-context utilities', () => {
       };
 
       expect(getPublicAuthContext(authContext)).toEqual({
-        rbacEnabled: true,
+        authEnabled: true,
         groups: ['worker'],
         isAdmin: true,
         userName: 'worker',
         id: 'worker',
         isAuthenticated: true,
+        token: undefined,
       });
     });
   });
@@ -497,7 +456,7 @@ describe('auth-context utilities', () => {
           token: 'abc',
           groups: [],
           isAdmin: false,
-          rbacEnabled: true,
+          authEnabled: true,
         })
       ).toEqual({ 'cadence-authorization': 'abc' });
     });
@@ -505,7 +464,7 @@ describe('auth-context utilities', () => {
     it('returns undefined when token is missing', () => {
       expect(
         getGrpcMetadataFromAuth({
-          rbacEnabled: true,
+          authEnabled: true,
           groups: [],
           isAdmin: false,
         })

@@ -8,6 +8,17 @@ const COOKIE_OPTIONS = {
   path: '/',
 };
 
+const JWT_PATTERN = /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/;
+
+const badRequest = (message: string) =>
+  NextResponse.json(
+    { message },
+    { status: 400, headers: { 'Cache-Control': 'no-store' } }
+  );
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null;
+
 function getCookieSecureAttribute(request: NextRequest) {
   const xfProto = request.headers.get('x-forwarded-proto');
   const proto = xfProto?.split(',')[0]?.trim().toLowerCase();
@@ -17,19 +28,27 @@ function getCookieSecureAttribute(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    if (!body?.token || typeof body.token !== 'string') {
-      return NextResponse.json(
-        { message: 'A valid token is required' },
-        { status: 400, headers: { 'Cache-Control': 'no-store' } }
-      );
+    const body: unknown = await request.json();
+    if (!isRecord(body)) {
+      return badRequest('Request body must be a JSON object');
+    }
+
+    if (!Object.hasOwn(body, 'token')) {
+      return badRequest('Token is required');
+    }
+
+    if (typeof body.token !== 'string') {
+      return badRequest('Token must be a string');
     }
 
     const normalizedToken = body.token.trim().replace(/^bearer\s+/i, '');
     if (!normalizedToken) {
-      return NextResponse.json(
-        { message: 'A valid token is required' },
-        { status: 400, headers: { 'Cache-Control': 'no-store' } }
+      return badRequest('Token cannot be empty');
+    }
+
+    if (!JWT_PATTERN.test(normalizedToken)) {
+      return badRequest(
+        'Token must be a JWT in header.payload.signature format'
       );
     }
 
@@ -41,10 +60,7 @@ export async function POST(request: NextRequest) {
     });
     return response;
   } catch {
-    return NextResponse.json(
-      { message: 'Invalid request body' },
-      { status: 400, headers: { 'Cache-Control': 'no-store' } }
-    );
+    return badRequest('Invalid request body');
   }
 }
 

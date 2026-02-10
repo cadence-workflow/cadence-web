@@ -1,16 +1,15 @@
 import { type Domain } from '@/__generated__/proto-ts/uber/cadence/api/v1/Domain';
 
 export type CadenceJwtClaims = {
-  Admin?: boolean;
+  admin?: boolean;
   exp?: number;
   groups?: unknown;
   name?: string;
   sub?: string;
-  [key: string]: unknown;
 };
 
 type BaseAuthContext = {
-  rbacEnabled: boolean;
+  authEnabled: boolean;
   groups: string[];
   isAdmin: boolean;
   userName?: string;
@@ -61,7 +60,7 @@ export const getDomainAccessForUser = (
   domain: Domain,
   authContext: UserAuthContext | PublicAuthContext | null | undefined
 ) => {
-  if (!authContext?.rbacEnabled) {
+  if (!authContext?.authEnabled) {
     return {
       canRead: true,
       canWrite: true,

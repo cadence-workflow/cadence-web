@@ -308,7 +308,9 @@ async function setup({
     },
     userInfo: {
       id: 'test-user-id',
-      rbacEnabled: false,
+    },
+    authInfo: {
+      authEnabled: false,
       isAdmin: true,
       groups: [],
     },

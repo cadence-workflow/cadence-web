@@ -12,6 +12,6 @@ export default function useUserInfo() {
       const res = await request('/api/auth/me', { method: 'GET' });
       return res.json();
     },
-    staleTime: 30_000,
+    staleTime: 0,
   });
 }

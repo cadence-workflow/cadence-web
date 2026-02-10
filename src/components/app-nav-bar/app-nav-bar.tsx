@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 
 import { AppNavBar as BaseAppNavBar } from 'baseui/app-nav-bar';
-import { useSnackbar } from 'baseui/snackbar';
+import { DURATION, useSnackbar } from 'baseui/snackbar';
 import NextLink from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
@@ -22,6 +22,13 @@ import { cssStyles } from './app-nav-bar.styles';
 
 const LOGIN_ITEM = 'login';
 const LOGOUT_ITEM = 'logout';
+const ERROR_SNACKBAR_OVERRIDES = {
+  Root: {
+    style: {
+      backgroundColor: '#c62828',
+    },
+  },
+};
 
 export default function AppNavBar() {
   const { cls } = useStyletronClasses(cssStyles);
@@ -31,19 +38,33 @@ export default function AppNavBar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data: authInfo, isLoading: isAuthLoading, refetch } = useUserInfo();
-  const isRbacEnabled = authInfo?.rbacEnabled === true;
+  const isAuthEnabled = authInfo?.authEnabled === true;
   const isAuthenticated = authInfo?.isAuthenticated === true;
   const isAdmin = authInfo?.isAdmin === true;
   const expiresAtMs =
     typeof authInfo?.expiresAtMs === 'number'
       ? authInfo.expiresAtMs
       : undefined;
+  const latestExpiresAtRef = useRef<number | undefined>(expiresAtMs);
+  latestExpiresAtRef.current = expiresAtMs;
   const logoutInFlightRef = useRef(false);
   const prevIsAuthenticatedRef = useRef<boolean | null>(null);
   const logoutReasonRef = useRef<'manual' | 'expired' | null>(null);
+  const showErrorSnackbar = useCallback(
+    (message: string) => {
+      enqueue(
+        {
+          message,
+          overrides: ERROR_SNACKBAR_OVERRIDES,
+        },
+        DURATION.medium
+      );
+    },
+    [enqueue]
+  );
 
   const userItems = useMemo(() => {
-    if (!isRbacEnabled) return undefined;
+    if (!isAuthEnabled) return undefined;
     if (!isAuthenticated) {
       return [{ label: 'Login with JWT', info: LOGIN_ITEM }];
     }
@@ -51,10 +72,10 @@ export default function AppNavBar() {
       { label: 'Switch token', info: LOGIN_ITEM },
       { label: 'Logout', info: LOGOUT_ITEM },
     ];
-  }, [isAuthenticated, isRbacEnabled]);
+  }, [isAuthenticated, isAuthEnabled]);
 
   const username = useMemo(() => {
-    if (!isRbacEnabled) {
+    if (!isAuthEnabled) {
       return undefined;
     }
     if (isAuthLoading || !authInfo) {
@@ -63,14 +84,14 @@ export default function AppNavBar() {
     return isAuthenticated
       ? authInfo.userName || 'Authenticated user (unknown username)'
       : 'Authenticate';
-  }, [authInfo, isAuthLoading, isAuthenticated, isRbacEnabled]);
+  }, [authInfo, isAuthLoading, isAuthenticated, isAuthEnabled]);
 
   const usernameSubtitle =
-    isRbacEnabled && isAuthenticated
+    isAuthEnabled && isAuthenticated
       ? isAdmin
         ? 'Admin'
         : undefined
-      : isRbacEnabled
+      : isAuthEnabled
         ? 'Provide a Cadence JWT'
         : undefined;
 
@@ -82,13 +103,13 @@ export default function AppNavBar() {
         body: JSON.stringify({ token }),
       });
       await refetch();
-      enqueue({ message: 'Token saved' });
+      enqueue({ message: 'Token saved' }, DURATION.medium);
       setIsModalOpen(false);
       router.refresh();
     } catch (e) {
       const message =
         e instanceof Error ? e.message : 'Failed to save authentication token';
-      enqueue({ message });
+      showErrorSnackbar(message);
       throw e;
     }
   };
@@ -101,9 +122,8 @@ export default function AppNavBar() {
       try {
         await request('/api/auth/token', { method: 'DELETE' });
       } catch (e) {
-        logoutReasonRef.current = null;
         const message = e instanceof Error ? e.message : 'Failed to sign out';
-        enqueue({ message });
+        showErrorSnackbar(message);
       } finally {
         setIsModalOpen(false);
         await refetch();
@@ -112,23 +132,26 @@ export default function AppNavBar() {
         logoutInFlightRef.current = false;
       }
     },
-    [enqueue, refetch, router]
+    [refetch, router, showErrorSnackbar]
   );
 
   useEffect(() => {
-    if (!isRbacEnabled || isAuthLoading || !authInfo) return;
+    if (!isAuthEnabled || isAuthLoading || !authInfo) return;
     const prevIsAuthenticated = prevIsAuthenticatedRef.current;
     prevIsAuthenticatedRef.current = isAuthenticated;
 
     if (prevIsAuthenticated === true && !isAuthenticated) {
       const reason = logoutReasonRef.current;
       logoutReasonRef.current = null;
-      enqueue({
-        message:
-          reason === 'manual'
-            ? 'Signed out'
-            : 'Session expired. Please sign in again.',
-      });
+      enqueue(
+        {
+          message:
+            reason === 'manual'
+              ? 'Signed out'
+              : 'Session expired. Please sign in again.',
+        },
+        DURATION.medium
+      );
       if (pathname === '/domains') {
         router.refresh();
       } else {
@@ -140,31 +163,37 @@ export default function AppNavBar() {
     enqueue,
     isAuthenticated,
     isAuthLoading,
-    isRbacEnabled,
+    isAuthEnabled,
     pathname,
     router,
   ]);
 
   useEffect(() => {
-    if (!isRbacEnabled || !isAuthenticated || expiresAtMs === undefined) return;
+    if (!isAuthEnabled || !isAuthenticated || expiresAtMs === undefined) return;
     const timeoutMs = expiresAtMs - Date.now();
-    if (timeoutMs <= 0) {
+    const logoutIfCurrent = () => {
+      if (latestExpiresAtRef.current !== expiresAtMs) return;
       void logout('expired');
-      return;
+    };
+
+    if (timeoutMs <= 0) {
+      const id = window.setTimeout(logoutIfCurrent, 0);
+      return () => {
+        window.clearTimeout(id);
+      };
     }
 
-    const id = window.setTimeout(() => {
-      void logout('expired');
-    }, timeoutMs);
+    const id = window.setTimeout(logoutIfCurrent, timeoutMs);
 
     return () => {
       window.clearTimeout(id);
     };
-  }, [expiresAtMs, isAuthenticated, isRbacEnabled, logout]);
+  }, [expiresAtMs, isAuthenticated, isAuthEnabled, logout]);
 
   return (
     <>
       <BaseAppNavBar
+        key={`${isAuthEnabled ? 'auth' : 'open'}-${isAuthenticated ? authInfo?.userName ?? 'authed' : 'guest'}`}
         title={
           <NextLink href="/">
             <svg
@@ -190,7 +219,7 @@ export default function AppNavBar() {
           }
         }}
       />
-      {isRbacEnabled && (
+      {isAuthEnabled && (
         <AuthTokenModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}

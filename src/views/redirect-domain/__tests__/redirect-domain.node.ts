@@ -52,7 +52,7 @@ jest.mock('next/navigation', () => ({
 
 jest.mock('@/utils/auth/auth-context', () => ({
   resolveAuthContext: jest.fn(async () => ({
-    rbacEnabled: false,
+    authEnabled: false,
     isAdmin: false,
     groups: [],
   })),

@@ -145,7 +145,7 @@ function setup({
         httpResolver: () =>
           HttpResponse.json(
             {
-              rbacEnabled: false,
+              authEnabled: false,
               isAuthenticated: false,
               isAdmin: false,
               groups: [],

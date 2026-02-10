@@ -1,7 +1,6 @@
 import { Suspense } from 'react';
 
 import { HttpResponse } from 'msw';
-import { act } from 'react-dom/test-utils';
 
 import { render, screen } from '@/test-utils/rtl';
 
@@ -31,22 +30,7 @@ describe('DomainWorkflows', () => {
   });
 
   it('should fall back to basic workflows when cluster info fails', async () => {
-    await act(async () => {
-      await setup({ error: true });
-    });
-
-    expect(await screen.findByText('Basic Workflows')).toBeInTheDocument();
-  });
-
-  it('skips cluster fetch for non-admin token when RBAC is disabled', async () => {
-    await act(async () => {
-      await setup({
-        rbacEnabled: false,
-        isAuthenticated: true,
-        isAdmin: false,
-        skipClusterRequest: true,
-      });
-    });
+    await setup({ error: true });
 
     expect(await screen.findByText('Basic Workflows')).toBeInTheDocument();
   });
@@ -55,17 +39,9 @@ describe('DomainWorkflows', () => {
 async function setup({
   isAdvancedVisibility = false,
   error,
-  rbacEnabled = false,
-  isAuthenticated = false,
-  isAdmin = false,
-  skipClusterRequest = false,
 }: {
   error?: boolean;
   isAdvancedVisibility?: boolean;
-  rbacEnabled?: boolean;
-  isAuthenticated?: boolean;
-  isAdmin?: boolean;
-  skipClusterRequest?: boolean;
 }) {
   const props: DomainPageTabContentProps = {
     domain: 'test-domain',
@@ -83,13 +59,10 @@ async function setup({
           httpMethod: 'GET',
           mockOnce: false,
           jsonResponse: {
-            rbacEnabled,
-            isAuthenticated,
-            isAdmin,
             groups: [],
           },
         },
-        !skipClusterRequest && {
+        {
           path: '/api/clusters/test-cluster',
           httpMethod: 'GET',
           mockOnce: false,
@@ -120,7 +93,7 @@ async function setup({
                 } satisfies DescribeClusterResponse,
               }),
         },
-      ].filter(Boolean) as any,
+      ],
     }
   );
 }

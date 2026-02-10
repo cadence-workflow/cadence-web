@@ -1,82 +1,20 @@
-import {
-  getGrpcMetadataFromAuth,
-  resolveAuthContext,
-} from '@/utils/auth/auth-context';
-
 import userInfoMiddleware from '../user-info';
 
-jest.mock('@/utils/auth/auth-context', () => ({
-  resolveAuthContext: jest.fn(),
-  getGrpcMetadataFromAuth: jest.fn(),
-}));
-
-const mockRequest = {
-  cookies: {
-    get: jest.fn(),
-  },
-} as any;
-
 describe('user-info middleware', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it('returns auth context and sets grpc metadata when available', async () => {
-    const mockAuthContext = {
-      rbacEnabled: true,
-      token: 'abc',
-      isAdmin: false,
-      groups: [],
+  it('returns user info derived from auth info', async () => {
+    const ctx: Record<string, unknown> = {
+      authInfo: {
+        authEnabled: true,
+        token: 'abc',
+        isAdmin: false,
+        groups: [],
+        userName: 'tester',
+        id: 'tester',
+      },
     };
-    (resolveAuthContext as jest.Mock).mockResolvedValue(mockAuthContext);
-    (getGrpcMetadataFromAuth as jest.Mock).mockReturnValue({
-      'cadence-authorization': 'abc',
-    });
 
-    const ctx: Record<string, unknown> = {};
     const result = await userInfoMiddleware(
-      mockRequest,
-      { params: {} } as any,
-      ctx
-    );
-
-    expect(result).toEqual(['userInfo', mockAuthContext]);
-    expect(ctx.grpcMetadata).toEqual({
-      'cadence-authorization': 'abc',
-    });
-  });
-
-  it('merges existing grpc metadata', async () => {
-    (resolveAuthContext as jest.Mock).mockResolvedValue({
-      rbacEnabled: true,
-      token: 'xyz',
-      isAdmin: false,
-      groups: [],
-    });
-    (getGrpcMetadataFromAuth as jest.Mock).mockReturnValue({
-      'cadence-authorization': 'xyz',
-    });
-
-    const ctx: Record<string, unknown> = { grpcMetadata: { existing: 'true' } };
-    await userInfoMiddleware(mockRequest, { params: {} } as any, ctx);
-
-    expect(ctx.grpcMetadata).toEqual({
-      existing: 'true',
-      'cadence-authorization': 'xyz',
-    });
-  });
-
-  it('skips grpc metadata when not provided', async () => {
-    (resolveAuthContext as jest.Mock).mockResolvedValue({
-      rbacEnabled: false,
-      isAdmin: false,
-      groups: [],
-    });
-    (getGrpcMetadataFromAuth as jest.Mock).mockReturnValue(undefined);
-
-    const ctx: Record<string, unknown> = {};
-    const result = await userInfoMiddleware(
-      mockRequest,
+      { cookies: {} } as any,
       { params: {} } as any,
       ctx
     );
@@ -84,11 +22,60 @@ describe('user-info middleware', () => {
     expect(result).toEqual([
       'userInfo',
       {
-        rbacEnabled: false,
-        isAdmin: false,
-        groups: [],
+        id: 'tester',
+        userName: 'tester',
       },
     ]);
-    expect(ctx.grpcMetadata).toBeUndefined();
+  });
+
+  it('returns undefined when auth info is missing', async () => {
+    const result = await userInfoMiddleware(
+      { cookies: {} } as any,
+      { params: {} } as any,
+      {}
+    );
+
+    expect(result).toEqual(['userInfo', undefined]);
+  });
+
+  it('returns undefined when auth info has no id and userName', async () => {
+    const result = await userInfoMiddleware(
+      { cookies: {} } as any,
+      { params: {} } as any,
+      {
+        authInfo: {
+          authEnabled: true,
+          isAdmin: false,
+          groups: [],
+          token: 'abc',
+        },
+      }
+    );
+
+    expect(result).toEqual(['userInfo', undefined]);
+  });
+
+  it('returns partial user info when only userName exists', async () => {
+    const result = await userInfoMiddleware(
+      { cookies: {} } as any,
+      { params: {} } as any,
+      {
+        authInfo: {
+          authEnabled: true,
+          isAdmin: false,
+          groups: [],
+          token: 'abc',
+          userName: 'display-name',
+        },
+      }
+    );
+
+    expect(result).toEqual([
+      'userInfo',
+      {
+        id: undefined,
+        userName: 'display-name',
+      },
+    ]);
   });
 });

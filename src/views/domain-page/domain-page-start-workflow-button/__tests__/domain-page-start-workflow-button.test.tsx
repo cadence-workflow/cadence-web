@@ -206,7 +206,7 @@ function setup(
         httpResolver: async () =>
           HttpResponse.json(
             {
-              rbacEnabled: false,
+              authEnabled: false,
               isAuthenticated: false,
               isAdmin: false,
               groups: [],
