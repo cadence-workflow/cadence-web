@@ -26,6 +26,20 @@ const cssStylesObj = {
     textAlign: 'center',
     ...theme.typography.ParagraphSmall,
   }),
+  noResultPlaceholder: (theme) => ({
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    padding: `0px ${theme.sizing.scale600} ${theme.sizing.scale600} ${theme.sizing.scale600}`,
+    color: theme.colors.contentTertiary,
+    textAlign: 'center',
+    ...theme.typography.ParagraphSmall,
+  }),
+  noResultPlaceholderFirstLine: (theme) => ({
+    display: 'flex',
+    alignItems: 'center',
+    gap: theme.sizing.scale200,
+  }),
 } satisfies StyletronCSSObject;
 
 export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> =

@@ -25,6 +25,8 @@ export default function WorkflowHistoryGroupedTable({
   fetchMoreEvents,
   isFetchingMoreEvents,
 }: Props) {
+  const noEventsToDisplay = eventGroupsById.length === 0;
+
   return (
     <>
       <styled.TableHeader>
@@ -74,7 +76,8 @@ export default function WorkflowHistoryGroupedTable({
           Footer: () => (
             <WorkflowHistoryTableFooter
               error={error}
-              hasMoreEvents={hasMoreEvents}
+              noEventsToDisplay={noEventsToDisplay}
+              canFetchMoreEvents={hasMoreEvents}
               fetchMoreEvents={fetchMoreEvents}
               isFetchingMoreEvents={isFetchingMoreEvents}
             />

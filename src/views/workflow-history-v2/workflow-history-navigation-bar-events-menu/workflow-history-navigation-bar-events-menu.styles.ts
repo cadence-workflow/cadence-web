@@ -1,4 +1,5 @@
 import { styled as createStyled, type Theme } from 'baseui';
+import { type ButtonOverrides } from 'baseui/button';
 import { type PaginationOverrides } from 'baseui/pagination';
 import { type StyleObject } from 'styletron-react';
 
@@ -45,4 +46,12 @@ export const overrides = {
       }),
     },
   } satisfies PaginationOverrides,
+  button: {
+    BaseButton: {
+      style: {
+        width: '100%',
+        justifyContent: 'flex-start',
+      } satisfies StyleObject,
+    },
+  } satisfies ButtonOverrides,
 };
