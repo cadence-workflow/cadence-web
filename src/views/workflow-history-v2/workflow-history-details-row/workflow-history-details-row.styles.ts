@@ -8,7 +8,7 @@ export const styled = {
     alignItems: 'center',
     gap: $theme.sizing.scale300,
     ...$theme.typography.LabelXSmall,
-    overflow: 'hidden',
+    flexWrap: 'wrap',
   })),
   DetailsFieldContainer: createStyled<
     'div',
