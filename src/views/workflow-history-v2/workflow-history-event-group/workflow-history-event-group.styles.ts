@@ -36,7 +36,7 @@ export const styled = {
     alignItems: 'center',
   })),
   SummarizedDetailsContainer: createStyled('div', {
-    overflow: 'hidden',
+    minWidth: 0,
   }),
   ActionsContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
