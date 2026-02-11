@@ -35,8 +35,23 @@ describe('DomainWorkflows', () => {
     expect(await screen.findByText('Basic Workflows')).toBeInTheDocument();
   });
 
-  it('should not fetch cluster info for non-admin when auth is enabled', async () => {
+  it('should render advanced workflows when cluster info fails for authenticated users', async () => {
     await setup({
+      error: true,
+      authResponse: {
+        authEnabled: true,
+        isAuthenticated: true,
+        isAdmin: false,
+        groups: ['reader'],
+      },
+    });
+
+    expect(await screen.findByText('Advanced Workflows')).toBeInTheDocument();
+  });
+
+  it('should render advanced workflows for authenticated non-admin without cluster fetch', async () => {
+    await setup({
+      isAdvancedVisibility: true,
       authResponse: {
         authEnabled: true,
         isAuthenticated: true,
@@ -46,7 +61,7 @@ describe('DomainWorkflows', () => {
       skipClusterRequest: true,
     });
 
-    expect(await screen.findByText('Basic Workflows')).toBeInTheDocument();
+    expect(await screen.findByText('Advanced Workflows')).toBeInTheDocument();
   });
 });
 

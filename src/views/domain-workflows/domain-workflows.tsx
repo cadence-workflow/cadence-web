@@ -20,10 +20,12 @@ const DomainWorkflowsAdvanced = dynamic(
 );
 
 export default function DomainWorkflows(props: DomainPageTabContentProps) {
-  const { data: authInfo } = useUserInfo();
+  const { data: authInfo, isLoading: isAuthLoading } = useUserInfo();
 
   const isAdmin = authInfo?.isAdmin === true;
   const isAuthEnabled = authInfo?.authEnabled === true;
+  const isAuthenticated = authInfo?.isAuthenticated === true;
+  const isAuthenticatedNonAdmin = isAuthEnabled && isAuthenticated && !isAdmin;
 
   const shouldFetchClusterInfo =
     Boolean(authInfo) && (!isAuthEnabled || isAdmin);
@@ -37,9 +39,18 @@ export default function DomainWorkflows(props: DomainPageTabContentProps) {
   });
 
   const isAdvancedVisibilityEnabled = useMemo(() => {
+    // Non-admin authenticated users may not be allowed to call describeCluster,
+    // but can still have access to advanced visibility APIs.
+    if (isAuthenticatedNonAdmin) {
+      return true;
+    }
     if (!clusterInfo) return false;
     return isClusterAdvancedVisibilityEnabled(clusterInfo);
-  }, [clusterInfo]);
+  }, [clusterInfo, isAuthenticatedNonAdmin]);
+
+  if (isAuthLoading) {
+    return null;
+  }
 
   const DomainWorkflowsComponent = isAdvancedVisibilityEnabled
     ? DomainWorkflowsAdvanced
