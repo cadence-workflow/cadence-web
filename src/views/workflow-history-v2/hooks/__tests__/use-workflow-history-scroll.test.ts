@@ -1,7 +1,13 @@
 import { act, renderHook, waitFor } from '@/test-utils/rtl';
 
+import {
+  mockActivityEventGroup,
+  mockDecisionEventGroup,
+  mockTimerEventGroup,
+} from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
 import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-history.types';
 
+import compareUngroupedEvents from '../../workflow-history-ungrouped-table/helpers/compare-ungrouped-events';
 import { type UngroupedEventInfo } from '../../workflow-history-ungrouped-table/workflow-history-ungrouped-table.types';
 import { type EventGroupEntry } from '../../workflow-history-v2.types';
 import useWorkflowHistoryScroll from '../use-workflow-history-scroll';
@@ -55,11 +61,11 @@ describe(useWorkflowHistoryScroll.name, () => {
   });
 
   it('should find correct index in grouped view when event exists', () => {
-    const filteredEventGroupsEntries = createMockGroupedEntries([
-      { groupId: 'group-1', eventIds: ['event-1', 'event-2'] },
-      { groupId: 'group-2', eventIds: ['event-3', 'event-4'] },
-      { groupId: 'group-3', eventIds: ['event-5'] },
-    ]);
+    const filteredEventGroupsEntries: Array<EventGroupEntry> = [
+      ['decision-1', mockDecisionEventGroup],
+      ['activity-1', mockActivityEventGroup],
+      ['timer-1', mockTimerEventGroup],
+    ];
 
     const { result, mockGroupedScrollToIndex } = setup({
       filteredEventGroupsEntries,
@@ -67,10 +73,10 @@ describe(useWorkflowHistoryScroll.name, () => {
     });
 
     act(() => {
-      result.current.scrollToTableEvent('event-4');
+      // event '10' is in mockActivityEventGroup, which is at index 1
+      result.current.scrollToTableEvent('10');
     });
 
-    // event-4 is in group-2, which is at index 1
     expect(mockGroupedScrollToIndex).toHaveBeenCalledWith({
       index: 1,
       behavior: 'auto',
@@ -79,10 +85,9 @@ describe(useWorkflowHistoryScroll.name, () => {
   });
 
   it('should find correct index in ungrouped view when event exists', () => {
-    const ungroupedEventsInfo = createMockUngroupedEvents([
-      'event-1',
-      'event-2',
-      'event-3',
+    const ungroupedEventsInfo = createUngroupedEventsInfo([
+      ['decision-1', mockDecisionEventGroup],
+      ['activity-1', mockActivityEventGroup],
     ]);
 
     const { result, mockUngroupedScrollToIndex } = setup({
@@ -90,22 +95,26 @@ describe(useWorkflowHistoryScroll.name, () => {
       isUngroupedHistoryViewEnabled: true,
     });
 
+    // Find the index of event '10' in sorted ungrouped events
+    const targetEventIndex = ungroupedEventsInfo.findIndex(
+      (e) => e.id === '10'
+    );
+
     act(() => {
-      result.current.scrollToTableEvent('event-3');
+      result.current.scrollToTableEvent('10');
     });
 
-    // event-3 is at index 2
     expect(mockUngroupedScrollToIndex).toHaveBeenCalledWith({
-      index: 2,
+      index: targetEventIndex,
       behavior: 'auto',
       align: 'center',
     });
   });
 
   it('should not scroll when target event is not found in grouped view', () => {
-    const filteredEventGroupsEntries = createMockGroupedEntries([
-      { groupId: 'group-1', eventIds: ['event-1', 'event-2'] },
-    ]);
+    const filteredEventGroupsEntries: Array<EventGroupEntry> = [
+      ['activity-1', mockActivityEventGroup],
+    ];
 
     const { result, mockGroupedScrollToIndex } = setup({
       filteredEventGroupsEntries,
@@ -121,7 +130,9 @@ describe(useWorkflowHistoryScroll.name, () => {
   });
 
   it('should not scroll when target event is not found in ungrouped view', () => {
-    const ungroupedEventsInfo = createMockUngroupedEvents(['event-1']);
+    const ungroupedEventsInfo = createUngroupedEventsInfo([
+      ['activity-1', mockActivityEventGroup],
+    ]);
 
     const { result, mockUngroupedScrollToIndex } = setup({
       ungroupedEventsInfo,
@@ -196,9 +207,9 @@ describe(useWorkflowHistoryScroll.name, () => {
   });
 
   it('should use grouped ref when isUngroupedHistoryViewEnabled is false', () => {
-    const filteredEventGroupsEntries = createMockGroupedEntries([
-      { groupId: 'group-1', eventIds: ['event-1'] },
-    ]);
+    const filteredEventGroupsEntries: Array<EventGroupEntry> = [
+      ['activity-1', mockActivityEventGroup],
+    ];
 
     const { result, mockGroupedScrollToIndex, mockUngroupedScrollToIndex } =
       setup({
@@ -207,7 +218,8 @@ describe(useWorkflowHistoryScroll.name, () => {
       });
 
     act(() => {
-      result.current.scrollToTableEvent('event-1');
+      // event '7' is in mockActivityEventGroup
+      result.current.scrollToTableEvent('7');
     });
 
     expect(mockGroupedScrollToIndex).toHaveBeenCalled();
@@ -215,7 +227,9 @@ describe(useWorkflowHistoryScroll.name, () => {
   });
 
   it('should use ungrouped ref when isUngroupedHistoryViewEnabled is true', () => {
-    const ungroupedEventsInfo = createMockUngroupedEvents(['event-1']);
+    const ungroupedEventsInfo = createUngroupedEventsInfo([
+      ['activity-1', mockActivityEventGroup],
+    ]);
 
     const { result, mockGroupedScrollToIndex, mockUngroupedScrollToIndex } =
       setup({
@@ -224,7 +238,8 @@ describe(useWorkflowHistoryScroll.name, () => {
       });
 
     act(() => {
-      result.current.scrollToTableEvent('event-1');
+      // event '7' is in mockActivityEventGroup
+      result.current.scrollToTableEvent('7');
     });
 
     expect(mockUngroupedScrollToIndex).toHaveBeenCalled();
@@ -263,49 +278,21 @@ function setup({
   return { result, mockGroupedScrollToIndex, mockUngroupedScrollToIndex };
 }
 
-function createMockGroupedEntries(
-  groups: Array<{ groupId: string; eventIds: string[] }>
-): Array<EventGroupEntry> {
-  return groups.map(({ groupId, eventIds }) => [
-    groupId,
-    {
-      groupType: 'Activity',
-      label: groupId,
-      status: 'COMPLETED',
-      hasMissingEvents: false,
-      eventsMetadata: [],
-      events: eventIds.map((eventId) => ({
-        eventId,
-        eventType: 'ActivityTaskScheduled',
-        timestamp: new Date().toISOString(),
-      })),
-      timelineEvents: [],
-    } as unknown as HistoryEventsGroup,
-  ]);
-}
-
-function createMockUngroupedEvents(
-  eventIds: string[]
+function createUngroupedEventsInfo(
+  eventGroupsById: Array<[string, HistoryEventsGroup]>
 ): Array<UngroupedEventInfo> {
-  return eventIds.map((id) => ({
-    id,
-    event: {
-      eventId: id,
-      eventType: 'ActivityTaskScheduled',
-      timestamp: new Date().toISOString(),
-    },
-    eventMetadata: {
-      label: `Event ${id}`,
-    },
-    eventGroup: {
-      groupType: 'Activity',
-      label: id,
-      status: 'COMPLETED',
-      hasMissingEvents: false,
-      eventsMetadata: [],
-      events: [],
-      timelineEvents: [],
-    },
-    label: `Event ${id}`,
-  })) as unknown as Array<UngroupedEventInfo>;
+  return eventGroupsById
+    .map(([_, group]) => [
+      ...group.events.map((event, index) => ({
+        id: event.eventId ?? event.computedEventId,
+        event,
+        eventMetadata: group.eventsMetadata[index],
+        eventGroup: group,
+        label: group.label,
+        shortLabel: group.shortLabel,
+        canReset: group.resetToDecisionEventId === event.eventId,
+      })),
+    ])
+    .flat(1)
+    .sort(compareUngroupedEvents);
 }
