@@ -60,6 +60,54 @@ describe(useWorkflowHistoryScroll.name, () => {
     });
   });
 
+  it('should clear the previous timeout when scrollToTableEvent is called again', async () => {
+    const filteredEventGroupsEntries: Array<EventGroupEntry> = [
+      ['decision-1', mockDecisionEventGroup], // index 0, contains event '2'
+      ['activity-1', mockActivityEventGroup], // index 1, contains event '7'
+    ];
+
+    const { result } = setup({
+      filteredEventGroupsEntries,
+      isUngroupedHistoryViewEnabled: false,
+    });
+
+    // 0s
+    act(() => {
+      result.current.scrollToTableEvent('2');
+    });
+
+    expect(result.current.tableScrollTargetEventId).toBe('2');
+
+    // 1.5s
+    act(() => {
+      jest.advanceTimersByTime(1500);
+    });
+
+    expect(result.current.tableScrollTargetEventId).toBe('2');
+
+    act(() => {
+      result.current.scrollToTableEvent('7');
+    });
+
+    expect(result.current.tableScrollTargetEventId).toBe('7');
+
+    // 2s
+    act(() => {
+      jest.advanceTimersByTime(500);
+    });
+
+    expect(result.current.tableScrollTargetEventId).toBe('7');
+
+    // 3.5s
+    act(() => {
+      jest.advanceTimersByTime(1500);
+    });
+
+    await waitFor(() => {
+      expect(result.current.tableScrollTargetEventId).toBeUndefined();
+    });
+  });
+
   it('should find correct index in grouped view when event exists', () => {
     const filteredEventGroupsEntries: Array<EventGroupEntry> = [
       ['decision-1', mockDecisionEventGroup],

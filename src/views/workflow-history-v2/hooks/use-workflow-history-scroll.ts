@@ -51,7 +51,12 @@ export default function useWorkflowHistoryScroll({
       });
     }
 
-    setTimeout(() => setTableScrollTargetEventId(undefined), 2000);
+    const timeoutId = setTimeout(
+      () => setTableScrollTargetEventId(undefined),
+      2000
+    );
+
+    return () => clearTimeout(timeoutId);
   }, [scrollTargetEventIndex, isUngroupedHistoryViewEnabled]);
 
   const handleTableScrollUp = useCallback(() => {
