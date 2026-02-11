@@ -150,8 +150,8 @@ describe('getSignalExternalWorkflowExecutionGroupFromEvents', () => {
       (metadata) => metadata.label === 'Initiated'
     );
     expect(initiatedEventMetadata?.summaryFields).toEqual([
-      'input',
       'signalName',
+      'input',
     ]);
 
     // Other events should not have summaryFields
