@@ -51,13 +51,18 @@ export default function AppNavBar() {
   const prevIsAuthenticatedRef = useRef<boolean | null>(null);
   const logoutReasonRef = useRef<'manual' | 'expired' | null>(null);
   const showErrorSnackbar = useCallback(
-    (message: string) => {
+    (
+      message: string,
+      duration = DURATION.medium,
+      dismissActionLabel?: string
+    ) => {
       enqueue(
         {
           message,
+          ...(dismissActionLabel ? { actionMessage: dismissActionLabel } : {}),
           overrides: ERROR_SNACKBAR_OVERRIDES,
         },
-        DURATION.medium
+        duration
       );
     },
     [enqueue]
@@ -143,15 +148,15 @@ export default function AppNavBar() {
     if (prevIsAuthenticated === true && !isAuthenticated) {
       const reason = logoutReasonRef.current;
       logoutReasonRef.current = null;
-      enqueue(
-        {
-          message:
-            reason === 'manual'
-              ? 'Signed out'
-              : 'Session expired. Please sign in again.',
-        },
-        DURATION.medium
-      );
+      if (reason === 'manual') {
+        enqueue({ message: 'Signed out' }, DURATION.medium);
+      } else {
+        showErrorSnackbar(
+          'Session expired. Please sign in again.',
+          DURATION.infinite,
+          'Dismiss'
+        );
+      }
       if (pathname === '/domains') {
         router.refresh();
       } else {
@@ -166,6 +171,7 @@ export default function AppNavBar() {
     isAuthEnabled,
     pathname,
     router,
+    showErrorSnackbar,
   ]);
 
   useEffect(() => {

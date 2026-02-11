@@ -22,11 +22,11 @@ const DomainWorkflowsAdvanced = dynamic(
 export default function DomainWorkflows(props: DomainPageTabContentProps) {
   const { data: authInfo } = useUserInfo();
 
-  const isAuthenticated = authInfo?.isAuthenticated === true;
+  const isAdmin = authInfo?.isAdmin === true;
   const isAuthEnabled = authInfo?.authEnabled === true;
 
   const shouldFetchClusterInfo =
-    Boolean(authInfo) && (!isAuthEnabled || isAuthenticated);
+    Boolean(authInfo) && (!isAuthEnabled || isAdmin);
 
   const { data: clusterInfo } = useQuery<DescribeClusterResponse>({
     queryKey: ['describeCluster', props],

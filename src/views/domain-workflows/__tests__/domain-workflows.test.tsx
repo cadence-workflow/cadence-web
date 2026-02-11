@@ -34,14 +34,34 @@ describe('DomainWorkflows', () => {
 
     expect(await screen.findByText('Basic Workflows')).toBeInTheDocument();
   });
+
+  it('should not fetch cluster info for non-admin when auth is enabled', async () => {
+    await setup({
+      authResponse: {
+        authEnabled: true,
+        isAuthenticated: true,
+        isAdmin: false,
+        groups: ['reader'],
+      },
+      skipClusterRequest: true,
+    });
+
+    expect(await screen.findByText('Basic Workflows')).toBeInTheDocument();
+  });
 });
 
 async function setup({
   isAdvancedVisibility = false,
   error,
+  authResponse = {
+    groups: [],
+  },
+  skipClusterRequest = false,
 }: {
   error?: boolean;
   isAdvancedVisibility?: boolean;
+  authResponse?: Record<string, unknown>;
+  skipClusterRequest?: boolean;
 }) {
   const props: DomainPageTabContentProps = {
     domain: 'test-domain',
@@ -58,41 +78,43 @@ async function setup({
           path: '/api/auth/me',
           httpMethod: 'GET',
           mockOnce: false,
-          jsonResponse: {
-            groups: [],
-          },
+          jsonResponse: authResponse,
         },
-        {
-          path: '/api/clusters/test-cluster',
-          httpMethod: 'GET',
-          mockOnce: false,
-          ...(error
-            ? {
-                httpResolver: () => {
-                  return HttpResponse.json(
-                    { message: 'Failed to fetch cluster info' },
-                    { status: 500 }
-                  );
-                },
-              }
-            : {
-                jsonResponse: {
-                  persistenceInfo: {
-                    visibilityStore: {
-                      features: [
-                        {
-                          key: 'advancedVisibilityEnabled',
-                          enabled: isAdvancedVisibility,
+        ...(skipClusterRequest
+          ? []
+          : [
+              {
+                path: '/api/clusters/test-cluster',
+                httpMethod: 'GET' as const,
+                mockOnce: false,
+                ...(error
+                  ? {
+                      httpResolver: () => {
+                        return HttpResponse.json(
+                          { message: 'Failed to fetch cluster info' },
+                          { status: 500 }
+                        );
+                      },
+                    }
+                  : {
+                      jsonResponse: {
+                        persistenceInfo: {
+                          visibilityStore: {
+                            features: [
+                              {
+                                key: 'advancedVisibilityEnabled',
+                                enabled: isAdvancedVisibility,
+                              },
+                            ],
+                            backend: '',
+                            settings: [],
+                          },
                         },
-                      ],
-                      backend: '',
-                      settings: [],
-                    },
-                  },
-                  supportedClientVersions: null,
-                } satisfies DescribeClusterResponse,
-              }),
-        },
+                        supportedClientVersions: null,
+                      } satisfies DescribeClusterResponse,
+                    }),
+              },
+            ]),
       ],
     }
   );
