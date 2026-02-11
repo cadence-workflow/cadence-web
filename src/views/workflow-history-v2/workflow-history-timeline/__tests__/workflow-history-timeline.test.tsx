@@ -140,7 +140,7 @@ describe(WorkflowHistoryTimeline.name, () => {
     expect(statusBadge).toHaveAttribute('data-status', 'COMPLETED');
   });
 
-  it('should call onClickEvent with correct event ID when clicking a timeline bar', async () => {
+  it('should call onClickShowInTable with correct event ID when clicking a timeline bar', async () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     const mockOnClickEvent = jest.fn();
     const eventGroupsEntries: Array<EventGroupEntry> = [
@@ -151,7 +151,7 @@ describe(WorkflowHistoryTimeline.name, () => {
     const { container } = setup({
       eventGroupsEntries,
       workflowStartTimeMs,
-      onClickEvent: mockOnClickEvent,
+      onClickShowInTable: mockOnClickEvent,
     });
 
     const bar = container.querySelector('rect');
@@ -256,7 +256,7 @@ function setup({
   eventGroupsEntries,
   workflowStartTimeMs,
   workflowCloseTimeMs,
-  onClickEvent = jest.fn(),
+  onClickShowInTable = jest.fn(),
   decodedPageUrlParams = {
     domain: 'test-domain',
     cluster: 'test-cluster',
@@ -268,7 +268,7 @@ function setup({
   eventGroupsEntries: Array<EventGroupEntry>;
   workflowStartTimeMs: number;
   workflowCloseTimeMs?: number | null;
-  onClickEvent?: (eventId: string) => void;
+  onClickShowInTable?: (eventId: string) => void;
   decodedPageUrlParams?: {
     domain: string;
     cluster: string;
@@ -285,11 +285,11 @@ function setup({
         eventGroupsEntries={eventGroupsEntries}
         workflowStartTimeMs={workflowStartTimeMs}
         workflowCloseTimeMs={workflowCloseTimeMs}
-        onClickEvent={onClickEvent}
+        onClickShowInTable={onClickShowInTable}
         decodedPageUrlParams={decodedPageUrlParams}
       />
     </VirtuosoMockContext.Provider>
   );
 
-  return { ...renderResult, onClickEvent };
+  return { ...renderResult, onClickShowInTable };
 }
