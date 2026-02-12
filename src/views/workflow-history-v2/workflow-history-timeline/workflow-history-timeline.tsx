@@ -37,7 +37,6 @@ export default function WorkflowHistoryTimeline({
   eventGroupsEntries,
   workflowStartTimeMs,
   workflowCloseTimeMs,
-  onClickEvent,
   decodedPageUrlParams,
 }: Props) {
   const { cls, theme } = useStyletronClasses(cssStyles);
@@ -195,9 +194,6 @@ export default function WorkflowHistoryTimeline({
                                   width={Math.max(5, rowEnd - rowStart)}
                                   height={ROW_HEIGHT_PX - 12}
                                   rx={2}
-                                  onClick={() => {
-                                    onClickEvent(row.id);
-                                  }}
                                   {...(isRunning
                                     ? {
                                         fill: `url(#striped-pattern-${row.id})`,

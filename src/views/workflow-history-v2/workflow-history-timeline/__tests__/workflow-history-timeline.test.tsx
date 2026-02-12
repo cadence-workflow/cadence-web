@@ -2,7 +2,7 @@ import React from 'react';
 
 import { VirtuosoMockContext } from 'react-virtuoso';
 
-import { render, screen, userEvent, waitFor, within } from '@/test-utils/rtl';
+import { render, screen, userEvent, within } from '@/test-utils/rtl';
 
 import {
   mockActivityEventGroup,
@@ -140,32 +140,6 @@ describe(WorkflowHistoryTimeline.name, () => {
     expect(statusBadge).toHaveAttribute('data-status', 'COMPLETED');
   });
 
-  it('should call onClickEvent with correct event ID when clicking a timeline bar', async () => {
-    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-    const mockOnClickEvent = jest.fn();
-    const eventGroupsEntries: Array<EventGroupEntry> = [
-      ['group1', mockActivityEventGroup],
-    ];
-    const workflowStartTimeMs = mockNow - 1000000;
-
-    const { container } = setup({
-      eventGroupsEntries,
-      workflowStartTimeMs,
-      onClickEvent: mockOnClickEvent,
-    });
-
-    const bar = container.querySelector('rect');
-    expect(bar).toBeInTheDocument();
-
-    // If bar is null, the test would fail above
-    await user.click(bar!);
-    await waitFor(() => {
-      expect(mockOnClickEvent).toHaveBeenCalledWith(
-        mockActivityEventGroup.firstEventId
-      );
-    });
-  });
-
   it('should render striped pattern for running groups', () => {
     const runningGroup = {
       ...mockActivityEventGroup,
@@ -256,7 +230,6 @@ function setup({
   eventGroupsEntries,
   workflowStartTimeMs,
   workflowCloseTimeMs,
-  onClickEvent = jest.fn(),
   decodedPageUrlParams = {
     domain: 'test-domain',
     cluster: 'test-cluster',
@@ -268,7 +241,6 @@ function setup({
   eventGroupsEntries: Array<EventGroupEntry>;
   workflowStartTimeMs: number;
   workflowCloseTimeMs?: number | null;
-  onClickEvent?: (eventId: string) => void;
   decodedPageUrlParams?: {
     domain: string;
     cluster: string;
@@ -285,11 +257,10 @@ function setup({
         eventGroupsEntries={eventGroupsEntries}
         workflowStartTimeMs={workflowStartTimeMs}
         workflowCloseTimeMs={workflowCloseTimeMs}
-        onClickEvent={onClickEvent}
         decodedPageUrlParams={decodedPageUrlParams}
       />
     </VirtuosoMockContext.Provider>
   );
 
-  return { ...renderResult, onClickEvent };
+  return renderResult;
 }
