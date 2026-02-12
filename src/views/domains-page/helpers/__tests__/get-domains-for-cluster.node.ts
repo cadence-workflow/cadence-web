@@ -1,6 +1,7 @@
 import * as grpcClient from '@/utils/grpc/grpc-client';
 import { GRPCError } from '@/utils/grpc/grpc-error';
 import logger from '@/utils/logger';
+import { mockGrpcClusterMethods } from '@/utils/route-handlers-middleware/middlewares/__mocks__/grpc-cluster-methods';
 
 import { getDomainObj } from '../../__fixtures__/domains';
 import * as filterIrrelevantDomainsModule from '../filter-irrelevant-domains';
@@ -94,8 +95,9 @@ async function setup({
   const mockGetClusterMethods = jest
     .spyOn(grpcClient, 'getClusterMethods')
     .mockResolvedValue({
+      ...mockGrpcClusterMethods,
       listDomains: mockListDomains,
-    } as unknown as grpcClient.GRPCClusterMethods);
+    });
 
   const mockFilterIrrelevantDomains = jest
     .spyOn(filterIrrelevantDomainsModule, 'default')
