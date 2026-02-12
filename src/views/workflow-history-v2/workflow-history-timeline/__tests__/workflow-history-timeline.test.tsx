@@ -160,7 +160,7 @@ describe(WorkflowHistoryTimeline.name, () => {
     // If bar is null, the test would fail above
     await user.click(bar!);
     await waitFor(() => {
-      expect(mockOnClickShowInTable).toHaveBeenCalledWith('group-1');
+      expect(mockOnClickShowInTable).toHaveBeenCalledWith('group1');
     });
   });
 
