@@ -142,7 +142,7 @@ describe(WorkflowHistoryTimeline.name, () => {
 
   it('should call onClickShowInTable with correct event ID when clicking a timeline bar', async () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-    const mockOnClickEvent = jest.fn();
+    const mockOnClickShowInTable = jest.fn();
     const eventGroupsEntries: Array<EventGroupEntry> = [
       ['group1', mockActivityEventGroup],
     ];
@@ -151,7 +151,7 @@ describe(WorkflowHistoryTimeline.name, () => {
     const { container } = setup({
       eventGroupsEntries,
       workflowStartTimeMs,
-      onClickShowInTable: mockOnClickEvent,
+      onClickShowInTable: mockOnClickShowInTable,
     });
 
     const bar = container.querySelector('rect');
@@ -160,7 +160,7 @@ describe(WorkflowHistoryTimeline.name, () => {
     // If bar is null, the test would fail above
     await user.click(bar!);
     await waitFor(() => {
-      expect(mockOnClickEvent).toHaveBeenCalledWith(
+      expect(mockOnClickShowInTable).toHaveBeenCalledWith(
         mockActivityEventGroup.firstEventId
       );
     });
