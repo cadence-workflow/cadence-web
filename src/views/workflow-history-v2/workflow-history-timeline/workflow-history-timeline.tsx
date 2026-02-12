@@ -37,7 +37,7 @@ export default function WorkflowHistoryTimeline({
   eventGroupsEntries,
   workflowStartTimeMs,
   workflowCloseTimeMs,
-  onClickEvent,
+  onClickShowInTable,
   decodedPageUrlParams,
 }: Props) {
   const { cls, theme } = useStyletronClasses(cssStyles);
@@ -196,7 +196,7 @@ export default function WorkflowHistoryTimeline({
                                   height={ROW_HEIGHT_PX - 12}
                                   rx={2}
                                   onClick={() => {
-                                    onClickEvent(row.id);
+                                    onClickShowInTable(row.id);
                                   }}
                                   {...(isRunning
                                     ? {

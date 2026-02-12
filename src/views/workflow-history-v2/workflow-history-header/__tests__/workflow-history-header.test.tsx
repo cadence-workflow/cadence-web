@@ -270,7 +270,7 @@ function getDefaultProps(): Props {
     workflowStartTimeMs: null,
     workflowCloseTimeMs: null,
     selectedEventId: undefined,
-    onClickEvent: jest.fn(),
+    onClickShowInTable: jest.fn(),
     decodedPageUrlParams: {
       domain: 'test-domain',
       cluster: 'test-cluster',

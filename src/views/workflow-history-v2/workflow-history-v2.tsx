@@ -376,7 +376,7 @@ export default function WorkflowHistoryV2({ params }: Props) {
         workflowStartTimeMs={workflowStartTimeMs}
         workflowCloseTimeMs={workflowCloseTimeMs}
         selectedEventId={queryParams.historySelectedEventId}
-        onClickEvent={scrollToTableEvent}
+        onClickShowInTable={scrollToTableEvent}
         decodedPageUrlParams={decodedParams}
       />
       <styled.ContentSection>
