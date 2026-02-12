@@ -29,13 +29,13 @@ export default function WorkflowHistoryHeader({
   selectedEventId,
   onClickShowInTable,
   decodedPageUrlParams,
+  isTimelineShown,
+  setIsTimelineShown,
 }: Props) {
   const [isSticky, setIsSticky] = useState(false);
   useEffect(() => {
     if (!isStickyEnabled && isSticky) setIsSticky(false);
   }, [isStickyEnabled, isSticky]);
-
-  const [isTimelineShown, setIsTimelineShown] = useState(false);
 
   const { ref: sentinelRef } = useInView({
     threshold: 1,
