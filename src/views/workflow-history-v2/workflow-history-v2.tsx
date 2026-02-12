@@ -1,13 +1,4 @@
-import {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-
-import { type VirtuosoHandle } from 'react-virtuoso';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import usePageFilters from '@/components/page-filters/hooks/use-page-filters';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
@@ -37,6 +28,7 @@ import workflowHistoryFiltersConfig from './config/workflow-history-filters.conf
 import WORKFLOW_HISTORY_RENDER_FETCHED_EVENTS_THROTTLE_MS_CONFIG from './config/workflow-history-render-fetched-events-throttle-ms.config';
 import WORKFLOW_HISTORY_SET_RANGE_THROTTLE_MS_CONFIG from './config/workflow-history-set-range-throttle-ms.config';
 import getNavigationBarEventsMenuItems from './helpers/get-navigation-bar-events-menu-items';
+import useWorkflowHistoryScroll from './hooks/use-workflow-history-scroll';
 import WorkflowHistoryGroupedTable from './workflow-history-grouped-table/workflow-history-grouped-table';
 import WorkflowHistoryHeader from './workflow-history-header/workflow-history-header';
 import WorkflowHistoryNavigationBar from './workflow-history-navigation-bar/workflow-history-navigation-bar';
@@ -279,8 +271,18 @@ export default function WorkflowHistoryV2({ params }: Props) {
       !initialEventFound &&
       !reachedEndOfAvailableHistory);
 
-  const groupedTableVirtuosoRef = useRef<VirtuosoHandle>(null);
-  const ungroupedTableVirtuosoRef = useRef<VirtuosoHandle>(null);
+  const {
+    groupedTableVirtuosoRef,
+    ungroupedTableVirtuosoRef,
+    tableScrollTargetEventId,
+    scrollToTableEvent,
+    handleTableScrollUp,
+    handleTableScrollDown,
+  } = useWorkflowHistoryScroll({
+    isUngroupedHistoryViewEnabled,
+    ungroupedEventsInfo,
+    filteredEventGroupsEntries,
+  });
 
   const workflowStartTimeMs = workflowExecutionInfo?.startTime
     ? parseGrpcTimestamp(workflowExecutionInfo.startTime)
@@ -307,69 +309,6 @@ export default function WorkflowHistoryV2({ params }: Props) {
         }
       : {},
   });
-
-  const handleScrollUp = useCallback(() => {
-    const ref = isUngroupedHistoryViewEnabled
-      ? ungroupedTableVirtuosoRef
-      : groupedTableVirtuosoRef;
-    if (!ref.current) return;
-
-    ref.current.scrollToIndex({
-      index: 0,
-      // Position the start item as low as possible
-      align: 'end',
-    });
-  }, [isUngroupedHistoryViewEnabled]);
-
-  const handleScrollDown = useCallback(() => {
-    const ref = isUngroupedHistoryViewEnabled
-      ? ungroupedTableVirtuosoRef
-      : groupedTableVirtuosoRef;
-    if (!ref.current) return;
-
-    ref.current.scrollToIndex({
-      index: 'LAST',
-      // Position the end item as high as possible
-      align: 'start',
-    });
-  }, [isUngroupedHistoryViewEnabled]);
-
-  const [scrollToEventId, setScrollToEventId] = useState<string | undefined>(
-    undefined
-  );
-
-  const scrollToEventIndex = useMemo(() => {
-    if (!scrollToEventId) return undefined;
-
-    return isUngroupedHistoryViewEnabled
-      ? ungroupedEventsInfo.findIndex((e) => e.id === scrollToEventId)
-      : filteredEventGroupsEntries.findIndex(([_, group]) =>
-          group.events.some((e) => e.eventId === scrollToEventId)
-        );
-  }, [
-    scrollToEventId,
-    isUngroupedHistoryViewEnabled,
-    ungroupedEventsInfo,
-    filteredEventGroupsEntries,
-  ]);
-
-  useEffect(() => {
-    const ref = isUngroupedHistoryViewEnabled
-      ? ungroupedTableVirtuosoRef
-      : groupedTableVirtuosoRef;
-
-    if (!ref.current) return;
-
-    if (scrollToEventIndex && scrollToEventIndex !== -1) {
-      ref.current.scrollToIndex({
-        index: scrollToEventIndex,
-        behavior: 'auto',
-        align: 'center',
-      });
-    }
-
-    setTimeout(() => setScrollToEventId(undefined), 2000);
-  }, [scrollToEventIndex, isUngroupedHistoryViewEnabled]);
 
   const failedEventsMenuItems = useMemo(
     () =>
@@ -405,12 +344,13 @@ export default function WorkflowHistoryV2({ params }: Props) {
         );
       }
 
-      setScrollToEventId(eventId);
+      scrollToTableEvent(eventId);
       if (!getIsItemExpanded(eventId)) toggleIsItemExpanded(eventId);
     },
     [
       filteredEventGroupsEntries,
       setQueryParams,
+      scrollToTableEvent,
       getIsItemExpanded,
       toggleIsItemExpanded,
     ]
@@ -436,9 +376,7 @@ export default function WorkflowHistoryV2({ params }: Props) {
         workflowStartTimeMs={workflowStartTimeMs}
         workflowCloseTimeMs={workflowCloseTimeMs}
         selectedEventId={queryParams.historySelectedEventId}
-        onClickEvent={(eventId) => {
-          setScrollToEventId(eventId);
-        }}
+        onClickEvent={scrollToTableEvent}
         decodedPageUrlParams={decodedParams}
       />
       <styled.ContentSection>
@@ -455,7 +393,9 @@ export default function WorkflowHistoryV2({ params }: Props) {
               }))
             }
             decodedPageUrlParams={decodedParams}
-            selectedEventId={scrollToEventId ?? selectedEventIdWithinGroup}
+            selectedEventId={
+              tableScrollTargetEventId ?? selectedEventIdWithinGroup
+            }
             resetToDecisionEventId={setResetToDecisionEventId}
             getIsEventExpanded={getIsItemExpanded}
             toggleIsEventExpanded={toggleIsItemExpanded}
@@ -482,7 +422,7 @@ export default function WorkflowHistoryV2({ params }: Props) {
             workflowIsArchived={workflowExecutionInfo?.isArchived || false}
             workflowCloseTimeMs={workflowCloseTimeMs}
             selectedEventId={
-              scrollToEventId ?? queryParams.historySelectedEventId
+              tableScrollTargetEventId ?? queryParams.historySelectedEventId
             }
             resetToDecisionEventId={setResetToDecisionEventId}
             getIsEventExpanded={getIsItemExpanded}
@@ -507,8 +447,8 @@ export default function WorkflowHistoryV2({ params }: Props) {
         />
       )}
       <WorkflowHistoryNavigationBar
-        onScrollUp={handleScrollUp}
-        onScrollDown={handleScrollDown}
+        onScrollUp={handleTableScrollUp}
+        onScrollDown={handleTableScrollDown}
         areAllItemsExpanded={areAllItemsExpanded}
         onToggleAllItemsExpanded={toggleAreAllItemsExpanded}
         isUngroupedView={isUngroupedHistoryViewEnabled}
