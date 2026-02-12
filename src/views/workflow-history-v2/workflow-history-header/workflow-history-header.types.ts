@@ -29,6 +29,6 @@ export type Props = {
   workflowStartTimeMs: number | null;
   workflowCloseTimeMs?: number | null;
   selectedEventId?: string;
-  onClickEvent: (eventId: string) => void;
+  onClickShowInTable: (eventId: string) => void;
   decodedPageUrlParams: WorkflowHistoryProps['params'];
 };
