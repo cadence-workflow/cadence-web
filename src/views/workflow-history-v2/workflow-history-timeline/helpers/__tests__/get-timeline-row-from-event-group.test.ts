@@ -16,17 +16,25 @@ jest.useFakeTimers({ now: mockNow });
 
 describe(getTimelineRowFromEventGroup.name, () => {
   it('should return undefined when workflowStartTimeMs is null', () => {
-    const result = getTimelineRowFromEventGroup(mockActivityEventGroup, null);
+    const result = getTimelineRowFromEventGroup(
+      'test-group-id',
+      mockActivityEventGroup,
+      null
+    );
 
     expect(result).toBeUndefined();
   });
 
   it('should return a valid timeline row when workflowStartTimeMs is 0', () => {
-    const result = getTimelineRowFromEventGroup(mockActivityEventGroup, 0);
+    const result = getTimelineRowFromEventGroup(
+      'test-group-id',
+      mockActivityEventGroup,
+      0
+    );
 
     expect(result).toEqual(
       expect.objectContaining({
-        id: mockActivityEventGroup.firstEventId,
+        id: 'test-group-id',
         label: mockActivityEventGroup.label,
         groupType: 'ACTIVITY',
         status: mockActivityEventGroup.status,
@@ -41,7 +49,11 @@ describe(getTimelineRowFromEventGroup.name, () => {
       events: [],
     };
 
-    const result = getTimelineRowFromEventGroup(groupWithNoEvents, mockNow);
+    const result = getTimelineRowFromEventGroup(
+      'test-group-id',
+      groupWithNoEvents,
+      mockNow
+    );
 
     expect(result).toBeUndefined();
   });
@@ -57,7 +69,11 @@ describe(getTimelineRowFromEventGroup.name, () => {
       ],
     };
 
-    const result = getTimelineRowFromEventGroup(groupWithNoEventTime, mockNow);
+    const result = getTimelineRowFromEventGroup(
+      'test-group-id',
+      groupWithNoEventTime,
+      mockNow
+    );
 
     expect(result).toBeUndefined();
   });
@@ -66,13 +82,14 @@ describe(getTimelineRowFromEventGroup.name, () => {
     const workflowStartTimeMs = mockNow - 1000000; // 1000 seconds before now
 
     const result = getTimelineRowFromEventGroup(
+      'test-group-id',
       mockActivityEventGroup,
       workflowStartTimeMs
     );
 
     expect(result).toEqual(
       expect.objectContaining({
-        id: mockActivityEventGroup.firstEventId,
+        id: 'test-group-id',
         label: mockActivityEventGroup.label,
         startTimeMs: expect.closeTo(
           parseGrpcTimestamp(mockActivityEventGroup.events[0].eventTime!),
@@ -96,13 +113,14 @@ describe(getTimelineRowFromEventGroup.name, () => {
     const workflowStartTimeMs = mockNow - 1000000;
 
     const result = getTimelineRowFromEventGroup(
+      'test-group-id',
       ongoingGroup,
       workflowStartTimeMs
     );
 
     expect(result).toEqual(
       expect.objectContaining({
-        id: ongoingGroup.firstEventId,
+        id: 'test-group-id',
         label: ongoingGroup.label,
         startTimeMs: expect.closeTo(
           parseGrpcTimestamp(ongoingGroup.events[0].eventTime!),
@@ -130,13 +148,14 @@ describe(getTimelineRowFromEventGroup.name, () => {
     const workflowStartTimeMs = mockNow - 1000000;
 
     const result = getTimelineRowFromEventGroup(
+      'test-group-id',
       ongoingTimerGroup,
       workflowStartTimeMs
     );
 
     expect(result).toEqual(
       expect.objectContaining({
-        id: ongoingTimerGroup.firstEventId,
+        id: 'test-group-id',
         label: ongoingTimerGroup.label,
         startTimeMs: expect.closeTo(
           parseGrpcTimestamp(ongoingTimerGroup.events[0].eventTime!),
@@ -164,13 +183,14 @@ describe(getTimelineRowFromEventGroup.name, () => {
     const workflowStartTimeMs = mockNow - 1000000;
 
     const result = getTimelineRowFromEventGroup(
+      'test-group-id',
       waitingTimerGroup,
       workflowStartTimeMs
     );
 
     expect(result).toEqual(
       expect.objectContaining({
-        id: waitingTimerGroup.firstEventId,
+        id: 'test-group-id',
         label: waitingTimerGroup.label,
         startTimeMs: expect.closeTo(
           parseGrpcTimestamp(waitingTimerGroup.events[0].eventTime!),
@@ -194,13 +214,14 @@ describe(getTimelineRowFromEventGroup.name, () => {
     const workflowStartTimeMs = mockNow - 1000000;
 
     const result = getTimelineRowFromEventGroup(
+      'test-group-id',
       completedGroup,
       workflowStartTimeMs
     );
 
     expect(result).toEqual(
       expect.objectContaining({
-        id: completedGroup.firstEventId,
+        id: 'test-group-id',
         label: completedGroup.label,
         startTimeMs: expect.closeTo(
           parseGrpcTimestamp(completedGroup.events[0].eventTime!),
@@ -224,13 +245,14 @@ describe(getTimelineRowFromEventGroup.name, () => {
     const workflowStartTimeMs = mockNow - 1000000;
 
     const result = getTimelineRowFromEventGroup(
+      'test-group-id',
       failedGroup,
       workflowStartTimeMs
     );
 
     expect(result).toEqual(
       expect.objectContaining({
-        id: failedGroup.firstEventId,
+        id: 'test-group-id',
         label: failedGroup.label,
         startTimeMs: expect.closeTo(
           parseGrpcTimestamp(failedGroup.events[0].eventTime!),
@@ -254,13 +276,14 @@ describe(getTimelineRowFromEventGroup.name, () => {
     const workflowStartTimeMs = mockNow - 1000000;
 
     const result = getTimelineRowFromEventGroup(
+      'test-group-id',
       canceledGroup,
       workflowStartTimeMs
     );
 
     expect(result).toEqual(
       expect.objectContaining({
-        id: canceledGroup.firstEventId,
+        id: 'test-group-id',
         label: canceledGroup.label,
         startTimeMs: expect.closeTo(
           parseGrpcTimestamp(canceledGroup.events[0].eventTime!),
@@ -285,13 +308,14 @@ describe(getTimelineRowFromEventGroup.name, () => {
     const workflowStartTimeMs = mockNow - 1000000;
 
     const result = getTimelineRowFromEventGroup(
+      'test-group-id',
       ongoingTimerWithoutExpectedEnd,
       workflowStartTimeMs
     );
 
     expect(result).toEqual(
       expect.objectContaining({
-        id: ongoingTimerWithoutExpectedEnd.firstEventId,
+        id: 'test-group-id',
         label: ongoingTimerWithoutExpectedEnd.label,
         startTimeMs: expect.closeTo(
           parseGrpcTimestamp(
@@ -317,13 +341,14 @@ describe(getTimelineRowFromEventGroup.name, () => {
     const workflowStartTimeMs = mockNow - 1000000;
 
     const result = getTimelineRowFromEventGroup(
+      'test-group-id',
       completedTimerWithoutTimeMs,
       workflowStartTimeMs
     );
 
     expect(result).toEqual(
       expect.objectContaining({
-        id: completedTimerWithoutTimeMs.firstEventId,
+        id: 'test-group-id',
         label: completedTimerWithoutTimeMs.label,
         startTimeMs: expect.closeTo(
           parseGrpcTimestamp(completedTimerWithoutTimeMs.events[0].eventTime!),
@@ -335,21 +360,5 @@ describe(getTimelineRowFromEventGroup.name, () => {
         group: completedTimerWithoutTimeMs,
       })
     );
-  });
-
-  it('should use "unknown" as id when firstEventId is undefined', () => {
-    const groupWithoutFirstEventId = {
-      ...mockActivityEventGroup,
-      firstEventId: null,
-    };
-
-    const workflowStartTimeMs = mockNow - 1000000;
-
-    const result = getTimelineRowFromEventGroup(
-      groupWithoutFirstEventId,
-      workflowStartTimeMs
-    );
-
-    expect(result?.id).toBe('unknown');
   });
 });
