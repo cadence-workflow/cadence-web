@@ -45,8 +45,8 @@ export default function WorkflowHistoryTimeline({
   const timelineRows = useMemo(
     () =>
       eventGroupsEntries
-        .map(([_, group]) =>
-          getTimelineRowFromEventGroup(group, workflowStartTimeMs)
+        .map(([groupId, group]) =>
+          getTimelineRowFromEventGroup(groupId, group, workflowStartTimeMs)
         )
         .filter((row): row is TimelineRow => row !== undefined),
     [eventGroupsEntries, workflowStartTimeMs]

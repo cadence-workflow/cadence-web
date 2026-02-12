@@ -140,7 +140,7 @@ describe(WorkflowHistoryTimeline.name, () => {
     expect(statusBadge).toHaveAttribute('data-status', 'COMPLETED');
   });
 
-  it('should call onClickShowInTable with correct event ID when clicking a timeline bar', async () => {
+  it('should call onClickShowInTable with event group ID when clicking a timeline bar', async () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     const mockOnClickShowInTable = jest.fn();
     const eventGroupsEntries: Array<EventGroupEntry> = [
