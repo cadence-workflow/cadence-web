@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
 
+import { Combobox } from 'baseui/combobox';
 import { DatePicker } from 'baseui/datepicker';
 import { FormControl } from 'baseui/form-control';
 import { Input } from 'baseui/input';
 import { RadioGroup, Radio } from 'baseui/radio';
 import { Controller, useWatch } from 'react-hook-form';
-
 import CronScheduleInput from '@/components/cron-schedule-input/cron-schedule-input';
 import MultiJsonInput from '@/components/multi-json-input/multi-json-input';
 import { WORKER_SDK_LANGUAGES } from '@/route-handlers/start-workflow/start-workflow.constants';
@@ -13,8 +13,10 @@ import { WORKER_SDK_LANGUAGES } from '@/route-handlers/start-workflow/start-work
 import WorkflowActionStartOptionalSection from '../workflow-action-start-optional-section/workflow-action-start-optional-section';
 
 import getFieldErrorMessage from './helpers/get-field-error-message';
+import getFilteredComboboxOptions from './helpers/get-filtered-combobox-options';
 import getFieldObjectErrorMessages from './helpers/get-field-object-error-messages';
 import getMultiJsonErrorMessage from './helpers/get-multi-json-error-message';
+import useTaskListsByDomain from './hooks/use-task-lists-by-domain/use-task-lists-by-domain';
 import { type Props } from './workflow-action-start-form.types';
 
 export default function WorkflowActionStartForm({
@@ -24,8 +26,12 @@ export default function WorkflowActionStartForm({
   formData,
   trigger,
   cluster,
+  domain,
 }: Props) {
   const now = useMemo(() => new Date(), []);
+
+  const { data: taskListsData, isLoading: isLoadingTaskLists } =
+    useTaskListsByDomain({ domain, cluster });
 
   const scheduleType = useWatch({
     control,
@@ -40,23 +46,40 @@ export default function WorkflowActionStartForm({
           name="taskList.name"
           control={control}
           defaultValue=""
-          render={({ field: { ref, ...field } }) => (
-            <Input
-              {...field}
-              // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
-              inputRef={ref}
-              aria-label="Task List"
-              onChange={(e) => {
-                field.onChange(e.target.value);
-              }}
-              onBlur={field.onBlur}
-              error={Boolean(
-                getFieldErrorMessage(fieldErrors, 'taskList.name')
-              )}
-              size="compact"
-              placeholder="Enter task list name"
-            />
-          )}
+          render={({ field }) => {
+            return (
+              <Combobox
+                size="compact"
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                autocomplete
+                options={getFilteredComboboxOptions(
+                  taskListsData?.taskListNames ?? [],
+                  field.value
+                )}
+                mapOptionToString={(option) => option.id}
+                overrides={{
+                  Input: {
+                    props: {
+                      placeholder: 'Enter task list name',
+                      'aria-label': 'Task List',
+                      error: Boolean(
+                        getFieldErrorMessage(fieldErrors, 'taskList.name')
+                      ),
+                      overrides: {
+                        Input: {
+                          props: {
+                            ...(isLoadingTaskLists && { 'aria-busy': true }),
+                          },
+                        },
+                      },
+                    },
+                  },
+                }}
+              />
+            );
+          }}
         />
       </FormControl>
 
