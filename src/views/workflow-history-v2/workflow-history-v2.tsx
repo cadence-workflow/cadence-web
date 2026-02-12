@@ -296,6 +296,8 @@ export default function WorkflowHistoryV2({ params }: Props) {
     string | undefined
   >(undefined);
 
+  const [isTimelineShown, setIsTimelineShown] = useState(false);
+
   const {
     areAllItemsExpanded,
     toggleAreAllItemsExpanded,
@@ -378,6 +380,8 @@ export default function WorkflowHistoryV2({ params }: Props) {
         selectedEventId={queryParams.historySelectedEventId}
         onClickShowInTable={scrollToTableEvent}
         decodedPageUrlParams={decodedParams}
+        isTimelineShown={isTimelineShown}
+        setIsTimelineShown={setIsTimelineShown}
       />
       <styled.ContentSection>
         {isUngroupedHistoryViewEnabled ? (
