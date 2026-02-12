@@ -1,7 +1,7 @@
 import { notFound, redirect } from 'next/navigation';
 import queryString from 'query-string';
 
-import { getCachedAllDomains } from '../domains-page/helpers/get-all-domains';
+import getCachedAllDomains from '../domains-page/helpers/get-cached-all-domains';
 
 import { type Props } from './redirect-domain.types';
 
