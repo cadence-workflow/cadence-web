@@ -31,4 +31,6 @@ export type Props = {
   selectedEventId?: string;
   onClickShowInTable: (eventId: string) => void;
   decodedPageUrlParams: WorkflowHistoryProps['params'];
+  isTimelineShown: boolean;
+  setIsTimelineShown: React.Dispatch<React.SetStateAction<boolean>>;
 };

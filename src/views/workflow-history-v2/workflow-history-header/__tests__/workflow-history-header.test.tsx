@@ -200,38 +200,46 @@ describe(WorkflowHistoryHeader.name, () => {
     expect(screen.queryByText('Timeline')).not.toBeInTheDocument();
   });
 
-  it('should not show timeline by default', () => {
-    setup({ workflowStartTimeMs: 1000 });
+  it('should not show timeline when isTimelineShown is false', () => {
+    setup({ workflowStartTimeMs: 1000, isTimelineShown: false });
     expect(
       screen.queryByTestId('workflow-history-timeline')
     ).not.toBeInTheDocument();
   });
 
-  it('should toggle timeline visibility when Timeline button is clicked', async () => {
-    const { user } = setup({
+  it('should show timeline when isTimelineShown is true', () => {
+    setup({
+      workflowStartTimeMs: 1000,
+      isTimelineShown: true,
+      eventGroupsEntries: [['group1', {} as any]],
+    });
+
+    expect(screen.getByTestId('workflow-history-timeline')).toBeInTheDocument();
+  });
+
+  it('should call setIsTimelineShown when Timeline button is clicked', async () => {
+    const { user, mockSetIsTimelineShown } = setup({
       workflowStartTimeMs: 1000,
       eventGroupsEntries: [['group1', {} as any]],
     });
 
-    expect(
-      screen.queryByTestId('workflow-history-timeline')
-    ).not.toBeInTheDocument();
-
     const timelineButton = screen.getByText('Timeline');
     await user.click(timelineButton);
 
-    expect(screen.getByTestId('workflow-history-timeline')).toBeInTheDocument();
+    expect(mockSetIsTimelineShown).toHaveBeenCalledTimes(1);
   });
 });
 
 function setup(props: Partial<Props> = {}) {
   const user = userEvent.setup();
   const mockOnClickGroupModeToggle = jest.fn();
+  const mockSetIsTimelineShown = jest.fn();
 
   const defaultProps = getDefaultProps();
   const mergedProps = {
     ...defaultProps,
     onClickGroupModeToggle: mockOnClickGroupModeToggle,
+    setIsTimelineShown: mockSetIsTimelineShown,
     ...props,
   };
 
@@ -240,6 +248,7 @@ function setup(props: Partial<Props> = {}) {
   return {
     user,
     mockOnClickGroupModeToggle,
+    mockSetIsTimelineShown,
     ...renderResult,
   };
 }
@@ -278,5 +287,7 @@ function getDefaultProps(): Props {
       runId: 'test-runId',
       workflowTab: 'history',
     },
+    isTimelineShown: false,
+    setIsTimelineShown: jest.fn(),
   };
 }
