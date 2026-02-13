@@ -1,5 +1,6 @@
 import * as grpc from '@grpc/grpc-js';
 
+import { type ClustersConfigs } from '@/config/dynamic/resolvers/clusters.types';
 import mockResolvedConfigValues from '@/utils/config/__fixtures__/resolved-config-values';
 import * as getConfigValueModule from '@/utils/config/get-config-value';
 import { GRPCError } from '@/utils/grpc/grpc-error';
@@ -21,7 +22,7 @@ describe(getAllDomains.name, () => {
   it('fetches domains from all clusters and returns unique domains', async () => {
     const { result, mockGetDomainsForCluster, mockGetUniqueDomains } =
       await setup({
-        clusterConfigs: mockResolvedConfigValues.CLUSTERS,
+        clustersConfigs: mockResolvedConfigValues.CLUSTERS,
         domainsPerCluster: {
           'mock-cluster1': [getDomainObj({ id: 'domain-1', name: 'Domain 1' })],
           'mock-cluster2': [getDomainObj({ id: 'domain-2', name: 'Domain 2' })],
@@ -49,10 +50,7 @@ describe(getAllDomains.name, () => {
 
   it('returns failed clusters when some cluster fetches fail', async () => {
     const { result } = await setup({
-      clusterConfigs: [
-        { clusterName: 'mock-cluster1' },
-        { clusterName: 'mock-cluster2' },
-      ],
+      clustersConfigs: mockResolvedConfigValues.CLUSTERS,
       domainsPerCluster: {
         'mock-cluster1': [getDomainObj({ id: 'domain-1', name: 'Domain 1' })],
       },
@@ -71,10 +69,7 @@ describe(getAllDomains.name, () => {
 
   it('returns failed clusters without httpStatus when error has no httpStatusCode', async () => {
     const { result } = await setup({
-      clusterConfigs: [
-        { clusterName: 'mock-cluster1' },
-        { clusterName: 'mock-cluster2' },
-      ],
+      clustersConfigs: mockResolvedConfigValues.CLUSTERS,
       domainsPerCluster: {
         'mock-cluster1': [getDomainObj({ id: 'domain-1', name: 'Domain 1' })],
       },
@@ -91,10 +86,7 @@ describe(getAllDomains.name, () => {
 
   it('returns all clusters as failed when all fetches fail', async () => {
     const { result } = await setup({
-      clusterConfigs: [
-        { clusterName: 'mock-cluster1' },
-        { clusterName: 'mock-cluster2' },
-      ],
+      clustersConfigs: mockResolvedConfigValues.CLUSTERS,
       domainsPerCluster: {},
       clusterErrors: {
         'mock-cluster1': new GRPCError('Not found', {
@@ -115,7 +107,7 @@ describe(getAllDomains.name, () => {
 
   it('returns empty domains and failedClusters when no clusters are configured', async () => {
     const { result } = await setup({
-      clusterConfigs: [],
+      clustersConfigs: [],
       domainsPerCluster: {},
     });
 
@@ -127,15 +119,17 @@ describe(getAllDomains.name, () => {
 type DomainData = ReturnType<typeof getDomainObj>;
 
 async function setup({
-  clusterConfigs,
+  clustersConfigs,
   domainsPerCluster,
   clusterErrors = {},
 }: {
-  clusterConfigs: Array<{ clusterName: string }>;
+  clustersConfigs: ClustersConfigs;
   domainsPerCluster: Record<string, DomainData[]>;
   clusterErrors?: Record<string, Error | GRPCError>;
 }) {
-  jest.spyOn(getConfigValueModule, 'default').mockResolvedValue(clusterConfigs);
+  jest
+    .spyOn(getConfigValueModule, 'default')
+    .mockResolvedValue(clustersConfigs);
 
   const mockGetDomainsForCluster = jest
     .spyOn(getDomainsForClusterModule, 'default')
