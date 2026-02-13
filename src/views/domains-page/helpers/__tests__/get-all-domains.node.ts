@@ -1,5 +1,6 @@
 import * as grpc from '@grpc/grpc-js';
 
+import mockResolvedConfigValues from '@/utils/config/__fixtures__/resolved-config-values';
 import * as getConfigValueModule from '@/utils/config/get-config-value';
 import { GRPCError } from '@/utils/grpc/grpc-error';
 
@@ -20,19 +21,22 @@ describe(getAllDomains.name, () => {
   it('fetches domains from all clusters and returns unique domains', async () => {
     const { result, mockGetDomainsForCluster, mockGetUniqueDomains } =
       await setup({
-        clusterConfigs: [
-          { clusterName: 'cluster-1' },
-          { clusterName: 'cluster-2' },
-        ],
+        clusterConfigs: mockResolvedConfigValues.CLUSTERS,
         domainsPerCluster: {
-          'cluster-1': [getDomainObj({ id: 'domain-1', name: 'Domain 1' })],
-          'cluster-2': [getDomainObj({ id: 'domain-2', name: 'Domain 2' })],
+          'mock-cluster1': [getDomainObj({ id: 'domain-1', name: 'Domain 1' })],
+          'mock-cluster2': [getDomainObj({ id: 'domain-2', name: 'Domain 2' })],
         },
       });
 
     expect(mockGetDomainsForCluster).toHaveBeenCalledTimes(2);
-    expect(mockGetDomainsForCluster).toHaveBeenCalledWith('cluster-1', 2000);
-    expect(mockGetDomainsForCluster).toHaveBeenCalledWith('cluster-2', 2000);
+    expect(mockGetDomainsForCluster).toHaveBeenCalledWith(
+      'mock-cluster1',
+      2000
+    );
+    expect(mockGetDomainsForCluster).toHaveBeenCalledWith(
+      'mock-cluster2',
+      2000
+    );
     expect(mockGetUniqueDomains).toHaveBeenCalledWith(
       expect.arrayContaining([
         expect.objectContaining({ id: 'domain-1' }),
@@ -46,14 +50,14 @@ describe(getAllDomains.name, () => {
   it('returns failed clusters when some cluster fetches fail', async () => {
     const { result } = await setup({
       clusterConfigs: [
-        { clusterName: 'cluster-1' },
-        { clusterName: 'cluster-2' },
+        { clusterName: 'mock-cluster1' },
+        { clusterName: 'mock-cluster2' },
       ],
       domainsPerCluster: {
-        'cluster-1': [getDomainObj({ id: 'domain-1', name: 'Domain 1' })],
+        'mock-cluster1': [getDomainObj({ id: 'domain-1', name: 'Domain 1' })],
       },
       clusterErrors: {
-        'cluster-2': new GRPCError('Unavailable', {
+        'mock-cluster2': new GRPCError('Unavailable', {
           grpcStatusCode: grpc.status.UNAVAILABLE,
         }),
       },
@@ -61,42 +65,42 @@ describe(getAllDomains.name, () => {
 
     expect(result.domains).toHaveLength(1);
     expect(result.failedClusters).toEqual([
-      { clusterName: 'cluster-2', httpStatus: 503 },
+      { clusterName: 'mock-cluster2', httpStatus: 503 },
     ]);
   });
 
   it('returns failed clusters without httpStatus when error has no httpStatusCode', async () => {
     const { result } = await setup({
       clusterConfigs: [
-        { clusterName: 'cluster-1' },
-        { clusterName: 'cluster-2' },
+        { clusterName: 'mock-cluster1' },
+        { clusterName: 'mock-cluster2' },
       ],
       domainsPerCluster: {
-        'cluster-1': [getDomainObj({ id: 'domain-1', name: 'Domain 1' })],
+        'mock-cluster1': [getDomainObj({ id: 'domain-1', name: 'Domain 1' })],
       },
       clusterErrors: {
-        'cluster-2': new Error('Connection failed'),
+        'mock-cluster2': new Error('Connection failed'),
       },
     });
 
     expect(result.domains).toHaveLength(1);
     expect(result.failedClusters).toEqual([
-      { clusterName: 'cluster-2', httpStatus: undefined },
+      { clusterName: 'mock-cluster2', httpStatus: undefined },
     ]);
   });
 
   it('returns all clusters as failed when all fetches fail', async () => {
     const { result } = await setup({
       clusterConfigs: [
-        { clusterName: 'cluster-1' },
-        { clusterName: 'cluster-2' },
+        { clusterName: 'mock-cluster1' },
+        { clusterName: 'mock-cluster2' },
       ],
       domainsPerCluster: {},
       clusterErrors: {
-        'cluster-1': new GRPCError('Not found', {
+        'mock-cluster1': new GRPCError('Not found', {
           grpcStatusCode: grpc.status.NOT_FOUND,
         }),
-        'cluster-2': new GRPCError('Unavailable', {
+        'mock-cluster2': new GRPCError('Unavailable', {
           grpcStatusCode: grpc.status.UNAVAILABLE,
         }),
       },
@@ -104,8 +108,8 @@ describe(getAllDomains.name, () => {
 
     expect(result.domains).toEqual([]);
     expect(result.failedClusters).toEqual([
-      { clusterName: 'cluster-1', httpStatus: 404 },
-      { clusterName: 'cluster-2', httpStatus: 503 },
+      { clusterName: 'mock-cluster1', httpStatus: 404 },
+      { clusterName: 'mock-cluster2', httpStatus: 503 },
     ]);
   });
 
