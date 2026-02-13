@@ -144,7 +144,11 @@ async function setup({
     .spyOn(getUniqueDomainsModule, 'default')
     .mockImplementation((domains) => domains);
 
-  const result = await getAllDomains();
+  const result = await getAllDomains({
+    authEnabled: false,
+    groups: [],
+    isAdmin: false,
+  });
 
   return {
     result,
