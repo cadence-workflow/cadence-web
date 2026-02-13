@@ -169,7 +169,7 @@ describe('auth-context utilities', () => {
       dateNowSpy.mockRestore();
     });
 
-    it('still forwards cookie token when auth is disabled', async () => {
+    it('ignores cookie token when auth is disabled', async () => {
       const token = buildToken({
         sub: 'legacy-admin',
         admin: true,
@@ -184,8 +184,8 @@ describe('auth-context utilities', () => {
           name === CADENCE_AUTH_COOKIE_NAME ? { value: token } : undefined,
       });
 
-      expect(authContext.token).toBe(token);
-      expect(authContext.isAdmin).toBe(true);
+      expect(authContext.token).toBeUndefined();
+      expect(authContext.isAdmin).toBe(false);
     });
   });
 
@@ -444,7 +444,6 @@ describe('auth-context utilities', () => {
         userName: 'worker',
         id: 'worker',
         isAuthenticated: true,
-        token: undefined,
       });
     });
   });
@@ -465,6 +464,17 @@ describe('auth-context utilities', () => {
       expect(
         getGrpcMetadataFromAuth({
           authEnabled: true,
+          groups: [],
+          isAdmin: false,
+        })
+      ).toBeUndefined();
+    });
+
+    it('returns undefined when auth is disabled even if token is present', () => {
+      expect(
+        getGrpcMetadataFromAuth({
+          authEnabled: false,
+          token: 'abc',
           groups: [],
           isAdmin: false,
         })

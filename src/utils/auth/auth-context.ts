@@ -74,7 +74,7 @@ export async function resolveAuthContext(
     typeof claims?.exp === 'number' ? claims.exp * 1000 : undefined;
   const isExpired =
     expiresAtMsRaw !== undefined && Date.now() >= expiresAtMsRaw;
-  const shouldDropToken = isInvalidToken || isExpired;
+  const shouldDropToken = !authEnabled || isInvalidToken || isExpired;
   const effectiveClaims = shouldDropToken ? undefined : claims;
   const expiresAtMs = shouldDropToken ? undefined : expiresAtMsRaw;
   const effectiveToken = shouldDropToken ? undefined : token;
@@ -117,7 +117,7 @@ export async function resolveAuthContext(
 export function getGrpcMetadataFromAuth(
   authContext: UserAuthContext | null | undefined
 ): GRPCMetadata | undefined {
-  if (!authContext?.token) {
+  if (!authContext?.authEnabled || !authContext.token) {
     return undefined;
   }
 

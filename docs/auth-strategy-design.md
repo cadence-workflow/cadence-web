@@ -137,6 +137,7 @@ Reference: https://github.com/cadence-workflow/cadence/discussions/7508#discussi
 * No authentication required.
 * All users have full access.
 * No permission indicators.
+* `cadence-authorization` cookie is ignored and not forwarded to backend gRPC calls.
 
 ### 2 Upstream Auth Gateway (Recommended for Production)
 

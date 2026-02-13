@@ -47,6 +47,7 @@ export default function AppNavBar() {
       : undefined;
   const latestExpiresAtRef = useRef<number | undefined>(expiresAtMs);
   latestExpiresAtRef.current = expiresAtMs;
+  const expiryTimeoutIdRef = useRef<number | null>(null);
   const logoutInFlightRef = useRef(false);
   const prevIsAuthenticatedRef = useRef<boolean | null>(null);
   const logoutReasonRef = useRef<'manual' | 'expired' | null>(null);
@@ -175,25 +176,36 @@ export default function AppNavBar() {
   ]);
 
   useEffect(() => {
-    if (!isAuthEnabled || !isAuthenticated || expiresAtMs === undefined) return;
+    const clearExpiryTimeout = () => {
+      if (expiryTimeoutIdRef.current === null) return;
+      window.clearTimeout(expiryTimeoutIdRef.current);
+      expiryTimeoutIdRef.current = null;
+    };
+
+    clearExpiryTimeout();
+
+    if (
+      !isAuthEnabled ||
+      !isAuthenticated ||
+      expiresAtMs === undefined ||
+      logoutInFlightRef.current
+    ) {
+      return clearExpiryTimeout;
+    }
+
     const timeoutMs = expiresAtMs - Date.now();
     const logoutIfCurrent = () => {
+      if (logoutInFlightRef.current) return;
       if (latestExpiresAtRef.current !== expiresAtMs) return;
       void logout('expired');
     };
 
-    if (timeoutMs <= 0) {
-      const id = window.setTimeout(logoutIfCurrent, 0);
-      return () => {
-        window.clearTimeout(id);
-      };
-    }
+    expiryTimeoutIdRef.current = window.setTimeout(
+      logoutIfCurrent,
+      Math.max(0, timeoutMs)
+    );
 
-    const id = window.setTimeout(logoutIfCurrent, timeoutMs);
-
-    return () => {
-      window.clearTimeout(id);
-    };
+    return clearExpiryTimeout;
   }, [expiresAtMs, isAuthenticated, isAuthEnabled, logout]);
 
   return (
