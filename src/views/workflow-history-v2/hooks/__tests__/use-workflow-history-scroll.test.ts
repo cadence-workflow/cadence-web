@@ -293,6 +293,72 @@ describe(useWorkflowHistoryScroll.name, () => {
     expect(mockUngroupedScrollToIndex).toHaveBeenCalled();
     expect(mockGroupedScrollToIndex).not.toHaveBeenCalled();
   });
+
+  it('should set timelineScrollTargetEventGroupId when scrollToTimelineEventGroup is called', () => {
+    const { result } = setup({});
+
+    act(() => {
+      result.current.scrollToTimelineEventGroup('group-123');
+    });
+
+    expect(result.current.timelineScrollTargetEventGroupId).toBe('group-123');
+  });
+
+  it('should clear timelineScrollTargetEventGroupId after 2 seconds', async () => {
+    const { result } = setup({});
+
+    act(() => {
+      result.current.scrollToTimelineEventGroup('group-123');
+    });
+
+    expect(result.current.timelineScrollTargetEventGroupId).toBe('group-123');
+
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+
+    await waitFor(() => {
+      expect(result.current.timelineScrollTargetEventGroupId).toBeUndefined();
+    });
+  });
+
+  it('should scroll timeline to correct index when event group exists', () => {
+    const filteredEventGroupsEntries: Array<EventGroupEntry> = [
+      ['decision-1', mockDecisionEventGroup],
+      ['activity-1', mockActivityEventGroup],
+      ['timer-1', mockTimerEventGroup],
+    ];
+
+    const { result, mockTimelineScrollToIndex } = setup({
+      filteredEventGroupsEntries,
+    });
+
+    act(() => {
+      result.current.scrollToTimelineEventGroup('activity-1');
+    });
+
+    expect(mockTimelineScrollToIndex).toHaveBeenCalledWith({
+      index: 1,
+      behavior: 'auto',
+      align: 'start',
+    });
+  });
+
+  it('should not scroll timeline when event group is not found', () => {
+    const filteredEventGroupsEntries: Array<EventGroupEntry> = [
+      ['activity-1', mockActivityEventGroup],
+    ];
+
+    const { result, mockTimelineScrollToIndex } = setup({
+      filteredEventGroupsEntries,
+    });
+
+    act(() => {
+      result.current.scrollToTimelineEventGroup('non-existent-group');
+    });
+
+    expect(mockTimelineScrollToIndex).not.toHaveBeenCalled();
+  });
 });
 
 function setup({
@@ -306,6 +372,7 @@ function setup({
 }) {
   const mockGroupedScrollToIndex = jest.fn();
   const mockUngroupedScrollToIndex = jest.fn();
+  const mockTimelineScrollToIndex = jest.fn();
 
   const { result } = renderHook(() =>
     useWorkflowHistoryScroll({
@@ -315,15 +382,22 @@ function setup({
     })
   );
 
-  // Set up mocks for both refs
   (result.current.groupedTableVirtuosoRef as any).current = {
     scrollToIndex: mockGroupedScrollToIndex,
   };
   (result.current.ungroupedTableVirtuosoRef as any).current = {
     scrollToIndex: mockUngroupedScrollToIndex,
   };
+  (result.current.timelineVirtuosoRef as any).current = {
+    scrollToIndex: mockTimelineScrollToIndex,
+  };
 
-  return { result, mockGroupedScrollToIndex, mockUngroupedScrollToIndex };
+  return {
+    result,
+    mockGroupedScrollToIndex,
+    mockUngroupedScrollToIndex,
+    mockTimelineScrollToIndex,
+  };
 }
 
 function createUngroupedEventsInfo(
