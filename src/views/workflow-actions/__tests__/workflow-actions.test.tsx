@@ -4,6 +4,7 @@ import { HttpResponse } from 'msw';
 
 import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
+import { mockDomainDescription } from '@/views/domain-page/__fixtures__/domain-description';
 import { mockDescribeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
 
 import { mockWorkflowDetailsParams } from '../../workflow-page/__fixtures__/workflow-details-params';
@@ -131,6 +132,26 @@ function setup({
             });
           }
         },
+      },
+      {
+        path: '/api/domains/:domain/:cluster',
+        httpMethod: 'GET',
+        httpResolver: () =>
+          HttpResponse.json(mockDomainDescription, { status: 200 }),
+      },
+      {
+        path: '/api/auth/me',
+        httpMethod: 'GET',
+        httpResolver: () =>
+          HttpResponse.json(
+            {
+              authEnabled: false,
+              isAuthenticated: false,
+              isAdmin: false,
+              groups: [],
+            },
+            { status: 200 }
+          ),
       },
       {
         path: '/api/config',

@@ -5,6 +5,7 @@ import { StatefulTooltip } from 'baseui/tooltip';
 
 import Button from '@/components/button/button';
 import useConfigValue from '@/hooks/use-config-value/use-config-value';
+import useDomainAccess from '@/hooks/use-domain-access/use-domain-access';
 import { startWorkflowActionConfig } from '@/views/workflow-actions/config/workflow-actions.config';
 import getActionDisabledReason from '@/views/workflow-actions/workflow-actions-menu/helpers/get-action-disabled-reason';
 import WorkflowActionsModal from '@/views/workflow-actions/workflow-actions-modal/workflow-actions-modal';
@@ -26,9 +27,16 @@ export default function DomainPageStartWorkflowButton({
     domain,
     cluster,
   });
+  const { access, isLoading: isAccessLoading } = useDomainAccess({
+    domain,
+    cluster,
+  });
 
   const disabledReason = getActionDisabledReason({
-    actionEnabledConfig: actionsEnabledConfig?.start,
+    actionEnabledConfig:
+      access?.canWrite === false
+        ? 'DISABLED_UNAUTHORIZED'
+        : actionsEnabledConfig?.start,
     actionRunnableStatus: 'RUNNABLE',
   });
 
@@ -48,7 +56,11 @@ export default function DomainPageStartWorkflowButton({
             size="compact"
             kind="secondary"
             loadingIndicatorType="skeleton"
-            isLoading={isActionsEnabledLoading || isActionsEnabledError}
+            isLoading={
+              isActionsEnabledLoading ||
+              isActionsEnabledError ||
+              isAccessLoading
+            }
             disabled={Boolean(disabledReason)}
             startEnhancer={<startWorkflowActionConfig.icon size={16} />}
             aria-label={disabledReason ?? undefined}

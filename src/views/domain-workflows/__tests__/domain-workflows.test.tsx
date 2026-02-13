@@ -1,7 +1,6 @@
 import { Suspense } from 'react';
 
 import { HttpResponse } from 'msw';
-import { act } from 'react-dom/test-utils';
 
 import { render, screen } from '@/test-utils/rtl';
 
@@ -30,28 +29,55 @@ describe('DomainWorkflows', () => {
     expect(await screen.findByText('Advanced Workflows')).toBeInTheDocument();
   });
 
-  it('should throw on error', async () => {
-    let renderErrorMessage;
-    try {
-      await act(async () => {
-        await setup({ error: true });
-      });
-    } catch (error) {
-      if (error instanceof Error) {
-        renderErrorMessage = error.message;
-      }
-    }
+  it('should fall back to basic workflows when cluster info fails', async () => {
+    await setup({ error: true });
 
-    expect(renderErrorMessage).toEqual('Failed to fetch cluster info');
+    expect(await screen.findByText('Basic Workflows')).toBeInTheDocument();
+  });
+
+  it('should render advanced workflows for authenticated non-admin users when advanced visibility probe succeeds', async () => {
+    await setup({
+      authResponse: {
+        authEnabled: true,
+        isAuthenticated: true,
+        isAdmin: false,
+        groups: ['reader'],
+      },
+      isAdvancedVisibilityProbeEnabled: true,
+    });
+
+    expect(await screen.findByText('Advanced Workflows')).toBeInTheDocument();
+  });
+
+  it('should render basic workflows for authenticated non-admin users when advanced visibility probe fails', async () => {
+    await setup({
+      authResponse: {
+        authEnabled: true,
+        isAuthenticated: true,
+        isAdmin: false,
+        groups: ['reader'],
+      },
+      isAdvancedVisibilityProbeEnabled: false,
+    });
+
+    expect(await screen.findByText('Basic Workflows')).toBeInTheDocument();
   });
 });
 
 async function setup({
   isAdvancedVisibility = false,
   error,
+  authResponse = {
+    groups: [],
+  },
+  skipClusterRequest = false,
+  isAdvancedVisibilityProbeEnabled,
 }: {
   error?: boolean;
   isAdvancedVisibility?: boolean;
+  authResponse?: Record<string, unknown>;
+  skipClusterRequest?: boolean;
+  isAdvancedVisibilityProbeEnabled?: boolean;
 }) {
   const props: DomainPageTabContentProps = {
     domain: 'test-domain',
@@ -65,36 +91,70 @@ async function setup({
     {
       endpointsMocks: [
         {
-          path: '/api/clusters/test-cluster',
+          path: '/api/auth/me',
           httpMethod: 'GET',
           mockOnce: false,
-          ...(error
-            ? {
-                httpResolver: () => {
-                  return HttpResponse.json(
-                    { message: 'Failed to fetch cluster info' },
-                    { status: 500 }
-                  );
-                },
-              }
-            : {
-                jsonResponse: {
-                  persistenceInfo: {
-                    visibilityStore: {
-                      features: [
-                        {
-                          key: 'advancedVisibilityEnabled',
-                          enabled: isAdvancedVisibility,
-                        },
-                      ],
-                      backend: '',
-                      settings: [],
-                    },
-                  },
-                  supportedClientVersions: null,
-                } satisfies DescribeClusterResponse,
-              }),
+          jsonResponse: authResponse,
         },
+        ...(skipClusterRequest
+          ? []
+          : [
+              {
+                path: '/api/clusters/test-cluster',
+                httpMethod: 'GET' as const,
+                mockOnce: false,
+                ...(error
+                  ? {
+                      httpResolver: () => {
+                        return HttpResponse.json(
+                          { message: 'Failed to fetch cluster info' },
+                          { status: 500 }
+                        );
+                      },
+                    }
+                  : {
+                      jsonResponse: {
+                        persistenceInfo: {
+                          visibilityStore: {
+                            features: [
+                              {
+                                key: 'advancedVisibilityEnabled',
+                                enabled: isAdvancedVisibility,
+                              },
+                            ],
+                            backend: '',
+                            settings: [],
+                          },
+                        },
+                        supportedClientVersions: null,
+                      } satisfies DescribeClusterResponse,
+                    }),
+              },
+            ]),
+        ...(typeof isAdvancedVisibilityProbeEnabled === 'boolean'
+          ? [
+              {
+                path: '/api/domains/:domain/:cluster/workflows',
+                httpMethod: 'GET' as const,
+                mockOnce: false,
+                ...(isAdvancedVisibilityProbeEnabled
+                  ? {
+                      jsonResponse: {
+                        workflows: [],
+                        nextPage: '',
+                      },
+                    }
+                  : {
+                      httpResolver: () => {
+                        return HttpResponse.json(
+                          { message: 'Advanced visibility is not supported' },
+                          { status: 404 }
+                        );
+                      },
+                    }),
+              },
+            ]
+          : []),
       ],
     }
   );
