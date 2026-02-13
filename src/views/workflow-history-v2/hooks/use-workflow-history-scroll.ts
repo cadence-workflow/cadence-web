@@ -32,13 +32,6 @@ export default function useWorkflowHistoryScroll({
 }) {
   const groupedTableVirtuosoRef = useRef<VirtuosoHandle>(null);
   const ungroupedTableVirtuosoRef = useRef<VirtuosoHandle>(null);
-  const activeTableRef = useMemo(
-    () =>
-      isUngroupedHistoryViewEnabled
-        ? ungroupedTableVirtuosoRef
-        : groupedTableVirtuosoRef,
-    [isUngroupedHistoryViewEnabled]
-  );
   const timelineVirtuosoRef = useRef<VirtuosoHandle>(null);
 
   // Table scroll handler implementation
@@ -62,13 +55,17 @@ export default function useWorkflowHistoryScroll({
   ]);
 
   useEffect(() => {
-    if (!activeTableRef.current) return;
+    const activeTableVirtuoso = isUngroupedHistoryViewEnabled
+      ? ungroupedTableVirtuosoRef.current
+      : groupedTableVirtuosoRef.current;
+
+    if (!activeTableVirtuoso) return;
 
     if (
       tableScrollTargetEventIndex !== undefined &&
       tableScrollTargetEventIndex !== -1
     ) {
-      activeTableRef.current.scrollToIndex({
+      activeTableVirtuoso.scrollToIndex({
         index: tableScrollTargetEventIndex,
         behavior: 'auto',
         align: 'center',
@@ -81,7 +78,7 @@ export default function useWorkflowHistoryScroll({
     );
 
     return () => clearTimeout(timeoutId);
-  }, [tableScrollTargetEventIndex, activeTableRef]);
+  }, [tableScrollTargetEventIndex, isUngroupedHistoryViewEnabled]);
 
   const scrollToTableEvent = useCallback((eventId: string) => {
     setTableScrollTargetEventId(eventId);
@@ -129,24 +126,32 @@ export default function useWorkflowHistoryScroll({
 
   // Directional scrollers
   const handleTableScrollUp = useCallback(() => {
-    if (!activeTableRef.current) return;
+    const activeTableVirtuoso = isUngroupedHistoryViewEnabled
+      ? ungroupedTableVirtuosoRef.current
+      : groupedTableVirtuosoRef.current;
 
-    activeTableRef.current.scrollToIndex({
+    if (!activeTableVirtuoso) return;
+
+    activeTableVirtuoso.scrollToIndex({
       index: 0,
       // Position the start item as low as possible
       align: 'end',
     });
-  }, [activeTableRef]);
+  }, [isUngroupedHistoryViewEnabled]);
 
   const handleTableScrollDown = useCallback(() => {
-    if (!activeTableRef.current) return;
+    const activeTableVirtuoso = isUngroupedHistoryViewEnabled
+      ? ungroupedTableVirtuosoRef.current
+      : groupedTableVirtuosoRef.current;
 
-    activeTableRef.current.scrollToIndex({
+    if (!activeTableVirtuoso) return;
+
+    activeTableVirtuoso.scrollToIndex({
       index: 'LAST',
       // Position the end item as high as possible
       align: 'start',
     });
-  }, [activeTableRef]);
+  }, [isUngroupedHistoryViewEnabled]);
 
   return {
     groupedTableVirtuosoRef,
