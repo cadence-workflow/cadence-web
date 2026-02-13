@@ -37,6 +37,7 @@ export default function useWorkflowHistoryScroll({
     ? ungroupedTableVirtuosoRef
     : groupedTableVirtuosoRef;
 
+  // Table scroll handler implementation
   const [tableScrollTargetEventId, setTableScrollTargetEventId] = useState<
     string | undefined
   >(undefined);
