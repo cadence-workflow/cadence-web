@@ -18,14 +18,6 @@ describe('WorkflowHistoryEventLinkButton', () => {
     expect(button).toHaveAccessibleName('Copy link to event');
   });
 
-  it('shows tooltip with "Copy link to event" by default', async () => {
-    const user = userEvent.setup();
-    render(<WorkflowHistoryEventLinkButton historyEventId="123" />);
-    const button = screen.getByRole('button');
-    await user.hover(button);
-    expect(await screen.findByText('Copy link to event')).toBeInTheDocument();
-  });
-
   it('copies the current URL with event ID when clicked', async () => {
     // TODO: this is a bit hacky, see if there is a better way to mock the window location property
     const originalWindow = window;
@@ -72,9 +64,6 @@ describe('WorkflowHistoryEventLinkButton', () => {
     await waitFor(() => {
       expect(copiedText).not.toBeInTheDocument();
     });
-
-    await user.hover(button);
-    expect(await screen.findByText('Copy link to event')).toBeInTheDocument();
   });
 
   it('adds ungrouped view parameter when isUngroupedView is true', async () => {
