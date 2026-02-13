@@ -5,6 +5,7 @@ import getEventGroupFilteringType from '../../workflow-history-event-group/helpe
 import { type TimelineRow } from '../workflow-history-timeline.types';
 
 export default function getTimelineRowFromEventGroup(
+  groupId: string,
   group: HistoryEventsGroup,
   workflowStartTimeMs: number | null
 ): TimelineRow | undefined {
@@ -41,7 +42,7 @@ export default function getTimelineRowFromEventGroup(
   const groupType = getEventGroupFilteringType(group);
 
   return {
-    id: group.firstEventId ?? 'unknown',
+    id: groupId,
     label: group.label,
     startTimeMs: groupStartMs,
     endTimeMs: groupEndMs,
