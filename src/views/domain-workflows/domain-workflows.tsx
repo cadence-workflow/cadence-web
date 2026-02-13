@@ -38,17 +38,41 @@ export default function DomainWorkflows(props: DomainPageTabContentProps) {
     retry: false,
   });
 
+  const { data: isAdvancedVisibilityAvailableForNonAdmin } = useQuery<boolean>({
+    queryKey: ['probeAdvancedVisibility', props.domain, props.cluster],
+    queryFn: async () => {
+      try {
+        await request(
+          `/api/domains/${props.domain}/${props.cluster}/workflows?listType=default&inputType=search&timeColumn=StartTime&pageSize=1`
+        );
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    enabled: Boolean(authInfo) && isAuthenticatedNonAdmin,
+    retry: false,
+  });
+
   const isAdvancedVisibilityEnabled = useMemo(() => {
     // Non-admin authenticated users may not be allowed to call describeCluster,
-    // but can still have access to advanced visibility APIs.
+    // so we probe the workflows API instead.
     if (isAuthenticatedNonAdmin) {
-      return true;
+      return isAdvancedVisibilityAvailableForNonAdmin ?? false;
     }
     if (!clusterInfo) return false;
     return isClusterAdvancedVisibilityEnabled(clusterInfo);
-  }, [clusterInfo, isAuthenticatedNonAdmin]);
+  }, [
+    clusterInfo,
+    isAdvancedVisibilityAvailableForNonAdmin,
+    isAuthenticatedNonAdmin,
+  ]);
 
-  if (isAuthLoading) {
+  if (
+    isAuthLoading ||
+    (isAuthenticatedNonAdmin &&
+      isAdvancedVisibilityAvailableForNonAdmin === undefined)
+  ) {
     return null;
   }
 

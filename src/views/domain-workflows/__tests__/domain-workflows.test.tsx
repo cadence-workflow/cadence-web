@@ -35,33 +35,32 @@ describe('DomainWorkflows', () => {
     expect(await screen.findByText('Basic Workflows')).toBeInTheDocument();
   });
 
-  it('should render advanced workflows when cluster info fails for authenticated users', async () => {
+  it('should render advanced workflows for authenticated non-admin users when advanced visibility probe succeeds', async () => {
     await setup({
-      error: true,
       authResponse: {
         authEnabled: true,
         isAuthenticated: true,
         isAdmin: false,
         groups: ['reader'],
       },
+      isAdvancedVisibilityProbeEnabled: true,
     });
 
     expect(await screen.findByText('Advanced Workflows')).toBeInTheDocument();
   });
 
-  it('should render advanced workflows for authenticated non-admin without cluster fetch', async () => {
+  it('should render basic workflows for authenticated non-admin users when advanced visibility probe fails', async () => {
     await setup({
-      isAdvancedVisibility: true,
       authResponse: {
         authEnabled: true,
         isAuthenticated: true,
         isAdmin: false,
         groups: ['reader'],
       },
-      skipClusterRequest: true,
+      isAdvancedVisibilityProbeEnabled: false,
     });
 
-    expect(await screen.findByText('Advanced Workflows')).toBeInTheDocument();
+    expect(await screen.findByText('Basic Workflows')).toBeInTheDocument();
   });
 });
 
@@ -72,11 +71,13 @@ async function setup({
     groups: [],
   },
   skipClusterRequest = false,
+  isAdvancedVisibilityProbeEnabled,
 }: {
   error?: boolean;
   isAdvancedVisibility?: boolean;
   authResponse?: Record<string, unknown>;
   skipClusterRequest?: boolean;
+  isAdvancedVisibilityProbeEnabled?: boolean;
 }) {
   const props: DomainPageTabContentProps = {
     domain: 'test-domain',
@@ -130,6 +131,30 @@ async function setup({
                     }),
               },
             ]),
+        ...(typeof isAdvancedVisibilityProbeEnabled === 'boolean'
+          ? [
+              {
+                path: '/api/domains/:domain/:cluster/workflows',
+                httpMethod: 'GET' as const,
+                mockOnce: false,
+                ...(isAdvancedVisibilityProbeEnabled
+                  ? {
+                      jsonResponse: {
+                        workflows: [],
+                        nextPage: '',
+                      },
+                    }
+                  : {
+                      httpResolver: () => {
+                        return HttpResponse.json(
+                          { message: 'Advanced visibility is not supported' },
+                          { status: 404 }
+                        );
+                      },
+                    }),
+              },
+            ]
+          : []),
       ],
     }
   );
