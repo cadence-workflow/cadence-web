@@ -63,17 +63,17 @@ export const getAllDomains = async (authContext: UserAuthContext) => {
     domains: uniqueDomains.filter(
       (domain) => getDomainAccessForUser(domain, authContext).canRead
     ),
-    failedClusters: CLUSTERS_CONFIGS.map((config) => ({
+    failedClusters: CLUSTERS_CONFIGS.map((config, index) => ({
       clusterName: config.clusterName,
-      rejection: results.find((res) => res.status === 'rejected'),
+      result: results[index],
     }))
-      .filter((res) => res.rejection)
+      .filter(
+        (res): res is { clusterName: string; result: PromiseRejectedResult } =>
+          res.result.status === 'rejected'
+      )
       .map((res) => ({
         clusterName: res.clusterName,
-        httpStatus:
-          res.rejection && 'reason' in res.rejection
-            ? res.rejection.reason.httpStatusCode
-            : undefined,
+        httpStatus: res.result.reason?.httpStatusCode ?? undefined,
       })),
   };
 };

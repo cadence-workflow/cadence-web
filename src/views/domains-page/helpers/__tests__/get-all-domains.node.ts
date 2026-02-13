@@ -3,15 +3,18 @@ import * as grpc from '@grpc/grpc-js';
 import { type ClustersConfigs } from '@/config/dynamic/resolvers/clusters.types';
 import mockResolvedConfigValues from '@/utils/config/__fixtures__/resolved-config-values';
 import * as getConfigValueModule from '@/utils/config/get-config-value';
+import * as grpcClient from '@/utils/grpc/grpc-client';
 import { GRPCError } from '@/utils/grpc/grpc-error';
 
 import { getDomainObj } from '../../__fixtures__/domains';
 import { getAllDomains } from '../get-all-domains';
-import * as getDomainsForClusterModule from '../get-domains-for-cluster';
 import * as getUniqueDomainsModule from '../get-unique-domains';
 
+jest.mock('react', () => ({
+  cache: (fn: unknown) => fn,
+}));
 jest.mock('@/utils/config/get-config-value');
-jest.mock('../get-domains-for-cluster');
+jest.mock('@/utils/grpc/grpc-client');
 jest.mock('../get-unique-domains');
 
 describe(getAllDomains.name, () => {
@@ -20,24 +23,46 @@ describe(getAllDomains.name, () => {
   });
 
   it('fetches domains from all clusters and returns unique domains', async () => {
-    const { result, mockGetDomainsForCluster, mockGetUniqueDomains } =
-      await setup({
-        clustersConfigs: mockResolvedConfigValues.CLUSTERS,
-        domainsPerCluster: {
-          'mock-cluster1': [getDomainObj({ id: 'domain-1', name: 'Domain 1' })],
-          'mock-cluster2': [getDomainObj({ id: 'domain-2', name: 'Domain 2' })],
-        },
-      });
+    const {
+      result,
+      mockGetClusterMethods,
+      listDomainsByCluster,
+      mockGetUniqueDomains,
+    } = await setup({
+      clustersConfigs: mockResolvedConfigValues.CLUSTERS,
+      domainsPerCluster: {
+        'mock-cluster1': [
+          getDomainObj({
+            id: 'domain-1',
+            name: 'Domain 1',
+            clusters: [{ clusterName: 'mock-cluster1' }],
+          }),
+        ],
+        'mock-cluster2': [
+          getDomainObj({
+            id: 'domain-2',
+            name: 'Domain 2',
+            clusters: [{ clusterName: 'mock-cluster2' }],
+          }),
+        ],
+      },
+    });
 
-    expect(mockGetDomainsForCluster).toHaveBeenCalledTimes(2);
-    expect(mockGetDomainsForCluster).toHaveBeenCalledWith(
+    expect(mockGetClusterMethods).toHaveBeenCalledTimes(2);
+    expect(mockGetClusterMethods).toHaveBeenCalledWith(
       'mock-cluster1',
-      2000
+      undefined
     );
-    expect(mockGetDomainsForCluster).toHaveBeenCalledWith(
+    expect(mockGetClusterMethods).toHaveBeenCalledWith(
       'mock-cluster2',
-      2000
+      undefined
     );
+    expect(listDomainsByCluster['mock-cluster1']).toHaveBeenCalledWith({
+      pageSize: 2000,
+    });
+    expect(listDomainsByCluster['mock-cluster2']).toHaveBeenCalledWith({
+      pageSize: 2000,
+    });
     expect(mockGetUniqueDomains).toHaveBeenCalledWith(
       expect.arrayContaining([
         expect.objectContaining({ id: 'domain-1' }),
@@ -52,7 +77,13 @@ describe(getAllDomains.name, () => {
     const { result } = await setup({
       clustersConfigs: mockResolvedConfigValues.CLUSTERS,
       domainsPerCluster: {
-        'mock-cluster1': [getDomainObj({ id: 'domain-1', name: 'Domain 1' })],
+        'mock-cluster1': [
+          getDomainObj({
+            id: 'domain-1',
+            name: 'Domain 1',
+            clusters: [{ clusterName: 'mock-cluster1' }],
+          }),
+        ],
       },
       clusterErrors: {
         'mock-cluster2': new GRPCError('Unavailable', {
@@ -71,7 +102,13 @@ describe(getAllDomains.name, () => {
     const { result } = await setup({
       clustersConfigs: mockResolvedConfigValues.CLUSTERS,
       domainsPerCluster: {
-        'mock-cluster1': [getDomainObj({ id: 'domain-1', name: 'Domain 1' })],
+        'mock-cluster1': [
+          getDomainObj({
+            id: 'domain-1',
+            name: 'Domain 1',
+            clusters: [{ clusterName: 'mock-cluster1' }],
+          }),
+        ],
       },
       clusterErrors: {
         'mock-cluster2': new Error('Connection failed'),
@@ -117,6 +154,12 @@ describe(getAllDomains.name, () => {
 });
 
 type DomainData = ReturnType<typeof getDomainObj>;
+type SetupResult = {
+  result: Awaited<ReturnType<typeof getAllDomains>>;
+  mockGetClusterMethods: jest.SpyInstance;
+  listDomainsByCluster: Record<string, jest.Mock>;
+  mockGetUniqueDomains: jest.SpyInstance;
+};
 
 async function setup({
   clustersConfigs,
@@ -126,18 +169,25 @@ async function setup({
   clustersConfigs: ClustersConfigs;
   domainsPerCluster: Record<string, DomainData[]>;
   clusterErrors?: Record<string, Error | GRPCError>;
-}) {
+}): Promise<SetupResult> {
   jest
     .spyOn(getConfigValueModule, 'default')
     .mockResolvedValue(clustersConfigs);
 
-  const mockGetDomainsForCluster = jest
-    .spyOn(getDomainsForClusterModule, 'default')
+  const listDomainsByCluster: Record<string, jest.Mock> = {};
+  const mockGetClusterMethods = jest
+    .spyOn(grpcClient, 'getClusterMethods')
     .mockImplementation(async (clusterName: string) => {
-      if (clusterErrors[clusterName]) {
-        throw clusterErrors[clusterName];
-      }
-      return domainsPerCluster[clusterName] ?? [];
+      const listDomains = jest.fn(async () => {
+        if (clusterErrors[clusterName]) {
+          throw clusterErrors[clusterName];
+        }
+        return {
+          domains: domainsPerCluster[clusterName] ?? [],
+        };
+      });
+      listDomainsByCluster[clusterName] = listDomains;
+      return { listDomains } as any;
     });
 
   const mockGetUniqueDomains = jest
@@ -152,7 +202,8 @@ async function setup({
 
   return {
     result,
-    mockGetDomainsForCluster,
+    mockGetClusterMethods,
+    listDomainsByCluster,
     mockGetUniqueDomains,
   };
 }
