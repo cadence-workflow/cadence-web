@@ -12,7 +12,7 @@ export type TimelineRow = {
   id: string;
   label: string;
   startTimeMs: number;
-  endTimeMs: number;
+  endTimeMs: number | null;
   groupType: WorkflowHistoryEventFilteringType;
   status: HistoryEventsGroup['status'];
   group: HistoryEventsGroup;

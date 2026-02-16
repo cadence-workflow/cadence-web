@@ -3,3 +3,6 @@ export const ROW_HEIGHT_PX = 24;
 export const TIMELINE_HEIGHT = 250;
 export const TIMELINE_SIDE_PADDING = 0.04;
 export const TIMELINE_ITEM_TOOLTIP_ENTRY_DELAY_MS = 600;
+// The timeline will always show at least this much empty space beyond the last event
+// When events fill this space, the domain expands by another buffer
+export const TIMELINE_DOMAIN_BUFFER_PERCENT = 0.2;
