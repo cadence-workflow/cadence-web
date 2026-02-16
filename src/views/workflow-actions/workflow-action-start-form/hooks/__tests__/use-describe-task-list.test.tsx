@@ -1,10 +1,9 @@
 import { HttpResponse } from 'msw';
 
-import { renderHook, waitFor, act } from '@/test-utils/rtl';
+import { renderHook, waitFor } from '@/test-utils/rtl';
 
 import { type DescribeTaskListResponse } from '@/route-handlers/describe-task-list/describe-task-list.types';
 
-import { TASK_LIST_DEBOUNCE_MS } from '../use-describe-task-list.constants';
 import useDescribeTaskList from '../use-describe-task-list';
 
 const mockTaskListResponse: DescribeTaskListResponse = {
@@ -24,14 +23,6 @@ const mockTaskListResponse: DescribeTaskListResponse = {
   },
 };
 
-beforeEach(() => {
-  jest.useFakeTimers();
-});
-
-afterEach(() => {
-  jest.useRealTimers();
-});
-
 describe('useDescribeTaskList', () => {
   it('does not fetch when task list name is empty', () => {
     const { result } = setup({ taskListName: '' });
@@ -41,16 +32,8 @@ describe('useDescribeTaskList', () => {
     expect(result.current.isError).toBe(false);
   });
 
-  it('fetches task list data after debounce', async () => {
+  it('fetches task list data', async () => {
     const { result } = setup({ taskListName: 'test-task-list' });
-
-    // Before debounce fires, should be loading
-    expect(result.current.isLoading).toBe(true);
-
-    // Advance past debounce
-    act(() => {
-      jest.advanceTimersByTime(TASK_LIST_DEBOUNCE_MS + 50);
-    });
 
     await waitFor(() => {
       expect(result.current.data).toBeDefined();
@@ -65,10 +48,6 @@ describe('useDescribeTaskList', () => {
     const { result } = setup({
       taskListName: 'error-task-list',
       error: true,
-    });
-
-    act(() => {
-      jest.advanceTimersByTime(TASK_LIST_DEBOUNCE_MS + 50);
     });
 
     await waitFor(() => {

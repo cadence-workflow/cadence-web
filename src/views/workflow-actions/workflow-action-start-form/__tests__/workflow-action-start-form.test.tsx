@@ -15,7 +15,17 @@ jest.mock(
     })
 );
 
+const mockUseDescribeTaskList = jest.fn();
+
+jest.mock('../hooks/use-describe-task-list', () =>
+  jest.fn((...args) => mockUseDescribeTaskList(...args))
+);
+
 describe('WorkflowActionStartForm', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('renders essential form fields', async () => {
     await setup({});
 
@@ -204,14 +214,149 @@ describe('WorkflowActionStartForm', () => {
 
     expect(screen.getByText('Optional Section Fields')).toBeInTheDocument();
   });
+
+  it('shows warning caption when task list has no workers', async () => {
+    await setup({
+      describeTaskList: {
+        data: {
+          taskList: {
+            name: 'test-task-list',
+            workers: [],
+            decisionTaskListStatus: null,
+            activityTaskListStatus: null,
+          },
+        },
+        isLoading: false,
+        isError: false,
+      },
+    });
+
+    expect(
+      screen.getByText('This task list has no workers')
+    ).toBeInTheDocument();
+  });
+
+  it('shows warning caption when task list has no decision workers', async () => {
+    await setup({
+      describeTaskList: {
+        data: {
+          taskList: {
+            name: 'test-task-list',
+            workers: [
+              {
+                hasActivityHandler: true,
+                hasDecisionHandler: false,
+                identity: 'worker-1',
+                lastAccessTime: 1725370657336,
+                ratePerSecond: 100000,
+              },
+            ],
+            decisionTaskListStatus: null,
+            activityTaskListStatus: null,
+          },
+        },
+        isLoading: false,
+        isError: false,
+      },
+    });
+
+    expect(
+      screen.getByText('This task list has no decision workers')
+    ).toBeInTheDocument();
+  });
+
+  it('shows warning caption when task list has no activity workers', async () => {
+    await setup({
+      describeTaskList: {
+        data: {
+          taskList: {
+            name: 'test-task-list',
+            workers: [
+              {
+                hasActivityHandler: false,
+                hasDecisionHandler: true,
+                identity: 'worker-1',
+                lastAccessTime: 1725370657336,
+                ratePerSecond: 100000,
+              },
+            ],
+            decisionTaskListStatus: null,
+            activityTaskListStatus: null,
+          },
+        },
+        isLoading: false,
+        isError: false,
+      },
+    });
+
+    expect(
+      screen.getByText('This task list has no activity workers')
+    ).toBeInTheDocument();
+  });
+
+  it('does not show warning when task list has both handlers', async () => {
+    await setup({
+      describeTaskList: {
+        data: {
+          taskList: {
+            name: 'test-task-list',
+            workers: [
+              {
+                hasActivityHandler: true,
+                hasDecisionHandler: true,
+                identity: 'worker-1',
+                lastAccessTime: 1725370657336,
+                ratePerSecond: 100000,
+              },
+            ],
+            decisionTaskListStatus: null,
+            activityTaskListStatus: null,
+          },
+        },
+        isLoading: false,
+        isError: false,
+      },
+    });
+
+    expect(
+      screen.queryByText('This task list has no workers')
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('This task list has no decision workers')
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('This task list has no activity workers')
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows error when task list fetch fails', async () => {
+    const { user } = await setup({
+      describeTaskList: {
+        data: undefined,
+        isLoading: false,
+        isError: true,
+      },
+    });
+
+    const taskListInput = screen.getByRole('textbox', { name: 'Task List' });
+    await user.type(taskListInput, 'some-task-list');
+
+    expect(
+      screen.getByText('Error fetching task list information')
+    ).toBeInTheDocument();
+  });
 });
 
-type TestProps = {
+type SetupProps = {
   formErrors: FieldErrors<StartWorkflowFormData>;
   formData: StartWorkflowFormData;
+  describeTaskList: ReturnType<typeof mockUseDescribeTaskList>;
 };
 
-function TestWrapper({ formErrors, formData }: TestProps) {
+function TestWrapper({
+  formErrors,
+  formData,
+}: Pick<SetupProps, 'formErrors' | 'formData'>) {
   const methods = useForm<StartWorkflowFormData>({
     defaultValues: formData,
   });
@@ -241,7 +386,14 @@ async function setup({
     scheduleType: 'NOW',
     input: [''],
   },
-}: Partial<TestProps>) {
+  describeTaskList = {
+    data: undefined,
+    isLoading: false,
+    isError: false,
+  },
+}: Partial<SetupProps>) {
+  mockUseDescribeTaskList.mockReturnValue(describeTaskList);
+
   const user = userEvent.setup();
 
   render(<TestWrapper formErrors={formErrors} formData={formData} />);

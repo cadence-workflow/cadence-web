@@ -6,9 +6,12 @@ import { Input } from 'baseui/input';
 import { RadioGroup, Radio } from 'baseui/radio';
 import { Spinner, SIZE as SPINNER_SIZE } from 'baseui/spinner';
 import { Controller, useWatch } from 'react-hook-form';
+import { MdWarning } from 'react-icons/md';
 
 import CronScheduleInput from '@/components/cron-schedule-input/cron-schedule-input';
 import MultiJsonInput from '@/components/multi-json-input/multi-json-input';
+import useDebouncedValue from '@/hooks/use-debounced-value/use-debounced-value';
+import useStyletronClasses from '@/hooks/use-styletron-classes';
 import { WORKER_SDK_LANGUAGES } from '@/route-handlers/start-workflow/start-workflow.constants';
 
 import WorkflowActionStartOptionalSection from '../workflow-action-start-optional-section/workflow-action-start-optional-section';
@@ -16,8 +19,10 @@ import WorkflowActionStartOptionalSection from '../workflow-action-start-optiona
 import getFieldErrorMessage from './helpers/get-field-error-message';
 import getFieldObjectErrorMessages from './helpers/get-field-object-error-messages';
 import getMultiJsonErrorMessage from './helpers/get-multi-json-error-message';
+import getTaskListCaptionMessage from './helpers/get-task-list-caption-message';
 import useDescribeTaskList from './hooks/use-describe-task-list';
-import TaskListWorkersInfo from './task-list-workers-info/task-list-workers-info';
+import { TASK_LIST_DEBOUNCE_MS } from './hooks/use-describe-task-list.constants';
+import { overrides, cssStyles } from './workflow-action-start-form.styles';
 import { type Props } from './workflow-action-start-form.types';
 
 export default function WorkflowActionStartForm({
@@ -30,6 +35,7 @@ export default function WorkflowActionStartForm({
   domain,
 }: Props) {
   const now = useMemo(() => new Date(), []);
+  const { cls } = useStyletronClasses(cssStyles);
 
   const scheduleType = useWatch({
     control,
@@ -43,14 +49,27 @@ export default function WorkflowActionStartForm({
     defaultValue: '',
   });
 
+  const { debouncedValue: debouncedTaskListName, isDebouncePending } =
+    useDebouncedValue(taskListName, TASK_LIST_DEBOUNCE_MS);
+
   const {
     data: taskListData,
-    isLoading: isTaskListLoading,
+    isLoading: isTaskListQueryLoading,
     isError: isTaskListError,
   } = useDescribeTaskList({
     domain,
     cluster,
-    taskListName: taskListName,
+    taskListName: debouncedTaskListName,
+  });
+
+  const isTaskListLoading =
+    (isDebouncePending && taskListName.length > 0) || isTaskListQueryLoading;
+
+  const taskListCaptionMessage = getTaskListCaptionMessage({
+    taskListData,
+    isTaskListLoading,
+    isTaskListError,
+    taskListName,
   });
 
   return (
@@ -58,47 +77,46 @@ export default function WorkflowActionStartForm({
       <FormControl
         label="Task List"
         caption={
-          isTaskListError && taskListName
-            ? 'Error fetching task list information'
-            : undefined
+          taskListCaptionMessage ? (
+            <span className={cls.warningCaption}>
+              <MdWarning />
+              {taskListCaptionMessage}
+            </span>
+          ) : undefined
+        }
+        overrides={
+          taskListCaptionMessage ? overrides.taskListWarningCaption : undefined
         }
       >
-        <>
-          <Controller
-            name="taskList.name"
-            control={control}
-            defaultValue=""
-            render={({ field: { ref, ...field } }) => (
-              <Input
-                {...field}
-                // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
-                inputRef={ref}
-                aria-label="Task List"
-                onChange={(e) => {
-                  field.onChange(e.target.value.trim());
-                }}
-                onBlur={() => {
-                  field.onChange(field.value);
-                  field.onBlur();
-                }}
-                error={
-                  Boolean(getFieldErrorMessage(fieldErrors, 'taskList.name')) ||
-                  (isTaskListError && taskListName.length > 0)
-                }
-                size="compact"
-                placeholder="Enter task list name"
-                endEnhancer={
-                  isTaskListLoading ? (
-                    <Spinner $size={SPINNER_SIZE.small} />
-                  ) : undefined
-                }
-              />
-            )}
-          />
-          {taskListData && !isTaskListLoading && !isTaskListError && (
-            <TaskListWorkersInfo data={taskListData} />
+        <Controller
+          name="taskList.name"
+          control={control}
+          defaultValue=""
+          render={({ field: { ref, ...field } }) => (
+            <Input
+              {...field}
+              // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
+              inputRef={ref}
+              aria-label="Task List"
+              onChange={(e) => {
+                field.onChange(e.target.value.trim());
+              }}
+              onBlur={() => {
+                field.onBlur();
+              }}
+              error={Boolean(
+                getFieldErrorMessage(fieldErrors, 'taskList.name')
+              )}
+              size="compact"
+              placeholder="Enter task list name"
+              endEnhancer={
+                isTaskListLoading ? (
+                  <Spinner $size={SPINNER_SIZE.small} />
+                ) : undefined
+              }
+            />
           )}
-        </>
+        />
       </FormControl>
 
       <FormControl label="Workflow Type">
