@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { AxisTop } from '@visx/axis';
 import { Group } from '@visx/group';
@@ -64,6 +64,43 @@ export default function WorkflowHistoryTimeline({
     if (foundIndex === -1) return undefined;
     return foundIndex;
   }, [timelineRows, itemToHighlightId]);
+  const isWorkflowCompleted = workflowCloseTimeMs != null;
+
+  const requiredDomainMax = useMemo(
+    () =>
+      getTimelineMaxTimeMs(workflowCloseTimeMs, timelineRows) -
+      workflowStartTimeMs,
+    [workflowCloseTimeMs, timelineRows, workflowStartTimeMs]
+  );
+
+  const [steppedDomainMax, setSteppedDomainMax] = useState<number | null>(null);
+  const [currentTimeOffsetMs, setCurrentTimeOffsetMs] = useState<number>(
+    Date.now() - workflowStartTimeMs
+  );
+
+  useEffect(() => {
+    if (isWorkflowCompleted) return;
+
+    const newDomainMax = getSteppedDomainMax(
+      requiredDomainMax,
+      steppedDomainMax
+    );
+
+    if (newDomainMax !== steppedDomainMax) {
+      setSteppedDomainMax(newDomainMax);
+    }
+  }, [requiredDomainMax, steppedDomainMax, isWorkflowCompleted]);
+
+  // Update current time cursor for running workflows
+  useEffect(() => {
+    if (isWorkflowCompleted) return;
+
+    const intervalId = setInterval(() => {
+      setCurrentTimeOffsetMs(Date.now() - workflowStartTimeMs);
+    }, 1000 / 30);
+
+    return () => clearInterval(intervalId);
+  }, [isWorkflowCompleted, workflowStartTimeMs]);
 
   const currentTimeMs = useCurrentTimeMs({
     isWorkflowRunning:
@@ -110,6 +147,9 @@ export default function WorkflowHistoryTimeline({
 
         return (
           <styled.Container>
+            {!isWorkflowCompleted && (
+              <styled.CurrentTimeCursor $leftPx={xScale(currentTimeOffsetMs)} />
+            )}
             <styled.HeaderRow>
               <styled.HeaderLabelCell>Event group</styled.HeaderLabelCell>
               <styled.HeaderTimelineCell>
@@ -154,7 +194,7 @@ export default function WorkflowHistoryTimeline({
               initialTopMostItemIndex={maybeHighlightedRowIndex}
               itemContent={(index, row) => {
                 const isEven = index % 2 === 0;
-                const isRunning = row.group.hasMissingEvents ?? false;
+                const isRunning = row.endTimeMs === null;
                 const color =
                   workflowHistoryEventFilteringTypeColorsConfig[row.groupType]
                     .content;
