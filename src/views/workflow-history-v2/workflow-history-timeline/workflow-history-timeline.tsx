@@ -20,6 +20,7 @@ import getTimelineMaxTimeMs from './helpers/get-timeline-max-time-ms';
 import getTimelineRowFromEventGroup from './helpers/get-timeline-row-from-event-group';
 import {
   ROW_HEIGHT_PX,
+  TIMELINE_ITEM_TOOLTIP_ENTRY_DELAY_MS,
   TIMELINE_LABEL_COLUMN_WIDTH,
   TIMELINE_SIDE_PADDING,
 } from './workflow-history-timeline.constants';
@@ -179,7 +180,7 @@ export default function WorkflowHistoryTimeline({
                         placement="bottom"
                         overrides={overrides.popover}
                         popoverMargin={0}
-                        onMouseEnterDelay={400}
+                        onMouseEnterDelay={TIMELINE_ITEM_TOOLTIP_ENTRY_DELAY_MS}
                         popperOptions={{
                           modifiers: {
                             offset: {

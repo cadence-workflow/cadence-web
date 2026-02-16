@@ -2,7 +2,7 @@ import React from 'react';
 
 import { VirtuosoMockContext } from 'react-virtuoso';
 
-import { render, screen, userEvent, waitFor, within } from '@/test-utils/rtl';
+import { render, screen, userEvent, within } from '@/test-utils/rtl';
 
 import {
   mockActivityEventGroup,
@@ -138,30 +138,6 @@ describe(WorkflowHistoryTimeline.name, () => {
     const statusBadge = screen.getByTestId('status-badge');
     expect(statusBadge).toBeInTheDocument();
     expect(statusBadge).toHaveAttribute('data-status', 'COMPLETED');
-  });
-
-  it('should call onClickShowInTable with event group ID when clicking a timeline bar', async () => {
-    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-    const mockOnClickShowInTable = jest.fn();
-    const eventGroupsEntries: Array<EventGroupEntry> = [
-      ['group1', mockActivityEventGroup],
-    ];
-    const workflowStartTimeMs = mockNow - 1000000;
-
-    const { container } = setup({
-      eventGroupsEntries,
-      workflowStartTimeMs,
-      onClickShowInTable: mockOnClickShowInTable,
-    });
-
-    const bar = container.querySelector('rect');
-    expect(bar).toBeInTheDocument();
-
-    // If bar is null, the test would fail above
-    await user.click(bar!);
-    await waitFor(() => {
-      expect(mockOnClickShowInTable).toHaveBeenCalledWith('group1');
-    });
   });
 
   it('should render striped pattern for running groups', () => {

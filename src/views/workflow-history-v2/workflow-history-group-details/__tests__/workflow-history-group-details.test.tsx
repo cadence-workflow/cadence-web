@@ -308,6 +308,39 @@ describe(WorkflowHistoryGroupDetails.name, () => {
 
     expect(mockOnClickShowInTimeline).toHaveBeenCalledTimes(1);
   });
+
+  it('renders the "Show in table" button when onClickShowInTable is provided', () => {
+    setup({
+      groupDetailsEntries: mockGroupDetails,
+      onClickShowInTable: jest.fn(),
+    });
+
+    const showInTableButton = screen.getByLabelText('Show event in table');
+    expect(showInTableButton).toBeInTheDocument();
+  });
+
+  it('does not render the "Show in table" button when onClickShowInTable is not provided', () => {
+    setup({
+      groupDetailsEntries: mockGroupDetails,
+      onClickShowInTable: undefined,
+    });
+
+    const showInTableButton = screen.queryByLabelText('Show event in table');
+    expect(showInTableButton).not.toBeInTheDocument();
+  });
+
+  it('calls onClickShowInTable when the "Show in table" button is clicked', async () => {
+    const mockOnClickShowInTable = jest.fn();
+    const { user } = setup({
+      groupDetailsEntries: mockGroupDetails,
+      onClickShowInTable: mockOnClickShowInTable,
+    });
+
+    const showInTableButton = screen.getByLabelText('Show event in table');
+    await user.click(showInTableButton);
+
+    expect(mockOnClickShowInTable).toHaveBeenCalledTimes(1);
+  });
 });
 
 function setup({
@@ -321,12 +354,14 @@ function setup({
   },
   onClose,
   onClickShowInTimeline,
+  onClickShowInTable,
 }: {
   groupDetailsEntries: GroupDetailsEntries;
   initialEventId?: string;
   workflowPageParams?: WorkflowPageParams;
   onClose?: () => void;
   onClickShowInTimeline?: () => void;
+  onClickShowInTable?: () => void;
 }) {
   const user = userEvent.setup();
 
@@ -337,6 +372,7 @@ function setup({
       workflowPageParams={workflowPageParams}
       onClose={onClose}
       onClickShowInTimeline={onClickShowInTimeline}
+      onClickShowInTable={onClickShowInTable}
     />
   );
 
