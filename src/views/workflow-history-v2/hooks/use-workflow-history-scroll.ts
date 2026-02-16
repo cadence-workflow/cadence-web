@@ -33,12 +33,20 @@ export default function useWorkflowHistoryScroll({
   const groupedTableVirtuosoRef = useRef<VirtuosoHandle>(null);
   const ungroupedTableVirtuosoRef = useRef<VirtuosoHandle>(null);
   const timelineVirtuosoRef = useRef<VirtuosoHandle>(null);
+  const activeTableVirtuosoRef = isUngroupedHistoryViewEnabled
+    ? ungroupedTableVirtuosoRef
+    : groupedTableVirtuosoRef;
 
-  // Table scroll handler implementation
   const [tableScrollTargetEventId, setTableScrollTargetEventId] = useState<
     string | undefined
   >(undefined);
 
+  const [
+    timelineScrollTargetEventGroupId,
+    setTimelineScrollTargetEventGroupId,
+  ] = useState<string | undefined>(undefined);
+
+  // Table scroll handler implementation
   const tableScrollTargetEventIndex = useMemo(() => {
     if (!tableScrollTargetEventId) return undefined;
 
@@ -55,17 +63,13 @@ export default function useWorkflowHistoryScroll({
   ]);
 
   useEffect(() => {
-    const activeTableVirtuoso = isUngroupedHistoryViewEnabled
-      ? ungroupedTableVirtuosoRef.current
-      : groupedTableVirtuosoRef.current;
-
-    if (!activeTableVirtuoso) return;
+    if (!activeTableVirtuosoRef.current) return;
 
     if (
       tableScrollTargetEventIndex !== undefined &&
       tableScrollTargetEventIndex !== -1
     ) {
-      activeTableVirtuoso.scrollToIndex({
+      activeTableVirtuosoRef.current.scrollToIndex({
         index: tableScrollTargetEventIndex,
         behavior: 'auto',
         align: 'center',
@@ -78,18 +82,13 @@ export default function useWorkflowHistoryScroll({
     );
 
     return () => clearTimeout(timeoutId);
-  }, [tableScrollTargetEventIndex, isUngroupedHistoryViewEnabled]);
+  }, [tableScrollTargetEventIndex, activeTableVirtuosoRef]);
 
   const scrollToTableEvent = useCallback((eventId: string) => {
     setTableScrollTargetEventId(eventId);
   }, []);
 
   // Timeline scroll handler implementation
-  const [
-    timelineScrollTargetEventGroupId,
-    setTimelineScrollTargetEventGroupId,
-  ] = useState<string | undefined>(undefined);
-
   const timelineScrollTargetEventGroupIndex = useMemo(() => {
     if (!timelineScrollTargetEventGroupId) return undefined;
 
@@ -126,32 +125,24 @@ export default function useWorkflowHistoryScroll({
 
   // Directional scrollers
   const handleTableScrollUp = useCallback(() => {
-    const activeTableVirtuoso = isUngroupedHistoryViewEnabled
-      ? ungroupedTableVirtuosoRef.current
-      : groupedTableVirtuosoRef.current;
+    if (!activeTableVirtuosoRef.current) return;
 
-    if (!activeTableVirtuoso) return;
-
-    activeTableVirtuoso.scrollToIndex({
+    activeTableVirtuosoRef.current.scrollToIndex({
       index: 0,
       // Position the start item as low as possible
       align: 'end',
     });
-  }, [isUngroupedHistoryViewEnabled]);
+  }, [activeTableVirtuosoRef]);
 
   const handleTableScrollDown = useCallback(() => {
-    const activeTableVirtuoso = isUngroupedHistoryViewEnabled
-      ? ungroupedTableVirtuosoRef.current
-      : groupedTableVirtuosoRef.current;
+    if (!activeTableVirtuosoRef.current) return;
 
-    if (!activeTableVirtuoso) return;
-
-    activeTableVirtuoso.scrollToIndex({
+    activeTableVirtuosoRef.current.scrollToIndex({
       index: 'LAST',
       // Position the end item as high as possible
       align: 'start',
     });
-  }, [isUngroupedHistoryViewEnabled]);
+  }, [activeTableVirtuosoRef]);
 
   return {
     groupedTableVirtuosoRef,
