@@ -6,11 +6,10 @@ import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
 import { type RequestError } from '@/utils/request/request-error';
 import { mockActivityEventGroup } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
-import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-history.types';
 import { type WorkflowPageTabsParams } from '@/views/workflow-page/workflow-page-tabs/workflow-page-tabs.types';
 
+import { createUngroupedEventsInfo } from '../../__fixtures__/ungrouped-events-info';
 import type WorkflowHistoryTableFooter from '../../workflow-history-table-footer/workflow-history-table-footer';
-import compareUngroupedEvents from '../helpers/compare-ungrouped-events';
 import WorkflowHistoryUngroupedTable from '../workflow-history-ungrouped-table';
 import { type UngroupedEventInfo } from '../workflow-history-ungrouped-table.types';
 
@@ -206,26 +205,6 @@ describe(WorkflowHistoryUngroupedTable.name, () => {
     expect(screen.queryByText('Reset Event')).not.toBeInTheDocument();
   });
 });
-
-function createUngroupedEventsInfo(
-  eventGroupsById: Array<[string, HistoryEventsGroup]>
-): Array<UngroupedEventInfo> {
-  return eventGroupsById
-    .map(([groupId, group]) => [
-      ...group.events.map((event, index) => ({
-        id: event.eventId ?? event.computedEventId,
-        groupId,
-        event,
-        eventMetadata: group.eventsMetadata[index],
-        eventGroup: group,
-        label: group.label,
-        shortLabel: group.shortLabel,
-        canReset: group.resetToDecisionEventId === event.eventId,
-      })),
-    ])
-    .flat(1)
-    .sort(compareUngroupedEvents);
-}
 
 function setup({
   ungroupedEventsInfo = [],

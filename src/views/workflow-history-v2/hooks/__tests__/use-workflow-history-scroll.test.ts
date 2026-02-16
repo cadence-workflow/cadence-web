@@ -5,9 +5,8 @@ import {
   mockDecisionEventGroup,
   mockTimerEventGroup,
 } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
-import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-history.types';
 
-import compareUngroupedEvents from '../../workflow-history-ungrouped-table/helpers/compare-ungrouped-events';
+import { createUngroupedEventsInfo } from '../../__fixtures__/ungrouped-events-info';
 import { type UngroupedEventInfo } from '../../workflow-history-ungrouped-table/workflow-history-ungrouped-table.types';
 import { type EventGroupEntry } from '../../workflow-history-v2.types';
 import useWorkflowHistoryScroll from '../use-workflow-history-scroll';
@@ -398,23 +397,4 @@ function setup({
     mockUngroupedScrollToIndex,
     mockTimelineScrollToIndex,
   };
-}
-
-function createUngroupedEventsInfo(
-  eventGroupsById: Array<[string, HistoryEventsGroup]>
-): Array<UngroupedEventInfo> {
-  return eventGroupsById
-    .map(([_, group]) => [
-      ...group.events.map((event, index) => ({
-        id: event.eventId ?? event.computedEventId,
-        event,
-        eventMetadata: group.eventsMetadata[index],
-        eventGroup: group,
-        label: group.label,
-        shortLabel: group.shortLabel,
-        canReset: group.resetToDecisionEventId === event.eventId,
-      })),
-    ])
-    .flat(1)
-    .sort(compareUngroupedEvents);
 }
