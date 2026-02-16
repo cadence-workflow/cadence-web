@@ -16,4 +16,5 @@ export type Props = {
   workflowPageParams: WorkflowPageParams;
   onClose?: () => void;
   onClickShowInTimeline?: () => void;
+  onClickShowInTable?: () => void;
 };

@@ -169,6 +169,10 @@ export default function WorkflowHistoryTimeline({
                           <WorkflowHistoryTimelineEventGroup
                             eventGroup={row.group}
                             decodedPageUrlParams={decodedPageUrlParams}
+                            onClickShowInTable={() => {
+                              onClickShowInTable(row.id);
+                              close();
+                            }}
                             onClose={() => close()}
                           />
                         )}
@@ -212,9 +216,6 @@ export default function WorkflowHistoryTimeline({
                                   width={Math.max(5, rowEnd - rowStart)}
                                   height={ROW_HEIGHT_PX - 12}
                                   rx={2}
-                                  onClick={() => {
-                                    onClickShowInTable(row.id);
-                                  }}
                                   {...(isRunning
                                     ? {
                                         fill: `url(#striped-pattern-${row.id})`,
@@ -222,7 +223,6 @@ export default function WorkflowHistoryTimeline({
                                       }
                                     : {
                                         fill: color,
-                                        className: cls.bar,
                                       })}
                                 />
                               </Group>
