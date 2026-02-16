@@ -15,4 +15,5 @@ export type Props = {
   // UI behavior
   animateOnEnter?: boolean;
   onReset?: () => void;
+  onClickShowInTimeline: () => void;
 };

@@ -211,9 +211,10 @@ function createUngroupedEventsInfo(
   eventGroupsById: Array<[string, HistoryEventsGroup]>
 ): Array<UngroupedEventInfo> {
   return eventGroupsById
-    .map(([_, group]) => [
+    .map(([groupId, group]) => [
       ...group.events.map((event, index) => ({
         id: event.eventId ?? event.computedEventId,
+        groupId,
         event,
         eventMetadata: group.eventsMetadata[index],
         eventGroup: group,
@@ -245,6 +246,7 @@ function setup({
   getIsEventExpanded = jest.fn(() => false),
   toggleIsEventExpanded = jest.fn(),
   resetToDecisionEventId = jest.fn(),
+  onClickShowEventInTimeline = jest.fn(),
 }: {
   ungroupedEventsInfo?: Array<UngroupedEventInfo>;
   workflowStartTimeMs?: number | null;
@@ -265,6 +267,7 @@ function setup({
   getIsEventExpanded?: (eventId: string) => boolean;
   toggleIsEventExpanded?: (eventId: string) => void;
   resetToDecisionEventId?: (decisionEventId: string) => void;
+  onClickShowEventInTimeline?: (eventGroupId: string) => void;
 } = {}) {
   const virtuosoRef = { current: null };
   const user = userEvent.setup();
@@ -287,6 +290,7 @@ function setup({
         hasMoreEvents={hasMoreEvents}
         fetchMoreEvents={fetchMoreEvents}
         isFetchingMoreEvents={isFetchingMoreEvents}
+        onClickShowEventInTimeline={onClickShowEventInTimeline}
       />
     </VirtuosoMockContext.Provider>
   );
@@ -298,5 +302,6 @@ function setup({
     mockSetVisibleRange: setVisibleRange,
     mockToggleIsEventExpanded: toggleIsEventExpanded,
     mockResetToDecisionEventId: resetToDecisionEventId,
+    mockOnClickShowEventInTimeline: onClickShowEventInTimeline,
   };
 }
