@@ -19,4 +19,5 @@ export type Props = {
   // UI behavior
   onReset?: () => void;
   showLoadingMoreEvents: boolean;
+  onClickShowInTimeline: () => void;
 };

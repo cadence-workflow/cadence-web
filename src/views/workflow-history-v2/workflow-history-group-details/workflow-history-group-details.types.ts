@@ -15,4 +15,5 @@ export type Props = {
   isUngroupedView?: boolean;
   workflowPageParams: WorkflowPageParams;
   onClose?: () => void;
+  onClickShowInTimeline?: () => void;
 };

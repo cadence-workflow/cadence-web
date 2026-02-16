@@ -275,6 +275,8 @@ function setup({
     workflowTab: 'history';
   };
 }) {
+  const virtuosoRef = { current: null };
+
   const renderResult = render(
     <VirtuosoMockContext.Provider
       value={{ viewportHeight: 1000, itemHeight: 24 }}
@@ -285,6 +287,7 @@ function setup({
         workflowCloseTimeMs={workflowCloseTimeMs}
         onClickShowInTable={onClickShowInTable}
         decodedPageUrlParams={decodedPageUrlParams}
+        virtuosoRef={virtuosoRef}
       />
     </VirtuosoMockContext.Provider>
   );

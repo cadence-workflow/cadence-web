@@ -39,6 +39,8 @@ export default function WorkflowHistoryTimeline({
   workflowCloseTimeMs,
   onClickShowInTable,
   decodedPageUrlParams,
+  virtuosoRef,
+  itemToHighlightId,
 }: Props) {
   const { cls, theme } = useStyletronClasses(cssStyles);
 
@@ -51,6 +53,15 @@ export default function WorkflowHistoryTimeline({
         .filter((row): row is TimelineRow => row !== undefined),
     [eventGroupsEntries, workflowStartTimeMs]
   );
+
+  const maybeHighlightedRowIndex = useMemo(() => {
+    const foundIndex = timelineRows.findIndex(
+      ({ id }) => id === itemToHighlightId
+    );
+
+    if (foundIndex === -1) return undefined;
+    return foundIndex;
+  }, [timelineRows, itemToHighlightId]);
 
   return (
     <ParentSize>
@@ -120,8 +131,10 @@ export default function WorkflowHistoryTimeline({
               </styled.HeaderTimelineCell>
             </styled.HeaderRow>
             <Virtuoso
+              ref={virtuosoRef}
               style={{ flex: 1 }}
               data={timelineRows}
+              initialTopMostItemIndex={maybeHighlightedRowIndex}
               itemContent={(index, row) => {
                 const isEven = index % 2 === 0;
                 const isRunning = row.group.hasMissingEvents ?? false;
@@ -133,9 +146,13 @@ export default function WorkflowHistoryTimeline({
                 const rowEnd = xScale(row.endTimeMs - workflowStartTimeMs);
 
                 const popoverOffset = (rowStart + rowEnd - contentWidth) / 2;
+                const animateOnEnter = row.id === itemToHighlightId;
 
                 return (
-                  <styled.RowContainer $isEven={isEven}>
+                  <styled.RowContainer
+                    $isEven={isEven}
+                    $animateOnEnter={animateOnEnter}
+                  >
                     <styled.LabelCell>
                       <styled.LabelText>{row.label}</styled.LabelText>
                       <WorkflowHistoryEventStatusBadge

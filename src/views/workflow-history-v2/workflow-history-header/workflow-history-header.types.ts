@@ -1,3 +1,5 @@
+import { type VirtuosoHandle } from 'react-virtuoso';
+
 import {
   type PageQueryParamSetter,
   type PageQueryParamValues,
@@ -33,4 +35,6 @@ export type Props = {
   decodedPageUrlParams: WorkflowHistoryProps['params'];
   isTimelineShown: boolean;
   setIsTimelineShown: React.Dispatch<React.SetStateAction<boolean>>;
+  timelineVirtuosoRef: React.RefObject<VirtuosoHandle>;
+  timelineItemToHighlightId?: string;
 };

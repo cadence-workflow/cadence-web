@@ -24,6 +24,7 @@ export default function WorkflowHistoryGroupedTable({
   hasMoreEvents,
   fetchMoreEvents,
   isFetchingMoreEvents,
+  onClickShowGroupInTimeline,
 }: Props) {
   const noEventsToDisplay = eventGroupsById.length === 0;
 
@@ -52,7 +53,7 @@ export default function WorkflowHistoryGroupedTable({
                 behavior: 'auto',
               },
             })}
-        itemContent={(_, [__, group]) => (
+        itemContent={(_, [groupId, group]) => (
           <WorkflowHistoryEventGroup
             eventGroup={group}
             getIsEventExpanded={getIsEventExpanded}
@@ -70,6 +71,7 @@ export default function WorkflowHistoryGroupedTable({
                 resetToDecisionEventId(group.resetToDecisionEventId);
               }
             }}
+            onClickShowInTimeline={() => onClickShowGroupInTimeline(groupId)}
           />
         )}
         components={{

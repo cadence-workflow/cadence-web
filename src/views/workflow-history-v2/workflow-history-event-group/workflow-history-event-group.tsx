@@ -32,6 +32,7 @@ export default function WorkflowHistoryEventGroup({
   onReset,
   getIsEventExpanded,
   toggleIsEventExpanded,
+  onClickShowInTimeline,
 }: Props) {
   const {
     status,
@@ -146,6 +147,7 @@ export default function WorkflowHistoryEventGroup({
             initialEventId={selectedEventId}
             workflowPageParams={decodedPageUrlParams}
             onClose={() => handleGroupExpansionStateChange(false)}
+            onClickShowInTimeline={onClickShowInTimeline}
           />
         </styled.GroupDetailsContainer>
       </styled.GroupDetailsGridContainer>

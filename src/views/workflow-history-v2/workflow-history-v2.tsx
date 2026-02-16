@@ -274,8 +274,11 @@ export default function WorkflowHistoryV2({ params }: Props) {
   const {
     groupedTableVirtuosoRef,
     ungroupedTableVirtuosoRef,
+    timelineVirtuosoRef,
     tableScrollTargetEventId,
+    timelineScrollTargetEventGroupId,
     scrollToTableEvent,
+    scrollToTimelineEventGroup,
     handleTableScrollUp,
     handleTableScrollDown,
   } = useWorkflowHistoryScroll({
@@ -330,7 +333,7 @@ export default function WorkflowHistoryV2({ params }: Props) {
     [sortedEventGroupsEntries]
   );
 
-  const onClickNavMenuEvent = useCallback(
+  const handleClickNavMenuEvent = useCallback(
     (eventId: string) => {
       const isEventVisible = filteredEventGroupsEntries.some(
         ([_, eventGroup]) =>
@@ -358,6 +361,16 @@ export default function WorkflowHistoryV2({ params }: Props) {
     ]
   );
 
+  const handleShowGroupInTimeline = useCallback(
+    (groupId: string) => {
+      if (!isTimelineShown) {
+        setIsTimelineShown(true);
+      }
+      scrollToTimelineEventGroup(groupId);
+    },
+    [isTimelineShown, scrollToTimelineEventGroup]
+  );
+
   if (contentIsLoading) {
     return <SectionLoadingIndicator />;
   }
@@ -382,6 +395,8 @@ export default function WorkflowHistoryV2({ params }: Props) {
         decodedPageUrlParams={decodedParams}
         isTimelineShown={isTimelineShown}
         setIsTimelineShown={setIsTimelineShown}
+        timelineVirtuosoRef={timelineVirtuosoRef}
+        timelineItemToHighlightId={timelineScrollTargetEventGroupId}
       />
       <styled.ContentSection>
         {isUngroupedHistoryViewEnabled ? (
@@ -435,6 +450,7 @@ export default function WorkflowHistoryV2({ params }: Props) {
             hasMoreEvents={hasNextPage}
             fetchMoreEvents={startLoadingHistory}
             isFetchingMoreEvents={isFetchingNextPage}
+            onClickShowGroupInTimeline={handleShowGroupInTimeline}
           />
         )}
       </styled.ContentSection>
@@ -458,7 +474,7 @@ export default function WorkflowHistoryV2({ params }: Props) {
         isUngroupedView={isUngroupedHistoryViewEnabled}
         failedEventsMenuItems={failedEventsMenuItems}
         pendingEventsMenuItems={pendingEventsMenuItems}
-        onClickEvent={onClickNavMenuEvent}
+        onClickEvent={handleClickNavMenuEvent}
       />
     </styled.Container>
   );
