@@ -158,4 +158,32 @@ describe(getTimelineMaxTimeMs.name, () => {
 
     expect(result).toBe(mockNow);
   });
+
+  it('should return current time when at least one row has null endTimeMs', () => {
+    const futureTime = mockNow + 10000;
+    const timelineRows: Array<TimelineRow> = [
+      {
+        id: '1',
+        label: 'Test 1',
+        startTimeMs: mockNow - 5000,
+        endTimeMs: futureTime,
+        groupType: 'ACTIVITY',
+        status: 'COMPLETED',
+        group: mockActivityEventGroup,
+      },
+      {
+        id: '2',
+        label: 'Test 2',
+        startTimeMs: mockNow - 3000,
+        endTimeMs: null,
+        groupType: 'TIMER',
+        status: 'ONGOING',
+        group: mockTimerEventGroup,
+      },
+    ];
+
+    const result = getTimelineMaxTimeMs(null, timelineRows, mockNow);
+
+    expect(result).toBe(mockNow);
+  });
 });
