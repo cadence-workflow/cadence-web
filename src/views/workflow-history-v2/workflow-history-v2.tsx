@@ -423,7 +423,7 @@ export default function WorkflowHistoryV2({ params }: Props) {
             hasMoreEvents={hasNextPage}
             fetchMoreEvents={startLoadingHistory}
             isFetchingMoreEvents={isFetchingNextPage}
-            onClickShowEventInTimeline={handleShowGroupInTimeline}
+            onClickShowGroupInTimeline={handleShowGroupInTimeline}
           />
         ) : (
           <WorkflowHistoryGroupedTable

@@ -39,7 +39,7 @@ export type Props = {
   virtuosoRef: RefObject<VirtuosoHandle>;
 
   // Timeline integration
-  onClickShowEventInTimeline: (eventGroupId: string) => void;
+  onClickShowGroupInTimeline: (eventGroupId: string) => void;
 };
 
 export type UngroupedEventInfo = {

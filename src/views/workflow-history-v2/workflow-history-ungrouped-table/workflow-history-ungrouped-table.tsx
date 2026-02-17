@@ -22,7 +22,7 @@ export default function WorkflowHistoryUngroupedTable({
   hasMoreEvents,
   fetchMoreEvents,
   isFetchingMoreEvents,
-  onClickShowEventInTimeline,
+  onClickShowGroupInTimeline,
 }: Props) {
   const maybeHighlightedEventIndex = useMemo(
     () => ungroupedEventsInfo.findIndex((v) => v.id === selectedEventId),
@@ -57,7 +57,7 @@ export default function WorkflowHistoryUngroupedTable({
             toggleIsExpanded={() => toggleIsEventExpanded(eventInfo.id)}
             animateOnEnter={eventInfo.id === selectedEventId}
             onClickShowInTimeline={() =>
-              onClickShowEventInTimeline(eventInfo.groupId)
+              onClickShowGroupInTimeline(eventInfo.groupId)
             }
             {...(eventInfo.canReset
               ? { onReset: () => resetToDecisionEventId(eventInfo.id) }

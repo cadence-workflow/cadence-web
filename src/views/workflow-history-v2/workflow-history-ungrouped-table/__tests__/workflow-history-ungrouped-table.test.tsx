@@ -48,6 +48,7 @@ jest.mock(
         isExpanded,
         toggleIsExpanded,
         onReset,
+        onClickShowInTimeline,
         animateOnEnter,
       }) => (
         <div
@@ -60,6 +61,7 @@ jest.mock(
           <div>Event ID: {eventInfo.id}</div>
           <div>Label: {eventInfo.label}</div>
           {onReset && <button onClick={onReset}>Reset Event</button>}
+          <button onClick={onClickShowInTimeline}>Show in timeline</button>
         </div>
       )
     )
@@ -204,6 +206,21 @@ describe(WorkflowHistoryUngroupedTable.name, () => {
 
     expect(screen.queryByText('Reset Event')).not.toBeInTheDocument();
   });
+
+  it('should call onClickShowGroupInTimeline with correct groupId when show in timeline is clicked', async () => {
+    const groupId = 'group-1';
+    const ungroupedEventsInfo = createUngroupedEventsInfo([
+      [groupId, mockActivityEventGroup],
+    ]);
+    const { user, mockOnClickShowEventInTimeline } = setup({
+      ungroupedEventsInfo,
+    });
+
+    const showInTimelineButtons = screen.getAllByText('Show in timeline');
+    await user.click(showInTimelineButtons[0]);
+
+    expect(mockOnClickShowEventInTimeline).toHaveBeenCalledWith(groupId);
+  });
 });
 
 function setup({
@@ -225,7 +242,7 @@ function setup({
   getIsEventExpanded = jest.fn(() => false),
   toggleIsEventExpanded = jest.fn(),
   resetToDecisionEventId = jest.fn(),
-  onClickShowEventInTimeline = jest.fn(),
+  onClickShowGroupInTimeline = jest.fn(),
 }: {
   ungroupedEventsInfo?: Array<UngroupedEventInfo>;
   workflowStartTimeMs?: number | null;
@@ -246,7 +263,7 @@ function setup({
   getIsEventExpanded?: (eventId: string) => boolean;
   toggleIsEventExpanded?: (eventId: string) => void;
   resetToDecisionEventId?: (decisionEventId: string) => void;
-  onClickShowEventInTimeline?: (eventGroupId: string) => void;
+  onClickShowGroupInTimeline?: (eventGroupId: string) => void;
 } = {}) {
   const virtuosoRef = { current: null };
   const user = userEvent.setup();
@@ -269,7 +286,7 @@ function setup({
         hasMoreEvents={hasMoreEvents}
         fetchMoreEvents={fetchMoreEvents}
         isFetchingMoreEvents={isFetchingMoreEvents}
-        onClickShowEventInTimeline={onClickShowEventInTimeline}
+        onClickShowGroupInTimeline={onClickShowGroupInTimeline}
       />
     </VirtuosoMockContext.Provider>
   );
@@ -281,6 +298,6 @@ function setup({
     mockSetVisibleRange: setVisibleRange,
     mockToggleIsEventExpanded: toggleIsEventExpanded,
     mockResetToDecisionEventId: resetToDecisionEventId,
-    mockOnClickShowEventInTimeline: onClickShowEventInTimeline,
+    mockOnClickShowEventInTimeline: onClickShowGroupInTimeline,
   };
 }
