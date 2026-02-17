@@ -2,7 +2,7 @@ import { renderHook } from '@/test-utils/rtl';
 
 import { mockActivityEventGroup } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
 
-import { TIMELINE_DOMAIN_BUFFER_PERCENT } from '../../workflow-history-timeline.constants';
+import { TIMELINE_DOMAIN_BUFFER_RATIO } from '../../workflow-history-timeline.constants';
 import { type TimelineRow } from '../../workflow-history-timeline.types';
 import useSteppedDomainMaxMs from '../use-stepped-domain-max-ms';
 
@@ -36,7 +36,7 @@ describe(useSteppedDomainMaxMs.name, () => {
 
     const expectedOffset = currentTimeMs - mockWorkflowStartTimeMs;
     const expectedWithBuffer =
-      expectedOffset * (1 + TIMELINE_DOMAIN_BUFFER_PERCENT);
+      expectedOffset * (1 + TIMELINE_DOMAIN_BUFFER_RATIO);
 
     expect(result.current).toBe(expectedWithBuffer);
   });
@@ -78,7 +78,7 @@ describe(useSteppedDomainMaxMs.name, () => {
     rerender({ currentTimeMs: largerTimeMs });
 
     const newOffset = largerTimeMs - mockWorkflowStartTimeMs;
-    const expectedNewDomain = newOffset * (1 + TIMELINE_DOMAIN_BUFFER_PERCENT);
+    const expectedNewDomain = newOffset * (1 + TIMELINE_DOMAIN_BUFFER_RATIO);
 
     expect(result.current).toBe(expectedNewDomain);
     expect(result.current).toBeGreaterThan(initialDomain);
@@ -110,7 +110,7 @@ describe(useSteppedDomainMaxMs.name, () => {
     // Domain should be based on the row end time (which is greater than currentTimeMs)
     const expectedOffset = rowEndTimeMs - mockWorkflowStartTimeMs;
     const expectedWithBuffer =
-      expectedOffset * (1 + TIMELINE_DOMAIN_BUFFER_PERCENT);
+      expectedOffset * (1 + TIMELINE_DOMAIN_BUFFER_RATIO);
 
     expect(result.current).toBe(expectedWithBuffer);
   });

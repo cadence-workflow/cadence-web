@@ -1,7 +1,7 @@
 import { useMemo, useRef } from 'react';
 
 import getTimelineMaxTimeMs from '../helpers/get-timeline-max-time-ms';
-import { TIMELINE_DOMAIN_BUFFER_PERCENT } from '../workflow-history-timeline.constants';
+import { TIMELINE_DOMAIN_BUFFER_RATIO } from '../workflow-history-timeline.constants';
 import { type TimelineRow } from '../workflow-history-timeline.types';
 
 export default function useSteppedDomainMaxMs({
@@ -37,7 +37,7 @@ export default function useSteppedDomainMaxMs({
     requiredMaxOffsetMs >= domainMaxRef.current
   ) {
     domainMaxRef.current =
-      requiredMaxOffsetMs * (1 + TIMELINE_DOMAIN_BUFFER_PERCENT);
+      requiredMaxOffsetMs * (1 + TIMELINE_DOMAIN_BUFFER_RATIO);
   }
 
   return domainMaxRef.current;
