@@ -64,6 +64,7 @@ export default function WorkflowHistoryTimeline({
     if (foundIndex === -1) return undefined;
     return foundIndex;
   }, [timelineRows, itemToHighlightId]);
+
   const isWorkflowCompleted = workflowCloseTimeMs != null;
 
   const currentTimeMs = useCurrentTimeMs({
