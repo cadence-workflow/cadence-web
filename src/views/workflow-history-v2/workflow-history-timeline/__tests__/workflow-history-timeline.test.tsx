@@ -21,9 +21,25 @@ jest.mock(
 jest.mock(
   '../../workflow-history-timeline-event-group/workflow-history-timeline-event-group',
   () =>
-    jest.fn(({ eventGroup }: { eventGroup: { label: string } }) => (
-      <div data-testid="timeline-event-group">{eventGroup.label}</div>
-    ))
+    jest.fn(
+      ({
+        eventGroup,
+        onClickShowInTable,
+      }: {
+        eventGroup: { label: string };
+        onClickShowInTable: () => void;
+      }) => (
+        <div data-testid="timeline-event-group">
+          {eventGroup.label}
+          <button
+            data-testid="show-in-table-button"
+            onClick={onClickShowInTable}
+          >
+            Show in table
+          </button>
+        </div>
+      )
+    )
 );
 
 jest.mock(
@@ -223,6 +239,35 @@ describe(WorkflowHistoryTimeline.name, () => {
     expect(
       within(tooltip).getByText(mockActivityEventGroup.label)
     ).toBeInTheDocument();
+  });
+
+  it('should call onClickShowInTable with row ID and close popover when "Show in table" is clicked', async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    const eventGroupsEntries: Array<EventGroupEntry> = [
+      ['group1', mockActivityEventGroup],
+    ];
+    const workflowStartTimeMs = mockNow - 1000000;
+
+    const { container, onClickShowInTable } = setup({
+      eventGroupsEntries,
+      workflowStartTimeMs,
+    });
+
+    const bar = container.querySelector('rect');
+    expect(bar).toBeInTheDocument();
+
+    await user.hover(bar!);
+
+    const tooltip = await screen.findByRole('tooltip');
+    const showInTableButton = within(tooltip).getByTestId(
+      'show-in-table-button'
+    );
+
+    await user.click(showInTableButton);
+
+    expect(onClickShowInTable).toHaveBeenCalledTimes(1);
+    expect(onClickShowInTable).toHaveBeenCalledWith('group1');
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
   });
 });
 

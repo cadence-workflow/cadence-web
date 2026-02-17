@@ -55,7 +55,7 @@ export default function WorkflowHistoryGroupDetails({
             <Button
               kind="tertiary"
               size="compact"
-              aria-label="Show event in timeline"
+              aria-label="Show in timeline"
               onClick={onClickShowInTimeline}
               startEnhancer={<MdSchedule size={16} />}
             >
@@ -66,7 +66,7 @@ export default function WorkflowHistoryGroupDetails({
             <Button
               kind="tertiary"
               size="compact"
-              aria-label="Show event in table"
+              aria-label="Show in table"
               onClick={onClickShowInTable}
               startEnhancer={<MdList size={16} />}
             >
