@@ -67,7 +67,8 @@ export default function WorkflowHistoryTimeline({
   const isWorkflowCompleted = workflowCloseTimeMs != null;
 
   const currentTimeMs = useCurrentTimeMs({
-    isWorkflowRunning: !isWorkflowCompleted,
+    isWorkflowRunning:
+      workflowCloseTimeMs === null || workflowCloseTimeMs === undefined,
   });
 
   const currentTimeOffsetMs = useMemo(
@@ -188,7 +189,7 @@ export default function WorkflowHistoryTimeline({
               initialTopMostItemIndex={maybeHighlightedRowIndex}
               itemContent={(index, row) => {
                 const isEven = index % 2 === 0;
-                const isRunning = row.group.hasMissingEvents;
+                const isRunning = row.group.hasMissingEvents ?? false;
                 const color =
                   workflowHistoryEventFilteringTypeColorsConfig[row.groupType]
                     .content;
