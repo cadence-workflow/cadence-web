@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import { AxisTop } from '@visx/axis';
 import { Group } from '@visx/group';
 import { PatternLines } from '@visx/pattern';
 import { ParentSize } from '@visx/responsive';
 import { scaleLinear } from '@visx/scale';
-import { Bar } from '@visx/shape';
+import { Bar, Line } from '@visx/shape';
 import { StatefulPopover } from 'baseui/popover';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -22,6 +22,7 @@ import useTimelineMaxRangeMs from './hooks/use-timeline-max-range-ms';
 import {
   ROW_HEIGHT_PX,
   TIMELINE_ITEM_TOOLTIP_ENTRY_DELAY_MS,
+  TIMELINE_HEIGHT,
   TIMELINE_LABEL_COLUMN_WIDTH,
   TIMELINE_SIDE_PADDING,
 } from './workflow-history-timeline.constants';
@@ -66,41 +67,21 @@ export default function WorkflowHistoryTimeline({
   }, [timelineRows, itemToHighlightId]);
   const isWorkflowCompleted = workflowCloseTimeMs != null;
 
-  const requiredDomainMax = useMemo(
-    () =>
-      getTimelineMaxTimeMs(workflowCloseTimeMs, timelineRows) -
-      workflowStartTimeMs,
-    [workflowCloseTimeMs, timelineRows, workflowStartTimeMs]
+  const currentTimeMs = useCurrentTimeMs({
+    isWorkflowRunning: !isWorkflowCompleted,
+  });
+
+  const currentTimeOffsetMs = useMemo(
+    () => currentTimeMs - workflowStartTimeMs,
+    [currentTimeMs, workflowStartTimeMs]
   );
 
-  const [steppedDomainMax, setSteppedDomainMax] = useState<number | null>(null);
-  const [currentTimeOffsetMs, setCurrentTimeOffsetMs] = useState<number>(
-    Date.now() - workflowStartTimeMs
-  );
-
-  useEffect(() => {
-    if (isWorkflowCompleted) return;
-
-    const newDomainMax = getSteppedDomainMax(
-      requiredDomainMax,
-      steppedDomainMax
-    );
-
-    if (newDomainMax !== steppedDomainMax) {
-      setSteppedDomainMax(newDomainMax);
-    }
-  }, [requiredDomainMax, steppedDomainMax, isWorkflowCompleted]);
-
-  // Update current time cursor for running workflows
-  useEffect(() => {
-    if (isWorkflowCompleted) return;
-
-    const intervalId = setInterval(() => {
-      setCurrentTimeOffsetMs(Date.now() - workflowStartTimeMs);
-    }, 1000 / 30);
-
-    return () => clearInterval(intervalId);
-  }, [isWorkflowCompleted, workflowStartTimeMs]);
+  const domainMaxMs = useSteppedDomainMaxMs({
+    timelineRows,
+    workflowStartTimeMs,
+    workflowCloseTimeMs,
+    currentTimeMs,
+  });
 
   const currentTimeMs = useCurrentTimeMs({
     isWorkflowRunning:
@@ -147,9 +128,16 @@ export default function WorkflowHistoryTimeline({
 
         return (
           <styled.Container>
-            {!isWorkflowCompleted && (
-              <styled.CurrentTimeCursor $leftPx={xScale(currentTimeOffsetMs)} />
-            )}
+            <styled.ChartOverlaySvg>
+              {!isWorkflowCompleted && (
+                <Line
+                  from={{ x: xScale(currentTimeOffsetMs), y: 0 }}
+                  to={{ x: xScale(currentTimeOffsetMs), y: TIMELINE_HEIGHT }}
+                  stroke={theme.colors.negative300}
+                  strokeWidth={2}
+                />
+              )}
+            </styled.ChartOverlaySvg>
             <styled.HeaderRow>
               <styled.HeaderLabelCell>Event group</styled.HeaderLabelCell>
               <styled.HeaderTimelineCell>
@@ -194,7 +182,7 @@ export default function WorkflowHistoryTimeline({
               initialTopMostItemIndex={maybeHighlightedRowIndex}
               itemContent={(index, row) => {
                 const isEven = index % 2 === 0;
-                const isRunning = row.endTimeMs === null;
+                const isRunning = row.group.hasMissingEvents;
                 const color =
                   workflowHistoryEventFilteringTypeColorsConfig[row.groupType]
                     .content;
