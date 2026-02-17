@@ -206,9 +206,10 @@ export default function WorkflowHistoryV2({ params }: Props) {
   const ungroupedEventsInfo = useMemo<Array<UngroupedEventInfo>>(
     () =>
       filteredEventGroupsEntries
-        .map(([_, group]) => [
+        .map(([groupId, group]) => [
           ...group.events.map((event, index) => ({
             id: event.eventId ?? event.computedEventId,
+            groupId,
             event,
             eventMetadata: group.eventsMetadata[index],
             eventGroup: group,
@@ -422,6 +423,7 @@ export default function WorkflowHistoryV2({ params }: Props) {
             hasMoreEvents={hasNextPage}
             fetchMoreEvents={startLoadingHistory}
             isFetchingMoreEvents={isFetchingNextPage}
+            onClickShowGroupInTimeline={handleShowGroupInTimeline}
           />
         ) : (
           <WorkflowHistoryGroupedTable

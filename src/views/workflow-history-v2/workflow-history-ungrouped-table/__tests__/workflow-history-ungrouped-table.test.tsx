@@ -6,11 +6,10 @@ import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
 import { type RequestError } from '@/utils/request/request-error';
 import { mockActivityEventGroup } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
-import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-history.types';
 import { type WorkflowPageTabsParams } from '@/views/workflow-page/workflow-page-tabs/workflow-page-tabs.types';
 
+import { createUngroupedEventsInfo } from '../../__fixtures__/ungrouped-events-info';
 import type WorkflowHistoryTableFooter from '../../workflow-history-table-footer/workflow-history-table-footer';
-import compareUngroupedEvents from '../helpers/compare-ungrouped-events';
 import WorkflowHistoryUngroupedTable from '../workflow-history-ungrouped-table';
 import { type UngroupedEventInfo } from '../workflow-history-ungrouped-table.types';
 
@@ -49,6 +48,7 @@ jest.mock(
         isExpanded,
         toggleIsExpanded,
         onReset,
+        onClickShowInTimeline,
         animateOnEnter,
       }) => (
         <div
@@ -61,6 +61,7 @@ jest.mock(
           <div>Event ID: {eventInfo.id}</div>
           <div>Label: {eventInfo.label}</div>
           {onReset && <button onClick={onReset}>Reset Event</button>}
+          <button onClick={onClickShowInTimeline}>Show in timeline</button>
         </div>
       )
     )
@@ -205,26 +206,22 @@ describe(WorkflowHistoryUngroupedTable.name, () => {
 
     expect(screen.queryByText('Reset Event')).not.toBeInTheDocument();
   });
-});
 
-function createUngroupedEventsInfo(
-  eventGroupsById: Array<[string, HistoryEventsGroup]>
-): Array<UngroupedEventInfo> {
-  return eventGroupsById
-    .map(([_, group]) => [
-      ...group.events.map((event, index) => ({
-        id: event.eventId ?? event.computedEventId,
-        event,
-        eventMetadata: group.eventsMetadata[index],
-        eventGroup: group,
-        label: group.label,
-        shortLabel: group.shortLabel,
-        canReset: group.resetToDecisionEventId === event.eventId,
-      })),
-    ])
-    .flat(1)
-    .sort(compareUngroupedEvents);
-}
+  it('should call onClickShowGroupInTimeline with correct groupId when show in timeline is clicked', async () => {
+    const groupId = 'group-1';
+    const ungroupedEventsInfo = createUngroupedEventsInfo([
+      [groupId, mockActivityEventGroup],
+    ]);
+    const { user, mockOnClickShowEventInTimeline } = setup({
+      ungroupedEventsInfo,
+    });
+
+    const showInTimelineButtons = screen.getAllByText('Show in timeline');
+    await user.click(showInTimelineButtons[0]);
+
+    expect(mockOnClickShowEventInTimeline).toHaveBeenCalledWith(groupId);
+  });
+});
 
 function setup({
   ungroupedEventsInfo = [],
@@ -245,6 +242,7 @@ function setup({
   getIsEventExpanded = jest.fn(() => false),
   toggleIsEventExpanded = jest.fn(),
   resetToDecisionEventId = jest.fn(),
+  onClickShowGroupInTimeline = jest.fn(),
 }: {
   ungroupedEventsInfo?: Array<UngroupedEventInfo>;
   workflowStartTimeMs?: number | null;
@@ -265,6 +263,7 @@ function setup({
   getIsEventExpanded?: (eventId: string) => boolean;
   toggleIsEventExpanded?: (eventId: string) => void;
   resetToDecisionEventId?: (decisionEventId: string) => void;
+  onClickShowGroupInTimeline?: (eventGroupId: string) => void;
 } = {}) {
   const virtuosoRef = { current: null };
   const user = userEvent.setup();
@@ -287,6 +286,7 @@ function setup({
         hasMoreEvents={hasMoreEvents}
         fetchMoreEvents={fetchMoreEvents}
         isFetchingMoreEvents={isFetchingMoreEvents}
+        onClickShowGroupInTimeline={onClickShowGroupInTimeline}
       />
     </VirtuosoMockContext.Provider>
   );
@@ -298,5 +298,6 @@ function setup({
     mockSetVisibleRange: setVisibleRange,
     mockToggleIsEventExpanded: toggleIsEventExpanded,
     mockResetToDecisionEventId: resetToDecisionEventId,
+    mockOnClickShowEventInTimeline: onClickShowGroupInTimeline,
   };
 }
