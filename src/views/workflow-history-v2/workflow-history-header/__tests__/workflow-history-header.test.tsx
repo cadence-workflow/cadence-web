@@ -289,5 +289,6 @@ function getDefaultProps(): Props {
     },
     isTimelineShown: false,
     setIsTimelineShown: jest.fn(),
+    timelineVirtuosoRef: { current: null },
   };
 }

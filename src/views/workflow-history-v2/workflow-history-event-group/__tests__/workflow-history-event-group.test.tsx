@@ -614,6 +614,7 @@ function setup({
       onReset={mockOnReset}
       getIsEventExpanded={getIsEventExpanded}
       toggleIsEventExpanded={toggleIsEventExpanded}
+      onClickShowInTimeline={jest.fn()}
     />
   );
 

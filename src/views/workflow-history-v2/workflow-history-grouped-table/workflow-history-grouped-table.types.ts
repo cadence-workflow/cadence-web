@@ -33,4 +33,5 @@ export type Props = {
   hasMoreEvents: boolean;
   fetchMoreEvents: () => void;
   isFetchingMoreEvents: boolean;
+  onClickShowGroupInTimeline: (groupId: string) => void;
 };

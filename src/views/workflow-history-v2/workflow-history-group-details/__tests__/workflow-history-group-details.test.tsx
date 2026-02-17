@@ -269,6 +269,45 @@ describe(WorkflowHistoryGroupDetails.name, () => {
 
     expect(await screen.findByText('Copied link to event')).toBeInTheDocument();
   });
+
+  it('renders the "Show in timeline" button when onClickShowInTimeline is provided', () => {
+    setup({
+      groupDetailsEntries: mockGroupDetails,
+      onClickShowInTimeline: jest.fn(),
+    });
+
+    const showInTimelineButton = screen.getByLabelText(
+      'Show event in timeline'
+    );
+    expect(showInTimelineButton).toBeInTheDocument();
+  });
+
+  it('does not render the "Show in timeline" button when onClickShowInTimeline is not provided', () => {
+    setup({
+      groupDetailsEntries: mockGroupDetails,
+      onClickShowInTimeline: undefined,
+    });
+
+    const showInTimelineButton = screen.queryByLabelText(
+      'Show event in timeline'
+    );
+    expect(showInTimelineButton).not.toBeInTheDocument();
+  });
+
+  it('calls onClickShowInTimeline when the "Show in timeline" button is clicked', async () => {
+    const mockOnClickShowInTimeline = jest.fn();
+    const { user } = setup({
+      groupDetailsEntries: mockGroupDetails,
+      onClickShowInTimeline: mockOnClickShowInTimeline,
+    });
+
+    const showInTimelineButton = screen.getByLabelText(
+      'Show event in timeline'
+    );
+    await user.click(showInTimelineButton);
+
+    expect(mockOnClickShowInTimeline).toHaveBeenCalledTimes(1);
+  });
 });
 
 function setup({
@@ -281,11 +320,13 @@ function setup({
     runId: 'test-run-id',
   },
   onClose,
+  onClickShowInTimeline,
 }: {
   groupDetailsEntries: GroupDetailsEntries;
   initialEventId?: string;
   workflowPageParams?: WorkflowPageParams;
   onClose?: () => void;
+  onClickShowInTimeline?: () => void;
 }) {
   const user = userEvent.setup();
 
@@ -295,6 +336,7 @@ function setup({
       initialEventId={initialEventId}
       workflowPageParams={workflowPageParams}
       onClose={onClose}
+      onClickShowInTimeline={onClickShowInTimeline}
     />
   );
 
