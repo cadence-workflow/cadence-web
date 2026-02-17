@@ -1,3 +1,3 @@
-import { type UserAuthContext } from '@/utils/auth/auth-context';
+import { type PrivateAuthContext } from '@/utils/auth/auth-context';
 
-export type AuthInfoMiddlewareContext = UserAuthContext;
+export type AuthInfoMiddlewareContext = PrivateAuthContext;

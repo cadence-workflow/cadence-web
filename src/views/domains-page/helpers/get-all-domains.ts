@@ -3,7 +3,7 @@ import 'server-only';
 import {
   getDomainAccessForUser,
   getGrpcMetadataFromAuth,
-  type UserAuthContext,
+  type PrivateAuthContext,
 } from '@/utils/auth/auth-context';
 import getConfigValue from '@/utils/config/get-config-value';
 import * as grpcClient from '@/utils/grpc/grpc-client';
@@ -15,7 +15,7 @@ import getUniqueDomains from './get-unique-domains';
 
 const MAX_DOMAINS_TO_FETCH = 2000;
 
-export const getAllDomains = async (authContext: UserAuthContext) => {
+export const getAllDomains = async (authContext: PrivateAuthContext) => {
   const CLUSTERS_CONFIGS = await getConfigValue('CLUSTERS');
   const results = await Promise.allSettled(
     CLUSTERS_CONFIGS.map(async ({ clusterName }) => {

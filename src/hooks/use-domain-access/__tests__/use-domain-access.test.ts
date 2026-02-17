@@ -34,8 +34,8 @@ describe(useDomainAccess.name, () => {
       domainResponse: {
         name: 'test-domain',
         data: {
-          READ_GROUPS: '["reader"]',
-          WRITE_GROUPS: '["writer"]',
+          READ_GROUPS: 'reader',
+          WRITE_GROUPS: 'writer',
         },
       },
     });
@@ -59,8 +59,8 @@ describe(useDomainAccess.name, () => {
       domainResponse: {
         name: 'test-domain',
         data: {
-          READ_GROUPS: '["reader"]',
-          WRITE_GROUPS: '["writer"]',
+          READ_GROUPS: 'reader',
+          WRITE_GROUPS: 'writer',
         },
       },
     });
@@ -84,8 +84,8 @@ describe(useDomainAccess.name, () => {
       domainResponse: {
         name: 'test-domain',
         data: {
-          READ_GROUPS: '["reader"]',
-          WRITE_GROUPS: '["writer"]',
+          READ_GROUPS: 'reader',
+          WRITE_GROUPS: 'writer',
         },
       },
     });
@@ -161,8 +161,8 @@ describe(useDomainAccess.name, () => {
       domainResponse: {
         name: 'test-domain',
         data: {
-          READ_GROUPS: '["reader"]',
-          WRITE_GROUPS: '["writer"]',
+          READ_GROUPS: 'reader',
+          WRITE_GROUPS: 'writer',
         },
       },
     });

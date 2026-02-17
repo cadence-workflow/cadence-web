@@ -3,7 +3,10 @@ import { useMemo } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getDomainAccessForUser } from '@/utils/auth/auth-shared';
+import {
+  getDomainAccessForUser,
+  type DomainAccess,
+} from '@/utils/auth/auth-shared';
 import getDomainDescriptionQueryOptions from '@/views/shared/hooks/use-domain-description/get-domain-description-query-options';
 import { type UseDomainDescriptionParams } from '@/views/shared/hooks/use-domain-description/use-domain-description.types';
 
@@ -20,7 +23,7 @@ export default function useDomainAccess(params: UseDomainDescriptionParams) {
     enabled: shouldFetchDomain,
   });
 
-  const access = useMemo(() => {
+  const access = useMemo<DomainAccess | undefined>(() => {
     if (userInfoQuery.isError) {
       return { canRead: false, canWrite: false };
     }
@@ -60,6 +63,5 @@ export default function useDomainAccess(params: UseDomainDescriptionParams) {
     access,
     isLoading,
     isError: userInfoQuery.isError || domainQuery.isError,
-    userInfoQuery,
   };
 }

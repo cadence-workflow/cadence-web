@@ -196,6 +196,7 @@ async function setup({
 
   const result = await getAllDomains({
     authEnabled: false,
+    isAuthenticated: false,
     groups: [],
     isAdmin: false,
   });

@@ -11,7 +11,7 @@ import {
   splitGroupList,
   type CadenceJwtClaims,
   type PublicAuthContext,
-  type UserAuthContext,
+  type PrivateAuthContext,
 } from './auth-shared';
 
 export const CADENCE_AUTH_COOKIE_NAME = 'cadence-authorization';
@@ -24,7 +24,7 @@ const cadenceJwtClaimsSchema = z
   .object({
     admin: z.boolean().optional(),
     exp: z.number().optional(),
-    groups: z.unknown().optional(),
+    groups: z.string().optional(),
     name: z.string().optional(),
     sub: z.string().optional(),
   })
@@ -59,7 +59,7 @@ export function decodeCadenceJwtClaims(
 
 export async function resolveAuthContext(
   cookieStore?: CookieReader
-): Promise<UserAuthContext> {
+): Promise<PrivateAuthContext> {
   const authStrategy =
     (await getConfigValue('CADENCE_WEB_AUTH_STRATEGY')) ?? 'disabled';
   const authEnabled = authStrategy.toLowerCase() === 'jwt';
@@ -81,16 +81,8 @@ export async function resolveAuthContext(
 
   const normalizeGroups = (): string[] => {
     const raw = effectiveClaims?.groups;
-    if (!raw) return [];
-    if (Array.isArray(raw)) {
-      return raw
-        .flatMap((g) => splitGroupList(typeof g === 'string' ? g : `${g}`))
-        .filter(Boolean);
-    }
-    if (typeof raw === 'string') {
-      return splitGroupList(raw);
-    }
-    return [];
+    if (typeof raw !== 'string') return [];
+    return splitGroupList(raw);
   };
   const groups = normalizeGroups();
   const id =
@@ -105,6 +97,7 @@ export async function resolveAuthContext(
 
   return {
     authEnabled,
+    isAuthenticated: Boolean(effectiveToken),
     token: effectiveToken,
     groups,
     isAdmin,
@@ -115,7 +108,7 @@ export async function resolveAuthContext(
 }
 
 export function getGrpcMetadataFromAuth(
-  authContext: UserAuthContext | null | undefined
+  authContext: PrivateAuthContext | null | undefined
 ): GRPCMetadata | undefined {
   if (!authContext?.authEnabled || !authContext.token) {
     return undefined;
@@ -126,23 +119,17 @@ export function getGrpcMetadataFromAuth(
   };
 }
 
-export const getPublicAuthContext = (
-  authContext: UserAuthContext
-): PublicAuthContext => ({
-  authEnabled: authContext.authEnabled,
-  groups: authContext.groups,
-  isAdmin: authContext.isAdmin,
-  userName: authContext.userName,
-  id: authContext.id,
-  ...(typeof authContext.expiresAtMs === 'number'
-    ? { expiresAtMs: authContext.expiresAtMs }
-    : {}),
-  isAuthenticated: Boolean(authContext.token),
-});
+export const getPublicAuthContext = ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  token: _token,
+  ...publicFields
+}: PrivateAuthContext): PublicAuthContext => publicFields;
 
 export { getDomainAccessForUser } from './auth-shared';
 export type {
+  BaseAuthContext,
   CadenceJwtClaims,
+  DomainAccess,
+  PrivateAuthContext,
   PublicAuthContext,
-  UserAuthContext,
 } from './auth-shared';

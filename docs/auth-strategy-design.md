@@ -13,9 +13,9 @@ Domain Setup
 
 name: "finance-payments"
 
-READ_GROUPS: ["worker"]
+READ_GROUPS: worker
 
-WRITE_GROUPS: ["payer"]
+WRITE_GROUPS: payer
 
 Meaning:
 
@@ -220,7 +220,7 @@ WRITE_GROUPS
 JWT contains:
 
 ```
-groups: [string]
+groups: string
 admin: boolean
 ```
 admin bypasses all checks
@@ -280,7 +280,7 @@ or use button in UI
 ```
 
 Notes:
-- `groups` may be a string (comma- or space-delimited) or an array; the UI normalizes both.
+- `groups` must be a string (comma- or space-delimited).
 
 ## Diagrams
 
