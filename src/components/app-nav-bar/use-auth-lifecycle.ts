@@ -121,8 +121,12 @@ export default function useAuthLifecycle(): AuthLifecycle {
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({ token }),
         });
-        await refetch();
-        enqueue({ message: 'Token saved' }, DURATION.medium);
+        const { data } = await refetch();
+        if (!data?.isAuthenticated) {
+          showErrorSnackbar('Token is expired or invalid');
+          return;
+        }
+        enqueue({ message: 'Token saved' }, DURATION.short);
         setIsModalOpen(false);
         router.refresh();
       } catch (e) {

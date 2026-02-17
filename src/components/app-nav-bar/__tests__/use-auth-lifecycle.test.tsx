@@ -140,7 +140,31 @@ describe(useAuthLifecycle.name, () => {
 
   describe('saveToken', () => {
     it('calls POST /api/auth/token and refetches auth info', async () => {
+      let currentAuth: AuthResponse = AUTH_UNAUTHENTICATED;
       const { result, postTokenHandler, deleteTokenHandler } = setup({
+        authResponse: currentAuth,
+        dynamicAuthResolver: () => currentAuth,
+      });
+
+      await waitFor(() => {
+        expect(result.current.isAuthEnabled).toBe(true);
+      });
+
+      currentAuth = AUTH_ENABLED;
+      await act(async () => {
+        await result.current.saveToken('header.payload.signature');
+      });
+
+      expect(postTokenHandler).toHaveBeenCalled();
+      expect(deleteTokenHandler).not.toHaveBeenCalled();
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        { message: 'Token saved' },
+        expect.any(Number)
+      );
+    });
+
+    it('shows error snackbar when token is expired or invalid', async () => {
+      const { result } = setup({
         authResponse: AUTH_UNAUTHENTICATED,
       });
 
@@ -152,10 +176,10 @@ describe(useAuthLifecycle.name, () => {
         await result.current.saveToken('header.payload.signature');
       });
 
-      expect(postTokenHandler).toHaveBeenCalled();
-      expect(deleteTokenHandler).not.toHaveBeenCalled();
       expect(mockEnqueue).toHaveBeenCalledWith(
-        { message: 'Token saved' },
+        expect.objectContaining({
+          message: 'Token is expired or invalid',
+        }),
         expect.any(Number)
       );
     });

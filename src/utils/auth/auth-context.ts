@@ -9,7 +9,6 @@ import getConfigValue from '../config/get-config-value';
 
 import {
   splitGroupList,
-  type CadenceJwtClaims,
   type PublicAuthContext,
   type PrivateAuthContext,
 } from './auth-shared';
@@ -20,15 +19,15 @@ type CookieReader = {
   get: (name: string) => { value: string } | undefined;
 };
 
-const cadenceJwtClaimsSchema = z
-  .object({
-    admin: z.boolean().optional(),
-    exp: z.number().optional(),
-    groups: z.string().optional(),
-    name: z.string().optional(),
-    sub: z.string().optional(),
-  })
-  .passthrough();
+const cadenceJwtClaimsSchema = z.object({
+  admin: z.boolean().optional(),
+  exp: z.number().optional(),
+  groups: z.string().optional(),
+  name: z.string().optional(),
+  sub: z.string().optional(),
+});
+
+export type CadenceJwtClaims = z.infer<typeof cadenceJwtClaimsSchema>;
 
 export function decodeCadenceJwtClaims(
   token: string
@@ -51,7 +50,7 @@ export function decodeCadenceJwtClaims(
     if (!result.success) {
       return undefined;
     }
-    return result.data as CadenceJwtClaims;
+    return result.data;
   } catch {
     return undefined;
   }
@@ -79,20 +78,11 @@ export async function resolveAuthContext(
   const expiresAtMs = shouldDropToken ? undefined : expiresAtMsRaw;
   const effectiveToken = shouldDropToken ? undefined : token;
 
-  const normalizeGroups = (): string[] => {
-    const raw = effectiveClaims?.groups;
-    if (typeof raw !== 'string') return [];
-    return splitGroupList(raw);
-  };
-  const groups = normalizeGroups();
-  const id =
-    (typeof effectiveClaims?.sub === 'string' && effectiveClaims.sub) ||
-    (typeof effectiveClaims?.name === 'string' && effectiveClaims.name) ||
-    undefined;
-  const userName =
-    (typeof effectiveClaims?.name === 'string' && effectiveClaims.name) ||
-    (typeof effectiveClaims?.sub === 'string' && effectiveClaims.sub) ||
-    undefined;
+  const groups = effectiveClaims?.groups
+    ? splitGroupList(effectiveClaims.groups)
+    : [];
+  const id = effectiveClaims?.sub || effectiveClaims?.name || undefined;
+  const userName = effectiveClaims?.name || effectiveClaims?.sub || undefined;
   const isAdmin = effectiveClaims?.admin === true;
 
   return {
@@ -120,7 +110,6 @@ export function getGrpcMetadataFromAuth(
 }
 
 export const getPublicAuthContext = ({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   token: _token,
   ...publicFields
 }: PrivateAuthContext): PublicAuthContext => publicFields;
@@ -128,7 +117,6 @@ export const getPublicAuthContext = ({
 export { getDomainAccessForUser } from './auth-shared';
 export type {
   BaseAuthContext,
-  CadenceJwtClaims,
   DomainAccess,
   PrivateAuthContext,
   PublicAuthContext,

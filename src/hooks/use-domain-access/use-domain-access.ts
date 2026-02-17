@@ -4,6 +4,8 @@ import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import {
+  FULL_ACCESS,
+  NO_ACCESS,
   getDomainAccessForUser,
   type DomainAccess,
 } from '@/utils/auth/auth-shared';
@@ -25,7 +27,7 @@ export default function useDomainAccess(params: UseDomainDescriptionParams) {
 
   const access = useMemo<DomainAccess | undefined>(() => {
     if (userInfoQuery.isError) {
-      return { canRead: false, canWrite: false };
+      return NO_ACCESS;
     }
 
     if (!userInfoQuery.data) {
@@ -33,11 +35,11 @@ export default function useDomainAccess(params: UseDomainDescriptionParams) {
     }
 
     if (!userInfoQuery.data.authEnabled) {
-      return { canRead: true, canWrite: true };
+      return FULL_ACCESS;
     }
 
     if (!userInfoQuery.data.isAuthenticated) {
-      return { canRead: false, canWrite: false };
+      return NO_ACCESS;
     }
 
     if (domainQuery.data) {
@@ -45,7 +47,7 @@ export default function useDomainAccess(params: UseDomainDescriptionParams) {
     }
 
     if (domainQuery.isError) {
-      return { canRead: false, canWrite: false };
+      return NO_ACCESS;
     }
 
     return undefined;

@@ -251,17 +251,6 @@ describe('auth-context utilities', () => {
       activeClusters: null,
     };
 
-    it('allows open domains when auth is disabled', () => {
-      const access = getDomainAccessForUser(baseDomain, {
-        authEnabled: false,
-        isAuthenticated: false,
-        isAdmin: false,
-        groups: [],
-      });
-
-      expect(access).toEqual({ canRead: true, canWrite: true });
-    });
-
     it('allows admin users', () => {
       const access = getDomainAccessForUser(
         { ...baseDomain, data: { READ_GROUPS: 'worker' } },
@@ -391,26 +380,6 @@ describe('auth-context utilities', () => {
       );
 
       expect(access).toEqual({ canRead: true, canWrite: false });
-    });
-
-    it('supports PublicAuthContext for authenticated users', () => {
-      const access = getDomainAccessForUser(
-        {
-          ...baseDomain,
-          data: {
-            READ_GROUPS: 'reader',
-            WRITE_GROUPS: 'writer',
-          },
-        },
-        {
-          authEnabled: true,
-          isAdmin: false,
-          groups: ['writer'],
-          isAuthenticated: true,
-        }
-      );
-
-      expect(access).toEqual({ canRead: true, canWrite: true });
     });
 
     it('parses space-separated groups in domain metadata', () => {

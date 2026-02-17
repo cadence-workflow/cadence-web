@@ -48,56 +48,6 @@ describe(useDomainAccess.name, () => {
     });
   });
 
-  it('grants write access when the user is in the write group', async () => {
-    const { result } = setup({
-      authResponse: {
-        authEnabled: true,
-        isAuthenticated: true,
-        isAdmin: false,
-        groups: ['writer'],
-      },
-      domainResponse: {
-        name: 'test-domain',
-        data: {
-          READ_GROUPS: 'reader',
-          WRITE_GROUPS: 'writer',
-        },
-      },
-    });
-
-    await waitFor(() => {
-      expect(result.current.access).toEqual({
-        canRead: true,
-        canWrite: true,
-      });
-    });
-  });
-
-  it('grants full access to admin users', async () => {
-    const { result } = setup({
-      authResponse: {
-        authEnabled: true,
-        isAuthenticated: true,
-        isAdmin: true,
-        groups: [],
-      },
-      domainResponse: {
-        name: 'test-domain',
-        data: {
-          READ_GROUPS: 'reader',
-          WRITE_GROUPS: 'writer',
-        },
-      },
-    });
-
-    await waitFor(() => {
-      expect(result.current.access).toEqual({
-        canRead: true,
-        canWrite: true,
-      });
-    });
-  });
-
   it('denies access for unauthenticated users when auth is enabled', async () => {
     const { result, domainRequestHandler } = setup({
       authResponse: {

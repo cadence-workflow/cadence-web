@@ -1,13 +1,5 @@
 import { type Domain } from '@/__generated__/proto-ts/uber/cadence/api/v1/Domain';
 
-export type CadenceJwtClaims = {
-  admin?: boolean;
-  exp?: number;
-  groups?: string;
-  name?: string;
-  sub?: string;
-};
-
 export type BaseAuthContext = {
   authEnabled: boolean;
   isAuthenticated: boolean;
@@ -29,6 +21,16 @@ export type DomainAccess = {
   canWrite: boolean;
 };
 
+export const FULL_ACCESS: DomainAccess = {
+  canRead: true,
+  canWrite: true,
+};
+
+export const NO_ACCESS: DomainAccess = {
+  canRead: false,
+  canWrite: false,
+};
+
 export const splitGroupList = (raw: string) =>
   raw
     .split(/[,\s]+/g)
@@ -40,35 +42,23 @@ export const getDomainAccessForUser = (
   authContext: BaseAuthContext | null | undefined
 ): DomainAccess => {
   if (!authContext?.authEnabled) {
-    return {
-      canRead: true,
-      canWrite: true,
-    };
+    return FULL_ACCESS;
   }
 
   if (authContext.isAdmin) {
-    return {
-      canRead: true,
-      canWrite: true,
-    };
+    return FULL_ACCESS;
   }
 
   if (!authContext.isAuthenticated) {
-    return {
-      canRead: false,
-      canWrite: false,
-    };
+    return NO_ACCESS;
   }
 
   const readGroups = splitGroupList(domain.data?.READ_GROUPS ?? '');
   const writeGroups = splitGroupList(domain.data?.WRITE_GROUPS ?? '');
 
-  const userGroups = authContext?.groups ?? [];
+  const userGroups = authContext.groups;
   if (readGroups.length === 0 && writeGroups.length === 0) {
-    return {
-      canRead: false,
-      canWrite: false,
-    };
+    return NO_ACCESS;
   }
 
   const effectiveReadGroups = readGroups.length > 0 ? readGroups : writeGroups;
