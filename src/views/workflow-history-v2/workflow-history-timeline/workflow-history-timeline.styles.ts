@@ -153,15 +153,6 @@ export const styled = {
     width: '100%',
     height: '100%',
   })),
-  ChartOverlaySvg: createStyled('svg', () => ({
-    position: 'absolute',
-    top: 0,
-    left: `${TIMELINE_LABEL_COLUMN_WIDTH}px`,
-    width: `calc(100% - ${TIMELINE_LABEL_COLUMN_WIDTH}px)`,
-    height: '100%',
-    zIndex: 15,
-    pointerEvents: 'none',
-  })),
 };
 
 const cssStylesObj = {
