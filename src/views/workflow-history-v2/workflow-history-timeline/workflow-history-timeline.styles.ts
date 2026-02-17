@@ -156,11 +156,7 @@ export const styled = {
 };
 
 const cssStylesObj = {
-  bar: {
-    cursor: 'pointer',
-  },
   barAnimated: {
-    cursor: 'pointer',
     '@keyframes stripeMove': {
       '0%': {
         transform: 'translate(0, 0)',

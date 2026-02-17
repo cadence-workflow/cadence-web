@@ -2,7 +2,7 @@ import React from 'react';
 
 import { VirtuosoMockContext } from 'react-virtuoso';
 
-import { render, screen, userEvent, waitFor, within } from '@/test-utils/rtl';
+import { render, screen, userEvent, within } from '@/test-utils/rtl';
 
 import {
   mockActivityEventGroup,
@@ -21,9 +21,25 @@ jest.mock(
 jest.mock(
   '../../workflow-history-timeline-event-group/workflow-history-timeline-event-group',
   () =>
-    jest.fn(({ eventGroup }: { eventGroup: { label: string } }) => (
-      <div data-testid="timeline-event-group">{eventGroup.label}</div>
-    ))
+    jest.fn(
+      ({
+        eventGroup,
+        onClickShowInTable,
+      }: {
+        eventGroup: { label: string };
+        onClickShowInTable: () => void;
+      }) => (
+        <div data-testid="timeline-event-group">
+          {eventGroup.label}
+          <button
+            data-testid="show-in-table-button"
+            onClick={onClickShowInTable}
+          >
+            Show in table
+          </button>
+        </div>
+      )
+    )
 );
 
 jest.mock(
@@ -140,30 +156,6 @@ describe(WorkflowHistoryTimeline.name, () => {
     expect(statusBadge).toHaveAttribute('data-status', 'COMPLETED');
   });
 
-  it('should call onClickShowInTable with event group ID when clicking a timeline bar', async () => {
-    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-    const mockOnClickShowInTable = jest.fn();
-    const eventGroupsEntries: Array<EventGroupEntry> = [
-      ['group1', mockActivityEventGroup],
-    ];
-    const workflowStartTimeMs = mockNow - 1000000;
-
-    const { container } = setup({
-      eventGroupsEntries,
-      workflowStartTimeMs,
-      onClickShowInTable: mockOnClickShowInTable,
-    });
-
-    const bar = container.querySelector('rect');
-    expect(bar).toBeInTheDocument();
-
-    // If bar is null, the test would fail above
-    await user.click(bar!);
-    await waitFor(() => {
-      expect(mockOnClickShowInTable).toHaveBeenCalledWith('group1');
-    });
-  });
-
   it('should render striped pattern for running groups', () => {
     const runningGroup = {
       ...mockActivityEventGroup,
@@ -247,6 +239,35 @@ describe(WorkflowHistoryTimeline.name, () => {
     expect(
       within(tooltip).getByText(mockActivityEventGroup.label)
     ).toBeInTheDocument();
+  });
+
+  it('should call onClickShowInTable with row ID and close popover when "Show in table" is clicked', async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    const eventGroupsEntries: Array<EventGroupEntry> = [
+      ['group1', mockActivityEventGroup],
+    ];
+    const workflowStartTimeMs = mockNow - 1000000;
+
+    const { container, onClickShowInTable } = setup({
+      eventGroupsEntries,
+      workflowStartTimeMs,
+    });
+
+    const bar = container.querySelector('rect');
+    expect(bar).toBeInTheDocument();
+
+    await user.hover(bar!);
+
+    const tooltip = await screen.findByRole('tooltip');
+    const showInTableButton = within(tooltip).getByTestId(
+      'show-in-table-button'
+    );
+
+    await user.click(showInTableButton);
+
+    expect(onClickShowInTable).toHaveBeenCalledTimes(1);
+    expect(onClickShowInTable).toHaveBeenCalledWith('group1');
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
   });
 });
 
