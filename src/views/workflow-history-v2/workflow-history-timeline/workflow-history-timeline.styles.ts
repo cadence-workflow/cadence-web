@@ -153,42 +153,15 @@ export const styled = {
     width: '100%',
     height: '100%',
   })),
-  CurrentTimeCursor: createStyled<'div', { $leftPx: number }>(
-    'div',
-    ({ $theme, $leftPx }: { $theme: Theme; $leftPx: number }) => ({
-      position: 'absolute',
-      top: $theme.sizing.scale400,
-      bottom: 0,
-      left: `${TIMELINE_LABEL_COLUMN_WIDTH + $leftPx}px`,
-      width: '2px',
-      backgroundColor: $theme.colors.negative400,
-      zIndex: 15,
-      pointerEvents: 'none',
-      '::before': {
-        content: '"NOW"',
-        position: 'absolute',
-        top: '2px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        fontSize: '9px',
-        fontWeight: 600,
-        color: $theme.colors.negative400,
-        whiteSpace: 'nowrap',
-        letterSpacing: '0.5px',
-      },
-      '::after': {
-        content: '""',
-        position: 'absolute',
-        top: '14px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        width: '6px',
-        height: '6px',
-        backgroundColor: $theme.colors.negative400,
-        borderRadius: '50%',
-      },
-    })
-  ),
+  ChartOverlaySvg: createStyled('svg', () => ({
+    position: 'absolute',
+    top: 0,
+    left: `${TIMELINE_LABEL_COLUMN_WIDTH}px`,
+    width: `calc(100% - ${TIMELINE_LABEL_COLUMN_WIDTH}px)`,
+    height: '100%',
+    zIndex: 15,
+    pointerEvents: 'none',
+  })),
 };
 
 const cssStylesObj = {
