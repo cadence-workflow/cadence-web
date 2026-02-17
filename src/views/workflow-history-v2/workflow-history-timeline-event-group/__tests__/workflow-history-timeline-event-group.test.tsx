@@ -61,6 +61,7 @@ function setup(propsOverrides: Partial<Props> = {}) {
       runId: 'test-run-id',
       workflowTab: 'history',
     },
+    onClickShowInTable: jest.fn(),
     onClose: jest.fn(),
     ...propsOverrides,
   };

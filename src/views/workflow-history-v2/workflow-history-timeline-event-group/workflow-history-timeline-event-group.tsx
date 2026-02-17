@@ -6,6 +6,7 @@ import { type Props } from './workflow-history-timeline-event-group.types';
 export default function WorkflowHistoryTimelineEventGroup({
   eventGroup,
   decodedPageUrlParams,
+  onClickShowInTable,
   onClose,
 }: Props) {
   const { groupDetailsEntriesWithSummary } = useGroupDetailsEntries(eventGroup);
@@ -15,6 +16,7 @@ export default function WorkflowHistoryTimelineEventGroup({
       groupDetailsEntries={groupDetailsEntriesWithSummary}
       initialEventId={undefined}
       workflowPageParams={decodedPageUrlParams}
+      onClickShowInTable={onClickShowInTable}
       onClose={onClose}
     />
   );

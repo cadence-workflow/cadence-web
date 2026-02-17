@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 
 import { Button } from 'baseui/button';
 import { ButtonGroup } from 'baseui/button-group';
-import { MdClose, MdSchedule } from 'react-icons/md';
+import { MdClose, MdList, MdSchedule } from 'react-icons/md';
 
 import WorkflowHistoryEventDetails from '../workflow-history-event-details/workflow-history-event-details';
 import WorkflowHistoryEventLinkButton from '../workflow-history-event-link-button/workflow-history-event-link-button';
@@ -17,6 +17,7 @@ export default function WorkflowHistoryGroupDetails({
   workflowPageParams,
   onClose,
   onClickShowInTimeline,
+  onClickShowInTable,
 }: Props) {
   const [selectedIndex, setSelectedIndex] = useState<number>(
     (() => {
@@ -54,11 +55,22 @@ export default function WorkflowHistoryGroupDetails({
             <Button
               kind="tertiary"
               size="compact"
-              aria-label="Show event in timeline"
+              aria-label="Show in timeline"
               onClick={onClickShowInTimeline}
               startEnhancer={<MdSchedule size={16} />}
             >
               Show in timeline
+            </Button>
+          )}
+          {onClickShowInTable && (
+            <Button
+              kind="tertiary"
+              size="compact"
+              aria-label="Show in table"
+              onClick={onClickShowInTable}
+              startEnhancer={<MdList size={16} />}
+            >
+              Show in table
             </Button>
           )}
           <WorkflowHistoryEventLinkButton
