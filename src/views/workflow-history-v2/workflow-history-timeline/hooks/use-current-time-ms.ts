@@ -10,11 +10,16 @@ export default function useCurrentTimeMs({
   useEffect(() => {
     if (!isWorkflowRunning) return;
 
-    const intervalId = setInterval(() => {
-      setCurrentTimeMs(Date.now());
-    }, 1000 / 30);
+    let frameId: number;
 
-    return () => clearInterval(intervalId);
+    const tick = () => {
+      setCurrentTimeMs(Date.now());
+      frameId = requestAnimationFrame(tick);
+    };
+
+    frameId = requestAnimationFrame(tick);
+
+    return () => cancelAnimationFrame(frameId);
   }, [isWorkflowRunning]);
 
   return currentTimeMs;
