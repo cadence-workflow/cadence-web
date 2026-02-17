@@ -276,9 +276,7 @@ describe(WorkflowHistoryGroupDetails.name, () => {
       onClickShowInTimeline: jest.fn(),
     });
 
-    const showInTimelineButton = screen.getByLabelText(
-      'Show event in timeline'
-    );
+    const showInTimelineButton = screen.getByLabelText('Show in timeline');
     expect(showInTimelineButton).toBeInTheDocument();
   });
 
@@ -288,9 +286,7 @@ describe(WorkflowHistoryGroupDetails.name, () => {
       onClickShowInTimeline: undefined,
     });
 
-    const showInTimelineButton = screen.queryByLabelText(
-      'Show event in timeline'
-    );
+    const showInTimelineButton = screen.queryByLabelText('Show in timeline');
     expect(showInTimelineButton).not.toBeInTheDocument();
   });
 
@@ -301,9 +297,7 @@ describe(WorkflowHistoryGroupDetails.name, () => {
       onClickShowInTimeline: mockOnClickShowInTimeline,
     });
 
-    const showInTimelineButton = screen.getByLabelText(
-      'Show event in timeline'
-    );
+    const showInTimelineButton = screen.getByLabelText('Show in timeline');
     await user.click(showInTimelineButton);
 
     expect(mockOnClickShowInTimeline).toHaveBeenCalledTimes(1);
