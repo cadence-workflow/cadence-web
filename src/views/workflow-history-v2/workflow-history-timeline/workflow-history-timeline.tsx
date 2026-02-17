@@ -66,9 +66,11 @@ export default function WorkflowHistoryTimeline({
   }, [timelineRows, itemToHighlightId]);
   const isWorkflowCompleted = workflowCloseTimeMs != null;
 
+  const isWorkflowRunning =
+    workflowCloseTimeMs === null || workflowCloseTimeMs === undefined;
+
   const currentTimeMs = useCurrentTimeMs({
-    isWorkflowRunning:
-      workflowCloseTimeMs === null || workflowCloseTimeMs === undefined,
+    isWorkflowRunning,
   });
 
   const currentTimeOffsetMs = useMemo(
@@ -146,7 +148,7 @@ export default function WorkflowHistoryTimeline({
         return (
           <styled.Container>
             <styled.ChartOverlaySvg>
-              {!isWorkflowCompleted && (
+              {isWorkflowRunning && (
                 <Line
                   from={{ x: xScale(currentTimeOffsetMs), y: 0 }}
                   to={{ x: xScale(currentTimeOffsetMs), y: TIMELINE_HEIGHT }}
