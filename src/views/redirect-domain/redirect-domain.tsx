@@ -3,7 +3,7 @@ import queryString from 'query-string';
 
 import { resolveAuthContext } from '@/utils/auth/auth-context';
 
-import { getCachedAllDomains } from '../domains-page/helpers/get-all-domains';
+import getCachedAllDomains from '../domains-page/helpers/get-cached-all-domains';
 
 import { type Props } from './redirect-domain.types';
 

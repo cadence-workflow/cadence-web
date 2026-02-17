@@ -58,8 +58,9 @@ jest.mock('@/utils/auth/auth-context', () => ({
   })),
 }));
 
-jest.mock('@/views/domains-page/helpers/get-all-domains', () => ({
-  getCachedAllDomains: jest.fn(async () => ({
+jest.mock('@/views/domains-page/helpers/get-cached-all-domains', () => ({
+  __esModule: true,
+  default: jest.fn(async () => ({
     domains: MOCK_ALL_DOMAINS,
     failedClusters: [],
   })),

@@ -99,16 +99,12 @@ describe(useDomainAccess.name, () => {
   });
 
   it('denies access for unauthenticated users when auth is enabled', async () => {
-    const { result } = setup({
+    const { result, domainRequestHandler } = setup({
       authResponse: {
         authEnabled: true,
         isAuthenticated: false,
         isAdmin: false,
         groups: [],
-      },
-      domainResponse: {
-        name: 'test-domain',
-        data: {},
       },
     });
 
@@ -118,6 +114,8 @@ describe(useDomainAccess.name, () => {
         canWrite: false,
       });
     });
+
+    expect(domainRequestHandler).not.toHaveBeenCalled();
   });
 
   it('returns no access when the domain query fails', async () => {
@@ -184,6 +182,17 @@ function setup({
   authError?: boolean;
   domainError?: boolean;
 }) {
+  const domainRequestHandler = jest.fn(async () => {
+    if (domainError) {
+      return HttpResponse.json(
+        { message: 'Failed to fetch domain' },
+        { status: 500 }
+      );
+    }
+
+    return HttpResponse.json(domainResponse ?? {});
+  });
+
   const { result } = renderHook(
     () =>
       useDomainAccess({
@@ -213,27 +222,15 @@ function setup({
             );
           },
         },
-        ...(domainResponse || domainError
-          ? [
-              {
-                path: '/api/domains/test-domain/test-cluster',
-                httpMethod: 'GET' as const,
-                mockOnce: false,
-                httpResolver: async () => {
-                  if (domainError) {
-                    return HttpResponse.json(
-                      { message: 'Failed to fetch domain' },
-                      { status: 500 }
-                    );
-                  }
-                  return HttpResponse.json(domainResponse ?? {});
-                },
-              },
-            ]
-          : []),
+        {
+          path: '/api/domains/test-domain/test-cluster',
+          httpMethod: 'GET' as const,
+          mockOnce: false,
+          httpResolver: domainRequestHandler,
+        },
       ],
     }
   );
 
-  return { result };
+  return { result, domainRequestHandler };
 }

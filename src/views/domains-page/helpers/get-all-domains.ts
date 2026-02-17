@@ -1,8 +1,4 @@
 import 'server-only';
-// cache is not present in stable React 18's type definitions
-// It is available only in their canary, or with Next.js
-// eslint-disable-next-line import/named
-import { cache } from 'react';
 
 import {
   getDomainAccessForUser,
@@ -77,5 +73,3 @@ export const getAllDomains = async (authContext: UserAuthContext) => {
       })),
   };
 };
-
-export const getCachedAllDomains = cache(getAllDomains);
