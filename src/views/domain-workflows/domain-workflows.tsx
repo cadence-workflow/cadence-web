@@ -1,5 +1,5 @@
 'use client';
-import React, { useMemo } from 'react';
+import React from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 import dynamic from 'next/dynamic';
@@ -50,23 +50,9 @@ export default function DomainWorkflows(props: DomainPageTabContentProps) {
         return false;
       }
     },
-    enabled: Boolean(authInfo) && isAuthenticatedNonAdmin,
+    enabled: isAuthenticatedNonAdmin,
     retry: false,
   });
-
-  const isAdvancedVisibilityEnabled = useMemo(() => {
-    // Non-admin authenticated users may not be allowed to call describeCluster,
-    // so we probe the workflows API instead.
-    if (isAuthenticatedNonAdmin) {
-      return isAdvancedVisibilityAvailableForNonAdmin ?? false;
-    }
-    if (!clusterInfo) return false;
-    return isClusterAdvancedVisibilityEnabled(clusterInfo);
-  }, [
-    clusterInfo,
-    isAdvancedVisibilityAvailableForNonAdmin,
-    isAuthenticatedNonAdmin,
-  ]);
 
   if (
     isAuthLoading ||
@@ -75,6 +61,10 @@ export default function DomainWorkflows(props: DomainPageTabContentProps) {
   ) {
     return null;
   }
+
+  const isAdvancedVisibilityEnabled = isAuthenticatedNonAdmin
+    ? isAdvancedVisibilityAvailableForNonAdmin ?? false
+    : isClusterAdvancedVisibilityEnabled(clusterInfo);
 
   const DomainWorkflowsComponent = isAdvancedVisibilityEnabled
     ? DomainWorkflowsAdvanced
