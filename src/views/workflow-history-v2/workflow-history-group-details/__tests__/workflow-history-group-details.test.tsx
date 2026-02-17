@@ -315,7 +315,7 @@ describe(WorkflowHistoryGroupDetails.name, () => {
       onClickShowInTable: jest.fn(),
     });
 
-    const showInTableButton = screen.getByLabelText('Show event in table');
+    const showInTableButton = screen.getByLabelText('Show in table');
     expect(showInTableButton).toBeInTheDocument();
   });
 
@@ -325,7 +325,7 @@ describe(WorkflowHistoryGroupDetails.name, () => {
       onClickShowInTable: undefined,
     });
 
-    const showInTableButton = screen.queryByLabelText('Show event in table');
+    const showInTableButton = screen.queryByLabelText('Show in table');
     expect(showInTableButton).not.toBeInTheDocument();
   });
 
@@ -336,7 +336,7 @@ describe(WorkflowHistoryGroupDetails.name, () => {
       onClickShowInTable: mockOnClickShowInTable,
     });
 
-    const showInTableButton = screen.getByLabelText('Show event in table');
+    const showInTableButton = screen.getByLabelText('Show in table');
     await user.click(showInTableButton);
 
     expect(mockOnClickShowInTable).toHaveBeenCalledTimes(1);
