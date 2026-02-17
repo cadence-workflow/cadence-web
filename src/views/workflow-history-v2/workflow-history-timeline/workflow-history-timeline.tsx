@@ -5,7 +5,7 @@ import { Group } from '@visx/group';
 import { PatternLines } from '@visx/pattern';
 import { ParentSize } from '@visx/responsive';
 import { scaleLinear } from '@visx/scale';
-import { Bar, Line } from '@visx/shape';
+import { Bar } from '@visx/shape';
 import { StatefulPopover } from 'baseui/popover';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -22,7 +22,6 @@ import useSteppedDomainMaxMs from './hooks/use-stepped-domain-max-ms';
 import {
   ROW_HEIGHT_PX,
   TIMELINE_ITEM_TOOLTIP_ENTRY_DELAY_MS,
-  TIMELINE_HEIGHT,
   TIMELINE_LABEL_COLUMN_WIDTH,
   TIMELINE_SIDE_PADDING,
 } from './workflow-history-timeline.constants';
@@ -111,16 +110,6 @@ export default function WorkflowHistoryTimeline({
 
         return (
           <styled.Container>
-            <styled.ChartOverlaySvg>
-              {!isWorkflowCompleted && (
-                <Line
-                  from={{ x: xScale(currentTimeOffsetMs), y: 0 }}
-                  to={{ x: xScale(currentTimeOffsetMs), y: TIMELINE_HEIGHT }}
-                  stroke={theme.colors.negative300}
-                  strokeWidth={2}
-                />
-              )}
-            </styled.ChartOverlaySvg>
             <styled.HeaderRow>
               <styled.HeaderLabelCell>Event group</styled.HeaderLabelCell>
               <styled.HeaderTimelineCell>
