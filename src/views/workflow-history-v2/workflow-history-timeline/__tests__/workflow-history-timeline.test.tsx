@@ -209,9 +209,9 @@ describe(WorkflowHistoryTimeline.name, () => {
 
     // SVG width should be calculated based on viewport width minus label column width
     const svgs = container.querySelectorAll('svg');
-    expect(svgs.length).toBeGreaterThan(0);
-    // Content width should be 1000 - 300 = 700
-    expect(svgs[0]?.getAttribute('width')).toBe('700');
+    expect(svgs.length).toBeGreaterThan(2);
+    // Content width of the timeline SVG should be 1000 - 300 = 700
+    expect(svgs[1]?.getAttribute('width')).toBe('700');
   });
 
   it('should display timeline event group in tooltip when hovering over timeline bar', async () => {
