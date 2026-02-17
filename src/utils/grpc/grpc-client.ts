@@ -10,6 +10,8 @@ import { type DiagnoseWorkflowExecutionRequest__Input } from '@/__generated__/pr
 import { type DiagnoseWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/DiagnoseWorkflowExecutionResponse';
 import { type GetSearchAttributesRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/GetSearchAttributesRequest';
 import { type GetSearchAttributesResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/GetSearchAttributesResponse';
+import { type GetTaskListsByDomainRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/GetTaskListsByDomainRequest';
+import { type GetTaskListsByDomainResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/GetTaskListsByDomainResponse';
 import { type GetWorkflowExecutionHistoryRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/GetWorkflowExecutionHistoryRequest';
 import { type GetWorkflowExecutionHistoryResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/GetWorkflowExecutionHistoryResponse';
 import { type ListArchivedWorkflowExecutionsRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListArchivedWorkflowExecutionsRequest';
@@ -76,6 +78,9 @@ export type GRPCClusterMethods = {
   describeTaskList: (
     paload: DescribeTaskListRequest__Input
   ) => Promise<DescribeTaskListResponse>;
+  getTaskListsByDomain: (
+    payload: GetTaskListsByDomainRequest__Input
+  ) => Promise<GetTaskListsByDomainResponse>;
   describeWorkflow: (
     payload: DescribeWorkflowExecutionRequest__Input
   ) => Promise<DescribeWorkflowExecutionResponse>;
@@ -234,6 +239,13 @@ const getClusterServicesMethods = async (
       DescribeTaskListResponse
     >({
       method: 'DescribeTaskList',
+      metadata: metadata,
+    }),
+    getTaskListsByDomain: workflowService.request<
+      GetTaskListsByDomainRequest__Input,
+      GetTaskListsByDomainResponse
+    >({
+      method: 'GetTaskListsByDomain',
       metadata: metadata,
     }),
     describeWorkflow: workflowService.request<
