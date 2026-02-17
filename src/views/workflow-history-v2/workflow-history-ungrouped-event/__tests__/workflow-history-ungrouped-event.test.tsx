@@ -127,6 +127,7 @@ const createMockEventInfo = (
   eventMetadataIndex = 0
 ): UngroupedEventInfo => ({
   id: event.eventId ?? 'unknown',
+  groupId: 'groupId',
   event: event,
   eventMetadata:
     mockActivityEventGroupWithMetadata.eventsMetadata[eventMetadataIndex],
@@ -456,6 +457,7 @@ function setup({
   toggleIsExpanded = jest.fn(),
   animateOnEnter = false,
   onReset = jest.fn(),
+  onClickShowInTimeline = jest.fn(),
   mockGroupDetails,
 }: Partial<Props> & {
   mockGroupDetails?: {
@@ -500,6 +502,7 @@ function setup({
 
   const mockToggleIsExpanded = toggleIsExpanded || jest.fn();
   const mockOnReset = onReset || jest.fn();
+  const mockOnClickShowInTimeline = onClickShowInTimeline || jest.fn();
   const user = userEvent.setup();
 
   const defaultEventInfo = eventInfo ?? createMockEventInfo();
@@ -513,12 +516,14 @@ function setup({
       toggleIsExpanded={mockToggleIsExpanded}
       animateOnEnter={animateOnEnter}
       onReset={mockOnReset}
+      onClickShowInTimeline={mockOnClickShowInTimeline}
     />
   );
 
   return {
     mockToggleIsExpanded,
     mockOnReset,
+    mockOnClickShowInTimeline,
     user,
   };
 }

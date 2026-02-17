@@ -1,8 +1,6 @@
 'use client';
 import React from 'react';
 
-import { LabelMedium } from 'baseui/typography';
-
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 
 import workflowSummaryDetailsConfig from '../config/workflow-summary-details.config';
@@ -22,14 +20,12 @@ export default function WorkflowSummaryDetails({
 
   return (
     <div className={cls.pageContainer}>
-      <div>
-        <LabelMedium>
-          <strong>Workflow: </strong>
-          {
-            firstHistoryEvent?.workflowExecutionStartedEventAttributes
-              ?.workflowType?.name
-          }
-        </LabelMedium>
+      <div className={cls.workflowTitle}>
+        <strong>Workflow: </strong>
+        {
+          firstHistoryEvent?.workflowExecutionStartedEventAttributes
+            ?.workflowType?.name
+        }
       </div>
       <div>
         {workflowSummaryDetailsConfig

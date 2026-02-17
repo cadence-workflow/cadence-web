@@ -37,10 +37,14 @@ export type Props = {
     endIndex: number;
   }) => void;
   virtuosoRef: RefObject<VirtuosoHandle>;
+
+  // Timeline integration
+  onClickShowGroupInTimeline: (eventGroupId: string) => void;
 };
 
 export type UngroupedEventInfo = {
   id: string;
+  groupId: string;
   event: ExtendedHistoryEvent;
   eventMetadata: HistoryGroupEventMetadata;
   eventGroup: HistoryEventsGroup;

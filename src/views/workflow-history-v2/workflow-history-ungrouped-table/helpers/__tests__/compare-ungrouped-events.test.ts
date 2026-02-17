@@ -43,6 +43,7 @@ describe(compareUngroupedEvents.name, () => {
   it('orders non-pending events by event ID', () => {
     const eventA: UngroupedEventInfo = {
       id: '1',
+      groupId: 'groupId',
       label: 'Event A',
       event: startWorkflowExecutionEvent,
       eventMetadata: createMockEventMetadata('Event A'),
@@ -50,6 +51,7 @@ describe(compareUngroupedEvents.name, () => {
     };
     const eventB: UngroupedEventInfo = {
       id: '2',
+      groupId: 'groupId',
       label: 'Event B',
       event: startWorkflowExecutionEvent,
       eventMetadata: createMockEventMetadata('Event B'),
@@ -64,6 +66,7 @@ describe(compareUngroupedEvents.name, () => {
   it('puts non-pending events before pending events', () => {
     const nonPendingEvent: UngroupedEventInfo = {
       id: '2',
+      groupId: 'groupId',
       label: 'Non-pending Event',
       event: startWorkflowExecutionEvent,
       eventMetadata: createMockEventMetadata('Non-pending Event'),
@@ -74,6 +77,7 @@ describe(compareUngroupedEvents.name, () => {
     };
     const pendingEvent: UngroupedEventInfo = {
       id: '1',
+      groupId: 'groupId',
       label: 'Pending Event',
       event: pendingActivityTaskStartEvent,
       eventMetadata: createMockEventMetadata('Pending Event'),
@@ -102,6 +106,7 @@ describe(compareUngroupedEvents.name, () => {
 
     const pendingEventA: UngroupedEventInfo = {
       id: '1',
+      groupId: 'groupId',
       label: 'Pending Event A',
       event: eventA,
       eventMetadata: createMockEventMetadata('Pending Event A'),
@@ -109,6 +114,7 @@ describe(compareUngroupedEvents.name, () => {
     };
     const pendingEventB: UngroupedEventInfo = {
       id: '2',
+      groupId: 'groupId',
       label: 'Pending Event B',
       event: eventB,
       eventMetadata: createMockEventMetadata('Pending Event B'),
@@ -132,6 +138,7 @@ describe(compareUngroupedEvents.name, () => {
 
     const pendingEventA: UngroupedEventInfo = {
       id: '1',
+      groupId: 'groupId',
       label: 'Pending Event A',
       event: eventA,
       eventMetadata: createMockEventMetadata('Pending Event A'),
@@ -139,6 +146,7 @@ describe(compareUngroupedEvents.name, () => {
     };
     const pendingEventB: UngroupedEventInfo = {
       id: '2',
+      groupId: 'groupId',
       label: 'Pending Event B',
       event: eventB,
       eventMetadata: createMockEventMetadata('Pending Event B'),

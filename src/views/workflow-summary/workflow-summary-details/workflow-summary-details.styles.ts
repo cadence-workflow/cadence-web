@@ -33,6 +33,11 @@ const cssStylesObj = {
     display: 'flex',
     flex: '1 0 300px',
   }),
+  workflowTitle: (theme) => ({
+    ...theme.typography.LabelMedium,
+    whiteSpace: 'wrap',
+    wordBreak: 'break-all',
+  }),
 } satisfies StyletronCSSObject;
 
 export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> =

@@ -5,27 +5,33 @@ import type {
 
 const cssStylesObj = {
   pageContainer: (theme) => ({
-    display: 'flex',
-    flexWrap: 'wrap',
+    display: 'grid',
+    gridTemplateColumns: '1fr',
     gap: theme.sizing.scale1000,
+    [theme.mediaQuery.medium]: {
+      gridTemplateColumns: 'repeat(2, 1fr)',
+    },
+    [theme.mediaQuery.large]: {
+      gridTemplateColumns: 'repeat(3, 1fr)',
+    },
   }),
   mainContent: (theme) => ({
-    flex: '1 0 300px',
+    minWidth: 0,
     display: 'flex',
     flexDirection: 'column',
     gap: theme.sizing.scale800,
   }),
   jsonPanel: (theme) => ({
-    flex: '1 0 300px',
+    minWidth: 0,
     [theme.mediaQuery.large]: {
       display: 'none',
     },
   }),
   jsonPanelWide: (theme) => ({
+    minWidth: 0,
     display: 'none',
     [theme.mediaQuery.large]: {
       display: 'block',
-      flex: '1 0 300px',
     },
   }),
 } satisfies StyletronCSSObject;
