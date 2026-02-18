@@ -16,7 +16,6 @@ import pendingActivitiesInfoToEvents from '../workflow-history/helpers/pending-a
 import pendingDecisionInfoToEvent from '../workflow-history/helpers/pending-decision-info-to-event';
 import useInitialSelectedEvent from '../workflow-history/hooks/use-initial-selected-event';
 import useWorkflowHistoryFetcher from '../workflow-history/hooks/use-workflow-history-fetcher';
-import useWorkflowHistoryGrouper from '../workflow-history/hooks/use-workflow-history-grouper';
 import { WorkflowHistoryContext } from '../workflow-history/workflow-history-context-provider/workflow-history-context-provider';
 import filterGroupsByGroupStatus from '../workflow-history/workflow-history-filters-status/helpers/filter-groups-by-group-status';
 import workflowPageQueryParamsConfig from '../workflow-page/config/workflow-page-query-params.config';
@@ -28,6 +27,7 @@ import workflowHistoryFiltersConfig from './config/workflow-history-filters.conf
 import WORKFLOW_HISTORY_RENDER_FETCHED_EVENTS_THROTTLE_MS_CONFIG from './config/workflow-history-render-fetched-events-throttle-ms.config';
 import WORKFLOW_HISTORY_SET_RANGE_THROTTLE_MS_CONFIG from './config/workflow-history-set-range-throttle-ms.config';
 import getNavigationBarEventsMenuItems from './helpers/get-navigation-bar-events-menu-items';
+import useWorkflowHistoryGrouper from './hooks/use-workflow-history-grouper';
 import useWorkflowHistoryScroll from './hooks/use-workflow-history-scroll';
 import WorkflowHistoryGroupedTable from './workflow-history-grouped-table/workflow-history-grouped-table';
 import WorkflowHistoryHeader from './workflow-history-header/workflow-history-header';
