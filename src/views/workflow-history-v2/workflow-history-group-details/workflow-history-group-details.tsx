@@ -89,10 +89,12 @@ export default function WorkflowHistoryGroupDetails({
           )}
         </styled.ExtraActions>
       </styled.ActionsRow>
-      <WorkflowHistoryEventDetails
-        eventDetails={selectedEventTabContent.eventDetails ?? []}
-        workflowPageParams={workflowPageParams}
-      />
+      <styled.ScrollableContent>
+        <WorkflowHistoryEventDetails
+          eventDetails={selectedEventTabContent.eventDetails ?? []}
+          workflowPageParams={workflowPageParams}
+        />
+      </styled.ScrollableContent>
     </styled.GroupDetailsContainer>
   );
 }
