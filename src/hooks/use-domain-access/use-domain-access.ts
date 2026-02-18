@@ -18,7 +18,8 @@ export default function useDomainAccess(params: UseDomainDescriptionParams) {
   const userInfoQuery = useUserInfo();
   const isAuthEnabled = userInfoQuery.data?.authEnabled === true;
   const isAuthenticated = userInfoQuery.data?.isAuthenticated === true;
-  const shouldFetchDomain = isAuthEnabled && isAuthenticated;
+  const isAdmin = userInfoQuery.data?.isAdmin === true;
+  const shouldFetchDomain = isAuthEnabled && isAuthenticated && !isAdmin;
 
   const domainQuery = useQuery({
     ...getDomainDescriptionQueryOptions(params),
@@ -40,6 +41,10 @@ export default function useDomainAccess(params: UseDomainDescriptionParams) {
 
     if (!userInfoQuery.data.isAuthenticated) {
       return NO_ACCESS;
+    }
+
+    if (userInfoQuery.data.isAdmin) {
+      return FULL_ACCESS;
     }
 
     if (domainQuery.data) {

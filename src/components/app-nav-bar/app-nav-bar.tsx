@@ -33,7 +33,7 @@ export default function AppNavBar() {
   return (
     <>
       <BaseAppNavBar
-        key={`${isAuthEnabled ? 'auth' : 'open'}-${isAuthenticated ? username ?? 'authed' : 'guest'}`}
+        key={`${isAuthEnabled}-${isAuthenticated}`}
         title={
           <NextLink href="/">
             <svg

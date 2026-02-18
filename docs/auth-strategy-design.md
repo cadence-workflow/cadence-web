@@ -13,35 +13,35 @@ Domain Setup
 
 name: "finance-payments"
 
-READ_GROUPS: worker
+READ_GROUPS: viewer
 
-WRITE_GROUPS: payer
+WRITE_GROUPS: editor
 
 Meaning:
 
-worker → can READ
+viewer → can READ
 
-payer → can READ + WRITE
+editor → can READ + WRITE
 
 User JWT Examples
 
-User 1: Anna (worker — read only)
+User 1: viewer = read only
 
 {
 
-"name": "anna",
+"name": "user1",
 
-"groups": ["worker"]
+"groups": "viewer"
 
 }
 
-User 2: Ben (payer — read + write)
+User 2: editor = read + write
 
 {
 
-"name": "ben",
+"name": "user2",
 
-"groups": ["payer"]
+"groups": "editor"
 
 }
 
