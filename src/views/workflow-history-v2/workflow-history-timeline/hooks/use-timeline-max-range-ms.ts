@@ -17,10 +17,10 @@ export default function useTimelineMaxRangeMs({
 }): number {
   const maxRangeRef = useRef<number | null>(null);
 
-  const requiredMaxTimeMs = getTimelineMaxTimeMs(
-    workflowCloseTimeMs,
-    timelineRows,
-    currentTimeMs
+  const requiredMaxTimeMs = useMemo(
+    () =>
+      getTimelineMaxTimeMs(workflowCloseTimeMs, timelineRows, currentTimeMs),
+    [currentTimeMs, timelineRows, workflowCloseTimeMs]
   );
 
   const requiredMaxOffsetMs = useMemo(

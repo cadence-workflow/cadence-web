@@ -139,4 +139,3 @@ function setup({
     { initialProps: { currentTimeMs } }
   );
 }
-
