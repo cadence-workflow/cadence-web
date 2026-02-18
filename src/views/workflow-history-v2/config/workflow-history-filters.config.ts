@@ -11,6 +11,7 @@ import {
   type WorkflowHistoryEventFilteringType,
   type WorkflowHistoryFiltersTypeValue,
 } from '@/views/workflow-history/workflow-history-filters-type/workflow-history-filters-type.types';
+
 import { type WorkflowHistoryFilterConfig } from '../workflow-history-v2.types';
 
 import workflowHistoryFiltersStatusOptionsConfig from './workflow-history-filters-status-options.config';
