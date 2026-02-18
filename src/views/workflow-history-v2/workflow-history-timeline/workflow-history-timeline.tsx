@@ -18,7 +18,7 @@ import WorkflowHistoryTimelineEventGroup from '../workflow-history-timeline-even
 import formatTickDuration from './helpers/format-tick-duration';
 import getTimelineRowFromEventGroup from './helpers/get-timeline-row-from-event-group';
 import useCurrentTimeMs from './hooks/use-current-time-ms';
-import useSteppedDomainMaxMs from './hooks/use-stepped-domain-max-ms';
+import useTimelineMaxRangeMs from './hooks/use-timeline-max-range-ms';
 import {
   ROW_HEIGHT_PX,
   TIMELINE_ITEM_TOOLTIP_ENTRY_DELAY_MS,
@@ -75,7 +75,7 @@ export default function WorkflowHistoryTimeline({
     [currentTimeMs, workflowStartTimeMs]
   );
 
-  const domainMaxMs = useSteppedDomainMaxMs({
+  const maxRangeMs = useTimelineMaxRangeMs({
     timelineRows,
     workflowStartTimeMs,
     workflowCloseTimeMs,
@@ -92,7 +92,7 @@ export default function WorkflowHistoryTimeline({
 
         const domain = {
           min: 0,
-          max: domainMaxMs,
+          max: maxRangeMs,
         };
 
         const dataPointsPadding =

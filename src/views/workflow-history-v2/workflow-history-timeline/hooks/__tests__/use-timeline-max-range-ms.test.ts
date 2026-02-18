@@ -2,13 +2,13 @@ import { renderHook } from '@/test-utils/rtl';
 
 import { mockActivityEventGroup } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
 
-import { TIMELINE_DOMAIN_BUFFER_RATIO } from '../../workflow-history-timeline.constants';
+import { TIMELINE_RANGE_BUFFER_RATIO } from '../../workflow-history-timeline.constants';
 import { type TimelineRow } from '../../workflow-history-timeline.types';
-import useSteppedDomainMaxMs from '../use-stepped-domain-max-ms';
+import useTimelineMaxRangeMs from '../use-timeline-max-range-ms';
 
 const mockWorkflowStartTimeMs = 1705312800000;
 
-describe(useSteppedDomainMaxMs.name, () => {
+describe(useTimelineMaxRangeMs.name, () => {
   it('returns exact close time offset without buffer when workflow is closed', () => {
     const workflowCloseTimeMs = mockWorkflowStartTimeMs + 10000;
     const currentTimeMs = mockWorkflowStartTimeMs + 15000;
@@ -36,12 +36,12 @@ describe(useSteppedDomainMaxMs.name, () => {
 
     const expectedOffset = currentTimeMs - mockWorkflowStartTimeMs;
     const expectedWithBuffer =
-      expectedOffset * (1 + TIMELINE_DOMAIN_BUFFER_RATIO);
+      expectedOffset * (1 + TIMELINE_RANGE_BUFFER_RATIO);
 
     expect(result.current).toBe(expectedWithBuffer);
   });
 
-  it('maintains existing domain value when new required offset is within buffered range', () => {
+  it('maintains existing max range when new required offset is within buffered range', () => {
     const currentTimeMs = mockWorkflowStartTimeMs + 5000;
 
     const { result, rerender } = setup({
@@ -51,17 +51,17 @@ describe(useSteppedDomainMaxMs.name, () => {
       currentTimeMs,
     });
 
-    const initialDomain = result.current;
+    const initialMaxRange = result.current;
 
     // Advance time, but not enough to exceed the buffer
     const smallerTimeMs = mockWorkflowStartTimeMs + 5500;
     rerender({ currentTimeMs: smallerTimeMs });
 
-    // Domain should remain the same since we're still within buffer
-    expect(result.current).toBe(initialDomain);
+    // Max range should remain the same since we're still within buffer
+    expect(result.current).toBe(initialMaxRange);
   });
 
-  it('recalculates domain with buffer when required offset exceeds current domain', () => {
+  it('recalculates max range with buffer when required offset exceeds current max range', () => {
     const currentTimeMs = mockWorkflowStartTimeMs + 5000;
 
     const { result, rerender } = setup({
@@ -71,17 +71,17 @@ describe(useSteppedDomainMaxMs.name, () => {
       currentTimeMs,
     });
 
-    const initialDomain = result.current;
+    const initialMaxRange = result.current;
 
     // Advance time beyond the buffer
-    const largerTimeMs = mockWorkflowStartTimeMs + initialDomain + 1000;
+    const largerTimeMs = mockWorkflowStartTimeMs + initialMaxRange + 1000;
     rerender({ currentTimeMs: largerTimeMs });
 
     const newOffset = largerTimeMs - mockWorkflowStartTimeMs;
-    const expectedNewDomain = newOffset * (1 + TIMELINE_DOMAIN_BUFFER_RATIO);
+    const expectedNewMaxRange = newOffset * (1 + TIMELINE_RANGE_BUFFER_RATIO);
 
-    expect(result.current).toBe(expectedNewDomain);
-    expect(result.current).toBeGreaterThan(initialDomain);
+    expect(result.current).toBe(expectedNewMaxRange);
+    expect(result.current).toBeGreaterThan(initialMaxRange);
   });
 
   it('returns row end time offset with buffer when row end time exceeds current time', () => {
@@ -107,10 +107,10 @@ describe(useSteppedDomainMaxMs.name, () => {
       currentTimeMs,
     });
 
-    // Domain should be based on the row end time (which is greater than currentTimeMs)
+    // Max range should be based on the row end time (which is greater than currentTimeMs)
     const expectedOffset = rowEndTimeMs - mockWorkflowStartTimeMs;
     const expectedWithBuffer =
-      expectedOffset * (1 + TIMELINE_DOMAIN_BUFFER_RATIO);
+      expectedOffset * (1 + TIMELINE_RANGE_BUFFER_RATIO);
 
     expect(result.current).toBe(expectedWithBuffer);
   });
@@ -129,7 +129,7 @@ function setup({
 }) {
   return renderHook(
     (props = { currentTimeMs }) =>
-      useSteppedDomainMaxMs({
+      useTimelineMaxRangeMs({
         timelineRows,
         workflowStartTimeMs,
         workflowCloseTimeMs,
@@ -139,3 +139,4 @@ function setup({
     { initialProps: { currentTimeMs } }
   );
 }
+
