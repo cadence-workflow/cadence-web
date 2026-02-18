@@ -23,10 +23,6 @@ export const styled = {
     gap: $theme.sizing.scale100,
     alignItems: 'center',
   })),
-  ScrollableContent: createStyled('div', () => ({
-    maxHeight: '400px',
-    overflowY: 'auto',
-  })),
 };
 
 export const overrides = {
