@@ -175,6 +175,8 @@ export type HistoryEventsGroup =
   | RequestCancelExternalWorkflowExecutionHistoryGroup
   | SingleEventHistoryGroup;
 
+export type HistoryEventsGroupsMap = Record<string, HistoryEventsGroup>;
+
 export type ActivityHistoryEvent = HistoryEvent & {
   attributes:
     | 'activityTaskScheduledEventAttributes'
