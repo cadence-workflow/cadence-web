@@ -18,8 +18,6 @@ export type TimelineRow = {
   group: HistoryEventsGroup;
 };
 
-export type TimelineRowWithEndTime = TimelineRow & { endTimeMs: number };
-
 export type Props = {
   eventGroupsEntries: Array<EventGroupEntry>;
   workflowStartTimeMs: number;
