@@ -114,14 +114,28 @@ describe(WorkflowHistoryDetailsRow.name, () => {
     expect(await screen.findByTestId('tooltip-field1')).toBeInTheDocument();
     expect(screen.getByText('field1')).toBeInTheDocument();
   });
+
+  it('should stop click event propagation when clicking on a details field', async () => {
+    const onParentClick = jest.fn();
+    const { user } = setup({
+      wrapper: ({ children }) => <div onClick={onParentClick}>{children}</div>,
+    });
+
+    const field1 = screen.getByTestId('field-field1');
+    await user.click(field1);
+
+    expect(onParentClick).not.toHaveBeenCalled();
+  });
 });
 
 function setup({
   detailsEntries = mockDetailsEntries,
   workflowPageParams = mockWorkflowPageParams,
+  wrapper,
 }: {
   detailsEntries?: EventDetailsEntries;
   workflowPageParams?: WorkflowPageParams;
+  wrapper?: React.ComponentType<{ children: React.ReactNode }>;
 } = {}) {
   const user = userEvent.setup();
 
@@ -129,7 +143,9 @@ function setup({
     <WorkflowHistoryDetailsRow
       detailsEntries={detailsEntries}
       {...workflowPageParams}
-    />
+    />,
+    undefined,
+    { wrapper }
   );
 
   return { user, ...renderResult };

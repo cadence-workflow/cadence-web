@@ -58,6 +58,9 @@ export default function WorkflowHistoryDetailsRow({
             <styled.DetailsFieldContainer
               $isNegative={isNegative}
               $omitWrapping={item.omitWrapping ?? false}
+              onClick={(e: React.MouseEvent<HTMLDivElement>) =>
+                e.stopPropagation()
+              }
             >
               {item.icon && <item.icon size={12} />}
               <item.renderValue
