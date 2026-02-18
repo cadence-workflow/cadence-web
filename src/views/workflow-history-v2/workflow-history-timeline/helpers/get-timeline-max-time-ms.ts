@@ -1,4 +1,7 @@
-import { type TimelineRow } from '../workflow-history-timeline.types';
+import {
+  type TimelineRowWithEndTime,
+  type TimelineRow,
+} from '../workflow-history-timeline.types';
 
 export default function getTimelineMaxTimeMs(
   workflowCloseTimeMs: number | null | undefined,

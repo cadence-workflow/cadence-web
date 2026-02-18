@@ -9,7 +9,7 @@ import useSteppedDomainMaxMs from '../use-stepped-domain-max-ms';
 const mockWorkflowStartTimeMs = 1705312800000;
 
 describe(useSteppedDomainMaxMs.name, () => {
-  it('should return requiredMaxOffsetMs directly when workflow is closed', () => {
+  it('returns exact close time offset without buffer when workflow is closed', () => {
     const workflowCloseTimeMs = mockWorkflowStartTimeMs + 10000;
     const currentTimeMs = mockWorkflowStartTimeMs + 15000;
 
@@ -24,7 +24,7 @@ describe(useSteppedDomainMaxMs.name, () => {
     expect(result.current).toBe(workflowCloseTimeMs - mockWorkflowStartTimeMs);
   });
 
-  it('should set initial domain with buffer when workflow is running', () => {
+  it('returns current time offset multiplied by buffer ratio when workflow is running', () => {
     const currentTimeMs = mockWorkflowStartTimeMs + 5000;
 
     const { result } = setup({
@@ -41,7 +41,7 @@ describe(useSteppedDomainMaxMs.name, () => {
     expect(result.current).toBe(expectedWithBuffer);
   });
 
-  it('should keep existing domain when requiredMaxOffsetMs is less than current domain', () => {
+  it('maintains existing domain value when new required offset is within buffered range', () => {
     const currentTimeMs = mockWorkflowStartTimeMs + 5000;
 
     const { result, rerender } = setup({
@@ -61,7 +61,7 @@ describe(useSteppedDomainMaxMs.name, () => {
     expect(result.current).toBe(initialDomain);
   });
 
-  it('should expand domain when requiredMaxOffsetMs exceeds current domain', () => {
+  it('recalculates domain with buffer when required offset exceeds current domain', () => {
     const currentTimeMs = mockWorkflowStartTimeMs + 5000;
 
     const { result, rerender } = setup({
@@ -84,7 +84,7 @@ describe(useSteppedDomainMaxMs.name, () => {
     expect(result.current).toBeGreaterThan(initialDomain);
   });
 
-  it('should use max row endTimeMs when it exceeds currentTimeMs', () => {
+  it('returns row end time offset with buffer when row end time exceeds current time', () => {
     const currentTimeMs = mockWorkflowStartTimeMs + 5000;
     const rowEndTimeMs = mockWorkflowStartTimeMs + 8000;
 
