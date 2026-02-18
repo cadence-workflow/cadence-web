@@ -1,4 +1,7 @@
-import { type TimelineRow } from '../workflow-history-timeline.types';
+import {
+  type TimelineRowWithEndTime,
+  type TimelineRow,
+} from '../workflow-history-timeline.types';
 
 export default function getTimelineMaxTimeMs(
   workflowCloseTimeMs: number | null | undefined,
@@ -14,7 +17,7 @@ export default function getTimelineMaxTimeMs(
   }
 
   const rowsWithEndTime = timelineRows.filter(
-    (row): row is TimelineRow & { endTimeMs: number } => row.endTimeMs !== null
+    (row): row is TimelineRowWithEndTime => row.endTimeMs !== null
   );
 
   if (rowsWithEndTime.length !== timelineRows.length) {

@@ -38,6 +38,11 @@ describe(useCurrentTimeMs.name, () => {
     const { result } = setup({ isWorkflowRunning: false });
 
     expect(result.current).toBe(mockNow);
+
+    jest.setSystemTime(mockNow + 1000);
+
+    // Time should not update since no animation frame is running
+    expect(result.current).toBe(mockNow);
   });
 
   it('should not start animation frame when workflow is not running', () => {
