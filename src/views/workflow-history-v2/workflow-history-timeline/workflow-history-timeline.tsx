@@ -75,7 +75,7 @@ export default function WorkflowHistoryTimeline({
     [currentTimeMs, workflowStartTimeMs]
   );
 
-  const domainMaxMs = useSteppedDomainMaxMs({
+  const maxRangeMs = useTimelineMaxRangeMs({
     timelineRows,
     workflowStartTimeMs,
     workflowCloseTimeMs,
