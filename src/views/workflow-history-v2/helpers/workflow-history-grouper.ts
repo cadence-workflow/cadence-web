@@ -5,7 +5,7 @@ import type {
   ExtendedActivityHistoryEvent,
   ExtendedDecisionHistoryEvent,
   HistoryEventsGroup,
-  HistoryEventsGroups,
+  HistoryEventsGroupsMap,
   PendingActivityTaskStartEvent,
   PendingDecisionTaskStartEvent,
 } from '../workflow-history-v2.types';
@@ -43,7 +43,7 @@ import {
 export default class WorkflowHistoryGrouper {
   private allEvents: HistoryEvent[] = [];
   private lastProcessedEventIndex: number = -1;
-  private groups: HistoryEventsGroups = {};
+  private groups: HistoryEventsGroupsMap = {};
   private currentPendingActivities: PendingActivityTaskStartEvent[] = [];
   private currentPendingDecision: PendingDecisionTaskStartEvent | null = null;
   private subscribers: Set<(state: GroupingProcessState) => void> = new Set();
@@ -263,8 +263,8 @@ export default class WorkflowHistoryGrouper {
   private groupEvents(
     startIndex: number,
     endIndex: number,
-    existingGroups: HistoryEventsGroups
-  ): HistoryEventsGroups {
+    existingGroups: HistoryEventsGroupsMap
+  ): HistoryEventsGroupsMap {
     const groups = { ...existingGroups };
 
     // Process new history events using indices (avoids array slicing)
