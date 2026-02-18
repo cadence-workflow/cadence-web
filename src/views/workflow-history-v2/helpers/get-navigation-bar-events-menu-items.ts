@@ -1,4 +1,4 @@
-import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-history.types';
+import { type HistoryEventsGroup } from '../workflow-history-v2.types';
 
 import getEventGroupFilteringType from '../workflow-history-event-group/helpers/get-event-group-filtering-type';
 import { type NavigationBarEventsMenuItem } from '../workflow-history-navigation-bar-events-menu/workflow-history-navigation-bar-events-menu.types';

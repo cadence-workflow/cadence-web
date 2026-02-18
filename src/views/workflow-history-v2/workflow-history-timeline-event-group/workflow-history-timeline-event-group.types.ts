@@ -1,4 +1,4 @@
-import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-history.types';
+import { type HistoryEventsGroup } from '../workflow-history-v2.types';
 
 import { type Props as WorkflowHistoryProps } from '../workflow-history-v2.types';
 

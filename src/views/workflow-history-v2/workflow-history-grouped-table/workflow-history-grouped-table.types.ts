@@ -4,7 +4,7 @@ import { type VirtuosoHandle } from 'react-virtuoso';
 
 import { type WorkflowExecutionCloseStatus } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionCloseStatus';
 import { type RequestError } from '@/utils/request/request-error';
-import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-history.types';
+import { type HistoryEventsGroup } from '../workflow-history-v2.types';
 
 import { type Props as WorkflowHistoryV2Props } from '../workflow-history-v2.types';
 

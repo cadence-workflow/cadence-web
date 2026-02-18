@@ -7,7 +7,7 @@ import { render, screen, userEvent } from '@/test-utils/rtl';
 import { type WorkflowExecutionCloseStatus } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionCloseStatus';
 import { RequestError } from '@/utils/request/request-error';
 import { mockActivityEventGroup } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
-import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-history.types';
+import { type HistoryEventsGroup } from '../../workflow-history-v2.types';
 import { type WorkflowPageTabContentParams } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
 import type WorkflowHistoryTableFooter from '../../workflow-history-table-footer/workflow-history-table-footer';

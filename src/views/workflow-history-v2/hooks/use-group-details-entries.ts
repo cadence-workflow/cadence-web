@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-history.types';
+import { type HistoryEventsGroup } from '../workflow-history-v2.types';
 
 import generateHistoryGroupDetails from '../helpers/generate-history-group-details';
 import getSummaryTabContentEntry from '../helpers/get-summary-tab-content-entry';

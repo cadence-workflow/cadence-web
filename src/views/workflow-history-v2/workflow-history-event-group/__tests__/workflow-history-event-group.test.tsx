@@ -12,7 +12,7 @@ import {
 import type WorkflowHistoryEventStatusBadge from '@/views/workflow-history/workflow-history-event-status-badge/workflow-history-event-status-badge';
 import type WorkflowHistoryGroupLabel from '@/views/workflow-history/workflow-history-group-label/workflow-history-group-label';
 import type WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
-import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-history.types';
+import { type HistoryEventsGroup } from '../../workflow-history-v2.types';
 
 import * as generateHistoryGroupDetailsModule from '../../helpers/generate-history-group-details';
 import type { EventDetailsEntries } from '../../workflow-history-event-details/workflow-history-event-details.types';

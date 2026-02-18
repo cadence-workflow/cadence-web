@@ -19,7 +19,7 @@ import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-h
 import {
   type PendingActivityTaskStartEvent,
   type PendingDecisionTaskStartEvent,
-} from '@/views/workflow-history/workflow-history.types';
+} from '../workflow-history-v2.types';
 import { mockDescribeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
 import type workflowPageQueryParamsConfig from '@/views/workflow-page/config/workflow-page-query-params.config';
 

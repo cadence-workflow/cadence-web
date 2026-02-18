@@ -2,7 +2,7 @@ import {
   mockActivityEventGroup,
   mockDecisionEventGroup,
 } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
-import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-history.types';
+import { type HistoryEventsGroup } from '../../workflow-history-v2.types';
 
 import { type EventGroupEntry } from '../../workflow-history-v2.types';
 import getNavigationBarEventsMenuItems from '../get-navigation-bar-events-menu-items';

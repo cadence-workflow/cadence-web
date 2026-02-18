@@ -2,7 +2,7 @@ import { Button } from 'baseui/button';
 import { Filter } from 'baseui/icon';
 import { MdReplay } from 'react-icons/md';
 
-import { type WorkflowHistoryFilterConfig } from '@/views/workflow-history/workflow-history.types';
+import { type WorkflowHistoryFilterConfig } from '../workflow-history-v2.types';
 
 import workflowHistoryFiltersConfig from '../config/workflow-history-filters.config';
 

@@ -1,7 +1,7 @@
 import { renderHook } from '@/test-utils/rtl';
 
 import { mockActivityEventGroup } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
-import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-history.types';
+import { type HistoryEventsGroup } from '../../workflow-history-v2.types';
 import type { EventDetailsTabContent } from '@/views/workflow-history-v2/workflow-history-group-details/workflow-history-group-details.types';
 
 import * as generateHistoryGroupDetailsModule from '../../helpers/generate-history-group-details';

@@ -1,7 +1,7 @@
 import formatPendingWorkflowHistoryEvent from '@/utils/data-formatters/format-pending-workflow-history-event';
 import formatWorkflowHistoryEvent from '@/utils/data-formatters/format-workflow-history-event';
 import isPendingHistoryEvent from '@/views/workflow-history/workflow-history-event-details/helpers/is-pending-history-event';
-import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-history.types';
+import { type HistoryEventsGroup } from '../workflow-history-v2.types';
 
 import generateHistoryEventDetails from '../helpers/generate-history-event-details';
 import { type EventDetailsTabContent } from '../workflow-history-group-details/workflow-history-group-details.types';

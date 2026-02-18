@@ -11,7 +11,7 @@ import type WorkflowHistoryTimelineResetButton from '@/views/workflow-history/wo
 import {
   type ExtendedHistoryEvent,
   type ActivityHistoryGroup,
-} from '@/views/workflow-history/workflow-history.types';
+} from '../../workflow-history-v2.types';
 
 import * as generateHistoryGroupDetailsModule from '../../helpers/generate-history-group-details';
 import type { EventDetailsEntries } from '../../workflow-history-event-details/workflow-history-event-details.types';
