@@ -1,5 +1,3 @@
-import { type z } from 'zod';
-
 import { type Timestamp } from '@/__generated__/proto-ts/google/protobuf/Timestamp';
 import type { HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
 import { type PendingActivityInfo } from '@/__generated__/proto-ts/uber/cadence/api/v1/PendingActivityInfo';
@@ -12,7 +10,6 @@ import { type WorkflowPageTabContentProps } from '../workflow-page/workflow-page
 
 export type Props = WorkflowPageTabContentProps;
 
-export type WorkflowEventStatusBadgeSize = 'small' | 'medium';
 export type WorkflowEventStatus =
   | 'ONGOING'
   | 'WAITING'
@@ -39,6 +36,7 @@ export type HistoryGroupEventMetadata = {
   summaryFields?: Array<string>;
 };
 
+// TODO @adhitya.mamallan - remove this type when moving grouping logic to v2
 export type HistoryGroupBadge = {
   content: string;
 };
@@ -72,6 +70,7 @@ export type HistoryGroupEventToAdditionalDetailsMap<
 >;
 
 type BaseHistoryGroup = {
+  groupType: HistoryEventGroupType;
   label: string;
   shortLabel?: string;
   eventsMetadata: HistoryGroupEventMetadata[];
@@ -176,8 +175,6 @@ export type HistoryEventsGroup =
   | RequestCancelExternalWorkflowExecutionHistoryGroup
   | SingleEventHistoryGroup;
 
-export type HistoryEventsGroups = Record<string, HistoryEventsGroup>;
-
 export type ActivityHistoryEvent = HistoryEvent & {
   attributes:
     | 'activityTaskScheduledEventAttributes'
@@ -253,20 +250,6 @@ export type WorkflowHistoryFilterConfig<
   V extends Partial<PageQueryParamValues<typeof workflowPageQueryParamsConfig>>,
 > = PageFilterConfig<typeof workflowPageQueryParamsConfig, V> & {
   filterFunc: (d: HistoryEventsGroup, value: V) => boolean;
-};
-
-export type VisibleHistoryGroupRanges = {
-  startIndex: number;
-  endIndex: number;
-  compactStartIndex: number;
-  compactEndIndex: number;
-  ungroupedStartIndex: number;
-  ungroupedEndIndex: number;
-};
-
-export type WorkflowHistoryUserPreferenceConfig<T> = {
-  key: string;
-  schema: z.ZodType<T, z.ZodTypeDef, string>;
 };
 
 export type EventGroupEntry = [string, HistoryEventsGroup];
