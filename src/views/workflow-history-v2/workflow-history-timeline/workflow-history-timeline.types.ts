@@ -1,9 +1,9 @@
 import { type VirtuosoHandle } from 'react-virtuoso';
 
 import { type WorkflowHistoryEventFilteringType } from '@/views/workflow-history/workflow-history-filters-type/workflow-history-filters-type.types';
-import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-history.types';
 
 import {
+  type HistoryEventsGroup,
   type EventGroupEntry,
   type Props as WorkflowHistoryProps,
 } from '../workflow-history-v2.types';

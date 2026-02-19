@@ -1,7 +1,7 @@
 import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
-import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-history.types';
 
 import getEventGroupFilteringType from '../../workflow-history-event-group/helpers/get-event-group-filtering-type';
+import { type HistoryEventsGroup } from '../../workflow-history-v2.types';
 import { type TimelineRow } from '../workflow-history-timeline.types';
 
 export default function getTimelineRowFromEventGroup(
