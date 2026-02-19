@@ -103,7 +103,7 @@ describe(getTimelineRowFromEventGroup.name, () => {
     );
   });
 
-  it('should return current time as endTimeMs when group is ongoing and not a timer', () => {
+  it('should return null as endTimeMs when group is ongoing and not a timer', () => {
     const ongoingGroup = {
       ...mockActivityEventGroup,
       status: 'ONGOING' as const,
@@ -126,7 +126,7 @@ describe(getTimelineRowFromEventGroup.name, () => {
           parseGrpcTimestamp(ongoingGroup.events[0].eventTime!),
           0
         ),
-        endTimeMs: expect.closeTo(mockNow, 0),
+        endTimeMs: null,
         groupType: 'ACTIVITY',
         status: 'ONGOING',
         group: ongoingGroup,
@@ -297,7 +297,7 @@ describe(getTimelineRowFromEventGroup.name, () => {
     );
   });
 
-  it('should return current time as endTimeMs when timer is ongoing but has no expectedEndTimeInfo', () => {
+  it('should return null as endTimeMs when timer is ongoing but has no expectedEndTimeInfo', () => {
     const ongoingTimerWithoutExpectedEnd = {
       ...mockTimerEventGroup,
       status: 'ONGOING' as const,
@@ -323,7 +323,7 @@ describe(getTimelineRowFromEventGroup.name, () => {
           ),
           0
         ),
-        endTimeMs: expect.closeTo(mockNow, 0),
+        endTimeMs: null,
         groupType: 'ACTIVITY',
         status: 'ONGOING',
         group: ongoingTimerWithoutExpectedEnd,
@@ -331,7 +331,7 @@ describe(getTimelineRowFromEventGroup.name, () => {
     );
   });
 
-  it('should return current time as endTimeMs when timer is completed but has no timeMs', () => {
+  it('should return null as endTimeMs when timer is completed but has no timeMs', () => {
     const completedTimerWithoutTimeMs = {
       ...mockTimerEventGroup,
       status: 'COMPLETED' as const,
@@ -354,7 +354,7 @@ describe(getTimelineRowFromEventGroup.name, () => {
           parseGrpcTimestamp(completedTimerWithoutTimeMs.events[0].eventTime!),
           0
         ),
-        endTimeMs: expect.closeTo(mockNow, 0),
+        endTimeMs: null,
         groupType: 'ACTIVITY',
         status: 'COMPLETED',
         group: completedTimerWithoutTimeMs,
