@@ -1,13 +1,10 @@
-import max from 'lodash/max';
-
 import { type TimelineRow } from '../workflow-history-timeline.types';
 
 export default function getTimelineMaxTimeMs(
   workflowCloseTimeMs: number | null | undefined,
-  timelineRows: Array<TimelineRow>
+  timelineRows: Array<TimelineRow>,
+  now: number
 ): number {
-  const now = Date.now();
-
   if (workflowCloseTimeMs !== null && workflowCloseTimeMs !== undefined) {
     return workflowCloseTimeMs;
   }
@@ -16,8 +13,17 @@ export default function getTimelineMaxTimeMs(
     return now;
   }
 
-  // timelineRows will always have at least one element here
-  const maxRowEndTime = max(timelineRows.map((row) => row.endTimeMs))!;
+  const hasRowInProgress = timelineRows.some((row) => row.endTimeMs === null);
+  if (hasRowInProgress) {
+    return now;
+  }
+
+  const maxRowEndTime = timelineRows.reduce((max, row) => {
+    // This check will always evaluate to false, since this helper
+    // would have returned early if any rows didn't have an end time
+    if (row.endTimeMs === null) return max;
+    return Math.max(max, row.endTimeMs);
+  }, 0);
 
   return Math.max(maxRowEndTime, now);
 }

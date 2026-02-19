@@ -14,12 +14,14 @@ import {
 } from './workflow-history-timeline.constants';
 
 export const styled = {
-  Container: createStyled('div', () => ({
+  Container: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     width: '100%',
     position: 'relative',
     height: `${TIMELINE_HEIGHT}px`,
+    marginTop: $theme.sizing.scale400,
+    outline: `1px solid ${$theme.borders.border300.borderColor}`,
   })),
   HeaderRow: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
@@ -29,23 +31,21 @@ export const styled = {
     alignItems: 'center',
     backgroundColor: $theme.colors.backgroundPrimary,
     borderBottom: `1px solid ${$theme.colors.borderOpaque}`,
-    paddingTop: $theme.sizing.scale400,
   })),
   HeaderLabelCell: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     width: `${TIMELINE_LABEL_COLUMN_WIDTH}px`,
     flexShrink: 0,
     padding: $theme.sizing.scale300,
-    borderRight: `1px solid ${$theme.colors.borderOpaque}`,
     ...$theme.typography.LabelXSmall,
     color: $theme.colors.contentSecondary,
   })),
-  HeaderTimelineCell: createStyled('div', () => ({
+  HeaderTimelineCell: createStyled('div', {
     flex: 1,
     minWidth: 0,
     padding: 0,
     overflow: 'hidden',
     position: 'relative',
-  })),
+  }),
   HeaderTimelineViewport: createStyled('div', () => ({
     overflowX: 'auto',
     overflowY: 'visible',

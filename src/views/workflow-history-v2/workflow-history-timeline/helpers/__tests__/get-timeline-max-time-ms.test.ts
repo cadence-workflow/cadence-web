@@ -8,7 +8,6 @@ import { type TimelineRow } from '../../workflow-history-timeline.types';
 import getTimelineMaxTimeMs from '../get-timeline-max-time-ms';
 
 const mockNow = new Date('2024-01-15T10:00:00Z').getTime();
-jest.useFakeTimers({ now: mockNow });
 
 describe(getTimelineMaxTimeMs.name, () => {
   it('should return workflowCloseTimeMs when it is not null or undefined', () => {
@@ -25,7 +24,11 @@ describe(getTimelineMaxTimeMs.name, () => {
       },
     ];
 
-    const result = getTimelineMaxTimeMs(workflowCloseTimeMs, timelineRows);
+    const result = getTimelineMaxTimeMs(
+      workflowCloseTimeMs,
+      timelineRows,
+      mockNow
+    );
 
     expect(result).toBe(workflowCloseTimeMs);
   });
@@ -34,19 +37,23 @@ describe(getTimelineMaxTimeMs.name, () => {
     const workflowCloseTimeMs = 0;
     const timelineRows: Array<TimelineRow> = [];
 
-    const result = getTimelineMaxTimeMs(workflowCloseTimeMs, timelineRows);
+    const result = getTimelineMaxTimeMs(
+      workflowCloseTimeMs,
+      timelineRows,
+      mockNow
+    );
 
     expect(result).toBe(0);
   });
 
   it('should return current time when workflowCloseTimeMs is null and timelineRows is empty', () => {
-    const result = getTimelineMaxTimeMs(null, []);
+    const result = getTimelineMaxTimeMs(null, [], mockNow);
 
     expect(result).toBe(mockNow);
   });
 
   it('should return current time when workflowCloseTimeMs is undefined and timelineRows is empty', () => {
-    const result = getTimelineMaxTimeMs(undefined, []);
+    const result = getTimelineMaxTimeMs(undefined, [], mockNow);
 
     expect(result).toBe(mockNow);
   });
@@ -64,7 +71,7 @@ describe(getTimelineMaxTimeMs.name, () => {
       },
     ];
 
-    const result = getTimelineMaxTimeMs(null, timelineRows);
+    const result = getTimelineMaxTimeMs(null, timelineRows, mockNow);
 
     expect(result).toBe(mockNow);
   });
@@ -83,7 +90,7 @@ describe(getTimelineMaxTimeMs.name, () => {
       },
     ];
 
-    const result = getTimelineMaxTimeMs(null, timelineRows);
+    const result = getTimelineMaxTimeMs(null, timelineRows, mockNow);
 
     expect(result).toBe(futureTime);
   });
@@ -120,7 +127,7 @@ describe(getTimelineMaxTimeMs.name, () => {
       },
     ];
 
-    const result = getTimelineMaxTimeMs(null, timelineRows);
+    const result = getTimelineMaxTimeMs(null, timelineRows, mockNow);
 
     expect(result).toBe(maxEndTime);
   });
@@ -147,7 +154,35 @@ describe(getTimelineMaxTimeMs.name, () => {
       },
     ];
 
-    const result = getTimelineMaxTimeMs(null, timelineRows);
+    const result = getTimelineMaxTimeMs(null, timelineRows, mockNow);
+
+    expect(result).toBe(mockNow);
+  });
+
+  it('should return current time when at least one row has null endTimeMs', () => {
+    const futureTime = mockNow + 10000;
+    const timelineRows: Array<TimelineRow> = [
+      {
+        id: '1',
+        label: 'Test 1',
+        startTimeMs: mockNow - 5000,
+        endTimeMs: futureTime,
+        groupType: 'ACTIVITY',
+        status: 'COMPLETED',
+        group: mockActivityEventGroup,
+      },
+      {
+        id: '2',
+        label: 'Test 2',
+        startTimeMs: mockNow - 3000,
+        endTimeMs: null,
+        groupType: 'TIMER',
+        status: 'ONGOING',
+        group: mockTimerEventGroup,
+      },
+    ];
+
+    const result = getTimelineMaxTimeMs(null, timelineRows, mockNow);
 
     expect(result).toBe(mockNow);
   });
