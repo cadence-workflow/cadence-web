@@ -1,6 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
-import decodeUrlParams from '@/utils/decode-url-params';
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
@@ -17,27 +16,27 @@ export async function describeTaskList(
   requestParams: RequestParams,
   ctx: Context
 ) {
-  const decodedParams = decodeUrlParams(requestParams.params) as RouteParams;
+  const params = requestParams.params as RouteParams;
 
   try {
     const decisionTaskList = await ctx.grpcClusterMethods.describeTaskList({
-      domain: decodedParams.domain,
+      domain: params.domain,
       taskList: {
-        name: decodedParams.taskListName,
+        name: params.taskListName,
       },
       taskListType: 'TASK_LIST_TYPE_DECISION',
     });
 
     const activityTaskList = await ctx.grpcClusterMethods.describeTaskList({
-      domain: decodedParams.domain,
+      domain: params.domain,
       taskList: {
-        name: decodedParams.taskListName,
+        name: params.taskListName,
       },
       taskListType: 'TASK_LIST_TYPE_ACTIVITY',
     });
 
     const taskList: TaskList = {
-      name: decodedParams.taskListName,
+      name: params.taskListName,
       workers: getWorkersForTaskList({ decisionTaskList, activityTaskList }),
       decisionTaskListStatus: decisionTaskList.taskListStatus,
       activityTaskListStatus: activityTaskList.taskListStatus,
@@ -46,7 +45,7 @@ export async function describeTaskList(
     return NextResponse.json({ taskList });
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
-      { requestParams: decodedParams, error: e },
+      { requestParams: params, error: e },
       'Error fetching task list'
     );
 
