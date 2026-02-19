@@ -17,6 +17,7 @@ import isRequestCancelExternalWorkflowExecutionEvent from './check-history-event
 import isSignalExternalWorkflowExecutionEvent from './check-history-event-group/is-signal-external-workflow-execution-event';
 import isSingleEvent from './check-history-event-group/is-single-event';
 import isTimerEvent from './check-history-event-group/is-timer-event';
+import isWorkflowSignaledEvent from './check-history-event-group/is-workflow-signaled-event';
 import getHistoryEventGroupId from './get-history-event-group-id';
 import getActivityGroupFromEvents from './get-history-group-from-events/get-activity-group-from-events';
 import getChildWorkflowExecutionGroupFromEvents from './get-history-group-from-events/get-child-workflow-execution-group-from-events';
@@ -25,6 +26,7 @@ import getRequestCancelExternalWorkflowExecutionGroupFromEvents from './get-hist
 import getSignalExternalWorkflowExecutionGroupFromEvents from './get-history-group-from-events/get-signal-external-workflow-execution-group-from-events';
 import getSingleEventGroupFromEvents from './get-history-group-from-events/get-single-event-group-from-events';
 import getTimerGroupFromEvents from './get-history-group-from-events/get-timer-group-from-events';
+import getWorkflowSignaledGroupFromEvents from './get-history-group-from-events/get-workflow-signaled-group-from-events';
 import placeEventInGroupEvents from './place-event-in-group-events';
 import {
   type GroupingProcessState,
@@ -324,6 +326,8 @@ export default class WorkflowHistoryGrouper {
           getRequestCancelExternalWorkflowExecutionGroupFromEvents(
             updatedEventsArr
           );
+      } else if (updatedEventsArr.every(isWorkflowSignaledEvent)) {
+        groups[groupId] = getWorkflowSignaledGroupFromEvents(updatedEventsArr);
       } else if (updatedEventsArr.every(isSingleEvent)) {
         groups[groupId] = getSingleEventGroupFromEvents(updatedEventsArr);
       } else {

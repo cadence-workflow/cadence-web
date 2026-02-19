@@ -24,7 +24,6 @@ export default function getSingleEventGroupFromEvents(
     workflowExecutionCompletedEventAttributes: 'Workflow Completed',
     workflowExecutionFailedEventAttributes: 'Workflow Failed',
     workflowExecutionTimedOutEventAttributes: 'Workflow Timed out',
-    workflowExecutionSignaledEventAttributes: 'Workflow Signaled',
     workflowExecutionTerminatedEventAttributes: 'Workflow Terminated',
     workflowExecutionCancelRequestedEventAttributes: 'Workflow Cancel Request',
     workflowExecutionCanceledEventAttributes: 'Workflow Canceled',
@@ -59,7 +58,6 @@ export default function getSingleEventGroupFromEvents(
     workflowExecutionCompletedEventAttributes: 'Completed',
     workflowExecutionFailedEventAttributes: 'Failed',
     workflowExecutionTimedOutEventAttributes: 'Timed out',
-    workflowExecutionSignaledEventAttributes: 'Signaled',
     workflowExecutionTerminatedEventAttributes: 'Terminated',
     workflowExecutionCancelRequestedEventAttributes: 'Requested',
     workflowExecutionCanceledEventAttributes: 'Canceled',
@@ -76,7 +74,6 @@ export default function getSingleEventGroupFromEvents(
     workflowExecutionCompletedEventAttributes: 'COMPLETED',
     workflowExecutionFailedEventAttributes: 'FAILED',
     workflowExecutionTimedOutEventAttributes: 'FAILED',
-    workflowExecutionSignaledEventAttributes: 'COMPLETED',
     workflowExecutionTerminatedEventAttributes: 'FAILED',
     workflowExecutionCancelRequestedEventAttributes: 'COMPLETED',
     workflowExecutionCanceledEventAttributes: 'CANCELED',
@@ -95,7 +92,6 @@ export default function getSingleEventGroupFromEvents(
 
   const eventToSummaryFields: HistoryGroupEventToSummaryFieldsMap<SingleEventHistoryGroup> =
     {
-      workflowExecutionSignaledEventAttributes: ['signalName', 'input'],
       workflowExecutionStartedEventAttributes: [
         'input',
         'executionStartToCloseTimeoutSeconds',
