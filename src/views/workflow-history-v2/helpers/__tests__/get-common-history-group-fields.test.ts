@@ -48,16 +48,16 @@ describe('getCommonHistoryGroupFields', () => {
   it('should override group eventsMetadata timeLabel when eventToTimeLabelPrefixMap is passed', () => {
     const group = setup({
       eventToTimeLabelPrefixMap: {
-        timerStartedEventAttributes: 'Happend at',
+        timerStartedEventAttributes: 'Happened at',
       },
     });
     expect(group.eventsMetadata.map(({ timeLabel }) => timeLabel)).toEqual([
-      'Happend at 07 Sep, 22:32:50 UTC',
+      'Happened at 07 Sep, 22:32:50 UTC',
       'Fired at 07 Sep, 22:34:30 UTC',
     ]);
   });
 
-  it('should return the result of the function call if a function is passed for a stastus key', () => {
+  it('should return the result of the function call if a function is passed for a status key', () => {
     const singleEvent = [startTimerTaskEvent];
     const mockedGetStatusFunc = jest.fn().mockReturnValue('ONGOING');
     const eventToStatus: HistoryGroupEventToStatusMap<TimerHistoryGroup> = {

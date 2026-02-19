@@ -229,7 +229,7 @@ describe('getDecisionGroupFromEvents', () => {
     );
   });
 
-  it('should return a badge if schedueled attempts are greater than zero', () => {
+  it('should return a badge if scheduled attempts are greater than zero', () => {
     const retryEvent = {
       ...scheduleDecisionTaskEvent,
       decisionTaskScheduledEventAttributes: {
