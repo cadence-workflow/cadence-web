@@ -3,12 +3,13 @@ import { type RefObject } from 'react';
 import { type VirtuosoHandle } from 'react-virtuoso';
 
 import { type RequestError } from '@/utils/request/request-error';
+import { type WorkflowPageTabsParams } from '@/views/workflow-page/workflow-page-tabs/workflow-page-tabs.types';
+
 import {
   type HistoryGroupEventMetadata,
   type ExtendedHistoryEvent,
   type HistoryEventsGroup,
-} from '@/views/workflow-history/workflow-history.types';
-import { type WorkflowPageTabsParams } from '@/views/workflow-page/workflow-page-tabs/workflow-page-tabs.types';
+} from '../workflow-history-v2.types';
 
 export type Props = {
   // Data and state props

@@ -1,9 +1,9 @@
 import { render, screen } from '@/test-utils/rtl';
 
 import { mockActivityEventGroup } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
-import type WorkflowHistoryGroupDetails from '@/views/workflow-history-v2/workflow-history-group-details/workflow-history-group-details';
 
 import * as generateHistoryGroupDetailsModule from '../../helpers/generate-history-group-details';
+import type WorkflowHistoryGroupDetails from '../../workflow-history-group-details/workflow-history-group-details';
 import WorkflowHistoryTimelineEventGroup from '../workflow-history-timeline-event-group';
 import { type Props } from '../workflow-history-timeline-event-group.types';
 

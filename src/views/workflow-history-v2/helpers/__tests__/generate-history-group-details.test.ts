@@ -8,8 +8,8 @@ import {
 import { mockActivityEventGroup } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
 import { pendingActivityTaskStartEvent } from '@/views/workflow-history/__fixtures__/workflow-history-pending-events';
 import isPendingHistoryEvent from '@/views/workflow-history/workflow-history-event-details/helpers/is-pending-history-event';
-import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-history.types';
 
+import { type HistoryEventsGroup } from '../../workflow-history-v2.types';
 import generateHistoryEventDetails from '../generate-history-event-details';
 import generateHistoryGroupDetails from '../generate-history-group-details';
 
