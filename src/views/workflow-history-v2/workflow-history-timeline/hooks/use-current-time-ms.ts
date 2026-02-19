@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 
+import { TIMELINE_UPDATE_INTERVAL_MS } from '../workflow-history-timeline.constants';
+
 export default function useCurrentTimeMs({
   isWorkflowRunning,
 }: {
@@ -10,16 +12,11 @@ export default function useCurrentTimeMs({
   useEffect(() => {
     if (!isWorkflowRunning) return;
 
-    let frameId: number;
-
-    const tick = () => {
+    const intervalId = setInterval(() => {
       setCurrentTimeMs(Date.now());
-      frameId = requestAnimationFrame(tick);
-    };
+    }, TIMELINE_UPDATE_INTERVAL_MS);
 
-    frameId = requestAnimationFrame(tick);
-
-    return () => cancelAnimationFrame(frameId);
+    return () => clearInterval(intervalId);
   }, [isWorkflowRunning]);
 
   return currentTimeMs;

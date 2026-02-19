@@ -2,109 +2,84 @@ import { act, renderHook } from '@/test-utils/rtl';
 
 import useCurrentTimeMs from '../use-current-time-ms';
 
-describe(useCurrentTimeMs.name, () => {
-  let rafCallbacks: Array<FrameRequestCallback>;
-  let rafIdCounter: number;
+jest.mock('../../workflow-history-timeline.constants', () => ({
+  ...jest.requireActual('../../workflow-history-timeline.constants'),
+  TIMELINE_UPDATE_INTERVAL_MS: 1000,
+}));
 
+describe(useCurrentTimeMs.name, () => {
   beforeEach(() => {
     jest.useFakeTimers();
-    rafCallbacks = [];
-    rafIdCounter = 0;
-
-    jest
-      .spyOn(window, 'requestAnimationFrame')
-      .mockImplementation((callback: FrameRequestCallback) => {
-        rafCallbacks.push(callback);
-        return ++rafIdCounter;
-      });
-
-    jest
-      .spyOn(window, 'cancelAnimationFrame')
-      .mockImplementation((_id: number) => {
-        // Clear callbacks (simplified - in real impl would track by id)
-        rafCallbacks = [];
-      });
   });
 
   afterEach(() => {
     jest.useRealTimers();
-    jest.restoreAllMocks();
   });
 
   it('should return initial time when workflow is not running', () => {
-    const mockNow = 1705312800000;
-    jest.setSystemTime(mockNow);
-
     const { result } = setup({ isWorkflowRunning: false });
 
-    expect(result.current).toBe(mockNow);
+    const initialTime = result.current;
 
-    jest.setSystemTime(mockNow + 1000);
-
-    // Time should not update since no animation frame is running
-    expect(result.current).toBe(mockNow);
-  });
-
-  it('should not start animation frame when workflow is not running', () => {
-    const mockNow = 1705312800000;
-    jest.setSystemTime(mockNow);
-
-    setup({ isWorkflowRunning: false });
-
-    expect(window.requestAnimationFrame).not.toHaveBeenCalled();
-  });
-
-  it('should start animation frame when workflow is running', () => {
-    const mockNow = 1705312800000;
-    jest.setSystemTime(mockNow);
-
-    setup({ isWorkflowRunning: true });
-
-    expect(window.requestAnimationFrame).toHaveBeenCalled();
-  });
-
-  it('should update time on animation frame when workflow is running', () => {
-    const mockNow = 1705312800000;
-    jest.setSystemTime(mockNow);
-
-    const { result } = setup({ isWorkflowRunning: true });
-
-    expect(result.current).toBe(mockNow);
-
-    // Move system time forward
-    const newTime = mockNow + 16;
-    jest.setSystemTime(newTime);
-
-    // Trigger animation frame callback
     act(() => {
-      const callback = rafCallbacks.shift();
-      if (callback) callback(0);
+      jest.advanceTimersByTime(2000);
     });
 
-    expect(result.current).toBe(newTime);
+    // Time should not update since no interval is running
+    expect(result.current).toBe(initialTime);
+  });
+
+  it('should update time on interval when workflow is running', () => {
+    const { result } = setup({ isWorkflowRunning: true });
+
+    const initialTime = result.current;
+
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
+
+    expect(result.current).toBe(initialTime + 1000);
+  });
+
+  it('should update time multiple times when workflow is running', () => {
+    const { result } = setup({ isWorkflowRunning: true });
+
+    const initialTime = result.current;
+
+    // First interval tick
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
+    expect(result.current).toBe(initialTime + 1000);
+
+    // Second interval tick
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
+    expect(result.current).toBe(initialTime + 2000);
   });
 
   it('should stop updating when workflow stops running', () => {
-    const mockNow = 1705312800000;
-    jest.setSystemTime(mockNow);
-
     const { result, rerender } = setup({ isWorkflowRunning: true });
 
+    const initialTime = result.current;
+
     // Advance time while running
-    const timeWhileRunning = mockNow + 100;
-    jest.setSystemTime(timeWhileRunning);
     act(() => {
-      const callback = rafCallbacks.shift();
-      if (callback) callback(0);
+      jest.advanceTimersByTime(1000);
     });
 
-    expect(result.current).toBe(timeWhileRunning);
+    expect(result.current).toBe(initialTime + 1000);
 
     // Stop the workflow
     rerender({ isWorkflowRunning: false });
 
-    // cancelAnimationFrame should have been called
-    expect(window.cancelAnimationFrame).toHaveBeenCalled();
+    // Advance time further - should not update
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
+
+    expect(result.current).toBe(initialTime + 1000);
   });
 });
 
