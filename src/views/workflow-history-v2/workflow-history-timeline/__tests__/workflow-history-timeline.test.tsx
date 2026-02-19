@@ -202,16 +202,14 @@ describe(WorkflowHistoryTimeline.name, () => {
     ];
     const workflowStartTimeMs = mockNow - 1000000;
 
-    const { container } = setup({
+    setup({
       eventGroupsEntries,
       workflowStartTimeMs,
     });
 
-    // SVG width should be calculated based on viewport width minus label column width
-    const svgs = container.querySelectorAll('svg');
-    expect(svgs.length).toBeGreaterThan(2);
     // Content width of the timeline SVG should be 1000 - 300 = 700
-    expect(svgs[1]?.getAttribute('width')).toBe('700');
+    const axisSvg = screen.getByTestId('timeline-axis-svg');
+    expect(axisSvg).toHaveAttribute('width', '700');
   });
 
   it('should display timeline event group in tooltip when hovering over timeline bar', async () => {
@@ -268,6 +266,39 @@ describe(WorkflowHistoryTimeline.name, () => {
     expect(onClickShowInTable).toHaveBeenCalledTimes(1);
     expect(onClickShowInTable).toHaveBeenCalledWith('group1');
     expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+  });
+
+  it('should render current time marker when workflow is running', () => {
+    const eventGroupsEntries: Array<EventGroupEntry> = [
+      ['group1', mockActivityEventGroup],
+    ];
+    const workflowStartTimeMs = mockNow - 1000000;
+
+    const { container } = setup({
+      eventGroupsEntries,
+      workflowStartTimeMs,
+      workflowCloseTimeMs: null,
+    });
+
+    const line = container.querySelector('line');
+    expect(line).toBeInTheDocument();
+  });
+
+  it('should not render current time marker when workflow is completed', () => {
+    const eventGroupsEntries: Array<EventGroupEntry> = [
+      ['group1', mockActivityEventGroup],
+    ];
+    const workflowStartTimeMs = mockNow - 1000000;
+    const workflowCloseTimeMs = mockNow - 500000;
+
+    const { container } = setup({
+      eventGroupsEntries,
+      workflowStartTimeMs,
+      workflowCloseTimeMs,
+    });
+
+    const line = container.querySelector('line');
+    expect(line).not.toBeInTheDocument();
   });
 });
 

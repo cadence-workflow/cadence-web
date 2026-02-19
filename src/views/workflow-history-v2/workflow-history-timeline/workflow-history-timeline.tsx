@@ -127,6 +127,7 @@ export default function WorkflowHistoryTimeline({
                 <styled.HeaderTimelineViewport>
                   <styled.HeaderTimelineContent $widthPx={contentWidth}>
                     <styled.AxisSvg
+                      data-testid="timeline-axis-svg"
                       width={contentWidth}
                       height={20}
                       key={contentWidth}
