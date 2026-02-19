@@ -24,6 +24,7 @@ export type HistoryEventGroupType =
   | 'ChildWorkflowExecution'
   | 'SignalExternalWorkflowExecution'
   | 'RequestCancelExternalWorkflowExecution'
+  | 'WorkflowSignaled'
   | 'Event';
 
 export type HistoryGroupEventMetadata = {
@@ -161,6 +162,11 @@ export type RequestCancelExternalWorkflowExecutionHistoryGroup =
     events: RequestCancelExternalWorkflowExecutionHistoryEvent[];
   };
 
+export type WorkflowSignaledHistoryGroup = BaseHistoryGroup & {
+  groupType: 'WorkflowSignaled';
+  events: WorkflowSignaledHistoryEvent[];
+};
+
 export type SingleEventHistoryGroup = BaseHistoryGroup & {
   groupType: 'Event';
   events: SingleHistoryEvent[];
@@ -173,6 +179,7 @@ export type HistoryEventsGroup =
   | ChildWorkflowExecutionHistoryGroup
   | SignalExternalWorkflowExecutionHistoryGroup
   | RequestCancelExternalWorkflowExecutionHistoryGroup
+  | WorkflowSignaledHistoryGroup
   | SingleEventHistoryGroup;
 
 export type HistoryEventsGroupsMap = Record<string, HistoryEventsGroup>;
@@ -230,6 +237,10 @@ export type RequestCancelExternalWorkflowExecutionHistoryEvent =
       | 'externalWorkflowExecutionCancelRequestedEventAttributes';
   };
 
+export type WorkflowSignaledHistoryEvent = HistoryEvent & {
+  attributes: 'workflowExecutionSignaledEventAttributes';
+};
+
 export type SingleHistoryEvent = HistoryEvent & {
   attributes:
     | 'workflowExecutionStartedEventAttributes'
@@ -240,7 +251,6 @@ export type SingleHistoryEvent = HistoryEvent & {
     | 'requestCancelActivityTaskFailedEventAttributes'
     | 'cancelTimerFailedEventAttributes'
     | 'markerRecordedEventAttributes'
-    | 'workflowExecutionSignaledEventAttributes'
     | 'workflowExecutionTerminatedEventAttributes'
     | 'workflowExecutionCancelRequestedEventAttributes'
     | 'workflowExecutionCanceledEventAttributes'

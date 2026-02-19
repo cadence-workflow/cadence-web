@@ -1,4 +1,7 @@
-import type { SingleHistoryEvent } from '../workflow-history-v2.types';
+import type {
+  SingleHistoryEvent,
+  WorkflowSignaledHistoryEvent,
+} from '../workflow-history-v2.types';
 
 //TODO: get more realistic time and workflow id/ run id references that relates to other events
 
@@ -86,7 +89,7 @@ export const signalWorkflowExecutionEvent = {
     requestId: '488cd24f-37b0-48f7-955a-c5c8c7653290',
   },
   attributes: 'workflowExecutionSignaledEventAttributes',
-} as const satisfies SingleHistoryEvent;
+} as const satisfies WorkflowSignaledHistoryEvent;
 
 export const recordMarkerExecutionEvent = {
   eventId: '3',

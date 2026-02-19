@@ -9,7 +9,6 @@ export default function isSingleEvent(event: {
     'cancelTimerFailedEventAttributes',
     'markerRecordedEventAttributes',
     'upsertWorkflowSearchAttributesEventAttributes',
-    'workflowExecutionSignaledEventAttributes',
     'workflowExecutionStartedEventAttributes',
     'workflowExecutionCompletedEventAttributes',
     'workflowExecutionFailedEventAttributes',
