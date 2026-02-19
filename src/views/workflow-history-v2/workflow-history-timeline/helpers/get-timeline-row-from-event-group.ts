@@ -24,7 +24,7 @@ export default function getTimelineRowFromEventGroup(
 
   const groupStartMs = parseGrpcTimestamp(eventStartTimestamp);
 
-  let groupEndMs = Date.now();
+  let groupEndMs = null;
 
   if (
     group.groupType === 'Timer' &&

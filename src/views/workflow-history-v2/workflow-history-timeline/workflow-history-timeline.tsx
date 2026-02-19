@@ -16,8 +16,9 @@ import workflowHistoryEventFilteringTypeColorsConfig from '../config/workflow-hi
 import WorkflowHistoryTimelineEventGroup from '../workflow-history-timeline-event-group/workflow-history-timeline-event-group';
 
 import formatTickDuration from './helpers/format-tick-duration';
-import getTimelineMaxTimeMs from './helpers/get-timeline-max-time-ms';
 import getTimelineRowFromEventGroup from './helpers/get-timeline-row-from-event-group';
+import useCurrentTimeMs from './hooks/use-current-time-ms';
+import useTimelineMaxRangeMs from './hooks/use-timeline-max-range-ms';
 import {
   ROW_HEIGHT_PX,
   TIMELINE_ITEM_TOOLTIP_ENTRY_DELAY_MS,
@@ -64,6 +65,23 @@ export default function WorkflowHistoryTimeline({
     return foundIndex;
   }, [timelineRows, itemToHighlightId]);
 
+  const currentTimeMs = useCurrentTimeMs({
+    isWorkflowRunning:
+      workflowCloseTimeMs === null || workflowCloseTimeMs === undefined,
+  });
+
+  const currentTimeOffsetMs = useMemo(
+    () => currentTimeMs - workflowStartTimeMs,
+    [currentTimeMs, workflowStartTimeMs]
+  );
+
+  const maxRangeMs = useTimelineMaxRangeMs({
+    timelineRows,
+    workflowStartTimeMs,
+    workflowCloseTimeMs,
+    currentTimeMs,
+  });
+
   return (
     <ParentSize>
       {({ width: viewportWidth = 800 }) => {
@@ -74,9 +92,7 @@ export default function WorkflowHistoryTimeline({
 
         const domain = {
           min: 0,
-          max:
-            getTimelineMaxTimeMs(workflowCloseTimeMs, timelineRows) -
-            workflowStartTimeMs,
+          max: maxRangeMs,
         };
 
         const dataPointsPadding =
@@ -144,7 +160,11 @@ export default function WorkflowHistoryTimeline({
                     .content;
 
                 const rowStart = xScale(row.startTimeMs - workflowStartTimeMs);
-                const rowEnd = xScale(row.endTimeMs - workflowStartTimeMs);
+
+                const rowEnd =
+                  row.endTimeMs === null
+                    ? xScale(currentTimeOffsetMs)
+                    : xScale(row.endTimeMs - workflowStartTimeMs);
 
                 const popoverOffset = (rowStart + rowEnd - contentWidth) / 2;
                 const animateOnEnter = row.id === itemToHighlightId;
