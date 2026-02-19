@@ -9,8 +9,8 @@ import { useInView } from 'react-intersection-observer';
 
 import PageSection from '@/components/page-section/page-section';
 import WorkflowHistoryExportJsonButton from '@/views/workflow-history/workflow-history-export-json-button/workflow-history-export-json-button';
-import WorkflowHistoryFiltersMenu from '@/views/workflow-history-v2/workflow-history-filters-menu/workflow-history-filters-menu';
 
+import WorkflowHistoryFiltersMenu from '../workflow-history-filters-menu/workflow-history-filters-menu';
 import WorkflowHistorySwitchToV1Button from '../workflow-history-switch-to-v1-button/workflow-history-switch-to-v1-button';
 import WorkflowHistoryTimeline from '../workflow-history-timeline/workflow-history-timeline';
 

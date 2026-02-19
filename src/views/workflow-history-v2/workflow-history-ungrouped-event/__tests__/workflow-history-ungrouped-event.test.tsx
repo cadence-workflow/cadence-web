@@ -8,16 +8,16 @@ import { mockActivityEventGroup } from '@/views/workflow-history/__fixtures__/wo
 import type WorkflowHistoryEventStatusBadge from '@/views/workflow-history/workflow-history-event-status-badge/workflow-history-event-status-badge';
 import type WorkflowHistoryGroupLabel from '@/views/workflow-history/workflow-history-group-label/workflow-history-group-label';
 import type WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
-import {
-  type ExtendedHistoryEvent,
-  type ActivityHistoryGroup,
-} from '@/views/workflow-history/workflow-history.types';
 
 import * as generateHistoryGroupDetailsModule from '../../helpers/generate-history-group-details';
 import type { EventDetailsEntries } from '../../workflow-history-event-details/workflow-history-event-details.types';
 import type WorkflowHistoryGroupDetails from '../../workflow-history-group-details/workflow-history-group-details';
 import type { GroupDetailsEntries } from '../../workflow-history-group-details/workflow-history-group-details.types';
 import type { UngroupedEventInfo } from '../../workflow-history-ungrouped-table/workflow-history-ungrouped-table.types';
+import {
+  type ExtendedHistoryEvent,
+  type ActivityHistoryGroup,
+} from '../../workflow-history-v2.types';
 import WorkflowHistoryUngroupedEvent from '../workflow-history-ungrouped-event';
 import type { Props } from '../workflow-history-ungrouped-event.types';
 
