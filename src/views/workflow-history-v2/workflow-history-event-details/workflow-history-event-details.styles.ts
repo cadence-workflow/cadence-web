@@ -24,8 +24,21 @@ export const styled = {
   PanelContainer: createStyled('div', {
     flex: 1,
   }),
-  RestDetails: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
-    paddingLeft: $theme.sizing.scale100,
-    paddingRight: $theme.sizing.scale100,
-  })),
+  RestDetails: createStyled<'div', { $isScrollable?: boolean }>(
+    'div',
+    ({
+      $theme,
+      $isScrollable,
+    }: {
+      $theme: Theme;
+      $isScrollable?: boolean;
+    }) => ({
+      paddingLeft: $theme.sizing.scale100,
+      paddingRight: $theme.sizing.scale100,
+      ...($isScrollable && {
+        maxHeight: '250px',
+        overflowY: 'auto',
+      }),
+    })
+  ),
 };

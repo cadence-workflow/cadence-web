@@ -16,7 +16,7 @@ export const styled = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    gap: $theme.sizing.scale400,
+    gap: $theme.sizing.scale1200,
   })),
   ExtraActions: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',

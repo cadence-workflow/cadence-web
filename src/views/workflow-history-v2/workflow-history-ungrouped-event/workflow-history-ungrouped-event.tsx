@@ -30,6 +30,7 @@ export default function WorkflowHistoryUngroupedEvent({
   decodedPageUrlParams,
   isExpanded,
   toggleIsExpanded,
+  onClickShowInTimeline,
 }: Props) {
   const eventFilteringType = getEventGroupFilteringType(eventInfo.eventGroup);
 
@@ -122,6 +123,7 @@ export default function WorkflowHistoryUngroupedEvent({
             isUngroupedView={true}
             workflowPageParams={decodedPageUrlParams}
             onClose={() => toggleIsExpanded()}
+            onClickShowInTimeline={onClickShowInTimeline}
           />
         </styled.GroupDetailsContainer>
       </styled.GroupDetailsGridContainer>

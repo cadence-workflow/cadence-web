@@ -20,9 +20,7 @@ export default function WorkflowHistoryEventLinkButton({
       placement="right"
       popoverMargin={8}
       accessibilityType="tooltip"
-      content={() =>
-        isEventLinkCopied ? 'Copied link to event' : 'Copy link to event'
-      }
+      content={() => (isEventLinkCopied ? 'Copied link to event' : null)}
       onMouseLeave={() => setIsEventLinkCopied(false)}
       returnFocus
       autoFocus
@@ -31,6 +29,7 @@ export default function WorkflowHistoryEventLinkButton({
         aria-label="Copy link to event"
         kind="tertiary"
         size="compact"
+        startEnhancer={<MdLink size={16} />}
         onClick={(e) => {
           e.stopPropagation();
           copy(
@@ -45,7 +44,7 @@ export default function WorkflowHistoryEventLinkButton({
           setIsEventLinkCopied(true);
         }}
       >
-        <MdLink />
+        Copy link
       </Button>
     </StatefulTooltip>
   );

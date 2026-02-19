@@ -204,6 +204,7 @@ function setup({
         hasMoreEvents={hasMoreEvents}
         fetchMoreEvents={fetchMoreEvents}
         isFetchingMoreEvents={isFetchingMoreEvents}
+        onClickShowGroupInTimeline={jest.fn()}
       />
     </VirtuosoMockContext.Provider>
   );

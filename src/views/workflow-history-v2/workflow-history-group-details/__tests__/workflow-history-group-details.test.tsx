@@ -269,6 +269,72 @@ describe(WorkflowHistoryGroupDetails.name, () => {
 
     expect(await screen.findByText('Copied link to event')).toBeInTheDocument();
   });
+
+  it('renders the "Show in timeline" button when onClickShowInTimeline is provided', () => {
+    setup({
+      groupDetailsEntries: mockGroupDetails,
+      onClickShowInTimeline: jest.fn(),
+    });
+
+    const showInTimelineButton = screen.getByLabelText('Show in timeline');
+    expect(showInTimelineButton).toBeInTheDocument();
+  });
+
+  it('does not render the "Show in timeline" button when onClickShowInTimeline is not provided', () => {
+    setup({
+      groupDetailsEntries: mockGroupDetails,
+      onClickShowInTimeline: undefined,
+    });
+
+    const showInTimelineButton = screen.queryByLabelText('Show in timeline');
+    expect(showInTimelineButton).not.toBeInTheDocument();
+  });
+
+  it('calls onClickShowInTimeline when the "Show in timeline" button is clicked', async () => {
+    const mockOnClickShowInTimeline = jest.fn();
+    const { user } = setup({
+      groupDetailsEntries: mockGroupDetails,
+      onClickShowInTimeline: mockOnClickShowInTimeline,
+    });
+
+    const showInTimelineButton = screen.getByLabelText('Show in timeline');
+    await user.click(showInTimelineButton);
+
+    expect(mockOnClickShowInTimeline).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders the "Show in table" button when onClickShowInTable is provided', () => {
+    setup({
+      groupDetailsEntries: mockGroupDetails,
+      onClickShowInTable: jest.fn(),
+    });
+
+    const showInTableButton = screen.getByLabelText('Show in table');
+    expect(showInTableButton).toBeInTheDocument();
+  });
+
+  it('does not render the "Show in table" button when onClickShowInTable is not provided', () => {
+    setup({
+      groupDetailsEntries: mockGroupDetails,
+      onClickShowInTable: undefined,
+    });
+
+    const showInTableButton = screen.queryByLabelText('Show in table');
+    expect(showInTableButton).not.toBeInTheDocument();
+  });
+
+  it('calls onClickShowInTable when the "Show in table" button is clicked', async () => {
+    const mockOnClickShowInTable = jest.fn();
+    const { user } = setup({
+      groupDetailsEntries: mockGroupDetails,
+      onClickShowInTable: mockOnClickShowInTable,
+    });
+
+    const showInTableButton = screen.getByLabelText('Show in table');
+    await user.click(showInTableButton);
+
+    expect(mockOnClickShowInTable).toHaveBeenCalledTimes(1);
+  });
 });
 
 function setup({
@@ -281,11 +347,15 @@ function setup({
     runId: 'test-run-id',
   },
   onClose,
+  onClickShowInTimeline,
+  onClickShowInTable,
 }: {
   groupDetailsEntries: GroupDetailsEntries;
   initialEventId?: string;
   workflowPageParams?: WorkflowPageParams;
   onClose?: () => void;
+  onClickShowInTimeline?: () => void;
+  onClickShowInTable?: () => void;
 }) {
   const user = userEvent.setup();
 
@@ -295,6 +365,8 @@ function setup({
       initialEventId={initialEventId}
       workflowPageParams={workflowPageParams}
       onClose={onClose}
+      onClickShowInTimeline={onClickShowInTimeline}
+      onClickShowInTable={onClickShowInTable}
     />
   );
 

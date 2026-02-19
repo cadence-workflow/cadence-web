@@ -67,19 +67,45 @@ export const styled = {
     width: '100%',
     height: '100%',
   })),
-  RowContainer: createStyled<'div', { $isEven?: boolean }>(
+  RowContainer: createStyled<
     'div',
-    ({ $theme, $isEven }: { $theme: Theme; $isEven?: boolean }) => ({
-      display: 'flex',
-      width: '100%',
-      height: `${ROW_HEIGHT_PX}px`,
-      backgroundColor: $isEven
+    { $isEven?: boolean; $animateOnEnter?: boolean }
+  >(
+    'div',
+    ({
+      $theme,
+      $isEven,
+      $animateOnEnter,
+    }: {
+      $theme: Theme;
+      $isEven?: boolean;
+      $animateOnEnter?: boolean;
+    }) => {
+      const defaultBackgroundColor = $isEven
         ? undefined
-        : $theme.colors.backgroundTableStriped,
-      ':hover': {
-        backgroundColor: $theme.colors.backgroundTertiary,
-      },
-    })
+        : $theme.colors.backgroundTableStriped;
+
+      return {
+        display: 'flex',
+        width: '100%',
+        height: `${ROW_HEIGHT_PX}px`,
+        backgroundColor: defaultBackgroundColor,
+        ':hover': {
+          backgroundColor: $theme.colors.backgroundTertiary,
+        },
+        ...($animateOnEnter && {
+          animationDuration: '2s',
+          animationName: {
+            from: {
+              backgroundColor: $theme.colors.backgroundTertiary,
+            },
+            to: {
+              backgroundColor: defaultBackgroundColor,
+            },
+          },
+        }),
+      };
+    }
   ),
   LabelCell: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     width: `${TIMELINE_LABEL_COLUMN_WIDTH}px`,
@@ -130,11 +156,7 @@ export const styled = {
 };
 
 const cssStylesObj = {
-  bar: {
-    cursor: 'pointer',
-  },
   barAnimated: {
-    cursor: 'pointer',
     '@keyframes stripeMove': {
       '0%': {
         transform: 'translate(0, 0)',
@@ -160,6 +182,7 @@ export const overrides = {
         color: $theme.colors.contentPrimary,
         ...$theme.typography.LabelSmall,
         padding: $theme.sizing.scale400,
+        maxWidth: '800px',
       }),
     },
   } satisfies PopoverOverrides,

@@ -27,15 +27,17 @@ export default function WorkflowHistoryHeader({
   workflowStartTimeMs,
   workflowCloseTimeMs,
   selectedEventId,
-  onClickEvent,
+  onClickShowInTable,
   decodedPageUrlParams,
+  isTimelineShown,
+  setIsTimelineShown,
+  timelineVirtuosoRef,
+  timelineItemToHighlightId,
 }: Props) {
   const [isSticky, setIsSticky] = useState(false);
   useEffect(() => {
     if (!isStickyEnabled && isSticky) setIsSticky(false);
   }, [isStickyEnabled, isSticky]);
-
-  const [isTimelineShown, setIsTimelineShown] = useState(false);
 
   const { ref: sentinelRef } = useInView({
     threshold: 1,
@@ -131,8 +133,10 @@ export default function WorkflowHistoryHeader({
                 workflowStartTimeMs={workflowStartTimeMs}
                 workflowCloseTimeMs={workflowCloseTimeMs}
                 selectedEventId={selectedEventId}
-                onClickEvent={onClickEvent}
+                onClickShowInTable={onClickShowInTable}
                 decodedPageUrlParams={decodedPageUrlParams}
+                virtuosoRef={timelineVirtuosoRef}
+                itemToHighlightId={timelineItemToHighlightId}
               />
             </styled.TimelineContainer>
           )}
