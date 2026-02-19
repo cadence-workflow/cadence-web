@@ -1,7 +1,6 @@
 import merge from 'lodash/merge';
 import { NextResponse, type NextRequest } from 'next/server';
 
-import decodeUrlParams from '@/utils/decode-url-params';
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
@@ -17,15 +16,15 @@ export default async function describeWorkflow(
   requestParams: RequestParams,
   ctx: Context
 ) {
-  const decodedParams = decodeUrlParams(requestParams.params);
+  const params = requestParams.params;
 
   try {
     const describeWorkflowResponse =
       await ctx.grpcClusterMethods.describeWorkflow({
-        domain: decodedParams.domain,
+        domain: params.domain,
         workflowExecution: {
-          workflowId: decodedParams.workflowId,
-          runId: decodedParams.runId,
+          workflowId: params.workflowId,
+          runId: params.runId,
         },
       });
 
@@ -43,10 +42,10 @@ export default async function describeWorkflow(
         'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
     ) {
       const closeEventResponse = await ctx.grpcClusterMethods.getHistory({
-        domain: decodedParams.domain,
+        domain: params.domain,
         workflowExecution: {
-          workflowId: decodedParams.workflowId,
-          runId: decodedParams.runId,
+          workflowId: params.workflowId,
+          runId: params.runId,
         },
         historyEventFilterType: 'EVENT_FILTER_TYPE_CLOSE_EVENT',
       });
@@ -64,10 +63,10 @@ export default async function describeWorkflow(
         throw e;
       }
       const archivedHistoryResponse = await ctx.grpcClusterMethods.getHistory({
-        domain: decodedParams.domain,
+        domain: params.domain,
         workflowExecution: {
-          workflowId: decodedParams.workflowId,
-          runId: decodedParams.runId,
+          workflowId: params.workflowId,
+          runId: params.runId,
         },
         pageSize: 1,
       });
@@ -96,8 +95,8 @@ export default async function describeWorkflow(
         },
         workflowExecutionInfo: {
           workflowExecution: {
-            runId: decodedParams.runId,
-            workflowId: decodedParams.workflowId,
+            runId: params.runId,
+            workflowId: params.workflowId,
           },
           isArchived: true,
           startTime,
@@ -143,7 +142,7 @@ export default async function describeWorkflow(
         );
       } else {
         logger.error<RouteHandlerErrorPayload>(
-          { requestParams: decodedParams, error: e },
+          { requestParams: params, error: e },
           'Error fetching workflow execution info'
         );
 
