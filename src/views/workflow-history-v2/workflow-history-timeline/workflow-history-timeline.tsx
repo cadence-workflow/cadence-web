@@ -21,6 +21,7 @@ import useCurrentTimeMs from './hooks/use-current-time-ms';
 import useTimelineMaxRangeMs from './hooks/use-timeline-max-range-ms';
 import {
   ROW_HEIGHT_PX,
+  TIMELINE_HEIGHT,
   TIMELINE_ITEM_TOOLTIP_ENTRY_DELAY_MS,
   TIMELINE_LABEL_COLUMN_WIDTH,
   TIMELINE_SIDE_PADDING,
@@ -64,31 +65,11 @@ export default function WorkflowHistoryTimeline({
     if (foundIndex === -1) return undefined;
     return foundIndex;
   }, [timelineRows, itemToHighlightId]);
-  const isWorkflowCompleted = workflowCloseTimeMs != null;
 
   const isWorkflowRunning =
     workflowCloseTimeMs === null || workflowCloseTimeMs === undefined;
 
-  const currentTimeMs = useCurrentTimeMs({
-    isWorkflowRunning,
-  });
-
-  const currentTimeOffsetMs = useMemo(
-    () => currentTimeMs - workflowStartTimeMs,
-    [currentTimeMs, workflowStartTimeMs]
-  );
-
-  const domainMaxMs = useSteppedDomainMaxMs({
-    timelineRows,
-    workflowStartTimeMs,
-    workflowCloseTimeMs,
-    currentTimeMs,
-  });
-
-  const currentTimeMs = useCurrentTimeMs({
-    isWorkflowRunning:
-      workflowCloseTimeMs === null || workflowCloseTimeMs === undefined,
-  });
+  const currentTimeMs = useCurrentTimeMs({ isWorkflowRunning });
 
   const currentTimeOffsetMs = useMemo(
     () => currentTimeMs - workflowStartTimeMs,
