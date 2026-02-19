@@ -16,14 +16,7 @@ export default function useCurrentTimeMs({
       setCurrentTimeMs(Date.now());
     }, TIMELINE_UPDATE_INTERVAL_MS);
 
-    const tick = () => {
-      setCurrentTimeMs(Date.now());
-      frameId = requestAnimationFrame(tick);
-    };
-
-    frameId = requestAnimationFrame(tick);
-
-    return () => cancelAnimationFrame(frameId);
+    return () => clearInterval(intervalId);
   }, [isWorkflowRunning]);
 
   return currentTimeMs;
