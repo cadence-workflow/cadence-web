@@ -18,9 +18,9 @@ const grpcClusterMethods: MiddlewareFunction<
     throw new Error(`Cluster not found: ${params.cluster}`);
   }
 
-  const clusterMetods = await getClusterMethods(params.cluster, grpcMetadata);
+  const clusterMethods = await getClusterMethods(params.cluster, grpcMetadata);
 
-  return ['grpcClusterMethods', clusterMetods];
+  return ['grpcClusterMethods', clusterMethods];
 };
 
 export default grpcClusterMethods;

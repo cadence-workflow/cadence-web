@@ -30,10 +30,8 @@ describe('grpcClusterMethods middleware', () => {
 
   it('should throw an error if params.cluster is not provided', async () => {
     await expect(
-      await expect(
-        grpcClusterMethods(mockRequest, { params: {} }, mockContext)
-      ).rejects.toMatchObject(Error('Cluster not found: undefined'))
-    );
+      grpcClusterMethods(mockRequest, { params: {} }, mockContext)
+    ).rejects.toMatchObject(Error('Cluster not found: undefined'));
   });
   it('should pass params through and call getClusterMethods with correct arguments', async () => {
     await grpcClusterMethods(mockRequest, { params: mockParams }, mockContext);
