@@ -30,6 +30,7 @@ jest.mock('../helpers/get-parsed-details-row-items', () =>
           ),
           invertTooltipColors: acc.length === 1, // Second item has inverted tooltip
           omitWrapping: acc.length === 2, // Third item omits wrapping
+          isClickable: acc.length === 0, // First item is clickable
         });
       }
       return acc;
@@ -115,16 +116,30 @@ describe(WorkflowHistoryDetailsRow.name, () => {
     expect(screen.getByText('field1')).toBeInTheDocument();
   });
 
-  it('should stop click event propagation when clicking on a details field', async () => {
+  it('should stop click event propagation when isClickable is true', async () => {
     const onParentClick = jest.fn();
     const { user } = setup({
       wrapper: ({ children }) => <div onClick={onParentClick}>{children}</div>,
     });
 
+    // field1 has isClickable: true
     const field1 = screen.getByTestId('field-field1');
     await user.click(field1);
 
     expect(onParentClick).not.toHaveBeenCalled();
+  });
+
+  it('should allow click event propagation when isClickable is false', async () => {
+    const onParentClick = jest.fn();
+    const { user } = setup({
+      wrapper: ({ children }) => <div onClick={onParentClick}>{children}</div>,
+    });
+
+    // field2 does not have isClickable: true
+    const field2 = screen.getByTestId('field-field2');
+    await user.click(field2);
+
+    expect(onParentClick).toHaveBeenCalled();
   });
 });
 
