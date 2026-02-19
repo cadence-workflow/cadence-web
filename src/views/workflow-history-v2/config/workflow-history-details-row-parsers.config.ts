@@ -37,6 +37,8 @@ const workflowHistoryDetailsRowParsersConfig: Array<DetailsRowItemParser> = [
     matcher: (name) => name === 'attempt',
     hide: (_, value) => typeof value === 'number' && value <= 0,
     icon: MdReplay,
+    customRenderValue: ({ value }) =>
+      value === 1 ? '1 retry' : `${value} retries`,
     customTooltipContent: () => 'retries',
   },
 ];
