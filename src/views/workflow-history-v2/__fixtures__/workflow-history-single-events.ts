@@ -1,4 +1,7 @@
-import type { SingleHistoryEvent } from '../workflow-history-v2.types';
+import type {
+  SingleHistoryEvent,
+  WorkflowSignaledHistoryEvent,
+} from '../workflow-history-v2.types';
 
 //TODO: get more realistic time and workflow id/ run id references that relates to other events
 
