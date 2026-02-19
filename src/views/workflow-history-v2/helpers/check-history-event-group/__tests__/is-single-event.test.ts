@@ -37,7 +37,7 @@ describe('isSingleEvent', () => {
     });
   });
 
-  it('should return false for invalid timer events', () => {
+  it('should return false for invalid single events', () => {
     invalidEvents.forEach((event) => {
       expect(isSingleEvent(event)).toBe(false);
     });

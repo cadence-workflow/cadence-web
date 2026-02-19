@@ -38,7 +38,7 @@ describe('getDecisionGroupFromEvents', () => {
         assertionValue: true,
       },
       {
-        name: 'missingTimoutAndCloseEvent',
+        name: 'missingTimeoutAndCloseEvent',
         events: [scheduleDecisionTaskEvent],
         assertionValue: true,
       },

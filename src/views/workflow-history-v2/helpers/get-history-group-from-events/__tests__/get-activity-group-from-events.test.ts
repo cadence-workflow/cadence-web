@@ -35,9 +35,9 @@ describe('getActivityGroupFromEvents', () => {
   it('should return a group with a proper label when scheduled event exists', () => {
     const events: ExtendedActivityHistoryEvent[] = [scheduleActivityTaskEvent];
 
-    const scheduelAttrs =
+    const scheduleAttrs =
       scheduleActivityTaskEvent.activityTaskScheduledEventAttributes;
-    const expectedLabel = `Activity ${scheduelAttrs?.activityId}: ${scheduelAttrs?.activityType?.name}`;
+    const expectedLabel = `Activity ${scheduleAttrs?.activityId}: ${scheduleAttrs?.activityType?.name}`;
 
     const group = getActivityGroupFromEvents(events);
 
@@ -84,7 +84,7 @@ describe('getActivityGroupFromEvents', () => {
         assertionValue: true,
       },
       {
-        name: 'missingTimoutAndCloseEvent',
+        name: 'missingTimeoutAndCloseEvent',
         events: [scheduleActivityTaskEvent],
         assertionValue: true,
       },
