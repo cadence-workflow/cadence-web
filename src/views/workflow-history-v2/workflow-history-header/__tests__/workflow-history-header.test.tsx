@@ -16,7 +16,7 @@ jest.mock(
 );
 
 jest.mock(
-  '@/views/workflow-history-v2/workflow-history-filters-menu/workflow-history-filters-menu',
+  '../../workflow-history-filters-menu/workflow-history-filters-menu',
   () =>
     jest.fn(() => (
       <div data-testid="workflow-history-filters-menu">Filters Menu</div>

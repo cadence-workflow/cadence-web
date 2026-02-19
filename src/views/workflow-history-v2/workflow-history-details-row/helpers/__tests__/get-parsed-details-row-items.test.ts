@@ -1,6 +1,5 @@
-import { type EventDetailsEntries } from '@/views/workflow-history-v2/workflow-history-event-details/workflow-history-event-details.types';
-
 import * as workflowHistoryDetailsRowParsersConfigModule from '../../../config/workflow-history-details-row-parsers.config';
+import { type EventDetailsEntries } from '../../../workflow-history-event-details/workflow-history-event-details.types';
 import { type DetailsRowItemParser } from '../../workflow-history-details-row.types';
 import getParsedDetailsRowItems from '../get-parsed-details-row-items';
 
