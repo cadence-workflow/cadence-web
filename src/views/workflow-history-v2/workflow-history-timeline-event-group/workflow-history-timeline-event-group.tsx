@@ -18,6 +18,7 @@ export default function WorkflowHistoryTimelineEventGroup({
       workflowPageParams={decodedPageUrlParams}
       onClickShowInTable={onClickShowInTable}
       onClose={onClose}
+      isScrollable
     />
   );
 }

@@ -11,6 +11,7 @@ import { type Props } from './workflow-history-event-details.types';
 
 export default function WorkflowHistoryEventDetails({
   eventDetails,
+  isScrollable,
   workflowPageParams,
 }: Props) {
   const [panelDetails, restDetails] = useMemo(
@@ -39,7 +40,7 @@ export default function WorkflowHistoryEventDetails({
           })}
         </styled.PanelDetails>
       )}
-      <styled.RestDetails>
+      <styled.RestDetails $isScrollable={isScrollable}>
         <WorkflowHistoryEventDetailsGroup
           entries={restDetails}
           decodedPageUrlParams={workflowPageParams}

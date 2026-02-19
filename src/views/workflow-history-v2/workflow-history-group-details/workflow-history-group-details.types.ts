@@ -13,6 +13,7 @@ export type Props = {
   groupDetailsEntries: GroupDetailsEntries;
   initialEventId: string | undefined;
   isUngroupedView?: boolean;
+  isScrollable?: boolean;
   workflowPageParams: WorkflowPageParams;
   onClose?: () => void;
   onClickShowInTimeline?: () => void;
