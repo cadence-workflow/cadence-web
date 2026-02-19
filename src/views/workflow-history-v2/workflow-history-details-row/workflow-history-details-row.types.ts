@@ -51,8 +51,8 @@ export type DetailsRowItemParser = {
   invertTooltipColors?: boolean;
   /** Optional flag to remove padding and background from the details row item */
   omitWrapping?: boolean;
-  /** Optional flag to stop click event propagation, preventing parent row click handlers from firing */
-  isClickable?: boolean;
+  /** Optional flag to stop click event propagation if the item has clickable content */
+  hasClickableContent?: boolean;
 };
 
 export type DetailsRowItem = {
@@ -67,7 +67,7 @@ export type DetailsRowItem = {
   renderTooltip: ComponentType<DetailsRowValueComponentProps>;
   invertTooltipColors?: boolean;
   omitWrapping?: boolean;
-  isClickable?: boolean;
+  hasClickableContent?: boolean;
 };
 
 export type Props = {

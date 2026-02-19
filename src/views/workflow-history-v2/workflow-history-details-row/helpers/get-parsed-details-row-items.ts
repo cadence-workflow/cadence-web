@@ -51,7 +51,7 @@ export default function getParsedDetailsRowItems(
       renderTooltip: parserConfig?.customTooltipContent ?? (() => label),
       invertTooltipColors: parserConfig?.invertTooltipColors,
       omitWrapping: parserConfig?.omitWrapping,
-      isClickable: parserConfig?.isClickable,
+      hasClickableContent: parserConfig?.hasClickableContent,
     });
 
     return acc;

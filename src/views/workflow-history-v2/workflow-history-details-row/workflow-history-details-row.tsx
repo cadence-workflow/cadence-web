@@ -58,7 +58,7 @@ export default function WorkflowHistoryDetailsRow({
             <styled.DetailsFieldContainer
               $isNegative={isNegative}
               $omitWrapping={item.omitWrapping ?? false}
-              {...(item.isClickable
+              {...(item.hasClickableContent
                 ? {
                     onClick: (e: React.MouseEvent<HTMLDivElement>) =>
                       e.stopPropagation(),

@@ -30,7 +30,7 @@ jest.mock('../helpers/get-parsed-details-row-items', () =>
           ),
           invertTooltipColors: acc.length === 1, // Second item has inverted tooltip
           omitWrapping: acc.length === 2, // Third item omits wrapping
-          isClickable: acc.length === 0, // First item is clickable
+          hasClickableContent: acc.length === 0, // First item has clickable content
         });
       }
       return acc;
@@ -116,26 +116,26 @@ describe(WorkflowHistoryDetailsRow.name, () => {
     expect(screen.getByText('field1')).toBeInTheDocument();
   });
 
-  it('should stop click event propagation when isClickable is true', async () => {
+  it('should stop click event propagation when hasClickableContent is true', async () => {
     const onParentClick = jest.fn();
     const { user } = setup({
       wrapper: ({ children }) => <div onClick={onParentClick}>{children}</div>,
     });
 
-    // field1 has isClickable: true
+    // field1 has hasClickableContent: true
     const field1 = screen.getByTestId('field-field1');
     await user.click(field1);
 
     expect(onParentClick).not.toHaveBeenCalled();
   });
 
-  it('should allow click event propagation when isClickable is false', async () => {
+  it('should allow click event propagation when hasClickableContent is false', async () => {
     const onParentClick = jest.fn();
     const { user } = setup({
       wrapper: ({ children }) => <div onClick={onParentClick}>{children}</div>,
     });
 
-    // field2 does not have isClickable: true
+    // field2 does not have hasClickableContent: true
     const field2 = screen.getByTestId('field-field2');
     await user.click(field2);
 

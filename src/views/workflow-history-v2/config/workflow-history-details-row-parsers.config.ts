@@ -43,10 +43,10 @@ const workflowHistoryDetailsRowParsersConfig: Array<DetailsRowItemParser> = [
     name: 'Links as clickable',
     matcher: (name) =>
       new RegExp(
-        '(taskList|parentWorkflowExecution|externalWorkflowExecution|workflowExecution|firstExecutionRunId|originalExecutionRunId|newExecutionRunId|continuedExecutionRunId|workflowId)$'
+        '(parentWorkflowExecution|externalWorkflowExecution|workflowExecution|firstExecutionRunId|originalExecutionRunId|newExecutionRunId|continuedExecutionRunId|workflowId)$'
       ).test(name),
     icon: null,
-    isClickable: true,
+    hasClickableContent: true,
   },
 ];
 
