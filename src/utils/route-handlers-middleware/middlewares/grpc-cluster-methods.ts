@@ -1,4 +1,3 @@
-import decodeUrlParams from '@/utils/decode-url-params';
 import {
   type GRPCClusterMethods,
   getClusterMethods,
@@ -19,11 +18,7 @@ const grpcClusterMethods: MiddlewareFunction<
     throw new Error(`Cluster not found: ${params.cluster}`);
   }
 
-  const decodedParams = decodeUrlParams(params);
-  const clusterMetods = await getClusterMethods(
-    decodedParams.cluster,
-    grpcMetadata
-  );
+  const clusterMetods = await getClusterMethods(params.cluster, grpcMetadata);
 
   return ['grpcClusterMethods', clusterMetods];
 };
