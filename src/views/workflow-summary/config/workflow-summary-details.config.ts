@@ -8,6 +8,7 @@ import getWorkflowStatusTagProps from '@/views/workflow-page/helpers/get-workflo
 
 import WorkflowEventDetailsExecutionLink from '../../shared/workflow-event-details-execution-link/workflow-event-details-execution-link';
 import { type WorkflowSummaryDetailsConfig } from '../workflow-summary-details/workflow-summary-details.types';
+import WorkflowSummaryDuration from '../workflow-summary-duration/workflow-summary-duration';
 
 const workflowSummaryDetailsConfig: WorkflowSummaryDetailsConfig[] = [
   {
@@ -64,7 +65,7 @@ const workflowSummaryDetailsConfig: WorkflowSummaryDetailsConfig[] = [
   },
   {
     key: 'startTime',
-    getLabel: () => 'Start at',
+    getLabel: () => 'Start time',
     valueComponent: ({ formattedFirstEvent }) =>
       createElement(
         'div',
@@ -87,7 +88,16 @@ const workflowSummaryDetailsConfig: WorkflowSummaryDetailsConfig[] = [
       );
     },
     hide: ({ workflowDetails }) => {
-      //hide it on archived events as the value is not available
+      // hide it on archived events as the value is not available
+      return Boolean(workflowDetails.workflowExecutionInfo?.isArchived);
+    },
+  },
+  {
+    key: 'duration',
+    getLabel: () => 'Duration',
+    valueComponent: WorkflowSummaryDuration,
+    hide: ({ workflowDetails }) => {
+      // hide it on archived events as the end time is not available
       return Boolean(workflowDetails.workflowExecutionInfo?.isArchived);
     },
   },
