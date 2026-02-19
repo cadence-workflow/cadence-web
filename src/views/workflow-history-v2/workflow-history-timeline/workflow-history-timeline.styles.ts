@@ -182,6 +182,7 @@ export const overrides = {
         color: $theme.colors.contentPrimary,
         ...$theme.typography.LabelSmall,
         padding: $theme.sizing.scale400,
+        maxWidth: '800px',
       }),
     },
   } satisfies PopoverOverrides,

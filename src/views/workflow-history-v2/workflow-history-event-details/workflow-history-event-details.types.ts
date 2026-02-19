@@ -2,6 +2,7 @@ import { type WorkflowPageParams } from '@/views/workflow-page/workflow-page.typ
 
 export type Props = {
   eventDetails: EventDetailsEntries;
+  isScrollable?: boolean;
   workflowPageParams: WorkflowPageParams;
 };
 

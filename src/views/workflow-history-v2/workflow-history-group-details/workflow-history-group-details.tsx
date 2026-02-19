@@ -14,6 +14,7 @@ export default function WorkflowHistoryGroupDetails({
   groupDetailsEntries,
   initialEventId,
   isUngroupedView,
+  isScrollable,
   workflowPageParams,
   onClose,
   onClickShowInTimeline,
@@ -91,6 +92,7 @@ export default function WorkflowHistoryGroupDetails({
       </styled.ActionsRow>
       <WorkflowHistoryEventDetails
         eventDetails={selectedEventTabContent.eventDetails ?? []}
+        isScrollable={isScrollable}
         workflowPageParams={workflowPageParams}
       />
     </styled.GroupDetailsContainer>
