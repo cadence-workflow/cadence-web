@@ -1,6 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
-import decodeUrlParams from '@/utils/decode-url-params';
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
@@ -16,14 +15,14 @@ export default async function fetchWorkflowQueryTypes(
   requestParams: RequestParams,
   ctx: Context
 ) {
-  const decodedParams = decodeUrlParams(requestParams.params);
+  const params = requestParams.params;
 
   try {
     const res = await ctx.grpcClusterMethods.queryWorkflow({
-      domain: decodedParams.domain,
+      domain: params.domain,
       workflowExecution: {
-        workflowId: decodedParams.workflowId,
-        runId: decodedParams.runId,
+        workflowId: params.workflowId,
+        runId: params.runId,
       },
       query: {
         queryType: '__query_types',
@@ -44,7 +43,7 @@ export default async function fetchWorkflowQueryTypes(
     }
 
     logger.error<RouteHandlerErrorPayload>(
-      { requestParams: decodedParams, error: e },
+      { requestParams: params, error: e },
       'Error querying workflow for query types'
     );
 
