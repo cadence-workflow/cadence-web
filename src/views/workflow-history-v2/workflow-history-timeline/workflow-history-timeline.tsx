@@ -83,23 +83,6 @@ export default function WorkflowHistoryTimeline({
     currentTimeMs,
   });
 
-  const currentTimeMs = useCurrentTimeMs({
-    isWorkflowRunning:
-      workflowCloseTimeMs === null || workflowCloseTimeMs === undefined,
-  });
-
-  const currentTimeOffsetMs = useMemo(
-    () => currentTimeMs - workflowStartTimeMs,
-    [currentTimeMs, workflowStartTimeMs]
-  );
-
-  const maxRangeMs = useTimelineMaxRangeMs({
-    timelineRows,
-    workflowStartTimeMs,
-    workflowCloseTimeMs,
-    currentTimeMs,
-  });
-
   return (
     <ParentSize>
       {({ width: viewportWidth = 800 }) => {
