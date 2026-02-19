@@ -40,7 +40,7 @@ const workflowHistoryDetailsRowParsersConfig: Array<DetailsRowItemParser> = [
     customTooltipContent: () => 'retries',
   },
   {
-    name: 'Links as clickable',
+    name: 'Workflow links as having clickable content',
     matcher: (name) =>
       new RegExp(
         '(parentWorkflowExecution|externalWorkflowExecution|workflowExecution|firstExecutionRunId|originalExecutionRunId|newExecutionRunId|continuedExecutionRunId|workflowId)$'
