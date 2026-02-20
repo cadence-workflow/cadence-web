@@ -93,15 +93,14 @@ export default function getChildWorkflowExecutionGroupFromEvents(
     label,
     hasMissingEvents,
     groupType,
-    ...getCommonHistoryGroupFields<ChildWorkflowExecutionHistoryGroup>(
+    ...getCommonHistoryGroupFields<ChildWorkflowExecutionHistoryGroup>({
       events,
-      eventToStatus,
-      eventToLabel,
-      {},
-      closeEvent || startFailedEvent,
-      eventToNegativeFields,
-      undefined,
-      eventToSummaryFields
-    ),
+      historyGroupEventToStatusMap: eventToStatus,
+      eventToLabelMap: eventToLabel,
+      eventToTimeLabelPrefixMap: {},
+      closeEvent: closeEvent || startFailedEvent,
+      eventToNegativeFieldsMap: eventToNegativeFields,
+      eventToSummaryFieldsMap: eventToSummaryFields,
+    }),
   };
 }

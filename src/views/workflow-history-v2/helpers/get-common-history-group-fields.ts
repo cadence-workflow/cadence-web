@@ -13,16 +13,25 @@ import {
 
 export default function getCommonHistoryGroupFields<
   GroupT extends HistoryEventsGroup,
->(
-  events: GroupT['events'],
-  historyGroupEventToStatusMap: HistoryGroupEventToStatusMap<GroupT>,
-  eventToLabelMap: HistoryGroupEventToStringMap<GroupT>,
-  eventToTimeLabelPrefixMap: Partial<HistoryGroupEventToStringMap<GroupT>>,
-  closeEvent: GroupT['events'][number] | null | undefined,
-  eventToNegativeFieldsMap?: HistoryGroupEventToNegativeFieldsMap<GroupT>,
-  eventToAdditionalDetailsMap?: HistoryGroupEventToAdditionalDetailsMap<GroupT>,
-  eventToSummaryFieldsMap?: HistoryGroupEventToSummaryFieldsMap<GroupT>
-): Pick<
+>({
+  events,
+  historyGroupEventToStatusMap,
+  eventToLabelMap,
+  eventToTimeLabelPrefixMap,
+  closeEvent,
+  eventToNegativeFieldsMap,
+  eventToAdditionalDetailsMap,
+  eventToSummaryFieldsMap,
+}: {
+  events: GroupT['events'];
+  historyGroupEventToStatusMap: HistoryGroupEventToStatusMap<GroupT>;
+  eventToLabelMap: HistoryGroupEventToStringMap<GroupT>;
+  eventToTimeLabelPrefixMap: Partial<HistoryGroupEventToStringMap<GroupT>>;
+  closeEvent: GroupT['events'][number] | null | undefined;
+  eventToNegativeFieldsMap?: HistoryGroupEventToNegativeFieldsMap<GroupT>;
+  eventToAdditionalDetailsMap?: HistoryGroupEventToAdditionalDetailsMap<GroupT>;
+  eventToSummaryFieldsMap?: HistoryGroupEventToSummaryFieldsMap<GroupT>;
+}): Pick<
   GroupT,
   | 'eventsMetadata'
   | 'events'
