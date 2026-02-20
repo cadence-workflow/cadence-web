@@ -1,7 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
 import { type ListOpenWorkflowExecutionsRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListOpenWorkflowExecutionsRequest';
-import decodeUrlParams from '@/utils/decode-url-params';
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
@@ -20,7 +19,7 @@ export async function listWorkflowsBasic(
   requestParams: RequestParams,
   ctx: Context
 ) {
-  const decodedParams = decodeUrlParams(requestParams.params) as RouteParams;
+  const params = requestParams.params as RouteParams;
 
   const { data: queryParams, error } =
     listWorkflowsBasicQueryParamsSchema.safeParse(
@@ -40,7 +39,7 @@ export async function listWorkflowsBasic(
   }
 
   const baseParams = {
-    domain: decodedParams.domain,
+    domain: params.domain,
     pageSize: queryParams.pageSize,
     nextPageToken: queryParams.nextPage,
     startTimeFilter: {
@@ -84,7 +83,7 @@ export async function listWorkflowsBasic(
     return NextResponse.json(response);
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
-      { requestParams: decodedParams, queryParams, error: e },
+      { requestParams: params, queryParams, error: e },
       'Error fetching workflows' +
         (e instanceof GRPCError ? ': ' + e.message : '')
     );
