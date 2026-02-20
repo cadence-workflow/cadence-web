@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
+import decodeUrlParams from '@/utils/decode-url-params';
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
@@ -16,7 +17,7 @@ export default async function getSearchAttributes(
   requestParams: RequestParams,
   ctx: Context
 ): Promise<Response> {
-  const params = requestParams.params as RouteParams;
+  const decodedParams = decodeUrlParams(requestParams.params) as RouteParams;
   const category = request.nextUrl.searchParams.get('category');
 
   try {
@@ -44,7 +45,7 @@ export default async function getSearchAttributes(
     } satisfies GetSearchAttributesResponse);
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
-      { requestParams: params, error: e },
+      { requestParams: decodedParams, error: e },
       'Failed to fetch search attributes from Cadence service'
     );
 
