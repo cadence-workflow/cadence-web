@@ -57,10 +57,7 @@ describe(getWorkflowSignaledGroupFromEvents.name, () => {
   it('should include summaryFields for workflow signaled event', () => {
     const group = getWorkflowSignaledGroupFromEvents(workflowSignaledEvents);
 
-    expect(group.eventsMetadata[0].summaryFields).toEqual([
-      'signalName',
-      'input',
-    ]);
+    expect(group.eventsMetadata[0].summaryFields).toEqual(['input']);
   });
 
   it('should return a group with COMPLETED status', () => {
@@ -80,6 +77,6 @@ describe(getWorkflowSignaledGroupFromEvents.name, () => {
 
     const group = getWorkflowSignaledGroupFromEvents([eventWithoutSignalName]);
 
-    expect(group.label).toBe('Workflow Signaled: ');
+    expect(group.label).toBe('Workflow Signaled: Unknown Signal');
   });
 });

@@ -14,9 +14,8 @@ export default function getWorkflowSignaledGroupFromEvents(
   const groupType = 'WorkflowSignaled';
   const hasMissingEvents = false;
 
-  const signalName =
-    event.workflowExecutionSignaledEventAttributes?.signalName ?? '';
-  const label = `Workflow Signaled: ${signalName}`;
+  const signalName = event.workflowExecutionSignaledEventAttributes?.signalName;
+  const label = `Workflow Signaled: ${signalName ?? 'Unknown Signal'}`;
 
   const eventToLabel: HistoryGroupEventToStringMap<WorkflowSignaledHistoryGroup> =
     {
@@ -30,7 +29,7 @@ export default function getWorkflowSignaledGroupFromEvents(
 
   const eventToSummaryFields: HistoryGroupEventToSummaryFieldsMap<WorkflowSignaledHistoryGroup> =
     {
-      workflowExecutionSignaledEventAttributes: ['signalName', 'input'],
+      workflowExecutionSignaledEventAttributes: ['input'],
     };
 
   return {
