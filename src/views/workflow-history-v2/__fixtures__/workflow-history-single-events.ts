@@ -1,7 +1,4 @@
-import type {
-  SingleHistoryEvent,
-  WorkflowSignaledHistoryEvent,
-} from '../workflow-history-v2.types';
+import type { SingleHistoryEvent } from '../workflow-history-v2.types';
 
 //TODO: get more realistic time and workflow id/ run id references that relates to other events
 
@@ -71,25 +68,6 @@ export const startWorkflowExecutionEvent = {
   },
   attributes: 'workflowExecutionStartedEventAttributes',
 } as const satisfies SingleHistoryEvent;
-
-export const signalWorkflowExecutionEvent = {
-  eventId: '2',
-  eventTime: {
-    seconds: '1724747415',
-    nanos: 549377718,
-  },
-  version: '575102',
-  taskId: '22647173801',
-  workflowExecutionSignaledEventAttributes: {
-    signalName: 'signal-name',
-    input: {
-      data: 'ImNhZGVuY2Uuc2lnbmFsIg==',
-    },
-    identity: 'cadence-service',
-    requestId: '488cd24f-37b0-48f7-955a-c5c8c7653290',
-  },
-  attributes: 'workflowExecutionSignaledEventAttributes',
-} as const satisfies WorkflowSignaledHistoryEvent;
 
 export const recordMarkerExecutionEvent = {
   eventId: '3',
