@@ -1,6 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
-import decodeUrlParams from '@/utils/decode-url-params';
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
@@ -30,14 +29,14 @@ export async function terminateWorkflow(
     );
   }
 
-  const decodedParams = decodeUrlParams(requestParams.params);
+  const params = requestParams.params;
 
   try {
     await ctx.grpcClusterMethods.terminateWorkflow({
-      domain: decodedParams.domain,
+      domain: params.domain,
       workflowExecution: {
-        workflowId: decodedParams.workflowId,
-        runId: decodedParams.runId,
+        workflowId: params.workflowId,
+        runId: params.runId,
       },
       reason: data.reason,
       identity: ctx.userInfo?.id,
@@ -46,7 +45,7 @@ export async function terminateWorkflow(
     return NextResponse.json({} satisfies TerminateWorkflowResponse);
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
-      { requestParams: decodedParams, error: e },
+      { requestParams: params, error: e },
       'Error terminating workflow'
     );
 
