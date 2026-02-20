@@ -1,0 +1,56 @@
+import differenceBy from 'lodash/differenceBy';
+
+import { allWorkflowEventTypesAttrsExtended } from '../../../__fixtures__/all-workflow-event-types-attributes';
+import {
+  cancelActivityTaskEvent,
+  completeActivityTaskEvent,
+  failedActivityTaskEvent,
+  scheduleActivityTaskEvent,
+  startActivityTaskEvent,
+  timeoutActivityTaskEvent,
+} from '../../../__fixtures__/workflow-history-activity-events';
+import { pendingActivityTaskStartEvent } from '../../../__fixtures__/workflow-history-pending-events';
+import {
+  type ExtendedHistoryEvent,
+  type ExtendedActivityHistoryEvent,
+} from '../../../workflow-history-v2.types';
+import isExtendedActivityEvent from '../is-extended-activity-event';
+
+const validEvents: ExtendedActivityHistoryEvent[] = [
+  pendingActivityTaskStartEvent,
+  scheduleActivityTaskEvent,
+  startActivityTaskEvent,
+  completeActivityTaskEvent,
+  failedActivityTaskEvent,
+  timeoutActivityTaskEvent,
+  cancelActivityTaskEvent,
+];
+
+const invalidEvents: Pick<ExtendedHistoryEvent, 'attributes'>[] = differenceBy(
+  allWorkflowEventTypesAttrsExtended,
+  validEvents,
+  'attributes'
+);
+
+describe('isExtendedActivityEvent', () => {
+  it('should return true for valid activity events', () => {
+    validEvents.forEach((event) => {
+      expect(isExtendedActivityEvent(event)).toBe(true);
+    });
+  });
+
+  it('should return false for invalid activity events', () => {
+    invalidEvents.forEach((event) => {
+      expect(isExtendedActivityEvent(event)).toBe(false);
+    });
+  });
+
+  it('should return false for null, undefined, or missing attributes', () => {
+    //@ts-expect-error null is not of type HistoryEvent
+    expect(isExtendedActivityEvent(null)).toBe(false);
+    //@ts-expect-error undefined is not of type HistoryEvent
+    expect(isExtendedActivityEvent(undefined)).toBe(false);
+    //@ts-expect-error {} is not of type HistoryEvent
+    expect(isExtendedActivityEvent({})).toBe(false);
+  });
+});
