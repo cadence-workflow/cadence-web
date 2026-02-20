@@ -4,11 +4,11 @@ import {
   pendingDecisionTaskStartEvent,
 } from '@/views/workflow-history/__fixtures__/workflow-history-pending-events';
 import { startWorkflowExecutionEvent } from '@/views/workflow-history/__fixtures__/workflow-history-single-events';
+
 import {
   type HistoryEventsGroup,
   type HistoryGroupEventMetadata,
-} from '@/views/workflow-history/workflow-history.types';
-
+} from '../../../workflow-history-v2.types';
 import { type UngroupedEventInfo } from '../../workflow-history-ungrouped-table.types';
 import compareUngroupedEvents from '../compare-ungrouped-events';
 

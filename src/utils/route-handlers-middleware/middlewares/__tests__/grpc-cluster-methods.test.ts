@@ -1,11 +1,9 @@
 import { type NextRequest } from 'next/server';
 
-import decodeUrlParams from '@/utils/decode-url-params';
 import { getClusterMethods } from '@/utils/grpc/grpc-client';
 
 import grpcClusterMethods from '../grpc-cluster-methods';
 
-jest.mock('@/utils/decode-url-params', () => jest.fn());
 jest.mock('@/utils/grpc/grpc-client', () => ({
   getClusterMethods: jest.fn(),
 }));
@@ -16,10 +14,6 @@ const mockContext = {
 
 const mockParams = {
   cluster: 'test-cluster',
-};
-
-const mockDecodedParams = {
-  cluster: 'decoded-cluster',
 };
 
 const mockRequest = {
@@ -36,26 +30,20 @@ describe('grpcClusterMethods middleware', () => {
 
   it('should throw an error if params.cluster is not provided', async () => {
     await expect(
-      await expect(
-        grpcClusterMethods(mockRequest, { params: {} }, mockContext)
-      ).rejects.toMatchObject(Error('Cluster not found: undefined'))
-    );
+      grpcClusterMethods(mockRequest, { params: {} }, mockContext)
+    ).rejects.toMatchObject(Error('Cluster not found: undefined'));
   });
-  it('should decode URL params and call getClusterMethods with correct arguments', async () => {
-    (decodeUrlParams as jest.Mock).mockReturnValue(mockDecodedParams);
-
+  it('should pass params through and call getClusterMethods with correct arguments', async () => {
     await grpcClusterMethods(mockRequest, { params: mockParams }, mockContext);
 
-    expect(decodeUrlParams).toHaveBeenCalledWith(mockParams);
     await expect(getClusterMethods).toHaveBeenCalledWith(
-      mockDecodedParams.cluster,
+      mockParams.cluster,
       undefined
     );
   });
 
   it('should return the correct middleware result', async () => {
     const mockGRPCClusterMethods = {};
-    (decodeUrlParams as jest.Mock).mockReturnValue(mockDecodedParams);
     (getClusterMethods as jest.Mock).mockResolvedValue(mockGRPCClusterMethods);
 
     const result = await grpcClusterMethods(
@@ -70,7 +58,6 @@ describe('grpcClusterMethods middleware', () => {
   it('should handle grpcMetadata correctly', async () => {
     const mockGRPCMetadata = { key: 'value' };
     const contextWithMetadata = { grpcMetadata: mockGRPCMetadata };
-    (decodeUrlParams as jest.Mock).mockReturnValue(mockDecodedParams);
 
     await grpcClusterMethods(
       mockRequest,
@@ -79,7 +66,7 @@ describe('grpcClusterMethods middleware', () => {
     );
 
     expect(getClusterMethods).toHaveBeenCalledWith(
-      mockDecodedParams.cluster,
+      mockParams.cluster,
       mockGRPCMetadata
     );
   });

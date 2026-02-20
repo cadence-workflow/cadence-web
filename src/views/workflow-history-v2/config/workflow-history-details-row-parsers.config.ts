@@ -39,6 +39,15 @@ const workflowHistoryDetailsRowParsersConfig: Array<DetailsRowItemParser> = [
     icon: MdReplay,
     customTooltipContent: () => 'retries',
   },
+  {
+    name: 'Workflow links as having clickable content',
+    matcher: (name) =>
+      new RegExp(
+        '(parentWorkflowExecution|externalWorkflowExecution|workflowExecution|firstExecutionRunId|originalExecutionRunId|newExecutionRunId|continuedExecutionRunId|workflowId)$'
+      ).test(name),
+    icon: null,
+    hasClickableContent: true,
+  },
 ];
 
 export default workflowHistoryDetailsRowParsersConfig;

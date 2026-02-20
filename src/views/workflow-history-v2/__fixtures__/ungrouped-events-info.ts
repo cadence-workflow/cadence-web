@@ -1,7 +1,6 @@
-import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-history.types';
-
 import compareUngroupedEvents from '../workflow-history-ungrouped-table/helpers/compare-ungrouped-events';
 import { type UngroupedEventInfo } from '../workflow-history-ungrouped-table/workflow-history-ungrouped-table.types';
+import { type HistoryEventsGroup } from '../workflow-history-v2.types';
 
 export function createUngroupedEventsInfo(
   eventGroupsById: Array<[string, HistoryEventsGroup]>

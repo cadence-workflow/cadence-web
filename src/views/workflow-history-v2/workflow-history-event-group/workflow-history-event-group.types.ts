@@ -1,7 +1,9 @@
 import { type WorkflowExecutionCloseStatus } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionCloseStatus';
-import { type HistoryEventsGroup } from '@/views/workflow-history/workflow-history.types';
 
-import { type Props as WorkflowHistoryProps } from '../workflow-history-v2.types';
+import {
+  type HistoryEventsGroup,
+  type Props as WorkflowHistoryProps,
+} from '../workflow-history-v2.types';
 
 export type Props = {
   // Core data props
