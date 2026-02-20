@@ -73,16 +73,14 @@ export default function getTimerGroupFromEvents(
     label,
     hasMissingEvents,
     groupType,
-    ...getCommonHistoryGroupFields<TimerHistoryGroup>(
+    ...getCommonHistoryGroupFields<TimerHistoryGroup>({
       events,
-      eventToStatus,
-      eventToLabel,
-      {},
+      historyGroupEventToStatusMap: eventToStatus,
+      eventToLabelMap: eventToLabel,
+      eventToTimeLabelPrefixMap: {},
       closeEvent,
-      undefined,
-      undefined,
-      eventToSummaryFields
-    ),
+      eventToSummaryFieldsMap: eventToSummaryFields,
+    }),
     ...(expectedTimerFireTimeMs
       ? {
           expectedEndTimeInfo: {
