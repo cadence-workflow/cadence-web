@@ -1,6 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
-import decodeUrlParams from '@/utils/decode-url-params';
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
@@ -26,14 +25,14 @@ export async function signalWorkflow(
     );
   }
 
-  const decodedParams = decodeUrlParams(requestParams.params);
+  const params = requestParams.params;
 
   try {
     const response = await ctx.grpcClusterMethods.signalWorkflow({
-      domain: decodedParams.domain,
+      domain: params.domain,
       workflowExecution: {
-        workflowId: decodedParams.workflowId,
-        runId: decodedParams.runId,
+        workflowId: params.workflowId,
+        runId: params.runId,
       },
       signalName: data.signalName,
       signalInput: data.signalInput
@@ -45,7 +44,7 @@ export async function signalWorkflow(
     return NextResponse.json(response);
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
-      { requestParams: decodedParams, error: e },
+      { requestParams: params, error: e },
       'Error signaling workflow'
     );
 
