@@ -1,7 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import queryString from 'query-string';
 
-import decodeUrlParams from '@/utils/decode-url-params';
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
@@ -20,7 +19,7 @@ export async function listWorkflows(
   requestParams: RequestParams,
   ctx: Context
 ) {
-  const decodedParams = decodeUrlParams(requestParams.params) as RouteParams;
+  const params = requestParams.params as RouteParams;
 
   const { data: queryParams, error } = listWorkflowsQueryParamSchema.safeParse(
     queryString.parse(request.nextUrl.searchParams.toString())
@@ -38,7 +37,7 @@ export async function listWorkflows(
   }
 
   const listWorkflowsParams = {
-    domain: decodedParams.domain,
+    domain: params.domain,
     pageSize: queryParams.pageSize,
     nextPageToken: queryParams.nextPage,
     query:
@@ -69,7 +68,7 @@ export async function listWorkflows(
     return NextResponse.json(response);
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
-      { requestParams: decodedParams, queryParams, error: e },
+      { requestParams: params, queryParams, error: e },
       'Error fetching workflows' +
         (e instanceof GRPCError ? ': ' + e.message : '')
     );
