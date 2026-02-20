@@ -1,6 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
-import decodeUrlParams from '@/utils/decode-url-params';
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
@@ -16,7 +15,7 @@ export default async function getWorkflowHistory(
   requestParams: RequestParams,
   ctx: Context
 ) {
-  const decodedParams = decodeUrlParams<RouteParams>(requestParams.params);
+  const params = requestParams.params as RouteParams;
   const { data: queryParams, error } =
     getWorkflowHistoryQueryParamsSchema.safeParse(
       Object.fromEntries(request.nextUrl.searchParams)
@@ -36,10 +35,10 @@ export default async function getWorkflowHistory(
 
   try {
     const res = await ctx.grpcClusterMethods.getHistory({
-      domain: decodedParams.domain,
+      domain: params.domain,
       workflowExecution: {
-        workflowId: decodedParams.workflowId,
-        runId: decodedParams.runId,
+        workflowId: params.workflowId,
+        runId: params.runId,
       },
       pageSize: queryParams.pageSize,
       waitForNewEvent: queryParams.waitForNewEvent,
@@ -63,7 +62,7 @@ export default async function getWorkflowHistory(
     }
 
     logger.error<RouteHandlerErrorPayload>(
-      { requestParams: decodedParams, error: e },
+      { requestParams: params, error: e },
       'Error fetching workflow history'
     );
 

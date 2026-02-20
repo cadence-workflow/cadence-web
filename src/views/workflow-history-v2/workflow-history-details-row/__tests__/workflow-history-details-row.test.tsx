@@ -30,6 +30,7 @@ jest.mock('../helpers/get-parsed-details-row-items', () =>
           ),
           invertTooltipColors: acc.length === 1, // Second item has inverted tooltip
           omitWrapping: acc.length === 2, // Third item omits wrapping
+          hasClickableContent: acc.length === 0, // First item has clickable content
         });
       }
       return acc;
@@ -114,14 +115,42 @@ describe(WorkflowHistoryDetailsRow.name, () => {
     expect(await screen.findByTestId('tooltip-field1')).toBeInTheDocument();
     expect(screen.getByText('field1')).toBeInTheDocument();
   });
+
+  it('should stop click event propagation when hasClickableContent is true', async () => {
+    const onParentClick = jest.fn();
+    const { user } = setup({
+      wrapper: ({ children }) => <div onClick={onParentClick}>{children}</div>,
+    });
+
+    // field1 has hasClickableContent: true
+    const field1 = screen.getByTestId('field-field1');
+    await user.click(field1);
+
+    expect(onParentClick).not.toHaveBeenCalled();
+  });
+
+  it('should allow click event propagation when hasClickableContent is false', async () => {
+    const onParentClick = jest.fn();
+    const { user } = setup({
+      wrapper: ({ children }) => <div onClick={onParentClick}>{children}</div>,
+    });
+
+    // field2 does not have hasClickableContent: true
+    const field2 = screen.getByTestId('field-field2');
+    await user.click(field2);
+
+    expect(onParentClick).toHaveBeenCalled();
+  });
 });
 
 function setup({
   detailsEntries = mockDetailsEntries,
   workflowPageParams = mockWorkflowPageParams,
+  wrapper,
 }: {
   detailsEntries?: EventDetailsEntries;
   workflowPageParams?: WorkflowPageParams;
+  wrapper?: React.ComponentType<{ children: React.ReactNode }>;
 } = {}) {
   const user = userEvent.setup();
 
@@ -129,7 +158,9 @@ function setup({
     <WorkflowHistoryDetailsRow
       detailsEntries={detailsEntries}
       {...workflowPageParams}
-    />
+    />,
+    undefined,
+    { wrapper }
   );
 
   return { user, ...renderResult };

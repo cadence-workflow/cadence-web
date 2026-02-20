@@ -16,10 +16,6 @@ import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/
 import * as usePageFiltersModule from '@/components/page-filters/hooks/use-page-filters';
 import { type PageQueryParamValues } from '@/hooks/use-page-query-params/use-page-query-params.types';
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
-import {
-  type PendingActivityTaskStartEvent,
-  type PendingDecisionTaskStartEvent,
-} from '@/views/workflow-history/workflow-history.types';
 import { mockDescribeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
 import type workflowPageQueryParamsConfig from '@/views/workflow-page/config/workflow-page-query-params.config';
 
@@ -40,6 +36,10 @@ import {
 import { WorkflowHistoryContext } from '../../workflow-history/workflow-history-context-provider/workflow-history-context-provider';
 import { type Props as NavbarProps } from '../workflow-history-navigation-bar/workflow-history-navigation-bar.types';
 import WorkflowHistoryV2 from '../workflow-history-v2';
+import {
+  type PendingActivityTaskStartEvent,
+  type PendingDecisionTaskStartEvent,
+} from '../workflow-history-v2.types';
 
 jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
   jest.fn(() => [{ historySelectedEventId: '1' }, jest.fn()])
