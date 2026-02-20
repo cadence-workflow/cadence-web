@@ -1,7 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import queryString from 'query-string';
 
-import decodeUrlParams from '@/utils/decode-url-params';
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
@@ -18,7 +17,7 @@ export async function listFailoverHistory(
   requestParams: RequestParams,
   ctx: Context
 ) {
-  const decodedParams = decodeUrlParams(requestParams.params) as RouteParams;
+  const params = requestParams.params as RouteParams;
 
   const { data: queryParams, error } =
     listFailoverHistoryQueryParamsSchema.safeParse(
@@ -51,7 +50,7 @@ export async function listFailoverHistory(
     return NextResponse.json(response);
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
-      { requestParams: decodedParams, queryParams, error: e },
+      { requestParams: params, queryParams, error: e },
       'Error fetching failover history' +
         (e instanceof GRPCError ? ': ' + e.message : '')
     );

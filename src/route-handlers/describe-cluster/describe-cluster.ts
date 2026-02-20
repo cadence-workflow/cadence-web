@@ -1,7 +1,6 @@
 import omit from 'lodash/omit';
 import { type NextRequest, NextResponse } from 'next/server';
 
-import decodeUrlParams from '@/utils/decode-url-params';
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
@@ -17,11 +16,11 @@ export async function describeCluster(
   requestParams: RequestParams,
   ctx: Context
 ) {
-  const decodedParams = decodeUrlParams(requestParams.params) as RouteParams;
+  const params = requestParams.params as RouteParams;
 
   try {
     const res = await ctx.grpcClusterMethods.describeCluster({
-      name: decodedParams.cluster,
+      name: params.cluster,
     });
 
     const sanitizedRes: DescribeClusterResponse = omit(res, 'membershipInfo'); // No need to return host information to client
@@ -29,7 +28,7 @@ export async function describeCluster(
     return NextResponse.json(sanitizedRes);
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
-      { requestParams: decodedParams, error: e },
+      { requestParams: params, error: e },
       'Error fetching cluster info'
     );
 
