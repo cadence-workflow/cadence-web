@@ -256,12 +256,6 @@ export type WorkflowHistoryFilterConfig<
 
 export type EventGroupEntry = [string, HistoryEventsGroup];
 
-export type WorkflowHistoryEventFilteringTypeColors = {
-  content: string;
-  background: string;
-  backgroundHighlighted: string;
-};
-
 export type VisibleHistoryRanges = {
   groupedStartIndex: number;
   groupedEndIndex: number;
