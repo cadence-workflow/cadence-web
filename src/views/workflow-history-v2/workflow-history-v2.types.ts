@@ -24,7 +24,8 @@ export type HistoryEventGroupType =
   | 'ChildWorkflowExecution'
   | 'SignalExternalWorkflowExecution'
   | 'RequestCancelExternalWorkflowExecution'
-  | 'Event';
+  | 'Event'
+  | 'New';
 
 export type HistoryGroupEventMetadata = {
   label: string;
@@ -166,6 +167,11 @@ export type SingleEventHistoryGroup = BaseHistoryGroup & {
   events: SingleHistoryEvent[];
 };
 
+export type NewHistoryGroup = BaseHistoryGroup & {
+  groupType: 'New';
+  events: SingleHistoryEvent[];
+};
+
 export type HistoryEventsGroup =
   | ActivityHistoryGroup
   | DecisionHistoryGroup
@@ -173,7 +179,8 @@ export type HistoryEventsGroup =
   | ChildWorkflowExecutionHistoryGroup
   | SignalExternalWorkflowExecutionHistoryGroup
   | RequestCancelExternalWorkflowExecutionHistoryGroup
-  | SingleEventHistoryGroup;
+  | SingleEventHistoryGroup
+  | NewHistoryGroup;
 
 export type HistoryEventsGroupsMap = Record<string, HistoryEventsGroup>;
 

@@ -8,7 +8,7 @@ import WorkflowHistoryEventStatusBadge from '@/views/workflow-history/workflow-h
 import WorkflowHistoryGroupLabel from '@/views/workflow-history/workflow-history-group-label/workflow-history-group-label';
 import WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 
-import workflowHistoryGroupFilteringTypeColorsConfig from '../config/workflow-history-group-filtering-type-colors.config';
+import workflowHistoryEventGroupCategoryColorsConfig from '../config/workflow-history-event-group-category-colors.config';
 import useGroupDetailsEntries from '../hooks/use-group-details-entries';
 import WorkflowHistoryDetailsRow from '../workflow-history-details-row/workflow-history-details-row';
 import WorkflowHistoryEventGroupDuration from '../workflow-history-event-group-duration/workflow-history-event-group-duration';
@@ -85,7 +85,7 @@ export default function WorkflowHistoryEventGroup({
         <styled.HeaderContent>
           <MdCircle
             color={
-              workflowHistoryGroupFilteringTypeColorsConfig[eventFilteringType]
+              workflowHistoryEventGroupCategoryColorsConfig[eventFilteringType]
                 .content
             }
           />

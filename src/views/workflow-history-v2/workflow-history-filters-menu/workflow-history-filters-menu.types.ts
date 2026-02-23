@@ -18,7 +18,7 @@ export type Props = {
   setQueryParams: PageQueryParamSetter<WorkflowPageQueryParamsConfig>;
 };
 
-export type WorkflowHistoryGroupFilterType =
+export type EventGroupCategory =
   | 'DECISION'
   | 'ACTIVITY'
   | 'SIGNAL'
@@ -26,27 +26,23 @@ export type WorkflowHistoryGroupFilterType =
   | 'CHILDWORKFLOW'
   | 'WORKFLOW';
 
-export type WorkflowHistoryFiltersTypeValue = {
-  historyEventTypes: WorkflowHistoryGroupFilterType[] | undefined;
+export type EventGroupCategoryFilterValue = {
+  historyEventTypes: EventGroupCategory[] | undefined;
 };
 
-export type WorkflowHistoryGroupFilteringTypeColors = {
+export type EventGroupCategoryColors = {
   content: string;
   background: string;
   backgroundHighlighted: string;
 };
 
-export type WorkflowHistoryGroupFilterConfig =
+export type EventGroupCategoryConfig =
   // TODO @adhitya.mamallan - change this to use an array of group types
   // One filtering type maps to multiple group types
   HistoryEventGroupType | ((g: HistoryEventsGroup) => boolean);
 
-export type WorkflowHistoryGroupFilterStatus =
-  | 'COMPLETED'
-  | 'FAILED'
-  | 'CANCELED'
-  | 'PENDING';
+export type EventGroupStatus = 'COMPLETED' | 'FAILED' | 'CANCELED' | 'PENDING';
 
-export type WorkflowHistoryFiltersStatusValue = {
-  historyEventStatuses: WorkflowHistoryGroupFilterStatus[] | undefined;
+export type EventGroupStatusFilterValue = {
+  historyEventStatuses: EventGroupStatus[] | undefined;
 };

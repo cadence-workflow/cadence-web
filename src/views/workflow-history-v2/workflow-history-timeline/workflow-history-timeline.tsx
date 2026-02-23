@@ -12,7 +12,7 @@ import { Virtuoso } from 'react-virtuoso';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import WorkflowHistoryEventStatusBadge from '@/views/workflow-history/workflow-history-event-status-badge/workflow-history-event-status-badge';
 
-import workflowHistoryGroupFilteringTypeColorsConfig from '../config/workflow-history-group-filtering-type-colors.config';
+import workflowHistoryEventGroupCategoryColorsConfig from '../config/workflow-history-event-group-category-colors.config';
 import WorkflowHistoryTimelineEventGroup from '../workflow-history-timeline-event-group/workflow-history-timeline-event-group';
 
 import formatTickDuration from './helpers/format-tick-duration';
@@ -168,7 +168,7 @@ export default function WorkflowHistoryTimeline({
                 const isEven = index % 2 === 0;
                 const isRunning = row.group.hasMissingEvents ?? false;
                 const color =
-                  workflowHistoryGroupFilteringTypeColorsConfig[row.groupType]
+                  workflowHistoryEventGroupCategoryColorsConfig[row.groupType]
                     .content;
 
                 const rowStart = xScale(row.startTimeMs - workflowStartTimeMs);

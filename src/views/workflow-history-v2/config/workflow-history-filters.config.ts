@@ -5,10 +5,10 @@ import TagFilter from '@/components/tag-filter/tag-filter';
 import filterGroupsByGroupStatus from '../workflow-history-filters-menu/helpers/filter-groups-by-group-status';
 import filterGroupsByGroupType from '../workflow-history-filters-menu/helpers/filter-groups-by-group-type';
 import {
-  type WorkflowHistoryGroupFilterType,
-  type WorkflowHistoryFiltersStatusValue,
-  type WorkflowHistoryFiltersTypeValue,
-  type WorkflowHistoryGroupFilterStatus,
+  type EventGroupCategory,
+  type EventGroupStatusFilterValue,
+  type EventGroupCategoryFilterValue,
+  type EventGroupStatus,
 } from '../workflow-history-filters-menu/workflow-history-filters-menu.types';
 import { type WorkflowHistoryFilterConfig } from '../workflow-history-v2.types';
 
@@ -16,15 +16,15 @@ import workflowHistoryFiltersStatusOptionsConfig from './workflow-history-filter
 import workflowHistoryFiltersTypeOptionsConfig from './workflow-history-filters-type-options.config';
 
 const workflowHistoryFiltersConfig: [
-  WorkflowHistoryFilterConfig<WorkflowHistoryFiltersTypeValue>,
-  WorkflowHistoryFilterConfig<WorkflowHistoryFiltersStatusValue>,
+  WorkflowHistoryFilterConfig<EventGroupCategoryFilterValue>,
+  WorkflowHistoryFilterConfig<EventGroupStatusFilterValue>,
 ] = [
   {
     id: 'historyEventTypes',
     getValue: (v) => ({ historyEventTypes: v.historyEventTypes }),
     formatValue: (v) => v,
     component: ({ value, setValue }) =>
-      createElement(TagFilter<WorkflowHistoryGroupFilterType>, {
+      createElement(TagFilter<EventGroupCategory>, {
         label: 'Type',
         values: value.historyEventTypes ?? [],
         onChangeValues: (newValues) =>
@@ -40,7 +40,7 @@ const workflowHistoryFiltersConfig: [
     getValue: (v) => ({ historyEventStatuses: v.historyEventStatuses }),
     formatValue: (v) => v,
     component: ({ value, setValue }) =>
-      createElement(TagFilter<WorkflowHistoryGroupFilterStatus>, {
+      createElement(TagFilter<EventGroupStatus>, {
         label: 'Status',
         values: value.historyEventStatuses ?? [],
         onChangeValues: (newValues) =>
