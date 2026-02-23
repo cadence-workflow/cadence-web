@@ -131,16 +131,15 @@ export default function getSingleEventGroupFromEvents(
     hasMissingEvents,
     groupType,
     badges,
-    ...getCommonHistoryGroupFields<SingleEventHistoryGroup>(
+    ...getCommonHistoryGroupFields<SingleEventHistoryGroup>({
       events,
-      eventToStatus,
-      eventToLabel,
-      {},
-      undefined,
-      eventToNegativeFields,
-      undefined,
-      eventToSummaryFields
-    ),
+      historyGroupEventToStatusMap: eventToStatus,
+      eventToLabelMap: eventToLabel,
+      eventToTimeLabelPrefixMap: {},
+      closeEvent: undefined,
+      eventToNegativeFieldsMap: eventToNegativeFields,
+      eventToSummaryFieldsMap: eventToSummaryFields,
+    }),
     ...(expectedFirstDecisionScheduleTimeMs
       ? {
           expectedEndTimeInfo: {
