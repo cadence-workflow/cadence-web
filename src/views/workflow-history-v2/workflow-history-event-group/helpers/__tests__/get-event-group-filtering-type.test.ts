@@ -12,7 +12,7 @@ import { signalWorkflowExecutionEvent } from '@/views/workflow-history/__fixture
 import getEventGroupFilteringType from '../get-event-group-filtering-type';
 
 jest.mock(
-  '@/views/workflow-history/config/workflow-history-filters-type.config',
+  '@/views/workflow-history-v2/config/workflow-history-event-group-category-filters.config',
   () => ({
     ACTIVITY: 'Activity',
     CHILDWORKFLOW: 'ChildWorkflowExecution',

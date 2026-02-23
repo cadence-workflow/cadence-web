@@ -3,7 +3,7 @@ import {
   type EventGroupCategory,
 } from '../workflow-history-filters-menu/workflow-history-filters-menu.types';
 
-const workflowHistoryEventGroupCategoryConfig: Record<
+const workflowHistoryEventGroupCategoryFiltersConfig: Record<
   EventGroupCategory,
   EventGroupCategoryConfig
 > = {
@@ -22,4 +22,4 @@ const workflowHistoryEventGroupCategoryConfig: Record<
       g.events[0].attributes !== 'workflowExecutionSignaledEventAttributes'),
 };
 
-export default workflowHistoryEventGroupCategoryConfig;
+export default workflowHistoryEventGroupCategoryFiltersConfig;

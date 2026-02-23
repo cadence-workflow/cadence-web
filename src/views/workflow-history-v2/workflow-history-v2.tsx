@@ -28,7 +28,7 @@ import getNavigationBarEventsMenuItems from './helpers/get-navigation-bar-events
 import useInitialSelectedEvent from './hooks/use-initial-selected-event';
 import useWorkflowHistoryGrouper from './hooks/use-workflow-history-grouper';
 import useWorkflowHistoryScroll from './hooks/use-workflow-history-scroll';
-import filterGroupsByGroupStatus from './workflow-history-filters-menu/helpers/filter-groups-by-group-status';
+import filterGroupsByStatus from './workflow-history-filters-menu/helpers/filter-groups-by-status';
 import WorkflowHistoryGroupedTable from './workflow-history-grouped-table/workflow-history-grouped-table';
 import WorkflowHistoryHeader from './workflow-history-header/workflow-history-header';
 import WorkflowHistoryNavigationBar from './workflow-history-navigation-bar/workflow-history-navigation-bar';
@@ -319,7 +319,7 @@ export default function WorkflowHistoryV2({ params }: Props) {
   const failedEventsMenuItems = useMemo(
     () =>
       getNavigationBarEventsMenuItems(sortedEventGroupsEntries, (group) =>
-        filterGroupsByGroupStatus(group, { historyEventStatuses: ['FAILED'] })
+        filterGroupsByStatus(group, { historyEventStatuses: ['FAILED'] })
       ),
     [sortedEventGroupsEntries]
   );
@@ -327,7 +327,7 @@ export default function WorkflowHistoryV2({ params }: Props) {
   const pendingEventsMenuItems = useMemo(
     () =>
       getNavigationBarEventsMenuItems(sortedEventGroupsEntries, (group) =>
-        filterGroupsByGroupStatus(group, {
+        filterGroupsByStatus(group, {
           historyEventStatuses: ['PENDING'],
         })
       ),

@@ -1,8 +1,8 @@
-import workflowHistoryEventGroupCategoryConfig from '../../config/workflow-history-event-group-category.config';
+import workflowHistoryEventGroupCategoryFiltersConfig from '../../config/workflow-history-event-group-category-filters.config';
 import { type HistoryEventsGroup } from '../../workflow-history-v2.types';
 import { type EventGroupCategoryFilterValue } from '../workflow-history-filters-menu.types';
 
-const filterGroupsByGroupType = function (
+const filterGroupsByCategory = function (
   group: HistoryEventsGroup,
   value: EventGroupCategoryFilterValue
 ): boolean {
@@ -11,7 +11,8 @@ const filterGroupsByGroupType = function (
   }
 
   const filterConfigs = value.historyEventTypes.map(
-    (filteringType) => workflowHistoryEventGroupCategoryConfig[filteringType]
+    (filteringType) =>
+      workflowHistoryEventGroupCategoryFiltersConfig[filteringType]
   );
 
   return filterConfigs.some((filterConfig) => {
@@ -23,4 +24,4 @@ const filterGroupsByGroupType = function (
   });
 };
 
-export default filterGroupsByGroupType;
+export default filterGroupsByCategory;

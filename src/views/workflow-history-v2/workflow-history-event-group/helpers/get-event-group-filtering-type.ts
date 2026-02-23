@@ -1,4 +1,4 @@
-import workflowHistoryEventGroupCategoryConfig from '../../config/workflow-history-event-group-category.config';
+import workflowHistoryEventGroupCategoryFiltersConfig from '../../config/workflow-history-event-group-category-filters.config';
 import { type EventGroupCategory } from '../../workflow-history-filters-menu/workflow-history-filters-menu.types';
 import { type HistoryEventsGroup } from '../../workflow-history-v2.types';
 
@@ -7,7 +7,7 @@ function getEventGroupFilteringType(
   group: HistoryEventsGroup
 ): EventGroupCategory {
   for (const [eventGroupFilterType, filterConfig] of Object.entries(
-    workflowHistoryEventGroupCategoryConfig
+    workflowHistoryEventGroupCategoryFiltersConfig
   )) {
     if (
       (typeof filterConfig === 'function' && filterConfig(group)) ||

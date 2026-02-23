@@ -2,8 +2,8 @@ import { createElement } from 'react';
 
 import TagFilter from '@/components/tag-filter/tag-filter';
 
-import filterGroupsByGroupStatus from '../workflow-history-filters-menu/helpers/filter-groups-by-group-status';
-import filterGroupsByGroupType from '../workflow-history-filters-menu/helpers/filter-groups-by-group-type';
+import filterGroupsByCategory from '../workflow-history-filters-menu/helpers/filter-groups-by-category';
+import filterGroupsByStatus from '../workflow-history-filters-menu/helpers/filter-groups-by-status';
 import {
   type EventGroupCategory,
   type EventGroupStatusFilterValue,
@@ -33,7 +33,7 @@ const workflowHistoryFiltersConfig: [
           }),
         optionsConfig: workflowHistoryFiltersTypeOptionsConfig,
       }),
-    filterFunc: filterGroupsByGroupType,
+    filterFunc: filterGroupsByCategory,
   },
   {
     id: 'historyEventStatuses',
@@ -49,7 +49,7 @@ const workflowHistoryFiltersConfig: [
           }),
         optionsConfig: workflowHistoryFiltersStatusOptionsConfig,
       }),
-    filterFunc: filterGroupsByGroupStatus,
+    filterFunc: filterGroupsByStatus,
   },
 ] as const;
 
