@@ -2,7 +2,6 @@ import { status } from '@grpc/grpc-js';
 import { type NextRequest, NextResponse } from 'next/server';
 import pRetry from 'p-retry';
 
-import decodeUrlParams from '@/utils/decode-url-params';
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
@@ -24,15 +23,15 @@ export async function diagnoseWorkflow(
   requestParams: RequestParams,
   ctx: Context
 ) {
-  const decodedParams = decodeUrlParams(requestParams.params);
+  const params = requestParams.params;
 
   try {
     const { diagnosticWorkflowExecution } =
       await ctx.grpcClusterMethods.getDiagnosticsWorkflow({
-        domain: decodedParams.domain,
+        domain: params.domain,
         workflowExecution: {
-          workflowId: decodedParams.workflowId,
-          runId: decodedParams.runId,
+          workflowId: params.workflowId,
+          runId: params.runId,
         },
       });
 
@@ -90,7 +89,7 @@ export async function diagnoseWorkflow(
     );
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
-      { requestParams: decodedParams, error: e },
+      { requestParams: params, error: e },
       'Error diagnosing workflow'
     );
 
