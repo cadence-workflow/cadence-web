@@ -1,6 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
-import decodeUrlParams from '@/utils/decode-url-params';
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
@@ -15,17 +14,17 @@ export async function describeDomain(
   requestParams: RequestParams,
   ctx: Context
 ) {
-  const decodedParams = decodeUrlParams(requestParams.params) as RouteParams;
+  const params = requestParams.params as RouteParams;
 
   try {
     const res = await ctx.grpcClusterMethods.describeDomain({
-      name: decodedParams.domain,
+      name: params.domain,
     });
 
     return NextResponse.json(res.domain);
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
-      { requestParams: decodedParams, error: e },
+      { requestParams: params, error: e },
       'Error fetching domain info'
     );
 
