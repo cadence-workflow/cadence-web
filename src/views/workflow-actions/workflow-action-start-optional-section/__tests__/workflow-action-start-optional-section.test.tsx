@@ -1,11 +1,32 @@
 import React from 'react';
 
+import { type PanelProps } from 'baseui/accordion';
 import { useForm } from 'react-hook-form';
 
 import { fireEvent, render, screen, userEvent } from '@/test-utils/rtl';
 
 import WorkflowActionStartOptionalSection from '../workflow-action-start-optional-section';
 import { type Props } from '../workflow-action-start-optional-section.types';
+
+// Mock BaseUI Panel so the toggle uses a single render (no useEffect/animation).
+jest.mock('baseui/accordion/panel', () => {
+  const SimplePanel = (props: PanelProps) => {
+    const { expanded = false, onChange, overrides, children } = props;
+    const HeaderComponent = overrides?.Header?.component ?? (() => null);
+    return (
+      <>
+        <HeaderComponent
+          $expanded={expanded}
+          onClick={() =>
+            typeof onChange === 'function' && onChange({ expanded: !expanded })
+          }
+        />
+        {expanded ? children : null}
+      </>
+    );
+  };
+  return { __esModule: true, default: SimplePanel };
+});
 
 jest.mock(
   '../../workflow-action-start-retry-policy/workflow-action-start-retry-policy',
