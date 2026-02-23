@@ -135,17 +135,16 @@ export default function getDecisionGroupFromEvents(
     groupType,
     badges,
     resetToDecisionEventId,
-    ...getCommonHistoryGroupFields<DecisionHistoryGroup>(
+    ...getCommonHistoryGroupFields<DecisionHistoryGroup>({
       events,
-      eventToStatus,
-      eventToLabel,
-      {
+      historyGroupEventToStatusMap: eventToStatus,
+      eventToLabelMap: eventToLabel,
+      eventToTimeLabelPrefixMap: {
         pendingDecisionTaskStartEventAttributes: pendingStartEventTimePrefix,
       },
-      closeEvent || timeoutEvent,
-      eventToNegativeFields,
-      undefined,
-      eventToSummaryFields
-    ),
+      closeEvent: closeEvent || timeoutEvent,
+      eventToNegativeFieldsMap: eventToNegativeFields,
+      eventToSummaryFieldsMap: eventToSummaryFields,
+    }),
   };
 }
