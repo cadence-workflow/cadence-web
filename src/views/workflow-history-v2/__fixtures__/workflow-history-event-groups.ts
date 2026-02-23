@@ -6,6 +6,7 @@ import {
   type ChildWorkflowExecutionHistoryGroup,
   type SignalExternalWorkflowExecutionHistoryGroup,
   type RequestCancelExternalWorkflowExecutionHistoryGroup,
+  type WorkflowSignaledHistoryGroup,
 } from '../workflow-history-v2.types';
 
 import { completedActivityTaskEvents } from './workflow-history-activity-events';
@@ -15,6 +16,7 @@ import { requestedCancelExternalWorkflowEvents } from './workflow-history-reques
 import { signaledExternalWorkflowEvents } from './workflow-history-signal-external-workflow-events';
 import { startWorkflowExecutionEvent } from './workflow-history-single-events';
 import { startTimerTaskEvent } from './workflow-history-timer-events';
+import { workflowSignaledEvents } from './workflow-history-workflow-signaled-events';
 
 export const mockActivityEventGroup: ActivityHistoryGroup = {
   label: 'Mock event',
@@ -107,4 +109,17 @@ export const mockSingleEventGroup: SingleEventHistoryGroup = {
   timeLabel: 'Mock time label',
   events: [startWorkflowExecutionEvent],
   firstEventId: startWorkflowExecutionEvent.eventId,
+};
+
+export const mockWorkflowSignaledEventGroup: WorkflowSignaledHistoryGroup = {
+  label: 'Mock workflow signaled',
+  groupType: 'WorkflowSignaled',
+  status: 'COMPLETED',
+  eventsMetadata: [],
+  hasMissingEvents: false,
+  timeMs: 1724747415549,
+  startTimeMs: 1724747415549,
+  timeLabel: 'Mock time label',
+  events: workflowSignaledEvents,
+  firstEventId: workflowSignaledEvents[0].eventId,
 };

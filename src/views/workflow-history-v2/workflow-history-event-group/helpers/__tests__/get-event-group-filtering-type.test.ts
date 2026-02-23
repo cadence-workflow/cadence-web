@@ -6,29 +6,30 @@ import {
   mockSignalExternalWorkflowEventGroup,
   mockRequestCancelExternalWorkflowEventGroup,
   mockSingleEventGroup,
-} from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
-import { signalWorkflowExecutionEvent } from '@/views/workflow-history/__fixtures__/workflow-history-single-events';
-
+  mockWorkflowSignaledEventGroup,
+} from '../../../__fixtures__/workflow-history-event-groups';
 import getEventGroupFilteringType from '../get-event-group-filtering-type';
 
 jest.mock(
-  '@/views/workflow-history-v2/config/workflow-history-event-group-category-filters.config',
+  '../../../config/workflow-history-event-group-category-filters.config',
   () => ({
-    ACTIVITY: 'Activity',
-    CHILDWORKFLOW: 'ChildWorkflowExecution',
-    DECISION: 'Decision',
-    TIMER: 'Timer',
-    SIGNAL: jest.fn(
-      (g) =>
-        g.groupType === 'SignalExternalWorkflowExecution' ||
-        g.events[0].attributes === 'workflowExecutionSignaledEventAttributes'
-    ),
-    WORKFLOW: jest.fn(
-      (g) =>
-        g.groupType === 'RequestCancelExternalWorkflowExecution' ||
-        (g.groupType === 'Event' &&
-          g.events[0].attributes !== 'workflowExecutionSignaledEventAttributes')
-    ),
+    __esModule: true,
+    default: {
+      ACTIVITY: 'Activity',
+      CHILDWORKFLOW: 'ChildWorkflowExecution',
+      DECISION: 'Decision',
+      TIMER: 'Timer',
+      SIGNAL: jest.fn(
+        (g) =>
+          g.groupType === 'SignalExternalWorkflowExecution' ||
+          g.groupType === 'WorkflowSignaled'
+      ),
+      WORKFLOW: jest.fn(
+        (g) =>
+          g.groupType === 'RequestCancelExternalWorkflowExecution' ||
+          g.groupType === 'Event'
+      ),
+    },
   })
 );
 
@@ -61,14 +62,10 @@ describe(getEventGroupFilteringType.name, () => {
     ).toBe('SIGNAL');
   });
 
-  it('should return SIGNAL for Event group type with workflowExecutionSignaledEventAttributes', () => {
-    const group = {
-      ...mockSingleEventGroup,
-      events: [signalWorkflowExecutionEvent],
-      firstEventId: signalWorkflowExecutionEvent.eventId,
-    };
-
-    expect(getEventGroupFilteringType(group)).toBe('SIGNAL');
+  it('should return SIGNAL for WorkflowSignaled group type', () => {
+    expect(getEventGroupFilteringType(mockWorkflowSignaledEventGroup)).toBe(
+      'SIGNAL'
+    );
   });
 
   it('should return WORKFLOW for RequestCancelExternalWorkflowExecution group type', () => {

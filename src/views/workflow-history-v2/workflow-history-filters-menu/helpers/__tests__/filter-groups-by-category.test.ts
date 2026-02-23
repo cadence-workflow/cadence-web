@@ -6,8 +6,8 @@ import {
   mockSignalExternalWorkflowEventGroup,
   mockRequestCancelExternalWorkflowEventGroup,
   mockSingleEventGroup,
+  mockWorkflowSignaledEventGroup,
 } from '../../../__fixtures__/workflow-history-event-groups';
-import { signalWorkflowExecutionEvent } from '../../../__fixtures__/workflow-history-single-events';
 import { type EventGroupCategoryFilterValue } from '../../workflow-history-filters-menu.types';
 import filterGroupsByCategory from '../filter-groups-by-category';
 
@@ -23,17 +23,12 @@ jest.mock(
       SIGNAL: jest.fn(
         (g) =>
           g.groupType === 'SignalExternalWorkflowExecution' ||
-          (g.events.length > 0 &&
-            g.events[0].attributes ===
-              'workflowExecutionSignaledEventAttributes')
+          g.groupType === 'WorkflowSignaled'
       ),
       WORKFLOW: jest.fn(
         (g) =>
           g.groupType === 'RequestCancelExternalWorkflowExecution' ||
-          (g.events.length > 0 &&
-            g.groupType === 'Event' &&
-            g.events[0].attributes !==
-              'workflowExecutionSignaledEventAttributes')
+          g.groupType === 'Event'
       ),
     },
   })
@@ -114,38 +109,14 @@ describe(filterGroupsByCategory.name, () => {
     ).toBe(true);
   });
 
-  it('should return true if WorkflowSignaled single event is included in history events and filter is SIGNAL', () => {
+  it('should return true if WorkflowSignaled group type is included in historyEventTypes', () => {
     const value: EventGroupCategoryFilterValue = {
       historyEventTypes: ['SIGNAL'],
     };
 
-    expect(
-      filterGroupsByCategory(
-        {
-          ...mockSingleEventGroup,
-          events: [signalWorkflowExecutionEvent],
-          firstEventId: signalWorkflowExecutionEvent.eventId,
-        },
-        value
-      )
-    ).toBe(true);
-  });
-
-  it('should return false if WorkflowSignaled single event is included in history events and filter is WORKFLOW', () => {
-    const value: EventGroupCategoryFilterValue = {
-      historyEventTypes: ['WORKFLOW'],
-    };
-
-    expect(
-      filterGroupsByCategory(
-        {
-          ...mockSingleEventGroup,
-          events: [signalWorkflowExecutionEvent],
-          firstEventId: signalWorkflowExecutionEvent.eventId,
-        },
-        value
-      )
-    ).toBe(false);
+    expect(filterGroupsByCategory(mockWorkflowSignaledEventGroup, value)).toBe(
+      true
+    );
   });
 
   it('should return true if RequestCancelExternalWorkflowExecution group type maps to WORKFLOW and is included in historyEventTypes', () => {

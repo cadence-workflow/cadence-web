@@ -13,13 +13,10 @@ const workflowHistoryEventGroupCategoryFiltersConfig: Record<
   TIMER: 'Timer',
   SIGNAL: (g) =>
     g.groupType === 'SignalExternalWorkflowExecution' ||
-    (g.events.length > 0 &&
-      g.events[0].attributes === 'workflowExecutionSignaledEventAttributes'),
+    g.groupType === 'WorkflowSignaled',
   WORKFLOW: (g) =>
     g.groupType === 'RequestCancelExternalWorkflowExecution' ||
-    (g.groupType === 'Event' &&
-      g.events.length > 0 &&
-      g.events[0].attributes !== 'workflowExecutionSignaledEventAttributes'),
+    g.groupType === 'Event',
 };
 
 export default workflowHistoryEventGroupCategoryFiltersConfig;
