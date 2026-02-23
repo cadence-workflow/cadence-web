@@ -1,17 +1,15 @@
 import { createElement } from 'react';
 
 import TagFilter from '@/components/tag-filter/tag-filter';
-import filterGroupsByGroupStatus from '@/views/workflow-history/workflow-history-filters-status/helpers/filter-groups-by-group-status';
-import {
-  type HistoryEventFilterStatus,
-  type WorkflowHistoryFiltersStatusValue,
-} from '@/views/workflow-history/workflow-history-filters-status/workflow-history-filters-status.types';
-import filterGroupsByGroupType from '@/views/workflow-history/workflow-history-filters-type/helpers/filter-groups-by-group-type';
-import {
-  type WorkflowHistoryEventFilteringType,
-  type WorkflowHistoryFiltersTypeValue,
-} from '@/views/workflow-history/workflow-history-filters-type/workflow-history-filters-type.types';
 
+import filterGroupsByGroupStatus from '../workflow-history-filters-menu/helpers/filter-groups-by-group-status';
+import filterGroupsByGroupType from '../workflow-history-filters-menu/helpers/filter-groups-by-group-type';
+import {
+  type WorkflowHistoryGroupFilterType,
+  type WorkflowHistoryFiltersStatusValue,
+  type WorkflowHistoryFiltersTypeValue,
+  type WorkflowHistoryGroupFilterStatus,
+} from '../workflow-history-filters-menu/workflow-history-filters-menu.types';
 import { type WorkflowHistoryFilterConfig } from '../workflow-history-v2.types';
 
 import workflowHistoryFiltersStatusOptionsConfig from './workflow-history-filters-status-options.config';
@@ -26,7 +24,7 @@ const workflowHistoryFiltersConfig: [
     getValue: (v) => ({ historyEventTypes: v.historyEventTypes }),
     formatValue: (v) => v,
     component: ({ value, setValue }) =>
-      createElement(TagFilter<WorkflowHistoryEventFilteringType>, {
+      createElement(TagFilter<WorkflowHistoryGroupFilterType>, {
         label: 'Type',
         values: value.historyEventTypes ?? [],
         onChangeValues: (newValues) =>
@@ -42,7 +40,7 @@ const workflowHistoryFiltersConfig: [
     getValue: (v) => ({ historyEventStatuses: v.historyEventStatuses }),
     formatValue: (v) => v,
     component: ({ value, setValue }) =>
-      createElement(TagFilter<HistoryEventFilterStatus>, {
+      createElement(TagFilter<WorkflowHistoryGroupFilterStatus>, {
         label: 'Status',
         values: value.historyEventStatuses ?? [],
         onChangeValues: (newValues) =>

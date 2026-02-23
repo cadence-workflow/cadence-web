@@ -30,6 +30,12 @@ export type WorkflowHistoryFiltersTypeValue = {
   historyEventTypes: WorkflowHistoryGroupFilterType[] | undefined;
 };
 
+export type WorkflowHistoryGroupFilteringTypeColors = {
+  content: string;
+  background: string;
+  backgroundHighlighted: string;
+};
+
 export type WorkflowHistoryGroupFilterConfig =
   // TODO @adhitya.mamallan - change this to use an array of group types
   // One filtering type maps to multiple group types

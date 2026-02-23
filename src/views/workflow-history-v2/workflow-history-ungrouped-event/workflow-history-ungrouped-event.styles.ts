@@ -5,7 +5,7 @@ import { type StyleObject } from 'styletron-react';
 
 import { type WorkflowHistoryEventFilteringType } from '@/views/workflow-history/workflow-history-filters-type/workflow-history-filters-type.types';
 
-import workflowHistoryEventFilteringTypeColorsConfig from '../config/workflow-history-event-filtering-type-colors.config';
+import workflowHistoryGroupFilteringTypeColorsConfig from '../config/workflow-history-group-filtering-type-colors.config';
 import { WORKFLOW_HISTORY_UNGROUPED_GRID_TEMPLATE_COLUMNS } from '../workflow-history-ungrouped-table/workflow-history-ungrouped-table.constants';
 
 export const styled = {
@@ -106,7 +106,7 @@ export const overrides = (
         alignItems: 'center',
         ':hover': {
           backgroundColor:
-            workflowHistoryEventFilteringTypeColorsConfig[eventFilteringType]
+            workflowHistoryGroupFilteringTypeColorsConfig[eventFilteringType]
               .backgroundHighlighted,
         },
         ...(animateOnEnter && {
@@ -114,7 +114,7 @@ export const overrides = (
           animationName: {
             from: {
               backgroundColor:
-                workflowHistoryEventFilteringTypeColorsConfig[
+                workflowHistoryGroupFilteringTypeColorsConfig[
                   eventFilteringType
                 ].backgroundHighlighted,
             },

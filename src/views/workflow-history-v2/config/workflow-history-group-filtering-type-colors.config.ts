@@ -1,8 +1,9 @@
-import { type WorkflowHistoryEventFilteringType } from '@/views/workflow-history/workflow-history-filters-type/workflow-history-filters-type.types';
+import {
+  type WorkflowHistoryGroupFilteringTypeColors,
+  type WorkflowHistoryGroupFilterType,
+} from '../workflow-history-filters-menu/workflow-history-filters-menu.types';
 
-import { type WorkflowHistoryEventFilteringTypeColors } from '../workflow-history-v2.types';
-
-const workflowHistoryEventFilteringTypeColorsConfig = {
+const workflowHistoryGroupFilteringTypeColorsConfig = {
   ACTIVITY: {
     content: '#068BEE',
     background: '#EFF4FE',
@@ -34,8 +35,8 @@ const workflowHistoryEventFilteringTypeColorsConfig = {
     backgroundHighlighted: '#DEEEC6',
   },
 } as const satisfies Record<
-  WorkflowHistoryEventFilteringType,
-  WorkflowHistoryEventFilteringTypeColors
+  WorkflowHistoryGroupFilterType,
+  WorkflowHistoryGroupFilteringTypeColors
 >;
 
-export default workflowHistoryEventFilteringTypeColorsConfig;
+export default workflowHistoryGroupFilteringTypeColorsConfig;

@@ -3,37 +3,38 @@ import { createElement } from 'react';
 import { MdCircle } from 'react-icons/md';
 
 import { type TagFilterOptionConfig } from '@/components/tag-filter/tag-filter.types';
-import { type WorkflowHistoryEventFilteringType } from '@/views/workflow-history/workflow-history-filters-type/workflow-history-filters-type.types';
 
-import workflowHistoryEventFilteringTypeColorsConfig from './workflow-history-event-filtering-type-colors.config';
+import { type WorkflowHistoryGroupFilterType } from '../workflow-history-filters-menu/workflow-history-filters-menu.types';
+
+import workflowHistoryGroupFilteringTypeColorsConfig from './workflow-history-group-filtering-type-colors.config';
 
 const workflowHistoryFiltersTypeOptionsConfig = {
   ACTIVITY: {
     label: 'Activity',
     startEnhancer: () =>
       createElement(MdCircle, {
-        color: workflowHistoryEventFilteringTypeColorsConfig.ACTIVITY.content,
+        color: workflowHistoryGroupFilteringTypeColorsConfig.ACTIVITY.content,
       }),
   },
   DECISION: {
     label: 'Decision',
     startEnhancer: () =>
       createElement(MdCircle, {
-        color: workflowHistoryEventFilteringTypeColorsConfig.DECISION.content,
+        color: workflowHistoryGroupFilteringTypeColorsConfig.DECISION.content,
       }),
   },
   SIGNAL: {
     label: 'Signal',
     startEnhancer: () =>
       createElement(MdCircle, {
-        color: workflowHistoryEventFilteringTypeColorsConfig.SIGNAL.content,
+        color: workflowHistoryGroupFilteringTypeColorsConfig.SIGNAL.content,
       }),
   },
   TIMER: {
     label: 'Timer',
     startEnhancer: () =>
       createElement(MdCircle, {
-        color: workflowHistoryEventFilteringTypeColorsConfig.TIMER.content,
+        color: workflowHistoryGroupFilteringTypeColorsConfig.TIMER.content,
       }),
   },
   CHILDWORKFLOW: {
@@ -41,18 +42,18 @@ const workflowHistoryFiltersTypeOptionsConfig = {
     startEnhancer: () =>
       createElement(MdCircle, {
         color:
-          workflowHistoryEventFilteringTypeColorsConfig.CHILDWORKFLOW.content,
+          workflowHistoryGroupFilteringTypeColorsConfig.CHILDWORKFLOW.content,
       }),
   },
   WORKFLOW: {
     label: 'Other',
     startEnhancer: () =>
       createElement(MdCircle, {
-        color: workflowHistoryEventFilteringTypeColorsConfig.WORKFLOW.content,
+        color: workflowHistoryGroupFilteringTypeColorsConfig.WORKFLOW.content,
       }),
   },
 } as const satisfies Record<
-  WorkflowHistoryEventFilteringType,
+  WorkflowHistoryGroupFilterType,
   TagFilterOptionConfig
 >;
 
