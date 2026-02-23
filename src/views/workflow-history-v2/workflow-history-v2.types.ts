@@ -172,6 +172,11 @@ export type SingleEventHistoryGroup = BaseHistoryGroup & {
   events: SingleHistoryEvent[];
 };
 
+export type NewHistoryGroup = BaseHistoryGroup & {
+  groupType: 'New';
+  events: SingleHistoryEvent[];
+};
+
 export type HistoryEventsGroup =
   | ActivityHistoryGroup
   | DecisionHistoryGroup
