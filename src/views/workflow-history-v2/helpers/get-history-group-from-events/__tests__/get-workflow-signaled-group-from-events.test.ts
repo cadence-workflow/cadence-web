@@ -77,6 +77,6 @@ describe(getWorkflowSignaledGroupFromEvents.name, () => {
 
     const group = getWorkflowSignaledGroupFromEvents([eventWithoutSignalName]);
 
-    expect(group.label).toBe('Workflow Signaled: Unknown Signal');
+    expect(group.label).toBe('Workflow Signaled');
   });
 });

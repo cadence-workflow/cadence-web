@@ -15,7 +15,9 @@ export default function getWorkflowSignaledGroupFromEvents(
   const hasMissingEvents = false;
 
   const signalName = event.workflowExecutionSignaledEventAttributes?.signalName;
-  const label = `Workflow Signaled: ${signalName ?? 'Unknown Signal'}`;
+  const label = signalName
+    ? `Workflow Signaled: ${signalName}`
+    : 'Workflow Signaled';
 
   const eventToLabel: HistoryGroupEventToStringMap<WorkflowSignaledHistoryGroup> =
     {
