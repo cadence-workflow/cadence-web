@@ -1,25 +1,17 @@
 import { z } from 'zod';
 
-import formatPayload from '@/utils/data-formatters/format-payload';
-
-const localActivityMarkerDetailsSchema = z
-  .object({
-    data: z.string(),
-  })
-  .transform((payload) => formatPayload(payload))
-  .pipe(
-    z.object({
-      activityId: z.string(),
-      activityType: z.string(),
-      resultJson: z.string().transform((res, ctx) => {
-        try {
-          return JSON.parse(res);
-        } catch {
-          ctx.addIssue({ code: 'custom', message: 'Invalid JSON' });
-          return z.NEVER;
-        }
-      }),
-    })
-  );
+/**
+ * Local activity markers contain additional fields, but their storage varies by client:
+ * - Go client: stores fields in the "details" Payload
+ * - Java client: stores fields in headers (except result, which goes in "details" Payload)
+ *
+ * Field formats also differ (e.g., replay time is a date string in Go, epoch timestamp in Java).
+ * This schema only includes the common fields that are consistently available.
+ */
+const localActivityMarkerDetailsSchema = z.object({
+  activityId: z.string(),
+  activityType: z.string(),
+  attempt: z.number().optional(),
+});
 
 export default localActivityMarkerDetailsSchema;

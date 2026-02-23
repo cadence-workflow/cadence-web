@@ -1,11 +1,8 @@
+import formatPayload from '@/utils/data-formatters/format-payload';
 import logger from '@/utils/logger';
 
 import WORKFLOW_HISTORY_SHOULD_SHORTEN_GROUP_LABELS_CONFIG from '../../config/workflow-history-should-shorten-group-labels.config';
 import type {
-  HistoryGroupEventToAdditionalDetailsMap,
-  HistoryGroupEventToStatusMap,
-  HistoryGroupEventToStringMap,
-  HistoryGroupEventToSummaryFieldsMap,
   LocalActivityHistoryEvent,
   LocalActivityHistoryGroup,
 } from '../../workflow-history-v2.types';
@@ -23,23 +20,24 @@ export default function getLocalActivityGroupFromEvents(
 
   let activityId: string | undefined,
     activityType: string | undefined,
-    resultJson: object | undefined,
     label = 'Local Activity',
     shortLabel: string | undefined;
 
-  // What else can a local activity marker have?
+  const formattedLocalActivityPayload = formatPayload(
+    event[markerAttr]?.details
+  );
+
   const { data: localActivityDetails, error } =
-    localActivityMarkerDetailsSchema.safeParse(event[markerAttr]?.details);
+    localActivityMarkerDetailsSchema.safeParse(formattedLocalActivityPayload);
 
   if (error) {
     logger.warn(
-      { error, rawDetails: event[markerAttr]?.details },
+      { error, formattedDetails: formattedLocalActivityPayload },
       'Error parsing local activity details'
     );
   } else {
     activityId = localActivityDetails.activityId;
     activityType = localActivityDetails.activityType;
-    resultJson = localActivityDetails.resultJson;
 
     label = `Local Activity ${activityId}: ${activityType}`;
 
@@ -51,30 +49,6 @@ export default function getLocalActivityGroupFromEvents(
     }
   }
 
-  const eventToLabel: HistoryGroupEventToStringMap<LocalActivityHistoryGroup> =
-    {
-      markerRecordedEventAttributes: 'Completed',
-    };
-
-  const eventToStatus: HistoryGroupEventToStatusMap<LocalActivityHistoryGroup> =
-    {
-      markerRecordedEventAttributes: 'COMPLETED',
-    };
-
-  const eventToAdditionalDetails: HistoryGroupEventToAdditionalDetailsMap<LocalActivityHistoryGroup> =
-    {
-      markerRecordedEventAttributes: {
-        localActivityId: activityId,
-        localActivityType: activityType,
-        result: resultJson,
-      },
-    };
-
-  const eventToSummaryFields: HistoryGroupEventToSummaryFieldsMap<LocalActivityHistoryGroup> =
-    {
-      markerRecordedEventAttributes: ['result'],
-    };
-
   return {
     label,
     shortLabel,
@@ -82,12 +56,20 @@ export default function getLocalActivityGroupFromEvents(
     groupType,
     ...getCommonHistoryGroupFields<LocalActivityHistoryGroup>({
       events,
-      historyGroupEventToStatusMap: eventToStatus,
-      eventToLabelMap: eventToLabel,
+      historyGroupEventToStatusMap: {
+        markerRecordedEventAttributes: 'COMPLETED',
+      },
+      eventToLabelMap: {
+        markerRecordedEventAttributes: 'Completed',
+      },
       eventToTimeLabelPrefixMap: {},
       closeEvent: undefined,
-      eventToAdditionalDetailsMap: eventToAdditionalDetails,
-      eventToSummaryFieldsMap: eventToSummaryFields,
+      eventToAdditionalDetailsMap: {
+        markerRecordedEventAttributes: {
+          localActivityId: activityId,
+          localActivityType: activityType,
+        },
+      },
     }),
   };
 }
