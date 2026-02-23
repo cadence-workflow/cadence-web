@@ -4,7 +4,6 @@ import snakeCase from 'lodash/snakeCase';
 import { NextResponse, type NextRequest } from 'next/server';
 
 import getConfigValue from '@/utils/config/get-config-value';
-import decodeUrlParams from '@/utils/decode-url-params';
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
@@ -16,7 +15,7 @@ export async function updateDomain(
   requestParams: RequestParams,
   ctx: Context
 ) {
-  const decodedParams = decodeUrlParams(requestParams.params);
+  const params = requestParams.params;
   const requestBody = await request.json();
   const { data: values, error } =
     updateDomainValuesSchema.safeParse(requestBody);
@@ -34,7 +33,7 @@ export async function updateDomain(
   try {
     const res = await ctx.grpcClusterMethods.updateDomain({
       ...values,
-      name: decodedParams.domain,
+      name: params.domain,
       securityToken: ADMIN_SECURITY_TOKEN,
       updateMask: {
         paths: Object.keys(values).map(snakeCase),
@@ -53,7 +52,7 @@ export async function updateDomain(
     return NextResponse.json(res.domain);
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
-      { requestParams: decodedParams, error: e },
+      { requestParams: params, error: e },
       'Error updating domain information'
     );
 
