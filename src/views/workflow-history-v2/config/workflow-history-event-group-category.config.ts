@@ -1,11 +1,11 @@
 import {
-  type WorkflowHistoryGroupFilterConfig,
-  type WorkflowHistoryGroupFilterType,
+  type EventGroupCategoryConfig,
+  type EventGroupCategory,
 } from '../workflow-history-filters-menu/workflow-history-filters-menu.types';
 
-const workflowHistoryGroupFilterTypeConfig: Record<
-  WorkflowHistoryGroupFilterType,
-  WorkflowHistoryGroupFilterConfig
+const workflowHistoryEventGroupCategoryConfig: Record<
+  EventGroupCategory,
+  EventGroupCategoryConfig
 > = {
   ACTIVITY: 'Activity',
   CHILDWORKFLOW: 'ChildWorkflowExecution',
@@ -22,4 +22,4 @@ const workflowHistoryGroupFilterTypeConfig: Record<
       g.events[0].attributes !== 'workflowExecutionSignaledEventAttributes'),
 };
 
-export default workflowHistoryGroupFilterTypeConfig;
+export default workflowHistoryEventGroupCategoryConfig;
