@@ -296,14 +296,13 @@ function setup({
     timerCanceledEventAttributes: 'Canceled',
   };
 
-  return getCommonHistoryGroupFields(
-    mockEvents,
-    mockedEventToStatus,
-    mockedEventToLabel,
+  return getCommonHistoryGroupFields({
+    events: mockEvents,
+    historyGroupEventToStatusMap: mockedEventToStatus,
+    eventToLabelMap: mockedEventToLabel,
     eventToTimeLabelPrefixMap,
     closeEvent,
     eventToNegativeFieldsMap,
-    undefined,
-    eventToSummaryFieldsMap
-  );
+    eventToSummaryFieldsMap,
+  });
 }
