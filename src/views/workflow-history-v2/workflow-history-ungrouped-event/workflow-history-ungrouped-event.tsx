@@ -9,7 +9,7 @@ import WorkflowHistoryEventStatusBadge from '@/views/workflow-history/workflow-h
 import WorkflowHistoryGroupLabel from '@/views/workflow-history/workflow-history-group-label/workflow-history-group-label';
 import WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 
-import workflowHistoryEventFilteringTypeColorsConfig from '../config/workflow-history-event-filtering-type-colors.config';
+import workflowHistoryEventGroupCategoryColorsConfig from '../config/workflow-history-event-group-category-colors.config';
 import useGroupDetailsEntries from '../hooks/use-group-details-entries';
 import WorkflowHistoryDetailsRow from '../workflow-history-details-row/workflow-history-details-row';
 import getEventGroupFilteringType from '../workflow-history-event-group/helpers/get-event-group-filtering-type';
@@ -55,7 +55,7 @@ export default function WorkflowHistoryUngroupedEvent({
         <styled.HeaderContent>
           <MdOutlineCircle
             color={
-              workflowHistoryEventFilteringTypeColorsConfig[eventFilteringType]
+              workflowHistoryEventGroupCategoryColorsConfig[eventFilteringType]
                 .content
             }
           />

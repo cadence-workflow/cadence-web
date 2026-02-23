@@ -5,7 +5,7 @@ import { Pagination } from 'baseui/pagination';
 import { StatefulPopover } from 'baseui/popover';
 import { MdCircle, MdOutlineCircle } from 'react-icons/md';
 
-import workflowHistoryEventFilteringTypeColorsConfig from '../config/workflow-history-event-filtering-type-colors.config';
+import workflowHistoryEventGroupCategoryColorsConfig from '../config/workflow-history-event-group-category-colors.config';
 
 import { NAVBAR_MENU_ITEMS_PER_PAGE } from './workflow-history-navigation-bar-events-menu.constants';
 import {
@@ -53,7 +53,7 @@ export default function WorkflowHistoryNavigationBarEventsMenu({
                 startEnhancer={
                   <MenuItemIcon
                     color={
-                      workflowHistoryEventFilteringTypeColorsConfig[type]
+                      workflowHistoryEventGroupCategoryColorsConfig[type]
                         .content
                     }
                   />
