@@ -3,9 +3,8 @@ import { type PanelOverrides } from 'baseui/accordion';
 import { type BadgeOverrides } from 'baseui/badge';
 import { type StyleObject } from 'styletron-react';
 
-import { type WorkflowHistoryEventFilteringType } from '@/views/workflow-history/workflow-history-filters-type/workflow-history-filters-type.types';
-
 import workflowHistoryEventGroupCategoryColorsConfig from '../config/workflow-history-event-group-category-colors.config';
+import { type EventGroupCategory } from '../workflow-history-filters-menu/workflow-history-filters-menu.types';
 import { WORKFLOW_HISTORY_UNGROUPED_GRID_TEMPLATE_COLUMNS } from '../workflow-history-ungrouped-table/workflow-history-ungrouped-table.constants';
 
 export const styled = {
@@ -75,7 +74,7 @@ export const styled = {
 };
 
 export const overrides = (
-  eventFilteringType: WorkflowHistoryEventFilteringType,
+  eventGroupCategory: EventGroupCategory,
   animateOnEnter?: boolean
 ) => ({
   panel: {
@@ -106,7 +105,7 @@ export const overrides = (
         alignItems: 'center',
         ':hover': {
           backgroundColor:
-            workflowHistoryEventGroupCategoryColorsConfig[eventFilteringType]
+            workflowHistoryEventGroupCategoryColorsConfig[eventGroupCategory]
               .backgroundHighlighted,
         },
         ...(animateOnEnter && {
@@ -115,7 +114,7 @@ export const overrides = (
             from: {
               backgroundColor:
                 workflowHistoryEventGroupCategoryColorsConfig[
-                  eventFilteringType
+                  eventGroupCategory
                 ].backgroundHighlighted,
             },
             to: {

@@ -24,12 +24,15 @@ jest.mock(
       SIGNAL: jest.fn(
         (g) =>
           g.groupType === 'SignalExternalWorkflowExecution' ||
-          g.events[0].attributes === 'workflowExecutionSignaledEventAttributes'
+          (g.events.length > 0 &&
+            g.events[0].attributes ===
+              'workflowExecutionSignaledEventAttributes')
       ),
       WORKFLOW: jest.fn(
         (g) =>
           g.groupType === 'RequestCancelExternalWorkflowExecution' ||
-          (g.groupType === 'Event' &&
+          (g.events.length > 0 &&
+            g.groupType === 'Event' &&
             g.events[0].attributes !==
               'workflowExecutionSignaledEventAttributes')
       ),

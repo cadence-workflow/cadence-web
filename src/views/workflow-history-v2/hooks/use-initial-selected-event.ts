@@ -2,17 +2,19 @@ import { useMemo, useRef, useState } from 'react';
 
 import { type UseInitialSelectedEventParams } from './use-initial-selected-event.types';
 
-/*
- * This hook is used to search for the event within event groups. It captures the first selected event when the component is mounted
- * and keeps searching for the event in all event groups until it is found.
- * Afterwards it return the index of the group in the filtered set of event groups that is presented on the UI and retrun undefined if filtered groups do not contain the event/group.
+/**
+ * Hook to find the group index of the initially selected event.
+ * - Stores the first provided event ID on mount, even if it changes later.
+ * - Locates the event in the complete set of event groups until found.
+ * - Returns the group index within the filtered event groups shown in the UI,
+ *   or undefined if the event/group is not present in the filtered groups.
  */
 export default function useInitialSelectedEvent({
   selectedEventId,
   eventGroups,
   filteredEventGroupsEntries,
 }: UseInitialSelectedEventParams) {
-  // preserve initial event id even if prop changed.
+  // preserve initial event id even if props change
   const [initialEventId] = useState(selectedEventId);
   const foundGroupIndexRef = useRef<number | undefined>(undefined);
 
@@ -31,7 +33,7 @@ export default function useInitialSelectedEvent({
     if (!initialEventGroupEntry) return undefined;
 
     const groupId = initialEventGroupEntry[0];
-    // If group index not change do not search again.
+    // If group index has not changed do not search again
     if (
       foundGroupIndexRef.current &&
       filteredEventGroupsEntries[foundGroupIndexRef.current]?.[0] === groupId
