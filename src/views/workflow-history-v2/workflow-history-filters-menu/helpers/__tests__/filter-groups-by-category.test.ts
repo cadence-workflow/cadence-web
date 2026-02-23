@@ -1,5 +1,3 @@
-import { signalWorkflowExecutionEvent } from '@/views/workflow-history/__fixtures__/workflow-history-single-events';
-
 import {
   mockActivityEventGroup,
   mockDecisionEventGroup,
@@ -9,6 +7,7 @@ import {
   mockRequestCancelExternalWorkflowEventGroup,
   mockSingleEventGroup,
 } from '../../../__fixtures__/workflow-history-event-groups';
+import { signalWorkflowExecutionEvent } from '../../../__fixtures__/workflow-history-single-events';
 import { type EventGroupCategoryFilterValue } from '../../workflow-history-filters-menu.types';
 import filterGroupsByCategory from '../filter-groups-by-category';
 
