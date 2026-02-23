@@ -152,10 +152,7 @@ describe(filterGroupsByCategory.name, () => {
     };
 
     expect(
-      filterGroupsByCategory(
-        mockRequestCancelExternalWorkflowEventGroup,
-        value
-      )
+      filterGroupsByCategory(mockRequestCancelExternalWorkflowEventGroup, value)
     ).toBe(true);
   });
 
@@ -207,10 +204,7 @@ describe(filterGroupsByCategory.name, () => {
     };
 
     expect(
-      filterGroupsByCategory(
-        mockRequestCancelExternalWorkflowEventGroup,
-        value
-      )
+      filterGroupsByCategory(mockRequestCancelExternalWorkflowEventGroup, value)
     ).toBe(true);
     expect(filterGroupsByCategory(mockSingleEventGroup, value)).toBe(true);
 

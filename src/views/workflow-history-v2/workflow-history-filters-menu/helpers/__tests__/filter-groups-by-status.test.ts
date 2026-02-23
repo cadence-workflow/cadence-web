@@ -21,9 +21,9 @@ describe(filterGroupsByStatus.name, () => {
       historyEventStatuses: undefined,
     };
 
-    expect(
-      filterGroupsByStatus(ACTIVITY_HISTORY_GROUP_COMPLETED, value)
-    ).toBe(true);
+    expect(filterGroupsByStatus(ACTIVITY_HISTORY_GROUP_COMPLETED, value)).toBe(
+      true
+    );
   });
 
   it('should return true if group status is included in historyEventStatuses', () => {
@@ -31,9 +31,9 @@ describe(filterGroupsByStatus.name, () => {
       historyEventStatuses: ['COMPLETED'],
     };
 
-    expect(
-      filterGroupsByStatus(ACTIVITY_HISTORY_GROUP_COMPLETED, value)
-    ).toBe(true);
+    expect(filterGroupsByStatus(ACTIVITY_HISTORY_GROUP_COMPLETED, value)).toBe(
+      true
+    );
   });
 
   it('should return false if group status is not included in historyEventStatuses', () => {
@@ -82,8 +82,8 @@ describe(filterGroupsByStatus.name, () => {
       historyEventStatuses: ['PENDING'],
     };
 
-    expect(
-      filterGroupsByStatus(ACTIVITY_HISTORY_GROUP_COMPLETED, value)
-    ).toBe(false);
+    expect(filterGroupsByStatus(ACTIVITY_HISTORY_GROUP_COMPLETED, value)).toBe(
+      false
+    );
   });
 });
