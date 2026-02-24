@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import getFormattedEventsDuration from '@/views/workflow-history-v2/workflow-history-event-group-duration/helpers/get-formatted-events-duration';
+import formatTimeDiff from '@/utils/datetime/format-time-diff';
 
 import { type WorkflowSummaryFieldArgs } from '../workflow-summary-details/workflow-summary-details.types';
 
@@ -18,14 +18,13 @@ export default function WorkflowSummaryDuration({
   const [duration, setDuration] = useState<string>('-');
 
   useEffect(() => {
-    setDuration(
-      getFormattedEventsDuration(firstEventTime, closeEventTime, isOngoing)
-    );
+    if (!firstEventTime) return;
+
+    setDuration(formatTimeDiff(firstEventTime, closeEventTime, isOngoing));
+
     if (isOngoing) {
       const interval = setInterval(() => {
-        setDuration(
-          getFormattedEventsDuration(firstEventTime, closeEventTime, true)
-        );
+        setDuration(formatTimeDiff(firstEventTime, closeEventTime, true));
       }, 1000);
 
       return () => clearInterval(interval);

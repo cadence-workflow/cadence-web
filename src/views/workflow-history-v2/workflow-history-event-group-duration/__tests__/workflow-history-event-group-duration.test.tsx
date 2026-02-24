@@ -5,12 +5,12 @@ import dayjs from 'dayjs';
 import { render, screen, act } from '@/test-utils/rtl';
 
 import { WorkflowExecutionCloseStatus } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionCloseStatus';
+import formatTimeDiff from '@/utils/datetime/format-time-diff';
 
-import getFormattedEventsDuration from '../helpers/get-formatted-events-duration';
 import WorkflowHistoryEventGroupDuration from '../workflow-history-event-group-duration';
 import type { Props } from '../workflow-history-event-group-duration.types';
 
-jest.mock('../helpers/get-formatted-events-duration', () =>
+jest.mock('@/utils/datetime/format-time-diff', () =>
   jest.fn((startTime, endTime) =>
     String(dayjs(endTime ?? undefined).diff(dayjs(startTime), 'seconds'))
   )
@@ -37,7 +37,7 @@ const mockStartTime = new Date('2024-01-01T10:00:00Z').getTime();
 const mockCloseTime = new Date('2024-01-01T10:01:00Z').getTime();
 const mockNow = new Date('2024-01-01T10:02:00Z').getTime();
 
-describe('WorkflowHistoryEventGroupDuration', () => {
+describe(WorkflowHistoryEventGroupDuration.name, () => {
   beforeEach(() => {
     jest.useFakeTimers();
     jest.setSystemTime(mockNow);
@@ -113,7 +113,7 @@ describe('WorkflowHistoryEventGroupDuration', () => {
     });
     expect(screen.getByText('120')).toBeInTheDocument();
 
-    (getFormattedEventsDuration as jest.Mock).mockClear();
+    (formatTimeDiff as jest.Mock).mockClear();
     act(() => {
       jest.advanceTimersByTime(1000);
       jest.setSystemTime(new Date(mockNow + 1000));
@@ -125,7 +125,7 @@ describe('WorkflowHistoryEventGroupDuration', () => {
     });
     expect(screen.getByText('122')).toBeInTheDocument();
 
-    expect(getFormattedEventsDuration).toHaveBeenCalledTimes(2);
+    expect(formatTimeDiff).toHaveBeenCalledTimes(2);
   });
 
   it('uses workflow close time when close time is not provided', () => {
@@ -134,7 +134,7 @@ describe('WorkflowHistoryEventGroupDuration', () => {
       workflowCloseTime: mockCloseTime,
     });
 
-    expect(getFormattedEventsDuration).toHaveBeenCalledWith(
+    expect(formatTimeDiff).toHaveBeenCalledWith(
       mockStartTime,
       mockCloseTime,
       expect.any(Boolean)

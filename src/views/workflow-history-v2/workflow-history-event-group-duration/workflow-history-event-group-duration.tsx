@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 
+import formatTimeDiff from '@/utils/datetime/format-time-diff';
 import WorkflowHistoryRemainingDurationBadge from '@/views/workflow-history/workflow-history-remaining-duration-badge/workflow-history-remaining-duration-badge';
 
-import getFormattedEventsDuration from './helpers/get-formatted-events-duration';
 import { styled } from './workflow-history-event-group-duration.styles';
 import { type Props } from './workflow-history-event-group-duration.types';
 
@@ -28,18 +28,14 @@ export default function WorkflowHistoryEventGroupDuration({
   const isOngoing = !endTime && !hideDuration;
 
   const [duration, setDuration] = useState<string>(() =>
-    getFormattedEventsDuration(startTime ?? null, endTime, isOngoing)
+    formatTimeDiff(startTime ?? null, endTime, isOngoing)
   );
 
   useEffect(() => {
-    setDuration(
-      getFormattedEventsDuration(startTime ?? null, endTime, isOngoing)
-    );
+    setDuration(formatTimeDiff(startTime ?? null, endTime, isOngoing));
     if (isOngoing) {
       const interval = setInterval(() => {
-        setDuration(
-          getFormattedEventsDuration(startTime ?? null, endTime, true)
-        );
+        setDuration(formatTimeDiff(startTime ?? null, endTime, true));
       }, 1000);
 
       return () => clearInterval(interval);

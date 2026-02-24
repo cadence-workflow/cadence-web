@@ -4,6 +4,7 @@ import { Panel } from 'baseui/accordion';
 import { MdOutlineCircle } from 'react-icons/md';
 
 import formatDate from '@/utils/data-formatters/format-date';
+import formatTimeDiff from '@/utils/datetime/format-time-diff';
 import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
 import WorkflowHistoryEventStatusBadge from '@/views/workflow-history/workflow-history-event-status-badge/workflow-history-event-status-badge';
 import WorkflowHistoryGroupLabel from '@/views/workflow-history/workflow-history-group-label/workflow-history-group-label';
@@ -13,7 +14,6 @@ import workflowHistoryEventGroupCategoryColorsConfig from '../config/workflow-hi
 import useGroupDetailsEntries from '../hooks/use-group-details-entries';
 import WorkflowHistoryDetailsRow from '../workflow-history-details-row/workflow-history-details-row';
 import getEventGroupFilteringType from '../workflow-history-event-group/helpers/get-event-group-filtering-type';
-import getFormattedEventsDuration from '../workflow-history-event-group-duration/helpers/get-formatted-events-duration';
 import WorkflowHistoryGroupDetails from '../workflow-history-group-details/workflow-history-group-details';
 
 import {
@@ -81,7 +81,7 @@ export default function WorkflowHistoryUngroupedEvent({
           </div>
           <div>
             {eventInfo.event.eventTime && workflowStartTimeMs
-              ? getFormattedEventsDuration(
+              ? formatTimeDiff(
                   workflowStartTimeMs,
                   parseGrpcTimestamp(eventInfo.event.eventTime)
                 )
