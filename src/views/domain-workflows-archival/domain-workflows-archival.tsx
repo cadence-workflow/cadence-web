@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 
 import dayjs from 'dayjs';
 
-import getDayjsFromDateFilterValue from '@/components/date-filter-v2/helpers/get-dayjs-from-date-filter-value';
+import getDayjsFromDateFilterValue from '@/components/date-filter/helpers/get-dayjs-from-date-filter-value';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import { type DomainPageTabContentProps } from '@/views/domain-page/domain-page-content/domain-page-content.types';
 
