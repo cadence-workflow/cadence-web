@@ -13,7 +13,6 @@ const validEvents: Pick<SingleHistoryEvent, 'attributes'>[] = [
   { attributes: 'cancelTimerFailedEventAttributes' },
   { attributes: 'markerRecordedEventAttributes' },
   { attributes: 'upsertWorkflowSearchAttributesEventAttributes' },
-  { attributes: 'workflowExecutionSignaledEventAttributes' },
   { attributes: 'workflowExecutionStartedEventAttributes' },
   { attributes: 'workflowExecutionCompletedEventAttributes' },
   { attributes: 'workflowExecutionFailedEventAttributes' },
