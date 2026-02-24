@@ -18,3 +18,22 @@ export const localActivityMarkerEvent = {
   },
   attributes: 'markerRecordedEventAttributes',
 } as const satisfies LocalActivityHistoryEvent;
+
+export const failedLocalActivityMarkerEvent = {
+  eventId: '11',
+  eventTime: {
+    seconds: '1724747620',
+    nanos: 549377718,
+  },
+  version: '575102',
+  taskId: '22647173811',
+  markerRecordedEventAttributes: {
+    markerName: 'LocalActivity',
+    details: {
+      data: 'eyJhY3Rpdml0eUlkIjoiMiIsImFjdGl2aXR5VHlwZSI6ImZhaWxpbmdBY3Rpdml0eSIsImVyclJlYXNvbiI6ImFjdGl2aXR5IGZhaWxlZCB3aXRoIGVycm9yIn0=',
+    },
+    decisionTaskCompletedEventId: '9',
+    header: null,
+  },
+  attributes: 'markerRecordedEventAttributes',
+} as const satisfies LocalActivityHistoryEvent;
