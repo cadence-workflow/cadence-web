@@ -58,16 +58,20 @@ export function createLocalActivityEvent(
     ...localActivityMarkerEvent,
     markerRecordedEventAttributes: {
       ...localActivityMarkerEvent.markerRecordedEventAttributes,
-      details: {
-        data: Buffer.from(JSON.stringify(details)).toString('base64'),
-      },
-      header: {
-        fields: {
-          LocalActivityHeader: {
-            data: Buffer.from(JSON.stringify(header)).toString('base64'),
+      ...(details !== undefined && {
+        details: {
+          data: Buffer.from(JSON.stringify(details)).toString('base64'),
+        },
+      }),
+      ...(header !== undefined && {
+        header: {
+          fields: {
+            LocalActivityHeader: {
+              data: Buffer.from(JSON.stringify(header)).toString('base64'),
+            },
           },
         },
-      },
+      }),
     },
   };
 }

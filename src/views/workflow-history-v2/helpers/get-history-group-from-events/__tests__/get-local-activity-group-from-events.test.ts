@@ -163,8 +163,10 @@ describe(getLocalActivityGroupFromEvents.name, () => {
     expect(group.label).toBe('Local Activity');
   });
 
-  it('should return fallback label when details is an empty object', () => {
-    const events: LocalActivityHistoryEvent[] = [createLocalActivityEvent({})];
+  it('should return fallback label when details is undefined', () => {
+    const events: LocalActivityHistoryEvent[] = [
+      createLocalActivityEvent(undefined),
+    ];
     const group = getLocalActivityGroupFromEvents(events);
     expect(group.label).toBe('Local Activity');
   });
