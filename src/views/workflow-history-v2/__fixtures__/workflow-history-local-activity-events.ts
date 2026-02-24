@@ -49,3 +49,25 @@ export const failedLocalActivityMarkerEvent = {
   },
   attributes: 'markerRecordedEventAttributes',
 } as const satisfies LocalActivityHistoryEvent;
+
+export function createLocalActivityEvent(
+  details: unknown = null,
+  header: unknown = null
+): LocalActivityHistoryEvent {
+  return {
+    ...localActivityMarkerEvent,
+    markerRecordedEventAttributes: {
+      ...localActivityMarkerEvent.markerRecordedEventAttributes,
+      details: {
+        data: Buffer.from(JSON.stringify(details)).toString('base64'),
+      },
+      header: {
+        fields: {
+          LocalActivityHeader: {
+            data: Buffer.from(JSON.stringify(header)).toString('base64'),
+          },
+        },
+      },
+    },
+  };
+}
