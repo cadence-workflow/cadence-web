@@ -64,20 +64,12 @@ describe('formatTimeDiff', () => {
   });
 
   it('should remove ms from duration when hideMs is true', () => {
-    const duration = formatTimeDiff(
-      1726652232190,
-      1726652292194,
-      true
-    );
+    const duration = formatTimeDiff(1726652232190, 1726652292194, true);
     expect(duration).toEqual('mocked: 60s');
   });
 
   it('should not hide ms if there are no bigger units', () => {
-    const duration = formatTimeDiff(
-      1726652232190,
-      1726652232194,
-      true
-    );
+    const duration = formatTimeDiff(1726652232190, 1726652232194, true);
     expect(duration).toEqual('mocked: 0s 4ms');
   });
 });
