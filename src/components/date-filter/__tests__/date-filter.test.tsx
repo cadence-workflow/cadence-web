@@ -209,6 +209,74 @@ describe(DateFilter.name, () => {
     );
   });
 
+  it('does not restrict start time picker options when consecutive dates are selected', () => {
+    const { TimePicker } = jest.requireMock('baseui/timepicker');
+
+    setup({});
+    const datePicker = screen.getByPlaceholderText('Mock placeholder');
+
+    act(() => {
+      fireEvent.click(datePicker);
+    });
+
+    act(() => {
+      fireEvent.click(screen.getByLabelText(/May 13th 2023/));
+    });
+
+    act(() => {
+      fireEvent.click(screen.getByLabelText(/May 14th 2023/));
+    });
+
+    const startTimePickerCalls = TimePicker.mock.calls.filter(
+      (call: Array<TimePickerProps>) => {
+        const props = call[0];
+        return (
+          props.value?.getTime() === new Date('2023-05-13').getTime() &&
+          !props.disabled
+        );
+      }
+    );
+
+    expect(startTimePickerCalls.length).toBeGreaterThan(0);
+    startTimePickerCalls.forEach((call: Array<TimePickerProps>) => {
+      expect(call[0].maxTime).toBeUndefined();
+    });
+  });
+
+  it('restricts start time picker options when the same date is selected for start and end', () => {
+    const { TimePicker } = jest.requireMock('baseui/timepicker');
+
+    setup({});
+    const datePicker = screen.getByPlaceholderText('Mock placeholder');
+
+    act(() => {
+      fireEvent.click(datePicker);
+    });
+
+    act(() => {
+      fireEvent.click(screen.getByLabelText(/May 13th 2023/));
+    });
+
+    act(() => {
+      fireEvent.click(screen.getByLabelText(/May 13th 2023/));
+    });
+
+    const startTimePickerCalls = TimePicker.mock.calls.filter(
+      (call: Array<TimePickerProps>) => {
+        const props = call[0];
+        return (
+          props.value?.getTime() === new Date('2023-05-13').getTime() &&
+          !props.disabled
+        );
+      }
+    );
+
+    expect(startTimePickerCalls.length).toBeGreaterThan(0);
+    startTimePickerCalls.forEach((call: Array<TimePickerProps>) => {
+      expect(call[0].maxTime).toBeDefined();
+    });
+  });
+
   it('displays the correct format when using relative date values', () => {
     setup({
       overrides: {
