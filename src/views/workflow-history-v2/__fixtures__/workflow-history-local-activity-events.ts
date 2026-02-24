@@ -11,7 +11,13 @@ export const localActivityMarkerEvent = {
   markerRecordedEventAttributes: {
     markerName: 'LocalActivity',
     details: {
-      data: 'eyJhY3Rpdml0eUlkIjoiMSIsImFjdGl2aXR5VHlwZSI6ImxvY2FsQWN0aXZpdHkiLCJyZXN1bHQiOiJzdWNjZXNzIn0=',
+      data: Buffer.from(
+        JSON.stringify({
+          activityId: '1',
+          activityType: 'localActivity',
+          result: 'success',
+        })
+      ).toString('base64'),
     },
     decisionTaskCompletedEventId: '9',
     header: null,
@@ -30,7 +36,13 @@ export const failedLocalActivityMarkerEvent = {
   markerRecordedEventAttributes: {
     markerName: 'LocalActivity',
     details: {
-      data: 'eyJhY3Rpdml0eUlkIjoiMiIsImFjdGl2aXR5VHlwZSI6ImZhaWxpbmdBY3Rpdml0eSIsImVyclJlYXNvbiI6ImFjdGl2aXR5IGZhaWxlZCB3aXRoIGVycm9yIn0=',
+      data: Buffer.from(
+        JSON.stringify({
+          activityId: '2',
+          activityType: 'failingActivity',
+          errReason: 'activity failed with error',
+        })
+      ).toString('base64'),
     },
     decisionTaskCompletedEventId: '9',
     header: null,
