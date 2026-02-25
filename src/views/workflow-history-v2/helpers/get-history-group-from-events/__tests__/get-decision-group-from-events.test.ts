@@ -340,19 +340,34 @@ describe('getDecisionGroupFromEvents', () => {
     ];
     const group = getDecisionGroupFromEvents(events);
 
-    // The failed event should have negativeFields
     const failedEventMetadata = group.eventsMetadata.find(
-      (metadata) => metadata.status === 'FAILED'
+      (metadata) => metadata.label === 'Failed'
     );
-    expect(failedEventMetadata?.negativeFields).toEqual(['reason', 'details']);
+    expect(failedEventMetadata?.negativeFields).toEqual([
+      'reason',
+      'details',
+      'cause',
+    ]);
 
-    // Other events should not have negativeFields
     const otherEventsMetadata = group.eventsMetadata.filter(
-      (metadata) => metadata.status !== 'FAILED'
+      (metadata) => metadata.label !== 'Failed'
     );
     otherEventsMetadata.forEach((metadata) => {
       expect(metadata.negativeFields).toBeUndefined();
     });
+  });
+
+  it('should include negativeFields for timed out decision events', () => {
+    const events: ExtendedDecisionHistoryEvent[] = [
+      scheduleDecisionTaskEvent,
+      timeoutDecisionTaskEvent,
+    ];
+    const group = getDecisionGroupFromEvents(events);
+
+    const timedOutEventMetadata = group.eventsMetadata.find(
+      (metadata) => metadata.label === 'Timed out'
+    );
+    expect(timedOutEventMetadata?.negativeFields).toEqual(['cause']);
   });
 
   it('should include summaryFields for scheduled decision events', () => {
@@ -363,22 +378,35 @@ describe('getDecisionGroupFromEvents', () => {
     ];
     const group = getDecisionGroupFromEvents(events);
 
-    // The scheduled event should have summaryFields
     const scheduledEventMetadata = group.eventsMetadata.find(
       (metadata) => metadata.label === 'Scheduled'
     );
-    expect(scheduledEventMetadata?.summaryFields).toEqual([
-      'startToCloseTimeoutSeconds',
-      'attempt',
-    ]);
+    expect(scheduledEventMetadata?.summaryFields).toEqual(['attempt']);
 
-    // Other events should not have summaryFields
     const otherEventsMetadata = group.eventsMetadata.filter(
       (metadata) => metadata.label !== 'Scheduled'
     );
     otherEventsMetadata.forEach((metadata) => {
       expect(metadata.summaryFields).toBeUndefined();
     });
+  });
+
+  it('should include summaryFields for failed decision events', () => {
+    const events: ExtendedDecisionHistoryEvent[] = [
+      scheduleDecisionTaskEvent,
+      startDecisionTaskEvent,
+      failedDecisionTaskEvent,
+    ];
+    const group = getDecisionGroupFromEvents(events);
+
+    const failedEventMetadata = group.eventsMetadata.find(
+      (metadata) => metadata.label === 'Failed'
+    );
+    expect(failedEventMetadata?.summaryFields).toEqual([
+      'cause',
+      'reason',
+      'details',
+    ]);
   });
 
   it('should include summaryFields for pending decision start events', () => {
@@ -394,13 +422,9 @@ describe('getDecisionGroupFromEvents', () => {
     );
     expect(pendingStartEventMetadata?.summaryFields).toEqual(['attempt']);
 
-    // Other events should not have the same summaryFields
     const scheduledEventMetadata = group.eventsMetadata.find(
       (metadata) => metadata.label === 'Scheduled'
     );
-    expect(scheduledEventMetadata?.summaryFields).toEqual([
-      'startToCloseTimeoutSeconds',
-      'attempt',
-    ]);
+    expect(scheduledEventMetadata?.summaryFields).toEqual(['attempt']);
   });
 });

@@ -117,16 +117,15 @@ export default function getDecisionGroupFromEvents(
 
   const eventToNegativeFields: HistoryGroupEventToNegativeFieldsMap<DecisionHistoryGroup> =
     {
-      decisionTaskFailedEventAttributes: ['reason', 'details'],
+      decisionTaskFailedEventAttributes: ['reason', 'details', 'cause'],
+      decisionTaskTimedOutEventAttributes: ['cause'],
     };
 
   const eventToSummaryFields: HistoryGroupEventToSummaryFieldsMap<DecisionHistoryGroup> =
     {
-      decisionTaskScheduledEventAttributes: [
-        'startToCloseTimeoutSeconds',
-        'attempt',
-      ],
+      decisionTaskScheduledEventAttributes: ['attempt'],
       pendingDecisionTaskStartEventAttributes: ['attempt'],
+      decisionTaskFailedEventAttributes: ['cause', 'reason', 'details'],
     };
 
   return {
