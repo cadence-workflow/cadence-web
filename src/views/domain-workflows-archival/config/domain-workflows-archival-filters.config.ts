@@ -2,9 +2,9 @@ import { createElement } from 'react';
 
 import omit from 'lodash/omit';
 
-import DateFilterV2 from '@/components/date-filter-v2/date-filter-v2';
-import { type DateFilterValue } from '@/components/date-filter-v2/date-filter-v2.types';
-import stringifyDateFilterValue from '@/components/date-filter-v2/helpers/stringify-date-filter-value';
+import DateFilter from '@/components/date-filter/date-filter';
+import { type DateFilterValue } from '@/components/date-filter/date-filter.types';
+import stringifyDateFilterValue from '@/components/date-filter/helpers/stringify-date-filter-value';
 import ListFilterMulti from '@/components/list-filter-multi/list-filter-multi';
 import { type PageFilterConfig } from '@/components/page-filters/page-filters.types';
 import type domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
@@ -53,7 +53,7 @@ const domainWorkflowsArchivalFiltersConfig: [
         : undefined,
     }),
     component: ({ value, setValue }) =>
-      createElement(DateFilterV2, {
+      createElement(DateFilter, {
         label: 'Time range',
         placeholder: 'Select time range',
         dates: {

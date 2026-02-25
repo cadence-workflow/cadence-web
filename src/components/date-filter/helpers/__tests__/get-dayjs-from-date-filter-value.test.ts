@@ -1,7 +1,7 @@
 import dayjs from '@/utils/datetime/dayjs';
 
-import { DATE_FILTER_RELATIVE_VALUES } from '../../date-filter-v2.constants';
-import { type RelativeDateFilterValue } from '../../date-filter-v2.types';
+import { DATE_FILTER_RELATIVE_VALUES } from '../../date-filter.constants';
+import { type RelativeDateFilterValue } from '../../date-filter.types';
 import getDayjsFromDateFilterValue from '../get-dayjs-from-date-filter-value';
 
 describe('getDayjsFromDateFilterValue', () => {

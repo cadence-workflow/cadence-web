@@ -9,17 +9,17 @@ import { MdClose } from 'react-icons/md';
 
 import dayjs from '@/utils/datetime/dayjs';
 
-import { DATE_FILTER_RELATIVE_VALUES } from './date-filter-v2.constants';
-import { overrides, styled } from './date-filter-v2.styles';
+import { DATE_FILTER_RELATIVE_VALUES } from './date-filter.constants';
+import { overrides, styled } from './date-filter.styles';
 import {
   type Props,
   type DateFilterRange,
   type RelativeDateFilterValue,
-} from './date-filter-v2.types';
+} from './date-filter.types';
 import isRelativeDateFilterValue from './helpers/is-relative-date-filter-value';
 import stringifyDateFilterValue from './helpers/stringify-date-filter-value';
 
-export default function DateFilterV2({
+export default function DateFilter({
   label,
   placeholder,
   dates,

@@ -1,4 +1,4 @@
-import { type DATE_FILTER_RELATIVE_VALUES } from './date-filter-v2.constants';
+import { type DATE_FILTER_RELATIVE_VALUES } from './date-filter.constants';
 
 export type RelativeDurationConfig = {
   label: string;

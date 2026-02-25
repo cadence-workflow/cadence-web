@@ -1,4 +1,4 @@
-import { type RelativeDurationConfig } from './date-filter-v2.types';
+import { type RelativeDurationConfig } from './date-filter.types';
 
 export const DATE_FILTER_RELATIVE_VALUES = {
   'now-5m': { label: 'Last 5 minutes', durationSeconds: 5 * 60 },
