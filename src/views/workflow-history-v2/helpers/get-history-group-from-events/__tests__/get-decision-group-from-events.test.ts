@@ -403,10 +403,24 @@ describe('getDecisionGroupFromEvents', () => {
       (metadata) => metadata.label === 'Failed'
     );
     expect(failedEventMetadata?.summaryFields).toEqual([
-      'cause',
       'reason',
       'details',
+      'cause',
     ]);
+  });
+
+  it('should include summaryFields for timed out decision events', () => {
+    const events: ExtendedDecisionHistoryEvent[] = [
+      scheduleDecisionTaskEvent,
+      startDecisionTaskEvent,
+      timeoutDecisionTaskEvent,
+    ];
+    const group = getDecisionGroupFromEvents(events);
+
+    const timeoutEventMetadata = group.eventsMetadata.find(
+      (metadata) => metadata.label === 'Timed out'
+    );
+    expect(timeoutEventMetadata?.summaryFields).toEqual(['cause']);
   });
 
   it('should include summaryFields for pending decision start events', () => {

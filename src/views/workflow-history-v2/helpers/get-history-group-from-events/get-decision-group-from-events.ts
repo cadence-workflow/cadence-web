@@ -125,7 +125,8 @@ export default function getDecisionGroupFromEvents(
     {
       decisionTaskScheduledEventAttributes: ['attempt'],
       pendingDecisionTaskStartEventAttributes: ['attempt'],
-      decisionTaskFailedEventAttributes: ['cause', 'reason', 'details'],
+      decisionTaskFailedEventAttributes: ['reason', 'details', 'cause'],
+      decisionTaskTimedOutEventAttributes: ['cause'],
     };
 
   return {
