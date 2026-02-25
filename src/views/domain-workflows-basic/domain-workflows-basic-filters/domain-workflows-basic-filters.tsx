@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 
-import usePageFilters from '@/components/page-filters/hooks/use-page-filters';
 import PageFiltersFields from '@/components/page-filters/page-filters-fields/page-filters-fields';
 import PageFiltersSearch from '@/components/page-filters/page-filters-search/page-filters-search';
 import PageFiltersToggle from '@/components/page-filters/page-filters-toggle/page-filters-toggle';
@@ -11,15 +10,15 @@ import domainWorkflowsBasicFiltersConfig from '../config/domain-workflows-basic-
 import DOMAIN_WORKFLOWS_BASIC_SEARCH_DEBOUNCE_MS from '../config/domain-workflows-basic-search-debounce-ms.config';
 
 import { styled } from './domain-workflows-basic-filters.styles';
+import { type Props } from './domain-workflows-basic-filters.types';
 
-export default function DomainWorkflowsBasicFilters() {
+export default function DomainWorkflowsBasicFilters({
+  resetAllFilters,
+  activeFiltersCount,
+  queryParams,
+  setQueryParams,
+}: Props) {
   const [areFiltersShown, setAreFiltersShown] = useState(true);
-
-  const { resetAllFilters, activeFiltersCount, queryParams, setQueryParams } =
-    usePageFilters({
-      pageFiltersConfig: domainWorkflowsBasicFiltersConfig,
-      pageQueryParamsConfig: domainPageQueryParamsConfig,
-    });
 
   return (
     <styled.HeaderContainer>
