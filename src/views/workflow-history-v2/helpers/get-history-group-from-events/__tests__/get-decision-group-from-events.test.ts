@@ -367,7 +367,7 @@ describe('getDecisionGroupFromEvents', () => {
     const timedOutEventMetadata = group.eventsMetadata.find(
       (metadata) => metadata.label === 'Timed out'
     );
-    expect(timedOutEventMetadata?.negativeFields).toEqual(['cause']);
+    expect(timedOutEventMetadata?.negativeFields).toEqual(['reason', 'cause']);
   });
 
   it('should include summaryFields for scheduled decision events', () => {
@@ -420,7 +420,7 @@ describe('getDecisionGroupFromEvents', () => {
     const timeoutEventMetadata = group.eventsMetadata.find(
       (metadata) => metadata.label === 'Timed out'
     );
-    expect(timeoutEventMetadata?.summaryFields).toEqual(['cause']);
+    expect(timeoutEventMetadata?.summaryFields).toEqual(['reason', 'cause']);
   });
 
   it('should include summaryFields for pending decision start events', () => {
