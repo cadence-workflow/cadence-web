@@ -35,10 +35,12 @@ jest.mock('baseui/popover', () => {
 
 jest.mock('baseui/timepicker', () => ({
   TimePicker: jest.fn(
-    ({ value, onChange, disabled }: TimePickerProps) =>
+    ({ value, onChange, disabled, minTime, maxTime }: TimePickerProps) =>
       onChange && (
         <input
           data-testid="time-picker"
+          data-mintime={minTime?.getTime() ?? 'none'}
+          data-maxtime={maxTime?.getTime() ?? 'none'}
           value={value?.toTimeString() ?? ''}
           onChange={(e) => onChange(new Date(e.target.value))}
           disabled={disabled}
@@ -209,9 +211,31 @@ describe(DateFilter.name, () => {
     );
   });
 
-  it('does not restrict start time picker options when consecutive dates are selected', () => {
-    const { TimePicker } = jest.requireMock('baseui/timepicker');
+  it('restricts start time picker options when the same date is selected for start and end', () => {
+    setup({});
+    const datePicker = screen.getByPlaceholderText('Mock placeholder');
 
+    act(() => {
+      fireEvent.click(datePicker);
+    });
+
+    act(() => {
+      fireEvent.click(screen.getByLabelText(/May 13th 2023/));
+    });
+
+    act(() => {
+      fireEvent.click(screen.getByLabelText(/May 13th 2023/));
+    });
+
+    const timePickers = screen.getAllByTestId('time-picker');
+    const startTimePicker = timePickers[0];
+
+    expect(Number(startTimePicker.getAttribute('data-maxtime'))).toBe(
+      new Date('2023-05-13T23:59:59.999Z').getTime()
+    );
+  });
+
+  it('does not restrict start time picker options when consecutive dates are selected', () => {
     setup({});
     const datePicker = screen.getByPlaceholderText('Mock placeholder');
 
@@ -227,54 +251,10 @@ describe(DateFilter.name, () => {
       fireEvent.click(screen.getByLabelText(/May 14th 2023/));
     });
 
-    const startTimePickerCalls = TimePicker.mock.calls.filter(
-      (call: Array<TimePickerProps>) => {
-        const props = call[0];
-        return (
-          props.value?.getTime() === new Date('2023-05-13').getTime() &&
-          !props.disabled
-        );
-      }
-    );
+    const timePickers = screen.getAllByTestId('time-picker');
+    const startTimePicker = timePickers[0];
 
-    expect(startTimePickerCalls.length).toBeGreaterThan(0);
-    startTimePickerCalls.forEach((call: Array<TimePickerProps>) => {
-      expect(call[0].maxTime).toBeUndefined();
-    });
-  });
-
-  it('restricts start time picker options when the same date is selected for start and end', () => {
-    const { TimePicker } = jest.requireMock('baseui/timepicker');
-
-    setup({});
-    const datePicker = screen.getByPlaceholderText('Mock placeholder');
-
-    act(() => {
-      fireEvent.click(datePicker);
-    });
-
-    act(() => {
-      fireEvent.click(screen.getByLabelText(/May 13th 2023/));
-    });
-
-    act(() => {
-      fireEvent.click(screen.getByLabelText(/May 13th 2023/));
-    });
-
-    const startTimePickerCalls = TimePicker.mock.calls.filter(
-      (call: Array<TimePickerProps>) => {
-        const props = call[0];
-        return (
-          props.value?.getTime() === new Date('2023-05-13').getTime() &&
-          !props.disabled
-        );
-      }
-    );
-
-    expect(startTimePickerCalls.length).toBeGreaterThan(0);
-    startTimePickerCalls.forEach((call: Array<TimePickerProps>) => {
-      expect(call[0].maxTime).toBeDefined();
-    });
+    expect(startTimePicker.getAttribute('data-maxtime')).toBe('none');
   });
 
   it('displays the correct format when using relative date values', () => {
