@@ -177,7 +177,13 @@ export default function DateFilter({
                       nullable
                       disabled={!tempDates.start || !tempDates.end}
                       value={tempDates.start}
-                      maxTime={tempDates.end}
+                      maxTime={
+                        tempDates.start &&
+                        tempDates.end &&
+                        dayjs(tempDates.start).isSame(tempDates.end, 'day')
+                          ? tempDates.end
+                          : undefined
+                      }
                       error={areTempDatesInvalid}
                       onChange={(newStart) => {
                         setTempDates((oldDates) => ({
@@ -199,7 +205,13 @@ export default function DateFilter({
                       nullable
                       disabled={!tempDates.start || !tempDates.end}
                       value={tempDates.end}
-                      minTime={tempDates.start}
+                      minTime={
+                        tempDates.start &&
+                        tempDates.end &&
+                        dayjs(tempDates.start).isSame(tempDates.end, 'day')
+                          ? tempDates.start
+                          : undefined
+                      }
                       error={areTempDatesInvalid}
                       onChange={(newEnd) =>
                         setTempDates((oldDates) => ({
