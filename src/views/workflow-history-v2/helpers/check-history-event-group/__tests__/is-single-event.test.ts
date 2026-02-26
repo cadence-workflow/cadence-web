@@ -3,6 +3,7 @@ import differenceBy from 'lodash/differenceBy';
 import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
 
 import { allWorkflowEventTypesAttrs } from '../../../__fixtures__/all-workflow-event-types-attributes';
+import { localActivityMarkerEvent } from '../../../__fixtures__/workflow-history-local-activity-events';
 import type { SingleHistoryEvent } from '../../../workflow-history-v2.types';
 import isSingleEvent from '../is-single-event';
 
@@ -49,5 +50,9 @@ describe('isSingleEvent', () => {
     expect(isSingleEvent(undefined)).toBe(false);
     //@ts-expect-error {} is not of type HistoryEvent
     expect(isSingleEvent({})).toBe(false);
+  });
+
+  it('should return false for local activity marker events', () => {
+    expect(isSingleEvent(localActivityMarkerEvent)).toBe(false);
   });
 });

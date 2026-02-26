@@ -13,6 +13,7 @@ import type {
 import isChildWorkflowExecutionEvent from './check-history-event-group/is-child-workflow-execution-event';
 import isExtendedActivityEvent from './check-history-event-group/is-extended-activity-event';
 import isExtendedDecisionEvent from './check-history-event-group/is-extended-decision-event';
+import isLocalActivityEvent from './check-history-event-group/is-local-activity-event';
 import isRequestCancelExternalWorkflowExecutionEvent from './check-history-event-group/is-request-cancel-external-workflow-execution-event';
 import isSignalExternalWorkflowExecutionEvent from './check-history-event-group/is-signal-external-workflow-execution-event';
 import isSingleEvent from './check-history-event-group/is-single-event';
@@ -22,6 +23,7 @@ import getHistoryEventGroupId from './get-history-event-group-id';
 import getActivityGroupFromEvents from './get-history-group-from-events/get-activity-group-from-events';
 import getChildWorkflowExecutionGroupFromEvents from './get-history-group-from-events/get-child-workflow-execution-group-from-events';
 import getDecisionGroupFromEvents from './get-history-group-from-events/get-decision-group-from-events';
+import getLocalActivityGroupFromEvents from './get-history-group-from-events/get-local-activity-group-from-events';
 import getRequestCancelExternalWorkflowExecutionGroupFromEvents from './get-history-group-from-events/get-request-cancel-external-workflow-execution-group-from-events';
 import getSignalExternalWorkflowExecutionGroupFromEvents from './get-history-group-from-events/get-signal-external-workflow-execution-group-from-events';
 import getSingleEventGroupFromEvents from './get-history-group-from-events/get-single-event-group-from-events';
@@ -297,6 +299,8 @@ export default class WorkflowHistoryGrouper {
 
       if (updatedEventsArr.every(isExtendedActivityEvent)) {
         groups[groupId] = getActivityGroupFromEvents(updatedEventsArr);
+      } else if (updatedEventsArr.every(isLocalActivityEvent)) {
+        groups[groupId] = getLocalActivityGroupFromEvents(updatedEventsArr);
       } else if (updatedEventsArr.every(isExtendedDecisionEvent)) {
         // If there are more than 2 decision events, filter out the pending decision task start event
         // Pending decision task start event is only added to the group when the scheduled decision task event is added
