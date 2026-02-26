@@ -1,7 +1,7 @@
 import formatDuration from '@/utils/data-formatters/format-duration';
 import dayjs from '@/utils/datetime/dayjs';
 
-export default function getFormattedEventsDuration(
+export default function formatTimeDiff(
   startTime: Date | string | number | null,
   endTime: Date | string | number | null | undefined,
   hideMs: boolean = false
