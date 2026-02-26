@@ -48,6 +48,12 @@ const workflowHistoryDetailsRowParsersConfig: Array<DetailsRowItemParser> = [
     icon: null,
     hasClickableContent: true,
   },
+  {
+    name: 'Hide "reason" and "cause" fields if they are empty',
+    matcher: (name) => new RegExp('(reason|cause)$').test(name),
+    hide: (_, value) => !value,
+    icon: null,
+  },
 ];
 
 export default workflowHistoryDetailsRowParsersConfig;
