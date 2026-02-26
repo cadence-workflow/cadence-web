@@ -5,8 +5,8 @@ import { type TimePickerProps } from 'baseui/timepicker';
 
 import { render, screen, fireEvent, act, waitFor } from '@/test-utils/rtl';
 
-import DateFilterV2 from '../date-filter-v2';
-import { type DateFilterRange } from '../date-filter-v2.types';
+import DateFilter from '../date-filter';
+import { type DateFilterRange } from '../date-filter.types';
 
 jest.useFakeTimers().setSystemTime(new Date('2023-05-25'));
 
@@ -52,7 +52,7 @@ const mockDateOverrides: DateFilterRange = {
   end: new Date('2023-05-24T00:00:00.000Z'),
 };
 
-describe(DateFilterV2.name, () => {
+describe(DateFilter.name, () => {
   it('displays the date filter component with placeholder when no dates are provided', () => {
     setup({});
     expect(screen.getByPlaceholderText('Mock placeholder')).toBeInTheDocument();
@@ -247,7 +247,7 @@ function setup({ overrides }: { overrides?: Partial<DateFilterRange> }) {
   const mockOnChangeDates = jest.fn();
 
   const result = render(
-    <DateFilterV2
+    <DateFilter
       label="Mock label"
       placeholder="Mock placeholder"
       dates={{

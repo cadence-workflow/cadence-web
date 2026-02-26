@@ -1,4 +1,4 @@
-import { DATE_FILTER_RELATIVE_VALUES } from '../../date-filter-v2.constants';
+import { DATE_FILTER_RELATIVE_VALUES } from '../../date-filter.constants';
 import isRelativeDateFilterValue from '../is-relative-date-filter-value';
 
 describe('isRelativeDateFilterValue', () => {

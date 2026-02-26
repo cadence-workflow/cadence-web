@@ -1,5 +1,5 @@
-import { type DateFilterValue } from '@/components/date-filter-v2/date-filter-v2.types';
-import parseDateFilterValue from '@/components/date-filter-v2/helpers/parse-date-filter-value';
+import { type DateFilterValue } from '@/components/date-filter/date-filter.types';
+import parseDateFilterValue from '@/components/date-filter/helpers/parse-date-filter-value';
 import {
   type PageQueryParamMultiValue,
   type PageQueryParam,

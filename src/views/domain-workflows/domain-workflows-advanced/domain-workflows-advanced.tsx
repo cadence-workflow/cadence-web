@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import getDayjsFromDateFilterValue from '@/components/date-filter-v2/helpers/get-dayjs-from-date-filter-value';
+import getDayjsFromDateFilterValue from '@/components/date-filter/helpers/get-dayjs-from-date-filter-value';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import dayjs from '@/utils/datetime/dayjs';
 import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';

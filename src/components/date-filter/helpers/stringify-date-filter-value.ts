@@ -1,6 +1,6 @@
 import dayjs from '@/utils/datetime/dayjs';
 
-import { type DateFilterValue } from '../date-filter-v2.types';
+import { type DateFilterValue } from '../date-filter.types';
 
 export default function stringifyDateFilterValue(
   v: DateFilterValue,
