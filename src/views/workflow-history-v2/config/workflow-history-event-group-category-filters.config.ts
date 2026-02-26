@@ -7,7 +7,8 @@ const workflowHistoryEventGroupCategoryFiltersConfig: Record<
   EventGroupCategory,
   EventGroupCategoryConfig
 > = {
-  ACTIVITY: 'Activity',
+  ACTIVITY: (g) =>
+    g.groupType === 'Activity' || g.groupType === 'LocalActivity',
   CHILDWORKFLOW: 'ChildWorkflowExecution',
   DECISION: 'Decision',
   TIMER: 'Timer',

@@ -1,5 +1,5 @@
-import { DATE_FILTER_RELATIVE_VALUES } from '../date-filter-v2.constants';
-import { type RelativeDateFilterValue } from '../date-filter-v2.types';
+import { DATE_FILTER_RELATIVE_VALUES } from '../date-filter.constants';
+import { type RelativeDateFilterValue } from '../date-filter.types';
 
 export default function isRelativeDateFilterValue(
   v: any

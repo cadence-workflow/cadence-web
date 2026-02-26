@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 
-import getDayjsFromDateFilterValue from '@/components/date-filter-v2/helpers/get-dayjs-from-date-filter-value';
+import getDayjsFromDateFilterValue from '@/components/date-filter/helpers/get-dayjs-from-date-filter-value';
 import useMergedInfiniteQueries from '@/hooks/use-merged-infinite-queries/use-merged-infinite-queries';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import { type ListWorkflowsBasicRequestQueryParams } from '@/route-handlers/list-workflows-basic/list-workflows-basic.types';

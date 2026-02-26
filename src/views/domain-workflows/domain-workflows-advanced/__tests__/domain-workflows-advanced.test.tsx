@@ -5,7 +5,7 @@ import { mockDomainPageQueryParamsValues } from '@/views/domain-page/__fixtures_
 import DomainWorkflowsAdvanced from '../domain-workflows-advanced';
 
 jest.mock(
-  '@/components/date-filter-v2/helpers/get-dayjs-from-date-filter-value',
+  '@/components/date-filter/helpers/get-dayjs-from-date-filter-value',
   () =>
     jest.fn(() => ({
       toISOString: () => '2024-03-20T00:00:00.000Z',
