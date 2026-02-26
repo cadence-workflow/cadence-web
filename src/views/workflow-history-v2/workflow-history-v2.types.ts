@@ -19,6 +19,7 @@ export type WorkflowEventStatus =
 
 export type HistoryEventGroupType =
   | 'Activity'
+  | 'LocalActivity'
   | 'Decision'
   | 'Timer'
   | 'ChildWorkflowExecution'
@@ -172,8 +173,14 @@ export type SingleEventHistoryGroup = BaseHistoryGroup & {
   events: SingleHistoryEvent[];
 };
 
+export type LocalActivityHistoryGroup = BaseHistoryGroup & {
+  groupType: 'LocalActivity';
+  events: LocalActivityHistoryEvent[];
+};
+
 export type HistoryEventsGroup =
   | ActivityHistoryGroup
+  | LocalActivityHistoryGroup
   | DecisionHistoryGroup
   | TimerHistoryGroup
   | ChildWorkflowExecutionHistoryGroup
@@ -239,6 +246,10 @@ export type RequestCancelExternalWorkflowExecutionHistoryEvent =
 
 export type WorkflowSignaledHistoryEvent = HistoryEvent & {
   attributes: 'workflowExecutionSignaledEventAttributes';
+};
+
+export type LocalActivityHistoryEvent = HistoryEvent & {
+  attributes: 'markerRecordedEventAttributes';
 };
 
 export type SingleHistoryEvent = HistoryEvent & {
