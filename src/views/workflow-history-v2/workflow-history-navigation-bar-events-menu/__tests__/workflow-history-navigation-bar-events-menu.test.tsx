@@ -53,12 +53,12 @@ describe(WorkflowHistoryNavigationBarEventsMenu.name, () => {
         {
           eventId: 'event-1',
           label: 'Event 1',
-          type: 'ACTIVITY',
+          category: 'ACTIVITY',
         },
         {
           eventId: 'event-2',
           label: 'Event 2',
-          type: 'DECISION',
+          category: 'DECISION',
         },
       ],
     });
@@ -76,7 +76,7 @@ describe(WorkflowHistoryNavigationBarEventsMenu.name, () => {
         {
           eventId: 'event-1',
           label: 'Event 1',
-          type: 'ACTIVITY',
+          category: 'ACTIVITY',
         },
       ],
     });
@@ -98,7 +98,7 @@ describe(WorkflowHistoryNavigationBarEventsMenu.name, () => {
       menuItems: Array.from({ length: 15 }, (_, i) => ({
         eventId: `event-${i + 1}`,
         label: `Event ${i + 1}`,
-        type: 'ACTIVITY',
+        category: 'ACTIVITY',
       })),
     });
 
@@ -112,7 +112,7 @@ describe(WorkflowHistoryNavigationBarEventsMenu.name, () => {
       menuItems: Array.from({ length: 10 }, (_, i) => ({
         eventId: `event-${i + 1}`,
         label: `Event ${i + 1}`,
-        type: 'ACTIVITY',
+        category: 'ACTIVITY',
       })),
     });
 
@@ -128,7 +128,7 @@ describe(WorkflowHistoryNavigationBarEventsMenu.name, () => {
       menuItems: Array.from({ length: 15 }, (_, i) => ({
         eventId: `event-${i + 1}`,
         label: `Event ${i + 1}`,
-        type: 'ACTIVITY',
+        category: 'ACTIVITY',
       })),
     });
 
@@ -144,7 +144,7 @@ describe(WorkflowHistoryNavigationBarEventsMenu.name, () => {
       menuItems: Array.from({ length: 15 }, (_, i) => ({
         eventId: `event-${i + 1}`,
         label: `Event ${i + 1}`,
-        type: 'ACTIVITY',
+        category: 'ACTIVITY',
       })),
     });
 
@@ -170,7 +170,7 @@ function setup(overrides: Partial<Props> = {}) {
         {
           eventId: 'event-1',
           label: 'Event 1',
-          type: 'ACTIVITY',
+          category: 'ACTIVITY',
         },
       ]}
       onClickEvent={mockOnClickEvent}

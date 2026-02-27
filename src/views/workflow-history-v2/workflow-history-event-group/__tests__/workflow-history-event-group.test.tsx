@@ -89,10 +89,6 @@ jest.mock(
   () => jest.fn(() => <span>1m 30s</span>)
 );
 
-jest.mock('../helpers/get-event-group-filtering-type', () =>
-  jest.fn(() => 'ACTIVITY')
-);
-
 const mockActivityEventGroupWithMetadata: HistoryEventsGroup = {
   ...mockActivityEventGroup,
   eventsMetadata: [

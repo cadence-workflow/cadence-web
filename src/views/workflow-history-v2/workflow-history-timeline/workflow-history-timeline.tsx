@@ -168,7 +168,7 @@ export default function WorkflowHistoryTimeline({
                 const isEven = index % 2 === 0;
                 const isRunning = row.group.hasMissingEvents ?? false;
                 const color =
-                  workflowHistoryEventGroupCategoryColorsConfig[row.groupType]
+                  workflowHistoryEventGroupCategoryColorsConfig[row.category]
                     .content;
 
                 const rowStart = xScale(row.startTimeMs - workflowStartTimeMs);

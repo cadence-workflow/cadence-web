@@ -14,11 +14,6 @@ import { type EventGroupEntry } from '../../workflow-history-v2.types';
 import WorkflowHistoryTimeline from '../workflow-history-timeline';
 
 jest.mock(
-  '../../workflow-history-event-group/helpers/get-event-group-filtering-type',
-  () => jest.fn(() => 'ACTIVITY')
-);
-
-jest.mock(
   '../../workflow-history-timeline-event-group/workflow-history-timeline-event-group',
   () =>
     jest.fn(

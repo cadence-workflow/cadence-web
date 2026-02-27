@@ -12,8 +12,8 @@ import WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflo
 import workflowHistoryEventGroupCategoryColorsConfig from '../config/workflow-history-event-group-category-colors.config';
 import useGroupDetailsEntries from '../hooks/use-group-details-entries';
 import WorkflowHistoryDetailsRow from '../workflow-history-details-row/workflow-history-details-row';
-import getEventGroupFilteringType from '../workflow-history-event-group/helpers/get-event-group-filtering-type';
 import WorkflowHistoryEventStatusBadge from '../workflow-history-event-status-badge/workflow-history-event-status-badge';
+import { WORKFLOW_HISTORY_EVENT_GROUP_TYPE_TO_CATEGORY_MAP } from '../workflow-history-filters-menu/workflow-history-filters-menu.constants';
 import WorkflowHistoryGroupDetails from '../workflow-history-group-details/workflow-history-group-details';
 
 import {
@@ -32,9 +32,12 @@ export default function WorkflowHistoryUngroupedEvent({
   toggleIsExpanded,
   onClickShowInTimeline,
 }: Props) {
-  const eventFilteringType = getEventGroupFilteringType(eventInfo.eventGroup);
+  const eventGroupCategory =
+    WORKFLOW_HISTORY_EVENT_GROUP_TYPE_TO_CATEGORY_MAP[
+      eventInfo.eventGroup.groupType
+    ];
 
-  const overrides = getOverrides(eventFilteringType, animateOnEnter);
+  const overrides = getOverrides(eventGroupCategory, animateOnEnter);
 
   const handleReset = useCallback(() => {
     if (onReset) {
@@ -55,7 +58,7 @@ export default function WorkflowHistoryUngroupedEvent({
         <styled.HeaderContent>
           <MdOutlineCircle
             color={
-              workflowHistoryEventGroupCategoryColorsConfig[eventFilteringType]
+              workflowHistoryEventGroupCategoryColorsConfig[eventGroupCategory]
                 .content
             }
           />

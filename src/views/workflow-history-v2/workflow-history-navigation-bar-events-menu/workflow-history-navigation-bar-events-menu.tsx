@@ -40,7 +40,7 @@ export default function WorkflowHistoryNavigationBarEventsMenu({
     <StatefulPopover
       content={({ close }) => (
         <styled.MenuItemsContainer>
-          {paginatedItems.map(({ eventId, label, type }) => (
+          {paginatedItems.map(({ eventId, label, category }) => (
             <styled.MenuItemContainer key={eventId}>
               <Button
                 onClick={() => {
@@ -53,7 +53,7 @@ export default function WorkflowHistoryNavigationBarEventsMenu({
                 startEnhancer={
                   <MenuItemIcon
                     color={
-                      workflowHistoryEventGroupCategoryColorsConfig[type]
+                      workflowHistoryEventGroupCategoryColorsConfig[category]
                         .content
                     }
                   />

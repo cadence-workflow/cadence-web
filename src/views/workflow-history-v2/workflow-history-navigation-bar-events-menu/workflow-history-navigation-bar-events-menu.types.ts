@@ -1,4 +1,4 @@
-import { type WorkflowHistoryEventFilteringType } from '@/views/workflow-history/workflow-history-filters-type/workflow-history-filters-type.types';
+import { type EventGroupCategory } from '../workflow-history-filters-menu/workflow-history-filters-menu.types';
 
 export type Props = {
   children: React.ReactNode;
@@ -8,7 +8,7 @@ export type Props = {
 };
 
 export type NavigationBarEventsMenuItem = {
-  type: WorkflowHistoryEventFilteringType;
+  category: EventGroupCategory;
   eventId: string;
   label: string;
 };

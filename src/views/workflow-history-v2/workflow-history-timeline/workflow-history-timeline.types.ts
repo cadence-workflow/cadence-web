@@ -1,7 +1,6 @@
 import { type VirtuosoHandle } from 'react-virtuoso';
 
-import { type WorkflowHistoryEventFilteringType } from '@/views/workflow-history/workflow-history-filters-type/workflow-history-filters-type.types';
-
+import { type EventGroupCategory } from '../workflow-history-filters-menu/workflow-history-filters-menu.types';
 import {
   type HistoryEventsGroup,
   type EventGroupEntry,
@@ -13,7 +12,7 @@ export type TimelineRow = {
   label: string;
   startTimeMs: number;
   endTimeMs: number | null;
-  groupType: WorkflowHistoryEventFilteringType;
+  category: EventGroupCategory;
   status: HistoryEventsGroup['status'];
   group: HistoryEventsGroup;
 };

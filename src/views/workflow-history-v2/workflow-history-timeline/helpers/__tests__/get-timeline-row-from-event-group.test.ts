@@ -6,11 +6,6 @@ import {
 
 import getTimelineRowFromEventGroup from '../get-timeline-row-from-event-group';
 
-jest.mock(
-  '../../../workflow-history-event-group/helpers/get-event-group-filtering-type',
-  () => jest.fn(() => 'ACTIVITY')
-);
-
 const mockNow = new Date('2024-09-10').getTime();
 jest.useFakeTimers({ now: mockNow });
 
@@ -36,7 +31,7 @@ describe(getTimelineRowFromEventGroup.name, () => {
       expect.objectContaining({
         id: 'test-group-id',
         label: mockActivityEventGroup.label,
-        groupType: 'ACTIVITY',
+        category: 'ACTIVITY',
         status: mockActivityEventGroup.status,
         group: mockActivityEventGroup,
       })
@@ -96,7 +91,7 @@ describe(getTimelineRowFromEventGroup.name, () => {
           0
         ),
         endTimeMs: expect.closeTo(mockActivityEventGroup.timeMs!, 0),
-        groupType: 'ACTIVITY',
+        category: 'ACTIVITY',
         status: mockActivityEventGroup.status,
         group: mockActivityEventGroup,
       })
@@ -127,7 +122,7 @@ describe(getTimelineRowFromEventGroup.name, () => {
           0
         ),
         endTimeMs: null,
-        groupType: 'ACTIVITY',
+        category: 'ACTIVITY',
         status: 'ONGOING',
         group: ongoingGroup,
       })
@@ -162,7 +157,7 @@ describe(getTimelineRowFromEventGroup.name, () => {
           0
         ),
         endTimeMs: expect.closeTo(mockNow + 5000, 0),
-        groupType: 'ACTIVITY',
+        category: 'TIMER',
         status: 'ONGOING',
         group: ongoingTimerGroup,
       })
@@ -197,7 +192,7 @@ describe(getTimelineRowFromEventGroup.name, () => {
           0
         ),
         endTimeMs: expect.closeTo(mockNow + 10000, 0),
-        groupType: 'ACTIVITY',
+        category: 'TIMER',
         status: 'WAITING',
         group: waitingTimerGroup,
       })
@@ -228,7 +223,7 @@ describe(getTimelineRowFromEventGroup.name, () => {
           0
         ),
         endTimeMs: expect.closeTo(mockNow - 5000, 0),
-        groupType: 'ACTIVITY',
+        category: 'ACTIVITY',
         status: 'COMPLETED',
         group: completedGroup,
       })
@@ -259,7 +254,7 @@ describe(getTimelineRowFromEventGroup.name, () => {
           0
         ),
         endTimeMs: expect.closeTo(mockNow - 3000, 0),
-        groupType: 'ACTIVITY',
+        category: 'ACTIVITY',
         status: 'FAILED',
         group: failedGroup,
       })
@@ -290,7 +285,7 @@ describe(getTimelineRowFromEventGroup.name, () => {
           0
         ),
         endTimeMs: expect.closeTo(mockNow - 2000, 0),
-        groupType: 'ACTIVITY',
+        category: 'ACTIVITY',
         status: 'CANCELED',
         group: canceledGroup,
       })
@@ -324,7 +319,7 @@ describe(getTimelineRowFromEventGroup.name, () => {
           0
         ),
         endTimeMs: null,
-        groupType: 'ACTIVITY',
+        category: 'TIMER',
         status: 'ONGOING',
         group: ongoingTimerWithoutExpectedEnd,
       })
@@ -355,7 +350,7 @@ describe(getTimelineRowFromEventGroup.name, () => {
           0
         ),
         endTimeMs: null,
-        groupType: 'ACTIVITY',
+        category: 'TIMER',
         status: 'COMPLETED',
         group: completedTimerWithoutTimeMs,
       })
