@@ -52,6 +52,22 @@ describe(filterGroupsByStatus.name, () => {
     ).toBe(false);
   });
 
+  it('should return true if group status is CANCELED when historyEventStatuses includes CANCELED', () => {
+    const value: EventGroupStatusFilterValue = {
+      historyEventStatuses: ['CANCELED'],
+    };
+
+    expect(
+      filterGroupsByStatus(
+        {
+          ...ACTIVITY_HISTORY_GROUP_COMPLETED,
+          status: 'CANCELED',
+        },
+        value
+      )
+    ).toBe(true);
+  });
+
   it('should return true if group status is ONGOING or WAITING when historyEventStatuses includes PENDING', () => {
     const value: EventGroupStatusFilterValue = {
       historyEventStatuses: ['PENDING'],

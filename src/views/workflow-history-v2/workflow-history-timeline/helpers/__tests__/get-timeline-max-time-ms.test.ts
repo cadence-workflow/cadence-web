@@ -18,7 +18,7 @@ describe(getTimelineMaxTimeMs.name, () => {
         label: 'Test',
         startTimeMs: mockNow,
         endTimeMs: mockNow + 1000, // 1 second after now
-        groupType: 'ACTIVITY',
+        category: 'ACTIVITY',
         status: 'COMPLETED',
         group: mockActivityEventGroup,
       },
@@ -65,7 +65,7 @@ describe(getTimelineMaxTimeMs.name, () => {
         label: 'Test',
         startTimeMs: mockNow - 5000, // 5 seconds before now
         endTimeMs: mockNow - 1000, // 1 second before now
-        groupType: 'ACTIVITY',
+        category: 'ACTIVITY',
         status: 'COMPLETED',
         group: mockActivityEventGroup,
       },
@@ -84,7 +84,7 @@ describe(getTimelineMaxTimeMs.name, () => {
         label: 'Test',
         startTimeMs: mockNow,
         endTimeMs: futureTime,
-        groupType: 'ACTIVITY',
+        category: 'ACTIVITY',
         status: 'COMPLETED',
         group: mockActivityEventGroup,
       },
@@ -103,7 +103,7 @@ describe(getTimelineMaxTimeMs.name, () => {
         label: 'Test 1',
         startTimeMs: mockNow - 5000, // 5 seconds before now
         endTimeMs: mockNow - 1000, // 1 second before now
-        groupType: 'ACTIVITY',
+        category: 'ACTIVITY',
         status: 'COMPLETED',
         group: mockActivityEventGroup,
       },
@@ -112,7 +112,7 @@ describe(getTimelineMaxTimeMs.name, () => {
         label: 'Test 2',
         startTimeMs: mockNow,
         endTimeMs: maxEndTime,
-        groupType: 'DECISION',
+        category: 'DECISION',
         status: 'COMPLETED',
         group: mockDecisionEventGroup,
       },
@@ -121,7 +121,7 @@ describe(getTimelineMaxTimeMs.name, () => {
         label: 'Test 3',
         startTimeMs: mockNow - 3000, // 3 seconds before now
         endTimeMs: mockNow + 5000, // 5 seconds after now
-        groupType: 'TIMER',
+        category: 'TIMER',
         status: 'COMPLETED',
         group: mockTimerEventGroup,
       },
@@ -139,7 +139,7 @@ describe(getTimelineMaxTimeMs.name, () => {
         label: 'Test 1',
         startTimeMs: mockNow - 10000, // 10 seconds before now
         endTimeMs: mockNow - 5000, // 5 seconds before now
-        groupType: 'ACTIVITY',
+        category: 'ACTIVITY',
         status: 'COMPLETED',
         group: mockActivityEventGroup,
       },
@@ -148,7 +148,7 @@ describe(getTimelineMaxTimeMs.name, () => {
         label: 'Test 2',
         startTimeMs: mockNow - 8000, // 8 seconds before now
         endTimeMs: mockNow - 2000, // 2 seconds before now
-        groupType: 'DECISION',
+        category: 'DECISION',
         status: 'COMPLETED',
         group: mockDecisionEventGroup,
       },
@@ -167,7 +167,7 @@ describe(getTimelineMaxTimeMs.name, () => {
         label: 'Test 1',
         startTimeMs: mockNow - 5000,
         endTimeMs: futureTime,
-        groupType: 'ACTIVITY',
+        category: 'ACTIVITY',
         status: 'COMPLETED',
         group: mockActivityEventGroup,
       },
@@ -176,7 +176,7 @@ describe(getTimelineMaxTimeMs.name, () => {
         label: 'Test 2',
         startTimeMs: mockNow - 3000,
         endTimeMs: null,
-        groupType: 'TIMER',
+        category: 'TIMER',
         status: 'ONGOING',
         group: mockTimerEventGroup,
       },

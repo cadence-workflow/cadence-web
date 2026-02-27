@@ -1,6 +1,7 @@
 import {
   mockActivityEventGroup,
   mockDecisionEventGroup,
+  mockLocalActivityEventGroup,
   mockTimerEventGroup,
   mockChildWorkflowEventGroup,
   mockSignalExternalWorkflowEventGroup,
@@ -11,34 +12,7 @@ import {
 import { type EventGroupCategoryFilterValue } from '../../workflow-history-filters-menu.types';
 import filterGroupsByCategory from '../filter-groups-by-category';
 
-jest.mock(
-  '../../../config/workflow-history-event-group-category-filters.config',
-  () => ({
-    __esModule: true,
-    default: {
-      ACTIVITY: 'Activity',
-      CHILDWORKFLOW: 'ChildWorkflowExecution',
-      DECISION: 'Decision',
-      TIMER: 'Timer',
-      SIGNAL: jest.fn(
-        (g) =>
-          g.groupType === 'SignalExternalWorkflowExecution' ||
-          g.groupType === 'WorkflowSignaled'
-      ),
-      WORKFLOW: jest.fn(
-        (g) =>
-          g.groupType === 'RequestCancelExternalWorkflowExecution' ||
-          g.groupType === 'Event'
-      ),
-    },
-  })
-);
-
 describe(filterGroupsByCategory.name, () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   it('should return true if historyEventTypes is undefined', () => {
     const value: EventGroupCategoryFilterValue = {
       historyEventTypes: undefined,
@@ -55,6 +29,16 @@ describe(filterGroupsByCategory.name, () => {
     };
 
     expect(filterGroupsByCategory(mockActivityEventGroup, value)).toBe(true);
+  });
+
+  it('should return true if LocalActivity group type maps to ACTIVITY and is included in historyEventTypes', () => {
+    const value: EventGroupCategoryFilterValue = {
+      historyEventTypes: ['ACTIVITY'],
+    };
+
+    expect(filterGroupsByCategory(mockLocalActivityEventGroup, value)).toBe(
+      true
+    );
   });
 
   it('should return false if Activity group type is not included in historyEventTypes', () => {

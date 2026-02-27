@@ -9,16 +9,6 @@ import {
 } from '../../workflow-history-v2.types';
 import getNavigationBarEventsMenuItems from '../get-navigation-bar-events-menu-items';
 
-jest.mock(
-  '../../workflow-history-event-group/helpers/get-event-group-filtering-type',
-  () =>
-    jest.fn((group: HistoryEventsGroup) => {
-      if (group.groupType === 'Activity') return 'ACTIVITY';
-      if (group.groupType === 'Decision') return 'DECISION';
-      return 'WORKFLOW';
-    })
-);
-
 describe(getNavigationBarEventsMenuItems.name, () => {
   it('should return an empty array when eventGroupsEntries is empty', () => {
     const eventGroupsEntries: Array<EventGroupEntry> = [];
@@ -66,7 +56,7 @@ describe(getNavigationBarEventsMenuItems.name, () => {
     expect(result[0]).toEqual({
       eventId: '4', // last eventId from completedDecisionTaskEvents
       label: 'Mock decision',
-      type: 'DECISION',
+      category: 'DECISION',
     });
   });
 
@@ -85,12 +75,12 @@ describe(getNavigationBarEventsMenuItems.name, () => {
     expect(result[0]).toEqual({
       eventId: '10', // last eventId from completedActivityTaskEvents
       label: 'Mock event',
-      type: 'ACTIVITY',
+      category: 'ACTIVITY',
     });
     expect(result[1]).toEqual({
       eventId: '4', // last eventId from completedDecisionTaskEvents
       label: 'Mock decision',
-      type: 'DECISION',
+      category: 'DECISION',
     });
   });
 

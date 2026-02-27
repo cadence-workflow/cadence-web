@@ -94,7 +94,7 @@ describe(useTimelineMaxRangeMs.name, () => {
         label: 'Test',
         startTimeMs: mockWorkflowStartTimeMs + 1000,
         endTimeMs: rowEndTimeMs,
-        groupType: 'ACTIVITY',
+        category: 'ACTIVITY',
         status: 'COMPLETED',
         group: mockActivityEventGroup,
       },

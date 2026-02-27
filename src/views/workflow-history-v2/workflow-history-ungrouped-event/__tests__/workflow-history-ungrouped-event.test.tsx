@@ -97,11 +97,6 @@ jest.mock<typeof WorkflowHistoryTimelineResetButton>(
 
 jest.mock('@/utils/datetime/format-time-diff', () => jest.fn(() => '1m 30s'));
 
-jest.mock(
-  '../../workflow-history-event-group/helpers/get-event-group-filtering-type',
-  () => jest.fn(() => 'ACTIVITY')
-);
-
 const mockActivityEventGroupWithMetadata: ActivityHistoryGroup = {
   ...mockActivityEventGroup,
   eventsMetadata: [

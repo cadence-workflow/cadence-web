@@ -69,7 +69,7 @@ describe(WorkflowHistoryNavigationBar.name, () => {
         {
           eventId: 'event-1',
           label: 'Failed Event 1',
-          type: 'ACTIVITY',
+          category: 'ACTIVITY',
         },
       ],
     });
@@ -84,12 +84,12 @@ describe(WorkflowHistoryNavigationBar.name, () => {
         {
           eventId: 'event-1',
           label: 'Failed Event 1',
-          type: 'ACTIVITY',
+          category: 'ACTIVITY',
         },
         {
           eventId: 'event-2',
           label: 'Failed Event 2',
-          type: 'DECISION',
+          category: 'DECISION',
         },
       ],
     });
@@ -103,7 +103,7 @@ describe(WorkflowHistoryNavigationBar.name, () => {
         {
           eventId: 'event-1',
           label: 'Pending Event 1',
-          type: 'ACTIVITY',
+          category: 'ACTIVITY',
         },
       ],
     });
@@ -118,12 +118,12 @@ describe(WorkflowHistoryNavigationBar.name, () => {
         {
           eventId: 'event-1',
           label: 'Pending Event 1',
-          type: 'ACTIVITY',
+          category: 'ACTIVITY',
         },
         {
           eventId: 'event-2',
           label: 'Pending Event 2',
-          type: 'DECISION',
+          category: 'DECISION',
         },
       ],
     });

@@ -1,27 +1,15 @@
-import workflowHistoryEventGroupCategoryFiltersConfig from '../../config/workflow-history-event-group-category-filters.config';
 import { type HistoryEventsGroup } from '../../workflow-history-v2.types';
+import { WORKFLOW_HISTORY_EVENT_GROUP_TYPE_TO_CATEGORY_MAP } from '../workflow-history-filters-menu.constants';
 import { type EventGroupCategoryFilterValue } from '../workflow-history-filters-menu.types';
 
-const filterGroupsByCategory = function (
-  group: HistoryEventsGroup,
-  value: EventGroupCategoryFilterValue
-): boolean {
-  if (!value.historyEventTypes) {
-    return true;
-  }
-
-  const filterConfigs = value.historyEventTypes.map(
-    (filteringType) =>
-      workflowHistoryEventGroupCategoryFiltersConfig[filteringType]
-  );
-
-  return filterConfigs.some((filterConfig) => {
-    if (typeof filterConfig === 'function') {
-      return filterConfig(group);
-    }
-
-    return group.groupType === filterConfig;
-  });
-};
+const filterGroupsByCategory = (
+  { groupType }: HistoryEventsGroup,
+  { historyEventTypes }: EventGroupCategoryFilterValue
+) =>
+  historyEventTypes
+    ? historyEventTypes.includes(
+        WORKFLOW_HISTORY_EVENT_GROUP_TYPE_TO_CATEGORY_MAP[groupType]
+      )
+    : true;
 
 export default filterGroupsByCategory;

@@ -12,9 +12,9 @@ import useGroupDetailsEntries from '../hooks/use-group-details-entries';
 import WorkflowHistoryDetailsRow from '../workflow-history-details-row/workflow-history-details-row';
 import WorkflowHistoryEventGroupDuration from '../workflow-history-event-group-duration/workflow-history-event-group-duration';
 import WorkflowHistoryEventStatusBadge from '../workflow-history-event-status-badge/workflow-history-event-status-badge';
+import { WORKFLOW_HISTORY_EVENT_GROUP_TYPE_TO_CATEGORY_MAP } from '../workflow-history-filters-menu/workflow-history-filters-menu.constants';
 import WorkflowHistoryGroupDetails from '../workflow-history-group-details/workflow-history-group-details';
 
-import getEventGroupFilteringType from './helpers/get-event-group-filtering-type';
 import {
   overrides as getOverrides,
   styled,
@@ -48,7 +48,8 @@ export default function WorkflowHistoryEventGroup({
     resetToDecisionEventId,
   } = eventGroup;
 
-  const eventFilteringType = getEventGroupFilteringType(eventGroup);
+  const eventGroupCategory =
+    WORKFLOW_HISTORY_EVENT_GROUP_TYPE_TO_CATEGORY_MAP[eventGroup.groupType];
 
   const handleReset = useCallback(() => {
     if (onReset) {
@@ -77,7 +78,7 @@ export default function WorkflowHistoryEventGroup({
     [groupDetailsEntriesWithSummary, selectedEventId]
   );
 
-  const overrides = getOverrides(eventFilteringType, animateOnEnter);
+  const overrides = getOverrides(eventGroupCategory, animateOnEnter);
 
   return (
     <Panel
@@ -85,7 +86,7 @@ export default function WorkflowHistoryEventGroup({
         <styled.HeaderContent>
           <MdCircle
             color={
-              workflowHistoryEventGroupCategoryColorsConfig[eventFilteringType]
+              workflowHistoryEventGroupCategoryColorsConfig[eventGroupCategory]
                 .content
             }
           />

@@ -1,30 +1,15 @@
-import {
-  type WorkflowEventStatus,
-  type HistoryEventsGroup,
-} from '../../workflow-history-v2.types';
-import {
-  type EventGroupStatus,
-  type EventGroupStatusFilterValue,
-} from '../workflow-history-filters-menu.types';
+import { type HistoryEventsGroup } from '../../workflow-history-v2.types';
+import { WORKFLOW_HISTORY_EVENT_STATUS_TO_GROUP_STATUS_MAP } from '../workflow-history-filters-menu.constants';
+import { type EventGroupStatusFilterValue } from '../workflow-history-filters-menu.types';
 
-export default function filterGroupsByStatus(
-  group: HistoryEventsGroup,
-  value: EventGroupStatusFilterValue
-) {
-  const historyFiltersStatuses = value.historyEventStatuses;
-  if (!historyFiltersStatuses) return true;
+const filterGroupsByStatus = (
+  { status }: HistoryEventsGroup,
+  { historyEventStatuses }: EventGroupStatusFilterValue
+) =>
+  historyEventStatuses
+    ? historyEventStatuses.includes(
+        WORKFLOW_HISTORY_EVENT_STATUS_TO_GROUP_STATUS_MAP[status]
+      )
+    : true;
 
-  const workflowEventStatuses = historyFiltersStatuses.reduce(
-    (acc: WorkflowEventStatus[], currentValue: EventGroupStatus) => {
-      if (currentValue === 'PENDING') {
-        acc.push('ONGOING', 'WAITING');
-      } else {
-        acc.push(currentValue);
-      }
-      return acc;
-    },
-    []
-  );
-
-  return workflowEventStatuses.includes(group.status);
-}
+export default filterGroupsByStatus;
