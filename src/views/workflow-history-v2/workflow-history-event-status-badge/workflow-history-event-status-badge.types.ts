@@ -7,7 +7,7 @@ export type WorkflowHistoryEventStatusBadgeConfig = {
   icon: React.ComponentType<{
     size?: IconProps['size'];
     color?: IconProps['color'];
-  }> | null;
+  }>;
   hierarchy: BadgeProps['hierarchy'];
   color: BadgeProps['color'];
 };
