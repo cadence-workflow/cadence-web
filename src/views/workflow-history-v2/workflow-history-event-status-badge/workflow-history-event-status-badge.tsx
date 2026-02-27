@@ -34,6 +34,7 @@ export default function WorkflowHistoryEventStatusBadge({
   // TODO @adhitya.mamallan - once we update Baseweb to 16, use the new Tag here
   return (
     <Badge
+      aria-label={`status-badge-${status}`}
       hierarchy={hierarchy}
       color={color}
       overrides={overrides.badge}
