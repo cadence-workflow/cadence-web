@@ -4,7 +4,6 @@ import { Panel } from 'baseui/accordion';
 import { MdCircle } from 'react-icons/md';
 
 import formatDate from '@/utils/data-formatters/format-date';
-import WorkflowHistoryEventStatusBadge from '@/views/workflow-history/workflow-history-event-status-badge/workflow-history-event-status-badge';
 import WorkflowHistoryGroupLabel from '@/views/workflow-history/workflow-history-group-label/workflow-history-group-label';
 import WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 
@@ -12,6 +11,7 @@ import workflowHistoryEventGroupCategoryColorsConfig from '../config/workflow-hi
 import useGroupDetailsEntries from '../hooks/use-group-details-entries';
 import WorkflowHistoryDetailsRow from '../workflow-history-details-row/workflow-history-details-row';
 import WorkflowHistoryEventGroupDuration from '../workflow-history-event-group-duration/workflow-history-event-group-duration';
+import WorkflowHistoryEventStatusBadge from '../workflow-history-event-status-badge/workflow-history-event-status-badge';
 import WorkflowHistoryGroupDetails from '../workflow-history-group-details/workflow-history-group-details';
 
 import getEventGroupFilteringType from './helpers/get-event-group-filtering-type';
@@ -95,10 +95,9 @@ export default function WorkflowHistoryEventGroup({
           <styled.StatusContainer>
             <WorkflowHistoryEventStatusBadge
               status={status}
-              statusReady={!showLoadingMoreEvents}
-              size="small"
+              statusText={eventsMetadata.at(-1)?.label}
+              isLoading={showLoadingMoreEvents}
             />
-            {eventsMetadata.at(-1)?.label}
           </styled.StatusContainer>
           <div>{timeMs ? formatDate(timeMs) : null}</div>
           <div>
