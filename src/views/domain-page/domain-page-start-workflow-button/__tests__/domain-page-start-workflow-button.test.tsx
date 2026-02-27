@@ -172,6 +172,47 @@ describe('DomainPageStartWorkflowButton', () => {
     expect(screen.queryByTestId('actions-modal')).not.toBeInTheDocument();
   });
 
+  it('disables button when user lacks domain write access', async () => {
+    mockGetActionDisabledReason.mockImplementation(
+      ({
+        actionEnabledConfig,
+      }: {
+        actionEnabledConfig?: WorkflowActionEnabledConfigValue;
+      }) =>
+        actionEnabledConfig === 'DISABLED_UNAUTHORIZED'
+          ? 'Not authorized'
+          : undefined
+    );
+
+    await setup(defaultProps, {
+      authResponse: {
+        authEnabled: true,
+        isAuthenticated: true,
+        isAdmin: false,
+        groups: ['reader'],
+      },
+      domainResponse: {
+        name: 'test-domain',
+        data: {
+          READ_GROUPS: 'reader',
+          WRITE_GROUPS: 'writer',
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(mockGetActionDisabledReason).toHaveBeenCalledWith({
+        actionEnabledConfig: 'DISABLED_UNAUTHORIZED',
+        actionRunnableStatus: 'RUNNABLE',
+      });
+    });
+
+    expect(screen.getByTestId('start-workflow-button')).toHaveTextContent(
+      /"disabled":true/
+    );
+    expect(screen.getByTestId('tooltip')).toHaveTextContent('Not authorized');
+  });
+
   it('show loading indicator when config errors', async () => {
     await setup(defaultProps, {
       isConfigError: true,
@@ -188,6 +229,8 @@ function setup(
     startActionEnabledConfig?: string;
     isConfigLoading?: boolean;
     isConfigError?: boolean;
+    authResponse?: Record<string, unknown>;
+    domainResponse?: Record<string, unknown>;
   } = {}
 ) {
   const user = userEvent.setup();
@@ -196,10 +239,32 @@ function setup(
       .start,
     isConfigLoading = false,
     isConfigError = false,
+    authResponse = {
+      authEnabled: false,
+      isAuthenticated: false,
+      isAdmin: false,
+      groups: [],
+    },
+    domainResponse = {
+      name: 'test-domain',
+      data: {},
+    },
   } = options;
 
   const renderResult = render(<DomainPageStartWorkflowButton {...props} />, {
     endpointsMocks: [
+      {
+        path: '/api/auth/me',
+        httpMethod: 'GET',
+        httpResolver: async () =>
+          HttpResponse.json(authResponse, { status: 200 }),
+      },
+      {
+        path: '/api/domains/test-domain/test-cluster',
+        httpMethod: 'GET',
+        httpResolver: async () =>
+          HttpResponse.json(domainResponse, { status: 200 }),
+      },
       {
         path: '/api/config',
         httpMethod: 'GET',

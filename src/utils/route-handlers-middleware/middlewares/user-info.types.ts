@@ -1,3 +1,6 @@
-export type UserInfoMiddlewareContext = {
-  id: string;
-} | null;
+export type UserInfoMiddlewareContext =
+  | {
+      id?: string;
+      userName?: string;
+    }
+  | undefined;

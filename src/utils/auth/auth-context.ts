@@ -1,0 +1,123 @@
+import 'server-only';
+
+import { cookies as getRequestCookies } from 'next/headers';
+import { z } from 'zod';
+
+import { type GRPCMetadata } from '@/utils/grpc/grpc-service';
+
+import getConfigValue from '../config/get-config-value';
+
+import {
+  splitGroupList,
+  type PublicAuthContext,
+  type PrivateAuthContext,
+} from './auth-shared';
+
+export const CADENCE_AUTH_COOKIE_NAME = 'cadence-authorization';
+
+type CookieReader = {
+  get: (name: string) => { value: string } | undefined;
+};
+
+const cadenceJwtClaimsSchema = z.object({
+  admin: z.boolean().optional(),
+  exp: z.number().optional(),
+  groups: z.string().optional(),
+  name: z.string().optional(),
+  sub: z.string().optional(),
+});
+
+export type CadenceJwtClaims = z.infer<typeof cadenceJwtClaimsSchema>;
+
+export function decodeCadenceJwtClaims(
+  token: string
+): CadenceJwtClaims | undefined {
+  const [, payload] = token.split('.');
+  if (!payload) {
+    return undefined;
+  }
+
+  try {
+    const normalizedPayload = payload.replace(/-/g, '+').replace(/_/g, '/');
+    const paddedPayload =
+      normalizedPayload + '='.repeat((4 - (normalizedPayload.length % 4)) % 4);
+    const decodedPayload = Buffer.from(paddedPayload, 'base64').toString(
+      'utf8'
+    );
+
+    const parsed = JSON.parse(decodedPayload);
+    const result = cadenceJwtClaimsSchema.safeParse(parsed);
+    if (!result.success) {
+      return undefined;
+    }
+    return result.data;
+  } catch {
+    return undefined;
+  }
+}
+
+export async function resolveAuthContext(
+  cookieStore?: CookieReader
+): Promise<PrivateAuthContext> {
+  const authStrategy =
+    (await getConfigValue('CADENCE_WEB_AUTH_STRATEGY')) ?? 'disabled';
+  const authEnabled = authStrategy.toLowerCase() === 'jwt';
+
+  const cookies = cookieStore ?? getRequestCookies();
+  const tokenFromCookie = cookies.get(CADENCE_AUTH_COOKIE_NAME)?.value?.trim();
+  const token = tokenFromCookie || undefined;
+
+  const claims = token ? decodeCadenceJwtClaims(token) : undefined;
+  const isInvalidToken = token !== undefined && claims === undefined;
+  const expiresAtMsRaw =
+    typeof claims?.exp === 'number' ? claims.exp * 1000 : undefined;
+  const isExpired =
+    expiresAtMsRaw !== undefined && Date.now() >= expiresAtMsRaw;
+  const shouldDropToken = !authEnabled || isInvalidToken || isExpired;
+  const effectiveClaims = shouldDropToken ? undefined : claims;
+  const expiresAtMs = shouldDropToken ? undefined : expiresAtMsRaw;
+  const effectiveToken = shouldDropToken ? undefined : token;
+
+  const groups = effectiveClaims?.groups
+    ? splitGroupList(effectiveClaims.groups)
+    : [];
+  const id = effectiveClaims?.sub || effectiveClaims?.name || undefined;
+  const userName = effectiveClaims?.name || effectiveClaims?.sub || undefined;
+  const isAdmin = effectiveClaims?.admin === true;
+
+  return {
+    authEnabled,
+    isAuthenticated: Boolean(effectiveToken),
+    token: effectiveToken,
+    groups,
+    isAdmin,
+    userName,
+    id,
+    expiresAtMs,
+  };
+}
+
+export function getGrpcMetadataFromAuth(
+  authContext: PrivateAuthContext | null | undefined
+): GRPCMetadata | undefined {
+  if (!authContext?.authEnabled || !authContext.token) {
+    return undefined;
+  }
+
+  return {
+    'cadence-authorization': authContext.token,
+  };
+}
+
+export const getPublicAuthContext = ({
+  token: _token,
+  ...publicFields
+}: PrivateAuthContext): PublicAuthContext => publicFields;
+
+export { getDomainAccessForUser } from './auth-shared';
+export type {
+  BaseAuthContext,
+  DomainAccess,
+  PrivateAuthContext,
+  PublicAuthContext,
+} from './auth-shared';

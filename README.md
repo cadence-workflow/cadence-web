@@ -22,13 +22,14 @@ docker-compose -f docker/docker-compose.yml up
 Set these environment variables if you need to change their defaults.
 
 | Variable                     | Description                                                                   | Default          |
-| ---------------------------- | ----------------------------------------------------------------------------- | ---------------- |
+|------------------------------| ----------------------------------------------------------------------------- | ---------------- |
 | CADENCE_GRPC_PEERS           | Comma-delimited list of gRPC peers                                            | 127.0.0.1:7833   |
 | CADENCE_GRPC_SERVICES_NAMES  | Comma-delimited list of gRPC services to call                                 | cadence-frontend |
 | CADENCE_CLUSTERS_NAMES       | Comma-delimited list of cluster names                                         | cluster0         |
 | CADENCE_WEB_PORT             | HTTP port to serve on                                                         | 8088             |
 | CADENCE_WEB_HOSTNAME         | Host name to serve on                                                         | 0.0.0.0          |
 | CADENCE_ADMIN_SECURITY_TOKEN | Admin token for accessing admin methods                                       | ''               |
+| CADENCE_WEB_AUTH_STRATEGY    | Auth strategy: `disabled` or `jwt`.                                           | disabled         |
 | CADENCE_GRPC_TLS_CA_FILE     | Path to root CA certificate file for enabling one-way TLS on gRPC connections | ''               |
 | CADENCE_WEB_SERVICE_NAME     | Name of the web service used as GRPC caller and OTEL resource name            | cadence-web      |
 
@@ -41,6 +42,20 @@ CADENCE_GRPC_PEERS=127.0.0.1:3000,127.0.0.1:5000
 CADENCE_GRPC_SERVICES_NAMES=cadence-frontend-cluster0,cadence-frontend-cluster1
 CADENCE_CLUSTERS_NAMES=cluster0,cluster1
 ```
+
+#### JWT Authentication (cookie)
+
+When `CADENCE_WEB_AUTH_STRATEGY=jwt`, cadence-web authenticates using a cookie:
+
+- Cookie name: `cadence-authorization`
+- Cookie value: raw JWT string
+
+To integrate an upstream proxy / IdP, set the cookie for the cadence-web origin:
+
+```
+Set-Cookie: cadence-authorization=<JWT>; Path=/; HttpOnly; SameSite=Lax; Secure
+```
+You can also set/clear the cookie via `POST /api/auth/token` and `DELETE /api/auth/token`; or use `Login with JWT` button in the UI.
 
 #### Feature flags
 

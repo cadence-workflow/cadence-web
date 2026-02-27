@@ -50,12 +50,21 @@ jest.mock('next/navigation', () => ({
   },
 }));
 
-jest.mock('@/views/domains-page/helpers/get-cached-all-domains', () =>
-  jest.fn(() => ({
+jest.mock('@/utils/auth/auth-context', () => ({
+  resolveAuthContext: jest.fn(async () => ({
+    authEnabled: false,
+    isAdmin: false,
+    groups: [],
+  })),
+}));
+
+jest.mock('@/views/domains-page/helpers/get-cached-all-domains', () => ({
+  __esModule: true,
+  default: jest.fn(async () => ({
     domains: MOCK_ALL_DOMAINS,
     failedClusters: [],
-  }))
-);
+  })),
+}));
 
 describe(RedirectDomain.name, () => {
   const tests: Array<{

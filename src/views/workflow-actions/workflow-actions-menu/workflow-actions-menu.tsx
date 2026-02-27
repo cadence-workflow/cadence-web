@@ -10,13 +10,16 @@ import { type Props } from './workflow-actions-menu.types';
 export default function WorkflowActionsMenu({
   workflow,
   actionsEnabledConfig,
+  isWriteAuthorized = true,
   onActionSelect,
 }: Props) {
   return (
     <styled.MenuItemsContainer>
       {workflowActionsConfig.map((action) => {
         const actionDisabledReason = getActionDisabledReason({
-          actionEnabledConfig: actionsEnabledConfig?.[action.id],
+          actionEnabledConfig: isWriteAuthorized
+            ? actionsEnabledConfig?.[action.id]
+            : 'DISABLED_UNAUTHORIZED',
           actionRunnableStatus: workflow
             ? action.getRunnableStatus(workflow)
             : undefined,
