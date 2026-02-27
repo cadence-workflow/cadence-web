@@ -1,4 +1,4 @@
-import { type BadgeProps } from 'baseui/badge';
+import { type Hierarchy, type Color } from 'baseui/badge';
 import { type IconProps } from 'baseui/icon';
 
 import { type WorkflowEventStatus } from '../workflow-history-v2.types';
@@ -8,8 +8,8 @@ export type WorkflowHistoryEventStatusBadgeConfig = {
     size?: IconProps['size'];
     color?: IconProps['color'];
   }>;
-  hierarchy: BadgeProps['hierarchy'];
-  color: BadgeProps['color'];
+  hierarchy: Hierarchy;
+  color: Color;
 };
 
 export type Props = {
