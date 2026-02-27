@@ -9,12 +9,12 @@ import {
   mockActivityEventGroup,
   mockDecisionEventGroup,
 } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
-import type WorkflowHistoryEventStatusBadge from '@/views/workflow-history/workflow-history-event-status-badge/workflow-history-event-status-badge';
 import type WorkflowHistoryGroupLabel from '@/views/workflow-history/workflow-history-group-label/workflow-history-group-label';
 import type WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 
 import * as generateHistoryGroupDetailsModule from '../../helpers/generate-history-group-details';
 import type { EventDetailsEntries } from '../../workflow-history-event-details/workflow-history-event-details.types';
+import type WorkflowHistoryEventStatusBadge from '../../workflow-history-event-status-badge/workflow-history-event-status-badge';
 import type WorkflowHistoryGroupDetails from '../../workflow-history-group-details/workflow-history-group-details';
 import type { GroupDetailsEntries } from '../../workflow-history-group-details/workflow-history-group-details.types';
 import { type HistoryEventsGroup } from '../../workflow-history-v2.types';
@@ -53,11 +53,18 @@ jest.mock<typeof WorkflowHistoryGroupDetails>(
 );
 
 jest.mock<typeof WorkflowHistoryEventStatusBadge>(
-  '@/views/workflow-history/workflow-history-event-status-badge/workflow-history-event-status-badge',
+  '../../workflow-history-event-status-badge/workflow-history-event-status-badge',
   () =>
     jest.fn((props) => (
       <div data-testid="status-badge">
-        {props.statusReady ? props.status : 'Loading'}
+        {props.isLoading ? (
+          'Loading'
+        ) : (
+          <>
+            {props.status}
+            {props.statusText && <span>{props.statusText}</span>}
+          </>
+        )}
       </div>
     ))
 );
@@ -250,7 +257,7 @@ describe(WorkflowHistoryEventGroup.name, () => {
     expect(screen.queryByText(/Formatted:/)).not.toBeInTheDocument();
   });
 
-  it('shows status when statusReady is true (showLoadingMoreEvents is false)', () => {
+  it('shows status when showLoadingMoreEvents is false', () => {
     setup({
       eventGroup: mockActivityEventGroupWithMetadata,
       showLoadingMoreEvents: false,
@@ -261,7 +268,7 @@ describe(WorkflowHistoryEventGroup.name, () => {
     expect(screen.queryByText('Loading')).not.toBeInTheDocument();
   });
 
-  it('shows Loading when statusReady is false (showLoadingMoreEvents is true)', () => {
+  it('shows Loading badge when showLoadingMoreEvents is true', () => {
     setup({
       eventGroup: mockActivityEventGroupWithMetadata,
       showLoadingMoreEvents: true,

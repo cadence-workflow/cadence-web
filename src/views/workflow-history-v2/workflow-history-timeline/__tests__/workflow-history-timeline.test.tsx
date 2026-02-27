@@ -43,13 +43,15 @@ jest.mock(
 );
 
 jest.mock(
-  '@/views/workflow-history/workflow-history-event-status-badge/workflow-history-event-status-badge',
+  '../../workflow-history-event-status-badge/workflow-history-event-status-badge',
   () =>
-    jest.fn((props: { status: string; statusReady: boolean; size: string }) => (
-      <div data-testid="status-badge" data-status={props.status}>
-        {props.statusReady ? props.status : 'Loading'}
-      </div>
-    ))
+    jest.fn(
+      (props: { status: string; statusText?: string; isLoading?: boolean }) => (
+        <div data-testid="status-badge" data-status={props.status}>
+          {props.isLoading ? 'Loading' : props.status}
+        </div>
+      )
+    )
 );
 
 jest.mock('@visx/responsive', () => ({
