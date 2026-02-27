@@ -2,8 +2,12 @@ import React from 'react';
 
 import { render, screen } from '@/test-utils/rtl';
 
+import { type WorkflowEventStatus } from '../../workflow-history-v2.types';
 import WorkflowHistoryEventStatusBadge from '../workflow-history-event-status-badge';
-import type { Props } from '../workflow-history-event-status-badge.types';
+import type {
+  Props,
+  WorkflowHistoryEventStatusBadgeConfig,
+} from '../workflow-history-event-status-badge.types';
 
 jest.mock('baseui/badge', () => ({
   Badge: jest.fn(({ content, hierarchy, color }) => (
@@ -21,7 +25,7 @@ jest.mock('../../config/workflow-history-event-status-badges.config', () => ({
   __esModule: true,
   default: {
     COMPLETED: {
-      icon: ({ size }: { size?: number }) => (
+      icon: ({ size }) => (
         <span data-testid="icon-completed" data-size={size}>
           CompletedIcon
         </span>
@@ -30,7 +34,7 @@ jest.mock('../../config/workflow-history-event-status-badges.config', () => ({
       color: 'positive',
     },
     FAILED: {
-      icon: ({ size }: { size?: number }) => (
+      icon: ({ size }) => (
         <span data-testid="icon-failed" data-size={size}>
           FailedIcon
         </span>
@@ -39,7 +43,7 @@ jest.mock('../../config/workflow-history-event-status-badges.config', () => ({
       color: 'negative',
     },
     CANCELED: {
-      icon: ({ size }: { size?: number }) => (
+      icon: ({ size }) => (
         <span data-testid="icon-canceled" data-size={size}>
           CanceledIcon
         </span>
@@ -48,7 +52,7 @@ jest.mock('../../config/workflow-history-event-status-badges.config', () => ({
       color: 'negative',
     },
     ONGOING: {
-      icon: ({ size }: { size?: number }) => (
+      icon: ({ size }) => (
         <span data-testid="icon-ongoing" data-size={size}>
           OngoingIcon
         </span>
@@ -57,7 +61,7 @@ jest.mock('../../config/workflow-history-event-status-badges.config', () => ({
       color: 'accent',
     },
     WAITING: {
-      icon: ({ size }: { size?: number }) => (
+      icon: ({ size }) => (
         <span data-testid="icon-waiting" data-size={size}>
           WaitingIcon
         </span>
@@ -65,7 +69,10 @@ jest.mock('../../config/workflow-history-event-status-badges.config', () => ({
       hierarchy: 'secondary',
       color: 'primary',
     },
-  },
+  } satisfies Record<
+    WorkflowEventStatus,
+    WorkflowHistoryEventStatusBadgeConfig
+  >,
 }));
 
 describe(WorkflowHistoryEventStatusBadge.name, () => {
