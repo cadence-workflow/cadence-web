@@ -10,9 +10,9 @@ import { StatefulPopover } from 'baseui/popover';
 import { Virtuoso } from 'react-virtuoso';
 
 import useStyletronClasses from '@/hooks/use-styletron-classes';
-import WorkflowHistoryEventStatusBadge from '@/views/workflow-history/workflow-history-event-status-badge/workflow-history-event-status-badge';
 
 import workflowHistoryEventGroupCategoryColorsConfig from '../config/workflow-history-event-group-category-colors.config';
+import WorkflowHistoryEventStatusBadge from '../workflow-history-event-status-badge/workflow-history-event-status-badge';
 import WorkflowHistoryTimelineEventGroup from '../workflow-history-timeline-event-group/workflow-history-timeline-event-group';
 
 import formatTickDuration from './helpers/format-tick-duration';
@@ -188,11 +188,7 @@ export default function WorkflowHistoryTimeline({
                   >
                     <styled.LabelCell>
                       <styled.LabelText>{row.label}</styled.LabelText>
-                      <WorkflowHistoryEventStatusBadge
-                        status={row.status}
-                        statusReady={true}
-                        size="small"
-                      />
+                      <WorkflowHistoryEventStatusBadge status={row.status} />
                     </styled.LabelCell>
                     <styled.TimelineCell>
                       <StatefulPopover

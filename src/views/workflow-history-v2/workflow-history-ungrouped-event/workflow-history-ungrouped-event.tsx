@@ -6,7 +6,6 @@ import { MdOutlineCircle } from 'react-icons/md';
 import formatDate from '@/utils/data-formatters/format-date';
 import formatTimeDiff from '@/utils/datetime/format-time-diff';
 import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
-import WorkflowHistoryEventStatusBadge from '@/views/workflow-history/workflow-history-event-status-badge/workflow-history-event-status-badge';
 import WorkflowHistoryGroupLabel from '@/views/workflow-history/workflow-history-group-label/workflow-history-group-label';
 import WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 
@@ -14,6 +13,7 @@ import workflowHistoryEventGroupCategoryColorsConfig from '../config/workflow-hi
 import useGroupDetailsEntries from '../hooks/use-group-details-entries';
 import WorkflowHistoryDetailsRow from '../workflow-history-details-row/workflow-history-details-row';
 import getEventGroupFilteringType from '../workflow-history-event-group/helpers/get-event-group-filtering-type';
+import WorkflowHistoryEventStatusBadge from '../workflow-history-event-status-badge/workflow-history-event-status-badge';
 import WorkflowHistoryGroupDetails from '../workflow-history-group-details/workflow-history-group-details';
 
 import {
@@ -68,11 +68,9 @@ export default function WorkflowHistoryUngroupedEvent({
           </styled.HeaderLabel>
           <styled.StatusContainer>
             <WorkflowHistoryEventStatusBadge
-              statusReady={true}
-              size="small"
               status={eventInfo.eventMetadata.status}
+              statusText={eventInfo.eventMetadata.label}
             />
-            {eventInfo.eventMetadata.label}
           </styled.StatusContainer>
           <div>
             {eventInfo.event.eventTime
