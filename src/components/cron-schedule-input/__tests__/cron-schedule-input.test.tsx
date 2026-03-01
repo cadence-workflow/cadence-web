@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { render, screen, userEvent } from '@/test-utils/rtl';
+import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
 import CronScheduleInput from '../cron-schedule-input';
 import { type CronScheduleInputProps } from '../cron-schedule-input.types';
@@ -289,7 +289,6 @@ describe(CronScheduleInput.name, () => {
     const minutesInput = screen.getByLabelText('Minute');
     await user.click(minutesInput);
 
-    // Should not throw an error
     expect(
       screen.getByTestId('cron-schedule-input-popover-minutes')
     ).toBeInTheDocument();
@@ -302,10 +301,11 @@ describe(CronScheduleInput.name, () => {
     await user.click(minutesInput);
     await user.tab();
 
-    // Should not throw an error
-    expect(
-      screen.queryByTestId('cron-schedule-input-popover-minutes')
-    ).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(
+        screen.queryByTestId('cron-schedule-input-popover-minutes')
+      ).not.toBeInTheDocument()
+    );
   });
 
   it('should maintain focus management between fields', async () => {
