@@ -54,7 +54,7 @@
     "cron-validate": "^1.5.2",
     "cronstrue": "^3.11.0",
     "dayjs": "^1.11.13",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "lossless-json": "^4.0.2",
     "next": "^14.2.31",
     "p-retry": "^6.2.1",
