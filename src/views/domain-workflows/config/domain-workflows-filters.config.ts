@@ -3,7 +3,7 @@ import { createElement } from 'react';
 import DateFilter from '@/components/date-filter/date-filter';
 import { type DateFilterValue } from '@/components/date-filter/date-filter.types';
 import stringifyDateFilterValue from '@/components/date-filter/helpers/stringify-date-filter-value';
-import ListFilterMulti from '@/components/list-filter-multi/list-filter-multi';
+import MultiSelectFilter from '@/components/multi-select-filter/multi-select-filter';
 import { type PageFilterConfig } from '@/components/page-filters/page-filters.types';
 import type domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
 import { WORKFLOW_STATUS_NAMES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
@@ -27,12 +27,13 @@ const domainWorkflowsFiltersConfig: [
     getValue: (v) => ({ statuses: v.statuses }),
     formatValue: (v) => v,
     component: ({ value, setValue }) =>
-      createElement(ListFilterMulti<WorkflowStatus>, {
+      createElement(MultiSelectFilter<WorkflowStatus>, {
         label: 'Status',
         placeholder: 'Show all statuses',
-        values: value.statuses,
-        onChangeValues: (v) => setValue({ statuses: v }),
-        labelMap: WORKFLOW_STATUS_NAMES,
+        values: value.statuses ?? [],
+        onChangeValues: (v) =>
+          setValue({ statuses: v.length > 0 ? v : undefined }),
+        optionsLabelMap: WORKFLOW_STATUS_NAMES,
       }),
   },
   {
