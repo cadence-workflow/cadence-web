@@ -1,9 +1,10 @@
-import { WORKFLOW_HISTORY_EVENT_GROUP_TYPE_TO_CATEGORY_MAP } from '../workflow-history-filters-menu/workflow-history-filters-menu.constants';
 import { type NavigationBarEventsMenuItem } from '../workflow-history-navigation-bar-events-menu/workflow-history-navigation-bar-events-menu.types';
 import {
   type HistoryEventsGroup,
   type EventGroupEntry,
 } from '../workflow-history-v2.types';
+
+import getEventGroupCategory from './get-event-group-category';
 
 export default function getNavigationBarEventsMenuItems(
   eventGroupsEntries: Array<EventGroupEntry>,
@@ -19,8 +20,7 @@ export default function getNavigationBarEventsMenuItems(
       acc.push({
         eventId: lastEventId,
         label: group.shortLabel ?? group.label,
-        category:
-          WORKFLOW_HISTORY_EVENT_GROUP_TYPE_TO_CATEGORY_MAP[group.groupType],
+        category: getEventGroupCategory(group),
       });
 
       return acc;

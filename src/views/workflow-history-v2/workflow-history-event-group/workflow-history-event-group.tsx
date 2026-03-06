@@ -8,11 +8,11 @@ import WorkflowHistoryGroupLabel from '@/views/workflow-history/workflow-history
 import WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 
 import workflowHistoryEventGroupCategoryColorsConfig from '../config/workflow-history-event-group-category-colors.config';
+import getEventGroupCategory from '../helpers/get-event-group-category';
 import useGroupDetailsEntries from '../hooks/use-group-details-entries';
 import WorkflowHistoryDetailsRow from '../workflow-history-details-row/workflow-history-details-row';
 import WorkflowHistoryEventGroupDuration from '../workflow-history-event-group-duration/workflow-history-event-group-duration';
 import WorkflowHistoryEventStatusBadge from '../workflow-history-event-status-badge/workflow-history-event-status-badge';
-import { WORKFLOW_HISTORY_EVENT_GROUP_TYPE_TO_CATEGORY_MAP } from '../workflow-history-filters-menu/workflow-history-filters-menu.constants';
 import WorkflowHistoryGroupDetails from '../workflow-history-group-details/workflow-history-group-details';
 
 import {
@@ -48,8 +48,7 @@ export default function WorkflowHistoryEventGroup({
     resetToDecisionEventId,
   } = eventGroup;
 
-  const eventGroupCategory =
-    WORKFLOW_HISTORY_EVENT_GROUP_TYPE_TO_CATEGORY_MAP[eventGroup.groupType];
+  const eventGroupCategory = getEventGroupCategory(eventGroup);
 
   const handleReset = useCallback(() => {
     if (onReset) {
