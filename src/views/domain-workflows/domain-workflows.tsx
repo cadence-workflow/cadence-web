@@ -1,8 +1,10 @@
-import React, { useMemo } from 'react';
+'use client';
+import React from 'react';
 
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import dynamic from 'next/dynamic';
 
+import useUserInfo from '@/hooks/use-user-info/use-user-info';
 import { type DescribeClusterResponse } from '@/route-handlers/describe-cluster/describe-cluster.types';
 import request from '@/utils/request';
 import { type DomainPageTabContentProps } from '@/views/domain-page/domain-page-content/domain-page-content.types';
@@ -18,15 +20,51 @@ const DomainWorkflowsAdvanced = dynamic(
 );
 
 export default function DomainWorkflows(props: DomainPageTabContentProps) {
-  const { data } = useSuspenseQuery<DescribeClusterResponse>({
-    queryKey: ['describeCluster', props],
+  const { data: authInfo, isLoading: isAuthLoading } = useUserInfo();
+
+  const isAdmin = authInfo?.isAdmin === true;
+  const isAuthEnabled = authInfo?.authEnabled === true;
+  const isAuthenticated = authInfo?.isAuthenticated === true;
+  const isAuthenticatedNonAdmin = isAuthEnabled && isAuthenticated && !isAdmin;
+
+  const shouldFetchClusterInfo =
+    Boolean(authInfo) && (!isAuthEnabled || isAdmin);
+
+  const { data: clusterInfo } = useQuery<DescribeClusterResponse>({
+    queryKey: ['describeCluster', props.cluster],
     queryFn: () =>
       request(`/api/clusters/${props.cluster}`).then((res) => res.json()),
+    enabled: shouldFetchClusterInfo,
+    retry: false,
   });
 
-  const isAdvancedVisibilityEnabled = useMemo(() => {
-    return isClusterAdvancedVisibilityEnabled(data);
-  }, [data]);
+  const { data: isAdvancedVisibilityAvailableForNonAdmin } = useQuery<boolean>({
+    queryKey: ['probeAdvancedVisibility', props.domain, props.cluster],
+    queryFn: async () => {
+      try {
+        await request(
+          `/api/domains/${props.domain}/${props.cluster}/workflows?listType=default&inputType=search&timeColumn=StartTime&pageSize=1`
+        );
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    enabled: isAuthenticatedNonAdmin,
+    retry: false,
+  });
+
+  if (
+    isAuthLoading ||
+    (isAuthenticatedNonAdmin &&
+      isAdvancedVisibilityAvailableForNonAdmin === undefined)
+  ) {
+    return null;
+  }
+
+  const isAdvancedVisibilityEnabled = isAuthenticatedNonAdmin
+    ? isAdvancedVisibilityAvailableForNonAdmin ?? false
+    : isClusterAdvancedVisibilityEnabled(clusterInfo);
 
   const DomainWorkflowsComponent = isAdvancedVisibilityEnabled
     ? DomainWorkflowsAdvanced
