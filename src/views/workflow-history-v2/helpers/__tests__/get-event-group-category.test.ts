@@ -2,7 +2,7 @@ import { type HistoryEventsGroup } from '../../workflow-history-v2.types';
 import getEventGroupCategory from '../get-event-group-category';
 
 jest.mock(
-  '../../config/workflow-history-event-group-category-map.config',
+  '../../config/workflow-history-event-group-type-to-category.config',
   () => ({
     __esModule: true,
     default: {
