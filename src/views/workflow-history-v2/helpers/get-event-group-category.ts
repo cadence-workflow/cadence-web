@@ -1,4 +1,4 @@
-import workflowHistoryEventGroupTypeToCategoryConfig from '../config/workflow-history-event-group-category-map.config';
+import workflowHistoryEventGroupTypeToCategoryConfig from '../config/workflow-history-event-group-type-to-category.config';
 import { type EventGroupTypeToCategoryConfig } from '../workflow-history-filters-menu/workflow-history-filters-menu.types';
 import { type HistoryEventsGroup } from '../workflow-history-v2.types';
 
