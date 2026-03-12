@@ -7,9 +7,9 @@ import { useRouter, useParams } from 'next/navigation';
 
 import { type DomainPageTabsParams } from '@/views/domain-page/domain-page-tabs/domain-page-tabs.types';
 
-import getClusterReplicationStatusLabel from './helpers/get-cluster-replication-status-label';
 import { overrides, styled } from './domain-cluster-selector.styles';
 import type { Props } from './domain-cluster-selector.types';
+import getClusterReplicationStatusLabel from './helpers/get-cluster-replication-status-label';
 
 export default function DomainClusterSelector({
   domainDescription,

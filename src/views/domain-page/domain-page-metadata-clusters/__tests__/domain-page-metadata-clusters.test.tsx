@@ -8,7 +8,9 @@ import {
 } from '../../__fixtures__/domain-description';
 import DomainPageMetadataClusters from '../domain-page-metadata-clusters';
 
-jest.mock('@/views/shared/domain-cluster-selector/helpers/get-cluster-replication-status-label');
+jest.mock(
+  '@/views/shared/domain-cluster-selector/helpers/get-cluster-replication-status-label'
+);
 
 describe(DomainPageMetadataClusters.name, () => {
   it('renders plain text for single cluster', async () => {
