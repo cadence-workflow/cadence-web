@@ -1,4 +1,4 @@
-import DomainPageClusterSelector from '../domain-page-cluster-selector/domain-page-cluster-selector';
+import DomainClusterSelector from '@/views/shared/domain-cluster-selector/domain-cluster-selector';
 import {
   type DomainHeaderInfoItemContentProps,
   type DomainPageHeaderInfoItemsConfig,
@@ -8,7 +8,7 @@ import getClusterOperationMode from '../helpers/get-cluster-operation-mode';
 const domainPageHeaderInfoItemsConfig = [
   {
     title: 'Cluster',
-    component: DomainPageClusterSelector,
+    component: DomainClusterSelector,
     placeholderSize: '120px',
   },
   {

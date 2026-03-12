@@ -7,9 +7,11 @@ import { mockActiveActiveDomain } from '@/views/shared/active-active/__fixtures_
 import {
   mockDomainDescription,
   mockDomainDescriptionSingleCluster,
-} from '../../__fixtures__/domain-description';
-import { type DomainDescription } from '../../domain-page.types';
-import DomainPageClusterSelector from '../domain-page-cluster-selector';
+} from '@/views/domain-page/__fixtures__/domain-description';
+import getClusterReplicationStatusLabel from '@/views/domain-page/helpers/get-cluster-replication-status-label';
+import { type DomainDescription } from '@/views/domain-page/domain-page.types';
+
+import DomainClusterSelector from '../domain-cluster-selector';
 
 const mockPushFn = jest.fn();
 jest.mock('next/navigation', () => ({
@@ -29,9 +31,7 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
-jest.mock('../../helpers/get-cluster-replication-status-label');
-
-describe(DomainPageClusterSelector.name, () => {
+describe(DomainClusterSelector.name, () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -93,8 +93,11 @@ describe(DomainPageClusterSelector.name, () => {
     ).toBeInTheDocument();
   });
 
-  it('Should show primary label only for active cluster in active-active domains', () => {
-    setup({ domainDescription: mockActiveActiveDomain, cluster: 'cluster0' });
+  it('Should show default label only for active cluster in active-active domains', () => {
+    setup({
+      domainDescription: mockActiveActiveDomain as DomainDescription,
+      cluster: 'cluster0',
+    });
 
     const clusterSelect = screen.getByRole('combobox');
 
@@ -105,7 +108,7 @@ describe(DomainPageClusterSelector.name, () => {
     const clustersMenu = screen.getByRole('listbox');
 
     expect(
-      within(clustersMenu).getByText('cluster0 (primary)')
+      within(clustersMenu).getByText('cluster0 (default)')
     ).toBeInTheDocument();
     expect(within(clustersMenu).getByText('cluster1')).toBeInTheDocument();
   });
@@ -119,9 +122,10 @@ function setup({
   cluster?: string;
 }) {
   render(
-    <DomainPageClusterSelector
+    <DomainClusterSelector
       cluster={cluster}
       domainDescription={domainDescription}
+      getReplicationStatusLabel={getClusterReplicationStatusLabel}
     />
   );
 }

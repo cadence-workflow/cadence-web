@@ -13,8 +13,16 @@ export const styled = {
 export const overrides = {
   select: {
     Root: {
-      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
-        paddingTop: $theme.sizing.scale100,
+      style: ({
+        $theme,
+        $noSpacing,
+      }: {
+        $theme: Theme;
+        $noSpacing?: boolean;
+      }): StyleObject => ({
+        ...($noSpacing ? {} : { paddingTop: $theme.sizing.scale100 }),
+        width: 'fit-content',
+        maxWidth: '200px',
       }),
     },
     ControlContainer: {
