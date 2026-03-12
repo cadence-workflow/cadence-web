@@ -29,6 +29,10 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
+jest.mock(
+  '@/views/shared/domain-cluster-selector/helpers/get-cluster-replication-status-label'
+);
+
 describe(DomainClusterSelector.name, () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -106,7 +110,7 @@ describe(DomainClusterSelector.name, () => {
     const clustersMenu = screen.getByRole('listbox');
 
     expect(
-      within(clustersMenu).getByText('cluster0 (default)')
+      within(clustersMenu).getByText('cluster0 (primary)')
     ).toBeInTheDocument();
     expect(within(clustersMenu).getByText('cluster1')).toBeInTheDocument();
   });

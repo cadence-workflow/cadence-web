@@ -16,7 +16,7 @@ import getClusterReplicationStatusLabel from './helpers/get-cluster-replication-
 export default function DomainClusterSelector({
   domainDescription,
   cluster,
-  buildPathForCluster: buildPathForClusterProp,
+  buildPathForCluster,
   singleClusterFallbackType = 'label',
   noSpacing = false,
 }: Props): React.ReactNode {
@@ -49,7 +49,7 @@ export default function DomainClusterSelector({
   });
 
   const buildPath =
-    buildPathForClusterProp ??
+    buildPathForCluster ??
     ((newCluster: string) =>
       buildDomainClusterPath({
         domain: decodedParams.domain,

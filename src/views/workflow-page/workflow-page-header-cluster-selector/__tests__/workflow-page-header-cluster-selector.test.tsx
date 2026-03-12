@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 
 import { HttpResponse } from 'msw';
 
-import { render, screen } from '@/test-utils/rtl';
+import { render, screen, within } from '@/test-utils/rtl';
 
 import ErrorBoundary from '@/components/error-boundary/error-boundary';
 import { mockDomainDescription } from '@/views/domain-page/__fixtures__/domain-description';
@@ -63,13 +63,21 @@ describe(WorkflowPageHeaderClusterSelector.name, () => {
     expect(
       await screen.findByTestId('domain-cluster-selector')
     ).toBeInTheDocument();
-    expect(await screen.findByTestId('single-cluster-fallback-type')).toBe(
-      'none'
+
+    const singleClusterFallbackTypeDiv = screen.getByTestId(
+      'single-cluster-fallback-type'
     );
-    expect(await screen.findByTestId('no-spacing')).toBe('true');
-    expect(await screen.findByTestId('domain-description')).toBe(
-      JSON.stringify(mockDomainDescription)
-    );
+    expect(
+      within(singleClusterFallbackTypeDiv).getByText('none')
+    ).toBeInTheDocument();
+
+    const noSpacing = screen.getByTestId('no-spacing');
+    expect(within(noSpacing).getByText('true')).toBeInTheDocument();
+
+    const domainDescription = screen.getByTestId('domain-description');
+    expect(
+      within(domainDescription).getByText(JSON.stringify(mockDomainDescription))
+    ).toBeInTheDocument();
   });
 
   it('shows throw an error when domain API returns an error', async () => {
@@ -77,7 +85,7 @@ describe(WorkflowPageHeaderClusterSelector.name, () => {
 
     expect(await screen.findByText('Error loading domain')).toBeInTheDocument();
     expect(
-      await screen.findByTestId('domain-cluster-selector')
+      await screen.queryByTestId('domain-cluster-selector')
     ).not.toBeInTheDocument();
   });
 
@@ -85,9 +93,10 @@ describe(WorkflowPageHeaderClusterSelector.name, () => {
     setup({ domain: 'mock-domain', cluster: 'cluster_1' });
 
     await screen.findByTestId('domain-cluster-selector');
-    expect(await screen.findByTestId('build-path-for-cluster')).toBe(
-      'function'
-    );
+    const buildPathForClusterDiv = screen.getByTestId('build-path-for-cluster');
+    expect(
+      within(buildPathForClusterDiv).getByText('function')
+    ).toBeInTheDocument();
   });
 });
 
