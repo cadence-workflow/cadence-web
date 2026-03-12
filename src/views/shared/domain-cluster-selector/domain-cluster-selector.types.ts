@@ -1,11 +1,5 @@
 import { type DomainDescription } from '@/views/domain-page/domain-page.types';
 
-export type BuildPathForClusterParams = {
-  newCluster: string;
-  domainName: string;
-  domainTab: string;
-};
-
 export type Props = {
   domainDescription: DomainDescription;
   cluster: string;
@@ -13,7 +7,7 @@ export type Props = {
     domainDescription: DomainDescription,
     clusterName: string
   ) => string | undefined;
-  buildPathForCluster?: (params: BuildPathForClusterParams) => string;
+  buildPathForCluster?: (cluster: string) => string;
   singleClusterRender?: 'label' | 'none';
   noSpacing?: boolean;
 };

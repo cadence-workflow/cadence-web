@@ -1,19 +1,16 @@
 'use client';
 import React from 'react';
 
+import { mergeOverrides } from 'baseui';
 import { Select, SIZE } from 'baseui/select';
 import { type Route } from 'next';
 import { useRouter, useParams } from 'next/navigation';
 
-import decodeUrlParams from '@/utils/decode-url-params';
+import { type DomainPageTabsParams } from '@/views/domain-page/domain-page-tabs/domain-page-tabs.types';
 import getClusterReplicationStatusLabel from '@/views/domain-page/helpers/get-cluster-replication-status-label';
 
 import { overrides, styled } from './domain-cluster-selector.styles';
-import type {
-  BuildPathForClusterParams,
-  Props,
-} from './domain-cluster-selector.types';
-import { DomainPageTabsParams } from '@/views/domain-page/domain-page-tabs/domain-page-tabs.types';
+import type { Props } from './domain-cluster-selector.types';
 
 export default function DomainClusterSelector({
   domainDescription,
@@ -25,7 +22,6 @@ export default function DomainClusterSelector({
 }: Props): React.ReactNode {
   const router = useRouter();
   const encodedParams = useParams<DomainPageTabsParams>();
-  const decodedParams = decodeUrlParams(encodedParams) as DomainPageTabsParams;
 
   const hasMultipleClusters =
     domainDescription.clusters && domainDescription.clusters.length > 1;
@@ -53,19 +49,21 @@ export default function DomainClusterSelector({
 
   const buildPath =
     buildPathForClusterProp ??
-    ((params: BuildPathForClusterParams) => {
-      const domainTabSegment = params.domainTab
-        ? `/${encodeURIComponent(params.domainTab)}`
+    ((newCluster: string) => {
+      const domainTabSegment = encodedParams.domainTab
+        ? `/${encodedParams.domainTab}`
         : '';
 
-      return `/domains/${encodeURIComponent(params.domainName)}/${encodeURIComponent(params.newCluster)}${domainTabSegment}` as Route;
+      return `/domains/${encodeURIComponent(encodedParams.domain)}/${encodeURIComponent(newCluster)}${domainTabSegment}` as Route;
     });
 
   return (
     <Select
-      overrides={overrides.select}
-      // @ts-ignore : TODO @assem.hafez: find the recommended solution for this
-      $noSpacing={noSpacing}
+      overrides={
+        noSpacing
+          ? overrides.baseSelect
+          : mergeOverrides(overrides.baseSelect, overrides.spacedSelect)
+      }
       options={clusterSelectorOptions}
       value={[
         clusterSelectorOptions.find(({ id }) => id === cluster) ?? {
@@ -75,13 +73,7 @@ export default function DomainClusterSelector({
       ]}
       onChange={({ option }) => {
         if (option?.id != null && String(option.id) !== cluster) {
-          router.push(
-            buildPath({
-              newCluster: String(option.id),
-              domainName: decodedParams.domain ?? '',
-              domainTab: decodedParams.domainTab ?? '',
-            })
-          );
+          router.push(buildPath(String(option.id)));
         }
       }}
       placeholder=""

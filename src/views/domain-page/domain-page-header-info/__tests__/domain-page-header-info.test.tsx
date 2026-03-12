@@ -27,14 +27,7 @@ jest.mock(
 
 jest.mock(
   '@/views/shared/domain-cluster-selector/domain-cluster-selector',
-  () => {
-    const React = require('react');
-    return jest.fn(() =>
-      React.createElement('div', {
-        'data-testid': 'mock-domain-cluster-selector',
-      })
-    );
-  }
+  () => jest.fn(() => <div data-testid="mock-domain-cluster-selector" />)
 );
 
 describe(DomainPageHeaderInfo.name, () => {

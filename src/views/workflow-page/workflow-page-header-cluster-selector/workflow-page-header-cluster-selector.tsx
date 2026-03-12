@@ -5,7 +5,6 @@ import { type Route } from 'next';
 import { useParams } from 'next/navigation';
 
 import DomainClusterSelector from '@/views/shared/domain-cluster-selector/domain-cluster-selector';
-import type { BuildPathForClusterParams } from '@/views/shared/domain-cluster-selector/domain-cluster-selector.types';
 import useSuspenseDomainDescription from '@/views/shared/hooks/use-domain-description/use-suspense-domain-description';
 
 import { type WorkflowPageTabsParams } from '../workflow-page-tabs/workflow-page-tabs.types';
@@ -23,7 +22,7 @@ export default function WorkflowPageHeaderClusterSelector({
 
   const encodedParams = useParams<WorkflowPageTabsParams>();
 
-  const buildPathForCluster = ({ newCluster }: BuildPathForClusterParams) => {
+  const buildPathForCluster = (newCluster: string) => {
     const workflowTabSegment = encodedParams.workflowTab
       ? `/${encodedParams.workflowTab}`
       : '';

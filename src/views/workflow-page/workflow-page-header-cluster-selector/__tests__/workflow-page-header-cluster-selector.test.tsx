@@ -1,38 +1,19 @@
-import type React from 'react';
-import { Suspense } from 'react';
+import React, { Suspense } from 'react';
 
 import { HttpResponse } from 'msw';
 
-import {
-  render,
-  screen,
-  fireEvent,
-  act,
-  within,
-  waitFor,
-} from '@/test-utils/rtl';
+import { render, screen } from '@/test-utils/rtl';
 
-import type { HttpEndpointMock } from '@/test-utils/msw-mock-handlers/msw-mock-handlers.types';
-import {
-  mockDomainDescription,
-  mockDomainDescriptionSingleCluster,
-} from '@/views/domain-page/__fixtures__/domain-description';
+import ErrorBoundary from '@/components/error-boundary/error-boundary';
+import { mockDomainDescription } from '@/views/domain-page/__fixtures__/domain-description';
 import { type DomainDescription } from '@/views/domain-page/domain-page.types';
-import { mockActiveActiveDomain } from '@/views/shared/active-active/__fixtures__/active-active-domain';
+import type { Props as DomainClusterSelectorProps } from '@/views/shared/domain-cluster-selector/domain-cluster-selector.types';
 
 import WorkflowPageHeaderClusterSelector from '../workflow-page-header-cluster-selector';
+import { type Props } from '../workflow-page-header-cluster-selector.types';
 
-const mockPushFn = jest.fn();
 jest.mock('next/navigation', () => ({
   ...jest.requireActual('next/navigation'),
-  useRouter: () => ({
-    push: mockPushFn,
-    back: () => {},
-    replace: () => {},
-    forward: () => {},
-    prefetch: () => {},
-    refresh: () => {},
-  }),
   useParams: () => ({
     domain: 'mock-domain',
     cluster: 'cluster_1',
@@ -42,68 +23,18 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
+const MockDomainClusterSelector = jest.fn(
+  (props: DomainClusterSelectorProps) => (
+    <div data-testid="domain-cluster-selector">{props.cluster}</div>
+  )
+);
 jest.mock(
   '@/views/shared/domain-cluster-selector/domain-cluster-selector',
-  () => {
-    const React = require('react');
-    const { useRouter, useParams } = require('next/navigation');
-    return function MockDomainClusterSelector(props: {
-      domainDescription: DomainDescription;
-      cluster: string;
-      buildPathForCluster?: (params: {
-        newCluster: string;
-        domainName: string;
-        domainTab: string;
-      }) => string;
-      singleClusterRender?: 'label' | 'none';
-    }) {
-      const router = useRouter();
-      const params = useParams() as {
-        domain?: string;
-        workflowTab?: string;
-      };
-      const hasMultipleClusters =
-        props.domainDescription.clusters &&
-        props.domainDescription.clusters.length > 1;
-
-      if (!hasMultipleClusters) {
-        if (props.singleClusterRender === 'label') {
-          return <span data-testid="cluster-label">{props.cluster}</span>;
-        }
-        return null;
-      }
-
-      const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const newCluster = e.target.value;
-        const path =
-          props.buildPathForCluster?.({
-            newCluster,
-            domainName: params.domain ?? '',
-            domainTab: params.workflowTab ?? '',
-          }) ?? '';
-        if (path) router.push(path);
-      };
-
-      return (
-        <div data-testid="domain-cluster-selector">
-          <span data-testid="current-cluster">{props.cluster}</span>
-          <select
-            data-testid="cluster-combobox"
-            role="combobox"
-            aria-haspopup="listbox"
-            value={props.cluster}
-            onChange={handleChange}
-          >
-            {(props.domainDescription.clusters ?? []).map((c) => (
-              <option key={c.clusterName} value={c.clusterName}>
-                {c.clusterName}
-              </option>
-            ))}
-          </select>
-        </div>
-      );
-    };
-  }
+  () => ({
+    __esModule: true,
+    default: (props: DomainClusterSelectorProps) =>
+      MockDomainClusterSelector(props),
+  })
 );
 
 describe(WorkflowPageHeaderClusterSelector.name, () => {
@@ -111,139 +42,78 @@ describe(WorkflowPageHeaderClusterSelector.name, () => {
     jest.clearAllMocks();
   });
 
-  const defaultEndpointsMocks = [
-    {
-      path: '/api/domains/:domain/:cluster',
-      httpMethod: 'GET' as const,
-      mockOnce: false,
-      httpResolver: () => HttpResponse.json(mockDomainDescription),
-    },
-  ];
-
-  it('Should render current cluster correctly', async () => {
-    setup(
-      { domain: 'mock-domain', cluster: 'cluster_1' },
-      defaultEndpointsMocks
-    );
+  it('renders DomainClusterSelector with correct props', async () => {
+    setup({ domain: 'mock-domain', cluster: 'cluster_1' });
 
     expect(
       await screen.findByTestId('domain-cluster-selector')
     ).toBeInTheDocument();
-    expect(screen.getByTestId('current-cluster')).toHaveTextContent(
-      'cluster_1'
-    );
-    expect(screen.getByRole('combobox')).toBeInTheDocument();
-  });
-
-  it('Should render nothing for single cluster (cluster omitted from breadcrumb)', async () => {
-    setup({ domain: 'mock-domain', cluster: 'cluster_1' }, [
-      {
-        path: '/api/domains/:domain/:cluster',
-        httpMethod: 'GET' as const,
-        mockOnce: false,
-        httpResolver: () =>
-          HttpResponse.json(mockDomainDescriptionSingleCluster),
-      },
-    ]);
-
-    await waitFor(
-      () => {
-        expect(screen.queryByTestId('domain-cluster-selector')).toBeNull();
-      },
-      { timeout: 2000 }
+    expect(MockDomainClusterSelector).toHaveBeenCalledTimes(1);
+    expect(MockDomainClusterSelector).toHaveBeenCalledWith(
+      expect.objectContaining({
+        domainDescription: mockDomainDescription,
+        cluster: 'cluster_1',
+        singleClusterRender: 'none',
+        noSpacing: true,
+      })
     );
   });
 
-  it('Should render nothing when clusters is empty or undefined', async () => {
-    setup({ domain: 'mock-domain', cluster: 'cluster_1' }, [
-      {
-        path: '/api/domains/:domain/:cluster',
-        httpMethod: 'GET' as const,
-        mockOnce: false,
-        httpResolver: () =>
-          HttpResponse.json({
-            ...mockDomainDescriptionSingleCluster,
-            clusters: [],
-          } as DomainDescription),
-      },
-    ]);
+  it('shows throw an error when domain API returns an error', async () => {
+    setup({ domain: 'mock-domain', cluster: 'cluster_1', isError: true });
 
-    await waitFor(
-      () => {
-        expect(screen.queryByTestId('domain-cluster-selector')).toBeNull();
-      },
-      { timeout: 2000 }
-    );
+    expect(await screen.findByText('Error loading domain')).toBeInTheDocument();
+    expect(MockDomainClusterSelector).not.toHaveBeenCalled();
   });
 
-  it('Should show available clusters and redirect when one is selected', async () => {
-    setup(
-      { domain: 'mock-domain', cluster: 'cluster_1' },
-      defaultEndpointsMocks
-    );
+  it('passes buildPathForCluster that builds workflow page path with encoded segments', async () => {
+    setup({ domain: 'mock-domain', cluster: 'cluster_1' });
 
-    expect(await screen.findByTestId('current-cluster')).toHaveTextContent(
-      'cluster_1'
-    );
-    const clusterSelect = screen.getByRole('combobox');
+    await screen.findByTestId('domain-cluster-selector');
+    const buildPathForCluster =
+      MockDomainClusterSelector.mock.calls[0][0].buildPathForCluster;
+    expect(buildPathForCluster).toBeDefined();
 
-    act(() => {
-      fireEvent.change(clusterSelect, { target: { value: 'cluster_2' } });
-    });
-
-    expect(mockPushFn).toHaveBeenCalledWith(
+    expect(buildPathForCluster!('cluster_2')).toBe(
       '/domains/mock-domain/cluster_2/workflows/workflow-123/run-456/summary'
     );
-  });
 
-  it('Should show active/passive labels for active-passive domains', async () => {
-    setup(
-      { domain: 'mock-domain', cluster: 'cluster_1' },
-      defaultEndpointsMocks
+    expect(buildPathForCluster!('cluster_with_special%chars')).toBe(
+      '/domains/mock-domain/cluster_with_special%25chars/workflows/workflow-123/run-456/summary'
     );
-
-    await screen.findByTestId('domain-cluster-selector');
-    const clusterSelect = screen.getByRole('combobox');
-    const options = within(clusterSelect).getAllByRole('option');
-
-    expect(options.map((o) => o.textContent)).toContain('cluster_1');
-    expect(options.map((o) => o.textContent)).toContain('cluster_2');
-  });
-
-  it('Should show default label only for active cluster in active-active domains', async () => {
-    setup({ domain: 'mock-domain', cluster: 'cluster0' }, [
-      {
-        path: '/api/domains/:domain/:cluster',
-        httpMethod: 'GET' as const,
-        mockOnce: false,
-        httpResolver: () =>
-          HttpResponse.json(mockActiveActiveDomain as DomainDescription),
-      },
-    ]);
-
-    await screen.findByTestId('domain-cluster-selector');
-    const clusterSelect = screen.getByRole('combobox');
-    const options = within(clusterSelect).getAllByRole('option');
-
-    expect(options.map((o) => o.textContent)).toContain('cluster0');
-    expect(options.map((o) => o.textContent)).toContain('cluster1');
   });
 });
 
-function setup(
-  {
-    domain,
-    cluster,
-  }: {
-    domain: string;
-    cluster: string;
-  },
-  endpointsMocks: HttpEndpointMock[]
-) {
+function setup({
+  domain,
+  cluster,
+  domainDescription = mockDomainDescription,
+  isError,
+}: Props & {
+  domainDescription?: DomainDescription;
+  isError?: boolean;
+}) {
   render(
-    <Suspense fallback={null}>
-      <WorkflowPageHeaderClusterSelector domain={domain} cluster={cluster} />
-    </Suspense>,
-    { endpointsMocks }
+    <ErrorBoundary
+      fallbackRender={() => <div>Error loading domain</div>}
+      omitLogging
+    >
+      <Suspense fallback={null}>
+        <WorkflowPageHeaderClusterSelector domain={domain} cluster={cluster} />
+      </Suspense>
+    </ErrorBoundary>,
+    {
+      endpointsMocks: [
+        {
+          path: '/api/domains/:domain/:cluster',
+          httpMethod: 'GET',
+          mockOnce: false,
+          httpResolver: () =>
+            isError
+              ? HttpResponse.json({ message: 'Error' }, { status: 500 })
+              : HttpResponse.json(domainDescription),
+        },
+      ],
+    }
   );
 }

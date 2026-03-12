@@ -11,19 +11,12 @@ export const styled = {
 };
 
 export const overrides = {
-  select: {
+  baseSelect: {
     Root: {
-      style: ({
-        $theme,
-        $noSpacing,
-      }: {
-        $theme: Theme;
-        $noSpacing?: boolean;
-      }): StyleObject => ({
-        ...($noSpacing ? {} : { paddingTop: $theme.sizing.scale100 }),
+      style: {
         width: 'fit-content',
         maxWidth: '200px',
-      }),
+      },
     },
     ControlContainer: {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
@@ -32,4 +25,11 @@ export const overrides = {
       }),
     },
   } satisfies SelectOverrides,
+  spacedSelect: {
+    Root: {
+      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+        paddingTop: $theme.sizing.scale100,
+      }),
+    },
+  },
 };
