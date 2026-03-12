@@ -8,6 +8,6 @@ export default function buildDomainClusterPath({
   cluster,
   domainTab,
 }: BuildDomainClusterPathParams): string {
-  const domainTabSegment = domainTab ? `/${decodeURIComponent(domainTab)}` : '';
+  const domainTabSegment = domainTab ? `/${encodeURIComponent(domainTab)}` : '';
   return `/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}${domainTabSegment}`;
 }
