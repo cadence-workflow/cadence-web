@@ -2,13 +2,12 @@
 import React from 'react';
 
 import { mergeOverrides } from 'baseui';
-import { Select, SIZE } from 'baseui/select';
-import { type Route } from 'next';
+import { Select } from 'baseui/select';
 import { useRouter, useParams } from 'next/navigation';
 
 import { type DomainPageTabsParams } from '@/views/domain-page/domain-page-tabs/domain-page-tabs.types';
-import getClusterReplicationStatusLabel from '@/views/domain-page/helpers/get-cluster-replication-status-label';
 
+import getClusterReplicationStatusLabel from './helpers/get-cluster-replication-status-label';
 import { overrides, styled } from './domain-cluster-selector.styles';
 import type { Props } from './domain-cluster-selector.types';
 
@@ -76,7 +75,7 @@ export default function DomainClusterSelector({
         }
       }}
       placeholder=""
-      size={SIZE.mini}
+      size="mini"
       backspaceRemoves={false}
       clearable={false}
       deleteRemoves={false}

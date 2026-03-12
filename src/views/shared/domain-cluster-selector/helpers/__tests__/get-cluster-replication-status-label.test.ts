@@ -3,7 +3,7 @@ import { mockActiveActiveDomain } from '@/views/shared/active-active/__fixtures_
 import {
   mockDomainDescription,
   mockDomainDescriptionSingleCluster,
-} from '../../__fixtures__/domain-description';
+} from '@/views/domain-page/__fixtures__/domain-description';
 import getClusterReplicationStatusLabel from '../get-cluster-replication-status-label';
 
 jest.mock('@/views/shared/active-active/helpers/is-active-active-domain');
