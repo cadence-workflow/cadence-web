@@ -4,6 +4,12 @@ export type Props = {
   domainDescription: DomainDescription;
   cluster: string;
   buildPathForCluster?: (cluster: string) => string;
-  singleClusterRender?: 'label' | 'none';
+  singleClusterFallbackType?: 'label' | 'none';
   noSpacing?: boolean;
+};
+
+export type BuildDomainClusterPathParams = {
+  domain: string;
+  cluster: string;
+  domainTab?: string;
 };

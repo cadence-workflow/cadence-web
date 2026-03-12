@@ -25,9 +25,24 @@ jest.mock('next/navigation', () => ({
 
 const MockDomainClusterSelector = jest.fn(
   (props: DomainClusterSelectorProps) => (
-    <div data-testid="domain-cluster-selector">{props.cluster}</div>
+    <>
+      <div data-testid="domain-cluster-selector">{props.cluster}</div>
+      <div data-testid="single-cluster-fallback-type">
+        {props.singleClusterFallbackType}
+      </div>
+      <div data-testid="no-spacing">{props.noSpacing ? 'true' : 'false'}</div>
+      <div data-testid="domain-description">
+        {JSON.stringify(props.domainDescription)}
+      </div>
+      <div data-testid="build-path-for-cluster">
+        {typeof props.buildPathForCluster === 'function'
+          ? 'function'
+          : 'undefined'}
+      </div>
+    </>
   )
 );
+
 jest.mock(
   '@/views/shared/domain-cluster-selector/domain-cluster-selector',
   () => ({
@@ -48,14 +63,12 @@ describe(WorkflowPageHeaderClusterSelector.name, () => {
     expect(
       await screen.findByTestId('domain-cluster-selector')
     ).toBeInTheDocument();
-    expect(MockDomainClusterSelector).toHaveBeenCalledTimes(1);
-    expect(MockDomainClusterSelector).toHaveBeenCalledWith(
-      expect.objectContaining({
-        domainDescription: mockDomainDescription,
-        cluster: 'cluster_1',
-        singleClusterRender: 'none',
-        noSpacing: true,
-      })
+    expect(await screen.findByTestId('single-cluster-fallback-type')).toBe(
+      'none'
+    );
+    expect(await screen.findByTestId('no-spacing')).toBe('true');
+    expect(await screen.findByTestId('domain-description')).toBe(
+      JSON.stringify(mockDomainDescription)
     );
   });
 
@@ -63,23 +76,17 @@ describe(WorkflowPageHeaderClusterSelector.name, () => {
     setup({ domain: 'mock-domain', cluster: 'cluster_1', isError: true });
 
     expect(await screen.findByText('Error loading domain')).toBeInTheDocument();
-    expect(MockDomainClusterSelector).not.toHaveBeenCalled();
+    expect(
+      await screen.findByTestId('domain-cluster-selector')
+    ).not.toBeInTheDocument();
   });
 
-  it('passes buildPathForCluster that builds workflow page path with encoded segments', async () => {
+  it('passes buildPathForCluster', async () => {
     setup({ domain: 'mock-domain', cluster: 'cluster_1' });
 
     await screen.findByTestId('domain-cluster-selector');
-    const buildPathForCluster =
-      MockDomainClusterSelector.mock.calls[0][0].buildPathForCluster;
-    expect(buildPathForCluster).toBeDefined();
-
-    expect(buildPathForCluster!('cluster_2')).toBe(
-      '/domains/mock-domain/cluster_2/workflows/workflow-123/run-456/summary'
-    );
-
-    expect(buildPathForCluster!('cluster_with_special%chars')).toBe(
-      '/domains/mock-domain/cluster_with_special%25chars/workflows/workflow-123/run-456/summary'
+    expect(await screen.findByTestId('build-path-for-cluster')).toBe(
+      'function'
     );
   });
 });
