@@ -5,8 +5,8 @@
  * For further customization, override the implementation of this resolver.
  *
  * Server version behaviour:
- * - > 1.3.6 (still hasn't been released yet): The Failover History API will work as expected.
- * - <= 1.3.6: The Failover History API will return a GRPC unimplemented error (maps to HTTP 404 in the client).
+ * - >= 1.4.0: The Failover History API will work as expected.
+ * - < 1.4.0: The Failover History API will return a GRPC unimplemented error (maps to HTTP 404 in the client).
  *
  * @returns {Promise<boolean>} Whether failover history UI is enabled.
  */
