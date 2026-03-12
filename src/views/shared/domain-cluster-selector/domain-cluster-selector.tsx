@@ -15,7 +15,6 @@ import type { Props } from './domain-cluster-selector.types';
 export default function DomainClusterSelector({
   domainDescription,
   cluster,
-  getReplicationStatusLabel = getClusterReplicationStatusLabel,
   buildPathForCluster: buildPathForClusterProp,
   singleClusterRender = 'label',
   noSpacing = false,
@@ -34,7 +33,7 @@ export default function DomainClusterSelector({
   }
 
   const clusterSelectorOptions = (domainDescription.clusters ?? []).map((c) => {
-    const replicationStatusLabel = getReplicationStatusLabel(
+    const replicationStatusLabel = getClusterReplicationStatusLabel(
       domainDescription,
       c.clusterName
     );
@@ -72,7 +71,7 @@ export default function DomainClusterSelector({
         },
       ]}
       onChange={({ option }) => {
-        if (option?.id != null && String(option.id) !== cluster) {
+        if (option?.id && String(option.id) !== cluster) {
           router.push(buildPath(String(option.id)));
         }
       }}
