@@ -8,9 +8,9 @@ import DomainClusterSelector from '@/views/shared/domain-cluster-selector/domain
 import type { BuildPathForClusterParams } from '@/views/shared/domain-cluster-selector/domain-cluster-selector.types';
 import useSuspenseDomainDescription from '@/views/shared/hooks/use-domain-description/use-suspense-domain-description';
 
+import { type WorkflowPageTabsParams } from '../workflow-page-tabs/workflow-page-tabs.types';
+
 import type { Props } from './workflow-page-header-cluster-selector.types';
-import { WorkflowPageTabsParams } from '../workflow-page-tabs/workflow-page-tabs.types';
-import decodeUrlParams from '@/utils/decode-url-params';
 
 export default function WorkflowPageHeaderClusterSelector({
   domain,
@@ -22,22 +22,18 @@ export default function WorkflowPageHeaderClusterSelector({
   });
 
   const encodedParams = useParams<WorkflowPageTabsParams>();
-  const decodedParams = decodeUrlParams(encodedParams) as WorkflowPageTabsParams;
 
-  const buildPathForCluster = ({
-    newCluster,
-    domainName,
-  }: BuildPathForClusterParams) =>{
+  const buildPathForCluster = ({ newCluster }: BuildPathForClusterParams) => {
     const workflowTabSegment = encodedParams.workflowTab
-    ? `/${encodedParams.workflowTab}`
-    : '';
-    return `/domains/${encodeURIComponent(domainName)}/${encodeURIComponent(newCluster)}/workflows/${encodedParams.workflowId}/${encodedParams.runId}${workflowTabSegment}` as Route;
-  }
+      ? `/${encodedParams.workflowTab}`
+      : '';
+    return `/domains/${encodeURIComponent(domain)}/${encodeURIComponent(newCluster)}/workflows/${encodedParams.workflowId}/${encodedParams.runId}${workflowTabSegment}` as Route;
+  };
 
   return (
     <DomainClusterSelector
       domainDescription={domainDescription}
-      cluster={decodedParams.cluster}
+      cluster={cluster}
       buildPathForCluster={buildPathForCluster}
       singleClusterRender="none"
       noSpacing={true}

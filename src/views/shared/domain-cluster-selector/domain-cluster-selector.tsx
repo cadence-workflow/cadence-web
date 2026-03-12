@@ -5,6 +5,7 @@ import { Select, SIZE } from 'baseui/select';
 import { type Route } from 'next';
 import { useRouter, useParams } from 'next/navigation';
 
+import decodeUrlParams from '@/utils/decode-url-params';
 import getClusterReplicationStatusLabel from '@/views/domain-page/helpers/get-cluster-replication-status-label';
 
 import { overrides, styled } from './domain-cluster-selector.styles';
@@ -12,7 +13,7 @@ import type {
   BuildPathForClusterParams,
   Props,
 } from './domain-cluster-selector.types';
-import decodeUrlParams from '@/utils/decode-url-params';
+import { DomainPageTabsParams } from '@/views/domain-page/domain-page-tabs/domain-page-tabs.types';
 
 export default function DomainClusterSelector({
   domainDescription,
@@ -23,9 +24,8 @@ export default function DomainClusterSelector({
   noSpacing = false,
 }: Props): React.ReactNode {
   const router = useRouter();
-  const params = useParams<{ domain?: string; domainTab?: string }>();
-  const decodedParams = decodeUrlParams(params) as { domain?: string; domainTab?: string };
-
+  const encodedParams = useParams<DomainPageTabsParams>();
+  const decodedParams = decodeUrlParams(encodedParams) as DomainPageTabsParams;
 
   const hasMultipleClusters =
     domainDescription.clusters && domainDescription.clusters.length > 1;
@@ -53,8 +53,13 @@ export default function DomainClusterSelector({
 
   const buildPath =
     buildPathForClusterProp ??
-    ((params: BuildPathForClusterParams) =>
-      `/domains/${encodeURIComponent(params.domainName)}/${encodeURIComponent(params.newCluster)}/${encodeURIComponent(params.domainTab) ?? ''}` as Route);
+    ((params: BuildPathForClusterParams) => {
+      const domainTabSegment = params.domainTab
+        ? `/${encodeURIComponent(params.domainTab)}`
+        : '';
+
+      return `/domains/${encodeURIComponent(params.domainName)}/${encodeURIComponent(params.newCluster)}${domainTabSegment}` as Route;
+    });
 
   return (
     <Select

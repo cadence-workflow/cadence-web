@@ -1,4 +1,4 @@
-import { DomainDescription } from "@/views/domain-page/domain-page.types";
+import { type DomainDescription } from '@/views/domain-page/domain-page.types';
 
 export type BuildPathForClusterParams = {
   newCluster: string;

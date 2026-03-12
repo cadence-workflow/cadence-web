@@ -27,7 +27,9 @@ jest.mock(
     }: {
       cluster: string;
     }) {
-      return <span data-testid="workflow-page-cluster-selector">{cluster}</span>;
+      return (
+        <span data-testid="workflow-page-cluster-selector">{cluster}</span>
+      );
     }
 );
 

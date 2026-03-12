@@ -1,4 +1,5 @@
 import DomainClusterSelector from '@/views/shared/domain-cluster-selector/domain-cluster-selector';
+
 import {
   type DomainHeaderInfoItemContentProps,
   type DomainPageHeaderInfoItemsConfig,

@@ -2,14 +2,13 @@ import React from 'react';
 
 import { render, screen, fireEvent, act, within } from '@/test-utils/rtl';
 
-import { mockActiveActiveDomain } from '@/views/shared/active-active/__fixtures__/active-active-domain';
-
 import {
   mockDomainDescription,
   mockDomainDescriptionSingleCluster,
 } from '@/views/domain-page/__fixtures__/domain-description';
-import getClusterReplicationStatusLabel from '@/views/domain-page/helpers/get-cluster-replication-status-label';
 import { type DomainDescription } from '@/views/domain-page/domain-page.types';
+import getClusterReplicationStatusLabel from '@/views/domain-page/helpers/get-cluster-replication-status-label';
+import { mockActiveActiveDomain } from '@/views/shared/active-active/__fixtures__/active-active-domain';
 
 import DomainClusterSelector from '../domain-cluster-selector';
 
