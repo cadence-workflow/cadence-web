@@ -13,6 +13,18 @@ import {
 
 type AllowedMockGroups = 'mockDomain' | 'mockWorkflow';
 
+const mockParams = {
+  domain: 'test-domain',
+  cluster: 'test-cluster',
+  workflowId: 'test-workflow-id',
+  runId: 'test-run-id',
+};
+
+jest.mock('next/navigation', () => ({
+  ...jest.requireActual('next/navigation'),
+  useParams: () => mockParams,
+}));
+
 jest.mock('@/components/copy-text-button/copy-text-button', () =>
   jest.fn((props) => (
     <button data-testid="copy-text-button" onClick={() => props.textToCopy}>
@@ -37,18 +49,19 @@ jest.mock(
       {
         label: 'List Domains',
         description: 'Displays a list of all domains',
-        command: 'cadence list domains',
+        command: 'cadence --domain {domain-name} list domains',
         group: 'mockDomain',
       },
       {
         label: 'Create Domain',
         description: 'Creates a new domain with the specified name',
-        command: 'cadence create domain',
+        command: 'cadence --domain {domain-name} create domain',
         group: 'mockDomain',
       },
       {
         label: 'Run workflow',
-        command: 'cadence run workflow',
+        command:
+          'cadence --domain {domain-name} workflow run -w {workflow-id} -r {run-id}',
         group: 'mockWorkflow',
       },
     ] as const satisfies CliCommandConfigs<AllowedMockGroups>
@@ -80,38 +93,25 @@ describe('WorkflowPageCliCommandsModal', () => {
     });
   });
 
-  it('displays commands based on the selected tab', async () => {
+  it('displays only commands for the selected tab', async () => {
     const { user } = setup({});
 
-    // Simulate selecting a tab
+    const previousTab = workflowPageCliCommandsGroupsConfig[0];
     const newTab = workflowPageCliCommandsGroupsConfig[1];
     await user.click(screen.getByText(newTab.title));
 
-    // Check if the correct commands are shown
-    const filteredCommands = workflowPageCliCommandsConfig.filter(
+    const newTabCommands = workflowPageCliCommandsConfig.filter(
       (cmd) => cmd.group === newTab.name
     );
+    const previousTabCommands = workflowPageCliCommandsConfig.filter(
+      (cmd) => cmd.group === previousTab.name
+    );
 
-    filteredCommands.forEach(({ label }) => {
+    newTabCommands.forEach(({ label }) => {
       expect(screen.getByText(label)).toBeInTheDocument();
     });
-  });
-
-  it('updates commands when switching tabs', async () => {
-    const { user } = setup({});
-
-    // Simulate selecting a different tab
-    const newTab = workflowPageCliCommandsGroupsConfig[1];
-    await user.click(screen.getByText(newTab.title));
-
-    // Check if the previous tab's commands are not in the document
-    const filteredCommands = workflowPageCliCommandsConfig.filter(
-      (cmd) => cmd.group === newTab.name
-    );
-
-    // Ensure only commands of the selected group are displayed
-    filteredCommands.forEach(({ label }) => {
-      expect(screen.getByText(label)).toBeInTheDocument();
+    previousTabCommands.forEach(({ label }) => {
+      expect(screen.queryByText(label)).not.toBeInTheDocument();
     });
   });
 
@@ -124,6 +124,23 @@ describe('WorkflowPageCliCommandsModal', () => {
     expect(screen.getAllByTestId('copy-text-button').length).toBe(
       initialTabCommands.length
     );
+  });
+
+  it('substitutes all params including workflow and run IDs', async () => {
+    const { user } = setup({});
+
+    // Switch to the workflow tab
+    const workflowTab = workflowPageCliCommandsGroupsConfig[1];
+    await user.click(screen.getByText(workflowTab.title));
+
+    expect(
+      screen.getByText((_content, element) => {
+        return (
+          element?.textContent ===
+          'cadence --domain test-domain workflow run -w test-workflow-id -r test-run-id'
+        );
+      })
+    ).toBeInTheDocument();
   });
 });
 
