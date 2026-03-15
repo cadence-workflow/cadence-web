@@ -16,7 +16,7 @@ export const mockWorkflowExecutions: Array<WorkflowExecutionInfo> = [
     memo: null,
     searchAttributes: null,
     autoResetPoints: null,
-    taskList: '',
+    taskList: 'mock-task-list',
     isCron: false,
     updateTime: null,
     partitionConfig: {},
