@@ -26,7 +26,7 @@ export default function getWorkflowListItemFromExecution(
     closeTime: execution.closeTime
       ? parseGrpcTimestamp(execution.closeTime)
       : undefined,
-    historyLength: parseInt(execution.historyLength),
+    historyLength: parseInt(execution.historyLength, 10),
     taskList: execution.taskList,
     isCron: execution.isCron,
     clusterAttributeScope:
