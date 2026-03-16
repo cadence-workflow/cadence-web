@@ -39,9 +39,9 @@ export type WorkflowListItem = {
   workflowName: string;
   status: WorkflowExecutionCloseStatus;
   startTime: number;
-  executionTime: number | null | undefined;
-  updateTime: number | null | undefined;
-  closeTime: number | null | undefined;
+  executionTime: number | undefined;
+  updateTime: number | undefined;
+  closeTime: number | undefined;
   historyLength: number;
   taskList: string;
   isCron: boolean;

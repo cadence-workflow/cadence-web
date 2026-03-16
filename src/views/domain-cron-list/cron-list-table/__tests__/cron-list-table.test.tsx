@@ -181,6 +181,8 @@ function generateWorkflowPages(count: number): Array<ListWorkflowsResponse> {
           workflowID: `mock-workflow-id-${pageIndex}-${index}`,
           runID: `mock-run-id-${pageIndex}-${index}`,
           workflowName: `mock-workflow-name-${pageIndex}-${index}`,
+          isCron: true,
+          closeTime: undefined,
         })
       ),
       nextPage: `${pageIndex + 1}`,

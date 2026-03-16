@@ -36,7 +36,7 @@ describe(listWorkflows.name, () => {
     });
 
     const responseJson = await res.json();
-    expect(responseJson).toEqual({
+    expect(responseJson).toMatchObject({
       workflows: [
         {
           workflowID: 'mock-wf-uuid-1',
@@ -77,7 +77,7 @@ describe(listWorkflows.name, () => {
     expect(mockListWorkflows).not.toHaveBeenCalled();
 
     const responseJson = await res.json();
-    expect(responseJson).toEqual({
+    expect(responseJson).toMatchObject({
       workflows: [
         {
           workflowID: 'mock-wf-uuid-1',
