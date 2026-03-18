@@ -41,7 +41,6 @@ export const styled = {
     ...$theme.typography.MonoLabelSmall,
     paddingLeft: $theme.sizing.scale300,
     maxWidth: '240px',
-    whiteSpace: 'wrap',
     wordBreak: 'break-all',
   })),
   Actions: createStyled('div', ({ $theme }) => ({
