@@ -13,7 +13,7 @@ import themeProviderOverrides from '@/config/theme/theme-provider-overrides.conf
 import StyletronProvider from '@/providers/styletron-provider';
 
 import MSWMockHandlers from './msw-mock-handlers/msw-mock-handlers';
-import { TestQueryClientRef, type Props } from './test-provider.types';
+import { type TestQueryClientRef, type Props } from './test-provider.types';
 
 jest.mock('next/router', () => require('next-router-mock'));
 
@@ -33,8 +33,6 @@ const disableAnimationOverrides = {
   },
 };
 const CURRENT_TEST_QUERY_CLIENT_KEY = '__CURRENT_TEST_QUERY_CLIENT__';
-
-
 
 /**
  * One ref per process. Jest runs tests in parallel across workers (separate processes);

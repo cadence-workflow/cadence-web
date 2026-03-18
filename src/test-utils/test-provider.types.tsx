@@ -1,6 +1,9 @@
 import { type ReactElement } from 'react';
 
-import { QueryClient, type QueryClientConfig } from '@tanstack/react-query';
+import {
+  type QueryClient,
+  type QueryClientConfig,
+} from '@tanstack/react-query';
 
 import type { Props as MSWMocksHandlersProps } from './msw-mock-handlers/msw-mock-handlers.types';
 
@@ -15,6 +18,5 @@ export type Props = {
   enableAnimations?: boolean;
   isSnapshotTest?: boolean;
 };
-
 
 export type TestQueryClientRef = { current: QueryClient | null };
