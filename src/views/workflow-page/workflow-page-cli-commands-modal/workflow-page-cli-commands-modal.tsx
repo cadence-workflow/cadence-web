@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { SIZE as BUTTON_SIZE } from 'baseui/button';
 import {
@@ -15,14 +15,14 @@ import { useParams } from 'next/navigation';
 
 import CopyTextButton from '@/components/copy-text-button/copy-text-button';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
+import decodeUrlParams from '@/utils/decode-url-params';
 
 import workflowPageCliCommandsGroupsConfig from '../config/workflow-page-cli-commands-groups.config';
 import workflowPageCliCommandsConfig from '../config/workflow-page-cli-commands.config';
 import type { WorkflowPageParams } from '../workflow-page.types';
 
-import substituteCliCommandParams, {
-  substituteCliCommandParamsJSX,
-} from './helpers/substitute-cli-command-params';
+import CliCommandHighlighted from './cli-command-highlighted/cli-command-highlighted';
+import substituteCliCommandParams from './helpers/substitute-cli-command-params';
 import { cssStyles } from './workflow-page-cli-commands-modal.styles';
 import {
   type Props,
@@ -34,12 +34,11 @@ export default function WorkflowPageCliCommandsModal({
   onClose,
 }: Props) {
   const { cls, theme } = useStyletronClasses(cssStyles);
-  const params = useParams<WorkflowPageParams>();
+  const rawParams = useParams<WorkflowPageParams>();
+  const decodedParams = rawParams ? decodeUrlParams(rawParams) : {};
 
-  const substituteParams = useCallback(
-    (command: string) => substituteCliCommandParams(command, params ?? {}),
-    [params]
-  );
+  const substituteParams = (command: string) =>
+    substituteCliCommandParams(command, decodedParams);
 
   const [selectedTab, setSelectedTab] = useState<CliCommandGroups>(
     workflowPageCliCommandsGroupsConfig[0].name
@@ -72,17 +71,18 @@ export default function WorkflowPageCliCommandsModal({
         <div className={cls.commandsScrollContainer}>
           {currentTabCommands.map(({ label, command, description }) => {
             const substitutedCommand = substituteParams(command);
-            const substitutedCommandJSX = substituteCliCommandParamsJSX(
-              command,
-              params ?? {},
-              cls.paramHighlight
-            );
             return (
               <div key={label} className={cls.rowContainer}>
                 <div className={cls.rowLabel}>{label}</div>
                 <div className={cls.rowDetails}>
                   <div className={cls.commandContainer}>
-                    <div>{substitutedCommandJSX}</div>
+                    <div>
+                      <CliCommandHighlighted
+                        command={command}
+                        params={decodedParams}
+                        highlightClassName={cls.paramHighlight}
+                      />
+                    </div>
                     <div className={cls.copyButtonContainer}>
                       <CopyTextButton textToCopy={substitutedCommand} />
                     </div>

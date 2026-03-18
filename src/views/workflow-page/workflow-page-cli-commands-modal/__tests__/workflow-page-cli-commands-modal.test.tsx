@@ -13,7 +13,7 @@ import {
 
 type AllowedMockGroups = 'mockDomain' | 'mockWorkflow';
 
-const mockParams = {
+let mockParams: Record<string, string> = {
   domain: 'test-domain',
   cluster: 'test-cluster',
   workflowId: 'test-workflow-id',
@@ -68,6 +68,15 @@ jest.mock(
 );
 
 describe('WorkflowPageCliCommandsModal', () => {
+  beforeEach(() => {
+    mockParams = {
+      domain: 'test-domain',
+      cluster: 'test-cluster',
+      workflowId: 'test-workflow-id',
+      runId: 'test-run-id',
+    };
+  });
+
   it('renders the modal with header and footer', () => {
     setup({});
     expect(screen.getByText('CLI commands')).toBeInTheDocument();
@@ -98,7 +107,6 @@ describe('WorkflowPageCliCommandsModal', () => {
 
     const previousTab = workflowPageCliCommandsGroupsConfig[0];
     const newTab = workflowPageCliCommandsGroupsConfig[1];
-    await user.click(screen.getByText(newTab.title));
 
     const newTabCommands = workflowPageCliCommandsConfig.filter(
       (cmd) => cmd.group === newTab.name
@@ -107,6 +115,17 @@ describe('WorkflowPageCliCommandsModal', () => {
       (cmd) => cmd.group === previousTab.name
     );
 
+    // Before clicking: previous tab commands shown, new tab commands not shown
+    previousTabCommands.forEach(({ label }) => {
+      expect(screen.getByText(label)).toBeInTheDocument();
+    });
+    newTabCommands.forEach(({ label }) => {
+      expect(screen.queryByText(label)).not.toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText(newTab.title));
+
+    // After clicking: new tab commands shown, previous tab commands not shown
     newTabCommands.forEach(({ label }) => {
       expect(screen.getByText(label)).toBeInTheDocument();
     });
@@ -138,6 +157,24 @@ describe('WorkflowPageCliCommandsModal', () => {
         return (
           element?.textContent ===
           'cadence --domain test-domain workflow run -w test-workflow-id -r test-run-id'
+        );
+      })
+    ).toBeInTheDocument();
+  });
+
+  it('decodes URL-encoded params before substituting', () => {
+    mockParams = {
+      domain: 'test%20domain',
+      cluster: 'test-cluster',
+      workflowId: 'workflow%2Fid',
+      runId: 'run%3Aid',
+    };
+    setup({});
+
+    expect(
+      screen.getByText((_content, element) => {
+        return (
+          element?.textContent === 'cadence --domain test domain list domains'
         );
       })
     ).toBeInTheDocument();
