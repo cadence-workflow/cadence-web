@@ -1,5 +1,4 @@
 import type { WorkflowExecutionInfo } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionInfo';
-import formatPayloadMap from '@/utils/data-formatters/format-payload-map';
 import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
 
 import { type WorkflowListItem } from '../list-workflows.types';
@@ -35,8 +34,8 @@ export default function getWorkflowListItemFromExecution(
     clusterAttributeName:
       execution.activeClusterSelectionPolicy?.clusterAttribute?.name ??
       undefined,
-    searchAttributes:
-      formatPayloadMap(execution.searchAttributes, 'indexedFields') ??
-      undefined,
+    searchAttributes: execution.searchAttributes
+      ? execution.searchAttributes.indexedFields
+      : undefined,
   };
 }

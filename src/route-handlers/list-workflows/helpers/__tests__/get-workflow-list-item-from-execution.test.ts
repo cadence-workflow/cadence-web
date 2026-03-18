@@ -86,7 +86,7 @@ describe('getWorkflowListItemFromExecution', () => {
     expect(result!.clusterAttributeName).toBe('mock-cluster-name');
   });
 
-  it('should map searchAttributes when present', () => {
+  it('should return raw searchAttributes when present', () => {
     const execution: WorkflowExecutionInfo = {
       ...BASE_EXECUTION,
       searchAttributes: {
@@ -101,7 +101,9 @@ describe('getWorkflowListItemFromExecution', () => {
     const result = getWorkflowListItemFromExecution(execution);
     expect(result).toBeDefined();
     expect(result!.searchAttributes).toEqual({
-      indexedFields: { CustomField: 'mock-value' },
+      CustomField: {
+        data: Buffer.from('mock-value').toString('base64'),
+      },
     });
   });
 

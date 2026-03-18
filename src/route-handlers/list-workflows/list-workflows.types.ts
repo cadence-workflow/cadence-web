@@ -1,5 +1,6 @@
 import { type ZodIssue, type z } from 'zod';
 
+import { type Payload } from '@/__generated__/proto-ts/uber/cadence/api/v1/Payload';
 import { type WorkflowExecutionCloseStatus } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionCloseStatus';
 import { type DefaultMiddlewaresContext } from '@/utils/route-handlers-middleware';
 
@@ -47,7 +48,7 @@ export type WorkflowListItem = {
   isCron: boolean;
   clusterAttributeScope: string | undefined;
   clusterAttributeName: string | undefined;
-  searchAttributes?: Record<string, unknown>;
+  searchAttributes?: Record<string, Payload>;
 };
 
 export type Context = DefaultMiddlewaresContext;
