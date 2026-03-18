@@ -307,7 +307,7 @@ describe(CronScheduleInput.name, () => {
     expect(
       screen.getByTestId('cron-schedule-input-popover-minutes')
     ).toBeInTheDocument();
-    
+
     await user.tab();
 
     // Should not throw an error; wait for popover to close (async state update)
