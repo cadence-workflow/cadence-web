@@ -1,9 +1,9 @@
 import React from 'react';
 
 import Link from '@/components/link/link';
+import getClusterReplicationStatusLabel from '@/views/shared/domain-cluster-selector/helpers/get-cluster-replication-status-label';
 
 import { type DomainDescription } from '../domain-page.types';
-import getClusterReplicationStatusLabel from '../helpers/get-cluster-replication-status-label';
 
 import { styled } from './domain-page-metadata-clusters.styles';
 
