@@ -34,15 +34,15 @@ export const styled = {
   }),
   LabelContainer: createStyled('div', ({ $theme }) => ({
     display: 'flex',
+    alignItems: 'center',
     gap: $theme.sizing.scale300,
   })),
   Label: createStyled('div', ({ $theme }) => ({
     ...$theme.typography.MonoLabelSmall,
     paddingLeft: $theme.sizing.scale300,
-    maxWidth: '180px',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
+    maxWidth: '240px',
+    whiteSpace: 'wrap',
+    wordBreak: 'break-all',
   })),
   Actions: createStyled('div', ({ $theme }) => ({
     display: 'flex',
