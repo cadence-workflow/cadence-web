@@ -3,6 +3,7 @@ import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow
 export type Props = {
   domain: string;
   cluster: string;
+  showColumnsPicker?: boolean;
   timeRangeStart: string;
   timeRangeEnd: string;
 };

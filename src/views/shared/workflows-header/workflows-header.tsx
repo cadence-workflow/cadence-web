@@ -26,17 +26,21 @@ export default function WorkflowsHeader<
   I extends PageQueryParamKeys<P>,
   S extends PageQueryParamKeys<P>,
   Q extends PageQueryParamKeys<P>,
+  C extends PageQueryParamKeys<P>,
 >({
   pageQueryParamsConfig,
   pageFiltersConfig,
   inputTypeQueryParamKey,
   searchQueryParamKey,
   queryStringQueryParamKey,
+  // TODO @adhitya.mamallan: use this in a future change
+  // columnsQueryParamKey,
   refetchQuery,
   isQueryRunning,
   expandFiltersByDefault,
   showQueryInputOnly,
-}: Props<P, I, S, Q>) {
+  showColumnsPicker,
+}: Props<P, I, S, Q, C>) {
   const [areFiltersShown, setAreFiltersShown] = useState(
     expandFiltersByDefault ?? false
   );
@@ -106,6 +110,7 @@ export default function WorkflowsHeader<
             />
           </styled.SearchContainer>
         )}
+        {showColumnsPicker && <div>Placeholder for columns picker</div>}
       </styled.InputContainer>
       {inputType === 'search' && areFiltersShown && (
         <PageFiltersFields

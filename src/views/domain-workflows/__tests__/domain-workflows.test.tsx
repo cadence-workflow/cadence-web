@@ -65,6 +65,12 @@ async function setup({
     {
       endpointsMocks: [
         {
+          path: '/api/config',
+          httpMethod: 'GET',
+          mockOnce: false,
+          jsonResponse: false,
+        },
+        {
           path: '/api/clusters/test-cluster',
           httpMethod: 'GET',
           mockOnce: false,

@@ -1,7 +1,6 @@
 export type Props = {
   domain: string;
   cluster: string;
-  showColumnsPicker?: boolean;
   timeRangeStart?: string;
   timeRangeEnd: string;
 };

@@ -14,6 +14,7 @@ import { type WorkflowsHeaderInputType } from '@/views/shared/workflows-header/w
 
 const domainPageQueryParamsConfig: [
   PageQueryParam<'inputType', WorkflowsHeaderInputType>,
+  PageQueryParamMultiValue<'columns', Array<string>>,
   // Search input
   PageQueryParam<'search', string>,
   PageQueryParamMultiValue<'statuses', Array<WorkflowStatus> | undefined>,
@@ -31,6 +32,7 @@ const domainPageQueryParamsConfig: [
   PageQueryParam<'timeRangeEndBasic', DateFilterValue>,
   // Archival inputs
   PageQueryParam<'inputTypeArchival', WorkflowsHeaderInputType>,
+  PageQueryParamMultiValue<'columnsArchival', Array<string>>,
   PageQueryParam<'searchArchival', string>,
   PageQueryParamMultiValue<
     'statusesArchival',
@@ -50,6 +52,12 @@ const domainPageQueryParamsConfig: [
     queryParamKey: 'input',
     defaultValue: 'search',
     parseValue: (value: string) => (value === 'query' ? 'query' : 'search'),
+  },
+  {
+    key: 'columns',
+    queryParamKey: 'columns',
+    isMultiValue: true,
+    defaultValue: [],
   },
   {
     key: 'search',
@@ -119,6 +127,12 @@ const domainPageQueryParamsConfig: [
     queryParamKey: 'ainput',
     defaultValue: 'search',
     parseValue: (value: string) => (value === 'query' ? 'query' : 'search'),
+  },
+  {
+    key: 'columnsArchival',
+    queryParamKey: 'acolumns',
+    isMultiValue: true,
+    defaultValue: [],
   },
   {
     key: 'searchArchival',
