@@ -38,6 +38,5 @@ export default function getWorkflowListItemFromExecution(
     searchAttributes:
       formatPayloadMap(execution.searchAttributes, 'indexedFields') ??
       undefined,
-    memo: formatPayloadMap(execution.memo, 'fields') ?? undefined,
   };
 }

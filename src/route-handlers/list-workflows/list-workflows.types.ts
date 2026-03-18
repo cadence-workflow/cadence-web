@@ -48,7 +48,6 @@ export type WorkflowListItem = {
   clusterAttributeScope: string | undefined;
   clusterAttributeName: string | undefined;
   searchAttributes?: Record<string, unknown>;
-  memo?: Record<string, unknown>;
 };
 
 export type Context = DefaultMiddlewaresContext;

@@ -127,25 +127,6 @@ describe('getWorkflowListItemFromExecution', () => {
     });
   });
 
-  it('should map memo when present', () => {
-    const execution: WorkflowExecutionInfo = {
-      ...BASE_EXECUTION,
-      memo: {
-        fields: {
-          memoKey: {
-            data: Buffer.from('mock-memo-value').toString('base64'),
-          },
-        },
-      },
-    };
-
-    const result = getWorkflowListItemFromExecution(execution);
-    expect(result).toBeDefined();
-    expect(result!.memo).toEqual({
-      fields: { memoKey: 'mock-memo-value' },
-    });
-  });
-
   it('should handle an open workflow (INVALID close status, no closeTime)', () => {
     const execution: WorkflowExecutionInfo = {
       ...BASE_EXECUTION,
