@@ -19,6 +19,20 @@ jest.mock(
     }
 );
 
+jest.mock(
+  '../../workflow-page-header-cluster-selector/workflow-page-header-cluster-selector',
+  () =>
+    function WorkflowPageHeaderClusterSelector({
+      cluster,
+    }: {
+      cluster: string;
+    }) {
+      return (
+        <span data-testid="workflow-page-cluster-selector">{cluster}</span>
+      );
+    }
+);
+
 describe('WorkflowPageHeader', () => {
   it('renders breadcrumbs with correct domain content and link', () => {
     const domain = 'test-domain';
@@ -43,6 +57,15 @@ describe('WorkflowPageHeader', () => {
     expect(workflowIdBreadcrumb).toHaveAttribute(
       'href',
       '/mock-stringified-api-url'
+    );
+  });
+
+  it('renders cluster selector in breadcrumb', () => {
+    const cluster = 'test-cluster';
+    const { getByTestId } = setup({ cluster });
+
+    expect(getByTestId('workflow-page-cluster-selector')).toHaveTextContent(
+      cluster
     );
   });
 

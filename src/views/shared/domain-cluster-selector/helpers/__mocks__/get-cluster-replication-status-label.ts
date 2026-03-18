@@ -1,6 +1,5 @@
+import type { DomainDescription } from '@/views/domain-page/domain-page.types';
 import isActiveActiveDomain from '@/views/shared/active-active/helpers/is-active-active-domain';
-
-import { type DomainDescription } from '../../domain-page.types';
 
 // Manual mock for getClusterReplicationStatusLabel
 export default function getClusterReplicationStatusLabel(

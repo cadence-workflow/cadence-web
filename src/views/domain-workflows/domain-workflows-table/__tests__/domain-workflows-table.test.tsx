@@ -4,6 +4,7 @@ import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
 import { type Props as LoaderProps } from '@/components/table/table-infinite-scroll-loader/table-infinite-scroll-loader.types';
 import * as usePageQueryParamsModule from '@/hooks/use-page-query-params/use-page-query-params';
+import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtures__/mock-workflow-list-items';
 import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list-workflows.types';
 import { type WorkflowsHeaderInputType } from '@/views/shared/workflows-header/workflows-header.types';
 
@@ -212,14 +213,16 @@ function generateWorkflowPages(count: number): Array<ListWorkflowsResponse> {
   const pages = Array.from(
     { length: count },
     (_, pageIndex): ListWorkflowsResponse => ({
-      workflows: Array.from({ length: 10 }, (_, index) => ({
-        workflowID: `mock-workflow-id-${pageIndex}-${index}`,
-        runID: `mock-run-id-${pageIndex}-${index}`,
-        workflowName: `mock-workflow-name-${pageIndex}-${index}`,
-        status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
-        startTime: 1684800000000,
-        closeTime: count > 5 ? 1684886400000 : undefined,
-      })),
+      workflows: Array.from({ length: 10 }, (_, index) =>
+        getMockWorkflowListItem({
+          workflowID: `mock-workflow-id-${pageIndex}-${index}`,
+          runID: `mock-run-id-${pageIndex}-${index}`,
+          workflowName: `mock-workflow-name-${pageIndex}-${index}`,
+          status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
+          startTime: 1684800000000,
+          closeTime: count > 5 ? 1684886400000 : undefined,
+        })
+      ),
       nextPage: `${pageIndex + 1}`,
     })
   );

@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { Suspense } from 'react';
 
 import { Breadcrumbs } from 'baseui/breadcrumbs';
 import { StyledLink } from 'baseui/link';
@@ -14,6 +14,7 @@ import useStyletronClasses from '@/hooks/use-styletron-classes';
 import type domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
 import { type DomainPageTabName } from '@/views/domain-page/domain-page-tabs/domain-page-tabs.types';
 
+import WorkflowPageHeaderClusterSelector from '../workflow-page-header-cluster-selector/workflow-page-header-cluster-selector';
 import WorkflowPageStatusTag from '../workflow-page-status-tag/workflow-page-status-tag';
 
 import { cssStyles, overrides } from './workflow-page-header.styles';
@@ -43,6 +44,12 @@ export default function WorkflowPageHeader({
           <StyledLink $as={Link} href={domainLink}>
             {domain}
           </StyledLink>
+          <Suspense fallback={null}>
+            <WorkflowPageHeaderClusterSelector
+              domain={domain}
+              cluster={cluster}
+            />
+          </Suspense>
         </div>
         <StyledLink
           $as={Link}

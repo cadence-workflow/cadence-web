@@ -4,7 +4,7 @@ import { RequestError } from './request-error';
 
 export default async function request(
   url: string,
-  options?: RequestInit
+  options?: RequestInit & { omitUserHeaders?: boolean }
 ): Promise<Response> {
   let absoluteUrl = url;
   let userHeaders = {};
@@ -18,10 +18,16 @@ export default async function request(
       await (await import('next/headers')).headers().entries()
     );
   }
-  const requestHeaders = { ...userHeaders, ...(options?.headers || {}) };
+
+  const { omitUserHeaders, headers, ...requestOptions } = options || {};
+  // Add or remove existing user headers based on the omitUserHeaders flag
+  const requestHeaders = omitUserHeaders
+    ? headers
+    : { ...userHeaders, ...(headers || {}) };
+
   return fetch(absoluteUrl, {
     cache: 'no-cache',
-    ...(options || {}),
+    ...requestOptions,
     headers: requestHeaders,
   }).then(async (res) => {
     if (!res.ok) {

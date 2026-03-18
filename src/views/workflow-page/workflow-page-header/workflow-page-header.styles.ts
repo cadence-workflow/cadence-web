@@ -39,6 +39,7 @@ const cssStylesObj = {
     display: 'flex',
     alignItems: 'center',
     gap: theme.sizing.scale550,
+    flexWrap: 'wrap',
   }),
 } satisfies StyletronCSSObject;
 

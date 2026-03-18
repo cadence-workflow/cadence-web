@@ -4,6 +4,7 @@ import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import { type Props as LoaderProps } from '@/components/table/table-infinite-scroll-loader/table-infinite-scroll-loader.types';
 import * as usePageQueryParamsModule from '@/hooks/use-page-query-params/use-page-query-params';
+import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtures__/mock-workflow-list-items';
 import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list-workflows.types';
 import type { Props as MSWMocksHandlersProps } from '@/test-utils/msw-mock-handlers/msw-mock-handlers.types';
 import { mockDomainPageQueryParamsValues } from '@/views/domain-page/__fixtures__/domain-page-query-params';
@@ -253,16 +254,18 @@ function generateWorkflowPages(
   const pages = Array.from(
     { length: count },
     (_, pageIndex): ListWorkflowsResponse => ({
-      workflows: Array.from({ length: 5 }, (_, index) => ({
-        workflowID: `mock-workflow-id-${pageIndex}-${index}-${isOpen ? 'open' : 'closed'}`,
-        runID: `mock-run-id-${pageIndex}-${index}`,
-        workflowName: `mock-workflow-name-${pageIndex}-${index}`,
-        status: isOpen
-          ? 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
-          : 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
-        startTime: 1684800000000 - pageIndex * 1000 - index * 100,
-        closeTime: isOpen ? undefined : 1684886400000,
-      })),
+      workflows: Array.from({ length: 5 }, (_, index) =>
+        getMockWorkflowListItem({
+          workflowID: `mock-workflow-id-${pageIndex}-${index}-${isOpen ? 'open' : 'closed'}`,
+          runID: `mock-run-id-${pageIndex}-${index}`,
+          workflowName: `mock-workflow-name-${pageIndex}-${index}`,
+          status: isOpen
+            ? 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
+            : 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
+          startTime: 1684800000000 - pageIndex * 1000 - index * 100,
+          closeTime: isOpen ? undefined : 1684886400000,
+        })
+      ),
       nextPage: `${pageIndex + 1}`,
     })
   );
