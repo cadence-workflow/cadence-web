@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import {
   QueryClient,
@@ -13,7 +13,7 @@ import themeProviderOverrides from '@/config/theme/theme-provider-overrides.conf
 import StyletronProvider from '@/providers/styletron-provider';
 
 import MSWMockHandlers from './msw-mock-handlers/msw-mock-handlers';
-import { type Props } from './test-provider.types';
+import { TestQueryClientRef, type Props } from './test-provider.types';
 
 jest.mock('next/router', () => require('next-router-mock'));
 
@@ -32,6 +32,44 @@ const disableAnimationOverrides = {
     },
   },
 };
+const CURRENT_TEST_QUERY_CLIENT_KEY = '__CURRENT_TEST_QUERY_CLIENT__';
+
+
+
+/**
+ * One ref per process. Jest runs tests in parallel across workers (separate processes);
+ * within each worker, tests run sequentially. So there is only one active test per process,
+ * and the ref always points at that test's client.
+ */
+function getCurrentTestQueryClientRef(): TestQueryClientRef {
+  const g =
+    typeof globalThis !== 'undefined'
+      ? globalThis
+      : typeof global !== 'undefined'
+        ? global
+        : ({} as Record<string, unknown>);
+  const store = g as Record<string, TestQueryClientRef | undefined>;
+  let ref = store[CURRENT_TEST_QUERY_CLIENT_KEY];
+  if (!ref) {
+    ref = { current: null };
+    store[CURRENT_TEST_QUERY_CLIENT_KEY] = ref;
+  }
+  return ref;
+}
+
+/**
+ * Clears and unmounts the current test QueryClient. Called from jest.setup.ts afterEach
+ * so cache is released at a fixed point in Jest's lifecycle.
+ */
+export function clearTestQueryClient(): void {
+  const ref = getCurrentTestQueryClientRef();
+  if (ref.current) {
+    ref.current.clear();
+    ref.current.unmount();
+    ref.current = null;
+  }
+}
+
 const getQueryClient = (config: QueryClientConfig) =>
   new QueryClient(
     Object.assign(
@@ -49,6 +87,7 @@ const getQueryClient = (config: QueryClientConfig) =>
       config
     )
   );
+
 /**
  * Don't use this directly. Use render from rtl.tsx instead.
  */
@@ -64,6 +103,12 @@ export const TestProvider = ({
   isSnapshotTest = false,
 }: Props) => {
   const [client] = useState(() => getQueryClient(queryClientConfig));
+
+  useEffect(() => {
+    const ref = getCurrentTestQueryClientRef();
+    ref.current = client;
+  }, [client]);
+
   const themeOverridesWithDisabledAnimations = useMemo(() => {
     if (enableAnimations) return themeProviderOverrides;
     return Object.assign({}, themeProviderOverrides, disableAnimationOverrides);
