@@ -1,30 +1,9 @@
 import { type WorkflowExecutionInfo } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionInfo';
 
+import { mockWorkflowExecutions } from '../../__fixtures__/mock-workflow-executions';
 import getWorkflowListItemFromExecution from '../get-workflow-list-item-from-execution';
 
-const BASE_EXECUTION: WorkflowExecutionInfo = {
-  workflowExecution: {
-    workflowId: 'mock-wf-uuid-1',
-    runId: 'mock-run-uuid-1',
-  },
-  type: { name: 'mock-workflow-name' },
-  startTime: { seconds: '1717408148', nanos: 258000000 },
-  closeTime: { seconds: '1717409148', nanos: 258000000 },
-  closeStatus: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
-  historyLength: '100',
-  parentExecutionInfo: null,
-  executionTime: { seconds: '1717408150', nanos: 0 },
-  memo: null,
-  searchAttributes: null,
-  autoResetPoints: null,
-  taskList: 'mock-task-list',
-  isCron: false,
-  updateTime: { seconds: '1717408200', nanos: 0 },
-  partitionConfig: {},
-  taskListInfo: null,
-  activeClusterSelectionPolicy: null,
-  cronOverlapPolicy: 'CRON_OVERLAP_POLICY_INVALID',
-};
+const BASE_EXECUTION = mockWorkflowExecutions[0];
 
 describe('getWorkflowListItemFromExecution', () => {
   it('should map a complete execution to a WorkflowListItem', () => {
@@ -43,7 +22,6 @@ describe('getWorkflowListItemFromExecution', () => {
       clusterAttributeScope: undefined,
       clusterAttributeName: undefined,
       searchAttributes: undefined,
-      memo: undefined,
     });
   });
 

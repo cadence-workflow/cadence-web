@@ -1,4 +1,4 @@
-import { getMockWorkflowListItem } from '@/views/shared/workflows-table/__fixtures__/mock-workflows-list';
+import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtures__/mock-workflow-list-items';
 
 import compareBasicVisibilityWorkflows from '../compare-basic-visibility-workflows';
 

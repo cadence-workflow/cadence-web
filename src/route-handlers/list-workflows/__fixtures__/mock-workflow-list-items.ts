@@ -1,4 +1,4 @@
-import { type WorkflowListItem } from '@/route-handlers/list-workflows/list-workflows.types';
+import { type WorkflowListItem } from '../list-workflows.types';
 
 export const mockWorkflowListItem: WorkflowListItem = {
   workflowID: 'mock-workflow-id',
