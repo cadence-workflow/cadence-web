@@ -1,7 +1,8 @@
 import { type z, type ZodIssue } from 'zod';
 
 import { type DefaultMiddlewaresContext } from '@/utils/route-handlers-middleware';
-import { type DomainWorkflow } from '@/views/domain-page/domain-page.types';
+
+import { type WorkflowListItem } from '../list-workflows/list-workflows.types';
 
 import type listWorkflowsBasicQueryParamsSchema from './schemas/list-workflows-basic-query-params-schema';
 
@@ -14,7 +15,7 @@ export type RequestParams = {
   params: RouteParams;
 };
 export type ListWorkflowsBasicResponse = {
-  workflows: Array<DomainWorkflow>;
+  workflows: Array<WorkflowListItem>;
   nextPage: string;
 };
 

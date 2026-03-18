@@ -3,6 +3,7 @@ import { HttpResponse } from 'msw';
 import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
 import { type Props as LoaderProps } from '@/components/table/table-infinite-scroll-loader/table-infinite-scroll-loader.types';
+import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtures__/mock-workflow-list-items';
 import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list-workflows.types';
 
 import type { Props as MSWMocksHandlersProps } from '../../../../test-utils/msw-mock-handlers/msw-mock-handlers.types';
@@ -175,14 +176,15 @@ function generateWorkflowPages(count: number): Array<ListWorkflowsResponse> {
   const pages = Array.from(
     { length: count },
     (_, pageIndex): ListWorkflowsResponse => ({
-      workflows: Array.from({ length: WORKFLOWS_PER_PAGE }, (_, index) => ({
-        workflowID: `mock-workflow-id-${pageIndex}-${index}`,
-        runID: `mock-run-id-${pageIndex}-${index}`,
-        workflowName: `mock-workflow-name-${pageIndex}-${index}`,
-        status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
-        startTime: 1763498300000,
-        closeTime: undefined, // Cron List excludes closed workflows.
-      })),
+      workflows: Array.from({ length: WORKFLOWS_PER_PAGE }, (_, index) =>
+        getMockWorkflowListItem({
+          workflowID: `mock-workflow-id-${pageIndex}-${index}`,
+          runID: `mock-run-id-${pageIndex}-${index}`,
+          workflowName: `mock-workflow-name-${pageIndex}-${index}`,
+          isCron: true,
+          closeTime: undefined,
+        })
+      ),
       nextPage: `${pageIndex + 1}`,
     })
   );

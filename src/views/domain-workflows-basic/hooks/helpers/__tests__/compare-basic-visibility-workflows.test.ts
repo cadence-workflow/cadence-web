@@ -1,27 +1,13 @@
-import { type DomainWorkflow } from '@/views/domain-page/domain-page.types';
+import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtures__/mock-workflow-list-items';
 
 import compareBasicVisibilityWorkflows from '../compare-basic-visibility-workflows';
 
-function createMockWorkflow(
-  startTime: number,
-  closeTime?: number
-): DomainWorkflow {
-  return {
-    workflowID: 'mock-id',
-    runID: 'mock-run-id',
-    workflowName: 'mock-name',
-    status: closeTime
-      ? 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED'
-      : 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
-    startTime,
-    closeTime,
-  };
-}
-
 describe('compareBasicVisibilityWorkflows', () => {
   it('should pick workflow with later start time for running workflows', () => {
-    const firstWorkflow = createMockWorkflow(1741500000000);
-    const secondWorkflow = createMockWorkflow(1741600000000);
+    const firstWorkflow = getMockWorkflowListItem({ startTime: 1741500000000 });
+    const secondWorkflow = getMockWorkflowListItem({
+      startTime: 1741600000000,
+    });
 
     expect(compareBasicVisibilityWorkflows(firstWorkflow, secondWorkflow)).toBe(
       1
@@ -32,8 +18,16 @@ describe('compareBasicVisibilityWorkflows', () => {
   });
 
   it('should pick workflow with later close time for closed workflows', () => {
-    const firstWorkflow = createMockWorkflow(1741400000000, 1741600000000);
-    const secondWorkflow = createMockWorkflow(1741500000000, 1741700000000);
+    const firstWorkflow = getMockWorkflowListItem({
+      startTime: 1741400000000,
+      closeTime: 1741600000000,
+      status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
+    });
+    const secondWorkflow = getMockWorkflowListItem({
+      startTime: 1741500000000,
+      closeTime: 1741700000000,
+      status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
+    });
 
     expect(compareBasicVisibilityWorkflows(firstWorkflow, secondWorkflow)).toBe(
       1
@@ -44,8 +38,14 @@ describe('compareBasicVisibilityWorkflows', () => {
   });
 
   it('should pick running workflows over closed workflows', () => {
-    const runningWorkflow = createMockWorkflow(1741500000000);
-    const closedWorkflow = createMockWorkflow(1741500000000, 1741600000000);
+    const runningWorkflow = getMockWorkflowListItem({
+      startTime: 1741500000000,
+    });
+    const closedWorkflow = getMockWorkflowListItem({
+      startTime: 1741500000000,
+      closeTime: 1741600000000,
+      status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
+    });
 
     expect(
       compareBasicVisibilityWorkflows(runningWorkflow, closedWorkflow)
@@ -56,8 +56,16 @@ describe('compareBasicVisibilityWorkflows', () => {
   });
 
   it('should handle edge cases with same timestamps', () => {
-    const firstWorkflow = createMockWorkflow(1741500000000, 1741600000000);
-    const secondWorkflow = createMockWorkflow(1741500000000, 1741600000000);
+    const firstWorkflow = getMockWorkflowListItem({
+      startTime: 1741500000000,
+      closeTime: 1741600000000,
+      status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
+    });
+    const secondWorkflow = getMockWorkflowListItem({
+      startTime: 1741500000000,
+      closeTime: 1741600000000,
+      status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
+    });
 
     expect(compareBasicVisibilityWorkflows(firstWorkflow, secondWorkflow)).toBe(
       -1

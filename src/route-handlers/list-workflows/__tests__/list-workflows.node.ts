@@ -36,7 +36,7 @@ describe(listWorkflows.name, () => {
     });
 
     const responseJson = await res.json();
-    expect(responseJson).toEqual({
+    expect(responseJson).toMatchObject({
       workflows: [
         {
           workflowID: 'mock-wf-uuid-1',
@@ -45,6 +45,9 @@ describe(listWorkflows.name, () => {
           status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
           startTime: 1717408148258,
           closeTime: 1717409148258,
+          historyLength: 100,
+          isCron: false,
+          taskList: 'mock-task-list',
         },
       ],
       nextPage: 'mock-next-page-token',
@@ -74,7 +77,7 @@ describe(listWorkflows.name, () => {
     expect(mockListWorkflows).not.toHaveBeenCalled();
 
     const responseJson = await res.json();
-    expect(responseJson).toEqual({
+    expect(responseJson).toMatchObject({
       workflows: [
         {
           workflowID: 'mock-wf-uuid-1',
@@ -83,6 +86,9 @@ describe(listWorkflows.name, () => {
           status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
           startTime: 1717408148258,
           closeTime: 1717409148258,
+          historyLength: 100,
+          isCron: false,
+          taskList: 'mock-task-list',
         },
       ],
       nextPage: 'mock-next-page-token',
