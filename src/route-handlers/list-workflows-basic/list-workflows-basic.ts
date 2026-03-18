@@ -4,7 +4,7 @@ import { type ListOpenWorkflowExecutionsRequest__Input } from '@/__generated__/p
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
-import mapExecutionsToWorkflows from '../list-workflows/helpers/map-executions-to-workflows';
+import getWorkflowListItemFromExecution from '../list-workflows/helpers/get-workflow-list-item-from-execution';
 
 import type {
   Context,
@@ -75,8 +75,13 @@ export async function listWorkflowsBasic(
           })
         : await ctx.grpcClusterMethods.openWorkflows({ ...baseParams });
 
+    const workflows = res.executions.flatMap((execution) => {
+      const listWorkflow = getWorkflowListItemFromExecution(execution);
+      return listWorkflow ? [listWorkflow] : [];
+    });
+
     const response: ListWorkflowsBasicResponse = {
-      workflows: mapExecutionsToWorkflows(res.executions),
+      workflows,
       nextPage: res.nextPageToken,
     };
 
