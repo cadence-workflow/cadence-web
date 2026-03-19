@@ -5,7 +5,7 @@ import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
 import getListWorkflowExecutionsQuery from './helpers/get-list-workflow-executions-query';
-import mapExecutionsToWorkflows from './helpers/map-executions-to-workflows';
+import getWorkflowListItemFromExecution from './helpers/get-workflow-list-item-from-execution';
 import type {
   Context,
   ListWorkflowsResponse,
@@ -60,8 +60,13 @@ export async function listWorkflows(
         ? await ctx.grpcClusterMethods.archivedWorkflows(listWorkflowsParams)
         : await ctx.grpcClusterMethods.listWorkflows(listWorkflowsParams);
 
+    const workflows = res.executions.flatMap((execution) => {
+      const listWorkflow = getWorkflowListItemFromExecution(execution);
+      return listWorkflow ? [listWorkflow] : [];
+    });
+
     const response: ListWorkflowsResponse = {
-      workflows: mapExecutionsToWorkflows(res.executions),
+      workflows,
       nextPage: res.nextPageToken,
     };
 

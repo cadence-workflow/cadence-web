@@ -59,6 +59,9 @@ const cssStylesObj = {
     overflowY: 'auto',
     paddingRight: theme.sizing.scale300,
   }),
+  paramHighlight: (theme) => ({
+    color: theme.colors.contentAccent,
+  }),
 } satisfies StyletronCSSObject;
 
 export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> =
