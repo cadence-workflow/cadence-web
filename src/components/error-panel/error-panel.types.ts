@@ -25,4 +25,5 @@ export type Props = {
   actions?: Array<ErrorAction>;
   reset?: () => void;
   omitLogging?: boolean;
+  showErrorMessage?: boolean;
 };
