@@ -1,51 +1,50 @@
-import { styled as createStyled } from 'baseui';
-import { type ButtonOverrides } from 'baseui/button';
+import React from 'react';
 
-export const overrides = {
-  inputButton: {
-    Root: {
-      style: {
-        whiteSpace: 'nowrap',
-      },
-    },
-  } satisfies ButtonOverrides,
-};
+import { Button, KIND, SIZE } from 'baseui/button';
+import { MdPlayArrow } from 'react-icons/md';
 
-export const styled = {
-  Tile: createStyled<'div', { $isSelected: boolean }>(
-    'div',
-    ({ $theme, $isSelected }) => ({
-      border: '2px solid',
-      borderRadius: $theme.sizing.scale500,
-      padding: $theme.sizing.scale300,
-      display: 'flex',
-      flexDirection: 'column',
-      rowGap: $theme.sizing.scale300,
-      borderColor: $isSelected
-        ? $theme.colors.borderSelected
-        : $theme.colors.borderOpaque,
-    })
-  ),
-  Header: createStyled('div', {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  }),
-  LabelContainer: createStyled('div', ({ $theme }) => ({
-    display: 'flex',
-    alignItems: 'center',
-    gap: $theme.sizing.scale300,
-  })),
-  Label: createStyled('div', ({ $theme }) => ({
-    ...$theme.typography.MonoLabelSmall,
-    paddingLeft: $theme.sizing.scale300,
-    maxWidth: '240px',
-    overflowWrap: 'break-word',
-  })),
-  Actions: createStyled('div', ({ $theme }) => ({
-    display: 'flex',
-    flexDirection: 'row',
-    columnGap: $theme.sizing.scale300,
-  })),
-};
+import WorkflowQueriesStatusIcon from '../workflow-queries-status-icon/workflow-queries-status-icon';
+import WorkflowQueriesTileInput from '../workflow-queries-tile-input/workflow-queries-tile-input';
+
+import { overrides, styled } from './workflow-queries-tile.styles';
+import { type Props } from './workflow-queries-tile.types';
+
+export default function WorkflowQueriesTile(props: Props) {
+  return (
+    <styled.Tile onClick={() => props.onClick()} $isSelected={props.isSelected}>
+      <styled.Header>
+        <styled.LabelContainer>
+          <styled.Label>{props.name}</styled.Label>
+          <WorkflowQueriesStatusIcon status={props.queryStatus} />
+        </styled.LabelContainer>
+        <styled.Actions>
+          <Button
+            overrides={overrides.inputButton}
+            size={SIZE.mini}
+            kind={KIND.tertiary}
+            onClick={() =>
+              props.onChangeInput(props.input !== undefined ? undefined : '')
+            }
+          >
+            {props.input !== undefined ? 'Remove input' : 'Add input'}
+          </Button>
+          <Button
+            size={SIZE.compact}
+            kind={KIND.secondary}
+            endEnhancer={MdPlayArrow}
+            onClick={props.runQuery}
+            disabled={props.queryStatus === 'loading'}
+          >
+            Run
+          </Button>
+        </styled.Actions>
+      </styled.Header>
+      {props.input !== undefined && (
+        <WorkflowQueriesTileInput
+          value={props.input}
+          onChange={props.onChangeInput}
+        />
+      )}
+    </styled.Tile>
+  );
+}
