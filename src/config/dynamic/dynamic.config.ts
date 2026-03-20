@@ -24,6 +24,7 @@ import {
   type WorkflowActionsEnabledConfig,
 } from './resolvers/workflow-actions-enabled.types';
 import workflowDiagnosticsEnabled from './resolvers/workflow-diagnostics-enabled';
+import workflowsListEnabled from './resolvers/workflows-list-enabled';
 
 const dynamicConfigs: {
   CADENCE_WEB_PORT: ConfigEnvDefinition;
@@ -81,6 +82,12 @@ const dynamicConfigs: {
     'request',
     true
   >;
+  WORKFLOWS_LIST_ENABLED: ConfigAsyncResolverDefinition<
+    undefined,
+    boolean,
+    'request',
+    true
+  >;
 } = {
   CADENCE_WEB_PORT: {
     env: 'CADENCE_WEB_PORT',
@@ -132,6 +139,11 @@ const dynamicConfigs: {
   },
   HISTORY_PAGE_V2_ENABLED: {
     resolver: historyPageV2Enabled,
+    evaluateOn: 'request',
+    isPublic: true,
+  },
+  WORKFLOWS_LIST_ENABLED: {
+    resolver: workflowsListEnabled,
     evaluateOn: 'request',
     isPublic: true,
   },
