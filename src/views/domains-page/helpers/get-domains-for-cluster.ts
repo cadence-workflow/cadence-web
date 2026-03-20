@@ -2,15 +2,20 @@ import 'server-only';
 
 import * as grpcClient from '@/utils/grpc/grpc-client';
 import { GRPCError } from '@/utils/grpc/grpc-error';
+import { type GRPCMetadata } from '@/utils/grpc/grpc-service';
 import logger from '@/utils/logger';
 
 import filterIrrelevantDomains from './filter-irrelevant-domains';
 
 export default async function getDomainsForCluster(
   clusterName: string,
-  pageSize: number
+  pageSize: number,
+  metadata?: GRPCMetadata
 ) {
-  const clusterMethods = await grpcClient.getClusterMethods(clusterName);
+  const clusterMethods = await grpcClient.getClusterMethods(
+    clusterName,
+    metadata
+  );
 
   return clusterMethods.listDomains({ pageSize }).then(
     ({ domains }) => {

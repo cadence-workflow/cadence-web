@@ -10,6 +10,9 @@ import { getAllDomains } from '../get-all-domains';
 import * as getDomainsForClusterModule from '../get-domains-for-cluster';
 import * as getUniqueDomainsModule from '../get-unique-domains';
 
+jest.mock('react', () => ({
+  cache: (fn: unknown) => fn,
+}));
 jest.mock('@/utils/config/get-config-value');
 jest.mock('../get-domains-for-cluster');
 jest.mock('../get-unique-domains');
@@ -24,19 +27,33 @@ describe(getAllDomains.name, () => {
       await setup({
         clustersConfigs: mockResolvedConfigValues.CLUSTERS,
         domainsPerCluster: {
-          'mock-cluster1': [getDomainObj({ id: 'domain-1', name: 'Domain 1' })],
-          'mock-cluster2': [getDomainObj({ id: 'domain-2', name: 'Domain 2' })],
+          'mock-cluster1': [
+            getDomainObj({
+              id: 'domain-1',
+              name: 'Domain 1',
+              clusters: [{ clusterName: 'mock-cluster1' }],
+            }),
+          ],
+          'mock-cluster2': [
+            getDomainObj({
+              id: 'domain-2',
+              name: 'Domain 2',
+              clusters: [{ clusterName: 'mock-cluster2' }],
+            }),
+          ],
         },
       });
 
     expect(mockGetDomainsForCluster).toHaveBeenCalledTimes(2);
     expect(mockGetDomainsForCluster).toHaveBeenCalledWith(
       'mock-cluster1',
-      2000
+      2000,
+      undefined
     );
     expect(mockGetDomainsForCluster).toHaveBeenCalledWith(
       'mock-cluster2',
-      2000
+      2000,
+      undefined
     );
     expect(mockGetUniqueDomains).toHaveBeenCalledWith(
       expect.arrayContaining([
@@ -48,11 +65,44 @@ describe(getAllDomains.name, () => {
     expect(result.failedClusters).toEqual([]);
   });
 
+  it('passes auth-derived grpc metadata to the shared cluster helper', async () => {
+    const { mockGetDomainsForCluster } = await setup({
+      clustersConfigs: mockResolvedConfigValues.CLUSTERS,
+      domainsPerCluster: {},
+      authContext: {
+        authEnabled: true,
+        auth: {
+          isValidToken: true,
+          token: 'jwt-token',
+        },
+        groups: [],
+        isAdmin: false,
+      },
+    });
+
+    expect(mockGetDomainsForCluster).toHaveBeenCalledWith(
+      'mock-cluster1',
+      2000,
+      { 'cadence-authorization': 'jwt-token' }
+    );
+    expect(mockGetDomainsForCluster).toHaveBeenCalledWith(
+      'mock-cluster2',
+      2000,
+      { 'cadence-authorization': 'jwt-token' }
+    );
+  });
+
   it('returns failed clusters when some cluster fetches fail', async () => {
     const { result } = await setup({
       clustersConfigs: mockResolvedConfigValues.CLUSTERS,
       domainsPerCluster: {
-        'mock-cluster1': [getDomainObj({ id: 'domain-1', name: 'Domain 1' })],
+        'mock-cluster1': [
+          getDomainObj({
+            id: 'domain-1',
+            name: 'Domain 1',
+            clusters: [{ clusterName: 'mock-cluster1' }],
+          }),
+        ],
       },
       clusterErrors: {
         'mock-cluster2': new GRPCError('Unavailable', {
@@ -71,7 +121,13 @@ describe(getAllDomains.name, () => {
     const { result } = await setup({
       clustersConfigs: mockResolvedConfigValues.CLUSTERS,
       domainsPerCluster: {
-        'mock-cluster1': [getDomainObj({ id: 'domain-1', name: 'Domain 1' })],
+        'mock-cluster1': [
+          getDomainObj({
+            id: 'domain-1',
+            name: 'Domain 1',
+            clusters: [{ clusterName: 'mock-cluster1' }],
+          }),
+        ],
       },
       clusterErrors: {
         'mock-cluster2': new Error('Connection failed'),
@@ -117,16 +173,30 @@ describe(getAllDomains.name, () => {
 });
 
 type DomainData = ReturnType<typeof getDomainObj>;
+type SetupResult = {
+  result: Awaited<ReturnType<typeof getAllDomains>>;
+  mockGetDomainsForCluster: jest.SpyInstance;
+  mockGetUniqueDomains: jest.SpyInstance;
+};
 
 async function setup({
   clustersConfigs,
   domainsPerCluster,
   clusterErrors = {},
+  authContext = {
+    authEnabled: false,
+    auth: {
+      isValidToken: false,
+    },
+    groups: [],
+    isAdmin: false,
+  },
 }: {
   clustersConfigs: ClustersConfigs;
   domainsPerCluster: Record<string, DomainData[]>;
   clusterErrors?: Record<string, Error | GRPCError>;
-}) {
+  authContext?: Parameters<typeof getAllDomains>[0];
+}): Promise<SetupResult> {
   jest
     .spyOn(getConfigValueModule, 'default')
     .mockResolvedValue(clustersConfigs);
@@ -144,7 +214,7 @@ async function setup({
     .spyOn(getUniqueDomainsModule, 'default')
     .mockImplementation((domains) => domains);
 
-  const result = await getAllDomains();
+  const result = await getAllDomains(authContext);
 
   return {
     result,

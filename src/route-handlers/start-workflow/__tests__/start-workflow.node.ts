@@ -309,6 +309,11 @@ async function setup({
     userInfo: {
       id: 'test-user-id',
     },
+    authInfo: {
+      authEnabled: false,
+      isAdmin: true,
+      groups: [],
+    },
   };
 
   const mockOptions = {

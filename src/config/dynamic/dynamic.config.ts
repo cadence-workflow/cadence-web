@@ -7,12 +7,19 @@ import type {
 } from '../../utils/config/config.types';
 
 import archivalDefaultSearchEnabled from './resolvers/archival-default-search-enabled';
+import authStrategy from './resolvers/auth-strategy';
+import { type AuthStrategyConfigValue } from './resolvers/auth-strategy.types';
 import clusters from './resolvers/clusters';
 import clustersPublic from './resolvers/clusters-public';
 import { type PublicClustersConfigs } from './resolvers/clusters-public.types';
 import { type ClustersConfigs } from './resolvers/clusters.types';
 import cronListEnabled from './resolvers/cron-list-enabled';
 import { type CronListEnabledResolverParams } from './resolvers/cron-list-enabled.types';
+import domainAccess from './resolvers/domain-access';
+import {
+  type DomainAccessResolverParams,
+  type DomainAccessResolverValue,
+} from './resolvers/domain-access.types';
 import extendedDomainInfoEnabled from './resolvers/extended-domain-info-enabled';
 import { type ExtendedDomainInfoEnabledConfig } from './resolvers/extended-domain-info-enabled.types';
 import failoverHistoryEnabled from './resolvers/failover-history-enabled';
@@ -28,6 +35,11 @@ import workflowDiagnosticsEnabled from './resolvers/workflow-diagnostics-enabled
 const dynamicConfigs: {
   CADENCE_WEB_PORT: ConfigEnvDefinition;
   ADMIN_SECURITY_TOKEN: ConfigEnvDefinition;
+  CADENCE_WEB_AUTH_STRATEGY: ConfigSyncResolverDefinition<
+    undefined,
+    AuthStrategyConfigValue,
+    'serverStart'
+  >;
   CLUSTERS: ConfigSyncResolverDefinition<
     undefined,
     ClustersConfigs,
@@ -42,6 +54,12 @@ const dynamicConfigs: {
   CRON_LIST_ENABLED: ConfigAsyncResolverDefinition<
     CronListEnabledResolverParams,
     boolean,
+    'request',
+    true
+  >;
+  DOMAIN_ACCESS: ConfigAsyncResolverDefinition<
+    DomainAccessResolverParams,
+    DomainAccessResolverValue,
     'request',
     true
   >;
@@ -91,6 +109,10 @@ const dynamicConfigs: {
     env: 'CADENCE_ADMIN_SECURITY_TOKEN',
     default: '',
   },
+  CADENCE_WEB_AUTH_STRATEGY: {
+    resolver: authStrategy,
+    evaluateOn: 'serverStart',
+  },
   CLUSTERS: {
     resolver: clusters,
     evaluateOn: 'serverStart',
@@ -102,6 +124,11 @@ const dynamicConfigs: {
   },
   CRON_LIST_ENABLED: {
     resolver: cronListEnabled,
+    evaluateOn: 'request',
+    isPublic: true,
+  },
+  DOMAIN_ACCESS: {
+    resolver: domainAccess,
     evaluateOn: 'request',
     isPublic: true,
   },
