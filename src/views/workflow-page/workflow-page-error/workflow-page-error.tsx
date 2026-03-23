@@ -23,6 +23,7 @@ export default function WorkflowPageError({ error, reset }: Props) {
         ]}
         reset={reset}
         omitLogging={true}
+        showErrorDetails={true}
       />
     );
   }
@@ -41,6 +42,7 @@ export default function WorkflowPageError({ error, reset }: Props) {
         ]}
         reset={reset}
         omitLogging={true}
+        showErrorDetails={true}
       />
     );
   }
@@ -56,6 +58,7 @@ export default function WorkflowPageError({ error, reset }: Props) {
         },
       ]}
       reset={reset}
+      showErrorDetails={true}
     />
   );
 }

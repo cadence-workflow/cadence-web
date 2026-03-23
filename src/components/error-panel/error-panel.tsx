@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { useQueryErrorResetBoundary } from '@tanstack/react-query';
-import { Banner, KIND as BANNER_KIND, HIERARCHY } from 'baseui/banner';
+import { Banner } from 'baseui/banner';
 import { Button, SIZE, KIND, SHAPE } from 'baseui/button';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -20,7 +20,7 @@ import { styled, overrides } from './error-panel.styles';
 import { type Props } from './error-panel.types';
 
 export default function ErrorPanel({
-  showErrorMessage = true,
+  showErrorDetails = false,
   ...props
 }: Props) {
   const router = useRouter();
@@ -38,14 +38,12 @@ export default function ErrorPanel({
     <styled.ErrorContainer>
       <Image width={64} height={64} alt="Error" src={errorIcon} />
       <styled.ErrorText>{props.message}</styled.ErrorText>
-      {showErrorMessage && props.error?.message && (
-        <Banner
-          kind={BANNER_KIND.negative}
-          hierarchy={HIERARCHY.low}
-          overrides={overrides.banner}
-        >
+      {showErrorDetails && props.error?.message && (
+        <Banner kind="negative" hierarchy="low" overrides={overrides.banner}>
           <styled.ErrorMessageToggle
             onClick={() => setIsErrorExpanded((v) => !v)}
+            aria-expanded={isErrorExpanded}
+            aria-label="Toggle error message"
           >
             {isErrorExpanded ? (
               <MdExpandMore size={16} />
