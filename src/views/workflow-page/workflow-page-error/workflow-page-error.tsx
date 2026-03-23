@@ -58,7 +58,7 @@ export default function WorkflowPageError({ error, reset }: Props) {
         },
       ]}
       reset={reset}
-      showErrorDetails={true}
+      showErrorDetails={error instanceof RequestError}
     />
   );
 }

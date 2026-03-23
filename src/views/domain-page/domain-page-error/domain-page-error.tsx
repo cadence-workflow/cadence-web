@@ -57,7 +57,7 @@ export default function DomainPageError({ error, reset }: Props) {
         },
       ]}
       reset={reset}
-      showErrorDetails={true}
+      showErrorDetails={error instanceof RequestError}
     />
   );
 }
