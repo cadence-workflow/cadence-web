@@ -75,6 +75,10 @@ const resolverSchemas: ResolverSchemas = {
     args: z.undefined(),
     returnType: z.enum(HISTORY_PAGE_V2_ENABLED_VALUES_CONFIG),
   },
+  WORKFLOWS_LIST_ENABLED: {
+    args: z.undefined(),
+    returnType: z.boolean(),
+  },
 };
 
 export default resolverSchemas;
