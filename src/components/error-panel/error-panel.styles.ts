@@ -55,6 +55,8 @@ export const styled = {
   ErrorMessageText: createStyled('div', () => ({
     overflowY: 'auto',
     maxHeight: '160px',
+    overflowWrap: 'break-word',
+    wordBreak: 'break-word',
   })),
   ErrorCopyButtonContainer: createStyled('div', () => ({
     flexShrink: 0,

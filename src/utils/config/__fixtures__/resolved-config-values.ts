@@ -44,5 +44,6 @@ const mockResolvedConfigValues: LoadedConfigResolvedValues = {
   ARCHIVAL_DEFAULT_SEARCH_ENABLED: false,
   FAILOVER_HISTORY_ENABLED: false,
   HISTORY_PAGE_V2_ENABLED: 'DISABLED',
+  WORKFLOWS_LIST_ENABLED: false,
 };
 export default mockResolvedConfigValues;
