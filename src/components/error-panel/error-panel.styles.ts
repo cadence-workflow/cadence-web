@@ -43,6 +43,7 @@ export const styled = {
     ({ $theme }: { $theme: Theme }) => ({
       display: 'flex',
       alignItems: 'flex-start',
+      justifyContent: 'space-between',
       gap: $theme.sizing.scale300,
       marginTop: $theme.sizing.scale600,
       padding: $theme.sizing.scale600,
