@@ -151,6 +151,7 @@ function setup({
       inputTypeQueryParamKey="inputType"
       searchQueryParamKey="search"
       queryStringQueryParamKey="query"
+      columnsQueryParamKey="columns"
       refetchQuery={jest.fn()}
       isQueryRunning={isQueryRunning ?? false}
       expandFiltersByDefault={expandFiltersByDefault}
