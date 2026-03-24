@@ -39,7 +39,7 @@ export default function WorkflowHistoryUngroupedTable({
         <div>Event group</div>
         <div>Status</div>
         <div>Time</div>
-        <div>Duration</div>
+        <div>Elapsed</div>
         <div>Details</div>
       </styled.TableHeader>
       <Virtuoso

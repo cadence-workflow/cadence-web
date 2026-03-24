@@ -98,7 +98,7 @@ export default function WorkflowsHeader<
               inputDebounceDurationMs={WORKFLOWS_SEARCH_DEBOUNCE_MS}
             />
             <PageFiltersToggle
-              isActive={areFiltersShown}
+              isActive={areFiltersShown || activeFiltersCount > 0}
               onClick={() => {
                 setAreFiltersShown((value) => !value);
               }}
