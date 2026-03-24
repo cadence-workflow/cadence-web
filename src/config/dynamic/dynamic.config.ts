@@ -7,6 +7,7 @@ import type {
 } from '../../utils/config/config.types';
 
 import archivalDefaultSearchEnabled from './resolvers/archival-default-search-enabled';
+import batchActionsEnabled from './resolvers/batch-actions-enabled';
 import clusters from './resolvers/clusters';
 import clustersPublic from './resolvers/clusters-public';
 import { type PublicClustersConfigs } from './resolvers/clusters-public.types';
@@ -65,6 +66,12 @@ const dynamicConfigs: {
     true
   >;
   ARCHIVAL_DEFAULT_SEARCH_ENABLED: ConfigAsyncResolverDefinition<
+    undefined,
+    boolean,
+    'request',
+    true
+  >;
+  BATCH_ACTIONS_ENABLED: ConfigAsyncResolverDefinition<
     undefined,
     boolean,
     'request',
@@ -129,6 +136,11 @@ const dynamicConfigs: {
   },
   ARCHIVAL_DEFAULT_SEARCH_ENABLED: {
     resolver: archivalDefaultSearchEnabled,
+    evaluateOn: 'request',
+    isPublic: true,
+  },
+  BATCH_ACTIONS_ENABLED: {
+    resolver: batchActionsEnabled,
     evaluateOn: 'request',
     isPublic: true,
   },

@@ -67,6 +67,10 @@ const resolverSchemas: ResolverSchemas = {
     args: z.undefined(),
     returnType: z.boolean(),
   },
+  BATCH_ACTIONS_ENABLED: {
+    args: z.undefined(),
+    returnType: z.boolean(),
+  },
   FAILOVER_HISTORY_ENABLED: {
     args: z.undefined(),
     returnType: z.boolean(),
