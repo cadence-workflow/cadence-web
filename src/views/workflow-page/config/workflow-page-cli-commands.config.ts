@@ -15,13 +15,14 @@ const workflowPageCliCommandsConfig: CliCommandConfig[] = [
   {
     label: 'Update domain active cluster',
     command:
-      'cadence --domain {domain-name} domain update -active_cluster {cluster-name}',
+      'cadence --domain {domain-name} domain failover --active_cluster {cluster-name}',
     group: 'domain',
   },
   {
     label: 'Update domain bad binary',
     command:
       'cadence --domain {domain-name} domain update --add_bad_binary {bad-binary-SHA} --reason \'"{reason}"\'',
+    description: 'Add a bad binary to the domain (Admins only)',
     group: 'domain',
   },
   // workflow commands
