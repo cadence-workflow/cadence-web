@@ -33,9 +33,10 @@ export default function useInitialSelectedEvent({
     if (!initialEventGroupEntry) return undefined;
 
     const groupId = initialEventGroupEntry[0];
+
     // If group index has not changed do not search again
     if (
-      foundGroupIndexRef.current &&
+      foundGroupIndexRef.current !== undefined &&
       filteredEventGroupsEntries[foundGroupIndexRef.current]?.[0] === groupId
     )
       return foundGroupIndexRef.current;
