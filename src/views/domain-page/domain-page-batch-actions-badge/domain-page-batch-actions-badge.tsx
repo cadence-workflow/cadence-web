@@ -11,5 +11,6 @@ export default function DomainPageBatchActionsBadge() {
 
   if (count === 0) return null;
 
+
   return <Badge content={count} overrides={overrides.badge} />;
 }
