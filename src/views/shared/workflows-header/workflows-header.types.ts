@@ -28,4 +28,5 @@ export type Props<
   isQueryRunning: boolean;
   expandFiltersByDefault?: boolean;
   showQueryInputOnly?: boolean;
+  showColumnsPicker?: boolean;
 };
