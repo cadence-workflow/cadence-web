@@ -33,7 +33,7 @@ export default function PageFilters<
           {...restSearchProps}
         />
         <PageFiltersToggle
-          isActive={areFiltersShown}
+          isActive={areFiltersShown || activeFiltersCount > 0}
           onClick={() => {
             setAreFiltersShown((value) => !value);
           }}

@@ -26,7 +26,7 @@ jest.mock(
 );
 
 jest.mock(
-  '../../domain-page-cluster-selector/domain-page-cluster-selector',
+  '@/views/shared/domain-cluster-selector/domain-cluster-selector',
   () => jest.fn(() => <div data-testid="mock-domain-cluster-selector" />)
 );
 

@@ -1,7 +1,8 @@
 import { type ZodIssue, type z } from 'zod';
 
+import { type Payload } from '@/__generated__/proto-ts/uber/cadence/api/v1/Payload';
+import { type WorkflowExecutionCloseStatus } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionCloseStatus';
 import { type DefaultMiddlewaresContext } from '@/utils/route-handlers-middleware';
-import { type DomainWorkflow } from '@/views/domain-page/domain-page.types';
 
 import type listWorkflowsQueryParamSchema from './schemas/list-workflows-query-params-schema';
 
@@ -21,7 +22,7 @@ export type ListWorkflowsRequestQueryParams = z.input<
 export type TimeColumn = ListWorkflowsRequestQueryParams['timeColumn'];
 
 export type ListWorkflowsResponse = {
-  workflows: Array<DomainWorkflow>;
+  workflows: Array<WorkflowListItem>;
   nextPage: string;
 };
 
@@ -29,6 +30,25 @@ export type ListWorkflowsError = {
   error: string;
   validationErrors?: Array<ZodIssue>;
   message?: string;
+};
+
+// Fields based on Cadence's default search attributes for workflow execution visibility
+// Reference: https://github.com/cadence-workflow/cadence/blob/master/common/definition/indexedKeys.go
+export type WorkflowListItem = {
+  workflowID: string;
+  runID: string;
+  workflowName: string;
+  status: WorkflowExecutionCloseStatus;
+  startTime: number;
+  executionTime: number | undefined;
+  updateTime: number | undefined;
+  closeTime: number | undefined;
+  historyLength: number;
+  taskList: string;
+  isCron: boolean;
+  clusterAttributeScope: string | undefined;
+  clusterAttributeName: string | undefined;
+  searchAttributes?: Record<string, Payload>;
 };
 
 export type Context = DefaultMiddlewaresContext;
