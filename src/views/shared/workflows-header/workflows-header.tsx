@@ -26,21 +26,18 @@ export default function WorkflowsHeader<
   I extends PageQueryParamKeys<P>,
   S extends PageQueryParamKeys<P>,
   Q extends PageQueryParamKeys<P>,
-  C extends PageQueryParamKeys<P>,
 >({
   pageQueryParamsConfig,
   pageFiltersConfig,
   inputTypeQueryParamKey,
   searchQueryParamKey,
   queryStringQueryParamKey,
-  // TODO @adhitya.mamallan: use this in a future change
-  // columnsQueryParamKey,
   refetchQuery,
   isQueryRunning,
   expandFiltersByDefault,
   showQueryInputOnly,
   showColumnsPicker,
-}: Props<P, I, S, Q, C>) {
+}: Props<P, I, S, Q>) {
   const [areFiltersShown, setAreFiltersShown] = useState(
     expandFiltersByDefault ?? false
   );

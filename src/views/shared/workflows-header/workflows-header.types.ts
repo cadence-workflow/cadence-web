@@ -14,7 +14,6 @@ export type Props<
   I extends PageQueryParamKeys<P>,
   S extends PageQueryParamKeys<P>,
   Q extends PageQueryParamKeys<P>,
-  C extends PageQueryParamKeys<P>,
 > = {
   pageQueryParamsConfig: P;
   pageFiltersConfig: Array<PageFilterConfig<P, any>>;
@@ -24,9 +23,6 @@ export type Props<
   searchQueryParamKey: PageQueryParamValues<P>[S] extends string ? S : never;
   queryStringQueryParamKey: PageQueryParamValues<P>[Q] extends string
     ? Q
-    : never;
-  columnsQueryParamKey: PageQueryParamValues<P>[C] extends Array<string>
-    ? C
     : never;
   refetchQuery: () => void;
   isQueryRunning: boolean;

@@ -3,7 +3,6 @@ import type domainPageQueryParamsConfig from '@/views/domain-page/config/domain-
 
 export const mockDomainPageQueryParamsValues = {
   inputType: 'search',
-  columns: [],
   search: '',
   statuses: undefined,
   timeRangeStart: 'now',
@@ -17,7 +16,6 @@ export const mockDomainPageQueryParamsValues = {
   timeRangeStartBasic: 'now',
   timeRangeEndBasic: 'now-7d',
   inputTypeArchival: 'search',
-  columnsArchival: [],
   searchArchival: '',
   statusesArchival: undefined,
   timeRangeStartArchival: new Date('2024-11-17T03:24:00'),

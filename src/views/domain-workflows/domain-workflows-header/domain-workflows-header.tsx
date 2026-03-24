@@ -40,7 +40,6 @@ export default function DomainWorkflowsHeader({
       inputTypeQueryParamKey="inputType"
       searchQueryParamKey="search"
       queryStringQueryParamKey="query"
-      columnsQueryParamKey="columns"
       refetchQuery={refetch}
       isQueryRunning={isFetching}
       showColumnsPicker={showColumnsPicker}

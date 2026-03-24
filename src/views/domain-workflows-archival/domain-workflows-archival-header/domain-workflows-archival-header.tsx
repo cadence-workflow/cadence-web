@@ -43,7 +43,6 @@ export default function DomainWorkflowsArchivalHeader({
       inputTypeQueryParamKey="inputTypeArchival"
       searchQueryParamKey="searchArchival"
       queryStringQueryParamKey="queryArchival"
-      columnsQueryParamKey="columnsArchival"
       refetchQuery={refetch}
       isQueryRunning={isFetching}
       expandFiltersByDefault={true}
