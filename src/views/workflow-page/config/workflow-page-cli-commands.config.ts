@@ -23,7 +23,6 @@ const workflowPageCliCommandsConfig: CliCommandConfig[] = [
     label: 'Update domain bad binary',
     command:
       'cadence --domain {domain-name} domain update --add_bad_binary {bad-binary-SHA} --reason \'"{reason}"\'',
-    description: '(Allowed to admins only)',
     group: 'domain',
   },
   // workflow commands
