@@ -12,6 +12,7 @@ import { type Props } from './domain-workflows-header.types';
 export default function DomainWorkflowsHeader({
   domain,
   cluster,
+  showColumnsPicker,
   timeRangeStart,
   timeRangeEnd,
 }: Props) {
@@ -41,6 +42,7 @@ export default function DomainWorkflowsHeader({
       queryStringQueryParamKey="query"
       refetchQuery={refetch}
       isQueryRunning={isFetching}
+      showColumnsPicker={showColumnsPicker}
     />
   );
 }

@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import dynamic from 'next/dynamic';
 
+import useSuspenseConfigValue from '@/hooks/use-config-value/use-suspense-config-value';
 import { type DescribeClusterResponse } from '@/route-handlers/describe-cluster/describe-cluster.types';
 import request from '@/utils/request';
 import { type DomainPageTabContentProps } from '@/views/domain-page/domain-page-content/domain-page-content.types';
@@ -28,11 +29,21 @@ export default function DomainWorkflows(props: DomainPageTabContentProps) {
     return isClusterAdvancedVisibilityEnabled(data);
   }, [data]);
 
-  const DomainWorkflowsComponent = isAdvancedVisibilityEnabled
-    ? DomainWorkflowsAdvanced
-    : DomainWorkflowsBasic;
+  const { data: isNewWorkflowsListEnabled } = useSuspenseConfigValue(
+    'WORKFLOWS_LIST_ENABLED'
+  );
+
+  if (!isAdvancedVisibilityEnabled) {
+    return (
+      <DomainWorkflowsBasic domain={props.domain} cluster={props.cluster} />
+    );
+  }
 
   return (
-    <DomainWorkflowsComponent domain={props.domain} cluster={props.cluster} />
+    <DomainWorkflowsAdvanced
+      domain={props.domain}
+      cluster={props.cluster}
+      isNewWorkflowsListEnabled={isNewWorkflowsListEnabled}
+    />
   );
 }

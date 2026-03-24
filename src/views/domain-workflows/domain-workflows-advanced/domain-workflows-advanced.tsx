@@ -6,11 +6,16 @@ import dayjs from '@/utils/datetime/dayjs';
 import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
 
 import DomainWorkflowsHeader from '../domain-workflows-header/domain-workflows-header';
+import DomainWorkflowsList from '../domain-workflows-list/domain-workflows-list';
 import DomainWorkflowsTable from '../domain-workflows-table/domain-workflows-table';
 
 import { type Props } from './domain-workflows-advanced.types';
 
-export default function DomainWorkflowsAdvanced({ domain, cluster }: Props) {
+export default function DomainWorkflowsAdvanced({
+  domain,
+  cluster,
+  isNewWorkflowsListEnabled,
+}: Props) {
   const [queryParams] = usePageQueryParams(domainPageQueryParamsConfig);
 
   const timeRangeParams = useMemo(() => {
@@ -29,6 +34,24 @@ export default function DomainWorkflowsAdvanced({ domain, cluster }: Props) {
       ).toISOString(),
     };
   }, [queryParams.timeRangeStart, queryParams.timeRangeEnd]);
+
+  if (isNewWorkflowsListEnabled) {
+    return (
+      <>
+        <DomainWorkflowsHeader
+          domain={domain}
+          cluster={cluster}
+          showColumnsPicker
+          {...timeRangeParams}
+        />
+        <DomainWorkflowsList
+          domain={domain}
+          cluster={cluster}
+          {...timeRangeParams}
+        />
+      </>
+    );
+  }
 
   return (
     <>
