@@ -43,6 +43,7 @@ jest.mock('../../config/domain-page-actions.config', () => {
   };
 });
 
+
 jest.mock('@/components/button/button', () =>
   jest.fn((props) => {
     return (
