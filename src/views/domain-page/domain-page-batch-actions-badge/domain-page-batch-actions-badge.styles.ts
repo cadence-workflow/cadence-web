@@ -8,10 +8,9 @@ export const overrides = {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
         color: $theme.colors.contentOnColor,
         backgroundColor: $theme.colors.accent,
-        borderRadius: '50%',
-        minWidth: $theme.sizing.scale700,
+        borderRadius: '20px',
+        padding: `${$theme.sizing.scale0} ${$theme.sizing.scale300}`,
         ...$theme.typography.LabelXSmall,
-        justifyContent: 'center',
       }),
     },
   } satisfies BadgeOverrides,
