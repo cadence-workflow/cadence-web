@@ -6,6 +6,7 @@ import { waitFor } from '@/test-utils/rtl';
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
 import mswMockEndpoints from '@/test-utils/msw-mock-handlers/helper/msw-mock-endpoints';
 
+import { scheduleActivityTaskEvent } from '../../__fixtures__/workflow-history-activity-events';
 import workflowHistoryMultiPageFixture from '../../__fixtures__/workflow-history-multi-page-fixture';
 import WorkflowHistoryFetcher from '../workflow-history-fetcher';
 
@@ -329,21 +330,110 @@ describe(WorkflowHistoryFetcher.name, () => {
       jest.useRealTimers();
     }
   });
+
+  it('should send waitForNewEvent=true for all requests when param is set', async () => {
+    const emptyPageFixture: GetWorkflowHistoryResponse[] = [
+      // Page 1: has events
+      {
+        history: { events: [scheduleActivityTaskEvent] },
+        rawHistory: [],
+        archived: false,
+        nextPageToken: 'page2',
+      },
+      // Page 2: empty events (server keeps nextPageToken for long-polling)
+      {
+        history: { events: [] },
+        rawHistory: [],
+        archived: false,
+        nextPageToken: 'page3',
+      },
+      // Page 3: empty events (last page)
+      {
+        history: { events: [] },
+        rawHistory: [],
+        archived: false,
+        nextPageToken: '',
+      },
+    ];
+
+    const { fetcher, getCapturedWaitForNewEvent } = setup(queryClient, {
+      waitForNewEvent: true,
+      responses: emptyPageFixture,
+    });
+
+    fetcher.start();
+
+    await waitFor(() => {
+      const state = fetcher.getCurrentState();
+      expect(state.hasNextPage).toBe(false);
+      expect(state.data?.pages).toHaveLength(3);
+    });
+
+    const waitForNewEventValues = getCapturedWaitForNewEvent();
+    // All requests should use waitForNewEvent=true when param is set
+    expect(waitForNewEventValues[0]).toBe('true');
+    expect(waitForNewEventValues[1]).toBe('true');
+    expect(waitForNewEventValues[2]).toBe('true');
+  });
+
+  it('should send waitForNewEvent=false for all requests when param is not set', async () => {
+    const emptyPageFixture: GetWorkflowHistoryResponse[] = [
+      {
+        history: { events: [scheduleActivityTaskEvent] },
+        rawHistory: [],
+        archived: false,
+        nextPageToken: 'page2',
+      },
+      {
+        history: { events: [] },
+        rawHistory: [],
+        archived: false,
+        nextPageToken: 'page3',
+      },
+    ];
+
+    const { fetcher, getCapturedWaitForNewEvent } = setup(queryClient, {
+      responses: emptyPageFixture,
+    });
+
+    fetcher.start();
+
+    await waitFor(() => {
+      const state = fetcher.getCurrentState();
+      expect(state.hasNextPage).toBe(false);
+    });
+
+    const waitForNewEventValues = getCapturedWaitForNewEvent();
+    // All requests should use waitForNewEvent=false when param is not set
+    expect(waitForNewEventValues[0]).toBe('false');
+    expect(waitForNewEventValues[1]).toBe('false');
+  });
 });
 
-function setup(client: QueryClient, options: { failOnPages?: number[] } = {}) {
+function setup(
+  client: QueryClient,
+  options: {
+    failOnPages?: number[];
+    waitForNewEvent?: boolean;
+    responses?: GetWorkflowHistoryResponse[];
+  } = {}
+) {
   const params = {
     domain: 'test-domain',
     cluster: 'test-cluster',
     workflowId: 'test-workflow-id',
     runId: 'test-run-id',
     pageSize: 10,
+    ...(options.waitForNewEvent !== undefined && {
+      waitForNewEvent: options.waitForNewEvent,
+    }),
   };
 
-  const { getCapturedPageSizes } = mockHistoryEndpoint(
-    workflowHistoryMultiPageFixture,
-    options.failOnPages
-  );
+  const { getCapturedPageSizes, getCapturedWaitForNewEvent } =
+    mockHistoryEndpoint(
+      options.responses ?? workflowHistoryMultiPageFixture,
+      options.failOnPages
+    );
   const fetcher = new WorkflowHistoryFetcher(client, params);
   hoistedFetcher = fetcher;
 
@@ -363,6 +453,7 @@ function setup(client: QueryClient, options: { failOnPages?: number[] } = {}) {
     params,
     waitForData,
     getCapturedPageSizes,
+    getCapturedWaitForNewEvent,
   };
 }
 
@@ -371,6 +462,7 @@ function mockHistoryEndpoint(
   failOnPages: number[] = []
 ) {
   const capturedPageSizes: string[] = [];
+  const capturedWaitForNewEvent: string[] = [];
 
   mswMockEndpoints([
     {
@@ -381,8 +473,10 @@ function mockHistoryEndpoint(
         const url = new URL(request.url);
         const nextPage = url.searchParams.get('nextPage');
         const pageSize = url.searchParams.get('pageSize');
+        const waitForNewEvent = url.searchParams.get('waitForNewEvent');
 
         capturedPageSizes.push(pageSize ?? '');
+        capturedWaitForNewEvent.push(waitForNewEvent ?? '');
 
         // Determine current page number based on nextPage param
         let pageNumber = 1;
@@ -406,6 +500,14 @@ function mockHistoryEndpoint(
         const responseIndex = pageNumber - 1;
         const response =
           responses[responseIndex] || responses[responses.length - 1];
+
+        // Simulate real server behavior: when waitForNewEvent is false
+        // and the page is empty, the server doesn't return nextPageToken
+        const isEmpty = response.history?.events?.length === 0;
+        if (isEmpty && waitForNewEvent === 'false') {
+          return HttpResponse.json({ ...response, nextPageToken: '' });
+        }
+
         return HttpResponse.json(response);
       },
     },
@@ -413,5 +515,6 @@ function mockHistoryEndpoint(
 
   return {
     getCapturedPageSizes: () => capturedPageSizes,
+    getCapturedWaitForNewEvent: () => capturedWaitForNewEvent,
   };
 }

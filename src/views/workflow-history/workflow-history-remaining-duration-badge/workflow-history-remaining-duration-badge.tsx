@@ -18,7 +18,7 @@ export default function WorkflowHistoryRemainingDurationBadge({
     workflowIsArchived ||
     workflowCloseStatus !== 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID';
 
-  const shouldHide = loadingMoreEvents || workflowEnded;
+  const shouldHide = workflowEnded;
 
   const [remainingDuration, setRemainingDuration] = useState<string | null>(
     null

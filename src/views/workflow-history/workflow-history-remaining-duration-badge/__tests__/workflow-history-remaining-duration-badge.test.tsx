@@ -36,12 +36,12 @@ describe('WorkflowHistoryRemainingDurationBadge', () => {
     expect(screen.getByText('Remaining: 5m 30s')).toBeInTheDocument();
   });
 
-  it('does not render badge when loading more events', () => {
+  it('renders badge when loading more events for running workflow', () => {
     setup({
       loadingMoreEvents: true,
     });
 
-    expect(screen.queryByText(/Remaining:/)).not.toBeInTheDocument();
+    expect(screen.getByText('Remaining: 5m 30s')).toBeInTheDocument();
   });
 
   it('does not render badge when workflow is archived', () => {
@@ -151,11 +151,11 @@ describe('WorkflowHistoryRemainingDurationBadge', () => {
         startTime={mockStartTime}
         expectedEndTime={new Date('2024-01-01T10:07:00Z').getTime()}
         prefix="Remaining:"
-        workflowIsArchived={false}
+        workflowIsArchived={true}
         workflowCloseStatus={
           WorkflowExecutionCloseStatus.WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID
         }
-        loadingMoreEvents={true}
+        loadingMoreEvents={false}
       />
     );
 

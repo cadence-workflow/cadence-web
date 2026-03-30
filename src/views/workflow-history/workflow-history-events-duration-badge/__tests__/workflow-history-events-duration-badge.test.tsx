@@ -64,9 +64,19 @@ describe('WorkflowHistoryEventsDurationBadge', () => {
     expect(screen.getByText('Duration: 120')).toBeInTheDocument();
   });
 
-  it('does not render badge when loading more events', () => {
+  it('renders badge when loading more events for running workflow', () => {
     setup({
       loadingMoreEvents: true,
+    });
+
+    expect(screen.getByText(/Duration:/)).toBeInTheDocument();
+  });
+
+  it('does not render badge when loading more events for completed workflow', () => {
+    setup({
+      loadingMoreEvents: true,
+      workflowCloseStatus:
+        WorkflowExecutionCloseStatus.WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED,
     });
 
     expect(screen.queryByText(/Duration:/)).not.toBeInTheDocument();
