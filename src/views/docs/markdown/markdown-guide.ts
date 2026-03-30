@@ -127,6 +127,55 @@ Image with 100px height:
 Image with 100px width and 100px height:
 {% image src="https://cadenceworkflow.io/assets/images/workflow-84ef76d93c7ff138714a0aa7c9b92841.png" alt="Image with 100px width and 100px height" width="100" height="100" /%}
 
+## Styled Text
+
+Use the \`{% style %}\` tag to apply custom text color or background color to any content.
+
+### Color
+
+Use the \`color\` attribute to set the text color:
+
+\`\`\`
+{% style color="red" %}red text{% /style %}
+{% style color="#0070f3" %}blue text{% /style %}
+\`\`\`
+
+{% style color="red" %}red text{% /style %}
+
+{% style color="green" %}green text{% /style %}
+
+### Background
+
+Use the \`bg\` attribute to set the background color:
+
+\`\`\`
+{% style bg="yellow" %}highlighted text{% /style %}
+\`\`\`
+
+{% style bg="yellow" %}highlighted text{% /style %}
+
+### Combined
+
+Use both \`color\` and \`bg\` together:
+
+\`\`\`
+{% style color="white" bg="blue" %}white text on blue background{% /style %}
+\`\`\`
+
+{% style color="white" bg="blue" %}white text on blue background{% /style %}
+
+### Nesting
+
+Tags can be nested for fine-grained control:
+
+\`\`\`
+{% style color="blue" %}
+  This is blue text, {% style color="red" %}this part is red{% /style %}, and back to blue.
+{% /style %}
+\`\`\`
+
+{% style color="blue" %}This is blue text, {% style color="red" %}this part is red{% /style %}, and back to blue.{% /style %}
+
 `;
 
 export default content;
