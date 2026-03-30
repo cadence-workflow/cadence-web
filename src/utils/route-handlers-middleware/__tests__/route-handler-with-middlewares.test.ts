@@ -8,8 +8,9 @@ import type {
 } from '../route-handlers-middleware.types';
 
 jest.mock('@/utils/logger');
-
-const mockRequest = {} as NextRequest;
+const mockRequest = {
+  url: 'http://localhost',
+} as NextRequest;
 const mockOptions = { params: {} };
 const mockResponse = NextResponse.json({ message: 'Success' });
 

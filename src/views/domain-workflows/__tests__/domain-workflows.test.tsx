@@ -1,7 +1,6 @@
-import { Suspense } from 'react';
+import React, { Suspense } from 'react';
 
 import { HttpResponse } from 'msw';
-import { act } from 'react-dom/test-utils';
 
 import { render, screen } from '@/test-utils/rtl';
 
@@ -17,6 +16,20 @@ jest.mock('../domain-workflows-advanced/domain-workflows-advanced', () =>
   jest.fn(() => <div>Advanced Workflows</div>)
 );
 
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { error: string | null }
+> {
+  state = { error: null };
+  static getDerivedStateFromError(error: Error) {
+    return { error: error.message };
+  }
+  render() {
+    if (this.state.error) return <div>{this.state.error}</div>;
+    return this.props.children;
+  }
+}
+
 describe('DomainWorkflows', () => {
   it('should render basic workflows table when advanced visibility is disabled', async () => {
     await setup({ isAdvancedVisibility: false });
@@ -31,27 +44,57 @@ describe('DomainWorkflows', () => {
   });
 
   it('should throw on error', async () => {
-    let renderErrorMessage;
-    try {
-      await act(async () => {
-        await setup({ error: true });
-      });
-    } catch (error) {
-      if (error instanceof Error) {
-        renderErrorMessage = error.message;
-      }
-    }
+    await setup({ error: true });
 
-    expect(renderErrorMessage).toEqual('Failed to fetch cluster info');
+    expect(
+      await screen.findByText('Failed to fetch cluster info')
+    ).toBeInTheDocument();
+  });
+
+  it('should render advanced workflows for non-admin users when advanced visibility probe succeeds', async () => {
+    await setup({
+      authResponse: {
+        authEnabled: true,
+        auth: { isValidToken: true },
+        isAdmin: false,
+        groups: ['reader'],
+      },
+      isAdvancedVisibilityProbeEnabled: true,
+    });
+
+    expect(await screen.findByText('Advanced Workflows')).toBeInTheDocument();
+  });
+
+  it('should render basic workflows for non-admin users when advanced visibility probe fails', async () => {
+    await setup({
+      authResponse: {
+        authEnabled: true,
+        auth: { isValidToken: true },
+        isAdmin: false,
+        groups: ['reader'],
+      },
+      isAdvancedVisibilityProbeEnabled: false,
+    });
+
+    expect(await screen.findByText('Basic Workflows')).toBeInTheDocument();
   });
 });
 
 async function setup({
   isAdvancedVisibility = false,
   error,
+  authResponse = {
+    authEnabled: false,
+    auth: { isValidToken: false },
+    isAdmin: false,
+    groups: [],
+  },
+  isAdvancedVisibilityProbeEnabled,
 }: {
-  error?: boolean;
   isAdvancedVisibility?: boolean;
+  error?: boolean;
+  authResponse?: Record<string, unknown>;
+  isAdvancedVisibilityProbeEnabled?: boolean;
 }) {
   const props: DomainPageTabContentProps = {
     domain: 'test-domain',
@@ -59,9 +102,11 @@ async function setup({
   };
 
   render(
-    <Suspense>
-      <DomainWorkflows {...props} />
-    </Suspense>,
+    <ErrorBoundary>
+      <Suspense>
+        <DomainWorkflows {...props} />
+      </Suspense>
+    </ErrorBoundary>,
     {
       endpointsMocks: [
         {
@@ -71,8 +116,14 @@ async function setup({
           jsonResponse: false,
         },
         {
-          path: '/api/clusters/test-cluster',
+          path: '/api/auth/me',
           httpMethod: 'GET',
+          mockOnce: false,
+          jsonResponse: authResponse,
+        },
+        {
+          path: '/api/clusters/test-cluster',
+          httpMethod: 'GET' as const,
           mockOnce: false,
           ...(error
             ? {
@@ -101,6 +152,30 @@ async function setup({
                 } satisfies DescribeClusterResponse,
               }),
         },
+        ...(isAdvancedVisibilityProbeEnabled !== undefined
+          ? [
+              {
+                path: '/api/domains/:domain/:cluster/workflows',
+                httpMethod: 'GET' as const,
+                mockOnce: false,
+                ...(isAdvancedVisibilityProbeEnabled
+                  ? {
+                      jsonResponse: {
+                        workflows: [],
+                        nextPage: '',
+                      },
+                    }
+                  : {
+                      httpResolver: () => {
+                        return HttpResponse.json(
+                          { message: 'Advanced visibility is not supported' },
+                          { status: 404 }
+                        );
+                      },
+                    }),
+              },
+            ]
+          : []),
       ],
     }
   );

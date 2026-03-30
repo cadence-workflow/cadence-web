@@ -172,6 +172,35 @@ describe('DomainPageStartWorkflowButton', () => {
     expect(screen.queryByTestId('actions-modal')).not.toBeInTheDocument();
   });
 
+  it('disables button when user lacks domain write access', async () => {
+    mockGetActionDisabledReason.mockImplementation(
+      ({
+        actionEnabledConfig,
+      }: {
+        actionEnabledConfig?: WorkflowActionEnabledConfigValue;
+      }) =>
+        actionEnabledConfig === 'DISABLED_UNAUTHORIZED'
+          ? 'Not authorized'
+          : undefined
+    );
+
+    await setup(defaultProps, {
+      startActionEnabledConfig: 'DISABLED_UNAUTHORIZED',
+    });
+
+    await waitFor(() => {
+      expect(mockGetActionDisabledReason).toHaveBeenCalledWith({
+        actionEnabledConfig: 'DISABLED_UNAUTHORIZED',
+        actionRunnableStatus: 'RUNNABLE',
+      });
+    });
+
+    expect(screen.getByTestId('start-workflow-button')).toHaveTextContent(
+      /"disabled":true/
+    );
+    expect(screen.getByTestId('tooltip')).toHaveTextContent('Not authorized');
+  });
+
   it('show loading indicator when config errors', async () => {
     await setup(defaultProps, {
       isConfigError: true,
@@ -185,7 +214,7 @@ describe('DomainPageStartWorkflowButton', () => {
 function setup(
   props: Props,
   options: {
-    startActionEnabledConfig?: string;
+    startActionEnabledConfig?: WorkflowActionEnabledConfigValue;
     isConfigLoading?: boolean;
     isConfigError?: boolean;
   } = {}
@@ -203,7 +232,7 @@ function setup(
       {
         path: '/api/config',
         httpMethod: 'GET',
-        mockOnce: true,
+        mockOnce: false,
         httpResolver: async () => {
           if (isConfigError) {
             return HttpResponse.json(
@@ -215,11 +244,10 @@ function setup(
             return new Promise(() => {});
           }
 
-          const response = {
+          return HttpResponse.json({
             ...mockResolvedConfigValues.WORKFLOW_ACTIONS_ENABLED,
             start: startActionEnabledConfig,
-          };
-          return HttpResponse.json(response);
+          });
         },
       },
     ],
