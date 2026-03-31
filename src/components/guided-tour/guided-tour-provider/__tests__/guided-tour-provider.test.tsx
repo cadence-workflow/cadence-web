@@ -29,16 +29,16 @@ jest.mock('react-joyride', () => {
     info: jest.fn(),
   };
 
-  let onEventCallback: Function | undefined;
-  let onCallback: Function | undefined;
+  let onEventCallback: ((...args: unknown[]) => void) | undefined;
+  let onCallback: ((...args: unknown[]) => void) | undefined;
 
   return {
     __esModule: true,
-    useJoyride: jest.fn((props: { onEvent?: Function }) => {
+    useJoyride: jest.fn((props: { onEvent?: (...args: unknown[]) => void }) => {
       onEventCallback = props.onEvent;
       return {
         controls: mockControls,
-        on: jest.fn((event: string, handler: Function) => {
+        on: jest.fn((event: string, handler: (...args: unknown[]) => void) => {
           if (event === 'tour:end') {
             onCallback = handler;
           }
