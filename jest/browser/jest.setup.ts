@@ -1,18 +1,17 @@
-import "@testing-library/jest-dom";
+import '@testing-library/jest-dom';
 
 import { server } from '@/utils/msw/node';
+import { clearTestQueryClient } from '@/test-utils/test-provider';
 
 beforeAll(() => {
-  // Enable API mocking before all the tests.
-  server.listen()
-})
+  server.listen();
+});
 
 afterEach(() => {
-  // Reset the request handlers between each test.
-  // This way the handlers we add on a per-test basis
-  // do not leak to other, irrelevant tests.
-  server.resetHandlers()
-})
+  server.resetHandlers();
+  // Clear at a fixed point in Jest lifecycle so heap reflects released cache.
+  clearTestQueryClient();
+});
 
 afterAll(() => {
   // Finally, disable API mocking after the tests are done.

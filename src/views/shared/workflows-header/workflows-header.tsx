@@ -36,6 +36,7 @@ export default function WorkflowsHeader<
   isQueryRunning,
   expandFiltersByDefault,
   showQueryInputOnly,
+  showColumnsPicker,
 }: Props<P, I, S, Q>) {
   const [areFiltersShown, setAreFiltersShown] = useState(
     expandFiltersByDefault ?? false
@@ -106,6 +107,7 @@ export default function WorkflowsHeader<
             />
           </styled.SearchContainer>
         )}
+        {showColumnsPicker && <div>Placeholder for columns picker</div>}
       </styled.InputContainer>
       {inputType === 'search' && areFiltersShown && (
         <PageFiltersFields
