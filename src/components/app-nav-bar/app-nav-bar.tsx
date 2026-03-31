@@ -16,13 +16,9 @@ import useStyletronClasses from '@/hooks/use-styletron-classes';
 
 import AuthTokenModal from '../auth-token-modal/auth-token-modal';
 
-import { cssStyles } from './app-nav-bar.styles';
+import { cssStyles, errorSnackbarOverrides } from './app-nav-bar.styles';
 import useAuthLifecycle from './hooks/use-auth-lifecycle';
-import {
-  ERROR_SNACKBAR_OVERRIDES,
-  LOGIN_ITEM,
-  LOGOUT_ITEM,
-} from './use-auth-lifecycle.constants';
+import { LOGIN_ITEM, LOGOUT_ITEM } from './use-auth-lifecycle.constants';
 import { type UserMenuItem } from './use-auth-lifecycle.types';
 
 export default function AppNavBar() {
@@ -44,7 +40,7 @@ export default function AppNavBar() {
   } = useAuthLifecycle();
 
   const logoutInFlightRef = useRef(false);
-  const logoutReasonRef = useRef<'manual' | 'expired' | null>(null);
+  const logoutTriggerRef = useRef<'manual' | 'expired' | null>(null);
   const prevIsValidTokenRef = useRef<boolean | null>(null);
   const latestExpiresAtRef = useRef(expiresAtMs);
   latestExpiresAtRef.current = expiresAtMs;
@@ -60,7 +56,7 @@ export default function AppNavBar() {
         {
           message,
           ...(dismissActionLabel ? { actionMessage: dismissActionLabel } : {}),
-          overrides: ERROR_SNACKBAR_OVERRIDES,
+          overrides: errorSnackbarOverrides,
         },
         duration
       );
@@ -69,14 +65,14 @@ export default function AppNavBar() {
   );
 
   const handleLogout = useCallback(
-    async (reason: 'manual' | 'expired') => {
+    async (trigger: 'manual' | 'expired') => {
       if (logoutInFlightRef.current) return;
       logoutInFlightRef.current = true;
-      logoutReasonRef.current = reason;
+      logoutTriggerRef.current = trigger;
       try {
         await logout();
       } catch (e) {
-        logoutReasonRef.current = null;
+        logoutTriggerRef.current = null;
         const message = e instanceof Error ? e.message : 'Failed to sign out';
         showErrorSnackbar(message);
       } finally {
@@ -109,9 +105,9 @@ export default function AppNavBar() {
     prevIsValidTokenRef.current = isValidToken;
 
     if (prevIsValidToken === true && !isValidToken) {
-      const reason = logoutReasonRef.current;
-      logoutReasonRef.current = null;
-      if (reason === 'manual') {
+      const trigger = logoutTriggerRef.current;
+      logoutTriggerRef.current = null;
+      if (trigger === 'manual') {
         enqueue({ message: 'Signed out' }, DURATION.medium);
       } else {
         showErrorSnackbar(
@@ -155,14 +151,14 @@ export default function AppNavBar() {
     }
 
     const timeoutMs = expiresAtMs - Date.now();
-    const logoutIfCurrent = () => {
+    const logoutIfExpiryMatches = () => {
       if (logoutInFlightRef.current) return;
       if (latestExpiresAtRef.current !== expiresAtMs) return;
       void handleLogout('expired');
     };
 
     expiryTimeoutIdRef.current = window.setTimeout(
-      logoutIfCurrent,
+      logoutIfExpiryMatches,
       Math.max(0, timeoutMs)
     );
 
