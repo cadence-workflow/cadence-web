@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "react-joyride": {
+      "source": "gilbarbara/react-joyride",
+      "sourceType": "github",
+      "computedHash": "6a28b20c1fc4cc8f6e4ea7d9229a0c7f3dc196e0095c48271c5ebec9dd4ff924"
+    }
+  }
+}
