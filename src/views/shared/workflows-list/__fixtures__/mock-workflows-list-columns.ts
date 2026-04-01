@@ -5,7 +5,7 @@ import {
   type WorkflowsListColumnMatcher,
 } from '../workflows-list.types';
 
-export const mockWorkflowsListColumnMatchers: ReadonlyArray<WorkflowsListColumnMatcher> =
+export const mockWorkflowsListColumnsConfig: ReadonlyArray<WorkflowsListColumnMatcher> =
   [
     {
       match: (name: string) => name === 'WorkflowID',
