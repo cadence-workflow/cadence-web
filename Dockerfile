@@ -13,17 +13,16 @@ COPY . .
 FROM base AS builder
 WORKDIR /app
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends git ca-certificates 
+  && apt-get install -y --no-install-recommends git ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
 COPY package.json package-lock.json ./
 RUN npm ci
 RUN npm run install-idl
 COPY . .
 
-# Next.js collects completely anonymous telemetry data about general usage.
+# Disable Next.js telemetry from collecting general usage data.
 # Learn more here: https://nextjs.org/telemetry
-# Uncomment the following line in case you want to disable telemetry during the build.
 ENV NEXT_TELEMETRY_DISABLED=1
-# optimize Build size by including only required resources
 
 
 RUN npm run generate:idl
