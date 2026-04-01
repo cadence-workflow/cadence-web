@@ -24,28 +24,33 @@ export default function WorkflowsList({
   const shouldShowResults = !isLoading && workflows.length > 0;
 
   return (
-    <styled.Container>
-      <styled.GridHeader $gridTemplateColumns={gridTemplateColumns}>
-        {columns.map((col) => (
-          <styled.HeaderCell key={col.id}>{col.name}</styled.HeaderCell>
-        ))}
-      </styled.GridHeader>
-      {shouldShowResults &&
-        workflows.map((workflow, index) => (
-          <styled.GridRow
-            key={`${workflow.workflowID}-${workflow.runID}-${index}`}
-            $as={NextLink}
-            href={`workflows/${encodeURIComponent(workflow.workflowID)}/${encodeURIComponent(workflow.runID)}`}
-            prefetch={false}
-            $gridTemplateColumns={gridTemplateColumns}
-          >
+    <div>
+      <styled.ScrollArea>
+        {/* TODO @adhitya.mamallan - add a scroll shadow here */}
+        <styled.Container>
+          <styled.GridHeader $gridTemplateColumns={gridTemplateColumns}>
             {columns.map((col) => (
-              <styled.GridCell key={col.id}>
-                {col.renderCell(workflow)}
-              </styled.GridCell>
+              <styled.HeaderCell key={col.id}>{col.name}</styled.HeaderCell>
             ))}
-          </styled.GridRow>
-        ))}
+          </styled.GridHeader>
+          {shouldShowResults &&
+            workflows.map((workflow, index) => (
+              <styled.GridRow
+                key={`${workflow.workflowID}-${workflow.runID}-${index}`}
+                $as={NextLink}
+                href={`workflows/${encodeURIComponent(workflow.workflowID)}/${encodeURIComponent(workflow.runID)}`}
+                prefetch={false}
+                $gridTemplateColumns={gridTemplateColumns}
+              >
+                {columns.map((col) => (
+                  <styled.GridCell key={col.id}>
+                    {col.renderCell(workflow)}
+                  </styled.GridCell>
+                ))}
+              </styled.GridRow>
+            ))}
+        </styled.Container>
+      </styled.ScrollArea>
       <styled.FooterContainer>
         <TableInfiniteScrollLoader
           hasData={workflows.length > 0}
@@ -55,6 +60,6 @@ export default function WorkflowsList({
           isFetchingNextPage={isFetchingNextPage}
         />
       </styled.FooterContainer>
-    </styled.Container>
+    </div>
   );
 }

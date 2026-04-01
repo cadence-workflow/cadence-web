@@ -1,14 +1,22 @@
 import { styled as createStyled, type Theme } from 'baseui';
 
 export const styled = {
+  ScrollArea: createStyled('div', {
+    position: 'relative',
+  }),
   Container: createStyled('div', {
-    overflowX: 'auto',
+    overflowX: 'scroll',
+    scrollbarWidth: 'none',
+    '::-webkit-scrollbar': {
+      display: 'none',
+    },
   }),
   GridHeader: createStyled<'div', { $gridTemplateColumns: string }>(
     'div',
     ({ $theme, $gridTemplateColumns }) => ({
       display: 'grid',
       gridTemplateColumns: $gridTemplateColumns,
+      minWidth: 'min-content',
       borderBottomWidth: '1px',
       borderBottomStyle: 'solid',
       borderBottomColor: $theme.colors.borderOpaque,
@@ -30,6 +38,7 @@ export const styled = {
     ({ $theme, $gridTemplateColumns }) => ({
       display: 'grid',
       gridTemplateColumns: $gridTemplateColumns,
+      minWidth: 'min-content',
       borderBottomWidth: '1px',
       borderBottomStyle: 'solid',
       borderBottomColor: $theme.colors.borderOpaque,

@@ -7,4 +7,4 @@ export const DEFAULT_WORKFLOWS_LIST_COLUMNS = [
   'CloseTime',
 ] as const satisfies Array<string>;
 
-export const DEFAULT_WORKFLOWS_LIST_COLUMN_WIDTH = '2fr';
+export const DEFAULT_WORKFLOWS_LIST_COLUMN_WIDTH = '200px';
