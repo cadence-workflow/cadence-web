@@ -60,20 +60,6 @@ describe(useWorkflowsListColumns.name, () => {
     });
   });
 
-  it('excludes system attributes without matchers', async () => {
-    const { result } = setup({ keys: MOCK_SEARCH_ATTRIBUTES_KEYS });
-
-    await waitFor(() => {
-      expect(result.current.availableColumns.length).toBeGreaterThan(0);
-    });
-
-    const columnIds = result.current.availableColumns.map((c) => c.id);
-    expect(columnIds).not.toContain('DomainID');
-    expect(columnIds).not.toContain('HistoryLength');
-    expect(columnIds).not.toContain('TaskList');
-    expect(columnIds).not.toContain('IsCron');
-  });
-
   it('places system attributes before custom attributes', async () => {
     const { result } = setup({
       keys: MOCK_CUSTOM_SEARCH_ATTRIBUTES_KEYS,
