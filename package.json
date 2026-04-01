@@ -66,6 +66,7 @@
     "react-hook-form": "^7.52.0",
     "react-icons": "^5.1.0",
     "react-intersection-observer": "^9.8.1",
+    "react-joyride": "^3.0.0",
     "react-json-view-lite": "^1.4.0",
     "react-markdown": "^10.1.0",
     "react-virtuoso": "^4.10.4",
