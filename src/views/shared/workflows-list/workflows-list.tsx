@@ -42,11 +42,18 @@ export default function WorkflowsList({
                 prefetch={false}
                 $gridTemplateColumns={gridTemplateColumns}
               >
-                {columns.map((col) => (
-                  <styled.GridCell key={col.id}>
-                    {col.renderCell(workflow)}
-                  </styled.GridCell>
-                ))}
+                {columns.map((col) => {
+                  const content = col.renderCell(workflow);
+                  return (
+                    <styled.GridCell key={col.id}>
+                      {content !== null ? (
+                        content
+                      ) : (
+                        <styled.CellPlaceholder>None</styled.CellPlaceholder>
+                      )}
+                    </styled.GridCell>
+                  );
+                })}
               </styled.GridRow>
             ))}
         </styled.Container>

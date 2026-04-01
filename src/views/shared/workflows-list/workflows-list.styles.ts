@@ -60,6 +60,10 @@ export const styled = {
     wordBreak: 'break-word',
     minWidth: 0,
   })),
+  CellPlaceholder: createStyled('span', ({ $theme }: { $theme: Theme }) => ({
+    color: $theme.colors.contentTertiary,
+    fontStyle: 'italic',
+  })),
   FooterContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
     justifyContent: 'center',
