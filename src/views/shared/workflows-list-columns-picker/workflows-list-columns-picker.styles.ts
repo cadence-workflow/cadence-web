@@ -5,13 +5,12 @@ import { type PopoverOverrides } from 'baseui/popover';
 import { type StyleObject } from 'styletron-react';
 
 export const styled = {
-  PopoverContent: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+  PopoverContent: createStyled('div', {
     width: '300px',
     maxHeight: '400px',
     display: 'flex',
-    flexDirection: 'column' as const,
-    backgroundColor: $theme.colors.backgroundPrimary,
-  })),
+    flexDirection: 'column',
+  }),
   SearchContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     paddingLeft: $theme.sizing.scale600,
     paddingRight: $theme.sizing.scale600,
@@ -47,7 +46,7 @@ export const styled = {
     },
   })),
   ColumnsList: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
-    overflowY: 'auto' as const,
+    overflowY: 'auto',
     flex: 1,
     paddingLeft: $theme.sizing.scale200,
     paddingRight: $theme.sizing.scale200,
@@ -86,19 +85,19 @@ export const overrides = {
   popover: {
     Body: {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
-        borderTopLeftRadius: $theme.borders.radius300,
-        borderTopRightRadius: $theme.borders.radius300,
-        borderBottomLeftRadius: $theme.borders.radius300,
-        borderBottomRightRadius: $theme.borders.radius300,
+        borderTopLeftRadius: $theme.borders.radius400,
+        borderTopRightRadius: $theme.borders.radius400,
+        borderBottomLeftRadius: $theme.borders.radius400,
+        borderBottomRightRadius: $theme.borders.radius400,
         boxShadow: $theme.lighting.shadow600,
       }),
     },
     Inner: {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
-        borderTopLeftRadius: $theme.borders.radius300,
-        borderTopRightRadius: $theme.borders.radius300,
-        borderBottomLeftRadius: $theme.borders.radius300,
-        borderBottomRightRadius: $theme.borders.radius300,
+        borderTopLeftRadius: $theme.borders.radius400,
+        borderTopRightRadius: $theme.borders.radius400,
+        borderBottomLeftRadius: $theme.borders.radius400,
+        borderBottomRightRadius: $theme.borders.radius400,
         backgroundColor: $theme.colors.backgroundPrimary,
       }),
     },
