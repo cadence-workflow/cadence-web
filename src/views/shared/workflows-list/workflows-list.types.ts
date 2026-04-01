@@ -1,9 +1,10 @@
 import type React from 'react';
 
+import { type IndexedValueType } from '@/__generated__/proto-ts/uber/cadence/api/v1/IndexedValueType';
 import { type DomainWorkflow } from '@/views/domain-page/domain-page.types';
 
 export type WorkflowsListColumnMatcher = {
-  match: (attributeName: string, attributeType: string) => boolean;
+  match: (attributeName: string, attributeType: IndexedValueType) => boolean;
   name?: string;
   width?: string;
   isDefault?: boolean;
