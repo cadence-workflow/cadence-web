@@ -59,7 +59,7 @@ const workflowsListColumnMatchers: ReadonlyArray<WorkflowsListColumnMatcher> = [
       createElement(FormattedDate, { timestampMs: row.closeTime }),
   },
   {
-    match: (_name, type) => type === 'DATETIME',
+    match: (_name, type) => type === 'INDEXED_VALUE_TYPE_DATETIME',
     width: 'minmax(150px, 1.5fr)',
     renderCell: (row, attributeName) => {
       const value = formatPayload(row.searchAttributes?.[attributeName]);

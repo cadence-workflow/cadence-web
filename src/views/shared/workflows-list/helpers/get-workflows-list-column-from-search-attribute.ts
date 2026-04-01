@@ -1,3 +1,4 @@
+import { type IndexedValueType } from '@/__generated__/proto-ts/uber/cadence/api/v1/IndexedValueType';
 import { SYSTEM_SEARCH_ATTRIBUTES } from '@/route-handlers/get-search-attributes/get-search-attributes.constants';
 import formatPayload from '@/utils/data-formatters/format-payload';
 
@@ -7,7 +8,7 @@ import { type WorkflowsListColumn } from '../workflows-list.types';
 
 export default function getWorkflowsListColumnFromSearchAttribute(
   attributeName: string,
-  attributeType: string
+  attributeType: IndexedValueType
 ): WorkflowsListColumn | null {
   const matcher = workflowsListColumnMatchers.find((m) =>
     m.match(attributeName, attributeType)
