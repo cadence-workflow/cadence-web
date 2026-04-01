@@ -64,7 +64,7 @@ const workflowsListColumnMatchers: ReadonlyArray<WorkflowsListColumnMatcher> = [
     renderCell: (row, attributeName) => {
       const value = formatPayload(row.searchAttributes?.[attributeName]);
       const timestamp = typeof value === 'string' ? Date.parse(value) : null;
-      if (timestamp && !isNaN(timestamp)) {
+      if (timestamp != null && !isNaN(timestamp)) {
         return createElement(FormattedDate, { timestampMs: timestamp });
       }
       return String(value ?? '');

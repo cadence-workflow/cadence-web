@@ -24,9 +24,9 @@ export default function useWorkflowsListColumns({
   setSelectedColumnIds: Dispatch<SetStateAction<Array<string>>>;
   resetColumns: () => void;
 } {
-  const [selectedColumnIds, setSelectedColumnIds] = useState<Array<string>>(
-    DEFAULT_WORKFLOWS_LIST_COLUMNS
-  );
+  const [selectedColumnIds, setSelectedColumnIds] = useState<Array<string>>([
+    ...DEFAULT_WORKFLOWS_LIST_COLUMNS,
+  ]);
   const { data: searchAttributesData } = useSearchAttributes({
     cluster,
   });
