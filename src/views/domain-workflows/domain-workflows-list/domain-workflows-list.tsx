@@ -1,9 +1,83 @@
 'use client';
 
+import ErrorPanel from '@/components/error-panel/error-panel';
+import PanelSection from '@/components/panel-section/panel-section';
+import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
+import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
+import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
+import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
 import WorkflowsList from '@/views/shared/workflows-list/workflows-list';
+
+import DOMAIN_WORKFLOWS_PAGE_SIZE from '../config/domain-workflows-page-size.config';
+import getWorkflowsErrorPanelProps from '../domain-workflows-table/helpers/get-workflows-error-panel-props';
 
 import { type Props } from './domain-workflows-list.types';
 
-export default function DomainWorkflowsList(_props: Props) {
-  return <WorkflowsList />;
+export default function DomainWorkflowsList({
+  domain,
+  cluster,
+  visibleColumns,
+  timeRangeStart,
+  timeRangeEnd,
+}: Props) {
+  const [queryParams] = usePageQueryParams(domainPageQueryParamsConfig);
+
+  const {
+    workflows,
+    error,
+    isLoading,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+    refetch,
+  } = useListWorkflows({
+    domain,
+    cluster,
+    listType: 'default',
+    pageSize: DOMAIN_WORKFLOWS_PAGE_SIZE,
+    inputType: queryParams.inputType,
+    search: queryParams.search,
+    statuses: queryParams.statuses,
+    timeRangeStart,
+    timeRangeEnd,
+    sortColumn: queryParams.sortColumn,
+    sortOrder: queryParams.sortOrder,
+    query: queryParams.query,
+  });
+
+  if (isLoading) {
+    return <SectionLoadingIndicator />;
+  }
+
+  if (workflows.length === 0) {
+    const errorPanelProps = getWorkflowsErrorPanelProps({
+      inputType: queryParams.inputType,
+      error,
+      areSearchParamsAbsent:
+        !queryParams.search &&
+        !queryParams.statuses &&
+        !queryParams.timeRangeStart &&
+        !queryParams.timeRangeEnd,
+    });
+
+    if (errorPanelProps) {
+      return (
+        <PanelSection>
+          <ErrorPanel {...errorPanelProps} reset={refetch} />
+        </PanelSection>
+      );
+    }
+  }
+
+  return (
+    <WorkflowsList
+      workflows={workflows}
+      columns={visibleColumns}
+      isLoading={isLoading}
+      error={error}
+      hasNextPage={hasNextPage}
+      fetchNextPage={fetchNextPage}
+      isFetchingNextPage={isFetchingNextPage}
+    />
+  );
 }
