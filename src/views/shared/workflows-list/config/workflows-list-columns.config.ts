@@ -1,5 +1,7 @@
 import { createElement } from 'react';
 
+import isNil from 'lodash/isNil';
+
 import FormattedDate from '@/components/formatted-date/formatted-date';
 import WorkflowStatusTag from '@/views/shared/workflow-status-tag/workflow-status-tag';
 
@@ -96,10 +98,12 @@ const workflowsListColumnsConfig: ReadonlyArray<WorkflowsListColumnConfig> = [
     renderCell: (row, attributeName) => {
       const value = getSearchAttributeValue(row, attributeName);
       const timestamp = typeof value === 'string' ? Date.parse(value) : null;
-      if (timestamp != null && !isNaN(timestamp)) {
+
+      if (timestamp !== null && !isNaN(timestamp)) {
         return createElement(FormattedDate, { timestampMs: timestamp });
       }
-      return String(value ?? '');
+
+      return isNil(value) ? null : String(value);
     },
   },
 ];
