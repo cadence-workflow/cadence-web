@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 
+import isNil from 'lodash/isNil';
 import NextLink from 'next/link';
 
 import TableInfiniteScrollLoader from '@/components/table/table-infinite-scroll-loader/table-infinite-scroll-loader';
@@ -45,10 +46,10 @@ export default function WorkflowsList({
                   const content = col.renderCell(workflow);
                   return (
                     <styled.GridCell key={col.id}>
-                      {content !== null ? (
-                        content
-                      ) : (
+                      {isNil(content) ? (
                         <styled.CellPlaceholder>None</styled.CellPlaceholder>
+                      ) : (
+                        content
                       )}
                     </styled.GridCell>
                   );
