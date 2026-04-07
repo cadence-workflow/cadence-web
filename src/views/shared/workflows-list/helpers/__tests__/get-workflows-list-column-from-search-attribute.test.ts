@@ -1,7 +1,7 @@
 import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtures__/mock-workflow-list-items';
 import { type DomainWorkflow } from '@/views/domain-page/domain-page.types';
 
-import { type WorkflowsListColumnMatcher } from '../../workflows-list.types';
+import { type WorkflowsListColumnConfig } from '../../workflows-list.types';
 import getWorkflowsListColumnFromSearchAttribute from '../get-workflows-list-column-from-search-attribute';
 
 jest.mock('../../config/workflows-list-columns.config', () => ({
@@ -30,7 +30,7 @@ jest.mock('../../config/workflows-list-columns.config', () => ({
       renderCell: (row: DomainWorkflow, attributeName: string) =>
         `${attributeName}:${row.workflowID}`,
     },
-  ] satisfies ReadonlyArray<WorkflowsListColumnMatcher>,
+  ] satisfies ReadonlyArray<WorkflowsListColumnConfig>,
 }));
 
 const mockRow = getMockWorkflowListItem({

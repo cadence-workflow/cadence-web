@@ -4,21 +4,19 @@ import FormattedDate from '@/components/formatted-date/formatted-date';
 import formatPayload from '@/utils/data-formatters/format-payload';
 import WorkflowStatusTag from '@/views/shared/workflow-status-tag/workflow-status-tag';
 
-import { type WorkflowsListColumnMatcher } from '../workflows-list.types';
+import { type WorkflowsListColumnConfig } from '../workflows-list.types';
 
-const workflowsListColumns: ReadonlyArray<WorkflowsListColumnMatcher> = [
+const workflowsListColumnsConfig: ReadonlyArray<WorkflowsListColumnConfig> = [
   {
     match: (name) => name === 'WorkflowID',
     name: 'Workflow ID',
     width: 'minmax(300px, 3fr)',
-    isDefault: true,
     renderCell: (row) => row.workflowID,
   },
   {
     match: (name) => name === 'CloseStatus',
     name: 'Status',
     width: '140px',
-    isDefault: true,
     renderCell: (row) =>
       createElement(WorkflowStatusTag, { status: row.status }),
   },
@@ -26,21 +24,18 @@ const workflowsListColumns: ReadonlyArray<WorkflowsListColumnMatcher> = [
     match: (name) => name === 'RunID',
     name: 'Run ID',
     width: 'minmax(300px, 3fr)',
-    isDefault: true,
     renderCell: (row) => row.runID,
   },
   {
     match: (name) => name === 'WorkflowType',
     name: 'Workflow Type',
     width: 'minmax(200px, 2fr)',
-    isDefault: true,
     renderCell: (row) => row.workflowName,
   },
   {
     match: (name) => name === 'StartTime',
     name: 'Started',
     width: '200px',
-    isDefault: true,
     renderCell: (row) =>
       createElement(FormattedDate, { timestampMs: row.startTime }),
   },
@@ -48,7 +43,6 @@ const workflowsListColumns: ReadonlyArray<WorkflowsListColumnMatcher> = [
     match: (name) => name === 'CloseTime',
     name: 'Ended',
     width: '200px',
-    isDefault: true,
     renderCell: (row) =>
       createElement(FormattedDate, { timestampMs: row.closeTime }),
   },
@@ -110,4 +104,4 @@ const workflowsListColumns: ReadonlyArray<WorkflowsListColumnMatcher> = [
   },
 ];
 
-export default workflowsListColumns;
+export default workflowsListColumnsConfig;
