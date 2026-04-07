@@ -81,13 +81,13 @@ const workflowsListColumnsConfig: ReadonlyArray<WorkflowsListColumnConfig> = [
   {
     match: (name) => name === 'ClusterAttributeScope',
     name: 'Cluster Attribute Scope',
-    width: '200px',
+    width: 'minmax(150px, 1.5fr)',
     renderCell: (row) => row.clusterAttributeScope ?? null,
   },
   {
     match: (name) => name === 'ClusterAttributeName',
     name: 'Cluster Attribute Name',
-    width: '200px',
+    width: 'minmax(150px, 1.5fr)',
     renderCell: (row) => row.clusterAttributeName ?? null,
   },
   {
