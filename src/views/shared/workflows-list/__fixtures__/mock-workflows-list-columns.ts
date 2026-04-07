@@ -2,16 +2,15 @@ import { type DomainWorkflow } from '@/views/domain-page/domain-page.types';
 
 import {
   type WorkflowsListColumn,
-  type WorkflowsListColumnMatcher,
+  type WorkflowsListColumnConfig,
 } from '../workflows-list.types';
 
-export const mockWorkflowsListColumnsConfig: ReadonlyArray<WorkflowsListColumnMatcher> =
+export const mockWorkflowsListColumnsConfig: ReadonlyArray<WorkflowsListColumnConfig> =
   [
     {
       match: (name: string) => name === 'WorkflowID',
       name: 'Workflow ID',
       width: 'minmax(200px, 3fr)',
-      isDefault: true,
       renderCell: (row: DomainWorkflow, attributeName: string) =>
         `${attributeName}:${row.workflowID}`,
     },
@@ -19,7 +18,6 @@ export const mockWorkflowsListColumnsConfig: ReadonlyArray<WorkflowsListColumnMa
       match: (name: string) => name === 'CloseStatus',
       name: 'Status',
       width: 'minmax(100px, 1fr)',
-      isDefault: true,
       renderCell: (row: DomainWorkflow, attributeName: string) =>
         `${attributeName}:${row.workflowID}`,
     },
@@ -37,14 +35,14 @@ export const mockWorkflowsListColumns: Array<WorkflowsListColumn> = [
     id: 'WorkflowID',
     name: 'Workflow ID',
     width: 'minmax(200px, 3fr)',
-    isDefault: true,
+    isSystem: true,
     renderCell: (row) => row.workflowID,
   },
   {
     id: 'Status',
     name: 'Status',
     width: 'minmax(100px, 1fr)',
-    isDefault: true,
+    isSystem: true,
     renderCell: (row) => row.status,
   },
 ];

@@ -10,7 +10,6 @@ import { type Props } from './workflows-list.types';
 export default function WorkflowsList({
   workflows,
   columns,
-  isLoading,
   error,
   hasNextPage,
   fetchNextPage,
@@ -21,7 +20,7 @@ export default function WorkflowsList({
     [columns]
   );
 
-  const shouldShowResults = !isLoading && workflows.length > 0;
+  const hasWorkflows = workflows.length > 0;
 
   return (
     <div>
@@ -33,7 +32,7 @@ export default function WorkflowsList({
               <styled.HeaderCell key={col.id}>{col.name}</styled.HeaderCell>
             ))}
           </styled.GridHeader>
-          {shouldShowResults &&
+          {hasWorkflows &&
             workflows.map((workflow, index) => (
               <styled.GridRow
                 key={`${workflow.workflowID}-${workflow.runID}-${index}`}
@@ -60,7 +59,7 @@ export default function WorkflowsList({
       </styled.ScrollArea>
       <styled.FooterContainer>
         <TableInfiniteScrollLoader
-          hasData={workflows.length > 0}
+          hasData={hasWorkflows}
           error={error}
           fetchNextPage={fetchNextPage}
           hasNextPage={hasNextPage}

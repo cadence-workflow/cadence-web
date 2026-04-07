@@ -47,24 +47,10 @@ describe(WorkflowsList.name, () => {
     expect(screen.getByText('wf-2')).toBeInTheDocument();
   });
 
-  it('does not render workflow rows when loading', () => {
-    setup({ isLoading: true });
-
-    expect(screen.queryByText('wf-1')).not.toBeInTheDocument();
-    expect(screen.queryByText('wf-2')).not.toBeInTheDocument();
-  });
-
   it('does not render workflow rows when workflows array is empty', () => {
     setup({ workflows: [] });
 
     expect(screen.queryByText('wf-1')).not.toBeInTheDocument();
-  });
-
-  it('still renders column headers when loading', () => {
-    setup({ isLoading: true });
-
-    expect(screen.getByText('Workflow ID')).toBeInTheDocument();
-    expect(screen.getByText('Status')).toBeInTheDocument();
   });
 
   it('renders each row as a link with the correct href', () => {
@@ -117,6 +103,22 @@ describe(WorkflowsList.name, () => {
     expect(loader).toHaveTextContent('has-data');
   });
 
+  it('renders "None" placeholder when a column renderCell returns null', () => {
+    setup({
+      columns: [
+        {
+          id: 'NullableCol',
+          name: 'Nullable Column',
+          width: '100px',
+          isSystem: false,
+          renderCell: () => null,
+        },
+      ],
+    });
+
+    expect(screen.getByText('None')).toBeInTheDocument();
+  });
+
   it('passes hasData as false to loader when workflows is empty', () => {
     setup({ workflows: [] });
 
@@ -128,7 +130,6 @@ describe(WorkflowsList.name, () => {
 function setup({
   workflows = MOCK_WORKFLOWS,
   columns = mockWorkflowsListColumns,
-  isLoading = false,
   error = null,
   hasNextPage = false,
   isFetchingNextPage = false,
@@ -137,7 +138,6 @@ function setup({
     <WorkflowsList
       workflows={workflows}
       columns={columns}
-      isLoading={isLoading}
       error={error}
       hasNextPage={hasNextPage}
       fetchNextPage={jest.fn()}

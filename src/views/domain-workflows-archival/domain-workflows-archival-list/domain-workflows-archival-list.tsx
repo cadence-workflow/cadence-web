@@ -70,7 +70,6 @@ export default function DomainWorkflowsArchivalList({
     <WorkflowsList
       workflows={workflows}
       columns={visibleColumns}
-      isLoading={isLoading}
       error={error}
       hasNextPage={hasNextPage}
       fetchNextPage={fetchNextPage}
