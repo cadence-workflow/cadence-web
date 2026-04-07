@@ -1,9 +1,9 @@
 import { createElement } from 'react';
 
 import FormattedDate from '@/components/formatted-date/formatted-date';
-import formatPayload from '@/utils/data-formatters/format-payload';
 import WorkflowStatusTag from '@/views/shared/workflow-status-tag/workflow-status-tag';
 
+import getSearchAttributeValue from '../helpers/get-search-attribute-value';
 import { type WorkflowsListColumnConfig } from '../workflows-list.types';
 
 const workflowsListColumnsConfig: ReadonlyArray<WorkflowsListColumnConfig> = [
@@ -64,7 +64,7 @@ const workflowsListColumnsConfig: ReadonlyArray<WorkflowsListColumnConfig> = [
     match: (name) => name === 'HistoryLength',
     name: 'History Length',
     width: '140px',
-    renderCell: (row) => String(row.historyLength ?? ''),
+    renderCell: (row) => row.historyLength ?? null,
   },
   {
     match: (name) => name === 'TaskList',
@@ -81,20 +81,20 @@ const workflowsListColumnsConfig: ReadonlyArray<WorkflowsListColumnConfig> = [
   {
     match: (name) => name === 'ClusterAttributeScope',
     name: 'Cluster Attribute Scope',
-    width: '160px',
-    renderCell: (row) => row.clusterAttributeScope ?? '',
+    width: '200px',
+    renderCell: (row) => row.clusterAttributeScope ?? null,
   },
   {
     match: (name) => name === 'ClusterAttributeName',
     name: 'Cluster Attribute Name',
-    width: '160px',
-    renderCell: (row) => row.clusterAttributeName ?? '',
+    width: '200px',
+    renderCell: (row) => row.clusterAttributeName ?? null,
   },
   {
     match: (_name, type) => type === 'INDEXED_VALUE_TYPE_DATETIME',
     width: '200px',
     renderCell: (row, attributeName) => {
-      const value = formatPayload(row.searchAttributes?.[attributeName]);
+      const value = getSearchAttributeValue(row, attributeName);
       const timestamp = typeof value === 'string' ? Date.parse(value) : null;
       if (timestamp != null && !isNaN(timestamp)) {
         return createElement(FormattedDate, { timestampMs: timestamp });
