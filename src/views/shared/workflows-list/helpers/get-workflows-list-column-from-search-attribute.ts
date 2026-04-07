@@ -21,7 +21,7 @@ export default function getWorkflowsListColumnFromSearchAttribute(
 
   return {
     id: attributeName,
-    name: config?.name ?? (isSystem ? attributeName : `*${attributeName}`),
+    name: config?.name ?? attributeName,
     width: config?.width ?? DEFAULT_WORKFLOWS_LIST_COLUMN_WIDTH,
     isSystem,
     renderCell: config
