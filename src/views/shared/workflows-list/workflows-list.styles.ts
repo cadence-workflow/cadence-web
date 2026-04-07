@@ -4,22 +4,32 @@ export const styled = {
   ScrollArea: createStyled('div', {
     position: 'relative',
   }),
-  Container: createStyled('div', {
+  Container: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     overflowX: 'scroll',
     scrollbarWidth: 'none',
     '::-webkit-scrollbar': {
       display: 'none',
     },
-  }),
+    backgroundImage: [
+      'linear-gradient(to right, #FFFFFF 30%, rgba(255, 255, 255, 0))',
+      'linear-gradient(to left, #FFFFFF 30%, rgba(255, 255, 255, 0))',
+      'linear-gradient(to right, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0))',
+      'linear-gradient(to left, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0))',
+    ].join(', '),
+    backgroundPosition: 'left center, right center, left center, right center',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: `${$theme.sizing.scale1000} 100%, ${$theme.sizing.scale1000} 100%, ${$theme.sizing.scale900} 100%, ${$theme.sizing.scale900} 100%`,
+    backgroundAttachment: 'local, local, scroll, scroll',
+  })),
   GridHeader: createStyled<'div', { $gridTemplateColumns: string }>(
     'div',
-    ({ $theme, $gridTemplateColumns }) => ({
+    ({ $gridTemplateColumns }) => ({
       display: 'grid',
       gridTemplateColumns: $gridTemplateColumns,
       minWidth: 'min-content',
       borderBottomWidth: '1px',
       borderBottomStyle: 'solid',
-      borderBottomColor: $theme.colors.borderOpaque,
+      borderBottomColor: 'rgba(0, 0, 0, 0.08)',
     })
   ),
   HeaderCell: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
@@ -35,18 +45,18 @@ export const styled = {
   })),
   GridRow: createStyled<'a', { $gridTemplateColumns: string }>(
     'a',
-    ({ $theme, $gridTemplateColumns }) => ({
+    ({ $gridTemplateColumns }) => ({
       display: 'grid',
       gridTemplateColumns: $gridTemplateColumns,
       minWidth: 'min-content',
       borderBottomWidth: '1px',
       borderBottomStyle: 'solid',
-      borderBottomColor: $theme.colors.borderOpaque,
+      borderBottomColor: 'rgba(0, 0, 0, 0.08)',
       cursor: 'pointer',
       textDecoration: 'none',
       color: 'inherit',
       ':hover': {
-        backgroundColor: $theme.colors.backgroundSecondary,
+        backgroundColor: 'rgba(0, 0, 0, 0.04)',
       },
     })
   ),
