@@ -105,6 +105,7 @@ describe(WorkflowsList.name, () => {
 
   it('renders "None" placeholder when a column renderCell returns null', () => {
     setup({
+      workflows: [MOCK_WORKFLOWS[0]],
       columns: [
         {
           id: 'NullableCol',
