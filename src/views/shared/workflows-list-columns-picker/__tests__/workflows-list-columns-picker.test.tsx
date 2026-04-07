@@ -26,10 +26,10 @@ jest.mock('baseui/popover', () => ({
 }));
 
 const MOCK_ALL_COLUMNS: ColumnDefinition[] = [
-  { id: 'col-1', name: 'Workflow ID', isDefault: true },
-  { id: 'col-2', name: 'Status', isDefault: true },
-  { id: 'col-3', name: 'Start Time', isDefault: false },
-  { id: 'col-4', name: 'End Time', isDefault: false },
+  { id: 'col-1', name: 'Workflow ID' },
+  { id: 'col-2', name: 'Status' },
+  { id: 'col-3', name: 'Start Time' },
+  { id: 'col-4', name: 'End Time' },
 ];
 
 describe(WorkflowsListColumnsPicker.name, () => {
