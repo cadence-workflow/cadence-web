@@ -84,23 +84,6 @@ describe(useWorkflowsListColumns.name, () => {
     expect(lastSystemIndex).toBeLessThan(firstCustomIndex);
   });
 
-  it('includes custom attributes with star-prefixed names', async () => {
-    const { result } = setup({
-      keys: MOCK_CUSTOM_SEARCH_ATTRIBUTES_KEYS,
-    });
-
-    await waitFor(() => {
-      expect(result.current.availableColumns.length).toBeGreaterThan(0);
-    });
-
-    const customKeyword = result.current.availableColumns.find(
-      (c) => c.id === 'CustomKeyword'
-    );
-    expect(customKeyword).toBeDefined();
-    expect(customKeyword?.name).toBe('*CustomKeyword');
-    expect(customKeyword?.isDefault).toBe(false);
-  });
-
   it('returns visible columns matching the default selection', async () => {
     const { result } = setup({
       keys: MOCK_CUSTOM_SEARCH_ATTRIBUTES_KEYS,

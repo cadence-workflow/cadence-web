@@ -11,7 +11,6 @@ jest.mock('../../config/workflows-list-columns.config', () => ({
       match: (name: string) => name === 'WorkflowID',
       name: 'Workflow ID',
       width: 'minmax(200px, 3fr)',
-      isDefault: true,
       renderCell: (row: DomainWorkflow, attributeName: string) =>
         `${attributeName}:${row.workflowID}`,
     },
@@ -19,7 +18,6 @@ jest.mock('../../config/workflows-list-columns.config', () => ({
       match: (name: string) => name === 'CloseStatus',
       name: 'Status',
       width: 'minmax(100px, 1fr)',
-      isDefault: true,
       renderCell: (row: DomainWorkflow, attributeName: string) =>
         `${attributeName}:${row.workflowID}`,
     },
@@ -53,7 +51,7 @@ describe(getWorkflowsListColumnFromSearchAttribute.name, () => {
     expect(column?.id).toBe('WorkflowID');
     expect(column?.name).toBe('Workflow ID');
     expect(column?.width).toBe('minmax(200px, 3fr)');
-    expect(column?.isDefault).toBe(true);
+    expect(column?.isSystem).toBe(true);
   });
 
   it('binds renderCell to the attribute name when matched', () => {
@@ -73,9 +71,9 @@ describe(getWorkflowsListColumnFromSearchAttribute.name, () => {
 
     expect(column).not.toBeNull();
     expect(column?.id).toBe('CustomDateField');
-    expect(column?.name).toBe('*CustomDateField');
+    expect(column?.name).toBe('CustomDateField');
     expect(column?.width).toBe('minmax(150px, 1.5fr)');
-    expect(column?.isDefault).toBe(false);
+    expect(column?.isSystem).toBe(false);
   });
 
   it('returns null for system attributes without a matcher', () => {
@@ -95,9 +93,9 @@ describe(getWorkflowsListColumnFromSearchAttribute.name, () => {
 
     expect(column).not.toBeNull();
     expect(column?.id).toBe('MyCustomField');
-    expect(column?.name).toBe('*MyCustomField');
-    expect(column?.width).toBe('2fr');
-    expect(column?.isDefault).toBe(false);
+    expect(column?.name).toBe('MyCustomField');
+    expect(column?.width).toBe('minmax(200px, 2fr)');
+    expect(column?.isSystem).toBe(false);
   });
 
   it('renders custom attribute values via formatPayload', () => {
