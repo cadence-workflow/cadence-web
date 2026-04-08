@@ -74,20 +74,16 @@ describe(DomainWorkflowsList.name, () => {
     const { user } = setup({});
 
     expect(await screen.findByText('Mock end message: OK')).toBeInTheDocument();
-    Array(10).forEach((_, index) => {
-      expect(
-        screen.getByText(`mock-workflow-id-0-${index}`)
-      ).toBeInTheDocument();
-    });
+    for (let i = 0; i < 10; i++) {
+      expect(screen.getByText(`mock-workflow-id-0-${i}`)).toBeInTheDocument();
+    }
 
     await user.click(screen.getByTestId('mock-loader'));
 
     expect(await screen.findByText('Mock end message: OK')).toBeInTheDocument();
-    Array(10).forEach((_, index) => {
-      expect(
-        screen.getByText(`mock-workflow-id-1-${index}`)
-      ).toBeInTheDocument();
-    });
+    for (let i = 0; i < 10; i++) {
+      expect(screen.getByText(`mock-workflow-id-1-${i}`)).toBeInTheDocument();
+    }
   });
 
   it('renders error panel if the initial call fails', async () => {
@@ -126,11 +122,9 @@ describe(DomainWorkflowsList.name, () => {
     const { user } = setup({ errorCase: 'subsequent-fetch-error' });
 
     expect(await screen.findByText('Mock end message: OK')).toBeInTheDocument();
-    Array(10).forEach((_, index) => {
-      expect(
-        screen.getByText(`mock-workflow-id-0-${index}`)
-      ).toBeInTheDocument();
-    });
+    for (let i = 0; i < 10; i++) {
+      expect(screen.getByText(`mock-workflow-id-0-${i}`)).toBeInTheDocument();
+    }
 
     await user.click(screen.getByTestId('mock-loader'));
 
@@ -141,11 +135,9 @@ describe(DomainWorkflowsList.name, () => {
     await user.click(screen.getByTestId('mock-loader'));
 
     expect(await screen.findByText('Mock end message: OK')).toBeInTheDocument();
-    Array(10).forEach((_, index) => {
-      expect(
-        screen.getByText(`mock-workflow-id-1-${index}`)
-      ).toBeInTheDocument();
-    });
+    for (let i = 0; i < 10; i++) {
+      expect(screen.getByText(`mock-workflow-id-1-${i}`)).toBeInTheDocument();
+    }
   });
 });
 
