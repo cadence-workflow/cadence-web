@@ -1,0 +1,65 @@
+import React, { useMemo } from 'react';
+
+import { Select } from 'baseui/select';
+
+import { type Props } from './workflow-actions-cluster-attribute.types';
+
+export default function WorkflowActionsClusterAttribute({
+  clusterAttributesByScope,
+  value,
+  onChange,
+}: Props) {
+  const selectedScope = value?.scope || '';
+
+  const scopeOptions = useMemo(() => {
+    return Object.keys(clusterAttributesByScope).map((scope) => ({
+      id: scope,
+      label: scope,
+    }));
+  }, [clusterAttributesByScope]);
+
+  const nameOptions = useMemo(() => {
+    if (!selectedScope) return [];
+    const scopeEntry = clusterAttributesByScope[selectedScope];
+    if (!scopeEntry) return [];
+    return Object.keys(scopeEntry.clusterAttributes).map((name) => ({
+      id: name,
+      label: name,
+    }));
+  }, [clusterAttributesByScope, selectedScope]);
+
+  return (
+    <>
+      <Select
+        aria-label="Cluster Attribute Scope"
+        options={scopeOptions}
+        value={selectedScope ? [{ id: selectedScope }] : []}
+        onChange={(params) => {
+          const newScope = (params.value[0]?.id as string) || '';
+          if (newScope) {
+            onChange({ scope: newScope, name: '' });
+          } else {
+            onChange(undefined);
+          }
+        }}
+        size="compact"
+        placeholder="Select cluster attribute scope"
+        clearable
+      />
+
+      <Select
+        aria-label="Cluster Attribute Name"
+        options={nameOptions}
+        value={value?.name ? [{ id: value.name }] : []}
+        onChange={(params) => {
+          const newName = (params.value[0]?.id as string) || '';
+          onChange({ scope: selectedScope, name: newName });
+        }}
+        size="compact"
+        placeholder="Select cluster attribute name"
+        clearable
+        disabled={!selectedScope}
+      />
+    </>
+  );
+}

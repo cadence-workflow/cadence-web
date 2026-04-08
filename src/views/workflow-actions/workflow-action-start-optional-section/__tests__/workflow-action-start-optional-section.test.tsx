@@ -51,6 +51,14 @@ jest.mock(
     })
 );
 
+jest.mock(
+  '../../workflow-actions-cluster-attribute/workflow-actions-cluster-attribute',
+  () =>
+    jest.fn(() => {
+      return <div>Cluster Attribute Fields</div>;
+    })
+);
+
 describe('WorkflowActionStartForm', () => {
   it('displays error when form has errors', async () => {
     const formErrors = {
@@ -176,6 +184,7 @@ function TestWrapper({ formData, fieldErrors }: TestProps) {
       formData={formData}
       fieldErrors={fieldErrors}
       cluster="test-cluster"
+      domain="test-domain"
     />
   );
 }

@@ -124,6 +124,13 @@ const baseSchema = z.object({
       }
     })
     .optional(),
+  // Cluster attribute (active-active domains only)
+  clusterAttribute: z
+    .object({
+      scope: z.string().min(1, 'Cluster attribute scope is required'),
+      name: z.string().min(1, 'Cluster attribute name is required'),
+    })
+    .optional(),
   // Retry policy fields
   enableRetryPolicy: z.boolean().optional(),
   limitRetries: z.enum(['ATTEMPTS', 'DURATION']).optional(),

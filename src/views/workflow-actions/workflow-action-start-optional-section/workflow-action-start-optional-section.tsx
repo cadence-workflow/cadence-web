@@ -11,12 +11,15 @@ import { Controller } from 'react-hook-form';
 import { MdExpandMore, MdExpandLess } from 'react-icons/md';
 
 import useStyletronClasses from '@/hooks/use-styletron-classes';
+import isActiveActiveDomain from '@/views/shared/active-active/helpers/is-active-active-domain';
+import useDomainDescription from '@/views/shared/hooks/use-domain-description/use-domain-description';
 import useSearchAttributes from '@/views/shared/hooks/use-search-attributes/use-search-attributes';
 import WorkflowActionsSearchAttributes from '@/views/workflow-actions/workflow-actions-search-attributes/workflow-actions-search-attributes';
 
 import getFieldErrorMessage from '../workflow-action-start-form/helpers/get-field-error-message';
 import getSearchAttributesErrorMessage from '../workflow-action-start-form/helpers/get-search-attributes-error-message';
 import WorkflowActionStartRetryPolicy from '../workflow-action-start-retry-policy/workflow-action-start-retry-policy';
+import WorkflowActionsClusterAttribute from '../workflow-actions-cluster-attribute/workflow-actions-cluster-attribute';
 
 import { workflowIdReusePolicyOptions } from './workflow-action-start-optional-section.constants';
 import {
@@ -31,8 +34,14 @@ export default function WorkflowActionStartOptionalSection({
   formData,
   fieldErrors,
   cluster,
+  domain,
 }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
+
+  const { data: domainData } = useDomainDescription({ domain, cluster });
+
+  // TODO: use the loading state
+  const isActiveActive = domainData && isActiveActiveDomain(domainData);
 
   // Fetch custom search attributes for the input component
   const { data: searchAttributesData, isLoading: isLoadingSearchAttributes } =
@@ -202,6 +211,24 @@ export default function WorkflowActionStartOptionalSection({
             )}
           />
         </FormControl>
+
+        {isActiveActive && (
+          <FormControl label="Cluster Attribute (optional)">
+            <Controller
+              name="clusterAttribute"
+              control={control}
+              render={({ field }) => (
+                <WorkflowActionsClusterAttribute
+                  clusterAttributesByScope={
+                    domainData.activeClusters.activeClustersByClusterAttribute
+                  }
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+          </FormControl>
+        )}
       </>
     </StatefulPanel>
   );
