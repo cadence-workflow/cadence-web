@@ -13,8 +13,8 @@ export const styled = {
     backgroundImage: [
       'linear-gradient(to right, #FFFFFF 30%, rgba(255, 255, 255, 0))',
       'linear-gradient(to left, #FFFFFF 30%, rgba(255, 255, 255, 0))',
-      'linear-gradient(to right, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0))',
-      'linear-gradient(to left, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0))',
+      'linear-gradient(to right, rgba(124, 124, 124, 0.1), rgba(124, 124, 124, 0))',
+      'linear-gradient(to left, rgba(124, 124, 124, 0.1), rgba(124, 124, 124, 0))',
     ].join(', '),
     backgroundPosition: 'left center, right center, left center, right center',
     backgroundRepeat: 'no-repeat',
@@ -39,9 +39,7 @@ export const styled = {
     paddingBottom: $theme.sizing.scale400,
     paddingLeft: $theme.sizing.scale600,
     paddingRight: $theme.sizing.scale600,
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
+    whiteSpace: 'wrap',
   })),
   GridRow: createStyled<'a', { $gridTemplateColumns: string }>(
     'a',
