@@ -1,9 +1,11 @@
 import { HttpResponse } from 'msw';
 
-import { render, screen } from '@/test-utils/rtl';
+import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtures__/mock-workflow-list-items';
 import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list-workflows.types';
+import { type WorkflowsHeaderInputType } from '@/views/shared/workflows-header/workflows-header.types';
+import { type Props as WorkflowsListProps } from '@/views/shared/workflows-list/workflows-list.types';
 
 import type { Props as MSWMocksHandlersProps } from '../../../../test-utils/msw-mock-handlers/msw-mock-handlers.types';
 import { mockDomainPageQueryParamsValues } from '../../../domain-page/__fixtures__/domain-page-query-params';
@@ -13,16 +15,42 @@ jest.mock('@/components/error-panel/error-panel', () =>
   jest.fn(({ message }: { message: string }) => <div>{message}</div>)
 );
 
+jest.mock(
+  '../../domain-workflows-archival-table/helpers/get-archival-error-panel-props',
+  () =>
+    jest
+      .fn()
+      .mockImplementation(
+        ({
+          error,
+          inputType,
+        }: {
+          error: Error;
+          inputType: WorkflowsHeaderInputType;
+        }) => {
+          if (inputType === 'query') {
+            return {
+              message: error ? error.message : undefined,
+            };
+          }
+          return {
+            message: error ? 'Error loading workflows' : 'No workflows found',
+          };
+        }
+      )
+);
+
 jest.mock('@/views/shared/workflows-list/workflows-list', () =>
-  jest.fn(() => <div>Mock workflows list</div>)
-);
-
-jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
-  jest.fn(() => [mockDomainPageQueryParamsValues, jest.fn()])
-);
-
-jest.mock('@/hooks/use-config-value/use-suspense-config-value', () =>
-  jest.fn(() => ({ data: true }))
+  jest.fn((props: WorkflowsListProps) => (
+    <div>
+      {props.workflows.map((wf) => (
+        <div key={wf.workflowID}>{wf.workflowID}</div>
+      ))}
+      <button data-testid="mock-loader" onClick={props.fetchNextPage}>
+        Mock end message: {props.error ? 'Error' : 'OK'}
+      </button>
+    </div>
+  ))
 );
 
 jest.mock('query-string', () => ({
@@ -31,34 +59,86 @@ jest.mock('query-string', () => ({
   ),
 }));
 
+const mockSetQueryParams = jest.fn();
+jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
+  jest.fn(() => [mockDomainPageQueryParamsValues, mockSetQueryParams])
+);
+
+jest.mock('../../hooks/use-archival-input-type', () =>
+  jest.fn(() => ({
+    forceQueryInputOnly: false,
+    inputType: mockDomainPageQueryParamsValues.inputTypeArchival,
+  }))
+);
+
 describe(DomainWorkflowsArchivalList.name, () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('renders workflows list when data is loaded', async () => {
-    setup({});
+  it('renders workflows without error', async () => {
+    const { user } = setup({});
 
-    expect(await screen.findByText('Mock workflows list')).toBeInTheDocument();
+    expect(await screen.findByText('Mock end message: OK')).toBeInTheDocument();
+    Array(10).forEach((_, index) => {
+      expect(
+        screen.getByText(`mock-workflow-id-0-${index}`)
+      ).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByTestId('mock-loader'));
+
+    expect(await screen.findByText('Mock end message: OK')).toBeInTheDocument();
+    Array(10).forEach((_, index) => {
+      expect(
+        screen.getByText(`mock-workflow-id-1-${index}`)
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('renders error panel if the initial call fails', async () => {
+    setup({ errorCase: 'initial-fetch-error' });
+
+    expect(
+      await screen.findByText('Error loading workflows')
+    ).toBeInTheDocument();
+  });
+
+  it('renders workflows and allows the user to try again if there is an error', async () => {
+    const { user } = setup({ errorCase: 'subsequent-fetch-error' });
+
+    expect(await screen.findByText('Mock end message: OK')).toBeInTheDocument();
+    Array(10).forEach((_, index) => {
+      expect(
+        screen.getByText(`mock-workflow-id-0-${index}`)
+      ).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByTestId('mock-loader'));
+
+    expect(
+      await screen.findByText('Mock end message: Error')
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByTestId('mock-loader'));
+
+    expect(await screen.findByText('Mock end message: OK')).toBeInTheDocument();
+    Array(10).forEach((_, index) => {
+      expect(
+        screen.getByText(`mock-workflow-id-1-${index}`)
+      ).toBeInTheDocument();
+    });
   });
 });
 
-function setup({ errorCase }: { errorCase?: 'no-workflows' }) {
-  const mockResponse: ListWorkflowsResponse =
-    errorCase === 'no-workflows'
-      ? { workflows: [], nextPage: '' }
-      : {
-          workflows: Array.from({ length: 5 }, (_, i) =>
-            getMockWorkflowListItem({
-              workflowID: `mock-wf-${i}`,
-              runID: `mock-run-${i}`,
-              workflowName: `mock-name-${i}`,
-              status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
-              startTime: 1684800000000,
-            })
-          ),
-          nextPage: '',
-        };
+function setup({
+  errorCase,
+}: {
+  errorCase?: 'initial-fetch-error' | 'subsequent-fetch-error';
+}) {
+  const pages = generateWorkflowPages(2);
+  let currentEventIndex = 0;
+  const user = userEvent.setup();
 
   render(
     <DomainWorkflowsArchivalList
@@ -74,9 +154,62 @@ function setup({ errorCase }: { errorCase?: 'no-workflows' }) {
           path: '/api/domains/:domain/:cluster/workflows',
           httpMethod: 'GET',
           mockOnce: false,
-          httpResolver: async () => HttpResponse.json(mockResponse),
+          httpResolver: async () => {
+            const index = currentEventIndex;
+            currentEventIndex++;
+
+            switch (errorCase) {
+              case 'initial-fetch-error':
+                return HttpResponse.json(
+                  { message: 'Request failed' },
+                  { status: 500 }
+                );
+              case 'subsequent-fetch-error':
+                if (index === 0) {
+                  return HttpResponse.json(pages[0]);
+                } else if (index === 1) {
+                  return HttpResponse.json(
+                    { message: 'Request failed' },
+                    { status: 500 }
+                  );
+                } else {
+                  return HttpResponse.json(pages[1]);
+                }
+              default:
+                if (index === 0) {
+                  return HttpResponse.json(pages[0]);
+                } else {
+                  return HttpResponse.json(pages[1]);
+                }
+            }
+          },
         },
       ] as MSWMocksHandlersProps['endpointsMocks'],
     }
   );
+
+  return { user };
+}
+
+// TODO @adhitya.mamallan - Explore using fakerjs.dev for cases like this
+function generateWorkflowPages(count: number): Array<ListWorkflowsResponse> {
+  const pages = Array.from(
+    { length: count },
+    (_, pageIndex): ListWorkflowsResponse => ({
+      workflows: Array.from({ length: 10 }, (_, index) =>
+        getMockWorkflowListItem({
+          workflowID: `mock-workflow-id-${pageIndex}-${index}`,
+          runID: `mock-run-id-${pageIndex}-${index}`,
+          workflowName: `mock-workflow-name-${pageIndex}-${index}`,
+          status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
+          startTime: 1684800000000,
+          closeTime: count > 5 ? 1684886400000 : undefined,
+        })
+      ),
+      nextPage: `${pageIndex + 1}`,
+    })
+  );
+
+  pages[pages.length - 1].nextPage = '';
+  return pages;
 }
