@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 
 import { Select } from 'baseui/select';
 
+import { styled } from './workflow-actions-cluster-attribute.styles';
 import { type Props } from './workflow-actions-cluster-attribute.types';
 
 export default function WorkflowActionsClusterAttribute({
@@ -29,7 +30,7 @@ export default function WorkflowActionsClusterAttribute({
   }, [clusterAttributesByScope, selectedScope]);
 
   return (
-    <>
+    <styled.Container>
       <Select
         aria-label="Cluster Attribute Scope"
         options={scopeOptions}
@@ -43,10 +44,9 @@ export default function WorkflowActionsClusterAttribute({
           }
         }}
         size="compact"
-        placeholder="Select cluster attribute scope"
+        placeholder="Scope"
         clearable
       />
-
       <Select
         aria-label="Cluster Attribute Name"
         options={nameOptions}
@@ -56,10 +56,10 @@ export default function WorkflowActionsClusterAttribute({
           onChange({ scope: selectedScope, name: newName });
         }}
         size="compact"
-        placeholder="Select cluster attribute name"
+        placeholder="Name"
         clearable
         disabled={!selectedScope}
       />
-    </>
+    </styled.Container>
   );
 }

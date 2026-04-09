@@ -59,7 +59,7 @@ jest.mock(
     })
 );
 
-describe('WorkflowActionStartForm', () => {
+describe(WorkflowActionStartOptionalSection.name, () => {
   it('displays error when form has errors', async () => {
     const formErrors = {
       header: {

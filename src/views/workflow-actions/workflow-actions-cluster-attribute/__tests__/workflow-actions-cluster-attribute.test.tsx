@@ -1,12 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import WorkflowActionsClusterAttribute from '../workflow-actions-cluster-attribute';
-import {
-  type ClusterAttributeValue,
-  type Props,
-} from '../workflow-actions-cluster-attribute.types';
+import type { Props } from '../workflow-actions-cluster-attribute.types';
 
 const mockClusterAttributesByScope: Props['clusterAttributesByScope'] = {
   region: {
@@ -22,9 +19,9 @@ const mockClusterAttributesByScope: Props['clusterAttributesByScope'] = {
   },
 };
 
-describe('WorkflowActionsClusterAttribute', () => {
-  it('renders scope and name selects', async () => {
-    await setup();
+describe(WorkflowActionsClusterAttribute.name, () => {
+  it('renders scope and name selects', () => {
+    setup();
 
     expect(
       screen.getByRole('combobox', { name: 'Cluster Attribute Scope' })
@@ -34,8 +31,8 @@ describe('WorkflowActionsClusterAttribute', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders name select as disabled when scope is not selected', async () => {
-    await setup();
+  it('renders name select as disabled when scope is not selected', () => {
+    setup();
 
     const nameSelect = screen.getByRole('combobox', {
       name: 'Cluster Attribute Name',
@@ -44,7 +41,7 @@ describe('WorkflowActionsClusterAttribute', () => {
   });
 
   it('shows scope options from cluster attributes data', async () => {
-    const { user } = await setup();
+    const { user } = setup();
 
     const scopeSelect = screen.getByRole('combobox', {
       name: 'Cluster Attribute Scope',
@@ -54,24 +51,72 @@ describe('WorkflowActionsClusterAttribute', () => {
     expect(screen.getByText('region')).toBeInTheDocument();
     expect(screen.getByText('zone')).toBeInTheDocument();
   });
+
+  it('calls onChange with scope and empty name when scope is selected', async () => {
+    const { user, mockOnChange } = setup();
+
+    const scopeSelect = screen.getByRole('combobox', {
+      name: 'Cluster Attribute Scope',
+    });
+    await user.click(scopeSelect);
+    await user.click(screen.getByText('region'));
+
+    expect(mockOnChange).toHaveBeenCalledWith({ scope: 'region', name: '' });
+  });
+
+  it('enables name select when a scope is selected', () => {
+    setup({ value: { scope: 'region', name: '' } });
+
+    const nameSelect = screen.getByRole('combobox', {
+      name: 'Cluster Attribute Name',
+    });
+    expect(nameSelect).not.toBeDisabled();
+  });
+
+  it('shows name options for the selected scope', async () => {
+    const { user } = setup({ value: { scope: 'region', name: '' } });
+
+    const nameSelect = screen.getByRole('combobox', {
+      name: 'Cluster Attribute Name',
+    });
+    await user.click(nameSelect);
+
+    expect(screen.getByText('region0')).toBeInTheDocument();
+    expect(screen.getByText('region1')).toBeInTheDocument();
+  });
+
+  it('calls onChange with scope and name when name is selected', async () => {
+    const { user, mockOnChange } = setup({
+      value: { scope: 'region', name: '' },
+    });
+
+    const nameSelect = screen.getByRole('combobox', {
+      name: 'Cluster Attribute Name',
+    });
+    await user.click(nameSelect);
+    await user.click(screen.getByText('region0'));
+
+    expect(mockOnChange).toHaveBeenCalledWith({
+      scope: 'region',
+      name: 'region0',
+    });
+  });
 });
 
-function TestWrapper() {
-  const [value, setValue] = useState<ClusterAttributeValue | undefined>(
-    undefined
-  );
-
-  return (
-    <WorkflowActionsClusterAttribute
-      clusterAttributesByScope={mockClusterAttributesByScope}
-      value={value}
-      onChange={setValue}
-    />
-  );
-}
-
-async function setup() {
+function setup(props: Partial<Props> = {}) {
+  const mockOnChange = jest.fn();
   const user = userEvent.setup();
-  const renderResult = render(<TestWrapper />);
-  return { user, ...renderResult };
+
+  const defaultProps: Props = {
+    clusterAttributesByScope: mockClusterAttributesByScope,
+    onChange: mockOnChange,
+    ...props,
+  };
+
+  render(<WorkflowActionsClusterAttribute {...defaultProps} />);
+
+  return {
+    user,
+    mockOnChange,
+  };
 }
