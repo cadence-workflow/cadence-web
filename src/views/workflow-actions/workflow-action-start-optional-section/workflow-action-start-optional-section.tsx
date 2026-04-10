@@ -219,7 +219,10 @@ export default function WorkflowActionStartOptionalSection({
         </FormControl>
 
         {isActiveActive && (
-          <FormControl label="Cluster Attribute (optional)">
+          <FormControl
+            label="Cluster Attribute (optional)"
+            error={getFieldErrorMessage(fieldErrors, 'clusterAttribute.name')}
+          >
             <Controller
               name="clusterAttribute"
               control={control}
@@ -229,7 +232,13 @@ export default function WorkflowActionStartOptionalSection({
                     domainData.activeClusters.activeClustersByClusterAttribute
                   }
                   value={field.value}
-                  onChange={field.onChange}
+                  onChange={(value) => {
+                    field.onChange(value);
+                    clearErrors('clusterAttribute');
+                  }}
+                  error={Boolean(
+                    getFieldErrorMessage(fieldErrors, 'clusterAttribute.name')
+                  )}
                 />
               )}
             />

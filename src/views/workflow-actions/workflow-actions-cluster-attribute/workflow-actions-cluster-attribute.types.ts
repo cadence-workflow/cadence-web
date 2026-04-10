@@ -9,4 +9,5 @@ export type Props = {
   clusterAttributesByScope: Record<string, ClusterAttributeScope>;
   value?: ClusterAttributeValue;
   onChange: (value: ClusterAttributeValue | undefined) => void;
+  error?: boolean;
 };

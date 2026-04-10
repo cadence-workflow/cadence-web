@@ -9,6 +9,7 @@ export default function WorkflowActionsClusterAttribute({
   clusterAttributesByScope,
   value,
   onChange,
+  error,
 }: Props) {
   const selectedScope = value?.scope || '';
 
@@ -59,6 +60,7 @@ export default function WorkflowActionsClusterAttribute({
         placeholder="Name"
         clearable
         disabled={!selectedScope}
+        error={error}
       />
     </styled.Container>
   );
