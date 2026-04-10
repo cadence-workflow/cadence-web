@@ -44,31 +44,11 @@ Cadence Web does **not** implement a full identity provider and does **not** ver
 
 ## 3. How to use web auth
 
-### Enable JWT mode
+### Production & local development
 
-```bash
-CADENCE_WEB_AUTH_STRATEGY=jwt
-```
-
-Restart Cadence Web after changing this value.
-
-### Production: upstream gateway or SSO
-
-Recommended pattern: your OAuth/OIDC proxy, ingress, or SSO gateway performs login, then sets the cookie on the **Cadence Web origin**:
-
-```http
-Set-Cookie: cadence-authorization=<JWT>; Path=/; HttpOnly; SameSite=Lax; Secure
-```
-
-Use a JWT whose claims match what your Cadence cluster is configured to validate and authorize. Users typically do not use the in-app “paste JWT” flow when a gateway sets the cookie automatically.
-
-### Local development or ad hoc testing
-
-1. Set `CADENCE_WEB_AUTH_STRATEGY=jwt`.
+1. Set `CADENCE_WEB_AUTH_STRATEGY=jwt` (Restart Cadence Web after changing this value if it was running)
 2. Obtain a JWT issued for your Cadence environment (same claims your server expects).
-3. Either:
-   - Use **Login with JWT** in the app (calls `POST /api/auth/token`), or  
-   - `POST /api/auth/token` with `{ "token": "<JWT>" }` yourself.
+3. Use **Login with JWT** on the UI (calls `POST /api/auth/token`).
 
 Logout: use the UI logout control or `DELETE /api/auth/token`.
 
@@ -85,7 +65,7 @@ Logout: use the UI logout control or `DELETE /api/auth/token`.
 }
 ```
 
-`groups` is a **string** (space- or comma-separated list in typical setups). Adjust claims to match your IdP and Cadence server configuration.
+`groups` is a **string** (space-separated list). Adjust claims to match your Cadence server configuration.
 
 ### Quick verification
 
@@ -104,11 +84,12 @@ sequenceDiagram
   participant W as Cadence Web
   participant C as Cadence server
 
-  B->>W: Request with cadence-authorization cookie
-  W->>W: resolveAuthContext (decode claims, no signature verify)
+  B->>W: Set cadence-authorization cookie
   B->>W: GET /api/auth/me
   W->>B: Public auth fields only
   W->>C: gRPC with cadence-authorization metadata
   C->>C: Validate JWT and authorize
   C->>W: Response
 ```
+
+Note: 4-5 are not dependant on 2-3 (They can go directly after setting the cookie in step 1)
