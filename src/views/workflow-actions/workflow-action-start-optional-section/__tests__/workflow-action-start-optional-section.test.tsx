@@ -8,6 +8,7 @@ import { fireEvent, render, screen, userEvent } from '@/test-utils/rtl';
 
 import { type GetSearchAttributesResponse } from '@/route-handlers/get-search-attributes/get-search-attributes.types';
 import { mockDomainDescription } from '@/views/domain-page/__fixtures__/domain-description';
+import { mockActiveActiveDomain } from '@/views/shared/active-active/__fixtures__/active-active-domain';
 
 import WorkflowActionStartOptionalSection from '../workflow-action-start-optional-section';
 import { type Props } from '../workflow-action-start-optional-section.types';
@@ -169,6 +170,28 @@ describe(WorkflowActionStartOptionalSection.name, () => {
 
     // Search attributes input checks are done in its own component test
   });
+
+  it('shows cluster attribute field for active-active domains', async () => {
+    const { user } = await setup({ isActiveActiveDomain: true });
+
+    await user.click(
+      screen.getByRole('button', { name: /Show Optional Configurations/i })
+    );
+
+    expect(screen.getByText('Cluster Attribute Fields')).toBeInTheDocument();
+  });
+
+  it('does not show cluster attribute field for non-active-active domains', async () => {
+    const { user } = await setup({});
+
+    await user.click(
+      screen.getByRole('button', { name: /Show Optional Configurations/i })
+    );
+
+    expect(
+      screen.queryByText('Cluster Attribute Fields')
+    ).not.toBeInTheDocument();
+  });
 });
 
 type TestProps = {
@@ -206,7 +229,8 @@ async function setup({
     retryPolicy: undefined,
   },
   fieldErrors = {},
-}: Partial<TestProps>) {
+  isActiveActiveDomain = false,
+}: Partial<TestProps> & { isActiveActiveDomain?: boolean }) {
   const user = userEvent.setup();
 
   render(<TestWrapper formData={formData} fieldErrors={fieldErrors} />, {
@@ -226,7 +250,11 @@ async function setup({
         httpMethod: 'GET',
         mockOnce: false,
         httpResolver: () => {
-          return HttpResponse.json(mockDomainDescription);
+          return HttpResponse.json(
+            isActiveActiveDomain
+              ? mockActiveActiveDomain
+              : mockDomainDescription
+          );
         },
       },
     ],
