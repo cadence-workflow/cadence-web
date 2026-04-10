@@ -26,7 +26,7 @@ Cadence Web does **not** implement a full identity provider and does **not** ver
 | Strategy | Behavior |
 | -------- | -------- |
 | `disabled` (default) | No login required. No token is read from the cookie or sent to Cadence. Domain/action resolvers treat the user as having full access for UI purposes. |
-| `jwt` | Auth is on: a JWT in the **`cadence-authorization`** HttpOnly cookie is decoded; if valid and not expired, it is attached to gRPC calls. |
+| `jwt` | Auth is on: a JWT in the **`cadence-authorization`** HttpOnly cookie is decoded. If valid and not expired, it is attached to gRPC calls. |
 
 **Cookie and token handling.** The cookie name is `cadence-authorization`. Server-side code (`resolveAuthContext`) reads the cookie, base64-decodes the JWT payload, and validates the shape with a small schema (for example `sub` or `name` required; optional `admin`, `groups`, `exp`). Expired or malformed tokens are dropped. The **raw JWT** stays on the server in the private auth context; the client only sees **public** fields via `GET /api/auth/me` (for example `authEnabled`, `groups`, `isAdmin`, `userName`, `id`, `auth.isValidToken`, `auth.expiresAtMs`—never the token string).
 
