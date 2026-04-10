@@ -38,9 +38,10 @@ export default function WorkflowActionStartOptionalSection({
 }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
 
-  const { data: domainData } = useDomainDescription({ domain, cluster });
+  const { data: domainData, isLoading: isLoadingDomain } = useDomainDescription(
+    { domain, cluster }
+  );
 
-  // TODO: use the loading state
   const isActiveActive = domainData && isActiveActiveDomain(domainData);
 
   // Fetch custom search attributes for the input component
@@ -66,6 +67,11 @@ export default function WorkflowActionStartOptionalSection({
                 size="mini"
                 kind="tertiary"
                 type="button"
+                data-testid={`workflow-action-start-optional-section-${
+                  isLoadingDomain || isLoadingSearchAttributes
+                    ? 'loading'
+                    : 'loaded'
+                }`}
                 startEnhancer={
                   props.$expanded ? (
                     <MdExpandLess size={20} />

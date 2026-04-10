@@ -1,9 +1,13 @@
 import React from 'react';
 
 import { type PanelProps } from 'baseui/accordion';
+import { HttpResponse } from 'msw';
 import { useForm } from 'react-hook-form';
 
 import { fireEvent, render, screen, userEvent } from '@/test-utils/rtl';
+
+import { type GetSearchAttributesResponse } from '@/route-handlers/get-search-attributes/get-search-attributes.types';
+import { mockDomainDescription } from '@/views/domain-page/__fixtures__/domain-description';
 
 import WorkflowActionStartOptionalSection from '../workflow-action-start-optional-section';
 import { type Props } from '../workflow-action-start-optional-section.types';
@@ -205,7 +209,32 @@ async function setup({
 }: Partial<TestProps>) {
   const user = userEvent.setup();
 
-  render(<TestWrapper formData={formData} fieldErrors={fieldErrors} />);
+  render(<TestWrapper formData={formData} fieldErrors={fieldErrors} />, {
+    endpointsMocks: [
+      {
+        path: '/api/clusters/:cluster/search-attributes',
+        httpMethod: 'GET',
+        mockOnce: false,
+        httpResolver: () => {
+          return HttpResponse.json({
+            keys: {},
+          } satisfies GetSearchAttributesResponse);
+        },
+      },
+      {
+        path: '/api/domains/:domain/:cluster',
+        httpMethod: 'GET',
+        mockOnce: false,
+        httpResolver: () => {
+          return HttpResponse.json(mockDomainDescription);
+        },
+      },
+    ],
+  });
+
+  // Wait for HTTP mock responses to settle — the toggle button's data-testid
+  // switches from "loading" to "loaded" once both queries have resolved.
+  await screen.findByTestId('workflow-action-start-optional-section-loaded');
 
   return { user };
 }
