@@ -21,7 +21,6 @@ export type WorkflowsListColumn = {
 export type Props = {
   workflows: Array<DomainWorkflow>;
   columns: Array<WorkflowsListColumn>;
-  isLoading: boolean;
   error: Error | null;
   hasNextPage: boolean;
   fetchNextPage: () => void;

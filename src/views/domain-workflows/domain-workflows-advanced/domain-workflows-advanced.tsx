@@ -4,6 +4,7 @@ import getDayjsFromDateFilterValue from '@/components/date-filter/helpers/get-da
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import dayjs from '@/utils/datetime/dayjs';
 import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
+import useWorkflowsListColumns from '@/views/shared/workflows-list/hooks/use-workflows-list-columns';
 
 import DomainWorkflowsHeader from '../domain-workflows-header/domain-workflows-header';
 import DomainWorkflowsList from '../domain-workflows-list/domain-workflows-list';
@@ -17,6 +18,8 @@ export default function DomainWorkflowsAdvanced({
   isNewWorkflowsListEnabled,
 }: Props) {
   const [queryParams] = usePageQueryParams(domainPageQueryParamsConfig);
+
+  const { visibleColumns } = useWorkflowsListColumns({ cluster });
 
   const timeRangeParams = useMemo(() => {
     const now = dayjs();
@@ -47,6 +50,7 @@ export default function DomainWorkflowsAdvanced({
         <DomainWorkflowsList
           domain={domain}
           cluster={cluster}
+          visibleColumns={visibleColumns}
           {...timeRangeParams}
         />
       </>

@@ -1,34 +1,11 @@
 import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtures__/mock-workflow-list-items';
-import { type DomainWorkflow } from '@/views/domain-page/domain-page.types';
 
-import { type WorkflowsListColumnConfig } from '../../workflows-list.types';
+import { mockWorkflowsListColumnsConfig } from '../../__fixtures__/mock-workflows-list-columns';
 import getWorkflowsListColumnFromSearchAttribute from '../get-workflows-list-column-from-search-attribute';
 
 jest.mock('../../config/workflows-list-columns.config', () => ({
   __esModule: true,
-  default: [
-    {
-      match: (name: string) => name === 'WorkflowID',
-      name: 'Workflow ID',
-      width: 'minmax(200px, 3fr)',
-      renderCell: (row: DomainWorkflow, attributeName: string) =>
-        `${attributeName}:${row.workflowID}`,
-    },
-    {
-      match: (name: string) => name === 'CloseStatus',
-      name: 'Status',
-      width: 'minmax(100px, 1fr)',
-      renderCell: (row: DomainWorkflow, attributeName: string) =>
-        `${attributeName}:${row.workflowID}`,
-    },
-    {
-      match: (_name: string, type: string) =>
-        type === 'INDEXED_VALUE_TYPE_DATETIME',
-      width: 'minmax(150px, 1.5fr)',
-      renderCell: (row: DomainWorkflow, attributeName: string) =>
-        `${attributeName}:${row.workflowID}`,
-    },
-  ] satisfies ReadonlyArray<WorkflowsListColumnConfig>,
+  default: mockWorkflowsListColumnsConfig,
 }));
 
 const mockRow = getMockWorkflowListItem({
@@ -112,13 +89,13 @@ describe(getWorkflowsListColumnFromSearchAttribute.name, () => {
     expect(column?.renderCell(row)).toBe('custom-value');
   });
 
-  it('renders empty string when custom attribute value is missing', () => {
+  it('renders null when custom attribute value is missing', () => {
     const row = getMockWorkflowListItem({ searchAttributes: {} });
     const column = getWorkflowsListColumnFromSearchAttribute(
       'MyCustomField',
       'INDEXED_VALUE_TYPE_KEYWORD'
     );
 
-    expect(column?.renderCell(row)).toBe('');
+    expect(column?.renderCell(row)).toBe(null);
   });
 });
