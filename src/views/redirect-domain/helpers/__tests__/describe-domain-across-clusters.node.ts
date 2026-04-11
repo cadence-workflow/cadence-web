@@ -1,11 +1,12 @@
 import * as grpc from '@grpc/grpc-js';
 
+import { type Domain } from '@/__generated__/proto-ts/uber/cadence/api/v1/Domain';
 import { type ClustersConfigs } from '@/config/dynamic/resolvers/clusters.types';
 import mockResolvedConfigValues from '@/utils/config/__fixtures__/resolved-config-values';
 import * as getConfigValueModule from '@/utils/config/get-config-value';
-import { type GRPCClusterMethods } from '@/utils/grpc/grpc-client';
 import * as grpcClient from '@/utils/grpc/grpc-client';
 import { GRPCError } from '@/utils/grpc/grpc-error';
+import { mockGrpcClusterMethods } from '@/utils/route-handlers-middleware/middlewares/__mocks__/grpc-cluster-methods';
 
 import { getDomainObj } from '@/views/domains-page/__fixtures__/domains';
 
@@ -215,8 +216,6 @@ describe(describeDomainAcrossClusters.name, () => {
   });
 });
 
-type DomainData = ReturnType<typeof getDomainObj>;
-
 async function setup({
   domainName,
   clustersConfigs = mockResolvedConfigValues.CLUSTERS,
@@ -226,7 +225,7 @@ async function setup({
   clustersConfigs?: ClustersConfigs;
   clusterResponses: Record<
     string,
-    { domain: DomainData } | { error: Error | GRPCError }
+    { domain: Domain } | { error: Error | GRPCError }
   >;
 }) {
   jest
@@ -237,15 +236,17 @@ async function setup({
     .spyOn(grpcClient, 'getClusterMethods')
     .mockImplementation(async (clusterName: string) => {
       const response = clusterResponses[clusterName];
-
-      return {
+      const clusterMethods = {
+        ...mockGrpcClusterMethods,
         describeDomain: jest.fn().mockImplementation(async () => {
           if (response && 'error' in response) {
             throw response.error;
           }
           return { domain: response?.domain ?? null };
         }),
-      } as unknown as GRPCClusterMethods;
+      };
+
+      return clusterMethods;
     });
 
   const result = await describeDomainAcrossClusters(domainName);
