@@ -1,6 +1,6 @@
 import { getDomainObj } from '@/views/domains-page/__fixtures__/domains';
 import { type DomainData } from '@/views/domains-page/domains-page.types';
-import { type DescribeDomainAcrossClustersResult } from '../helpers/describe-domain-across-clusters';
+import * as describeDomainAcrossClustersModule from '../helpers/describe-domain-across-clusters';
 
 import RedirectDomain from '../redirect-domain';
 
@@ -46,31 +46,25 @@ jest.mock('next/navigation', () => ({
     throw new Error('Not found');
   },
 }));
-
-const mockDescribeDomainAcrossClusters = jest.fn<
-  Promise<DescribeDomainAcrossClustersResult>,
-  [string]
->();
-
-jest.mock('../helpers/describe-domain-across-clusters', () => ({
-  __esModule: true,
-  default: (...args: [string]) => mockDescribeDomainAcrossClusters(...args),
-}));
+jest.mock('../helpers/describe-domain-across-clusters');
 
 function setMockResult(
   domains: DomainData[],
   hasPermissionDenied: boolean = false,
   hasUnexpectedError: boolean = false
 ) {
-  mockDescribeDomainAcrossClusters.mockResolvedValue({
-    domains,
-    hasPermissionDenied,
-    hasUnexpectedError,
-  });
+  return jest
+    .spyOn(describeDomainAcrossClustersModule, 'default')
+    .mockResolvedValue({
+      domains,
+      hasPermissionDenied,
+      hasUnexpectedError,
+    });
 }
 
 describe(RedirectDomain.name, () => {
   beforeEach(() => {
+    jest.restoreAllMocks();
     jest.clearAllMocks();
   });
 
@@ -79,6 +73,7 @@ describe(RedirectDomain.name, () => {
     urlParams: Array<string>;
     queryParams?: { [key: string]: string | string[] | undefined };
     domains: DomainData[];
+    expectedDomainNameToSearch?: string;
     hasPermissionDenied?: boolean;
     hasUnexpectedError?: boolean;
     assertOnError?: (e: Error) => void;
@@ -88,17 +83,14 @@ describe(RedirectDomain.name, () => {
       name: 'should redirect to domain page of active cluster',
       urlParams: ['mock-domain-unique'],
       domains: [MOCK_UNIQUE_DOMAIN],
+      expectedDomainNameToSearch: 'mock-domain-unique',
       expectedRedirect: '/domains/mock-domain-unique/mock-cluster-1',
     },
     {
       name: 'should redirect to workflow page of active cluster',
-      urlParams: [
-        'mock-domain-unique',
-        'workflows',
-        'mock-wfid',
-        'mock-runid',
-      ],
+      urlParams: ['mock-domain-unique', 'workflows', 'mock-wfid', 'mock-runid'],
       domains: [MOCK_UNIQUE_DOMAIN],
+      expectedDomainNameToSearch: 'mock-domain-unique',
       expectedRedirect:
         '/domains/mock-domain-unique/mock-cluster-1/workflows/mock-wfid/mock-runid',
     },
@@ -116,6 +108,7 @@ describe(RedirectDomain.name, () => {
         ht: 'ACTIVITY',
       },
       domains: [MOCK_UNIQUE_DOMAIN],
+      expectedDomainNameToSearch: 'mock-domain-unique',
       expectedRedirect:
         '/domains/mock-domain-unique/mock-cluster-1/workflows/mock-wfid/mock-runid/history?hs=COMPLETED&ht=ACTIVITY',
     },
@@ -123,6 +116,7 @@ describe(RedirectDomain.name, () => {
       name: 'should redirect to All Domains page with search param if multiple domains exist',
       urlParams: ['mock-domain-shared-name'],
       domains: [MOCK_SHARED_NAME_DOMAIN_1, MOCK_SHARED_NAME_DOMAIN_2],
+      expectedDomainNameToSearch: 'mock-domain-shared-name',
       expectedRedirect: '/domains?d=true&s=mock-domain-shared-name',
     },
     {
@@ -134,12 +128,14 @@ describe(RedirectDomain.name, () => {
         'mock-runid',
       ],
       domains: [MOCK_SHARED_NAME_DOMAIN_1, MOCK_SHARED_NAME_DOMAIN_2],
+      expectedDomainNameToSearch: 'mock-domain-shared-name',
       expectedRedirect: '/domains?d=true&s=mock-domain-shared-name',
     },
     {
       name: 'should call notFound if no domain exists',
       urlParams: ['mock-domain-nonexistent'],
       domains: [],
+      expectedDomainNameToSearch: 'mock-domain-nonexistent',
       assertOnError: (e) => {
         expect(e.message).toEqual('Not found');
       },
@@ -148,6 +144,7 @@ describe(RedirectDomain.name, () => {
       name: 'should throw access denied error when domain is not found but permission was denied',
       urlParams: ['mock-domain-restricted'],
       domains: [],
+      expectedDomainNameToSearch: 'mock-domain-restricted',
       hasPermissionDenied: true,
       assertOnError: (e) => {
         expect(e.message).toEqual(
@@ -159,12 +156,20 @@ describe(RedirectDomain.name, () => {
       name: 'should throw resolve error when clusters fail unexpectedly and no domain is found',
       urlParams: ['mock-domain-unavailable'],
       domains: [],
+      expectedDomainNameToSearch: 'mock-domain-unavailable',
       hasUnexpectedError: true,
       assertOnError: (e) => {
         expect(e.message).toEqual(
           'Failed to resolve domain "mock-domain-unavailable"'
         );
       },
+    },
+    {
+      name: 'should pass the decoded domain name to describeDomainAcrossClusters',
+      urlParams: ['mock-domain%3Aunique'],
+      domains: [MOCK_UNIQUE_DOMAIN],
+      expectedDomainNameToSearch: 'mock-domain:unique',
+      expectedRedirect: '/domains/mock-domain%3Aunique/mock-cluster-1',
     },
     {
       // This never happens in practice because the router simply would not route to this component
@@ -197,22 +202,11 @@ describe(RedirectDomain.name, () => {
           expect(mockRedirect).toHaveBeenCalledWith(test.expectedRedirect);
         }
       }
+      if (test.expectedDomainNameToSearch) {
+        expect(describeDomainAcrossClustersModule.default).toHaveBeenCalledWith(
+          test.expectedDomainNameToSearch
+        );
+      }
     })
   );
-
-  it('should pass the decoded domain name to describeDomainAcrossClusters', async () => {
-    setMockResult([MOCK_UNIQUE_DOMAIN]);
-
-    try {
-      await RedirectDomain({
-        params: { domainParams: ['mock-domain-unique'] },
-      });
-    } catch {
-      // Expected redirect throw
-    }
-
-    expect(mockDescribeDomainAcrossClusters).toHaveBeenCalledWith(
-      'mock-domain-unique'
-    );
-  });
 });
