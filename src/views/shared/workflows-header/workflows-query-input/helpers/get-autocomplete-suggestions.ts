@@ -19,6 +19,7 @@ export default function getAutocompleteSuggestions(
   const tokens = value.trim().split(/\s+/);
   const lastToken = tokens[tokens.length - 1] || '';
   const secondLastToken = tokens[tokens.length - 2] || '';
+  const thirdLastToken = tokens[tokens.length - 3] || '';
 
   // At query start or after logical operators: show attribute suggestions
   if (
@@ -72,6 +73,39 @@ export default function getAutocompleteSuggestions(
 
   if (foundBooleanAttr) {
     return BOOLEAN_VALUES;
+  }
+
+  // Partially-typed quoted value: starts with `"` but isn't a closed string.
+  // Used to filter down enumerated value suggestions as the user types.
+  const isPartialQuotedValue =
+    lastToken.startsWith('"') &&
+    (lastToken.length === 1 || !lastToken.endsWith('"'));
+
+  const filterByPartialValue = (values: Array<string>) =>
+    values.filter((v) => v.toLowerCase().startsWith(lastToken.toLowerCase()));
+
+  // Partial value after CloseStatus attribute: filter status values
+  if (
+    isPartialQuotedValue &&
+    ((thirdLastToken === CLOSE_STATUS_ATTRIBUTE &&
+      (secondLastToken === '=' || secondLastToken === '!=')) ||
+      new RegExp(`^CloseStatus(!=|=)$`).test(secondLastToken))
+  ) {
+    return filterByPartialValue(STATUSES);
+  }
+
+  // Partial value after Passed/IsCron attributes: filter boolean values
+  const foundPartialBooleanAttr = isPartialQuotedValue
+    ? BOOLEAN_ATTRIBUTES.find(
+        (attr) =>
+          (thirdLastToken === attr &&
+            (secondLastToken === '=' || secondLastToken === '!=')) ||
+          new RegExp(`^${attr}(!=|=)$`).test(secondLastToken)
+      )
+    : undefined;
+
+  if (foundPartialBooleanAttr) {
+    return filterByPartialValue(BOOLEAN_VALUES);
   }
 
   // After complete values: show logical operators
