@@ -1,7 +1,7 @@
 'use client';
 import { useMutation } from '@tanstack/react-query';
 import { Button } from 'baseui/button';
-import { useSnackbar } from 'baseui/snackbar';
+import { useSnackbar, DURATION } from 'baseui/snackbar';
 
 import losslessJsonStringify from '@/utils/lossless-json-stringify';
 import request from '@/utils/request';
@@ -45,10 +45,12 @@ export default function SignalButton({
       return response.json();
     },
     onSuccess: () => {
-      enqueue({
-        message: `Successfully sent signal "${signalName}"`,
-        actionMessage: 'OK',
-      });
+      enqueue(
+        {
+          message: `Successfully sent signal "${signalName}"`,
+        },
+        DURATION.medium
+      );
     },
     onError: (error: Error) => {
       enqueue({
