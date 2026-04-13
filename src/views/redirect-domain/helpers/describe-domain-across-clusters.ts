@@ -11,7 +11,7 @@ import logger from '@/utils/logger';
 export type DescribeDomainAcrossClustersResult = {
   domains: Domain[];
   hasPermissionDenied: boolean;
-  hasUnexpectedError: boolean;
+  unexpectedError: Error | null;
 };
 
 export default async function describeDomainAcrossClusters(
@@ -31,7 +31,7 @@ export default async function describeDomainAcrossClusters(
 
   const domains: Domain[] = [];
   let hasPermissionDenied = false;
-  let hasUnexpectedError = false;
+  let unexpectedError: Error | null = null;
 
   for (const result of results) {
     if (result.status === 'fulfilled' && result.value) {
@@ -48,7 +48,10 @@ export default async function describeDomainAcrossClusters(
           result.reason.grpcStatusCode === grpc.status.NOT_FOUND
         )
       ) {
-        hasUnexpectedError = true;
+        unexpectedError ??=
+          result.reason instanceof Error
+            ? result.reason
+            : new Error(String(result.reason));
         logger.error(
           { error: result.reason },
           `Failed to describe domain "${domainName}"`
@@ -68,6 +71,6 @@ export default async function describeDomainAcrossClusters(
   return {
     domains: Array.from(uniqueDomainsMap.values()),
     hasPermissionDenied,
-    hasUnexpectedError,
+    unexpectedError,
   };
 }

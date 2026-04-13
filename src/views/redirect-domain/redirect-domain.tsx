@@ -12,12 +12,12 @@ export default async function RedirectDomain(props: Props) {
 
   const domain = decodeURIComponent(encodedDomain);
 
-  const { domains, hasPermissionDenied, hasUnexpectedError } =
+  const { domains, hasPermissionDenied, unexpectedError } =
     await describeDomainAcrossClusters(domain);
 
   if (domains.length === 0) {
-    if (hasUnexpectedError) {
-      throw new Error(`Failed to resolve domain "${domain}"`);
+    if (unexpectedError) {
+      throw unexpectedError;
     }
     if (hasPermissionDenied) {
       throw new Error(`Access denied for domain "${domain}"`);

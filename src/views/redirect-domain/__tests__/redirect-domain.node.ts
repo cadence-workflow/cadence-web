@@ -1,7 +1,7 @@
 import { getDomainObj } from '@/views/domains-page/__fixtures__/domains';
 import { type DomainData } from '@/views/domains-page/domains-page.types';
-import * as describeDomainAcrossClustersModule from '../helpers/describe-domain-across-clusters';
 
+import * as describeDomainAcrossClustersModule from '../helpers/describe-domain-across-clusters';
 import RedirectDomain from '../redirect-domain';
 
 const MOCK_UNIQUE_DOMAIN = getDomainObj({
@@ -51,14 +51,14 @@ jest.mock('../helpers/describe-domain-across-clusters');
 function setMockResult(
   domains: DomainData[],
   hasPermissionDenied: boolean = false,
-  hasUnexpectedError: boolean = false
+  unexpectedError: Error | null = null
 ) {
   return jest
     .spyOn(describeDomainAcrossClustersModule, 'default')
     .mockResolvedValue({
       domains,
       hasPermissionDenied,
-      hasUnexpectedError,
+      unexpectedError,
     });
 }
 
@@ -75,7 +75,7 @@ describe(RedirectDomain.name, () => {
     domains: DomainData[];
     expectedDomainNameToSearch?: string;
     hasPermissionDenied?: boolean;
-    hasUnexpectedError?: boolean;
+    unexpectedError?: Error;
     assertOnError?: (e: Error) => void;
     expectedRedirect?: string;
   }> = [
@@ -157,11 +157,9 @@ describe(RedirectDomain.name, () => {
       urlParams: ['mock-domain-unavailable'],
       domains: [],
       expectedDomainNameToSearch: 'mock-domain-unavailable',
-      hasUnexpectedError: true,
+      unexpectedError: new Error('Cluster is unavailable'),
       assertOnError: (e) => {
-        expect(e.message).toEqual(
-          'Failed to resolve domain "mock-domain-unavailable"'
-        );
+        expect(e.message).toEqual('Cluster is unavailable');
       },
     },
     {
@@ -186,7 +184,7 @@ describe(RedirectDomain.name, () => {
       setMockResult(
         test.domains,
         test.hasPermissionDenied,
-        test.hasUnexpectedError
+        test.unexpectedError ?? null
       );
 
       try {
