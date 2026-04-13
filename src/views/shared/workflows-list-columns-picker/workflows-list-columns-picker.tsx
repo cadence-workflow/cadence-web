@@ -119,39 +119,31 @@ export default function WorkflowsListColumnsPicker({
           </styled.SubHeader>
           <styled.ColumnsList>
             <List
-              items={displayedColumns.reduce<React.ReactNode[]>(
-                (acc, entry) => {
-                  const col = columnMap.get(entry.id);
-                  if (!col) return acc;
+              items={displayedColumns.map((entry) => {
+                // columnMap will always have all possible columns
+                const col = columnMap.get(entry.id);
 
-                  acc.push(
-                    <styled.ColumnRow key={entry.id}>
-                      <styled.ColumnName>
-                        {!col.isSystem ? '*' : ''}
-                        {col.name}
-                      </styled.ColumnName>
-                      <styled.CheckboxContainer
-                        onClick={(e: React.MouseEvent) => e.stopPropagation()}
-                        onMouseDown={(e: React.MouseEvent) =>
-                          e.stopPropagation()
-                        }
-                        onTouchStart={(e: React.TouchEvent) =>
-                          e.stopPropagation()
-                        }
-                      >
-                        <Checkbox
-                          checked={entry.checked}
-                          onChange={() => handleToggle(entry.id)}
-                          checkmarkType="toggle"
-                        />
-                      </styled.CheckboxContainer>
-                    </styled.ColumnRow>
-                  );
-
-                  return acc;
-                },
-                []
-              )}
+                return (
+                  <styled.ColumnRow key={entry.id}>
+                    <styled.ColumnName>
+                      {col ? `${col.isSystem ? '' : '*'}${col.name}` : ''}
+                    </styled.ColumnName>
+                    <styled.CheckboxContainer
+                      onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                      onMouseDown={(e: React.MouseEvent) => e.stopPropagation()}
+                      onTouchStart={(e: React.TouchEvent) =>
+                        e.stopPropagation()
+                      }
+                    >
+                      <Checkbox
+                        checked={entry.checked}
+                        onChange={() => handleToggle(entry.id)}
+                        checkmarkType="toggle"
+                      />
+                    </styled.CheckboxContainer>
+                  </styled.ColumnRow>
+                );
+              })}
               onChange={handleDragEnd}
               overrides={
                 isDragDisabled
