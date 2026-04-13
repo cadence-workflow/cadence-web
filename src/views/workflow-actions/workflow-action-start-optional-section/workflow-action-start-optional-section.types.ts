@@ -2,4 +2,5 @@ import { type SubFormProps } from '../workflow-action-start-form/workflow-action
 
 export type Props = SubFormProps & {
   cluster: string;
+  domain: string;
 };
