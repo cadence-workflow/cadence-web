@@ -37,7 +37,7 @@ export default function WorkflowActionsClusterAttribute({
         options={scopeOptions}
         value={selectedScope ? [{ id: selectedScope }] : []}
         onChange={(params) => {
-          const newScope = params.value[0].id?.toString() || '';
+          const newScope = params.value.at(0)?.id?.toString() || '';
           if (newScope) {
             onChange({ scope: newScope, name: '' });
           } else {
@@ -53,7 +53,7 @@ export default function WorkflowActionsClusterAttribute({
         options={nameOptions}
         value={value?.name ? [{ id: value.name }] : []}
         onChange={(params) => {
-          const newName = params.value[0].id?.toString() || '';
+          const newName = params.value.at(0)?.id?.toString() || '';
           onChange({ scope: selectedScope, name: newName });
         }}
         size="compact"
