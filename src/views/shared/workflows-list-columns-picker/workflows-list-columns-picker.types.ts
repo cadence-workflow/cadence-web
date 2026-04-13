@@ -1,6 +1,7 @@
 export type ColumnDefinition = {
   id: string;
   name: string;
+  isSystem: boolean;
 };
 
 export type ColumnState = { id: string; checked: boolean };

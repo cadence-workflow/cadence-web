@@ -26,10 +26,10 @@ jest.mock('baseui/popover', () => ({
 }));
 
 const MOCK_ALL_COLUMNS: ColumnDefinition[] = [
-  { id: 'col-1', name: 'Workflow ID' },
-  { id: 'col-2', name: 'Status' },
-  { id: 'col-3', name: 'Start Time' },
-  { id: 'col-4', name: 'End Time' },
+  { id: 'col-1', name: 'Workflow ID', isSystem: true },
+  { id: 'col-2', name: 'Status', isSystem: true },
+  { id: 'col-3', name: 'Start Time', isSystem: false },
+  { id: 'col-4', name: 'End Time', isSystem: false },
 ];
 
 describe(WorkflowsListColumnsPicker.name, () => {
@@ -60,8 +60,8 @@ describe(WorkflowsListColumnsPicker.name, () => {
 
     expect(screen.getByText('Workflow ID')).toBeInTheDocument();
     expect(screen.getByText('Status')).toBeInTheDocument();
-    expect(screen.getByText('Start Time')).toBeInTheDocument();
-    expect(screen.getByText('End Time')).toBeInTheDocument();
+    expect(screen.getByText('*Start Time')).toBeInTheDocument();
+    expect(screen.getByText('*End Time')).toBeInTheDocument();
   });
 
   it('shows selected columns as checked and unselected as unchecked', async () => {
@@ -105,10 +105,10 @@ describe(WorkflowsListColumnsPicker.name, () => {
       'Start'
     );
 
-    expect(screen.getByText('Start Time')).toBeInTheDocument();
+    expect(screen.getByText('*Start Time')).toBeInTheDocument();
     expect(screen.queryByText('Workflow ID')).not.toBeInTheDocument();
     expect(screen.queryByText('Status')).not.toBeInTheDocument();
-    expect(screen.queryByText('End Time')).not.toBeInTheDocument();
+    expect(screen.queryByText('*End Time')).not.toBeInTheDocument();
   });
 
   it('toggles column checked state when checkbox is clicked', async () => {
