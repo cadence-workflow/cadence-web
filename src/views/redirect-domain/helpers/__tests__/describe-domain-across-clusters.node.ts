@@ -7,7 +7,6 @@ import * as getConfigValueModule from '@/utils/config/get-config-value';
 import * as grpcClient from '@/utils/grpc/grpc-client';
 import { GRPCError } from '@/utils/grpc/grpc-error';
 import { mockGrpcClusterMethods } from '@/utils/route-handlers-middleware/middlewares/__mocks__/grpc-cluster-methods';
-
 import { getDomainObj } from '@/views/domains-page/__fixtures__/domains';
 
 import describeDomainAcrossClusters from '../describe-domain-across-clusters';
@@ -42,7 +41,7 @@ describe(describeDomainAcrossClusters.name, () => {
     expect(result.domains).toHaveLength(1);
     expect(result.domains[0]).toEqual(domain);
     expect(result.hasPermissionDenied).toBe(false);
-    expect(result.hasUnexpectedError).toBe(false);
+    expect(result.unexpectedError).toBe(null);
   });
 
   it('deduplicates domains found on multiple clusters by ID', async () => {
@@ -106,7 +105,7 @@ describe(describeDomainAcrossClusters.name, () => {
 
     expect(result.domains).toHaveLength(0);
     expect(result.hasPermissionDenied).toBe(true);
-    expect(result.hasUnexpectedError).toBe(false);
+    expect(result.unexpectedError).toBe(null);
   });
 
   it('returns empty domains when all clusters return NOT_FOUND', async () => {
@@ -128,7 +127,7 @@ describe(describeDomainAcrossClusters.name, () => {
 
     expect(result.domains).toHaveLength(0);
     expect(result.hasPermissionDenied).toBe(false);
-    expect(result.hasUnexpectedError).toBe(false);
+    expect(result.unexpectedError).toBe(null);
   });
 
   it('returns found domain even when some clusters return PERMISSION_DENIED', async () => {
@@ -153,17 +152,19 @@ describe(describeDomainAcrossClusters.name, () => {
     expect(result.domains).toHaveLength(1);
     expect(result.domains[0]).toEqual(domain);
     expect(result.hasPermissionDenied).toBe(true);
-    expect(result.hasUnexpectedError).toBe(false);
+    expect(result.unexpectedError).toBe(null);
   });
 
-  it('tracks unexpected errors when no cluster resolves the domain', async () => {
+  it('preserves unexpected errors when no cluster resolves the domain', async () => {
+    const serviceUnavailable = new GRPCError('Service unavailable', {
+      grpcStatusCode: grpc.status.UNAVAILABLE,
+    });
+
     const { result } = await setup({
       domainName: 'test-domain',
       clusterResponses: {
         'mock-cluster1': {
-          error: new GRPCError('Service unavailable', {
-            grpcStatusCode: grpc.status.UNAVAILABLE,
-          }),
+          error: serviceUnavailable,
         },
         'mock-cluster2': {
           error: new GRPCError('Domain not found', {
@@ -175,10 +176,13 @@ describe(describeDomainAcrossClusters.name, () => {
 
     expect(result.domains).toHaveLength(0);
     expect(result.hasPermissionDenied).toBe(false);
-    expect(result.hasUnexpectedError).toBe(true);
+    expect(result.unexpectedError).toBe(serviceUnavailable);
   });
 
   it('still returns found domains when another cluster is unavailable', async () => {
+    const serviceUnavailable = new GRPCError('Service unavailable', {
+      grpcStatusCode: grpc.status.UNAVAILABLE,
+    });
     const domain = getDomainObj({
       id: 'domain-1',
       name: 'test-domain',
@@ -190,9 +194,7 @@ describe(describeDomainAcrossClusters.name, () => {
       clusterResponses: {
         'mock-cluster1': { domain },
         'mock-cluster2': {
-          error: new GRPCError('Service unavailable', {
-            grpcStatusCode: grpc.status.UNAVAILABLE,
-          }),
+          error: serviceUnavailable,
         },
       },
     });
@@ -200,7 +202,7 @@ describe(describeDomainAcrossClusters.name, () => {
     expect(result.domains).toHaveLength(1);
     expect(result.domains[0]).toEqual(domain);
     expect(result.hasPermissionDenied).toBe(false);
-    expect(result.hasUnexpectedError).toBe(true);
+    expect(result.unexpectedError).toBe(serviceUnavailable);
   });
 
   it('returns empty result when no clusters are configured', async () => {
@@ -212,7 +214,7 @@ describe(describeDomainAcrossClusters.name, () => {
 
     expect(result.domains).toHaveLength(0);
     expect(result.hasPermissionDenied).toBe(false);
-    expect(result.hasUnexpectedError).toBe(false);
+    expect(result.unexpectedError).toBe(null);
   });
 });
 
