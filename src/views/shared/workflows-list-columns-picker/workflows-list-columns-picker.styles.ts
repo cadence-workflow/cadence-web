@@ -58,6 +58,9 @@ export const styled = {
     width: '100%',
     gap: $theme.sizing.scale300,
   })),
+  CheckboxContainer: createStyled('div', {
+    pointerEvents: 'all',
+  }),
   ColumnName: createStyled('span', ({ $theme }: { $theme: Theme }) => ({
     ...$theme.typography.ParagraphSmall,
     display: 'flex',
@@ -133,6 +136,25 @@ export const overrides = {
       style: (): StyleObject => ({
         flex: 1,
         minWidth: 0,
+      }),
+    },
+  } satisfies ListOverrides,
+  dndListDragDisabled: {
+    DragHandle: {
+      style: (): StyleObject => ({
+        opacity: 0.3,
+        pointerEvents: 'none',
+        cursor: 'default',
+      }),
+    },
+    Item: {
+      style: (): StyleObject => ({
+        cursor: 'default',
+        pointerEvents: 'none',
+        ':hover': {
+          borderColor: 'transparent',
+          backgroundColor: 'inherit',
+        },
       }),
     },
   } satisfies ListOverrides,

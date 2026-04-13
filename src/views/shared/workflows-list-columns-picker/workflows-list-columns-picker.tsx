@@ -3,6 +3,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { Button } from 'baseui/button';
 import { Checkbox } from 'baseui/checkbox';
 import { List, arrayMove } from 'baseui/dnd-list';
+import { mergeOverrides } from 'baseui/helpers/overrides';
 import { Input } from 'baseui/input';
 import { Popover } from 'baseui/popover';
 import { MdArrowDropDown, MdArrowDropUp, MdTune } from 'react-icons/md';
@@ -84,6 +85,8 @@ export default function WorkflowsListColumnsPicker({
     setIsOpen(false);
   }, [onApply, columns]);
 
+  const isDragDisabled = searchQuery.length > 0;
+
   const handleDragEnd = useCallback(
     ({ oldIndex, newIndex }: { oldIndex: number; newIndex: number }) => {
       if (newIndex === -1 || searchQuery.length > 0) return;
@@ -123,22 +126,31 @@ export default function WorkflowsListColumnsPicker({
                     <styled.ColumnName>
                       {col?.name ?? entry.id}
                     </styled.ColumnName>
-                    <div
-                      onClick={(e) => e.stopPropagation()}
-                      onMouseDown={(e) => e.stopPropagation()}
-                      onTouchStart={(e) => e.stopPropagation()}
+                    <styled.CheckboxContainer
+                      onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                      onMouseDown={(e: React.MouseEvent) => e.stopPropagation()}
+                      onTouchStart={(e: React.TouchEvent) =>
+                        e.stopPropagation()
+                      }
                     >
                       <Checkbox
                         checked={entry.checked}
                         onChange={() => handleToggle(entry.id)}
                         checkmarkType="toggle"
                       />
-                    </div>
+                    </styled.CheckboxContainer>
                   </styled.ColumnRow>
                 );
               })}
               onChange={handleDragEnd}
-              overrides={overrides.dndList}
+              overrides={
+                isDragDisabled
+                  ? mergeOverrides(
+                      overrides.dndList,
+                      overrides.dndListDragDisabled
+                    )
+                  : overrides.dndList
+              }
             />
           </styled.ColumnsList>
           <styled.Footer>
