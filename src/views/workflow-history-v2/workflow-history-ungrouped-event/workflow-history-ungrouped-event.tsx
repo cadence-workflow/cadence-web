@@ -82,24 +82,25 @@ export default function WorkflowHistoryUngroupedEvent({
               : null}
           </div>
           <div>
+            {eventInfo.event.eventTime && workflowStartTimeMs
+              ? formatTimeDiff(
+                  workflowStartTimeMs,
+                  parseGrpcTimestamp(eventInfo.event.eventTime)
+                )
+              : null}
             {eventInfo.eventGroup.expectedEndTimeInfo &&
-            eventInfo.event.eventTime ? (
-              <WorkflowHistoryRemainingDurationBadge
-                startTime={parseGrpcTimestamp(eventInfo.event.eventTime)}
-                expectedEndTime={
-                  eventInfo.eventGroup.expectedEndTimeInfo.timeMs
-                }
-                prefix={eventInfo.eventGroup.expectedEndTimeInfo.prefix}
-                workflowIsArchived={workflowIsArchived}
-                workflowCloseStatus={workflowCloseStatus}
-                loadingMoreEvents={loadingMoreEvents}
-              />
-            ) : eventInfo.event.eventTime && workflowStartTimeMs ? (
-              formatTimeDiff(
-                workflowStartTimeMs,
-                parseGrpcTimestamp(eventInfo.event.eventTime)
-              )
-            ) : null}
+              eventInfo.event.eventTime && (
+                <WorkflowHistoryRemainingDurationBadge
+                  startTime={parseGrpcTimestamp(eventInfo.event.eventTime)}
+                  expectedEndTime={
+                    eventInfo.eventGroup.expectedEndTimeInfo.timeMs
+                  }
+                  prefix={eventInfo.eventGroup.expectedEndTimeInfo.prefix}
+                  workflowIsArchived={workflowIsArchived}
+                  workflowCloseStatus={workflowCloseStatus}
+                  loadingMoreEvents={loadingMoreEvents}
+                />
+              )}
           </div>
           <styled.SummarizedDetailsContainer>
             {eventSummaryDetails && eventSummaryDetails.length > 0 ? (

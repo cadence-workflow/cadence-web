@@ -451,7 +451,7 @@ describe(WorkflowHistoryUngroupedEvent.name, () => {
     expect(screen.getByText('Scheduled')).toBeInTheDocument();
   });
 
-  it('shows remaining duration badge instead of elapsed time when expectedEndTimeInfo exists', () => {
+  it('shows remaining duration badge alongside elapsed time when expectedEndTimeInfo exists', () => {
     const eventInfo = createMockEventInfo();
     eventInfo.eventGroup = {
       ...eventInfo.eventGroup,
@@ -469,7 +469,7 @@ describe(WorkflowHistoryUngroupedEvent.name, () => {
 
     expect(screen.getByTestId('remaining-duration-badge')).toBeInTheDocument();
     expect(screen.getByText('Starts in')).toBeInTheDocument();
-    expect(screen.queryByText('1m 30s')).not.toBeInTheDocument();
+    expect(screen.getByText('1m 30s')).toBeInTheDocument();
   });
 });
 

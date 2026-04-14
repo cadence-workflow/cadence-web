@@ -17,7 +17,7 @@ export type Props = {
   decodedPageUrlParams: WorkflowPageTabsParams;
   onResetToEventId: (eventId: string) => void;
 
-  // Workflow state props (for "Starts in" badge)
+  // Workflow state props
   workflowIsArchived: boolean;
   workflowCloseStatus: WorkflowExecutionCloseStatus | null | undefined;
   loadingMoreEvents: boolean;

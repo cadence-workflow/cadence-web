@@ -88,7 +88,11 @@ export default function WorkflowHistoryUngroupedEvent({
           )}
           {eventInfo.event.eventTime && workflowStartTime ? (
             <styled.CardHeaderFieldContainer>
-              {eventInfo.expectedEndTimeInfo ? (
+              {getFormattedEventsDuration(
+                parseGrpcTimestamp(workflowStartTime),
+                parseGrpcTimestamp(eventInfo.event.eventTime)
+              )}
+              {eventInfo.expectedEndTimeInfo && (
                 <WorkflowHistoryRemainingDurationBadge
                   startTime={parseGrpcTimestamp(eventInfo.event.eventTime)}
                   expectedEndTime={eventInfo.expectedEndTimeInfo.timeMs}
@@ -97,11 +101,6 @@ export default function WorkflowHistoryUngroupedEvent({
                   workflowCloseStatus={workflowCloseStatus}
                   loadingMoreEvents={loadingMoreEvents}
                 />
-              ) : (
-                getFormattedEventsDuration(
-                  parseGrpcTimestamp(workflowStartTime),
-                  parseGrpcTimestamp(eventInfo.event.eventTime)
-                )
               )}
             </styled.CardHeaderFieldContainer>
           ) : (
