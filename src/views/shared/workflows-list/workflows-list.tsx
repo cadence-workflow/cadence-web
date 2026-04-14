@@ -26,7 +26,6 @@ export default function WorkflowsList({
   return (
     <div>
       <styled.ScrollArea>
-        {/* TODO @adhitya.mamallan - add a scroll shadow here */}
         <styled.Container>
           <styled.GridHeader $gridTemplateColumns={gridTemplateColumns}>
             {columns.map((col) => (
