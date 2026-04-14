@@ -4,6 +4,7 @@ import ErrorPanel from '@/components/error-panel/error-panel';
 import PanelSection from '@/components/panel-section/panel-section';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
+import { toggleSortOrder } from '@/utils/sort-by';
 import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
 import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
 import WorkflowsList from '@/views/shared/workflows-list/workflows-list';
@@ -21,7 +22,9 @@ export default function DomainWorkflowsArchivalList({
   timeRangeStart,
   timeRangeEnd,
 }: Props) {
-  const [queryParams] = usePageQueryParams(domainPageQueryParamsConfig);
+  const [queryParams, setQueryParams] = usePageQueryParams(
+    domainPageQueryParamsConfig
+  );
   const { inputType } = useArchivalInputType();
 
   const {
@@ -74,6 +77,24 @@ export default function DomainWorkflowsArchivalList({
       hasNextPage={hasNextPage}
       fetchNextPage={fetchNextPage}
       isFetchingNextPage={isFetchingNextPage}
+      sortParams={
+        queryParams.inputTypeArchival === 'search'
+          ? {
+              onSort: (column: string) =>
+                setQueryParams({
+                  sortColumnArchival: column,
+                  sortOrderArchival: toggleSortOrder({
+                    currentSortColumn: queryParams.sortColumnArchival,
+                    currentSortOrder: queryParams.sortOrderArchival,
+                    newSortColumn: column,
+                    defaultSortOrder: 'DESC',
+                  }),
+                }),
+              sortColumn: queryParams.sortColumnArchival,
+              sortOrder: queryParams.sortOrderArchival,
+            }
+          : undefined
+      }
     />
   );
 }

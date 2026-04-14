@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { render, screen } from '@/test-utils/rtl';
+import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import { type Props as LoaderProps } from '@/components/table/table-infinite-scroll-loader/table-infinite-scroll-loader.types';
 import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtures__/mock-workflow-list-items';
@@ -126,6 +126,100 @@ describe(WorkflowsList.name, () => {
     const loader = screen.getByTestId('mock-loader');
     expect(loader).toHaveTextContent('no-data');
   });
+
+  it('renders plain header cells when sortParams is not provided', () => {
+    setup({
+      columns: [
+        {
+          id: 'StartTime',
+          name: 'Started',
+          width: '200px',
+          isSystem: true,
+          sortable: true,
+          renderCell: () => 'start',
+        },
+      ],
+    });
+
+    expect(screen.getByText('Started')).toBeInTheDocument();
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+  });
+
+  it('renders sortable header cells as buttons when sortParams is provided', () => {
+    const onSort = jest.fn();
+    setup({
+      columns: [
+        {
+          id: 'StartTime',
+          name: 'Started',
+          width: '200px',
+          isSystem: true,
+          sortable: true,
+          renderCell: () => 'start',
+        },
+      ],
+      sortParams: {
+        onSort,
+        sortColumn: '',
+        sortOrder: 'DESC',
+      },
+    });
+
+    const button = screen.getByRole('button', {
+      name: /Started/,
+    });
+    expect(button).toBeInTheDocument();
+  });
+
+  it('calls onSort with the column id when a sortable header is clicked', async () => {
+    const onSort = jest.fn();
+    const { user } = setup({
+      columns: [
+        {
+          id: 'StartTime',
+          name: 'Started',
+          width: '200px',
+          isSystem: true,
+          sortable: true,
+          renderCell: () => 'start',
+        },
+      ],
+      sortParams: {
+        onSort,
+        sortColumn: '',
+        sortOrder: 'DESC',
+      },
+    });
+
+    await user.click(
+      screen.getByRole('button', {
+        name: /Started/,
+      })
+    );
+    expect(onSort).toHaveBeenCalledWith('StartTime');
+  });
+
+  it('does not render non-sortable columns as buttons even when sortParams is provided', () => {
+    setup({
+      columns: [
+        {
+          id: 'WorkflowID',
+          name: 'Workflow ID',
+          width: '200px',
+          isSystem: true,
+          renderCell: (row) => row.workflowID,
+        },
+      ],
+      sortParams: {
+        onSort: jest.fn(),
+        sortColumn: '',
+        sortOrder: 'DESC',
+      },
+    });
+
+    expect(screen.getByText('Workflow ID')).toBeInTheDocument();
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+  });
 });
 
 function setup({
@@ -134,7 +228,9 @@ function setup({
   error = null,
   hasNextPage = false,
   isFetchingNextPage = false,
+  sortParams,
 }: Partial<React.ComponentProps<typeof WorkflowsList>> = {}) {
+  const user = userEvent.setup();
   render(
     <WorkflowsList
       workflows={workflows}
@@ -143,6 +239,8 @@ function setup({
       hasNextPage={hasNextPage}
       fetchNextPage={jest.fn()}
       isFetchingNextPage={isFetchingNextPage}
+      sortParams={sortParams}
     />
   );
+  return { user };
 }
