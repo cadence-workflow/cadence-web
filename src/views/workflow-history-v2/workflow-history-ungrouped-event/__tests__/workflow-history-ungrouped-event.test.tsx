@@ -484,7 +484,7 @@ function setup({
     workflowTab: 'history',
   },
   workflowIsArchived = false,
-  workflowCloseStatus = 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID' as const,
+  workflowCloseStatus = 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
   loadingMoreEvents = false,
   isExpanded = false,
   toggleIsExpanded = jest.fn(),
