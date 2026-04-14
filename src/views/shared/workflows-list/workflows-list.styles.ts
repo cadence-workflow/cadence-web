@@ -23,13 +23,13 @@ export const styled = {
   })),
   GridHeader: createStyled<'div', { $gridTemplateColumns: string }>(
     'div',
-    ({ $gridTemplateColumns }) => ({
+    ({ $theme, $gridTemplateColumns }) => ({
       display: 'grid',
       gridTemplateColumns: $gridTemplateColumns,
       minWidth: 'min-content',
       borderBottomWidth: '1px',
       borderBottomStyle: 'solid',
-      borderBottomColor: 'rgba(0, 0, 0, 0.08)',
+      borderBottomColor: $theme.colors.borderTransparent,
     })
   ),
   HeaderCell: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
@@ -43,18 +43,18 @@ export const styled = {
   })),
   GridRow: createStyled<'a', { $gridTemplateColumns: string }>(
     'a',
-    ({ $gridTemplateColumns }) => ({
+    ({ $theme, $gridTemplateColumns }) => ({
       display: 'grid',
       gridTemplateColumns: $gridTemplateColumns,
       minWidth: 'min-content',
       borderBottomWidth: '1px',
       borderBottomStyle: 'solid',
-      borderBottomColor: 'rgba(0, 0, 0, 0.08)',
+      borderBottomColor: $theme.colors.borderTransparent,
       cursor: 'pointer',
       textDecoration: 'none',
       color: 'inherit',
       ':hover': {
-        backgroundColor: 'rgba(0, 0, 0, 0.04)',
+        backgroundColor: `${$theme.colors.contentPrimary}0A`,
       },
     })
   ),
