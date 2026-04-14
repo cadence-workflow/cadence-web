@@ -6,6 +6,8 @@ import { useSnackbar } from 'baseui/snackbar';
 import losslessJsonStringify from '@/utils/lossless-json-stringify';
 import request from '@/utils/request';
 
+import { useMarkdownPageParams } from '../../markdown-page-context';
+
 import { overrides } from './signal-button.styles';
 import { type SignalButtonProps } from './signal-button.types';
 
@@ -13,11 +15,17 @@ export default function SignalButton({
   signalName,
   label,
   input,
-  workflowId,
-  runId,
-  domain,
-  cluster,
+  workflowId: workflowIdProp,
+  runId: runIdProp,
+  domain: domainProp,
+  cluster: clusterProp,
 }: SignalButtonProps) {
+  const pageParams = useMarkdownPageParams();
+  const domain = domainProp ?? pageParams.domain;
+  const cluster = clusterProp ?? pageParams.cluster;
+  const workflowId = workflowIdProp ?? pageParams.workflowId;
+  const runId = runIdProp ?? pageParams.runId;
+
   const { enqueue } = useSnackbar();
 
   const { mutate, isPending } = useMutation({
