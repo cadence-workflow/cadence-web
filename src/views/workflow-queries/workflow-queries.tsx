@@ -61,6 +61,8 @@ export default function WorkflowQueries(props: WorkflowPageTabContentProps) {
     queryTypes: filteredQueryTypes,
   });
 
+  // Auto-run the selected query when arriving via deep link (?q=...).
+  // initialQueryName ensures this only fires on initial page load, not on subsequent tile clicks.
   const initialQueryName = useRef(queryParams.selectedQueryName);
   const hasAutoRun = useRef(false);
   useEffect(() => {
