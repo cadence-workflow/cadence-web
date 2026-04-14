@@ -304,7 +304,7 @@ function setup({
   isExpanded = false,
   animateBorderOnEnter = false,
   workflowIsArchived = false,
-  workflowCloseStatus = 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID' as const,
+  workflowCloseStatus = 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
   loadingMoreEvents = false,
   onReset,
 }: {
