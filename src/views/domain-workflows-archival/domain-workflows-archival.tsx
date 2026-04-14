@@ -25,7 +25,13 @@ export default function DomainWorkflowsArchival(
 
   const [queryParams] = usePageQueryParams(domainPageQueryParamsConfig);
 
-  const { visibleColumns } = useWorkflowsListColumns({
+  const {
+    availableColumns,
+    visibleColumns,
+    selectedColumnIds,
+    setSelectedColumnIds,
+    resetColumns,
+  } = useWorkflowsListColumns({
     cluster: props.cluster,
   });
 
@@ -61,7 +67,12 @@ export default function DomainWorkflowsArchival(
         <DomainWorkflowsArchivalHeader
           domain={props.domain}
           cluster={props.cluster}
-          showColumnsPicker
+          columnsPickerProps={{
+            allColumns: availableColumns,
+            selectedColumnIds,
+            onApply: setSelectedColumnIds,
+            onReset: resetColumns,
+          }}
           {...timeRangeParams}
         />
         <DomainWorkflowsArchivalList
