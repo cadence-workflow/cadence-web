@@ -100,6 +100,16 @@ jest.mock(
   })
 );
 
+jest.mock(
+  '../../workflow-history-remaining-duration-badge/workflow-history-remaining-duration-badge',
+  () => ({
+    __esModule: true,
+    default: ({ prefix }: { prefix: string }) => (
+      <div data-testid="remaining-duration-badge">{prefix}</div>
+    ),
+  })
+);
+
 const mockEventInfo: WorkflowHistoryUngroupedEventInfo = {
   id: '1',
   label: 'Workflow Execution Started',
@@ -268,17 +278,42 @@ describe(WorkflowHistoryUngroupedEvent.name, () => {
 
     expect(screen.queryByText('Event summary')).not.toBeInTheDocument();
   });
+
+  it('shows remaining duration badge instead of elapsed time when expectedEndTimeInfo exists', () => {
+    const eventInfoWithExpectedEnd: WorkflowHistoryUngroupedEventInfo = {
+      ...mockEventInfo,
+      expectedEndTimeInfo: {
+        timeMs: Date.now() + 60000,
+        prefix: 'Starts in',
+      },
+    };
+    setup({
+      eventInfo: eventInfoWithExpectedEnd,
+      workflowIsArchived: false,
+      workflowCloseStatus: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
+      loadingMoreEvents: false,
+    });
+
+    expect(screen.getByTestId('remaining-duration-badge')).toBeInTheDocument();
+    expect(screen.getByText('Starts in')).toBeInTheDocument();
+  });
 });
 
 function setup({
   eventInfo = mockEventInfo,
   isExpanded = false,
   animateBorderOnEnter = false,
+  workflowIsArchived = false,
+  workflowCloseStatus = 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID' as const,
+  loadingMoreEvents = false,
   onReset,
 }: {
   eventInfo?: WorkflowHistoryUngroupedEventInfo;
   isExpanded?: boolean;
   animateBorderOnEnter?: boolean;
+  workflowIsArchived?: boolean;
+  workflowCloseStatus?: string;
+  loadingMoreEvents?: boolean;
   onReset?: (() => void) | undefined;
 } = {}) {
   const mockToggleIsExpanded = jest.fn();
@@ -290,6 +325,9 @@ function setup({
       nanos: 0,
     },
     decodedPageUrlParams: mockDecodedPageUrlParams,
+    workflowIsArchived,
+    workflowCloseStatus,
+    loadingMoreEvents,
     isExpanded,
     toggleIsExpanded: mockToggleIsExpanded,
     animateBorderOnEnter,

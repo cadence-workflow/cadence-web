@@ -12,6 +12,7 @@ export const overrides = {
         $hierarchy: string;
       }) => ({
         ...$theme.typography.LabelXSmall,
+        height: 'auto',
         ...($hierarchy === 'secondary'
           ? {
               color: $theme.colors.contentSecondary,

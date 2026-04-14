@@ -12,6 +12,7 @@ import WorkflowHistoryEventStatusBadge from '../workflow-history-event-status-ba
 import WorkflowHistoryEventSummary from '../workflow-history-event-summary/workflow-history-event-summary';
 import getFormattedEventsDuration from '../workflow-history-events-duration-badge/helpers/get-formatted-events-duration';
 import WorkflowHistoryGroupLabel from '../workflow-history-group-label/workflow-history-group-label';
+import WorkflowHistoryRemainingDurationBadge from '../workflow-history-remaining-duration-badge/workflow-history-remaining-duration-badge';
 import WorkflowHistoryTimelineResetButton from '../workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 
 import getRetriesForHistoryEvent from './helpers/get-retries-for-history-event';
@@ -25,6 +26,9 @@ export default function WorkflowHistoryUngroupedEvent({
   eventInfo,
   workflowStartTime,
   decodedPageUrlParams,
+  workflowIsArchived,
+  workflowCloseStatus,
+  loadingMoreEvents,
   isExpanded,
   toggleIsExpanded,
   animateOnEnter,
@@ -84,9 +88,20 @@ export default function WorkflowHistoryUngroupedEvent({
           )}
           {eventInfo.event.eventTime && workflowStartTime ? (
             <styled.CardHeaderFieldContainer>
-              {getFormattedEventsDuration(
-                parseGrpcTimestamp(workflowStartTime),
-                parseGrpcTimestamp(eventInfo.event.eventTime)
+              {eventInfo.expectedEndTimeInfo ? (
+                <WorkflowHistoryRemainingDurationBadge
+                  startTime={parseGrpcTimestamp(eventInfo.event.eventTime)}
+                  expectedEndTime={eventInfo.expectedEndTimeInfo.timeMs}
+                  prefix={eventInfo.expectedEndTimeInfo.prefix}
+                  workflowIsArchived={workflowIsArchived}
+                  workflowCloseStatus={workflowCloseStatus}
+                  loadingMoreEvents={loadingMoreEvents}
+                />
+              ) : (
+                getFormattedEventsDuration(
+                  parseGrpcTimestamp(workflowStartTime),
+                  parseGrpcTimestamp(eventInfo.event.eventTime)
+                )
               )}
             </styled.CardHeaderFieldContainer>
           ) : (
