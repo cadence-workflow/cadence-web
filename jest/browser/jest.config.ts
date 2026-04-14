@@ -11,6 +11,7 @@ const esModules = [
   'decode-uri-component',
   'split-on-first',
   'filter-obj',
+  'react-movable',
 ];
 
 const createJestConfig = nextJest({
