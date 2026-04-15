@@ -9,7 +9,7 @@ export type Props = {
   workflowStartTimeMs: number | null;
   decodedPageUrlParams: WorkflowPageTabsParams;
 
-  // Workflow state props (for "Starts in" badge)
+  // Workflow state props
   workflowIsArchived: boolean;
   workflowCloseStatus: WorkflowExecutionCloseStatus | null | undefined;
   loadingMoreEvents: boolean;

@@ -37,6 +37,12 @@ export const styled = {
   SummarizedDetailsContainer: createStyled('div', {
     minWidth: 0,
   }),
+  ElapsedContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'column',
+    gap: $theme.sizing.scale100,
+  })),
   ActionsContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
     gap: $theme.sizing.scale300,

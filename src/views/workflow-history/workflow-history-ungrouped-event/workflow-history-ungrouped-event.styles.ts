@@ -23,6 +23,12 @@ export const styled = {
   CardHeaderFieldContainer: createStyled('div', {
     overflowWrap: 'anywhere',
   }),
+  ElapsedContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'column',
+    gap: $theme.sizing.scale100,
+  })),
   CardLabelContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
     alignItems: 'center',

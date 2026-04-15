@@ -87,7 +87,7 @@ export default function WorkflowHistoryUngroupedEvent({
             <div />
           )}
           {eventInfo.event.eventTime && workflowStartTime ? (
-            <styled.CardHeaderFieldContainer>
+            <styled.ElapsedContainer>
               {getFormattedEventsDuration(
                 parseGrpcTimestamp(workflowStartTime),
                 parseGrpcTimestamp(eventInfo.event.eventTime)
@@ -102,7 +102,7 @@ export default function WorkflowHistoryUngroupedEvent({
                   loadingMoreEvents={loadingMoreEvents}
                 />
               )}
-            </styled.CardHeaderFieldContainer>
+            </styled.ElapsedContainer>
           ) : (
             <div />
           )}

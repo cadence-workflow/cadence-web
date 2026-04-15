@@ -1,5 +1,6 @@
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
+import { type WorkflowExecutionCloseStatus } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionCloseStatus';
 import { type WorkflowPageTabsParams } from '@/views/workflow-page/workflow-page-tabs/workflow-page-tabs.types';
 
 import {
@@ -304,7 +305,7 @@ function setup({
   isExpanded = false,
   animateBorderOnEnter = false,
   workflowIsArchived = false,
-  workflowCloseStatus = 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
+  workflowCloseStatus = 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID' as const,
   loadingMoreEvents = false,
   onReset,
 }: {
@@ -312,7 +313,7 @@ function setup({
   isExpanded?: boolean;
   animateBorderOnEnter?: boolean;
   workflowIsArchived?: boolean;
-  workflowCloseStatus?: string;
+  workflowCloseStatus?: WorkflowExecutionCloseStatus;
   loadingMoreEvents?: boolean;
   onReset?: (() => void) | undefined;
 } = {}) {

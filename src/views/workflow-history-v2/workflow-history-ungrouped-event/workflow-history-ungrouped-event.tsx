@@ -81,7 +81,7 @@ export default function WorkflowHistoryUngroupedEvent({
               ? formatDate(parseGrpcTimestamp(eventInfo.event.eventTime))
               : null}
           </div>
-          <div>
+          <styled.ElapsedContainer>
             {eventInfo.event.eventTime && workflowStartTimeMs
               ? formatTimeDiff(
                   workflowStartTimeMs,
@@ -101,7 +101,7 @@ export default function WorkflowHistoryUngroupedEvent({
                   loadingMoreEvents={loadingMoreEvents}
                 />
               )}
-          </div>
+          </styled.ElapsedContainer>
           <styled.SummarizedDetailsContainer>
             {eventSummaryDetails && eventSummaryDetails.length > 0 ? (
               <WorkflowHistoryDetailsRow
