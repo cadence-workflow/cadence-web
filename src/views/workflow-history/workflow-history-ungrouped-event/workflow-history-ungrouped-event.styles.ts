@@ -25,7 +25,6 @@ export const styled = {
   }),
   ElapsedContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
-    alignItems: 'center',
     flexDirection: 'column',
     gap: $theme.sizing.scale100,
   })),
