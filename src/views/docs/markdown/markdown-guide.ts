@@ -1,29 +1,88 @@
 const content = `# Cadence Markdown Guide
 
-This guide provides examples of how to use markdown to interact with Cadence workflows. 
-You can use markdown format in your workflow queries to return actionable content. 
+This guide provides examples of how to use markdown to interact with Cadence workflows.
+You can use markdown format in your workflow queries to return actionable content.
 You can find an example in [cadence-samples repository](https://github.com/cadence-workflow/cadence-samples/tree/master/new_samples) under the query sample.
 Learn more about Cadence markdown in [Cadence Docs](https://cadenceworkflow.io).
 
-It can also be used as a test page to see if the markdown rendering is working correctly. 
-If you see buttons for workflow start and signal, then the markdown rendering is working correctly. 
+It can also be used as a test page to see if the markdown rendering is working correctly.
+If you see buttons for workflow start and signal, then the markdown rendering is working correctly.
 
-Cadence markdown support is implemented using [Markdoc](https://markdoc.io/). 
+Cadence markdown support is implemented using [Markdoc](https://markdoc.io/).
 Markdoc is a markdown parser and renderer that is used to safely render the markdown content.
+
+> **Note:** This docs page has no workflow context, so buttons that rely on inherited page params will appear disabled. On an actual workflow query page, \`domain\`, \`cluster\`, \`workflowId\`, and \`runId\` are inherited automatically and the buttons will be active.
+
+
+## Signal Workflow
+
+Send a signal to a running workflow using the \`signal\` tag.
+
+When rendered on a workflow page (e.g. in a query response), \`domain\`, \`cluster\`, \`workflowId\`, and \`runId\` are inherited from the page automatically. You only need to specify \`signalName\` and \`label\`.
+
+### Example: Minimal (inherits context from page)
+
+\`\`\`
+{% signal signalName="approve" label="Approve" /%}
+\`\`\`
+
+{% signal signalName="approve" label="Approve" /%}
+
+### Example: Explicit target (overrides page context)
+
+Use explicit attributes when you need to signal a different workflow than the one being viewed.
+
+\`\`\`
+{% signal
+  signalName="approve"
+  label="Approve"
+  input={status: "approved", user: "john"}
+  domain="my-domain"
+  cluster="my-cluster"
+  workflowId="workflow-123"
+  runId="run-456"
+/%}
+\`\`\`
+
+{% signal
+  signalName="approve"
+  label="Signal Workflow"
+  input={status: "approved", user: "john"}
+  domain="cadence-samples"
+  cluster="cadence-samples"
+  workflowId="sample-workflow"
+  runId="sample-run"
+/%}
+
+### Signal Attributes
+
+- \`signalName\` (string, **required**) -- name of the signal to send
+- \`label\` (string, **required**) -- button text
+- \`input\` (object, optional) -- signal payload
+- \`domain\` (string, optional) -- inherited from page context if omitted
+- \`cluster\` (string, optional) -- inherited from page context if omitted
+- \`workflowId\` (string, optional) -- inherited from page context if omitted
+- \`runId\` (string, optional) -- inherited from page context if omitted
+
+The \`input\` field supports different value types:
+
+- For booleans, use \`input=true\` or \`input=false\`
+- For json objects, use \`input={"key": "value"}\`
+- For strings, use \`input="string"\`
 
 
 ## Start Workflow
 
 Start a new workflow execution using the \`start\` tag.
 
-### Example: Basic Start
+When rendered on a workflow page, \`domain\` and \`cluster\` are inherited from the page automatically.
+
+### Example: Minimal (inherits context from page)
 
 \`\`\`
 {% start
   workflowType="MyWorkflow"
   label="Start Workflow"
-  domain="my-domain"
-  cluster="my-cluster"
   taskList="my-task-list"
 /%}
 \`\`\`
@@ -31,12 +90,10 @@ Start a new workflow execution using the \`start\` tag.
 {% start
   workflowType="cadence_samples.SampleWorkflow"
   label="Start Workflow"
-  domain="cadence-samples"
-  cluster="cadence-samples"
   taskList="cadence-samples-worker"
 /%}
 
-### Example: Start with Options
+### Example: Explicit target with all options
 
 \`\`\`
 {% start
@@ -64,40 +121,18 @@ Start a new workflow execution using the \`start\` tag.
   sdkLanguage="GO"
 /%}
 
+### Start Attributes
 
-## Signal Workflow
+- \`workflowType\` (string, **required**) -- workflow type name
+- \`label\` (string, **required**) -- button text
+- \`taskList\` (string, **required**) -- task list for the workflow
+- \`domain\` (string, optional) -- inherited from page context if omitted
+- \`cluster\` (string, optional) -- inherited from page context if omitted
+- \`wfId\` (string, optional) -- custom workflow ID
+- \`input\` (object, optional) -- workflow input payload
+- \`timeoutSeconds\` (number, optional, default: 60) -- execution timeout
+- \`sdkLanguage\` (string, optional, default: "GO") -- worker SDK language
 
-Send a signal to a running workflow using the \`signal\` tag.
-
-### Example:
-
-\`\`\`
-{% signal 
-  signalName="approve"
-  label="Approve"
-  input={status: "approved", user: "john"}
-  domain="my-domain"
-  cluster="my-cluster"
-  workflowId="workflow-123"
-  runId="run-456"
-/%}
-\`\`\`
-
-Note that input field is optional and can be omitted. For different value types, you can use the following syntax: 
-
-- For booleans, use \`input=true\` or \`input=false\`
-- For json objects, use \`input={"key": "value"}\`
-- For strings, use \`input="string"\`
-
-{% signal 
-  signalName="approve"
-  label="Signal Workflow"
-  input={status: "approved", user: "john"}
-  domain="cadence-samples"
-  cluster="cadence-samples"
-  workflowId="sample-workflow"
-  runId="sample-run"
-/%}
 
 ## Images
 
