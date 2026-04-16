@@ -73,7 +73,11 @@ Feature flags control various UI features and functionality in `cadence-web`. Th
 
 **Note:** For advanced customization, feature flags can be modified through resolvers in the dynamic config system ([`src/config/dynamic/resolvers`](src/config/dynamic/resolvers)).
 
+#### Markdown in Queries
 
+Workflow queries can return markdown with interactive buttons for signaling and starting workflows, powered by [Markdoc](https://markdoc.io/). When rendered on a workflow page, buttons automatically inherit `domain`, `cluster`, `workflowId`, and `runId` from the page context so workflow authors don't need to hardcode them.
+
+A live reference and test page is available at `/docs` when cadence-web is running. See the [cadence-samples query example](https://github.com/cadence-workflow/cadence-samples/tree/master/new_samples) for a working implementation.
 
 ### Using TLS for gRPC
 

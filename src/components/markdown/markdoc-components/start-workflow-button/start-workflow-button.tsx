@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 
 import request from '@/utils/request';
 
+import { useMarkdownPageParams } from '../../markdown-page-context';
+
 import { overrides } from './start-workflow-button.styles';
 import { type StartWorkflowButtonProps } from './start-workflow-button.types';
 
@@ -17,14 +19,18 @@ type StartWorkflowResult = {
 export default function StartWorkflowButton({
   workflowType,
   label,
-  domain,
-  cluster,
+  domain: domainProp,
+  cluster: clusterProp,
   taskList,
   wfId,
   input,
   timeoutSeconds = 60,
   sdkLanguage = 'GO',
 }: StartWorkflowButtonProps) {
+  const pageParams = useMarkdownPageParams();
+  const domain = domainProp ?? pageParams.domain;
+  const cluster = clusterProp ?? pageParams.cluster;
+
   const { enqueue } = useSnackbar();
   const router = useRouter();
 
