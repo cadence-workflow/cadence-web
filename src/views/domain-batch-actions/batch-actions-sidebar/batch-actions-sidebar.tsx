@@ -36,6 +36,8 @@ function StatusIcon({ action }: { action: BatchAction }) {
       );
     case 'running':
       return <Spinner $size={theme.sizing.scale600} />;
+    default:
+      return null;
   }
 }
 
