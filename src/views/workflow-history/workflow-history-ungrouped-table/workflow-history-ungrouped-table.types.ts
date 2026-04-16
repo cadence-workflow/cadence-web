@@ -1,5 +1,6 @@
 import { type ListRange, type VirtuosoHandle } from 'react-virtuoso';
 
+import { type WorkflowExecutionCloseStatus } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionCloseStatus';
 import { type RequestError } from '@/utils/request/request-error';
 import { type WorkflowPageTabsParams } from '@/views/workflow-page/workflow-page-tabs/workflow-page-tabs.types';
 
@@ -15,6 +16,11 @@ export type Props = {
   selectedEventId?: string;
   decodedPageUrlParams: WorkflowPageTabsParams;
   onResetToEventId: (eventId: string) => void;
+
+  // Workflow state props
+  workflowIsArchived: boolean;
+  workflowCloseStatus: WorkflowExecutionCloseStatus | null | undefined;
+  loadingMoreEvents: boolean;
 
   // React Query props
   error: RequestError | null;
