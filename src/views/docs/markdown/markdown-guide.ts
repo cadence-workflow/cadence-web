@@ -6,12 +6,10 @@ You can find an example in [cadence-samples repository](https://github.com/caden
 Learn more about Cadence markdown in [Cadence Docs](https://cadenceworkflow.io).
 
 It can also be used as a test page to see if the markdown rendering is working correctly.
-If you see buttons for workflow start and signal, then the markdown rendering is working correctly.
+If you see live buttons for the explicit examples below, then the markdown rendering is working correctly.
 
 Cadence markdown support is implemented using [Markdoc](https://markdoc.io/).
 Markdoc is a markdown parser and renderer that is used to safely render the markdown content.
-
-> **Note:** This docs page has no workflow context, so buttons that rely on inherited page params will appear disabled. On an actual workflow query page, \`domain\`, \`cluster\`, \`workflowId\`, and \`runId\` are inherited automatically and the buttons will be active.
 
 
 ## Signal Workflow
@@ -23,10 +21,8 @@ When rendered on a workflow page (e.g. in a query response), \`domain\`, \`clust
 ### Example: Minimal (inherits context from page)
 
 \`\`\`
-{% signal signalName="approve" label="Approve" /%}
+{% signal signalName="approve" label="Signal Workflow" /%}
 \`\`\`
-
-{% signal signalName="approve" label="Approve" /%}
 
 ### Example: Explicit target (overrides page context)
 
@@ -35,12 +31,12 @@ Use explicit attributes when you need to signal a different workflow than the on
 \`\`\`
 {% signal
   signalName="approve"
-  label="Approve"
+  label="Signal Workflow"
   input={status: "approved", user: "john"}
-  domain="my-domain"
-  cluster="my-cluster"
-  workflowId="workflow-123"
-  runId="run-456"
+  domain="cadence-samples"
+  cluster="cadence-samples"
+  workflowId="sample-workflow"
+  runId="sample-run"
 /%}
 \`\`\`
 
@@ -87,31 +83,25 @@ When rendered on a workflow page, \`domain\` and \`cluster\` are inherited from 
 /%}
 \`\`\`
 
-{% start
-  workflowType="cadence_samples.SampleWorkflow"
-  label="Start Workflow"
-  taskList="cadence-samples-worker"
-/%}
-
 ### Example: Explicit target with all options
 
 \`\`\`
 {% start
-  workflowType="MyWorkflow"
-  label="Start with Config"
-  domain="my-domain"
-  cluster="my-cluster"
-  taskList="my-task-list"
-  wfId="custom-workflow-id"
-  input={key: "value"}
-  timeoutSeconds=300
+  workflowType="cadence_samples.ConfiguredWorkflow"
+  label="Start Workflow""
+  domain="cadence-samples"
+  cluster="cadence-samples"
+  taskList="cadence-samples-worker"
+  wfId="configured-wf-123"
+  input={priority: "high", region: "us-west"}
+  timeoutSeconds=120
   sdkLanguage="GO"
 /%}
 \`\`\`
 
 {% start
   workflowType="cadence_samples.ConfiguredWorkflow"
-  label="Start with Config"
+  label="Start Workflow"
   domain="cadence-samples"
   cluster="cadence-samples"
   taskList="cadence-samples-worker"
