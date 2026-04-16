@@ -35,18 +35,23 @@ export default function WorkflowsList({
               if (col.sortable && sortParams) {
                 const isActive = sortParams.sortColumn === col.id;
 
-                let SortIcon = null;
+                let SortIcon = null,
+                  ariaSortAttribute: 'ascending' | 'descending' | 'none' =
+                    'none';
+
                 if (isActive && sortParams.sortOrder === 'ASC') {
                   SortIcon = ChevronUp;
+                  ariaSortAttribute = 'ascending';
                 } else if (isActive && sortParams.sortOrder === 'DESC') {
                   SortIcon = ChevronDown;
+                  ariaSortAttribute = 'descending';
                 }
 
                 return (
                   <styled.SortableHeaderCell
                     key={col.id}
                     onClick={() => sortParams.onSort(col.id)}
-                    aria-label={`${col.name}, ${isActive ? `sorted ${sortParams.sortOrder}` : 'not sorted'}`}
+                    aria-sort={ariaSortAttribute}
                   >
                     {col.name}
                     {SortIcon && (
