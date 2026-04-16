@@ -21,7 +21,7 @@ export default function processWorkflowInput({
         : JSON.stringify(input[0]);
     default:
       /**
-       * Go accepts multiple arguments to be passed separated by spaces.
+       * Go and Python accept multiple arguments to be passed separated by spaces.
        * Each item is stringified separately and then joined with spaces.
        */
       return input.map((i) => JSON.stringify(i)).join(' ');
