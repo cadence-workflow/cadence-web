@@ -5,8 +5,8 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { useSuspenseQuery } from '@tanstack/react-query';
 
 import ErrorPanel from '@/components/error-panel/error-panel';
-import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import PanelSection from '@/components/panel-section/panel-section';
+import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import { type FetchWorkflowQueryTypesResponse } from '@/route-handlers/fetch-workflow-query-types/fetch-workflow-query-types.types';
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
@@ -99,9 +99,7 @@ export default function WorkflowQueries(props: WorkflowPageTabContentProps) {
                 setInputs((oldInputs) => ({ ...oldInputs, [name]: v }))
               }
               isSelected={index === selectedQueryIndex}
-              onClick={() =>
-                setQueryParams({ selectedQueryName: name })
-              }
+              onClick={() => setQueryParams({ selectedQueryName: name })}
               runQuery={queries[index].refetch}
               queryStatus={getWorkflowQueryStatus({
                 queryStatus: queries[index].status,
