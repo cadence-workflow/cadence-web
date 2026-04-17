@@ -15,8 +15,12 @@ type Props = {
 export default function BatchActionHeaderInfo({ batchAction }: Props) {
   return (
     <styled.DetailsContainer>
-      {batchActionHeaderInfoItemsConfig.map(
-        (configItem: BatchActionHeaderInfoItemConfig) => (
+      {batchActionHeaderInfoItemsConfig
+        .filter(
+          (configItem: BatchActionHeaderInfoItemConfig) =>
+            !configItem.hidden?.({ batchAction })
+        )
+        .map((configItem: BatchActionHeaderInfoItemConfig) => (
           <BatchActionHeaderInfoItem
             key={configItem.title}
             title={configItem.title}
@@ -30,8 +34,7 @@ export default function BatchActionHeaderInfo({ batchAction }: Props) {
             }
             placeholderSize={configItem.placeholderSize}
           />
-        )
-      )}
+        ))}
     </styled.DetailsContainer>
   );
 }

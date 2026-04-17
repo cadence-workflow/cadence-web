@@ -38,9 +38,21 @@ describe(BatchActionHeaderInfo.name, () => {
     expect(screen.getByText('Status')).toBeInTheDocument();
     expect(screen.getByText('Action')).toBeInTheDocument();
     expect(screen.getByText('Started')).toBeInTheDocument();
+    expect(screen.queryByText('Ended')).not.toBeInTheDocument();
     expect(screen.getByText('Duration')).toBeInTheDocument();
     expect(screen.getByText('RPS')).toBeInTheDocument();
     expect(screen.getByText('Concurrency')).toBeInTheDocument();
+  });
+
+  it('shows Ended field for completed actions', () => {
+    const action: BatchAction = {
+      id: 4,
+      status: 'completed',
+      endTime: new Date('2024-03-13T09:00:00.000Z').getTime(),
+    };
+    render(<BatchActionHeaderInfo batchAction={action} />);
+
+    expect(screen.getByText('Ended')).toBeInTheDocument();
   });
 
   it('renders Processing badge with spinner for running status', () => {
@@ -92,6 +104,6 @@ describe(BatchActionHeaderInfo.name, () => {
     const action: BatchAction = { id: 2, status: 'completed' };
     render(<BatchActionHeaderInfo batchAction={action} />);
 
-    expect(screen.getAllByText('—')).toHaveLength(5); // actionType, startTime, duration, rps, concurrency
+    expect(screen.getAllByText('—')).toHaveLength(6); // actionType, startTime, ended, duration, rps, concurrency
   });
 });

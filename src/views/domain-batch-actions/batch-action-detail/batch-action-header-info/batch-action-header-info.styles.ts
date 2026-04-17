@@ -9,7 +9,6 @@ export const styled = {
     rowGap: $theme.sizing.scale500,
     [$theme.mediaQuery.medium]: {
       flexDirection: 'row',
-      alignItems: 'center',
     },
   })),
 };

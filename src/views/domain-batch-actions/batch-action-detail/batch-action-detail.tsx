@@ -1,7 +1,6 @@
 'use client';
 import React from 'react';
 
-import { useStyletron } from 'baseui';
 import { MdOutlineCancel } from 'react-icons/md';
 
 import Button from '@/components/button/button';
@@ -16,8 +15,6 @@ type Props = {
 };
 
 export default function BatchActionDetail({ batchAction }: Props) {
-  const [_, theme] = useStyletron();
-
   return (
     <styled.Container>
       <styled.Header>
