@@ -9,6 +9,7 @@ export type BatchActionHeaderInfoItemProps = {
 interface InfoItemBase {
   title: string;
   placeholderSize: string;
+  hidden?: (props: BatchActionHeaderInfoItemProps) => boolean;
 }
 
 interface InfoItemComponent extends InfoItemBase {

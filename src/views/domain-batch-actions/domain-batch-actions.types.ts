@@ -8,6 +8,7 @@ export type BatchAction = {
   progress?: number; // 0-100, only relevant when status is 'running'
   actionType?: BatchActionType;
   startTime?: number;
+  endTime?: number;
   rps?: number;
   concurrency?: number;
 };

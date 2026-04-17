@@ -36,10 +36,24 @@ const batchActionHeaderInfoItemsConfig = [
     placeholderSize: '180px',
   },
   {
+    title: 'Ended',
+    hidden: ({ batchAction }: BatchActionHeaderInfoItemProps) =>
+      batchAction.status === 'running',
+    getLabel: ({ batchAction }: BatchActionHeaderInfoItemProps) =>
+      batchAction.endTime ? formatDate(batchAction.endTime) : '—',
+    placeholderSize: '180px',
+  },
+  {
     title: 'Duration',
     getLabel: ({ batchAction }: BatchActionHeaderInfoItemProps) =>
       batchAction.startTime
-        ? formatTimeDiff(batchAction.startTime, null, true)
+        ? formatTimeDiff(
+            batchAction.startTime,
+            batchAction.status === 'running'
+              ? null
+              : batchAction.endTime ?? null,
+            true
+          )
         : '—',
     placeholderSize: '80px',
   },
