@@ -2,7 +2,7 @@
 import React from 'react';
 
 import { useStyletron } from 'baseui';
-import { MdOutlineCancel } from 'react-icons/md';
+import { MdCancel } from 'react-icons/md';
 
 import Button from '@/components/button/button';
 
@@ -23,14 +23,12 @@ export default function BatchActionDetail({ batchAction }: Props) {
         <styled.Title>Batch action #{batchAction.id}</styled.Title>
         {batchAction.status === 'running' && (
           <Button
-            kind="secondary"
+            kind="primary"
             size="compact"
             overrides={overrides.abortButton}
-            startEnhancer={
-              <MdOutlineCancel color={theme.colors.contentNegative} />
-            }
+            startEnhancer={<MdCancel />}
           >
-            Abort
+            Abort batch action
           </Button>
         )}
       </styled.Header>

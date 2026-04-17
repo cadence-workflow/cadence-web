@@ -5,8 +5,7 @@ export const overrides = {
   abortButton: {
     BaseButton: {
       style: ({ $theme }: { $theme: Theme }) => ({
-        color: $theme.colors.contentNegative,
-        background: $theme.colors.backgroundLightNegative,
+        background: $theme.colors.negative,
       }),
     },
   } satisfies ButtonOverrides,
