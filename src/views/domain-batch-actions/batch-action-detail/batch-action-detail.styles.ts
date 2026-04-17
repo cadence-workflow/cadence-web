@@ -28,10 +28,6 @@ export const styled = {
   Title: createStyled('h2', ({ $theme }: { $theme: Theme }) => ({
     ...$theme.typography.HeadingXSmall,
   })),
-  DetailsSection: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
-    paddingTop: $theme.sizing.scale600,
-    paddingBottom: $theme.sizing.scale600,
-  })),
   ProgressSection: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     paddingTop: $theme.sizing.scale600,
   })),
