@@ -8,7 +8,7 @@ import NextLink from 'next/link';
 import TableInfiniteScrollLoader from '@/components/table/table-infinite-scroll-loader/table-infinite-scroll-loader';
 
 import { styled } from './workflows-list.styles';
-import { type Props, type WorkflowsListColumn } from './workflows-list.types';
+import { type Props } from './workflows-list.types';
 
 export default function WorkflowsList({
   workflows,
@@ -31,13 +31,13 @@ export default function WorkflowsList({
       <styled.ScrollArea>
         <styled.Container>
           <styled.GridHeader $gridTemplateColumns={gridTemplateColumns}>
-            {columns.map((col: WorkflowsListColumn) => {
+            {columns.map((col) => {
               if (col.sortable && sortParams) {
                 const isActive = sortParams.sortColumn === col.id;
 
-                let SortIcon = null,
-                  ariaSortAttribute: 'ascending' | 'descending' | 'none' =
-                    'none';
+                let SortIcon = null;
+                let ariaSortAttribute: 'ascending' | 'descending' | 'none' =
+                  'none';
 
                 if (isActive && sortParams.sortOrder === 'ASC') {
                   SortIcon = ChevronUp;

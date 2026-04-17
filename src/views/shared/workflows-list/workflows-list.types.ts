@@ -21,7 +21,7 @@ export type WorkflowsListColumn = {
   renderCell: (row: DomainWorkflow) => React.ReactNode;
 };
 
-type SortParams = {
+export type SortParams = {
   onSort: (column: string) => void;
   sortColumn: string;
   sortOrder: SortOrder;

@@ -4,9 +4,9 @@ import ErrorPanel from '@/components/error-panel/error-panel';
 import PanelSection from '@/components/panel-section/panel-section';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
-import { toggleSortOrder } from '@/utils/sort-by';
 import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
 import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
+import buildSortParams from '@/views/shared/workflows-list/helpers/build-sort-params';
 import WorkflowsList from '@/views/shared/workflows-list/workflows-list';
 
 import DOMAIN_WORKFLOWS_ARCHIVAL_PAGE_SIZE from '../config/domain-workflows-archival-page-size.config';
@@ -79,20 +79,15 @@ export default function DomainWorkflowsArchivalList({
       isFetchingNextPage={isFetchingNextPage}
       sortParams={
         queryParams.inputTypeArchival === 'search'
-          ? {
-              onSort: (column: string) =>
-                setQueryParams({
-                  sortColumnArchival: column,
-                  sortOrderArchival: toggleSortOrder({
-                    currentSortColumn: queryParams.sortColumnArchival,
-                    currentSortOrder: queryParams.sortOrderArchival,
-                    newSortColumn: column,
-                    defaultSortOrder: 'DESC',
-                  }),
-                }),
+          ? buildSortParams({
               sortColumn: queryParams.sortColumnArchival,
               sortOrder: queryParams.sortOrderArchival,
-            }
+              setSortQueryParams: ({ sortColumn, sortOrder }) =>
+                setQueryParams({
+                  sortColumnArchival: sortColumn,
+                  sortOrderArchival: sortOrder,
+                }),
+            })
           : undefined
       }
     />

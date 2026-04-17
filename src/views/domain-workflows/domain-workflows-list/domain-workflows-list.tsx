@@ -4,9 +4,9 @@ import ErrorPanel from '@/components/error-panel/error-panel';
 import PanelSection from '@/components/panel-section/panel-section';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
-import { toggleSortOrder } from '@/utils/sort-by';
 import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
 import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
+import buildSortParams from '@/views/shared/workflows-list/helpers/build-sort-params';
 import WorkflowsList from '@/views/shared/workflows-list/workflows-list';
 
 import DOMAIN_WORKFLOWS_PAGE_SIZE from '../config/domain-workflows-page-size.config';
@@ -82,20 +82,12 @@ export default function DomainWorkflowsList({
       isFetchingNextPage={isFetchingNextPage}
       sortParams={
         queryParams.inputType === 'search'
-          ? {
-              onSort: (column: string) =>
-                setQueryParams({
-                  sortColumn: column,
-                  sortOrder: toggleSortOrder({
-                    currentSortColumn: queryParams.sortColumn,
-                    currentSortOrder: queryParams.sortOrder,
-                    newSortColumn: column,
-                    defaultSortOrder: 'DESC',
-                  }),
-                }),
+          ? buildSortParams({
               sortColumn: queryParams.sortColumn,
               sortOrder: queryParams.sortOrder,
-            }
+              setSortQueryParams: ({ sortColumn, sortOrder }) =>
+                setQueryParams({ sortColumn, sortOrder }),
+            })
           : undefined
       }
     />
