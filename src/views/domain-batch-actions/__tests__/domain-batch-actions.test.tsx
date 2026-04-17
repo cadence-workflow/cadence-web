@@ -6,11 +6,21 @@ import { render, screen } from '@/test-utils/rtl';
 
 import DomainBatchActions from '../domain-batch-actions';
 
+jest.mock('../domain-batch-actions.constants', () => ({
+  MOCK_BATCH_ACTIONS: [
+    { id: 5, status: 'running', progress: 60 },
+    { id: 4, status: 'completed' },
+    { id: 3, status: 'aborted' },
+    { id: 2, status: 'failed' },
+  ],
+}));
+
 jest.mock('react-icons/md', () => ({
   ...jest.requireActual('react-icons/md'),
   MdAdd: () => <div>Add Icon</div>,
   MdCheckCircle: () => <div>Check Icon</div>,
   MdOutlineCancel: () => <div>Cancel Icon</div>,
+  MdWarning: () => <div>Warning Icon</div>,
 }));
 
 jest.mock('baseui/spinner', () => ({

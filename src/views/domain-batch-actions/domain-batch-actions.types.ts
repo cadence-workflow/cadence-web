@@ -1,4 +1,4 @@
-export type BatchActionStatus = 'running' | 'completed' | 'aborted';
+export type BatchActionStatus = 'running' | 'completed' | 'aborted' | 'failed';
 
 export type BatchAction = {
   id: number;

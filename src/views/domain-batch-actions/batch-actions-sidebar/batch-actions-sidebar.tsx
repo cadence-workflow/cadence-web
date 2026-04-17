@@ -1,13 +1,12 @@
 'use client';
 import React from 'react';
 
-import { useStyletron } from 'baseui';
-import { Spinner } from 'baseui/spinner';
-import { MdAdd, MdCheckCircle, MdOutlineCancel } from 'react-icons/md';
+import { MdAdd } from 'react-icons/md';
 
 import Button from '@/components/button/button';
 
 import { type BatchAction } from '../domain-batch-actions.types';
+import StatusIcon from '../helpers/status-icon';
 
 import { overrides, styled } from './batch-actions-sidebar.styles';
 
@@ -16,30 +15,6 @@ type Props = {
   selectedId: number | null;
   onSelect: (id: number) => void;
 };
-
-function StatusIcon({ action }: { action: BatchAction }) {
-  const [_, theme] = useStyletron();
-  switch (action.status) {
-    case 'completed':
-      return (
-        <MdCheckCircle
-          size={theme.sizing.scale600}
-          color={theme.colors.contentPositive}
-        />
-      );
-    case 'aborted':
-      return (
-        <MdOutlineCancel
-          size={theme.sizing.scale600}
-          color={theme.colors.contentNegative}
-        />
-      );
-    case 'running':
-      return <Spinner $size={theme.sizing.scale600} />;
-    default:
-      return null;
-  }
-}
 
 export default function BatchActionsSidebar({
   batchActions,
@@ -63,6 +38,11 @@ export default function BatchActionsSidebar({
             key={action.id}
             $isSelected={action.id === selectedId}
             onClick={() => onSelect(action.id)}
+            onKeyDown={(e: React.KeyboardEvent) => {
+              if (e.key === 'Enter' || e.key === ' ') onSelect(action.id);
+            }}
+            role="button"
+            tabIndex={0}
             $isActive={action.status === 'running' || action.id === selectedId}
           >
             <StatusIcon action={action} />
