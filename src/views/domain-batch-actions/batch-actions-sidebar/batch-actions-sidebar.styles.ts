@@ -4,7 +4,7 @@ import { type ButtonOverrides } from 'baseui/button';
 export const overrides = {
   newActionButton: {
     BaseButton: {
-      style: ({ $theme: _theme }: { $theme: Theme }) => ({
+      style: () => ({
         justifyContent: 'flex-start',
         width: '100%',
       }),
