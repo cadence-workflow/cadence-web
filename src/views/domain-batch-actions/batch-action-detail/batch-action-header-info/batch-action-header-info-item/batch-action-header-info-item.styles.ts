@@ -11,6 +11,9 @@ export const styled = {
     'div',
     ({ $theme, $isString }) => ({
       paddingTop: $theme.sizing.scale300,
+      display: 'flex',
+      alignItems: 'center',
+      flex: 1,
       ...($isString && {
         ...$theme.typography.LabelSmall,
       }),
