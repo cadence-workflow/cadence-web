@@ -9,6 +9,7 @@ import Button from '@/components/button/button';
 import { type BatchAction } from '../domain-batch-actions.types';
 
 import { overrides, styled } from './batch-action-detail.styles';
+import BatchActionHeaderInfo from './batch-action-header-info/batch-action-header-info';
 
 type Props = {
   batchAction: BatchAction;
@@ -34,7 +35,9 @@ export default function BatchActionDetail({ batchAction }: Props) {
           </Button>
         )}
       </styled.Header>
-      <styled.DetailsSection />
+      <div>
+        <BatchActionHeaderInfo batchAction={batchAction} />
+      </div>
       <styled.ProgressSection />
     </styled.Container>
   );
