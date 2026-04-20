@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 
 import { type DomainPageTabContentProps } from '@/views/domain-page/domain-page-content/domain-page-content.types';
 
-import BatchActionDetail from './batch-action-detail/batch-action-detail';
-import BatchActionsSidebar from './batch-actions-sidebar/batch-actions-sidebar';
+import DomainBatchActionDetail from './domain-batch-action-detail/domain-batch-action-detail';
+import DomainBatchActionsSidebar from './domain-batch-actions-sidebar/domain-batch-actions-sidebar';
 import { MOCK_BATCH_ACTIONS } from './domain-batch-actions.constants';
 import { styled } from './domain-batch-actions.styles';
 
@@ -20,14 +20,16 @@ export default function DomainBatchActions(_props: DomainPageTabContentProps) {
   return (
     <styled.Container>
       <styled.Sidebar>
-        <BatchActionsSidebar
+        <DomainBatchActionsSidebar
           batchActions={MOCK_BATCH_ACTIONS}
           selectedId={selectedId}
           onSelect={setSelectedId}
         />
       </styled.Sidebar>
       <styled.DetailPanel>
-        {selectedAction && <BatchActionDetail batchAction={selectedAction} />}
+        {selectedAction && (
+          <DomainBatchActionDetail batchAction={selectedAction} />
+        )}
       </styled.DetailPanel>
     </styled.Container>
   );

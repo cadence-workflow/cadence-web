@@ -1,22 +1,14 @@
 'use client';
 import React from 'react';
 
-import { useStyletron } from 'baseui';
 import { MdCancel } from 'react-icons/md';
 
 import Button from '@/components/button/button';
 
-import { type BatchAction } from '../domain-batch-actions.types';
+import { overrides, styled } from './domain-batch-action-detail.styles';
+import { type Props } from './domain-batch-action-detail.types';
 
-import { overrides, styled } from './batch-action-detail.styles';
-
-type Props = {
-  batchAction: BatchAction;
-};
-
-export default function BatchActionDetail({ batchAction }: Props) {
-  const [_, theme] = useStyletron();
-
+export default function DomainBatchActionDetail({ batchAction }: Props) {
   return (
     <styled.Container>
       <styled.Header>

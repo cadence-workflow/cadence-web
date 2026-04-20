@@ -3,7 +3,7 @@ import { styled as createStyled, type Theme } from 'baseui';
 export const styled = {
   Container: createStyled('div', () => ({
     display: 'flex',
-    flexDirection: 'row' as const,
+    flexDirection: 'row',
     height: '100%',
   })),
   Sidebar: createStyled('aside', () => ({

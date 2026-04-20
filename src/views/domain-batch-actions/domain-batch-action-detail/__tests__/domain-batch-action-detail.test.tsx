@@ -3,14 +3,14 @@ import React from 'react';
 import { render, screen } from '@/test-utils/rtl';
 
 import { type BatchAction } from '../../domain-batch-actions.types';
-import BatchActionDetail from '../batch-action-detail';
+import DomainBatchActionDetail from '../domain-batch-action-detail';
 
 jest.mock('react-icons/md', () => ({
   ...jest.requireActual('react-icons/md'),
   MdOutlineCancel: () => <div>Cancel Icon</div>,
 }));
 
-describe(BatchActionDetail.name, () => {
+describe(DomainBatchActionDetail.name, () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -18,7 +18,7 @@ describe(BatchActionDetail.name, () => {
   it('renders the batch action title', () => {
     const action: BatchAction = { id: 5, status: 'completed' };
 
-    render(<BatchActionDetail batchAction={action} />);
+    render(<DomainBatchActionDetail batchAction={action} />);
 
     expect(screen.getByText('Batch action #5')).toBeInTheDocument();
   });
@@ -26,24 +26,24 @@ describe(BatchActionDetail.name, () => {
   it('shows abort button when status is running', () => {
     const action: BatchAction = { id: 3, status: 'running', progress: 60 };
 
-    render(<BatchActionDetail batchAction={action} />);
+    render(<DomainBatchActionDetail batchAction={action} />);
 
-    expect(screen.getByText('Abort')).toBeInTheDocument();
+    expect(screen.getByText('Abort batch action')).toBeInTheDocument();
   });
 
   it('does not show abort button when status is completed', () => {
     const action: BatchAction = { id: 2, status: 'completed' };
 
-    render(<BatchActionDetail batchAction={action} />);
+    render(<DomainBatchActionDetail batchAction={action} />);
 
-    expect(screen.queryByText('Abort')).not.toBeInTheDocument();
+    expect(screen.queryByText('Abort batch action')).not.toBeInTheDocument();
   });
 
   it('does not show abort button when status is aborted', () => {
     const action: BatchAction = { id: 1, status: 'aborted' };
 
-    render(<BatchActionDetail batchAction={action} />);
+    render(<DomainBatchActionDetail batchAction={action} />);
 
-    expect(screen.queryByText('Abort')).not.toBeInTheDocument();
+    expect(screen.queryByText('Abort batch action')).not.toBeInTheDocument();
   });
 });

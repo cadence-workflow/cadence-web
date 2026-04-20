@@ -8,7 +8,7 @@ import Button from '@/components/button/button';
 import { type BatchAction } from '../domain-batch-actions.types';
 import StatusIcon from '../helpers/status-icon';
 
-import { overrides, styled } from './batch-actions-sidebar.styles';
+import { overrides, styled } from './domain-batch-actions-sidebar.styles';
 
 type Props = {
   batchActions: BatchAction[];
@@ -16,7 +16,7 @@ type Props = {
   onSelect: (id: number) => void;
 };
 
-export default function BatchActionsSidebar({
+export default function DomainBatchActionsSidebar({
   batchActions,
   selectedId,
   onSelect,

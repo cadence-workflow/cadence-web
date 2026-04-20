@@ -5,11 +5,10 @@ import { userEvent } from '@testing-library/user-event';
 import { render, screen } from '@/test-utils/rtl';
 
 import { type BatchAction } from '../../domain-batch-actions.types';
-import BatchActionsSidebar from '../batch-actions-sidebar';
+import DomainBatchActionsSidebar from '../domain-batch-actions-sidebar';
 
 jest.mock('react-icons/md', () => ({
   ...jest.requireActual('react-icons/md'),
-  MdAdd: () => <div>Add Icon</div>,
   MdCheckCircle: () => <div>Check Icon</div>,
   MdOutlineCancel: () => <div>Cancel Icon</div>,
   MdWarning: () => <div>Warning Icon</div>,
@@ -26,43 +25,45 @@ const mockBatchActions: BatchAction[] = [
   { id: 1, status: 'failed' },
 ];
 
-describe(BatchActionsSidebar.name, () => {
+function setup({
+  batchActions = mockBatchActions,
+  selectedId = null,
+  onSelect = jest.fn(),
+}: {
+  batchActions?: BatchAction[];
+  selectedId?: number | null;
+  onSelect?: (id: number) => void;
+} = {}) {
+  const user = userEvent.setup();
+  render(
+    <DomainBatchActionsSidebar
+      batchActions={batchActions}
+      selectedId={selectedId}
+      onSelect={onSelect}
+    />
+  );
+  return { user, onSelect };
+}
+
+describe(DomainBatchActionsSidebar.name, () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   it('renders the new batch action button', () => {
-    render(
-      <BatchActionsSidebar
-        batchActions={mockBatchActions}
-        selectedId={null}
-        onSelect={jest.fn()}
-      />
-    );
+    setup();
 
     expect(screen.getByText('New batch action')).toBeInTheDocument();
   });
 
   it('renders batch history label', () => {
-    render(
-      <BatchActionsSidebar
-        batchActions={mockBatchActions}
-        selectedId={null}
-        onSelect={jest.fn()}
-      />
-    );
+    setup();
 
     expect(screen.getByText('Batch history')).toBeInTheDocument();
   });
 
   it('renders all batch actions in the list', () => {
-    render(
-      <BatchActionsSidebar
-        batchActions={mockBatchActions}
-        selectedId={null}
-        onSelect={jest.fn()}
-      />
-    );
+    setup();
 
     expect(screen.getByText('Batch action #4')).toBeInTheDocument();
     expect(screen.getByText('Batch action #3')).toBeInTheDocument();
@@ -71,13 +72,7 @@ describe(BatchActionsSidebar.name, () => {
   });
 
   it('renders correct status icons for each status', () => {
-    render(
-      <BatchActionsSidebar
-        batchActions={mockBatchActions}
-        selectedId={null}
-        onSelect={jest.fn()}
-      />
-    );
+    setup();
 
     expect(screen.getByText('Spinner')).toBeInTheDocument();
     expect(screen.getByText('Check Icon')).toBeInTheDocument();
@@ -86,16 +81,7 @@ describe(BatchActionsSidebar.name, () => {
   });
 
   it('calls onSelect when a batch action is clicked', async () => {
-    const onSelect = jest.fn();
-    const user = userEvent.setup();
-
-    render(
-      <BatchActionsSidebar
-        batchActions={mockBatchActions}
-        selectedId={null}
-        onSelect={onSelect}
-      />
-    );
+    const { user, onSelect } = setup();
 
     await user.click(screen.getByText('Batch action #2'));
 

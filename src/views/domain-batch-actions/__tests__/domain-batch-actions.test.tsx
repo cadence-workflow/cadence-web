@@ -15,18 +15,6 @@ jest.mock('../domain-batch-actions.constants', () => ({
   ],
 }));
 
-jest.mock('react-icons/md', () => ({
-  ...jest.requireActual('react-icons/md'),
-  MdAdd: () => <div>Add Icon</div>,
-  MdCheckCircle: () => <div>Check Icon</div>,
-  MdOutlineCancel: () => <div>Cancel Icon</div>,
-  MdWarning: () => <div>Warning Icon</div>,
-}));
-
-jest.mock('baseui/spinner', () => ({
-  Spinner: jest.fn(() => <div>Spinner</div>),
-}));
-
 describe(DomainBatchActions.name, () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -45,7 +33,7 @@ describe(DomainBatchActions.name, () => {
     expect(
       screen.getByRole('heading', { name: /Batch action #5/ })
     ).toBeInTheDocument();
-    expect(screen.getByText('Abort')).toBeInTheDocument();
+    expect(screen.getByText('Abort batch action')).toBeInTheDocument();
   });
 
   it('updates detail panel when a different action is selected', async () => {
@@ -58,6 +46,6 @@ describe(DomainBatchActions.name, () => {
     expect(
       screen.getByRole('heading', { name: /Batch action #4/ })
     ).toBeInTheDocument();
-    expect(screen.queryByText('Abort')).not.toBeInTheDocument();
+    expect(screen.queryByText('Abort batch action')).not.toBeInTheDocument();
   });
 });
