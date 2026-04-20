@@ -12,3 +12,5 @@ export type BatchAction = {
   rps?: number;
   concurrency?: number;
 };
+
+export type SelectedId = number | 'draft' | null;

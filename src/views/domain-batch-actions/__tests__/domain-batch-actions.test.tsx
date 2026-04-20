@@ -71,4 +71,34 @@ describe(DomainBatchActions.name, () => {
     ).toBeInTheDocument();
     expect(screen.queryByText('Abort batch action')).not.toBeInTheDocument();
   });
+
+  it('opens a draft when "New batch action" is clicked', async () => {
+    const user = userEvent.setup();
+
+    render(<DomainBatchActions domain="test-domain" cluster="test-cluster" />);
+
+    await user.click(screen.getByText('New batch action'));
+
+    expect(screen.getByText('Untitled batch action')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'New batch action' })
+    ).toBeInTheDocument();
+    expect(screen.getByText('Discard batch action')).toBeInTheDocument();
+  });
+
+  it('removes the draft and selects the most recent saved action when discarded', async () => {
+    const user = userEvent.setup();
+
+    render(<DomainBatchActions domain="test-domain" cluster="test-cluster" />);
+
+    await user.click(screen.getByText('New batch action'));
+    expect(screen.getByText('Untitled batch action')).toBeInTheDocument();
+
+    await user.click(screen.getByText('Discard batch action'));
+
+    expect(screen.queryByText('Untitled batch action')).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: /Batch action #5/ })
+    ).toBeInTheDocument();
+  });
 });

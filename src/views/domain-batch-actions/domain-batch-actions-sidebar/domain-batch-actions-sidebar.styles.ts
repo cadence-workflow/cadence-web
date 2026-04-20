@@ -30,4 +30,9 @@ export const styled = {
     margin: 0,
     padding: 0,
   })),
+  DraftIcon: createStyled('span', ({ $theme }: { $theme: Theme }) => ({
+    display: 'inline-flex',
+    fontSize: $theme.sizing.scale600,
+    color: $theme.colors.contentSecondary,
+  })),
 };

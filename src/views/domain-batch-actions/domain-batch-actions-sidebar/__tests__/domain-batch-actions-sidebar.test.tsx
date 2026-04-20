@@ -4,13 +4,17 @@ import { userEvent } from '@testing-library/user-event';
 
 import { render, screen } from '@/test-utils/rtl';
 
-import { type BatchAction } from '../../domain-batch-actions.types';
+import {
+  type BatchAction,
+  type SelectedId,
+} from '../../domain-batch-actions.types';
 import DomainBatchActionsSidebar from '../domain-batch-actions-sidebar';
 
 jest.mock('react-icons/md', () => ({
   ...jest.requireActual('react-icons/md'),
   MdCheckCircle: () => <div>Check Icon</div>,
   MdOutlineCancel: () => <div>Cancel Icon</div>,
+  MdOutlineEdit: () => <div>Edit Icon</div>,
   MdWarning: () => <div>Warning Icon</div>,
 }));
 
@@ -27,22 +31,28 @@ const mockBatchActions: BatchAction[] = [
 
 function setup({
   batchActions = mockBatchActions,
+  hasDraft = false,
   selectedId = null,
   onSelect = jest.fn(),
+  onCreateNew = jest.fn(),
 }: {
   batchActions?: BatchAction[];
-  selectedId?: number | null;
-  onSelect?: (id: number) => void;
+  hasDraft?: boolean;
+  selectedId?: SelectedId;
+  onSelect?: (id: number | 'draft') => void;
+  onCreateNew?: () => void;
 } = {}) {
   const user = userEvent.setup();
   render(
     <DomainBatchActionsSidebar
       batchActions={batchActions}
+      hasDraft={hasDraft}
       selectedId={selectedId}
       onSelect={onSelect}
+      onCreateNew={onCreateNew}
     />
   );
-  return { user, onSelect };
+  return { user, onSelect, onCreateNew };
 }
 
 describe(DomainBatchActionsSidebar.name, () => {
@@ -80,11 +90,34 @@ describe(DomainBatchActionsSidebar.name, () => {
     expect(screen.getByText('Warning Icon')).toBeInTheDocument();
   });
 
-  it('calls onSelect when a batch action is clicked', async () => {
+  it('calls onSelect with the action id when a batch action is clicked', async () => {
     const { user, onSelect } = setup();
 
     await user.click(screen.getByText('Batch action #2'));
 
     expect(onSelect).toHaveBeenCalledWith(2);
+  });
+
+  it('calls onCreateNew when the new batch action button is clicked', async () => {
+    const { user, onCreateNew } = setup();
+
+    await user.click(screen.getByText('New batch action'));
+
+    expect(onCreateNew).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders draft row with "Untitled batch action" label and edit icon when hasDraft is true', () => {
+    setup({ hasDraft: true, selectedId: 'draft' });
+
+    expect(screen.getByText('Untitled batch action')).toBeInTheDocument();
+    expect(screen.getByText('Edit Icon')).toBeInTheDocument();
+  });
+
+  it('calls onSelect with "draft" when the draft row is clicked', async () => {
+    const { user, onSelect } = setup({ hasDraft: true, selectedId: 4 });
+
+    await user.click(screen.getByText('Untitled batch action'));
+
+    expect(onSelect).toHaveBeenCalledWith('draft');
   });
 });
