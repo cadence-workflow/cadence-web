@@ -5,9 +5,9 @@ import { useStyletron } from 'baseui';
 import { Spinner } from 'baseui/spinner';
 import { MdCheckCircle, MdOutlineCancel, MdWarning } from 'react-icons/md';
 
-import { type BatchAction } from '../domain-batch-actions.types';
+import { type Props } from './status-icon.types';
 
-export default function StatusIcon({ action }: { action: BatchAction }) {
+export default function StatusIcon({ action }: Props) {
   const [_, theme] = useStyletron();
   switch (action.status) {
     case 'completed':

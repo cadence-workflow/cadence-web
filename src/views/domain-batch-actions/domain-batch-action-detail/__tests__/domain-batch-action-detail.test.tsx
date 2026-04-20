@@ -5,11 +5,6 @@ import { render, screen } from '@/test-utils/rtl';
 import { type BatchAction } from '../../domain-batch-actions.types';
 import DomainBatchActionDetail from '../domain-batch-action-detail';
 
-jest.mock('react-icons/md', () => ({
-  ...jest.requireActual('react-icons/md'),
-  MdOutlineCancel: () => <div>Cancel Icon</div>,
-}));
-
 describe(DomainBatchActionDetail.name, () => {
   afterEach(() => {
     jest.clearAllMocks();

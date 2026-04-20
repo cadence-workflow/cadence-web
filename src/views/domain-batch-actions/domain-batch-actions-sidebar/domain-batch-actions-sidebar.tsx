@@ -5,16 +5,11 @@ import { MdAdd } from 'react-icons/md';
 
 import Button from '@/components/button/button';
 
-import { type BatchAction } from '../domain-batch-actions.types';
 import StatusIcon from '../helpers/status-icon';
 
+import BatchActionsSidebarItem from './batch-actions-sidebar-item/batch-actions-sidebar-item';
 import { overrides, styled } from './domain-batch-actions-sidebar.styles';
-
-type Props = {
-  batchActions: BatchAction[];
-  selectedId: number | null;
-  onSelect: (id: number) => void;
-};
+import { type Props } from './domain-batch-actions-sidebar.types';
 
 export default function DomainBatchActionsSidebar({
   batchActions,
@@ -34,20 +29,15 @@ export default function DomainBatchActionsSidebar({
       <styled.SectionLabel>Batch history</styled.SectionLabel>
       <styled.List>
         {batchActions.map((action) => (
-          <styled.ListItem
+          <BatchActionsSidebarItem
             key={action.id}
-            $isSelected={action.id === selectedId}
-            onClick={() => onSelect(action.id)}
-            onKeyDown={(e: React.KeyboardEvent) => {
-              if (e.key === 'Enter' || e.key === ' ') onSelect(action.id);
-            }}
-            role="button"
-            tabIndex={0}
-            $isActive={action.status === 'running' || action.id === selectedId}
-          >
-            <StatusIcon action={action} />
-            Batch action #{action.id}
-          </styled.ListItem>
+            id={action.id}
+            label={`Batch action #${action.id}`}
+            icon={<StatusIcon action={action} />}
+            isSelected={selectedId === action.id}
+            isActive={action.status === 'running' || selectedId === action.id}
+            onSelect={onSelect}
+          />
         ))}
       </styled.List>
     </styled.Container>
