@@ -5,6 +5,7 @@ import { MdCancel } from 'react-icons/md';
 
 import Button from '@/components/button/button';
 
+import BatchActionHeaderInfo from './batch-action-header-info/batch-action-header-info';
 import { overrides, styled } from './domain-batch-action-detail.styles';
 import { type Props } from './domain-batch-action-detail.types';
 
@@ -24,7 +25,9 @@ export default function DomainBatchActionDetail({ batchAction }: Props) {
           </Button>
         )}
       </styled.Header>
-      <styled.DetailsSection />
+      <div>
+        <BatchActionHeaderInfo batchAction={batchAction} />
+      </div>
       <styled.ProgressSection />
     </styled.Container>
   );
