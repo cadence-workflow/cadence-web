@@ -7,6 +7,7 @@ import Button from '@/components/button/button';
 
 import { overrides, styled } from './new-batch-action-detail.styles';
 import { type Props } from './new-batch-action-detail.types';
+import NewBatchActionInfoBanner from './new-batch-action-info-banner/new-batch-action-info-banner';
 
 export default function NewBatchActionDetail({ onDiscard }: Props) {
   return (
@@ -23,6 +24,7 @@ export default function NewBatchActionDetail({ onDiscard }: Props) {
           Discard batch action
         </Button>
       </styled.Header>
+      <NewBatchActionInfoBanner />
     </styled.Container>
   );
 }
