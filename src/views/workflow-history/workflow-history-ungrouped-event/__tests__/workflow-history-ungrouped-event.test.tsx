@@ -1,5 +1,6 @@
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
+import { type WorkflowExecutionCloseStatus } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionCloseStatus';
 import { type WorkflowPageTabsParams } from '@/views/workflow-page/workflow-page-tabs/workflow-page-tabs.types';
 
 import {
@@ -97,6 +98,16 @@ jest.mock(
   () => ({
     __esModule: true,
     default: () => <div>Event summary</div>,
+  })
+);
+
+jest.mock(
+  '../../workflow-history-remaining-duration-badge/workflow-history-remaining-duration-badge',
+  () => ({
+    __esModule: true,
+    default: ({ prefix }: { prefix: string }) => (
+      <div data-testid="remaining-duration-badge">{prefix}</div>
+    ),
   })
 );
 
@@ -268,17 +279,42 @@ describe(WorkflowHistoryUngroupedEvent.name, () => {
 
     expect(screen.queryByText('Event summary')).not.toBeInTheDocument();
   });
+
+  it('shows remaining duration badge instead of elapsed time when expectedEndTimeInfo exists', () => {
+    const eventInfoWithExpectedEnd: WorkflowHistoryUngroupedEventInfo = {
+      ...mockEventInfo,
+      expectedEndTimeInfo: {
+        timeMs: Date.now() + 60000,
+        prefix: 'Starts in',
+      },
+    };
+    setup({
+      eventInfo: eventInfoWithExpectedEnd,
+      workflowIsArchived: false,
+      workflowCloseStatus: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
+      loadingMoreEvents: false,
+    });
+
+    expect(screen.getByTestId('remaining-duration-badge')).toBeInTheDocument();
+    expect(screen.getByText('Starts in')).toBeInTheDocument();
+  });
 });
 
 function setup({
   eventInfo = mockEventInfo,
   isExpanded = false,
   animateBorderOnEnter = false,
+  workflowIsArchived = false,
+  workflowCloseStatus = 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID' as const,
+  loadingMoreEvents = false,
   onReset,
 }: {
   eventInfo?: WorkflowHistoryUngroupedEventInfo;
   isExpanded?: boolean;
   animateBorderOnEnter?: boolean;
+  workflowIsArchived?: boolean;
+  workflowCloseStatus?: WorkflowExecutionCloseStatus;
+  loadingMoreEvents?: boolean;
   onReset?: (() => void) | undefined;
 } = {}) {
   const mockToggleIsExpanded = jest.fn();
@@ -290,6 +326,9 @@ function setup({
       nanos: 0,
     },
     decodedPageUrlParams: mockDecodedPageUrlParams,
+    workflowIsArchived,
+    workflowCloseStatus,
+    loadingMoreEvents,
     isExpanded,
     toggleIsExpanded: mockToggleIsExpanded,
     animateBorderOnEnter,
