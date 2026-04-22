@@ -307,6 +307,7 @@ export default function WorkflowActionStartForm({
         formData={formData}
         fieldErrors={fieldErrors}
         cluster={cluster}
+        domain={domain}
       />
     </div>
   );

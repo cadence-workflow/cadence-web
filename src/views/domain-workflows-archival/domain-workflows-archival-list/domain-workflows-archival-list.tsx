@@ -1,9 +1,95 @@
 'use client';
 
+import ErrorPanel from '@/components/error-panel/error-panel';
+import PanelSection from '@/components/panel-section/panel-section';
+import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
+import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
+import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
+import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
+import buildSortParams from '@/views/shared/workflows-list/helpers/build-sort-params';
 import WorkflowsList from '@/views/shared/workflows-list/workflows-list';
+
+import DOMAIN_WORKFLOWS_ARCHIVAL_PAGE_SIZE from '../config/domain-workflows-archival-page-size.config';
+import getArchivalErrorPanelProps from '../domain-workflows-archival-table/helpers/get-archival-error-panel-props';
+import useArchivalInputType from '../hooks/use-archival-input-type';
 
 import { type Props } from './domain-workflows-archival-list.types';
 
-export default function DomainWorkflowsArchivalList(_props: Props) {
-  return <WorkflowsList />;
+export default function DomainWorkflowsArchivalList({
+  domain,
+  cluster,
+  visibleColumns,
+  timeRangeStart,
+  timeRangeEnd,
+}: Props) {
+  const [queryParams, setQueryParams] = usePageQueryParams(
+    domainPageQueryParamsConfig
+  );
+  const { inputType } = useArchivalInputType();
+
+  const {
+    workflows,
+    error,
+    isLoading,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+    refetch,
+  } = useListWorkflows({
+    domain,
+    cluster,
+    listType: 'archived',
+    pageSize: DOMAIN_WORKFLOWS_ARCHIVAL_PAGE_SIZE,
+    inputType,
+    search: queryParams.searchArchival,
+    statuses: queryParams.statusesArchival,
+    timeRangeStart,
+    timeRangeEnd,
+    sortColumn: queryParams.sortColumnArchival,
+    sortOrder: queryParams.sortOrderArchival,
+    query: queryParams.queryArchival,
+  });
+
+  if (isLoading) {
+    return <SectionLoadingIndicator />;
+  }
+
+  if (workflows.length === 0 && error) {
+    return (
+      <PanelSection>
+        <ErrorPanel
+          {...getArchivalErrorPanelProps({
+            inputType,
+            error,
+            queryString: queryParams.queryArchival,
+          })}
+          reset={refetch}
+        />
+      </PanelSection>
+    );
+  }
+
+  return (
+    <WorkflowsList
+      workflows={workflows}
+      columns={visibleColumns}
+      error={error}
+      hasNextPage={hasNextPage}
+      fetchNextPage={fetchNextPage}
+      isFetchingNextPage={isFetchingNextPage}
+      sortParams={
+        queryParams.inputTypeArchival === 'search'
+          ? buildSortParams({
+              sortColumn: queryParams.sortColumnArchival,
+              sortOrder: queryParams.sortOrderArchival,
+              setSortQueryParams: ({ sortColumn, sortOrder }) =>
+                setQueryParams({
+                  sortColumnArchival: sortColumn,
+                  sortOrderArchival: sortOrder,
+                }),
+            })
+          : undefined
+      }
+    />
+  );
 }

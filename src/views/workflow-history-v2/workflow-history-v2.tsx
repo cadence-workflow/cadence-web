@@ -419,6 +419,9 @@ export default function WorkflowHistoryV2({ params }: Props) {
             resetToDecisionEventId={setResetToDecisionEventId}
             getIsEventExpanded={getIsItemExpanded}
             toggleIsEventExpanded={toggleIsItemExpanded}
+            workflowIsArchived={workflowExecutionInfo?.isArchived || false}
+            workflowCloseStatus={workflowExecutionInfo?.closeStatus}
+            loadingMoreEvents={false}
             error={error}
             hasMoreEvents={hasNextPage}
             fetchMoreEvents={startLoadingHistory}

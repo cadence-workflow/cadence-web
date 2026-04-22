@@ -11,6 +11,7 @@ import {
   type PageQueryParamKeys,
   type PageQueryParams,
 } from '@/hooks/use-page-query-params/use-page-query-params.types';
+import WorkflowsListColumnsPicker from '@/views/shared/workflows-list-columns-picker/workflows-list-columns-picker';
 
 import WORKFLOWS_SEARCH_DEBOUNCE_MS from './config/workflows-search-debounce-ms.config';
 import { overrides, styled } from './workflows-header.styles';
@@ -36,7 +37,7 @@ export default function WorkflowsHeader<
   isQueryRunning,
   expandFiltersByDefault,
   showQueryInputOnly,
-  showColumnsPicker,
+  columnsPickerProps,
 }: Props<P, I, S, Q>) {
   const [areFiltersShown, setAreFiltersShown] = useState(
     expandFiltersByDefault ?? false
@@ -107,7 +108,9 @@ export default function WorkflowsHeader<
             />
           </styled.SearchContainer>
         )}
-        {showColumnsPicker && <div>Placeholder for columns picker</div>}
+        {columnsPickerProps && (
+          <WorkflowsListColumnsPicker {...columnsPickerProps} />
+        )}
       </styled.InputContainer>
       {inputType === 'search' && areFiltersShown && (
         <PageFiltersFields

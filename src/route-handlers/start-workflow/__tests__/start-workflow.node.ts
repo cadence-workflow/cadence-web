@@ -136,6 +136,25 @@ const fieldsTestCases: FieldsTestCase[] = [
       },
     },
   },
+  {
+    name: 'handles activeClusterSelectionPolicy field correctly',
+    inputField: {
+      activeClusterSelectionPolicy: {
+        clusterAttribute: {
+          scope: 'region',
+          name: 'region0',
+        },
+      },
+    },
+    expectedOutput: {
+      activeClusterSelectionPolicy: {
+        clusterAttribute: {
+          scope: 'region',
+          name: 'region0',
+        },
+      },
+    },
+  },
 ];
 
 describe(startWorkflow.name, () => {
