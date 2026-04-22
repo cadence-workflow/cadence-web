@@ -94,8 +94,8 @@ src/views/
 
 ## Config and constants
 
-- **Config** — Values and wiring that **forks are expected to change** between deployments or product variants (clusters, auth, feature visibility, ports). Lives in the config system: `src/config/` (e.g. `config/dynamic/dynamic.config.ts` and resolvers under `config/dynamic/resolvers/`).
-- **Constants** — **Stable, reusable literals** that are **not** treated as fork overrides (shared labels, fixed format tokens, internal limits used the same way upstream and in forks). Prefer `*.constants.ts`, feature-local modules for cross-cutting fixed values; keep them out of the dynamic config registry unless a value is intentionally fork-swappable.
+- **Config** — Values and wiring that **forks are expected to change** between deployments or product variants (clusters, auth, feature visibility, columns).
+- **Constants** — **Stable, reusable literals** that are **not** treated as fork overrides (shared labels, fixed format tokens, internal limits used the same way upstream and in forks). Prefer `*.constants.ts`, feature-local modules for cross-cutting fixed values.
 
 ## Styling Pattern
 
@@ -261,4 +261,4 @@ jest.mock('../child-component', () =>
 - **Skipping the `setup()` function** — always use one when tests share initialization; don't repeat `render` calls inline
 - **Nesting too deep** — max 2 levels under `src/views/` and `src/components/`; `__tests__/` at level 3 only
 - **Creating barrel `index.ts` files** — this project does not use them
-- **Helpers, types, constants, or config in the component `.tsx`** — use `component-name.types.ts` and small modules; put **constants** in `*.constants.ts` or `utils/`; put **config** in `src/config/` / env / resolvers so fork-facing values are not buried in JSX
+- **Helpers, types or constants in the component `.tsx`** — add them into their dedicated files.
