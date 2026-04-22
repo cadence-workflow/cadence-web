@@ -262,3 +262,4 @@ jest.mock('../child-component', () =>
 - **Nesting too deep** — max 2 levels under `src/views/` and `src/components/`; `__tests__/` at level 3 only
 - **Creating barrel `index.ts` files** — this project does not use them
 - **Helpers, types or constants in the component `.tsx`** — add them into their dedicated files.
+- 
