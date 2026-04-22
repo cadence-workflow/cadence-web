@@ -36,8 +36,10 @@ const workflowHistoryDetailsRowParsersConfig: Array<DetailsRowItemParser> = [
     name: '"attempt" greater than 0, as "retries"',
     matcher: (name) => name === 'attempt',
     hide: (_, value) => typeof value === 'number' && value <= 0,
-    icon: MdReplay,
-    customTooltipContent: () => 'retries',
+    icon: null,
+    customRenderValue: ({ value }) =>
+      value === 1 ? '1 Retry' : `${value} Retries`,
+    badgeColor: 'warning',
   },
   {
     name: 'Workflow links as having clickable content',
