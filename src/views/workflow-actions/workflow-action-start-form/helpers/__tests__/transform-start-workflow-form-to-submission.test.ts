@@ -338,4 +338,62 @@ describe('transformStartWorkflowFormToSubmission', () => {
 
     expect(result.retryPolicy?.backoffCoefficient).toBe(1.5);
   });
+
+  it('should include activeClusterSelectionPolicy when clusterAttribute is set', () => {
+    const formData: StartWorkflowFormData = {
+      ...baseFormData,
+      clusterAttribute: {
+        scope: 'region',
+        name: 'region0',
+      },
+    };
+
+    const result = transformStartWorkflowFormToSubmission(formData);
+
+    expect(result.activeClusterSelectionPolicy).toEqual({
+      clusterAttribute: {
+        scope: 'region',
+        name: 'region0',
+      },
+    });
+  });
+
+  it('should not include activeClusterSelectionPolicy when clusterAttribute is undefined', () => {
+    const formData: StartWorkflowFormData = {
+      ...baseFormData,
+      clusterAttribute: undefined,
+    };
+
+    const result = transformStartWorkflowFormToSubmission(formData);
+
+    expect(result.activeClusterSelectionPolicy).toBeUndefined();
+  });
+
+  it('should not include activeClusterSelectionPolicy when clusterAttribute has empty scope', () => {
+    const formData: StartWorkflowFormData = {
+      ...baseFormData,
+      clusterAttribute: {
+        scope: '',
+        name: 'region0',
+      },
+    };
+
+    const result = transformStartWorkflowFormToSubmission(formData);
+
+    expect(result.activeClusterSelectionPolicy).toBeUndefined();
+  });
+
+  it('should not include activeClusterSelectionPolicy when clusterAttribute has empty name', () => {
+    const formData: StartWorkflowFormData = {
+      ...baseFormData,
+      clusterAttribute: {
+        scope: 'region',
+        name: '',
+      },
+    };
+
+    const result = transformStartWorkflowFormToSubmission(formData);
+
+    expect(result.activeClusterSelectionPolicy).toBeUndefined();
+  });
 });

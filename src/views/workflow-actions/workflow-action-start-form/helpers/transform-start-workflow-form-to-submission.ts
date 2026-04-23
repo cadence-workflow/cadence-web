@@ -69,5 +69,11 @@ export default function transformStartWorkflowFormToSubmission(
     memo: formData?.memo ? JSON.parse(formData?.memo) : undefined,
     searchAttributes: searchAttributesObject,
     header: formData?.header ? JSON.parse(formData?.header) : undefined,
+    ...(formData.clusterAttribute?.scope &&
+      formData.clusterAttribute?.name && {
+        activeClusterSelectionPolicy: {
+          clusterAttribute: formData.clusterAttribute,
+        },
+      }),
   };
 }
