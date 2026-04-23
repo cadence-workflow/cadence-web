@@ -10,7 +10,7 @@ Typed, runtime-configurable values (feature flags and server settings). Entries 
 | **`evaluateOn: 'serverStart'`** | Once at startup; cached for the process | -                | Resolver runs at boot; return value validated with Zod. Misconfiguration shows failure immediately on startup. |
 | **`evaluateOn: 'request'`**     | Every `getConfigValue(key, args)`       | Optional         | Resolver stored at startup; runs per call with `args`; return value validated with Zod.                        |
 
-Startup vs request: **server start** fails fast and suits static config (e.g. cluster topology). **Request** can use information that does not exist at boot (e.g. cluster, auth, user/domain dependant config).
+Startup vs request: **server start** suits static config as fails fast (e.g. cluster topology). **Request** can use information that does not exist at boot (e.g. cluster, auth, user/domain dependant config).
 
 ### Extensibility and choosing a kind early
 
