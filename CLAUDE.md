@@ -8,7 +8,7 @@ Next.js 14+ (App Router) web UI for [Cadence Workflow](https://cadenceworkflow.i
 
 ```bash
 npm run dev          # Dev server on :8088
-npm test             # All tests + type tests (85% coverage threshold enforced)
+npm run test             # All tests + type tests (85% coverage threshold enforced)
 npm run test:unit:browser  # Browser (jsdom) tests only
 npm run test:unit:node     # Node (server-side) tests only
 npm run lint         # ESLint
