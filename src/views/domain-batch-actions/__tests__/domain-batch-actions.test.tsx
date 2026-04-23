@@ -8,10 +8,33 @@ import DomainBatchActions from '../domain-batch-actions';
 
 jest.mock('../domain-batch-actions.constants', () => ({
   MOCK_BATCH_ACTIONS: [
-    { id: 5, status: 'running', progress: 60 },
-    { id: 4, status: 'completed' },
-    { id: 3, status: 'aborted' },
-    { id: 2, status: 'failed' },
+    {
+      id: 5,
+      status: 'running',
+      progress: 60,
+      actionType: 'cancel',
+      startTime: Date.now() - 100000,
+      rps: 200,
+      concurrency: 10,
+    },
+    {
+      id: 4,
+      status: 'completed',
+      actionType: 'terminate',
+      startTime: Date.now() - 3600000,
+      endTime: Date.now() - 1800000,
+      rps: 150,
+      concurrency: 5,
+    },
+    {
+      id: 3,
+      status: 'failed',
+      actionType: 'reset',
+      startTime: Date.now() - 7200000,
+      endTime: Date.now() - 5400000,
+      rps: 100,
+      concurrency: 8,
+    },
   ],
 }));
 

@@ -8,6 +8,11 @@ export const overrides = {
         background: $theme.colors.negative,
       }),
     },
+    StartEnhancer: {
+      style: ({ $theme }: { $theme: Theme }) => ({
+        fontSize: $theme.sizing.scale700,
+      }),
+    },
   } satisfies ButtonOverrides,
 };
 
@@ -26,10 +31,6 @@ export const styled = {
   })),
   Title: createStyled('h2', ({ $theme }: { $theme: Theme }) => ({
     ...$theme.typography.HeadingXSmall,
-  })),
-  DetailsSection: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
-    paddingTop: $theme.sizing.scale600,
-    paddingBottom: $theme.sizing.scale600,
   })),
   ProgressSection: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     paddingTop: $theme.sizing.scale600,
