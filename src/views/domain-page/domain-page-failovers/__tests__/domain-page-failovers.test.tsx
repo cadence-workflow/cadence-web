@@ -67,40 +67,6 @@ jest.mock('../../config/domain-page-failovers-table.config', () => [
 ]);
 
 jest.mock(
-  '../../config/domain-page-failovers-table-active-active.config',
-  () => [
-    {
-      name: 'Failover ID',
-      id: 'failoverId',
-      width: '35%',
-      renderCell: (event: FailoverEvent) => <div>{event.id}</div>,
-    },
-    {
-      name: 'Time',
-      id: 'time',
-      width: '15%',
-      renderCell: (event: FailoverEvent) => (
-        <div>{event.createdTime?.seconds || 'No date'}</div>
-      ),
-    },
-    {
-      name: 'Type',
-      id: 'type',
-      width: '10%',
-      renderCell: (event: FailoverEvent) => <div>{event.failoverType}</div>,
-    },
-    {
-      name: 'Failover Information',
-      id: 'failoverInfo',
-      width: '40%',
-      renderCell: (event: FailoverEvent) => (
-        <div>Active Active: {event.id}</div>
-      ),
-    },
-  ]
-);
-
-jest.mock(
   '../../domain-page-failovers-filters/domain-page-failovers-filters',
   () => jest.fn(() => <div data-testid="domain-page-failovers-filters" />)
 );

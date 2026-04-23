@@ -1,16 +1,9 @@
 import { render, screen } from '@/test-utils/rtl';
 
-import * as usePageQueryParamsModule from '@/hooks/use-page-query-params/use-page-query-params';
 import { type FailoverEvent } from '@/route-handlers/list-failover-history/list-failover-history.types';
-import { mockDomainPageQueryParamsValues } from '@/views/domain-page/__fixtures__/domain-page-query-params';
 import { DEFAULT_CLUSTER_SCOPE } from '@/views/domain-page/domain-page-failovers/domain-page-failovers.constants';
 
 import DomainPageFailoverActiveActive from '../domain-page-failover-active-active';
-
-const mockSetQueryParams = jest.fn();
-jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
-  jest.fn(() => [mockDomainPageQueryParamsValues, mockSetQueryParams])
-);
 
 jest.mock(
   '../../domain-page-failover-single-cluster/domain-page-failover-single-cluster',
@@ -309,14 +302,11 @@ function setup({
   clusterAttributeScope?: string;
   clusterAttributeValue?: string;
 }) {
-  jest.spyOn(usePageQueryParamsModule, 'default').mockReturnValue([
-    {
-      ...mockDomainPageQueryParamsValues,
-      clusterAttributeScope,
-      clusterAttributeValue,
-    } as typeof mockDomainPageQueryParamsValues,
-    mockSetQueryParams,
-  ]);
-
-  render(<DomainPageFailoverActiveActive failoverEvent={failoverEvent} />);
+  render(
+    <DomainPageFailoverActiveActive
+      failoverEvent={failoverEvent}
+      clusterAttributeScope={clusterAttributeScope}
+      clusterAttributeValue={clusterAttributeValue}
+    />
+  );
 }

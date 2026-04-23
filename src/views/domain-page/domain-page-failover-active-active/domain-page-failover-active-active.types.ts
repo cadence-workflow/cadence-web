@@ -2,4 +2,6 @@ import { type FailoverEvent } from '@/route-handlers/list-failover-history/list-
 
 export type Props = {
   failoverEvent: FailoverEvent;
+  clusterAttributeScope?: string;
+  clusterAttributeValue?: string;
 };
