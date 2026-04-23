@@ -6,6 +6,7 @@ import getDayjsFromDateFilterValue from '@/components/date-filter/helpers/get-da
 import useSuspenseConfigValue from '@/hooks/use-config-value/use-suspense-config-value';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import { type DomainPageTabContentProps } from '@/views/domain-page/domain-page-content/domain-page-content.types';
+import useWorkflowsListColumns from '@/views/shared/workflows-list/hooks/use-workflows-list-columns';
 
 import domainPageQueryParamsConfig from '../domain-page/config/domain-page-query-params.config';
 import useSuspenseDomainDescription from '../shared/hooks/use-domain-description/use-suspense-domain-description';
@@ -23,6 +24,17 @@ export default function DomainWorkflowsArchival(
   } = useSuspenseDomainDescription(props);
 
   const [queryParams] = usePageQueryParams(domainPageQueryParamsConfig);
+
+  const {
+    availableColumns,
+    visibleColumns,
+    selectedColumnIds,
+    setSelectedColumnIds,
+    resetColumns,
+  } = useWorkflowsListColumns({
+    cluster: props.cluster,
+    domain: props.domain,
+  });
 
   const { data: isNewWorkflowsListEnabled } = useSuspenseConfigValue(
     'WORKFLOWS_LIST_ENABLED'
@@ -56,12 +68,18 @@ export default function DomainWorkflowsArchival(
         <DomainWorkflowsArchivalHeader
           domain={props.domain}
           cluster={props.cluster}
-          showColumnsPicker
+          columnsPickerProps={{
+            allColumns: availableColumns,
+            selectedColumnIds,
+            onApply: setSelectedColumnIds,
+            onReset: resetColumns,
+          }}
           {...timeRangeParams}
         />
         <DomainWorkflowsArchivalList
           domain={props.domain}
           cluster={props.cluster}
+          visibleColumns={visibleColumns}
           {...timeRangeParams}
         />
       </>

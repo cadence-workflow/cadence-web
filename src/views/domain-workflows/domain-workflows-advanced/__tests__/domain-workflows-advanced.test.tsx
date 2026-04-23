@@ -14,12 +14,12 @@ jest.mock(
 
 jest.mock('../../domain-workflows-header/domain-workflows-header', () =>
   jest.fn(
-    ({ domain, cluster, showColumnsPicker, timeRangeStart, timeRangeEnd }) => (
+    ({ domain, cluster, columnsPickerProps, timeRangeStart, timeRangeEnd }) => (
       <div data-testid="workflows-header">
         <div>Header Domain: {domain}</div>
         <div>Header Cluster: {cluster}</div>
         <div>
-          Header Show Columns Picker: {showColumnsPicker ? 'true' : 'false'}
+          Header Has Columns Picker: {columnsPickerProps ? 'true' : 'false'}
         </div>
         <div>Header Time Range Start: {timeRangeStart}</div>
         <div>Header Time Range End: {timeRangeEnd}</div>
@@ -70,7 +70,7 @@ describe(DomainWorkflowsAdvanced.name, () => {
       screen.getByText('Header Cluster: test-cluster')
     ).toBeInTheDocument();
     expect(
-      screen.getByText('Header Show Columns Picker: false')
+      screen.getByText('Header Has Columns Picker: false')
     ).toBeInTheDocument();
     expect(
       screen.getByText('Header Time Range Start: 2024-03-20T00:00:00.000Z')
@@ -93,7 +93,7 @@ describe(DomainWorkflowsAdvanced.name, () => {
     expect(screen.queryByTestId('workflows-list')).not.toBeInTheDocument();
   });
 
-  it('should render header with showColumnsPicker and list when isNewWorkflowsListEnabled is true', async () => {
+  it('should render header with columnsPickerProps and list when isNewWorkflowsListEnabled is true', async () => {
     setup({ isNewWorkflowsListEnabled: true });
 
     const header = screen.getByTestId('workflows-header');
@@ -103,7 +103,7 @@ describe(DomainWorkflowsAdvanced.name, () => {
       screen.getByText('Header Cluster: test-cluster')
     ).toBeInTheDocument();
     expect(
-      screen.getByText('Header Show Columns Picker: true')
+      screen.getByText('Header Has Columns Picker: true')
     ).toBeInTheDocument();
 
     const list = screen.getByTestId('workflows-list');
