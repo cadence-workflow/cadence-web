@@ -6,20 +6,9 @@ import { Spinner } from 'baseui/spinner';
 import { Tag } from 'baseui/tag';
 import { MdCheckCircle, MdOutlineCancel, MdWarning } from 'react-icons/md';
 
-import { type BatchActionStatus } from '@/views/domain-batch-actions/domain-batch-actions.types';
-
+import { BATCH_WORKFLOW_STATUS_LABELS } from './batch-action-status-badge.constants';
 import { getTagOverrides } from './batch-action-status-badge.styles';
-
-const STATUS_LABELS: Record<BatchActionStatus, string> = {
-  running: 'Processing',
-  completed: 'Completed',
-  aborted: 'Aborted',
-  failed: 'Failed',
-};
-
-type Props = {
-  status: BatchActionStatus;
-};
+import { type Props } from './batch-action-status-badge.types';
 
 export default function BatchActionStatusBadge({ status }: Props) {
   const [_, theme] = useStyletron();
@@ -38,7 +27,7 @@ export default function BatchActionStatusBadge({ status }: Props) {
   return (
     <Tag closeable={false} overrides={getTagOverrides(status, theme)}>
       {icon}
-      {STATUS_LABELS[status]}
+      {BATCH_WORKFLOW_STATUS_LABELS[status]}
     </Tag>
   );
 }
