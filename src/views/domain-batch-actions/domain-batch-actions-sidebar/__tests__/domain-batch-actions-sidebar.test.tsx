@@ -19,10 +19,10 @@ jest.mock('baseui/spinner', () => ({
 }));
 
 const mockBatchActions: BatchAction[] = [
-  { id: 4, status: 'running', progress: 60 },
-  { id: 3, status: 'completed' },
-  { id: 2, status: 'aborted' },
-  { id: 1, status: 'failed' },
+  { id: 4, status: 'running', progress: 60, actionType: 'cancel' },
+  { id: 3, status: 'completed', actionType: 'cancel' },
+  { id: 2, status: 'aborted', actionType: 'cancel' },
+  { id: 1, status: 'failed', actionType: 'cancel' },
 ];
 
 function setup({
