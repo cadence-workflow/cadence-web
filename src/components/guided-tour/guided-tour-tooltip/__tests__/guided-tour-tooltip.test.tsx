@@ -1,3 +1,5 @@
+import { type StepMerged } from 'react-joyride';
+
 import { render, screen, fireEvent } from '@/test-utils/rtl';
 
 import GuidedTourTooltip from '../guided-tour-tooltip';
@@ -14,6 +16,11 @@ const mockControls = {
   reset: jest.fn(),
   info: jest.fn(),
 };
+
+const baseStep = {
+  target: 'body',
+  content: 'Default step content',
+} as unknown as StepMerged;
 
 const baseProps = {
   backProps: {
@@ -53,6 +60,8 @@ const baseProps = {
   continuous: true,
   isLastStep: false,
   size: 5,
+  index: 0,
+  step: baseStep,
 } as const;
 
 beforeEach(() => {
@@ -64,8 +73,7 @@ describe('GuidedTourTooltip', () => {
     render(
       <GuidedTourTooltip
         {...baseProps}
-        index={0}
-        step={{ title: 'Welcome', content: 'This is a tour' } as any}
+        step={{ ...baseStep, title: 'Welcome', content: 'This is a tour' }}
       />
     );
 
@@ -74,95 +82,52 @@ describe('GuidedTourTooltip', () => {
   });
 
   it('shows progress indicator', () => {
-    render(
-      <GuidedTourTooltip
-        {...baseProps}
-        index={2}
-        step={{ content: 'Step content' } as any}
-      />
-    );
+    render(<GuidedTourTooltip {...baseProps} index={2} />);
 
     expect(screen.getByText('3 of 5')).toBeInTheDocument();
   });
 
   it('hides Back button on first step', () => {
-    render(
-      <GuidedTourTooltip
-        {...baseProps}
-        index={0}
-        step={{ content: 'First step' } as any}
-      />
-    );
+    render(<GuidedTourTooltip {...baseProps} index={0} />);
 
     expect(screen.queryByText('Back')).not.toBeInTheDocument();
     expect(screen.getByText('Next')).toBeInTheDocument();
   });
 
   it('shows Back button on subsequent steps', () => {
-    render(
-      <GuidedTourTooltip
-        {...baseProps}
-        index={1}
-        step={{ content: 'Second step' } as any}
-      />
-    );
+    render(<GuidedTourTooltip {...baseProps} index={1} />);
 
     expect(screen.getByText('Back')).toBeInTheDocument();
   });
 
   it('shows Done instead of Next on last step', () => {
-    render(
-      <GuidedTourTooltip
-        {...baseProps}
-        index={4}
-        isLastStep={true}
-        step={{ content: 'Last step' } as any}
-      />
-    );
+    render(<GuidedTourTooltip {...baseProps} index={4} isLastStep={true} />);
 
     expect(screen.getByText('Done')).toBeInTheDocument();
     expect(screen.queryByText('Next')).not.toBeInTheDocument();
   });
 
-  it('calls controls.skip() when close button is clicked', () => {
-    render(
-      <GuidedTourTooltip
-        {...baseProps}
-        index={0}
-        step={{ content: 'Content' } as any}
-      />
-    );
+  it('invokes closeProps.onClick when close button is clicked', () => {
+    render(<GuidedTourTooltip {...baseProps} />);
 
-    fireEvent.click(screen.getByLabelText('Close tour'));
+    fireEvent.click(screen.getByLabelText('Close'));
 
-    expect(mockControls.skip).toHaveBeenCalled();
+    expect(baseProps.closeProps.onClick).toHaveBeenCalled();
   });
 
-  it('calls controls.next() when Next is clicked', () => {
-    render(
-      <GuidedTourTooltip
-        {...baseProps}
-        index={0}
-        step={{ content: 'Content' } as any}
-      />
-    );
+  it('invokes primaryProps.onClick when Next is clicked', () => {
+    render(<GuidedTourTooltip {...baseProps} />);
 
     fireEvent.click(screen.getByText('Next'));
 
-    expect(mockControls.next).toHaveBeenCalled();
+    expect(baseProps.primaryProps.onClick).toHaveBeenCalled();
   });
 
-  it('calls controls.prev() when Back is clicked', () => {
-    render(
-      <GuidedTourTooltip
-        {...baseProps}
-        index={1}
-        step={{ content: 'Content' } as any}
-      />
-    );
+  it('invokes backProps.onClick when Back is clicked', () => {
+    render(<GuidedTourTooltip {...baseProps} index={1} />);
 
     fireEvent.click(screen.getByText('Back'));
 
-    expect(mockControls.prev).toHaveBeenCalled();
+    expect(baseProps.backProps.onClick).toHaveBeenCalled();
   });
 });

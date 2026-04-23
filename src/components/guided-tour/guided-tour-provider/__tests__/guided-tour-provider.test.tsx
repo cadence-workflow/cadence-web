@@ -1,18 +1,12 @@
 import { render, screen, act } from '@/test-utils/rtl';
 
-import getLocalStorageValue from '@/utils/local-storage/get-local-storage-value';
-import setLocalStorageValue from '@/utils/local-storage/set-local-storage-value';
-
 import GuidedTourProvider from '../guided-tour-provider';
+import * as storage from '../guided-tour-storage';
 
-jest.mock('@/utils/local-storage/get-local-storage-value', () => ({
+jest.mock('../guided-tour-storage', () => ({
   __esModule: true,
-  default: jest.fn(),
-}));
-
-jest.mock('@/utils/local-storage/set-local-storage-value', () => ({
-  __esModule: true,
-  default: jest.fn(),
+  isTourCompleted: jest.fn(),
+  markTourCompleted: jest.fn(),
 }));
 
 jest.mock('react-joyride', () => {
@@ -93,17 +87,17 @@ describe('GuidedTourProvider', () => {
     expect(screen.getByTestId('joyride-tour')).toBeInTheDocument();
   });
 
-  it('auto-starts tour on first visit when localStorage flag is not set', () => {
-    (getLocalStorageValue as jest.Mock).mockReturnValue(null);
+  it('auto-starts tour on first visit when not previously completed', () => {
+    (storage.isTourCompleted as jest.Mock).mockReturnValue(false);
 
     setup();
 
-    expect(getLocalStorageValue).toHaveBeenCalledWith('guided-tour:test-tour');
+    expect(storage.isTourCompleted).toHaveBeenCalledWith('test-tour');
     expect(mockJoyride._mockControls.start).toHaveBeenCalled();
   });
 
-  it('does not auto-start when localStorage flag is set', () => {
-    (getLocalStorageValue as jest.Mock).mockReturnValue('completed');
+  it('does not auto-start when tour is already completed', () => {
+    (storage.isTourCompleted as jest.Mock).mockReturnValue(true);
 
     setup();
 
@@ -111,34 +105,29 @@ describe('GuidedTourProvider', () => {
   });
 
   it('does not auto-start when autoStart is false', () => {
-    (getLocalStorageValue as jest.Mock).mockReturnValue(null);
+    (storage.isTourCompleted as jest.Mock).mockReturnValue(false);
 
     setup({ autoStart: false });
 
     expect(mockJoyride._mockControls.start).not.toHaveBeenCalled();
   });
 
-  it('uses tour-specific localStorage key', () => {
-    (getLocalStorageValue as jest.Mock).mockReturnValue(null);
+  it('uses tour-specific id when checking completion', () => {
+    (storage.isTourCompleted as jest.Mock).mockReturnValue(false);
 
     setup({ tourId: 'my-feature-tour' });
 
-    expect(getLocalStorageValue).toHaveBeenCalledWith(
-      'guided-tour:my-feature-tour'
-    );
+    expect(storage.isTourCompleted).toHaveBeenCalledWith('my-feature-tour');
   });
 
-  it('marks tour as completed in localStorage on tour end', () => {
+  it('marks tour as completed on tour end', () => {
     setup({ tourId: 'domain-overview' });
 
     act(() => {
       mockJoyride._triggerTourEnd?.();
     });
 
-    expect(setLocalStorageValue).toHaveBeenCalledWith(
-      'guided-tour:domain-overview',
-      'completed'
-    );
+    expect(storage.markTourCompleted).toHaveBeenCalledWith('domain-overview');
   });
 
   it('skips tour when overlay is clicked', () => {

@@ -6,42 +6,43 @@ Reusable components for creating guided product tours using [react-joyride v3](h
 
 | Component | Path | Purpose |
 |-----------|------|---------|
-| `GuidedTourProvider` | `@/components/guided-tour/guided-tour-provider` | Wraps a section with tour functionality. Manages `useJoyride`, localStorage completion flags, and auto-starts the tour on first visit. |
+| `GuidedTourProvider` | `@/components/guided-tour/guided-tour-provider` | Wraps a section with tour functionality. Manages `useJoyride`, completion tracking, and auto-starts the tour on first visit. |
 | `GuidedTourTooltip` | `@/components/guided-tour/guided-tour-tooltip` | Custom tooltip styled with BaseUI. Used internally by the provider. |
+| `useGuidedTour` | `@/components/guided-tour/guided-tour-provider` | Hook that returns the current tour's `controls`. Throws if used outside a `GuidedTourProvider`. |
 
 ## Quick Start
 
 ### 1. Define your tour steps
 
-Create a helper file in your page's `helpers/` directory:
+Add a config file in your page's `config/` directory:
 
 ```ts
-// src/views/my-page/helpers/get-my-page-tour-steps.ts
+// src/views/my-page/config/my-page-tour.config.ts
 import { type Step } from 'react-joyride';
 
-export default function getMyPageTourSteps(): Step[] {
-  return [
-    {
-      target: 'body',
-      placement: 'center',
-      skipBeacon: true,
-      title: 'Welcome!',
-      content: 'Let us show you around this page.',
-    },
-    {
-      target: '[data-tour="search-bar"]',
-      skipBeacon: true,
-      title: 'Search',
-      content: 'Use the search bar to find workflows by ID or type.',
-    },
-    {
-      target: '[data-tour="filters"]',
-      skipBeacon: true,
-      title: 'Filters',
-      content: 'Narrow down results using these filters.',
-    },
-  ];
-}
+const myPageTourConfig: Step[] = [
+  {
+    target: 'body',
+    placement: 'center',
+    skipBeacon: true,
+    title: 'Welcome!',
+    content: 'Let us show you around this page.',
+  },
+  {
+    target: '[data-tour="search-bar"]',
+    skipBeacon: true,
+    title: 'Search',
+    content: 'Use the search bar to find workflows by ID or type.',
+  },
+  {
+    target: '[data-tour="filters"]',
+    skipBeacon: true,
+    title: 'Filters',
+    content: 'Narrow down results using these filters.',
+  },
+];
+
+export default myPageTourConfig;
 ```
 
 ### 2. Wrap your page with the provider
@@ -51,11 +52,11 @@ Add `GuidedTourProvider` in your page's component tree. The tour auto-starts on 
 ```tsx
 // src/views/my-page/my-page-context-provider.tsx
 import GuidedTourProvider from '@/components/guided-tour/guided-tour-provider/guided-tour-provider';
-import getMyPageTourSteps from '../helpers/get-my-page-tour-steps';
+import myPageTourConfig from '../config/my-page-tour.config';
 
 export default function MyPageContextProvider({ children }) {
   return (
-    <GuidedTourProvider tourId="my-page-overview" steps={getMyPageTourSteps()}>
+    <GuidedTourProvider tourId="my-page-overview" steps={myPageTourConfig}>
       {children}
     </GuidedTourProvider>
   );
@@ -76,27 +77,27 @@ Add `data-tour` attributes to elements you want to highlight:
 </div>
 ```
 
-That's it. The tour runs automatically on the user's first visit and is remembered via localStorage.
+That's it. The tour runs automatically on the user's first visit and is remembered in localStorage.
 
 ## Provider Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `tourId` | `string` | *required* | Unique identifier for localStorage tracking. Each tour needs its own ID. |
+| `tourId` | `string` | *required* | Unique identifier for completion tracking. Each tour needs its own ID. |
 | `steps` | `Step[]` | *required* | Array of react-joyride step objects. |
 | `children` | `ReactNode` | *required* | Page content to wrap. |
-| `autoStart` | `boolean` | `true` | Auto-start the tour on first visit (when localStorage flag is not set). Set to `false` to control start timing manually via the `GuidedTourContext`. |
+| `autoStart` | `boolean` | `true` | Auto-start the tour on first visit (when not already completed). Set to `false` to control start timing manually via `useGuidedTour`. |
 
 ## Triggering a Tour on a Modal or Specific Event
 
-For tours that should start when a modal opens or a specific action occurs, set `autoStart={false}` and use the context to start manually:
+For tours that should start when a modal opens or a specific action occurs, set `autoStart={false}` and use `useGuidedTour` to start manually:
 
 ```tsx
-import { useContext, useEffect } from 'react';
-import { GuidedTourContext } from '@/components/guided-tour/guided-tour-provider/guided-tour-provider';
+import { useEffect } from 'react';
+import { useGuidedTour } from '@/components/guided-tour/guided-tour-provider/guided-tour-provider';
 
 function MyModal({ isOpen }) {
-  const { controls } = useContext(GuidedTourContext);
+  const { controls } = useGuidedTour();
 
   useEffect(() => {
     if (isOpen) {
@@ -116,31 +117,58 @@ Wrap the modal's parent with the provider:
 </GuidedTourProvider>
 ```
 
-The localStorage flag still applies — even with manual triggering, the tour only shows once unless the flag is cleared.
+The completion flag still applies — even with manual triggering, the tour only shows once unless the flag is cleared.
 
-## localStorage Flags
+## Completion Tracking
 
-Each tour tracks completion independently using the key format:
+All completed tour ids are stored together under a single localStorage key:
 
 ```
-guided-tour:{tourId}
+guided-tour:completed   →   {"my-page-overview": true, "my-modal-tour": true}
 ```
 
-- On first visit (no key in localStorage), the tour auto-starts.
-- When the tour finishes or is skipped, the key is set to `'completed'`.
-- To reset: clear the key from localStorage (e.g., `localStorage.removeItem('guided-tour:my-page-overview')`).
+- On first visit (tour id not in the map), the tour auto-starts.
+- When the tour finishes or is skipped, the id is added to the map.
+- To reset a single tour, remove its id from the map; to reset all, delete the `guided-tour:completed` key entirely.
 
 ## Multiple Tours on One Page
 
-Use different `tourId` values to run independent tours on the same page. Each tour has its own localStorage flag:
+Each tour gets its own `tourId` so completion is tracked independently. **Run only one tour at a time** — under the hood, `useJoyride` appends a global portal (`<div id="react-joyride-portal">`), attaches a document-level Escape listener, and renders a full-screen overlay. Two `RUNNING` tours on the same page would collide on all three.
+
+The two safe patterns are:
+
+### Pattern A — Sibling providers, only one auto-starts at a time
+
+Use `autoStart={false}` on every provider except the one you want to run, and switch which is active based on app state.
 
 ```tsx
-<GuidedTourProvider tourId="my-page-overview" steps={overviewSteps}>
-  <GuidedTourProvider tourId="my-page-new-feature" steps={featureSteps}>
-    {children}
+<GuidedTourProvider tourId="overview" steps={overviewSteps} autoStart={!hasSeenOverview}>
+  <Page />
+</GuidedTourProvider>
+
+{showFeatureTour && (
+  <GuidedTourProvider tourId="new-feature" steps={featureSteps} autoStart={false}>
+    <FeatureModal />
+  </GuidedTourProvider>
+)}
+```
+
+### Pattern B — Nested providers for scoped `useGuidedTour()` access
+
+You **can** nest providers — the two tours stay independent for completion tracking — but be aware:
+
+> **Heads up.** Both providers share the same `GuidedTourContext`, so the inner provider shadows the outer one. A child rendered inside the inner provider will only ever get the inner tour's `controls` from `useGuidedTour()`. If a child needs the outer controls, render it between the two providers (above the inner `<GuidedTourProvider>`), or use sibling providers (Pattern A) instead.
+
+```tsx
+<GuidedTourProvider tourId="overview" steps={overviewSteps}>
+  <OuterControlsTrigger /> {/* useGuidedTour() here → outer controls */}
+  <GuidedTourProvider tourId="new-feature" steps={featureSteps} autoStart={false}>
+    <InnerControlsTrigger /> {/* useGuidedTour() here → inner controls */}
   </GuidedTourProvider>
 </GuidedTourProvider>
 ```
+
+Even with nesting, only one tour should be `RUNNING` at any moment — start the inner one after the outer ends (e.g., on the inner provider's `tour:end` listener or via a user action).
 
 ## Step Configuration Reference
 

@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { type SyntheticEvent } from 'react';
 
 import { Button } from 'baseui/button';
 import { MdClose } from 'react-icons/md';
@@ -7,10 +7,22 @@ import { MdClose } from 'react-icons/md';
 import { overrides, styled } from './guided-tour-tooltip.styles';
 import { type Props } from './guided-tour-tooltip.types';
 
+type JoyrideButtonProps = Props['closeProps'];
+type BaseUIButtonOnClick = (a: SyntheticEvent<HTMLButtonElement>) => unknown;
+
+function adaptButtonProps({ onClick, ...rest }: JoyrideButtonProps) {
+  return {
+    ...rest,
+    onClick: onClick as unknown as BaseUIButtonOnClick,
+  };
+}
+
 export default function GuidedTourTooltip({
-  controls,
+  backProps,
+  closeProps,
   index,
   isLastStep,
+  primaryProps,
   size,
   step,
   tooltipProps,
@@ -20,11 +32,10 @@ export default function GuidedTourTooltip({
       <styled.Header>
         {step.title && <styled.Title>{step.title}</styled.Title>}
         <Button
+          {...adaptButtonProps(closeProps)}
           size="mini"
           kind="tertiary"
           shape="square"
-          aria-label="Close tour"
-          onClick={() => controls.skip()}
           overrides={overrides.closeButton}
         >
           <MdClose size={14} />
@@ -38,14 +49,18 @@ export default function GuidedTourTooltip({
         <styled.FooterActions>
           {index > 0 && (
             <Button
+              {...adaptButtonProps(backProps)}
               size="compact"
               kind="secondary"
-              onClick={() => controls.prev()}
             >
               Back
             </Button>
           )}
-          <Button size="compact" kind="primary" onClick={() => controls.next()}>
+          <Button
+            {...adaptButtonProps(primaryProps)}
+            size="compact"
+            kind="primary"
+          >
             {isLastStep ? 'Done' : 'Next'}
           </Button>
         </styled.FooterActions>

@@ -1,10 +1,7 @@
 'use client';
-import { createContext, useEffect, useRef } from 'react';
+import { createContext, useContext, useEffect, useRef } from 'react';
 
 import { useJoyride, ORIGIN } from 'react-joyride';
-
-import getLocalStorageValue from '@/utils/local-storage/get-local-storage-value';
-import setLocalStorageValue from '@/utils/local-storage/set-local-storage-value';
 
 import GuidedTourTooltip from '../guided-tour-tooltip/guided-tour-tooltip';
 
@@ -12,13 +9,18 @@ import {
   type GuidedTourContextType,
   type Props,
 } from './guided-tour-provider.types';
+import { isTourCompleted, markTourCompleted } from './guided-tour-storage';
 
-export const GuidedTourContext = createContext<GuidedTourContextType>(
-  {} as GuidedTourContextType
+export const GuidedTourContext = createContext<GuidedTourContextType | null>(
+  null
 );
 
-function getStorageKey(tourId: string) {
-  return `guided-tour:${tourId}`;
+export function useGuidedTour(): GuidedTourContextType {
+  const ctx = useContext(GuidedTourContext);
+  if (!ctx) {
+    throw new Error('useGuidedTour must be used within a GuidedTourProvider');
+  }
+  return ctx;
 }
 
 export default function GuidedTourProvider({
@@ -38,22 +40,20 @@ export default function GuidedTourProvider({
     },
   });
 
-  const hasAutoStarted = useRef(false);
+  const startedTourId = useRef<string | null>(null);
 
   useEffect(() => {
-    if (autoStart && !hasAutoStarted.current) {
-      const completed = getLocalStorageValue(getStorageKey(tourId));
+    if (!autoStart || startedTourId.current === tourId) return;
 
-      if (!completed) {
-        controls.start();
-      }
-      hasAutoStarted.current = true;
+    if (!isTourCompleted(tourId)) {
+      controls.start();
     }
+    startedTourId.current = tourId;
   }, [autoStart, tourId, controls]);
 
   useEffect(() => {
     return on('tour:end', () => {
-      setLocalStorageValue(getStorageKey(tourId), 'completed');
+      markTourCompleted(tourId);
     });
   }, [on, tourId]);
 
