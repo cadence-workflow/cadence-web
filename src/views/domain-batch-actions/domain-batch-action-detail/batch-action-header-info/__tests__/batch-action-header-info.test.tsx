@@ -48,6 +48,7 @@ describe(BatchActionHeaderInfo.name, () => {
     const action: BatchAction = {
       id: 4,
       status: 'completed',
+      actionType: 'cancel',
       endTime: new Date('2024-03-13T09:00:00.000Z').getTime(),
     };
     render(<BatchActionHeaderInfo batchAction={action} />);
@@ -63,7 +64,11 @@ describe(BatchActionHeaderInfo.name, () => {
   });
 
   it('renders Completed badge with check icon for completed status', () => {
-    const action: BatchAction = { id: 4, status: 'completed' };
+    const action: BatchAction = {
+      id: 4,
+      status: 'completed',
+      actionType: 'cancel',
+    };
     render(<BatchActionHeaderInfo batchAction={action} />);
 
     expect(screen.getByText('Completed')).toBeInTheDocument();
@@ -71,7 +76,11 @@ describe(BatchActionHeaderInfo.name, () => {
   });
 
   it('renders Aborted badge with cancel icon for aborted status', () => {
-    const action: BatchAction = { id: 1, status: 'aborted' };
+    const action: BatchAction = {
+      id: 1,
+      status: 'aborted',
+      actionType: 'cancel',
+    };
     render(<BatchActionHeaderInfo batchAction={action} />);
 
     expect(screen.getByText('Aborted')).toBeInTheDocument();
@@ -79,7 +88,11 @@ describe(BatchActionHeaderInfo.name, () => {
   });
 
   it('renders Failed badge with warning icon for failed status', () => {
-    const action: BatchAction = { id: 2, status: 'failed' };
+    const action: BatchAction = {
+      id: 2,
+      status: 'failed',
+      actionType: 'cancel',
+    };
     render(<BatchActionHeaderInfo batchAction={action} />);
 
     expect(screen.getByText('Failed')).toBeInTheDocument();
@@ -101,9 +114,13 @@ describe(BatchActionHeaderInfo.name, () => {
   });
 
   it('renders dashes when optional fields are missing', () => {
-    const action: BatchAction = { id: 2, status: 'completed' };
+    const action: BatchAction = {
+      id: 2,
+      status: 'completed',
+      actionType: 'cancel',
+    };
     render(<BatchActionHeaderInfo batchAction={action} />);
 
-    expect(screen.getAllByText('—')).toHaveLength(6); // actionType, startTime, ended, duration, rps, concurrency
+    expect(screen.getAllByText('—')).toHaveLength(5); // startTime, ended, duration, rps, concurrency
   });
 });
