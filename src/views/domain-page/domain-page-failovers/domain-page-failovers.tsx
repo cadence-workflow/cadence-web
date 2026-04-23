@@ -1,16 +1,15 @@
 'use client';
-import React, { createElement, useMemo } from 'react';
+import React from 'react';
 
 import Table from '@/components/table/table';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
-import { type FailoverEvent } from '@/route-handlers/list-failover-history/list-failover-history.types';
 import isActiveActiveDomain from '@/views/shared/active-active/helpers/is-active-active-domain';
 import useSuspenseDomainDescription from '@/views/shared/hooks/use-domain-description/use-suspense-domain-description';
 
+import domainPageFailoversTableActiveActiveConfig from '../config/domain-page-failovers-table-active-active.config';
 import domainPageFailoversTableConfig from '../config/domain-page-failovers-table.config';
 import domainPageQueryParamsConfig from '../config/domain-page-query-params.config';
 import { type DomainPageTabContentProps } from '../domain-page-content/domain-page-content.types';
-import DomainPageFailoverActiveActive from '../domain-page-failover-active-active/domain-page-failover-active-active';
 import DomainPageFailoversFilters from '../domain-page-failovers-filters/domain-page-failovers-filters';
 import useDomainFailoverHistory from '../hooks/use-domain-failover-history/use-domain-failover-history';
 
@@ -53,22 +52,6 @@ export default function DomainPageFailovers({
       : {}),
   });
 
-  const activeActiveColumns = useMemo(
-    () => [
-      ...domainPageFailoversTableConfig.slice(0, 2),
-      {
-        ...domainPageFailoversTableConfig[2],
-        renderCell: (event: FailoverEvent) =>
-          createElement(DomainPageFailoverActiveActive, {
-            failoverEvent: event,
-            clusterAttributeScope,
-            clusterAttributeValue,
-          }),
-      },
-    ],
-    [clusterAttributeScope, clusterAttributeValue]
-  );
-
   return (
     <div>
       {isActiveActive ? (
@@ -81,7 +64,15 @@ export default function DomainPageFailovers({
         <styled.TableTopSpacer />
       )}
       <Table
-        data={filteredFailoverEvents}
+        data={
+          isActiveActive
+            ? filteredFailoverEvents.map((e) => ({
+                ...e,
+                displayedScope: clusterAttributeScope,
+                displayedValue: clusterAttributeValue,
+              }))
+            : filteredFailoverEvents
+        }
         shouldShowResults={!isLoading && filteredFailoverEvents.length > 0}
         endMessageProps={{
           kind: 'infinite-scroll',
@@ -92,7 +83,9 @@ export default function DomainPageFailovers({
           isFetchingNextPage,
         }}
         columns={
-          isActiveActive ? activeActiveColumns : domainPageFailoversTableConfig
+          isActiveActive
+            ? domainPageFailoversTableActiveActiveConfig
+            : domainPageFailoversTableConfig
         }
       />
     </div>

@@ -1,7 +1,5 @@
-import { type FailoverEvent } from '@/route-handlers/list-failover-history/list-failover-history.types';
+import { type FailoverEventActiveActive } from '../domain-page-failovers/domain-page-failovers.types';
 
 export type Props = {
-  failoverEvent: FailoverEvent;
-  clusterAttributeScope?: string;
-  clusterAttributeValue?: string;
+  failoverEvent: FailoverEventActiveActive;
 };

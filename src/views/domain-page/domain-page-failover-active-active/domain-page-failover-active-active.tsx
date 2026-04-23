@@ -16,29 +16,27 @@ import { type Props } from './domain-page-failover-active-active.types';
 
 export default function DomainPageFailoverActiveActive({
   failoverEvent,
-  clusterAttributeScope,
-  clusterAttributeValue,
 }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const clusterFailoverForMaybeSelectedAttribute = useMemo(() => {
     if (
-      !clusterAttributeScope ||
-      (clusterAttributeScope !== DEFAULT_CLUSTER_SCOPE &&
-        !clusterAttributeValue)
+      !failoverEvent.displayedScope ||
+      (failoverEvent.displayedScope !== DEFAULT_CLUSTER_SCOPE &&
+        !failoverEvent.displayedValue)
     )
       return undefined;
 
     return failoverEvent.clusterFailovers.find((clusterFailover) =>
       clusterFailoverMatchesAttribute(
         clusterFailover,
-        clusterAttributeScope,
-        clusterAttributeValue
+        failoverEvent.displayedScope,
+        failoverEvent.displayedValue
       )
     );
   }, [
-    clusterAttributeScope,
-    clusterAttributeValue,
+    failoverEvent.displayedScope,
+    failoverEvent.displayedValue,
     failoverEvent.clusterFailovers,
   ]);
 
@@ -48,9 +46,9 @@ export default function DomainPageFailoverActiveActive({
         {clusterFailoverForMaybeSelectedAttribute && (
           <styled.ClusterFailoverContainer>
             <styled.ClusterAttributeLabel>
-              {clusterAttributeScope === DEFAULT_CLUSTER_SCOPE
+              {failoverEvent.displayedScope === DEFAULT_CLUSTER_SCOPE
                 ? `${DEFAULT_CLUSTER_SCOPE_LABEL}:`
-                : `${clusterAttributeScope} (${clusterAttributeValue}):`}
+                : `${failoverEvent.displayedScope} (${failoverEvent.displayedValue}):`}
             </styled.ClusterAttributeLabel>
             <DomainPageFailoverSingleCluster
               fromCluster={
