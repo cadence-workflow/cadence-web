@@ -4,8 +4,8 @@ import { userEvent } from '@testing-library/user-event';
 
 import { render, screen } from '@/test-utils/rtl';
 
-import { type Props as SidebarProps } from '../domain-batch-actions-sidebar/domain-batch-actions-sidebar.types';
 import DomainBatchActions from '../domain-batch-actions';
+import { type Props as SidebarProps } from '../domain-batch-actions-sidebar/domain-batch-actions-sidebar.types';
 
 jest.mock('../domain-batch-actions.constants', () => ({
   MOCK_BATCH_ACTIONS: [

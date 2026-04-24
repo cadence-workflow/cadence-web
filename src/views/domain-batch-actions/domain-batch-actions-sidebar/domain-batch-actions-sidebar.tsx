@@ -47,8 +47,7 @@ export default function DomainBatchActionsSidebar({
           />
         )}
         {batchActions.map((action) => {
-          const isSelected =
-            !isDraftSelected && selectedActionId === action.id;
+          const isSelected = !isDraftSelected && selectedActionId === action.id;
           return (
             <BatchActionsSidebarItem
               key={action.id}

@@ -13,6 +13,8 @@ export const styled = {
   })),
   DetailPanel: createStyled('main', ({ $theme }: { $theme: Theme }) => ({
     flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
     padding: $theme.sizing.scale600,
     overflow: 'auto',
   })),
