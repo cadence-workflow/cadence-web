@@ -7,31 +7,38 @@ import DomainBatchActionDetail from './domain-batch-action-detail/domain-batch-a
 import DomainBatchActionsSidebar from './domain-batch-actions-sidebar/domain-batch-actions-sidebar';
 import { MOCK_BATCH_ACTIONS } from './domain-batch-actions.constants';
 import { styled } from './domain-batch-actions.styles';
-import { type SelectedId } from './domain-batch-actions.types';
 import NewBatchActionDetail from './new-batch-action-detail/new-batch-action-detail';
 
 export default function DomainBatchActions(_props: DomainPageTabContentProps) {
   // TODO: replace with useSuspenseQuery once the batch-actions list endpoint exists
   const batchActions = MOCK_BATCH_ACTIONS;
 
-  const [hasDraft, setHasDraft] = useState(false);
-  const [selectedId, setSelectedId] = useState<SelectedId>(
+  // TODO: lift selectedActionId into a query param to support deep linking.
+  const [selectedActionId, setSelectedActionId] = useState<string | null>(
     batchActions[0]?.id ?? null
   );
+  const [isDraftOpen, setIsDraftOpen] = useState(false);
+  const [isDraftSelected, setIsDraftSelected] = useState(false);
 
-  const selectedAction =
-    typeof selectedId === 'number'
-      ? batchActions.find((action) => action.id === selectedId)
-      : undefined;
+  const selectedAction = batchActions.find((a) => a.id === selectedActionId);
 
   const handleCreateNew = () => {
-    setHasDraft(true);
-    setSelectedId('draft');
+    setIsDraftOpen(true);
+    setIsDraftSelected(true);
+  };
+
+  const handleSelectAction = (id: string) => {
+    setSelectedActionId(id);
+    setIsDraftSelected(false);
+  };
+
+  const handleSelectDraft = () => {
+    setIsDraftSelected(true);
   };
 
   const handleDiscard = () => {
-    setHasDraft(false);
-    setSelectedId(batchActions[0]?.id ?? null);
+    setIsDraftOpen(false);
+    setIsDraftSelected(false);
   };
 
   return (
@@ -39,17 +46,17 @@ export default function DomainBatchActions(_props: DomainPageTabContentProps) {
       <styled.Sidebar>
         <DomainBatchActionsSidebar
           batchActions={batchActions}
-          hasDraft={hasDraft}
-          selectedId={selectedId}
-          onSelect={(next) => setSelectedId(next)}
+          isDraftOpen={isDraftOpen}
+          isDraftSelected={isDraftSelected}
+          selectedActionId={selectedActionId}
+          onSelectAction={handleSelectAction}
+          onSelectDraft={handleSelectDraft}
           onCreateNew={handleCreateNew}
         />
       </styled.Sidebar>
       <styled.DetailPanel>
-        {selectedId === 'draft' && (
-          <NewBatchActionDetail onDiscard={handleDiscard} />
-        )}
-        {selectedAction && (
+        {isDraftSelected && <NewBatchActionDetail onDiscard={handleDiscard} />}
+        {!isDraftSelected && selectedAction && (
           <DomainBatchActionDetail batchAction={selectedAction} />
         )}
       </styled.DetailPanel>

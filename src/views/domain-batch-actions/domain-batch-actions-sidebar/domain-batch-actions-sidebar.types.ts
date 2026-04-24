@@ -1,12 +1,11 @@
-import {
-  type BatchAction,
-  type SelectedId,
-} from '../domain-batch-actions.types';
+import { type BatchAction } from '../domain-batch-actions.types';
 
 export type Props = {
   batchActions: BatchAction[];
-  hasDraft: boolean;
-  selectedId: SelectedId;
-  onSelect: (id: number | 'draft') => void;
+  isDraftOpen: boolean;
+  isDraftSelected: boolean;
+  selectedActionId: string | null;
+  onSelectAction: (id: string) => void;
+  onSelectDraft: () => void;
   onCreateNew: () => void;
 };

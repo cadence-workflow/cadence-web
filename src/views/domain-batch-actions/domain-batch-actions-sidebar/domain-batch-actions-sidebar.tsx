@@ -13,9 +13,11 @@ import { type Props } from './domain-batch-actions-sidebar.types';
 
 export default function DomainBatchActionsSidebar({
   batchActions,
-  hasDraft,
-  selectedId,
-  onSelect,
+  isDraftOpen,
+  isDraftSelected,
+  selectedActionId,
+  onSelectAction,
+  onSelectDraft,
   onCreateNew,
 }: Props) {
   return (
@@ -31,31 +33,33 @@ export default function DomainBatchActionsSidebar({
       </Button>
       <styled.SectionLabel>Batch history</styled.SectionLabel>
       <styled.List>
-        {hasDraft && (
+        {isDraftOpen && (
           <BatchActionsSidebarItem
-            id="draft"
             label="Untitled batch action"
             icon={
               <styled.DraftIcon>
                 <MdOutlineEdit />
               </styled.DraftIcon>
             }
-            isSelected={selectedId === 'draft'}
+            isSelected={isDraftSelected}
             isActive
-            onSelect={onSelect}
+            onSelect={onSelectDraft}
           />
         )}
-        {batchActions.map((action) => (
-          <BatchActionsSidebarItem
-            key={action.id}
-            id={action.id}
-            label={`Batch action #${action.id}`}
-            icon={<StatusIcon action={action} />}
-            isSelected={selectedId === action.id}
-            isActive={action.status === 'running' || selectedId === action.id}
-            onSelect={onSelect}
-          />
-        ))}
+        {batchActions.map((action) => {
+          const isSelected =
+            !isDraftSelected && selectedActionId === action.id;
+          return (
+            <BatchActionsSidebarItem
+              key={action.id}
+              label={`Batch action #${action.id}`}
+              icon={<StatusIcon action={action} />}
+              isSelected={isSelected}
+              isActive={action.status === 'running' || isSelected}
+              onSelect={() => onSelectAction(action.id)}
+            />
+          );
+        })}
       </styled.List>
     </styled.Container>
   );

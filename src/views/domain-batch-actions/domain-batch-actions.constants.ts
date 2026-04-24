@@ -3,7 +3,7 @@ import { type BatchAction } from './domain-batch-actions.types';
 // TODO: Replace with real API data
 export const MOCK_BATCH_ACTIONS: BatchAction[] = [
   {
-    id: 5,
+    id: '5',
     status: 'running',
     progress: 60,
     actionType: 'cancel',
@@ -12,7 +12,7 @@ export const MOCK_BATCH_ACTIONS: BatchAction[] = [
     concurrency: 10,
   },
   {
-    id: 4,
+    id: '4',
     status: 'completed',
     actionType: 'terminate',
     startTime: Date.now() - 3600000,
@@ -21,7 +21,7 @@ export const MOCK_BATCH_ACTIONS: BatchAction[] = [
     concurrency: 5,
   },
   {
-    id: 3,
+    id: '3',
     status: 'aborted',
     actionType: 'reset',
     startTime: Date.now() - 7200000,
@@ -30,7 +30,7 @@ export const MOCK_BATCH_ACTIONS: BatchAction[] = [
     concurrency: 8,
   },
   {
-    id: 2,
+    id: '2',
     status: 'failed',
     actionType: 'signal',
     startTime: Date.now() - 14400000,

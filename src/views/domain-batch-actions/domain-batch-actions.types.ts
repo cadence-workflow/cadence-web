@@ -3,7 +3,7 @@ export type BatchActionStatus = 'running' | 'completed' | 'aborted' | 'failed';
 export type BatchActionType = 'cancel' | 'terminate' | 'reset' | 'signal';
 
 export type BatchAction = {
-  id: number;
+  id: string;
   status: BatchActionStatus;
   progress?: number; // 0-100, only relevant when status is 'running'
   actionType: BatchActionType;
@@ -12,5 +12,3 @@ export type BatchAction = {
   rps?: number;
   concurrency?: number;
 };
-
-export type SelectedId = number | 'draft' | null;

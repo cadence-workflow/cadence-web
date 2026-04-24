@@ -16,7 +16,6 @@ export const styled = {
     display: 'flex',
     flexDirection: 'column' as const,
     gap: $theme.sizing.scale600,
-    width: '100%',
   })),
   Header: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',

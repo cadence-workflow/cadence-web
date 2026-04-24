@@ -14,7 +14,6 @@ describe(BatchActionsSidebarItem.name, () => {
   it('renders the label and icon', () => {
     render(
       <BatchActionsSidebarItem
-        id={5}
         label="Batch action #5"
         icon={<div>Test Icon</div>}
         isSelected={false}
@@ -27,13 +26,12 @@ describe(BatchActionsSidebarItem.name, () => {
     expect(screen.getByText('Test Icon')).toBeInTheDocument();
   });
 
-  it('calls onSelect with the id when clicked', async () => {
+  it('calls onSelect when clicked', async () => {
     const onSelect = jest.fn();
     const user = userEvent.setup();
 
     render(
       <BatchActionsSidebarItem
-        id={5}
         label="Batch action #5"
         icon={null}
         isSelected={false}
@@ -44,6 +42,6 @@ describe(BatchActionsSidebarItem.name, () => {
 
     await user.click(screen.getByText('Batch action #5'));
 
-    expect(onSelect).toHaveBeenCalledWith(5);
+    expect(onSelect).toHaveBeenCalledTimes(1);
   });
 });

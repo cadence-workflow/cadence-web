@@ -5,22 +5,19 @@ import { styled } from './batch-actions-sidebar-item.styles';
 import { type Props } from './batch-actions-sidebar-item.types';
 
 export default function BatchActionsSidebarItem({
-  id,
   label,
   icon,
   isSelected,
   isActive,
   onSelect,
 }: Props) {
-  const handleSelect = () => onSelect(id);
-
   return (
     <styled.ListItem
       $isSelected={isSelected}
       $isActive={isActive}
-      onClick={handleSelect}
+      onClick={onSelect}
       onKeyDown={(e: React.KeyboardEvent) => {
-        if (e.key === 'Enter' || e.key === ' ') handleSelect();
+        if (e.key === 'Enter' || e.key === ' ') onSelect();
       }}
       role="button"
       tabIndex={0}
