@@ -1,7 +1,4 @@
-import {
-  type BatchAction,
-  type SelectedId,
-} from '../domain-batch-actions.types';
+import { type BatchAction } from '../domain-batch-actions.types';
 
 export type Props = {
   batchActions: BatchAction[];

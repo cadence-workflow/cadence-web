@@ -2,7 +2,6 @@
 import React from 'react';
 
 import { MdAdd, MdOutlineEdit } from 'react-icons/md';
-import { MdAdd, MdOutlineEdit } from 'react-icons/md';
 
 import Button from '@/components/button/button';
 
@@ -28,7 +27,6 @@ export default function DomainBatchActionsSidebar({
         size="compact"
         startEnhancer={<MdAdd />}
         overrides={overrides.newActionButton}
-        onClick={onCreateNew}
         onClick={onCreateNew}
       >
         New batch action

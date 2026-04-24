@@ -4,10 +4,7 @@ import { userEvent } from '@testing-library/user-event';
 
 import { render, screen } from '@/test-utils/rtl';
 
-import {
-  type BatchAction,
-  type SelectedId,
-} from '../../domain-batch-actions.types';
+import { type BatchAction } from '../../domain-batch-actions.types';
 import DomainBatchActionsSidebar from '../domain-batch-actions-sidebar';
 
 jest.mock('react-icons/md', () => ({
