@@ -5,9 +5,12 @@ import { MdDirectionsRun } from 'react-icons/md';
 
 import Button from '@/components/button/button';
 
-import { overrides, styled } from './new-batch-action-info-banner.styles';
+import {
+  overrides,
+  styled,
+} from './domain-new-batch-action-info-banner.styles';
 
-export default function NewBatchActionInfoBanner() {
+export default function DomainNewBatchActionInfoBanner() {
   const [isDismissed, setIsDismissed] = useState(false);
 
   if (isDismissed) return null;

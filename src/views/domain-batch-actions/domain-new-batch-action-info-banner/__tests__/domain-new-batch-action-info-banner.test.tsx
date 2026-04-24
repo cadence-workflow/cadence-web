@@ -1,18 +1,12 @@
 import React from 'react';
 
-import { userEvent } from '@testing-library/user-event';
+import { render, screen, userEvent } from '@/test-utils/rtl';
 
-import { render, screen } from '@/test-utils/rtl';
+import DomainNewBatchActionInfoBanner from '../domain-new-batch-action-info-banner';
 
-import NewBatchActionInfoBanner from '../new-batch-action-info-banner';
-
-describe(NewBatchActionInfoBanner.name, () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
+describe(DomainNewBatchActionInfoBanner.name, () => {
   it('renders the banner title and subtitle', () => {
-    render(<NewBatchActionInfoBanner />);
+    setup();
 
     expect(
       screen.getByText(
@@ -25,15 +19,13 @@ describe(NewBatchActionInfoBanner.name, () => {
   });
 
   it('renders the dismiss button', () => {
-    render(<NewBatchActionInfoBanner />);
+    setup();
 
     expect(screen.getByText('Got it!')).toBeInTheDocument();
   });
 
   it('hides the banner when the dismiss button is clicked', async () => {
-    const user = userEvent.setup();
-
-    render(<NewBatchActionInfoBanner />);
+    const { user } = setup();
 
     await user.click(screen.getByText('Got it!'));
 
@@ -45,3 +37,9 @@ describe(NewBatchActionInfoBanner.name, () => {
     ).not.toBeInTheDocument();
   });
 });
+
+function setup() {
+  const user = userEvent.setup();
+  render(<DomainNewBatchActionInfoBanner />);
+  return { user };
+}

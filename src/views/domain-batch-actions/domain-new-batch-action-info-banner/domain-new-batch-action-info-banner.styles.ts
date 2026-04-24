@@ -49,11 +49,15 @@ export const styled = {
       color: $theme.colors.contentPrimary,
     })
   ),
-  TextContainer: createStyled('div', {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    minWidth: 0,
-  }),
+  TextContainer: createStyled(
+    'div',
+    ({ $theme }: { $theme: Theme }): StyleObject => ({
+      display: 'flex',
+      flexDirection: 'column' as const,
+      minWidth: 0,
+      gap: $theme.sizing.scale100,
+    })
+  ),
   Title: createStyled(
     'div',
     ({ $theme }: { $theme: Theme }): StyleObject => ({

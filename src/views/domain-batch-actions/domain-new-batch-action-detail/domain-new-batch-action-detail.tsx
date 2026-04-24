@@ -5,11 +5,12 @@ import { MdDeleteOutline } from 'react-icons/md';
 
 import Button from '@/components/button/button';
 
-import { overrides, styled } from './new-batch-action-detail.styles';
-import { type Props } from './new-batch-action-detail.types';
-import NewBatchActionInfoBanner from './new-batch-action-info-banner/new-batch-action-info-banner';
+import DomainNewBatchActionInfoBanner from '../domain-new-batch-action-info-banner/domain-new-batch-action-info-banner';
 
-export default function NewBatchActionDetail({ onDiscard }: Props) {
+import { overrides, styled } from './domain-new-batch-action-detail.styles';
+import { type Props } from './domain-new-batch-action-detail.types';
+
+export default function DomainNewBatchActionDetail({ onDiscard }: Props) {
   return (
     <styled.Container>
       <styled.Header>
@@ -24,7 +25,7 @@ export default function NewBatchActionDetail({ onDiscard }: Props) {
           Discard batch action
         </Button>
       </styled.Header>
-      <NewBatchActionInfoBanner />
+      <DomainNewBatchActionInfoBanner />
     </styled.Container>
   );
 }

@@ -2,8 +2,8 @@ import React from 'react';
 
 import { render, screen } from '@/test-utils/rtl';
 
-import { type BatchAction } from '../../../domain-batch-actions.types';
-import BatchActionHeaderInfo from '../batch-action-header-info';
+import { type BatchAction } from '../../domain-batch-actions.types';
+import DomainBatchActionHeaderInfo from '../domain-batch-action-header-info';
 
 jest.mock('react-icons/md', () => ({
   ...jest.requireActual('react-icons/md'),
@@ -27,13 +27,13 @@ const MOCK_RUNNING_ACTION: BatchAction = {
   concurrency: 10,
 };
 
-describe(BatchActionHeaderInfo.name, () => {
+describe(DomainBatchActionHeaderInfo.name, () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   it('renders all field titles', () => {
-    render(<BatchActionHeaderInfo batchAction={MOCK_RUNNING_ACTION} />);
+    render(<DomainBatchActionHeaderInfo batchAction={MOCK_RUNNING_ACTION} />);
 
     expect(screen.getByText('Status')).toBeInTheDocument();
     expect(screen.getByText('Action')).toBeInTheDocument();
@@ -51,13 +51,13 @@ describe(BatchActionHeaderInfo.name, () => {
       actionType: 'cancel',
       endTime: new Date('2024-03-13T09:00:00.000Z').getTime(),
     };
-    render(<BatchActionHeaderInfo batchAction={action} />);
+    render(<DomainBatchActionHeaderInfo batchAction={action} />);
 
     expect(screen.getByText('Ended')).toBeInTheDocument();
   });
 
   it('renders Processing badge with spinner for running status', () => {
-    render(<BatchActionHeaderInfo batchAction={MOCK_RUNNING_ACTION} />);
+    render(<DomainBatchActionHeaderInfo batchAction={MOCK_RUNNING_ACTION} />);
 
     expect(screen.getByText('Processing')).toBeInTheDocument();
     expect(screen.getByText('Spinner')).toBeInTheDocument();
@@ -69,7 +69,7 @@ describe(BatchActionHeaderInfo.name, () => {
       status: 'completed',
       actionType: 'cancel',
     };
-    render(<BatchActionHeaderInfo batchAction={action} />);
+    render(<DomainBatchActionHeaderInfo batchAction={action} />);
 
     expect(screen.getByText('Completed')).toBeInTheDocument();
     expect(screen.getByText('Check Icon')).toBeInTheDocument();
@@ -81,7 +81,7 @@ describe(BatchActionHeaderInfo.name, () => {
       status: 'aborted',
       actionType: 'cancel',
     };
-    render(<BatchActionHeaderInfo batchAction={action} />);
+    render(<DomainBatchActionHeaderInfo batchAction={action} />);
 
     expect(screen.getByText('Aborted')).toBeInTheDocument();
     expect(screen.getByText('Cancel Icon')).toBeInTheDocument();
@@ -93,20 +93,20 @@ describe(BatchActionHeaderInfo.name, () => {
       status: 'failed',
       actionType: 'cancel',
     };
-    render(<BatchActionHeaderInfo batchAction={action} />);
+    render(<DomainBatchActionHeaderInfo batchAction={action} />);
 
     expect(screen.getByText('Failed')).toBeInTheDocument();
     expect(screen.getByText('Warning Icon')).toBeInTheDocument();
   });
 
   it('renders capitalized action type', () => {
-    render(<BatchActionHeaderInfo batchAction={MOCK_RUNNING_ACTION} />);
+    render(<DomainBatchActionHeaderInfo batchAction={MOCK_RUNNING_ACTION} />);
 
     expect(screen.getByText('Cancel')).toBeInTheDocument();
   });
 
   it('renders rps and concurrency values with Edit buttons', () => {
-    render(<BatchActionHeaderInfo batchAction={MOCK_RUNNING_ACTION} />);
+    render(<DomainBatchActionHeaderInfo batchAction={MOCK_RUNNING_ACTION} />);
 
     expect(screen.getByText('200')).toBeInTheDocument();
     expect(screen.getByText('10')).toBeInTheDocument();
@@ -119,7 +119,7 @@ describe(BatchActionHeaderInfo.name, () => {
       status: 'completed',
       actionType: 'cancel',
     };
-    render(<BatchActionHeaderInfo batchAction={action} />);
+    render(<DomainBatchActionHeaderInfo batchAction={action} />);
 
     expect(screen.getAllByText('—')).toHaveLength(5); // startTime, ended, duration, rps, concurrency
   });

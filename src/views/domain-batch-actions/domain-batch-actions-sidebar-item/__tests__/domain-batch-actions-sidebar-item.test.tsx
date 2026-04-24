@@ -4,16 +4,16 @@ import { userEvent } from '@testing-library/user-event';
 
 import { render, screen } from '@/test-utils/rtl';
 
-import BatchActionsSidebarItem from '../batch-actions-sidebar-item';
+import DomainBatchActionsSidebarItem from '../domain-batch-actions-sidebar-item';
 
-describe(BatchActionsSidebarItem.name, () => {
+describe(DomainBatchActionsSidebarItem.name, () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   it('renders the label and icon', () => {
     render(
-      <BatchActionsSidebarItem
+      <DomainBatchActionsSidebarItem
         label="Batch action #5"
         icon={<div>Test Icon</div>}
         isSelected={false}
@@ -31,7 +31,7 @@ describe(BatchActionsSidebarItem.name, () => {
     const user = userEvent.setup();
 
     render(
-      <BatchActionsSidebarItem
+      <DomainBatchActionsSidebarItem
         label="Batch action #5"
         icon={null}
         isSelected={false}
