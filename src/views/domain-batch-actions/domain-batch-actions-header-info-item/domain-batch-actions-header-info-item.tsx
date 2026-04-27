@@ -5,8 +5,8 @@ import { Skeleton } from 'baseui/skeleton';
 import {
   overrides,
   styled,
-} from './domain-batch-action-header-info-item.styles';
-import { type Props } from './domain-batch-action-header-info-item.types';
+} from './domain-batch-actions-header-info-item.styles';
+import { type Props } from './domain-batch-actions-header-info-item.types';
 
 export default function DomainBatchActionHeaderInfoItem(props: Props) {
   return (

@@ -2,9 +2,9 @@ import React from 'react';
 
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
-import DomainNewBatchActionInfoBanner from '../domain-new-batch-action-info-banner';
+import DomainBatchActionsNewActionInfoBanner from '../domain-batch-actions-new-action-info-banner';
 
-describe(DomainNewBatchActionInfoBanner.name, () => {
+describe(DomainBatchActionsNewActionInfoBanner.name, () => {
   it('renders the banner title and subtitle', () => {
     setup();
 
@@ -40,6 +40,6 @@ describe(DomainNewBatchActionInfoBanner.name, () => {
 
 function setup() {
   const user = userEvent.setup();
-  render(<DomainNewBatchActionInfoBanner />);
+  render(<DomainBatchActionsNewActionInfoBanner />);
   return { user };
 }

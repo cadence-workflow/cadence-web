@@ -3,10 +3,10 @@ import React from 'react';
 import formatDate from '@/utils/data-formatters/format-date';
 import formatTimeDiff from '@/utils/datetime/format-time-diff';
 
-import DomainBatchActionEditableValue from '../domain-batch-action-editable-value/domain-batch-action-editable-value';
-import DomainBatchActionStatusBadge from '../domain-batch-action-status-badge/domain-batch-action-status-badge';
+import DomainBatchActionEditableValue from '../domain-batch-actions-editable-value/domain-batch-actions-editable-value';
+import DomainBatchActionStatusBadge from '../domain-batch-actions-status-badge/domain-batch-actions-status-badge';
 
-import { type DomainBatchActionHeaderInfoItemsConfig } from './domain-batch-action-header-info.types';
+import { type DomainBatchActionHeaderInfoItemsConfig } from './domain-batch-actions-header-info.types';
 
 const batchActionHeaderInfoItemsConfig = [
   {

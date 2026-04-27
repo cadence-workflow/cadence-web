@@ -3,7 +3,7 @@ import React from 'react';
 import { render, screen } from '@/test-utils/rtl';
 
 import { type BatchAction } from '../../domain-batch-actions.types';
-import DomainBatchActionDetail from '../domain-batch-action-detail';
+import DomainBatchActionDetail from '../domain-batch-actions-detail';
 
 describe(DomainBatchActionDetail.name, () => {
   afterEach(() => {
