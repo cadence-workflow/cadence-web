@@ -6,10 +6,10 @@ import Button from '@/components/button/button';
 import {
   overrides,
   styled,
-} from './domain-new-batch-actions-floating-bar.styles';
-import { type Props } from './domain-new-batch-actions-floating-bar.types';
+} from './domain-batch-actions-new-action-floating-bar.styles';
+import { type Props } from './domain-batch-actions-new-action-floating-bar.types';
 
-export default function DomainNewBatchActionFloatingBar({
+export default function DomainBatchActionsNewActionFloatingBar({
   selectedCount,
   totalCount,
   actions,

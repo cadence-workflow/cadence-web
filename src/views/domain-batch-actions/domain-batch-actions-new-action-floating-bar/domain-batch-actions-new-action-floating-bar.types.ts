@@ -1,6 +1,6 @@
 import { type IconProps } from 'baseui/icon';
 
-export type DomainNewBatchActionFloatingBarActionConfig = {
+export type DomainBatchActionsNewActionFloatingBarActionConfig = {
   id: string;
   label: string;
   icon: React.ComponentType<{
@@ -12,6 +12,6 @@ export type DomainNewBatchActionFloatingBarActionConfig = {
 export type Props = {
   selectedCount: number;
   totalCount: number;
-  actions: ReadonlyArray<DomainNewBatchActionFloatingBarActionConfig>;
+  actions: ReadonlyArray<DomainBatchActionsNewActionFloatingBarActionConfig>;
   onActionClick: (actionId: string) => void;
 };

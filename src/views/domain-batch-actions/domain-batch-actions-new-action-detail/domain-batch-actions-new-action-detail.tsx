@@ -5,6 +5,8 @@ import { MdDeleteOutline } from 'react-icons/md';
 
 import Button from '@/components/button/button';
 
+import domainBatchActionsNewActionFloatingBarConfig from '../config/domain-batch-actions-new-action-floating-bar.config';
+import DomainBatchActionsNewActionFloatingBar from '../domain-batch-actions-new-action-floating-bar/domain-batch-actions-new-action-floating-bar';
 import DomainBatchActionsNewActionInfoBanner from '../domain-batch-actions-new-action-info-banner/domain-batch-actions-new-action-info-banner';
 
 import {
@@ -31,6 +33,14 @@ export default function DomainBatchActionsNewActionDetail({
         </Button>
       </styled.Header>
       <DomainBatchActionsNewActionInfoBanner />
+      <styled.WorkflowsListPlaceholder>
+        <DomainBatchActionsNewActionFloatingBar
+          selectedCount={32}
+          totalCount={32}
+          actions={domainBatchActionsNewActionFloatingBarConfig}
+          onActionClick={() => {}}
+        />
+      </styled.WorkflowsListPlaceholder>
     </styled.Container>
   );
 }

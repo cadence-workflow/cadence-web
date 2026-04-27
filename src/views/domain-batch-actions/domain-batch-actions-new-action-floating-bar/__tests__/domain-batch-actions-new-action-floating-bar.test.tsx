@@ -2,20 +2,20 @@ import React from 'react';
 
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
-import DomainNewBatchActionFloatingBar from '../domain-new-batch-actions-floating-bar';
-import { type DomainNewBatchActionFloatingBarActionConfig } from '../domain-new-batch-actions-floating-bar.types';
+import DomainBatchActionsNewActionFloatingBar from '../domain-batch-actions-new-action-floating-bar';
+import { type DomainBatchActionsNewActionFloatingBarActionConfig } from '../domain-batch-actions-new-action-floating-bar.types';
 
 function MockIcon() {
   return <span data-testid="mock-icon" />;
 }
 
-const mockActions: DomainNewBatchActionFloatingBarActionConfig[] = [
+const mockActions: DomainBatchActionsNewActionFloatingBarActionConfig[] = [
   { id: 'cancel', label: 'Cancel', icon: MockIcon },
   { id: 'terminate', label: 'Terminate', icon: MockIcon },
   { id: 'signal', label: 'Signal', icon: MockIcon },
 ];
 
-describe(DomainNewBatchActionFloatingBar.name, () => {
+describe(DomainBatchActionsNewActionFloatingBar.name, () => {
   it('renders the selection summary text', () => {
     setup({ selectedCount: 5, totalCount: 32 });
 
@@ -55,13 +55,13 @@ function setup({
 }: {
   selectedCount?: number;
   totalCount?: number;
-  actions?: DomainNewBatchActionFloatingBarActionConfig[];
+  actions?: DomainBatchActionsNewActionFloatingBarActionConfig[];
 }) {
   const onActionClick = jest.fn();
   const user = userEvent.setup();
 
   render(
-    <DomainNewBatchActionFloatingBar
+    <DomainBatchActionsNewActionFloatingBar
       selectedCount={selectedCount}
       totalCount={totalCount}
       actions={actions}
