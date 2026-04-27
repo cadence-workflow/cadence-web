@@ -26,4 +26,9 @@ export const styled = {
   Title: createStyled('h2', ({ $theme }: { $theme: Theme }) => ({
     ...$theme.typography.HeadingXSmall,
   })),
+  WorkflowsListPlaceholder: createStyled('div', () => ({
+    position: 'relative',
+    flex: 1,
+    minHeight: '400px',
+  })),
 };
