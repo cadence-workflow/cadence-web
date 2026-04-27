@@ -1,10 +1,8 @@
 import React from 'react';
 
-import { userEvent } from '@testing-library/user-event';
+import { render, screen, userEvent } from '@/test-utils/rtl';
 
-import { render, screen } from '@/test-utils/rtl';
-
-import DomainNewBatchActionDetail from '../domain-new-batch-action-detail';
+import DomainNewBatchActionDetail from '../domain-new-batch-actions-detail';
 
 jest.mock('react-icons/md', () => ({
   ...jest.requireActual('react-icons/md'),

@@ -5,8 +5,11 @@ import { MdOutlineEdit } from 'react-icons/md';
 
 import Button from '@/components/button/button';
 
-import { overrides, styled } from './domain-batch-action-editable-value.styles';
-import { type Props } from './domain-batch-action-editable-value.types';
+import {
+  overrides,
+  styled,
+} from './domain-batch-actions-editable-value.styles';
+import { type Props } from './domain-batch-actions-editable-value.types';
 
 export default function DomainBatchActionEditableValue({
   value,

@@ -2,7 +2,7 @@ import React from 'react';
 
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
-import DomainNewBatchActionInfoBanner from '../domain-new-batch-action-info-banner';
+import DomainNewBatchActionInfoBanner from '../domain-new-batch-actions-info-banner';
 
 describe(DomainNewBatchActionInfoBanner.name, () => {
   it('renders the banner title and subtitle', () => {

@@ -1,14 +1,14 @@
 'use client';
 import React from 'react';
 
-import DomainBatchActionHeaderInfoItem from '../domain-batch-action-header-info-item/domain-batch-action-header-info-item';
+import DomainBatchActionHeaderInfoItem from '../domain-batch-actions-header-info-item/domain-batch-actions-header-info-item';
 
-import batchActionHeaderInfoItemsConfig from './domain-batch-action-header-info-items.config';
-import { styled } from './domain-batch-action-header-info.styles';
+import batchActionHeaderInfoItemsConfig from './domain-batch-actions-header-info-items.config';
+import { styled } from './domain-batch-actions-header-info.styles';
 import {
   type DomainBatchActionHeaderInfoItemConfig,
   type Props,
-} from './domain-batch-action-header-info.types';
+} from './domain-batch-actions-header-info.types';
 
 export default function DomainBatchActionHeaderInfo({ batchAction }: Props) {
   return (

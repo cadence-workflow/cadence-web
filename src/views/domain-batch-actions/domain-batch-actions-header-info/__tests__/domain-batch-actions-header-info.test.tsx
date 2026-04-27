@@ -3,7 +3,7 @@ import React from 'react';
 import { render, screen } from '@/test-utils/rtl';
 
 import { type BatchAction } from '../../domain-batch-actions.types';
-import DomainBatchActionHeaderInfo from '../domain-batch-action-header-info';
+import DomainBatchActionHeaderInfo from '../domain-batch-actions-header-info';
 
 jest.mock('react-icons/md', () => ({
   ...jest.requireActual('react-icons/md'),

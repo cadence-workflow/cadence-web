@@ -8,7 +8,7 @@ import Button from '@/components/button/button';
 import {
   overrides,
   styled,
-} from './domain-new-batch-action-info-banner.styles';
+} from './domain-new-batch-actions-info-banner.styles';
 
 export default function DomainNewBatchActionInfoBanner() {
   const [isDismissed, setIsDismissed] = useState(false);
