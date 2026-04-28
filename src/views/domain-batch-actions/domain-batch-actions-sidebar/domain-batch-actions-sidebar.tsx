@@ -5,9 +5,9 @@ import { MdAdd, MdOutlineEdit } from 'react-icons/md';
 
 import Button from '@/components/button/button';
 
+import DomainBatchActionsSidebarItem from '../domain-batch-actions-sidebar-item/domain-batch-actions-sidebar-item';
 import StatusIcon from '../helpers/status-icon';
 
-import BatchActionsSidebarItem from './batch-actions-sidebar-item/batch-actions-sidebar-item';
 import { overrides, styled } from './domain-batch-actions-sidebar.styles';
 import { type Props } from './domain-batch-actions-sidebar.types';
 
@@ -34,7 +34,7 @@ export default function DomainBatchActionsSidebar({
       <styled.SectionLabel>Batch history</styled.SectionLabel>
       <styled.List>
         {isDraftOpen && (
-          <BatchActionsSidebarItem
+          <DomainBatchActionsSidebarItem
             label="Untitled batch action"
             icon={
               <styled.DraftIcon>
@@ -49,7 +49,7 @@ export default function DomainBatchActionsSidebar({
         {batchActions.map((action) => {
           const isSelected = !isDraftSelected && selectedActionId === action.id;
           return (
-            <BatchActionsSidebarItem
+            <DomainBatchActionsSidebarItem
               key={action.id}
               label={`Batch action #${action.id}`}
               icon={<StatusIcon action={action} />}

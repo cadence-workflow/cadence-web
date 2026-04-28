@@ -1,23 +1,21 @@
 import React from 'react';
 
-import { userEvent } from '@testing-library/user-event';
+import { render, screen, userEvent } from '@/test-utils/rtl';
 
-import { render, screen } from '@/test-utils/rtl';
-
-import NewBatchActionDetail from '../new-batch-action-detail';
+import DomainBatchActionsNewActionDetail from '../domain-batch-actions-new-action-detail';
 
 jest.mock('react-icons/md', () => ({
   ...jest.requireActual('react-icons/md'),
   MdDeleteOutline: () => <div>Delete Icon</div>,
 }));
 
-describe(NewBatchActionDetail.name, () => {
+describe(DomainBatchActionsNewActionDetail.name, () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   it('renders the "New batch action" title', () => {
-    render(<NewBatchActionDetail onDiscard={jest.fn()} />);
+    render(<DomainBatchActionsNewActionDetail onDiscard={jest.fn()} />);
 
     expect(
       screen.getByRole('heading', { name: 'New batch action' })
@@ -25,7 +23,7 @@ describe(NewBatchActionDetail.name, () => {
   });
 
   it('renders the discard button', () => {
-    render(<NewBatchActionDetail onDiscard={jest.fn()} />);
+    render(<DomainBatchActionsNewActionDetail onDiscard={jest.fn()} />);
 
     expect(screen.getByText('Discard batch action')).toBeInTheDocument();
   });
@@ -34,7 +32,7 @@ describe(NewBatchActionDetail.name, () => {
     const onDiscard = jest.fn();
     const user = userEvent.setup();
 
-    render(<NewBatchActionDetail onDiscard={onDiscard} />);
+    render(<DomainBatchActionsNewActionDetail onDiscard={onDiscard} />);
 
     await user.click(screen.getByText('Discard batch action'));
 

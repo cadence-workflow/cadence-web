@@ -2,10 +2,13 @@ import React from 'react';
 
 import { Skeleton } from 'baseui/skeleton';
 
-import { overrides, styled } from './batch-action-header-info-item.styles';
-import { type Props } from './batch-action-header-info-item.types';
+import {
+  overrides,
+  styled,
+} from './domain-batch-actions-header-info-item.styles';
+import { type Props } from './domain-batch-actions-header-info-item.types';
 
-export default function BatchActionHeaderInfoItem(props: Props) {
+export default function DomainBatchActionHeaderInfoItem(props: Props) {
   return (
     <styled.ItemContainer>
       <styled.ItemTitle>{props.title}</styled.ItemTitle>

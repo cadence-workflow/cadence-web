@@ -1,10 +1,10 @@
 'use client';
 import React from 'react';
 
-import { styled } from './batch-actions-sidebar-item.styles';
-import { type Props } from './batch-actions-sidebar-item.types';
+import { styled } from './domain-batch-actions-sidebar-item.styles';
+import { type Props } from './domain-batch-actions-sidebar-item.types';
 
-export default function BatchActionsSidebarItem({
+export default function DomainBatchActionsSidebarItem({
   label,
   icon,
   isSelected,

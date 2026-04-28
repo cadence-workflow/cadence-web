@@ -3,15 +3,16 @@ import React from 'react';
 import formatDate from '@/utils/data-formatters/format-date';
 import formatTimeDiff from '@/utils/datetime/format-time-diff';
 
-import BatchActionEditableValue from './batch-action-editable-value/batch-action-editable-value';
-import { type BatchActionHeaderInfoItemsConfig } from './batch-action-header-info.types';
-import BatchActionStatusBadge from './batch-action-status-badge/batch-action-status-badge';
+import DomainBatchActionEditableValue from '../domain-batch-actions-editable-value/domain-batch-actions-editable-value';
+import DomainBatchActionStatusBadge from '../domain-batch-actions-status-badge/domain-batch-actions-status-badge';
+
+import { type DomainBatchActionHeaderInfoItemsConfig } from './domain-batch-actions-header-info.types';
 
 const batchActionHeaderInfoItemsConfig = [
   {
     title: 'Status',
     render: ({ batchAction }) => (
-      <BatchActionStatusBadge status={batchAction.status} />
+      <DomainBatchActionStatusBadge status={batchAction.status} />
     ),
     placeholderSize: '100px',
   },
@@ -56,7 +57,7 @@ const batchActionHeaderInfoItemsConfig = [
   {
     title: 'RPS',
     render: ({ batchAction }) => (
-      <BatchActionEditableValue
+      <DomainBatchActionEditableValue
         value={batchAction.rps}
         editable={batchAction.status === 'running'}
       />
@@ -66,13 +67,13 @@ const batchActionHeaderInfoItemsConfig = [
   {
     title: 'Concurrency',
     render: ({ batchAction }) => (
-      <BatchActionEditableValue
+      <DomainBatchActionEditableValue
         value={batchAction.concurrency}
         editable={batchAction.status === 'running'}
       />
     ),
     placeholderSize: '80px',
   },
-] as const satisfies BatchActionHeaderInfoItemsConfig;
+] as const satisfies DomainBatchActionHeaderInfoItemsConfig;
 
 export default batchActionHeaderInfoItemsConfig;

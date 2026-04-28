@@ -3,11 +3,11 @@ import React, { useState } from 'react';
 
 import { type DomainPageTabContentProps } from '@/views/domain-page/domain-page-content/domain-page-content.types';
 
-import DomainBatchActionDetail from './domain-batch-action-detail/domain-batch-action-detail';
+import DomainBatchActionDetail from './domain-batch-actions-detail/domain-batch-actions-detail';
+import DomainBatchActionsNewActionDetail from './domain-batch-actions-new-action-detail/domain-batch-actions-new-action-detail';
 import DomainBatchActionsSidebar from './domain-batch-actions-sidebar/domain-batch-actions-sidebar';
 import { MOCK_BATCH_ACTIONS } from './domain-batch-actions.constants';
 import { styled } from './domain-batch-actions.styles';
-import NewBatchActionDetail from './new-batch-action-detail/new-batch-action-detail';
 
 export default function DomainBatchActions(_props: DomainPageTabContentProps) {
   // TODO: replace with useSuspenseQuery once the batch-actions list endpoint exists
@@ -55,7 +55,9 @@ export default function DomainBatchActions(_props: DomainPageTabContentProps) {
         />
       </styled.Sidebar>
       <styled.DetailPanel>
-        {isDraftSelected && <NewBatchActionDetail onDiscard={handleDiscard} />}
+        {isDraftSelected && (
+          <DomainBatchActionsNewActionDetail onDiscard={handleDiscard} />
+        )}
         {!isDraftSelected && selectedAction && (
           <DomainBatchActionDetail batchAction={selectedAction} />
         )}
