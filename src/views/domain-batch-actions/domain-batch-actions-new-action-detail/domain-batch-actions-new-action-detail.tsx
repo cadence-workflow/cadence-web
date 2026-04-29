@@ -34,12 +34,14 @@ export default function DomainBatchActionsNewActionDetail({
       </styled.Header>
       <DomainBatchActionsNewActionInfoBanner />
       <styled.WorkflowsListPlaceholder>
-        <DomainBatchActionsNewActionFloatingBar
-          selectedCount={32}
-          totalCount={32}
-          actions={domainBatchActionsNewActionFloatingBarConfig}
-          onActionClick={() => {}}
-        />
+        <styled.FloatingBarSlot>
+          <DomainBatchActionsNewActionFloatingBar
+            selectedCount={32}
+            totalCount={32}
+            actions={domainBatchActionsNewActionFloatingBarConfig}
+            onActionClick={() => {}}
+          />
+        </styled.FloatingBarSlot>
       </styled.WorkflowsListPlaceholder>
     </styled.Container>
   );

@@ -16,6 +16,8 @@ export const styled = {
     display: 'flex',
     flexDirection: 'column' as const,
     gap: $theme.sizing.scale600,
+    flex: 1,
+    minHeight: 0,
   })),
   Header: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
@@ -27,8 +29,17 @@ export const styled = {
     ...$theme.typography.HeadingXSmall,
   })),
   WorkflowsListPlaceholder: createStyled('div', () => ({
-    position: 'relative',
+    display: 'flex',
+    flexDirection: 'column',
     flex: 1,
-    minHeight: '400px',
+    minHeight: 0,
+    overflowY: 'auto',
+  })),
+  FloatingBarSlot: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+    position: 'sticky',
+    bottom: $theme.sizing.scale800,
+    alignSelf: 'center',
+    display: 'flex',
+    zIndex: 1,
   })),
 };
