@@ -2,6 +2,9 @@ import getWorkflowIsError from '../get-workflow-is-error';
 
 describe('getWorkflowIsError', () => {
   it('should return true for error attributes', () => {
+    expect(getWorkflowIsError('workflowExecutionCanceledEventAttributes')).toBe(
+      true
+    );
     expect(getWorkflowIsError('workflowExecutionFailedEventAttributes')).toBe(
       true
     );
@@ -16,7 +19,6 @@ describe('getWorkflowIsError', () => {
   it('should return false for non-error completed attributes', () => {
     const nonErrorAttributes = [
       'workflowExecutionCompletedEventAttributes',
-      'workflowExecutionCanceledEventAttributes',
       'workflowExecutionContinuedAsNewEventAttributes',
     ];
 
