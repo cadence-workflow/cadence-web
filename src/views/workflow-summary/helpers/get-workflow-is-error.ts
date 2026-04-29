@@ -1,5 +1,6 @@
 const workflowErrorAttributes = [
   'workflowExecutionFailedEventAttributes',
+  'workflowExecutionTerminatedEventAttributes',
   'workflowExecutionTimedOutEventAttributes',
 ];
 

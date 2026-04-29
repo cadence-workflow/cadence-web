@@ -5,6 +5,9 @@ describe('getWorkflowIsError', () => {
     expect(getWorkflowIsError('workflowExecutionFailedEventAttributes')).toBe(
       true
     );
+    expect(
+      getWorkflowIsError('workflowExecutionTerminatedEventAttributes')
+    ).toBe(true);
     expect(getWorkflowIsError('workflowExecutionTimedOutEventAttributes')).toBe(
       true
     );
@@ -14,7 +17,6 @@ describe('getWorkflowIsError', () => {
     const nonErrorAttributes = [
       'workflowExecutionCompletedEventAttributes',
       'workflowExecutionCanceledEventAttributes',
-      'workflowExecutionTerminatedEventAttributes',
       'workflowExecutionContinuedAsNewEventAttributes',
     ];
 
