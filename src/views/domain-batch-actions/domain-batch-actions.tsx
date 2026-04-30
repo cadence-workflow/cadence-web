@@ -9,7 +9,7 @@ import DomainBatchActionsSidebar from './domain-batch-actions-sidebar/domain-bat
 import { MOCK_BATCH_ACTIONS } from './domain-batch-actions.constants';
 import { styled } from './domain-batch-actions.styles';
 
-export default function DomainBatchActions(_props: DomainPageTabContentProps) {
+export default function DomainBatchActions(props: DomainPageTabContentProps) {
   // TODO: replace with useSuspenseQuery once the batch-actions list endpoint exists
   const batchActions = MOCK_BATCH_ACTIONS;
 
@@ -56,7 +56,11 @@ export default function DomainBatchActions(_props: DomainPageTabContentProps) {
       </styled.Sidebar>
       <styled.DetailPanel>
         {isDraftSelected && (
-          <DomainBatchActionsNewActionDetail onDiscard={handleDiscard} />
+          <DomainBatchActionsNewActionDetail
+            domain={props.domain}
+            cluster={props.cluster}
+            onDiscard={handleDiscard}
+          />
         )}
         {!isDraftSelected && selectedAction && (
           <DomainBatchActionDetail batchAction={selectedAction} />

@@ -40,6 +40,19 @@ jest.mock('../domain-batch-actions.constants', () => ({
 }));
 
 jest.mock(
+  '../domain-batch-actions-new-action-detail/domain-batch-actions-new-action-detail',
+  () => ({
+    __esModule: true,
+    default: ({ onDiscard }: { onDiscard: () => void }) => (
+      <div>
+        <h2>New batch action</h2>
+        <button onClick={onDiscard}>Discard batch action</button>
+      </div>
+    ),
+  })
+);
+
+jest.mock(
   '../domain-batch-actions-sidebar/domain-batch-actions-sidebar',
   () => ({
     __esModule: true,

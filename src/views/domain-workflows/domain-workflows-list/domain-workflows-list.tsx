@@ -18,12 +18,16 @@ export default function DomainWorkflowsList({
   domain,
   cluster,
   visibleColumns,
+  inputTypeQueryParamKey = 'inputType',
+  queryStringQueryParamKey = 'query',
   timeRangeStart,
   timeRangeEnd,
 }: Props) {
   const [queryParams, setQueryParams] = usePageQueryParams(
     domainPageQueryParamsConfig
   );
+
+  const inputType = queryParams[inputTypeQueryParamKey];
 
   const {
     workflows,
@@ -38,14 +42,14 @@ export default function DomainWorkflowsList({
     cluster,
     listType: 'default',
     pageSize: DOMAIN_WORKFLOWS_PAGE_SIZE,
-    inputType: queryParams.inputType,
+    inputType,
     search: queryParams.search,
     statuses: queryParams.statuses,
     timeRangeStart,
     timeRangeEnd,
     sortColumn: queryParams.sortColumn,
     sortOrder: queryParams.sortOrder,
-    query: queryParams.query,
+    query: queryParams[queryStringQueryParamKey],
   });
 
   if (isLoading) {
@@ -54,7 +58,7 @@ export default function DomainWorkflowsList({
 
   if (workflows.length === 0) {
     const errorPanelProps = getWorkflowsErrorPanelProps({
-      inputType: queryParams.inputType,
+      inputType,
       error,
       areSearchParamsAbsent:
         !queryParams.search &&
@@ -81,7 +85,7 @@ export default function DomainWorkflowsList({
       fetchNextPage={fetchNextPage}
       isFetchingNextPage={isFetchingNextPage}
       sortParams={
-        queryParams.inputType === 'search'
+        inputType === 'search'
           ? buildSortParams({
               sortColumn: queryParams.sortColumn,
               sortOrder: queryParams.sortOrder,

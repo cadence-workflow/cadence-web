@@ -13,6 +13,10 @@ export default function DomainWorkflowsHeader({
   domain,
   cluster,
   columnsPickerProps,
+  showQueryInputOnly,
+  noSpacing,
+  inputTypeQueryParamKey = 'inputType',
+  queryStringQueryParamKey = 'query',
   timeRangeStart,
   timeRangeEnd,
 }: Props) {
@@ -23,26 +27,28 @@ export default function DomainWorkflowsHeader({
     cluster,
     listType: 'default',
     pageSize: DOMAIN_WORKFLOWS_PAGE_SIZE,
-    inputType: queryParams.inputType,
+    inputType: queryParams[inputTypeQueryParamKey],
     search: queryParams.search,
     statuses: queryParams.statuses,
     timeRangeStart,
     timeRangeEnd,
     sortColumn: queryParams.sortColumn,
     sortOrder: queryParams.sortOrder,
-    query: queryParams.query,
+    query: queryParams[queryStringQueryParamKey],
   });
 
   return (
     <WorkflowsHeader
       pageQueryParamsConfig={domainPageQueryParamsConfig}
       pageFiltersConfig={domainWorkflowsFiltersConfig}
-      inputTypeQueryParamKey="inputType"
+      inputTypeQueryParamKey={inputTypeQueryParamKey}
       searchQueryParamKey="search"
-      queryStringQueryParamKey="query"
+      queryStringQueryParamKey={queryStringQueryParamKey}
       refetchQuery={refetch}
       isQueryRunning={isFetching}
       columnsPickerProps={columnsPickerProps}
+      showQueryInputOnly={showQueryInputOnly}
+      noSpacing={noSpacing}
     />
   );
 }
