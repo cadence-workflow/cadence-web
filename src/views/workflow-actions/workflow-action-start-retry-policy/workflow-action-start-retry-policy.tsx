@@ -4,6 +4,7 @@ import { Checkbox } from 'baseui/checkbox';
 import { FormControl } from 'baseui/form-control';
 import { Input } from 'baseui/input';
 import { RadioGroup, Radio } from 'baseui/radio';
+import { LabelXSmall } from 'baseui/typography';
 import { Controller, useWatch } from 'react-hook-form';
 
 import useStyletronClasses from '@/hooks/use-styletron-classes';
@@ -92,6 +93,7 @@ export default function WorkflowActionStartRetryPolicy({
                   )}
                   size="compact"
                   placeholder="Enter initial interval in seconds"
+                  endEnhancer={<LabelXSmall>Seconds</LabelXSmall>}
                 />
               )}
             />
@@ -147,6 +149,7 @@ export default function WorkflowActionStartRetryPolicy({
                   )}
                   size="compact"
                   placeholder="Enter maximum interval in seconds"
+                  endEnhancer={<LabelXSmall>Seconds</LabelXSmall>}
                 />
               )}
             />
@@ -204,6 +207,7 @@ export default function WorkflowActionStartRetryPolicy({
                     )}
                     size="compact"
                     placeholder="Enter expiration interval in seconds"
+                    endEnhancer={<LabelXSmall>Seconds</LabelXSmall>}
                   />
                 )}
               />
