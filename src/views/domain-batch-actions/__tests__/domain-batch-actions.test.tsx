@@ -8,6 +8,12 @@ import DomainBatchActions from '../domain-batch-actions';
 import { type Props as NewActionDetailProps } from '../domain-batch-actions-new-action-detail/domain-batch-actions-new-action-detail.types';
 import { type Props as SidebarProps } from '../domain-batch-actions-sidebar/domain-batch-actions-sidebar.types';
 
+const mockSearchParamsGet = jest.fn();
+jest.mock('next/navigation', () => ({
+  ...jest.requireActual('next/navigation'),
+  useSearchParams: () => ({ get: mockSearchParamsGet }),
+}));
+
 jest.mock('../domain-batch-actions.constants', () => ({
   MOCK_BATCH_ACTIONS: [
     {
@@ -41,6 +47,19 @@ jest.mock('../domain-batch-actions.constants', () => ({
 }));
 
 jest.mock(
+  '../domain-batch-actions-new-action-detail/domain-batch-actions-new-action-detail',
+  () => ({
+    __esModule: true,
+    default: ({ onDiscard }: NewActionDetailProps) => (
+      <div>
+        <h2>New batch action</h2>
+        <button onClick={onDiscard}>Discard batch action</button>
+      </div>
+    ),
+  })
+);
+
+jest.mock(
   '../domain-batch-actions-sidebar/domain-batch-actions-sidebar',
   () => ({
     __esModule: true,
@@ -63,20 +82,11 @@ jest.mock(
   })
 );
 
-jest.mock(
-  '../domain-batch-actions-new-action-detail/domain-batch-actions-new-action-detail',
-  () => ({
-    __esModule: true,
-    default: ({ onDiscard }: NewActionDetailProps) => (
-      <div>
-        <h2>New batch action</h2>
-        <button onClick={onDiscard}>Discard batch action</button>
-      </div>
-    ),
-  })
-);
-
 describe(DomainBatchActions.name, () => {
+  beforeEach(() => {
+    mockSearchParamsGet.mockReturnValue(null);
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -134,5 +144,20 @@ describe(DomainBatchActions.name, () => {
     expect(
       screen.getByRole('heading', { name: /Batch action #5/ })
     ).toBeInTheDocument();
+  });
+
+  it('opens the draft on mount when batch-query is present in the URL', () => {
+    mockSearchParamsGet.mockImplementation((key: string) =>
+      key === 'batch-query' ? '' : null
+    );
+
+    render(<DomainBatchActions domain="test-domain" cluster="test-cluster" />);
+
+    expect(
+      screen.getByRole('heading', { name: 'New batch action' })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: /Batch action #5/ })
+    ).not.toBeInTheDocument();
   });
 });
