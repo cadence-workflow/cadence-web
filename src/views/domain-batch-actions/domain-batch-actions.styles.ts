@@ -15,7 +15,5 @@ export const styled = {
     display: 'flex',
     flexDirection: 'column',
     padding: $theme.sizing.scale600,
-    minHeight: 0,
-    overflow: 'hidden',
   })),
 };

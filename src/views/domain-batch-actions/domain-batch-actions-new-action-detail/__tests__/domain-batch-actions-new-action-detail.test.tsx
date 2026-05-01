@@ -1,81 +1,31 @@
 import React from 'react';
 
-import { render, screen, userEvent } from '@/test-utils/rtl';
+import { HttpResponse } from 'msw';
 
+import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
+
+import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtures__/mock-workflow-list-items';
+import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list-workflows.types';
 import { mockDomainPageQueryParamsValues } from '@/views/domain-page/__fixtures__/domain-page-query-params';
-import DomainWorkflowsHeader from '@/views/domain-workflows/domain-workflows-header/domain-workflows-header';
-import DomainWorkflowsList from '@/views/domain-workflows/domain-workflows-list/domain-workflows-list';
-import { type WorkflowsListColumn } from '@/views/shared/workflows-list/workflows-list.types';
 
-import DomainBatchActionsNewActionFloatingBar from '../../domain-batch-actions-new-action-floating-bar/domain-batch-actions-new-action-floating-bar';
+import { type Props as MSWMocksHandlersProps } from '../../../../test-utils/msw-mock-handlers/msw-mock-handlers.types';
 import DomainBatchActionsNewActionDetail from '../domain-batch-actions-new-action-detail';
-import { BATCH_ACTIONS_NEW_ACTION_VISIBLE_COLUMN_IDS } from '../domain-batch-actions-new-action-detail.constants';
 
 jest.mock('react-icons/md', () => ({
   ...jest.requireActual('react-icons/md'),
   MdDeleteOutline: () => <div>Delete Icon</div>,
 }));
 
-const mockSetQueryParams = jest.fn();
-const mockUsePageQueryParams = jest.fn();
-jest.mock('@/hooks/use-page-query-params/use-page-query-params', () => ({
-  __esModule: true,
-  default: (...args: Array<unknown>) => mockUsePageQueryParams(...args),
+jest.mock('query-string', () => ({
+  stringifyUrl: jest.fn(
+    () => '/api/domains/test-domain/test-cluster/workflows'
+  ),
 }));
 
-jest.mock(
-  '@/views/domain-workflows/domain-workflows-header/domain-workflows-header',
-  () => jest.fn(() => <div data-testid="mock-domain-workflows-header" />)
+const mockSetQueryParams = jest.fn();
+jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
+  jest.fn(() => [mockDomainPageQueryParamsValues, mockSetQueryParams])
 );
-
-jest.mock(
-  '@/views/domain-workflows/domain-workflows-list/domain-workflows-list',
-  () => jest.fn(() => <div data-testid="mock-domain-workflows-list" />)
-);
-
-jest.mock(
-  '../../domain-batch-actions-new-action-floating-bar/domain-batch-actions-new-action-floating-bar',
-  () => jest.fn(() => <div data-testid="mock-floating-bar" />)
-);
-
-const mockAvailableColumns: Array<WorkflowsListColumn> = [
-  {
-    id: 'WorkflowID',
-    name: 'Workflow ID',
-    width: '1fr',
-    isSystem: true,
-    renderCell: () => null,
-  },
-  {
-    id: 'CloseStatus',
-    name: 'Status',
-    width: '1fr',
-    isSystem: true,
-    renderCell: () => null,
-  },
-  {
-    id: 'RunID',
-    name: 'Run ID',
-    width: '1fr',
-    isSystem: true,
-    renderCell: () => null,
-  },
-  {
-    id: 'WorkflowType',
-    name: 'Workflow Type',
-    width: '1fr',
-    isSystem: true,
-    renderCell: () => null,
-  },
-  {
-    id: 'StartTime',
-    name: 'Started',
-    width: '1fr',
-    isSystem: true,
-    sortable: true,
-    renderCell: () => null,
-  },
-];
 
 const mockUseWorkflowsListColumns = jest.fn();
 jest.mock(
@@ -86,18 +36,48 @@ jest.mock(
   })
 );
 
-const mockUseListWorkflows = jest.fn();
-jest.mock('@/views/shared/hooks/use-list-workflows', () => ({
-  __esModule: true,
-  default: (...args: Array<unknown>) => mockUseListWorkflows(...args),
-}));
+const mockAvailableColumns = [
+  {
+    id: 'WorkflowID',
+    name: 'Workflow ID',
+    width: '1fr',
+    isSystem: true,
+    renderCell: () => 'wf-id-cell',
+  },
+  {
+    id: 'CloseStatus',
+    name: 'Status',
+    width: '1fr',
+    isSystem: true,
+    renderCell: () => 'status-cell',
+  },
+  {
+    id: 'RunID',
+    name: 'Run ID',
+    width: '1fr',
+    isSystem: true,
+    renderCell: () => 'run-id-cell',
+  },
+  {
+    id: 'WorkflowType',
+    name: 'Workflow Type',
+    width: '1fr',
+    isSystem: true,
+    renderCell: () => 'wf-type-cell',
+  },
+  {
+    id: 'StartTime',
+    name: 'Started',
+    width: '1fr',
+    isSystem: true,
+    sortable: true,
+    renderCell: () => 'start-time-cell',
+  },
+];
 
 describe(DomainBatchActionsNewActionDetail.name, () => {
   beforeEach(() => {
-    mockUsePageQueryParams.mockReturnValue([
-      mockDomainPageQueryParamsValues,
-      mockSetQueryParams,
-    ]);
+    jest.clearAllMocks();
     mockUseWorkflowsListColumns.mockReturnValue({
       availableColumns: mockAvailableColumns,
       visibleColumns: mockAvailableColumns,
@@ -105,162 +85,88 @@ describe(DomainBatchActionsNewActionDetail.name, () => {
       setSelectedColumnIds: jest.fn(),
       resetColumns: jest.fn(),
     });
-    mockUseListWorkflows.mockReturnValue({
-      workflows: [{ workflowID: 'wf-0', runID: 'run-0' }],
-      error: null,
-      isLoading: false,
-      isFetching: false,
-      hasNextPage: false,
-      fetchNextPage: jest.fn(),
-      isFetchingNextPage: false,
-      refetch: jest.fn(),
-    });
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it('renders the "New batch action" title', () => {
+  it('renders the "New batch action" title', async () => {
     setup({});
 
     expect(
-      screen.getByRole('heading', { name: 'New batch action' })
+      await screen.findByRole('heading', { name: 'New batch action' })
     ).toBeInTheDocument();
   });
 
-  it('renders the discard button', () => {
-    setup({});
-
-    expect(screen.getByText('Discard batch action')).toBeInTheDocument();
-  });
-
-  it('calls onDiscard when the discard button is clicked', async () => {
+  it('renders the discard button and calls onDiscard when clicked', async () => {
     const onDiscard = jest.fn();
     const { user } = setup({ onDiscard });
 
-    await user.click(screen.getByText('Discard batch action'));
+    await user.click(await screen.findByText('Discard batch action'));
 
     expect(onDiscard).toHaveBeenCalledTimes(1);
   });
 
-  it('renders the workflows header with showQueryInputOnly, noSpacing, batch URL keys, and no columns picker', () => {
-    setup({});
+  it('renders the 4-column subset (Run ID, Status, Workflow ID, Workflow Type)', async () => {
+    setup({ workflowCount: 3 });
 
-    expect(jest.mocked(DomainWorkflowsHeader)).toHaveBeenCalledWith(
-      expect.objectContaining({
-        domain: 'test-domain',
-        cluster: 'test-cluster',
-        showQueryInputOnly: true,
-        noSpacing: true,
-        inputTypeQueryParamKey: 'batchInputType',
-        queryStringQueryParamKey: 'batchQuery',
-      }),
-      expect.anything()
-    );
-    const headerProps = jest.mocked(DomainWorkflowsHeader).mock.calls[0][0];
-    expect(headerProps.columnsPickerProps).toBeUndefined();
+    expect(await screen.findByText('Run ID')).toBeInTheDocument();
+    expect(screen.getByText('Status')).toBeInTheDocument();
+    expect(screen.getByText('Workflow ID')).toBeInTheDocument();
+    expect(screen.getByText('Workflow Type')).toBeInTheDocument();
+    expect(screen.queryByText('Started')).not.toBeInTheDocument();
   });
 
-  it('renders the workflows list with the fixed 4-column subset and batch URL keys', () => {
-    setup({});
-
-    expect(jest.mocked(DomainWorkflowsList)).toHaveBeenCalledWith(
-      expect.objectContaining({
-        domain: 'test-domain',
-        cluster: 'test-cluster',
-        inputTypeQueryParamKey: 'batchInputType',
-        queryStringQueryParamKey: 'batchQuery',
-        visibleColumns: BATCH_ACTIONS_NEW_ACTION_VISIBLE_COLUMN_IDS.map((id) =>
-          expect.objectContaining({ id })
-        ),
-      }),
-      expect.anything()
-    );
-  });
-
-  it('forwards the fetched workflow count to the floating bar', () => {
-    mockUseListWorkflows.mockReturnValue({
-      workflows: Array.from({ length: 7 }, (_, i) => ({
-        workflowID: `wf-${i}`,
-        runID: `run-${i}`,
-      })),
-      error: null,
-      isLoading: false,
-      isFetching: false,
-      hasNextPage: false,
-      fetchNextPage: jest.fn(),
-      isFetchingNextPage: false,
-      refetch: jest.fn(),
-    });
-    setup({});
+  it('shows the floating bar with the fetched workflow count', async () => {
+    setup({ workflowCount: 7 });
 
     expect(
-      jest.mocked(DomainBatchActionsNewActionFloatingBar)
-    ).toHaveBeenCalledWith(
-      expect.objectContaining({
-        selectedCount: 7,
-        totalCount: 7,
-      }),
-      expect.anything()
-    );
+      await screen.findByText(/7 of 7 workflows included/i)
+    ).toBeInTheDocument();
   });
 
-  it('hides the floating bar when no workflows have been fetched', () => {
-    mockUseListWorkflows.mockReturnValue({
-      workflows: [],
-      error: null,
-      isLoading: false,
-      isFetching: false,
-      hasNextPage: false,
-      fetchNextPage: jest.fn(),
-      isFetchingNextPage: false,
-      refetch: jest.fn(),
+  it('hides the floating bar when no workflows have been fetched', async () => {
+    setup({ workflowCount: 0 });
+
+    await waitFor(() => {
+      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
     });
-    setup({});
 
-    expect(screen.queryByTestId('mock-floating-bar')).not.toBeInTheDocument();
-  });
-
-  it('seeds batchQuery from query on mount when batchQuery is empty', () => {
-    mockUsePageQueryParams.mockReturnValue([
-      {
-        ...mockDomainPageQueryParamsValues,
-        query: 'WorkflowType="foo"',
-        batchQuery: '',
-      },
-      mockSetQueryParams,
-    ]);
-    setup({});
-
-    expect(mockSetQueryParams).toHaveBeenCalledWith({
-      batchQuery: 'WorkflowType="foo"',
-    });
-  });
-
-  it('does not seed batchQuery when it is already set', () => {
-    mockUsePageQueryParams.mockReturnValue([
-      {
-        ...mockDomainPageQueryParamsValues,
-        query: 'WorkflowType="foo"',
-        batchQuery: 'WorkflowType="bar"',
-      },
-      mockSetQueryParams,
-    ]);
-    setup({});
-
-    expect(mockSetQueryParams).not.toHaveBeenCalled();
+    expect(screen.queryByText(/workflows included/i)).not.toBeInTheDocument();
   });
 });
 
-function setup({ onDiscard = jest.fn() }: { onDiscard?: () => void }) {
+function setup({
+  onDiscard = jest.fn(),
+  workflowCount = 1,
+}: {
+  onDiscard?: () => void;
+  workflowCount?: number;
+}) {
   const user = userEvent.setup();
+  const response: ListWorkflowsResponse = {
+    workflows: Array.from({ length: workflowCount }, (_, i) =>
+      getMockWorkflowListItem({
+        workflowID: `wf-${i}`,
+        runID: `run-${i}`,
+      })
+    ),
+    nextPage: '',
+  };
+
   render(
     <DomainBatchActionsNewActionDetail
       domain="test-domain"
       cluster="test-cluster"
       onDiscard={onDiscard}
-    />
+    />,
+    {
+      endpointsMocks: [
+        {
+          path: '/api/domains/:domain/:cluster/workflows',
+          httpMethod: 'GET',
+          mockOnce: false,
+          httpResolver: async () => HttpResponse.json(response),
+        },
+      ] as MSWMocksHandlersProps['endpointsMocks'],
+    }
   );
 
   return { user };

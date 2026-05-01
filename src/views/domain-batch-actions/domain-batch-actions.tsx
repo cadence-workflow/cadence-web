@@ -1,6 +1,8 @@
 'use client';
 import React, { useState } from 'react';
 
+import { useSearchParams } from 'next/navigation';
+
 import { type DomainPageTabContentProps } from '@/views/domain-page/domain-page-content/domain-page-content.types';
 
 import DomainBatchActionDetail from './domain-batch-actions-detail/domain-batch-actions-detail';
@@ -10,6 +12,8 @@ import { MOCK_BATCH_ACTIONS } from './domain-batch-actions.constants';
 import { styled } from './domain-batch-actions.styles';
 
 export default function DomainBatchActions(props: DomainPageTabContentProps) {
+  const searchParams = useSearchParams();
+
   // TODO: replace with useSuspenseQuery once the batch-actions list endpoint exists
   const batchActions = MOCK_BATCH_ACTIONS;
 
@@ -17,8 +21,12 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
   const [selectedActionId, setSelectedActionId] = useState<string | null>(
     batchActions[0]?.id ?? null
   );
-  const [isDraftOpen, setIsDraftOpen] = useState(false);
-  const [isDraftSelected, setIsDraftSelected] = useState(false);
+  // The "Batch workflow actions" dropdown is the only producer of `batch-query`
+  // in the URL; its presence (even empty) signals that the user wants the
+  // draft open.
+  const isNewActionRequested = searchParams.get('batch-query') !== null;
+  const [isDraftOpen, setIsDraftOpen] = useState(isNewActionRequested);
+  const [isDraftSelected, setIsDraftSelected] = useState(isNewActionRequested);
 
   const selectedAction = batchActions.find((a) => a.id === selectedActionId);
 

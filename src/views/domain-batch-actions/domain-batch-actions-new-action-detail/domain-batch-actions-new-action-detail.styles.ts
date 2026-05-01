@@ -1,8 +1,6 @@
 import { styled as createStyled, type Theme } from 'baseui';
 import { type ButtonOverrides } from 'baseui/button';
 
-import { WORKFLOWS_LIST_MAX_HEIGHT } from './domain-batch-actions-new-action-detail.constants';
-
 export const overrides = {
   discardButton: {
     StartEnhancer: {
@@ -18,8 +16,6 @@ export const styled = {
     display: 'flex',
     flexDirection: 'column',
     gap: $theme.sizing.scale600,
-    flex: 1,
-    minHeight: 0,
   })),
   Header: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
@@ -29,15 +25,6 @@ export const styled = {
   })),
   Title: createStyled('h2', ({ $theme }: { $theme: Theme }) => ({
     ...$theme.typography.HeadingXSmall,
-  })),
-  WorkflowsListContainer: createStyled('div', () => ({
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 1,
-    minHeight: 0,
-    // Caps the list against the viewport.
-    maxHeight: WORKFLOWS_LIST_MAX_HEIGHT,
-    overflowY: 'auto',
   })),
   FloatingBarSlot: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     position: 'sticky',

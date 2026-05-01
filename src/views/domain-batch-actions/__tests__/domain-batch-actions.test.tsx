@@ -7,6 +7,12 @@ import { render, screen } from '@/test-utils/rtl';
 import DomainBatchActions from '../domain-batch-actions';
 import { type Props as SidebarProps } from '../domain-batch-actions-sidebar/domain-batch-actions-sidebar.types';
 
+const mockSearchParamsGet = jest.fn();
+jest.mock('next/navigation', () => ({
+  ...jest.requireActual('next/navigation'),
+  useSearchParams: () => ({ get: mockSearchParamsGet }),
+}));
+
 jest.mock('../domain-batch-actions.constants', () => ({
   MOCK_BATCH_ACTIONS: [
     {
@@ -76,6 +82,10 @@ jest.mock(
 );
 
 describe(DomainBatchActions.name, () => {
+  beforeEach(() => {
+    mockSearchParamsGet.mockReturnValue(null);
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -133,5 +143,20 @@ describe(DomainBatchActions.name, () => {
     expect(
       screen.getByRole('heading', { name: /Batch action #5/ })
     ).toBeInTheDocument();
+  });
+
+  it('opens the draft on mount when batch-query is present in the URL', () => {
+    mockSearchParamsGet.mockImplementation((key: string) =>
+      key === 'batch-query' ? '' : null
+    );
+
+    render(<DomainBatchActions domain="test-domain" cluster="test-cluster" />);
+
+    expect(
+      screen.getByRole('heading', { name: 'New batch action' })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: /Batch action #5/ })
+    ).not.toBeInTheDocument();
   });
 });
