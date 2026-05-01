@@ -5,6 +5,7 @@ import { userEvent } from '@testing-library/user-event';
 import { render, screen } from '@/test-utils/rtl';
 
 import DomainBatchActions from '../domain-batch-actions';
+import { type Props as NewActionDetailProps } from '../domain-batch-actions-new-action-detail/domain-batch-actions-new-action-detail.types';
 import { type Props as SidebarProps } from '../domain-batch-actions-sidebar/domain-batch-actions-sidebar.types';
 
 jest.mock('../domain-batch-actions.constants', () => ({
@@ -57,6 +58,19 @@ jest.mock(
             mock-select-{a.id}
           </button>
         ))}
+      </div>
+    ),
+  })
+);
+
+jest.mock(
+  '../domain-batch-actions-new-action-detail/domain-batch-actions-new-action-detail',
+  () => ({
+    __esModule: true,
+    default: ({ onDiscard }: NewActionDetailProps) => (
+      <div>
+        <h2>New batch action</h2>
+        <button onClick={onDiscard}>Discard batch action</button>
       </div>
     ),
   })

@@ -23,6 +23,7 @@ export const styled = {
       padding: `${$theme.sizing.scale400} ${$theme.sizing.scale600}`,
       borderRadius: '999px',
       boxShadow: $theme.lighting.shadow600,
+      backgroundColor: $theme.colors.backgroundPrimary,
     })
   ),
   Summary: createStyled(
