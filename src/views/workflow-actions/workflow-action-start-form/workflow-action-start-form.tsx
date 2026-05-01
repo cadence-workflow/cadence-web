@@ -5,6 +5,7 @@ import { FormControl } from 'baseui/form-control';
 import { Input } from 'baseui/input';
 import { RadioGroup, Radio } from 'baseui/radio';
 import { Spinner, SIZE as SPINNER_SIZE } from 'baseui/spinner';
+import { LabelXSmall } from 'baseui/typography';
 import { Controller, useWatch } from 'react-hook-form';
 import { MdWarning } from 'react-icons/md';
 
@@ -170,6 +171,7 @@ export default function WorkflowActionStartForm({
               )}
               placeholder="Enter timeout in seconds"
               size="compact"
+              endEnhancer={<LabelXSmall>Seconds</LabelXSmall>}
             />
           )}
         />
