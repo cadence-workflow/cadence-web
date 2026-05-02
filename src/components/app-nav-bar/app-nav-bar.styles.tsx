@@ -12,3 +12,11 @@ const cssStylesObj = {
 
 export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> =
   cssStylesObj;
+
+export const errorSnackbarOverrides = {
+  Root: {
+    style: {
+      backgroundColor: '#c62828',
+    },
+  },
+};
