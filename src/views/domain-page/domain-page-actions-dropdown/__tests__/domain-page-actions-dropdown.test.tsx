@@ -17,6 +17,18 @@ import getActionDisabledReason from '@/views/workflow-actions/workflow-actions-m
 import DomainPageActionsDropdown from '../domain-page-actions-dropdown';
 import type { Props } from '../domain-page-actions-dropdown.types';
 
+const mockRouterPush = jest.fn();
+jest.mock('next/navigation', () => ({
+  ...jest.requireActual('next/navigation'),
+  useRouter: () => ({ push: mockRouterPush }),
+}));
+
+const mockUsePageQueryParams = jest.fn();
+jest.mock('@/hooks/use-page-query-params/use-page-query-params', () => ({
+  __esModule: true,
+  default: (...args: Array<unknown>) => mockUsePageQueryParams(...args),
+}));
+
 jest.mock('@/views/workflow-actions/config/workflow-actions.config', () => {
   return {
     default: mockWorkflowActionsConfig,
@@ -127,6 +139,7 @@ describe(DomainPageActionsDropdown.name, () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockGetActionDisabledReason.mockReturnValue(undefined);
+    mockUsePageQueryParams.mockReturnValue([{ query: '' }, jest.fn()]);
   });
 
   describe('trigger button', () => {
@@ -230,6 +243,66 @@ describe(DomainPageActionsDropdown.name, () => {
       await user.click(screen.getByTestId('close-modal-button'));
 
       expect(screen.queryByTestId('actions-modal')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('batch workflow actions', () => {
+    it('navigates to batch-actions tab with empty batch-query when clicked without a workflows query', async () => {
+      const { user } = await setup({
+        ...defaultProps,
+        isBatchActionsEnabled: true,
+      });
+
+      await user.click(screen.getByTestId('popover-trigger'));
+      await user.click(screen.getByText('Batch workflow actions'));
+
+      expect(mockRouterPush).toHaveBeenCalledWith('batch-actions?batch-query=');
+    });
+
+    it('seeds batch-query from current query when navigating', async () => {
+      mockUsePageQueryParams.mockReturnValue([
+        { query: 'WorkflowType="foo"' },
+        jest.fn(),
+      ]);
+      const { user } = await setup({
+        ...defaultProps,
+        isBatchActionsEnabled: true,
+      });
+
+      await user.click(screen.getByTestId('popover-trigger'));
+      await user.click(screen.getByText('Batch workflow actions'));
+
+      const pushedTo = mockRouterPush.mock.calls[0][0];
+      const url = new URL(pushedTo, 'http://example.com/');
+      expect(url.pathname).toBe('/batch-actions');
+      expect(url.searchParams.get('batch-query')).toBe('WorkflowType="foo"');
+    });
+
+    it('preserves existing URL search params when navigating', async () => {
+      const originalLocation = window.location;
+      Object.defineProperty(window, 'location', {
+        configurable: true,
+        value: { ...originalLocation, search: '?input=query&query=foo' },
+      });
+
+      const { user } = await setup({
+        ...defaultProps,
+        isBatchActionsEnabled: true,
+      });
+
+      await user.click(screen.getByTestId('popover-trigger'));
+      await user.click(screen.getByText('Batch workflow actions'));
+
+      const pushedTo = mockRouterPush.mock.calls[0][0];
+      const url = new URL(pushedTo, 'http://example.com/');
+      expect(url.searchParams.get('input')).toBe('query');
+      expect(url.searchParams.get('query')).toBe('foo');
+      expect(url.searchParams.get('batch-query')).toBe('');
+
+      Object.defineProperty(window, 'location', {
+        configurable: true,
+        value: originalLocation,
+      });
     });
   });
 });
