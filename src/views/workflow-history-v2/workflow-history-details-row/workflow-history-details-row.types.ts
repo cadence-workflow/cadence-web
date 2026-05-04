@@ -53,6 +53,8 @@ export type DetailsRowItemParser = {
   omitWrapping?: boolean;
   /** Optional flag to stop click event propagation if the item has clickable content */
   hasClickableContent?: boolean;
+  /** Optional semantic badge color for the field pill (e.g. retries / attempt count) */
+  badgeColor?: 'warning';
 };
 
 export type DetailsRowItem = {
@@ -68,6 +70,7 @@ export type DetailsRowItem = {
   invertTooltipColors?: boolean;
   omitWrapping?: boolean;
   hasClickableContent?: boolean;
+  badgeColor?: 'warning';
 };
 
 export type Props = {

@@ -19,7 +19,13 @@ export default function DomainWorkflowsAdvanced({
 }: Props) {
   const [queryParams] = usePageQueryParams(domainPageQueryParamsConfig);
 
-  const { visibleColumns } = useWorkflowsListColumns({ cluster });
+  const {
+    availableColumns,
+    visibleColumns,
+    selectedColumnIds,
+    setSelectedColumnIds,
+    resetColumns,
+  } = useWorkflowsListColumns({ cluster, domain });
 
   const timeRangeParams = useMemo(() => {
     const now = dayjs();
@@ -44,7 +50,12 @@ export default function DomainWorkflowsAdvanced({
         <DomainWorkflowsHeader
           domain={domain}
           cluster={cluster}
-          showColumnsPicker
+          columnsPickerProps={{
+            allColumns: availableColumns,
+            selectedColumnIds,
+            onApply: setSelectedColumnIds,
+            onReset: resetColumns,
+          }}
           {...timeRangeParams}
         />
         <DomainWorkflowsList

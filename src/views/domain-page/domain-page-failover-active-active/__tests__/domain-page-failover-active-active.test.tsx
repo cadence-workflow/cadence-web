@@ -1,16 +1,9 @@
 import { render, screen } from '@/test-utils/rtl';
 
-import * as usePageQueryParamsModule from '@/hooks/use-page-query-params/use-page-query-params';
-import { type FailoverEvent } from '@/route-handlers/list-failover-history/list-failover-history.types';
-import { mockDomainPageQueryParamsValues } from '@/views/domain-page/__fixtures__/domain-page-query-params';
 import { DEFAULT_CLUSTER_SCOPE } from '@/views/domain-page/domain-page-failovers/domain-page-failovers.constants';
+import { type FailoverEventActiveActive } from '@/views/domain-page/domain-page-failovers/domain-page-failovers.types';
 
 import DomainPageFailoverActiveActive from '../domain-page-failover-active-active';
-
-const mockSetQueryParams = jest.fn();
-jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
-  jest.fn(() => [mockDomainPageQueryParamsValues, mockSetQueryParams])
-);
 
 jest.mock(
   '../../domain-page-failover-single-cluster/domain-page-failover-single-cluster',
@@ -32,7 +25,7 @@ describe(DomainPageFailoverActiveActive.name, () => {
   });
 
   it('renders cluster failover when matching default cluster failover is found', () => {
-    const failoverEvent: FailoverEvent = {
+    const failoverEvent: FailoverEventActiveActive = {
       id: 'failover-1',
       createdTime: {
         seconds: '1700000000',
@@ -52,12 +45,10 @@ describe(DomainPageFailoverActiveActive.name, () => {
           clusterAttribute: null,
         },
       ],
+      displayedScope: DEFAULT_CLUSTER_SCOPE,
     };
 
-    setup({
-      failoverEvent,
-      clusterAttributeScope: DEFAULT_CLUSTER_SCOPE,
-    });
+    setup({ failoverEvent });
 
     expect(screen.getByText('Default:')).toBeInTheDocument();
     expect(
@@ -69,7 +60,7 @@ describe(DomainPageFailoverActiveActive.name, () => {
   });
 
   it('renders cluster failover when matching non-default cluster failover is found', () => {
-    const failoverEvent: FailoverEvent = {
+    const failoverEvent: FailoverEventActiveActive = {
       id: 'failover-1',
       createdTime: {
         seconds: '1700000000',
@@ -92,13 +83,11 @@ describe(DomainPageFailoverActiveActive.name, () => {
           },
         },
       ],
+      displayedScope: 'city',
+      displayedValue: 'new_york',
     };
 
-    setup({
-      failoverEvent,
-      clusterAttributeScope: 'city',
-      clusterAttributeValue: 'new_york',
-    });
+    setup({ failoverEvent });
 
     expect(screen.getByText('city (new_york):')).toBeInTheDocument();
     expect(
@@ -110,7 +99,7 @@ describe(DomainPageFailoverActiveActive.name, () => {
   });
 
   it('does not render cluster failover section when clusterAttributeScope is set but clusterAttributeValue is undefined for non-default scope', () => {
-    const failoverEvent: FailoverEvent = {
+    const failoverEvent: FailoverEventActiveActive = {
       id: 'failover-1',
       createdTime: {
         seconds: '1700000000',
@@ -133,12 +122,10 @@ describe(DomainPageFailoverActiveActive.name, () => {
           },
         },
       ],
+      displayedScope: 'region',
     };
 
-    setup({
-      failoverEvent,
-      clusterAttributeScope: 'region',
-    });
+    setup({ failoverEvent });
 
     expect(
       screen.queryByTestId('mock-single-cluster-failover')
@@ -148,7 +135,7 @@ describe(DomainPageFailoverActiveActive.name, () => {
   });
 
   it('does not render cluster failover section when no matching cluster failover is found', () => {
-    const failoverEvent: FailoverEvent = {
+    const failoverEvent: FailoverEventActiveActive = {
       id: 'failover-1',
       createdTime: {
         seconds: '1700000000',
@@ -171,13 +158,11 @@ describe(DomainPageFailoverActiveActive.name, () => {
           },
         },
       ],
+      displayedScope: 'city',
+      displayedValue: 'los_angeles',
     };
 
-    setup({
-      failoverEvent,
-      clusterAttributeScope: 'city',
-      clusterAttributeValue: 'los_angeles',
-    });
+    setup({ failoverEvent });
 
     expect(screen.queryByText('city (los_angeles):')).not.toBeInTheDocument();
     expect(
@@ -188,7 +173,7 @@ describe(DomainPageFailoverActiveActive.name, () => {
   });
 
   it('does not render cluster failover section when clusterAttributeScope is undefined', () => {
-    const failoverEvent: FailoverEvent = {
+    const failoverEvent: FailoverEventActiveActive = {
       id: 'failover-1',
       createdTime: {
         seconds: '1700000000',
@@ -210,10 +195,7 @@ describe(DomainPageFailoverActiveActive.name, () => {
       ],
     };
 
-    setup({
-      failoverEvent,
-      clusterAttributeScope: undefined,
-    });
+    setup({ failoverEvent });
 
     expect(
       screen.queryByTestId('mock-single-cluster-failover')
@@ -223,7 +205,7 @@ describe(DomainPageFailoverActiveActive.name, () => {
   });
 
   it('renders "See more" button even when no matching cluster failover is found', () => {
-    const failoverEvent: FailoverEvent = {
+    const failoverEvent: FailoverEventActiveActive = {
       id: 'failover-1',
       createdTime: {
         seconds: '1700000000',
@@ -231,12 +213,10 @@ describe(DomainPageFailoverActiveActive.name, () => {
       },
       failoverType: 'FAILOVER_TYPE_GRACEFUL',
       clusterFailovers: [],
+      displayedScope: DEFAULT_CLUSTER_SCOPE,
     };
 
-    setup({
-      failoverEvent,
-      clusterAttributeScope: DEFAULT_CLUSTER_SCOPE,
-    });
+    setup({ failoverEvent });
 
     expect(
       screen.queryByTestId('mock-single-cluster-failover')
@@ -246,7 +226,7 @@ describe(DomainPageFailoverActiveActive.name, () => {
   });
 
   it('selects the correct cluster failover when multiple cluster failovers exist', () => {
-    const failoverEvent: FailoverEvent = {
+    const failoverEvent: FailoverEventActiveActive = {
       id: 'failover-1',
       createdTime: {
         seconds: '1700000000',
@@ -283,13 +263,11 @@ describe(DomainPageFailoverActiveActive.name, () => {
           },
         },
       ],
+      displayedScope: 'region',
+      displayedValue: 'us-east',
     };
 
-    setup({
-      failoverEvent,
-      clusterAttributeScope: 'region',
-      clusterAttributeValue: 'us-east',
-    });
+    setup({ failoverEvent });
 
     expect(screen.getByText('region (us-east):')).toBeInTheDocument();
     expect(
@@ -302,21 +280,8 @@ describe(DomainPageFailoverActiveActive.name, () => {
 
 function setup({
   failoverEvent,
-  clusterAttributeScope,
-  clusterAttributeValue,
 }: {
-  failoverEvent: FailoverEvent;
-  clusterAttributeScope?: string;
-  clusterAttributeValue?: string;
+  failoverEvent: FailoverEventActiveActive;
 }) {
-  jest.spyOn(usePageQueryParamsModule, 'default').mockReturnValue([
-    {
-      ...mockDomainPageQueryParamsValues,
-      clusterAttributeScope,
-      clusterAttributeValue,
-    } as typeof mockDomainPageQueryParamsValues,
-    mockSetQueryParams,
-  ]);
-
   render(<DomainPageFailoverActiveActive failoverEvent={failoverEvent} />);
 }

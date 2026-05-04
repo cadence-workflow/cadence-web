@@ -37,6 +37,14 @@ const startWorkflowRequestBodySchema = z.object({
     .record(z.union([z.string(), z.number(), z.boolean()]))
     .optional(),
   header: z.record(z.string()).optional(),
+  activeClusterSelectionPolicy: z
+    .object({
+      clusterAttribute: z.object({
+        scope: z.string().min(1),
+        name: z.string().min(1),
+      }),
+    })
+    .optional(),
 });
 
 export default startWorkflowRequestBodySchema;

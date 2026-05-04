@@ -11,12 +11,14 @@ import { type DomainPageTabsParams } from '@/views/domain-page/domain-page-tabs/
 import { overrides, styled } from './domain-cluster-selector.styles';
 import type { Props } from './domain-cluster-selector.types';
 import buildDomainClusterPath from './helpers/build-domain-cluster-path';
+import defaultFormatClusterLabel from './helpers/format-cluster-label';
 import getClusterReplicationStatusLabel from './helpers/get-cluster-replication-status-label';
 
 export default function DomainClusterSelector({
   domainDescription,
   cluster,
   buildPathForCluster,
+  formatClusterLabel = defaultFormatClusterLabel,
   singleClusterFallbackType = 'label',
   noSpacing = false,
 }: Props): React.ReactNode {
@@ -42,9 +44,7 @@ export default function DomainClusterSelector({
 
     return {
       id: c.clusterName,
-      label: replicationStatusLabel
-        ? `${c.clusterName} (${replicationStatusLabel})`
-        : c.clusterName,
+      label: formatClusterLabel(c.clusterName, replicationStatusLabel),
     };
   });
 
@@ -68,7 +68,10 @@ export default function DomainClusterSelector({
       value={[
         clusterSelectorOptions.find(({ id }) => id === cluster) ?? {
           id: cluster,
-          label: cluster,
+          label: formatClusterLabel(
+            cluster,
+            getClusterReplicationStatusLabel(domainDescription, cluster)
+          ),
         },
       ]}
       onChange={({ option }) => {

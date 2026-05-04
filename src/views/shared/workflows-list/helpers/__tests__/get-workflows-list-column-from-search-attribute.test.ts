@@ -71,7 +71,7 @@ describe(getWorkflowsListColumnFromSearchAttribute.name, () => {
     expect(column).not.toBeNull();
     expect(column?.id).toBe('MyCustomField');
     expect(column?.name).toBe('MyCustomField');
-    expect(column?.width).toBe('minmax(200px, 2fr)');
+    expect(column?.width).toBe('minmax(150px, 2fr)');
     expect(column?.isSystem).toBe(false);
   });
 

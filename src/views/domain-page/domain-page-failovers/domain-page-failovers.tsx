@@ -64,7 +64,15 @@ export default function DomainPageFailovers({
         <styled.TableTopSpacer />
       )}
       <Table
-        data={filteredFailoverEvents}
+        data={
+          isActiveActive
+            ? filteredFailoverEvents.map((e) => ({
+                ...e,
+                displayedScope: clusterAttributeScope,
+                displayedValue: clusterAttributeValue,
+              }))
+            : filteredFailoverEvents
+        }
         shouldShowResults={!isLoading && filteredFailoverEvents.length > 0}
         endMessageProps={{
           kind: 'infinite-scroll',
