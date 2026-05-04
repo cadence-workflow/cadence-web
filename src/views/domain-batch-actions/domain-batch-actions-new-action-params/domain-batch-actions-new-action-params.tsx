@@ -3,6 +3,7 @@ import React from 'react';
 
 import { FormControl } from 'baseui/form-control';
 import { Input } from 'baseui/input';
+import { Controller } from 'react-hook-form';
 
 import LabelWithTooltip from '@/components/label-with-tooltip/label-with-tooltip';
 
@@ -13,12 +14,8 @@ import {
 import { type Props } from './domain-batch-actions-new-action-params.types';
 
 export default function DomainBatchActionsNewActionParams({
-  description,
-  rps,
-  onDescriptionChange,
-  onRpsChange,
-  descriptionError,
-  rpsError,
+  control,
+  fieldErrors,
 }: Props) {
   return (
     <styled.Container>
@@ -26,14 +23,21 @@ export default function DomainBatchActionsNewActionParams({
         <FormControl
           label={<LabelWithTooltip label="Description" />}
           overrides={overrides.formControl}
-          error={descriptionError}
+          error={fieldErrors.description?.message}
         >
-          <Input
-            size="compact"
-            value={description}
-            onChange={(e) => onDescriptionChange(e.target.value)}
-            aria-label="Description"
-            error={Boolean(descriptionError)}
+          <Controller
+            name="description"
+            control={control}
+            render={({ field: { ref, ...field } }) => (
+              <Input
+                {...field}
+                // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
+                inputRef={ref}
+                size="compact"
+                aria-label="Description"
+                error={Boolean(fieldErrors.description)}
+              />
+            )}
           />
         </FormControl>
       </styled.DescriptionField>
@@ -46,19 +50,28 @@ export default function DomainBatchActionsNewActionParams({
             />
           }
           overrides={overrides.formControl}
-          error={rpsError}
+          error={fieldErrors.rps?.message}
         >
-          <Input
-            size="compact"
-            type="number"
-            value={String(rps)}
-            onChange={(e) =>
-              onRpsChange(
-                e.target.value === '' ? 0 : parseInt(e.target.value, 10)
-              )
-            }
-            aria-label="RPS"
-            error={Boolean(rpsError)}
+          <Controller
+            name="rps"
+            control={control}
+            render={({ field: { ref, value, onChange, ...field } }) => (
+              <Input
+                {...field}
+                // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
+                inputRef={ref}
+                size="compact"
+                type="number"
+                value={String(value)}
+                onChange={(e) =>
+                  onChange(
+                    e.target.value === '' ? 0 : parseInt(e.target.value, 10)
+                  )
+                }
+                aria-label="RPS"
+                error={Boolean(fieldErrors.rps)}
+              />
+            )}
           />
         </FormControl>
       </styled.RpsField>

@@ -1,8 +1,14 @@
 import React from 'react';
 
+import { zodResolver } from '@hookform/resolvers/zod';
+import { type FieldErrors, useForm } from 'react-hook-form';
+
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import DomainBatchActionsNewActionParams from '../domain-batch-actions-new-action-params';
+import batchActionParamsSchema, {
+  type BatchActionParamsFormData,
+} from '../schemas/batch-action-params-schema';
 
 describe(DomainBatchActionsNewActionParams.name, () => {
   it('renders description input with label', () => {
@@ -21,77 +27,60 @@ describe(DomainBatchActionsNewActionParams.name, () => {
     expect(screen.getByRole('spinbutton', { name: 'RPS' })).toBeInTheDocument();
   });
 
-  it('displays the provided description value', () => {
-    setup({ description: 'My batch' });
+  it('displays the default rps value', () => {
+    setup({});
 
-    expect(screen.getByRole('textbox', { name: 'Description' })).toHaveValue(
-      'My batch'
-    );
+    expect(screen.getByRole('spinbutton', { name: 'RPS' })).toHaveValue(100);
   });
 
-  it('displays the provided rps value', () => {
-    setup({ rps: 50 });
+  it('shows description error when provided', () => {
+    setup({
+      fieldErrors: {
+        description: { type: 'too_small', message: 'Description is required' },
+      },
+    });
 
-    expect(screen.getByRole('spinbutton', { name: 'RPS' })).toHaveValue(50);
+    expect(screen.getByText('Description is required')).toBeInTheDocument();
   });
 
-  it('calls onDescriptionChange when description input changes', async () => {
-    const { user, onDescriptionChange } = setup({});
-
-    await user.type(
-      screen.getByRole('textbox', { name: 'Description' }),
-      'test'
-    );
-
-    expect(onDescriptionChange).toHaveBeenCalled();
-  });
-
-  it('calls onRpsChange when RPS input changes', async () => {
-    const { user, onRpsChange } = setup({});
-
-    await user.type(screen.getByRole('spinbutton', { name: 'RPS' }), '200');
-
-    expect(onRpsChange).toHaveBeenCalled();
-  });
-
-  it('shows description error when descriptionError is provided', () => {
-    setup({ descriptionError: 'Required' });
-
-    expect(screen.getByText('Required')).toBeInTheDocument();
-  });
-
-  it('shows rps error when rpsError is provided', () => {
-    setup({ rpsError: 'Must be between 1 and 999' });
+  it('shows rps error when provided', () => {
+    setup({
+      fieldErrors: {
+        rps: { type: 'too_small', message: 'Must be between 1 and 999' },
+      },
+    });
 
     expect(screen.getByText('Must be between 1 and 999')).toBeInTheDocument();
   });
 });
 
-function setup({
-  description = '',
-  rps = 100,
-  descriptionError,
-  rpsError,
+function Wrapper({
+  fieldErrors,
 }: {
-  description?: string;
-  rps?: number;
-  descriptionError?: string;
-  rpsError?: string;
+  fieldErrors?: FieldErrors<BatchActionParamsFormData>;
 }) {
-  const user = userEvent.setup();
-  const onDescriptionChange = jest.fn();
-  const onRpsChange = jest.fn();
+  const { control } = useForm<BatchActionParamsFormData>({
+    resolver: zodResolver(batchActionParamsSchema),
+    defaultValues: { description: '', rps: 100 },
+    mode: 'onChange',
+  });
 
-  render(
+  return (
     <DomainBatchActionsNewActionParams
-      description={description}
-      rps={rps}
-      onDescriptionChange={onDescriptionChange}
-      onRpsChange={onRpsChange}
-      descriptionError={descriptionError}
-      rpsError={rpsError}
+      control={control}
+      fieldErrors={fieldErrors ?? {}}
     />
   );
+}
 
-  return { user, onDescriptionChange, onRpsChange };
+function setup({
+  fieldErrors,
+}: {
+  fieldErrors?: FieldErrors<BatchActionParamsFormData>;
+}) {
+  const user = userEvent.setup();
+
+  render(<Wrapper fieldErrors={fieldErrors} />);
+
+  return { user };
 }
