@@ -94,6 +94,13 @@ const resolverSchemas: ResolverSchemas = {
     args: z.undefined(),
     returnType: z.enum(HISTORY_PAGE_V2_ENABLED_VALUES_CONFIG),
   },
+  SCHEDULES_ENABLED: {
+    args: z.object({
+      cluster: z.string(),
+      domain: z.string(),
+    }),
+    returnType: z.boolean(),
+  },
   WORKFLOWS_LIST_ENABLED: {
     args: z.undefined(),
     returnType: z.boolean(),
