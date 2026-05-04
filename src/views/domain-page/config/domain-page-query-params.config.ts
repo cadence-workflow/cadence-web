@@ -3,6 +3,8 @@ import parseDateFilterValue from '@/components/date-filter/helpers/parse-date-fi
 import {
   type PageQueryParamMultiValue,
   type PageQueryParam,
+  type PageQueryParamKeys,
+  type PageQueryParamValues,
 } from '@/hooks/use-page-query-params/use-page-query-params.types';
 import { type SortOrder } from '@/utils/sort-by';
 import { type WorkflowStatusClosed } from '@/views/domain-workflows-archival/domain-workflows-archival-header/domain-workflows-archival-header.types';
@@ -23,6 +25,10 @@ const domainPageQueryParamsConfig: [
   PageQueryParam<'sortOrder', SortOrder>,
   // Query input
   PageQueryParam<'query', string>,
+  // Batch actions query input (uses separate URL params so the workflows tab
+  // and the batch action draft do not overwrite each other's state).
+  PageQueryParam<'batchInputType', WorkflowsHeaderInputType>,
+  PageQueryParam<'batchQuery', string>,
   // Basic Visibility inputs
   PageQueryParam<'workflowId', string>,
   PageQueryParam<'workflowType', string>,
@@ -86,6 +92,17 @@ const domainPageQueryParamsConfig: [
   },
   {
     key: 'query',
+    defaultValue: '',
+  },
+  {
+    key: 'batchInputType',
+    queryParamKey: 'batch-input',
+    defaultValue: 'query',
+    parseValue: (value: string) => (value === 'search' ? 'search' : 'query'),
+  },
+  {
+    key: 'batchQuery',
+    queryParamKey: 'batch-query',
     defaultValue: '',
   },
   {
@@ -177,3 +194,24 @@ const domainPageQueryParamsConfig: [
 ] as const;
 
 export default domainPageQueryParamsConfig;
+
+type DomainPageQueryParamValues = PageQueryParamValues<
+  typeof domainPageQueryParamsConfig
+>;
+type DomainPageQueryParamKey = PageQueryParamKeys<
+  typeof domainPageQueryParamsConfig
+>;
+
+// Keys whose value is a plain string (e.g. `query`, `batchQuery`, `search`).
+export type DomainPageStringQueryParamKey = {
+  [K in DomainPageQueryParamKey]: DomainPageQueryParamValues[K] extends string
+    ? K
+    : never;
+}[DomainPageQueryParamKey];
+
+// Keys whose value is `WorkflowsHeaderInputType` (`'search' | 'query'`).
+export type DomainPageInputTypeQueryParamKey = {
+  [K in DomainPageQueryParamKey]: DomainPageQueryParamValues[K] extends WorkflowsHeaderInputType
+    ? K
+    : never;
+}[DomainPageQueryParamKey];
