@@ -81,8 +81,9 @@ export default function getAutocompleteSuggestions(
     lastToken.startsWith('"') &&
     (lastToken.length === 1 || !lastToken.endsWith('"'));
 
+  const lowerCaseLastToken = lastToken.toLowerCase();
   const filterByPartialValue = (values: Array<string>) =>
-    values.filter((v) => v.toLowerCase().startsWith(lastToken.toLowerCase()));
+    values.filter((v) => v.toLowerCase().startsWith(lowerCaseLastToken));
 
   // Partial value after CloseStatus attribute: filter status values
   if (
