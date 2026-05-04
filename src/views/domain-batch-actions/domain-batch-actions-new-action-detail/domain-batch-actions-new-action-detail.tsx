@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 
 import { MdDeleteOutline } from 'react-icons/md';
 
@@ -20,6 +20,7 @@ import WorkflowsList from '@/views/shared/workflows-list/workflows-list';
 import domainBatchActionsNewActionFloatingBarConfig from '../config/domain-batch-actions-new-action-floating-bar.config';
 import DomainBatchActionsNewActionFloatingBar from '../domain-batch-actions-new-action-floating-bar/domain-batch-actions-new-action-floating-bar';
 import DomainBatchActionsNewActionInfoBanner from '../domain-batch-actions-new-action-info-banner/domain-batch-actions-new-action-info-banner';
+import DomainBatchActionsNewActionParams from '../domain-batch-actions-new-action-params/domain-batch-actions-new-action-params';
 
 import {
   overrides,
@@ -33,6 +34,9 @@ export default function DomainBatchActionsNewActionDetail({
   onDiscard,
 }: Props) {
   const [queryParams] = usePageQueryParams(domainPageQueryParamsConfig);
+
+  const [description, setDescription] = useState('');
+  const [rps, setRps] = useState(100);
 
   // Reuse the workflows tab's column selection (persisted per-domain in
   // localStorage) so the user sees the same search attributes they picked
@@ -81,6 +85,12 @@ export default function DomainBatchActionsNewActionDetail({
         </Button>
       </styled.Header>
       <DomainBatchActionsNewActionInfoBanner />
+      <DomainBatchActionsNewActionParams
+        description={description}
+        rps={rps}
+        onDescriptionChange={setDescription}
+        onRpsChange={setRps}
+      />
       <WorkflowsHeader
         pageQueryParamsConfig={domainPageQueryParamsConfig}
         pageFiltersConfig={domainWorkflowsFiltersConfig}

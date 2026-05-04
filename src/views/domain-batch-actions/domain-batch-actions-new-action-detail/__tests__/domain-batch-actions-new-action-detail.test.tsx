@@ -22,6 +22,11 @@ jest.mock('query-string', () => ({
   ),
 }));
 
+jest.mock(
+  '../../domain-batch-actions-new-action-params/domain-batch-actions-new-action-params',
+  () => jest.fn(() => <div data-testid="mock-params" />)
+);
+
 const mockSetQueryParams = jest.fn();
 const mockUsePageQueryParams = jest.fn();
 jest.mock('@/hooks/use-page-query-params/use-page-query-params', () => ({
@@ -108,6 +113,12 @@ describe(DomainBatchActionsNewActionDetail.name, () => {
     await user.click(await screen.findByText('Discard batch action'));
 
     expect(onDiscard).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders the params input row', async () => {
+    setup({});
+
+    expect(await screen.findByTestId('mock-params')).toBeInTheDocument();
   });
 
   it('renders the columns selected for the workflows tab', async () => {
