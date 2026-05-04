@@ -4,14 +4,16 @@ import { userEvent } from '@testing-library/user-event';
 
 import { render, screen } from '@/test-utils/rtl';
 
+import { mockDomainPageQueryParamsValues } from '@/views/domain-page/__fixtures__/domain-page-query-params';
+
 import DomainBatchActions from '../domain-batch-actions';
 import { type Props as NewActionDetailProps } from '../domain-batch-actions-new-action-detail/domain-batch-actions-new-action-detail.types';
 import { type Props as SidebarProps } from '../domain-batch-actions-sidebar/domain-batch-actions-sidebar.types';
 
-const mockSearchParamsGet = jest.fn();
-jest.mock('next/navigation', () => ({
-  ...jest.requireActual('next/navigation'),
-  useSearchParams: () => ({ get: mockSearchParamsGet }),
+const mockUsePageQueryParams = jest.fn();
+jest.mock('@/hooks/use-page-query-params/use-page-query-params', () => ({
+  __esModule: true,
+  default: (...args: Array<unknown>) => mockUsePageQueryParams(...args),
 }));
 
 jest.mock('../domain-batch-actions.constants', () => ({
@@ -84,7 +86,10 @@ jest.mock(
 
 describe(DomainBatchActions.name, () => {
   beforeEach(() => {
-    mockSearchParamsGet.mockReturnValue(null);
+    mockUsePageQueryParams.mockReturnValue([
+      { ...mockDomainPageQueryParamsValues, batchQuery: '' },
+      jest.fn(),
+    ]);
   });
 
   afterEach(() => {
@@ -146,10 +151,14 @@ describe(DomainBatchActions.name, () => {
     ).toBeInTheDocument();
   });
 
-  it('opens the draft on mount when batch-query is present in the URL', () => {
-    mockSearchParamsGet.mockImplementation((key: string) =>
-      key === 'batch-query' ? '' : null
-    );
+  it('opens the draft on mount when batchQuery is present in the URL', () => {
+    mockUsePageQueryParams.mockReturnValue([
+      {
+        ...mockDomainPageQueryParamsValues,
+        batchQuery: 'WorkflowType="foo"',
+      },
+      jest.fn(),
+    ]);
 
     render(<DomainBatchActions domain="test-domain" cluster="test-cluster" />);
 
