@@ -15,7 +15,13 @@ describe(DomainBatchActionsNewActionDetail.name, () => {
   });
 
   it('renders the "New batch action" title', () => {
-    render(<DomainBatchActionsNewActionDetail onDiscard={jest.fn()} />);
+    render(
+      <DomainBatchActionsNewActionDetail
+        domain="test-domain"
+        cluster="test-cluster"
+        onDiscard={jest.fn()}
+      />
+    );
 
     expect(
       screen.getByRole('heading', { name: 'New batch action' })
@@ -23,7 +29,13 @@ describe(DomainBatchActionsNewActionDetail.name, () => {
   });
 
   it('renders the discard button', () => {
-    render(<DomainBatchActionsNewActionDetail onDiscard={jest.fn()} />);
+    render(
+      <DomainBatchActionsNewActionDetail
+        domain="test-domain"
+        cluster="test-cluster"
+        onDiscard={jest.fn()}
+      />
+    );
 
     expect(screen.getByText('Discard batch action')).toBeInTheDocument();
   });
@@ -32,7 +44,13 @@ describe(DomainBatchActionsNewActionDetail.name, () => {
     const onDiscard = jest.fn();
     const user = userEvent.setup();
 
-    render(<DomainBatchActionsNewActionDetail onDiscard={onDiscard} />);
+    render(
+      <DomainBatchActionsNewActionDetail
+        domain="test-domain"
+        cluster="test-cluster"
+        onDiscard={onDiscard}
+      />
+    );
 
     await user.click(screen.getByText('Discard batch action'));
 
