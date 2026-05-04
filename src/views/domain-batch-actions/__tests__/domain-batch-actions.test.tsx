@@ -4,9 +4,17 @@ import { userEvent } from '@testing-library/user-event';
 
 import { render, screen } from '@/test-utils/rtl';
 
+import { mockDomainPageQueryParamsValues } from '@/views/domain-page/__fixtures__/domain-page-query-params';
+
 import DomainBatchActions from '../domain-batch-actions';
 import { type Props as NewActionDetailProps } from '../domain-batch-actions-new-action-detail/domain-batch-actions-new-action-detail.types';
 import { type Props as SidebarProps } from '../domain-batch-actions-sidebar/domain-batch-actions-sidebar.types';
+
+const mockUsePageQueryParams = jest.fn();
+jest.mock('@/hooks/use-page-query-params/use-page-query-params', () => ({
+  __esModule: true,
+  default: (...args: Array<unknown>) => mockUsePageQueryParams(...args),
+}));
 
 jest.mock('../domain-batch-actions.constants', () => ({
   MOCK_BATCH_ACTIONS: [
@@ -41,6 +49,19 @@ jest.mock('../domain-batch-actions.constants', () => ({
 }));
 
 jest.mock(
+  '../domain-batch-actions-new-action-detail/domain-batch-actions-new-action-detail',
+  () => ({
+    __esModule: true,
+    default: ({ onDiscard }: NewActionDetailProps) => (
+      <div>
+        <h2>New batch action</h2>
+        <button onClick={onDiscard}>Discard batch action</button>
+      </div>
+    ),
+  })
+);
+
+jest.mock(
   '../domain-batch-actions-sidebar/domain-batch-actions-sidebar',
   () => ({
     __esModule: true,
@@ -63,20 +84,14 @@ jest.mock(
   })
 );
 
-jest.mock(
-  '../domain-batch-actions-new-action-detail/domain-batch-actions-new-action-detail',
-  () => ({
-    __esModule: true,
-    default: ({ onDiscard }: NewActionDetailProps) => (
-      <div>
-        <h2>New batch action</h2>
-        <button onClick={onDiscard}>Discard batch action</button>
-      </div>
-    ),
-  })
-);
-
 describe(DomainBatchActions.name, () => {
+  beforeEach(() => {
+    mockUsePageQueryParams.mockReturnValue([
+      { ...mockDomainPageQueryParamsValues, batchQuery: '' },
+      jest.fn(),
+    ]);
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -134,5 +149,24 @@ describe(DomainBatchActions.name, () => {
     expect(
       screen.getByRole('heading', { name: /Batch action #5/ })
     ).toBeInTheDocument();
+  });
+
+  it('opens the draft on mount when batchQuery is present in the URL', () => {
+    mockUsePageQueryParams.mockReturnValue([
+      {
+        ...mockDomainPageQueryParamsValues,
+        batchQuery: 'WorkflowType="foo"',
+      },
+      jest.fn(),
+    ]);
+
+    render(<DomainBatchActions domain="test-domain" cluster="test-cluster" />);
+
+    expect(
+      screen.getByRole('heading', { name: 'New batch action' })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: /Batch action #5/ })
+    ).not.toBeInTheDocument();
   });
 });
