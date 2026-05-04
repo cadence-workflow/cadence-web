@@ -1,8 +1,8 @@
+import { type Control, type FieldErrors } from 'react-hook-form';
+
+import { type BatchActionParamsFormData } from './schemas/batch-action-params-schema';
+
 export type Props = {
-  description: string;
-  rps: number;
-  onDescriptionChange: (value: string) => void;
-  onRpsChange: (value: number) => void;
-  descriptionError?: string;
-  rpsError?: string;
+  control: Control<BatchActionParamsFormData>;
+  fieldErrors: FieldErrors<BatchActionParamsFormData>;
 };

@@ -14,4 +14,5 @@ export type Props = {
   totalCount: number;
   actions: ReadonlyArray<DomainBatchActionsNewActionFloatingBarActionConfig>;
   onActionClick: (actionId: string) => void;
+  disabled?: boolean;
 };
