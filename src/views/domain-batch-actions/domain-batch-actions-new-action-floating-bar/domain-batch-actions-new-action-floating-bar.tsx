@@ -14,6 +14,7 @@ export default function DomainBatchActionsNewActionFloatingBar({
   totalCount,
   actions,
   onActionClick,
+  disabled,
 }: Props) {
   return (
     <styled.Container role="region" aria-label="Batch action floating bar">
@@ -30,6 +31,7 @@ export default function DomainBatchActionsNewActionFloatingBar({
             overrides={overrides.actionButton}
             startEnhancer={<action.icon />}
             onClick={() => onActionClick(action.id)}
+            disabled={disabled}
           >
             {action.label}
           </Button>
