@@ -1,14 +1,16 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 
 import { useSuspenseQuery } from '@tanstack/react-query';
 
 import ErrorPanel from '@/components/error-panel/error-panel';
 import PanelSection from '@/components/panel-section/panel-section';
+import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import { type FetchWorkflowQueryTypesResponse } from '@/route-handlers/fetch-workflow-query-types/fetch-workflow-query-types.types';
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
+import workflowPageQueryParamsConfig from '@/views/workflow-page/config/workflow-page-query-params.config';
 import { type WorkflowPageTabContentProps } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
 import workflowQueriesEmptyPanelConfig from './config/workflow-queries-empty-panel.config';
@@ -21,6 +23,11 @@ import { styled } from './workflow-queries.styles';
 import { type WorkflowQueryURLParams } from './workflow-queries.types';
 
 export default function WorkflowQueries(props: WorkflowPageTabContentProps) {
+  const [queryParams, setQueryParams] = usePageQueryParams(
+    workflowPageQueryParamsConfig,
+    { pageRerender: false, replace: true }
+  );
+
   const {
     data: { queryTypes },
   } = useSuspenseQuery<
@@ -41,12 +48,35 @@ export default function WorkflowQueries(props: WorkflowPageTabContentProps) {
     [queryTypes]
   );
 
-  const [selectedQueryIndex, setSelectedQueryIndex] = useState<number>(-1);
+  const selectedQueryIndex = useMemo(
+    () =>
+      queryParams.selectedQueryName
+        ? filteredQueryTypes.indexOf(queryParams.selectedQueryName)
+        : -1,
+    [queryParams.selectedQueryName, filteredQueryTypes]
+  );
 
   const { queries, inputs, setInputs } = useWorkflowQueries({
     ...props.params,
     queryTypes: filteredQueryTypes,
   });
+
+  // Auto-run the selected query when arriving via deep link (?q=...).
+  // initialQueryName ensures this only fires on initial page load, not on subsequent tile clicks.
+  const initialQueryName = useRef(queryParams.selectedQueryName);
+  const hasAutoRun = useRef(false);
+  useEffect(() => {
+    if (
+      !hasAutoRun.current &&
+      initialQueryName.current &&
+      selectedQueryIndex >= 0 &&
+      queries[selectedQueryIndex] &&
+      !queries[selectedQueryIndex].isFetching
+    ) {
+      hasAutoRun.current = true;
+      queries[selectedQueryIndex].refetch();
+    }
+  }, [selectedQueryIndex, queries]);
 
   if (filteredQueryTypes.length === 0) {
     return (
@@ -69,7 +99,7 @@ export default function WorkflowQueries(props: WorkflowPageTabContentProps) {
                 setInputs((oldInputs) => ({ ...oldInputs, [name]: v }))
               }
               isSelected={index === selectedQueryIndex}
-              onClick={() => setSelectedQueryIndex(index)}
+              onClick={() => setQueryParams({ selectedQueryName: name })}
               runQuery={queries[index].refetch}
               queryStatus={getWorkflowQueryStatus({
                 queryStatus: queries[index].status,

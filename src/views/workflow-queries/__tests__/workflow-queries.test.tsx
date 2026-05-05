@@ -5,14 +5,22 @@ import { HttpResponse } from 'msw';
 
 import { render, screen, act } from '@/test-utils/rtl';
 
+import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import { type FetchWorkflowQueryTypesResponse } from '@/route-handlers/fetch-workflow-query-types/fetch-workflow-query-types.types';
 import { type QueryWorkflowResponse } from '@/route-handlers/query-workflow/query-workflow.types';
 
 import WorkflowQueries from '../workflow-queries';
 
+jest.mock('@/hooks/use-page-query-params/use-page-query-params');
+
+const mockSetQueryParams = jest.fn();
+const mockUsePageQueryParams = usePageQueryParams as jest.MockedFunction<
+  typeof usePageQueryParams
+>;
+
 jest.mock('../workflow-queries-tile/workflow-queries-tile', () =>
-  jest.fn(({ name, onClick, runQuery }) => (
-    <div onClick={onClick}>
+  jest.fn(({ name, onClick, runQuery, isSelected }) => (
+    <div onClick={onClick} data-selected={isSelected}>
       <div>Mock tile: {name}</div>
       <button onClick={runQuery}>Run</button>
     </div>
@@ -55,7 +63,9 @@ describe(WorkflowQueries.name, () => {
   });
 
   it('runs query and updates JSON', async () => {
-    const { user } = await setup({});
+    const { user } = await setup({
+      selectedQueryName: '__open_sessions',
+    });
 
     const queryRunButtons = await screen.findAllByRole('button');
     expect(queryRunButtons).toHaveLength(1);
@@ -80,16 +90,61 @@ describe(WorkflowQueries.name, () => {
 
     expect(renderErrorMessage).toEqual('Failed to fetch query types');
   });
+
+  it('selects the correct tile when a query name is in the URL', async () => {
+    await setup({ selectedQueryName: '__open_sessions' });
+
+    const tiles = await screen.findAllByText(/Mock tile:/);
+    expect(tiles).toHaveLength(1);
+
+    const tile = tiles[0].closest('[data-selected]');
+    expect(tile).toHaveAttribute('data-selected', 'true');
+  });
+
+  it('does not select any tile when the URL query name is invalid', async () => {
+    await setup({ selectedQueryName: 'non_existent_query' });
+
+    const tiles = await screen.findAllByText(/Mock tile:/);
+    expect(tiles).toHaveLength(1);
+
+    const tile = tiles[0].closest('[data-selected]');
+    expect(tile).toHaveAttribute('data-selected', 'false');
+  });
+
+  it('updates URL query param when a tile is clicked', async () => {
+    const { user } = await setup({});
+
+    const tile = await screen.findByText(/Mock tile: __open_sessions/);
+    await user.click(tile);
+
+    expect(mockSetQueryParams).toHaveBeenCalledWith({
+      selectedQueryName: '__open_sessions',
+    });
+  });
+
+  it('auto-runs query when arriving via deep link', async () => {
+    await setup({ selectedQueryName: '__open_sessions' });
+
+    expect(await screen.findByText(/"test_1"/)).toBeInTheDocument();
+    expect(await screen.findByText(/"test_2"/)).toBeInTheDocument();
+  });
 });
 
 async function setup({
   error,
   noQueries,
+  selectedQueryName,
 }: {
   error?: boolean;
   noQueries?: boolean;
+  selectedQueryName?: string;
 }) {
   const user = userEvent.setup();
+
+  mockUsePageQueryParams.mockReturnValue([
+    { selectedQueryName } as any,
+    mockSetQueryParams as any,
+  ]);
 
   render(
     <Suspense>
