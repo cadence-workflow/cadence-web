@@ -121,13 +121,6 @@ describe(WorkflowQueries.name, () => {
       selectedQueryName: '__open_sessions',
     });
   });
-
-  it('auto-runs query when arriving via deep link', async () => {
-    await setup({ selectedQueryName: '__open_sessions' });
-
-    expect(await screen.findByText(/"test_1"/)).toBeInTheDocument();
-    expect(await screen.findByText(/"test_2"/)).toBeInTheDocument();
-  });
 });
 
 async function setup({

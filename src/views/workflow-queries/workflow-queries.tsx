@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useMemo } from 'react';
 
 import { useSuspenseQuery } from '@tanstack/react-query';
 
@@ -60,23 +60,6 @@ export default function WorkflowQueries(props: WorkflowPageTabContentProps) {
     ...props.params,
     queryTypes: filteredQueryTypes,
   });
-
-  // Auto-run the selected query when arriving via deep link (?q=...).
-  // initialQueryName ensures this only fires on initial page load, not on subsequent tile clicks.
-  const initialQueryName = useRef(queryParams.selectedQueryName);
-  const hasAutoRun = useRef(false);
-  useEffect(() => {
-    if (
-      !hasAutoRun.current &&
-      initialQueryName.current &&
-      selectedQueryIndex >= 0 &&
-      queries[selectedQueryIndex] &&
-      !queries[selectedQueryIndex].isFetching
-    ) {
-      hasAutoRun.current = true;
-      queries[selectedQueryIndex].refetch();
-    }
-  }, [selectedQueryIndex, queries]);
 
   if (filteredQueryTypes.length === 0) {
     return (
