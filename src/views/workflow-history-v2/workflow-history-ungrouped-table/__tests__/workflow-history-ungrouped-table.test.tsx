@@ -282,6 +282,9 @@ function setup({
         getIsEventExpanded={getIsEventExpanded}
         toggleIsEventExpanded={toggleIsEventExpanded}
         resetToDecisionEventId={resetToDecisionEventId}
+        workflowIsArchived={false}
+        workflowCloseStatus={'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'}
+        loadingMoreEvents={false}
         error={error}
         hasMoreEvents={hasMoreEvents}
         fetchMoreEvents={fetchMoreEvents}

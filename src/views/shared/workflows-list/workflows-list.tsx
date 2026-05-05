@@ -1,5 +1,7 @@
 import { useMemo } from 'react';
 
+import ChevronDown from 'baseui/icon/chevron-down';
+import ChevronUp from 'baseui/icon/chevron-up';
 import isNil from 'lodash/isNil';
 import NextLink from 'next/link';
 
@@ -15,6 +17,7 @@ export default function WorkflowsList({
   hasNextPage,
   fetchNextPage,
   isFetchingNextPage,
+  sortParams,
 }: Props) {
   const gridTemplateColumns = useMemo(
     () => columns.map((col) => col.width).join(' '),
@@ -28,9 +31,44 @@ export default function WorkflowsList({
       <styled.ScrollArea>
         <styled.Container>
           <styled.GridHeader $gridTemplateColumns={gridTemplateColumns}>
-            {columns.map((col) => (
-              <styled.HeaderCell key={col.id}>{col.name}</styled.HeaderCell>
-            ))}
+            {columns.map((col) => {
+              if (col.sortable && sortParams) {
+                const isActive = sortParams.sortColumn === col.id;
+
+                let SortIcon = null;
+                let ariaSortAttribute: 'ascending' | 'descending' | 'none' =
+                  'none';
+
+                if (isActive && sortParams.sortOrder === 'ASC') {
+                  SortIcon = ChevronUp;
+                  ariaSortAttribute = 'ascending';
+                } else if (isActive && sortParams.sortOrder === 'DESC') {
+                  SortIcon = ChevronDown;
+                  ariaSortAttribute = 'descending';
+                }
+
+                return (
+                  <styled.SortableHeaderCell
+                    key={col.id}
+                    onClick={() => sortParams.onSort(col.id)}
+                    aria-sort={ariaSortAttribute}
+                  >
+                    {col.name}
+                    {SortIcon && (
+                      <SortIcon
+                        size="16px"
+                        aria-hidden="true"
+                        role="presentation"
+                      />
+                    )}
+                  </styled.SortableHeaderCell>
+                );
+              }
+
+              return (
+                <styled.HeaderCell key={col.id}>{col.name}</styled.HeaderCell>
+              );
+            })}
           </styled.GridHeader>
           {hasWorkflows &&
             workflows.map((workflow, index) => (

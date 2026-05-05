@@ -20,6 +20,7 @@ import type { WorkflowPageTabContentProps } from '@/views/workflow-page/workflow
 import getWorkflowIsCompleted from '../workflow-page/helpers/get-workflow-is-completed';
 import { useDescribeWorkflow } from '../workflow-page/hooks/use-describe-workflow';
 
+import getWorkflowIsError from './helpers/get-workflow-is-error';
 import getWorkflowResultJson from './helpers/get-workflow-result-json';
 import WorkflowSummaryDetails from './workflow-summary-details/workflow-summary-details';
 import WorkflowSummaryDiagnosticsBanner from './workflow-summary-diagnostics-banner/workflow-summary-diagnostics-banner';
@@ -85,6 +86,9 @@ export default function WorkflowSummary({
     !closeEvent.attributes ||
     !getWorkflowIsCompleted(closeEvent.attributes);
 
+  const isWorkflowError =
+    !!closeEvent?.attributes && getWorkflowIsError(closeEvent.attributes);
+
   const baseJsonViewProps: JsonViewProps = {
     inputJson:
       formattedStartEvent && 'input' in formattedStartEvent
@@ -92,6 +96,7 @@ export default function WorkflowSummary({
         : [],
     resultJson,
     isWorkflowRunning,
+    isWorkflowError,
     isArchived,
     ...params,
   };

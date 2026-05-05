@@ -1,6 +1,6 @@
 import { WorkflowIdReusePolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowIdReusePolicy';
 
-export const WORKER_SDK_LANGUAGES = ['GO', 'JAVA'] as const;
+export const WORKER_SDK_LANGUAGES = ['GO', 'JAVA', 'PYTHON'] as const;
 
 export const DEFAULT_TASK_START_TO_CLOSE_TIMEOUT_SECONDS = 10;
 

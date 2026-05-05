@@ -13,6 +13,9 @@ export default function WorkflowHistoryUngroupedTable({
   selectedEventId,
   decodedPageUrlParams,
   onResetToEventId,
+  workflowIsArchived,
+  workflowCloseStatus,
+  loadingMoreEvents,
   error,
   hasMoreEvents,
   isFetchingMoreEvents,
@@ -48,6 +51,9 @@ export default function WorkflowHistoryUngroupedTable({
             eventInfo={eventInfo}
             workflowStartTime={workflowStartTime}
             decodedPageUrlParams={decodedPageUrlParams}
+            workflowIsArchived={workflowIsArchived}
+            workflowCloseStatus={workflowCloseStatus}
+            loadingMoreEvents={loadingMoreEvents}
             isExpanded={getIsEventExpanded(eventInfo.id)}
             toggleIsExpanded={() => toggleIsEventExpanded(eventInfo.id)}
             animateOnEnter={eventInfo.id === selectedEventId}

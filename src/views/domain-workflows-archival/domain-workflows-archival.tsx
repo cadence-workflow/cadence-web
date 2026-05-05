@@ -33,6 +33,7 @@ export default function DomainWorkflowsArchival(
     resetColumns,
   } = useWorkflowsListColumns({
     cluster: props.cluster,
+    domain: props.domain,
   });
 
   const { data: isNewWorkflowsListEnabled } = useSuspenseConfigValue(

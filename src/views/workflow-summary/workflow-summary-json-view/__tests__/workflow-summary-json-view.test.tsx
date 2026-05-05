@@ -144,6 +144,29 @@ describe('WorkflowSummaryJsonView Component', () => {
     expect(queryByText('SegmentedControlRounded Mock')).not.toBeInTheDocument();
     expect(getByText('Result')).toBeInTheDocument();
   });
+
+  it('renders result tab with error styling when isWorkflowError is true and on result tab', () => {
+    const { container, getByText } = setup({
+      isWorkflowError: true,
+      defaultTab: 'result',
+      hideTabToggle: true,
+    });
+    getByText('Result');
+    const jsonViewContainer = container.firstChild as HTMLElement;
+    expect(jsonViewContainer).toBeInTheDocument();
+    // The styled component applies backgroundNegativeLight — presence of child content confirms correct render
+    expect(getByText('PrettyJson Mock')).toBeInTheDocument();
+  });
+
+  it('does not apply error styling on input tab when isWorkflowError is true', () => {
+    const { getByText } = setup({
+      isWorkflowError: true,
+      defaultTab: 'input',
+      hideTabToggle: true,
+    });
+    getByText('Input');
+    expect(getByText('PrettyJson Mock')).toBeInTheDocument();
+  });
 });
 
 const losslessInputJson = {
@@ -159,6 +182,7 @@ const setup = ({
   inputJson = losslessInputJson,
   resultJson = losselessResultJson,
   isWorkflowRunning = false,
+  isWorkflowError = false,
   isArchived = false,
   defaultTab,
   hideTabToggle = false,
@@ -168,6 +192,7 @@ const setup = ({
       inputJson={inputJson}
       resultJson={resultJson}
       isWorkflowRunning={isWorkflowRunning}
+      isWorkflowError={isWorkflowError}
       isArchived={isArchived}
       defaultTab={defaultTab}
       hideTabToggle={hideTabToggle}

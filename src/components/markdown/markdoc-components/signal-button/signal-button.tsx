@@ -6,6 +6,7 @@ import { useSnackbar } from 'baseui/snackbar';
 import losslessJsonStringify from '@/utils/lossless-json-stringify';
 import request from '@/utils/request';
 
+import { SIGNAL_SUCCESS_NOTIFICATION_DURATION_MS } from './signal-button.constants';
 import { overrides } from './signal-button.styles';
 import { type SignalButtonProps } from './signal-button.types';
 
@@ -45,10 +46,13 @@ export default function SignalButton({
       return response.json();
     },
     onSuccess: () => {
-      enqueue({
-        message: `Successfully sent signal "${signalName}"`,
-        actionMessage: 'OK',
-      });
+      enqueue(
+        {
+          message: `Successfully sent signal "${signalName}"`,
+          actionMessage: 'OK',
+        },
+        SIGNAL_SUCCESS_NOTIFICATION_DURATION_MS
+      );
     },
     onError: (error: Error) => {
       enqueue({

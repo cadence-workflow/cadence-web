@@ -6,6 +6,7 @@ import SectionLoadingIndicator from '@/components/section-loading-indicator/sect
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
 import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
+import buildSortParams from '@/views/shared/workflows-list/helpers/build-sort-params';
 import WorkflowsList from '@/views/shared/workflows-list/workflows-list';
 
 import DOMAIN_WORKFLOWS_PAGE_SIZE from '../config/domain-workflows-page-size.config';
@@ -20,7 +21,9 @@ export default function DomainWorkflowsList({
   timeRangeStart,
   timeRangeEnd,
 }: Props) {
-  const [queryParams] = usePageQueryParams(domainPageQueryParamsConfig);
+  const [queryParams, setQueryParams] = usePageQueryParams(
+    domainPageQueryParamsConfig
+  );
 
   const {
     workflows,
@@ -77,6 +80,16 @@ export default function DomainWorkflowsList({
       hasNextPage={hasNextPage}
       fetchNextPage={fetchNextPage}
       isFetchingNextPage={isFetchingNextPage}
+      sortParams={
+        queryParams.inputType === 'search'
+          ? buildSortParams({
+              sortColumn: queryParams.sortColumn,
+              sortOrder: queryParams.sortOrder,
+              setSortQueryParams: ({ sortColumn, sortOrder }) =>
+                setQueryParams({ sortColumn, sortOrder }),
+            })
+          : undefined
+      }
     />
   );
 }

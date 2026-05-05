@@ -10,6 +10,8 @@ export const mockDomainPageQueryParamsValues = {
   sortColumn: 'startTime',
   sortOrder: 'DESC',
   query: '',
+  batchInputType: 'query',
+  batchQuery: '',
   workflowId: '',
   workflowType: '',
   statusBasic: undefined,

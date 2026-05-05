@@ -6,10 +6,13 @@ import {
 import { type StyleObject } from 'styletron-react';
 
 export const styled = {
-  HeaderContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
-    marginTop: $theme.sizing.scale950,
-    marginBottom: $theme.sizing.scale900,
-  })),
+  HeaderContainer: createStyled<'div', { $noSpacing?: boolean }>(
+    'div',
+    ({ $theme, $noSpacing }) => ({
+      marginTop: $noSpacing ? 0 : $theme.sizing.scale950,
+      marginBottom: $noSpacing ? 0 : $theme.sizing.scale900,
+    })
+  ),
   InputContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
     flexDirection: 'column',

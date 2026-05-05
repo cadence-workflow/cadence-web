@@ -4,9 +4,17 @@ import { renderHook, act, waitFor } from '@/test-utils/rtl';
 
 import { type IndexedValueType } from '@/__generated__/proto-ts/uber/cadence/api/v1/IndexedValueType';
 import { type GetSearchAttributesResponse } from '@/route-handlers/get-search-attributes/get-search-attributes.types';
+import * as localStorageModule from '@/utils/local-storage';
 
+import getWorkflowsListColumnsLocalStorageKey from '../../helpers/get-column-ids-local-storage-key';
 import { DEFAULT_WORKFLOWS_LIST_COLUMNS } from '../../workflows-list.constants';
 import useWorkflowsListColumns from '../use-workflows-list-columns';
+
+jest.mock('@/utils/local-storage', () => ({
+  getLocalStorageValue: jest.fn(),
+  setLocalStorageValue: jest.fn(),
+  clearLocalStorageValue: jest.fn(),
+}));
 
 const MOCK_SEARCH_ATTRIBUTES_KEYS: Record<string, IndexedValueType> = {
   WorkflowID: 'INDEXED_VALUE_TYPE_KEYWORD',
@@ -30,6 +38,10 @@ const MOCK_CUSTOM_SEARCH_ATTRIBUTES_KEYS: Record<string, IndexedValueType> = {
 };
 
 describe(useWorkflowsListColumns.name, () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('returns empty availableColumns when the API returns an error', async () => {
     const { result } = setup({ apiError: true });
 
@@ -180,6 +192,116 @@ describe(useWorkflowsListColumns.name, () => {
       ...DEFAULT_WORKFLOWS_LIST_COLUMNS,
     ]);
   });
+
+  it('initializes selectedColumnIds from local storage when a valid value exists', async () => {
+    const storedColumns = ['WorkflowID', 'RunID'];
+
+    jest
+      .spyOn(localStorageModule, 'getLocalStorageValue')
+      .mockReturnValue(JSON.stringify(storedColumns));
+
+    const { result } = setup({ keys: MOCK_SEARCH_ATTRIBUTES_KEYS });
+
+    await waitFor(() => {
+      expect(result.current.selectedColumnIds).toEqual(storedColumns);
+    });
+
+    expect(localStorageModule.getLocalStorageValue).toHaveBeenCalledWith(
+      getWorkflowsListColumnsLocalStorageKey('test-domain')
+    );
+  });
+
+  it('falls back to defaults when local storage returns null', async () => {
+    jest
+      .spyOn(localStorageModule, 'getLocalStorageValue')
+      .mockReturnValue(null);
+
+    const { result } = setup({ keys: MOCK_SEARCH_ATTRIBUTES_KEYS });
+
+    await waitFor(() => {
+      expect(result.current.selectedColumnIds).toEqual([
+        ...DEFAULT_WORKFLOWS_LIST_COLUMNS,
+      ]);
+    });
+  });
+
+  it('falls back to defaults when local storage contains malformed JSON', async () => {
+    jest
+      .spyOn(localStorageModule, 'getLocalStorageValue')
+      .mockReturnValue('not-valid-json');
+
+    const { result } = setup({ keys: MOCK_SEARCH_ATTRIBUTES_KEYS });
+
+    await waitFor(() => {
+      expect(result.current.selectedColumnIds).toEqual([
+        ...DEFAULT_WORKFLOWS_LIST_COLUMNS,
+      ]);
+    });
+  });
+
+  it('falls back to defaults when local storage contains an empty array', async () => {
+    jest
+      .spyOn(localStorageModule, 'getLocalStorageValue')
+      .mockReturnValue(JSON.stringify([]));
+
+    const { result } = setup({ keys: MOCK_SEARCH_ATTRIBUTES_KEYS });
+
+    await waitFor(() => {
+      expect(result.current.selectedColumnIds).toEqual([
+        ...DEFAULT_WORKFLOWS_LIST_COLUMNS,
+      ]);
+    });
+  });
+
+  it('saves to local storage when setSelectedColumnIds is called', async () => {
+    const mockSetLocalStorageValue = jest.spyOn(
+      localStorageModule,
+      'setLocalStorageValue'
+    );
+
+    const { result } = setup({ keys: MOCK_SEARCH_ATTRIBUTES_KEYS });
+
+    await waitFor(() => {
+      expect(result.current.availableColumns.length).toBeGreaterThan(0);
+    });
+
+    act(() => {
+      result.current.setSelectedColumnIds(['WorkflowID', 'RunID']);
+    });
+
+    expect(mockSetLocalStorageValue).toHaveBeenCalledWith(
+      getWorkflowsListColumnsLocalStorageKey('test-domain'),
+      JSON.stringify(['WorkflowID', 'RunID'])
+    );
+  });
+
+  it('saves defaults to local storage when resetColumns is called', async () => {
+    const mockSetLocalStorageValue = jest.spyOn(
+      localStorageModule,
+      'setLocalStorageValue'
+    );
+
+    const { result } = setup({ keys: MOCK_SEARCH_ATTRIBUTES_KEYS });
+
+    await waitFor(() => {
+      expect(result.current.availableColumns.length).toBeGreaterThan(0);
+    });
+
+    act(() => {
+      result.current.setSelectedColumnIds(['WorkflowID']);
+    });
+
+    mockSetLocalStorageValue.mockClear();
+
+    act(() => {
+      result.current.resetColumns();
+    });
+
+    expect(mockSetLocalStorageValue).toHaveBeenCalledWith(
+      getWorkflowsListColumnsLocalStorageKey('test-domain'),
+      JSON.stringify([...DEFAULT_WORKFLOWS_LIST_COLUMNS])
+    );
+  });
 });
 
 function setup({
@@ -190,7 +312,11 @@ function setup({
   apiError?: boolean;
 } = {}) {
   return renderHook(
-    () => useWorkflowsListColumns({ cluster: 'test-cluster' }),
+    () =>
+      useWorkflowsListColumns({
+        cluster: 'test-cluster',
+        domain: 'test-domain',
+      }),
     {
       endpointsMocks: [
         {

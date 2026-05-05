@@ -43,6 +43,7 @@ jest.mock('../../../config/workflow-history-details-row-parsers.config', () => {
         icon: mockIcon,
         customTooltipContent: jest.fn(() => 'retries'),
         omitWrapping: true,
+        badgeColor: 'warning',
       },
     ] satisfies Array<DetailsRowItemParser>,
   };
@@ -352,5 +353,25 @@ describe(getParsedDetailsRowItems.name, () => {
 
     expect(result).toHaveLength(1);
     expect(result[0].omitWrapping).toBe(true);
+  });
+
+  it('should include badgeColor from parser config when available', () => {
+    const detailsEntries: EventDetailsEntries = [
+      {
+        key: 'attempt',
+        path: 'attempt',
+        value: 2,
+        renderConfig: {
+          name: 'Test Config',
+          key: 'test',
+        },
+        isGroup: false,
+      },
+    ];
+
+    const result = getParsedDetailsRowItems(detailsEntries);
+
+    expect(result).toHaveLength(1);
+    expect(result[0].badgeColor).toBe('warning');
   });
 });

@@ -25,7 +25,7 @@ export default function DomainWorkflowsAdvanced({
     selectedColumnIds,
     setSelectedColumnIds,
     resetColumns,
-  } = useWorkflowsListColumns({ cluster });
+  } = useWorkflowsListColumns({ cluster, domain });
 
   const timeRangeParams = useMemo(() => {
     const now = dayjs();

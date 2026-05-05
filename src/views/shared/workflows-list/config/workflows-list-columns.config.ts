@@ -38,6 +38,7 @@ const workflowsListColumnsConfig: ReadonlyArray<WorkflowsListColumnConfig> = [
     match: (name) => name === 'StartTime',
     name: 'Started',
     width: 'minmax(100px, 200px)',
+    sortable: true,
     renderCell: (row) =>
       createElement(FormattedDate, { timestampMs: row.startTime }),
   },
@@ -45,6 +46,7 @@ const workflowsListColumnsConfig: ReadonlyArray<WorkflowsListColumnConfig> = [
     match: (name) => name === 'CloseTime',
     name: 'Ended',
     width: 'minmax(100px, 200px)',
+    sortable: true,
     renderCell: (row) =>
       createElement(FormattedDate, { timestampMs: row.closeTime }),
   },
