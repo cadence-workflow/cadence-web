@@ -1,9 +1,9 @@
 import { render, screen, act } from '@/test-utils/rtl';
 
+import * as storage from '../../helpers/guided-tour-completion';
 import GuidedTourProvider from '../guided-tour-provider';
-import * as storage from '../guided-tour-storage';
 
-jest.mock('../guided-tour-storage', () => ({
+jest.mock('../../helpers/guided-tour-completion', () => ({
   __esModule: true,
   isTourCompleted: jest.fn(),
   markTourCompleted: jest.fn(),

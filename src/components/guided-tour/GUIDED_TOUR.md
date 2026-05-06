@@ -94,7 +94,7 @@ For tours that should start when a modal opens or a specific action occurs, set 
 
 ```tsx
 import { useEffect } from 'react';
-import { useGuidedTour } from '@/components/guided-tour/guided-tour-provider/guided-tour-provider';
+import useGuidedTour from '@/components/guided-tour/hooks/use-guided-tour';
 
 function MyModal({ isOpen }) {
   const { controls } = useGuidedTour();

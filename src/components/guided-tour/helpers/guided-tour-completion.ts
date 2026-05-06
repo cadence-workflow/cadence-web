@@ -3,28 +3,20 @@ import { z } from 'zod';
 import getLocalStorageValue from '@/utils/local-storage/get-local-storage-value';
 import setLocalStorageValue from '@/utils/local-storage/set-local-storage-value';
 
-export const COMPLETED_TOURS_STORAGE_KEY = 'guided-tour:completed';
+import { COMPLETED_TOURS_STORAGE_KEY } from '../guided-tour.constants';
 
-const completedToursSchema = z
-  .string()
-  .transform((val, ctx) => {
-    try {
-      return JSON.parse(val);
-    } catch {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Invalid JSON',
-      });
-      return z.NEVER;
-    }
-  })
-  .pipe(z.record(z.literal(true)));
+const completedToursSchema = z.record(z.literal(true));
 
 function readCompletedTours(): Record<string, true> {
-  return (
-    getLocalStorageValue(COMPLETED_TOURS_STORAGE_KEY, completedToursSchema) ??
-    {}
-  );
+  const raw = getLocalStorageValue(COMPLETED_TOURS_STORAGE_KEY);
+  if (!raw) return {};
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    const result = completedToursSchema.safeParse(parsed);
+    return result.success ? result.data : {};
+  } catch {
+    return {};
+  }
 }
 
 export function isTourCompleted(tourId: string): boolean {

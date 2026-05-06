@@ -1,27 +1,22 @@
 'use client';
-import { createContext, useContext, useEffect, useRef } from 'react';
+import { createContext, useEffect, useRef } from 'react';
 
 import { useJoyride, ORIGIN } from 'react-joyride';
 
 import GuidedTourTooltip from '../guided-tour-tooltip/guided-tour-tooltip';
+import {
+  isTourCompleted,
+  markTourCompleted,
+} from '../helpers/guided-tour-completion';
 
 import {
   type GuidedTourContextType,
   type Props,
 } from './guided-tour-provider.types';
-import { isTourCompleted, markTourCompleted } from './guided-tour-storage';
 
 export const GuidedTourContext = createContext<GuidedTourContextType | null>(
   null
 );
-
-export function useGuidedTour(): GuidedTourContextType {
-  const ctx = useContext(GuidedTourContext);
-  if (!ctx) {
-    throw new Error('useGuidedTour must be used within a GuidedTourProvider');
-  }
-  return ctx;
-}
 
 export default function GuidedTourProvider({
   tourId,

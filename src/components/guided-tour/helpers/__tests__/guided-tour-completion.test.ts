@@ -1,15 +1,12 @@
-import {
-  COMPLETED_TOURS_STORAGE_KEY,
-  isTourCompleted,
-  markTourCompleted,
-} from '../guided-tour-storage';
+import { COMPLETED_TOURS_STORAGE_KEY } from '../../guided-tour.constants';
+import { isTourCompleted, markTourCompleted } from '../guided-tour-completion';
 
 beforeEach(() => {
   localStorage.clear();
   jest.clearAllMocks();
 });
 
-describe('guided-tour-storage', () => {
+describe('guided-tour-completion', () => {
   describe('isTourCompleted', () => {
     it('returns false when nothing has been stored', () => {
       expect(isTourCompleted('any-tour')).toBe(false);
