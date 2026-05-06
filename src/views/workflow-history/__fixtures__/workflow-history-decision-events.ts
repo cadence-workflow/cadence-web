@@ -12,6 +12,7 @@ export const scheduleDecisionTaskEvent = {
     taskList: {
       name: 'task-queue',
       kind: 'TASK_LIST_KIND_INVALID',
+      baseName: '',
     },
     startToCloseTimeout: {
       seconds: '10',
