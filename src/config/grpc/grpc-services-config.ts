@@ -7,6 +7,10 @@ const GRPC_SERVICES_CONFIGS = {
     schemaPath: 'uber/cadence/api/v1/service_domain.proto',
     servicePath: 'uber.cadence.api.v1.DomainAPI',
   },
+  scheduleServiceConfig: {
+    schemaPath: 'uber/cadence/api/v1/service_schedule.proto',
+    servicePath: 'uber.cadence.api.v1.ScheduleAPI',
+  },
   visibilityServiceConfig: {
     schemaPath: 'uber/cadence/api/v1/service_visibility.proto',
     servicePath: 'uber.cadence.api.v1.VisibilityAPI',
