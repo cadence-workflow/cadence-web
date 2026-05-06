@@ -89,7 +89,7 @@ export default function ErrorPanel({
                 key={action.label}
                 size={SIZE.compact}
                 kind={action.buttonKind ?? KIND.secondary}
-                shape={ction.shape ?? SHAPE.pill}
+                shape={action.shape ?? SHAPE.pill}
                 onClick={() => {
                   switch (action.kind) {
                     case 'retry':
