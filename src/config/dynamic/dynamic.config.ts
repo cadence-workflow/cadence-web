@@ -26,6 +26,8 @@ import { type ExtendedDomainInfoEnabledConfig } from './resolvers/extended-domai
 import failoverHistoryEnabled from './resolvers/failover-history-enabled';
 import historyPageV2Enabled from './resolvers/history-page-v2-enabled';
 import { type HistoryPageV2EnabledConfigValue } from './resolvers/history-page-v2-enabled.types';
+import schedulesEnabled from './resolvers/schedules-enabled';
+import { type SchedulesEnabledResolverParams } from './resolvers/schedules-enabled.types';
 import workflowActionsEnabled from './resolvers/workflow-actions-enabled';
 import {
   type WorkflowActionsEnabledResolverParams,
@@ -107,6 +109,12 @@ const dynamicConfigs: {
     'request',
     true
   >;
+  SCHEDULES_ENABLED: ConfigAsyncResolverDefinition<
+    SchedulesEnabledResolverParams,
+    boolean,
+    'request',
+    true
+  >;
   WORKFLOWS_LIST_ENABLED: ConfigAsyncResolverDefinition<
     undefined,
     boolean,
@@ -178,6 +186,11 @@ const dynamicConfigs: {
   },
   HISTORY_PAGE_V2_ENABLED: {
     resolver: historyPageV2Enabled,
+    evaluateOn: 'request',
+    isPublic: true,
+  },
+  SCHEDULES_ENABLED: {
+    resolver: schedulesEnabled,
     evaluateOn: 'request',
     isPublic: true,
   },

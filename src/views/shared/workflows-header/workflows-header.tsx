@@ -37,6 +37,7 @@ export default function WorkflowsHeader<
   isQueryRunning,
   expandFiltersByDefault,
   showQueryInputOnly,
+  noSpacing,
   columnsPickerProps,
 }: Props<P, I, S, Q>) {
   const [areFiltersShown, setAreFiltersShown] = useState(
@@ -55,7 +56,7 @@ export default function WorkflowsHeader<
   const query = queryParams[queryStringQueryParamKey];
 
   return (
-    <styled.HeaderContainer>
+    <styled.HeaderContainer $noSpacing={noSpacing}>
       <styled.InputContainer>
         <SegmentedControl
           activeKey={inputType}

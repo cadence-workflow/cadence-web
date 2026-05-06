@@ -11,6 +11,7 @@ jest.mock('react-icons/md', () => ({
   ...jest.requireActual('react-icons/md'),
   MdCheckCircle: () => <div>Check Icon</div>,
   MdOutlineCancel: () => <div>Cancel Icon</div>,
+  MdOutlineEdit: () => <div>Edit Icon</div>,
   MdWarning: () => <div>Warning Icon</div>,
 }));
 
@@ -19,30 +20,42 @@ jest.mock('baseui/spinner', () => ({
 }));
 
 const mockBatchActions: BatchAction[] = [
-  { id: 4, status: 'running', progress: 60, actionType: 'cancel' },
-  { id: 3, status: 'completed', actionType: 'cancel' },
-  { id: 2, status: 'aborted', actionType: 'cancel' },
-  { id: 1, status: 'failed', actionType: 'cancel' },
+  { id: '4', status: 'running', progress: 60, actionType: 'cancel' },
+  { id: '3', status: 'completed', actionType: 'cancel' },
+  { id: '2', status: 'aborted', actionType: 'cancel' },
+  { id: '1', status: 'failed', actionType: 'cancel' },
 ];
 
 function setup({
   batchActions = mockBatchActions,
-  selectedId = null,
-  onSelect = jest.fn(),
+  isDraftOpen = false,
+  isDraftSelected = false,
+  selectedActionId = null,
+  onSelectAction = jest.fn(),
+  onSelectDraft = jest.fn(),
+  onCreateNew = jest.fn(),
 }: {
   batchActions?: BatchAction[];
-  selectedId?: number | null;
-  onSelect?: (id: number) => void;
+  isDraftOpen?: boolean;
+  isDraftSelected?: boolean;
+  selectedActionId?: string | null;
+  onSelectAction?: (id: string) => void;
+  onSelectDraft?: () => void;
+  onCreateNew?: () => void;
 } = {}) {
   const user = userEvent.setup();
   render(
     <DomainBatchActionsSidebar
       batchActions={batchActions}
-      selectedId={selectedId}
-      onSelect={onSelect}
+      isDraftOpen={isDraftOpen}
+      isDraftSelected={isDraftSelected}
+      selectedActionId={selectedActionId}
+      onSelectAction={onSelectAction}
+      onSelectDraft={onSelectDraft}
+      onCreateNew={onCreateNew}
     />
   );
-  return { user, onSelect };
+  return { user, onSelectAction, onSelectDraft, onCreateNew };
 }
 
 describe(DomainBatchActionsSidebar.name, () => {
@@ -80,11 +93,38 @@ describe(DomainBatchActionsSidebar.name, () => {
     expect(screen.getByText('Warning Icon')).toBeInTheDocument();
   });
 
-  it('calls onSelect when a batch action is clicked', async () => {
-    const { user, onSelect } = setup();
+  it('calls onSelectAction with the action id when a batch action is clicked', async () => {
+    const { user, onSelectAction } = setup();
 
     await user.click(screen.getByText('Batch action #2'));
 
-    expect(onSelect).toHaveBeenCalledWith(2);
+    expect(onSelectAction).toHaveBeenCalledWith('2');
+  });
+
+  it('calls onCreateNew when the new batch action button is clicked', async () => {
+    const { user, onCreateNew } = setup();
+
+    await user.click(screen.getByText('New batch action'));
+
+    expect(onCreateNew).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders draft row with "Untitled batch action" label and edit icon when isDraftOpen is true', () => {
+    setup({ isDraftOpen: true, isDraftSelected: true });
+
+    expect(screen.getByText('Untitled batch action')).toBeInTheDocument();
+    expect(screen.getByText('Edit Icon')).toBeInTheDocument();
+  });
+
+  it('calls onSelectDraft when the draft row is clicked', async () => {
+    const { user, onSelectDraft } = setup({
+      isDraftOpen: true,
+      isDraftSelected: false,
+      selectedActionId: '4',
+    });
+
+    await user.click(screen.getByText('Untitled batch action'));
+
+    expect(onSelectDraft).toHaveBeenCalledTimes(1);
   });
 });

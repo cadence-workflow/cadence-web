@@ -4,7 +4,6 @@ export const styled = {
   Container: createStyled('div', () => ({
     display: 'flex',
     flexDirection: 'row',
-    height: '100%',
   })),
   Sidebar: createStyled('aside', () => ({
     width: '20%',
@@ -13,7 +12,8 @@ export const styled = {
   })),
   DetailPanel: createStyled('main', ({ $theme }: { $theme: Theme }) => ({
     flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
     padding: $theme.sizing.scale600,
-    overflow: 'auto',
   })),
 };

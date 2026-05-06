@@ -23,6 +23,10 @@ const domainPageQueryParamsConfig: [
   PageQueryParam<'sortOrder', SortOrder>,
   // Query input
   PageQueryParam<'query', string>,
+  // Batch actions query input (uses separate URL params so the workflows tab
+  // and the batch action draft do not overwrite each other's state).
+  PageQueryParam<'batchInputType', WorkflowsHeaderInputType>,
+  PageQueryParam<'batchQuery', string>,
   // Basic Visibility inputs
   PageQueryParam<'workflowId', string>,
   PageQueryParam<'workflowType', string>,
@@ -86,6 +90,17 @@ const domainPageQueryParamsConfig: [
   },
   {
     key: 'query',
+    defaultValue: '',
+  },
+  {
+    key: 'batchInputType',
+    queryParamKey: 'batch-input',
+    defaultValue: 'query',
+    parseValue: (value: string) => (value === 'search' ? 'search' : 'query'),
+  },
+  {
+    key: 'batchQuery',
+    queryParamKey: 'batch-query',
     defaultValue: '',
   },
   {

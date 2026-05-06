@@ -50,6 +50,7 @@ const mockResolvedConfigValues: LoadedConfigResolvedValues = {
   BATCH_ACTIONS_ENABLED: false,
   FAILOVER_HISTORY_ENABLED: false,
   HISTORY_PAGE_V2_ENABLED: 'DISABLED',
+  SCHEDULES_ENABLED: false,
   WORKFLOWS_LIST_ENABLED: false,
 };
 export default mockResolvedConfigValues;
