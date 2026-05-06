@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 
-import { waitFor } from '@testing-library/react';
-import { userEvent } from '@testing-library/user-event';
 import { HttpResponse } from 'msw';
 
-import { render, screen } from '@/test-utils/rtl';
+import { render, screen, waitFor, userEvent } from '@/test-utils/rtl';
 
 import { type WorkflowActionEnabledConfigValue } from '@/config/dynamic/resolvers/workflow-actions-enabled.types';
 import mockResolvedConfigValues from '@/utils/config/__fixtures__/resolved-config-values';
@@ -130,6 +128,7 @@ jest.mock(
 const mockGetActionDisabledReason = getActionDisabledReason as jest.Mock;
 
 describe(DomainPageActionsDropdown.name, () => {
+  // Batch actions disabled by default; tests that need them enabled pass isBatchActionsEnabled: true.
   const defaultProps: Props = {
     domain: 'test-domain',
     cluster: 'test-cluster',
@@ -137,9 +136,10 @@ describe(DomainPageActionsDropdown.name, () => {
   };
 
   beforeEach(() => {
+    // clearAllMocks resets call records but not implementations, so mock return values need explicit resets below.
     jest.clearAllMocks();
-    mockGetActionDisabledReason.mockReturnValue(undefined);
-    mockUsePageQueryParams.mockReturnValue([{ query: '' }, jest.fn()]);
+    mockGetActionDisabledReason.mockReturnValue(undefined); // "action enabled" baseline; some tests override to a disabled reason
+    mockUsePageQueryParams.mockReturnValue([{ query: '' }, jest.fn()]); // empty-query baseline; component crashes if this returns undefined
   });
 
   describe('trigger button', () => {
