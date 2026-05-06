@@ -59,6 +59,7 @@ export const mockDescribeWorkflowResponse = {
     taskList: {
       name: 'test-task-queue',
       kind: 'TASK_LIST_KIND_INVALID',
+      baseName: '',
     },
     executionStartToCloseTimeout: {
       seconds: '360',
@@ -153,6 +154,9 @@ export const mockDescribeWorkflowResponse = {
     cronOverlapPolicy: 'CRON_OVERLAP_POLICY_INVALID',
     activeClusterSelectionPolicy: null,
     taskListInfo: null,
+    cronSchedule: '',
+    executionStatus: 'WORKFLOW_EXECUTION_STATUS_INVALID',
+    scheduledExecutionTime: null,
   },
   pendingDecision: null,
 } as const satisfies DescribeWorkflowResponse;
