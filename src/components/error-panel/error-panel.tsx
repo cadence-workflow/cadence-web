@@ -38,6 +38,9 @@ export default function ErrorPanel({
     <styled.ErrorContainer>
       <Image width={64} height={64} alt="Error" src={errorIcon} />
       <styled.ErrorText>{props.message}</styled.ErrorText>
+      {props.description && (
+        <styled.ErrorDescription>{props.description}</styled.ErrorDescription>
+      )}
       {showErrorDetails && props.error?.message && (
         <Banner kind="negative" hierarchy="low" overrides={overrides.banner}>
           <styled.ErrorMessageToggle
@@ -66,35 +69,52 @@ export default function ErrorPanel({
       )}
       {props.actions && (
         <styled.ErrorActionsContainer>
-          {props.actions.map((action) => (
-            <Button
-              key={action.label}
-              size={SIZE.compact}
-              kind={KIND.secondary}
-              shape={SHAPE.pill}
-              onClick={() => {
-                switch (action.kind) {
-                  case 'retry':
-                    resetQueryErrors();
-                    router.refresh();
-                    props.reset?.();
-                    break;
-                  case 'link-internal':
-                    router.push(action.link);
-                    break;
-                  case 'link-external':
-                    window.open(action.link);
-                    break;
-                }
-              }}
-              {...(action.kind === 'retry' && { startEnhancer: MdRefresh })}
-              {...(action.kind === 'link-external' && {
-                endEnhancer: MdOpenInNew,
-              })}
-            >
-              {action.label}
-            </Button>
-          ))}
+          {props.actions.map((action) => {
+            let startEnhancer;
+            if (action.startEnhancer) {
+              startEnhancer = action.startEnhancer;
+            } else if (action.kind === 'retry') {
+              startEnhancer = MdRefresh;
+            }
+
+            let endEnhancer;
+            if (action.endEnhancer) {
+              endEnhancer = action.endEnhancer;
+            } else if (action.kind === 'link-external') {
+              endEnhancer = MdOpenInNew;
+            }
+
+            return (
+              <Button
+                key={action.label}
+                size={SIZE.compact}
+                kind={action.buttonKind ?? KIND.secondary}
+                shape={ction.shape ?? SHAPE.pill}
+                onClick={() => {
+                  switch (action.kind) {
+                    case 'retry':
+                      resetQueryErrors();
+                      router.refresh();
+                      props.reset?.();
+                      break;
+                    case 'link-internal':
+                      router.push(action.link);
+                      break;
+                    case 'link-external':
+                      window.open(action.link);
+                      break;
+                    case 'callback':
+                      action.onClick();
+                      break;
+                  }
+                }}
+                startEnhancer={startEnhancer}
+                endEnhancer={endEnhancer}
+              >
+                {action.label}
+              </Button>
+            );
+          })}
         </styled.ErrorActionsContainer>
       )}
     </styled.ErrorContainer>
