@@ -61,11 +61,13 @@ function setup({
   totalCount = 32,
   actions = mockActions,
   disabled,
+  errorMessage,
 }: {
   selectedCount?: number;
   totalCount?: number;
   actions?: DomainBatchActionsNewActionFloatingBarActionConfig[];
   disabled?: boolean;
+  errorMessage?: string;
 }) {
   const onActionClick = jest.fn();
   const user = userEvent.setup();
@@ -77,6 +79,7 @@ function setup({
       actions={actions}
       onActionClick={onActionClick}
       disabled={disabled}
+      errorMessage={errorMessage}
     />
   );
 
