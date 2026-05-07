@@ -1,5 +1,6 @@
 import {
   MdArchive,
+  MdCalendarMonth,
   MdListAlt,
   MdPlaylistPlay,
   MdSettings,
@@ -10,6 +11,7 @@ import {
 
 import DomainBatchActions from '@/views/domain-batch-actions/domain-batch-actions';
 import DomainCronList from '@/views/domain-cron-list/domain-cron-list';
+import DomainSchedules from '@/views/domain-schedules/domain-schedules';
 import DomainWorkflows from '@/views/domain-workflows/domain-workflows';
 import DomainWorkflowsArchival from '@/views/domain-workflows-archival/domain-workflows-archival';
 
@@ -23,6 +25,7 @@ const domainPageTabsConfig: DomainPageTabsConfig<
   | 'workflows'
   | 'cron-list'
   | 'metadata'
+  | 'schedules'
   | 'failovers'
   | 'settings'
   | 'archival'
@@ -52,6 +55,15 @@ const domainPageTabsConfig: DomainPageTabsConfig<
     content: DomainPageMetadata,
     getErrorConfig: () => ({
       message: 'Failed to load metadata',
+      actions: [{ kind: 'retry', label: 'Retry' }],
+    }),
+  },
+  schedules: {
+    title: 'Schedules',
+    artwork: MdCalendarMonth,
+    content: DomainSchedules,
+    getErrorConfig: () => ({
+      message: 'Failed to load schedules',
       actions: [{ kind: 'retry', label: 'Retry' }],
     }),
   },
