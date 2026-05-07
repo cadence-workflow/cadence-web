@@ -46,3 +46,42 @@ export const mockWorkflowsListColumns: Array<WorkflowsListColumn> = [
     renderCell: (row) => row.status,
   },
 ];
+
+export const mockWorkflowsListSystemColumns: Array<WorkflowsListColumn> = [
+  {
+    id: 'WorkflowID',
+    name: 'Workflow ID',
+    width: '1fr',
+    isSystem: true,
+    renderCell: () => 'wf-id-cell',
+  },
+  {
+    id: 'CloseStatus',
+    name: 'Status',
+    width: '1fr',
+    isSystem: true,
+    renderCell: () => 'status-cell',
+  },
+  {
+    id: 'RunID',
+    name: 'Run ID',
+    width: '1fr',
+    isSystem: true,
+    renderCell: () => 'run-id-cell',
+  },
+  {
+    id: 'WorkflowType',
+    name: 'Workflow Type',
+    width: '1fr',
+    isSystem: true,
+    renderCell: () => 'wf-type-cell',
+  },
+  {
+    id: 'StartTime',
+    name: 'Started',
+    width: '1fr',
+    isSystem: true,
+    sortable: true,
+    renderCell: () => 'start-time-cell',
+  },
+];
