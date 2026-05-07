@@ -35,16 +35,21 @@ export type ErrorAction =
   | CallbackAction;
 
 export type Props = {
+  /** Optional underlying `Error` used for logging and the expandable details banner. */
   error?: Error;
+  /** Primary message rendered as the panel heading. */
   message: string;
   /**
-   * Optional secondary copy rendered under `message`.
-   * Useful for empty-state explanations such as
-   * "click the button below to create a schedule…".
+   * Optional secondary text rendered under `message`.
+   * Useful for empty-state explanations
    */
   description?: React.ReactNode;
+  /** Optional list of action buttons rendered below the message. */
   actions?: Array<ErrorAction>;
+  /** Callback invoked after a `retry` action, e.g. to reset an error boundary. */
   reset?: () => void;
+  /** When true, suppresses the automatic `logger.error` call for `error`. */
   omitLogging?: boolean;
+  /** When true, shows an expandable banner exposing `error.message` with a copy button. */
   showErrorDetails?: boolean;
 };

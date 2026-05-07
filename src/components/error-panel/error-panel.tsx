@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { useQueryErrorResetBoundary } from '@tanstack/react-query';
 import { Banner } from 'baseui/banner';
-import { Button, SIZE, KIND, SHAPE } from 'baseui/button';
+import { Button } from 'baseui/button';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import {
@@ -87,9 +87,9 @@ export default function ErrorPanel({
             return (
               <Button
                 key={action.label}
-                size={SIZE.compact}
-                kind={action.buttonKind ?? KIND.secondary}
-                shape={action.shape ?? SHAPE.pill}
+                size="compact"
+                kind={action.buttonKind ?? 'secondary'}
+                shape={action.shape ?? 'pill'}
                 onClick={() => {
                   switch (action.kind) {
                     case 'retry':
