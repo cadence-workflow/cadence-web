@@ -64,22 +64,17 @@ describe(listSchedules.name, () => {
     expect(res.status).toEqual(200);
   });
 
-  it('returns validation error when pageSize is missing', async () => {
+  it('defaults pageSize to 25 when not provided', async () => {
     const { res, mockListSchedules } = await setup({
       queryParams: {},
     });
 
-    expect(mockListSchedules).not.toHaveBeenCalled();
-    expect(res.status).toEqual(400);
-    const responseJson = await res.json();
-    expect(responseJson).toEqual(
-      expect.objectContaining({
-        message: 'Invalid argument(s) for listing schedules',
-        validationErrors: expect.arrayContaining([
-          expect.objectContaining({ path: ['pageSize'] }),
-        ]),
-      })
-    );
+    expect(mockListSchedules).toHaveBeenCalledWith({
+      domain: 'mock-domain',
+      pageSize: 25,
+      nextPageToken: undefined,
+    });
+    expect(res.status).toEqual(200);
   });
 
   it('returns validation error when pageSize is not a positive integer', async () => {
