@@ -3,6 +3,7 @@ import { type GRPCClusterMethods } from '@/utils/grpc/grpc-client';
 export const mockGrpcClusterMethods: GRPCClusterMethods = {
   archivedWorkflows: jest.fn(),
   closedWorkflows: jest.fn(),
+  countWorkflows: jest.fn(),
   describeCluster: jest.fn(),
   describeDomain: jest.fn(),
   updateDomain: jest.fn(),

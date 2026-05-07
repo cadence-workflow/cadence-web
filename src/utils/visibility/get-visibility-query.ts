@@ -10,6 +10,7 @@ export default function getVisibilityQuery({
   timeColumn,
   timeRangeStart,
   timeRangeEnd,
+  includeOrderBy = true,
 }: {
   search?: string;
   workflowStatuses?: Array<WorkflowStatus>;
@@ -18,6 +19,7 @@ export default function getVisibilityQuery({
   timeColumn: 'StartTime' | 'CloseTime';
   timeRangeStart?: string;
   timeRangeEnd?: string;
+  includeOrderBy?: boolean;
 }) {
   const searchQueries: Array<string> = [];
   if (search) {
@@ -51,8 +53,11 @@ export default function getVisibilityQuery({
     searchQueries.push(`${timeColumn} <= "${timeRangeEnd}"`);
   }
 
-  return (
-    (searchQueries.length > 0 ? `${searchQueries.join(' AND ')} ` : '') +
-    `ORDER BY ${sortColumn ?? 'StartTime'} ${sortOrder ?? 'DESC'}`
-  );
+  const filterClause =
+    searchQueries.length > 0 ? searchQueries.join(' AND ') : '';
+  const orderClause = includeOrderBy
+    ? `ORDER BY ${sortColumn ?? 'StartTime'} ${sortOrder ?? 'DESC'}`
+    : '';
+
+  return [filterClause, orderClause].filter(Boolean).join(' ');
 }
