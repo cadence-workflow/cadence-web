@@ -42,6 +42,7 @@ const taskListSchema = z.object({
     TaskListKind.TASK_LIST_KIND_NORMAL,
     TaskListKind.TASK_LIST_KIND_STICKY,
   ]),
+  baseName: z.string(),
 });
 
 const payloadSchema = z.object({

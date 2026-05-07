@@ -39,6 +39,14 @@ export default function DomainPageTabs() {
     'BATCH_ACTIONS_ENABLED'
   );
 
+  const { data: isSchedulesEnabled } = useSuspenseConfigValue(
+    'SCHEDULES_ENABLED',
+    {
+      domain: decodedParams.domain,
+      cluster: decodedParams.cluster,
+    }
+  );
+
   const tabsConfig = useMemo<Partial<typeof domainPageTabsConfig>>(() => {
     const tabsToHide: Array<DomainPageTabName> = [];
 
@@ -54,8 +62,17 @@ export default function DomainPageTabs() {
       tabsToHide.push('batch-actions');
     }
 
+    if (!isSchedulesEnabled) {
+      tabsToHide.push('schedules');
+    }
+
     return omit(domainPageTabsConfig, tabsToHide);
-  }, [isFailoverHistoryEnabled, isCronListEnabled, isBatchActionsEnabled]);
+  }, [
+    isFailoverHistoryEnabled,
+    isCronListEnabled,
+    isBatchActionsEnabled,
+    isSchedulesEnabled,
+  ]);
 
   const tabList = useMemo(
     () =>

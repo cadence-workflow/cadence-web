@@ -17,6 +17,7 @@ export const initiateChildWorkflowEvent = {
     taskList: {
       name: 'canary-task-queue',
       kind: 'TASK_LIST_KIND_INVALID',
+      baseName: '',
     },
     input: {
       data: 'MTcyNjQ5Mjc1MTc5ODgxMjMwOAozMDAwMDAwMDAwMAo=',
