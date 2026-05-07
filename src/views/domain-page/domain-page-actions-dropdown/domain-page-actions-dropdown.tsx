@@ -4,10 +4,12 @@ import React, { useMemo, useState } from 'react';
 import { Button, KIND } from 'baseui/button';
 import { StatefulPopover } from 'baseui/popover';
 import { StatefulTooltip } from 'baseui/tooltip';
+import { useRouter } from 'next/navigation';
 import { MdArrowDropDown } from 'react-icons/md';
 
 import CustomButton from '@/components/button/button';
 import useConfigValue from '@/hooks/use-config-value/use-config-value';
+import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import { startWorkflowActionConfig } from '@/views/workflow-actions/config/workflow-actions.config';
 import getActionDisabledReason from '@/views/workflow-actions/workflow-actions-menu/helpers/get-action-disabled-reason';
 import WorkflowActionsModal from '@/views/workflow-actions/workflow-actions-modal/workflow-actions-modal';
@@ -16,6 +18,7 @@ import domainPageActionsConfig, {
   batchWorkflowDomainAction,
   startWorkflowDomainAction,
 } from '../config/domain-page-actions.config';
+import domainPageQueryParamsConfig from '../config/domain-page-query-params.config';
 
 import { styled, overrides } from './domain-page-actions-dropdown.styles';
 import type {
@@ -28,6 +31,9 @@ export default function DomainPageActionsDropdown({
   cluster,
   isBatchActionsEnabled,
 }: Props) {
+  const router = useRouter();
+  const [queryParams] = usePageQueryParams(domainPageQueryParamsConfig);
+
   const [showStartNewWorkflowModal, setShowStartNewWorkflowModal] =
     useState(false);
 
@@ -64,6 +70,12 @@ export default function DomainPageActionsDropdown({
   const handleActionClick = (action: DomainPageActionConfig) => {
     if (action.id === startWorkflowDomainAction.id) {
       setShowStartNewWorkflowModal(true);
+      return;
+    }
+    if (action.id === batchWorkflowDomainAction.id) {
+      const params = new URLSearchParams(window.location.search);
+      params.set('batch-query', queryParams.query ?? '');
+      router.push(`batch-actions?${params.toString()}`);
     }
   };
 

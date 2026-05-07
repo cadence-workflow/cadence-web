@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 
-import { waitFor } from '@testing-library/react';
-import { userEvent } from '@testing-library/user-event';
 import { HttpResponse } from 'msw';
 
-import { render, screen } from '@/test-utils/rtl';
+import { render, screen, waitFor, userEvent } from '@/test-utils/rtl';
 
 import { type WorkflowActionEnabledConfigValue } from '@/config/dynamic/resolvers/workflow-actions-enabled.types';
 import mockResolvedConfigValues from '@/utils/config/__fixtures__/resolved-config-values';
@@ -16,6 +14,18 @@ import getActionDisabledReason from '@/views/workflow-actions/workflow-actions-m
 
 import DomainPageActionsDropdown from '../domain-page-actions-dropdown';
 import type { Props } from '../domain-page-actions-dropdown.types';
+
+const mockRouterPush = jest.fn();
+jest.mock('next/navigation', () => ({
+  ...jest.requireActual('next/navigation'),
+  useRouter: () => ({ push: mockRouterPush }),
+}));
+
+const mockUsePageQueryParams = jest.fn();
+jest.mock('@/hooks/use-page-query-params/use-page-query-params', () => ({
+  __esModule: true,
+  default: (...args: Array<unknown>) => mockUsePageQueryParams(...args),
+}));
 
 jest.mock('@/views/workflow-actions/config/workflow-actions.config', () => {
   return {
@@ -118,6 +128,7 @@ jest.mock(
 const mockGetActionDisabledReason = getActionDisabledReason as jest.Mock;
 
 describe(DomainPageActionsDropdown.name, () => {
+  // Batch actions disabled by default; tests that need them enabled pass isBatchActionsEnabled: true.
   const defaultProps: Props = {
     domain: 'test-domain',
     cluster: 'test-cluster',
@@ -125,8 +136,10 @@ describe(DomainPageActionsDropdown.name, () => {
   };
 
   beforeEach(() => {
+    // clearAllMocks resets call records but not implementations, so mock return values need explicit resets below.
     jest.clearAllMocks();
-    mockGetActionDisabledReason.mockReturnValue(undefined);
+    mockGetActionDisabledReason.mockReturnValue(undefined); // "action enabled" baseline; some tests override to a disabled reason
+    mockUsePageQueryParams.mockReturnValue([{ query: '' }, jest.fn()]); // empty-query baseline; component crashes if this returns undefined
   });
 
   describe('trigger button', () => {
@@ -230,6 +243,66 @@ describe(DomainPageActionsDropdown.name, () => {
       await user.click(screen.getByTestId('close-modal-button'));
 
       expect(screen.queryByTestId('actions-modal')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('batch workflow actions', () => {
+    it('navigates to batch-actions tab with empty batch-query when clicked without a workflows query', async () => {
+      const { user } = await setup({
+        ...defaultProps,
+        isBatchActionsEnabled: true,
+      });
+
+      await user.click(screen.getByTestId('popover-trigger'));
+      await user.click(screen.getByText('Batch workflow actions'));
+
+      expect(mockRouterPush).toHaveBeenCalledWith('batch-actions?batch-query=');
+    });
+
+    it('seeds batch-query from current query when navigating', async () => {
+      mockUsePageQueryParams.mockReturnValue([
+        { query: 'WorkflowType="foo"' },
+        jest.fn(),
+      ]);
+      const { user } = await setup({
+        ...defaultProps,
+        isBatchActionsEnabled: true,
+      });
+
+      await user.click(screen.getByTestId('popover-trigger'));
+      await user.click(screen.getByText('Batch workflow actions'));
+
+      const pushedTo = mockRouterPush.mock.calls[0][0];
+      const url = new URL(pushedTo, 'http://example.com/');
+      expect(url.pathname).toBe('/batch-actions');
+      expect(url.searchParams.get('batch-query')).toBe('WorkflowType="foo"');
+    });
+
+    it('preserves existing URL search params when navigating', async () => {
+      const originalLocation = window.location;
+      Object.defineProperty(window, 'location', {
+        configurable: true,
+        value: { ...originalLocation, search: '?input=query&query=foo' },
+      });
+
+      const { user } = await setup({
+        ...defaultProps,
+        isBatchActionsEnabled: true,
+      });
+
+      await user.click(screen.getByTestId('popover-trigger'));
+      await user.click(screen.getByText('Batch workflow actions'));
+
+      const pushedTo = mockRouterPush.mock.calls[0][0];
+      const url = new URL(pushedTo, 'http://example.com/');
+      expect(url.searchParams.get('input')).toBe('query');
+      expect(url.searchParams.get('query')).toBe('foo');
+      expect(url.searchParams.get('batch-query')).toBe('');
+
+      Object.defineProperty(window, 'location', {
+        configurable: true,
+        value: originalLocation,
+      });
     });
   });
 });
