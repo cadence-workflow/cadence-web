@@ -2,9 +2,7 @@ import { type SortOrder } from '@/utils/sort-by';
 import { WORKFLOW_STATUSES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
 import type { WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
 
-import { type TimeColumn } from '../list-workflows.types';
-
-export default function getListWorkflowExecutionsQuery({
+export default function getVisibilityQuery({
   search,
   workflowStatuses,
   sortColumn,
@@ -17,7 +15,7 @@ export default function getListWorkflowExecutionsQuery({
   workflowStatuses?: Array<WorkflowStatus>;
   sortColumn?: string;
   sortOrder?: SortOrder;
-  timeColumn: TimeColumn;
+  timeColumn: 'StartTime' | 'CloseTime';
   timeRangeStart?: string;
   timeRangeEnd?: string;
 }) {

@@ -1,8 +1,8 @@
-import getListWorkflowExecutionsQuery from '../get-list-workflow-executions-query';
+import getVisibilityQuery from '../get-visibility-query';
 
-describe('getListWorkflowExecutionsQuery', () => {
+describe('getVisibilityQuery', () => {
   it('should return query to show various open and closed workflows', () => {
-    const query = getListWorkflowExecutionsQuery({
+    const query = getVisibilityQuery({
       search: 'mocksearchterm',
       workflowStatuses: [
         'WORKFLOW_EXECUTION_CLOSE_STATUS_TERMINATED',
@@ -23,7 +23,7 @@ describe('getListWorkflowExecutionsQuery', () => {
   });
 
   it('should return default query with no params except for time column', () => {
-    const query = getListWorkflowExecutionsQuery({ timeColumn: 'StartTime' });
+    const query = getVisibilityQuery({ timeColumn: 'StartTime' });
     expect(query).toEqual('ORDER BY StartTime DESC');
   });
 });

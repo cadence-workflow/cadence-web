@@ -1,72 +1,22 @@
 import { z } from 'zod';
 
-import { SORT_ORDERS } from '@/utils/sort-by';
-import isWorkflowStatus from '@/views/shared/workflow-status-tag/helpers/is-workflow-status';
-import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
+import validateArchivedQueryParams from '@/route-handlers/shared/helpers/validate-archived-query-params';
+import visibilityQuerySchema from '@/route-handlers/shared/schemas/visibility-query-schema';
 
-// TODO: this should go in a shared location
-const workflowStatusSchema = z.custom<WorkflowStatus>(isWorkflowStatus, {
-  message: 'Invalid workflow status',
-});
-
-const listWorkflowsQueryParamSchema = z
-  .object({
-    pageSize: z
-      .string()
-      .transform((val) => parseInt(val, 10))
-      .pipe(
-        z.number().positive({ message: 'Page size must be a positive integer' })
-      ),
-    listType: z.enum(['default', 'archived']),
-    inputType: z.enum(['search', 'query']),
-    search: z
-      .string()
-      .trim()
-      .optional()
-      .transform((search) =>
-        search === undefined
-          ? undefined
-          : search.replace(/['"]/g, (match) => `\\${match}`)
-      ),
-    query: z.string().optional(),
-    statuses: z
-      .union([
-        workflowStatusSchema.transform((status) => [status]),
-        z.array(workflowStatusSchema),
-      ])
-      .optional(),
-    timeColumn: z
-      .enum(['StartTime', 'CloseTime'])
-      .optional()
-      .default('StartTime'),
-    timeRangeStart: z.string().datetime().optional(),
-    timeRangeEnd: z.string().datetime().optional(),
-    sortColumn: z.string().optional(),
-    sortOrder: z
-      .enum(SORT_ORDERS, { message: 'Invalid sort order' })
-      .optional(),
-    nextPage: z.string().optional(),
-  })
-  .superRefine((queryParams, ctx) => {
-    if (
-      queryParams.listType === 'archived' &&
-      queryParams.inputType === 'search'
-    ) {
-      if (queryParams.timeColumn === 'StartTime') {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Cannot search for archived workflows by start time',
-        });
-      }
-
-      if (!queryParams.timeRangeStart || !queryParams.timeRangeEnd) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message:
-            'Start and End time need to be passed for searching archived workflows',
-        });
-      }
-    }
-  });
+const listWorkflowsQueryParamSchema = visibilityQuerySchema
+  .merge(
+    z.object({
+      pageSize: z
+        .string()
+        .transform((val) => parseInt(val, 10))
+        .pipe(
+          z
+            .number()
+            .positive({ message: 'Page size must be a positive integer' })
+        ),
+      nextPage: z.string().optional(),
+    })
+  )
+  .superRefine(validateArchivedQueryParams);
 
 export default listWorkflowsQueryParamSchema;
