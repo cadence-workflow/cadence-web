@@ -9,6 +9,7 @@ import { mockGrpcClusterMethods } from '@/utils/route-handlers-middleware/middle
 import { getMockScheduleListEntry } from '../__fixtures__/mock-schedule-list-entries';
 import { listSchedules } from '../list-schedules';
 import { type Context, type RequestParams } from '../list-schedules.types';
+import { getMockScheduleListEntry } from '../__fixtures__/mock-schedule-list-entries';
 
 jest.mock('@/utils/logger');
 
