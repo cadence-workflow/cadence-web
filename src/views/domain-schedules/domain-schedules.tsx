@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { MdAdd } from 'react-icons/md';
 
@@ -30,7 +30,7 @@ export default function DomainSchedules({ domain, cluster }: Props) {
     pageSize: SCHEDULES_PAGE_SIZE,
   });
 
-  const schedules = React.useMemo(
+  const schedules = useMemo(
     () => data?.pages.flatMap((page) => page.schedules ?? []) ?? [],
     [data]
   );
