@@ -4,7 +4,9 @@ type Props = {
   cronExpression: string;
 };
 
-export default function DomainSchedulesCronExpressionCell({ cronExpression }: Props) {
+export default function DomainSchedulesCronExpressionCell({
+  cronExpression,
+}: Props) {
   try {
     return `${cronToString(cronExpression)} (${cronExpression})`;
   } catch {
