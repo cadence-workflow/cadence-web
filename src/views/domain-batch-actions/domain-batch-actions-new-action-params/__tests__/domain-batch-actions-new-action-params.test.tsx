@@ -6,9 +6,8 @@ import { type FieldErrors, useForm } from 'react-hook-form';
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import DomainBatchActionsNewActionParams from '../domain-batch-actions-new-action-params';
-import batchActionParamsSchema, {
-  type BatchActionParamsFormData,
-} from '../schemas/batch-action-params-schema';
+import { type BatchActionParamsFormData } from '../domain-batch-actions-new-action-params.types';
+import batchActionParamsSchema from '../schemas/batch-action-params-schema';
 
 describe(DomainBatchActionsNewActionParams.name, () => {
   it('renders description input with label', () => {

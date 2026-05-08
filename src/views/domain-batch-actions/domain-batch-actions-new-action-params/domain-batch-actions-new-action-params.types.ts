@@ -1,6 +1,9 @@
 import { type Control, type FieldErrors } from 'react-hook-form';
+import { type z } from 'zod';
 
-import { type BatchActionParamsFormData } from './schemas/batch-action-params-schema';
+import type batchActionParamsSchema from './schemas/batch-action-params-schema';
+
+export type BatchActionParamsFormData = z.infer<typeof batchActionParamsSchema>;
 
 export type Props = {
   control: Control<BatchActionParamsFormData>;
