@@ -1,5 +1,5 @@
 'use client';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -41,25 +41,23 @@ export default function DomainBatchActionsNewActionDetail({
 
   const {
     control,
-    formState: { errors, isValid },
-    trigger,
+    handleSubmit,
+    formState: { errors, isValid, isSubmitted },
   } = useForm({
     resolver: zodResolver(batchActionParamsSchema),
     defaultValues: { description: '', rps: BATCH_ACTION_RPS_DEFAULT },
     mode: 'onChange',
   });
 
-  const [isValidated, setIsValidated] = useState(false);
-  const hasValidationErrors = isValidated && !isValid;
+  const hasValidationErrors = isSubmitted && !isValid;
 
   const handleActionClick = useCallback(
-    async (_actionId: string) => {
-      setIsValidated(true);
-      const valid = await trigger();
-      if (!valid) return;
-      // TODO: handle action execution
+    (_actionId: string) => {
+      handleSubmit(() => {
+        // TODO: handle action execution
+      })();
     },
-    [trigger]
+    [handleSubmit]
   );
 
   // Reuse the workflows tab's column selection (persisted per-domain in
@@ -114,7 +112,7 @@ export default function DomainBatchActionsNewActionDetail({
       <DomainBatchActionsNewActionInfoBanner />
       <DomainBatchActionsNewActionParams
         control={control}
-        fieldErrors={isValidated ? errors : {}}
+        fieldErrors={isSubmitted ? errors : {}}
       />
       <WorkflowsHeader
         pageQueryParamsConfig={domainPageQueryParamsConfig}
