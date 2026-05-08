@@ -4,13 +4,21 @@ import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import DomainSchedules from '../domain-schedules';
 
-describe(DomainSchedules.name, () => {
-  it('renders the schedules page', () => {
-    setup();
+jest.mock('@/components/error-panel/error-panel', () =>
+  jest.fn(({ message }: { message: string }) => <div>{message}</div>)
+);
 
+describe(DomainSchedules.name, () => {
+  it('renders toolbar', () => {
+    setup();
     expect(
-      screen.getByRole('heading', { name: 'Schedules Placeholder' })
+      screen.getByRole('heading', { name: 'Schedules (0)' })
     ).toBeInTheDocument();
+  });
+
+  it('renders the empty error panel', () => {
+    setup();
+    expect(screen.getByText('No schedules found')).toBeInTheDocument();
   });
 });
 

@@ -10,6 +10,7 @@ import domainWorkflowsArchivalDisabledPanelConfig from '../config/domain-workflo
 import { styled } from './domain-workflows-archival-disabled-panel.styles';
 
 export default function DomainWorkflowsArchivalDisabledPanel() {
+  // TODO: Replace with ErrorPanel
   return (
     <PanelSection>
       <Image width={64} alt="Error" src={errorIcon} />
