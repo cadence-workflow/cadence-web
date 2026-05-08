@@ -6,15 +6,23 @@ import { GRPCError } from '@/utils/grpc/grpc-error';
 import logger from '@/utils/logger';
 import { mockGrpcClusterMethods } from '@/utils/route-handlers-middleware/middlewares/__mocks__/grpc-cluster-methods';
 
+import { getMockScheduleListEntry } from '../__fixtures__/mock-schedule-list-entries';
 import { listSchedules } from '../list-schedules';
 import { type Context, type RequestParams } from '../list-schedules.types';
-import { getMockScheduleListEntry } from '../__fixtures__/mock-schedule-list-entries';
 
 jest.mock('@/utils/logger');
 
 const mockSchedules = [
-  getMockScheduleListEntry({ scheduleId: 'mock-schedule-id-1', workflowType: { name: 'mock-workflow-type-1' } }),
-  getMockScheduleListEntry({ scheduleId: 'mock-schedule-id-2', workflowType: { name: 'mock-workflow-type-2' }, state: { paused: true, pauseInfo: null }, cronExpression: '*/5 * * * *' }),
+  getMockScheduleListEntry({
+    scheduleId: 'mock-schedule-id-1',
+    workflowType: { name: 'mock-workflow-type-1' },
+  }),
+  getMockScheduleListEntry({
+    scheduleId: 'mock-schedule-id-2',
+    workflowType: { name: 'mock-workflow-type-2' },
+    state: { paused: true, pauseInfo: null },
+    cronExpression: '*/5 * * * *',
+  }),
 ];
 
 describe(listSchedules.name, () => {
