@@ -63,11 +63,10 @@ export default function DomainBatchActionsNewActionParams({
                 size="compact"
                 type="number"
                 value={String(value)}
-                onChange={(e) =>
-                  onChange(
-                    e.target.value === '' ? 0 : parseInt(e.target.value, 10)
-                  )
-                }
+                onChange={(e) => {
+                  const parsed = parseInt(e.target.value, 10);
+                  onChange(Number.isNaN(parsed) ? 0 : parsed);
+                }}
                 aria-label="RPS"
                 error={Boolean(fieldErrors.rps)}
               />

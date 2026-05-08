@@ -24,6 +24,7 @@ import DomainBatchActionsNewActionFloatingBar from '../domain-batch-actions-new-
 import DomainBatchActionsNewActionInfoBanner from '../domain-batch-actions-new-action-info-banner/domain-batch-actions-new-action-info-banner';
 import DomainBatchActionsNewActionParams from '../domain-batch-actions-new-action-params/domain-batch-actions-new-action-params';
 import batchActionParamsSchema from '../domain-batch-actions-new-action-params/schemas/batch-action-params-schema';
+import { BATCH_ACTION_RPS_DEFAULT } from '../domain-batch-actions.constants';
 
 import {
   overrides,
@@ -44,7 +45,7 @@ export default function DomainBatchActionsNewActionDetail({
     trigger,
   } = useForm({
     resolver: zodResolver(batchActionParamsSchema),
-    defaultValues: { description: '', rps: 100 },
+    defaultValues: { description: '', rps: BATCH_ACTION_RPS_DEFAULT },
     mode: 'onChange',
   });
 
