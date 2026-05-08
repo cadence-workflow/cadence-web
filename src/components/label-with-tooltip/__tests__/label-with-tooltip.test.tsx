@@ -14,7 +14,10 @@ describe(LabelWithTooltip.name, () => {
   it('does not render tooltip icon when tooltip is not provided', () => {
     setup({ label: 'Description' });
 
-    expect(screen.queryByRole('img', { hidden: true })).not.toBeInTheDocument();
+    expect(
+      screen.getByText('Description').parentElement?.querySelectorAll('svg')
+        .length
+    ).toBe(0);
   });
 
   it('renders tooltip icon when tooltip is provided', () => {
