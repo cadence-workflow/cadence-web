@@ -22,6 +22,8 @@ import { type ListFailoverHistoryRequest__Input } from '@/__generated__/proto-ts
 import { type ListFailoverHistoryResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListFailoverHistoryResponse';
 import { type ListOpenWorkflowExecutionsRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListOpenWorkflowExecutionsRequest';
 import { type ListOpenWorkflowExecutionsResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListOpenWorkflowExecutionsResponse';
+import { type ListSchedulesRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListSchedulesRequest';
+import { type ListSchedulesResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListSchedulesResponse';
 import { type ListTaskListPartitionsRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListTaskListPartitionsRequest';
 import { type ListTaskListPartitionsResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListTaskListPartitionsResponse';
 import { type ListWorkflowExecutionsRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListWorkflowExecutionsRequest';
@@ -53,7 +55,11 @@ import GRPCService, {
   type GRPCRequestConfig,
 } from './grpc-service';
 type ClusterService = Record<
-  'adminService' | 'domainService' | 'visibilityService' | 'workflowService',
+  | 'adminService'
+  | 'domainService'
+  | 'scheduleService'
+  | 'visibilityService'
+  | 'workflowService',
   GRPCService
 >;
 type ClustersServices = Record<string, ClusterService>;
@@ -91,6 +97,9 @@ export type GRPCClusterMethods = {
   listDomains: (
     payload: ListDomainsRequest__Input
   ) => Promise<ListDomainsResponse>;
+  listSchedules: (
+    payload: ListSchedulesRequest__Input
+  ) => Promise<ListSchedulesResponse>;
   listTaskListPartitions: (
     payload: ListTaskListPartitionsRequest__Input
   ) => Promise<ListTaskListPartitionsResponse>;
@@ -156,6 +165,11 @@ const getClusterServices = async (c: ClusterConfig) => {
     requestConfig,
     ...grpcServiceConfigurations.domainServiceConfig,
   });
+  const scheduleService = new GRPCService({
+    peer: c.grpc.peer,
+    requestConfig,
+    ...grpcServiceConfigurations.scheduleServiceConfig,
+  });
   const visibilityService = new GRPCService({
     peer: c.grpc.peer,
     requestConfig,
@@ -170,6 +184,7 @@ const getClusterServices = async (c: ClusterConfig) => {
   const services: ClusterService = {
     adminService,
     domainService,
+    scheduleService,
     visibilityService,
     workflowService,
   };
@@ -193,8 +208,13 @@ const getClusterServicesMethods = async (
   metadata?: GRPCMetadata
 ): Promise<GRPCClusterMethods> => {
   const clusterServices = await getAllClustersServices();
-  const { visibilityService, adminService, domainService, workflowService } =
-    clusterServices[c];
+  const {
+    visibilityService,
+    adminService,
+    domainService,
+    scheduleService,
+    workflowService,
+  } = clusterServices[c];
 
   return {
     archivedWorkflows: visibilityService.request<
@@ -269,6 +289,13 @@ const getClusterServicesMethods = async (
       ListDomainsResponse
     >({
       method: 'ListDomains',
+      metadata: metadata,
+    }),
+    listSchedules: scheduleService.request<
+      ListSchedulesRequest__Input,
+      ListSchedulesResponse
+    >({
+      method: 'ListSchedules',
       metadata: metadata,
     }),
     listTaskListPartitions: workflowService.request<
