@@ -84,19 +84,6 @@ jest.mock(
   })
 );
 
-jest.mock(
-  '../domain-batch-actions-new-action-detail/domain-batch-actions-new-action-detail',
-  () => ({
-    __esModule: true,
-    default: ({ onDiscard }: NewActionDetailProps) => (
-      <div>
-        <h2>New batch action</h2>
-        <button onClick={onDiscard}>Discard batch action</button>
-      </div>
-    ),
-  })
-);
-
 describe(DomainBatchActions.name, () => {
   beforeEach(() => {
     mockUsePageQueryParams.mockReturnValue([
