@@ -5,14 +5,14 @@ import queryString from 'query-string';
 import { GRPCError } from '@/utils/grpc/grpc-error';
 import logger from '@/utils/logger';
 import { mockGrpcClusterMethods } from '@/utils/route-handlers-middleware/middlewares/__mocks__/grpc-cluster-methods';
+import * as getVisibilityQueryModule from '@/utils/visibility/get-visibility-query';
 
-import * as getVisibilityQueryModule from '../../shared/helpers/get-visibility-query';
 import { mockWorkflowExecutions } from '../__fixtures__/mock-workflow-executions';
 import { listWorkflows } from '../list-workflows';
 import type { Context } from '../list-workflows.types';
 
 jest.mock('@/utils/logger');
-jest.mock('../../shared/helpers/get-visibility-query');
+jest.mock('@/utils/visibility/get-visibility-query');
 
 describe(listWorkflows.name, () => {
   beforeEach(() => {

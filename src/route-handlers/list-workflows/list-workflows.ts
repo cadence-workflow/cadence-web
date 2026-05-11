@@ -1,9 +1,9 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import queryString from 'query-string';
 
-import getVisibilityQuery from '@/route-handlers/shared/helpers/get-visibility-query';
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
+import getVisibilityQuery from '@/utils/visibility/get-visibility-query';
 
 import getWorkflowListItemFromExecution from './helpers/get-workflow-list-item-from-execution';
 import type {
