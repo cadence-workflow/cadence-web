@@ -1,5 +1,7 @@
 import { type BatchAction } from './domain-batch-actions.types';
 
+export const BATCH_ACTION_RPS_DEFAULT = 100;
+
 // TODO: Replace with real API data
 export const MOCK_BATCH_ACTIONS: BatchAction[] = [
   {
