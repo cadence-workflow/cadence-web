@@ -1,9 +1,10 @@
 import { z } from 'zod';
 
 import { SORT_ORDERS } from '@/utils/sort-by';
-import validateArchivedQueryParams from '@/utils/visibility/validate-archived-query-params';
 import isWorkflowStatus from '@/views/shared/workflow-status-tag/helpers/is-workflow-status';
 import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
+
+import validateArchivedQueryParams from '../helpers/validate-archived-query-params';
 
 const workflowStatusSchema = z.custom<WorkflowStatus>(isWorkflowStatus, {
   message: 'Invalid workflow status',
