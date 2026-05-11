@@ -16,7 +16,7 @@ import useStyletronClasses from '@/hooks/use-styletron-classes';
 
 import AuthTokenModal from '../auth-token-modal/auth-token-modal';
 
-import { cssStyles, errorSnackbarOverrides } from './app-nav-bar.styles';
+import { cssStyles, overrides } from './app-nav-bar.styles';
 import useAuthLifecycle from './hooks/use-auth-lifecycle';
 import { LOGIN_ITEM, LOGOUT_ITEM } from './use-auth-lifecycle.constants';
 import { type UserMenuItem } from './use-auth-lifecycle.types';
@@ -56,7 +56,7 @@ export default function AppNavBar() {
         {
           message,
           ...(dismissActionLabel ? { actionMessage: dismissActionLabel } : {}),
-          overrides: errorSnackbarOverrides,
+          overrides: overrides.errorSnackbar,
         },
         duration
       );

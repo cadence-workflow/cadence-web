@@ -1,3 +1,5 @@
+import { type SnackbarElementOverrides } from 'baseui/snackbar';
+
 import type {
   StyletronCSSObject,
   StyletronCSSObjectOf,
@@ -13,10 +15,12 @@ const cssStylesObj = {
 export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> =
   cssStylesObj;
 
-export const errorSnackbarOverrides = {
-  Root: {
-    style: {
-      backgroundColor: '#c62828',
+export const overrides = {
+  errorSnackbar: {
+    Root: {
+      style: {
+        backgroundColor: '#c62828',
+      },
     },
-  },
+  } satisfies SnackbarElementOverrides,
 };

@@ -2,13 +2,17 @@
 import React from 'react';
 
 import { useSuspenseQuery } from '@tanstack/react-query';
+import dynamic from 'next/dynamic';
 
 import { type PublicAuthContext } from '@/utils/auth/auth-shared.types';
 import request from '@/utils/request';
 import { type DomainPageTabContentProps } from '@/views/domain-page/domain-page-content/domain-page-content.types';
 
-import DomainWorkflowsBasic from './domain-workflows-basic-lazy';
-import DomainWorkflowsClusterGate from './domain-workflows-cluster-gate';
+import DomainWorkflowsClusterGate from './domain-workflows-cluster-gate/domain-workflows-cluster-gate';
+
+const DomainWorkflowsBasic = dynamic(
+  () => import('@/views/domain-workflows-basic/domain-workflows-basic')
+);
 
 export default function DomainWorkflows(props: DomainPageTabContentProps) {
   const { data: authInfo } = useSuspenseQuery<PublicAuthContext>({

@@ -2,14 +2,18 @@
 import React, { useMemo } from 'react';
 
 import { useSuspenseQuery } from '@tanstack/react-query';
+import dynamic from 'next/dynamic';
 
 import { type DescribeClusterResponse } from '@/route-handlers/describe-cluster/describe-cluster.types';
 import request from '@/utils/request';
 import { type DomainPageTabContentProps } from '@/views/domain-page/domain-page-content/domain-page-content.types';
 
-import DomainWorkflowsAdvancedGate from './domain-workflows-advanced-gate';
-import DomainWorkflowsBasic from './domain-workflows-basic-lazy';
-import isClusterAdvancedVisibilityEnabled from './helpers/is-cluster-advanced-visibility-enabled';
+import DomainWorkflowsAdvancedGate from '../domain-workflows-advanced-gate/domain-workflows-advanced-gate';
+import isClusterAdvancedVisibilityEnabled from '../helpers/is-cluster-advanced-visibility-enabled';
+
+const DomainWorkflowsBasic = dynamic(
+  () => import('@/views/domain-workflows-basic/domain-workflows-basic')
+);
 
 export default function DomainWorkflowsClusterGate(
   props: DomainPageTabContentProps
@@ -31,5 +35,10 @@ export default function DomainWorkflowsClusterGate(
     );
   }
 
-  return <DomainWorkflowsAdvancedGate {...props} />;
+  return (
+    <DomainWorkflowsAdvancedGate
+      domain={props.domain}
+      cluster={props.cluster}
+    />
+  );
 }

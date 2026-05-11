@@ -7,7 +7,7 @@ import useSuspenseConfigValue from '@/hooks/use-config-value/use-suspense-config
 import { type DomainPageTabContentProps } from '@/views/domain-page/domain-page-content/domain-page-content.types';
 
 const DomainWorkflowsAdvanced = dynamic(
-  () => import('./domain-workflows-advanced/domain-workflows-advanced')
+  () => import('../domain-workflows-advanced/domain-workflows-advanced')
 );
 
 export default function DomainWorkflowsAdvancedGate(
