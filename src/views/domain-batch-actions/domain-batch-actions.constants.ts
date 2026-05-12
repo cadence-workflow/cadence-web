@@ -4,6 +4,11 @@ export const DRAFT_ACTION_ID = 'draft';
 
 export const BATCH_ACTION_RPS_DEFAULT = 100;
 
+export const BATCH_ACTION_BATCHER_DOMAIN = 'cadence-batcher';
+export const BATCH_ACTION_WORKFLOW_TYPE = 'cadence-sys-batch-workflow-v2';
+export const BATCH_ACTION_TASK_LIST = 'cadence-sys-batcher-tasklist';
+export const BATCH_ACTION_EXECUTION_TIMEOUT_SECONDS = 24 * 60 * 60;
+
 // TODO: Replace with real API data
 export const MOCK_BATCH_ACTIONS: BatchAction[] = [
   {
