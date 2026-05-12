@@ -19,6 +19,7 @@ import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
 import WorkflowsHeader from '@/views/shared/workflows-header/workflows-header';
 import useWorkflowsListColumns from '@/views/shared/workflows-list/hooks/use-workflows-list-columns';
 import WorkflowsList from '@/views/shared/workflows-list/workflows-list';
+import { type SignalWorkflowSubmissionData } from '@/views/workflow-actions/workflow-action-signal-form/workflow-action-signal-form.types';
 
 import domainBatchActionsConfirmationModalConfig from '../config/domain-batch-actions-confirmation-modal.config';
 import domainBatchActionsNewActionFloatingBarConfig from '../config/domain-batch-actions-new-action-floating-bar.config';
@@ -29,6 +30,7 @@ import DomainBatchActionsNewActionParams from '../domain-batch-actions-new-actio
 import batchActionParamsSchema from '../domain-batch-actions-new-action-params/schemas/batch-action-params-schema';
 import { BATCH_ACTION_RPS_DEFAULT } from '../domain-batch-actions.constants';
 import { type BatchActionConfirmableType } from '../domain-batch-actions.types';
+import useConfirmBatchAction from '../hooks/use-confirm-batch-action';
 
 import {
   overrides,
@@ -46,6 +48,7 @@ export default function DomainBatchActionsNewActionDetail({
   const {
     control,
     handleSubmit,
+    getValues,
     formState: { errors, isValid, isSubmitted },
   } = useForm({
     resolver: zodResolver(batchActionParamsSchema),
@@ -55,6 +58,13 @@ export default function DomainBatchActionsNewActionDetail({
   const [activeAction, setActiveAction] =
     useState<BatchActionConfirmableType | null>(null);
   const hasValidationErrors = isSubmitted && !isValid;
+
+  const { handleConfirm, isPending: isStartingBatchAction } =
+    useConfirmBatchAction({
+      domain,
+      cluster,
+      onSuccess: () => setActiveAction(null),
+    });
 
   const handleActionClick = useCallback(
     (actionId: string) => {
@@ -172,9 +182,23 @@ export default function DomainBatchActionsNewActionDetail({
       <DomainBatchActionsConfirmationModal
         actionId={activeAction}
         selectedCount={totalWorkflowCount ?? 0}
+        isSubmitting={isStartingBatchAction}
         onClose={() => setActiveAction(null)}
-        // TODO: wire onConfirm to batch action execution API
-        onConfirm={() => setActiveAction(null)}
+        onConfirm={(actionId, submissionData) =>
+          handleConfirm({
+            batchType: actionId,
+            // TODO: queryParams.batchQuery is empty until the user clicks
+            // "Run Query" — typing alone doesn't commit. The batcher rejects
+            // an empty Query, so this needs gating before submit. (CDNC-19042)
+            query: queryParams.batchQuery ?? '',
+            reason: getValues('description'),
+            rps: getValues('rps'),
+            signalParams:
+              actionId === 'signal'
+                ? (submissionData as SignalWorkflowSubmissionData)
+                : undefined,
+          })
+        }
       />
     </styled.Container>
   );
