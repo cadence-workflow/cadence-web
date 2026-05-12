@@ -21,6 +21,7 @@ import { type Props } from './domain-batch-actions-confirmation-modal.types';
 export default function DomainBatchActionsConfirmationModal({
   actionId,
   selectedCount,
+  isSubmitting,
   onClose,
   onConfirm,
 }: Props) {
@@ -112,6 +113,7 @@ export default function DomainBatchActionsConfirmationModal({
               type="button"
               kind={BUTTON_KIND.secondary}
               onClick={handleClose}
+              disabled={isSubmitting}
             >
               Close
             </ModalButton>
@@ -120,6 +122,8 @@ export default function DomainBatchActionsConfirmationModal({
               kind={BUTTON_KIND.primary}
               type="button"
               onClick={handleConfirm}
+              isLoading={isSubmitting}
+              disabled={isSubmitting}
             >
               Start Batch Action
             </ModalButton>
