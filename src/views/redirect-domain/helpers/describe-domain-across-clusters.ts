@@ -8,11 +8,7 @@ import * as grpcClient from '@/utils/grpc/grpc-client';
 import { GRPCError } from '@/utils/grpc/grpc-error';
 import logger from '@/utils/logger';
 
-export type DescribeDomainAcrossClustersResult = {
-  domains: Domain[];
-  hasPermissionDenied: boolean;
-  unexpectedError: Error | null;
-};
+import { type DescribeDomainAcrossClustersResult } from '../redirect-domain.types';
 
 export default async function describeDomainAcrossClusters(
   domainName: string
