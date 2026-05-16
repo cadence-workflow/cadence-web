@@ -1,5 +1,6 @@
 import { type NextRequest } from 'next/server';
 
+import { createSchedule } from '@/route-handlers/create-schedule/create-schedule';
 import { listSchedules } from '@/route-handlers/list-schedules/list-schedules';
 import type { RouteParams } from '@/route-handlers/list-schedules/list-schedules.types';
 import { routeHandlerWithMiddlewares } from '@/utils/route-handlers-middleware';
@@ -11,6 +12,18 @@ export async function GET(
 ) {
   return routeHandlerWithMiddlewares(
     listSchedules,
+    request,
+    options,
+    routeHandlersDefaultMiddlewares
+  );
+}
+
+export async function POST(
+  request: NextRequest,
+  options: { params: RouteParams }
+) {
+  return routeHandlerWithMiddlewares(
+    createSchedule,
     request,
     options,
     routeHandlersDefaultMiddlewares
