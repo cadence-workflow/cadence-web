@@ -10,7 +10,7 @@ import { type CreateScheduleRequestBody } from '../create-schedule.types';
 function isoToTimestamp(iso: string): { seconds: number; nanos: number } {
   const ms = Date.parse(iso);
   const seconds = Math.floor(ms / 1000);
-  const nanos = (ms % 1000) * 1_000_000;
+  const nanos = (ms - seconds * 1000) * 1_000_000;
   return { seconds, nanos };
 }
 
