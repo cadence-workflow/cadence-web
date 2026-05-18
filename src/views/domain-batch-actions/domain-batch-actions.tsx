@@ -8,44 +8,47 @@ import { type DomainPageTabContentProps } from '@/views/domain-page/domain-page-
 import DomainBatchActionDetail from './domain-batch-actions-detail/domain-batch-actions-detail';
 import DomainBatchActionsNewActionDetail from './domain-batch-actions-new-action-detail/domain-batch-actions-new-action-detail';
 import DomainBatchActionsSidebar from './domain-batch-actions-sidebar/domain-batch-actions-sidebar';
-import { MOCK_BATCH_ACTIONS } from './domain-batch-actions.constants';
+import { DRAFT_ACTION_ID, MOCK_BATCH_ACTIONS } from './domain-batch-actions.constants';
 import { styled } from './domain-batch-actions.styles';
 
 export default function DomainBatchActions(props: DomainPageTabContentProps) {
-  const [queryParams] = usePageQueryParams(domainPageQueryParamsConfig);
+  const [queryParams, setQueryParams] = usePageQueryParams(
+    domainPageQueryParamsConfig
+  );
 
   // TODO: replace with useSuspenseQuery once the batch-actions list endpoint exists
   const batchActions = MOCK_BATCH_ACTIONS;
 
-  // TODO: lift selectedActionId into a query param to support deep linking.
-  const [selectedActionId, setSelectedActionId] = useState<string | null>(
-    batchActions[0]?.id ?? null
+  const isDraftSelected =
+    queryParams.batchActionId === DRAFT_ACTION_ID ||
+    (!queryParams.batchActionId && Boolean(queryParams.batchQuery));
+  const selectedActionId =
+    !isDraftSelected && queryParams.batchActionId
+      ? queryParams.batchActionId
+      : (batchActions[0]?.id ?? null);
+
+  const [isDraftOpen, setIsDraftOpen] = useState(
+    isDraftSelected || Boolean(queryParams.batchQuery)
   );
-  // The "Batch workflow actions" dropdown is the only producer of `batch-query`
-  // in the URL; its presence signals that the user wants the draft open.
-  const isNewActionRequested = Boolean(queryParams.batchQuery);
-  const [isDraftOpen, setIsDraftOpen] = useState(isNewActionRequested);
-  const [isDraftSelected, setIsDraftSelected] = useState(isNewActionRequested);
 
   const selectedAction = batchActions.find((a) => a.id === selectedActionId);
 
   const handleCreateNew = () => {
     setIsDraftOpen(true);
-    setIsDraftSelected(true);
+    setQueryParams({ batchActionId: DRAFT_ACTION_ID });
   };
 
   const handleSelectAction = (id: string) => {
-    setSelectedActionId(id);
-    setIsDraftSelected(false);
+    setQueryParams({ batchActionId: id });
   };
 
   const handleSelectDraft = () => {
-    setIsDraftSelected(true);
+    setQueryParams({ batchActionId: DRAFT_ACTION_ID });
   };
 
   const handleDiscard = () => {
     setIsDraftOpen(false);
-    setIsDraftSelected(false);
+    setQueryParams({ batchActionId: undefined, batchQuery: '' });
   };
 
   return (

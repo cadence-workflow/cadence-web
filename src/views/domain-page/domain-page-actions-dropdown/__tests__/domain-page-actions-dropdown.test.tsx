@@ -256,7 +256,9 @@ describe(DomainPageActionsDropdown.name, () => {
       await user.click(screen.getByTestId('popover-trigger'));
       await user.click(screen.getByText('Batch workflow actions'));
 
-      expect(mockRouterPush).toHaveBeenCalledWith('batch-actions?batch-query=');
+      expect(mockRouterPush).toHaveBeenCalledWith(
+        'batch-actions?batch-query=&bid=draft'
+      );
     });
 
     it('seeds batch-query from current query when navigating', async () => {
@@ -276,6 +278,7 @@ describe(DomainPageActionsDropdown.name, () => {
       const url = new URL(pushedTo, 'http://example.com/');
       expect(url.pathname).toBe('/batch-actions');
       expect(url.searchParams.get('batch-query')).toBe('WorkflowType="foo"');
+      expect(url.searchParams.get('bid')).toBe('draft');
     });
 
     it('preserves existing URL search params when navigating', async () => {
@@ -298,6 +301,7 @@ describe(DomainPageActionsDropdown.name, () => {
       expect(url.searchParams.get('input')).toBe('query');
       expect(url.searchParams.get('query')).toBe('foo');
       expect(url.searchParams.get('batch-query')).toBe('');
+      expect(url.searchParams.get('bid')).toBe('draft');
 
       Object.defineProperty(window, 'location', {
         configurable: true,
