@@ -17,7 +17,7 @@ const retryPolicySchema = z
   })
   .optional();
 
-const scheduleStartWorkflowActionSchema = z.object({
+const scheduleStartWorkflowBodySchema = z.object({
   workflowType: z.object({
     name: z.string().min(1),
   }),
@@ -36,35 +36,26 @@ const scheduleStartWorkflowActionSchema = z.object({
     .optional(),
 });
 
-const schedulePoliciesSchema = z
-  .object({
-    overlapPolicy: z.enum(SCHEDULE_OVERLAP_POLICIES).optional(),
-    catchUpPolicy: z.enum(SCHEDULE_CATCH_UP_POLICIES).optional(),
-    catchUpWindowSeconds: z.number().nonnegative().optional(),
-    pauseOnFailure: z.boolean().optional(),
-    bufferLimit: z.number().int().nonnegative().optional(),
-    concurrencyLimit: z.number().int().nonnegative().optional(),
-  })
-  .optional();
+const createScheduleRequestBodySchema = z.object({
+  // Schedule identity (server generates one when omitted)
+  scheduleId: z.string().min(1).optional(),
 
-const scheduleSpecSchema = z.object({
+  // Schedule spec
   cronExpression: z.string().min(1),
   startTime: z.string().datetime().optional(),
   endTime: z.string().datetime().optional(),
   jitterSeconds: z.number().nonnegative().optional(),
-});
 
-const createScheduleRequestBodySchema = z.object({
-  scheduleId: z.string().min(1),
-  spec: scheduleSpecSchema,
-  action: z.object({
-    startWorkflow: scheduleStartWorkflowActionSchema,
-  }),
-  policies: schedulePoliciesSchema,
-  memo: z.record(z.any()).optional(),
-  searchAttributes: z
-    .record(z.union([z.string(), z.number(), z.boolean()]))
-    .optional(),
+  // Schedule policies
+  overlapPolicy: z.enum(SCHEDULE_OVERLAP_POLICIES).optional(),
+  catchUpPolicy: z.enum(SCHEDULE_CATCH_UP_POLICIES).optional(),
+  catchUpWindowSeconds: z.number().nonnegative().optional(),
+  pauseOnFailure: z.boolean().optional(),
+  bufferLimit: z.number().int().nonnegative().optional(),
+  concurrencyLimit: z.number().int().nonnegative().optional(),
+
+  // Start-workflow action
+  startWorkflow: scheduleStartWorkflowBodySchema,
 });
 
 export default createScheduleRequestBodySchema;

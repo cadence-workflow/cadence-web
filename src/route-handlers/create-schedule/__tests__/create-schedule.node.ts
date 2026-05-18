@@ -1,4 +1,5 @@
 import { status } from '@grpc/grpc-js';
+import crypto from 'crypto';
 import { NextRequest } from 'next/server';
 
 import { GRPCError } from '@/utils/grpc/grpc-error';
@@ -10,23 +11,27 @@ import { type Context, type RequestParams } from '../create-schedule.types';
 
 jest.mock('@/utils/logger');
 
+const validScheduleCreateFields = {
+  cronExpression: '0 9 * * *',
+  startWorkflow: {
+    workflowType: { name: 'DemoWorkflow' },
+    taskList: { name: 'demo-task-list' },
+    workerSDKLanguage: 'GO' as const,
+    workflowIdPrefix: 'scheduled-demo-',
+    executionStartToCloseTimeoutSeconds: 3600,
+    taskStartToCloseTimeoutSeconds: 30,
+  },
+};
+
 function getValidRequestBody() {
   return {
     scheduleId: 'my-schedule',
-    spec: {
-      cronExpression: '0 9 * * *',
-    },
-    action: {
-      startWorkflow: {
-        workflowType: { name: 'DemoWorkflow' },
-        taskList: { name: 'demo-task-list' },
-        workerSDKLanguage: 'GO' as const,
-        workflowIdPrefix: 'scheduled-demo-',
-        executionStartToCloseTimeoutSeconds: 3600,
-        taskStartToCloseTimeoutSeconds: 30,
-      },
-    },
+    ...validScheduleCreateFields,
   };
+}
+
+function getValidRequestBodyWithoutScheduleId() {
+  return { ...validScheduleCreateFields };
 }
 
 describe(createSchedule.name, () => {
@@ -41,6 +46,23 @@ describe(createSchedule.name, () => {
     expect(res.status).toEqual(200);
     const json = await res.json();
     expect(json).toEqual({ scheduleId: 'my-schedule' });
+  });
+
+  it('generates scheduleId when omitted', async () => {
+    const generated = 'aaaaaaaa-bbbb-4ccc-dddd-eeeeeeeeeeee';
+    const randomSpy = jest.spyOn(crypto, 'randomUUID').mockReturnValue(generated);
+
+    try {
+      const { mockCreateSchedule } = await setup({
+        body: getValidRequestBodyWithoutScheduleId(),
+      });
+
+      expect(mockCreateSchedule).toHaveBeenCalledWith(
+        expect.objectContaining({ scheduleId: generated })
+      );
+    } finally {
+      randomSpy.mockRestore();
+    }
   });
 
   it('returns validation error when body is invalid', async () => {
