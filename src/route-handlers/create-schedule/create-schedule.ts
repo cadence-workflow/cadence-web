@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { NextResponse, type NextRequest } from 'next/server';
 
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
@@ -27,9 +28,10 @@ export async function createSchedule(
     );
   }
 
+  const scheduleId = data.scheduleId ?? crypto.randomUUID();
   const grpcPayload = transformCreateScheduleBodyToGrpcInput({
     domain: params.domain,
-    body: data,
+    body: { ...data, scheduleId },
   });
 
   try {

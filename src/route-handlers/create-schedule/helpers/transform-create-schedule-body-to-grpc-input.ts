@@ -1,47 +1,12 @@
-import isEmpty from 'lodash/isEmpty';
-
 import { type CreateScheduleRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/CreateScheduleRequest';
-import { type RetryPolicy__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/RetryPolicy';
+import getGrpcTimestampFromIso from '@/utils/datetime/get-grpc-timestamp-from-iso';
 
 import processWorkflowInput from '../../start-workflow/helpers/process-workflow-input';
 import { DEFAULT_TASK_START_TO_CLOSE_TIMEOUT_SECONDS } from '../../start-workflow/start-workflow.constants';
 import { type CreateScheduleRequestBody } from '../create-schedule.types';
 
-function isoToTimestamp(iso: string): { seconds: number; nanos: number } {
-  const ms = Date.parse(iso);
-  const seconds = Math.floor(ms / 1000);
-  const nanos = (ms - seconds * 1000) * 1_000_000;
-  return { seconds, nanos };
-}
-
-function secondsToDuration(seconds: number): {
-  seconds: number;
-  nanos: number;
-} {
-  return { seconds, nanos: 0 };
-}
-
-function mapRetryPolicy(
-  retryPolicy: CreateScheduleRequestBody['action']['startWorkflow']['retryPolicy']
-): RetryPolicy__Input | undefined {
-  if (!retryPolicy || isEmpty(retryPolicy)) {
-    return undefined;
-  }
-
-  return {
-    initialInterval: retryPolicy.initialIntervalSeconds
-      ? secondsToDuration(retryPolicy.initialIntervalSeconds)
-      : undefined,
-    backoffCoefficient: retryPolicy.backoffCoefficient,
-    maximumInterval: retryPolicy.maximumIntervalSeconds
-      ? secondsToDuration(retryPolicy.maximumIntervalSeconds)
-      : undefined,
-    expirationInterval: retryPolicy.expirationIntervalSeconds
-      ? secondsToDuration(retryPolicy.expirationIntervalSeconds)
-      : undefined,
-    maximumAttempts: retryPolicy.maximumAttempts,
-  };
-}
+import mapRetryPolicyToGrpcInput from './map-retry-policy-to-grpc-input';
+import secondsToGrpcDurationInput from './seconds-to-grpc-duration-input';
 
 export default function transformCreateScheduleBodyToGrpcInput({
   domain,
@@ -50,8 +15,28 @@ export default function transformCreateScheduleBodyToGrpcInput({
   domain: string;
   body: CreateScheduleRequestBody;
 }): CreateScheduleRequest__Input {
-  const { scheduleId, spec, action, policies, memo, searchAttributes } = body;
-  const sw = action.startWorkflow;
+  const {
+    // Schedule identity
+    scheduleId,
+
+    // Schedule spec
+    cronExpression,
+    startTime,
+    endTime,
+    jitterSeconds,
+
+    // Schedule policies
+    overlapPolicy,
+    catchUpPolicy,
+    catchUpWindowSeconds,
+    pauseOnFailure,
+    bufferLimit,
+    concurrencyLimit,
+
+    // Start-workflow action
+    startWorkflow: sw,
+  } = body;
+
   const processedInput = processWorkflowInput({
     input: sw.input,
     workerSDKLanguage: sw.workerSDKLanguage,
@@ -60,14 +45,18 @@ export default function transformCreateScheduleBodyToGrpcInput({
   return {
     domain,
     scheduleId,
+
+    // Schedule spec
     spec: {
-      cronExpression: spec.cronExpression,
-      startTime: spec.startTime ? isoToTimestamp(spec.startTime) : undefined,
-      endTime: spec.endTime ? isoToTimestamp(spec.endTime) : undefined,
-      jitter: spec.jitterSeconds
-        ? secondsToDuration(spec.jitterSeconds)
+      cronExpression,
+      startTime: startTime ? getGrpcTimestampFromIso(startTime) : undefined,
+      endTime: endTime ? getGrpcTimestampFromIso(endTime) : undefined,
+      jitter: jitterSeconds
+        ? secondsToGrpcDurationInput(jitterSeconds)
         : undefined,
     },
+
+    // Start-workflow action
     action: {
       startWorkflow: {
         workflowType: sw.workflowType,
@@ -76,14 +65,14 @@ export default function transformCreateScheduleBodyToGrpcInput({
           ? { data: Buffer.from(processedInput, 'utf-8') }
           : undefined,
         workflowIdPrefix: sw.workflowIdPrefix,
-        executionStartToCloseTimeout: secondsToDuration(
+        executionStartToCloseTimeout: secondsToGrpcDurationInput(
           sw.executionStartToCloseTimeoutSeconds
         ),
-        taskStartToCloseTimeout: secondsToDuration(
+        taskStartToCloseTimeout: secondsToGrpcDurationInput(
           sw.taskStartToCloseTimeoutSeconds ??
             DEFAULT_TASK_START_TO_CLOSE_TIMEOUT_SECONDS
         ),
-        retryPolicy: mapRetryPolicy(sw.retryPolicy),
+        retryPolicy: mapRetryPolicyToGrpcInput(sw.retryPolicy),
         memo: sw.memo
           ? {
               fields: Object.fromEntries(
@@ -106,38 +95,18 @@ export default function transformCreateScheduleBodyToGrpcInput({
           : undefined,
       },
     },
-    policies: policies
-      ? {
-          overlapPolicy: policies.overlapPolicy,
-          catchUpPolicy: policies.catchUpPolicy,
-          catchUpWindow:
-            policies.catchUpWindowSeconds !== undefined
-              ? secondsToDuration(policies.catchUpWindowSeconds)
-              : undefined,
-          pauseOnFailure: policies.pauseOnFailure,
-          bufferLimit: policies.bufferLimit,
-          concurrencyLimit: policies.concurrencyLimit,
-        }
-      : undefined,
-    memo: memo
-      ? {
-          fields: Object.fromEntries(
-            Object.entries(memo).map(([k, v]) => [
-              k,
-              { data: Buffer.from(JSON.stringify(v), 'utf-8') },
-            ])
-          ),
-        }
-      : undefined,
-    searchAttributes: searchAttributes
-      ? {
-          indexedFields: Object.fromEntries(
-            Object.entries(searchAttributes).map(([k, v]) => [
-              k,
-              { data: Buffer.from(JSON.stringify(v), 'utf-8') },
-            ])
-          ),
-        }
-      : undefined,
+
+    // Schedule policies
+    policies: {
+      overlapPolicy,
+      catchUpPolicy,
+      catchUpWindow:
+        catchUpWindowSeconds !== undefined
+          ? secondsToGrpcDurationInput(catchUpWindowSeconds)
+          : undefined,
+      pauseOnFailure,
+      bufferLimit,
+      concurrencyLimit,
+    },
   };
 }
