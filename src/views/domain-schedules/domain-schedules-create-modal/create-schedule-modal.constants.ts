@@ -1,0 +1,4 @@
+export const CATCH_UP_WINDOW_DEFAULT_DAYS = 14;
+export const CATCH_UP_WINDOW_MAX_DAYS = 90;
+export const CATCH_UP_WINDOW_MIN_DAYS = 0;
+export const SECONDS_PER_DAY = 86400;
