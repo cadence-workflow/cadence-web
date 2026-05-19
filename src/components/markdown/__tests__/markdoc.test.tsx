@@ -123,4 +123,42 @@ console.log('Hello');
     expect(screen.getByText('Bold text')).toBeInTheDocument();
     expect(screen.getByText('italic text')).toBeInTheDocument();
   });
+
+  it('renders style tag with color', () => {
+    const content = '{% style color="red" %}red text{% /style %}';
+    render(<Markdown markdown={content} />);
+
+    const styledEl = screen.getByText('red text');
+    expect(styledEl).toBeInTheDocument();
+    expect(styledEl).toHaveStyle({ color: 'red' });
+  });
+
+  it('renders style tag with background color', () => {
+    const content = '{% style bg="yellow" %}highlighted text{% /style %}';
+    render(<Markdown markdown={content} />);
+
+    const styledEl = screen.getByText('highlighted text');
+    expect(styledEl).toBeInTheDocument();
+    expect(styledEl).toHaveStyle({ backgroundColor: 'yellow' });
+  });
+
+  it('renders style tag with both color and background', () => {
+    const content =
+      '{% style color="white" bg="blue" %}styled text{% /style %}';
+    render(<Markdown markdown={content} />);
+
+    const styledEl = screen.getByText('styled text');
+    expect(styledEl).toBeInTheDocument();
+    expect(styledEl).toHaveStyle({ color: 'white', backgroundColor: 'blue' });
+  });
+
+  it('renders nested style tags', () => {
+    const content =
+      '{% style color="blue" %}outer {% style color="red" %}inner{% /style %}{% /style %}';
+    render(<Markdown markdown={content} />);
+
+    const innerEl = screen.getByText('inner');
+    expect(innerEl).toBeInTheDocument();
+    expect(innerEl).toHaveStyle({ color: 'red' });
+  });
 });
