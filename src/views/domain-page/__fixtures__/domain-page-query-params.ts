@@ -12,6 +12,7 @@ export const mockDomainPageQueryParamsValues = {
   query: '',
   batchInputType: 'query',
   batchQuery: '',
+  batchActionId: undefined,
   workflowId: '',
   workflowType: '',
   statusBasic: undefined,
