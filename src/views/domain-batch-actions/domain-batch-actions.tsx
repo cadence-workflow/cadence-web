@@ -7,6 +7,7 @@ import { type DomainPageTabContentProps } from '@/views/domain-page/domain-page-
 
 import DomainBatchActionDetail from './domain-batch-actions-detail/domain-batch-actions-detail';
 import DomainBatchActionsNewActionDetail from './domain-batch-actions-new-action-detail/domain-batch-actions-new-action-detail';
+import DomainBatchActionsNoActionsPlaceholder from './domain-batch-actions-no-actions-placeholder/domain-batch-actions-no-actions-placeholder';
 import DomainBatchActionsSidebar from './domain-batch-actions-sidebar/domain-batch-actions-sidebar';
 import { MOCK_BATCH_ACTIONS } from './domain-batch-actions.constants';
 import { styled } from './domain-batch-actions.styles';
@@ -47,6 +48,18 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
     setIsDraftOpen(false);
     setIsDraftSelected(false);
   };
+
+  if (batchActions.length === 0 && !isDraftOpen) {
+    return (
+      <styled.Container>
+        <styled.DetailPanel>
+          <DomainBatchActionsNoActionsPlaceholder
+            onCreateNew={handleCreateNew}
+          />
+        </styled.DetailPanel>
+      </styled.Container>
+    );
+  }
 
   return (
     <styled.Container>
