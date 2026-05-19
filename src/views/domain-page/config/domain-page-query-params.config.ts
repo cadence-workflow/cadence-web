@@ -5,6 +5,8 @@ import {
   type PageQueryParam,
 } from '@/hooks/use-page-query-params/use-page-query-params.types';
 import { type SortOrder } from '@/utils/sort-by';
+import { type DomainSchedulesStatus } from '@/views/domain-schedules/domain-schedules.types';
+import { isDomainSchedulesStatus } from '@/views/domain-schedules/helpers/is-domain-schedules-status';
 import { type WorkflowStatusClosed } from '@/views/domain-workflows-archival/domain-workflows-archival-header/domain-workflows-archival-header.types';
 import { type WorkflowStatusBasicVisibility } from '@/views/domain-workflows-basic/domain-workflows-basic-filters/domain-workflows-basic-filters.types';
 import isWorkflowStatusBasicVisibility from '@/views/domain-workflows-basic/domain-workflows-basic-filters/helpers/is-workflow-status-basic-visibility';
@@ -48,6 +50,9 @@ const domainPageQueryParamsConfig: [
   // Failovers Tab query params
   PageQueryParam<'clusterAttributeScope', string | undefined>,
   PageQueryParam<'clusterAttributeValue', string | undefined>,
+  // Schedules Tab query params
+  PageQueryParam<'schedulesSearch', string>,
+  PageQueryParam<'schedulesStatus', DomainSchedulesStatus | undefined>,
 ] = [
   {
     key: 'inputType',
@@ -188,6 +193,17 @@ const domainPageQueryParamsConfig: [
   {
     key: 'clusterAttributeValue',
     queryParamKey: 'cv',
+  },
+  {
+    key: 'schedulesSearch',
+    queryParamKey: 'schsearch',
+    defaultValue: '',
+  },
+  {
+    key: 'schedulesStatus',
+    queryParamKey: 'schstatus',
+    parseValue: (value: string) =>
+      isDomainSchedulesStatus(value) ? value : undefined,
   },
 ] as const;
 
