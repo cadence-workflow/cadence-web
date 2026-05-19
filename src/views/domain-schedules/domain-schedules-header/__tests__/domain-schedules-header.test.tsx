@@ -11,6 +11,11 @@ jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
   jest.fn(() => [mockDomainPageQueryParamsValues, mockSetQueryParams])
 );
 
+jest.mock('@/components/page-filters/page-filters', () => ({
+  __esModule: true,
+  default: jest.fn(() => <div data-testid="mock-page-filters" />),
+}));
+
 describe(DomainSchedulesHeader.name, () => {
   it('renders the title without count when count is undefined', () => {
     render(<DomainSchedulesHeader count={undefined} />);
@@ -36,11 +41,9 @@ describe(DomainSchedulesHeader.name, () => {
     ).toBeInTheDocument();
   });
 
-  it('renders the page filters search input', () => {
+  it('renders the page filters slot', () => {
     render(<DomainSchedulesHeader count={0} />);
 
-    expect(
-      screen.getByPlaceholderText('Find schedule by ID or workflow type')
-    ).toBeInTheDocument();
+    expect(screen.getByTestId('mock-page-filters')).toBeInTheDocument();
   });
 });
