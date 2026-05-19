@@ -2,9 +2,7 @@ import { type SortOrder } from '@/utils/sort-by';
 import { WORKFLOW_STATUSES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
 import type { WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
 
-import { type TimeColumn } from '../list-workflows.types';
-
-export default function getListWorkflowExecutionsQuery({
+export default function getVisibilityQuery({
   search,
   workflowStatuses,
   sortColumn,
@@ -12,14 +10,16 @@ export default function getListWorkflowExecutionsQuery({
   timeColumn,
   timeRangeStart,
   timeRangeEnd,
+  includeOrderBy = true,
 }: {
   search?: string;
   workflowStatuses?: Array<WorkflowStatus>;
   sortColumn?: string;
   sortOrder?: SortOrder;
-  timeColumn: TimeColumn;
+  timeColumn: 'StartTime' | 'CloseTime';
   timeRangeStart?: string;
   timeRangeEnd?: string;
+  includeOrderBy?: boolean;
 }) {
   const searchQueries: Array<string> = [];
   if (search) {
@@ -53,8 +53,11 @@ export default function getListWorkflowExecutionsQuery({
     searchQueries.push(`${timeColumn} <= "${timeRangeEnd}"`);
   }
 
-  return (
-    (searchQueries.length > 0 ? `${searchQueries.join(' AND ')} ` : '') +
-    `ORDER BY ${sortColumn ?? 'StartTime'} ${sortOrder ?? 'DESC'}`
-  );
+  const filterClause =
+    searchQueries.length > 0 ? searchQueries.join(' AND ') : '';
+  const orderClause = includeOrderBy
+    ? `ORDER BY ${sortColumn ?? 'StartTime'} ${sortOrder ?? 'DESC'}`
+    : '';
+
+  return [filterClause, orderClause].filter(Boolean).join(' ');
 }

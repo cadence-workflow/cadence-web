@@ -3,8 +3,8 @@ import queryString from 'query-string';
 
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
+import getVisibilityQuery from '@/utils/visibility/get-visibility-query';
 
-import getListWorkflowExecutionsQuery from './helpers/get-list-workflow-executions-query';
 import getWorkflowListItemFromExecution from './helpers/get-workflow-list-item-from-execution';
 import type {
   Context,
@@ -43,7 +43,7 @@ export async function listWorkflows(
     query:
       queryParams.inputType === 'query'
         ? queryParams.query
-        : getListWorkflowExecutionsQuery({
+        : getVisibilityQuery({
             search: queryParams.search,
             workflowStatuses: queryParams.statuses,
             sortColumn: queryParams.sortColumn,
