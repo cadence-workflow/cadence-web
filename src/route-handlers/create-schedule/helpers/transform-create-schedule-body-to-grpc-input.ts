@@ -5,7 +5,6 @@ import { type RetryPolicy__Input } from '@/__generated__/proto-ts/uber/cadence/a
 import getGrpcTimestampFromIso from '@/utils/datetime/get-grpc-timestamp-from-iso';
 
 import processWorkflowInput from '../../start-workflow/helpers/process-workflow-input';
-import { DEFAULT_TASK_START_TO_CLOSE_TIMEOUT_SECONDS } from '../../start-workflow/start-workflow.constants';
 import { type CreateScheduleRequestBody } from '../create-schedule.types';
 
 import secondsToGrpcDurationInput from './seconds-to-grpc-duration-input';
@@ -59,13 +58,12 @@ export default function transformCreateScheduleBodyToGrpcInput({
     input: processedInput
       ? { data: Buffer.from(processedInput, 'utf-8') }
       : undefined,
-    workflowIdPrefix: startWorkflow.workflowIdPrefix,
+    workflowIdPrefix: startWorkflow.workflowIdPrefix?.trim() ?? '',
     executionStartToCloseTimeout: secondsToGrpcDurationInput(
       startWorkflow.executionStartToCloseTimeoutSeconds
     ),
     taskStartToCloseTimeout: secondsToGrpcDurationInput(
-      startWorkflow.taskStartToCloseTimeoutSeconds ??
-        DEFAULT_TASK_START_TO_CLOSE_TIMEOUT_SECONDS
+      startWorkflow.taskStartToCloseTimeoutSeconds
     ),
     retryPolicy: grpcRetryPolicy,
     memo: startWorkflow.memo

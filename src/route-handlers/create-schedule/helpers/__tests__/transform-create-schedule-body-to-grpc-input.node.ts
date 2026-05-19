@@ -1,8 +1,6 @@
 import { ScheduleCatchUpPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleCatchUpPolicy';
 import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
 
-import { DEFAULT_TASK_START_TO_CLOSE_TIMEOUT_SECONDS } from '@/route-handlers/start-workflow/start-workflow.constants';
-
 import { type CreateScheduleRequestBody } from '../../create-schedule.types';
 import transformCreateScheduleBodyToGrpcInput from '../transform-create-schedule-body-to-grpc-input';
 
@@ -59,19 +57,6 @@ describe(transformCreateScheduleBodyToGrpcInput.name, () => {
         input: undefined,
       })
     );
-  });
-
-  it('uses default task start-to-close timeout when omitted on the body', () => {
-    const { taskStartToCloseTimeoutSeconds: _omit, ...sw } = minimalStartWorkflow();
-    const grpc = transformCreateScheduleBodyToGrpcInput({
-      domain: 'd',
-      body: minimalBody({ startWorkflow: sw }),
-    });
-
-    expect(grpc.action?.startWorkflow?.taskStartToCloseTimeout).toEqual({
-      seconds: DEFAULT_TASK_START_TO_CLOSE_TIMEOUT_SECONDS,
-      nanos: 0,
-    });
   });
 
   it('maps ISO schedule bounds and jitter to spec timestamps and duration', () => {

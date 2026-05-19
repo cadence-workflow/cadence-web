@@ -2,6 +2,7 @@ import { status } from '@grpc/grpc-js';
 import crypto from 'crypto';
 import { NextRequest } from 'next/server';
 
+import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
 import { GRPCError } from '@/utils/grpc/grpc-error';
 import logger from '@/utils/logger';
 import { mockGrpcClusterMethods } from '@/utils/route-handlers-middleware/middlewares/__mocks__/grpc-cluster-methods';
@@ -63,6 +64,33 @@ describe(createSchedule.name, () => {
     } finally {
       randomSpy.mockRestore();
     }
+  });
+
+  it('accepts buffer limit 0 when overlap policy is buffer', async () => {
+    const { res, mockCreateSchedule } = await setup({
+      body: {
+        ...getValidRequestBody(),
+        overlapPolicy: ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_BUFFER,
+        bufferLimit: 0,
+      },
+    });
+
+    expect(mockCreateSchedule).toHaveBeenCalledTimes(1);
+    expect(res.status).toEqual(200);
+  });
+
+  it('accepts concurrency limit 0 when overlap policy is concurrent', async () => {
+    const { res, mockCreateSchedule } = await setup({
+      body: {
+        ...getValidRequestBody(),
+        overlapPolicy:
+          ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_CONCURRENT,
+        concurrencyLimit: 0,
+      },
+    });
+
+    expect(mockCreateSchedule).toHaveBeenCalledTimes(1);
+    expect(res.status).toEqual(200);
   });
 
   it('returns validation error when body is invalid', async () => {
