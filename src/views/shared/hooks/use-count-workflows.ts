@@ -21,7 +21,7 @@ export default function useCountWorkflows({
     queryFn: async () =>
       request(
         queryString.stringifyUrl({
-          url: `/api/domains/${domain}/${cluster}/workflows/count`,
+          url: `/api/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows/count`,
           query: {
             inputType: 'query',
             listType: 'default',
