@@ -1,6 +1,10 @@
 import { type DescribeClusterRequest__Input } from '@/__generated__/proto-ts/uber/cadence/admin/v1/DescribeClusterRequest';
 import { type DescribeClusterResponse } from '@/__generated__/proto-ts/uber/cadence/admin/v1/DescribeClusterResponse';
 import { type DescribeWorkflowExecutionRequest__Input } from '@/__generated__/proto-ts/uber/cadence/admin/v1/DescribeWorkflowExecutionRequest';
+import { type CountWorkflowExecutionsRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/CountWorkflowExecutionsRequest';
+import { type CountWorkflowExecutionsResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/CountWorkflowExecutionsResponse';
+import { type CreateScheduleRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/CreateScheduleRequest';
+import { type CreateScheduleResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/CreateScheduleResponse';
 import { type DescribeDomainRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeDomainRequest';
 import { type DescribeDomainResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeDomainResponse';
 import { type DescribeTaskListRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeTaskListRequest';
@@ -70,6 +74,12 @@ export type GRPCClusterMethods = {
   closedWorkflows: (
     payload: ListClosedWorkflowExecutionsRequest__Input
   ) => Promise<ListClosedWorkflowExecutionsResponse>;
+  countWorkflows: (
+    payload: CountWorkflowExecutionsRequest__Input
+  ) => Promise<CountWorkflowExecutionsResponse>;
+  createSchedule: (
+    payload: CreateScheduleRequest__Input
+  ) => Promise<CreateScheduleResponse>;
   describeCluster: (
     payload: DescribeClusterRequest__Input
   ) => Promise<DescribeClusterResponse>;
@@ -229,6 +239,20 @@ const getClusterServicesMethods = async (
       ListClosedWorkflowExecutionsResponse
     >({
       method: 'ListClosedWorkflowExecutions',
+      metadata: metadata,
+    }),
+    countWorkflows: visibilityService.request<
+      CountWorkflowExecutionsRequest__Input,
+      CountWorkflowExecutionsResponse
+    >({
+      method: 'CountWorkflowExecutions',
+      metadata: metadata,
+    }),
+    createSchedule: scheduleService.request<
+      CreateScheduleRequest__Input,
+      CreateScheduleResponse
+    >({
+      method: 'CreateSchedule',
       metadata: metadata,
     }),
     describeCluster: adminService.request<
