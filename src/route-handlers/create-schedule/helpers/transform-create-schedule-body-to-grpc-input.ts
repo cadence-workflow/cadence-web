@@ -17,34 +17,8 @@ export default function transformCreateScheduleBodyToGrpcInput({
   domain: string;
   body: CreateScheduleRequestBody;
 }): CreateScheduleRequest__Input {
-  const {
-    // Schedule identity
-    scheduleId,
+  const retryPolicy = body.startWorkflow.retryPolicy;
 
-    // Schedule spec
-    cronExpression,
-    startTime,
-    endTime,
-    jitterSeconds,
-
-    // Schedule policies
-    overlapPolicy,
-    catchUpPolicy,
-    catchUpWindowSeconds,
-    pauseOnFailure,
-    bufferLimit,
-    concurrencyLimit,
-
-    // Start-workflow action
-    startWorkflow: sw,
-  } = body;
-
-  const processedInput = processWorkflowInput({
-    input: sw.input,
-    workerSDKLanguage: sw.workerSDKLanguage,
-  });
-
-  const retryPolicy = sw.retryPolicy;
   const grpcRetryPolicy: RetryPolicy__Input | undefined =
     !retryPolicy || isEmpty(retryPolicy)
       ? undefined
@@ -62,44 +36,52 @@ export default function transformCreateScheduleBodyToGrpcInput({
           maximumAttempts: retryPolicy.maximumAttempts,
         };
 
-  const spec = {
-    cronExpression,
-    startTime: startTime ? getGrpcTimestampFromIso(startTime) : undefined,
-    endTime: endTime ? getGrpcTimestampFromIso(endTime) : undefined,
-    jitter: jitterSeconds
-      ? secondsToGrpcDurationInput(jitterSeconds)
+  const grpcSpec = {
+    cronExpression: body.cronExpression,
+    startTime: body.startTime
+      ? getGrpcTimestampFromIso(body.startTime)
+      : undefined,
+    endTime: body.endTime ? getGrpcTimestampFromIso(body.endTime) : undefined,
+    jitter: body.jitterSeconds
+      ? secondsToGrpcDurationInput(body.jitterSeconds)
       : undefined,
   };
 
-  const startWorkflow = {
-    workflowType: sw.workflowType,
-    taskList: sw.taskList,
+  const startWorkflow = body.startWorkflow;
+  const processedInput = processWorkflowInput({
+    input: startWorkflow.input,
+    workerSDKLanguage: startWorkflow.workerSDKLanguage,
+  });
+
+  const grpcStartWorkflow = {
+    workflowType: startWorkflow.workflowType,
+    taskList: startWorkflow.taskList,
     input: processedInput
       ? { data: Buffer.from(processedInput, 'utf-8') }
       : undefined,
-    workflowIdPrefix: sw.workflowIdPrefix,
+    workflowIdPrefix: startWorkflow.workflowIdPrefix,
     executionStartToCloseTimeout: secondsToGrpcDurationInput(
-      sw.executionStartToCloseTimeoutSeconds
+      startWorkflow.executionStartToCloseTimeoutSeconds
     ),
     taskStartToCloseTimeout: secondsToGrpcDurationInput(
-      sw.taskStartToCloseTimeoutSeconds ??
+      startWorkflow.taskStartToCloseTimeoutSeconds ??
         DEFAULT_TASK_START_TO_CLOSE_TIMEOUT_SECONDS
     ),
     retryPolicy: grpcRetryPolicy,
-    memo: sw.memo
+    memo: startWorkflow.memo
       ? {
           fields: Object.fromEntries(
-            Object.entries(sw.memo).map(([k, v]) => [
+            Object.entries(startWorkflow.memo).map(([k, v]) => [
               k,
               { data: Buffer.from(JSON.stringify(v), 'utf-8') },
             ])
           ),
         }
       : undefined,
-    searchAttributes: sw.searchAttributes
+    searchAttributes: startWorkflow.searchAttributes
       ? {
           indexedFields: Object.fromEntries(
-            Object.entries(sw.searchAttributes).map(([k, v]) => [
+            Object.entries(startWorkflow.searchAttributes).map(([k, v]) => [
               k,
               { data: Buffer.from(JSON.stringify(v), 'utf-8') },
             ])
@@ -110,23 +92,22 @@ export default function transformCreateScheduleBodyToGrpcInput({
 
   return {
     domain,
-    scheduleId,
+    scheduleId: body.scheduleId,
 
-    spec,
+    spec: grpcSpec,
 
-    action: { startWorkflow },
+    action: { startWorkflow: grpcStartWorkflow },
 
-    // Schedule policies
     policies: {
-      overlapPolicy,
-      catchUpPolicy,
+      overlapPolicy: body.overlapPolicy,
+      catchUpPolicy: body.catchUpPolicy,
       catchUpWindow:
-        catchUpWindowSeconds !== undefined
-          ? secondsToGrpcDurationInput(catchUpWindowSeconds)
+        body.catchUpWindowSeconds !== undefined
+          ? secondsToGrpcDurationInput(body.catchUpWindowSeconds)
           : undefined,
-      pauseOnFailure,
-      bufferLimit,
-      concurrencyLimit,
+      pauseOnFailure: body.pauseOnFailure,
+      bufferLimit: body.bufferLimit,
+      concurrencyLimit: body.concurrencyLimit,
     },
   };
 }
