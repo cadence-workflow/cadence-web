@@ -2,9 +2,9 @@
 import React from 'react';
 
 import PageFilters from '@/components/page-filters/page-filters';
+import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
 
 import domainSchedulesFiltersConfig from '../config/domain-schedules-filters.config';
-import domainSchedulesQueryParamsConfig from '../config/domain-schedules-query-params.config';
 
 import { styled } from './domain-schedules-header.styles';
 import { type Props } from './domain-schedules-header.types';
@@ -21,7 +21,7 @@ export default function DomainSchedulesHeader({ count }: Props) {
         searchQueryParamKey="schedulesSearch"
         searchPlaceholder="Find schedule by ID or workflow type"
         pageFiltersConfig={domainSchedulesFiltersConfig}
-        pageQueryParamsConfig={domainSchedulesQueryParamsConfig}
+        pageQueryParamsConfig={domainPageQueryParamsConfig}
       />
     </styled.Container>
   );

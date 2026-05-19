@@ -2,13 +2,13 @@ import React from 'react';
 
 import { render, screen } from '@/test-utils/rtl';
 
-import { mockQueryParamsValues } from '@/components/page-filters/__fixtures__/page-filters.fixtures';
+import { mockDomainPageQueryParamsValues } from '@/views/domain-page/__fixtures__/domain-page-query-params';
 
 import DomainSchedulesHeader from '../domain-schedules-header';
 
 const mockSetQueryParams = jest.fn();
 jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
-  jest.fn(() => [mockQueryParamsValues, mockSetQueryParams])
+  jest.fn(() => [mockDomainPageQueryParamsValues, mockSetQueryParams])
 );
 
 describe(DomainSchedulesHeader.name, () => {
