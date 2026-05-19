@@ -115,6 +115,17 @@ describe(transformCreateScheduleBodyToGrpcInput.name, () => {
     });
   });
 
+  it('omits gRPC retry policy when the body retry policy is an empty object', () => {
+    const grpc = transformCreateScheduleBodyToGrpcInput({
+      domain: 'd',
+      body: minimalBody({
+        startWorkflow: minimalStartWorkflow({ retryPolicy: {} }),
+      }),
+    });
+
+    expect(grpc.action?.startWorkflow?.retryPolicy).toBeUndefined();
+  });
+
   it('serializes workflow input, memo, and search attributes for the gRPC action', () => {
     const grpc = transformCreateScheduleBodyToGrpcInput({
       domain: 'd',
