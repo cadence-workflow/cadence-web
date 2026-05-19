@@ -1,4 +1,4 @@
-import { type SignalWorkflowFormData } from '@/views/workflow-actions/workflow-action-signal-form/workflow-action-signal-form.types';
+import { type FieldValues } from 'react-hook-form';
 
 import { type BatchActionConfirmableType } from '../domain-batch-actions.types';
 
@@ -8,6 +8,6 @@ export type Props = {
   onClose: () => void;
   onConfirm: (
     actionId: BatchActionConfirmableType,
-    formData?: SignalWorkflowFormData
+    formData?: FieldValues
   ) => void;
 };

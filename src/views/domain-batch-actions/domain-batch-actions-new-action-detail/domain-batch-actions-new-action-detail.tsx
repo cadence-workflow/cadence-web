@@ -45,28 +45,25 @@ export default function DomainBatchActionsNewActionDetail({
 
   const {
     control,
-    trigger,
-    formState: { errors, isValid },
+    handleSubmit,
+    formState: { errors, isValid, isSubmitted },
   } = useForm({
     resolver: zodResolver(batchActionParamsSchema),
     defaultValues: { description: '', rps: BATCH_ACTION_RPS_DEFAULT },
-    mode: 'onChange',
   });
 
-  const [isValidated, setIsValidated] = useState(false);
   const [activeAction, setActiveAction] =
     useState<BatchActionConfirmableType | null>(null);
-  const hasValidationErrors = isValidated && !isValid;
+  const hasValidationErrors = isSubmitted && !isValid;
 
   const handleActionClick = useCallback(
-    async (actionId: string) => {
-      setIsValidated(true);
-      const valid = await trigger();
-      if (!valid) return;
-      if (!(actionId in domainBatchActionsConfirmationModalConfig)) return;
-      setActiveAction(actionId as BatchActionConfirmableType);
+    (actionId: string) => {
+      handleSubmit(() => {
+        if (!(actionId in domainBatchActionsConfirmationModalConfig)) return;
+        setActiveAction(actionId as BatchActionConfirmableType);
+      })();
     },
-    [trigger]
+    [handleSubmit]
   );
 
   // Reuse the workflows tab's column selection (persisted per-domain in
@@ -132,7 +129,7 @@ export default function DomainBatchActionsNewActionDetail({
       <DomainBatchActionsNewActionInfoBanner />
       <DomainBatchActionsNewActionParams
         control={control}
-        fieldErrors={isValidated ? errors : {}}
+        fieldErrors={errors}
       />
       <WorkflowsHeader
         pageQueryParamsConfig={domainPageQueryParamsConfig}

@@ -1,3 +1,5 @@
+import { type FieldValues } from 'react-hook-form';
+
 export type BatchActionStatus = 'running' | 'completed' | 'aborted' | 'failed';
 
 export type BatchActionType = 'cancel' | 'terminate' | 'reset' | 'signal';
@@ -7,15 +9,26 @@ export type BatchActionConfirmableType = Extract<
   'cancel' | 'terminate' | 'signal'
 >;
 
-export type BatchActionModalConfig = {
+export type BatchActionFormComponentProps = {
+  formId: string;
+  onSubmit: (data: FieldValues) => void;
+};
+
+type BatchActionModalBase = {
   title: string;
   description: string;
-  withForm: boolean;
   docsLink?: {
     text: string;
     href: string;
   };
 };
+
+export type BatchActionModalConfig =
+  | (BatchActionModalBase & { withForm: false })
+  | (BatchActionModalBase & {
+      withForm: true;
+      FormComponent: React.ComponentType<BatchActionFormComponentProps>;
+    });
 
 export type BatchAction = {
   id: string;

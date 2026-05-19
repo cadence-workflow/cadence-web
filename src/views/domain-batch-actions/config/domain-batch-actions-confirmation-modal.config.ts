@@ -1,3 +1,4 @@
+import DomainBatchActionsSignalForm from '../domain-batch-actions-signal-form/domain-batch-actions-signal-form';
 import {
   type BatchActionConfirmableType,
   type BatchActionModalConfig,
@@ -31,6 +32,7 @@ const domainBatchActionsConfirmationModalConfig: Record<
     title: 'Signal workflows',
     description: 'Allow user to signal running executions.',
     withForm: true,
+    FormComponent: DomainBatchActionsSignalForm,
     docsLink: {
       text: 'Learn more about signals',
       href: 'https://cadenceworkflow.io/docs/go-client/signals',

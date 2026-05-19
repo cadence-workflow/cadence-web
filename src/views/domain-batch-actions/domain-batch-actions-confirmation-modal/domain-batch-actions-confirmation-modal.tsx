@@ -1,13 +1,8 @@
 'use client';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { KIND as BUTTON_KIND, SIZE } from 'baseui/button';
+import { SIZE } from 'baseui/button';
 import { Modal, ModalButton } from 'baseui/modal';
-import { useForm } from 'react-hook-form';
+import { type FieldValues } from 'react-hook-form';
 import { MdList, MdOpenInNew } from 'react-icons/md';
-
-import { signalWorkflowFormSchema } from '@/views/workflow-actions/workflow-action-signal-form/schemas/signal-workflow-form-schema';
-import WorkflowActionSignalForm from '@/views/workflow-actions/workflow-action-signal-form/workflow-action-signal-form';
-import { type SignalWorkflowFormData } from '@/views/workflow-actions/workflow-action-signal-form/workflow-action-signal-form.types';
 
 import domainBatchActionsConfirmationModalConfig from '../config/domain-batch-actions-confirmation-modal.config';
 import DomainBatchActionsBanner from '../domain-batch-actions-banner/domain-batch-actions-banner';
@@ -18,6 +13,8 @@ import {
 } from './domain-batch-actions-confirmation-modal.styles';
 import { type Props } from './domain-batch-actions-confirmation-modal.types';
 
+const BATCH_ACTION_FORM_ID = 'batch-action-form';
+
 export default function DomainBatchActionsConfirmationModal({
   actionId,
   selectedCount,
@@ -25,44 +22,23 @@ export default function DomainBatchActionsConfirmationModal({
   onConfirm,
 }: Props) {
   const config = actionId
-    ? domainBatchActionsConfirmationModalConfig[actionId] ?? null
+    ? domainBatchActionsConfirmationModalConfig[actionId]
     : null;
-
-  const {
-    handleSubmit,
-    formState: { errors: validationErrors },
-    control,
-    watch,
-    clearErrors,
-    trigger,
-    reset,
-  } = useForm<SignalWorkflowFormData>({
-    resolver: zodResolver(signalWorkflowFormSchema),
-    defaultValues: { signalName: '', signalInput: '' },
-  });
-
-  const handleClose = () => {
-    reset();
-    onClose();
-  };
 
   const handleConfirm = () => {
     if (!actionId) return;
+    onConfirm(actionId);
+  };
 
-    if (config?.withForm) {
-      handleSubmit((data: SignalWorkflowFormData) => {
-        onConfirm(actionId, data);
-        reset();
-      })();
-    } else {
-      onConfirm(actionId);
-    }
+  const handleFormSubmit = (data: FieldValues) => {
+    if (!actionId) return;
+    onConfirm(actionId, data);
   };
 
   return (
     <Modal
       isOpen={Boolean(actionId && config)}
-      onClose={handleClose}
+      onClose={onClose}
       closeable
       overrides={overrides.modal}
     >
@@ -84,25 +60,16 @@ export default function DomainBatchActionsConfirmationModal({
             <DomainBatchActionsBanner
               icon={<MdList />}
               actionLabel="Change"
-              onActionClick={handleClose}
+              onActionClick={onClose}
             >
               <styled.SelectionText>
                 {selectedCount} workflows selected
               </styled.SelectionText>
             </DomainBatchActionsBanner>
             {config.withForm && (
-              // TODO: WorkflowActionSignalForm requires cluster/domain/workflowId/runId
-              // but doesn't use them. Narrow the form's prop interface for batch usage.
-              <WorkflowActionSignalForm
-                formData={watch()}
-                fieldErrors={validationErrors}
-                control={control}
-                clearErrors={clearErrors}
-                trigger={trigger}
-                cluster=""
-                domain=""
-                workflowId=""
-                runId=""
+              <config.FormComponent
+                formId={BATCH_ACTION_FORM_ID}
+                onSubmit={handleFormSubmit}
               />
             )}
           </styled.ModalBody>
@@ -110,19 +77,30 @@ export default function DomainBatchActionsConfirmationModal({
             <ModalButton
               size={SIZE.compact}
               type="button"
-              kind={BUTTON_KIND.secondary}
-              onClick={handleClose}
+              kind="secondary"
+              onClick={onClose}
             >
               Close
             </ModalButton>
-            <ModalButton
-              size={SIZE.compact}
-              kind={BUTTON_KIND.primary}
-              type="button"
-              onClick={handleConfirm}
-            >
-              Start Batch Action
-            </ModalButton>
+            {config.withForm ? (
+              <ModalButton
+                size={SIZE.compact}
+                kind="primary"
+                type="submit"
+                form={BATCH_ACTION_FORM_ID}
+              >
+                Start Batch Action
+              </ModalButton>
+            ) : (
+              <ModalButton
+                size={SIZE.compact}
+                kind="primary"
+                type="button"
+                onClick={handleConfirm}
+              >
+                Start Batch Action
+              </ModalButton>
+            )}
           </styled.ModalFooter>
         </>
       )}
