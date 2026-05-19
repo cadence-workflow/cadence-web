@@ -14,6 +14,7 @@ import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-
 import domainWorkflowsFiltersConfig from '@/views/domain-workflows/config/domain-workflows-filters.config';
 import DOMAIN_WORKFLOWS_PAGE_SIZE from '@/views/domain-workflows/config/domain-workflows-page-size.config';
 import getWorkflowsErrorPanelProps from '@/views/domain-workflows/domain-workflows-table/helpers/get-workflows-error-panel-props';
+import useCountWorkflows from '@/views/shared/hooks/use-count-workflows';
 import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
 import WorkflowsHeader from '@/views/shared/workflows-header/workflows-header';
 import useWorkflowsListColumns from '@/views/shared/workflows-list/hooks/use-workflows-list-columns';
@@ -83,18 +84,29 @@ export default function DomainBatchActionsNewActionDetail({
     query: queryParams.batchQuery,
   });
 
+  const {
+    count: totalWorkflowCount,
+    error: countError,
+    isLoading: isCountLoading,
+  } = useCountWorkflows({
+    domain,
+    cluster,
+    query: queryParams.batchQuery,
+  });
+
+  const isDataLoading = isLoading || isCountLoading;
+
   const errorPanelProps =
-    workflows.length === 0
+    workflows.length === 0 || countError
       ? getWorkflowsErrorPanelProps({
           inputType: 'query',
-          error,
+          error: error ?? countError,
           // TODO: compute this from the panel's filter state, the way
           // domain-workflows-table.tsx does. Hardcoded false for now because
           // batchQuery is the only filter and an empty query is a valid state.
           areSearchParamsAbsent: false,
         })
       : undefined;
-
   return (
     <styled.Container>
       <styled.Header>
@@ -125,13 +137,13 @@ export default function DomainBatchActionsNewActionDetail({
         showQueryInputOnly
         noSpacing
       />
-      {isLoading && <SectionLoadingIndicator />}
-      {!isLoading && errorPanelProps && (
+      {isDataLoading && <SectionLoadingIndicator />}
+      {!isDataLoading && errorPanelProps && (
         <PanelSection>
           <ErrorPanel {...errorPanelProps} reset={refetch} />
         </PanelSection>
       )}
-      {!isLoading && !errorPanelProps && (
+      {!isDataLoading && !errorPanelProps && (
         <WorkflowsList
           workflows={workflows}
           columns={visibleColumns}
@@ -141,16 +153,11 @@ export default function DomainBatchActionsNewActionDetail({
           isFetchingNextPage={isFetchingNextPage}
         />
       )}
-      {workflows.length > 0 && (
+      {!isDataLoading && !errorPanelProps && !!totalWorkflowCount && (
         <styled.FloatingBarSlot>
-          {/* TODO: totalCount currently reflects only the workflows already
-              loaded by useInfiniteQuery, not the true match count for the
-              query. Wire up the CountWorkflowExecutions visibility API
-              (proto types already generated) so the bar shows the real
-              total across all pages. */}
           <DomainBatchActionsNewActionFloatingBar
-            selectedCount={workflows.length}
-            totalCount={workflows.length}
+            selectedCount={totalWorkflowCount}
+            totalCount={totalWorkflowCount}
             actions={domainBatchActionsNewActionFloatingBarConfig}
             onActionClick={handleActionClick}
             disabled={hasValidationErrors}
