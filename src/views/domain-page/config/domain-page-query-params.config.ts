@@ -50,6 +50,7 @@ const domainPageQueryParamsConfig: [
   // Failovers Tab query params
   PageQueryParam<'clusterAttributeScope', string | undefined>,
   PageQueryParam<'clusterAttributeValue', string | undefined>,
+  // Schedules Tab query params
   PageQueryParam<'schedulesSearch', string>,
   PageQueryParam<'schedulesStatus', DomainSchedulesStatus | undefined>,
 ] = [
