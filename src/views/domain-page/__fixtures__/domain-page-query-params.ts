@@ -28,4 +28,6 @@ export const mockDomainPageQueryParamsValues = {
   queryArchival: '',
   clusterAttributeScope: undefined,
   clusterAttributeValue: undefined,
+  schedulesSearch: '',
+  schedulesStatus: undefined,
 } as const satisfies PageQueryParamValues<typeof domainPageQueryParamsConfig>;

@@ -152,25 +152,6 @@ describe(DomainBatchActions.name, () => {
     });
   });
 
-  it('opens the draft on mount when batchQuery is present in the URL', () => {
-    mockUsePageQueryParams.mockReturnValue([
-      {
-        ...mockDomainPageQueryParamsValues,
-        batchQuery: 'WorkflowType="foo"',
-      },
-      mockSetQueryParams,
-    ]);
-
-    render(<DomainBatchActions domain="test-domain" cluster="test-cluster" />);
-
-    expect(
-      screen.getByRole('heading', { name: 'New batch action' })
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByRole('heading', { name: /Batch action #5/ })
-    ).not.toBeInTheDocument();
-  });
-
   it('opens the draft when batchActionId is "draft" (no batchQuery)', () => {
     mockUsePageQueryParams.mockReturnValue([
       {

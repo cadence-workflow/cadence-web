@@ -281,6 +281,39 @@ describe(DomainPageActionsDropdown.name, () => {
       expect(url.searchParams.get('bid')).toBe('draft');
     });
 
+    it('propagates workflows query param into batch-query when navigating', async () => {
+      const originalLocation = window.location;
+      Object.defineProperty(window, 'location', {
+        configurable: true,
+        value: {
+          ...originalLocation,
+          search: '?query=WorkflowType%3D%22bar%22',
+        },
+      });
+      mockUsePageQueryParams.mockReturnValue([
+        { query: 'WorkflowType="bar"' },
+        jest.fn(),
+      ]);
+
+      const { user } = await setup({
+        ...defaultProps,
+        isBatchActionsEnabled: true,
+      });
+
+      await user.click(screen.getByTestId('popover-trigger'));
+      await user.click(screen.getByText('Batch workflow actions'));
+
+      const pushedTo = mockRouterPush.mock.calls[0][0];
+      const url = new URL(pushedTo, 'http://example.com/');
+      expect(url.searchParams.get('batch-query')).toBe('WorkflowType="bar"');
+      expect(url.searchParams.get('bid')).toBe('draft');
+
+      Object.defineProperty(window, 'location', {
+        configurable: true,
+        value: originalLocation,
+      });
+    });
+
     it('preserves existing URL search params when navigating', async () => {
       const originalLocation = window.location;
       Object.defineProperty(window, 'location', {

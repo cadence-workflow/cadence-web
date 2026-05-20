@@ -8,7 +8,10 @@ import { type DomainPageTabContentProps } from '@/views/domain-page/domain-page-
 import DomainBatchActionDetail from './domain-batch-actions-detail/domain-batch-actions-detail';
 import DomainBatchActionsNewActionDetail from './domain-batch-actions-new-action-detail/domain-batch-actions-new-action-detail';
 import DomainBatchActionsSidebar from './domain-batch-actions-sidebar/domain-batch-actions-sidebar';
-import { DRAFT_ACTION_ID, MOCK_BATCH_ACTIONS } from './domain-batch-actions.constants';
+import {
+  DRAFT_ACTION_ID,
+  MOCK_BATCH_ACTIONS,
+} from './domain-batch-actions.constants';
 import { styled } from './domain-batch-actions.styles';
 
 export default function DomainBatchActions(props: DomainPageTabContentProps) {
@@ -19,17 +22,22 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
   // TODO: replace with useSuspenseQuery once the batch-actions list endpoint exists
   const batchActions = MOCK_BATCH_ACTIONS;
 
-  const isDraftSelected =
-    queryParams.batchActionId === DRAFT_ACTION_ID ||
-    (!queryParams.batchActionId && Boolean(queryParams.batchQuery));
+  const isDraftSelected = queryParams.batchActionId === DRAFT_ACTION_ID;
   const selectedActionId =
     !isDraftSelected && queryParams.batchActionId
       ? queryParams.batchActionId
-      : (batchActions[0]?.id ?? null);
+      : batchActions[0]?.id ?? null;
 
-  const [isDraftOpen, setIsDraftOpen] = useState(
-    isDraftSelected || Boolean(queryParams.batchQuery)
-  );
+  // Keep the draft entry visible in the sidebar even after the user navigates
+  // to another action, until they explicitly discard it.
+  const [isDraftOpen, setIsDraftOpen] = useState(isDraftSelected);
+
+  // Sync sidebar draft visibility when URL changes to draft (e.g. back/forward)
+  React.useEffect(() => {
+    if (isDraftSelected) {
+      setIsDraftOpen(true);
+    }
+  }, [isDraftSelected]);
 
   const selectedAction = batchActions.find((a) => a.id === selectedActionId);
 
