@@ -282,14 +282,7 @@ describe(DomainPageActionsDropdown.name, () => {
     });
 
     it('propagates workflows query param into batch-query when navigating', async () => {
-      const originalLocation = window.location;
-      Object.defineProperty(window, 'location', {
-        configurable: true,
-        value: {
-          ...originalLocation,
-          search: '?query=WorkflowType%3D%22bar%22',
-        },
-      });
+      window.history.pushState({}, '', '?query=WorkflowType%3D%22bar%22');
       mockUsePageQueryParams.mockReturnValue([
         { query: 'WorkflowType="bar"' },
         jest.fn(),
@@ -308,18 +301,11 @@ describe(DomainPageActionsDropdown.name, () => {
       expect(url.searchParams.get('batch-query')).toBe('WorkflowType="bar"');
       expect(url.searchParams.get('bid')).toBe('draft');
 
-      Object.defineProperty(window, 'location', {
-        configurable: true,
-        value: originalLocation,
-      });
+      window.history.pushState({}, '', '/');
     });
 
     it('preserves existing URL search params when navigating', async () => {
-      const originalLocation = window.location;
-      Object.defineProperty(window, 'location', {
-        configurable: true,
-        value: { ...originalLocation, search: '?input=query&query=foo' },
-      });
+      window.history.pushState({}, '', '?input=query&query=foo');
 
       const { user } = await setup({
         ...defaultProps,
@@ -336,10 +322,7 @@ describe(DomainPageActionsDropdown.name, () => {
       expect(url.searchParams.get('batch-query')).toBe('');
       expect(url.searchParams.get('bid')).toBe('draft');
 
-      Object.defineProperty(window, 'location', {
-        configurable: true,
-        value: originalLocation,
-      });
+      window.history.pushState({}, '', '/');
     });
   });
 });
