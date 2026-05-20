@@ -1,4 +1,10 @@
-import DomainBatchActionsSignalForm from '../domain-batch-actions-signal-form/domain-batch-actions-signal-form';
+import { signalWorkflowFormSchema } from '@/views/workflow-actions/workflow-action-signal-form/schemas/signal-workflow-form-schema';
+import WorkflowActionSignalForm from '@/views/workflow-actions/workflow-action-signal-form/workflow-action-signal-form';
+import {
+  type SignalWorkflowFormData,
+  type SignalWorkflowSubmissionData,
+} from '@/views/workflow-actions/workflow-action-signal-form/workflow-action-signal-form.types';
+
 import {
   type BatchActionConfirmableType,
   type BatchActionModalConfig,
@@ -6,7 +12,7 @@ import {
 
 const domainBatchActionsConfirmationModalConfig: Record<
   BatchActionConfirmableType,
-  BatchActionModalConfig
+  BatchActionModalConfig<any, any>
 > = {
   cancel: {
     title: 'Cancel workflows',
@@ -32,12 +38,19 @@ const domainBatchActionsConfirmationModalConfig: Record<
     title: 'Signal workflows',
     description: 'Allow user to signal running executions.',
     withForm: true,
-    FormComponent: DomainBatchActionsSignalForm,
+    form: WorkflowActionSignalForm,
+    formSchema: signalWorkflowFormSchema,
+    transformFormDataToSubmission: (
+      formData: SignalWorkflowFormData
+    ): SignalWorkflowSubmissionData => formData,
     docsLink: {
       text: 'Learn more about signals',
       href: 'https://cadenceworkflow.io/docs/go-client/signals',
     },
-  },
+  } satisfies BatchActionModalConfig<
+    SignalWorkflowFormData,
+    SignalWorkflowSubmissionData
+  >,
 };
 
 export default domainBatchActionsConfirmationModalConfig;

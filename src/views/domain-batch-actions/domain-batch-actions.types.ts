@@ -1,4 +1,11 @@
-import { type FieldValues } from 'react-hook-form';
+import { type ReactNode } from 'react';
+
+import {
+  type Control,
+  type FieldErrors,
+  type FieldValues,
+} from 'react-hook-form';
+import { type z } from 'zod';
 
 export type BatchActionStatus = 'running' | 'completed' | 'aborted' | 'failed';
 
@@ -9,9 +16,9 @@ export type BatchActionConfirmableType = Extract<
   'cancel' | 'terminate' | 'signal'
 >;
 
-export type BatchActionFormComponentProps = {
-  formId: string;
-  onSubmit: (data: FieldValues) => void;
+export type BatchActionFormProps<FormData extends FieldValues> = {
+  control: Control<FormData>;
+  fieldErrors: FieldErrors<FormData>;
 };
 
 type BatchActionModalBase = {
@@ -23,12 +30,28 @@ type BatchActionModalBase = {
   };
 };
 
-export type BatchActionModalConfig =
-  | (BatchActionModalBase & { withForm: false })
-  | (BatchActionModalBase & {
+type BatchActionModalForm<FormData, SubmissionData> =
+  | {
       withForm: true;
-      FormComponent: React.ComponentType<BatchActionFormComponentProps>;
-    });
+      form: (
+        props: BatchActionFormProps<
+          FormData extends FieldValues ? FormData : any
+        >
+      ) => ReactNode;
+      formSchema: z.ZodSchema<FormData>;
+      transformFormDataToSubmission: (formData: FormData) => SubmissionData;
+    }
+  | {
+      withForm: false;
+      form?: undefined;
+      formSchema?: undefined;
+      transformFormDataToSubmission?: undefined;
+    };
+
+export type BatchActionModalConfig<
+  FormData = undefined,
+  SubmissionData = undefined,
+> = BatchActionModalBase & BatchActionModalForm<FormData, SubmissionData>;
 
 export type BatchAction = {
   id: string;

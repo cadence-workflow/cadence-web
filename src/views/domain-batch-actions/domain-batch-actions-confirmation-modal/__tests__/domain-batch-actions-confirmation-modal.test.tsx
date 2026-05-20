@@ -1,3 +1,5 @@
+import { type Control } from 'react-hook-form';
+
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import { type BatchActionConfirmableType } from '../../domain-batch-actions.types';
@@ -6,8 +8,15 @@ import DomainBatchActionsConfirmationModal from '../domain-batch-actions-confirm
 jest.mock(
   '@/views/workflow-actions/workflow-action-signal-form/workflow-action-signal-form',
   () =>
-    function MockSignalForm() {
-      return <div data-testid="signal-form">Signal Form</div>;
+    function MockSignalForm({ control }: { control: Control<any> }) {
+      return (
+        <div data-testid="signal-form">
+          <label>
+            Signal Name
+            <input {...control.register('signalName')} />
+          </label>
+        </div>
+      );
     }
 );
 
@@ -68,7 +77,26 @@ describe(DomainBatchActionsConfirmationModal.name, () => {
 
     await user.click(screen.getByText('Start Batch Action'));
 
-    expect(mockOnConfirm).toHaveBeenCalledWith('terminate');
+    expect(mockOnConfirm).toHaveBeenCalledWith('terminate', undefined);
+  });
+
+  it('calls onConfirm with transformed submission data for form actions', async () => {
+    const { user, mockOnConfirm } = setup({ actionId: 'signal' });
+
+    await user.type(screen.getByLabelText('Signal Name'), 'my-signal');
+    await user.click(screen.getByText('Start Batch Action'));
+
+    expect(mockOnConfirm).toHaveBeenCalledWith('signal', {
+      signalName: 'my-signal',
+    });
+  });
+
+  it('does not call onConfirm for form actions when validation fails', async () => {
+    const { user, mockOnConfirm } = setup({ actionId: 'signal' });
+
+    await user.click(screen.getByText('Start Batch Action'));
+
+    expect(mockOnConfirm).not.toHaveBeenCalled();
   });
 
   it('shows Start Batch Action as confirm button label', () => {

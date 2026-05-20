@@ -1,7 +1,7 @@
 'use client';
-import { SIZE } from 'baseui/button';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Modal, ModalButton } from 'baseui/modal';
-import { type FieldValues } from 'react-hook-form';
+import { type FieldValues, useForm } from 'react-hook-form';
 import { MdList, MdOpenInNew } from 'react-icons/md';
 
 import domainBatchActionsConfirmationModalConfig from '../config/domain-batch-actions-confirmation-modal.config';
@@ -13,8 +13,6 @@ import {
 } from './domain-batch-actions-confirmation-modal.styles';
 import { type Props } from './domain-batch-actions-confirmation-modal.types';
 
-const BATCH_ACTION_FORM_ID = 'batch-action-form';
-
 export default function DomainBatchActionsConfirmationModal({
   actionId,
   selectedCount,
@@ -25,14 +23,21 @@ export default function DomainBatchActionsConfirmationModal({
     ? domainBatchActionsConfirmationModalConfig[actionId]
     : null;
 
-  const handleConfirm = () => {
-    if (!actionId) return;
-    onConfirm(actionId);
-  };
+  const {
+    handleSubmit,
+    formState: { errors },
+    control,
+  } = useForm({
+    resolver:
+      config && config.withForm ? zodResolver(config.formSchema) : undefined,
+  });
 
-  const handleFormSubmit = (data: FieldValues) => {
-    if (!actionId) return;
-    onConfirm(actionId, data);
+  const onSubmit = (data: FieldValues) => {
+    if (!actionId || !config) return;
+    onConfirm(
+      actionId,
+      config.withForm ? config.transformFormDataToSubmission(data) : undefined
+    );
   };
 
   return (
@@ -43,7 +48,7 @@ export default function DomainBatchActionsConfirmationModal({
       overrides={overrides.modal}
     >
       {config && (
-        <>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <styled.ModalHeader>{config.title}</styled.ModalHeader>
           <styled.ModalBody>
             <styled.Description>{config.description}</styled.Description>
@@ -67,42 +72,28 @@ export default function DomainBatchActionsConfirmationModal({
               </styled.SelectionText>
             </DomainBatchActionsBanner>
             {config.withForm && (
-              <config.FormComponent
-                formId={BATCH_ACTION_FORM_ID}
-                onSubmit={handleFormSubmit}
-              />
+              <config.form control={control} fieldErrors={errors} />
             )}
           </styled.ModalBody>
           <styled.ModalFooter>
             <ModalButton
-              size={SIZE.compact}
+              size="compact"
               type="button"
               kind="secondary"
               onClick={onClose}
             >
               Close
             </ModalButton>
-            {config.withForm ? (
-              <ModalButton
-                size={SIZE.compact}
-                kind="primary"
-                type="submit"
-                form={BATCH_ACTION_FORM_ID}
-              >
-                Start Batch Action
-              </ModalButton>
-            ) : (
-              <ModalButton
-                size={SIZE.compact}
-                kind="primary"
-                type="button"
-                onClick={handleConfirm}
-              >
-                Start Batch Action
-              </ModalButton>
-            )}
+            <ModalButton
+              size="compact"
+              kind="primary"
+              type="submit"
+              disabled={Object.keys(errors).length > 0}
+            >
+              Start Batch Action
+            </ModalButton>
           </styled.ModalFooter>
-        </>
+        </form>
       )}
     </Modal>
   );

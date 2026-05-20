@@ -1,5 +1,3 @@
-import { type FieldValues } from 'react-hook-form';
-
 import { type BatchActionConfirmableType } from '../domain-batch-actions.types';
 
 export type Props = {
@@ -8,6 +6,6 @@ export type Props = {
   onClose: () => void;
   onConfirm: (
     actionId: BatchActionConfirmableType,
-    formData?: FieldValues
+    submissionData?: unknown
   ) => void;
 };
