@@ -1,12 +1,15 @@
 import React from 'react';
 
 import { userEvent } from '@testing-library/user-event';
+import { HttpResponse } from 'msw';
 
 import { render, screen } from '@/test-utils/rtl';
 
+import { type ListBatchActionsResponse } from '@/route-handlers/list-batch-actions/list-batch-actions.types';
 import { mockDomainPageQueryParamsValues } from '@/views/domain-page/__fixtures__/domain-page-query-params';
 
 import DomainBatchActions from '../domain-batch-actions';
+import { type Props as DetailProps } from '../domain-batch-actions-detail/domain-batch-actions-detail.types';
 import { type Props as NewActionDetailProps } from '../domain-batch-actions-new-action-detail/domain-batch-actions-new-action-detail.types';
 import { type Props as SidebarProps } from '../domain-batch-actions-sidebar/domain-batch-actions-sidebar.types';
 
@@ -15,39 +18,6 @@ const mockUsePageQueryParams = jest.fn();
 jest.mock('@/hooks/use-page-query-params/use-page-query-params', () => ({
   __esModule: true,
   default: (...args: Array<unknown>) => mockUsePageQueryParams(...args),
-}));
-
-jest.mock('../domain-batch-actions.constants', () => ({
-  DRAFT_ACTION_ID: 'draft',
-  MOCK_BATCH_ACTIONS: [
-    {
-      id: '5',
-      status: 'RUNNING',
-      progress: 60,
-      actionType: 'cancel',
-      startTime: Date.now() - 100000,
-      rps: 200,
-      concurrency: 10,
-    },
-    {
-      id: '4',
-      status: 'COMPLETED',
-      actionType: 'terminate',
-      startTime: Date.now() - 3600000,
-      endTime: Date.now() - 1800000,
-      rps: 150,
-      concurrency: 5,
-    },
-    {
-      id: '3',
-      status: 'FAILED',
-      actionType: 'reset',
-      startTime: Date.now() - 7200000,
-      endTime: Date.now() - 5400000,
-      rps: 100,
-      concurrency: 8,
-    },
-  ],
 }));
 
 jest.mock(
@@ -62,6 +32,13 @@ jest.mock(
     ),
   })
 );
+
+jest.mock('../domain-batch-actions-detail/domain-batch-actions-detail', () => ({
+  __esModule: true,
+  default: ({ batchAction }: DetailProps) => (
+    <div>mock-batch-action-detail-{batchAction.id}</div>
+  ),
+}));
 
 jest.mock(
   '../domain-batch-actions-sidebar/domain-batch-actions-sidebar',
@@ -86,6 +63,14 @@ jest.mock(
   })
 );
 
+const mockBatchActionsResponse: ListBatchActionsResponse = {
+  batchActions: [
+    { id: '5', status: 'RUNNING' },
+    { id: '4', status: 'COMPLETED' },
+  ],
+  nextPageToken: '',
+};
+
 describe(DomainBatchActions.name, () => {
   beforeEach(() => {
     mockSetQueryParams.mockClear();
@@ -99,21 +84,20 @@ describe(DomainBatchActions.name, () => {
     jest.clearAllMocks();
   });
 
-  it('renders detail panel for the first batch action by default', () => {
-    render(<DomainBatchActions domain="test-domain" cluster="test-cluster" />);
+  it('renders detail panel for the first batch action by default', async () => {
+    setup();
 
     expect(
-      screen.getByRole('heading', { name: /Batch action #5/ })
+      await screen.findByText('mock-batch-action-detail-5')
     ).toBeInTheDocument();
-    expect(screen.getByText('Abort batch action')).toBeInTheDocument();
   });
 
   it('updates URL param when a different action is selected', async () => {
     const user = userEvent.setup();
 
-    render(<DomainBatchActions domain="test-domain" cluster="test-cluster" />);
+    setup();
 
-    await user.click(screen.getByText('mock-select-4'));
+    await user.click(await screen.findByText('mock-select-4'));
 
     expect(mockSetQueryParams).toHaveBeenCalledWith({ batchActionId: '4' });
   });
@@ -121,9 +105,9 @@ describe(DomainBatchActions.name, () => {
   it('sets batchActionId to draft when "New batch action" is clicked', async () => {
     const user = userEvent.setup();
 
-    render(<DomainBatchActions domain="test-domain" cluster="test-cluster" />);
+    setup();
 
-    await user.click(screen.getByText('mock-new-batch-action'));
+    await user.click(await screen.findByText('mock-new-batch-action'));
 
     expect(mockSetQueryParams).toHaveBeenCalledWith({
       batchActionId: 'draft',
@@ -142,7 +126,7 @@ describe(DomainBatchActions.name, () => {
 
     const user = userEvent.setup();
 
-    render(<DomainBatchActions domain="test-domain" cluster="test-cluster" />);
+    setup();
 
     await user.click(screen.getByText('Discard batch action'));
 
@@ -162,14 +146,14 @@ describe(DomainBatchActions.name, () => {
       mockSetQueryParams,
     ]);
 
-    render(<DomainBatchActions domain="test-domain" cluster="test-cluster" />);
+    setup();
 
     expect(
       screen.getByRole('heading', { name: 'New batch action' })
     ).toBeInTheDocument();
   });
 
-  it('renders the specified batch action when batchActionId is set', () => {
+  it('renders the specified batch action when batchActionId is set', async () => {
     mockUsePageQueryParams.mockReturnValue([
       {
         ...mockDomainPageQueryParamsValues,
@@ -179,20 +163,20 @@ describe(DomainBatchActions.name, () => {
       mockSetQueryParams,
     ]);
 
-    render(<DomainBatchActions domain="test-domain" cluster="test-cluster" />);
+    setup();
 
     expect(
-      screen.getByRole('heading', { name: /Batch action #4/ })
+      await screen.findByText('mock-batch-action-detail-4')
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole('heading', { name: /Batch action #5/ })
+      screen.queryByText('mock-batch-action-detail-5')
     ).not.toBeInTheDocument();
   });
 
   it('sets batchActionId to draft when selecting the draft sidebar item', async () => {
     const user = userEvent.setup();
 
-    render(<DomainBatchActions domain="test-domain" cluster="test-cluster" />);
+    setup();
 
     await user.click(screen.getByText('mock-select-draft'));
 
@@ -201,3 +185,19 @@ describe(DomainBatchActions.name, () => {
     });
   });
 });
+
+function setup() {
+  return render(
+    <DomainBatchActions domain="test-domain" cluster="test-cluster" />,
+    {
+      endpointsMocks: [
+        {
+          path: '/api/domains/:domain/:cluster/batch-actions',
+          httpMethod: 'GET',
+          mockOnce: false,
+          httpResolver: async () => HttpResponse.json(mockBatchActionsResponse),
+        },
+      ],
+    }
+  );
+}

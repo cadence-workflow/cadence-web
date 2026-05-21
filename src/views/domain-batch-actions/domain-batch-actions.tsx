@@ -4,14 +4,15 @@ import React, { useEffect, useState } from 'react';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
 import { type DomainPageTabContentProps } from '@/views/domain-page/domain-page-content/domain-page-content.types';
+import useListBatchActions from '@/views/shared/hooks/use-list-batch-actions/use-list-batch-actions';
 
 import DomainBatchActionDetail from './domain-batch-actions-detail/domain-batch-actions-detail';
 import DomainBatchActionsNewActionDetail from './domain-batch-actions-new-action-detail/domain-batch-actions-new-action-detail';
 import DomainBatchActionsNoActionsPlaceholder from './domain-batch-actions-no-actions-placeholder/domain-batch-actions-no-actions-placeholder';
 import DomainBatchActionsSidebar from './domain-batch-actions-sidebar/domain-batch-actions-sidebar';
 import {
+  BATCH_ACTIONS_PAGE_SIZE,
   DRAFT_ACTION_ID,
-  MOCK_BATCH_ACTIONS,
 } from './domain-batch-actions.constants';
 import { styled } from './domain-batch-actions.styles';
 
@@ -20,8 +21,13 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
     domainPageQueryParamsConfig
   );
 
-  // TODO: replace with useSuspenseQuery once the batch-actions list endpoint exists
-  const batchActions = MOCK_BATCH_ACTIONS;
+  const { data } = useListBatchActions({
+    domain: props.domain,
+    cluster: props.cluster,
+    pageSize: BATCH_ACTIONS_PAGE_SIZE,
+  });
+  const batchActions = data?.pages[0]?.batchActions ?? [];
+  const isLoaded = data !== undefined;
 
   const isDraftSelected = queryParams.batchActionId === DRAFT_ACTION_ID;
   const selectedActionId =
@@ -60,7 +66,7 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
     setQueryParams({ batchActionId: undefined, batchQuery: '' });
   };
 
-  if (batchActions.length === 0 && !isDraftOpen) {
+  if (isLoaded && batchActions.length === 0 && !isDraftOpen) {
     return (
       <styled.Container>
         <styled.DetailPanel>
@@ -94,7 +100,12 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
           />
         )}
         {!isDraftSelected && selectedAction && (
-          <DomainBatchActionDetail batchAction={selectedAction} />
+          <DomainBatchActionDetail
+            // TODO: enrich with a describe-workflow call in a follow-up PR.
+            // The list endpoint only surfaces id + status; the rest are
+            // placeholders so the existing detail UI keeps rendering.
+            batchAction={{ ...selectedAction, actionType: 'cancel' }}
+          />
         )}
       </styled.DetailPanel>
     </styled.Container>

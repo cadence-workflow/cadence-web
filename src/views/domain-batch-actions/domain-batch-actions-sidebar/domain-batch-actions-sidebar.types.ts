@@ -1,7 +1,7 @@
-import { type BatchAction } from '../domain-batch-actions.types';
+import { type BatchActionListItem } from '@/route-handlers/list-batch-actions/list-batch-actions.types';
 
 export type Props = {
-  batchActions: BatchAction[];
+  batchActions: BatchActionListItem[];
   isDraftOpen: boolean;
   isDraftSelected: boolean;
   selectedActionId: string | null;
