@@ -4,7 +4,7 @@ import { type BatchActionConfirmableType } from '../../domain-batch-actions.type
 import DomainBatchActionsConfirmationModal from '../domain-batch-actions-confirmation-modal';
 
 jest.mock('../../config/domain-batch-actions-confirmation-modal.config', () => {
-  const { z } = require('zod');
+  const { z } = jest.requireActual('zod');
   return {
     cancel: {
       title: 'Mock Cancel',
