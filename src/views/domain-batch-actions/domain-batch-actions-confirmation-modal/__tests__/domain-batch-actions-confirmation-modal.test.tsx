@@ -1,60 +1,68 @@
-import { type Control } from 'react-hook-form';
-
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import { type BatchActionConfirmableType } from '../../domain-batch-actions.types';
 import DomainBatchActionsConfirmationModal from '../domain-batch-actions-confirmation-modal';
 
-jest.mock(
-  '@/views/workflow-actions/workflow-action-signal-form/workflow-action-signal-form',
-  () =>
-    function MockSignalForm({ control }: { control: Control<any> }) {
-      return (
-        <div data-testid="signal-form">
-          <label>
-            Signal Name
-            <input {...control.register('signalName')} />
-          </label>
-        </div>
-      );
-    }
-);
+jest.mock('../../config/domain-batch-actions-confirmation-modal.config', () => {
+  const { z } = require('zod');
+  return {
+    cancel: {
+      title: 'Mock Cancel',
+      description: 'Mock cancel desc',
+      withForm: false,
+    },
+    terminate: {
+      title: 'Mock Terminate',
+      description: 'Mock terminate desc',
+      withForm: false,
+    },
+    signal: {
+      title: 'Mock Signal',
+      description: 'Mock signal desc',
+      withForm: true,
+      form: function MockSignalForm({ control }: { control: any }) {
+        return (
+          <div data-testid="signal-form">
+            <label>
+              Signal Name
+              <input {...control.register('signalName')} />
+            </label>
+          </div>
+        );
+      },
+      formSchema: z.object({ signalName: z.string().min(1) }),
+      transformFormDataToSubmission: (data: unknown) => data,
+    },
+  };
+});
 
 describe(DomainBatchActionsConfirmationModal.name, () => {
   it('does not render modal content when actionId is null', () => {
     setup({ actionId: null });
 
-    expect(screen.queryByText('Cancel workflows')).not.toBeInTheDocument();
+    expect(screen.queryByText('Mock Cancel')).not.toBeInTheDocument();
   });
 
   it('renders cancel modal with correct title and description', () => {
     setup({ actionId: 'cancel' });
 
-    expect(screen.getByText('Cancel workflows')).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        'Cancel running workflows by scheduling a cancellation request, giving them a chance to clean up.'
-      )
-    ).toBeInTheDocument();
+    expect(screen.getByText('Mock Cancel')).toBeInTheDocument();
+    expect(screen.getByText('Mock cancel desc')).toBeInTheDocument();
     expect(screen.queryByTestId('signal-form')).not.toBeInTheDocument();
   });
 
   it('renders terminate modal with correct title and description', () => {
     setup({ actionId: 'terminate' });
 
-    expect(screen.getByText('Terminate workflows')).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        'Terminate running workflows immediately. Please terminate only if you know what you are doing.'
-      )
-    ).toBeInTheDocument();
+    expect(screen.getByText('Mock Terminate')).toBeInTheDocument();
+    expect(screen.getByText('Mock terminate desc')).toBeInTheDocument();
     expect(screen.queryByTestId('signal-form')).not.toBeInTheDocument();
   });
 
   it('renders signal modal with form', () => {
     setup({ actionId: 'signal' });
 
-    expect(screen.getByText('Signal workflows')).toBeInTheDocument();
+    expect(screen.getByText('Mock Signal')).toBeInTheDocument();
     expect(screen.getByTestId('signal-form')).toBeInTheDocument();
   });
 
