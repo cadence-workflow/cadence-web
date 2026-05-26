@@ -102,11 +102,17 @@ export default function DomainBatchActionsNewActionDetail({
     count: totalWorkflowCount,
     error: countError,
     isLoading: isCountLoading,
+    refetch: refetchCount,
   } = useCountWorkflows({
     domain,
     cluster,
     query: queryParams.batchQuery,
   });
+
+  const refetchAll = useCallback(() => {
+    refetch();
+    refetchCount();
+  }, [refetch, refetchCount]);
 
   const isDataLoading = isLoading || isCountLoading;
 
@@ -146,7 +152,7 @@ export default function DomainBatchActionsNewActionDetail({
         inputTypeQueryParamKey="batchInputType"
         searchQueryParamKey="search"
         queryStringQueryParamKey="batchQuery"
-        refetchQuery={refetch}
+        refetchQuery={refetchAll}
         isQueryRunning={isFetching}
         showQueryInputOnly
         noSpacing
@@ -154,7 +160,7 @@ export default function DomainBatchActionsNewActionDetail({
       {isDataLoading && <SectionLoadingIndicator />}
       {!isDataLoading && errorPanelProps && (
         <PanelSection>
-          <ErrorPanel {...errorPanelProps} reset={refetch} />
+          <ErrorPanel {...errorPanelProps} reset={refetchAll} />
         </PanelSection>
       )}
       {!isDataLoading && !errorPanelProps && (
