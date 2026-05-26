@@ -1,7 +1,7 @@
 import buildBatchActionPayload from '../build-batch-action-payload';
 
 describe('buildBatchActionPayload', () => {
-  it('builds a payload with the basic fields and no SignalParams for non-signal actions', () => {
+  it('build a payload with the basic fields and no SignalParams for non-signal actions', () => {
     expect(
       buildBatchActionPayload({
         domain: 'cadence-samples',
