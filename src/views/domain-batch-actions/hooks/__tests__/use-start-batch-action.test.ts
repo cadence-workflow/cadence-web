@@ -40,7 +40,7 @@ describe(useStartBatchAction.name, () => {
         },
       ],
       workerSDKLanguage: 'GO',
-      executionStartToCloseTimeoutSeconds: 24 * 60 * 60,
+      executionStartToCloseTimeoutSeconds: 20 * 365 * 24 * 60 * 60,
     });
     expect(result.current.data).toEqual({
       workflowId: 'wf-1',
