@@ -75,7 +75,7 @@ describe(useConfirmBatchAction.name, () => {
 
     expect(mockDequeue).toHaveBeenCalled();
     expect(mockRouterPush).toHaveBeenCalledWith(
-      '/domains/cadence-samples/cluster0/batch-actions?bid=run-1'
+      '/domains/cadence-samples/cluster0/batch-actions?bid=wf-1'
     );
   });
 
