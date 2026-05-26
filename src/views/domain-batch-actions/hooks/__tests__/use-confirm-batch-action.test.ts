@@ -14,6 +14,14 @@ jest.mock('baseui/snackbar', () => ({
   }),
 }));
 
+const mockRouterPush = jest.fn();
+jest.mock('next/navigation', () => ({
+  ...jest.requireActual('next/navigation'),
+  useRouter: () => ({
+    push: mockRouterPush,
+  }),
+}));
+
 describe(useConfirmBatchAction.name, () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -36,7 +44,35 @@ describe(useConfirmBatchAction.name, () => {
       expect(onSuccess).toHaveBeenCalled();
     });
     expect(mockEnqueue).toHaveBeenCalledWith(
-      expect.objectContaining({ message: 'Batch action started' })
+      expect.objectContaining({
+        message: 'Batch action started',
+        actionMessage: 'View',
+      })
+    );
+  });
+
+  it('navigates to the batch workflow on snackbar action click', async () => {
+    const { result } = setup({});
+
+    act(() => {
+      result.current.handleConfirm({
+        batchType: 'terminate',
+        query: 'WorkflowType="foo"',
+        reason: 'cleanup',
+        rps: 10,
+      });
+    });
+
+    await waitFor(() => {
+      expect(mockEnqueue).toHaveBeenCalled();
+    });
+
+    const { actionOnClick } = mockEnqueue.mock.calls[0][0];
+    actionOnClick();
+
+    expect(mockDequeue).toHaveBeenCalled();
+    expect(mockRouterPush).toHaveBeenCalledWith(
+      '/domains/cadence-samples/cluster0/batch-actions?bid=run-1'
     );
   });
 

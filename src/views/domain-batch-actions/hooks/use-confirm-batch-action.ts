@@ -1,6 +1,7 @@
 'use client';
 
 import { useSnackbar } from 'baseui/snackbar';
+import { useRouter } from 'next/navigation';
 import { MdCheckCircle, MdErrorOutline } from 'react-icons/md';
 
 import {
@@ -18,6 +19,7 @@ export default function useConfirmBatchAction({
   isPending: boolean;
 } {
   const { enqueue, dequeue } = useSnackbar();
+  const router = useRouter();
   const { mutate: startBatchAction, isPending } = useStartBatchAction({
     cluster,
   });
@@ -26,13 +28,18 @@ export default function useConfirmBatchAction({
     startBatchAction(
       { domain, ...input },
       {
-        onSuccess: () => {
+        onSuccess: (result) => {
           onSuccess?.();
           enqueue({
             message: 'Batch action started',
             startEnhancer: MdCheckCircle,
-            actionMessage: 'OK',
-            actionOnClick: () => dequeue(),
+            actionMessage: 'View',
+            actionOnClick: () => {
+              dequeue();
+              router.push(
+                `/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/batch-actions?bid=${encodeURIComponent(result.runId)}`
+              );
+            },
           });
         },
         onError: (err) => {
