@@ -85,7 +85,7 @@ describe(DomainBatchActionsConfirmationModal.name, () => {
 
     await user.click(screen.getByText('Start Batch Action'));
 
-    expect(mockOnConfirm).toHaveBeenCalledWith('terminate', undefined);
+    expect(mockOnConfirm).toHaveBeenCalledWith({ actionId: 'terminate' });
   });
 
   it('calls onConfirm with transformed submission data for form actions', async () => {
@@ -94,8 +94,9 @@ describe(DomainBatchActionsConfirmationModal.name, () => {
     await user.type(screen.getByLabelText('Signal Name'), 'my-signal');
     await user.click(screen.getByText('Start Batch Action'));
 
-    expect(mockOnConfirm).toHaveBeenCalledWith('signal', {
-      signalName: 'my-signal',
+    expect(mockOnConfirm).toHaveBeenCalledWith({
+      actionId: 'signal',
+      submissionData: { signalName: 'my-signal' },
     });
   });
 
