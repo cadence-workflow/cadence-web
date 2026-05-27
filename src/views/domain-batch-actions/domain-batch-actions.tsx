@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
@@ -34,7 +34,7 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
   const [isDraftOpen, setIsDraftOpen] = useState(isDraftSelected);
 
   // Sync sidebar draft visibility when URL changes to draft (e.g. back/forward)
-  React.useEffect(() => {
+  useEffect(() => {
     if (isDraftSelected) {
       setIsDraftOpen(true);
     }

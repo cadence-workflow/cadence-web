@@ -19,7 +19,6 @@ import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
 import WorkflowsHeader from '@/views/shared/workflows-header/workflows-header';
 import useWorkflowsListColumns from '@/views/shared/workflows-list/hooks/use-workflows-list-columns';
 import WorkflowsList from '@/views/shared/workflows-list/workflows-list';
-import { type SignalWorkflowSubmissionData } from '@/views/workflow-actions/workflow-action-signal-form/workflow-action-signal-form.types';
 
 import domainBatchActionsConfirmationModalConfig from '../config/domain-batch-actions-confirmation-modal.config';
 import domainBatchActionsNewActionFloatingBarConfig from '../config/domain-batch-actions-new-action-floating-bar.config';
@@ -184,9 +183,9 @@ export default function DomainBatchActionsNewActionDetail({
         selectedCount={totalWorkflowCount ?? 0}
         isSubmitting={isStartingBatchAction}
         onClose={() => setActiveAction(null)}
-        onConfirm={(actionId, submissionData) =>
+        onConfirm={(payload) =>
           handleConfirm({
-            batchType: actionId,
+            batchType: payload.actionId,
             // TODO: queryParams.batchQuery is empty until the user clicks
             // "Run Query" — typing alone doesn't commit. The batcher rejects
             // an empty Query, so this needs gating before submit. (CDNC-19042)
@@ -194,8 +193,8 @@ export default function DomainBatchActionsNewActionDetail({
             reason: getValues('description'),
             rps: getValues('rps'),
             signalParams:
-              actionId === 'signal'
-                ? (submissionData as SignalWorkflowSubmissionData)
+              payload.actionId === 'signal'
+                ? payload.submissionData
                 : undefined,
           })
         }

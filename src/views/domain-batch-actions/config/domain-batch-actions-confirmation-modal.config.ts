@@ -10,10 +10,7 @@ import {
   type BatchActionModalConfig,
 } from '../domain-batch-actions.types';
 
-const domainBatchActionsConfirmationModalConfig: Record<
-  BatchActionConfirmableType,
-  BatchActionModalConfig<any, any>
-> = {
+const domainBatchActionsConfirmationModalConfig = {
   cancel: {
     title: 'Cancel workflows',
     description:
@@ -51,6 +48,21 @@ const domainBatchActionsConfirmationModalConfig: Record<
     SignalWorkflowFormData,
     SignalWorkflowSubmissionData
   >,
-};
+} satisfies Record<
+  BatchActionConfirmableType,
+  BatchActionModalConfig<any, any>
+>;
 
 export default domainBatchActionsConfirmationModalConfig;
+
+type ConfirmationModalConfigMap =
+  typeof domainBatchActionsConfirmationModalConfig;
+
+// Adding a new form-bearing action to the config above automatically extends this union.
+export type BatchActionConfirmPayload = {
+  [K in BatchActionConfirmableType]: ConfirmationModalConfigMap[K] extends {
+    transformFormDataToSubmission: (data: any) => infer S;
+  }
+    ? { actionId: K; submissionData: S }
+    : { actionId: K };
+}[BatchActionConfirmableType];
