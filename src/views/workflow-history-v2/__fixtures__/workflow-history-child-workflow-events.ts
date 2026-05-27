@@ -66,7 +66,7 @@ export const initiateFailureChildWorkflowEvent = {
     },
     control: '',
     decisionTaskCompletedEventId: '4',
-    cause: 'CHILD_WORKFLOW_EXECUTION_FAILED_CAUSE_INVALID',
+    cause: 'CHILD_WORKFLOW_EXECUTION_FAILED_CAUSE_WORKFLOW_ALREADY_RUNNING',
     initiatedEventId: '',
   },
   attributes: 'startChildWorkflowExecutionFailedEventAttributes',

@@ -413,7 +413,7 @@ exports[`formatWorkflowHistoryEvent should format workflow requestCancelActivity
 
 exports[`formatWorkflowHistoryEvent should format workflow requestCancelExternalWorkflowExecutionFailedEventAttributes to match snapshot 1`] = `
 {
-  "cause": "CANCEL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_INVALID",
+  "cause": "UNKNOWN_EXTERNAL_WORKFLOW_EXECUTION",
   "control": null,
   "decisionTaskCompletedEventId": 24,
   "domain": "cadence-domain",
@@ -450,7 +450,7 @@ exports[`formatWorkflowHistoryEvent should format workflow requestCancelExternal
 
 exports[`formatWorkflowHistoryEvent should format workflow signalExternalWorkflowExecutionFailedEventAttributes to match snapshot 1`] = `
 {
-  "cause": "SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_INVALID",
+  "cause": "UNKNOWN_EXTERNAL_WORKFLOW_EXECUTION",
   "control": 0,
   "decisionTaskCompletedEventId": 4,
   "domain": "cadence-domain",
@@ -491,7 +491,7 @@ exports[`formatWorkflowHistoryEvent should format workflow signalExternalWorkflo
 
 exports[`formatWorkflowHistoryEvent should format workflow startChildWorkflowExecutionFailedEventAttributes to match snapshot 1`] = `
 {
-  "cause": "CHILD_WORKFLOW_EXECUTION_FAILED_CAUSE_INVALID",
+  "cause": "WORKFLOW_ALREADY_RUNNING",
   "control": null,
   "decisionTaskCompletedEventId": 4,
   "domain": "cadence-domain",
