@@ -1,4 +1,4 @@
-import { type SignalWorkflowFormData } from '@/views/workflow-actions/workflow-action-signal-form/workflow-action-signal-form.types';
+import { type SignalWorkflowSubmissionData } from '@/views/workflow-actions/workflow-action-signal-form/workflow-action-signal-form.types';
 
 import { type BatchActionConfirmableType } from '../domain-batch-actions.types';
 
@@ -13,7 +13,7 @@ export type ConfirmBatchActionInput = {
   query: string;
   reason: string;
   rps: number;
-  signalParams?: SignalWorkflowFormData;
+  signalParams?: SignalWorkflowSubmissionData;
 };
 
 export type ConfirmBatchActionHandler = (
