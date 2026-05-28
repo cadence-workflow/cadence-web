@@ -8,6 +8,7 @@ export const styled = {
     flexDirection: 'column',
     alignItems: 'stretch',
     padding: $theme.sizing.scale200,
+    minWidth: '250px',
   })),
 };
 
