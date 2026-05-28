@@ -2,12 +2,11 @@ import isEmpty from 'lodash/isEmpty';
 
 import { type CreateScheduleRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/CreateScheduleRequest';
 import { type RetryPolicy__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/RetryPolicy';
+import getGrpcDurationFromSeconds from '@/utils/datetime/get-grpc-duration-from-seconds';
 import getGrpcTimestampFromIso from '@/utils/datetime/get-grpc-timestamp-from-iso';
 
 import processWorkflowInput from '../../start-workflow/helpers/process-workflow-input';
 import { type CreateScheduleRequestBody } from '../create-schedule.types';
-
-import secondsToGrpcDurationInput from './seconds-to-grpc-duration-input';
 
 export default function transformCreateScheduleBodyToGrpcInput({
   domain,
@@ -23,14 +22,14 @@ export default function transformCreateScheduleBodyToGrpcInput({
       ? undefined
       : {
           initialInterval: retryPolicy.initialIntervalSeconds
-            ? secondsToGrpcDurationInput(retryPolicy.initialIntervalSeconds)
+            ? getGrpcDurationFromSeconds(retryPolicy.initialIntervalSeconds)
             : undefined,
           backoffCoefficient: retryPolicy.backoffCoefficient,
           maximumInterval: retryPolicy.maximumIntervalSeconds
-            ? secondsToGrpcDurationInput(retryPolicy.maximumIntervalSeconds)
+            ? getGrpcDurationFromSeconds(retryPolicy.maximumIntervalSeconds)
             : undefined,
           expirationInterval: retryPolicy.expirationIntervalSeconds
-            ? secondsToGrpcDurationInput(retryPolicy.expirationIntervalSeconds)
+            ? getGrpcDurationFromSeconds(retryPolicy.expirationIntervalSeconds)
             : undefined,
           maximumAttempts: retryPolicy.maximumAttempts,
         };
@@ -42,7 +41,7 @@ export default function transformCreateScheduleBodyToGrpcInput({
       : undefined,
     endTime: body.endTime ? getGrpcTimestampFromIso(body.endTime) : undefined,
     jitter: body.jitterSeconds
-      ? secondsToGrpcDurationInput(body.jitterSeconds)
+      ? getGrpcDurationFromSeconds(body.jitterSeconds)
       : undefined,
   };
 
@@ -59,10 +58,10 @@ export default function transformCreateScheduleBodyToGrpcInput({
       ? { data: Buffer.from(processedInput, 'utf-8') }
       : undefined,
     workflowIdPrefix: startWorkflow.workflowIdPrefix?.trim() ?? '',
-    executionStartToCloseTimeout: secondsToGrpcDurationInput(
+    executionStartToCloseTimeout: getGrpcDurationFromSeconds(
       startWorkflow.executionStartToCloseTimeoutSeconds
     ),
-    taskStartToCloseTimeout: secondsToGrpcDurationInput(
+    taskStartToCloseTimeout: getGrpcDurationFromSeconds(
       startWorkflow.taskStartToCloseTimeoutSeconds
     ),
     retryPolicy: grpcRetryPolicy,
@@ -101,7 +100,7 @@ export default function transformCreateScheduleBodyToGrpcInput({
       catchUpPolicy: body.catchUpPolicy,
       catchUpWindow:
         body.catchUpWindowSeconds !== undefined
-          ? secondsToGrpcDurationInput(body.catchUpWindowSeconds)
+          ? getGrpcDurationFromSeconds(body.catchUpWindowSeconds)
           : undefined,
       pauseOnFailure: body.pauseOnFailure,
       bufferLimit: body.bufferLimit,

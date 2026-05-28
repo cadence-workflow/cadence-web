@@ -77,6 +77,15 @@ describe(transformCreateScheduleBodyToGrpcInput.name, () => {
     });
   });
 
+  it('maps fractional jitter seconds to duration nanos', () => {
+    const grpc = transformCreateScheduleBodyToGrpcInput({
+      domain: 'd',
+      body: minimalBody({ jitterSeconds: 1.5 }),
+    });
+
+    expect(grpc.spec?.jitter).toEqual({ seconds: 1, nanos: 500_000_000 });
+  });
+
   it('maps schedule policies', () => {
     const grpc = transformCreateScheduleBodyToGrpcInput({
       domain: 'd',
