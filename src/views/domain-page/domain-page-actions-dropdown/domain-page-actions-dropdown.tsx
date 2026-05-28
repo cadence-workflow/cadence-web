@@ -75,6 +75,7 @@ export default function DomainPageActionsDropdown({
     if (action.id === batchWorkflowDomainAction.id) {
       const params = new URLSearchParams(window.location.search);
       params.set('batch-query', queryParams.query ?? '');
+      params.set('bid', 'draft');
       router.push(`batch-actions?${params.toString()}`);
     }
   };

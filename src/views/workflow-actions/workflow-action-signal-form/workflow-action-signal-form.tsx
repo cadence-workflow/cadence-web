@@ -11,7 +11,10 @@ import { type SignalWorkflowFormData } from './workflow-action-signal-form.types
 export default function WorkflowActionSignalForm({
   fieldErrors,
   control,
-}: WorkflowActionFormProps<SignalWorkflowFormData>) {
+}: Pick<
+  WorkflowActionFormProps<SignalWorkflowFormData>,
+  'fieldErrors' | 'control'
+>) {
   const getErrorMessage = (field: string) => {
     return field in fieldErrors
       ? fieldErrors[field as keyof typeof fieldErrors]?.message

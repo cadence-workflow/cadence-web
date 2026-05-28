@@ -256,7 +256,9 @@ describe(DomainPageActionsDropdown.name, () => {
       await user.click(screen.getByTestId('popover-trigger'));
       await user.click(screen.getByText('Batch workflow actions'));
 
-      expect(mockRouterPush).toHaveBeenCalledWith('batch-actions?batch-query=');
+      expect(mockRouterPush).toHaveBeenCalledWith(
+        'batch-actions?batch-query=&bid=draft'
+      );
     });
 
     it('seeds batch-query from current query when navigating', async () => {
@@ -276,14 +278,34 @@ describe(DomainPageActionsDropdown.name, () => {
       const url = new URL(pushedTo, 'http://example.com/');
       expect(url.pathname).toBe('/batch-actions');
       expect(url.searchParams.get('batch-query')).toBe('WorkflowType="foo"');
+      expect(url.searchParams.get('bid')).toBe('draft');
+    });
+
+    it('propagates workflows query param into batch-query when navigating', async () => {
+      window.history.pushState({}, '', '?query=WorkflowType%3D%22bar%22');
+      mockUsePageQueryParams.mockReturnValue([
+        { query: 'WorkflowType="bar"' },
+        jest.fn(),
+      ]);
+
+      const { user } = await setup({
+        ...defaultProps,
+        isBatchActionsEnabled: true,
+      });
+
+      await user.click(screen.getByTestId('popover-trigger'));
+      await user.click(screen.getByText('Batch workflow actions'));
+
+      const pushedTo = mockRouterPush.mock.calls[0][0];
+      const url = new URL(pushedTo, 'http://example.com/');
+      expect(url.searchParams.get('batch-query')).toBe('WorkflowType="bar"');
+      expect(url.searchParams.get('bid')).toBe('draft');
+
+      window.history.pushState({}, '', '/');
     });
 
     it('preserves existing URL search params when navigating', async () => {
-      const originalLocation = window.location;
-      Object.defineProperty(window, 'location', {
-        configurable: true,
-        value: { ...originalLocation, search: '?input=query&query=foo' },
-      });
+      window.history.pushState({}, '', '?input=query&query=foo');
 
       const { user } = await setup({
         ...defaultProps,
@@ -298,11 +320,9 @@ describe(DomainPageActionsDropdown.name, () => {
       expect(url.searchParams.get('input')).toBe('query');
       expect(url.searchParams.get('query')).toBe('foo');
       expect(url.searchParams.get('batch-query')).toBe('');
+      expect(url.searchParams.get('bid')).toBe('draft');
 
-      Object.defineProperty(window, 'location', {
-        configurable: true,
-        value: originalLocation,
-      });
+      window.history.pushState({}, '', '/');
     });
   });
 });
