@@ -51,7 +51,9 @@ describe(createSchedule.name, () => {
 
   it('generates scheduleId when omitted', async () => {
     const generated = 'aaaaaaaa-bbbb-4ccc-dddd-eeeeeeeeeeee';
-    const randomSpy = jest.spyOn(crypto, 'randomUUID').mockReturnValue(generated);
+    const randomSpy = jest
+      .spyOn(crypto, 'randomUUID')
+      .mockReturnValue(generated);
 
     try {
       const { mockCreateSchedule } = await setup({
@@ -83,8 +85,7 @@ describe(createSchedule.name, () => {
     const { res, mockCreateSchedule } = await setup({
       body: {
         ...getValidRequestBody(),
-        overlapPolicy:
-          ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_CONCURRENT,
+        overlapPolicy: ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_CONCURRENT,
         concurrencyLimit: 0,
       },
     });
