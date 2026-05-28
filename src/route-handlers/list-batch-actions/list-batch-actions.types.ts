@@ -1,5 +1,6 @@
 import { type DefaultMiddlewaresContext } from '@/utils/route-handlers-middleware';
-import { type BatchActionStatus } from '@/views/domain-batch-actions/domain-batch-actions.types';
+
+export type BatchActionStatus = 'RUNNING' | 'COMPLETED' | 'ABORTED' | 'FAILED';
 
 export type RouteParams = {
   domain: string;

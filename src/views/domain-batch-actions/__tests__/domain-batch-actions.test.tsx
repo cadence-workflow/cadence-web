@@ -22,7 +22,7 @@ jest.mock('../domain-batch-actions.constants', () => ({
   MOCK_BATCH_ACTIONS: [
     {
       id: '5',
-      status: 'running',
+      status: 'RUNNING',
       progress: 60,
       actionType: 'cancel',
       startTime: Date.now() - 100000,
@@ -31,7 +31,7 @@ jest.mock('../domain-batch-actions.constants', () => ({
     },
     {
       id: '4',
-      status: 'completed',
+      status: 'COMPLETED',
       actionType: 'terminate',
       startTime: Date.now() - 3600000,
       endTime: Date.now() - 1800000,
@@ -40,7 +40,7 @@ jest.mock('../domain-batch-actions.constants', () => ({
     },
     {
       id: '3',
-      status: 'failed',
+      status: 'FAILED',
       actionType: 'reset',
       startTime: Date.now() - 7200000,
       endTime: Date.now() - 5400000,

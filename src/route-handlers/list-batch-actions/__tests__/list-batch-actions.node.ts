@@ -40,11 +40,11 @@ describe(listBatchActions.name, () => {
       batchActions: [
         {
           id: 'mock-batch-action-id-1',
-          status: 'completed',
+          status: 'COMPLETED',
         },
         {
           id: 'mock-batch-action-id-2',
-          status: 'running',
+          status: 'RUNNING',
         },
       ],
       nextPageToken: 'mock-next-page-token',
@@ -66,7 +66,7 @@ describe(listBatchActions.name, () => {
     expect(res.status).toEqual(200);
     const responseJson = await res.json();
     expect(responseJson.batchActions).toEqual([
-      { id: 'mock-batch-action-id-1', status: 'running' },
+      { id: 'mock-batch-action-id-1', status: 'RUNNING' },
     ]);
   });
 

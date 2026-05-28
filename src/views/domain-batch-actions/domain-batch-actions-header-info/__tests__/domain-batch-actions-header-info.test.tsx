@@ -19,7 +19,7 @@ jest.mock('baseui/spinner', () => ({
 
 const MOCK_RUNNING_ACTION: BatchAction = {
   id: '5',
-  status: 'running',
+  status: 'RUNNING',
   progress: 60,
   actionType: 'cancel',
   startTime: new Date('2024-03-13T08:28:50.000Z').getTime(),
@@ -47,7 +47,7 @@ describe(DomainBatchActionHeaderInfo.name, () => {
   it('shows Ended field for completed actions', () => {
     const action: BatchAction = {
       id: '4',
-      status: 'completed',
+      status: 'COMPLETED',
       actionType: 'cancel',
       endTime: new Date('2024-03-13T09:00:00.000Z').getTime(),
     };
@@ -66,7 +66,7 @@ describe(DomainBatchActionHeaderInfo.name, () => {
   it('renders Completed badge with check icon for completed status', () => {
     const action: BatchAction = {
       id: '4',
-      status: 'completed',
+      status: 'COMPLETED',
       actionType: 'cancel',
     };
     render(<DomainBatchActionHeaderInfo batchAction={action} />);
@@ -78,7 +78,7 @@ describe(DomainBatchActionHeaderInfo.name, () => {
   it('renders Aborted badge with cancel icon for aborted status', () => {
     const action: BatchAction = {
       id: '1',
-      status: 'aborted',
+      status: 'ABORTED',
       actionType: 'cancel',
     };
     render(<DomainBatchActionHeaderInfo batchAction={action} />);
@@ -90,7 +90,7 @@ describe(DomainBatchActionHeaderInfo.name, () => {
   it('renders Failed badge with warning icon for failed status', () => {
     const action: BatchAction = {
       id: '2',
-      status: 'failed',
+      status: 'FAILED',
       actionType: 'cancel',
     };
     render(<DomainBatchActionHeaderInfo batchAction={action} />);
@@ -116,7 +116,7 @@ describe(DomainBatchActionHeaderInfo.name, () => {
   it('renders dashes when optional fields are missing', () => {
     const action: BatchAction = {
       id: '2',
-      status: 'completed',
+      status: 'COMPLETED',
       actionType: 'cancel',
     };
     render(<DomainBatchActionHeaderInfo batchAction={action} />);

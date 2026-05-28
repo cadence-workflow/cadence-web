@@ -54,7 +54,7 @@ export default function DomainBatchActionsSidebar({
               label={`Batch action #${action.id}`}
               icon={<StatusIcon action={action} />}
               isSelected={isSelected}
-              isActive={action.status === 'running' || isSelected}
+              isActive={action.status === 'RUNNING' || isSelected}
               onSelect={() => onSelectAction(action.id)}
             />
           );

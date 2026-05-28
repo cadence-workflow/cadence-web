@@ -11,7 +11,7 @@ export const BATCH_ACTION_EXECUTION_TIMEOUT_SECONDS = 20 * 365 * 24 * 60 * 60;
 export const MOCK_BATCH_ACTIONS: BatchAction[] = [
   {
     id: '5',
-    status: 'running',
+    status: 'RUNNING',
     progress: 60,
     actionType: 'cancel',
     startTime: Date.now() - 100000,
@@ -20,7 +20,7 @@ export const MOCK_BATCH_ACTIONS: BatchAction[] = [
   },
   {
     id: '4',
-    status: 'completed',
+    status: 'COMPLETED',
     actionType: 'terminate',
     startTime: Date.now() - 3600000,
     endTime: Date.now() - 1800000,
@@ -29,7 +29,7 @@ export const MOCK_BATCH_ACTIONS: BatchAction[] = [
   },
   {
     id: '3',
-    status: 'aborted',
+    status: 'ABORTED',
     actionType: 'reset',
     startTime: Date.now() - 7200000,
     endTime: Date.now() - 5400000,
@@ -38,7 +38,7 @@ export const MOCK_BATCH_ACTIONS: BatchAction[] = [
   },
   {
     id: '2',
-    status: 'failed',
+    status: 'FAILED',
     actionType: 'signal',
     startTime: Date.now() - 14400000,
     endTime: Date.now() - 10800000,

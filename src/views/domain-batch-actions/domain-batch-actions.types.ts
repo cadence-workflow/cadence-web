@@ -7,7 +7,7 @@ import {
 } from 'react-hook-form';
 import { type z } from 'zod';
 
-export type BatchActionStatus = 'running' | 'completed' | 'aborted' | 'failed';
+import { type BatchActionStatus } from '@/route-handlers/list-batch-actions/list-batch-actions.types';
 
 export type BatchActionType = 'cancel' | 'terminate' | 'reset' | 'signal';
 
@@ -56,7 +56,7 @@ export type BatchActionModalConfig<
 export type BatchAction = {
   id: string;
   status: BatchActionStatus;
-  progress?: number; // 0-100, only relevant when status is 'running'
+  progress?: number; // 0-100, only relevant when status is 'RUNNING'
   actionType: BatchActionType;
   startTime?: number;
   endTime?: number;
