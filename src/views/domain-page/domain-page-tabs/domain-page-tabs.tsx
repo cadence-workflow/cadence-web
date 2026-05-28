@@ -97,10 +97,7 @@ export default function DomainPageTabs() {
         }}
         endEnhancer={
           <styled.EndButtonsContainer>
-            <DomainPageActionsDropdown
-              {...decodedParams}
-              isBatchActionsEnabled={isBatchActionsEnabled}
-            />
+            <DomainPageActionsDropdown {...decodedParams} />
             <DomainPageHelp />
           </styled.EndButtonsContainer>
         }
