@@ -3,10 +3,10 @@ import queryString from 'query-string';
 
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
-import { BATCH_ACTION_BATCHER_DOMAIN } from '@/views/domain-batch-actions/domain-batch-actions.constants';
 
 import getBatchActionFromWorkflow from './helpers/get-batch-action-from-workflow';
 import getBatchActionsListQuery from './helpers/get-batch-actions-list-query';
+import { BATCH_ACTION_BATCHER_DOMAIN } from './list-batch-actions.constants';
 import type {
   Context,
   ListBatchActionsResponse,

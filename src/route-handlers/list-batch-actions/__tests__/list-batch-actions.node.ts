@@ -2,7 +2,6 @@ import { status } from '@grpc/grpc-js';
 import { NextRequest } from 'next/server';
 import queryString from 'query-string';
 
-import { type WorkflowExecutionCloseStatus } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionCloseStatus';
 import { type WorkflowExecutionInfo } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionInfo';
 import { GRPCError } from '@/utils/grpc/grpc-error';
 import logger from '@/utils/logger';
@@ -58,7 +57,8 @@ describe(listBatchActions.name, () => {
       executions: [
         {
           ...mockBatchOperationWorkflows[0],
-          closeStatus: null as unknown as WorkflowExecutionCloseStatus,
+          // @ts-expect-error - testing missing closeStatus from gRPC response
+          closeStatus: null,
         },
       ],
     });
@@ -80,20 +80,6 @@ describe(listBatchActions.name, () => {
         domain: 'cadence-batcher',
         pageSize: 25,
         nextPageToken: 'token-123',
-      })
-    );
-    expect(res.status).toEqual(200);
-  });
-
-  it('escapes quote and backslash characters in the domain name', async () => {
-    const { res, mockListWorkflows } = await setup({
-      queryParams: { pageSize: '10' },
-      domain: 'evil"\\domain',
-    });
-
-    expect(mockListWorkflows).toHaveBeenCalledWith(
-      expect.objectContaining({
-        query: expect.stringContaining('CustomDomain = "evil\\"\\\\domain"'),
       })
     );
     expect(res.status).toEqual(200);

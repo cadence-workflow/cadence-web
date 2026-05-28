@@ -2,14 +2,16 @@
 
 import { useMutation } from '@tanstack/react-query';
 
+import {
+  BATCH_ACTION_BATCHER_DOMAIN,
+  BATCH_ACTION_WORKFLOW_TYPE,
+} from '@/route-handlers/list-batch-actions/list-batch-actions.constants';
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
 
 import {
-  BATCH_ACTION_BATCHER_DOMAIN,
   BATCH_ACTION_EXECUTION_TIMEOUT_SECONDS,
   BATCH_ACTION_TASK_LIST,
-  BATCH_ACTION_WORKFLOW_TYPE,
 } from '../domain-batch-actions.constants';
 import buildBatchActionPayload from '../helpers/build-batch-action-payload';
 
