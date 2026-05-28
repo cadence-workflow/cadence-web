@@ -10,6 +10,7 @@ import DomainBatchActions from '../domain-batch-actions';
 import { type Props as NewActionDetailProps } from '../domain-batch-actions-new-action-detail/domain-batch-actions-new-action-detail.types';
 import { type Props as SidebarProps } from '../domain-batch-actions-sidebar/domain-batch-actions-sidebar.types';
 
+const mockSetQueryParams = jest.fn();
 const mockUsePageQueryParams = jest.fn();
 jest.mock('@/hooks/use-page-query-params/use-page-query-params', () => ({
   __esModule: true,
@@ -17,10 +18,11 @@ jest.mock('@/hooks/use-page-query-params/use-page-query-params', () => ({
 }));
 
 jest.mock('../domain-batch-actions.constants', () => ({
+  DRAFT_ACTION_ID: 'draft',
   MOCK_BATCH_ACTIONS: [
     {
       id: '5',
-      status: 'running',
+      status: 'RUNNING',
       progress: 60,
       actionType: 'cancel',
       startTime: Date.now() - 100000,
@@ -29,7 +31,7 @@ jest.mock('../domain-batch-actions.constants', () => ({
     },
     {
       id: '4',
-      status: 'completed',
+      status: 'COMPLETED',
       actionType: 'terminate',
       startTime: Date.now() - 3600000,
       endTime: Date.now() - 1800000,
@@ -38,7 +40,7 @@ jest.mock('../domain-batch-actions.constants', () => ({
     },
     {
       id: '3',
-      status: 'failed',
+      status: 'FAILED',
       actionType: 'reset',
       startTime: Date.now() - 7200000,
       endTime: Date.now() - 5400000,
@@ -86,9 +88,10 @@ jest.mock(
 
 describe(DomainBatchActions.name, () => {
   beforeEach(() => {
+    mockSetQueryParams.mockClear();
     mockUsePageQueryParams.mockReturnValue([
       { ...mockDomainPageQueryParamsValues, batchQuery: '' },
-      jest.fn(),
+      mockSetQueryParams,
     ]);
   });
 
@@ -105,59 +108,58 @@ describe(DomainBatchActions.name, () => {
     expect(screen.getByText('Abort batch action')).toBeInTheDocument();
   });
 
-  it('updates detail panel when a different action is selected', async () => {
+  it('updates URL param when a different action is selected', async () => {
     const user = userEvent.setup();
 
     render(<DomainBatchActions domain="test-domain" cluster="test-cluster" />);
 
     await user.click(screen.getByText('mock-select-4'));
 
-    expect(
-      screen.getByRole('heading', { name: /Batch action #4/ })
-    ).toBeInTheDocument();
-    expect(screen.queryByText('Abort batch action')).not.toBeInTheDocument();
+    expect(mockSetQueryParams).toHaveBeenCalledWith({ batchActionId: '4' });
   });
 
-  it('opens the draft detail panel when "New batch action" is clicked', async () => {
+  it('sets batchActionId to draft when "New batch action" is clicked', async () => {
     const user = userEvent.setup();
 
     render(<DomainBatchActions domain="test-domain" cluster="test-cluster" />);
 
     await user.click(screen.getByText('mock-new-batch-action'));
 
-    expect(
-      screen.getByRole('heading', { name: 'New batch action' })
-    ).toBeInTheDocument();
-    expect(screen.getByText('Discard batch action')).toBeInTheDocument();
+    expect(mockSetQueryParams).toHaveBeenCalledWith({
+      batchActionId: 'draft',
+    });
   });
 
-  it('returns to the previously selected action detail when discarded', async () => {
-    const user = userEvent.setup();
-
-    render(<DomainBatchActions domain="test-domain" cluster="test-cluster" />);
-
-    await user.click(screen.getByText('mock-new-batch-action'));
-    expect(
-      screen.getByRole('heading', { name: 'New batch action' })
-    ).toBeInTheDocument();
-
-    await user.click(screen.getByText('Discard batch action'));
-
-    expect(
-      screen.queryByRole('heading', { name: 'New batch action' })
-    ).not.toBeInTheDocument();
-    expect(
-      screen.getByRole('heading', { name: /Batch action #5/ })
-    ).toBeInTheDocument();
-  });
-
-  it('opens the draft on mount when batchQuery is present in the URL', () => {
+  it('clears batchActionId and batchQuery on discard', async () => {
     mockUsePageQueryParams.mockReturnValue([
       {
         ...mockDomainPageQueryParamsValues,
+        batchActionId: 'draft',
         batchQuery: 'WorkflowType="foo"',
       },
-      jest.fn(),
+      mockSetQueryParams,
+    ]);
+
+    const user = userEvent.setup();
+
+    render(<DomainBatchActions domain="test-domain" cluster="test-cluster" />);
+
+    await user.click(screen.getByText('Discard batch action'));
+
+    expect(mockSetQueryParams).toHaveBeenCalledWith({
+      batchActionId: undefined,
+      batchQuery: '',
+    });
+  });
+
+  it('opens the draft when batchActionId is "draft" (no batchQuery)', () => {
+    mockUsePageQueryParams.mockReturnValue([
+      {
+        ...mockDomainPageQueryParamsValues,
+        batchActionId: 'draft',
+        batchQuery: '',
+      },
+      mockSetQueryParams,
     ]);
 
     render(<DomainBatchActions domain="test-domain" cluster="test-cluster" />);
@@ -165,8 +167,37 @@ describe(DomainBatchActions.name, () => {
     expect(
       screen.getByRole('heading', { name: 'New batch action' })
     ).toBeInTheDocument();
+  });
+
+  it('renders the specified batch action when batchActionId is set', () => {
+    mockUsePageQueryParams.mockReturnValue([
+      {
+        ...mockDomainPageQueryParamsValues,
+        batchActionId: '4',
+        batchQuery: '',
+      },
+      mockSetQueryParams,
+    ]);
+
+    render(<DomainBatchActions domain="test-domain" cluster="test-cluster" />);
+
+    expect(
+      screen.getByRole('heading', { name: /Batch action #4/ })
+    ).toBeInTheDocument();
     expect(
       screen.queryByRole('heading', { name: /Batch action #5/ })
     ).not.toBeInTheDocument();
+  });
+
+  it('sets batchActionId to draft when selecting the draft sidebar item', async () => {
+    const user = userEvent.setup();
+
+    render(<DomainBatchActions domain="test-domain" cluster="test-cluster" />);
+
+    await user.click(screen.getByText('mock-select-draft'));
+
+    expect(mockSetQueryParams).toHaveBeenCalledWith({
+      batchActionId: 'draft',
+    });
   });
 });

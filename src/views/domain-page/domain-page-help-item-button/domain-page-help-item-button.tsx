@@ -40,6 +40,7 @@ export default function DomainPageHelpItemButton(item: DomainPageHelpItem) {
         <Button {...baseButtonProps} onClick={() => setIsModalOpen(true)}>
           {item.text}
         </Button>
+        {/* Note: Placing the modal as a sibling to the button means if the menu button unmounts (e.g., on menu close), the modal will unmount and close too. */}
         <item.modal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}

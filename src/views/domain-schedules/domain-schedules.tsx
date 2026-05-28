@@ -8,12 +8,16 @@ import ErrorPanel from '@/components/error-panel/error-panel';
 import PanelSection from '@/components/panel-section/panel-section';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import Table from '@/components/table/table';
+import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
+import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
 import useListSchedules from '@/views/shared/hooks/use-list-schedules/use-list-schedules';
 
 import schedulesTableConfig from './config/schedules-table.config';
+import DomainSchedulesHeader from './domain-schedules-header/domain-schedules-header';
 import { SCHEDULES_PAGE_SIZE } from './domain-schedules.constants';
 import { styled } from './domain-schedules.styles';
 import { type Props } from './domain-schedules.types';
+import filterSchedules from './helpers/filter-schedules';
 
 export default function DomainSchedules({ domain, cluster }: Props) {
   const {
@@ -30,12 +34,28 @@ export default function DomainSchedules({ domain, cluster }: Props) {
     pageSize: SCHEDULES_PAGE_SIZE,
   });
 
+  const [queryParams] = usePageQueryParams(domainPageQueryParamsConfig, {
+    pageRerender: false,
+  });
+
   const schedules = useMemo(
     () => data?.pages.flatMap((page) => page.schedules ?? []) ?? [],
     [data]
   );
 
-  const title = isLoading ? 'Schedules' : `Schedules (${schedules.length})`;
+  const filteredSchedules = useMemo(
+    () =>
+      filterSchedules({
+        schedules,
+        search: queryParams.schedulesSearch,
+        status: queryParams.schedulesStatus,
+      }),
+    [schedules, queryParams.schedulesSearch, queryParams.schedulesStatus]
+  );
+
+  const hasActiveFilters = Boolean(
+    queryParams.schedulesSearch || queryParams.schedulesStatus
+  );
 
   let content;
   if (isLoading) {
@@ -71,10 +91,20 @@ export default function DomainSchedules({ domain, cluster }: Props) {
         />
       </PanelSection>
     );
+  } else if (filteredSchedules.length === 0 && hasActiveFilters) {
+    content = (
+      <PanelSection>
+        <ErrorPanel
+          message="No schedules match your filters"
+          description="Try changing the search term or clearing the filters."
+          omitLogging={true}
+        />
+      </PanelSection>
+    );
   } else {
     content = (
       <Table
-        data={schedules}
+        data={filteredSchedules}
         shouldShowResults
         endMessageProps={{
           kind: 'infinite-scroll',
@@ -91,9 +121,9 @@ export default function DomainSchedules({ domain, cluster }: Props) {
 
   return (
     <styled.Root>
-      <styled.Toolbar>
-        <styled.ToolbarTitle>{title}</styled.ToolbarTitle>
-      </styled.Toolbar>
+      <DomainSchedulesHeader
+        count={isLoading ? undefined : filteredSchedules.length}
+      />
       {content}
     </styled.Root>
   );

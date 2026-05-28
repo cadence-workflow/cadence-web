@@ -7,6 +7,7 @@ import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 import { type Props as LoaderProps } from '@/components/table/table-infinite-scroll-loader/table-infinite-scroll-loader.types';
 import { getMockScheduleListEntry } from '@/route-handlers/list-schedules/__fixtures__/mock-schedule-list-entries';
 import { type ListSchedulesResponse } from '@/route-handlers/list-schedules/list-schedules.types';
+import { mockDomainPageQueryParamsValues } from '@/views/domain-page/__fixtures__/domain-page-query-params';
 
 import type { Props as MSWMocksHandlersProps } from '../../../test-utils/msw-mock-handlers/msw-mock-handlers.types';
 import DomainSchedules from '../domain-schedules';
@@ -32,6 +33,14 @@ jest.mock(
     ))
 );
 
+jest.mock('../domain-schedules-header/domain-schedules-header', () =>
+  jest.fn(({ count }: { count: number | undefined }) => (
+    <div data-testid="mock-header">
+      Schedules header (count={count === undefined ? 'loading' : count})
+    </div>
+  ))
+);
+
 jest.mock('../config/schedules-table.config', () => [
   {
     name: 'Schedule Id',
@@ -41,33 +50,39 @@ jest.mock('../config/schedules-table.config', () => [
   },
 ]);
 
+const mockUsePageQueryParams = jest.fn();
+jest.mock('@/hooks/use-page-query-params/use-page-query-params', () => ({
+  __esModule: true,
+  default: (...args: Array<unknown>) => mockUsePageQueryParams(...args),
+}));
+
 describe(DomainSchedules.name, () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockUsePageQueryParams.mockReturnValue([
+      mockDomainPageQueryParamsValues,
+      jest.fn(),
+    ]);
   });
 
-  it('renders loading indicator while initial fetch is pending', () => {
+  it('renders loading indicator and a header in loading state while initial fetch is pending', () => {
     setup({ isLoading: true });
 
     expect(screen.getByTestId('loading-indicator')).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Schedules' })).toBeDefined();
+    expect(screen.getByText(/count=loading/)).toBeInTheDocument();
   });
 
   it('renders the empty state when no schedules are returned', async () => {
     setup({ errorCase: 'no-schedules' });
 
     expect(await screen.findByText('No schedules found')).toBeInTheDocument();
-    expect(
-      screen.getByRole('heading', { name: 'Schedules (0)' })
-    ).toBeInTheDocument();
+    expect(screen.getByText(/count=0/)).toBeInTheDocument();
   });
 
   it('renders the title with the count and the table when schedules load', async () => {
     setup();
 
-    expect(
-      await screen.findByRole('heading', { name: /Schedules \(\d+\)/ })
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/count=2/)).toBeInTheDocument();
     expect(screen.getByText('Schedule Id')).toBeInTheDocument();
     expect(screen.getByText('mock-schedule-id-0-0')).toBeInTheDocument();
   });
@@ -75,16 +90,12 @@ describe(DomainSchedules.name, () => {
   it('updates the count after fetching the next page', async () => {
     const { user } = setup();
 
-    expect(
-      await screen.findByRole('heading', { name: 'Schedules (2)' })
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/count=2/)).toBeInTheDocument();
 
     await user.click(screen.getByTestId('mock-loader'));
 
     await waitFor(() => {
-      expect(
-        screen.getByRole('heading', { name: 'Schedules (4)' })
-      ).toBeInTheDocument();
+      expect(screen.getByText(/count=4/)).toBeInTheDocument();
     });
   });
 
@@ -99,22 +110,65 @@ describe(DomainSchedules.name, () => {
   it('still renders the table when a follow-up page fails', async () => {
     const { user } = setup({ errorCase: 'subsequent-fetch-error' });
 
-    expect(
-      await screen.findByRole('heading', { name: 'Schedules (2)' })
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/count=2/)).toBeInTheDocument();
 
     await user.click(screen.getByTestId('mock-loader'));
 
     expect(await screen.findByText('Mock end: Error')).toBeInTheDocument();
+  });
+
+  it('filters schedules by the search term and reflects the filtered count in the title', async () => {
+    mockUsePageQueryParams.mockReturnValue([
+      {
+        ...mockDomainPageQueryParamsValues,
+        schedulesSearch: 'mock-schedule-id-0-1',
+      },
+      jest.fn(),
+    ]);
+
+    setup();
+
+    expect(await screen.findByText(/count=1/)).toBeInTheDocument();
+    expect(screen.getAllByText(/^mock-schedule-id-/)).toHaveLength(1);
+  });
+
+  it('filters schedules by the status query param', async () => {
+    mockUsePageQueryParams.mockReturnValue([
+      { ...mockDomainPageQueryParamsValues, schedulesStatus: 'PAUSED' },
+      jest.fn(),
+    ]);
+
+    setup({ pausedScheduleIndex: 1 });
+
+    expect(await screen.findByText(/count=1/)).toBeInTheDocument();
+    expect(screen.getAllByText(/^mock-schedule-id-/)).toHaveLength(1);
+  });
+
+  it('renders the no-match state when filters return no results but schedules exist', async () => {
+    mockUsePageQueryParams.mockReturnValue([
+      {
+        ...mockDomainPageQueryParamsValues,
+        schedulesSearch: 'something-that-never-matches',
+      },
+      jest.fn(),
+    ]);
+
+    setup();
+
+    expect(
+      await screen.findByText('No schedules match your filters')
+    ).toBeInTheDocument();
+    expect(screen.getByText(/count=0/)).toBeInTheDocument();
   });
 });
 
 function setup(opts?: {
   errorCase?: 'initial-fetch-error' | 'subsequent-fetch-error' | 'no-schedules';
   isLoading?: boolean;
+  pausedScheduleIndex?: number;
 }) {
-  const { errorCase, isLoading } = opts ?? {};
-  const pages = generateSchedulePages(2);
+  const { errorCase, isLoading, pausedScheduleIndex } = opts ?? {};
+  const pages = generateSchedulePages(2, pausedScheduleIndex);
   let currentEventIndex = 0;
   const user = userEvent.setup();
 
@@ -169,7 +223,10 @@ function setup(opts?: {
   return { user };
 }
 
-function generateSchedulePages(count: number): Array<ListSchedulesResponse> {
+function generateSchedulePages(
+  count: number,
+  pausedScheduleIndex?: number
+): Array<ListSchedulesResponse> {
   const pages = Array.from(
     { length: count },
     (_, pageIndex): ListSchedulesResponse => ({
@@ -177,6 +234,10 @@ function generateSchedulePages(count: number): Array<ListSchedulesResponse> {
         getMockScheduleListEntry({
           scheduleId: `mock-schedule-id-${pageIndex}-${index}`,
           workflowType: { name: `mock-workflow-name-${pageIndex}-${index}` },
+          state: {
+            paused: index === pausedScheduleIndex,
+            pauseInfo: null,
+          },
         })
       ),
       nextPageToken: `${pageIndex + 1}`,

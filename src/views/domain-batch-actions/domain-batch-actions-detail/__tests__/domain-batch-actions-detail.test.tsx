@@ -13,7 +13,7 @@ describe(DomainBatchActionDetail.name, () => {
   it('renders the batch action title', () => {
     const action: BatchAction = {
       id: '5',
-      status: 'completed',
+      status: 'COMPLETED',
       actionType: 'cancel',
     };
 
@@ -25,7 +25,7 @@ describe(DomainBatchActionDetail.name, () => {
   it('shows abort button when status is running', () => {
     const action: BatchAction = {
       id: '3',
-      status: 'running',
+      status: 'RUNNING',
       progress: 60,
       actionType: 'cancel',
     };
@@ -38,7 +38,7 @@ describe(DomainBatchActionDetail.name, () => {
   it('does not show abort button when status is completed', () => {
     const action: BatchAction = {
       id: '2',
-      status: 'completed',
+      status: 'COMPLETED',
       actionType: 'cancel',
     };
 
@@ -50,7 +50,7 @@ describe(DomainBatchActionDetail.name, () => {
   it('does not show abort button when status is aborted', () => {
     const action: BatchAction = {
       id: '1',
-      status: 'aborted',
+      status: 'ABORTED',
       actionType: 'cancel',
     };
 
