@@ -48,7 +48,6 @@ describe('isSingleEvent', () => {
     expect(isSingleEvent(null)).toBe(false);
     //@ts-expect-error undefined is not of type HistoryEvent
     expect(isSingleEvent(undefined)).toBe(false);
-    //@ts-expect-error {} is not of type HistoryEvent
     expect(isSingleEvent({})).toBe(false);
   });
 });
