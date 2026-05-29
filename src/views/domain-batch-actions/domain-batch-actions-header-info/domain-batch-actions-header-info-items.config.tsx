@@ -35,7 +35,7 @@ const batchActionHeaderInfoItemsConfig = [
   },
   {
     title: 'Ended',
-    hidden: ({ batchAction }) => batchAction.status === 'running',
+    hidden: ({ batchAction }) => batchAction.status === 'RUNNING',
     render: ({ batchAction }) =>
       batchAction.endTime ? formatDate(batchAction.endTime) : '—',
     placeholderSize: '180px',
@@ -46,7 +46,7 @@ const batchActionHeaderInfoItemsConfig = [
       batchAction.startTime
         ? formatTimeDiff(
             batchAction.startTime,
-            batchAction.status === 'running'
+            batchAction.status === 'RUNNING'
               ? null
               : batchAction.endTime ?? null,
             true
@@ -59,7 +59,7 @@ const batchActionHeaderInfoItemsConfig = [
     render: ({ batchAction }) => (
       <DomainBatchActionEditableValue
         value={batchAction.rps}
-        editable={batchAction.status === 'running'}
+        editable={batchAction.status === 'RUNNING'}
       />
     ),
     placeholderSize: '80px',
@@ -69,7 +69,7 @@ const batchActionHeaderInfoItemsConfig = [
     render: ({ batchAction }) => (
       <DomainBatchActionEditableValue
         value={batchAction.concurrency}
-        editable={batchAction.status === 'running'}
+        editable={batchAction.status === 'RUNNING'}
       />
     ),
     placeholderSize: '80px',

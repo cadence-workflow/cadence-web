@@ -29,6 +29,7 @@ const domainPageQueryParamsConfig: [
   // and the batch action draft do not overwrite each other's state).
   PageQueryParam<'batchInputType', WorkflowsHeaderInputType>,
   PageQueryParam<'batchQuery', string>,
+  PageQueryParam<'batchActionId', string | undefined>,
   // Basic Visibility inputs
   PageQueryParam<'workflowId', string>,
   PageQueryParam<'workflowType', string>,
@@ -107,6 +108,10 @@ const domainPageQueryParamsConfig: [
     key: 'batchQuery',
     queryParamKey: 'batch-query',
     defaultValue: '',
+  },
+  {
+    key: 'batchActionId',
+    queryParamKey: 'bid',
   },
   {
     key: 'workflowId',

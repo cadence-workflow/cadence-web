@@ -5,9 +5,9 @@ import { HttpResponse } from 'msw';
 import { render, screen, act } from '@/test-utils/rtl';
 
 import { type DescribeTaskListResponse } from '@/route-handlers/describe-task-list/describe-task-list.types';
-import type { Props as TaskListLabelProps } from '@/views/shared/task-list-label/task-list-label.types';
 
 import { mockTaskList } from '../../__fixtures__/mock-task-list';
+import { type Props as TaskListPageHeaderProps } from '../../task-list-page-header/task-list-page-header.types';
 import { type Props as TaskListTableProps } from '../../task-list-workers-table/task-list-workers-table.types';
 import TaskListLoader from '../task-list-loader';
 
@@ -25,8 +25,8 @@ jest.mock('../../task-list-filters/task-list-filters', () =>
   jest.fn(() => <div>Mock task list filters</div>)
 );
 
-jest.mock('@/views/shared/task-list-label/task-list-label', () =>
-  jest.fn(({ taskList }: TaskListLabelProps) => (
+jest.mock('../../task-list-page-header/task-list-page-header', () =>
+  jest.fn(({ taskList }: TaskListPageHeaderProps) => (
     <div>
       {taskList.name}: {taskList.workers.length} workers
     </div>
