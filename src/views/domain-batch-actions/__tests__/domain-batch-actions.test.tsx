@@ -3,7 +3,7 @@ import React from 'react';
 import { userEvent } from '@testing-library/user-event';
 import { HttpResponse } from 'msw';
 
-import { render, screen } from '@/test-utils/rtl';
+import { render, screen, waitFor } from '@/test-utils/rtl';
 
 import { type ListBatchActionsResponse } from '@/route-handlers/list-batch-actions/list-batch-actions.types';
 import { mockDomainPageQueryParamsValues } from '@/views/domain-page/__fixtures__/domain-page-query-params';
@@ -12,12 +12,23 @@ import DomainBatchActions from '../domain-batch-actions';
 import { type Props as DetailProps } from '../domain-batch-actions-detail/domain-batch-actions-detail.types';
 import { type Props as NewActionDetailProps } from '../domain-batch-actions-new-action-detail/domain-batch-actions-new-action-detail.types';
 import { type Props as SidebarProps } from '../domain-batch-actions-sidebar/domain-batch-actions-sidebar.types';
+import { type BatchAction } from '../domain-batch-actions.types';
 
 const mockSetQueryParams = jest.fn();
 const mockUsePageQueryParams = jest.fn();
 jest.mock('@/hooks/use-page-query-params/use-page-query-params', () => ({
   __esModule: true,
   default: (...args: Array<unknown>) => mockUsePageQueryParams(...args),
+}));
+
+const mockEnqueue = jest.fn();
+const mockDequeue = jest.fn();
+jest.mock('baseui/snackbar', () => ({
+  ...jest.requireActual('baseui/snackbar'),
+  useSnackbar: () => ({
+    enqueue: mockEnqueue,
+    dequeue: mockDequeue,
+  }),
 }));
 
 jest.mock(
@@ -219,11 +230,29 @@ describe(DomainBatchActions.name, () => {
     expect(screen.getByText('mock-select-5')).toBeInTheDocument();
     expect(screen.getByText('mock-select-2')).toBeInTheDocument();
   });
+
+  it('enqueues an error snackbar when fetching batch action details fails', async () => {
+    setup({ describeError: true });
+
+    await waitFor(() => {
+      expect(mockEnqueue).toHaveBeenCalledTimes(1);
+    });
+    expect(mockEnqueue).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: 'Failed to fetch describe',
+        actionMessage: 'OK',
+      })
+    );
+  });
 });
 
 function setup({
   pages = [mockBatchActionsResponse],
-}: { pages?: ListBatchActionsResponse[] } = {}) {
+  describeError = false,
+}: {
+  pages?: ListBatchActionsResponse[];
+  describeError?: boolean;
+} = {}) {
   return render(
     <DomainBatchActions domain="test-domain" cluster="test-cluster" />,
     {
@@ -239,6 +268,24 @@ function setup({
               ? pages.findIndex((p) => p.nextPageToken === nextPage) + 1
               : 0;
             return HttpResponse.json(pages[pageIndex] ?? pages[0]);
+          },
+        },
+        {
+          path: '/api/domains/:domain/:cluster/batch-actions/:batchActionId',
+          httpMethod: 'GET',
+          mockOnce: false,
+          httpResolver: async ({ params }) => {
+            if (describeError) {
+              return HttpResponse.json(
+                { message: 'Failed to fetch describe' },
+                { status: 500 }
+              );
+            }
+            const detail: BatchAction = {
+              id: params.batchActionId as string,
+              status: 'COMPLETED',
+            };
+            return HttpResponse.json(detail);
           },
         },
       ],

@@ -10,7 +10,10 @@ import DomainBatchActionHeaderInfo from '../domain-batch-actions-header-info/dom
 import { overrides, styled } from './domain-batch-actions-detail.styles';
 import { type Props } from './domain-batch-actions-detail.types';
 
-export default function DomainBatchActionDetail({ batchAction }: Props) {
+export default function DomainBatchActionDetail({
+  batchAction,
+  loading = false,
+}: Props) {
   return (
     <styled.Container>
       <styled.Header>
@@ -27,7 +30,10 @@ export default function DomainBatchActionDetail({ batchAction }: Props) {
         )}
       </styled.Header>
       <div>
-        <DomainBatchActionHeaderInfo batchAction={batchAction} />
+        <DomainBatchActionHeaderInfo
+          batchAction={batchAction}
+          loading={loading}
+        />
       </div>
       <styled.ProgressSection />
     </styled.Container>

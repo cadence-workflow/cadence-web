@@ -10,7 +10,10 @@ import {
   type Props,
 } from './domain-batch-actions-header-info.types';
 
-export default function DomainBatchActionHeaderInfo({ batchAction }: Props) {
+export default function DomainBatchActionHeaderInfo({
+  batchAction,
+  loading = false,
+}: Props) {
   return (
     <styled.DetailsContainer>
       {batchActionHeaderInfoItemsConfig
@@ -22,7 +25,7 @@ export default function DomainBatchActionHeaderInfo({ batchAction }: Props) {
           <DomainBatchActionHeaderInfoItem
             key={configItem.title}
             title={configItem.title}
-            loading={false}
+            loading={loading}
             content={configItem.render({ batchAction })}
             placeholderSize={configItem.placeholderSize}
           />

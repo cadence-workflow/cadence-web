@@ -1,10 +1,14 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+
+import { useSnackbar } from 'baseui/snackbar';
+import { MdErrorOutline } from 'react-icons/md';
 
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
 import { type DomainPageTabContentProps } from '@/views/domain-page/domain-page-content/domain-page-content.types';
+import useDescribeBatchAction from '@/views/shared/hooks/use-describe-batch-action/use-describe-batch-action';
 import useListBatchActions from '@/views/shared/hooks/use-list-batch-actions/use-list-batch-actions';
 
 import DomainBatchActionDetail from './domain-batch-actions-detail/domain-batch-actions-detail';
@@ -53,6 +57,39 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
     }
   }, [isDraftSelected]);
 
+  // Computed defensively (data may be undefined while loading) so the hooks
+  // below are always called unconditionally, before any early return.
+  const batchActions = data?.pages.flatMap((p) => p.batchActions ?? []) ?? [];
+
+  const selectedActionId =
+    !isDraftSelected && queryParams.batchActionId
+      ? queryParams.batchActionId
+      : batchActions[0]?.id ?? null;
+
+  const {
+    data: batchActionDetail,
+    isLoading: isLoadingBatchActionDetail,
+    error: batchActionDetailError,
+  } = useDescribeBatchAction({
+    domain: props.domain,
+    cluster: props.cluster,
+    batchActionId: selectedActionId ?? '',
+    enabled: !isDraftSelected && !!selectedActionId,
+  });
+
+  const { enqueue, dequeue } = useSnackbar();
+  useEffect(() => {
+    if (!batchActionDetailError) return;
+    enqueue({
+      message:
+        batchActionDetailError.message ||
+        'Failed to fetch batch action details',
+      startEnhancer: MdErrorOutline,
+      actionMessage: 'OK',
+      actionOnClick: () => dequeue(),
+    });
+  }, [batchActionDetailError, enqueue, dequeue]);
+
   if (isLoading) {
     return <SectionLoadingIndicator />;
   }
@@ -60,13 +97,6 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
   if (!data) {
     throw new Error('Batch actions failed to load');
   }
-
-  const batchActions = data.pages.flatMap((p) => p.batchActions ?? []);
-
-  const selectedActionId =
-    !isDraftSelected && queryParams.batchActionId
-      ? queryParams.batchActionId
-      : batchActions[0]?.id ?? null;
 
   const selectedAction = batchActions.find((a) => a.id === selectedActionId);
 
@@ -130,10 +160,8 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
         )}
         {!isDraftSelected && selectedAction && (
           <DomainBatchActionDetail
-            // TODO: enrich with a describe-workflow call in a follow-up PR.
-            // The list endpoint only surfaces id + status; the rest are
-            // placeholders so the existing detail UI keeps rendering.
-            batchAction={{ ...selectedAction, actionType: 'cancel' }}
+            batchAction={batchActionDetail ?? selectedAction}
+            loading={isLoadingBatchActionDetail}
           />
         )}
       </styled.DetailPanel>

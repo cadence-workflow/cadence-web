@@ -123,4 +123,21 @@ describe(DomainBatchActionHeaderInfo.name, () => {
 
     expect(screen.getAllByText('—')).toHaveLength(5); // startTime, ended, duration, rps, concurrency
   });
+
+  it('replaces field values with skeleton placeholders when loading', () => {
+    render(
+      <DomainBatchActionHeaderInfo batchAction={MOCK_RUNNING_ACTION} loading />
+    );
+
+    // Titles still render
+    expect(screen.getByText('Status')).toBeInTheDocument();
+    expect(screen.getByText('Action')).toBeInTheDocument();
+    expect(screen.getByText('RPS')).toBeInTheDocument();
+
+    // Values do not
+    expect(screen.queryByText('Processing')).not.toBeInTheDocument();
+    expect(screen.queryByText('Cancel')).not.toBeInTheDocument();
+    expect(screen.queryByText('200')).not.toBeInTheDocument();
+    expect(screen.queryByText('10')).not.toBeInTheDocument();
+  });
 });

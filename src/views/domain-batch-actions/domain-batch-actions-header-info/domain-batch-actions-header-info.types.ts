@@ -4,6 +4,7 @@ import { type BatchAction } from '@/views/domain-batch-actions/domain-batch-acti
 
 export type Props = {
   batchAction: BatchAction;
+  loading?: boolean;
 };
 
 export type DomainBatchActionHeaderInfoItemProps = {

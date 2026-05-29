@@ -58,4 +58,21 @@ describe(DomainBatchActionDetail.name, () => {
 
     expect(screen.queryByText('Abort batch action')).not.toBeInTheDocument();
   });
+
+  it('keeps the title and abort button while loading details', () => {
+    const action: BatchAction = {
+      id: '7',
+      status: 'RUNNING',
+      actionType: 'cancel',
+    };
+
+    render(<DomainBatchActionDetail batchAction={action} loading />);
+
+    // Header chrome keeps rendering — id and status come from the slim list item.
+    expect(screen.getByText('Batch action #7')).toBeInTheDocument();
+    expect(screen.getByText('Abort batch action')).toBeInTheDocument();
+
+    // Field-level values do not render while skeleton placeholders are shown.
+    expect(screen.queryByText('Cancel')).not.toBeInTheDocument();
+  });
 });
