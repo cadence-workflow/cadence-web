@@ -65,15 +65,17 @@ export default function DomainBatchActionsSidebar({
             />
           );
         })}
-        <styled.LoaderWrapper>
-          <TableInfiniteScrollLoader
-            hasData={batchActions.length > 0}
-            error={error}
-            fetchNextPage={fetchNextPage}
-            hasNextPage={hasNextPage}
-            isFetchingNextPage={isFetchingNextPage}
-          />
-        </styled.LoaderWrapper>
+        {(hasNextPage || isFetchingNextPage || error) && (
+          <styled.LoaderWrapper>
+            <TableInfiniteScrollLoader
+              hasData={batchActions.length > 0}
+              error={error}
+              fetchNextPage={fetchNextPage}
+              hasNextPage={hasNextPage}
+              isFetchingNextPage={isFetchingNextPage}
+            />
+          </styled.LoaderWrapper>
+        )}
       </styled.List>
     </styled.Container>
   );

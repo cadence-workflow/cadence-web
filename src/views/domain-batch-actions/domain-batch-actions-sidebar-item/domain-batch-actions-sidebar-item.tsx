@@ -22,8 +22,8 @@ export default function DomainBatchActionsSidebarItem({
       role="button"
       tabIndex={0}
     >
-      {icon}
-      {label}
+      <span>{icon}</span>
+      <span>{label}</span>
     </styled.ListItem>
   );
 }

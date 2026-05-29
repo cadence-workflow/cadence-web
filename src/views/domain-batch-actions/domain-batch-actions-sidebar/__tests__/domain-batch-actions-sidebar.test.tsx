@@ -104,10 +104,10 @@ describe(DomainBatchActionsSidebar.name, () => {
   it('renders all batch actions in the list', () => {
     setup();
 
-    expect(screen.getByText('Batch action #4')).toBeInTheDocument();
-    expect(screen.getByText('Batch action #3')).toBeInTheDocument();
-    expect(screen.getByText('Batch action #2')).toBeInTheDocument();
-    expect(screen.getByText('Batch action #1')).toBeInTheDocument();
+    expect(screen.getByText('4')).toBeInTheDocument();
+    expect(screen.getByText('3')).toBeInTheDocument();
+    expect(screen.getByText('2')).toBeInTheDocument();
+    expect(screen.getByText('1')).toBeInTheDocument();
   });
 
   it('renders correct status icons for each status', () => {
@@ -122,7 +122,7 @@ describe(DomainBatchActionsSidebar.name, () => {
   it('calls onSelectAction with the action id when a batch action is clicked', async () => {
     const { user, onSelectAction } = setup();
 
-    await user.click(screen.getByText('Batch action #2'));
+    await user.click(screen.getByText('2'));
 
     expect(onSelectAction).toHaveBeenCalledWith('2');
   });
