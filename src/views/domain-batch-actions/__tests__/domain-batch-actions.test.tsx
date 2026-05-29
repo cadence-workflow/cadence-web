@@ -49,10 +49,12 @@ jest.mock(
       onSelectAction,
       onSelectDraft,
       onCreateNew,
+      fetchNextPage,
     }: SidebarProps) => (
       <div>
         <button onClick={onCreateNew}>mock-new-batch-action</button>
         <button onClick={onSelectDraft}>mock-select-draft</button>
+        <button onClick={fetchNextPage}>mock-fetch-next-page</button>
         {batchActions.map((a) => (
           <button key={a.id} onClick={() => onSelectAction(a.id)}>
             mock-select-{a.id}
@@ -184,9 +186,43 @@ describe(DomainBatchActions.name, () => {
       batchActionId: 'draft',
     });
   });
+
+  it('renders items from all fetched pages when paginating', async () => {
+    const user = userEvent.setup();
+
+    setup({
+      pages: [
+        {
+          batchActions: [
+            { id: '5', status: 'RUNNING' },
+            { id: '4', status: 'COMPLETED' },
+          ],
+          nextPageToken: 'page-2',
+        },
+        {
+          batchActions: [
+            { id: '3', status: 'COMPLETED' },
+            { id: '2', status: 'COMPLETED' },
+          ],
+          nextPageToken: '',
+        },
+      ],
+    });
+
+    expect(await screen.findByText('mock-select-5')).toBeInTheDocument();
+    expect(screen.queryByText('mock-select-3')).not.toBeInTheDocument();
+
+    await user.click(screen.getByText('mock-fetch-next-page'));
+
+    expect(await screen.findByText('mock-select-3')).toBeInTheDocument();
+    expect(screen.getByText('mock-select-5')).toBeInTheDocument();
+    expect(screen.getByText('mock-select-2')).toBeInTheDocument();
+  });
 });
 
-function setup() {
+function setup({
+  pages = [mockBatchActionsResponse],
+}: { pages?: ListBatchActionsResponse[] } = {}) {
   return render(
     <DomainBatchActions domain="test-domain" cluster="test-cluster" />,
     {
@@ -195,7 +231,14 @@ function setup() {
           path: '/api/domains/:domain/:cluster/batch-actions',
           httpMethod: 'GET',
           mockOnce: false,
-          httpResolver: async () => HttpResponse.json(mockBatchActionsResponse),
+          httpResolver: async ({ request }) => {
+            const url = new URL(request.url);
+            const nextPage = url.searchParams.get('nextPage');
+            const pageIndex = nextPage
+              ? pages.findIndex((p) => p.nextPageToken === nextPage) + 1
+              : 0;
+            return HttpResponse.json(pages[pageIndex] ?? pages[0]);
+          },
         },
       ],
     }

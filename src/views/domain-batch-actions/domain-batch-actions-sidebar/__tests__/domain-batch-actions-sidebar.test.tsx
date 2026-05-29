@@ -19,6 +19,20 @@ jest.mock('baseui/spinner', () => ({
   Spinner: jest.fn(() => <div>Spinner</div>),
 }));
 
+const mockInViewOnChange = jest.fn();
+jest.mock('react-intersection-observer', () => ({
+  InView: ({
+    children,
+    onChange,
+  }: {
+    children: React.ReactNode;
+    onChange: (inView: boolean) => void;
+  }) => {
+    mockInViewOnChange.mockImplementation(onChange);
+    return <div data-testid="in-view">{children}</div>;
+  },
+}));
+
 const mockBatchActions: BatchAction[] = [
   { id: '4', status: 'RUNNING', progress: 60, actionType: 'cancel' },
   { id: '3', status: 'COMPLETED', actionType: 'cancel' },
@@ -34,6 +48,10 @@ function setup({
   onSelectAction = jest.fn(),
   onSelectDraft = jest.fn(),
   onCreateNew = jest.fn(),
+  fetchNextPage = jest.fn(),
+  hasNextPage = false,
+  isFetchingNextPage = false,
+  error = null,
 }: {
   batchActions?: BatchAction[];
   isDraftOpen?: boolean;
@@ -42,6 +60,10 @@ function setup({
   onSelectAction?: (id: string) => void;
   onSelectDraft?: () => void;
   onCreateNew?: () => void;
+  fetchNextPage?: () => void;
+  hasNextPage?: boolean;
+  isFetchingNextPage?: boolean;
+  error?: Error | null;
 } = {}) {
   const user = userEvent.setup();
   render(
@@ -53,9 +75,13 @@ function setup({
       onSelectAction={onSelectAction}
       onSelectDraft={onSelectDraft}
       onCreateNew={onCreateNew}
+      fetchNextPage={fetchNextPage}
+      hasNextPage={hasNextPage}
+      isFetchingNextPage={isFetchingNextPage}
+      error={error}
     />
   );
-  return { user, onSelectAction, onSelectDraft, onCreateNew };
+  return { user, onSelectAction, onSelectDraft, onCreateNew, fetchNextPage };
 }
 
 describe(DomainBatchActionsSidebar.name, () => {
@@ -126,5 +152,19 @@ describe(DomainBatchActionsSidebar.name, () => {
     await user.click(screen.getByText('Untitled batch action'));
 
     expect(onSelectDraft).toHaveBeenCalledTimes(1);
+  });
+
+  it('calls fetchNextPage when the load-more sentinel comes into view', () => {
+    const { fetchNextPage } = setup({ hasNextPage: true });
+
+    mockInViewOnChange(true);
+
+    expect(fetchNextPage).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not render the load-more sentinel when there are no more pages', () => {
+    setup({ hasNextPage: false });
+
+    expect(screen.queryByTestId('in-view')).not.toBeInTheDocument();
   });
 });

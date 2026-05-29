@@ -21,12 +21,13 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
     domainPageQueryParamsConfig
   );
 
-  const { data } = useListBatchActions({
-    domain: props.domain,
-    cluster: props.cluster,
-    pageSize: BATCH_ACTIONS_PAGE_SIZE,
-  });
-  const batchActions = data?.pages[0]?.batchActions ?? [];
+  const { data, error, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useListBatchActions({
+      domain: props.domain,
+      cluster: props.cluster,
+      pageSize: BATCH_ACTIONS_PAGE_SIZE,
+    });
+  const batchActions = data?.pages.flatMap((p) => p.batchActions ?? []) ?? [];
   const isLoaded = data !== undefined;
 
   const isDraftSelected = queryParams.batchActionId === DRAFT_ACTION_ID;
@@ -89,6 +90,10 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
           onSelectAction={handleSelectAction}
           onSelectDraft={handleSelectDraft}
           onCreateNew={handleCreateNew}
+          fetchNextPage={fetchNextPage}
+          hasNextPage={!!hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+          error={error}
         />
       </styled.Sidebar>
       <styled.DetailPanel>

@@ -8,4 +8,8 @@ export type Props = {
   onSelectAction: (id: string) => void;
   onSelectDraft: () => void;
   onCreateNew: () => void;
+  fetchNextPage: () => void;
+  hasNextPage: boolean;
+  isFetchingNextPage: boolean;
+  error: Error | null;
 };
