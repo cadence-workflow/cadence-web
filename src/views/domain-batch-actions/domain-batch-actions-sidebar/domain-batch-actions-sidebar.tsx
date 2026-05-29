@@ -56,7 +56,8 @@ export default function DomainBatchActionsSidebar({
           return (
             <DomainBatchActionsSidebarItem
               key={action.id}
-              label={`Batch action #${action.id}`}
+              // TODO: label should be either start date or provided from search attributes once available.
+              label={action.id}
               icon={<StatusIcon action={action} />}
               isSelected={isSelected}
               isActive={action.status === 'RUNNING' || isSelected}
