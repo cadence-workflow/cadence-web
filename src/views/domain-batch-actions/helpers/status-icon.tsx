@@ -10,28 +10,28 @@ import { type Props } from './status-icon.types';
 export default function StatusIcon({ action }: Props) {
   const [_, theme] = useStyletron();
   switch (action.status) {
-    case 'completed':
+    case 'COMPLETED':
       return (
         <MdCheckCircle
           size={theme.sizing.scale600}
           color={theme.colors.contentPositive}
         />
       );
-    case 'aborted':
+    case 'ABORTED':
       return (
         <MdOutlineCancel
           size={theme.sizing.scale600}
           color={theme.colors.contentNegative}
         />
       );
-    case 'failed':
+    case 'FAILED':
       return (
         <MdWarning
           size={theme.sizing.scale600}
           color={theme.colors.contentWarning}
         />
       );
-    case 'running':
+    case 'RUNNING':
       return <Spinner $size={theme.sizing.scale600} />;
     default:
       return null;
