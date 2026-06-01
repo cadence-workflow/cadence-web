@@ -27,7 +27,10 @@ import DomainBatchActionsNewActionFloatingBar from '../domain-batch-actions-new-
 import DomainBatchActionsNewActionInfoBanner from '../domain-batch-actions-new-action-info-banner/domain-batch-actions-new-action-info-banner';
 import DomainBatchActionsNewActionParams from '../domain-batch-actions-new-action-params/domain-batch-actions-new-action-params';
 import batchActionParamsSchema from '../domain-batch-actions-new-action-params/schemas/batch-action-params-schema';
-import { BATCH_ACTION_RPS_DEFAULT } from '../domain-batch-actions.constants';
+import {
+  BATCH_ACTION_DEFAULT_QUERY,
+  BATCH_ACTION_RPS_DEFAULT,
+} from '../domain-batch-actions.constants';
 import { type BatchActionConfirmableType } from '../domain-batch-actions.types';
 import useConfirmBatchAction from '../hooks/use-confirm-batch-action';
 
@@ -56,7 +59,15 @@ export default function DomainBatchActionsNewActionDetail({
 
   const [activeAction, setActiveAction] =
     useState<BatchActionConfirmableType | null>(null);
-  const hasValidationErrors = isSubmitted && !isValid;
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+
+  // The query lives in URL params (not the form), so we validate it in parallel
+  // with the form to mirror how the Description field behaves: required, with
+  // the error shown only after a submit attempt.
+  const isQueryEmpty = !queryParams.batchQuery?.trim();
+  const showQueryError = submitAttempted && isQueryEmpty;
+  const isDefaultQuery = queryParams.batchQuery === BATCH_ACTION_DEFAULT_QUERY;
+  const hasValidationErrors = (isSubmitted && !isValid) || showQueryError;
 
   const { handleConfirm, isPending: isStartingBatchAction } =
     useConfirmBatchAction({
@@ -67,12 +78,14 @@ export default function DomainBatchActionsNewActionDetail({
 
   const handleActionClick = useCallback(
     (actionId: string) => {
+      setSubmitAttempted(true);
       handleSubmit(() => {
+        if (isQueryEmpty) return;
         if (!(actionId in domainBatchActionsConfirmationModalConfig)) return;
         setActiveAction(actionId as BatchActionConfirmableType);
       })();
     },
-    [handleSubmit]
+    [handleSubmit, isQueryEmpty]
   );
 
   // Reuse the workflows tab's column selection (persisted per-domain in
@@ -146,17 +159,28 @@ export default function DomainBatchActionsNewActionDetail({
         control={control}
         fieldErrors={errors}
       />
-      <WorkflowsHeader
-        pageQueryParamsConfig={domainPageQueryParamsConfig}
-        pageFiltersConfig={domainWorkflowsFiltersConfig}
-        inputTypeQueryParamKey="batchInputType"
-        searchQueryParamKey="search"
-        queryStringQueryParamKey="batchQuery"
-        refetchQuery={refetchAll}
-        isQueryRunning={isFetching}
-        showQueryInputOnly
-        noSpacing
-      />
+      <div>
+        <WorkflowsHeader
+          pageQueryParamsConfig={domainPageQueryParamsConfig}
+          pageFiltersConfig={domainWorkflowsFiltersConfig}
+          inputTypeQueryParamKey="batchInputType"
+          searchQueryParamKey="search"
+          queryStringQueryParamKey="batchQuery"
+          refetchQuery={refetchAll}
+          isQueryRunning={isFetching}
+          showQueryInputOnly
+          noSpacing
+        />
+        {showQueryError ? (
+          <styled.QueryError>Query must not be empty</styled.QueryError>
+        ) : (
+          isDefaultQuery && (
+            <styled.QueryCaption>
+              Showing all running workflows. Edit the query to narrow the set.
+            </styled.QueryCaption>
+          )
+        )}
+      </div>
       {isDataLoading && <SectionLoadingIndicator />}
       {!isDataLoading && errorPanelProps && (
         <PanelSection>
@@ -192,10 +216,9 @@ export default function DomainBatchActionsNewActionDetail({
         onConfirm={(payload) =>
           handleConfirm({
             batchType: payload.actionId,
-            // TODO: queryParams.batchQuery is empty until the user clicks
-            // "Run Query" — typing alone doesn't commit. The batcher rejects
-            // an empty Query, so this needs gating before submit. (CDNC-19042)
-            query: queryParams.batchQuery ?? '',
+            // An empty query is blocked before submit (see the required-query
+            // validation above), so batchQuery is guaranteed non-empty here.
+            query: queryParams.batchQuery,
             reason: getValues('description'),
             rps: getValues('rps'),
             signalParams:

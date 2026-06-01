@@ -104,7 +104,7 @@ describe(DomainBatchActions.name, () => {
     expect(mockSetQueryParams).toHaveBeenCalledWith({ batchActionId: '4' });
   });
 
-  it('sets batchActionId to draft when "New batch action" is clicked', async () => {
+  it('sets batchActionId to draft and prefills the query when "New batch action" is clicked', async () => {
     const user = userEvent.setup();
 
     setup();
@@ -113,6 +113,7 @@ describe(DomainBatchActions.name, () => {
 
     expect(mockSetQueryParams).toHaveBeenCalledWith({
       batchActionId: 'draft',
+      batchQuery: 'CloseTime = missing',
     });
   });
 
