@@ -19,6 +19,16 @@ jest.mock('baseui/spinner', () => ({
   Spinner: jest.fn(() => <div>Spinner</div>),
 }));
 
+jest.mock(
+  '@/components/table/table-infinite-scroll-loader/table-infinite-scroll-loader',
+  () => ({
+    __esModule: true,
+    default: ({ hasData }: { hasData: boolean }) => (
+      <div data-testid="mock-loader" data-has-data={String(hasData)} />
+    ),
+  })
+);
+
 const mockBatchActions: BatchAction[] = [
   { id: '4', status: 'RUNNING', progress: 60, actionType: 'cancel' },
   { id: '3', status: 'COMPLETED', actionType: 'cancel' },
@@ -34,6 +44,10 @@ function setup({
   onSelectAction = jest.fn(),
   onSelectDraft = jest.fn(),
   onCreateNew = jest.fn(),
+  fetchNextPage = jest.fn(),
+  hasNextPage = false,
+  isFetchingNextPage = false,
+  error = null,
 }: {
   batchActions?: BatchAction[];
   isDraftOpen?: boolean;
@@ -42,6 +56,10 @@ function setup({
   onSelectAction?: (id: string) => void;
   onSelectDraft?: () => void;
   onCreateNew?: () => void;
+  fetchNextPage?: () => void;
+  hasNextPage?: boolean;
+  isFetchingNextPage?: boolean;
+  error?: Error | null;
 } = {}) {
   const user = userEvent.setup();
   render(
@@ -53,9 +71,13 @@ function setup({
       onSelectAction={onSelectAction}
       onSelectDraft={onSelectDraft}
       onCreateNew={onCreateNew}
+      fetchNextPage={fetchNextPage}
+      hasNextPage={hasNextPage}
+      isFetchingNextPage={isFetchingNextPage}
+      error={error}
     />
   );
-  return { user, onSelectAction, onSelectDraft, onCreateNew };
+  return { user, onSelectAction, onSelectDraft, onCreateNew, fetchNextPage };
 }
 
 describe(DomainBatchActionsSidebar.name, () => {
@@ -78,10 +100,10 @@ describe(DomainBatchActionsSidebar.name, () => {
   it('renders all batch actions in the list', () => {
     setup();
 
-    expect(screen.getByText('Batch action #4')).toBeInTheDocument();
-    expect(screen.getByText('Batch action #3')).toBeInTheDocument();
-    expect(screen.getByText('Batch action #2')).toBeInTheDocument();
-    expect(screen.getByText('Batch action #1')).toBeInTheDocument();
+    expect(screen.getByText('4')).toBeInTheDocument();
+    expect(screen.getByText('3')).toBeInTheDocument();
+    expect(screen.getByText('2')).toBeInTheDocument();
+    expect(screen.getByText('1')).toBeInTheDocument();
   });
 
   it('renders correct status icons for each status', () => {
@@ -96,7 +118,7 @@ describe(DomainBatchActionsSidebar.name, () => {
   it('calls onSelectAction with the action id when a batch action is clicked', async () => {
     const { user, onSelectAction } = setup();
 
-    await user.click(screen.getByText('Batch action #2'));
+    await user.click(screen.getByText('2'));
 
     expect(onSelectAction).toHaveBeenCalledWith('2');
   });
@@ -126,5 +148,47 @@ describe(DomainBatchActionsSidebar.name, () => {
     await user.click(screen.getByText('Untitled batch action'));
 
     expect(onSelectDraft).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not render the loader when there is no next page, no in-flight fetch, and no error', () => {
+    setup({ hasNextPage: false, isFetchingNextPage: false, error: null });
+
+    expect(screen.queryByTestId('mock-loader')).not.toBeInTheDocument();
+  });
+
+  it('renders the loader when hasNextPage is true', () => {
+    setup({ hasNextPage: true });
+
+    expect(screen.getByTestId('mock-loader')).toBeInTheDocument();
+  });
+
+  it('renders the loader when isFetchingNextPage is true', () => {
+    setup({ isFetchingNextPage: true });
+
+    expect(screen.getByTestId('mock-loader')).toBeInTheDocument();
+  });
+
+  it('renders the loader when error is set', () => {
+    setup({ error: new Error('boom') });
+
+    expect(screen.getByTestId('mock-loader')).toBeInTheDocument();
+  });
+
+  it('passes hasData=true to the loader when batchActions is non-empty', () => {
+    setup({ hasNextPage: true });
+
+    expect(screen.getByTestId('mock-loader')).toHaveAttribute(
+      'data-has-data',
+      'true'
+    );
+  });
+
+  it('passes hasData=false to the loader when batchActions is empty', () => {
+    setup({ batchActions: [], hasNextPage: true });
+
+    expect(screen.getByTestId('mock-loader')).toHaveAttribute(
+      'data-has-data',
+      'false'
+    );
   });
 });

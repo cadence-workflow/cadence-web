@@ -1,12 +1,15 @@
 import React from 'react';
 
 import { userEvent } from '@testing-library/user-event';
+import { HttpResponse } from 'msw';
 
 import { render, screen } from '@/test-utils/rtl';
 
+import { type ListBatchActionsResponse } from '@/route-handlers/list-batch-actions/list-batch-actions.types';
 import { mockDomainPageQueryParamsValues } from '@/views/domain-page/__fixtures__/domain-page-query-params';
 
 import DomainBatchActions from '../domain-batch-actions';
+import { type Props as DetailProps } from '../domain-batch-actions-detail/domain-batch-actions-detail.types';
 import { type Props as NewActionDetailProps } from '../domain-batch-actions-new-action-detail/domain-batch-actions-new-action-detail.types';
 import { type Props as SidebarProps } from '../domain-batch-actions-sidebar/domain-batch-actions-sidebar.types';
 
@@ -15,39 +18,6 @@ const mockUsePageQueryParams = jest.fn();
 jest.mock('@/hooks/use-page-query-params/use-page-query-params', () => ({
   __esModule: true,
   default: (...args: Array<unknown>) => mockUsePageQueryParams(...args),
-}));
-
-jest.mock('../domain-batch-actions.constants', () => ({
-  DRAFT_ACTION_ID: 'draft',
-  MOCK_BATCH_ACTIONS: [
-    {
-      id: '5',
-      status: 'RUNNING',
-      progress: 60,
-      actionType: 'cancel',
-      startTime: Date.now() - 100000,
-      rps: 200,
-      concurrency: 10,
-    },
-    {
-      id: '4',
-      status: 'COMPLETED',
-      actionType: 'terminate',
-      startTime: Date.now() - 3600000,
-      endTime: Date.now() - 1800000,
-      rps: 150,
-      concurrency: 5,
-    },
-    {
-      id: '3',
-      status: 'FAILED',
-      actionType: 'reset',
-      startTime: Date.now() - 7200000,
-      endTime: Date.now() - 5400000,
-      rps: 100,
-      concurrency: 8,
-    },
-  ],
 }));
 
 jest.mock(
@@ -63,6 +33,13 @@ jest.mock(
   })
 );
 
+jest.mock('../domain-batch-actions-detail/domain-batch-actions-detail', () => ({
+  __esModule: true,
+  default: ({ batchAction }: DetailProps) => (
+    <div>mock-batch-action-detail-{batchAction.id}</div>
+  ),
+}));
+
 jest.mock(
   '../domain-batch-actions-sidebar/domain-batch-actions-sidebar',
   () => ({
@@ -72,10 +49,12 @@ jest.mock(
       onSelectAction,
       onSelectDraft,
       onCreateNew,
+      fetchNextPage,
     }: SidebarProps) => (
       <div>
         <button onClick={onCreateNew}>mock-new-batch-action</button>
         <button onClick={onSelectDraft}>mock-select-draft</button>
+        <button onClick={fetchNextPage}>mock-fetch-next-page</button>
         {batchActions.map((a) => (
           <button key={a.id} onClick={() => onSelectAction(a.id)}>
             mock-select-{a.id}
@@ -85,6 +64,14 @@ jest.mock(
     ),
   })
 );
+
+const mockBatchActionsResponse: ListBatchActionsResponse = {
+  batchActions: [
+    { id: '5', status: 'RUNNING' },
+    { id: '4', status: 'COMPLETED' },
+  ],
+  nextPageToken: '',
+};
 
 describe(DomainBatchActions.name, () => {
   beforeEach(() => {
@@ -99,34 +86,34 @@ describe(DomainBatchActions.name, () => {
     jest.clearAllMocks();
   });
 
-  it('renders detail panel for the first batch action by default', () => {
-    render(<DomainBatchActions domain="test-domain" cluster="test-cluster" />);
+  it('renders detail panel for the first batch action by default', async () => {
+    setup();
 
     expect(
-      screen.getByRole('heading', { name: /Batch action #5/ })
+      await screen.findByText('mock-batch-action-detail-5')
     ).toBeInTheDocument();
-    expect(screen.getByText('Abort batch action')).toBeInTheDocument();
   });
 
   it('updates URL param when a different action is selected', async () => {
     const user = userEvent.setup();
 
-    render(<DomainBatchActions domain="test-domain" cluster="test-cluster" />);
+    setup();
 
-    await user.click(screen.getByText('mock-select-4'));
+    await user.click(await screen.findByText('mock-select-4'));
 
     expect(mockSetQueryParams).toHaveBeenCalledWith({ batchActionId: '4' });
   });
 
-  it('sets batchActionId to draft when "New batch action" is clicked', async () => {
+  it('sets batchActionId to draft and prefills the query when "New batch action" is clicked', async () => {
     const user = userEvent.setup();
 
-    render(<DomainBatchActions domain="test-domain" cluster="test-cluster" />);
+    setup();
 
-    await user.click(screen.getByText('mock-new-batch-action'));
+    await user.click(await screen.findByText('mock-new-batch-action'));
 
     expect(mockSetQueryParams).toHaveBeenCalledWith({
       batchActionId: 'draft',
+      batchQuery: 'CloseTime = missing',
     });
   });
 
@@ -142,9 +129,9 @@ describe(DomainBatchActions.name, () => {
 
     const user = userEvent.setup();
 
-    render(<DomainBatchActions domain="test-domain" cluster="test-cluster" />);
+    setup();
 
-    await user.click(screen.getByText('Discard batch action'));
+    await user.click(await screen.findByText('Discard batch action'));
 
     expect(mockSetQueryParams).toHaveBeenCalledWith({
       batchActionId: undefined,
@@ -152,7 +139,7 @@ describe(DomainBatchActions.name, () => {
     });
   });
 
-  it('opens the draft when batchActionId is "draft" (no batchQuery)', () => {
+  it('opens the draft when batchActionId is "draft" (no batchQuery)', async () => {
     mockUsePageQueryParams.mockReturnValue([
       {
         ...mockDomainPageQueryParamsValues,
@@ -162,14 +149,14 @@ describe(DomainBatchActions.name, () => {
       mockSetQueryParams,
     ]);
 
-    render(<DomainBatchActions domain="test-domain" cluster="test-cluster" />);
+    setup();
 
     expect(
-      screen.getByRole('heading', { name: 'New batch action' })
+      await screen.findByRole('heading', { name: 'New batch action' })
     ).toBeInTheDocument();
   });
 
-  it('renders the specified batch action when batchActionId is set', () => {
+  it('renders the specified batch action when batchActionId is set', async () => {
     mockUsePageQueryParams.mockReturnValue([
       {
         ...mockDomainPageQueryParamsValues,
@@ -179,25 +166,82 @@ describe(DomainBatchActions.name, () => {
       mockSetQueryParams,
     ]);
 
-    render(<DomainBatchActions domain="test-domain" cluster="test-cluster" />);
+    setup();
 
     expect(
-      screen.getByRole('heading', { name: /Batch action #4/ })
+      await screen.findByText('mock-batch-action-detail-4')
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole('heading', { name: /Batch action #5/ })
+      screen.queryByText('mock-batch-action-detail-5')
     ).not.toBeInTheDocument();
   });
 
   it('sets batchActionId to draft when selecting the draft sidebar item', async () => {
     const user = userEvent.setup();
 
-    render(<DomainBatchActions domain="test-domain" cluster="test-cluster" />);
+    setup();
 
-    await user.click(screen.getByText('mock-select-draft'));
+    await user.click(await screen.findByText('mock-select-draft'));
 
     expect(mockSetQueryParams).toHaveBeenCalledWith({
       batchActionId: 'draft',
     });
   });
+
+  it('renders items from all fetched pages when paginating', async () => {
+    const user = userEvent.setup();
+
+    setup({
+      pages: [
+        {
+          batchActions: [
+            { id: '5', status: 'RUNNING' },
+            { id: '4', status: 'COMPLETED' },
+          ],
+          nextPageToken: 'page-2',
+        },
+        {
+          batchActions: [
+            { id: '3', status: 'COMPLETED' },
+            { id: '2', status: 'COMPLETED' },
+          ],
+          nextPageToken: '',
+        },
+      ],
+    });
+
+    expect(await screen.findByText('mock-select-5')).toBeInTheDocument();
+    expect(screen.queryByText('mock-select-3')).not.toBeInTheDocument();
+
+    await user.click(screen.getByText('mock-fetch-next-page'));
+
+    expect(await screen.findByText('mock-select-3')).toBeInTheDocument();
+    expect(screen.getByText('mock-select-5')).toBeInTheDocument();
+    expect(screen.getByText('mock-select-2')).toBeInTheDocument();
+  });
 });
+
+function setup({
+  pages = [mockBatchActionsResponse],
+}: { pages?: ListBatchActionsResponse[] } = {}) {
+  return render(
+    <DomainBatchActions domain="test-domain" cluster="test-cluster" />,
+    {
+      endpointsMocks: [
+        {
+          path: '/api/domains/:domain/:cluster/batch-actions',
+          httpMethod: 'GET',
+          mockOnce: false,
+          httpResolver: async ({ request }) => {
+            const url = new URL(request.url);
+            const nextPage = url.searchParams.get('nextPage');
+            const pageIndex = nextPage
+              ? pages.findIndex((p) => p.nextPageToken === nextPage) + 1
+              : 0;
+            return HttpResponse.json(pages[pageIndex] ?? pages[0]);
+          },
+        },
+      ],
+    }
+  );
+}

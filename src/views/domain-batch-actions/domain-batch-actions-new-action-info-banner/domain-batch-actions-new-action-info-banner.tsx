@@ -24,8 +24,7 @@ export default function DomainBatchActionsNewActionInfoBanner() {
         </styled.Title>
         <styled.Subtitle>
           That means that the workflows listed below are subject to change. If a
-          workflow changes state from running, it will be ignored. Only selected
-          workflows will be submitted.
+          workflow changes state from running, it will be ignored.
         </styled.Subtitle>
       </styled.TextContainer>
     </DomainBatchActionsBanner>
