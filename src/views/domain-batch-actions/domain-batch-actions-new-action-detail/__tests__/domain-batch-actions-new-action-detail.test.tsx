@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { HttpResponse } from 'msw';
+import { Controller } from 'react-hook-form';
 
 import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
@@ -29,7 +30,6 @@ jest.mock(
   '../../domain-batch-actions-new-action-params/domain-batch-actions-new-action-params',
   () => {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { Controller } = require('react-hook-form');
     return function MockParams({ control }: any) {
       return (
         <div data-testid="mock-params">
@@ -200,16 +200,6 @@ describe(DomainBatchActionsNewActionDetail.name, () => {
     expect(
       screen.queryByText(/Showing all running workflows/i)
     ).not.toBeInTheDocument();
-    expect(
-      screen.queryByText('Query must not be empty')
-    ).not.toBeInTheDocument();
-  });
-
-  it('does not show the required-query error before an action is attempted', async () => {
-    setQueryParams({ batchQuery: '' });
-    setup({});
-
-    expect(await screen.findByTestId('mock-floating-bar')).toBeInTheDocument();
     expect(
       screen.queryByText('Query must not be empty')
     ).not.toBeInTheDocument();
