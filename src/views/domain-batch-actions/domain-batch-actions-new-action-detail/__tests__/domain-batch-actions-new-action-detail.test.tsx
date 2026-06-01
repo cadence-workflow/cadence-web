@@ -11,6 +11,7 @@ import { type CountWorkflowsResponse } from '@/views/shared/hooks/use-count-work
 import { mockWorkflowsListSystemColumns } from '@/views/shared/workflows-list/__fixtures__/mock-workflows-list-columns';
 
 import { type Props as MSWMocksHandlersProps } from '../../../../test-utils/msw-mock-handlers/msw-mock-handlers.types';
+import { BATCH_ACTION_DEFAULT_QUERY } from '../../domain-batch-actions.constants';
 import DomainBatchActionsNewActionDetail from '../domain-batch-actions-new-action-detail';
 
 jest.mock('react-icons/md', () => ({
@@ -22,19 +23,44 @@ jest.mock('query-string', () => ({
   stringifyUrl: jest.fn(({ url }: { url: string }) => url),
 }));
 
+// Render a real Controller-wired Description input so tests can make the form
+// valid, while keeping the mock-params testid for isolation.
 jest.mock(
   '../../domain-batch-actions-new-action-params/domain-batch-actions-new-action-params',
-  () => jest.fn(() => <div data-testid="mock-params" />)
+  () => {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { Controller } = require('react-hook-form');
+    return function MockParams({ control }: any) {
+      return (
+        <div data-testid="mock-params">
+          <Controller
+            name="description"
+            control={control}
+            render={({ field }: any) => (
+              <input aria-label="Description" {...field} />
+            )}
+          />
+        </div>
+      );
+    };
+  }
 );
 
 jest.mock(
   '../../domain-batch-actions-new-action-floating-bar/domain-batch-actions-new-action-floating-bar',
   () =>
-    jest.fn(({ selectedCount, totalCount }) => (
-      <div data-testid="mock-floating-bar">
-        {`${selectedCount} of ${totalCount} workflows included`}
-      </div>
-    ))
+    jest.fn(
+      ({ selectedCount, totalCount, actions, onActionClick, disabled }) => (
+        <div data-testid="mock-floating-bar" data-disabled={String(disabled)}>
+          <span>{`${selectedCount} of ${totalCount} workflows included`}</span>
+          {actions.map((action: { id: string }) => (
+            <button key={action.id} onClick={() => onActionClick(action.id)}>
+              {`action-${action.id}`}
+            </button>
+          ))}
+        </div>
+      )
+    )
 );
 
 jest.mock('@/components/error-panel/error-panel', () =>
@@ -153,7 +179,133 @@ describe(DomainBatchActionsNewActionDetail.name, () => {
 
     expect(screen.queryByText(/workflows included/i)).not.toBeInTheDocument();
   });
+
+  it('shows the running-workflows caption when the query is the default', async () => {
+    setQueryParams({ batchQuery: BATCH_ACTION_DEFAULT_QUERY });
+    setup({});
+
+    expect(
+      await screen.findByText(/Showing all running workflows/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText('Query must not be empty')
+    ).not.toBeInTheDocument();
+  });
+
+  it('hides the caption once the query has been edited', async () => {
+    setQueryParams({ batchQuery: 'WorkflowType="foo"' });
+    setup({});
+
+    expect(await screen.findByTestId('mock-floating-bar')).toBeInTheDocument();
+    expect(
+      screen.queryByText(/Showing all running workflows/i)
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('Query must not be empty')
+    ).not.toBeInTheDocument();
+  });
+
+  it('does not show the required-query error before an action is attempted', async () => {
+    setQueryParams({ batchQuery: '' });
+    setup({});
+
+    expect(await screen.findByTestId('mock-floating-bar')).toBeInTheDocument();
+    expect(
+      screen.queryByText('Query must not be empty')
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows the required-query error and blocks the action when the query is empty', async () => {
+    setQueryParams({ batchQuery: '' });
+    const { user } = setup({});
+
+    await user.click(await screen.findByText('action-cancel'));
+
+    expect(
+      await screen.findByText('Query must not be empty')
+    ).toBeInTheDocument();
+    // The confirmation modal must not open for an empty query.
+    expect(screen.queryByText('Start Batch Action')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/Showing all running workflows/i)
+    ).not.toBeInTheDocument();
+  });
+
+  it('blocks submission when the description is valid but the query is empty', async () => {
+    setQueryParams({ batchQuery: '' });
+    const { user } = setup({});
+
+    await user.type(await screen.findByLabelText('Description'), 'cleanup');
+    await user.click(screen.getByText('action-cancel'));
+
+    expect(
+      await screen.findByText('Query must not be empty')
+    ).toBeInTheDocument();
+    expect(screen.queryByText('Start Batch Action')).not.toBeInTheDocument();
+  });
+
+  it('disables the floating bar after an empty-query action attempt', async () => {
+    setQueryParams({ batchQuery: '' });
+    const { user } = setup({});
+
+    expect(await screen.findByTestId('mock-floating-bar')).toHaveAttribute(
+      'data-disabled',
+      'false'
+    );
+
+    await user.click(screen.getByText('action-cancel'));
+
+    expect(screen.getByTestId('mock-floating-bar')).toHaveAttribute(
+      'data-disabled',
+      'true'
+    );
+  });
+
+  it('opens the confirmation modal when the query and description are valid', async () => {
+    setQueryParams({ batchQuery: 'WorkflowType="foo"' });
+    const { user } = setup({});
+
+    await user.type(await screen.findByLabelText('Description'), 'cleanup');
+    await user.click(screen.getByText('action-cancel'));
+
+    expect(await screen.findByText('Start Batch Action')).toBeInTheDocument();
+  });
+
+  it('closes the confirmation modal without starting the action', async () => {
+    setQueryParams({ batchQuery: 'WorkflowType="foo"' });
+    const { user } = setup({});
+
+    await user.type(await screen.findByLabelText('Description'), 'cleanup');
+    await user.click(screen.getByText('action-cancel'));
+    await user.click(await screen.findByText('Close'));
+
+    await waitFor(() => {
+      expect(screen.queryByText('Start Batch Action')).not.toBeInTheDocument();
+    });
+  });
+
+  it('starts the batch action and closes the modal on success when confirmed', async () => {
+    setQueryParams({ batchQuery: 'WorkflowType="foo"' });
+    const { user } = setup({});
+
+    await user.type(await screen.findByLabelText('Description'), 'cleanup');
+    await user.click(screen.getByText('action-cancel'));
+    await user.click(await screen.findByText('Start Batch Action'));
+
+    // A successful start triggers onSuccess -> setActiveAction(null), closing
+    // the modal.
+    await waitFor(() => {
+      expect(screen.queryByText('Start Batch Action')).not.toBeInTheDocument();
+    });
+  });
 });
+
+function setQueryParams(overrides: Record<string, unknown>) {
+  mockUsePageQueryParams.mockReturnValue([
+    { ...mockDomainPageQueryParamsValues, ...overrides },
+    mockSetQueryParams,
+  ]);
+}
 
 function setup({
   onDiscard = jest.fn(),
@@ -206,6 +358,12 @@ function setup({
                   { status: 500 }
                 )
               : HttpResponse.json(countResponse),
+        },
+        {
+          path: '/api/domains/:domain/:cluster/workflows/start',
+          httpMethod: 'POST',
+          mockOnce: false,
+          httpResolver: async () => HttpResponse.json({}),
         },
       ] as MSWMocksHandlersProps['endpointsMocks'],
     }

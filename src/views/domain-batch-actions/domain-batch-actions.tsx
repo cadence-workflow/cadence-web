@@ -13,6 +13,7 @@ import DomainBatchActionsNoActionsPlaceholder from './domain-batch-actions-no-ac
 import DomainBatchActionsSidebar from './domain-batch-actions-sidebar/domain-batch-actions-sidebar';
 import {
   BATCH_ACTIONS_PAGE_SIZE,
+  BATCH_ACTION_DEFAULT_QUERY,
   DRAFT_ACTION_ID,
 } from './domain-batch-actions.constants';
 import { styled } from './domain-batch-actions.styles';
@@ -71,7 +72,10 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
 
   const handleCreateNew = () => {
     setIsDraftOpen(true);
-    setQueryParams({ batchActionId: DRAFT_ACTION_ID });
+    setQueryParams({
+      batchActionId: DRAFT_ACTION_ID,
+      batchQuery: BATCH_ACTION_DEFAULT_QUERY,
+    });
   };
 
   const handleSelectAction = (id: string) => {
