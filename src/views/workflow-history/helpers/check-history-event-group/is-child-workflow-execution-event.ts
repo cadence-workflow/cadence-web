@@ -3,7 +3,7 @@ import type { ChildWorkflowExecutionHistoryEvent } from '../../workflow-history.
 export default function isChildWorkflowExecutionEvent(event: {
   attributes?: string;
 }): event is ChildWorkflowExecutionHistoryEvent {
-  if (!event.attributes) return false;
+  if (!event?.attributes) return false;
 
   return [
     'startChildWorkflowExecutionInitiatedEventAttributes',
