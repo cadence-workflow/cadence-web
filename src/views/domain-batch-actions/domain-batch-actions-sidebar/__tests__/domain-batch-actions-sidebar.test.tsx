@@ -19,19 +19,15 @@ jest.mock('baseui/spinner', () => ({
   Spinner: jest.fn(() => <div>Spinner</div>),
 }));
 
-const mockInViewOnChange = jest.fn();
-jest.mock('react-intersection-observer', () => ({
-  InView: ({
-    children,
-    onChange,
-  }: {
-    children: React.ReactNode;
-    onChange: (inView: boolean) => void;
-  }) => {
-    mockInViewOnChange.mockImplementation(onChange);
-    return <div data-testid="in-view">{children}</div>;
-  },
-}));
+jest.mock(
+  '@/components/table/table-infinite-scroll-loader/table-infinite-scroll-loader',
+  () => ({
+    __esModule: true,
+    default: ({ hasData }: { hasData: boolean }) => (
+      <div data-testid="mock-loader" data-has-data={String(hasData)} />
+    ),
+  })
+);
 
 const mockBatchActions: BatchAction[] = [
   { id: '4', status: 'RUNNING', progress: 60, actionType: 'cancel' },
@@ -154,17 +150,45 @@ describe(DomainBatchActionsSidebar.name, () => {
     expect(onSelectDraft).toHaveBeenCalledTimes(1);
   });
 
-  it('calls fetchNextPage when the load-more sentinel comes into view', () => {
-    const { fetchNextPage } = setup({ hasNextPage: true });
+  it('does not render the loader when there is no next page, no in-flight fetch, and no error', () => {
+    setup({ hasNextPage: false, isFetchingNextPage: false, error: null });
 
-    mockInViewOnChange(true);
-
-    expect(fetchNextPage).toHaveBeenCalledTimes(1);
+    expect(screen.queryByTestId('mock-loader')).not.toBeInTheDocument();
   });
 
-  it('does not render the load-more sentinel when there are no more pages', () => {
-    setup({ hasNextPage: false });
+  it('renders the loader when hasNextPage is true', () => {
+    setup({ hasNextPage: true });
 
-    expect(screen.queryByTestId('in-view')).not.toBeInTheDocument();
+    expect(screen.getByTestId('mock-loader')).toBeInTheDocument();
+  });
+
+  it('renders the loader when isFetchingNextPage is true', () => {
+    setup({ isFetchingNextPage: true });
+
+    expect(screen.getByTestId('mock-loader')).toBeInTheDocument();
+  });
+
+  it('renders the loader when error is set', () => {
+    setup({ error: new Error('boom') });
+
+    expect(screen.getByTestId('mock-loader')).toBeInTheDocument();
+  });
+
+  it('passes hasData=true to the loader when batchActions is non-empty', () => {
+    setup({ hasNextPage: true });
+
+    expect(screen.getByTestId('mock-loader')).toHaveAttribute(
+      'data-has-data',
+      'true'
+    );
+  });
+
+  it('passes hasData=false to the loader when batchActions is empty', () => {
+    setup({ batchActions: [], hasNextPage: true });
+
+    expect(screen.getByTestId('mock-loader')).toHaveAttribute(
+      'data-has-data',
+      'false'
+    );
   });
 });

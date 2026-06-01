@@ -130,7 +130,7 @@ describe(DomainBatchActions.name, () => {
 
     setup();
 
-    await user.click(screen.getByText('Discard batch action'));
+    await user.click(await screen.findByText('Discard batch action'));
 
     expect(mockSetQueryParams).toHaveBeenCalledWith({
       batchActionId: undefined,
@@ -138,7 +138,7 @@ describe(DomainBatchActions.name, () => {
     });
   });
 
-  it('opens the draft when batchActionId is "draft" (no batchQuery)', () => {
+  it('opens the draft when batchActionId is "draft" (no batchQuery)', async () => {
     mockUsePageQueryParams.mockReturnValue([
       {
         ...mockDomainPageQueryParamsValues,
@@ -151,7 +151,7 @@ describe(DomainBatchActions.name, () => {
     setup();
 
     expect(
-      screen.getByRole('heading', { name: 'New batch action' })
+      await screen.findByRole('heading', { name: 'New batch action' })
     ).toBeInTheDocument();
   });
 
@@ -180,7 +180,7 @@ describe(DomainBatchActions.name, () => {
 
     setup();
 
-    await user.click(screen.getByText('mock-select-draft'));
+    await user.click(await screen.findByText('mock-select-draft'));
 
     expect(mockSetQueryParams).toHaveBeenCalledWith({
       batchActionId: 'draft',
