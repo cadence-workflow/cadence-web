@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import queryString from 'query-string';
 
+import getConfigValue from '@/utils/config/get-config-value';
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 import getVisibilityQuery from '@/utils/visibility/get-visibility-query';
@@ -35,6 +36,10 @@ export async function countWorkflows(
     );
   }
 
+  const isPartialMatchingEnabled = await getConfigValue(
+    'LIST_WORKFLOWS_PARTIAL_MATCH_ENABLED'
+  ).catch(() => false);
+
   const query =
     queryParams.inputType === 'query'
       ? queryParams.query
@@ -47,6 +52,7 @@ export async function countWorkflows(
           timeRangeStart: queryParams.timeRangeStart,
           timeRangeEnd: queryParams.timeRangeEnd,
           includeOrderBy: false,
+          isPartialMatchingEnabled,
         });
 
   try {

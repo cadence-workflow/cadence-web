@@ -11,6 +11,7 @@ export default function getVisibilityQuery({
   timeRangeStart,
   timeRangeEnd,
   includeOrderBy = true,
+  isPartialMatchingEnabled = false,
 }: {
   search?: string;
   workflowStatuses?: Array<WorkflowStatus>;
@@ -20,11 +21,13 @@ export default function getVisibilityQuery({
   timeRangeStart?: string;
   timeRangeEnd?: string;
   includeOrderBy?: boolean;
+  isPartialMatchingEnabled?: boolean;
 }) {
   const searchQueries: Array<string> = [];
   if (search) {
+    const comparator = isPartialMatchingEnabled ? 'LIKE' : '=';
     searchQueries.push(
-      `(WorkflowType = "${search}" OR WorkflowID = "${search}" OR RunID = "${search}")`
+      `(WorkflowType ${comparator} "${search}" OR WorkflowID ${comparator} "${search}" OR RunID ${comparator} "${search}")`
     );
   }
 
