@@ -105,6 +105,10 @@ const resolverSchemas: ResolverSchemas = {
     args: z.undefined(),
     returnType: z.boolean(),
   },
+  LIST_WORKFLOWS_PARTIAL_MATCH_ENABLED: {
+    args: z.undefined(),
+    returnType: z.boolean(),
+  },
 };
 
 export default resolverSchemas;
