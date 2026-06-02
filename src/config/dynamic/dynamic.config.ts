@@ -26,6 +26,7 @@ import { type ExtendedDomainInfoEnabledConfig } from './resolvers/extended-domai
 import failoverHistoryEnabled from './resolvers/failover-history-enabled';
 import historyPageV2Enabled from './resolvers/history-page-v2-enabled';
 import { type HistoryPageV2EnabledConfigValue } from './resolvers/history-page-v2-enabled.types';
+import listWorkflowsPartialMatchEnabled from './resolvers/list-workflows-partial-match-enabled';
 import schedulesEnabled from './resolvers/schedules-enabled';
 import { type SchedulesEnabledResolverParams } from './resolvers/schedules-enabled.types';
 import workflowActionsEnabled from './resolvers/workflow-actions-enabled';
@@ -121,6 +122,12 @@ const dynamicConfigs: {
     'request',
     true
   >;
+  LIST_WORKFLOWS_PARTIAL_MATCH_ENABLED: ConfigAsyncResolverDefinition<
+    undefined,
+    boolean,
+    'request',
+    true
+  >;
 } = {
   CADENCE_WEB_PORT: {
     env: 'CADENCE_WEB_PORT',
@@ -196,6 +203,11 @@ const dynamicConfigs: {
   },
   WORKFLOWS_LIST_ENABLED: {
     resolver: workflowsListEnabled,
+    evaluateOn: 'request',
+    isPublic: true,
+  },
+  LIST_WORKFLOWS_PARTIAL_MATCH_ENABLED: {
+    resolver: listWorkflowsPartialMatchEnabled,
     evaluateOn: 'request',
     isPublic: true,
   },

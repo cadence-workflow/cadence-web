@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import queryString from 'query-string';
 
+import getConfigValue from '@/utils/config/get-config-value';
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 import getVisibilityQuery from '@/utils/visibility/get-visibility-query';
@@ -24,6 +25,7 @@ export async function listWorkflows(
   const { data: queryParams, error } = listWorkflowsQueryParamSchema.safeParse(
     queryString.parse(request.nextUrl.searchParams.toString())
   );
+
   if (error) {
     return NextResponse.json(
       {
@@ -35,6 +37,10 @@ export async function listWorkflows(
       }
     );
   }
+
+  const isPartialMatchingEnabled = await getConfigValue(
+    'LIST_WORKFLOWS_PARTIAL_MATCH_ENABLED'
+  ).catch(() => false);
 
   const listWorkflowsParams = {
     domain: params.domain,
@@ -51,6 +57,7 @@ export async function listWorkflows(
             timeColumn: queryParams.timeColumn,
             timeRangeStart: queryParams.timeRangeStart,
             timeRangeEnd: queryParams.timeRangeEnd,
+            isPartialMatchingEnabled,
           }),
   };
 
