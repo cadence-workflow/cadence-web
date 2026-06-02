@@ -312,14 +312,16 @@ async function setup({
   error?: Error;
   configError?: Error;
 }) {
-  const mockGetConfigValue = jest
-    .spyOn(getConfigValueModule, 'default')
-    .mockImplementation(async () => {
-      if (configError) {
-        throw configError;
-      }
-      return false as never;
-    });
+  const mockGetConfigValue = jest.spyOn(
+    getConfigValueModule,
+    'default'
+  ) as jest.Mock;
+
+  if (configError) {
+    mockGetConfigValue.mockRejectedValue(error);
+  } else {
+    mockGetConfigValue.mockResolvedValue(false);
+  }
 
   const mockGetListWorkflowExecutionsQuery = jest
     .spyOn(getVisibilityQueryModule, 'default')
