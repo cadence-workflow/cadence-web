@@ -4,7 +4,7 @@ import { DURATION, useSnackbar } from 'baseui/snackbar';
 import { useRouter } from 'next/navigation';
 import { MdCheckCircle, MdErrorOutline } from 'react-icons/md';
 
-import { ERROR_SNACKBAR_OVERRIDES } from '../domain-batch-actions.constants';
+import { overrides } from '../domain-batch-actions.styles';
 
 import {
   type ConfirmBatchActionHandler,
@@ -52,7 +52,7 @@ export default function useConfirmBatchAction({
             {
               message: err.message || 'Failed to start batch action',
               startEnhancer: MdErrorOutline,
-              overrides: ERROR_SNACKBAR_OVERRIDES,
+              overrides: overrides.errorSnackbar,
               actionMessage: 'OK',
               actionOnClick: () => dequeue(),
             },

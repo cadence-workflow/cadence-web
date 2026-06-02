@@ -13,7 +13,9 @@ type TransformEventType<T extends string> = CapitalizeFirstLetter<
   RemoveEventAttributes<T>
 >;
 
-const formatWorkflowHistoryEventType = <T extends HistoryEvent['attributes']>(
+const formatWorkflowHistoryEventType = <
+  T extends NonNullable<HistoryEvent['attributes']>,
+>(
   attributes: T
 ) => {
   if (!attributes) return attributes;

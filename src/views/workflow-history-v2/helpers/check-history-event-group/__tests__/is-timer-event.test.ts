@@ -37,7 +37,6 @@ describe('isTimerEvent', () => {
     expect(isTimerEvent(null)).toBe(false);
     //@ts-expect-error undefined is not of type HistoryEvent
     expect(isTimerEvent(undefined)).toBe(false);
-    //@ts-expect-error {} is not of type HistoryEvent
     expect(isTimerEvent({})).toBe(false);
   });
 });
