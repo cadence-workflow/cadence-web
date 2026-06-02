@@ -1,7 +1,10 @@
 'use client';
 
-import { useSnackbar } from 'baseui/snackbar';
+import { DURATION, useSnackbar } from 'baseui/snackbar';
+import { useRouter } from 'next/navigation';
 import { MdCheckCircle, MdErrorOutline } from 'react-icons/md';
+
+import { overrides } from '../domain-batch-actions.styles';
 
 import {
   type ConfirmBatchActionHandler,
@@ -18,6 +21,7 @@ export default function useConfirmBatchAction({
   isPending: boolean;
 } {
   const { enqueue, dequeue } = useSnackbar();
+  const router = useRouter();
   const { mutate: startBatchAction, isPending } = useStartBatchAction({
     cluster,
   });
@@ -26,22 +30,34 @@ export default function useConfirmBatchAction({
     startBatchAction(
       { domain, ...input },
       {
-        onSuccess: () => {
+        onSuccess: (result) => {
           onSuccess?.();
-          enqueue({
-            message: 'Batch action started',
-            startEnhancer: MdCheckCircle,
-            actionMessage: 'OK',
-            actionOnClick: () => dequeue(),
-          });
+          enqueue(
+            {
+              message: 'Batch action started',
+              startEnhancer: MdCheckCircle,
+              actionMessage: 'View',
+              actionOnClick: () => {
+                dequeue();
+                router.push(
+                  `/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/batch-actions?bid=${encodeURIComponent(result.workflowId)}`
+                );
+              },
+            },
+            DURATION.short
+          );
         },
         onError: (err) => {
-          enqueue({
-            message: err.message || 'Failed to start batch action',
-            startEnhancer: MdErrorOutline,
-            actionMessage: 'OK',
-            actionOnClick: () => dequeue(),
-          });
+          enqueue(
+            {
+              message: err.message || 'Failed to start batch action',
+              startEnhancer: MdErrorOutline,
+              overrides: overrides.errorSnackbar,
+              actionMessage: 'OK',
+              actionOnClick: () => dequeue(),
+            },
+            DURATION.short
+          );
         },
       }
     );
