@@ -45,4 +45,16 @@ describe('getVisibilityQuery', () => {
     });
     expect(query).toEqual('');
   });
+
+  it('should use LIKE comparator when partial matching is enabled', () => {
+    const query = getVisibilityQuery({
+      search: 'mocksearchterm',
+      timeColumn: 'StartTime',
+      includeOrderBy: false,
+      isPartialMatchingEnabled: true,
+    });
+    expect(query).toEqual(
+      '(WorkflowType LIKE "mocksearchterm" OR WorkflowID LIKE "mocksearchterm" OR RunID LIKE "mocksearchterm")'
+    );
+  });
 });
