@@ -3,7 +3,7 @@ import { HttpResponse } from 'msw';
 
 import { act, renderHook, waitFor } from '@/test-utils/rtl';
 
-import { ERROR_SNACKBAR_OVERRIDES } from '../../domain-batch-actions.constants';
+import { overrides } from '../../domain-batch-actions.styles';
 import useConfirmBatchAction from '../use-confirm-batch-action';
 
 const mockEnqueue = jest.fn();
@@ -96,7 +96,7 @@ describe(useConfirmBatchAction.name, () => {
       expect(mockEnqueue).toHaveBeenCalledWith(
         expect.objectContaining({
           message: 'Failed to start',
-          overrides: ERROR_SNACKBAR_OVERRIDES,
+          overrides: overrides.errorSnackbar,
         }),
         DURATION.short
       );
