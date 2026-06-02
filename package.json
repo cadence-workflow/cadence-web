@@ -39,7 +39,7 @@
     "@opentelemetry/instrumentation-undici": "^0.11.0",
     "@opentelemetry/propagator-jaeger": "^2.0.0",
     "@opentelemetry/resources": "^2.0.0",
-    "@opentelemetry/sdk-node": "^0.200.0",
+    "@opentelemetry/sdk-node": "^0.218.0",
     "@opentelemetry/semantic-conventions": "^1.33.0",
     "@tanstack/react-query": "^5.45.0",
     "@tanstack/react-query-next-experimental": "^5.45.0",
