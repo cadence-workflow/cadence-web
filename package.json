@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.10.0",
-    "@grpc/proto-loader": "^0.7.10",
+    "@grpc/proto-loader": "^0.7.15",
     "@hookform/resolvers": "^3.6.0",
     "@markdoc/markdoc": "^0.5.4",
     "@opentelemetry/exporter-trace-otlp-grpc": "^0.200.0",
@@ -79,11 +79,11 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^15.0.2",
     "@testing-library/user-event": "^14.5.2",
     "@types/eslint__js": "^8.42.3",
-    "@types/jest": "^29.5.12",
+    "@types/jest": "^29.5.14",
     "@types/lodash": "^4.14.202",
     "@types/node": "^20.11.17",
     "@types/react": "^18.2.57",
@@ -104,7 +104,7 @@
     "pino-pretty": "^11.2.2",
     "prettier": "3.2.5",
     "styletron-engine-snapshot": "^1.0.2",
-    "ts-jest": "^29.1.2",
+    "ts-jest": "^29.4.11",
     "ts-node": "^10.9.2",
     "tstyche": "^3.0.0",
     "tsx": "^4.19.3",

@@ -1,8 +1,10 @@
 import type { ExtendedActivityHistoryEvent } from '../../workflow-history.types';
 
 export default function isExtendedActivityEvent(event: {
-  attributes: string;
+  attributes?: string;
 }): event is ExtendedActivityHistoryEvent {
+  if (!event?.attributes) return false;
+
   return [
     'activityTaskScheduledEventAttributes',
     'pendingActivityTaskStartEventAttributes',
@@ -11,5 +13,5 @@ export default function isExtendedActivityEvent(event: {
     'activityTaskFailedEventAttributes',
     'activityTaskTimedOutEventAttributes',
     'activityTaskCanceledEventAttributes',
-  ].includes(event?.attributes);
+  ].includes(event.attributes);
 }

@@ -41,7 +41,6 @@ describe('isPendingHistoryEvent', () => {
     expect(isPendingHistoryEvent(null)).toBe(false);
     //@ts-expect-error undefined is not of type HistoryEvent
     expect(isPendingHistoryEvent(undefined)).toBe(false);
-    //@ts-expect-error {} is not of type HistoryEvent
     expect(isPendingHistoryEvent({})).toBe(false);
   });
 });

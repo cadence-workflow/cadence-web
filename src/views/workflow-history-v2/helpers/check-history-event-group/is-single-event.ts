@@ -3,11 +3,13 @@ import type { SingleHistoryEvent } from '../../workflow-history-v2.types';
 import isLocalActivityEvent from './is-local-activity-event';
 
 export default function isSingleEvent(event: {
-  attributes: string;
+  attributes?: string;
   markerRecordedEventAttributes?: {
     markerName?: string;
   } | null;
 }): event is SingleHistoryEvent {
+  if (!event?.attributes) return false;
+
   // Local activity events are marker events but should be handled separately
   if (isLocalActivityEvent(event)) {
     return false;
@@ -27,5 +29,5 @@ export default function isSingleEvent(event: {
     'workflowExecutionCancelRequestedEventAttributes',
     'workflowExecutionCanceledEventAttributes',
     'workflowExecutionContinuedAsNewEventAttributes',
-  ].includes(event?.attributes);
+  ].includes(event.attributes);
 }
