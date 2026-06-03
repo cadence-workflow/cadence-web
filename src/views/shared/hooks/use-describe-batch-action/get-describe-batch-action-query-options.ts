@@ -1,7 +1,7 @@
 import request from '@/utils/request';
-import DOMAIN_BATCH_ACTION_STATUS_REFETCH_INTERVAL from '@/views/domain-batch-actions/config/domain-batch-action-status-refetch-interval.config';
 import { type BatchAction } from '@/views/domain-batch-actions/domain-batch-actions.types';
 
+import { DESCRIBE_BATCH_ACTION_REFETCH_INTERVAL } from './use-describe-batch-action.constants';
 import {
   type DescribeBatchActionQueryKey,
   type UseDescribeBatchActionParams,
@@ -12,7 +12,7 @@ export default function getDescribeBatchActionQueryOptions({
   domain,
   cluster,
   batchActionId,
-  refetchInterval = DOMAIN_BATCH_ACTION_STATUS_REFETCH_INTERVAL,
+  refetchInterval = DESCRIBE_BATCH_ACTION_REFETCH_INTERVAL,
   ...queryOptions
 }: UseDescribeBatchActionParams): UseDescribeBatchActionQueryOptions {
   return {
