@@ -220,7 +220,109 @@ describe(WorkflowsList.name, () => {
     expect(screen.getByText('Workflow ID')).toBeInTheDocument();
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
+
+  it('does not render checkboxes when selection is not provided', () => {
+    setup({});
+
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
+  });
+
+  it('renders a select-all checkbox and one checkbox per row when selection is provided', () => {
+    setup({ selection: makeSelection() });
+
+    // select-all + one per row
+    expect(screen.getAllByRole('checkbox')).toHaveLength(3);
+    expect(
+      screen.getByRole('checkbox', { name: 'Select all workflows' })
+    ).toBeInTheDocument();
+  });
+
+  it('toggles a row without navigating when its checkbox is clicked', async () => {
+    const selection = makeSelection();
+    const { user } = setup({ selection });
+
+    await user.click(
+      screen.getByRole('checkbox', { name: 'Select workflow wf-1' })
+    );
+
+    expect(selection.onToggle).toHaveBeenCalledTimes(1);
+    expect(selection.onToggle).toHaveBeenCalledWith(MOCK_WORKFLOWS[0]);
+  });
+
+  it('calls onToggleAll when the select-all checkbox is clicked', async () => {
+    const selection = makeSelection();
+    const { user } = setup({ selection });
+
+    await user.click(
+      screen.getByRole('checkbox', { name: 'Select all workflows' })
+    );
+
+    expect(selection.onToggleAll).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders rows checked and disabled while select all is active', () => {
+    setup({
+      selection: makeSelection({
+        isAllSelected: true,
+        isRowToggleDisabled: true,
+        isSelected: () => true,
+      }),
+    });
+
+    const rowCheckbox = screen.getByRole('checkbox', {
+      name: 'Select workflow wf-1',
+    });
+    expect(rowCheckbox).toBeChecked();
+    expect(rowCheckbox).toBeDisabled();
+  });
+
+  it('does not toggle a disabled row checkbox', async () => {
+    const selection = makeSelection({
+      isAllSelected: true,
+      isRowToggleDisabled: true,
+      isSelected: () => true,
+    });
+    const { user } = setup({ selection });
+
+    await user.click(
+      screen.getByRole('checkbox', { name: 'Select workflow wf-1' })
+    );
+
+    expect(selection.onToggle).not.toHaveBeenCalled();
+  });
+
+  it('shows the disabled-reason tooltip when hovering a disabled row checkbox', async () => {
+    const { user } = setup({
+      selection: makeSelection({
+        isAllSelected: true,
+        isRowToggleDisabled: true,
+        isSelected: () => true,
+        rowToggleDisabledReason: 'All selected',
+      }),
+    });
+
+    await user.hover(
+      screen.getByRole('checkbox', { name: 'Select workflow wf-1' })
+    );
+
+    expect(await screen.findByText('All selected')).toBeInTheDocument();
+  });
 });
+
+function makeSelection(
+  overrides: Partial<
+    React.ComponentProps<typeof WorkflowsList>['selection']
+  > = {}
+): NonNullable<React.ComponentProps<typeof WorkflowsList>['selection']> {
+  return {
+    isAllSelected: false,
+    onToggleAll: jest.fn(),
+    isSelected: () => false,
+    isRowToggleDisabled: false,
+    onToggle: jest.fn(),
+    ...overrides,
+  };
+}
 
 function setup({
   workflows = MOCK_WORKFLOWS,
@@ -229,6 +331,7 @@ function setup({
   hasNextPage = false,
   isFetchingNextPage = false,
   sortParams,
+  selection,
 }: Partial<React.ComponentProps<typeof WorkflowsList>> = {}) {
   const user = userEvent.setup();
   render(
@@ -240,6 +343,7 @@ function setup({
       fetchNextPage={jest.fn()}
       isFetchingNextPage={isFetchingNextPage}
       sortParams={sortParams}
+      selection={selection}
     />
   );
   return { user };

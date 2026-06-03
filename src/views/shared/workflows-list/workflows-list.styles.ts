@@ -95,6 +95,14 @@ export const styled = {
     color: $theme.colors.contentTertiary,
     fontStyle: 'italic',
   })),
+  CheckboxCell: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+    width: $theme.sizing.scale800,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: $theme.sizing.scale400,
+    paddingBottom: $theme.sizing.scale400,
+  })),
   FooterContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
     justifyContent: 'center',
