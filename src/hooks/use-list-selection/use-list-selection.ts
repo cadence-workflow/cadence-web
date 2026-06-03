@@ -9,16 +9,6 @@ import {
 /**
  * Generic selection state for a list of items identified by a string id.
  *
- * Mirrors use-expansion-toggle: a single state value that is either `true`
- * (every item selected) or an explicit map of selected ids — the two never
- * coexist. It differs from use-expansion-toggle in two ways that the "select
- * workflows for a batch action" use case requires:
- * - individual toggling is locked while "select all" is active (no de-select of
- *   a single row), and
- * - the selected count is derived from a caller-supplied totalCount, because
- *   the matching set may be larger than what is rendered, so the full id list
- *   is never available.
- *
  * The hook holds no knowledge of the items themselves — the caller maps each
  * item to a stable id and renders the selection state.
  */

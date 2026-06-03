@@ -1,7 +1,6 @@
 import { type Dispatch, type SetStateAction } from 'react';
 
-// A single piece of state mirroring use-expansion-toggle's ExpansionState:
-// either `true` (every item is selected) or an explicit map of selected ids.
+// A single state either `true` (every item is selected) or an explicit map of selected ids.
 // The two representations never coexist.
 export type ListSelectionState<T extends string> = Record<T, boolean> | true;
 
