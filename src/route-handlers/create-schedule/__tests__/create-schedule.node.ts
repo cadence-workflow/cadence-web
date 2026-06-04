@@ -7,32 +7,19 @@ import { GRPCError } from '@/utils/grpc/grpc-error';
 import logger from '@/utils/logger';
 import { mockGrpcClusterMethods } from '@/utils/route-handlers-middleware/middlewares/__mocks__/grpc-cluster-methods';
 
+import { mockCreateScheduleRequestBody } from '../__fixtures__/create-schedule-request-body';
 import { createSchedule } from '../create-schedule';
 import { type Context, type RequestParams } from '../create-schedule.types';
 
 jest.mock('@/utils/logger');
 
-const validScheduleCreateFields = {
-  cronExpression: '0 9 * * *',
-  startWorkflow: {
-    workflowType: { name: 'DemoWorkflow' },
-    taskList: { name: 'demo-task-list' },
-    workerSDKLanguage: 'GO' as const,
-    workflowIdPrefix: 'scheduled-demo-',
-    executionStartToCloseTimeoutSeconds: 3600,
-    taskStartToCloseTimeoutSeconds: 30,
-  },
-};
-
 function getValidRequestBody() {
-  return {
-    scheduleId: 'my-schedule',
-    ...validScheduleCreateFields,
-  };
+  return { ...mockCreateScheduleRequestBody };
 }
 
 function getValidRequestBodyWithoutScheduleId() {
-  return { ...validScheduleCreateFields };
+  const { scheduleId: _, ...rest } = mockCreateScheduleRequestBody;
+  return rest;
 }
 
 describe(createSchedule.name, () => {
