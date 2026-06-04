@@ -6,6 +6,7 @@ import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
 import {
   type Context,
+  type DescribeBatchActionResponse,
   type RequestParams,
 } from './describe-batch-action.types';
 import getBatchActionDetailFromWorkflow from './helpers/get-batch-action-detail-from-workflow';
@@ -24,7 +25,7 @@ export async function describeBatchAction(
   };
 
   try {
-    const [describeResult, historyResult] = await Promise.allSettled([
+    const [describeResponse, historyResponse] = await Promise.all([
       ctx.grpcClusterMethods.describeWorkflow({
         domain: BATCH_ACTION_BATCHER_DOMAIN,
         workflowExecution,
@@ -36,11 +37,7 @@ export async function describeBatchAction(
       }),
     ]);
 
-    if (describeResult.status === 'rejected') {
-      throw describeResult.reason;
-    }
-
-    const detail = getBatchActionDetailFromWorkflow(describeResult.value);
+    const detail = getBatchActionDetailFromWorkflow(describeResponse);
     if (!detail) {
       return NextResponse.json(
         { message: 'Batch action not found' },
@@ -48,19 +45,12 @@ export async function describeBatchAction(
       );
     }
 
-    if (historyResult.status === 'rejected') {
-      // Enrichment is non-fatal — log and continue with describe-only data.
-      logger.error<RouteHandlerErrorPayload>(
-        { requestParams: params, error: historyResult.reason },
-        'Failed to read batch action input from history'
-      );
-      return NextResponse.json(detail);
-    }
-
-    return NextResponse.json({
+    const response: DescribeBatchActionResponse = {
       ...detail,
-      ...getBatchActionInputFromHistory(historyResult.value),
-    });
+      ...getBatchActionInputFromHistory(historyResponse),
+    };
+
+    return NextResponse.json(response);
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
       { requestParams: params, error: e },

@@ -11,12 +11,9 @@ export default function getBatchActionDetailFromWorkflow(
     return undefined;
   }
 
-  const closeStatus =
-    info.closeStatus ?? 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID';
-
   return {
     id: info.workflowExecution.workflowId,
-    status: BATCH_ACTION_STATUS_BY_CLOSE_STATUS[closeStatus],
+    status: BATCH_ACTION_STATUS_BY_CLOSE_STATUS[info.closeStatus],
     startTime: info.startTime ? parseGrpcTimestamp(info.startTime) : undefined,
     endTime: info.closeTime ? parseGrpcTimestamp(info.closeTime) : undefined,
   };

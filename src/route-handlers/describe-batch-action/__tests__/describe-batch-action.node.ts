@@ -93,18 +93,16 @@ describe(describeBatchAction.name, () => {
     expect(body.concurrency).toBeUndefined();
   });
 
-  it('returns describe-only data and logs when getHistory fails', async () => {
+  it('returns 500 and logs when getHistory fails', async () => {
     const { res } = await setup({
       describeResponse: mockDescribeBatchOperationWorkflowCompleted,
       historyError: new Error('History service unavailable'),
     });
 
-    expect(res.status).toEqual(200);
-    const body = await res.json();
-    expect(body.actionType).toBeUndefined();
-    expect(body.rps).toBeUndefined();
-    expect(body.concurrency).toBeUndefined();
-    expect(body.status).toEqual('COMPLETED');
+    expect(res.status).toEqual(500);
+    expect(await res.json()).toEqual(
+      expect.objectContaining({ message: 'Error fetching batch action' })
+    );
 
     expect(logger.error).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -115,7 +113,7 @@ describe(describeBatchAction.name, () => {
         },
         error: expect.any(Error),
       }),
-      'Failed to read batch action input from history'
+      'Error fetching batch action'
     );
   });
 
