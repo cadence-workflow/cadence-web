@@ -29,7 +29,8 @@ export type SortParams = {
 
 // Opt-in row selection. When provided, the list renders a leading checkbox
 // column (a "select all" checkbox in the header and one per row). The list is
-// stateless about selection: a parent owns the state (e.g. via useListSelection)
+// stateless about selection: a parent owns the state (e.g. via
+// useBatchActionSelection)
 // and passes the derived predicates/handlers here.
 export type SelectionParams = {
   isAllSelected: boolean;
