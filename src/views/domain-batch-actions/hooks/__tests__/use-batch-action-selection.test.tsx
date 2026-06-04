@@ -1,12 +1,12 @@
 import { act, renderHook } from '@/test-utils/rtl';
 
-import useListSelection from '../use-list-selection';
+import useBatchActionSelection from '../use-batch-action-selection';
 
 function setup({ totalCount = 5 }: { totalCount?: number } = {}) {
-  return renderHook(() => useListSelection({ totalCount }));
+  return renderHook(() => useBatchActionSelection({ totalCount }));
 }
 
-describe(useListSelection.name, () => {
+describe(useBatchActionSelection.name, () => {
   it('starts with an empty selection', () => {
     const { result } = setup();
 
