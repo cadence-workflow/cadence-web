@@ -5,6 +5,7 @@ import { HttpResponse } from 'msw';
 import { renderHook, waitFor } from '@/test-utils/rtl';
 
 import { mockCreateScheduleRequestBody } from '@/route-handlers/create-schedule/__fixtures__/create-schedule-request-body';
+import { type CreateScheduleRequestBody } from '@/route-handlers/create-schedule/create-schedule.types';
 
 import useCreateSchedule from '../use-create-schedule';
 
@@ -25,6 +26,21 @@ describe(useCreateSchedule.name, () => {
     );
     expect(req.method).toBe('POST');
     expect(req.body).toEqual(mockCreateScheduleRequestBody);
+  });
+
+  it('returns the response from the endpoint', async () => {
+    const { result } = setup({});
+
+    let response;
+    await act(async () => {
+      response = await result.current.mutateAsync(
+        mockCreateScheduleRequestBody
+      );
+    });
+
+    expect(response).toEqual({
+      scheduleId: mockCreateScheduleRequestBody.scheduleId,
+    });
   });
 
   it('invalidates listSchedules queries on success', async () => {
@@ -106,12 +122,13 @@ function setup({
             httpResolver ??
             (async ({ request }) => {
               const url = new URL(request.url);
+              const body = (await request.json()) as CreateScheduleRequestBody;
               latestRequest = {
                 url: url.pathname,
                 method: request.method,
-                body: await request.json(),
+                body,
               };
-              return HttpResponse.json({});
+              return HttpResponse.json({ scheduleId: body.scheduleId });
             }),
         },
       ],
