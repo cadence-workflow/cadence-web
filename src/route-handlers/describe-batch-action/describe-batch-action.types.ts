@@ -1,7 +1,7 @@
 import { type DefaultMiddlewaresContext } from '@/utils/route-handlers-middleware';
 import { type BatchAction } from '@/views/domain-batch-actions/domain-batch-actions.types';
 
-export type BatchActionType = 'cancel' | 'terminate' | 'reset' | 'signal';
+export type BatchActionType = 'cancel' | 'terminate' | 'signal';
 
 export type RouteParams = {
   domain: string;

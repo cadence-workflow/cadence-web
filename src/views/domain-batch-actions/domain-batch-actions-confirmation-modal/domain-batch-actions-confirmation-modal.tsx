@@ -4,11 +4,11 @@ import { Modal, ModalButton } from 'baseui/modal';
 import { type FieldValues, useForm } from 'react-hook-form';
 import { MdList, MdOpenInNew } from 'react-icons/md';
 
-import domainBatchActionsConfirmationModalConfig, {
-  type BatchActionConfirmPayload,
-} from '../config/domain-batch-actions-confirmation-modal.config';
 import DomainBatchActionsBanner from '../domain-batch-actions-banner/domain-batch-actions-banner';
-import { type BatchActionModalConfig } from '../domain-batch-actions.types';
+import {
+  type BatchActionConfirmPayload,
+  type BatchActionModalConfig,
+} from '../domain-batch-actions.types';
 
 import {
   overrides,
@@ -17,15 +17,15 @@ import {
 import { type Props } from './domain-batch-actions-confirmation-modal.types';
 
 export default function DomainBatchActionsConfirmationModal({
+  config: modalConfig,
   actionId,
   selectedCount,
   isSubmitting,
   onClose,
   onConfirm,
 }: Props) {
-  const config: BatchActionModalConfig<any, any> | null = actionId
-    ? domainBatchActionsConfirmationModalConfig[actionId]
-    : null;
+  const config: BatchActionModalConfig<any, any> | null =
+    (actionId ? modalConfig[actionId] : null) ?? null;
 
   const {
     handleSubmit,

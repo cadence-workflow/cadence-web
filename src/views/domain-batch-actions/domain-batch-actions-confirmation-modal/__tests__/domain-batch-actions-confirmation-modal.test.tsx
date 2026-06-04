@@ -1,40 +1,40 @@
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
-import { type BatchActionConfirmableType } from '../../domain-batch-actions.types';
+import { type BatchActionType } from '@/route-handlers/describe-batch-action/describe-batch-action.types';
+import { signalWorkflowFormSchema } from '@/views/workflow-actions/workflow-action-signal-form/schemas/signal-workflow-form-schema';
+
+import { type BatchActionsConfirmationModalConfig } from '../../domain-batch-actions.types';
 import DomainBatchActionsConfirmationModal from '../domain-batch-actions-confirmation-modal';
 
-jest.mock('../../config/domain-batch-actions-confirmation-modal.config', () => {
-  const { z } = jest.requireActual('zod');
-  return {
-    cancel: {
-      title: 'Mock Cancel',
-      description: 'Mock cancel desc',
-      withForm: false,
+const mockConfig: BatchActionsConfirmationModalConfig = {
+  cancel: {
+    title: 'Mock Cancel',
+    description: 'Mock cancel desc',
+    withForm: false,
+  },
+  terminate: {
+    title: 'Mock Terminate',
+    description: 'Mock terminate desc',
+    withForm: false,
+  },
+  signal: {
+    title: 'Mock Signal',
+    description: 'Mock signal desc',
+    withForm: true,
+    form: function MockSignalForm({ control }: { control: any }) {
+      return (
+        <div data-testid="signal-form">
+          <label>
+            Signal Name
+            <input {...control.register('signalName')} />
+          </label>
+        </div>
+      );
     },
-    terminate: {
-      title: 'Mock Terminate',
-      description: 'Mock terminate desc',
-      withForm: false,
-    },
-    signal: {
-      title: 'Mock Signal',
-      description: 'Mock signal desc',
-      withForm: true,
-      form: function MockSignalForm({ control }: { control: any }) {
-        return (
-          <div data-testid="signal-form">
-            <label>
-              Signal Name
-              <input {...control.register('signalName')} />
-            </label>
-          </div>
-        );
-      },
-      formSchema: z.object({ signalName: z.string().min(1) }),
-      transformFormDataToSubmission: (data: unknown) => data,
-    },
-  };
-});
+    formSchema: signalWorkflowFormSchema,
+    transformFormDataToSubmission: (formData) => formData,
+  },
+};
 
 describe(DomainBatchActionsConfirmationModal.name, () => {
   it('does not render modal content when actionId is null', () => {
@@ -118,7 +118,7 @@ describe(DomainBatchActionsConfirmationModal.name, () => {
 });
 
 function setup({
-  actionId = 'cancel' as BatchActionConfirmableType | null,
+  actionId = 'cancel' as BatchActionType | null,
   selectedCount = 10,
 } = {}) {
   const mockOnClose = jest.fn();
@@ -127,6 +127,7 @@ function setup({
 
   render(
     <DomainBatchActionsConfirmationModal
+      config={mockConfig}
       actionId={actionId}
       selectedCount={selectedCount}
       onClose={mockOnClose}

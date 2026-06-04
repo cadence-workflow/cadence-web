@@ -1,8 +1,13 @@
-import { type BatchActionConfirmPayload } from '../config/domain-batch-actions-confirmation-modal.config';
-import { type BatchActionConfirmableType } from '../domain-batch-actions.types';
+import { type BatchActionType } from '@/route-handlers/describe-batch-action/describe-batch-action.types';
+
+import {
+  type BatchActionConfirmPayload,
+  type BatchActionsConfirmationModalConfig,
+} from '../domain-batch-actions.types';
 
 export type Props = {
-  actionId: BatchActionConfirmableType | null;
+  config: BatchActionsConfirmationModalConfig;
+  actionId: BatchActionType | null;
   selectedCount: number;
   isSubmitting?: boolean;
   onClose: () => void;

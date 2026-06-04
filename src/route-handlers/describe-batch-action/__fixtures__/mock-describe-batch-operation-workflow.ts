@@ -11,7 +11,7 @@ export const mockDescribeBatchOperationWorkflowRunning: DescribeWorkflowExecutio
         baseName: '',
       },
       executionStartToCloseTimeout: {
-        seconds: String(20 * 365 * 24 * 60 * 60),
+        seconds: String(20 * 365 * 24 * 60 * 60), //mirrored from backend
         nanos: 0,
       },
       taskStartToCloseTimeout: { seconds: '10', nanos: 0 },
