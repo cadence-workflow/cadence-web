@@ -29,9 +29,6 @@ export default function useCreateSchedule({
         {
           method: 'POST',
           body: JSON.stringify(variables),
-          headers: {
-            'Content-Type': 'application/json',
-          },
         }
       ).then((res) => res.json()),
     onSuccess: () => {
