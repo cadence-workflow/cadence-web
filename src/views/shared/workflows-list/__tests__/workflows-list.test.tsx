@@ -242,7 +242,7 @@ describe(WorkflowsList.name, () => {
     const { user } = setup({ selection });
 
     await user.click(
-      screen.getByRole('checkbox', { name: 'Select workflow wf-1' })
+      screen.getByRole('checkbox', { name: 'Select workflow wf-1 run run-1' })
     );
 
     expect(selection.onToggle).toHaveBeenCalledTimes(1);
@@ -270,7 +270,7 @@ describe(WorkflowsList.name, () => {
     });
 
     const rowCheckbox = screen.getByRole('checkbox', {
-      name: 'Select workflow wf-1',
+      name: 'Select workflow wf-1 run run-1',
     });
     expect(rowCheckbox).toBeChecked();
     expect(rowCheckbox).toBeDisabled();
@@ -285,7 +285,7 @@ describe(WorkflowsList.name, () => {
     const { user } = setup({ selection });
 
     await user.click(
-      screen.getByRole('checkbox', { name: 'Select workflow wf-1' })
+      screen.getByRole('checkbox', { name: 'Select workflow wf-1 run run-1' })
     );
 
     expect(selection.onToggle).not.toHaveBeenCalled();
@@ -302,7 +302,7 @@ describe(WorkflowsList.name, () => {
     });
 
     await user.hover(
-      screen.getByRole('checkbox', { name: 'Select workflow wf-1' })
+      screen.getByRole('checkbox', { name: 'Select workflow wf-1 run run-1' })
     );
 
     expect(await screen.findByText('All selected')).toBeInTheDocument();

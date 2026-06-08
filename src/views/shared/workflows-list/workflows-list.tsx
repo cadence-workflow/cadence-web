@@ -1,14 +1,15 @@
-import { type MouseEvent, useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { Checkbox } from 'baseui/checkbox';
 import ChevronDown from 'baseui/icon/chevron-down';
 import ChevronUp from 'baseui/icon/chevron-up';
-import { StatefulTooltip } from 'baseui/tooltip';
 import isNil from 'lodash/isNil';
 import NextLink from 'next/link';
 
 import TableInfiniteScrollLoader from '@/components/table/table-infinite-scroll-loader/table-infinite-scroll-loader';
 
+import WorkflowsListSelectionCell from './workflows-list-selection-cell/workflows-list-selection-cell';
+import { styled as selectionCellStyled } from './workflows-list-selection-cell/workflows-list-selection-cell.styles';
 import { styled } from './workflows-list.styles';
 import { type Props } from './workflows-list.types';
 
@@ -45,13 +46,13 @@ export default function WorkflowsList({
                 on the per-row checkbox below to drop the capture-phase
                 preventDefault workaround. */}
             {selection && (
-              <styled.CheckboxCell>
+              <selectionCellStyled.CheckboxCell>
                 <Checkbox
                   checked={selection.isAllSelected}
                   onChange={selection.onToggleAll}
                   aria-label="Select all workflows"
                 />
-              </styled.CheckboxCell>
+              </selectionCellStyled.CheckboxCell>
             )}
             {columns.map((col) => {
               if (col.sortable && sortParams) {
@@ -94,18 +95,6 @@ export default function WorkflowsList({
           </styled.GridHeader>
           {hasWorkflows &&
             workflows.map((workflow, index) => {
-              // Toggling is handled by the cell's onClickCapture below (so we
-              // can stop the surrounding link from navigating), hence the no-op
-              // onChange.
-              const rowCheckbox = selection && (
-                <Checkbox
-                  checked={selection.isSelected(workflow)}
-                  disabled={selection.isRowToggleDisabled}
-                  onChange={() => {}}
-                  aria-label={`Select workflow ${workflow.workflowID}`}
-                />
-              );
-
               return (
                 <styled.GridRow
                   key={`${workflow.workflowID}-${workflow.runID}-${index}`}
@@ -115,34 +104,10 @@ export default function WorkflowsList({
                   $gridTemplateColumns={gridTemplateColumns}
                 >
                   {selection && (
-                    <styled.CheckboxCell
-                      // The row is a link and baseui's Checkbox stops click
-                      // propagation, so intercept in the capture phase: prevent
-                      // navigation and toggle selection ourselves.
-                      onClickCapture={(e: MouseEvent) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (!selection.isRowToggleDisabled) {
-                          selection.onToggle(workflow);
-                        }
-                      }}
-                    >
-                      {selection.isRowToggleDisabled &&
-                      selection.rowToggleDisabledReason ? (
-                        <StatefulTooltip
-                          placement="right"
-                          showArrow
-                          accessibilityType="tooltip"
-                          content={selection.rowToggleDisabledReason}
-                        >
-                          {/* span so the tooltip can attach hover handlers — a
-                              disabled checkbox does not receive them. */}
-                          <span>{rowCheckbox}</span>
-                        </StatefulTooltip>
-                      ) : (
-                        rowCheckbox
-                      )}
-                    </styled.CheckboxCell>
+                    <WorkflowsListSelectionCell
+                      selection={selection}
+                      workflow={workflow}
+                    />
                   )}
                   {columns.map((col) => {
                     const content = col.renderCell(workflow);

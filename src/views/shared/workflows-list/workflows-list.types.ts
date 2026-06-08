@@ -27,20 +27,26 @@ export type SortParams = {
   sortOrder: SortOrder;
 };
 
-// Opt-in row selection. When provided, the list renders a leading checkbox
-// column (a "select all" checkbox in the header and one per row). The list is
-// stateless about selection: a parent owns the state (e.g. via
-// useBatchActionSelection)
-// and passes the derived predicates/handlers here.
+/**
+ * Opt-in row selection. When provided, the list renders a leading checkbox
+ * column (a "select all" checkbox in the header and one per row).
+ *
+ * The list is stateless about selection: a parent owns the state (e.g. via
+ * `useBatchActionSelection`) and passes the derived predicates/handlers here.
+ */
 export type SelectionParams = {
   isAllSelected: boolean;
   onToggleAll: () => void;
   isSelected: (workflow: DomainWorkflow) => boolean;
-  // When true, per-row checkboxes are rendered checked but disabled (used while
-  // "select all" is active).
+  /**
+   * When true, per-row checkboxes are rendered checked but disabled (used while
+   * "select all" is active).
+   */
   isRowToggleDisabled: boolean;
-  // Optional short message shown in a tooltip when hovering a disabled per-row
-  // checkbox, explaining why it cannot be toggled.
+  /**
+   * Optional short message shown in a tooltip when hovering a disabled per-row
+   * checkbox, explaining why it cannot be toggled.
+   */
   rowToggleDisabledReason?: string;
   onToggle: (workflow: DomainWorkflow) => void;
 };
