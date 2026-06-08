@@ -2,6 +2,7 @@ import { status } from '@grpc/grpc-js';
 import { NextRequest } from 'next/server';
 import queryString from 'query-string';
 
+import * as getConfigValueModule from '@/utils/config/get-config-value';
 import { GRPCError } from '@/utils/grpc/grpc-error';
 import logger from '@/utils/logger';
 import { mockGrpcClusterMethods } from '@/utils/route-handlers-middleware/middlewares/__mocks__/grpc-cluster-methods';
@@ -12,6 +13,7 @@ import type { Context } from '../count-workflows.types';
 
 jest.mock('@/utils/logger');
 jest.mock('@/utils/visibility/get-visibility-query');
+jest.mock('@/utils/config/get-config-value');
 
 describe(countWorkflows.name, () => {
   beforeEach(() => {
@@ -55,6 +57,25 @@ describe(countWorkflows.name, () => {
       query: 'mock list workflow executions query',
     });
 
+    const responseJson = await res.json();
+    expect(responseJson).toEqual({ count: 42 });
+  });
+
+  it('swallows getConfigValue errors and still returns count', async () => {
+    const { res, mockCountWorkflows, mockGetConfigValue } = await setup({
+      queryParams: {
+        listType: 'default',
+        inputType: 'search',
+      },
+      configError: new Error('config blew up'),
+    });
+
+    expect(mockGetConfigValue).toHaveBeenCalledWith(
+      'LIST_WORKFLOWS_PARTIAL_MATCH_ENABLED'
+    );
+    expect(mockCountWorkflows).toHaveBeenCalled();
+
+    expect(res.status).toEqual(200);
     const responseJson = await res.json();
     expect(responseJson).toEqual({ count: 42 });
   });
@@ -142,10 +163,21 @@ describe(countWorkflows.name, () => {
 async function setup({
   queryParams,
   error,
+  configError,
 }: {
   queryParams: Record<string, string | string[] | undefined>;
   error?: Error;
+  configError?: Error;
 }) {
+  const mockGetConfigValue = (
+    jest.spyOn(getConfigValueModule, 'default') as jest.Mock
+  ).mockImplementation(async () => {
+    if (configError) {
+      throw configError;
+    }
+    return false;
+  });
+
   const mockGetListWorkflowExecutionsQuery = jest
     .spyOn(getVisibilityQueryModule, 'default')
     .mockReturnValue('mock list workflow executions query');
@@ -176,5 +208,6 @@ async function setup({
     res,
     mockCountWorkflows,
     mockGetListWorkflowExecutionsQuery,
+    mockGetConfigValue,
   };
 }

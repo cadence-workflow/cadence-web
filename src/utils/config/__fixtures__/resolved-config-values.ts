@@ -52,5 +52,6 @@ const mockResolvedConfigValues: LoadedConfigResolvedValues = {
   HISTORY_PAGE_V2_ENABLED: 'DISABLED',
   SCHEDULES_ENABLED: false,
   WORKFLOWS_LIST_ENABLED: false,
+  LIST_WORKFLOWS_PARTIAL_MATCH_ENABLED: false,
 };
 export default mockResolvedConfigValues;
