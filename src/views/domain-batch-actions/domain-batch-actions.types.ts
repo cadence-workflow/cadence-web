@@ -9,10 +9,6 @@ import { type z } from 'zod';
 
 import { type BatchActionType } from '@/route-handlers/describe-batch-action/describe-batch-action.types';
 import { type BatchActionStatus } from '@/route-handlers/list-batch-actions/list-batch-actions.types';
-import {
-  type SignalWorkflowFormData,
-  type SignalWorkflowSubmissionData,
-} from '@/views/workflow-actions/workflow-action-signal-form/workflow-action-signal-form.types';
 
 export type BatchActionFormProps<FormData extends FieldValues> = {
   control: Control<FormData>;
@@ -71,22 +67,7 @@ export type BatchAction = {
   concurrency?: number;
 };
 
-// Source of truth for the confirmation modal config. The config object must
-// comply with this type. `Partial` lets the config omit any action
-// and prevent adding an unsupported one.
-export type BatchActionsConfirmationModalConfig = Partial<{
-  cancel: BatchActionModalConfigNoForm;
-  terminate: BatchActionModalConfigNoForm;
-  signal: BatchActionModalConfigWithForm<
-    SignalWorkflowFormData,
-    SignalWorkflowSubmissionData
-  >;
-}>;
-
-export type BatchActionConfirmPayload = {
-  [K in keyof BatchActionsConfirmationModalConfig]-?: NonNullable<
-    BatchActionsConfirmationModalConfig[K]
-  > extends BatchActionModalConfigWithForm<any, infer S>
-    ? { actionId: K; submissionData: S }
-    : { actionId: K };
-}[keyof BatchActionsConfirmationModalConfig];
+export type BatchActionConfirmPayload<SubmissionData> = {
+  actionId: BatchActionType;
+  submissionData: SubmissionData;
+};

@@ -3,10 +3,12 @@ import { render, screen, userEvent } from '@/test-utils/rtl';
 import { type BatchActionType } from '@/route-handlers/describe-batch-action/describe-batch-action.types';
 import { signalWorkflowFormSchema } from '@/views/workflow-actions/workflow-action-signal-form/schemas/signal-workflow-form-schema';
 
-import { type BatchActionsConfirmationModalConfig } from '../../domain-batch-actions.types';
+import { type BatchActionModalConfig } from '../../domain-batch-actions.types';
 import DomainBatchActionsConfirmationModal from '../domain-batch-actions-confirmation-modal';
 
-const mockConfig: BatchActionsConfirmationModalConfig = {
+const mockConfig: Partial<
+  Record<BatchActionType, BatchActionModalConfig<any, any>>
+> = {
   cancel: {
     title: 'Mock Cancel',
     description: 'Mock cancel desc',

@@ -4,6 +4,8 @@ import { Modal, ModalButton } from 'baseui/modal';
 import { type FieldValues, useForm } from 'react-hook-form';
 import { MdList, MdOpenInNew } from 'react-icons/md';
 
+import { type SignalWorkflowSubmissionData } from '@/views/workflow-actions/workflow-action-signal-form/workflow-action-signal-form.types';
+
 import DomainBatchActionsBanner from '../domain-batch-actions-banner/domain-batch-actions-banner';
 import {
   type BatchActionConfirmPayload,
@@ -38,14 +40,12 @@ export default function DomainBatchActionsConfirmationModal({
 
   const onSubmit = (data: FieldValues) => {
     if (!actionId || !config) return;
-    const payload = (
-      config.withForm
-        ? {
-            actionId,
-            submissionData: config.transformFormDataToSubmission(data),
-          }
-        : { actionId }
-    ) as BatchActionConfirmPayload;
+    const payload: BatchActionConfirmPayload<
+      SignalWorkflowSubmissionData | undefined
+    > = {
+      actionId,
+      submissionData: config.transformFormDataToSubmission?.(data),
+    };
     onConfirm(payload);
   };
 
