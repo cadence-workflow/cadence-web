@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Banner, HIERARCHY, KIND as BANNER_KIND } from 'baseui/banner';
-import { KIND as BUTTON_KIND, SIZE } from 'baseui/button';
 import { Modal, ModalButton } from 'baseui/modal';
 import { useSnackbar } from 'baseui/snackbar';
 import { useForm, useWatch } from 'react-hook-form';
@@ -135,16 +134,16 @@ export default function CreateScheduleModal({
         </styled.ModalBody>
         <styled.ModalFooter>
           <ModalButton
-            size={SIZE.compact}
+            size="compact"
             type="button"
-            kind={BUTTON_KIND.secondary}
+            kind="secondary"
             onClick={onClose}
           >
             Cancel
           </ModalButton>
           <ModalButton
-            size={SIZE.compact}
-            kind={BUTTON_KIND.primary}
+            size="compact"
+            kind="primary"
             type="submit"
             isLoading={isCreateSchedulePending}
             disabled={isCreateSchedulePending}
