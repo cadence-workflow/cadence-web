@@ -6,6 +6,11 @@ import { type StyleObject } from 'styletron-react';
 export const styled = {
   ModalHeader: withStyle(ModalHeader, ({ $theme }: { $theme: Theme }) => ({
     marginTop: $theme.sizing.scale850,
+    // First tab stop inside the dialog so Modal + focus-lock do not send focus to the cron row.
+    outline: 'none',
+    ':focus': {
+      outline: 'none',
+    },
   })),
   ModalBody: withStyle(ModalBody, ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
