@@ -2,22 +2,13 @@
 
 import React from 'react';
 
-import { KIND as BUTTON_KIND, SIZE } from 'baseui/button';
 import { Modal, ModalButton } from 'baseui/modal';
 import { ParagraphMedium } from 'baseui/typography';
 
 import { overrides, styled } from './create-schedule-modal.styles';
 import { type Props } from './create-schedule-modal.types';
 
-export default function CreateScheduleModal({
-  domain: _domain,
-  cluster: _cluster,
-  isOpen,
-  onClose,
-}: Props) {
-  void _domain;
-  void _cluster;
-
+export default function CreateScheduleModal({ isOpen, onClose }: Props) {
   return (
     <Modal
       isOpen={isOpen}
@@ -34,19 +25,14 @@ export default function CreateScheduleModal({
       </styled.ModalBody>
       <styled.ModalFooter>
         <ModalButton
-          size={SIZE.compact}
+          size="compact"
           type="button"
-          kind={BUTTON_KIND.secondary}
+          kind="secondary"
           onClick={onClose}
         >
           Cancel
         </ModalButton>
-        <ModalButton
-          size={SIZE.compact}
-          kind={BUTTON_KIND.primary}
-          type="button"
-          disabled
-        >
+        <ModalButton size="compact" kind="primary" type="button" disabled>
           Create schedule
         </ModalButton>
       </styled.ModalFooter>
