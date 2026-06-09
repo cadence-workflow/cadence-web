@@ -79,7 +79,6 @@ export const createScheduleFormSchema = z.object({
     })
     .positive('Task timeout must be positive'),
   workflowIdPrefix: z.string().optional(),
-  // TODO: make this required once the field is added to the UI
-  workerSDKLanguage: z.enum(WORKER_SDK_LANGUAGES).optional().default('GO'),
+
   pauseOnFailure: z.boolean().optional().default(false),
 });
