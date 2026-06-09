@@ -5,62 +5,31 @@ import React, { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Banner, HIERARCHY, KIND as BANNER_KIND } from 'baseui/banner';
 import { Modal, ModalButton } from 'baseui/modal';
-import { useSnackbar } from 'baseui/snackbar';
-import { useForm, useWatch } from 'react-hook-form';
-import { MdCheckCircle, MdErrorOutline } from 'react-icons/md';
-
-import { SCHEDULE_CATCH_UP_POLICIES } from '@/route-handlers/create-schedule/create-schedule.constants';
-import { RequestError } from '@/utils/request/request-error';
-import useCreateSchedule from '@/views/shared/hooks/use-create-schedule/use-create-schedule';
+import { useForm } from 'react-hook-form';
+import { MdErrorOutline } from 'react-icons/md';
 
 import CreateScheduleForm from './create-schedule-form/create-schedule-form';
 import { type CreateScheduleFormData } from './create-schedule-form/create-schedule-form.types';
 import { overrides, styled } from './create-schedule-modal.styles';
 import { type Props } from './create-schedule-modal.types';
-import getCreateScheduleFormDefaultValues from './helpers/get-create-schedule-form-default-values';
-import mapServerValidationIssuesToCreateScheduleForm from './helpers/map-server-validation-issues-to-create-schedule-form';
-import transformCreateScheduleFormToBody from './helpers/transform-create-schedule-form-to-body';
 import { createScheduleFormSchema } from './schemas/create-schedule-form-schema';
 
-export default function CreateScheduleModal({
-  domain,
-  cluster,
-  isOpen,
-  onClose,
-}: Props) {
-  const { enqueue, dequeue } = useSnackbar();
-  const {
-    mutateAsync: createScheduleAsync,
-    isPending: isCreateSchedulePending,
-    reset: resetCreateScheduleMutation,
-  } = useCreateSchedule({ domain, cluster });
+export default function CreateScheduleModal({ isOpen, onClose }: Props) {
   const [serverBannerMessage, setServerBannerMessage] = useState<string | null>(
     null
   );
 
-  const {
-    control,
-    handleSubmit,
-    reset,
-    setError,
-    clearErrors,
-    formState: { errors: validationErrors },
-  } = useForm<CreateScheduleFormData>({
-    resolver: zodResolver(createScheduleFormSchema),
-    defaultValues: getCreateScheduleFormDefaultValues(),
-    mode: 'onSubmit',
-  });
-
-  const catchUpPolicy = useWatch({
-    control,
-    name: 'catchUpPolicy',
-    defaultValue: SCHEDULE_CATCH_UP_POLICIES[0],
-  });
+  const { control, handleSubmit, reset, clearErrors, trigger } =
+    useForm<CreateScheduleFormData>({
+      resolver: zodResolver(createScheduleFormSchema),
+      defaultValues: {},
+      mode: 'onSubmit',
+      reValidateMode: 'onChange',
+    });
 
   useEffect(() => {
     if (!isOpen) return;
-    reset(getCreateScheduleFormDefaultValues());
-    resetCreateScheduleMutation();
+    reset();
     setServerBannerMessage(null);
     clearErrors();
     // Intentionally depend only on isOpen so typing does not re-trigger a full form reset
@@ -68,41 +37,12 @@ export default function CreateScheduleModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
-  const onSubmit = async (data: CreateScheduleFormData) => {
+  const onSubmit = (data: CreateScheduleFormData) => {
     setServerBannerMessage(null);
     clearErrors();
-
-    try {
-      await createScheduleAsync(transformCreateScheduleFormToBody(data));
-      enqueue({
-        message: 'Schedule created',
-        startEnhancer: MdCheckCircle,
-        actionMessage: 'OK',
-        actionOnClick: () => dequeue(),
-      });
-      onClose();
-    } catch (error) {
-      if (
-        error instanceof RequestError &&
-        error.status === 400 &&
-        error.validationErrors?.length
-      ) {
-        const { unmappedMessages } =
-          mapServerValidationIssuesToCreateScheduleForm(
-            error.validationErrors,
-            setError
-          );
-        resetCreateScheduleMutation();
-        setServerBannerMessage(
-          unmappedMessages.length ? unmappedMessages.join(' ') : null
-        );
-        return;
-      }
-      if (error instanceof RequestError) {
-        setServerBannerMessage(error.message);
-      }
-    }
   };
+
+  const modalErrorBannerMessage = serverBannerMessage;
 
   return (
     <Modal
@@ -111,10 +51,10 @@ export default function CreateScheduleModal({
       closeable
       overrides={overrides.modal}
     >
-      <styled.ModalHeader>Create Schedule</styled.ModalHeader>
+      <styled.ModalHeader tabIndex={0}>Create Schedule</styled.ModalHeader>
       <form onSubmit={handleSubmit(onSubmit)}>
         <styled.ModalBody>
-          {serverBannerMessage && (
+          {modalErrorBannerMessage && (
             <Banner
               hierarchy={HIERARCHY.low}
               kind={BANNER_KIND.negative}
@@ -123,14 +63,10 @@ export default function CreateScheduleModal({
                 icon: MdErrorOutline,
               }}
             >
-              {serverBannerMessage}
+              {modalErrorBannerMessage}
             </Banner>
           )}
-          <CreateScheduleForm
-            control={control}
-            fieldErrors={validationErrors}
-            catchUpPolicy={catchUpPolicy}
-          />
+          <CreateScheduleForm control={control} trigger={trigger} />
         </styled.ModalBody>
         <styled.ModalFooter>
           <ModalButton
@@ -141,13 +77,7 @@ export default function CreateScheduleModal({
           >
             Cancel
           </ModalButton>
-          <ModalButton
-            size="compact"
-            kind="primary"
-            type="submit"
-            isLoading={isCreateSchedulePending}
-            disabled={isCreateSchedulePending}
-          >
+          <ModalButton size="compact" kind="primary" type="submit">
             Create schedule
           </ModalButton>
         </styled.ModalFooter>

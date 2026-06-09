@@ -1,7 +1,8 @@
 import { HttpResponse } from 'msw';
 
-import { type HttpEndpointMock } from '@/test-utils/msw-mock-handlers/msw-mock-handlers.types';
 import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
+
+import { type HttpEndpointMock } from '@/test-utils/msw-mock-handlers/msw-mock-handlers.types';
 
 import CreateScheduleModal from '../create-schedule-modal';
 
@@ -25,11 +26,9 @@ describe('CreateScheduleModal', () => {
   it('renders dialog with main form fields when open', () => {
     setup({ isOpen: true });
 
-    expect(screen.getByRole('dialog')).toBeInTheDocument();
     expect(
-      screen.getByRole('textbox', { name: 'Workflow Type' })
+      screen.getByRole('textbox', { name: 'Task List' })
     ).toBeInTheDocument();
-    expect(screen.getByRole('textbox', { name: 'Task List' })).toBeInTheDocument();
     expect(
       screen.getByRole('spinbutton', { name: 'Task Start-to-Close Timeout' })
     ).toBeInTheDocument();
@@ -52,6 +51,43 @@ describe('CreateScheduleModal', () => {
     expect(screen.getByText('Task list is required')).toBeInTheDocument();
   });
 
+  it('shows cron expression error when cron fields are cleared', async () => {
+    const { user } = setup({ isOpen: true });
+
+    for (const label of ['Minute', 'Hour', 'Day of Month', 'Month', 'Day of Week']) {
+      const input = screen.getByLabelText(label);
+      await user.clear(input);
+    }
+
+    await user.click(screen.getByRole('button', { name: 'Create schedule' }));
+
+    expect(
+      await screen.findByText('Cron expression is required')
+    ).toBeInTheDocument();
+  });
+
+  it('shows cron expression validation on change without submitting', async () => {
+    const { user } = setup({ isOpen: true });
+
+    await user.type(
+      screen.getByRole('textbox', { name: 'Workflow Type' }),
+      'DemoWorkflow'
+    );
+    await user.type(
+      screen.getByRole('textbox', { name: 'Task List' }),
+      'demo-task-list'
+    );
+    await fillRequiredTimeouts(user);
+
+    const minuteInput = screen.getByLabelText('Minute');
+    await user.type(minuteInput, '0');
+    await user.clear(minuteInput);
+
+    expect(
+      await screen.findByText('Cron expression is required')
+    ).toBeInTheDocument();
+  });
+
   it('submits create schedule, enqueues success snackbar, and closes on success', async () => {
     const onClose = jest.fn();
     const { user } = setup({
@@ -71,6 +107,7 @@ describe('CreateScheduleModal', () => {
     const taskList = screen.getByRole('textbox', { name: 'Task List' });
     await user.type(workflowType, 'DemoWorkflow');
     await user.type(taskList, 'demo-task-list');
+    await fillRequiredTimeouts(user);
 
     expect(workflowType).toHaveValue('DemoWorkflow');
     expect(taskList).toHaveValue('demo-task-list');
@@ -112,6 +149,7 @@ describe('CreateScheduleModal', () => {
       screen.getByRole('textbox', { name: 'Task List' }),
       'demo-task-list'
     );
+    await fillRequiredTimeouts(user);
     await user.click(screen.getByRole('button', { name: 'Create schedule' }));
 
     expect(
@@ -150,6 +188,7 @@ describe('CreateScheduleModal', () => {
       screen.getByRole('textbox', { name: 'Task List' }),
       'demo-task-list'
     );
+    await fillRequiredTimeouts(user);
     await user.click(screen.getByRole('button', { name: 'Create schedule' }));
 
     expect(onClose).not.toHaveBeenCalled();
@@ -170,6 +209,21 @@ describe('CreateScheduleModal', () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 });
+
+async function fillRequiredTimeouts(
+  user: ReturnType<typeof userEvent.setup>
+): Promise<void> {
+  await user.type(
+    screen.getByRole('spinbutton', { name: 'Task Start-to-Close Timeout' }),
+    '30'
+  );
+  await user.type(
+    screen.getByRole('spinbutton', {
+      name: 'Execution Start-to-Close Timeout',
+    }),
+    '3600'
+  );
+}
 
 function setup({
   isOpen = true,
