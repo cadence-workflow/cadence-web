@@ -81,16 +81,28 @@ describe(describeBatchAction.name, () => {
     expect((await res.json()).status).toEqual('ABORTED');
   });
 
-  it('leaves actionType undefined when BatchType in input is not a UI-supported value', async () => {
+  it('returns 500 and logs when BatchType in input is not a UI-supported value', async () => {
     const { res } = await setup({
       describeResponse: mockDescribeBatchOperationWorkflowRunning,
       historyResponse: mockBatcherStartedHistoryWithUnknownType,
     });
 
-    const body = await res.json();
-    expect(body.actionType).toBeUndefined();
-    expect(body.rps).toEqual(50);
-    expect(body.concurrency).toBeUndefined();
+    expect(res.status).toEqual(500);
+    expect(await res.json()).toEqual(
+      expect.objectContaining({ message: 'Error fetching batch action' })
+    );
+
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.objectContaining({
+        requestParams: {
+          domain: 'mock-domain',
+          cluster: 'mock-cluster',
+          batchActionId: 'mock-batch-action-id-1',
+        },
+        error: expect.any(Error),
+      }),
+      'Error fetching batch action'
+    );
   });
 
   it('returns 500 and logs when getHistory fails', async () => {

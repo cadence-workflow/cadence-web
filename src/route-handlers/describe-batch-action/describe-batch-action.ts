@@ -45,10 +45,10 @@ export async function describeBatchAction(
       );
     }
 
-    const response: DescribeBatchActionResponse = {
+    const response = {
       ...detail,
       ...getBatchActionInputFromHistory(historyResponse),
-    };
+    } satisfies DescribeBatchActionResponse;
 
     return NextResponse.json(response);
   } catch (e) {

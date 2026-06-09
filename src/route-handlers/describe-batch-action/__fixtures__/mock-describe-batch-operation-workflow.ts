@@ -140,6 +140,6 @@ export const mockBatcherStartedHistory = buildHistoryResponse({
 
 export const mockBatcherStartedHistoryWithUnknownType = buildHistoryResponse({
   DomainName: 'mock-domain',
-  BatchType: 'replicate', // not a UI-supported actionType
+  BatchType: 'replicate', // not a UI-supported type — fails the input parse
   RPS: 50,
 });

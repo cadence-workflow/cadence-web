@@ -60,7 +60,7 @@ export type BatchAction = {
   id: string;
   status: BatchActionStatus;
   progress?: number; // 0-100, only relevant when status is 'RUNNING'
-  actionType?: BatchActionType; // absent if BatchType is not UI-supported
+  actionType?: BatchActionType; // absent if BatchType is missing from the batcher input
   startTime?: number;
   endTime?: number;
   rps?: number;
