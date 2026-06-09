@@ -8,15 +8,7 @@ import { ParagraphMedium } from 'baseui/typography';
 import { overrides, styled } from './create-schedule-modal.styles';
 import { type Props } from './create-schedule-modal.types';
 
-export default function CreateScheduleModal({
-  domain: _domain,
-  cluster: _cluster,
-  isOpen,
-  onClose,
-}: Props) {
-  void _domain;
-  void _cluster;
-
+export default function CreateScheduleModal({ isOpen, onClose }: Props) {
   return (
     <Modal
       isOpen={isOpen}
