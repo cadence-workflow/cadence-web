@@ -132,16 +132,25 @@ describe(WorkflowsHeader.name, () => {
       })
     ).toBeInTheDocument();
   });
+
+  it('renders a custom search segment label when provided', async () => {
+    setup({ searchSegmentLabel: 'Select' });
+
+    expect(await screen.findByText('Select')).toBeInTheDocument();
+    expect(screen.queryByText('Search')).not.toBeInTheDocument();
+  });
 });
 
 function setup({
   isQueryRunning,
   expandFiltersByDefault,
   showQueryInputOnly,
+  searchSegmentLabel,
 }: {
   isQueryRunning?: boolean;
   expandFiltersByDefault?: boolean;
   showQueryInputOnly?: boolean;
+  searchSegmentLabel?: string;
 }) {
   const user = userEvent.setup();
   const renderResult = render(
@@ -155,6 +164,7 @@ function setup({
       isQueryRunning={isQueryRunning ?? false}
       expandFiltersByDefault={expandFiltersByDefault}
       showQueryInputOnly={showQueryInputOnly}
+      searchSegmentLabel={searchSegmentLabel}
     />
   );
 
