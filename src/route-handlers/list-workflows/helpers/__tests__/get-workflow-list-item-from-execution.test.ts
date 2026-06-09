@@ -1,3 +1,4 @@
+import { ActiveClusterSelectionStrategy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ActiveClusterSelectionStrategy';
 import { type WorkflowExecutionInfo } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionInfo';
 
 import { mockWorkflowExecutions } from '../../__fixtures__/mock-workflow-executions';
@@ -71,6 +72,8 @@ describe('getWorkflowListItemFromExecution', () => {
     const execution: WorkflowExecutionInfo = {
       ...BASE_EXECUTION,
       activeClusterSelectionPolicy: {
+        strategy:
+          ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_INVALID,
         clusterAttribute: {
           scope: 'mock-scope',
           name: 'mock-cluster-name',

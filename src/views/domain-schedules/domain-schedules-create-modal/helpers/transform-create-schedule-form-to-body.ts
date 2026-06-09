@@ -1,8 +1,6 @@
 import { CRON_FIELD_ORDER } from '@/components/cron-schedule-input/cron-schedule-input.constants';
 import { type CreateScheduleRequestBody } from '@/route-handlers/create-schedule/create-schedule.types';
-import { type Json } from '@/route-handlers/start-workflow/start-workflow.types';
 
-import { SECONDS_PER_DAY } from '../create-schedule-modal.constants';
 import { type CreateScheduleFormData } from '../create-schedule-form/create-schedule-form.types';
 
 function newScheduleId(): string {
@@ -24,39 +22,18 @@ export default function transformCreateScheduleFormToBody(
     (key) => formData.cronExpression?.[key] ?? ''
   ).join(' ');
 
-  const parsedInput =
-    formData.input
-      ?.filter((v) => v !== '')
-      .map((v) => JSON.parse(v) as Json) ?? [];
-
-  const trimmedPrefix = formData.workflowIdPrefix?.trim() ?? '';
-
   return {
     scheduleId,
-    spec: {
-      cronExpression: cronString,
+    cronExpression: cronString,
+    startWorkflow: {
+      workflowType: formData.workflowType,
+      taskList: formData.taskList,
+      workerSDKLanguage: formData.workerSDKLanguage,
+      executionStartToCloseTimeoutSeconds:
+        formData.executionStartToCloseTimeoutSeconds,
+      workflowIdPrefix: '',
+      taskStartToCloseTimeoutSeconds: formData.taskStartToCloseTimeoutSeconds,
     },
-    action: {
-      startWorkflow: {
-        workflowType: formData.workflowType,
-        taskList: formData.taskList,
-        workerSDKLanguage: formData.workerSDKLanguage,
-        executionStartToCloseTimeoutSeconds:
-          formData.executionStartToCloseTimeoutSeconds ?? 0,
-        workflowIdPrefix: trimmedPrefix || scheduleId,
-        taskStartToCloseTimeoutSeconds: formData.taskStartToCloseTimeoutSeconds,
-        ...(parsedInput.length > 0 && { input: parsedInput }),
-      },
-    },
-    policies: {
-      overlapPolicy: formData.overlapPolicy,
-      catchUpPolicy: formData.catchUpPolicy,
-      ...(formData.catchUpPolicy !== 'SCHEDULE_CATCH_UP_POLICY_SKIP' && {
-        catchUpWindowSeconds:
-          (formData.catchUpWindowDays ?? 0) * SECONDS_PER_DAY,
-      }),
-      bufferLimit: formData.bufferLimit ?? 0,
-      pauseOnFailure: formData.pauseOnFailure ?? false,
-    },
+    pauseOnFailure: formData.pauseOnFailure ?? false,
   };
 }

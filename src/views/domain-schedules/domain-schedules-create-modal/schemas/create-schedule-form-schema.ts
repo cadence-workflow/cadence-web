@@ -1,52 +1,67 @@
 import { z } from 'zod';
 
 import { CRON_FIELD_ORDER } from '@/components/cron-schedule-input/cron-schedule-input.constants';
-import {
-  SCHEDULE_CATCH_UP_POLICIES,
-  SCHEDULE_OVERLAP_POLICIES,
-} from '@/route-handlers/create-schedule/create-schedule.constants';
 import { WORKER_SDK_LANGUAGES } from '@/route-handlers/start-workflow/start-workflow.constants';
 import { getCronFieldsError } from '@/views/workflow-actions/workflow-action-start-form/helpers/get-cron-fields-error';
 
-import {
-  CATCH_UP_WINDOW_DEFAULT_DAYS,
-  CATCH_UP_WINDOW_MAX_DAYS,
-  CATCH_UP_WINDOW_MIN_DAYS,
-} from '../create-schedule-modal.constants';
+const cronExpressionFieldsSchema = z
+  .object({
+    minutes: z.string(),
+    hours: z.string(),
+    daysOfMonth: z.string(),
+    months: z.string(),
+    daysOfWeek: z.string(),
+  })
+  // If cron is invalid catch the error to proceed with better error messages in superRefine
+  .catch(() => ({
+    minutes: '',
+    hours: '',
+    daysOfMonth: '',
+    months: '',
+    daysOfWeek: '',
+  }))
+  .superRefine((data, ctx) => {
+    const allFieldsHasValue = Object.values(data).every(Boolean);
 
-export const createScheduleFormSchema = z.object({
-  cronExpression: z
-    .object({
-      minutes: z.string().min(1, 'Minutes is required'),
-      hours: z.string().min(1, 'Hours is required'),
-      daysOfMonth: z.string().min(1, 'Days of month is required'),
-      months: z.string().min(1, 'Months is required'),
-      daysOfWeek: z.string().min(1, 'Days of week is required'),
-    })
-    .superRefine((data, ctx) => {
-      const allFieldsHaveValue = Object.values(data).every(Boolean);
-      if (!allFieldsHaveValue) return;
+    if (!allFieldsHasValue) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Cron expression is required',
+      });
+      // If there are missing fields, no need to validate the cron schedule format.
+      return;
+    }
 
-      const cronString = CRON_FIELD_ORDER.map((key) => data[key]).join(' ');
-      const cronFieldsErrors = getCronFieldsError(cronString);
+    const cronString = CRON_FIELD_ORDER.map((key) => data[key]).join(' ');
+    const cronFieldsErrors = getCronFieldsError(cronString);
 
-      if (!cronFieldsErrors) return;
+    if (!cronFieldsErrors) return;
 
-      if (cronFieldsErrors?.general) {
+    if (cronFieldsErrors?.general) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Invalid cron schedule format',
+      });
+    } else {
+      // multi error format exposes the general error along with field errors
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Invalid cron schedule format',
+        path: ['general'],
+      });
+
+      Object.entries(cronFieldsErrors).forEach(([errorKey, errorMessage]) => {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Invalid cron schedule format',
+          message: errorMessage,
+          path: [errorKey],
         });
-      } else {
-        Object.entries(cronFieldsErrors).forEach(([errorKey, errorMessage]) => {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: errorMessage,
-            path: [errorKey],
-          });
-        });
-      }
-    }),
+      });
+    }
+  });
+
+export const createScheduleFormSchema = z.object({
+  cronExpression: cronExpressionFieldsSchema,
   workflowType: z.object({
     name: z.string().min(1, 'Workflow type is required'),
   }),
@@ -54,43 +69,17 @@ export const createScheduleFormSchema = z.object({
     name: z.string().min(1, 'Task list is required'),
   }),
   executionStartToCloseTimeoutSeconds: z
-    .number({ invalid_type_error: 'Execution timeout is required' })
+    .number({
+      required_error: 'Execution timeout is required',
+    })
     .positive('Execution timeout must be positive'),
   taskStartToCloseTimeoutSeconds: z
-    .number({ invalid_type_error: 'Task timeout is required' })
+    .number({
+      required_error: 'Task timeout is required',
+    })
     .positive('Task timeout must be positive'),
   workflowIdPrefix: z.string().optional(),
-  workerSDKLanguage: z.enum(WORKER_SDK_LANGUAGES),
-  input: z
-    .array(z.string())
-    .optional()
-    .superRefine((inputArray, ctx) => {
-      if (!inputArray) return;
-      if (inputArray.length === 1 && inputArray[0] === '') return;
-      for (let i = 0; i < inputArray.length; i++) {
-        const val = inputArray[i];
-        try {
-          JSON.parse(val);
-        } catch {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: 'Input must be valid JSON',
-            path: [i],
-          });
-        }
-      }
-    }),
-  overlapPolicy: z.enum(SCHEDULE_OVERLAP_POLICIES),
-  catchUpPolicy: z.enum(SCHEDULE_CATCH_UP_POLICIES),
-  catchUpWindowDays: z
-    .number()
-    .int()
-    .min(CATCH_UP_WINDOW_MIN_DAYS)
-    .max(
-      CATCH_UP_WINDOW_MAX_DAYS,
-      `Catch-up window cannot exceed ${CATCH_UP_WINDOW_MAX_DAYS} days`
-    )
-    .default(CATCH_UP_WINDOW_DEFAULT_DAYS),
-  bufferLimit: z.number().int().nonnegative().default(0),
-  pauseOnFailure: z.boolean().default(false),
+  // TODO: make this required once the field is added to the UI
+  workerSDKLanguage: z.enum(WORKER_SDK_LANGUAGES).optional().default('GO'),
+  pauseOnFailure: z.boolean().optional().default(false),
 });

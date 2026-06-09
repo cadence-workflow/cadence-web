@@ -3,26 +3,42 @@ import { type ZodIssue } from 'zod';
 
 import { type CreateScheduleFormData } from '../create-schedule-form/create-schedule-form.types';
 
+function startWorkflowSubpath(
+  path: ReadonlyArray<string | number>
+): ReadonlyArray<string | number> | null {
+  if (path[0] === 'startWorkflow') {
+    return path.slice(1);
+  }
+  if (path[0] === 'action' && path[1] === 'startWorkflow') {
+    return path.slice(2);
+  }
+  return null;
+}
+
 function toFormPath(
   path: ReadonlyArray<string | number>
 ): FieldPath<CreateScheduleFormData> | null {
+  if (path[0] === 'cronExpression') {
+    return 'cronExpression';
+  }
+
+  if (path[0] === 'pauseOnFailure') {
+    return 'pauseOnFailure';
+  }
+
   if (path[0] === 'spec' && path[1] === 'cronExpression') {
     return 'cronExpression';
   }
 
-  if (path[0] === 'policies') {
-    if (path[1] === 'overlapPolicy') return 'overlapPolicy';
-    if (path[1] === 'catchUpPolicy') return 'catchUpPolicy';
-    if (path[1] === 'catchUpWindowSeconds') return 'catchUpWindowDays';
-    if (path[1] === 'bufferLimit') return 'bufferLimit';
-    if (path[1] === 'pauseOnFailure') return 'pauseOnFailure';
+  if (path[0] === 'policies' && path[1] === 'pauseOnFailure') {
+    return 'pauseOnFailure';
   }
 
-  if (path[0] !== 'action' || path[1] !== 'startWorkflow') {
+  const rest = startWorkflowSubpath(path);
+  if (!rest?.length) {
     return null;
   }
 
-  const rest = path.slice(2);
   if (rest[0] === 'workflowType' && rest[1] === 'name') {
     return 'workflowType.name';
   }
@@ -40,9 +56,6 @@ function toFormPath(
   }
   if (rest[0] === 'workerSDKLanguage') {
     return 'workerSDKLanguage';
-  }
-  if (rest[0] === 'input' && typeof rest[1] === 'number') {
-    return `input.${rest[1]}` as FieldPath<CreateScheduleFormData>;
   }
 
   return null;
