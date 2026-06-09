@@ -6,6 +6,7 @@ import type {
 const cssStylesObj = {
   container: (theme) => ({
     ...theme.typography.MonoLabelXSmall,
+    overflowWrap: 'anywhere',
   }),
   basicChildStyle: (theme) => ({
     marginLeft: theme.sizing.scale550,
@@ -33,10 +34,12 @@ const cssStylesObj = {
     color: '#016974',
     marginRight: theme.sizing.scale200,
     cursor: 'pointer',
+    wordBreak: 'break-all',
   }),
   label: {
     color: '#016974',
     marginRight: '7px',
+    wordBreak: 'break-all',
   },
   numberValue: {
     color: '#06C167',

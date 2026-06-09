@@ -4,6 +4,7 @@ import React from 'react';
 import { MdAdd, MdOutlineEdit } from 'react-icons/md';
 
 import Button from '@/components/button/button';
+import TableInfiniteScrollLoader from '@/components/table/table-infinite-scroll-loader/table-infinite-scroll-loader';
 
 import DomainBatchActionsSidebarItem from '../domain-batch-actions-sidebar-item/domain-batch-actions-sidebar-item';
 import StatusIcon from '../helpers/status-icon';
@@ -19,6 +20,10 @@ export default function DomainBatchActionsSidebar({
   onSelectAction,
   onSelectDraft,
   onCreateNew,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
+  error,
 }: Props) {
   return (
     <styled.Container>
@@ -51,14 +56,26 @@ export default function DomainBatchActionsSidebar({
           return (
             <DomainBatchActionsSidebarItem
               key={action.id}
-              label={`Batch action #${action.id}`}
+              // TODO: label should be either start date or provided from search attributes once available.
+              label={action.id}
               icon={<StatusIcon action={action} />}
               isSelected={isSelected}
-              isActive={action.status === 'running' || isSelected}
+              isActive={action.status === 'RUNNING' || isSelected}
               onSelect={() => onSelectAction(action.id)}
             />
           );
         })}
+        {(hasNextPage || isFetchingNextPage || error) && (
+          <styled.LoaderWrapper>
+            <TableInfiniteScrollLoader
+              hasData={batchActions.length > 0}
+              error={error}
+              fetchNextPage={fetchNextPage}
+              hasNextPage={hasNextPage}
+              isFetchingNextPage={isFetchingNextPage}
+            />
+          </styled.LoaderWrapper>
+        )}
       </styled.List>
     </styled.Container>
   );

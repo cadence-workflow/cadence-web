@@ -26,4 +26,35 @@ describe('getVisibilityQuery', () => {
     const query = getVisibilityQuery({ timeColumn: 'StartTime' });
     expect(query).toEqual('ORDER BY StartTime DESC');
   });
+
+  it('should omit ORDER BY when includeOrderBy is false', () => {
+    const query = getVisibilityQuery({
+      search: 'mocksearchterm',
+      timeColumn: 'StartTime',
+      includeOrderBy: false,
+    });
+    expect(query).toEqual(
+      '(WorkflowType = "mocksearchterm" OR WorkflowID = "mocksearchterm" OR RunID = "mocksearchterm")'
+    );
+  });
+
+  it('should return empty string when includeOrderBy is false and no filters', () => {
+    const query = getVisibilityQuery({
+      timeColumn: 'StartTime',
+      includeOrderBy: false,
+    });
+    expect(query).toEqual('');
+  });
+
+  it('should use LIKE comparator when partial matching is enabled', () => {
+    const query = getVisibilityQuery({
+      search: 'mocksearchterm',
+      timeColumn: 'StartTime',
+      includeOrderBy: false,
+      isPartialMatchingEnabled: true,
+    });
+    expect(query).toEqual(
+      '(WorkflowType LIKE "mocksearchterm" OR WorkflowID LIKE "mocksearchterm" OR RunID LIKE "mocksearchterm")'
+    );
+  });
 });

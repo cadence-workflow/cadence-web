@@ -1,4 +1,6 @@
 import { styled as createStyled, type Theme } from 'baseui';
+import { type SnackbarElementOverrides } from 'baseui/snackbar';
+import { type StyleObject } from 'styletron-react';
 
 export const styled = {
   Container: createStyled('div', () => ({
@@ -16,4 +18,14 @@ export const styled = {
     flexDirection: 'column',
     padding: $theme.sizing.scale600,
   })),
+};
+
+export const overrides = {
+  errorSnackbar: {
+    Root: {
+      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+        backgroundColor: $theme.colors.contentNegative,
+      }),
+    },
+  } satisfies SnackbarElementOverrides,
 };

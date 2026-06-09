@@ -15,7 +15,7 @@ export default function DomainBatchActionDetail({ batchAction }: Props) {
     <styled.Container>
       <styled.Header>
         <styled.Title>Batch action #{batchAction.id}</styled.Title>
-        {batchAction.status === 'running' && (
+        {batchAction.status === 'RUNNING' && (
           <Button
             kind="primary"
             size="compact"

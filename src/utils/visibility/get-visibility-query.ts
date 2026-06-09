@@ -10,6 +10,8 @@ export default function getVisibilityQuery({
   timeColumn,
   timeRangeStart,
   timeRangeEnd,
+  includeOrderBy = true,
+  isPartialMatchingEnabled = false,
 }: {
   search?: string;
   workflowStatuses?: Array<WorkflowStatus>;
@@ -18,11 +20,14 @@ export default function getVisibilityQuery({
   timeColumn: 'StartTime' | 'CloseTime';
   timeRangeStart?: string;
   timeRangeEnd?: string;
+  includeOrderBy?: boolean;
+  isPartialMatchingEnabled?: boolean;
 }) {
   const searchQueries: Array<string> = [];
   if (search) {
+    const comparator = isPartialMatchingEnabled ? 'LIKE' : '=';
     searchQueries.push(
-      `(WorkflowType = "${search}" OR WorkflowID = "${search}" OR RunID = "${search}")`
+      `(WorkflowType ${comparator} "${search}" OR WorkflowID ${comparator} "${search}" OR RunID ${comparator} "${search}")`
     );
   }
 
@@ -51,8 +56,11 @@ export default function getVisibilityQuery({
     searchQueries.push(`${timeColumn} <= "${timeRangeEnd}"`);
   }
 
-  return (
-    (searchQueries.length > 0 ? `${searchQueries.join(' AND ')} ` : '') +
-    `ORDER BY ${sortColumn ?? 'StartTime'} ${sortOrder ?? 'DESC'}`
-  );
+  const filterClause =
+    searchQueries.length > 0 ? searchQueries.join(' AND ') : '';
+  const orderClause = includeOrderBy
+    ? `ORDER BY ${sortColumn ?? 'StartTime'} ${sortOrder ?? 'DESC'}`
+    : '';
+
+  return [filterClause, orderClause].filter(Boolean).join(' ');
 }

@@ -39,8 +39,16 @@ export const visibilityQuerySchema = z.object({
   sortOrder: z.enum(SORT_ORDERS, { message: 'Invalid sort order' }).optional(),
 });
 
-const listWorkflowsQueryParamSchema = visibilityQuerySchema
-  .merge(
+export const getRefinedVisibilityQuerySchema = <
+  T extends typeof visibilityQuerySchema,
+>(
+  schema: T = visibilityQuerySchema as T
+): z.ZodEffects<T> => {
+  return schema.superRefine(validateArchivedQueryParams) as z.ZodEffects<T>;
+};
+
+const listWorkflowsQueryParamSchema = getRefinedVisibilityQuerySchema(
+  visibilityQuerySchema.merge(
     z.object({
       pageSize: z
         .string()
@@ -53,6 +61,6 @@ const listWorkflowsQueryParamSchema = visibilityQuerySchema
       nextPage: z.string().optional(),
     })
   )
-  .superRefine(validateArchivedQueryParams);
+);
 
 export default listWorkflowsQueryParamSchema;

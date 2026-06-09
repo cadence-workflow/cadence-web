@@ -42,7 +42,6 @@ describe('isChildWorkflowExecutionEvent', () => {
     expect(isChildWorkflowExecutionEvent(null)).toBe(false);
     //@ts-expect-error undefined is not of type HistoryEvent
     expect(isChildWorkflowExecutionEvent(undefined)).toBe(false);
-    //@ts-expect-error {} is not of type HistoryEvent
     expect(isChildWorkflowExecutionEvent({})).toBe(false);
   });
 });
