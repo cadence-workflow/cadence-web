@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Modal, ModalButton } from 'baseui/modal';
@@ -28,7 +28,7 @@ export default function CreateScheduleModal({ isOpen, onClose }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
-  const onSubmit = (data: CreateScheduleFormData) => {
+  const onSubmit = (_data: CreateScheduleFormData) => {
     clearErrors();
   };
 
