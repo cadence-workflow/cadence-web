@@ -1,0 +1,41 @@
+'use client';
+
+import React from 'react';
+
+import { Modal, ModalButton } from 'baseui/modal';
+import { ParagraphMedium } from 'baseui/typography';
+
+import { overrides, styled } from './create-schedule-modal.styles';
+import { type Props } from './create-schedule-modal.types';
+
+export default function CreateScheduleModal({ isOpen, onClose }: Props) {
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      closeable
+      overrides={overrides.modal}
+    >
+      <styled.ModalHeader>Create Schedule</styled.ModalHeader>
+      <styled.ModalBody>
+        <ParagraphMedium marginTop="scale0" marginBottom="scale0">
+          Schedule form will be added in the next change. This dialog confirms
+          entry points and layout only.
+        </ParagraphMedium>
+      </styled.ModalBody>
+      <styled.ModalFooter>
+        <ModalButton
+          size="compact"
+          type="button"
+          kind="secondary"
+          onClick={onClose}
+        >
+          Cancel
+        </ModalButton>
+        <ModalButton size="compact" kind="primary" type="button" disabled>
+          Create schedule
+        </ModalButton>
+      </styled.ModalFooter>
+    </Modal>
+  );
+}
