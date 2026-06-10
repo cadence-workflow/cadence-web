@@ -4,13 +4,11 @@ import { type RouteParams } from '@/route-handlers/describe-batch-action/describ
 import { type RequestError } from '@/utils/request/request-error';
 import { type BatchAction } from '@/views/domain-batch-actions/domain-batch-actions.types';
 
-export type UseDescribeBatchActionParams = RouteParams & {
-  refetchInterval?: number;
-};
+export type UseDescribeBatchActionParams = RouteParams;
 
 export type DescribeBatchActionQueryKey = [
   'describeBatchAction',
-  Omit<UseDescribeBatchActionParams, 'refetchInterval'>,
+  UseDescribeBatchActionParams,
 ];
 
 export type UseDescribeBatchActionQueryOptions = UseQueryOptions<

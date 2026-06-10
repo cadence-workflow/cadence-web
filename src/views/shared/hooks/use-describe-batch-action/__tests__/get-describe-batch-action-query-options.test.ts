@@ -1,8 +1,4 @@
-import { type BatchAction } from '@/views/domain-batch-actions/domain-batch-actions.types';
-
 import getDescribeBatchActionQueryOptions from '../get-describe-batch-action-query-options';
-import { DESCRIBE_BATCH_ACTION_REFETCH_INTERVAL } from '../use-describe-batch-action.constants';
-import { type UseDescribeBatchActionParams } from '../use-describe-batch-action.types';
 
 const PARAMS = {
   domain: 'mock-domain',
@@ -17,40 +13,21 @@ describe(getDescribeBatchActionQueryOptions.name, () => {
     });
   });
 
-  it('polls at the default interval while the batch action is RUNNING', () => {
-    expect(getRefetchInterval({ status: 'RUNNING' })).toBe(
-      DESCRIBE_BATCH_ACTION_REFETCH_INTERVAL
-    );
-  });
-
-  it('honours a custom refetchInterval override while RUNNING', () => {
+  it('does not set a refetch interval by default (one-shot fetch)', () => {
     expect(
-      getRefetchInterval({ status: 'RUNNING' }, { refetchInterval: 500 })
-    ).toBe(500);
+      getDescribeBatchActionQueryOptions(PARAMS).refetchInterval
+    ).toBeUndefined();
   });
 
-  it.each(['COMPLETED', 'FAILED', 'ABORTED'] as const)(
-    'stops polling once the batch action is %s',
-    (status) => {
-      expect(getRefetchInterval({ status })).toBe(false);
-    }
-  );
+  it('forwards react-query option overrides supplied by the consumer', () => {
+    const refetchInterval = jest.fn();
 
-  it('does not poll before any data has been fetched', () => {
-    expect(getRefetchInterval(undefined)).toBe(false);
+    expect(
+      getDescribeBatchActionQueryOptions({
+        ...PARAMS,
+        enabled: false,
+        refetchInterval,
+      })
+    ).toMatchObject({ enabled: false, refetchInterval });
   });
 });
-
-function getRefetchInterval(
-  data: Partial<BatchAction> | undefined,
-  overrides: Partial<UseDescribeBatchActionParams> = {}
-) {
-  const refetchInterval = getDescribeBatchActionQueryOptions({
-    ...PARAMS,
-    ...overrides,
-  }).refetchInterval as unknown as (query: {
-    state: { data?: BatchAction };
-  }) => number | false;
-
-  return refetchInterval({ state: { data: data as BatchAction | undefined } });
-}

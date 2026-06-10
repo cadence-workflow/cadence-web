@@ -1,20 +1,17 @@
 import request from '@/utils/request';
-import { type BatchAction } from '@/views/domain-batch-actions/domain-batch-actions.types';
 
-import { DESCRIBE_BATCH_ACTION_REFETCH_INTERVAL } from './use-describe-batch-action.constants';
 import {
   type DescribeBatchActionQueryKey,
-  type UseDescribeBatchActionParams,
   type UseDescribeBatchActionQueryOptions,
+  type UseQueryDescribeBatchActionParams,
 } from './use-describe-batch-action.types';
 
 export default function getDescribeBatchActionQueryOptions({
   domain,
   cluster,
   batchActionId,
-  refetchInterval = DESCRIBE_BATCH_ACTION_REFETCH_INTERVAL,
   ...queryOptions
-}: UseDescribeBatchActionParams): UseDescribeBatchActionQueryOptions {
+}: UseQueryDescribeBatchActionParams): UseDescribeBatchActionQueryOptions {
   return {
     queryKey: [
       'describeBatchAction',
@@ -30,8 +27,6 @@ export default function getDescribeBatchActionQueryOptions({
           p.cluster
         )}/batch-actions/${encodeURIComponent(p.batchActionId)}`
       ).then((res) => res.json()),
-    refetchInterval: (query: { state: { data?: BatchAction } }) =>
-      query.state.data?.status === 'RUNNING' ? refetchInterval : false,
     ...queryOptions,
   };
 }
