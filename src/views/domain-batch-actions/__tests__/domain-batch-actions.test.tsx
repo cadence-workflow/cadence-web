@@ -3,7 +3,7 @@ import React from 'react';
 import { userEvent } from '@testing-library/user-event';
 import { HttpResponse } from 'msw';
 
-import { render, screen, waitFor } from '@/test-utils/rtl';
+import { render, screen, waitFor, act } from '@/test-utils/rtl';
 
 import { type ListBatchActionsResponse } from '@/route-handlers/list-batch-actions/list-batch-actions.types';
 import { mockDomainPageQueryParamsValues } from '@/views/domain-page/__fixtures__/domain-page-query-params';
@@ -244,14 +244,51 @@ describe(DomainBatchActions.name, () => {
       })
     );
   });
+
+  it('enqueues the error snackbar only once across repeated failed refetches', async () => {
+    jest.useFakeTimers();
+    try {
+      let detailCalls = 0;
+      setup({
+        detailResolver: () => {
+          detailCalls += 1;
+          // First load succeeds with a RUNNING action so the hook starts
+          // polling; every subsequent refetch fails with a fresh error object.
+          return detailCalls === 1
+            ? HttpResponse.json({ id: '5', status: 'RUNNING' })
+            : HttpResponse.json(
+                { message: 'Failed to fetch describe' },
+                { status: 500 }
+              );
+        },
+      });
+
+      // Flush the initial list + detail fetches.
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(0);
+      });
+      expect(mockEnqueue).not.toHaveBeenCalled();
+
+      // Advance past several polling intervals — each refetch fails.
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(30000);
+      });
+
+      expect(mockEnqueue).toHaveBeenCalledTimes(1);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
 });
 
 function setup({
   pages = [mockBatchActionsResponse],
   describeError = false,
+  detailResolver,
 }: {
   pages?: ListBatchActionsResponse[];
   describeError?: boolean;
+  detailResolver?: () => ReturnType<typeof HttpResponse.json>;
 } = {}) {
   return render(
     <DomainBatchActions domain="test-domain" cluster="test-cluster" />,
@@ -275,6 +312,9 @@ function setup({
           httpMethod: 'GET',
           mockOnce: false,
           httpResolver: async ({ params }) => {
+            if (detailResolver) {
+              return detailResolver();
+            }
             if (describeError) {
               return HttpResponse.json(
                 { message: 'Failed to fetch describe' },

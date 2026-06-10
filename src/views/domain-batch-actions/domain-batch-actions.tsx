@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useSnackbar } from 'baseui/snackbar';
 import { MdErrorOutline } from 'react-icons/md';
@@ -78,12 +78,18 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
   });
 
   const { enqueue, dequeue } = useSnackbar();
+  const lastShownErrorRef = useRef<string | null>(null);
   useEffect(() => {
-    if (!batchActionDetailError) return;
+    if (!batchActionDetailError) {
+      lastShownErrorRef.current = null;
+      return;
+    }
+    const message =
+      batchActionDetailError.message || 'Failed to fetch batch action details';
+    if (lastShownErrorRef.current === message) return;
+    lastShownErrorRef.current = message;
     enqueue({
-      message:
-        batchActionDetailError.message ||
-        'Failed to fetch batch action details',
+      message,
       startEnhancer: MdErrorOutline,
       actionMessage: 'OK',
       actionOnClick: () => dequeue(),
