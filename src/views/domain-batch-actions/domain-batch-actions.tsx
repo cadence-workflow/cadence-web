@@ -18,6 +18,7 @@ import DomainBatchActionsSidebar from './domain-batch-actions-sidebar/domain-bat
 import {
   BATCH_ACTIONS_PAGE_SIZE,
   BATCH_ACTION_DEFAULT_QUERY,
+  BATCH_ACTION_DETAIL_REFETCH_INTERVAL,
   DRAFT_ACTION_ID,
 } from './domain-batch-actions.constants';
 import { styled } from './domain-batch-actions.styles';
@@ -75,6 +76,10 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
     cluster: props.cluster,
     batchActionId: selectedActionId ?? '',
     enabled: !isDraftSelected && !!selectedActionId,
+    refetchInterval: (query) =>
+      query.state.data?.status === 'RUNNING'
+        ? BATCH_ACTION_DETAIL_REFETCH_INTERVAL
+        : false,
   });
 
   const { enqueue, dequeue } = useSnackbar();
