@@ -10,8 +10,8 @@ export const CREATE_SCHEDULE_FORM_FIELD_IDS = {
 
 export const CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS = {
   cronExpression: 'Cron string describing the schedule for running workflows',
-  workflowType: 'WorkflowType of the target workflow the schedule starts',
-  taskList: 'TaskList of the target workflow the schedule starts',
+  workflowType: 'WorkflowType of the workflow that the schedule will start',
+  taskList: 'TaskList of the workflow that the schedule will start',
   taskStartToCloseTimeout: 'Activity & decision tasks start to close timeout',
   executionStartToCloseTimeout: 'Workflow start to close timeout',
   pauseOnFailure: 'Pause the schedule when a triggered workflow fails',
