@@ -54,7 +54,13 @@ describe('CreateScheduleModal', () => {
   it('shows cron expression error when cron fields are cleared', async () => {
     const { user } = setup({ isOpen: true });
 
-    for (const label of ['Minute', 'Hour', 'Day of Month', 'Month', 'Day of Week']) {
+    for (const label of [
+      'Minute',
+      'Hour',
+      'Day of Month',
+      'Month',
+      'Day of Week',
+    ]) {
       const input = screen.getByLabelText(label);
       await user.clear(input);
     }
