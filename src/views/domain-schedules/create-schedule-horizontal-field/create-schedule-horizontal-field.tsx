@@ -1,17 +1,11 @@
+'use client';
+
 import React from 'react';
 
 import { FormControl } from 'baseui/form-control';
 
-import { overrides, styled } from './create-schedule-form.styles';
-
-export type HorizontalFormFieldProps = {
-  label: React.ReactNode;
-  description?: React.ReactNode;
-  /** When set, associates the left column with the control via `htmlFor` / `id`. */
-  htmlFor?: string;
-  error?: React.ReactNode;
-  children: React.ReactNode;
-};
+import { overrides, styled } from './create-schedule-horizontal-field.styles';
+import { type Props } from './create-schedule-horizontal-field.types';
 
 export default function CreateScheduleHorizontalField({
   label,
@@ -19,7 +13,7 @@ export default function CreateScheduleHorizontalField({
   htmlFor,
   error,
   children,
-}: HorizontalFormFieldProps) {
+}: Props) {
   return (
     <styled.FieldRow>
       <styled.FieldLabelColumn>
