@@ -82,7 +82,25 @@ export const createScheduleFormSchema = z.object({
   workflowIdPrefix: z.string().optional(),
   // TODO(refactor): WORKER_SDK_LANGUAGES imported from start-workflow — extract to shared constants
   workerSDKLanguage: z.enum(WORKER_SDK_LANGUAGES).default(WORKER_SDK_LANGUAGES[0]),
-  input: z.array(z.string()).optional(),
+  input: z
+    .array(z.string())
+    .optional()
+    .superRefine((inputArray, ctx) => {
+      if (!inputArray) return;
+      if (inputArray.length === 1 && inputArray[0] === '') return;
+      inputArray.forEach((val, i) => {
+        if (val.trim() === '') return;
+        try {
+          JSON.parse(val);
+        } catch {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Input must be valid JSON',
+            path: [i],
+          });
+        }
+      });
+    }),
 
   pauseOnFailure: z.boolean().optional().default(false),
 });

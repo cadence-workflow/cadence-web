@@ -129,6 +129,7 @@ export default function CreateScheduleForm({ control, trigger }: Props) {
         <Controller
           name="workerSDKLanguage"
           control={control}
+          defaultValue={WORKER_SDK_LANGUAGES[0]}
           render={({ field: { value, onChange, ref, ...field } }) => (
             <RadioGroup
               {...field}
