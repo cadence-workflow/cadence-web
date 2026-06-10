@@ -1,6 +1,5 @@
-import { type z } from 'zod';
-
 import { type Control, type UseFormTrigger } from 'react-hook-form';
+import { type z } from 'zod';
 
 import { type createScheduleFormSchema } from '../schemas/create-schedule-form-schema';
 
