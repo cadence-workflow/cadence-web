@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { CRON_FIELD_ORDER } from '@/components/cron-schedule-input/cron-schedule-input.constants';
+// TODO(refactor): WORKER_SDK_LANGUAGES is imported from start-workflow — extract to shared constants once both features stabilise
 import { WORKER_SDK_LANGUAGES } from '@/route-handlers/start-workflow/start-workflow.constants';
 import { getCronFieldsError } from '@/views/workflow-actions/workflow-action-start-form/helpers/get-cron-fields-error';
 
@@ -79,6 +80,9 @@ export const createScheduleFormSchema = z.object({
     })
     .positive('Task timeout must be positive'),
   workflowIdPrefix: z.string().optional(),
+  // TODO(refactor): WORKER_SDK_LANGUAGES imported from start-workflow — extract to shared constants
+  workerSDKLanguage: z.enum(WORKER_SDK_LANGUAGES).default(WORKER_SDK_LANGUAGES[0]),
+  input: z.array(z.string()).optional(),
 
   pauseOnFailure: z.boolean().optional().default(false),
 });

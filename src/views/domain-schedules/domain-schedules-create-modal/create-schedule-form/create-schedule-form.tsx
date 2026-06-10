@@ -4,13 +4,20 @@ import React from 'react';
 
 import { Checkbox } from 'baseui/checkbox';
 import { Input } from 'baseui/input';
+import { RadioGroup, Radio } from 'baseui/radio';
 import { LabelXSmall } from 'baseui/typography';
 import { Controller, useFormState } from 'react-hook-form';
 
 import CronScheduleInput from '@/components/cron-schedule-input/cron-schedule-input';
+import MultiJsonInput from '@/components/multi-json-input/multi-json-input';
+// TODO(refactor): WORKER_SDK_LANGUAGES is imported from start-workflow — extract to shared constants once both features stabilise
+import { WORKER_SDK_LANGUAGES } from '@/route-handlers/start-workflow/start-workflow.constants';
 import CreateScheduleHorizontalField from '@/views/domain-schedules/create-schedule-horizontal-field/create-schedule-horizontal-field';
+// TODO(refactor): getFieldErrorMessage and getFieldObjectErrorMessages are imported from start-workflow helpers — extract to shared utils
 import getFieldErrorMessage from '@/views/workflow-actions/workflow-action-start-form/helpers/get-field-error-message';
 import getFieldObjectErrorMessages from '@/views/workflow-actions/workflow-action-start-form/helpers/get-field-object-error-messages';
+// TODO(refactor): getMultiJsonErrorMessage is imported from start-workflow helpers — extract to shared utils
+import getMultiJsonErrorMessage from '@/views/workflow-actions/workflow-action-start-form/helpers/get-multi-json-error-message';
 
 import {
   CREATE_SCHEDULE_FORM_FIELD_IDS,
@@ -20,8 +27,8 @@ import { overrides } from './create-schedule-form.styles';
 import { type Props } from './create-schedule-form.types';
 
 export default function CreateScheduleForm({ control, trigger }: Props) {
-  const { errors: fieldErrors, isSubmitted } = useFormState({ control });
-  // TODO: move getFieldObjectErrorMessages to a common helper
+  const { errors: fieldErrors } = useFormState({ control });
+  // TODO(refactor): getFieldObjectErrorMessages imported from start-workflow helpers — extract to shared utils
   const cronExpressionError = getFieldObjectErrorMessages(
     fieldErrors,
     'cronExpression'
@@ -30,6 +37,8 @@ export default function CreateScheduleForm({ control, trigger }: Props) {
     typeof cronExpressionError === 'string'
       ? cronExpressionError
       : cronExpressionError?.general;
+
+  const inputError = getMultiJsonErrorMessage(fieldErrors, 'input');
 
   return (
     <div>
@@ -75,8 +84,7 @@ export default function CreateScheduleForm({ control, trigger }: Props) {
               value={field.value}
               onChange={(value) => {
                 field.onChange(value);
-                // If form is submitted, trigger the validation to show fix immediately
-                if (isSubmitted) trigger('cronExpression');
+                trigger('cronExpression');
               }}
               onBlur={field.onBlur}
               error={cronExpressionError}
@@ -109,6 +117,55 @@ export default function CreateScheduleForm({ control, trigger }: Props) {
               )}
               size="compact"
               placeholder="Enter task list name"
+            />
+          )}
+        />
+      </CreateScheduleHorizontalField>
+
+      <CreateScheduleHorizontalField
+        label="Worker SDK"
+        description={CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.workerSDK}
+      >
+        <Controller
+          name="workerSDKLanguage"
+          control={control}
+          render={({ field: { value, onChange, ref, ...field } }) => (
+            <RadioGroup
+              {...field}
+              // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
+              inputRef={ref}
+              aria-label="Worker SDK"
+              value={value}
+              onChange={(e) => onChange(e.currentTarget.value)}
+              align="horizontal"
+            >
+              {WORKER_SDK_LANGUAGES.map((language) => (
+                <Radio key={language} value={language}>
+                  {language}
+                </Radio>
+              ))}
+            </RadioGroup>
+          )}
+        />
+      </CreateScheduleHorizontalField>
+
+      <CreateScheduleHorizontalField
+        label="Workflow Input"
+        description={CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.workflowInput}
+        error={typeof inputError === 'string' ? inputError : undefined}
+      >
+        <Controller
+          name="input"
+          control={control}
+          defaultValue={['']}
+          render={({ field }) => (
+            <MultiJsonInput
+              label="Workflow input arguments"
+              placeholder="Enter JSON input"
+              value={field.value}
+              onChange={field.onChange}
+              error={inputError}
+              addButtonText="Add argument"
             />
           )}
         />
