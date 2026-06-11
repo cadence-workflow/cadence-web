@@ -49,6 +49,12 @@ const nextConfig = {
           '/domains/:domain/:cluster/workflows/:workflowId/:runId/summary',
         permanent: true,
       },
+      {
+        source: '/domains/:domain/:cluster/schedules/:scheduleId',
+        destination:
+          '/domains/:domain/:cluster/schedules/:scheduleId/details',
+        permanent: true,
+      },
     ];
   },
   output: BUILD_OUTPUT,
