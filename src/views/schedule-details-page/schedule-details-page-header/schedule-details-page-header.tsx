@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { Suspense } from 'react';
 
 import { Breadcrumbs } from 'baseui/breadcrumbs';
 import { StyledLink } from 'baseui/link';
@@ -10,6 +10,9 @@ import cadenceLogoBlack from '@/assets/cadence-logo-black.svg';
 import PageSection from '@/components/page-section/page-section';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import { type DomainPageTabName } from '@/views/domain-page/domain-page-tabs/domain-page-tabs.types';
+
+import ScheduleDetailsPageHeaderClusterSelector from '../schedule-details-page-header-cluster-selector/schedule-details-page-header-cluster-selector';
+import ScheduleDetailsPageHeaderStatusTag from '../schedule-details-page-header-status-tag/schedule-details-page-header-status-tag';
 
 import { cssStyles, overrides } from './schedule-details-page-header.styles';
 import { type Props } from './schedule-details-page-header.types';
@@ -39,11 +42,26 @@ export default function ScheduleDetailsPageHeader({
           <StyledLink $as={Link} href={domainLink}>
             {domain}
           </StyledLink>
+          <Suspense fallback={null}>
+            <ScheduleDetailsPageHeaderClusterSelector
+              domain={domain}
+              cluster={cluster}
+            />
+          </Suspense>
         </div>
         <StyledLink $as={Link} href={schedulesListLink}>
           Schedules
         </StyledLink>
-        <div>{scheduleId}</div>
+        <div className={cls.breadcrumbItemContainer}>
+          {scheduleId}
+          <Suspense fallback={null}>
+            <ScheduleDetailsPageHeaderStatusTag
+              domain={domain}
+              cluster={cluster}
+              scheduleId={scheduleId}
+            />
+          </Suspense>
+        </div>
       </Breadcrumbs>
     </PageSection>
   );
