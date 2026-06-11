@@ -3,7 +3,7 @@ import React from 'react';
 import { userEvent } from '@testing-library/user-event';
 import { HttpResponse } from 'msw';
 
-import { render, screen } from '@/test-utils/rtl';
+import { render, screen, act } from '@/test-utils/rtl';
 
 import { type ListBatchActionsResponse } from '@/route-handlers/list-batch-actions/list-batch-actions.types';
 import { mockDomainPageQueryParamsValues } from '@/views/domain-page/__fixtures__/domain-page-query-params';
@@ -269,6 +269,45 @@ describe(DomainBatchActions.name, () => {
     expect(
       await screen.findByText('mock-batch-action-detail-5')
     ).toBeInTheDocument();
+  });
+
+  it('shows a stale-data banner (keeping the detail) when a background poll fails', async () => {
+    jest.useFakeTimers();
+    try {
+      let detailCalls = 0;
+      setup({
+        detailResolver: () => {
+          detailCalls += 1;
+          // First load succeeds with a RUNNING action so the hook starts
+          // polling; the next poll fails while data is already on screen.
+          return detailCalls === 1
+            ? HttpResponse.json({ id: '5', status: 'RUNNING' })
+            : HttpResponse.json(
+                { message: 'Failed to fetch describe' },
+                { status: 500 }
+              );
+        },
+      });
+
+      // Flush the initial load, then advance past a polling interval so a
+      // background poll fires and fails while data is already on screen.
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(0);
+      });
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(30000);
+      });
+
+      // Banner appears, and the (stale) detail is still rendered.
+      expect(
+        screen.getByText(/Could not refresh batch action details/i)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('mock-batch-action-detail-5')
+      ).toBeInTheDocument();
+    } finally {
+      jest.useRealTimers();
+    }
   });
 });
 

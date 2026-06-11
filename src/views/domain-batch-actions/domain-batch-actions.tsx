@@ -1,6 +1,9 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
 
+import { Banner, HIERARCHY, KIND } from 'baseui/banner';
+import { MdErrorOutline } from 'react-icons/md';
+
 import ErrorPanel from '@/components/error-panel/error-panel';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
@@ -167,10 +170,26 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
             />
           ) : (
             (isLoadingBatchActionDetail || batchActionDetail) && (
-              <DomainBatchActionDetail
-                batchAction={batchActionDetail}
-                loading={isLoadingBatchActionDetail}
-              />
+              <>
+                {batchActionDetailError && batchActionDetail && (
+                  <Banner
+                    hierarchy={HIERARCHY.low}
+                    kind={KIND.warning}
+                    artwork={{ icon: MdErrorOutline }}
+                    action={{
+                      label: 'Retry',
+                      onClick: () => refetchBatchActionDetail(),
+                    }}
+                  >
+                    Showing last known data. Could not refresh batch action
+                    details.
+                  </Banner>
+                )}
+                <DomainBatchActionDetail
+                  batchAction={batchActionDetail}
+                  loading={isLoadingBatchActionDetail}
+                />
+              </>
             )
           ))}
       </styled.DetailPanel>
