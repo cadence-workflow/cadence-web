@@ -8,7 +8,7 @@ import { LabelXSmall } from 'baseui/typography';
 import { Controller, useFormState } from 'react-hook-form';
 
 import CronScheduleInput from '@/components/cron-schedule-input/cron-schedule-input';
-import CreateScheduleHorizontalField from '@/views/domain-schedules/create-schedule-horizontal-field/create-schedule-horizontal-field';
+import DomainSchedulesHorizontalField from '@/views/domain-schedules/domain-schedules-horizontal-field/domain-schedules-horizontal-field';
 import getFieldErrorMessage from '@/views/workflow-actions/workflow-action-start-form/helpers/get-field-error-message';
 import getFieldObjectErrorMessages from '@/views/workflow-actions/workflow-action-start-form/helpers/get-field-object-error-messages';
 
@@ -33,7 +33,7 @@ export default function CreateScheduleForm({ control, trigger }: Props) {
 
   return (
     <div>
-      <CreateScheduleHorizontalField
+      <DomainSchedulesHorizontalField
         label="Workflow Type"
         description={CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.workflowType}
         htmlFor={CREATE_SCHEDULE_FORM_FIELD_IDS.workflowType}
@@ -60,9 +60,9 @@ export default function CreateScheduleForm({ control, trigger }: Props) {
             />
           )}
         />
-      </CreateScheduleHorizontalField>
+      </DomainSchedulesHorizontalField>
 
-      <CreateScheduleHorizontalField
+      <DomainSchedulesHorizontalField
         label="Cron Expression (UTC)"
         description={CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.cronExpression}
         error={cronExpressionErrorMessage}
@@ -83,9 +83,9 @@ export default function CreateScheduleForm({ control, trigger }: Props) {
             />
           )}
         />
-      </CreateScheduleHorizontalField>
+      </DomainSchedulesHorizontalField>
 
-      <CreateScheduleHorizontalField
+      <DomainSchedulesHorizontalField
         label="Task List"
         description={CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.taskList}
         htmlFor={CREATE_SCHEDULE_FORM_FIELD_IDS.taskList}
@@ -112,9 +112,9 @@ export default function CreateScheduleForm({ control, trigger }: Props) {
             />
           )}
         />
-      </CreateScheduleHorizontalField>
+      </DomainSchedulesHorizontalField>
 
-      <CreateScheduleHorizontalField
+      <DomainSchedulesHorizontalField
         label="Execution Start-to-Close Timeout"
         description={
           CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.executionStartToCloseTimeout
@@ -156,9 +156,9 @@ export default function CreateScheduleForm({ control, trigger }: Props) {
             />
           )}
         />
-      </CreateScheduleHorizontalField>
+      </DomainSchedulesHorizontalField>
 
-      <CreateScheduleHorizontalField
+      <DomainSchedulesHorizontalField
         label="Task Start-to-Close Timeout"
         description={
           CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.taskStartToCloseTimeout
@@ -200,9 +200,9 @@ export default function CreateScheduleForm({ control, trigger }: Props) {
             />
           )}
         />
-      </CreateScheduleHorizontalField>
+      </DomainSchedulesHorizontalField>
 
-      <CreateScheduleHorizontalField
+      <DomainSchedulesHorizontalField
         label="Pause on failure"
         description={CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.pauseOnFailure}
         htmlFor={CREATE_SCHEDULE_FORM_FIELD_IDS.pauseOnFailure}
@@ -227,7 +227,7 @@ export default function CreateScheduleForm({ control, trigger }: Props) {
             </Checkbox>
           )}
         />
-      </CreateScheduleHorizontalField>
+      </DomainSchedulesHorizontalField>
     </div>
   );
 }

@@ -8,11 +8,11 @@ import { useForm } from 'react-hook-form';
 
 import CreateScheduleForm from './create-schedule-form/create-schedule-form';
 import { type CreateScheduleFormData } from './create-schedule-form/create-schedule-form.types';
-import { overrides, styled } from './create-schedule-modal.styles';
-import { type Props } from './create-schedule-modal.types';
+import { overrides, styled } from './domain-schedules-create-modal.styles';
+import { type Props } from './domain-schedules-create-modal.types';
 import { createScheduleFormSchema } from './schemas/create-schedule-form-schema';
 
-export default function CreateScheduleModal({ isOpen, onClose }: Props) {
+export default function DomainSchedulesCreateModal({ isOpen, onClose }: Props) {
   const { control, handleSubmit, reset, clearErrors, trigger } =
     useForm<CreateScheduleFormData>({
       resolver: zodResolver(createScheduleFormSchema),

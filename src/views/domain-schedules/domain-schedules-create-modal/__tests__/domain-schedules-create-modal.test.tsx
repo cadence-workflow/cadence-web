@@ -1,8 +1,8 @@
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
-import CreateScheduleModal from '../create-schedule-modal';
+import DomainSchedulesCreateModal from '../domain-schedules-create-modal';
 
-describe('CreateScheduleModal', () => {
+describe('DomainSchedulesCreateModal', () => {
   it('renders dialog with main form fields when open', () => {
     setup({ isOpen: true });
 
@@ -72,7 +72,7 @@ function setup({
   const user = userEvent.setup();
 
   render(
-    <CreateScheduleModal
+    <DomainSchedulesCreateModal
       domain="d1"
       cluster="c1"
       isOpen={isOpen}
