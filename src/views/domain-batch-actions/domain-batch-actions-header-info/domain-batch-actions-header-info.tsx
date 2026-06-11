@@ -19,14 +19,14 @@ export default function DomainBatchActionHeaderInfo({
       {batchActionHeaderInfoItemsConfig
         .filter(
           (configItem: DomainBatchActionHeaderInfoItemConfig) =>
-            !configItem.hidden?.({ batchAction })
+            !batchAction || !configItem.hidden?.({ batchAction })
         )
         .map((configItem: DomainBatchActionHeaderInfoItemConfig) => (
           <DomainBatchActionHeaderInfoItem
             key={configItem.title}
             title={configItem.title}
-            loading={loading}
-            content={configItem.render({ batchAction })}
+            loading={loading || !batchAction}
+            content={batchAction ? configItem.render({ batchAction }) : null}
             placeholderSize={configItem.placeholderSize}
           />
         ))}

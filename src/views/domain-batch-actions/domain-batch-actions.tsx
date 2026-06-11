@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { useSnackbar } from 'baseui/snackbar';
 import { MdErrorOutline } from 'react-icons/md';
@@ -60,12 +60,16 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
 
   // Computed defensively (data may be undefined while loading) so the hooks
   // below are always called unconditionally, before any early return.
-  const batchActions = data?.pages.flatMap((p) => p.batchActions ?? []) ?? [];
+  const batchActions = useMemo(
+    () => data?.pages.flatMap((p) => p.batchActions ?? []) ?? [],
+    [data]
+  );
 
-  const selectedActionId =
-    !isDraftSelected && queryParams.batchActionId
-      ? queryParams.batchActionId
-      : batchActions[0]?.id ?? null;
+  // Default to the first action in the list unless a real (non-draft) action is selected
+  const firstBatchActionId = batchActions[0]?.id ?? null;
+  const selectedActionId = isDraftSelected
+    ? firstBatchActionId
+    : queryParams.batchActionId || firstBatchActionId;
 
   const {
     data: batchActionDetail,
@@ -83,23 +87,20 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
   });
 
   const { enqueue, dequeue } = useSnackbar();
-  const lastShownErrorRef = useRef<string | null>(null);
+  const batchActionDetailErrorMessage = batchActionDetailError
+    ? batchActionDetailError.message || 'Failed to fetch batch action details'
+    : undefined;
   useEffect(() => {
-    if (!batchActionDetailError) {
-      lastShownErrorRef.current = null;
-      return;
-    }
-    const message =
-      batchActionDetailError.message || 'Failed to fetch batch action details';
-    if (lastShownErrorRef.current === message) return;
-    lastShownErrorRef.current = message;
+    if (!batchActionDetailErrorMessage) return;
     enqueue({
-      message,
+      message: batchActionDetailErrorMessage,
       startEnhancer: MdErrorOutline,
       actionMessage: 'OK',
       actionOnClick: () => dequeue(),
     });
-  }, [batchActionDetailError, enqueue, dequeue]);
+    // Fire only when the error message itself changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [batchActionDetailErrorMessage]);
 
   if (isLoading) {
     return <SectionLoadingIndicator />;
@@ -108,8 +109,6 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
   if (!data) {
     throw new Error('Batch actions failed to load');
   }
-
-  const selectedAction = batchActions.find((a) => a.id === selectedActionId);
 
   const handleCreateNew = () => {
     setIsDraftOpen(true);
@@ -169,12 +168,14 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
             onDiscard={handleDiscard}
           />
         )}
-        {!isDraftSelected && selectedAction && (
-          <DomainBatchActionDetail
-            batchAction={batchActionDetail ?? selectedAction}
-            loading={isLoadingBatchActionDetail}
-          />
-        )}
+        {!isDraftSelected &&
+          selectedActionId &&
+          (isLoadingBatchActionDetail || batchActionDetail) && (
+            <DomainBatchActionDetail
+              batchAction={batchActionDetail}
+              loading={isLoadingBatchActionDetail}
+            />
+          )}
       </styled.DetailPanel>
     </styled.Container>
   );

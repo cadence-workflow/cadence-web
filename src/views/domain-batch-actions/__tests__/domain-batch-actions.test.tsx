@@ -46,8 +46,11 @@ jest.mock(
 
 jest.mock('../domain-batch-actions-detail/domain-batch-actions-detail', () => ({
   __esModule: true,
-  default: ({ batchAction }: DetailProps) => (
-    <div>mock-batch-action-detail-{batchAction.id}</div>
+  default: ({ batchAction, loading }: DetailProps) => (
+    <div>
+      {loading && <span>mock-batch-action-detail-loading</span>}
+      mock-batch-action-detail-{batchAction?.id}
+    </div>
   ),
 }));
 
