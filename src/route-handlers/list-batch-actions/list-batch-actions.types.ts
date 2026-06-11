@@ -12,7 +12,7 @@ export type RequestParams = {
 };
 
 // Slim shape returned by the sidebar list endpoint. The full BatchAction
-// (with actionType, rps, concurrency, etc.) is only available via a per-row
+// (with actionType, rps, etc.) is only available via a per-row
 // describe call planned for a follow-up PR.
 export type BatchActionListItem = {
   id: string;

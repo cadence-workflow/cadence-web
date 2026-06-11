@@ -31,7 +31,7 @@ export const overrides = {
     },
     Dialog: {
       style: (): StyleObject => ({
-        width: '680px',
+        width: '900px',
       }),
     },
   } satisfies ModalOverrides,

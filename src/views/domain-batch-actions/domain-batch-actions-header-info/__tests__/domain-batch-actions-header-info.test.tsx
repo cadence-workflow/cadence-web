@@ -24,7 +24,6 @@ const MOCK_RUNNING_ACTION: BatchAction = {
   actionType: 'cancel',
   startTime: new Date('2024-03-13T08:28:50.000Z').getTime(),
   rps: 200,
-  concurrency: 10,
 };
 
 describe(DomainBatchActionHeaderInfo.name, () => {
@@ -41,7 +40,6 @@ describe(DomainBatchActionHeaderInfo.name, () => {
     expect(screen.queryByText('Ended')).not.toBeInTheDocument();
     expect(screen.getByText('Duration')).toBeInTheDocument();
     expect(screen.getByText('RPS')).toBeInTheDocument();
-    expect(screen.getByText('Concurrency')).toBeInTheDocument();
   });
 
   it('shows Ended field for completed actions', () => {
@@ -105,12 +103,11 @@ describe(DomainBatchActionHeaderInfo.name, () => {
     expect(screen.getByText('Cancel')).toBeInTheDocument();
   });
 
-  it('renders rps and concurrency values with Edit buttons', () => {
+  it('renders the rps value with an Edit button', () => {
     render(<DomainBatchActionHeaderInfo batchAction={MOCK_RUNNING_ACTION} />);
 
     expect(screen.getByText('200')).toBeInTheDocument();
-    expect(screen.getByText('10')).toBeInTheDocument();
-    expect(screen.getAllByText('Edit')).toHaveLength(2);
+    expect(screen.getAllByText('Edit')).toHaveLength(1);
   });
 
   it('renders dashes when optional fields are missing', () => {
@@ -121,7 +118,24 @@ describe(DomainBatchActionHeaderInfo.name, () => {
     };
     render(<DomainBatchActionHeaderInfo batchAction={action} />);
 
-    expect(screen.getAllByText('—')).toHaveLength(5); // startTime, ended, duration, rps, concurrency
+    expect(screen.getAllByText('—')).toHaveLength(4); // startTime, ended, duration, rps
+  });
+
+  it('replaces field values with skeleton placeholders when loading', () => {
+    render(
+      <DomainBatchActionHeaderInfo batchAction={MOCK_RUNNING_ACTION} loading />
+    );
+
+    // Titles still render
+    expect(screen.getByText('Status')).toBeInTheDocument();
+    expect(screen.getByText('Action')).toBeInTheDocument();
+    expect(screen.getByText('RPS')).toBeInTheDocument();
+
+    // Values do not
+    expect(screen.queryByText('Processing')).not.toBeInTheDocument();
+    expect(screen.queryByText('Cancel')).not.toBeInTheDocument();
+    expect(screen.queryByText('200')).not.toBeInTheDocument();
+    expect(screen.queryByText('10')).not.toBeInTheDocument();
   });
 
   it('replaces field values with skeleton placeholders when loading', () => {
