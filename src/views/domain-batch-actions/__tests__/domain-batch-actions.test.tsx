@@ -3,7 +3,7 @@ import React from 'react';
 import { userEvent } from '@testing-library/user-event';
 import { HttpResponse } from 'msw';
 
-import { render, screen, waitFor, act } from '@/test-utils/rtl';
+import { render, screen } from '@/test-utils/rtl';
 
 import { type ListBatchActionsResponse } from '@/route-handlers/list-batch-actions/list-batch-actions.types';
 import { mockDomainPageQueryParamsValues } from '@/views/domain-page/__fixtures__/domain-page-query-params';
@@ -19,16 +19,6 @@ const mockUsePageQueryParams = jest.fn();
 jest.mock('@/hooks/use-page-query-params/use-page-query-params', () => ({
   __esModule: true,
   default: (...args: Array<unknown>) => mockUsePageQueryParams(...args),
-}));
-
-const mockEnqueue = jest.fn();
-const mockDequeue = jest.fn();
-jest.mock('baseui/snackbar', () => ({
-  ...jest.requireActual('baseui/snackbar'),
-  useSnackbar: () => ({
-    enqueue: mockEnqueue,
-    dequeue: mockDequeue,
-  }),
 }));
 
 jest.mock(
@@ -50,6 +40,20 @@ jest.mock('../domain-batch-actions-detail/domain-batch-actions-detail', () => ({
     <div>
       {loading && <span>mock-batch-action-detail-loading</span>}
       mock-batch-action-detail-{batchAction?.id}
+    </div>
+  ),
+}));
+
+jest.mock('@/components/error-panel/error-panel', () => ({
+  __esModule: true,
+  default: ({ message, actions }: any) => (
+    <div>
+      <span>mock-error-panel-{message}</span>
+      {actions?.map((action: any) => (
+        <button key={action.label} onClick={action.onClick}>
+          {action.label}
+        </button>
+      ))}
     </div>
   ),
 }));
@@ -234,53 +238,37 @@ describe(DomainBatchActions.name, () => {
     expect(screen.getByText('mock-select-2')).toBeInTheDocument();
   });
 
-  it('enqueues an error snackbar when fetching batch action details fails', async () => {
+  it('shows the error panel when the initial detail fetch fails', async () => {
     setup({ describeError: true });
 
-    await waitFor(() => {
-      expect(mockEnqueue).toHaveBeenCalledTimes(1);
-    });
-    expect(mockEnqueue).toHaveBeenCalledWith(
-      expect.objectContaining({
-        message: 'Failed to fetch describe',
-        actionMessage: 'OK',
-      })
-    );
+    expect(
+      await screen.findByText(
+        'mock-error-panel-Failed to load batch action details'
+      )
+    ).toBeInTheDocument();
   });
 
-  it('enqueues the error snackbar only once across repeated failed refetches', async () => {
-    jest.useFakeTimers();
-    try {
-      let detailCalls = 0;
-      setup({
-        detailResolver: () => {
-          detailCalls += 1;
-          // First load succeeds with a RUNNING action so the hook starts
-          // polling; every subsequent refetch fails with a fresh error object.
-          return detailCalls === 1
-            ? HttpResponse.json({ id: '5', status: 'RUNNING' })
-            : HttpResponse.json(
-                { message: 'Failed to fetch describe' },
-                { status: 500 }
-              );
-        },
-      });
+  it('refetches the detail when the error panel retry action is clicked', async () => {
+    const user = userEvent.setup();
+    let detailCalls = 0;
+    setup({
+      detailResolver: () => {
+        detailCalls += 1;
+        // First load fails so the panel renders; the retry succeeds.
+        return detailCalls === 1
+          ? HttpResponse.json(
+              { message: 'Failed to fetch describe' },
+              { status: 500 }
+            )
+          : HttpResponse.json({ id: '5', status: 'COMPLETED' });
+      },
+    });
 
-      // Flush the initial list + detail fetches.
-      await act(async () => {
-        await jest.advanceTimersByTimeAsync(0);
-      });
-      expect(mockEnqueue).not.toHaveBeenCalled();
+    await user.click(await screen.findByText('Retry'));
 
-      // Advance past several polling intervals — each refetch fails.
-      await act(async () => {
-        await jest.advanceTimersByTimeAsync(30000);
-      });
-
-      expect(mockEnqueue).toHaveBeenCalledTimes(1);
-    } finally {
-      jest.useRealTimers();
-    }
+    expect(
+      await screen.findByText('mock-batch-action-detail-5')
+    ).toBeInTheDocument();
   });
 });
 
