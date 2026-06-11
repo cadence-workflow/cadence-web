@@ -148,46 +148,36 @@ const clusterAttributeSchema = z.object({
   name: z.string(),
 });
 
-// TODO @adhitya.mamallan - this needs to be removed as part of active-active's redesign, once the IDL has removed them
-const activeClusterSelectionStrategySchema = z.enum([
-  ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_INVALID,
-  ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_REGION_STICKY,
-  ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_EXTERNAL_ENTITY,
-]);
-
-// The IDL still contains the strategy and strategyConfig fields, but they are absent
-// in the new active-active design. The preprocess step corrects this and allows us to
-// parse activeClusterSelectionPolicy even if the backend does not pass the deprecated fields.
-//
-// TODO @adhitya.mamallan - update this once the IDL has been updated
+// In the new active-active design the policy is identified solely by clusterAttribute.
+// An empty object (no clusterAttribute) means there is no policy, so we treat it as null.
+// strategy is a legacy field that is always ignored, but we cannot drop it because the IDL
+// codegen still types it as a required enum, so we hardcode it to INVALID.
 const activeClusterSelectionPolicySchema = z.preprocess(
   (data) => {
-    if (typeof data === 'object' && data !== null) {
-      const dataWithDefaults = {
-        ...data,
-        strategy:
-          'strategy' in data && data.strategy
-            ? data.strategy
-            : 'ACTIVE_CLUSTER_SELECTION_STRATEGY_INVALID',
-        strategyConfig:
-          'strategyConfig' in data && data.strategyConfig
-            ? data.strategyConfig
-            : 'activeClusterStickyRegionConfig',
-      };
-      return dataWithDefaults;
+    const clusterAttribute =
+      data && typeof data === 'object' && 'clusterAttribute' in data
+        ? data.clusterAttribute
+        : null;
+
+    if (!clusterAttribute) {
+      return null;
     }
-    return data;
+
+    return {
+      clusterAttribute,
+      strategy:
+        ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_INVALID,
+    };
   },
-  z.object({
-    clusterAttribute: clusterAttributeSchema,
-    // TODO: remove the below fields once the IDL has removed them
-    strategy: activeClusterSelectionStrategySchema,
-    strategyConfig: z.enum([
-      'activeClusterStickyRegionConfig',
-      'activeClusterExternalEntityConfig',
-    ]),
-  })
-) as z.ZodType<ActiveClusterSelectionPolicy>;
+  z
+    .object({
+      clusterAttribute: clusterAttributeSchema,
+      strategy: z.literal(
+        ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_INVALID
+      ),
+    })
+    .nullable()
+) as z.ZodType<ActiveClusterSelectionPolicy | null>;
 
 const failureSchema = z.object({
   reason: z.string(),
