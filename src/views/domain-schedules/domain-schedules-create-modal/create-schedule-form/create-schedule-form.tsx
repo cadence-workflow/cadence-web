@@ -27,7 +27,7 @@ import { overrides } from './create-schedule-form.styles';
 import { type Props } from './create-schedule-form.types';
 
 export default function CreateScheduleForm({ control, trigger }: Props) {
-  const { errors: fieldErrors } = useFormState({ control });
+  const { errors: fieldErrors, isSubmitted } = useFormState({ control });
   // TODO(refactor): getFieldObjectErrorMessages imported from start-workflow helpers — extract to shared utils
   const cronExpressionError = getFieldObjectErrorMessages(
     fieldErrors,
@@ -84,7 +84,8 @@ export default function CreateScheduleForm({ control, trigger }: Props) {
               value={field.value}
               onChange={(value) => {
                 field.onChange(value);
-                trigger('cronExpression');
+                // If form is submitted, trigger the validation to show fix immediately
+                if (isSubmitted) trigger('cronExpression');
               }}
               onBlur={field.onBlur}
               error={cronExpressionError}

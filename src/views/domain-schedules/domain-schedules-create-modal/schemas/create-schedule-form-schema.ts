@@ -81,7 +81,9 @@ export const createScheduleFormSchema = z.object({
     .positive('Task timeout must be positive'),
   workflowIdPrefix: z.string().optional(),
   // TODO(refactor): WORKER_SDK_LANGUAGES imported from start-workflow — extract to shared constants
-  workerSDKLanguage: z.enum(WORKER_SDK_LANGUAGES).default(WORKER_SDK_LANGUAGES[0]),
+  workerSDKLanguage: z
+    .enum(WORKER_SDK_LANGUAGES)
+    .default(WORKER_SDK_LANGUAGES[0]),
   input: z
     .array(z.string())
     .optional()
