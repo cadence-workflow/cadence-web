@@ -7,14 +7,8 @@ import {
 } from 'react-hook-form';
 import { type z } from 'zod';
 
+import { type BatchActionType } from '@/route-handlers/describe-batch-action/describe-batch-action.types';
 import { type BatchActionStatus } from '@/route-handlers/list-batch-actions/list-batch-actions.types';
-
-export type BatchActionType = 'cancel' | 'terminate' | 'reset' | 'signal';
-
-export type BatchActionConfirmableType = Extract<
-  BatchActionType,
-  'cancel' | 'terminate' | 'signal'
->;
 
 export type BatchActionFormProps<FormData extends FieldValues> = {
   control: Control<FormData>;
@@ -30,36 +24,50 @@ type BatchActionModalBase = {
   };
 };
 
-type BatchActionModalForm<FormData, SubmissionData> =
-  | {
-      withForm: true;
-      form: (
-        props: BatchActionFormProps<
-          FormData extends FieldValues ? FormData : any
-        >
-      ) => ReactNode;
-      formSchema: z.ZodSchema<FormData>;
-      transformFormDataToSubmission: (formData: FormData) => SubmissionData;
-    }
-  | {
-      withForm: false;
-      form?: undefined;
-      formSchema?: undefined;
-      transformFormDataToSubmission?: undefined;
-    };
+type BatchActionModalFormVariant<FormData, SubmissionData> = {
+  withForm: true;
+  form: (
+    props: BatchActionFormProps<FormData extends FieldValues ? FormData : any>
+  ) => ReactNode;
+  formSchema: z.ZodSchema<FormData>;
+  transformFormDataToSubmission: (formData: FormData) => SubmissionData;
+};
 
+type BatchActionModalNoFormVariant = {
+  withForm: false;
+  form?: undefined;
+  formSchema?: undefined;
+  transformFormDataToSubmission?: undefined;
+};
+
+export type BatchActionModalConfigWithForm<FormData, SubmissionData> =
+  BatchActionModalBase & BatchActionModalFormVariant<FormData, SubmissionData>;
+
+export type BatchActionModalConfigNoForm = BatchActionModalBase &
+  BatchActionModalNoFormVariant;
+
+// The generic union — used by the component for the entry it looks up by actionId.
 export type BatchActionModalConfig<
   FormData = undefined,
   SubmissionData = undefined,
-> = BatchActionModalBase & BatchActionModalForm<FormData, SubmissionData>;
+> = BatchActionModalBase &
+  (
+    | BatchActionModalFormVariant<FormData, SubmissionData>
+    | BatchActionModalNoFormVariant
+  );
 
 export type BatchAction = {
   id: string;
   status: BatchActionStatus;
   progress?: number; // 0-100, only relevant when status is 'RUNNING'
-  actionType: BatchActionType;
+  actionType?: BatchActionType; // absent if BatchType is missing from the batcher input
   startTime?: number;
   endTime?: number;
   rps?: number;
   concurrency?: number;
+};
+
+export type BatchActionConfirmPayload<SubmissionData> = {
+  actionId: BatchActionType;
+  submissionData: SubmissionData;
 };

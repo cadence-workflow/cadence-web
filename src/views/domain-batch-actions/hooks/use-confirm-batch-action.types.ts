@@ -1,6 +1,5 @@
+import { type BatchActionType } from '@/route-handlers/describe-batch-action/describe-batch-action.types';
 import { type SignalWorkflowSubmissionData } from '@/views/workflow-actions/workflow-action-signal-form/workflow-action-signal-form.types';
-
-import { type BatchActionConfirmableType } from '../domain-batch-actions.types';
 
 export type UseConfirmBatchActionParams = {
   domain: string;
@@ -9,7 +8,7 @@ export type UseConfirmBatchActionParams = {
 };
 
 export type ConfirmBatchActionInput = {
-  batchType: BatchActionConfirmableType;
+  batchType: BatchActionType;
   query: string;
   reason: string;
   rps: number;

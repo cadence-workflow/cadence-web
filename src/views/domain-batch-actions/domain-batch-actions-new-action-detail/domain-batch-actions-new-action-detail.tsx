@@ -10,6 +10,7 @@ import ErrorPanel from '@/components/error-panel/error-panel';
 import PanelSection from '@/components/panel-section/panel-section';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
+import { type BatchActionType } from '@/route-handlers/describe-batch-action/describe-batch-action.types';
 import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
 import domainWorkflowsFiltersConfig from '@/views/domain-workflows/config/domain-workflows-filters.config';
 import DOMAIN_WORKFLOWS_PAGE_SIZE from '@/views/domain-workflows/config/domain-workflows-page-size.config';
@@ -31,7 +32,6 @@ import {
   BATCH_ACTION_DEFAULT_QUERY,
   BATCH_ACTION_RPS_DEFAULT,
 } from '../domain-batch-actions.constants';
-import { type BatchActionConfirmableType } from '../domain-batch-actions.types';
 import useConfirmBatchAction from '../hooks/use-confirm-batch-action';
 
 import {
@@ -57,8 +57,9 @@ export default function DomainBatchActionsNewActionDetail({
     defaultValues: { description: '', rps: BATCH_ACTION_RPS_DEFAULT },
   });
 
-  const [activeAction, setActiveAction] =
-    useState<BatchActionConfirmableType | null>(null);
+  const [activeAction, setActiveAction] = useState<BatchActionType | null>(
+    null
+  );
   const [submitAttempted, setSubmitAttempted] = useState(false);
 
   // The query lives in URL params (not the form), so we validate it in parallel
@@ -82,7 +83,7 @@ export default function DomainBatchActionsNewActionDetail({
       handleSubmit(() => {
         if (isQueryEmpty) return;
         if (!(actionId in domainBatchActionsConfirmationModalConfig)) return;
-        setActiveAction(actionId as BatchActionConfirmableType);
+        setActiveAction(actionId as BatchActionType);
       })();
     },
     [handleSubmit, isQueryEmpty]
@@ -209,6 +210,7 @@ export default function DomainBatchActionsNewActionDetail({
         </styled.FloatingBarSlot>
       )}
       <DomainBatchActionsConfirmationModal
+        config={domainBatchActionsConfirmationModalConfig}
         actionId={activeAction}
         selectedCount={totalWorkflowCount ?? 0}
         isSubmitting={isStartingBatchAction}

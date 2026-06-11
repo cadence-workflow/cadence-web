@@ -4,11 +4,13 @@ import { Modal, ModalButton } from 'baseui/modal';
 import { type FieldValues, useForm } from 'react-hook-form';
 import { MdList, MdOpenInNew } from 'react-icons/md';
 
-import domainBatchActionsConfirmationModalConfig, {
-  type BatchActionConfirmPayload,
-} from '../config/domain-batch-actions-confirmation-modal.config';
+import { type SignalWorkflowSubmissionData } from '@/views/workflow-actions/workflow-action-signal-form/workflow-action-signal-form.types';
+
 import DomainBatchActionsBanner from '../domain-batch-actions-banner/domain-batch-actions-banner';
-import { type BatchActionModalConfig } from '../domain-batch-actions.types';
+import {
+  type BatchActionConfirmPayload,
+  type BatchActionModalConfig,
+} from '../domain-batch-actions.types';
 
 import {
   overrides,
@@ -17,15 +19,15 @@ import {
 import { type Props } from './domain-batch-actions-confirmation-modal.types';
 
 export default function DomainBatchActionsConfirmationModal({
+  config: modalConfig,
   actionId,
   selectedCount,
   isSubmitting,
   onClose,
   onConfirm,
 }: Props) {
-  const config: BatchActionModalConfig<any, any> | null = actionId
-    ? domainBatchActionsConfirmationModalConfig[actionId]
-    : null;
+  const config: BatchActionModalConfig<any, any> | null =
+    (actionId ? modalConfig[actionId] : null) ?? null;
 
   const {
     handleSubmit,
@@ -38,14 +40,12 @@ export default function DomainBatchActionsConfirmationModal({
 
   const onSubmit = (data: FieldValues) => {
     if (!actionId || !config) return;
-    const payload = (
-      config.withForm
-        ? {
-            actionId,
-            submissionData: config.transformFormDataToSubmission(data),
-          }
-        : { actionId }
-    ) as BatchActionConfirmPayload;
+    const payload: BatchActionConfirmPayload<
+      SignalWorkflowSubmissionData | undefined
+    > = {
+      actionId,
+      submissionData: config.transformFormDataToSubmission?.(data),
+    };
     onConfirm(payload);
   };
 
