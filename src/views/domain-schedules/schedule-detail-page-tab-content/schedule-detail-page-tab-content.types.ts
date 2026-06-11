@@ -1,5 +1,5 @@
-import { type ScheduleDetailPageParams } from '@/views/domain-schedules/schedule-detail-page/schedule-detail-page.types';
+import { type ScheduleDetailPageTabsParams } from '@/views/domain-schedules/schedule-detail-page-tabs/schedule-detail-page-tabs.types';
 
 export type Props = {
-  params: ScheduleDetailPageParams;
+  params: ScheduleDetailPageTabsParams;
 };
