@@ -19,9 +19,6 @@ export type RequestParams = {
 
 export type DescribeBatchActionResponse = BatchAction;
 
-export type BatcherInputFields = Pick<
-  BatchAction,
-  'actionType' | 'rps' | 'concurrency'
->;
+export type BatcherInputFields = Pick<BatchAction, 'actionType' | 'rps'>;
 
 export type Context = DefaultMiddlewaresContext;
