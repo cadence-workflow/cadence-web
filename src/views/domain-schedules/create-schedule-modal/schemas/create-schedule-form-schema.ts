@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 import { CRON_FIELD_ORDER } from '@/components/cron-schedule-input/cron-schedule-input.constants';
-import { WORKER_SDK_LANGUAGES } from '@/route-handlers/start-workflow/start-workflow.constants';
 import { getCronFieldsError } from '@/views/workflow-actions/workflow-action-start-form/helpers/get-cron-fields-error';
 
 const cronExpressionFieldsSchema = z
@@ -78,7 +77,5 @@ export const createScheduleFormSchema = z.object({
       required_error: 'Task timeout is required',
     })
     .positive('Task timeout must be positive'),
-  workflowIdPrefix: z.string().optional(),
-
   pauseOnFailure: z.boolean().optional().default(false),
 });

@@ -38,5 +38,5 @@ next-env.d.ts
 #generated
 src/__generated__
 
-# Local agent / planning issues (not versioned)
-.cursor/features/create-schedules/issues/issues-create-schedule.md
+# Local agent / planning features (not versioned)
+.agents/features/
