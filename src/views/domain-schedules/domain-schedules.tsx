@@ -13,7 +13,7 @@ import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-
 import useListSchedules from '@/views/shared/hooks/use-list-schedules/use-list-schedules';
 
 import schedulesTableConfig from './config/schedules-table.config';
-import CreateScheduleModal from './create-schedule-modal/create-schedule-modal';
+import DomainSchedulesCreateModal from './domain-schedules-create-modal/domain-schedules-create-modal';
 import DomainSchedulesHeader from './domain-schedules-header/domain-schedules-header';
 import { SCHEDULES_PAGE_SIZE } from './domain-schedules.constants';
 import { styled } from './domain-schedules.styles';
@@ -128,7 +128,7 @@ export default function DomainSchedules({ domain, cluster }: Props) {
         count={isLoading ? undefined : filteredSchedules.length}
       />
       {content}
-      <CreateScheduleModal
+      <DomainSchedulesCreateModal
         domain={domain}
         cluster={cluster}
         isOpen={isCreateModalOpen}
