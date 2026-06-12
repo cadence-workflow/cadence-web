@@ -6,8 +6,6 @@ export default function buildScheduleDetailsPageClusterPath({
   scheduleId,
   scheduleTab,
 }: BuildScheduleDetailsPageClusterPathParams): string {
-  const tabSegment = scheduleTab
-    ? `/${decodeURIComponent(scheduleTab)}`
-    : '';
+  const tabSegment = scheduleTab ? `/${decodeURIComponent(scheduleTab)}` : '';
   return `/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/schedules/${encodeURIComponent(scheduleId)}${tabSegment}`;
 }

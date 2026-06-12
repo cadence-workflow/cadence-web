@@ -3,6 +3,7 @@ import React, { Suspense } from 'react';
 import { HttpResponse } from 'msw';
 
 import { render, screen, within } from '@/test-utils/rtl';
+
 import ErrorBoundary from '@/components/error-boundary/error-boundary';
 import { mockDomainDescription } from '@/views/domain-page/__fixtures__/domain-description';
 import { type DomainDescription } from '@/views/domain-page/domain-page.types';

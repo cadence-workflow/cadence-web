@@ -19,7 +19,9 @@ describe(ScheduleDetailsPageHeader.name, () => {
   it('does not render a Schedules list link', () => {
     setup();
 
-    expect(screen.queryByRole('link', { name: 'Schedules' })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('link', { name: 'Schedules' })
+    ).not.toBeInTheDocument();
   });
 
   it('renders schedule id as last breadcrumb (non-link)', () => {

@@ -31,8 +31,6 @@ describe(buildScheduleDetailsPageClusterPath.name, () => {
         scheduleId: 'schedule/id',
         scheduleTab: 'runs',
       })
-    ).toBe(
-      '/domains/my%20domain/my%20cluster/schedules/schedule%2Fid/runs'
-    );
+    ).toBe('/domains/my%20domain/my%20cluster/schedules/schedule%2Fid/runs');
   });
 });
