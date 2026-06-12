@@ -15,6 +15,8 @@ import { TaskListKind } from '@/__generated__/proto-ts/uber/cadence/api/v1/TaskL
 import { TimeoutType } from '@/__generated__/proto-ts/uber/cadence/api/v1/TimeoutType';
 import { WorkflowIdReusePolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowIdReusePolicy';
 
+import preprocessActiveClusterSelectionPolicy from '../helpers/preprocess-active-cluster-selection-policy';
+
 const timestampSchema = z.object({
   seconds: z.string(),
   nanos: z.number(),
@@ -148,36 +150,8 @@ const clusterAttributeSchema = z.object({
   name: z.string(),
 });
 
-/**
- * In the new active-active design the policy is identified solely by clusterAttribute.
- * An empty object (no clusterAttribute) means there is no policy, so we treat it as null.
- *
- * strategy (plus the strategy_config oneof and the ActiveClusterSelectionStrategy enum) is a
- * legacy field that is always ignored. It has been removed from the IDL upstream.
- *
- * Until the generated proto types are regenerated past that change, the codegen still types
- * strategy as a required enum, so we keep hardcoding it to INVALID here. Once the new IDL is
- * pulled in, drop the strategy handling and the ActiveClusterSelectionStrategy import below.
- *
- * @see https://github.com/cadence-workflow/cadence-idl/pull/264
- */
 const activeClusterSelectionPolicySchema = z.preprocess(
-  (data) => {
-    const clusterAttribute =
-      data && typeof data === 'object' && 'clusterAttribute' in data
-        ? data.clusterAttribute
-        : null;
-
-    if (!clusterAttribute) {
-      return null;
-    }
-
-    return {
-      clusterAttribute,
-      strategy:
-        ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_INVALID,
-    };
-  },
+  preprocessActiveClusterSelectionPolicy,
   z
     .object({
       clusterAttribute: clusterAttributeSchema,
