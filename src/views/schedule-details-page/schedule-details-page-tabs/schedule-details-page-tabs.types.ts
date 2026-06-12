@@ -1,20 +1,20 @@
 import type { PageTab } from '@/components/page-tabs/page-tabs.types';
 
-import type scheduleDetailTabsConfig from '../schedule-detail-page/schedule-detail-tabs.config';
+import type scheduleDetailsTabsConfig from '../config/schedule-details-tabs.config';
 
 export type ScheduleDetailTabConfig = {
   title: string;
   artwork: PageTab['artwork'];
 };
 
-export type ScheduleDetailPageTabsConfig<K extends string> = Record<
+export type ScheduleDetailsPageTabsConfig<K extends string> = Record<
   K,
   ScheduleDetailTabConfig
 >;
 
-export type ScheduleDetailTabName = keyof typeof scheduleDetailTabsConfig;
+export type ScheduleDetailTabName = keyof typeof scheduleDetailsTabsConfig;
 
-export type ScheduleDetailPageTabsParams = {
+export type ScheduleDetailsPageTabsParams = {
   domain: string;
   cluster: string;
   scheduleId: string;

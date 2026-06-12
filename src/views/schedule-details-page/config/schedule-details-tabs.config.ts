@@ -1,8 +1,8 @@
 import { MdCalendarMonth, MdTimeline } from 'react-icons/md';
 
-import { type ScheduleDetailPageTabsConfig } from '../schedule-detail-page-tabs/schedule-detail-page-tabs.types';
+import { type ScheduleDetailsPageTabsConfig } from '../schedule-details-page-tabs/schedule-details-page-tabs.types';
 
-const scheduleDetailTabsConfig: ScheduleDetailPageTabsConfig<
+const scheduleDetailsTabsConfig: ScheduleDetailsPageTabsConfig<
   'details' | 'runs'
 > = {
   details: {
@@ -15,4 +15,4 @@ const scheduleDetailTabsConfig: ScheduleDetailPageTabsConfig<
   },
 };
 
-export default scheduleDetailTabsConfig;
+export default scheduleDetailsTabsConfig;

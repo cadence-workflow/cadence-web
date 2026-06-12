@@ -1,3 +1,3 @@
-import ScheduleDetailPage from '@/views/domain-schedules/schedule-detail-page/schedule-detail-page';
+import ScheduleDetailsPage from '@/views/schedule-details-page/schedule-details-page';
 
-export default ScheduleDetailPage;
+export default ScheduleDetailsPage;
