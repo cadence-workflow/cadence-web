@@ -16,15 +16,10 @@ describe(ScheduleDetailsPageHeader.name, () => {
     );
   });
 
-  it('renders breadcrumb schedules list link', () => {
+  it('does not render a Schedules list link', () => {
     setup();
 
-    const schedulesLink = screen.getByRole('link', { name: 'Schedules' });
-    expect(schedulesLink).toBeInTheDocument();
-    expect(schedulesLink).toHaveAttribute(
-      'href',
-      '/domains/test-domain/test-cluster/schedules'
-    );
+    expect(screen.queryByRole('link', { name: 'Schedules' })).not.toBeInTheDocument();
   });
 
   it('renders schedule id as last breadcrumb (non-link)', () => {

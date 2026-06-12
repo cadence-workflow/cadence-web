@@ -9,7 +9,6 @@ import Link from 'next/link';
 import cadenceLogoBlack from '@/assets/cadence-logo-black.svg';
 import PageSection from '@/components/page-section/page-section';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
-import { type DomainPageTabName } from '@/views/domain-page/domain-page-tabs/domain-page-tabs.types';
 
 import ScheduleDetailsPageHeaderClusterSelector from '../schedule-details-page-header-cluster-selector/schedule-details-page-header-cluster-selector';
 import ScheduleDetailsPageHeaderStatusTag from '../schedule-details-page-header-status-tag/schedule-details-page-header-status-tag';
@@ -24,7 +23,6 @@ export default function ScheduleDetailsPageHeader({
 }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
   const domainLink = `/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}`;
-  const schedulesListLink = `${domainLink}/${'schedules' satisfies DomainPageTabName}`;
 
   return (
     <PageSection>
@@ -49,9 +47,6 @@ export default function ScheduleDetailsPageHeader({
             />
           </Suspense>
         </div>
-        <StyledLink $as={Link} href={schedulesListLink}>
-          Schedules
-        </StyledLink>
         <div className={cls.breadcrumbItemContainer}>
           {scheduleId}
           <Suspense fallback={null}>
