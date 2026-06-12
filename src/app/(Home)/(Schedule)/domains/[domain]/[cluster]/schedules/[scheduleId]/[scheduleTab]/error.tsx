@@ -9,7 +9,7 @@ type Props = {
   reset: () => void;
 };
 
-export default function ScheduleDetailsPageError({ error, reset }: Props) {
+export default function SchedulePageError({ error, reset }: Props) {
   return (
     <PanelSection>
       <ErrorPanel

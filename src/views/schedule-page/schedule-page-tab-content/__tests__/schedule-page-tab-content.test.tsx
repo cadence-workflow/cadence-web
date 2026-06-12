@@ -2,8 +2,8 @@ import React from 'react';
 
 import { render, screen } from '@/test-utils/rtl';
 
-import { type ScheduleDetailsPageTabsParams } from '../../schedule-details-page-tabs/schedule-details-page-tabs.types';
-import ScheduleDetailsPageTabContent from '../schedule-details-page-tab-content';
+import { type SchedulePageTabsParams } from '../../schedule-page-tabs/schedule-page-tabs.types';
+import SchedulePageTabContent from '../schedule-page-tab-content';
 
 jest.mock('next/navigation', () => ({
   ...jest.requireActual('next/navigation'),
@@ -12,7 +12,7 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
-describe(ScheduleDetailsPageTabContent.name, () => {
+describe(SchedulePageTabContent.name, () => {
   it('renders placeholder for details tab', () => {
     setup({ scheduleTab: 'details' });
     expect(screen.getByText(/Details/i)).toBeInTheDocument();
@@ -27,8 +27,7 @@ describe(ScheduleDetailsPageTabContent.name, () => {
     const { notFound } = jest.requireMock('next/navigation');
     expect(() =>
       setup({
-        scheduleTab:
-          'unknown-tab' as ScheduleDetailsPageTabsParams['scheduleTab'],
+        scheduleTab: 'unknown-tab' as SchedulePageTabsParams['scheduleTab'],
       })
     ).toThrow('NEXT_NOT_FOUND');
     expect(notFound).toHaveBeenCalled();
@@ -38,10 +37,10 @@ describe(ScheduleDetailsPageTabContent.name, () => {
 function setup({
   scheduleTab = 'details',
 }: {
-  scheduleTab?: ScheduleDetailsPageTabsParams['scheduleTab'];
+  scheduleTab?: SchedulePageTabsParams['scheduleTab'];
 } = {}) {
   render(
-    <ScheduleDetailsPageTabContent
+    <SchedulePageTabContent
       params={{
         domain: 'test-domain',
         cluster: 'test-cluster',

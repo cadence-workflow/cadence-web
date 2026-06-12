@@ -1,3 +1,3 @@
-import ScheduleDetailsPageTabContent from '@/views/schedule-details-page/schedule-details-page-tab-content/schedule-details-page-tab-content';
+import SchedulePageTabContent from '@/views/schedule-page/schedule-page-tab-content/schedule-page-tab-content';
 
-export default ScheduleDetailsPageTabContent;
+export default SchedulePageTabContent;
