@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 import { type ActiveClusterSelectionPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ActiveClusterSelectionPolicy';
-import { ActiveClusterSelectionStrategy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ActiveClusterSelectionStrategy';
 import { CancelExternalWorkflowExecutionFailedCause } from '@/__generated__/proto-ts/uber/cadence/api/v1/CancelExternalWorkflowExecutionFailedCause';
 import { ChildWorkflowExecutionFailedCause } from '@/__generated__/proto-ts/uber/cadence/api/v1/ChildWorkflowExecutionFailedCause';
 import { ContinueAsNewInitiator } from '@/__generated__/proto-ts/uber/cadence/api/v1/ContinueAsNewInitiator';
@@ -14,8 +13,6 @@ import { SignalExternalWorkflowExecutionFailedCause } from '@/__generated__/prot
 import { TaskListKind } from '@/__generated__/proto-ts/uber/cadence/api/v1/TaskListKind';
 import { TimeoutType } from '@/__generated__/proto-ts/uber/cadence/api/v1/TimeoutType';
 import { WorkflowIdReusePolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowIdReusePolicy';
-
-import preprocessActiveClusterSelectionPolicy from '../helpers/preprocess-active-cluster-selection-policy';
 
 const timestampSchema = z.object({
   seconds: z.string(),
@@ -150,17 +147,20 @@ const clusterAttributeSchema = z.object({
   name: z.string(),
 });
 
-const activeClusterSelectionPolicySchema = z.preprocess(
-  preprocessActiveClusterSelectionPolicy,
-  z
-    .object({
-      clusterAttribute: clusterAttributeSchema,
-      strategy: z.literal(
-        ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_INVALID
-      ),
-    })
-    .nullable()
-) as z.ZodType<ActiveClusterSelectionPolicy | null>;
+/**
+ * In the active-active design the policy is identified solely by clusterAttribute, so a missing
+ * or malformed payload carries no policy and falls back to null instead of failing the whole
+ * history event.
+ *
+ * activeClusterSelectionPolicy and retryPolicy are the only object fields passed to StartWorkflow,
+ * but activeClusterSelectionPolicy does not validate the request input type the way retryPolicy does.
+ */
+const activeClusterSelectionPolicySchema = z
+  .object({
+    clusterAttribute: clusterAttributeSchema.nullable(),
+  })
+  .nullable()
+  .catch(null) as z.ZodType<ActiveClusterSelectionPolicy | null>;
 
 const failureSchema = z.object({
   reason: z.string(),
