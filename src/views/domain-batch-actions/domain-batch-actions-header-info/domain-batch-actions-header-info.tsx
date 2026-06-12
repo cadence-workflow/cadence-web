@@ -10,20 +10,23 @@ import {
   type Props,
 } from './domain-batch-actions-header-info.types';
 
-export default function DomainBatchActionHeaderInfo({ batchAction }: Props) {
+export default function DomainBatchActionHeaderInfo({
+  batchAction,
+  loading = false,
+}: Props) {
   return (
     <styled.DetailsContainer>
       {batchActionHeaderInfoItemsConfig
         .filter(
           (configItem: DomainBatchActionHeaderInfoItemConfig) =>
-            !configItem.hidden?.({ batchAction })
+            !batchAction || !configItem.hidden?.({ batchAction })
         )
         .map((configItem: DomainBatchActionHeaderInfoItemConfig) => (
           <DomainBatchActionHeaderInfoItem
             key={configItem.title}
             title={configItem.title}
-            loading={false}
-            content={configItem.render({ batchAction })}
+            loading={loading || !batchAction}
+            content={batchAction ? configItem.render({ batchAction }) : null}
             placeholderSize={configItem.placeholderSize}
           />
         ))}

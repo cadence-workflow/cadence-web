@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 
+import { Skeleton } from 'baseui/skeleton';
 import { MdCancel } from 'react-icons/md';
 
 import Button from '@/components/button/button';
@@ -10,12 +11,19 @@ import DomainBatchActionHeaderInfo from '../domain-batch-actions-header-info/dom
 import { overrides, styled } from './domain-batch-actions-detail.styles';
 import { type Props } from './domain-batch-actions-detail.types';
 
-export default function DomainBatchActionDetail({ batchAction }: Props) {
+export default function DomainBatchActionDetail({
+  batchAction,
+  loading = false,
+}: Props) {
   return (
     <styled.Container>
       <styled.Header>
-        <styled.Title>Batch action #{batchAction.id}</styled.Title>
-        {batchAction.status === 'RUNNING' && (
+        {batchAction ? (
+          <styled.Title>Batch action #{batchAction.id}</styled.Title>
+        ) : (
+          <Skeleton overrides={overrides.titleSkeleton} animation={true} />
+        )}
+        {batchAction?.status === 'RUNNING' && (
           <Button
             kind="primary"
             size="compact"
@@ -27,7 +35,10 @@ export default function DomainBatchActionDetail({ batchAction }: Props) {
         )}
       </styled.Header>
       <div>
-        <DomainBatchActionHeaderInfo batchAction={batchAction} />
+        <DomainBatchActionHeaderInfo
+          batchAction={batchAction}
+          loading={loading}
+        />
       </div>
       <styled.ProgressSection />
     </styled.Container>

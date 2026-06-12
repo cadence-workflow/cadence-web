@@ -1,10 +1,15 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
+import { Banner, HIERARCHY, KIND } from 'baseui/banner';
+import { MdErrorOutline } from 'react-icons/md';
+
+import ErrorPanel from '@/components/error-panel/error-panel';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
 import { type DomainPageTabContentProps } from '@/views/domain-page/domain-page-content/domain-page-content.types';
+import useDescribeBatchAction from '@/views/shared/hooks/use-describe-batch-action/use-describe-batch-action';
 import useListBatchActions from '@/views/shared/hooks/use-list-batch-actions/use-list-batch-actions';
 
 import DomainBatchActionDetail from './domain-batch-actions-detail/domain-batch-actions-detail';
@@ -14,6 +19,7 @@ import DomainBatchActionsSidebar from './domain-batch-actions-sidebar/domain-bat
 import {
   BATCH_ACTIONS_PAGE_SIZE,
   BATCH_ACTION_DEFAULT_QUERY,
+  BATCH_ACTION_DETAIL_REFETCH_INTERVAL,
   DRAFT_ACTION_ID,
 } from './domain-batch-actions.constants';
 import { styled } from './domain-batch-actions.styles';
@@ -53,6 +59,35 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
     }
   }, [isDraftSelected]);
 
+  // Computed defensively (data may be undefined while loading) so the hooks
+  // below are always called unconditionally, before any early return.
+  const batchActions = useMemo(
+    () => data?.pages.flatMap((p) => p.batchActions ?? []) ?? [],
+    [data]
+  );
+
+  // Default to the first action in the list unless a real (non-draft) action is selected
+  const firstBatchActionId = batchActions[0]?.id ?? null;
+  const selectedActionId = isDraftSelected
+    ? firstBatchActionId
+    : queryParams.batchActionId || firstBatchActionId;
+
+  const {
+    data: batchActionDetail,
+    isLoading: isLoadingBatchActionDetail,
+    error: batchActionDetailError,
+    refetch: refetchBatchActionDetail,
+  } = useDescribeBatchAction({
+    domain: props.domain,
+    cluster: props.cluster,
+    batchActionId: selectedActionId ?? '',
+    enabled: !isDraftSelected && !!selectedActionId,
+    refetchInterval: (query) =>
+      query.state.data?.status === 'RUNNING'
+        ? BATCH_ACTION_DETAIL_REFETCH_INTERVAL
+        : false,
+  });
+
   if (isLoading) {
     return <SectionLoadingIndicator />;
   }
@@ -60,15 +95,6 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
   if (!data) {
     throw new Error('Batch actions failed to load');
   }
-
-  const batchActions = data.pages.flatMap((p) => p.batchActions ?? []);
-
-  const selectedActionId =
-    !isDraftSelected && queryParams.batchActionId
-      ? queryParams.batchActionId
-      : batchActions[0]?.id ?? null;
-
-  const selectedAction = batchActions.find((a) => a.id === selectedActionId);
 
   const handleCreateNew = () => {
     setIsDraftOpen(true);
@@ -128,14 +154,44 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
             onDiscard={handleDiscard}
           />
         )}
-        {!isDraftSelected && selectedAction && (
-          <DomainBatchActionDetail
-            // TODO: enrich with a describe-workflow call in a follow-up PR.
-            // The list endpoint only surfaces id + status; the rest are
-            // placeholders so the existing detail UI keeps rendering.
-            batchAction={{ ...selectedAction, actionType: 'cancel' }}
-          />
-        )}
+        {!isDraftSelected &&
+          selectedActionId &&
+          (batchActionDetailError && !batchActionDetail ? (
+            <ErrorPanel
+              error={batchActionDetailError}
+              message="Failed to load batch action details"
+              actions={[
+                {
+                  kind: 'callback',
+                  label: 'Retry',
+                  onClick: () => refetchBatchActionDetail(),
+                },
+              ]}
+            />
+          ) : (
+            (isLoadingBatchActionDetail || batchActionDetail) && (
+              <>
+                {batchActionDetailError && batchActionDetail && (
+                  <Banner
+                    hierarchy={HIERARCHY.low}
+                    kind={KIND.warning}
+                    artwork={{ icon: MdErrorOutline }}
+                    action={{
+                      label: 'Retry',
+                      onClick: () => refetchBatchActionDetail(),
+                    }}
+                  >
+                    Showing last known data. Could not refresh batch action
+                    details.
+                  </Banner>
+                )}
+                <DomainBatchActionDetail
+                  batchAction={batchActionDetail}
+                  loading={isLoadingBatchActionDetail}
+                />
+              </>
+            )
+          ))}
       </styled.DetailPanel>
     </styled.Container>
   );
