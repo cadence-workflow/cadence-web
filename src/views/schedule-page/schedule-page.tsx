@@ -1,8 +1,8 @@
 import React from 'react';
 
 import decodeUrlParams from '@/utils/decode-url-params';
-import ScheduleDetailsPageHeader from '@/views/schedule-details-page/schedule-details-page-header/schedule-details-page-header';
 
+import SchedulePageHeader from './schedule-page-header/schedule-page-header';
 import { type Props } from './schedule-page.types';
 
 export default function SchedulePage({ params, children }: Props) {
@@ -10,7 +10,7 @@ export default function SchedulePage({ params, children }: Props) {
 
   return (
     <>
-      <ScheduleDetailsPageHeader
+      <SchedulePageHeader
         domain={decodedParams.domain}
         cluster={decodedParams.cluster}
         scheduleId={decodedParams.scheduleId}

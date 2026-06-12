@@ -1,11 +1,11 @@
-import { type BuildScheduleDetailsPageClusterPathParams } from '../schedule-details-page-header-cluster-selector.types';
+import { type BuildSchedulePageClusterPathParams } from '../schedule-page-header-cluster-selector.types';
 
-export default function buildScheduleDetailsPageClusterPath({
+export default function buildSchedulePageClusterPath({
   domain,
   cluster,
   scheduleId,
   scheduleTab,
-}: BuildScheduleDetailsPageClusterPathParams): string {
+}: BuildSchedulePageClusterPathParams): string {
   const tabSegment = scheduleTab ? `/${encodeURIComponent(scheduleTab)}` : '';
   return `/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/schedules/${encodeURIComponent(scheduleId)}${tabSegment}`;
 }

@@ -1,9 +1,9 @@
-import buildScheduleDetailsPageClusterPath from '../helpers/build-schedule-details-page-cluster-path';
+import buildSchedulePageClusterPath from '../helpers/build-schedule-page-cluster-path';
 
-describe(buildScheduleDetailsPageClusterPath.name, () => {
+describe(buildSchedulePageClusterPath.name, () => {
   it('builds the path with domain, cluster, scheduleId, and tab', () => {
     expect(
-      buildScheduleDetailsPageClusterPath({
+      buildSchedulePageClusterPath({
         domain: 'my-domain',
         cluster: 'cluster-2',
         scheduleId: 'my-schedule',
@@ -14,7 +14,7 @@ describe(buildScheduleDetailsPageClusterPath.name, () => {
 
   it('omits the tab segment when scheduleTab is undefined', () => {
     expect(
-      buildScheduleDetailsPageClusterPath({
+      buildSchedulePageClusterPath({
         domain: 'my-domain',
         cluster: 'cluster-2',
         scheduleId: 'my-schedule',
@@ -25,7 +25,7 @@ describe(buildScheduleDetailsPageClusterPath.name, () => {
 
   it('encodes special characters in domain, cluster, and scheduleId', () => {
     expect(
-      buildScheduleDetailsPageClusterPath({
+      buildSchedulePageClusterPath({
         domain: 'my domain',
         cluster: 'my cluster',
         scheduleId: 'schedule/id',

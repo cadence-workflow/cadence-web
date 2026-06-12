@@ -9,8 +9,8 @@ import { mockDomainDescription } from '@/views/domain-page/__fixtures__/domain-d
 import { type DomainDescription } from '@/views/domain-page/domain-page.types';
 import type { Props as DomainClusterSelectorProps } from '@/views/shared/domain-cluster-selector/domain-cluster-selector.types';
 
-import ScheduleDetailsPageHeaderClusterSelector from '../schedule-details-page-header-cluster-selector';
-import { type Props } from '../schedule-details-page-header-cluster-selector.types';
+import SchedulePageHeaderClusterSelector from '../schedule-page-header-cluster-selector';
+import { type Props } from '../schedule-page-header-cluster-selector.types';
 
 jest.mock('next/navigation', () => ({
   ...jest.requireActual('next/navigation'),
@@ -48,7 +48,7 @@ jest.mock(
   })
 );
 
-describe(ScheduleDetailsPageHeaderClusterSelector.name, () => {
+describe(SchedulePageHeaderClusterSelector.name, () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -101,10 +101,7 @@ function setup({
       omitLogging
     >
       <Suspense fallback={null}>
-        <ScheduleDetailsPageHeaderClusterSelector
-          domain={domain}
-          cluster={cluster}
-        />
+        <SchedulePageHeaderClusterSelector domain={domain} cluster={cluster} />
       </Suspense>
     </ErrorBoundary>,
     {

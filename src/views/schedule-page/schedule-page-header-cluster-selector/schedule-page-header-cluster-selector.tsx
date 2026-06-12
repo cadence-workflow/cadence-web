@@ -7,12 +7,12 @@ import decodeUrlParams from '@/utils/decode-url-params';
 import DomainClusterSelector from '@/views/shared/domain-cluster-selector/domain-cluster-selector';
 import useSuspenseDomainDescription from '@/views/shared/hooks/use-domain-description/use-suspense-domain-description';
 
-import { type ScheduleDetailsPageTabsParams } from '../schedule-details-page-tabs/schedule-details-page-tabs.types';
+import { type SchedulePageTabsParams } from '../schedule-page-tabs/schedule-page-tabs.types';
 
-import buildScheduleDetailsPageClusterPath from './helpers/build-schedule-details-page-cluster-path';
-import type { Props } from './schedule-details-page-header-cluster-selector.types';
+import buildSchedulePageClusterPath from './helpers/build-schedule-page-cluster-path';
+import type { Props } from './schedule-page-header-cluster-selector.types';
 
-export default function ScheduleDetailsPageHeaderClusterSelector({
+export default function SchedulePageHeaderClusterSelector({
   domain,
   cluster,
 }: Props) {
@@ -21,13 +21,13 @@ export default function ScheduleDetailsPageHeaderClusterSelector({
     cluster,
   });
 
-  const encodedParams = useParams<ScheduleDetailsPageTabsParams>();
+  const encodedParams = useParams<SchedulePageTabsParams>();
   const decodedParams = decodeUrlParams(
     encodedParams
-  ) as ScheduleDetailsPageTabsParams;
+  ) as SchedulePageTabsParams;
 
   const buildPathForCluster = (newCluster: string) =>
-    buildScheduleDetailsPageClusterPath({
+    buildSchedulePageClusterPath({
       domain,
       cluster: newCluster,
       scheduleId: decodedParams.scheduleId,

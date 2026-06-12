@@ -10,13 +10,13 @@ import cadenceLogoBlack from '@/assets/cadence-logo-black.svg';
 import PageSection from '@/components/page-section/page-section';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 
-import ScheduleDetailsPageHeaderClusterSelector from '../schedule-details-page-header-cluster-selector/schedule-details-page-header-cluster-selector';
-import ScheduleDetailsPageHeaderStatusTag from '../schedule-details-page-header-status-tag/schedule-details-page-header-status-tag';
+import SchedulePageHeaderClusterSelector from '../schedule-page-header-cluster-selector/schedule-page-header-cluster-selector';
+import SchedulePageHeaderStatusTag from '../schedule-page-header-status-tag/schedule-page-header-status-tag';
 
-import { cssStyles, overrides } from './schedule-details-page-header.styles';
-import { type Props } from './schedule-details-page-header.types';
+import { cssStyles, overrides } from './schedule-page-header.styles';
+import { type Props } from './schedule-page-header.types';
 
-export default function ScheduleDetailsPageHeader({
+export default function SchedulePageHeader({
   domain,
   cluster,
   scheduleId,
@@ -41,7 +41,7 @@ export default function ScheduleDetailsPageHeader({
             {domain}
           </StyledLink>
           <Suspense fallback={null}>
-            <ScheduleDetailsPageHeaderClusterSelector
+            <SchedulePageHeaderClusterSelector
               domain={domain}
               cluster={cluster}
             />
@@ -50,7 +50,7 @@ export default function ScheduleDetailsPageHeader({
         <div className={cls.breadcrumbItemContainer}>
           {scheduleId}
           <Suspense fallback={null}>
-            <ScheduleDetailsPageHeaderStatusTag
+            <SchedulePageHeaderStatusTag
               domain={domain}
               cluster={cluster}
               scheduleId={scheduleId}

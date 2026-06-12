@@ -2,9 +2,9 @@ import React from 'react';
 
 import { render, screen } from '@/test-utils/rtl';
 
-import ScheduleDetailsPageHeader from '../schedule-details-page-header';
+import SchedulePageHeader from '../schedule-page-header';
 
-describe(ScheduleDetailsPageHeader.name, () => {
+describe(SchedulePageHeader.name, () => {
   it('renders breadcrumb with domain link', () => {
     setup();
 
@@ -53,7 +53,7 @@ function setup({
   scheduleId?: string;
 } = {}) {
   render(
-    <ScheduleDetailsPageHeader
+    <SchedulePageHeader
       domain={domain}
       cluster={cluster}
       scheduleId={scheduleId}
