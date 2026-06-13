@@ -13,7 +13,6 @@ import schedulePageTabsConfig from '../config/schedule-page-tabs.config';
 
 import { styled } from './schedule-page-tabs.styles';
 import { type SchedulePageTabsParams } from './schedule-page-tabs.types';
-import PageSection from '@/components/page-section/page-section';
 
 export default function SchedulePageTabs() {
   const router = useRouter();
@@ -30,7 +29,7 @@ export default function SchedulePageTabs() {
     []
   );
 
-  const schedulesListHref = `/domains/${encodeURIComponent(decodedParams.domain)}/${encodeURIComponent(decodedParams.cluster)}/schedules`;
+  const schedulesListHref = `/domains/${params.domain}/${params.cluster}/schedules`;
 
   return (
     <styled.Container>

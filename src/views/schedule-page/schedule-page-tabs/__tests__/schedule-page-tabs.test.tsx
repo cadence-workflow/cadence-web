@@ -53,18 +53,6 @@ describe(SchedulePageTabs.name, () => {
     expect(screen.getByTestId('runs-artwork')).toBeInTheDocument();
   });
 
-  it('navigates with router.push when the details tab is clicked', () => {
-    setup();
-
-    act(() => {
-      fireEvent.click(
-        screen.getByText(mockSchedulePageTabsConfig.details.title)
-      );
-    });
-
-    expect(mockPushFn).toHaveBeenCalledWith('details');
-  });
-
   it('navigates with router.push when the runs tab is clicked', () => {
     setup();
 

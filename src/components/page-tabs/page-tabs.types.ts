@@ -23,7 +23,7 @@ export type Props = {
   /**
    * When true, the tab bar spans the slot edge-to-edge (no max-width / side
    * padding from the content grid). Use when a parent already applies those
-   * gutters (e.g. a row with a leading control).
+   * gutters.
    */
   removeTabBarGridGutters?: boolean;
   hideTabBarBorder?: boolean;

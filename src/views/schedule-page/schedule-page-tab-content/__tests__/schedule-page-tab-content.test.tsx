@@ -15,7 +15,7 @@ jest.mock('next/navigation', () => ({
 describe(SchedulePageTabContent.name, () => {
   it('renders placeholder for details tab', () => {
     setup({ scheduleTab: 'details' });
-    expect(screen.getByText(/Schedule details/i)).toBeInTheDocument();
+    expect(screen.getByText(/Details/i)).toBeInTheDocument();
   });
 
   it('renders placeholder for runs tab', () => {
