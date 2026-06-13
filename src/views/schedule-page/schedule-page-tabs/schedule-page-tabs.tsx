@@ -11,9 +11,9 @@ import decodeUrlParams from '@/utils/decode-url-params';
 
 import schedulePageTabsConfig from '../config/schedule-page-tabs.config';
 
-import { BACK_TO_SCHEDULES_LABEL } from './schedule-page-tabs.constants';
 import { styled } from './schedule-page-tabs.styles';
 import { type SchedulePageTabsParams } from './schedule-page-tabs.types';
+import PageSection from '@/components/page-section/page-section';
 
 export default function SchedulePageTabs() {
   const router = useRouter();
@@ -33,29 +33,32 @@ export default function SchedulePageTabs() {
   const schedulesListHref = `/domains/${encodeURIComponent(decodedParams.domain)}/${encodeURIComponent(decodedParams.cluster)}/schedules`;
 
   return (
-    <styled.TabsRow>
-      <styled.BackSlot>
-        <Button
-          $as={Link}
-          href={schedulesListHref}
-          kind="tertiary"
-          size="compact"
-          startEnhancer={() => <MdChevronLeft size={20} aria-hidden />}
-        >
-          {BACK_TO_SCHEDULES_LABEL}
-        </Button>
-      </styled.BackSlot>
-      <styled.BackTabsDivider aria-hidden />
-      <styled.TabsSlot>
-        <PageTabs
-          selectedTab={decodedParams.scheduleTab}
-          tabList={tabList}
-          omitTabBarResponsiveInset
-          setSelectedTab={(newTab) => {
-            router.push(encodeURIComponent(newTab.toString()));
-          }}
-        />
-      </styled.TabsSlot>
-    </styled.TabsRow>
+    <styled.Container>
+      <styled.TabsRow>
+        <styled.BackSlot>
+          <Button
+            $as={Link}
+            href={schedulesListHref}
+            kind="tertiary"
+            size="compact"
+            startEnhancer={() => <MdChevronLeft size={20} aria-hidden />}
+          >
+            Back to schedules
+          </Button>
+        </styled.BackSlot>
+        <styled.BackTabsDivider aria-hidden />
+        <styled.TabsSlot>
+          <PageTabs
+            selectedTab={decodedParams.scheduleTab}
+            tabList={tabList}
+            applyTabBarGridGutters={false}
+            hideTabBarBorder={true}
+            setSelectedTab={(newTab) => {
+              router.push(encodeURIComponent(newTab.toString()));
+            }}
+          />
+        </styled.TabsSlot>
+      </styled.TabsRow>
+    </styled.Container>
   );
 }

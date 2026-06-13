@@ -4,7 +4,6 @@ import { act, fireEvent, render, screen } from '@/test-utils/rtl';
 
 import { mockSchedulePageTabsConfig } from '../../__fixtures__/schedule-page-tabs-config';
 import SchedulePageTabs from '../schedule-page-tabs';
-import { BACK_TO_SCHEDULES_LABEL } from '../schedule-page-tabs.constants';
 
 const mockPushFn = jest.fn();
 
@@ -79,7 +78,7 @@ describe(SchedulePageTabs.name, () => {
   it('renders back link to domain schedules list', () => {
     setup();
 
-    const link = screen.getByRole('link', { name: BACK_TO_SCHEDULES_LABEL });
+    const link = screen.getByRole('link', { name: 'Back to schedules' });
     expect(link).toHaveAttribute(
       'href',
       '/domains/test-domain/test-cluster/schedules'

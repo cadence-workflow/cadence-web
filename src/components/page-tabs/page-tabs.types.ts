@@ -21,8 +21,10 @@ export type Props = {
   setSelectedTab: (value: React.Key) => void;
   endEnhancer?: TabsProps['endEnhancer'];
   /**
-   * When the tab bar sits inside a parent that already applies the same
-   * responsive horizontal inset as PageTabs (e.g. a row with a leading control).
+   * When false, the tab bar spans the slot edge-to-edge (no max-width / side
+   * padding from the content grid). Use when a parent already applies those
+   * gutters (e.g. a row with a leading control).
    */
-  omitTabBarResponsiveInset?: boolean;
+  applyTabBarGridGutters?: boolean;
+  hideTabBarBorder?: boolean;
 };

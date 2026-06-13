@@ -1,25 +1,23 @@
-import { styled as createStyled, type Theme } from 'baseui';
+import { styled as createStyled, withStyle, type Theme } from 'baseui';
 
-import { getPageTabsTabBarInsetStyle } from '@/components/page-tabs/page-tabs.styles';
+import PageSection from '@/components/page-section/page-section';
 
 export const styled = {
-  TabsRow: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+  Container: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'stretch',
+    flexDirection: 'column',
     borderBottom: `1px solid ${$theme.colors.borderOpaque}`,
-    ...getPageTabsTabBarInsetStyle({ $theme }),
+  })),
+  TabsRow: withStyle(PageSection, ({ $theme }: { $theme: Theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
   })),
   BackSlot: createStyled('div', () => ({
     display: 'flex',
-    alignItems: 'center',
-    flexShrink: 0,
   })),
   BackTabsDivider: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     width: $theme.borders.border100.borderWidth,
     height: $theme.sizing.scale700,
-    alignSelf: 'center',
-    flexShrink: 0,
     backgroundColor: $theme.colors.borderOpaque,
     marginLeft: $theme.sizing.scale300,
     marginRight: $theme.sizing.scale300,

@@ -4,41 +4,6 @@ import type { StyleObject } from 'styletron-react';
 
 import { getMediaQueryMargins } from '@/utils/media-query/get-media-queries-margins';
 
-export function getPageTabsTabBarInsetStyle({
-  $theme,
-}: {
-  $theme: Theme;
-}): StyleObject {
-  return {
-    width: '100%',
-    alignSelf: 'center',
-    ...getMediaQueryMargins($theme, (margin) => ({
-      maxWidth: `${$theme.grid.maxWidth + 2 * margin}px`,
-      paddingRight: `${margin}px`,
-      paddingLeft: `${margin}px`,
-    })),
-  };
-}
-
-export function getPageTabsTabBarFlushInsetStyle({
-  $theme,
-}: {
-  $theme: Theme;
-}): StyleObject {
-  return {
-    width: '100%',
-    maxWidth: 'none',
-    alignSelf: 'stretch',
-    paddingLeft: 0,
-    paddingRight: 0,
-    ...getMediaQueryMargins($theme, () => ({
-      maxWidth: 'none',
-      paddingLeft: 0,
-      paddingRight: 0,
-    })),
-  };
-}
-
 export const styled = {
   TabTitleContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
@@ -48,18 +13,35 @@ export const styled = {
   })),
 };
 
-export const overrides = {
+export const overrides = ({
+  applyTabBarGridGutters,
+  hideTabBarBorder,
+}: {
+  applyTabBarGridGutters: boolean;
+  hideTabBarBorder: boolean;
+}) => ({
   tabs: {
     Root: {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
         display: 'flex',
         flexDirection: 'column',
-        borderBottom: `1px solid ${$theme.colors.borderOpaque}`,
+        borderBottom: hideTabBarBorder
+          ? 'none'
+          : `1px solid ${$theme.colors.borderOpaque}`,
       }),
     },
     TabBar: {
-      style: ({ $theme }: { $theme: Theme }): StyleObject =>
-        getPageTabsTabBarInsetStyle({ $theme }),
+      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+        width: '100%',
+        alignSelf: 'center',
+        ...(applyTabBarGridGutters
+          ? getMediaQueryMargins($theme, (margin) => ({
+              maxWidth: `${$theme.grid.maxWidth + 2 * margin}px`,
+              paddingRight: `${margin}px`,
+              paddingLeft: `${margin}px`,
+            }))
+          : null),
+      }),
     },
     TabList: {
       style: {
@@ -83,4 +65,4 @@ export const overrides = {
       style: { display: 'none' },
     },
   } satisfies TabOverrides,
-};
+});
