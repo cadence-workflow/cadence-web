@@ -3,6 +3,7 @@ import { type TabOverrides, type TabsOverrides } from 'baseui/tabs-motion';
 import type { StyleObject } from 'styletron-react';
 
 import { getMediaQueryMargins } from '@/utils/media-query/get-media-queries-margins';
+import { Props } from './page-tabs.types';
 
 export const styled = {
   TabTitleContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
@@ -14,12 +15,9 @@ export const styled = {
 };
 
 export const overrides = ({
-  applyTabBarGridGutters,
+  removeTabBarGridGutters,
   hideTabBarBorder,
-}: {
-  applyTabBarGridGutters: boolean;
-  hideTabBarBorder: boolean;
-}) => ({
+}: Pick<Props, 'removeTabBarGridGutters' | 'hideTabBarBorder'>) => ({
   tabs: {
     Root: {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
@@ -34,7 +32,7 @@ export const overrides = ({
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
         width: '100%',
         alignSelf: 'center',
-        ...(applyTabBarGridGutters
+        ...(!removeTabBarGridGutters
           ? getMediaQueryMargins($theme, (margin) => ({
               maxWidth: `${$theme.grid.maxWidth + 2 * margin}px`,
               paddingRight: `${margin}px`,

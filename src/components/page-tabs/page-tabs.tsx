@@ -10,10 +10,10 @@ export default function PageTabs({
   selectedTab,
   setSelectedTab,
   endEnhancer,
-  applyTabBarGridGutters = true,
+  removeTabBarGridGutters = false,
   hideTabBarBorder = false,
 }: Props) {
-  const overrides = getOverrides({ applyTabBarGridGutters, hideTabBarBorder });
+  const overrides = getOverrides({ removeTabBarGridGutters, hideTabBarBorder });
 
   return (
     <Tabs

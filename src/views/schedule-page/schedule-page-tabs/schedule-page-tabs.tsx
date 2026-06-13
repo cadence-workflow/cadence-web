@@ -51,7 +51,7 @@ export default function SchedulePageTabs() {
           <PageTabs
             selectedTab={decodedParams.scheduleTab}
             tabList={tabList}
-            applyTabBarGridGutters={false}
+            removeTabBarGridGutters
             hideTabBarBorder={true}
             setSelectedTab={(newTab) => {
               router.push(encodeURIComponent(newTab.toString()));

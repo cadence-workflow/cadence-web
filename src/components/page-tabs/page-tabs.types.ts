@@ -21,10 +21,10 @@ export type Props = {
   setSelectedTab: (value: React.Key) => void;
   endEnhancer?: TabsProps['endEnhancer'];
   /**
-   * When false, the tab bar spans the slot edge-to-edge (no max-width / side
+   * When true, the tab bar spans the slot edge-to-edge (no max-width / side
    * padding from the content grid). Use when a parent already applies those
    * gutters (e.g. a row with a leading control).
    */
-  applyTabBarGridGutters?: boolean;
+  removeTabBarGridGutters?: boolean;
   hideTabBarBorder?: boolean;
 };
