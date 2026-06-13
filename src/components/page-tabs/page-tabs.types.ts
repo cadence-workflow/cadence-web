@@ -20,4 +20,9 @@ export type Props = {
   selectedTab: React.Key;
   setSelectedTab: (value: React.Key) => void;
   endEnhancer?: TabsProps['endEnhancer'];
+  /**
+   * When the tab bar sits inside a parent that already applies the same
+   * responsive horizontal inset as PageTabs (e.g. a row with a leading control).
+   */
+  omitTabBarResponsiveInset?: boolean;
 };

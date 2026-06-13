@@ -4,6 +4,41 @@ import type { StyleObject } from 'styletron-react';
 
 import { getMediaQueryMargins } from '@/utils/media-query/get-media-queries-margins';
 
+export function getPageTabsTabBarInsetStyle({
+  $theme,
+}: {
+  $theme: Theme;
+}): StyleObject {
+  return {
+    width: '100%',
+    alignSelf: 'center',
+    ...getMediaQueryMargins($theme, (margin) => ({
+      maxWidth: `${$theme.grid.maxWidth + 2 * margin}px`,
+      paddingRight: `${margin}px`,
+      paddingLeft: `${margin}px`,
+    })),
+  };
+}
+
+export function getPageTabsTabBarFlushInsetStyle({
+  $theme,
+}: {
+  $theme: Theme;
+}): StyleObject {
+  return {
+    width: '100%',
+    maxWidth: 'none',
+    alignSelf: 'stretch',
+    paddingLeft: 0,
+    paddingRight: 0,
+    ...getMediaQueryMargins($theme, () => ({
+      maxWidth: 'none',
+      paddingLeft: 0,
+      paddingRight: 0,
+    })),
+  };
+}
+
 export const styled = {
   TabTitleContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
@@ -23,15 +58,8 @@ export const overrides = {
       }),
     },
     TabBar: {
-      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
-        width: '100%',
-        alignSelf: 'center',
-        ...getMediaQueryMargins($theme, (margin) => ({
-          maxWidth: `${$theme.grid.maxWidth + 2 * margin}px`,
-          paddingRight: `${margin}px`,
-          paddingLeft: `${margin}px`,
-        })),
-      }),
+      style: ({ $theme }: { $theme: Theme }): StyleObject =>
+        getPageTabsTabBarInsetStyle({ $theme }),
     },
     TabList: {
       style: {

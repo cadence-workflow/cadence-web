@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
+import { mergeOverrides } from 'baseui/helpers/overrides';
 import { Tabs, Tab } from 'baseui/tabs-motion';
 
-import { overrides, styled } from './page-tabs.styles';
+import {
+  getPageTabsTabBarFlushInsetStyle,
+  overrides,
+  styled,
+} from './page-tabs.styles';
 import { type Props } from './page-tabs.types';
 
 export default function PageTabs({
@@ -10,14 +15,32 @@ export default function PageTabs({
   selectedTab,
   setSelectedTab,
   endEnhancer,
+  omitTabBarResponsiveInset = false,
 }: Props) {
+  const tabsOverrides = useMemo(
+    () =>
+      omitTabBarResponsiveInset
+        ? mergeOverrides(overrides.tabs, {
+            Root: {
+              style: () => ({
+                borderBottom: 'none',
+              }),
+            },
+            TabBar: {
+              style: ({ $theme }) => getPageTabsTabBarFlushInsetStyle({ $theme }),
+            },
+          })
+        : overrides.tabs,
+    [omitTabBarResponsiveInset]
+  );
+
   return (
     <Tabs
       activeKey={selectedTab}
       onChange={({ activeKey }) => {
         setSelectedTab(activeKey);
       }}
-      overrides={overrides.tabs}
+      overrides={tabsOverrides}
       endEnhancer={endEnhancer}
     >
       {tabList.map((tab) => (
