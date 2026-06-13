@@ -3,7 +3,8 @@ import { type TabOverrides, type TabsOverrides } from 'baseui/tabs-motion';
 import type { StyleObject } from 'styletron-react';
 
 import { getMediaQueryMargins } from '@/utils/media-query/get-media-queries-margins';
-import { Props } from './page-tabs.types';
+
+import type { Props } from './page-tabs.types';
 
 export const styled = {
   TabTitleContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({

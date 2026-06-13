@@ -8,7 +8,7 @@ export const styled = {
     flexDirection: 'column',
     borderBottom: `1px solid ${$theme.colors.borderOpaque}`,
   })),
-  TabsRow: withStyle(PageSection, ({ $theme }: { $theme: Theme }) => ({
+  TabsRow: withStyle(PageSection, ({ $theme: _$theme }: { $theme: Theme }) => ({
     display: 'flex',
     alignItems: 'center',
   })),
