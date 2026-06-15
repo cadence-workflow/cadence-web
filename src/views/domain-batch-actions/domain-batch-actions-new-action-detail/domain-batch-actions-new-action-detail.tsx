@@ -9,29 +9,23 @@ import Button from '@/components/button/button';
 import ErrorPanel from '@/components/error-panel/error-panel';
 import PanelSection from '@/components/panel-section/panel-section';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
-import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import { type BatchActionType } from '@/route-handlers/describe-batch-action/describe-batch-action.types';
 import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
-import domainWorkflowsFiltersConfig from '@/views/domain-workflows/config/domain-workflows-filters.config';
-import DOMAIN_WORKFLOWS_PAGE_SIZE from '@/views/domain-workflows/config/domain-workflows-page-size.config';
 import getWorkflowsErrorPanelProps from '@/views/domain-workflows/domain-workflows-table/helpers/get-workflows-error-panel-props';
-import useCountWorkflows from '@/views/shared/hooks/use-count-workflows';
-import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
 import WorkflowsHeader from '@/views/shared/workflows-header/workflows-header';
 import useWorkflowsListColumns from '@/views/shared/workflows-list/hooks/use-workflows-list-columns';
 import WorkflowsList from '@/views/shared/workflows-list/workflows-list';
 
 import domainBatchActionsConfirmationModalConfig from '../config/domain-batch-actions-confirmation-modal.config';
+import domainBatchActionsFiltersConfig from '../config/domain-batch-actions-filters.config';
 import domainBatchActionsNewActionFloatingBarConfig from '../config/domain-batch-actions-new-action-floating-bar.config';
 import DomainBatchActionsConfirmationModal from '../domain-batch-actions-confirmation-modal/domain-batch-actions-confirmation-modal';
 import DomainBatchActionsNewActionFloatingBar from '../domain-batch-actions-new-action-floating-bar/domain-batch-actions-new-action-floating-bar';
 import DomainBatchActionsNewActionInfoBanner from '../domain-batch-actions-new-action-info-banner/domain-batch-actions-new-action-info-banner';
 import DomainBatchActionsNewActionParams from '../domain-batch-actions-new-action-params/domain-batch-actions-new-action-params';
 import batchActionParamsSchema from '../domain-batch-actions-new-action-params/schemas/batch-action-params-schema';
-import {
-  BATCH_ACTION_DEFAULT_QUERY,
-  BATCH_ACTION_RPS_DEFAULT,
-} from '../domain-batch-actions.constants';
+import { BATCH_ACTION_RPS_DEFAULT } from '../domain-batch-actions.constants';
+import useBatchActionTarget from '../hooks/use-batch-action-target';
 import useConfirmBatchAction from '../hooks/use-confirm-batch-action';
 
 import {
@@ -45,7 +39,26 @@ export default function DomainBatchActionsNewActionDetail({
   cluster,
   onDiscard,
 }: Props) {
-  const [queryParams] = usePageQueryParams(domainPageQueryParamsConfig);
+  const {
+    workflows,
+    error,
+    isLoading,
+    isFetching,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+    totalWorkflowCount,
+    countError,
+    isCountLoading,
+    refetchAll,
+    selectedCount,
+    isTargetEmpty,
+    blocksSubmit,
+    getBatchActionQuery,
+    onSubmitAttempt,
+    queryHint,
+    listSelection,
+  } = useBatchActionTarget({ domain, cluster });
 
   const {
     control,
@@ -60,15 +73,6 @@ export default function DomainBatchActionsNewActionDetail({
   const [activeAction, setActiveAction] = useState<BatchActionType | null>(
     null
   );
-  const [submitAttempted, setSubmitAttempted] = useState(false);
-
-  // The query lives in URL params (not the form), so we validate it in parallel
-  // with the form to mirror how the Description field behaves: required, with
-  // the error shown only after a submit attempt.
-  const isQueryEmpty = !queryParams.batchQuery?.trim();
-  const showQueryError = submitAttempted && isQueryEmpty;
-  const isDefaultQuery = queryParams.batchQuery === BATCH_ACTION_DEFAULT_QUERY;
-  const hasValidationErrors = (isSubmitted && !isValid) || showQueryError;
 
   const { handleConfirm, isPending: isStartingBatchAction } =
     useConfirmBatchAction({
@@ -77,56 +81,24 @@ export default function DomainBatchActionsNewActionDetail({
       onSuccess: () => setActiveAction(null),
     });
 
-  const handleActionClick = useCallback(
-    (actionId: string) => {
-      setSubmitAttempted(true);
-      handleSubmit(() => {
-        if (isQueryEmpty) return;
-        if (!(actionId in domainBatchActionsConfirmationModalConfig)) return;
-        setActiveAction(actionId as BatchActionType);
-      })();
-    },
-    [handleSubmit, isQueryEmpty]
-  );
-
   // Reuse the workflows tab's column selection (persisted per-domain in
   // localStorage) so the user sees the same search attributes they picked
   // there.
   const { visibleColumns } = useWorkflowsListColumns({ cluster, domain });
 
-  const {
-    workflows,
-    error,
-    isLoading,
-    isFetching,
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-    refetch,
-  } = useListWorkflows({
-    domain,
-    cluster,
-    listType: 'default',
-    pageSize: DOMAIN_WORKFLOWS_PAGE_SIZE,
-    inputType: 'query',
-    query: queryParams.batchQuery,
-  });
+  const hasValidationErrors = (isSubmitted && !isValid) || blocksSubmit;
 
-  const {
-    count: totalWorkflowCount,
-    error: countError,
-    isLoading: isCountLoading,
-    refetch: refetchCount,
-  } = useCountWorkflows({
-    domain,
-    cluster,
-    query: queryParams.batchQuery,
-  });
-
-  const refetchAll = useCallback(() => {
-    refetch();
-    refetchCount();
-  }, [refetch, refetchCount]);
+  const handleActionClick = useCallback(
+    (actionId: string) => {
+      onSubmitAttempt();
+      handleSubmit(() => {
+        if (isTargetEmpty) return;
+        if (!(actionId in domainBatchActionsConfirmationModalConfig)) return;
+        setActiveAction(actionId as BatchActionType);
+      })();
+    },
+    [handleSubmit, onSubmitAttempt, isTargetEmpty]
+  );
 
   const isDataLoading = isLoading || isCountLoading;
 
@@ -163,24 +135,16 @@ export default function DomainBatchActionsNewActionDetail({
       <div>
         <WorkflowsHeader
           pageQueryParamsConfig={domainPageQueryParamsConfig}
-          pageFiltersConfig={domainWorkflowsFiltersConfig}
+          pageFiltersConfig={domainBatchActionsFiltersConfig}
           inputTypeQueryParamKey="batchInputType"
-          searchQueryParamKey="search"
+          searchQueryParamKey="batchSearch"
           queryStringQueryParamKey="batchQuery"
+          searchSegmentLabel="Select"
           refetchQuery={refetchAll}
           isQueryRunning={isFetching}
-          showQueryInputOnly
           noSpacing
         />
-        {showQueryError ? (
-          <styled.QueryError>Query must not be empty</styled.QueryError>
-        ) : (
-          isDefaultQuery && (
-            <styled.QueryCaption>
-              Showing all running workflows. Edit the query to narrow the set.
-            </styled.QueryCaption>
-          )
-        )}
+        {queryHint}
       </div>
       {isDataLoading && <SectionLoadingIndicator />}
       {!isDataLoading && errorPanelProps && (
@@ -196,12 +160,13 @@ export default function DomainBatchActionsNewActionDetail({
           hasNextPage={hasNextPage}
           fetchNextPage={fetchNextPage}
           isFetchingNextPage={isFetchingNextPage}
+          selection={listSelection}
         />
       )}
       {!isDataLoading && !errorPanelProps && !!totalWorkflowCount && (
         <styled.FloatingBarSlot>
           <DomainBatchActionsNewActionFloatingBar
-            selectedCount={totalWorkflowCount}
+            selectedCount={selectedCount}
             totalCount={totalWorkflowCount}
             actions={domainBatchActionsNewActionFloatingBarConfig}
             onActionClick={handleActionClick}
@@ -212,15 +177,16 @@ export default function DomainBatchActionsNewActionDetail({
       <DomainBatchActionsConfirmationModal
         config={domainBatchActionsConfirmationModalConfig}
         actionId={activeAction}
-        selectedCount={totalWorkflowCount ?? 0}
+        selectedCount={selectedCount}
         isSubmitting={isStartingBatchAction}
         onClose={() => setActiveAction(null)}
         onConfirm={(payload) =>
           handleConfirm({
             batchType: payload.actionId,
-            // An empty query is blocked before submit (see the required-query
-            // validation above), so batchQuery is guaranteed non-empty here.
-            query: queryParams.batchQuery,
+            // An empty target is blocked before submit (required-query in query
+            // mode, non-empty selection in select mode), so the query is
+            // guaranteed non-empty here.
+            query: getBatchActionQuery(),
             reason: getValues('description'),
             rps: getValues('rps'),
             signalParams:

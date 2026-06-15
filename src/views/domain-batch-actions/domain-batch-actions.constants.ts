@@ -11,3 +11,7 @@ export const BATCH_ACTION_TASK_LIST = 'cadence-sys-batcher-tasklist';
 export const BATCH_ACTION_EXECUTION_TIMEOUT_SECONDS = 20 * 365 * 24 * 60 * 60;
 
 export const BATCH_ACTION_DETAIL_REFETCH_INTERVAL = 10000;
+
+// Tooltip shown on a disabled per-row checkbox while "select all" is active.
+export const BATCH_ACTION_SELECT_ALL_ROW_TOOLTIP =
+  'Turn off "Select all" to choose workflows individually.';
