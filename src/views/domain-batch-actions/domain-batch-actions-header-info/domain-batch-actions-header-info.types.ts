@@ -3,7 +3,8 @@ import type React from 'react';
 import { type BatchAction } from '@/views/domain-batch-actions/domain-batch-actions.types';
 
 export type Props = {
-  batchAction: BatchAction;
+  batchAction?: BatchAction;
+  loading?: boolean;
 };
 
 export type DomainBatchActionHeaderInfoItemProps = {

@@ -135,7 +135,6 @@ export const mockBatcherStartedHistory = buildHistoryResponse({
   Reason: 'cleanup',
   BatchType: 'terminate',
   RPS: 100,
-  Concurrency: 5,
 });
 
 export const mockBatcherStartedHistoryWithUnknownType = buildHistoryResponse({
