@@ -185,6 +185,15 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
                     details.
                   </Banner>
                 )}
+                {batchActionDetail?.progressError && (
+                  <Banner
+                    hierarchy={HIERARCHY.low}
+                    kind={KIND.warning}
+                    artwork={{ icon: MdErrorOutline }}
+                  >
+                    Could not load batch action progress.
+                  </Banner>
+                )}
                 <DomainBatchActionDetail
                   batchAction={batchActionDetail}
                   loading={isLoadingBatchActionDetail}

@@ -20,7 +20,7 @@ jest.mock('baseui/spinner', () => ({
 const MOCK_RUNNING_ACTION: BatchAction = {
   id: '5',
   status: 'RUNNING',
-  progress: 60,
+  progress: { totalEstimate: 200, successCount: 120, errorCount: 5 },
   actionType: 'cancel',
   startTime: new Date('2024-03-13T08:28:50.000Z').getTime(),
   rps: 200,

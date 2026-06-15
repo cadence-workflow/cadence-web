@@ -69,6 +69,17 @@ export const mockDescribeBatchOperationWorkflowTerminated: DescribeWorkflowExecu
     },
   };
 
+export const mockDescribeBatchOperationWorkflowFailed: DescribeWorkflowExecutionResponse =
+  {
+    ...mockDescribeBatchOperationWorkflowRunning,
+    workflowExecutionInfo: {
+      ...mockDescribeBatchOperationWorkflowRunning.workflowExecutionInfo!,
+      closeTime: { seconds: '1717409148', nanos: 0 },
+      closeStatus: 'WORKFLOW_EXECUTION_CLOSE_STATUS_TIMED_OUT',
+      historyLength: '8',
+    },
+  };
+
 const encodedBatcherInput = (params: Record<string, unknown>) =>
   Buffer.from(JSON.stringify(params)).toString('base64');
 
@@ -142,3 +153,66 @@ export const mockBatcherStartedHistoryWithUnknownType = buildHistoryResponse({
   BatchType: 'replicate', // not a UI-supported type — fails the input parse
   RPS: 50,
 });
+
+// Mirrors the batcher's HeartBeatDetails struct (Go field names) used for progress.
+export const MOCK_BATCH_PROGRESS = {
+  TotalEstimate: 200,
+  SuccessCount: 120,
+  ErrorCount: 5,
+};
+
+// Running batch whose pending batcher activity is reporting progress via heartbeat.
+export const mockDescribeBatchOperationWorkflowRunningWithProgress: DescribeWorkflowExecutionResponse =
+  {
+    ...mockDescribeBatchOperationWorkflowRunning,
+    pendingActivities: [
+      {
+        activityId: '0',
+        activityType: { name: 'cadence-sys-batch-activity-v2' },
+        state: 'PENDING_ACTIVITY_STATE_STARTED',
+        heartbeatDetails: { data: encodedBatcherInput(MOCK_BATCH_PROGRESS) },
+        lastHeartbeatTime: { seconds: '1717408200', nanos: 0 },
+        lastStartedTime: { seconds: '1717408150', nanos: 0 },
+        attempt: 1,
+        maximumAttempts: 0,
+        scheduledTime: { seconds: '1717408149', nanos: 0 },
+        expirationTime: null,
+        lastFailure: null,
+        lastWorkerIdentity: 'mock-worker',
+        startedWorkerIdentity: 'mock-worker',
+        scheduleId: '0',
+      },
+    ],
+  };
+
+// Failed batch that timed out at the workflow level while the batcher activity
+// was still pending — its last heartbeat survives on the describe response.
+export const mockDescribeBatchOperationWorkflowFailedWithPendingProgress: DescribeWorkflowExecutionResponse =
+  {
+    ...mockDescribeBatchOperationWorkflowFailed,
+    pendingActivities:
+      mockDescribeBatchOperationWorkflowRunningWithProgress.pendingActivities,
+  };
+
+// Close-event history carrying the workflow's final HeartBeatDetails result.
+export const mockBatcherCloseEventHistory: GetWorkflowExecutionHistoryResponse =
+  {
+    history: {
+      events: [
+        {
+          eventId: '100',
+          eventTime: { seconds: '1717409148', nanos: 0 },
+          version: '0',
+          taskId: '0',
+          attributes: 'workflowExecutionCompletedEventAttributes',
+          workflowExecutionCompletedEventAttributes: {
+            result: { data: encodedBatcherInput(MOCK_BATCH_PROGRESS) },
+            decisionTaskCompletedEventId: '99',
+          },
+        },
+      ],
+    },
+    archived: false,
+    rawHistory: [],
+    nextPageToken: '',
+  };

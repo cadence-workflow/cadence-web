@@ -30,7 +30,12 @@ jest.mock(
 );
 
 const mockBatchActions: BatchAction[] = [
-  { id: '4', status: 'RUNNING', progress: 60, actionType: 'cancel' },
+  {
+    id: '4',
+    status: 'RUNNING',
+    progress: { totalEstimate: 200, successCount: 120, errorCount: 5 },
+    actionType: 'cancel',
+  },
   { id: '3', status: 'COMPLETED', actionType: 'cancel' },
   { id: '2', status: 'ABORTED', actionType: 'cancel' },
   { id: '1', status: 'FAILED', actionType: 'cancel' },

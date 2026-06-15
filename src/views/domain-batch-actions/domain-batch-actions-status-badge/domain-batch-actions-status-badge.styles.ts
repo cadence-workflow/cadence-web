@@ -4,34 +4,19 @@ import { type StyleObject } from 'styletron-react';
 
 import { type BatchActionStatus } from '@/route-handlers/list-batch-actions/list-batch-actions.types';
 
+import getStatusBackgroundColor from '../helpers/get-status-background-color';
+
 export function getTagOverrides(
   status: BatchActionStatus,
   theme: Theme
 ): TagOverrides {
-  const colors = {
-    RUNNING: {
-      background: theme.colors.backgroundAccent,
-      border: theme.colors.backgroundAccent,
-    },
-    COMPLETED: {
-      background: theme.colors.backgroundPositive,
-      border: theme.colors.backgroundPositive,
-    },
-    ABORTED: {
-      background: theme.colors.backgroundNegative,
-      border: theme.colors.backgroundNegative,
-    },
-    FAILED: {
-      background: theme.colors.backgroundWarning,
-      border: theme.colors.backgroundWarning,
-    },
-  }[status];
+  const backgroundColor = getStatusBackgroundColor(status, theme);
 
   return {
     Root: {
       style: (): StyleObject => ({
-        backgroundColor: colors.background,
-        borderColor: colors.border,
+        backgroundColor,
+        borderColor: backgroundColor,
         borderRadius: theme.borders.radius200,
         marginLeft: 0,
       }),
