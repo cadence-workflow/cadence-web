@@ -237,6 +237,9 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
                   </Banner>
                 )}
                 <DomainBatchActionDetail
+                  domain={props.domain}
+                  cluster={props.cluster}
+                  workflowId={selectedWorkflowId ?? ''}
                   batchAction={batchActionDetail}
                   loading={isLoadingBatchActionDetail}
                 />

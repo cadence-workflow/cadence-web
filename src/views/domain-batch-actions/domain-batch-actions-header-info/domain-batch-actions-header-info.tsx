@@ -13,6 +13,7 @@ import {
 export default function DomainBatchActionHeaderInfo({
   batchAction,
   loading = false,
+  onEditRps,
 }: Props) {
   return (
     <styled.DetailsContainer>
@@ -26,7 +27,9 @@ export default function DomainBatchActionHeaderInfo({
             key={configItem.title}
             title={configItem.title}
             loading={loading || !batchAction}
-            content={batchAction ? configItem.render({ batchAction }) : null}
+            content={
+              batchAction ? configItem.render({ batchAction, onEditRps }) : null
+            }
             placeholderSize={configItem.placeholderSize}
           />
         ))}

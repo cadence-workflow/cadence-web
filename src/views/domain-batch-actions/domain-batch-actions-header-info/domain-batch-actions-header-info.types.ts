@@ -5,10 +5,12 @@ import { type BatchAction } from '@/views/domain-batch-actions/domain-batch-acti
 export type Props = {
   batchAction?: BatchAction;
   loading?: boolean;
+  onEditRps?: () => void;
 };
 
 export type DomainBatchActionHeaderInfoItemProps = {
   batchAction: BatchAction;
+  onEditRps?: () => void;
 };
 
 export type DomainBatchActionHeaderInfoItemConfig = {

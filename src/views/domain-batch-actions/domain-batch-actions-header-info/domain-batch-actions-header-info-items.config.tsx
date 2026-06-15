@@ -56,10 +56,11 @@ const batchActionHeaderInfoItemsConfig = [
   },
   {
     title: 'RPS',
-    render: ({ batchAction }) => (
+    render: ({ batchAction, onEditRps }) => (
       <DomainBatchActionEditableValue
         value={batchAction.rps}
         editable={batchAction.status === 'RUNNING'}
+        onEdit={onEditRps}
       />
     ),
     placeholderSize: '80px',
