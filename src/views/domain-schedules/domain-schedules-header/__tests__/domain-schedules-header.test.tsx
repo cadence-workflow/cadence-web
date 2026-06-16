@@ -1,10 +1,11 @@
 import React from 'react';
 
-import { render, screen } from '@/test-utils/rtl';
+import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import { mockDomainPageQueryParamsValues } from '@/views/domain-page/__fixtures__/domain-page-query-params';
 
 import DomainSchedulesHeader from '../domain-schedules-header';
+import { type Props } from '../domain-schedules-header.types';
 
 const mockSetQueryParams = jest.fn();
 jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
@@ -13,7 +14,7 @@ jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
 
 describe(DomainSchedulesHeader.name, () => {
   it('renders the title without count when count is undefined', () => {
-    render(<DomainSchedulesHeader count={undefined} />);
+    setup({ count: undefined });
 
     expect(
       screen.getByRole('heading', { name: 'Schedules' })
@@ -21,7 +22,7 @@ describe(DomainSchedulesHeader.name, () => {
   });
 
   it('renders the title with count when count is provided', () => {
-    render(<DomainSchedulesHeader count={5} />);
+    setup({ count: 5 });
 
     expect(
       screen.getByRole('heading', { name: 'Schedules (5)' })
@@ -29,7 +30,7 @@ describe(DomainSchedulesHeader.name, () => {
   });
 
   it('renders zero count', () => {
-    render(<DomainSchedulesHeader count={0} />);
+    setup({ count: 0 });
 
     expect(
       screen.getByRole('heading', { name: 'Schedules (0)' })
@@ -37,10 +38,30 @@ describe(DomainSchedulesHeader.name, () => {
   });
 
   it('renders the page filters search input', () => {
-    render(<DomainSchedulesHeader count={0} />);
+    setup({ count: 0 });
 
     expect(
       screen.getByPlaceholderText('Find schedule by ID or workflow type')
     ).toBeInTheDocument();
   });
+
+  it('calls onCreateScheduleClick when Create schedule is pressed', async () => {
+    const { user, mockedOnCreateScheduleClick } = setup({ count: 0 });
+
+    await user.click(screen.getByRole('button', { name: 'Create schedule' }));
+
+    expect(mockedOnCreateScheduleClick).toHaveBeenCalledTimes(1);
+  });
 });
+
+function setup(props: Partial<Pick<Props, 'count'>> = {}) {
+  const mockedOnCreateScheduleClick = jest.fn();
+  const user = userEvent.setup();
+  render(
+    <DomainSchedulesHeader
+      onCreateScheduleClick={mockedOnCreateScheduleClick}
+      count={props.count}
+    />
+  );
+  return { user, mockedOnCreateScheduleClick };
+}
