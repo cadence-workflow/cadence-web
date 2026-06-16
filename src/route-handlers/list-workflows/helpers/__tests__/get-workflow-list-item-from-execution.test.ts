@@ -1,4 +1,3 @@
-import { ActiveClusterSelectionStrategy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ActiveClusterSelectionStrategy';
 import { type WorkflowExecutionInfo } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionInfo';
 
 import { mockWorkflowExecutions } from '../../__fixtures__/mock-workflow-executions';
