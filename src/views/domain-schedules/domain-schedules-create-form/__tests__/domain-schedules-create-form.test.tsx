@@ -10,8 +10,8 @@ import {
   waitFor,
 } from '@/test-utils/rtl';
 
+import { type DomainSchedulesCreateFormData } from '../../domain-schedules-create-modal/domain-schedules-create-modal.types';
 import DomainSchedulesCreateForm from '../domain-schedules-create-form';
-import { type DomainSchedulesCreateFormData } from '../domain-schedules-create-form.types';
 
 /** Required fields rendered by `DomainSchedulesCreateForm` (excludes optional input / pause / prefix / SDK default). */
 const REQUIRED_FORM_FIELD_PATHS: FieldPath<DomainSchedulesCreateFormData>[] = [
@@ -161,25 +161,6 @@ type SetupProps = {
   injectFieldErrors?: boolean;
 };
 
-function getValidDefaults(): DomainSchedulesCreateFormData {
-  return {
-    workflowType: { name: 'sample-workflow' },
-    taskList: { name: 'sample-task-list' },
-    cronExpression: {
-      minutes: '0',
-      hours: '9',
-      daysOfMonth: '*',
-      months: '*',
-      daysOfWeek: '*',
-    },
-    executionStartToCloseTimeoutSeconds: 300,
-    taskStartToCloseTimeoutSeconds: 60,
-    workerSDKLanguage: 'GO',
-    input: [''],
-    pauseOnFailure: false,
-  };
-}
-
 function TestWrapper({
   defaultValues,
   injectFieldErrors,
@@ -189,7 +170,7 @@ function TestWrapper({
 }) {
   const { control, trigger, setError } = useForm<DomainSchedulesCreateFormData>(
     {
-      defaultValues: { ...getValidDefaults(), ...defaultValues },
+      defaultValues: { ...defaultValues },
       mode: 'onSubmit',
     }
   );

@@ -79,7 +79,6 @@ export const createScheduleFormSchema = z.object({
       required_error: 'Task timeout is required',
     })
     .positive('Task timeout must be positive'),
-  workflowIdPrefix: z.string().optional(),
   // TODO(refactor): WORKER_SDK_LANGUAGES imported from start-workflow — extract to shared constants
   workerSDKLanguage: z
     .enum(WORKER_SDK_LANGUAGES)
@@ -89,10 +88,12 @@ export const createScheduleFormSchema = z.object({
     .optional()
     .superRefine((inputArray, ctx) => {
       if (!inputArray) return;
-      if (inputArray.length === 1 && inputArray[0] === '') return;
+      if (inputArray.length === 1 && inputArray[0] === '') {
+        return;
+      }
+      // Check each input individually for field-level errors
       for (let i = 0; i < inputArray.length; i++) {
         const val = inputArray[i];
-        if (val.trim() === '') continue;
         try {
           JSON.parse(val);
         } catch {

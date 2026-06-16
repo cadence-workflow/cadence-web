@@ -7,18 +7,15 @@ import { Modal, ModalButton } from 'baseui/modal';
 import { useForm } from 'react-hook-form';
 
 import DomainSchedulesCreateForm from '../domain-schedules-create-form/domain-schedules-create-form';
-import { type DomainSchedulesCreateFormData } from '../domain-schedules-create-form/domain-schedules-create-form.types';
 
 import { overrides, styled } from './domain-schedules-create-modal.styles';
-import { type Props } from './domain-schedules-create-modal.types';
+import {
+  type DomainSchedulesCreateFormData,
+  type Props,
+} from './domain-schedules-create-modal.types';
 import { createScheduleFormSchema } from './schemas/create-schedule-form-schema';
 
-export default function DomainSchedulesCreateModal({
-  domain: _domain,
-  cluster: _cluster,
-  isOpen,
-  onClose,
-}: Props) {
+export default function DomainSchedulesCreateModal({ isOpen, onClose }: Props) {
   const { control, handleSubmit, reset, clearErrors, trigger } =
     useForm<DomainSchedulesCreateFormData>({
       resolver: zodResolver(createScheduleFormSchema),

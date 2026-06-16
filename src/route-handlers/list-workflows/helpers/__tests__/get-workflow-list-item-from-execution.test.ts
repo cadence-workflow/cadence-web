@@ -72,8 +72,6 @@ describe('getWorkflowListItemFromExecution', () => {
     const execution: WorkflowExecutionInfo = {
       ...BASE_EXECUTION,
       activeClusterSelectionPolicy: {
-        strategy:
-          ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_INVALID,
         clusterAttribute: {
           scope: 'mock-scope',
           name: 'mock-cluster-name',

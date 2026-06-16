@@ -212,7 +212,13 @@ export default function WorkflowActionStartForm({
       {/* TODO(refactor): wrap getMultiJsonErrorMessage + FormControl pattern in a shared helper once schedules uses the same field */}
       <FormControl
         label="JSON input arguments (optional)"
-        error={typeof inputError === 'string' ? inputError : undefined}
+        error={
+          typeof inputError === 'string'
+            ? inputError
+            : Array.isArray(inputError)
+              ? inputError.find(Boolean)
+              : undefined
+        }
       >
         <Controller
           name="input"

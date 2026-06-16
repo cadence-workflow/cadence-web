@@ -10,11 +10,6 @@ import useStyletronClasses from '@/hooks/use-styletron-classes';
 import { cssStyles, overrides } from './multi-json-input.styles';
 import type { Props } from './multi-json-input.types';
 
-/**
- * Multi-value JSON textarea input. Does not render its own label — callers
- * provide labeling via a parent FormControl (or equivalent), matching the same
- * outer pattern used for the shared CronScheduleInput.
- */
 export default function MultiJsonInput({
   label,
   placeholder,
@@ -30,7 +25,7 @@ export default function MultiJsonInput({
   const getInputError = useCallback(
     (index: number): boolean => {
       if (!error) return false;
-      if (typeof error === 'string') return true;
+      if (typeof error === 'string') return true; // Global error affects all
       if (Array.isArray(error)) return Boolean(error[index]);
       return false;
     },
@@ -63,8 +58,10 @@ export default function MultiJsonInput({
   const handleDeleteInput = useCallback(
     (index: number) => {
       if (displayValue.length === 1) {
+        // If only one input, clear it instead of deleting
         onChange(['']);
       } else {
+        // Remove the input at the specified index
         const newArray = displayValue.filter(
           (_: string, i: number) => i !== index
         );
