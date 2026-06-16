@@ -1,5 +1,19 @@
 import { styled as createStyled, type Theme } from 'baseui';
+import { type ButtonOverrides } from 'baseui/button';
 import { type StyleObject } from 'styletron-react';
+
+export const overrides = {
+  createScheduleButton: {
+    BaseButton: {
+      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+        width: '100%',
+        [$theme.mediaQuery.medium]: {
+          width: 'auto',
+        },
+      }),
+    },
+  } satisfies ButtonOverrides,
+};
 
 export const styled = {
   Container: createStyled(
@@ -53,10 +67,12 @@ export const styled = {
   CreateButtonWrap: createStyled(
     'div',
     ({ $theme }: { $theme: Theme }): StyleObject => ({
-      flexShrink: 0,
-      alignSelf: 'flex-start',
+      alignSelf: 'stretch',
+      width: '100%',
       [$theme.mediaQuery.medium]: {
         alignSelf: 'center',
+        width: 'auto',
+        flexShrink: 0,
       },
     })
   ),

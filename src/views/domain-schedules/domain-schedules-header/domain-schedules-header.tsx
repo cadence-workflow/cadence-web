@@ -9,7 +9,7 @@ import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-
 
 import domainSchedulesFiltersConfig from '../config/domain-schedules-filters.config';
 
-import { styled } from './domain-schedules-header.styles';
+import { overrides, styled } from './domain-schedules-header.styles';
 import { type Props } from './domain-schedules-header.types';
 
 export default function DomainSchedulesHeader({
@@ -37,8 +37,9 @@ export default function DomainSchedulesHeader({
             kind={KIND.primary}
             size={SIZE.compact}
             shape={SHAPE.default}
-            startEnhancer={<MdAdd size={18} aria-hidden />}
+            startEnhancer={<MdAdd size={16} aria-hidden />}
             onClick={onCreateScheduleClick}
+            overrides={overrides.createScheduleButton}
           >
             Create schedule
           </Button>

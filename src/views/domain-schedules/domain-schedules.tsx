@@ -88,7 +88,7 @@ export default function DomainSchedules({ domain, cluster }: Props) {
               onClick: () => setIsCreateModalOpen(true),
               buttonKind: 'primary',
               shape: 'default',
-              startEnhancer: <MdAdd size={18} aria-hidden />,
+              startEnhancer: <MdAdd size={16} aria-hidden />,
             },
           ]}
         />
