@@ -215,14 +215,14 @@ export default function WorkflowActionStartForm({
           name="input"
           control={control}
           defaultValue={['']}
-          render={({ field }) => (
+          render={({ field, formState: { isSubmitted } }) => (
             <MultiJsonInput
               label="JSON input arguments (optional)"
               placeholder="Enter JSON input"
               value={field.value}
               onChange={(value) => {
                 field.onChange(value);
-                trigger('input');
+                if (isSubmitted) trigger('input');
               }}
               error={inputError}
               addButtonText="Add argument"
@@ -296,12 +296,12 @@ export default function WorkflowActionStartForm({
           <Controller
             name="cronSchedule"
             control={control}
-            render={({ field }) => (
+            render={({ field, formState: { isSubmitted } }) => (
               <CronScheduleInput
                 value={field.value}
                 onChange={(value) => {
                   field.onChange(value);
-                  trigger('cronSchedule');
+                  if (isSubmitted) trigger('cronSchedule');
                 }}
                 onBlur={field.onBlur}
                 error={getFieldObjectErrorMessages(fieldErrors, 'cronSchedule')}
