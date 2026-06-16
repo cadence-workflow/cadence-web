@@ -26,7 +26,7 @@ describe(useBatchActionTarget.name, () => {
   it('uses the count as the selected count in query mode', async () => {
     const { result } = setup({ totalCount: 7 });
 
-    await waitFor(() => expect(result.current.totalWorkflowCount).toBe(7));
+    await waitFor(() => expect(result.current.countQueryResult.count).toBe(7));
     expect(result.current.selectedCount).toBe(7);
     expect(result.current.listSelection).toBeUndefined();
   });
@@ -34,7 +34,7 @@ describe(useBatchActionTarget.name, () => {
   it('exposes the raw query as the batch action query in query mode', async () => {
     const { result } = setup({ totalCount: 7 });
 
-    await waitFor(() => expect(result.current.totalWorkflowCount).toBe(7));
+    await waitFor(() => expect(result.current.countQueryResult.count).toBe(7));
     expect(result.current.getBatchActionQuery()).toBe('WorkflowType="foo"');
   });
 
@@ -42,7 +42,9 @@ describe(useBatchActionTarget.name, () => {
     setQueryParams({ batchQuery: BATCH_ACTION_DEFAULT_QUERY });
     const { result } = setup({});
 
-    await waitFor(() => expect(result.current.totalWorkflowCount).toBe(100));
+    await waitFor(() =>
+      expect(result.current.countQueryResult.count).toBe(100)
+    );
     render(<>{result.current.queryHint}</>);
     expect(
       screen.getByText(/Showing all running workflows/i)
@@ -53,7 +55,9 @@ describe(useBatchActionTarget.name, () => {
     setQueryParams({ batchQuery: 'WorkflowType="foo"' });
     const { result } = setup({});
 
-    await waitFor(() => expect(result.current.totalWorkflowCount).toBe(100));
+    await waitFor(() =>
+      expect(result.current.countQueryResult.count).toBe(100)
+    );
     expect(result.current.queryHint).toBeNull();
   });
 
@@ -61,7 +65,9 @@ describe(useBatchActionTarget.name, () => {
     setQueryParams({ batchQuery: '' });
     const { result } = setup({});
 
-    await waitFor(() => expect(result.current.totalWorkflowCount).toBe(100));
+    await waitFor(() =>
+      expect(result.current.countQueryResult.count).toBe(100)
+    );
     expect(result.current.isTargetEmpty).toBe(true);
     expect(result.current.blocksSubmit).toBe(false);
     expect(result.current.queryHint).toBeNull();
@@ -81,7 +87,9 @@ describe(useBatchActionTarget.name, () => {
     it('starts with nothing selected and blocks submission immediately', async () => {
       const { result } = setup({ workflowCount: 2, totalCount: 5 });
 
-      await waitFor(() => expect(result.current.totalWorkflowCount).toBe(5));
+      await waitFor(() =>
+        expect(result.current.countQueryResult.count).toBe(5)
+      );
       expect(result.current.listSelection).toBeDefined();
       expect(result.current.queryHint).toBeNull();
       expect(result.current.selectedCount).toBe(0);
@@ -92,9 +100,13 @@ describe(useBatchActionTarget.name, () => {
     it('builds a selection query from individually toggled workflows', async () => {
       const { result } = setup({ workflowCount: 2, totalCount: 5 });
 
-      await waitFor(() => expect(result.current.workflows).toHaveLength(2));
+      await waitFor(() =>
+        expect(result.current.workflowsQueryResult.workflows).toHaveLength(2)
+      );
       act(() => {
-        result.current.listSelection?.onToggle(result.current.workflows[0]);
+        result.current.listSelection?.onToggle(
+          result.current.workflowsQueryResult.workflows[0]
+        );
       });
 
       expect(result.current.selectedCount).toBe(1);
@@ -110,7 +122,9 @@ describe(useBatchActionTarget.name, () => {
       });
       const { result } = setup({ workflowCount: 2, totalCount: 5 });
 
-      await waitFor(() => expect(result.current.totalWorkflowCount).toBe(5));
+      await waitFor(() =>
+        expect(result.current.countQueryResult.count).toBe(5)
+      );
       act(() => {
         result.current.listSelection?.onToggleAll();
       });
@@ -124,9 +138,13 @@ describe(useBatchActionTarget.name, () => {
     it('resets the selection when the search filter changes', async () => {
       const { result, rerender } = setup({ workflowCount: 2, totalCount: 5 });
 
-      await waitFor(() => expect(result.current.workflows).toHaveLength(2));
+      await waitFor(() =>
+        expect(result.current.workflowsQueryResult.workflows).toHaveLength(2)
+      );
       act(() => {
-        result.current.listSelection?.onToggle(result.current.workflows[0]);
+        result.current.listSelection?.onToggle(
+          result.current.workflowsQueryResult.workflows[0]
+        );
       });
       expect(result.current.selectedCount).toBe(1);
 

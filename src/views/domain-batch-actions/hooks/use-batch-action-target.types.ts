@@ -1,37 +1,28 @@
 import type React from 'react';
 
-import { type RequestError } from '@/utils/request/request-error';
 import { type DomainWorkflow } from '@/views/domain-page/domain-page.types';
+import type useCountWorkflows from '@/views/shared/hooks/use-count-workflows';
+import type useListWorkflows from '@/views/shared/hooks/use-list-workflows';
 import { type SelectionParams } from '@/views/shared/workflows-list/workflows-list.types';
+
+import { type UseBatchActionSelectionResult } from './use-batch-action-selection.types';
 
 export type UseBatchActionTargetParams = {
   domain: string;
   cluster: string;
 };
 
-export type UseBatchActionTargetResult = {
-  /** Workflows in the displayed list (the matching set, paginated). */
-  workflows: Array<DomainWorkflow>;
-  /** Error from the list query, if any. */
-  error: RequestError | null;
-  /** True while the first page of the list is loading. */
-  isLoading: boolean;
-  /** True while the list is fetching (including background refetches). */
-  isFetching: boolean;
-  /** True when more pages of the list are available. */
-  hasNextPage: boolean;
-  /** Fetches the next page of the list. */
-  fetchNextPage: () => void;
-  /** True while the next page is being fetched. */
-  isFetchingNextPage: boolean;
-  /** Total number of workflows in the matching set, from the count query. */
+export type BatchActionTargetContext = {
+  /** Manual checkbox selection state (only meaningful in select mode). */
+  selection: UseBatchActionSelectionResult<string>;
+  /** Displayed workflows whose id is currently selected. */
+  selectedWorkflows: Array<DomainWorkflow>;
+  /** Total size of the matching set, from the count query. */
   totalWorkflowCount: number | undefined;
-  /** Error from the count query, if any. */
-  countError: RequestError | null;
-  /** True while the count is loading. */
-  isCountLoading: boolean;
-  /** Refetches both the list and the count. */
-  refetchAll: () => void;
+};
+
+/** The mode-specific values the component renders. */
+export type BatchActionTargetOutputs = {
   /** Number of workflows the action will target. */
   selectedCount: number;
   /**
@@ -39,19 +30,16 @@ export type UseBatchActionTargetResult = {
    * selection). Used to block submission.
    */
   isTargetEmpty: boolean;
-  /**
-   * Whether the floating-bar action should be disabled. Captures the
-   */
+  /** Whether the floating-bar action should be disabled. */
   blocksSubmit: boolean;
   /**
    * Builds the visibility query the batch action runs against. Guaranteed
    * non-empty only when `isTargetEmpty` is false.
    */
   getBatchActionQuery: () => string;
-  /** Marks that a submission was attempted (drives the query-mode hint). */
-  onSubmitAttempt: () => void;
   /**
-   * Ready-to-render hint shown under the workflows header in query mode
+   * Ready-to-render hint shown under the workflows header. Only query mode has
+   * one (the empty-query error or the default-query caption); null otherwise.
    */
   queryHint: React.ReactNode;
   /**
@@ -60,3 +48,21 @@ export type UseBatchActionTargetResult = {
    */
   listSelection: SelectionParams | undefined;
 };
+
+export type BatchActionModeStrategy = {
+  /** Visibility query used for both the displayed list and the count. */
+  query: string;
+  /** Produces the mode-specific outputs from the fetched/selection context. */
+  resolve: (context: BatchActionTargetContext) => BatchActionTargetOutputs;
+};
+
+export type UseBatchActionTargetResult = {
+  /** List query state (workflows + the TanStack infinite-query result). */
+  workflowsQueryResult: ReturnType<typeof useListWorkflows>;
+  /** Count query state (count + the TanStack query result). */
+  countQueryResult: ReturnType<typeof useCountWorkflows>;
+  /** Refetches both the list and the count. */
+  refetchAll: () => void;
+  /** Marks that a submission was attempted (drives the query-mode hint). */
+  onSubmitAttempt: () => void;
+} & BatchActionTargetOutputs;

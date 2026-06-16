@@ -40,16 +40,8 @@ export default function DomainBatchActionsNewActionDetail({
   onDiscard,
 }: Props) {
   const {
-    workflows,
-    error,
-    isLoading,
-    isFetching,
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-    totalWorkflowCount,
-    countError,
-    isCountLoading,
+    workflowsQueryResult,
+    countQueryResult,
     refetchAll,
     selectedCount,
     isTargetEmpty,
@@ -59,6 +51,21 @@ export default function DomainBatchActionsNewActionDetail({
     queryHint,
     listSelection,
   } = useBatchActionTarget({ domain, cluster });
+
+  const {
+    workflows,
+    error: queryError,
+    isLoading: isQueryLoading,
+    isFetching: isQueryFetching,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = workflowsQueryResult;
+  const {
+    count: totalWorkflowCount,
+    error: countError,
+    isLoading: isCountLoading,
+  } = countQueryResult;
 
   const {
     control,
@@ -100,16 +107,13 @@ export default function DomainBatchActionsNewActionDetail({
     [handleSubmit, onSubmitAttempt, isTargetEmpty]
   );
 
-  const isDataLoading = isLoading || isCountLoading;
+  const isDataLoading = isQueryLoading || isCountLoading;
 
   const errorPanelProps =
     workflows.length === 0 || countError
       ? getWorkflowsErrorPanelProps({
           inputType: 'query',
-          error: error ?? countError,
-          // TODO: compute this from the panel's filter state, the way
-          // domain-workflows-table.tsx does. Hardcoded false for now because
-          // batchQuery is the only filter and an empty query is a valid state.
+          error: queryError ?? countError,
           areSearchParamsAbsent: false,
         })
       : undefined;
@@ -141,7 +145,7 @@ export default function DomainBatchActionsNewActionDetail({
           queryStringQueryParamKey="batchQuery"
           searchSegmentLabel="Select"
           refetchQuery={refetchAll}
-          isQueryRunning={isFetching}
+          isQueryRunning={isQueryFetching}
           noSpacing
         />
         {queryHint}
@@ -156,7 +160,7 @@ export default function DomainBatchActionsNewActionDetail({
         <WorkflowsList
           workflows={workflows}
           columns={visibleColumns}
-          error={error}
+          error={queryError}
           hasNextPage={hasNextPage}
           fetchNextPage={fetchNextPage}
           isFetchingNextPage={isFetchingNextPage}
