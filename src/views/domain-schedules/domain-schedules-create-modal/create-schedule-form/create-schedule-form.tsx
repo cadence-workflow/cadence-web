@@ -4,7 +4,7 @@ import React from 'react';
 
 import { Checkbox } from 'baseui/checkbox';
 import { Input } from 'baseui/input';
-import { RadioGroup, Radio } from 'baseui/radio';
+import { Radio, RadioGroup } from 'baseui/radio';
 import { LabelXSmall } from 'baseui/typography';
 import { Controller, useFormState } from 'react-hook-form';
 
@@ -16,7 +16,7 @@ import CreateScheduleHorizontalField from '@/views/domain-schedules/create-sched
 // TODO(refactor): getFieldErrorMessage and getFieldObjectErrorMessages are imported from start-workflow helpers — extract to shared utils
 import getFieldErrorMessage from '@/views/workflow-actions/workflow-action-start-form/helpers/get-field-error-message';
 import getFieldObjectErrorMessages from '@/views/workflow-actions/workflow-action-start-form/helpers/get-field-object-error-messages';
-// TODO(refactor): getMultiJsonErrorMessage is imported from start-workflow helpers — extract to shared utils
+// FIXME(refactor): Share multi-JSON field error wiring with Start workflow in a common helper (cross-cutting create-schedule / Start workflow imports).
 import getMultiJsonErrorMessage from '@/views/workflow-actions/workflow-action-start-form/helpers/get-multi-json-error-message';
 
 import {
@@ -138,7 +138,12 @@ export default function CreateScheduleForm({ control, trigger }: Props) {
               inputRef={ref}
               aria-label="Worker SDK"
               value={value}
-              onChange={(e) => onChange(e.currentTarget.value)}
+              onChange={(e) => {
+                onChange(e.currentTarget.value);
+              }}
+              error={Boolean(
+                getFieldErrorMessage(fieldErrors, 'workerSDKLanguage')
+              )}
               align="horizontal"
             >
               {WORKER_SDK_LANGUAGES.map((language) => (
@@ -152,9 +157,15 @@ export default function CreateScheduleForm({ control, trigger }: Props) {
       </CreateScheduleHorizontalField>
 
       <CreateScheduleHorizontalField
-        label="Workflow Input"
+        label="JSON input arguments (optional)"
         description={CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.workflowInput}
-        error={typeof inputError === 'string' ? inputError : undefined}
+        error={
+          typeof inputError === 'string'
+            ? inputError
+            : Array.isArray(inputError)
+              ? inputError.find(Boolean)
+              : undefined
+        }
       >
         <Controller
           name="input"
@@ -162,12 +173,13 @@ export default function CreateScheduleForm({ control, trigger }: Props) {
           defaultValue={['']}
           render={({ field }) => (
             <MultiJsonInput
-              label="Workflow input arguments"
+              label="JSON input arguments (optional)"
               placeholder="Enter JSON input"
               value={field.value}
               onChange={field.onChange}
               error={inputError}
               addButtonText="Add argument"
+              showLeftBorder={false}
             />
           )}
         />

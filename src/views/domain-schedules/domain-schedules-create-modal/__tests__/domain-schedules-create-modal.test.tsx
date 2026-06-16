@@ -7,10 +7,13 @@ describe('DomainSchedulesCreateModal', () => {
     setup({ isOpen: true });
 
     expect(
-      screen.getByRole('textbox', { name: 'Task List' })
-    ).toBeInTheDocument();
-    expect(
       screen.getByRole('spinbutton', { name: 'Task Start-to-Close Timeout' })
+    ).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: 'GO' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('textbox', {
+        name: 'JSON input arguments (optional)',
+      })
     ).toBeInTheDocument();
   });
 
@@ -49,6 +52,22 @@ describe('DomainSchedulesCreateModal', () => {
 
     expect(
       await screen.findByText('Cron expression is required')
+    ).toBeInTheDocument();
+  });
+
+  it('shows JSON input validation when value is not valid JSON', async () => {
+    const { user } = setup({ isOpen: true });
+
+    await user.type(
+      screen.getByRole('textbox', {
+        name: 'JSON input arguments (optional)',
+      }),
+      'not-json'
+    );
+    await user.click(screen.getByRole('button', { name: 'Create schedule' }));
+
+    expect(
+      await screen.findByText('Input must be valid JSON')
     ).toBeInTheDocument();
   });
 

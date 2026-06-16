@@ -28,6 +28,12 @@ const cssStylesObj = {
     borderLeft: `2px solid ${theme.colors.borderOpaque}`,
     paddingLeft: theme.sizing.scale600,
   }),
+  /** Same layout as `container` without the left accent (e.g. create-schedule horizontal field). */
+  containerPlain: (theme) => ({
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.sizing.scale600,
+  }),
   inputRow: (theme) => ({
     display: 'flex',
     gap: theme.sizing.scale300,

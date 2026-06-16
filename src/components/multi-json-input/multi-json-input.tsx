@@ -22,8 +22,10 @@ export default function MultiJsonInput({
   onChange,
   error,
   addButtonText = 'Add',
+  showLeftBorder = true,
 }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
+  const containerClass = showLeftBorder ? cls.container : cls.containerPlain;
 
   const getInputError = useCallback(
     (index: number): boolean => {
@@ -77,7 +79,7 @@ export default function MultiJsonInput({
   }, [displayValue]);
 
   return (
-    <div className={cls.container}>
+    <div className={containerClass}>
       {displayValue.map((inputValue: string, index: number) => (
         <div key={index} className={cls.inputRow}>
           <div className={cls.inputContainer}>

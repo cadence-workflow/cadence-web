@@ -15,6 +15,8 @@ export const CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS = {
   taskStartToCloseTimeout: 'Activity & decision tasks start to close timeout',
   executionStartToCloseTimeout: 'Workflow start to close timeout',
   pauseOnFailure: 'Pause the schedule when a triggered workflow fails',
-  workerSDK: 'SDK language used by the workers processing scheduled workflows',
-  workflowInput: 'Optional JSON arguments passed to each scheduled workflow run',
+  workerSDK:
+    'Worker language for encoding workflow arguments (matches Start workflow)',
+  workflowInput:
+    'Optional JSON payloads passed to the workflow (one value per argument)',
 } as const;

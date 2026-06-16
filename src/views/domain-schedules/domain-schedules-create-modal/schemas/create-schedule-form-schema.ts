@@ -90,8 +90,9 @@ export const createScheduleFormSchema = z.object({
     .superRefine((inputArray, ctx) => {
       if (!inputArray) return;
       if (inputArray.length === 1 && inputArray[0] === '') return;
-      inputArray.forEach((val, i) => {
-        if (val.trim() === '') return;
+      for (let i = 0; i < inputArray.length; i++) {
+        const val = inputArray[i];
+        if (val.trim() === '') continue;
         try {
           JSON.parse(val);
         } catch {
@@ -101,8 +102,7 @@ export const createScheduleFormSchema = z.object({
             path: [i],
           });
         }
-      });
+      }
     }),
-
   pauseOnFailure: z.boolean().optional().default(false),
 });
