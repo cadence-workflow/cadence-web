@@ -220,7 +220,10 @@ export default function WorkflowActionStartForm({
               label="JSON input arguments (optional)"
               placeholder="Enter JSON input"
               value={field.value}
-              onChange={field.onChange}
+              onChange={(value) => {
+                field.onChange(value);
+                trigger('input');
+              }}
               error={inputError}
               addButtonText="Add argument"
             />

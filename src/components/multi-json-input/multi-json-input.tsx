@@ -92,6 +92,7 @@ export default function MultiJsonInput({
           </div>
           <div className={cls.buttonContainer}>
             <Button
+              type="button"
               size="mini"
               kind="tertiary"
               shape="circle"
@@ -110,6 +111,7 @@ export default function MultiJsonInput({
       ))}
       <div className={cls.addButtonContainer}>
         <Button
+          type="button"
           size="mini"
           kind="secondary"
           shape="pill"

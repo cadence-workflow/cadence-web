@@ -175,7 +175,10 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
               label="JSON input arguments (optional)"
               placeholder="Enter JSON input"
               value={field.value}
-              onChange={field.onChange}
+              onChange={(value) => {
+                field.onChange(value);
+                if (isSubmitted) trigger('input');
+              }}
               error={inputError}
               addButtonText="Add argument"
               showLeftBorder={false}
