@@ -126,6 +126,7 @@ export default function DomainSchedules({ domain, cluster }: Props) {
     <styled.Root>
       <DomainSchedulesHeader
         count={isLoading ? undefined : filteredSchedules.length}
+        onCreateScheduleClick={() => setIsCreateModalOpen(true)}
       />
       {content}
       <DomainSchedulesCreateModal
