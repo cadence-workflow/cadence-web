@@ -34,9 +34,9 @@ export default function DomainSchedulesHeader({
         </styled.FiltersSlot>
         <styled.CreateButtonWrap>
           <Button
-            kind={KIND.primary}
-            size={SIZE.compact}
-            shape={SHAPE.default}
+            kind="primary"
+            size="compact"
+            shape="default"
             startEnhancer={<MdAdd size={16} aria-hidden />}
             onClick={onCreateScheduleClick}
             overrides={overrides.createScheduleButton}
