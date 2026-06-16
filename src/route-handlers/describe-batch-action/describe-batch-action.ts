@@ -54,7 +54,10 @@ export async function describeBatchAction(
       ...getBatchActionInputFromHistory(historyResponse),
     } satisfies DescribeBatchActionResponse;
 
-    if (detail.status === 'RUNNING') {
+    if (detail.status === 'RUNNING' || detail.status === 'FAILED') {
+      // RUNNING: live activity heartbeat. FAILED: only a workflow-level timeout
+      // keeps the activity (and its last heartbeat) on the describe response;
+      // a missing heartbeat just means no progress.
       response.progress = getRunningProgressFromDescribe(describeResponse);
     } else if (detail.status === 'COMPLETED') {
       // Final counts live in the close event; reading them is best-effort.
@@ -74,10 +77,6 @@ export async function describeBatchAction(
           'Failed to read batch action progress from close event'
         );
       }
-    } else if (detail.status === 'FAILED') {
-      // Only a workflow-level timeout keeps the activity (and its heartbeat) on
-      // the describe response; a missing heartbeat just means no progress.
-      response.progress = getRunningProgressFromDescribe(describeResponse);
     }
 
     return NextResponse.json(response);

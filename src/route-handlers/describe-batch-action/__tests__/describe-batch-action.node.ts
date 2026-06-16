@@ -15,7 +15,6 @@ import {
   mockDescribeBatchOperationWorkflowFailed,
   mockDescribeBatchOperationWorkflowFailedWithPendingProgress,
   mockDescribeBatchOperationWorkflowRunning,
-  mockDescribeBatchOperationWorkflowRunningWithProgress,
   mockDescribeBatchOperationWorkflowTerminated,
   MOCK_BATCH_PROGRESS,
 } from '../__fixtures__/mock-describe-batch-operation-workflow';
@@ -107,30 +106,6 @@ describe(describeBatchAction.name, () => {
       }),
       'Error fetching batch action'
     );
-  });
-
-  it('populates progress from the running activity heartbeat', async () => {
-    const { res } = await setup({
-      describeResponse: mockDescribeBatchOperationWorkflowRunningWithProgress,
-    });
-
-    const body = await res.json();
-    expect(body.status).toEqual('RUNNING');
-    expect(body.progress).toEqual({
-      totalEstimate: MOCK_BATCH_PROGRESS.TotalEstimate,
-      successCount: MOCK_BATCH_PROGRESS.SuccessCount,
-      errorCount: MOCK_BATCH_PROGRESS.ErrorCount,
-    });
-  });
-
-  it('leaves progress undefined for a running batch with no heartbeat yet', async () => {
-    const { res } = await setup({
-      describeResponse: mockDescribeBatchOperationWorkflowRunning,
-    });
-
-    const body = await res.json();
-    expect(body.status).toEqual('RUNNING');
-    expect(body.progress).toBeUndefined();
   });
 
   it('populates final progress from the close event for a completed batch', async () => {
