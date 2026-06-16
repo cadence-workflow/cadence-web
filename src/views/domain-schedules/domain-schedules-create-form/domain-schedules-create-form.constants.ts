@@ -1,5 +1,5 @@
 /** Stable ids for horizontal label + control layout (single create-schedule modal instance). */
-export const CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS = {
+export const CREATE_SCHEDULE_FORM_FIELD_IDS = {
   workflowType: 'domain-schedules-create-form-workflow-type',
   taskList: 'domain-schedules-create-form-task-list',
   taskStartToCloseTimeout: 'domain-schedules-create-form-task-stc-timeout',
@@ -9,7 +9,7 @@ export const CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS = {
   workerSDK: 'domain-schedules-create-form-worker-sdk',
 } as const;
 
-export const DOMAIN_SCHEDULES_CREATE_FORM_MAIN_FIELD_DESCRIPTIONS = {
+export const CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS = {
   cronExpression: 'Cron string describing the schedule for running workflows',
   workflowType: 'WorkflowType of the workflow that the schedule will start',
   taskList: 'TaskList of the workflow that the schedule will start',

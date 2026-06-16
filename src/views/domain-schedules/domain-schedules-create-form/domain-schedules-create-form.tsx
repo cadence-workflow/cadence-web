@@ -20,8 +20,8 @@ import getFieldObjectErrorMessages from '@/views/workflow-actions/workflow-actio
 import getMultiJsonErrorMessage from '@/views/workflow-actions/workflow-action-start-form/helpers/get-multi-json-error-message';
 
 import {
+  CREATE_SCHEDULE_FORM_FIELD_IDS,
   CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS,
-  DOMAIN_SCHEDULES_CREATE_FORM_MAIN_FIELD_DESCRIPTIONS,
 } from './domain-schedules-create-form.constants';
 import { overrides } from './domain-schedules-create-form.styles';
 import { type Props } from './domain-schedules-create-form.types';
@@ -44,9 +44,9 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
       <DomainSchedulesHorizontalField
         label="Workflow Type"
         description={
-          DOMAIN_SCHEDULES_CREATE_FORM_MAIN_FIELD_DESCRIPTIONS.workflowType
+          CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.workflowType
         }
-        htmlFor={CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.workflowType}
+        htmlFor={CREATE_SCHEDULE_FORM_FIELD_IDS.workflowType}
         error={getFieldErrorMessage(fieldErrors, 'workflowType.name')}
       >
         <Controller
@@ -56,7 +56,7 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
           render={({ field: { ref, ...field } }) => (
             <Input
               {...field}
-              id={CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.workflowType}
+              id={CREATE_SCHEDULE_FORM_FIELD_IDS.workflowType}
               // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
               inputRef={ref}
               aria-label="Workflow Type"
@@ -75,7 +75,7 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
       <DomainSchedulesHorizontalField
         label="Cron Expression (UTC)"
         description={
-          DOMAIN_SCHEDULES_CREATE_FORM_MAIN_FIELD_DESCRIPTIONS.cronExpression
+          CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.cronExpression
         }
         error={cronExpressionErrorMessage}
       >
@@ -100,9 +100,9 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
       <DomainSchedulesHorizontalField
         label="Task List"
         description={
-          DOMAIN_SCHEDULES_CREATE_FORM_MAIN_FIELD_DESCRIPTIONS.taskList
+          CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.taskList
         }
-        htmlFor={CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.taskList}
+        htmlFor={CREATE_SCHEDULE_FORM_FIELD_IDS.taskList}
         error={getFieldErrorMessage(fieldErrors, 'taskList.name')}
       >
         <Controller
@@ -112,7 +112,7 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
           render={({ field: { ref, ...field } }) => (
             <Input
               {...field}
-              id={CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.taskList}
+              id={CREATE_SCHEDULE_FORM_FIELD_IDS.taskList}
               // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
               inputRef={ref}
               aria-label="Task List"
@@ -131,7 +131,7 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
       <DomainSchedulesHorizontalField
         label="Worker SDK"
         description={
-          DOMAIN_SCHEDULES_CREATE_FORM_MAIN_FIELD_DESCRIPTIONS.workerSDK
+          CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.workerSDK
         }
       >
         <Controller
@@ -166,7 +166,7 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
       <DomainSchedulesHorizontalField
         label="JSON input arguments (optional)"
         description={
-          DOMAIN_SCHEDULES_CREATE_FORM_MAIN_FIELD_DESCRIPTIONS.workflowInput
+          CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.workflowInput
         }
         error={
           typeof inputError === 'string'
@@ -197,13 +197,9 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
       <DomainSchedulesHorizontalField
         label="Execution Start-to-Close Timeout"
         description={
-          DOMAIN_SCHEDULES_CREATE_FORM_MAIN_FIELD_DESCRIPTIONS.executionStartToCloseTimeout
-        }
-        htmlFor={
           CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.executionStartToCloseTimeout
         }
-        error={getFieldErrorMessage(
-          fieldErrors,
+        htmlFor={ror={getFieldErrorMessage(  fieldErrors,
           'executionStartToCloseTimeoutSeconds'
         )}
       >
@@ -213,13 +209,9 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
           render={({ field: { ref, ...field } }) => (
             <Input
               {...field}
-              id={
-                CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.executionStartToCloseTimeout
-              }
+              id={CREATE_SCHEDULE_FORM_FIELD_IDS.executionStartToCloseTimeout}
               value={field.value ?? ''}
-              // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
-              inputRef={ref}
-              aria-label="Execution Start-to-Close Timeout"
+              // @putRef={ref}aria-label="Execution Start-to-Close Timeout"
               type="number"
               min={1}
               onChange={(e) =>
@@ -245,33 +237,25 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
       <DomainSchedulesHorizontalField
         label="Task Start-to-Close Timeout"
         description={
-          DOMAIN_SCHEDULES_CREATE_FORM_MAIN_FIELD_DESCRIPTIONS.taskStartToCloseTimeout
-        }
-        htmlFor={
           CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.taskStartToCloseTimeout
         }
+        htmlFor={CREATE_SCHEDULE_FORM_FIELD_IDS.taskStartToCloseTimeout}
         error={getFieldErrorMessage(
           fieldErrors,
           'taskStartToCloseTimeoutSeconds'
-        )}
-      >
-        <Controller
+        )}<Controller
           name="taskStartToCloseTimeoutSeconds"
           control={control}
           render={({ field: { ref, ...field } }) => (
             <Input
               {...field}
-              id={
-                CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.taskStartToCloseTimeout
-              }
+              id={CREATE_SCHEDULE_FORM_FIELD_IDS.taskStartToCloseTimeout}
               value={field.value ?? ''}
               // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
               inputRef={ref}
               aria-label="Task Start-to-Close Timeout"
               type="number"
-              min={1}
-              onChange={(e) =>
-                field.onChange(
+              min=Change={(e) =>  field.onChange(
                   e.target.value ? parseInt(e.target.value, 10) : undefined
                 )
               }
@@ -293,9 +277,9 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
       <DomainSchedulesHorizontalField
         label="Pause on failure"
         description={
-          DOMAIN_SCHEDULES_CREATE_FORM_MAIN_FIELD_DESCRIPTIONS.pauseOnFailure
+          CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.pauseOnFailure
         }
-        htmlFor={CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.pauseOnFailure}
+        htmlFor={CREATE_SCHEDULE_FORM_FIELD_IDS.pauseOnFailure}
       >
         <Controller
           name="pauseOnFailure"
@@ -304,7 +288,7 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
           render={({ field: { value, onChange, ref, ...field } }) => (
             <Checkbox
               {...field}
-              id={CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.pauseOnFailure}
+              id={CREATE_SCHEDULE_FORM_FIELD_IDS.pauseOnFailure}
               // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
               inputRef={ref}
               checked={value}
