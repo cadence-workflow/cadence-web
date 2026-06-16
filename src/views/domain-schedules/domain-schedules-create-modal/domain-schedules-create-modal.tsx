@@ -6,8 +6,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Modal, ModalButton } from 'baseui/modal';
 import { useForm } from 'react-hook-form';
 
-import CreateScheduleForm from './create-schedule-form/create-schedule-form';
-import { type CreateScheduleFormData } from './create-schedule-form/create-schedule-form.types';
+import DomainSchedulesCreateForm from '../domain-schedules-create-form/domain-schedules-create-form';
+import { type DomainSchedulesCreateFormData } from '../domain-schedules-create-form/domain-schedules-create-form.types';
+
 import { overrides, styled } from './domain-schedules-create-modal.styles';
 import { type Props } from './domain-schedules-create-modal.types';
 import { createScheduleFormSchema } from './schemas/create-schedule-form-schema';
@@ -19,7 +20,7 @@ export default function DomainSchedulesCreateModal({
   onClose,
 }: Props) {
   const { control, handleSubmit, reset, clearErrors, trigger } =
-    useForm<CreateScheduleFormData>({
+    useForm<DomainSchedulesCreateFormData>({
       resolver: zodResolver(createScheduleFormSchema),
       defaultValues: {},
       mode: 'onSubmit',
@@ -33,7 +34,7 @@ export default function DomainSchedulesCreateModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
-  const onSubmit = (_data: CreateScheduleFormData) => {
+  const onSubmit = (_data: DomainSchedulesCreateFormData) => {
     clearErrors();
   };
 
@@ -47,7 +48,7 @@ export default function DomainSchedulesCreateModal({
       <styled.ModalHeader>Create Schedule</styled.ModalHeader>
       <form onSubmit={handleSubmit(onSubmit)}>
         <styled.ModalBody>
-          <CreateScheduleForm control={control} trigger={trigger} />
+          <DomainSchedulesCreateForm control={control} trigger={trigger} />
         </styled.ModalBody>
         <styled.ModalFooter>
           <ModalButton

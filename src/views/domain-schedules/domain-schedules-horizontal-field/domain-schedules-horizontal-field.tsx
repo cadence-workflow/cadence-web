@@ -4,10 +4,10 @@ import React from 'react';
 
 import { FormControl } from 'baseui/form-control';
 
-import { overrides, styled } from './create-schedule-horizontal-field.styles';
-import { type Props } from './create-schedule-horizontal-field.types';
+import { overrides, styled } from './domain-schedules-horizontal-field.styles';
+import { type Props } from './domain-schedules-horizontal-field.types';
 
-export default function CreateScheduleHorizontalField({
+export default function DomainSchedulesHorizontalField({
   label,
   description,
   htmlFor,

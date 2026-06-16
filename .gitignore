@@ -40,6 +40,3 @@ src/__generated__
 
 # Local agent / planning features (not versioned)
 .agents/features/
-
-# Local agent / planning issues (not versioned)
-.cursor/features/create-schedules/issues/issues-create-schedule.md
