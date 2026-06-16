@@ -148,7 +148,11 @@ export default function DomainBatchActionsNewActionDetail({
           isQueryRunning={isQueryFetching}
           noSpacing
         />
-        {queryHint}
+        {queryHint && (
+          <styled.QueryHint $kind={queryHint.kind}>
+            {queryHint.message}
+          </styled.QueryHint>
+        )}
       </div>
       {isDataLoading && <SectionLoadingIndicator />}
       {!isDataLoading && errorPanelProps && (

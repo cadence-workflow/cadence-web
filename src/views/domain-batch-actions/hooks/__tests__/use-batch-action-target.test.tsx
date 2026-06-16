@@ -1,6 +1,6 @@
 import { HttpResponse } from 'msw';
 
-import { act, render, renderHook, screen, waitFor } from '@/test-utils/rtl';
+import { act, renderHook, waitFor } from '@/test-utils/rtl';
 
 import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtures__/mock-workflow-list-items';
 import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list-workflows.types';
@@ -45,10 +45,10 @@ describe(useBatchActionTarget.name, () => {
     await waitFor(() =>
       expect(result.current.countQueryResult.count).toBe(100)
     );
-    render(<>{result.current.queryHint}</>);
-    expect(
-      screen.getByText(/Showing all running workflows/i)
-    ).toBeInTheDocument();
+    expect(result.current.queryHint).toEqual({
+      kind: 'caption',
+      message: expect.stringMatching(/Showing all running workflows/i),
+    });
   });
 
   it('has no query hint once the query has been edited', async () => {
@@ -75,8 +75,10 @@ describe(useBatchActionTarget.name, () => {
     act(() => result.current.onSubmitAttempt());
 
     expect(result.current.blocksSubmit).toBe(true);
-    render(<>{result.current.queryHint}</>);
-    expect(screen.getByText('Query must not be empty')).toBeInTheDocument();
+    expect(result.current.queryHint).toEqual({
+      kind: 'error',
+      message: 'Query must not be empty',
+    });
   });
 
   describe('select mode', () => {
@@ -132,6 +134,26 @@ describe(useBatchActionTarget.name, () => {
       expect(result.current.selectedCount).toBe(5);
       expect(result.current.getBatchActionQuery()).toBe(
         '(WorkflowType = "foo" OR WorkflowID = "foo" OR RunID = "foo")'
+      );
+    });
+
+    it('escapes quotes in the search term for the select-all query', async () => {
+      setQueryParams({
+        batchInputType: 'search',
+        batchSearch: 'a"b',
+        batchTimeRangeEnd: undefined,
+      });
+      const { result } = setup({ workflowCount: 2, totalCount: 5 });
+
+      await waitFor(() =>
+        expect(result.current.countQueryResult.count).toBe(5)
+      );
+      act(() => {
+        result.current.listSelection?.onToggleAll();
+      });
+
+      expect(result.current.getBatchActionQuery()).toBe(
+        '(WorkflowType = "a\\"b" OR WorkflowID = "a\\"b" OR RunID = "a\\"b")'
       );
     });
 

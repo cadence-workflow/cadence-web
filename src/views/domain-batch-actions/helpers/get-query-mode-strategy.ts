@@ -1,9 +1,12 @@
-import React from 'react';
-
-import { BATCH_ACTION_DEFAULT_QUERY } from '../domain-batch-actions.constants';
-import { type BatchActionModeStrategy } from '../hooks/use-batch-action-target.types';
-
-import { styled } from './get-query-mode-strategy.styles';
+import {
+  BATCH_ACTION_DEFAULT_QUERY,
+  BATCH_ACTION_DEFAULT_QUERY_HINT,
+  BATCH_ACTION_EMPTY_QUERY_ERROR,
+} from '../domain-batch-actions.constants';
+import {
+  type BatchActionModeStrategy,
+  type QueryHint,
+} from '../hooks/use-batch-action-target.types';
 
 export default function getQueryModeStrategy({
   batchQuery,
@@ -16,15 +19,11 @@ export default function getQueryModeStrategy({
   const showQueryError = submitAttempted && isQueryEmpty;
   const isDefaultQuery = batchQuery === BATCH_ACTION_DEFAULT_QUERY;
 
-  let queryHint: React.ReactNode = null;
+  let queryHint: QueryHint | null = null;
   if (showQueryError) {
-    queryHint = <styled.QueryError>Query must not be empty</styled.QueryError>;
+    queryHint = { kind: 'error', message: BATCH_ACTION_EMPTY_QUERY_ERROR };
   } else if (isDefaultQuery) {
-    queryHint = (
-      <styled.QueryCaption>
-        Showing all running workflows. Edit the query to narrow the set.
-      </styled.QueryCaption>
-    );
+    queryHint = { kind: 'caption', message: BATCH_ACTION_DEFAULT_QUERY_HINT };
   }
 
   return {

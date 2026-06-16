@@ -1,5 +1,3 @@
-import type React from 'react';
-
 import { type DomainWorkflow } from '@/views/domain-page/domain-page.types';
 import type useCountWorkflows from '@/views/shared/hooks/use-count-workflows';
 import type useListWorkflows from '@/views/shared/hooks/use-list-workflows';
@@ -21,6 +19,15 @@ export type BatchActionTargetContext = {
   totalWorkflowCount: number | undefined;
 };
 
+/**
+ * A hint shown under the workflows header, as data the component renders.
+ * `kind` selects the styling (error vs informational caption).
+ */
+export type QueryHint = {
+  kind: 'error' | 'caption';
+  message: string;
+};
+
 /** The mode-specific values the component renders. */
 export type BatchActionTargetOutputs = {
   /** Number of workflows the action will target. */
@@ -38,10 +45,11 @@ export type BatchActionTargetOutputs = {
    */
   getBatchActionQuery: () => string;
   /**
-   * Ready-to-render hint shown under the workflows header. Only query mode has
-   * one (the empty-query error or the default-query caption); null otherwise.
+   * Hint shown under the workflows header, as data (the component renders it).
+   * Only query mode has one (empty-query error or default-query caption); null
+   * otherwise.
    */
-  queryHint: React.ReactNode;
+  queryHint: QueryHint | null;
   /**
    * Per-row + select-all checkbox wiring for WorkflowsList. Undefined in query
    * mode, where the whole query defines the target set.

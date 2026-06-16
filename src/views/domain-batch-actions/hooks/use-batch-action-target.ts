@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import getDayjsFromDateFilterValue from '@/components/date-filter/helpers/get-dayjs-from-date-filter-value';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import dayjs from '@/utils/datetime/dayjs';
+import escapeVisibilityQueryValue from '@/utils/visibility/escape-visibility-query-value';
 import getVisibilityQuery from '@/utils/visibility/get-visibility-query';
 import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
 import DOMAIN_WORKFLOWS_PAGE_SIZE from '@/views/domain-workflows/config/domain-workflows-page-size.config';
@@ -57,7 +58,10 @@ export default function useBatchActionTarget({
 
   const selectModeFilters = useMemo(
     () => ({
-      search: queryParams.batchSearch,
+      // Escape the search term so quotes/backslashes cannot break out of the
+      // quoted literal — this query also defines the target set when "select
+      // all" submits the batch action.
+      search: escapeVisibilityQueryValue(queryParams.batchSearch),
       workflowStatuses: queryParams.batchStatuses,
       timeColumn: 'StartTime' as const,
       timeRangeStart: batchTimeRange.timeRangeStart,
