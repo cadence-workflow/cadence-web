@@ -64,16 +64,6 @@ const batchActionHeaderInfoItemsConfig = [
     ),
     placeholderSize: '80px',
   },
-  {
-    title: 'Concurrency',
-    render: ({ batchAction }) => (
-      <DomainBatchActionEditableValue
-        value={batchAction.concurrency}
-        editable={batchAction.status === 'RUNNING'}
-      />
-    ),
-    placeholderSize: '80px',
-  },
 ] as const satisfies DomainBatchActionHeaderInfoItemsConfig;
 
 export default batchActionHeaderInfoItemsConfig;

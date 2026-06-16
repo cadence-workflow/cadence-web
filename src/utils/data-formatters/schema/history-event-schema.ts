@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 import { type ActiveClusterSelectionPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ActiveClusterSelectionPolicy';
-import { ActiveClusterSelectionStrategy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ActiveClusterSelectionStrategy';
 import { CancelExternalWorkflowExecutionFailedCause } from '@/__generated__/proto-ts/uber/cadence/api/v1/CancelExternalWorkflowExecutionFailedCause';
 import { ChildWorkflowExecutionFailedCause } from '@/__generated__/proto-ts/uber/cadence/api/v1/ChildWorkflowExecutionFailedCause';
 import { ContinueAsNewInitiator } from '@/__generated__/proto-ts/uber/cadence/api/v1/ContinueAsNewInitiator';
@@ -148,46 +147,20 @@ const clusterAttributeSchema = z.object({
   name: z.string(),
 });
 
-// TODO @adhitya.mamallan - this needs to be removed as part of active-active's redesign, once the IDL has removed them
-const activeClusterSelectionStrategySchema = z.enum([
-  ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_INVALID,
-  ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_REGION_STICKY,
-  ActiveClusterSelectionStrategy.ACTIVE_CLUSTER_SELECTION_STRATEGY_EXTERNAL_ENTITY,
-]);
-
-// The IDL still contains the strategy and strategyConfig fields, but they are absent
-// in the new active-active design. The preprocess step corrects this and allows us to
-// parse activeClusterSelectionPolicy even if the backend does not pass the deprecated fields.
-//
-// TODO @adhitya.mamallan - update this once the IDL has been updated
-const activeClusterSelectionPolicySchema = z.preprocess(
-  (data) => {
-    if (typeof data === 'object' && data !== null) {
-      const dataWithDefaults = {
-        ...data,
-        strategy:
-          'strategy' in data && data.strategy
-            ? data.strategy
-            : 'ACTIVE_CLUSTER_SELECTION_STRATEGY_INVALID',
-        strategyConfig:
-          'strategyConfig' in data && data.strategyConfig
-            ? data.strategyConfig
-            : 'activeClusterStickyRegionConfig',
-      };
-      return dataWithDefaults;
-    }
-    return data;
-  },
-  z.object({
-    clusterAttribute: clusterAttributeSchema,
-    // TODO: remove the below fields once the IDL has removed them
-    strategy: activeClusterSelectionStrategySchema,
-    strategyConfig: z.enum([
-      'activeClusterStickyRegionConfig',
-      'activeClusterExternalEntityConfig',
-    ]),
+/**
+ * In the active-active design the policy is identified solely by clusterAttribute, so a missing
+ * or malformed payload carries no policy and falls back to null instead of failing the whole
+ * history event.
+ *
+ * activeClusterSelectionPolicy and retryPolicy are the only object fields passed to StartWorkflow,
+ * but activeClusterSelectionPolicy does not validate the request input type the way retryPolicy does.
+ */
+const activeClusterSelectionPolicySchema = z
+  .object({
+    clusterAttribute: clusterAttributeSchema.nullable(),
   })
-) as z.ZodType<ActiveClusterSelectionPolicy>;
+  .nullable()
+  .catch(null) as z.ZodType<ActiveClusterSelectionPolicy | null>;
 
 const failureSchema = z.object({
   reason: z.string(),

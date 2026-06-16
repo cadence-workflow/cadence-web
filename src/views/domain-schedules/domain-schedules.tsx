@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { MdAdd } from 'react-icons/md';
 
@@ -13,6 +13,7 @@ import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-
 import useListSchedules from '@/views/shared/hooks/use-list-schedules/use-list-schedules';
 
 import schedulesTableConfig from './config/schedules-table.config';
+import DomainSchedulesCreateModal from './domain-schedules-create-modal/domain-schedules-create-modal';
 import DomainSchedulesHeader from './domain-schedules-header/domain-schedules-header';
 import { SCHEDULES_PAGE_SIZE } from './domain-schedules.constants';
 import { styled } from './domain-schedules.styles';
@@ -20,6 +21,8 @@ import { type Props } from './domain-schedules.types';
 import filterSchedules from './helpers/filter-schedules';
 
 export default function DomainSchedules({ domain, cluster }: Props) {
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
   const {
     data,
     error,
@@ -82,7 +85,7 @@ export default function DomainSchedules({ domain, cluster }: Props) {
             {
               kind: 'callback',
               label: 'Create schedule',
-              onClick: () => {},
+              onClick: () => setIsCreateModalOpen(true),
               buttonKind: 'primary',
               shape: 'default',
               startEnhancer: <MdAdd size={18} aria-hidden />,
@@ -125,6 +128,12 @@ export default function DomainSchedules({ domain, cluster }: Props) {
         count={isLoading ? undefined : filteredSchedules.length}
       />
       {content}
+      <DomainSchedulesCreateModal
+        domain={domain}
+        cluster={cluster}
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
     </styled.Root>
   );
 }
