@@ -10,6 +10,4 @@ export type BuildSchedulePageClusterPathParams = Pick<
   SchedulePageTabsParams,
   'domain' | 'scheduleId' | 'scheduleTab'
 > &
-  Pick<SchedulePageLayoutParams, 'cluster'> & {
-    cluster: string;
-  };
+  Pick<SchedulePageLayoutParams, 'cluster'>;
