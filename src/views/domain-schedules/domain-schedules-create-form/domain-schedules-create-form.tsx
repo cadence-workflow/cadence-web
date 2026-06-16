@@ -43,9 +43,7 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
     <div>
       <DomainSchedulesHorizontalField
         label="Workflow Type"
-        description={
-          CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.workflowType
-        }
+        description={CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.workflowType}
         htmlFor={CREATE_SCHEDULE_FORM_FIELD_IDS.workflowType}
         error={getFieldErrorMessage(fieldErrors, 'workflowType.name')}
       >
@@ -74,9 +72,7 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
 
       <DomainSchedulesHorizontalField
         label="Cron Expression (UTC)"
-        description={
-          CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.cronExpression
-        }
+        description={CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.cronExpression}
         error={cronExpressionErrorMessage}
       >
         <Controller
@@ -99,9 +95,7 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
 
       <DomainSchedulesHorizontalField
         label="Task List"
-        description={
-          CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.taskList
-        }
+        description={CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.taskList}
         htmlFor={CREATE_SCHEDULE_FORM_FIELD_IDS.taskList}
         error={getFieldErrorMessage(fieldErrors, 'taskList.name')}
       >
@@ -130,9 +124,7 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
 
       <DomainSchedulesHorizontalField
         label="Worker SDK"
-        description={
-          CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.workerSDK
-        }
+        description={CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.workerSDK}
       >
         <Controller
           name="workerSDKLanguage"
@@ -165,9 +157,7 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
 
       <DomainSchedulesHorizontalField
         label="JSON input arguments (optional)"
-        description={
-          CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.workflowInput
-        }
+        description={CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.workflowInput}
         error={
           typeof inputError === 'string'
             ? inputError
@@ -199,7 +189,9 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
         description={
           CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.executionStartToCloseTimeout
         }
-        htmlFor={ror={getFieldErrorMessage(  fieldErrors,
+        htmlFor={CREATE_SCHEDULE_FORM_FIELD_IDS.executionStartToCloseTimeout}
+        error={getFieldErrorMessage(
+          fieldErrors,
           'executionStartToCloseTimeoutSeconds'
         )}
       >
@@ -211,7 +203,9 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
               {...field}
               id={CREATE_SCHEDULE_FORM_FIELD_IDS.executionStartToCloseTimeout}
               value={field.value ?? ''}
-              // @putRef={ref}aria-label="Execution Start-to-Close Timeout"
+              // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
+              inputRef={ref}
+              aria-label="Execution Start-to-Close Timeout"
               type="number"
               min={1}
               onChange={(e) =>
@@ -243,7 +237,9 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
         error={getFieldErrorMessage(
           fieldErrors,
           'taskStartToCloseTimeoutSeconds'
-        )}<Controller
+        )}
+      >
+        <Controller
           name="taskStartToCloseTimeoutSeconds"
           control={control}
           render={({ field: { ref, ...field } }) => (
@@ -255,7 +251,9 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
               inputRef={ref}
               aria-label="Task Start-to-Close Timeout"
               type="number"
-              min=Change={(e) =>  field.onChange(
+              min={1}
+              onChange={(e) =>
+                field.onChange(
                   e.target.value ? parseInt(e.target.value, 10) : undefined
                 )
               }
@@ -276,9 +274,7 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
 
       <DomainSchedulesHorizontalField
         label="Pause on failure"
-        description={
-          CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.pauseOnFailure
-        }
+        description={CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.pauseOnFailure}
         htmlFor={CREATE_SCHEDULE_FORM_FIELD_IDS.pauseOnFailure}
       >
         <Controller
