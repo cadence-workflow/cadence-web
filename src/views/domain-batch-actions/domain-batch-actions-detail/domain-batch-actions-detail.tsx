@@ -1,36 +1,22 @@
 'use client';
 import React from 'react';
 
-import { ProgressBar } from 'baseui/progress-bar';
 import { Skeleton } from 'baseui/skeleton';
 import { MdCancel } from 'react-icons/md';
 
 import Button from '@/components/button/button';
 
 import DomainBatchActionHeaderInfo from '../domain-batch-actions-header-info/domain-batch-actions-header-info';
+import DomainBatchActionsProgressBar from '../domain-batch-actions-progress-bar/domain-batch-actions-progress-bar';
 
-import {
-  overrides,
-  getProgressBarOverrides,
-  styled,
-} from './domain-batch-actions-detail.styles';
+import { overrides, styled } from './domain-batch-actions-detail.styles';
 import { type Props } from './domain-batch-actions-detail.types';
 
 export default function DomainBatchActionDetail({
   batchAction,
   loading = false,
 }: Props) {
-  const progress = batchAction?.progress;
   const status = batchAction?.status;
-  const completed = progress ? progress.successCount + progress.errorCount : 0;
-  const total = progress?.totalEstimate ?? 0;
-  const hasProgress = total > 0;
-  // Determinate bar once counts exist (running, completed, or failed with a last
-  // known heartbeat); an indeterminate bar while a running batch has not reported
-  // progress yet. Nothing otherwise.
-  const showProgressBar =
-    status === 'RUNNING' ||
-    ((status === 'COMPLETED' || status === 'FAILED') && hasProgress);
 
   return (
     <styled.Container>
@@ -58,29 +44,12 @@ export default function DomainBatchActionDetail({
         />
       </div>
       <styled.ProgressSection>
-        {showProgressBar &&
-          status &&
-          (hasProgress ? (
-            <ProgressBar
-              value={completed}
-              maxValue={total}
-              showLabel
-              size="large"
-              getProgressLabel={() =>
-                status === 'FAILED'
-                  ? `Stopped at ${completed} out of ${total} workflows`
-                  : `${completed} out of ${total} workflows completed`
-              }
-              overrides={getProgressBarOverrides(status)}
-            />
-          ) : (
-            <ProgressBar
-              infinite
-              showLabel
-              getProgressLabel={() => 'Calculating progress…'}
-              overrides={getProgressBarOverrides(status)}
-            />
-          ))}
+        {status && (
+          <DomainBatchActionsProgressBar
+            status={status}
+            progress={batchAction?.progress}
+          />
+        )}
       </styled.ProgressSection>
     </styled.Container>
   );
