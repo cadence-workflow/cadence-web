@@ -41,6 +41,7 @@ describe(useStartBatchAction.name, () => {
       ],
       workerSDKLanguage: 'GO',
       executionStartToCloseTimeoutSeconds: 20 * 365 * 24 * 60 * 60,
+      searchAttributes: { CustomDomain: 'cadence-samples' },
     });
     expect(result.current.data).toEqual({
       workflowId: 'wf-1',
