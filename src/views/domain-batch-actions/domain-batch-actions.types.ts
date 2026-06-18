@@ -7,7 +7,10 @@ import {
 } from 'react-hook-form';
 import { type z } from 'zod';
 
-import { type BatchActionType } from '@/route-handlers/describe-batch-action/describe-batch-action.types';
+import {
+  type BatchActionProgress,
+  type BatchActionType,
+} from '@/route-handlers/describe-batch-action/describe-batch-action.types';
 import { type BatchActionStatus } from '@/route-handlers/list-batch-actions/list-batch-actions.types';
 
 export type BatchActionFormProps<FormData extends FieldValues> = {
@@ -59,7 +62,11 @@ export type BatchActionModalConfig<
 export type BatchAction = {
   id: string;
   status: BatchActionStatus;
-  progress?: number; // 0-100, only relevant when status is 'RUNNING'
+  // Present while RUNNING (live activity heartbeat) and when COMPLETED (final
+  // workflow result). Absent for aborted/failed actions or before counts exist.
+  progress?: BatchActionProgress;
+  // Set when progress could not be loaded; the UI shows a non-fatal banner.
+  progressError?: boolean;
   actionType?: BatchActionType; // absent if BatchType is missing from the batcher input
   startTime?: number;
   endTime?: number;

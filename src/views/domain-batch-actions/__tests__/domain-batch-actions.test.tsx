@@ -308,6 +308,22 @@ describe(DomainBatchActions.name, () => {
       jest.useRealTimers();
     }
   });
+
+  it('shows a progress-error banner (keeping the detail) when the response flags progressError', async () => {
+    setup({
+      detailResolver: () =>
+        HttpResponse.json({
+          id: '5',
+          status: 'COMPLETED',
+          progressError: true,
+        }),
+    });
+
+    expect(
+      await screen.findByText(/Could not load batch action progress/i)
+    ).toBeInTheDocument();
+    expect(screen.getByText('mock-batch-action-detail-5')).toBeInTheDocument();
+  });
 });
 
 function setup({
