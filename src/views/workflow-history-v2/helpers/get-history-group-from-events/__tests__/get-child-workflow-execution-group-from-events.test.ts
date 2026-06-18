@@ -277,6 +277,20 @@ describe('getChildWorkflowExecutionGroupFromEvents', () => {
     });
   });
 
+  it('should include negativeFields with cause for initiation failed child workflow event', () => {
+    const events: ChildWorkflowExecutionHistoryEvent[] = [
+      initiateChildWorkflowEvent,
+      initiateFailureChildWorkflowEvent,
+    ];
+    const group = getChildWorkflowExecutionGroupFromEvents(events);
+
+    // The initiation failed event should have negativeFields with cause
+    const initiationFailedEventMetadata = group.eventsMetadata.find(
+      (metadata) => metadata.label === 'Initiation failed'
+    );
+    expect(initiationFailedEventMetadata?.negativeFields).toEqual(['cause']);
+  });
+
   it('should include summaryFields for child workflow events', () => {
     const events: ChildWorkflowExecutionHistoryEvent[] = [
       initiateChildWorkflowEvent,
@@ -315,5 +329,19 @@ describe('getChildWorkflowExecutionGroupFromEvents', () => {
       (metadata) => metadata.status === 'FAILED'
     );
     expect(failedEventMetadata?.summaryFields).toEqual(['reason', 'details']);
+  });
+
+  it('should include summaryFields with cause for initiation failed child workflow event', () => {
+    const events: ChildWorkflowExecutionHistoryEvent[] = [
+      initiateChildWorkflowEvent,
+      initiateFailureChildWorkflowEvent,
+    ];
+    const group = getChildWorkflowExecutionGroupFromEvents(events);
+
+    // The initiation failed event should have summaryFields with cause
+    const initiationFailedEventMetadata = group.eventsMetadata.find(
+      (metadata) => metadata.label === 'Initiation failed'
+    );
+    expect(initiationFailedEventMetadata?.summaryFields).toEqual(['cause']);
   });
 });
