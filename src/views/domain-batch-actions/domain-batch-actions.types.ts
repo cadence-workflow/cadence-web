@@ -60,7 +60,7 @@ export type BatchActionModalConfig<
   );
 
 export type BatchAction = {
-  id: string;
+  runId: string;
   status: BatchActionStatus;
   // Present while RUNNING (live activity heartbeat) and when COMPLETED (final
   // workflow result). Absent for aborted/failed actions or before counts exist.

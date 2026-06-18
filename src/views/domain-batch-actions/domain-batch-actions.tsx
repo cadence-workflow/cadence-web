@@ -67,11 +67,15 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
     [data]
   );
 
-  // Default to the first action in the list unless a real (non-draft) action is selected
-  const firstBatchActionId = batchActions[0]?.id ?? null;
+  // Default to the first action in the list unless a real (non-draft) action is selected.
+  // selectedActionId is a runId (the URL identity); the matching list item also
+  // carries the workflowId that the describe endpoint requires.
+  const firstBatchActionId = batchActions[0]?.runId ?? null;
   const selectedActionId = isDraftSelected
     ? firstBatchActionId
     : queryParams.batchActionId || firstBatchActionId;
+  const selectedAction =
+    batchActions.find((action) => action.runId === selectedActionId) ?? null;
 
   const {
     data: batchActionDetail,
@@ -81,8 +85,9 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
   } = useDescribeBatchAction({
     domain: props.domain,
     cluster: props.cluster,
-    batchActionId: selectedActionId ?? '',
-    enabled: !isDraftSelected && !!selectedActionId,
+    workflowId: selectedAction?.workflowId ?? '',
+    runId: selectedAction?.runId ?? '',
+    enabled: !isDraftSelected && !!selectedAction,
     refetchInterval: (query) =>
       query.state.data?.status === 'RUNNING'
         ? BATCH_ACTION_DETAIL_REFETCH_INTERVAL

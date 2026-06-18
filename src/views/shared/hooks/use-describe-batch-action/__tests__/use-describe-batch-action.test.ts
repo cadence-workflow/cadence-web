@@ -7,39 +7,40 @@ import { type BatchAction } from '@/views/domain-batch-actions/domain-batch-acti
 import useDescribeBatchAction from '../use-describe-batch-action';
 
 const mockResponse: BatchAction = {
-  id: 'batch-1',
+  runId: 'batch-1',
   status: 'COMPLETED',
   startTime: 1717408148258,
   endTime: 1717409148258,
 };
 
 describe(useDescribeBatchAction.name, () => {
-  it('fetches a batch action from the describe endpoint using the batchActionId from params', async () => {
+  it('fetches a batch action addressing the execution by the compound workflowId/runId path', async () => {
     const { result, getLatestRequest } = setup();
 
     await waitFor(() => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(getLatestRequest().url).toBe(
-      '/api/domains/cadence-samples/cluster0/batch-actions/batch-1'
+    expect(getLatestRequest().pathname).toBe(
+      '/api/domains/cadence-samples/cluster0/batch-actions/wf-1/runs/batch-1'
     );
     expect(result.current.data).toEqual(mockResponse);
   });
 
-  it('encodes domain, cluster, and batchActionId in the URL', async () => {
+  it('encodes domain, cluster, workflowId, and runId in the URL', async () => {
     const { result, getLatestRequest } = setup({
       domain: 'evil/domain',
       cluster: 'cluster 0',
-      batchActionId: 'id with/slash',
+      workflowId: 'wf with/slash',
+      runId: 'run with/slash',
     });
 
     await waitFor(() => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(getLatestRequest().url).toBe(
-      '/api/domains/evil%2Fdomain/cluster%200/batch-actions/id%20with%2Fslash'
+    expect(getLatestRequest().pathname).toBe(
+      '/api/domains/evil%2Fdomain/cluster%200/batch-actions/wf%20with%2Fslash/runs/run%20with%2Fslash'
     );
   });
 
@@ -57,30 +58,33 @@ function setup({
   error = false,
   domain = 'cadence-samples',
   cluster = 'cluster0',
-  batchActionId = 'batch-1',
+  workflowId = 'wf-1',
+  runId = 'batch-1',
 }: {
   error?: boolean;
   domain?: string;
   cluster?: string;
-  batchActionId?: string;
+  workflowId?: string;
+  runId?: string;
 } = {}) {
-  let latestRequest: { url: string } = { url: '' };
+  let latestRequest: { pathname: string } = { pathname: '' };
 
   const utils = renderHook(
     () =>
       useDescribeBatchAction({
         domain,
         cluster,
-        batchActionId,
+        workflowId,
+        runId,
       }),
     {
       endpointsMocks: [
         {
-          path: '/api/domains/:domain/:cluster/batch-actions/:batchActionId',
+          path: '/api/domains/:domain/:cluster/batch-actions/:workflowId/runs/:runId',
           httpMethod: 'GET',
           mockOnce: false,
           httpResolver: async ({ request }) => {
-            latestRequest = { url: new URL(request.url).pathname };
+            latestRequest = { pathname: new URL(request.url).pathname };
 
             if (error) {
               return HttpResponse.json(

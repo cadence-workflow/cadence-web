@@ -8,8 +8,8 @@ import useListBatchActions from '../use-list-batch-actions';
 
 const mockResponse: ListBatchActionsResponse = {
   batchActions: [
-    { id: 'batch-1', status: 'RUNNING' },
-    { id: 'batch-2', status: 'COMPLETED' },
+    { workflowId: 'wf-1', runId: 'batch-1', status: 'RUNNING' },
+    { workflowId: 'wf-2', runId: 'batch-2', status: 'COMPLETED' },
   ],
   nextPageToken: '',
 };

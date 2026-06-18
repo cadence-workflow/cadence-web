@@ -25,8 +25,8 @@ export async function describeBatchAction(
   const params = requestParams.params;
 
   const workflowExecution = {
-    workflowId: params.batchActionId,
-    runId: '',
+    workflowId: params.workflowId,
+    runId: params.runId,
   };
 
   try {

@@ -7,12 +7,12 @@ export default function getBatchActionDetailFromWorkflow(
   response: DescribeWorkflowExecutionResponse
 ): BatchAction | undefined {
   const info = response.workflowExecutionInfo;
-  if (!info?.workflowExecution?.workflowId) {
+  if (!info?.workflowExecution?.runId) {
     return undefined;
   }
 
   return {
-    id: info.workflowExecution.workflowId,
+    runId: info.workflowExecution.runId,
     status: BATCH_ACTION_STATUS_BY_CLOSE_STATUS[info.closeStatus],
     startTime: info.startTime ? parseGrpcTimestamp(info.startTime) : undefined,
     endTime: info.closeTime ? parseGrpcTimestamp(info.closeTime) : undefined,

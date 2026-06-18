@@ -40,21 +40,21 @@ describe(describeBatchAction.name, () => {
       domain: 'cadence-batcher',
       workflowExecution: {
         workflowId: 'mock-batch-action-id-1',
-        runId: '',
+        runId: 'mock-batch-action-run-id-1',
       },
     });
     expect(mockGetHistory).toHaveBeenCalledWith({
       domain: 'cadence-batcher',
       workflowExecution: {
         workflowId: 'mock-batch-action-id-1',
-        runId: '',
+        runId: 'mock-batch-action-run-id-1',
       },
       pageSize: 1,
     });
 
     expect(res.status).toEqual(200);
     expect(await res.json()).toEqual({
-      id: 'mock-batch-action-id-1',
+      runId: 'mock-batch-action-run-id-1',
       status: 'COMPLETED',
       startTime: 1717408148258,
       endTime: 1717409148258,
@@ -100,7 +100,8 @@ describe(describeBatchAction.name, () => {
         requestParams: {
           domain: 'mock-domain',
           cluster: 'mock-cluster',
-          batchActionId: 'mock-batch-action-id-1',
+          workflowId: 'mock-batch-action-id-1',
+          runId: 'mock-batch-action-run-id-1',
         },
         error: expect.any(Error),
       }),
@@ -116,7 +117,10 @@ describe(describeBatchAction.name, () => {
 
     expect(mockGetHistory).toHaveBeenCalledWith({
       domain: 'cadence-batcher',
-      workflowExecution: { workflowId: 'mock-batch-action-id-1', runId: '' },
+      workflowExecution: {
+        workflowId: 'mock-batch-action-id-1',
+        runId: 'mock-batch-action-run-id-1',
+      },
       historyEventFilterType: 'EVENT_FILTER_TYPE_CLOSE_EVENT',
     });
 
@@ -257,7 +261,8 @@ describe(describeBatchAction.name, () => {
         requestParams: {
           domain: 'mock-domain',
           cluster: 'mock-cluster',
-          batchActionId: 'mock-batch-action-id-1',
+          workflowId: 'mock-batch-action-id-1',
+          runId: 'mock-batch-action-run-id-1',
         },
         error: expect.any(Error),
       }),
@@ -296,7 +301,8 @@ describe(describeBatchAction.name, () => {
         requestParams: {
           domain: 'mock-domain',
           cluster: 'mock-cluster',
-          batchActionId: 'mock-batch-action-id-1',
+          workflowId: 'mock-batch-action-id-1',
+          runId: 'mock-batch-action-run-id-1',
         },
         error: expect.any(GRPCError),
       }),
@@ -319,7 +325,8 @@ describe(describeBatchAction.name, () => {
         requestParams: {
           domain: 'mock-domain',
           cluster: 'mock-cluster',
-          batchActionId: 'mock-batch-action-id-1',
+          workflowId: 'mock-batch-action-id-1',
+          runId: 'mock-batch-action-run-id-1',
         },
         error: expect.any(Error),
       }),
@@ -335,7 +342,8 @@ async function setup({
   describeError,
   historyError,
   closeEventError,
-  batchActionId = 'mock-batch-action-id-1',
+  workflowId = 'mock-batch-action-id-1',
+  runId = 'mock-batch-action-run-id-1',
 }: {
   describeResponse?: DescribeWorkflowExecutionResponse;
   historyResponse?: GetWorkflowExecutionHistoryResponse;
@@ -343,7 +351,8 @@ async function setup({
   describeError?: Error;
   historyError?: Error;
   closeEventError?: Error;
-  batchActionId?: string;
+  workflowId?: string;
+  runId?: string;
 }) {
   const mockDescribeWorkflow = jest
     .spyOn(mockGrpcClusterMethods, 'describeWorkflow')
@@ -373,7 +382,8 @@ async function setup({
       params: {
         domain: 'mock-domain',
         cluster: 'mock-cluster',
-        batchActionId,
+        workflowId,
+        runId,
       },
     } as RequestParams,
     {

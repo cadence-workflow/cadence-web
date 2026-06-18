@@ -40,7 +40,7 @@ jest.mock('../domain-batch-actions-detail/domain-batch-actions-detail', () => ({
   default: ({ batchAction, loading }: DetailProps) => (
     <div>
       {loading && <span>mock-batch-action-detail-loading</span>}
-      mock-batch-action-detail-{batchAction?.id}
+      mock-batch-action-detail-{batchAction?.runId}
     </div>
   ),
 }));
@@ -75,8 +75,8 @@ jest.mock(
         <button onClick={onSelectDraft}>mock-select-draft</button>
         <button onClick={fetchNextPage}>mock-fetch-next-page</button>
         {batchActions.map((a) => (
-          <button key={a.id} onClick={() => onSelectAction(a.id)}>
-            mock-select-{a.id}
+          <button key={a.runId} onClick={() => onSelectAction(a.runId)}>
+            mock-select-{a.runId}
           </button>
         ))}
       </div>
@@ -86,8 +86,8 @@ jest.mock(
 
 const mockBatchActionsResponse: ListBatchActionsResponse = {
   batchActions: [
-    { id: '5', status: 'RUNNING' },
-    { id: '4', status: 'COMPLETED' },
+    { workflowId: 'wf-5', runId: '5', status: 'RUNNING' },
+    { workflowId: 'wf-4', runId: '4', status: 'COMPLETED' },
   ],
   nextPageToken: '',
 };
@@ -212,15 +212,15 @@ describe(DomainBatchActions.name, () => {
       pages: [
         {
           batchActions: [
-            { id: '5', status: 'RUNNING' },
-            { id: '4', status: 'COMPLETED' },
+            { workflowId: 'wf-5', runId: '5', status: 'RUNNING' },
+            { workflowId: 'wf-4', runId: '4', status: 'COMPLETED' },
           ],
           nextPageToken: 'page-2',
         },
         {
           batchActions: [
-            { id: '3', status: 'COMPLETED' },
-            { id: '2', status: 'COMPLETED' },
+            { workflowId: 'wf-3', runId: '3', status: 'COMPLETED' },
+            { workflowId: 'wf-2', runId: '2', status: 'COMPLETED' },
           ],
           nextPageToken: '',
         },
@@ -259,7 +259,10 @@ describe(DomainBatchActions.name, () => {
               { message: 'Failed to fetch describe' },
               { status: 500 }
             )
-          : HttpResponse.json({ id: '5', status: 'COMPLETED' });
+          : HttpResponse.json({
+              runId: '5',
+              status: 'COMPLETED',
+            });
       },
     });
 
@@ -280,7 +283,10 @@ describe(DomainBatchActions.name, () => {
           // First load succeeds with a RUNNING action so the hook starts
           // polling; the next poll fails while data is already on screen.
           return detailCalls === 1
-            ? HttpResponse.json({ id: '5', status: 'RUNNING' })
+            ? HttpResponse.json({
+                runId: '5',
+                status: 'RUNNING',
+              })
             : HttpResponse.json(
                 { message: 'Failed to fetch describe' },
                 { status: 500 }
@@ -313,7 +319,7 @@ describe(DomainBatchActions.name, () => {
     setup({
       detailResolver: () =>
         HttpResponse.json({
-          id: '5',
+          runId: '5',
           status: 'COMPLETED',
           progressError: true,
         }),
@@ -353,7 +359,7 @@ function setup({
           },
         },
         {
-          path: '/api/domains/:domain/:cluster/batch-actions/:batchActionId',
+          path: '/api/domains/:domain/:cluster/batch-actions/:workflowId/runs/:runId',
           httpMethod: 'GET',
           mockOnce: false,
           httpResolver: async ({ params }) => {
@@ -367,7 +373,7 @@ function setup({
               );
             }
             const detail: BatchAction = {
-              id: params.batchActionId as string,
+              runId: params.runId as string,
               status: 'COMPLETED',
             };
             return HttpResponse.json(detail);

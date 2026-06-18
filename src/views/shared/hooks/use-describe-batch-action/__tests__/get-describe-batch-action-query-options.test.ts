@@ -3,7 +3,8 @@ import getDescribeBatchActionQueryOptions from '../get-describe-batch-action-que
 const PARAMS = {
   domain: 'mock-domain',
   cluster: 'mock-cluster',
-  batchActionId: 'batch-1',
+  workflowId: 'wf-1',
+  runId: 'batch-1',
 };
 
 describe(getDescribeBatchActionQueryOptions.name, () => {

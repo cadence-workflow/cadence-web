@@ -52,16 +52,17 @@ export default function DomainBatchActionsSidebar({
           />
         )}
         {batchActions.map((action) => {
-          const isSelected = !isDraftSelected && selectedActionId === action.id;
+          const isSelected =
+            !isDraftSelected && selectedActionId === action.runId;
           return (
             <DomainBatchActionsSidebarItem
-              key={action.id}
+              key={action.runId}
               // TODO: label should be either start date or provided from search attributes once available.
-              label={action.id}
+              label={action.runId}
               icon={<StatusIcon action={action} />}
               isSelected={isSelected}
               isActive={action.status === 'RUNNING' || isSelected}
-              onSelect={() => onSelectAction(action.id)}
+              onSelect={() => onSelectAction(action.runId)}
             />
           );
         })}

@@ -22,7 +22,7 @@ export default function DomainBatchActionDetail({
     <styled.Container>
       <styled.Header>
         {batchAction ? (
-          <styled.Title>Batch action #{batchAction.id}</styled.Title>
+          <styled.Title>Batch action #{batchAction.runId}</styled.Title>
         ) : (
           <Skeleton overrides={overrides.titleSkeleton} animation={true} />
         )}
