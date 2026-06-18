@@ -7,7 +7,10 @@ import {
 } from 'react-hook-form';
 import { type z } from 'zod';
 
-import { type BatchActionType } from '@/route-handlers/describe-batch-action/describe-batch-action.types';
+import {
+  type BatchActionProgress,
+  type BatchActionType,
+} from '@/route-handlers/describe-batch-action/describe-batch-action.types';
 import { type BatchActionStatus } from '@/route-handlers/list-batch-actions/list-batch-actions.types';
 
 export type BatchActionFormProps<FormData extends FieldValues> = {
@@ -55,14 +58,6 @@ export type BatchActionModalConfig<
     | BatchActionModalFormVariant<FormData, SubmissionData>
     | BatchActionModalNoFormVariant
   );
-
-// Mirrors the batcher's HeartBeatDetails progress counts. `completed` is
-// `successCount + errorCount` and `totalEstimate` is the estimated workflow count.
-export type BatchActionProgress = {
-  totalEstimate: number;
-  successCount: number;
-  errorCount: number;
-};
 
 export type BatchAction = {
   id: string;

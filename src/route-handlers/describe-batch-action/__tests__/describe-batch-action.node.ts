@@ -146,6 +146,34 @@ describe(describeBatchAction.name, () => {
     );
   });
 
+  it('returns 200 and flags progressError when the close-event result is malformed', async () => {
+    const { res } = await setup({
+      describeResponse: mockDescribeBatchOperationWorkflowCompleted,
+      closeEventResponse: {
+        ...EMPTY_HISTORY,
+        history: {
+          events: [
+            {
+              workflowExecutionCompletedEventAttributes: {
+                result: { data: Buffer.from('not json').toString('base64') },
+              },
+            },
+          ],
+        },
+      } as GetWorkflowExecutionHistoryResponse,
+    });
+
+    expect(res.status).toEqual(200);
+    const body = await res.json();
+    expect(body.status).toEqual('COMPLETED');
+    expect(body.progress).toBeUndefined();
+    expect(body.progressError).toBe(true);
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.objectContaining({ error: expect.anything() }),
+      'Batch action heartbeat did not match the expected shape'
+    );
+  });
+
   it('populates progress from the pending activity heartbeat for a failed batch that timed out at the workflow level', async () => {
     const { res, mockGetHistory } = await setup({
       describeResponse:
@@ -183,6 +211,33 @@ describe(describeBatchAction.name, () => {
     expect(mockGetHistory).toHaveBeenCalledTimes(1);
     expect(mockGetHistory).toHaveBeenCalledWith(
       expect.objectContaining({ pageSize: 1 })
+    );
+  });
+
+  it('flags progressError and logs a warning for a failed batch whose pending heartbeat is malformed', async () => {
+    const { res } = await setup({
+      describeResponse: {
+        ...mockDescribeBatchOperationWorkflowFailedWithPendingProgress,
+        pendingActivities:
+          mockDescribeBatchOperationWorkflowFailedWithPendingProgress.pendingActivities.map(
+            (activity) => ({
+              ...activity,
+              heartbeatDetails: {
+                data: Buffer.from('not json').toString('base64'),
+              },
+            })
+          ),
+      },
+    });
+
+    expect(res.status).toEqual(200);
+    const body = await res.json();
+    expect(body.status).toEqual('FAILED');
+    expect(body.progress).toBeUndefined();
+    expect(body.progressError).toBe(true);
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.objectContaining({ error: expect.anything() }),
+      'Batch action heartbeat did not match the expected shape'
     );
   });
 

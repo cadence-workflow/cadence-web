@@ -5,6 +5,7 @@ import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
 import {
+  type BatchActionProgressResult,
   type Context,
   type DescribeBatchActionResponse,
   type RequestParams,
@@ -49,16 +50,13 @@ export async function describeBatchAction(
       );
     }
 
-    const response = {
-      ...detail,
-      ...getBatchActionInputFromHistory(historyResponse),
-    } satisfies DescribeBatchActionResponse;
+    let progressResult: BatchActionProgressResult = {};
 
     if (detail.status === 'RUNNING' || detail.status === 'FAILED') {
       // RUNNING: live activity heartbeat. FAILED: only a workflow-level timeout
       // keeps the activity (and its last heartbeat) on the describe response;
       // a missing heartbeat just means no progress.
-      response.progress = getRunningProgressFromDescribe(describeResponse);
+      progressResult = getRunningProgressFromDescribe(describeResponse);
     } else if (detail.status === 'COMPLETED') {
       // Final counts live in the close event; reading them is best-effort.
       try {
@@ -67,17 +65,23 @@ export async function describeBatchAction(
           workflowExecution,
           historyEventFilterType: 'EVENT_FILTER_TYPE_CLOSE_EVENT',
         });
-        response.progress = getFinalProgressFromCloseEvent(
+        progressResult = getFinalProgressFromCloseEvent(
           closeEventResponse.history?.events?.[0]
         );
       } catch (e) {
-        response.progressError = true;
+        progressResult = { progressError: true };
         logger.error<RouteHandlerErrorPayload>(
           { requestParams: params, error: e },
           'Failed to read batch action progress from close event'
         );
       }
     }
+
+    const response = {
+      ...detail,
+      ...getBatchActionInputFromHistory(historyResponse),
+      ...progressResult,
+    } satisfies DescribeBatchActionResponse;
 
     return NextResponse.json(response);
   } catch (e) {

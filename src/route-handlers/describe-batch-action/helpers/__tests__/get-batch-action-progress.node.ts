@@ -1,4 +1,5 @@
 import { type DescribeWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeWorkflowExecutionResponse';
+import logger from '@/utils/logger';
 
 import {
   MOCK_BATCH_PROGRESS,
@@ -12,7 +13,9 @@ import {
   getRunningProgressFromDescribe,
 } from '../get-batch-action-progress';
 
-const EXPECTED = {
+jest.mock('@/utils/logger');
+
+const EXPECTED_PROGRESS = {
   totalEstimate: MOCK_BATCH_PROGRESS.TotalEstimate,
   successCount: MOCK_BATCH_PROGRESS.SuccessCount,
   errorCount: MOCK_BATCH_PROGRESS.ErrorCount,
@@ -34,32 +37,40 @@ const describeWithHeartbeat = (
 });
 
 describe('getRunningProgressFromDescribe', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('decodes progress from the pending activity heartbeat', () => {
     expect(
       getRunningProgressFromDescribe(
         mockDescribeBatchOperationWorkflowRunningWithProgress
       )
-    ).toEqual(EXPECTED);
+    ).toEqual({ progress: EXPECTED_PROGRESS });
+    expect(logger.warn).not.toHaveBeenCalled();
   });
 
-  it('returns undefined when there are no pending activities', () => {
+  it('returns an empty result when there are no pending activities', () => {
     expect(
       getRunningProgressFromDescribe(mockDescribeBatchOperationWorkflowRunning)
-    ).toBeUndefined();
+    ).toEqual({});
+    expect(logger.warn).not.toHaveBeenCalled();
   });
 
-  it('returns undefined when heartbeatDetails is null', () => {
-    expect(
-      getRunningProgressFromDescribe(describeWithHeartbeat(null))
-    ).toBeUndefined();
+  it('returns an empty result when heartbeatDetails is null', () => {
+    expect(getRunningProgressFromDescribe(describeWithHeartbeat(null))).toEqual(
+      {}
+    );
+    expect(logger.warn).not.toHaveBeenCalled();
   });
 
-  it('returns undefined when the heartbeat lacks TotalEstimate', () => {
+  it('flags progressError and logs when the heartbeat lacks TotalEstimate', () => {
     expect(
       getRunningProgressFromDescribe(
         describeWithHeartbeat(encode({ SuccessCount: 1, ErrorCount: 2 }))
       )
-    ).toBeUndefined();
+    ).toEqual({ progressError: true });
+    expect(logger.warn).toHaveBeenCalledTimes(1);
   });
 
   it('defaults missing counts to 0', () => {
@@ -67,36 +78,60 @@ describe('getRunningProgressFromDescribe', () => {
       getRunningProgressFromDescribe(
         describeWithHeartbeat(encode({ TotalEstimate: 10 }))
       )
-    ).toEqual({ totalEstimate: 10, successCount: 0, errorCount: 0 });
+    ).toEqual({
+      progress: { totalEstimate: 10, successCount: 0, errorCount: 0 },
+    });
+    expect(logger.warn).not.toHaveBeenCalled();
   });
 
-  it('returns undefined when the heartbeat payload is not JSON', () => {
+  it('flags progressError and logs when the heartbeat payload is not JSON', () => {
     expect(
       getRunningProgressFromDescribe(
         describeWithHeartbeat(Buffer.from('not json').toString('base64'))
       )
-    ).toBeUndefined();
+    ).toEqual({ progressError: true });
+    expect(logger.warn).toHaveBeenCalledTimes(1);
   });
 });
 
 describe('getFinalProgressFromCloseEvent', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('decodes progress from the completed event result', () => {
     expect(
       getFinalProgressFromCloseEvent(
         mockBatcherCloseEventHistory.history?.events?.[0]
       )
-    ).toEqual(EXPECTED);
+    ).toEqual({ progress: EXPECTED_PROGRESS });
+    expect(logger.warn).not.toHaveBeenCalled();
   });
 
-  it('returns undefined when the event is missing', () => {
-    expect(getFinalProgressFromCloseEvent(undefined)).toBeUndefined();
+  it('returns an empty result when the event is missing', () => {
+    expect(getFinalProgressFromCloseEvent(undefined)).toEqual({});
+    expect(logger.warn).not.toHaveBeenCalled();
   });
 
-  it('returns undefined when the event is not a completed event', () => {
+  it('returns an empty result when the event is not a completed event', () => {
     expect(
       getFinalProgressFromCloseEvent(
         mockBatcherStartedHistory.history?.events?.[0]
       )
-    ).toBeUndefined();
+    ).toEqual({});
+    expect(logger.warn).not.toHaveBeenCalled();
+  });
+
+  it('flags progressError and logs when the completed event result is malformed', () => {
+    const event = {
+      workflowExecutionCompletedEventAttributes: {
+        result: { data: Buffer.from('not json').toString('base64') },
+      },
+    } as NonNullable<Parameters<typeof getFinalProgressFromCloseEvent>[0]>;
+
+    expect(getFinalProgressFromCloseEvent(event)).toEqual({
+      progressError: true,
+    });
+    expect(logger.warn).toHaveBeenCalledTimes(1);
   });
 });

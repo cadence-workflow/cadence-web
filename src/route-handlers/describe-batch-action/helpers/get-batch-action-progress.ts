@@ -1,50 +1,54 @@
-import { z } from 'zod';
-
 import { type DescribeWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeWorkflowExecutionResponse';
 import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
 import { type Payload } from '@/__generated__/proto-ts/uber/cadence/api/v1/Payload';
 import formatPayload from '@/utils/data-formatters/format-payload';
-import { type BatchActionProgress } from '@/views/domain-batch-actions/domain-batch-actions.types';
+import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
-// The batcher records progress in a HeartBeatDetails struct
-const heartBeatDetailsSchema = z
-  .object({
-    TotalEstimate: z.number(),
-    SuccessCount: z.number().catch(0),
-    ErrorCount: z.number().catch(0),
-  })
-  .transform(({ TotalEstimate, SuccessCount, ErrorCount }) => ({
-    totalEstimate: TotalEstimate,
-    successCount: SuccessCount,
-    errorCount: ErrorCount,
-  }));
+import { type BatchActionProgressResult } from '../describe-batch-action.types';
+import heartbeatDetailsSchema from '../schemas/heartbeat-details-schema';
 
 function parseHeartBeatDetails(
   payload: Payload | null | undefined
-): BatchActionProgress | undefined {
-  if (!payload?.data) return undefined;
-  const result = heartBeatDetailsSchema.safeParse(formatPayload(payload));
-  return result.success ? result.data : undefined;
+): BatchActionProgressResult {
+  // No payload means no progress has been reported yet — not an error.
+  if (!payload?.data) return {};
+
+  const result = heartbeatDetailsSchema.safeParse(formatPayload(payload));
+  if (!result.success) {
+    // A payload is present but does not match the expected shape. Surface it
+    // rather than silently dropping it, so wrong assumptions about the heartbeat
+    // structure don't hide behind perpetually-missing progress.
+    logger.warn<RouteHandlerErrorPayload>(
+      { error: result.error },
+      'Batch action heartbeat did not match the expected shape'
+    );
+    return { progressError: true };
+  }
+
+  return { progress: result.data };
 }
 
 // While the batch is running, progress is surfaced on the batcher activity's
 // heartbeatDetails. Returns the first pending activity that carries a decodable
-// HeartBeatDetails payload, or undefined when none is available yet.
+// HeartBeatDetails payload; otherwise flags progressError if any payload was
+// present but malformed, or an empty result when none is available yet.
 export function getRunningProgressFromDescribe(
   response: DescribeWorkflowExecutionResponse
-): BatchActionProgress | undefined {
+): BatchActionProgressResult {
+  let progressError = false;
   for (const activity of response.pendingActivities ?? []) {
-    const progress = parseHeartBeatDetails(activity.heartbeatDetails);
-    if (progress) return progress;
+    const result = parseHeartBeatDetails(activity.heartbeatDetails);
+    if (result.progress) return result;
+    if (result.progressError) progressError = true;
   }
-  return undefined;
+  return progressError ? { progressError: true } : {};
 }
 
 // On completion the workflow returns its final HeartBeatDetails as the result
 // carried by the WorkflowExecutionCompletedEvent.
 export function getFinalProgressFromCloseEvent(
   event: HistoryEvent | undefined
-): BatchActionProgress | undefined {
+): BatchActionProgressResult {
   return parseHeartBeatDetails(
     event?.workflowExecutionCompletedEventAttributes?.result
   );

@@ -48,6 +48,7 @@ export default function DomainBatchActionDetail({
           <DomainBatchActionsProgressBar
             status={status}
             progress={batchAction?.progress}
+            actionType={batchAction?.actionType}
           />
         )}
       </styled.ProgressSection>
