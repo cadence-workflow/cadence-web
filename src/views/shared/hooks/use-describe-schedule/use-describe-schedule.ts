@@ -1,11 +1,20 @@
 'use client';
 import { useQuery } from '@tanstack/react-query';
 
-import getDescribeScheduleQueryOptions from './get-describe-schedule-query-options';
-import { type UseDescribeScheduleParams } from './use-describe-schedule.types';
+import { type RequestError } from '@/utils/request/request-error';
 
-export default function useDescribeSchedule(
-  params: UseDescribeScheduleParams
-) {
-  return useQuery(getDescribeScheduleQueryOptions(params));
+import getDescribeScheduleQueryOptions from './get-describe-schedule-query-options';
+import {
+  type DescribeScheduleResponse,
+  type DescribeScheduleQueryKey,
+  type UseDescribeScheduleParams,
+} from './use-describe-schedule.types';
+
+export default function useDescribeSchedule(params: UseDescribeScheduleParams) {
+  return useQuery<
+    DescribeScheduleResponse,
+    RequestError,
+    DescribeScheduleResponse,
+    DescribeScheduleQueryKey
+  >(getDescribeScheduleQueryOptions(params));
 }

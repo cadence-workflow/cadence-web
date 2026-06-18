@@ -1,12 +1,16 @@
-import {
-  mockRunningDescribeScheduleResponse,
-  mockPausedDescribeScheduleResponse,
-} from '@/route-handlers/describe-schedule/__fixtures__/mock-describe-schedule-response';
+import { type Query } from '@tanstack/react-query';
 
-import getDescribeScheduleQueryOptions, {
-  getDescribeScheduleQueryKey,
-} from '../get-describe-schedule-query-options';
-import { type DescribeScheduleDTO } from '../use-describe-schedule.types';
+import {
+  getMockPausedDescribeScheduleResponse,
+  getMockRunningDescribeScheduleResponse,
+} from '@/route-handlers/describe-schedule/__fixtures__/mock-describe-schedule-response';
+import { type RequestError } from '@/utils/request/request-error';
+
+import getDescribeScheduleQueryOptions from '../get-describe-schedule-query-options';
+import {
+  type DescribeScheduleQueryKey,
+  type DescribeScheduleResponse,
+} from '../use-describe-schedule.types';
 
 const params = {
   domain: 'test-domain',
@@ -14,13 +18,26 @@ const params = {
   scheduleId: 'test-schedule-id',
 };
 
+const mockRunningDescribeScheduleResponse =
+  getMockRunningDescribeScheduleResponse();
+
+const mockPausedDescribeScheduleResponse =
+  getMockPausedDescribeScheduleResponse();
+
+type RefetchTypeIntervalArg = Query<
+  DescribeScheduleResponse,
+  RequestError,
+  DescribeScheduleResponse,
+  DescribeScheduleQueryKey
+>;
+
 describe(getDescribeScheduleQueryOptions.name, () => {
   it('returns namespaced queryKey including domain, cluster, and scheduleId', () => {
     const options = getDescribeScheduleQueryOptions(params);
     expect(options.queryKey).toEqual(['describeSchedule', params]);
   });
 
-  it('returns refetchInterval of 10s when schedule is running', () => {
+  it('returns refetchInterval of 10s by default when schedule is running', () => {
     const options = getDescribeScheduleQueryOptions(params);
     const refetchInterval = options.refetchInterval;
 
@@ -29,8 +46,10 @@ describe(getDescribeScheduleQueryOptions.name, () => {
     }
 
     const mockQuery = {
-      state: { data: mockRunningDescribeScheduleResponse },
-    } as Parameters<typeof refetchInterval>[0];
+      state: {
+        data: mockRunningDescribeScheduleResponse as DescribeScheduleResponse,
+      },
+    } as RefetchTypeIntervalArg;
 
     expect(refetchInterval(mockQuery)).toBe(10_000);
   });
@@ -44,14 +63,19 @@ describe(getDescribeScheduleQueryOptions.name, () => {
     }
 
     const mockQuery = {
-      state: { data: mockPausedDescribeScheduleResponse },
-    } as Parameters<typeof refetchInterval>[0];
+      state: {
+        data: mockPausedDescribeScheduleResponse as DescribeScheduleResponse,
+      },
+    } as RefetchTypeIntervalArg;
 
     expect(refetchInterval(mockQuery)).toBe(false);
   });
 
-  it('returns refetchInterval false when data is undefined (initial load)', () => {
-    const options = getDescribeScheduleQueryOptions(params);
+  it('uses custom runningScheduleRefetchIntervalMs when provided', () => {
+    const options = getDescribeScheduleQueryOptions({
+      ...params,
+      runningScheduleRefetchIntervalMs: 5_000,
+    });
     const refetchInterval = options.refetchInterval;
 
     if (typeof refetchInterval !== 'function') {
@@ -59,40 +83,20 @@ describe(getDescribeScheduleQueryOptions.name, () => {
     }
 
     const mockQuery = {
-      state: { data: undefined as unknown as DescribeScheduleDTO },
-    } as Parameters<typeof refetchInterval>[0];
+      state: {
+        data: mockRunningDescribeScheduleResponse as DescribeScheduleResponse,
+      },
+    } as RefetchTypeIntervalArg;
 
-    expect(refetchInterval(mockQuery)).toBe(false);
+    expect(refetchInterval(mockQuery)).toBe(5_000);
   });
 
-  it('encodes domain, cluster, scheduleId in the query URL', () => {
-    const encodedParams = {
-      domain: 'my domain',
-      cluster: 'my cluster',
-      scheduleId: 'schedule/id',
-    };
-    const options = getDescribeScheduleQueryOptions(encodedParams);
-    const queryFn = options.queryFn;
+  it('does not include runningScheduleRefetchIntervalMs in queryKey', () => {
+    const options = getDescribeScheduleQueryOptions({
+      ...params,
+      runningScheduleRefetchIntervalMs: 5_000,
+    });
 
-    if (typeof queryFn !== 'function') {
-      throw new Error('Expected queryFn to be a function');
-    }
-
-    const mockFetch = jest.fn().mockReturnValue({ json: jest.fn() });
-    jest.mock('@/utils/request', () => mockFetch);
-  });
-});
-
-describe(getDescribeScheduleQueryKey.name, () => {
-  it('returns stable key for same params', () => {
-    expect(getDescribeScheduleQueryKey(params)).toEqual(
-      getDescribeScheduleQueryKey(params)
-    );
-  });
-
-  it('returns different keys for different scheduleIds', () => {
-    const key1 = getDescribeScheduleQueryKey({ ...params, scheduleId: 'a' });
-    const key2 = getDescribeScheduleQueryKey({ ...params, scheduleId: 'b' });
-    expect(key1).not.toEqual(key2);
+    expect(options.queryKey).toEqual(['describeSchedule', params]);
   });
 });

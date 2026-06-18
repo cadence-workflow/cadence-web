@@ -1,14 +1,25 @@
-import { type DescribeScheduleDTO } from '@/route-handlers/describe-schedule/describe-schedule.types';
+import { type UseQueryOptions } from '@tanstack/react-query';
 
-export type UseDescribeScheduleParams = {
-  domain: string;
-  cluster: string;
-  scheduleId: string;
-};
+import {
+  type DescribeScheduleResponse,
+  type RouteParams as DescribeScheduleRouteParams,
+} from '@/route-handlers/describe-schedule/describe-schedule.types';
+import { type RequestError } from '@/utils/request/request-error';
+
+export { type DescribeScheduleResponse };
 
 export type DescribeScheduleQueryKey = [
   'describeSchedule',
-  UseDescribeScheduleParams,
+  DescribeScheduleRouteParams,
 ];
 
-export type { DescribeScheduleDTO };
+export type UseDescribeScheduleParams = DescribeScheduleRouteParams & {
+  runningScheduleRefetchIntervalMs?: number;
+};
+
+export type UseDescribeScheduleQueryOptions = UseQueryOptions<
+  DescribeScheduleResponse,
+  RequestError,
+  DescribeScheduleResponse,
+  DescribeScheduleQueryKey
+>;
