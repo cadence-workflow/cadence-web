@@ -293,6 +293,104 @@ describe(DomainBatchActionsNewActionDetail.name, () => {
       expect(screen.queryByText('Start Batch Action')).not.toBeInTheDocument();
     });
   });
+
+  describe('Select mode', () => {
+    it('renders the "Select" toggle segment', async () => {
+      setQueryParams({ batchInputType: 'search' });
+      setup({ workflowCount: 2, totalCount: 5 });
+
+      expect(await screen.findByText('Select')).toBeInTheDocument();
+    });
+
+    it('renders checkboxes and a disabled bar when nothing is selected', async () => {
+      setQueryParams({ batchInputType: 'search' });
+      setup({ workflowCount: 2, totalCount: 5 });
+
+      expect(
+        await screen.findByRole('checkbox', { name: 'Select all workflows' })
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByText(/0 of 5 workflows included/i)
+      ).toBeInTheDocument();
+      expect(screen.getByTestId('mock-floating-bar')).toHaveAttribute(
+        'data-disabled',
+        'true'
+      );
+    });
+
+    it('selecting a row updates the count and enables the bar', async () => {
+      setQueryParams({ batchInputType: 'search' });
+      const { user } = setup({ workflowCount: 2, totalCount: 5 });
+
+      await user.click(
+        await screen.findByRole('checkbox', {
+          name: 'Select workflow wf-0 run run-0',
+        })
+      );
+
+      expect(
+        await screen.findByText(/1 of 5 workflows included/i)
+      ).toBeInTheDocument();
+      expect(screen.getByTestId('mock-floating-bar')).toHaveAttribute(
+        'data-disabled',
+        'false'
+      );
+    });
+
+    it('select all selects every workflow and disables row checkboxes', async () => {
+      setQueryParams({ batchInputType: 'search' });
+      const { user } = setup({ workflowCount: 2, totalCount: 5 });
+
+      await user.click(
+        await screen.findByRole('checkbox', { name: 'Select all workflows' })
+      );
+
+      expect(
+        await screen.findByText(/5 of 5 workflows included/i)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('checkbox', { name: 'Select workflow wf-0 run run-0' })
+      ).toBeDisabled();
+    });
+
+    it('submits a query built from the individually selected workflows', async () => {
+      setQueryParams({ batchInputType: 'search' });
+      const { user, startBodies } = setup({ workflowCount: 2, totalCount: 5 });
+
+      await user.click(
+        await screen.findByRole('checkbox', {
+          name: 'Select workflow wf-0 run run-0',
+        })
+      );
+      await user.type(await screen.findByLabelText('Description'), 'cleanup');
+      await user.click(screen.getByText('action-cancel'));
+      await user.click(await screen.findByText('Start Batch Action'));
+
+      await waitFor(() => expect(startBodies).toHaveLength(1));
+      expect(startBodies[0].input[0].Query).toBe('(RunID = "run-0")');
+    });
+
+    it('submits the matching-set query when select all is active', async () => {
+      setQueryParams({
+        batchInputType: 'search',
+        batchSearch: 'foo',
+        batchTimeRangeEnd: undefined,
+      });
+      const { user, startBodies } = setup({ workflowCount: 2, totalCount: 5 });
+
+      await user.click(
+        await screen.findByRole('checkbox', { name: 'Select all workflows' })
+      );
+      await user.type(await screen.findByLabelText('Description'), 'cleanup');
+      await user.click(screen.getByText('action-cancel'));
+      await user.click(await screen.findByText('Start Batch Action'));
+
+      await waitFor(() => expect(startBodies).toHaveLength(1));
+      expect(startBodies[0].input[0].Query).toBe(
+        '(WorkflowType = "foo" OR WorkflowID = "foo" OR RunID = "foo")'
+      );
+    });
+  });
 });
 
 function setQueryParams(overrides: Record<string, unknown>) {
@@ -328,6 +426,9 @@ function setup({
     count: totalCount,
   };
 
+  // Only the generated batch Query is asserted on in select-mode tests.
+  const startBodies: Array<{ input: Array<{ Query: string }> }> = [];
+
   render(
     <DomainBatchActionsNewActionDetail
       domain="test-domain"
@@ -358,11 +459,16 @@ function setup({
           path: '/api/domains/:domain/:cluster/workflows/start',
           httpMethod: 'POST',
           mockOnce: false,
-          httpResolver: async () => HttpResponse.json({}),
+          httpResolver: async ({ request }) => {
+            startBodies.push(
+              (await request.json()) as { input: Array<{ Query: string }> }
+            );
+            return HttpResponse.json({ workflowId: 'b-wf', runId: 'b-run' });
+          },
         },
       ] as MSWMocksHandlersProps['endpointsMocks'],
     }
   );
 
-  return { user };
+  return { user, startBodies };
 }
