@@ -297,6 +297,53 @@ describe(generateHistoryGroupDetails.name, () => {
     );
   });
 
+  it('should order summary details entries by summaryFields order, not event details order', () => {
+    mockedGenerateHistoryEventDetails.mockReturnValue([
+      {
+        key: 'activityId',
+        path: 'activityId',
+        value: '0',
+        isGroup: false,
+        renderConfig: null,
+      },
+      {
+        key: 'activityType',
+        path: 'activityType',
+        value: 'TestActivity',
+        isGroup: false,
+        renderConfig: null,
+      },
+      {
+        key: 'input',
+        path: 'input',
+        value: 'test input',
+        isGroup: false,
+        renderConfig: null,
+      },
+    ]);
+
+    const eventGroup: HistoryEventsGroup = {
+      ...mockActivityEventGroup,
+      events: [scheduleActivityTaskEvent],
+      eventsMetadata: [
+        {
+          label: 'Scheduled',
+          status: 'COMPLETED',
+          timeMs: 1725747370599,
+          timeLabel: 'Scheduled at 07 Sep, 22:16:10 UTC',
+          summaryFields: ['input', 'activityId'],
+        },
+      ],
+    };
+
+    const result = generateHistoryGroupDetails(eventGroup);
+
+    const summaryPaths = result.summaryDetailsEntries[0][1].eventDetails.map(
+      (detail) => detail.path
+    );
+    expect(summaryPaths).toEqual(['input', 'activityId']);
+  });
+
   it('should not generate summary details entries when summaryFields do not match any event details', () => {
     mockedGenerateHistoryEventDetails.mockReturnValue([
       {

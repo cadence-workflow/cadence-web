@@ -240,7 +240,7 @@ describe('getChildWorkflowExecutionGroupFromEvents', () => {
     const failedEventMetadata = group.eventsMetadata.find(
       (metadata) => metadata.status === 'FAILED'
     );
-    expect(failedEventMetadata?.negativeFields).toEqual(['details', 'reason']);
+    expect(failedEventMetadata?.negativeFields).toEqual(['reason', 'details']);
 
     // Other events should not have negativeFields
     const otherEventsMetadata = group.eventsMetadata.filter(
@@ -264,8 +264,8 @@ describe('getChildWorkflowExecutionGroupFromEvents', () => {
       (metadata) => metadata.status === 'FAILED' // timeout events have FAILED status
     );
     expect(timedOutEventMetadata?.negativeFields).toEqual([
-      'details',
       'reason',
+      'details',
     ]);
 
     // Other events should not have negativeFields
@@ -314,6 +314,6 @@ describe('getChildWorkflowExecutionGroupFromEvents', () => {
     const failedEventMetadata = group.eventsMetadata.find(
       (metadata) => metadata.status === 'FAILED'
     );
-    expect(failedEventMetadata?.summaryFields).toEqual(['details', 'reason']);
+    expect(failedEventMetadata?.summaryFields).toEqual(['reason', 'details']);
   });
 });

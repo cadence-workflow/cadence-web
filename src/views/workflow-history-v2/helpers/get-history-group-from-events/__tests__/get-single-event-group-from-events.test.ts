@@ -138,7 +138,7 @@ describe('getSingleEventGroupFromEvents', () => {
     const eventMetadata = group.eventsMetadata[0];
 
     expect(eventMetadata.status).toBe('FAILED');
-    expect(eventMetadata.negativeFields).toEqual(['details', 'reason']);
+    expect(eventMetadata.negativeFields).toEqual(['reason', 'details']);
   });
 
   it('should include negativeFields for terminated workflow execution events', () => {
@@ -148,7 +148,7 @@ describe('getSingleEventGroupFromEvents', () => {
     const eventMetadata = group.eventsMetadata[0];
 
     expect(eventMetadata.status).toBe('FAILED');
-    expect(eventMetadata.negativeFields).toEqual(['details', 'reason']);
+    expect(eventMetadata.negativeFields).toEqual(['reason', 'details']);
   });
 
   it('should include negativeFields for continued as new workflow execution events', () => {
@@ -159,8 +159,8 @@ describe('getSingleEventGroupFromEvents', () => {
 
     expect(eventMetadata.status).toBe('COMPLETED');
     expect(eventMetadata.negativeFields).toEqual([
-      'failureDetails',
       'failureReason',
+      'failureDetails',
     ]);
   });
 
@@ -191,7 +191,7 @@ describe('getSingleEventGroupFromEvents', () => {
     const eventMetadata = group.eventsMetadata[0];
 
     expect(eventMetadata.status).toBe('FAILED');
-    expect(eventMetadata.summaryFields).toEqual(['details', 'reason']);
+    expect(eventMetadata.summaryFields).toEqual(['reason', 'details']);
   });
 
   it('should include summaryFields for terminated workflow execution events', () => {
@@ -201,7 +201,7 @@ describe('getSingleEventGroupFromEvents', () => {
     const eventMetadata = group.eventsMetadata[0];
 
     expect(eventMetadata.status).toBe('FAILED');
-    expect(eventMetadata.summaryFields).toEqual(['details', 'reason']);
+    expect(eventMetadata.summaryFields).toEqual(['reason', 'details']);
   });
 
   it('should include summaryFields for continued as new workflow execution events', () => {
@@ -212,8 +212,8 @@ describe('getSingleEventGroupFromEvents', () => {
 
     expect(eventMetadata.status).toBe('COMPLETED');
     expect(eventMetadata.summaryFields).toEqual([
-      'failureDetails',
       'failureReason',
+      'failureDetails',
       'newExecutionRunId',
     ]);
   });

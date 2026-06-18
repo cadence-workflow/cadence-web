@@ -10,11 +10,7 @@ import {
 } from 'baseui/modal';
 import { Textarea } from 'baseui/textarea';
 
-type Props = {
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit: (token: string) => Promise<void> | void;
-};
+import { type Props } from './auth-token-modal.types';
 
 export default function AuthTokenModal({ isOpen, onClose, onSubmit }: Props) {
   const [token, setToken] = useState('');
