@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 
-import { Button, KIND, SHAPE, SIZE } from 'baseui/button';
+import { Button } from 'baseui/button';
 import { MdAdd } from 'react-icons/md';
 
 import PageFilters from '@/components/page-filters/page-filters';
