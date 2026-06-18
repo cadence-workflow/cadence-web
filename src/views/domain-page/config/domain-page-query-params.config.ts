@@ -29,6 +29,12 @@ const domainPageQueryParamsConfig: [
   // and the batch action draft do not overwrite each other's state).
   PageQueryParam<'batchInputType', WorkflowsHeaderInputType>,
   PageQueryParam<'batchQuery', string>,
+  // Batch actions "Select" mode search/filter inputs (separate from the
+  // workflows tab's search params, mirroring the batchQuery separation above).
+  PageQueryParam<'batchSearch', string>,
+  PageQueryParamMultiValue<'batchStatuses', Array<WorkflowStatus> | undefined>,
+  PageQueryParam<'batchTimeRangeStart', DateFilterValue | undefined>,
+  PageQueryParam<'batchTimeRangeEnd', DateFilterValue>,
   PageQueryParam<'batchActionId', string | undefined>,
   // Basic Visibility inputs
   PageQueryParam<'workflowId', string>,
@@ -108,6 +114,29 @@ const domainPageQueryParamsConfig: [
     key: 'batchQuery',
     queryParamKey: 'batch-query',
     defaultValue: '',
+  },
+  {
+    key: 'batchSearch',
+    queryParamKey: 'batch-search',
+    defaultValue: '',
+  },
+  {
+    key: 'batchStatuses',
+    queryParamKey: 'batch-status',
+    isMultiValue: true,
+    parseValue: (value: Array<string>) =>
+      value.every(isWorkflowStatus) ? value : undefined,
+  },
+  {
+    key: 'batchTimeRangeStart',
+    queryParamKey: 'batch-start',
+    parseValue: parseDateFilterValue,
+  },
+  {
+    key: 'batchTimeRangeEnd',
+    queryParamKey: 'batch-end',
+    defaultValue: 'now',
+    parseValue: (v) => parseDateFilterValue(v) ?? 'now',
   },
   {
     key: 'batchActionId',
