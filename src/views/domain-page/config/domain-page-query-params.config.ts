@@ -14,15 +14,7 @@ import isWorkflowStatus from '@/views/shared/workflow-status-tag/helpers/is-work
 import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
 import { type WorkflowsHeaderInputType } from '@/views/shared/workflows-header/workflows-header.types';
 
-// URL params scoped to the batch action draft. Defined here (rather than in the
-// batch-actions feature) and spread into domainPageQueryParamsConfig below so
-// every page key lives in one file and collisions stay easy to spot. Exported
-// so the batch feature can derive BATCH_DRAFT_RESET_PARAMS from this single
-// definition: adding a batch param here wires it into both the URL parsing and
-// the draft reset automatically.
-//
-// They use separate `batch-*` URL keys from the workflows tab so the two tabs
-// do not overwrite each other's search/query/filter state.
+// URL params scoped to the batch action draft.
 export const domainBatchActionsQueryParamsConfig: [
   PageQueryParam<'batchInputType', WorkflowsHeaderInputType>,
   PageQueryParam<'batchQuery', string>,
