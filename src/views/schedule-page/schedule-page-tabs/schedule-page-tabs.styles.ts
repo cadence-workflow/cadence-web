@@ -8,10 +8,10 @@ export const styled = {
     flexDirection: 'column',
     borderBottom: `1px solid ${$theme.colors.borderOpaque}`,
   })),
-  TabsRow: withStyle(PageSection, ({ $theme: _$theme }: { $theme: Theme }) => ({
+  TabsRow: withStyle(PageSection, {
     display: 'flex',
     alignItems: 'center',
-  })),
+  }),
   BackSlot: createStyled('div', () => ({
     display: 'flex',
   })),
