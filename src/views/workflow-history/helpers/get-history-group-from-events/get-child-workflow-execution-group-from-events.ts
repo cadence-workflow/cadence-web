@@ -84,6 +84,7 @@ export default function getChildWorkflowExecutionGroupFromEvents(
   const eventToSummaryFields: HistoryGroupEventToSummaryFieldsMap<ChildWorkflowExecutionHistoryGroup> =
     {
       startChildWorkflowExecutionInitiatedEventAttributes: ['input'],
+      startChildWorkflowExecutionFailedEventAttributes: ['cause'],
       childWorkflowExecutionStartedEventAttributes: ['workflowExecution'],
       childWorkflowExecutionCompletedEventAttributes: ['result'],
       childWorkflowExecutionFailedEventAttributes: ['details', 'reason'],

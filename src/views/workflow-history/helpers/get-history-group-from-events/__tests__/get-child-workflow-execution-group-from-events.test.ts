@@ -317,4 +317,18 @@ describe('getChildWorkflowExecutionGroupFromEvents', () => {
     );
     expect(failedEventMetadata?.summaryFields).toEqual(['details', 'reason']);
   });
+
+  it('should include summaryFields with cause for initiation failed child workflow event', () => {
+    const events: ChildWorkflowExecutionHistoryEvent[] = [
+      initiateChildWorkflowEvent,
+      initiateFailureChildWorkflowEvent,
+    ];
+    const group = getChildWorkflowExecutionGroupFromEvents(events);
+
+    // The initiation failed event should have summaryFields with cause
+    const initiationFailedEventMetadata = group.eventsMetadata.find(
+      (metadata) => metadata.label === 'Initiation failed'
+    );
+    expect(initiationFailedEventMetadata?.summaryFields).toEqual(['cause']);
+  });
 });
