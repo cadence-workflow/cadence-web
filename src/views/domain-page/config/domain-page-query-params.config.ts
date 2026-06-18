@@ -14,6 +14,56 @@ import isWorkflowStatus from '@/views/shared/workflow-status-tag/helpers/is-work
 import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
 import { type WorkflowsHeaderInputType } from '@/views/shared/workflows-header/workflows-header.types';
 
+// URL params scoped to the batch action draft.
+export const domainBatchActionsQueryParamsConfig: [
+  PageQueryParam<'batchInputType', WorkflowsHeaderInputType>,
+  PageQueryParam<'batchQuery', string>,
+  PageQueryParam<'batchSearch', string>,
+  PageQueryParamMultiValue<'batchStatuses', Array<WorkflowStatus> | undefined>,
+  PageQueryParam<'batchTimeRangeStart', DateFilterValue | undefined>,
+  PageQueryParam<'batchTimeRangeEnd', DateFilterValue>,
+  PageQueryParam<'batchActionId', string | undefined>,
+] = [
+  {
+    key: 'batchInputType',
+    queryParamKey: 'batch-input',
+    defaultValue: 'query',
+    parseValue: (value: string) => (value === 'search' ? 'search' : 'query'),
+  },
+  {
+    key: 'batchQuery',
+    queryParamKey: 'batch-query',
+    defaultValue: '',
+  },
+  {
+    key: 'batchSearch',
+    queryParamKey: 'batch-search',
+    defaultValue: '',
+  },
+  {
+    key: 'batchStatuses',
+    queryParamKey: 'batch-status',
+    isMultiValue: true,
+    parseValue: (value: Array<string>) =>
+      value.every(isWorkflowStatus) ? value : undefined,
+  },
+  {
+    key: 'batchTimeRangeStart',
+    queryParamKey: 'batch-start',
+    parseValue: parseDateFilterValue,
+  },
+  {
+    key: 'batchTimeRangeEnd',
+    queryParamKey: 'batch-end',
+    defaultValue: 'now',
+    parseValue: (v) => parseDateFilterValue(v) ?? 'now',
+  },
+  {
+    key: 'batchActionId',
+    queryParamKey: 'bid',
+  },
+] as const;
+
 const domainPageQueryParamsConfig: [
   PageQueryParam<'inputType', WorkflowsHeaderInputType>,
   // Search input
@@ -25,17 +75,8 @@ const domainPageQueryParamsConfig: [
   PageQueryParam<'sortOrder', SortOrder>,
   // Query input
   PageQueryParam<'query', string>,
-  // Batch actions query input (uses separate URL params so the workflows tab
-  // and the batch action draft do not overwrite each other's state).
-  PageQueryParam<'batchInputType', WorkflowsHeaderInputType>,
-  PageQueryParam<'batchQuery', string>,
-  // Batch actions "Select" mode search/filter inputs (separate from the
-  // workflows tab's search params, mirroring the batchQuery separation above).
-  PageQueryParam<'batchSearch', string>,
-  PageQueryParamMultiValue<'batchStatuses', Array<WorkflowStatus> | undefined>,
-  PageQueryParam<'batchTimeRangeStart', DateFilterValue | undefined>,
-  PageQueryParam<'batchTimeRangeEnd', DateFilterValue>,
-  PageQueryParam<'batchActionId', string | undefined>,
+  // Batch actions query params (Query + Select mode), defined and exported above.
+  ...typeof domainBatchActionsQueryParamsConfig,
   // Basic Visibility inputs
   PageQueryParam<'workflowId', string>,
   PageQueryParam<'workflowType', string>,
@@ -104,44 +145,7 @@ const domainPageQueryParamsConfig: [
     key: 'query',
     defaultValue: '',
   },
-  {
-    key: 'batchInputType',
-    queryParamKey: 'batch-input',
-    defaultValue: 'query',
-    parseValue: (value: string) => (value === 'search' ? 'search' : 'query'),
-  },
-  {
-    key: 'batchQuery',
-    queryParamKey: 'batch-query',
-    defaultValue: '',
-  },
-  {
-    key: 'batchSearch',
-    queryParamKey: 'batch-search',
-    defaultValue: '',
-  },
-  {
-    key: 'batchStatuses',
-    queryParamKey: 'batch-status',
-    isMultiValue: true,
-    parseValue: (value: Array<string>) =>
-      value.every(isWorkflowStatus) ? value : undefined,
-  },
-  {
-    key: 'batchTimeRangeStart',
-    queryParamKey: 'batch-start',
-    parseValue: parseDateFilterValue,
-  },
-  {
-    key: 'batchTimeRangeEnd',
-    queryParamKey: 'batch-end',
-    defaultValue: 'now',
-    parseValue: (v) => parseDateFilterValue(v) ?? 'now',
-  },
-  {
-    key: 'batchActionId',
-    queryParamKey: 'bid',
-  },
+  ...domainBatchActionsQueryParamsConfig,
   {
     key: 'workflowId',
     defaultValue: '',

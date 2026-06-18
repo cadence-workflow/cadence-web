@@ -20,6 +20,7 @@ import {
   BATCH_ACTIONS_PAGE_SIZE,
   BATCH_ACTION_DEFAULT_QUERY,
   BATCH_ACTION_DETAIL_REFETCH_INTERVAL,
+  BATCH_DRAFT_RESET_PARAMS,
   DRAFT_ACTION_ID,
 } from './domain-batch-actions.constants';
 import { styled } from './domain-batch-actions.styles';
@@ -99,6 +100,7 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
   const handleCreateNew = () => {
     setIsDraftOpen(true);
     setQueryParams({
+      ...BATCH_DRAFT_RESET_PARAMS,
       batchActionId: DRAFT_ACTION_ID,
       batchQuery: BATCH_ACTION_DEFAULT_QUERY,
     });
@@ -114,7 +116,7 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
 
   const handleDiscard = () => {
     setIsDraftOpen(false);
-    setQueryParams({ batchActionId: undefined, batchQuery: '' });
+    setQueryParams(BATCH_DRAFT_RESET_PARAMS);
   };
 
   if (batchActions.length === 0 && !isDraftOpen) {

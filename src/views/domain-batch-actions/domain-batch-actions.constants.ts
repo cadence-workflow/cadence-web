@@ -1,4 +1,17 @@
+import { type PageQueryParamSetterValues } from '@/hooks/use-page-query-params/use-page-query-params.types';
+import { domainBatchActionsQueryParamsConfig } from '@/views/domain-page/config/domain-page-query-params.config';
+
 export const DRAFT_ACTION_ID = 'draft';
+
+// Derived from the batch query params config
+// so a new batch param is reset automatically. Discarding or starting a new
+// draft applies this, preventing stale "Select"/"Query" mode state from
+// leaking across drafts.
+export const BATCH_DRAFT_RESET_PARAMS = Object.fromEntries(
+  domainBatchActionsQueryParamsConfig.map((param) => [param.key, undefined])
+) as Partial<
+  PageQueryParamSetterValues<typeof domainBatchActionsQueryParamsConfig>
+>;
 
 export const BATCH_ACTION_RPS_DEFAULT = 100;
 export const BATCH_ACTIONS_PAGE_SIZE = 10;
