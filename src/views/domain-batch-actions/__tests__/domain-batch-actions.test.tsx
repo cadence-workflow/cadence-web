@@ -12,6 +12,7 @@ import DomainBatchActions from '../domain-batch-actions';
 import { type Props as DetailProps } from '../domain-batch-actions-detail/domain-batch-actions-detail.types';
 import { type Props as NewActionDetailProps } from '../domain-batch-actions-new-action-detail/domain-batch-actions-new-action-detail.types';
 import { type Props as SidebarProps } from '../domain-batch-actions-sidebar/domain-batch-actions-sidebar.types';
+import { BATCH_DRAFT_RESET_PARAMS } from '../domain-batch-actions.constants';
 import { type BatchAction } from '../domain-batch-actions.types';
 
 const mockSetQueryParams = jest.fn();
@@ -122,7 +123,7 @@ describe(DomainBatchActions.name, () => {
     expect(mockSetQueryParams).toHaveBeenCalledWith({ batchActionId: '4' });
   });
 
-  it('sets batchActionId to draft and prefills the query when "New batch action" is clicked', async () => {
+  it('resets all batch draft params and prefills the query when "New batch action" is clicked', async () => {
     const user = userEvent.setup();
 
     setup();
@@ -130,12 +131,13 @@ describe(DomainBatchActions.name, () => {
     await user.click(await screen.findByText('mock-new-batch-action'));
 
     expect(mockSetQueryParams).toHaveBeenCalledWith({
+      ...BATCH_DRAFT_RESET_PARAMS,
       batchActionId: 'draft',
       batchQuery: 'CloseTime = missing',
     });
   });
 
-  it('clears batchActionId and batchQuery on discard', async () => {
+  it('clears all batch draft params on discard', async () => {
     mockUsePageQueryParams.mockReturnValue([
       {
         ...mockDomainPageQueryParamsValues,
@@ -151,10 +153,7 @@ describe(DomainBatchActions.name, () => {
 
     await user.click(await screen.findByText('Discard batch action'));
 
-    expect(mockSetQueryParams).toHaveBeenCalledWith({
-      batchActionId: undefined,
-      batchQuery: '',
-    });
+    expect(mockSetQueryParams).toHaveBeenCalledWith(BATCH_DRAFT_RESET_PARAMS);
   });
 
   it('opens the draft when batchActionId is "draft" (no batchQuery)', async () => {
@@ -308,6 +307,22 @@ describe(DomainBatchActions.name, () => {
     } finally {
       jest.useRealTimers();
     }
+  });
+
+  it('shows a progress-error banner (keeping the detail) when the response flags progressError', async () => {
+    setup({
+      detailResolver: () =>
+        HttpResponse.json({
+          id: '5',
+          status: 'COMPLETED',
+          progressError: true,
+        }),
+    });
+
+    expect(
+      await screen.findByText(/Could not load batch action progress/i)
+    ).toBeInTheDocument();
+    expect(screen.getByText('mock-batch-action-detail-5')).toBeInTheDocument();
   });
 });
 
