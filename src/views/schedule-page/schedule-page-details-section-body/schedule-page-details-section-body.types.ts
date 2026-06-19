@@ -3,5 +3,4 @@ import { type ReadOnlyDetailsTableRow } from '@/components/read-only-details-tab
 export type Props = {
   title: string;
   rows: ReadOnlyDetailsTableRow[];
-  initiallyCollapsed?: boolean;
 };

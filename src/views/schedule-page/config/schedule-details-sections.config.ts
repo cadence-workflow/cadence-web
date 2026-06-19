@@ -2,28 +2,22 @@ import { type ScheduleDetailsSectionConfig } from './schedule-detail-sections.ty
 import scheduleActionDetailsConfig from './schedule-action-details.config';
 import schedulePoliciesDetailsConfig from './schedule-policies-details.config';
 import scheduleSpecificationsDetailsConfig from './schedule-specifications-details.config';
-import scheduleStateDetailsConfig from './schedule-state-details.config';
 
 const scheduleDetailsSectionsConfig: ScheduleDetailsSectionConfig[] = [
   {
     key: 'specifications',
-    title: 'Specifications',
+    title: 'Schedule specifications',
     rowsConfig: scheduleSpecificationsDetailsConfig,
   },
   {
-    key: 'policies',
-    title: 'Policies',
-    rowsConfig: schedulePoliciesDetailsConfig,
-  },
-  {
     key: 'action',
-    title: 'Action',
+    title: 'Schedule action',
     rowsConfig: scheduleActionDetailsConfig,
   },
   {
-    key: 'state',
-    title: 'State',
-    rowsConfig: scheduleStateDetailsConfig,
+    key: 'policies',
+    title: 'Schedule policies',
+    rowsConfig: schedulePoliciesDetailsConfig,
   },
 ];
 

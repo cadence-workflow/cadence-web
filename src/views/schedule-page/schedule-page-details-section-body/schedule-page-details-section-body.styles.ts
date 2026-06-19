@@ -4,10 +4,8 @@ import type {
 } from '@/hooks/use-styletron-classes';
 
 const cssStylesObj = {
-  section: (theme) => ({
-    display: 'flex',
-    flexDirection: 'column',
-    gap: theme.sizing.scale500,
+  bodyContainer: (_theme) => ({
+    width: '100%',
   }),
 } satisfies StyletronCSSObject;
 

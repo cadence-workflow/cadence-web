@@ -3,6 +3,7 @@ import { type DescribeScheduleResponse } from '@/views/shared/hooks/use-describe
 
 export type ScheduleDetailRowArgs = {
   describeSchedule: DescribeScheduleResponse;
+  scheduleId: string;
 };
 
 export type ScheduleDetailRowConfig = {
