@@ -1,7 +1,7 @@
 import { type Theme, styled as createStyled } from 'baseui';
 import { type StyleObject } from 'styletron-react';
 
-const LABEL_COLUMN_WIDTH_PX = 160;
+const LABEL_COLUMN_WIDTH_PX = 200;
 
 export const styled = {
   Table: createStyled(
@@ -19,9 +19,6 @@ export const styled = {
       ':not(:last-child)': {
         borderBottom: `1px solid ${$theme.colors.borderOpaque}`,
       },
-      ':nth-child(even)': {
-        backgroundColor: $theme.colors.backgroundSecondary,
-      },
     })
   ),
   LabelCell: createStyled(
@@ -33,9 +30,9 @@ export const styled = {
       maxWidth: `${LABEL_COLUMN_WIDTH_PX}px`,
       textAlign: 'left',
       verticalAlign: 'top',
-      paddingTop: $theme.sizing.scale550,
-      paddingBottom: $theme.sizing.scale550,
-      paddingLeft: $theme.sizing.scale500,
+      paddingTop: $theme.sizing.scale400,
+      paddingBottom: $theme.sizing.scale400,
+      paddingLeft: 0,
       paddingRight: $theme.sizing.scale300,
       lineHeight: $theme.typography.ParagraphSmall.lineHeight,
       wordBreak: 'break-word',
@@ -47,10 +44,10 @@ export const styled = {
     ({ $theme }: { $theme: Theme }): StyleObject => ({
       ...$theme.typography.ParagraphSmall,
       verticalAlign: 'top',
-      paddingTop: $theme.sizing.scale550,
-      paddingBottom: $theme.sizing.scale550,
+      paddingTop: $theme.sizing.scale400,
+      paddingBottom: $theme.sizing.scale400,
       paddingLeft: $theme.sizing.scale300,
-      paddingRight: $theme.sizing.scale500,
+      paddingRight: 0,
       wordBreak: 'break-word',
       overflowWrap: 'anywhere',
       whiteSpace: 'normal',
