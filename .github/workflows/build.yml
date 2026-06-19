@@ -54,9 +54,6 @@ jobs:
       with:
         path: .jest-cache
         key: ${{ runner.os }}-jest-${{ steps.date.outputs.date }}-${{ hashFiles('package-lock.json', 'jest.config.ts', 'jest/browser/jest.config.ts', 'jest/node/jest.config.ts', 'tsconfig.json') }}
-        restore-keys: |
-          ${{ runner.os }}-jest-${{ steps.date.outputs.date }}-
-          ${{ runner.os }}-jest-
 
     - run: npm run lint
     - run: npm run typecheck
