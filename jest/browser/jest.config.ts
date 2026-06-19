@@ -52,6 +52,18 @@ const config: Config = {
     '\\.config\\.ts(x)?$',
   ],
 
+  collectCoverage: true,
+  coverageDirectory: '<rootDir>/coverage/browser',
+  coverageProvider: 'v8',
+  coverageThreshold: {
+    global: {
+      branches: 85,
+      functions: 85,
+      lines: 85,
+      statements: 85,
+    },
+  },
+
   // Indicates which provider should be used to instrument code for coverage
   // coverageProvider: "v8",
 
@@ -132,6 +144,11 @@ const config: Config = {
 
   // A preset that is used as a base for Jest's configuration
   preset: 'ts-jest',
+  globals: {
+    'ts-jest': {
+      isolatedModules: true,
+    },
+  },
 
   // Run tests from one or more projects
   // projects: undefined,

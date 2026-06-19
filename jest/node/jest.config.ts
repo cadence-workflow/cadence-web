@@ -22,6 +22,11 @@ const config: Config = {
   },
   rootDir: '../../',
   preset: 'ts-jest',
+  globals: {
+    'ts-jest': {
+      isolatedModules: true,
+    },
+  },
   setupFilesAfterEnv: ['<rootDir>/jest/node/jest.setup.ts'],
   testEnvironment: 'node',
   testMatch: ['**/__tests__/**/*.node.ts'],
@@ -31,6 +36,17 @@ const config: Config = {
     '/__fixtures__/',
     '\\.config\\.ts$',
   ],
+  collectCoverage: true,
+  coverageDirectory: '<rootDir>/coverage/node',
+  coverageProvider: 'v8',
+  coverageThreshold: {
+    global: {
+      branches: 85,
+      functions: 85,
+      lines: 85,
+      statements: 85,
+    },
+  },
   transformIgnorePatterns: [`/node_modules/(?!(${esModules.join('|')})/)`],
 };
 
