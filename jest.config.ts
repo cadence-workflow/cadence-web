@@ -1,5 +1,4 @@
 const config = {
-  cacheDirectory: '.jest-cache',
   collectCoverage: true,
   coverageDirectory: 'coverage',
   coveragePathIgnorePatterns: [
