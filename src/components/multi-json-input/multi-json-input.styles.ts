@@ -1,4 +1,4 @@
-import { type Theme } from 'baseui';
+import { styled as createStyled, type Theme } from 'baseui';
 import { type TextareaOverrides } from 'baseui/textarea';
 import { type StyleObject } from 'styletron-react';
 
@@ -20,20 +20,26 @@ export const overrides = {
   } satisfies TextareaOverrides,
 };
 
+export const styled = {
+  Container: createStyled<
+    'div',
+    {
+      $showLeftBorder: boolean;
+    }
+  >('div', ({ $theme, $showLeftBorder }) => ({
+    display: 'flex',
+    flexDirection: 'column',
+    gap: $theme.sizing.scale600,
+    ...($showLeftBorder
+      ? {
+          borderLeft: `2px solid ${$theme.colors.borderOpaque}`,
+          paddingLeft: $theme.sizing.scale600,
+        }
+      : {}),
+  })),
+};
+
 const cssStylesObj = {
-  container: (theme) => ({
-    display: 'flex',
-    flexDirection: 'column',
-    gap: theme.sizing.scale600,
-    borderLeft: `2px solid ${theme.colors.borderOpaque}`,
-    paddingLeft: theme.sizing.scale600,
-  }),
-  /** Same layout as `container` without the left accent (e.g. create-schedule horizontal field). */
-  containerPlain: (theme) => ({
-    display: 'flex',
-    flexDirection: 'column',
-    gap: theme.sizing.scale600,
-  }),
   inputRow: (theme) => ({
     display: 'flex',
     gap: theme.sizing.scale300,
