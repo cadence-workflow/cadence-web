@@ -4,6 +4,8 @@ import type { StyleObject } from 'styletron-react';
 
 import { getMediaQueryMargins } from '@/utils/media-query/get-media-queries-margins';
 
+import type { Props } from './page-tabs.types';
+
 export const styled = {
   TabTitleContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
@@ -13,24 +15,31 @@ export const styled = {
   })),
 };
 
-export const overrides = {
+export const overrides = ({
+  removeTabBarGridGutters,
+  hideTabBarBorder,
+}: Pick<Props, 'removeTabBarGridGutters' | 'hideTabBarBorder'>) => ({
   tabs: {
     Root: {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
         display: 'flex',
         flexDirection: 'column',
-        borderBottom: `1px solid ${$theme.colors.borderOpaque}`,
+        borderBottom: hideTabBarBorder
+          ? 'none'
+          : `1px solid ${$theme.colors.borderOpaque}`,
       }),
     },
     TabBar: {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
         width: '100%',
         alignSelf: 'center',
-        ...getMediaQueryMargins($theme, (margin) => ({
-          maxWidth: `${$theme.grid.maxWidth + 2 * margin}px`,
-          paddingRight: `${margin}px`,
-          paddingLeft: `${margin}px`,
-        })),
+        ...(!removeTabBarGridGutters
+          ? getMediaQueryMargins($theme, (margin) => ({
+              maxWidth: `${$theme.grid.maxWidth + 2 * margin}px`,
+              paddingRight: `${margin}px`,
+              paddingLeft: `${margin}px`,
+            }))
+          : null),
       }),
     },
     TabList: {
@@ -55,4 +64,4 @@ export const overrides = {
       style: { display: 'none' },
     },
   } satisfies TabOverrides,
-};
+});
