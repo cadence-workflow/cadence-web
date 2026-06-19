@@ -21,6 +21,7 @@ const config: Config = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   rootDir: '../../',
+  preset: 'ts-jest',
   cacheDirectory: '<rootDir>/.jest-cache',
   setupFilesAfterEnv: ['<rootDir>/jest/node/jest.setup.ts'],
   testEnvironment: 'node',
