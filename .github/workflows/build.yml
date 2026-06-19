@@ -41,20 +41,6 @@ jobs:
       if: steps.cache-idl.outputs.cache-hit != 'true'
       run: npm run install-idl && npm run generate:idl
 
-    # Cache jest transform output — daily rotation + config hash
-    # Daily key ensures the cache is fresh each day without waiting for GitHub's 7-day expiry.
-    # Config hash suffix means a config change immediately creates a new entry mid-day.
-    # restore-keys cascades: same-day hit → same-day any config → any day (for new branches).
-    - name: Get current date
-      id: date
-      run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
-
-    - name: Cache jest transforms
-      uses: actions/cache@v3
-      with:
-        path: .jest-cache
-        key: ${{ runner.os }}-jest-${{ steps.date.outputs.date }}-${{ hashFiles('package-lock.json', 'jest.config.ts', 'jest/browser/jest.config.ts', 'jest/node/jest.config.ts', 'tsconfig.json') }}
-
     - run: npm run lint
     - run: npm run typecheck
     - run: npm run test
