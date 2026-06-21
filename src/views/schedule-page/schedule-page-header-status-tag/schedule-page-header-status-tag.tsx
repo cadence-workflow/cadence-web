@@ -7,9 +7,13 @@ import ScheduleStatusTag from '@/views/shared/schedule-status-tag/schedule-statu
 import type { Props } from './schedule-page-header-status-tag.types';
 
 export default function SchedulePageHeaderStatusTag(props: Props) {
-  const { data: scheduleDetails, isLoading } = useDescribeSchedule(props);
+  const {
+    data: scheduleDetails,
+    isLoading,
+    isError,
+  } = useDescribeSchedule(props);
 
-  if (isLoading || !scheduleDetails) {
+  if (isLoading || isError || !scheduleDetails) {
     return null;
   }
 

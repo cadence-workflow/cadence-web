@@ -10,6 +10,7 @@ import { type SchedulePageTabsParams } from '../schedule-page-tabs/schedule-page
 
 import buildSchedulePageClusterPath from './helpers/build-schedule-page-cluster-path';
 import type { Props } from './schedule-page-header-cluster-selector.types';
+import decodeUrlParams from '@/utils/decode-url-params';
 
 export default function SchedulePageHeaderClusterSelector({
   domain,
@@ -21,13 +22,14 @@ export default function SchedulePageHeaderClusterSelector({
   });
 
   const routeParams = useParams<SchedulePageTabsParams>();
+  const decodedParams = decodeUrlParams(routeParams) as SchedulePageTabsParams;
 
   const buildPathForCluster = (newCluster: string) =>
     buildSchedulePageClusterPath({
       domain,
       cluster: newCluster,
-      scheduleId: routeParams.scheduleId,
-      scheduleTab: routeParams.scheduleTab,
+      scheduleId: decodedParams.scheduleId,
+      scheduleTab: decodedParams.scheduleTab,
     });
 
   return (
