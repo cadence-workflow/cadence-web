@@ -7,9 +7,14 @@ import {
 } from './use-describe-schedule.types';
 
 export default function getDescribeScheduleQueryOptions({
+  domain,
+  cluster,
+  scheduleId,
   runningScheduleRefetchIntervalMs = 10000, // 10 seconds
-  ...params
+  ...queryOptions
 }: UseDescribeScheduleParams): UseDescribeScheduleQueryOptions {
+  const params = { domain, cluster, scheduleId };
+
   return {
     queryKey: ['describeSchedule', params] satisfies DescribeScheduleQueryKey,
     queryFn: ({ queryKey: [_, p] }: { queryKey: DescribeScheduleQueryKey }) =>
@@ -23,5 +28,6 @@ export default function getDescribeScheduleQueryOptions({
       }
       return false;
     },
+    ...queryOptions,
   };
 }
