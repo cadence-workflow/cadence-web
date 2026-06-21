@@ -81,7 +81,7 @@ export default function DomainSchedulesCreateModal({
       },
     });
   };
-  
+
   return (
     <Modal
       isOpen={isOpen}
