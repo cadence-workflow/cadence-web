@@ -41,6 +41,8 @@ export const overrides = {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
         marginTop: $theme.sizing.scale400,
         marginBottom: 0,
+        marginLeft: 0,
+        marginRight: 0,
       }),
     },
   } satisfies BannerOverrides,

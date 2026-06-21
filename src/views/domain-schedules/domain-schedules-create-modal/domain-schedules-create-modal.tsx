@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Banner, HIERARCHY, KIND as BANNER_KIND } from 'baseui/banner';
@@ -36,6 +36,8 @@ export default function DomainSchedulesCreateModal({
     error: createScheduleError,
   } = useCreateSchedule({ domain, cluster });
 
+  const errorAlertRef = useRef<HTMLDivElement>(null);
+
   const { control, handleSubmit, reset, clearErrors, trigger } =
     useForm<DomainSchedulesCreateFormData>({
       resolver: zodResolver(createScheduleFormSchema),
@@ -50,6 +52,12 @@ export default function DomainSchedulesCreateModal({
     clearErrors();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
+
+  useEffect(() => {
+    if (createScheduleError) {
+      errorAlertRef.current?.scrollIntoView({ block: 'start' });
+    }
+  }, [createScheduleError]);
 
   const onSubmit = (data: DomainSchedulesCreateFormData) => {
     clearErrors();
@@ -73,7 +81,7 @@ export default function DomainSchedulesCreateModal({
       },
     });
   };
-
+  
   return (
     <Modal
       isOpen={isOpen}
@@ -85,17 +93,19 @@ export default function DomainSchedulesCreateModal({
       <form onSubmit={handleSubmit(onSubmit)}>
         <styled.ModalBody>
           {createScheduleError && (
-            <Banner
-              hierarchy={HIERARCHY.low}
-              kind={BANNER_KIND.negative}
-              overrides={overrides.banner}
-              artwork={{
-                icon: MdErrorOutline,
-              }}
-            >
-              {createScheduleError.message.trim() ||
-                'Failed to create schedule'}
-            </Banner>
+            <div ref={errorAlertRef} role="alert">
+              <Banner
+                hierarchy={HIERARCHY.low}
+                kind={BANNER_KIND.negative}
+                overrides={overrides.banner}
+                artwork={{
+                  icon: MdErrorOutline,
+                }}
+              >
+                {createScheduleError.message.trim() ||
+                  'Failed to create schedule'}
+              </Banner>
+            </div>
           )}
           <DomainSchedulesCreateForm control={control} trigger={trigger} />
         </styled.ModalBody>
