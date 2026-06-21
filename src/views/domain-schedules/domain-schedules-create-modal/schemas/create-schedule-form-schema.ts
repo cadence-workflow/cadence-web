@@ -1,6 +1,8 @@
 import { z } from 'zod';
 
 import { CRON_FIELD_ORDER } from '@/components/cron-schedule-input/cron-schedule-input.constants';
+// TODO(refactor): WORKER_SDK_LANGUAGES is imported from start-workflow — extract to shared constants once both features stabilise
+import { WORKER_SDK_LANGUAGES } from '@/route-handlers/start-workflow/start-workflow.constants';
 import { getCronFieldsError } from '@/views/workflow-actions/workflow-action-start-form/helpers/get-cron-fields-error';
 
 const cronExpressionFieldsSchema = z
@@ -77,5 +79,31 @@ export const createScheduleFormSchema = z.object({
       required_error: 'Task timeout is required',
     })
     .positive('Task timeout must be positive'),
+  // TODO(refactor): WORKER_SDK_LANGUAGES imported from start-workflow — extract to shared constants
+  workerSDKLanguage: z
+    .enum(WORKER_SDK_LANGUAGES)
+    .default(WORKER_SDK_LANGUAGES[0]),
+  input: z
+    .array(z.string())
+    .optional()
+    .superRefine((inputArray, ctx) => {
+      if (!inputArray) return;
+      if (inputArray.length === 1 && inputArray[0] === '') {
+        return;
+      }
+      // Check each input individually for field-level errors
+      for (let i = 0; i < inputArray.length; i++) {
+        const val = inputArray[i];
+        try {
+          JSON.parse(val);
+        } catch {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Input must be valid JSON',
+            path: [i],
+          });
+        }
+      }
+    }),
   pauseOnFailure: z.boolean().optional().default(false),
 });

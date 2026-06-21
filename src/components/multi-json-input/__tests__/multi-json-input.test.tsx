@@ -20,7 +20,7 @@ describe('MultiJsonInput', () => {
   it('renders with default props', () => {
     setup({});
 
-    expect(screen.getByText('Test Label')).toBeInTheDocument();
+    // label is used for aria-label only; visible label comes from the parent FormControl
     expect(screen.getByPlaceholderText('Enter JSON')).toBeInTheDocument();
     expect(screen.getByText('Add')).toBeInTheDocument();
   });
@@ -31,10 +31,11 @@ describe('MultiJsonInput', () => {
       placeholder: 'Custom Placeholder',
     });
 
-    expect(screen.getByText('Custom Label')).toBeInTheDocument();
     expect(
       screen.getByPlaceholderText('Custom Placeholder')
     ).toBeInTheDocument();
+    // aria-label is set on each textarea from the label prop
+    expect(screen.getByLabelText('Custom Label')).toBeInTheDocument();
   });
 
   it('renders multiple inputs when value array has multiple items', () => {
@@ -135,7 +136,7 @@ describe('MultiJsonInput', () => {
     expect(deleteButton).not.toBeDisabled();
   });
 
-  it('displays error message when error prop is provided', () => {
+  it('applies error state to textarea when string error prop is provided', () => {
     const props = {
       ...defaultProps,
       error: 'Invalid JSON format',
@@ -143,17 +144,7 @@ describe('MultiJsonInput', () => {
 
     render(<MultiJsonInput {...props} />);
 
-    expect(screen.getByText('Invalid JSON format')).toBeInTheDocument();
-  });
-
-  it('applies error state to textarea when error prop is provided', () => {
-    const props = {
-      ...defaultProps,
-      error: 'Invalid JSON format',
-    };
-
-    render(<MultiJsonInput {...props} />);
-
+    // string error marks all textareas as invalid; global error message is shown by parent FormControl
     const textarea = screen.getByPlaceholderText('Enter JSON');
     expect(textarea).toHaveAttribute('aria-invalid', 'true');
   });
