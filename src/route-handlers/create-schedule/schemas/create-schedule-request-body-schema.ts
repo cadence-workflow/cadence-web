@@ -26,7 +26,7 @@ const scheduleStartWorkflowBodySchema = z.object({
   }),
   workerSDKLanguage: z.enum(WORKER_SDK_LANGUAGES),
   input: z.array(jsonValueSchema).optional(),
-  workflowIdPrefix: z.string(),
+  workflowIdPrefix: z.string().optional(),
   executionStartToCloseTimeoutSeconds: z.number().positive(),
   taskStartToCloseTimeoutSeconds: z.number().positive(),
   retryPolicy: retryPolicySchema,

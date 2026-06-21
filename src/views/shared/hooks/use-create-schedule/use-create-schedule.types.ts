@@ -9,6 +9,7 @@ import { type RequestError } from '@/utils/request/request-error';
 export type UseCreateScheduleParams = {
   domain: string;
   cluster: string;
+  invalidateQueriesTimeout?: number;
 };
 
 export type UseCreateScheduleVariables = CreateScheduleRequestBody;
