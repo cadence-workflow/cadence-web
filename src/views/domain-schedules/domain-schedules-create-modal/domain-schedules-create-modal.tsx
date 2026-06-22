@@ -95,8 +95,8 @@ export default function DomainSchedulesCreateModal({
           {createScheduleError && (
             <div ref={errorAlertRef} role="alert">
               <Banner
-                hierarchy={HIERARCHY.low}
-                kind={BANNER_KIND.negative}
+                hierarchy="low"
+                kind="negative"
                 overrides={overrides.banner}
                 artwork={{
                   icon: MdErrorOutline,
