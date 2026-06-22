@@ -1,4 +1,5 @@
-FROM node:18-bookworm-slim  AS base
+FROM node:24-bookworm-slim  AS base
+ENV npm_config_min_release_age=14
 
 FROM base AS dev
 # Install git + CA bundle so git https can verify TLS

@@ -9,13 +9,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    steps:
-    - uses: actions/checkout@v2
+    env:
+      npm_config_min_release_age: '14'
 
+    steps:
+    - uses: actions/checkout@v4
     - name: Use Node.js
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '24'
 
     # Cache node_modules keyed to the exact lockfile — skips npm ci on cache hit
     - name: Cache node_modules

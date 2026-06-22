@@ -23,8 +23,8 @@
     "test:types": "tstyche"
   },
   "engines": {
-    "node": ">=18.19.0",
-    "npm": ">=9.6.7"
+    "node": ">=24.0.0",
+    "npm": ">=11.10.0"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.14.4",
@@ -85,7 +85,7 @@
     "@types/eslint__js": "^8.42.3",
     "@types/jest": "^29.5.14",
     "@types/lodash": "^4.14.202",
-    "@types/node": "^20.11.17",
+    "@types/node": "^24.13.2",
     "@types/react": "^18.2.57",
     "@types/react-dom": "^18.2.19",
     "@typescript-eslint/parser": "^7.18.0",
