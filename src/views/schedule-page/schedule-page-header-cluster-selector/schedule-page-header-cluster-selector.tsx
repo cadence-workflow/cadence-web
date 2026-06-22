@@ -3,6 +3,7 @@ import React from 'react';
 
 import { useParams } from 'next/navigation';
 
+import decodeUrlParams from '@/utils/decode-url-params';
 import DomainClusterSelector from '@/views/shared/domain-cluster-selector/domain-cluster-selector';
 import useSuspenseDomainDescription from '@/views/shared/hooks/use-domain-description/use-suspense-domain-description';
 
@@ -10,7 +11,6 @@ import { type SchedulePageTabsParams } from '../schedule-page-tabs/schedule-page
 
 import buildSchedulePageClusterPath from './helpers/build-schedule-page-cluster-path';
 import type { Props } from './schedule-page-header-cluster-selector.types';
-import decodeUrlParams from '@/utils/decode-url-params';
 
 export default function SchedulePageHeaderClusterSelector({
   domain,

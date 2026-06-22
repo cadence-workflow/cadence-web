@@ -1,7 +1,7 @@
 import { RequestError } from '@/utils/request/request-error';
 
-import { type SchedulePageTabErrorConfig } from '../schedule-page-tabs-error/schedule-page-tabs-error.types';
 import { type SchedulePageTabsParams } from '../schedule-page-tabs/schedule-page-tabs.types';
+import { type SchedulePageTabErrorConfig } from '../schedule-page-tabs-error/schedule-page-tabs-error.types';
 
 export default function getSchedulePageTabErrorConfig(
   error: Error,
