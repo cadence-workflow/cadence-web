@@ -7,6 +7,7 @@ const config = {
     '\\.config\\.ts$',
   ],
   coverageProvider: 'babel',
+  coverageReporters: ['text-summary'],
   coverageThreshold: {
     global: {
       branches: 85,
