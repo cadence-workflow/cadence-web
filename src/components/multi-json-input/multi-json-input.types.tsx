@@ -5,4 +5,5 @@ export type Props = {
   onChange: (value: string[]) => void;
   error?: string | Array<string | undefined>;
   addButtonText?: string;
+  showLeftBorder?: boolean;
 };

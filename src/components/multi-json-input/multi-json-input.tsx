@@ -2,13 +2,12 @@
 import React, { useCallback, useMemo } from 'react';
 
 import { Button } from 'baseui/button';
-import { FormControl } from 'baseui/form-control';
 import { Textarea } from 'baseui/textarea';
 import { MdAdd, MdDeleteOutline } from 'react-icons/md';
 
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 
-import { cssStyles, overrides } from './multi-json-input.styles';
+import { cssStyles, overrides, styled } from './multi-json-input.styles';
 import type { Props } from './multi-json-input.types';
 
 export default function MultiJsonInput({
@@ -18,6 +17,7 @@ export default function MultiJsonInput({
   onChange,
   error,
   addButtonText = 'Add',
+  showLeftBorder = true,
 }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
 
@@ -30,11 +30,6 @@ export default function MultiJsonInput({
     },
     [error]
   );
-
-  const getGlobalErrorMessage = useCallback((): string | undefined => {
-    if (typeof error === 'string') return error;
-    return undefined;
-  }, [error]);
 
   const displayValue = useMemo(() => {
     return value && value.length > 0 ? value : [''];
@@ -80,52 +75,52 @@ export default function MultiJsonInput({
   }, [displayValue]);
 
   return (
-    <FormControl label={label} error={getGlobalErrorMessage()}>
-      <div className={cls.container}>
-        {displayValue.map((inputValue: string, index: number) => (
-          <div key={index} className={cls.inputRow}>
-            <div className={cls.inputContainer}>
-              <Textarea
-                aria-label={label}
-                overrides={overrides.jsonInput}
-                value={inputValue}
-                onChange={(e) => handleInputChange(index, e.target.value)}
-                placeholder={placeholder}
-                size="compact"
-                error={getInputError(index)}
-              />
-            </div>
-            <div className={cls.buttonContainer}>
-              <Button
-                size="mini"
-                kind="tertiary"
-                shape="circle"
-                onClick={() => {
-                  handleDeleteInput(index);
-                }}
-                disabled={isDeleteDisabled}
-                aria-label={
-                  displayValue.length === 1 ? 'Clear input' : 'Delete input'
-                }
-              >
-                <MdDeleteOutline size={16} />
-              </Button>
-            </div>
+    <styled.Container $showLeftBorder={showLeftBorder}>
+      {displayValue.map((inputValue: string, index: number) => (
+        <div key={index} className={cls.inputRow}>
+          <div className={cls.inputContainer}>
+            <Textarea
+              aria-label={label}
+              overrides={overrides.jsonInput}
+              value={inputValue}
+              onChange={(e) => handleInputChange(index, e.target.value)}
+              placeholder={placeholder}
+              size="compact"
+              error={getInputError(index)}
+            />
           </div>
-        ))}
-        <div className={cls.addButtonContainer}>
-          <Button
-            size="mini"
-            kind="secondary"
-            shape="pill"
-            onClick={handleAddInput}
-            disabled={!canAddMore}
-            startEnhancer={<MdAdd size={16} />}
-          >
-            {addButtonText}
-          </Button>
+          <div className={cls.buttonContainer}>
+            <Button
+              type="button"
+              size="mini"
+              kind="tertiary"
+              shape="circle"
+              onClick={() => {
+                handleDeleteInput(index);
+              }}
+              disabled={isDeleteDisabled}
+              aria-label={
+                displayValue.length === 1 ? 'Clear input' : 'Delete input'
+              }
+            >
+              <MdDeleteOutline size={16} />
+            </Button>
+          </div>
         </div>
+      ))}
+      <div className={cls.addButtonContainer}>
+        <Button
+          type="button"
+          size="mini"
+          kind="secondary"
+          shape="pill"
+          onClick={handleAddInput}
+          disabled={!canAddMore}
+          startEnhancer={<MdAdd size={16} />}
+        >
+          {addButtonText}
+        </Button>
       </div>
-    </FormControl>
+    </styled.Container>
   );
 }

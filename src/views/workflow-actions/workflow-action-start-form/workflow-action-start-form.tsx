@@ -66,6 +66,8 @@ export default function WorkflowActionStartForm({
   const isTaskListLoading =
     (isDebouncePending && taskListName.length > 0) || isTaskListQueryLoading;
 
+  const inputError = getMultiJsonErrorMessage(fieldErrors, 'input');
+
   const taskListCaptionMessage = getTaskListCaptionMessage({
     taskListData,
     isTaskListLoading,
@@ -207,21 +209,27 @@ export default function WorkflowActionStartForm({
         />
       </FormControl>
 
-      <Controller
-        name="input"
-        control={control}
-        defaultValue={['']}
-        render={({ field }) => (
-          <MultiJsonInput
-            label="JSON input arguments (optional)"
-            placeholder="Enter JSON input"
-            value={field.value}
-            onChange={field.onChange}
-            error={getMultiJsonErrorMessage(fieldErrors, 'input')}
-            addButtonText="Add argument"
-          />
-        )}
-      />
+      {/* TODO(refactor): wrap getMultiJsonErrorMessage + FormControl pattern in a shared helper once schedules uses the same field */}
+      <FormControl label="JSON input arguments (optional)">
+        <Controller
+          name="input"
+          control={control}
+          defaultValue={['']}
+          render={({ field, formState: { isSubmitted } }) => (
+            <MultiJsonInput
+              label="JSON input arguments (optional)"
+              placeholder="Enter JSON input"
+              value={field.value}
+              onChange={(value) => {
+                field.onChange(value);
+                if (isSubmitted) trigger('input');
+              }}
+              error={inputError}
+              addButtonText="Add argument"
+            />
+          )}
+        />
+      </FormControl>
 
       <FormControl label="Schedule Time">
         <Controller
@@ -288,12 +296,12 @@ export default function WorkflowActionStartForm({
           <Controller
             name="cronSchedule"
             control={control}
-            render={({ field }) => (
+            render={({ field, formState: { isSubmitted } }) => (
               <CronScheduleInput
                 value={field.value}
                 onChange={(value) => {
                   field.onChange(value);
-                  trigger('cronSchedule');
+                  if (isSubmitted) trigger('cronSchedule');
                 }}
                 onBlur={field.onBlur}
                 error={getFieldObjectErrorMessages(fieldErrors, 'cronSchedule')}
