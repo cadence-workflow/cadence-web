@@ -31,7 +31,7 @@ jest.mock('../../config/schedule-page-tabs.config', () => ({
   runs: {
     title: 'Runs',
     artwork: () => null,
-    content: null,
+    content: () => <div>runs-tab-content</div>,
     getErrorConfig: () => ({ message: 'runs error' }),
   },
 }));
@@ -46,10 +46,10 @@ describe(SchedulePageTabContent.name, () => {
     ).toBeInTheDocument();
   });
 
-  it('renders empty state for runs tab when content is null', () => {
+  it('renders selected tab content for runs tab', () => {
     setup({ scheduleTab: 'runs' });
     const { notFound } = jest.requireMock('next/navigation');
-    expect(screen.queryByText('runs-tab-content')).not.toBeInTheDocument();
+    expect(screen.getByText('runs-tab-content')).toBeInTheDocument();
     expect(notFound).not.toHaveBeenCalled();
   });
 
