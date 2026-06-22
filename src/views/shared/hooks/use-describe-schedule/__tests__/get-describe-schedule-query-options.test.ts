@@ -99,4 +99,13 @@ describe(getDescribeScheduleQueryOptions.name, () => {
 
     expect(options.queryKey).toEqual(['describeSchedule', params]);
   });
+
+  it('passes through query options configuration', () => {
+    const options = getDescribeScheduleQueryOptions({
+      ...params,
+      throwOnError: true,
+    });
+
+    expect(options.throwOnError).toBe(true);
+  });
 });

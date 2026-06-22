@@ -21,10 +21,8 @@ export default function SchedulePageHeaderClusterSelector({
     cluster,
   });
 
-  const encodedParams = useParams<SchedulePageTabsParams>();
-  const decodedParams = decodeUrlParams(
-    encodedParams
-  ) as SchedulePageTabsParams;
+  const routeParams = useParams<SchedulePageTabsParams>();
+  const decodedParams = decodeUrlParams(routeParams) as SchedulePageTabsParams;
 
   const buildPathForCluster = (newCluster: string) =>
     buildSchedulePageClusterPath({

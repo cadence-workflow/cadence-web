@@ -1,54 +1,61 @@
 import React from 'react';
 
-import { render, screen, userEvent } from '@/test-utils/rtl';
+import * as navigationModule from 'next/navigation';
+
+import { render, screen } from '@/test-utils/rtl';
+
+import { mockSchedulePageTabsConfig } from '../../__fixtures__/schedule-page-tabs-config';
+import SchedulePageTabsError from '../schedule-page-tabs-error';
+
+jest.mock('@/components/error-panel/error-panel', () =>
+  jest.fn(({ message }: { message: string }) => <div>{message}</div>)
+);
 
 jest.mock('next/navigation', () => ({
   ...jest.requireActual('next/navigation'),
-  useRouter: () => ({
-    push: jest.fn(),
-    back: jest.fn(),
-    replace: jest.fn(),
-    forward: jest.fn(),
-    prefetch: jest.fn(),
-    refresh: jest.fn(),
-  }),
+  useParams: jest.fn(() => ({
+    domain: 'test-domain',
+    cluster: 'test-cluster',
+    scheduleId: 'my-schedule',
+    scheduleTab: 'details',
+  })),
 }));
 
-import SchedulePageTabsError from '../schedule-page-tabs-error';
+jest.mock(
+  '../../config/schedule-page-tabs.config',
+  () => mockSchedulePageTabsConfig
+);
 
 describe(SchedulePageTabsError.name, () => {
-  it('renders the error message', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('renders tab error config when schedule tab exists in config', () => {
+    setup();
+
+    expect(screen.getByText('details error')).toBeInTheDocument();
+  });
+
+  it('renders generic error when schedule tab is missing from config', () => {
+    jest.spyOn(navigationModule, 'useParams').mockReturnValue({
+      domain: 'test-domain',
+      cluster: 'test-cluster',
+      scheduleId: 'my-schedule',
+      scheduleTab: 'invalid',
+    });
     setup();
 
     expect(
       screen.getByText('Failed to load schedule content')
     ).toBeInTheDocument();
   });
-
-  it('renders a Retry button', () => {
-    setup();
-
-    expect(screen.getByRole('button', { name: 'Retry' })).toBeInTheDocument();
-  });
-
-  it('calls reset when Retry is clicked', async () => {
-    const reset = jest.fn();
-    const { user } = setup({ reset });
-
-    await user.click(screen.getByRole('button', { name: 'Retry' }));
-
-    expect(reset).toHaveBeenCalledTimes(1);
-  });
 });
 
 function setup({
   error = new Error('Something went wrong'),
-  reset = jest.fn(),
 }: {
   error?: Error;
-  reset?: jest.Mock;
 } = {}) {
-  const user = userEvent.setup();
-  render(<SchedulePageTabsError error={error} reset={reset} />);
-  return { user };
+  render(<SchedulePageTabsError error={error} reset={() => {}} />);
 }

@@ -15,7 +15,7 @@ export type DescribeScheduleQueryKey = [
 
 export type UseDescribeScheduleParams = DescribeScheduleRouteParams & {
   runningScheduleRefetchIntervalMs?: number;
-};
+} & Partial<UseDescribeScheduleQueryOptions>;
 
 export type UseDescribeScheduleQueryOptions = UseQueryOptions<
   DescribeScheduleResponse,
