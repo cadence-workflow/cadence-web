@@ -1,5 +1,4 @@
 FROM node:24-bookworm-slim  AS base
-ENV npm_config_min_release_age=14
 
 FROM base AS dev
 # Install git + CA bundle so git https can verify TLS
@@ -7,6 +6,9 @@ RUN apt-get update \
   && apt-get install -y --no-install-recommends git ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
+# Supply-chain cooldown: only effective where the lockfile is generated
+# (npm install), i.e. local dev inside this container. No-op for npm ci.
+ENV npm_config_min_release_age=14
 COPY . .
 
 
@@ -17,7 +19,7 @@ RUN apt-get update \
   && apt-get install -y --no-install-recommends git ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm ci --maxsockets 1000
 RUN npm run install-idl
 COPY . .
 

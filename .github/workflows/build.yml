@@ -9,9 +9,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    env:
-      npm_config_min_release_age: '14'
-
     steps:
     - uses: actions/checkout@v4
     - name: Use Node.js
