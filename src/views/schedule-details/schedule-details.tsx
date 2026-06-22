@@ -9,6 +9,7 @@ import useDescribeSchedule from '@/views/shared/hooks/use-describe-schedule/use-
 
 import { type ScheduleDetailRowConfig } from '../schedule-page/config/schedule-detail-sections.types';
 import scheduleDetailsSectionsConfig from '../schedule-page/config/schedule-details-sections.config';
+import SchedulePageBackfillsTable from '../schedule-page/schedule-page-backfills-table/schedule-page-backfills-table';
 import SchedulePageDetailsSection from '../schedule-page/schedule-page-details-section/schedule-page-details-section';
 
 import { cssStyles } from './schedule-details.styles';
@@ -53,6 +54,9 @@ export default function ScheduleDetails({ params }: Props) {
             />
           );
         })}
+        <SchedulePageBackfillsTable
+          backfills={data.info?.ongoingBackfills ?? []}
+        />
       </div>
     </PageSection>
   );
