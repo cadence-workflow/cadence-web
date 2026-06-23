@@ -30,7 +30,7 @@ export default function SchedulePagePausedBanner(props: Props) {
     <PageSection>
       <Banner
         hierarchy={HIERARCHY.low}
-        kind={KIND.info}
+        kind={KIND.warning}
         title="This schedule is paused"
         artwork={{ icon: () => <MdPause size={20} aria-hidden /> }}
         overrides={overrides.banner}
