@@ -69,4 +69,27 @@ export default function refineCreateScheduleForm(
       path: ['startTime'],
     });
   }
+
+  if (data.memo && data.memo.trim() !== '') {
+    try {
+      const parsedMemo = JSON.parse(data.memo);
+      const isObject =
+        typeof parsedMemo === 'object' &&
+        parsedMemo !== null &&
+        !Array.isArray(parsedMemo);
+      if (!isObject) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Memo must be a JSON object',
+          path: ['memo'],
+        });
+      }
+    } catch {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Memo must be valid JSON',
+        path: ['memo'],
+      });
+    }
+  }
 }

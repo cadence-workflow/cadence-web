@@ -31,6 +31,8 @@ const cssStylesObj = {
     display: 'flex',
     flexDirection: 'column',
     gap: theme.sizing.scale600,
+  }),
+  containerWithBorder: (theme: Theme) => ({
     borderLeft: `2px solid ${theme.colors.borderOpaque}`,
     paddingLeft: theme.sizing.scale600,
   }),

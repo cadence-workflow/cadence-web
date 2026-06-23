@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { StatefulPanel } from 'baseui/accordion';
 import { Button } from 'baseui/button';
@@ -10,14 +10,20 @@ import { mergeOverrides } from 'baseui/helpers/overrides';
 import { Input } from 'baseui/input';
 import { Radio, RadioGroup } from 'baseui/radio';
 import { Select } from 'baseui/select';
+import { Textarea } from 'baseui/textarea';
 import { LabelXSmall } from 'baseui/typography';
 import { Controller, useWatch } from 'react-hook-form';
 import { MdExpandLess, MdExpandMore } from 'react-icons/md';
 
 import { ScheduleCatchUpPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleCatchUpPolicy';
 import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
+import useSearchAttributes from '@/views/shared/hooks/use-search-attributes/use-search-attributes';
 import DomainSchedulesHorizontalField from '@/views/domain-schedules/domain-schedules-horizontal-field/domain-schedules-horizontal-field';
+// TODO(refactor): getSearchAttributesErrorMessage is imported from start-workflow helpers — extract to shared utils
 import getFieldErrorMessage from '@/views/workflow-actions/workflow-action-start-form/helpers/get-field-error-message';
+import getSearchAttributesErrorMessage from '@/views/workflow-actions/workflow-action-start-form/helpers/get-search-attributes-error-message';
+// TODO(refactor): WorkflowActionsSearchAttributes is imported from start-workflow feature — extract shared component under views/shared
+import WorkflowActionsSearchAttributes from '@/views/workflow-actions/workflow-actions-search-attributes/workflow-actions-search-attributes';
 
 import {
   CATCH_UP_POLICY_OPTIONS,
@@ -39,7 +45,23 @@ export default function DomainSchedulesCreateAdvancedForm({
   fieldErrors,
   trigger,
   isSubmitted = false,
+  cluster,
 }: Props) {
+  const { data: searchAttributesData, isLoading: isLoadingSearchAttributes } =
+    useSearchAttributes({ cluster, category: 'custom' });
+  const searchAttributesError = getSearchAttributesErrorMessage(
+    fieldErrors,
+    'searchAttributes'
+  );
+
+  const searchAttributesOptions = useMemo(() => {
+    return Object.entries(searchAttributesData?.keys || {}).map(
+      ([name, valueType]) => ({
+        name,
+        valueType,
+      })
+    );
+  }, [searchAttributesData?.keys]);
   const overlapPolicy = useWatch({
     control,
     name: 'overlapPolicy',
@@ -367,6 +389,60 @@ export default function DomainSchedulesCreateAdvancedForm({
               </FormControl>
             </styled.SchedulePeriodField>
           </styled.SchedulePeriodRow>
+        </DomainSchedulesHorizontalField>
+
+        <DomainSchedulesHorizontalField
+          label="Memo (optional)"
+          description="JSON object that is attached to each started workflow."
+          htmlFor="create-schedule-form-memo"
+          error={getFieldErrorMessage(fieldErrors, 'memo')}
+        >
+          <Controller
+            name="memo"
+            control={control}
+            render={({ field: { ref, ...field } }) => (
+              <Textarea
+                {...field}
+                value={field.value ?? ''}
+                id="create-schedule-form-memo"
+                // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
+                inputRef={ref}
+                aria-label="Memo"
+                onChange={(e) => field.onChange(e.target.value)}
+                onBlur={field.onBlur}
+                error={Boolean(getFieldErrorMessage(fieldErrors, 'memo'))}
+                size="compact"
+                placeholder='{"key":"value"}'
+                rows={3}
+              />
+            )}
+          />
+        </DomainSchedulesHorizontalField>
+
+        <DomainSchedulesHorizontalField
+          label="Search attributes (optional)"
+          description="Additional indexed attributes attached to each started workflow."
+          error={
+            typeof searchAttributesError === 'string'
+              ? searchAttributesError
+              : undefined
+          }
+        >
+          <Controller
+            name="searchAttributes"
+            control={control}
+            defaultValue={[]}
+            render={({ field }) => (
+              <WorkflowActionsSearchAttributes
+                value={field.value}
+                onChange={field.onChange}
+                searchAttributes={searchAttributesOptions}
+                isLoading={isLoadingSearchAttributes}
+                error={searchAttributesError}
+                showSectionBorder={false}
+              />
+            )}
+          />
         </DomainSchedulesHorizontalField>
 
         <DomainSchedulesHorizontalField
