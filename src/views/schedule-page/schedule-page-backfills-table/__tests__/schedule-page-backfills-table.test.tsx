@@ -22,10 +22,22 @@ const mockBackfills: BackfillInfo[] = [
   },
 ];
 
+jest.mock('next/link', () =>
+  function MockLink({
+    href,
+    children,
+  }: {
+    href: string;
+    children: React.ReactNode;
+  }) {
+    return <a href={href}>{children}</a>;
+  }
+);
+
 describe(SchedulePageBackfillsTable.name, () => {
-  it('renders section title', () => {
+  it('renders section title with count', () => {
     setup({});
-    expect(screen.getByText('Ongoing backfills')).toBeInTheDocument();
+    expect(screen.getByText('Ongoing backfills (2)')).toBeInTheDocument();
   });
 
   it('renders column headers when backfills are present', () => {
@@ -33,19 +45,23 @@ describe(SchedulePageBackfillsTable.name, () => {
     expect(screen.getByText('Backfill ID')).toBeInTheDocument();
     expect(screen.getByText('Start time')).toBeInTheDocument();
     expect(screen.getByText('End time')).toBeInTheDocument();
-    expect(screen.getByText('Progress')).toBeInTheDocument();
+    expect(screen.getByText('Completed')).toBeInTheDocument();
   });
 
-  it('renders backfill IDs from fixture data', () => {
+  it('renders backfill IDs as links', () => {
     setup({});
-    expect(screen.getByText('backfill-abc-123')).toBeInTheDocument();
-    expect(screen.getByText('backfill-def-456')).toBeInTheDocument();
+    const link = screen.getByRole('link', { name: 'backfill-abc-123' });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute(
+      'href',
+      `/domains/test-domain/test-cluster/workflows?input=query&query=${encodeURIComponent('CadenceScheduleBackfillID="backfill-abc-123"')}`
+    );
   });
 
-  it('renders progress as completed/total', () => {
+  it('renders completed count as "X of Y"', () => {
     setup({});
-    expect(screen.getByText('3 / 10')).toBeInTheDocument();
-    expect(screen.getByText('0 / 5')).toBeInTheDocument();
+    expect(screen.getByText('3 of 10')).toBeInTheDocument();
+    expect(screen.getByText('0 of 5')).toBeInTheDocument();
   });
 
   it('renders em dash for null end time', () => {
@@ -55,20 +71,21 @@ describe(SchedulePageBackfillsTable.name, () => {
 
   it('renders nothing when no backfills', () => {
     setup({ backfills: [] });
-    expect(screen.queryByText('Ongoing backfills')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/ongoing backfills/i)
+    ).not.toBeInTheDocument();
     expect(screen.queryByText('Backfill ID')).not.toBeInTheDocument();
   });
 
   it('collapses content when toggle button is clicked', async () => {
     const { user } = setup({});
-    expect(screen.getByText('backfill-abc-123')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'backfill-abc-123' })).toBeInTheDocument();
 
     await user.click(
       screen.getByRole('button', { name: /collapse ongoing backfills/i })
     );
 
-    expect(screen.queryByText('backfill-abc-123')).not.toBeInTheDocument();
-    expect(screen.queryByText('No ongoing backfills')).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'backfill-abc-123' })).not.toBeInTheDocument();
   });
 
   it('expands content again after collapsing', async () => {
@@ -81,12 +98,18 @@ describe(SchedulePageBackfillsTable.name, () => {
       screen.getByRole('button', { name: /expand ongoing backfills/i })
     );
 
-    expect(screen.getByText('backfill-abc-123')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'backfill-abc-123' })).toBeInTheDocument();
   });
 });
 
 function setup({ backfills = mockBackfills }: { backfills?: BackfillInfo[] }) {
   const user = userEvent.setup();
-  render(<SchedulePageBackfillsTable backfills={backfills} />);
+  render(
+    <SchedulePageBackfillsTable
+      backfills={backfills}
+      domain="test-domain"
+      cluster="test-cluster"
+    />
+  );
   return { user };
 }

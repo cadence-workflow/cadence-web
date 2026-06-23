@@ -56,6 +56,8 @@ export default function ScheduleDetails({ params }: Props) {
         })}
         <SchedulePageBackfillsTable
           backfills={data.info?.ongoingBackfills ?? []}
+          domain={params.domain}
+          cluster={params.cluster}
         />
       </div>
     </PageSection>

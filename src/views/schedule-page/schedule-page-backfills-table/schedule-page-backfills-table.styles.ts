@@ -1,3 +1,7 @@
+import { type Theme } from 'baseui';
+import { type TableOverrides } from 'baseui/table-semantic';
+import { type StyleObject } from 'styletron-react';
+
 import type {
   StyletronCSSObject,
   StyletronCSSObjectOf,
@@ -16,3 +20,21 @@ const cssStylesObj = {
 
 export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> =
   cssStylesObj;
+
+export const overrides = {
+  table: {
+    TableHeadCell: {
+      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+        ...$theme.typography.LabelXSmall,
+        color: $theme.colors.contentTertiary,
+      }),
+    },
+    TableBodyRow: {
+      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+        ':not(:last-child)': {
+          borderBottom: `1px solid ${$theme.colors.borderOpaque}`,
+        },
+      }),
+    },
+  } satisfies TableOverrides,
+};

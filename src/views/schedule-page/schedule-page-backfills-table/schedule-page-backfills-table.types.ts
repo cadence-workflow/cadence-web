@@ -6,4 +6,6 @@ export type BackfillInfo = NonNullable<
 
 export type Props = {
   backfills: BackfillInfo[];
+  domain: string;
+  cluster: string;
 };
