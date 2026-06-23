@@ -19,18 +19,7 @@ describe(resolveSelectedBatchAction.name, () => {
     ).toEqual({ selectedActionId: 'run-1', selectedWorkflowId: 'wf-1' });
   });
 
-  it('selects the URL action and reads its workflowId from the list', () => {
-    expect(
-      resolveSelectedBatchAction({
-        batchActions: ACTIONS,
-        batchActionId: 'run-2',
-        batchActionWorkflowId: undefined,
-        isDraftSelected: false,
-      })
-    ).toEqual({ selectedActionId: 'run-2', selectedWorkflowId: 'wf-2' });
-  });
-
-  it('uses the workflowId from the URL for an action not in the list (deep link)', () => {
+  it('selects the runId + workflowId pair from the URL (deep link)', () => {
     expect(
       resolveSelectedBatchAction({
         batchActions: ACTIONS,
@@ -41,15 +30,26 @@ describe(resolveSelectedBatchAction.name, () => {
     ).toEqual({ selectedActionId: 'run-999', selectedWorkflowId: 'wf-999' });
   });
 
-  it('returns a null workflowId when the action is not in the list and the URL omits it', () => {
+  it('resolves to nothing when the URL has a runId but no workflowId', () => {
     expect(
       resolveSelectedBatchAction({
         batchActions: ACTIONS,
-        batchActionId: 'run-999',
+        batchActionId: 'run-2',
         batchActionWorkflowId: undefined,
         isDraftSelected: false,
       })
-    ).toEqual({ selectedActionId: 'run-999', selectedWorkflowId: null });
+    ).toEqual({ selectedActionId: null, selectedWorkflowId: null });
+  });
+
+  it('resolves to nothing when the URL has a workflowId but no runId', () => {
+    expect(
+      resolveSelectedBatchAction({
+        batchActions: ACTIONS,
+        batchActionId: undefined,
+        batchActionWorkflowId: 'wf-999',
+        isDraftSelected: false,
+      })
+    ).toEqual({ selectedActionId: null, selectedWorkflowId: null });
   });
 
   it('tracks the first action while a draft is selected', () => {

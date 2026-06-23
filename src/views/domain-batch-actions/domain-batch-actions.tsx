@@ -93,13 +93,20 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
         : false,
   });
 
-  // The selected action can't be loaded: either we have no workflowId to
-  // describe it with (deep link to a runId not in the list and no workflowId in
-  // the URL), or describe reported it isn't a batch action / doesn't exist.
+  // The URL carries only one of the two required ids, so no action could be
+  // resolved (see resolveSelectedBatchAction).
+  const isInvalidSelection =
+    !isDraftSelected &&
+    !selectedActionId &&
+    (Boolean(queryParams.batchActionId) ||
+      Boolean(queryParams.batchActionWorkflowId));
+
+  // The selection can't be shown: it's an invalid URL pair, or describe
+  // reported the action isn't a batch action / doesn't exist.
   const isSelectedActionNotFound =
     !isDraftSelected &&
-    !!selectedActionId &&
-    (!selectedWorkflowId || batchActionDetailError?.status === 404);
+    (isInvalidSelection ||
+      (!!selectedActionId && batchActionDetailError?.status === 404));
 
   if (isLoading) {
     return <SectionLoadingIndicator />;
@@ -179,7 +186,7 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
           />
         )}
         {!isDraftSelected &&
-          selectedActionId &&
+          (selectedActionId || isInvalidSelection) &&
           (isSelectedActionNotFound ? (
             <ErrorPanel
               message="Batch action not found"

@@ -16,6 +16,7 @@ import {
   mockDescribeBatchOperationWorkflowFailedWithPendingProgress,
   mockDescribeBatchOperationWorkflowRunning,
   mockDescribeBatchOperationWorkflowTerminated,
+  mockDescribeBatchOperationWorkflowOtherDomain,
   mockDescribeNonBatchWorkflow,
   MOCK_BATCH_PROGRESS,
 } from '../__fixtures__/mock-describe-batch-operation-workflow';
@@ -274,6 +275,17 @@ describe(describeBatchAction.name, () => {
   it('returns 404 when the workflow is not a batch action', async () => {
     const { res } = await setup({
       describeResponse: mockDescribeNonBatchWorkflow,
+    });
+
+    expect(res.status).toEqual(404);
+    expect(await res.json()).toEqual(
+      expect.objectContaining({ message: 'Batch action not found' })
+    );
+  });
+
+  it('returns 404 when the batch action belongs to a different domain', async () => {
+    const { res } = await setup({
+      describeResponse: mockDescribeBatchOperationWorkflowOtherDomain,
     });
 
     expect(res.status).toEqual(404);

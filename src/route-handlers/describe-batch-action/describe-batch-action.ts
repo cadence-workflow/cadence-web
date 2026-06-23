@@ -42,7 +42,10 @@ export async function describeBatchAction(
       }),
     ]);
 
-    const detail = getBatchActionDetailFromWorkflow(describeResponse);
+    const detail = getBatchActionDetailFromWorkflow(
+      describeResponse,
+      params.domain
+    );
     if (!detail) {
       return NextResponse.json(
         { message: 'Batch action not found' },

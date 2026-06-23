@@ -181,6 +181,7 @@ describe(DomainBatchActions.name, () => {
       {
         ...mockDomainPageQueryParamsValues,
         batchActionId: '4',
+        batchActionWorkflowId: 'wf-4',
         batchQuery: '',
       },
       mockSetQueryParams,
@@ -249,7 +250,7 @@ describe(DomainBatchActions.name, () => {
     });
   });
 
-  it('shows a not-found panel when the URL has a runId with no workflowId and it is not in the list', async () => {
+  it('shows a not-found panel when the URL has only one of runId / workflowId', async () => {
     mockUsePageQueryParams.mockReturnValue([
       {
         ...mockDomainPageQueryParamsValues,

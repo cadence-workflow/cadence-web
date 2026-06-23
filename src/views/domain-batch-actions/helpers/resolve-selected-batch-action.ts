@@ -1,10 +1,13 @@
 import { type BatchActionListItem } from '@/route-handlers/list-batch-actions/list-batch-actions.types';
 
 /**
- * Resolves which batch action the detail panel should show, from the URL params
- * and the loaded list. The action is identified by its runId (the URL identity),
- * defaulting to the first loaded action. describe also needs the workflowId:
- * it comes from the URL (deep links carry it), or from the matching list item.
+ * Resolves which batch action the detail panel should show. A URL selection is
+ * the (runId, workflowId) pair carried together by batchActionId +
+ * batchActionWorkflowId:
+ * - both ids present → that action;
+ * - exactly one id present → invalid selection, resolves to nothing so the view
+ *   can show an error instead of the wrong action;
+ * - neither present → default to the first loaded action.
  */
 export default function resolveSelectedBatchAction({
   batchActions,
@@ -17,16 +20,18 @@ export default function resolveSelectedBatchAction({
   batchActionWorkflowId: string | undefined;
   isDraftSelected: boolean;
 }): { selectedActionId: string | null; selectedWorkflowId: string | null } {
-  const firstActionId = batchActions[0]?.runId ?? null;
-  const selectedActionId = isDraftSelected
-    ? firstActionId
-    : batchActionId || firstActionId;
+  if (!isDraftSelected && (batchActionId || batchActionWorkflowId)) {
+    return batchActionId && batchActionWorkflowId
+      ? {
+          selectedActionId: batchActionId,
+          selectedWorkflowId: batchActionWorkflowId,
+        }
+      : { selectedActionId: null, selectedWorkflowId: null };
+  }
 
-  const selectedWorkflowId =
-    batchActionWorkflowId ||
-    batchActions.find((action) => action.runId === selectedActionId)
-      ?.workflowId ||
-    null;
-
-  return { selectedActionId, selectedWorkflowId };
+  const firstAction = batchActions[0];
+  return {
+    selectedActionId: firstAction?.runId ?? null,
+    selectedWorkflowId: firstAction?.workflowId ?? null,
+  };
 }
