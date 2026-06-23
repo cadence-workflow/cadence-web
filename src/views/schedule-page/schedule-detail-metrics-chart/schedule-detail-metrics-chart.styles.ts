@@ -28,14 +28,40 @@ export const styled = {
     height: `${CHART_HEIGHT_PX}px`,
     backgroundColor: $theme.colors.backgroundSecondary,
   })),
-  ChartCanvas: createStyled('div', () => ({
+  ChartCanvas: createStyled('div', ({ $isPanning }: { $isPanning?: boolean }) => ({
     width: '100%',
     height: '100%',
+    cursor: $isPanning ? 'grabbing' : 'grab',
+    touchAction: 'none',
   })),
   ChartSvg: createStyled('svg', () => ({
     display: 'block',
     width: '100%',
     height: '100%',
+  })),
+
+  LoadingOverlay: createStyled('div', () => ({
+    position: 'absolute',
+    inset: 0,
+    zIndex: 1,
+  })),
+  FetchLoadingOverlay: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+    position: 'absolute',
+    top: $theme.sizing.scale600,
+    left: $theme.sizing.scale600,
+    zIndex: 2,
+    display: 'flex',
+    alignItems: 'center',
+    gap: $theme.sizing.scale200,
+    paddingTop: $theme.sizing.scale100,
+    paddingBottom: $theme.sizing.scale100,
+    paddingLeft: $theme.sizing.scale300,
+    paddingRight: $theme.sizing.scale300,
+    borderRadius: $theme.borders.radius200,
+    backgroundColor: $theme.colors.backgroundPrimary,
+    boxShadow: $theme.lighting.shadow400,
+    ...$theme.typography.LabelSmall,
+    color: $theme.colors.contentSecondary,
   })),
   EmptyState: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
@@ -57,7 +83,18 @@ const toolbarButtonRootOverrides = {
   }),
 };
 
+
+const loadingSkeletonOverrides = {
+  Root: {
+    style: (): StyleObject => ({
+      width: '100%',
+      height: '100%',
+    }),
+  },
+};
+
 export const overrides = {
+  loadingSkeleton: loadingSkeletonOverrides,
   toolbarButton: {
     Root: toolbarButtonRootOverrides,
   } satisfies ButtonOverrides,
