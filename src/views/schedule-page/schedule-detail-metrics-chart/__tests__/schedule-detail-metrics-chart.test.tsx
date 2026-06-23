@@ -5,9 +5,11 @@ import { render, screen, within } from '@/test-utils/rtl';
 import {
   CHART_EMPTY_STATE_MESSAGE,
   CHART_REGION_ARIA_LABEL,
+  CHART_SERIES_TEST_IDS,
   CHART_TOOLBAR_ARIA_LABEL,
   CHART_TOOLBAR_BUTTON_LABELS,
 } from '../schedule-detail-metrics-chart.constants';
+import { SCHEDULE_METRICS_CHART_FIXTURE_NOW_MS } from '../__fixtures__/schedule-detail-metrics-chart-fixture';
 import ScheduleDetailMetricsChart from '../schedule-detail-metrics-chart';
 
 jest.mock('@visx/responsive', () => ({
@@ -19,18 +21,36 @@ jest.mock('@visx/responsive', () => ({
 }));
 
 describe(ScheduleDetailMetricsChart.name, () => {
-  it('renders chart region with empty state when there is no chart data', () => {
+  beforeEach(() => {
+    jest.useFakeTimers({ now: SCHEDULE_METRICS_CHART_FIXTURE_NOW_MS });
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it('renders chart canvas with static fixture series markers', () => {
     setup();
 
     expect(
       screen.getByRole('region', { name: CHART_REGION_ARIA_LABEL })
     ).toBeInTheDocument();
-    expect(screen.getByRole('status')).toHaveTextContent(
-      CHART_EMPTY_STATE_MESSAGE
-    );
     expect(
-      screen.queryByTestId('schedule-metrics-chart-canvas')
-    ).not.toBeInTheDocument();
+      screen.getByTestId('schedule-metrics-chart-canvas')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId(CHART_SERIES_TEST_IDS.svg)
+    ).toBeInTheDocument();
+    expect(
+      screen.getAllByTestId(CHART_SERIES_TEST_IDS.successfulRunMarker)
+    ).toHaveLength(3);
+    expect(
+      screen.getByTestId(CHART_SERIES_TEST_IDS.missedExecutionMarker)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId(CHART_SERIES_TEST_IDS.nextExecutionMarker)
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
   });
 
   it('renders disabled chart toolbar controls', () => {

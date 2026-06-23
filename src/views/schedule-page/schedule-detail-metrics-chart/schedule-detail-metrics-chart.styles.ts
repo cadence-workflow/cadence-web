@@ -32,6 +32,11 @@ export const styled = {
     width: '100%',
     height: '100%',
   })),
+  ChartSvg: createStyled('svg', () => ({
+    display: 'block',
+    width: '100%',
+    height: '100%',
+  })),
   EmptyState: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
     alignItems: 'center',

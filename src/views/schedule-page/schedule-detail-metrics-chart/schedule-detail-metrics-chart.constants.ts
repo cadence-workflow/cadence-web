@@ -24,3 +24,17 @@ export const CHART_FUTURE_GUTTER_MS = 30 * 60_000;
 
 /** Horizontal inset applied to the chart drawable area (px). */
 export const CHART_SIDE_PADDING_PX = 24;
+
+export const CHART_SERIES_TEST_IDS = {
+  svg: 'schedule-metrics-chart-series-svg',
+  successfulRunMarker: 'schedule-metrics-chart-successful-run-marker',
+  missedExecutionMarker: 'schedule-metrics-chart-missed-execution-marker',
+  nextExecutionMarker: 'schedule-metrics-chart-next-execution-marker',
+} as const;
+
+export const CHART_SERIES_MARKER_RADIUS_PX = 5;
+export const CHART_SERIES_MISSED_MARKER_RADIUS_PX = 6;
+export const CHART_SERIES_NEXT_EXECUTION_STROKE_WIDTH_PX = 2;
+export const CHART_SERIES_MISSED_STROKE_WIDTH_PX = 2;
+export const CHART_SERIES_SUCCESS_Y_RATIO = 0.45;
+export const CHART_SERIES_MISSED_Y_RATIO = 0.65;
