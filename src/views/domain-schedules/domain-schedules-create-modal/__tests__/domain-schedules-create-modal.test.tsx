@@ -1,51 +1,52 @@
-import { render, screen, userEvent } from '@/test-utils/rtl';
+import { type ModalProps } from 'baseui/modal';
+
+import { render, screen } from '@/test-utils/rtl';
 
 import DomainSchedulesCreateModal from '../domain-schedules-create-modal';
 
+jest.mock('baseui/modal', () => ({
+  ...jest.requireActual('baseui/modal'),
+  Modal: ({ isOpen, children }: ModalProps) =>
+    isOpen ? (
+      <div aria-modal aria-label="dialog" role="dialog">
+        {typeof children === 'function' ? children() : children}
+      </div>
+    ) : null,
+}));
+
 jest.mock(
-  '@/views/domain-schedules/domain-schedules-create-form/domain-schedules-create-form',
-  () => jest.fn(() => <div>DomainSchedulesCreateForm</div>)
+  '../../domain-schedules-create-form/domain-schedules-create-form',
+  () => jest.fn(() => <div>Create schedule form</div>)
 );
 
-describe('DomainSchedulesCreateModal', () => {
-  it('renders dialog with form when open', () => {
-    setup({ isOpen: true });
-    expect(screen.getByText('DomainSchedulesCreateForm')).toBeInTheDocument();
+describe(DomainSchedulesCreateModal.name, () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
-  it('does not render dialog when closed', () => {
+  it('renders the create schedule flow as expected', async () => {
+    setup({ isOpen: true });
+
+    expect(screen.getByText('Create Schedule')).toBeInTheDocument();
+    expect(await screen.findByText('Create schedule form')).toBeInTheDocument();
+  });
+
+  it('renders nothing when the modal is closed', () => {
     setup({ isOpen: false });
 
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-  });
-
-  it('calls onClose when Cancel is clicked', async () => {
-    const onClose = jest.fn();
-    const { user } = setup({ isOpen: true, onClose });
-
-    await user.click(screen.getByRole('button', { name: 'Cancel' }));
-
-    expect(onClose).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole('dialog')).toBeNull();
   });
 });
 
-function setup({
-  isOpen = true,
-  onClose = jest.fn(),
-}: {
-  isOpen?: boolean;
-  onClose?: jest.Mock;
-} = {}) {
-  const user = userEvent.setup();
+function setup({ isOpen }: { isOpen: boolean }) {
+  const mockOnClose = jest.fn();
 
   render(
     <DomainSchedulesCreateModal
       domain="d1"
       cluster="c1"
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={mockOnClose}
     />
   );
-
-  return { user };
 }

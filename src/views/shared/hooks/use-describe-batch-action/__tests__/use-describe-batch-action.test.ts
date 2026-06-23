@@ -22,7 +22,7 @@ describe(useDescribeBatchAction.name, () => {
     });
 
     expect(getLatestRequest().pathname).toBe(
-      '/api/domains/cadence-samples/cluster0/batch-actions/wf-1/runs/batch-1'
+      '/api/domains/cadence-samples/cluster0/batch-actions/wf-1/batch-1'
     );
     expect(result.current.data).toEqual(mockResponse);
   });
@@ -40,7 +40,7 @@ describe(useDescribeBatchAction.name, () => {
     });
 
     expect(getLatestRequest().pathname).toBe(
-      '/api/domains/evil%2Fdomain/cluster%200/batch-actions/wf%20with%2Fslash/runs/run%20with%2Fslash'
+      '/api/domains/evil%2Fdomain/cluster%200/batch-actions/wf%20with%2Fslash/run%20with%2Fslash'
     );
   });
 
@@ -80,7 +80,7 @@ function setup({
     {
       endpointsMocks: [
         {
-          path: '/api/domains/:domain/:cluster/batch-actions/:workflowId/runs/:runId',
+          path: '/api/domains/:domain/:cluster/batch-actions/:workflowId/:runId',
           httpMethod: 'GET',
           mockOnce: false,
           httpResolver: async ({ request }) => {

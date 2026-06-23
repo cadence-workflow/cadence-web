@@ -359,7 +359,7 @@ function setup({
           },
         },
         {
-          path: '/api/domains/:domain/:cluster/batch-actions/:workflowId/runs/:runId',
+          path: '/api/domains/:domain/:cluster/batch-actions/:workflowId/:runId',
           httpMethod: 'GET',
           mockOnce: false,
           httpResolver: async ({ params }) => {
@@ -373,7 +373,7 @@ function setup({
               );
             }
             const detail: BatchAction = {
-              runId: params.runId as string,
+              runId: String(params.runId),
               status: 'COMPLETED',
             };
             return HttpResponse.json(detail);

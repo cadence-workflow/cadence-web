@@ -15,6 +15,7 @@ import {
 export default function useCreateSchedule({
   domain,
   cluster,
+  invalidateQueriesTimeout = 2000,
 }: UseCreateScheduleParams): UseCreateScheduleResult {
   const queryClient = useQueryClient();
 
@@ -32,9 +33,12 @@ export default function useCreateSchedule({
         }
       ).then((res) => res.json()),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['listSchedules', { domain, cluster }],
-      });
+      // New schedule doesn't appear immediately in the list, add a delay to ensure it appears.
+      setTimeout(() => {
+        queryClient.invalidateQueries({
+          queryKey: ['listSchedules', { domain, cluster }],
+        });
+      }, invalidateQueriesTimeout);
     },
   });
 }

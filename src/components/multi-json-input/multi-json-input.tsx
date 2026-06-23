@@ -7,7 +7,7 @@ import { MdAdd, MdDeleteOutline } from 'react-icons/md';
 
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 
-import { cssStyles, overrides, styled } from './multi-json-input.styles';
+import { cssStyles, overrides } from './multi-json-input.styles';
 import type { Props } from './multi-json-input.types';
 
 export default function MultiJsonInput({
@@ -20,6 +20,7 @@ export default function MultiJsonInput({
   showLeftBorder = true,
 }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
+  const containerClass = showLeftBorder ? cls.container : cls.containerPlain;
 
   const getInputError = useCallback(
     (index: number): boolean => {
@@ -75,7 +76,7 @@ export default function MultiJsonInput({
   }, [displayValue]);
 
   return (
-    <styled.Container $showLeftBorder={showLeftBorder}>
+    <div className={containerClass}>
       {displayValue.map((inputValue: string, index: number) => (
         <div key={index} className={cls.inputRow}>
           <div className={cls.inputContainer}>
@@ -121,6 +122,6 @@ export default function MultiJsonInput({
           {addButtonText}
         </Button>
       </div>
-    </styled.Container>
+    </div>
   );
 }

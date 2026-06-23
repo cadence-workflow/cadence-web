@@ -1,4 +1,5 @@
 import { type Theme, withStyle } from 'baseui';
+import { type BannerOverrides } from 'baseui/banner';
 import { type ModalOverrides } from 'baseui/modal';
 import { ModalBody, ModalFooter, ModalHeader } from 'baseui/modal';
 import { type StyleObject } from 'styletron-react';
@@ -35,4 +36,14 @@ export const overrides = {
       }),
     },
   } satisfies ModalOverrides,
+  banner: {
+    Root: {
+      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+        marginTop: $theme.sizing.scale400,
+        marginBottom: 0,
+        marginLeft: 0,
+        marginRight: 0,
+      }),
+    },
+  } satisfies BannerOverrides,
 };

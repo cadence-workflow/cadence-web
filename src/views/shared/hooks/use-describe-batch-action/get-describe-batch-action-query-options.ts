@@ -26,7 +26,7 @@ export default function getDescribeBatchActionQueryOptions({
       request(
         `/api/domains/${encodeURIComponent(p.domain)}/${encodeURIComponent(
           p.cluster
-        )}/batch-actions/${encodeURIComponent(p.workflowId)}/runs/${encodeURIComponent(p.runId)}`
+        )}/batch-actions/${encodeURIComponent(p.workflowId)}/${encodeURIComponent(p.runId)}`
       ).then((res) => res.json()),
     ...queryOptions,
   };

@@ -44,25 +44,34 @@ describe(useCreateSchedule.name, () => {
   });
 
   it('invalidates listSchedules queries on success', async () => {
-    const invalidateQueriesSpy = jest.spyOn(
-      QueryClient.prototype,
-      'invalidateQueries'
-    );
+    jest.useFakeTimers();
+    try {
+      const invalidateQueriesSpy = jest.spyOn(
+        QueryClient.prototype,
+        'invalidateQueries'
+      );
 
-    const { result } = setup({});
+      const { result } = setup({});
 
-    await act(async () => {
-      await result.current.mutateAsync(mockCreateScheduleRequestBody);
-    });
+      await act(async () => {
+        await result.current.mutateAsync(mockCreateScheduleRequestBody);
+      });
 
-    expect(invalidateQueriesSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        queryKey: [
-          'listSchedules',
-          { domain: MOCK_DOMAIN, cluster: MOCK_CLUSTER },
-        ],
-      })
-    );
+      act(() => {
+        jest.advanceTimersByTime(2000);
+      });
+
+      expect(invalidateQueriesSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          queryKey: [
+            'listSchedules',
+            { domain: MOCK_DOMAIN, cluster: MOCK_CLUSTER },
+          ],
+        })
+      );
+    } finally {
+      jest.useRealTimers();
+    }
   });
 
   it('does not invalidate queries on failure', async () => {
