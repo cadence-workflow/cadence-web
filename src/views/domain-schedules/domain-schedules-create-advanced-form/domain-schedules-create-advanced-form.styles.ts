@@ -28,6 +28,14 @@ export const styled = {
       alignItems: 'center',
     })
   ),
+  SchedulePeriodRow: createStyled(
+    'div',
+    ({ $theme }: { $theme: Theme }): StyleObject => ({
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      gap: $theme.sizing.scale400,
+    })
+  ),
   Divider: createStyled(
     'div',
     ({ $theme }: { $theme: Theme }): StyleObject => ({

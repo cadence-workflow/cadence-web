@@ -60,6 +60,8 @@ export default function transformDomainSchedulesCreateFormToBody(
             ? parseInt(formData.catchUpWindowDays, 10) * 24 * 60 * 60
             : undefined,
         scheduleId: formData.scheduleId?.trim() || undefined,
+        startTime: formData.startTime || undefined,
+        endTime: formData.endTime || undefined,
         jitterSeconds: formData.jitterSeconds
           ? parseFloat(formData.jitterSeconds)
           : undefined,

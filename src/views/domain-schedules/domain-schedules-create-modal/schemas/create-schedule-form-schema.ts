@@ -136,6 +136,8 @@ export const createScheduleFormSchema = z
         message: 'Jitter seconds must be zero or positive',
       })
       .optional(),
+    startTime: z.string().datetime('Start time must be valid').optional(),
+    endTime: z.string().datetime('End time must be valid').optional(),
     workflowIdPrefix: z.string().optional(),
   })
   .superRefine((data, ctx) => {

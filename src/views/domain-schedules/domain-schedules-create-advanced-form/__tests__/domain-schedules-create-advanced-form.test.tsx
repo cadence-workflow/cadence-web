@@ -30,6 +30,8 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
     expect(screen.getByLabelText('Schedule Id')).toBeInTheDocument();
     expect(screen.getByLabelText('Jitter duration')).toBeInTheDocument();
     expect(screen.getByLabelText('Workflow Id Prefix')).toBeInTheDocument();
+    expect(screen.getByLabelText('Schedule period start')).toBeInTheDocument();
+    expect(screen.getByLabelText('Schedule period end')).toBeInTheDocument();
     expect(
       screen.getByRole('combobox', { name: /overlap policy/i })
     ).toBeInTheDocument();
