@@ -6,7 +6,6 @@ export const overrides = {
   banner: {
     Root: {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
-        backgroundColor: $theme.colors.backgroundWarningLight,
         marginLeft: 0,
         marginRight: 0,
         marginTop: $theme.sizing.scale600,
