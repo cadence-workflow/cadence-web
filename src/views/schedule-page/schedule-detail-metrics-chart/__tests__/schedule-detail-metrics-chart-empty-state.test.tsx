@@ -1,10 +1,20 @@
 import React from 'react';
 
-import { render, screen } from '@/test-utils/rtl';
+import { HttpResponse } from 'msw';
+
+import { getMockRunningDescribeScheduleResponse } from '@/route-handlers/describe-schedule/__fixtures__/mock-describe-schedule-response';
+import { render, screen, waitFor } from '@/test-utils/rtl';
 
 import {
-  CHART_EMPTY_STATE_MESSAGE,
+  MOCK_CLUSTER,
+  MOCK_DOMAIN,
+  MOCK_SCHEDULE_ID,
+  SCHEDULE_METRICS_CHART_API_FIXTURE_NOW_MS,
+} from '../__fixtures__/schedule-detail-metrics-chart-api-fixture';
+import {
+  CHART_LOADING_SKELETON_TEST_ID,
   CHART_REGION_ARIA_LABEL,
+  CHART_SERIES_TEST_IDS,
   CHART_SVG_TEST_ID,
 } from '../schedule-detail-metrics-chart.constants';
 import ScheduleDetailMetricsChart from '../schedule-detail-metrics-chart';
@@ -17,38 +27,58 @@ jest.mock('@visx/responsive', () => ({
   }) => <>{children({ width: 800, height: 280 })}</>,
 }));
 
-jest.mock('../__fixtures__/schedule-detail-metrics-chart-fixture', () => ({
-  SCHEDULE_METRICS_CHART_FIXTURE_NOW_MS: new Date(
-    '2024-06-15T12:00:00.000Z'
-  ).getTime(),
-  scheduleMetricsChartFixture: {
-    successfulRuns: [],
-    missedExecutions: [],
-    nextExecutionTimeMs: null,
-  },
-}));
+describe(`${ScheduleDetailMetricsChart.name} empty workflows`, () => {
+  beforeEach(() => {
+    jest.useFakeTimers({ now: SCHEDULE_METRICS_CHART_API_FIXTURE_NOW_MS });
+  });
 
-describe(`${ScheduleDetailMetricsChart.name} empty state`, () => {
-  it('renders empty state when there is no chart data', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it('renders a default timeline when workflows are empty but describe succeeds', async () => {
     render(
       <ScheduleDetailMetricsChart
         params={{
-          domain: 'test-domain',
-          cluster: 'test-cluster',
-          scheduleId: 'my-schedule',
+          domain: MOCK_DOMAIN,
+          cluster: MOCK_CLUSTER,
+          scheduleId: MOCK_SCHEDULE_ID,
           scheduleTab: 'runs',
         }}
-      />
+      />,
+      {
+        endpointsMocks: [
+          {
+            path: `/api/domains/${MOCK_DOMAIN}/${MOCK_CLUSTER}/schedules/${MOCK_SCHEDULE_ID}`,
+            httpMethod: 'GET',
+            httpResolver: async () =>
+              HttpResponse.json(getMockRunningDescribeScheduleResponse()),
+          },
+          {
+            path: `/api/domains/${MOCK_DOMAIN}/${MOCK_CLUSTER}/workflows`,
+            httpMethod: 'GET',
+            httpResolver: async () =>
+              HttpResponse.json({ workflows: [], nextPage: '' }),
+          },
+        ],
+      }
     );
+
+    await waitFor(() => {
+      expect(
+        screen.queryByTestId(CHART_LOADING_SKELETON_TEST_ID)
+      ).not.toBeInTheDocument();
+    });
 
     expect(
       screen.getByRole('region', { name: CHART_REGION_ARIA_LABEL })
     ).toBeInTheDocument();
-    expect(screen.getByRole('status')).toHaveTextContent(
-      CHART_EMPTY_STATE_MESSAGE
-    );
     expect(
-      screen.queryByTestId(CHART_SVG_TEST_ID)
-    ).not.toBeInTheDocument();
+      screen.getByTestId('schedule-metrics-chart-canvas')
+    ).toBeInTheDocument();
+    expect(screen.getByTestId(CHART_SVG_TEST_ID)).toBeInTheDocument();
+    expect(
+      screen.queryAllByTestId(CHART_SERIES_TEST_IDS.successfulRunMarker)
+    ).toHaveLength(0);
   });
 });
