@@ -28,6 +28,22 @@ export default function transformDomainSchedulesCreateFormToBody(
           formData.searchAttributes.map(({ key, value }) => [key, value])
         )
       : undefined;
+  const mappedRetryPolicy =
+    formData.enableRetryPolicy && formData.retryPolicy
+      ? {
+          initialIntervalSeconds: formData.retryPolicy.initialIntervalSeconds,
+          backoffCoefficient: formData.retryPolicy.backoffCoefficient,
+          ...(formData.retryPolicy.maximumIntervalSeconds !== undefined
+            ? { maximumIntervalSeconds: formData.retryPolicy.maximumIntervalSeconds }
+            : {}),
+          ...(formData.limitRetries === 'ATTEMPTS'
+            ? { maximumAttempts: formData.retryPolicy.maximumAttempts }
+            : {
+                expirationIntervalSeconds:
+                  formData.retryPolicy.expirationIntervalSeconds,
+              }),
+        }
+      : undefined;
 
   return {
     cronExpression: cronString,
@@ -43,6 +59,7 @@ export default function transformDomainSchedulesCreateFormToBody(
       ...(mappedSearchAttributes
         ? { searchAttributes: mappedSearchAttributes }
         : {}),
+      ...(mappedRetryPolicy ? { retryPolicy: mappedRetryPolicy } : {}),
       ...(formData.workflowIdPrefix?.trim()
         ? { workflowIdPrefix: formData.workflowIdPrefix.trim() }
         : {}),

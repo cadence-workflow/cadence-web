@@ -145,6 +145,17 @@ export const createScheduleFormSchema = z
         })
       )
       .optional(),
+    enableRetryPolicy: z.boolean().optional().default(false),
+    limitRetries: z.enum(['ATTEMPTS', 'DURATION']).optional().default('ATTEMPTS'),
+    retryPolicy: z
+      .object({
+        initialIntervalSeconds: z.number().positive().optional(),
+        backoffCoefficient: z.number().min(1).optional(),
+        maximumIntervalSeconds: z.number().positive().optional(),
+        maximumAttempts: z.number().int().positive().optional(),
+        expirationIntervalSeconds: z.number().positive().optional(),
+      })
+      .optional(),
     workflowIdPrefix: z.string().optional(),
   })
   .superRefine((data, ctx) => {
@@ -229,6 +240,40 @@ export const createScheduleFormSchema = z
           code: z.ZodIssueCode.custom,
           message: 'Memo must be valid JSON',
           path: ['memo'],
+        });
+      }
+    }
+
+    if (data.enableRetryPolicy) {
+      if (!data.retryPolicy?.initialIntervalSeconds) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Initial interval is required',
+          path: ['retryPolicy', 'initialIntervalSeconds'],
+        });
+      }
+
+      if (!data.retryPolicy?.backoffCoefficient) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Backoff coefficient is required',
+          path: ['retryPolicy', 'backoffCoefficient'],
+        });
+      }
+
+      if (data.limitRetries === 'ATTEMPTS') {
+        if (!data.retryPolicy?.maximumAttempts) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Maximum attempts is required',
+            path: ['retryPolicy', 'maximumAttempts'],
+          });
+        }
+      } else if (!data.retryPolicy?.expirationIntervalSeconds) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Expiration interval is required',
+          path: ['retryPolicy', 'expirationIntervalSeconds'],
         });
       }
     }

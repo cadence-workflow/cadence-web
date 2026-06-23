@@ -198,6 +198,34 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
       await screen.findByText('Start date must be before end date')
     ).toBeInTheDocument();
   });
+
+  it('shows retry sub-fields only after enabling retry policy', async () => {
+    const { user } = setup();
+
+    await user.click(
+      screen.getByRole('button', { name: /show advanced configurations/i })
+    );
+
+    expect(screen.queryByLabelText('Initial interval')).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('checkbox', { name: /enable retry policy/i }));
+    expect(screen.getByLabelText('Initial interval')).toBeInTheDocument();
+    expect(screen.getByLabelText('Maximum attempts')).toBeInTheDocument();
+  });
+
+  it('switches retry limit field between attempts and duration', async () => {
+    const { user } = setup();
+
+    await user.click(
+      screen.getByRole('button', { name: /show advanced configurations/i })
+    );
+    await user.click(screen.getByRole('checkbox', { name: /enable retry policy/i }));
+
+    expect(screen.getByLabelText('Maximum attempts')).toBeInTheDocument();
+    await user.click(screen.getByRole('radio', { name: 'Duration' }));
+    expect(screen.getByLabelText('Expiration interval')).toBeInTheDocument();
+    expect(screen.queryByLabelText('Maximum attempts')).not.toBeInTheDocument();
+  });
 });
 
 function setup() {
