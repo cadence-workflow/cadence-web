@@ -115,7 +115,9 @@ export default function ScheduleDetailMetricsChartRunPopover({
       case WORKFLOW_STATUSES.running:
         return <MdPlayArrow color={theme.colors.contentAccent} size={14} />;
       default:
-        return <MdInfoOutline color={theme.colors.contentSecondary} size={14} />;
+        return (
+          <MdInfoOutline color={theme.colors.contentSecondary} size={14} />
+        );
     }
   }
 }

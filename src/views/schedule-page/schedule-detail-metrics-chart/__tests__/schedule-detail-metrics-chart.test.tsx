@@ -12,6 +12,7 @@ import {
   MOCK_SCHEDULE_ID,
   SCHEDULE_METRICS_CHART_API_FIXTURE_NOW_MS,
 } from '../__fixtures__/schedule-detail-metrics-chart-api-fixture';
+import ScheduleDetailMetricsChart from '../schedule-detail-metrics-chart';
 import {
   CHART_LOADING_SKELETON_TEST_ID,
   CHART_REGION_ARIA_LABEL,
@@ -19,7 +20,6 @@ import {
   CHART_TOOLBAR_ARIA_LABEL,
   CHART_TOOLBAR_BUTTON_LABELS,
 } from '../schedule-detail-metrics-chart.constants';
-import ScheduleDetailMetricsChart from '../schedule-detail-metrics-chart';
 
 jest.mock('@visx/responsive', () => ({
   ParentSize: ({
@@ -53,9 +53,7 @@ describe(ScheduleDetailMetricsChart.name, () => {
     expect(
       screen.getByTestId('schedule-metrics-chart-canvas')
     ).toBeInTheDocument();
-    expect(
-      screen.getByTestId(CHART_SERIES_TEST_IDS.svg)
-    ).toBeInTheDocument();
+    expect(screen.getByTestId(CHART_SERIES_TEST_IDS.svg)).toBeInTheDocument();
     expect(
       screen.getAllByTestId(CHART_SERIES_TEST_IDS.successfulRunMarker)
     ).toHaveLength(2);

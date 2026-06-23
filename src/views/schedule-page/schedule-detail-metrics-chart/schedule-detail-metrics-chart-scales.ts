@@ -44,13 +44,9 @@ export function resolveMetricsChartTimeDomain({
   }
 
   const dataMinMs =
-    validTimestampsMs.length > 0
-      ? Math.min(...validTimestampsMs)
-      : nowMs;
+    validTimestampsMs.length > 0 ? Math.min(...validTimestampsMs) : nowMs;
   const dataMaxMs =
-    validTimestampsMs.length > 0
-      ? Math.max(...validTimestampsMs)
-      : nowMs;
+    validTimestampsMs.length > 0 ? Math.max(...validTimestampsMs) : nowMs;
 
   let minMs = Math.max(
     Math.min(dataMinMs, nowMs),

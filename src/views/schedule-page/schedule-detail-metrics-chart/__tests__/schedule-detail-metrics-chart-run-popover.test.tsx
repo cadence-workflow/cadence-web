@@ -1,10 +1,12 @@
 import React from 'react';
 
-import { HttpResponse } from 'msw';
 import { act } from '@testing-library/react';
+import { HttpResponse } from 'msw';
+
+import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
 import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list-workflows.types';
-import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
+import { WORKFLOW_STATUS_NAMES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
 
 import {
   getMockDescribeScheduleResponseForChart,
@@ -14,18 +16,17 @@ import {
   MOCK_SCHEDULE_ID,
   SCHEDULE_METRICS_CHART_API_FIXTURE_NOW_MS,
 } from '../__fixtures__/schedule-detail-metrics-chart-api-fixture';
-import {
-  CHART_GLYPH_TEST_IDS,
-  CHART_LOADING_SKELETON_TEST_ID,
-  CHART_RUN_POPOVER_ENTRY_DELAY_MS,
-} from '../schedule-detail-metrics-chart.constants';
+import ScheduleDetailMetricsChart from '../schedule-detail-metrics-chart';
 import {
   RUN_POPOVER_BACKFILL_LABEL,
   RUN_POPOVER_TEST_IDS,
   RUN_POPOVER_TIMESTAMP_LABELS,
 } from '../schedule-detail-metrics-chart-run-popover/schedule-detail-metrics-chart-run-popover.constants';
-import ScheduleDetailMetricsChart from '../schedule-detail-metrics-chart';
-import { WORKFLOW_STATUS_NAMES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
+import {
+  CHART_GLYPH_TEST_IDS,
+  CHART_LOADING_SKELETON_TEST_ID,
+  CHART_RUN_POPOVER_ENTRY_DELAY_MS,
+} from '../schedule-detail-metrics-chart.constants';
 
 jest.mock('@visx/responsive', () => ({
   ParentSize: ({
@@ -69,9 +70,15 @@ describe(`${ScheduleDetailMetricsChart.name} run popover`, () => {
     });
 
     expect(screen.getByText('run-recent')).toBeInTheDocument();
-    expect(screen.getByText(RUN_POPOVER_TIMESTAMP_LABELS.scheduled)).toBeInTheDocument();
-    expect(screen.getByText(RUN_POPOVER_TIMESTAMP_LABELS.started)).toBeInTheDocument();
-    expect(screen.getByText(RUN_POPOVER_TIMESTAMP_LABELS.ended)).toBeInTheDocument();
+    expect(
+      screen.getByText(RUN_POPOVER_TIMESTAMP_LABELS.scheduled)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(RUN_POPOVER_TIMESTAMP_LABELS.started)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(RUN_POPOVER_TIMESTAMP_LABELS.ended)
+    ).toBeInTheDocument();
     expect(
       screen.getByText(
         WORKFLOW_STATUS_NAMES.WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED
@@ -101,7 +108,9 @@ describe(`${ScheduleDetailMetricsChart.name} run popover`, () => {
     });
 
     await waitFor(() => {
-      expect(screen.getAllByTestId(RUN_POPOVER_TEST_IDS.runEntry)).toHaveLength(2);
+      expect(screen.getAllByTestId(RUN_POPOVER_TEST_IDS.runEntry)).toHaveLength(
+        2
+      );
     });
 
     expect(screen.getByText('run-stack-a')).toBeInTheDocument();

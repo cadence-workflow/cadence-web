@@ -1,10 +1,11 @@
 import React from 'react';
 
-import { HttpResponse } from 'msw';
 import { act } from '@testing-library/react';
+import { HttpResponse } from 'msw';
+
+import { fireEvent, render, screen, waitFor } from '@/test-utils/rtl';
 
 import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list-workflows.types';
-import { fireEvent, render, screen, waitFor } from '@/test-utils/rtl';
 
 import {
   getMockDescribeScheduleResponseForChart,
@@ -14,12 +15,12 @@ import {
   MOCK_SCHEDULE_ID,
   SCHEDULE_METRICS_CHART_API_FIXTURE_NOW_MS,
 } from '../__fixtures__/schedule-detail-metrics-chart-api-fixture';
+import ScheduleDetailMetricsChart from '../schedule-detail-metrics-chart';
 import {
   CHART_FETCH_LOADING_TEST_ID,
   CHART_LOADING_SKELETON_TEST_ID,
   CHART_SERIES_TEST_IDS,
 } from '../schedule-detail-metrics-chart.constants';
-import ScheduleDetailMetricsChart from '../schedule-detail-metrics-chart';
 
 jest.mock('@visx/responsive', () => ({
   ParentSize: ({
