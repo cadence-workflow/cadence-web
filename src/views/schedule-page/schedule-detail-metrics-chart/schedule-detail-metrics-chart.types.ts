@@ -1,5 +1,7 @@
 import { type SchedulePageTabsParams } from '@/views/schedule-page/schedule-page-tabs/schedule-page-tabs.types';
 
+import { type CHART_MARGIN } from './schedule-detail-metrics-chart.constants';
+
 export type Props = {
   params: SchedulePageTabsParams;
 };
@@ -12,6 +14,12 @@ export type MetricsChartTimeDomain = {
 export type MetricsChartPixelRange = {
   startPx: number;
   endPx: number;
+};
+
+export type MetricsChartInnerDimensions = {
+  innerWidth: number;
+  innerHeight: number;
+  margin: typeof CHART_MARGIN;
 };
 
 export type ResolveMetricsChartTimeDomainParams = {

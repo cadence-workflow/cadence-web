@@ -28,18 +28,10 @@ export const styled = {
     height: `${CHART_HEIGHT_PX}px`,
     backgroundColor: $theme.colors.backgroundSecondary,
   })),
-  ChartCanvas: createStyled('div', () => ({
+  ChartSvg: createStyled('svg', () => ({
+    display: 'block',
     width: '100%',
     height: '100%',
-  })),
-  EmptyState: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    height: '100%',
-    ...$theme.typography.ParagraphSmall,
-    color: $theme.colors.contentSecondary,
   })),
 };
 
