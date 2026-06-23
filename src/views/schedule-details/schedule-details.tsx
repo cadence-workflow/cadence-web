@@ -36,7 +36,8 @@ export default function ScheduleDetails({ params }: Props) {
 
   return (
     <PageSection>
-      <div className={cls.detailsSectionsContainer}>
+      <div className={cls.pageContainer}>
+        <div className={cls.mainContent}>
         {scheduleDetailsSectionsConfig.map((section) => {
           const rows = getRowsFromConfig(
             section.rowsConfig,
@@ -55,12 +56,19 @@ export default function ScheduleDetails({ params }: Props) {
             />
           );
         })}
-        <SchedulePageInputJson input={data.action?.startWorkflow?.input} />
         <SchedulePageBackfillsTable
           backfills={data.info?.ongoingBackfills ?? []}
           domain={params.domain}
           cluster={params.cluster}
         />
+        </div>
+        <div className={cls.jsonPanel}>
+          <SchedulePageInputJson
+            input={data.action?.startWorkflow?.input}
+            domain={params.domain}
+            cluster={params.cluster}
+          />
+        </div>
       </div>
     </PageSection>
   );

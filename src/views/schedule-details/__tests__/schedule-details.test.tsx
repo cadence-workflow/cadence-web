@@ -146,7 +146,7 @@ describe(ScheduleDetails.name, () => {
     });
 
     expect(
-      await screen.findByRole('heading', { name: 'Schedule input' })
+      await screen.findByText('Input')
     ).toBeInTheDocument();
   });
 
@@ -160,7 +160,7 @@ describe(ScheduleDetails.name, () => {
       await screen.findByRole('heading', { name: 'Schedule specifications' })
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole('heading', { name: 'Schedule input' })
+      screen.queryByText('Input')
     ).not.toBeInTheDocument();
   });
 
