@@ -4,11 +4,13 @@ import { type ScaleLinear } from 'd3-scale';
 import {
   CHART_DEFAULT_PAST_WINDOW_MS,
   CHART_FUTURE_GUTTER_MS,
+  CHART_MARGIN,
   CHART_MIN_DOMAIN_SPAN_MS,
   CHART_SIDE_PADDING_PX,
 } from './schedule-detail-metrics-chart.constants';
 import {
   type CreateMetricsChartXScaleParams,
+  type MetricsChartInnerDimensions,
   type MetricsChartPixelRange,
   type MetricsChartTimeDomain,
   type ResolveMetricsChartPixelRangeParams,
@@ -16,6 +18,7 @@ import {
 } from './schedule-detail-metrics-chart.types';
 
 type MetricsChartXScale = ScaleLinear<number, number, never>;
+type MetricsChartYScale = ScaleLinear<number, number, never>;
 
 export function resolveMetricsChartTimeDomain({
   timestampsMs,
@@ -86,6 +89,26 @@ export function resolveMetricsChartPixelRange({
   };
 }
 
+export function getMetricsChartInnerDimensions(
+  widthPx: number,
+  heightPx: number
+): MetricsChartInnerDimensions {
+  const innerWidth = Math.max(
+    0,
+    widthPx - CHART_MARGIN.left - CHART_MARGIN.right
+  );
+  const innerHeight = Math.max(
+    0,
+    heightPx - CHART_MARGIN.top - CHART_MARGIN.bottom
+  );
+
+  return {
+    innerWidth,
+    innerHeight,
+    margin: CHART_MARGIN,
+  };
+}
+
 export function createMetricsChartXScale({
   domain,
   range,
@@ -110,6 +133,20 @@ export function createMetricsChartXScale({
     domain: [domain.minMs, domain.maxMs],
     range: [range.startPx, range.endPx],
     clamp: true,
+  });
+}
+
+export function createMetricsChartYScale({
+  maxCount,
+  innerHeight,
+}: {
+  maxCount: number;
+  innerHeight: number;
+}): MetricsChartYScale {
+  return scaleLinear<number>({
+    domain: [0, Math.max(maxCount, 1)],
+    range: [innerHeight, 0],
+    nice: true,
   });
 }
 

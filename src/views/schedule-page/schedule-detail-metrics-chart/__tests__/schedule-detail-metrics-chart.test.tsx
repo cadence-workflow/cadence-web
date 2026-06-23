@@ -3,8 +3,9 @@ import React from 'react';
 import { render, screen, within } from '@/test-utils/rtl';
 
 import {
-  CHART_EMPTY_STATE_MESSAGE,
+  CHART_NOW_LINE_TEST_ID,
   CHART_REGION_ARIA_LABEL,
+  CHART_SVG_TEST_ID,
   CHART_TOOLBAR_ARIA_LABEL,
   CHART_TOOLBAR_BUTTON_LABELS,
 } from '../schedule-detail-metrics-chart.constants';
@@ -18,19 +19,41 @@ jest.mock('@visx/responsive', () => ({
   }) => <>{children({ width: 800, height: 280 })}</>,
 }));
 
+const mockNow = new Date('2024-06-15T12:00:00Z').getTime();
+
 describe(ScheduleDetailMetricsChart.name, () => {
-  it('renders chart region with empty state when there is no chart data', () => {
+  beforeEach(() => {
+    jest.useFakeTimers({ now: mockNow });
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it('renders chart region with svg frame', () => {
     setup();
 
     expect(
       screen.getByRole('region', { name: CHART_REGION_ARIA_LABEL })
     ).toBeInTheDocument();
-    expect(screen.getByRole('status')).toHaveTextContent(
-      CHART_EMPTY_STATE_MESSAGE
+    expect(screen.getByTestId(CHART_SVG_TEST_ID)).toBeInTheDocument();
+  });
+
+  it('renders x and y axes in the chart svg', () => {
+    setup();
+
+    const chartSvg = screen.getByTestId(CHART_SVG_TEST_ID);
+
+    expect(within(chartSvg).getAllByText(/\d{2}:\d{2}/).length).toBeGreaterThan(
+      0
     );
-    expect(
-      screen.queryByTestId('schedule-metrics-chart-canvas')
-    ).not.toBeInTheDocument();
+    expect(within(chartSvg).getAllByText(/^\d+$/).length).toBeGreaterThan(0);
+  });
+
+  it('renders vertical now line in the chart svg', () => {
+    setup();
+
+    expect(screen.getByTestId(CHART_NOW_LINE_TEST_ID)).toBeInTheDocument();
   });
 
   it('renders disabled chart toolbar controls', () => {
