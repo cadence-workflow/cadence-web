@@ -28,12 +28,16 @@ export const styled = {
     height: `${CHART_HEIGHT_PX}px`,
     backgroundColor: $theme.colors.backgroundSecondary,
   })),
-  ChartCanvas: createStyled('div', ({ $isPanning }: { $isPanning?: boolean }) => ({
-    width: '100%',
-    height: '100%',
-    cursor: $isPanning ? 'grabbing' : 'grab',
-    touchAction: 'none',
-  })),
+  ChartCanvas: createStyled(
+    'div',
+    ({ $isPanning }: { $isPanning?: boolean }) => ({
+      position: 'relative',
+      width: '100%',
+      height: '100%',
+      cursor: $isPanning ? 'grabbing' : 'grab',
+      touchAction: 'none',
+    })
+  ),
   ChartSvg: createStyled('svg', () => ({
     display: 'block',
     width: '100%',
@@ -82,7 +86,6 @@ const toolbarButtonRootOverrides = {
     paddingRight: $theme.sizing.scale200,
   }),
 };
-
 
 const loadingSkeletonOverrides = {
   Root: {

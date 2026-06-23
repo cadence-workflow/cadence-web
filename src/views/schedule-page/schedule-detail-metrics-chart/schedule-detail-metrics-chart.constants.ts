@@ -50,3 +50,12 @@ export const CHART_LOADING_SKELETON_TEST_ID =
 
 export const CHART_FETCH_LOADING_TEST_ID =
   'schedule-metrics-chart-fetch-loading';
+
+export const CHART_GLYPH_HIT_AREA_RADIUS_PX = 12;
+
+export const CHART_RUN_POPOVER_ENTRY_DELAY_MS = 200;
+
+export const CHART_GLYPH_TEST_IDS = {
+  successfulRunTrigger: 'schedule-metrics-chart-successful-run-trigger',
+  missedExecutionTrigger: 'schedule-metrics-chart-missed-execution-trigger',
+} as const;
