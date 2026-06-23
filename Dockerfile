@@ -19,7 +19,7 @@ RUN apt-get update \
   && apt-get install -y --no-install-recommends git ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 COPY package.json package-lock.json ./
-RUN npm ci --maxsockets 1000
+RUN npm ci
 RUN npm run install-idl
 COPY . .
 
