@@ -18,15 +18,24 @@ export default function transformDomainSchedulesCreateFormToBody(
   const parsedInput = formData.input
     ?.filter((v) => v.trim() !== '')
     .map((v) => JSON.parse(v) as Json);
-  const parsedMemo =
-    formData.memo && formData.memo.trim() !== ''
-      ? (JSON.parse(formData.memo) as Record<string, unknown>)
-      : undefined;
-  const mappedSearchAttributes =
-    formData.searchAttributes && formData.searchAttributes.length > 0
-      ? Object.fromEntries(
-          formData.searchAttributes.map(({ key, value }) => [key, value])
-        )
+  const mappedRetryPolicy =
+    formData.enableRetryPolicy && formData.retryPolicy
+      ? {
+          initialIntervalSeconds: formData.retryPolicy.initialIntervalSeconds,
+          backoffCoefficient: formData.retryPolicy.backoffCoefficient,
+          ...(formData.retryPolicy.maximumIntervalSeconds !== undefined
+            ? {
+                maximumIntervalSeconds:
+                  formData.retryPolicy.maximumIntervalSeconds,
+              }
+            : {}),
+          ...(formData.limitRetries === 'ATTEMPTS'
+            ? { maximumAttempts: formData.retryPolicy.maximumAttempts }
+            : {
+                expirationIntervalSeconds:
+                  formData.retryPolicy.expirationIntervalSeconds,
+              }),
+        }
       : undefined;
 
   return {
@@ -39,10 +48,7 @@ export default function transformDomainSchedulesCreateFormToBody(
         formData.executionStartToCloseTimeoutSeconds,
       taskStartToCloseTimeoutSeconds: formData.taskStartToCloseTimeoutSeconds,
       ...(parsedInput && parsedInput.length > 0 ? { input: parsedInput } : {}),
-      ...(parsedMemo ? { memo: parsedMemo } : {}),
-      ...(mappedSearchAttributes
-        ? { searchAttributes: mappedSearchAttributes }
-        : {}),
+      ...(mappedRetryPolicy ? { retryPolicy: mappedRetryPolicy } : {}),
       ...(formData.workflowIdPrefix?.trim()
         ? { workflowIdPrefix: formData.workflowIdPrefix.trim() }
         : {}),

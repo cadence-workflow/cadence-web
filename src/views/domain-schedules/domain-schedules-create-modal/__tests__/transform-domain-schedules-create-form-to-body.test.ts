@@ -3,9 +3,30 @@ import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api
 import { DEFAULT_OVERLAP_POLICY } from '@/views/domain-schedules/domain-schedules-create-advanced-form/domain-schedules-create-advanced-form.constants';
 
 import { mockDomainSchedulesCreateFormData } from '../__fixtures__/mock-domain-schedules-create-form-data';
+import { type DomainSchedulesCreateFormData } from '../domain-schedules-create-modal.types';
 import transformDomainSchedulesCreateFormToBody from '../helpers/transform-domain-schedules-create-form-to-body';
 
 describe(transformDomainSchedulesCreateFormToBody.name, () => {
+  const baseForm: DomainSchedulesCreateFormData = {
+    cronExpression: {
+      minutes: '0',
+      hours: '9',
+      daysOfMonth: '*',
+      months: '*',
+      daysOfWeek: '*',
+    },
+    workflowType: { name: 'DemoWorkflow' },
+    taskList: { name: 'demo-tl' },
+    workerSDKLanguage: 'GO',
+    executionStartToCloseTimeoutSeconds: 3600,
+    taskStartToCloseTimeoutSeconds: 45,
+    pauseOnFailure: false,
+    overlapPolicy: ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_SKIP_NEW,
+    catchUpPolicy: ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_SKIP,
+    enableRetryPolicy: false,
+    limitRetries: 'ATTEMPTS',
+  };
+
   it('maps form fields to create-schedule request body', () => {
     const result = transformDomainSchedulesCreateFormToBody(
       mockDomainSchedulesCreateFormData
@@ -176,31 +197,58 @@ describe(transformDomainSchedulesCreateFormToBody.name, () => {
     expect(result.endTime).toBeUndefined();
   });
 
-  it('maps memo JSON and search attributes into startWorkflow', () => {
+  it('maps retry policy with attempts limit when enabled', () => {
     const result = transformDomainSchedulesCreateFormToBody({
-      ...mockDomainSchedulesCreateFormData,
-      memo: '{"k":"v"}',
-      searchAttributes: [
-        { key: 'CustomKeywordField', value: 'value-1' },
-        { key: 'CustomIntField', value: 9 },
-      ],
+      ...baseForm,
+      enableRetryPolicy: true,
+      limitRetries: 'ATTEMPTS',
+      retryPolicy: {
+        initialIntervalSeconds: 1,
+        backoffCoefficient: 2,
+        maximumIntervalSeconds: 10,
+        maximumAttempts: 5,
+      },
     });
 
-    expect(result.startWorkflow.memo).toEqual({ k: 'v' });
-    expect(result.startWorkflow.searchAttributes).toEqual({
-      CustomKeywordField: 'value-1',
-      CustomIntField: 9,
+    expect(result.startWorkflow.retryPolicy).toEqual({
+      initialIntervalSeconds: 1,
+      backoffCoefficient: 2,
+      maximumIntervalSeconds: 10,
+      maximumAttempts: 5,
     });
   });
 
-  it('omits memo and search attributes when empty', () => {
+  it('maps retry policy with duration limit when enabled', () => {
     const result = transformDomainSchedulesCreateFormToBody({
-      ...mockDomainSchedulesCreateFormData,
-      memo: '  ',
-      searchAttributes: [],
+      ...baseForm,
+      enableRetryPolicy: true,
+      limitRetries: 'DURATION',
+      retryPolicy: {
+        initialIntervalSeconds: 1,
+        backoffCoefficient: 2,
+        expirationIntervalSeconds: 60,
+      },
     });
 
-    expect(result.startWorkflow.memo).toBeUndefined();
-    expect(result.startWorkflow.searchAttributes).toBeUndefined();
+    expect(result.startWorkflow.retryPolicy).toEqual({
+      initialIntervalSeconds: 1,
+      backoffCoefficient: 2,
+      expirationIntervalSeconds: 60,
+    });
+  });
+
+  it('omits retry policy when disabled', () => {
+    const result = transformDomainSchedulesCreateFormToBody({
+      ...baseForm,
+      enableRetryPolicy: false,
+      limitRetries: 'ATTEMPTS',
+      retryPolicy: {
+        initialIntervalSeconds: 1,
+        backoffCoefficient: 2,
+        maximumAttempts: 5,
+      },
+    });
+
+    expect(result.startWorkflow.retryPolicy).toBeUndefined();
   });
 });
