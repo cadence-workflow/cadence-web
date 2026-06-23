@@ -10,6 +10,20 @@ import { type DomainSchedulesCreateFormData } from '../../domain-schedules-creat
 import { createScheduleFormSchema } from '../../domain-schedules-create-modal/schemas/create-schedule-form-schema';
 import DomainSchedulesCreateAdvancedForm from '../domain-schedules-create-advanced-form';
 
+jest.mock(
+  '@/views/shared/hooks/use-search-attributes/use-search-attributes',
+  () =>
+    jest.fn(() => ({
+      data: {
+        keys: {
+          CustomKeywordField: 'INDEXED_VALUE_TYPE_STRING',
+          CustomIntField: 'INDEXED_VALUE_TYPE_INT',
+        },
+      },
+      isLoading: false,
+    }))
+);
+
 describe(DomainSchedulesCreateAdvancedForm.name, () => {
   it('renders the accordion toggle and is collapsed by default', () => {
     setup();
@@ -37,6 +51,8 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
     expect(screen.getByLabelText('Schedule period end')).toBeInTheDocument();
     expect(screen.getByText('Start date')).toBeInTheDocument();
     expect(screen.getByText('End date')).toBeInTheDocument();
+    expect(screen.getByLabelText('Memo')).toBeInTheDocument();
+    expect(screen.getByLabelText('Search attribute key')).toBeInTheDocument();
     expect(
       screen.getByRole('combobox', { name: /overlap policy/i })
     ).toBeInTheDocument();
@@ -162,6 +178,7 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
             fieldErrors={fieldErrors}
             trigger={trigger}
             isSubmitted={isSubmitted}
+            cluster="test-cluster"
           />
           <button type="button" onClick={() => trigger()}>
             Validate
@@ -201,6 +218,7 @@ function setup() {
       <DomainSchedulesCreateAdvancedForm
         control={control}
         fieldErrors={fieldErrors}
+        cluster="test-cluster"
       />
     );
   }

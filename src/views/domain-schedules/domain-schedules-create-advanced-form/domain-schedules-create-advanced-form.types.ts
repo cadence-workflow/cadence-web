@@ -7,4 +7,5 @@ export type Props = {
   fieldErrors: FieldErrors<DomainSchedulesCreateFormData>;
   trigger?: UseFormTrigger<DomainSchedulesCreateFormData>;
   isSubmitted?: boolean;
+  cluster: string;
 };

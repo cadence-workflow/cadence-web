@@ -136,6 +136,15 @@ export const createScheduleFormSchema = z
       .optional(),
     startTime: z.string().datetime('Start time must be valid').optional(),
     endTime: z.string().datetime('End time must be valid').optional(),
+    memo: z.string().optional(),
+    searchAttributes: z
+      .array(
+        z.object({
+          key: z.string().min(1, 'Search attribute key is required'),
+          value: z.union([z.string(), z.number(), z.boolean()]),
+        })
+      )
+      .optional(),
     workflowIdPrefix: z.string().optional(),
   })
   .superRefine((data, ctx) => {
@@ -197,6 +206,29 @@ export const createScheduleFormSchema = z
           code: z.ZodIssueCode.custom,
           message: 'Start date must be before end date',
           path: ['startTime'],
+        });
+      }
+    }
+
+    if (data.memo && data.memo.trim() !== '') {
+      try {
+        const parsedMemo = JSON.parse(data.memo);
+        const isObject =
+          typeof parsedMemo === 'object' &&
+          parsedMemo !== null &&
+          !Array.isArray(parsedMemo);
+        if (!isObject) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Memo must be a JSON object',
+            path: ['memo'],
+          });
+        }
+      } catch {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Memo must be valid JSON',
+          path: ['memo'],
         });
       }
     }

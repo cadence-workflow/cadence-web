@@ -182,7 +182,14 @@ function TestWrapper({
     }
   }, [injectFieldErrors, setError]);
 
-  return <DomainSchedulesCreateForm control={control} trigger={trigger} />;
+  return (
+    <DomainSchedulesCreateForm
+      control={control}
+      trigger={trigger}
+      clearErrors={clearErrors}
+      cluster="test-cluster"
+    />
+  );
 }
 
 async function setup({
