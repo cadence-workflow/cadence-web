@@ -7,6 +7,7 @@ import { MdErrorOutline } from 'react-icons/md';
 import ErrorPanel from '@/components/error-panel/error-panel';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
+import { type BatchActionListItem } from '@/route-handlers/list-batch-actions/list-batch-actions.types';
 import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
 import { type DomainPageTabContentProps } from '@/views/domain-page/domain-page-content/domain-page-content.types';
 import useDescribeBatchAction from '@/views/shared/hooks/use-describe-batch-action/use-describe-batch-action';
@@ -24,6 +25,7 @@ import {
   DRAFT_ACTION_ID,
 } from './domain-batch-actions.constants';
 import { styled } from './domain-batch-actions.styles';
+import resolveSelectedBatchAction from './helpers/resolve-selected-batch-action';
 
 export default function DomainBatchActions(props: DomainPageTabContentProps) {
   const [queryParams, setQueryParams] = usePageQueryParams(
@@ -67,15 +69,12 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
     [data]
   );
 
-  // Default to the first action in the list unless a real (non-draft) action is selected.
-  // selectedActionId is a runId (the URL identity); the matching list item also
-  // carries the workflowId that the describe endpoint requires.
-  const firstBatchActionId = batchActions[0]?.runId ?? null;
-  const selectedActionId = isDraftSelected
-    ? firstBatchActionId
-    : queryParams.batchActionId || firstBatchActionId;
-  const selectedAction =
-    batchActions.find((action) => action.runId === selectedActionId) ?? null;
+  const { selectedActionId, selectedWorkflowId } = resolveSelectedBatchAction({
+    batchActions,
+    batchActionId: queryParams.batchActionId,
+    batchActionWorkflowId: queryParams.batchActionWorkflowId,
+    isDraftSelected,
+  });
 
   const {
     data: batchActionDetail,
@@ -85,14 +84,22 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
   } = useDescribeBatchAction({
     domain: props.domain,
     cluster: props.cluster,
-    workflowId: selectedAction?.workflowId ?? '',
-    runId: selectedAction?.runId ?? '',
-    enabled: !isDraftSelected && !!selectedAction,
+    workflowId: selectedWorkflowId ?? '',
+    runId: selectedActionId ?? '',
+    enabled: !isDraftSelected && !!selectedActionId && !!selectedWorkflowId,
     refetchInterval: (query) =>
       query.state.data?.status === 'RUNNING'
         ? BATCH_ACTION_DETAIL_REFETCH_INTERVAL
         : false,
   });
+
+  // The selected action can't be loaded: either we have no workflowId to
+  // describe it with (deep link to a runId not in the list and no workflowId in
+  // the URL), or describe reported it isn't a batch action / doesn't exist.
+  const isSelectedActionNotFound =
+    !isDraftSelected &&
+    !!selectedActionId &&
+    (!selectedWorkflowId || batchActionDetailError?.status === 404);
 
   if (isLoading) {
     return <SectionLoadingIndicator />;
@@ -111,8 +118,18 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
     });
   };
 
-  const handleSelectAction = (id: string) => {
-    setQueryParams({ batchActionId: id });
+  const handleSelectAction = (action: BatchActionListItem) => {
+    setQueryParams({
+      batchActionId: action.runId,
+      batchActionWorkflowId: action.workflowId,
+    });
+  };
+
+  const handleClearSelectedAction = () => {
+    setQueryParams({
+      batchActionId: undefined,
+      batchActionWorkflowId: undefined,
+    });
   };
 
   const handleSelectDraft = () => {
@@ -163,7 +180,19 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
         )}
         {!isDraftSelected &&
           selectedActionId &&
-          (batchActionDetailError && !batchActionDetail ? (
+          (isSelectedActionNotFound ? (
+            <ErrorPanel
+              message="Batch action not found"
+              description="This batch action does not exist or is no longer available."
+              actions={[
+                {
+                  kind: 'callback',
+                  label: 'View batch actions',
+                  onClick: handleClearSelectedAction,
+                },
+              ]}
+            />
+          ) : batchActionDetailError && !batchActionDetail ? (
             <ErrorPanel
               error={batchActionDetailError}
               message="Failed to load batch action details"

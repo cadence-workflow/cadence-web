@@ -16,6 +16,7 @@ import {
   mockDescribeBatchOperationWorkflowFailedWithPendingProgress,
   mockDescribeBatchOperationWorkflowRunning,
   mockDescribeBatchOperationWorkflowTerminated,
+  mockDescribeNonBatchWorkflow,
   MOCK_BATCH_PROGRESS,
 } from '../__fixtures__/mock-describe-batch-operation-workflow';
 import { describeBatchAction } from '../describe-batch-action';
@@ -267,6 +268,17 @@ describe(describeBatchAction.name, () => {
         error: expect.any(Error),
       }),
       'Error fetching batch action'
+    );
+  });
+
+  it('returns 404 when the workflow is not a batch action', async () => {
+    const { res } = await setup({
+      describeResponse: mockDescribeNonBatchWorkflow,
+    });
+
+    expect(res.status).toEqual(404);
+    expect(await res.json()).toEqual(
+      expect.objectContaining({ message: 'Batch action not found' })
     );
   });
 

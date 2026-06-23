@@ -62,7 +62,7 @@ export default function DomainBatchActionsSidebar({
               icon={<StatusIcon action={action} />}
               isSelected={isSelected}
               isActive={action.status === 'RUNNING' || isSelected}
-              onSelect={() => onSelectAction(action.runId)}
+              onSelect={() => onSelectAction(action)}
             />
           );
         })}

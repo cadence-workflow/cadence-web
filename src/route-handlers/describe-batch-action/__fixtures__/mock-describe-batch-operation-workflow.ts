@@ -80,6 +80,16 @@ export const mockDescribeBatchOperationWorkflowFailed: DescribeWorkflowExecution
     },
   };
 
+// A workflow that exists but is not a batch action (e.g. a deep link to some
+// other workflow's runId) — the describe handler should treat it as not found.
+export const mockDescribeNonBatchWorkflow: DescribeWorkflowExecutionResponse = {
+  ...mockDescribeBatchOperationWorkflowRunning,
+  workflowExecutionInfo: {
+    ...mockDescribeBatchOperationWorkflowRunning.workflowExecutionInfo!,
+    type: { name: 'some-other-workflow-type' },
+  },
+};
+
 const encodedBatcherInput = (params: Record<string, unknown>) =>
   Buffer.from(JSON.stringify(params)).toString('base64');
 

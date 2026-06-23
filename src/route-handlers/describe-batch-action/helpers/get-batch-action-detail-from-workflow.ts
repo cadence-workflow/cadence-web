@@ -1,5 +1,8 @@
 import { type DescribeWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeWorkflowExecutionResponse';
-import { BATCH_ACTION_STATUS_BY_CLOSE_STATUS } from '@/route-handlers/list-batch-actions/list-batch-actions.constants';
+import {
+  BATCH_ACTION_STATUS_BY_CLOSE_STATUS,
+  BATCH_ACTION_WORKFLOW_TYPE,
+} from '@/route-handlers/list-batch-actions/list-batch-actions.constants';
 import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
 import { type BatchAction } from '@/views/domain-batch-actions/domain-batch-actions.types';
 
@@ -7,7 +10,13 @@ export default function getBatchActionDetailFromWorkflow(
   response: DescribeWorkflowExecutionResponse
 ): BatchAction | undefined {
   const info = response.workflowExecutionInfo;
-  if (!info?.workflowExecution?.runId) {
+  // Reject executions that aren't batch actions (e.g. a deep link to a random
+  // workflow's runId), so the handler surfaces a "not found" instead of
+  // rendering an unrelated workflow as a batch action.
+  if (
+    !info?.workflowExecution?.runId ||
+    info.type?.name !== BATCH_ACTION_WORKFLOW_TYPE
+  ) {
     return undefined;
   }
 

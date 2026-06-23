@@ -75,7 +75,7 @@ jest.mock(
         <button onClick={onSelectDraft}>mock-select-draft</button>
         <button onClick={fetchNextPage}>mock-fetch-next-page</button>
         {batchActions.map((a) => (
-          <button key={a.runId} onClick={() => onSelectAction(a.runId)}>
+          <button key={a.runId} onClick={() => onSelectAction(a)}>
             mock-select-{a.runId}
           </button>
         ))}
@@ -120,7 +120,10 @@ describe(DomainBatchActions.name, () => {
 
     await user.click(await screen.findByText('mock-select-4'));
 
-    expect(mockSetQueryParams).toHaveBeenCalledWith({ batchActionId: '4' });
+    expect(mockSetQueryParams).toHaveBeenCalledWith({
+      batchActionId: '4',
+      batchActionWorkflowId: 'wf-4',
+    });
   });
 
   it('resets all batch draft params and prefills the query when "New batch action" is clicked', async () => {
@@ -191,6 +194,77 @@ describe(DomainBatchActions.name, () => {
     expect(
       screen.queryByText('mock-batch-action-detail-5')
     ).not.toBeInTheDocument();
+  });
+
+  it('loads the detail for a deep-linked action that is not in the sidebar list', async () => {
+    mockUsePageQueryParams.mockReturnValue([
+      {
+        ...mockDomainPageQueryParamsValues,
+        batchActionId: 'run-999',
+        batchActionWorkflowId: 'wf-999',
+        batchQuery: '',
+      },
+      mockSetQueryParams,
+    ]);
+
+    setup();
+
+    // run-999 is not among the loaded sidebar items (5, 4) but the detail still
+    // loads, because the workflowId comes from the URL, not the list.
+    expect(
+      await screen.findByText('mock-batch-action-detail-run-999')
+    ).toBeInTheDocument();
+  });
+
+  it('shows a not-found panel and clears the selection when describe returns 404', async () => {
+    mockUsePageQueryParams.mockReturnValue([
+      {
+        ...mockDomainPageQueryParamsValues,
+        batchActionId: 'run-999',
+        batchActionWorkflowId: 'wf-999',
+        batchQuery: '',
+      },
+      mockSetQueryParams,
+    ]);
+
+    const user = userEvent.setup();
+
+    setup({
+      detailResolver: () =>
+        HttpResponse.json(
+          { message: 'Batch action not found' },
+          { status: 404 }
+        ),
+    });
+
+    expect(
+      await screen.findByText('mock-error-panel-Batch action not found')
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByText('View batch actions'));
+
+    expect(mockSetQueryParams).toHaveBeenCalledWith({
+      batchActionId: undefined,
+      batchActionWorkflowId: undefined,
+    });
+  });
+
+  it('shows a not-found panel when the URL has a runId with no workflowId and it is not in the list', async () => {
+    mockUsePageQueryParams.mockReturnValue([
+      {
+        ...mockDomainPageQueryParamsValues,
+        batchActionId: 'run-999',
+        batchActionWorkflowId: undefined,
+        batchQuery: '',
+      },
+      mockSetQueryParams,
+    ]);
+
+    setup();
+
+    expect(
+      await screen.findByText('mock-error-panel-Batch action not found')
+    ).toBeInTheDocument();
   });
 
   it('sets batchActionId to draft when selecting the draft sidebar item', async () => {
