@@ -13,15 +13,15 @@ describe(workflowsForScheduleToChartPoints.name, () => {
   it('flattens infinite query pages in server page order', () => {
     const data = getMockInfiniteData();
 
-    expect(flattenScheduleWorkflowPages(data).map((w) => w.workflowID)).toEqual([
-      'wf-1',
-      'wf-2',
-      'wf-3',
-    ]);
+    expect(flattenScheduleWorkflowPages(data).map((w) => w.workflowID)).toEqual(
+      ['wf-1', 'wf-2', 'wf-3']
+    );
   });
 
   it('maps CadenceScheduleTime search attributes to successful run markers with run details', () => {
-    const chartPoints = workflowsForScheduleToChartPoints(getMockInfiniteData());
+    const chartPoints = workflowsForScheduleToChartPoints(
+      getMockInfiniteData()
+    );
 
     expect(chartPoints.successfulRuns).toEqual([
       {

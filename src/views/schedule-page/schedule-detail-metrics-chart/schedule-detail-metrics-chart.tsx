@@ -1,14 +1,14 @@
 'use client';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import { ParentSize } from '@visx/responsive';
-
-import {
-  MdFitScreen,
-  MdGpsFixed,
-  MdZoomIn,
-  MdZoomOut,
-} from 'react-icons/md';
+import { MdFitScreen, MdGpsFixed, MdZoomIn, MdZoomOut } from 'react-icons/md';
 
 import Button from '@/components/button/button';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
@@ -22,6 +22,15 @@ import shiftMetricsChartViewDomain from './helpers/shift-metrics-chart-view-doma
 import workflowsForScheduleToChartPoints, {
   getOldestLoadedScheduleTimeMs,
 } from './helpers/workflows-for-schedule-to-chart-points';
+import ScheduleDetailMetricsChartGlyph from './schedule-detail-metrics-chart-glyph/schedule-detail-metrics-chart-glyph';
+import { styled as glyphStyled } from './schedule-detail-metrics-chart-glyph/schedule-detail-metrics-chart-glyph.styles';
+import ScheduleDetailMetricsChartLoading from './schedule-detail-metrics-chart-loading';
+import {
+  createMetricsChartXScale,
+  resolveMetricsChartPixelRange,
+  resolveMetricsChartTimeDomain,
+} from './schedule-detail-metrics-chart-scales';
+import ScheduleDetailMetricsChartSeries from './schedule-detail-metrics-chart-series';
 import {
   CHART_EMPTY_STATE_MESSAGE,
   CHART_FETCH_LOADING_TEST_ID,
@@ -34,17 +43,11 @@ import {
   CHART_TOOLBAR_BUTTON_LABELS,
   CHART_WORKFLOWS_PAGE_SIZE,
 } from './schedule-detail-metrics-chart.constants';
-import ScheduleDetailMetricsChartGlyph from './schedule-detail-metrics-chart-glyph/schedule-detail-metrics-chart-glyph';
-import { styled as glyphStyled } from './schedule-detail-metrics-chart-glyph/schedule-detail-metrics-chart-glyph.styles';
-import ScheduleDetailMetricsChartLoading from './schedule-detail-metrics-chart-loading';
-import {
-  createMetricsChartXScale,
-  resolveMetricsChartPixelRange,
-  resolveMetricsChartTimeDomain,
-} from './schedule-detail-metrics-chart-scales';
-import ScheduleDetailMetricsChartSeries from './schedule-detail-metrics-chart-series';
 import { overrides, styled } from './schedule-detail-metrics-chart.styles';
-import { type MetricsChartTimeDomain, type Props } from './schedule-detail-metrics-chart.types';
+import {
+  type MetricsChartTimeDomain,
+  type Props,
+} from './schedule-detail-metrics-chart.types';
 
 type PanState = {
   startClientX: number;
@@ -90,15 +93,16 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
   const timestampsMs = useMemo(
     () => [
       ...chartData.successfulRuns.map(({ scheduledTimeMs }) => scheduledTimeMs),
-      ...chartData.missedExecutions.map(({ scheduledTimeMs }) => scheduledTimeMs),
+      ...chartData.missedExecutions.map(
+        ({ scheduledTimeMs }) => scheduledTimeMs
+      ),
     ],
     [chartData]
   );
 
   const nowMs = Date.now();
 
-  const isInitialLoading =
-    describeQuery.isLoading || workflowsQuery.isLoading;
+  const isInitialLoading = describeQuery.isLoading || workflowsQuery.isLoading;
   const isFetchingMore =
     workflowsQuery.isFetchingNextPage ||
     (workflowsQuery.isFetching && !workflowsQuery.isLoading);
@@ -375,7 +379,10 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
             });
             const xScale =
               pixelRange != null
-                ? createMetricsChartXScale({ domain: viewDomain, range: pixelRange })
+                ? createMetricsChartXScale({
+                    domain: viewDomain,
+                    range: pixelRange,
+                  })
                 : null;
 
             if (!xScale) {
@@ -432,18 +439,20 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
                       testId={CHART_GLYPH_TEST_IDS.successfulRunTrigger}
                     />
                   ))}
-                  {chartData.missedExecutions.map(({ scheduledTimeMs, runs }) => (
-                    <ScheduleDetailMetricsChartGlyph
-                      key={`missed-trigger-${scheduledTimeMs}`}
-                      x={xScale(scheduledTimeMs)}
-                      y={chartHeight * CHART_SERIES_MISSED_Y_RATIO}
-                      runs={runs}
-                      domain={params.domain}
-                      cluster={params.cluster}
-                      variant="missed"
-                      testId={CHART_GLYPH_TEST_IDS.missedExecutionTrigger}
-                    />
-                  ))}
+                  {chartData.missedExecutions.map(
+                    ({ scheduledTimeMs, runs }) => (
+                      <ScheduleDetailMetricsChartGlyph
+                        key={`missed-trigger-${scheduledTimeMs}`}
+                        x={xScale(scheduledTimeMs)}
+                        y={chartHeight * CHART_SERIES_MISSED_Y_RATIO}
+                        runs={runs}
+                        domain={params.domain}
+                        cluster={params.cluster}
+                        variant="missed"
+                        testId={CHART_GLYPH_TEST_IDS.missedExecutionTrigger}
+                      />
+                    )
+                  )}
                 </glyphStyled.Overlay>
               </styled.ChartCanvas>
             );
