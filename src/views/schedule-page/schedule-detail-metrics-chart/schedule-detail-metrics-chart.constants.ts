@@ -38,3 +38,15 @@ export const CHART_SERIES_NEXT_EXECUTION_STROKE_WIDTH_PX = 2;
 export const CHART_SERIES_MISSED_STROKE_WIDTH_PX = 2;
 export const CHART_SERIES_SUCCESS_Y_RATIO = 0.45;
 export const CHART_SERIES_MISSED_Y_RATIO = 0.65;
+
+export const CHART_WORKFLOWS_PAGE_SIZE = 20;
+
+export const CHART_DEFAULT_VIEW_SPAN_MS = 6 * 60 * 60_000;
+
+export const CHART_PAN_FETCH_EDGE_THRESHOLD_RATIO = 0.05;
+
+export const CHART_LOADING_SKELETON_TEST_ID =
+  'schedule-metrics-chart-loading-skeleton';
+
+export const CHART_FETCH_LOADING_TEST_ID =
+  'schedule-metrics-chart-fetch-loading';
