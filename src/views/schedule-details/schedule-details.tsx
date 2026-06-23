@@ -6,6 +6,7 @@ import SectionLoadingIndicator from '@/components/section-loading-indicator/sect
 import decodeUrlParams from '@/utils/decode-url-params';
 import useDescribeSchedule from '@/views/shared/hooks/use-describe-schedule/use-describe-schedule';
 
+import ScheduleDetailMetricsChart from '../schedule-page/schedule-detail-metrics-chart/schedule-detail-metrics-chart';
 import { type SchedulePageTabsParams } from '../schedule-page/schedule-page-tabs/schedule-page-tabs.types';
 
 import scheduleDetailsSectionsConfig from './config/schedule-details-sections.config';
@@ -47,6 +48,7 @@ export default function ScheduleDetails({ params }: Props) {
       />
       <styled.PageContainer>
         <styled.DetailsSectionsContainer>
+          <ScheduleDetailMetricsChart params={decodedParams} />
           {scheduleDetailsSectionsConfig.map((section) => {
             const rows = getRowsFromConfig(
               section.rowsConfig,
