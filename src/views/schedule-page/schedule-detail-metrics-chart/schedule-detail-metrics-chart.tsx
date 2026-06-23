@@ -25,12 +25,17 @@ import workflowsForScheduleToChartPoints, {
 import {
   CHART_EMPTY_STATE_MESSAGE,
   CHART_FETCH_LOADING_TEST_ID,
+  CHART_GLYPH_TEST_IDS,
   CHART_PAN_FETCH_EDGE_THRESHOLD_RATIO,
   CHART_REGION_ARIA_LABEL,
+  CHART_SERIES_MISSED_Y_RATIO,
+  CHART_SERIES_SUCCESS_Y_RATIO,
   CHART_TOOLBAR_ARIA_LABEL,
   CHART_TOOLBAR_BUTTON_LABELS,
   CHART_WORKFLOWS_PAGE_SIZE,
 } from './schedule-detail-metrics-chart.constants';
+import ScheduleDetailMetricsChartGlyph from './schedule-detail-metrics-chart-glyph/schedule-detail-metrics-chart-glyph';
+import { styled as glyphStyled } from './schedule-detail-metrics-chart-glyph/schedule-detail-metrics-chart-glyph.styles';
 import ScheduleDetailMetricsChartLoading from './schedule-detail-metrics-chart-loading';
 import {
   createMetricsChartXScale,
@@ -414,6 +419,32 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
                     Loading older runs…
                   </styled.FetchLoadingOverlay>
                 ) : null}
+                <glyphStyled.Overlay>
+                  {chartData.successfulRuns.map(({ scheduledTimeMs, runs }) => (
+                    <ScheduleDetailMetricsChartGlyph
+                      key={`successful-trigger-${scheduledTimeMs}`}
+                      x={xScale(scheduledTimeMs)}
+                      y={chartHeight * CHART_SERIES_SUCCESS_Y_RATIO}
+                      runs={runs}
+                      domain={params.domain}
+                      cluster={params.cluster}
+                      variant="successful"
+                      testId={CHART_GLYPH_TEST_IDS.successfulRunTrigger}
+                    />
+                  ))}
+                  {chartData.missedExecutions.map(({ scheduledTimeMs, runs }) => (
+                    <ScheduleDetailMetricsChartGlyph
+                      key={`missed-trigger-${scheduledTimeMs}`}
+                      x={xScale(scheduledTimeMs)}
+                      y={chartHeight * CHART_SERIES_MISSED_Y_RATIO}
+                      runs={runs}
+                      domain={params.domain}
+                      cluster={params.cluster}
+                      variant="missed"
+                      testId={CHART_GLYPH_TEST_IDS.missedExecutionTrigger}
+                    />
+                  ))}
+                </glyphStyled.Overlay>
               </styled.ChartCanvas>
             );
           }}

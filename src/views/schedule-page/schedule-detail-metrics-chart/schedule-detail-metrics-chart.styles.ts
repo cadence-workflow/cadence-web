@@ -29,6 +29,7 @@ export const styled = {
     backgroundColor: $theme.colors.backgroundSecondary,
   })),
   ChartCanvas: createStyled('div', ({ $isPanning }: { $isPanning?: boolean }) => ({
+    position: 'relative',
     width: '100%',
     height: '100%',
     cursor: $isPanning ? 'grabbing' : 'grab',
@@ -82,7 +83,6 @@ const toolbarButtonRootOverrides = {
     paddingRight: $theme.sizing.scale200,
   }),
 };
-
 
 const loadingSkeletonOverrides = {
   Root: {

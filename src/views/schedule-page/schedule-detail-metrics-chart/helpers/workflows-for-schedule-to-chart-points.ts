@@ -5,15 +5,19 @@ import {
   type WorkflowListItem,
 } from '@/route-handlers/list-workflows/list-workflows.types';
 
-import { type ScheduleMetricsChartSeriesData } from '../schedule-detail-metrics-chart-series.types';
+import {
+  type ScheduleMetricsChartExecutionPoint,
+  type ScheduleMetricsChartRun,
+} from '../schedule-detail-metrics-chart-series.types';
 
 import getScheduleWorkflowScheduledTimeMs from './get-schedule-workflow-scheduled-time-ms';
 import isMissedScheduleWorkflowExecution from './is-missed-schedule-workflow-execution';
+import workflowListItemToChartRun from './workflow-list-item-to-chart-run';
 
-export type WorkflowsForScheduleChartPoints = Pick<
-  ScheduleMetricsChartSeriesData,
-  'successfulRuns' | 'missedExecutions'
->;
+export type WorkflowsForScheduleChartPoints = {
+  successfulRuns: ScheduleMetricsChartExecutionPoint[];
+  missedExecutions: ScheduleMetricsChartExecutionPoint[];
+};
 
 export default function workflowsForScheduleToChartPoints(
   data: InfiniteData<ListWorkflowsResponse> | undefined
@@ -22,24 +26,38 @@ export default function workflowsForScheduleToChartPoints(
 
   return workflows.reduce<WorkflowsForScheduleChartPoints>(
     (chartPoints, workflow) => {
-      const scheduledTimeMs = getScheduleWorkflowScheduledTimeMs(workflow);
+      const run = workflowListItemToChartRun(workflow);
 
-      if (scheduledTimeMs == null) {
+      if (run == null) {
         return chartPoints;
       }
 
-      const point = { scheduledTimeMs };
+      const targetPoints = isMissedScheduleWorkflowExecution(workflow)
+        ? chartPoints.missedExecutions
+        : chartPoints.successfulRuns;
 
-      if (isMissedScheduleWorkflowExecution(workflow)) {
-        chartPoints.missedExecutions.push(point);
-      } else {
-        chartPoints.successfulRuns.push(point);
-      }
+      appendRunToExecutionPoints(targetPoints, run);
 
       return chartPoints;
     },
     { successfulRuns: [], missedExecutions: [] }
   );
+}
+
+function appendRunToExecutionPoints(
+  points: ScheduleMetricsChartExecutionPoint[],
+  run: ScheduleMetricsChartRun
+) {
+  const existingPoint = points.find(
+    (point) => point.scheduledTimeMs === run.scheduledTimeMs
+  );
+
+  if (existingPoint) {
+    existingPoint.runs.push(run);
+    return;
+  }
+
+  points.push({ scheduledTimeMs: run.scheduledTimeMs, runs: [run] });
 }
 
 export function flattenScheduleWorkflowPages(

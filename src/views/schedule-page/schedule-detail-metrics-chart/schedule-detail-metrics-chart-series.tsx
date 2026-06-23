@@ -35,6 +35,7 @@ export default function ScheduleDetailMetricsChartSeries({
           cy={successfulRunY}
           r={CHART_SERIES_MARKER_RADIUS_PX}
           fill={successfulRunColor}
+          pointerEvents="none"
           data-testid={CHART_SERIES_TEST_IDS.successfulRunMarker}
         />
       ))}
@@ -58,6 +59,7 @@ export default function ScheduleDetailMetricsChartSeries({
               fill="transparent"
               stroke={missedExecutionColor}
               strokeWidth={CHART_SERIES_MISSED_STROKE_WIDTH_PX}
+              pointerEvents="none"
               data-testid={CHART_SERIES_TEST_IDS.missedExecutionMarker}
             />
           </Group>
