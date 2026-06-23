@@ -5,10 +5,12 @@ import { render, screen, within } from '@/test-utils/rtl';
 import {
   CHART_NOW_LINE_TEST_ID,
   CHART_REGION_ARIA_LABEL,
+  CHART_SERIES_TEST_IDS,
   CHART_SVG_TEST_ID,
   CHART_TOOLBAR_ARIA_LABEL,
   CHART_TOOLBAR_BUTTON_LABELS,
 } from '../schedule-detail-metrics-chart.constants';
+import { SCHEDULE_METRICS_CHART_FIXTURE_NOW_MS } from '../__fixtures__/schedule-detail-metrics-chart-fixture';
 import ScheduleDetailMetricsChart from '../schedule-detail-metrics-chart';
 
 jest.mock('@visx/responsive', () => ({
@@ -19,24 +21,35 @@ jest.mock('@visx/responsive', () => ({
   }) => <>{children({ width: 800, height: 280 })}</>,
 }));
 
-const mockNow = new Date('2024-06-15T12:00:00Z').getTime();
-
 describe(ScheduleDetailMetricsChart.name, () => {
   beforeEach(() => {
-    jest.useFakeTimers({ now: mockNow });
+    jest.useFakeTimers({ now: SCHEDULE_METRICS_CHART_FIXTURE_NOW_MS });
   });
 
   afterEach(() => {
     jest.useRealTimers();
   });
 
-  it('renders chart region with svg frame', () => {
+  it('renders chart region with svg frame and static fixture series markers', () => {
     setup();
 
     expect(
       screen.getByRole('region', { name: CHART_REGION_ARIA_LABEL })
     ).toBeInTheDocument();
     expect(screen.getByTestId(CHART_SVG_TEST_ID)).toBeInTheDocument();
+    expect(
+      screen.getByTestId(CHART_SERIES_TEST_IDS.svg)
+    ).toBeInTheDocument();
+    expect(
+      screen.getAllByTestId(CHART_SERIES_TEST_IDS.successfulRunMarker)
+    ).toHaveLength(3);
+    expect(
+      screen.getByTestId(CHART_SERIES_TEST_IDS.missedExecutionMarker)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId(CHART_SERIES_TEST_IDS.nextExecutionMarker)
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
   });
 
   it('renders x and y axes in the chart svg', () => {

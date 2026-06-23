@@ -16,9 +16,12 @@ import {
 
 import Button from '@/components/button/button';
 
+import { scheduleMetricsChartFixture } from './__fixtures__/schedule-detail-metrics-chart-fixture';
 import formatChartTimeTick from './helpers/format-chart-time-tick';
+import hasScheduleMetricsChartData from './helpers/has-schedule-metrics-chart-data';
 import useCurrentTimeMs from './hooks/use-current-time-ms';
 import {
+  CHART_EMPTY_STATE_MESSAGE,
   CHART_NOW_LINE_TEST_ID,
   CHART_REGION_ARIA_LABEL,
   CHART_SVG_TEST_ID,
@@ -32,15 +35,22 @@ import {
   getMetricsChartInnerDimensions,
   resolveMetricsChartTimeDomain,
 } from './schedule-detail-metrics-chart-scales';
+import ScheduleDetailMetricsChartSeries from './schedule-detail-metrics-chart-series';
+import { type ScheduleMetricsChartSeriesData } from './schedule-detail-metrics-chart-series.types';
 import { overrides, styled } from './schedule-detail-metrics-chart.styles';
 import { type Props } from './schedule-detail-metrics-chart.types';
 
 type ChartSvgProps = {
   width: number;
   height: number;
+  chartData: ScheduleMetricsChartSeriesData;
 };
 
-function ScheduleMetricsChartSvg({ width, height }: ChartSvgProps) {
+function ScheduleMetricsChartSvg({
+  width,
+  height,
+  chartData,
+}: ChartSvgProps) {
   const [, theme] = useStyletron();
   const currentTimeMs = useCurrentTimeMs();
 
@@ -49,13 +59,26 @@ function ScheduleMetricsChartSvg({ width, height }: ChartSvgProps) {
     [width, height]
   );
 
+  const timestampsMs = useMemo(
+    () => [
+      ...chartData.successfulRuns.map(
+        ({ scheduledTimeMs }) => scheduledTimeMs
+      ),
+      ...chartData.missedExecutions.map(
+        ({ scheduledTimeMs }) => scheduledTimeMs
+      ),
+    ],
+    [chartData]
+  );
+
   const timeDomain = useMemo(
     () =>
       resolveMetricsChartTimeDomain({
-        timestampsMs: [],
+        timestampsMs,
         nowMs: currentTimeMs,
+        nextExecutionMs: chartData.nextExecutionTimeMs,
       }),
-    [currentTimeMs]
+    [timestampsMs, currentTimeMs, chartData.nextExecutionTimeMs]
   );
 
   const xScale = useMemo(() => {
@@ -138,6 +161,15 @@ function ScheduleMetricsChartSvg({ width, height }: ChartSvgProps) {
             dy: '0.25em',
           })}
         />
+        <ScheduleDetailMetricsChartSeries
+          width={innerWidth}
+          height={innerHeight}
+          xScale={xScale}
+          data={chartData}
+          successfulRunColor={theme.colors.positive400}
+          missedExecutionColor={theme.colors.warning400}
+          nextExecutionColor={theme.colors.accent400}
+        />
         {nowLineX != null && nowLineX >= 0 && nowLineX <= innerWidth && (
           <Line
             data-testid={CHART_NOW_LINE_TEST_ID}
@@ -154,6 +186,9 @@ function ScheduleMetricsChartSvg({ width, height }: ChartSvgProps) {
 }
 
 export default function ScheduleDetailMetricsChart(_props: Props) {
+  const chartData = scheduleMetricsChartFixture;
+  const hasChartData = hasScheduleMetricsChartData(chartData);
+
   return (
     <styled.Container>
       <styled.Toolbar role="toolbar" aria-label={CHART_TOOLBAR_ARIA_LABEL}>
@@ -204,11 +239,26 @@ export default function ScheduleDetailMetricsChart(_props: Props) {
       </styled.Toolbar>
       <styled.ChartRegion role="region" aria-label={CHART_REGION_ARIA_LABEL}>
         <ParentSize>
-          {({ width = 0, height = 0 }) =>
-            width > 0 && height > 0 ? (
-              <ScheduleMetricsChartSvg width={width} height={height} />
-            ) : null
-          }
+          {({ width = 0, height = 0 }) => {
+            const chartWidth = Math.max(width, 0);
+            const chartHeight = Math.max(height, 0);
+
+            if (!hasChartData || chartWidth === 0 || chartHeight === 0) {
+              return (
+                <styled.EmptyState role="status">
+                  {CHART_EMPTY_STATE_MESSAGE}
+                </styled.EmptyState>
+              );
+            }
+
+            return (
+              <ScheduleMetricsChartSvg
+                width={chartWidth}
+                height={chartHeight}
+                chartData={chartData}
+              />
+            );
+          }}
         </ParentSize>
       </styled.ChartRegion>
     </styled.Container>

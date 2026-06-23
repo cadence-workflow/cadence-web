@@ -33,6 +33,15 @@ export const styled = {
     width: '100%',
     height: '100%',
   })),
+  EmptyState: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: '100%',
+    ...$theme.typography.ParagraphSmall,
+    color: $theme.colors.contentSecondary,
+  })),
 };
 
 const toolbarButtonRootOverrides = {

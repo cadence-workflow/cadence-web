@@ -18,6 +18,8 @@ export const CHART_TOOLBAR_BUTTON_LABELS = {
   now: 'Now',
 } as const;
 
+export const CHART_EMPTY_STATE_MESSAGE = 'No chart data available yet';
+
 export const CHART_REGION_ARIA_LABEL = 'Schedule metrics chart';
 
 export const CHART_TOOLBAR_ARIA_LABEL = 'Chart controls';
@@ -42,3 +44,17 @@ export const CHART_SIDE_PADDING_PX = 24;
 export const CHART_SERIES_TICK_LABEL_WIDTH_PX = 112;
 export const CHART_SERIES_MIN_TICK_COUNT = 2;
 export const CHART_SERIES_MAX_TICK_COUNT = 7;
+
+export const CHART_SERIES_TEST_IDS = {
+  svg: 'schedule-metrics-chart-series-svg',
+  successfulRunMarker: 'schedule-metrics-chart-successful-run-marker',
+  missedExecutionMarker: 'schedule-metrics-chart-missed-execution-marker',
+  nextExecutionMarker: 'schedule-metrics-chart-next-execution-marker',
+} as const;
+
+export const CHART_SERIES_MARKER_RADIUS_PX = 5;
+export const CHART_SERIES_MISSED_MARKER_RADIUS_PX = 6;
+export const CHART_SERIES_NEXT_EXECUTION_STROKE_WIDTH_PX = 2;
+export const CHART_SERIES_MISSED_STROKE_WIDTH_PX = 2;
+export const CHART_SERIES_SUCCESS_Y_RATIO = 0.45;
+export const CHART_SERIES_MISSED_Y_RATIO = 0.65;
