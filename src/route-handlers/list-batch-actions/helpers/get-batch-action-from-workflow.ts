@@ -6,7 +6,10 @@ import { type BatchActionListItem } from '../list-batch-actions.types';
 export default function getBatchActionFromWorkflow(
   execution: WorkflowExecutionInfo
 ): BatchActionListItem | undefined {
-  if (!execution.workflowExecution?.workflowId) {
+  if (
+    !execution.workflowExecution?.workflowId ||
+    !execution.workflowExecution?.runId
+  ) {
     return undefined;
   }
 
@@ -14,7 +17,8 @@ export default function getBatchActionFromWorkflow(
     execution.closeStatus ?? 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID';
 
   return {
-    id: execution.workflowExecution.workflowId,
+    workflowId: execution.workflowExecution.workflowId,
+    runId: execution.workflowExecution.runId,
     status: BATCH_ACTION_STATUS_BY_CLOSE_STATUS[closeStatus],
   };
 }

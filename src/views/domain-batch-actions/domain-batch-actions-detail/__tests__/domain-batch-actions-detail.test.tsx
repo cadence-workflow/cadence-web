@@ -27,7 +27,7 @@ describe(DomainBatchActionDetail.name, () => {
 
   it('renders the batch action title', () => {
     const action: BatchAction = {
-      id: '5',
+      runId: '5',
       status: 'COMPLETED',
       actionType: 'cancel',
     };
@@ -39,7 +39,7 @@ describe(DomainBatchActionDetail.name, () => {
 
   it('shows abort button when status is running', () => {
     const action: BatchAction = {
-      id: '3',
+      runId: '3',
       status: 'RUNNING',
       actionType: 'cancel',
     };
@@ -51,7 +51,7 @@ describe(DomainBatchActionDetail.name, () => {
 
   it('does not show abort button when status is completed', () => {
     const action: BatchAction = {
-      id: '2',
+      runId: '2',
       status: 'COMPLETED',
       actionType: 'cancel',
     };
@@ -63,7 +63,7 @@ describe(DomainBatchActionDetail.name, () => {
 
   it('does not show abort button when status is aborted', () => {
     const action: BatchAction = {
-      id: '1',
+      runId: '1',
       status: 'ABORTED',
       actionType: 'cancel',
     };
@@ -75,14 +75,14 @@ describe(DomainBatchActionDetail.name, () => {
 
   it('keeps the title and abort button while loading details', () => {
     const action: BatchAction = {
-      id: '7',
+      runId: '7',
       status: 'RUNNING',
       actionType: 'cancel',
     };
 
     render(<DomainBatchActionDetail batchAction={action} loading />);
 
-    // Header chrome keeps rendering — id and status come from the slim list item.
+    // Header chrome keeps rendering — runId and status come from the slim list item.
     expect(screen.getByText('Batch action #7')).toBeInTheDocument();
     expect(screen.getByText('Abort batch action')).toBeInTheDocument();
 
@@ -99,7 +99,11 @@ describe(DomainBatchActionDetail.name, () => {
 
   it('renders the progress bar with the batch action status', () => {
     setup({
-      batchAction: { id: '8', status: 'RUNNING', progress: PROGRESS },
+      batchAction: {
+        runId: '8',
+        status: 'RUNNING',
+        progress: PROGRESS,
+      },
     });
 
     expect(screen.getByText('Mock progress bar: RUNNING')).toBeInTheDocument();

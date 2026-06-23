@@ -11,11 +11,9 @@ export type RequestParams = {
   params: RouteParams;
 };
 
-// Slim shape returned by the sidebar list endpoint. The full BatchAction
-// (with actionType, rps, etc.) is only available via a per-row
-// describe call planned for a follow-up PR.
 export type BatchActionListItem = {
-  id: string;
+  workflowId: string;
+  runId: string;
   status: BatchActionStatus;
 };
 

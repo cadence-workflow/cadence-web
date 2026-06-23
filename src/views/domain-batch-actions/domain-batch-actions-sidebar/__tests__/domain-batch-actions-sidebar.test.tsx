@@ -4,7 +4,8 @@ import { userEvent } from '@testing-library/user-event';
 
 import { render, screen } from '@/test-utils/rtl';
 
-import { type BatchAction } from '../../domain-batch-actions.types';
+import { type BatchActionListItem } from '@/route-handlers/list-batch-actions/list-batch-actions.types';
+
 import DomainBatchActionsSidebar from '../domain-batch-actions-sidebar';
 
 jest.mock('react-icons/md', () => ({
@@ -29,16 +30,11 @@ jest.mock(
   })
 );
 
-const mockBatchActions: BatchAction[] = [
-  {
-    id: '4',
-    status: 'RUNNING',
-    progress: { totalEstimate: 200, successCount: 120, errorCount: 5 },
-    actionType: 'cancel',
-  },
-  { id: '3', status: 'COMPLETED', actionType: 'cancel' },
-  { id: '2', status: 'ABORTED', actionType: 'cancel' },
-  { id: '1', status: 'FAILED', actionType: 'cancel' },
+const mockBatchActions: BatchActionListItem[] = [
+  { workflowId: 'wf-4', runId: '4', status: 'RUNNING' },
+  { workflowId: 'wf-3', runId: '3', status: 'COMPLETED' },
+  { workflowId: 'wf-2', runId: '2', status: 'ABORTED' },
+  { workflowId: 'wf-1', runId: '1', status: 'FAILED' },
 ];
 
 function setup({
@@ -54,7 +50,7 @@ function setup({
   isFetchingNextPage = false,
   error = null,
 }: {
-  batchActions?: BatchAction[];
+  batchActions?: BatchActionListItem[];
   isDraftOpen?: boolean;
   isDraftSelected?: boolean;
   selectedActionId?: string | null;

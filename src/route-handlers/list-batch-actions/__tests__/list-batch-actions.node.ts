@@ -39,11 +39,13 @@ describe(listBatchActions.name, () => {
     expect(responseJson).toEqual({
       batchActions: [
         {
-          id: 'mock-batch-action-id-1',
+          workflowId: 'mock-batch-action-id-1',
+          runId: 'mock-batch-action-run-id-1',
           status: 'COMPLETED',
         },
         {
-          id: 'mock-batch-action-id-2',
+          workflowId: 'mock-batch-action-id-2',
+          runId: 'mock-batch-action-run-id-2',
           status: 'RUNNING',
         },
       ],
@@ -66,7 +68,11 @@ describe(listBatchActions.name, () => {
     expect(res.status).toEqual(200);
     const responseJson = await res.json();
     expect(responseJson.batchActions).toEqual([
-      { id: 'mock-batch-action-id-1', status: 'RUNNING' },
+      {
+        workflowId: 'mock-batch-action-id-1',
+        runId: 'mock-batch-action-run-id-1',
+        status: 'RUNNING',
+      },
     ]);
   });
 

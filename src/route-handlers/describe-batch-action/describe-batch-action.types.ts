@@ -23,7 +23,8 @@ export type BatchActionProgressResult = {
 export type RouteParams = {
   domain: string;
   cluster: string;
-  batchActionId: string;
+  workflowId: string;
+  runId: string;
 };
 
 export type RequestParams = {

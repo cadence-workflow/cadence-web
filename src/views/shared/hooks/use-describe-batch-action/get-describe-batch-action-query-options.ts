@@ -9,13 +9,14 @@ import {
 export default function getDescribeBatchActionQueryOptions({
   domain,
   cluster,
-  batchActionId,
+  workflowId,
+  runId,
   ...queryOptions
 }: UseQueryDescribeBatchActionParams): UseDescribeBatchActionQueryOptions {
   return {
     queryKey: [
       'describeBatchAction',
-      { domain, cluster, batchActionId },
+      { domain, cluster, workflowId, runId },
     ] as DescribeBatchActionQueryKey,
     queryFn: ({
       queryKey: [_, p],
@@ -25,7 +26,7 @@ export default function getDescribeBatchActionQueryOptions({
       request(
         `/api/domains/${encodeURIComponent(p.domain)}/${encodeURIComponent(
           p.cluster
-        )}/batch-actions/${encodeURIComponent(p.batchActionId)}`
+        )}/batch-actions/${encodeURIComponent(p.workflowId)}/${encodeURIComponent(p.runId)}`
       ).then((res) => res.json()),
     ...queryOptions,
   };
