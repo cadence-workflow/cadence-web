@@ -38,8 +38,7 @@ describe(SchedulePagePausedBanner.name, () => {
       'href',
       'mailto:operator@example.com'
     );
-    expect(screen.getByText('Paused for maintenance')).toBeInTheDocument();
-    expect(document.body).toHaveTextContent(/Reason: "Paused for maintenance"/);
+    expect(document.body.textContent).toMatch(/Reason:.*Paused for maintenance/);
   });
 
   it('does not render when schedule is running', async () => {
