@@ -1,8 +1,10 @@
 import React from 'react';
 
 import { HttpResponse } from 'msw';
+import { act } from '@testing-library/react';
 
-import { render, screen, within, waitFor } from '@/test-utils/rtl';
+import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list-workflows.types';
+import { fireEvent, render, screen, waitFor } from '@/test-utils/rtl';
 
 import {
   getMockDescribeScheduleResponseForChart,
@@ -13,11 +15,9 @@ import {
   SCHEDULE_METRICS_CHART_API_FIXTURE_NOW_MS,
 } from '../__fixtures__/schedule-detail-metrics-chart-api-fixture';
 import {
+  CHART_FETCH_LOADING_TEST_ID,
   CHART_LOADING_SKELETON_TEST_ID,
-  CHART_REGION_ARIA_LABEL,
   CHART_SERIES_TEST_IDS,
-  CHART_TOOLBAR_ARIA_LABEL,
-  CHART_TOOLBAR_BUTTON_LABELS,
 } from '../schedule-detail-metrics-chart.constants';
 import ScheduleDetailMetricsChart from '../schedule-detail-metrics-chart';
 
@@ -29,7 +29,7 @@ jest.mock('@visx/responsive', () => ({
   }) => <>{children({ width: 800, height: 280 })}</>,
 }));
 
-describe(ScheduleDetailMetricsChart.name, () => {
+describe(`${ScheduleDetailMetricsChart.name} scroll fetch`, () => {
   beforeEach(() => {
     jest.useFakeTimers({ now: SCHEDULE_METRICS_CHART_API_FIXTURE_NOW_MS });
   });
@@ -38,8 +38,9 @@ describe(ScheduleDetailMetricsChart.name, () => {
     jest.useRealTimers();
   });
 
-  it('renders chart canvas with live workflow markers', async () => {
-    setup();
+  it('loads the next workflow page when panning horizontally into older time', async () => {
+    const workflowPages = getMockWorkflowPagesForChart();
+    const { getWorkflowRequestCount } = setup({ workflowPages });
 
     await waitFor(() => {
       expect(
@@ -47,49 +48,41 @@ describe(ScheduleDetailMetricsChart.name, () => {
       ).not.toBeInTheDocument();
     });
 
-    expect(
-      screen.getByRole('region', { name: CHART_REGION_ARIA_LABEL })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByTestId('schedule-metrics-chart-canvas')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByTestId(CHART_SERIES_TEST_IDS.svg)
-    ).toBeInTheDocument();
+    expect(getWorkflowRequestCount()).toBe(1);
     expect(
       screen.getAllByTestId(CHART_SERIES_TEST_IDS.successfulRunMarker)
     ).toHaveLength(2);
-    expect(
-      screen.getByTestId(CHART_SERIES_TEST_IDS.nextExecutionMarker)
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByTestId(CHART_LOADING_SKELETON_TEST_ID)
-    ).not.toBeInTheDocument();
-  });
 
-  it('renders disabled chart toolbar controls', async () => {
-    setup();
+    const canvas = screen.getByTestId('schedule-metrics-chart-canvas');
+
+    await act(async () => {
+      fireEvent.wheel(canvas, { deltaY: -4000 });
+    });
+
+    await waitFor(() => {
+      expect(getWorkflowRequestCount()).toBeGreaterThan(1);
+    });
 
     await waitFor(() => {
       expect(
-        screen.queryByTestId(CHART_LOADING_SKELETON_TEST_ID)
-      ).not.toBeInTheDocument();
+        screen.getAllByTestId(CHART_SERIES_TEST_IDS.successfulRunMarker)
+      ).toHaveLength(3);
     });
 
-    const toolbar = screen.getByRole('toolbar', {
-      name: CHART_TOOLBAR_ARIA_LABEL,
-    });
-
-    Object.values(CHART_TOOLBAR_BUTTON_LABELS).forEach((label) => {
-      const button = within(toolbar).getByRole('button', { name: label });
-      expect(button).toBeDisabled();
-      expect(button).toHaveAttribute('aria-disabled', 'true');
-    });
+    expect(
+      screen.queryByTestId(CHART_FETCH_LOADING_TEST_ID)
+    ).not.toBeInTheDocument();
   });
 });
 
-function setup() {
-  render(
+function setup({
+  workflowPages,
+}: {
+  workflowPages: Array<ListWorkflowsResponse>;
+}) {
+  let workflowRequestCount = 0;
+
+  const utils = render(
     <ScheduleDetailMetricsChart
       params={{
         domain: MOCK_DOMAIN,
@@ -109,10 +102,21 @@ function setup() {
         {
           path: `/api/domains/${MOCK_DOMAIN}/${MOCK_CLUSTER}/workflows`,
           httpMethod: 'GET',
-          httpResolver: async () =>
-            HttpResponse.json(getMockWorkflowPagesForChart()[0]),
+          mockOnce: false,
+          httpResolver: async () => {
+            const page =
+              workflowPages[workflowRequestCount] ??
+              workflowPages[workflowPages.length - 1];
+            workflowRequestCount += 1;
+            return HttpResponse.json(page);
+          },
         },
       ],
     }
   );
+
+  return {
+    ...utils,
+    getWorkflowRequestCount: () => workflowRequestCount,
+  };
 }
