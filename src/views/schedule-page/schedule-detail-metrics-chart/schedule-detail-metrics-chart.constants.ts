@@ -22,6 +22,16 @@ export const CHART_DEFAULT_PAST_WINDOW_MS = 6 * 60 * 60_000;
 /** Padding to the right of `now` reserved for upcoming expected executions (ms). */
 export const CHART_FUTURE_GUTTER_MS = 30 * 60_000;
 
+
+/** Multiplier applied when zooming in (smaller span). */
+export const CHART_ZOOM_IN_FACTOR = 0.5;
+
+/** Multiplier applied when zooming out (larger span). */
+export const CHART_ZOOM_OUT_FACTOR = 2;
+
+/** Horizontal position of `now` after panning (0 = left edge, 1 = right edge). */
+export const CHART_NOW_ANCHOR_RATIO = 0.85;
+
 /** Horizontal inset applied to the chart drawable area (px). */
 export const CHART_SIDE_PADDING_PX = 24;
 

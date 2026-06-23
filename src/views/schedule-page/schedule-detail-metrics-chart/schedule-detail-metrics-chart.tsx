@@ -1,14 +1,13 @@
 'use client';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { ParentSize } from '@visx/responsive';
-import { MdFitScreen, MdGpsFixed, MdZoomIn, MdZoomOut } from 'react-icons/md';
+import {
+  MdFitScreen,
+  MdGpsFixed,
+  MdZoomIn,
+  MdZoomOut,
+} from 'react-icons/md';
 
 import Button from '@/components/button/button';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
@@ -22,15 +21,7 @@ import shiftMetricsChartViewDomain from './helpers/shift-metrics-chart-view-doma
 import workflowsForScheduleToChartPoints, {
   getOldestLoadedScheduleTimeMs,
 } from './helpers/workflows-for-schedule-to-chart-points';
-import ScheduleDetailMetricsChartGlyph from './schedule-detail-metrics-chart-glyph/schedule-detail-metrics-chart-glyph';
-import { styled as glyphStyled } from './schedule-detail-metrics-chart-glyph/schedule-detail-metrics-chart-glyph.styles';
-import ScheduleDetailMetricsChartLoading from './schedule-detail-metrics-chart-loading';
-import {
-  createMetricsChartXScale,
-  resolveMetricsChartPixelRange,
-  resolveMetricsChartTimeDomain,
-} from './schedule-detail-metrics-chart-scales';
-import ScheduleDetailMetricsChartSeries from './schedule-detail-metrics-chart-series';
+import useScheduleMetricsChartViewState from './hooks/use-schedule-metrics-chart-view-state';
 import {
   CHART_EMPTY_STATE_MESSAGE,
   CHART_FETCH_LOADING_TEST_ID,
@@ -43,11 +34,17 @@ import {
   CHART_TOOLBAR_BUTTON_LABELS,
   CHART_WORKFLOWS_PAGE_SIZE,
 } from './schedule-detail-metrics-chart.constants';
-import { overrides, styled } from './schedule-detail-metrics-chart.styles';
+import ScheduleDetailMetricsChartGlyph from './schedule-detail-metrics-chart-glyph/schedule-detail-metrics-chart-glyph';
+import { styled as glyphStyled } from './schedule-detail-metrics-chart-glyph/schedule-detail-metrics-chart-glyph.styles';
+import ScheduleDetailMetricsChartLoading from './schedule-detail-metrics-chart-loading';
 import {
-  type MetricsChartTimeDomain,
-  type Props,
-} from './schedule-detail-metrics-chart.types';
+  createMetricsChartXScale,
+  resolveMetricsChartPixelRange,
+  resolveMetricsChartTimeDomain,
+} from './schedule-detail-metrics-chart-scales';
+import ScheduleDetailMetricsChartSeries from './schedule-detail-metrics-chart-series';
+import { overrides, styled } from './schedule-detail-metrics-chart.styles';
+import { type MetricsChartTimeDomain, type Props } from './schedule-detail-metrics-chart.types';
 
 type PanState = {
   startClientX: number;
@@ -57,9 +54,6 @@ type PanState = {
 export default function ScheduleDetailMetricsChart({ params }: Props) {
   const { domain, cluster, scheduleId } = params;
   const { theme } = useStyletronClasses({});
-  const [viewDomain, setViewDomain] = useState<MetricsChartTimeDomain | null>(
-    null
-  );
   const [isPanning, setIsPanning] = useState(false);
   const panStateRef = useRef<PanState | null>(null);
   const chartWidthRef = useRef(0);
@@ -93,21 +87,20 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
   const timestampsMs = useMemo(
     () => [
       ...chartData.successfulRuns.map(({ scheduledTimeMs }) => scheduledTimeMs),
-      ...chartData.missedExecutions.map(
-        ({ scheduledTimeMs }) => scheduledTimeMs
-      ),
+      ...chartData.missedExecutions.map(({ scheduledTimeMs }) => scheduledTimeMs),
     ],
     [chartData]
   );
 
   const nowMs = Date.now();
 
-  const isInitialLoading = describeQuery.isLoading || workflowsQuery.isLoading;
+  const isInitialLoading =
+    describeQuery.isLoading || workflowsQuery.isLoading;
   const isFetchingMore =
     workflowsQuery.isFetchingNextPage ||
     (workflowsQuery.isFetching && !workflowsQuery.isLoading);
 
-  const scrollBounds = useMemo(
+  const fitAllDomain = useMemo(
     () =>
       resolveMetricsChartTimeDomain({
         timestampsMs,
@@ -119,21 +112,33 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
 
   const panBounds = useMemo(
     () =>
-      scrollBounds
+      fitAllDomain
         ? {
             minMs: Number.NEGATIVE_INFINITY,
-            maxMs: scrollBounds.maxMs,
+            maxMs: fitAllDomain.maxMs,
           }
         : null,
-    [scrollBounds]
+    [fitAllDomain]
   );
 
+  const {
+    visibleDomain,
+    setVisibleDomain,
+    canZoomIn,
+    canZoomOut,
+    isFitAllView,
+    zoomIn,
+    zoomOut,
+    fitAll,
+    goToNow,
+  } = useScheduleMetricsChartViewState({ fitAllDomain, nowMs });
+
   useEffect(() => {
-    if (viewDomain != null || isInitialLoading || scrollBounds == null) {
+    if (visibleDomain != null || isInitialLoading || fitAllDomain == null) {
       return;
     }
 
-    setViewDomain(
+    setVisibleDomain(
       resolveInitialMetricsChartViewDomain({
         nowMs,
         nextExecutionMs: nextExecutionTimeMs,
@@ -141,11 +146,12 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
       })
     );
   }, [
-    viewDomain,
+    visibleDomain,
     isInitialLoading,
-    scrollBounds,
+    fitAllDomain,
     nowMs,
     nextExecutionTimeMs,
+    setVisibleDomain,
     timestampsMs,
   ]);
 
@@ -176,22 +182,19 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
     },
     [
       oldestLoadedScheduleTimeMs,
-      workflowsQuery.data,
       workflowsQuery.hasNextPage,
       workflowsQuery.isFetchingNextPage,
-      workflowsQuery.isLoading,
-      workflowsQuery.isSuccess,
     ]
   );
 
   useEffect(() => {
-    if (!shouldFetchOlderWorkflows(viewDomain)) {
+    if (!shouldFetchOlderWorkflows(visibleDomain)) {
       return;
     }
 
     void workflowsQuery.fetchNextPage();
   }, [
-    viewDomain,
+    visibleDomain,
     shouldFetchOlderWorkflows,
     workflowsQuery.fetchNextPage,
     workflowsQuery.data?.pages.length,
@@ -208,7 +211,7 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
       const viewSpanMs = startViewDomain.maxMs - startViewDomain.minMs;
       const deltaMs = -(deltaClientX / chartWidth) * viewSpanMs;
 
-      setViewDomain(
+      setVisibleDomain(
         shiftMetricsChartViewDomain({
           viewDomain: startViewDomain,
           deltaMs,
@@ -216,22 +219,22 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
         })
       );
     },
-    [scrollBounds]
+    [panBounds, setVisibleDomain]
   );
 
   const handlePanStart = useCallback(
     (clientX: number) => {
-      if (viewDomain == null) {
+      if (visibleDomain == null) {
         return;
       }
 
       panStateRef.current = {
         startClientX: clientX,
-        startViewDomain: viewDomain,
+        startViewDomain: visibleDomain,
       };
       setIsPanning(true);
     },
-    [viewDomain]
+    [visibleDomain]
   );
 
   useEffect(() => {
@@ -268,7 +271,7 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
 
   const handleWheel = useCallback(
     (event: React.WheelEvent<HTMLDivElement>) => {
-      if (viewDomain == null) {
+      if (visibleDomain == null) {
         return;
       }
 
@@ -278,27 +281,30 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
         Math.abs(event.deltaX) > Math.abs(event.deltaY)
           ? event.deltaX
           : event.deltaY;
-      const viewSpanMs = viewDomain.maxMs - viewDomain.minMs;
+      const viewSpanMs = visibleDomain.maxMs - visibleDomain.minMs;
       const chartWidth = chartWidthRef.current || 1;
       const deltaMs = (horizontalDelta / chartWidth) * viewSpanMs;
 
-      setViewDomain((currentViewDomain) => {
-        if (currentViewDomain == null) {
-          return currentViewDomain;
+      setVisibleDomain((currentVisibleDomain) => {
+        if (currentVisibleDomain == null) {
+          return currentVisibleDomain;
         }
 
         return shiftMetricsChartViewDomain({
-          viewDomain: currentViewDomain,
+          viewDomain: currentVisibleDomain,
           deltaMs,
           bounds: panBounds,
         });
       });
     },
-    [scrollBounds, viewDomain]
+    [panBounds, setVisibleDomain, visibleDomain]
   );
 
   const hasRenderableChartData =
     hasScheduleMetricsChartData(chartData) || describeQuery.isSuccess;
+
+  const toolbarEnabled =
+    hasRenderableChartData && visibleDomain != null && !isInitialLoading;
 
   return (
     <styled.Container>
@@ -307,10 +313,11 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
           size="mini"
           kind="tertiary"
           shape="pill"
-          disabled
-          aria-disabled
+          disabled={!toolbarEnabled || !canZoomIn}
+          aria-disabled={!toolbarEnabled || !canZoomIn}
           overrides={overrides.toolbarButton}
           aria-label={CHART_TOOLBAR_BUTTON_LABELS.zoomIn}
+          onClick={zoomIn}
         >
           <MdZoomIn size={16} />
         </Button>
@@ -318,10 +325,11 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
           size="mini"
           kind="tertiary"
           shape="pill"
-          disabled
-          aria-disabled
+          disabled={!toolbarEnabled || !canZoomOut}
+          aria-disabled={!toolbarEnabled || !canZoomOut}
           overrides={overrides.toolbarButton}
           aria-label={CHART_TOOLBAR_BUTTON_LABELS.zoomOut}
+          onClick={zoomOut}
         >
           <MdZoomOut size={16} />
         </Button>
@@ -329,10 +337,11 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
           size="mini"
           kind="tertiary"
           shape="pill"
-          disabled
-          aria-disabled
+          disabled={!toolbarEnabled || isFitAllView}
+          aria-disabled={!toolbarEnabled || isFitAllView}
           overrides={overrides.toolbarButton}
           aria-label={CHART_TOOLBAR_BUTTON_LABELS.fitAll}
+          onClick={fitAll}
         >
           <MdFitScreen size={16} />
         </Button>
@@ -340,10 +349,11 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
           size="mini"
           kind="tertiary"
           shape="pill"
-          disabled
-          aria-disabled
+          disabled={!toolbarEnabled}
+          aria-disabled={!toolbarEnabled}
           overrides={overrides.toolbarButton}
           aria-label={CHART_TOOLBAR_BUTTON_LABELS.now}
+          onClick={goToNow}
         >
           <MdGpsFixed size={16} />
         </Button>
@@ -361,7 +371,7 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
               !hasRenderableChartData ||
               chartWidth === 0 ||
               chartHeight === 0 ||
-              viewDomain == null
+              visibleDomain == null
             ) {
               if (isInitialLoading) {
                 return null;
@@ -380,7 +390,7 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
             const xScale =
               pixelRange != null
                 ? createMetricsChartXScale({
-                    domain: viewDomain,
+                    domain: visibleDomain,
                     range: pixelRange,
                   })
                 : null;
@@ -439,20 +449,18 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
                       testId={CHART_GLYPH_TEST_IDS.successfulRunTrigger}
                     />
                   ))}
-                  {chartData.missedExecutions.map(
-                    ({ scheduledTimeMs, runs }) => (
-                      <ScheduleDetailMetricsChartGlyph
-                        key={`missed-trigger-${scheduledTimeMs}`}
-                        x={xScale(scheduledTimeMs)}
-                        y={chartHeight * CHART_SERIES_MISSED_Y_RATIO}
-                        runs={runs}
-                        domain={params.domain}
-                        cluster={params.cluster}
-                        variant="missed"
-                        testId={CHART_GLYPH_TEST_IDS.missedExecutionTrigger}
-                      />
-                    )
-                  )}
+                  {chartData.missedExecutions.map(({ scheduledTimeMs, runs }) => (
+                    <ScheduleDetailMetricsChartGlyph
+                      key={`missed-trigger-${scheduledTimeMs}`}
+                      x={xScale(scheduledTimeMs)}
+                      y={chartHeight * CHART_SERIES_MISSED_Y_RATIO}
+                      runs={runs}
+                      domain={params.domain}
+                      cluster={params.cluster}
+                      variant="missed"
+                      testId={CHART_GLYPH_TEST_IDS.missedExecutionTrigger}
+                    />
+                  ))}
                 </glyphStyled.Overlay>
               </styled.ChartCanvas>
             );
