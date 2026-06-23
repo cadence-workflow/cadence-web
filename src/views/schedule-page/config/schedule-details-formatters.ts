@@ -57,3 +57,9 @@ export function formatScheduleMemo(
   if (values.length === 0) return null;
   return values.join(', ');
 }
+
+export function formatScheduleInput(
+  input: { data?: string | null } | null | undefined
+) {
+  return formatPayload(input);
+}
