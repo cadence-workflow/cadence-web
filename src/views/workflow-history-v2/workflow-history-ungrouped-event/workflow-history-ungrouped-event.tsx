@@ -1,11 +1,12 @@
 import { useCallback } from 'react';
 
 import { Panel } from 'baseui/accordion';
-import { MdOutlineCircle } from 'react-icons/md';
+import { MdHourglassTop, MdOutlineCircle } from 'react-icons/md';
 
 import formatDate from '@/utils/data-formatters/format-date';
 import formatTimeDiff from '@/utils/datetime/format-time-diff';
 import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
+import isPendingHistoryEvent from '@/views/workflow-history/workflow-history-event-details/helpers/is-pending-history-event';
 import WorkflowHistoryGroupLabel from '@/views/workflow-history/workflow-history-group-label/workflow-history-group-label';
 import WorkflowHistoryRemainingDurationBadge from '@/views/workflow-history/workflow-history-remaining-duration-badge/workflow-history-remaining-duration-badge';
 import WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
@@ -53,6 +54,8 @@ export default function WorkflowHistoryUngroupedEvent({
     ([eventId]) => eventId === eventInfo.id
   )?.[1].eventDetails;
 
+  const isPendingEvent = isPendingHistoryEvent(eventInfo.event);
+ 
   return (
     <Panel
       title={
@@ -63,7 +66,9 @@ export default function WorkflowHistoryUngroupedEvent({
                 .content
             }
           />
-          <styled.HeaderLabel>{eventInfo.id}</styled.HeaderLabel>
+          <styled.HeaderLabel>
+            {isPendingEvent ? <MdHourglassTop /> : eventInfo.id}
+          </styled.HeaderLabel>
           <styled.HeaderLabel>
             <WorkflowHistoryGroupLabel
               label={eventInfo.label}
