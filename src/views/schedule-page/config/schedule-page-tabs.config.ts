@@ -1,10 +1,9 @@
-import { createElement } from 'react';
-
 import { MdCalendarMonth, MdTimeline } from 'react-icons/md';
 
 import ScheduleDetails from '@/views/schedule-details/schedule-details';
 
 import getSchedulePageTabErrorConfig from '../helpers/get-schedule-page-tab-error-config';
+import ScheduleDetailMetricsChart from '../schedule-detail-metrics-chart/schedule-detail-metrics-chart';
 import { type SchedulePageTabsConfig } from '../schedule-page-tabs/schedule-page-tabs.types';
 
 const schedulePageTabsConfig: SchedulePageTabsConfig<'details' | 'runs'> = {
@@ -17,7 +16,7 @@ const schedulePageTabsConfig: SchedulePageTabsConfig<'details' | 'runs'> = {
   runs: {
     title: 'Runs',
     artwork: MdTimeline,
-    content: () => createElement('div', {}, 'Runs content'),
+    content: ScheduleDetailMetricsChart,
     getErrorConfig: (error, params) =>
       getSchedulePageTabErrorConfig(
         error,
