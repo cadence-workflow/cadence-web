@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 
 import { Panel } from 'baseui/accordion';
-import { MdHourglassTop, MdOutlineCircle } from 'react-icons/md';
+import { MdOutlineCircle } from 'react-icons/md';
 
 import formatDate from '@/utils/data-formatters/format-date';
 import formatTimeDiff from '@/utils/datetime/format-time-diff';
@@ -55,7 +55,7 @@ export default function WorkflowHistoryUngroupedEvent({
   )?.[1].eventDetails;
 
   const isPendingEvent = isPendingHistoryEvent(eventInfo.event);
- 
+
   return (
     <Panel
       title={
@@ -67,7 +67,7 @@ export default function WorkflowHistoryUngroupedEvent({
             }
           />
           <styled.HeaderLabel>
-            {isPendingEvent ? <MdHourglassTop /> : eventInfo.id}
+            {isPendingEvent ? '-' : eventInfo.id}
           </styled.HeaderLabel>
           <styled.HeaderLabel>
             <WorkflowHistoryGroupLabel
