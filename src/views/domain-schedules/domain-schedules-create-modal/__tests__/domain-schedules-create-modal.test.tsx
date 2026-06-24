@@ -1,13 +1,15 @@
-import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
-import { type CreateScheduleRequestBody } from '@/route-handlers/create-schedule/create-schedule.types';
-import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 import { type ModalProps } from 'baseui/modal';
 import { HttpResponse } from 'msw';
 import * as reactHookForm from 'react-hook-form';
 
+import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
+
+import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
+import { type CreateScheduleRequestBody } from '@/route-handlers/create-schedule/create-schedule.types';
+
 import { mockDomainSchedulesCreateFormData } from '../__fixtures__/mock-domain-schedules-create-form-data';
-import { type DomainSchedulesCreateFormData } from '../domain-schedules-create-modal.types';
 import DomainSchedulesCreateModal from '../domain-schedules-create-modal';
+import { type DomainSchedulesCreateFormData } from '../domain-schedules-create-modal.types';
 
 const { useForm: useFormActual } =
   jest.requireActual<typeof reactHookForm>('react-hook-form');
