@@ -19,6 +19,10 @@ export default function SchedulePageTabContent({ params }: Props) {
     return notFound();
   }
 
+  if (!TabContent) {
+    return <div className={cls.tabContentContainer} />;
+  }
+
   return (
     <div className={cls.tabContentContainer}>
       <TabContent params={params} />
