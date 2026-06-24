@@ -73,7 +73,6 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
     batchActions,
     batchActionId: queryParams.batchActionId,
     batchActionWorkflowId: queryParams.batchActionWorkflowId,
-    isDraftSelected,
   });
 
   const {

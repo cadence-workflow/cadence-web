@@ -14,7 +14,6 @@ describe(resolveSelectedBatchAction.name, () => {
         batchActions: ACTIONS,
         batchActionId: undefined,
         batchActionWorkflowId: undefined,
-        isDraftSelected: false,
       })
     ).toEqual({ selectedActionId: 'run-1', selectedWorkflowId: 'wf-1' });
   });
@@ -25,7 +24,6 @@ describe(resolveSelectedBatchAction.name, () => {
         batchActions: ACTIONS,
         batchActionId: 'run-999',
         batchActionWorkflowId: 'wf-999',
-        isDraftSelected: false,
       })
     ).toEqual({ selectedActionId: 'run-999', selectedWorkflowId: 'wf-999' });
   });
@@ -36,7 +34,6 @@ describe(resolveSelectedBatchAction.name, () => {
         batchActions: ACTIONS,
         batchActionId: 'run-2',
         batchActionWorkflowId: undefined,
-        isDraftSelected: false,
       })
     ).toEqual({ selectedActionId: null, selectedWorkflowId: null });
   });
@@ -47,20 +44,8 @@ describe(resolveSelectedBatchAction.name, () => {
         batchActions: ACTIONS,
         batchActionId: undefined,
         batchActionWorkflowId: 'wf-999',
-        isDraftSelected: false,
       })
     ).toEqual({ selectedActionId: null, selectedWorkflowId: null });
-  });
-
-  it('tracks the first action while a draft is selected', () => {
-    expect(
-      resolveSelectedBatchAction({
-        batchActions: ACTIONS,
-        batchActionId: 'draft',
-        batchActionWorkflowId: undefined,
-        isDraftSelected: true,
-      })
-    ).toEqual({ selectedActionId: 'run-1', selectedWorkflowId: 'wf-1' });
   });
 
   it('returns nulls for an empty list', () => {
@@ -69,7 +54,6 @@ describe(resolveSelectedBatchAction.name, () => {
         batchActions: [],
         batchActionId: undefined,
         batchActionWorkflowId: undefined,
-        isDraftSelected: false,
       })
     ).toEqual({ selectedActionId: null, selectedWorkflowId: null });
   });
