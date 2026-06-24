@@ -6,7 +6,10 @@ import { StatefulPopover } from 'baseui/popover';
 import ScheduleDetailMetricsChartRunPopover from '../schedule-detail-metrics-chart-run-popover/schedule-detail-metrics-chart-run-popover';
 import { CHART_RUN_POPOVER_ENTRY_DELAY_MS } from '../schedule-detail-metrics-chart.constants';
 
-import { overrides, styled } from './schedule-detail-metrics-chart-glyph.styles';
+import {
+  overrides,
+  styled,
+} from './schedule-detail-metrics-chart-glyph.styles';
 import { type Props } from './schedule-detail-metrics-chart-glyph.types';
 
 export default function ScheduleDetailMetricsChartGlyph({

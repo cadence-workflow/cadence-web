@@ -3,6 +3,7 @@ import React from 'react';
 import { Group } from '@visx/group';
 import { Circle, Line } from '@visx/shape';
 
+import { type ScheduleMetricsChartSeriesProps } from './schedule-detail-metrics-chart-series.types';
 import {
   CHART_SERIES_MARKER_RADIUS_PX,
   CHART_SERIES_MISSED_MARKER_RADIUS_PX,
@@ -12,7 +13,6 @@ import {
   CHART_SERIES_SUCCESS_Y_RATIO,
   CHART_SERIES_TEST_IDS,
 } from './schedule-detail-metrics-chart.constants';
-import { type ScheduleMetricsChartSeriesProps } from './schedule-detail-metrics-chart-series.types';
 
 export default function ScheduleDetailMetricsChartSeries({
   width,
@@ -76,7 +76,12 @@ export default function ScheduleDetailMetricsChartSeries({
           data-testid={CHART_SERIES_TEST_IDS.nextExecutionMarker}
         />
       )}
-      <rect width={width} height={height} fill="transparent" pointerEvents="none" />
+      <rect
+        width={width}
+        height={height}
+        fill="transparent"
+        pointerEvents="none"
+      />
     </Group>
   );
 }

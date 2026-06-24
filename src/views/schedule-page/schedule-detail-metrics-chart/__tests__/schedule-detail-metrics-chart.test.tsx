@@ -2,7 +2,7 @@ import React from 'react';
 
 import { HttpResponse } from 'msw';
 
-import { render, screen, within, waitFor } from '@/test-utils/rtl';
+import { render, screen, userEvent, within, waitFor } from '@/test-utils/rtl';
 
 import {
   getMockDescribeScheduleResponseForChart,
@@ -12,6 +12,7 @@ import {
   MOCK_SCHEDULE_ID,
   SCHEDULE_METRICS_CHART_API_FIXTURE_NOW_MS,
 } from '../__fixtures__/schedule-detail-metrics-chart-api-fixture';
+import ScheduleDetailMetricsChart from '../schedule-detail-metrics-chart';
 import {
   CHART_LOADING_SKELETON_TEST_ID,
   CHART_REGION_ARIA_LABEL,
@@ -19,7 +20,6 @@ import {
   CHART_TOOLBAR_ARIA_LABEL,
   CHART_TOOLBAR_BUTTON_LABELS,
 } from '../schedule-detail-metrics-chart.constants';
-import ScheduleDetailMetricsChart from '../schedule-detail-metrics-chart';
 
 jest.mock('@visx/responsive', () => ({
   ParentSize: ({
@@ -53,9 +53,7 @@ describe(ScheduleDetailMetricsChart.name, () => {
     expect(
       screen.getByTestId('schedule-metrics-chart-canvas')
     ).toBeInTheDocument();
-    expect(
-      screen.getByTestId(CHART_SERIES_TEST_IDS.svg)
-    ).toBeInTheDocument();
+    expect(screen.getByTestId(CHART_SERIES_TEST_IDS.svg)).toBeInTheDocument();
     expect(
       screen.getAllByTestId(CHART_SERIES_TEST_IDS.successfulRunMarker)
     ).toHaveLength(2);
@@ -67,7 +65,7 @@ describe(ScheduleDetailMetricsChart.name, () => {
     ).not.toBeInTheDocument();
   });
 
-  it('renders disabled chart toolbar controls', async () => {
+  it('renders enabled chart toolbar controls when chart has data', async () => {
     setup();
 
     await waitFor(() => {
@@ -80,15 +78,72 @@ describe(ScheduleDetailMetricsChart.name, () => {
       name: CHART_TOOLBAR_ARIA_LABEL,
     });
 
-    Object.values(CHART_TOOLBAR_BUTTON_LABELS).forEach((label) => {
-      const button = within(toolbar).getByRole('button', { name: label });
-      expect(button).toBeDisabled();
-      expect(button).toHaveAttribute('aria-disabled', 'true');
+    expect(
+      within(toolbar).getByRole('button', {
+        name: CHART_TOOLBAR_BUTTON_LABELS.zoomIn,
+      })
+    ).toBeEnabled();
+    expect(
+      within(toolbar).getByRole('button', {
+        name: CHART_TOOLBAR_BUTTON_LABELS.zoomOut,
+      })
+    ).toBeDisabled();
+    expect(
+      within(toolbar).getByRole('button', {
+        name: CHART_TOOLBAR_BUTTON_LABELS.fitAll,
+      })
+    ).toBeDisabled();
+    expect(
+      within(toolbar).getByRole('button', {
+        name: CHART_TOOLBAR_BUTTON_LABELS.now,
+      })
+    ).toBeEnabled();
+  });
+
+  it('zooms in when the zoom in control is clicked', async () => {
+    const { user } = setup();
+
+    await waitFor(() => {
+      expect(
+        screen.queryByTestId(CHART_LOADING_SKELETON_TEST_ID)
+      ).not.toBeInTheDocument();
     });
+
+    const toolbar = screen.getByRole('toolbar', {
+      name: CHART_TOOLBAR_ARIA_LABEL,
+    });
+    const zoomInButton = within(toolbar).getByRole('button', {
+      name: CHART_TOOLBAR_BUTTON_LABELS.zoomIn,
+    });
+    const getLastSuccessfulRunX = () =>
+      screen
+        .getAllByTestId(CHART_SERIES_TEST_IDS.successfulRunMarker)
+        .at(-1)
+        ?.getAttribute('cx');
+
+    const initialSuccessfulRunX = getLastSuccessfulRunX();
+
+    await user.click(zoomInButton);
+
+    expect(getLastSuccessfulRunX()).not.toBe(initialSuccessfulRunX);
+    expect(
+      within(toolbar).getByRole('button', {
+        name: CHART_TOOLBAR_BUTTON_LABELS.zoomOut,
+      })
+    ).toBeEnabled();
+    expect(
+      within(toolbar).getByRole('button', {
+        name: CHART_TOOLBAR_BUTTON_LABELS.fitAll,
+      })
+    ).toBeEnabled();
   });
 });
 
 function setup() {
+  const user = userEvent.setup({
+    advanceTimers: jest.advanceTimersByTime,
+  });
+
   render(
     <ScheduleDetailMetricsChart
       params={{
@@ -115,4 +170,6 @@ function setup() {
       ],
     }
   );
+
+  return { user };
 }

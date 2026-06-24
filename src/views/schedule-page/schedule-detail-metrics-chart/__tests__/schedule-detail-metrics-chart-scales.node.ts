@@ -1,16 +1,16 @@
 import {
-  CHART_DEFAULT_PAST_WINDOW_MS,
-  CHART_FUTURE_GUTTER_MS,
-  CHART_MIN_DOMAIN_SPAN_MS,
-  CHART_SIDE_PADDING_PX,
-} from '../schedule-detail-metrics-chart.constants';
-import {
   createMetricsChartXScale,
   pixelToTimeMs,
   resolveMetricsChartPixelRange,
   resolveMetricsChartTimeDomain,
   timeMsToPixel,
 } from '../schedule-detail-metrics-chart-scales';
+import {
+  CHART_DEFAULT_PAST_WINDOW_MS,
+  CHART_FUTURE_GUTTER_MS,
+  CHART_MIN_DOMAIN_SPAN_MS,
+  CHART_SIDE_PADDING_PX,
+} from '../schedule-detail-metrics-chart.constants';
 
 const mockNowMs = new Date('2024-06-15T12:00:00Z').getTime();
 
