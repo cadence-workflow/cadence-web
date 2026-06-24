@@ -107,11 +107,11 @@ export const createScheduleFormSchema = z
           }
         }
       }),
-    pauseOnFailure: z.boolean().optional().default(false),
+    pauseOnFailure: z.boolean().optional(),
 
     // --- Advanced fields ---
     scheduleId: z.string().min(1).optional(),
-    overlapPolicy: z.enum(SCHEDULE_OVERLAP_POLICIES),
+    overlapPolicy: z.enum(SCHEDULE_OVERLAP_POLICIES).optional(),
     bufferLimit: z.string().optional(),
     concurrencyLimit: z.string().optional(),
     jitterSeconds: z
