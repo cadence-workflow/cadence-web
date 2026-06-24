@@ -3,12 +3,13 @@
 import React, { useEffect, useRef } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Banner, HIERARCHY, KIND as BANNER_KIND } from 'baseui/banner';
+import { Banner } from 'baseui/banner';
 import { Modal, ModalButton } from 'baseui/modal';
 import { useSnackbar } from 'baseui/snackbar';
 import { useForm } from 'react-hook-form';
 import { MdCheckCircle, MdErrorOutline } from 'react-icons/md';
 
+import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
 import useCreateSchedule from '@/views/shared/hooks/use-create-schedule/use-create-schedule';
 
 import DomainSchedulesCreateForm from '../domain-schedules-create-form/domain-schedules-create-form';
@@ -43,6 +44,9 @@ export default function DomainSchedulesCreateModal({
       resolver: zodResolver(createScheduleFormSchema),
       mode: 'onSubmit',
       reValidateMode: 'onChange',
+      defaultValues: {
+        overlapPolicy: ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_CONCURRENT,
+      },
     });
 
   useEffect(() => {

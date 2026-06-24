@@ -12,11 +12,13 @@ export default function DomainSchedulesHorizontalField({
   description,
   htmlFor,
   error,
+  caption,
+  subfield = false,
   children,
 }: Props) {
   return (
-    <styled.FieldRow>
-      <styled.FieldLabelColumn>
+    <styled.FieldRow $bordered={subfield}>
+      <styled.FieldLabelColumn $indent={subfield}>
         {htmlFor ? (
           <styled.FieldLabel htmlFor={htmlFor}>{label}</styled.FieldLabel>
         ) : (
@@ -26,9 +28,10 @@ export default function DomainSchedulesHorizontalField({
           <styled.FieldDescription>{description}</styled.FieldDescription>
         ) : null}
       </styled.FieldLabelColumn>
-      <styled.FieldControlColumn>
+      <styled.FieldControlColumn $indent={subfield}>
         <FormControl
           error={error}
+          caption={caption}
           overrides={overrides.horizontalFieldFormControl}
         >
           {children}

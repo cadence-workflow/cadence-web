@@ -30,6 +30,9 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
     expect(screen.getByLabelText('Schedule Id')).toBeInTheDocument();
     expect(screen.getByLabelText('Jitter duration')).toBeInTheDocument();
     expect(screen.getByLabelText('Workflow Id Prefix')).toBeInTheDocument();
+    expect(
+      screen.getByRole('combobox', { name: /overlap policy/i })
+    ).toBeInTheDocument();
   });
 
   it('collapses advanced fields when the toggle is clicked again', async () => {
@@ -46,6 +49,42 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
     expect(
       screen.getByRole('button', { name: /show advanced configurations/i })
     ).toBeInTheDocument();
+  });
+
+  it('shows buffer limit only when overlap policy is Buffer', async () => {
+    const { user } = setup();
+
+    await user.click(
+      screen.getByRole('button', { name: /show advanced configurations/i })
+    );
+
+    const overlapPolicy = screen.getByRole('combobox', {
+      name: /overlap policy/i,
+    });
+    await user.click(overlapPolicy);
+    await user.click(screen.getByText('Buffer'));
+
+    expect(screen.getByLabelText('Buffer limit')).toBeInTheDocument();
+    expect(
+      screen.queryByLabelText('Concurrency limit')
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows concurrency limit only when overlap policy is Concurrent', async () => {
+    const { user } = setup();
+
+    await user.click(
+      screen.getByRole('button', { name: /show advanced configurations/i })
+    );
+
+    const overlapPolicy = screen.getByRole('combobox', {
+      name: /overlap policy/i,
+    });
+    await user.click(overlapPolicy);
+    await user.click(screen.getByText('Concurrent'));
+
+    expect(screen.getByLabelText('Concurrency limit')).toBeInTheDocument();
+    expect(screen.queryByLabelText('Buffer limit')).not.toBeInTheDocument();
   });
 });
 
