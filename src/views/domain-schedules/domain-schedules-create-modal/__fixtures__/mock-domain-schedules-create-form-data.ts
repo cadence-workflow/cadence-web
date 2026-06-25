@@ -1,3 +1,5 @@
+import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
+
 import { type DomainSchedulesCreateFormData } from '../domain-schedules-create-modal.types';
 
 export const mockDomainSchedulesCreateFormData = {
@@ -13,4 +15,6 @@ export const mockDomainSchedulesCreateFormData = {
   workerSDKLanguage: 'GO',
   executionStartToCloseTimeoutSeconds: 3600,
   taskStartToCloseTimeoutSeconds: 45,
+  pauseOnFailure: false,
+  overlapPolicy: ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_CONCURRENT,
 } satisfies DomainSchedulesCreateFormData;
