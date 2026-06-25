@@ -8,11 +8,15 @@ const heartbeatDetailsSchema = z
     TotalEstimate: z.number(),
     SuccessCount: z.number().catch(0),
     ErrorCount: z.number().catch(0),
+    // Live, signal-tuned rate limit in effect for the running activity.
+    // Optional so a batcher that predates the field still parses.
+    RPS: z.number().optional().catch(undefined),
   })
-  .transform(({ TotalEstimate, SuccessCount, ErrorCount }) => ({
+  .transform(({ TotalEstimate, SuccessCount, ErrorCount, RPS }) => ({
     totalEstimate: TotalEstimate,
     successCount: SuccessCount,
     errorCount: ErrorCount,
+    rps: RPS,
   }));
 
 export default heartbeatDetailsSchema;
