@@ -36,7 +36,7 @@ export default function transformDomainSchedulesCreateFormToBody(
     // fields that are only present if they are defined
     ...pickBy(
       {
-        pauseOnFailure: formData.pauseOnFailure ?? false,
+        pauseOnFailure: formData.pauseOnFailure ?? undefined,
         overlapPolicy: formData.overlapPolicy ?? undefined,
         bufferLimit:
           formData.overlapPolicy ===
