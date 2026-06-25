@@ -159,6 +159,7 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
       const {
         control,
         trigger,
+        clearErrors,
         formState: { errors: fieldErrors, isSubmitted },
       } = useForm<DomainSchedulesCreateFormData>({
         resolver: zodResolver(createScheduleFormSchema),
@@ -178,6 +179,7 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
             fieldErrors={fieldErrors}
             trigger={trigger}
             isSubmitted={isSubmitted}
+            clearErrors={clearErrors}
             cluster="test-cluster"
           />
           <button type="button" onClick={() => trigger()}>
@@ -236,6 +238,7 @@ function setup() {
     const {
       control,
       getValues: readValues,
+      clearErrors,
       formState: { errors: fieldErrors },
     } = useForm<DomainSchedulesCreateFormData>({
       defaultValues: {},
@@ -246,6 +249,7 @@ function setup() {
       <DomainSchedulesCreateAdvancedForm
         control={control}
         fieldErrors={fieldErrors}
+        clearErrors={clearErrors}
         cluster="test-cluster"
       />
     );

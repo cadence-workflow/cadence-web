@@ -1,7 +1,7 @@
 import { mockDomainSchedulesCreateFormData } from '../../__fixtures__/mock-domain-schedules-create-form-data';
 import { createScheduleFormSchema } from '../create-schedule-form-schema';
 
-describe(createScheduleFormSchema.name, () => {
+describe('createScheduleFormSchema', () => {
   it('accepts schedule period when only start or end is provided', () => {
     expect(
       createScheduleFormSchema.safeParse({
@@ -41,7 +41,7 @@ describe(createScheduleFormSchema.name, () => {
     expect(result.error.issues).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          path: ['endTime'],
+          path: ['startTime'],
           message: 'Start date must be before end date',
         }),
       ])

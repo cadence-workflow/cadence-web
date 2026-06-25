@@ -30,7 +30,7 @@ import { type Props } from './domain-schedules-create-form.types';
 export default function DomainSchedulesCreateForm({
   control,
   trigger,
-  clearErrors: _clearErrors,
+  clearErrors,
   cluster,
 }: Props) {
   const { errors: fieldErrors, isSubmitted } = useFormState({ control });
@@ -313,6 +313,7 @@ export default function DomainSchedulesCreateForm({
         fieldErrors={fieldErrors}
         trigger={trigger}
         isSubmitted={isSubmitted}
+        clearErrors={clearErrors}
         cluster={cluster}
       />
     </div>

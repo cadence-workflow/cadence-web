@@ -47,6 +47,7 @@ export default function DomainSchedulesCreateAdvancedForm({
   fieldErrors,
   trigger,
   isSubmitted = false,
+  clearErrors,
   cluster,
 }: Props) {
   const { data: searchAttributesData, isLoading: isLoadingSearchAttributes } =

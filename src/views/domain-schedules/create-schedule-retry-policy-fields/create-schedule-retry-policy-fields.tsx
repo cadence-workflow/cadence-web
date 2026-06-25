@@ -69,8 +69,9 @@ export default function CreateScheduleRetryPolicyFields({
       </DomainSchedulesHorizontalField>
 
       {enableRetryPolicy && (
-        <DomainSchedulesHorizontalField.GroupedFields>
+        <>
           <DomainSchedulesHorizontalField
+            subfield={true}
             label="Initial interval"
             description="How long to wait before first retry."
             htmlFor="create-schedule-form-retry-initial-interval"
@@ -112,6 +113,7 @@ export default function CreateScheduleRetryPolicyFields({
           </DomainSchedulesHorizontalField>
 
           <DomainSchedulesHorizontalField
+            subfield={true}
             label="Backoff coefficient"
             description="Multiplier applied between retries."
             htmlFor="create-schedule-form-retry-backoff-coefficient"
@@ -153,6 +155,7 @@ export default function CreateScheduleRetryPolicyFields({
           </DomainSchedulesHorizontalField>
 
           <DomainSchedulesHorizontalField
+            subfield={true}
             label="Maximum interval (optional)"
             description="Upper bound for retry interval."
             htmlFor="create-schedule-form-retry-maximum-interval"
@@ -194,6 +197,7 @@ export default function CreateScheduleRetryPolicyFields({
           </DomainSchedulesHorizontalField>
 
           <DomainSchedulesHorizontalField
+            subfield={true}
             label="Limit retries"
             description="Choose whether retries are limited by attempts or duration."
             error={getFieldErrorMessage(fieldErrors, 'limitRetries')}
@@ -226,6 +230,7 @@ export default function CreateScheduleRetryPolicyFields({
 
           {limitRetries === 'ATTEMPTS' && (
             <DomainSchedulesHorizontalField
+              subfield={true}
               label="Maximum attempts"
               description="Total number of retry attempts."
               htmlFor="create-schedule-form-retry-maximum-attempts"
@@ -265,6 +270,7 @@ export default function CreateScheduleRetryPolicyFields({
 
           {limitRetries === 'DURATION' && (
             <DomainSchedulesHorizontalField
+              subfield={true}
               label="Expiration interval"
               description="Maximum total retry duration."
               htmlFor="create-schedule-form-retry-expiration-interval"
@@ -308,7 +314,7 @@ export default function CreateScheduleRetryPolicyFields({
               />
             </DomainSchedulesHorizontalField>
           )}
-        </DomainSchedulesHorizontalField.GroupedFields>
+        </>
       )}
     </>
   );
