@@ -4,9 +4,12 @@ import { type StyleObject } from 'styletron-react';
 import { LABEL_COLUMN_WIDTH_PX } from './schedule-details-table.constants';
 
 export const styled = {
-  Container: createStyled('div', (): StyleObject => ({
-    width: '100%',
-  })),
+  Container: createStyled(
+    'div',
+    (): StyleObject => ({
+      width: '100%',
+    })
+  ),
   Row: createStyled(
     'div',
     ({ $theme }: { $theme: Theme }): StyleObject => ({
@@ -28,8 +31,8 @@ export const styled = {
       minWidth: `${LABEL_COLUMN_WIDTH_PX}px`,
       maxWidth: `${LABEL_COLUMN_WIDTH_PX}px`,
       display: 'flex',
-      ...$theme.typography.LabelSmall,
-      lineHeight: $theme.typography.ParagraphSmall.lineHeight,
+      ...$theme.typography.LabelXSmall,
+      lineHeight: $theme.typography.ParagraphXSmall.lineHeight,
     })
   ),
   Value: createStyled(
@@ -37,7 +40,7 @@ export const styled = {
     ({ $theme }: { $theme: Theme }): StyleObject => ({
       display: 'flex',
       flex: '1 0 300px',
-      ...$theme.typography.ParagraphSmall,
+      ...$theme.typography.ParagraphXSmall,
     })
   ),
 };
