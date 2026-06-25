@@ -27,7 +27,12 @@ import {
 import { overrides } from './domain-schedules-create-form.styles';
 import { type Props } from './domain-schedules-create-form.types';
 
-export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
+export default function DomainSchedulesCreateForm({
+  control,
+  trigger,
+  clearErrors: _clearErrors,
+  cluster,
+}: Props) {
   const { errors: fieldErrors, isSubmitted } = useFormState({ control });
   const cronExpressionError = getFieldObjectErrorMessages(
     fieldErrors,
@@ -306,6 +311,9 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
       <DomainSchedulesCreateAdvancedForm
         control={control}
         fieldErrors={fieldErrors}
+        trigger={trigger}
+        isSubmitted={isSubmitted}
+        cluster={cluster}
       />
     </div>
   );

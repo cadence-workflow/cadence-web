@@ -1,10 +1,15 @@
 import { z } from 'zod';
 
+import { ScheduleCatchUpPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleCatchUpPolicy';
 import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
 import { CRON_FIELD_ORDER } from '@/components/cron-schedule-input/cron-schedule-input.constants';
-import { SCHEDULE_OVERLAP_POLICIES } from '@/route-handlers/create-schedule/create-schedule.constants';
+import {
+  SCHEDULE_CATCH_UP_POLICIES,
+  SCHEDULE_OVERLAP_POLICIES,
+} from '@/route-handlers/create-schedule/create-schedule.constants';
 // TODO(refactor): WORKER_SDK_LANGUAGES is imported from start-workflow — extract to shared constants once both features stabilise
 import { WORKER_SDK_LANGUAGES } from '@/route-handlers/start-workflow/start-workflow.constants';
+import { MAX_CATCH_UP_WINDOW_DAYS } from '@/views/domain-schedules/domain-schedules-create-advanced-form/domain-schedules-create-advanced-form.constants';
 import { getCronFieldsError } from '@/views/workflow-actions/workflow-action-start-form/helpers/get-cron-fields-error';
 
 const cronExpressionFieldsSchema = z
@@ -114,15 +119,36 @@ export const createScheduleFormSchema = z
     overlapPolicy: z.enum(SCHEDULE_OVERLAP_POLICIES).optional(),
     bufferLimit: z.string().optional(),
     concurrencyLimit: z.string().optional(),
+    catchUpPolicy: z.enum(SCHEDULE_CATCH_UP_POLICIES).optional(),
+    catchUpWindowDays: z
+      .string()
+      .refine(
+        (v) =>
+          v === '' || (Number(v) >= 1 && Number(v) <= MAX_CATCH_UP_WINDOW_DAYS),
+        { message: 'Catch-up window must be between 1 and 90 days' }
+      )
+      .optional(),
     jitterSeconds: z
       .string()
       .refine((v) => v === '' || Number(v) >= 0, {
         message: 'Jitter seconds must be zero or positive',
       })
       .optional(),
+    startTime: z.string().datetime('Start time must be valid').optional(),
+    endTime: z.string().datetime('End time must be valid').optional(),
+    memo: z.string().optional(),
+    searchAttributes: z
+      .array(
+        z.object({
+          key: z.string().min(1, 'Search attribute key is required'),
+          value: z.union([z.string(), z.number(), z.boolean()]),
+        })
+      )
+      .optional(),
     workflowIdPrefix: z.string().optional(),
   })
   .superRefine((data, ctx) => {
+    // overlap policy fields
     if (
       data.overlapPolicy ===
         ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_BUFFER &&
@@ -155,5 +181,55 @@ export const createScheduleFormSchema = z
         message: 'Concurrency limit must be a non-negative integer',
         path: ['concurrencyLimit'],
       });
+    }
+
+    // catch up policy fields
+    if (
+      data.catchUpPolicy !== undefined &&
+      data.catchUpPolicy !==
+        ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_SKIP &&
+      (data.catchUpWindowDays === '' || data.catchUpWindowDays === undefined)
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Catch-up window is required',
+        path: ['catchUpWindowDays'],
+      });
+    }
+
+    if (data.startTime && data.endTime) {
+      const startMs = Date.parse(data.startTime);
+      const endMs = Date.parse(data.endTime);
+
+      if (startMs >= endMs) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Start date must be before end date',
+          path: ['startTime'],
+        });
+      }
+    }
+
+    if (data.memo && data.memo.trim() !== '') {
+      try {
+        const parsedMemo = JSON.parse(data.memo);
+        const isObject =
+          typeof parsedMemo === 'object' &&
+          parsedMemo !== null &&
+          !Array.isArray(parsedMemo);
+        if (!isObject) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Memo must be a JSON object',
+            path: ['memo'],
+          });
+        }
+      } catch {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Memo must be valid JSON',
+          path: ['memo'],
+        });
+      }
     }
   });

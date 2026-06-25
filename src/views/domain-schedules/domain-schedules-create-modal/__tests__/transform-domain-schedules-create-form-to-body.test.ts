@@ -1,3 +1,4 @@
+import { ScheduleCatchUpPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleCatchUpPolicy';
 import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
 import { DEFAULT_OVERLAP_POLICY } from '@/views/domain-schedules/domain-schedules-create-advanced-form/domain-schedules-create-advanced-form.constants';
 
@@ -103,5 +104,101 @@ describe(transformDomainSchedulesCreateFormToBody.name, () => {
     expect(result.overlapPolicy).toBe(DEFAULT_OVERLAP_POLICY);
     expect(result.concurrencyLimit).toBe(7);
     expect(result.bufferLimit).toBeUndefined();
+  });
+
+  it('maps catch-up window days to seconds for non-skip catch-up policy', () => {
+    const result = transformDomainSchedulesCreateFormToBody({
+      ...mockDomainSchedulesCreateFormData,
+      catchUpPolicy: ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_ONE,
+      catchUpWindowDays: '14',
+    });
+
+    expect(result.catchUpPolicy).toBe(
+      ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_ONE
+    );
+    expect(result.catchUpWindowSeconds).toBe(14 * 86400);
+  });
+
+  it('omits catch-up window seconds for skip catch-up policy', () => {
+    const result = transformDomainSchedulesCreateFormToBody({
+      ...mockDomainSchedulesCreateFormData,
+      catchUpPolicy: ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_SKIP,
+      catchUpWindowDays: '14',
+    });
+
+    expect(result.catchUpPolicy).toBe(
+      ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_SKIP
+    );
+    expect(result.catchUpWindowSeconds).toBeUndefined();
+  });
+
+  it('omits catchUpPolicy when not set on form data', () => {
+    const result = transformDomainSchedulesCreateFormToBody(
+      mockDomainSchedulesCreateFormData
+    );
+
+    expect(result.catchUpPolicy).toBeUndefined();
+  });
+
+  it('omits buffer and concurrency limits when limit strings are empty', () => {
+    const bufferResult = transformDomainSchedulesCreateFormToBody({
+      ...mockDomainSchedulesCreateFormData,
+      overlapPolicy: ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_BUFFER,
+      bufferLimit: '',
+    });
+    expect(bufferResult.bufferLimit).toBeUndefined();
+
+    const concurrentResult = transformDomainSchedulesCreateFormToBody({
+      ...mockDomainSchedulesCreateFormData,
+      overlapPolicy: ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_CONCURRENT,
+      concurrencyLimit: '',
+    });
+    expect(concurrentResult.concurrencyLimit).toBeUndefined();
+  });
+
+  it('includes schedule period fields when provided', () => {
+    const result = transformDomainSchedulesCreateFormToBody({
+      ...baseForm,
+      startTime: '2026-06-23T12:00:00.000Z',
+      endTime: '2026-06-30T12:00:00.000Z',
+    });
+
+    expect(result.startTime).toBe('2026-06-23T12:00:00.000Z');
+    expect(result.endTime).toBe('2026-06-30T12:00:00.000Z');
+  });
+
+  it('omits schedule period fields when not provided', () => {
+    const result = transformDomainSchedulesCreateFormToBody(baseForm);
+
+    expect(result.startTime).toBeUndefined();
+    expect(result.endTime).toBeUndefined();
+  });
+
+  it('maps memo JSON and search attributes into startWorkflow', () => {
+    const result = transformDomainSchedulesCreateFormToBody({
+      ...baseForm,
+      memo: '{"k":"v"}',
+      searchAttributes: [
+        { key: 'CustomKeywordField', value: 'value-1' },
+        { key: 'CustomIntField', value: 9 },
+      ],
+    });
+
+    expect(result.startWorkflow.memo).toEqual({ k: 'v' });
+    expect(result.startWorkflow.searchAttributes).toEqual({
+      CustomKeywordField: 'value-1',
+      CustomIntField: 9,
+    });
+  });
+
+  it('omits memo and search attributes when empty', () => {
+    const result = transformDomainSchedulesCreateFormToBody({
+      ...baseForm,
+      memo: '  ',
+      searchAttributes: [],
+    });
+
+    expect(result.startWorkflow.memo).toBeUndefined();
+    expect(result.startWorkflow.searchAttributes).toBeUndefined();
   });
 });
