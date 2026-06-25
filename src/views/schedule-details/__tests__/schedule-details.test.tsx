@@ -14,7 +14,6 @@ import { getMockRunningDescribeScheduleResponse } from '@/route-handlers/describ
 import { type DescribeScheduleResponse } from '@/route-handlers/describe-schedule/describe-schedule.types';
 
 import { mockScheduleDetailsSectionsConfig } from '../__fixtures__/schedule-details-sections-config';
-import { getRowsFromConfig } from '../helpers/get-rows-from-config';
 import ScheduleDetails from '../schedule-details';
 
 jest.mock('next/navigation', () => ({
@@ -55,34 +54,19 @@ describe(ScheduleDetails.name, () => {
 
     await waitForElementToBeRemoved(() => screen.queryByRole('progressbar'));
 
-    for (const section of mockScheduleDetailsSectionsConfig) {
-      const rows = getRowsFromConfig(
-        section.rowsConfig,
-        describeResponse,
-        scheduleId
-      );
-      if (!rows.length) {
-        continue;
-      }
-
-      expect(
-        screen.getByRole('heading', { name: section.title })
-      ).toBeInTheDocument();
-
-      for (const row of rows) {
-        if (typeof row.label !== 'string') {
-          continue;
-        }
-
-        expect(
-          screen.getByRole('rowheader', { name: row.label })
-        ).toBeInTheDocument();
-
-        if (typeof row.value === 'string' || typeof row.value === 'number') {
-          expect(screen.getByText(String(row.value))).toBeInTheDocument();
-        }
-      }
-    }
+    expect(
+      screen.getByRole('heading', { name: 'Mock policies section' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('rowheader', { name: 'Primary row' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_BUFFER)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('rowheader', { name: 'Conditional row' })
+    ).toBeInTheDocument();
+    expect(screen.getByText('conditional-value')).toBeInTheDocument();
 
     expect(describeResolver).toHaveBeenCalledTimes(1);
   });
@@ -98,46 +82,18 @@ describe(ScheduleDetails.name, () => {
       describeResolver: () => HttpResponse.json(describeResponse),
     });
 
-    for (const section of mockScheduleDetailsSectionsConfig) {
-      const visibleRows = getRowsFromConfig(
-        section.rowsConfig,
-        describeResponse,
-        scheduleId
-      );
-      const hiddenRowLabels = section.rowsConfig
-        .filter((rowConfig) =>
-          rowConfig.hide?.({ describeSchedule: describeResponse, scheduleId })
-        )
-        .map((rowConfig) => rowConfig.getLabel());
-
-      if (!visibleRows.length && !hiddenRowLabels.length) {
-        continue;
-      }
-
-      expect(
-        await screen.findByRole('heading', { name: section.title })
-      ).toBeInTheDocument();
-
-      for (const row of visibleRows) {
-        if (typeof row.label !== 'string') {
-          continue;
-        }
-
-        expect(
-          screen.getByRole('rowheader', { name: row.label })
-        ).toBeInTheDocument();
-
-        if (typeof row.value === 'string' || typeof row.value === 'number') {
-          expect(screen.getByText(String(row.value))).toBeInTheDocument();
-        }
-      }
-
-      for (const label of hiddenRowLabels) {
-        expect(
-          screen.queryByRole('rowheader', { name: label })
-        ).not.toBeInTheDocument();
-      }
-    }
+    expect(
+      await screen.findByRole('heading', { name: 'Mock policies section' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('rowheader', { name: 'Primary row' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_SKIP_NEW)
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('rowheader', { name: 'Conditional row' })
+    ).not.toBeInTheDocument();
   });
 
   it('throws into error boundary when describe fails', async () => {
