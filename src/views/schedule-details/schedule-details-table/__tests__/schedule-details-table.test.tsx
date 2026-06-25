@@ -2,10 +2,8 @@ import React from 'react';
 
 import { render, screen } from '@/test-utils/rtl';
 
-import {
-  DEFAULT_ARIA_LABEL,
-} from '../schedule-details-table.constants';
 import ScheduleDetailsTable from '../schedule-details-table';
+import { DEFAULT_ARIA_LABEL } from '../schedule-details-table.constants';
 import { type Props } from '../schedule-details-table.types';
 
 describe(ScheduleDetailsTable.name, () => {
@@ -21,7 +19,9 @@ describe(ScheduleDetailsTable.name, () => {
       screen.getByRole('table', { name: DEFAULT_ARIA_LABEL })
     ).toBeInTheDocument();
     expect(screen.getByRole('rowheader', { name: 'Name' })).toBeInTheDocument();
-    expect(screen.getByRole('rowheader', { name: 'Status' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('rowheader', { name: 'Status' })
+    ).toBeInTheDocument();
     expect(screen.getByText('Daily schedule')).toBeInTheDocument();
     expect(screen.getByText('Running')).toBeInTheDocument();
   });
