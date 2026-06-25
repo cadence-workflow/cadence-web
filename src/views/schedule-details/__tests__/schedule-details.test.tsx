@@ -34,8 +34,82 @@ describe(ScheduleDetails.name, () => {
     expect(screen.getByRole('progressbar')).toBeInTheDocument();
 
     await waitForElementToBeRemoved(() => screen.queryByRole('progressbar'));
-    expect(screen.queryByRole('heading')).not.toBeInTheDocument();
     expect(describeResolver).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders schedule specifications section rows', async () => {
+    setup({
+      describeResolver: () =>
+        HttpResponse.json(
+          getMockRunningDescribeScheduleResponse({
+            info: {
+              createTime: { seconds: '1745490629', nanos: 850000000 },
+              nextRunTime: { seconds: '1745490629', nanos: 850000000 },
+              lastRunTime: { seconds: '1745490629', nanos: 850000000 },
+              totalRuns: '32',
+              lastUpdateTime: null,
+              ongoingBackfills: [],
+              missedRuns: '0',
+              skippedRuns: '0',
+            },
+            spec: {
+              cronExpression: '0 * * * *',
+              startTime: { seconds: '1735689600', nanos: 0 },
+              endTime: null,
+              jitter: { seconds: '300', nanos: 0 },
+            },
+          })
+        ),
+    });
+
+    expect(
+      await screen.findByRole('heading', { name: 'Schedule specifications' })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: 'Schedule action' })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: 'Schedule policies' })
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.getByRole('rowheader', { name: 'Schedule Id' })
+    ).toBeInTheDocument();
+    expect(screen.getByText('my-schedule')).toBeInTheDocument();
+    expect(
+      screen.getByRole('rowheader', { name: 'Cron execution' })
+    ).toBeInTheDocument();
+    expect(screen.getByText('Every hour (0 * * * *)')).toBeInTheDocument();
+    expect(screen.getByText('5m')).toBeInTheDocument();
+  });
+
+  it('hides optional specification rows when schedule fields are missing', async () => {
+    setup({
+      describeResolver: () =>
+        HttpResponse.json(
+          getMockRunningDescribeScheduleResponse({
+            spec: {
+              cronExpression: '*/10 * * * *',
+              startTime: null,
+              endTime: null,
+              jitter: null,
+            },
+          })
+        ),
+    });
+
+    expect(
+      await screen.findByRole('heading', { name: 'Schedule specifications' })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('rowheader', { name: 'Start time' })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('rowheader', { name: 'Creation time' })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('rowheader', { name: 'Jitter duration' })
+    ).not.toBeInTheDocument();
   });
 
   it('throws into error boundary when describe fails', async () => {
