@@ -1,5 +1,6 @@
 import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
 import { getMockRunningDescribeScheduleResponse } from '@/route-handlers/describe-schedule/__fixtures__/mock-describe-schedule-response';
+import { type DescribeScheduleResponse } from '@/route-handlers/describe-schedule/describe-schedule.types';
 
 import { type ScheduleDetailRowConfig } from '../../schedule-details.types';
 import { getRowsFromConfig } from '../get-rows-from-config';
@@ -9,7 +10,7 @@ describe(getRowsFromConfig.name, () => {
     policies: {
       overlapPolicy: ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_BUFFER,
     },
-  });
+  } as Partial<DescribeScheduleResponse>);
   const scheduleId = 'my-schedule';
 
   it('maps row config to table rows', () => {
