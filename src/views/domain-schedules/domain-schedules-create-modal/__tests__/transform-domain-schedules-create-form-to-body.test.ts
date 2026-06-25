@@ -52,14 +52,27 @@ describe(transformDomainSchedulesCreateFormToBody.name, () => {
     expect(result.startWorkflow.input).toBeUndefined();
   });
 
-  it('trims workflow type and task list names', () => {
+  it('trims text fields', () => {
     const result = transformDomainSchedulesCreateFormToBody({
       ...baseForm,
       workflowType: { name: ' DemoWorkflow ' },
       taskList: { name: ' demo-tl ' },
+      scheduleId: '  my-schedule  ',
+      workflowIdPrefix: '  wf-prefix  ',
     });
 
     expect(result.startWorkflow.workflowType.name).toBe('DemoWorkflow');
     expect(result.startWorkflow.taskList.name).toBe('demo-tl');
+    expect(result.scheduleId).toBe('my-schedule');
+    expect(result.startWorkflow.workflowIdPrefix).toBe('wf-prefix');
+  });
+
+  it('passes 0 seconds as jitter', () => {
+    const result = transformDomainSchedulesCreateFormToBody({
+      ...baseForm,
+      jitterSeconds: '0',
+    });
+
+    expect(result.jitterSeconds).toBe(0);
   });
 });

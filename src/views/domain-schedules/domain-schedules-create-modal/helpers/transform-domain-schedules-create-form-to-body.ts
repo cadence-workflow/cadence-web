@@ -25,7 +25,16 @@ export default function transformDomainSchedulesCreateFormToBody(
         formData.executionStartToCloseTimeoutSeconds,
       taskStartToCloseTimeoutSeconds: formData.taskStartToCloseTimeoutSeconds,
       ...(parsedInput && parsedInput.length > 0 ? { input: parsedInput } : {}),
+      ...(formData.workflowIdPrefix?.trim()
+        ? { workflowIdPrefix: formData.workflowIdPrefix.trim() }
+        : {}),
     },
     pauseOnFailure: formData.pauseOnFailure,
+    ...(formData.scheduleId?.trim()
+      ? { scheduleId: formData.scheduleId.trim() }
+      : {}),
+    ...(formData.jitterSeconds
+      ? { jitterSeconds: parseFloat(formData.jitterSeconds) }
+      : {}),
   };
 }
