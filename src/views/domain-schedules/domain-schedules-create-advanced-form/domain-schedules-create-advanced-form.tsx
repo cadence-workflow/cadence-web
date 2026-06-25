@@ -1,0 +1,153 @@
+'use client';
+
+import React from 'react';
+
+import { StatefulPanel } from 'baseui/accordion';
+import { Button } from 'baseui/button';
+import { mergeOverrides } from 'baseui/helpers/overrides';
+import { Input } from 'baseui/input';
+import { LabelXSmall } from 'baseui/typography';
+import { Controller } from 'react-hook-form';
+import { MdExpandLess, MdExpandMore } from 'react-icons/md';
+
+import DomainSchedulesHorizontalField from '@/views/domain-schedules/domain-schedules-horizontal-field/domain-schedules-horizontal-field';
+import getFieldErrorMessage from '@/views/workflow-actions/workflow-action-start-form/helpers/get-field-error-message';
+
+import {
+  CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS,
+  CREATE_SCHEDULE_ADVANCED_FIELD_IDS,
+} from './domain-schedules-create-advanced-form.constants';
+import {
+  overrides,
+  styled,
+} from './domain-schedules-create-advanced-form.styles';
+import { type Props } from './domain-schedules-create-advanced-form.types';
+
+export default function DomainSchedulesCreateAdvancedForm({
+  control,
+  fieldErrors,
+}: Props) {
+  return (
+    <StatefulPanel
+      overrides={mergeOverrides(overrides.panel, {
+        Header: {
+          component: (props) => (
+            <styled.ToggleRow>
+              <Button
+                size="mini"
+                kind="tertiary"
+                type="button"
+                startEnhancer={
+                  props.$expanded ? (
+                    <MdExpandLess size={20} />
+                  ) : (
+                    <MdExpandMore size={20} />
+                  )
+                }
+                onClick={() => props.onClick?.({ expanded: !props.$expanded })}
+              >
+                {props.$expanded
+                  ? 'Hide advanced configurations'
+                  : 'Show advanced configurations'}
+              </Button>
+              <styled.Divider />
+            </styled.ToggleRow>
+          ),
+        },
+      })}
+    >
+      <>
+        <DomainSchedulesHorizontalField
+          label="Schedule Id"
+          description={CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS.scheduleId}
+          htmlFor={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.scheduleId}
+          error={getFieldErrorMessage(fieldErrors, 'scheduleId')}
+        >
+          <Controller
+            name="scheduleId"
+            control={control}
+            defaultValue=""
+            render={({ field: { ref, ...field } }) => (
+              <Input
+                {...field}
+                id={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.scheduleId}
+                // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
+                inputRef={ref}
+                aria-label="Schedule Id"
+                onChange={(e) => field.onChange(e.target.value || undefined)}
+                onBlur={field.onBlur}
+                error={Boolean(getFieldErrorMessage(fieldErrors, 'scheduleId'))}
+                size="compact"
+                placeholder="Add schedule id"
+              />
+            )}
+          />
+        </DomainSchedulesHorizontalField>
+
+        <DomainSchedulesHorizontalField
+          label="Jitter duration"
+          description={
+            CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS.jitterSeconds
+          }
+          htmlFor={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.jitterSeconds}
+          error={getFieldErrorMessage(fieldErrors, 'jitterSeconds')}
+        >
+          <Controller
+            name="jitterSeconds"
+            control={control}
+            defaultValue=""
+            render={({ field: { ref, ...field } }) => (
+              <Input
+                {...field}
+                id={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.jitterSeconds}
+                // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
+                inputRef={ref}
+                aria-label="Jitter duration"
+                type="number"
+                min={0}
+                onBlur={field.onBlur}
+                error={Boolean(
+                  getFieldErrorMessage(fieldErrors, 'jitterSeconds')
+                )}
+                size="compact"
+                placeholder="Add Jitter duration"
+                endEnhancer={<LabelXSmall>Seconds</LabelXSmall>}
+              />
+            )}
+          />
+        </DomainSchedulesHorizontalField>
+
+        <DomainSchedulesHorizontalField
+          label="Workflow Id Prefix"
+          description={
+            CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS.workflowIdPrefix
+          }
+          htmlFor={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.workflowIdPrefix}
+          error={getFieldErrorMessage(fieldErrors, 'workflowIdPrefix')}
+        >
+          <Controller
+            name="workflowIdPrefix"
+            control={control}
+            defaultValue=""
+            render={({ field: { ref, ...field } }) => (
+              <Input
+                {...field}
+                id={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.workflowIdPrefix}
+                // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
+                inputRef={ref}
+                aria-label="Workflow Id Prefix"
+                onChange={(e) => field.onChange(e.target.value || undefined)}
+                onBlur={field.onBlur}
+                error={Boolean(
+                  getFieldErrorMessage(fieldErrors, 'workflowIdPrefix')
+                )}
+                size="compact"
+                placeholder="Add workflow id prefix"
+              />
+            )}
+          />
+        </DomainSchedulesHorizontalField>
+      </>
+    </StatefulPanel>
+  );
+}
