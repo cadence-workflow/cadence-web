@@ -137,6 +137,7 @@ export const createScheduleFormSchema = z
     workflowIdPrefix: z.string().optional(),
   })
   .superRefine((data, ctx) => {
+    // overlap policy fields
     if (
       data.overlapPolicy ===
         ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_BUFFER &&
@@ -171,6 +172,7 @@ export const createScheduleFormSchema = z
       });
     }
 
+    // catch up policy fields
     if (
       data.catchUpPolicy !== undefined &&
       data.catchUpPolicy !==

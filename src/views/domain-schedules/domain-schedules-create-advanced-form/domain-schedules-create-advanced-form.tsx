@@ -21,6 +21,7 @@ import {
   CATCH_UP_POLICY_OPTIONS,
   CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS,
   CREATE_SCHEDULE_ADVANCED_FIELD_IDS,
+  DEFAULT_CATCH_UP_POLICY,
   DEFAULT_OVERLAP_POLICY,
   MAX_CATCH_UP_WINDOW_DAYS,
   OVERLAP_POLICY_OPTIONS,
@@ -43,7 +44,7 @@ export default function DomainSchedulesCreateAdvancedForm({
   const catchUpPolicy = useWatch({
     control,
     name: 'catchUpPolicy',
-    defaultValue: ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_SKIP,
+    defaultValue: DEFAULT_CATCH_UP_POLICY,
   });
 
   return (
@@ -214,7 +215,7 @@ export default function DomainSchedulesCreateAdvancedForm({
           <Controller
             name="catchUpPolicy"
             control={control}
-            defaultValue={ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_SKIP}
+            defaultValue={DEFAULT_CATCH_UP_POLICY}
             render={({ field: { value, onChange, ref, ...field } }) => (
               <RadioGroup
                 {...field}

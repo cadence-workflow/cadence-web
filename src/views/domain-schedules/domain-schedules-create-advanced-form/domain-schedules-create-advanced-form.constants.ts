@@ -30,6 +30,9 @@ export const CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS = {
     'Prefix text to add into started workflows. Ids are formed as `${Prefix}+{auto generated postfix}`.',
 } as const;
 
+export const DEFAULT_CATCH_UP_POLICY =
+  ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_SKIP;
+
 export const DEFAULT_OVERLAP_POLICY =
   ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_CONCURRENT;
 
