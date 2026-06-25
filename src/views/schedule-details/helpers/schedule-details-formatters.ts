@@ -1,4 +1,35 @@
+import formatDate from '@/utils/data-formatters/format-date';
+import formatDuration from '@/utils/data-formatters/format-duration';
 import formatEnum from '@/utils/data-formatters/format-enum';
+import formatTimestampToDatetime from '@/utils/data-formatters/format-timestamp-to-datetime';
+import { toString as cronToString } from 'cronstrue';
+
+export function formatScheduleTimestamp(
+  timestamp:
+    | { seconds: number | string; nanos: number | string }
+    | null
+    | undefined
+) {
+  const datetime = formatTimestampToDatetime(timestamp);
+  if (!datetime) {
+    return null;
+  }
+
+  return formatDate(datetime.valueOf());
+}
+
+export function formatScheduleDuration(
+  duration: { seconds: number | string; nanos: number } | null | undefined
+) {
+  if (!duration) {
+    return null;
+  }
+
+  return formatDuration({
+    seconds: String(duration.seconds),
+    nanos: duration.nanos,
+  });
+}
 
 export function formatScheduleEnum(
   value: string | null | undefined,
@@ -41,4 +72,18 @@ export function formatScheduleLimitValue(
   }
 
   return String(limit);
+}
+
+export function formatScheduleCronExpression(
+  cronExpression: string | null | undefined
+) {
+  if (!cronExpression) {
+    return null;
+  }
+
+  try {
+    return `${cronToString(cronExpression)} (${cronExpression})`;
+  } catch {
+    return cronExpression;
+  }
 }
