@@ -31,8 +31,8 @@ export const styled = {
       minWidth: `${LABEL_COLUMN_WIDTH_PX}px`,
       maxWidth: `${LABEL_COLUMN_WIDTH_PX}px`,
       display: 'flex',
-      ...$theme.typography.LabelSmall,
-      lineHeight: $theme.typography.ParagraphSmall.lineHeight,
+      ...$theme.typography.LabelXSmall,
+      lineHeight: $theme.typography.ParagraphXSmall.lineHeight,
     })
   ),
   Value: createStyled(
@@ -40,7 +40,7 @@ export const styled = {
     ({ $theme }: { $theme: Theme }): StyleObject => ({
       display: 'flex',
       flex: '1 0 300px',
-      ...$theme.typography.ParagraphSmall,
+      ...$theme.typography.ParagraphXSmall,
     })
   ),
 };

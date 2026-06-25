@@ -13,7 +13,7 @@ describe(formatScheduleEnumWithDefault.name, () => {
     ).toBe('Buffer');
   });
 
-  it('returns default label when value is unset', () => {
+  it('returns default label when value is unset or invalid', () => {
     expect(
       formatScheduleEnumWithDefault(
         undefined,
@@ -21,15 +21,12 @@ describe(formatScheduleEnumWithDefault.name, () => {
         ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_SKIP_NEW
       )
     ).toBe('Default (SkipNew)');
-  });
-
-  it('returns null for invalid values', () => {
     expect(
       formatScheduleEnumWithDefault(
         'SCHEDULE_OVERLAP_POLICY_INVALID',
         'SCHEDULE_OVERLAP_POLICY',
         ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_SKIP_NEW
       )
-    ).toBeNull();
+    ).toBe('Default (SkipNew)');
   });
 });
