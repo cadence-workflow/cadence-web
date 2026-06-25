@@ -1,5 +1,11 @@
+import { ScheduleCatchUpPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleCatchUpPolicy';
 import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
-import { SCHEDULE_OVERLAP_POLICIES } from '@/route-handlers/create-schedule/create-schedule.constants';
+import {
+  SCHEDULE_CATCH_UP_POLICIES,
+  SCHEDULE_OVERLAP_POLICIES,
+} from '@/route-handlers/create-schedule/create-schedule.constants';
+
+export const MAX_CATCH_UP_WINDOW_DAYS = 90;
 
 /** Stable ids for advanced create-schedule horizontal fields. */
 export const CREATE_SCHEDULE_ADVANCED_FIELD_IDS = {
@@ -24,6 +30,9 @@ export const CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS = {
     'Prefix text to add into started workflows. Ids are formed as `${Prefix}+{auto generated postfix}`.',
 } as const;
 
+export const DEFAULT_CATCH_UP_POLICY =
+  ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_SKIP;
+
 export const DEFAULT_OVERLAP_POLICY =
   ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_CONCURRENT;
 
@@ -44,5 +53,21 @@ export const OVERLAP_POLICY_OPTIONS = SCHEDULE_OVERLAP_POLICIES.map(
   (policy) => ({
     id: policy,
     label: overlapPolicyLabels[policy],
+  })
+);
+
+const catchUpPolicyLabels: Record<
+  (typeof SCHEDULE_CATCH_UP_POLICIES)[number],
+  string
+> = {
+  [ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_SKIP]: 'Skip',
+  [ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_ONE]: 'Catch-up one',
+  [ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_ALL]: 'Catch-up all',
+};
+
+export const CATCH_UP_POLICY_OPTIONS = SCHEDULE_CATCH_UP_POLICIES.map(
+  (policy) => ({
+    id: policy,
+    label: catchUpPolicyLabels[policy],
   })
 );
