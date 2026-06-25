@@ -1,5 +1,6 @@
 import { styled as createStyled, type Theme } from 'baseui';
 import { type PanelOverrides } from 'baseui/accordion';
+import { type FormControlOverrides } from 'baseui/form-control';
 import { type StyleObject } from 'styletron-react';
 
 export const overrides = {
@@ -18,6 +19,13 @@ export const overrides = {
       }),
     },
   } satisfies PanelOverrides,
+  schedulePeriodFormControl: {
+    ControlContainer: {
+      style: {
+        marginBottom: 0,
+      },
+    },
+  } satisfies FormControlOverrides,
 };
 
 export const styled = {
@@ -34,6 +42,21 @@ export const styled = {
       display: 'grid',
       gridTemplateColumns: '1fr 1fr',
       gap: $theme.sizing.scale400,
+    })
+  ),
+  SchedulePeriodField: createStyled(
+    'div',
+    (): StyleObject => ({
+      display: 'flex',
+      flexDirection: 'column',
+    })
+  ),
+  SchedulePeriodInputLabel: createStyled(
+    'label',
+    ({ $theme }: { $theme: Theme }): StyleObject => ({
+      ...$theme.typography.LabelSmall,
+      color: $theme.colors.contentPrimary,
+      marginBottom: $theme.sizing.scale200,
     })
   ),
   Divider: createStyled(

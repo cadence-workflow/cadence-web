@@ -187,4 +187,17 @@ export const createScheduleFormSchema = z
         path: ['catchUpWindowDays'],
       });
     }
+
+    if (data.startTime && data.endTime) {
+      const startMs = Date.parse(data.startTime);
+      const endMs = Date.parse(data.endTime);
+
+      if (startMs >= endMs) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Start date must be before end date',
+          path: ['startTime'],
+        });
+      }
+    }
   });
