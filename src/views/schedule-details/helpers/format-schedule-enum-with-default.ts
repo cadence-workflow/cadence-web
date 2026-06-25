@@ -5,16 +5,12 @@ export function formatScheduleEnumWithDefault(
   prefix: string,
   defaultValue: string
 ) {
-  const isEmpty = !value;
+  const isEmpty = !value || value.includes('INVALID');
   const formatted = formatEnum(
     isEmpty ? defaultValue : value,
     prefix,
     'pascal'
   );
-
-  if (!formatted) {
-    return null;
-  }
 
   return isEmpty ? `Default (${formatted})` : formatted;
 }
