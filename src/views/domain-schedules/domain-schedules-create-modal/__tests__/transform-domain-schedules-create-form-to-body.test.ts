@@ -158,7 +158,7 @@ describe(transformDomainSchedulesCreateFormToBody.name, () => {
 
   it('includes schedule period fields when provided', () => {
     const result = transformDomainSchedulesCreateFormToBody({
-      ...baseForm,
+      ...mockDomainSchedulesCreateFormData,
       startTime: '2026-06-23T12:00:00.000Z',
       endTime: '2026-06-30T12:00:00.000Z',
     });
@@ -168,7 +168,9 @@ describe(transformDomainSchedulesCreateFormToBody.name, () => {
   });
 
   it('omits schedule period fields when not provided', () => {
-    const result = transformDomainSchedulesCreateFormToBody(baseForm);
+    const result = transformDomainSchedulesCreateFormToBody(
+      mockDomainSchedulesCreateFormData
+    );
 
     expect(result.startTime).toBeUndefined();
     expect(result.endTime).toBeUndefined();

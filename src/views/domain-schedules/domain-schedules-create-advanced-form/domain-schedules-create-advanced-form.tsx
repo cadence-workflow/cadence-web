@@ -5,6 +5,7 @@ import React from 'react';
 import { StatefulPanel } from 'baseui/accordion';
 import { Button } from 'baseui/button';
 import { DatePicker } from 'baseui/datepicker';
+import { FormControl } from 'baseui/form-control';
 import { mergeOverrides } from 'baseui/helpers/overrides';
 import { Input } from 'baseui/input';
 import { Radio, RadioGroup } from 'baseui/radio';
@@ -36,6 +37,8 @@ import { type Props } from './domain-schedules-create-advanced-form.types';
 export default function DomainSchedulesCreateAdvancedForm({
   control,
   fieldErrors,
+  trigger,
+  isSubmitted = false,
 }: Props) {
   const overlapPolicy = useWatch({
     control,
@@ -47,6 +50,14 @@ export default function DomainSchedulesCreateAdvancedForm({
     name: 'catchUpPolicy',
     defaultValue: DEFAULT_CATCH_UP_POLICY,
   });
+  const startTimeErrorMessage = getFieldErrorMessage(fieldErrors, 'startTime');
+  const endTimeErrorMessage = getFieldErrorMessage(fieldErrors, 'endTime');
+
+  const revalidateSchedulePeriod = () => {
+    if (isSubmitted) {
+      void trigger?.(['startTime', 'endTime']);
+    }
+  };
 
   return (
     <StatefulPanel
@@ -87,7 +98,6 @@ export default function DomainSchedulesCreateAdvancedForm({
           <Controller
             name="scheduleId"
             control={control}
-            defaultValue=""
             render={({ field: { ref, ...field } }) => (
               <Input
                 {...field}
@@ -280,60 +290,82 @@ export default function DomainSchedulesCreateAdvancedForm({
           description="Optional time range that limits when this schedule can run."
         >
           <styled.SchedulePeriodRow>
-            <Controller
-              name="startTime"
-              control={control}
-              render={({ field: { value, onChange, ref, ...field } }) => (
-                <DatePicker
-                  {...field}
-                  // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
-                  inputRef={ref}
-                  aria-label="Schedule period start"
-                  value={value ? [new Date(value)] : []}
-                  onChange={({ date }) => {
-                    const d = Array.isArray(date) ? date[0] : date;
-                    if (d) {
-                      onChange(d.toISOString());
-                    } else {
-                      onChange(undefined);
-                    }
-                  }}
-                  error={Boolean(getFieldErrorMessage(fieldErrors, 'startTime'))}
-                  size="compact"
-                  timeSelectStart
-                  formatString="yyyy/MM/dd HH:mm"
-                  placeholderText="Start date and time"
-                  clearable
+            <styled.SchedulePeriodField>
+              <styled.SchedulePeriodInputLabel htmlFor="create-schedule-form-start-time">
+                Start date
+              </styled.SchedulePeriodInputLabel>
+              <FormControl
+                error={startTimeErrorMessage}
+                overrides={overrides.schedulePeriodFormControl}
+              >
+                <Controller
+                  name="startTime"
+                  control={control}
+                  render={({ field: { value, onChange, ref, ...field } }) => (
+                    <DatePicker
+                      {...field}
+                      // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
+                      inputRef={ref}
+                      id="create-schedule-form-start-time"
+                      aria-label="Schedule period start"
+                      value={value ? [new Date(value)] : []}
+                      onChange={({ date }) => {
+                        const d = Array.isArray(date) ? date[0] : date;
+                        if (d) {
+                          onChange(d.toISOString());
+                        } else {
+                          onChange(undefined);
+                        }
+                        revalidateSchedulePeriod();
+                      }}
+                      error={Boolean(startTimeErrorMessage)}
+                      size="compact"
+                      timeSelectStart
+                      formatString="yyyy/MM/dd HH:mm"
+                      clearable
+                    />
+                  )}
                 />
-              )}
-            />
-            <Controller
-              name="endTime"
-              control={control}
-              render={({ field: { value, onChange, ref, ...field } }) => (
-                <DatePicker
-                  {...field}
-                  // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
-                  inputRef={ref}
-                  aria-label="Schedule period end"
-                  value={value ? [new Date(value)] : []}
-                  onChange={({ date }) => {
-                    const d = Array.isArray(date) ? date[0] : date;
-                    if (d) {
-                      onChange(d.toISOString());
-                    } else {
-                      onChange(undefined);
-                    }
-                  }}
-                  error={Boolean(getFieldErrorMessage(fieldErrors, 'endTime'))}
-                  size="compact"
-                  timeSelectStart
-                  formatString="yyyy/MM/dd HH:mm"
-                  placeholderText="End date and time"
-                  clearable
+              </FormControl>
+            </styled.SchedulePeriodField>
+            <styled.SchedulePeriodField>
+              <styled.SchedulePeriodInputLabel htmlFor="create-schedule-form-end-time">
+                End date
+              </styled.SchedulePeriodInputLabel>
+              <FormControl
+                error={endTimeErrorMessage}
+                overrides={overrides.schedulePeriodFormControl}
+              >
+                <Controller
+                  name="endTime"
+                  control={control}
+                  render={({ field: { value, onChange, ref, ...field } }) => (
+                    <DatePicker
+                      {...field}
+                      // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
+                      inputRef={ref}
+                      id="create-schedule-form-end-time"
+                      aria-label="Schedule period end"
+                      value={value ? [new Date(value)] : []}
+                      onChange={({ date }) => {
+                        const d = Array.isArray(date) ? date[0] : date;
+                        if (d) {
+                          onChange(d.toISOString());
+                        } else {
+                          onChange(undefined);
+                        }
+                        revalidateSchedulePeriod();
+                      }}
+                      error={Boolean(endTimeErrorMessage)}
+                      size="compact"
+                      timeSelectStart
+                      formatString="yyyy/MM/dd HH:mm"
+                      clearable
+                    />
+                  )}
                 />
-              )}
-            />
+              </FormControl>
+            </styled.SchedulePeriodField>
           </styled.SchedulePeriodRow>
         </DomainSchedulesHorizontalField>
 
@@ -381,7 +413,6 @@ export default function DomainSchedulesCreateAdvancedForm({
           <Controller
             name="workflowIdPrefix"
             control={control}
-            defaultValue=""
             render={({ field: { ref, ...field } }) => (
               <Input
                 {...field}
