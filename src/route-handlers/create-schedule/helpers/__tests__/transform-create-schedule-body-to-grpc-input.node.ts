@@ -86,6 +86,15 @@ describe(transformCreateScheduleBodyToGrpcInput.name, () => {
     expect(grpc.spec?.jitter).toEqual({ seconds: 1, nanos: 500_000_000 });
   });
 
+  it('omits zero jitter seconds', () => {
+    const grpc = transformCreateScheduleBodyToGrpcInput({
+      domain: 'd',
+      body: minimalBody({ jitterSeconds: 0 }),
+    });
+
+    expect(grpc.spec?.jitter).toBeUndefined();
+  });
+
   it('maps schedule policies', () => {
     const grpc = transformCreateScheduleBodyToGrpcInput({
       domain: 'd',
