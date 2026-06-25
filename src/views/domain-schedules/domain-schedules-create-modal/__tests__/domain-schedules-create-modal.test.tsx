@@ -4,7 +4,6 @@ import * as reactHookForm from 'react-hook-form';
 
 import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
-import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
 import { type CreateScheduleRequestBody } from '@/route-handlers/create-schedule/create-schedule.types';
 
 import { mockDomainSchedulesCreateFormData } from '../__fixtures__/mock-domain-schedules-create-form-data';
@@ -80,11 +79,10 @@ describe(DomainSchedulesCreateModal.name, () => {
       expect(getLatestRequestBody()).toEqual(
         expect.objectContaining({
           cronExpression: '0 9 * * *',
+          pauseOnFailure: false,
           startWorkflow: expect.objectContaining({
             workflowType: { name: 'DemoWorkflow' },
           }),
-          overlapPolicy:
-            ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_CONCURRENT,
         })
       );
       expect(mockEnqueue).toHaveBeenCalledWith(

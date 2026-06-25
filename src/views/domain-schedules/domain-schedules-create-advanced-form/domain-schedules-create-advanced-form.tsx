@@ -15,7 +15,12 @@ import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api
 import DomainSchedulesHorizontalField from '@/views/domain-schedules/domain-schedules-horizontal-field/domain-schedules-horizontal-field';
 import getFieldErrorMessage from '@/views/workflow-actions/workflow-action-start-form/helpers/get-field-error-message';
 
-import { OVERLAP_POLICY_OPTIONS } from './domain-schedules-create-advanced-form.constants';
+import {
+  CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS,
+  CREATE_SCHEDULE_ADVANCED_FIELD_IDS,
+  DEFAULT_OVERLAP_POLICY,
+  OVERLAP_POLICY_OPTIONS,
+} from './domain-schedules-create-advanced-form.constants';
 import {
   overrides,
   styled,
@@ -29,7 +34,7 @@ export default function DomainSchedulesCreateAdvancedForm({
   const overlapPolicy = useWatch({
     control,
     name: 'overlapPolicy',
-    defaultValue: ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_CONCURRENT,
+    defaultValue: DEFAULT_OVERLAP_POLICY,
   });
 
   return (
@@ -64,18 +69,18 @@ export default function DomainSchedulesCreateAdvancedForm({
       <>
         <DomainSchedulesHorizontalField
           label="Schedule Id"
-          description="Unique name provided by users to name the schedule."
-          htmlFor="create-schedule-form-schedule-id"
+          description={CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS.scheduleId}
+          htmlFor={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.scheduleId}
           error={getFieldErrorMessage(fieldErrors, 'scheduleId')}
         >
           <Controller
             name="scheduleId"
             control={control}
+            defaultValue=""
             render={({ field: { ref, ...field } }) => (
               <Input
                 {...field}
-                value={field.value ?? ''}
-                id="create-schedule-form-schedule-id"
+                id={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.scheduleId}
                 // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
                 inputRef={ref}
                 aria-label="Schedule Id"
@@ -91,12 +96,15 @@ export default function DomainSchedulesCreateAdvancedForm({
 
         <DomainSchedulesHorizontalField
           label="Overlap Policy"
-          description="Policy that controls what the scheduler should do if the previous action is still running."
+          description={
+            CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS.overlapPolicy
+          }
           error={getFieldErrorMessage(fieldErrors, 'overlapPolicy')}
         >
           <Controller
             name="overlapPolicy"
             control={control}
+            defaultValue={DEFAULT_OVERLAP_POLICY}
             render={({ field: { value, onChange, ref, ...field } }) => (
               <Select
                 {...field}
@@ -122,8 +130,10 @@ export default function DomainSchedulesCreateAdvancedForm({
           <DomainSchedulesHorizontalField
             subfield={true}
             label="Buffer limit"
-            description="Max number of pending workflows allowed when using Buffer overlap policy."
-            htmlFor="create-schedule-form-buffer-limit"
+            description={
+              CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS.bufferLimit
+            }
+            htmlFor={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.bufferLimit}
             caption="Defaults to 0 (unlimited)"
             error={getFieldErrorMessage(fieldErrors, 'bufferLimit')}
           >
@@ -133,7 +143,7 @@ export default function DomainSchedulesCreateAdvancedForm({
               render={({ field: { ref, ...field } }) => (
                 <Input
                   {...field}
-                  id="create-schedule-form-buffer-limit"
+                  id={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.bufferLimit}
                   // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
                   inputRef={ref}
                   aria-label="Buffer limit"
@@ -156,8 +166,10 @@ export default function DomainSchedulesCreateAdvancedForm({
           <DomainSchedulesHorizontalField
             subfield={true}
             label="Concurrency limit"
-            description="Max number of concurrently running workflows allowed for Concurrent overlap policy."
-            htmlFor="create-schedule-form-concurrency-limit"
+            description={
+              CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS.concurrencyLimit
+            }
+            htmlFor={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.concurrencyLimit}
             caption="Defaults to 0 (unlimited)"
             error={getFieldErrorMessage(fieldErrors, 'concurrencyLimit')}
           >
@@ -167,7 +179,7 @@ export default function DomainSchedulesCreateAdvancedForm({
               render={({ field: { ref, ...field } }) => (
                 <Input
                   {...field}
-                  id="create-schedule-form-concurrency-limit"
+                  id={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.concurrencyLimit}
                   // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
                   inputRef={ref}
                   aria-label="Concurrency limit"
@@ -187,17 +199,20 @@ export default function DomainSchedulesCreateAdvancedForm({
 
         <DomainSchedulesHorizontalField
           label="Jitter duration"
-          description="Time range to distribute starting workflows across. This helps avoiding burst of workflow creations in a single point of time."
-          htmlFor="create-schedule-form-jitter"
+          description={
+            CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS.jitterSeconds
+          }
+          htmlFor={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.jitterSeconds}
           error={getFieldErrorMessage(fieldErrors, 'jitterSeconds')}
         >
           <Controller
             name="jitterSeconds"
             control={control}
+            defaultValue=""
             render={({ field: { ref, ...field } }) => (
               <Input
                 {...field}
-                id="create-schedule-form-jitter"
+                id={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.jitterSeconds}
                 // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
                 inputRef={ref}
                 aria-label="Jitter duration"
@@ -217,18 +232,20 @@ export default function DomainSchedulesCreateAdvancedForm({
 
         <DomainSchedulesHorizontalField
           label="Workflow Id Prefix"
-          description="Prefix text to add into started workflows. Ids are formed as `${Prefix}+{auto generated postfix}`."
-          htmlFor="create-schedule-form-workflow-id-prefix"
+          description={
+            CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS.workflowIdPrefix
+          }
+          htmlFor={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.workflowIdPrefix}
           error={getFieldErrorMessage(fieldErrors, 'workflowIdPrefix')}
         >
           <Controller
             name="workflowIdPrefix"
             control={control}
+            defaultValue=""
             render={({ field: { ref, ...field } }) => (
               <Input
                 {...field}
-                value={field.value ?? ''}
-                id="create-schedule-form-workflow-id-prefix"
+                id={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.workflowIdPrefix}
                 // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
                 inputRef={ref}
                 aria-label="Workflow Id Prefix"

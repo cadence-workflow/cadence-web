@@ -77,12 +77,6 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
       screen.getByRole('button', { name: /show advanced configurations/i })
     );
 
-    const overlapPolicy = screen.getByRole('combobox', {
-      name: /overlap policy/i,
-    });
-    await user.click(overlapPolicy);
-    await user.click(screen.getByText('Concurrent'));
-
     expect(screen.getByLabelText('Concurrency limit')).toBeInTheDocument();
     expect(screen.queryByLabelText('Buffer limit')).not.toBeInTheDocument();
   });

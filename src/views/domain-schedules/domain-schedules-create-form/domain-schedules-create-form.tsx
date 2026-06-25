@@ -51,6 +51,7 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
         <Controller
           name="workflowType.name"
           control={control}
+          defaultValue=""
           render={({ field: { ref, ...field } }) => (
             <Input
               {...field}
@@ -102,6 +103,7 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
         <Controller
           name="taskList.name"
           control={control}
+          defaultValue=""
           render={({ field: { ref, ...field } }) => (
             <Input
               {...field}
@@ -168,6 +170,7 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
         <Controller
           name="input"
           control={control}
+          defaultValue={['']}
           render={({ field }) => (
             <MultiJsonInput
               label="JSON input arguments (optional)"
@@ -281,6 +284,7 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
         <Controller
           name="pauseOnFailure"
           control={control}
+          defaultValue={false}
           render={({ field: { value, onChange, ref, ...field } }) => (
             <Checkbox
               {...field}

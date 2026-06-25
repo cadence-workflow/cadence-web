@@ -1,7 +1,6 @@
-import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
-
 import { type DomainSchedulesCreateFormData } from '../domain-schedules-create-modal.types';
 
+/** Minimal required create-schedule form fields for tests. */
 export const mockDomainSchedulesCreateFormData = {
   cronExpression: {
     minutes: '0',
@@ -15,6 +14,4 @@ export const mockDomainSchedulesCreateFormData = {
   workerSDKLanguage: 'GO',
   executionStartToCloseTimeoutSeconds: 3600,
   taskStartToCloseTimeoutSeconds: 45,
-  pauseOnFailure: false,
-  overlapPolicy: ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_CONCURRENT,
 } satisfies DomainSchedulesCreateFormData;
