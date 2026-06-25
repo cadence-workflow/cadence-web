@@ -10,14 +10,19 @@ import type heartbeatDetailsSchema from './schemas/heartbeat-details-schema';
 // single source of truth.
 export type BatchActionType = keyof typeof BATCH_ACTION_TYPE;
 
-export type BatchActionProgress = z.infer<typeof heartbeatDetailsSchema>;
+export type BatchActionProgress = Omit<
+  z.infer<typeof heartbeatDetailsSchema>,
+  'rps'
+>;
 
 // Outcome of reading progress from a heartbeat payload. `progressError` is set
 // when a payload was present but did not match the expected heartbeat shape (as
-// opposed to simply being absent, which leaves both fields undefined).
+// opposed to simply being absent, which leaves both fields undefined). `rps` is
+// the live, signal-tuned rate limit carried by the same heartbeat, when present.
 export type BatchActionProgressResult = {
   progress?: BatchActionProgress;
   progressError?: boolean;
+  rps?: number;
 };
 
 export type RouteParams = {

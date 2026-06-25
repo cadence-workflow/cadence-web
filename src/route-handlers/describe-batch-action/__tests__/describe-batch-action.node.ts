@@ -15,6 +15,7 @@ import {
   mockDescribeBatchOperationWorkflowFailed,
   mockDescribeBatchOperationWorkflowFailedWithPendingProgress,
   mockDescribeBatchOperationWorkflowRunning,
+  mockDescribeBatchOperationWorkflowRunningWithProgress,
   mockDescribeBatchOperationWorkflowTerminated,
   mockDescribeBatchOperationWorkflowOtherDomain,
   mockDescribeNonBatchWorkflow,
@@ -75,6 +76,26 @@ describe(describeBatchAction.name, () => {
     expect(body.status).toEqual('RUNNING');
     expect(body.endTime).toBeUndefined();
     expect(body.startTime).toEqual(1717408148258);
+    // No heartbeat yet, so rps falls back to the start-input value.
+    expect(body.rps).toEqual(100);
+  });
+
+  it('overrides the start-input rps with the live rps from the running heartbeat', async () => {
+    const { res } = await setup({
+      describeResponse: mockDescribeBatchOperationWorkflowRunningWithProgress,
+    });
+
+    expect(res.status).toEqual(200);
+    const body = await res.json();
+    expect(body.status).toEqual('RUNNING');
+    // Live, signal-tuned value from the heartbeat (250), not the input (100).
+    expect(body.rps).toEqual(MOCK_BATCH_PROGRESS.RPS);
+    // rps is surfaced at the top level, not nested in progress.
+    expect(body.progress).toEqual({
+      totalEstimate: MOCK_BATCH_PROGRESS.TotalEstimate,
+      successCount: MOCK_BATCH_PROGRESS.SuccessCount,
+      errorCount: MOCK_BATCH_PROGRESS.ErrorCount,
+    });
   });
 
   it('maps TERMINATED close status to aborted', async () => {
@@ -133,6 +154,8 @@ describe(describeBatchAction.name, () => {
       successCount: MOCK_BATCH_PROGRESS.SuccessCount,
       errorCount: MOCK_BATCH_PROGRESS.ErrorCount,
     });
+    // Final heartbeat carries the last effective rps, overriding the input.
+    expect(body.rps).toEqual(MOCK_BATCH_PROGRESS.RPS);
   });
 
   it('returns 200 and flags progressError when the close-event read fails', async () => {

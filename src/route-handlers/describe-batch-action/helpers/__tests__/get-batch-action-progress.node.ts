@@ -46,7 +46,7 @@ describe('getRunningProgressFromDescribe', () => {
       getRunningProgressFromDescribe(
         mockDescribeBatchOperationWorkflowRunningWithProgress
       )
-    ).toEqual({ progress: EXPECTED_PROGRESS });
+    ).toEqual({ progress: EXPECTED_PROGRESS, rps: MOCK_BATCH_PROGRESS.RPS });
     expect(logger.warn).not.toHaveBeenCalled();
   });
 
@@ -104,7 +104,7 @@ describe('getFinalProgressFromCloseEvent', () => {
       getFinalProgressFromCloseEvent(
         mockBatcherCloseEventHistory.history?.events?.[0]
       )
-    ).toEqual({ progress: EXPECTED_PROGRESS });
+    ).toEqual({ progress: EXPECTED_PROGRESS, rps: MOCK_BATCH_PROGRESS.RPS });
     expect(logger.warn).not.toHaveBeenCalled();
   });
 
