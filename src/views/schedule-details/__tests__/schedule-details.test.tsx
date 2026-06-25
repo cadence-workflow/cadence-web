@@ -6,6 +6,7 @@ import {
   act,
   render,
   screen,
+  userEvent,
   waitForElementToBeRemoved,
 } from '@/test-utils/rtl';
 
@@ -58,6 +59,23 @@ describe(ScheduleDetails.name, () => {
               endTime: null,
               jitter: { seconds: '300', nanos: 0 },
             },
+            action: {
+              startWorkflow: {
+                workflowType: { name: 'ScheduleWorker' },
+                taskList: {
+                  name: 'schedule-task-list',
+                  kind: 'TASK_LIST_KIND_NORMAL',
+                  baseName: 'schedule-task-list',
+                },
+                input: null,
+                workflowIdPrefix: 'schedule-prefix',
+                executionStartToCloseTimeout: { seconds: '1800', nanos: 0 },
+                taskStartToCloseTimeout: null,
+                retryPolicy: null,
+                memo: null,
+                searchAttributes: null,
+              },
+            },
           })
         ),
     });
@@ -66,8 +84,8 @@ describe(ScheduleDetails.name, () => {
       await screen.findByRole('heading', { name: 'Schedule specifications' })
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole('heading', { name: 'Schedule action' })
-    ).not.toBeInTheDocument();
+      screen.getByRole('heading', { name: 'Schedule action' })
+    ).toBeInTheDocument();
     expect(
       screen.queryByRole('heading', { name: 'Schedule policies' })
     ).not.toBeInTheDocument();
@@ -81,6 +99,50 @@ describe(ScheduleDetails.name, () => {
     ).toBeInTheDocument();
     expect(screen.getByText('Every hour (0 * * * *)')).toBeInTheDocument();
     expect(screen.getByText('5m')).toBeInTheDocument();
+    expect(screen.getByText('ScheduleWorker')).toBeInTheDocument();
+  });
+
+  it('collapses and expands the schedule action section', async () => {
+    const user = userEvent.setup();
+
+    setup({
+      describeResolver: () =>
+        HttpResponse.json(
+          getMockRunningDescribeScheduleResponse({
+            action: {
+              startWorkflow: {
+                workflowType: { name: 'ScheduleWorker' },
+                taskList: {
+                  name: 'schedule-task-list',
+                  kind: 'TASK_LIST_KIND_NORMAL',
+                  baseName: 'schedule-task-list',
+                },
+                input: null,
+                workflowIdPrefix: null,
+                executionStartToCloseTimeout: null,
+                taskStartToCloseTimeout: null,
+                retryPolicy: null,
+                memo: null,
+                searchAttributes: null,
+              },
+            },
+          })
+        ),
+    });
+
+    expect(
+      await screen.findByRole('heading', { name: 'Schedule action' })
+    ).toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole('button', { name: 'Collapse Schedule action details' })
+    );
+    expect(
+      screen.queryByRole('rowheader', { name: 'Workflow type' })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Expand Schedule action details' })
+    ).toBeInTheDocument();
   });
 
   it('hides optional specification rows when schedule fields are missing', async () => {
@@ -94,6 +156,7 @@ describe(ScheduleDetails.name, () => {
               endTime: null,
               jitter: null,
             },
+            action: { startWorkflow: null },
           })
         ),
     });
@@ -110,6 +173,15 @@ describe(ScheduleDetails.name, () => {
     expect(
       screen.queryByRole('rowheader', { name: 'Jitter duration' })
     ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('rowheader', { name: 'Workflow Id Prefix' })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('rowheader', { name: 'Schedule Search attributes' })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Schedule action' })
+    ).toBeInTheDocument();
   });
 
   it('throws into error boundary when describe fails', async () => {
