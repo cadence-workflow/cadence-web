@@ -49,7 +49,7 @@
     "@visx/responsive": "^3.12.0",
     "@visx/scale": "^3.12.0",
     "@visx/shape": "^3.12.0",
-    "baseui": "^14.0.0",
+    "baseui": "^18.1.0",
     "copy-to-clipboard": "^3.3.3",
     "cron-validate": "^1.5.2",
     "cronstrue": "^3.11.0",

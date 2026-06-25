@@ -15,7 +15,7 @@ exports[`TaskListWorkersTableHandlerIcon should render correctly if worker does 
 "
   >
     <div
-      class="style={ color: '#CBCBCB', display: 'block' }
+      class="style={ color: '#DDDDDD', display: 'block' }
 "
     >
       <svg

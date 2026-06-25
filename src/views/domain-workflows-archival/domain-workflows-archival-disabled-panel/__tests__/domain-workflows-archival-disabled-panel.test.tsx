@@ -1,19 +1,34 @@
 import React from 'react';
 
-import { render, screen } from '@/test-utils/rtl';
+import { render, screen, userEvent } from '@/test-utils/rtl';
+
+import { type Props as ErrorPanelProps } from '@/components/error-panel/error-panel.types';
 
 import DomainWorkflowsArchivalDisabledPanel from '../domain-workflows-archival-disabled-panel';
 import { type ArchivalDisabledPanelConfig } from '../domain-workflows-archival-disabled-panel.types';
+
+const mockOnActionClick = jest.fn();
+
+jest.mock('@/components/error-panel/error-panel', () =>
+  jest.fn(({ message, description, actions }: ErrorPanelProps) => (
+    <div>
+      <div>{message}</div>
+      <div>{description}</div>
+      {actions?.map((action) => (
+        <button key={action.label} onClick={() => mockOnActionClick(action)}>
+          {action.label}
+        </button>
+      ))}
+    </div>
+  ))
+);
 
 jest.mock(
   '../../config/domain-workflows-archival-disabled-panel.config',
   () =>
     ({
       title: 'Mock archival disabled title',
-      details: [
-        'Mock archival disabled detail 1',
-        'Mock archival disabled detail 2',
-      ],
+      description: 'Mock archival disabled description',
       links: [
         {
           text: 'Mock docs CTA',
@@ -24,6 +39,10 @@ jest.mock(
 );
 
 describe(DomainWorkflowsArchivalDisabledPanel.name, () => {
+  beforeEach(() => {
+    mockOnActionClick.mockClear();
+  });
+
   it('renders panel correctly', async () => {
     render(<DomainWorkflowsArchivalDisabledPanel />);
 
@@ -32,14 +51,28 @@ describe(DomainWorkflowsArchivalDisabledPanel.name, () => {
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText('Mock archival disabled detail 1')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText('Mock archival disabled detail 2')
+      screen.getByText('Mock archival disabled description')
     ).toBeInTheDocument();
 
-    const docsLink = await screen.findByText('Mock docs CTA');
-    expect(docsLink).toBeInTheDocument();
-    expect(docsLink).toHaveAttribute('href', 'https://mock.docs.link');
+    expect(
+      await screen.findByRole('button', { name: 'Mock docs CTA' })
+    ).toBeInTheDocument();
+  });
+
+  it('passes an external link action for the docs CTA', async () => {
+    const user = userEvent.setup();
+    render(<DomainWorkflowsArchivalDisabledPanel />);
+
+    await user.click(
+      await screen.findByRole('button', { name: 'Mock docs CTA' })
+    );
+
+    expect(mockOnActionClick).toHaveBeenCalledWith(
+      expect.objectContaining({
+        kind: 'link-external',
+        label: 'Mock docs CTA',
+        link: 'https://mock.docs.link',
+      })
+    );
   });
 });

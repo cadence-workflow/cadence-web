@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 
-import { Tag, VARIANT } from 'baseui/tag';
+import { Tag } from 'baseui/tag';
 
 import WorkflowStatusTagIcon from './workflow-status-tag-icon/workflow-status-tag-icon';
 import { WORKFLOW_STATUS_NAMES } from './workflow-status-tag.constants';
@@ -11,7 +11,7 @@ import type { Props } from './workflow-status-tag.types';
 export default function WorkflowStatusTag(props: Props) {
   return (
     <Tag
-      variant={VARIANT.solid}
+      hierarchy="primary"
       closeable={false}
       overrides={
         overrides({
