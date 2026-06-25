@@ -71,6 +71,49 @@ describe(ScheduleDetails.name, () => {
     expect(describeResolver).toHaveBeenCalledTimes(1);
   });
 
+  it('renders schedule input JSON section when workflow input is present', async () => {
+    setup({
+      describeResolver: () =>
+        HttpResponse.json(
+          getMockRunningDescribeScheduleResponse({
+            action: {
+              startWorkflow: {
+                workflowType: { name: 'ScheduleWorker' },
+                taskList: {
+                  name: 'schedule-task-list',
+                  kind: 'TASK_LIST_KIND_NORMAL',
+                  baseName: 'schedule-task-list',
+                },
+                input: {
+                  data: 'eyJ3b3JrZmxvd0FyZyI6InRlc3QtdmFsdWUifQ==',
+                },
+                workflowIdPrefix: 'schedule-prefix',
+                executionStartToCloseTimeout: null,
+                taskStartToCloseTimeout: null,
+                retryPolicy: null,
+                memo: null,
+                searchAttributes: null,
+              },
+            },
+          })
+        ),
+    });
+
+    expect(await screen.findByText('Input')).toBeInTheDocument();
+  });
+
+  it('hides schedule input JSON section when workflow input is absent', async () => {
+    setup({
+      describeResolver: () =>
+        HttpResponse.json(getMockRunningDescribeScheduleResponse()),
+    });
+
+    expect(
+      await screen.findByRole('heading', { name: 'Mock policies section' })
+    ).toBeInTheDocument();
+    expect(screen.queryByText('Input')).not.toBeInTheDocument();
+  });
+
   it('hides conditional rows when hide predicate returns true', async () => {
     const describeResponse = getMockRunningDescribeScheduleResponse({
       policies: {
