@@ -4,40 +4,53 @@ import { type StyleObject } from 'styletron-react';
 import { LABEL_COLUMN_WIDTH_PX } from './schedule-details-table.constants';
 
 export const styled = {
-  Container: createStyled('div', (): StyleObject => ({
-    width: '100%',
-  })),
-  Row: createStyled(
-    'div',
+  Table: createStyled(
+    'table',
     ({ $theme }: { $theme: Theme }): StyleObject => ({
-      display: 'flex',
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: $theme.sizing.scale300,
-      paddingTop: $theme.sizing.scale400,
-      paddingBottom: $theme.sizing.scale400,
-      wordBreak: 'break-word',
+      width: '100%',
+      borderCollapse: 'collapse',
+      borderSpacing: 0,
+      ...$theme.typography.ParagraphXSmall,
+    })
+  ),
+  Row: createStyled(
+    'tr',
+    ({ $theme }: { $theme: Theme }): StyleObject => ({
       ':not(:last-child)': {
         borderBottom: `1px solid ${$theme.colors.borderOpaque}`,
       },
     })
   ),
-  Label: createStyled(
-    'div',
+  LabelCell: createStyled(
+    'th',
     ({ $theme }: { $theme: Theme }): StyleObject => ({
+      ...$theme.typography.LabelXSmall,
+      width: `${LABEL_COLUMN_WIDTH_PX}px`,
       minWidth: `${LABEL_COLUMN_WIDTH_PX}px`,
       maxWidth: `${LABEL_COLUMN_WIDTH_PX}px`,
-      display: 'flex',
-      ...$theme.typography.LabelSmall,
-      lineHeight: $theme.typography.ParagraphSmall.lineHeight,
+      textAlign: 'left',
+      verticalAlign: 'top',
+      paddingTop: $theme.sizing.scale400,
+      paddingBottom: $theme.sizing.scale400,
+      paddingLeft: 0,
+      paddingRight: $theme.sizing.scale300,
+      lineHeight: $theme.typography.ParagraphXSmall.lineHeight,
+      wordBreak: 'break-word',
+      overflowWrap: 'anywhere',
     })
   ),
-  Value: createStyled(
-    'div',
+  ValueCell: createStyled(
+    'td',
     ({ $theme }: { $theme: Theme }): StyleObject => ({
-      display: 'flex',
-      flex: '1 0 300px',
-      ...$theme.typography.ParagraphSmall,
+      ...$theme.typography.ParagraphXSmall,
+      verticalAlign: 'top',
+      paddingTop: $theme.sizing.scale400,
+      paddingBottom: $theme.sizing.scale400,
+      paddingLeft: $theme.sizing.scale300,
+      paddingRight: 0,
+      wordBreak: 'break-word',
+      overflowWrap: 'anywhere',
+      whiteSpace: 'normal',
     })
   ),
 };

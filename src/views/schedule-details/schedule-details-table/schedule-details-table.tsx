@@ -15,15 +15,17 @@ export default function ScheduleDetailsTable({
   const visibleRows = rows.filter((row) => !row.hide);
 
   return (
-    <styled.Container aria-label={ariaLabel} role="table">
-      {visibleRows.map((row, index) => (
-        <styled.Row key={row.key ?? getRowKey(row, index)} role="row">
-          <styled.Label role="rowheader">{row.label}</styled.Label>
-          <styled.Value role="cell">
-            {getDisplayValue(row.value, emptyValue)}
-          </styled.Value>
-        </styled.Row>
-      ))}
-    </styled.Container>
+    <styled.Table aria-label={ariaLabel}>
+      <tbody>
+        {visibleRows.map((row, index) => (
+          <styled.Row key={row.key ?? getRowKey(row, index)}>
+            <styled.LabelCell scope="row">{row.label}</styled.LabelCell>
+            <styled.ValueCell>
+              {getDisplayValue(row.value, emptyValue)}
+            </styled.ValueCell>
+          </styled.Row>
+        ))}
+      </tbody>
+    </styled.Table>
   );
 }

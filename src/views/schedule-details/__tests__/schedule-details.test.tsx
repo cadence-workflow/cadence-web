@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { HttpResponse, type HttpResponseResolver } from 'msw';
+import { HttpResponse, delay, type HttpResponseResolver } from 'msw';
 
 import {
   act,
@@ -23,29 +23,70 @@ jest.mock('next/navigation', () => ({
 }));
 
 describe(ScheduleDetails.name, () => {
-  it('shows loading first then renders details placeholder after describe succeeds', async () => {
-    // Success resolver for describe request
-    const { promise: resolveResponsePromise, resolve: resolveResponse } =
-      getDeferredPromise();
-
+  it('shows loading first then renders schedule policies section', async () => {
     const describeResolver = jest.fn(async () => {
-      await resolveResponsePromise;
-      return HttpResponse.json(getMockRunningDescribeScheduleResponse());
+      await delay(100);
+      return HttpResponse.json(
+        getMockRunningDescribeScheduleResponse({
+          policies: {
+            overlapPolicy: 'SCHEDULE_OVERLAP_POLICY_BUFFER',
+            catchUpPolicy: 'SCHEDULE_CATCH_UP_POLICY_ONE',
+            catchUpWindow: { seconds: '3600', nanos: 0 },
+            pauseOnFailure: true,
+            bufferLimit: 10,
+            concurrencyLimit: 2,
+          },
+        })
+      );
     });
 
     setup({ describeResolver });
 
     expect(screen.getByRole('progressbar')).toBeInTheDocument();
-    // Resolve the promise to simulate the describe request succeeding
-    resolveResponse();
 
     await waitForElementToBeRemoved(() => screen.queryByRole('progressbar'));
-    expect(screen.getByText('Details — coming soon')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Schedule policies' })
+    ).toBeInTheDocument();
+    expect(screen.getByText('Buffer')).toBeInTheDocument();
+    expect(screen.getByText('Yes')).toBeInTheDocument();
     expect(describeResolver).toHaveBeenCalledTimes(1);
   });
 
+  it('hides conditional policy rows when overlap policy does not apply', async () => {
+    setup({
+      describeResolver: () =>
+        HttpResponse.json(
+          getMockRunningDescribeScheduleResponse({
+            policies: {
+              overlapPolicy: 'SCHEDULE_OVERLAP_POLICY_INVALID',
+              catchUpPolicy: 'SCHEDULE_CATCH_UP_POLICY_INVALID',
+              catchUpWindow: null,
+              pauseOnFailure: false,
+              bufferLimit: 0,
+              concurrencyLimit: 0,
+            },
+          })
+        ),
+    });
+
+    expect(
+      await screen.findByRole('heading', { name: 'Schedule policies' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('rowheader', { name: 'Overlap policy' })
+    ).toBeInTheDocument();
+    expect(screen.getByText('Default (SkipNew)')).toBeInTheDocument();
+    expect(screen.getByText('Default (Skip)')).toBeInTheDocument();
+    expect(
+      screen.queryByRole('rowheader', { name: 'Buffer limit' })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('rowheader', { name: 'Concurrency limit' })
+    ).not.toBeInTheDocument();
+  });
+
   it('throws into error boundary when describe fails', async () => {
-    // Error resolver for describe request
     const describeResolver = jest.fn(() =>
       HttpResponse.json(
         { message: 'Failed to describe schedule' },
@@ -90,16 +131,4 @@ function setup({
       ],
     }
   );
-}
-
-function getDeferredPromise(): {
-  promise: Promise<void>;
-  resolve: () => void;
-} {
-  let resolve = () => {};
-  const promise = new Promise<void>((resolvePromise) => {
-    resolve = resolvePromise;
-  });
-
-  return { promise, resolve };
 }
