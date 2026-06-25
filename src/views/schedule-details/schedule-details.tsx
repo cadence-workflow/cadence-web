@@ -7,6 +7,7 @@ import useDescribeSchedule from '@/views/shared/hooks/use-describe-schedule/use-
 
 import scheduleDetailsSectionsConfig from './config/schedule-details-sections.config';
 import { getRowsFromConfig } from './helpers/get-rows-from-config';
+import ScheduleDetailsBackfillsTable from './schedule-details-backfills-table/schedule-details-backfills-table';
 import ScheduleDetailsSection from './schedule-details-section/schedule-details-section';
 import { styled } from './schedule-details.styles';
 import { type Props } from './schedule-details.types';
@@ -49,6 +50,11 @@ export default function ScheduleDetails({ params }: Props) {
             />
           );
         })}
+        <ScheduleDetailsBackfillsTable
+          backfills={data.info?.ongoingBackfills ?? []}
+          domain={params.domain}
+          cluster={params.cluster}
+        />
       </styled.DetailsSectionsContainer>
     </PageSection>
   );
