@@ -23,6 +23,7 @@ export const domainBatchActionsQueryParamsConfig: [
   PageQueryParam<'batchTimeRangeStart', DateFilterValue | undefined>,
   PageQueryParam<'batchTimeRangeEnd', DateFilterValue>,
   PageQueryParam<'batchActionId', string | undefined>,
+  PageQueryParam<'batchActionWorkflowId', string | undefined>,
 ] = [
   {
     key: 'batchInputType',
@@ -61,6 +62,10 @@ export const domainBatchActionsQueryParamsConfig: [
   {
     key: 'batchActionId',
     queryParamKey: 'bid',
+  },
+  {
+    key: 'batchActionWorkflowId',
+    queryParamKey: 'bwid',
   },
 ] as const;
 

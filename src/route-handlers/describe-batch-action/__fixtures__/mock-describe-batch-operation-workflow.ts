@@ -29,7 +29,13 @@ export const mockDescribeBatchOperationWorkflowRunning: DescribeWorkflowExecutio
       parentExecutionInfo: null,
       executionTime: { seconds: '1717408150', nanos: 0 },
       memo: null,
-      searchAttributes: null,
+      searchAttributes: {
+        indexedFields: {
+          CustomDomain: {
+            data: Buffer.from(JSON.stringify('mock-domain')).toString('base64'),
+          },
+        },
+      },
       autoResetPoints: null,
       taskList: 'cadence-sys-batcher-tasklist',
       isCron: false,
@@ -77,6 +83,35 @@ export const mockDescribeBatchOperationWorkflowFailed: DescribeWorkflowExecution
       closeTime: { seconds: '1717409148', nanos: 0 },
       closeStatus: 'WORKFLOW_EXECUTION_CLOSE_STATUS_TIMED_OUT',
       historyLength: '8',
+    },
+  };
+
+// A workflow that exists but is not a batch action (e.g. a deep link to some
+// other workflow's runId) — the describe handler should treat it as not found.
+export const mockDescribeNonBatchWorkflow: DescribeWorkflowExecutionResponse = {
+  ...mockDescribeBatchOperationWorkflowRunning,
+  workflowExecutionInfo: {
+    ...mockDescribeBatchOperationWorkflowRunning.workflowExecutionInfo!,
+    type: { name: 'some-other-workflow-type' },
+  },
+};
+
+// A batch action that belongs to a different domain than the request — should be
+// treated as not found so one domain can't view another's batch actions.
+export const mockDescribeBatchOperationWorkflowOtherDomain: DescribeWorkflowExecutionResponse =
+  {
+    ...mockDescribeBatchOperationWorkflowRunning,
+    workflowExecutionInfo: {
+      ...mockDescribeBatchOperationWorkflowRunning.workflowExecutionInfo!,
+      searchAttributes: {
+        indexedFields: {
+          CustomDomain: {
+            data: Buffer.from(JSON.stringify('other-domain')).toString(
+              'base64'
+            ),
+          },
+        },
+      },
     },
   };
 

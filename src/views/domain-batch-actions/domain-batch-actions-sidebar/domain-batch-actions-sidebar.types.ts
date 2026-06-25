@@ -5,7 +5,7 @@ export type Props = {
   isDraftOpen: boolean;
   isDraftSelected: boolean;
   selectedActionId: string | null;
-  onSelectAction: (id: string) => void;
+  onSelectAction: (action: BatchActionListItem) => void;
   onSelectDraft: () => void;
   onCreateNew: () => void;
   fetchNextPage: () => void;

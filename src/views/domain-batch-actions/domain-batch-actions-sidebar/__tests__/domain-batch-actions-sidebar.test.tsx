@@ -54,7 +54,7 @@ function setup({
   isDraftOpen?: boolean;
   isDraftSelected?: boolean;
   selectedActionId?: string | null;
-  onSelectAction?: (id: string) => void;
+  onSelectAction?: (action: BatchActionListItem) => void;
   onSelectDraft?: () => void;
   onCreateNew?: () => void;
   fetchNextPage?: () => void;
@@ -116,12 +116,16 @@ describe(DomainBatchActionsSidebar.name, () => {
     expect(screen.getByText('Warning Icon')).toBeInTheDocument();
   });
 
-  it('calls onSelectAction with the action id when a batch action is clicked', async () => {
+  it('calls onSelectAction with the action when a batch action is clicked', async () => {
     const { user, onSelectAction } = setup();
 
     await user.click(screen.getByText('2'));
 
-    expect(onSelectAction).toHaveBeenCalledWith('2');
+    expect(onSelectAction).toHaveBeenCalledWith({
+      workflowId: 'wf-2',
+      runId: '2',
+      status: 'ABORTED',
+    });
   });
 
   it('calls onCreateNew when the new batch action button is clicked', async () => {

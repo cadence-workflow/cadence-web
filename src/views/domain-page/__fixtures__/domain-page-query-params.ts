@@ -17,6 +17,7 @@ export const mockDomainPageQueryParamsValues = {
   batchTimeRangeStart: undefined,
   batchTimeRangeEnd: 'now',
   batchActionId: undefined,
+  batchActionWorkflowId: undefined,
   workflowId: '',
   workflowType: '',
   statusBasic: undefined,

@@ -20,7 +20,7 @@
 export default function mergeSortedArrays<T>({
   sortedArrays,
   itemsCount,
-  compareFunc = (a: T, b: T): number => (a < b ? -1 : 1),
+  compareFunc,
 }: {
   sortedArrays: Array<Array<T>>;
   itemsCount: number;

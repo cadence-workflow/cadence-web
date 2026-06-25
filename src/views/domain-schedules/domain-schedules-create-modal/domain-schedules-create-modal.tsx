@@ -90,7 +90,7 @@ export default function DomainSchedulesCreateModal({
       overrides={overrides.modal}
     >
       <styled.ModalHeader>Create Schedule</styled.ModalHeader>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form noValidate onSubmit={handleSubmit(onSubmit)}>
         <styled.ModalBody>
           {createScheduleError && (
             <div ref={errorAlertRef} role="alert">

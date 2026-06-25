@@ -62,6 +62,7 @@ const cronExpressionFieldsSchema = z
   });
 
 export const createScheduleFormSchema = z.object({
+  // --- Main fields ---
   cronExpression: cronExpressionFieldsSchema,
   workflowType: z.object({
     name: z.string().min(1, 'Workflow type is required'),
@@ -106,4 +107,14 @@ export const createScheduleFormSchema = z.object({
       }
     }),
   pauseOnFailure: z.boolean().optional().default(false),
+
+  // --- Advanced fields ---
+  scheduleId: z.string().min(1).optional(),
+  jitterSeconds: z
+    .string()
+    .refine((v) => v === '' || Number(v) >= 0, {
+      message: 'Jitter seconds must be zero or positive',
+    })
+    .optional(),
+  workflowIdPrefix: z.string().optional(),
 });
