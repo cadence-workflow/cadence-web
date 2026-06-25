@@ -29,7 +29,7 @@ export const styled = {
   FieldLabelColumn: createStyled<'div', { $indent: boolean }>(
     'div',
     ({ $theme, $indent }): StyleObject => ({
-      flexBasis: $indent ? 'calc(38% - 10px)' : '38%',
+      flexBasis: '38%',
       flexGrow: 0,
       flexShrink: 0,
       maxWidth: '280px',
