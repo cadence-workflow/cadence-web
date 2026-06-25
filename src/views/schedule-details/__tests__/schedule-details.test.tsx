@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { HttpResponse, type HttpResponseResolver } from 'msw';
+import { HttpResponse, delay, type HttpResponseResolver } from 'msw';
 
 import {
   act,
@@ -23,29 +23,22 @@ jest.mock('next/navigation', () => ({
 }));
 
 describe(ScheduleDetails.name, () => {
-  it('shows loading first then renders details placeholder after describe succeeds', async () => {
-    // Success resolver for describe request
-    const { promise: resolveResponsePromise, resolve: resolveResponse } =
-      getDeferredPromise();
-
+  it('shows loading first then renders the config-driven sections container', async () => {
     const describeResolver = jest.fn(async () => {
-      await resolveResponsePromise;
+      await delay(100);
       return HttpResponse.json(getMockRunningDescribeScheduleResponse());
     });
 
     setup({ describeResolver });
 
     expect(screen.getByRole('progressbar')).toBeInTheDocument();
-    // Resolve the promise to simulate the describe request succeeding
-    resolveResponse();
 
     await waitForElementToBeRemoved(() => screen.queryByRole('progressbar'));
-    expect(screen.getByText('Details — coming soon')).toBeInTheDocument();
+    expect(screen.queryByRole('heading')).not.toBeInTheDocument();
     expect(describeResolver).toHaveBeenCalledTimes(1);
   });
 
   it('throws into error boundary when describe fails', async () => {
-    // Error resolver for describe request
     const describeResolver = jest.fn(() =>
       HttpResponse.json(
         { message: 'Failed to describe schedule' },
@@ -90,16 +83,4 @@ function setup({
       ],
     }
   );
-}
-
-function getDeferredPromise(): {
-  promise: Promise<void>;
-  resolve: () => void;
-} {
-  let resolve = () => {};
-  const promise = new Promise<void>((resolvePromise) => {
-    resolve = resolvePromise;
-  });
-
-  return { promise, resolve };
 }
