@@ -9,7 +9,6 @@ import { useSnackbar } from 'baseui/snackbar';
 import { useForm } from 'react-hook-form';
 import { MdCheckCircle, MdErrorOutline } from 'react-icons/md';
 
-import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
 import useCreateSchedule from '@/views/shared/hooks/use-create-schedule/use-create-schedule';
 
 import DomainSchedulesCreateForm from '../domain-schedules-create-form/domain-schedules-create-form';
