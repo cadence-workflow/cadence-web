@@ -44,9 +44,6 @@ export default function DomainSchedulesCreateModal({
       resolver: zodResolver(createScheduleFormSchema),
       mode: 'onSubmit',
       reValidateMode: 'onChange',
-      defaultValues: {
-        overlapPolicy: ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_CONCURRENT,
-      },
     });
 
   useEffect(() => {
