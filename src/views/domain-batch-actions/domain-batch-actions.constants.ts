@@ -28,6 +28,9 @@ export const BATCH_ACTION_DEFAULT_QUERY_HINT =
 export const BATCH_ACTION_TASK_LIST = 'cadence-sys-batcher-tasklist';
 export const BATCH_ACTION_EXECUTION_TIMEOUT_SECONDS = 20 * 365 * 24 * 60 * 60;
 
+// Signal sent to a running batcher workflow to adjust its RPS on the fly.
+export const BATCH_ACTION_TUNE_SIGNAL_NAME = 'cadence-sys-batch-tune-signal';
+
 export const BATCH_ACTION_DETAIL_REFETCH_INTERVAL = 10000;
 
 // Tooltip shown on a disabled per-row checkbox while "select all" is active.
