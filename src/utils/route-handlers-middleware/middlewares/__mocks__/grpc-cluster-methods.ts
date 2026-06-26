@@ -18,6 +18,8 @@ export const mockGrpcClusterMethods: GRPCClusterMethods = {
   listDomains: jest.fn(),
   listFailoverHistory: jest.fn(),
   listSchedules: jest.fn(),
+  pauseSchedule: jest.fn(),
+  unpauseSchedule: jest.fn(),
   listTaskListPartitions: jest.fn(),
   listWorkflows: jest.fn(),
   openWorkflows: jest.fn(),

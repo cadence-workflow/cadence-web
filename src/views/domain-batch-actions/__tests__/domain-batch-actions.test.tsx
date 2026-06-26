@@ -3,8 +3,9 @@ import React from 'react';
 import { userEvent } from '@testing-library/user-event';
 import { HttpResponse } from 'msw';
 
-import { render, screen, act } from '@/test-utils/rtl';
+import { render, screen, act, waitFor } from '@/test-utils/rtl';
 
+import { type GetConfigResponse } from '@/route-handlers/get-config/get-config.types';
 import { type ListBatchActionsResponse } from '@/route-handlers/list-batch-actions/list-batch-actions.types';
 import { mockDomainPageQueryParamsValues } from '@/views/domain-page/__fixtures__/domain-page-query-params';
 
@@ -20,6 +21,12 @@ const mockUsePageQueryParams = jest.fn();
 jest.mock('@/hooks/use-page-query-params/use-page-query-params', () => ({
   __esModule: true,
   default: (...args: Array<unknown>) => mockUsePageQueryParams(...args),
+}));
+
+const mockNotFound = jest.fn();
+jest.mock('next/navigation', () => ({
+  ...jest.requireActual('next/navigation'),
+  notFound: () => mockNotFound(),
 }));
 
 jest.mock(
@@ -111,6 +118,16 @@ describe(DomainBatchActions.name, () => {
     expect(
       await screen.findByText('mock-batch-action-detail-5')
     ).toBeInTheDocument();
+  });
+
+  it('calls notFound without fetching batch actions when disabled', async () => {
+    const { listRequestSpy } = setup({ enableBatchActions: false });
+
+    await waitFor(() => expect(mockNotFound).toHaveBeenCalled());
+    expect(
+      screen.queryByText('mock-batch-action-detail-5')
+    ).not.toBeInTheDocument();
+    expect(listRequestSpy).not.toHaveBeenCalled();
   });
 
   it('updates URL param when a different action is selected', async () => {
@@ -369,6 +386,12 @@ describe(DomainBatchActions.name, () => {
         },
       });
 
+      // Let the feature-gate config query resolve so the content component
+      // (and its polling detail query) mounts.
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(0);
+      });
+
       // Flush the initial load, then advance past a polling interval so a
       // background poll fires and fails while data is already on screen.
       await act(async () => {
@@ -411,50 +434,69 @@ function setup({
   pages = [mockBatchActionsResponse],
   describeError = false,
   detailResolver,
+  enableBatchActions = true,
 }: {
   pages?: ListBatchActionsResponse[];
   describeError?: boolean;
   detailResolver?: () => ReturnType<typeof HttpResponse.json>;
+  enableBatchActions?: boolean;
 } = {}) {
-  return render(
-    <DomainBatchActions domain="test-domain" cluster="test-cluster" />,
-    {
-      endpointsMocks: [
-        {
-          path: '/api/domains/:domain/:cluster/batch-actions',
-          httpMethod: 'GET',
-          mockOnce: false,
-          httpResolver: async ({ request }) => {
-            const url = new URL(request.url);
-            const nextPage = url.searchParams.get('nextPage');
-            const pageIndex = nextPage
-              ? pages.findIndex((p) => p.nextPageToken === nextPage) + 1
-              : 0;
-            return HttpResponse.json(pages[pageIndex] ?? pages[0]);
-          },
+  const listRequestSpy = jest.fn();
+  render(<DomainBatchActions domain="test-domain" cluster="test-cluster" />, {
+    endpointsMocks: [
+      {
+        path: '/api/config',
+        httpMethod: 'GET',
+        mockOnce: false,
+        httpResolver: async ({ request }) => {
+          const url = new URL(request.url);
+          if (
+            url.searchParams.get('configKey') !== 'BATCH_ACTIONS_UI_ENABLED'
+          ) {
+            return HttpResponse.json(false);
+          }
+          return HttpResponse.json(
+            enableBatchActions satisfies GetConfigResponse<'BATCH_ACTIONS_UI_ENABLED'>
+          );
         },
-        {
-          path: '/api/domains/:domain/:cluster/batch-actions/:workflowId/:runId',
-          httpMethod: 'GET',
-          mockOnce: false,
-          httpResolver: async ({ params }) => {
-            if (detailResolver) {
-              return detailResolver();
-            }
-            if (describeError) {
-              return HttpResponse.json(
-                { message: 'Failed to fetch describe' },
-                { status: 500 }
-              );
-            }
-            const detail: BatchAction = {
-              runId: String(params.runId),
-              status: 'COMPLETED',
-            };
-            return HttpResponse.json(detail);
-          },
+      },
+      {
+        path: '/api/domains/:domain/:cluster/batch-actions',
+        httpMethod: 'GET',
+        mockOnce: false,
+        httpResolver: async ({ request }) => {
+          listRequestSpy();
+          const url = new URL(request.url);
+          const nextPage = url.searchParams.get('nextPage');
+          const pageIndex = nextPage
+            ? pages.findIndex((p) => p.nextPageToken === nextPage) + 1
+            : 0;
+          return HttpResponse.json(pages[pageIndex] ?? pages[0]);
         },
-      ],
-    }
-  );
+      },
+      {
+        path: '/api/domains/:domain/:cluster/batch-actions/:workflowId/:runId',
+        httpMethod: 'GET',
+        mockOnce: false,
+        httpResolver: async ({ params }) => {
+          if (detailResolver) {
+            return detailResolver();
+          }
+          if (describeError) {
+            return HttpResponse.json(
+              { message: 'Failed to fetch describe' },
+              { status: 500 }
+            );
+          }
+          const detail: BatchAction = {
+            runId: String(params.runId),
+            status: 'COMPLETED',
+          };
+          return HttpResponse.json(detail);
+        },
+      },
+    ],
+  });
+
+  return { listRequestSpy };
 }
