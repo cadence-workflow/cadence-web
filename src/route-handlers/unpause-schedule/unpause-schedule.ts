@@ -31,13 +31,6 @@ export async function unpauseSchedule(
 
   const params = requestParams.params;
 
-  if (!params.scheduleId) {
-    return NextResponse.json(
-      { message: 'Missing scheduleId in route params' },
-      { status: 400 }
-    );
-  }
-
   try {
     await ctx.grpcClusterMethods.unpauseSchedule({
       domain: params.domain,

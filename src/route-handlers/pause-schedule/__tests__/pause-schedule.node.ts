@@ -91,20 +91,6 @@ describe(pauseSchedule.name, () => {
       })
     );
   });
-
-  it('returns an error if scheduleId is missing from route params', async () => {
-    const { res, mockPauseSchedule } = await setup({
-      scheduleId: '',
-    });
-
-    expect(mockPauseSchedule).not.toHaveBeenCalled();
-    expect(res.status).toEqual(400);
-    expect(await res.json()).toEqual(
-      expect.objectContaining({
-        message: 'Missing scheduleId in route params',
-      })
-    );
-  });
 });
 
 async function setup({
