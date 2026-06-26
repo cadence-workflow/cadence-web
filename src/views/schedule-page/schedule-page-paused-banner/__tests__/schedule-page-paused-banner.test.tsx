@@ -10,7 +10,7 @@ import {
 } from '@/route-handlers/describe-schedule/__fixtures__/mock-describe-schedule-response';
 import { type DescribeScheduleResponse } from '@/views/shared/hooks/use-describe-schedule/use-describe-schedule.types';
 
-import { formatScheduleTimestamp } from '../../config/schedule-details-formatters';
+import { formatScheduleTimestamp } from '@/views/schedule-details/helpers/format-schedule-timestamp';
 import SchedulePagePausedBanner from '../schedule-page-paused-banner';
 
 describe(SchedulePagePausedBanner.name, () => {
