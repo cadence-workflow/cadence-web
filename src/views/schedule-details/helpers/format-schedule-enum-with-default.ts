@@ -1,16 +1,11 @@
-import formatEnum from '@/utils/data-formatters/format-enum';
-
 export function formatScheduleEnumWithDefault(
   value: string | null | undefined,
-  prefix: string,
+  labelMap: Record<string, string>,
   defaultValue: string
 ) {
   const isEmpty = !value || value.includes('INVALID');
-  const formatted = formatEnum(
-    isEmpty ? defaultValue : value,
-    prefix,
-    'pascal'
-  );
+  const enumValue = isEmpty ? defaultValue : value;
+  const formatted = labelMap[enumValue] ?? enumValue;
 
   return isEmpty ? `Default (${formatted})` : formatted;
 }

@@ -4,6 +4,10 @@ import {
   SCHEDULE_CATCH_UP_POLICIES,
   SCHEDULE_OVERLAP_POLICIES,
 } from '@/route-handlers/create-schedule/create-schedule.constants';
+import {
+  SCHEDULE_CATCH_UP_POLICY_LABELS,
+  SCHEDULE_OVERLAP_POLICY_LABELS,
+} from '@/views/shared/constants/schedule-policy-labels.constants';
 
 export const MAX_CATCH_UP_WINDOW_DAYS = 90;
 
@@ -36,40 +40,16 @@ export const DEFAULT_CATCH_UP_POLICY =
 export const DEFAULT_OVERLAP_POLICY =
   ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_CONCURRENT;
 
-const overlapPolicyLabels: Record<
-  (typeof SCHEDULE_OVERLAP_POLICIES)[number],
-  string
-> = {
-  [ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_SKIP_NEW]: 'Skip',
-  [ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_BUFFER]: 'Buffer',
-  [ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_CONCURRENT]: 'Concurrent',
-  [ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_CANCEL_PREVIOUS]:
-    'Cancel previous',
-  [ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_TERMINATE_PREVIOUS]:
-    'Terminate previous',
-};
-
 export const OVERLAP_POLICY_OPTIONS = SCHEDULE_OVERLAP_POLICIES.map(
   (policy) => ({
     id: policy,
-    label: overlapPolicyLabels[policy],
+    label: SCHEDULE_OVERLAP_POLICY_LABELS[policy],
   })
 );
-
-type ScheduleCatchUpPolicyLabelMap = Record<
-  (typeof SCHEDULE_CATCH_UP_POLICIES)[number],
-  string
->;
-
-const catchUpPolicyLabels: ScheduleCatchUpPolicyLabelMap = {
-  [ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_SKIP]: 'Skip',
-  [ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_ONE]: 'Catch-up one',
-  [ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_ALL]: 'Catch-up all',
-};
 
 export const CATCH_UP_POLICY_OPTIONS = SCHEDULE_CATCH_UP_POLICIES.map(
   (policy) => ({
     id: policy,
-    label: catchUpPolicyLabels[policy],
+    label: SCHEDULE_CATCH_UP_POLICY_LABELS[policy],
   })
 );
