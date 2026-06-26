@@ -15,7 +15,7 @@ export async function pauseSchedule(
   requestParams: RequestParams,
   ctx: Context
 ) {
-  // allow empty body
+  // catch to allow empty body
   const requestBody = await request.json().catch(() => ({}));
   const { data, error } = pauseScheduleRequestBodySchema.safeParse(requestBody);
 
@@ -39,7 +39,7 @@ export async function pauseSchedule(
       identity: ctx.userInfo?.id,
     });
 
-    return NextResponse.json(response);
+    return NextResponse.json(response satisfies PauseScheduleResponse);
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
       { requestParams: params, error: e },

@@ -30,14 +30,12 @@ import { type ListOpenWorkflowExecutionsRequest__Input } from '@/__generated__/p
 import { type ListOpenWorkflowExecutionsResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListOpenWorkflowExecutionsResponse';
 import { type ListSchedulesRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListSchedulesRequest';
 import { type ListSchedulesResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListSchedulesResponse';
-import { type PauseScheduleRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/PauseScheduleRequest';
-import { type PauseScheduleResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/PauseScheduleResponse';
-import { type UnpauseScheduleRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/UnpauseScheduleRequest';
-import { type UnpauseScheduleResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/UnpauseScheduleResponse';
 import { type ListTaskListPartitionsRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListTaskListPartitionsRequest';
 import { type ListTaskListPartitionsResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListTaskListPartitionsResponse';
 import { type ListWorkflowExecutionsRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListWorkflowExecutionsRequest';
 import { type ListWorkflowExecutionsResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListWorkflowExecutionsResponse';
+import { type PauseScheduleRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/PauseScheduleRequest';
+import { type PauseScheduleResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/PauseScheduleResponse';
 import { type QueryWorkflowRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/QueryWorkflowRequest';
 import { type QueryWorkflowResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/QueryWorkflowResponse';
 import { type RequestCancelWorkflowExecutionRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/RequestCancelWorkflowExecutionRequest';
@@ -52,6 +50,8 @@ import { type StartWorkflowExecutionRequest__Input } from '@/__generated__/proto
 import { type StartWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/StartWorkflowExecutionResponse';
 import { type TerminateWorkflowExecutionRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/TerminateWorkflowExecutionRequest';
 import { type TerminateWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/TerminateWorkflowExecutionResponse';
+import { type UnpauseScheduleRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/UnpauseScheduleRequest';
+import { type UnpauseScheduleResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/UnpauseScheduleResponse';
 import { type UpdateDomainRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/UpdateDomainRequest';
 import { type UpdateDomainResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/UpdateDomainResponse';
 import { type ClusterConfig } from '@/config/dynamic/resolvers/clusters.types';

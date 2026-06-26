@@ -15,6 +15,7 @@ export async function unpauseSchedule(
   requestParams: RequestParams,
   ctx: Context
 ) {
+  // catch to allow empty body
   const requestBody = await request.json().catch(() => ({}));
   const { data, error } =
     unpauseScheduleRequestBodySchema.safeParse(requestBody);
@@ -39,7 +40,7 @@ export async function unpauseSchedule(
       catchUpPolicy: data.catchUpPolicy,
     });
 
-    return NextResponse.json(response);
+    return NextResponse.json(response satisfies UnpauseScheduleResponse);
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
       { requestParams: params, error: e },

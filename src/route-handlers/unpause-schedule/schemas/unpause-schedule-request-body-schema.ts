@@ -1,5 +1,6 @@
-import { ScheduleCatchUpPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleCatchUpPolicy';
 import { z } from 'zod';
+
+import { ScheduleCatchUpPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleCatchUpPolicy';
 
 const unpauseScheduleRequestBodySchema = z.object({
   reason: z.string().optional(),
