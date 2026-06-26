@@ -155,4 +155,24 @@ describe(transformDomainSchedulesCreateFormToBody.name, () => {
     });
     expect(concurrentResult.concurrencyLimit).toBeUndefined();
   });
+
+  it('includes schedule period fields when provided', () => {
+    const result = transformDomainSchedulesCreateFormToBody({
+      ...mockDomainSchedulesCreateFormData,
+      startTime: '2026-06-23T12:00:00.000Z',
+      endTime: '2026-06-30T12:00:00.000Z',
+    });
+
+    expect(result.startTime).toBe('2026-06-23T12:00:00.000Z');
+    expect(result.endTime).toBe('2026-06-30T12:00:00.000Z');
+  });
+
+  it('omits schedule period fields when not provided', () => {
+    const result = transformDomainSchedulesCreateFormToBody(
+      mockDomainSchedulesCreateFormData
+    );
+
+    expect(result.startTime).toBeUndefined();
+    expect(result.endTime).toBeUndefined();
+  });
 });
