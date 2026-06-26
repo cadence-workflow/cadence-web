@@ -241,10 +241,10 @@ async function setup(opts?: {
                   (enableCronList ??
                     false) satisfies GetConfigResponse<'CRON_LIST_ENABLED'>
                 );
-              case 'BATCH_ACTIONS_ENABLED':
+              case 'BATCH_ACTIONS_UI_ENABLED':
                 return HttpResponse.json(
                   (enableBatchActions ??
-                    false) satisfies GetConfigResponse<'BATCH_ACTIONS_ENABLED'>
+                    false) satisfies GetConfigResponse<'BATCH_ACTIONS_UI_ENABLED'>
                 );
               case 'SCHEDULES_ENABLED':
                 return HttpResponse.json(

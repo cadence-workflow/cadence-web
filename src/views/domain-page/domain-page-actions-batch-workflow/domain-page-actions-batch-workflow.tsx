@@ -8,6 +8,8 @@ import { type DomainPageActionButtonProps } from '../domain-page-actions-dropdow
 import DomainPageBaseActionButton from '../domain-page-base-action-button/domain-page-base-action-button';
 
 export default function DomainPageActionsBatchWorkflow({
+  domain,
+  cluster,
   label,
   icon,
   onCloseMenu,
@@ -19,7 +21,7 @@ export default function DomainPageActionsBatchWorkflow({
     data: isBatchActionsEnabled,
     isError,
     isLoading,
-  } = useConfigValue('BATCH_ACTIONS_ENABLED');
+  } = useConfigValue('BATCH_ACTIONS_UI_ENABLED', { domain, cluster });
 
   if (!isBatchActionsEnabled) return null;
 
