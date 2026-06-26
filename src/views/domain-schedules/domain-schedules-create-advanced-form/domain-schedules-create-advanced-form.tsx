@@ -6,19 +6,24 @@ import { StatefulPanel } from 'baseui/accordion';
 import { Button } from 'baseui/button';
 import { mergeOverrides } from 'baseui/helpers/overrides';
 import { Input } from 'baseui/input';
+import { Radio, RadioGroup } from 'baseui/radio';
 import { Select } from 'baseui/select';
 import { LabelXSmall } from 'baseui/typography';
 import { Controller, useWatch } from 'react-hook-form';
 import { MdExpandLess, MdExpandMore } from 'react-icons/md';
 
+import { ScheduleCatchUpPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleCatchUpPolicy';
 import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
 import DomainSchedulesHorizontalField from '@/views/domain-schedules/domain-schedules-horizontal-field/domain-schedules-horizontal-field';
 import getFieldErrorMessage from '@/views/workflow-actions/workflow-action-start-form/helpers/get-field-error-message';
 
 import {
+  CATCH_UP_POLICY_OPTIONS,
   CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS,
   CREATE_SCHEDULE_ADVANCED_FIELD_IDS,
+  DEFAULT_CATCH_UP_POLICY,
   DEFAULT_OVERLAP_POLICY,
+  MAX_CATCH_UP_WINDOW_DAYS,
   OVERLAP_POLICY_OPTIONS,
 } from './domain-schedules-create-advanced-form.constants';
 import {
@@ -35,6 +40,11 @@ export default function DomainSchedulesCreateAdvancedForm({
     control,
     name: 'overlapPolicy',
     defaultValue: DEFAULT_OVERLAP_POLICY,
+  });
+  const catchUpPolicy = useWatch({
+    control,
+    name: 'catchUpPolicy',
+    defaultValue: DEFAULT_CATCH_UP_POLICY,
   });
 
   return (
@@ -191,6 +201,73 @@ export default function DomainSchedulesCreateAdvancedForm({
                   )}
                   size="compact"
                   placeholder="Set concurrency limit"
+                />
+              )}
+            />
+          </DomainSchedulesHorizontalField>
+        )}
+
+        <DomainSchedulesHorizontalField
+          label="Catch-up Policy"
+          description="Controls whether missed schedules should run after downtime."
+          error={getFieldErrorMessage(fieldErrors, 'catchUpPolicy')}
+        >
+          <Controller
+            name="catchUpPolicy"
+            control={control}
+            defaultValue={DEFAULT_CATCH_UP_POLICY}
+            render={({ field: { value, onChange, ref, ...field } }) => (
+              <RadioGroup
+                {...field}
+                // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
+                inputRef={ref}
+                aria-label="Catch-up Policy"
+                value={value}
+                onChange={(e) => onChange(e.currentTarget.value)}
+                error={Boolean(
+                  getFieldErrorMessage(fieldErrors, 'catchUpPolicy')
+                )}
+                align="horizontal"
+              >
+                {CATCH_UP_POLICY_OPTIONS.map((option) => (
+                  <Radio key={option.id} value={option.id}>
+                    {option.label}
+                  </Radio>
+                ))}
+              </RadioGroup>
+            )}
+          />
+        </DomainSchedulesHorizontalField>
+
+        {catchUpPolicy !==
+          ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_SKIP && (
+          <DomainSchedulesHorizontalField
+            subfield={true}
+            label="Catch-up window"
+            description="Maximum age of missed schedules that can still be started."
+            htmlFor="create-schedule-form-catch-up-window-days"
+            error={getFieldErrorMessage(fieldErrors, 'catchUpWindowDays')}
+          >
+            <Controller
+              name="catchUpWindowDays"
+              control={control}
+              render={({ field: { ref, ...field } }) => (
+                <Input
+                  {...field}
+                  id="create-schedule-form-catch-up-window-days"
+                  // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
+                  inputRef={ref}
+                  aria-label="Catch-up window"
+                  type="number"
+                  min={1}
+                  max={MAX_CATCH_UP_WINDOW_DAYS}
+                  onBlur={field.onBlur}
+                  error={Boolean(
+                    getFieldErrorMessage(fieldErrors, 'catchUpWindowDays')
+                  )}
+                  size="compact"
+                  placeholder="Set catch-up window"
+                  endEnhancer={<LabelXSmall>Days</LabelXSmall>}
                 />
               )}
             />

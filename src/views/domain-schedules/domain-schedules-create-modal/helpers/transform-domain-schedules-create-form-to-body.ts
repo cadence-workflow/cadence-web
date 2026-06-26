@@ -1,5 +1,6 @@
 import pickBy from 'lodash/pickBy';
 
+import { ScheduleCatchUpPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleCatchUpPolicy';
 import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
 import { CRON_FIELD_ORDER } from '@/components/cron-schedule-input/cron-schedule-input.constants';
 import { type CreateScheduleRequestBody } from '@/route-handlers/create-schedule/create-schedule.types';
@@ -38,6 +39,7 @@ export default function transformDomainSchedulesCreateFormToBody(
       {
         pauseOnFailure: formData.pauseOnFailure ?? undefined,
         overlapPolicy: formData.overlapPolicy ?? undefined,
+        catchUpPolicy: formData.catchUpPolicy ?? undefined,
         bufferLimit:
           formData.overlapPolicy ===
             ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_BUFFER &&
@@ -49,6 +51,13 @@ export default function transformDomainSchedulesCreateFormToBody(
             ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_CONCURRENT &&
           formData.concurrencyLimit
             ? parseInt(formData.concurrencyLimit, 10)
+            : undefined,
+        catchUpWindowSeconds:
+          formData.catchUpPolicy !== undefined &&
+          formData.catchUpPolicy !==
+            ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_SKIP &&
+          formData.catchUpWindowDays
+            ? parseInt(formData.catchUpWindowDays, 10) * 24 * 60 * 60
             : undefined,
         scheduleId: formData.scheduleId?.trim() || undefined,
         jitterSeconds: formData.jitterSeconds
