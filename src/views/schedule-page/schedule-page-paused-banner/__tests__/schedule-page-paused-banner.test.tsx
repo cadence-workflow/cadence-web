@@ -10,7 +10,7 @@ import {
 } from '@/route-handlers/describe-schedule/__fixtures__/mock-describe-schedule-response';
 import { type DescribeScheduleResponse } from '@/views/shared/hooks/use-describe-schedule/use-describe-schedule.types';
 
-import { formatScheduleTimestamp } from '@/views/schedule-details/helpers/format-schedule-timestamp';
+import formatPausedAtTimestamp from '../helpers/format-paused-at-timestamp';
 import SchedulePagePausedBanner from '../schedule-page-paused-banner';
 
 describe(SchedulePagePausedBanner.name, () => {
@@ -29,23 +29,43 @@ describe(SchedulePagePausedBanner.name, () => {
 
     setup({ response });
 
-    expect(await screen.findByText('This schedule is paused')).toBeInTheDocument();
-    expect(screen.getByText(/Paused at:/)).toBeInTheDocument();
+    expect(await screen.findByText(/Schedule was paused/)).toBeInTheDocument();
     expect(
-      screen.getByText((content) => content.includes(formatScheduleTimestamp(pausedAt)!))
+      screen.getByText((content) =>
+        content.includes(formatPausedAtTimestamp(pausedAt)!)
+      )
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'operator@example.com' })).toHaveAttribute(
       'href',
       'mailto:operator@example.com'
     );
-    expect(document.body.textContent).toMatch(/Reason:.*Paused for maintenance/);
+    expect(document.body.textContent).toMatch(/Reason: "Paused for maintenance"/);
+  });
+
+  it('omits unknown pause details when pause info is missing', async () => {
+    const response = getMockPausedDescribeScheduleResponse({
+      state: {
+        paused: true,
+        pauseInfo: {
+          pausedBy: '',
+          reason: '',
+          pausedAt: null,
+        },
+      },
+    });
+
+    setup({ response });
+
+    expect(await screen.findByText('Schedule was paused')).toBeInTheDocument();
+    expect(document.body.textContent).not.toMatch(/Unknown/);
+    expect(document.body.textContent).not.toMatch(/Reason:/);
   });
 
   it('does not render when schedule is running', async () => {
     setup({ response: getMockRunningDescribeScheduleResponse() });
 
     await waitFor(() => {
-      expect(screen.queryByText('This schedule is paused')).not.toBeInTheDocument();
+      expect(screen.queryByText(/Schedule was paused/)).not.toBeInTheDocument();
     });
   });
 });
