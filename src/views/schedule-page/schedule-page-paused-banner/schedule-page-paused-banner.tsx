@@ -8,7 +8,7 @@ import { MdPause } from 'react-icons/md';
 import PageSection from '@/components/page-section/page-section';
 import useDescribeSchedule from '@/views/shared/hooks/use-describe-schedule/use-describe-schedule';
 
-import { formatScheduleTimestamp } from '../config/schedule-details-formatters';
+import { formatScheduleTimestamp } from '@/views/schedule-details/helpers/format-schedule-timestamp';
 
 import isEmailShapedActor from './helpers/is-email-shaped-actor';
 import { overrides } from './schedule-page-paused-banner.styles';
