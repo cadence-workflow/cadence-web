@@ -15,7 +15,7 @@ export async function unpauseSchedule(
   requestParams: RequestParams,
   ctx: Context
 ) {
-  const requestBody = await request.json();
+  const requestBody = await request.json().catch(() => ({}));
   const { data, error } =
     unpauseScheduleRequestBodySchema.safeParse(requestBody);
 

@@ -3,19 +3,20 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
-import pauseScheduleRequestBodySchema from './schemas/pause-schedule-request-body-schema';
 import {
   type Context,
   type PauseScheduleResponse,
   type RequestParams,
 } from './pause-schedule.types';
+import pauseScheduleRequestBodySchema from './schemas/pause-schedule-request-body-schema';
 
 export async function pauseSchedule(
   request: NextRequest,
   requestParams: RequestParams,
   ctx: Context
 ) {
-  const requestBody = await request.json();
+  // allow empty body
+  const requestBody = await request.json().catch(() => ({}));
   const { data, error } = pauseScheduleRequestBodySchema.safeParse(requestBody);
 
   if (error) {

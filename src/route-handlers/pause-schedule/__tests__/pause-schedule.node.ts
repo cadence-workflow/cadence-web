@@ -26,6 +26,31 @@ describe(pauseSchedule.name, () => {
     expect(await res.json()).toEqual({});
   });
 
+  it('returns valid response when request has no body', async () => {
+    const { res, mockPauseSchedule } = await setup({
+      requestBody: null,
+    });
+
+    expect(mockPauseSchedule).toHaveBeenCalledWith({
+      domain: 'mock-domain',
+      scheduleId: 'mock-schedule-id',
+      reason: undefined,
+      identity: undefined,
+    });
+    expect(res.status).toEqual(200);
+    expect(await res.json()).toEqual({});
+  });
+
+  it('returns valid response when request body is malformed JSON', async () => {
+    const { res, mockPauseSchedule } = await setup({
+      requestBody: 'not-json',
+    });
+
+    expect(mockPauseSchedule).toHaveBeenCalled();
+    expect(res.status).toEqual(200);
+    expect(await res.json()).toEqual({});
+  });
+
   it('calls pauseSchedule with optional reason in request body', async () => {
     const { mockPauseSchedule } = await setup({
       requestBody: JSON.stringify({ reason: 'Maintenance window' }),
@@ -87,7 +112,7 @@ async function setup({
   scheduleId = 'mock-schedule-id',
   error,
 }: {
-  requestBody?: string;
+  requestBody?: string | null;
   scheduleId?: string;
   error?: GRPCError;
 }) {
@@ -103,7 +128,7 @@ async function setup({
   const res = await pauseSchedule(
     new NextRequest('http://localhost', {
       method: 'POST',
-      body: requestBody,
+      ...(requestBody === null ? {} : { body: requestBody }),
     }),
     {
       params: {
