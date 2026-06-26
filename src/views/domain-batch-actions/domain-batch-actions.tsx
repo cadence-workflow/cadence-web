@@ -2,10 +2,12 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import { Banner, HIERARCHY, KIND } from 'baseui/banner';
+import { notFound } from 'next/navigation';
 import { MdErrorOutline } from 'react-icons/md';
 
 import ErrorPanel from '@/components/error-panel/error-panel';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
+import useConfigValue from '@/hooks/use-config-value/use-config-value';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import { type BatchActionListItem } from '@/route-handlers/list-batch-actions/list-batch-actions.types';
 import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
@@ -28,6 +30,12 @@ import { styled } from './domain-batch-actions.styles';
 import resolveSelectedBatchAction from './helpers/resolve-selected-batch-action';
 
 export default function DomainBatchActions(props: DomainPageTabContentProps) {
+  const { data: isBatchActionsEnabled, isLoading: isConfigLoading } =
+    useConfigValue('BATCH_ACTIONS_ENABLED', {
+      domain: props.domain,
+      cluster: props.cluster,
+    });
+
   const [queryParams, setQueryParams] = usePageQueryParams(
     domainPageQueryParamsConfig
   );
@@ -106,6 +114,16 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
     !isDraftSelected &&
     (isInvalidSelection ||
       (!!selectedActionId && batchActionDetailError?.status === 404));
+
+  if (isConfigLoading) {
+    return <SectionLoadingIndicator />;
+  }
+
+  // Fail closed: block the route when the feature is disabled (or its config
+  // could not be resolved), even though the tab/button are also hidden.
+  if (!isBatchActionsEnabled) {
+    return notFound();
+  }
 
   if (isLoading) {
     return <SectionLoadingIndicator />;

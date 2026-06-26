@@ -1,0 +1,7 @@
+const BATCH_ACTIONS_UI_ENABLED_VALUES_CONFIG = [
+  'ENABLED',
+  'ADMIN',
+  'WRITE',
+] as const;
+
+export default BATCH_ACTIONS_UI_ENABLED_VALUES_CONFIG;
