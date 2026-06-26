@@ -6,6 +6,7 @@ import {
   SCHEDULE_OVERLAP_POLICIES,
   WORKER_SDK_LANGUAGES,
 } from '../create-schedule.constants';
+import getSchedulePeriodError from '../helpers/get-schedule-period-error';
 
 const retryPolicySchema = z
   .object({
@@ -59,17 +60,17 @@ const createScheduleRequestBodySchema = z
     startWorkflow: scheduleStartWorkflowBodySchema,
   })
   .superRefine((data, ctx) => {
-    if (data.startTime && data.endTime) {
-      const startMs = Date.parse(data.startTime);
-      const endMs = Date.parse(data.endTime);
+    const schedulePeriodError = getSchedulePeriodError(
+      data.startTime,
+      data.endTime
+    );
 
-      if (startMs >= endMs) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Start date must be before end date',
-          path: ['endTime'],
-        });
-      }
+    if (schedulePeriodError) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: schedulePeriodError.message,
+        path: ['endTime'],
+      });
     }
   });
 
