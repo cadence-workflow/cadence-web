@@ -32,14 +32,14 @@ export async function pauseSchedule(
   const params = requestParams.params;
 
   try {
-    await ctx.grpcClusterMethods.pauseSchedule({
+    const response = await ctx.grpcClusterMethods.pauseSchedule({
       domain: params.domain,
       scheduleId: params.scheduleId,
       reason: data.reason,
       identity: ctx.userInfo?.id,
     });
 
-    return NextResponse.json({} satisfies PauseScheduleResponse);
+    return NextResponse.json(response);
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
       { requestParams: params, error: e },

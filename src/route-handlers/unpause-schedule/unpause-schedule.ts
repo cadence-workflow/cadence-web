@@ -32,14 +32,14 @@ export async function unpauseSchedule(
   const params = requestParams.params;
 
   try {
-    await ctx.grpcClusterMethods.unpauseSchedule({
+    const response = await ctx.grpcClusterMethods.unpauseSchedule({
       domain: params.domain,
       scheduleId: params.scheduleId,
       reason: data.reason,
       catchUpPolicy: data.catchUpPolicy,
     });
 
-    return NextResponse.json({} satisfies UnpauseScheduleResponse);
+    return NextResponse.json(response);
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
       { requestParams: params, error: e },
