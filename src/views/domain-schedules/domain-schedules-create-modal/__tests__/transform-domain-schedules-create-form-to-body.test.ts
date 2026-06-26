@@ -116,7 +116,7 @@ describe(transformDomainSchedulesCreateFormToBody.name, () => {
     expect(result.catchUpPolicy).toBe(
       ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_ONE
     );
-    expect(result.catchUpWindowSeconds).toBe(14 * 86400);
+    expect(result.catchUpWindowSeconds).toBe(14 * 24 * 60 * 60);
   });
 
   it('omits catch-up window seconds for skip catch-up policy', () => {

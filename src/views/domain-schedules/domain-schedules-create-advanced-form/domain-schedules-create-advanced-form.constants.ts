@@ -56,10 +56,12 @@ export const OVERLAP_POLICY_OPTIONS = SCHEDULE_OVERLAP_POLICIES.map(
   })
 );
 
-const catchUpPolicyLabels: Record<
+type ScheduleCatchUpPolicyLabelMap = Record<
   (typeof SCHEDULE_CATCH_UP_POLICIES)[number],
   string
-> = {
+>;
+
+const catchUpPolicyLabels: ScheduleCatchUpPolicyLabelMap = {
   [ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_SKIP]: 'Skip',
   [ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_ONE]: 'Catch-up one',
   [ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_ALL]: 'Catch-up all',

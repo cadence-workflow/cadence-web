@@ -125,7 +125,9 @@ export const createScheduleFormSchema = z
       .refine(
         (v) =>
           v === '' || (Number(v) >= 1 && Number(v) <= MAX_CATCH_UP_WINDOW_DAYS),
-        { message: 'Catch-up window must be between 1 and 90 days' }
+        {
+          message: `Catch-up window must be between 1 and ${MAX_CATCH_UP_WINDOW_DAYS} days`,
+        }
       )
       .optional(),
     jitterSeconds: z
