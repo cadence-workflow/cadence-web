@@ -1,3 +1,7 @@
+import {
+  getGrpcMetadataFromAuth,
+  resolveAuthContext,
+} from '@/utils/auth/auth-context';
 import * as grpcClient from '@/utils/grpc/grpc-client';
 import { GRPCError } from '@/utils/grpc/grpc-error';
 import logger from '@/utils/logger';
@@ -7,6 +11,7 @@ import { getDomainObj } from '../../__fixtures__/domains';
 import * as filterIrrelevantDomainsModule from '../filter-irrelevant-domains';
 import getDomainsForCluster from '../get-domains-for-cluster';
 
+jest.mock('@/utils/auth/auth-context');
 jest.mock('@/utils/grpc/grpc-client');
 jest.mock('@/utils/logger');
 jest.mock('../filter-irrelevant-domains');
@@ -14,12 +19,24 @@ jest.mock('../filter-irrelevant-domains');
 describe(getDomainsForCluster.name, () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.mocked(resolveAuthContext).mockResolvedValue({
+      authEnabled: true,
+      auth: { isValidToken: true, token: 'mock-token' },
+      groups: [],
+      isAdmin: true,
+    });
+    jest
+      .mocked(getGrpcMetadataFromAuth)
+      .mockReturnValue({ 'cadence-authorization': 'mock-token' });
   });
 
   it('calls listDomains with the correct pageSize and returns filtered domains', async () => {
     const { result, mockListDomains, mockFilterIrrelevantDomains } =
       await setup({ domainsCount: 2 });
 
+    expect(grpcClient.getClusterMethods).toHaveBeenCalledWith('test-cluster', {
+      'cadence-authorization': 'mock-token',
+    });
     expect(mockListDomains).toHaveBeenCalledWith({ pageSize: 1000 });
     expect(mockFilterIrrelevantDomains).toHaveBeenCalledWith(
       'test-cluster',
@@ -110,6 +127,7 @@ async function setup({
       domains: Array.from({ length: domainsCount }, (_, i) =>
         getDomainObj({ id: `domain-${i + 1}`, name: `Domain ${i + 1}` })
       ),
+      nextPageToken: '',
     });
   }
 
