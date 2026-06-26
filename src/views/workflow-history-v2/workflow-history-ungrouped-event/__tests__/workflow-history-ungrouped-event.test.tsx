@@ -5,6 +5,10 @@ import {
   startActivityTaskEvent,
 } from '@/views/workflow-history/__fixtures__/workflow-history-activity-events';
 import { mockActivityEventGroup } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
+import {
+  pendingActivityTaskStartEvent,
+  pendingDecisionTaskStartEvent,
+} from '@/views/workflow-history/__fixtures__/workflow-history-pending-events';
 import type WorkflowHistoryGroupLabel from '@/views/workflow-history/workflow-history-group-label/workflow-history-group-label';
 import type WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 
@@ -130,6 +134,21 @@ const mockActivityEventGroupWithMetadata: ActivityHistoryGroup = {
     },
   ],
 };
+
+const createMockPendingEventInfo = (
+  event:
+    | typeof pendingActivityTaskStartEvent
+    | typeof pendingDecisionTaskStartEvent
+): UngroupedEventInfo => ({
+  ...createMockEventInfo(event),
+  id: event.computedEventId,
+  eventMetadata: {
+    label: 'Pending',
+    status: 'WAITING',
+    timeMs: null,
+    timeLabel: 'Pending',
+  },
+});
 
 const createMockEventInfo = (
   event: ExtendedHistoryEvent = scheduleActivityTaskEvent,
@@ -449,6 +468,26 @@ describe(WorkflowHistoryUngroupedEvent.name, () => {
     setup({ eventInfo });
 
     expect(screen.getByText('Scheduled')).toBeInTheDocument();
+  });
+
+  it('renders dash instead of event id for pending activity event', () => {
+    const eventInfo = createMockPendingEventInfo(pendingActivityTaskStartEvent);
+    setup({ eventInfo });
+
+    expect(screen.getByText('-')).toBeInTheDocument();
+    expect(
+      screen.queryByText(pendingActivityTaskStartEvent.computedEventId)
+    ).not.toBeInTheDocument();
+  });
+
+  it('renders dash instead of event id for pending decision event', () => {
+    const eventInfo = createMockPendingEventInfo(pendingDecisionTaskStartEvent);
+    setup({ eventInfo });
+
+    expect(screen.getByText('-')).toBeInTheDocument();
+    expect(
+      screen.queryByText(pendingDecisionTaskStartEvent.computedEventId)
+    ).not.toBeInTheDocument();
   });
 
   it('shows remaining duration badge alongside elapsed time when expectedEndTimeInfo exists', () => {

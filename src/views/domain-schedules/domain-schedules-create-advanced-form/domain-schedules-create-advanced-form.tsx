@@ -6,16 +6,20 @@ import { StatefulPanel } from 'baseui/accordion';
 import { Button } from 'baseui/button';
 import { mergeOverrides } from 'baseui/helpers/overrides';
 import { Input } from 'baseui/input';
+import { Select } from 'baseui/select';
 import { LabelXSmall } from 'baseui/typography';
-import { Controller } from 'react-hook-form';
+import { Controller, useWatch } from 'react-hook-form';
 import { MdExpandLess, MdExpandMore } from 'react-icons/md';
 
+import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
 import DomainSchedulesHorizontalField from '@/views/domain-schedules/domain-schedules-horizontal-field/domain-schedules-horizontal-field';
 import getFieldErrorMessage from '@/views/workflow-actions/workflow-action-start-form/helpers/get-field-error-message';
 
 import {
   CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS,
   CREATE_SCHEDULE_ADVANCED_FIELD_IDS,
+  DEFAULT_OVERLAP_POLICY,
+  OVERLAP_POLICY_OPTIONS,
 } from './domain-schedules-create-advanced-form.constants';
 import {
   overrides,
@@ -27,6 +31,12 @@ export default function DomainSchedulesCreateAdvancedForm({
   control,
   fieldErrors,
 }: Props) {
+  const overlapPolicy = useWatch({
+    control,
+    name: 'overlapPolicy',
+    defaultValue: DEFAULT_OVERLAP_POLICY,
+  });
+
   return (
     <StatefulPanel
       overrides={mergeOverrides(overrides.panel, {
@@ -83,6 +93,109 @@ export default function DomainSchedulesCreateAdvancedForm({
             )}
           />
         </DomainSchedulesHorizontalField>
+
+        <DomainSchedulesHorizontalField
+          label="Overlap Policy"
+          description={
+            CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS.overlapPolicy
+          }
+          error={getFieldErrorMessage(fieldErrors, 'overlapPolicy')}
+        >
+          <Controller
+            name="overlapPolicy"
+            control={control}
+            defaultValue={DEFAULT_OVERLAP_POLICY}
+            render={({ field: { value, onChange, ref, ...field } }) => (
+              <Select
+                {...field}
+                inputRef={ref}
+                aria-label="Overlap Policy"
+                options={OVERLAP_POLICY_OPTIONS}
+                value={value ? [{ id: value }] : []}
+                onChange={(params) => {
+                  onChange(params.value[0]?.id);
+                }}
+                error={Boolean(
+                  getFieldErrorMessage(fieldErrors, 'overlapPolicy')
+                )}
+                size="compact"
+                clearable={false}
+              />
+            )}
+          />
+        </DomainSchedulesHorizontalField>
+
+        {overlapPolicy ===
+          ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_BUFFER && (
+          <DomainSchedulesHorizontalField
+            subfield={true}
+            label="Buffer limit"
+            description={
+              CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS.bufferLimit
+            }
+            htmlFor={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.bufferLimit}
+            caption="Defaults to 0 (unlimited)"
+            error={getFieldErrorMessage(fieldErrors, 'bufferLimit')}
+          >
+            <Controller
+              name="bufferLimit"
+              control={control}
+              render={({ field: { ref, ...field } }) => (
+                <Input
+                  {...field}
+                  id={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.bufferLimit}
+                  // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
+                  inputRef={ref}
+                  aria-label="Buffer limit"
+                  type="number"
+                  min={0}
+                  onBlur={field.onBlur}
+                  error={Boolean(
+                    getFieldErrorMessage(fieldErrors, 'bufferLimit')
+                  )}
+                  size="compact"
+                  placeholder="Set buffer limit"
+                />
+              )}
+            />
+          </DomainSchedulesHorizontalField>
+        )}
+
+        {overlapPolicy ===
+          ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_CONCURRENT && (
+          <DomainSchedulesHorizontalField
+            subfield={true}
+            label="Concurrency limit"
+            description={
+              CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS.concurrencyLimit
+            }
+            htmlFor={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.concurrencyLimit}
+            caption="Defaults to 0 (unlimited)"
+            error={getFieldErrorMessage(fieldErrors, 'concurrencyLimit')}
+          >
+            <Controller
+              name="concurrencyLimit"
+              control={control}
+              render={({ field: { ref, ...field } }) => (
+                <Input
+                  {...field}
+                  id={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.concurrencyLimit}
+                  // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
+                  inputRef={ref}
+                  aria-label="Concurrency limit"
+                  type="number"
+                  min={0}
+                  onBlur={field.onBlur}
+                  error={Boolean(
+                    getFieldErrorMessage(fieldErrors, 'concurrencyLimit')
+                  )}
+                  size="compact"
+                  placeholder="Set concurrency limit"
+                />
+              )}
+            />
+          </DomainSchedulesHorizontalField>
+        )}
 
         <DomainSchedulesHorizontalField
           label="Jitter duration"

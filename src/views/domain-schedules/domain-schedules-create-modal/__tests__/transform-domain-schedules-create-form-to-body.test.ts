@@ -1,29 +1,17 @@
-import { type DomainSchedulesCreateFormData } from '../domain-schedules-create-modal.types';
+import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
+import { DEFAULT_OVERLAP_POLICY } from '@/views/domain-schedules/domain-schedules-create-advanced-form/domain-schedules-create-advanced-form.constants';
+
+import { mockDomainSchedulesCreateFormData } from '../__fixtures__/mock-domain-schedules-create-form-data';
 import transformDomainSchedulesCreateFormToBody from '../helpers/transform-domain-schedules-create-form-to-body';
 
 describe(transformDomainSchedulesCreateFormToBody.name, () => {
-  const baseForm: DomainSchedulesCreateFormData = {
-    cronExpression: {
-      minutes: '0',
-      hours: '9',
-      daysOfMonth: '*',
-      months: '*',
-      daysOfWeek: '*',
-    },
-    workflowType: { name: 'DemoWorkflow' },
-    taskList: { name: 'demo-tl' },
-    workerSDKLanguage: 'GO',
-    executionStartToCloseTimeoutSeconds: 3600,
-    taskStartToCloseTimeoutSeconds: 45,
-    pauseOnFailure: false,
-  };
-
   it('maps form fields to create-schedule request body', () => {
-    const result = transformDomainSchedulesCreateFormToBody(baseForm);
+    const result = transformDomainSchedulesCreateFormToBody(
+      mockDomainSchedulesCreateFormData
+    );
 
     expect(result).toEqual({
       cronExpression: '0 9 * * *',
-      pauseOnFailure: false,
       startWorkflow: {
         workflowType: { name: 'DemoWorkflow' },
         taskList: { name: 'demo-tl' },
@@ -36,7 +24,7 @@ describe(transformDomainSchedulesCreateFormToBody.name, () => {
 
   it('includes parsed JSON inputs when provided', () => {
     const result = transformDomainSchedulesCreateFormToBody({
-      ...baseForm,
+      ...mockDomainSchedulesCreateFormData,
       input: ['"a"', '42'],
     });
 
@@ -45,7 +33,7 @@ describe(transformDomainSchedulesCreateFormToBody.name, () => {
 
   it('omits input when only empty strings are present', () => {
     const result = transformDomainSchedulesCreateFormToBody({
-      ...baseForm,
+      ...mockDomainSchedulesCreateFormData,
       input: ['', '  '],
     });
 
@@ -54,7 +42,7 @@ describe(transformDomainSchedulesCreateFormToBody.name, () => {
 
   it('trims text fields', () => {
     const result = transformDomainSchedulesCreateFormToBody({
-      ...baseForm,
+      ...mockDomainSchedulesCreateFormData,
       workflowType: { name: ' DemoWorkflow ' },
       taskList: { name: ' demo-tl ' },
       scheduleId: '  my-schedule  ',
@@ -69,10 +57,51 @@ describe(transformDomainSchedulesCreateFormToBody.name, () => {
 
   it('passes 0 seconds as jitter', () => {
     const result = transformDomainSchedulesCreateFormToBody({
-      ...baseForm,
+      ...mockDomainSchedulesCreateFormData,
       jitterSeconds: '0',
     });
 
     expect(result.jitterSeconds).toBe(0);
+  });
+
+  it('maps optional simple advanced fields only when provided', () => {
+    const result = transformDomainSchedulesCreateFormToBody({
+      ...mockDomainSchedulesCreateFormData,
+      scheduleId: '  my-schedule  ',
+      workflowIdPrefix: '  wf-prefix  ',
+      jitterSeconds: '10',
+    });
+
+    expect(result.scheduleId).toBe('my-schedule');
+    expect(result.jitterSeconds).toBe(10);
+    expect(result.startWorkflow.workflowIdPrefix).toBe('wf-prefix');
+  });
+
+  it('includes bufferLimit only for buffer overlap policy', () => {
+    const result = transformDomainSchedulesCreateFormToBody({
+      ...mockDomainSchedulesCreateFormData,
+      overlapPolicy: ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_BUFFER,
+      bufferLimit: '4',
+      concurrencyLimit: '9',
+    });
+
+    expect(result.overlapPolicy).toBe(
+      ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_BUFFER
+    );
+    expect(result.bufferLimit).toBe(4);
+    expect(result.concurrencyLimit).toBeUndefined();
+  });
+
+  it('includes concurrencyLimit only for concurrent overlap policy', () => {
+    const result = transformDomainSchedulesCreateFormToBody({
+      ...mockDomainSchedulesCreateFormData,
+      overlapPolicy: DEFAULT_OVERLAP_POLICY,
+      bufferLimit: '2',
+      concurrencyLimit: '7',
+    });
+
+    expect(result.overlapPolicy).toBe(DEFAULT_OVERLAP_POLICY);
+    expect(result.concurrencyLimit).toBe(7);
+    expect(result.bufferLimit).toBeUndefined();
   });
 });

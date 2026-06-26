@@ -1,3 +1,6 @@
+import pickBy from 'lodash/pickBy';
+
+import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
 import { CRON_FIELD_ORDER } from '@/components/cron-schedule-input/cron-schedule-input.constants';
 import { type CreateScheduleRequestBody } from '@/route-handlers/create-schedule/create-schedule.types';
 import { type Json } from '@/route-handlers/start-workflow/start-workflow.types';
@@ -29,12 +32,30 @@ export default function transformDomainSchedulesCreateFormToBody(
         ? { workflowIdPrefix: formData.workflowIdPrefix.trim() }
         : {}),
     },
-    pauseOnFailure: formData.pauseOnFailure,
-    ...(formData.scheduleId?.trim()
-      ? { scheduleId: formData.scheduleId.trim() }
-      : {}),
-    ...(formData.jitterSeconds
-      ? { jitterSeconds: parseFloat(formData.jitterSeconds) }
-      : {}),
+
+    // fields that are only present if they are defined
+    ...pickBy(
+      {
+        pauseOnFailure: formData.pauseOnFailure ?? undefined,
+        overlapPolicy: formData.overlapPolicy ?? undefined,
+        bufferLimit:
+          formData.overlapPolicy ===
+            ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_BUFFER &&
+          formData.bufferLimit
+            ? parseInt(formData.bufferLimit, 10)
+            : undefined,
+        concurrencyLimit:
+          formData.overlapPolicy ===
+            ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_CONCURRENT &&
+          formData.concurrencyLimit
+            ? parseInt(formData.concurrencyLimit, 10)
+            : undefined,
+        scheduleId: formData.scheduleId?.trim() || undefined,
+        jitterSeconds: formData.jitterSeconds
+          ? parseFloat(formData.jitterSeconds)
+          : undefined,
+      },
+      (value) => value !== undefined
+    ),
   };
 }

@@ -2,11 +2,10 @@
 import React, { Suspense } from 'react';
 
 import { Breadcrumbs } from 'baseui/breadcrumbs';
-import { StyledLink } from 'baseui/link';
 import Image from 'next/image';
-import Link from 'next/link';
 
 import cadenceLogoBlack from '@/assets/cadence-logo-black.svg';
+import Link from '@/components/link/link';
 import PageSection from '@/components/page-section/page-section';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 
@@ -37,9 +36,7 @@ export default function SchedulePageHeader({
             alt="Cadence Icon"
             src={cadenceLogoBlack}
           />
-          <StyledLink $as={Link} href={domainLink}>
-            {domain}
-          </StyledLink>
+          <Link href={domainLink}>{domain}</Link>
           <Suspense fallback={null}>
             <SchedulePageHeaderClusterSelector
               domain={domain}
