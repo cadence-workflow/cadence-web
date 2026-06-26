@@ -3,7 +3,7 @@ import type React from 'react';
 export type ScheduleDetailsTableRow = {
   key?: React.Key;
   label: React.ReactNode;
-  value?: React.ReactNode | null;
+  value?: React.ReactNode;
   hide?: boolean;
 };
 
