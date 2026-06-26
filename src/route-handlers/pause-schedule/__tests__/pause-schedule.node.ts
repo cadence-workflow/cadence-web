@@ -7,6 +7,10 @@ import { mockGrpcClusterMethods } from '@/utils/route-handlers-middleware/middle
 import { pauseSchedule } from '../pause-schedule';
 import { type Context } from '../pause-schedule.types';
 
+const defaultRequestBody = {
+  reason: 'Pausing schedule from cadence-web UI',
+};
+
 describe(pauseSchedule.name, () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -18,7 +22,7 @@ describe(pauseSchedule.name, () => {
     expect(mockPauseSchedule).toHaveBeenCalledWith({
       domain: 'mock-domain',
       scheduleId: 'mock-schedule-id',
-      reason: undefined,
+      reason: defaultRequestBody.reason,
       identity: undefined,
     });
 
@@ -26,32 +30,35 @@ describe(pauseSchedule.name, () => {
     expect(await res.json()).toEqual({});
   });
 
-  it('returns valid response when request has no body', async () => {
+  it('returns an error when request has no body', async () => {
     const { res, mockPauseSchedule } = await setup({
       requestBody: null,
     });
 
-    expect(mockPauseSchedule).toHaveBeenCalledWith({
-      domain: 'mock-domain',
-      scheduleId: 'mock-schedule-id',
-      reason: undefined,
-      identity: undefined,
-    });
-    expect(res.status).toEqual(200);
-    expect(await res.json()).toEqual({});
+    expect(mockPauseSchedule).not.toHaveBeenCalled();
+    expect(res.status).toEqual(400);
+    expect(await res.json()).toEqual(
+      expect.objectContaining({
+        message: 'Invalid values provided for schedule pause',
+      })
+    );
   });
 
-  it('returns valid response when request body is malformed JSON', async () => {
+  it('returns an error when request body is malformed JSON', async () => {
     const { res, mockPauseSchedule } = await setup({
       requestBody: 'not-json',
     });
 
-    expect(mockPauseSchedule).toHaveBeenCalled();
-    expect(res.status).toEqual(200);
-    expect(await res.json()).toEqual({});
+    expect(mockPauseSchedule).not.toHaveBeenCalled();
+    expect(res.status).toEqual(400);
+    expect(await res.json()).toEqual(
+      expect.objectContaining({
+        message: 'Invalid values provided for schedule pause',
+      })
+    );
   });
 
-  it('calls pauseSchedule with optional reason in request body', async () => {
+  it('calls pauseSchedule with reason in request body', async () => {
     const { mockPauseSchedule } = await setup({
       requestBody: JSON.stringify({ reason: 'Maintenance window' }),
     });
@@ -91,10 +98,24 @@ describe(pauseSchedule.name, () => {
       })
     );
   });
+
+  it('returns an error when reason is empty', async () => {
+    const { res, mockPauseSchedule } = await setup({
+      requestBody: JSON.stringify({ reason: '' }),
+    });
+
+    expect(mockPauseSchedule).not.toHaveBeenCalled();
+    expect(res.status).toEqual(400);
+    expect(await res.json()).toEqual(
+      expect.objectContaining({
+        message: 'Invalid values provided for schedule pause',
+      })
+    );
+  });
 });
 
 async function setup({
-  requestBody = '{}',
+  requestBody = JSON.stringify(defaultRequestBody),
   scheduleId = 'mock-schedule-id',
   error,
 }: {
@@ -104,7 +125,7 @@ async function setup({
 }) {
   const mockPauseSchedule = jest
     .spyOn(mockGrpcClusterMethods, 'pauseSchedule')
-    .mockImplementationOnce(async () => {
+    .mockImplementation(async () => {
       if (error) {
         throw error;
       }
