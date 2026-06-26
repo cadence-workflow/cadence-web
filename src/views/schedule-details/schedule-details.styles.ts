@@ -1,27 +1,24 @@
-import type {
-  StyletronCSSObject,
-  StyletronCSSObjectOf,
-} from '@/hooks/use-styletron-classes';
+import { styled as createStyled, type Theme } from 'baseui';
 
-const cssStylesObj = {
-  pageContainer: (theme) => ({
+export const styled = {
+  PageContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'grid',
     gridTemplateColumns: '1fr',
-    gap: theme.sizing.scale1000,
-    [theme.mediaQuery.medium]: {
+    gap: $theme.sizing.scale1000,
+    [$theme.mediaQuery.medium]: {
       gridTemplateColumns: 'repeat(2, 1fr)',
     },
-  }),
-  mainContent: (theme) => ({
+  })),
+  DetailsSectionsContainer: createStyled(
+    'div',
+    ({ $theme }: { $theme: Theme }) => ({
+      minWidth: 0,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: $theme.sizing.scale900,
+    })
+  ),
+  JsonPanel: createStyled('div', () => ({
     minWidth: 0,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: theme.sizing.scale900,
-  }),
-  jsonPanel: () => ({
-    minWidth: 0,
-  }),
-} satisfies StyletronCSSObject;
-
-export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> =
-  cssStylesObj;
+  })),
+};
