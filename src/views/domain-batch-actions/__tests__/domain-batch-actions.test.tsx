@@ -120,13 +120,14 @@ describe(DomainBatchActions.name, () => {
     ).toBeInTheDocument();
   });
 
-  it('calls notFound when batch actions are disabled', async () => {
-    setup({ enableBatchActions: false });
+  it('calls notFound without fetching batch actions when disabled', async () => {
+    const { listRequestSpy } = setup({ enableBatchActions: false });
 
     await waitFor(() => expect(mockNotFound).toHaveBeenCalled());
     expect(
       screen.queryByText('mock-batch-action-detail-5')
     ).not.toBeInTheDocument();
+    expect(listRequestSpy).not.toHaveBeenCalled();
   });
 
   it('updates URL param when a different action is selected', async () => {
@@ -385,6 +386,12 @@ describe(DomainBatchActions.name, () => {
         },
       });
 
+      // Let the feature-gate config query resolve so the content component
+      // (and its polling detail query) mounts.
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(0);
+      });
+
       // Flush the initial load, then advance past a polling interval so a
       // background poll fires and fails while data is already on screen.
       await act(async () => {
@@ -434,59 +441,60 @@ function setup({
   detailResolver?: () => ReturnType<typeof HttpResponse.json>;
   enableBatchActions?: boolean;
 } = {}) {
-  return render(
-    <DomainBatchActions domain="test-domain" cluster="test-cluster" />,
-    {
-      endpointsMocks: [
-        {
-          path: '/api/config',
-          httpMethod: 'GET',
-          mockOnce: false,
-          httpResolver: async ({ request }) => {
-            const url = new URL(request.url);
-            if (url.searchParams.get('configKey') !== 'BATCH_ACTIONS_ENABLED') {
-              return HttpResponse.json(false);
-            }
+  const listRequestSpy = jest.fn();
+  render(<DomainBatchActions domain="test-domain" cluster="test-cluster" />, {
+    endpointsMocks: [
+      {
+        path: '/api/config',
+        httpMethod: 'GET',
+        mockOnce: false,
+        httpResolver: async ({ request }) => {
+          const url = new URL(request.url);
+          if (url.searchParams.get('configKey') !== 'BATCH_ACTIONS_ENABLED') {
+            return HttpResponse.json(false);
+          }
+          return HttpResponse.json(
+            enableBatchActions satisfies GetConfigResponse<'BATCH_ACTIONS_ENABLED'>
+          );
+        },
+      },
+      {
+        path: '/api/domains/:domain/:cluster/batch-actions',
+        httpMethod: 'GET',
+        mockOnce: false,
+        httpResolver: async ({ request }) => {
+          listRequestSpy();
+          const url = new URL(request.url);
+          const nextPage = url.searchParams.get('nextPage');
+          const pageIndex = nextPage
+            ? pages.findIndex((p) => p.nextPageToken === nextPage) + 1
+            : 0;
+          return HttpResponse.json(pages[pageIndex] ?? pages[0]);
+        },
+      },
+      {
+        path: '/api/domains/:domain/:cluster/batch-actions/:workflowId/:runId',
+        httpMethod: 'GET',
+        mockOnce: false,
+        httpResolver: async ({ params }) => {
+          if (detailResolver) {
+            return detailResolver();
+          }
+          if (describeError) {
             return HttpResponse.json(
-              enableBatchActions satisfies GetConfigResponse<'BATCH_ACTIONS_ENABLED'>
+              { message: 'Failed to fetch describe' },
+              { status: 500 }
             );
-          },
+          }
+          const detail: BatchAction = {
+            runId: String(params.runId),
+            status: 'COMPLETED',
+          };
+          return HttpResponse.json(detail);
         },
-        {
-          path: '/api/domains/:domain/:cluster/batch-actions',
-          httpMethod: 'GET',
-          mockOnce: false,
-          httpResolver: async ({ request }) => {
-            const url = new URL(request.url);
-            const nextPage = url.searchParams.get('nextPage');
-            const pageIndex = nextPage
-              ? pages.findIndex((p) => p.nextPageToken === nextPage) + 1
-              : 0;
-            return HttpResponse.json(pages[pageIndex] ?? pages[0]);
-          },
-        },
-        {
-          path: '/api/domains/:domain/:cluster/batch-actions/:workflowId/:runId',
-          httpMethod: 'GET',
-          mockOnce: false,
-          httpResolver: async ({ params }) => {
-            if (detailResolver) {
-              return detailResolver();
-            }
-            if (describeError) {
-              return HttpResponse.json(
-                { message: 'Failed to fetch describe' },
-                { status: 500 }
-              );
-            }
-            const detail: BatchAction = {
-              runId: String(params.runId),
-              status: 'COMPLETED',
-            };
-            return HttpResponse.json(detail);
-          },
-        },
-      ],
-    }
-  );
+      },
+    ],
+  });
+
+  return { listRequestSpy };
 }

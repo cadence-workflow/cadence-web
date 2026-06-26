@@ -36,6 +36,22 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
       cluster: props.cluster,
     });
 
+  if (isConfigLoading) {
+    return <SectionLoadingIndicator />;
+  }
+
+  // Fail closed: block the route when the feature is disabled (or its config
+  // could not be resolved). Returning here, before the content component
+  // mounts, ensures the batch-actions queries never fire for users without
+  // access.
+  if (!isBatchActionsEnabled) {
+    return notFound();
+  }
+
+  return <DomainBatchActionsContent {...props} />;
+}
+
+function DomainBatchActionsContent(props: DomainPageTabContentProps) {
   const [queryParams, setQueryParams] = usePageQueryParams(
     domainPageQueryParamsConfig
   );
@@ -114,16 +130,6 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
     !isDraftSelected &&
     (isInvalidSelection ||
       (!!selectedActionId && batchActionDetailError?.status === 404));
-
-  if (isConfigLoading) {
-    return <SectionLoadingIndicator />;
-  }
-
-  // Fail closed: block the route when the feature is disabled (or its config
-  // could not be resolved), even though the tab/button are also hidden.
-  if (!isBatchActionsEnabled) {
-    return notFound();
-  }
 
   if (isLoading) {
     return <SectionLoadingIndicator />;
