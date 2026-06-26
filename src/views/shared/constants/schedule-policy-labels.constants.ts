@@ -5,6 +5,14 @@ import {
   type SCHEDULE_OVERLAP_POLICIES,
 } from '@/route-handlers/create-schedule/create-schedule.constants';
 
+/** Cadence server default when describeSchedule omits overlapPolicy (not the create-form default). */
+export const SERVER_OVERLAP_POLICY_DEFAULT =
+  ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_SKIP_NEW;
+
+/** Cadence server default when describeSchedule omits catchUpPolicy. */
+export const SERVER_CATCH_UP_POLICY_DEFAULT =
+  ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_SKIP;
+
 export const SCHEDULE_OVERLAP_POLICY_LABELS: Record<
   (typeof SCHEDULE_OVERLAP_POLICIES)[number],
   string

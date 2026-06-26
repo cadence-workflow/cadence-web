@@ -7,12 +7,8 @@ import ScheduleDetailsTable from '../schedule-details-table/schedule-details-tab
 import { styled } from './schedule-details-section.styles';
 import { type Props } from './schedule-details-section.types';
 
-export default function ScheduleDetailsSection({
-  title,
-  rows,
-  initiallyCollapsed = false,
-}: Props) {
-  const [isCollapsed, setIsCollapsed] = useState(initiallyCollapsed);
+export default function ScheduleDetailsSection({ title, rows }: Props) {
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const onToggle = useCallback(() => {
     setIsCollapsed((currentValue) => !currentValue);

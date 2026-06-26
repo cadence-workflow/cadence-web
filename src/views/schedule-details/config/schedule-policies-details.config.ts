@@ -1,7 +1,8 @@
-import { ScheduleCatchUpPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleCatchUpPolicy';
 import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
 import { type ScheduleDetailRowConfig } from '@/views/schedule-details/schedule-details.types';
 import {
+  SERVER_CATCH_UP_POLICY_DEFAULT,
+  SERVER_OVERLAP_POLICY_DEFAULT,
   SCHEDULE_CATCH_UP_POLICY_LABELS,
   SCHEDULE_OVERLAP_POLICY_LABELS,
 } from '@/views/shared/constants/schedule-policy-labels.constants';
@@ -17,7 +18,7 @@ const schedulePoliciesDetailsConfig: ScheduleDetailRowConfig[] = [
       formatScheduleEnumWithDefault(
         describeSchedule.policies?.overlapPolicy,
         SCHEDULE_OVERLAP_POLICY_LABELS,
-        ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_SKIP_NEW
+        SERVER_OVERLAP_POLICY_DEFAULT
       ),
   },
   {
@@ -27,7 +28,7 @@ const schedulePoliciesDetailsConfig: ScheduleDetailRowConfig[] = [
       formatScheduleEnumWithDefault(
         describeSchedule.policies?.catchUpPolicy,
         SCHEDULE_CATCH_UP_POLICY_LABELS,
-        ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_SKIP
+        SERVER_CATCH_UP_POLICY_DEFAULT
       ),
   },
   {

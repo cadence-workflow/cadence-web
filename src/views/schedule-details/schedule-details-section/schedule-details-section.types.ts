@@ -3,5 +3,4 @@ import { type ScheduleDetailsTableRow } from '@/views/schedule-details/schedule-
 export type Props = {
   title: string;
   rows: ScheduleDetailsTableRow[];
-  initiallyCollapsed?: boolean;
 };
