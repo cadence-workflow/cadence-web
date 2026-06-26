@@ -1,5 +1,4 @@
 import getDisplayValue from './helpers/get-display-value';
-import getRowKey from './helpers/get-row-key';
 import {
   DEFAULT_ARIA_LABEL,
   DEFAULT_EMPTY_VALUE,
@@ -17,7 +16,13 @@ export default function ScheduleDetailsTable({
   return (
     <styled.Container aria-label={ariaLabel} role="table">
       {visibleRows.map((row, index) => (
-        <styled.Row key={row.key ?? getRowKey(row, index)} role="row">
+        <styled.Row
+          key={
+            row.key ??
+            `${typeof row.label === 'string' ? row.label : 'row'}-${index}`
+          }
+          role="row"
+        >
           <styled.Label role="rowheader">{row.label}</styled.Label>
           <styled.Value role="cell">
             {getDisplayValue(row.value, emptyValue)}
