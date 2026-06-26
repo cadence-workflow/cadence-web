@@ -34,6 +34,8 @@ import { type ListTaskListPartitionsRequest__Input } from '@/__generated__/proto
 import { type ListTaskListPartitionsResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListTaskListPartitionsResponse';
 import { type ListWorkflowExecutionsRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListWorkflowExecutionsRequest';
 import { type ListWorkflowExecutionsResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListWorkflowExecutionsResponse';
+import { type PauseScheduleRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/PauseScheduleRequest';
+import { type PauseScheduleResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/PauseScheduleResponse';
 import { type QueryWorkflowRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/QueryWorkflowRequest';
 import { type QueryWorkflowResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/QueryWorkflowResponse';
 import { type RequestCancelWorkflowExecutionRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/RequestCancelWorkflowExecutionRequest';
@@ -48,6 +50,8 @@ import { type StartWorkflowExecutionRequest__Input } from '@/__generated__/proto
 import { type StartWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/StartWorkflowExecutionResponse';
 import { type TerminateWorkflowExecutionRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/TerminateWorkflowExecutionRequest';
 import { type TerminateWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/TerminateWorkflowExecutionResponse';
+import { type UnpauseScheduleRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/UnpauseScheduleRequest';
+import { type UnpauseScheduleResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/UnpauseScheduleResponse';
 import { type UpdateDomainRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/UpdateDomainRequest';
 import { type UpdateDomainResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/UpdateDomainResponse';
 import { type ClusterConfig } from '@/config/dynamic/resolvers/clusters.types';
@@ -115,6 +119,12 @@ export type GRPCClusterMethods = {
   listSchedules: (
     payload: ListSchedulesRequest__Input
   ) => Promise<ListSchedulesResponse>;
+  pauseSchedule: (
+    payload: PauseScheduleRequest__Input
+  ) => Promise<PauseScheduleResponse>;
+  unpauseSchedule: (
+    payload: UnpauseScheduleRequest__Input
+  ) => Promise<UnpauseScheduleResponse>;
   listTaskListPartitions: (
     payload: ListTaskListPartitionsRequest__Input
   ) => Promise<ListTaskListPartitionsResponse>;
@@ -332,6 +342,20 @@ const getClusterServicesMethods = async (
       ListSchedulesResponse
     >({
       method: 'ListSchedules',
+      metadata: metadata,
+    }),
+    pauseSchedule: scheduleService.request<
+      PauseScheduleRequest__Input,
+      PauseScheduleResponse
+    >({
+      method: 'PauseSchedule',
+      metadata: metadata,
+    }),
+    unpauseSchedule: scheduleService.request<
+      UnpauseScheduleRequest__Input,
+      UnpauseScheduleResponse
+    >({
+      method: 'UnpauseSchedule',
       metadata: metadata,
     }),
     listTaskListPartitions: workflowService.request<

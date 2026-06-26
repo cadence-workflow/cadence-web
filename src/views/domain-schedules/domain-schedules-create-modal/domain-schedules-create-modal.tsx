@@ -3,7 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Banner, HIERARCHY, KIND as BANNER_KIND } from 'baseui/banner';
+import { Banner } from 'baseui/banner';
 import { Modal, ModalButton } from 'baseui/modal';
 import { useSnackbar } from 'baseui/snackbar';
 import { useForm } from 'react-hook-form';
@@ -90,7 +90,7 @@ export default function DomainSchedulesCreateModal({
       overrides={overrides.modal}
     >
       <styled.ModalHeader>Create Schedule</styled.ModalHeader>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form noValidate onSubmit={handleSubmit(onSubmit)}>
         <styled.ModalBody>
           {createScheduleError && (
             <div ref={errorAlertRef} role="alert">
