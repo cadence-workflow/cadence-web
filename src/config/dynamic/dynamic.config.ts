@@ -93,7 +93,7 @@ const dynamicConfigs: {
     'request',
     true
   >;
-  BATCH_ACTIONS_ENABLED: ConfigAsyncResolverDefinition<
+  BATCH_ACTIONS_UI_ENABLED: ConfigAsyncResolverDefinition<
     BatchActionsUiEnabledResolverParams,
     boolean,
     'request',
@@ -182,7 +182,7 @@ const dynamicConfigs: {
     evaluateOn: 'request',
     isPublic: true,
   },
-  BATCH_ACTIONS_ENABLED: {
+  BATCH_ACTIONS_UI_ENABLED: {
     resolver: batchActionsUiEnabled,
     evaluateOn: 'request',
     isPublic: true,

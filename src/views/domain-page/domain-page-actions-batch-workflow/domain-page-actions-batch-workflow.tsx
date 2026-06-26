@@ -21,7 +21,7 @@ export default function DomainPageActionsBatchWorkflow({
     data: isBatchActionsEnabled,
     isError,
     isLoading,
-  } = useConfigValue('BATCH_ACTIONS_ENABLED', { domain, cluster });
+  } = useConfigValue('BATCH_ACTIONS_UI_ENABLED', { domain, cluster });
 
   if (!isBatchActionsEnabled) return null;
 

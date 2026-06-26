@@ -31,7 +31,7 @@ import resolveSelectedBatchAction from './helpers/resolve-selected-batch-action'
 
 export default function DomainBatchActions(props: DomainPageTabContentProps) {
   const { data: isBatchActionsEnabled, isLoading: isConfigLoading } =
-    useConfigValue('BATCH_ACTIONS_ENABLED', {
+    useConfigValue('BATCH_ACTIONS_UI_ENABLED', {
       domain: props.domain,
       cluster: props.cluster,
     });
@@ -40,10 +40,6 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
     return <SectionLoadingIndicator />;
   }
 
-  // Fail closed: block the route when the feature is disabled (or its config
-  // could not be resolved). Returning here, before the content component
-  // mounts, ensures the batch-actions queries never fire for users without
-  // access.
   if (!isBatchActionsEnabled) {
     return notFound();
   }

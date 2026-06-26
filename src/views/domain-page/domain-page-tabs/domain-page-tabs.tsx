@@ -36,7 +36,7 @@ export default function DomainPageTabs() {
   );
 
   const { data: isBatchActionsEnabled } = useSuspenseConfigValue(
-    'BATCH_ACTIONS_ENABLED',
+    'BATCH_ACTIONS_UI_ENABLED',
     {
       domain: decodedParams.domain,
       cluster: decodedParams.cluster,

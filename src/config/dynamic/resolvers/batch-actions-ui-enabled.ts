@@ -1,16 +1,7 @@
 import { resolveAuthContext } from '@/utils/auth/auth-context';
 
-import BATCH_ACTIONS_UI_ENABLED_VALUES_CONFIG from './batch-actions-ui-enabled-values.config';
-import {
-  type BatchActionsUiEnabledResolverParams,
-  type BatchActionsUiMode,
-} from './batch-actions-ui-enabled.types';
+import { type BatchActionsUiEnabledResolverParams } from './batch-actions-ui-enabled.types';
 import domainAccess from './domain-access';
-
-function resolveMode(): BatchActionsUiMode | undefined {
-  const raw = process.env.CADENCE_BATCH_ACTIONS_UI_ENABLED;
-  return BATCH_ACTIONS_UI_ENABLED_VALUES_CONFIG.find((mode) => mode === raw);
-}
 
 /**
  * Returns whether the Batch Actions feature is enabled for the current user/domain.
@@ -29,10 +20,8 @@ export default async function batchActionsUiEnabled({
   domain,
   cluster,
 }: BatchActionsUiEnabledResolverParams): Promise<boolean> {
-  const mode = resolveMode();
-
   try {
-    switch (mode) {
+    switch (process.env.CADENCE_BATCH_ACTIONS_UI_ENABLED) {
       case 'ENABLED':
         return true;
       case 'WRITE':

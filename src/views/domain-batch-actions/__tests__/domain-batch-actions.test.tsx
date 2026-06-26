@@ -450,11 +450,13 @@ function setup({
         mockOnce: false,
         httpResolver: async ({ request }) => {
           const url = new URL(request.url);
-          if (url.searchParams.get('configKey') !== 'BATCH_ACTIONS_ENABLED') {
+          if (
+            url.searchParams.get('configKey') !== 'BATCH_ACTIONS_UI_ENABLED'
+          ) {
             return HttpResponse.json(false);
           }
           return HttpResponse.json(
-            enableBatchActions satisfies GetConfigResponse<'BATCH_ACTIONS_ENABLED'>
+            enableBatchActions satisfies GetConfigResponse<'BATCH_ACTIONS_UI_ENABLED'>
           );
         },
       },
