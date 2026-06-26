@@ -2,16 +2,17 @@
 import React from 'react';
 
 import { Banner, HIERARCHY, KIND } from 'baseui/banner';
-import { StyledLink } from 'baseui/link';
-import { MdPause } from 'react-icons/md';
+import { MdInfoOutline } from 'react-icons/md';
 
 import PageSection from '@/components/page-section/page-section';
 import useDescribeSchedule from '@/views/shared/hooks/use-describe-schedule/use-describe-schedule';
 
-import { formatScheduleTimestamp } from '@/views/schedule-details/helpers/format-schedule-timestamp';
-
-import isEmailShapedActor from './helpers/is-email-shaped-actor';
-import { overrides } from './schedule-page-paused-banner.styles';
+import buildPausedBannerMessage from './helpers/build-paused-banner-message';
+import formatPausedAtTimestamp from './helpers/format-paused-at-timestamp';
+import {
+  overrides,
+  PAUSED_BANNER_ICON_SIZE,
+} from './schedule-page-paused-banner.styles';
 import { type Props } from './schedule-page-paused-banner.types';
 
 export default function SchedulePagePausedBanner(props: Props) {
@@ -21,27 +22,24 @@ export default function SchedulePagePausedBanner(props: Props) {
     return null;
   }
 
-  const pausedAt =
-    formatScheduleTimestamp(scheduleDetails.state.pauseInfo?.pausedAt) ?? 'Unknown';
-  const pausedBy = scheduleDetails.state.pauseInfo?.pausedBy?.trim() || 'Unknown';
-  const reason = scheduleDetails.state.pauseInfo?.reason?.trim() || 'Unknown';
+  const pauseInfo = scheduleDetails.state.pauseInfo;
+  const pausedAt = formatPausedAtTimestamp(pauseInfo?.pausedAt);
+  const pausedBy = pauseInfo?.pausedBy?.trim() || null;
+  const reason = pauseInfo?.reason?.trim() || null;
 
   return (
     <PageSection>
       <Banner
         hierarchy={HIERARCHY.low}
-        kind={KIND.info}
-        title="This schedule is paused"
-        artwork={{ icon: () => <MdPause size={20} aria-hidden /> }}
+        kind={KIND.warning}
+        artwork={{
+          icon: () => (
+            <MdInfoOutline size={PAUSED_BANNER_ICON_SIZE} aria-hidden />
+          ),
+        }}
         overrides={overrides.banner}
       >
-        Paused at: {pausedAt}. Paused by:{' '}
-        {isEmailShapedActor(pausedBy) ? (
-          <StyledLink href={`mailto:${pausedBy}`}>{pausedBy}</StyledLink>
-        ) : (
-          pausedBy
-        )}
-        . Reason: "{reason}".
+        {buildPausedBannerMessage({ pausedAt, pausedBy, reason })}
       </Banner>
     </PageSection>
   );
