@@ -109,7 +109,7 @@ async function setup({
 }) {
   const mockUnpauseSchedule = jest
     .spyOn(mockGrpcClusterMethods, 'unpauseSchedule')
-    .mockImplementationOnce(async () => {
+    .mockImplementation(async () => {
       if (error) {
         throw error;
       }
