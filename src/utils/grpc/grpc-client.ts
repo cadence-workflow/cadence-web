@@ -30,6 +30,10 @@ import { type ListOpenWorkflowExecutionsRequest__Input } from '@/__generated__/p
 import { type ListOpenWorkflowExecutionsResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListOpenWorkflowExecutionsResponse';
 import { type ListSchedulesRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListSchedulesRequest';
 import { type ListSchedulesResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListSchedulesResponse';
+import { type PauseScheduleRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/PauseScheduleRequest';
+import { type PauseScheduleResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/PauseScheduleResponse';
+import { type UnpauseScheduleRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/UnpauseScheduleRequest';
+import { type UnpauseScheduleResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/UnpauseScheduleResponse';
 import { type ListTaskListPartitionsRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListTaskListPartitionsRequest';
 import { type ListTaskListPartitionsResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListTaskListPartitionsResponse';
 import { type ListWorkflowExecutionsRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListWorkflowExecutionsRequest';
@@ -115,6 +119,12 @@ export type GRPCClusterMethods = {
   listSchedules: (
     payload: ListSchedulesRequest__Input
   ) => Promise<ListSchedulesResponse>;
+  pauseSchedule: (
+    payload: PauseScheduleRequest__Input
+  ) => Promise<PauseScheduleResponse>;
+  unpauseSchedule: (
+    payload: UnpauseScheduleRequest__Input
+  ) => Promise<UnpauseScheduleResponse>;
   listTaskListPartitions: (
     payload: ListTaskListPartitionsRequest__Input
   ) => Promise<ListTaskListPartitionsResponse>;
@@ -332,6 +342,20 @@ const getClusterServicesMethods = async (
       ListSchedulesResponse
     >({
       method: 'ListSchedules',
+      metadata: metadata,
+    }),
+    pauseSchedule: scheduleService.request<
+      PauseScheduleRequest__Input,
+      PauseScheduleResponse
+    >({
+      method: 'PauseSchedule',
+      metadata: metadata,
+    }),
+    unpauseSchedule: scheduleService.request<
+      UnpauseScheduleRequest__Input,
+      UnpauseScheduleResponse
+    >({
+      method: 'UnpauseSchedule',
       metadata: metadata,
     }),
     listTaskListPartitions: workflowService.request<
