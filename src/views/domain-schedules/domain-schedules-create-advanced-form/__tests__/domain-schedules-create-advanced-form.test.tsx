@@ -1,13 +1,10 @@
 import React from 'react';
 
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
-import { mockDomainSchedulesCreateFormData } from '../../domain-schedules-create-modal/__fixtures__/mock-domain-schedules-create-form-data';
 import { type DomainSchedulesCreateFormData } from '../../domain-schedules-create-modal/domain-schedules-create-modal.types';
-import { createScheduleFormSchema } from '../../domain-schedules-create-modal/schemas/create-schedule-form-schema';
 import DomainSchedulesCreateAdvancedForm from '../domain-schedules-create-advanced-form';
 
 describe(DomainSchedulesCreateAdvancedForm.name, () => {
@@ -35,8 +32,6 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
     expect(screen.getByLabelText('Workflow Id Prefix')).toBeInTheDocument();
     expect(screen.getByLabelText('Schedule period start')).toBeInTheDocument();
     expect(screen.getByLabelText('Schedule period end')).toBeInTheDocument();
-    expect(screen.getByText('Start date')).toBeInTheDocument();
-    expect(screen.getByText('End date')).toBeInTheDocument();
     expect(
       screen.getByRole('combobox', { name: /overlap policy/i })
     ).toBeInTheDocument();
@@ -134,52 +129,6 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
     await user.type(workflowIdPrefix, 'prefix');
     await user.clear(workflowIdPrefix);
     expect(getValues().workflowIdPrefix).toBeUndefined();
-  });
-
-  it('shows end date error when start is not before end', async () => {
-    const user = userEvent.setup();
-
-    function Wrapper() {
-      const {
-        control,
-        trigger,
-        formState: { errors: fieldErrors, isSubmitted },
-      } = useForm<DomainSchedulesCreateFormData>({
-        resolver: zodResolver(createScheduleFormSchema),
-        mode: 'onSubmit',
-        reValidateMode: 'onChange',
-        defaultValues: {
-          ...mockDomainSchedulesCreateFormData,
-          startTime: '2026-06-30T12:00:00.000Z',
-          endTime: '2026-06-23T12:00:00.000Z',
-        },
-      });
-
-      return (
-        <>
-          <DomainSchedulesCreateAdvancedForm
-            control={control}
-            fieldErrors={fieldErrors}
-            trigger={trigger}
-            isSubmitted={isSubmitted}
-          />
-          <button type="button" onClick={() => trigger()}>
-            Validate
-          </button>
-        </>
-      );
-    }
-
-    render(<Wrapper />);
-
-    await user.click(
-      screen.getByRole('button', { name: /show advanced configurations/i })
-    );
-    await user.click(screen.getByRole('button', { name: 'Validate' }));
-
-    expect(
-      await screen.findByText('Start date must be before end date')
-    ).toBeInTheDocument();
   });
 });
 

@@ -36,39 +36,41 @@ const scheduleStartWorkflowBodySchema = z.object({
     .optional(),
 });
 
-const createScheduleRequestBodySchema = z.object({
-  // Schedule identity (server generates one when omitted)
-  scheduleId: z.string().min(1).optional(),
+const createScheduleRequestBodySchema = z
+  .object({
+    // Schedule identity (server generates one when omitted)
+    scheduleId: z.string().min(1).optional(),
 
-  // Schedule spec
-  cronExpression: z.string().min(1),
-  startTime: z.string().datetime().optional(),
-  endTime: z.string().datetime().optional(),
-  jitterSeconds: z.number().nonnegative().optional(),
+    // Schedule spec
+    cronExpression: z.string().min(1),
+    startTime: z.string().datetime().optional(),
+    endTime: z.string().datetime().optional(),
+    jitterSeconds: z.number().nonnegative().optional(),
 
-  // Schedule policies
-  overlapPolicy: z.enum(SCHEDULE_OVERLAP_POLICIES).optional(),
-  catchUpPolicy: z.enum(SCHEDULE_CATCH_UP_POLICIES).optional(),
-  catchUpWindowSeconds: z.number().nonnegative().optional(),
-  pauseOnFailure: z.boolean().optional(),
-  bufferLimit: z.number().int().nonnegative().optional(),
-  concurrencyLimit: z.number().int().nonnegative().optional(),
+    // Schedule policies
+    overlapPolicy: z.enum(SCHEDULE_OVERLAP_POLICIES).optional(),
+    catchUpPolicy: z.enum(SCHEDULE_CATCH_UP_POLICIES).optional(),
+    catchUpWindowSeconds: z.number().nonnegative().optional(),
+    pauseOnFailure: z.boolean().optional(),
+    bufferLimit: z.number().int().nonnegative().optional(),
+    concurrencyLimit: z.number().int().nonnegative().optional(),
 
-  // Start-workflow action
-  startWorkflow: scheduleStartWorkflowBodySchema,
-}).superRefine((data, ctx) => {
-  if (data.startTime && data.endTime) {
-    const startMs = Date.parse(data.startTime);
-    const endMs = Date.parse(data.endTime);
+    // Start-workflow action
+    startWorkflow: scheduleStartWorkflowBodySchema,
+  })
+  .superRefine((data, ctx) => {
+    if (data.startTime && data.endTime) {
+      const startMs = Date.parse(data.startTime);
+      const endMs = Date.parse(data.endTime);
 
-    if (startMs >= endMs) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Start date must be before end date',
-        path: ['endTime'],
-      });
+      if (startMs >= endMs) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Start date must be before end date',
+          path: ['endTime'],
+        });
+      }
     }
-  }
-});
+  });
 
 export default createScheduleRequestBodySchema;
