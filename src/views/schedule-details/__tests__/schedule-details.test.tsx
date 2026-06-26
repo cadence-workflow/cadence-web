@@ -102,7 +102,7 @@ describe(ScheduleDetails.name, () => {
     expect(await screen.findByText('Input')).toBeInTheDocument();
   });
 
-  it('hides schedule input JSON section when workflow input is absent', async () => {
+  it('renders schedule input JSON section when workflow input is absent', async () => {
     setup({
       describeResolver: () =>
         HttpResponse.json(getMockRunningDescribeScheduleResponse()),
@@ -111,7 +111,7 @@ describe(ScheduleDetails.name, () => {
     expect(
       await screen.findByRole('heading', { name: 'Mock policies section' })
     ).toBeInTheDocument();
-    expect(screen.queryByText('Input')).not.toBeInTheDocument();
+    expect(screen.getByText('Input')).toBeInTheDocument();
   });
 
   it('hides conditional rows when hide predicate returns true', async () => {

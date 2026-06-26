@@ -55,11 +55,7 @@ export default function ScheduleDetails({ params }: Props) {
           })}
         </div>
         <div className={cls.jsonPanel}>
-          <ScheduleDetailsInputJson
-            input={data.action?.startWorkflow?.input}
-            domain={params.domain}
-            cluster={params.cluster}
-          />
+          <ScheduleDetailsInputJson input={data.action?.startWorkflow?.input} />
         </div>
       </div>
     </PageSection>

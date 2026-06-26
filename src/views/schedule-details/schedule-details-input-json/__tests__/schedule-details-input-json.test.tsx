@@ -2,18 +2,16 @@ import React from 'react';
 
 import { render, screen } from '@/test-utils/rtl';
 
+import losslessJsonStringify from '@/utils/lossless-json-stringify';
+
 import ScheduleDetailsInputJson from '../schedule-details-input-json';
 
-jest.mock(
-  '@/views/workflow-summary/workflow-summary-json-view/workflow-summary-json-view',
-  () =>
-    jest.fn(({ inputJson, hideTabToggle }) => (
-      <div>
-        WorkflowSummaryJsonView Mock
-        {hideTabToggle ? ' hideTabToggle' : ''}
-        {JSON.stringify(inputJson)}
-      </div>
-    ))
+jest.mock('@/components/copy-text-button/copy-text-button', () =>
+  jest.fn(({ textToCopy }) => <div>Copy Button: {textToCopy}</div>)
+);
+
+jest.mock('@/components/pretty-json/pretty-json', () =>
+  jest.fn(({ json }) => <div>PrettyJson Mock: {JSON.stringify(json)}</div>)
 );
 
 const mockInputPayload = {
@@ -21,28 +19,47 @@ const mockInputPayload = {
 };
 
 describe(ScheduleDetailsInputJson.name, () => {
-  it('renders workflow summary JSON view when input is present', () => {
+  it('renders input JSON when input is present', () => {
     setup({});
+    expect(screen.getByText('Input')).toBeInTheDocument();
     expect(
-      screen.getByText(/WorkflowSummaryJsonView Mock hideTabToggle/)
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/{"workflowArg":"test-value"}/)
+      screen.getByText(/PrettyJson Mock: \[{"workflowArg":"test-value"}\]/)
     ).toBeInTheDocument();
   });
 
-  it('renders nothing when input is missing', () => {
+  it('passes formatted input to the copy button', () => {
+    setup({});
+    const parsedInput = [{ workflowArg: 'test-value' }];
+    const copyButton = screen.getByText(/Copy Button:/);
+    expect(copyButton).toBeInTheDocument();
+    expect(copyButton.innerHTML).toMatch(
+      losslessJsonStringify(parsedInput, null, '\t')
+    );
+  });
+
+  it('renders null when input is missing', () => {
     setup({ input: null });
-    expect(
-      screen.queryByText(/WorkflowSummaryJsonView Mock/)
-    ).not.toBeInTheDocument();
+    expect(screen.getByText('Input')).toBeInTheDocument();
+    expect(screen.getByText('PrettyJson Mock: null')).toBeInTheDocument();
   });
 
-  it('renders nothing when input payload has no data', () => {
+  it('renders null when input payload has no data', () => {
     setup({ input: { data: null } });
+    expect(screen.getByText('Input')).toBeInTheDocument();
+    expect(screen.getByText('PrettyJson Mock: null')).toBeInTheDocument();
+  });
+
+  it('parses multiple workflow inputs', () => {
+    setup({
+      input: {
+        data: btoa('{"name": "John", "age": 30} {"name": "Jane", "age": 25}'),
+      },
+    });
     expect(
-      screen.queryByText(/WorkflowSummaryJsonView Mock/)
-    ).not.toBeInTheDocument();
+      screen.getByText(
+        /PrettyJson Mock: \[{"name":"John","age":30},{"name":"Jane","age":25}\]/
+      )
+    ).toBeInTheDocument();
   });
 });
 
@@ -51,11 +68,5 @@ function setup({
 }: {
   input?: { data?: string | null } | null;
 }) {
-  render(
-    <ScheduleDetailsInputJson
-      input={input}
-      domain="test-domain"
-      cluster="test-cluster"
-    />
-  );
+  render(<ScheduleDetailsInputJson input={input} />);
 }

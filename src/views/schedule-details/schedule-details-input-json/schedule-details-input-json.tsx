@@ -1,34 +1,33 @@
 'use client';
 import React, { useMemo } from 'react';
 
-import WorkflowSummaryJsonView from '@/views/workflow-summary/workflow-summary-json-view/workflow-summary-json-view';
-
+import CopyTextButton from '@/components/copy-text-button/copy-text-button';
+import PrettyJson from '@/components/pretty-json/pretty-json';
 import { type PrettyJsonValue } from '@/components/pretty-json/pretty-json.types';
+import formatInputPayload from '@/utils/data-formatters/format-input-payload';
+import losslessJsonStringify from '@/utils/lossless-json-stringify';
 
-import { formatScheduleInput } from '../helpers/format-schedule-input';
-
+import { overrides, styled } from './schedule-details-input-json.styles';
 import { type Props } from './schedule-details-input-json.types';
 
-export default function ScheduleDetailsInputJson({ input, domain, cluster }: Props) {
-  const parsedInput = useMemo(() => formatScheduleInput(input), [input]);
+export default function ScheduleDetailsInputJson({ input }: Props) {
+  const parsedInput = useMemo(() => formatInputPayload(input), [input]);
 
-  if (parsedInput === null || parsedInput === undefined) {
-    return null;
-  }
+  const textToCopy = useMemo(
+    () => losslessJsonStringify(parsedInput, null, '\t'),
+    [parsedInput]
+  );
 
   return (
-    <WorkflowSummaryJsonView
-      inputJson={parsedInput as PrettyJsonValue}
-      resultJson={null}
-      isWorkflowRunning={false}
-      isWorkflowError={false}
-      isArchived={false}
-      domain={domain}
-      cluster={cluster}
-      workflowId=""
-      runId=""
-      defaultTab="input"
-      hideTabToggle
-    />
+    <styled.Container>
+      <styled.Header>
+        <styled.Title>Input</styled.Title>
+        <CopyTextButton
+          textToCopy={textToCopy}
+          overrides={overrides.copyButton}
+        />
+      </styled.Header>
+      <PrettyJson json={parsedInput as PrettyJsonValue} />
+    </styled.Container>
   );
 }
