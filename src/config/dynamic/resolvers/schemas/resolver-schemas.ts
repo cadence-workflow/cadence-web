@@ -82,8 +82,11 @@ const resolverSchemas: ResolverSchemas = {
     args: z.undefined(),
     returnType: z.boolean(),
   },
-  BATCH_ACTIONS_ENABLED: {
-    args: z.undefined(),
+  BATCH_ACTIONS_UI_ENABLED: {
+    args: z.object({
+      cluster: z.string(),
+      domain: z.string(),
+    }),
     returnType: z.boolean(),
   },
   FAILOVER_HISTORY_ENABLED: {

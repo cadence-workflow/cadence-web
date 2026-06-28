@@ -9,8 +9,11 @@ import {
   waitForElementToBeRemoved,
 } from '@/test-utils/rtl';
 
+import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
 import { getMockRunningDescribeScheduleResponse } from '@/route-handlers/describe-schedule/__fixtures__/mock-describe-schedule-response';
+import { type DescribeScheduleResponse } from '@/route-handlers/describe-schedule/describe-schedule.types';
 
+import { mockScheduleDetailsSectionsConfig } from '../__fixtures__/schedule-details-sections-config';
 import ScheduleDetails from '../schedule-details';
 
 jest.mock('next/navigation', () => ({
@@ -22,30 +25,78 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
+jest.mock(
+  '../config/schedule-details-sections.config',
+  () => mockScheduleDetailsSectionsConfig
+);
+
+const scheduleId = 'my-schedule';
+
 describe(ScheduleDetails.name, () => {
-  it('shows loading first then renders details placeholder after describe succeeds', async () => {
-    // Success resolver for describe request
+  it('shows loading first then renders configured detail sections', async () => {
+    const describeResponse = getMockRunningDescribeScheduleResponse({
+      policies: {
+        overlapPolicy: ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_BUFFER,
+      },
+    } as Partial<DescribeScheduleResponse>);
     const { promise: resolveResponsePromise, resolve: resolveResponse } =
       getDeferredPromise();
 
     const describeResolver = jest.fn(async () => {
       await resolveResponsePromise;
-      return HttpResponse.json(getMockRunningDescribeScheduleResponse());
+      return HttpResponse.json(describeResponse);
     });
 
     setup({ describeResolver });
 
     expect(screen.getByRole('progressbar')).toBeInTheDocument();
-    // Resolve the promise to simulate the describe request succeeding
     resolveResponse();
 
     await waitForElementToBeRemoved(() => screen.queryByRole('progressbar'));
-    expect(screen.getByText('Details — coming soon')).toBeInTheDocument();
+
+    expect(
+      screen.getByRole('heading', { name: 'Mock policies section' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('rowheader', { name: 'Primary row' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_BUFFER)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('rowheader', { name: 'Conditional row' })
+    ).toBeInTheDocument();
+    expect(screen.getByText('conditional-value')).toBeInTheDocument();
+
     expect(describeResolver).toHaveBeenCalledTimes(1);
   });
 
+  it('hides conditional rows when hide predicate returns true', async () => {
+    const describeResponse = getMockRunningDescribeScheduleResponse({
+      policies: {
+        overlapPolicy: ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_SKIP_NEW,
+      },
+    } as Partial<DescribeScheduleResponse>);
+
+    setup({
+      describeResolver: () => HttpResponse.json(describeResponse),
+    });
+
+    expect(
+      await screen.findByRole('heading', { name: 'Mock policies section' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('rowheader', { name: 'Primary row' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_SKIP_NEW)
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('rowheader', { name: 'Conditional row' })
+    ).not.toBeInTheDocument();
+  });
+
   it('throws into error boundary when describe fails', async () => {
-    // Error resolver for describe request
     const describeResolver = jest.fn(() =>
       HttpResponse.json(
         { message: 'Failed to describe schedule' },
@@ -75,7 +126,7 @@ function setup({
       params={{
         domain: 'test-domain',
         cluster: 'test-cluster',
-        scheduleId: 'my-schedule',
+        scheduleId,
         scheduleTab: 'details',
       }}
     />,

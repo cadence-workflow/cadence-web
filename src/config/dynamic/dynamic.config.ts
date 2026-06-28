@@ -9,7 +9,8 @@ import type {
 import archivalDefaultSearchEnabled from './resolvers/archival-default-search-enabled';
 import authStrategy from './resolvers/auth-strategy';
 import { type AuthStrategyConfigValue } from './resolvers/auth-strategy.types';
-import batchActionsEnabled from './resolvers/batch-actions-enabled';
+import batchActionsUiEnabled from './resolvers/batch-actions-ui-enabled';
+import { type BatchActionsUiEnabledResolverParams } from './resolvers/batch-actions-ui-enabled.types';
 import clusters from './resolvers/clusters';
 import clustersPublic from './resolvers/clusters-public';
 import { type PublicClustersConfigs } from './resolvers/clusters-public.types';
@@ -92,8 +93,8 @@ const dynamicConfigs: {
     'request',
     true
   >;
-  BATCH_ACTIONS_ENABLED: ConfigAsyncResolverDefinition<
-    undefined,
+  BATCH_ACTIONS_UI_ENABLED: ConfigAsyncResolverDefinition<
+    BatchActionsUiEnabledResolverParams,
     boolean,
     'request',
     true
@@ -181,8 +182,8 @@ const dynamicConfigs: {
     evaluateOn: 'request',
     isPublic: true,
   },
-  BATCH_ACTIONS_ENABLED: {
-    resolver: batchActionsEnabled,
+  BATCH_ACTIONS_UI_ENABLED: {
+    resolver: batchActionsUiEnabled,
     evaluateOn: 'request',
     isPublic: true,
   },
