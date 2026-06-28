@@ -5,15 +5,8 @@ import {
   type createScheduleFormSchema,
 } from './schemas/create-schedule-form-schema';
 
-export type CreateScheduleFormRefineInput = Pick<
-  z.infer<typeof createScheduleFormFieldsSchema>,
-  | 'overlapPolicy'
-  | 'bufferLimit'
-  | 'concurrencyLimit'
-  | 'catchUpPolicy'
-  | 'catchUpWindowDays'
-  | 'startTime'
-  | 'endTime'
+export type CreateScheduleFormRefineInput = z.infer<
+  typeof createScheduleFormFieldsSchema
 >;
 
 export type DomainSchedulesCreateFormData = z.infer<

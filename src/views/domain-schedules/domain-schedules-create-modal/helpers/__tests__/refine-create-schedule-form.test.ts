@@ -3,6 +3,7 @@ import { type z } from 'zod';
 import { ScheduleCatchUpPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleCatchUpPolicy';
 import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
 
+import { createDomainSchedulesCreateFormData } from '../../__fixtures__/mock-domain-schedules-create-form-data';
 import { type CreateScheduleFormRefineInput } from '../../domain-schedules-create-modal.types';
 import refineCreateScheduleForm from '../refine-create-schedule-form';
 
@@ -103,10 +104,10 @@ describe(refineCreateScheduleForm.name, () => {
   });
 });
 
-function getIssues(data: CreateScheduleFormRefineInput) {
+function getIssues(overrides: Partial<CreateScheduleFormRefineInput> = {}) {
   const issues: Array<z.IssueData> = [];
 
-  refineCreateScheduleForm(data, {
+  refineCreateScheduleForm(createDomainSchedulesCreateFormData(overrides), {
     addIssue: (issue) => {
       issues.push(issue);
     },
