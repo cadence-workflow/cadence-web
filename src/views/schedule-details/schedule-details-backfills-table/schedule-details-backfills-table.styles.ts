@@ -1,25 +1,20 @@
-import { type Theme } from 'baseui';
+import { styled as createStyled, type Theme } from 'baseui';
 import { type TableOverrides } from 'baseui/table-semantic';
 import { type StyleObject } from 'styletron-react';
 
-import type {
-  StyletronCSSObject,
-  StyletronCSSObjectOf,
-} from '@/hooks/use-styletron-classes';
-
-const cssStylesObj = {
-  section: () => ({
+export const styled = {
+  Section: createStyled('section', (): StyleObject => ({
     display: 'flex',
     flexDirection: 'column',
-  }),
-  tableContainer: (theme) => ({
-    overflowX: 'auto',
-    paddingBottom: theme.sizing.scale400,
-  }),
-} satisfies StyletronCSSObject;
-
-export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> =
-  cssStylesObj;
+  })),
+  TableContainer: createStyled(
+    'div',
+    ({ $theme }: { $theme: Theme }): StyleObject => ({
+      overflowX: 'auto',
+      paddingBottom: $theme.sizing.scale400,
+    })
+  ),
+};
 
 export const overrides = {
   table: {
