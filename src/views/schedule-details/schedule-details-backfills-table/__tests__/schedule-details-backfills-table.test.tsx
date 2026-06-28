@@ -22,16 +22,18 @@ const mockBackfills: BackfillInfo[] = [
   },
 ];
 
-jest.mock('next/link', () =>
-  function MockLink({
-    href,
-    children,
-  }: {
-    href: string;
-    children: React.ReactNode;
-  }) {
-    return <a href={href}>{children}</a>;
-  }
+jest.mock(
+  'next/link',
+  () =>
+    function MockLink({
+      href,
+      children,
+    }: {
+      href: string;
+      children: React.ReactNode;
+    }) {
+      return <a href={href}>{children}</a>;
+    }
 );
 
 describe(ScheduleDetailsBackfillsTable.name, () => {
@@ -71,21 +73,23 @@ describe(ScheduleDetailsBackfillsTable.name, () => {
 
   it('renders nothing when no backfills', () => {
     setup({ backfills: [] });
-    expect(
-      screen.queryByText(/ongoing backfills/i)
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/ongoing backfills/i)).not.toBeInTheDocument();
     expect(screen.queryByText('Backfill ID')).not.toBeInTheDocument();
   });
 
   it('collapses content when toggle button is clicked', async () => {
     const { user } = setup({});
-    expect(screen.getByRole('link', { name: 'backfill-abc-123' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'backfill-abc-123' })
+    ).toBeInTheDocument();
 
     await user.click(
       screen.getByRole('button', { name: /collapse ongoing backfills/i })
     );
 
-    expect(screen.queryByRole('link', { name: 'backfill-abc-123' })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('link', { name: 'backfill-abc-123' })
+    ).not.toBeInTheDocument();
   });
 
   it('expands content again after collapsing', async () => {
@@ -98,7 +102,9 @@ describe(ScheduleDetailsBackfillsTable.name, () => {
       screen.getByRole('button', { name: /expand ongoing backfills/i })
     );
 
-    expect(screen.getByRole('link', { name: 'backfill-abc-123' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'backfill-abc-123' })
+    ).toBeInTheDocument();
   });
 });
 

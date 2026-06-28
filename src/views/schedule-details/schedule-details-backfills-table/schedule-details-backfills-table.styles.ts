@@ -3,10 +3,13 @@ import { type TableOverrides } from 'baseui/table-semantic';
 import { type StyleObject } from 'styletron-react';
 
 export const styled = {
-  Section: createStyled('section', (): StyleObject => ({
-    display: 'flex',
-    flexDirection: 'column',
-  })),
+  Section: createStyled(
+    'section',
+    (): StyleObject => ({
+      display: 'flex',
+      flexDirection: 'column',
+    })
+  ),
   TableContainer: createStyled(
     'div',
     ({ $theme }: { $theme: Theme }): StyleObject => ({
