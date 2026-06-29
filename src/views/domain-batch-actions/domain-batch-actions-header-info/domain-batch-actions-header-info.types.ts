@@ -5,16 +5,24 @@ import { type BatchAction } from '@/views/domain-batch-actions/domain-batch-acti
 export type Props = {
   batchAction?: BatchAction;
   loading?: boolean;
+  domain: string;
+  cluster: string;
+  workflowId: string;
 };
 
 export type DomainBatchActionHeaderInfoItemProps = {
   batchAction: BatchAction;
+  domain: string;
+  cluster: string;
+  workflowId: string;
 };
 
 export type DomainBatchActionHeaderInfoItemConfig = {
   title: string;
   placeholderSize: string;
-  hidden?: (props: DomainBatchActionHeaderInfoItemProps) => boolean;
+  hidden?: (
+    props: Pick<DomainBatchActionHeaderInfoItemProps, 'batchAction'>
+  ) => boolean;
   render: (props: DomainBatchActionHeaderInfoItemProps) => React.ReactNode;
 };
 

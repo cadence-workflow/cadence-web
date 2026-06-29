@@ -13,6 +13,9 @@ import { overrides, styled } from './domain-batch-actions-detail.styles';
 import { type Props } from './domain-batch-actions-detail.types';
 
 export default function DomainBatchActionDetail({
+  domain,
+  cluster,
+  workflowId,
   batchAction,
   loading = false,
 }: Props) {
@@ -41,6 +44,9 @@ export default function DomainBatchActionDetail({
         <DomainBatchActionHeaderInfo
           batchAction={batchAction}
           loading={loading}
+          domain={domain}
+          cluster={cluster}
+          workflowId={workflowId}
         />
       </div>
       <styled.ProgressSection>

@@ -4,6 +4,5 @@ export type Props = {
   domain: string;
   cluster: string;
   workflowId: string;
-  batchAction?: BatchAction;
-  loading?: boolean;
+  batchAction: BatchAction;
 };
