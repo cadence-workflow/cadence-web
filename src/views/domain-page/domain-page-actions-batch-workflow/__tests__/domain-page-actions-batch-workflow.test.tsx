@@ -148,7 +148,7 @@ function setup(
           const url = new URL(request.url);
           const configKey = url.searchParams.get('configKey');
 
-          if (configKey !== 'BATCH_ACTIONS_ENABLED') {
+          if (configKey !== 'BATCH_ACTIONS_UI_ENABLED') {
             return HttpResponse.json(false);
           }
 
@@ -164,7 +164,7 @@ function setup(
           }
 
           return HttpResponse.json(
-            enableBatchActions satisfies GetConfigResponse<'BATCH_ACTIONS_ENABLED'>
+            enableBatchActions satisfies GetConfigResponse<'BATCH_ACTIONS_UI_ENABLED'>
           );
         },
       },

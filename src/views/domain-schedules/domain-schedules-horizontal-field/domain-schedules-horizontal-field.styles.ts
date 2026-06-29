@@ -1,4 +1,4 @@
-import { styled as createStyled, type Theme } from 'baseui';
+import { styled as createStyled } from 'baseui';
 import { type FormControlOverrides } from 'baseui/form-control';
 import { type StyleObject } from 'styletron-react';
 
@@ -13,37 +13,42 @@ export const overrides = {
 };
 
 export const styled = {
-  FieldRow: createStyled(
+  FieldRow: createStyled<'div', { $bordered: boolean }>(
     'div',
-    ({ $theme }: { $theme: Theme }): StyleObject => ({
+    ({ $theme, $bordered }): StyleObject => ({
       display: 'flex',
       flexDirection: 'row',
       alignItems: 'flex-start',
       gap: $theme.sizing.scale600,
       marginBottom: $theme.sizing.scale600,
+      boxShadow: $bordered
+        ? `inset 2px 0 0 ${$theme.colors.borderOpaque}`
+        : undefined,
     })
   ),
-  FieldLabelColumn: createStyled(
+  FieldLabelColumn: createStyled<'div', { $indent: boolean }>(
     'div',
-    ({ $theme }: { $theme: Theme }): StyleObject => ({
+    ({ $theme, $indent }): StyleObject => ({
       flexBasis: '38%',
       flexGrow: 0,
       flexShrink: 0,
       maxWidth: '280px',
       paddingTop: $theme.sizing.scale100,
       paddingRight: $theme.sizing.scale400,
+      paddingLeft: $indent ? $theme.sizing.scale500 : 0,
     })
   ),
-  FieldControlColumn: createStyled(
+  FieldControlColumn: createStyled<'div', { $indent: boolean }>(
     'div',
-    (): StyleObject => ({
+    ({ $theme, $indent }): StyleObject => ({
       flex: 1,
       minWidth: 0,
+      paddingRight: $indent ? $theme.sizing.scale500 : 0,
     })
   ),
   FieldLabel: createStyled(
     'label',
-    ({ $theme }: { $theme: Theme }): StyleObject => ({
+    ({ $theme }): StyleObject => ({
       ...$theme.typography.font250,
       color: $theme.colors.contentPrimary,
       display: 'block',
@@ -54,7 +59,7 @@ export const styled = {
   ),
   FieldLabelText: createStyled(
     'div',
-    ({ $theme }: { $theme: Theme }): StyleObject => ({
+    ({ $theme }): StyleObject => ({
       ...$theme.typography.font250,
       color: $theme.colors.contentPrimary,
       width: '100%',
@@ -62,7 +67,7 @@ export const styled = {
   ),
   FieldDescription: createStyled(
     'div',
-    ({ $theme }: { $theme: Theme }): StyleObject => ({
+    ({ $theme }): StyleObject => ({
       ...$theme.typography.font100,
       color: $theme.colors.contentTertiary,
       marginTop: $theme.sizing.scale200,

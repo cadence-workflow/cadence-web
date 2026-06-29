@@ -49,7 +49,8 @@ export default function DomainBatchActionsEditRpsModal({
       reset({ rps: currentRps ?? BATCH_ACTION_RPS_DEFAULT });
     }
     wasOpen.current = isOpen;
-  }, [isOpen, currentRps, reset]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, reset]);
 
   const rpsValue = watch('rps');
   const isUnchanged = rpsValue === currentRps;

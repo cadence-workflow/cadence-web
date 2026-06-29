@@ -1,6 +1,13 @@
 import { type z } from 'zod';
 
-import { type createScheduleFormSchema } from './schemas/create-schedule-form-schema';
+import {
+  type createScheduleFormFieldsSchema,
+  type createScheduleFormSchema,
+} from './schemas/create-schedule-form-schema';
+
+export type CreateScheduleFormRefineInput = z.infer<
+  typeof createScheduleFormFieldsSchema
+>;
 
 export type DomainSchedulesCreateFormData = z.infer<
   typeof createScheduleFormSchema

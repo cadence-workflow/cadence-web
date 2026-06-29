@@ -14,7 +14,11 @@ export default function PrettyJson({ json }: Props) {
       data={json as object}
       shouldExpandNode={allExpanded}
       clickToExpandNode
-      style={{ ...cls, noQuotesForStringValues: false }}
+      style={{
+        ...cls,
+        noQuotesForStringValues: false,
+        quotesForFieldNames: true,
+      }}
     />
   );
 }

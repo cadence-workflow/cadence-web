@@ -70,6 +70,7 @@ Feature flags control various UI features and functionality in `cadence-web`. Th
 | **Default Archival Search**     | Shows the default workflow search input and query input for archival workflows page. Default search is disabled by default as it doesn't work well with S3 implementation | `CADENCE_ARCHIVAL_DEFAULT_SEARCH_ENABLED=true`                 | N/A                                      |
 | **Failover History List**       | List and filter domain failovers                                                                                                                                        | `CADENCE_FAILOVER_HISTORY_ENABLED=true`                        | 1.4.0+                                   |
 | **New Workflow History View**   | New and improved UI for viewing workflow history                                                                                                                        | `CADENCE_HISTORY_PAGE_V2_ENABLED=ENABLED` (or `OPT_IN`/`OPT_OUT`)  | N/A                                      |
+| **Batch Actions**               | Run and view batch actions (terminate/cancel/signal) over workflows. Access can be scoped: enabled for everyone, for domain admins, or for users with domain write access | `CADENCE_BATCH_ACTIONS_UI_ENABLED=ENABLED` (or `ADMIN`/`WRITE`)    | N/A                                      |
 
 **Note:** For advanced customization, feature flags can be modified through resolvers in the dynamic config system ([`src/config/dynamic/resolvers`](src/config/dynamic/resolvers)).
 

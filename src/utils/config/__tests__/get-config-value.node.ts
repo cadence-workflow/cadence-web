@@ -38,4 +38,21 @@ describe('getConfigValue', () => {
     expect(mockFn).toHaveBeenCalledWith(undefined);
     expect(result).toBe('resolvedValue');
   });
+
+  it('throws when resolver arguments fail validation', async () => {
+    // @ts-expect-error COMPUTED is not a loaded config
+    await expect(getConfigValue('COMPUTED', { invalid: true })).rejects.toThrow(
+      "Failed to parse config 'COMPUTED' arguments:"
+    );
+  });
+
+  it('throws when resolver return value fails validation', async () => {
+    // @ts-expect-error COMPUTED doesn't exist in the original loaded configs but it exists in the mocks
+    const mockFn = getLoadedGlobalConfigs().COMPUTED as jest.Mock;
+    mockFn.mockResolvedValue(123);
+    // @ts-expect-error COMPUTED is not a loaded config
+    await expect(getConfigValue('COMPUTED')).rejects.toThrow(
+      "Failed to parse config 'COMPUTED' resolved value:"
+    );
+  });
 });

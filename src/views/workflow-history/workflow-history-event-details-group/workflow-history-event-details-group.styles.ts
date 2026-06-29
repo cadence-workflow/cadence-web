@@ -5,7 +5,7 @@ import { type EventDetailsLabelKind } from './workflow-history-event-details-gro
 const getLabelColor = ($theme: Theme, $labelKind: EventDetailsLabelKind) => {
   switch ($labelKind) {
     case 'negative':
-      return $theme.colors.red300;
+      return $theme.colors.red500;
     case 'group':
       return $theme.colors.contentPrimary;
     default:

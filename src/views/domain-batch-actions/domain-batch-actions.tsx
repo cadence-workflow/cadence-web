@@ -2,10 +2,12 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import { Banner, HIERARCHY, KIND } from 'baseui/banner';
+import { notFound } from 'next/navigation';
 import { MdErrorOutline } from 'react-icons/md';
 
 import ErrorPanel from '@/components/error-panel/error-panel';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
+import useConfigValue from '@/hooks/use-config-value/use-config-value';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import { type BatchActionListItem } from '@/route-handlers/list-batch-actions/list-batch-actions.types';
 import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
@@ -28,6 +30,24 @@ import { styled } from './domain-batch-actions.styles';
 import resolveSelectedBatchAction from './helpers/resolve-selected-batch-action';
 
 export default function DomainBatchActions(props: DomainPageTabContentProps) {
+  const { data: isBatchActionsEnabled, isLoading: isConfigLoading } =
+    useConfigValue('BATCH_ACTIONS_UI_ENABLED', {
+      domain: props.domain,
+      cluster: props.cluster,
+    });
+
+  if (isConfigLoading) {
+    return <SectionLoadingIndicator />;
+  }
+
+  if (!isBatchActionsEnabled) {
+    return notFound();
+  }
+
+  return <DomainBatchActionsContent {...props} />;
+}
+
+function DomainBatchActionsContent(props: DomainPageTabContentProps) {
   const [queryParams, setQueryParams] = usePageQueryParams(
     domainPageQueryParamsConfig
   );
