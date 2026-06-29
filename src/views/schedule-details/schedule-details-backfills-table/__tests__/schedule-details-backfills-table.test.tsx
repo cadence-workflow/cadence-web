@@ -2,9 +2,9 @@ import React from 'react';
 
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
+import { type Props as ScheduleDetailsSectionHeaderProps } from '../../schedule-details-section-header/schedule-details-section-header.types';
 import ScheduleDetailsBackfillsTable from '../schedule-details-backfills-table';
 import { type BackfillInfo } from '../schedule-details-backfills-table.types';
-import { type Props as ScheduleDetailsSectionHeaderProps } from '../../schedule-details-section-header/schedule-details-section-header.types';
 
 const mockBackfills: BackfillInfo[] = [
   {
