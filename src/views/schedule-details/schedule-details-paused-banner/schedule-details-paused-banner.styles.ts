@@ -25,8 +25,7 @@ export const overrides = {
     },
     Message: {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
-        ...$theme.typography.LabelSmall,
-        fontWeight: 'normal',
+        ...$theme.typography.ParagraphSmall,
       }),
     },
   } satisfies BannerOverrides,

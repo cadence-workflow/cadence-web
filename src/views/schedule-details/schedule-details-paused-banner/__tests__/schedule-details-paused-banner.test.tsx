@@ -2,8 +2,6 @@ import React from 'react';
 
 import { render, screen } from '@/test-utils/rtl';
 
-import { formatScheduleTimestamp } from '../../helpers/format-schedule-timestamp';
-
 import ScheduleDetailsPausedBanner from '../schedule-details-paused-banner';
 import { type Props } from '../schedule-details-paused-banner.types';
 
@@ -20,29 +18,58 @@ describe(ScheduleDetailsPausedBanner.name, () => {
       },
     });
 
-    expect(screen.getByText(/Schedule was paused/)).toBeInTheDocument();
-    expect(
-      screen.getByText((content) =>
-        content.includes(formatScheduleTimestamp(pausedAt)!)
-      )
-    ).toBeInTheDocument();
-    expect(screen.getByText(/operator@example.com/)).toBeInTheDocument();
-    expect(document.body.textContent).toMatch(/Reason: "Paused for maintenance"/);
+    const expectedMessage =
+      'Schedule was paused 01 Jan 2024, 12:34:56 UTC by operator@example.com. Reason: "Paused for maintenance"';
+
+    expect(document.body).toHaveTextContent(expectedMessage);
   });
 
-  it('omits unknown pause details when pause info is missing', () => {
+  it('omits missing pause details when other pause info is present', () => {
+    setup({
+      paused: true,
+      pauseInfo: {
+        pausedBy: 'operator@example.com',
+        reason: '',
+        pausedAt: { seconds: '1704112496', nanos: 0 },
+      },
+    });
+
+    expect(document.body).toHaveTextContent(
+      'Schedule was paused 01 Jan 2024, 12:34:56 UTC by operator@example.com'
+    );
+    expect(document.body.textContent).not.toMatch(/Reason:/);
+  });
+
+  it('omits pausedBy when other pause info is present', () => {
     setup({
       paused: true,
       pauseInfo: {
         pausedBy: '',
-        reason: '',
+        reason: 'Paused for maintenance',
+        pausedAt: { seconds: '1704112496', nanos: 0 },
+      },
+    });
+
+    expect(document.body).toHaveTextContent(
+      'Schedule was paused 01 Jan 2024, 12:34:56 UTC. Reason: "Paused for maintenance"'
+    );
+    expect(document.body.textContent).not.toMatch(/ by /);
+  });
+
+  it('omits pausedAt when other pause info is present', () => {
+    setup({
+      paused: true,
+      pauseInfo: {
+        pausedBy: 'operator@example.com',
+        reason: 'Paused for maintenance',
         pausedAt: null,
       },
     });
 
-    expect(screen.getByText('Schedule was paused')).toBeInTheDocument();
-    expect(document.body.textContent).not.toMatch(/Unknown/);
-    expect(document.body.textContent).not.toMatch(/Reason:/);
+    expect(document.body).toHaveTextContent(
+      'Schedule was paused by operator@example.com. Reason: "Paused for maintenance"'
+    );
+    expect(document.body.textContent).not.toMatch(/01 Jan 2024/);
   });
 
   it('does not render when schedule is running', () => {
