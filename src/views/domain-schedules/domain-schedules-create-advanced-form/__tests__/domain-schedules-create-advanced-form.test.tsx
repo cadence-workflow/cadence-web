@@ -30,6 +30,8 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
     expect(screen.getByLabelText('Schedule Id')).toBeInTheDocument();
     expect(screen.getByLabelText('Jitter duration')).toBeInTheDocument();
     expect(screen.getByLabelText('Workflow Id Prefix')).toBeInTheDocument();
+    expect(screen.getByLabelText('Schedule period start')).toBeInTheDocument();
+    expect(screen.getByLabelText('Schedule period end')).toBeInTheDocument();
     expect(
       screen.getByRole('combobox', { name: /overlap policy/i })
     ).toBeInTheDocument();
@@ -110,18 +112,39 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
     await user.click(screen.getByRole('radio', { name: 'Skip' }));
     expect(screen.queryByLabelText('Catch-up window')).not.toBeInTheDocument();
   });
+
+  it('clears schedule id and workflow id prefix when inputs are emptied', async () => {
+    const { user, getValues } = setup();
+
+    await user.click(
+      screen.getByRole('button', { name: /show advanced configurations/i })
+    );
+
+    const scheduleId = screen.getByLabelText('Schedule Id');
+    await user.type(scheduleId, 'my-schedule');
+    await user.clear(scheduleId);
+    expect(getValues().scheduleId).toBeUndefined();
+
+    const workflowIdPrefix = screen.getByLabelText('Workflow Id Prefix');
+    await user.type(workflowIdPrefix, 'prefix');
+    await user.clear(workflowIdPrefix);
+    expect(getValues().workflowIdPrefix).toBeUndefined();
+  });
 });
 
 function setup() {
   const user = userEvent.setup();
+  let getValues: () => DomainSchedulesCreateFormData;
 
   function Wrapper() {
     const {
       control,
+      getValues: readValues,
       formState: { errors: fieldErrors },
     } = useForm<DomainSchedulesCreateFormData>({
       defaultValues: {},
     });
+    getValues = readValues;
 
     return (
       <DomainSchedulesCreateAdvancedForm
@@ -132,5 +155,5 @@ function setup() {
   }
 
   render(<Wrapper />);
-  return { user };
+  return { user, getValues: () => getValues() };
 }
