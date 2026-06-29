@@ -10,11 +10,12 @@ import {
 } from '@/route-handlers/describe-schedule/__fixtures__/mock-describe-schedule-response';
 import { type DescribeScheduleResponse } from '@/views/shared/hooks/use-describe-schedule/use-describe-schedule.types';
 
-import formatPausedAtTimestamp from '../helpers/format-paused-at-timestamp';
-import SchedulePagePausedBanner from '../schedule-page-paused-banner';
+import { formatScheduleTimestamp } from '../../helpers/format-schedule-timestamp';
 
-describe(SchedulePagePausedBanner.name, () => {
-  it('shows paused banner with mailto link when schedule is paused', async () => {
+import ScheduleDetailsPausedBanner from '../schedule-details-paused-banner';
+
+describe(ScheduleDetailsPausedBanner.name, () => {
+  it('shows paused banner when schedule is paused', async () => {
     const pausedAt = { seconds: '1704112496', nanos: 0 };
     const response = getMockPausedDescribeScheduleResponse({
       state: {
@@ -32,13 +33,10 @@ describe(SchedulePagePausedBanner.name, () => {
     expect(await screen.findByText(/Schedule was paused/)).toBeInTheDocument();
     expect(
       screen.getByText((content) =>
-        content.includes(formatPausedAtTimestamp(pausedAt)!)
+        content.includes(formatScheduleTimestamp(pausedAt)!)
       )
     ).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'operator@example.com' })).toHaveAttribute(
-      'href',
-      'mailto:operator@example.com'
-    );
+    expect(screen.getByText(/operator@example.com/)).toBeInTheDocument();
     expect(document.body.textContent).toMatch(/Reason: "Paused for maintenance"/);
   });
 
@@ -77,7 +75,7 @@ function setup({
 }) {
   return render(
     <Suspense fallback={null}>
-      <SchedulePagePausedBanner
+      <ScheduleDetailsPausedBanner
         domain="test-domain"
         cluster="test-cluster"
         scheduleId="test-schedule"
