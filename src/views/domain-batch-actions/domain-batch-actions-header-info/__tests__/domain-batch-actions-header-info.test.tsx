@@ -4,154 +4,98 @@ import { render, screen } from '@/test-utils/rtl';
 
 import { type BatchAction } from '../../domain-batch-actions.types';
 import DomainBatchActionHeaderInfo from '../domain-batch-actions-header-info';
+import { type Props } from '../domain-batch-actions-header-info.types';
 
-jest.mock('react-icons/md', () => ({
-  ...jest.requireActual('react-icons/md'),
-  MdCheckCircle: () => <div>Check Icon</div>,
-  MdOutlineCancel: () => <div>Cancel Icon</div>,
-  MdWarning: () => <div>Warning Icon</div>,
-  MdEdit: () => <div>Edit Icon</div>,
+jest.mock(
+  '../../domain-batch-actions-header-info-item/domain-batch-actions-header-info-item',
+  () =>
+    function MockItem({ title, content, loading, placeholderSize }: any) {
+      return (
+        <div>
+          <span>title: {title}</span>
+          {loading ? (
+            <span>loading: {placeholderSize}</span>
+          ) : (
+            <span>content: {content}</span>
+          )}
+        </div>
+      );
+    }
+);
+
+jest.mock('../../config/domain-batch-actions-header-info-items.config', () => ({
+  __esModule: true,
+  default: [
+    {
+      title: 'Always',
+      // Echoes the runtime context so we can assert it is threaded through.
+      render: ({ batchAction, domain, cluster, workflowId }: any) =>
+        `${batchAction.runId}/${domain}/${cluster}/${workflowId}`,
+      placeholderSize: '10px',
+    },
+    {
+      title: 'Conditional',
+      hidden: ({ batchAction }: any) => batchAction.status === 'COMPLETED',
+      render: () => 'conditional-content',
+      placeholderSize: '20px',
+    },
+  ],
 }));
 
-jest.mock('baseui/spinner', () => ({
-  Spinner: () => <div>Spinner</div>,
-}));
-
-const MOCK_RUNNING_ACTION: BatchAction = {
-  runId: '5',
-  status: 'RUNNING',
-  progress: { totalEstimate: 200, successCount: 120, errorCount: 5 },
-  actionType: 'cancel',
-  startTime: new Date('2024-03-13T08:28:50.000Z').getTime(),
-  rps: 200,
-};
+const RUNNING_ACTION: BatchAction = { runId: '5', status: 'RUNNING' };
 
 describe(DomainBatchActionHeaderInfo.name, () => {
-  afterEach(() => {
-    jest.clearAllMocks();
+  it('renders an item per config entry, threading runtime context into render', () => {
+    setup({ batchAction: RUNNING_ACTION });
+
+    expect(screen.getByText('title: Always')).toBeInTheDocument();
+    expect(
+      screen.getByText('content: 5/domain1/cluster1/workflow1')
+    ).toBeInTheDocument();
   });
 
-  it('renders all field titles', () => {
-    render(<DomainBatchActionHeaderInfo batchAction={MOCK_RUNNING_ACTION} />);
+  it('omits items whose hidden predicate returns true', () => {
+    setup({ batchAction: { runId: '5', status: 'COMPLETED' } });
 
-    expect(screen.getByText('Status')).toBeInTheDocument();
-    expect(screen.getByText('Action')).toBeInTheDocument();
-    expect(screen.getByText('Started')).toBeInTheDocument();
-    expect(screen.queryByText('Ended')).not.toBeInTheDocument();
-    expect(screen.getByText('Duration')).toBeInTheDocument();
-    expect(screen.getByText('RPS')).toBeInTheDocument();
+    expect(screen.getByText('title: Always')).toBeInTheDocument();
+    expect(screen.queryByText('title: Conditional')).not.toBeInTheDocument();
   });
 
-  it('shows Ended field for completed actions', () => {
-    const action: BatchAction = {
-      runId: '4',
-      status: 'COMPLETED',
-      actionType: 'cancel',
-      endTime: new Date('2024-03-13T09:00:00.000Z').getTime(),
-    };
-    render(<DomainBatchActionHeaderInfo batchAction={action} />);
+  it('keeps items whose hidden predicate returns false', () => {
+    setup({ batchAction: RUNNING_ACTION });
 
-    expect(screen.getByText('Ended')).toBeInTheDocument();
+    expect(screen.getByText('title: Conditional')).toBeInTheDocument();
+    expect(
+      screen.getByText('content: conditional-content')
+    ).toBeInTheDocument();
   });
 
-  it('renders Processing badge with spinner for running status', () => {
-    render(<DomainBatchActionHeaderInfo batchAction={MOCK_RUNNING_ACTION} />);
+  it('renders every item as a loading placeholder with no content when there is no batch action', () => {
+    setup({ batchAction: undefined });
 
-    expect(screen.getByText('Processing')).toBeInTheDocument();
-    expect(screen.getByText('Spinner')).toBeInTheDocument();
+    // hidden filter is skipped without a batch action, so all items show.
+    expect(screen.getByText('title: Always')).toBeInTheDocument();
+    expect(screen.getByText('title: Conditional')).toBeInTheDocument();
+    expect(screen.getByText('loading: 10px')).toBeInTheDocument();
+    expect(screen.queryByText(/^content:/)).not.toBeInTheDocument();
   });
 
-  it('renders Completed badge with check icon for completed status', () => {
-    const action: BatchAction = {
-      runId: '4',
-      status: 'COMPLETED',
-      actionType: 'cancel',
-    };
-    render(<DomainBatchActionHeaderInfo batchAction={action} />);
+  it('renders items as loading placeholders when loading is true', () => {
+    setup({ batchAction: RUNNING_ACTION, loading: true });
 
-    expect(screen.getByText('Completed')).toBeInTheDocument();
-    expect(screen.getByText('Check Icon')).toBeInTheDocument();
-  });
-
-  it('renders Aborted badge with cancel icon for aborted status', () => {
-    const action: BatchAction = {
-      runId: '1',
-      status: 'ABORTED',
-      actionType: 'cancel',
-    };
-    render(<DomainBatchActionHeaderInfo batchAction={action} />);
-
-    expect(screen.getByText('Aborted')).toBeInTheDocument();
-    expect(screen.getByText('Cancel Icon')).toBeInTheDocument();
-  });
-
-  it('renders Failed badge with warning icon for failed status', () => {
-    const action: BatchAction = {
-      runId: '2',
-      status: 'FAILED',
-      actionType: 'cancel',
-    };
-    render(<DomainBatchActionHeaderInfo batchAction={action} />);
-
-    expect(screen.getByText('Failed')).toBeInTheDocument();
-    expect(screen.getByText('Warning Icon')).toBeInTheDocument();
-  });
-
-  it('renders capitalized action type', () => {
-    render(<DomainBatchActionHeaderInfo batchAction={MOCK_RUNNING_ACTION} />);
-
-    expect(screen.getByText('Cancel')).toBeInTheDocument();
-  });
-
-  it('renders the rps value with an Edit button', () => {
-    render(<DomainBatchActionHeaderInfo batchAction={MOCK_RUNNING_ACTION} />);
-
-    expect(screen.getByText('200')).toBeInTheDocument();
-    expect(screen.getAllByText('Edit')).toHaveLength(1);
-  });
-
-  it('renders dashes when optional fields are missing', () => {
-    const action: BatchAction = {
-      runId: '2',
-      status: 'COMPLETED',
-      actionType: 'cancel',
-    };
-    render(<DomainBatchActionHeaderInfo batchAction={action} />);
-
-    expect(screen.getAllByText('—')).toHaveLength(4); // startTime, ended, duration, rps
-  });
-
-  it('replaces field values with skeleton placeholders when loading', () => {
-    render(
-      <DomainBatchActionHeaderInfo batchAction={MOCK_RUNNING_ACTION} loading />
-    );
-
-    // Titles still render
-    expect(screen.getByText('Status')).toBeInTheDocument();
-    expect(screen.getByText('Action')).toBeInTheDocument();
-    expect(screen.getByText('RPS')).toBeInTheDocument();
-
-    // Values do not
-    expect(screen.queryByText('Processing')).not.toBeInTheDocument();
-    expect(screen.queryByText('Cancel')).not.toBeInTheDocument();
-    expect(screen.queryByText('200')).not.toBeInTheDocument();
-    expect(screen.queryByText('10')).not.toBeInTheDocument();
-  });
-
-  it('replaces field values with skeleton placeholders when loading', () => {
-    render(
-      <DomainBatchActionHeaderInfo batchAction={MOCK_RUNNING_ACTION} loading />
-    );
-
-    // Titles still render
-    expect(screen.getByText('Status')).toBeInTheDocument();
-    expect(screen.getByText('Action')).toBeInTheDocument();
-    expect(screen.getByText('RPS')).toBeInTheDocument();
-
-    // Values do not
-    expect(screen.queryByText('Processing')).not.toBeInTheDocument();
-    expect(screen.queryByText('Cancel')).not.toBeInTheDocument();
-    expect(screen.queryByText('200')).not.toBeInTheDocument();
-    expect(screen.queryByText('10')).not.toBeInTheDocument();
+    expect(screen.getByText('title: Always')).toBeInTheDocument();
+    expect(screen.getByText('loading: 10px')).toBeInTheDocument();
+    expect(screen.queryByText(/^content:/)).not.toBeInTheDocument();
   });
 });
+
+function setup(props: Partial<Props> = {}) {
+  render(
+    <DomainBatchActionHeaderInfo
+      domain="domain1"
+      cluster="cluster1"
+      workflowId="workflow1"
+      {...props}
+    />
+  );
+}

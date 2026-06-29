@@ -211,6 +211,7 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
               ]}
             />
           ) : (
+            selectedWorkflowId &&
             (isLoadingBatchActionDetail || batchActionDetail) && (
               <>
                 {batchActionDetailError && batchActionDetail && (
@@ -239,7 +240,7 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
                 <DomainBatchActionDetail
                   domain={props.domain}
                   cluster={props.cluster}
-                  workflowId={selectedWorkflowId ?? ''}
+                  workflowId={selectedWorkflowId}
                   batchAction={batchActionDetail}
                   loading={isLoadingBatchActionDetail}
                 />

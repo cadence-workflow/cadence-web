@@ -14,24 +14,11 @@ jest.mock(
     }
 );
 
-const mockEditRps = jest.fn();
-jest.mock('../../hooks/use-edit-batch-action-rps', () => ({
-  __esModule: true,
-  default: () => ({ editRps: mockEditRps, isPending: false }),
-}));
-
 jest.mock(
-  '../../domain-batch-actions-edit-rps-modal/domain-batch-actions-edit-rps-modal',
+  '../../domain-batch-actions-rps-value/domain-batch-actions-rps-value',
   () =>
-    function MockEditRpsModal({ isOpen, onSubmit, onClose }: any) {
-      if (!isOpen) return null;
-      return (
-        <div>
-          <span>mock-edit-rps-modal</span>
-          <button onClick={() => onSubmit(250)}>mock-save</button>
-          <button onClick={onClose}>mock-close</button>
-        </div>
-      );
+    function MockRpsValue({ batchAction }: any) {
+      return <div>Mock rps value: {batchAction.rps}</div>;
     }
 );
 
@@ -115,39 +102,6 @@ describe(DomainBatchActionDetail.name, () => {
     setup({ loading: true });
 
     expect(screen.queryByText(/Mock progress bar/)).not.toBeInTheDocument();
-  });
-
-  it('opens the edit RPS modal when the RPS Edit button is clicked', async () => {
-    const { user } = setup({
-      batchAction: {
-        runId: '9',
-        status: 'RUNNING',
-        actionType: 'cancel',
-        rps: 100,
-      },
-    });
-
-    expect(screen.queryByText('mock-edit-rps-modal')).not.toBeInTheDocument();
-
-    await user.click(screen.getByText('Edit'));
-
-    expect(screen.getByText('mock-edit-rps-modal')).toBeInTheDocument();
-  });
-
-  it('submits the new RPS through the edit hook', async () => {
-    const { user } = setup({
-      batchAction: {
-        runId: '9',
-        status: 'RUNNING',
-        actionType: 'cancel',
-        rps: 100,
-      },
-    });
-
-    await user.click(screen.getByText('Edit'));
-    await user.click(screen.getByText('mock-save'));
-
-    expect(mockEditRps).toHaveBeenCalledWith(250);
   });
 });
 

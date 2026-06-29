@@ -1,9 +1,9 @@
 'use client';
 import React from 'react';
 
+import batchActionHeaderInfoItemsConfig from '../config/domain-batch-actions-header-info-items.config';
 import DomainBatchActionHeaderInfoItem from '../domain-batch-actions-header-info-item/domain-batch-actions-header-info-item';
 
-import batchActionHeaderInfoItemsConfig from './domain-batch-actions-header-info-items.config';
 import { styled } from './domain-batch-actions-header-info.styles';
 import {
   type DomainBatchActionHeaderInfoItemConfig,
@@ -13,7 +13,9 @@ import {
 export default function DomainBatchActionHeaderInfo({
   batchAction,
   loading = false,
-  onEditRps,
+  domain,
+  cluster,
+  workflowId,
 }: Props) {
   return (
     <styled.DetailsContainer>
@@ -28,7 +30,14 @@ export default function DomainBatchActionHeaderInfo({
             title={configItem.title}
             loading={loading || !batchAction}
             content={
-              batchAction ? configItem.render({ batchAction, onEditRps }) : null
+              batchAction
+                ? configItem.render({
+                    batchAction,
+                    domain,
+                    cluster,
+                    workflowId,
+                  })
+                : null
             }
             placeholderSize={configItem.placeholderSize}
           />
