@@ -306,6 +306,8 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
       <DomainSchedulesCreateAdvancedForm
         control={control}
         fieldErrors={fieldErrors}
+        trigger={trigger}
+        isSubmitted={isSubmitted}
       />
     </div>
   );

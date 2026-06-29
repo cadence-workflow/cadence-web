@@ -6,6 +6,7 @@ import {
   SCHEDULE_OVERLAP_POLICIES,
   WORKER_SDK_LANGUAGES,
 } from '../create-schedule.constants';
+import getSchedulePeriodError from '../helpers/get-schedule-period-error';
 
 const retryPolicySchema = z
   .object({
@@ -36,26 +37,41 @@ const scheduleStartWorkflowBodySchema = z.object({
     .optional(),
 });
 
-const createScheduleRequestBodySchema = z.object({
-  // Schedule identity (server generates one when omitted)
-  scheduleId: z.string().min(1).optional(),
+const createScheduleRequestBodySchema = z
+  .object({
+    // Schedule identity (server generates one when omitted)
+    scheduleId: z.string().min(1).optional(),
 
-  // Schedule spec
-  cronExpression: z.string().min(1),
-  startTime: z.string().datetime().optional(),
-  endTime: z.string().datetime().optional(),
-  jitterSeconds: z.number().nonnegative().optional(),
+    // Schedule spec
+    cronExpression: z.string().min(1),
+    startTime: z.string().datetime().optional(),
+    endTime: z.string().datetime().optional(),
+    jitterSeconds: z.number().nonnegative().optional(),
 
-  // Schedule policies
-  overlapPolicy: z.enum(SCHEDULE_OVERLAP_POLICIES).optional(),
-  catchUpPolicy: z.enum(SCHEDULE_CATCH_UP_POLICIES).optional(),
-  catchUpWindowSeconds: z.number().nonnegative().optional(),
-  pauseOnFailure: z.boolean().optional(),
-  bufferLimit: z.number().int().nonnegative().optional(),
-  concurrencyLimit: z.number().int().nonnegative().optional(),
+    // Schedule policies
+    overlapPolicy: z.enum(SCHEDULE_OVERLAP_POLICIES).optional(),
+    catchUpPolicy: z.enum(SCHEDULE_CATCH_UP_POLICIES).optional(),
+    catchUpWindowSeconds: z.number().nonnegative().optional(),
+    pauseOnFailure: z.boolean().optional(),
+    bufferLimit: z.number().int().nonnegative().optional(),
+    concurrencyLimit: z.number().int().nonnegative().optional(),
 
-  // Start-workflow action
-  startWorkflow: scheduleStartWorkflowBodySchema,
-});
+    // Start-workflow action
+    startWorkflow: scheduleStartWorkflowBodySchema,
+  })
+  .superRefine((data, ctx) => {
+    const schedulePeriodError = getSchedulePeriodError(
+      data.startTime,
+      data.endTime
+    );
+
+    if (schedulePeriodError) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: schedulePeriodError.message,
+        path: ['endTime'],
+      });
+    }
+  });
 
 export default createScheduleRequestBodySchema;
