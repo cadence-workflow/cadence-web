@@ -10,10 +10,10 @@ import { getCronFieldsError } from '../helpers/get-cron-fields-error';
 
 const baseSchema = z.object({
   workflowType: z.object({
-    name: z.string().min(1, 'Workflow type name is required'),
+    name: z.string().trim().min(1, 'Workflow type name is required'),
   }),
   taskList: z.object({
-    name: z.string().min(1, 'Task list name is required'),
+    name: z.string().trim().min(1, 'Task list name is required'),
   }),
   workerSDKLanguage: z.enum(WORKER_SDK_LANGUAGES),
   input: z
@@ -38,7 +38,7 @@ const baseSchema = z.object({
         }
       }
     }),
-  workflowId: z.string().optional(),
+  workflowId: z.string().trim().optional(),
   executionStartToCloseTimeoutSeconds: z.number().positive(),
   taskStartToCloseTimeoutSeconds: z.number().positive().optional(),
   workflowIdReusePolicy: z.enum(WORKFLOW_ID_REUSE_POLICIES).optional(),

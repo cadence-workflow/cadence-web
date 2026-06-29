@@ -50,8 +50,12 @@ export default function WorkflowActionStartForm({
     defaultValue: '',
   });
 
+  // Search with the trimmed value so leading/trailing spaces in the input
+  // don't change the lookup (the field itself keeps the user's raw text).
+  const trimmedTaskListName = taskListName.trim();
+
   const { debouncedValue: debouncedTaskListName, isDebouncePending } =
-    useDebouncedValue(taskListName, TASK_LIST_DEBOUNCE_MS);
+    useDebouncedValue(trimmedTaskListName, TASK_LIST_DEBOUNCE_MS);
 
   const {
     data: taskListData,
@@ -64,10 +68,10 @@ export default function WorkflowActionStartForm({
   });
 
   const isTaskListLoading =
-    (isDebouncePending && taskListName.length > 0) || isTaskListQueryLoading;
+    (isDebouncePending && trimmedTaskListName.length > 0) ||
+    isTaskListQueryLoading;
 
   const inputError = getMultiJsonErrorMessage(fieldErrors, 'input');
-
   const taskListCaptionMessage = getTaskListCaptionMessage({
     taskListData,
     isTaskListLoading,
@@ -101,12 +105,6 @@ export default function WorkflowActionStartForm({
               // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
               inputRef={ref}
               aria-label="Task List"
-              onChange={(e) => {
-                field.onChange(e.target.value.trim());
-              }}
-              onBlur={() => {
-                field.onBlur();
-              }}
               error={Boolean(
                 getFieldErrorMessage(fieldErrors, 'taskList.name')
               )}
