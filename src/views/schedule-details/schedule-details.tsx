@@ -23,16 +23,7 @@ export default function ScheduleDetails({ params }: Props) {
   });
 
   if (isLoading || isPending) {
-    return (
-      <>
-        <ScheduleDetailsPausedBanner
-          domain={params.domain}
-          cluster={params.cluster}
-          scheduleId={params.scheduleId}
-        />
-        <SectionLoadingIndicator />
-      </>
-    );
+    return <SectionLoadingIndicator />;
   }
 
   // Should never happen as we have throwOnError set to true but it is for better type safety below
@@ -43,9 +34,8 @@ export default function ScheduleDetails({ params }: Props) {
   return (
     <PageSection>
       <ScheduleDetailsPausedBanner
-        domain={params.domain}
-        cluster={params.cluster}
-        scheduleId={params.scheduleId}
+        paused={data.state?.paused ?? false}
+        pauseInfo={data.state?.pauseInfo ?? null}
       />
       <styled.PageContainer>
         <styled.DetailsSectionsContainer>

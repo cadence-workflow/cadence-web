@@ -1,6 +1,5 @@
-import { type SchedulePageTabsParams } from '@/views/schedule-page/schedule-page-tabs/schedule-page-tabs.types';
+import { type DescribeScheduleResponse } from '@/views/shared/hooks/use-describe-schedule/use-describe-schedule.types';
 
-export type Props = Pick<
-  SchedulePageTabsParams,
-  'domain' | 'cluster' | 'scheduleId'
->;
+type ScheduleState = NonNullable<DescribeScheduleResponse['state']>;
+
+export type Props = Pick<ScheduleState, 'paused' | 'pauseInfo'>;
