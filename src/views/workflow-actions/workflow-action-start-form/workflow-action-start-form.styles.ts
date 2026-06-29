@@ -22,6 +22,9 @@ const cssStylesObj = {
     alignItems: 'center',
     gap: '4px',
   },
+  prefillBanner: (theme: Theme) => ({
+    marginBottom: theme.sizing.scale600,
+  }),
 } satisfies StyletronCSSObject;
 
 export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> =
