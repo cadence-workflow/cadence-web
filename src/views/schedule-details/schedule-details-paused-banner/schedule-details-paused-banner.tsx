@@ -4,7 +4,6 @@ import React, { useMemo } from 'react';
 import { Banner, HIERARCHY, KIND } from 'baseui/banner';
 import { MdInfoOutline } from 'react-icons/md';
 
-import PageSection from '@/components/page-section/page-section';
 import useDescribeSchedule from '@/views/shared/hooks/use-describe-schedule/use-describe-schedule';
 
 import { formatScheduleTimestamp } from '../helpers/format-schedule-timestamp';
@@ -67,19 +66,17 @@ export default function ScheduleDetailsPausedBanner(props: Props) {
   }
 
   return (
-    <PageSection>
-      <Banner
-        hierarchy={HIERARCHY.low}
-        kind={KIND.warning}
-        artwork={{
-          icon: () => (
-            <MdInfoOutline size={PAUSED_BANNER_ICON_SIZE} aria-hidden />
-          ),
-        }}
-        overrides={overrides.banner}
-      >
-        {message}
-      </Banner>
-    </PageSection>
+    <Banner
+      hierarchy={HIERARCHY.low}
+      kind={KIND.warning}
+      artwork={{
+        icon: () => (
+          <MdInfoOutline size={PAUSED_BANNER_ICON_SIZE} aria-hidden />
+        ),
+      }}
+      overrides={overrides.banner}
+    >
+      {message}
+    </Banner>
   );
 }

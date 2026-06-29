@@ -41,44 +41,42 @@ export default function ScheduleDetails({ params }: Props) {
   }
 
   return (
-    <>
+    <PageSection>
       <ScheduleDetailsPausedBanner
         domain={params.domain}
         cluster={params.cluster}
         scheduleId={params.scheduleId}
       />
-      <PageSection>
-        <styled.PageContainer>
-          <styled.DetailsSectionsContainer>
-            {scheduleDetailsSectionsConfig.map((section) => {
-              const rows = getRowsFromConfig(
-                section.rowsConfig,
-                data,
-                params.scheduleId
-              );
-              if (!rows.length) {
-                return null;
-              }
+      <styled.PageContainer>
+        <styled.DetailsSectionsContainer>
+          {scheduleDetailsSectionsConfig.map((section) => {
+            const rows = getRowsFromConfig(
+              section.rowsConfig,
+              data,
+              params.scheduleId
+            );
+            if (!rows.length) {
+              return null;
+            }
 
-              return (
-                <ScheduleDetailsSection
-                  key={section.key}
-                  title={section.title}
-                  rows={rows}
-                />
-              );
-            })}
-            <ScheduleDetailsBackfillsTable
-              backfills={data.info?.ongoingBackfills ?? []}
-              domain={params.domain}
-              cluster={params.cluster}
-            />
-          </styled.DetailsSectionsContainer>
-          <styled.JsonPanel>
-            <ScheduleDetailsInputJson input={data.action?.startWorkflow?.input} />
-          </styled.JsonPanel>
-        </styled.PageContainer>
-      </PageSection>
-    </>
+            return (
+              <ScheduleDetailsSection
+                key={section.key}
+                title={section.title}
+                rows={rows}
+              />
+            );
+          })}
+          <ScheduleDetailsBackfillsTable
+            backfills={data.info?.ongoingBackfills ?? []}
+            domain={params.domain}
+            cluster={params.cluster}
+          />
+        </styled.DetailsSectionsContainer>
+        <styled.JsonPanel>
+          <ScheduleDetailsInputJson input={data.action?.startWorkflow?.input} />
+        </styled.JsonPanel>
+      </styled.PageContainer>
+    </PageSection>
   );
 }
