@@ -44,7 +44,7 @@ describe(ScheduleDetailsInputJson.name, () => {
   });
 
   it('renders null when input payload has no data', () => {
-    setup({ input: { data: null } });
+    setup({ input: { data: '' } });
     expect(screen.getByText('Input')).toBeInTheDocument();
     expect(screen.getByText('PrettyJson Mock: null')).toBeInTheDocument();
   });
@@ -66,7 +66,7 @@ describe(ScheduleDetailsInputJson.name, () => {
 function setup({
   input = mockInputPayload,
 }: {
-  input?: { data?: string | null } | null;
+  input?: { data: string } | null;
 }) {
   render(<ScheduleDetailsInputJson input={input} />);
 }

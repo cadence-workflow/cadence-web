@@ -1,3 +1,3 @@
 export type Props = {
-  input: { data?: string | null } | null | undefined;
+  input?: { data: string } | null;
 };
