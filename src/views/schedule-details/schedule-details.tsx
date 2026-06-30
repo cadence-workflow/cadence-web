@@ -1,5 +1,5 @@
 'use client';
-import React, { useMemo } from 'react';
+import React from 'react';
 
 import PageSection from '@/components/page-section/page-section';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
@@ -23,19 +23,16 @@ export default function ScheduleDetails({ params }: Props) {
     throwOnError: true,
   });
 
+  if (isLoading || isPending) {
+    return <SectionLoadingIndicator />;
+  }
+
   // Should never happen as we have throwOnError set to true but it is for better type safety below
   if (!data) {
     throw new Error('Schedule data is unavailable');
   }
 
-  const formattedScheduleDetails = useMemo(
-    () => formatScheduleDetails(data),
-    [data]
-  );
-
-  if (isLoading || isPending) {
-    return <SectionLoadingIndicator />;
-  }
+  const formattedScheduleDetails = formatScheduleDetails(data);
 
   return (
     <PageSection>
