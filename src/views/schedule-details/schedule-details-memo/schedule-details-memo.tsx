@@ -1,14 +1,16 @@
 'use client';
 import React, { useMemo } from 'react';
 
-import useStyletronClasses from '@/hooks/use-styletron-classes';
+import CopyTextButton from '@/components/copy-text-button/copy-text-button';
+import PrettyJson from '@/components/pretty-json/pretty-json';
+import type { PrettyJsonValue } from '@/components/pretty-json/pretty-json.types';
 import formatPayload from '@/utils/data-formatters/format-payload';
+import losslessJsonStringify from '@/utils/lossless-json-stringify';
 
-import { cssStyles } from './schedule-details-memo.styles';
+import { overrides, styled } from './schedule-details-memo.styles';
 import { type Props } from './schedule-details-memo.types';
 
 export default function ScheduleDetailsMemo({ memo }: Props) {
-  const { cls } = useStyletronClasses(cssStyles);
   const formattedMemo = useMemo(() => {
     if (!memo?.fields) {
       return null;
@@ -27,14 +29,32 @@ export default function ScheduleDetailsMemo({ memo }: Props) {
       return null;
     }
 
-    return Object.fromEntries(entries);
+    return Object.fromEntries(entries) as PrettyJsonValue;
   }, [memo]);
+
+  const textToCopy = useMemo(() => {
+    if (!formattedMemo) {
+      return '';
+    }
+
+    return losslessJsonStringify(formattedMemo, null, '\t');
+  }, [formattedMemo]);
 
   if (!formattedMemo) {
     return null;
   }
 
   return (
-    <pre className={cls.pre}>{JSON.stringify(formattedMemo, null, '\t')}</pre>
+    <styled.JsonViewWrapper>
+      <styled.JsonViewContainer $isNegative={false}>
+        <styled.JsonViewHeader>
+          <CopyTextButton
+            textToCopy={textToCopy}
+            overrides={overrides.copyButton}
+          />
+        </styled.JsonViewHeader>
+        <PrettyJson json={formattedMemo} />
+      </styled.JsonViewContainer>
+    </styled.JsonViewWrapper>
   );
 }

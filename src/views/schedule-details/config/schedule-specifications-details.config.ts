@@ -1,5 +1,6 @@
 import { createElement } from 'react';
 
+import formatPayload from '@/utils/data-formatters/format-payload';
 import { type ScheduleDetailRowConfig } from '@/views/schedule-details/schedule-details.types';
 
 import ScheduleDetailsBadges from '../schedule-details-badges/schedule-details-badges';
@@ -36,9 +37,10 @@ const scheduleSpecificationsDetailsConfig: ScheduleDetailRowConfig[] = [
     key: 'totalRuns',
     getLabel: () => 'Total runs',
     getValue: ({ describeSchedule }) => {
-      const total = describeSchedule.info?.totalRuns;
-      if (!total) return null;
-      return createElement(ScheduleDetailsBadges, { labels: [`${total} runs`] });
+      const total = describeSchedule.info?.totalRuns || '0';
+      return createElement(ScheduleDetailsBadges, {
+        labels: [`${total} runs`],
+      });
     },
   },
   {
