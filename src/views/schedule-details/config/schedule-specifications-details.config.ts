@@ -11,7 +11,7 @@ import ScheduleDetailsBadges from '../schedule-details-badges/schedule-details-b
 const scheduleSpecificationsDetailsConfig: ScheduleDetailRowConfig[] = [
   {
     key: 'scheduleId',
-    getLabel: () => 'Schedule Id',
+    getLabel: () => 'Schedule ID',
     getValue: ({ scheduleId }) => scheduleId,
   },
   {
