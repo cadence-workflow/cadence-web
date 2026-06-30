@@ -7,6 +7,8 @@ import { type CreateScheduleRequest__Input } from '@/__generated__/proto-ts/uber
 import { type CreateScheduleResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/CreateScheduleResponse';
 import { type DescribeDomainRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeDomainRequest';
 import { type DescribeDomainResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeDomainResponse';
+import { type DeleteScheduleRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/DeleteScheduleRequest';
+import { type DeleteScheduleResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/DeleteScheduleResponse';
 import { type DescribeScheduleRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeScheduleRequest';
 import { type DescribeScheduleResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeScheduleResponse';
 import { type DescribeTaskListRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeTaskListRequest';
@@ -86,6 +88,9 @@ export type GRPCClusterMethods = {
   createSchedule: (
     payload: CreateScheduleRequest__Input
   ) => Promise<CreateScheduleResponse>;
+  deleteSchedule: (
+    payload: DeleteScheduleRequest__Input
+  ) => Promise<DeleteScheduleResponse>;
   describeSchedule: (
     payload: DescribeScheduleRequest__Input
   ) => Promise<DescribeScheduleResponse>;
@@ -268,6 +273,13 @@ const getClusterServicesMethods = async (
       CreateScheduleResponse
     >({
       method: 'CreateSchedule',
+      metadata: metadata,
+    }),
+    deleteSchedule: scheduleService.request<
+      DeleteScheduleRequest__Input,
+      DeleteScheduleResponse
+    >({
+      method: 'DeleteSchedule',
       metadata: metadata,
     }),
     describeSchedule: scheduleService.request<
