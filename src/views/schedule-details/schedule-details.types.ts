@@ -1,19 +1,15 @@
-import { type PrettyJsonValue } from '@/components/pretty-json/pretty-json.types';
 import { type ScheduleDetailsTableRow } from '@/views/schedule-details/schedule-details-table/schedule-details-table.types';
 import { type SchedulePageTabsParams } from '@/views/schedule-page/schedule-page-tabs/schedule-page-tabs.types';
 import { type DescribeScheduleResponse } from '@/views/shared/hooks/use-describe-schedule/use-describe-schedule.types';
 
-type FormattedWorkflowInput = PrettyJsonValue | null;
-
 type FormattedWorkflowMemo = {
-  fields: PrettyJsonValue;
+  fields: Record<string, unknown>;
 } | null;
 
 type FormattedStartWorkflow = Omit<
   NonNullable<NonNullable<DescribeScheduleResponse['action']>['startWorkflow']>,
-  'input' | 'memo'
+  'memo'
 > & {
-  input: FormattedWorkflowInput;
   memo: FormattedWorkflowMemo;
 };
 

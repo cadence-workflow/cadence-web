@@ -3,7 +3,7 @@ import { getMockRunningDescribeScheduleResponse } from '@/route-handlers/describ
 import { formatScheduleDetails } from '../format-schedule-details';
 
 describe(formatScheduleDetails.name, () => {
-  it('formats workflow input and memo fields in place', () => {
+  it('formats workflow memo fields in place', () => {
     const describeSchedule = getMockRunningDescribeScheduleResponse({
       action: {
         startWorkflow: {
@@ -13,9 +13,7 @@ describe(formatScheduleDetails.name, () => {
             kind: 'TASK_LIST_KIND_NORMAL',
             baseName: 'schedule-task-list',
           },
-          input: {
-            data: 'eyJ3b3JrZmxvd0FyZyI6InRlc3QtdmFsdWUifQ==',
-          },
+          input: null,
           workflowIdPrefix: 'schedule-prefix',
           executionStartToCloseTimeout: null,
           taskStartToCloseTimeout: null,
@@ -44,7 +42,6 @@ describe(formatScheduleDetails.name, () => {
         ...describeSchedule.action,
         startWorkflow: {
           ...describeSchedule.action!.startWorkflow!,
-          input: [{ workflowArg: 'test-value' }],
           memo: { fields: { owner: 'eng-lead' } },
         },
       },

@@ -1,4 +1,3 @@
-import formatInputPayload from '@/utils/data-formatters/format-input-payload';
 import formatPayloadMap from '@/utils/data-formatters/format-payload-map';
 import { type DescribeScheduleResponse } from '@/views/shared/hooks/use-describe-schedule/use-describe-schedule.types';
 
@@ -22,7 +21,6 @@ export function formatScheduleDetails(
           startWorkflow: startWorkflow
             ? {
                 ...startWorkflow,
-                input: formatInputPayload(startWorkflow.input),
                 memo: formatPayloadMap(startWorkflow.memo, 'fields'),
               }
             : startWorkflow,
