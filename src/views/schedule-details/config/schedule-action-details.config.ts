@@ -1,12 +1,11 @@
 import { createElement } from 'react';
 
-import { type ScheduleDetailRowConfig } from '@/views/schedule-details/schedule-details.types';
 import ScheduleDetailsBadges from '@/views/schedule-details/schedule-details-badges/schedule-details-badges';
+import { type ScheduleDetailRowConfig } from '@/views/schedule-details/schedule-details.types';
 import WorkflowHistoryEventDetailsTaskListLink from '@/views/shared/workflow-history-event-details-task-list-link/workflow-history-event-details-task-list-link';
 
-import getScheduleDetailsMapBadgeLabels from '../helpers/get-schedule-details-map-badge-labels';
-
 import { formatScheduleDuration } from '../helpers/format-schedule-duration';
+import getScheduleDetailsMapBadgeLabels from '../helpers/get-schedule-details-map-badge-labels';
 import { hideWithoutRetryPolicy } from '../helpers/schedule-details-row-hide';
 import ScheduleDetailsJsonView from '../schedule-details-json-view/schedule-details-json-view';
 
