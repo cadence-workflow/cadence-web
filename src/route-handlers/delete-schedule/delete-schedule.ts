@@ -17,12 +17,12 @@ export async function deleteSchedule(
   const params = requestParams.params;
 
   try {
-    await ctx.grpcClusterMethods.deleteSchedule({
+    const response = await ctx.grpcClusterMethods.deleteSchedule({
       domain: params.domain,
       scheduleId: params.scheduleId,
     });
 
-    return NextResponse.json({} satisfies DeleteScheduleResponse);
+    return NextResponse.json(response satisfies DeleteScheduleResponse);
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
       { requestParams: params, error: e },
@@ -31,8 +31,7 @@ export async function deleteSchedule(
 
     return NextResponse.json(
       {
-        message:
-          e instanceof GRPCError ? e.message : 'Error deleting schedule',
+        message: e instanceof GRPCError ? e.message : 'Error deleting schedule',
         cause: e,
       },
       { status: getHTTPStatusCode(e) }
