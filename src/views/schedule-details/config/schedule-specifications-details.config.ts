@@ -2,11 +2,11 @@ import { createElement } from 'react';
 
 import { type ScheduleDetailRowConfig } from '@/views/schedule-details/schedule-details.types';
 
-import ScheduleDetailsBadges from '../schedule-details-badges/schedule-details-badges';
-import ScheduleDetailsJsonView from '../schedule-details-json-view/schedule-details-json-view';
 import { formatScheduleCronExpression } from '../helpers/format-schedule-cron-expression';
 import { formatScheduleDuration } from '../helpers/format-schedule-duration';
 import { formatScheduleTimestamp } from '../helpers/format-schedule-timestamp';
+import ScheduleDetailsBadges from '../schedule-details-badges/schedule-details-badges';
+import ScheduleDetailsJsonView from '../schedule-details-json-view/schedule-details-json-view';
 
 const scheduleSpecificationsDetailsConfig: ScheduleDetailRowConfig[] = [
   {

@@ -7,8 +7,11 @@ import { type FormattedScheduleDetails } from '../schedule-details.types';
 export function formatScheduleDetails(
   describeSchedule: DescribeScheduleResponse
 ): FormattedScheduleDetails {
-  const { memo: _scheduleMemo, action, ...scheduleWithoutMemo } =
-    describeSchedule;
+  const {
+    memo: _scheduleMemo,
+    action,
+    ...scheduleWithoutMemo
+  } = describeSchedule;
   const startWorkflow = action?.startWorkflow;
 
   return {

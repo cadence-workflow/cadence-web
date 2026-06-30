@@ -6,8 +6,8 @@ import SectionLoadingIndicator from '@/components/section-loading-indicator/sect
 import useDescribeSchedule from '@/views/shared/hooks/use-describe-schedule/use-describe-schedule';
 
 import scheduleDetailsSectionsConfig from './config/schedule-details-sections.config';
-import { getRowsFromConfig } from './helpers/get-rows-from-config';
 import { formatScheduleDetails } from './helpers/format-schedule-details';
+import { getRowsFromConfig } from './helpers/get-rows-from-config';
 import ScheduleDetailsBackfillsTable from './schedule-details-backfills-table/schedule-details-backfills-table';
 import ScheduleDetailsJsonView from './schedule-details-json-view/schedule-details-json-view';
 import ScheduleDetailsPausedBanner from './schedule-details-paused-banner/schedule-details-paused-banner';
@@ -69,9 +69,7 @@ export default function ScheduleDetails({ params }: Props) {
         <styled.JsonPanel>
           <ScheduleDetailsJsonView
             title="Input"
-            json={
-              formattedScheduleDetails.action?.startWorkflow?.input ?? null
-            }
+            json={formattedScheduleDetails.action?.startWorkflow?.input ?? null}
           />
         </styled.JsonPanel>
       </styled.PageContainer>

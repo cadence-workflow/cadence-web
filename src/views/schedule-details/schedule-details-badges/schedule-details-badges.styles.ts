@@ -15,7 +15,8 @@ const cssStylesObj = {
   }),
 } satisfies StyletronCSSObject;
 
-export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> = cssStylesObj;
+export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> =
+  cssStylesObj;
 
 export const overrides = {
   badge: {

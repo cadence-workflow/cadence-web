@@ -12,9 +12,7 @@ export function getRowsFromConfig(
 ): ScheduleDetailsTableRow[] {
   const args = { formattedScheduleDetails, scheduleId };
   return config
-    .filter(
-      (rowConfig) => !rowConfig.hide || !rowConfig.hide(args)
-    )
+    .filter((rowConfig) => !rowConfig.hide || !rowConfig.hide(args))
     .map((rowConfig) => ({
       key: rowConfig.key,
       label: rowConfig.getLabel(),

@@ -1,8 +1,8 @@
 import React from 'react';
 
 import { render, screen } from '@/test-utils/rtl';
-import { type PrettyJsonValue } from '@/components/pretty-json/pretty-json.types';
 
+import { type PrettyJsonValue } from '@/components/pretty-json/pretty-json.types';
 import losslessJsonStringify from '@/utils/lossless-json-stringify';
 
 import ScheduleDetailsJsonView from '../schedule-details-json-view';
