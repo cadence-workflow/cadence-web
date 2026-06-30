@@ -189,11 +189,14 @@ export const mockBatcherStartedHistoryWithUnknownType = buildHistoryResponse({
   RPS: 50,
 });
 
-// Mirrors the batcher's HeartBeatDetails struct (Go field names) used for progress.
+// Mirrors the batcher's HeartBeatDetails struct (Go field names). RPS is the
+// live, signal-tuned value — deliberately different from the start-input RPS
+// (100) so tests can prove the heartbeat value overrides the input.
 export const MOCK_BATCH_PROGRESS = {
   TotalEstimate: 200,
   SuccessCount: 120,
   ErrorCount: 5,
+  RPS: 250,
 };
 
 // Running batch whose pending batcher activity is reporting progress via heartbeat.
