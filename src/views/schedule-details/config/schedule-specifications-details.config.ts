@@ -1,6 +1,5 @@
 import { createElement } from 'react';
 
-import formatPayload from '@/utils/data-formatters/format-payload';
 import { type ScheduleDetailRowConfig } from '@/views/schedule-details/schedule-details.types';
 
 import ScheduleDetailsBadges from '../schedule-details-badges/schedule-details-badges';
