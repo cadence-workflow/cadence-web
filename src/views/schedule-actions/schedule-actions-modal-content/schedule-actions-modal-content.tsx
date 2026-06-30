@@ -46,7 +46,12 @@ export default function ScheduleActionsModalContent<
     resolver: action.modal.formSchema
       ? zodResolver(action.modal.formSchema)
       : undefined,
-    defaultValues: initialFormValues as DefaultValues<OptionalFormData>,
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
+    defaultValues: (initialFormValues ??
+      (action.modal.withForm
+        ? action.modal.initialFormValues
+        : undefined)) as DefaultValues<OptionalFormData>,
   });
 
   const { mutate, isPending, error } = useMutation<
@@ -103,8 +108,13 @@ export default function ScheduleActionsModalContent<
     });
   };
 
-  const Form = action.modal.form;
-  const isSubmitDisabled = Object.keys(validationErrors).length > 0;
+  const modalText = action.modal.text ? (
+    Array.isArray(action.modal.text) ? (
+      action.modal.text.map((text, index) => <p key={index}>{text}</p>)
+    ) : (
+      <p>{action.modal.text}</p>
+    )
+  ) : null;
 
   const modalBanner = action.modal.banner ? (
     <Banner
@@ -118,6 +128,9 @@ export default function ScheduleActionsModalContent<
       {action.modal.banner.render(schedule)}
     </Banner>
   ) : null;
+
+  const Form = action.modal.form;
+  const isSubmitDisabled = Object.keys(validationErrors).length > 0;
 
   return (
     <>
@@ -140,6 +153,16 @@ export default function ScheduleActionsModalContent<
             </div>
           )}
           <styled.ModalBodyContent>
+            {modalText}
+            {action.modal.docsLink && (
+              <styled.Link
+                href={action.modal.docsLink.href}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {action.modal.docsLink.text}
+              </styled.Link>
+            )}
             {action.modal.withForm && Form && (
               <Form
                 fieldErrors={validationErrors}
