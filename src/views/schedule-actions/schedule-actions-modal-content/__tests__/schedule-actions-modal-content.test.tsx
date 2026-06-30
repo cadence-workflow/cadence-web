@@ -2,7 +2,9 @@ import { HttpResponse } from 'msw';
 
 import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
+import { mockDescribeScheduleResponse } from '@/route-handlers/describe-schedule/__fixtures__/mock-describe-schedule-response';
 import { type PauseScheduleResponse } from '@/route-handlers/pause-schedule/pause-schedule.types';
+import { type UnpauseScheduleResponse } from '@/route-handlers/unpause-schedule/unpause-schedule.types';
 
 import { mockScheduleActionsConfig } from '../../__fixtures__/schedule-actions-config';
 import { type ScheduleAction } from '../../schedule-actions.types';
@@ -58,6 +60,10 @@ describe(ScheduleActionsModalContent.name, () => {
       {}
     );
 
+    await user.type(
+      screen.getByTestId('mock-pause-reason'),
+      'Mock pause reason'
+    );
     await user.click(
       await screen.findByRole('button', { name: 'Mock pause schedule' })
     );
@@ -75,9 +81,21 @@ describe(ScheduleActionsModalContent.name, () => {
     expect(mockOnClose).toHaveBeenCalled();
   });
 
+  it('renders pause banner without describe schedule data', async () => {
+    setup({ schedule: undefined });
+
+    expect(
+      await screen.findByText('Mock pause banner message')
+    ).toBeInTheDocument();
+  });
+
   it('displays banner when the action fails', async () => {
     const { user, mockOnClose } = setup({ error: true });
 
+    await user.type(
+      screen.getByTestId('mock-pause-reason'),
+      'Mock pause reason'
+    );
     await user.click(
       await screen.findByRole('button', { name: 'Mock pause schedule' })
     );
@@ -90,14 +108,50 @@ describe(ScheduleActionsModalContent.name, () => {
     });
     expect(mockOnClose).not.toHaveBeenCalled();
   });
+
+  describe('form handling', () => {
+    it('renders form when provided in action config', () => {
+      setup({});
+
+      expect(screen.getByTestId('mock-pause-form')).toBeInTheDocument();
+      expect(screen.getByTestId('mock-pause-reason')).toBeInTheDocument();
+    });
+
+    it('disables submit button when form has validation errors', async () => {
+      const { user } = setup({});
+
+      const submitButton = screen.getByRole('button', {
+        name: 'Mock pause schedule',
+      });
+      await user.click(submitButton);
+
+      expect(submitButton).toHaveAttribute('disabled');
+    });
+
+    it('shows validation error when reason is empty', async () => {
+      const { user } = setup({});
+
+      const submitButton = screen.getByRole('button', {
+        name: 'Mock pause schedule',
+      });
+      await user.click(submitButton);
+
+      expect(screen.getByTestId('mock-pause-reason')).toHaveAttribute(
+        'aria-invalid',
+        'true'
+      );
+    });
+  });
 });
 
 function setup({
   error,
   actionConfig,
+  schedule = mockDescribeScheduleResponse,
 }: {
   error?: boolean;
   actionConfig?: ScheduleAction<any, any, any>;
+  schedule?: typeof mockDescribeScheduleResponse;
 }) {
   const user = userEvent.setup();
   const mockOnClose = jest.fn();
@@ -111,6 +165,7 @@ function setup({
     <ScheduleActionsModalContent
       action={actionConfig ?? mockScheduleActionsConfig[0]}
       params={{ ...mockScheduleParams }}
+      schedule={schedule}
       onCloseModal={mockOnClose}
     />,
     {
@@ -131,7 +186,9 @@ function setup({
               );
             }
 
-            return HttpResponse.json({} satisfies PauseScheduleResponse);
+            return HttpResponse.json(
+              {} satisfies PauseScheduleResponse | UnpauseScheduleResponse
+            );
           },
         },
       ],
