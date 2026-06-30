@@ -11,15 +11,15 @@ export const mockScheduleDetailsSectionsConfig: ScheduleDetailsSectionConfig[] =
         {
           key: 'primary',
           getLabel: () => 'Primary row',
-          getValue: ({ describeSchedule }) =>
-            describeSchedule.policies?.overlapPolicy,
+          getValue: ({ formattedScheduleDetails: { policies } }) =>
+            policies?.overlapPolicy,
         },
         {
           key: 'conditional',
           getLabel: () => 'Conditional row',
           getValue: () => 'conditional-value',
-          hide: ({ describeSchedule }) =>
-            describeSchedule.policies?.overlapPolicy !==
+          hide: ({ formattedScheduleDetails: { policies } }) =>
+            policies?.overlapPolicy !==
             ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_BUFFER,
         },
       ],

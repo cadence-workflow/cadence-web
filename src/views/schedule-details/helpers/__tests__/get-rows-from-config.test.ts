@@ -3,6 +3,7 @@ import { getMockRunningDescribeScheduleResponse } from '@/route-handlers/describ
 import { type DescribeScheduleResponse } from '@/route-handlers/describe-schedule/describe-schedule.types';
 
 import { type ScheduleDetailRowConfig } from '../../schedule-details.types';
+import { formatScheduleDetails } from '../format-schedule-details';
 import { getRowsFromConfig } from '../get-rows-from-config';
 
 describe(getRowsFromConfig.name, () => {
@@ -12,6 +13,7 @@ describe(getRowsFromConfig.name, () => {
     },
   } as Partial<DescribeScheduleResponse>);
   const scheduleId = 'my-schedule';
+  const formattedScheduleDetails = formatScheduleDetails(describeSchedule);
 
   it('maps row config to table rows', () => {
     const config: ScheduleDetailRowConfig[] = [
@@ -22,7 +24,9 @@ describe(getRowsFromConfig.name, () => {
       },
     ];
 
-    expect(getRowsFromConfig(config, describeSchedule, scheduleId)).toEqual([
+    expect(
+      getRowsFromConfig(config, formattedScheduleDetails, scheduleId)
+    ).toEqual([
       { key: 'overlap', label: 'Overlap', value: 'my-schedule-value' },
     ]);
   });
@@ -42,27 +46,24 @@ describe(getRowsFromConfig.name, () => {
       },
     ];
 
-    expect(getRowsFromConfig(config, describeSchedule, scheduleId)).toEqual([
-      { key: 'visible', label: 'Visible', value: 'shown' },
-    ]);
+    expect(
+      getRowsFromConfig(config, formattedScheduleDetails, scheduleId)
+    ).toEqual([{ key: 'visible', label: 'Visible', value: 'shown' }]);
   });
 
-  it('passes describeSchedule and scheduleId to hide predicate', () => {
+  it('passes formatted schedule details to hide predicate', () => {
+    const hide = jest.fn(() => false);
     const config: ScheduleDetailRowConfig[] = [
       {
         key: 'conditional',
         getLabel: () => 'Conditional',
         getValue: () => 'value',
-        hide: ({ describeSchedule: data, scheduleId: id }) =>
-          data.policies?.overlapPolicy !==
-            ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_BUFFER ||
-          id !== 'my-schedule',
+        hide,
       },
     ];
 
-    expect(getRowsFromConfig(config, describeSchedule, scheduleId)).toEqual([
-      { key: 'conditional', label: 'Conditional', value: 'value' },
-    ]);
-    expect(getRowsFromConfig(config, describeSchedule, 'other-id')).toEqual([]);
+    getRowsFromConfig(config, formattedScheduleDetails, scheduleId);
+
+    expect(hide).toHaveBeenCalledWith({ formattedScheduleDetails, scheduleId });
   });
 });

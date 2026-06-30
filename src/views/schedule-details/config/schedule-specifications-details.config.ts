@@ -3,7 +3,7 @@ import { createElement } from 'react';
 import { type ScheduleDetailRowConfig } from '@/views/schedule-details/schedule-details.types';
 
 import ScheduleDetailsBadges from '../schedule-details-badges/schedule-details-badges';
-import ScheduleDetailsMemo from '../schedule-details-memo/schedule-details-memo';
+import ScheduleDetailsJsonView from '../schedule-details-json-view/schedule-details-json-view';
 import { formatScheduleCronExpression } from '../helpers/format-schedule-cron-expression';
 import { formatScheduleDuration } from '../helpers/format-schedule-duration';
 import { formatScheduleTimestamp } from '../helpers/format-schedule-timestamp';
@@ -17,26 +17,26 @@ const scheduleSpecificationsDetailsConfig: ScheduleDetailRowConfig[] = [
   {
     key: 'cronExpression',
     getLabel: () => 'Cron execution',
-    getValue: ({ describeSchedule }) =>
-      formatScheduleCronExpression(describeSchedule.spec?.cronExpression),
+    getValue: ({ formattedScheduleDetails: { spec } }) =>
+      formatScheduleCronExpression(spec?.cronExpression),
   },
   {
     key: 'nextRunTime',
     getLabel: () => 'Next run',
-    getValue: ({ describeSchedule }) =>
-      formatScheduleTimestamp(describeSchedule.info?.nextRunTime),
+    getValue: ({ formattedScheduleDetails: { info } }) =>
+      formatScheduleTimestamp(info?.nextRunTime),
   },
   {
     key: 'lastRunTime',
     getLabel: () => 'Last run',
-    getValue: ({ describeSchedule }) =>
-      formatScheduleTimestamp(describeSchedule.info?.lastRunTime),
+    getValue: ({ formattedScheduleDetails: { info } }) =>
+      formatScheduleTimestamp(info?.lastRunTime),
   },
   {
     key: 'totalRuns',
     getLabel: () => 'Total runs',
-    getValue: ({ describeSchedule }) => {
-      const total = describeSchedule.info?.totalRuns || '0';
+    getValue: ({ formattedScheduleDetails: { info } }) => {
+      const total = info?.totalRuns || '0';
       return createElement(ScheduleDetailsBadges, {
         labels: [`${total} runs`],
       });
@@ -45,38 +45,41 @@ const scheduleSpecificationsDetailsConfig: ScheduleDetailRowConfig[] = [
   {
     key: 'createTime',
     getLabel: () => 'Creation time',
-    getValue: ({ describeSchedule }) =>
-      formatScheduleTimestamp(describeSchedule.info?.createTime),
-    hide: ({ describeSchedule }) => !describeSchedule.info?.createTime,
+    getValue: ({ formattedScheduleDetails: { info } }) =>
+      formatScheduleTimestamp(info?.createTime),
+    hide: ({ formattedScheduleDetails: { info } }) => !info?.createTime,
   },
   {
     key: 'startTime',
     getLabel: () => 'Start time',
-    getValue: ({ describeSchedule }) =>
-      formatScheduleTimestamp(describeSchedule.spec?.startTime),
-    hide: ({ describeSchedule }) => !describeSchedule.spec?.startTime,
+    getValue: ({ formattedScheduleDetails: { spec } }) =>
+      formatScheduleTimestamp(spec?.startTime),
+    hide: ({ formattedScheduleDetails: { spec } }) => !spec?.startTime,
   },
   {
     key: 'endTime',
     getLabel: () => 'End time',
-    getValue: ({ describeSchedule }) =>
-      formatScheduleTimestamp(describeSchedule.spec?.endTime),
-    hide: ({ describeSchedule }) => !describeSchedule.spec?.endTime,
+    getValue: ({ formattedScheduleDetails: { spec } }) =>
+      formatScheduleTimestamp(spec?.endTime),
+    hide: ({ formattedScheduleDetails: { spec } }) => !spec?.endTime,
   },
   {
     key: 'memo',
     getLabel: () => 'Memo',
-    getValue: ({ describeSchedule }) =>
-      createElement(ScheduleDetailsMemo, { memo: describeSchedule.memo }),
-    hide: ({ describeSchedule }) => !describeSchedule.memo?.fields,
+    getValue: ({ formattedScheduleDetails: { action } }) =>
+      createElement(ScheduleDetailsJsonView, {
+        json: action?.startWorkflow?.memo?.fields ?? null,
+      }),
+    hide: ({ formattedScheduleDetails: { action } }) =>
+      !action?.startWorkflow?.memo?.fields,
   },
 
   {
     key: 'jitter',
     getLabel: () => 'Jitter duration',
-    getValue: ({ describeSchedule }) =>
-      formatScheduleDuration(describeSchedule.spec?.jitter),
-    hide: ({ describeSchedule }) => !describeSchedule.spec?.jitter,
+    getValue: ({ formattedScheduleDetails: { spec } }) =>
+      formatScheduleDuration(spec?.jitter),
+    hide: ({ formattedScheduleDetails: { spec } }) => !spec?.jitter,
   },
 ];
 

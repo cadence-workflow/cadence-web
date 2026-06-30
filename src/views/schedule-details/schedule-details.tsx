@@ -7,8 +7,9 @@ import useDescribeSchedule from '@/views/shared/hooks/use-describe-schedule/use-
 
 import scheduleDetailsSectionsConfig from './config/schedule-details-sections.config';
 import { getRowsFromConfig } from './helpers/get-rows-from-config';
+import { formatScheduleDetails } from './helpers/format-schedule-details';
 import ScheduleDetailsBackfillsTable from './schedule-details-backfills-table/schedule-details-backfills-table';
-import ScheduleDetailsInputJson from './schedule-details-input-json/schedule-details-input-json';
+import ScheduleDetailsJsonView from './schedule-details-json-view/schedule-details-json-view';
 import ScheduleDetailsPausedBanner from './schedule-details-paused-banner/schedule-details-paused-banner';
 import ScheduleDetailsSection from './schedule-details-section/schedule-details-section';
 import { styled } from './schedule-details.styles';
@@ -31,6 +32,8 @@ export default function ScheduleDetails({ params }: Props) {
     throw new Error('Schedule data is unavailable');
   }
 
+  const formattedScheduleDetails = formatScheduleDetails(data);
+
   return (
     <PageSection>
       <ScheduleDetailsPausedBanner
@@ -42,7 +45,7 @@ export default function ScheduleDetails({ params }: Props) {
           {scheduleDetailsSectionsConfig.map((section) => {
             const rows = getRowsFromConfig(
               section.rowsConfig,
-              data,
+              formattedScheduleDetails,
               params.scheduleId
             );
             if (!rows.length) {
@@ -64,7 +67,12 @@ export default function ScheduleDetails({ params }: Props) {
           />
         </styled.DetailsSectionsContainer>
         <styled.JsonPanel>
-          <ScheduleDetailsInputJson input={data.action?.startWorkflow?.input} />
+          <ScheduleDetailsJsonView
+            title="Input"
+            json={
+              formattedScheduleDetails.action?.startWorkflow?.input ?? null
+            }
+          />
         </styled.JsonPanel>
       </styled.PageContainer>
     </PageSection>
