@@ -67,6 +67,19 @@ const scheduleActionDetailsConfig: ScheduleDetailRowConfig[] = [
       ).length === 0,
   },
   {
+    key: 'memo',
+    getLabel: () => 'Memo',
+    getValue: ({ formattedScheduleDetails: { action } }) =>
+      createElement(ScheduleDetailsBadges, {
+        labels: getScheduleDetailsMapBadgeLabels(
+          action?.startWorkflow?.memo?.fields
+        ),
+      }),
+    hide: ({ formattedScheduleDetails: { action } }) =>
+      getScheduleDetailsMapBadgeLabels(action?.startWorkflow?.memo?.fields)
+        .length === 0,
+  },
+  {
     key: 'retryPolicy',
     getLabel: () => 'Retry policy',
     getValue: ({ formattedScheduleDetails: { action } }) =>
