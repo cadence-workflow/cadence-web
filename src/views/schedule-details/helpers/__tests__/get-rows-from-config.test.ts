@@ -13,6 +13,8 @@ describe(getRowsFromConfig.name, () => {
     },
   } as Partial<DescribeScheduleResponse>);
   const scheduleId = 'my-schedule';
+  const domain = 'test-domain';
+  const cluster = 'test-cluster';
   const formattedScheduleDetails = formatScheduleDetails(describeSchedule);
 
   it('maps row config to table rows', () => {
@@ -25,7 +27,13 @@ describe(getRowsFromConfig.name, () => {
     ];
 
     expect(
-      getRowsFromConfig(config, formattedScheduleDetails, scheduleId)
+      getRowsFromConfig(
+        config,
+        formattedScheduleDetails,
+        scheduleId,
+        domain,
+        cluster
+      )
     ).toEqual([
       { key: 'overlap', label: 'Overlap', value: 'my-schedule-value' },
     ]);
@@ -47,7 +55,13 @@ describe(getRowsFromConfig.name, () => {
     ];
 
     expect(
-      getRowsFromConfig(config, formattedScheduleDetails, scheduleId)
+      getRowsFromConfig(
+        config,
+        formattedScheduleDetails,
+        scheduleId,
+        domain,
+        cluster
+      )
     ).toEqual([{ key: 'visible', label: 'Visible', value: 'shown' }]);
   });
 
@@ -62,8 +76,19 @@ describe(getRowsFromConfig.name, () => {
       },
     ];
 
-    getRowsFromConfig(config, formattedScheduleDetails, scheduleId);
+    getRowsFromConfig(
+      config,
+      formattedScheduleDetails,
+      scheduleId,
+      domain,
+      cluster
+    );
 
-    expect(hide).toHaveBeenCalledWith({ formattedScheduleDetails, scheduleId });
+    expect(hide).toHaveBeenCalledWith({
+      formattedScheduleDetails,
+      scheduleId,
+      domain,
+      cluster,
+    });
   });
 });

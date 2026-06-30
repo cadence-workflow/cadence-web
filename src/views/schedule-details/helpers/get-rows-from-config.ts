@@ -8,9 +8,11 @@ import {
 export function getRowsFromConfig(
   config: ScheduleDetailRowConfig[],
   formattedScheduleDetails: FormattedScheduleDetails,
-  scheduleId: string
+  scheduleId: string,
+  domain: string,
+  cluster: string
 ): ScheduleDetailsTableRow[] {
-  const args = { formattedScheduleDetails, scheduleId };
+  const args = { formattedScheduleDetails, scheduleId, domain, cluster };
   return config
     .filter((rowConfig) => !rowConfig.hide || !rowConfig.hide(args))
     .map((rowConfig) => ({
