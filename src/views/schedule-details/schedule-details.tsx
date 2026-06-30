@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import PageSection from '@/components/page-section/page-section';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
@@ -23,22 +23,25 @@ export default function ScheduleDetails({ params }: Props) {
     throwOnError: true,
   });
 
-  if (isLoading || isPending) {
-    return <SectionLoadingIndicator />;
-  }
-
   // Should never happen as we have throwOnError set to true but it is for better type safety below
   if (!data) {
     throw new Error('Schedule data is unavailable');
   }
 
-  const formattedScheduleDetails = formatScheduleDetails(data);
+  const formattedScheduleDetails = useMemo(
+    () => formatScheduleDetails(data),
+    [data]
+  );
+
+  if (isLoading || isPending) {
+    return <SectionLoadingIndicator />;
+  }
 
   return (
     <PageSection>
       <ScheduleDetailsPausedBanner
-        paused={data.state?.paused ?? false}
-        pauseInfo={data.state?.pauseInfo ?? null}
+        paused={formattedScheduleDetails.state?.paused ?? false}
+        pauseInfo={formattedScheduleDetails.state?.pauseInfo ?? null}
       />
       <styled.PageContainer>
         <styled.DetailsSectionsContainer>
@@ -61,13 +64,15 @@ export default function ScheduleDetails({ params }: Props) {
             );
           })}
           <ScheduleDetailsBackfillsTable
-            backfills={data.info?.ongoingBackfills ?? []}
+            backfills={formattedScheduleDetails.info?.ongoingBackfills ?? []}
             domain={params.domain}
             cluster={params.cluster}
           />
         </styled.DetailsSectionsContainer>
         <styled.JsonPanel>
-          <ScheduleDetailsInputJson input={data.action?.startWorkflow?.input} />
+          <ScheduleDetailsInputJson
+            input={formattedScheduleDetails.action?.startWorkflow?.input}
+          />
         </styled.JsonPanel>
       </styled.PageContainer>
     </PageSection>
