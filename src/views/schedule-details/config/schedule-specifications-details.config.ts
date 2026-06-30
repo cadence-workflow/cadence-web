@@ -5,7 +5,6 @@ import { type ScheduleDetailRowConfig } from '@/views/schedule-details/schedule-
 import { formatScheduleCronExpression } from '../helpers/format-schedule-cron-expression';
 import { formatScheduleDuration } from '../helpers/format-schedule-duration';
 import { formatScheduleTimestamp } from '../helpers/format-schedule-timestamp';
-import getScheduleDetailsMapBadgeLabels from '../helpers/get-schedule-details-map-badge-labels';
 import ScheduleDetailsBadges from '../schedule-details-badges/schedule-details-badges';
 
 const scheduleSpecificationsDetailsConfig: ScheduleDetailRowConfig[] = [
@@ -63,20 +62,6 @@ const scheduleSpecificationsDetailsConfig: ScheduleDetailRowConfig[] = [
       formatScheduleTimestamp(spec?.endTime),
     hide: ({ formattedScheduleDetails: { spec } }) => !spec?.endTime,
   },
-  {
-    key: 'memo',
-    getLabel: () => 'Memo',
-    getValue: ({ formattedScheduleDetails: { action } }) =>
-      createElement(ScheduleDetailsBadges, {
-        labels: getScheduleDetailsMapBadgeLabels(
-          action?.startWorkflow?.memo?.fields
-        ),
-      }),
-    hide: ({ formattedScheduleDetails: { action } }) =>
-      getScheduleDetailsMapBadgeLabels(action?.startWorkflow?.memo?.fields)
-        .length === 0,
-  },
-
   {
     key: 'jitter',
     getLabel: () => 'Jitter duration',
