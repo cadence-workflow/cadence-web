@@ -17,9 +17,9 @@ export default function ScheduleDetailsBadges({ labels }: Props) {
 
   return (
     <div className={cls.container}>
-      {labels.map((label) => (
+      {labels.map((label, index) => (
         <Badge
-          key={label}
+          key={`${label}-${index}`}
           content={label}
           shape="rectangle"
           color="primary"
