@@ -25,7 +25,12 @@ function parseHeartBeatDetails(
     return { progressError: true };
   }
 
-  return { progress: result.data };
+  // The heartbeat carries both progress counts and the live, signal-tuned rps;
+  // split them so rps surfaces at the top level (overriding the start-input
+  // value) while progress stays counts-only. Omit rps when absent so it never
+  // clobbers the input rps with undefined.
+  const { rps, ...progress } = result.data;
+  return { progress, ...(rps !== undefined ? { rps } : {}) };
 }
 
 // While the batch is running, progress is surfaced on the batcher activity's

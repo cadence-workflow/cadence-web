@@ -169,13 +169,7 @@ function DomainBatchActionsContent(props: DomainPageTabContentProps) {
 
   if (batchActions.length === 0 && !isDraftOpen) {
     return (
-      <styled.Container>
-        <styled.DetailPanel>
-          <DomainBatchActionsNoActionsPlaceholder
-            onCreateNew={handleCreateNew}
-          />
-        </styled.DetailPanel>
-      </styled.Container>
+      <DomainBatchActionsNoActionsPlaceholder onCreateNew={handleCreateNew} />
     );
   }
 
