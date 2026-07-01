@@ -10,8 +10,11 @@ import {
 } from './schedule-actions-enabled.types';
 
 /**
- * If you have authentication enabled for users, override this resolver
- * to control whether users can access schedule actions in the UI.
+ * Override this resolver if you have different
+ * requirements for enabling/disabling schedule actions.
+ *
+ * All schedule actions are enabled by default if authorization is disabled.
+ * Otherwise it is only enabled for users with write access to domain.
  * Domain access is resolved via the DOMAIN_ACCESS config resolver.
  */
 export default async function scheduleActionsEnabled(
