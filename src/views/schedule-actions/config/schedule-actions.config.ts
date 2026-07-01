@@ -61,6 +61,9 @@ const resumeScheduleActionConfig: ScheduleAction<UnpauseScheduleResponse> = {
 const scheduleActionsConfig = [
   pauseScheduleActionConfig,
   resumeScheduleActionConfig,
-] as const satisfies ScheduleAction<any, any, any>[];
+] as const;
+
+/** Discriminated union of configured actions; use at menu/selection boundaries. */
+export type SelectableScheduleAction = (typeof scheduleActionsConfig)[number];
 
 export default scheduleActionsConfig;

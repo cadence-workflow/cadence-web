@@ -16,7 +16,10 @@ import useDescribeSchedule from '@/views/shared/hooks/use-describe-schedule/use-
 import ScheduleActionsMenu from './schedule-actions-menu/schedule-actions-menu';
 import ScheduleActionsModal from './schedule-actions-modal/schedule-actions-modal';
 import { overrides } from './schedule-actions.styles';
-import { type ScheduleAction } from './schedule-actions.types';
+import { type SelectableScheduleAction } from './config/schedule-actions.config';
+import {
+  type ErasedScheduleAction,
+} from './schedule-actions.types';
 
 export default function ScheduleActions() {
   const params = useParams<SchedulePageLayoutParams>();
@@ -31,7 +34,7 @@ export default function ScheduleActions() {
   });
 
   const [selectedAction, setSelectedAction] = useState<
-    ScheduleAction<any, any, any> | undefined
+    SelectableScheduleAction | undefined
   >(undefined);
 
   if (scheduleError) {
@@ -68,7 +71,7 @@ export default function ScheduleActions() {
       <ScheduleActionsModal
         {...scheduleDetailsParams}
         schedule={schedule}
-        action={selectedAction}
+        action={selectedAction as ErasedScheduleAction | undefined}
         onClose={() => setSelectedAction(undefined)}
       />
     </>

@@ -112,3 +112,6 @@ export type ScheduleAction<
     router: AppRouterInstance;
   }) => void;
 };
+
+/** Erases per-action generics for the generic modal boundary. */
+export type ErasedScheduleAction = ScheduleAction<any, any, any>;
