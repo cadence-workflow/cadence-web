@@ -10,8 +10,10 @@ import {
 } from './workflow-actions-enabled.types';
 
 /**
- * If you have authentication enabled for users, override this resolver
- * to control whether users can access workflow actions in the UI.
+ * Override this resolver if you have different
+ * requirements for enabling/disabling workflow actions.
+ *
+ * All workflow actions are enabled by default for users with write access to the domain.
  * Domain access is resolved via the DOMAIN_ACCESS config resolver.
  */
 export default async function workflowActionsEnabled(
