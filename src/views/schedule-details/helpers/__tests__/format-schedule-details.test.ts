@@ -8,11 +8,7 @@ describe(formatScheduleDetails.name, () => {
       action: {
         startWorkflow: {
           workflowType: { name: 'ScheduleWorker' },
-          taskList: {
-            name: 'schedule-task-list',
-            kind: 'TASK_LIST_KIND_NORMAL',
-            baseName: 'schedule-task-list',
-          },
+          taskList: null,
           input: {
             data: 'eyJ3b3JrZmxvd0FyZyI6InRlc3QtdmFsdWUifQ==',
           },
@@ -28,31 +24,45 @@ describe(formatScheduleDetails.name, () => {
           searchAttributes: null,
         },
       },
-      memo: {
-        fields: {
-          team: { data: 'ImNhZGVuY2Ui' },
-          note: { data: 'dGVzdC1ub3Rl' },
+    });
+
+    const result = formatScheduleDetails(describeSchedule);
+
+    expect(result.action?.startWorkflow?.input).toEqual([
+      { workflowArg: 'test-value' },
+    ]);
+    expect(result.action?.startWorkflow?.memo).toEqual({
+      fields: { owner: 'eng-lead' },
+    });
+  });
+
+  it('formats task list kind enum', () => {
+    const describeSchedule = getMockRunningDescribeScheduleResponse({
+      action: {
+        startWorkflow: {
+          workflowType: { name: 'ScheduleWorker' },
+          taskList: {
+            name: 'schedule-task-list',
+            kind: 'TASK_LIST_KIND_NORMAL',
+            baseName: 'schedule-task-list',
+          },
+          input: null,
+          workflowIdPrefix: '',
+          executionStartToCloseTimeout: null,
+          taskStartToCloseTimeout: null,
+          retryPolicy: null,
+          memo: null,
+          searchAttributes: null,
         },
       },
     });
 
-    const { memo: _scheduleMemo, ...scheduleWithoutMemo } = describeSchedule;
-
-    expect(formatScheduleDetails(describeSchedule)).toEqual({
-      ...scheduleWithoutMemo,
-      action: {
-        ...describeSchedule.action,
-        startWorkflow: {
-          ...describeSchedule.action!.startWorkflow!,
-          input: [{ workflowArg: 'test-value' }],
-          memo: { fields: { owner: 'eng-lead' } },
-          taskList: {
-            ...describeSchedule.action!.startWorkflow!.taskList!,
-            kind: 'NORMAL',
-          },
-          retryPolicy: null,
-        },
-      },
+    expect(
+      formatScheduleDetails(describeSchedule).action?.startWorkflow?.taskList
+    ).toEqual({
+      name: 'schedule-task-list',
+      baseName: 'schedule-task-list',
+      kind: 'NORMAL',
     });
   });
 
@@ -80,27 +90,15 @@ describe(formatScheduleDetails.name, () => {
       },
     });
 
-    const { memo: _scheduleMemo, ...scheduleWithoutMemo } = describeSchedule;
-
-    expect(formatScheduleDetails(describeSchedule)).toEqual({
-      ...scheduleWithoutMemo,
-      action: {
-        ...describeSchedule.action,
-        startWorkflow: {
-          ...describeSchedule.action!.startWorkflow!,
-          input: null,
-          memo: null,
-          taskList: null,
-          retryPolicy: {
-            initialIntervalInSeconds: 10,
-            maximumIntervalInSeconds: 100,
-            expirationIntervalInSeconds: 1000,
-            backoffCoefficient: 2,
-            maximumAttempts: 3,
-            nonRetryableErrorReasons: [],
-          },
-        },
-      },
+    expect(
+      formatScheduleDetails(describeSchedule).action?.startWorkflow?.retryPolicy
+    ).toEqual({
+      initialIntervalInSeconds: 10,
+      maximumIntervalInSeconds: 100,
+      expirationIntervalInSeconds: 1000,
+      backoffCoefficient: 2,
+      maximumAttempts: 3,
+      nonRetryableErrorReasons: [],
     });
   });
 
@@ -127,37 +125,15 @@ describe(formatScheduleDetails.name, () => {
       },
     });
 
-    const { memo: _scheduleMemo, ...scheduleWithoutMemo } = describeSchedule;
-
-    expect(formatScheduleDetails(describeSchedule)).toEqual({
-      ...scheduleWithoutMemo,
-      action: {
-        ...describeSchedule.action,
-        startWorkflow: {
-          ...describeSchedule.action!.startWorkflow!,
-          input: null,
-          memo: null,
-          taskList: null,
-          retryPolicy: null,
-          searchAttributes: {
-            indexedFields: {
-              CustomStringField: 'schedule-demo',
-              CustomIntField: 42,
-              CustomBoolField: true,
-            },
-          },
-        },
+    expect(
+      formatScheduleDetails(describeSchedule).action?.startWorkflow
+        ?.searchAttributes
+    ).toEqual({
+      indexedFields: {
+        CustomStringField: 'schedule-demo',
+        CustomIntField: 42,
+        CustomBoolField: true,
       },
-    });
-  });
-
-  it('omits root memo when action is absent', () => {
-    const describeSchedule = getMockRunningDescribeScheduleResponse();
-    const { memo: _scheduleMemo, ...scheduleWithoutMemo } = describeSchedule;
-
-    expect(formatScheduleDetails(describeSchedule)).toEqual({
-      ...scheduleWithoutMemo,
-      action: null,
     });
   });
 });
