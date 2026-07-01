@@ -33,7 +33,6 @@ export type ScheduleActionInput<SubmissionData> = ScheduleActionInputParams & {
 };
 
 export type ScheduleActionFormProps<FormData extends FieldValues> = {
-  formData: FormData;
   fieldErrors: FieldErrors<FormData>;
   control: Control<FormData>;
   clearErrors: UseFormClearErrors<FormData>;
@@ -113,3 +112,6 @@ export type ScheduleAction<
     router: AppRouterInstance;
   }) => void;
 };
+
+/** Erases per-action generics for the generic modal boundary. */
+export type ErasedScheduleAction = ScheduleAction<any, any, any>;
