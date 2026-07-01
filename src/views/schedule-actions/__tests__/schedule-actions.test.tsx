@@ -152,6 +152,7 @@ function setup({
             {
               pause: 'ENABLED',
               resume: 'ENABLED',
+              delete: 'ENABLED',
             },
             { status: 200 }
           );

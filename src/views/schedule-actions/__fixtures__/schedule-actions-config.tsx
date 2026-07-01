@@ -1,4 +1,5 @@
 import {
+  MdDeleteOutline,
   MdOutlineWarningAmber,
   MdPauseCircleOutline,
   MdPlayCircleOutline,
@@ -6,6 +7,7 @@ import {
 import { z } from 'zod';
 
 import { ScheduleCatchUpPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleCatchUpPolicy';
+import { type DeleteScheduleResponse } from '@/route-handlers/delete-schedule/delete-schedule.types';
 import { type PauseScheduleResponse } from '@/route-handlers/pause-schedule/pause-schedule.types';
 import { type UnpauseScheduleResponse } from '@/route-handlers/unpause-schedule/unpause-schedule.types';
 
@@ -95,7 +97,27 @@ export const mockResumeActionConfig: ScheduleAction<
   renderSuccessMessage: () => 'Mock resume notification',
 };
 
+export const mockDeleteActionConfig: ScheduleAction<DeleteScheduleResponse> = {
+  id: 'delete',
+  label: 'Delete',
+  subtitle: 'Mock delete a schedule',
+  modal: {
+    text: 'Deletes the schedule permanently. In-progress workflow runs are not affected.',
+    withForm: false,
+  },
+  icon: MdDeleteOutline,
+  getRunnableStatus: () => 'RUNNABLE',
+  apiRoute: (params) =>
+    `/api/domains/${params.domain}/${params.cluster}/schedules/${params.scheduleId}`,
+  httpMethod: 'DELETE',
+  renderSuccessMessage: () => 'Schedule deleted.',
+  onSuccess: ({ router, params }) => {
+    router.push(`/domains/${params.domain}/${params.cluster}/schedules`);
+  },
+};
+
 export const mockScheduleActionsConfig = [
   mockPauseActionConfig,
   mockResumeActionConfig,
+  mockDeleteActionConfig,
 ] as const;
