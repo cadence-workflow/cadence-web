@@ -1,5 +1,9 @@
 import 'server-only';
 
+import {
+  getGrpcMetadataFromAuth,
+  resolveAuthContext,
+} from '@/utils/auth/auth-context';
 import * as grpcClient from '@/utils/grpc/grpc-client';
 import { GRPCError } from '@/utils/grpc/grpc-error';
 import logger from '@/utils/logger';
@@ -10,7 +14,11 @@ export default async function getDomainsForCluster(
   clusterName: string,
   pageSize: number
 ) {
-  const clusterMethods = await grpcClient.getClusterMethods(clusterName);
+  const authContext = await resolveAuthContext();
+  const clusterMethods = await grpcClient.getClusterMethods(
+    clusterName,
+    getGrpcMetadataFromAuth(authContext)
+  );
 
   return clusterMethods.listDomains({ pageSize }).then(
     ({ domains }) => {
