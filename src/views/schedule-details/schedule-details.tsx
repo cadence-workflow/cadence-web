@@ -6,6 +6,7 @@ import SectionLoadingIndicator from '@/components/section-loading-indicator/sect
 import useDescribeSchedule from '@/views/shared/hooks/use-describe-schedule/use-describe-schedule';
 
 import scheduleDetailsSectionsConfig from './config/schedule-details-sections.config';
+import { formatScheduleDetails } from './helpers/format-schedule-details';
 import { getRowsFromConfig } from './helpers/get-rows-from-config';
 import ScheduleDetailsBackfillsTable from './schedule-details-backfills-table/schedule-details-backfills-table';
 import ScheduleDetailsInputJson from './schedule-details-input-json/schedule-details-input-json';
@@ -31,18 +32,20 @@ export default function ScheduleDetails({ params }: Props) {
     throw new Error('Schedule data is unavailable');
   }
 
+  const formattedScheduleDetails = formatScheduleDetails(data);
+
   return (
     <PageSection>
       <ScheduleDetailsPausedBanner
-        paused={data.state?.paused ?? false}
-        pauseInfo={data.state?.pauseInfo ?? null}
+        paused={formattedScheduleDetails.state?.paused ?? false}
+        pauseInfo={formattedScheduleDetails.state?.pauseInfo ?? null}
       />
       <styled.PageContainer>
         <styled.DetailsSectionsContainer>
           {scheduleDetailsSectionsConfig.map((section) => {
             const rows = getRowsFromConfig(
               section.rowsConfig,
-              data,
+              formattedScheduleDetails,
               params.scheduleId
             );
             if (!rows.length) {
@@ -58,13 +61,15 @@ export default function ScheduleDetails({ params }: Props) {
             );
           })}
           <ScheduleDetailsBackfillsTable
-            backfills={data.info?.ongoingBackfills ?? []}
+            backfills={formattedScheduleDetails.info?.ongoingBackfills ?? []}
             domain={params.domain}
             cluster={params.cluster}
           />
         </styled.DetailsSectionsContainer>
         <styled.JsonPanel>
-          <ScheduleDetailsInputJson input={data.action?.startWorkflow?.input} />
+          <ScheduleDetailsInputJson
+            input={formattedScheduleDetails.action?.startWorkflow?.input}
+          />
         </styled.JsonPanel>
       </styled.PageContainer>
     </PageSection>
