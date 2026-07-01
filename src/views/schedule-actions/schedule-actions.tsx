@@ -10,8 +10,8 @@ import { useParams } from 'next/navigation';
 import { MdArrowDropDown } from 'react-icons/md';
 
 import Button from '@/components/button/button';
-import useDescribeSchedule from '@/views/shared/hooks/use-describe-schedule/use-describe-schedule';
 import { type SchedulePageLayoutParams } from '@/views/schedule-page/schedule-page.types';
+import useDescribeSchedule from '@/views/shared/hooks/use-describe-schedule/use-describe-schedule';
 
 import ScheduleActionsMenu from './schedule-actions-menu/schedule-actions-menu';
 import ScheduleActionsModal from './schedule-actions-modal/schedule-actions-modal';
@@ -20,12 +20,7 @@ import { type ScheduleAction } from './schedule-actions.types';
 
 export default function ScheduleActions() {
   const params = useParams<SchedulePageLayoutParams>();
-  const scheduleDetailsParams = pick(
-    params,
-    'cluster',
-    'scheduleId',
-    'domain'
-  );
+  const scheduleDetailsParams = pick(params, 'cluster', 'scheduleId', 'domain');
 
   const {
     data: schedule,
