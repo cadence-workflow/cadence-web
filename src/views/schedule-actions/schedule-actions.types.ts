@@ -13,11 +13,10 @@ import {
 } from 'react-hook-form';
 import { type z } from 'zod';
 
+import { type ScheduleActionID } from '@/config/dynamic/resolvers/schedule-actions-enabled.types';
 import { type DescribeScheduleResponse } from '@/route-handlers/describe-schedule/describe-schedule.types';
 
 import type SCHEDULE_ACTIONS_NON_RUNNABLE_STATUSES_CONFIG from './config/schedule-actions-non-runnable-statuses.config';
-
-export type ScheduleActionID = 'pause' | 'resume';
 
 export type ScheduleActionInputParams = {
   domain: string;
