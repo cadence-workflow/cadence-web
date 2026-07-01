@@ -142,7 +142,7 @@ function setup({
   const renderResult = render(
     <WorkflowActionsMenu
       workflow={mockDescribeWorkflowResponse}
-      {...(actionsEnabledConfig && { actionsEnabledConfig })}
+      actionsEnabledConfig={actionsEnabledConfig}
       onActionSelect={mockOnActionSelect}
     />
   );
