@@ -1,4 +1,8 @@
-import { MdOutlineWarningAmber, MdPauseCircleOutline, MdPlayCircleOutline } from 'react-icons/md';
+import {
+  MdOutlineWarningAmber,
+  MdPauseCircleOutline,
+  MdPlayCircleOutline,
+} from 'react-icons/md';
 
 import { type PauseScheduleResponse } from '@/route-handlers/pause-schedule/pause-schedule.types';
 import { type UnpauseScheduleResponse } from '@/route-handlers/unpause-schedule/unpause-schedule.types';

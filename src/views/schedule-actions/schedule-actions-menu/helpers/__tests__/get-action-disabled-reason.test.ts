@@ -1,5 +1,4 @@
 import { type ScheduleActionRunnableStatus } from '../../../schedule-actions.types';
-
 import getActionDisabledReason from '../get-action-disabled-reason';
 
 describe(getActionDisabledReason.name, () => {
@@ -28,7 +27,9 @@ describe(getActionDisabledReason.name, () => {
   it('returns undefined when runnable status is not provided', () => {
     expect(
       getActionDisabledReason({
-        actionRunnableStatus: undefined as ScheduleActionRunnableStatus | undefined,
+        actionRunnableStatus: undefined as
+          | ScheduleActionRunnableStatus
+          | undefined,
       })
     ).toBeUndefined();
   });

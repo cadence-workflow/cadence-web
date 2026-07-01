@@ -40,9 +40,7 @@ const pauseScheduleActionConfig: ScheduleAction<
   renderSuccessMessage: () => 'Schedule has been paused.',
 };
 
-const resumeScheduleActionConfig: ScheduleAction<
-  UnpauseScheduleResponse
-> = {
+const resumeScheduleActionConfig: ScheduleAction<UnpauseScheduleResponse> = {
   id: 'resume',
   label: 'Resume',
   subtitle: 'Resume a paused schedule',

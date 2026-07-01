@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { render, screen, userEvent, within } from '@/test-utils/rtl';
+
 import {
   getMockPausedDescribeScheduleResponse,
   getMockRunningDescribeScheduleResponse,
@@ -75,9 +76,7 @@ describe(ScheduleActionsMenu.name, () => {
     const { user } = setup({ schedule: undefined });
 
     await user.hover(screen.getAllByRole('button')[0]);
-    expect(
-      await screen.findByText('Loading schedule...')
-    ).toBeInTheDocument();
+    expect(await screen.findByText('Loading schedule...')).toBeInTheDocument();
   });
 
   it('calls onActionSelect when an enabled action button is clicked', async () => {
