@@ -1,6 +1,3 @@
-import { type ScheduleActionEnabledConfigValue } from '@/config/dynamic/resolvers/schedule-actions-enabled.types';
-
-import { type ScheduleActionRunnableStatus } from '../../../schedule-actions.types';
 import SCHEDULE_ACTIONS_DISABLED_REASONS_CONFIG from '../../../config/schedule-actions-disabled-reasons.config';
 import SCHEDULE_ACTIONS_NON_RUNNABLE_REASONS_CONFIG from '../../../config/schedule-actions-non-runnable-reasons.config';
 import getActionDisabledReason from '../get-action-disabled-reason';
