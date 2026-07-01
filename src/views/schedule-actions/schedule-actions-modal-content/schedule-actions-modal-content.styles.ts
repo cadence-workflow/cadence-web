@@ -30,21 +30,13 @@ export const styled = {
 };
 
 export const overrides = {
-  contextBanner: {
-    Root: {
-      style: {
-        marginTop: 0,
-        marginLeft: 0,
-        marginRight: 0,
-      },
-    },
-  } satisfies BannerOverrides,
   banner: {
     Root: {
       style: {
         marginTop: 0,
         marginLeft: 0,
         marginRight: 0,
+        marginBottom: 0,
       },
     },
   } satisfies BannerOverrides,

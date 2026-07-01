@@ -110,7 +110,7 @@ export default function ScheduleActionsModalContent<
     <Banner
       hierarchy={HIERARCHY.low}
       kind={action.modal.banner.kind}
-      overrides={overrides.contextBanner}
+      overrides={overrides.banner}
       artwork={{
         icon: action.modal.banner.icon,
       }}
