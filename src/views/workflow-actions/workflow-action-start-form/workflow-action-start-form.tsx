@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { DatePicker } from 'baseui/datepicker';
 import { FormControl } from 'baseui/form-control';
@@ -7,22 +7,26 @@ import { RadioGroup, Radio } from 'baseui/radio';
 import { Spinner, SIZE as SPINNER_SIZE } from 'baseui/spinner';
 import { LabelXSmall } from 'baseui/typography';
 import { Controller, useWatch } from 'react-hook-form';
-import { MdWarning } from 'react-icons/md';
+import { MdWarning, MdContentCopy } from 'react-icons/md';
 
 import CronScheduleInput from '@/components/cron-schedule-input/cron-schedule-input';
 import MultiJsonInput from '@/components/multi-json-input/multi-json-input';
 import useDebouncedValue from '@/hooks/use-debounced-value/use-debounced-value';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import { WORKER_SDK_LANGUAGES } from '@/route-handlers/start-workflow/start-workflow.constants';
+import DomainBatchActionsBanner from '@/views/domain-batch-actions/domain-batch-actions-banner/domain-batch-actions-banner';
+import useSearchAttributes from '@/views/shared/hooks/use-search-attributes/use-search-attributes';
 
 import WorkflowActionStartOptionalSection from '../workflow-action-start-optional-section/workflow-action-start-optional-section';
 
 import getFieldErrorMessage from './helpers/get-field-error-message';
 import getFieldObjectErrorMessages from './helpers/get-field-object-error-messages';
 import getMultiJsonErrorMessage from './helpers/get-multi-json-error-message';
+import getStartWorkflowFormPrefill from './helpers/get-start-workflow-form-prefill';
 import getTaskListCaptionMessage from './helpers/get-task-list-caption-message';
 import useDescribeTaskList from './hooks/use-describe-task-list';
 import { TASK_LIST_DEBOUNCE_MS } from './hooks/use-describe-task-list.constants';
+import useWorkflowStartedEvent from './hooks/use-workflow-started-event';
 import { overrides, cssStyles } from './workflow-action-start-form.styles';
 import { type Props } from './workflow-action-start-form.types';
 
@@ -32,11 +36,52 @@ export default function WorkflowActionStartForm({
   clearErrors,
   formData,
   trigger,
+  setValue,
   cluster,
   domain,
+  workflowId,
+  runId,
 }: Props) {
   const now = useMemo(() => new Date(), []);
   const { cls } = useStyletronClasses(cssStyles);
+  const [isPrefillBannerDismissed, setIsPrefillBannerDismissed] =
+    useState(false);
+
+  const { startedEvent } = useWorkflowStartedEvent({
+    domain,
+    cluster,
+    workflowId,
+    runId,
+  });
+
+  // Custom search attributes registry — used to drop prefilled search attributes
+  // the form's editor can't render. undefined until loaded (best-effort prefill).
+  const { data: searchAttributesData } = useSearchAttributes({
+    cluster,
+    category: 'custom',
+  });
+  const validSearchAttributeKeys = useMemo(
+    () =>
+      searchAttributesData?.keys
+        ? new Set(Object.keys(searchAttributesData.keys))
+        : undefined,
+    [searchAttributesData?.keys]
+  );
+
+  const prefill = useMemo(
+    () => getStartWorkflowFormPrefill(startedEvent, validSearchAttributeKeys),
+    [startedEvent, validSearchAttributeKeys]
+  );
+
+  const handlePrefill = () => {
+    if (!prefill) return;
+    (Object.entries(prefill) as [keyof typeof prefill, unknown][]).forEach(
+      ([key, value]) => {
+        setValue(key, value as never, { shouldValidate: true });
+      }
+    );
+    setIsPrefillBannerDismissed(true);
+  };
 
   const scheduleType = useWatch({
     control,
@@ -81,6 +126,17 @@ export default function WorkflowActionStartForm({
 
   return (
     <div>
+      {prefill && !isPrefillBannerDismissed && (
+        <div className={cls.prefillBanner}>
+          <DomainBatchActionsBanner
+            icon={<MdContentCopy />}
+            actionLabel="Prefill"
+            onActionClick={handlePrefill}
+          >
+            Prefill this form with the current workflow&apos;s configuration.
+          </DomainBatchActionsBanner>
+        </div>
+      )}
       <FormControl
         label="Task List"
         caption={
