@@ -5,6 +5,7 @@ import { KIND as BUTTON_KIND, SIZE } from 'baseui/button';
 import { ModalButton } from 'baseui/modal';
 import { useSnackbar } from 'baseui/snackbar';
 import { useRouter } from 'next/navigation';
+import { useEffect, useRef } from 'react';
 import { type DefaultValues, type FieldValues, useForm } from 'react-hook-form';
 import { MdCheckCircle, MdErrorOutline } from 'react-icons/md';
 
@@ -30,6 +31,7 @@ export default function ScheduleActionsModalContent<
   const queryClient = useQueryClient();
   const router = useRouter();
   const { enqueue, dequeue } = useSnackbar();
+  const errorAlertRef = useRef<HTMLDivElement>(null);
 
   type OptionalFormData = FormData extends FieldValues ? FormData : FieldValues;
 
@@ -85,6 +87,12 @@ export default function ScheduleActionsModalContent<
     queryClient
   );
 
+  useEffect(() => {
+    if (error) {
+      errorAlertRef.current?.scrollIntoView({ block: 'start' });
+    }
+  }, [error]);
+
   const onSubmit = (data: OptionalFormData) => {
     mutate({
       ...params,
@@ -115,6 +123,20 @@ export default function ScheduleActionsModalContent<
       <styled.ModalHeader>{`${action.label} schedule`}</styled.ModalHeader>
       <form onSubmit={handleSubmit(onSubmit)}>
         <styled.ModalBody>
+          {error && (
+            <div ref={errorAlertRef} role="alert">
+              <Banner
+                hierarchy={HIERARCHY.low}
+                kind={BANNER_KIND.negative}
+                overrides={overrides.banner}
+                artwork={{
+                  icon: MdErrorOutline,
+                }}
+              >
+                {error.message}
+              </Banner>
+            </div>
+          )}
           {modalBanner ? (
             <styled.ContextBanner>{modalBanner}</styled.ContextBanner>
           ) : null}
@@ -129,18 +151,6 @@ export default function ScheduleActionsModalContent<
                 domain={params.domain}
                 scheduleId={params.scheduleId}
               />
-            )}
-            {error && (
-              <Banner
-                hierarchy={HIERARCHY.low}
-                kind={BANNER_KIND.negative}
-                overrides={overrides.banner}
-                artwork={{
-                  icon: MdErrorOutline,
-                }}
-              >
-                {error.message}
-              </Banner>
             )}
           </styled.ModalBodyContent>
         </styled.ModalBody>

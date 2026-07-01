@@ -33,6 +33,7 @@ jest.mock('next/navigation', () => ({
 describe(ScheduleActionsModalContent.name, () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    HTMLElement.prototype.scrollIntoView = jest.fn();
   });
 
   it('renders the modal content as expected', async () => {
@@ -83,6 +84,9 @@ describe(ScheduleActionsModalContent.name, () => {
 
     await waitFor(() => {
       expect(screen.getByText('Failed to pause schedule')).toBeInTheDocument();
+    });
+    expect(HTMLElement.prototype.scrollIntoView).toHaveBeenCalledWith({
+      block: 'start',
     });
     expect(mockOnClose).not.toHaveBeenCalled();
   });

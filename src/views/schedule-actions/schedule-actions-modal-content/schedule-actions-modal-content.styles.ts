@@ -10,7 +10,10 @@ export const styled = {
   ModalBody: withStyle(ModalBody, ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
     flexDirection: 'column',
+    rowGap: $theme.sizing.scale600,
     marginBottom: $theme.sizing.scale800,
+    overflowY: 'auto',
+    maxHeight: '70vh',
   })),
   ContextBanner: createStyled(
     'div',
