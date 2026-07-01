@@ -24,30 +24,39 @@ const mockInput: PrettyJsonValue = [{ workflowArg: 'test-value' }];
 const mockJson: PrettyJsonValue = { key: 'value', nested: { foo: 'bar' } };
 
 describe(ScheduleDetailsJsonView.name, () => {
-  describe('panel layout', () => {
-    it('renders titled JSON when input is present', () => {
-      setupPanel({});
+  it('renders JSON with PrettyJson', () => {
+    setup({});
+    expect(screen.getByTestId('pretty-json')).toHaveTextContent(
+      JSON.stringify(mockJson)
+    );
+  });
+
+  it('passes formatted JSON to the copy button', () => {
+    setup({});
+    expect(screen.getByTestId('copy-text-button').innerHTML).toMatch(
+      losslessJsonStringify(mockJson, null, '\t')
+    );
+  });
+
+  it('renders null JSON when json is null', () => {
+    setup({ json: null });
+    expect(screen.getByTestId('pretty-json')).toHaveTextContent('null');
+  });
+
+  describe('title', () => {
+    it('renders the title when provided', () => {
+      setup({ title: 'Input', json: mockInput });
       expect(screen.getByText('Input')).toBeInTheDocument();
-      expect(screen.getByTestId('pretty-json')).toHaveTextContent(
-        JSON.stringify(mockInput)
-      );
     });
 
-    it('passes formatted JSON to the copy button', () => {
-      setupPanel({});
-      expect(screen.getByTestId('copy-text-button').innerHTML).toMatch(
-        losslessJsonStringify(mockInput, null, '\t')
-      );
-    });
-
-    it('renders null JSON when input is missing', () => {
-      setupPanel({ json: null });
-      expect(screen.getByText('Input')).toBeInTheDocument();
-      expect(screen.getByTestId('pretty-json')).toHaveTextContent('null');
+    it('does not render a title when omitted', () => {
+      setup({ limitHeight: true });
+      expect(screen.queryByText('Input')).not.toBeInTheDocument();
     });
 
     it('renders multiple workflow inputs', () => {
-      setupPanel({
+      setup({
+        title: 'Input',
         json: [
           { name: 'John', age: 30 },
           { name: 'Jane', age: 25 },
@@ -62,35 +71,35 @@ describe(ScheduleDetailsJsonView.name, () => {
     });
   });
 
-  describe('inline layout', () => {
-    it('renders JSON with PrettyJson', () => {
-      setupInline({ json: mockJson });
-      expect(screen.getByTestId('pretty-json')).toHaveTextContent(
-        JSON.stringify(mockJson)
-      );
+  describe('limitHeight', () => {
+    it('applies a max height when enabled', () => {
+      setup({ limitHeight: true });
+      expect(getBodyElement()).toHaveStyle({
+        maxHeight: '50vh',
+        overflow: 'auto',
+      });
     });
 
-    it('passes formatted JSON to the copy button', () => {
-      setupInline({ json: mockJson });
-      expect(screen.getByTestId('copy-text-button').innerHTML).toMatch(
-        losslessJsonStringify(mockJson, null, '\t')
-      );
+    it('does not apply a max height by default', () => {
+      setup({ title: 'Input', json: mockInput });
+      expect(getBodyElement()).not.toHaveStyle({ maxHeight: '50vh' });
     });
 
-    it('renders null JSON when json is null', () => {
-      setupInline({ json: null });
-      expect(screen.getByTestId('pretty-json')).toHaveTextContent('null');
+    it('can be enabled alongside a title', () => {
+      setup({ title: 'Input', json: mockInput, limitHeight: true });
+      expect(screen.getByText('Input')).toBeInTheDocument();
+      expect(getBodyElement()).toHaveStyle({
+        maxHeight: '50vh',
+        overflow: 'auto',
+      });
     });
   });
 });
 
-function setupPanel({
-  json = mockInput,
-  title = 'Input',
-}: Partial<Pick<Props, 'json' | 'title'>> = {}) {
-  render(<ScheduleDetailsJsonView json={json} title={title} />);
+function setup({ json = mockJson, ...rest }: Partial<Props> = {}) {
+  render(<ScheduleDetailsJsonView json={json} {...rest} />);
 }
 
-function setupInline({ json }: Pick<Props, 'json'>) {
-  render(<ScheduleDetailsJsonView json={json} />);
+function getBodyElement() {
+  return screen.getByTestId('pretty-json').parentElement as HTMLElement;
 }

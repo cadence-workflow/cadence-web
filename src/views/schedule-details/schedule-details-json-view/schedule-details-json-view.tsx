@@ -8,38 +8,29 @@ import losslessJsonStringify from '@/utils/lossless-json-stringify';
 import { overrides, styled } from './schedule-details-json-view.styles';
 import { type Props } from './schedule-details-json-view.types';
 
-export default function ScheduleDetailsJsonView({ json, title }: Props) {
+export default function ScheduleDetailsJsonView({
+  json,
+  title,
+  limitHeight,
+}: Props) {
   const textToCopy = useMemo(
     () => losslessJsonStringify(json, null, '\t'),
     [json]
   );
-
-  if (title) {
-    return (
-      <styled.PanelContainer>
-        <styled.PanelHeader>
-          <styled.PanelTitle>{title}</styled.PanelTitle>
-          <CopyTextButton
-            textToCopy={textToCopy}
-            overrides={overrides.copyButton}
-          />
-        </styled.PanelHeader>
-        <PrettyJson json={json} />
-      </styled.PanelContainer>
-    );
-  }
+  const noTitle = !title;
 
   return (
-    <styled.InlineWrapper>
-      <styled.InlineContainer>
-        <styled.InlineHeader>
+    <styled.Root $noTitle={noTitle}>
+      <styled.Body $limitHeight={limitHeight}>
+        <styled.Header $noTitle={noTitle}>
+          {title && <styled.Title>{title}</styled.Title>}
           <CopyTextButton
             textToCopy={textToCopy}
             overrides={overrides.copyButton}
           />
-        </styled.InlineHeader>
+        </styled.Header>
         <PrettyJson json={json} />
-      </styled.InlineContainer>
-    </styled.InlineWrapper>
+      </styled.Body>
+    </styled.Root>
   );
 }

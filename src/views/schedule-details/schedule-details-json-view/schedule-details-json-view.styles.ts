@@ -2,36 +2,43 @@ import { styled as createStyled, type Theme } from 'baseui';
 import { type ButtonOverrides } from 'baseui/button';
 
 export const styled = {
-  PanelContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
-    padding: $theme.sizing.scale600,
-    backgroundColor: $theme.colors.backgroundSecondary,
-    borderRadius: $theme.borders.radius300,
+  Root: createStyled<'div', { $noTitle?: boolean }>('div', ({ $noTitle }) => ({
+    ...($noTitle && {
+      position: 'relative',
+      width: '100%',
+    }),
   })),
-  PanelHeader: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
-    display: 'flex',
-    justifyContent: 'space-between',
-    gap: $theme.sizing.scale600,
-    marginBottom: $theme.sizing.scale700,
-  })),
-  PanelTitle: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+  Body: createStyled<'div', { $limitHeight?: boolean }>(
+    'div',
+    ({ $theme, $limitHeight }) => ({
+      padding: $theme.sizing.scale600,
+      backgroundColor: $theme.colors.backgroundSecondary,
+      borderRadius: $theme.borders.radius300,
+      ...($limitHeight && {
+        maxHeight: '50vh',
+        overflow: 'auto',
+      }),
+    })
+  ),
+  Header: createStyled<'div', { $noTitle?: boolean }>(
+    'div',
+    ({ $theme, $noTitle }) => ({
+      display: 'flex',
+      ...($noTitle
+        ? {
+            position: 'absolute',
+            right: $theme.sizing.scale400,
+            top: $theme.sizing.scale400,
+          }
+        : {
+            justifyContent: 'space-between',
+            gap: $theme.sizing.scale600,
+            marginBottom: $theme.sizing.scale700,
+          }),
+    })
+  ),
+  Title: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     ...$theme.typography.LabelSmall,
-  })),
-  InlineWrapper: createStyled('div', {
-    position: 'relative',
-    width: '100%',
-  }),
-  InlineContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
-    padding: $theme.sizing.scale600,
-    backgroundColor: $theme.colors.backgroundSecondary,
-    borderRadius: $theme.borders.radius300,
-    maxHeight: '50vh',
-    overflow: 'auto',
-  })),
-  InlineHeader: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
-    display: 'flex',
-    position: 'absolute',
-    right: $theme.sizing.scale400,
-    top: $theme.sizing.scale400,
   })),
 };
 

@@ -84,6 +84,7 @@ const scheduleActionDetailsConfig: ScheduleDetailRowConfig[] = [
     getValue: ({ formattedScheduleDetails: { action } }) =>
       createElement(ScheduleDetailsJsonView, {
         json: action?.startWorkflow?.retryPolicy ?? null,
+        limitHeight: true,
       }),
     hide: ({ formattedScheduleDetails: { action } }) =>
       !action?.startWorkflow?.retryPolicy,
