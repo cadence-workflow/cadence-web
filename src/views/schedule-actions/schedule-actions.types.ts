@@ -59,10 +59,10 @@ export type ScheduleActionRunnableStatus =
 
 export type ScheduleActionBannerKind = keyof typeof BANNER_KIND;
 
-export type ScheduleActionIcon = React.ComponentType<{
+export type ScheduleActionIcon = (props: {
   size?: IconProps['size'];
   color?: IconProps['color'];
-}>;
+}) => ReactNode;
 
 export type ScheduleActionModalBanner = {
   kind: ScheduleActionBannerKind;
