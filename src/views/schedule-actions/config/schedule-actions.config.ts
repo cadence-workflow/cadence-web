@@ -12,8 +12,6 @@ import {
   type ScheduleAction,
 } from '../schedule-actions.types';
 
-import { PAUSE_SCHEDULE_MODAL_BANNER_MESSAGE } from './schedule-actions.constants';
-
 const pauseScheduleActionConfig: ScheduleAction<
   PauseScheduleResponse,
   undefined,
@@ -26,7 +24,8 @@ const pauseScheduleActionConfig: ScheduleAction<
     banner: {
       kind: 'warning',
       icon: MdOutlineWarningAmber,
-      render: () => PAUSE_SCHEDULE_MODAL_BANNER_MESSAGE,
+      render: () =>
+        'Pausing stops new executions but does not stop workflows already in progress.',
     },
     withForm: false,
   },

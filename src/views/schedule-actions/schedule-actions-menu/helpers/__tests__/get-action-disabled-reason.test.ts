@@ -1,6 +1,8 @@
 import { type ScheduleActionEnabledConfigValue } from '@/config/dynamic/resolvers/schedule-actions-enabled.types';
 
 import { type ScheduleActionRunnableStatus } from '../../../schedule-actions.types';
+import SCHEDULE_ACTIONS_DISABLED_REASONS_CONFIG from '../../../config/schedule-actions-disabled-reasons.config';
+import SCHEDULE_ACTIONS_NON_RUNNABLE_REASONS_CONFIG from '../../../config/schedule-actions-non-runnable-reasons.config';
 import getActionDisabledReason from '../get-action-disabled-reason';
 
 describe(getActionDisabledReason.name, () => {
@@ -19,7 +21,7 @@ describe(getActionDisabledReason.name, () => {
         actionEnabledConfig: 'DISABLED_DEFAULT',
         actionRunnableStatus: 'RUNNABLE',
       })
-    ).toBe('Schedule action has been disabled');
+    ).toBe(SCHEDULE_ACTIONS_DISABLED_REASONS_CONFIG.DISABLED_DEFAULT);
   });
 
   it('returns reason when action is disabled due to unauthorized access', () => {
@@ -28,7 +30,7 @@ describe(getActionDisabledReason.name, () => {
         actionEnabledConfig: 'DISABLED_UNAUTHORIZED',
         actionRunnableStatus: 'RUNNABLE',
       })
-    ).toBe('Not authorized to perform this action');
+    ).toBe(SCHEDULE_ACTIONS_DISABLED_REASONS_CONFIG.DISABLED_UNAUTHORIZED);
   });
 
   it('returns disabled reason over non-runnable reason when both apply', () => {
@@ -37,7 +39,7 @@ describe(getActionDisabledReason.name, () => {
         actionEnabledConfig: 'DISABLED_DEFAULT',
         actionRunnableStatus: 'NOT_RUNNABLE_SCHEDULE_ALREADY_PAUSED',
       })
-    ).toBe('Schedule action has been disabled');
+    ).toBe(SCHEDULE_ACTIONS_DISABLED_REASONS_CONFIG.DISABLED_DEFAULT);
   });
 
   it('returns reason when schedule is already paused', () => {
@@ -46,7 +48,9 @@ describe(getActionDisabledReason.name, () => {
         actionEnabledConfig: 'ENABLED',
         actionRunnableStatus: 'NOT_RUNNABLE_SCHEDULE_ALREADY_PAUSED',
       })
-    ).toBe('Schedule is already paused');
+    ).toBe(
+      SCHEDULE_ACTIONS_NON_RUNNABLE_REASONS_CONFIG.NOT_RUNNABLE_SCHEDULE_ALREADY_PAUSED
+    );
   });
 
   it('returns reason when schedule is not paused', () => {
@@ -55,7 +59,9 @@ describe(getActionDisabledReason.name, () => {
         actionEnabledConfig: 'ENABLED',
         actionRunnableStatus: 'NOT_RUNNABLE_SCHEDULE_NOT_PAUSED',
       })
-    ).toBe('Schedule is not paused');
+    ).toBe(
+      SCHEDULE_ACTIONS_NON_RUNNABLE_REASONS_CONFIG.NOT_RUNNABLE_SCHEDULE_NOT_PAUSED
+    );
   });
 
   it('returns disabled default reason when no config is provided', () => {
@@ -63,30 +69,33 @@ describe(getActionDisabledReason.name, () => {
       getActionDisabledReason({
         actionRunnableStatus: 'RUNNABLE',
       })
-    ).toBe('Schedule action has been disabled');
+    ).toBe(SCHEDULE_ACTIONS_DISABLED_REASONS_CONFIG.DISABLED_DEFAULT);
   });
 
-  it('returns undefined when runnable status is not provided', () => {
+  it('returns undefined when schedule is loading and action is enabled', () => {
     expect(
       getActionDisabledReason({
         actionEnabledConfig: 'ENABLED',
-        actionRunnableStatus: undefined as
-          | ScheduleActionRunnableStatus
-          | undefined,
+        actionRunnableStatus: undefined,
       })
     ).toBeUndefined();
   });
 
-  it('returns undefined when neither config nor runnable status is provided', () => {
+  it('returns disabled reason when schedule is loading and action is disabled from config', () => {
     expect(
       getActionDisabledReason({
-        actionEnabledConfig: undefined as
-          | ScheduleActionEnabledConfigValue
-          | undefined,
-        actionRunnableStatus: undefined as
-          | ScheduleActionRunnableStatus
-          | undefined,
+        actionEnabledConfig: 'DISABLED_UNAUTHORIZED',
+        actionRunnableStatus: undefined,
       })
-    ).toBeUndefined();
+    ).toBe(SCHEDULE_ACTIONS_DISABLED_REASONS_CONFIG.DISABLED_UNAUTHORIZED);
+  });
+
+  it('returns disabled default reason when config is not loaded', () => {
+    expect(
+      getActionDisabledReason({
+        actionEnabledConfig: undefined,
+        actionRunnableStatus: undefined,
+      })
+    ).toBe(SCHEDULE_ACTIONS_DISABLED_REASONS_CONFIG.DISABLED_DEFAULT);
   });
 });

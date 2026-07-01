@@ -11,14 +11,14 @@ export default function getActionDisabledReason({
   actionEnabledConfig?: ScheduleActionEnabledConfigValue;
   actionRunnableStatus?: ScheduleActionRunnableStatus;
 }): string | undefined {
-  if (!actionRunnableStatus) {
-    return undefined;
-  }
-
   if (actionEnabledConfig !== 'ENABLED') {
     return SCHEDULE_ACTIONS_DISABLED_REASONS_CONFIG[
       actionEnabledConfig ?? 'DISABLED_DEFAULT'
     ];
+  }
+
+  if (!actionRunnableStatus) {
+    return undefined;
   }
 
   if (actionRunnableStatus !== 'RUNNABLE') {
