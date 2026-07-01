@@ -6,9 +6,8 @@ import {
   type ScheduleActionEnabledConfigValue,
   type ScheduleActionsEnabledConfig,
 } from '@/config/dynamic/resolvers/schedule-actions-enabled.types';
-import mockResolvedConfigValues from '@/utils/config/__fixtures__/resolved-config-values';
-
 import { mockDescribeScheduleResponse } from '@/route-handlers/describe-schedule/__fixtures__/mock-describe-schedule-response';
+import mockResolvedConfigValues from '@/utils/config/__fixtures__/resolved-config-values';
 
 import { mockScheduleActionsConfig } from '../../__fixtures__/schedule-actions-config';
 import ScheduleActionsMenu from '../schedule-actions-menu';
