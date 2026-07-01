@@ -21,7 +21,7 @@ jest.mock('@/components/pretty-json/pretty-json', () =>
 );
 
 const mockInput: PrettyJsonValue = [{ workflowArg: 'test-value' }];
-const mockMemo: PrettyJsonValue = { team: 'cadence', note: 'test-note' };
+const mockJson: PrettyJsonValue = { key: 'value', nested: { foo: 'bar' } };
 
 describe(ScheduleDetailsJsonView.name, () => {
   describe('panel layout', () => {
@@ -63,21 +63,21 @@ describe(ScheduleDetailsJsonView.name, () => {
   });
 
   describe('inline layout', () => {
-    it('renders formatted memo fields with PrettyJson', () => {
-      setupInline({ json: mockMemo });
+    it('renders JSON with PrettyJson', () => {
+      setupInline({ json: mockJson });
       expect(screen.getByTestId('pretty-json')).toHaveTextContent(
-        JSON.stringify(mockMemo)
+        JSON.stringify(mockJson)
       );
     });
 
-    it('renders copy text button with formatted memo JSON', () => {
-      setupInline({ json: mockMemo });
+    it('passes formatted JSON to the copy button', () => {
+      setupInline({ json: mockJson });
       expect(screen.getByTestId('copy-text-button').innerHTML).toMatch(
-        losslessJsonStringify(mockMemo, null, '\t')
+        losslessJsonStringify(mockJson, null, '\t')
       );
     });
 
-    it('renders null JSON when memo is absent', () => {
+    it('renders null JSON when json is null', () => {
       setupInline({ json: null });
       expect(screen.getByTestId('pretty-json')).toHaveTextContent('null');
     });
