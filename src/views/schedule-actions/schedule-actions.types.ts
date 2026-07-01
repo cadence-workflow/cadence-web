@@ -59,13 +59,14 @@ export type ScheduleActionRunnableStatus =
 
 export type ScheduleActionBannerKind = keyof typeof BANNER_KIND;
 
-export type ScheduleActionBannerIcon = (props: {
-  size: IconProps['size'];
-}) => ReactNode;
+export type ScheduleActionIcon = React.ComponentType<{
+  size?: IconProps['size'];
+  color?: IconProps['color'];
+}>;
 
 export type ScheduleActionModalBanner = {
   kind: ScheduleActionBannerKind;
-  icon: ScheduleActionBannerIcon;
+  icon: ScheduleActionIcon;
   render: (schedule?: DescribeScheduleResponse) => ReactNode;
 };
 
@@ -98,10 +99,7 @@ export type ScheduleAction<
   modal: {
     banner?: ScheduleActionModalBanner;
   } & ScheduleActionModalForm<FormData, SubmissionData>;
-  icon: React.ComponentType<{
-    size?: IconProps['size'];
-    color?: IconProps['color'];
-  }>;
+  icon: ScheduleActionIcon;
   getRunnableStatus: (
     schedule: DescribeScheduleResponse
   ) => ScheduleActionRunnableStatus;

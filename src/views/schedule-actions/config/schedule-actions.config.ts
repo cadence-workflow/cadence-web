@@ -1,4 +1,8 @@
-import { MdPauseCircleOutline, MdPlayCircleOutline } from 'react-icons/md';
+import {
+  MdOutlineWarningAmber,
+  MdPauseCircleOutline,
+  MdPlayCircleOutline,
+} from 'react-icons/md';
 
 import { type PauseScheduleResponse } from '@/route-handlers/pause-schedule/pause-schedule.types';
 import { type UnpauseScheduleResponse } from '@/route-handlers/unpause-schedule/unpause-schedule.types';
@@ -8,7 +12,6 @@ import {
   type ScheduleAction,
 } from '../schedule-actions.types';
 
-import { pauseScheduleBannerIcon } from './schedule-actions-banner-icons';
 import { PAUSE_SCHEDULE_MODAL_BANNER_MESSAGE } from './schedule-actions.constants';
 
 const pauseScheduleActionConfig: ScheduleAction<
@@ -22,7 +25,7 @@ const pauseScheduleActionConfig: ScheduleAction<
   modal: {
     banner: {
       kind: 'warning',
-      icon: pauseScheduleBannerIcon,
+      icon: MdOutlineWarningAmber,
       render: () => PAUSE_SCHEDULE_MODAL_BANNER_MESSAGE,
     },
     withForm: false,
@@ -34,6 +37,7 @@ const pauseScheduleActionConfig: ScheduleAction<
       : 'RUNNABLE',
   apiRoute: (params) =>
     `/api/domains/${encodeURIComponent(params.domain)}/${encodeURIComponent(params.cluster)}/schedules/${encodeURIComponent(params.scheduleId)}/pause`,
+  // TODO: get reason from UI form
   getConfirmSubmissionData: () => ({
     reason: 'Paused from Cadence Web UI',
   }),

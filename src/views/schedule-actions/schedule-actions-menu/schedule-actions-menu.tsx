@@ -7,20 +7,20 @@ import getActionDisabledReason from './helpers/get-action-disabled-reason';
 import { overrides, styled } from './schedule-actions-menu.styles';
 import { type Props } from './schedule-actions-menu.types';
 
-const SCHEDULE_LOADING_DISABLED_REASON = 'Loading schedule...';
-
 export default function ScheduleActionsMenu({
   schedule,
+  actionsEnabledConfig,
   onActionSelect,
 }: Props) {
   return (
     <styled.MenuItemsContainer>
       {scheduleActionsConfig.map((action) => {
-        const actionDisabledReason = schedule
-          ? getActionDisabledReason({
-              actionRunnableStatus: action.getRunnableStatus(schedule),
-            })
-          : SCHEDULE_LOADING_DISABLED_REASON;
+        const actionDisabledReason = getActionDisabledReason({
+          actionEnabledConfig: actionsEnabledConfig?.[action.id],
+          actionRunnableStatus: schedule
+            ? action.getRunnableStatus(schedule)
+            : undefined,
+        });
 
         return (
           <StatefulTooltip
