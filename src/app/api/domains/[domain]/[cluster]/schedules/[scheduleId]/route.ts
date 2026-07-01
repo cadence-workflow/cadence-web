@@ -1,5 +1,6 @@
 import { type NextRequest } from 'next/server';
 
+import { deleteSchedule } from '@/route-handlers/delete-schedule/delete-schedule';
 import { describeSchedule } from '@/route-handlers/describe-schedule/describe-schedule';
 import { type RouteParams } from '@/route-handlers/describe-schedule/describe-schedule.types';
 import { routeHandlerWithMiddlewares } from '@/utils/route-handlers-middleware';
@@ -11,6 +12,18 @@ export async function GET(
 ) {
   return routeHandlerWithMiddlewares(
     describeSchedule,
+    request,
+    options,
+    routeHandlersDefaultMiddlewares
+  );
+}
+
+export async function DELETE(
+  request: NextRequest,
+  options: { params: RouteParams }
+) {
+  return routeHandlerWithMiddlewares(
+    deleteSchedule,
     request,
     options,
     routeHandlersDefaultMiddlewares

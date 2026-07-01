@@ -1,5 +1,3 @@
-import React from 'react';
-
 import SchedulePageHeader from './schedule-page-header/schedule-page-header';
 import SchedulePageTabs from './schedule-page-tabs/schedule-page-tabs';
 import { type Props } from './schedule-page.types';

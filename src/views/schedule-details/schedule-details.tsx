@@ -9,6 +9,7 @@ import scheduleDetailsSectionsConfig from './config/schedule-details-sections.co
 import { getRowsFromConfig } from './helpers/get-rows-from-config';
 import ScheduleDetailsBackfillsTable from './schedule-details-backfills-table/schedule-details-backfills-table';
 import ScheduleDetailsInputJson from './schedule-details-input-json/schedule-details-input-json';
+import ScheduleDetailsPausedBanner from './schedule-details-paused-banner/schedule-details-paused-banner';
 import ScheduleDetailsSection from './schedule-details-section/schedule-details-section';
 import { styled } from './schedule-details.styles';
 import { type Props } from './schedule-details.types';
@@ -32,6 +33,10 @@ export default function ScheduleDetails({ params }: Props) {
 
   return (
     <PageSection>
+      <ScheduleDetailsPausedBanner
+        paused={data.state?.paused ?? false}
+        pauseInfo={data.state?.pauseInfo ?? null}
+      />
       <styled.PageContainer>
         <styled.DetailsSectionsContainer>
           {scheduleDetailsSectionsConfig.map((section) => {
