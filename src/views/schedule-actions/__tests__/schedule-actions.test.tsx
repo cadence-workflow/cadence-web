@@ -30,12 +30,18 @@ jest.mock('../schedule-actions-modal/schedule-actions-modal', () =>
 
 jest.mock('../schedule-actions-menu/schedule-actions-menu', () =>
   jest.fn((props) => {
+    const areAllActionsDisabled = props.actionsEnabledConfig
+      ? Object.entries(props.actionsEnabledConfig).every(
+          ([_, value]) => value !== 'ENABLED'
+        )
+      : true;
+
     return (
       <div
         onClick={() => props.onActionSelect(mockScheduleActionsConfig[0])}
         data-testid="actions-menu"
       >
-        Actions Menu
+        Actions Menu{areAllActionsDisabled ? ' (disabled)' : ''}
       </div>
     );
   })
@@ -74,6 +80,17 @@ describe(ScheduleActions.name, () => {
     expect(await screen.findByTestId('actions-menu')).toBeInTheDocument();
   });
 
+  it('renders the button with disabled configs if config fetching fails', async () => {
+    const { user } = setup({ isConfigError: true });
+
+    const actionsButton = await screen.findByRole('button');
+    await user.click(actionsButton);
+
+    const actionsMenu = await screen.findByTestId('actions-menu');
+    expect(actionsMenu).toBeInTheDocument();
+    expect(actionsMenu).toHaveTextContent('Actions Menu (disabled)');
+  });
+
   it('shows the modal when a menu option is clicked', async () => {
     const { user } = setup({});
 
@@ -93,7 +110,13 @@ describe(ScheduleActions.name, () => {
   });
 });
 
-function setup({ isError = false }: { isError?: boolean }) {
+function setup({
+  isError = false,
+  isConfigError = false,
+}: {
+  isError?: boolean;
+  isConfigError?: boolean;
+}) {
   const user = userEvent.setup();
 
   render(<ScheduleActions />, {
@@ -111,6 +134,27 @@ function setup({ isError = false }: { isError?: boolean }) {
           }
 
           return HttpResponse.json(mockDescribeScheduleResponse);
+        },
+      },
+      {
+        path: '/api/config',
+        httpMethod: 'GET',
+        mockOnce: false,
+        httpResolver: () => {
+          if (isConfigError) {
+            return HttpResponse.json(
+              { message: 'Failed to fetch config' },
+              { status: 500 }
+            );
+          }
+
+          return HttpResponse.json(
+            {
+              pause: 'ENABLED',
+              resume: 'ENABLED',
+            },
+            { status: 200 }
+          );
         },
       },
     ],

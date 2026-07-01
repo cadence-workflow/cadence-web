@@ -10,16 +10,15 @@ import { useParams } from 'next/navigation';
 import { MdArrowDropDown } from 'react-icons/md';
 
 import Button from '@/components/button/button';
+import useConfigValue from '@/hooks/use-config-value/use-config-value';
 import { type SchedulePageLayoutParams } from '@/views/schedule-page/schedule-page.types';
 import useDescribeSchedule from '@/views/shared/hooks/use-describe-schedule/use-describe-schedule';
 
+import { type SelectableScheduleAction } from './config/schedule-actions.config';
 import ScheduleActionsMenu from './schedule-actions-menu/schedule-actions-menu';
 import ScheduleActionsModal from './schedule-actions-modal/schedule-actions-modal';
 import { overrides } from './schedule-actions.styles';
-import { type SelectableScheduleAction } from './config/schedule-actions.config';
-import {
-  type ErasedScheduleAction,
-} from './schedule-actions.types';
+import { type ErasedScheduleAction } from './schedule-actions.types';
 
 export default function ScheduleActions() {
   const params = useParams<SchedulePageLayoutParams>();
@@ -32,6 +31,12 @@ export default function ScheduleActions() {
   } = useDescribeSchedule({
     ...scheduleDetailsParams,
   });
+
+  const { data: actionsEnabledConfig, isLoading: isActionsEnabledLoading } =
+    useConfigValue('SCHEDULE_ACTIONS_ENABLED', {
+      domain: params.domain,
+      cluster: params.cluster,
+    });
 
   const [selectedAction, setSelectedAction] = useState<
     SelectableScheduleAction | undefined
@@ -49,6 +54,7 @@ export default function ScheduleActions() {
         content={({ close }) => (
           <ScheduleActionsMenu
             schedule={schedule}
+            actionsEnabledConfig={actionsEnabledConfig}
             onActionSelect={(action) => {
               setSelectedAction(action);
               close();
@@ -63,7 +69,7 @@ export default function ScheduleActions() {
           kind="secondary"
           endEnhancer={<MdArrowDropDown size={20} />}
           loadingIndicatorType="skeleton"
-          isLoading={isScheduleLoading}
+          isLoading={isScheduleLoading || isActionsEnabledLoading}
         >
           Schedule Actions
         </Button>
