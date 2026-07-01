@@ -3,6 +3,7 @@ import { HttpResponse } from 'msw';
 import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
 import { type PauseScheduleResponse } from '@/route-handlers/pause-schedule/pause-schedule.types';
+import { type UnpauseScheduleResponse } from '@/route-handlers/unpause-schedule/unpause-schedule.types';
 
 import { mockScheduleActionsConfig } from '../../__fixtures__/schedule-actions-config';
 import { type ScheduleAction } from '../../schedule-actions.types';
@@ -90,6 +91,28 @@ describe(ScheduleActionsModalContent.name, () => {
     });
     expect(mockOnClose).not.toHaveBeenCalled();
   });
+
+  it('calls resume API with default submission when confirmed', async () => {
+    const { user, mockOnClose, getLatestRequestBody, waitForRequest } = setup({
+      actionConfig: mockScheduleActionsConfig[1],
+    });
+
+    await user.click(
+      await screen.findByRole('button', { name: 'Mock resume schedule' })
+    );
+
+    await waitForRequest();
+    expect(getLatestRequestBody()).toEqual({});
+
+    await waitFor(() => {
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'Mock resume notification',
+        })
+      );
+    });
+    expect(mockOnClose).toHaveBeenCalled();
+  });
 });
 
 function setup({
@@ -131,7 +154,9 @@ function setup({
               );
             }
 
-            return HttpResponse.json({} satisfies PauseScheduleResponse);
+            return HttpResponse.json(
+              {} satisfies PauseScheduleResponse | UnpauseScheduleResponse
+            );
           },
         },
       ],

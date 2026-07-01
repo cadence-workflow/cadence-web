@@ -46,7 +46,12 @@ export default function ScheduleActionsModalContent<
     resolver: action.modal.formSchema
       ? zodResolver(action.modal.formSchema)
       : undefined,
-    defaultValues: initialFormValues as DefaultValues<OptionalFormData>,
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
+    defaultValues: (initialFormValues ??
+      (action.modal.withForm
+        ? action.modal.initialFormValues
+        : undefined)) as DefaultValues<OptionalFormData>,
   });
 
   const { mutate, isPending, error } = useMutation<
