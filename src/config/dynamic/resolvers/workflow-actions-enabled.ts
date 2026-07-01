@@ -13,8 +13,7 @@ import {
  * Override this resolver if you have different
  * requirements for enabling/disabling workflow actions.
  *
- * All workflow actions are enabled by default if authorization is disabled.
- * Otherwise it is only enabled for users with write access to domain.
+ * All workflow actions are enabled by default for users with write access to the domain.
  * Domain access is resolved via the DOMAIN_ACCESS config resolver.
  */
 export default async function workflowActionsEnabled(
