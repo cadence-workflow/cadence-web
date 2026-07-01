@@ -10,7 +10,7 @@ import type {
 const cssStylesObj = {
   container: (theme) => ({
     display: 'flex',
-    flexWrap: 'wrap' as const,
+    flexWrap: 'wrap',
     gap: theme.sizing.scale100,
   }),
 } satisfies StyletronCSSObject;
