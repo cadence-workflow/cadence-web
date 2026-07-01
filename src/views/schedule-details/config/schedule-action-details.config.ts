@@ -6,7 +6,6 @@ import WorkflowHistoryEventDetailsTaskListLink from '@/views/shared/workflow-his
 
 import { formatScheduleDuration } from '../helpers/format-schedule-duration';
 import getScheduleDetailsMapBadgeLabels from '../helpers/get-schedule-details-map-badge-labels';
-import { hideWithoutRetryPolicy } from '../helpers/schedule-details-row-hide';
 import ScheduleDetailsJsonView from '../schedule-details-json-view/schedule-details-json-view';
 
 const scheduleActionDetailsConfig: ScheduleDetailRowConfig[] = [
@@ -86,7 +85,8 @@ const scheduleActionDetailsConfig: ScheduleDetailRowConfig[] = [
       createElement(ScheduleDetailsJsonView, {
         json: action?.startWorkflow?.retryPolicy ?? null,
       }),
-    hide: hideWithoutRetryPolicy,
+    hide: ({ formattedScheduleDetails: { action } }) =>
+      !action?.startWorkflow?.retryPolicy,
   },
 ];
 
