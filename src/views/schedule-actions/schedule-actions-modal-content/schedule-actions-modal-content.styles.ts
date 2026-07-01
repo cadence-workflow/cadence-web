@@ -15,12 +15,6 @@ export const styled = {
     overflowY: 'auto',
     maxHeight: '70vh',
   })),
-  ContextBanner: createStyled(
-    'div',
-    ({ $theme }: { $theme: Theme }): StyleObject => ({
-      marginBottom: $theme.sizing.scale500,
-    })
-  ),
   ModalBodyContent: createStyled(
     'div',
     ({ $theme }: { $theme: Theme }): StyleObject => ({
@@ -48,6 +42,7 @@ export const overrides = {
   banner: {
     Root: {
       style: {
+        marginTop: 0,
         marginLeft: 0,
         marginRight: 0,
       },

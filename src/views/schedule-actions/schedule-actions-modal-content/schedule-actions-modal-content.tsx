@@ -124,6 +124,7 @@ export default function ScheduleActionsModalContent<
       <styled.ModalHeader>{`${action.label} schedule`}</styled.ModalHeader>
       <form onSubmit={handleSubmit(onSubmit)}>
         <styled.ModalBody>
+          {modalBanner}
           {error && (
             <div ref={errorAlertRef} role="alert">
               <Banner
@@ -138,9 +139,6 @@ export default function ScheduleActionsModalContent<
               </Banner>
             </div>
           )}
-          {modalBanner ? (
-            <styled.ContextBanner>{modalBanner}</styled.ContextBanner>
-          ) : null}
           <styled.ModalBodyContent>
             {action.modal.withForm && Form && (
               <Form
