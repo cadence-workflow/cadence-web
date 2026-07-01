@@ -90,8 +90,7 @@ export default function ScheduleActionsModalContent<
       ...params,
       submissionData: action.modal.withForm
         ? action.modal.transformFormDataToSubmission(data as FormData)
-        : (action.getConfirmSubmissionData?.() ??
-          (undefined as SubmissionData)),
+        : action.getConfirmSubmissionData?.() ?? (undefined as SubmissionData),
     });
   };
 
@@ -132,17 +131,17 @@ export default function ScheduleActionsModalContent<
               />
             )}
             {error && (
-            <Banner
-              hierarchy={HIERARCHY.low}
-              kind={BANNER_KIND.negative}
-              overrides={overrides.banner}
-              artwork={{
-                icon: MdErrorOutline,
-              }}
-            >
-              {error.message}
-            </Banner>
-          )}
+              <Banner
+                hierarchy={HIERARCHY.low}
+                kind={BANNER_KIND.negative}
+                overrides={overrides.banner}
+                artwork={{
+                  icon: MdErrorOutline,
+                }}
+              >
+                {error.message}
+              </Banner>
+            )}
           </styled.ModalBodyContent>
         </styled.ModalBody>
         <styled.ModalFooter>

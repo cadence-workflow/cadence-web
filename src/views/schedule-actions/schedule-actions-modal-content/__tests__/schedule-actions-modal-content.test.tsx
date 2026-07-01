@@ -53,8 +53,9 @@ describe(ScheduleActionsModalContent.name, () => {
   });
 
   it('calls pause API, sends toast, and closes modal when confirmed', async () => {
-    const { user, mockOnClose, getLatestRequestBody, waitForRequest } =
-      setup({});
+    const { user, mockOnClose, getLatestRequestBody, waitForRequest } = setup(
+      {}
+    );
 
     await user.click(
       await screen.findByRole('button', { name: 'Mock pause schedule' })
