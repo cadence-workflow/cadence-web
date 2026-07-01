@@ -142,6 +142,28 @@ describe(ScheduleActionsModalContent.name, () => {
       );
     });
   });
+
+  it('calls resume API with default submission when confirmed', async () => {
+    const { user, mockOnClose, getLatestRequestBody, waitForRequest } = setup({
+      actionConfig: mockScheduleActionsConfig[1],
+    });
+
+    await user.click(
+      await screen.findByRole('button', { name: 'Mock resume schedule' })
+    );
+
+    await waitForRequest();
+    expect(getLatestRequestBody()).toEqual({});
+
+    await waitFor(() => {
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'Mock resume notification',
+        })
+      );
+    });
+    expect(mockOnClose).toHaveBeenCalled();
+  });
 });
 
 function setup({
