@@ -2,12 +2,34 @@ import { type ScheduleDetailsTableRow } from '@/views/schedule-details/schedule-
 import { type SchedulePageTabsParams } from '@/views/schedule-page/schedule-page-tabs/schedule-page-tabs.types';
 import { type DescribeScheduleResponse } from '@/views/shared/hooks/use-describe-schedule/use-describe-schedule.types';
 
+type FormattedWorkflowMemo = {
+  fields: Record<string, unknown>;
+} | null;
+
+type FormattedStartWorkflow = Omit<
+  NonNullable<NonNullable<DescribeScheduleResponse['action']>['startWorkflow']>,
+  'memo'
+> & {
+  memo: FormattedWorkflowMemo;
+};
+
+export type FormattedScheduleDetails = Omit<
+  DescribeScheduleResponse,
+  'memo' | 'action'
+> & {
+  action:
+    | (NonNullable<DescribeScheduleResponse['action']> & {
+        startWorkflow: FormattedStartWorkflow | null;
+      })
+    | null;
+};
+
 export type Props = {
   params: SchedulePageTabsParams;
 };
 
 export type ScheduleDetailRowArgs = {
-  describeSchedule: DescribeScheduleResponse;
+  formattedScheduleDetails: FormattedScheduleDetails;
   scheduleId: string;
 };
 

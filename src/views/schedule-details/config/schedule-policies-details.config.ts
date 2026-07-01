@@ -14,9 +14,9 @@ const schedulePoliciesDetailsConfig: ScheduleDetailRowConfig[] = [
   {
     key: 'overlapPolicy',
     getLabel: () => 'Overlap policy',
-    getValue: ({ describeSchedule }) =>
+    getValue: ({ formattedScheduleDetails: { policies } }) =>
       formatScheduleEnumWithDefault(
-        describeSchedule.policies?.overlapPolicy,
+        policies?.overlapPolicy,
         SCHEDULE_OVERLAP_POLICY_LABELS,
         SERVER_OVERLAP_POLICY_DEFAULT
       ),
@@ -24,9 +24,9 @@ const schedulePoliciesDetailsConfig: ScheduleDetailRowConfig[] = [
   {
     key: 'catchUpPolicy',
     getLabel: () => 'Catchup policy',
-    getValue: ({ describeSchedule }) =>
+    getValue: ({ formattedScheduleDetails: { policies } }) =>
       formatScheduleEnumWithDefault(
-        describeSchedule.policies?.catchUpPolicy,
+        policies?.catchUpPolicy,
         SCHEDULE_CATCH_UP_POLICY_LABELS,
         SERVER_CATCH_UP_POLICY_DEFAULT
       ),
@@ -34,25 +34,25 @@ const schedulePoliciesDetailsConfig: ScheduleDetailRowConfig[] = [
   {
     key: 'pauseOnFailure',
     getLabel: () => 'Pause on failure',
-    getValue: ({ describeSchedule }) =>
-      describeSchedule.policies?.pauseOnFailure ? 'Yes' : 'No',
+    getValue: ({ formattedScheduleDetails: { policies } }) =>
+      policies?.pauseOnFailure ? 'Yes' : 'No',
   },
   {
     key: 'bufferLimit',
     getLabel: () => 'Buffer limit',
-    getValue: ({ describeSchedule }) =>
-      formatScheduleLimitValue(describeSchedule.policies?.bufferLimit),
-    hide: ({ describeSchedule }) =>
-      describeSchedule.policies?.overlapPolicy !==
+    getValue: ({ formattedScheduleDetails: { policies } }) =>
+      formatScheduleLimitValue(policies?.bufferLimit),
+    hide: ({ formattedScheduleDetails: { policies } }) =>
+      policies?.overlapPolicy !==
       ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_BUFFER,
   },
   {
     key: 'concurrencyLimit',
     getLabel: () => 'Concurrency limit',
-    getValue: ({ describeSchedule }) =>
-      formatScheduleLimitValue(describeSchedule.policies?.concurrencyLimit),
-    hide: ({ describeSchedule }) =>
-      describeSchedule.policies?.overlapPolicy !==
+    getValue: ({ formattedScheduleDetails: { policies } }) =>
+      formatScheduleLimitValue(policies?.concurrencyLimit),
+    hide: ({ formattedScheduleDetails: { policies } }) =>
+      policies?.overlapPolicy !==
       ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_CONCURRENT,
   },
 ];
