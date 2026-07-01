@@ -33,7 +33,6 @@ export type ScheduleActionInput<SubmissionData> = ScheduleActionInputParams & {
 };
 
 export type ScheduleActionFormProps<FormData extends FieldValues> = {
-  formData: FormData;
   fieldErrors: FieldErrors<FormData>;
   control: Control<FormData>;
   clearErrors: UseFormClearErrors<FormData>;
