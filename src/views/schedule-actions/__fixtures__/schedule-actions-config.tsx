@@ -3,7 +3,9 @@ import {
   MdPauseCircleOutline,
   MdPlayCircleOutline,
 } from 'react-icons/md';
+import { z } from 'zod';
 
+import { ScheduleCatchUpPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleCatchUpPolicy';
 import { type PauseScheduleResponse } from '@/route-handlers/pause-schedule/pause-schedule.types';
 import { type UnpauseScheduleResponse } from '@/route-handlers/unpause-schedule/unpause-schedule.types';
 
@@ -42,12 +44,37 @@ export const mockPauseActionConfig: ScheduleAction<
   renderSuccessMessage: () => 'Mock pause notification',
 };
 
-export const mockResumeActionConfig: ScheduleAction<UnpauseScheduleResponse> = {
+export const mockResumeActionConfig: ScheduleAction<
+  UnpauseScheduleResponse,
+  { reason?: string; catchUpPolicy?: ScheduleCatchUpPolicy },
+  { reason?: string; catchUpPolicy?: ScheduleCatchUpPolicy }
+> = {
   id: 'resume',
   label: 'Mock resume',
   subtitle: 'Mock resume a schedule',
   modal: {
-    withForm: false,
+    withForm: true,
+    form: ({ control, fieldErrors }) => (
+      <div data-testid="mock-resume-form">
+        <input
+          data-testid="mock-resume-reason"
+          aria-label="Reason (optional)"
+          aria-invalid={!!fieldErrors.reason}
+          {...control.register('reason')}
+        />
+      </div>
+    ),
+    formSchema: z.object({
+      reason: z.string().optional(),
+      catchUpPolicy: z.nativeEnum(ScheduleCatchUpPolicy).optional(),
+    }),
+    transformFormDataToSubmission: (formData) => ({
+      ...(formData.reason?.trim() ? { reason: formData.reason.trim() } : {}),
+      ...(formData.catchUpPolicy
+        ? { catchUpPolicy: formData.catchUpPolicy }
+        : {}),
+    }),
+    initialFormValues: { reason: '' },
   },
   icon: MdPlayCircleOutline,
   getRunnableStatus: (schedule) =>

@@ -7,6 +7,14 @@ import {
 import { type PauseScheduleResponse } from '@/route-handlers/pause-schedule/pause-schedule.types';
 import { type UnpauseScheduleResponse } from '@/route-handlers/unpause-schedule/unpause-schedule.types';
 
+import transformResumeScheduleFormToSubmission from '../schedule-action-resume-form/helpers/transform-resume-schedule-form-to-submission';
+import ScheduleActionResumeForm from '../schedule-action-resume-form/schedule-action-resume-form';
+import { USE_SCHEDULE_CATCH_UP_POLICY } from '../schedule-action-resume-form/schedule-action-resume-form.constants';
+import {
+  type ResumeScheduleFormData,
+  type ResumeScheduleSubmissionData,
+} from '../schedule-action-resume-form/schedule-action-resume-form.types';
+import { resumeScheduleFormSchema } from '../schedule-action-resume-form/schemas/resume-schedule-form-schema';
 import {
   type PauseScheduleSubmissionData,
   type ScheduleAction,
@@ -43,12 +51,23 @@ const pauseScheduleActionConfig: ScheduleAction<
   renderSuccessMessage: () => 'Schedule has been paused.',
 };
 
-const resumeScheduleActionConfig: ScheduleAction<UnpauseScheduleResponse> = {
+const resumeScheduleActionConfig: ScheduleAction<
+  UnpauseScheduleResponse,
+  ResumeScheduleFormData,
+  ResumeScheduleSubmissionData
+> = {
   id: 'resume',
   label: 'Resume',
   subtitle: 'Resume a paused schedule',
   modal: {
-    withForm: false,
+    withForm: true,
+    form: ScheduleActionResumeForm,
+    formSchema: resumeScheduleFormSchema,
+    transformFormDataToSubmission: transformResumeScheduleFormToSubmission,
+    initialFormValues: {
+      catchUpPolicy: USE_SCHEDULE_CATCH_UP_POLICY,
+      reason: '',
+    },
   },
   icon: MdPlayCircleOutline,
   getRunnableStatus: (schedule) =>
@@ -61,6 +80,9 @@ const resumeScheduleActionConfig: ScheduleAction<UnpauseScheduleResponse> = {
 const scheduleActionsConfig = [
   pauseScheduleActionConfig,
   resumeScheduleActionConfig,
-] as const satisfies ScheduleAction<any, any, any>[];
+] as const;
+
+/** Discriminated union of configured actions; use at menu/selection boundaries. */
+export type SelectableScheduleAction = (typeof scheduleActionsConfig)[number];
 
 export default scheduleActionsConfig;
