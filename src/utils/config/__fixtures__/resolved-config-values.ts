@@ -50,6 +50,10 @@ const mockResolvedConfigValues: LoadedConfigResolvedValues = {
   BATCH_ACTIONS_UI_ENABLED: false,
   FAILOVER_HISTORY_ENABLED: false,
   HISTORY_PAGE_V2_ENABLED: 'DISABLED',
+  SCHEDULE_ACTIONS_ENABLED: {
+    pause: 'ENABLED',
+    resume: 'ENABLED',
+  },
   SCHEDULES_ENABLED: false,
   WORKFLOWS_LIST_ENABLED: false,
   LIST_WORKFLOWS_PARTIAL_MATCH_ENABLED: false,

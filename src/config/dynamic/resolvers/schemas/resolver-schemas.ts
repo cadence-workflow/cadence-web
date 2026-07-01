@@ -3,7 +3,13 @@ import { z } from 'zod';
 import { type ResolverSchemas } from '../../../../utils/config/config.types';
 import AUTH_STRATEGY_VALUES_CONFIG from '../auth-strategy-values.config';
 import HISTORY_PAGE_V2_ENABLED_VALUES_CONFIG from '../history-page-v2-enabled-values.config';
+import SCHEDULE_ACTIONS_DISABLED_VALUES_CONFIG from '../schedule-actions-disabled-values.config';
 import WORKFLOW_ACTIONS_DISABLED_VALUES_CONFIG from '../workflow-actions-disabled-values.config';
+
+const scheduleActionsEnabledValueSchema = z.enum([
+  'ENABLED',
+  ...SCHEDULE_ACTIONS_DISABLED_VALUES_CONFIG,
+]);
 
 const workflowActionsEnabledValueSchema = z.enum([
   'ENABLED',
@@ -58,6 +64,16 @@ const resolverSchemas: ResolverSchemas = {
       restart: workflowActionsEnabledValueSchema,
       reset: workflowActionsEnabledValueSchema,
       start: workflowActionsEnabledValueSchema,
+    }),
+  },
+  SCHEDULE_ACTIONS_ENABLED: {
+    args: z.object({
+      cluster: z.string(),
+      domain: z.string(),
+    }),
+    returnType: z.object({
+      pause: scheduleActionsEnabledValueSchema,
+      resume: scheduleActionsEnabledValueSchema,
     }),
   },
   CRON_LIST_ENABLED: {
