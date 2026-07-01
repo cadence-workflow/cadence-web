@@ -1,7 +1,9 @@
+import { QueryClient } from '@tanstack/react-query';
 import { HttpResponse } from 'msw';
 
 import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
+import { type DeleteScheduleResponse } from '@/route-handlers/delete-schedule/delete-schedule.types';
 import { type PauseScheduleResponse } from '@/route-handlers/pause-schedule/pause-schedule.types';
 
 import { mockScheduleActionsConfig } from '../../__fixtures__/schedule-actions-config';
@@ -90,6 +92,72 @@ describe(ScheduleActionsModalContent.name, () => {
     });
     expect(mockOnClose).not.toHaveBeenCalled();
   });
+
+  describe('delete action', () => {
+    it('renders confirmation copy with no form inputs', () => {
+      setup({ actionConfig: mockScheduleActionsConfig[2] });
+
+      expect(screen.getAllByText('Delete schedule').length).toBeGreaterThan(0);
+      expect(
+        screen.getByText(
+          'Deletes the schedule permanently. In-progress workflow runs are not affected.'
+        )
+      ).toBeInTheDocument();
+      expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+    });
+
+    it('closes without DELETE when Cancel is clicked', async () => {
+      const { user, mockOnClose } = setup({
+        actionConfig: mockScheduleActionsConfig[2],
+      });
+
+      await user.click(screen.getByText('Cancel'));
+      expect(mockOnClose).toHaveBeenCalled();
+      expect(mockEnqueue).not.toHaveBeenCalled();
+    });
+
+    it('DELETEs with no body, navigates to list, and shows snackbar on success', async () => {
+      const { user, mockOnClose, getLatestRequestBody, waitForRequest } = setup(
+        { actionConfig: mockScheduleActionsConfig[2] }
+      );
+
+      await user.click(screen.getByRole('button', { name: 'Delete schedule' }));
+
+      await waitForRequest();
+      expect(getLatestRequestBody()).toBeNull();
+
+      await waitFor(() => {
+        expect(mockPush).toHaveBeenCalledWith(
+          '/domains/mock-domain/mock-cluster/schedules'
+        );
+      });
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        expect.objectContaining({ message: 'Schedule deleted.' })
+      );
+      expect(mockOnClose).toHaveBeenCalled();
+    });
+
+    it('does not invalidate describeSchedule after delete', async () => {
+      const invalidateQueriesSpy = jest.spyOn(
+        QueryClient.prototype,
+        'invalidateQueries'
+      );
+
+      const { user, waitForRequest } = setup({
+        actionConfig: mockScheduleActionsConfig[2],
+      });
+
+      await user.click(screen.getByRole('button', { name: 'Delete schedule' }));
+
+      await waitForRequest();
+
+      expect(invalidateQueriesSpy).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          queryKey: ['describeSchedule', mockScheduleParams],
+        })
+      );
+    });
+  });
 });
 
 function setup({
@@ -132,6 +200,18 @@ function setup({
             }
 
             return HttpResponse.json({} satisfies PauseScheduleResponse);
+          },
+        },
+        {
+          path: '/api/domains/:domain/:cluster/schedules/:scheduleId',
+          httpMethod: 'DELETE',
+          mockOnce: false,
+          httpResolver: async ({ request }) => {
+            const text = await request.text();
+            latestRequestBody = text ? JSON.parse(text) : null;
+            requestPromiseResolve(null);
+
+            return HttpResponse.json({} satisfies DeleteScheduleResponse);
           },
         },
       ],

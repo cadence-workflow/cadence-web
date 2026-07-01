@@ -95,6 +95,11 @@ export type ScheduleAction<
   label: string;
   subtitle: string;
   modal: {
+    text?: string | string[];
+    docsLink?: {
+      text: string;
+      href: string;
+    };
     banner?: ScheduleActionModalBanner;
   } & ScheduleActionModalForm<FormData, SubmissionData>;
   icon: ScheduleActionIcon;
@@ -102,6 +107,7 @@ export type ScheduleAction<
     schedule: DescribeScheduleResponse
   ) => ScheduleActionRunnableStatus;
   apiRoute: (params: ScheduleActionInputParams) => string;
+  httpMethod?: 'POST' | 'DELETE';
   getConfirmSubmissionData?: () => SubmissionData;
   renderSuccessMessage: (
     props: ScheduleActionSuccessMessageProps<SubmissionData, Result>
