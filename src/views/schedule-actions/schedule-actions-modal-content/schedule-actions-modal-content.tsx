@@ -37,7 +37,6 @@ export default function ScheduleActionsModalContent<
     handleSubmit,
     formState: { errors: validationErrors, isSubmitting },
     control,
-    watch,
     clearErrors,
     trigger,
   } = useForm<OptionalFormData>({
@@ -123,7 +122,6 @@ export default function ScheduleActionsModalContent<
           <styled.ModalBodyContent>
             {action.modal.withForm && Form && (
               <Form
-                formData={watch()}
                 fieldErrors={validationErrors}
                 clearErrors={clearErrors}
                 control={control}
