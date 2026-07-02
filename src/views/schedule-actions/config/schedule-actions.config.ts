@@ -1,9 +1,11 @@
 import {
+  MdDeleteOutline,
   MdOutlineWarningAmber,
   MdPauseCircleOutline,
   MdPlayCircleOutline,
 } from 'react-icons/md';
 
+import { type DeleteScheduleResponse } from '@/route-handlers/delete-schedule/delete-schedule.types';
 import { type PauseScheduleResponse } from '@/route-handlers/pause-schedule/pause-schedule.types';
 import { type UnpauseScheduleResponse } from '@/route-handlers/unpause-schedule/unpause-schedule.types';
 
@@ -58,9 +60,45 @@ const resumeScheduleActionConfig: ScheduleAction<UnpauseScheduleResponse> = {
   renderSuccessMessage: () => 'Schedule has been resumed.',
 };
 
+const deleteScheduleActionConfig: ScheduleAction<DeleteScheduleResponse> = {
+  id: 'delete',
+  label: 'Delete',
+  subtitle: 'Delete this schedule permanently',
+  modal: {
+    banner: {
+      kind: 'warning',
+      icon: MdOutlineWarningAmber,
+      render: () =>
+        'Deletes the schedule permanently. In-progress workflow runs are not affected.',
+    },
+    withForm: false,
+  },
+  icon: MdDeleteOutline,
+  getRunnableStatus: () => 'RUNNABLE',
+  apiRoute: (params) =>
+    `/api/domains/${encodeURIComponent(params.domain)}/${encodeURIComponent(params.cluster)}/schedules/${encodeURIComponent(params.scheduleId)}`,
+  httpMethod: 'DELETE',
+  renderSuccessMessage: () => 'Schedule deleted.',
+  onSuccess: ({ queryClient, params, router }) => {
+    router.push(
+      `/domains/${encodeURIComponent(params.domain)}/${encodeURIComponent(params.cluster)}/schedules`
+    );
+    queryClient.invalidateQueries({
+      queryKey: [
+        'listSchedules',
+        { domain: params.domain, cluster: params.cluster },
+      ],
+    });
+  },
+};
+
 const scheduleActionsConfig = [
   pauseScheduleActionConfig,
   resumeScheduleActionConfig,
-] as const satisfies ScheduleAction<any, any, any>[];
+  deleteScheduleActionConfig,
+] as const;
+
+/** Discriminated union of configured actions; use at menu/selection boundaries. */
+export type SelectableScheduleAction = (typeof scheduleActionsConfig)[number];
 
 export default scheduleActionsConfig;

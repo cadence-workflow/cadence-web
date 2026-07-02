@@ -1,9 +1,11 @@
 import {
+  MdDeleteOutline,
   MdOutlineWarningAmber,
   MdPauseCircleOutline,
   MdPlayCircleOutline,
 } from 'react-icons/md';
 
+import { type DeleteScheduleResponse } from '@/route-handlers/delete-schedule/delete-schedule.types';
 import { type PauseScheduleResponse } from '@/route-handlers/pause-schedule/pause-schedule.types';
 import { type UnpauseScheduleResponse } from '@/route-handlers/unpause-schedule/unpause-schedule.types';
 
@@ -56,7 +58,32 @@ export const mockResumeActionConfig: ScheduleAction<UnpauseScheduleResponse> = {
   renderSuccessMessage: () => 'Mock resume notification',
 };
 
+export const mockDeleteActionConfig: ScheduleAction<DeleteScheduleResponse> = {
+  id: 'delete',
+  label: 'Delete',
+  subtitle: 'Mock delete a schedule',
+  modal: {
+    banner: {
+      kind: 'warning',
+      icon: MdOutlineWarningAmber,
+      render: () =>
+        'Deletes the schedule permanently. In-progress workflow runs are not affected.',
+    },
+    withForm: false,
+  },
+  icon: MdDeleteOutline,
+  getRunnableStatus: () => 'RUNNABLE',
+  apiRoute: (params) =>
+    `/api/domains/${params.domain}/${params.cluster}/schedules/${params.scheduleId}`,
+  httpMethod: 'DELETE',
+  renderSuccessMessage: () => 'Schedule deleted.',
+  onSuccess: ({ router, params }) => {
+    router.push(`/domains/${params.domain}/${params.cluster}/schedules`);
+  },
+};
+
 export const mockScheduleActionsConfig = [
   mockPauseActionConfig,
   mockResumeActionConfig,
+  mockDeleteActionConfig,
 ] as const;

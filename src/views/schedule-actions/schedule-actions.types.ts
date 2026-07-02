@@ -33,7 +33,6 @@ export type ScheduleActionInput<SubmissionData> = ScheduleActionInputParams & {
 };
 
 export type ScheduleActionFormProps<FormData extends FieldValues> = {
-  formData: FormData;
   fieldErrors: FieldErrors<FormData>;
   control: Control<FormData>;
   clearErrors: UseFormClearErrors<FormData>;
@@ -87,6 +86,8 @@ export type ScheduleActionModalForm<FormData, SubmissionData> =
       transformFormDataToSubmission?: undefined;
     };
 
+export type ScheduleActionHttpMethod = 'POST' | 'PUT' | 'DELETE';
+
 export type ScheduleAction<
   Result,
   FormData = undefined,
@@ -96,6 +97,11 @@ export type ScheduleAction<
   label: string;
   subtitle: string;
   modal: {
+    text?: string | string[];
+    docsLink?: {
+      text: string;
+      href: string;
+    };
     banner?: ScheduleActionModalBanner;
   } & ScheduleActionModalForm<FormData, SubmissionData>;
   icon: ScheduleActionIcon;
@@ -103,6 +109,7 @@ export type ScheduleAction<
     schedule: DescribeScheduleResponse
   ) => ScheduleActionRunnableStatus;
   apiRoute: (params: ScheduleActionInputParams) => string;
+  httpMethod?: ScheduleActionHttpMethod;
   getConfirmSubmissionData?: () => SubmissionData;
   renderSuccessMessage: (
     props: ScheduleActionSuccessMessageProps<SubmissionData, Result>
@@ -113,3 +120,6 @@ export type ScheduleAction<
     router: AppRouterInstance;
   }) => void;
 };
+
+/** Erases per-action generics for the generic modal boundary. */
+export type ErasedScheduleAction = ScheduleAction<any, any, any>;
