@@ -68,21 +68,23 @@ export default function useConfigGatedTabs<Name extends string>(
   const failedTitles = gates
     .filter((_, index) => results[index]?.data.status === 'error')
     .map((gate) => gate.title);
-  const failedTitlesKey = failedTitles.join(', ');
+  const failedMessage = failedTitles.length
+    ? `Failed to load ${failedTitles.join(', ')} tab${
+        failedTitles.length > 1 ? 's' : ''
+      }`
+    : '';
 
   useEffect(() => {
-    if (!failedTitlesKey) return;
+    if (!failedMessage) return;
     enqueue(
       {
-        message: `Failed to load ${failedTitlesKey} tab${
-          failedTitlesKey.includes(',') ? 's' : ''
-        }`,
+        message: failedMessage,
         actionMessage: 'Close',
         overrides: overrides.errorSnackbar,
       },
       DURATION.medium
     );
-  }, [failedTitlesKey, enqueue]);
+  }, [failedMessage, enqueue]);
 
   return { tabsToHide };
 }
