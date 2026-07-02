@@ -8,7 +8,7 @@ import { ModalButton } from 'baseui/modal';
 import { useSnackbar } from 'baseui/snackbar';
 import { useRouter } from 'next/navigation';
 import { type DefaultValues, type FieldValues, useForm } from 'react-hook-form';
-import { MdCheckCircle, MdErrorOutline, MdOpenInNew } from 'react-icons/md';
+import { MdCheckCircle, MdErrorOutline } from 'react-icons/md';
 
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
@@ -113,14 +113,6 @@ export default function ScheduleActionsModalContent<
   const Form = action.modal.form;
   const isSubmitDisabled = Object.keys(validationErrors).length > 0;
 
-  const modalText = action.modal.text ? (
-    Array.isArray(action.modal.text) ? (
-      action.modal.text.map((text, index) => <p key={index}>{text}</p>)
-    ) : (
-      <p>{action.modal.text}</p>
-    )
-  ) : null;
-
   const modalBanner = action.modal.banner ? (
     <Banner
       hierarchy={HIERARCHY.low}
@@ -155,17 +147,6 @@ export default function ScheduleActionsModalContent<
             </div>
           )}
           <styled.ModalBodyContent>
-            {modalText}
-            {action.modal.docsLink && (
-              <styled.Link
-                href={action.modal.docsLink.href}
-                target="_blank"
-                rel="noreferrer"
-              >
-                {action.modal.docsLink.text}
-                <MdOpenInNew />
-              </styled.Link>
-            )}
             {action.modal.withForm && Form && (
               <Form
                 fieldErrors={validationErrors}

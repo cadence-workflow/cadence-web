@@ -97,11 +97,6 @@ export type ScheduleAction<
   label: string;
   subtitle: string;
   modal: {
-    text?: string | string[];
-    docsLink?: {
-      text: string;
-      href: string;
-    };
     banner?: ScheduleActionModalBanner;
   } & ScheduleActionModalForm<FormData, SubmissionData>;
   icon: ScheduleActionIcon;
