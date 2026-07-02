@@ -33,7 +33,7 @@ export const backfillScheduleFormSchema = z
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: schedulePeriodError.message,
-        path: ['endTime'],
+        path: ['startTime'],
       });
     }
   });

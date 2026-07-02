@@ -3,7 +3,7 @@ import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
-import { render, screen, waitFor } from '@/test-utils/rtl';
+import { render, screen, waitFor, within } from '@/test-utils/rtl';
 
 import ScheduleActionBackfillForm from '../schedule-action-backfill-form';
 import { type BackfillScheduleFormData } from '../schedule-action-backfill-form.types';
@@ -23,7 +23,7 @@ describe(ScheduleActionBackfillForm.name, () => {
     ).toBeInTheDocument();
   });
 
-  it('shows end date validation error when end is before start', async () => {
+  it('shows start date validation error when end is before start', async () => {
     const { triggerValidation } = setup({
       defaultValues: {
         startTime: '2026-06-02T12:00:00.000Z',
@@ -34,9 +34,17 @@ describe(ScheduleActionBackfillForm.name, () => {
 
     await triggerValidation();
 
+    const startPeriodField = screen.getByText('Start date').parentElement!;
+    const endPeriodField = screen.getByText('End date').parentElement!;
+
     expect(
-      await screen.findByText('Start date must be before end date')
+      await within(startPeriodField).findByText(
+        'Start date must be before end date'
+      )
     ).toBeInTheDocument();
+    expect(
+      within(endPeriodField).queryByText('Start date must be before end date')
+    ).not.toBeInTheDocument();
   });
 
   it('shows required validation errors when dates are missing', async () => {
