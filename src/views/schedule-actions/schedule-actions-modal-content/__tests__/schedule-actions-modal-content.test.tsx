@@ -128,7 +128,7 @@ describe(ScheduleActionsModalContent.name, () => {
       expect(submitButton).toHaveAttribute('disabled');
     });
 
-    it('shows validation error when reason is empty', async () => {
+    it('passes validation error to form', async () => {
       const { user } = setup({});
 
       const submitButton = screen.getByRole('button', {
