@@ -13,7 +13,6 @@ import { type UnpauseScheduleResponse } from '@/route-handlers/unpause-schedule/
 
 import transformBackfillScheduleFormToSubmission from '../schedule-action-backfill-form/helpers/transform-backfill-schedule-form-to-submission';
 import ScheduleActionBackfillForm from '../schedule-action-backfill-form/schedule-action-backfill-form';
-import { DEFAULT_BACKFILL_OVERLAP_POLICY } from '../schedule-action-backfill-form/schedule-action-backfill-form.constants';
 import { type BackfillScheduleFormData } from '../schedule-action-backfill-form/schedule-action-backfill-form.types';
 import { backfillScheduleFormSchema } from '../schedule-action-backfill-form/schemas/backfill-schedule-form-schema';
 import ScheduleActionPauseForm from '../schedule-action-pause-form/schedule-action-pause-form';
@@ -129,9 +128,6 @@ const backfillScheduleActionConfig: ScheduleAction<
     form: ScheduleActionBackfillForm,
     formSchema: backfillScheduleFormSchema,
     transformFormDataToSubmission: transformBackfillScheduleFormToSubmission,
-    initialFormValues: {
-      overlapPolicy: DEFAULT_BACKFILL_OVERLAP_POLICY,
-    },
   },
   icon: MdHistory,
   getRunnableStatus: () => 'RUNNABLE',

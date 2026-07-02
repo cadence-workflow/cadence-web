@@ -1,9 +1,6 @@
 import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
 
-import {
-  DEFAULT_BACKFILL_OVERLAP_POLICY,
-  USE_SCHEDULE_OVERLAP_POLICY,
-} from '../../schedule-action-backfill-form.constants';
+import { USE_SCHEDULE_OVERLAP_POLICY } from '../../schedule-action-backfill-form.constants';
 import transformBackfillScheduleFormToSubmission from '../transform-backfill-schedule-form-to-submission';
 
 describe(transformBackfillScheduleFormToSubmission.name, () => {
@@ -12,11 +9,26 @@ describe(transformBackfillScheduleFormToSubmission.name, () => {
       transformBackfillScheduleFormToSubmission({
         startTime: '2026-01-01T00:00:00.000Z',
         endTime: '2026-01-02T00:00:00.000Z',
-        overlapPolicy: DEFAULT_BACKFILL_OVERLAP_POLICY,
+        overlapPolicy: USE_SCHEDULE_OVERLAP_POLICY,
       })
     ).toEqual({
       startTime: '2026-01-01T00:00:00.000Z',
       endTime: '2026-01-02T00:00:00.000Z',
+    });
+  });
+
+  it('includes backfillId when provided', () => {
+    expect(
+      transformBackfillScheduleFormToSubmission({
+        backfillId: '  my-backfill  ',
+        startTime: '2026-01-01T00:00:00.000Z',
+        endTime: '2026-01-02T00:00:00.000Z',
+        overlapPolicy: USE_SCHEDULE_OVERLAP_POLICY,
+      })
+    ).toEqual({
+      startTime: '2026-01-01T00:00:00.000Z',
+      endTime: '2026-01-02T00:00:00.000Z',
+      backfillId: 'my-backfill',
     });
   });
 

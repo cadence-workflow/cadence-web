@@ -7,6 +7,7 @@ import { USE_SCHEDULE_OVERLAP_POLICY } from '../schedule-action-backfill-form.co
 
 export const backfillScheduleFormSchema = z
   .object({
+    backfillId: z.string().trim().optional(),
     startTime: z
       .string({ required_error: 'Start date is required' })
       .min(1, 'Start date is required')

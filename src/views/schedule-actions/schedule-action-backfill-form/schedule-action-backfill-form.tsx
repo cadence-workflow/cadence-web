@@ -1,16 +1,16 @@
 import { DatePicker } from 'baseui/datepicker';
 import { FormControl } from 'baseui/form-control';
+import { Input } from 'baseui/input';
 import { Select } from 'baseui/select';
 import { Controller } from 'react-hook-form';
-
 import DomainSchedulesHorizontalField from '@/views/domain-schedules/domain-schedules-horizontal-field/domain-schedules-horizontal-field';
 import getFieldErrorMessage from '@/views/workflow-actions/workflow-action-start-form/helpers/get-field-error-message';
 
 import {
   BACKFILL_OVERLAP_POLICY_OPTIONS,
   BACKFILL_SCHEDULE_FORM_FIELD_DESCRIPTIONS,
-  DEFAULT_BACKFILL_OVERLAP_POLICY,
   SCHEDULE_ACTION_BACKFILL_FORM_FIELD_IDS,
+  USE_SCHEDULE_OVERLAP_POLICY,
 } from './schedule-action-backfill-form.constants';
 import { overrides, styled } from './schedule-action-backfill-form.styles';
 import { type Props } from './schedule-action-backfill-form.types';
@@ -32,6 +32,35 @@ export default function ScheduleActionBackfillForm({
 
   return (
     <>
+      <DomainSchedulesHorizontalField
+        label="Overlap policy"
+        description={BACKFILL_SCHEDULE_FORM_FIELD_DESCRIPTIONS.overlapPolicy}
+        error={getFieldErrorMessage(fieldErrors, 'overlapPolicy')}
+      >
+        <Controller
+          name="overlapPolicy"
+          control={control}
+          defaultValue={USE_SCHEDULE_OVERLAP_POLICY}
+          render={({ field: { value, onChange, ref, ...field } }) => (
+            <Select
+              {...field}
+              inputRef={ref}
+              aria-label="Overlap policy"
+              options={BACKFILL_OVERLAP_POLICY_OPTIONS}
+              value={value ? [{ id: value }] : []}
+              onChange={(params) => {
+                onChange(params.value[0]?.id);
+              }}
+              error={Boolean(
+                getFieldErrorMessage(fieldErrors, 'overlapPolicy')
+              )}
+              size="compact"
+              clearable={false}
+            />
+          )}
+        />
+      </DomainSchedulesHorizontalField>
+
       <DomainSchedulesHorizontalField
         label="Backfill period"
         description={BACKFILL_SCHEDULE_FORM_FIELD_DESCRIPTIONS.period}
@@ -122,29 +151,27 @@ export default function ScheduleActionBackfillForm({
       </DomainSchedulesHorizontalField>
 
       <DomainSchedulesHorizontalField
-        label="Overlap policy"
-        description={BACKFILL_SCHEDULE_FORM_FIELD_DESCRIPTIONS.overlapPolicy}
-        error={getFieldErrorMessage(fieldErrors, 'overlapPolicy')}
+        label="Backfill ID (optional)"
+        description={BACKFILL_SCHEDULE_FORM_FIELD_DESCRIPTIONS.backfillId}
+        htmlFor={SCHEDULE_ACTION_BACKFILL_FORM_FIELD_IDS.backfillId}
+        error={getFieldErrorMessage(fieldErrors, 'backfillId')}
       >
         <Controller
-          name="overlapPolicy"
+          name="backfillId"
           control={control}
-          defaultValue={DEFAULT_BACKFILL_OVERLAP_POLICY}
-          render={({ field: { value, onChange, ref, ...field } }) => (
-            <Select
+          defaultValue=""
+          render={({ field: { ref, ...field } }) => (
+            <Input
               {...field}
+              id={SCHEDULE_ACTION_BACKFILL_FORM_FIELD_IDS.backfillId}
+              // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
               inputRef={ref}
-              aria-label="Overlap policy"
-              options={BACKFILL_OVERLAP_POLICY_OPTIONS}
-              value={value ? [{ id: value }] : []}
-              onChange={(params) => {
-                onChange(params.value[0]?.id);
-              }}
-              error={Boolean(
-                getFieldErrorMessage(fieldErrors, 'overlapPolicy')
-              )}
+              aria-label="Backfill ID"
+              onChange={(e) => field.onChange(e.target.value || undefined)}
+              onBlur={field.onBlur}
+              error={Boolean(getFieldErrorMessage(fieldErrors, 'backfillId'))}
               size="compact"
-              clearable={false}
+              placeholder="Add backfill id"
             />
           )}
         />

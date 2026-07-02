@@ -5,15 +5,16 @@ import { useForm } from 'react-hook-form';
 
 import { render, screen, waitFor } from '@/test-utils/rtl';
 
-import { DEFAULT_BACKFILL_OVERLAP_POLICY } from '../schedule-action-backfill-form.constants';
 import ScheduleActionBackfillForm from '../schedule-action-backfill-form';
 import { type BackfillScheduleFormData } from '../schedule-action-backfill-form.types';
 import { backfillScheduleFormSchema } from '../schemas/backfill-schedule-form-schema';
+import { USE_SCHEDULE_OVERLAP_POLICY } from '../schedule-action-backfill-form.constants';
 
 describe(ScheduleActionBackfillForm.name, () => {
   it('renders backfill period and overlap policy fields', () => {
     setup();
 
+    expect(screen.getByLabelText('Backfill ID')).toBeInTheDocument();
     expect(screen.getByText('Backfill period')).toBeInTheDocument();
     expect(screen.getByLabelText('Backfill period start')).toBeInTheDocument();
     expect(screen.getByLabelText('Backfill period end')).toBeInTheDocument();
@@ -27,7 +28,7 @@ describe(ScheduleActionBackfillForm.name, () => {
       defaultValues: {
         startTime: '2026-06-02T12:00:00.000Z',
         endTime: '2026-06-01T12:00:00.000Z',
-        overlapPolicy: DEFAULT_BACKFILL_OVERLAP_POLICY,
+        overlapPolicy: USE_SCHEDULE_OVERLAP_POLICY,
       },
     });
 
@@ -65,9 +66,7 @@ function setup({
     } = useForm<BackfillScheduleFormData>({
       resolver: zodResolver(backfillScheduleFormSchema),
       mode: 'onChange',
-      defaultValues: defaultValues ?? {
-        overlapPolicy: DEFAULT_BACKFILL_OVERLAP_POLICY,
-      },
+      defaultValues: defaultValues ?? {},
     });
 
     triggerValidation = () => trigger(['startTime', 'endTime']);

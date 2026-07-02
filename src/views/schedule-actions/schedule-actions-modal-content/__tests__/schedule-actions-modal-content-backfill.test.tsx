@@ -40,6 +40,7 @@ describe(`${ScheduleActionsModalContent.name} backfill`, () => {
   it('submits backfill form with ISO date strings', async () => {
     const { user, getLatestRequestBody, waitForRequest } = setup({
       defaultValues: {
+        backfillId: 'custom-backfill-id',
         startTime: '2026-01-01T00:00:00.000Z',
         endTime: '2026-01-02T00:00:00.000Z',
         overlapPolicy: ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_BUFFER,
@@ -52,6 +53,7 @@ describe(`${ScheduleActionsModalContent.name} backfill`, () => {
 
     await waitForRequest();
     expect(getLatestRequestBody()).toEqual({
+      backfillId: 'custom-backfill-id',
       startTime: '2026-01-01T00:00:00.000Z',
       endTime: '2026-01-02T00:00:00.000Z',
       overlapPolicy: ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_BUFFER,
