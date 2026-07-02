@@ -38,7 +38,7 @@ export default function ScheduleActionsModalContent<
 
   const {
     handleSubmit,
-    formState: { errors: validationErrors, isSubmitting },
+    formState: { errors: validationErrors, isSubmitting, isSubmitted },
     control,
     clearErrors,
     trigger,
@@ -156,6 +156,7 @@ export default function ScheduleActionsModalContent<
                 cluster={params.cluster}
                 domain={params.domain}
                 scheduleId={params.scheduleId}
+                isSubmitted={isSubmitted}
               />
             )}
           </styled.ModalBodyContent>
