@@ -3,7 +3,7 @@ import { type z } from 'zod';
 import { type BackfillScheduleResponse as BackfillScheduleResponseProto } from '@/__generated__/proto-ts/uber/cadence/api/v1/BackfillScheduleResponse';
 import { type DefaultMiddlewaresContext } from '@/utils/route-handlers-middleware';
 
-import { type backfillScheduleRequestBodySchema } from './schemas/backfill-schedule-request-body-schema';
+import type backfillScheduleRequestBodySchema from './schemas/backfill-schedule-request-body-schema';
 
 export type RouteParams = {
   domain: string;
