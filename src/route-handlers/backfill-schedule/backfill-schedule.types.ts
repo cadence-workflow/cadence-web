@@ -21,7 +21,6 @@ export type BackfillScheduleRequestBody = z.infer<
   typeof backfillScheduleRequestBodySchema
 >;
 
-/** POST body shape shared by the backfill form UI. */
 export type BackfillScheduleSubmissionData = BackfillScheduleRequestBody;
 
 export type Context = DefaultMiddlewaresContext;

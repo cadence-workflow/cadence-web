@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
+// TODO: Move this to a shared validator instead of using the one from create-schedule
 import getSchedulePeriodError from '@/route-handlers/create-schedule/helpers/get-schedule-period-error';
 
 const backfillScheduleRequestBodySchema = z
