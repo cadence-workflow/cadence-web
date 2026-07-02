@@ -67,17 +67,13 @@ export default function ScheduleActionsModalContent<
 
         return request(action.apiRoute({ domain, cluster, scheduleId }), {
           method: httpMethod,
-          ...(httpMethod === 'POST'
-            ? { body: JSON.stringify(submissionData ?? {}) }
-            : {}),
+          body: JSON.stringify(submissionData ?? {}),
         }).then((res) => res.json() as Result);
       },
       onSuccess: (result, mutationParams) => {
-        if (action.id !== 'delete') {
-          queryClient.invalidateQueries({
-            queryKey: ['describeSchedule', params],
-          });
-        }
+        queryClient.invalidateQueries({
+          queryKey: ['describeSchedule', params],
+        });
 
         action.onSuccess?.({ queryClient, params, router });
 

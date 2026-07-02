@@ -86,6 +86,8 @@ export type ScheduleActionModalForm<FormData, SubmissionData> =
       transformFormDataToSubmission?: undefined;
     };
 
+export type ScheduleActionHttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+
 export type ScheduleAction<
   Result,
   FormData = undefined,
@@ -107,7 +109,7 @@ export type ScheduleAction<
     schedule: DescribeScheduleResponse
   ) => ScheduleActionRunnableStatus;
   apiRoute: (params: ScheduleActionInputParams) => string;
-  httpMethod?: 'POST' | 'DELETE';
+  httpMethod?: ScheduleActionHttpMethod;
   getConfirmSubmissionData?: () => SubmissionData;
   renderSuccessMessage: (
     props: ScheduleActionSuccessMessageProps<SubmissionData, Result>
