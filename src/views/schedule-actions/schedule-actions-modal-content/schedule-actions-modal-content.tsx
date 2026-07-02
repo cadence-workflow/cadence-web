@@ -71,11 +71,13 @@ export default function ScheduleActionsModalContent<
         }).then((res) => res.json() as Result);
       },
       onSuccess: (result, mutationParams) => {
-        queryClient.invalidateQueries({
-          queryKey: ['describeSchedule', params],
-        });
-
-        action.onSuccess?.({ queryClient, params, router });
+        if (!action.onSuccess)
+          queryClient.invalidateQueries({
+            queryKey: ['describeSchedule', params],
+          });
+        else {
+          action.onSuccess?.({ queryClient, params, router });
+        }
 
         onCloseModal();
         enqueue({
