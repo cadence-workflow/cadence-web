@@ -81,10 +81,11 @@ const deleteScheduleActionConfig: ScheduleAction<DeleteScheduleResponse> = {
   label: 'Delete',
   subtitle: 'Delete this schedule permanently',
   modal: {
-    text: 'Deletes the schedule permanently. In-progress workflow runs are not affected.',
-    docsLink: {
-      text: 'Read more about schedules',
-      href: 'https://cadenceworkflow.io/docs/concepts/schedules',
+    banner: {
+      kind: 'warning',
+      icon: MdOutlineWarningAmber,
+      render: () =>
+        'Deletes the schedule permanently. In-progress workflow runs are not affected.',
     },
     withForm: false,
   },
