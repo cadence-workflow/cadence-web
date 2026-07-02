@@ -5,6 +5,7 @@ import { type KIND as BANNER_KIND } from 'baseui/banner';
 import { type IconProps } from 'baseui/icon';
 import { type AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import {
+  type DefaultValues,
   type UseFormClearErrors,
   type Control,
   type FieldErrors,
@@ -28,6 +29,8 @@ export type PauseScheduleSubmissionData = {
   reason: string;
 };
 
+export type { BackfillScheduleSubmissionData } from '@/route-handlers/backfill-schedule/backfill-schedule.types';
+
 export type ScheduleActionInput<SubmissionData> = ScheduleActionInputParams & {
   submissionData: SubmissionData;
 };
@@ -40,6 +43,7 @@ export type ScheduleActionFormProps<FormData extends FieldValues> = {
   cluster: string;
   domain: string;
   scheduleId: string;
+  isSubmitted?: boolean;
 };
 
 export type ScheduleActionSuccessMessageProps<SubmissionData, Result> = {
@@ -78,6 +82,9 @@ export type ScheduleActionModalForm<FormData, SubmissionData> =
       ) => ReactNode;
       formSchema: z.ZodSchema<FormData>;
       transformFormDataToSubmission: (formData: FormData) => SubmissionData;
+      initialFormValues?: DefaultValues<
+        FormData extends FieldValues ? FormData : FieldValues
+      >;
     }
   | {
       withForm: false;

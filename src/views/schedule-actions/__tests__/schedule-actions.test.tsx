@@ -152,6 +152,7 @@ function setup({
             {
               pause: 'ENABLED',
               resume: 'ENABLED',
+              backfill: 'ENABLED',
             },
             { status: 200 }
           );

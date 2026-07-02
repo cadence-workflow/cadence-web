@@ -26,6 +26,7 @@ describe(scheduleActionsEnabled.name, () => {
     expect(result).toEqual({
       pause: 'ENABLED',
       resume: 'ENABLED',
+      backfill: 'ENABLED',
     });
   });
 
@@ -40,6 +41,7 @@ describe(scheduleActionsEnabled.name, () => {
     expect(result).toEqual({
       pause: 'DISABLED_UNAUTHORIZED',
       resume: 'DISABLED_UNAUTHORIZED',
+      backfill: 'DISABLED_UNAUTHORIZED',
     });
   });
 
@@ -54,6 +56,7 @@ describe(scheduleActionsEnabled.name, () => {
     expect(result).toEqual({
       pause: 'DISABLED_DEFAULT',
       resume: 'DISABLED_DEFAULT',
+      backfill: 'DISABLED_DEFAULT',
     });
   });
 });

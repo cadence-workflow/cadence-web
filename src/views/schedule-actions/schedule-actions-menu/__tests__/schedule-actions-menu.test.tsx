@@ -61,6 +61,7 @@ describe(ScheduleActionsMenu.name, () => {
       actionsEnabledConfig: {
         pause: 'DISABLED_DEFAULT',
         resume: 'DISABLED_DEFAULT',
+        backfill: 'DISABLED_DEFAULT',
       },
     });
 
