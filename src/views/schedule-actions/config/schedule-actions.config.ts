@@ -10,6 +10,13 @@ import { type UnpauseScheduleResponse } from '@/route-handlers/unpause-schedule/
 import ScheduleActionPauseForm from '../schedule-action-pause-form/schedule-action-pause-form';
 import { type PauseScheduleFormData } from '../schedule-action-pause-form/schedule-action-pause-form.types';
 import { pauseScheduleFormSchema } from '../schedule-action-pause-form/schemas/pause-schedule-form-schema';
+import transformResumeScheduleFormToSubmission from '../schedule-action-resume-form/helpers/transform-resume-schedule-form-to-submission';
+import ScheduleActionResumeForm from '../schedule-action-resume-form/schedule-action-resume-form';
+import {
+  type ResumeScheduleFormData,
+  type ResumeScheduleSubmissionData,
+} from '../schedule-action-resume-form/schedule-action-resume-form.types';
+import { resumeScheduleFormSchema } from '../schedule-action-resume-form/schemas/resume-schedule-form-schema';
 import {
   type PauseScheduleSubmissionData,
   type ScheduleAction,
@@ -45,12 +52,19 @@ const pauseScheduleActionConfig: ScheduleAction<
   renderSuccessMessage: () => 'Schedule has been paused.',
 };
 
-const resumeScheduleActionConfig: ScheduleAction<UnpauseScheduleResponse> = {
+const resumeScheduleActionConfig: ScheduleAction<
+  UnpauseScheduleResponse,
+  ResumeScheduleFormData,
+  ResumeScheduleSubmissionData
+> = {
   id: 'resume',
   label: 'Resume',
   subtitle: 'Resume a paused schedule',
   modal: {
-    withForm: false,
+    withForm: true,
+    form: ScheduleActionResumeForm,
+    formSchema: resumeScheduleFormSchema,
+    transformFormDataToSubmission: transformResumeScheduleFormToSubmission,
   },
   icon: MdPlayCircleOutline,
   getRunnableStatus: (schedule) =>
