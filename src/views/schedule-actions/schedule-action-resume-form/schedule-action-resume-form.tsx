@@ -7,9 +7,9 @@ import { RESUME_SCHEDULE_FORM_FIELD_DESCRIPTIONS } from '@/views/schedule-action
 import getFieldErrorMessage from '@/views/workflow-actions/workflow-action-start-form/helpers/get-field-error-message';
 
 import {
-  DEFAULT_RESUME_CATCH_UP_POLICY,
   RESUME_CATCH_UP_POLICY_OPTIONS,
   SCHEDULE_ACTION_RESUME_FORM_FIELD_IDS,
+  USE_SCHEDULE_CATCH_UP_POLICY,
 } from './schedule-action-resume-form.constants';
 import { type Props } from './schedule-action-resume-form.types';
 
@@ -27,7 +27,7 @@ export default function ScheduleActionResumeForm({
         <Controller
           name="catchUpPolicy"
           control={control}
-          defaultValue={DEFAULT_RESUME_CATCH_UP_POLICY}
+          defaultValue={USE_SCHEDULE_CATCH_UP_POLICY}
           render={({ field: { value, onChange, ref, ...field } }) => (
             <RadioGroup
               {...field}

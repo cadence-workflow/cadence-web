@@ -3,8 +3,6 @@ import { SCHEDULE_CATCH_UP_POLICY_LABELS } from '@/views/shared/constants/schedu
 
 export const USE_SCHEDULE_CATCH_UP_POLICY = 'USE_SCHEDULE_POLICY' as const;
 
-export const DEFAULT_RESUME_CATCH_UP_POLICY = USE_SCHEDULE_CATCH_UP_POLICY;
-
 export const SCHEDULE_ACTION_RESUME_FORM_FIELD_IDS = {
   reason: 'schedule-action-resume-reason',
 } as const;
@@ -25,8 +23,3 @@ export type ResumeCatchUpPolicyOptionId =
 
 export type ExplicitResumeCatchUpPolicy =
   (typeof SCHEDULE_CATCH_UP_POLICIES)[number];
-
-export const isExplicitCatchUpPolicy = (
-  value: ResumeCatchUpPolicyOptionId | undefined
-): value is ExplicitResumeCatchUpPolicy =>
-  value !== undefined && value !== USE_SCHEDULE_CATCH_UP_POLICY;

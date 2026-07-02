@@ -1,4 +1,8 @@
-import { MdPauseCircleOutline, MdPlayCircleOutline } from 'react-icons/md';
+import {
+  MdOutlineWarningAmber,
+  MdPauseCircleOutline,
+  MdPlayCircleOutline,
+} from 'react-icons/md';
 
 import { type PauseScheduleResponse } from '@/route-handlers/pause-schedule/pause-schedule.types';
 import { type UnpauseScheduleResponse } from '@/route-handlers/unpause-schedule/unpause-schedule.types';
@@ -18,8 +22,6 @@ import {
   type ScheduleAction,
 } from '../schedule-actions.types';
 
-import { pauseScheduleBannerIcon } from './schedule-actions-banner-icons';
-
 const pauseScheduleActionConfig: ScheduleAction<
   PauseScheduleResponse,
   PauseScheduleFormData,
@@ -31,7 +33,7 @@ const pauseScheduleActionConfig: ScheduleAction<
   modal: {
     banner: {
       kind: 'warning',
-      icon: pauseScheduleBannerIcon,
+      icon: MdOutlineWarningAmber,
       render: () =>
         'Pausing stops new executions but does not stop workflows already in progress.',
     },

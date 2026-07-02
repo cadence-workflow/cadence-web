@@ -29,9 +29,7 @@ export const mockPauseActionConfig: ScheduleAction<
   modal: {
     banner: {
       kind: 'warning',
-      icon: ({ size, color }) => (
-        <MdOutlineWarningAmber size={size} color={color} />
-      ),
+      icon: MdOutlineWarningAmber,
       render: () => 'Mock pause banner message',
     },
     withForm: true,
