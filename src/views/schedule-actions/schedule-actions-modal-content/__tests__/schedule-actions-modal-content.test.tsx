@@ -7,7 +7,6 @@ import { type PauseScheduleResponse } from '@/route-handlers/pause-schedule/paus
 import { type UnpauseScheduleResponse } from '@/route-handlers/unpause-schedule/unpause-schedule.types';
 
 import { mockScheduleActionsConfig } from '../../__fixtures__/schedule-actions-config';
-import { type ScheduleAction } from '../../schedule-actions.types';
 import ScheduleActionsModalContent from '../schedule-actions-modal-content';
 
 const mockScheduleParams = {
@@ -26,10 +25,9 @@ jest.mock('baseui/snackbar', () => ({
   }),
 }));
 
-const mockPush = jest.fn();
 jest.mock('next/navigation', () => ({
   ...jest.requireActual('next/navigation'),
-  useRouter: () => ({ push: mockPush }),
+  useRouter: () => ({ push: jest.fn() }),
 }));
 
 describe(ScheduleActionsModalContent.name, () => {
@@ -146,11 +144,9 @@ describe(ScheduleActionsModalContent.name, () => {
 
 function setup({
   error,
-  actionConfig,
   schedule = mockDescribeScheduleResponse,
 }: {
   error?: boolean;
-  actionConfig?: ScheduleAction<any, any, any>;
   schedule?: typeof mockDescribeScheduleResponse;
 }) {
   const user = userEvent.setup();
@@ -163,7 +159,7 @@ function setup({
 
   render(
     <ScheduleActionsModalContent
-      action={actionConfig ?? mockScheduleActionsConfig[0]}
+      action={mockScheduleActionsConfig[0]}
       params={{ ...mockScheduleParams }}
       schedule={schedule}
       onCloseModal={mockOnClose}

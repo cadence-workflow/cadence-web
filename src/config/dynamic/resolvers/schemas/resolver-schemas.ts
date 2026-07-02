@@ -74,6 +74,7 @@ const resolverSchemas: ResolverSchemas = {
     returnType: z.object({
       pause: scheduleActionsEnabledValueSchema,
       resume: scheduleActionsEnabledValueSchema,
+      delete: scheduleActionsEnabledValueSchema,
     }),
   },
   CRON_LIST_ENABLED: {

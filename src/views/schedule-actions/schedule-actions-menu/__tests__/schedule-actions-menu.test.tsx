@@ -41,7 +41,7 @@ describe(ScheduleActionsMenu.name, () => {
     });
 
     const menuButtons = screen.getAllByRole('button');
-    expect(menuButtons).toHaveLength(2);
+    expect(menuButtons).toHaveLength(3);
 
     expect(within(menuButtons[0]).getByText('Mock pause')).toBeInTheDocument();
     expect(
@@ -54,6 +54,12 @@ describe(ScheduleActionsMenu.name, () => {
       within(menuButtons[1]).getByText('Mock resume a schedule')
     ).toBeInTheDocument();
     expect(menuButtons[1]).not.toBeDisabled();
+
+    expect(within(menuButtons[2]).getByText('Delete')).toBeInTheDocument();
+    expect(
+      within(menuButtons[2]).getByText('Mock delete a schedule')
+    ).toBeInTheDocument();
+    expect(menuButtons[2]).not.toBeDisabled();
   });
 
   it('disables menu items and shows tooltip if they are disabled from config', async () => {
@@ -61,6 +67,7 @@ describe(ScheduleActionsMenu.name, () => {
       actionsEnabledConfig: {
         pause: 'DISABLED_DEFAULT',
         resume: 'DISABLED_DEFAULT',
+        delete: 'DISABLED_DEFAULT',
       },
     });
 

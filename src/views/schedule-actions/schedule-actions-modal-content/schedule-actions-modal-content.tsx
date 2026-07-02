@@ -62,17 +62,22 @@ export default function ScheduleActionsModalContent<
         cluster,
         scheduleId,
         submissionData,
-      }: ScheduleActionInput<SubmissionData>) =>
-        request(action.apiRoute({ domain, cluster, scheduleId }), {
-          method: 'POST',
-          body: JSON.stringify(submissionData ?? {}),
-        }).then((res) => res.json() as Result),
-      onSuccess: (result, mutationParams) => {
-        queryClient.invalidateQueries({
-          queryKey: ['describeSchedule', params],
-        });
+      }: ScheduleActionInput<SubmissionData>) => {
+        const httpMethod = action.httpMethod ?? 'POST';
 
-        action.onSuccess?.({ queryClient, params, router });
+        return request(action.apiRoute({ domain, cluster, scheduleId }), {
+          method: httpMethod,
+          body: JSON.stringify(submissionData ?? {}),
+        }).then((res) => res.json() as Result);
+      },
+      onSuccess: (result, mutationParams) => {
+        if (!action.onSuccess)
+          queryClient.invalidateQueries({
+            queryKey: ['describeSchedule', params],
+          });
+        else {
+          action.onSuccess?.({ queryClient, params, router });
+        }
 
         onCloseModal();
         enqueue({
@@ -105,6 +110,9 @@ export default function ScheduleActionsModalContent<
     });
   };
 
+  const Form = action.modal.form;
+  const isSubmitDisabled = Object.keys(validationErrors).length > 0;
+
   const modalBanner = action.modal.banner ? (
     <Banner
       hierarchy={HIERARCHY.low}
@@ -117,9 +125,6 @@ export default function ScheduleActionsModalContent<
       {action.modal.banner.render(schedule)}
     </Banner>
   ) : null;
-
-  const Form = action.modal.form;
-  const isSubmitDisabled = Object.keys(validationErrors).length > 0;
 
   return (
     <>
