@@ -84,7 +84,7 @@ function setup({
 
   render(
     <ScheduleActionsModalContent
-      action={scheduleActionsConfig[2]}
+      action={scheduleActionsConfig[3]}
       params={{ ...mockScheduleParams }}
       onCloseModal={mockOnClose}
       initialFormValues={defaultValues}
