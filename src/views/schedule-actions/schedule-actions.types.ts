@@ -86,7 +86,7 @@ export type ScheduleActionModalForm<FormData, SubmissionData> =
       transformFormDataToSubmission?: undefined;
     };
 
-export type ScheduleActionHttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+export type ScheduleActionHttpMethod = 'POST' | 'PUT' | 'DELETE';
 
 export type ScheduleAction<
   Result,
