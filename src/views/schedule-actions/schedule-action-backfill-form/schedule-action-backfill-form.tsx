@@ -167,7 +167,7 @@ export default function ScheduleActionBackfillForm({
               // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
               inputRef={ref}
               aria-label="Backfill ID"
-              onChange={(e) => field.onChange(e.target.value || undefined)}
+              onChange={(e) => field.onChange(e.target.value)}
               onBlur={field.onBlur}
               error={Boolean(getFieldErrorMessage(fieldErrors, 'backfillId'))}
               size="compact"
