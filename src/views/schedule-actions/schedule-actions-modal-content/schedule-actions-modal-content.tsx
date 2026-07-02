@@ -108,14 +108,6 @@ export default function ScheduleActionsModalContent<
     });
   };
 
-  const modalText = action.modal.text ? (
-    Array.isArray(action.modal.text) ? (
-      action.modal.text.map((text, index) => <p key={index}>{text}</p>)
-    ) : (
-      <p>{action.modal.text}</p>
-    )
-  ) : null;
-
   const modalBanner = action.modal.banner ? (
     <Banner
       hierarchy={HIERARCHY.low}
@@ -153,16 +145,6 @@ export default function ScheduleActionsModalContent<
             </div>
           )}
           <styled.ModalBodyContent>
-            {modalText}
-            {action.modal.docsLink && (
-              <styled.Link
-                href={action.modal.docsLink.href}
-                target="_blank"
-                rel="noreferrer"
-              >
-                {action.modal.docsLink.text}
-              </styled.Link>
-            )}
             {action.modal.withForm && Form && (
               <Form
                 fieldErrors={validationErrors}

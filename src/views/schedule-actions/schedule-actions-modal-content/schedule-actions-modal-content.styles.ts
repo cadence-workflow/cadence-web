@@ -1,6 +1,5 @@
 import { styled as createStyled, type Theme, withStyle } from 'baseui';
 import { type BannerOverrides } from 'baseui/banner';
-import { StyledLink } from 'baseui/link';
 import { ModalBody, ModalFooter, ModalHeader } from 'baseui/modal';
 import { type StyleObject } from 'styletron-react';
 
@@ -28,13 +27,6 @@ export const styled = {
     display: 'flex',
     justifyContent: 'space-between',
   }),
-  Link: withStyle(StyledLink, ({ $theme }: { $theme: Theme }) => ({
-    alignSelf: 'start',
-    ...$theme.typography.LabelSmall,
-    display: 'flex',
-    alignItems: 'center',
-    columnGap: $theme.sizing.scale100,
-  })),
 };
 
 export const overrides = {
