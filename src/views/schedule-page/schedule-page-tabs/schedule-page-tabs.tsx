@@ -6,8 +6,10 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { MdChevronLeft } from 'react-icons/md';
 
+import ErrorBoundary from '@/components/error-boundary/error-boundary';
 import PageTabs from '@/components/page-tabs/page-tabs';
 import decodeUrlParams from '@/utils/decode-url-params';
+import ScheduleActions from '@/views/schedule-actions/schedule-actions';
 
 import schedulePageTabsConfig from '../config/schedule-page-tabs.config';
 
@@ -55,6 +57,11 @@ export default function SchedulePageTabs() {
             setSelectedTab={(newTab) => {
               router.push(encodeURIComponent(newTab.toString()));
             }}
+            endEnhancer={
+              <ErrorBoundary fallbackRender={() => null}>
+                <ScheduleActions />
+              </ErrorBoundary>
+            }
           />
         </styled.TabsSlot>
       </styled.TabsRow>
