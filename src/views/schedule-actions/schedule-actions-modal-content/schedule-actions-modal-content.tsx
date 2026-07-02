@@ -48,10 +48,7 @@ export default function ScheduleActionsModalContent<
       : undefined,
     mode: 'onSubmit',
     reValidateMode: 'onChange',
-    defaultValues: (initialFormValues ??
-      (action.modal.withForm
-        ? action.modal.initialFormValues
-        : undefined)) as DefaultValues<OptionalFormData>,
+    defaultValues: initialFormValues as DefaultValues<OptionalFormData>,
   });
 
   const { mutate, isPending, error } = useMutation<

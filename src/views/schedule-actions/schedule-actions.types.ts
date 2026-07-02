@@ -5,7 +5,6 @@ import { type KIND as BANNER_KIND } from 'baseui/banner';
 import { type IconProps } from 'baseui/icon';
 import { type AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import {
-  type DefaultValues,
   type UseFormClearErrors,
   type Control,
   type FieldErrors,
@@ -79,9 +78,6 @@ export type ScheduleActionModalForm<FormData, SubmissionData> =
       ) => ReactNode;
       formSchema: z.ZodSchema<FormData>;
       transformFormDataToSubmission: (formData: FormData) => SubmissionData;
-      initialFormValues?: DefaultValues<
-        FormData extends FieldValues ? FormData : FieldValues
-      >;
     }
   | {
       withForm: false;

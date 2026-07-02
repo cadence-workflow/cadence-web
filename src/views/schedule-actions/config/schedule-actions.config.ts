@@ -32,7 +32,6 @@ const pauseScheduleActionConfig: ScheduleAction<
     form: ScheduleActionPauseForm,
     formSchema: pauseScheduleFormSchema,
     transformFormDataToSubmission: (formData) => formData,
-    initialFormValues: { reason: '' },
   },
   icon: MdPauseCircleOutline,
   getRunnableStatus: (schedule) =>

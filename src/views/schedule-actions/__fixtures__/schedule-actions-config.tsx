@@ -48,7 +48,6 @@ export const mockPauseActionConfig: ScheduleAction<
       reason: z.string().trim().min(1, 'Reason for pausing is required'),
     }),
     transformFormDataToSubmission: (formData) => formData,
-    initialFormValues: { reason: '' },
   },
   icon: MdPauseCircleOutline,
   getRunnableStatus: (schedule) =>
