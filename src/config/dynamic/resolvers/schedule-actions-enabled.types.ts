@@ -1,6 +1,6 @@
 import type SCHEDULE_ACTIONS_DISABLED_VALUES_CONFIG from './schedule-actions-disabled-values.config';
 
-export type ScheduleActionID = 'pause' | 'resume';
+export type ScheduleActionID = 'pause' | 'resume' | 'backfill';
 
 export type ScheduleActionDisabledValue =
   (typeof SCHEDULE_ACTIONS_DISABLED_VALUES_CONFIG)[number];

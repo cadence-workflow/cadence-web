@@ -3,6 +3,8 @@ import { type DescribeClusterResponse } from '@/__generated__/proto-ts/uber/cade
 import { type DescribeWorkflowExecutionRequest__Input } from '@/__generated__/proto-ts/uber/cadence/admin/v1/DescribeWorkflowExecutionRequest';
 import { type CountWorkflowExecutionsRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/CountWorkflowExecutionsRequest';
 import { type CountWorkflowExecutionsResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/CountWorkflowExecutionsResponse';
+import { type BackfillScheduleRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/BackfillScheduleRequest';
+import { type BackfillScheduleResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/BackfillScheduleResponse';
 import { type CreateScheduleRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/CreateScheduleRequest';
 import { type CreateScheduleResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/CreateScheduleResponse';
 import { type DeleteScheduleRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/DeleteScheduleRequest';
@@ -88,6 +90,9 @@ export type GRPCClusterMethods = {
   createSchedule: (
     payload: CreateScheduleRequest__Input
   ) => Promise<CreateScheduleResponse>;
+  backfillSchedule: (
+    payload: BackfillScheduleRequest__Input
+  ) => Promise<BackfillScheduleResponse>;
   deleteSchedule: (
     payload: DeleteScheduleRequest__Input
   ) => Promise<DeleteScheduleResponse>;
@@ -273,6 +278,13 @@ const getClusterServicesMethods = async (
       CreateScheduleResponse
     >({
       method: 'CreateSchedule',
+      metadata: metadata,
+    }),
+    backfillSchedule: scheduleService.request<
+      BackfillScheduleRequest__Input,
+      BackfillScheduleResponse
+    >({
+      method: 'BackfillSchedule',
       metadata: metadata,
     }),
     deleteSchedule: scheduleService.request<

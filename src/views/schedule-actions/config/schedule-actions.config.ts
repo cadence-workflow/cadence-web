@@ -1,13 +1,21 @@
 import {
+  MdHistory,
   MdOutlineWarningAmber,
   MdPauseCircleOutline,
   MdPlayCircleOutline,
 } from 'react-icons/md';
 
+import { type BackfillScheduleResponse } from '@/route-handlers/backfill-schedule/backfill-schedule.types';
 import { type PauseScheduleResponse } from '@/route-handlers/pause-schedule/pause-schedule.types';
 import { type UnpauseScheduleResponse } from '@/route-handlers/unpause-schedule/unpause-schedule.types';
 
+import transformBackfillScheduleFormToSubmission from '../schedule-action-backfill-form/helpers/transform-backfill-schedule-form-to-submission';
+import ScheduleActionBackfillForm from '../schedule-action-backfill-form/schedule-action-backfill-form';
+import { DEFAULT_BACKFILL_OVERLAP_POLICY } from '../schedule-action-backfill-form/schedule-action-backfill-form.constants';
+import { type BackfillScheduleFormData } from '../schedule-action-backfill-form/schedule-action-backfill-form.types';
+import { backfillScheduleFormSchema } from '../schedule-action-backfill-form/schemas/backfill-schedule-form-schema';
 import {
+  type BackfillScheduleSubmissionData,
   type PauseScheduleSubmissionData,
   type ScheduleAction,
 } from '../schedule-actions.types';
@@ -58,9 +66,37 @@ const resumeScheduleActionConfig: ScheduleAction<UnpauseScheduleResponse> = {
   renderSuccessMessage: () => 'Schedule has been resumed.',
 };
 
+const backfillScheduleActionConfig: ScheduleAction<
+  BackfillScheduleResponse,
+  BackfillScheduleFormData,
+  BackfillScheduleSubmissionData
+> = {
+  id: 'backfill',
+  label: 'Backfill',
+  subtitle: 'Backfill missed workflow runs',
+  modal: {
+    withForm: true,
+    form: ScheduleActionBackfillForm,
+    formSchema: backfillScheduleFormSchema,
+    transformFormDataToSubmission: transformBackfillScheduleFormToSubmission,
+    initialFormValues: {
+      overlapPolicy: DEFAULT_BACKFILL_OVERLAP_POLICY,
+    },
+  },
+  icon: MdHistory,
+  getRunnableStatus: () => 'RUNNABLE',
+  apiRoute: (params) =>
+    `/api/domains/${encodeURIComponent(params.domain)}/${encodeURIComponent(params.cluster)}/schedules/${encodeURIComponent(params.scheduleId)}/backfill`,
+  renderSuccessMessage: () => 'Schedule backfill has been started.',
+};
+
 const scheduleActionsConfig = [
   pauseScheduleActionConfig,
   resumeScheduleActionConfig,
-] as const satisfies ScheduleAction<any, any, any>[];
+  backfillScheduleActionConfig,
+] as const;
+
+/** Discriminated union of configured actions; use at menu/selection boundaries. */
+export type SelectableScheduleAction = (typeof scheduleActionsConfig)[number];
 
 export default scheduleActionsConfig;
