@@ -63,7 +63,12 @@ export const mockDeleteActionConfig: ScheduleAction<DeleteScheduleResponse> = {
   label: 'Delete',
   subtitle: 'Mock delete a schedule',
   modal: {
-    text: 'Deletes the schedule permanently. In-progress workflow runs are not affected.',
+    banner: {
+      kind: 'warning',
+      icon: MdOutlineWarningAmber,
+      render: () =>
+        'Deletes the schedule permanently. In-progress workflow runs are not affected.',
+    },
     withForm: false,
   },
   icon: MdDeleteOutline,
