@@ -8,18 +8,20 @@ export default function DomainBatchActionsNoActionsPlaceholder({
   onCreateNew,
 }: Props) {
   return (
-    <ErrorPanel
-      message="No batch actions found"
-      description="Click the button below to get started with Batch Workflow actions. Easily process multiple tasks at once and automate your workflows with just a few simple steps."
-      actions={[
-        {
-          kind: 'callback',
-          label: 'New batch action',
-          buttonKind: 'primary',
-          startEnhancer: MdAdd,
-          onClick: onCreateNew,
-        },
-      ]}
-    />
+    <div data-tour="batch-new-action-button">
+      <ErrorPanel
+        message="No batch actions found"
+        description="Click the button below to get started with Batch Workflow actions. Easily process multiple tasks at once and automate your workflows with just a few simple steps."
+        actions={[
+          {
+            kind: 'callback',
+            label: 'New batch action',
+            buttonKind: 'primary',
+            startEnhancer: MdAdd,
+            onClick: onCreateNew,
+          },
+        ]}
+      />
+    </div>
   );
 }
