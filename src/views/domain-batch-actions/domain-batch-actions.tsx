@@ -176,12 +176,14 @@ function DomainBatchActionsContent(props: DomainPageTabContentProps) {
 
   return (
     <GuidedTourProvider
-      tourId="batch-actions-overview"
+      tourId={isEmpty ? 'batch-actions-empty' : 'batch-actions-overview'}
       steps={
         isEmpty
           ? domainBatchActionsOverviewEmptyTourConfig
           : domainBatchActionsOverviewTourConfig
       }
+      // Don't auto-start the overview while a draft is open (e.g. deep link)
+      autoStart={!isDraftOpen}
     >
       {isEmpty ? (
         <DomainBatchActionsNoActionsPlaceholder onCreateNew={handleCreateNew} />
