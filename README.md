@@ -21,24 +21,24 @@ docker-compose -f docker/docker-compose.yml up
 
 Set these environment variables if you need to change their defaults.
 
-| Variable                     | Description                                                                   | Default          |
-|------------------------------| ----------------------------------------------------------------------------- | ---------------- |
-| CADENCE_GRPC_PEERS           | Comma-delimited list of gRPC peers                                            | 127.0.0.1:7833   |
-| CADENCE_GRPC_SERVICES_NAMES  | Comma-delimited list of gRPC services to call                                 | cadence-frontend |
-| CADENCE_CLUSTERS_NAMES       | Comma-delimited list of cluster names                                         | cluster0         |
-| CADENCE_WEB_PORT             | HTTP port to serve on                                                         | 8088             |
-| CADENCE_WEB_HOSTNAME         | Host name to serve on                                                         | 0.0.0.0          |
-| CADENCE_ADMIN_SECURITY_TOKEN | Admin token for accessing admin methods                                       | ''               |
+| Variable                     | Description                                                                                                     | Default          |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------- | ---------------- |
+| CADENCE_GRPC_PEERS           | Comma-delimited list of gRPC peers                                                                              | 127.0.0.1:7833   |
+| CADENCE_GRPC_SERVICES_NAMES  | Comma-delimited list of gRPC services to call                                                                   | cadence-frontend |
+| CADENCE_CLUSTERS_NAMES       | Comma-delimited list of cluster names                                                                           | cluster0         |
+| CADENCE_WEB_PORT             | HTTP port to serve on                                                                                           | 8088             |
+| CADENCE_WEB_HOSTNAME         | Host name to serve on                                                                                           | 0.0.0.0          |
+| CADENCE_ADMIN_SECURITY_TOKEN | Admin token for accessing admin methods                                                                         | ''               |
 | CADENCE_WEB_AUTH_STRATEGY    | Auth strategy resolver. Supported values: `disabled` or `jwt`; invalid or unset values fall back to `disabled`. | disabled         |
-| CADENCE_GRPC_TLS_CA_FILE     | Path to root CA certificate file for enabling one-way TLS on gRPC connections | ''               |
-| CADENCE_WEB_SERVICE_NAME     | Name of the web service used as GRPC caller and OTEL resource name            | cadence-web      |
+| CADENCE_GRPC_TLS_CA_FILE     | Path to root CA certificate file for enabling one-way TLS on gRPC connections                                   | ''               |
+| CADENCE_WEB_SERVICE_NAME     | Name of the web service used as GRPC caller and OTEL resource name                                              | cadence-web      |
 
 Note: To connect `cadence-web` to multiple clusters, you will need to add comma-delimted entries for `CADENCE_GRPC_PEERS`, `CADENCE_GRPC_SERVICES_NAMES` & `CADENCE_CLUSTERS_NAMES` for each cluster (each cluster values are grouped by their index within the Comma-delimited lists).
 
 Example:
 
 ```
-CADENCE_GRPC_PEERS=127.0.0.1:3000,127.0.0.1:5000 
+CADENCE_GRPC_PEERS=127.0.0.1:3000,127.0.0.1:5000
 CADENCE_GRPC_SERVICES_NAMES=cadence-frontend-cluster0,cadence-frontend-cluster1
 CADENCE_CLUSTERS_NAMES=cluster0,cluster1
 ```
@@ -57,24 +57,23 @@ To integrate an upstream proxy / IdP, set the cookie for the cadence-web origin:
 ```
 Set-Cookie: cadence-authorization=<JWT>; Path=/; HttpOnly; SameSite=Lax; Secure
 ```
+
 You can also set/clear the cookie via `POST /api/auth/token` and `DELETE /api/auth/token`; or use `Login with JWT` button in the UI.
 
 #### Feature flags
 
 Feature flags control various UI features and functionality in `cadence-web`. These can be configured using environment variables.
 
-| Feature                        | Description                                                                                                                                                               | Environment Variable Configuration                            | Minimum Cadence Server Version           |
-|------------------------------- |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------|-----------------------------------------|
-| **Extended Domain Information** | Enhanced domain metadata display and help menu UI                                                                                                                        | `CADENCE_EXTENDED_DOMAIN_INFO_METADATA_ENABLED=true`           | N/A                                      |
-| **Workflow Diagnostics**        | Workflow diagnostics APIs and UI for debugging workflows                                                                                                                 | `CADENCE_WORKFLOW_DIAGNOSTICS_ENABLED=true`                    | 1.2.13+ (1.3.1+ for full functionality)  |
-| **Default Archival Search**     | Shows the default workflow search input and query input for archival workflows page. Default search is disabled by default as it doesn't work well with S3 implementation | `CADENCE_ARCHIVAL_DEFAULT_SEARCH_ENABLED=true`                 | N/A                                      |
-| **Failover History List**       | List and filter domain failovers                                                                                                                                        | `CADENCE_FAILOVER_HISTORY_ENABLED=true`                        | 1.4.0+                                   |
-| **New Workflow History View**   | New and improved UI for viewing workflow history                                                                                                                        | `CADENCE_HISTORY_PAGE_V2_ENABLED=ENABLED` (or `OPT_IN`/`OPT_OUT`)  | N/A                                      |
-| **Batch Actions**               | Run and view batch actions (terminate/cancel/signal) over workflows. Access can be scoped: enabled for everyone, for domain admins, or for users with domain write access | `CADENCE_BATCH_ACTIONS_UI_ENABLED=ENABLED` (or `ADMIN`/`WRITE`)    | N/A                                      |
+| Feature                         | Description                                                                                                                                                                                                     | Environment Variable Configuration                                | Minimum Cadence Server Version          |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- | --------------------------------------- |
+| **Extended Domain Information** | Enhanced domain metadata display and help menu UI                                                                                                                                                               | `CADENCE_EXTENDED_DOMAIN_INFO_METADATA_ENABLED=true`              | N/A                                     |
+| **Workflow Diagnostics**        | Workflow diagnostics APIs and UI for debugging workflows                                                                                                                                                        | `CADENCE_WORKFLOW_DIAGNOSTICS_ENABLED=true`                       | 1.2.13+ (1.3.1+ for full functionality) |
+| **Default Archival Search**     | Shows the default workflow search input and query input for archival workflows page. Default search is disabled by default as it doesn't work well with S3 implementation                                       | `CADENCE_ARCHIVAL_DEFAULT_SEARCH_ENABLED=true`                    | N/A                                     |
+| **Failover History List**       | List and filter domain failovers                                                                                                                                                                                | `CADENCE_FAILOVER_HISTORY_ENABLED=true`                           | 1.4.0+                                  |
+| **New Workflow History View**   | New and improved UI for viewing workflow history                                                                                                                                                                | `CADENCE_HISTORY_PAGE_V2_ENABLED=ENABLED` (or `OPT_IN`/`OPT_OUT`) | N/A                                     |
+| **Batch Actions**               | View/hide batch actions (terminate/cancel/signal) UI for workflows.only works for users with access for cadence-system domain. Access can be scoped: everyone, domain admins, or users with domain write access | `CADENCE_BATCH_ACTIONS_UI_ENABLED=ENABLED` (or `ADMIN`/`WRITE`)   | 1.4.0+                                  |
 
 **Note:** For advanced customization, feature flags can be modified through resolvers in the dynamic config system ([`src/config/dynamic/resolvers`](src/config/dynamic/resolvers)).
-
-
 
 ### Using TLS for gRPC
 
@@ -88,7 +87,7 @@ You can run cadence-web with secure gRPC TLS communication by passing your CA ce
 2. **Mount the certificate file into the container:**  
    Use Docker volume mounting (`-v` or `--volume`) to make the certificate file available inside the container at a known path.
 
-3. **Set the `CADENCE_GRPC_TLS_CA_FILE` environment variable to the mounted certificate path:**  
+3. **Set the `CADENCE_GRPC_TLS_CA_FILE` environment variable to the mounted certificate path:**
 
 Example command (for Linux):
 
@@ -178,16 +177,19 @@ To update the Cadence IDL files:
 1. Update the commit hash in `package.json` under `config.cadence_idl_version` to the latest commit hash from the [cadence-idl repository](https://github.com/cadence-workflow/cadence-idl).
 
 2. Download the new IDL files:
+
 ```
 npm run install-idl
 ```
 
 3. Generate TypeScript types from the IDL files:
+
 ```
 npm run generate:idl
 ```
 
 4. Check for errors:
+
 ```
 npm run lint && npm run typecheck && npm run test
 ```
@@ -198,19 +200,19 @@ npm run lint && npm run typecheck && npm run test
 
 ### NPM scripts
 
-| script            | Description                                                                                     |
-| ----------------- | ----------------------------------------------------------------------------------------------- |
-| build             | Generate a production build                                                                     |
-| start             | Start server for existing production build                                                      |
-| dev               | Run a development server                                                                        |
-| install-idl       | Download idl files required for building/running the project                                    |
-| generate:idl      | Move idl files inside the project and generate typescript types for them                        |
-| test              | Run all test cases. To pass extra jest flags, use environment specific scripts e.g. test:unit:* |
-| test:unit         | Run all unit tests. To pass extra jest flags, use environment specific scripts e.g. test:unit:* |
-| test:unit:browser | Run only browser unit tests                                                                     |
-| test:unit:node    | Run only node unit tests                                                                        |
-| lint              | Run eslint                                                                                      |
-| typecheck         | Run typescript checks                                                                           |
+| script            | Description                                                                                      |
+| ----------------- | ------------------------------------------------------------------------------------------------ |
+| build             | Generate a production build                                                                      |
+| start             | Start server for existing production build                                                       |
+| dev               | Run a development server                                                                         |
+| install-idl       | Download idl files required for building/running the project                                     |
+| generate:idl      | Move idl files inside the project and generate typescript types for them                         |
+| test              | Run all test cases. To pass extra jest flags, use environment specific scripts e.g. test:unit:\* |
+| test:unit         | Run all unit tests. To pass extra jest flags, use environment specific scripts e.g. test:unit:\* |
+| test:unit:browser | Run only browser unit tests                                                                      |
+| test:unit:node    | Run only node unit tests                                                                         |
+| lint              | Run eslint                                                                                       |
+| typecheck         | Run typescript checks                                                                            |
 
 ## Contributing
 
