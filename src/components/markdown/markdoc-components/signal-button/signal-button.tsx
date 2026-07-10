@@ -1,10 +1,14 @@
 'use client';
+import { useContext } from 'react';
+
 import { useMutation } from '@tanstack/react-query';
 import { Button } from 'baseui/button';
 import { useSnackbar } from 'baseui/snackbar';
 
 import losslessJsonStringify from '@/utils/lossless-json-stringify';
 import request from '@/utils/request';
+
+import { MarkdownPageContext } from '../../markdown-page-context';
 
 import { SIGNAL_SUCCESS_NOTIFICATION_DURATION_MS } from './signal-button.constants';
 import { overrides } from './signal-button.styles';
@@ -14,11 +18,17 @@ export default function SignalButton({
   signalName,
   label,
   input,
-  workflowId,
-  runId,
-  domain,
-  cluster,
+  workflowId: workflowIdProp,
+  runId: runIdProp,
+  domain: domainProp,
+  cluster: clusterProp,
 }: SignalButtonProps) {
+  const pageContext = useContext(MarkdownPageContext);
+  const domain = domainProp ?? pageContext.domain;
+  const cluster = clusterProp ?? pageContext.cluster;
+  const workflowId = workflowIdProp ?? pageContext.workflowId;
+  const runId = runIdProp ?? pageContext.runId;
+
   const { enqueue } = useSnackbar();
 
   const { mutate, isPending } = useMutation({
