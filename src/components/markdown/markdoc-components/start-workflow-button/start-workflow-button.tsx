@@ -1,10 +1,14 @@
 'use client';
+import { useContext } from 'react';
+
 import { useMutation } from '@tanstack/react-query';
 import { Button } from 'baseui/button';
 import { useSnackbar } from 'baseui/snackbar';
 import { useRouter } from 'next/navigation';
 
 import request from '@/utils/request';
+
+import { MarkdownPageContext } from '../../markdown-page-context';
 
 import { overrides } from './start-workflow-button.styles';
 import { type StartWorkflowButtonProps } from './start-workflow-button.types';
@@ -17,14 +21,18 @@ type StartWorkflowResult = {
 export default function StartWorkflowButton({
   workflowType,
   label,
-  domain,
-  cluster,
+  domain: domainProp,
+  cluster: clusterProp,
   taskList,
   wfId,
   input,
   timeoutSeconds = 60,
   sdkLanguage = 'GO',
 }: StartWorkflowButtonProps) {
+  const pageContext = useContext(MarkdownPageContext);
+  const domain = domainProp ?? pageContext.domain;
+  const cluster = clusterProp ?? pageContext.cluster;
+
   const { enqueue } = useSnackbar();
   const router = useRouter();
 
@@ -63,7 +71,7 @@ export default function StartWorkflowButton({
         message: `Successfully started workflow "${workflowType}"`,
         actionMessage: 'View',
         actionOnClick: () => {
-          if (startedWorkflowId && runId) {
+          if (domain && cluster && startedWorkflowId && runId) {
             router.push(
               `/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows/${encodeURIComponent(startedWorkflowId)}/${encodeURIComponent(runId)}/summary`
             );
