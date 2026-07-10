@@ -2,6 +2,7 @@ import { HttpResponse } from 'msw';
 
 import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
+import { MarkdownPageContext } from '../../../markdown-page-context';
 import SignalButton from '../signal-button';
 import { SIGNAL_SUCCESS_NOTIFICATION_DURATION_MS } from '../signal-button.constants';
 
@@ -82,35 +83,115 @@ describe(SignalButton.name, () => {
     expect(mockEnqueue).toHaveBeenCalledTimes(1);
     expect(mockEnqueue.mock.calls[0]).toHaveLength(1);
   });
+
+  it('remains disabled when props are missing and no page context is provided', () => {
+    setup({ propsOverrides: { domain: undefined, cluster: undefined } });
+
+    expect(screen.getByRole('button', { name: 'Send Signal' })).toHaveAttribute(
+      'disabled'
+    );
+  });
+
+  it('is enabled and signals successfully using values inherited from page context', async () => {
+    const { user, getLatestRequest } = setup({
+      propsOverrides: {
+        domain: undefined,
+        cluster: undefined,
+        workflowId: undefined,
+        runId: undefined,
+      },
+      contextValue: {
+        domain: 'context-domain',
+        cluster: 'context-cluster',
+        workflowId: 'context-workflow-id',
+        runId: 'context-run-id',
+      },
+    });
+
+    const button = screen.getByRole('button', { name: 'Send Signal' });
+    expect(button).not.toHaveAttribute('disabled');
+
+    await user.click(button);
+
+    await waitFor(() => {
+      expect(getLatestRequest()).toBe(
+        '/api/domains/context-domain/context-cluster/workflows/context-workflow-id/context-run-id/signal'
+      );
+    });
+  });
+
+  it('prefers explicit props over page context values', async () => {
+    const { user, getLatestRequest } = setup({
+      contextValue: {
+        domain: 'context-domain',
+        cluster: 'context-cluster',
+        workflowId: 'context-workflow-id',
+        runId: 'context-run-id',
+      },
+    });
+
+    const button = screen.getByRole('button', { name: 'Send Signal' });
+    await user.click(button);
+
+    await waitFor(() => {
+      expect(getLatestRequest()).toBe(
+        `/api/domains/${defaultProps.domain}/${defaultProps.cluster}/workflows/${defaultProps.workflowId}/${defaultProps.runId}/signal`
+      );
+    });
+  });
 });
 
 function setup({
   error,
   propsOverrides,
+  contextValue,
 }: {
   error?: boolean;
   propsOverrides?: Partial<typeof defaultProps>;
+  contextValue?: Partial<typeof defaultProps>;
 }) {
   const user = userEvent.setup();
+  let latestRequestPathname: string | undefined;
 
-  render(<SignalButton {...defaultProps} {...propsOverrides} />, {
-    endpointsMocks: [
-      {
-        path: SIGNAL_ENDPOINT,
-        httpMethod: 'POST',
-        mockOnce: false,
-        httpResolver: async () => {
-          if (error) {
-            return HttpResponse.json(
-              { message: 'Failed to signal workflow' },
-              { status: 500 }
-            );
-          }
-          return HttpResponse.json({});
+  render(
+    <SignalButton {...defaultProps} {...propsOverrides} />,
+    {
+      endpointsMocks: [
+        {
+          path: SIGNAL_ENDPOINT,
+          httpMethod: 'POST',
+          mockOnce: false,
+          httpResolver: async ({ request }) => {
+            latestRequestPathname = new URL(request.url).pathname;
+            if (error) {
+              return HttpResponse.json(
+                { message: 'Failed to signal workflow' },
+                { status: 500 }
+              );
+            }
+            return HttpResponse.json({});
+          },
         },
-      },
-    ],
-  });
+      ],
+    },
+    contextValue
+      ? {
+          wrapper: ({ children }) => (
+            <MarkdownPageContext.Provider value={contextValue}>
+              {children}
+            </MarkdownPageContext.Provider>
+          ),
+        }
+      : undefined
+  );
 
-  return { user };
+  return {
+    user,
+    getLatestRequest: () => {
+      if (!latestRequestPathname) {
+        throw new Error('No request was captured yet');
+      }
+      return latestRequestPathname;
+    },
+  };
 }
