@@ -18,6 +18,10 @@ export const CREATE_SCHEDULE_ADVANCED_FIELD_IDS = {
   workflowIdPrefix: 'domain-schedules-create-form-workflow-id-prefix',
   bufferLimit: 'domain-schedules-create-form-buffer-limit',
   concurrencyLimit: 'domain-schedules-create-form-concurrency-limit',
+  catchUpWindowDays: 'domain-schedules-create-form-catch-up-window-days',
+  startTime: 'domain-schedules-create-form-start-time',
+  endTime: 'domain-schedules-create-form-end-time',
+  memo: 'domain-schedules-create-form-memo',
 } as const;
 
 export const CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS = {
@@ -28,10 +32,17 @@ export const CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS = {
     'Max number of pending workflows allowed when using Buffer overlap policy.',
   concurrencyLimit:
     'Max number of concurrently running workflows allowed for Concurrent overlap policy.',
+  catchUpPolicy: 'Controls whether missed schedules should run after downtime.',
+  catchUpWindowDays:
+    'Maximum age of missed schedules that can still be started.',
+  schedulePeriod: 'Optional time range that limits when this schedule can run.',
+  searchAttributes:
+    'Additional indexed attributes attached to each started workflow.',
   jitterSeconds:
     'Time range to distribute starting workflows across. This helps avoiding burst of workflow creations in a single point of time.',
   workflowIdPrefix:
     'Prefix text to add into started workflows. Ids are formed as `${Prefix}+{auto generated postfix}`.',
+  memo: 'JSON object that is attached to each started workflow.',
 } as const;
 
 export const DEFAULT_CATCH_UP_POLICY =

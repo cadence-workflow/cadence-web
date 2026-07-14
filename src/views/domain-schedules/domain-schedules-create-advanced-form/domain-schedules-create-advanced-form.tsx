@@ -17,8 +17,8 @@ import { MdExpandLess, MdExpandMore } from 'react-icons/md';
 
 import { ScheduleCatchUpPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleCatchUpPolicy';
 import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
-import useSearchAttributes from '@/views/shared/hooks/use-search-attributes/use-search-attributes';
 import DomainSchedulesHorizontalField from '@/views/domain-schedules/domain-schedules-horizontal-field/domain-schedules-horizontal-field';
+import useSearchAttributes from '@/views/shared/hooks/use-search-attributes/use-search-attributes';
 // TODO(refactor): getSearchAttributesErrorMessage is imported from start-workflow helpers — extract to shared utils
 import getFieldErrorMessage from '@/views/workflow-actions/workflow-action-start-form/helpers/get-field-error-message';
 import getSearchAttributesErrorMessage from '@/views/workflow-actions/workflow-action-start-form/helpers/get-search-attributes-error-message';
@@ -242,7 +242,9 @@ export default function DomainSchedulesCreateAdvancedForm({
 
         <DomainSchedulesHorizontalField
           label="Catch-up Policy"
-          description="Controls whether missed schedules should run after downtime."
+          description={
+            CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS.catchUpPolicy
+          }
           error={getFieldErrorMessage(fieldErrors, 'catchUpPolicy')}
         >
           <Controller
@@ -277,8 +279,10 @@ export default function DomainSchedulesCreateAdvancedForm({
           <DomainSchedulesHorizontalField
             subfield={true}
             label="Catch-up window"
-            description="Maximum age of missed schedules that can still be started."
-            htmlFor="create-schedule-form-catch-up-window-days"
+            description={
+              CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS.catchUpWindowDays
+            }
+            htmlFor={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.catchUpWindowDays}
             error={getFieldErrorMessage(fieldErrors, 'catchUpWindowDays')}
           >
             <Controller
@@ -287,7 +291,7 @@ export default function DomainSchedulesCreateAdvancedForm({
               render={({ field: { ref, ...field } }) => (
                 <Input
                   {...field}
-                  id="create-schedule-form-catch-up-window-days"
+                  id={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.catchUpWindowDays}
                   // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
                   inputRef={ref}
                   aria-label="Catch-up window"
@@ -309,11 +313,15 @@ export default function DomainSchedulesCreateAdvancedForm({
 
         <DomainSchedulesHorizontalField
           label="Schedule period"
-          description="Optional time range that limits when this schedule can run."
+          description={
+            CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS.schedulePeriod
+          }
         >
           <styled.SchedulePeriodRow>
             <styled.SchedulePeriodField>
-              <styled.SchedulePeriodInputLabel htmlFor="create-schedule-form-start-time">
+              <styled.SchedulePeriodInputLabel
+                htmlFor={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.startTime}
+              >
                 Start date
               </styled.SchedulePeriodInputLabel>
               <FormControl
@@ -328,7 +336,7 @@ export default function DomainSchedulesCreateAdvancedForm({
                       {...field}
                       // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
                       inputRef={ref}
-                      id="create-schedule-form-start-time"
+                      id={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.startTime}
                       aria-label="Schedule period start"
                       value={value ? [new Date(value)] : []}
                       onChange={({ date }) => {
@@ -351,7 +359,9 @@ export default function DomainSchedulesCreateAdvancedForm({
               </FormControl>
             </styled.SchedulePeriodField>
             <styled.SchedulePeriodField>
-              <styled.SchedulePeriodInputLabel htmlFor="create-schedule-form-end-time">
+              <styled.SchedulePeriodInputLabel
+                htmlFor={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.endTime}
+              >
                 End date
               </styled.SchedulePeriodInputLabel>
               <FormControl
@@ -366,7 +376,7 @@ export default function DomainSchedulesCreateAdvancedForm({
                       {...field}
                       // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
                       inputRef={ref}
-                      id="create-schedule-form-end-time"
+                      id={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.endTime}
                       aria-label="Schedule period end"
                       value={value ? [new Date(value)] : []}
                       onChange={({ date }) => {
@@ -392,40 +402,9 @@ export default function DomainSchedulesCreateAdvancedForm({
         </DomainSchedulesHorizontalField>
 
         <DomainSchedulesHorizontalField
-          label="Memo (optional)"
-          description="JSON object that is attached to each started workflow."
-          htmlFor="create-schedule-form-memo"
-          error={getFieldErrorMessage(fieldErrors, 'memo')}
-        >
-          <Controller
-            name="memo"
-            control={control}
-            render={({ field: { ref, ...field } }) => (
-              <Textarea
-                {...field}
-                value={field.value ?? ''}
-                id="create-schedule-form-memo"
-                // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
-                inputRef={ref}
-                aria-label="Memo"
-                onChange={(e) => field.onChange(e.target.value)}
-                onBlur={field.onBlur}
-                error={Boolean(getFieldErrorMessage(fieldErrors, 'memo'))}
-                size="compact"
-                placeholder='{"key":"value"}'
-                rows={3}
-              />
-            )}
-          />
-        </DomainSchedulesHorizontalField>
-
-        <DomainSchedulesHorizontalField
-          label="Search attributes (optional)"
-          description="Additional indexed attributes attached to each started workflow."
-          error={
-            typeof searchAttributesError === 'string'
-              ? searchAttributesError
-              : undefined
+          label="Search attributes"
+          description={
+            CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS.searchAttributes
           }
         >
           <Controller
@@ -435,11 +414,44 @@ export default function DomainSchedulesCreateAdvancedForm({
             render={({ field }) => (
               <WorkflowActionsSearchAttributes
                 value={field.value}
-                onChange={field.onChange}
+                onChange={(value) => {
+                  field.onChange(value);
+                  if (isSubmitted) {
+                    trigger?.('searchAttributes');
+                  }
+                }}
                 searchAttributes={searchAttributesOptions}
                 isLoading={isLoadingSearchAttributes}
                 error={searchAttributesError}
                 showSectionBorder={false}
+              />
+            )}
+          />
+        </DomainSchedulesHorizontalField>
+
+        <DomainSchedulesHorizontalField
+          label="Memo"
+          description={CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS.memo}
+          htmlFor={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.memo}
+          error={getFieldErrorMessage(fieldErrors, 'memo')}
+        >
+          <Controller
+            name="memo"
+            control={control}
+            render={({ field: { ref, ...field } }) => (
+              <Textarea
+                {...field}
+                value={field.value ?? ''}
+                id={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.memo}
+                // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
+                inputRef={ref}
+                aria-label="Memo"
+                onChange={(e) => field.onChange(e.target.value)}
+                onBlur={field.onBlur}
+                error={Boolean(getFieldErrorMessage(fieldErrors, 'memo'))}
+                size="compact"
+                placeholder='{"key":"value"}'
+                rows={3}
               />
             )}
           />

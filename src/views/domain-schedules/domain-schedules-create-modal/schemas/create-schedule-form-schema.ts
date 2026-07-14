@@ -140,8 +140,12 @@ export const createScheduleFormFieldsSchema = z.object({
   searchAttributes: z
     .array(
       z.object({
-        key: z.string().min(1, 'Search attribute key is required'),
-        value: z.union([z.string(), z.number(), z.boolean()]),
+        key: z.string().min(1, 'Attribute key is required'),
+        value: z.union([
+          z.string().min(1, 'Attribute value is required'),
+          z.number(),
+          z.boolean(),
+        ]),
       })
     )
     .optional(),

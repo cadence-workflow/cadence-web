@@ -224,12 +224,12 @@ describe(SearchAttributesInput.name, () => {
     expect(screen.getByLabelText('Delete attribute')).toBeDisabled();
   });
 
-  it('should display global error state on fields', () => {
+  it('applies error state to inputs when string error prop is provided', () => {
     setup({
       error: 'Global error message',
     });
 
-    // Global errors apply error state to all fields (aria-invalid="true")
+    // string error marks inputs invalid; message is shown by parent FormControl
     const valueInput = screen.getByRole('textbox', {
       name: 'Search attribute value',
     });
@@ -255,8 +255,10 @@ describe(SearchAttributesInput.name, () => {
       name: 'Search attribute value',
     });
 
-    expect(allValueInputs[0]).toHaveAttribute('aria-invalid', 'false');
+    expect(allValueInputs).toHaveLength(2);
+    expect(allValueInputs[0]).not.toHaveAttribute('aria-invalid', 'true');
     expect(allValueInputs[1]).toHaveAttribute('aria-invalid', 'true');
+    expect(screen.getByText('Value is required')).toBeInTheDocument();
   });
 
   it('should be searchable in the key select dropdown', async () => {

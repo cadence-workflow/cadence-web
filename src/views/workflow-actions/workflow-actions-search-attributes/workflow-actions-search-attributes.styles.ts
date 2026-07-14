@@ -1,4 +1,5 @@
 import { type Theme } from 'baseui';
+import { type FormControlOverrides } from 'baseui/form-control';
 import { type InputOverrides } from 'baseui/input';
 import { type SelectOverrides } from 'baseui/select';
 import { type StyleObject } from 'styletron-react';
@@ -9,6 +10,13 @@ import type {
 } from '@/hooks/use-styletron-classes';
 
 export const overrides = {
+  fieldFormControl: {
+    ControlContainer: {
+      style: {
+        marginBottom: 0,
+      },
+    },
+  } satisfies FormControlOverrides,
   keySelect: {
     Root: {
       style: (): StyleObject => ({
