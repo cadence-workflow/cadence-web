@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
 
+import { useQueryClient } from '@tanstack/react-query';
 import { Banner, HIERARCHY, KIND } from 'baseui/banner';
 import { notFound } from 'next/navigation';
 import { MdErrorOutline } from 'react-icons/md';
@@ -53,6 +54,7 @@ export default function DomainBatchActions(props: DomainPageTabContentProps) {
 }
 
 function DomainBatchActionsContent(props: DomainPageTabContentProps) {
+  const queryClient = useQueryClient();
   const [queryParams, setQueryParams] = usePageQueryParams(
     domainPageQueryParamsConfig
   );
@@ -68,6 +70,10 @@ function DomainBatchActionsContent(props: DomainPageTabContentProps) {
     domain: props.domain,
     cluster: props.cluster,
     pageSize: BATCH_ACTIONS_PAGE_SIZE,
+    // Refresh the sidebar statuses when the tab regains focus (a job may have
+    // completed/terminated while the user was away).
+    refetchOnWindowFocus: (query) =>
+      query.state.status !== 'error' ? 'always' : false,
     // Throw only when the initial load fails (no data yet) so the route-level
     // error boundary renders the tab error. Next-page failures keep the
     // sidebar visible and are surfaced inline by TableInfiniteScrollLoader.
@@ -150,6 +156,7 @@ function DomainBatchActionsContent(props: DomainPageTabContentProps) {
   };
 
   const handleSelectAction = (action: BatchActionListItem) => {
+    queryClient.invalidateQueries({ queryKey: ['listBatchActions'] });
     setQueryParams({
       batchActionId: action.runId,
       batchActionWorkflowId: action.workflowId,
