@@ -33,11 +33,12 @@ export default function DomainBatchActionsSidebar({
         startEnhancer={<MdAdd />}
         overrides={overrides.newActionButton}
         onClick={onCreateNew}
+        data-tour="batch-new-action-button"
       >
         New batch action
       </Button>
       <styled.SectionLabel>Batch history</styled.SectionLabel>
-      <styled.List>
+      <styled.List data-tour="batch-history">
         {isDraftOpen && (
           <DomainBatchActionsSidebarItem
             label="Untitled batch action"

@@ -1,7 +1,4 @@
-import {
-  type CreateScheduleFormRefineInput,
-  type DomainSchedulesCreateFormData,
-} from '../domain-schedules-create-modal.types';
+import { type DomainSchedulesCreateFormData } from '../domain-schedules-create-modal.types';
 
 /** Minimal required create-schedule form fields for tests. */
 export const mockDomainSchedulesCreateFormData = {

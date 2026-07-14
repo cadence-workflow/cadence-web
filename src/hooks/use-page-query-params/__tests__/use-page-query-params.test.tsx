@@ -1,3 +1,5 @@
+import { memoryRouter } from 'next-router-mock';
+
 import { renderHook, act } from '@/test-utils/rtl';
 
 import { queryParamsConfig } from '../__fixtures__/page-query-params.fixtures';
@@ -11,7 +13,7 @@ describe('usePageQueryParams', () => {
     jest.resetAllMocks();
     // Reset the shared next-router-mock URL so searchParams don't leak between
     // tests (the hook now reads searchParams on first render when populated).
-    require('next-router-mock').memoryRouter.setCurrentUrl('/');
+    memoryRouter.setCurrentUrl('/');
   });
 
   afterEach(() => {
@@ -106,7 +108,7 @@ describe('usePageQueryParams', () => {
     // but window.location.search still shows the previous (empty) URL. The hook
     // must read searchParams, otherwise it stays stuck on the stale value since
     // searchParams won't change again to trigger a re-read.
-    require('next-router-mock').memoryRouter.setCurrentUrl('?sortBy=fromParams');
+    memoryRouter.setCurrentUrl('?sortBy=fromParams');
     Object.defineProperty(window, 'location', {
       value: { ...originalWindowLocation, search: '' },
       writable: true,
@@ -120,7 +122,7 @@ describe('usePageQueryParams', () => {
 
   it('reads window.location (not stale searchParams) after a pushState-only update when a new consumer mounts', () => {
     // The router (and useSearchParams) knows the URL as ?sortBy=stale.
-    require('next-router-mock').memoryRouter.setCurrentUrl('/?sortBy=stale');
+    memoryRouter.setCurrentUrl('/?sortBy=stale');
 
     // jsdom rejects the production code's unbound window.history.pushState call,
     // so stub it and simulate the URL it would have written.

@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 
 import { Table } from 'baseui/table-semantic';
 
@@ -17,9 +17,9 @@ export default function ScheduleDetailsBackfillsTable({
   domain,
   cluster,
 }: Props) {
-  const [isCollapsed, setIsCollapsed] = React.useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
-  const onToggle = React.useCallback(() => {
+  const onToggle = useCallback(() => {
     setIsCollapsed((current) => !current);
   }, []);
 

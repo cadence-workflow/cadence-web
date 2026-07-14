@@ -2,21 +2,19 @@ import { type ScheduleDetailsTableRow } from '@/views/schedule-details/schedule-
 
 import {
   type ScheduleDetailRowConfig,
-  type ScheduleDetailRowArgs,
+  type FormattedScheduleDetails,
 } from '../schedule-details.types';
 
 export function getRowsFromConfig(
   config: ScheduleDetailRowConfig[],
-  data: ScheduleDetailRowArgs['describeSchedule'],
-  scheduleId: string
+  formattedScheduleDetails: FormattedScheduleDetails,
+  scheduleId: string,
+  domain: string,
+  cluster: string
 ): ScheduleDetailsTableRow[] {
-  const args = { describeSchedule: data, scheduleId };
+  const args = { formattedScheduleDetails, scheduleId, domain, cluster };
   return config
-    .filter(
-      (rowConfig) =>
-        !rowConfig.hide ||
-        !rowConfig.hide({ describeSchedule: data, scheduleId })
-    )
+    .filter((rowConfig) => !rowConfig.hide || !rowConfig.hide(args))
     .map((rowConfig) => ({
       key: rowConfig.key,
       label: rowConfig.getLabel(),
