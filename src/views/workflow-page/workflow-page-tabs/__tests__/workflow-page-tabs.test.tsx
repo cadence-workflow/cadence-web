@@ -5,6 +5,7 @@ import { HttpResponse } from 'msw';
 import { render, screen, act, fireEvent } from '@/test-utils/rtl';
 
 import ErrorBoundary from '@/components/error-boundary/error-boundary';
+import SnackbarProvider from '@/components/snackbar-provider/snackbar-provider';
 
 import { mockWorkflowPageTabsConfig } from '../../__fixtures__/workflow-page-tabs-config';
 import WorkflowPageTabs from '../workflow-page-tabs';
@@ -66,7 +67,7 @@ describe('WorkflowPageTabs', () => {
     expect(screen.getByText('History')).toBeInTheDocument();
     expect(screen.getByText('Queries')).toBeInTheDocument();
     expect(screen.getByText('Stack Trace')).toBeInTheDocument();
-    expect(screen.getByText('Diagnostics')).toBeInTheDocument();
+    expect(await screen.findByText('Diagnostics')).toBeInTheDocument();
   });
 
   it('renders tabs buttons correctly', async () => {
@@ -93,7 +94,9 @@ describe('WorkflowPageTabs', () => {
     expect(screen.getByTestId('history-artwork')).toBeInTheDocument();
     expect(screen.getByTestId('queries-artwork')).toBeInTheDocument();
     expect(screen.getByTestId('stack-trace-artwork')).toBeInTheDocument();
-    expect(screen.getByTestId('diagnostics-artwork')).toBeInTheDocument();
+    expect(
+      await screen.findByTestId('diagnostics-artwork')
+    ).toBeInTheDocument();
   });
 
   it('reroutes when new tab is clicked', async () => {
@@ -107,11 +110,17 @@ describe('WorkflowPageTabs', () => {
     expect(mockPushFn).toHaveBeenCalledWith('history');
   });
 
-  it('handles errors gracefully', async () => {
+  it('hides the diagnostics tab and shows an error snackbar when the resolver fails', async () => {
     await setup({ error: true });
 
+    // Non-gated tabs still render — the tab bar is not torn down.
+    expect(await screen.findByText('Summary')).toBeInTheDocument();
+    expect(screen.getByText('History')).toBeInTheDocument();
+
+    // Diagnostics is hidden and an error snackbar surfaces the failure.
+    expect(screen.queryByText('Diagnostics')).toBeNull();
     expect(
-      await screen.findByText('Error: Failed to fetch config')
+      await screen.findByText('Failed to load Diagnostics tab')
     ).toBeInTheDocument();
   });
 });
@@ -127,9 +136,11 @@ async function setup({
     <ErrorBoundary
       fallbackRender={({ error }) => <div>Error: {error.message}</div>}
     >
-      <Suspense fallback={<div>Loading...</div>}>
-        <WorkflowPageTabs />
-      </Suspense>
+      <SnackbarProvider>
+        <Suspense fallback={<div>Loading...</div>}>
+          <WorkflowPageTabs />
+        </Suspense>
+      </SnackbarProvider>
     </ErrorBoundary>,
     {
       endpointsMocks: [

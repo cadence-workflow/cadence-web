@@ -6,8 +6,8 @@ import { useRouter, useParams } from 'next/navigation';
 
 import ErrorBoundary from '@/components/error-boundary/error-boundary';
 import PageTabs from '@/components/page-tabs/page-tabs';
-import useSuspenseConfigValue from '@/hooks/use-config-value/use-suspense-config-value';
 import decodeUrlParams from '@/utils/decode-url-params';
+import useConfigGatedTabs from '@/views/shared/hooks/use-config-gated-tabs';
 import WorkflowActions from '@/views/workflow-actions/workflow-actions';
 
 import workflowPageTabsConfig from '../config/workflow-page-tabs.config';
@@ -21,16 +21,18 @@ export default function WorkflowPageTabs() {
   const params = useParams<WorkflowPageTabsParams>();
   const decodedParams = decodeUrlParams(params) as WorkflowPageTabsParams;
 
-  const { data: isWorkflowDiagnosticsEnabled } = useSuspenseConfigValue(
-    'WORKFLOW_DIAGNOSTICS_ENABLED'
-  );
+  const { tabsToHide } = useConfigGatedTabs([
+    {
+      tab: 'diagnostics',
+      title: workflowPageTabsConfig.diagnostics.title,
+      key: 'WORKFLOW_DIAGNOSTICS_ENABLED',
+    },
+  ]);
 
   const filteredTabsConfig = useMemo(
-    () =>
-      isWorkflowDiagnosticsEnabled
-        ? workflowPageTabsConfig
-        : omit(workflowPageTabsConfig, 'diagnostics'),
-    [isWorkflowDiagnosticsEnabled]
+    () => omit(workflowPageTabsConfig, tabsToHide),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [tabsToHide.join(',')]
   );
 
   const tabList = useMemo(

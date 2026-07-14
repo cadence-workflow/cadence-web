@@ -5,6 +5,7 @@ import { HttpResponse } from 'msw';
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import ErrorBoundary from '@/components/error-boundary/error-boundary';
+import SnackbarProvider from '@/components/snackbar-provider/snackbar-provider';
 import { type GetConfigResponse } from '@/route-handlers/get-config/get-config.types';
 import { mockConsoleError } from '@/test-utils/mock-console-error';
 
@@ -53,6 +54,10 @@ jest.mock('../../config/domain-page-tabs.config', () => ({
     title: 'Schedules',
     artwork: () => <div data-testid="schedules-artwork" />,
   },
+  'batch-actions': {
+    title: 'Batch actions',
+    artwork: () => <div data-testid="batch-actions-artwork" />,
+  },
   failovers: {
     title: 'Failovers',
     artwork: () => <div data-testid="failovers-artwork" />,
@@ -92,7 +97,7 @@ describe(DomainPageTabs.name, () => {
   it('renders Schedules tab when schedules feature is enabled', async () => {
     await setup({ enableSchedules: true });
 
-    expect(screen.getByText('Schedules')).toBeInTheDocument();
+    expect(await screen.findByText('Schedules')).toBeInTheDocument();
   });
 
   it('renders tabs with cron and failover history enabled', async () => {
@@ -102,9 +107,9 @@ describe(DomainPageTabs.name, () => {
     });
 
     expect(screen.getByText('Workflows')).toBeInTheDocument();
-    expect(screen.getByText('Cron')).toBeInTheDocument();
+    expect(await screen.findByText('Cron')).toBeInTheDocument();
     expect(screen.getByText('Metadata')).toBeInTheDocument();
-    expect(screen.getByText('Failovers')).toBeInTheDocument();
+    expect(await screen.findByText('Failovers')).toBeInTheDocument();
     expect(screen.getByText('Settings')).toBeInTheDocument();
     expect(screen.getByText('Archival')).toBeInTheDocument();
   });
@@ -153,24 +158,27 @@ describe(DomainPageTabs.name, () => {
     expect(screen.queryByTestId('schedules-artwork')).toBeNull();
   });
 
-  it('handles errors gracefully', async () => {
-    // Mute console.error to avoid polluting the test output.
-    const silencedErrorRegexes = [
-      /RequestError: Failed to fetch config/,
-      /The above error occurred in the <DomainPageTabs> component/,
-    ];
+  it('hides gated tabs and shows an error snackbar when resolvers fail', async () => {
+    // Mute console.error for the failed config requests.
     const { restore: restoreConsoleError } = mockConsoleError({
-      silencedErrorRegexes,
+      silencedErrorRegexes: [/RequestError: Failed to fetch config/],
     });
 
     try {
       await setup({ error: true });
 
+      // Non-gated tabs still render — the tab bar is not torn down.
+      expect(await screen.findByText('Workflows')).toBeInTheDocument();
+      expect(screen.getByText('Metadata')).toBeInTheDocument();
+
+      // Gated tabs are hidden and a single error snackbar lists them.
+      expect(screen.queryByText('Cron')).toBeNull();
       expect(
-        await screen.findByText('Error: Failed to fetch config')
+        await screen.findByText(
+          'Failed to load Failovers, Cron, Batch actions, Schedules tabs'
+        )
       ).toBeInTheDocument();
     } finally {
-      // Be sure to restore the console.error.
       restoreConsoleError();
     }
   });
@@ -209,9 +217,11 @@ async function setup(opts?: {
     <ErrorBoundary
       fallbackRender={({ error }) => <div>Error: {error.message}</div>}
     >
-      <Suspense fallback={<div>Loading...</div>}>
-        <DomainPageTabs />
-      </Suspense>
+      <SnackbarProvider>
+        <Suspense fallback={<div>Loading...</div>}>
+          <DomainPageTabs />
+        </Suspense>
+      </SnackbarProvider>
     </ErrorBoundary>,
     {
       endpointsMocks: [
