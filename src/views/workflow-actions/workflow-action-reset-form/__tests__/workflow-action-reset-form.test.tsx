@@ -195,6 +195,7 @@ function TestWrapper({ formErrors, formData }: TestProps) {
       trigger={methods.trigger}
       control={methods.control}
       clearErrors={methods.clearErrors}
+      setValue={methods.setValue}
       fieldErrors={formErrors}
       formData={formData}
       cluster="test-cluster"

@@ -21,6 +21,17 @@ jest.mock('../hooks/use-describe-task-list', () =>
   jest.fn((...args) => mockUseDescribeTaskList(...args))
 );
 
+const mockUseWorkflowStartedEvent = jest.fn();
+
+jest.mock('../hooks/use-workflow-started-event', () =>
+  jest.fn((...args) => mockUseWorkflowStartedEvent(...args))
+);
+
+jest.mock(
+  '@/views/shared/hooks/use-search-attributes/use-search-attributes',
+  () => jest.fn(() => ({ data: undefined }))
+);
+
 describe('WorkflowActionStartForm', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -345,12 +356,58 @@ describe('WorkflowActionStartForm', () => {
       screen.getByText('Error fetching task list information')
     ).toBeInTheDocument();
   });
+
+  it('does not show the prefill banner when there is no started event', async () => {
+    await setup({});
+
+    expect(
+      screen.queryByRole('button', { name: 'Prefill' })
+    ).not.toBeInTheDocument();
+  });
+
+  it('prefills the form from the started event when the banner action is clicked', async () => {
+    const { user } = await setup({
+      startedEvent: {
+        startedEvent: {
+          eventType: 'WorkflowExecutionStarted',
+          workflowType: { name: 'PrefillWorkflowType' },
+          taskList: { name: 'prefill-task-list' },
+          executionStartToCloseTimeoutSeconds: 600,
+          input: [{ foo: 'bar' }],
+        },
+        isLoading: false,
+      },
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Prefill' }));
+
+    expect(screen.getByRole('textbox', { name: 'Task List' })).toHaveValue(
+      'prefill-task-list'
+    );
+    expect(screen.getByRole('textbox', { name: 'Workflow Type' })).toHaveValue(
+      'PrefillWorkflowType'
+    );
+    expect(
+      screen.getByRole('spinbutton', {
+        name: 'Execution Start to Close Timeout',
+      })
+    ).toHaveValue(600);
+    expect(
+      screen.getByRole('textbox', { name: 'JSON input arguments (optional)' })
+    ).toHaveValue('{"foo":"bar"}');
+
+    // Banner is dismissed after prefilling
+    expect(
+      screen.queryByRole('button', { name: 'Prefill' })
+    ).not.toBeInTheDocument();
+  });
 });
 
 type SetupProps = {
   formErrors: FieldErrors<StartWorkflowFormData>;
   formData: StartWorkflowFormData;
   describeTaskList: ReturnType<typeof mockUseDescribeTaskList>;
+  startedEvent: ReturnType<typeof mockUseWorkflowStartedEvent>;
 };
 
 function TestWrapper({
@@ -366,6 +423,7 @@ function TestWrapper({
       trigger={methods.trigger}
       control={methods.control}
       clearErrors={methods.clearErrors}
+      setValue={methods.setValue}
       fieldErrors={formErrors}
       formData={formData}
       cluster="test-cluster"
@@ -391,8 +449,13 @@ async function setup({
     isLoading: false,
     isError: false,
   },
+  startedEvent = {
+    startedEvent: undefined,
+    isLoading: false,
+  },
 }: Partial<SetupProps>) {
   mockUseDescribeTaskList.mockReturnValue(describeTaskList);
+  mockUseWorkflowStartedEvent.mockReturnValue(startedEvent);
 
   const user = userEvent.setup();
 
