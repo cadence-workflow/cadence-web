@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation';
 import { MdErrorOutline } from 'react-icons/md';
 
 import ErrorPanel from '@/components/error-panel/error-panel';
+import GuidedTourProvider from '@/components/guided-tour/guided-tour-provider/guided-tour-provider';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import useConfigValue from '@/hooks/use-config-value/use-config-value';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
@@ -15,6 +16,10 @@ import { type DomainPageTabContentProps } from '@/views/domain-page/domain-page-
 import useDescribeBatchAction from '@/views/shared/hooks/use-describe-batch-action/use-describe-batch-action';
 import useListBatchActions from '@/views/shared/hooks/use-list-batch-actions/use-list-batch-actions';
 
+import {
+  domainBatchActionsOverviewEmptyTourConfig,
+  domainBatchActionsOverviewTourConfig,
+} from './config/domain-batch-actions-tour.config';
 import DomainBatchActionDetail from './domain-batch-actions-detail/domain-batch-actions-detail';
 import DomainBatchActionsNewActionDetail from './domain-batch-actions-new-action-detail/domain-batch-actions-new-action-detail';
 import DomainBatchActionsNoActionsPlaceholder from './domain-batch-actions-no-actions-placeholder/domain-batch-actions-no-actions-placeholder';
@@ -167,101 +172,112 @@ function DomainBatchActionsContent(props: DomainPageTabContentProps) {
     setQueryParams(BATCH_DRAFT_RESET_PARAMS);
   };
 
-  if (batchActions.length === 0 && !isDraftOpen) {
-    return (
-      <DomainBatchActionsNoActionsPlaceholder onCreateNew={handleCreateNew} />
-    );
-  }
+  const isEmpty = batchActions.length === 0 && !isDraftOpen;
 
   return (
-    <styled.Container>
-      <styled.Sidebar>
-        <DomainBatchActionsSidebar
-          batchActions={batchActions}
-          isDraftOpen={isDraftOpen}
-          isDraftSelected={isDraftSelected}
-          selectedActionId={selectedActionId}
-          onSelectAction={handleSelectAction}
-          onSelectDraft={handleSelectDraft}
-          onCreateNew={handleCreateNew}
-          fetchNextPage={fetchNextPage}
-          hasNextPage={hasNextPage}
-          isFetchingNextPage={isFetchingNextPage}
-          error={error}
-        />
-      </styled.Sidebar>
-      <styled.DetailPanel>
-        {isDraftSelected && (
-          <DomainBatchActionsNewActionDetail
-            domain={props.domain}
-            cluster={props.cluster}
-            onDiscard={handleDiscard}
-          />
-        )}
-        {!isDraftSelected &&
-          (selectedActionId || isInvalidSelection) &&
-          (isSelectedActionNotFound ? (
-            <ErrorPanel
-              message="Batch action not found"
-              description="This batch action does not exist or is no longer available."
-              actions={[
-                {
-                  kind: 'callback',
-                  label: 'View batch actions',
-                  onClick: handleClearSelectedAction,
-                },
-              ]}
+    <GuidedTourProvider
+      tourId={isEmpty ? 'batch-actions-empty' : 'batch-actions-overview'}
+      steps={
+        isEmpty
+          ? domainBatchActionsOverviewEmptyTourConfig
+          : domainBatchActionsOverviewTourConfig
+      }
+      // Don't auto-start the overview while a draft is open (e.g. deep link)
+      autoStart={!isDraftOpen}
+    >
+      {isEmpty ? (
+        <DomainBatchActionsNoActionsPlaceholder onCreateNew={handleCreateNew} />
+      ) : (
+        <styled.Container>
+          <styled.Sidebar>
+            <DomainBatchActionsSidebar
+              batchActions={batchActions}
+              isDraftOpen={isDraftOpen}
+              isDraftSelected={isDraftSelected}
+              selectedActionId={selectedActionId}
+              onSelectAction={handleSelectAction}
+              onSelectDraft={handleSelectDraft}
+              onCreateNew={handleCreateNew}
+              fetchNextPage={fetchNextPage}
+              hasNextPage={hasNextPage}
+              isFetchingNextPage={isFetchingNextPage}
+              error={error}
             />
-          ) : batchActionDetailError && !batchActionDetail ? (
-            <ErrorPanel
-              error={batchActionDetailError}
-              message="Failed to load batch action details"
-              actions={[
-                {
-                  kind: 'callback',
-                  label: 'Retry',
-                  onClick: () => refetchBatchActionDetail(),
-                },
-              ]}
-            />
-          ) : (
-            selectedWorkflowId &&
-            (isLoadingBatchActionDetail || batchActionDetail) && (
-              <>
-                {batchActionDetailError && batchActionDetail && (
-                  <Banner
-                    hierarchy={HIERARCHY.low}
-                    kind={KIND.warning}
-                    artwork={{ icon: MdErrorOutline }}
-                    action={{
+          </styled.Sidebar>
+          <styled.DetailPanel>
+            {isDraftSelected && (
+              <DomainBatchActionsNewActionDetail
+                domain={props.domain}
+                cluster={props.cluster}
+                onDiscard={handleDiscard}
+              />
+            )}
+            {!isDraftSelected &&
+              (selectedActionId || isInvalidSelection) &&
+              (isSelectedActionNotFound ? (
+                <ErrorPanel
+                  message="Batch action not found"
+                  description="This batch action does not exist or is no longer available."
+                  actions={[
+                    {
+                      kind: 'callback',
+                      label: 'View batch actions',
+                      onClick: handleClearSelectedAction,
+                    },
+                  ]}
+                />
+              ) : batchActionDetailError && !batchActionDetail ? (
+                <ErrorPanel
+                  error={batchActionDetailError}
+                  message="Failed to load batch action details"
+                  actions={[
+                    {
+                      kind: 'callback',
                       label: 'Retry',
                       onClick: () => refetchBatchActionDetail(),
-                    }}
-                  >
-                    Showing last known data. Could not refresh batch action
-                    details.
-                  </Banner>
-                )}
-                {batchActionDetail?.progressError && (
-                  <Banner
-                    hierarchy={HIERARCHY.low}
-                    kind={KIND.warning}
-                    artwork={{ icon: MdErrorOutline }}
-                  >
-                    Could not load batch action progress.
-                  </Banner>
-                )}
-                <DomainBatchActionDetail
-                  domain={props.domain}
-                  cluster={props.cluster}
-                  workflowId={selectedWorkflowId}
-                  batchAction={batchActionDetail}
-                  loading={isLoadingBatchActionDetail}
+                    },
+                  ]}
                 />
-              </>
-            )
-          ))}
-      </styled.DetailPanel>
-    </styled.Container>
+              ) : (
+                selectedWorkflowId &&
+                (isLoadingBatchActionDetail || batchActionDetail) && (
+                  <>
+                    {batchActionDetailError && batchActionDetail && (
+                      <Banner
+                        hierarchy={HIERARCHY.low}
+                        kind={KIND.warning}
+                        artwork={{ icon: MdErrorOutline }}
+                        action={{
+                          label: 'Retry',
+                          onClick: () => refetchBatchActionDetail(),
+                        }}
+                      >
+                        Showing last known data. Could not refresh batch action
+                        details.
+                      </Banner>
+                    )}
+                    {batchActionDetail?.progressError && (
+                      <Banner
+                        hierarchy={HIERARCHY.low}
+                        kind={KIND.warning}
+                        artwork={{ icon: MdErrorOutline }}
+                      >
+                        Could not load batch action progress.
+                      </Banner>
+                    )}
+                    <DomainBatchActionDetail
+                      domain={props.domain}
+                      cluster={props.cluster}
+                      workflowId={selectedWorkflowId}
+                      batchAction={batchActionDetail}
+                      loading={isLoadingBatchActionDetail}
+                    />
+                  </>
+                )
+              ))}
+          </styled.DetailPanel>
+        </styled.Container>
+      )}
+    </GuidedTourProvider>
   );
 }
