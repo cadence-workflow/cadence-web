@@ -205,12 +205,12 @@ export default function WorkflowActionStartOptionalSection({
             name="searchAttributes"
             control={control}
             defaultValue={[]}
-            render={({ field }) => (
+            render={({ field, formState: { isSubmitted } }) => (
               <WorkflowActionsSearchAttributes
                 value={field.value}
                 onChange={(value) => {
                   field.onChange(value);
-                  trigger('searchAttributes');
+                  if (isSubmitted) trigger('searchAttributes');
                 }}
                 searchAttributes={searchAttributesOptions}
                 isLoading={isLoadingSearchAttributes}
