@@ -1,5 +1,6 @@
 import { type PageQueryParamSetterValues } from '@/hooks/use-page-query-params/use-page-query-params.types';
 import { domainBatchActionsQueryParamsConfig } from '@/views/domain-page/config/domain-page-query-params.config';
+import { WORKFLOW_STATUSES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
 
 export const DRAFT_ACTION_ID = 'draft';
 
@@ -24,6 +25,15 @@ export const BATCH_ACTION_DEFAULT_QUERY = 'CloseTime = missing';
 export const BATCH_ACTION_EMPTY_QUERY_ERROR = 'Query must not be empty';
 export const BATCH_ACTION_DEFAULT_QUERY_HINT =
   'Showing all running workflows. Edit the query to narrow the set.';
+
+// Prefilled status filter for a new batch action in "Select" mode: running
+// (not-yet-closed) workflows only.
+export const BATCH_ACTION_DEFAULT_STATUSES = [WORKFLOW_STATUSES.running];
+
+// Hint shown under the workflows header in select mode while only the default
+// running-status filter is applied.
+export const BATCH_ACTION_DEFAULT_SELECT_HINT =
+  'Showing running workflows. Edit filters to see more workflows.';
 
 export const BATCH_ACTION_TASK_LIST = 'cadence-sys-batcher-tasklist';
 export const BATCH_ACTION_EXECUTION_TIMEOUT_SECONDS = 20 * 365 * 24 * 60 * 60;

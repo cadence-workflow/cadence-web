@@ -13,7 +13,10 @@ import DomainBatchActions from '../domain-batch-actions';
 import { type Props as DetailProps } from '../domain-batch-actions-detail/domain-batch-actions-detail.types';
 import { type Props as NewActionDetailProps } from '../domain-batch-actions-new-action-detail/domain-batch-actions-new-action-detail.types';
 import { type Props as SidebarProps } from '../domain-batch-actions-sidebar/domain-batch-actions-sidebar.types';
-import { BATCH_DRAFT_RESET_PARAMS } from '../domain-batch-actions.constants';
+import {
+  BATCH_ACTION_DEFAULT_STATUSES,
+  BATCH_DRAFT_RESET_PARAMS,
+} from '../domain-batch-actions.constants';
 import { type BatchAction } from '../domain-batch-actions.types';
 
 const mockSetQueryParams = jest.fn();
@@ -154,6 +157,7 @@ describe(DomainBatchActions.name, () => {
       ...BATCH_DRAFT_RESET_PARAMS,
       batchActionId: 'draft',
       batchQuery: 'CloseTime = missing',
+      batchStatuses: BATCH_ACTION_DEFAULT_STATUSES,
     });
   });
 

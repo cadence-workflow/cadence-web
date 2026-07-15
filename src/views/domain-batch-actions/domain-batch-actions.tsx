@@ -27,6 +27,7 @@ import DomainBatchActionsSidebar from './domain-batch-actions-sidebar/domain-bat
 import {
   BATCH_ACTIONS_PAGE_SIZE,
   BATCH_ACTION_DEFAULT_QUERY,
+  BATCH_ACTION_DEFAULT_STATUSES,
   BATCH_ACTION_DETAIL_REFETCH_INTERVAL,
   BATCH_DRAFT_RESET_PARAMS,
   DRAFT_ACTION_ID,
@@ -146,6 +147,7 @@ function DomainBatchActionsContent(props: DomainPageTabContentProps) {
       ...BATCH_DRAFT_RESET_PARAMS,
       batchActionId: DRAFT_ACTION_ID,
       batchQuery: BATCH_ACTION_DEFAULT_QUERY,
+      batchStatuses: BATCH_ACTION_DEFAULT_STATUSES,
     });
   };
 

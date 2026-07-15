@@ -10,6 +10,7 @@ import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-
 import DOMAIN_WORKFLOWS_PAGE_SIZE from '@/views/domain-workflows/config/domain-workflows-page-size.config';
 import useCountWorkflows from '@/views/shared/hooks/use-count-workflows';
 import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
+import { WORKFLOW_STATUSES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
 
 import getQueryModeStrategy from '../helpers/get-query-mode-strategy';
 import getSelectModeStrategy from '../helpers/get-select-mode-strategy';
@@ -79,8 +80,17 @@ export default function useBatchActionTarget({
   });
 
   // The single mode decision: pick the strategy. Everything below is uniform.
+  // Default select state = only the prefilled running-status filter, nothing else.
+  const isDefaultSelectFilters =
+    queryParams.batchStatuses?.join() === WORKFLOW_STATUSES.running &&
+    !queryParams.batchSearch &&
+    !queryParams.batchTimeRangeStart;
+
   const strategy = isSelectMode
-    ? getSelectModeStrategy({ selectQuery })
+    ? getSelectModeStrategy({
+        selectQuery,
+        isDefaultFilters: isDefaultSelectFilters,
+      })
     : getQueryModeStrategy({
         batchQuery: queryParams.batchQuery,
         submitAttempted,
