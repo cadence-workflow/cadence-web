@@ -8,6 +8,7 @@ import Button from '@/components/button/button';
 
 import DomainBatchActionHeaderInfo from '../domain-batch-actions-header-info/domain-batch-actions-header-info';
 import DomainBatchActionsProgressBar from '../domain-batch-actions-progress-bar/domain-batch-actions-progress-bar';
+import useTerminateBatchAction from '../hooks/use-terminate-batch-action';
 
 import { overrides, styled } from './domain-batch-actions-detail.styles';
 import { type Props } from './domain-batch-actions-detail.types';
@@ -20,6 +21,11 @@ export default function DomainBatchActionDetail({
   loading = false,
 }: Props) {
   const status = batchAction?.status;
+
+  const { terminate, isTerminating } = useTerminateBatchAction({
+    cluster,
+    workflowId,
+  });
 
   return (
     <styled.Container>
@@ -35,6 +41,8 @@ export default function DomainBatchActionDetail({
             size="compact"
             overrides={overrides.abortButton}
             startEnhancer={<MdCancel />}
+            isLoading={isTerminating}
+            onClick={() => terminate(batchAction.runId)}
           >
             Abort batch action
           </Button>

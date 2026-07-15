@@ -31,7 +31,7 @@ export const BATCH_ACTION_EXECUTION_TIMEOUT_SECONDS = 20 * 365 * 24 * 60 * 60;
 // Signal sent to a running batcher workflow to adjust its RPS on the fly.
 export const BATCH_ACTION_TUNE_SIGNAL_NAME = 'cadence-sys-batch-tune-signal';
 
-export const BATCH_ACTION_DETAIL_REFETCH_INTERVAL = 10000;
+export const BATCH_ACTION_DETAIL_REFETCH_INTERVAL = 5000;
 
 // Poll interval for the sidebar list so newly started / status-changed actions
 // show up without a manual refresh.

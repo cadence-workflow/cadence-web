@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
 import { MdAdd, MdOutlineEdit } from 'react-icons/md';
@@ -36,9 +36,11 @@ export default function DomainBatchActionsSidebar({
   // instead of waiting for its next poll. Keyed on selectedActionId too, so
   // re-selecting an action re-checks it even when another action happened to
   // share the same status pair (which wouldn't change the deps otherwise).
-  const selectedActionListStatus = batchActions.find(
-    (action) => action.runId === selectedActionId
-  )?.status;
+  const selectedActionListStatus = useMemo(
+    () =>
+      batchActions.find((action) => action.runId === selectedActionId)?.status,
+    [batchActions, selectedActionId]
+  );
   useEffect(() => {
     if (
       selectedActionDetailStatus &&
