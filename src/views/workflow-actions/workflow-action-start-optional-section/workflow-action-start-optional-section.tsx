@@ -33,6 +33,7 @@ export default function WorkflowActionStartOptionalSection({
   clearErrors,
   formData,
   fieldErrors,
+  trigger,
   cluster,
   domain,
 }: Props) {
@@ -146,6 +147,7 @@ export default function WorkflowActionStartOptionalSection({
           clearErrors={clearErrors}
           formData={formData}
           fieldErrors={fieldErrors}
+          trigger={trigger}
         />
 
         <FormControl label="Header (optional)">
@@ -206,7 +208,10 @@ export default function WorkflowActionStartOptionalSection({
             render={({ field }) => (
               <WorkflowActionsSearchAttributes
                 value={field.value}
-                onChange={field.onChange}
+                onChange={(value) => {
+                  field.onChange(value);
+                  trigger('searchAttributes');
+                }}
                 searchAttributes={searchAttributesOptions}
                 isLoading={isLoadingSearchAttributes}
                 error={getSearchAttributesErrorMessage(

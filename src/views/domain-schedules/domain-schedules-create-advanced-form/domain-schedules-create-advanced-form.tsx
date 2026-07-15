@@ -424,6 +424,7 @@ export default function DomainSchedulesCreateAdvancedForm({
                 isLoading={isLoadingSearchAttributes}
                 error={searchAttributesError}
                 showSectionBorder={false}
+                showFieldErrorMessages
               />
             )}
           />

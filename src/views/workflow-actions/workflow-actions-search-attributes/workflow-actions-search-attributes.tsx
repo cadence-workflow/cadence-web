@@ -34,6 +34,7 @@ export default function WorkflowActionsSearchAttributes({
   searchAttributes,
   addButtonText = 'Add search attribute',
   showSectionBorder = true,
+  showFieldErrorMessages = false,
 }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
 
@@ -270,7 +271,7 @@ export default function WorkflowActionsSearchAttributes({
           <div key={item.key || `empty-${index}`} className={cls.attributeRow}>
             <div className={cls.keyContainer}>
               <FormControl
-                error={keyError}
+                error={showFieldErrorMessages ? keyError : undefined}
                 overrides={overrides.fieldFormControl}
               >
                 <Select
@@ -295,7 +296,7 @@ export default function WorkflowActionsSearchAttributes({
 
             <div className={cls.valueContainer}>
               <FormControl
-                error={valueError}
+                error={showFieldErrorMessages ? valueError : undefined}
                 overrides={overrides.fieldFormControl}
               >
                 {renderValueInput(item, index)}

@@ -20,4 +20,5 @@ export type Props = {
   searchAttributes: Array<SearchAttributeOption>;
   addButtonText?: string;
   showSectionBorder?: boolean;
+  showFieldErrorMessages?: boolean;
 };

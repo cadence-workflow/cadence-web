@@ -239,6 +239,7 @@ describe(SearchAttributesInput.name, () => {
 
   it('should display field-specific error state', () => {
     setup({
+      showFieldErrorMessages: true,
       value: [
         { key: 'WorkflowType', value: 'test' },
         { key: 'StartTime', value: '' },
@@ -259,6 +260,28 @@ describe(SearchAttributesInput.name, () => {
     expect(allValueInputs[0]).not.toHaveAttribute('aria-invalid', 'true');
     expect(allValueInputs[1]).toHaveAttribute('aria-invalid', 'true');
     expect(screen.getByText('Value is required')).toBeInTheDocument();
+  });
+
+  it('shows error borders without messages by default', () => {
+    setup({
+      value: [
+        { key: 'WorkflowType', value: 'test' },
+        { key: 'StartTime', value: '' },
+      ],
+      error: [
+        undefined,
+        {
+          value: 'Value is required',
+        },
+      ],
+    });
+
+    const allValueInputs = screen.getAllByRole('textbox', {
+      name: 'Search attribute value',
+    });
+
+    expect(allValueInputs[1]).toHaveAttribute('aria-invalid', 'true');
+    expect(screen.queryByText('Value is required')).not.toBeInTheDocument();
   });
 
   it('should be searchable in the key select dropdown', async () => {
