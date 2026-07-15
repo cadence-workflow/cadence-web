@@ -39,10 +39,10 @@ export type ScheduleActionFormProps<FormData extends FieldValues> = {
   control: Control<FormData>;
   clearErrors: UseFormClearErrors<FormData>;
   trigger: UseFormTrigger<FormData>;
+  isSubmitted: boolean;
   cluster: string;
   domain: string;
   scheduleId: string;
-  isSubmitted?: boolean;
 };
 
 export type ScheduleActionSuccessMessageProps<SubmissionData, Result> = {
