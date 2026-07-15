@@ -5,16 +5,16 @@ import { type RequestError } from '@/utils/request/request-error';
 
 import getDescribeScheduleQueryOptions from './get-describe-schedule-query-options';
 import {
-  type DescribeScheduleResponse,
+  type FormattedScheduleDetails,
   type DescribeScheduleQueryKey,
   type UseDescribeScheduleParams,
 } from './use-describe-schedule.types';
 
 export default function useDescribeSchedule(params: UseDescribeScheduleParams) {
   return useQuery<
-    DescribeScheduleResponse,
+    FormattedScheduleDetails,
     RequestError,
-    DescribeScheduleResponse,
+    FormattedScheduleDetails,
     DescribeScheduleQueryKey
   >(getDescribeScheduleQueryOptions(params));
 }

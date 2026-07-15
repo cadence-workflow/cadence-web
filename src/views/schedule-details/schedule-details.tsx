@@ -6,7 +6,6 @@ import SectionLoadingIndicator from '@/components/section-loading-indicator/sect
 import useDescribeSchedule from '@/views/shared/hooks/use-describe-schedule/use-describe-schedule';
 
 import scheduleDetailsSectionsConfig from './config/schedule-details-sections.config';
-import { formatScheduleDetails } from './helpers/format-schedule-details';
 import { getRowsFromConfig } from './helpers/get-rows-from-config';
 import ScheduleDetailsBackfillsTable from './schedule-details-backfills-table/schedule-details-backfills-table';
 import ScheduleDetailsJsonView from './schedule-details-json-view/schedule-details-json-view';
@@ -32,20 +31,18 @@ export default function ScheduleDetails({ params }: Props) {
     throw new Error('Schedule data is unavailable');
   }
 
-  const formattedScheduleDetails = formatScheduleDetails(data);
-
   return (
     <PageSection>
       <ScheduleDetailsPausedBanner
-        paused={formattedScheduleDetails.state?.paused ?? false}
-        pauseInfo={formattedScheduleDetails.state?.pauseInfo ?? null}
+        paused={data.state?.paused ?? false}
+        pauseInfo={data.state?.pauseInfo ?? null}
       />
       <styled.PageContainer>
         <styled.DetailsSectionsContainer>
           {scheduleDetailsSectionsConfig.map((section) => {
             const rows = getRowsFromConfig(
               section.rowsConfig,
-              formattedScheduleDetails,
+              data,
               params.scheduleId,
               params.domain,
               params.cluster
@@ -63,7 +60,7 @@ export default function ScheduleDetails({ params }: Props) {
             );
           })}
           <ScheduleDetailsBackfillsTable
-            backfills={formattedScheduleDetails.info?.ongoingBackfills ?? []}
+            backfills={data.info?.ongoingBackfills ?? []}
             domain={params.domain}
             cluster={params.cluster}
           />
@@ -71,7 +68,7 @@ export default function ScheduleDetails({ params }: Props) {
         <styled.JsonPanel>
           <ScheduleDetailsJsonView
             title="Input"
-            json={formattedScheduleDetails.action?.startWorkflow?.input ?? null}
+            json={data.action?.startWorkflow?.input ?? null}
           />
         </styled.JsonPanel>
       </styled.PageContainer>

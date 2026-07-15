@@ -3,6 +3,7 @@ import { FormControl } from 'baseui/form-control';
 import { Input } from 'baseui/input';
 import { Select } from 'baseui/select';
 import { Controller } from 'react-hook-form';
+import formatTimestampToDatetime from '@/utils/data-formatters/format-timestamp-to-datetime';
 import DomainSchedulesHorizontalField from '@/views/domain-schedules/domain-schedules-horizontal-field/domain-schedules-horizontal-field';
 import getFieldErrorMessage from '@/views/workflow-actions/workflow-action-start-form/helpers/get-field-error-message';
 
@@ -19,10 +20,15 @@ export default function ScheduleActionBackfillForm({
   fieldErrors,
   control,
   trigger,
+  schedule,
   isSubmitted = false,
 }: Props) {
   const startTimeErrorMessage = getFieldErrorMessage(fieldErrors, 'startTime');
   const endTimeErrorMessage = getFieldErrorMessage(fieldErrors, 'endTime');
+  const scheduleStartDate =
+    formatTimestampToDatetime(schedule?.spec?.startTime ?? null) ?? undefined;
+  const scheduleEndDate =
+    formatTimestampToDatetime(schedule?.spec?.endTime ?? null) ?? undefined;
 
   const revalidateBackfillPeriod = () => {
     if (isSubmitted) {
@@ -100,6 +106,8 @@ export default function ScheduleActionBackfillForm({
                     size="compact"
                     timeSelectStart
                     formatString="yyyy/MM/dd HH:mm"
+                    minDate={scheduleStartDate}
+                    maxDate={scheduleEndDate}
                     clearable
                   />
                 )}
@@ -141,6 +149,8 @@ export default function ScheduleActionBackfillForm({
                     size="compact"
                     timeSelectStart
                     formatString="yyyy/MM/dd HH:mm"
+                    minDate={scheduleStartDate}
+                    maxDate={scheduleEndDate}
                     clearable
                   />
                 )}

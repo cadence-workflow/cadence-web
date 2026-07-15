@@ -7,6 +7,7 @@ import {
   type ScheduleActionsEnabledConfig,
 } from '@/config/dynamic/resolvers/schedule-actions-enabled.types';
 import { mockDescribeScheduleResponse } from '@/route-handlers/describe-schedule/__fixtures__/mock-describe-schedule-response';
+import { formatScheduleDetails } from '@/views/shared/hooks/use-describe-schedule/format-schedule-details';
 import mockResolvedConfigValues from '@/utils/config/__fixtures__/resolved-config-values';
 
 import { mockScheduleActionsConfig } from '../../__fixtures__/schedule-actions-config';
@@ -103,10 +104,10 @@ describe(ScheduleActionsMenu.name, () => {
 });
 
 function setup({
-  schedule = mockDescribeScheduleResponse,
+  schedule = formatScheduleDetails(mockDescribeScheduleResponse),
   actionsEnabledConfig,
 }: {
-  schedule?: typeof mockDescribeScheduleResponse | undefined;
+  schedule?: ReturnType<typeof formatScheduleDetails> | undefined;
   actionsEnabledConfig?: ScheduleActionsEnabledConfig;
 }) {
   const user = userEvent.setup();

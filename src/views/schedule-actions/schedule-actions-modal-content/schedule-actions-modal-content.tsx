@@ -154,6 +154,7 @@ export default function ScheduleActionsModalContent<
                 cluster={params.cluster}
                 domain={params.domain}
                 scheduleId={params.scheduleId}
+                schedule={schedule}
                 isSubmitted={isSubmitted}
               />
             )}

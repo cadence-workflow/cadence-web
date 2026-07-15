@@ -5,11 +5,12 @@ import {
   getMockRunningDescribeScheduleResponse,
 } from '@/route-handlers/describe-schedule/__fixtures__/mock-describe-schedule-response';
 import { type RequestError } from '@/utils/request/request-error';
+import { formatScheduleDetails } from '@/views/shared/hooks/use-describe-schedule/format-schedule-details';
 
 import getDescribeScheduleQueryOptions from '../get-describe-schedule-query-options';
 import {
   type DescribeScheduleQueryKey,
-  type DescribeScheduleResponse,
+  type FormattedScheduleDetails,
 } from '../use-describe-schedule.types';
 
 const params = {
@@ -25,9 +26,9 @@ const mockPausedDescribeScheduleResponse =
   getMockPausedDescribeScheduleResponse();
 
 type RefetchTypeIntervalArg = Query<
-  DescribeScheduleResponse,
+  FormattedScheduleDetails,
   RequestError,
-  DescribeScheduleResponse,
+  FormattedScheduleDetails,
   DescribeScheduleQueryKey
 >;
 
@@ -47,7 +48,7 @@ describe(getDescribeScheduleQueryOptions.name, () => {
 
     const mockQuery = {
       state: {
-        data: mockRunningDescribeScheduleResponse as DescribeScheduleResponse,
+        data: mockRunningDescribeScheduleResponse as FormattedScheduleDetails,
       },
     } as RefetchTypeIntervalArg;
 
@@ -64,7 +65,7 @@ describe(getDescribeScheduleQueryOptions.name, () => {
 
     const mockQuery = {
       state: {
-        data: mockPausedDescribeScheduleResponse as DescribeScheduleResponse,
+        data: mockPausedDescribeScheduleResponse as FormattedScheduleDetails,
       },
     } as RefetchTypeIntervalArg;
 
@@ -84,7 +85,7 @@ describe(getDescribeScheduleQueryOptions.name, () => {
 
     const mockQuery = {
       state: {
-        data: mockRunningDescribeScheduleResponse as DescribeScheduleResponse,
+        data: mockRunningDescribeScheduleResponse as FormattedScheduleDetails,
       },
     } as RefetchTypeIntervalArg;
 
@@ -107,5 +108,48 @@ describe(getDescribeScheduleQueryOptions.name, () => {
     });
 
     expect(options.throwOnError).toBe(true);
+  });
+
+  it('formats describe schedule response in queryFn', async () => {
+    const options = getDescribeScheduleQueryOptions(params);
+    const queryFn = options.queryFn;
+
+    if (!queryFn) {
+      throw new Error('Expected queryFn to be defined');
+    }
+
+    const describeSchedule = getMockRunningDescribeScheduleResponse({
+      action: {
+        startWorkflow: {
+          workflowType: { name: 'ScheduleWorker' },
+          taskList: null,
+          input: {
+            data: 'eyJ3b3JrZmxvd0FyZyI6InRlc3QtdmFsdWUifQ==',
+          },
+          workflowIdPrefix: 'schedule-prefix',
+          executionStartToCloseTimeout: null,
+          taskStartToCloseTimeout: null,
+          retryPolicy: null,
+          memo: null,
+          searchAttributes: null,
+        },
+      },
+    });
+
+    const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify(describeSchedule), {
+        status: 200,
+      })
+    );
+
+    const result = await queryFn({
+      queryKey: ['describeSchedule', params],
+      signal: new AbortController().signal,
+      meta: undefined,
+    });
+
+    expect(result).toEqual(formatScheduleDetails(describeSchedule));
+
+    fetchSpy.mockRestore();
   });
 });
