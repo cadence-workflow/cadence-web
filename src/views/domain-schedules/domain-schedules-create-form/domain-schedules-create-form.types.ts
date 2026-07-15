@@ -1,4 +1,8 @@
-import { type Control, type UseFormClearErrors, type UseFormTrigger } from 'react-hook-form';
+import {
+  type Control,
+  type UseFormClearErrors,
+  type UseFormTrigger,
+} from 'react-hook-form';
 
 import { type DomainSchedulesCreateFormData } from '../domain-schedules-create-modal/domain-schedules-create-modal.types';
 
