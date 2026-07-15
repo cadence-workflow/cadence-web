@@ -15,7 +15,7 @@ import {
 import { type z } from 'zod';
 
 import { type ScheduleActionID } from '@/config/dynamic/resolvers/schedule-actions-enabled.types';
-import { type FormattedScheduleDetails } from '@/views/shared/hooks/use-describe-schedule/use-describe-schedule.types';
+import { type DescribeScheduleResponse } from '@/route-handlers/describe-schedule/describe-schedule.types';
 
 import type SCHEDULE_ACTIONS_NON_RUNNABLE_STATUSES_CONFIG from './config/schedule-actions-non-runnable-statuses.config';
 
@@ -43,7 +43,6 @@ export type ScheduleActionFormProps<FormData extends FieldValues> = {
   cluster: string;
   domain: string;
   scheduleId: string;
-  schedule?: FormattedScheduleDetails;
   isSubmitted?: boolean;
 };
 
@@ -70,7 +69,7 @@ export type ScheduleActionIcon = (props: {
 export type ScheduleActionModalBanner = {
   kind: ScheduleActionBannerKind;
   icon: ScheduleActionIcon;
-  render: (schedule?: FormattedScheduleDetails) => ReactNode;
+  render: (schedule?: DescribeScheduleResponse) => ReactNode;
 };
 
 export type ScheduleActionModalForm<FormData, SubmissionData> =
@@ -109,7 +108,7 @@ export type ScheduleAction<
   } & ScheduleActionModalForm<FormData, SubmissionData>;
   icon: ScheduleActionIcon;
   getRunnableStatus: (
-    schedule: FormattedScheduleDetails
+    schedule: DescribeScheduleResponse
   ) => ScheduleActionRunnableStatus;
   apiRoute: (params: ScheduleActionInputParams) => string;
   httpMethod?: ScheduleActionHttpMethod;

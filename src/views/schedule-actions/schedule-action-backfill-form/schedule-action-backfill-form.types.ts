@@ -8,7 +8,7 @@ export type BackfillScheduleFormData = z.infer<typeof backfillScheduleFormSchema
 
 export type Props = Pick<
   ScheduleActionFormProps<BackfillScheduleFormData>,
-  'fieldErrors' | 'control' | 'trigger' | 'schedule'
+  'fieldErrors' | 'control' | 'trigger'
 > & {
   isSubmitted?: boolean;
 };

@@ -3,7 +3,7 @@ import { getMockRunningDescribeScheduleResponse } from '@/route-handlers/describ
 import { type DescribeScheduleResponse } from '@/route-handlers/describe-schedule/describe-schedule.types';
 
 import { type ScheduleDetailRowConfig } from '../../schedule-details.types';
-import { formatScheduleDetails } from '@/views/shared/hooks/use-describe-schedule/format-schedule-details';
+import { formatScheduleDetails } from '../format-schedule-details';
 import { getRowsFromConfig } from '../get-rows-from-config';
 
 describe(getRowsFromConfig.name, () => {

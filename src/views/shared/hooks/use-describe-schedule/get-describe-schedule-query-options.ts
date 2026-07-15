@@ -1,9 +1,7 @@
 import request from '@/utils/request';
-import { formatScheduleDetails } from './format-schedule-details';
 
 import {
   type DescribeScheduleQueryKey,
-  type DescribeScheduleResponse,
   type UseDescribeScheduleParams,
   type UseDescribeScheduleQueryOptions,
 } from './use-describe-schedule.types';
@@ -22,9 +20,7 @@ export default function getDescribeScheduleQueryOptions({
     queryFn: ({ queryKey: [_, p] }: { queryKey: DescribeScheduleQueryKey }) =>
       request(
         `/api/domains/${encodeURIComponent(p.domain)}/${encodeURIComponent(p.cluster)}/schedules/${encodeURIComponent(p.scheduleId)}`
-      ).then(async (res) =>
-        formatScheduleDetails((await res.json()) as DescribeScheduleResponse)
-      ),
+      ).then((res) => res.json()),
     refetchInterval: (query) => {
       const data = query.state.data;
       if (data?.state?.paused === false) {

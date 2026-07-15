@@ -3,7 +3,6 @@ import { HttpResponse } from 'msw';
 import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
 import { mockDescribeScheduleResponse } from '@/route-handlers/describe-schedule/__fixtures__/mock-describe-schedule-response';
-import { formatScheduleDetails } from '@/views/shared/hooks/use-describe-schedule/format-schedule-details';
 import { type PauseScheduleResponse } from '@/route-handlers/pause-schedule/pause-schedule.types';
 import { type UnpauseScheduleResponse } from '@/route-handlers/unpause-schedule/unpause-schedule.types';
 
@@ -145,10 +144,10 @@ describe(ScheduleActionsModalContent.name, () => {
 
 function setup({
   error,
-  schedule = formatScheduleDetails(mockDescribeScheduleResponse),
+  schedule = mockDescribeScheduleResponse,
 }: {
   error?: boolean;
-  schedule?: ReturnType<typeof formatScheduleDetails>;
+  schedule?: typeof mockDescribeScheduleResponse;
 }) {
   const user = userEvent.setup();
   const mockOnClose = jest.fn();

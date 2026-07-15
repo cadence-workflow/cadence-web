@@ -3,40 +3,12 @@ import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
-import { getMockDescribeScheduleResponse } from '@/route-handlers/describe-schedule/__fixtures__/mock-describe-schedule-response';
-import { formatScheduleDetails } from '@/views/shared/hooks/use-describe-schedule/format-schedule-details';
 import { render, screen, waitFor, within } from '@/test-utils/rtl';
 
 import ScheduleActionBackfillForm from '../schedule-action-backfill-form';
 import { type BackfillScheduleFormData } from '../schedule-action-backfill-form.types';
 import { backfillScheduleFormSchema } from '../schemas/backfill-schedule-form-schema';
 import { USE_SCHEDULE_OVERLAP_POLICY } from '../schedule-action-backfill-form.constants';
-
-const mockDatePicker = jest.fn(
-  ({
-    'aria-label': ariaLabel,
-    minDate,
-    maxDate,
-  }: {
-    'aria-label'?: string;
-    minDate?: Date;
-    maxDate?: Date;
-  }) => (
-    <input
-      aria-label={ariaLabel}
-      data-min-date={minDate?.toISOString()}
-      data-max-date={maxDate?.toISOString()}
-    />
-  )
-);
-
-jest.mock('baseui/datepicker', () => ({
-  DatePicker: (props: {
-    'aria-label'?: string;
-    minDate?: Date;
-    maxDate?: Date;
-  }) => mockDatePicker(props),
-}));
 
 describe(ScheduleActionBackfillForm.name, () => {
   it('renders backfill period and overlap policy fields', () => {
@@ -85,44 +57,12 @@ describe(ScheduleActionBackfillForm.name, () => {
       expect(screen.getByText('End date is required')).toBeInTheDocument();
     });
   });
-
-  it('limits date pickers to schedule start and end when available', () => {
-    setup({
-      schedule: formatScheduleDetails(
-        getMockDescribeScheduleResponse({
-          spec: {
-            cronExpression: '',
-            startTime: { seconds: '1704067200', nanos: 0 },
-            endTime: { seconds: '1706745600', nanos: 0 },
-            jitter: null,
-          },
-        })
-      ),
-    });
-
-    expect(
-      screen.getByLabelText('Backfill period start')
-    ).toHaveAttribute('data-min-date', '2024-01-01T00:00:00.000Z');
-    expect(
-      screen.getByLabelText('Backfill period start')
-    ).toHaveAttribute('data-max-date', '2024-02-01T00:00:00.000Z');
-    expect(screen.getByLabelText('Backfill period end')).toHaveAttribute(
-      'data-min-date',
-      '2024-01-01T00:00:00.000Z'
-    );
-    expect(screen.getByLabelText('Backfill period end')).toHaveAttribute(
-      'data-max-date',
-      '2024-02-01T00:00:00.000Z'
-    );
-  });
 });
 
 function setup({
   defaultValues,
-  schedule,
 }: {
   defaultValues?: BackfillScheduleFormData;
-  schedule?: ReturnType<typeof formatScheduleDetails>;
 } = {}) {
   let triggerValidation: () => Promise<boolean> = async () => true;
 
@@ -144,7 +84,6 @@ function setup({
         control={control}
         fieldErrors={fieldErrors}
         trigger={trigger}
-        schedule={schedule}
         isSubmitted={isSubmitted}
       />
     );
