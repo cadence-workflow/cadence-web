@@ -7,7 +7,7 @@ import { KIND as BUTTON_KIND, SIZE } from 'baseui/button';
 import { ModalButton } from 'baseui/modal';
 import { useSnackbar } from 'baseui/snackbar';
 import { useRouter } from 'next/navigation';
-import { type FieldValues, useForm } from 'react-hook-form';
+import { type DefaultValues, type FieldValues, useForm } from 'react-hook-form';
 import { MdCheckCircle, MdErrorOutline } from 'react-icons/md';
 
 import request from '@/utils/request';
@@ -27,6 +27,7 @@ export default function ScheduleActionsModalContent<
   params,
   schedule,
   onCloseModal,
+  initialFormValues,
 }: Props<Result, FormData, SubmissionData>) {
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -47,6 +48,7 @@ export default function ScheduleActionsModalContent<
       : undefined,
     mode: 'onSubmit',
     reValidateMode: 'onChange',
+    defaultValues: initialFormValues as DefaultValues<OptionalFormData>,
   });
 
   const { mutate, isPending, error } = useMutation<

@@ -8,6 +8,7 @@ import { type Props } from './schedule-actions-modal.types';
 export default function ScheduleActionsModal<Result, FormData, SubmissionData>({
   action,
   onClose,
+  initialFormValues,
   schedule,
   ...scheduleDetailsParams
 }: Props<Result, FormData, SubmissionData>) {
@@ -26,6 +27,7 @@ export default function ScheduleActionsModal<Result, FormData, SubmissionData>({
             ...scheduleDetailsParams,
           }}
           schedule={schedule}
+          initialFormValues={initialFormValues}
           onCloseModal={onClose}
         />
       )}

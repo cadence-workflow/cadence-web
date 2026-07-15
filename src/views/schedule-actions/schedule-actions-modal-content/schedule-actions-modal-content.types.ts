@@ -1,3 +1,5 @@
+import { type DefaultValues } from 'react-hook-form';
+
 import { type DescribeScheduleResponse } from '@/route-handlers/describe-schedule/describe-schedule.types';
 
 import {
@@ -10,4 +12,5 @@ export type Props<Result, FormData, SubmissionData> = {
   params: ScheduleActionInputParams;
   schedule?: DescribeScheduleResponse;
   onCloseModal: () => void;
+  initialFormValues?: DefaultValues<FormData>;
 };

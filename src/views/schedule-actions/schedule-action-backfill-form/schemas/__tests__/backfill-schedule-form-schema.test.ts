@@ -1,6 +1,6 @@
 import { backfillScheduleFormSchema } from '../backfill-schedule-form-schema';
 
-describe(backfillScheduleFormSchema.name, () => {
+describe('backfillScheduleFormSchema', () => {
   it('attributes schedule period error to startTime', () => {
     const result = backfillScheduleFormSchema.safeParse({
       startTime: '2026-06-02T12:00:00.000Z',
