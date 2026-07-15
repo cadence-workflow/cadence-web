@@ -1,3 +1,4 @@
+import isPlainObject from 'lodash/isPlainObject';
 import { z } from 'zod';
 
 import { ScheduleCatchUpPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleCatchUpPolicy';
@@ -73,11 +74,7 @@ export default function refineCreateScheduleForm(
   if (data.memo && data.memo.trim() !== '') {
     try {
       const parsedMemo = JSON.parse(data.memo);
-      const isObject =
-        typeof parsedMemo === 'object' &&
-        parsedMemo !== null &&
-        !Array.isArray(parsedMemo);
-      if (!isObject) {
+      if (!isPlainObject(parsedMemo)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: 'Memo must be a JSON object',

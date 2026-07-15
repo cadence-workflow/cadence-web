@@ -18,6 +18,7 @@ import {
 import {
   cssStyles,
   overrides,
+  styled,
 } from './workflow-actions-search-attributes.styles';
 import type {
   Props,
@@ -175,7 +176,6 @@ export default function WorkflowActionsSearchAttributes({
         'aria-label': 'Search attribute value',
         placeholder: inputPlaceholder,
         size: 'compact' as const,
-        // FormControl shows message text; input error is still required for border/aria-invalid (see multi-json-input).
         error: valueError !== undefined,
         overrides: overrides.valueInput,
       };
@@ -255,11 +255,7 @@ export default function WorkflowActionsSearchAttributes({
   );
 
   return (
-    <div
-      className={`${cls.container} ${
-        showSectionBorder ? cls.containerWithBorder : ''
-      }`}
-    >
+    <styled.Container $showSectionBorder={showSectionBorder}>
       {displayValue.map((item: SearchAttributeItem, index: number) => {
         const isEmptyRow = !item.key && !item.value;
         const isLastItem = displayValue.length === 1;
@@ -338,6 +334,6 @@ export default function WorkflowActionsSearchAttributes({
           {addButtonText}
         </Button>
       </div>
-    </div>
+    </styled.Container>
   );
 }
