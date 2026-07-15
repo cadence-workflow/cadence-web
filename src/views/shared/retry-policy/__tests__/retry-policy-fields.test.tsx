@@ -3,11 +3,12 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 
 import { render, screen, userEvent } from '@/test-utils/rtl';
+import { type RetryPolicyFormFields } from '@/views/shared/retry-policy/retry-policy-form.schema';
 
-import WorkflowActionStartRetryPolicy from '../workflow-action-start-retry-policy';
-import { type Props } from '../workflow-action-start-retry-policy.types';
+import RetryPolicyFields from '../retry-policy-fields';
+import { type Props } from '../retry-policy-fields.types';
 
-describe('WorkflowActionStartForm', () => {
+describe(RetryPolicyFields.name, () => {
   it('displays error when form has errors', async () => {
     const formErrors = {
       retryPolicy: {
@@ -39,20 +40,20 @@ describe('WorkflowActionStartForm', () => {
     );
 
     expect(
-      screen.getByRole('spinbutton', { name: 'Initial Interval' })
+      screen.getByRole('spinbutton', { name: 'Initial interval' })
     ).toHaveAttribute('aria-invalid', 'true');
 
     expect(
-      screen.getByRole('spinbutton', { name: 'Backoff Coefficient' })
+      screen.getByRole('spinbutton', { name: 'Backoff coefficient' })
     ).toHaveAttribute('aria-invalid', 'true');
 
     expect(
-      screen.getByRole('spinbutton', { name: 'Maximum Attempts' })
+      screen.getByRole('spinbutton', { name: 'Maximum attempts' })
     ).toHaveAttribute('aria-invalid', 'true');
 
     await user.click(screen.getByRole('radio', { name: 'Duration' }));
     expect(
-      screen.getByRole('spinbutton', { name: 'Expiration Interval' })
+      screen.getByRole('spinbutton', { name: 'Expiration interval' })
     ).toHaveAttribute('aria-invalid', 'true');
   });
 
@@ -68,119 +69,99 @@ describe('WorkflowActionStartForm', () => {
   it('toggles retry policy fields visibility', async () => {
     const { user } = await setup({});
 
-    // Initially retry policy fields should not be visible
-    expect(screen.queryByLabelText('Initial Interval')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Initial interval')).not.toBeInTheDocument();
     expect(
-      screen.queryByLabelText('Backoff Coefficient')
+      screen.queryByLabelText('Backoff coefficient')
     ).not.toBeInTheDocument();
-    expect(screen.queryByLabelText('Maximum Interval')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Maximum interval')).not.toBeInTheDocument();
     expect(screen.queryByLabelText('Retries Limit')).not.toBeInTheDocument();
 
-    // Enable retry policy
-    const enableRetryCheckbox = screen.getByRole('checkbox', {
-      name: /Enable retry policy/i,
-    });
-    await user.click(enableRetryCheckbox);
+    await user.click(
+      screen.getByRole('checkbox', { name: /Enable retry policy/i })
+    );
 
-    // Now retry policy fields should be visible
-    expect(screen.getByLabelText('Initial Interval')).toBeInTheDocument();
-    expect(screen.getByLabelText('Backoff Coefficient')).toBeInTheDocument();
-    expect(screen.getByLabelText('Maximum Interval')).toBeInTheDocument();
+    expect(screen.getByLabelText('Initial interval')).toBeInTheDocument();
+    expect(screen.getByLabelText('Backoff coefficient')).toBeInTheDocument();
+    expect(screen.getByLabelText('Maximum interval')).toBeInTheDocument();
     expect(screen.getByLabelText('Retries Limit')).toBeInTheDocument();
   });
 
   it('handles non retry limit input fields changes', async () => {
     const { user } = await setup({});
 
-    // Enable retry policy
-    const enableRetryCheckbox = screen.getByRole('checkbox', {
-      name: /Enable retry policy/i,
-    });
-    await user.click(enableRetryCheckbox);
+    await user.click(
+      screen.getByRole('checkbox', { name: /Enable retry policy/i })
+    );
 
-    // Should show maximum interval input
-    const maxIntervalInput = screen.getByLabelText('Maximum Interval');
+    const maxIntervalInput = screen.getByLabelText('Maximum interval');
     await user.type(maxIntervalInput, '30');
     expect(maxIntervalInput).toHaveValue(30);
 
-    // Should change initial interval
-    const initialIntervalInput = screen.getByLabelText('Initial Interval');
+    const initialIntervalInput = screen.getByLabelText('Initial interval');
     await user.type(initialIntervalInput, '10');
     expect(initialIntervalInput).toHaveValue(10);
 
-    // Should change backoff coefficient
-    const backoffCoeffInput = screen.getByLabelText('Backoff Coefficient');
+    const backoffCoeffInput = screen.getByLabelText('Backoff coefficient');
     await user.type(backoffCoeffInput, '2.0');
-    expect(backoffCoeffInput).toHaveValue(2.0);
+    expect(backoffCoeffInput).toHaveValue(2);
   });
 
   it('handles retry limit field changes', async () => {
     const { user } = await setup({});
 
-    // Enable retry policy
     await user.click(
       screen.getByRole('checkbox', { name: 'Enable Retry Policy' })
     );
 
-    // Should show attempts field
     expect(screen.getByRole('radio', { name: 'Attempts' })).toBeChecked();
     expect(
-      screen.getByRole('spinbutton', { name: 'Maximum Attempts' })
+      screen.getByRole('spinbutton', { name: 'Maximum attempts' })
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole('spinbutton', { name: 'Expiration Interval' })
+      screen.queryByRole('spinbutton', { name: 'Expiration interval' })
     ).not.toBeInTheDocument();
 
-    // Should show duration field
     await user.click(screen.getByRole('radio', { name: 'Duration' }));
     expect(screen.getByRole('radio', { name: 'Duration' })).toBeChecked();
     expect(
-      screen.queryByRole('spinbutton', { name: 'Maximum Attempts' })
+      screen.queryByRole('spinbutton', { name: 'Maximum attempts' })
     ).not.toBeInTheDocument();
     expect(
-      screen.getByRole('spinbutton', { name: 'Expiration Interval' })
+      screen.getByRole('spinbutton', { name: 'Expiration interval' })
     ).toBeInTheDocument();
   });
 });
 
 type TestProps = {
-  formData: Props['formData'];
-  fieldErrors: Props['fieldErrors'];
+  fieldErrors: Props<RetryPolicyFormFields>['fieldErrors'];
+  variant?: Props<RetryPolicyFormFields>['variant'];
 };
 
-function TestWrapper({ formData, fieldErrors }: TestProps) {
-  const methods = useForm<Props['formData']>({
-    defaultValues: formData,
+function TestWrapper({ fieldErrors, variant = 'compact' }: TestProps) {
+  const methods = useForm<RetryPolicyFormFields>({
+    defaultValues: {
+      enableRetryPolicy: false,
+      limitRetries: 'ATTEMPTS',
+    },
   });
 
   return (
-    <WorkflowActionStartRetryPolicy
+    <RetryPolicyFields
       control={methods.control}
       clearErrors={methods.clearErrors}
-      formData={formData}
       fieldErrors={fieldErrors}
-      trigger={methods.trigger}
+      variant={variant}
     />
   );
 }
 
 async function setup({
-  formData = {
-    taskList: { name: '' },
-    workflowType: { name: '' },
-    workerSDKLanguage: 'GO',
-    executionStartToCloseTimeoutSeconds: 0,
-    scheduleType: 'NOW',
-    input: [''],
-
-    enableRetryPolicy: false,
-    retryPolicy: undefined,
-  },
   fieldErrors = {},
-}: Partial<TestProps>) {
+  variant = 'compact',
+}: Partial<TestProps> = {}) {
   const user = userEvent.setup();
 
-  render(<TestWrapper formData={formData} fieldErrors={fieldErrors} />);
+  render(<TestWrapper fieldErrors={fieldErrors} variant={variant} />);
 
   return { user };
 }

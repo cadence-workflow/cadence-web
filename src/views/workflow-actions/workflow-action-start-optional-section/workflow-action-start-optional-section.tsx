@@ -18,7 +18,7 @@ import WorkflowActionsSearchAttributes from '@/views/workflow-actions/workflow-a
 
 import getFieldErrorMessage from '../workflow-action-start-form/helpers/get-field-error-message';
 import getSearchAttributesErrorMessage from '../workflow-action-start-form/helpers/get-search-attributes-error-message';
-import WorkflowActionStartRetryPolicy from '../workflow-action-start-retry-policy/workflow-action-start-retry-policy';
+import RetryPolicyFields from '@/views/shared/retry-policy/retry-policy-fields';
 import WorkflowActionsClusterAttribute from '../workflow-actions-cluster-attribute/workflow-actions-cluster-attribute';
 
 import { workflowIdReusePolicyOptions } from './workflow-action-start-optional-section.constants';
@@ -31,7 +31,6 @@ import { type Props } from './workflow-action-start-optional-section.types';
 export default function WorkflowActionStartOptionalSection({
   control,
   clearErrors,
-  formData,
   fieldErrors,
   trigger,
   cluster,
@@ -142,12 +141,11 @@ export default function WorkflowActionStartOptionalSection({
           />
         </FormControl>
 
-        <WorkflowActionStartRetryPolicy
+        <RetryPolicyFields
           control={control}
           clearErrors={clearErrors}
-          formData={formData}
           fieldErrors={fieldErrors}
-          trigger={trigger}
+          variant="compact"
         />
 
         <FormControl label="Header (optional)">

@@ -5,6 +5,7 @@ import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api
 import { CRON_FIELD_ORDER } from '@/components/cron-schedule-input/cron-schedule-input.constants';
 import { type CreateScheduleRequestBody } from '@/route-handlers/create-schedule/create-schedule.types';
 import { type Json } from '@/route-handlers/start-workflow/start-workflow.types';
+import mapRetryPolicyFormToBody from '@/views/shared/retry-policy/map-retry-policy-form-to-body';
 
 import { type DomainSchedulesCreateFormData } from '../domain-schedules-create-modal.types';
 
@@ -18,25 +19,7 @@ export default function transformDomainSchedulesCreateFormToBody(
   const parsedInput = formData.input
     ?.filter((v) => v.trim() !== '')
     .map((v) => JSON.parse(v) as Json);
-  const mappedRetryPolicy =
-    formData.enableRetryPolicy && formData.retryPolicy
-      ? {
-          initialIntervalSeconds: formData.retryPolicy.initialIntervalSeconds,
-          backoffCoefficient: formData.retryPolicy.backoffCoefficient,
-          ...(formData.retryPolicy.maximumIntervalSeconds !== undefined
-            ? {
-                maximumIntervalSeconds:
-                  formData.retryPolicy.maximumIntervalSeconds,
-              }
-            : {}),
-          ...(formData.limitRetries === 'ATTEMPTS'
-            ? { maximumAttempts: formData.retryPolicy.maximumAttempts }
-            : {
-                expirationIntervalSeconds:
-                  formData.retryPolicy.expirationIntervalSeconds,
-              }),
-        }
-      : undefined;
+  const mappedRetryPolicy = mapRetryPolicyFormToBody(formData);
 
   return {
     cronExpression: cronString,

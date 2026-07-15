@@ -17,7 +17,7 @@ import { MdExpandLess, MdExpandMore } from 'react-icons/md';
 
 import { ScheduleCatchUpPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleCatchUpPolicy';
 import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
-import CreateScheduleRetryPolicyFields from '@/views/domain-schedules/create-schedule-retry-policy-fields/create-schedule-retry-policy-fields';
+import RetryPolicyFields from '@/views/shared/retry-policy/retry-policy-fields';
 import DomainSchedulesHorizontalField from '@/views/domain-schedules/domain-schedules-horizontal-field/domain-schedules-horizontal-field';
 import useSearchAttributes from '@/views/shared/hooks/use-search-attributes/use-search-attributes';
 // TODO(refactor): getSearchAttributesErrorMessage is imported from start-workflow helpers — extract to shared utils
@@ -402,10 +402,12 @@ export default function DomainSchedulesCreateAdvancedForm({
           </styled.SchedulePeriodRow>
         </DomainSchedulesHorizontalField>
 
-        <CreateScheduleRetryPolicyFields
+        <RetryPolicyFields
           control={control}
           clearErrors={clearErrors}
           fieldErrors={fieldErrors}
+          variant="horizontal"
+          idPrefix="create-schedule-form-retry"
         />
 
         <DomainSchedulesHorizontalField

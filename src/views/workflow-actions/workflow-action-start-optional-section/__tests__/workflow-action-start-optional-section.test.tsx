@@ -34,7 +34,7 @@ jest.mock('baseui/accordion/panel', () => {
 });
 
 jest.mock(
-  '../../workflow-action-start-retry-policy/workflow-action-start-retry-policy',
+  '@/views/shared/retry-policy/retry-policy-fields',
   () =>
     jest.fn(() => {
       return <div>Retry Policy Fields</div>;

@@ -1,5 +1,6 @@
 import { CRON_FIELD_ORDER } from '@/components/cron-schedule-input/cron-schedule-input.constants';
 import { type Json } from '@/route-handlers/start-workflow/start-workflow.types';
+import mapRetryPolicyFormToBody from '@/views/shared/retry-policy/map-retry-policy-form-to-body';
 
 import {
   type StartWorkflowFormData,
@@ -27,31 +28,11 @@ export default function transformStartWorkflowFormToSubmission(
         (key) => formData.cronSchedule?.[key]
       ).join(' '),
     }),
-    ...(formData.enableRetryPolicy && {
-      retryPolicy: {
-        initialIntervalSeconds: formData.retryPolicy?.initialIntervalSeconds
-          ? parseInt(formData.retryPolicy?.initialIntervalSeconds, 10)
-          : undefined,
-        backoffCoefficient: formData.retryPolicy?.backoffCoefficient
-          ? parseFloat(formData.retryPolicy?.backoffCoefficient)
-          : undefined,
-        maximumIntervalSeconds: formData.retryPolicy?.maximumIntervalSeconds
-          ? parseInt(formData.retryPolicy?.maximumIntervalSeconds, 10)
-          : undefined,
-        ...(formData.limitRetries === 'ATTEMPTS' && {
-          maximumAttempts: formData.retryPolicy?.maximumAttempts
-            ? parseInt(formData.retryPolicy?.maximumAttempts, 10)
-            : undefined,
-        }),
-        ...(formData.limitRetries === 'DURATION' && {
-          expirationIntervalSeconds: formData.retryPolicy
-            ?.expirationIntervalSeconds
-            ? parseInt(formData.retryPolicy?.expirationIntervalSeconds, 10)
-            : undefined,
-        }),
-      },
-    }),
   };
+  const retryPolicy = mapRetryPolicyFormToBody(formData);
+  if (retryPolicy) {
+    conditionalFormData.retryPolicy = retryPolicy;
+  }
 
   const searchAttributesObject =
     formData?.searchAttributes && formData.searchAttributes.length > 0
