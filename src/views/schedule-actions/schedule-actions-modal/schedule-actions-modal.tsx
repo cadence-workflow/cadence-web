@@ -1,5 +1,4 @@
 import { Modal } from 'baseui/modal';
-import { type DefaultValues } from 'react-hook-form';
 
 import ScheduleActionsModalContent from '../schedule-actions-modal-content/schedule-actions-modal-content';
 
@@ -9,7 +8,6 @@ import { type Props } from './schedule-actions-modal.types';
 export default function ScheduleActionsModal<Result, FormData, SubmissionData>({
   action,
   onClose,
-  initialFormValues,
   schedule,
   ...scheduleDetailsParams
 }: Props<Result, FormData, SubmissionData>) {
@@ -28,12 +26,6 @@ export default function ScheduleActionsModal<Result, FormData, SubmissionData>({
             ...scheduleDetailsParams,
           }}
           schedule={schedule}
-          initialFormValues={
-            (initialFormValues ??
-              (action.modal.withForm
-                ? action.modal.initialFormValues
-                : undefined)) as DefaultValues<FormData> | undefined
-          }
           onCloseModal={onClose}
         />
       )}

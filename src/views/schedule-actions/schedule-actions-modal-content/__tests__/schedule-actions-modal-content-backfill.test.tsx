@@ -1,18 +1,72 @@
 import { HttpResponse } from 'msw';
+import { MdHistory } from 'react-icons/md';
 
 import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
-import { type BackfillScheduleResponse } from '@/route-handlers/backfill-schedule/backfill-schedule.types';
 import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
+import { type BackfillScheduleResponse } from '@/route-handlers/backfill-schedule/backfill-schedule.types';
 
-import scheduleActionsConfig from '../../config/schedule-actions.config';
-import { type BackfillScheduleFormData } from '../../schedule-action-backfill-form/schedule-action-backfill-form.types';
+import transformBackfillScheduleFormToSubmission from '../../schedule-action-backfill-form/helpers/transform-backfill-schedule-form-to-submission';
+import { backfillScheduleFormSchema } from '../../schedule-action-backfill-form/schemas/backfill-schedule-form-schema';
+import {
+  type BackfillScheduleSubmissionData,
+  type ScheduleAction,
+} from '../../schedule-actions.types';
 import ScheduleActionsModalContent from '../schedule-actions-modal-content';
 
 const mockScheduleParams = {
   domain: 'mock-domain',
   cluster: 'mock-cluster',
   scheduleId: 'mock-schedule-id',
+};
+
+const mockBackfillActionConfig: ScheduleAction<
+  BackfillScheduleResponse,
+  {
+    backfillId?: string;
+    startTime: string;
+    endTime: string;
+    overlapPolicy?: string;
+  },
+  BackfillScheduleSubmissionData
+> = {
+  id: 'backfill',
+  label: 'Backfill',
+  subtitle: 'Backfill missed workflow runs',
+  modal: {
+    withForm: true,
+    form: ({ control }) => (
+      <div data-testid="mock-backfill-form">
+        <input
+          data-testid="mock-backfill-id"
+          aria-label="Backfill ID"
+          {...control.register('backfillId')}
+        />
+        <input
+          data-testid="mock-backfill-start-time"
+          aria-label="Start time"
+          {...control.register('startTime')}
+        />
+        <input
+          data-testid="mock-backfill-end-time"
+          aria-label="End time"
+          {...control.register('endTime')}
+        />
+        <input
+          data-testid="mock-backfill-overlap-policy"
+          aria-label="Overlap policy"
+          {...control.register('overlapPolicy')}
+        />
+      </div>
+    ),
+    formSchema: backfillScheduleFormSchema,
+    transformFormDataToSubmission: transformBackfillScheduleFormToSubmission,
+  },
+  icon: MdHistory,
+  getRunnableStatus: () => 'RUNNABLE',
+  apiRoute: (params) =>
+    `/api/domains/${encodeURIComponent(params.domain)}/${encodeURIComponent(params.cluster)}/schedules/${encodeURIComponent(params.scheduleId)}/backfill`,
+  renderSuccessMessage: () => 'Schedule backfill has been started.',
 };
 
 const mockEnqueue = jest.fn();
@@ -38,14 +92,24 @@ describe(`${ScheduleActionsModalContent.name} backfill`, () => {
   });
 
   it('submits backfill form with ISO date strings', async () => {
-    const { user, getLatestRequestBody, waitForRequest } = setup({
-      defaultValues: {
-        backfillId: 'custom-backfill-id',
-        startTime: '2026-01-01T00:00:00.000Z',
-        endTime: '2026-01-02T00:00:00.000Z',
-        overlapPolicy: ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_BUFFER,
-      },
-    });
+    const { user, getLatestRequestBody, waitForRequest } = setup();
+
+    await user.type(
+      screen.getByTestId('mock-backfill-id'),
+      'custom-backfill-id'
+    );
+    await user.type(
+      screen.getByTestId('mock-backfill-start-time'),
+      '2026-01-01T00:00:00.000Z'
+    );
+    await user.type(
+      screen.getByTestId('mock-backfill-end-time'),
+      '2026-01-02T00:00:00.000Z'
+    );
+    await user.type(
+      screen.getByTestId('mock-backfill-overlap-policy'),
+      String(ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_BUFFER)
+    );
 
     await user.click(
       await screen.findByRole('button', { name: 'Backfill schedule' })
@@ -69,11 +133,7 @@ describe(`${ScheduleActionsModalContent.name} backfill`, () => {
   });
 });
 
-function setup({
-  defaultValues,
-}: {
-  defaultValues?: BackfillScheduleFormData;
-}) {
+function setup() {
   const user = userEvent.setup();
   const mockOnClose = jest.fn();
   let latestRequestBody: unknown = null;
@@ -84,10 +144,9 @@ function setup({
 
   render(
     <ScheduleActionsModalContent
-      action={scheduleActionsConfig[3]}
+      action={mockBackfillActionConfig}
       params={{ ...mockScheduleParams }}
       onCloseModal={mockOnClose}
-      initialFormValues={defaultValues}
     />,
     {
       endpointsMocks: [
