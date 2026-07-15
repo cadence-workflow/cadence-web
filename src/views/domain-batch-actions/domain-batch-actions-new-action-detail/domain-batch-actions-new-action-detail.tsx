@@ -7,6 +7,7 @@ import { MdDeleteOutline } from 'react-icons/md';
 
 import Button from '@/components/button/button';
 import ErrorPanel from '@/components/error-panel/error-panel';
+import GuidedTourProvider from '@/components/guided-tour/guided-tour-provider/guided-tour-provider';
 import PanelSection from '@/components/panel-section/panel-section';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import { type BatchActionType } from '@/route-handlers/describe-batch-action/describe-batch-action.types';
@@ -19,6 +20,7 @@ import WorkflowsList from '@/views/shared/workflows-list/workflows-list';
 import domainBatchActionsConfirmationModalConfig from '../config/domain-batch-actions-confirmation-modal.config';
 import domainBatchActionsFiltersConfig from '../config/domain-batch-actions-filters.config';
 import domainBatchActionsNewActionFloatingBarConfig from '../config/domain-batch-actions-new-action-floating-bar.config';
+import { domainBatchActionsDraftTourConfig } from '../config/domain-batch-actions-tour.config';
 import DomainBatchActionsConfirmationModal from '../domain-batch-actions-confirmation-modal/domain-batch-actions-confirmation-modal';
 import DomainBatchActionsNewActionFloatingBar from '../domain-batch-actions-new-action-floating-bar/domain-batch-actions-new-action-floating-bar';
 import DomainBatchActionsNewActionInfoBanner from '../domain-batch-actions-new-action-info-banner/domain-batch-actions-new-action-info-banner';
@@ -118,92 +120,99 @@ export default function DomainBatchActionsNewActionDetail({
         })
       : undefined;
   return (
-    <styled.Container>
-      <styled.Header>
-        <styled.Title>New batch action</styled.Title>
-        <Button
-          kind="secondary"
-          size="compact"
-          overrides={overrides.discardButton}
-          startEnhancer={<MdDeleteOutline />}
-          onClick={onDiscard}
-        >
-          Discard batch action
-        </Button>
-      </styled.Header>
-      <DomainBatchActionsNewActionInfoBanner />
-      <DomainBatchActionsNewActionParams
-        control={control}
-        fieldErrors={errors}
-      />
-      <div>
-        <WorkflowsHeader
-          pageQueryParamsConfig={domainPageQueryParamsConfig}
-          pageFiltersConfig={domainBatchActionsFiltersConfig}
-          inputTypeQueryParamKey="batchInputType"
-          searchQueryParamKey="batchSearch"
-          queryStringQueryParamKey="batchQuery"
-          searchSegmentLabel="Select"
-          refetchQuery={refetchAll}
-          isQueryRunning={isQueryFetching}
-          noSpacing
-        />
-        {queryHint && (
-          <styled.QueryHint $kind={queryHint.kind}>
-            {queryHint.message}
-          </styled.QueryHint>
-        )}
-      </div>
-      {isDataLoading && <SectionLoadingIndicator />}
-      {!isDataLoading && errorPanelProps && (
-        <PanelSection>
-          <ErrorPanel {...errorPanelProps} reset={refetchAll} />
-        </PanelSection>
-      )}
-      {!isDataLoading && !errorPanelProps && (
-        <WorkflowsList
-          workflows={workflows}
-          columns={visibleColumns}
-          error={queryError}
-          hasNextPage={hasNextPage}
-          fetchNextPage={fetchNextPage}
-          isFetchingNextPage={isFetchingNextPage}
-          selection={listSelection}
-        />
-      )}
-      {!isDataLoading && !errorPanelProps && !!totalWorkflowCount && (
-        <styled.FloatingBarSlot>
-          <DomainBatchActionsNewActionFloatingBar
-            selectedCount={selectedCount}
-            totalCount={totalWorkflowCount}
-            actions={domainBatchActionsNewActionFloatingBarConfig}
-            onActionClick={handleActionClick}
-            disabled={hasValidationErrors}
+    <GuidedTourProvider
+      tourId="batch-actions-draft"
+      steps={domainBatchActionsDraftTourConfig}
+    >
+      <styled.Container>
+        <styled.Header>
+          <styled.Title>New batch action</styled.Title>
+          <Button
+            kind="secondary"
+            size="compact"
+            overrides={overrides.discardButton}
+            startEnhancer={<MdDeleteOutline />}
+            onClick={onDiscard}
+          >
+            Discard batch action
+          </Button>
+        </styled.Header>
+        <DomainBatchActionsNewActionInfoBanner />
+        <div data-tour="batch-draft-params">
+          <DomainBatchActionsNewActionParams
+            control={control}
+            fieldErrors={errors}
           />
-        </styled.FloatingBarSlot>
-      )}
-      <DomainBatchActionsConfirmationModal
-        config={domainBatchActionsConfirmationModalConfig}
-        actionId={activeAction}
-        selectedCount={selectedCount}
-        isSubmitting={isStartingBatchAction}
-        onClose={() => setActiveAction(null)}
-        onConfirm={(payload) =>
-          handleConfirm({
-            batchType: payload.actionId,
-            // An empty target is blocked before submit (required-query in query
-            // mode, non-empty selection in select mode), so the query is
-            // guaranteed non-empty here.
-            query: getBatchActionQuery(),
-            reason: getValues('description'),
-            rps: getValues('rps'),
-            signalParams:
-              payload.actionId === 'signal'
-                ? payload.submissionData
-                : undefined,
-          })
-        }
-      />
-    </styled.Container>
+        </div>
+        <div data-tour="batch-input-toggle">
+          <WorkflowsHeader
+            pageQueryParamsConfig={domainPageQueryParamsConfig}
+            pageFiltersConfig={domainBatchActionsFiltersConfig}
+            inputTypeQueryParamKey="batchInputType"
+            searchQueryParamKey="batchSearch"
+            queryStringQueryParamKey="batchQuery"
+            searchSegmentLabel="Select"
+            refetchQuery={refetchAll}
+            isQueryRunning={isQueryFetching}
+            noSpacing
+          />
+          {queryHint && (
+            <styled.QueryHint $kind={queryHint.kind}>
+              {queryHint.message}
+            </styled.QueryHint>
+          )}
+        </div>
+        {isDataLoading && <SectionLoadingIndicator />}
+        {!isDataLoading && errorPanelProps && (
+          <PanelSection>
+            <ErrorPanel {...errorPanelProps} reset={refetchAll} />
+          </PanelSection>
+        )}
+        {!isDataLoading && !errorPanelProps && (
+          <WorkflowsList
+            workflows={workflows}
+            columns={visibleColumns}
+            error={queryError}
+            hasNextPage={hasNextPage}
+            fetchNextPage={fetchNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+            selection={listSelection}
+          />
+        )}
+        {!isDataLoading && !errorPanelProps && !!totalWorkflowCount && (
+          <styled.FloatingBarSlot>
+            <DomainBatchActionsNewActionFloatingBar
+              selectedCount={selectedCount}
+              totalCount={totalWorkflowCount}
+              actions={domainBatchActionsNewActionFloatingBarConfig}
+              onActionClick={handleActionClick}
+              disabled={hasValidationErrors}
+            />
+          </styled.FloatingBarSlot>
+        )}
+        <DomainBatchActionsConfirmationModal
+          config={domainBatchActionsConfirmationModalConfig}
+          actionId={activeAction}
+          selectedCount={selectedCount}
+          isSubmitting={isStartingBatchAction}
+          onClose={() => setActiveAction(null)}
+          onConfirm={(payload) =>
+            handleConfirm({
+              batchType: payload.actionId,
+              // An empty target is blocked before submit (required-query in query
+              // mode, non-empty selection in select mode), so the query is
+              // guaranteed non-empty here.
+              query: getBatchActionQuery(),
+              reason: getValues('description'),
+              rps: getValues('rps'),
+              signalParams:
+                payload.actionId === 'signal'
+                  ? payload.submissionData
+                  : undefined,
+            })
+          }
+        />
+      </styled.Container>
+    </GuidedTourProvider>
   );
 }
