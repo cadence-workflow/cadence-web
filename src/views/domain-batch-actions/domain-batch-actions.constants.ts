@@ -33,6 +33,10 @@ export const BATCH_ACTION_TUNE_SIGNAL_NAME = 'cadence-sys-batch-tune-signal';
 
 export const BATCH_ACTION_DETAIL_REFETCH_INTERVAL = 10000;
 
+// Poll interval for the sidebar list so newly started / status-changed actions
+// show up without a manual refresh.
+export const BATCH_ACTIONS_LIST_REFETCH_INTERVAL = 10000;
+
 // Delay before refreshing the list after starting a batch action, to allow the
 // new batcher workflow to become visible (visibility propagation lag).
 export const BATCH_ACTION_LIST_INVALIDATE_TIMEOUT_MS = 2000;

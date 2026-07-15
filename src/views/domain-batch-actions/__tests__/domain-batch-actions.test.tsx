@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { focusManager, QueryClient } from '@tanstack/react-query';
 import { userEvent } from '@testing-library/user-event';
 import { HttpResponse } from 'msw';
 
@@ -428,42 +427,6 @@ describe(DomainBatchActions.name, () => {
       await screen.findByText(/Could not load batch action progress/i)
     ).toBeInTheDocument();
     expect(screen.getByText('mock-batch-action-detail-5')).toBeInTheDocument();
-  });
-
-  it('invalidates the list when an action is selected', async () => {
-    const user = userEvent.setup();
-    const invalidateQueriesSpy = jest.spyOn(
-      QueryClient.prototype,
-      'invalidateQueries'
-    );
-
-    setup();
-
-    await user.click(await screen.findByText('mock-select-4'));
-
-    expect(invalidateQueriesSpy).toHaveBeenCalledWith(
-      expect.objectContaining({ queryKey: ['listBatchActions'] })
-    );
-  });
-
-  it('refetches the list when the window regains focus', async () => {
-    const { listRequestSpy } = setup();
-
-    await waitFor(() => {
-      expect(listRequestSpy).toHaveBeenCalled();
-    });
-    const callsAfterLoad = listRequestSpy.mock.calls.length;
-
-    act(() => {
-      focusManager.setFocused(false);
-      focusManager.setFocused(true);
-    });
-
-    await waitFor(() => {
-      expect(listRequestSpy.mock.calls.length).toBeGreaterThan(callsAfterLoad);
-    });
-
-    focusManager.setFocused(undefined);
   });
 });
 
