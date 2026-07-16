@@ -111,6 +111,8 @@ export default function DomainSchedulesCreateModal({
             control={control}
             trigger={trigger}
             clearErrors={clearErrors}
+            domain={domain}
+            cluster={cluster}
           />
         </styled.ModalBody>
         <styled.ModalFooter>

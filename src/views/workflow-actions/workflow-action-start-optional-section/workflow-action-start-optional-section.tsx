@@ -14,11 +14,11 @@ import useStyletronClasses from '@/hooks/use-styletron-classes';
 import isActiveActiveDomain from '@/views/shared/active-active/helpers/is-active-active-domain';
 import useDomainDescription from '@/views/shared/hooks/use-domain-description/use-domain-description';
 import useSearchAttributes from '@/views/shared/hooks/use-search-attributes/use-search-attributes';
+import RetryPolicyFields from '@/views/shared/retry-policy-fields/retry-policy-fields';
 import WorkflowActionsSearchAttributes from '@/views/workflow-actions/workflow-actions-search-attributes/workflow-actions-search-attributes';
 
 import getFieldErrorMessage from '../workflow-action-start-form/helpers/get-field-error-message';
 import getSearchAttributesErrorMessage from '../workflow-action-start-form/helpers/get-search-attributes-error-message';
-import RetryPolicyFields from '@/views/shared/retry-policy/retry-policy-fields';
 import WorkflowActionsClusterAttribute from '../workflow-actions-cluster-attribute/workflow-actions-cluster-attribute';
 
 import { workflowIdReusePolicyOptions } from './workflow-action-start-optional-section.constants';

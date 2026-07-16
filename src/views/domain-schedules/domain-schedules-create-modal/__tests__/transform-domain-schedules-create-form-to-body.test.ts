@@ -251,4 +251,32 @@ describe(transformDomainSchedulesCreateFormToBody.name, () => {
 
     expect(result.startWorkflow.retryPolicy).toBeUndefined();
   });
+
+  it('maps memo JSON and search attributes into startWorkflow', () => {
+    const result = transformDomainSchedulesCreateFormToBody({
+      ...mockDomainSchedulesCreateFormData,
+      memo: '{"k":"v"}',
+      searchAttributes: [
+        { key: 'CustomKeywordField', value: 'value-1' },
+        { key: 'CustomIntField', value: 9 },
+      ],
+    });
+
+    expect(result.startWorkflow.memo).toEqual({ k: 'v' });
+    expect(result.startWorkflow.searchAttributes).toEqual({
+      CustomKeywordField: 'value-1',
+      CustomIntField: 9,
+    });
+  });
+
+  it('omits memo and search attributes when empty', () => {
+    const result = transformDomainSchedulesCreateFormToBody({
+      ...mockDomainSchedulesCreateFormData,
+      memo: '  ',
+      searchAttributes: [],
+    });
+
+    expect(result.startWorkflow.memo).toBeUndefined();
+    expect(result.startWorkflow.searchAttributes).toBeUndefined();
+  });
 });

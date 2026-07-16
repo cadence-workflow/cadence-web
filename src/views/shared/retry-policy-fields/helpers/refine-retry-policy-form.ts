@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { type RetryPolicyFormFields } from './retry-policy-form.schema';
+import { type RetryPolicyFormFields } from '../schemas/retry-policy-form-schema';
 
 export default function refineRetryPolicyForm(
   data: RetryPolicyFormFields,

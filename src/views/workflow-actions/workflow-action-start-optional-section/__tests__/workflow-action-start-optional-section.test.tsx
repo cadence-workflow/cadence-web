@@ -10,6 +10,7 @@ import { type GetSearchAttributesResponse } from '@/route-handlers/get-search-at
 import { mockDomainDescription } from '@/views/domain-page/__fixtures__/domain-description';
 import { mockActiveActiveDomain } from '@/views/shared/active-active/__fixtures__/active-active-domain';
 
+import { type StartWorkflowFormData } from '../../workflow-action-start-form/workflow-action-start-form.types';
 import WorkflowActionStartOptionalSection from '../workflow-action-start-optional-section';
 import { type Props } from '../workflow-action-start-optional-section.types';
 
@@ -33,12 +34,10 @@ jest.mock('baseui/accordion/panel', () => {
   return { __esModule: true, default: SimplePanel };
 });
 
-jest.mock(
-  '@/views/shared/retry-policy/retry-policy-fields',
-  () =>
-    jest.fn(() => {
-      return <div>Retry Policy Fields</div>;
-    })
+jest.mock('@/views/shared/retry-policy-fields/retry-policy-fields', () =>
+  jest.fn(() => {
+    return <div>Retry Policy Fields</div>;
+  })
 );
 
 jest.mock(
@@ -195,12 +194,12 @@ describe(WorkflowActionStartOptionalSection.name, () => {
 });
 
 type TestProps = {
-  formData: Props['formData'];
+  formData: StartWorkflowFormData;
   fieldErrors: Props['fieldErrors'];
 };
 
 function TestWrapper({ formData, fieldErrors }: TestProps) {
-  const methods = useForm<Props['formData']>({
+  const methods = useForm<StartWorkflowFormData>({
     defaultValues: formData,
   });
 
@@ -208,7 +207,6 @@ function TestWrapper({ formData, fieldErrors }: TestProps) {
     <WorkflowActionStartOptionalSection
       control={methods.control}
       clearErrors={methods.clearErrors}
-      formData={formData}
       fieldErrors={fieldErrors}
       trigger={methods.trigger}
       cluster="test-cluster"

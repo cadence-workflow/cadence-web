@@ -4,8 +4,7 @@ import { z } from 'zod';
 import { ScheduleCatchUpPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleCatchUpPolicy';
 import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
 import getSchedulePeriodError from '@/route-handlers/create-schedule/helpers/get-schedule-period-error';
-
-import refineRetryPolicyForm from '@/views/shared/retry-policy/refine-retry-policy-form';
+import refineRetryPolicyForm from '@/views/shared/retry-policy-fields/helpers/refine-retry-policy-form';
 
 import { type CreateScheduleFormRefineInput } from '../domain-schedules-create-modal.types';
 
@@ -69,9 +68,28 @@ export default function refineCreateScheduleForm(
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       message: schedulePeriodError.message,
-      path: ['startTime'],
+      path: ['endTime'],
     });
   }
 
   refineRetryPolicyForm(data, ctx);
+
+  if (data.memo && data.memo.trim() !== '') {
+    try {
+      const parsedMemo = JSON.parse(data.memo);
+      if (!isPlainObject(parsedMemo)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Memo must be a JSON object',
+          path: ['memo'],
+        });
+      }
+    } catch {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Memo must be valid JSON',
+        path: ['memo'],
+      });
+    }
+  }
 }

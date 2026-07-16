@@ -190,12 +190,11 @@ function TestWrapper({
   defaultValues?: Partial<DomainSchedulesCreateFormData>;
   injectFieldErrors?: boolean;
 }) {
-  const { control, trigger, setError, clearErrors } = useForm<DomainSchedulesCreateFormData>(
-    {
+  const { control, trigger, setError, clearErrors } =
+    useForm<DomainSchedulesCreateFormData>({
       defaultValues: { ...defaultValues },
       mode: 'onSubmit',
-    }
-  );
+    });
 
   useEffect(() => {
     if (!injectFieldErrors) return;
@@ -209,6 +208,8 @@ function TestWrapper({
       control={control}
       trigger={trigger}
       clearErrors={clearErrors}
+      domain={MOCK_DOMAIN}
+      cluster={MOCK_CLUSTER}
     />
   );
 }

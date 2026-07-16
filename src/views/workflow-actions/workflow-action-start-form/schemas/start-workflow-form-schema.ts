@@ -5,8 +5,8 @@ import {
   WORKER_SDK_LANGUAGES,
   WORKFLOW_ID_REUSE_POLICIES,
 } from '@/route-handlers/start-workflow/start-workflow.constants';
-import refineRetryPolicyForm from '@/views/shared/retry-policy/refine-retry-policy-form';
-import { retryPolicyFormFieldsShape } from '@/views/shared/retry-policy/retry-policy-form.schema';
+import refineRetryPolicyForm from '@/views/shared/retry-policy-fields/helpers/refine-retry-policy-form';
+import { retryPolicyFormFieldsShape } from '@/views/shared/retry-policy-fields/schemas/retry-policy-form-schema';
 
 import { getCronFieldsError } from '../helpers/get-cron-fields-error';
 

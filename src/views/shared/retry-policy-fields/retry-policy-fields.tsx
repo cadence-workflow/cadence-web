@@ -14,11 +14,8 @@ import DomainSchedulesHorizontalField from '@/views/domain-schedules/domain-sche
 import getFieldErrorMessage from '@/views/workflow-actions/workflow-action-start-form/helpers/get-field-error-message';
 
 import { cssStyles, overrides } from './retry-policy-fields.styles';
-import {
-  type InnerProps,
-  type Props,
-} from './retry-policy-fields.types';
-import { type RetryPolicyFormFields } from './retry-policy-form.schema';
+import { type InnerProps, type Props } from './retry-policy-fields.types';
+import { type RetryPolicyFormFields } from './schemas/retry-policy-form-schema';
 
 type FieldWrapperProps = {
   label: string;
@@ -102,7 +99,7 @@ function RetryPolicyFieldsInner({
     variant === 'horizontal' ? (
       <HorizontalFieldWrapper
         label="Retry policy"
-        description="Controls retry behavior for the started workflow."
+        description="Controls retry behavior for the workflow."
       >
         {enableRetryPolicyCheckbox}
       </HorizontalFieldWrapper>
@@ -191,9 +188,7 @@ function RetryPolicyFieldsInner({
               min={1}
               onChange={(e) =>
                 field.onChange(
-                  e.target.value === ''
-                    ? undefined
-                    : parseFloat(e.target.value)
+                  e.target.value === '' ? undefined : parseFloat(e.target.value)
                 )
               }
               onBlur={field.onBlur}
@@ -431,10 +426,10 @@ function HorizontalFieldWrapper({
   );
 }
 
-function CompactFieldWrapper({
-  label,
-  error,
-  children,
-}: FieldWrapperProps) {
-  return <FormControl label={label} error={error}>{children}</FormControl>;
+function CompactFieldWrapper({ label, error, children }: FieldWrapperProps) {
+  return (
+    <FormControl label={label} error={error}>
+      {children}
+    </FormControl>
+  );
 }

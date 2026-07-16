@@ -1,6 +1,6 @@
 import { CRON_FIELD_ORDER } from '@/components/cron-schedule-input/cron-schedule-input.constants';
 import { type Json } from '@/route-handlers/start-workflow/start-workflow.types';
-import mapRetryPolicyFormToBody from '@/views/shared/retry-policy/map-retry-policy-form-to-body';
+import mapRetryPolicyFormToBody from '@/views/shared/retry-policy-fields/helpers/map-retry-policy-form-to-body';
 
 import {
   type StartWorkflowFormData,

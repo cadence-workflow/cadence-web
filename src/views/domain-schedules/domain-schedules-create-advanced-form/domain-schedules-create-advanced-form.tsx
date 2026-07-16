@@ -17,11 +17,11 @@ import { MdExpandLess, MdExpandMore } from 'react-icons/md';
 
 import { ScheduleCatchUpPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleCatchUpPolicy';
 import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
-import RetryPolicyFields from '@/views/shared/retry-policy/retry-policy-fields';
 import DomainSchedulesHorizontalField from '@/views/domain-schedules/domain-schedules-horizontal-field/domain-schedules-horizontal-field';
 import useSearchAttributes from '@/views/shared/hooks/use-search-attributes/use-search-attributes';
-// TODO(refactor): getSearchAttributesErrorMessage is imported from start-workflow helpers — extract to shared utils
+import RetryPolicyFields from '@/views/shared/retry-policy-fields/retry-policy-fields';
 import getFieldErrorMessage from '@/views/workflow-actions/workflow-action-start-form/helpers/get-field-error-message';
+// TODO(refactor): getSearchAttributesErrorMessage is imported from start-workflow helpers — extract to shared utils
 import getSearchAttributesErrorMessage from '@/views/workflow-actions/workflow-action-start-form/helpers/get-search-attributes-error-message';
 // TODO(refactor): WorkflowActionsSearchAttributes is imported from start-workflow feature — extract shared component under views/shared
 import WorkflowActionsSearchAttributes from '@/views/workflow-actions/workflow-actions-search-attributes/workflow-actions-search-attributes';
@@ -47,6 +47,7 @@ export default function DomainSchedulesCreateAdvancedForm({
   trigger,
   isSubmitted = false,
   clearErrors,
+  cluster,
 }: Props) {
   const { data: searchAttributesData, isLoading: isLoadingSearchAttributes } =
     useSearchAttributes({ cluster, category: 'custom' });
@@ -293,6 +294,7 @@ export default function DomainSchedulesCreateAdvancedForm({
                 <Input
                   {...field}
                   id={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.catchUpWindowDays}
+                  value={field.value ?? ''}
                   // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
                   inputRef={ref}
                   aria-label="Catch-up window"
@@ -391,7 +393,7 @@ export default function DomainSchedulesCreateAdvancedForm({
                       }}
                       error={Boolean(endTimeErrorMessage)}
                       size="compact"
-                      timeSelectStart
+                      timeSelectEnd
                       formatString="yyyy/MM/dd HH:mm"
                       clearable
                     />

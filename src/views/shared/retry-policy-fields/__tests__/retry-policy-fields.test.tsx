@@ -3,7 +3,8 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 
 import { render, screen, userEvent } from '@/test-utils/rtl';
-import { type RetryPolicyFormFields } from '@/views/shared/retry-policy/retry-policy-form.schema';
+
+import { type RetryPolicyFormFields } from '@/views/shared/retry-policy-fields/schemas/retry-policy-form-schema';
 
 import RetryPolicyFields from '../retry-policy-fields';
 import { type Props } from '../retry-policy-fields.types';

@@ -27,7 +27,6 @@ export default function WorkflowActionStartForm({
   fieldErrors,
   control,
   clearErrors,
-  formData,
   trigger,
   cluster,
   domain,
@@ -283,7 +282,6 @@ export default function WorkflowActionStartForm({
       <WorkflowActionStartOptionalSection
         control={control}
         clearErrors={clearErrors}
-        formData={formData}
         fieldErrors={fieldErrors}
         trigger={trigger}
         cluster={cluster}

@@ -10,7 +10,7 @@ import type {
 export const overrides = {
   toggle: {
     Root: {
-      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+      style: (): StyleObject => ({
         alignItems: 'center',
         marginTop: 0,
         marginBottom: 0,

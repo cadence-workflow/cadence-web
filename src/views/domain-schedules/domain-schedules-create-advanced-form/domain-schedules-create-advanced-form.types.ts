@@ -13,4 +13,5 @@ export type Props = {
   trigger?: UseFormTrigger<DomainSchedulesCreateFormData>;
   isSubmitted?: boolean;
   clearErrors: UseFormClearErrors<DomainSchedulesCreateFormData>;
+  cluster: string;
 };

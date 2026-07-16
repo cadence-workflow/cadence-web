@@ -4,7 +4,7 @@ import {
   type UseFormClearErrors,
 } from 'react-hook-form';
 
-import { type RetryPolicyFormFields } from './retry-policy-form.schema';
+import { type RetryPolicyFormFields } from './schemas/retry-policy-form-schema';
 
 export type Props<TFieldValues extends RetryPolicyFormFields> = {
   control: Control<TFieldValues>;

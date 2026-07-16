@@ -155,7 +155,9 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
 
     expect(screen.queryByLabelText('Initial interval')).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole('checkbox', { name: /enable retry policy/i }));
+    await user.click(
+      screen.getByRole('checkbox', { name: /enable retry policy/i })
+    );
     expect(screen.getByLabelText('Initial interval')).toBeInTheDocument();
     expect(screen.getByLabelText('Maximum attempts')).toBeInTheDocument();
   });
@@ -166,7 +168,9 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
     await user.click(
       screen.getByRole('button', { name: /show advanced configurations/i })
     );
-    await user.click(screen.getByRole('checkbox', { name: /enable retry policy/i }));
+    await user.click(
+      screen.getByRole('checkbox', { name: /enable retry policy/i })
+    );
 
     expect(screen.getByLabelText('Maximum attempts')).toBeInTheDocument();
     await user.click(screen.getByRole('radio', { name: 'Duration' }));
@@ -195,6 +199,7 @@ function setup() {
         control={control}
         fieldErrors={fieldErrors}
         clearErrors={clearErrors}
+        cluster="test-cluster"
       />
     );
   }
