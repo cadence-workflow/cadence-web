@@ -11,18 +11,15 @@ import { MdWarning } from 'react-icons/md';
 
 import CronScheduleInput from '@/components/cron-schedule-input/cron-schedule-input';
 import MultiJsonInput from '@/components/multi-json-input/multi-json-input';
-import useDebouncedValue from '@/hooks/use-debounced-value/use-debounced-value';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import { WORKER_SDK_LANGUAGES } from '@/route-handlers/start-workflow/start-workflow.constants';
+import useTaskListFieldValidation from './hooks/use-task-list-field-validation';
 
 import WorkflowActionStartOptionalSection from '../workflow-action-start-optional-section/workflow-action-start-optional-section';
 
 import getFieldErrorMessage from './helpers/get-field-error-message';
 import getFieldObjectErrorMessages from './helpers/get-field-object-error-messages';
 import getMultiJsonErrorMessage from './helpers/get-multi-json-error-message';
-import getTaskListCaptionMessage from './helpers/get-task-list-caption-message';
-import useDescribeTaskList from './hooks/use-describe-task-list';
-import { TASK_LIST_DEBOUNCE_MS } from './hooks/use-describe-task-list.constants';
 import { overrides, cssStyles } from './workflow-action-start-form.styles';
 import { type Props } from './workflow-action-start-form.types';
 
@@ -44,40 +41,14 @@ export default function WorkflowActionStartForm({
     defaultValue: 'NOW',
   });
 
-  const taskListName = useWatch({
-    control,
-    name: 'taskList.name',
-    defaultValue: '',
-  });
-
-  // Search with the trimmed value so leading/trailing spaces in the input
-  // don't change the lookup (the field itself keeps the user's raw text).
-  const trimmedTaskListName = taskListName.trim();
-
-  const { debouncedValue: debouncedTaskListName, isDebouncePending } =
-    useDebouncedValue(trimmedTaskListName, TASK_LIST_DEBOUNCE_MS);
-
-  const {
-    data: taskListData,
-    isLoading: isTaskListQueryLoading,
-    isError: isTaskListError,
-  } = useDescribeTaskList({
-    domain,
-    cluster,
-    taskListName: debouncedTaskListName,
-  });
-
-  const isTaskListLoading =
-    (isDebouncePending && trimmedTaskListName.length > 0) ||
-    isTaskListQueryLoading;
+  const { isTaskListLoading, taskListCaptionMessage } =
+    useTaskListFieldValidation({
+      control,
+      domain,
+      cluster,
+    });
 
   const inputError = getMultiJsonErrorMessage(fieldErrors, 'input');
-  const taskListCaptionMessage = getTaskListCaptionMessage({
-    taskListData,
-    isTaskListLoading,
-    isTaskListError,
-    taskListName,
-  });
 
   return (
     <div>
