@@ -108,6 +108,52 @@ describe('getAutocompleteSuggestions', () => {
     expect(suggestionsIncomplete).toEqual([]);
   });
 
+  it('suggests matching boolean value for partial quoted IsCron value', () => {
+    const suggestions = getAutocompleteSuggestions('IsCron = "tr');
+    expect(suggestions).toEqual(['"true"']);
+  });
+
+  it('suggests matching boolean value for partial quoted Passed value with !=', () => {
+    const suggestions = getAutocompleteSuggestions('Passed != "fa');
+    expect(suggestions).toEqual(['"false"']);
+  });
+
+  it('suggests all boolean values when only the opening quote is typed', () => {
+    const suggestions = getAutocompleteSuggestions('IsCron = "');
+    expect(suggestions).toEqual(BOOLEAN_VALUES);
+  });
+
+  it('suggests matching boolean value when attribute and operator are joined', () => {
+    const suggestions = getAutocompleteSuggestions('IsCron= "tr');
+    expect(suggestions).toEqual(['"true"']);
+  });
+
+  it('matches partial boolean values case-insensitively', () => {
+    const suggestions = getAutocompleteSuggestions('IsCron = "TR');
+    expect(suggestions).toEqual(['"true"']);
+  });
+
+  it('suggests matching status values for partial quoted CloseStatus value', () => {
+    const suggestions = getAutocompleteSuggestions('CloseStatus = "c');
+    expect(suggestions).toEqual([
+      '"completed"',
+      '"canceled"',
+      '"continued_as_new"',
+    ]);
+  });
+
+  it('suggests matching status values after logical operator with partial value', () => {
+    const suggestions = getAutocompleteSuggestions(
+      'WorkflowID = "foo" AND CloseStatus != "ti'
+    );
+    expect(suggestions).toEqual(['"timed_out"']);
+  });
+
+  it('returns empty array when partial value does not match any boolean value', () => {
+    const suggestions = getAutocompleteSuggestions('IsCron = "xyz');
+    expect(suggestions).toEqual([]);
+  });
+
   it('handles partial attribute matching for Close attributes', () => {
     const suggestions = getAutocompleteSuggestions('Close');
     expect(suggestions).toContain('CloseStatus');
