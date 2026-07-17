@@ -42,11 +42,13 @@ describe(listBatchActions.name, () => {
           workflowId: 'mock-batch-action-id-1',
           runId: 'mock-batch-action-run-id-1',
           status: 'COMPLETED',
+          startTime: 1717408148258,
         },
         {
           workflowId: 'mock-batch-action-id-2',
           runId: 'mock-batch-action-run-id-2',
           status: 'RUNNING',
+          startTime: 1717400000000,
         },
       ],
       nextPageToken: 'mock-next-page-token',
@@ -72,6 +74,7 @@ describe(listBatchActions.name, () => {
         workflowId: 'mock-batch-action-id-1',
         runId: 'mock-batch-action-run-id-1',
         status: 'RUNNING',
+        startTime: 1717408148258,
       },
     ]);
   });

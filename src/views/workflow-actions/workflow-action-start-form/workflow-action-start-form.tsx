@@ -314,6 +314,7 @@ export default function WorkflowActionStartForm({
         clearErrors={clearErrors}
         formData={formData}
         fieldErrors={fieldErrors}
+        trigger={trigger}
         cluster={cluster}
         domain={domain}
       />

@@ -153,6 +153,7 @@ function setup({
               pause: 'ENABLED',
               resume: 'ENABLED',
               delete: 'ENABLED',
+              backfill: 'ENABLED',
             },
             { status: 200 }
           );
