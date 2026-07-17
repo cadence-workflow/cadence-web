@@ -6,6 +6,7 @@ import { MdAdd, MdOutlineEdit } from 'react-icons/md';
 
 import Button from '@/components/button/button';
 import TableInfiniteScrollLoader from '@/components/table/table-infinite-scroll-loader/table-infinite-scroll-loader';
+import formatDate from '@/utils/data-formatters/format-date';
 
 import DomainBatchActionsSidebarItem from '../domain-batch-actions-sidebar-item/domain-batch-actions-sidebar-item';
 import StatusIcon from '../helpers/status-icon';
@@ -90,8 +91,8 @@ export default function DomainBatchActionsSidebar({
           return (
             <DomainBatchActionsSidebarItem
               key={action.runId}
-              // TODO: label should be either start date or provided from search attributes once available.
-              label={action.runId}
+              label={formatDate(action.startTime)}
+              subLabel={action.runId}
               icon={<StatusIcon action={action} />}
               isSelected={isSelected}
               isActive={action.status === 'RUNNING' || isSelected}

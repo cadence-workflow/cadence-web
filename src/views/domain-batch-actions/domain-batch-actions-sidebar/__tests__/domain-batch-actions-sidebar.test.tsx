@@ -35,10 +35,30 @@ jest.mock(
 );
 
 const mockBatchActions: BatchActionListItem[] = [
-  { workflowId: 'wf-4', runId: '4', status: 'RUNNING' },
-  { workflowId: 'wf-3', runId: '3', status: 'COMPLETED' },
-  { workflowId: 'wf-2', runId: '2', status: 'ABORTED' },
-  { workflowId: 'wf-1', runId: '1', status: 'FAILED' },
+  {
+    workflowId: 'wf-4',
+    runId: '4',
+    status: 'RUNNING',
+    startTime: 1717400000000,
+  },
+  {
+    workflowId: 'wf-3',
+    runId: '3',
+    status: 'COMPLETED',
+    startTime: 1717400000000,
+  },
+  {
+    workflowId: 'wf-2',
+    runId: '2',
+    status: 'ABORTED',
+    startTime: 1717400000000,
+  },
+  {
+    workflowId: 'wf-1',
+    runId: '1',
+    status: 'FAILED',
+    startTime: 1717400000000,
+  },
 ];
 
 function setup({
@@ -139,6 +159,7 @@ describe(DomainBatchActionsSidebar.name, () => {
       workflowId: 'wf-2',
       runId: '2',
       status: 'ABORTED',
+      startTime: 1717400000000,
     });
   });
 
