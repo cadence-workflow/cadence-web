@@ -168,11 +168,12 @@ function TestWrapper({
   defaultValues?: Partial<DomainSchedulesCreateFormData>;
   injectFieldErrors?: boolean;
 }) {
-  const { control, trigger, setError } =
-    useForm<DomainSchedulesCreateFormData>({
+  const { control, trigger, setError } = useForm<DomainSchedulesCreateFormData>(
+    {
       defaultValues: { ...defaultValues },
       mode: 'onSubmit',
-    });
+    }
+  );
 
   useEffect(() => {
     if (!injectFieldErrors) return;
