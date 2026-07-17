@@ -14,12 +14,16 @@ import ScheduleDetailsPausedBanner from './schedule-details-paused-banner/schedu
 import ScheduleDetailsSection from './schedule-details-section/schedule-details-section';
 import { styled } from './schedule-details.styles';
 import { type Props } from './schedule-details.types';
+import decodeUrlParams from '@/utils/decode-url-params';
+import { SchedulePageTabsParams } from '../schedule-page/schedule-page-tabs/schedule-page-tabs.types';
 
 export default function ScheduleDetails({ params }: Props) {
+  const decodedParams = decodeUrlParams(params) as SchedulePageTabsParams;
+
   const { data, isLoading, isPending } = useDescribeSchedule({
-    domain: params.domain,
-    cluster: params.cluster,
-    scheduleId: params.scheduleId,
+    domain: decodedParams.domain,
+    cluster: decodedParams.cluster,
+    scheduleId: decodedParams.scheduleId,
     throwOnError: true,
   });
 
@@ -46,8 +50,8 @@ export default function ScheduleDetails({ params }: Props) {
             const rows = getRowsFromConfig(
               section.rowsConfig,
               formattedScheduleDetails,
-              params.scheduleId,
-              params.domain,
+              decodedParams.scheduleId,
+              decodedParams.domain,
               params.cluster
             );
             if (!rows.length) {
@@ -64,8 +68,8 @@ export default function ScheduleDetails({ params }: Props) {
           })}
           <ScheduleDetailsBackfillsTable
             backfills={formattedScheduleDetails.info?.ongoingBackfills ?? []}
-            domain={params.domain}
-            cluster={params.cluster}
+            domain={decodedParams.domain}
+            cluster={decodedParams.cluster}
           />
         </styled.DetailsSectionsContainer>
         <styled.JsonPanel>
