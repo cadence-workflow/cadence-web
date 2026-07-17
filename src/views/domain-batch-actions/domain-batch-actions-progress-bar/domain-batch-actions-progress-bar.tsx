@@ -66,6 +66,9 @@ export default function DomainBatchActionsProgressBar({
   const failedMuted = errorCount === 0;
   const remainingMuted = remaining === 0;
 
+  const isTerminal = status === 'COMPLETED' || status === 'FAILED';
+  const remainingLabel = isTerminal ? 'skipped' : 'remaining';
+
   return (
     <styled.Container>
       <ProgressBar
@@ -97,7 +100,7 @@ export default function DomainBatchActionsProgressBar({
             size={iconSize}
             color={getStatIconColor('neutral', remainingMuted, theme)}
           />
-          {`${remaining} remaining`}
+          {`${remaining} ${remainingLabel}`}
         </styled.Stat>
       </styled.Label>
     </styled.Container>
