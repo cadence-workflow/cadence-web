@@ -107,7 +107,11 @@ export default function DomainSchedulesCreateModal({
               </Banner>
             </div>
           )}
-          <DomainSchedulesCreateForm control={control} trigger={trigger} />
+          <DomainSchedulesCreateForm
+            control={control}
+            trigger={trigger}
+            cluster={cluster}
+          />
         </styled.ModalBody>
         <styled.ModalFooter>
           <ModalButton

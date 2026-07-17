@@ -136,6 +136,19 @@ export const createScheduleFormFieldsSchema = z.object({
     .optional(),
   startTime: z.string().datetime('Start time must be valid').optional(),
   endTime: z.string().datetime('End time must be valid').optional(),
+  memo: z.string().optional(),
+  searchAttributes: z
+    .array(
+      z.object({
+        key: z.string().min(1, 'Attribute key is required'),
+        value: z.union([
+          z.string().min(1, 'Attribute value is required'),
+          z.number(),
+          z.boolean(),
+        ]),
+      })
+    )
+    .optional(),
   workflowIdPrefix: z.string().optional(),
 });
 

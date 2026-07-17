@@ -210,6 +210,7 @@ function TestWrapper({ formData, fieldErrors }: TestProps) {
       clearErrors={methods.clearErrors}
       formData={formData}
       fieldErrors={fieldErrors}
+      trigger={methods.trigger}
       cluster="test-cluster"
       domain="test-domain"
     />
