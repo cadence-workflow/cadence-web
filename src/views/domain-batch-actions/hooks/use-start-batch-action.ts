@@ -1,6 +1,6 @@
 'use client';
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import {
   BATCH_ACTION_BATCHER_DOMAIN,
@@ -12,6 +12,7 @@ import { type RequestError } from '@/utils/request/request-error';
 
 import {
   BATCH_ACTION_EXECUTION_TIMEOUT_SECONDS,
+  BATCH_ACTION_LIST_INVALIDATE_TIMEOUT_MS,
   BATCH_ACTION_TASK_LIST,
 } from '../domain-batch-actions.constants';
 import buildBatchActionPayload from '../helpers/build-batch-action-payload';
@@ -25,6 +26,8 @@ import {
 export default function useStartBatchAction({
   cluster,
 }: UseStartBatchActionParams) {
+  const queryClient = useQueryClient();
+
   return useMutation<
     StartBatchActionResponse,
     RequestError,
@@ -56,6 +59,13 @@ export default function useStartBatchAction({
           }),
         }
       ).then((res): Promise<StartBatchActionResponse> => res.json());
+    },
+    onSuccess: () => {
+      // A freshly-started batcher workflow isn't visible in the list query
+      // immediately (visibility propagation lag), so delay the invalidation.
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['listBatchActions'] });
+      }, BATCH_ACTION_LIST_INVALIDATE_TIMEOUT_MS);
     },
   });
 }

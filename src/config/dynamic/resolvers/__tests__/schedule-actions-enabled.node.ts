@@ -27,6 +27,7 @@ describe(scheduleActionsEnabled.name, () => {
       pause: 'ENABLED',
       resume: 'ENABLED',
       delete: 'ENABLED',
+      backfill: 'ENABLED',
     });
   });
 
@@ -42,6 +43,7 @@ describe(scheduleActionsEnabled.name, () => {
       pause: 'DISABLED_UNAUTHORIZED',
       resume: 'DISABLED_UNAUTHORIZED',
       delete: 'DISABLED_UNAUTHORIZED',
+      backfill: 'DISABLED_UNAUTHORIZED',
     });
   });
 
@@ -57,6 +59,7 @@ describe(scheduleActionsEnabled.name, () => {
       pause: 'DISABLED_DEFAULT',
       resume: 'DISABLED_DEFAULT',
       delete: 'DISABLED_DEFAULT',
+      backfill: 'DISABLED_DEFAULT',
     });
   });
 });

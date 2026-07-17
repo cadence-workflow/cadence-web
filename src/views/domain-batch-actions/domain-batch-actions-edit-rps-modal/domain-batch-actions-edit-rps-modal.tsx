@@ -6,9 +6,11 @@ import { FormControl } from 'baseui/form-control';
 import { Input } from 'baseui/input';
 import { Modal, ModalButton } from 'baseui/modal';
 import { Controller, useForm } from 'react-hook-form';
+import { MdInfoOutline } from 'react-icons/md';
 
 import LabelWithTooltip from '@/components/label-with-tooltip/label-with-tooltip';
 
+import DomainBatchActionsBanner from '../domain-batch-actions-banner/domain-batch-actions-banner';
 import { BATCH_ACTION_RPS_DEFAULT } from '../domain-batch-actions.constants';
 
 import {
@@ -70,6 +72,9 @@ export default function DomainBatchActionsEditRpsModal({
             needed. This provides flexibility to fine-tune performance based on
             system load, external dependencies, or operational constraints.
           </styled.Description>
+          <DomainBatchActionsBanner icon={<MdInfoOutline />}>
+            The new RPS value will take effect on the next progress update.
+          </DomainBatchActionsBanner>
           <FormControl
             label={
               <LabelWithTooltip
