@@ -1,4 +1,5 @@
 import { type WorkflowExecutionInfo } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionInfo';
+import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
 
 import { BATCH_ACTION_STATUS_BY_CLOSE_STATUS } from '../list-batch-actions.constants';
 import { type BatchActionListItem } from '../list-batch-actions.types';
@@ -8,7 +9,8 @@ export default function getBatchActionFromWorkflow(
 ): BatchActionListItem | undefined {
   if (
     !execution.workflowExecution?.workflowId ||
-    !execution.workflowExecution?.runId
+    !execution.workflowExecution?.runId ||
+    !execution.startTime
   ) {
     return undefined;
   }
@@ -20,5 +22,6 @@ export default function getBatchActionFromWorkflow(
     workflowId: execution.workflowExecution.workflowId,
     runId: execution.workflowExecution.runId,
     status: BATCH_ACTION_STATUS_BY_CLOSE_STATUS[closeStatus],
+    startTime: parseGrpcTimestamp(execution.startTime),
   };
 }

@@ -40,7 +40,7 @@ export default function useConfirmBatchAction({
               actionOnClick: () => {
                 dequeue();
                 router.push(
-                  `/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/batch-actions?bid=${encodeURIComponent(result.workflowId)}`
+                  `/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/batch-actions?bid=${encodeURIComponent(result.runId)}&bwid=${encodeURIComponent(result.workflowId)}`
                 );
               },
             },

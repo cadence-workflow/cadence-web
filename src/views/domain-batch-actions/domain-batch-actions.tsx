@@ -26,6 +26,7 @@ import DomainBatchActionsNoActionsPlaceholder from './domain-batch-actions-no-ac
 import DomainBatchActionsSidebar from './domain-batch-actions-sidebar/domain-batch-actions-sidebar';
 import {
   BATCH_ACTIONS_PAGE_SIZE,
+  BATCH_ACTIONS_LIST_REFETCH_INTERVAL,
   BATCH_ACTION_DEFAULT_QUERY,
   BATCH_ACTION_DETAIL_REFETCH_INTERVAL,
   BATCH_DRAFT_RESET_PARAMS,
@@ -68,6 +69,14 @@ function DomainBatchActionsContent(props: DomainPageTabContentProps) {
     domain: props.domain,
     cluster: props.cluster,
     pageSize: BATCH_ACTIONS_PAGE_SIZE,
+    // Poll while any action is still RUNNING so new actions and status changes
+    // appear without a manual refresh; stop once everything is terminal.
+    refetchInterval: (query) =>
+      query.state.data?.pages.some((page) =>
+        page.batchActions?.some((action) => action.status === 'RUNNING')
+      )
+        ? BATCH_ACTIONS_LIST_REFETCH_INTERVAL
+        : false,
     // Throw only when the initial load fails (no data yet) so the route-level
     // error boundary renders the tab error. Next-page failures keep the
     // sidebar visible and are surfaced inline by TableInfiniteScrollLoader.
@@ -195,6 +204,7 @@ function DomainBatchActionsContent(props: DomainPageTabContentProps) {
               isDraftOpen={isDraftOpen}
               isDraftSelected={isDraftSelected}
               selectedActionId={selectedActionId}
+              selectedActionDetailStatus={batchActionDetail?.status}
               onSelectAction={handleSelectAction}
               onSelectDraft={handleSelectDraft}
               onCreateNew={handleCreateNew}

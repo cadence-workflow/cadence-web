@@ -3,8 +3,18 @@ import { type BatchActionListItem } from '@/route-handlers/list-batch-actions/li
 import resolveSelectedBatchAction from '../resolve-selected-batch-action';
 
 const ACTIONS: BatchActionListItem[] = [
-  { workflowId: 'wf-1', runId: 'run-1', status: 'RUNNING' },
-  { workflowId: 'wf-2', runId: 'run-2', status: 'COMPLETED' },
+  {
+    workflowId: 'wf-1',
+    runId: 'run-1',
+    status: 'RUNNING',
+    startTime: 1717400000000,
+  },
+  {
+    workflowId: 'wf-2',
+    runId: 'run-2',
+    status: 'COMPLETED',
+    startTime: 1717400000000,
+  },
 ];
 
 describe(resolveSelectedBatchAction.name, () => {

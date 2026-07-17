@@ -102,6 +102,28 @@ describe(refineCreateScheduleForm.name, () => {
       }),
     ]);
   });
+
+  it('accepts valid memo JSON object', () => {
+    expect(getIssues({ memo: '{"k":"v"}' })).toEqual([]);
+  });
+
+  it('rejects invalid memo JSON', () => {
+    expect(getIssues({ memo: 'not-json' })).toEqual([
+      expect.objectContaining({
+        path: ['memo'],
+        message: 'Memo must be valid JSON',
+      }),
+    ]);
+  });
+
+  it('rejects memo JSON that is not an object', () => {
+    expect(getIssues({ memo: '["array"]' })).toEqual([
+      expect.objectContaining({
+        path: ['memo'],
+        message: 'Memo must be a JSON object',
+      }),
+    ]);
+  });
 });
 
 function getIssues(overrides: Partial<CreateScheduleFormRefineInput> = {}) {

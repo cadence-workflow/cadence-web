@@ -12,7 +12,7 @@ export const overrides = {
     },
     StartEnhancer: {
       style: ({ $theme }: { $theme: Theme }) => ({
-        fontSize: $theme.sizing.scale700,
+        fontSize: $theme.sizing.scale600,
       }),
     },
   } satisfies ButtonOverrides,

@@ -41,6 +41,10 @@ jest.mock('../../config/domain-page-tabs.config', () => ({
     title: 'Workflows',
     artwork: () => <div data-testid="workflows-artwork" />,
   },
+  schedules: {
+    title: 'Schedules',
+    artwork: () => <div data-testid="schedules-artwork" />,
+  },
   'cron-list': {
     title: 'Cron',
     artwork: () => <div data-testid="cron-list-artwork" />,
@@ -48,10 +52,6 @@ jest.mock('../../config/domain-page-tabs.config', () => ({
   metadata: {
     title: 'Metadata',
     artwork: () => <div data-testid="metadata-artwork" />,
-  },
-  schedules: {
-    title: 'Schedules',
-    artwork: () => <div data-testid="schedules-artwork" />,
   },
   failovers: {
     title: 'Failovers',

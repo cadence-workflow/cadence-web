@@ -340,6 +340,7 @@ export default function DomainSchedulesCreateForm({
         fieldErrors={fieldErrors}
         trigger={trigger}
         isSubmitted={isSubmitted}
+        cluster={cluster}
       />
     </div>
   );

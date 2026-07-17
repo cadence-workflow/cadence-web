@@ -38,9 +38,8 @@ export default function ScheduleActionsModalContent<
 
   const {
     handleSubmit,
-    formState: { errors: validationErrors, isSubmitting },
+    formState: { errors: validationErrors, isSubmitting, isSubmitted },
     control,
-    clearErrors,
     trigger,
   } = useForm<OptionalFormData>({
     resolver: action.modal.formSchema
@@ -150,12 +149,12 @@ export default function ScheduleActionsModalContent<
             {action.modal.withForm && Form && (
               <Form
                 fieldErrors={validationErrors}
-                clearErrors={clearErrors}
                 control={control}
                 trigger={trigger}
                 cluster={params.cluster}
                 domain={params.domain}
                 scheduleId={params.scheduleId}
+                isSubmitted={isSubmitted}
               />
             )}
           </styled.ModalBodyContent>

@@ -49,7 +49,7 @@ describe(DomainBatchActionsProgressBar.name, () => {
 
     expect(screen.getByText('200 succeeded')).toBeInTheDocument();
     expect(screen.getByText('0 failed')).toBeInTheDocument();
-    expect(screen.getByText('0 remaining')).toBeInTheDocument();
+    expect(screen.getByText('0 skipped')).toBeInTheDocument();
   });
 
   it('renders an indeterminate progress bar while running with no counts yet', () => {
@@ -68,7 +68,7 @@ describe(DomainBatchActionsProgressBar.name, () => {
     ).toBeInTheDocument();
     expect(screen.getByText('120 succeeded')).toBeInTheDocument();
     expect(screen.getByText('5 failed')).toBeInTheDocument();
-    expect(screen.getByText('75 remaining')).toBeInTheDocument();
+    expect(screen.getByText('75 skipped')).toBeInTheDocument();
   });
 
   it('renders nothing for a completed batch without counts', () => {
@@ -93,7 +93,7 @@ describe(DomainBatchActionsProgressBar.name, () => {
     ).toBeInTheDocument();
     expect(screen.getByText('120 succeeded')).toBeInTheDocument();
     expect(screen.getByText('5 failed')).toBeInTheDocument();
-    expect(screen.getByText('75 remaining')).toBeInTheDocument();
+    expect(screen.getByText('75 skipped')).toBeInTheDocument();
   });
 
   it('renders nothing for a failed batch without counts', () => {
