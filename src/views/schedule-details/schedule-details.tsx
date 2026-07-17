@@ -3,7 +3,10 @@ import React from 'react';
 
 import PageSection from '@/components/page-section/page-section';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
+import decodeUrlParams from '@/utils/decode-url-params';
 import useDescribeSchedule from '@/views/shared/hooks/use-describe-schedule/use-describe-schedule';
+
+import { type SchedulePageTabsParams } from '../schedule-page/schedule-page-tabs/schedule-page-tabs.types';
 
 import scheduleDetailsSectionsConfig from './config/schedule-details-sections.config';
 import { formatScheduleDetails } from './helpers/format-schedule-details';
@@ -14,8 +17,6 @@ import ScheduleDetailsPausedBanner from './schedule-details-paused-banner/schedu
 import ScheduleDetailsSection from './schedule-details-section/schedule-details-section';
 import { styled } from './schedule-details.styles';
 import { type Props } from './schedule-details.types';
-import decodeUrlParams from '@/utils/decode-url-params';
-import { SchedulePageTabsParams } from '../schedule-page/schedule-page-tabs/schedule-page-tabs.types';
 
 export default function ScheduleDetails({ params }: Props) {
   const decodedParams = decodeUrlParams(params) as SchedulePageTabsParams;
