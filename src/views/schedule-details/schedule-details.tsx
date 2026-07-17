@@ -52,7 +52,7 @@ export default function ScheduleDetails({ params }: Props) {
               formattedScheduleDetails,
               decodedParams.scheduleId,
               decodedParams.domain,
-              params.cluster
+              decodedParams.cluster
             );
             if (!rows.length) {
               return null;
