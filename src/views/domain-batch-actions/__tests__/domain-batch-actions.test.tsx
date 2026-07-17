@@ -93,8 +93,18 @@ jest.mock(
 
 const mockBatchActionsResponse: ListBatchActionsResponse = {
   batchActions: [
-    { workflowId: 'wf-5', runId: '5', status: 'RUNNING' },
-    { workflowId: 'wf-4', runId: '4', status: 'COMPLETED' },
+    {
+      workflowId: 'wf-5',
+      runId: '5',
+      status: 'RUNNING',
+      startTime: 1717400000000,
+    },
+    {
+      workflowId: 'wf-4',
+      runId: '4',
+      status: 'COMPLETED',
+      startTime: 1717400000000,
+    },
   ],
   nextPageToken: '',
 };
@@ -304,15 +314,35 @@ describe(DomainBatchActions.name, () => {
       pages: [
         {
           batchActions: [
-            { workflowId: 'wf-5', runId: '5', status: 'RUNNING' },
-            { workflowId: 'wf-4', runId: '4', status: 'COMPLETED' },
+            {
+              workflowId: 'wf-5',
+              runId: '5',
+              status: 'RUNNING',
+              startTime: 1717400000000,
+            },
+            {
+              workflowId: 'wf-4',
+              runId: '4',
+              status: 'COMPLETED',
+              startTime: 1717400000000,
+            },
           ],
           nextPageToken: 'page-2',
         },
         {
           batchActions: [
-            { workflowId: 'wf-3', runId: '3', status: 'COMPLETED' },
-            { workflowId: 'wf-2', runId: '2', status: 'COMPLETED' },
+            {
+              workflowId: 'wf-3',
+              runId: '3',
+              status: 'COMPLETED',
+              startTime: 1717400000000,
+            },
+            {
+              workflowId: 'wf-2',
+              runId: '2',
+              status: 'COMPLETED',
+              startTime: 1717400000000,
+            },
           ],
           nextPageToken: '',
         },
