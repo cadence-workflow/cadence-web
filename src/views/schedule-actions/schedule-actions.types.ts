@@ -5,11 +5,9 @@ import { type KIND as BANNER_KIND } from 'baseui/banner';
 import { type IconProps } from 'baseui/icon';
 import { type AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import {
-  type UseFormClearErrors,
   type Control,
   type FieldErrors,
   type FieldValues,
-  type UseFormTrigger,
 } from 'react-hook-form';
 import { type z } from 'zod';
 
@@ -35,8 +33,6 @@ export type ScheduleActionInput<SubmissionData> = ScheduleActionInputParams & {
 export type ScheduleActionFormProps<FormData extends FieldValues> = {
   fieldErrors: FieldErrors<FormData>;
   control: Control<FormData>;
-  clearErrors: UseFormClearErrors<FormData>;
-  trigger: UseFormTrigger<FormData>;
   cluster: string;
   domain: string;
   scheduleId: string;

@@ -40,8 +40,6 @@ export default function ScheduleActionsModalContent<
     handleSubmit,
     formState: { errors: validationErrors, isSubmitting },
     control,
-    clearErrors,
-    trigger,
   } = useForm<OptionalFormData>({
     resolver: action.modal.formSchema
       ? zodResolver(action.modal.formSchema)
@@ -150,9 +148,7 @@ export default function ScheduleActionsModalContent<
             {action.modal.withForm && Form && (
               <Form
                 fieldErrors={validationErrors}
-                clearErrors={clearErrors}
                 control={control}
-                trigger={trigger}
                 cluster={params.cluster}
                 domain={params.domain}
                 scheduleId={params.scheduleId}

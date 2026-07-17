@@ -110,7 +110,6 @@ export default function DomainSchedulesCreateModal({
           <DomainSchedulesCreateForm
             control={control}
             trigger={trigger}
-            clearErrors={clearErrors}
             cluster={cluster}
           />
         </styled.ModalBody>
