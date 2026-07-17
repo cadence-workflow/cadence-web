@@ -36,7 +36,6 @@ export type ScheduleActionInput<SubmissionData> = ScheduleActionInputParams & {
 export type ScheduleActionFormProps<FormData extends FieldValues> = {
   fieldErrors: FieldErrors<FormData>;
   control: Control<FormData>;
-  /** Cross-field revalidation after submit (e.g. backfill period). */
   trigger?: UseFormTrigger<FormData>;
   isSubmitted?: boolean;
   cluster: string;
