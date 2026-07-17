@@ -71,7 +71,7 @@ export const createScheduleFormFieldsSchema = z.object({
   // --- Main fields ---
   cronExpression: cronExpressionFieldsSchema,
   workflowType: z.object({
-    name: z.string().min(1, 'Workflow type is required'),
+    name: z.string().trim().min(1, 'Workflow type is required'),
   }),
   taskList: z.object({
     name: z.string().trim().min(1, 'Task list is required'),
