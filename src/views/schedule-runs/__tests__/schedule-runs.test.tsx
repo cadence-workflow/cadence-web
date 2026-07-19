@@ -8,7 +8,7 @@ import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list
 import { type Props as MSWMocksHandlersProps } from '@/test-utils/msw-mock-handlers/msw-mock-handlers.types';
 
 import ScheduleRuns from '../schedule-runs';
-import { type Props as ScheduleRunsTableProps } from '../schedule-runs-table.types';
+import { type Props as ScheduleRunsTableProps } from '../schedule-runs-table/schedule-runs-table.types';
 
 jest.mock(
   '@/components/section-loading-indicator/section-loading-indicator',
@@ -18,7 +18,7 @@ jest.mock(
 jest.mock('@/components/error-panel/error-panel', () =>
   jest.fn(({ message }: ErrorPanelProps) => <div>{message}</div>)
 );
-jest.mock('../schedule-runs-table', () =>
+jest.mock('../schedule-runs-table/schedule-runs-table', () =>
   jest.fn(({ workflows }: ScheduleRunsTableProps) => (
     <div>
       {workflows.length
