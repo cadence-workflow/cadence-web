@@ -8,6 +8,7 @@ import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list
 import { type Props as MSWMocksHandlersProps } from '@/test-utils/msw-mock-handlers/msw-mock-handlers.types';
 
 import ScheduleRuns from '../schedule-runs';
+import { type Props as ScheduleRunsTableProps } from '../schedule-runs-table.types';
 
 jest.mock(
   '@/components/section-loading-indicator/section-loading-indicator',
@@ -17,16 +18,30 @@ jest.mock(
 jest.mock('@/components/error-panel/error-panel', () =>
   jest.fn(({ message }: ErrorPanelProps) => <div>{message}</div>)
 );
-
+jest.mock('../schedule-runs-table', () =>
+  jest.fn(({ workflows }: ScheduleRunsTableProps) => (
+    <div>{workflows.map(({ workflowID }) => workflowID).join(',')}</div>
+  ))
+);
 describe(ScheduleRuns.name, () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('queries the schedule and renders its runs as JSON', async () => {
-    setup({});
+  it('queries the schedule and renders all loaded pages in the table', () => {
+    const scheduleId = String.raw`schedule"\id`;
+    setup({ scheduleId });
 
-    expect(await screen.findByText(/first-page-workflow/)).toBeInTheDocument();
+    expect(mockUseListWorkflows).toHaveBeenCalledWith({
+      domain: 'test-domain',
+      cluster: 'test-cluster',
+      listType: 'default',
+      pageSize: 20,
+      inputType: 'query',
+      query: String.raw`CadenceScheduleID = "schedule\"\\id"`,
+    });
+    expect(screen.getByText(/first-page-workflow/)).toBeInTheDocument();
+    expect(screen.getByText(/second-page-workflow/)).toBeInTheDocument();
   });
 
   it('renders the initial loading state', () => {
@@ -41,6 +56,18 @@ describe(ScheduleRuns.name, () => {
     expect(
       await screen.findByText('Failed to load schedule runs')
     ).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Retry' }));
+    expect(mockRefetch).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders an empty state when the first page has no runs', () => {
+    setup({
+      hookResult: {
+        workflows: [],
+      },
+    });
+
+    expect(screen.getByText('No schedule runs found')).toBeInTheDocument();
   });
 });
 
@@ -53,7 +80,33 @@ function setup({
   isError?: boolean;
   isLoading?: boolean;
 } = {}) {
-  const user = userEvent.setup();
+  const workflows = [
+    getMockWorkflowListItem({ workflowID: 'first-page-workflow' }),
+    getMockWorkflowListItem({ workflowID: 'second-page-workflow' }),
+  ];
+  mockUseListWorkflows.mockReturnValue({
+    data: {
+      pages: [
+        {
+          workflows: [workflows[0]],
+          nextPage: 'next-page',
+        },
+        {
+          workflows: [workflows[1]],
+          nextPage: '',
+        },
+      ],
+      pageParams: [undefined, 'next-page'],
+    },
+    workflows,
+    error: null,
+    isLoading: false,
+    refetch: mockRefetch,
+    hasNextPage: false,
+    fetchNextPage: jest.fn(),
+    isFetchingNextPage: false,
+    ...hookResult,
+  } as unknown as HookResult);
 
   render(
     <ScheduleRuns
