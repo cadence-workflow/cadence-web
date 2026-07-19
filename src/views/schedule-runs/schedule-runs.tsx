@@ -1,15 +1,35 @@
 'use client';
+import { useMemo } from 'react';
 
+import getDayjsFromDateFilterValue from '@/components/date-filter/helpers/get-dayjs-from-date-filter-value';
 import ErrorPanel from '@/components/error-panel/error-panel';
 import PanelSection from '@/components/panel-section/panel-section';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
+import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
+import dayjs from '@/utils/datetime/dayjs';
 import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
 
+import scheduleRunsQueryParamsConfig from './config/schedule-runs-query-params.config';
 import getScheduleRunsQuery from './helpers/get-schedule-runs-query';
+import ScheduleRunsHeader from './schedule-runs-header';
 import ScheduleRunsTable from './schedule-runs-table';
 import { type Props } from './schedule-runs.types';
 
 export default function ScheduleRuns({ params }: Props) {
+  const [queryParams] = usePageQueryParams(scheduleRunsQueryParamsConfig);
+  const timeRange = useMemo(() => {
+    const now = dayjs();
+    return {
+      timeRangeStart: getDayjsFromDateFilterValue(
+        queryParams.scheduleRunsTimeStart,
+        now
+      ).toISOString(),
+      timeRangeEnd: getDayjsFromDateFilterValue(
+        queryParams.scheduleRunsTimeEnd,
+        now
+      ).toISOString(),
+    };
+  }, [queryParams.scheduleRunsTimeEnd, queryParams.scheduleRunsTimeStart]);
   const {
     workflows,
     error,
@@ -18,20 +38,24 @@ export default function ScheduleRuns({ params }: Props) {
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
+    isFetching,
   } = useListWorkflows({
     domain: params.domain,
     cluster: params.cluster,
     listType: 'default',
     pageSize: 20,
     inputType: 'query',
-    query: getScheduleRunsQuery(params.scheduleId),
+    query: getScheduleRunsQuery(params.scheduleId, timeRange),
   });
+  const hasActiveFilters = Boolean(
+    queryParams.scheduleRunsTimeStart !== 'now-7d' ||
+      queryParams.scheduleRunsTimeEnd !== 'now'
+  );
 
   if (isLoading) {
     return <SectionLoadingIndicator />;
   }
-
-  if (error) {
+  if (error && workflows.length === 0) {
     return (
       <PanelSection>
         <ErrorPanel
@@ -44,23 +68,33 @@ export default function ScheduleRuns({ params }: Props) {
     );
   }
 
-  if (workflows.length === 0) {
-    return (
-      <PanelSection>
-        <ErrorPanel message="No schedule runs found" omitLogging />
-      </PanelSection>
-    );
-  }
-
   return (
-    <ScheduleRunsTable
-      domain={params.domain}
-      cluster={params.cluster}
-      workflows={workflows}
-      error={error}
-      hasNextPage={hasNextPage}
-      fetchNextPage={fetchNextPage}
-      isFetchingNextPage={isFetchingNextPage}
-    />
+    <>
+      <ScheduleRunsHeader />
+      {workflows.length === 0 ? (
+        <PanelSection>
+          <ErrorPanel
+            message={
+              hasActiveFilters
+                ? 'No schedule runs match your filters'
+                : 'No schedule runs found'
+            }
+            omitLogging
+          />
+        </PanelSection>
+      ) : (
+        <ScheduleRunsTable
+          domain={params.domain}
+          cluster={params.cluster}
+          workflows={workflows}
+          error={error}
+          hasNextPage={hasNextPage}
+          fetchNextPage={fetchNextPage}
+          isFetchingNextPage={
+            isFetchingNextPage || (isFetching && workflows.length > 0)
+          }
+        />
+      )}
+    </>
   );
 }

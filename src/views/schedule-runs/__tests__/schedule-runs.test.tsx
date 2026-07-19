@@ -1,7 +1,9 @@
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
+import { type DateFilterValue } from '@/components/date-filter/date-filter.types';
 import { type Props as ErrorPanelProps } from '@/components/error-panel/error-panel.types';
 import { type Props as PanelSectionProps } from '@/components/panel-section/panel-section.types';
+import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtures__/mock-workflow-list-items';
 import { RequestError } from '@/utils/request/request-error';
 import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
@@ -10,8 +12,10 @@ import ScheduleRuns from '../schedule-runs';
 import { type Props as ScheduleRunsTableProps } from '../schedule-runs-table.types';
 
 const mockRefetch = jest.fn();
+const mockUsePageQueryParams = jest.mocked(usePageQueryParams);
 const mockUseListWorkflows = jest.mocked(useListWorkflows);
 
+jest.mock('@/hooks/use-page-query-params/use-page-query-params');
 jest.mock('@/views/shared/hooks/use-list-workflows');
 jest.mock(
   '@/components/section-loading-indicator/section-loading-indicator',
@@ -33,6 +37,9 @@ jest.mock('../schedule-runs-table', () =>
     <div>{workflows.map(({ workflowID }) => workflowID).join(',')}</div>
   ))
 );
+jest.mock('../schedule-runs-header', () =>
+  jest.fn(() => <div>Schedule run filters</div>)
+);
 describe(ScheduleRuns.name, () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -42,16 +49,31 @@ describe(ScheduleRuns.name, () => {
     const scheduleId = String.raw`schedule"\id`;
     setup({ scheduleId });
 
-    expect(mockUseListWorkflows).toHaveBeenCalledWith({
-      domain: 'test-domain',
-      cluster: 'test-cluster',
-      listType: 'default',
-      pageSize: 20,
-      inputType: 'query',
-      query: String.raw`CadenceScheduleID = "schedule\"\\id"`,
-    });
+    expect(mockUseListWorkflows).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: expect.stringContaining(
+          String.raw`CadenceScheduleID = "schedule\"\\id"`
+        ),
+      })
+    );
     expect(screen.getByText(/first-page-workflow/)).toBeInTheDocument();
     expect(screen.getByText(/second-page-workflow/)).toBeInTheDocument();
+  });
+
+  it('queries the selected Schedule time range', () => {
+    setup({
+      timeStart: new Date('2026-07-12T10:00:00Z'),
+      timeEnd: new Date('2026-07-19T10:00:00Z'),
+    });
+
+    expect(mockUseListWorkflows).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query:
+          'CadenceScheduleID = "test-schedule" AND ' +
+          'CadenceScheduleTime > "2026-07-12T10:00:00.000Z" AND ' +
+          'CadenceScheduleTime <= "2026-07-19T10:00:00.000Z"',
+      })
+    );
   });
 
   it('renders the initial loading state', () => {
@@ -65,6 +87,7 @@ describe(ScheduleRuns.name, () => {
     setup({
       hookResult: {
         data: undefined,
+        workflows: [],
         error: new RequestError('Request failed', '/workflows', 500),
       },
     });
@@ -85,17 +108,38 @@ describe(ScheduleRuns.name, () => {
 
     expect(screen.getByText('No schedule runs found')).toBeInTheDocument();
   });
+
+  it('distinguishes filtered no-results', () => {
+    setup({
+      timeStart: new Date('2026-07-12T10:00:00Z'),
+      hookResult: { workflows: [] },
+    });
+    expect(
+      screen.getByText('No schedule runs match your filters')
+    ).toBeInTheDocument();
+  });
 });
 
 type HookResult = ReturnType<typeof useListWorkflows>;
 
 function setup({
   scheduleId = 'test-schedule',
+  timeStart = 'now-7d',
+  timeEnd = 'now',
   hookResult = {},
 }: {
   scheduleId?: string;
+  timeStart?: DateFilterValue;
+  timeEnd?: DateFilterValue;
   hookResult?: Partial<HookResult>;
 } = {}) {
+  mockUsePageQueryParams.mockReturnValue([
+    {
+      scheduleRunsTimeStart: timeStart,
+      scheduleRunsTimeEnd: timeEnd,
+    },
+    jest.fn(),
+  ]);
   const workflows = [
     getMockWorkflowListItem({ workflowID: 'first-page-workflow' }),
     getMockWorkflowListItem({ workflowID: 'second-page-workflow' }),
@@ -121,6 +165,7 @@ function setup({
     hasNextPage: false,
     fetchNextPage: jest.fn(),
     isFetchingNextPage: false,
+    isFetching: false,
     ...hookResult,
   } as unknown as HookResult);
 
