@@ -1,6 +1,7 @@
 'use client';
 
 import ErrorPanel from '@/components/error-panel/error-panel';
+import PageSection from '@/components/page-section/page-section';
 import PanelSection from '@/components/panel-section/panel-section';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
@@ -53,14 +54,16 @@ export default function ScheduleRuns({ params }: Props) {
   }
 
   return (
-    <ScheduleRunsTable
-      domain={params.domain}
-      cluster={params.cluster}
-      workflows={workflows}
-      error={error}
-      hasNextPage={hasNextPage}
-      fetchNextPage={fetchNextPage}
-      isFetchingNextPage={isFetchingNextPage}
-    />
+    <PageSection>
+      <ScheduleRunsTable
+        domain={params.domain}
+        cluster={params.cluster}
+        workflows={workflows}
+        error={error}
+        hasNextPage={hasNextPage}
+        fetchNextPage={fetchNextPage}
+        isFetchingNextPage={isFetchingNextPage}
+      />
+    </PageSection>
   );
 }
