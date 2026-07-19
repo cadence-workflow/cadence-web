@@ -1,7 +1,7 @@
 'use client';
 import { useMemo } from 'react';
 
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
 import queryString from 'query-string';
 
 import {
@@ -71,6 +71,7 @@ export default function useListWorkflows({
       return lastPage.nextPage;
     },
     retry: false,
+    placeholderData: keepPreviousData,
     refetchOnWindowFocus: (query) => query.state.status !== 'error',
     gcTime: 0,
   });

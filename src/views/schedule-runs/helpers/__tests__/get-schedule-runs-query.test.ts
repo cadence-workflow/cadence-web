@@ -12,4 +12,25 @@ describe(getScheduleRunsQuery.name, () => {
       String.raw`CadenceScheduleID = "schedule\"\\id"`
     );
   });
+
+  it.each([
+    [false, '='],
+    [true, 'LIKE'],
+  ])(
+    'searches IDs with partial matching set to %s',
+    (partialMatching, comparator) => {
+      expect(
+        getScheduleRunsQuery(
+          'test-schedule',
+          String.raw`term"\value`,
+          partialMatching
+        )
+      ).toBe(
+        `CadenceScheduleID = "test-schedule" AND ` +
+          `(RunID ${comparator} "term\\"\\\\value" OR ` +
+          `WorkflowID ${comparator} "term\\"\\\\value" OR ` +
+          `CadenceScheduleBackfillID ${comparator} "term\\"\\\\value")`
+      );
+    }
+  );
 });
