@@ -1,18 +1,30 @@
-import FormattedDate from '@/components/formatted-date/formatted-date';
+import { MdArrowForward } from 'react-icons/md';
 
-import { styled } from './schedule-runs-runtime-cell.styles';
+import FormattedDate from '@/components/formatted-date/formatted-date';
+import useStyletronClasses from '@/hooks/use-styletron-classes';
+
+import { cssStyles } from './schedule-runs-runtime-cell.styles';
 import { type Props } from './schedule-runs-runtime-cell.types';
 
 export default function ScheduleRunsRuntimeCell({
   startTime,
   closeTime,
 }: Props) {
-  if (!startTime) return '-';
+  const { cls, theme } = useStyletronClasses(cssStyles);
+
+  if (!startTime) {
+    return <div className={cls.missingDateContainer}>None</div>;
+  }
 
   return (
-    <styled.Container>
-      <FormattedDate timestampMs={startTime} /> →
-      {closeTime ? <FormattedDate timestampMs={closeTime} /> : 'Running…'}
-    </styled.Container>
+    <div className={cls.runtimeContainer}>
+      <FormattedDate timestampMs={startTime} />
+      <MdArrowForward color={theme.colors.contentSecondary} aria-hidden />
+      {closeTime ? (
+        <FormattedDate timestampMs={closeTime} />
+      ) : (
+        <div className={cls.missingDateContainer}>Running…</div>
+      )}
+    </div>
   );
 }
