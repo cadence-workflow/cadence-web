@@ -1,22 +1,32 @@
-import { HttpResponse } from 'msw';
-
-import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
+import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import { type Props as ErrorPanelProps } from '@/components/error-panel/error-panel.types';
+import { type Props as PanelSectionProps } from '@/components/panel-section/panel-section.types';
 import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtures__/mock-workflow-list-items';
-import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list-workflows.types';
-import { type Props as MSWMocksHandlersProps } from '@/test-utils/msw-mock-handlers/msw-mock-handlers.types';
+import { RequestError } from '@/utils/request/request-error';
+import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
 
 import ScheduleRuns from '../schedule-runs';
 import { type Props as ScheduleRunsTableProps } from '../schedule-runs-table/schedule-runs-table.types';
 
+const mockRefetch = jest.fn();
+const mockUseListWorkflows = jest.mocked(useListWorkflows);
+
+jest.mock('@/views/shared/hooks/use-list-workflows');
 jest.mock(
   '@/components/section-loading-indicator/section-loading-indicator',
   () => jest.fn(() => <div>Loading schedule runs</div>)
 );
-
+jest.mock('@/components/panel-section/panel-section', () =>
+  jest.fn(({ children }: PanelSectionProps) => <section>{children}</section>)
+);
 jest.mock('@/components/error-panel/error-panel', () =>
-  jest.fn(({ message }: ErrorPanelProps) => <div>{message}</div>)
+  jest.fn(({ message, reset }: ErrorPanelProps) => (
+    <div>
+      {message}
+      {reset && <button onClick={reset}>Retry</button>}
+    </div>
+  ))
 );
 jest.mock('../schedule-runs-table/schedule-runs-table', () =>
   jest.fn(({ workflows }: ScheduleRunsTableProps) => (
@@ -49,7 +59,7 @@ describe(ScheduleRuns.name, () => {
   });
 
   it('renders the initial loading state', () => {
-    setup({ isLoading: true });
+    setup({ hookResult: { data: undefined, isLoading: true } });
 
     expect(screen.getByText('Loading schedule runs')).toBeInTheDocument();
   });
@@ -65,7 +75,7 @@ describe(ScheduleRuns.name, () => {
     });
 
     expect(
-      await screen.findByText('Failed to load schedule runs')
+      screen.getByText('Failed to load schedule runs')
     ).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Retry' }));
     expect(mockRefetch).toHaveBeenCalledTimes(1);
@@ -82,14 +92,14 @@ describe(ScheduleRuns.name, () => {
   });
 });
 
+type HookResult = ReturnType<typeof useListWorkflows>;
+
 function setup({
   scheduleId = 'test-schedule',
-  isError = false,
-  isLoading = false,
+  hookResult = {},
 }: {
   scheduleId?: string;
-  isError?: boolean;
-  isLoading?: boolean;
+  hookResult?: Partial<HookResult>;
 } = {}) {
   const workflows = [
     getMockWorkflowListItem({ workflowID: 'first-page-workflow' }),
@@ -127,38 +137,6 @@ function setup({
         scheduleId,
         scheduleTab: 'runs',
       }}
-    />,
-    {
-      endpointsMocks: [
-        {
-          path: '/api/domains/:domain/:cluster/workflows',
-          httpMethod: 'GET',
-          mockOnce: false,
-          httpResolver: async ({ request }) => {
-            if (isLoading) {
-              return new Promise(() => {});
-            }
-
-            if (isError) {
-              return HttpResponse.json(
-                { message: 'Request failed' },
-                { status: 500 }
-              );
-            }
-
-            return HttpResponse.json({
-              workflows: [
-                getMockWorkflowListItem({
-                  workflowID: 'first-page-workflow',
-                }),
-              ],
-              nextPage: 'next-page',
-            } satisfies ListWorkflowsResponse);
-          },
-        },
-      ] as MSWMocksHandlersProps['endpointsMocks'],
-    }
+    />
   );
-
-  return { user };
 }
