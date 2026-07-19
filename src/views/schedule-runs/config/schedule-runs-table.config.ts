@@ -11,6 +11,18 @@ export default function getScheduleRunsTableConfig(
 ): TableConfig<WorkflowListItem> {
   return [
     {
+      name: 'Workflow ID',
+      id: 'WorkflowID',
+      renderCell: (row: WorkflowListItem) => row.workflowID,
+      width: '20%',
+    },
+    {
+      name: 'Status',
+      id: 'CloseStatus',
+      renderCell: (row: WorkflowListItem) => row.status,
+      width: '10%',
+    },
+    {
       name: 'Run ID',
       id: 'RunID',
       renderCell: (row: WorkflowListItem) =>
@@ -21,12 +33,6 @@ export default function getScheduleRunsTableConfig(
           },
           row.runID
         ),
-      width: '20%',
-    },
-    {
-      name: 'Workflow ID',
-      id: 'WorkflowID',
-      renderCell: (row: WorkflowListItem) => row.workflowID,
       width: '20%',
     },
     {
@@ -51,12 +57,6 @@ export default function getScheduleRunsTableConfig(
       renderCell: (row: WorkflowListItem) =>
         `${row.startTime} → ${row.closeTime ?? 'Running'}`,
       width: '23%',
-    },
-    {
-      name: 'Status',
-      id: 'CloseStatus',
-      renderCell: (row: WorkflowListItem) => row.status,
-      width: '10%',
     },
   ];
 }
