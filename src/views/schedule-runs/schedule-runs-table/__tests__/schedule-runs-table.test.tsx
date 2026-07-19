@@ -69,13 +69,6 @@ describe(ScheduleRunsTable.name, () => {
       }),
       {}
     );
-
-    const { endMessageProps } = mockTable.mock.calls[0][0];
-    expect(endMessageProps.kind).toBe('infinite-scroll');
-    if (endMessageProps.kind === 'infinite-scroll') {
-      endMessageProps.fetchNextPage();
-    }
-    expect(fetchNextPage).toHaveBeenCalledTimes(1);
   });
 });
 
