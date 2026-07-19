@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 
 import getDayjsFromDateFilterValue from '@/components/date-filter/helpers/get-dayjs-from-date-filter-value';
 import ErrorPanel from '@/components/error-panel/error-panel';
+import PageSection from '@/components/page-section/page-section';
 import PanelSection from '@/components/panel-section/panel-section';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
@@ -69,7 +70,7 @@ export default function ScheduleRuns({ params }: Props) {
   }
 
   return (
-    <>
+    <PageSection>
       <ScheduleRunsHeader />
       {workflows.length === 0 ? (
         <PanelSection>
@@ -95,6 +96,6 @@ export default function ScheduleRuns({ params }: Props) {
           }
         />
       )}
-    </>
+    </PageSection>
   );
 }
