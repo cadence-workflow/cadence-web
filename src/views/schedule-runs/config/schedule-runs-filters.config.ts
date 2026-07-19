@@ -6,12 +6,11 @@ import stringifyDateFilterValue from '@/components/date-filter/helpers/stringify
 import ListFilter from '@/components/list-filter/list-filter';
 import MultiSelectFilter from '@/components/multi-select-filter/multi-select-filter';
 import { type PageFilterConfig } from '@/components/page-filters/page-filters.types';
+import type schedulePageQueryParamsConfig from '@/views/schedule-page/config/schedule-page-query-params.config';
 import { WORKFLOW_STATUS_NAMES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
 import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
 
 import { type ScheduleRunsRunType } from '../schedule-runs.types';
-
-import type scheduleRunsQueryParamsConfig from './schedule-runs-query-params.config';
 
 const RUN_TYPE_LABELS: Record<ScheduleRunsRunType, string> = {
   all: 'All runs',
@@ -21,18 +20,18 @@ const RUN_TYPE_LABELS: Record<ScheduleRunsRunType, string> = {
 
 const scheduleRunsFiltersConfig: [
   PageFilterConfig<
-    typeof scheduleRunsQueryParamsConfig,
+    typeof schedulePageQueryParamsConfig,
     { scheduleRunsStatuses: Array<WorkflowStatus> | undefined }
   >,
   PageFilterConfig<
-    typeof scheduleRunsQueryParamsConfig,
+    typeof schedulePageQueryParamsConfig,
     {
       scheduleRunsTimeStart: DateFilterValue;
       scheduleRunsTimeEnd: DateFilterValue;
     }
   >,
   PageFilterConfig<
-    typeof scheduleRunsQueryParamsConfig,
+    typeof schedulePageQueryParamsConfig,
     { scheduleRunsRunType: ScheduleRunsRunType }
   >,
 ] = [

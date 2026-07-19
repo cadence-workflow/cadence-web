@@ -3,16 +3,16 @@ import { useState } from 'react';
 import usePageFilters from '@/components/page-filters/hooks/use-page-filters';
 import PageFiltersFields from '@/components/page-filters/page-filters-fields/page-filters-fields';
 import PageFiltersToggle from '@/components/page-filters/page-filters-toggle/page-filters-toggle';
+import schedulePageQueryParamsConfig from '@/views/schedule-page/config/schedule-page-query-params.config';
 
 import scheduleRunsFiltersConfig from './config/schedule-runs-filters.config';
-import scheduleRunsQueryParamsConfig from './config/schedule-runs-query-params.config';
 
 export default function ScheduleRunsHeader() {
   const [areFiltersShown, setAreFiltersShown] = useState(false);
   const { resetAllFilters, activeFiltersCount, queryParams, setQueryParams } =
     usePageFilters({
       pageFiltersConfig: scheduleRunsFiltersConfig,
-      pageQueryParamsConfig: scheduleRunsQueryParamsConfig,
+      pageQueryParamsConfig: schedulePageQueryParamsConfig,
     });
 
   return (
