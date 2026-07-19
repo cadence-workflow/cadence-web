@@ -4,12 +4,11 @@ import DateFilter from '@/components/date-filter/date-filter';
 import { type DateFilterValue } from '@/components/date-filter/date-filter.types';
 import stringifyDateFilterValue from '@/components/date-filter/helpers/stringify-date-filter-value';
 import { type PageFilterConfig } from '@/components/page-filters/page-filters.types';
-
-import type scheduleRunsQueryParamsConfig from './schedule-runs-query-params.config';
+import type schedulePageQueryParamsConfig from '@/views/schedule-page/config/schedule-page-query-params.config';
 
 const scheduleRunsFiltersConfig: [
   PageFilterConfig<
-    typeof scheduleRunsQueryParamsConfig,
+    typeof schedulePageQueryParamsConfig,
     {
       scheduleRunsTimeStart: DateFilterValue;
       scheduleRunsTimeEnd: DateFilterValue;
