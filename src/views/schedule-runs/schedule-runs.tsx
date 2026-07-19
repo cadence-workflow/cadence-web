@@ -4,6 +4,9 @@ import ErrorPanel from '@/components/error-panel/error-panel';
 import PageSection from '@/components/page-section/page-section';
 import PanelSection from '@/components/panel-section/panel-section';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
+import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
+import { toggleSortOrder } from '@/utils/sort-by';
+import schedulePageQueryParamsConfig from '@/views/schedule-page/config/schedule-page-query-params.config';
 import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
 
 import getScheduleRunsQuery from './helpers/get-schedule-runs-query';
@@ -11,6 +14,10 @@ import ScheduleRunsTable from './schedule-runs-table/schedule-runs-table';
 import { type Props } from './schedule-runs.types';
 
 export default function ScheduleRuns({ params }: Props) {
+  const [queryParams, setQueryParams] = usePageQueryParams(
+    schedulePageQueryParamsConfig,
+    { pageRerender: false }
+  );
   const {
     workflows,
     error,
@@ -25,7 +32,10 @@ export default function ScheduleRuns({ params }: Props) {
     listType: 'default',
     pageSize: 20,
     inputType: 'query',
-    query: getScheduleRunsQuery(params.scheduleId),
+    query: getScheduleRunsQuery(
+      params.scheduleId,
+      queryParams.scheduleRunsSortOrder
+    ),
   });
 
   if (isLoading) {
@@ -55,6 +65,17 @@ export default function ScheduleRuns({ params }: Props) {
         hasNextPage={hasNextPage}
         fetchNextPage={fetchNextPage}
         isFetchingNextPage={isFetchingNextPage}
+        sortOrder={queryParams.scheduleRunsSortOrder}
+        onSort={(column) =>
+          setQueryParams({
+            scheduleRunsSortOrder: toggleSortOrder({
+              currentSortColumn: 'CadenceScheduleTime',
+              currentSortOrder: queryParams.scheduleRunsSortOrder,
+              newSortColumn: column,
+              defaultSortOrder: 'DESC',
+            }),
+          })
+        }
       />
     </PageSection>
   );

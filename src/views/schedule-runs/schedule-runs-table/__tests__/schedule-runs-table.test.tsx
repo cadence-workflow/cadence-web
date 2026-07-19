@@ -74,6 +74,7 @@ describe(ScheduleRunsTable.name, () => {
 
 function setup(overrides: Partial<Props> = {}) {
   const fetchNextPage = jest.fn();
+  const onSort = jest.fn();
   const props: Props = {
     domain: 'test-domain',
     cluster: 'test-cluster',
@@ -87,6 +88,8 @@ function setup(overrides: Partial<Props> = {}) {
     hasNextPage: true,
     fetchNextPage,
     isFetchingNextPage: false,
+    sortOrder: 'DESC',
+    onSort,
     ...overrides,
   };
   render(<ScheduleRunsTable {...props} />);

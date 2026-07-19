@@ -53,6 +53,7 @@ const scheduleRunsTableConfig = [
         formatPayload(row.searchAttributes?.['CadenceScheduleTime']) ?? '-'
       ),
     width: '17%',
+    sortable: true,
   },
   {
     name: 'Run time (Start/Close)',
