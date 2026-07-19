@@ -23,7 +23,8 @@ const schedulePageQueryParamsConfig: [
   {
     key: 'scheduleRunsTimeEnd',
     queryParamKey: 'runs-end',
-    parseValue: parseDateFilterValue,
+    parseValue: (value) =>
+      value === 'now' ? 'now' : parseDateFilterValue(value),
   },
   {
     key: 'scheduleRunsStatuses',
