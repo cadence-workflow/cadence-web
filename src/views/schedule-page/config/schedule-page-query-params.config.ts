@@ -4,9 +4,9 @@ import {
   type PageQueryParamMultiValue,
   type PageQueryParam,
 } from '@/hooks/use-page-query-params/use-page-query-params.types';
+import { type ScheduleRunsRunType } from '@/views/schedule-runs/schedule-runs.types';
 import isWorkflowStatus from '@/views/shared/workflow-status-tag/helpers/is-workflow-status';
 import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
-import { type ScheduleRunsRunType } from '@/views/schedule-runs/schedule-runs.types';
 
 const schedulePageQueryParamsConfig: [
   PageQueryParam<'scheduleRunsTimeStart', DateFilterValue>,
