@@ -3,20 +3,18 @@ import parseDateFilterValue from '@/components/date-filter/helpers/parse-date-fi
 import { type PageQueryParam } from '@/hooks/use-page-query-params/use-page-query-params.types';
 
 const schedulePageQueryParamsConfig: [
-  PageQueryParam<'scheduleRunsTimeStart', DateFilterValue>,
-  PageQueryParam<'scheduleRunsTimeEnd', DateFilterValue>,
+  PageQueryParam<'scheduleRunsTimeStart', DateFilterValue | undefined>,
+  PageQueryParam<'scheduleRunsTimeEnd', DateFilterValue | undefined>,
 ] = [
   {
     key: 'scheduleRunsTimeStart',
     queryParamKey: 'runs-start',
-    defaultValue: 'now-7d',
-    parseValue: (value) => parseDateFilterValue(value) ?? 'now-7d',
+    parseValue: parseDateFilterValue,
   },
   {
     key: 'scheduleRunsTimeEnd',
     queryParamKey: 'runs-end',
-    defaultValue: 'now',
-    parseValue: (value) => parseDateFilterValue(value) ?? 'now',
+    parseValue: parseDateFilterValue,
   },
 ] as const;
 

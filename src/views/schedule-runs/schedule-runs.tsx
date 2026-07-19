@@ -22,14 +22,18 @@ export default function ScheduleRuns({ params }: Props) {
   const timeRange = useMemo(() => {
     const now = dayjs();
     return {
-      timeRangeStart: getDayjsFromDateFilterValue(
-        queryParams.scheduleRunsTimeStart,
-        now
-      ).toISOString(),
-      timeRangeEnd: getDayjsFromDateFilterValue(
-        queryParams.scheduleRunsTimeEnd,
-        now
-      ).toISOString(),
+      timeRangeStart: queryParams.scheduleRunsTimeStart
+        ? getDayjsFromDateFilterValue(
+            queryParams.scheduleRunsTimeStart,
+            now
+          ).toISOString()
+        : undefined,
+      timeRangeEnd: queryParams.scheduleRunsTimeEnd
+        ? getDayjsFromDateFilterValue(
+            queryParams.scheduleRunsTimeEnd,
+            now
+          ).toISOString()
+        : undefined,
     };
   }, [queryParams.scheduleRunsTimeEnd, queryParams.scheduleRunsTimeStart]);
   const {
@@ -50,8 +54,7 @@ export default function ScheduleRuns({ params }: Props) {
     query: getScheduleRunsQuery(params.scheduleId, timeRange),
   });
   const hasActiveFilters = Boolean(
-    queryParams.scheduleRunsTimeStart !== 'now-7d' ||
-      queryParams.scheduleRunsTimeEnd !== 'now'
+    queryParams.scheduleRunsTimeStart || queryParams.scheduleRunsTimeEnd
   );
 
   if (isLoading) {

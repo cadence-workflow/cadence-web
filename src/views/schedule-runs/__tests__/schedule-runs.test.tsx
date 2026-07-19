@@ -124,8 +124,8 @@ type HookResult = ReturnType<typeof useListWorkflows>;
 
 function setup({
   scheduleId = 'test-schedule',
-  timeStart = 'now-7d',
-  timeEnd = 'now',
+  timeStart,
+  timeEnd,
   hookResult = {},
 }: {
   scheduleId?: string;
