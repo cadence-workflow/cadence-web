@@ -7,6 +7,7 @@ import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-par
 import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtures__/mock-workflow-list-items';
 import { RequestError } from '@/utils/request/request-error';
 import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
+import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
 
 import ScheduleRuns from '../schedule-runs';
 import { type Props as ScheduleRunsTableProps } from '../schedule-runs-table.types';
@@ -60,16 +61,21 @@ describe(ScheduleRuns.name, () => {
     expect(screen.getByText(/second-page-workflow/)).toBeInTheDocument();
   });
 
-  it('queries the selected Schedule time range', () => {
+  it('combines Schedule time and workflow status filters', () => {
     setup({
       timeStart: new Date('2026-07-12T10:00:00Z'),
       timeEnd: new Date('2026-07-19T10:00:00Z'),
+      statuses: [
+        'WORKFLOW_EXECUTION_CLOSE_STATUS_FAILED',
+        'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
+      ],
     });
 
     expect(mockUseListWorkflows).toHaveBeenCalledWith(
       expect.objectContaining({
         query:
           'CadenceScheduleID = "test-schedule" AND ' +
+          '(CloseStatus = 1 OR CloseTime = missing) AND ' +
           'CadenceScheduleTime > "2026-07-12T10:00:00.000Z" AND ' +
           'CadenceScheduleTime <= "2026-07-19T10:00:00.000Z"',
       })
@@ -126,17 +132,20 @@ function setup({
   scheduleId = 'test-schedule',
   timeStart = 'now-7d',
   timeEnd = 'now',
+  statuses,
   hookResult = {},
 }: {
   scheduleId?: string;
   timeStart?: DateFilterValue;
   timeEnd?: DateFilterValue;
+  statuses?: Array<WorkflowStatus>;
   hookResult?: Partial<HookResult>;
 } = {}) {
   mockUsePageQueryParams.mockReturnValue([
     {
       scheduleRunsTimeStart: timeStart,
       scheduleRunsTimeEnd: timeEnd,
+      scheduleRunsStatuses: statuses,
     },
     jest.fn(),
   ]);
