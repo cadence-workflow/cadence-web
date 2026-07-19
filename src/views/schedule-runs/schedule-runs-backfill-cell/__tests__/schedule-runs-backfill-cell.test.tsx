@@ -1,4 +1,4 @@
-import { render, screen, userEvent } from '@/test-utils/rtl';
+import { render, screen, userEvent, within } from '@/test-utils/rtl';
 
 import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtures__/mock-workflow-list-items';
 
@@ -9,9 +9,7 @@ describe(ScheduleRunsBackfillCell.name, () => {
     const { user } = setup({ isBackfill: true, backfillId: 'backfill-123' });
 
     await user.hover(screen.getByText('Yes'));
-    expect(await screen.findByRole('tooltip')).toHaveTextContent(
-      'Backfill Id: backfill-123'
-    );
+    expectTooltipContent(await screen.findByRole('tooltip'), 'backfill-123');
   });
 
   it('shows the Backfill ID tooltip on keyboard focus', async () => {
@@ -19,16 +17,14 @@ describe(ScheduleRunsBackfillCell.name, () => {
 
     await user.tab();
     expect(screen.getByText('Yes').closest('[tabindex="0"]')).toHaveFocus();
-    expect(await screen.findByRole('tooltip')).toHaveTextContent(
-      'Backfill Id: backfill-123'
-    );
+    expectTooltipContent(await screen.findByRole('tooltip'), 'backfill-123');
   });
 
   it('renders No without a tooltip for a regular run', async () => {
     const { user } = setup({ isBackfill: false, backfillId: 'ignored' });
 
     await user.hover(screen.getByText('No'));
-    expect(screen.queryByText(/Backfill Id:/)).not.toBeInTheDocument();
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
   });
 
   it('handles missing and malformed Backfill IDs', () => {
@@ -46,9 +42,14 @@ describe(ScheduleRunsBackfillCell.name, () => {
       />
     );
     expect(screen.getByText('Yes')).toBeInTheDocument();
-    expect(screen.queryByText(/Backfill Id:/)).not.toBeInTheDocument();
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
   });
 });
+
+function expectTooltipContent(tooltip: HTMLElement, backfillId: string) {
+  const label = within(tooltip).getByText('Backfill Id:');
+  expect(within(tooltip).getByText(backfillId)).toBeInTheDocument();
+}
 
 function setup({
   isBackfill,
