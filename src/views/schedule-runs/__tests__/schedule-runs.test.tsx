@@ -24,8 +24,7 @@ describe(ScheduleRuns.name, () => {
   });
 
   it('queries the schedule and renders its runs as JSON', async () => {
-    const scheduleId = String.raw`schedule"\id`;
-    setup({ scheduleId });
+    setup({});
 
     expect(await screen.findByText(/first-page-workflow/)).toBeInTheDocument();
   });
