@@ -34,7 +34,11 @@ jest.mock('@/components/error-panel/error-panel', () =>
 );
 jest.mock('../schedule-runs-table', () =>
   jest.fn(({ workflows }: ScheduleRunsTableProps) => (
-    <div>{workflows.map(({ workflowID }) => workflowID).join(',')}</div>
+    <div>
+      {workflows.length
+        ? workflows.map(({ workflowID }) => workflowID).join(',')
+        : 'No results'}
+    </div>
   ))
 );
 jest.mock('../schedule-runs-header', () =>
@@ -106,17 +110,15 @@ describe(ScheduleRuns.name, () => {
       },
     });
 
-    expect(screen.getByText('No schedule runs found')).toBeInTheDocument();
+    expect(screen.getByText('No results')).toBeInTheDocument();
   });
 
-  it('distinguishes filtered no-results', () => {
+  it('renders no results for an empty filtered response', () => {
     setup({
       timeStart: new Date('2026-07-12T10:00:00Z'),
       hookResult: { workflows: [] },
     });
-    expect(
-      screen.getByText('No schedule runs match your filters')
-    ).toBeInTheDocument();
+    expect(screen.getByText('No results')).toBeInTheDocument();
   });
 });
 

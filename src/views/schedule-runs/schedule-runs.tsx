@@ -53,9 +53,6 @@ export default function ScheduleRuns({ params }: Props) {
     inputType: 'query',
     query: getScheduleRunsQuery(params.scheduleId, timeRange),
   });
-  const hasActiveFilters = Boolean(
-    queryParams.scheduleRunsTimeStart || queryParams.scheduleRunsTimeEnd
-  );
 
   if (isLoading) {
     return <SectionLoadingIndicator />;
@@ -77,30 +74,17 @@ export default function ScheduleRuns({ params }: Props) {
     <PageSection>
       <styled.Root>
         <ScheduleRunsHeader />
-        {workflows.length === 0 ? (
-          <PanelSection>
-            <ErrorPanel
-              message={
-                hasActiveFilters
-                  ? 'No schedule runs match your filters'
-                  : 'No schedule runs found'
-              }
-              omitLogging
-            />
-          </PanelSection>
-        ) : (
-          <ScheduleRunsTable
-            domain={params.domain}
-            cluster={params.cluster}
-            workflows={workflows}
-            error={error}
-            hasNextPage={hasNextPage}
-            fetchNextPage={fetchNextPage}
-            isFetchingNextPage={
-              isFetchingNextPage || (isFetching && workflows.length > 0)
-            }
-          />
-        )}
+        <ScheduleRunsTable
+          domain={params.domain}
+          cluster={params.cluster}
+          workflows={workflows}
+          error={error}
+          hasNextPage={hasNextPage}
+          fetchNextPage={fetchNextPage}
+          isFetchingNextPage={
+            isFetchingNextPage || (isFetching && workflows.length > 0)
+          }
+        />
       </styled.Root>
     </PageSection>
   );
