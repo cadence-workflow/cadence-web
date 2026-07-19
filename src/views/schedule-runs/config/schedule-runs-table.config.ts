@@ -5,6 +5,8 @@ import { type TableConfig } from '@/components/table/table.types';
 import { type WorkflowListItem } from '@/route-handlers/list-workflows/list-workflows.types';
 import getSearchAttributeValue from '@/views/shared/workflows-list/helpers/get-search-attribute-value';
 
+import ScheduleRunsStatusCell from '../schedule-runs-status-cell';
+
 export default function getScheduleRunsTableConfig(
   domain: string,
   cluster: string
@@ -19,7 +21,7 @@ export default function getScheduleRunsTableConfig(
     {
       name: 'Status',
       id: 'CloseStatus',
-      renderCell: (row: WorkflowListItem) => row.status,
+      renderCell: ScheduleRunsStatusCell,
       width: '10%',
     },
     {
