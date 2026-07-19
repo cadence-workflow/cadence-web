@@ -70,6 +70,16 @@ describe(ScheduleRunsTable.name, () => {
   it('renders the base columns and an encoded run link', () => {
     setup();
 
+    expect(
+      screen.getAllByRole('columnheader').map((column) => column.textContent)
+    ).toEqual([
+      'Workflow ID',
+      'Status',
+      'Run ID',
+      'Backfill',
+      'Schedule time',
+      'Run time (Start/Close)',
+    ]);
     expect(screen.getByRole('link', { name: 'run/id?' })).toHaveAttribute(
       'href',
       '/domains/test-domain/test-cluster/workflows/workflow%2Fid/run%2Fid%3F'
