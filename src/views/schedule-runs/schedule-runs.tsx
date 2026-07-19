@@ -37,13 +37,5 @@ export default function ScheduleRuns({ params }: Props) {
     );
   }
 
-  if (workflows.length === 0) {
-    return (
-      <PanelSection>
-        <ErrorPanel message="No schedule runs found" omitLogging />
-      </PanelSection>
-    );
-  }
-
   return <PageSection>{JSON.stringify(workflows)}</PageSection>;
 }
