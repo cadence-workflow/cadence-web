@@ -30,7 +30,11 @@ jest.mock('@/components/error-panel/error-panel', () =>
 );
 jest.mock('../schedule-runs-table', () =>
   jest.fn(({ workflows }: ScheduleRunsTableProps) => (
-    <div>{workflows.map(({ workflowID }) => workflowID).join(',')}</div>
+    <div>
+      {workflows.length
+        ? workflows.map(({ workflowID }) => workflowID).join(',')
+        : 'No results'}
+    </div>
   ))
 );
 describe(ScheduleRuns.name, () => {
@@ -65,6 +69,7 @@ describe(ScheduleRuns.name, () => {
     setup({
       hookResult: {
         data: undefined,
+        workflows: [],
         error: new RequestError('Request failed', '/workflows', 500),
       },
     });
@@ -83,7 +88,7 @@ describe(ScheduleRuns.name, () => {
       },
     });
 
-    expect(screen.getByText('No schedule runs found')).toBeInTheDocument();
+    expect(screen.getByText('No results')).toBeInTheDocument();
   });
 });
 
