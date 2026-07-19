@@ -1,8 +1,10 @@
 'use client';
 
+import { useMemo } from 'react';
+
 import Table from '@/components/table/table';
 
-import getScheduleRunsTableConfig from './schedule-runs-table.config';
+import scheduleRunsTableConfig from '../config/schedule-runs-table.config';
 import { type Props } from './schedule-runs-table.types';
 
 export default function ScheduleRunsTable({
@@ -14,10 +16,15 @@ export default function ScheduleRunsTable({
   fetchNextPage,
   isFetchingNextPage,
 }: Props) {
+  const data = useMemo(
+    () => workflows.map((workflow) => ({ ...workflow, domain, cluster })),
+    [workflows, domain, cluster]
+  );
+
   return (
     <Table
-      data={workflows}
-      columns={getScheduleRunsTableConfig(domain, cluster)}
+      data={data}
+      columns={scheduleRunsTableConfig}
       shouldShowResults={workflows.length > 0}
       endMessageProps={{
         kind: 'infinite-scroll',

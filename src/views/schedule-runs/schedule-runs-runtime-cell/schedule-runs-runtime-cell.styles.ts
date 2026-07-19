@@ -8,20 +8,20 @@ import type {
 const cssStylesObj = {
   runtimeContainer: (theme: Theme) => ({
     display: 'flex',
+    flexWrap: 'wrap',
     gap: theme.sizing.scale400,
     alignItems: 'center',
-    whiteSpace: 'nowrap',
+    minWidth: 0,
+    width: '100%',
   }),
   dateContainer: () => ({
     flexShrink: 0,
-    whiteSpace: 'nowrap',
   }),
   arrowIcon: () => ({
     flexShrink: 0,
   }),
   missingDateContainer: (theme: Theme) => ({
     color: theme.colors.contentSecondary,
-    flexShrink: 0,
     whiteSpace: 'nowrap',
   }),
 } satisfies StyletronCSSObject;
