@@ -32,7 +32,7 @@ export default function ScheduleRuns({ params }: Props) {
     return <SectionLoadingIndicator />;
   }
 
-  if (error) {
+  if (error && workflows.length === 0) {
     return (
       <PanelSection>
         <ErrorPanel
@@ -41,14 +41,6 @@ export default function ScheduleRuns({ params }: Props) {
           reset={refetch}
           actions={[{ kind: 'retry', label: 'Retry' }]}
         />
-      </PanelSection>
-    );
-  }
-
-  if (workflows.length === 0) {
-    return (
-      <PanelSection>
-        <ErrorPanel message="No schedule runs found" omitLogging />
       </PanelSection>
     );
   }
