@@ -9,9 +9,9 @@ describe(ScheduleRunsBackfillCell.name, () => {
     const { user } = setup({ isBackfill: true, backfillId: 'backfill-123' });
 
     await user.hover(screen.getByText('Yes'));
-    expect(
-      await screen.findByText('Backfill Id: backfill-123')
-    ).toBeInTheDocument();
+    expect(await screen.findByRole('tooltip')).toHaveTextContent(
+      'Backfill Id: backfill-123'
+    );
   });
 
   it('shows the Backfill ID tooltip on keyboard focus', async () => {
@@ -19,9 +19,9 @@ describe(ScheduleRunsBackfillCell.name, () => {
 
     await user.tab();
     expect(screen.getByText('Yes').closest('[tabindex="0"]')).toHaveFocus();
-    expect(
-      await screen.findByText('Backfill Id: backfill-123')
-    ).toBeInTheDocument();
+    expect(await screen.findByRole('tooltip')).toHaveTextContent(
+      'Backfill Id: backfill-123'
+    );
   });
 
   it('renders No without a tooltip for a regular run', async () => {

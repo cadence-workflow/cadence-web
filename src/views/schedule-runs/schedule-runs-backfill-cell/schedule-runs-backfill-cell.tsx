@@ -31,7 +31,11 @@ export default function ScheduleRunsBackfillCell(props: Props) {
   return (
     <StatefulTooltip
       accessibilityType="tooltip"
-      content={`Backfill Id: ${backfillId}`}
+      content={
+        <>
+          <strong>Backfill Id:</strong> {backfillId}
+        </>
+      }
       showArrow
     >
       <span tabIndex={0}>{tag}</span>
