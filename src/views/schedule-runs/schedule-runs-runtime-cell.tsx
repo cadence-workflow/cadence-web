@@ -18,10 +18,18 @@ export default function ScheduleRunsRuntimeCell({
 
   return (
     <div className={cls.runtimeContainer}>
-      <FormattedDate timestampMs={startTime} />
-      <MdArrowForward color={theme.colors.contentSecondary} aria-hidden />
+      <div className={cls.dateContainer}>
+        <FormattedDate timestampMs={startTime} />
+      </div>
+      <MdArrowForward
+        className={cls.arrowIcon}
+        color={theme.colors.contentSecondary}
+        aria-hidden
+      />
       {closeTime ? (
-        <FormattedDate timestampMs={closeTime} />
+        <div className={cls.dateContainer}>
+          <FormattedDate timestampMs={closeTime} />
+        </div>
       ) : (
         <div className={cls.missingDateContainer}>Running…</div>
       )}
