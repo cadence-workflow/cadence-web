@@ -14,9 +14,7 @@ describe(ScheduleRunsRuntimeCell.name, () => {
     setup({ startTime: 100, closeTime: undefined });
 
     expect(screen.getByText('100')).toBeInTheDocument();
-    expect(screen.getByText('100').parentElement).toHaveTextContent(
-      /→\s*Running…/
-    );
+    expect(screen.getByText('Running…')).toBeInTheDocument();
   });
 
   it('renders a closed execution', () => {
@@ -30,7 +28,7 @@ describe(ScheduleRunsRuntimeCell.name, () => {
   it('renders a fallback when the start time is missing', () => {
     setup({ startTime: 0, closeTime: undefined });
 
-    expect(screen.getByText('-')).toBeInTheDocument();
+    expect(screen.getByText('None')).toBeInTheDocument();
   });
 });
 

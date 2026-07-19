@@ -1,13 +1,20 @@
-import { styled as createStyled, type Theme } from 'baseui';
-import { type StyleObject } from 'styletron-react';
+import { type Theme } from 'baseui';
 
-export const styled = {
-  Container: createStyled(
-    'div',
-    ({ $theme }: { $theme: Theme }): StyleObject => ({
-      alignItems: 'center',
-      display: 'flex',
-      gap: $theme.sizing.scale200,
-    })
-  ),
-};
+import type {
+  StyletronCSSObject,
+  StyletronCSSObjectOf,
+} from '@/hooks/use-styletron-classes';
+
+const cssStylesObj = {
+  runtimeContainer: (theme: Theme) => ({
+    display: 'flex',
+    gap: theme.sizing.scale400,
+    alignItems: 'center',
+  }),
+  missingDateContainer: (theme: Theme) => ({
+    color: theme.colors.contentSecondary,
+  }),
+} satisfies StyletronCSSObject;
+
+export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> =
+  cssStylesObj;
