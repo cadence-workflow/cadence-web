@@ -7,7 +7,7 @@ import SectionLoadingIndicator from '@/components/section-loading-indicator/sect
 import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
 
 import getScheduleRunsQuery from './helpers/get-schedule-runs-query';
-import ScheduleRunsTable from './schedule-runs-table';
+import ScheduleRunsTable from './schedule-runs-table/schedule-runs-table';
 import { type Props } from './schedule-runs.types';
 
 export default function ScheduleRuns({ params }: Props) {
