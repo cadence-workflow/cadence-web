@@ -3,12 +3,21 @@ import { createElement } from 'react';
 import DateFilter from '@/components/date-filter/date-filter';
 import { type DateFilterValue } from '@/components/date-filter/date-filter.types';
 import stringifyDateFilterValue from '@/components/date-filter/helpers/stringify-date-filter-value';
+import ListFilter from '@/components/list-filter/list-filter';
 import MultiSelectFilter from '@/components/multi-select-filter/multi-select-filter';
 import { type PageFilterConfig } from '@/components/page-filters/page-filters.types';
 import { WORKFLOW_STATUS_NAMES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
 import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
 
+import { type ScheduleRunsRunType } from '../schedule-runs.types';
+
 import type scheduleRunsQueryParamsConfig from './schedule-runs-query-params.config';
+
+const RUN_TYPE_LABELS: Record<ScheduleRunsRunType, string> = {
+  all: 'All runs',
+  backfill: 'Backfill runs',
+  regular: 'Regular runs',
+};
 
 const scheduleRunsFiltersConfig: [
   PageFilterConfig<
@@ -21,6 +30,10 @@ const scheduleRunsFiltersConfig: [
       scheduleRunsTimeStart: DateFilterValue;
       scheduleRunsTimeEnd: DateFilterValue;
     }
+  >,
+  PageFilterConfig<
+    typeof scheduleRunsQueryParamsConfig,
+    { scheduleRunsRunType: ScheduleRunsRunType }
   >,
 ] = [
   {
@@ -66,6 +79,22 @@ const scheduleRunsFiltersConfig: [
             scheduleRunsTimeStart: start ?? 'now-7d',
             scheduleRunsTimeEnd: end ?? 'now',
           }),
+      }),
+  },
+  {
+    id: 'run-type',
+    getValue: (value) => ({
+      scheduleRunsRunType: value.scheduleRunsRunType,
+    }),
+    formatValue: (value) => value,
+    component: ({ value, setValue }) =>
+      createElement(ListFilter<ScheduleRunsRunType>, {
+        label: 'Run type',
+        placeholder: 'All runs',
+        value: value.scheduleRunsRunType,
+        onChangeValue: (runType) =>
+          setValue({ scheduleRunsRunType: runType ?? 'all' }),
+        labelMap: RUN_TYPE_LABELS,
       }),
   },
 ] as const;

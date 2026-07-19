@@ -7,6 +7,8 @@ import {
 import isWorkflowStatus from '@/views/shared/workflow-status-tag/helpers/is-workflow-status';
 import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
 
+import { type ScheduleRunsRunType } from '../schedule-runs.types';
+
 const scheduleRunsQueryParamsConfig: [
   PageQueryParam<'scheduleRunsTimeStart', DateFilterValue>,
   PageQueryParam<'scheduleRunsTimeEnd', DateFilterValue>,
@@ -14,6 +16,7 @@ const scheduleRunsQueryParamsConfig: [
     'scheduleRunsStatuses',
     Array<WorkflowStatus> | undefined
   >,
+  PageQueryParam<'scheduleRunsRunType', ScheduleRunsRunType>,
 ] = [
   {
     key: 'scheduleRunsTimeStart',
@@ -33,6 +36,13 @@ const scheduleRunsQueryParamsConfig: [
     isMultiValue: true,
     parseValue: (values) =>
       values.every(isWorkflowStatus) ? values : undefined,
+  },
+  {
+    key: 'scheduleRunsRunType',
+    queryParamKey: 'runs-type',
+    defaultValue: 'all',
+    parseValue: (value) =>
+      value === 'backfill' || value === 'regular' ? value : 'all',
   },
 ] as const;
 

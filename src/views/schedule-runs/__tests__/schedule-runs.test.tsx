@@ -11,6 +11,7 @@ import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow
 
 import ScheduleRuns from '../schedule-runs';
 import { type Props as ScheduleRunsTableProps } from '../schedule-runs-table.types';
+import { type ScheduleRunsRunType } from '../schedule-runs.types';
 
 const mockRefetch = jest.fn();
 const mockUsePageQueryParams = jest.mocked(usePageQueryParams);
@@ -82,6 +83,20 @@ describe(ScheduleRuns.name, () => {
     );
   });
 
+  it.each([
+    ['backfill', 'true'],
+    ['regular', 'false'],
+  ] as const)('queries %s runs', (runType, expectedValue) => {
+    setup({ runType });
+    expect(mockUseListWorkflows).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: expect.stringContaining(
+          `CadenceScheduleIsBackfill = ${expectedValue}`
+        ),
+      })
+    );
+  });
+
   it('renders the initial loading state', () => {
     setup({ hookResult: { data: undefined, isLoading: true } });
 
@@ -133,12 +148,14 @@ function setup({
   timeStart = 'now-7d',
   timeEnd = 'now',
   statuses,
+  runType = 'all',
   hookResult = {},
 }: {
   scheduleId?: string;
   timeStart?: DateFilterValue;
   timeEnd?: DateFilterValue;
   statuses?: Array<WorkflowStatus>;
+  runType?: ScheduleRunsRunType;
   hookResult?: Partial<HookResult>;
 } = {}) {
   mockUsePageQueryParams.mockReturnValue([
@@ -146,6 +163,7 @@ function setup({
       scheduleRunsTimeStart: timeStart,
       scheduleRunsTimeEnd: timeEnd,
       scheduleRunsStatuses: statuses,
+      scheduleRunsRunType: runType,
     },
     jest.fn(),
   ]);

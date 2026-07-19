@@ -48,10 +48,12 @@ export default function ScheduleRuns({ params }: Props) {
     query: getScheduleRunsQuery(params.scheduleId, {
       ...timeRange,
       statuses: queryParams.scheduleRunsStatuses,
+      runType: queryParams.scheduleRunsRunType,
     }),
   });
   const hasActiveFilters = Boolean(
     queryParams.scheduleRunsStatuses?.length ||
+      queryParams.scheduleRunsRunType !== 'all' ||
       queryParams.scheduleRunsTimeStart !== 'now-7d' ||
       queryParams.scheduleRunsTimeEnd !== 'now'
   );
