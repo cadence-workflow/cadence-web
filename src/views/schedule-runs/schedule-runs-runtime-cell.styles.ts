@@ -10,9 +10,19 @@ const cssStylesObj = {
     display: 'flex',
     gap: theme.sizing.scale400,
     alignItems: 'center',
+    whiteSpace: 'nowrap',
+  }),
+  dateContainer: () => ({
+    flexShrink: 0,
+    whiteSpace: 'nowrap',
+  }),
+  arrowIcon: () => ({
+    flexShrink: 0,
   }),
   missingDateContainer: (theme: Theme) => ({
     color: theme.colors.contentSecondary,
+    flexShrink: 0,
+    whiteSpace: 'nowrap',
   }),
 } satisfies StyletronCSSObject;
 
