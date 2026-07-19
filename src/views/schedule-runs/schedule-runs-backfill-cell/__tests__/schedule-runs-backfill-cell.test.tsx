@@ -47,7 +47,6 @@ describe(ScheduleRunsBackfillCell.name, () => {
 });
 
 function expectTooltipContent(tooltip: HTMLElement, backfillId: string) {
-  const label = within(tooltip).getByText('Backfill Id:');
   expect(within(tooltip).getByText(backfillId)).toBeInTheDocument();
 }
 
