@@ -13,7 +13,7 @@ import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow
 import { type ScheduleRunsRunType } from '../schedule-runs.types';
 
 const RUN_TYPE_LABELS: Record<ScheduleRunsRunType, string> = {
-  all: 'All runs',
+  all: 'All',
   backfill: 'Backfill runs',
   regular: 'Regular runs',
 };
@@ -96,6 +96,7 @@ const scheduleRunsFiltersConfig: [
         onChangeValue: (runType) =>
           setValue({ scheduleRunsRunType: runType ?? 'all' }),
         labelMap: RUN_TYPE_LABELS,
+        clearable: false,
       }),
   },
 ] as const;

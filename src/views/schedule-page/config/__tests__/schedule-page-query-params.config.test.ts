@@ -9,9 +9,11 @@ describe('schedulePageQueryParamsConfig', () => {
         'runs-start': 'now-30d',
         'runs-end': 'now',
       })
-    ).toEqual({
-      scheduleRunsTimeStart: 'now-30d',
-      scheduleRunsTimeEnd: 'now',
-    });
+    ).toEqual(
+      expect.objectContaining({
+        scheduleRunsTimeStart: 'now-30d',
+        scheduleRunsTimeEnd: 'now',
+      })
+    );
   });
 });

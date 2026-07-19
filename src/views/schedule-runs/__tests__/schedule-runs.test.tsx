@@ -95,7 +95,7 @@ describe(ScheduleRuns.name, () => {
     expect(mockUseListWorkflows).toHaveBeenCalledWith(
       expect.objectContaining({
         query: expect.stringContaining(
-          `CadenceScheduleIsBackfill = ${expectedValue}`
+          `CadenceScheduleIsBackfill = "${expectedValue}"`
         ),
       })
     );

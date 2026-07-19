@@ -30,7 +30,7 @@ export default function getScheduleRunsQuery(
   }
   if (filters?.runType !== undefined && filters.runType !== 'all') {
     clauses.push(
-      `CadenceScheduleIsBackfill = ${filters.runType === 'backfill'}`
+      `CadenceScheduleIsBackfill = "${filters.runType === 'backfill'}"`
     );
   }
   return clauses.join(' AND ');
