@@ -14,8 +14,8 @@ import { type ScheduleRunsRunType } from '../schedule-runs.types';
 
 const RUN_TYPE_LABELS: Record<ScheduleRunsRunType, string> = {
   all: 'All',
-  backfill: 'Backfill runs',
-  regular: 'Regular runs',
+  backfill: 'Backfill',
+  regular: 'Regular',
 };
 
 const scheduleRunsFiltersConfig: [
