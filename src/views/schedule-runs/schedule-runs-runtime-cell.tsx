@@ -26,13 +26,9 @@ export default function ScheduleRunsRuntimeCell({
         color={theme.colors.contentSecondary}
         aria-hidden
       />
-      {closeTime ? (
-        <div className={cls.dateContainer}>
-          <FormattedDate timestampMs={closeTime} />
-        </div>
-      ) : (
-        <div className={cls.missingDateContainer}>Running…</div>
-      )}
+      <div className={cls.dateContainer}>
+        <FormattedDate timestampMs={closeTime} />
+      </div>
     </div>
   );
 }
