@@ -14,6 +14,7 @@ import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
 import getScheduleRunsQuery from './helpers/get-schedule-runs-query';
 import ScheduleRunsHeader from './schedule-runs-header';
 import ScheduleRunsTable from './schedule-runs-table';
+import { styled } from './schedule-runs.styles';
 import { type Props } from './schedule-runs.types';
 
 export default function ScheduleRuns({ params }: Props) {
@@ -21,14 +22,18 @@ export default function ScheduleRuns({ params }: Props) {
   const timeRange = useMemo(() => {
     const now = dayjs();
     return {
-      timeRangeStart: getDayjsFromDateFilterValue(
-        queryParams.scheduleRunsTimeStart,
-        now
-      ).toISOString(),
-      timeRangeEnd: getDayjsFromDateFilterValue(
-        queryParams.scheduleRunsTimeEnd,
-        now
-      ).toISOString(),
+      timeRangeStart: queryParams.scheduleRunsTimeStart
+        ? getDayjsFromDateFilterValue(
+            queryParams.scheduleRunsTimeStart,
+            now
+          ).toISOString()
+        : undefined,
+      timeRangeEnd: queryParams.scheduleRunsTimeEnd
+        ? getDayjsFromDateFilterValue(
+            queryParams.scheduleRunsTimeEnd,
+            now
+          ).toISOString()
+        : undefined,
     };
   }, [queryParams.scheduleRunsTimeEnd, queryParams.scheduleRunsTimeStart]);
   const {
@@ -51,11 +56,6 @@ export default function ScheduleRuns({ params }: Props) {
       statuses: queryParams.scheduleRunsStatuses,
     }),
   });
-  const hasActiveFilters = Boolean(
-    queryParams.scheduleRunsStatuses?.length ||
-      queryParams.scheduleRunsTimeStart !== 'now-7d' ||
-      queryParams.scheduleRunsTimeEnd !== 'now'
-  );
 
   if (isLoading) {
     return <SectionLoadingIndicator />;
@@ -75,19 +75,8 @@ export default function ScheduleRuns({ params }: Props) {
 
   return (
     <PageSection>
-      <ScheduleRunsHeader />
-      {workflows.length === 0 ? (
-        <PanelSection>
-          <ErrorPanel
-            message={
-              hasActiveFilters
-                ? 'No schedule runs match your filters'
-                : 'No schedule runs found'
-            }
-            omitLogging
-          />
-        </PanelSection>
-      ) : (
+      <styled.Root>
+        <ScheduleRunsHeader />
         <ScheduleRunsTable
           domain={params.domain}
           cluster={params.cluster}
@@ -99,7 +88,7 @@ export default function ScheduleRuns({ params }: Props) {
             isFetchingNextPage || (isFetching && workflows.length > 0)
           }
         />
-      )}
+      </styled.Root>
     </PageSection>
   );
 }
