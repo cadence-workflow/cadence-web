@@ -6,7 +6,9 @@ import ScheduleRunsRuntimeCell from '../schedule-runs-runtime-cell';
 import { type Props } from '../schedule-runs-runtime-cell.types';
 
 jest.mock('@/components/formatted-date/formatted-date', () =>
-  jest.fn(({ timestampMs }: FormattedDateProps) => <time>{timestampMs}</time>)
+  jest.fn(({ timestampMs }: FormattedDateProps) => (
+    <time>{timestampMs ?? 'Ongoing'}</time>
+  ))
 );
 
 describe(ScheduleRunsRuntimeCell.name, () => {
@@ -14,7 +16,7 @@ describe(ScheduleRunsRuntimeCell.name, () => {
     setup({ startTime: 100, closeTime: undefined });
 
     expect(screen.getByText('100')).toBeInTheDocument();
-    expect(screen.getByText('Running…')).toBeInTheDocument();
+    expect(screen.getByText('Ongoing')).toBeInTheDocument();
   });
 
   it('renders a closed execution', () => {
@@ -22,7 +24,7 @@ describe(ScheduleRunsRuntimeCell.name, () => {
 
     expect(screen.getByText('100')).toBeInTheDocument();
     expect(screen.getByText('200')).toBeInTheDocument();
-    expect(screen.queryByText('Running…')).not.toBeInTheDocument();
+    expect(screen.queryByText('Ongoing')).not.toBeInTheDocument();
   });
 
   it('renders a fallback when the start time is missing', () => {
