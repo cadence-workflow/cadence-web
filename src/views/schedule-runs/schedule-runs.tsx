@@ -14,6 +14,7 @@ import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
 import getScheduleRunsQuery from './helpers/get-schedule-runs-query';
 import ScheduleRunsHeader from './schedule-runs-header';
 import ScheduleRunsTable from './schedule-runs-table';
+import { styled } from './schedule-runs.styles';
 import { type Props } from './schedule-runs.types';
 
 export default function ScheduleRuns({ params }: Props) {
@@ -71,31 +72,33 @@ export default function ScheduleRuns({ params }: Props) {
 
   return (
     <PageSection>
-      <ScheduleRunsHeader />
-      {workflows.length === 0 ? (
-        <PanelSection>
-          <ErrorPanel
-            message={
-              hasActiveFilters
-                ? 'No schedule runs match your filters'
-                : 'No schedule runs found'
+      <styled.Root>
+        <ScheduleRunsHeader />
+        {workflows.length === 0 ? (
+          <PanelSection>
+            <ErrorPanel
+              message={
+                hasActiveFilters
+                  ? 'No schedule runs match your filters'
+                  : 'No schedule runs found'
+              }
+              omitLogging
+            />
+          </PanelSection>
+        ) : (
+          <ScheduleRunsTable
+            domain={params.domain}
+            cluster={params.cluster}
+            workflows={workflows}
+            error={error}
+            hasNextPage={hasNextPage}
+            fetchNextPage={fetchNextPage}
+            isFetchingNextPage={
+              isFetchingNextPage || (isFetching && workflows.length > 0)
             }
-            omitLogging
           />
-        </PanelSection>
-      ) : (
-        <ScheduleRunsTable
-          domain={params.domain}
-          cluster={params.cluster}
-          workflows={workflows}
-          error={error}
-          hasNextPage={hasNextPage}
-          fetchNextPage={fetchNextPage}
-          isFetchingNextPage={
-            isFetchingNextPage || (isFetching && workflows.length > 0)
-          }
-        />
-      )}
+        )}
+      </styled.Root>
     </PageSection>
   );
 }
