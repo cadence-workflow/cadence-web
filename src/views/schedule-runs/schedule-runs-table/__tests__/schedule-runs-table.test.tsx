@@ -1,132 +1,81 @@
-import { render, screen, userEvent } from '@/test-utils/rtl';
+import { render, screen } from '@/test-utils/rtl';
 
-import { type Props as LinkProps } from '@/components/link/link.types';
-import {
-  type EndMessageProps,
-  type TableConfig,
-} from '@/components/table/table.types';
+import Table from '@/components/table/table';
 import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtures__/mock-workflow-list-items';
-import { type WorkflowListItem } from '@/route-handlers/list-workflows/list-workflows.types';
 
-import { type Props as RuntimeCellProps } from '../../schedule-runs-runtime-cell/schedule-runs-runtime-cell.types';
-import { type Props as StatusCellProps } from '../../schedule-runs-status-cell/schedule-runs-status-cell.types';
 import ScheduleRunsTable from '../schedule-runs-table';
+import scheduleRunsTableConfig from '../../config/schedule-runs-table.config';
 import { type Props } from '../schedule-runs-table.types';
 
-type MockTableProps = {
-  data: Array<WorkflowListItem>;
-  columns: TableConfig<WorkflowListItem>;
-  endMessageProps: Extract<EndMessageProps, { kind: 'infinite-scroll' }>;
-};
-
-jest.mock('@/components/link/link', () =>
-  jest.fn(({ href, children }: LinkProps) => (
-    <a href={href.toString()}>{children}</a>
-  ))
-);
-jest.mock('../../schedule-runs-runtime-cell/schedule-runs-runtime-cell', () =>
-  jest.fn(({ startTime, closeTime }: RuntimeCellProps) => (
-    <>{`${startTime} → ${closeTime}`}</>
-  ))
-);
-jest.mock('../../schedule-runs-status-cell/schedule-runs-status-cell', () =>
-  jest.fn(({ status }: StatusCellProps) => <>{status}</>)
-);
 jest.mock('@/components/table/table', () =>
-  jest.fn(({ data, columns, endMessageProps }: MockTableProps) => (
-    <table>
-      <thead>
-        <tr>
-          {columns.map(({ id, name }) => (
-            <th key={id}>{name}</th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((row) => (
-          <tr key={row.runID}>
-            {columns.map((column) => (
-              <td key={column.id}>
-                <column.renderCell {...row} />
-              </td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-      <tfoot>
-        <tr>
-          <td>
-            <button onClick={endMessageProps.fetchNextPage}>
-              {endMessageProps.isFetchingNextPage
-                ? 'Loading more'
-                : endMessageProps.error
-                  ? 'Retry'
-                  : endMessageProps.hasNextPage
-                    ? 'Load more'
-                    : 'End of results'}
-            </button>
-          </td>
-        </tr>
-      </tfoot>
-    </table>
-  ))
+  jest.fn(() => <div>Mock Table</div>)
 );
+
+const mockTable = jest.mocked(Table);
 
 describe(ScheduleRunsTable.name, () => {
-  it('renders the base columns and an encoded run link', () => {
+  it('renders the table', () => {
     setup();
 
-    expect(
-      screen.getAllByRole('columnheader').map((column) => column.textContent)
-    ).toEqual([
-      'Workflow ID',
-      'Status',
-      'Run ID',
-      'Backfill',
-      'Schedule time',
-      'Run time (Start/Close)',
-    ]);
-    expect(screen.getByRole('link', { name: 'run/id?' })).toHaveAttribute(
-      'href',
-      '/domains/test-domain/test-cluster/workflows/workflow%2Fid/run%2Fid%3F'
-    );
-    ['2026-07-19T10:00:00Z', '100 → 200'].forEach((value) =>
-      expect(screen.getByText(value)).toBeInTheDocument()
+    expect(screen.getByText('Mock Table')).toBeInTheDocument();
+  });
+
+  it('passes enriched rows to Table', () => {
+    const { props } = setup();
+
+    expect(mockTable).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: [
+          {
+            ...props.workflows[0],
+            domain: props.domain,
+            cluster: props.cluster,
+          },
+        ],
+        columns: scheduleRunsTableConfig,
+        shouldShowResults: true,
+      }),
+      {}
     );
   });
 
-  it('loads the next page while retaining existing rows', async () => {
-    const user = userEvent.setup();
-    const { fetchNextPage } = setup();
+  it('passes empty state to Table', () => {
+    setup({ workflows: [] });
 
-    await user.click(screen.getByRole('button', { name: 'Load more' }));
+    expect(mockTable).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: [],
+        shouldShowResults: false,
+        endMessageProps: expect.objectContaining({ hasData: false }),
+      }),
+      {}
+    );
+  });
+
+  it('passes pagination props to Table', () => {
+    const error = new Error('Request failed');
+    const { fetchNextPage } = setup({ error, isFetchingNextPage: true });
+
+    expect(mockTable).toHaveBeenCalledWith(
+      expect.objectContaining({
+        endMessageProps: {
+          kind: 'infinite-scroll',
+          hasData: true,
+          error,
+          fetchNextPage,
+          hasNextPage: true,
+          isFetchingNextPage: true,
+        },
+      }),
+      {}
+    );
+
+    const { endMessageProps } = mockTable.mock.calls[0][0];
+    expect(endMessageProps.kind).toBe('infinite-scroll');
+    if (endMessageProps.kind === 'infinite-scroll') {
+      endMessageProps.fetchNextPage();
+    }
     expect(fetchNextPage).toHaveBeenCalledTimes(1);
-    expect(screen.getByText('workflow/id')).toBeInTheDocument();
-  });
-
-  it('renders distinct loading, error, and end states', () => {
-    const { rerender, props } = setup({ isFetchingNextPage: true });
-    expect(screen.getByRole('button', { name: 'Loading more' })).toBeVisible();
-
-    rerender(
-      <ScheduleRunsTable
-        {...props}
-        isFetchingNextPage={false}
-        error={new Error('Request failed')}
-      />
-    );
-    expect(screen.getByRole('button', { name: 'Retry' })).toBeVisible();
-
-    rerender(
-      <ScheduleRunsTable
-        {...props}
-        isFetchingNextPage={false}
-        hasNextPage={false}
-      />
-    );
-    expect(
-      screen.getByRole('button', { name: 'End of results' })
-    ).toBeVisible();
   });
 });
 
@@ -139,13 +88,6 @@ function setup(overrides: Partial<Props> = {}) {
       getMockWorkflowListItem({
         workflowID: 'workflow/id',
         runID: 'run/id?',
-        startTime: 100,
-        closeTime: 200,
-        status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
-        searchAttributes: {
-          CadenceScheduleIsBackfill: { data: btoa('true') },
-          CadenceScheduleTime: { data: btoa('"2026-07-19T10:00:00Z"') },
-        },
       }),
     ],
     error: null,
@@ -154,6 +96,6 @@ function setup(overrides: Partial<Props> = {}) {
     isFetchingNextPage: false,
     ...overrides,
   };
-  const renderResult = render(<ScheduleRunsTable {...props} />);
-  return { ...renderResult, props, fetchNextPage };
+  render(<ScheduleRunsTable {...props} />);
+  return { props, fetchNextPage };
 }

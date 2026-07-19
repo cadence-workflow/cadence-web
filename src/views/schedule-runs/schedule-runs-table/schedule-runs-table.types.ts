@@ -9,3 +9,6 @@ export type Props = {
   fetchNextPage: () => void;
   isFetchingNextPage: boolean;
 };
+
+export type ScheduleRunsTableRow = WorkflowListItem &
+  Pick<Props, 'domain' | 'cluster'>;
