@@ -9,6 +9,7 @@ import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtu
 import { type WorkflowListItem } from '@/route-handlers/list-workflows/list-workflows.types';
 
 import { type Props as RuntimeCellProps } from '../schedule-runs-runtime-cell.types';
+import { type Props as StatusCellProps } from '../schedule-runs-status-cell.types';
 import ScheduleRunsTable from '../schedule-runs-table';
 import { type Props } from '../schedule-runs-table.types';
 
@@ -27,6 +28,9 @@ jest.mock('../schedule-runs-runtime-cell', () =>
   jest.fn(({ startTime, closeTime }: RuntimeCellProps) => (
     <>{`${startTime} → ${closeTime}`}</>
   ))
+);
+jest.mock('../schedule-runs-status-cell', () =>
+  jest.fn(({ status }: StatusCellProps) => <>{status}</>)
 );
 jest.mock('@/components/table/table', () =>
   jest.fn(({ data, columns, endMessageProps }: MockTableProps) => (

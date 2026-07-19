@@ -6,6 +6,7 @@ import { type WorkflowListItem } from '@/route-handlers/list-workflows/list-work
 import getSearchAttributeValue from '@/views/shared/workflows-list/helpers/get-search-attribute-value';
 
 import ScheduleRunsRuntimeCell from '../schedule-runs-runtime-cell';
+import ScheduleRunsStatusCell from '../schedule-runs-status-cell';
 
 export default function getScheduleRunsTableConfig(
   domain: string,
@@ -21,7 +22,7 @@ export default function getScheduleRunsTableConfig(
     {
       name: 'Status',
       id: 'CloseStatus',
-      renderCell: (row: WorkflowListItem) => row.status,
+      renderCell: ScheduleRunsStatusCell,
       width: '10%',
     },
     {
