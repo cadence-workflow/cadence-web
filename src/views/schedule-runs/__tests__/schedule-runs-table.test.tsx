@@ -8,6 +8,7 @@ import {
 import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtures__/mock-workflow-list-items';
 import { type WorkflowListItem } from '@/route-handlers/list-workflows/list-workflows.types';
 
+import { type Props as RuntimeCellProps } from '../schedule-runs-runtime-cell.types';
 import ScheduleRunsTable from '../schedule-runs-table';
 import { type Props } from '../schedule-runs-table.types';
 
@@ -20,6 +21,11 @@ type MockTableProps = {
 jest.mock('@/components/link/link', () =>
   jest.fn(({ href, children }: LinkProps) => (
     <a href={href.toString()}>{children}</a>
+  ))
+);
+jest.mock('../schedule-runs-runtime-cell', () =>
+  jest.fn(({ startTime, closeTime }: RuntimeCellProps) => (
+    <>{`${startTime} → ${closeTime}`}</>
   ))
 );
 jest.mock('@/components/table/table', () =>

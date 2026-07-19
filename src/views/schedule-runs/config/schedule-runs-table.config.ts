@@ -5,6 +5,8 @@ import { type TableConfig } from '@/components/table/table.types';
 import { type WorkflowListItem } from '@/route-handlers/list-workflows/list-workflows.types';
 import getSearchAttributeValue from '@/views/shared/workflows-list/helpers/get-search-attribute-value';
 
+import ScheduleRunsRuntimeCell from '../schedule-runs-runtime-cell';
+
 export default function getScheduleRunsTableConfig(
   domain: string,
   cluster: string
@@ -48,8 +50,7 @@ export default function getScheduleRunsTableConfig(
     {
       name: 'Run time (Start/Close)',
       id: 'RunTime',
-      renderCell: (row: WorkflowListItem) =>
-        `${row.startTime} → ${row.closeTime ?? 'Running'}`,
+      renderCell: ScheduleRunsRuntimeCell,
       width: '23%',
     },
     {
