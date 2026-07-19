@@ -5,18 +5,17 @@ import { type DateFilterValue } from '@/components/date-filter/date-filter.types
 import stringifyDateFilterValue from '@/components/date-filter/helpers/stringify-date-filter-value';
 import MultiSelectFilter from '@/components/multi-select-filter/multi-select-filter';
 import { type PageFilterConfig } from '@/components/page-filters/page-filters.types';
+import type schedulePageQueryParamsConfig from '@/views/schedule-page/config/schedule-page-query-params.config';
 import { WORKFLOW_STATUS_NAMES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
 import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
 
-import type scheduleRunsQueryParamsConfig from './schedule-runs-query-params.config';
-
 const scheduleRunsFiltersConfig: [
   PageFilterConfig<
-    typeof scheduleRunsQueryParamsConfig,
+    typeof schedulePageQueryParamsConfig,
     { scheduleRunsStatuses: Array<WorkflowStatus> | undefined }
   >,
   PageFilterConfig<
-    typeof scheduleRunsQueryParamsConfig,
+    typeof schedulePageQueryParamsConfig,
     {
       scheduleRunsTimeStart: DateFilterValue;
       scheduleRunsTimeEnd: DateFilterValue;

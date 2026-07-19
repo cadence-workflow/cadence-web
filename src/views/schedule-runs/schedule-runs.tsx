@@ -7,16 +7,16 @@ import PanelSection from '@/components/panel-section/panel-section';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import dayjs from '@/utils/datetime/dayjs';
+import schedulePageQueryParamsConfig from '@/views/schedule-page/config/schedule-page-query-params.config';
 import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
 
-import scheduleRunsQueryParamsConfig from './config/schedule-runs-query-params.config';
 import getScheduleRunsQuery from './helpers/get-schedule-runs-query';
 import ScheduleRunsHeader from './schedule-runs-header';
 import ScheduleRunsTable from './schedule-runs-table';
 import { type Props } from './schedule-runs.types';
 
 export default function ScheduleRuns({ params }: Props) {
-  const [queryParams] = usePageQueryParams(scheduleRunsQueryParamsConfig);
+  const [queryParams] = usePageQueryParams(schedulePageQueryParamsConfig);
   const timeRange = useMemo(() => {
     const now = dayjs();
     return {
