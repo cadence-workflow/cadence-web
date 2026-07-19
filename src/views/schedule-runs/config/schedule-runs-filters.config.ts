@@ -26,8 +26,8 @@ const scheduleRunsFiltersConfig: [
   PageFilterConfig<
     typeof schedulePageQueryParamsConfig,
     {
-      scheduleRunsTimeStart: DateFilterValue;
-      scheduleRunsTimeEnd: DateFilterValue;
+      scheduleRunsTimeStart: DateFilterValue | undefined;
+      scheduleRunsTimeEnd: DateFilterValue | undefined;
     }
   >,
   PageFilterConfig<
@@ -60,10 +60,12 @@ const scheduleRunsFiltersConfig: [
       scheduleRunsTimeEnd: value.scheduleRunsTimeEnd,
     }),
     formatValue: (value) => ({
-      scheduleRunsTimeStart: stringifyDateFilterValue(
-        value.scheduleRunsTimeStart
-      ),
-      scheduleRunsTimeEnd: stringifyDateFilterValue(value.scheduleRunsTimeEnd),
+      scheduleRunsTimeStart: value.scheduleRunsTimeStart
+        ? stringifyDateFilterValue(value.scheduleRunsTimeStart)
+        : undefined,
+      scheduleRunsTimeEnd: value.scheduleRunsTimeEnd
+        ? stringifyDateFilterValue(value.scheduleRunsTimeEnd)
+        : undefined,
     }),
     component: ({ value, setValue }) =>
       createElement(DateFilter, {
@@ -75,8 +77,8 @@ const scheduleRunsFiltersConfig: [
         },
         onChangeDates: ({ start, end }) =>
           setValue({
-            scheduleRunsTimeStart: start ?? 'now-7d',
-            scheduleRunsTimeEnd: end ?? 'now',
+            scheduleRunsTimeStart: start,
+            scheduleRunsTimeEnd: end,
           }),
       }),
   },

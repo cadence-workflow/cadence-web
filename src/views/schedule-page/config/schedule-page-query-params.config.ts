@@ -9,8 +9,8 @@ import isWorkflowStatus from '@/views/shared/workflow-status-tag/helpers/is-work
 import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
 
 const schedulePageQueryParamsConfig: [
-  PageQueryParam<'scheduleRunsTimeStart', DateFilterValue>,
-  PageQueryParam<'scheduleRunsTimeEnd', DateFilterValue>,
+  PageQueryParam<'scheduleRunsTimeStart', DateFilterValue | undefined>,
+  PageQueryParam<'scheduleRunsTimeEnd', DateFilterValue | undefined>,
   PageQueryParamMultiValue<
     'scheduleRunsStatuses',
     Array<WorkflowStatus> | undefined
@@ -20,14 +20,12 @@ const schedulePageQueryParamsConfig: [
   {
     key: 'scheduleRunsTimeStart',
     queryParamKey: 'runs-start',
-    defaultValue: 'now-7d',
-    parseValue: (value) => parseDateFilterValue(value) ?? 'now-7d',
+    parseValue: parseDateFilterValue,
   },
   {
     key: 'scheduleRunsTimeEnd',
     queryParamKey: 'runs-end',
-    defaultValue: 'now',
-    parseValue: (value) => parseDateFilterValue(value) ?? 'now',
+    parseValue: parseDateFilterValue,
   },
   {
     key: 'scheduleRunsStatuses',
