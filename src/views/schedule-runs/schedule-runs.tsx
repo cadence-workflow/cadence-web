@@ -46,14 +46,16 @@ export default function ScheduleRuns({ params }: Props) {
   }
 
   return (
-    <ScheduleRunsTable
-      domain={params.domain}
-      cluster={params.cluster}
-      workflows={workflows}
-      error={error}
-      hasNextPage={hasNextPage}
-      fetchNextPage={fetchNextPage}
-      isFetchingNextPage={isFetchingNextPage}
-    />
+    <PageSection>
+      <ScheduleRunsTable
+        domain={params.domain}
+        cluster={params.cluster}
+        workflows={workflows}
+        error={error}
+        hasNextPage={hasNextPage}
+        fetchNextPage={fetchNextPage}
+        isFetchingNextPage={isFetchingNextPage}
+      />
+    </PageSection>
   );
 }

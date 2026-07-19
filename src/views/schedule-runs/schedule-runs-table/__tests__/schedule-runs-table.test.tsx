@@ -3,8 +3,8 @@ import { render, screen } from '@/test-utils/rtl';
 import Table from '@/components/table/table';
 import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtures__/mock-workflow-list-items';
 
-import ScheduleRunsTable from '../schedule-runs-table';
 import scheduleRunsTableConfig from '../../config/schedule-runs-table.config';
+import ScheduleRunsTable from '../schedule-runs-table';
 import { type Props } from '../schedule-runs-table.types';
 
 jest.mock('@/components/table/table', () =>

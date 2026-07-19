@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import Table from '@/components/table/table';
 
 import scheduleRunsTableConfig from '../config/schedule-runs-table.config';
+
 import { type Props } from './schedule-runs-table.types';
 
 export default function ScheduleRunsTable({
