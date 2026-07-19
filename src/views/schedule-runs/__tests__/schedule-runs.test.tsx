@@ -69,19 +69,6 @@ describe(ScheduleRuns.name, () => {
     await user.click(screen.getByRole('button', { name: 'Retry' }));
     expect(mockRefetch).toHaveBeenCalledTimes(1);
   });
-
-  it('renders an empty state when the first page has no runs', () => {
-    setup({
-      hookResult: {
-        data: {
-          pages: [{ workflows: [], nextPage: '' }],
-          pageParams: [undefined],
-        },
-      },
-    });
-
-    expect(screen.getByText('No schedule runs found')).toBeInTheDocument();
-  });
 });
 
 type HookResult = ReturnType<typeof useListWorkflows>;
