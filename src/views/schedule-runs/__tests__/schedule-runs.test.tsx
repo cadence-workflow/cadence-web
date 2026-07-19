@@ -7,6 +7,7 @@ import { RequestError } from '@/utils/request/request-error';
 import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
 
 import ScheduleRuns from '../schedule-runs';
+import { type Props as ScheduleRunsTableProps } from '../schedule-runs-table.types';
 
 const mockRefetch = jest.fn();
 const mockUseListWorkflows = jest.mocked(useListWorkflows);
@@ -27,12 +28,17 @@ jest.mock('@/components/error-panel/error-panel', () =>
     </div>
   ))
 );
+jest.mock('../schedule-runs-table', () =>
+  jest.fn(({ workflows }: ScheduleRunsTableProps) => (
+    <div>{workflows.map(({ workflowID }) => workflowID).join(',')}</div>
+  ))
+);
 describe(ScheduleRuns.name, () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('queries the schedule and renders only the first page as JSON', () => {
+  it('queries the schedule and renders all loaded pages in the table', () => {
     const scheduleId = String.raw`schedule"\id`;
     setup({ scheduleId });
 
@@ -45,7 +51,7 @@ describe(ScheduleRuns.name, () => {
       query: String.raw`CadenceScheduleID = "schedule\"\\id"`,
     });
     expect(screen.getByText(/first-page-workflow/)).toBeInTheDocument();
-    expect(screen.queryByText(/second-page-workflow/)).not.toBeInTheDocument();
+    expect(screen.getByText(/second-page-workflow/)).toBeInTheDocument();
   });
 
   it('renders the initial loading state', () => {
@@ -73,10 +79,7 @@ describe(ScheduleRuns.name, () => {
   it('renders an empty state when the first page has no runs', () => {
     setup({
       hookResult: {
-        data: {
-          pages: [{ workflows: [], nextPage: '' }],
-          pageParams: [undefined],
-        },
+        workflows: [],
       },
     });
 
@@ -93,27 +96,31 @@ function setup({
   scheduleId?: string;
   hookResult?: Partial<HookResult>;
 } = {}) {
+  const workflows = [
+    getMockWorkflowListItem({ workflowID: 'first-page-workflow' }),
+    getMockWorkflowListItem({ workflowID: 'second-page-workflow' }),
+  ];
   mockUseListWorkflows.mockReturnValue({
     data: {
       pages: [
         {
-          workflows: [
-            getMockWorkflowListItem({ workflowID: 'first-page-workflow' }),
-          ],
+          workflows: [workflows[0]],
           nextPage: 'next-page',
         },
         {
-          workflows: [
-            getMockWorkflowListItem({ workflowID: 'second-page-workflow' }),
-          ],
+          workflows: [workflows[1]],
           nextPage: '',
         },
       ],
       pageParams: [undefined, 'next-page'],
     },
+    workflows,
     error: null,
     isLoading: false,
     refetch: mockRefetch,
+    hasNextPage: false,
+    fetchNextPage: jest.fn(),
+    isFetchingNextPage: false,
     ...hookResult,
   } as unknown as HookResult);
 

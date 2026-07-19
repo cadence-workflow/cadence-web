@@ -6,10 +6,19 @@ import SectionLoadingIndicator from '@/components/section-loading-indicator/sect
 import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
 
 import getScheduleRunsQuery from './helpers/get-schedule-runs-query';
+import ScheduleRunsTable from './schedule-runs-table';
 import { type Props } from './schedule-runs.types';
 
 export default function ScheduleRuns({ params }: Props) {
-  const { data, error, isLoading, refetch } = useListWorkflows({
+  const {
+    workflows,
+    error,
+    isLoading,
+    refetch,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useListWorkflows({
     domain: params.domain,
     cluster: params.cluster,
     listType: 'default',
@@ -17,7 +26,6 @@ export default function ScheduleRuns({ params }: Props) {
     inputType: 'query',
     query: getScheduleRunsQuery(params.scheduleId),
   });
-  const workflows = data?.pages[0]?.workflows ?? [];
 
   if (isLoading) {
     return <SectionLoadingIndicator />;
@@ -44,5 +52,15 @@ export default function ScheduleRuns({ params }: Props) {
     );
   }
 
-  return JSON.stringify(workflows);
+  return (
+    <ScheduleRunsTable
+      domain={params.domain}
+      cluster={params.cluster}
+      workflows={workflows}
+      error={error}
+      hasNextPage={hasNextPage}
+      fetchNextPage={fetchNextPage}
+      isFetchingNextPage={isFetchingNextPage}
+    />
+  );
 }
