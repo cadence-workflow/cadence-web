@@ -1,5 +1,5 @@
 import { type SchedulePageTabsParams } from '../schedule-page-tabs/schedule-page-tabs.types';
-import { type SchedulePageLayoutParams } from '../schedule-page.types';
+import { type SchedulePageParams } from '../schedule-page.types';
 
 export type Props = {
   domain: string;
@@ -10,4 +10,4 @@ export type BuildSchedulePageClusterPathParams = Pick<
   SchedulePageTabsParams,
   'domain' | 'scheduleId' | 'scheduleTab'
 > &
-  Pick<SchedulePageLayoutParams, 'cluster'>;
+  Pick<SchedulePageParams, 'cluster'>;

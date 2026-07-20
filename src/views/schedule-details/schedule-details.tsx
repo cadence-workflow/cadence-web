@@ -3,7 +3,10 @@ import React from 'react';
 
 import PageSection from '@/components/page-section/page-section';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
+import decodeUrlParams from '@/utils/decode-url-params';
 import useDescribeSchedule from '@/views/shared/hooks/use-describe-schedule/use-describe-schedule';
+
+import { type SchedulePageTabsParams } from '../schedule-page/schedule-page-tabs/schedule-page-tabs.types';
 
 import scheduleDetailsSectionsConfig from './config/schedule-details-sections.config';
 import { formatScheduleDetails } from './helpers/format-schedule-details';
@@ -16,10 +19,12 @@ import { styled } from './schedule-details.styles';
 import { type Props } from './schedule-details.types';
 
 export default function ScheduleDetails({ params }: Props) {
+  const decodedParams = decodeUrlParams(params) as SchedulePageTabsParams;
+
   const { data, isLoading, isPending } = useDescribeSchedule({
-    domain: params.domain,
-    cluster: params.cluster,
-    scheduleId: params.scheduleId,
+    domain: decodedParams.domain,
+    cluster: decodedParams.cluster,
+    scheduleId: decodedParams.scheduleId,
     throwOnError: true,
   });
 
@@ -46,9 +51,9 @@ export default function ScheduleDetails({ params }: Props) {
             const rows = getRowsFromConfig(
               section.rowsConfig,
               formattedScheduleDetails,
-              params.scheduleId,
-              params.domain,
-              params.cluster
+              decodedParams.scheduleId,
+              decodedParams.domain,
+              decodedParams.cluster
             );
             if (!rows.length) {
               return null;
@@ -64,8 +69,8 @@ export default function ScheduleDetails({ params }: Props) {
           })}
           <ScheduleDetailsBackfillsTable
             backfills={formattedScheduleDetails.info?.ongoingBackfills ?? []}
-            domain={params.domain}
-            cluster={params.cluster}
+            domain={decodedParams.domain}
+            cluster={decodedParams.cluster}
           />
         </styled.DetailsSectionsContainer>
         <styled.JsonPanel>
