@@ -71,6 +71,7 @@ export type BatchAction = {
   startTime?: number;
   endTime?: number;
   rps?: number;
+  query?: string;
 };
 
 export type BatchActionConfirmPayload<SubmissionData> = {
