@@ -38,6 +38,9 @@ export type RequestParams = {
 
 export type DescribeBatchActionResponse = BatchAction;
 
-export type BatcherInputFields = Pick<BatchAction, 'actionType' | 'rps'>;
+export type BatcherInputFields = Pick<
+  BatchAction,
+  'actionType' | 'rps' | 'query'
+>;
 
 export type Context = DefaultMiddlewaresContext;
