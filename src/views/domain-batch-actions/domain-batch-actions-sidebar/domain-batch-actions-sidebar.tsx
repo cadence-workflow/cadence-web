@@ -1,10 +1,12 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 
+import { useQueryClient } from '@tanstack/react-query';
 import { MdAdd, MdOutlineEdit } from 'react-icons/md';
 
 import Button from '@/components/button/button';
 import TableInfiniteScrollLoader from '@/components/table/table-infinite-scroll-loader/table-infinite-scroll-loader';
+import formatDate from '@/utils/data-formatters/format-date';
 
 import DomainBatchActionsSidebarItem from '../domain-batch-actions-sidebar-item/domain-batch-actions-sidebar-item';
 import StatusIcon from '../helpers/status-icon';
@@ -17,6 +19,7 @@ export default function DomainBatchActionsSidebar({
   isDraftOpen,
   isDraftSelected,
   selectedActionId,
+  selectedActionDetailStatus,
   onSelectAction,
   onSelectDraft,
   onCreateNew,
@@ -25,6 +28,36 @@ export default function DomainBatchActionsSidebar({
   isFetchingNextPage,
   error,
 }: Props) {
+  const queryClient = useQueryClient();
+
+  // The list and the open detail poll independently, so one can lag the other
+  // after a status change (e.g. the sidebar already shows COMPLETED while the
+  // detail still shows RUNNING, or vice versa). When the selected action's two
+  // copies disagree, refetch both so whichever is stale catches up immediately
+  // instead of waiting for its next poll. Keyed on selectedActionId too, so
+  // re-selecting an action re-checks it even when another action happened to
+  // share the same status pair (which wouldn't change the deps otherwise).
+  const selectedActionListStatus = useMemo(
+    () =>
+      batchActions.find((action) => action.runId === selectedActionId)?.status,
+    [batchActions, selectedActionId]
+  );
+  useEffect(() => {
+    if (
+      selectedActionDetailStatus &&
+      selectedActionListStatus &&
+      selectedActionDetailStatus !== selectedActionListStatus
+    ) {
+      queryClient.invalidateQueries({ queryKey: ['listBatchActions'] });
+      queryClient.invalidateQueries({ queryKey: ['describeBatchAction'] });
+    }
+  }, [
+    selectedActionId,
+    selectedActionDetailStatus,
+    selectedActionListStatus,
+    queryClient,
+  ]);
+
   return (
     <styled.Container>
       <Button
@@ -58,8 +91,8 @@ export default function DomainBatchActionsSidebar({
           return (
             <DomainBatchActionsSidebarItem
               key={action.runId}
-              // TODO: label should be either start date or provided from search attributes once available.
-              label={action.runId}
+              label={formatDate(action.startTime)}
+              subLabel={action.runId}
               icon={<StatusIcon action={action} />}
               isSelected={isSelected}
               isActive={action.status === 'RUNNING' || isSelected}

@@ -32,4 +32,16 @@ export const styled = {
       ...$theme.typography.LabelXSmall,
     })
   ),
+  TextContainer: createStyled('div', {
+    display: 'flex',
+    flexDirection: 'column',
+    minWidth: 0,
+  }),
+  SubLabel: createStyled('span', ({ $theme }: { $theme: Theme }) => ({
+    color: $theme.colors.contentTertiary,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    ...$theme.typography.ParagraphXSmall,
+  })),
 };

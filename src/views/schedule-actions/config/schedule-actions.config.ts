@@ -1,14 +1,20 @@
 import {
   MdDeleteOutline,
+  MdHistory,
   MdOutlineWarningAmber,
   MdPauseCircleOutline,
   MdPlayCircleOutline,
 } from 'react-icons/md';
 
+import { type BackfillScheduleResponse } from '@/route-handlers/backfill-schedule/backfill-schedule.types';
 import { type DeleteScheduleResponse } from '@/route-handlers/delete-schedule/delete-schedule.types';
 import { type PauseScheduleResponse } from '@/route-handlers/pause-schedule/pause-schedule.types';
 import { type UnpauseScheduleResponse } from '@/route-handlers/unpause-schedule/unpause-schedule.types';
 
+import transformBackfillScheduleFormToSubmission from '../schedule-action-backfill-form/helpers/transform-backfill-schedule-form-to-submission';
+import ScheduleActionBackfillForm from '../schedule-action-backfill-form/schedule-action-backfill-form';
+import { type BackfillScheduleFormData } from '../schedule-action-backfill-form/schedule-action-backfill-form.types';
+import { backfillScheduleFormSchema } from '../schedule-action-backfill-form/schemas/backfill-schedule-form-schema';
 import ScheduleActionPauseForm from '../schedule-action-pause-form/schedule-action-pause-form';
 import { type PauseScheduleFormData } from '../schedule-action-pause-form/schedule-action-pause-form.types';
 import { pauseScheduleFormSchema } from '../schedule-action-pause-form/schemas/pause-schedule-form-schema';
@@ -20,6 +26,7 @@ import {
 } from '../schedule-action-resume-form/schedule-action-resume-form.types';
 import { resumeScheduleFormSchema } from '../schedule-action-resume-form/schemas/resume-schedule-form-schema';
 import {
+  type BackfillScheduleSubmissionData,
   type PauseScheduleSubmissionData,
   type ScheduleAction,
 } from '../schedule-actions.types';
@@ -108,10 +115,32 @@ const deleteScheduleActionConfig: ScheduleAction<DeleteScheduleResponse> = {
   },
 };
 
+const backfillScheduleActionConfig: ScheduleAction<
+  BackfillScheduleResponse,
+  BackfillScheduleFormData,
+  BackfillScheduleSubmissionData
+> = {
+  id: 'backfill',
+  label: 'Backfill',
+  subtitle: 'Backfill missed workflow runs',
+  modal: {
+    withForm: true,
+    form: ScheduleActionBackfillForm,
+    formSchema: backfillScheduleFormSchema,
+    transformFormDataToSubmission: transformBackfillScheduleFormToSubmission,
+  },
+  icon: MdHistory,
+  getRunnableStatus: () => 'RUNNABLE',
+  apiRoute: (params) =>
+    `/api/domains/${encodeURIComponent(params.domain)}/${encodeURIComponent(params.cluster)}/schedules/${encodeURIComponent(params.scheduleId)}/backfill`,
+  renderSuccessMessage: () => 'Schedule backfill has been started.',
+};
+
 const scheduleActionsConfig = [
   pauseScheduleActionConfig,
   resumeScheduleActionConfig,
   deleteScheduleActionConfig,
+  backfillScheduleActionConfig,
 ] as const;
 
 /** Discriminated union of configured actions; use at menu/selection boundaries. */

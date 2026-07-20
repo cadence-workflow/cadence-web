@@ -26,6 +26,22 @@ describe(DomainBatchActionsSidebarItem.name, () => {
     expect(screen.getByText('Test Icon')).toBeInTheDocument();
   });
 
+  it('renders the sub label under the label when provided', () => {
+    render(
+      <DomainBatchActionsSidebarItem
+        label="01 Jun, 12:00:00"
+        subLabel="run-id-123"
+        icon={null}
+        isSelected={false}
+        isActive={false}
+        onSelect={jest.fn()}
+      />
+    );
+
+    expect(screen.getByText('01 Jun, 12:00:00')).toBeInTheDocument();
+    expect(screen.getByText('run-id-123')).toBeInTheDocument();
+  });
+
   it('calls onSelect when clicked', async () => {
     const onSelect = jest.fn();
     const user = userEvent.setup();

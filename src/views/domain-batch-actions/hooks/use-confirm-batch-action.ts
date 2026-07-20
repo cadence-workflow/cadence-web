@@ -32,17 +32,13 @@ export default function useConfirmBatchAction({
       {
         onSuccess: (result) => {
           onSuccess?.();
+          router.push(
+            `/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/batch-actions?bid=${encodeURIComponent(result.runId)}&bwid=${encodeURIComponent(result.workflowId)}`
+          );
           enqueue(
             {
               message: 'Batch action started',
               startEnhancer: MdCheckCircle,
-              actionMessage: 'View',
-              actionOnClick: () => {
-                dequeue();
-                router.push(
-                  `/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/batch-actions?bid=${encodeURIComponent(result.workflowId)}`
-                );
-              },
             },
             DURATION.short
           );

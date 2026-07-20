@@ -1,6 +1,7 @@
+import { QueryClient } from '@tanstack/react-query';
 import { HttpResponse } from 'msw';
 
-import { renderHook, waitFor } from '@/test-utils/rtl';
+import { act, renderHook, waitFor } from '@/test-utils/rtl';
 
 import useStartBatchAction from '../use-start-batch-action';
 import { type BuildBatchActionPayloadParams } from '../use-start-batch-action.types';
@@ -64,6 +65,40 @@ describe(useStartBatchAction.name, () => {
       expect(result.current.isError).toBe(true);
     });
     expect(result.current.error?.message).toBe('Failed to start');
+  });
+
+  it('invalidates listBatchActions queries on success after the delay', async () => {
+    jest.useFakeTimers();
+    try {
+      const invalidateQueriesSpy = jest.spyOn(
+        QueryClient.prototype,
+        'invalidateQueries'
+      );
+
+      const { result } = setup();
+
+      await act(async () => {
+        await result.current.mutateAsync({
+          domain: 'cadence-samples',
+          query: 'WorkflowType="foo"',
+          reason: 'cleanup',
+          rps: 50,
+          batchType: 'terminate',
+        });
+      });
+
+      expect(invalidateQueriesSpy).not.toHaveBeenCalled();
+
+      act(() => {
+        jest.advanceTimersByTime(2000);
+      });
+
+      expect(invalidateQueriesSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ queryKey: ['listBatchActions'] })
+      );
+    } finally {
+      jest.useRealTimers();
+    }
   });
 });
 

@@ -15,6 +15,7 @@ export type BatchActionListItem = {
   workflowId: string;
   runId: string;
   status: BatchActionStatus;
+  startTime: number;
 };
 
 export type ListBatchActionsResponse = {
