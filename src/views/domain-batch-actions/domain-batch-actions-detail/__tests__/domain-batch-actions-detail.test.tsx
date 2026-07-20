@@ -1,6 +1,10 @@
 import React from 'react';
 
-import { render, screen, userEvent } from '@/test-utils/rtl';
+import { HttpResponse } from 'msw';
+
+import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
+
+import { type PublicProviderProps } from '@/test-utils/rtl.types';
 
 import { type BatchAction } from '../../domain-batch-actions.types';
 import DomainBatchActionDetail from '../domain-batch-actions-detail';
@@ -103,9 +107,39 @@ describe(DomainBatchActionDetail.name, () => {
 
     expect(screen.queryByText(/Mock progress bar/)).not.toBeInTheDocument();
   });
+  it('fires a terminate request when the abort button is clicked', async () => {
+    let terminateUrl = '';
+    const { user } = setup({
+      batchAction: { runId: '3', status: 'RUNNING', actionType: 'cancel' },
+      endpointsMocks: [
+        {
+          path: '/api/domains/:domain/:cluster/workflows/:workflowId/:runId/terminate',
+          httpMethod: 'POST',
+          mockOnce: false,
+          httpResolver: async ({ request }) => {
+            terminateUrl = new URL(request.url).pathname;
+            return HttpResponse.json({});
+          },
+        },
+      ],
+    });
+
+    await user.click(screen.getByText('Abort batch action'));
+
+    await waitFor(() => {
+      expect(terminateUrl).toBe(
+        '/api/domains/cadence-batcher/cluster1/workflows/workflow1/3/terminate'
+      );
+    });
+  });
 });
 
-function setup(props: Partial<Props> = {}) {
+function setup({
+  endpointsMocks,
+  ...props
+}: Partial<Props> & {
+  endpointsMocks?: PublicProviderProps['endpointsMocks'];
+} = {}) {
   const user = userEvent.setup();
   render(
     <DomainBatchActionDetail
@@ -113,7 +147,8 @@ function setup(props: Partial<Props> = {}) {
       cluster="cluster1"
       workflowId="workflow1"
       {...props}
-    />
+    />,
+    endpointsMocks ? { endpointsMocks } : undefined
   );
   return { user };
 }

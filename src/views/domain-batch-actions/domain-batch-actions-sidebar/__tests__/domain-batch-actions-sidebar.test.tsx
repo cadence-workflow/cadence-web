@@ -1,10 +1,14 @@
 import React from 'react';
 
+import { QueryClient } from '@tanstack/react-query';
 import { userEvent } from '@testing-library/user-event';
 
-import { render, screen } from '@/test-utils/rtl';
+import { render, screen, waitFor } from '@/test-utils/rtl';
 
-import { type BatchActionListItem } from '@/route-handlers/list-batch-actions/list-batch-actions.types';
+import {
+  type BatchActionListItem,
+  type BatchActionStatus,
+} from '@/route-handlers/list-batch-actions/list-batch-actions.types';
 
 import DomainBatchActionsSidebar from '../domain-batch-actions-sidebar';
 
@@ -31,10 +35,30 @@ jest.mock(
 );
 
 const mockBatchActions: BatchActionListItem[] = [
-  { workflowId: 'wf-4', runId: '4', status: 'RUNNING' },
-  { workflowId: 'wf-3', runId: '3', status: 'COMPLETED' },
-  { workflowId: 'wf-2', runId: '2', status: 'ABORTED' },
-  { workflowId: 'wf-1', runId: '1', status: 'FAILED' },
+  {
+    workflowId: 'wf-4',
+    runId: '4',
+    status: 'RUNNING',
+    startTime: 1717400000000,
+  },
+  {
+    workflowId: 'wf-3',
+    runId: '3',
+    status: 'COMPLETED',
+    startTime: 1717400000000,
+  },
+  {
+    workflowId: 'wf-2',
+    runId: '2',
+    status: 'ABORTED',
+    startTime: 1717400000000,
+  },
+  {
+    workflowId: 'wf-1',
+    runId: '1',
+    status: 'FAILED',
+    startTime: 1717400000000,
+  },
 ];
 
 function setup({
@@ -42,6 +66,7 @@ function setup({
   isDraftOpen = false,
   isDraftSelected = false,
   selectedActionId = null,
+  selectedActionDetailStatus = undefined,
   onSelectAction = jest.fn(),
   onSelectDraft = jest.fn(),
   onCreateNew = jest.fn(),
@@ -54,6 +79,7 @@ function setup({
   isDraftOpen?: boolean;
   isDraftSelected?: boolean;
   selectedActionId?: string | null;
+  selectedActionDetailStatus?: BatchActionStatus;
   onSelectAction?: (action: BatchActionListItem) => void;
   onSelectDraft?: () => void;
   onCreateNew?: () => void;
@@ -63,22 +89,30 @@ function setup({
   error?: Error | null;
 } = {}) {
   const user = userEvent.setup();
-  render(
-    <DomainBatchActionsSidebar
-      batchActions={batchActions}
-      isDraftOpen={isDraftOpen}
-      isDraftSelected={isDraftSelected}
-      selectedActionId={selectedActionId}
-      onSelectAction={onSelectAction}
-      onSelectDraft={onSelectDraft}
-      onCreateNew={onCreateNew}
-      fetchNextPage={fetchNextPage}
-      hasNextPage={hasNextPage}
-      isFetchingNextPage={isFetchingNextPage}
-      error={error}
-    />
-  );
-  return { user, onSelectAction, onSelectDraft, onCreateNew, fetchNextPage };
+  const props = {
+    batchActions,
+    isDraftOpen,
+    isDraftSelected,
+    selectedActionId,
+    selectedActionDetailStatus,
+    onSelectAction,
+    onSelectDraft,
+    onCreateNew,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    error,
+  };
+  const { rerender } = render(<DomainBatchActionsSidebar {...props} />);
+  return {
+    user,
+    onSelectAction,
+    onSelectDraft,
+    onCreateNew,
+    fetchNextPage,
+    rerender: (nextProps: Partial<typeof props>) =>
+      rerender(<DomainBatchActionsSidebar {...props} {...nextProps} />),
+  };
 }
 
 describe(DomainBatchActionsSidebar.name, () => {
@@ -125,6 +159,7 @@ describe(DomainBatchActionsSidebar.name, () => {
       workflowId: 'wf-2',
       runId: '2',
       status: 'ABORTED',
+      startTime: 1717400000000,
     });
   });
 
@@ -195,5 +230,77 @@ describe(DomainBatchActionsSidebar.name, () => {
       'data-has-data',
       'false'
     );
+  });
+
+  it('invalidates the list and the detail when the selected statuses differ', async () => {
+    const invalidateQueriesSpy = jest.spyOn(
+      QueryClient.prototype,
+      'invalidateQueries'
+    );
+
+    // List says action 4 is RUNNING, detail reports COMPLETED → stale copy.
+    setup({ selectedActionId: '4', selectedActionDetailStatus: 'COMPLETED' });
+
+    await waitFor(() => {
+      expect(invalidateQueriesSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ queryKey: ['listBatchActions'] })
+      );
+    });
+    expect(invalidateQueriesSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ queryKey: ['describeBatchAction'] })
+    );
+  });
+
+  it('does not invalidate anything when the selected statuses match', () => {
+    const invalidateQueriesSpy = jest.spyOn(
+      QueryClient.prototype,
+      'invalidateQueries'
+    );
+
+    setup({ selectedActionId: '4', selectedActionDetailStatus: 'RUNNING' });
+
+    expect(invalidateQueriesSpy).not.toHaveBeenCalledWith(
+      expect.objectContaining({ queryKey: ['listBatchActions'] })
+    );
+    expect(invalidateQueriesSpy).not.toHaveBeenCalledWith(
+      expect.objectContaining({ queryKey: ['describeBatchAction'] })
+    );
+  });
+
+  it('re-checks on re-selection even when the status pair is unchanged', async () => {
+    const invalidateQueriesSpy = jest.spyOn(
+      QueryClient.prototype,
+      'invalidateQueries'
+    );
+
+    // Action 4 (RUNNING in list) selected with a COMPLETED detail → stale.
+    const { rerender } = setup({
+      selectedActionId: '4',
+      selectedActionDetailStatus: 'COMPLETED',
+    });
+    await waitFor(() => {
+      expect(invalidateQueriesSpy).toHaveBeenCalled();
+    });
+    const callsAfterFirst = invalidateQueriesSpy.mock.calls.length;
+
+    // Select action 3 (COMPLETED in both list and detail) → nothing to do.
+    rerender({
+      selectedActionId: '3',
+      selectedActionDetailStatus: 'COMPLETED',
+    });
+
+    // Back to action 4: same (COMPLETED detail / RUNNING list) pair as before,
+    // so the status deps are unchanged — only selectedActionId flips back. The
+    // list must still be refreshed.
+    rerender({
+      selectedActionId: '4',
+      selectedActionDetailStatus: 'COMPLETED',
+    });
+
+    await waitFor(() => {
+      expect(invalidateQueriesSpy.mock.calls.length).toBeGreaterThan(
+        callsAfterFirst
+      );
+    });
   });
 });

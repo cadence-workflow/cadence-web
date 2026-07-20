@@ -1,6 +1,8 @@
 'use client';
 
-import { useMutation } from '@tanstack/react-query';
+import { useEffect, useRef } from 'react';
+
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import {
   BATCH_ACTION_BATCHER_DOMAIN,
@@ -12,6 +14,7 @@ import { type RequestError } from '@/utils/request/request-error';
 
 import {
   BATCH_ACTION_EXECUTION_TIMEOUT_SECONDS,
+  BATCH_ACTION_LIST_INVALIDATE_TIMEOUT_MS,
   BATCH_ACTION_TASK_LIST,
 } from '../domain-batch-actions.constants';
 import buildBatchActionPayload from '../helpers/build-batch-action-payload';
@@ -25,6 +28,13 @@ import {
 export default function useStartBatchAction({
   cluster,
 }: UseStartBatchActionParams) {
+  const queryClient = useQueryClient();
+
+  // Track the deferred-invalidation timer so it is cleared on unmount and never
+  // fires against a torn-down view (prevents cross-test bleed in tests).
+  const invalidateTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  useEffect(() => () => clearTimeout(invalidateTimeoutRef.current), []);
+
   return useMutation<
     StartBatchActionResponse,
     RequestError,
@@ -56,6 +66,13 @@ export default function useStartBatchAction({
           }),
         }
       ).then((res): Promise<StartBatchActionResponse> => res.json());
+    },
+    onSuccess: () => {
+      // A freshly-started batcher workflow isn't visible in the list query
+      // immediately (visibility propagation lag), so delay the invalidation.
+      invalidateTimeoutRef.current = setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['listBatchActions'] });
+      }, BATCH_ACTION_LIST_INVALIDATE_TIMEOUT_MS);
     },
   });
 }

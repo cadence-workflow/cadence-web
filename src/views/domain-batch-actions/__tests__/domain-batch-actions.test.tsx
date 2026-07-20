@@ -13,7 +13,10 @@ import DomainBatchActions from '../domain-batch-actions';
 import { type Props as DetailProps } from '../domain-batch-actions-detail/domain-batch-actions-detail.types';
 import { type Props as NewActionDetailProps } from '../domain-batch-actions-new-action-detail/domain-batch-actions-new-action-detail.types';
 import { type Props as SidebarProps } from '../domain-batch-actions-sidebar/domain-batch-actions-sidebar.types';
-import { BATCH_DRAFT_RESET_PARAMS } from '../domain-batch-actions.constants';
+import {
+  BATCH_ACTION_DEFAULT_STATUSES,
+  BATCH_DRAFT_RESET_PARAMS,
+} from '../domain-batch-actions.constants';
 import { type BatchAction } from '../domain-batch-actions.types';
 
 const mockSetQueryParams = jest.fn();
@@ -93,8 +96,18 @@ jest.mock(
 
 const mockBatchActionsResponse: ListBatchActionsResponse = {
   batchActions: [
-    { workflowId: 'wf-5', runId: '5', status: 'RUNNING' },
-    { workflowId: 'wf-4', runId: '4', status: 'COMPLETED' },
+    {
+      workflowId: 'wf-5',
+      runId: '5',
+      status: 'RUNNING',
+      startTime: 1717400000000,
+    },
+    {
+      workflowId: 'wf-4',
+      runId: '4',
+      status: 'COMPLETED',
+      startTime: 1717400000000,
+    },
   ],
   nextPageToken: '',
 };
@@ -154,6 +167,7 @@ describe(DomainBatchActions.name, () => {
       ...BATCH_DRAFT_RESET_PARAMS,
       batchActionId: 'draft',
       batchQuery: 'CloseTime = missing',
+      batchStatuses: BATCH_ACTION_DEFAULT_STATUSES,
     });
   });
 
@@ -304,15 +318,35 @@ describe(DomainBatchActions.name, () => {
       pages: [
         {
           batchActions: [
-            { workflowId: 'wf-5', runId: '5', status: 'RUNNING' },
-            { workflowId: 'wf-4', runId: '4', status: 'COMPLETED' },
+            {
+              workflowId: 'wf-5',
+              runId: '5',
+              status: 'RUNNING',
+              startTime: 1717400000000,
+            },
+            {
+              workflowId: 'wf-4',
+              runId: '4',
+              status: 'COMPLETED',
+              startTime: 1717400000000,
+            },
           ],
           nextPageToken: 'page-2',
         },
         {
           batchActions: [
-            { workflowId: 'wf-3', runId: '3', status: 'COMPLETED' },
-            { workflowId: 'wf-2', runId: '2', status: 'COMPLETED' },
+            {
+              workflowId: 'wf-3',
+              runId: '3',
+              status: 'COMPLETED',
+              startTime: 1717400000000,
+            },
+            {
+              workflowId: 'wf-2',
+              runId: '2',
+              status: 'COMPLETED',
+              startTime: 1717400000000,
+            },
           ],
           nextPageToken: '',
         },

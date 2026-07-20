@@ -13,6 +13,16 @@ import {
 import { type DomainSchedulesCreateFormData } from '../../domain-schedules-create-modal/domain-schedules-create-modal.types';
 import DomainSchedulesCreateForm from '../domain-schedules-create-form';
 
+const mockUseTaskListFieldValidation = jest.fn();
+
+jest.mock(
+  '@/views/workflow-actions/workflow-action-start-form/hooks/use-task-list-field-validation',
+  () => jest.fn((...args) => mockUseTaskListFieldValidation(...args))
+);
+
+const MOCK_DOMAIN = 'test-domain';
+const MOCK_CLUSTER = 'test-cluster';
+
 /** Required fields rendered by `DomainSchedulesCreateForm` (excludes optional input / pause / prefix / SDK default). */
 const REQUIRED_FORM_FIELD_PATHS: FieldPath<DomainSchedulesCreateFormData>[] = [
   'workflowType.name',
@@ -95,10 +105,8 @@ describe('DomainSchedulesCreateForm', () => {
     const { user } = await setup({});
 
     const taskListInput = screen.getByRole('textbox', { name: 'Task List' });
-    fireEvent.change(taskListInput, {
-      target: { value: '  spaced-task-list  ' },
-    });
-    expect(taskListInput).toHaveValue('spaced-task-list');
+    await user.type(taskListInput, 'test-task-list');
+    expect(taskListInput).toHaveValue('test-task-list');
 
     const workflowTypeInput = screen.getByRole('textbox', {
       name: 'Workflow Type',
@@ -153,12 +161,26 @@ describe('DomainSchedulesCreateForm', () => {
     await user.click(checkbox);
     expect(checkbox).not.toBeChecked();
   });
+
+  it('shows warning caption when taskListCaptionMessage exists', async () => {
+    await setup({
+      taskListValidation: {
+        isTaskListLoading: false,
+        taskListCaptionMessage: 'This task list has no workers',
+      },
+    });
+
+    expect(
+      screen.getByText('This task list has no workers')
+    ).toBeInTheDocument();
+  });
 });
 
 type SetupProps = {
   defaultValues?: Partial<DomainSchedulesCreateFormData>;
   /** Applies fixed `setError` calls (same role as passing `fieldErrors` into start form tests). */
   injectFieldErrors?: boolean;
+  taskListValidation?: ReturnType<typeof mockUseTaskListFieldValidation>;
 };
 
 function TestWrapper({
@@ -182,13 +204,26 @@ function TestWrapper({
     }
   }, [injectFieldErrors, setError]);
 
-  return <DomainSchedulesCreateForm control={control} trigger={trigger} />;
+  return (
+    <DomainSchedulesCreateForm
+      control={control}
+      trigger={trigger}
+      domain={MOCK_DOMAIN}
+      cluster={MOCK_CLUSTER}
+    />
+  );
 }
 
 async function setup({
   defaultValues,
   injectFieldErrors = false,
+  taskListValidation = {
+    isTaskListLoading: false,
+    taskListCaptionMessage: null,
+  },
 }: Partial<SetupProps> = {}) {
+  mockUseTaskListFieldValidation.mockReturnValue(taskListValidation);
+
   const user = userEvent.setup();
 
   render(

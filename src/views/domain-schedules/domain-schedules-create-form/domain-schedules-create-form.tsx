@@ -5,8 +5,10 @@ import React from 'react';
 import { Checkbox } from 'baseui/checkbox';
 import { Input } from 'baseui/input';
 import { Radio, RadioGroup } from 'baseui/radio';
+import { Spinner, SIZE as SPINNER_SIZE } from 'baseui/spinner';
 import { LabelXSmall } from 'baseui/typography';
 import { Controller, useFormState } from 'react-hook-form';
+import { MdWarning } from 'react-icons/md';
 
 import CronScheduleInput from '@/components/cron-schedule-input/cron-schedule-input';
 import MultiJsonInput from '@/components/multi-json-input/multi-json-input';
@@ -19,6 +21,10 @@ import getFieldErrorMessage from '@/views/workflow-actions/workflow-action-start
 import getFieldObjectErrorMessages from '@/views/workflow-actions/workflow-action-start-form/helpers/get-field-object-error-messages';
 // FIXME(refactor): Share multi-JSON field error wiring with Start workflow in a common helper (cross-cutting create-schedule / Start workflow imports).
 import getMultiJsonErrorMessage from '@/views/workflow-actions/workflow-action-start-form/helpers/get-multi-json-error-message';
+// TODO(migrate): task-list validation hooks/helpers live in start-workflow for now —
+// move useDescribeTaskList, useTaskListFieldValidation, and getTaskListCaptionMessage
+// to shared dir once create-schedule and start-workflow stabilise.
+import useTaskListFieldValidation from '@/views/workflow-actions/workflow-action-start-form/hooks/use-task-list-field-validation';
 
 import {
   CREATE_SCHEDULE_FORM_FIELD_IDS,
@@ -27,8 +33,20 @@ import {
 import { overrides } from './domain-schedules-create-form.styles';
 import { type Props } from './domain-schedules-create-form.types';
 
-export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
+export default function DomainSchedulesCreateForm({
+  control,
+  trigger,
+  domain,
+  cluster,
+}: Props) {
   const { errors: fieldErrors, isSubmitted } = useFormState({ control });
+
+  const { isTaskListLoading, taskListCaptionMessage } =
+    useTaskListFieldValidation({
+      control,
+      domain,
+      cluster,
+    });
   const cronExpressionError = getFieldObjectErrorMessages(
     fieldErrors,
     'cronExpression'
@@ -99,6 +117,17 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
         description={CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.taskList}
         htmlFor={CREATE_SCHEDULE_FORM_FIELD_IDS.taskList}
         error={getFieldErrorMessage(fieldErrors, 'taskList.name')}
+        caption={
+          taskListCaptionMessage ? (
+            <>
+              <MdWarning />
+              {taskListCaptionMessage}
+            </>
+          ) : undefined
+        }
+        overrides={
+          taskListCaptionMessage ? overrides.taskListWarningField : undefined
+        }
       >
         <Controller
           name="taskList.name"
@@ -111,13 +140,16 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
               // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
               inputRef={ref}
               aria-label="Task List"
-              onChange={(e) => field.onChange(e.target.value.trim())}
-              onBlur={field.onBlur}
               error={Boolean(
                 getFieldErrorMessage(fieldErrors, 'taskList.name')
               )}
               size="compact"
               placeholder="Enter task list name"
+              endEnhancer={
+                isTaskListLoading ? (
+                  <Spinner $size={SPINNER_SIZE.small} />
+                ) : undefined
+              }
             />
           )}
         />
@@ -308,6 +340,7 @@ export default function DomainSchedulesCreateForm({ control, trigger }: Props) {
         fieldErrors={fieldErrors}
         trigger={trigger}
         isSubmitted={isSubmitted}
+        cluster={cluster}
       />
     </div>
   );
