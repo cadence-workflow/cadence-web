@@ -3,6 +3,7 @@
 import React from 'react';
 
 import { FormControl } from 'baseui/form-control';
+import { mergeOverrides } from 'baseui/helpers/overrides';
 
 import { overrides, styled } from './domain-schedules-horizontal-field.styles';
 import { type Props } from './domain-schedules-horizontal-field.types';
@@ -13,6 +14,7 @@ export default function DomainSchedulesHorizontalField({
   htmlFor,
   error,
   caption,
+  overrides: externalOverrides,
   subfield = false,
   children,
 }: Props) {
@@ -32,7 +34,10 @@ export default function DomainSchedulesHorizontalField({
         <FormControl
           error={error}
           caption={caption}
-          overrides={overrides.horizontalFieldFormControl}
+          overrides={mergeOverrides(
+            overrides.horizontalFieldFormControl,
+            externalOverrides?.FormControl?.props?.overrides
+          )}
         >
           {children}
         </FormControl>

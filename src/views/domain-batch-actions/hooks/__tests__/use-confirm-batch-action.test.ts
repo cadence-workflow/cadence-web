@@ -29,7 +29,7 @@ describe(useConfirmBatchAction.name, () => {
     jest.clearAllMocks();
   });
 
-  it('starts the batch action, calls onSuccess, and shows a success snackbar', async () => {
+  it('starts the batch action, calls onSuccess, redirects, and shows a success snackbar', async () => {
     const onSuccess = jest.fn();
     const { result } = setup({ onSuccess });
 
@@ -45,37 +45,14 @@ describe(useConfirmBatchAction.name, () => {
     await waitFor(() => {
       expect(onSuccess).toHaveBeenCalled();
     });
+    expect(mockRouterPush).toHaveBeenCalledWith(
+      '/domains/cadence-samples/cluster0/batch-actions?bid=run-1&bwid=wf-1'
+    );
     expect(mockEnqueue).toHaveBeenCalledWith(
       expect.objectContaining({
         message: 'Batch action started',
-        actionMessage: 'View',
       }),
       DURATION.short
-    );
-  });
-
-  it('navigates to the batch workflow on snackbar action click', async () => {
-    const { result } = setup({});
-
-    act(() => {
-      result.current.handleConfirm({
-        batchType: 'terminate',
-        query: 'WorkflowType="foo"',
-        reason: 'cleanup',
-        rps: 10,
-      });
-    });
-
-    await waitFor(() => {
-      expect(mockEnqueue).toHaveBeenCalled();
-    });
-
-    const { actionOnClick } = mockEnqueue.mock.calls[0][0];
-    actionOnClick();
-
-    expect(mockDequeue).toHaveBeenCalled();
-    expect(mockRouterPush).toHaveBeenCalledWith(
-      '/domains/cadence-samples/cluster0/batch-actions?bid=run-1&bwid=wf-1'
     );
   });
 
