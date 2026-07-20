@@ -20,11 +20,10 @@ describe(getScheduleRunsQuery.name, () => {
     'searches IDs with partial matching set to %s',
     (partialMatching, comparator) => {
       expect(
-        getScheduleRunsQuery(
-          'test-schedule',
-          String.raw`term"\value`,
-          partialMatching
-        )
+        getScheduleRunsQuery('test-schedule', {
+          search: String.raw`term"\value`,
+          isPartialMatchingEnabled: partialMatching,
+        })
       ).toBe(
         `CadenceScheduleID = "test-schedule" AND ` +
           `(RunID ${comparator} "term\\"\\\\value" OR ` +
@@ -33,4 +32,31 @@ describe(getScheduleRunsQuery.name, () => {
       );
     }
   );
+
+  it('combines schedule time and workflow status filters', () => {
+    expect(
+      getScheduleRunsQuery('test-schedule', {
+        timeRangeStart: '2026-07-12T10:00:00.000Z',
+        timeRangeEnd: '2026-07-19T10:00:00.000Z',
+        statuses: [
+          'WORKFLOW_EXECUTION_CLOSE_STATUS_FAILED',
+          'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
+        ],
+      })
+    ).toBe(
+      'CadenceScheduleID = "test-schedule" AND ' +
+        '(CloseStatus = 1 OR CloseTime = missing) AND ' +
+        'CadenceScheduleTime > "2026-07-12T10:00:00.000Z" AND ' +
+        'CadenceScheduleTime <= "2026-07-19T10:00:00.000Z"'
+    );
+  });
+
+  it.each([
+    ['backfill', 'true'],
+    ['regular', 'false'],
+  ] as const)('queries %s runs', (runType, expectedValue) => {
+    expect(
+      getScheduleRunsQuery('test-schedule', { runType })
+    ).toContain(`CadenceScheduleIsBackfill = "${expectedValue}"`);
+  });
 });

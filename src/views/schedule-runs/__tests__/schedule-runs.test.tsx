@@ -1,23 +1,26 @@
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
+import usePageFilters from '@/components/page-filters/hooks/use-page-filters';
+import { type DateFilterValue } from '@/components/date-filter/date-filter.types';
 import { type Props as ErrorPanelProps } from '@/components/error-panel/error-panel.types';
 import { type Props as PanelSectionProps } from '@/components/panel-section/panel-section.types';
 import useConfigValue from '@/hooks/use-config-value/use-config-value';
-import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtures__/mock-workflow-list-items';
 import { RequestError } from '@/utils/request/request-error';
 import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
+import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
 
 import ScheduleRuns from '../schedule-runs';
 import { type Props as ScheduleRunsTableProps } from '../schedule-runs-table/schedule-runs-table.types';
+import { type ScheduleRunsRunType } from '../schedule-runs.types';
 
 const mockRefetch = jest.fn();
 const mockUseConfigValue = jest.mocked(useConfigValue);
-const mockUsePageQueryParams = jest.mocked(usePageQueryParams);
+const mockUsePageFilters = jest.mocked(usePageFilters);
 const mockUseListWorkflows = jest.mocked(useListWorkflows);
 
 jest.mock('@/hooks/use-config-value/use-config-value');
-jest.mock('@/hooks/use-page-query-params/use-page-query-params');
+jest.mock('@/components/page-filters/hooks/use-page-filters');
 jest.mock('@/views/shared/hooks/use-list-workflows');
 jest.mock(
   '@/components/section-loading-indicator/section-loading-indicator',
@@ -35,18 +38,18 @@ jest.mock('@/components/error-panel/error-panel', () =>
   ))
 );
 jest.mock('../schedule-runs-table/schedule-runs-table', () =>
-  jest.fn(({ workflows, isFetchingNextPage }: ScheduleRunsTableProps) => (
+  jest.fn(({ workflows }: ScheduleRunsTableProps) => (
     <div>
       {workflows.length
         ? workflows.map(({ workflowID }) => workflowID).join(',')
         : 'No results'}
-      {isFetchingNextPage && ' Background loading'}
     </div>
   ))
 );
 jest.mock('../schedule-runs-header', () =>
-  jest.fn(() => <div>Search schedule runs</div>)
+  jest.fn(() => <div>Schedule run filters</div>)
 );
+
 describe(ScheduleRuns.name, () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -56,22 +59,13 @@ describe(ScheduleRuns.name, () => {
     const scheduleId = String.raw`schedule"\id`;
     setup({ scheduleId });
 
-    expect(mockUseListWorkflows).toHaveBeenCalledWith({
-      domain: 'test-domain',
-      cluster: 'test-cluster',
-      listType: 'default',
-      pageSize: 20,
-      inputType: 'query',
-      query: String.raw`CadenceScheduleID = "schedule\"\\id"`,
-    });
+    expect(mockUseListWorkflows).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: String.raw`CadenceScheduleID = "schedule\"\\id"`,
+      })
+    );
     expect(screen.getByText(/first-page-workflow/)).toBeInTheDocument();
     expect(screen.getByText(/second-page-workflow/)).toBeInTheDocument();
-  });
-
-  it('renders the initial loading state', () => {
-    setup({ hookResult: { data: undefined, isLoading: true } });
-
-    expect(screen.getByText('Loading schedule runs')).toBeInTheDocument();
   });
 
   it.each([
@@ -94,6 +88,47 @@ describe(ScheduleRuns.name, () => {
       );
     }
   );
+
+  it('combines schedule time and workflow status filters', () => {
+    setup({
+      timeStart: new Date('2026-07-12T10:00:00Z'),
+      timeEnd: new Date('2026-07-19T10:00:00Z'),
+      statuses: [
+        'WORKFLOW_EXECUTION_CLOSE_STATUS_FAILED',
+        'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
+      ],
+    });
+
+    expect(mockUseListWorkflows).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query:
+          'CadenceScheduleID = "test-schedule" AND ' +
+          '(CloseStatus = 1 OR CloseTime = missing) AND ' +
+          'CadenceScheduleTime > "2026-07-12T10:00:00.000Z" AND ' +
+          'CadenceScheduleTime <= "2026-07-19T10:00:00.000Z"',
+      })
+    );
+  });
+
+  it.each([
+    ['backfill', 'true'],
+    ['regular', 'false'],
+  ] as const)('queries %s runs', (runType, expectedValue) => {
+    setup({ runType });
+    expect(mockUseListWorkflows).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: expect.stringContaining(
+          `CadenceScheduleIsBackfill = "${expectedValue}"`
+        ),
+      })
+    );
+  });
+
+  it('renders the initial loading state', () => {
+    setup({ hookResult: { data: undefined, isPending: true } });
+
+    expect(screen.getByText('Loading schedule runs')).toBeInTheDocument();
+  });
 
   it('renders a retryable request error', async () => {
     const user = userEvent.setup();
@@ -121,31 +156,6 @@ describe(ScheduleRuns.name, () => {
 
     expect(screen.getByText('No results')).toBeInTheDocument();
   });
-
-  it('renders no results and retains rows while refetching', () => {
-    const { rerender } = setup({
-      search: 'missing',
-      hookResult: { workflows: [] },
-    });
-    expect(screen.getByText('No results')).toBeInTheDocument();
-
-    mockUseListWorkflows.mockReturnValueOnce(
-      getHookResult({ isFetching: true })
-    );
-    rerender(
-      <ScheduleRuns
-        params={{
-          domain: 'test-domain',
-          cluster: 'test-cluster',
-          scheduleId: 'test-schedule',
-          scheduleTab: 'runs',
-        }}
-      />
-    );
-    expect(screen.getByText(/first-page-workflow/)).toHaveTextContent(
-      'Background loading'
-    );
-  });
 });
 
 type HookResult = ReturnType<typeof useListWorkflows>;
@@ -154,20 +164,36 @@ function setup({
   scheduleId = 'test-schedule',
   search = '',
   partialMatching = false,
+  timeStart,
+  timeEnd,
+  statuses,
+  runType = 'all',
   hookResult = {},
 }: {
   scheduleId?: string;
   search?: string;
   partialMatching?: boolean;
+  timeStart?: DateFilterValue;
+  timeEnd?: DateFilterValue;
+  statuses?: Array<WorkflowStatus>;
+  runType?: ScheduleRunsRunType;
   hookResult?: Partial<HookResult>;
 } = {}) {
   mockUseConfigValue.mockReturnValue({
     data: partialMatching,
   } as ReturnType<typeof useConfigValue>);
-  mockUsePageQueryParams.mockReturnValue([
-    { scheduleRunsSearch: search },
-    jest.fn(),
-  ]);
+  mockUsePageFilters.mockReturnValue({
+    resetAllFilters: jest.fn(),
+    activeFiltersCount: 0,
+    queryParams: {
+      scheduleRunsSearch: search,
+      scheduleRunsTimeStart: timeStart,
+      scheduleRunsTimeEnd: timeEnd,
+      scheduleRunsStatuses: statuses,
+      scheduleRunsRunType: runType,
+    },
+    setQueryParams: jest.fn(),
+  });
   mockUseListWorkflows.mockReturnValue(getHookResult(hookResult));
 
   return render(
@@ -203,12 +229,11 @@ function getHookResult(overrides: Partial<HookResult> = {}): HookResult {
     },
     workflows,
     error: null,
-    isLoading: false,
+    isPending: false,
     refetch: mockRefetch,
     hasNextPage: false,
     fetchNextPage: jest.fn(),
     isFetchingNextPage: false,
-    isFetching: false,
     ...overrides,
   } as unknown as HookResult;
 }

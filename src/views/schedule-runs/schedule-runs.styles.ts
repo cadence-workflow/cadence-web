@@ -10,4 +10,17 @@ export const styled = {
       gap: $theme.sizing.scale900,
     })
   ),
+  HeaderToolbar: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+    display: 'flex',
+    flexDirection: 'column',
+    gap: $theme.sizing.scale500,
+    [$theme.mediaQuery.medium]: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+    },
+  })),
+  SearchSlot: createStyled('div', () => ({
+    flexGrow: 1,
+    minWidth: 0,
+  })),
 };
