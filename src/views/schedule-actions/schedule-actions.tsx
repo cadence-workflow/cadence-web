@@ -11,7 +11,7 @@ import { MdArrowDropDown } from 'react-icons/md';
 
 import Button from '@/components/button/button';
 import useConfigValue from '@/hooks/use-config-value/use-config-value';
-import { type SchedulePageLayoutParams } from '@/views/schedule-page/schedule-page.types';
+import { type SchedulePageParams } from '@/views/schedule-page/schedule-page.types';
 import useDescribeSchedule from '@/views/shared/hooks/use-describe-schedule/use-describe-schedule';
 
 import { type SelectableScheduleAction } from './config/schedule-actions.config';
@@ -21,7 +21,7 @@ import { overrides } from './schedule-actions.styles';
 import { type ErasedScheduleAction } from './schedule-actions.types';
 
 export default function ScheduleActions() {
-  const params = useParams<SchedulePageLayoutParams>();
+  const params = useParams<SchedulePageParams>();
   const scheduleDetailsParams = pick(params, 'cluster', 'scheduleId', 'domain');
 
   const {

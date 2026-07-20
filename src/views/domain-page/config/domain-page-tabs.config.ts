@@ -40,6 +40,15 @@ const domainPageTabsConfig: DomainPageTabsConfig<
       actions: [{ kind: 'retry', label: 'Retry' }],
     }),
   },
+  schedules: {
+    title: 'Schedules',
+    artwork: MdCalendarMonth,
+    content: DomainSchedules,
+    getErrorConfig: () => ({
+      message: 'Failed to load schedules',
+      actions: [{ kind: 'retry', label: 'Retry' }],
+    }),
+  },
   'cron-list': {
     title: 'Cron',
     artwork: MdSchedule,
@@ -55,15 +64,6 @@ const domainPageTabsConfig: DomainPageTabsConfig<
     content: DomainPageMetadata,
     getErrorConfig: () => ({
       message: 'Failed to load metadata',
-      actions: [{ kind: 'retry', label: 'Retry' }],
-    }),
-  },
-  schedules: {
-    title: 'Schedules',
-    artwork: MdCalendarMonth,
-    content: DomainSchedules,
-    getErrorConfig: () => ({
-      message: 'Failed to load schedules',
       actions: [{ kind: 'retry', label: 'Retry' }],
     }),
   },

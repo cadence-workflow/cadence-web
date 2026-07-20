@@ -1,12 +1,12 @@
 import type React from 'react';
 
-export type SchedulePageLayoutParams = {
+export type SchedulePageParams = {
   domain: string;
   cluster: string;
   scheduleId: string;
 };
 
 export type Props = {
-  params: SchedulePageLayoutParams;
+  params: SchedulePageParams;
   children: React.ReactNode;
 };
