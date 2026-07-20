@@ -1,5 +1,6 @@
-import { type FormControlOverrides } from 'baseui/form-control';
 import type { ReactNode } from 'react';
+
+import { type FormControlOverrides } from 'baseui/form-control';
 
 export type DomainSchedulesHorizontalFieldOverrides = {
   FormControl?: {
