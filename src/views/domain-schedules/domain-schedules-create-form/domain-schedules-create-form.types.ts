@@ -5,5 +5,6 @@ import { type DomainSchedulesCreateFormData } from '../domain-schedules-create-m
 export type Props = {
   control: Control<DomainSchedulesCreateFormData>;
   trigger: UseFormTrigger<DomainSchedulesCreateFormData>;
+  domain: string;
   cluster: string;
 };
