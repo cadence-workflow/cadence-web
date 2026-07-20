@@ -27,23 +27,30 @@ export default function SignalButton({
   const domain = domainProp ?? pageContext.domain;
   const cluster = clusterProp ?? pageContext.cluster;
   const workflowId = workflowIdProp ?? pageContext.workflowId;
-  const runId = runIdProp ?? pageContext.runId;
+  // Only inherit runId from context when workflowId is also being inherited
+  // from context -- an explicit workflowId with no explicit runId means
+  // "the current run of that workflow" (per Cadence API semantics), not the
+  // page's unrelated run.
+  const runId =
+    workflowIdProp === undefined ? runIdProp ?? pageContext.runId : runIdProp;
 
   const { enqueue } = useSnackbar();
 
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
-      if (!domain || !cluster || !workflowId || !runId) {
+      if (!domain || !cluster || !workflowId) {
         throw new Error(
-          'Missing workflow context. Please specify domain, cluster, workflowId, and runId.'
+          'Missing workflow context. Please specify domain, cluster, and workflowId.'
         );
       }
 
       const signalInput =
         input === undefined ? undefined : losslessJsonStringify(input);
 
+      const runIdPathSegment = runId ? `/${encodeURIComponent(runId)}` : '';
+
       const response = await request(
-        `/api/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows/${encodeURIComponent(workflowId)}/${encodeURIComponent(runId)}/signal`,
+        `/api/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows/${encodeURIComponent(workflowId)}${runIdPathSegment}/signal`,
         {
           method: 'POST',
           body: JSON.stringify({
@@ -72,7 +79,7 @@ export default function SignalButton({
     },
   });
 
-  const isDisabled = !domain || !cluster || !workflowId || !runId;
+  const isDisabled = !domain || !cluster || !workflowId;
 
   const handleClick = () => {
     if (!isDisabled) {

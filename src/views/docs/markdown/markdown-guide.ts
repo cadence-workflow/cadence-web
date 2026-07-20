@@ -58,7 +58,7 @@ Use explicit attributes when you need to signal a different workflow than the on
 - \`domain\` (string, optional) -- inherited from page context if omitted
 - \`cluster\` (string, optional) -- inherited from page context if omitted
 - \`workflowId\` (string, optional) -- inherited from page context if omitted
-- \`runId\` (string, optional) -- inherited from page context if omitted
+- \`runId\` (string, optional) -- inherited from page context only if \`workflowId\` is also omitted. If \`workflowId\` is specified explicitly without \`runId\`, the signal targets the current run of that workflow (per Cadence API semantics), not the page's run
 
 The \`input\` field supports different value types:
 

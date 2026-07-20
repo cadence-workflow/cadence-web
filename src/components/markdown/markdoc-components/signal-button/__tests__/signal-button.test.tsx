@@ -17,6 +17,8 @@ jest.mock('baseui/snackbar', () => ({
 
 const SIGNAL_ENDPOINT =
   '/api/domains/:domain/:cluster/workflows/:workflowId/:runId/signal';
+const SIGNAL_ENDPOINT_CURRENT_RUN =
+  '/api/domains/:domain/:cluster/workflows/:workflowId/signal';
 
 const defaultProps = {
   signalName: 'test-signal',
@@ -139,6 +141,53 @@ describe(SignalButton.name, () => {
       );
     });
   });
+
+  it('signals the current run when workflowId is explicit and no runId is provided anywhere', async () => {
+    const { user, getLatestRequest } = setup({
+      propsOverrides: { runId: undefined },
+    });
+
+    const button = screen.getByRole('button', { name: 'Send Signal' });
+    expect(button).not.toHaveAttribute('disabled');
+
+    await user.click(button);
+
+    await waitFor(() => {
+      expect(getLatestRequest()).toBe(
+        `/api/domains/${defaultProps.domain}/${defaultProps.cluster}/workflows/${defaultProps.workflowId}/signal`
+      );
+    });
+  });
+
+  it('does not inherit runId from context when workflowId is explicit (signals current run instead)', async () => {
+    const { user, getLatestRequest } = setup({
+      propsOverrides: {
+        domain: undefined,
+        cluster: undefined,
+        runId: undefined,
+      },
+      contextValue: {
+        domain: 'context-domain',
+        cluster: 'context-cluster',
+        workflowId: 'context-workflow-id',
+        runId: 'context-run-id',
+      },
+    });
+
+    const button = screen.getByRole('button', { name: 'Send Signal' });
+    expect(button).not.toHaveAttribute('disabled');
+
+    await user.click(button);
+
+    // domain/cluster are still inherited from context independently, but
+    // runId must NOT be -- it belongs to the context's workflowId, not the
+    // explicit one from props.
+    await waitFor(() => {
+      expect(getLatestRequest()).toBe(
+        `/api/domains/context-domain/context-cluster/workflows/${defaultProps.workflowId}/signal`
+      );
+    });
+  });
 });
 
 function setup({
@@ -153,6 +202,17 @@ function setup({
   const user = userEvent.setup();
   let latestRequestPathname: string | undefined;
 
+  const httpResolver = async ({ request }: { request: Request }) => {
+    latestRequestPathname = new URL(request.url).pathname;
+    if (error) {
+      return HttpResponse.json(
+        { message: 'Failed to signal workflow' },
+        { status: 500 }
+      );
+    }
+    return HttpResponse.json({});
+  };
+
   render(
     <SignalButton {...defaultProps} {...propsOverrides} />,
     {
@@ -161,16 +221,13 @@ function setup({
           path: SIGNAL_ENDPOINT,
           httpMethod: 'POST',
           mockOnce: false,
-          httpResolver: async ({ request }) => {
-            latestRequestPathname = new URL(request.url).pathname;
-            if (error) {
-              return HttpResponse.json(
-                { message: 'Failed to signal workflow' },
-                { status: 500 }
-              );
-            }
-            return HttpResponse.json({});
-          },
+          httpResolver,
+        },
+        {
+          path: SIGNAL_ENDPOINT_CURRENT_RUN,
+          httpMethod: 'POST',
+          mockOnce: false,
+          httpResolver,
         },
       ],
     },
