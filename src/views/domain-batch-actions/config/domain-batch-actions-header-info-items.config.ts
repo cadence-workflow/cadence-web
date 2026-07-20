@@ -4,6 +4,7 @@ import formatDate from '@/utils/data-formatters/format-date';
 
 import DomainBatchActionDurationValue from '../domain-batch-actions-duration-value/domain-batch-actions-duration-value';
 import { type DomainBatchActionHeaderInfoItemsConfig } from '../domain-batch-actions-header-info/domain-batch-actions-header-info.types';
+import DomainBatchActionQueryValue from '../domain-batch-actions-query-value/domain-batch-actions-query-value';
 import DomainBatchActionRpsValue from '../domain-batch-actions-rps-value/domain-batch-actions-rps-value';
 import DomainBatchActionStatusBadge from '../domain-batch-actions-status-badge/domain-batch-actions-status-badge';
 
@@ -56,6 +57,17 @@ const batchActionHeaderInfoItemsConfig = [
         batchAction,
       }),
     placeholderSize: '80px',
+  },
+  {
+    title: 'Query',
+    hidden: ({ batchAction }) => !batchAction.query,
+    render: ({ batchAction }) =>
+      batchAction.query
+        ? createElement(DomainBatchActionQueryValue, {
+            query: batchAction.query,
+          })
+        : '—',
+    placeholderSize: '240px',
   },
 ] as const satisfies DomainBatchActionHeaderInfoItemsConfig;
 

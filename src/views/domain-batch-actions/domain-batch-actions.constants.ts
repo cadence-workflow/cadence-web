@@ -54,3 +54,6 @@ export const BATCH_ACTION_LIST_INVALIDATE_TIMEOUT_MS = 2000;
 // Tooltip shown on a disabled per-row checkbox while "select all" is active.
 export const BATCH_ACTION_SELECT_ALL_ROW_TOOLTIP =
   'Turn off "Select all" to choose workflows individually.';
+
+// Logical cap on the query text rendered in the (CSS-ellipsized) pill.
+export const BATCH_ACTION_QUERY_MAX_DISPLAY_LENGTH = 1200;
