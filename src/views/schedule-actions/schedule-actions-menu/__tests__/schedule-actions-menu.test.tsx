@@ -68,6 +68,7 @@ describe(ScheduleActionsMenu.name, () => {
         pause: 'DISABLED_DEFAULT',
         resume: 'DISABLED_DEFAULT',
         delete: 'DISABLED_DEFAULT',
+        backfill: 'DISABLED_DEFAULT',
       },
     });
 

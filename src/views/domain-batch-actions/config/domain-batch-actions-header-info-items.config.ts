@@ -1,8 +1,8 @@
 import { createElement } from 'react';
 
 import formatDate from '@/utils/data-formatters/format-date';
-import formatTimeDiff from '@/utils/datetime/format-time-diff';
 
+import DomainBatchActionDurationValue from '../domain-batch-actions-duration-value/domain-batch-actions-duration-value';
 import { type DomainBatchActionHeaderInfoItemsConfig } from '../domain-batch-actions-header-info/domain-batch-actions-header-info.types';
 import DomainBatchActionRpsValue from '../domain-batch-actions-rps-value/domain-batch-actions-rps-value';
 import DomainBatchActionStatusBadge from '../domain-batch-actions-status-badge/domain-batch-actions-status-badge';
@@ -43,15 +43,7 @@ const batchActionHeaderInfoItemsConfig = [
   {
     title: 'Duration',
     render: ({ batchAction }) =>
-      batchAction.startTime
-        ? formatTimeDiff(
-            batchAction.startTime,
-            batchAction.status === 'RUNNING'
-              ? null
-              : batchAction.endTime ?? null,
-            true
-          )
-        : '—',
+      createElement(DomainBatchActionDurationValue, { batchAction }),
     placeholderSize: '80px',
   },
   {
