@@ -20,30 +20,30 @@ const schedulePageQueryParamsConfig: [
 ] = [
   {
     key: 'scheduleRunsSearch',
-    queryParamKey: 'runs-search',
+    queryParamKey: 'runsearch',
     defaultValue: '',
   },
   {
     key: 'scheduleRunsTimeStart',
-    queryParamKey: 'runs-start',
+    queryParamKey: 'runstart',
     parseValue: parseDateFilterValue,
   },
   {
     key: 'scheduleRunsTimeEnd',
-    queryParamKey: 'runs-end',
+    queryParamKey: 'runend',
     parseValue: (value) =>
       value === 'now' ? 'now' : parseDateFilterValue(value),
   },
   {
     key: 'scheduleRunsStatuses',
-    queryParamKey: 'runs-status',
+    queryParamKey: 'runstatus',
     isMultiValue: true,
     parseValue: (values) =>
       values.every(isWorkflowStatus) ? values : undefined,
   },
   {
     key: 'scheduleRunsRunType',
-    queryParamKey: 'runs-type',
+    queryParamKey: 'runtype',
     defaultValue: 'all',
     parseValue: (value) =>
       value === 'backfill' || value === 'regular' ? value : 'all',

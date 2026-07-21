@@ -6,11 +6,11 @@ describe('schedulePageQueryParamsConfig', () => {
   it('restores search and filter params from the URL', () => {
     expect(
       getPageQueryParamsValues(schedulePageQueryParamsConfig, {
-        'runs-search': 'run-123',
-        'runs-start': 'now-30d',
-        'runs-end': 'now',
-        'runs-status': 'WORKFLOW_EXECUTION_CLOSE_STATUS_FAILED',
-        'runs-type': 'backfill',
+        runsearch: 'run-123',
+        runstart: 'now-30d',
+        runend: 'now',
+        runstatus: 'WORKFLOW_EXECUTION_CLOSE_STATUS_FAILED',
+        runtype: 'backfill',
       })
     ).toEqual(
       expect.objectContaining({
