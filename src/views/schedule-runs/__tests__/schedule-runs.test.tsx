@@ -1,10 +1,10 @@
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
-import usePageFilters from '@/components/page-filters/hooks/use-page-filters';
 import { type DateFilterValue } from '@/components/date-filter/date-filter.types';
 import { type Props as ErrorPanelProps } from '@/components/error-panel/error-panel.types';
 import { type Props as PanelSectionProps } from '@/components/panel-section/panel-section.types';
 import useConfigValue from '@/hooks/use-config-value/use-config-value';
+import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtures__/mock-workflow-list-items';
 import { RequestError } from '@/utils/request/request-error';
 import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
@@ -16,12 +16,15 @@ import { type ScheduleRunsRunType } from '../schedule-runs.types';
 
 const mockRefetch = jest.fn();
 const mockUseConfigValue = jest.mocked(useConfigValue);
-const mockUsePageFilters = jest.mocked(usePageFilters);
+const mockUsePageQueryParams = jest.mocked(usePageQueryParams);
 const mockUseListWorkflows = jest.mocked(useListWorkflows);
 
 jest.mock('@/hooks/use-config-value/use-config-value');
-jest.mock('@/components/page-filters/hooks/use-page-filters');
+jest.mock('@/hooks/use-page-query-params/use-page-query-params');
 jest.mock('@/views/shared/hooks/use-list-workflows');
+jest.mock('@/components/page-filters/page-filters', () =>
+  jest.fn(() => <div>Schedule run filters</div>)
+);
 jest.mock(
   '@/components/section-loading-indicator/section-loading-indicator',
   () => jest.fn(() => <div>Loading schedule runs</div>)
@@ -46,10 +49,6 @@ jest.mock('../schedule-runs-table/schedule-runs-table', () =>
     </div>
   ))
 );
-jest.mock('../schedule-runs-header', () =>
-  jest.fn(() => <div>Schedule run filters</div>)
-);
-
 describe(ScheduleRuns.name, () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -182,18 +181,16 @@ function setup({
   mockUseConfigValue.mockReturnValue({
     data: partialMatching,
   } as ReturnType<typeof useConfigValue>);
-  mockUsePageFilters.mockReturnValue({
-    resetAllFilters: jest.fn(),
-    activeFiltersCount: 0,
-    queryParams: {
+  mockUsePageQueryParams.mockReturnValue([
+    {
       scheduleRunsSearch: search,
       scheduleRunsTimeStart: timeStart,
       scheduleRunsTimeEnd: timeEnd,
       scheduleRunsStatuses: statuses,
       scheduleRunsRunType: runType,
     },
-    setQueryParams: jest.fn(),
-  });
+    jest.fn(),
+  ]);
   mockUseListWorkflows.mockReturnValue(getHookResult(hookResult));
 
   return render(

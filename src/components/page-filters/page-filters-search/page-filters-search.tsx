@@ -51,6 +51,17 @@ export default function PageFiltersSearch<
     return setSearch;
   }, [setSearch, inputDebounceDurationMs]);
 
+  useEffect(
+    () => () => {
+      if (
+        'cancel' in setSearchMaybeDebounced &&
+        typeof setSearchMaybeDebounced.cancel === 'function'
+      )
+        setSearchMaybeDebounced.cancel();
+    },
+    [setSearchMaybeDebounced]
+  );
+
   return (
     <Input
       value={inputState}

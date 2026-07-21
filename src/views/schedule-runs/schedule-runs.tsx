@@ -3,32 +3,27 @@
 import { useMemo } from 'react';
 
 import getDayjsFromDateFilterValue from '@/components/date-filter/helpers/get-dayjs-from-date-filter-value';
-import usePageFilters from '@/components/page-filters/hooks/use-page-filters';
 import ErrorPanel from '@/components/error-panel/error-panel';
+import PageFilters from '@/components/page-filters/page-filters';
 import PageSection from '@/components/page-section/page-section';
 import PanelSection from '@/components/panel-section/panel-section';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import useConfigValue from '@/hooks/use-config-value/use-config-value';
+import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import dayjs from '@/utils/datetime/dayjs';
 import schedulePageQueryParamsConfig from '@/views/schedule-page/config/schedule-page-query-params.config';
 import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
+import WORKFLOWS_SEARCH_DEBOUNCE_MS from '@/views/shared/workflows-header/config/workflows-search-debounce-ms.config';
 
 import scheduleRunsFiltersConfig from './config/schedule-runs-filters.config';
 import getScheduleRunsQuery from './helpers/get-schedule-runs-query';
-import ScheduleRunsHeader from './schedule-runs-header';
 import ScheduleRunsTable from './schedule-runs-table/schedule-runs-table';
 import { styled } from './schedule-runs.styles';
 import { type Props } from './schedule-runs.types';
 
 export default function ScheduleRuns({ params }: Props) {
-  const {
-    queryParams,
-    setQueryParams,
-    resetAllFilters,
-    activeFiltersCount,
-  } = usePageFilters({
-    pageFiltersConfig: scheduleRunsFiltersConfig,
-    pageQueryParamsConfig: schedulePageQueryParamsConfig,
+  const [queryParams] = usePageQueryParams(schedulePageQueryParamsConfig, {
+    pageRerender: false,
   });
   const { data: isPartialMatchingEnabled = false } = useConfigValue(
     'LIST_WORKFLOWS_PARTIAL_MATCH_ENABLED'
@@ -104,15 +99,12 @@ export default function ScheduleRuns({ params }: Props) {
   return (
     <PageSection>
       <styled.Root>
-        <ScheduleRunsHeader
-          search={queryParams.scheduleRunsSearch}
-          setSearch={(scheduleRunsSearch) =>
-            setQueryParams({ scheduleRunsSearch })
-          }
-          queryParams={queryParams}
-          setQueryParams={setQueryParams}
-          resetAllFilters={resetAllFilters}
-          activeFiltersCount={activeFiltersCount}
+        <PageFilters
+          searchQueryParamKey="scheduleRunsSearch"
+          searchPlaceholder="Search for runs by Run ID, Workflow ID or Backfill ID"
+          pageFiltersConfig={scheduleRunsFiltersConfig}
+          pageQueryParamsConfig={schedulePageQueryParamsConfig}
+          inputDebounceDurationMs={WORKFLOWS_SEARCH_DEBOUNCE_MS}
         />
         {content}
       </styled.Root>

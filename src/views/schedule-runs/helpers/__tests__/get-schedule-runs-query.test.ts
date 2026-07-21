@@ -55,8 +55,8 @@ describe(getScheduleRunsQuery.name, () => {
     ['backfill', 'true'],
     ['regular', 'false'],
   ] as const)('queries %s runs', (runType, expectedValue) => {
-    expect(
-      getScheduleRunsQuery('test-schedule', { runType })
-    ).toContain(`CadenceScheduleIsBackfill = "${expectedValue}"`);
+    expect(getScheduleRunsQuery('test-schedule', { runType })).toContain(
+      `CadenceScheduleIsBackfill = "${expectedValue}"`
+    );
   });
 });
