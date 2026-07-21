@@ -268,22 +268,6 @@ describe(DateFilter.name, () => {
     expect(screen.getByDisplayValue('Last 1 hour')).toBeInTheDocument();
   });
 
-  it('clears selected dates when clearable and the clear button is clicked', () => {
-    const { mockOnChangeDates } = setup({
-      clearable: true,
-      overrides: mockDateOverrides,
-    });
-
-    act(() => {
-      fireEvent.click(screen.getByLabelText('Clear value'));
-    });
-
-    expect(mockOnChangeDates).toHaveBeenCalledWith({
-      start: undefined,
-      end: undefined,
-    });
-  });
-
   it('closes popover when clicking the close button', () => {
     setup({});
     const datePicker = screen.getByPlaceholderText('Mock placeholder');
@@ -307,13 +291,7 @@ describe(DateFilter.name, () => {
   });
 });
 
-function setup({
-  overrides,
-  clearable,
-}: {
-  overrides?: Partial<DateFilterRange>;
-  clearable?: boolean;
-}) {
+function setup({ overrides }: { overrides?: Partial<DateFilterRange> }) {
   const mockOnChangeDates = jest.fn();
 
   const result = render(
@@ -326,7 +304,6 @@ function setup({
         ...overrides,
       }}
       onChangeDates={mockOnChangeDates}
-      clearable={clearable}
     />
   );
 

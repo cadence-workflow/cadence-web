@@ -71,7 +71,6 @@ const scheduleRunsFiltersConfig: [
       createElement(DateFilter, {
         label: 'Schedule time',
         placeholder: 'Select schedule time',
-        clearable: true,
         dates: {
           start: value.scheduleRunsTimeStart,
           end: value.scheduleRunsTimeEnd,

@@ -24,7 +24,6 @@ export default function DateFilter({
   placeholder,
   dates,
   onChangeDates,
-  clearable,
 }: Props) {
   const [tempDates, setTempDates] = useState<{
     start: Date | undefined;
@@ -244,20 +243,10 @@ export default function DateFilter({
       >
         <div>
           <Input
-            readOnly={!clearable}
+            readOnly
             size="compact"
             placeholder={placeholder}
             value={displayValue}
-            clearable={clearable}
-            onChange={
-              clearable
-                ? (event) => {
-                    if (event.target.value === '') {
-                      onChangeDates({ start: undefined, end: undefined });
-                    }
-                  }
-                : undefined
-            }
           />
         </div>
       </StatefulPopover>

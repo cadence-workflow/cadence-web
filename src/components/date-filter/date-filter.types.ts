@@ -19,5 +19,4 @@ export type Props = {
   placeholder: string;
   dates: DateFilterRange;
   onChangeDates: (v: DateFilterRange) => void;
-  clearable?: boolean;
 };
