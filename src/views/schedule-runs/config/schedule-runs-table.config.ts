@@ -1,5 +1,6 @@
 import { createElement } from 'react';
 
+import FormattedDate from '@/components/formatted-date/formatted-date';
 import Link from '@/components/link/link';
 import { type TableConfig } from '@/components/table/table.types';
 import formatPayload from '@/utils/data-formatters/format-payload';
@@ -46,10 +47,16 @@ const scheduleRunsTableConfig = [
     name: 'Schedule time',
     id: 'CadenceScheduleTime',
     renderCell: (row: ScheduleRunsTableRow) =>
-      String(
-        formatPayload(row.searchAttributes?.['CadenceScheduleTime']) ?? '-'
-      ),
+      createElement(FormattedDate, {
+        timestampMs: Date.parse(
+          String(
+            formatPayload(row.searchAttributes?.['CadenceScheduleTime']) ?? ''
+          )
+        ),
+        placeholderText: '-',
+      }),
     width: '17%',
+    sortable: true,
   },
   {
     name: 'Run time (Start/Close)',

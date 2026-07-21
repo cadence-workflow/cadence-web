@@ -1,4 +1,5 @@
 import { type WorkflowListItem } from '@/route-handlers/list-workflows/list-workflows.types';
+import { type SortOrder } from '@/utils/sort-by';
 
 export type Props = {
   domain: string;
@@ -8,6 +9,8 @@ export type Props = {
   hasNextPage: boolean;
   fetchNextPage: () => void;
   isFetchingNextPage: boolean;
+  sortOrder: SortOrder;
+  onSort: (column: string) => void;
 };
 
 export type ScheduleRunsTableRow = WorkflowListItem &
