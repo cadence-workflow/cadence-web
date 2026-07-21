@@ -24,6 +24,11 @@ jest.mock(
   () => jest.fn(() => <div>MockWorkflowSummaryDiagnosticsBanner</div>)
 );
 
+jest.mock(
+  '../workflow-summary-schedule-details/workflow-summary-schedule-details',
+  () => jest.fn(() => <div>MockWorkflowSummaryScheduleDetails</div>)
+);
+
 describe('WorkflowSummary', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -85,6 +90,9 @@ describe('WorkflowSummary', () => {
 
     expect(
       await screen.findByText('MockWorkflowSummaryDiagnosticsBanner')
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText('MockWorkflowSummaryScheduleDetails')
     ).toBeInTheDocument();
   });
 });
