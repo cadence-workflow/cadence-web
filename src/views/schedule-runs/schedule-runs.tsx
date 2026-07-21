@@ -53,7 +53,7 @@ export default function ScheduleRuns({ params }: Props) {
   const {
     workflows,
     error,
-    isPending,
+    isLoading,
     refetch,
     hasNextPage,
     fetchNextPage,
@@ -74,7 +74,7 @@ export default function ScheduleRuns({ params }: Props) {
   });
 
   let content;
-  if (isPending) {
+  if (isLoading) {
     content = <SectionLoadingIndicator />;
   } else if (error && workflows.length === 0) {
     content = (

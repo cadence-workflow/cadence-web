@@ -6,9 +6,13 @@ import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtu
 import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list-workflows.types';
 import { mockDomainPageQueryParamsValues } from '@/views/domain-page/__fixtures__/domain-page-query-params';
 import { type CountWorkflowsResponse } from '@/views/shared/hooks/use-count-workflows.types';
+import { WORKFLOW_STATUSES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
 
 import { type Props as MSWMocksHandlersProps } from '../../../../test-utils/msw-mock-handlers/msw-mock-handlers.types';
-import { BATCH_ACTION_DEFAULT_QUERY } from '../../domain-batch-actions.constants';
+import {
+  BATCH_ACTION_DEFAULT_QUERY,
+  BATCH_ACTION_DEFAULT_SELECT_HINT,
+} from '../../domain-batch-actions.constants';
 import useBatchActionTarget from '../use-batch-action-target';
 
 const mockUsePageQueryParams = jest.fn();
@@ -97,6 +101,36 @@ describe(useBatchActionTarget.name, () => {
       expect(result.current.selectedCount).toBe(0);
       expect(result.current.isTargetEmpty).toBe(true);
       expect(result.current.blocksSubmit).toBe(true);
+    });
+
+    it('shows the default caption while only the running-status filter is applied', async () => {
+      setQueryParams({
+        batchInputType: 'search',
+        batchStatuses: [WORKFLOW_STATUSES.running],
+      });
+      const { result } = setup({ workflowCount: 2, totalCount: 5 });
+
+      await waitFor(() =>
+        expect(result.current.countQueryResult.count).toBe(5)
+      );
+      expect(result.current.queryHint).toEqual({
+        kind: 'caption',
+        message: BATCH_ACTION_DEFAULT_SELECT_HINT,
+      });
+    });
+
+    it('hides the default caption once the filters are edited', async () => {
+      setQueryParams({
+        batchInputType: 'search',
+        batchStatuses: [WORKFLOW_STATUSES.running],
+        batchSearch: 'foo',
+      });
+      const { result } = setup({ workflowCount: 2, totalCount: 5 });
+
+      await waitFor(() =>
+        expect(result.current.countQueryResult.count).toBe(5)
+      );
+      expect(result.current.queryHint).toBeNull();
     });
 
     it('builds a selection query from individually toggled workflows', async () => {

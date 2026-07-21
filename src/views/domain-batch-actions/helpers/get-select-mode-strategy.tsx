@@ -1,4 +1,7 @@
-import { BATCH_ACTION_SELECT_ALL_ROW_TOOLTIP } from '../domain-batch-actions.constants';
+import {
+  BATCH_ACTION_DEFAULT_SELECT_HINT,
+  BATCH_ACTION_SELECT_ALL_ROW_TOOLTIP,
+} from '../domain-batch-actions.constants';
 import { type BatchActionModeStrategy } from '../hooks/use-batch-action-target.types';
 
 import buildSelectionQuery from './build-selection-query';
@@ -6,8 +9,10 @@ import getWorkflowSelectionId from './get-workflow-selection-id';
 
 export default function getSelectModeStrategy({
   selectQuery,
+  isDefaultFilters,
 }: {
   selectQuery: string;
+  isDefaultFilters: boolean;
 }): BatchActionModeStrategy {
   return {
     query: selectQuery,
@@ -25,7 +30,9 @@ export default function getSelectModeStrategy({
           selection.isAllSelected
             ? selectQuery
             : buildSelectionQuery(selectedWorkflows),
-        queryHint: null,
+        queryHint: isDefaultFilters
+          ? { kind: 'caption', message: BATCH_ACTION_DEFAULT_SELECT_HINT }
+          : null,
         // The list renders checkboxes wired to the selection state.
         listSelection: {
           isAllSelected: selection.isAllSelected,

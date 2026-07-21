@@ -125,7 +125,7 @@ describe(ScheduleRuns.name, () => {
   });
 
   it('renders the initial loading state', () => {
-    setup({ hookResult: { data: undefined, isPending: true } });
+    setup({ hookResult: { data: undefined, isLoading: true } });
 
     expect(screen.getByText('Loading schedule runs')).toBeInTheDocument();
   });
@@ -229,7 +229,7 @@ function getHookResult(overrides: Partial<HookResult> = {}): HookResult {
     },
     workflows,
     error: null,
-    isPending: false,
+    isLoading: false,
     refetch: mockRefetch,
     hasNextPage: false,
     fetchNextPage: jest.fn(),

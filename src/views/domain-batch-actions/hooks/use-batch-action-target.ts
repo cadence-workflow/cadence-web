@@ -11,6 +11,7 @@ import DOMAIN_WORKFLOWS_PAGE_SIZE from '@/views/domain-workflows/config/domain-w
 import useCountWorkflows from '@/views/shared/hooks/use-count-workflows';
 import useListWorkflows from '@/views/shared/hooks/use-list-workflows';
 
+import { BATCH_ACTION_DEFAULT_STATUSES } from '../domain-batch-actions.constants';
 import getQueryModeStrategy from '../helpers/get-query-mode-strategy';
 import getSelectModeStrategy from '../helpers/get-select-mode-strategy';
 import getWorkflowSelectionId from '../helpers/get-workflow-selection-id';
@@ -20,6 +21,13 @@ import {
   type UseBatchActionTargetParams,
   type UseBatchActionTargetResult,
 } from './use-batch-action-target.types';
+
+// The select query produced by the prefilled defaults and nothing else.
+const DEFAULT_SELECT_QUERY = getVisibilityQuery({
+  workflowStatuses: BATCH_ACTION_DEFAULT_STATUSES,
+  timeColumn: 'StartTime',
+  includeOrderBy: false,
+});
 
 /**
  * Single source of truth for a new batch action's target set.
@@ -79,8 +87,21 @@ export default function useBatchActionTarget({
   });
 
   // The single mode decision: pick the strategy. Everything below is uniform.
+  // Default select state = the prefilled defaults only (no user edits). Comparing
+  // the built query (minus the live end bound) covers every filter without
+  // listing each param by hand.
+  const isDefaultSelectFilters =
+    getVisibilityQuery({
+      ...selectModeFilters,
+      timeRangeEnd: undefined,
+      includeOrderBy: false,
+    }) === DEFAULT_SELECT_QUERY;
+
   const strategy = isSelectMode
-    ? getSelectModeStrategy({ selectQuery })
+    ? getSelectModeStrategy({
+        selectQuery,
+        isDefaultFilters: isDefaultSelectFilters,
+      })
     : getQueryModeStrategy({
         batchQuery: queryParams.batchQuery,
         submitAttempted,
