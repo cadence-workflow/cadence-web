@@ -14,15 +14,11 @@ const cssStylesObj = {
     minWidth: 0,
     width: '100%',
   }),
-  dateContainer: () => ({
-    flexShrink: 0,
-  }),
-  arrowIcon: () => ({
+  noShrink: () => ({
     flexShrink: 0,
   }),
   missingDateContainer: (theme: Theme) => ({
     color: theme.colors.contentSecondary,
-    whiteSpace: 'nowrap',
   }),
 } satisfies StyletronCSSObject;
 
