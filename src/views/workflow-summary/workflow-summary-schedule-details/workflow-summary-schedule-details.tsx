@@ -1,10 +1,10 @@
 'use client';
 import React from 'react';
 
-import Link from '@/components/link/link';
 import useConfigValue from '@/hooks/use-config-value/use-config-value';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 
+import workflowSummaryScheduleDetailsConfig from '../config/workflow-summary-schedule-details.config';
 import { cssStyles } from '../workflow-summary-details/workflow-summary-details.styles';
 
 import { type Props } from './workflow-summary-schedule-details.types';
@@ -27,13 +27,7 @@ export default function WorkflowSummaryScheduleDetails({
     return null;
   }
 
-  const scheduleTimeValue = searchAttributes?.CadenceScheduleTime;
-  const scheduleTime =
-    typeof scheduleTimeValue === 'string' ? scheduleTimeValue : '-';
-  const isBackfill = searchAttributes?.CadenceScheduleIsBackfill === true;
-  const backfillIdValue = searchAttributes?.CadenceScheduleBackfillID;
-  const backfillId =
-    isBackfill && typeof backfillIdValue === 'string' ? backfillIdValue : null;
+  const rowArgs = { cluster, domain, scheduleId, searchAttributes };
 
   return (
     <div className={cls.pageContainer}>
@@ -41,48 +35,18 @@ export default function WorkflowSummaryScheduleDetails({
         <strong>Schedule details</strong>
       </div>
       <div aria-label="Schedule details" role="table">
-        <div className={cls.detailsRow} role="row">
-          <div className={cls.detailsLabel} role="rowheader">
-            Schedule ID
-          </div>
-          <div className={cls.detailsValue} role="cell">
-            <Link
-              href={`/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/schedules/${encodeURIComponent(scheduleId)}/details`}
-            >
-              {scheduleId}
-            </Link>
-          </div>
-        </div>
-        <div className={cls.detailsRow} role="row">
-          <div className={cls.detailsLabel} role="rowheader">
-            Schedule time
-          </div>
-          <div className={cls.detailsValue} role="cell">
-            {scheduleTime}
-          </div>
-        </div>
-        <div className={cls.detailsRow} role="row">
-          <div className={cls.detailsLabel} role="rowheader">
-            Backfill
-          </div>
-          <div className={cls.detailsValue} role="cell">
-            {isBackfill ? 'Yes' : 'No'}
-          </div>
-        </div>
-        {backfillId && (
-          <div className={cls.detailsRow} role="row">
-            <div className={cls.detailsLabel} role="rowheader">
-              Backfill ID
+        {workflowSummaryScheduleDetailsConfig
+          .filter((row) => !row.hide || !row.hide(rowArgs))
+          .map((row) => (
+            <div className={cls.detailsRow} key={row.key} role="row">
+              <div className={cls.detailsLabel} role="rowheader">
+                {row.getLabel()}
+              </div>
+              <div className={cls.detailsValue} role="cell">
+                {row.getValue(rowArgs)}
+              </div>
             </div>
-            <div className={cls.detailsValue} role="cell">
-              <Link
-                href={`/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows?input=query&query=${encodeURIComponent(`CadenceScheduleBackfillID="${backfillId}"`)}`}
-              >
-                {backfillId}
-              </Link>
-            </div>
-          </div>
-        )}
+          ))}
       </div>
     </div>
   );
