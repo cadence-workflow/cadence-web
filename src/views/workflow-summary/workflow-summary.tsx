@@ -26,6 +26,7 @@ import WorkflowSummaryDetails from './workflow-summary-details/workflow-summary-
 import WorkflowSummaryDiagnosticsBanner from './workflow-summary-diagnostics-banner/workflow-summary-diagnostics-banner';
 import WorkflowSummaryJsonView from './workflow-summary-json-view/workflow-summary-json-view';
 import { type Props as JsonViewProps } from './workflow-summary-json-view/workflow-summary-json-view.types';
+import WorkflowSummaryScheduleDetails from './workflow-summary-schedule-details/workflow-summary-schedule-details';
 import { cssStyles } from './workflow-summary.styles';
 
 export default function WorkflowSummary({
@@ -113,6 +114,13 @@ export default function WorkflowSummary({
             formattedCloseHistoryEvent={formattedCloseEvent}
             workflowDetails={workflowDetails}
             decodedPageUrlParams={decodedParams}
+          />
+          <WorkflowSummaryScheduleDetails
+            cluster={decodedParams.cluster}
+            domain={decodedParams.domain}
+            searchAttributes={
+              formattedStartEvent?.searchAttributes?.indexedFields
+            }
           />
         </div>
         {/* On narrow screens */}

@@ -16,6 +16,8 @@ export default function ScheduleRunsTable({
   hasNextPage,
   fetchNextPage,
   isFetchingNextPage,
+  sortOrder,
+  onSort,
 }: Props) {
   const data = useMemo(
     () => workflows.map((workflow) => ({ ...workflow, domain, cluster })),
@@ -27,6 +29,9 @@ export default function ScheduleRunsTable({
       data={data}
       columns={scheduleRunsTableConfig}
       shouldShowResults={workflows.length > 0}
+      onSort={onSort}
+      sortColumn="CadenceScheduleTime"
+      sortOrder={sortOrder}
       endMessageProps={{
         kind: 'infinite-scroll',
         hasData: workflows.length > 0,

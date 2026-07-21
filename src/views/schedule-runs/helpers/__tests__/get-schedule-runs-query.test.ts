@@ -3,13 +3,19 @@ import getScheduleRunsQuery from '../get-schedule-runs-query';
 describe(getScheduleRunsQuery.name, () => {
   it('builds a query for the schedule ID', () => {
     expect(getScheduleRunsQuery('schedule-id')).toBe(
-      'CadenceScheduleID = "schedule-id"'
+      'CadenceScheduleID = "schedule-id" ORDER BY CadenceScheduleTime DESC'
     );
   });
 
   it('escapes special characters in the schedule ID', () => {
     expect(getScheduleRunsQuery(String.raw`schedule"\id`)).toBe(
-      String.raw`CadenceScheduleID = "schedule\"\\id"`
+      String.raw`CadenceScheduleID = "schedule\"\\id" ORDER BY CadenceScheduleTime DESC`
+    );
+  });
+
+  it('applies the requested sort order', () => {
+    expect(getScheduleRunsQuery('schedule-id', { sortOrder: 'ASC' })).toBe(
+      'CadenceScheduleID = "schedule-id" ORDER BY CadenceScheduleTime ASC'
     );
   });
 
@@ -28,7 +34,8 @@ describe(getScheduleRunsQuery.name, () => {
         `CadenceScheduleID = "test-schedule" AND ` +
           `(RunID ${comparator} "term\\"\\\\value" OR ` +
           `WorkflowID ${comparator} "term\\"\\\\value" OR ` +
-          `CadenceScheduleBackfillID ${comparator} "term\\"\\\\value")`
+          `CadenceScheduleBackfillID ${comparator} "term\\"\\\\value") ` +
+          'ORDER BY CadenceScheduleTime DESC'
       );
     }
   );
@@ -47,7 +54,8 @@ describe(getScheduleRunsQuery.name, () => {
       'CadenceScheduleID = "test-schedule" AND ' +
         '(CloseStatus = 1 OR CloseTime = missing) AND ' +
         'CadenceScheduleTime > "2026-07-12T10:00:00.000Z" AND ' +
-        'CadenceScheduleTime <= "2026-07-19T10:00:00.000Z"'
+        'CadenceScheduleTime <= "2026-07-19T10:00:00.000Z" ' +
+        'ORDER BY CadenceScheduleTime DESC'
     );
   });
 

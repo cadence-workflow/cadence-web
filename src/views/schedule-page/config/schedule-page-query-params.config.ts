@@ -4,6 +4,7 @@ import {
   type PageQueryParamMultiValue,
   type PageQueryParam,
 } from '@/hooks/use-page-query-params/use-page-query-params.types';
+import { type SortOrder } from '@/utils/sort-by';
 import { type ScheduleRunsRunType } from '@/views/schedule-runs/schedule-runs.types';
 import isWorkflowStatus from '@/views/shared/workflow-status-tag/helpers/is-workflow-status';
 import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
@@ -17,6 +18,7 @@ const schedulePageQueryParamsConfig: [
     Array<WorkflowStatus> | undefined
   >,
   PageQueryParam<'scheduleRunsRunType', ScheduleRunsRunType>,
+  PageQueryParam<'scheduleRunsSortOrder', SortOrder>,
 ] = [
   {
     key: 'scheduleRunsSearch',
@@ -47,6 +49,12 @@ const schedulePageQueryParamsConfig: [
     defaultValue: 'all',
     parseValue: (value) =>
       value === 'backfill' || value === 'regular' ? value : 'all',
+  },
+  {
+    key: 'scheduleRunsSortOrder',
+    queryParamKey: 'runs-order',
+    defaultValue: 'DESC',
+    parseValue: (value) => (value === 'ASC' ? 'ASC' : 'DESC'),
   },
 ] as const;
 

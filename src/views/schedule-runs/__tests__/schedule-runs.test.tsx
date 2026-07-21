@@ -15,6 +15,7 @@ import { type Props as ScheduleRunsTableProps } from '../schedule-runs-table/sch
 import { type ScheduleRunsRunType } from '../schedule-runs.types';
 
 const mockRefetch = jest.fn();
+const mockSetQueryParams = jest.fn();
 const mockUseConfigValue = jest.mocked(useConfigValue);
 const mockUsePageQueryParams = jest.mocked(usePageQueryParams);
 const mockUseListWorkflows = jest.mocked(useListWorkflows);
@@ -41,11 +42,14 @@ jest.mock('@/components/error-panel/error-panel', () =>
   ))
 );
 jest.mock('../schedule-runs-table/schedule-runs-table', () =>
-  jest.fn(({ workflows }: ScheduleRunsTableProps) => (
+  jest.fn(({ workflows, onSort }: ScheduleRunsTableProps) => (
     <div>
       {workflows.length
         ? workflows.map(({ workflowID }) => workflowID).join(',')
         : 'No results'}
+      <button onClick={() => onSort('CadenceScheduleTime')}>
+        Sort Schedule time
+      </button>
     </div>
   ))
 );
@@ -60,7 +64,7 @@ describe(ScheduleRuns.name, () => {
 
     expect(mockUseListWorkflows).toHaveBeenCalledWith(
       expect.objectContaining({
-        query: String.raw`CadenceScheduleID = "schedule\"\\id"`,
+        query: String.raw`CadenceScheduleID = "schedule\"\\id" ORDER BY CadenceScheduleTime DESC`,
       })
     );
     expect(screen.getByText(/first-page-workflow/)).toBeInTheDocument();
@@ -82,7 +86,8 @@ describe(ScheduleRuns.name, () => {
             `CadenceScheduleID = "test-schedule" AND ` +
             `(RunID ${comparator} "term\\"\\\\value" OR ` +
             `WorkflowID ${comparator} "term\\"\\\\value" OR ` +
-            `CadenceScheduleBackfillID ${comparator} "term\\"\\\\value")`,
+            `CadenceScheduleBackfillID ${comparator} "term\\"\\\\value") ` +
+            'ORDER BY CadenceScheduleTime DESC',
         })
       );
     }
@@ -104,7 +109,8 @@ describe(ScheduleRuns.name, () => {
           'CadenceScheduleID = "test-schedule" AND ' +
           '(CloseStatus = 1 OR CloseTime = missing) AND ' +
           'CadenceScheduleTime > "2026-07-12T10:00:00.000Z" AND ' +
-          'CadenceScheduleTime <= "2026-07-19T10:00:00.000Z"',
+          'CadenceScheduleTime <= "2026-07-19T10:00:00.000Z" ' +
+          'ORDER BY CadenceScheduleTime DESC',
       })
     );
   });
@@ -121,6 +127,23 @@ describe(ScheduleRuns.name, () => {
         ),
       })
     );
+  });
+
+  it('restores and changes the URL-backed sort order', async () => {
+    const user = userEvent.setup();
+    setup({ sortOrder: 'ASC' });
+
+    expect(mockUseListWorkflows).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: expect.stringContaining('ORDER BY CadenceScheduleTime ASC'),
+      })
+    );
+    await user.click(
+      screen.getByRole('button', { name: 'Sort Schedule time' })
+    );
+    expect(mockSetQueryParams).toHaveBeenCalledWith({
+      scheduleRunsSortOrder: 'DESC',
+    });
   });
 
   it('renders the initial loading state', () => {
@@ -167,6 +190,7 @@ function setup({
   timeEnd,
   statuses,
   runType = 'all',
+  sortOrder = 'DESC',
   hookResult = {},
 }: {
   scheduleId?: string;
@@ -176,6 +200,7 @@ function setup({
   timeEnd?: DateFilterValue;
   statuses?: Array<WorkflowStatus>;
   runType?: ScheduleRunsRunType;
+  sortOrder?: 'ASC' | 'DESC';
   hookResult?: Partial<HookResult>;
 } = {}) {
   mockUseConfigValue.mockReturnValue({
@@ -188,8 +213,9 @@ function setup({
       scheduleRunsTimeEnd: timeEnd,
       scheduleRunsStatuses: statuses,
       scheduleRunsRunType: runType,
+      scheduleRunsSortOrder: sortOrder,
     },
-    jest.fn(),
+    mockSetQueryParams,
   ]);
   mockUseListWorkflows.mockReturnValue(getHookResult(hookResult));
 

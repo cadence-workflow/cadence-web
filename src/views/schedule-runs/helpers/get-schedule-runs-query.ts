@@ -1,3 +1,4 @@
+import { type SortOrder } from '@/utils/sort-by';
 import escapeVisibilityQueryValue from '@/utils/visibility/escape-visibility-query-value';
 import getVisibilityQuery from '@/utils/visibility/get-visibility-query';
 import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
@@ -11,6 +12,7 @@ export type ScheduleRunsQueryFilters = {
   timeRangeEnd?: string;
   statuses?: Array<WorkflowStatus>;
   runType?: ScheduleRunsRunType;
+  sortOrder?: SortOrder;
 };
 
 export default function getScheduleRunsQuery(
@@ -48,5 +50,5 @@ export default function getScheduleRunsQuery(
     );
   }
 
-  return clauses.join(' AND ');
+  return `${clauses.join(' AND ')} ORDER BY CadenceScheduleTime ${filters.sortOrder ?? 'DESC'}`;
 }
