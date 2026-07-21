@@ -1,6 +1,7 @@
 import { type SortOrder } from '@/utils/sort-by';
-import { WORKFLOW_STATUSES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
 import type { WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
+
+import { WORKFLOW_STATUS_QUERIES } from './get-visibility-query.constants';
 
 export default function getVisibilityQuery({
   search,
@@ -31,18 +32,8 @@ export default function getVisibilityQuery({
     );
   }
 
-  const workflowStatusQueries: Array<string> = [];
-  workflowStatuses?.forEach((status) => {
-    if (status === WORKFLOW_STATUSES.running) {
-      workflowStatusQueries.push('CloseTime = missing');
-    } else {
-      workflowStatusQueries.push(
-        // Numerical query CloseStatus is 0-indexed (and excludes INVALID)
-        // https://cadenceworkflow.io/docs/concepts/search-workflows/#query-capabilities
-        `CloseStatus = ${Object.values(WORKFLOW_STATUSES).indexOf(status) - 1}`
-      );
-    }
-  });
+  const workflowStatusQueries =
+    workflowStatuses?.map((status) => WORKFLOW_STATUS_QUERIES[status]) ?? [];
 
   if (workflowStatusQueries.length > 0) {
     searchQueries.push(`(${workflowStatusQueries.join(' OR ')})`);

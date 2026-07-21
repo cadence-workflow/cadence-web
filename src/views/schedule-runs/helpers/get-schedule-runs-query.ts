@@ -1,19 +1,7 @@
-import { type SortOrder } from '@/utils/sort-by';
 import escapeVisibilityQueryValue from '@/utils/visibility/escape-visibility-query-value';
-import getVisibilityQuery from '@/utils/visibility/get-visibility-query';
-import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
+import { WORKFLOW_STATUS_QUERIES } from '@/utils/visibility/get-visibility-query.constants';
 
-import { type ScheduleRunsRunType } from '../schedule-runs.types';
-
-export type ScheduleRunsQueryFilters = {
-  search?: string;
-  isPartialMatchingEnabled?: boolean;
-  timeRangeStart?: string;
-  timeRangeEnd?: string;
-  statuses?: Array<WorkflowStatus>;
-  runType?: ScheduleRunsRunType;
-  sortOrder?: SortOrder;
-};
+import { type ScheduleRunsQueryFilters } from '../schedule-runs.types';
 
 export default function getScheduleRunsQuery(
   scheduleId: string,
@@ -31,12 +19,13 @@ export default function getScheduleRunsQuery(
     );
   }
 
-  const statusQuery = getVisibilityQuery({
-    workflowStatuses: filters.statuses,
-    timeColumn: 'StartTime',
-    includeOrderBy: false,
-  });
-  if (statusQuery) clauses.push(statusQuery);
+  if (filters.statuses?.length) {
+    clauses.push(
+      `(${filters.statuses
+        .map((status) => WORKFLOW_STATUS_QUERIES[status])
+        .join(' OR ')})`
+    );
+  }
 
   if (filters.timeRangeStart) {
     clauses.push(`CadenceScheduleTime > "${filters.timeRangeStart}"`);
