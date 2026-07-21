@@ -18,15 +18,15 @@ export default function ScheduleRunsRuntimeCell({
 
   return (
     <div className={cls.runtimeContainer}>
-      <div className={cls.dateContainer}>
+      <div className={cls.noShrink}>
         <FormattedDate timestampMs={startTime} />
       </div>
       <MdArrowForward
-        className={cls.arrowIcon}
+        className={cls.noShrink}
         color={theme.colors.contentSecondary}
         aria-hidden
       />
-      <div className={cls.dateContainer}>
+      <div className={cls.noShrink}>
         <FormattedDate timestampMs={closeTime} />
       </div>
     </div>

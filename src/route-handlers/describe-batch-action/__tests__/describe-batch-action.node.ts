@@ -63,6 +63,7 @@ describe(describeBatchAction.name, () => {
       endTime: 1717409148258,
       actionType: 'terminate',
       rps: 100,
+      query: 'WorkflowType="foo"',
     });
   });
 
