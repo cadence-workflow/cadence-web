@@ -1,6 +1,7 @@
 import { createElement } from 'react';
 
 import Link from '@/components/link/link';
+import escapeVisibilityQueryValue from '@/utils/visibility/escape-visibility-query-value';
 
 import { type WorkflowSummaryScheduleDetailsConfig } from '../workflow-summary-schedule-details/workflow-summary-schedule-details.types';
 
@@ -35,16 +36,18 @@ const workflowSummaryScheduleDetailsConfig: WorkflowSummaryScheduleDetailsConfig
     {
       key: 'backfillId',
       getLabel: () => 'Backfill ID',
-      getValue: ({ cluster, domain, searchAttributes }) => {
+      getValue: ({ cluster, domain, scheduleId, searchAttributes }) => {
         const backfillId = searchAttributes?.CadenceScheduleBackfillID;
         if (typeof backfillId !== 'string') {
           return null;
         }
 
+        const query = `CadenceScheduleID = "${escapeVisibilityQueryValue(scheduleId)}" AND CadenceScheduleBackfillID = "${escapeVisibilityQueryValue(backfillId)}"`;
+
         return createElement(
           Link,
           {
-            href: `/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows?input=query&query=${encodeURIComponent(`CadenceScheduleBackfillID="${backfillId}"`)}`,
+            href: `/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows?input=query&query=${encodeURIComponent(query)}`,
           },
           backfillId
         );

@@ -98,7 +98,7 @@ describe(WorkflowSummaryScheduleDetails.name, () => {
     expect(screen.getByRole('link', { name: 'backfill-id' })).toHaveAttribute(
       'href',
       `/domains/test%2Fdomain/test%20cluster/workflows?input=query&query=${encodeURIComponent(
-        'CadenceScheduleBackfillID="backfill-id"'
+        'CadenceScheduleID = "schedule-id" AND CadenceScheduleBackfillID = "backfill-id"'
       )}`
     );
   });
