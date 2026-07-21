@@ -6,6 +6,7 @@ import { type TableConfig } from '@/components/table/table.types';
 import formatPayload from '@/utils/data-formatters/format-payload';
 import WorkflowStatusTag from '@/views/shared/workflow-status-tag/workflow-status-tag';
 
+import ScheduleRunsBackfillCell from '../schedule-runs-backfill-cell/schedule-runs-backfill-cell';
 import ScheduleRunsRuntimeCell from '../schedule-runs-runtime-cell/schedule-runs-runtime-cell';
 import { type ScheduleRunsTableRow } from '../schedule-runs-table/schedule-runs-table.types';
 
@@ -39,11 +40,7 @@ const scheduleRunsTableConfig = [
   {
     name: 'Backfill',
     id: 'CadenceScheduleIsBackfill',
-    renderCell: (row: ScheduleRunsTableRow) =>
-      String(
-        formatPayload(row.searchAttributes?.['CadenceScheduleIsBackfill']) ??
-          '-'
-      ),
+    renderCell: ScheduleRunsBackfillCell,
     width: '9%',
   },
   {
