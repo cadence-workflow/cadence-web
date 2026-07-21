@@ -96,7 +96,6 @@ const scheduleRunsFiltersConfig: [
         onChangeValue: (runType) =>
           setValue({ scheduleRunsRunType: runType ?? 'all' }),
         labelMap: RUN_TYPE_LABELS,
-        clearable: false,
       }),
   },
 ] as const;
