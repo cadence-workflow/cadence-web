@@ -32,8 +32,8 @@ export default function DomainPageActionsBatchWorkflow({
       disabledReason={isError || isLoading ? 'Action Unavailable' : undefined}
       onClick={() => {
         const params = new URLSearchParams(window.location.search);
-        params.set('batch-query', queryParams.query ?? '');
-        params.set('bid', 'draft');
+        params.set('baquery', queryParams.query ?? '');
+        params.set('baid', 'draft');
         router.push(`batch-actions?${params.toString()}`);
         onCloseMenu();
       }}

@@ -155,8 +155,8 @@ function DomainBatchActionsContent(props: DomainPageTabContentProps) {
     setQueryParams({
       ...BATCH_DRAFT_RESET_PARAMS,
       batchActionId: DRAFT_ACTION_ID,
-      batchQuery: BATCH_ACTION_DEFAULT_QUERY,
-      batchStatuses: BATCH_ACTION_DEFAULT_STATUSES,
+      batchActionQuery: BATCH_ACTION_DEFAULT_QUERY,
+      batchActionStatuses: BATCH_ACTION_DEFAULT_STATUSES,
     });
   };
 

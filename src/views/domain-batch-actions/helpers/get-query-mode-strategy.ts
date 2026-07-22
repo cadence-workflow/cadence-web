@@ -9,15 +9,15 @@ import {
 } from '../hooks/use-batch-action-target.types';
 
 export default function getQueryModeStrategy({
-  batchQuery,
+  batchActionQuery,
   submitAttempted,
 }: {
-  batchQuery: string;
+  batchActionQuery: string;
   submitAttempted: boolean;
 }): BatchActionModeStrategy {
-  const isQueryEmpty = !batchQuery?.trim();
+  const isQueryEmpty = !batchActionQuery?.trim();
   const showQueryError = submitAttempted && isQueryEmpty;
-  const isDefaultQuery = batchQuery === BATCH_ACTION_DEFAULT_QUERY;
+  const isDefaultQuery = batchActionQuery === BATCH_ACTION_DEFAULT_QUERY;
 
   let queryHint: QueryHint | null = null;
   if (showQueryError) {
@@ -27,12 +27,12 @@ export default function getQueryModeStrategy({
   }
 
   return {
-    query: batchQuery,
+    query: batchActionQuery,
     resolve: ({ totalWorkflowCount }) => ({
       selectedCount: totalWorkflowCount ?? 0,
       isTargetEmpty: isQueryEmpty,
       blocksSubmit: showQueryError,
-      getBatchActionQuery: () => batchQuery,
+      getBatchActionQuery: () => batchActionQuery,
       queryHint,
       listSelection: undefined,
     }),

@@ -118,7 +118,7 @@ describe(DomainPageActionsBatchWorkflow.name, () => {
     );
 
     expect(mockPush).toHaveBeenCalledWith(
-      'batch-actions?status=RUNNING&batch-query=WorkflowType+%3D+%22test%22&bid=draft'
+      'batch-actions?status=RUNNING&baquery=WorkflowType+%3D+%22test%22&baid=draft'
     );
   });
 });

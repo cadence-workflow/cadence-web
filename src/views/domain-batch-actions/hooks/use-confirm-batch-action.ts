@@ -33,7 +33,7 @@ export default function useConfirmBatchAction({
         onSuccess: (result) => {
           onSuccess?.();
           router.push(
-            `/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/batch-actions?bid=${encodeURIComponent(result.runId)}&bwid=${encodeURIComponent(result.workflowId)}`
+            `/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/batch-actions?baid=${encodeURIComponent(result.runId)}&bawid=${encodeURIComponent(result.workflowId)}`
           );
           enqueue(
             {
