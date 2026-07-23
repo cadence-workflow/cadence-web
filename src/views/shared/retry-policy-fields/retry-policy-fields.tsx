@@ -111,7 +111,7 @@ function RetryPolicyFieldsInner({
     <>
       <FieldWrapper
         subfield={variant === 'horizontal'}
-        label="Initial interval"
+        label="Initial Interval"
         description={
           variant === 'horizontal'
             ? 'How long to wait before first retry.'
@@ -133,7 +133,7 @@ function RetryPolicyFieldsInner({
               id={`${idPrefix}-initial-interval`}
               // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
               inputRef={ref}
-              aria-label="Initial interval"
+              aria-label="Initial Interval"
               type="number"
               min={1}
               error={Boolean(
@@ -152,7 +152,7 @@ function RetryPolicyFieldsInner({
 
       <FieldWrapper
         subfield={variant === 'horizontal'}
-        label="Backoff coefficient"
+        label="Backoff Coefficient"
         description={
           variant === 'horizontal'
             ? 'Multiplier applied between retries.'
@@ -174,7 +174,7 @@ function RetryPolicyFieldsInner({
               id={`${idPrefix}-backoff-coefficient`}
               // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
               inputRef={ref}
-              aria-label="Backoff coefficient"
+              aria-label="Backoff Coefficient"
               type="number"
               step={0.1}
               min={1}
@@ -193,7 +193,7 @@ function RetryPolicyFieldsInner({
 
       <FieldWrapper
         subfield={variant === 'horizontal'}
-        label="Maximum interval (optional)"
+        label="Maximum Interval (optional)"
         description={
           variant === 'horizontal'
             ? 'Upper bound for retry interval.'
@@ -215,7 +215,7 @@ function RetryPolicyFieldsInner({
               id={`${idPrefix}-maximum-interval`}
               // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
               inputRef={ref}
-              aria-label="Maximum interval"
+              aria-label="Maximum Interval"
               type="number"
               min={1}
               error={Boolean(
@@ -271,7 +271,7 @@ function RetryPolicyFieldsInner({
       {limitRetries === 'ATTEMPTS' && (
         <FieldWrapper
           subfield={variant === 'horizontal'}
-          label="Maximum attempts"
+          label="Maximum Attempts"
           description={
             variant === 'horizontal'
               ? 'Total number of retry attempts.'
@@ -293,7 +293,7 @@ function RetryPolicyFieldsInner({
                 id={`${idPrefix}-maximum-attempts`}
                 // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
                 inputRef={ref}
-                aria-label="Maximum attempts"
+                aria-label="Maximum Attempts"
                 type="number"
                 min={1}
                 error={Boolean(
@@ -313,7 +313,7 @@ function RetryPolicyFieldsInner({
       {limitRetries === 'DURATION' && (
         <FieldWrapper
           subfield={variant === 'horizontal'}
-          label="Expiration interval"
+          label="Expiration Interval"
           description={
             variant === 'horizontal'
               ? 'Maximum total retry duration.'
@@ -335,7 +335,7 @@ function RetryPolicyFieldsInner({
                 id={`${idPrefix}-expiration-interval`}
                 // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
                 inputRef={ref}
-                aria-label="Expiration interval"
+                aria-label="Expiration Interval"
                 type="number"
                 min={1}
                 error={Boolean(

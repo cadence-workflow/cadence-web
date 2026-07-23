@@ -41,20 +41,20 @@ describe(RetryPolicyFields.name, () => {
     );
 
     expect(
-      screen.getByRole('spinbutton', { name: 'Initial interval' })
+      screen.getByRole('spinbutton', { name: 'Initial Interval' })
     ).toHaveAttribute('aria-invalid', 'true');
 
     expect(
-      screen.getByRole('spinbutton', { name: 'Backoff coefficient' })
+      screen.getByRole('spinbutton', { name: 'Backoff Coefficient' })
     ).toHaveAttribute('aria-invalid', 'true');
 
     expect(
-      screen.getByRole('spinbutton', { name: 'Maximum attempts' })
+      screen.getByRole('spinbutton', { name: 'Maximum Attempts' })
     ).toHaveAttribute('aria-invalid', 'true');
 
     await user.click(screen.getByRole('radio', { name: 'Duration' }));
     expect(
-      screen.getByRole('spinbutton', { name: 'Expiration interval' })
+      screen.getByRole('spinbutton', { name: 'Expiration Interval' })
     ).toHaveAttribute('aria-invalid', 'true');
   });
 
@@ -70,20 +70,20 @@ describe(RetryPolicyFields.name, () => {
   it('toggles retry policy fields visibility', async () => {
     const { user } = await setup({});
 
-    expect(screen.queryByLabelText('Initial interval')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Initial Interval')).not.toBeInTheDocument();
     expect(
-      screen.queryByLabelText('Backoff coefficient')
+      screen.queryByLabelText('Backoff Coefficient')
     ).not.toBeInTheDocument();
-    expect(screen.queryByLabelText('Maximum interval')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Maximum Interval')).not.toBeInTheDocument();
     expect(screen.queryByLabelText('Retries Limit')).not.toBeInTheDocument();
 
     await user.click(
       screen.getByRole('checkbox', { name: /Enable retry policy/i })
     );
 
-    expect(screen.getByLabelText('Initial interval')).toBeInTheDocument();
-    expect(screen.getByLabelText('Backoff coefficient')).toBeInTheDocument();
-    expect(screen.getByLabelText('Maximum interval')).toBeInTheDocument();
+    expect(screen.getByLabelText('Initial Interval')).toBeInTheDocument();
+    expect(screen.getByLabelText('Backoff Coefficient')).toBeInTheDocument();
+    expect(screen.getByLabelText('Maximum Interval')).toBeInTheDocument();
     expect(screen.getByLabelText('Retries Limit')).toBeInTheDocument();
   });
 
@@ -94,15 +94,15 @@ describe(RetryPolicyFields.name, () => {
       screen.getByRole('checkbox', { name: /Enable retry policy/i })
     );
 
-    const maxIntervalInput = screen.getByLabelText('Maximum interval');
+    const maxIntervalInput = screen.getByLabelText('Maximum Interval');
     await user.type(maxIntervalInput, '30');
     expect(maxIntervalInput).toHaveValue(30);
 
-    const initialIntervalInput = screen.getByLabelText('Initial interval');
+    const initialIntervalInput = screen.getByLabelText('Initial Interval');
     await user.type(initialIntervalInput, '10');
     expect(initialIntervalInput).toHaveValue(10);
 
-    const backoffCoeffInput = screen.getByLabelText('Backoff coefficient');
+    const backoffCoeffInput = screen.getByLabelText('Backoff Coefficient');
     await user.type(backoffCoeffInput, '2.0');
     expect(backoffCoeffInput).toHaveValue(2);
   });
@@ -116,19 +116,19 @@ describe(RetryPolicyFields.name, () => {
 
     expect(screen.getByRole('radio', { name: 'Attempts' })).toBeChecked();
     expect(
-      screen.getByRole('spinbutton', { name: 'Maximum attempts' })
+      screen.getByRole('spinbutton', { name: 'Maximum Attempts' })
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole('spinbutton', { name: 'Expiration interval' })
+      screen.queryByRole('spinbutton', { name: 'Expiration Interval' })
     ).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('radio', { name: 'Duration' }));
     expect(screen.getByRole('radio', { name: 'Duration' })).toBeChecked();
     expect(
-      screen.queryByRole('spinbutton', { name: 'Maximum attempts' })
+      screen.queryByRole('spinbutton', { name: 'Maximum Attempts' })
     ).not.toBeInTheDocument();
     expect(
-      screen.getByRole('spinbutton', { name: 'Expiration interval' })
+      screen.getByRole('spinbutton', { name: 'Expiration Interval' })
     ).toBeInTheDocument();
   });
 });
