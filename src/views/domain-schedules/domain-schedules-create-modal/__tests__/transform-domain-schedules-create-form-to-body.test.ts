@@ -203,10 +203,10 @@ describe(transformDomainSchedulesCreateFormToBody.name, () => {
       enableRetryPolicy: true,
       limitRetries: 'ATTEMPTS',
       retryPolicy: {
-        initialIntervalSeconds: 1,
-        backoffCoefficient: 2,
-        maximumIntervalSeconds: 10,
-        maximumAttempts: 5,
+        initialIntervalSeconds: '1',
+        backoffCoefficient: '2',
+        maximumIntervalSeconds: '10',
+        maximumAttempts: '5',
       },
     });
 
@@ -224,9 +224,9 @@ describe(transformDomainSchedulesCreateFormToBody.name, () => {
       enableRetryPolicy: true,
       limitRetries: 'DURATION',
       retryPolicy: {
-        initialIntervalSeconds: 1,
-        backoffCoefficient: 2,
-        expirationIntervalSeconds: 60,
+        initialIntervalSeconds: '1',
+        backoffCoefficient: '2',
+        expirationIntervalSeconds: '60',
       },
     });
 
@@ -243,9 +243,9 @@ describe(transformDomainSchedulesCreateFormToBody.name, () => {
       enableRetryPolicy: false,
       limitRetries: 'ATTEMPTS',
       retryPolicy: {
-        initialIntervalSeconds: 1,
-        backoffCoefficient: 2,
-        maximumAttempts: 5,
+        initialIntervalSeconds: '1',
+        backoffCoefficient: '2',
+        maximumAttempts: '5',
       },
     });
 

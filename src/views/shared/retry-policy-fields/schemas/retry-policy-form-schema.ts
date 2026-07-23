@@ -5,11 +5,11 @@ export const RETRY_LIMIT_TYPES = ['ATTEMPTS', 'DURATION'] as const;
 export type RetryLimitType = (typeof RETRY_LIMIT_TYPES)[number];
 
 export const retryPolicyValueSchema = z.object({
-  initialIntervalSeconds: z.number().positive().optional(),
-  backoffCoefficient: z.number().min(1).optional(),
-  maximumIntervalSeconds: z.number().positive().optional(),
-  maximumAttempts: z.number().int().positive().optional(),
-  expirationIntervalSeconds: z.number().positive().optional(),
+  initialIntervalSeconds: z.string().optional(),
+  backoffCoefficient: z.string().optional(),
+  maximumIntervalSeconds: z.string().optional(),
+  maximumAttempts: z.string().optional(),
+  expirationIntervalSeconds: z.string().optional(),
 });
 
 export const retryPolicyFormFieldsShape = {

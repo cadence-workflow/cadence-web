@@ -7,8 +7,8 @@ describe(mapRetryPolicyFormToBody.name, () => {
         enableRetryPolicy: false,
         limitRetries: 'ATTEMPTS',
         retryPolicy: {
-          initialIntervalSeconds: 10,
-          backoffCoefficient: 2,
+          initialIntervalSeconds: '10',
+          backoffCoefficient: '2',
         },
       })
     ).toBeUndefined();
@@ -20,10 +20,10 @@ describe(mapRetryPolicyFormToBody.name, () => {
         enableRetryPolicy: true,
         limitRetries: 'ATTEMPTS',
         retryPolicy: {
-          initialIntervalSeconds: 10,
-          backoffCoefficient: 2,
-          maximumIntervalSeconds: 100,
-          maximumAttempts: 5,
+          initialIntervalSeconds: '10',
+          backoffCoefficient: '2',
+          maximumIntervalSeconds: '100',
+          maximumAttempts: '5',
         },
       })
     ).toEqual({
@@ -40,15 +40,34 @@ describe(mapRetryPolicyFormToBody.name, () => {
         enableRetryPolicy: true,
         limitRetries: 'DURATION',
         retryPolicy: {
-          initialIntervalSeconds: 10,
-          backoffCoefficient: 2,
-          expirationIntervalSeconds: 3600,
+          initialIntervalSeconds: '10',
+          backoffCoefficient: '2',
+          expirationIntervalSeconds: '3600',
         },
       })
     ).toEqual({
       initialIntervalSeconds: 10,
       backoffCoefficient: 2,
       expirationIntervalSeconds: 3600,
+    });
+  });
+
+  it('maps empty form values to undefined', () => {
+    expect(
+      mapRetryPolicyFormToBody({
+        enableRetryPolicy: true,
+        limitRetries: 'ATTEMPTS',
+        retryPolicy: {
+          initialIntervalSeconds: '',
+          backoffCoefficient: '',
+          maximumIntervalSeconds: '',
+          maximumAttempts: '',
+        },
+      })
+    ).toEqual({
+      initialIntervalSeconds: undefined,
+      backoffCoefficient: undefined,
+      maximumAttempts: undefined,
     });
   });
 });

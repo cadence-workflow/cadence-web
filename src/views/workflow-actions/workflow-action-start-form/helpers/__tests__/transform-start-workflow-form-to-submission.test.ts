@@ -76,8 +76,8 @@ describe('transformStartWorkflowFormToSubmission', () => {
       ...baseFormData,
       enableRetryPolicy: false,
       retryPolicy: {
-        initialIntervalSeconds: 10,
-        backoffCoefficient: 2.0,
+        initialIntervalSeconds: '10',
+        backoffCoefficient: '2.0',
       },
     };
 
@@ -91,9 +91,9 @@ describe('transformStartWorkflowFormToSubmission', () => {
       ...baseFormData,
       enableRetryPolicy: true,
       retryPolicy: {
-        initialIntervalSeconds: 10,
-        backoffCoefficient: 2.0,
-        maximumIntervalSeconds: 100,
+        initialIntervalSeconds: '10',
+        backoffCoefficient: '2.0',
+        maximumIntervalSeconds: '100',
       },
     };
 
@@ -108,9 +108,9 @@ describe('transformStartWorkflowFormToSubmission', () => {
       enableRetryPolicy: true,
       limitRetries: 'ATTEMPTS',
       retryPolicy: {
-        initialIntervalSeconds: 10,
-        backoffCoefficient: 2.0,
-        maximumAttempts: 5,
+        initialIntervalSeconds: '10',
+        backoffCoefficient: '2.0',
+        maximumAttempts: '5',
       },
     };
 
@@ -129,9 +129,9 @@ describe('transformStartWorkflowFormToSubmission', () => {
       enableRetryPolicy: true,
       limitRetries: 'DURATION',
       retryPolicy: {
-        initialIntervalSeconds: 10,
-        backoffCoefficient: 2.0,
-        expirationIntervalSeconds: 3600,
+        initialIntervalSeconds: '10',
+        backoffCoefficient: '2.0',
+        expirationIntervalSeconds: '3600',
       },
     };
 
@@ -282,11 +282,11 @@ describe('transformStartWorkflowFormToSubmission', () => {
     expect(result.header).toBeUndefined();
   });
 
-  it('should pass through numeric retry policy values', () => {
+  it('should convert string numbers to numbers in retry policy', () => {
     const baseRetryPolicy = {
-      initialIntervalSeconds: 10,
-      backoffCoefficient: 2.5,
-      maximumIntervalSeconds: 100,
+      initialIntervalSeconds: '10',
+      backoffCoefficient: '2.5',
+      maximumIntervalSeconds: '100',
     };
     const formData: StartWorkflowFormData = {
       ...baseFormData,
@@ -294,7 +294,7 @@ describe('transformStartWorkflowFormToSubmission', () => {
       limitRetries: 'ATTEMPTS',
       retryPolicy: {
         ...baseRetryPolicy,
-        maximumAttempts: 3,
+        maximumAttempts: '3',
       },
     };
 
@@ -312,7 +312,7 @@ describe('transformStartWorkflowFormToSubmission', () => {
       limitRetries: 'DURATION',
       retryPolicy: {
         ...baseRetryPolicy,
-        expirationIntervalSeconds: 3600,
+        expirationIntervalSeconds: '3600',
       },
     });
 
@@ -329,8 +329,8 @@ describe('transformStartWorkflowFormToSubmission', () => {
       ...baseFormData,
       enableRetryPolicy: true,
       retryPolicy: {
-        initialIntervalSeconds: 1,
-        backoffCoefficient: 1.5,
+        initialIntervalSeconds: '1',
+        backoffCoefficient: '1.5',
       },
     };
 

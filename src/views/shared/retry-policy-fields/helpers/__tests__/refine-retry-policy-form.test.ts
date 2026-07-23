@@ -35,8 +35,8 @@ describe(refineRetryPolicyForm.name, () => {
         enableRetryPolicy: true,
         limitRetries: 'ATTEMPTS',
         retryPolicy: {
-          initialIntervalSeconds: 10,
-          backoffCoefficient: 2,
+          initialIntervalSeconds: '10',
+          backoffCoefficient: '2',
         },
       })
     ).toEqual([
@@ -53,8 +53,8 @@ describe(refineRetryPolicyForm.name, () => {
         enableRetryPolicy: true,
         limitRetries: 'DURATION',
         retryPolicy: {
-          initialIntervalSeconds: 10,
-          backoffCoefficient: 2,
+          initialIntervalSeconds: '10',
+          backoffCoefficient: '2',
         },
       })
     ).toEqual([

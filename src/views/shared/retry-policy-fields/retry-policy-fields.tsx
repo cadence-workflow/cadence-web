@@ -126,24 +126,16 @@ function RetryPolicyFieldsInner({
         <Controller
           name="retryPolicy.initialIntervalSeconds"
           control={control}
+          defaultValue=""
           render={({ field: { ref, ...field } }) => (
             <Input
               {...field}
               id={`${idPrefix}-initial-interval`}
-              value={field.value ?? ''}
               // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
               inputRef={ref}
               aria-label="Initial interval"
               type="number"
               min={1}
-              onChange={(e) =>
-                field.onChange(
-                  e.target.value === ''
-                    ? undefined
-                    : parseInt(e.target.value, 10)
-                )
-              }
-              onBlur={field.onBlur}
               error={Boolean(
                 getFieldErrorMessage(
                   fieldErrors,
@@ -175,23 +167,17 @@ function RetryPolicyFieldsInner({
         <Controller
           name="retryPolicy.backoffCoefficient"
           control={control}
+          defaultValue=""
           render={({ field: { ref, ...field } }) => (
             <Input
               {...field}
               id={`${idPrefix}-backoff-coefficient`}
-              value={field.value ?? ''}
               // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
               inputRef={ref}
               aria-label="Backoff coefficient"
               type="number"
               step={0.1}
               min={1}
-              onChange={(e) =>
-                field.onChange(
-                  e.target.value === '' ? undefined : parseFloat(e.target.value)
-                )
-              }
-              onBlur={field.onBlur}
               error={Boolean(
                 getFieldErrorMessage(
                   fieldErrors,
@@ -222,24 +208,16 @@ function RetryPolicyFieldsInner({
         <Controller
           name="retryPolicy.maximumIntervalSeconds"
           control={control}
+          defaultValue=""
           render={({ field: { ref, ...field } }) => (
             <Input
               {...field}
               id={`${idPrefix}-maximum-interval`}
-              value={field.value ?? ''}
               // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
               inputRef={ref}
               aria-label="Maximum interval"
               type="number"
               min={1}
-              onChange={(e) =>
-                field.onChange(
-                  e.target.value === ''
-                    ? undefined
-                    : parseInt(e.target.value, 10)
-                )
-              }
-              onBlur={field.onBlur}
               error={Boolean(
                 getFieldErrorMessage(
                   fieldErrors,
@@ -308,24 +286,16 @@ function RetryPolicyFieldsInner({
           <Controller
             name="retryPolicy.maximumAttempts"
             control={control}
+            defaultValue=""
             render={({ field: { ref, ...field } }) => (
               <Input
                 {...field}
                 id={`${idPrefix}-maximum-attempts`}
-                value={field.value ?? ''}
                 // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
                 inputRef={ref}
                 aria-label="Maximum attempts"
                 type="number"
                 min={1}
-                onChange={(e) =>
-                  field.onChange(
-                    e.target.value === ''
-                      ? undefined
-                      : parseInt(e.target.value, 10)
-                  )
-                }
-                onBlur={field.onBlur}
                 error={Boolean(
                   getFieldErrorMessage(
                     fieldErrors,
@@ -358,24 +328,16 @@ function RetryPolicyFieldsInner({
           <Controller
             name="retryPolicy.expirationIntervalSeconds"
             control={control}
+            defaultValue=""
             render={({ field: { ref, ...field } }) => (
               <Input
                 {...field}
                 id={`${idPrefix}-expiration-interval`}
-                value={field.value ?? ''}
                 // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
                 inputRef={ref}
                 aria-label="Expiration interval"
                 type="number"
                 min={1}
-                onChange={(e) =>
-                  field.onChange(
-                    e.target.value === ''
-                      ? undefined
-                      : parseInt(e.target.value, 10)
-                  )
-                }
-                onBlur={field.onBlur}
                 error={Boolean(
                   getFieldErrorMessage(
                     fieldErrors,
