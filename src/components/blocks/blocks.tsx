@@ -94,7 +94,13 @@ export default function Blocks({
     if (section.format === 'text/markdown') {
       return (
         <styled.SectionContainer>
-          <Markdown markdown={content} />
+          <Markdown
+            markdown={content}
+            domain={domain}
+            cluster={cluster}
+            workflowId={workflowId}
+            runId={runId}
+          />
         </styled.SectionContainer>
       );
     }
