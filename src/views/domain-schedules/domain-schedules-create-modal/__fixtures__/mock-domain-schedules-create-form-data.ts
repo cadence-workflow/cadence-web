@@ -14,6 +14,8 @@ export const mockDomainSchedulesCreateFormData = {
   workerSDKLanguage: 'GO',
   executionStartToCloseTimeoutSeconds: 3600,
   taskStartToCloseTimeoutSeconds: 45,
+  enableRetryPolicy: false,
+  limitRetries: 'ATTEMPTS',
 } satisfies DomainSchedulesCreateFormData;
 
 export function createDomainSchedulesCreateFormData(

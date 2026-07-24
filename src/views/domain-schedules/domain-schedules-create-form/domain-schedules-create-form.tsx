@@ -36,6 +36,7 @@ import { type Props } from './domain-schedules-create-form.types';
 export default function DomainSchedulesCreateForm({
   control,
   trigger,
+  clearErrors,
   domain,
   cluster,
 }: Props) {
@@ -340,6 +341,7 @@ export default function DomainSchedulesCreateForm({
         fieldErrors={fieldErrors}
         trigger={trigger}
         isSubmitted={isSubmitted}
+        clearErrors={clearErrors}
         cluster={cluster}
       />
     </div>

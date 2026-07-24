@@ -9,6 +9,7 @@ import {
 import { WORKER_SDK_LANGUAGES } from '@/route-handlers/start-workflow/start-workflow.constants';
 import { MAX_CATCH_UP_WINDOW_DAYS } from '@/views/domain-schedules/domain-schedules-create-advanced-form/domain-schedules-create-advanced-form.constants';
 import refineCreateScheduleForm from '@/views/domain-schedules/domain-schedules-create-modal/helpers/refine-create-schedule-form';
+import { retryPolicyFormFieldsShape } from '@/views/shared/retry-policy-fields/schemas/retry-policy-form-schema';
 import { getCronFieldsError } from '@/views/workflow-actions/workflow-action-start-form/helpers/get-cron-fields-error';
 
 const cronExpressionFieldsSchema = z
@@ -136,6 +137,7 @@ export const createScheduleFormFieldsSchema = z.object({
     .optional(),
   startTime: z.string().datetime('Start time must be valid').optional(),
   endTime: z.string().datetime('End time must be valid').optional(),
+  ...retryPolicyFormFieldsShape,
   memo: z.string().optional(),
   searchAttributes: z
     .array(
