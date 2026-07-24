@@ -145,7 +145,6 @@ export default function WorkflowActionStartOptionalSection({
           control={control}
           clearErrors={clearErrors}
           fieldErrors={fieldErrors}
-          variant="compact"
         />
 
         <FormControl label="Header (optional)">

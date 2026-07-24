@@ -15,14 +15,9 @@ export default function mapRetryPolicyFormToBody(
     backoffCoefficient: formData.retryPolicy.backoffCoefficient
       ? parseFloat(formData.retryPolicy.backoffCoefficient)
       : undefined,
-    ...(formData.retryPolicy.maximumIntervalSeconds
-      ? {
-          maximumIntervalSeconds: parseInt(
-            formData.retryPolicy.maximumIntervalSeconds,
-            10
-          ),
-        }
-      : {}),
+    maximumIntervalSeconds: formData.retryPolicy.maximumIntervalSeconds
+      ? parseInt(formData.retryPolicy.maximumIntervalSeconds, 10)
+      : undefined,
     ...(formData.limitRetries === 'ATTEMPTS'
       ? {
           maximumAttempts: formData.retryPolicy.maximumAttempts

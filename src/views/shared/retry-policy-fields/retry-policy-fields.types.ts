@@ -13,16 +13,6 @@ export type Props<TFieldValues extends RetryPolicyFormFields> = {
   control: Control<TFieldValues>;
   clearErrors: UseFormClearErrors<TFieldValues>;
   fieldErrors: FieldErrors<TFieldValues>;
-  variant: 'horizontal' | 'compact';
-  idPrefix?: string;
-  fieldComponent?: ComponentType<FieldComponentProps>;
-};
-
-type InnerProps = {
-  control: Control<RetryPolicyFormFields>;
-  clearErrors: UseFormClearErrors<RetryPolicyFormFields>;
-  fieldErrors: FieldErrors<RetryPolicyFormFields>;
-  variant: 'horizontal' | 'compact';
   idPrefix?: string;
   fieldComponent?: ComponentType<FieldComponentProps>;
 };
@@ -34,5 +24,3 @@ export type RetryPolicyBody = {
   maximumAttempts?: number;
   expirationIntervalSeconds?: number;
 };
-
-export type { InnerProps };

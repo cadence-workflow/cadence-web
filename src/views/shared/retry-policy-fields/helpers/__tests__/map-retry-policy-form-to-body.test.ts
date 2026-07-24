@@ -67,7 +67,7 @@ describe(mapRetryPolicyFormToBody.name, () => {
     ).toEqual({
       initialIntervalSeconds: undefined,
       backoffCoefficient: undefined,
+      maximumIntervalSeconds: undefined,
       maximumAttempts: undefined,
-    });
-  });
+    ;
 });

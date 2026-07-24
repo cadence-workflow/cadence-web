@@ -12,33 +12,20 @@ import getFieldErrorMessage from '@/views/workflow-actions/workflow-action-start
 
 import RetryPolicyFieldsWrapper from './retry-policy-fields-wrapper/retry-policy-fields-wrapper';
 import { cssStyles, overrides } from './retry-policy-fields.styles';
-import { type InnerProps, type Props } from './retry-policy-fields.types';
+import { type Props } from './retry-policy-fields.types';
 import { type RetryPolicyFormFields } from './schemas/retry-policy-form-schema';
 
 export default function RetryPolicyFields<
   TFieldValues extends RetryPolicyFormFields,
 >(props: Props<TFieldValues>) {
-  return (
-    <RetryPolicyFieldsInner
-      control={props.control as InnerProps['control']}
-      clearErrors={props.clearErrors as InnerProps['clearErrors']}
-      fieldErrors={props.fieldErrors as InnerProps['fieldErrors']}
-      variant={props.variant}
-      idPrefix={props.idPrefix}
-      fieldComponent={props.fieldComponent}
-    />
-  );
-}
-
-function RetryPolicyFieldsInner({
-  control,
-  clearErrors,
-  fieldErrors,
-  variant,
-  idPrefix = 'retry-policy-form',
-  fieldComponent,
-}: InnerProps) {
+  const control = props.control as Props<RetryPolicyFormFields>['control'];
+  const clearErrors =
+    props.clearErrors as Props<RetryPolicyFormFields>['clearErrors'];
+  const fieldErrors =
+    props.fieldErrors as Props<RetryPolicyFormFields>['fieldErrors'];
+  const { idPrefix = 'retry-policy-form', fieldComponent } = props;
   const { cls } = useStyletronClasses(cssStyles);
+  const usesCustomFieldComponent = Boolean(fieldComponent);
   const enableRetryPolicy = useWatch({
     control,
     name: 'enableRetryPolicy',
@@ -83,30 +70,25 @@ function RetryPolicyFieldsInner({
     />
   );
 
-  const enableRetryPolicyField =
-    variant === 'horizontal' ? (
-      <RetryPolicyFieldsWrapper
-        fieldComponent={fieldComponent}
-        label="Retry policy"
-        description="Controls retry behavior for the workflow."
-      >
-        {enableRetryPolicyCheckbox}
-      </RetryPolicyFieldsWrapper>
-    ) : (
-      <FormControl>{enableRetryPolicyCheckbox}</FormControl>
-    );
+  const enableRetryPolicyField = usesCustomFieldComponent ? (
+    <RetryPolicyFieldsWrapper
+      fieldComponent={fieldComponent}
+      label="Retry policy"
+      description="Controls retry behavior for the workflow."
+    >
+      {enableRetryPolicyCheckbox}
+    </RetryPolicyFieldsWrapper>
+  ) : (
+    <FormControl>{enableRetryPolicyCheckbox}</FormControl>
+  );
 
   const retryPolicyFields = enableRetryPolicy ? (
     <>
       <RetryPolicyFieldsWrapper
         fieldComponent={fieldComponent}
-        subfield={variant === 'horizontal'}
+        subfield
         label="Initial Interval"
-        description={
-          variant === 'horizontal'
-            ? 'How long to wait before first retry.'
-            : undefined
-        }
+        description="How long to wait before first retry."
         htmlFor={`${idPrefix}-initial-interval`}
         error={getFieldErrorMessage(
           fieldErrors,
@@ -142,13 +124,9 @@ function RetryPolicyFieldsInner({
 
       <RetryPolicyFieldsWrapper
         fieldComponent={fieldComponent}
-        subfield={variant === 'horizontal'}
+        subfield
         label="Backoff Coefficient"
-        description={
-          variant === 'horizontal'
-            ? 'Multiplier applied between retries.'
-            : undefined
-        }
+        description="Multiplier applied between retries."
         htmlFor={`${idPrefix}-backoff-coefficient`}
         error={getFieldErrorMessage(
           fieldErrors,
@@ -184,13 +162,9 @@ function RetryPolicyFieldsInner({
 
       <RetryPolicyFieldsWrapper
         fieldComponent={fieldComponent}
-        subfield={variant === 'horizontal'}
+        subfield
         label="Maximum Interval (optional)"
-        description={
-          variant === 'horizontal'
-            ? 'Upper bound for retry interval.'
-            : undefined
-        }
+        description="Upper bound for retry interval."
         htmlFor={`${idPrefix}-maximum-interval`}
         error={getFieldErrorMessage(
           fieldErrors,
@@ -226,13 +200,9 @@ function RetryPolicyFieldsInner({
 
       <RetryPolicyFieldsWrapper
         fieldComponent={fieldComponent}
-        subfield={variant === 'horizontal'}
+        subfield
         label="Limit retries"
-        description={
-          variant === 'horizontal'
-            ? 'Choose whether retries are limited by attempts or duration.'
-            : undefined
-        }
+        description="Choose whether retries are limited by attempts or duration."
         error={getFieldErrorMessage(fieldErrors, 'limitRetries')}
       >
         <Controller
@@ -264,13 +234,9 @@ function RetryPolicyFieldsInner({
       {limitRetries === 'ATTEMPTS' && (
         <RetryPolicyFieldsWrapper
           fieldComponent={fieldComponent}
-          subfield={variant === 'horizontal'}
+          subfield
           label="Maximum Attempts"
-          description={
-            variant === 'horizontal'
-              ? 'Total number of retry attempts.'
-              : undefined
-          }
+          description="Total number of retry attempts."
           htmlFor={`${idPrefix}-maximum-attempts`}
           error={getFieldErrorMessage(
             fieldErrors,
@@ -307,13 +273,9 @@ function RetryPolicyFieldsInner({
       {limitRetries === 'DURATION' && (
         <RetryPolicyFieldsWrapper
           fieldComponent={fieldComponent}
-          subfield={variant === 'horizontal'}
+          subfield
           label="Expiration Interval"
-          description={
-            variant === 'horizontal'
-              ? 'Maximum total retry duration.'
-              : undefined
-          }
+          description="Maximum total retry duration."
           htmlFor={`${idPrefix}-expiration-interval`}
           error={getFieldErrorMessage(
             fieldErrors,
@@ -353,7 +315,7 @@ function RetryPolicyFieldsInner({
   return (
     <>
       {enableRetryPolicyField}
-      {variant === 'compact' && retryPolicyFields ? (
+      {!usesCustomFieldComponent && retryPolicyFields ? (
         <div className={cls.retryPolicySection}>{retryPolicyFields}</div>
       ) : (
         retryPolicyFields

@@ -408,7 +408,6 @@ export default function DomainSchedulesCreateAdvancedForm({
           control={control}
           clearErrors={clearErrors}
           fieldErrors={fieldErrors}
-          variant="horizontal"
           idPrefix="create-schedule-form-retry"
           fieldComponent={DomainSchedulesHorizontalField}
         />

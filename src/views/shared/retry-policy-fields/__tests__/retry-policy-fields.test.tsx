@@ -135,10 +135,9 @@ describe(RetryPolicyFields.name, () => {
 
 type TestProps = {
   fieldErrors: Props<RetryPolicyFormFields>['fieldErrors'];
-  variant?: Props<RetryPolicyFormFields>['variant'];
 };
 
-function TestWrapper({ fieldErrors, variant = 'compact' }: TestProps) {
+function TestWrapper({ fieldErrors }: TestProps) {
   const methods = useForm<RetryPolicyFormFields>({
     defaultValues: {
       enableRetryPolicy: false,
@@ -151,18 +150,14 @@ function TestWrapper({ fieldErrors, variant = 'compact' }: TestProps) {
       control={methods.control}
       clearErrors={methods.clearErrors}
       fieldErrors={fieldErrors}
-      variant={variant}
     />
   );
 }
 
-async function setup({
-  fieldErrors = {},
-  variant = 'compact',
-}: Partial<TestProps> = {}) {
+async function setup({ fieldErrors = {} }: Partial<TestProps> = {}) {
   const user = userEvent.setup();
 
-  render(<TestWrapper fieldErrors={fieldErrors} variant={variant} />);
+  render(<TestWrapper fieldErrors={fieldErrors} />);
 
   return { user };
 }
