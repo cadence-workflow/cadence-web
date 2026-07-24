@@ -13,7 +13,6 @@ describe(RetryPolicyFieldsWrapper.name, () => {
     setup({ error: 'Invalid value' });
 
     expect(screen.getByText('Retry interval')).toBeInTheDocument();
-    expect(screen.getByText('Invalid value')).toBeInTheDocument();
     expect(screen.getByRole('spinbutton')).toBeInTheDocument();
   });
 

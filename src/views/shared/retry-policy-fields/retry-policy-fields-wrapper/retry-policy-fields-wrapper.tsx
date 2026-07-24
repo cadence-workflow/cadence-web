@@ -12,11 +12,7 @@ export default function RetryPolicyFieldsWrapper({
   children,
 }: Props) {
   if (!FieldComponent) {
-    return (
-      <FormControl label={label} error={error}>
-        {children}
-      </FormControl>
-    );
+    return <FormControl label={label}>{children}</FormControl>;
   }
 
   return (
