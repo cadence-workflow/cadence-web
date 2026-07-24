@@ -52,7 +52,7 @@ export const styled = {
       gap: $theme.sizing.scale500,
       [$theme.mediaQuery.medium]: {
         flexDirection: 'row',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         flexWrap: 'wrap',
       },
     })
@@ -70,7 +70,7 @@ export const styled = {
       alignSelf: 'stretch',
       width: '100%',
       [$theme.mediaQuery.medium]: {
-        alignSelf: 'center',
+        alignSelf: 'flex-start',
         width: 'auto',
         flexShrink: 0,
       },

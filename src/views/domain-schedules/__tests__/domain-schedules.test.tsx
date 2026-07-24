@@ -41,6 +41,11 @@ jest.mock('../domain-schedules-header/domain-schedules-header', () =>
   ))
 );
 
+jest.mock(
+  '../domain-schedules-create-button/domain-schedules-create-button',
+  () => jest.fn(() => null)
+);
+
 jest.mock('../config/schedules-table.config', () => [
   {
     name: 'Schedule Id',

@@ -249,6 +249,23 @@ describe(ErrorPanel.name, () => {
     expect(screen.queryByText('Open in New Icon')).toBeNull();
     expect(screen.getByTestId('custom-external-end')).toBeInTheDocument();
   });
+
+  it('renders custom action content', () => {
+    setup({
+      message: 'Mock error message',
+      actions: [
+        {
+          kind: 'custom',
+          key: 'custom-action',
+          content: <button type="button">Custom action</button>,
+        },
+      ],
+    });
+
+    expect(
+      screen.getByRole('button', { name: 'Custom action' })
+    ).toBeInTheDocument();
+  });
 });
 
 function setup({
