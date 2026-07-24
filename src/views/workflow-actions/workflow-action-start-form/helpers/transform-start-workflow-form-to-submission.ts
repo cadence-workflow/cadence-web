@@ -19,6 +19,8 @@ export default function transformStartWorkflowFormToSubmission(
     workflowId: formData.workflowId,
     workflowIdReusePolicy: formData.workflowIdReusePolicy,
   };
+  const retryPolicy = mapRetryPolicyFormToBody(formData);
+
   const conditionalFormData: Partial<StartWorkflowSubmissionData> = {
     ...(formData.scheduleType === 'LATER' && {
       firstRunAt: formData.firstRunAt,
@@ -28,11 +30,8 @@ export default function transformStartWorkflowFormToSubmission(
         (key) => formData.cronSchedule?.[key]
       ).join(' '),
     }),
+    ...(retryPolicy && { retryPolicy }),
   };
-  const retryPolicy = mapRetryPolicyFormToBody(formData);
-  if (retryPolicy) {
-    conditionalFormData.retryPolicy = retryPolicy;
-  }
 
   const searchAttributesObject =
     formData?.searchAttributes && formData.searchAttributes.length > 0

@@ -1,4 +1,4 @@
-import { type RetryPolicyBody } from '../retry-policy.types';
+import { type RetryPolicyBody } from '../retry-policy-fields.types';
 import { type RetryPolicyFormFields } from '../schemas/retry-policy-form-schema';
 
 export default function mapRetryPolicyFormToBody(

@@ -1,7 +1,5 @@
 'use client';
 
-import React from 'react';
-
 import { Checkbox } from 'baseui/checkbox';
 import { FormControl } from 'baseui/form-control';
 import { Input } from 'baseui/input';
@@ -10,21 +8,12 @@ import { LabelXSmall } from 'baseui/typography';
 import { Controller, useWatch } from 'react-hook-form';
 
 import useStyletronClasses from '@/hooks/use-styletron-classes';
-import DomainSchedulesHorizontalField from '@/views/domain-schedules/domain-schedules-horizontal-field/domain-schedules-horizontal-field';
 import getFieldErrorMessage from '@/views/workflow-actions/workflow-action-start-form/helpers/get-field-error-message';
 
+import RetryPolicyFieldsWrapper from './retry-policy-fields-wrapper/retry-policy-fields-wrapper';
 import { cssStyles, overrides } from './retry-policy-fields.styles';
 import { type InnerProps, type Props } from './retry-policy-fields.types';
 import { type RetryPolicyFormFields } from './schemas/retry-policy-form-schema';
-
-type FieldWrapperProps = {
-  label: string;
-  description?: string;
-  htmlFor?: string;
-  error?: string;
-  subfield?: boolean;
-  children: React.ReactNode;
-};
 
 export default function RetryPolicyFields<
   TFieldValues extends RetryPolicyFormFields,
@@ -36,6 +25,7 @@ export default function RetryPolicyFields<
       fieldErrors={props.fieldErrors as InnerProps['fieldErrors']}
       variant={props.variant}
       idPrefix={props.idPrefix}
+      fieldComponent={props.fieldComponent}
     />
   );
 }
@@ -46,6 +36,7 @@ function RetryPolicyFieldsInner({
   fieldErrors,
   variant,
   idPrefix = 'retry-policy-form',
+  fieldComponent,
 }: InnerProps) {
   const { cls } = useStyletronClasses(cssStyles);
   const enableRetryPolicy = useWatch({
@@ -58,9 +49,6 @@ function RetryPolicyFieldsInner({
     name: 'limitRetries',
     defaultValue: 'ATTEMPTS',
   });
-
-  const FieldWrapper =
-    variant === 'horizontal' ? HorizontalFieldWrapper : CompactFieldWrapper;
 
   const enableRetryPolicyCheckbox = (
     <Controller
@@ -97,19 +85,21 @@ function RetryPolicyFieldsInner({
 
   const enableRetryPolicyField =
     variant === 'horizontal' ? (
-      <HorizontalFieldWrapper
+      <RetryPolicyFieldsWrapper
+        fieldComponent={fieldComponent}
         label="Retry policy"
         description="Controls retry behavior for the workflow."
       >
         {enableRetryPolicyCheckbox}
-      </HorizontalFieldWrapper>
+      </RetryPolicyFieldsWrapper>
     ) : (
       <FormControl>{enableRetryPolicyCheckbox}</FormControl>
     );
 
   const retryPolicyFields = enableRetryPolicy ? (
     <>
-      <FieldWrapper
+      <RetryPolicyFieldsWrapper
+        fieldComponent={fieldComponent}
         subfield={variant === 'horizontal'}
         label="Initial Interval"
         description={
@@ -148,9 +138,10 @@ function RetryPolicyFieldsInner({
             />
           )}
         />
-      </FieldWrapper>
+      </RetryPolicyFieldsWrapper>
 
-      <FieldWrapper
+      <RetryPolicyFieldsWrapper
+        fieldComponent={fieldComponent}
         subfield={variant === 'horizontal'}
         label="Backoff Coefficient"
         description={
@@ -189,9 +180,10 @@ function RetryPolicyFieldsInner({
             />
           )}
         />
-      </FieldWrapper>
+      </RetryPolicyFieldsWrapper>
 
-      <FieldWrapper
+      <RetryPolicyFieldsWrapper
+        fieldComponent={fieldComponent}
         subfield={variant === 'horizontal'}
         label="Maximum Interval (optional)"
         description={
@@ -230,9 +222,10 @@ function RetryPolicyFieldsInner({
             />
           )}
         />
-      </FieldWrapper>
+      </RetryPolicyFieldsWrapper>
 
-      <FieldWrapper
+      <RetryPolicyFieldsWrapper
+        fieldComponent={fieldComponent}
         subfield={variant === 'horizontal'}
         label="Limit retries"
         description={
@@ -266,10 +259,11 @@ function RetryPolicyFieldsInner({
             </RadioGroup>
           )}
         />
-      </FieldWrapper>
+      </RetryPolicyFieldsWrapper>
 
       {limitRetries === 'ATTEMPTS' && (
-        <FieldWrapper
+        <RetryPolicyFieldsWrapper
+          fieldComponent={fieldComponent}
           subfield={variant === 'horizontal'}
           label="Maximum Attempts"
           description={
@@ -307,11 +301,12 @@ function RetryPolicyFieldsInner({
               />
             )}
           />
-        </FieldWrapper>
+        </RetryPolicyFieldsWrapper>
       )}
 
       {limitRetries === 'DURATION' && (
-        <FieldWrapper
+        <RetryPolicyFieldsWrapper
+          fieldComponent={fieldComponent}
           subfield={variant === 'horizontal'}
           label="Expiration Interval"
           description={
@@ -350,7 +345,7 @@ function RetryPolicyFieldsInner({
               />
             )}
           />
-        </FieldWrapper>
+        </RetryPolicyFieldsWrapper>
       )}
     </>
   ) : null;
@@ -364,34 +359,5 @@ function RetryPolicyFieldsInner({
         retryPolicyFields
       )}
     </>
-  );
-}
-
-function HorizontalFieldWrapper({
-  label,
-  description,
-  htmlFor,
-  error,
-  subfield = false,
-  children,
-}: FieldWrapperProps) {
-  return (
-    <DomainSchedulesHorizontalField
-      label={label}
-      description={description}
-      htmlFor={htmlFor}
-      error={error}
-      subfield={subfield}
-    >
-      {children}
-    </DomainSchedulesHorizontalField>
-  );
-}
-
-function CompactFieldWrapper({ label, error, children }: FieldWrapperProps) {
-  return (
-    <FormControl label={label} error={error}>
-      {children}
-    </FormControl>
   );
 }
