@@ -16,7 +16,7 @@ jest.mock('@/components/error-panel/error-panel', () =>
       <div>{description}</div>
       {actions?.map((action) => {
         if (action.kind === 'custom') {
-          return null;
+          return action.content;
         }
 
         return (
