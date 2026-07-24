@@ -153,13 +153,13 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
       screen.getByRole('button', { name: /show advanced configurations/i })
     );
 
-    expect(screen.queryByLabelText('Initial interval')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Initial Interval')).not.toBeInTheDocument();
 
     await user.click(
       screen.getByRole('checkbox', { name: /enable retry policy/i })
     );
-    expect(screen.getByLabelText('Initial interval')).toBeInTheDocument();
-    expect(screen.getByLabelText('Maximum attempts')).toBeInTheDocument();
+    expect(screen.getByLabelText('Initial Interval')).toBeInTheDocument();
+    expect(screen.getByLabelText('Maximum Attempts')).toBeInTheDocument();
   });
 
   it('switches retry limit field between attempts and duration', async () => {
@@ -172,10 +172,10 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
       screen.getByRole('checkbox', { name: /enable retry policy/i })
     );
 
-    expect(screen.getByLabelText('Maximum attempts')).toBeInTheDocument();
+    expect(screen.getByLabelText('Maximum Attempts')).toBeInTheDocument();
     await user.click(screen.getByRole('radio', { name: 'Duration' }));
-    expect(screen.getByLabelText('Expiration interval')).toBeInTheDocument();
-    expect(screen.queryByLabelText('Maximum attempts')).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Expiration Interval')).toBeInTheDocument();
+    expect(screen.queryByLabelText('Maximum Attempts')).not.toBeInTheDocument();
   });
 });
 

@@ -69,5 +69,6 @@ describe(mapRetryPolicyFormToBody.name, () => {
       backoffCoefficient: undefined,
       maximumIntervalSeconds: undefined,
       maximumAttempts: undefined,
-    ;
+    });
+  });
 });
