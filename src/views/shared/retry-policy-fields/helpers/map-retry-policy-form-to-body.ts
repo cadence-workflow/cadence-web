@@ -18,17 +18,15 @@ export default function mapRetryPolicyFormToBody(
     maximumIntervalSeconds: formData.retryPolicy.maximumIntervalSeconds
       ? parseInt(formData.retryPolicy.maximumIntervalSeconds, 10)
       : undefined,
-    ...(formData.limitRetries === 'ATTEMPTS'
-      ? {
-          maximumAttempts: formData.retryPolicy.maximumAttempts
-            ? parseInt(formData.retryPolicy.maximumAttempts, 10)
-            : undefined,
-        }
-      : {
-          expirationIntervalSeconds: formData.retryPolicy
-            .expirationIntervalSeconds
-            ? parseInt(formData.retryPolicy.expirationIntervalSeconds, 10)
-            : undefined,
-        }),
+    ...(formData.limitRetries === 'ATTEMPTS' && {
+      maximumAttempts: formData.retryPolicy?.maximumAttempts
+        ? parseInt(formData.retryPolicy?.maximumAttempts, 10)
+        : undefined,
+    }),
+    ...(formData.limitRetries === 'DURATION' && {
+      expirationIntervalSeconds: formData.retryPolicy?.expirationIntervalSeconds
+        ? parseInt(formData.retryPolicy?.expirationIntervalSeconds, 10)
+        : undefined,
+    }),
   };
 }

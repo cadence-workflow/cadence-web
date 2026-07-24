@@ -156,7 +156,7 @@ describe('transformStartWorkflowFormToSubmission', () => {
     expect(result.retryPolicy).toEqual({
       initialIntervalSeconds: undefined,
       backoffCoefficient: undefined,
-      maximumAttempts: undefined,
+      maximumIntervalSeconds: undefined,
     });
   });
 
