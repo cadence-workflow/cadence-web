@@ -171,7 +171,6 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
       workflowsQuery.hasNextPage,
       workflowsQuery.isFetchingNextPage,
       workflowsQuery.isLoading,
-      workflowsQuery.isSuccess,
     ]
   );
 
