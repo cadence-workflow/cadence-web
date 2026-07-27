@@ -42,6 +42,23 @@ describe(resolveMetricsChartTimeDomain.name, () => {
     });
   });
 
+  it('uses cadence-derived gutter and clamps history to the navigation boundary', () => {
+    const nextExecutionMs = mockNowMs + 60_000;
+
+    expect(
+      resolveMetricsChartTimeDomain({
+        timestampsMs: [mockNowMs - 4 * 60 * 60_000],
+        nowMs: mockNowMs,
+        nextExecutionMs,
+        futureGutterMs: 60_000,
+        minimumTimeMs: mockNowMs - 2 * 60 * 60_000,
+      })
+    ).toEqual({
+      minMs: mockNowMs - 2 * 60 * 60_000,
+      maxMs: nextExecutionMs + 60_000,
+    });
+  });
+
   it('pads the domain right of now even when all timestamps are in the past', () => {
     const domain = resolveMetricsChartTimeDomain({
       timestampsMs: [mockNowMs - 3 * 60 * 60_000, mockNowMs - 60_000],

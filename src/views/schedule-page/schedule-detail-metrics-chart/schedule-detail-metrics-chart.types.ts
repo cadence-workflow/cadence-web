@@ -18,6 +18,8 @@ export type ResolveMetricsChartTimeDomainParams = {
   timestampsMs: number[];
   nowMs: number;
   nextExecutionMs?: number | null;
+  futureGutterMs?: number;
+  minimumTimeMs?: number | null;
 };
 
 export type ResolveMetricsChartPixelRangeParams = {

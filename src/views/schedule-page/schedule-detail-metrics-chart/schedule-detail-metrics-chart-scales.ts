@@ -21,6 +21,8 @@ export function resolveMetricsChartTimeDomain({
   timestampsMs,
   nowMs,
   nextExecutionMs,
+  futureGutterMs = CHART_FUTURE_GUTTER_MS,
+  minimumTimeMs,
 }: ResolveMetricsChartTimeDomainParams): MetricsChartTimeDomain | null {
   if (!Number.isFinite(nowMs)) {
     return null;
@@ -30,8 +32,11 @@ export function resolveMetricsChartTimeDomain({
 
   if (validTimestampsMs.length === 0 && nextExecutionMs == null) {
     return {
-      minMs: nowMs - CHART_DEFAULT_PAST_WINDOW_MS,
-      maxMs: nowMs + CHART_FUTURE_GUTTER_MS,
+      minMs: Math.max(
+        nowMs - CHART_DEFAULT_PAST_WINDOW_MS,
+        minimumTimeMs ?? Number.NEGATIVE_INFINITY
+      ),
+      maxMs: nowMs + futureGutterMs,
     };
   }
 
@@ -44,15 +49,18 @@ export function resolveMetricsChartTimeDomain({
       ? Math.max(...validTimestampsMs)
       : nowMs;
 
-  let minMs = Math.min(dataMinMs, nowMs);
-  let maxMs = Math.max(dataMaxMs, nowMs, nowMs + CHART_FUTURE_GUTTER_MS);
+  let minMs = Math.max(
+    Math.min(dataMinMs, nowMs),
+    minimumTimeMs ?? Number.NEGATIVE_INFINITY
+  );
+  let maxMs = Math.max(dataMaxMs, nowMs, nowMs + futureGutterMs);
 
   if (
     nextExecutionMs != null &&
     Number.isFinite(nextExecutionMs) &&
     nextExecutionMs > nowMs
   ) {
-    maxMs = Math.max(maxMs, nextExecutionMs + CHART_FUTURE_GUTTER_MS);
+    maxMs = Math.max(maxMs, nextExecutionMs + futureGutterMs);
   }
 
   if (maxMs <= minMs) {
