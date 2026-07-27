@@ -5,6 +5,7 @@ export const styled = {
     display: 'grid',
     gridTemplateColumns: '1fr',
     gap: $theme.sizing.scale1000,
+    marginTop: $theme.sizing.scale1000,
     [$theme.mediaQuery.medium]: {
       gridTemplateColumns: 'repeat(2, 1fr)',
     },

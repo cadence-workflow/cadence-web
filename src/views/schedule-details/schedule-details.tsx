@@ -46,9 +46,9 @@ export default function ScheduleDetails({ params }: Props) {
         paused={formattedScheduleDetails.state?.paused ?? false}
         pauseInfo={formattedScheduleDetails.state?.pauseInfo ?? null}
       />
+      <ScheduleDetailMetricsChart params={decodedParams} />
       <styled.PageContainer>
         <styled.DetailsSectionsContainer>
-          <ScheduleDetailMetricsChart params={decodedParams} />
           {scheduleDetailsSectionsConfig.map((section) => {
             const rows = getRowsFromConfig(
               section.rowsConfig,
