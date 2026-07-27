@@ -5,7 +5,6 @@ import queryString from 'query-string';
 import { renderHook, waitFor } from '@/test-utils/rtl';
 
 import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtures__/mock-workflow-list-items';
-import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list-workflows.types';
 
 import buildScheduleWorkflowsVisibilityQuery from '../build-schedule-workflows-visibility-query';
 import useListWorkflowsForSchedule from '../use-list-workflows-for-schedule';
@@ -17,7 +16,9 @@ import {
 const MOCK_DOMAIN = 'test-domain';
 const MOCK_CLUSTER = 'test-cluster';
 const MOCK_SCHEDULE_ID = 'my-schedule-id';
-const MOCK_PAGE_SIZE = 2;
+const MOCK_PAGE_SIZE = 5;
+const MOCK_REFETCH_INTERVAL_MS = 10_000;
+const MOCK_RUN_COUNT = 40;
 
 describe(useListWorkflowsForSchedule.name, () => {
   afterEach(() => {
@@ -25,14 +26,9 @@ describe(useListWorkflowsForSchedule.name, () => {
   });
 
   it('fetches the first page with schedule query params', async () => {
-    const { result, getLatestRequestUrl } = setup({ pages: getMockPages() });
+    const { result, getLatestRequestUrl } = await setup();
 
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
-
-    const requestUrl = getLatestRequestUrl();
-    const parsed = queryString.parseUrl(requestUrl);
+    const parsed = queryString.parseUrl(getLatestRequestUrl());
 
     expect(parsed.query.listType).toBe('default');
     expect(parsed.query.inputType).toBe('query');
@@ -48,207 +44,189 @@ describe(useListWorkflowsForSchedule.name, () => {
     expect(result.current.error).toBeNull();
   });
 
-  it('loads additional pages in CadenceScheduleTime order via fetchNextPage', async () => {
-    const pages = getMockPages();
-    const { result } = setup({ pages });
+  it('loads older pages in CadenceScheduleTime order via fetchNextPage', async () => {
+    const harness = await setup();
 
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
+    await harness.loadOlderPages(2);
 
-    expect(result.current.hasNextPage).toBe(true);
-
-    await act(async () => {
-      await result.current.fetchNextPage();
-    });
-
-    await waitFor(() => {
-      expect(result.current.isFetching).toBe(false);
-    });
-
-    expect(result.current.data?.pages).toHaveLength(2);
-
-    const startTimes = result.current.data?.pages
-      .flatMap((page) => page.workflows ?? [])
-      .map((workflow) => workflow.startTime);
-
-    expect(startTimes).toEqual([3000, 2000, 1000]);
+    expect(harness.result.current.data?.pages).toHaveLength(3);
+    expect(getLoadedRunSeqs(harness)).toEqual(
+      harness.server.runs.slice(0, MOCK_PAGE_SIZE * 3)
+    );
   });
 
-  it('polls only the latest page and preserves loaded history', async () => {
-    jest.useFakeTimers();
-    const pages = getMockPages();
-    const refreshedLatestPage = {
-      ...pages[0],
-      workflows: [
-        getMockWorkflowListItem({ workflowID: 'wf-new', startTime: 4000 }),
-        ...(pages[0].workflows ?? []),
-      ],
-    };
-    const { result, getLatestRequestCount, getHistoricalRequestCount } = setup({
-      pages,
-      latestPages: [pages[0], refreshedLatestPage],
-      refetchIntervalMs: 1_000,
-    });
+  it('keeps loaded runs contiguous while new runs push older ones down', async () => {
+    const harness = await setup();
+    await harness.loadOlderPages(3);
 
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
+    for (let i = 0; i < 3; i++) {
+      harness.server.addRuns(1);
+      await harness.pollOnce();
+      expectContiguous(harness);
+    }
 
-    await act(async () => {
-      await result.current.fetchNextPage();
-    });
-
-    expect(getLatestRequestCount()).toBe(1);
-    expect(getHistoricalRequestCount()).toBe(1);
-
-    await act(async () => {
-      await jest.advanceTimersByTimeAsync(1_000);
-    });
-
-    await waitFor(() => {
-      expect(result.current.data?.pages[0]).toEqual(refreshedLatestPage);
-    });
-
-    expect(getLatestRequestCount()).toBe(2);
-    expect(getHistoricalRequestCount()).toBe(1);
-    expect(result.current.data?.pages).toHaveLength(2);
+    expect(harness.renderedGaps).toEqual([]);
   });
 
-  it('fetches refreshed pages until they overlap the loaded history', async () => {
-    jest.useFakeTimers();
-    const pages = getMockPages();
-    const refreshedLatestPage = {
-      workflows: [
-        getMockWorkflowListItem({
-          workflowID: 'wf-new-1',
-          runID: 'run-new-1',
-          startTime: 5000,
-        }),
-        getMockWorkflowListItem({
-          workflowID: 'wf-new-2',
-          runID: 'run-new-2',
-          startTime: 4000,
-        }),
-      ],
-      nextPage: 'refreshed-page-2',
-    };
-    const { result, getLatestRequestCount, getHistoricalRequestCount } = setup({
-      pages,
-      latestPages: [pages[0], refreshedLatestPage],
-      historicalPages: [
-        pages[1],
-        {
-          workflows: [
-            getMockWorkflowListItem({
-              workflowID: 'wf-new-3',
-              runID: 'run-new-3',
-              startTime: 3500,
-            }),
-            pages[0].workflows[0],
-          ],
-          nextPage: 'refreshed-page-3',
-        },
-        {
-          workflows: [pages[0].workflows[1], pages[1].workflows[0]],
-          nextPage: '',
-        },
-      ],
-      refetchIntervalMs: 1_000,
-    });
+  it('keeps loaded runs contiguous when more runs than a page arrive at once', async () => {
+    const harness = await setup();
+    await harness.loadOlderPages(3);
 
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
+    harness.server.addRuns(MOCK_PAGE_SIZE + 2);
+    await harness.pollOnce();
 
-    await act(async () => {
-      await result.current.fetchNextPage();
-    });
+    expectContiguous(harness);
+    expect(harness.renderedGaps).toEqual([]);
+  });
 
-    await waitFor(() => {
-      expect(result.current.data?.pages).toHaveLength(2);
-    });
+  it('refreshes the status of an already loaded older run', async () => {
+    const harness = await setup();
+    await harness.loadOlderPages(2);
 
-    await act(async () => {
-      await jest.advanceTimersByTimeAsync(1_000);
-    });
+    const olderRunSeq = harness.server.runs[MOCK_PAGE_SIZE * 2];
+    harness.server.closeRun(olderRunSeq);
+    await harness.pollOnce();
 
-    await waitFor(() => {
-      expect(getLatestRequestCount()).toBe(2);
-    });
+    expect(getLoadedRun(harness, olderRunSeq)?.status).toBe(
+      'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED'
+    );
+  });
 
-    await waitFor(() => {
-      expect(getHistoricalRequestCount()).toBe(3);
-    });
+  it('refreshes as soon as the runs revision changes', async () => {
+    const harness = await setup({ initialRunsRevision: '40' });
+    await harness.loadOlderPages(2);
 
-    await waitFor(() => {
-      expect(
-        new Set(
-          result.current.data?.pages
-            .flatMap((page) => page.workflows)
-            .map((workflow) => workflow.workflowID)
-        )
-      ).toEqual(
-        new Set(['wf-new-1', 'wf-new-2', 'wf-new-3', 'wf-1', 'wf-2', 'wf-3'])
-      );
-    });
+    harness.server.addRuns(1);
+    await harness.setRunsRevision('41');
+
+    expectContiguous(harness);
+    expect(harness.renderedGaps).toEqual([]);
+  });
+
+  it('does not refresh when the runs revision first arrives', async () => {
+    const harness = await setup();
+    await harness.loadOlderPages(2);
+    const requestsAfterLoad = harness.server.requestCount();
+
+    // The schedule description resolves after the runs are already loaded, so
+    // the revision it brings describes what is on screen.
+    await harness.setRunsRevision('40');
+
+    expect(harness.server.requestCount()).toBe(requestsAfterLoad);
+  });
+
+  it('keeps reporting the end of the history across polls', async () => {
+    const harness = await setup({ runCount: MOCK_PAGE_SIZE * 2 });
+
+    await harness.loadOlderPages(1);
+    expect(harness.result.current.hasNextPage).toBe(false);
+
+    await harness.pollOnce();
+
+    expectContiguous(harness);
+    expect(harness.result.current.hasNextPage).toBe(false);
+
+    // New runs push the oldest ones out of the loaded window, so there is
+    // older history to load again.
+    harness.server.addRuns(2);
+    await harness.pollOnce();
+
+    expectContiguous(harness);
+    expect(harness.result.current.hasNextPage).toBe(true);
   });
 });
 
-function getMockPages(): Array<ListWorkflowsResponse> {
-  return [
-    {
-      workflows: [
-        getMockWorkflowListItem({
-          workflowID: 'wf-1',
-          runID: 'run-1',
-          startTime: 3000,
-        }),
-        getMockWorkflowListItem({
-          workflowID: 'wf-2',
-          runID: 'run-2',
-          startTime: 2000,
-        }),
-      ],
-      nextPage: 'page-2',
-    },
-    {
-      workflows: [
-        getMockWorkflowListItem({
-          workflowID: 'wf-3',
-          runID: 'run-3',
-          startTime: 1000,
-        }),
-      ],
-      nextPage: '',
-    },
-  ];
+type Harness = Awaited<ReturnType<typeof setup>>;
+
+/**
+ * The chart infers skipped runs from the gaps between loaded runs, so the
+ * loaded runs must always be the newest N with nothing missing in between.
+ */
+function expectContiguous(harness: Harness) {
+  const loaded = getLoadedRunSeqs(harness);
+
+  expect(loaded).toEqual(harness.server.runs.slice(0, loaded.length));
 }
 
-function setup({
-  pages,
-  latestPages = [pages[0]],
-  historicalPages = pages.slice(1),
-  refetchIntervalMs,
+function getLoadedRun({ result }: Harness, seq: number) {
+  return (result.current.data?.pages ?? [])
+    .flatMap((page) => page.workflows ?? [])
+    .find((workflow) => workflow.runID === `run-${seq}`);
+}
+
+function getLoadedRunSeqs({ result }: Harness) {
+  return getRunSeqs(result.current.data?.pages ?? []);
+}
+
+function getRunSeqs(pages: Array<{ workflows?: Array<{ runID: string }> }>) {
+  return Array.from(
+    new Set(
+      pages
+        .flatMap((page) => page.workflows ?? [])
+        .map((workflow) => Number(workflow.runID.replace('run-', '')))
+    )
+  ).sort((a, b) => b - a);
+}
+
+function findGap(pages: Array<{ workflows?: Array<{ runID: string }> }>) {
+  const seqs = getRunSeqs(pages);
+  const gapIndex = seqs.findIndex(
+    (seq, index) => index > 0 && seqs[index - 1] - seq !== 1
+  );
+
+  return gapIndex === -1
+    ? null
+    : `missing run-${seqs[gapIndex] + 1} between run-${seqs[gapIndex - 1]} and run-${seqs[gapIndex]}`;
+}
+
+async function setup({
+  runCount = MOCK_RUN_COUNT,
+  latencyMs = 100,
+  initialRunsRevision,
 }: {
-  pages: Array<ListWorkflowsResponse>;
-  latestPages?: Array<ListWorkflowsResponse>;
-  historicalPages?: Array<ListWorkflowsResponse>;
-  refetchIntervalMs?: number;
-}) {
-  let latestRequestCount = 0;
-  let historicalRequestCount = 0;
+  runCount?: number;
+  latencyMs?: number;
+  initialRunsRevision?: string;
+} = {}) {
+  jest.useFakeTimers();
+
+  let nextRunSeq = runCount;
+  let requestCount = 0;
   let latestRequestUrl = '';
+  const runs = Array.from({ length: runCount }, (_, index) => runCount - index);
+  const closedRunSeqs = new Set<number>();
+  const renderedGaps: string[] = [];
+
+  const server = {
+    runs,
+    addRuns: (count: number) => {
+      for (let i = 0; i < count; i++) {
+        nextRunSeq += 1;
+        runs.unshift(nextRunSeq);
+      }
+    },
+    closeRun: (seq: number) => closedRunSeqs.add(seq),
+    requestCount: () => requestCount,
+  };
 
   const utils = renderHook(
-    () =>
-      useListWorkflowsForSchedule({
+    (props?: { runsRevision?: string }) => {
+      const result = useListWorkflowsForSchedule({
         domain: MOCK_DOMAIN,
         cluster: MOCK_CLUSTER,
         scheduleId: MOCK_SCHEDULE_ID,
         pageSize: MOCK_PAGE_SIZE,
-        refetchIntervalMs,
-      }),
+        refetchIntervalMs: MOCK_REFETCH_INTERVAL_MS,
+        runsRevision: props?.runsRevision,
+      });
+      const gap = findGap(result.data?.pages ?? []);
+
+      if (gap) {
+        renderedGaps.push(gap);
+      }
+
+      return result;
+    },
     {
       endpointsMocks: [
         {
@@ -256,24 +234,90 @@ function setup({
           httpMethod: 'GET',
           mockOnce: false,
           httpResolver: async ({ request }) => {
+            requestCount += 1;
             latestRequestUrl = request.url;
             const { query } = queryString.parseUrl(request.url);
-            const page = query.nextPage
-              ? historicalPages[historicalRequestCount++] ??
-                historicalPages[historicalPages.length - 1]
-              : latestPages[latestRequestCount++] ??
-                latestPages[latestPages.length - 1];
-            return HttpResponse.json(page);
+            const nextPage = query.nextPage as string | undefined;
+            // Stands in for a `search_after` token: resume just after the run
+            // the previous page ended on.
+            const startIndex = nextPage
+              ? runs.indexOf(Number(nextPage.replace('after-', ''))) + 1
+              : 0;
+            const page = runs.slice(startIndex, startIndex + MOCK_PAGE_SIZE);
+
+            await new Promise((resolve) => setTimeout(resolve, latencyMs));
+
+            return HttpResponse.json({
+              workflows: page.map((seq) =>
+                getMockWorkflowListItem({
+                  workflowID: `wf-${seq}`,
+                  runID: `run-${seq}`,
+                  startTime: seq * 1000,
+                  status: closedRunSeqs.has(seq)
+                    ? 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED'
+                    : 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
+                })
+              ),
+              nextPage:
+                startIndex + page.length < runs.length
+                  ? `after-${page[page.length - 1]}`
+                  : '',
+            });
           },
         },
       ],
-    }
+    },
+    { initialProps: { runsRevision: initialRunsRevision } }
   );
 
-  return {
-    ...utils,
-    getLatestRequestUrl: () => latestRequestUrl,
-    getLatestRequestCount: () => latestRequestCount,
-    getHistoricalRequestCount: () => historicalRequestCount,
+  const advance = async (ms: number) =>
+    act(async () => {
+      await jest.advanceTimersByTimeAsync(ms);
+    });
+
+  // Settles the in-flight requests and everything they trigger, without ever
+  // running long enough to start the next poll.
+  const waitForIdle = async () => {
+    for (let attempt = 0; attempt < 20; attempt++) {
+      const requestsBefore = requestCount;
+      await advance(latencyMs * 2);
+
+      if (requestsBefore === requestCount && !utils.result.current.isFetching) {
+        return;
+      }
+    }
+
+    throw new Error('workflows never settled');
   };
+
+  const harness = {
+    ...utils,
+    server,
+    renderedGaps,
+    getLatestRequestUrl: () => latestRequestUrl,
+    pollOnce: async () => {
+      await advance(MOCK_REFETCH_INTERVAL_MS);
+      await waitForIdle();
+    },
+    setRunsRevision: async (runsRevision: string) => {
+      utils.rerender({ runsRevision });
+      await waitForIdle();
+    },
+    loadOlderPages: async (count: number) => {
+      for (let i = 0; i < count; i++) {
+        await act(async () => {
+          void utils.result.current.fetchNextPage();
+        });
+        await waitForIdle();
+      }
+    },
+  };
+
+  await advance(latencyMs);
+  await waitFor(() => {
+    expect(utils.result.current.isLoading).toBe(false);
+  });
+  renderedGaps.length = 0;
+
+  return harness;
 }
