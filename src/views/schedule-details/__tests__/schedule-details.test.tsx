@@ -30,6 +30,14 @@ jest.mock(
   () => mockScheduleDetailsSectionsConfig
 );
 
+jest.mock(
+  '../schedule-details-metrics-chart/schedule-details-metrics-chart',
+  () =>
+    function MockScheduleDetailsMetricsChart() {
+      return <div>Mock metrics chart</div>;
+    }
+);
+
 const scheduleId = 'my-schedule';
 
 describe(ScheduleDetails.name, () => {
@@ -57,6 +65,7 @@ describe(ScheduleDetails.name, () => {
     expect(
       screen.getByRole('heading', { name: 'Mock policies section' })
     ).toBeInTheDocument();
+    expect(screen.getByText('Mock metrics chart')).toBeInTheDocument();
     expect(
       screen.getByRole('rowheader', { name: 'Primary row' })
     ).toBeInTheDocument();
@@ -180,14 +189,6 @@ function setup({
           httpMethod: 'GET',
           mockOnce: false,
           httpResolver: describeResolver,
-        },
-        // Requested by the metrics chart, which these tests do not assert on.
-        {
-          path: '/api/domains/:domain/:cluster/workflows',
-          httpMethod: 'GET',
-          mockOnce: false,
-          httpResolver: () =>
-            HttpResponse.json({ workflows: [], nextPage: '' }),
         },
       ],
     }
