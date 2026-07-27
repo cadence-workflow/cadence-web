@@ -13,7 +13,7 @@ import {
 import Button from '@/components/button/button';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import useDescribeSchedule from '@/views/shared/hooks/use-describe-schedule/use-describe-schedule';
-import useListWorkflowsForSchedule from '@/views/shared/hooks/use-list-workflows-for-schedule/use-list-workflows-for-schedule';
+import useListWorkflowsForSchedule from '@/views/schedule-details/hooks/use-list-workflows-for-schedule/use-list-workflows-for-schedule';
 
 import describeScheduleToNextExecutionMs from './helpers/describe-schedule-to-next-execution';
 import hasScheduleMetricsChartData from './helpers/has-schedule-metrics-chart-data';
