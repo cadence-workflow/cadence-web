@@ -181,6 +181,14 @@ function setup({
           mockOnce: false,
           httpResolver: describeResolver,
         },
+        // Requested by the metrics chart, which these tests do not assert on.
+        {
+          path: '/api/domains/:domain/:cluster/workflows',
+          httpMethod: 'GET',
+          mockOnce: false,
+          httpResolver: () =>
+            HttpResponse.json({ workflows: [], nextPage: '' }),
+        },
       ],
     }
   );
