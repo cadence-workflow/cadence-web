@@ -15,6 +15,6 @@ export const CHART_TOOLBAR_BUTTON_LABELS = {
 
 export const CHART_EMPTY_STATE_MESSAGE = 'No chart data available yet';
 
-export const CHART_REGION_ARIA_LABEL = 'Schedule metrics chart';
+export const CHART_REGION_ARIA_LABEL = 'Schedule runs chart';
 
 export const CHART_TOOLBAR_ARIA_LABEL = 'Chart controls';

@@ -6,7 +6,7 @@ import {
   CHART_HEADER_MIN_HEIGHT_PX,
   CHART_HEIGHT_PX,
   CHART_TOOLBAR_BUTTON_MIN_HEIGHT_PX,
-} from './schedule-details-metrics-chart.constants';
+} from './schedule-details-runs-chart.constants';
 
 export const styled = {
   Container: createStyled('div', ({ $theme }: { $theme: Theme }) => ({

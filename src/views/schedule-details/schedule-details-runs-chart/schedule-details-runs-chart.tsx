@@ -11,11 +11,11 @@ import {
   CHART_TOOLBAR_ARIA_LABEL,
   CHART_TOOLBAR_BUTTON_LABELS,
   CHART_TOOLBAR_ICON_SIZE_PX,
-} from './schedule-details-metrics-chart.constants';
-import { overrides, styled } from './schedule-details-metrics-chart.styles';
-import { type Props } from './schedule-details-metrics-chart.types';
+} from './schedule-details-runs-chart.constants';
+import { overrides, styled } from './schedule-details-runs-chart.styles';
+import { type Props } from './schedule-details-runs-chart.types';
 
-export default function ScheduleDetailsMetricsChart(_props: Props) {
+export default function ScheduleDetailsRunsChart(_props: Props) {
   return (
     <styled.Container>
       <styled.Header>

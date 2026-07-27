@@ -2,15 +2,15 @@ import React from 'react';
 
 import { render, screen, within } from '@/test-utils/rtl';
 
-import ScheduleDetailsMetricsChart from '../schedule-details-metrics-chart';
+import ScheduleDetailsRunsChart from '../schedule-details-runs-chart';
 import {
   CHART_EMPTY_STATE_MESSAGE,
   CHART_REGION_ARIA_LABEL,
   CHART_TOOLBAR_ARIA_LABEL,
   CHART_TOOLBAR_BUTTON_LABELS,
-} from '../schedule-details-metrics-chart.constants';
+} from '../schedule-details-runs-chart.constants';
 
-describe(ScheduleDetailsMetricsChart.name, () => {
+describe(ScheduleDetailsRunsChart.name, () => {
   it('renders the empty state inside the chart region', () => {
     setup();
 
@@ -38,7 +38,7 @@ describe(ScheduleDetailsMetricsChart.name, () => {
 
 function setup() {
   render(
-    <ScheduleDetailsMetricsChart
+    <ScheduleDetailsRunsChart
       params={{
         domain: 'test-domain',
         cluster: 'test-cluster',

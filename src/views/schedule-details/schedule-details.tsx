@@ -13,8 +13,8 @@ import { formatScheduleDetails } from './helpers/format-schedule-details';
 import { getRowsFromConfig } from './helpers/get-rows-from-config';
 import ScheduleDetailsBackfillsTable from './schedule-details-backfills-table/schedule-details-backfills-table';
 import ScheduleDetailsJsonView from './schedule-details-json-view/schedule-details-json-view';
-import ScheduleDetailsMetricsChart from './schedule-details-metrics-chart/schedule-details-metrics-chart';
 import ScheduleDetailsPausedBanner from './schedule-details-paused-banner/schedule-details-paused-banner';
+import ScheduleDetailsRunsChart from './schedule-details-runs-chart/schedule-details-runs-chart';
 import ScheduleDetailsSection from './schedule-details-section/schedule-details-section';
 import { styled } from './schedule-details.styles';
 import { type Props } from './schedule-details.types';
@@ -46,7 +46,7 @@ export default function ScheduleDetails({ params }: Props) {
         paused={formattedScheduleDetails.state?.paused ?? false}
         pauseInfo={formattedScheduleDetails.state?.pauseInfo ?? null}
       />
-      <ScheduleDetailsMetricsChart params={decodedParams} />
+      <ScheduleDetailsRunsChart params={decodedParams} />
       <styled.PageContainer>
         <styled.DetailsSectionsContainer>
           {scheduleDetailsSectionsConfig.map((section) => {

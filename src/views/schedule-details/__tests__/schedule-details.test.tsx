@@ -31,10 +31,10 @@ jest.mock(
 );
 
 jest.mock(
-  '../schedule-details-metrics-chart/schedule-details-metrics-chart',
+  '../schedule-details-runs-chart/schedule-details-runs-chart',
   () =>
-    function MockScheduleDetailsMetricsChart() {
-      return <div>Mock metrics chart</div>;
+    function MockScheduleDetailsRunsChart() {
+      return <div>Mock runs chart</div>;
     }
 );
 
@@ -65,7 +65,7 @@ describe(ScheduleDetails.name, () => {
     expect(
       screen.getByRole('heading', { name: 'Mock policies section' })
     ).toBeInTheDocument();
-    expect(screen.getByText('Mock metrics chart')).toBeInTheDocument();
+    expect(screen.getByText('Mock runs chart')).toBeInTheDocument();
     expect(
       screen.getByRole('rowheader', { name: 'Primary row' })
     ).toBeInTheDocument();
