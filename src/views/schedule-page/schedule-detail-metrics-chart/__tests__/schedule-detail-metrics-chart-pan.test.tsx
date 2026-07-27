@@ -63,6 +63,25 @@ describe(`${ScheduleDetailMetricsChart.name} panning`, () => {
     ).toBeDisabled();
   });
 
+  it('keys marker styles by status rather than position while panning', async () => {
+    const { getCanvas, getMarkers } = await setup();
+    const initialPositions = getMarkers().positions;
+
+    dragBy(getCanvas(), 80);
+    dragBy(getCanvas(), 80);
+    dragBy(getCanvas(), 80);
+
+    const { positions, transforms, classNames, variants } = getMarkers();
+
+    expect(positions).not.toEqual(initialPositions);
+    expect(
+      transforms.every((transform) => /^translate\(/.test(transform))
+    ).toBe(true);
+    // A generated class per pixel position would leak a stylesheet rule per
+    // glyph per frame, so classes must only vary by status variant.
+    expect(classNames.size).toBeLessThanOrEqual(variants.size);
+  });
+
   it('leaves wheel gestures to the page once the chart cannot move', async () => {
     const { getCanvas } = await setup();
 
@@ -157,6 +176,20 @@ async function setup() {
 
   return {
     getCanvas: () => screen.getByTestId(CHART_CANVAS_TEST_ID),
+    getMarkers: () => {
+      const markers = Array.from(
+        document.querySelectorAll<HTMLElement>('[data-chart-x]')
+      );
+
+      return {
+        positions: markers.map((marker) => marker.dataset.chartX),
+        transforms: markers.map((marker) => marker.style.transform),
+        classNames: new Set(markers.map((marker) => marker.className)),
+        variants: new Set(
+          markers.map((marker) => marker.dataset.statusVariant)
+        ),
+      };
+    },
     getTimeLabels: () =>
       Array.from(
         screen.getByTestId(CHART_SERIES_TEST_IDS.svg).querySelectorAll('text')

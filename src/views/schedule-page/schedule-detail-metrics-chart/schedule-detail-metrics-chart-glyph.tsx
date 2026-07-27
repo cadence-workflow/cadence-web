@@ -15,6 +15,7 @@ import ScheduleDetailMetricsChartStatusIcon from './schedule-detail-metrics-char
 import {
   CHART_GLYPH_BACKFILL_BADGE_SIZE_PX,
   CHART_GLYPH_GROUPED_CARD_OFFSETS_PX,
+  CHART_GLYPH_HIT_AREA_RADIUS_PX,
   CHART_GLYPH_MARKER_SIZE_PX,
   CHART_RUN_POPOVER_ENTRY_DELAY_MS,
 } from './schedule-detail-metrics-chart.constants';
@@ -26,7 +27,9 @@ export default function ScheduleDetailMetricsChartGlyph({
   scheduledTimeMs,
   domain,
   cluster,
+  scheduleId,
   variant,
+  isNew = false,
   testId,
 }: Props) {
   const runCount = runs.length;
@@ -44,16 +47,17 @@ export default function ScheduleDetailMetricsChartGlyph({
   const marker = (
     <styled.MarkerButton
       type="button"
-      $x={x}
-      $y={y}
       $variant={variant}
+      style={{
+        transform: `translate(${x - CHART_GLYPH_HIT_AREA_RADIUS_PX}px, ${y - CHART_GLYPH_HIT_AREA_RADIUS_PX}px)`,
+      }}
       aria-label={ariaLabel}
       data-testid={testId}
       data-chart-x={x}
       data-status-variant={variant}
       data-is-backfill={isBackfill || undefined}
     >
-      <styled.StatusMarker>
+      <styled.StatusMarker $isNew={isNew}>
         {variant === 'grouped' ? (
           <styled.GroupedMarker>
             <styled.GroupedMarkerBack
@@ -99,6 +103,7 @@ export default function ScheduleDetailMetricsChartGlyph({
             runs={runs}
             domain={domain}
             cluster={cluster}
+            scheduleId={scheduleId}
           />
         )
       }

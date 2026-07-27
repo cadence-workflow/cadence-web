@@ -25,7 +25,7 @@ export const styled = {
     color: $theme.colors.contentPrimary,
   })),
   RunId: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
-    ...$theme.typography.LabelMedium,
+    ...$theme.typography.LabelSmall,
     color: $theme.colors.contentPrimary,
     wordBreak: 'break-all',
     paddingBottom: $theme.sizing.scale300,

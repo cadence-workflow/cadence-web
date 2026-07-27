@@ -116,6 +116,8 @@ export function getExpectedScheduleTimesMs({
   }
 
   try {
+    // Forward iteration is authoritative: walking backward across a DST
+    // fall-back emits the repeated wall-clock time twice.
     const forwardInterval = CronExpressionParser.parse(cron.expression, {
       currentDate: startMs - 1,
       endDate: endMs,

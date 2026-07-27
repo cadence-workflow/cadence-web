@@ -6,22 +6,24 @@ import { type ScheduleMetricsChartGlyphVariant } from './schedule-detail-metrics
 import {
   CHART_GLYPH_BACKFILL_BADGE_OFFSET_PX,
   CHART_GLYPH_BACKFILL_BADGE_PADDING_PX,
+  CHART_GLYPH_ENTER_ANIMATION_MS,
   CHART_GLYPH_HIT_AREA_RADIUS_PX,
   CHART_GLYPH_MARKER_SIZE_PX,
 } from './schedule-detail-metrics-chart.constants';
 
 export const styled = {
+  // Position is applied as an inline transform by the glyph, not as a styled
+  // prop: Styletron mints a permanent class per distinct declaration, so
+  // panning would inject a new rule per glyph per frame.
   MarkerButton: createStyled<
     'button',
     {
-      $x: number;
-      $y: number;
       $variant: ScheduleMetricsChartGlyphVariant;
     }
-  >('button', ({ $theme, $x, $y, $variant }) => ({
+  >('button', ({ $theme, $variant }) => ({
     position: 'absolute',
-    left: `${$x - CHART_GLYPH_HIT_AREA_RADIUS_PX}px`,
-    top: `${$y - CHART_GLYPH_HIT_AREA_RADIUS_PX}px`,
+    left: 0,
+    top: 0,
     width: `${CHART_GLYPH_HIT_AREA_RADIUS_PX * 2}px`,
     height: `${CHART_GLYPH_HIT_AREA_RADIUS_PX * 2}px`,
     padding: 0,
@@ -44,12 +46,30 @@ export const styled = {
     width: `${CHART_GLYPH_MARKER_SIZE_PX}px`,
     height: `${CHART_GLYPH_MARKER_SIZE_PX}px`,
   })),
-  StatusMarker: createStyled('span', () => ({
-    position: 'relative',
-    display: 'flex',
-    width: `${CHART_GLYPH_MARKER_SIZE_PX}px`,
-    height: `${CHART_GLYPH_MARKER_SIZE_PX}px`,
-  })),
+  // The enter animation lives here rather than on the button, whose transform
+  // is the glyph's position on the timeline.
+  StatusMarker: createStyled<'span', { $isNew: boolean }>(
+    'span',
+    ({ $isNew }) => ({
+      position: 'relative',
+      display: 'flex',
+      width: `${CHART_GLYPH_MARKER_SIZE_PX}px`,
+      height: `${CHART_GLYPH_MARKER_SIZE_PX}px`,
+      ...($isNew
+        ? {
+            animationName: {
+              from: { opacity: 0, transform: 'scale(0.4)' },
+              to: { opacity: 1, transform: 'scale(1)' },
+            },
+            animationDuration: `${CHART_GLYPH_ENTER_ANIMATION_MS}ms`,
+            animationTimingFunction: 'ease-out',
+            '@media (prefers-reduced-motion: reduce)': {
+              animationName: 'none',
+            },
+          }
+        : {}),
+    })
+  ),
   BackfillIndicator: createStyled('span', ({ $theme }: { $theme: Theme }) => ({
     position: 'absolute',
     top: `-${CHART_GLYPH_BACKFILL_BADGE_OFFSET_PX}px`,

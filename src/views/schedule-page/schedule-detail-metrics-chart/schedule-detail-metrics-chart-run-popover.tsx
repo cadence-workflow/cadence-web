@@ -4,6 +4,7 @@ import { MdOpenInNew } from 'react-icons/md';
 
 import Link from '@/components/link/link';
 import formatDate from '@/utils/data-formatters/format-date';
+import buildScheduleBackfillWorkflowsVisibilityQuery from '@/utils/visibility/build-schedule-backfill-workflows-visibility-query';
 import WorkflowEventDetailsExecutionLink from '@/views/shared/workflow-event-details-execution-link/workflow-event-details-execution-link';
 import { WORKFLOW_STATUS_NAMES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
 
@@ -29,6 +30,7 @@ export default function ScheduleDetailMetricsChartRunPopover({
   runs,
   domain,
   cluster,
+  scheduleId,
 }: Props) {
   return (
     <styled.Content
@@ -71,7 +73,7 @@ export default function ScheduleDetailMetricsChartRunPopover({
               </styled.DetailLabel>
               <styled.DetailValue>
                 <Link
-                  href={`/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows?input=query&query=${encodeURIComponent(`CadenceScheduleBackfillID="${run.backfillId}"`)}`}
+                  href={`/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows?input=query&query=${encodeURIComponent(buildScheduleBackfillWorkflowsVisibilityQuery(scheduleId, run.backfillId))}`}
                 >
                   <styled.LinkContent>
                     {run.backfillId}

@@ -185,9 +185,11 @@ describe(ScheduleDetailMetricsChart.name, () => {
     });
 
     const summary = screen.getByTestId(CHART_SUMMARY_TEST_ID);
-    expect(within(summary).getByText('Runs')).toBeInTheDocument();
+    expect(within(summary).getByText('Runs:')).toBeInTheDocument();
     expect(within(summary).getByText('Completed')).toBeInTheDocument();
-    expect(within(summary).getByText('Terminated/Failed')).toBeInTheDocument();
+    expect(
+      within(summary).getByText('Terminated/Timed out/Failed')
+    ).toBeInTheDocument();
     expect(within(summary).getByText('Running')).toBeInTheDocument();
     expect(within(summary).getByText('Cancelled')).toBeInTheDocument();
     expect(within(summary).queryByText('Timed out')).not.toBeInTheDocument();
@@ -296,6 +298,7 @@ describe(ScheduleDetailMetricsChart.name, () => {
     };
     const { getLatestWorkflowRequestCount } = setup({
       latestPages: [initialPage, refreshedPage],
+      describeScheduleResponses: getDescribeResponsesWithNewRun(),
     });
 
     await waitFor(() => {
@@ -318,6 +321,50 @@ describe(ScheduleDetailMetricsChart.name, () => {
       ).toHaveLength(9);
     });
     expect(getLatestWorkflowRequestCount()).toBe(2);
+  });
+
+  it('hides runs that reach the next run time before the schedule catches up', async () => {
+    const initialPage = getMockWorkflowPagesForChart()[0];
+    const nextRunTimeMs = 6.25 * 60 * 60 * 1000;
+    const refreshedPage = {
+      ...initialPage,
+      workflows: [
+        getMockWorkflowListItem({
+          workflowID: 'wf-next',
+          runID: 'run-next',
+          status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
+          historyLength: 10,
+          startTime: nextRunTimeMs,
+          searchAttributes: {
+            [SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN]: {
+              data: String(nextRunTimeMs),
+            },
+          },
+        }),
+        ...(initialPage.workflows ?? []),
+      ],
+    };
+    setup({
+      latestPages: [initialPage, refreshedPage],
+      describeScheduleResponses: getDescribeResponsesWithNewRun(),
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.queryByTestId(CHART_LOADING_SKELETON_TEST_ID)
+      ).not.toBeInTheDocument();
+    });
+
+    await act(async () => {
+      await jest.advanceTimersByTimeAsync(CHART_LIVE_REFRESH_INTERVAL_MS);
+    });
+
+    expect(
+      screen.queryByLabelText('Schedule run run-next')
+    ).not.toBeInTheDocument();
+    expect(screen.getAllByTestId(CHART_GLYPH_TEST_IDS.runTrigger)).toHaveLength(
+      8
+    );
   });
 
   it('allows zooming out beyond the initial readable view', async () => {
@@ -411,6 +458,25 @@ describe(ScheduleDetailMetricsChart.name, () => {
     ).toBeEnabled();
   });
 });
+
+/**
+ * The runs are only refreshed once the schedule reports that it acted, so a
+ * test that expects new runs has to move `totalRuns` along with them.
+ */
+function getDescribeResponsesWithNewRun(): DescribeScheduleResponse[] {
+  const initial = getMockDescribeScheduleResponseForChart();
+
+  return [
+    initial,
+    {
+      ...initial,
+      info: initial.info && {
+        ...initial.info,
+        totalRuns: String(Number(initial.info.totalRuns) + 1),
+      },
+    },
+  ];
+}
 
 function setup({
   latestPages = [getMockWorkflowPagesForChart()[0]],

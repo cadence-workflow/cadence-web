@@ -3,7 +3,13 @@ import React from 'react';
 import { act } from '@testing-library/react';
 import { HttpResponse } from 'msw';
 
-import { fireEvent, render, screen, waitFor } from '@/test-utils/rtl';
+import {
+  fireEvent,
+  render,
+  screen,
+  userEvent,
+  waitFor,
+} from '@/test-utils/rtl';
 
 import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list-workflows.types';
 
@@ -18,6 +24,7 @@ import {
 import ScheduleDetailMetricsChart from '../schedule-detail-metrics-chart';
 import {
   CHART_CANVAS_TEST_ID,
+  CHART_FETCH_RETRY_LABEL,
   CHART_FETCH_LOADING_TEST_ID,
   CHART_LOADING_SKELETON_TEST_ID,
   CHART_SUMMARY_TEST_ID,
@@ -67,14 +74,55 @@ describe(`${ScheduleDetailMetricsChart.name} scroll fetch`, () => {
       screen.queryByTestId(CHART_FETCH_LOADING_TEST_ID)
     ).not.toBeInTheDocument();
   });
+
+  it('allows retrying after loading the next workflow page fails', async () => {
+    const workflowPages = getMockWorkflowPagesForChart();
+    const { getWorkflowRequestCount, user } = setup({
+      workflowPages,
+      failedWorkflowRequestIndexes: new Set([1]),
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.queryByTestId(CHART_LOADING_SKELETON_TEST_ID)
+      ).not.toBeInTheDocument();
+    });
+
+    await act(async () => {
+      fireEvent.wheel(screen.getByTestId(CHART_CANVAS_TEST_ID), {
+        deltaY: -4000,
+      });
+    });
+
+    expect(
+      await screen.findByRole('button', { name: CHART_FETCH_RETRY_LABEL })
+    ).toBeInTheDocument();
+    expect(getWorkflowRequestCount()).toBe(2);
+
+    await user.click(
+      screen.getByRole('button', { name: CHART_FETCH_RETRY_LABEL })
+    );
+
+    await waitFor(() => {
+      expect(getWorkflowRequestCount()).toBe(3);
+      expect(
+        screen.queryByRole('button', { name: CHART_FETCH_RETRY_LABEL })
+      ).not.toBeInTheDocument();
+    });
+  });
 });
 
 function setup({
   workflowPages,
+  failedWorkflowRequestIndexes = new Set(),
 }: {
   workflowPages: Array<ListWorkflowsResponse>;
+  failedWorkflowRequestIndexes?: Set<number>;
 }) {
   let workflowRequestCount = 0;
+  const user = userEvent.setup({
+    advanceTimers: jest.advanceTimersByTime,
+  });
 
   const utils = render(
     <ScheduleDetailMetricsChart
@@ -109,10 +157,19 @@ function setup({
           httpMethod: 'GET',
           mockOnce: false,
           httpResolver: async () => {
-            const page =
-              workflowPages[workflowRequestCount] ??
-              workflowPages[workflowPages.length - 1];
+            const requestIndex = workflowRequestCount;
             workflowRequestCount += 1;
+
+            if (failedWorkflowRequestIndexes.has(requestIndex)) {
+              return HttpResponse.json(
+                { message: 'Failed to load workflows' },
+                { status: 500 }
+              );
+            }
+
+            const page =
+              workflowPages[requestIndex] ??
+              workflowPages[workflowPages.length - 1];
             return HttpResponse.json(page);
           },
         },
@@ -122,6 +179,7 @@ function setup({
 
   return {
     ...utils,
+    user,
     getWorkflowRequestCount: () => workflowRequestCount,
   };
 }

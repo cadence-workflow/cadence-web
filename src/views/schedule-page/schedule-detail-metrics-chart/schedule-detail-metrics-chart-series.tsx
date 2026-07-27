@@ -35,6 +35,22 @@ export default function ScheduleDetailMetricsChartSeries({
 
   return (
     <Group data-testid={CHART_SERIES_TEST_IDS.svg}>
+      <Line
+        from={{ x: 0, y: CHART_SERIES_TIMELINE_Y_PX }}
+        to={{ x: width, y: CHART_SERIES_TIMELINE_Y_PX }}
+        stroke={timelineColor}
+        pointerEvents="none"
+      />
+      {isNowVisible && (
+        <Line
+          from={{ x: xScale(nowMs), y: 0 }}
+          to={{ x: xScale(nowMs), y: height }}
+          stroke={nowColor}
+          strokeWidth={CHART_SERIES_NOW_STROKE_WIDTH_PX}
+          pointerEvents="none"
+          data-testid={CHART_SERIES_TEST_IDS.nowMarker}
+        />
+      )}
       {ticks.map((timestampMs, index) => {
         const { date, time } = formatChartTimeTick(timestampMs);
         const x = xScale(timestampMs);
@@ -62,23 +78,6 @@ export default function ScheduleDetailMetricsChartSeries({
           </text>
         );
       })}
-      <Line
-        from={{ x: 0, y: CHART_SERIES_TIMELINE_Y_PX }}
-        to={{ x: width, y: CHART_SERIES_TIMELINE_Y_PX }}
-        stroke={timelineColor}
-        pointerEvents="none"
-      />
-      {isNowVisible && (
-        <Line
-          from={{ x: xScale(nowMs), y: 0 }}
-          to={{ x: xScale(nowMs), y: height }}
-          stroke={nowColor}
-          strokeWidth={CHART_SERIES_NOW_STROKE_WIDTH_PX}
-          strokeDasharray="2 2"
-          pointerEvents="none"
-          data-testid={CHART_SERIES_TEST_IDS.nowMarker}
-        />
-      )}
       <rect
         width={width}
         height={height}

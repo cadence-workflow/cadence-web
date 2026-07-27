@@ -4,7 +4,7 @@ import { Spinner } from 'baseui/spinner';
 import {
   MdAdjust,
   MdBlock,
-  MdCheckCircle,
+  MdCheckCircleOutline,
   MdHistory,
   MdReportGmailerrorred,
 } from 'react-icons/md';
@@ -32,7 +32,7 @@ export default function ScheduleDetailMetricsChartStatusIcon({
     case 'completed':
       return (
         <styled.Icon $size={size}>
-          <MdCheckCircle {...props} />
+          <MdCheckCircleOutline {...props} />
         </styled.Icon>
       );
     case 'failed':

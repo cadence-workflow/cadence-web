@@ -8,7 +8,13 @@ import React, {
 } from 'react';
 
 import { useParentSize } from '@visx/responsive';
-import { MdGpsFixed, MdZoomIn, MdZoomOut } from 'react-icons/md';
+import { Spinner } from 'baseui/spinner';
+import {
+  MdGpsFixed,
+  MdReportGmailerrorred,
+  MdZoomIn,
+  MdZoomOut,
+} from 'react-icons/md';
 
 import Button from '@/components/button/button';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
@@ -17,6 +23,7 @@ import useDomainDescription from '@/views/shared/hooks/use-domain-description/us
 import useListWorkflowsForSchedule from '@/views/shared/hooks/use-list-workflows-for-schedule/use-list-workflows-for-schedule';
 
 import describeScheduleToNextExecutionMs from './helpers/describe-schedule-to-next-execution';
+import filterExecutionsBeforeNextExecution from './helpers/filter-executions-before-next-execution';
 import filterExecutionsToVisibleDomain from './helpers/filter-executions-to-visible-domain';
 import {
   getDomainRetentionSeconds,
@@ -33,6 +40,7 @@ import workflowsForScheduleToChartPoints, {
   getOldestLoadedScheduleTimeMs,
 } from './helpers/workflows-for-schedule-to-chart-points';
 import useCurrentTimeMs from './hooks/use-current-time-ms';
+import useNewChartTimesMs from './hooks/use-new-chart-times-ms';
 import useScheduleMetricsChartViewState from './hooks/use-schedule-metrics-chart-view-state';
 import ScheduleDetailMetricsChartGlyph from './schedule-detail-metrics-chart-glyph';
 import ScheduleDetailMetricsChartLoading from './schedule-detail-metrics-chart-loading';
@@ -47,7 +55,10 @@ import {
   CHART_CANVAS_TEST_ID,
   CHART_EMPTY_STATE_MESSAGE,
   CHART_FETCH_LOADING_MESSAGE,
+  CHART_FETCH_LOADING_SPINNER_SIZE_PX,
   CHART_FETCH_LOADING_TEST_ID,
+  CHART_FETCH_RETRY_ICON_SIZE_PX,
+  CHART_FETCH_RETRY_LABEL,
   CHART_FUTURE_GUTTER_MS,
   CHART_GLYPH_TEST_IDS,
   CHART_HEIGHT_PX,
@@ -64,6 +75,7 @@ import {
   CHART_TOOLBAR_BUTTON_LABELS,
   CHART_TOOLBAR_ICON_SIZE_PX,
   CHART_WORKFLOWS_PAGE_SIZE,
+  CHART_WORKFLOWS_REFRESH_INTERVAL_MS,
 } from './schedule-detail-metrics-chart.constants';
 import { overrides, styled } from './schedule-detail-metrics-chart.styles';
 import {
@@ -96,7 +108,8 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
     cluster,
     scheduleId,
     pageSize: CHART_WORKFLOWS_PAGE_SIZE,
-    refetchIntervalMs: CHART_LIVE_REFRESH_INTERVAL_MS,
+    refetchIntervalMs: CHART_WORKFLOWS_REFRESH_INTERVAL_MS,
+    runsRevision: describeQuery.data?.info?.totalRuns,
   });
   const domainQuery = useDomainDescription({ domain, cluster });
   const fetchNextWorkflowPage = workflowsQuery.fetchNextPage;
@@ -131,6 +144,9 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
     [cronEvaluationTimeMs, describeQuery.data, retentionSeconds]
   );
   const cronExpression = describeQuery.data?.spec?.cronExpression ?? '';
+  // Depend on the jitter value rather than the polled response object, so
+  // re-expanding the cron timeline is driven by real changes only.
+  const jitterMs = getScheduleJitterMs(describeQuery.data);
   const skippedExecutions = useMemo(
     () =>
       getSkippedScheduleExecutions({
@@ -141,14 +157,14 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
         hasNextPage: workflowsQuery.hasNextPage,
         nowMs: cronEvaluationTimeMs,
         nextExecutionTimeMs,
-        jitterMs: getScheduleJitterMs(describeQuery.data),
+        jitterMs,
         actualExecutions: chartPoints.successfulRuns,
       }),
     [
       chartPoints.successfulRuns,
       cronEvaluationTimeMs,
       cronExpression,
-      describeQuery.data,
+      jitterMs,
       oldestLoadedScheduleTimeMs,
       nextExecutionTimeMs,
       timelineBounds.inferenceStartMs,
@@ -158,20 +174,36 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
   );
   const chartData = useMemo(
     () => ({
-      ...chartPoints,
-      skippedExecutions,
+      successfulRuns: filterExecutionsBeforeNextExecution(
+        chartPoints.successfulRuns,
+        nextExecutionTimeMs
+      ),
+      skippedExecutions: filterExecutionsBeforeNextExecution(
+        skippedExecutions,
+        nextExecutionTimeMs
+      ),
       nextExecutionTimeMs,
     }),
     [chartPoints, nextExecutionTimeMs, skippedExecutions]
   );
-  const timestampsMs = useMemo(
-    () => [
-      ...chartData.successfulRuns.map(({ scheduledTimeMs }) => scheduledTimeMs),
-      ...chartData.skippedExecutions.map(
+  const chartTimesMs = useMemo(
+    () => ({
+      runs: chartData.successfulRuns.map(
         ({ scheduledTimeMs }) => scheduledTimeMs
       ),
-    ],
+      skipped: chartData.skippedExecutions.map(
+        ({ scheduledTimeMs }) => scheduledTimeMs
+      ),
+      next:
+        chartData.nextExecutionTimeMs == null
+          ? []
+          : [chartData.nextExecutionTimeMs],
+    }),
     [chartData]
+  );
+  const timestampsMs = useMemo(
+    () => [...chartTimesMs.runs, ...chartTimesMs.skipped],
+    [chartTimesMs]
   );
   const latestExpectedTimesMs = useMemo(
     () =>
@@ -203,7 +235,21 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
     describeQuery.isLoading ||
     domainQuery.isLoading ||
     workflowsQuery.isLoading;
+  const newRunTimesMs = useNewChartTimesMs({
+    timesMs: chartTimesMs.runs,
+    isEnabled: !isInitialLoading,
+  });
+  const newSkippedTimesMs = useNewChartTimesMs({
+    timesMs: chartTimesMs.skipped,
+    isEnabled: !isInitialLoading,
+  });
+  const newNextTimesMs = useNewChartTimesMs({
+    timesMs: chartTimesMs.next,
+    isEnabled: !isInitialLoading,
+  });
   const isFetchingMore = workflowsQuery.isFetchingNextPage;
+  const isFetchMoreError = workflowsQuery.isFetchNextPageError;
+  const showFetchMoreError = isFetchMoreError && !isFetchingMore;
 
   const loadedTimeDomain = useMemo(
     () =>
@@ -294,7 +340,8 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
       if (
         domain == null ||
         !workflowsQuery.hasNextPage ||
-        workflowsQuery.isFetchingNextPage
+        workflowsQuery.isFetchingNextPage ||
+        workflowsQuery.isFetchNextPageError
       ) {
         return false;
       }
@@ -312,6 +359,7 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
     [
       oldestLoadedScheduleTimeMs,
       workflowsQuery.hasNextPage,
+      workflowsQuery.isFetchNextPageError,
       workflowsQuery.isFetchingNextPage,
     ]
   );
@@ -462,7 +510,7 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
     <styled.Container>
       <styled.Header>
         <styled.Summary data-testid={CHART_SUMMARY_TEST_ID}>
-          <styled.SummaryTitle>{CHART_LEGEND_TITLE}</styled.SummaryTitle>
+          <styled.SummaryTitle>{CHART_LEGEND_TITLE}:</styled.SummaryTitle>
           {CHART_LEGEND_ITEMS.map(({ variant, label }) => (
             <styled.SummaryItem key={variant}>
               <ScheduleDetailMetricsChartStatusIcon
@@ -544,16 +592,44 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
                 timelineColor={theme.colors.borderOpaque}
                 labelColor={theme.colors.contentTertiary}
                 labelStrongColor={theme.colors.contentPrimary}
-                nowColor={theme.colors.warning400}
+                nowColor={theme.colors.negative300}
               />
             </styled.ChartSvg>
-            {isFetchingMore ? (
-              <styled.FetchLoadingOverlay
-                role="status"
+            {isFetchingMore || isFetchMoreError ? (
+              <styled.FetchLoadingContainer
+                $isError={showFetchMoreError}
+                role={showFetchMoreError ? 'alert' : 'status'}
+                aria-label={
+                  showFetchMoreError
+                    ? CHART_FETCH_RETRY_LABEL
+                    : CHART_FETCH_LOADING_MESSAGE
+                }
                 data-testid={CHART_FETCH_LOADING_TEST_ID}
+                onPointerDown={(event: React.PointerEvent<HTMLDivElement>) =>
+                  event.stopPropagation()
+                }
               >
-                {CHART_FETCH_LOADING_MESSAGE}
-              </styled.FetchLoadingOverlay>
+                {showFetchMoreError ? (
+                  <Button
+                    size="mini"
+                    kind="tertiary"
+                    aria-label={CHART_FETCH_RETRY_LABEL}
+                    overrides={overrides.toolbarButton}
+                    onClick={() => void fetchNextWorkflowPage()}
+                  >
+                    <styled.ControlContent>
+                      <MdReportGmailerrorred
+                        aria-hidden
+                        color={theme.colors.negative}
+                        size={CHART_FETCH_RETRY_ICON_SIZE_PX}
+                      />
+                      Retry
+                    </styled.ControlContent>
+                  </Button>
+                ) : (
+                  <Spinner $size={CHART_FETCH_LOADING_SPINNER_SIZE_PX} />
+                )}
+              </styled.FetchLoadingContainer>
             ) : null}
             <styled.GlyphOverlay>
               {visibleRuns.map(({ scheduledTimeMs, runs }) => (
@@ -564,11 +640,13 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
                   runs={runs}
                   domain={params.domain}
                   cluster={params.cluster}
+                  scheduleId={params.scheduleId}
                   variant={
                     runs.length > 1
                       ? 'grouped'
                       : getScheduleMetricsChartStatus(runs[0])
                   }
+                  isNew={newRunTimesMs.has(scheduledTimeMs)}
                   testId={CHART_GLYPH_TEST_IDS.runTrigger}
                 />
               ))}
@@ -581,7 +659,9 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
                   scheduledTimeMs={scheduledTimeMs}
                   domain={params.domain}
                   cluster={params.cluster}
+                  scheduleId={params.scheduleId}
                   variant="skipped"
+                  isNew={newSkippedTimesMs.has(scheduledTimeMs)}
                   testId={CHART_GLYPH_TEST_IDS.skippedExecutionTrigger}
                 />
               ))}
@@ -594,7 +674,9 @@ export default function ScheduleDetailMetricsChart({ params }: Props) {
                   scheduledTimeMs={chartData.nextExecutionTimeMs}
                   domain={params.domain}
                   cluster={params.cluster}
+                  scheduleId={params.scheduleId}
                   variant="next"
+                  isNew={newNextTimesMs.has(chartData.nextExecutionTimeMs)}
                   testId={CHART_SERIES_TEST_IDS.nextExecutionMarker}
                 />
               ) : null}

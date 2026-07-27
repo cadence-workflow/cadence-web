@@ -4,12 +4,20 @@ export const CHART_HEIGHT_PX = 82;
 
 /**
  * Every tick shifts the domain while following, re-rendering each glyph and its
- * popover. 5s stays sub-pixel at the default zoom and only becomes visible as
- * stepping at the minimum span, where one pixel is a fraction of a second.
+ * popover. That is well within budget at 1s, which is the coarsest the current
+ * time can move and still read as advancing rather than stepping.
  */
-export const CURRENT_TIME_UPDATE_INTERVAL_MS = 5_000;
+export const CURRENT_TIME_UPDATE_INTERVAL_MS = 1_000;
 
 export const CHART_LIVE_REFRESH_INTERVAL_MS = 10_000;
+
+/**
+ * Refreshing the runs re-walks every loaded page, so it runs on a slower beat
+ * than the schedule itself. New runs do not wait for it: they arrive with the
+ * schedule's `totalRuns`, which is polled at the live interval above. This only
+ * bounds how long an older run can keep showing a stale status.
+ */
+export const CHART_WORKFLOWS_REFRESH_INTERVAL_MS = 60_000;
 
 export const CHART_TOOLBAR_BUTTON_LABELS = {
   zoomIn: 'Zoom in',
@@ -20,13 +28,16 @@ export const CHART_TOOLBAR_BUTTON_LABELS = {
 export const CHART_EMPTY_STATE_MESSAGE = 'No chart data available yet';
 
 export const CHART_FETCH_LOADING_MESSAGE = 'Loading older runs…';
+export const CHART_FETCH_LOADING_SPINNER_SIZE_PX = 16;
+export const CHART_FETCH_RETRY_LABEL = 'Retry loading older runs';
+export const CHART_FETCH_RETRY_ICON_SIZE_PX = 16;
 
 export const CHART_LEGEND_TITLE = 'Runs';
 
 /** Legend rows, in render order, mapping a status glyph to its label. */
 export const CHART_LEGEND_ITEMS = [
   { variant: 'completed', label: 'Completed' },
-  { variant: 'failed', label: 'Terminated/Failed' },
+  { variant: 'failed', label: 'Terminated/Timed out/Failed' },
   { variant: 'running', label: 'Running' },
   { variant: 'canceled', label: 'Cancelled' },
   { variant: 'skipped', label: 'Skipped' },
@@ -84,12 +95,12 @@ export const CHART_SERIES_TEST_IDS = {
 
 export const CHART_SERIES_TIMELINE_Y_PX = 58;
 export const CHART_SERIES_LABEL_Y_PX = 14;
+export const CHART_SERIES_TICK_FONT_SIZE_PX = 11;
 /** Horizontal space a `MMM D, HH:mm` tick label needs to stay legible (px). */
 export const CHART_SERIES_TICK_LABEL_WIDTH_PX = 112;
 export const CHART_SERIES_MIN_TICK_COUNT = 2;
 export const CHART_SERIES_MAX_TICK_COUNT = 7;
-export const CHART_SERIES_NOW_STROKE_WIDTH_PX = 1;
-export const CHART_SERIES_TICK_FONT_SIZE_PX = 11;
+export const CHART_SERIES_NOW_STROKE_WIDTH_PX = 2;
 
 /** Header row height, sized to fit the mini toolbar buttons (px). */
 export const CHART_HEADER_MIN_HEIGHT_PX = 28;
@@ -131,6 +142,9 @@ export const CHART_GLYPH_GROUPED_CARD_OFFSETS_PX = {
 export const CHART_FAILED_ICON_SCALE = 1.2;
 
 export const CHART_RUN_POPOVER_ENTRY_DELAY_MS = 200;
+
+/** Scale-up and fade-in played by a glyph that arrives on a live chart (ms). */
+export const CHART_GLYPH_ENTER_ANIMATION_MS = 260;
 
 export const CHART_GLYPH_TEST_IDS = {
   runTrigger: 'schedule-metrics-chart-run-trigger',

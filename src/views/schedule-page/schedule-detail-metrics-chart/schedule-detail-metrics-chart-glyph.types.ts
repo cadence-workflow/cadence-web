@@ -10,6 +10,9 @@ export type Props = {
   scheduledTimeMs?: number;
   domain: string;
   cluster: string;
+  scheduleId: string;
   variant: ScheduleMetricsChartGlyphVariant;
+  /** Plays the enter animation, for glyphs that arrive on an already open chart. */
+  isNew?: boolean;
   testId: string;
 };
