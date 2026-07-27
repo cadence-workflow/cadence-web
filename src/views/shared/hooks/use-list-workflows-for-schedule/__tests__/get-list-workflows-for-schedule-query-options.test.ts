@@ -3,10 +3,7 @@ import queryString from 'query-string';
 import request from '@/utils/request';
 
 import buildScheduleWorkflowsVisibilityQuery from '../build-schedule-workflows-visibility-query';
-import {
-  getHistoricalWorkflowsForScheduleQueryOptions,
-  getLatestWorkflowsForScheduleQueryOptions,
-} from '../get-list-workflows-for-schedule-query-options';
+import getListWorkflowsForScheduleQueryOptions from '../get-list-workflows-for-schedule-query-options';
 
 jest.mock('@/utils/request', () => jest.fn());
 
@@ -17,44 +14,22 @@ const params = {
   pageSize: 20,
 };
 
-describe(getLatestWorkflowsForScheduleQueryOptions.name, () => {
+describe(getListWorkflowsForScheduleQueryOptions.name, () => {
   beforeEach(() => {
     jest.mocked(request).mockResolvedValue({
       json: async () => ({ workflows: [], nextPage: '' }),
     } as Response);
   });
 
-  it('returns distinct namespaced query keys for latest and historical data', () => {
-    const latestOptions = getLatestWorkflowsForScheduleQueryOptions(params);
-    const historicalOptions = getHistoricalWorkflowsForScheduleQueryOptions({
-      initialPageParam: 'page-2-token',
-      params,
-    });
+  it('returns a namespaced query key that does not vary by page', () => {
+    const options = getListWorkflowsForScheduleQueryOptions(params);
 
-    expect(latestOptions.queryKey).toEqual([
-      'listLatestWorkflowsForSchedule',
-      params,
-    ]);
-    expect(historicalOptions.queryKey).toEqual([
-      'listHistoricalWorkflowsForSchedule',
-      params,
-      'page-2-token',
-    ]);
+    expect(options.queryKey).toEqual(['listWorkflowsForSchedule', params]);
+    expect(options.initialPageParam).toBeUndefined();
   });
 
-  it('requests the latest active workflows in descending schedule-time order', async () => {
-    const options = getLatestWorkflowsForScheduleQueryOptions(params);
-    const { queryFn } = options;
-
-    if (typeof queryFn !== 'function') {
-      throw new Error('Expected queryFn to be a function');
-    }
-
-    await queryFn({
-      queryKey: options.queryKey,
-      signal: new AbortController().signal,
-      meta: undefined,
-    });
+  it('requests the first page in descending schedule-time order', async () => {
+    await fetchPage(undefined);
 
     const expectedUrl = queryString.stringifyUrl({
       url: `/api/domains/${params.domain}/${params.cluster}/workflows`,
@@ -72,24 +47,8 @@ describe(getLatestWorkflowsForScheduleQueryOptions.name, () => {
     );
   });
 
-  it('requests a historical page without search or archived listType', async () => {
-    const options = getHistoricalWorkflowsForScheduleQueryOptions({
-      initialPageParam: 'page-2-token',
-      params,
-    });
-    const { queryFn } = options;
-
-    if (typeof queryFn !== 'function') {
-      throw new Error('Expected queryFn to be a function');
-    }
-
-    await queryFn({
-      pageParam: 'page-2-token',
-      queryKey: options.queryKey,
-      signal: new AbortController().signal,
-      meta: undefined,
-      direction: 'forward',
-    });
+  it('requests an older page without search or archived listType', async () => {
+    await fetchPage('page-2-token');
 
     const requestUrl = jest.mocked(request).mock.calls[0]?.[0] as string;
     const parsed = queryString.parseUrl(requestUrl);
@@ -102,11 +61,8 @@ describe(getLatestWorkflowsForScheduleQueryOptions.name, () => {
   });
 
   it('returns the next page token from the last response', () => {
-    const options = getHistoricalWorkflowsForScheduleQueryOptions({
-      initialPageParam: 'page-2-token',
-      params,
-    });
-    const getNextPageParam = options.getNextPageParam;
+    const { getNextPageParam } =
+      getListWorkflowsForScheduleQueryOptions(params);
 
     if (!getNextPageParam) {
       throw new Error('Expected getNextPageParam to be defined');
@@ -125,12 +81,32 @@ describe(getLatestWorkflowsForScheduleQueryOptions.name, () => {
     ).toBeUndefined();
   });
 
-  it('uses the requested latest-page refresh interval', () => {
-    const options = getLatestWorkflowsForScheduleQueryOptions({
-      ...params,
-      refetchIntervalMs: 10_000,
-    });
-
-    expect(options.refetchInterval).toBe(10_000);
+  it('uses the requested refresh interval', () => {
+    expect(
+      getListWorkflowsForScheduleQueryOptions(params).refetchInterval
+    ).toBeUndefined();
+    expect(
+      getListWorkflowsForScheduleQueryOptions({
+        ...params,
+        refetchIntervalMs: 10_000,
+      }).refetchInterval
+    ).toBe(10_000);
   });
 });
+
+async function fetchPage(pageParam: string | undefined) {
+  const options = getListWorkflowsForScheduleQueryOptions(params);
+  const { queryFn } = options;
+
+  if (typeof queryFn !== 'function') {
+    throw new Error('Expected queryFn to be a function');
+  }
+
+  await queryFn({
+    pageParam,
+    queryKey: options.queryKey,
+    signal: new AbortController().signal,
+    meta: undefined,
+    direction: 'forward',
+  });
+}

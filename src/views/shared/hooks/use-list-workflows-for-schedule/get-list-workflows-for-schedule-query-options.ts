@@ -5,45 +5,34 @@ import request from '@/utils/request';
 
 import buildScheduleWorkflowsVisibilityQuery from './build-schedule-workflows-visibility-query';
 import {
-  type HistoricalWorkflowsForScheduleQueryKey,
-  type HistoricalWorkflowsForScheduleQueryOptions,
-  type LatestWorkflowsForScheduleQueryKey,
-  type LatestWorkflowsForScheduleQueryOptions,
+  type ListWorkflowsForScheduleQueryKey,
+  type ListWorkflowsForScheduleQueryOptions,
   type ListWorkflowsForScheduleQueryParams,
   type UseListWorkflowsForScheduleParams,
 } from './use-list-workflows-for-schedule.types';
 
-export function getLatestWorkflowsForScheduleQueryOptions({
+export default function getListWorkflowsForScheduleQueryOptions({
   refetchIntervalMs,
+  runsRevision: _runsRevision,
   ...params
-}: UseListWorkflowsForScheduleParams): LatestWorkflowsForScheduleQueryOptions {
+}: UseListWorkflowsForScheduleParams): ListWorkflowsForScheduleQueryOptions {
   return {
     queryKey: [
-      'listLatestWorkflowsForSchedule',
+      'listWorkflowsForSchedule',
       params,
-    ] satisfies LatestWorkflowsForScheduleQueryKey,
-    queryFn: () => fetchWorkflowsForSchedule(params),
-    refetchInterval: refetchIntervalMs,
-  };
-}
-
-export function getHistoricalWorkflowsForScheduleQueryOptions({
-  initialPageParam,
-  params,
-}: {
-  initialPageParam: string | undefined;
-  params: ListWorkflowsForScheduleQueryParams;
-}): HistoricalWorkflowsForScheduleQueryOptions {
-  return {
-    queryKey: [
-      'listHistoricalWorkflowsForSchedule',
-      params,
-      initialPageParam,
-    ] satisfies HistoricalWorkflowsForScheduleQueryKey,
+    ] satisfies ListWorkflowsForScheduleQueryKey,
     queryFn: ({ pageParam }) => fetchWorkflowsForSchedule(params, pageParam),
-    initialPageParam,
+    initialPageParam: undefined,
     getNextPageParam: (lastPage) => lastPage.nextPage || undefined,
-    enabled: false,
+    // ponytail: each refresh re-walks every loaded page, re-deriving each page
+    // token from the page fetched before it. That is what keeps the loaded runs
+    // contiguous as new runs push older ones onto later pages, and it refreshes
+    // the status of older runs for free. Since it costs one request per loaded
+    // page, callers should pair a slow interval here with `runsRevision`, which
+    // refreshes as soon as the schedule actually acts. The ceiling is how
+    // quickly an older run's status settles: nothing but this interval notices
+    // a workflow that finishes without the schedule taking a new action.
+    refetchInterval: refetchIntervalMs,
   };
 }
 
