@@ -9,7 +9,7 @@ import { type DescribeScheduleResponse } from '@/route-handlers/describe-schedul
 import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtures__/mock-workflow-list-items';
 import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list-workflows.types';
 import formatDate from '@/utils/data-formatters/format-date';
-import { SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN } from '@/views/shared/hooks/use-list-workflows-for-schedule/use-list-workflows-for-schedule.constants';
+import { SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN } from '@/views/schedule-details/hooks/use-list-workflows-for-schedule/use-list-workflows-for-schedule.constants';
 
 import {
   getMockDescribeScheduleResponseForChart,

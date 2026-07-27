@@ -18,9 +18,9 @@ import {
 
 import Button from '@/components/button/button';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
+import useListWorkflowsForSchedule from '@/views/schedule-details/hooks/use-list-workflows-for-schedule/use-list-workflows-for-schedule';
 import useDescribeSchedule from '@/views/shared/hooks/use-describe-schedule/use-describe-schedule';
 import useDomainDescription from '@/views/shared/hooks/use-domain-description/use-domain-description';
-import useListWorkflowsForSchedule from '@/views/shared/hooks/use-list-workflows-for-schedule/use-list-workflows-for-schedule';
 
 import describeScheduleToNextExecutionMs from './helpers/describe-schedule-to-next-execution';
 import filterExecutionsBeforeNextExecution from './helpers/filter-executions-before-next-execution';
