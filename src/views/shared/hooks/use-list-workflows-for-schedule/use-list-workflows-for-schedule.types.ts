@@ -1,7 +1,6 @@
 import {
   type InfiniteData,
   type UseInfiniteQueryOptions,
-  type UseQueryOptions,
 } from '@tanstack/react-query';
 
 import {
@@ -14,37 +13,30 @@ export type UseListWorkflowsForScheduleParams = ListWorkflowsRouteParams & {
   scheduleId: string;
   pageSize: number;
   refetchIntervalMs?: number;
+  /**
+   * Any value that changes when the schedule takes a new action, such as
+   * `ScheduleInfo.totalRuns`. Refreshes the loaded runs as soon as it changes,
+   * so new runs do not have to wait for the periodic refresh. Deliberately not
+   * part of the query key: re-keying would drop the pages already loaded.
+   */
+  runsRevision?: string;
 };
 
 export type ListWorkflowsForScheduleQueryParams = Omit<
   UseListWorkflowsForScheduleParams,
-  'refetchIntervalMs'
+  'refetchIntervalMs' | 'runsRevision'
 >;
 
-export type LatestWorkflowsForScheduleQueryKey = [
-  'listLatestWorkflowsForSchedule',
+export type ListWorkflowsForScheduleQueryKey = [
+  'listWorkflowsForSchedule',
   ListWorkflowsForScheduleQueryParams,
 ];
 
-export type HistoricalWorkflowsForScheduleQueryKey = [
-  'listHistoricalWorkflowsForSchedule',
-  ListWorkflowsForScheduleQueryParams,
-  string | undefined,
-];
-
-export type LatestWorkflowsForScheduleQueryOptions = UseQueryOptions<
+export type ListWorkflowsForScheduleQueryOptions = UseInfiniteQueryOptions<
   ListWorkflowsResponse,
   RequestError,
+  InfiniteData<ListWorkflowsResponse>,
   ListWorkflowsResponse,
-  LatestWorkflowsForScheduleQueryKey
+  ListWorkflowsForScheduleQueryKey,
+  string | undefined
 >;
-
-export type HistoricalWorkflowsForScheduleQueryOptions =
-  UseInfiniteQueryOptions<
-    ListWorkflowsResponse,
-    RequestError,
-    InfiniteData<ListWorkflowsResponse>,
-    ListWorkflowsResponse,
-    HistoricalWorkflowsForScheduleQueryKey,
-    string | undefined
-  >;
