@@ -124,7 +124,9 @@ describe(`${ScheduleDetailMetricsChart.name} run popover`, () => {
     expect(screen.getByText('run-stack-a')).toBeInTheDocument();
     expect(screen.getByText('run-stack-b')).toBeInTheDocument();
     expect(screen.getByText(RUN_POPOVER_BACKFILL_LABEL)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'backfill-abc-123' })).toHaveAttribute(
+    expect(
+      screen.getByRole('link', { name: 'backfill-abc-123' })
+    ).toHaveAttribute(
       'href',
       `/domains/${MOCK_DOMAIN}/${MOCK_CLUSTER}/workflows?input=query&query=${encodeURIComponent(`CadenceScheduleID = "${MOCK_SCHEDULE_ID}" AND CadenceScheduleBackfillID = "backfill-abc-123"`)}`
     );
