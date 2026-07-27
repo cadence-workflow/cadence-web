@@ -3,7 +3,14 @@ import React from 'react';
 import { act } from '@testing-library/react';
 import { HttpResponse } from 'msw';
 
-import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
+import {
+  fireEvent,
+  render,
+  screen,
+  userEvent,
+  waitFor,
+  within,
+} from '@/test-utils/rtl';
 
 import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list-workflows.types';
 import { WORKFLOW_STATUS_NAMES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
@@ -21,7 +28,7 @@ import {
   RUN_POPOVER_BACKFILL_LABEL,
   RUN_POPOVER_TEST_IDS,
   RUN_POPOVER_TIMESTAMP_LABELS,
-} from '../schedule-detail-metrics-chart-run-popover/schedule-detail-metrics-chart-run-popover.constants';
+} from '../schedule-detail-metrics-chart-run-popover.constants';
 import {
   CHART_GLYPH_TEST_IDS,
   CHART_LOADING_SKELETON_TEST_ID,
@@ -29,11 +36,11 @@ import {
 } from '../schedule-detail-metrics-chart.constants';
 
 jest.mock('@visx/responsive', () => ({
-  ParentSize: ({
-    children,
-  }: {
-    children: (args: { width: number; height: number }) => React.ReactNode;
-  }) => <>{children({ width: 800, height: 280 })}</>,
+  useParentSize: () => ({
+    parentRef: { current: null },
+    width: 1600,
+    height: 82,
+  }),
 }));
 
 describe(`${ScheduleDetailMetricsChart.name} run popover`, () => {
@@ -54,9 +61,7 @@ describe(`${ScheduleDetailMetricsChart.name} run popover`, () => {
       ).not.toBeInTheDocument();
     });
 
-    const triggers = screen.getAllByTestId(
-      CHART_GLYPH_TEST_IDS.successfulRunTrigger
-    );
+    const triggers = screen.getAllByTestId(CHART_GLYPH_TEST_IDS.runTrigger);
 
     await user.hover(triggers[0]);
     act(() => {
@@ -69,7 +74,10 @@ describe(`${ScheduleDetailMetricsChart.name} run popover`, () => {
       ).toBeInTheDocument();
     });
 
-    expect(screen.getByText('run-recent')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'run-recent' })).toHaveAttribute(
+      'href',
+      `/domains/${MOCK_DOMAIN}/${MOCK_CLUSTER}/workflows/wf-recent/run-recent`
+    );
     expect(
       screen.getByText(RUN_POPOVER_TIMESTAMP_LABELS.scheduled)
     ).toBeInTheDocument();
@@ -80,7 +88,7 @@ describe(`${ScheduleDetailMetricsChart.name} run popover`, () => {
       screen.getByText(RUN_POPOVER_TIMESTAMP_LABELS.ended)
     ).toBeInTheDocument();
     expect(
-      screen.getByText(
+      within(screen.getByTestId(RUN_POPOVER_TEST_IDS.runEntry)).getByText(
         WORKFLOW_STATUS_NAMES.WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED
       )
     ).toBeInTheDocument();
@@ -99,7 +107,7 @@ describe(`${ScheduleDetailMetricsChart.name} run popover`, () => {
     });
 
     const stackedTrigger = screen.getByRole('button', {
-      name: /2 successful schedule runs/i,
+      name: /2 schedule runs/i,
     });
 
     await user.hover(stackedTrigger);
@@ -116,10 +124,32 @@ describe(`${ScheduleDetailMetricsChart.name} run popover`, () => {
     expect(screen.getByText('run-stack-a')).toBeInTheDocument();
     expect(screen.getByText('run-stack-b')).toBeInTheDocument();
     expect(screen.getByText(RUN_POPOVER_BACKFILL_LABEL)).toBeInTheDocument();
-    expect(screen.getByRole('link')).toBeInTheDocument();
+    expect(screen.getAllByRole('link')).toHaveLength(3);
   });
 
-  it('shows run details on focus over a missed execution glyph', async () => {
+  it('does not propagate text-selection pointer events to the chart', async () => {
+    const { user } = setup({ workflowPages: getMockWorkflowPagesForChart() });
+    const documentPointerDown = jest.fn();
+    document.addEventListener('pointerdown', documentPointerDown);
+
+    await waitFor(() => {
+      expect(
+        screen.queryByTestId(CHART_LOADING_SKELETON_TEST_ID)
+      ).not.toBeInTheDocument();
+    });
+    await user.hover(screen.getAllByTestId(CHART_GLYPH_TEST_IDS.runTrigger)[0]);
+    act(() => {
+      jest.advanceTimersByTime(CHART_RUN_POPOVER_ENTRY_DELAY_MS);
+    });
+    const content = await screen.findByTestId(RUN_POPOVER_TEST_IDS.content);
+
+    fireEvent.pointerDown(content);
+
+    expect(documentPointerDown).not.toHaveBeenCalled();
+    document.removeEventListener('pointerdown', documentPointerDown);
+  });
+
+  it('shows a running spinner for a zero-history open workflow', async () => {
     const { user } = setup({ workflowPages: getMockWorkflowPagesForChart() });
 
     await waitFor(() => {
@@ -128,9 +158,9 @@ describe(`${ScheduleDetailMetricsChart.name} run popover`, () => {
       ).not.toBeInTheDocument();
     });
 
-    const trigger = screen.getByTestId(
-      CHART_GLYPH_TEST_IDS.missedExecutionTrigger
-    );
+    const trigger = screen.getByRole('button', {
+      name: 'Schedule run run-missed',
+    });
 
     for (
       let tabCount = 0;
@@ -148,7 +178,17 @@ describe(`${ScheduleDetailMetricsChart.name} run popover`, () => {
     await waitFor(() => {
       expect(screen.getByText('run-missed')).toBeInTheDocument();
     });
-    expect(screen.getAllByText('—')).toHaveLength(1);
+    expect(
+      within(screen.getByTestId(RUN_POPOVER_TEST_IDS.runEntry)).getByText(
+        WORKFLOW_STATUS_NAMES.WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen
+        .getByTestId(RUN_POPOVER_TEST_IDS.statusIcon)
+        .querySelector('[role="progressbar"]')
+    ).toBeInTheDocument();
+    expect(screen.getAllByText('-')).toHaveLength(1);
   });
 });
 
@@ -170,6 +210,17 @@ function setup({
     />,
     {
       endpointsMocks: [
+        {
+          path: `/api/domains/${MOCK_DOMAIN}/${MOCK_CLUSTER}`,
+          httpMethod: 'GET',
+          httpResolver: async () =>
+            HttpResponse.json({
+              workflowExecutionRetentionPeriod: {
+                seconds: String(24 * 60 * 60),
+                nanos: 0,
+              },
+            }),
+        },
         {
           path: `/api/domains/${MOCK_DOMAIN}/${MOCK_CLUSTER}/schedules/${MOCK_SCHEDULE_ID}`,
           httpMethod: 'GET',

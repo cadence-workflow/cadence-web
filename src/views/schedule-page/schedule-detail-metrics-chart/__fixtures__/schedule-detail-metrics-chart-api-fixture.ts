@@ -14,11 +14,17 @@ export const MOCK_SCHEDULE_ID = 'my-schedule';
 
 export function getMockDescribeScheduleResponseForChart() {
   return getMockRunningDescribeScheduleResponse({
+    spec: {
+      cronExpression: '*/15 * * * *',
+      startTime: null,
+      endTime: null,
+      jitter: null,
+    },
     info: {
       lastRunTime: { seconds: '21600', nanos: 0 },
-      nextRunTime: { seconds: '25200', nanos: 0 },
+      nextRunTime: { seconds: '22500', nanos: 0 },
       totalRuns: '3',
-      createTime: null,
+      createTime: { seconds: '0', nanos: 0 },
       lastUpdateTime: null,
       missedRuns: '0',
       skippedRuns: '0',
@@ -83,6 +89,74 @@ export function getMockWorkflowPagesForChart(): Array<ListWorkflowsResponse> {
           searchAttributes: {
             [SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN]: {
               data: String(2 * HOUR_MS),
+            },
+          },
+        }),
+        getMockWorkflowListItem({
+          workflowID: 'wf-timed-out',
+          runID: 'run-timed-out',
+          status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_TIMED_OUT',
+          historyLength: 10,
+          closeTime: 4 * HOUR_MS + 1000,
+          startTime: 4 * HOUR_MS,
+          searchAttributes: {
+            [SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN]: {
+              data: String(4 * HOUR_MS),
+            },
+          },
+        }),
+        getMockWorkflowListItem({
+          workflowID: 'wf-canceled',
+          runID: 'run-canceled',
+          status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_CANCELED',
+          historyLength: 10,
+          closeTime: 3.5 * HOUR_MS + 1000,
+          startTime: 3.5 * HOUR_MS,
+          searchAttributes: {
+            [SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN]: {
+              data: String(3.5 * HOUR_MS),
+            },
+          },
+        }),
+        getMockWorkflowListItem({
+          workflowID: 'wf-running',
+          runID: 'run-running',
+          status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
+          historyLength: 10,
+          closeTime: undefined,
+          startTime: 3 * HOUR_MS,
+          searchAttributes: {
+            [SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN]: {
+              data: String(3 * HOUR_MS),
+            },
+          },
+        }),
+        getMockWorkflowListItem({
+          workflowID: 'wf-backfill',
+          runID: 'run-backfill',
+          status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
+          historyLength: 10,
+          closeTime: 2.5 * HOUR_MS + 1000,
+          startTime: 2.5 * HOUR_MS,
+          searchAttributes: {
+            [SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN]: {
+              data: String(2.5 * HOUR_MS),
+            },
+            CadenceScheduleBackfillID: {
+              data: 'YmFja2ZpbGwtc2luZ2xl',
+            },
+          },
+        }),
+        getMockWorkflowListItem({
+          workflowID: 'wf-failed',
+          runID: 'run-failed',
+          status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_FAILED',
+          historyLength: 10,
+          closeTime: 1.5 * HOUR_MS + 1000,
+          startTime: 1.5 * HOUR_MS,
+          searchAttributes: {
+            [SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN]: {
+              data: String(1.5 * HOUR_MS),
             },
           },
         }),

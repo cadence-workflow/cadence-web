@@ -1,40 +1,55 @@
 import {
   CHART_MIN_DOMAIN_SPAN_MS,
+  CHART_NEXT_RUN_ANCHOR_RATIO,
   CHART_NOW_ANCHOR_RATIO,
-  CHART_ZOOM_IN_FACTOR,
-  CHART_ZOOM_OUT_FACTOR,
 } from '../schedule-detail-metrics-chart.constants';
 import { type MetricsChartTimeDomain } from '../schedule-detail-metrics-chart.types';
 
-export type MetricsChartViewState = {
-  visibleDomain: MetricsChartTimeDomain;
-  fitAllDomain: MetricsChartTimeDomain;
-};
-
 export type ZoomMetricsChartDomainParams = {
   visibleDomain: MetricsChartTimeDomain;
-  fitAllDomain: MetricsChartTimeDomain;
+  bounds: MetricsChartTimeDomain;
+  maxSpanMs: number;
   factor: number;
   anchorMs: number;
 };
 
 export type PanMetricsChartDomainToTimeParams = {
   visibleDomain: MetricsChartTimeDomain;
-  fitAllDomain: MetricsChartTimeDomain;
+  bounds: MetricsChartTimeDomain;
   timeMs: number;
   anchorRatio?: number;
 };
 
-function getDomainSpanMs(domain: MetricsChartTimeDomain): number {
+export type ResolveMetricsChartFollowDomainParams = {
+  visibleDomain: MetricsChartTimeDomain;
+  bounds: MetricsChartTimeDomain;
+  nowMs: number;
+  nextExecutionMs?: number | null;
+};
+
+export function getMetricsChartDomainSpanMs(
+  domain: MetricsChartTimeDomain
+): number {
   return domain.maxMs - domain.minMs;
+}
+
+export function isSameMetricsChartDomain(
+  domain: MetricsChartTimeDomain,
+  otherDomain: MetricsChartTimeDomain
+): boolean {
+  return (
+    domain.minMs === otherDomain.minMs && domain.maxMs === otherDomain.maxMs
+  );
 }
 
 function getDomainCenterMs(domain: MetricsChartTimeDomain): number {
   return (domain.minMs + domain.maxMs) / 2;
 }
 
-function expandDomainToMinSpan(domain: MetricsChartTimeDomain): MetricsChartTimeDomain {
-  const spanMs = getDomainSpanMs(domain);
+function expandDomainToMinSpan(
+  domain: MetricsChartTimeDomain
+): MetricsChartTimeDomain {
+  const spanMs = getMetricsChartDomainSpanMs(domain);
 
   if (spanMs >= CHART_MIN_DOMAIN_SPAN_MS) {
     return domain;
@@ -50,20 +65,20 @@ function expandDomainToMinSpan(domain: MetricsChartTimeDomain): MetricsChartTime
 
 export function clampMetricsChartVisibleDomain(
   visibleDomain: MetricsChartTimeDomain,
-  fitAllDomain: MetricsChartTimeDomain
+  bounds: MetricsChartTimeDomain
 ): MetricsChartTimeDomain {
-  const visibleSpanMs = getDomainSpanMs(visibleDomain);
-  const fitAllSpanMs = getDomainSpanMs(fitAllDomain);
+  const visibleSpanMs = getMetricsChartDomainSpanMs(visibleDomain);
+  const boundsSpanMs = getMetricsChartDomainSpanMs(bounds);
 
-  if (visibleSpanMs >= fitAllSpanMs) {
-    return fitAllDomain;
+  if (visibleSpanMs >= boundsSpanMs) {
+    return bounds;
   }
 
-  let minMs = Math.max(visibleDomain.minMs, fitAllDomain.minMs);
+  let minMs = Math.max(visibleDomain.minMs, bounds.minMs);
   let maxMs = minMs + visibleSpanMs;
 
-  if (maxMs > fitAllDomain.maxMs) {
-    maxMs = fitAllDomain.maxMs;
+  if (maxMs > bounds.maxMs) {
+    maxMs = bounds.maxMs;
     minMs = maxMs - visibleSpanMs;
   }
 
@@ -72,84 +87,92 @@ export function clampMetricsChartVisibleDomain(
 
 export function zoomMetricsChartDomain({
   visibleDomain,
-  fitAllDomain,
+  bounds,
+  maxSpanMs,
   factor,
   anchorMs,
 }: ZoomMetricsChartDomainParams): MetricsChartTimeDomain {
-  const currentSpanMs = getDomainSpanMs(visibleDomain);
-  const nextSpanMs = currentSpanMs * factor;
-  const anchorRatio = (anchorMs - visibleDomain.minMs) / currentSpanMs;
-  const clampedAnchorRatio = Number.isFinite(anchorRatio)
-    ? Math.min(Math.max(anchorRatio, 0), 1)
+  const currentSpanMs = getMetricsChartDomainSpanMs(visibleDomain);
+  const nextSpanMs = Math.min(currentSpanMs * factor, maxSpanMs);
+  const anchorIsVisible =
+    anchorMs >= visibleDomain.minMs && anchorMs <= visibleDomain.maxMs;
+  const effectiveAnchorMs = anchorIsVisible
+    ? anchorMs
+    : getDomainCenterMs(visibleDomain);
+  const anchorRatio = anchorIsVisible
+    ? (effectiveAnchorMs - visibleDomain.minMs) / currentSpanMs
     : 0.5;
 
   const zoomedDomain = expandDomainToMinSpan({
-    minMs: anchorMs - nextSpanMs * clampedAnchorRatio,
-    maxMs: anchorMs + nextSpanMs * (1 - clampedAnchorRatio),
+    minMs: effectiveAnchorMs - nextSpanMs * anchorRatio,
+    maxMs: effectiveAnchorMs + nextSpanMs * (1 - anchorRatio),
   });
 
-  return clampMetricsChartVisibleDomain(zoomedDomain, fitAllDomain);
+  return clampMetricsChartVisibleDomain(zoomedDomain, bounds);
 }
 
 export function panMetricsChartDomainToTime({
   visibleDomain,
-  fitAllDomain,
+  bounds,
   timeMs,
   anchorRatio = CHART_NOW_ANCHOR_RATIO,
 }: PanMetricsChartDomainToTimeParams): MetricsChartTimeDomain {
-  const visibleSpanMs = getDomainSpanMs(visibleDomain);
+  const visibleSpanMs = getMetricsChartDomainSpanMs(visibleDomain);
   const clampedAnchorRatio = Math.min(Math.max(anchorRatio, 0), 1);
   const pannedDomain = {
     minMs: timeMs - visibleSpanMs * clampedAnchorRatio,
     maxMs: timeMs + visibleSpanMs * (1 - clampedAnchorRatio),
   };
 
-  return clampMetricsChartVisibleDomain(pannedDomain, fitAllDomain);
+  return clampMetricsChartVisibleDomain(pannedDomain, bounds);
+}
+
+/**
+ * Domain used while live follow is active: `now` sits at its anchor unless the
+ * next run would fall outside the view and still fits within the current span.
+ */
+export function resolveMetricsChartFollowDomain({
+  visibleDomain,
+  bounds,
+  nowMs,
+  nextExecutionMs,
+}: ResolveMetricsChartFollowDomainParams): MetricsChartTimeDomain {
+  const spanMs = getMetricsChartDomainSpanMs(visibleDomain);
+  const nowAnchoredDomain = panMetricsChartDomainToTime({
+    visibleDomain,
+    bounds,
+    timeMs: nowMs,
+  });
+
+  if (
+    nextExecutionMs == null ||
+    !Number.isFinite(nextExecutionMs) ||
+    nextExecutionMs <= nowAnchoredDomain.maxMs
+  ) {
+    return nowAnchoredDomain;
+  }
+
+  const nextRunAnchoredDomain = panMetricsChartDomainToTime({
+    visibleDomain,
+    bounds,
+    timeMs: nextExecutionMs,
+    anchorRatio: CHART_NEXT_RUN_ANCHOR_RATIO,
+  });
+
+  return nextRunAnchoredDomain.minMs <= nowMs && spanMs > 0
+    ? nextRunAnchoredDomain
+    : nowAnchoredDomain;
 }
 
 export function canZoomMetricsChartIn(
   visibleDomain: MetricsChartTimeDomain
 ): boolean {
-  return getDomainSpanMs(visibleDomain) > CHART_MIN_DOMAIN_SPAN_MS;
+  return getMetricsChartDomainSpanMs(visibleDomain) > CHART_MIN_DOMAIN_SPAN_MS;
 }
 
 export function canZoomMetricsChartOut(
   visibleDomain: MetricsChartTimeDomain,
-  fitAllDomain: MetricsChartTimeDomain
+  maxSpanMs: number
 ): boolean {
-  return getDomainSpanMs(visibleDomain) < getDomainSpanMs(fitAllDomain);
-}
-
-export function isMetricsChartFitAllView(
-  visibleDomain: MetricsChartTimeDomain,
-  fitAllDomain: MetricsChartTimeDomain
-): boolean {
-  return (
-    visibleDomain.minMs === fitAllDomain.minMs &&
-    visibleDomain.maxMs === fitAllDomain.maxMs
-  );
-}
-
-export function createMetricsChartZoomInAction(
-  state: MetricsChartViewState,
-  anchorMs: number
-): MetricsChartTimeDomain {
-  return zoomMetricsChartDomain({
-    visibleDomain: state.visibleDomain,
-    fitAllDomain: state.fitAllDomain,
-    factor: CHART_ZOOM_IN_FACTOR,
-    anchorMs,
-  });
-}
-
-export function createMetricsChartZoomOutAction(
-  state: MetricsChartViewState,
-  anchorMs: number
-): MetricsChartTimeDomain {
-  return zoomMetricsChartDomain({
-    visibleDomain: state.visibleDomain,
-    fitAllDomain: state.fitAllDomain,
-    factor: CHART_ZOOM_OUT_FACTOR,
-    anchorMs,
-  });
+  return getMetricsChartDomainSpanMs(visibleDomain) < maxSpanMs;
 }

@@ -26,6 +26,7 @@ export default function workflowListItemToChartRun(
       : undefined;
 
   return {
+    workflowId: workflow.workflowID,
     runId: workflow.runID,
     status: workflow.status,
     scheduledTimeMs,

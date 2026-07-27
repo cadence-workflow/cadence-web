@@ -1,9 +1,7 @@
 import {
   createMetricsChartXScale,
-  pixelToTimeMs,
   resolveMetricsChartPixelRange,
   resolveMetricsChartTimeDomain,
-  timeMsToPixel,
 } from '../schedule-detail-metrics-chart-scales';
 import {
   CHART_DEFAULT_PAST_WINDOW_MS,
@@ -90,9 +88,12 @@ describe(resolveMetricsChartTimeDomain.name, () => {
       nextExecutionMs: pointMs,
     });
 
-    expect(domain?.maxMs! - domain?.minMs!).toBeGreaterThanOrEqual(
-      CHART_MIN_DOMAIN_SPAN_MS
-    );
+    expect(domain).not.toBeNull();
+    if (domain != null) {
+      expect(domain.maxMs - domain.minMs).toBeGreaterThanOrEqual(
+        CHART_MIN_DOMAIN_SPAN_MS
+      );
+    }
   });
 
   it('returns null when nowMs is not finite', () => {
@@ -157,17 +158,17 @@ describe('metrics chart x scale', () => {
     const scale = createMetricsChartXScale({ domain, range });
 
     expect(scale).not.toBeNull();
-    expect(timeMsToPixel(domain.minMs, scale!)).toBe(range.startPx);
-    expect(timeMsToPixel(domain.maxMs, scale!)).toBe(range.endPx);
-    expect(timeMsToPixel(mockNowMs, scale!)).toBeGreaterThan(range.startPx);
-    expect(timeMsToPixel(mockNowMs, scale!)).toBeLessThan(range.endPx);
+    expect(scale!(domain.minMs)).toBe(range.startPx);
+    expect(scale!(domain.maxMs)).toBe(range.endPx);
+    expect(scale!(mockNowMs)).toBeGreaterThan(range.startPx);
+    expect(scale!(mockNowMs)).toBeLessThan(range.endPx);
   });
 
   it('inverts pixel positions back to timestamps', () => {
     const scale = createMetricsChartXScale({ domain, range })!;
 
-    expect(pixelToTimeMs(range.startPx, scale)).toBe(domain.minMs);
-    expect(pixelToTimeMs(range.endPx, scale)).toBe(domain.maxMs);
+    expect(scale.invert(range.startPx)).toBe(domain.minMs);
+    expect(scale.invert(range.endPx)).toBe(domain.maxMs);
   });
 
   it('returns null for invalid domain or range', () => {

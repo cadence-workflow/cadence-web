@@ -1,5 +1,8 @@
 import dayjs from '@/utils/datetime/dayjs';
 
 export default function formatChartTimeTick(timestampMs: number) {
-  return dayjs(timestampMs).format('HH:mm');
+  return {
+    date: dayjs(timestampMs).format('MMM D,'),
+    time: dayjs(timestampMs).format('HH:mm'),
+  };
 }

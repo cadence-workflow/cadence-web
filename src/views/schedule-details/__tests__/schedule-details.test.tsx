@@ -189,6 +189,12 @@ function setup({
           httpResolver: () =>
             HttpResponse.json({ workflows: [], nextPage: '' }),
         },
+        {
+          path: '/api/domains/:domain/:cluster',
+          httpMethod: 'GET',
+          mockOnce: false,
+          httpResolver: () => HttpResponse.json({}),
+        },
       ],
     }
   );

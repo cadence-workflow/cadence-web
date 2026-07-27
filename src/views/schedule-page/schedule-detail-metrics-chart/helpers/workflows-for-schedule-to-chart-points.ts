@@ -11,36 +11,36 @@ import {
 } from '../schedule-detail-metrics-chart-series.types';
 
 import getScheduleWorkflowScheduledTimeMs from './get-schedule-workflow-scheduled-time-ms';
-import isMissedScheduleWorkflowExecution from './is-missed-schedule-workflow-execution';
 import workflowListItemToChartRun from './workflow-list-item-to-chart-run';
 
 export type WorkflowsForScheduleChartPoints = {
   successfulRuns: ScheduleMetricsChartExecutionPoint[];
-  missedExecutions: ScheduleMetricsChartExecutionPoint[];
 };
 
 export default function workflowsForScheduleToChartPoints(
   data: InfiniteData<ListWorkflowsResponse> | undefined
 ): WorkflowsForScheduleChartPoints {
   const workflows = flattenScheduleWorkflowPages(data);
+  const seenRunIds = new Set<string>();
 
   return workflows.reduce<WorkflowsForScheduleChartPoints>(
     (chartPoints, workflow) => {
+      if (seenRunIds.has(workflow.runID)) {
+        return chartPoints;
+      }
+
       const run = workflowListItemToChartRun(workflow);
 
       if (run == null) {
         return chartPoints;
       }
 
-      const targetPoints = isMissedScheduleWorkflowExecution(workflow)
-        ? chartPoints.missedExecutions
-        : chartPoints.successfulRuns;
-
-      appendRunToExecutionPoints(targetPoints, run);
+      seenRunIds.add(run.runId);
+      appendRunToExecutionPoints(chartPoints.successfulRuns, run);
 
       return chartPoints;
     },
-    { successfulRuns: [], missedExecutions: [] }
+    { successfulRuns: [] }
   );
 }
 

@@ -3,6 +3,7 @@ import { type ScaleLinear } from 'd3-scale';
 import { type WorkflowExecutionCloseStatus } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionCloseStatus';
 
 export type ScheduleMetricsChartRun = {
+  workflowId: string;
   runId: string;
   status: WorkflowExecutionCloseStatus;
   scheduledTimeMs: number;
@@ -18,7 +19,7 @@ export type ScheduleMetricsChartExecutionPoint = {
 
 export type ScheduleMetricsChartSeriesData = {
   successfulRuns: ScheduleMetricsChartExecutionPoint[];
-  missedExecutions: ScheduleMetricsChartExecutionPoint[];
+  skippedExecutions: ScheduleMetricsChartExecutionPoint[];
   nextExecutionTimeMs: number | null;
 };
 
@@ -28,10 +29,22 @@ export type ScheduleMetricsChartSeriesProps = {
   width: number;
   height: number;
   xScale: ScheduleMetricsChartXScale;
-  data: ScheduleMetricsChartSeriesData;
-  successfulRunColor: string;
-  missedExecutionColor: string;
-  nextExecutionColor: string;
+  nowMs: number;
+  timelineColor: string;
+  labelColor: string;
+  labelStrongColor: string;
+  nowColor: string;
 };
 
-export type ScheduleMetricsChartGlyphVariant = 'successful' | 'missed';
+export type ScheduleMetricsChartStatusVariant =
+  | 'completed'
+  | 'failed'
+  | 'running'
+  | 'canceled'
+  | 'backfill'
+  | 'skipped'
+  | 'next';
+
+export type ScheduleMetricsChartGlyphVariant =
+  | ScheduleMetricsChartStatusVariant
+  | 'grouped';

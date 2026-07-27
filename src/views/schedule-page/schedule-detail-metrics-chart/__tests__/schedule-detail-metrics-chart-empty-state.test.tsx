@@ -14,17 +14,18 @@ import {
 } from '../__fixtures__/schedule-detail-metrics-chart-api-fixture';
 import ScheduleDetailMetricsChart from '../schedule-detail-metrics-chart';
 import {
+  CHART_CANVAS_TEST_ID,
+  CHART_GLYPH_TEST_IDS,
   CHART_LOADING_SKELETON_TEST_ID,
   CHART_REGION_ARIA_LABEL,
-  CHART_SERIES_TEST_IDS,
 } from '../schedule-detail-metrics-chart.constants';
 
 jest.mock('@visx/responsive', () => ({
-  ParentSize: ({
-    children,
-  }: {
-    children: (args: { width: number; height: number }) => React.ReactNode;
-  }) => <>{children({ width: 800, height: 280 })}</>,
+  useParentSize: () => ({
+    parentRef: { current: null },
+    width: 800,
+    height: 82,
+  }),
 }));
 
 describe(`${ScheduleDetailMetricsChart.name} empty workflows`, () => {
@@ -48,6 +49,17 @@ describe(`${ScheduleDetailMetricsChart.name} empty workflows`, () => {
       />,
       {
         endpointsMocks: [
+          {
+            path: `/api/domains/${MOCK_DOMAIN}/${MOCK_CLUSTER}`,
+            httpMethod: 'GET',
+            httpResolver: async () =>
+              HttpResponse.json({
+                workflowExecutionRetentionPeriod: {
+                  seconds: String(24 * 60 * 60),
+                  nanos: 0,
+                },
+              }),
+          },
           {
             path: `/api/domains/${MOCK_DOMAIN}/${MOCK_CLUSTER}/schedules/${MOCK_SCHEDULE_ID}`,
             httpMethod: 'GET',
@@ -73,11 +85,9 @@ describe(`${ScheduleDetailMetricsChart.name} empty workflows`, () => {
     expect(
       screen.getByRole('region', { name: CHART_REGION_ARIA_LABEL })
     ).toBeInTheDocument();
+    expect(screen.getByTestId(CHART_CANVAS_TEST_ID)).toBeInTheDocument();
     expect(
-      screen.getByTestId('schedule-metrics-chart-canvas')
-    ).toBeInTheDocument();
-    expect(
-      screen.queryAllByTestId(CHART_SERIES_TEST_IDS.successfulRunMarker)
+      screen.queryAllByTestId(CHART_GLYPH_TEST_IDS.runTrigger)
     ).toHaveLength(0);
   });
 });

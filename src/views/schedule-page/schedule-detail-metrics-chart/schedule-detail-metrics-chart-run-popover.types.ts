@@ -1,4 +1,4 @@
-import { type ScheduleMetricsChartRun } from '../schedule-detail-metrics-chart-series.types';
+import { type ScheduleMetricsChartRun } from './schedule-detail-metrics-chart-series.types';
 
 export type Props = {
   runs: ScheduleMetricsChartRun[];

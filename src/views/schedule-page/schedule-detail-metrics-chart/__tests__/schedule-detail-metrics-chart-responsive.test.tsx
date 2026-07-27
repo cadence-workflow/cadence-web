@@ -1,11 +1,8 @@
 import React from 'react';
 
-import { act } from '@testing-library/react';
 import { HttpResponse } from 'msw';
 
-import { fireEvent, render, screen, waitFor } from '@/test-utils/rtl';
-
-import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list-workflows.types';
+import { render, screen, waitFor } from '@/test-utils/rtl';
 
 import {
   getMockDescribeScheduleResponseForChart,
@@ -17,21 +14,22 @@ import {
 } from '../__fixtures__/schedule-detail-metrics-chart-api-fixture';
 import ScheduleDetailMetricsChart from '../schedule-detail-metrics-chart';
 import {
-  CHART_CANVAS_TEST_ID,
-  CHART_FETCH_LOADING_TEST_ID,
+  CHART_GLYPH_TEST_IDS,
   CHART_LOADING_SKELETON_TEST_ID,
-  CHART_SUMMARY_TEST_ID,
+  CHART_SERIES_TEST_IDS,
 } from '../schedule-detail-metrics-chart.constants';
+
+const NARROW_CHART_WIDTH_PX = 320;
 
 jest.mock('@visx/responsive', () => ({
   useParentSize: () => ({
     parentRef: { current: null },
-    width: 800,
+    width: 320,
     height: 82,
   }),
 }));
 
-describe(`${ScheduleDetailMetricsChart.name} scroll fetch`, () => {
+describe(`${ScheduleDetailMetricsChart.name} narrow viewport`, () => {
   beforeEach(() => {
     jest.useFakeTimers({ now: SCHEDULE_METRICS_CHART_API_FIXTURE_NOW_MS });
   });
@@ -40,9 +38,8 @@ describe(`${ScheduleDetailMetricsChart.name} scroll fetch`, () => {
     jest.useRealTimers();
   });
 
-  it('loads the next workflow page when panning horizontally into older time', async () => {
-    const workflowPages = getMockWorkflowPagesForChart();
-    const { getWorkflowRequestCount } = setup({ workflowPages });
+  it('thins out time labels so they stay inside the chart', async () => {
+    setup();
 
     await waitFor(() => {
       expect(
@@ -50,33 +47,42 @@ describe(`${ScheduleDetailMetricsChart.name} scroll fetch`, () => {
       ).not.toBeInTheDocument();
     });
 
-    expect(getWorkflowRequestCount()).toBe(1);
-    expect(screen.getByTestId(CHART_SUMMARY_TEST_ID)).toHaveTextContent('Runs');
+    const labels = screen
+      .getByTestId(CHART_SERIES_TEST_IDS.svg)
+      .querySelectorAll('text');
 
-    const canvas = screen.getByTestId(CHART_CANVAS_TEST_ID);
-
-    await act(async () => {
-      fireEvent.wheel(canvas, { deltaY: -4000 });
+    expect(labels).toHaveLength(3);
+    labels.forEach((label) => {
+      const x = Number(label.getAttribute('x'));
+      expect(x).toBeGreaterThanOrEqual(0);
+      expect(x).toBeLessThanOrEqual(NARROW_CHART_WIDTH_PX);
     });
+  });
+
+  it('opens on a shorter window than a wide chart would use', async () => {
+    setup();
 
     await waitFor(() => {
-      expect(getWorkflowRequestCount()).toBeGreaterThan(1);
+      expect(
+        screen.queryByTestId(CHART_LOADING_SKELETON_TEST_ID)
+      ).not.toBeInTheDocument();
     });
 
+    // The wide-chart fixture view fits all eight loaded run markers.
     expect(
-      screen.queryByTestId(CHART_FETCH_LOADING_TEST_ID)
-    ).not.toBeInTheDocument();
+      screen.getAllByTestId(CHART_GLYPH_TEST_IDS.runTrigger).length
+    ).toBeLessThan(8);
+    expect(
+      screen.getByTestId(CHART_SERIES_TEST_IDS.nextExecutionMarker)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId(CHART_SERIES_TEST_IDS.nowMarker)
+    ).toBeInTheDocument();
   });
 });
 
-function setup({
-  workflowPages,
-}: {
-  workflowPages: Array<ListWorkflowsResponse>;
-}) {
-  let workflowRequestCount = 0;
-
-  const utils = render(
+function setup() {
+  return render(
     <ScheduleDetailMetricsChart
       params={{
         domain: MOCK_DOMAIN,
@@ -90,6 +96,7 @@ function setup({
         {
           path: `/api/domains/${MOCK_DOMAIN}/${MOCK_CLUSTER}`,
           httpMethod: 'GET',
+          mockOnce: false,
           httpResolver: async () =>
             HttpResponse.json({
               workflowExecutionRetentionPeriod: {
@@ -101,6 +108,7 @@ function setup({
         {
           path: `/api/domains/${MOCK_DOMAIN}/${MOCK_CLUSTER}/schedules/${MOCK_SCHEDULE_ID}`,
           httpMethod: 'GET',
+          mockOnce: false,
           httpResolver: async () =>
             HttpResponse.json(getMockDescribeScheduleResponseForChart()),
         },
@@ -108,20 +116,10 @@ function setup({
           path: `/api/domains/${MOCK_DOMAIN}/${MOCK_CLUSTER}/workflows`,
           httpMethod: 'GET',
           mockOnce: false,
-          httpResolver: async () => {
-            const page =
-              workflowPages[workflowRequestCount] ??
-              workflowPages[workflowPages.length - 1];
-            workflowRequestCount += 1;
-            return HttpResponse.json(page);
-          },
+          httpResolver: async () =>
+            HttpResponse.json(getMockWorkflowPagesForChart()[0]),
         },
       ],
     }
   );
-
-  return {
-    ...utils,
-    getWorkflowRequestCount: () => workflowRequestCount,
-  };
 }

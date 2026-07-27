@@ -12,6 +12,7 @@ export const scheduleMetricsChartFixture: ScheduleMetricsChartSeriesData = {
       scheduledTimeMs: SCHEDULE_METRICS_CHART_FIXTURE_NOW_MS - 6 * HOUR_MS,
       runs: [
         {
+          workflowId: 'schedule-workflow-1',
           runId: '0192a1b2-c3d4-7000-8000-000000000001',
           status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
           scheduledTimeMs: SCHEDULE_METRICS_CHART_FIXTURE_NOW_MS - 6 * HOUR_MS,
@@ -25,6 +26,7 @@ export const scheduleMetricsChartFixture: ScheduleMetricsChartSeriesData = {
       scheduledTimeMs: SCHEDULE_METRICS_CHART_FIXTURE_NOW_MS - 4 * HOUR_MS,
       runs: [
         {
+          workflowId: 'schedule-workflow-2',
           runId: '0192a1b2-c3d4-7000-8000-000000000002',
           status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
           scheduledTimeMs: SCHEDULE_METRICS_CHART_FIXTURE_NOW_MS - 4 * HOUR_MS,
@@ -34,6 +36,7 @@ export const scheduleMetricsChartFixture: ScheduleMetricsChartSeriesData = {
           backfillId: 'backfill-abc-123',
         },
         {
+          workflowId: 'schedule-workflow-3',
           runId: '0192a1b2-c3d4-7000-8000-000000000003',
           status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_FAILED',
           scheduledTimeMs: SCHEDULE_METRICS_CHART_FIXTURE_NOW_MS - 4 * HOUR_MS,
@@ -47,6 +50,7 @@ export const scheduleMetricsChartFixture: ScheduleMetricsChartSeriesData = {
       scheduledTimeMs: SCHEDULE_METRICS_CHART_FIXTURE_NOW_MS - 1 * HOUR_MS,
       runs: [
         {
+          workflowId: 'schedule-workflow-4',
           runId: '0192a1b2-c3d4-7000-8000-000000000004',
           status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
           scheduledTimeMs: SCHEDULE_METRICS_CHART_FIXTURE_NOW_MS - 1 * HOUR_MS,
@@ -57,11 +61,12 @@ export const scheduleMetricsChartFixture: ScheduleMetricsChartSeriesData = {
       ],
     },
   ],
-  missedExecutions: [
+  skippedExecutions: [
     {
       scheduledTimeMs: SCHEDULE_METRICS_CHART_FIXTURE_NOW_MS - 2 * HOUR_MS,
       runs: [
         {
+          workflowId: 'schedule-workflow-5',
           runId: '0192a1b2-c3d4-7000-8000-000000000005',
           status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
           scheduledTimeMs: SCHEDULE_METRICS_CHART_FIXTURE_NOW_MS - 2 * HOUR_MS,

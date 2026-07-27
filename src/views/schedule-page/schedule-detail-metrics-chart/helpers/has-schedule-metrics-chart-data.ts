@@ -5,7 +5,7 @@ export default function hasScheduleMetricsChartData(
 ) {
   return (
     data.successfulRuns.length > 0 ||
-    data.missedExecutions.length > 0 ||
+    data.skippedExecutions.length > 0 ||
     data.nextExecutionTimeMs != null
   );
 }

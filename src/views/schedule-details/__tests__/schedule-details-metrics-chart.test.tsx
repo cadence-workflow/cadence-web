@@ -2,7 +2,12 @@ import React from 'react';
 
 import { HttpResponse } from 'msw';
 
-import { render, screen, waitForElementToBeRemoved, within } from '@/test-utils/rtl';
+import {
+  render,
+  screen,
+  waitForElementToBeRemoved,
+  within,
+} from '@/test-utils/rtl';
 
 import { getMockRunningDescribeScheduleResponse } from '@/route-handlers/describe-schedule/__fixtures__/mock-describe-schedule-response';
 
@@ -29,31 +34,37 @@ jest.mock(
 );
 
 jest.mock('@visx/responsive', () => ({
-  ParentSize: ({
-    children,
-  }: {
-    children: (args: { width: number; height: number }) => React.ReactNode;
-  }) => <>{children({ width: 800, height: 280 })}</>,
+  useParentSize: () => ({
+    parentRef: { current: null },
+    width: 800,
+    height: 82,
+  }),
 }));
 
 describe(`${ScheduleDetails.name} metrics chart`, () => {
-  it('renders chart region and disabled toolbar controls on the details tab', async () => {
+  it('renders a full-width chart before the details columns', async () => {
     setup();
 
     await waitForElementToBeRemoved(() => screen.queryByRole('progressbar'));
 
+    const chartRegion = screen.getByRole('region', {
+      name: CHART_REGION_ARIA_LABEL,
+    });
+    expect(chartRegion).toBeInTheDocument();
     expect(
-      screen.getByRole('region', { name: CHART_REGION_ARIA_LABEL })
-    ).toBeInTheDocument();
+      chartRegion.compareDocumentPosition(
+        screen.getByRole('button', { name: /mock policies section/i })
+      )
+    ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
 
     const toolbar = screen.getByRole('toolbar', {
       name: CHART_TOOLBAR_ARIA_LABEL,
     });
 
     Object.values(CHART_TOOLBAR_BUTTON_LABELS).forEach((label) => {
-      const button = within(toolbar).getByRole('button', { name: label });
-      expect(button).toBeDisabled();
-      expect(button).toHaveAttribute('aria-disabled', 'true');
+      expect(
+        within(toolbar).getByRole('button', { name: label })
+      ).toBeVisible();
     });
   });
 });
@@ -76,6 +87,17 @@ function setup() {
           mockOnce: false,
           httpResolver: () =>
             HttpResponse.json(getMockRunningDescribeScheduleResponse()),
+        },
+        {
+          path: '/api/domains/:domain/:cluster/workflows',
+          httpMethod: 'GET',
+          httpResolver: () =>
+            HttpResponse.json({ workflows: [], nextPage: '' }),
+        },
+        {
+          path: '/api/domains/:domain/:cluster',
+          httpMethod: 'GET',
+          httpResolver: () => HttpResponse.json({}),
         },
       ],
     }
