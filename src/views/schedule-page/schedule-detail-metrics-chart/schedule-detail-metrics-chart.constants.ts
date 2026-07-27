@@ -37,3 +37,8 @@ export const CHART_FUTURE_GUTTER_MS = 30 * 60_000;
 
 /** Horizontal inset applied to the chart drawable area (px). */
 export const CHART_SIDE_PADDING_PX = 24;
+
+/** Horizontal space a `MMM D, HH:mm` tick label needs to stay legible (px). */
+export const CHART_SERIES_TICK_LABEL_WIDTH_PX = 112;
+export const CHART_SERIES_MIN_TICK_COUNT = 2;
+export const CHART_SERIES_MAX_TICK_COUNT = 7;
