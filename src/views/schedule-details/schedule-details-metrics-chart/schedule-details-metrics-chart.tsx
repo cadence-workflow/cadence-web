@@ -15,8 +15,6 @@ import {
 import { overrides, styled } from './schedule-details-metrics-chart.styles';
 import { type Props } from './schedule-details-metrics-chart.types';
 
-// ponytail: params are unused until the chart queries workflows in PR09e. Kept
-// so the six branches stacked above this one rebase without a signature change.
 export default function ScheduleDetailsMetricsChart(_props: Props) {
   return (
     <styled.Container>
