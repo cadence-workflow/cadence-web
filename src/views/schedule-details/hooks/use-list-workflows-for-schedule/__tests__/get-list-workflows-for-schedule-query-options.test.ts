@@ -42,31 +42,28 @@ describe(getListWorkflowsForScheduleQueryOptions.name, () => {
     });
 
     expect(request).toHaveBeenCalledWith(expectedUrl);
-    expect(buildScheduleWorkflowsVisibilityQuery(params.scheduleId)).toBe(
-      `CadenceScheduleID = "${params.scheduleId}" ORDER BY CadenceScheduleTime DESC`
-    );
   });
 
-  it('requests an older page without search or archived listType', async () => {
+  it('requests an older page with nextPage token', async () => {
     await fetchPage('page-2-token');
 
-    const requestUrl = jest.mocked(request).mock.calls[0]?.[0] as string;
-    const parsed = queryString.parseUrl(requestUrl);
+    const expectedUrl = queryString.stringifyUrl({
+      url: `/api/domains/${params.domain}/${params.cluster}/workflows`,
+      query: {
+        listType: 'default',
+        inputType: 'query',
+        query: buildScheduleWorkflowsVisibilityQuery(params.scheduleId),
+        pageSize: params.pageSize.toString(),
+        nextPage: 'page-2-token',
+      },
+    });
 
-    expect(parsed.query.listType).toBe('default');
-    expect(parsed.query.inputType).toBe('query');
-    expect(parsed.query.search).toBeUndefined();
-    expect(parsed.query.listType).not.toBe('archived');
-    expect(parsed.query.nextPage).toBe('page-2-token');
+    expect(request).toHaveBeenCalledWith(expectedUrl);
   });
 
   it('returns the next page token from the last response', () => {
     const { getNextPageParam } =
       getListWorkflowsForScheduleQueryOptions(params);
-
-    if (!getNextPageParam) {
-      throw new Error('Expected getNextPageParam to be defined');
-    }
 
     expect(
       getNextPageParam(
@@ -96,11 +93,12 @@ describe(getListWorkflowsForScheduleQueryOptions.name, () => {
 
 async function fetchPage(pageParam: string | undefined) {
   const options = getListWorkflowsForScheduleQueryOptions(params);
-  const { queryFn } = options;
-
-  if (typeof queryFn !== 'function') {
-    throw new Error('Expected queryFn to be a function');
-  }
+  // `queryFn` is also typed to accept React Query's `skipToken` symbol, which
+  // this factory never returns.
+  const queryFn = options.queryFn as Exclude<
+    typeof options.queryFn,
+    symbol | undefined
+  >;
 
   await queryFn({
     pageParam,

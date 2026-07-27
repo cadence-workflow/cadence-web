@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
 import {
   type InfiniteData,
@@ -7,6 +7,7 @@ import {
   type UseInfiniteQueryResult,
 } from '@tanstack/react-query';
 
+import usePreviousValue from '@/hooks/use-previous-value';
 import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list-workflows.types';
 import { type RequestError } from '@/utils/request/request-error';
 
@@ -21,29 +22,21 @@ export default function useListWorkflowsForSchedule(
   );
   const { refetch } = query;
   const { runsRevision } = params;
-  // The first revision describes the runs that were just loaded, so it only
-  // becomes a trigger once it changes.
-  const handledRunsRevisionRef = useRef(runsRevision);
+  const previousRunsRevision = usePreviousValue(runsRevision);
 
   useEffect(() => {
+    // The first revision describes the runs that were just loaded, so it only
+    // becomes a trigger once it changes.
     if (
       runsRevision === undefined ||
-      runsRevision === handledRunsRevisionRef.current
+      previousRunsRevision === undefined ||
+      runsRevision === previousRunsRevision
     ) {
       return;
     }
 
-    const isFirstRevision = handledRunsRevisionRef.current === undefined;
-    handledRunsRevisionRef.current = runsRevision;
-
-    if (isFirstRevision) {
-      return;
-    }
-
-    // Never cancel a page the caller is already waiting on; a revision that
-    // lands mid-fetch is picked up by the periodic refresh instead.
-    void refetch({ cancelRefetch: false });
-  }, [refetch, runsRevision]);
+    refetch({ cancelRefetch: false });
+  }, [refetch, runsRevision, previousRunsRevision]);
 
   return query;
 }
