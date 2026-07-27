@@ -24,14 +24,6 @@ export default function getListWorkflowsForScheduleQueryOptions({
     queryFn: ({ pageParam }) => fetchWorkflowsForSchedule(params, pageParam),
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => lastPage.nextPage || undefined,
-    // ponytail: each refresh re-walks every loaded page, re-deriving each page
-    // token from the page fetched before it. That is what keeps the loaded runs
-    // contiguous as new runs push older ones onto later pages, and it refreshes
-    // the status of older runs for free. Since it costs one request per loaded
-    // page, callers should pair a slow interval here with `runsRevision`, which
-    // refreshes as soon as the schedule actually acts. The ceiling is how
-    // quickly an older run's status settles: nothing but this interval notices
-    // a workflow that finishes without the schedule taking a new action.
     refetchInterval: refetchIntervalMs,
   };
 }
