@@ -3,11 +3,10 @@ import queryString from 'query-string';
 import request from '@/utils/request';
 
 import buildScheduleWorkflowsVisibilityQuery from '../build-schedule-workflows-visibility-query';
-import getListWorkflowsForScheduleQueryOptions from '../get-list-workflows-for-schedule-query-options';
 import {
-  SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN,
-  SCHEDULE_WORKFLOWS_VISIBILITY_SORT_ORDER,
-} from '../use-list-workflows-for-schedule.constants';
+  getHistoricalWorkflowsForScheduleQueryOptions,
+  getLatestWorkflowsForScheduleQueryOptions,
+} from '../get-list-workflows-for-schedule-query-options';
 
 jest.mock('@/utils/request', () => jest.fn());
 
@@ -18,21 +17,33 @@ const params = {
   pageSize: 20,
 };
 
-describe(getListWorkflowsForScheduleQueryOptions.name, () => {
+describe(getLatestWorkflowsForScheduleQueryOptions.name, () => {
   beforeEach(() => {
     jest.mocked(request).mockResolvedValue({
       json: async () => ({ workflows: [], nextPage: '' }),
     } as Response);
   });
 
-  it('returns namespaced queryKey including domain, cluster, scheduleId, and pageSize', () => {
-    const options = getListWorkflowsForScheduleQueryOptions(params);
+  it('returns distinct namespaced query keys for latest and historical data', () => {
+    const latestOptions = getLatestWorkflowsForScheduleQueryOptions(params);
+    const historicalOptions = getHistoricalWorkflowsForScheduleQueryOptions({
+      initialPageParam: 'page-2-token',
+      params,
+    });
 
-    expect(options.queryKey).toEqual(['listWorkflowsForSchedule', params]);
+    expect(latestOptions.queryKey).toEqual([
+      'listLatestWorkflowsForSchedule',
+      params,
+    ]);
+    expect(historicalOptions.queryKey).toEqual([
+      'listHistoricalWorkflowsForSchedule',
+      params,
+      'page-2-token',
+    ]);
   });
 
-  it('requests active advanced-visibility workflows with scheduleId-only query', async () => {
-    const options = getListWorkflowsForScheduleQueryOptions(params);
+  it('requests the latest active workflows in descending schedule-time order', async () => {
+    const options = getLatestWorkflowsForScheduleQueryOptions(params);
     const { queryFn } = options;
 
     if (typeof queryFn !== 'function') {
@@ -40,11 +51,9 @@ describe(getListWorkflowsForScheduleQueryOptions.name, () => {
     }
 
     await queryFn({
-      pageParam: undefined,
       queryKey: options.queryKey,
       signal: new AbortController().signal,
       meta: undefined,
-      direction: 'forward',
     });
 
     const expectedUrl = queryString.stringifyUrl({
@@ -53,17 +62,21 @@ describe(getListWorkflowsForScheduleQueryOptions.name, () => {
         listType: 'default',
         inputType: 'query',
         query: buildScheduleWorkflowsVisibilityQuery(params.scheduleId),
-        sortColumn: SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN,
-        sortOrder: SCHEDULE_WORKFLOWS_VISIBILITY_SORT_ORDER,
         pageSize: params.pageSize.toString(),
       },
     });
 
     expect(request).toHaveBeenCalledWith(expectedUrl);
+    expect(buildScheduleWorkflowsVisibilityQuery(params.scheduleId)).toBe(
+      `CadenceScheduleID = "${params.scheduleId}" ORDER BY CadenceScheduleTime DESC`
+    );
   });
 
-  it('does not include search or archived listType in the request URL', async () => {
-    const options = getListWorkflowsForScheduleQueryOptions(params);
+  it('requests a historical page without search or archived listType', async () => {
+    const options = getHistoricalWorkflowsForScheduleQueryOptions({
+      initialPageParam: 'page-2-token',
+      params,
+    });
     const { queryFn } = options;
 
     if (typeof queryFn !== 'function') {
@@ -89,7 +102,10 @@ describe(getListWorkflowsForScheduleQueryOptions.name, () => {
   });
 
   it('returns the next page token from the last response', () => {
-    const options = getListWorkflowsForScheduleQueryOptions(params);
+    const options = getHistoricalWorkflowsForScheduleQueryOptions({
+      initialPageParam: 'page-2-token',
+      params,
+    });
     const getNextPageParam = options.getNextPageParam;
 
     if (!getNextPageParam) {
@@ -107,5 +123,14 @@ describe(getListWorkflowsForScheduleQueryOptions.name, () => {
     expect(
       getNextPageParam({ workflows: [], nextPage: '' }, [], undefined, [])
     ).toBeUndefined();
+  });
+
+  it('uses the requested latest-page refresh interval', () => {
+    const options = getLatestWorkflowsForScheduleQueryOptions({
+      ...params,
+      refetchIntervalMs: 10_000,
+    });
+
+    expect(options.refetchInterval).toBe(10_000);
   });
 });

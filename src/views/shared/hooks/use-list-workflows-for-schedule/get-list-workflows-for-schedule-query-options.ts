@@ -5,44 +5,69 @@ import request from '@/utils/request';
 
 import buildScheduleWorkflowsVisibilityQuery from './build-schedule-workflows-visibility-query';
 import {
-  SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN,
-  SCHEDULE_WORKFLOWS_VISIBILITY_SORT_ORDER,
-} from './use-list-workflows-for-schedule.constants';
-import {
-  type ListWorkflowsForScheduleQueryKey,
+  type HistoricalWorkflowsForScheduleQueryKey,
+  type HistoricalWorkflowsForScheduleQueryOptions,
+  type LatestWorkflowsForScheduleQueryKey,
+  type LatestWorkflowsForScheduleQueryOptions,
+  type ListWorkflowsForScheduleQueryParams,
   type UseListWorkflowsForScheduleParams,
-  type UseListWorkflowsForScheduleQueryOptions,
 } from './use-list-workflows-for-schedule.types';
 
-export default function getListWorkflowsForScheduleQueryOptions({
-  domain,
-  cluster,
-  scheduleId,
-  pageSize,
-}: UseListWorkflowsForScheduleParams): UseListWorkflowsForScheduleQueryOptions {
-  const params = { domain, cluster, scheduleId, pageSize };
-
+export function getLatestWorkflowsForScheduleQueryOptions({
+  refetchIntervalMs,
+  ...params
+}: UseListWorkflowsForScheduleParams): LatestWorkflowsForScheduleQueryOptions {
   return {
     queryKey: [
-      'listWorkflowsForSchedule',
+      'listLatestWorkflowsForSchedule',
       params,
-    ] satisfies ListWorkflowsForScheduleQueryKey,
-    queryFn: ({ pageParam }) =>
-      request(
-        queryString.stringifyUrl({
-          url: `/api/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows`,
-          query: {
-            listType: 'default',
-            inputType: 'query',
-            query: buildScheduleWorkflowsVisibilityQuery(scheduleId),
-            sortColumn: SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN,
-            sortOrder: SCHEDULE_WORKFLOWS_VISIBILITY_SORT_ORDER,
-            pageSize: pageSize.toString(),
-            nextPage: pageParam,
-          } as const satisfies ListWorkflowsRequestQueryParams,
-        })
-      ).then((res) => res.json()),
-    initialPageParam: undefined,
-    getNextPageParam: (lastPage) => lastPage.nextPage || undefined,
+    ] satisfies LatestWorkflowsForScheduleQueryKey,
+    queryFn: () => fetchWorkflowsForSchedule(params),
+    refetchInterval: refetchIntervalMs,
   };
+}
+
+export function getHistoricalWorkflowsForScheduleQueryOptions({
+  initialPageParam,
+  params,
+}: {
+  initialPageParam: string | undefined;
+  params: ListWorkflowsForScheduleQueryParams;
+}): HistoricalWorkflowsForScheduleQueryOptions {
+  return {
+    queryKey: [
+      'listHistoricalWorkflowsForSchedule',
+      params,
+      initialPageParam,
+    ] satisfies HistoricalWorkflowsForScheduleQueryKey,
+    queryFn: ({ pageParam }) => fetchWorkflowsForSchedule(params, pageParam),
+    initialPageParam,
+    getNextPageParam: (lastPage) => lastPage.nextPage || undefined,
+    enabled: false,
+  };
+}
+
+function fetchWorkflowsForSchedule(
+  {
+    domain,
+    cluster,
+    scheduleId,
+    pageSize,
+  }: ListWorkflowsForScheduleQueryParams,
+  nextPage?: string
+) {
+  return request(
+    queryString.stringifyUrl({
+      url: `/api/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows`,
+      query: {
+        listType: 'default',
+        inputType: 'query',
+        // Ordering rides inside the visibility query; the route handler passes
+        // `query` through verbatim and ignores `sortColumn`/`sortOrder`.
+        query: buildScheduleWorkflowsVisibilityQuery(scheduleId),
+        pageSize: pageSize.toString(),
+        nextPage,
+      } as const satisfies ListWorkflowsRequestQueryParams,
+    })
+  ).then((res) => res.json());
 }
