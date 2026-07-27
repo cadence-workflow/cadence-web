@@ -29,8 +29,6 @@ export default function getListWorkflowsForScheduleQueryOptions({
           query: {
             listType: 'default',
             inputType: 'query',
-            // Ordering rides inside the visibility query; the route handler passes
-            // `query` through verbatim and ignores `sortColumn`/`sortOrder`.
             query: buildScheduleWorkflowsVisibilityQuery(scheduleId),
             pageSize: pageSize.toString(),
             nextPage,
