@@ -1,6 +1,6 @@
 import React from 'react';
 
-import ScheduleDetailsRunsChartSeriesGlyph from '../schedule-details-runs-chart-series-glyph/schedule-details-runs-chart-series-glyph';
+import ScheduleDetailsRunsChartGlyph from '../schedule-details-runs-chart-glyph/schedule-details-runs-chart-glyph';
 import { CHART_TIMELINE_Y_PX } from '../schedule-details-runs-chart-timeline/schedule-details-runs-chart-timeline.constants';
 
 import {
@@ -23,7 +23,7 @@ export default function ScheduleDetailsRunsChartSeries({
         const isGrouped = group.runs.length > 1;
 
         return (
-          <ScheduleDetailsRunsChartSeriesGlyph
+          <ScheduleDetailsRunsChartGlyph
             key={`run-${group.scheduledTimeMs}`}
             x={xScale(group.scheduledTimeMs)}
             y={CHART_TIMELINE_Y_PX}
@@ -40,7 +40,7 @@ export default function ScheduleDetailsRunsChartSeries({
         );
       })}
       {data.skippedExecutions.map(({ scheduledTimeMs }) => (
-        <ScheduleDetailsRunsChartSeriesGlyph
+        <ScheduleDetailsRunsChartGlyph
           key={`skipped-${scheduledTimeMs}`}
           x={xScale(scheduledTimeMs)}
           y={CHART_TIMELINE_Y_PX}
@@ -50,7 +50,7 @@ export default function ScheduleDetailsRunsChartSeries({
         />
       ))}
       {data.nextExecutionTimeMs != null && (
-        <ScheduleDetailsRunsChartSeriesGlyph
+        <ScheduleDetailsRunsChartGlyph
           x={xScale(data.nextExecutionTimeMs)}
           y={CHART_TIMELINE_Y_PX}
           variant="next"

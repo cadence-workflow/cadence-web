@@ -18,8 +18,6 @@ export type ChartSeriesExecutionPoint = {
   scheduledTimeMs: number;
 };
 
-export type ChartSeriesGlyphVariant = ChartSeriesRunStatus | 'skipped' | 'next';
-
 export type ChartSeriesData = {
   runs: ChartSeriesRun[];
   skippedExecutions: ChartSeriesExecutionPoint[];

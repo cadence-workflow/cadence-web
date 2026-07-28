@@ -4,15 +4,15 @@ import { scaleLinear } from '@visx/scale';
 
 import { render, screen } from '@/test-utils/rtl';
 
-import { type Props as GlyphProps } from '../../schedule-details-runs-chart-series-glyph/schedule-details-runs-chart-series-glyph.types';
+import { type Props as GlyphProps } from '../../schedule-details-runs-chart-glyph/schedule-details-runs-chart-glyph.types';
 import ScheduleDetailsRunsChartSeries from '../schedule-details-runs-chart-series';
 import { CHART_SERIES_TEST_IDS } from '../schedule-details-runs-chart-series.constants';
 import { type ChartSeriesData } from '../schedule-details-runs-chart-series.types';
 
 jest.mock(
-  '../../schedule-details-runs-chart-series-glyph/schedule-details-runs-chart-series-glyph',
+  '../../schedule-details-runs-chart-glyph/schedule-details-runs-chart-glyph',
   () =>
-    function MockScheduleDetailsRunsChartSeriesGlyph({
+    function MockScheduleDetailsRunsChartGlyph({
       variant,
       runCount,
       testId,
@@ -27,6 +27,11 @@ jest.mock(
 
 const WINDOW_START_MS = Date.UTC(2024, 0, 1, 0, 0);
 const WINDOW_END_MS = Date.UTC(2024, 0, 1, 6, 0);
+const EMPTY_DATA: ChartSeriesData = {
+  runs: [],
+  skippedExecutions: [],
+  nextExecutionTimeMs: null,
+};
 
 describe(ScheduleDetailsRunsChartSeries.name, () => {
   it('renders a marker for each run', () => {
@@ -85,9 +90,8 @@ describe(ScheduleDetailsRunsChartSeries.name, () => {
   it('renders a marker for each skipped execution', () => {
     setup({
       data: {
-        runs: [],
+        ...EMPTY_DATA,
         skippedExecutions: [{ scheduledTimeMs: Date.UTC(2024, 0, 1, 3, 0) }],
-        nextExecutionTimeMs: null,
       },
     });
 
@@ -99,8 +103,7 @@ describe(ScheduleDetailsRunsChartSeries.name, () => {
   it('renders the next execution marker when set', () => {
     setup({
       data: {
-        runs: [],
-        skippedExecutions: [],
+        ...EMPTY_DATA,
         nextExecutionTimeMs: Date.UTC(2024, 0, 1, 5, 0),
       },
     });
@@ -111,13 +114,7 @@ describe(ScheduleDetailsRunsChartSeries.name, () => {
   });
 
   it('omits the next execution marker when unset', () => {
-    setup({
-      data: {
-        runs: [],
-        skippedExecutions: [],
-        nextExecutionTimeMs: null,
-      },
-    });
+    setup({ data: EMPTY_DATA });
 
     expect(
       screen.queryByTestId(CHART_SERIES_TEST_IDS.nextExecutionMarker)

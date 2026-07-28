@@ -1,10 +1,10 @@
 import { type Theme } from 'baseui';
 
-import { type ChartSeriesGlyphVariant } from '../../schedule-details-runs-chart-series/schedule-details-runs-chart-series.types';
+import { type ChartGlyphVariant } from '../schedule-details-runs-chart-glyph.types';
 
-export default function getChartSeriesGlyphColor(
+export default function getChartGlyphColor(
   theme: Theme,
-  variant: ChartSeriesGlyphVariant
+  variant: ChartGlyphVariant
 ): string {
   switch (variant) {
     case 'completed':

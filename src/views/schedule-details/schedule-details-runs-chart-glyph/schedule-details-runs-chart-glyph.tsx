@@ -10,18 +10,17 @@ import {
   MdReportGmailerrorred,
 } from 'react-icons/md';
 
-import getChartSeriesGlyphColor from './helpers/get-chart-series-glyph-color';
+import getChartGlyphColor from './helpers/get-chart-glyph-color';
 import {
   CHART_GLYPH_BACKFILL_BADGE_ICON_SIZE_PX,
-  CHART_GLYPH_FAILED_ICON_VIEW_BOX,
   CHART_GLYPH_GROUPED_CARD_OFFSETS_PX,
   CHART_GLYPH_MARKER_SIZE_PX,
   CHART_GLYPH_TEST_IDS,
-} from './schedule-details-runs-chart-series-glyph.constants';
-import { styled } from './schedule-details-runs-chart-series-glyph.styles';
-import { type Props } from './schedule-details-runs-chart-series-glyph.types';
+} from './schedule-details-runs-chart-glyph.constants';
+import { styled } from './schedule-details-runs-chart-glyph.styles';
+import { type Props } from './schedule-details-runs-chart-glyph.types';
 
-export default function ScheduleDetailsRunsChartSeriesGlyph({
+export default function ScheduleDetailsRunsChartGlyph({
   x,
   y,
   variant,
@@ -33,11 +32,12 @@ export default function ScheduleDetailsRunsChartSeriesGlyph({
   const [, theme] = useStyletron();
   const isGrouped = runCount > 1;
   const halfMarkerSizePx = CHART_GLYPH_MARKER_SIZE_PX / 2;
-  const color = getChartSeriesGlyphColor(theme, variant);
-  // `size="100%"` fills the fixed-size Icon wrapper so every status icon
-  // occupies the same footprint, regardless of how much of its own viewBox
-  // the icon's glyph fills.
-  const iconProps = { color, size: '100%', 'aria-hidden': true } as const;
+  const color = getChartGlyphColor(theme, variant);
+  const iconProps = {
+    color,
+    size: CHART_GLYPH_MARKER_SIZE_PX,
+    'aria-hidden': true,
+  } as const;
 
   let statusIcon: React.ReactNode;
   switch (variant) {
@@ -51,10 +51,7 @@ export default function ScheduleDetailsRunsChartSeriesGlyph({
     case 'failed':
       statusIcon = (
         <styled.Icon>
-          <MdReportGmailerrorred
-            {...iconProps}
-            viewBox={CHART_GLYPH_FAILED_ICON_VIEW_BOX}
-          />
+          <MdReportGmailerrorred {...iconProps} />
         </styled.Icon>
       );
       break;

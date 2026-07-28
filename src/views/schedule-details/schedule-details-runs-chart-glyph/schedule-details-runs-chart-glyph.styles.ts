@@ -4,7 +4,7 @@ import {
   CHART_GLYPH_BACKFILL_BADGE_OFFSET_PX,
   CHART_GLYPH_BACKFILL_BADGE_PADDING_PX,
   CHART_GLYPH_MARKER_SIZE_PX,
-} from './schedule-details-runs-chart-series-glyph.constants';
+} from './schedule-details-runs-chart-glyph.constants';
 
 export const styled = {
   // Position is an inline transform, not a styled prop: Styletron mints a
@@ -25,12 +25,13 @@ export const styled = {
     borderRadius: '50%',
     pointerEvents: 'none',
   })),
-  // Fixed footprint so every status icon fills the same box regardless of
-  // how much of its own viewBox the icon's glyph occupies.
   Icon: createStyled('span', () => ({
     display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     width: `${CHART_GLYPH_MARKER_SIZE_PX}px`,
     height: `${CHART_GLYPH_MARKER_SIZE_PX}px`,
+    flexShrink: 0,
   })),
   Skipped: createStyled('span', ({ $theme }: { $theme: Theme }) => ({
     display: 'inline-block',
