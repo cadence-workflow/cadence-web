@@ -13,6 +13,7 @@ import {
 import getChartSeriesGlyphColor from './helpers/get-chart-series-glyph-color';
 import {
   CHART_GLYPH_BACKFILL_BADGE_ICON_SIZE_PX,
+  CHART_GLYPH_FAILED_ICON_VIEW_BOX,
   CHART_GLYPH_GROUPED_CARD_OFFSETS_PX,
   CHART_GLYPH_MARKER_SIZE_PX,
   CHART_GLYPH_TEST_IDS,
@@ -50,7 +51,10 @@ export default function ScheduleDetailsRunsChartSeriesGlyph({
     case 'failed':
       statusIcon = (
         <styled.Icon>
-          <MdReportGmailerrorred {...iconProps} />
+          <MdReportGmailerrorred
+            {...iconProps}
+            viewBox={CHART_GLYPH_FAILED_ICON_VIEW_BOX}
+          />
         </styled.Icon>
       );
       break;
