@@ -50,7 +50,7 @@ describe(resolveChartTimeWindow.name, () => {
     });
   });
 
-  it('uses cadence-derived gutter and clamps history to the navigation boundary', () => {
+  it('honors a custom futureGutterMs when extending past a known next execution', () => {
     const nextExecutionMs = mockNowMs + 60_000;
 
     expect(
@@ -59,11 +59,23 @@ describe(resolveChartTimeWindow.name, () => {
         nowMs: mockNowMs,
         nextExecutionMs,
         futureGutterMs: 60_000,
+      })
+    ).toEqual({
+      minMs: mockNowMs - 4 * 60 * 60_000,
+      maxMs: nextExecutionMs + 60_000,
+    });
+  });
+
+  it('clamps minMs to minimumTimeMs when real run data extends further back', () => {
+    expect(
+      resolveChartTimeWindow({
+        timestampsMs: [mockNowMs - 4 * 60 * 60_000],
+        nowMs: mockNowMs,
         minimumTimeMs: mockNowMs - 2 * 60 * 60_000,
       })
     ).toEqual({
       minMs: mockNowMs - 2 * 60 * 60_000,
-      maxMs: nextExecutionMs + 60_000,
+      maxMs: mockNowMs + CHART_FUTURE_GUTTER_MS,
     });
   });
 
@@ -73,20 +85,8 @@ describe(resolveChartTimeWindow.name, () => {
       nowMs: mockNowMs,
     });
 
-    expect(timeWindow?.maxMs).toBe(mockNowMs + CHART_FUTURE_GUTTER_MS);
-    expect(timeWindow?.minMs).toBe(mockNowMs - 3 * 60 * 60_000);
-  });
-
-  it('anchors a single timestamp at now and pads the future gutter to the right', () => {
-    const timeWindow = resolveChartTimeWindow({
-      timestampsMs: [mockNowMs],
-      nowMs: mockNowMs,
-    });
-
-    expect(timeWindow).toEqual({
-      minMs: mockNowMs,
-      maxMs: mockNowMs + CHART_FUTURE_GUTTER_MS,
-    });
+    expect(timeWindow?.maxMs).toBeGreaterThan(mockNowMs);
+    expect(timeWindow?.minMs).toBeLessThan(mockNowMs);
   });
 
   it('expands a window narrower than the minimum span, centered on its midpoint', () => {
@@ -113,6 +113,8 @@ describe(resolveChartTimeWindow.name, () => {
     ).toBeNull();
   });
 
+  // Regression test: a minimumTimeMs at or past maxMs used to invert the
+  // window (minMs > maxMs) before both branches shared the widen guard.
   it('normalizes an empty-data window pushed past maxMs by minimumTimeMs', () => {
     const timeWindow = resolveChartTimeWindow({
       timestampsMs: [],

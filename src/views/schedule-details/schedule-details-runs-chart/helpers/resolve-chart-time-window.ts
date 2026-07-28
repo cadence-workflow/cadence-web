@@ -25,12 +25,16 @@ export default function resolveChartTimeWindow({
   let maxMs: number;
 
   if (validTimestampsMs.length === 0 && nextExecutionMs == null) {
+    // Nothing to anchor on yet (no runs, no known next execution):
+    // fall back to a fixed lookback window ending just past now.
     minMs = Math.max(
       nowMs - CHART_DEFAULT_PAST_WINDOW_MS,
       minimumTimeMs ?? Number.NEGATIVE_INFINITY
     );
     maxMs = nowMs + futureGutterMs;
   } else {
+    // With no runs yet, dataMinMs/dataMaxMs fall back to nowMs so the window
+    // still anchors on now instead of on an empty range.
     const dataMinMs =
       validTimestampsMs.length > 0 ? Math.min(...validTimestampsMs) : nowMs;
     const dataMaxMs =
@@ -42,6 +46,9 @@ export default function resolveChartTimeWindow({
     );
     maxMs = Math.max(dataMaxMs, nowMs, nowMs + futureGutterMs);
 
+    // A known next execution can push the right edge further than the
+    // default future gutter (e.g. an hourly schedule needs more lead space
+    // than the 30-minute default).
     if (
       nextExecutionMs != null &&
       Number.isFinite(nextExecutionMs) &&
@@ -51,6 +58,8 @@ export default function resolveChartTimeWindow({
     }
   }
 
+  // Guard against a degenerate (zero- or near-zero-width) window, which would
+  // otherwise produce an unusable or inverted x-scale.
   if (maxMs <= minMs) {
     maxMs = minMs + CHART_MIN_DOMAIN_SPAN_MS;
   } else if (maxMs - minMs < CHART_MIN_DOMAIN_SPAN_MS) {
