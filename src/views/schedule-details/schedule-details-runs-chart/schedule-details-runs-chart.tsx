@@ -1,12 +1,18 @@
 'use client';
-import React from 'react';
+import React, { useMemo } from 'react';
 
+import { useParentSize } from '@visx/responsive';
 import { MdGpsFixed, MdZoomIn, MdZoomOut } from 'react-icons/md';
 
 import Button from '@/components/button/button';
 
+import createChartXScale from './helpers/create-chart-x-scale';
+import resolveChartPixelRange from './helpers/resolve-chart-pixel-range';
+import resolveChartTimeWindow from './helpers/resolve-chart-time-window';
+import useCurrentTimeMs from './hooks/use-current-time-ms';
+import ScheduleDetailsRunsChartTimeline from './schedule-details-runs-chart-timeline';
 import {
-  CHART_EMPTY_STATE_MESSAGE,
+  CHART_HEIGHT_PX,
   CHART_REGION_ARIA_LABEL,
   CHART_TOOLBAR_ARIA_LABEL,
   CHART_TOOLBAR_BUTTON_LABELS,
@@ -16,6 +22,22 @@ import { overrides, styled } from './schedule-details-runs-chart.styles';
 import { type Props } from './schedule-details-runs-chart.types';
 
 export default function ScheduleDetailsRunsChart(_props: Props) {
+  const nowMs = useCurrentTimeMs();
+  const { parentRef, width } = useParentSize({
+    initialSize: { width: 0, height: CHART_HEIGHT_PX },
+  });
+
+  const xScale = useMemo(() => {
+    const timeWindow = resolveChartTimeWindow({ timestampsMs: [], nowMs });
+    const range = resolveChartPixelRange({ widthPx: width });
+
+    if (timeWindow === null || range === null) {
+      return null;
+    }
+
+    return createChartXScale({ timeWindow, range });
+  }, [nowMs, width]);
+
   return (
     <styled.Container>
       <styled.Header>
@@ -55,10 +77,21 @@ export default function ScheduleDetailsRunsChart(_props: Props) {
           </Button>
         </styled.Toolbar>
       </styled.Header>
-      <styled.ChartRegion role="region" aria-label={CHART_REGION_ARIA_LABEL}>
-        <styled.EmptyState role="status">
-          {CHART_EMPTY_STATE_MESSAGE}
-        </styled.EmptyState>
+      <styled.ChartRegion
+        ref={parentRef}
+        role="region"
+        aria-label={CHART_REGION_ARIA_LABEL}
+      >
+        {xScale !== null && (
+          <styled.ChartSvg width={width} height={CHART_HEIGHT_PX}>
+            <ScheduleDetailsRunsChartTimeline
+              width={width}
+              height={CHART_HEIGHT_PX}
+              xScale={xScale}
+              nowMs={nowMs}
+            />
+          </styled.ChartSvg>
+        )}
       </styled.ChartRegion>
     </styled.Container>
   );

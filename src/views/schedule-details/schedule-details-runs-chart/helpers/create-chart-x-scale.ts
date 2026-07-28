@@ -1,9 +1,9 @@
 import { scaleLinear } from '@visx/scale';
-import { type ScaleLinear } from 'd3-scale';
 
-import { type CreateChartXScaleParams } from '../schedule-details-runs-chart.types';
-
-type ChartXScale = ScaleLinear<number, number, never>;
+import {
+  type ChartXScale,
+  type CreateChartXScaleParams,
+} from '../schedule-details-runs-chart.types';
 
 export default function createChartXScale({
   timeWindow,

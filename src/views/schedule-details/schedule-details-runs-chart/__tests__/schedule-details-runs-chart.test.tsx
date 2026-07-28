@@ -4,20 +4,42 @@ import { render, screen, within } from '@/test-utils/rtl';
 
 import ScheduleDetailsRunsChart from '../schedule-details-runs-chart';
 import {
-  CHART_EMPTY_STATE_MESSAGE,
+  CHART_HEIGHT_PX,
+  CHART_MAX_TICK_COUNT,
+  CHART_NOW_MARKER_TEST_ID,
   CHART_REGION_ARIA_LABEL,
   CHART_TOOLBAR_ARIA_LABEL,
   CHART_TOOLBAR_BUTTON_LABELS,
 } from '../schedule-details-runs-chart.constants';
 
+const CHART_WIDTH_PX = 800;
+
+jest.mock('@visx/responsive', () => ({
+  useParentSize: () => ({
+    parentRef: { current: null },
+    width: CHART_WIDTH_PX,
+    height: CHART_HEIGHT_PX,
+  }),
+}));
+
 describe(ScheduleDetailsRunsChart.name, () => {
-  it('renders the empty state inside the chart region', () => {
+  it('labels the time axis with as many ticks as the width fits', () => {
     setup();
 
     expect(
       within(
         screen.getByRole('region', { name: CHART_REGION_ARIA_LABEL })
-      ).getByText(CHART_EMPTY_STATE_MESSAGE)
+      ).getAllByText(/^\d{2}:\d{2}$/)
+    ).toHaveLength(CHART_MAX_TICK_COUNT);
+  });
+
+  it('marks the current time inside the chart region', () => {
+    setup();
+
+    expect(
+      within(
+        screen.getByRole('region', { name: CHART_REGION_ARIA_LABEL })
+      ).getByTestId(CHART_NOW_MARKER_TEST_ID)
     ).toBeInTheDocument();
   });
 
