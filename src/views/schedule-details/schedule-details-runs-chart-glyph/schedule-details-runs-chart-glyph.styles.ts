@@ -1,17 +1,8 @@
 import { styled as createStyled, type Theme } from 'baseui';
 
-import {
-  CHART_GLYPH_BACKFILL_BADGE_OFFSET_PX,
-  CHART_GLYPH_BACKFILL_BADGE_PADDING_PX,
-  CHART_GLYPH_MARKER_SIZE_PX,
-} from './schedule-details-runs-chart-glyph.constants';
+import { CHART_GLYPH_MARKER_SIZE_PX } from './schedule-details-runs-chart-glyph.constants';
 
 export const styled = {
-  // Position is an inline transform, not a styled prop: Styletron mints a
-  // permanent class per distinct declaration, so one per marker would leak.
-  // The opaque background hides the timeline line behind outline icons
-  // (checkmark, target ring, dashed dot) that would otherwise let it show
-  // through their transparent centers.
   Marker: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     position: 'absolute',
     top: 0,
@@ -21,6 +12,7 @@ export const styled = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    // The opaque background hides the timeline line behind outline icons
     backgroundColor: $theme.colors.backgroundPrimary,
     borderRadius: '50%',
     pointerEvents: 'none',
@@ -43,10 +35,10 @@ export const styled = {
   })),
   BackfillBadge: createStyled('span', ({ $theme }: { $theme: Theme }) => ({
     position: 'absolute',
-    top: `-${CHART_GLYPH_BACKFILL_BADGE_OFFSET_PX}px`,
-    right: `-${CHART_GLYPH_BACKFILL_BADGE_OFFSET_PX}px`,
+    top: '-4px',
+    right: '-4px',
     display: 'flex',
-    padding: `${CHART_GLYPH_BACKFILL_BADGE_PADDING_PX}px`,
+    padding: '2px',
     borderRadius: '50%',
     backgroundColor: $theme.colors.backgroundPrimary,
   })),

@@ -10,10 +10,10 @@ import {
   MdReportGmailerrorred,
 } from 'react-icons/md';
 
+import { WORKFLOW_STATUSES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
+
 import getChartGlyphColor from './helpers/get-chart-glyph-color';
 import {
-  CHART_GLYPH_BACKFILL_BADGE_ICON_SIZE_PX,
-  CHART_GLYPH_GROUPED_CARD_OFFSETS_PX,
   CHART_GLYPH_MARKER_SIZE_PX,
   CHART_GLYPH_TEST_IDS,
 } from './schedule-details-runs-chart-glyph.constants';
@@ -41,26 +41,29 @@ export default function ScheduleDetailsRunsChartGlyph({
 
   let statusIcon: React.ReactNode;
   switch (variant) {
-    case 'completed':
+    case WORKFLOW_STATUSES.completed:
+    case WORKFLOW_STATUSES.continuedAsNew:
       statusIcon = (
         <styled.Icon>
           <MdCheckCircleOutline {...iconProps} />
         </styled.Icon>
       );
       break;
-    case 'failed':
+    case WORKFLOW_STATUSES.failed:
+    case WORKFLOW_STATUSES.timedOut:
       statusIcon = (
         <styled.Icon>
           <MdReportGmailerrorred {...iconProps} />
         </styled.Icon>
       );
       break;
-    case 'running':
+    case WORKFLOW_STATUSES.running:
       statusIcon = (
         <Spinner $size={CHART_GLYPH_MARKER_SIZE_PX} $color={color} />
       );
       break;
-    case 'canceled':
+    case WORKFLOW_STATUSES.canceled:
+    case WORKFLOW_STATUSES.terminated:
       statusIcon = (
         <styled.Icon>
           <MdBlock {...iconProps} />
@@ -91,14 +94,8 @@ export default function ScheduleDetailsRunsChartGlyph({
     >
       {isGrouped ? (
         <styled.GroupedMarker>
-          <styled.GroupedMarkerBack
-            $offset={CHART_GLYPH_GROUPED_CARD_OFFSETS_PX.far}
-            $isNear={false}
-          />
-          <styled.GroupedMarkerBack
-            $offset={CHART_GLYPH_GROUPED_CARD_OFFSETS_PX.near}
-            $isNear
-          />
+          <styled.GroupedMarkerBack $offset={8} $isNear={false} />
+          <styled.GroupedMarkerBack $offset={4} $isNear />
           <styled.GroupedMarkerCount>{runCount}</styled.GroupedMarkerCount>
         </styled.GroupedMarker>
       ) : (
@@ -108,7 +105,7 @@ export default function ScheduleDetailsRunsChartGlyph({
         <styled.BackfillBadge data-testid={CHART_GLYPH_TEST_IDS.backfillBadge}>
           <MdHistory
             color={theme.colors.contentSecondary}
-            size={CHART_GLYPH_BACKFILL_BADGE_ICON_SIZE_PX}
+            size={10}
             aria-hidden
           />
         </styled.BackfillBadge>

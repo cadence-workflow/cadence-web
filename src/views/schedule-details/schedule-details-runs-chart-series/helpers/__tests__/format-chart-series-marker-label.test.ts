@@ -1,15 +1,25 @@
+import { WORKFLOW_STATUSES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
+
 import {
   formatChartSeriesMomentLabel,
   formatChartSeriesRunGroupLabel,
 } from '../format-chart-series-marker-label';
 
 describe(formatChartSeriesRunGroupLabel.name, () => {
-  it('describes a single run by status and id', () => {
+  it('describes a single run by status and scheduled time', () => {
+    const scheduledTimeMs = Date.UTC(2024, 0, 1);
+
     expect(
       formatChartSeriesRunGroupLabel([
-        { runId: 'run-1', scheduledTimeMs: 0, status: 'completed' },
+        {
+          runId: 'run-1',
+          scheduledTimeMs,
+          status: WORKFLOW_STATUSES.completed,
+        },
       ])
-    ).toBe('Completed schedule run run-1');
+    ).toBe(
+      `Completed schedule run at ${new Date(scheduledTimeMs).toISOString()}`
+    );
   });
 
   it('describes a group by count and scheduled time', () => {
@@ -17,8 +27,16 @@ describe(formatChartSeriesRunGroupLabel.name, () => {
 
     expect(
       formatChartSeriesRunGroupLabel([
-        { runId: 'run-1', scheduledTimeMs, status: 'completed' },
-        { runId: 'run-2', scheduledTimeMs, status: 'failed' },
+        {
+          runId: 'run-1',
+          scheduledTimeMs,
+          status: WORKFLOW_STATUSES.completed,
+        },
+        {
+          runId: 'run-2',
+          scheduledTimeMs,
+          status: WORKFLOW_STATUSES.failed,
+        },
       ])
     ).toBe(`2 schedule runs at ${new Date(scheduledTimeMs).toISOString()}`);
   });

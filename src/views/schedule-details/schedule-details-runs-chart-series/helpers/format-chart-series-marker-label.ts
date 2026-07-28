@@ -1,19 +1,11 @@
-import {
-  type ChartSeriesRun,
-  type ChartSeriesRunStatus,
-} from '../schedule-details-runs-chart-series.types';
+import { WORKFLOW_STATUS_NAMES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
 
-const STATUS_LABELS: Record<ChartSeriesRunStatus, string> = {
-  completed: 'Completed',
-  failed: 'Failed',
-  running: 'Running',
-  canceled: 'Canceled',
-};
+import { type ChartSeriesRun } from '../schedule-details-runs-chart-series.types';
 
 export function formatChartSeriesRunGroupLabel(runs: ChartSeriesRun[]): string {
   if (runs.length === 1) {
     const [run] = runs;
-    return `${STATUS_LABELS[run.status]} schedule run ${run.runId}`;
+    return `${WORKFLOW_STATUS_NAMES[run.status]} schedule run at ${new Date(run.scheduledTimeMs).toISOString()}`;
   }
 
   return `${runs.length} schedule runs at ${new Date(runs[0].scheduledTimeMs).toISOString()}`;

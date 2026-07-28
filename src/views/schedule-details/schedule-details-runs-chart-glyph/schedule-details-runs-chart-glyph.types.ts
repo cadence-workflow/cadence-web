@@ -1,6 +1,6 @@
-import { type ChartSeriesRunStatus } from '../schedule-details-runs-chart-series/schedule-details-runs-chart-series.types';
+import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
 
-export type ChartGlyphVariant = ChartSeriesRunStatus | 'skipped' | 'next';
+export type ChartGlyphVariant = WorkflowStatus | 'skipped' | 'next';
 
 export type Props = {
   /** Timeline pixel position of the marker's center. */

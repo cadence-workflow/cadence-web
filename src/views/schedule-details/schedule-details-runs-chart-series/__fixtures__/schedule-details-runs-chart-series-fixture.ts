@@ -1,3 +1,5 @@
+import { WORKFLOW_STATUSES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
+
 import { type ChartSeriesData } from '../schedule-details-runs-chart-series.types';
 
 const HOUR_MS = 60 * 60 * 1000;
@@ -19,33 +21,33 @@ export default function buildScheduleRunsChartSeriesFixture(
       {
         runId: 'fixture-run-1',
         scheduledTimeMs: nowMs - 6 * HOUR_MS,
-        status: 'completed',
+        status: WORKFLOW_STATUSES.completed,
       },
       {
         runId: 'fixture-run-2',
         scheduledTimeMs: nowMs - 5 * HOUR_MS,
-        status: 'failed',
+        status: WORKFLOW_STATUSES.failed,
       },
       {
         runId: 'fixture-run-3',
         scheduledTimeMs: nowMs - 4 * HOUR_MS,
-        status: 'canceled',
+        status: WORKFLOW_STATUSES.canceled,
         isBackfill: true,
       },
       {
         runId: 'fixture-run-4',
         scheduledTimeMs: nowMs - 1 * HOUR_MS,
-        status: 'completed',
+        status: WORKFLOW_STATUSES.completed,
       },
       {
         runId: 'fixture-run-5',
         scheduledTimeMs: nowMs - 1 * HOUR_MS,
-        status: 'failed',
+        status: WORKFLOW_STATUSES.failed,
       },
       {
         runId: 'fixture-run-6',
         scheduledTimeMs: nowMs - 30 * 60_000,
-        status: 'running',
+        status: WORKFLOW_STATUSES.running,
       },
     ],
     skippedExecutions: [{ scheduledTimeMs: nowMs - 2 * HOUR_MS }],

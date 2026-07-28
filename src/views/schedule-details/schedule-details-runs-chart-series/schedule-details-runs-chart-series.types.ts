@@ -1,16 +1,11 @@
-import { type ChartXScale } from '../schedule-details-runs-chart/schedule-details-runs-chart.types';
+import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
 
-/** Terminated, timed out, and failed share one channel: Cadence closes all three the same way from an operator's point of view. */
-export type ChartSeriesRunStatus =
-  | 'completed'
-  | 'failed'
-  | 'running'
-  | 'canceled';
+import { type ChartXScale } from '../schedule-details-runs-chart/schedule-details-runs-chart.types';
 
 export type ChartSeriesRun = {
   runId: string;
   scheduledTimeMs: number;
-  status: ChartSeriesRunStatus;
+  status: WorkflowStatus;
   isBackfill?: boolean;
 };
 

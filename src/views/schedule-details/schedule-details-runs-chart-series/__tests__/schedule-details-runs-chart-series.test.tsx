@@ -4,6 +4,8 @@ import { scaleLinear } from '@visx/scale';
 
 import { render, screen } from '@/test-utils/rtl';
 
+import { WORKFLOW_STATUSES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
+
 import { type Props as GlyphProps } from '../../schedule-details-runs-chart-glyph/schedule-details-runs-chart-glyph.types';
 import ScheduleDetailsRunsChartSeries from '../schedule-details-runs-chart-series';
 import { CHART_SERIES_TEST_IDS } from '../schedule-details-runs-chart-series.constants';
@@ -41,12 +43,12 @@ describe(ScheduleDetailsRunsChartSeries.name, () => {
           {
             runId: 'run-1',
             scheduledTimeMs: Date.UTC(2024, 0, 1, 1, 0),
-            status: 'completed',
+            status: WORKFLOW_STATUSES.completed,
           },
           {
             runId: 'run-2',
             scheduledTimeMs: Date.UTC(2024, 0, 1, 2, 0),
-            status: 'failed',
+            status: WORKFLOW_STATUSES.failed,
           },
         ],
         skippedExecutions: [],
@@ -66,12 +68,12 @@ describe(ScheduleDetailsRunsChartSeries.name, () => {
           {
             runId: 'run-1',
             scheduledTimeMs: Date.UTC(2024, 0, 1, 1, 0),
-            status: 'completed',
+            status: WORKFLOW_STATUSES.completed,
           },
           {
             runId: 'run-2',
             scheduledTimeMs: Date.UTC(2024, 0, 1, 1, 0),
-            status: 'failed',
+            status: WORKFLOW_STATUSES.failed,
           },
         ],
         skippedExecutions: [],

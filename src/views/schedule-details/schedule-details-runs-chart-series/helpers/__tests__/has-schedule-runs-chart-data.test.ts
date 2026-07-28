@@ -1,3 +1,5 @@
+import { WORKFLOW_STATUSES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
+
 import hasScheduleRunsChartData from '../has-schedule-runs-chart-data';
 
 describe(hasScheduleRunsChartData.name, () => {
@@ -14,7 +16,13 @@ describe(hasScheduleRunsChartData.name, () => {
   it('returns true when there is a run', () => {
     expect(
       hasScheduleRunsChartData({
-        runs: [{ runId: 'run-1', scheduledTimeMs: 1, status: 'completed' }],
+        runs: [
+          {
+            runId: 'run-1',
+            scheduledTimeMs: 1,
+            status: WORKFLOW_STATUSES.completed,
+          },
+        ],
         skippedExecutions: [],
         nextExecutionTimeMs: null,
       })

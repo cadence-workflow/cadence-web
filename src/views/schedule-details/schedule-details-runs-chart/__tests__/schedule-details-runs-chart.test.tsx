@@ -26,7 +26,6 @@ jest.mock(
 
 jest.mock(
   '../../schedule-details-runs-chart-series/schedule-details-runs-chart-series',
-  // The real component renders an absolutely-positioned HTML overlay, not SVG content.
   () => jest.fn(() => <div>Mock series</div>)
 );
 

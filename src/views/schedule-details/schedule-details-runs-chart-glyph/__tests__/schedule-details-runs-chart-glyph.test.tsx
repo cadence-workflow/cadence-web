@@ -2,6 +2,8 @@ import React from 'react';
 
 import { render, screen } from '@/test-utils/rtl';
 
+import { WORKFLOW_STATUSES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
+
 import ScheduleDetailsRunsChartGlyph from '../schedule-details-runs-chart-glyph';
 import { CHART_GLYPH_TEST_IDS } from '../schedule-details-runs-chart-glyph.constants';
 import { type Props } from '../schedule-details-runs-chart-glyph.types';
@@ -10,7 +12,7 @@ const COMPLETED_LABEL = 'Completed schedule run run-1';
 
 describe(ScheduleDetailsRunsChartGlyph.name, () => {
   it('renders a single marker with an accessible label', () => {
-    setup({ variant: 'completed', label: COMPLETED_LABEL });
+    setup({ variant: WORKFLOW_STATUSES.completed, label: COMPLETED_LABEL });
 
     expect(
       screen.getByRole('img', { name: COMPLETED_LABEL })
@@ -18,13 +20,21 @@ describe(ScheduleDetailsRunsChartGlyph.name, () => {
   });
 
   it('renders a grouped count when more than one run shares the position', () => {
-    setup({ variant: 'completed', runCount: 3, label: '3 schedule runs' });
+    setup({
+      variant: WORKFLOW_STATUSES.completed,
+      runCount: 3,
+      label: '3 schedule runs',
+    });
 
     expect(screen.getByText('3')).toBeInTheDocument();
   });
 
   it('renders a backfill badge for an individual backfill run', () => {
-    setup({ variant: 'completed', isBackfill: true, label: COMPLETED_LABEL });
+    setup({
+      variant: WORKFLOW_STATUSES.completed,
+      isBackfill: true,
+      label: COMPLETED_LABEL,
+    });
 
     expect(
       screen.getByTestId(CHART_GLYPH_TEST_IDS.backfillBadge)
@@ -33,7 +43,7 @@ describe(ScheduleDetailsRunsChartGlyph.name, () => {
 
   it('omits the backfill badge for grouped markers', () => {
     setup({
-      variant: 'completed',
+      variant: WORKFLOW_STATUSES.completed,
       runCount: 2,
       isBackfill: true,
       label: '2 schedule runs',
