@@ -8,13 +8,6 @@ export type Props = {
 
 export type ChartXScale = ScaleLinear<number, number, never>;
 
-export type ChartTimelineProps = {
-  width: number;
-  height: number;
-  xScale: ChartXScale;
-  nowMs: number;
-};
-
 export type ChartTimeWindow = {
   minMs: number;
   maxMs: number;

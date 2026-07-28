@@ -6,12 +6,14 @@ import { MdGpsFixed, MdZoomIn, MdZoomOut } from 'react-icons/md';
 
 import Button from '@/components/button/button';
 
+import ScheduleDetailsRunsChartTimeline from '../schedule-details-runs-chart-timeline/schedule-details-runs-chart-timeline';
+
 import createChartXScale from './helpers/create-chart-x-scale';
 import resolveChartPixelRange from './helpers/resolve-chart-pixel-range';
 import resolveChartTimeWindow from './helpers/resolve-chart-time-window';
 import useCurrentTimeMs from './hooks/use-current-time-ms';
-import ScheduleDetailsRunsChartTimeline from './schedule-details-runs-chart-timeline';
 import {
+  CHART_EMPTY_STATE_MESSAGE,
   CHART_HEIGHT_PX,
   CHART_REGION_ARIA_LABEL,
   CHART_TOOLBAR_ARIA_LABEL,
@@ -82,7 +84,11 @@ export default function ScheduleDetailsRunsChart(_props: Props) {
         role="region"
         aria-label={CHART_REGION_ARIA_LABEL}
       >
-        {xScale !== null && (
+        {xScale === null ? (
+          <styled.EmptyState role="status">
+            {CHART_EMPTY_STATE_MESSAGE}
+          </styled.EmptyState>
+        ) : (
           <styled.ChartSvg width={width} height={CHART_HEIGHT_PX}>
             <ScheduleDetailsRunsChartTimeline
               width={width}

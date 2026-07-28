@@ -4,42 +4,40 @@ import { render, screen, within } from '@/test-utils/rtl';
 
 import ScheduleDetailsRunsChart from '../schedule-details-runs-chart';
 import {
-  CHART_HEIGHT_PX,
-  CHART_MAX_TICK_COUNT,
-  CHART_NOW_MARKER_TEST_ID,
+  CHART_EMPTY_STATE_MESSAGE,
   CHART_REGION_ARIA_LABEL,
   CHART_TOOLBAR_ARIA_LABEL,
   CHART_TOOLBAR_BUTTON_LABELS,
 } from '../schedule-details-runs-chart.constants';
 
-const CHART_WIDTH_PX = 800;
+let mockChartWidthPx = 800;
 
 jest.mock('@visx/responsive', () => ({
   useParentSize: () => ({
     parentRef: { current: null },
-    width: CHART_WIDTH_PX,
-    height: CHART_HEIGHT_PX,
+    width: mockChartWidthPx,
   }),
 }));
 
+jest.mock(
+  '../../schedule-details-runs-chart-timeline/schedule-details-runs-chart-timeline',
+  () => jest.fn(() => <text>Mock timeline</text>)
+);
+
 describe(ScheduleDetailsRunsChart.name, () => {
-  it('labels the time axis with as many ticks as the width fits', () => {
+  it('draws the timeline once the region has been measured', () => {
     setup();
 
     expect(
-      within(
-        screen.getByRole('region', { name: CHART_REGION_ARIA_LABEL })
-      ).getAllByText(/^\d{2}:\d{2}$/)
-    ).toHaveLength(CHART_MAX_TICK_COUNT);
+      within(getChartRegion()).getByText('Mock timeline')
+    ).toBeInTheDocument();
   });
 
-  it('marks the current time inside the chart region', () => {
-    setup();
+  it('falls back to the empty state while the region has no drawable width', () => {
+    setup({ widthPx: 0 });
 
     expect(
-      within(
-        screen.getByRole('region', { name: CHART_REGION_ARIA_LABEL })
-      ).getByTestId(CHART_NOW_MARKER_TEST_ID)
+      within(getChartRegion()).getByText(CHART_EMPTY_STATE_MESSAGE)
     ).toBeInTheDocument();
   });
 
@@ -58,7 +56,9 @@ describe(ScheduleDetailsRunsChart.name, () => {
   });
 });
 
-function setup() {
+function setup({ widthPx = 800 }: { widthPx?: number } = {}) {
+  mockChartWidthPx = widthPx;
+
   render(
     <ScheduleDetailsRunsChart
       params={{
@@ -69,4 +69,8 @@ function setup() {
       }}
     />
   );
+}
+
+function getChartRegion() {
+  return screen.getByRole('region', { name: CHART_REGION_ARIA_LABEL });
 }
