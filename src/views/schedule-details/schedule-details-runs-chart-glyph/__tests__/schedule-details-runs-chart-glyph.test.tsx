@@ -47,11 +47,6 @@ describe(ScheduleDetailsRunsChartGlyph.name, () => {
 
 function setup(props: Omit<Props, 'x' | 'y' | 'testId'>) {
   render(
-    <ScheduleDetailsRunsChartGlyph
-      x={10}
-      y={20}
-      testId="glyph"
-      {...props}
-    />
+    <ScheduleDetailsRunsChartGlyph x={10} y={20} testId="glyph" {...props} />
   );
 }
