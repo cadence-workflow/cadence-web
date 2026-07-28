@@ -25,9 +25,12 @@ export const styled = {
     borderRadius: '50%',
     pointerEvents: 'none',
   })),
-  Icon: createStyled<'span', { $scale?: number }>('span', ({ $scale }) => ({
+  // Fixed footprint so every status icon fills the same box regardless of
+  // how much of its own viewBox the icon's glyph occupies.
+  Icon: createStyled('span', () => ({
     display: 'inline-flex',
-    ...($scale == null ? {} : { transform: `scale(${$scale})` }),
+    width: `${CHART_GLYPH_MARKER_SIZE_PX}px`,
+    height: `${CHART_GLYPH_MARKER_SIZE_PX}px`,
   })),
   Skipped: createStyled('span', ({ $theme }: { $theme: Theme }) => ({
     display: 'inline-block',

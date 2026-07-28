@@ -13,7 +13,6 @@ import {
 import getChartSeriesGlyphColor from './helpers/get-chart-series-glyph-color';
 import {
   CHART_GLYPH_BACKFILL_BADGE_ICON_SIZE_PX,
-  CHART_GLYPH_FAILED_ICON_SCALE,
   CHART_GLYPH_GROUPED_CARD_OFFSETS_PX,
   CHART_GLYPH_MARKER_SIZE_PX,
   CHART_GLYPH_TEST_IDS,
@@ -34,20 +33,23 @@ export default function ScheduleDetailsRunsChartSeriesGlyph({
   const isGrouped = runCount > 1;
   const halfMarkerSizePx = CHART_GLYPH_MARKER_SIZE_PX / 2;
   const color = getChartSeriesGlyphColor(theme, variant);
-  const iconProps = {
-    color,
-    size: CHART_GLYPH_MARKER_SIZE_PX,
-    'aria-hidden': true,
-  } as const;
+  // `size="100%"` fills the fixed-size Icon wrapper so every status icon
+  // occupies the same footprint, regardless of how much of its own viewBox
+  // the icon's glyph fills.
+  const iconProps = { color, size: '100%', 'aria-hidden': true } as const;
 
   let statusIcon: React.ReactNode;
   switch (variant) {
     case 'completed':
-      statusIcon = <MdCheckCircleOutline {...iconProps} />;
+      statusIcon = (
+        <styled.Icon>
+          <MdCheckCircleOutline {...iconProps} />
+        </styled.Icon>
+      );
       break;
     case 'failed':
       statusIcon = (
-        <styled.Icon $scale={CHART_GLYPH_FAILED_ICON_SCALE}>
+        <styled.Icon>
           <MdReportGmailerrorred {...iconProps} />
         </styled.Icon>
       );
@@ -58,13 +60,21 @@ export default function ScheduleDetailsRunsChartSeriesGlyph({
       );
       break;
     case 'canceled':
-      statusIcon = <MdBlock {...iconProps} />;
+      statusIcon = (
+        <styled.Icon>
+          <MdBlock {...iconProps} />
+        </styled.Icon>
+      );
       break;
     case 'skipped':
       statusIcon = <styled.Skipped />;
       break;
     case 'next':
-      statusIcon = <MdAdjust {...iconProps} />;
+      statusIcon = (
+        <styled.Icon>
+          <MdAdjust {...iconProps} />
+        </styled.Icon>
+      );
       break;
   }
 

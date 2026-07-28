@@ -1,9 +1,6 @@
 /** Footprint of a glyph, grouped card, and its status icon alike (px). */
 export const CHART_GLYPH_MARKER_SIZE_PX = 20;
 
-/** `MdReportGmailerrorred` reads small at nominal size, so it is scaled up. */
-export const CHART_GLYPH_FAILED_ICON_SCALE = 1.2;
-
 /** Size of the history icon inside the backfill badge (px); padding grows the badge past this. */
 export const CHART_GLYPH_BACKFILL_BADGE_ICON_SIZE_PX = 10;
 export const CHART_GLYPH_BACKFILL_BADGE_PADDING_PX = 2;
