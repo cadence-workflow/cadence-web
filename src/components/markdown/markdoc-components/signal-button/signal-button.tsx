@@ -8,7 +8,7 @@ import { useSnackbar } from 'baseui/snackbar';
 import losslessJsonStringify from '@/utils/lossless-json-stringify';
 import request from '@/utils/request';
 
-import { MarkdownPageContext } from '../../markdown-page-context';
+import { MarkdownContext } from '../../markdown-context-provider/markdown-context-provider';
 
 import { SIGNAL_SUCCESS_NOTIFICATION_DURATION_MS } from './signal-button.constants';
 import { overrides } from './signal-button.styles';
@@ -23,16 +23,18 @@ export default function SignalButton({
   domain: domainProp,
   cluster: clusterProp,
 }: SignalButtonProps) {
-  const pageContext = useContext(MarkdownPageContext);
-  const domain = domainProp ?? pageContext.domain;
-  const cluster = clusterProp ?? pageContext.cluster;
-  const workflowId = workflowIdProp ?? pageContext.workflowId;
+  const markdownContext = useContext(MarkdownContext);
+  const domain = domainProp ?? markdownContext.domain;
+  const cluster = clusterProp ?? markdownContext.cluster;
+  const workflowId = workflowIdProp ?? markdownContext.workflowId;
   // Only inherit runId from context when workflowId is also being inherited
   // from context -- an explicit workflowId with no explicit runId means
   // "the current run of that workflow" (per Cadence API semantics), not the
   // page's unrelated run.
   const runId =
-    workflowIdProp === undefined ? runIdProp ?? pageContext.runId : runIdProp;
+    workflowIdProp === undefined
+      ? runIdProp ?? markdownContext.runId
+      : runIdProp;
 
   const { enqueue } = useSnackbar();
 

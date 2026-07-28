@@ -2,7 +2,7 @@ import { HttpResponse } from 'msw';
 
 import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
-import { MarkdownPageContext } from '../../../markdown-page-context';
+import { MarkdownContext } from '../../../markdown-context-provider/markdown-context-provider';
 import SignalButton from '../signal-button';
 import { SIGNAL_SUCCESS_NOTIFICATION_DURATION_MS } from '../signal-button.constants';
 
@@ -86,7 +86,7 @@ describe(SignalButton.name, () => {
     expect(mockEnqueue.mock.calls[0]).toHaveLength(1);
   });
 
-  it('remains disabled when props are missing and no page context is provided', () => {
+  it('remains disabled when props are missing and no markdown context is provided', () => {
     setup({ propsOverrides: { domain: undefined, cluster: undefined } });
 
     expect(screen.getByRole('button', { name: 'Send Signal' })).toHaveAttribute(
@@ -94,7 +94,7 @@ describe(SignalButton.name, () => {
     );
   });
 
-  it('is enabled and signals successfully using values inherited from page context', async () => {
+  it('is enabled and signals successfully using values inherited from markdown context', async () => {
     const { user, getLatestRequest } = setup({
       propsOverrides: {
         domain: undefined,
@@ -122,7 +122,7 @@ describe(SignalButton.name, () => {
     });
   });
 
-  it('prefers explicit props over page context values', async () => {
+  it('prefers explicit props over markdown context values', async () => {
     const { user, getLatestRequest } = setup({
       contextValue: {
         domain: 'context-domain',
@@ -234,9 +234,9 @@ function setup({
     contextValue
       ? {
           wrapper: ({ children }) => (
-            <MarkdownPageContext.Provider value={contextValue}>
+            <MarkdownContext.Provider value={contextValue}>
               {children}
-            </MarkdownPageContext.Provider>
+            </MarkdownContext.Provider>
           ),
         }
       : undefined

@@ -3,16 +3,16 @@ import { useContext } from 'react';
 import { render, screen } from '@testing-library/react';
 
 import Markdown from '@/components/markdown/markdown';
-import { MarkdownPageContext } from '@/components/markdown/markdown-page-context';
+import { MarkdownContext } from '@/components/markdown/markdown-context-provider/markdown-context-provider';
 
 // Mock the signal/start buttons to avoid needing full workflow context, while
-// still capturing the markdoc-supplied props and the ambient MarkdownPageContext
+// still capturing the markdoc-supplied props and the ambient MarkdownContext
 // so we can verify page params actually reach descendants of <Markdown>.
 const mockSignalButtonProps: Record<string, unknown>[] = [];
 const mockSignalButtonContexts: Record<string, unknown>[] = [];
 function MockSignalButton(props: Record<string, unknown>) {
   mockSignalButtonProps.push(props);
-  mockSignalButtonContexts.push(useContext(MarkdownPageContext));
+  mockSignalButtonContexts.push(useContext(MarkdownContext));
   return <button data-testid="signal-button">{props.label as string}</button>;
 }
 jest.mock(
@@ -24,7 +24,7 @@ const mockStartButtonProps: Record<string, unknown>[] = [];
 const mockStartButtonContexts: Record<string, unknown>[] = [];
 function MockStartWorkflowButton(props: Record<string, unknown>) {
   mockStartButtonProps.push(props);
-  mockStartButtonContexts.push(useContext(MarkdownPageContext));
+  mockStartButtonContexts.push(useContext(MarkdownContext));
   return (
     <button data-testid="start-workflow-button">{props.label as string}</button>
   );
@@ -151,8 +151,8 @@ console.log('Hello');
     expect(screen.getByText('italic text')).toBeInTheDocument();
   });
 
-  describe('page params context propagation', () => {
-    it('provides domain/cluster/workflowId/runId props to MarkdownPageContext for descendants', () => {
+  describe('markdown context propagation', () => {
+    it('provides domain/cluster/workflowId/runId props to MarkdownContext for descendants', () => {
       const content = '{% signal signalName="test" label="Go" /%}';
       render(
         <Markdown
@@ -187,7 +187,7 @@ console.log('Hello');
       });
     });
 
-    it('passes explicit tag attributes through as props regardless of page context', () => {
+    it('passes explicit tag attributes through regardless of markdown context', () => {
       const content =
         '{% signal signalName="s" label="L" domain="other" cluster="c1" workflowId="w1" runId="r1" /%}';
       render(
@@ -217,7 +217,7 @@ console.log('Hello');
       });
     });
 
-    it('provides the same page context to start workflow button descendants', () => {
+    it('provides the same markdown context to start workflow button descendants', () => {
       const content =
         '{% start workflowType="MyWorkflow" label="Start" taskList="tl" /%}';
       render(

@@ -2,7 +2,7 @@ import { HttpResponse } from 'msw';
 
 import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
-import { MarkdownPageContext } from '../../../markdown-page-context';
+import { MarkdownContext } from '../../../markdown-context-provider/markdown-context-provider';
 import StartWorkflowButton from '../start-workflow-button';
 
 const mockEnqueue = jest.fn();
@@ -53,7 +53,7 @@ describe(StartWorkflowButton.name, () => {
     ).toHaveAttribute('disabled');
   });
 
-  it('remains disabled when domain/cluster are missing and no page context is provided', () => {
+  it('remains disabled when domain/cluster are missing and no markdown context is provided', () => {
     setup({ propsOverrides: { domain: undefined, cluster: undefined } });
 
     expect(
@@ -61,7 +61,7 @@ describe(StartWorkflowButton.name, () => {
     ).toHaveAttribute('disabled');
   });
 
-  it('is enabled and starts successfully using domain/cluster inherited from page context', async () => {
+  it('is enabled and starts successfully using domain/cluster inherited from markdown context', async () => {
     const { user, getLatestRequest } = setup({
       propsOverrides: { domain: undefined, cluster: undefined },
       contextValue: {
@@ -82,7 +82,7 @@ describe(StartWorkflowButton.name, () => {
     });
   });
 
-  it('prefers explicit domain/cluster props over page context values', async () => {
+  it('prefers explicit domain/cluster props over markdown context values', async () => {
     const { user, getLatestRequest } = setup({
       contextValue: {
         domain: 'context-domain',
@@ -180,9 +180,9 @@ function setup({
     contextValue
       ? {
           wrapper: ({ children }) => (
-            <MarkdownPageContext.Provider value={contextValue}>
+            <MarkdownContext.Provider value={contextValue}>
               {children}
-            </MarkdownPageContext.Provider>
+            </MarkdownContext.Provider>
           ),
         }
       : undefined

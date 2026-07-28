@@ -5,7 +5,7 @@ import { parse, renderers, transform } from '@markdoc/markdoc';
 
 import { markdocComponents } from './markdoc-components';
 import { markdocConfig } from './markdoc-schema';
-import { MarkdownPageContext } from './markdown-page-context';
+import MarkdownContextProvider from './markdown-context-provider/markdown-context-provider';
 import { styled } from './markdown.styles';
 import { type Props } from './markdown.types';
 
@@ -16,10 +16,6 @@ export default function Markdown({
   workflowId,
   runId,
 }: Props) {
-  const pageContextValue = useMemo(
-    () => ({ domain, cluster, workflowId, runId }),
-    [domain, cluster, workflowId, runId]
-  );
   let normalizedContent = markdown || '';
 
   // Remove base indentation from the first non-empty line
@@ -62,12 +58,17 @@ export default function Markdown({
 
   // Render to React with our custom components
   return (
-    <MarkdownPageContext.Provider value={pageContextValue}>
+    <MarkdownContextProvider
+      domain={domain}
+      cluster={cluster}
+      workflowId={workflowId}
+      runId={runId}
+    >
       <styled.ViewContainer>
         {renderers.react(renderableTree, React, {
           components: markdocComponents,
         })}
       </styled.ViewContainer>
-    </MarkdownPageContext.Provider>
+    </MarkdownContextProvider>
   );
 }
