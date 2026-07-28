@@ -1,7 +1,7 @@
 import {
   CHART_MAX_TICK_COUNT,
   CHART_MIN_TICK_COUNT,
-} from '../../schedule-details-runs-chart.constants';
+} from '../../schedule-details-runs-chart-timeline.constants';
 import resolveChartTickCount from '../resolve-chart-tick-count';
 
 describe(resolveChartTickCount.name, () => {

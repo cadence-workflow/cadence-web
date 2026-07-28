@@ -13,15 +13,15 @@ import {
   CHART_TICK_LABEL_Y_PX,
   CHART_TIMELINE_TEST_ID,
   CHART_TIMELINE_Y_PX,
-} from './schedule-details-runs-chart.constants';
-import { type ChartTimelineProps } from './schedule-details-runs-chart.types';
+} from './schedule-details-runs-chart-timeline.constants';
+import { type Props } from './schedule-details-runs-chart-timeline.types';
 
 export default function ScheduleDetailsRunsChartTimeline({
   width,
   height,
   xScale,
   nowMs,
-}: ChartTimelineProps) {
+}: Props) {
   const [, theme] = useStyletron();
   const [visibleMinMs, visibleMaxMs] = xScale.domain();
   const tickCount = resolveChartTickCount(width);
@@ -72,9 +72,8 @@ export default function ScheduleDetailsRunsChartTimeline({
           data-testid={CHART_NOW_MARKER_TEST_ID}
           from={{ x: xScale(nowMs), y: 0 }}
           to={{ x: xScale(nowMs), y: height }}
-          stroke={theme.colors.warning400}
+          stroke={theme.colors.negative300}
           strokeWidth={CHART_NOW_STROKE_WIDTH_PX}
-          strokeDasharray="2 2"
           pointerEvents="none"
         />
       )}
