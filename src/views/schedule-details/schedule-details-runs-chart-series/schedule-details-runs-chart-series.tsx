@@ -1,78 +1,63 @@
 import React from 'react';
 
-import { Group } from '@visx/group';
-import { Circle, Line } from '@visx/shape';
+import ScheduleDetailsRunsChartSeriesGlyph from '../schedule-details-runs-chart-series-glyph/schedule-details-runs-chart-series-glyph';
+import { CHART_TIMELINE_Y_PX } from '../schedule-details-runs-chart-timeline/schedule-details-runs-chart-timeline.constants';
 
 import {
-  CHART_SERIES_MARKER_RADIUS_PX,
-  CHART_SERIES_MISSED_MARKER_RADIUS_PX,
-  CHART_SERIES_MISSED_STROKE_WIDTH_PX,
-  CHART_SERIES_MISSED_Y_RATIO,
-  CHART_SERIES_NEXT_EXECUTION_STROKE_WIDTH_PX,
-  CHART_SERIES_SUCCESS_Y_RATIO,
-  CHART_SERIES_TEST_IDS,
-} from './schedule-details-runs-chart-series.constants';
+  formatChartSeriesMomentLabel,
+  formatChartSeriesRunGroupLabel,
+} from './helpers/format-chart-series-marker-label';
+import groupChartSeriesRuns from './helpers/group-chart-series-runs';
+import { CHART_SERIES_TEST_IDS } from './schedule-details-runs-chart-series.constants';
 import { type Props } from './schedule-details-runs-chart-series.types';
 
 export default function ScheduleDetailsRunsChartSeries({
-  height,
   xScale,
   data,
-  successfulRunColor,
-  missedExecutionColor,
-  nextExecutionColor,
 }: Props) {
-  const successfulRunY = height * CHART_SERIES_SUCCESS_Y_RATIO;
-  const missedExecutionY = height * CHART_SERIES_MISSED_Y_RATIO;
+  const runGroups = groupChartSeriesRuns(data.runs);
 
   return (
-    <Group data-testid={CHART_SERIES_TEST_IDS.svg}>
-      {data.successfulRuns.map(({ scheduledTimeMs }) => (
-        <Circle
-          key={`successful-${scheduledTimeMs}`}
-          cx={xScale(scheduledTimeMs)}
-          cy={successfulRunY}
-          r={CHART_SERIES_MARKER_RADIUS_PX}
-          fill={successfulRunColor}
-          data-testid={CHART_SERIES_TEST_IDS.successfulRunMarker}
-        />
-      ))}
-      {data.missedExecutions.map(({ scheduledTimeMs }) => {
-        const x = xScale(scheduledTimeMs);
+    <div data-testid={CHART_SERIES_TEST_IDS.overlay}>
+      {runGroups.map((group) => {
+        const isGrouped = group.runs.length > 1;
 
         return (
-          <Group key={`missed-${scheduledTimeMs}`}>
-            <Line
-              from={{ x, y: successfulRunY }}
-              to={{ x, y: missedExecutionY }}
-              stroke={missedExecutionColor}
-              strokeWidth={CHART_SERIES_MISSED_STROKE_WIDTH_PX}
-              strokeDasharray="4 3"
-              pointerEvents="none"
-            />
-            <Circle
-              cx={x}
-              cy={missedExecutionY}
-              r={CHART_SERIES_MISSED_MARKER_RADIUS_PX}
-              fill="transparent"
-              stroke={missedExecutionColor}
-              strokeWidth={CHART_SERIES_MISSED_STROKE_WIDTH_PX}
-              data-testid={CHART_SERIES_TEST_IDS.missedExecutionMarker}
-            />
-          </Group>
+          <ScheduleDetailsRunsChartSeriesGlyph
+            key={`run-${group.scheduledTimeMs}`}
+            x={xScale(group.scheduledTimeMs)}
+            y={CHART_TIMELINE_Y_PX}
+            variant={group.runs[0].status}
+            runCount={group.runs.length}
+            isBackfill={group.runs[0].isBackfill}
+            label={formatChartSeriesRunGroupLabel(group.runs)}
+            testId={
+              isGrouped
+                ? CHART_SERIES_TEST_IDS.groupedMarker
+                : CHART_SERIES_TEST_IDS.runMarker
+            }
+          />
         );
       })}
+      {data.skippedExecutions.map(({ scheduledTimeMs }) => (
+        <ScheduleDetailsRunsChartSeriesGlyph
+          key={`skipped-${scheduledTimeMs}`}
+          x={xScale(scheduledTimeMs)}
+          y={CHART_TIMELINE_Y_PX}
+          variant="skipped"
+          label={formatChartSeriesMomentLabel('skipped', scheduledTimeMs)}
+          testId={CHART_SERIES_TEST_IDS.skippedExecutionMarker}
+        />
+      ))}
       {data.nextExecutionTimeMs != null && (
-        <Line
-          from={{ x: xScale(data.nextExecutionTimeMs), y: 0 }}
-          to={{ x: xScale(data.nextExecutionTimeMs), y: height }}
-          stroke={nextExecutionColor}
-          strokeWidth={CHART_SERIES_NEXT_EXECUTION_STROKE_WIDTH_PX}
-          strokeDasharray="6 4"
-          pointerEvents="none"
-          data-testid={CHART_SERIES_TEST_IDS.nextExecutionMarker}
+        <ScheduleDetailsRunsChartSeriesGlyph
+          x={xScale(data.nextExecutionTimeMs)}
+          y={CHART_TIMELINE_Y_PX}
+          variant="next"
+          label={formatChartSeriesMomentLabel('next', data.nextExecutionTimeMs)}
+          testId={CHART_SERIES_TEST_IDS.nextExecutionMarker}
         />
       )}
-    </Group>
+    </div>
   );
 }

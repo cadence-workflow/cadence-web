@@ -2,7 +2,6 @@
 import React, { useMemo } from 'react';
 
 import { useParentSize } from '@visx/responsive';
-import { useStyletron } from 'baseui';
 import { MdGpsFixed, MdZoomIn, MdZoomOut } from 'react-icons/md';
 
 import Button from '@/components/button/button';
@@ -29,7 +28,6 @@ import { overrides, styled } from './schedule-details-runs-chart.styles';
 import { type Props } from './schedule-details-runs-chart.types';
 
 export default function ScheduleDetailsRunsChart(_props: Props) {
-  const [, theme] = useStyletron();
   const nowMs = useCurrentTimeMs({
     intervalMs: CURRENT_TIME_UPDATE_INTERVAL_MS,
   });
@@ -46,8 +44,8 @@ export default function ScheduleDetailsRunsChart(_props: Props) {
 
   const xScale = useMemo(() => {
     const timestampsMs = [
-      ...chartData.successfulRuns.map(({ scheduledTimeMs }) => scheduledTimeMs),
-      ...chartData.missedExecutions.map(
+      ...chartData.runs.map(({ scheduledTimeMs }) => scheduledTimeMs),
+      ...chartData.skippedExecutions.map(
         ({ scheduledTimeMs }) => scheduledTimeMs
       ),
     ];
@@ -114,22 +112,17 @@ export default function ScheduleDetailsRunsChart(_props: Props) {
             {CHART_EMPTY_STATE_MESSAGE}
           </styled.EmptyState>
         ) : (
-          <styled.ChartSvg width={width} height={CHART_HEIGHT_PX}>
-            <ScheduleDetailsRunsChartTimeline
-              width={width}
-              height={CHART_HEIGHT_PX}
-              xScale={xScale}
-              nowMs={nowMs}
-            />
-            <ScheduleDetailsRunsChartSeries
-              height={CHART_HEIGHT_PX}
-              xScale={xScale}
-              data={chartData}
-              successfulRunColor={theme.colors.positive400}
-              missedExecutionColor={theme.colors.warning400}
-              nextExecutionColor={theme.colors.accent400}
-            />
-          </styled.ChartSvg>
+          <>
+            <styled.ChartSvg width={width} height={CHART_HEIGHT_PX}>
+              <ScheduleDetailsRunsChartTimeline
+                width={width}
+                height={CHART_HEIGHT_PX}
+                xScale={xScale}
+                nowMs={nowMs}
+              />
+            </styled.ChartSvg>
+            <ScheduleDetailsRunsChartSeries xScale={xScale} data={chartData} />
+          </>
         )}
       </styled.ChartRegion>
     </styled.Container>

@@ -4,50 +4,103 @@ import { scaleLinear } from '@visx/scale';
 
 import { render, screen } from '@/test-utils/rtl';
 
+import { type Props as GlyphProps } from '../../schedule-details-runs-chart-series-glyph/schedule-details-runs-chart-series-glyph.types';
 import ScheduleDetailsRunsChartSeries from '../schedule-details-runs-chart-series';
 import { CHART_SERIES_TEST_IDS } from '../schedule-details-runs-chart-series.constants';
 import { type ChartSeriesData } from '../schedule-details-runs-chart-series.types';
+
+jest.mock(
+  '../../schedule-details-runs-chart-series-glyph/schedule-details-runs-chart-series-glyph',
+  () =>
+    function MockScheduleDetailsRunsChartSeriesGlyph({
+      variant,
+      runCount,
+      testId,
+    }: GlyphProps) {
+      return (
+        <div data-testid={testId} data-variant={variant}>
+          {runCount}
+        </div>
+      );
+    }
+);
 
 const WINDOW_START_MS = Date.UTC(2024, 0, 1, 0, 0);
 const WINDOW_END_MS = Date.UTC(2024, 0, 1, 6, 0);
 
 describe(ScheduleDetailsRunsChartSeries.name, () => {
-  it('renders a marker for each successful run', () => {
+  it('renders a marker for each run', () => {
     setup({
       data: {
-        successfulRuns: [
-          { scheduledTimeMs: Date.UTC(2024, 0, 1, 1, 0) },
-          { scheduledTimeMs: Date.UTC(2024, 0, 1, 2, 0) },
+        runs: [
+          {
+            runId: 'run-1',
+            scheduledTimeMs: Date.UTC(2024, 0, 1, 1, 0),
+            status: 'completed',
+          },
+          {
+            runId: 'run-2',
+            scheduledTimeMs: Date.UTC(2024, 0, 1, 2, 0),
+            status: 'failed',
+          },
         ],
-        missedExecutions: [],
+        skippedExecutions: [],
         nextExecutionTimeMs: null,
       },
     });
 
-    expect(
-      screen.getAllByTestId(CHART_SERIES_TEST_IDS.successfulRunMarker)
-    ).toHaveLength(2);
+    expect(screen.getAllByTestId(CHART_SERIES_TEST_IDS.runMarker)).toHaveLength(
+      2
+    );
   });
 
-  it('renders a marker for each missed execution', () => {
+  it('renders a single grouped marker with a run count for runs sharing a scheduled time', () => {
     setup({
       data: {
-        successfulRuns: [],
-        missedExecutions: [{ scheduledTimeMs: Date.UTC(2024, 0, 1, 3, 0) }],
+        runs: [
+          {
+            runId: 'run-1',
+            scheduledTimeMs: Date.UTC(2024, 0, 1, 1, 0),
+            status: 'completed',
+          },
+          {
+            runId: 'run-2',
+            scheduledTimeMs: Date.UTC(2024, 0, 1, 1, 0),
+            status: 'failed',
+          },
+        ],
+        skippedExecutions: [],
         nextExecutionTimeMs: null,
       },
     });
 
     expect(
-      screen.getByTestId(CHART_SERIES_TEST_IDS.missedExecutionMarker)
+      screen.queryByTestId(CHART_SERIES_TEST_IDS.runMarker)
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByTestId(CHART_SERIES_TEST_IDS.groupedMarker)
+    ).toHaveTextContent('2');
+  });
+
+  it('renders a marker for each skipped execution', () => {
+    setup({
+      data: {
+        runs: [],
+        skippedExecutions: [{ scheduledTimeMs: Date.UTC(2024, 0, 1, 3, 0) }],
+        nextExecutionTimeMs: null,
+      },
+    });
+
+    expect(
+      screen.getByTestId(CHART_SERIES_TEST_IDS.skippedExecutionMarker)
     ).toBeInTheDocument();
   });
 
   it('renders the next execution marker when set', () => {
     setup({
       data: {
-        successfulRuns: [],
-        missedExecutions: [],
+        runs: [],
+        skippedExecutions: [],
         nextExecutionTimeMs: Date.UTC(2024, 0, 1, 5, 0),
       },
     });
@@ -60,8 +113,8 @@ describe(ScheduleDetailsRunsChartSeries.name, () => {
   it('omits the next execution marker when unset', () => {
     setup({
       data: {
-        successfulRuns: [],
-        missedExecutions: [],
+        runs: [],
+        skippedExecutions: [],
         nextExecutionTimeMs: null,
       },
     });
@@ -74,18 +127,12 @@ describe(ScheduleDetailsRunsChartSeries.name, () => {
 
 function setup({ data }: { data: ChartSeriesData }) {
   render(
-    <svg>
-      <ScheduleDetailsRunsChartSeries
-        height={82}
-        xScale={scaleLinear({
-          domain: [WINDOW_START_MS, WINDOW_END_MS],
-          range: [0, 800],
-        })}
-        data={data}
-        successfulRunColor="green"
-        missedExecutionColor="orange"
-        nextExecutionColor="blue"
-      />
-    </svg>
+    <ScheduleDetailsRunsChartSeries
+      xScale={scaleLinear({
+        domain: [WINDOW_START_MS, WINDOW_END_MS],
+        range: [0, 800],
+      })}
+      data={data}
+    />
   );
 }
