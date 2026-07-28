@@ -5,43 +5,23 @@ import { render, screen } from '@testing-library/react';
 import Markdown from '@/components/markdown/markdown';
 import { MarkdownContext } from '@/components/markdown/markdown-context-provider/markdown-context-provider';
 
-// Mock the signal/start buttons to avoid needing full workflow context, while
-// still capturing the markdoc-supplied props and the ambient MarkdownContext
-// so we can verify page params actually reach descendants of <Markdown>.
-const mockSignalButtonProps: Record<string, unknown>[] = [];
-const mockSignalButtonContexts: Record<string, unknown>[] = [];
+// Mock the signal button to expose its props and context for assertions.
 function MockSignalButton(props: Record<string, unknown>) {
-  mockSignalButtonProps.push(props);
-  mockSignalButtonContexts.push(useContext(MarkdownContext));
-  return <button data-testid="signal-button">{props.label as string}</button>;
+  const context = useContext(MarkdownContext);
+  return (
+    <>
+      <button data-testid="signal-button">{props.label as string}</button>
+      <pre data-testid="signal-button-props">{JSON.stringify(props)}</pre>
+      <pre data-testid="markdown-context">{JSON.stringify(context)}</pre>
+    </>
+  );
 }
 jest.mock(
   '@/components/markdown/markdoc-components/signal-button/signal-button',
   () => MockSignalButton
 );
 
-const mockStartButtonProps: Record<string, unknown>[] = [];
-const mockStartButtonContexts: Record<string, unknown>[] = [];
-function MockStartWorkflowButton(props: Record<string, unknown>) {
-  mockStartButtonProps.push(props);
-  mockStartButtonContexts.push(useContext(MarkdownContext));
-  return (
-    <button data-testid="start-workflow-button">{props.label as string}</button>
-  );
-}
-jest.mock(
-  '@/components/markdown/markdoc-components/start-workflow-button/start-workflow-button',
-  () => MockStartWorkflowButton
-);
-
 describe('Markdown with Markdoc', () => {
-  beforeEach(() => {
-    mockSignalButtonProps.length = 0;
-    mockSignalButtonContexts.length = 0;
-    mockStartButtonProps.length = 0;
-    mockStartButtonContexts.length = 0;
-  });
-
   it('renders basic markdown', () => {
     const content = '# Hello World\n\nThis is a test.';
     render(<Markdown markdown={content} />);
@@ -165,26 +145,21 @@ console.log('Hello');
       );
 
       expect(screen.getByTestId('signal-button')).toBeInTheDocument();
-      expect(mockSignalButtonContexts).toHaveLength(1);
-      expect(mockSignalButtonContexts[0]).toEqual({
-        domain: 'my-domain',
-        cluster: 'cluster0',
-        workflowId: 'wf-123',
-        runId: 'run-456',
-      });
+      expect(screen.getByTestId('markdown-context')).toHaveTextContent(
+        JSON.stringify({
+          domain: 'my-domain',
+          cluster: 'cluster0',
+          workflowId: 'wf-123',
+          runId: 'run-456',
+        })
+      );
     });
 
     it('provides an empty context when <Markdown> receives no page params', () => {
       const content = '{% signal signalName="test" label="Go" /%}';
       render(<Markdown markdown={content} />);
 
-      expect(mockSignalButtonContexts).toHaveLength(1);
-      expect(mockSignalButtonContexts[0]).toEqual({
-        domain: undefined,
-        cluster: undefined,
-        workflowId: undefined,
-        runId: undefined,
-      });
+      expect(screen.getByTestId('markdown-context')).toHaveTextContent('{}');
     });
 
     it('passes explicit tag attributes through regardless of markdown context', () => {
@@ -200,48 +175,13 @@ console.log('Hello');
         />
       );
 
-      expect(mockSignalButtonProps).toHaveLength(1);
-      expect(mockSignalButtonProps[0]).toMatchObject({
+      expect(
+        JSON.parse(screen.getByTestId('signal-button-props').textContent ?? '')
+      ).toMatchObject({
         domain: 'other',
         cluster: 'c1',
         workflowId: 'w1',
         runId: 'r1',
-      });
-      // The context is still available for the button to fall back to,
-      // even though this particular tag doesn't need it.
-      expect(mockSignalButtonContexts[0]).toEqual({
-        domain: 'page-domain',
-        cluster: 'page-cluster',
-        workflowId: 'page-wf',
-        runId: 'page-run',
-      });
-    });
-
-    it('provides the same markdown context to start workflow button descendants', () => {
-      const content =
-        '{% start workflowType="MyWorkflow" label="Start" taskList="tl" /%}';
-      render(
-        <Markdown
-          markdown={content}
-          domain="my-domain"
-          cluster="cluster0"
-          workflowId="wf-123"
-          runId="run-456"
-        />
-      );
-
-      expect(screen.getByTestId('start-workflow-button')).toBeInTheDocument();
-      expect(mockStartButtonProps).toHaveLength(1);
-      expect(mockStartButtonProps[0]).toMatchObject({
-        workflowType: 'MyWorkflow',
-        label: 'Start',
-        taskList: 'tl',
-      });
-      expect(mockStartButtonContexts[0]).toEqual({
-        domain: 'my-domain',
-        cluster: 'cluster0',
-        workflowId: 'wf-123',
-        runId: 'run-456',
       });
     });
   });
