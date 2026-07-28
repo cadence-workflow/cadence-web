@@ -5,13 +5,13 @@ import { useParentSize } from '@visx/responsive';
 import { MdGpsFixed, MdZoomIn, MdZoomOut } from 'react-icons/md';
 
 import Button from '@/components/button/button';
+import useCurrentTimeMs from '@/hooks/use-current-time-ms/use-current-time-ms';
 
 import ScheduleDetailsRunsChartTimeline from '../schedule-details-runs-chart-timeline/schedule-details-runs-chart-timeline';
 
 import createChartXScale from './helpers/create-chart-x-scale';
 import resolveChartPixelRange from './helpers/resolve-chart-pixel-range';
 import resolveChartTimeWindow from './helpers/resolve-chart-time-window';
-import useCurrentTimeMs from './hooks/use-current-time-ms';
 import {
   CHART_EMPTY_STATE_MESSAGE,
   CHART_HEIGHT_PX,
@@ -19,12 +19,15 @@ import {
   CHART_TOOLBAR_ARIA_LABEL,
   CHART_TOOLBAR_BUTTON_LABELS,
   CHART_TOOLBAR_ICON_SIZE_PX,
+  CURRENT_TIME_UPDATE_INTERVAL_MS,
 } from './schedule-details-runs-chart.constants';
 import { overrides, styled } from './schedule-details-runs-chart.styles';
 import { type Props } from './schedule-details-runs-chart.types';
 
 export default function ScheduleDetailsRunsChart(_props: Props) {
-  const nowMs = useCurrentTimeMs();
+  const nowMs = useCurrentTimeMs({
+    intervalMs: CURRENT_TIME_UPDATE_INTERVAL_MS,
+  });
   const { parentRef, width } = useParentSize({
     initialSize: { width: 0, height: CHART_HEIGHT_PX },
   });
