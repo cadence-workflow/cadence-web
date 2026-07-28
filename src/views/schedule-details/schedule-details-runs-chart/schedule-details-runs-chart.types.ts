@@ -4,17 +4,17 @@ export type Props = {
   params: SchedulePageTabsParams;
 };
 
-export type RunsChartTimeDomain = {
+export type ChartTimeWindow = {
   minMs: number;
   maxMs: number;
 };
 
-export type RunsChartPixelRange = {
+export type ChartPixelRange = {
   startPx: number;
   endPx: number;
 };
 
-export type ResolveRunsChartTimeDomainParams = {
+export type ResolveChartTimeWindowParams = {
   timestampsMs: number[];
   nowMs: number;
   nextExecutionMs?: number | null;
@@ -22,12 +22,12 @@ export type ResolveRunsChartTimeDomainParams = {
   minimumTimeMs?: number | null;
 };
 
-export type ResolveRunsChartPixelRangeParams = {
+export type ResolveChartPixelRangeParams = {
   widthPx: number;
   sidePaddingPx?: number;
 };
 
-export type CreateRunsChartXScaleParams = {
-  domain: RunsChartTimeDomain;
-  range: RunsChartPixelRange;
+export type CreateChartXScaleParams = {
+  timeWindow: ChartTimeWindow;
+  range: ChartPixelRange;
 };
