@@ -10,8 +10,6 @@ import {
   MdReportGmailerrorred,
 } from 'react-icons/md';
 
-import { type ChartSeriesGlyphVariant } from '../schedule-details-runs-chart-series/schedule-details-runs-chart-series.types';
-
 import getChartSeriesGlyphColor from './helpers/get-chart-series-glyph-color';
 import {
   CHART_GLYPH_BACKFILL_BADGE_ICON_SIZE_PX,
@@ -35,6 +33,40 @@ export default function ScheduleDetailsRunsChartSeriesGlyph({
   const [, theme] = useStyletron();
   const isGrouped = runCount > 1;
   const halfMarkerSizePx = CHART_GLYPH_MARKER_SIZE_PX / 2;
+  const color = getChartSeriesGlyphColor(theme, variant);
+  const iconProps = {
+    color,
+    size: CHART_GLYPH_MARKER_SIZE_PX,
+    'aria-hidden': true,
+  } as const;
+
+  let statusIcon: React.ReactNode;
+  switch (variant) {
+    case 'completed':
+      statusIcon = <MdCheckCircleOutline {...iconProps} />;
+      break;
+    case 'failed':
+      statusIcon = (
+        <styled.Icon $scale={CHART_GLYPH_FAILED_ICON_SCALE}>
+          <MdReportGmailerrorred {...iconProps} />
+        </styled.Icon>
+      );
+      break;
+    case 'running':
+      statusIcon = (
+        <Spinner $size={CHART_GLYPH_MARKER_SIZE_PX} $color={color} />
+      );
+      break;
+    case 'canceled':
+      statusIcon = <MdBlock {...iconProps} />;
+      break;
+    case 'skipped':
+      statusIcon = <styled.Skipped />;
+      break;
+    case 'next':
+      statusIcon = <MdAdjust {...iconProps} />;
+      break;
+  }
 
   return (
     <styled.Marker
@@ -59,10 +91,7 @@ export default function ScheduleDetailsRunsChartSeriesGlyph({
           <styled.GroupedMarkerCount>{runCount}</styled.GroupedMarkerCount>
         </styled.GroupedMarker>
       ) : (
-        <ChartSeriesStatusIcon
-          variant={variant}
-          color={getChartSeriesGlyphColor(theme, variant)}
-        />
+        statusIcon
       )}
       {isBackfill && !isGrouped && (
         <styled.BackfillBadge data-testid={CHART_GLYPH_TEST_IDS.backfillBadge}>
@@ -75,37 +104,4 @@ export default function ScheduleDetailsRunsChartSeriesGlyph({
       )}
     </styled.Marker>
   );
-}
-
-function ChartSeriesStatusIcon({
-  variant,
-  color,
-}: {
-  variant: ChartSeriesGlyphVariant;
-  color: string;
-}) {
-  const iconProps = {
-    color,
-    size: CHART_GLYPH_MARKER_SIZE_PX,
-    'aria-hidden': true,
-  } as const;
-
-  switch (variant) {
-    case 'completed':
-      return <MdCheckCircleOutline {...iconProps} />;
-    case 'failed':
-      return (
-        <styled.Icon $scale={CHART_GLYPH_FAILED_ICON_SCALE}>
-          <MdReportGmailerrorred {...iconProps} />
-        </styled.Icon>
-      );
-    case 'running':
-      return <Spinner $size={CHART_GLYPH_MARKER_SIZE_PX} $color={color} />;
-    case 'canceled':
-      return <MdBlock {...iconProps} />;
-    case 'skipped':
-      return <styled.Skipped />;
-    case 'next':
-      return <MdAdjust {...iconProps} />;
-  }
 }
