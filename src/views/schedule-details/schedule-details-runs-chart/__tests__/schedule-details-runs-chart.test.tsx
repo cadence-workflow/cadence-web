@@ -24,12 +24,25 @@ jest.mock(
   () => jest.fn(() => <text>Mock timeline</text>)
 );
 
+jest.mock(
+  '../../schedule-details-runs-chart-series/schedule-details-runs-chart-series',
+  () => jest.fn(() => <text>Mock series</text>)
+);
+
 describe(ScheduleDetailsRunsChart.name, () => {
   it('draws the timeline once the region has been measured', () => {
     setup();
 
     expect(
       within(getChartRegion()).getByText('Mock timeline')
+    ).toBeInTheDocument();
+  });
+
+  it('draws the series once the region has been measured', () => {
+    setup();
+
+    expect(
+      within(getChartRegion()).getByText('Mock series')
     ).toBeInTheDocument();
   });
 
