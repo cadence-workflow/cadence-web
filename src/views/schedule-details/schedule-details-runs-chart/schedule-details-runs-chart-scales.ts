@@ -1,4 +1,5 @@
 import { scaleLinear } from '@visx/scale';
+import { type ScaleLinear } from 'd3-scale';
 
 import {
   CHART_DEFAULT_PAST_WINDOW_MS,
@@ -12,8 +13,9 @@ import {
   type ResolveRunsChartTimeDomainParams,
   type RunsChartPixelRange,
   type RunsChartTimeDomain,
-  type RunsChartXScale,
 } from './schedule-details-runs-chart.types';
+
+type RunsChartXScale = ScaleLinear<number, number, never>;
 
 export function resolveRunsChartTimeDomain({
   timestampsMs,
@@ -28,33 +30,34 @@ export function resolveRunsChartTimeDomain({
 
   const validTimestampsMs = timestampsMs.filter(Number.isFinite);
 
+  let minMs: number;
+  let maxMs: number;
+
   if (validTimestampsMs.length === 0 && nextExecutionMs == null) {
-    return {
-      minMs: Math.max(
-        nowMs - CHART_DEFAULT_PAST_WINDOW_MS,
-        minimumTimeMs ?? Number.NEGATIVE_INFINITY
-      ),
-      maxMs: nowMs + futureGutterMs,
-    };
-  }
+    minMs = Math.max(
+      nowMs - CHART_DEFAULT_PAST_WINDOW_MS,
+      minimumTimeMs ?? Number.NEGATIVE_INFINITY
+    );
+    maxMs = nowMs + futureGutterMs;
+  } else {
+    const dataMinMs =
+      validTimestampsMs.length > 0 ? Math.min(...validTimestampsMs) : nowMs;
+    const dataMaxMs =
+      validTimestampsMs.length > 0 ? Math.max(...validTimestampsMs) : nowMs;
 
-  const dataMinMs =
-    validTimestampsMs.length > 0 ? Math.min(...validTimestampsMs) : nowMs;
-  const dataMaxMs =
-    validTimestampsMs.length > 0 ? Math.max(...validTimestampsMs) : nowMs;
+    minMs = Math.max(
+      Math.min(dataMinMs, nowMs),
+      minimumTimeMs ?? Number.NEGATIVE_INFINITY
+    );
+    maxMs = Math.max(dataMaxMs, nowMs, nowMs + futureGutterMs);
 
-  let minMs = Math.max(
-    Math.min(dataMinMs, nowMs),
-    minimumTimeMs ?? Number.NEGATIVE_INFINITY
-  );
-  let maxMs = Math.max(dataMaxMs, nowMs, nowMs + futureGutterMs);
-
-  if (
-    nextExecutionMs != null &&
-    Number.isFinite(nextExecutionMs) &&
-    nextExecutionMs > nowMs
-  ) {
-    maxMs = Math.max(maxMs, nextExecutionMs + futureGutterMs);
+    if (
+      nextExecutionMs != null &&
+      Number.isFinite(nextExecutionMs) &&
+      nextExecutionMs > nowMs
+    ) {
+      maxMs = Math.max(maxMs, nextExecutionMs + futureGutterMs);
+    }
   }
 
   if (maxMs <= minMs) {
@@ -113,12 +116,4 @@ export function createRunsChartXScale({
     range: [range.startPx, range.endPx],
     clamp: true,
   });
-}
-
-export function timeMsToPixel(timeMs: number, scale: RunsChartXScale): number {
-  return scale(timeMs);
-}
-
-export function pixelToTimeMs(pixel: number, scale: RunsChartXScale): number {
-  return scale.invert(pixel);
 }

@@ -1,12 +1,8 @@
-import { type ScaleLinear } from 'd3-scale';
-
 import { type SchedulePageTabsParams } from '@/views/schedule-page/schedule-page-tabs/schedule-page-tabs.types';
 
 export type Props = {
   params: SchedulePageTabsParams;
 };
-
-export type RunsChartXScale = ScaleLinear<number, number, never>;
 
 export type RunsChartTimeDomain = {
   minMs: number;
