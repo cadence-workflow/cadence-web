@@ -94,7 +94,10 @@ describe(DomainBatchActionsNewActionDetail.name, () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockUsePageQueryParams.mockReturnValue([
-      { ...mockDomainPageQueryParamsValues, batchQuery: 'WorkflowType="foo"' },
+      {
+        ...mockDomainPageQueryParamsValues,
+        batchActionQuery: 'WorkflowType="foo"',
+      },
       mockSetQueryParams,
     ]);
     mockUseWorkflowsListColumns.mockReturnValue({
@@ -186,7 +189,7 @@ describe(DomainBatchActionsNewActionDetail.name, () => {
   });
 
   it('shows the running-workflows caption when the query is the default', async () => {
-    setQueryParams({ batchQuery: BATCH_ACTION_DEFAULT_QUERY });
+    setQueryParams({ batchActionQuery: BATCH_ACTION_DEFAULT_QUERY });
     setup({});
 
     expect(
@@ -198,7 +201,7 @@ describe(DomainBatchActionsNewActionDetail.name, () => {
   });
 
   it('hides the caption once the query has been edited', async () => {
-    setQueryParams({ batchQuery: 'WorkflowType="foo"' });
+    setQueryParams({ batchActionQuery: 'WorkflowType="foo"' });
     setup({});
 
     expect(await screen.findByTestId('mock-floating-bar')).toBeInTheDocument();
@@ -211,7 +214,7 @@ describe(DomainBatchActionsNewActionDetail.name, () => {
   });
 
   it('shows the required-query error and blocks the action when the query is empty', async () => {
-    setQueryParams({ batchQuery: '' });
+    setQueryParams({ batchActionQuery: '' });
     const { user } = setup({});
 
     await user.click(await screen.findByText('action-cancel'));
@@ -227,7 +230,7 @@ describe(DomainBatchActionsNewActionDetail.name, () => {
   });
 
   it('blocks submission when the description is valid but the query is empty', async () => {
-    setQueryParams({ batchQuery: '' });
+    setQueryParams({ batchActionQuery: '' });
     const { user } = setup({});
 
     await user.type(await screen.findByLabelText('Description'), 'cleanup');
@@ -240,7 +243,7 @@ describe(DomainBatchActionsNewActionDetail.name, () => {
   });
 
   it('disables the floating bar after an empty-query action attempt', async () => {
-    setQueryParams({ batchQuery: '' });
+    setQueryParams({ batchActionQuery: '' });
     const { user } = setup({});
 
     expect(await screen.findByTestId('mock-floating-bar')).toHaveAttribute(
@@ -257,7 +260,7 @@ describe(DomainBatchActionsNewActionDetail.name, () => {
   });
 
   it('opens the confirmation modal when the query and description are valid', async () => {
-    setQueryParams({ batchQuery: 'WorkflowType="foo"' });
+    setQueryParams({ batchActionQuery: 'WorkflowType="foo"' });
     const { user } = setup({});
 
     await user.type(await screen.findByLabelText('Description'), 'cleanup');
@@ -267,7 +270,7 @@ describe(DomainBatchActionsNewActionDetail.name, () => {
   });
 
   it('closes the confirmation modal without starting the action', async () => {
-    setQueryParams({ batchQuery: 'WorkflowType="foo"' });
+    setQueryParams({ batchActionQuery: 'WorkflowType="foo"' });
     const { user } = setup({});
 
     await user.type(await screen.findByLabelText('Description'), 'cleanup');
@@ -280,7 +283,7 @@ describe(DomainBatchActionsNewActionDetail.name, () => {
   });
 
   it('starts the batch action and closes the modal on success when confirmed', async () => {
-    setQueryParams({ batchQuery: 'WorkflowType="foo"' });
+    setQueryParams({ batchActionQuery: 'WorkflowType="foo"' });
     const { user } = setup({});
 
     await user.type(await screen.findByLabelText('Description'), 'cleanup');
@@ -296,14 +299,14 @@ describe(DomainBatchActionsNewActionDetail.name, () => {
 
   describe('Select mode', () => {
     it('renders the "Select" toggle segment', async () => {
-      setQueryParams({ batchInputType: 'search' });
+      setQueryParams({ batchActionInputType: 'search' });
       setup({ workflowCount: 2, totalCount: 5 });
 
       expect(await screen.findByText('Select')).toBeInTheDocument();
     });
 
     it('renders checkboxes and a disabled bar when nothing is selected', async () => {
-      setQueryParams({ batchInputType: 'search' });
+      setQueryParams({ batchActionInputType: 'search' });
       setup({ workflowCount: 2, totalCount: 5 });
 
       expect(
@@ -319,7 +322,7 @@ describe(DomainBatchActionsNewActionDetail.name, () => {
     });
 
     it('selecting a row updates the count and enables the bar', async () => {
-      setQueryParams({ batchInputType: 'search' });
+      setQueryParams({ batchActionInputType: 'search' });
       const { user } = setup({ workflowCount: 2, totalCount: 5 });
 
       await user.click(
@@ -338,7 +341,7 @@ describe(DomainBatchActionsNewActionDetail.name, () => {
     });
 
     it('select all selects every workflow and disables row checkboxes', async () => {
-      setQueryParams({ batchInputType: 'search' });
+      setQueryParams({ batchActionInputType: 'search' });
       const { user } = setup({ workflowCount: 2, totalCount: 5 });
 
       await user.click(
@@ -354,7 +357,7 @@ describe(DomainBatchActionsNewActionDetail.name, () => {
     });
 
     it('submits a query built from the individually selected workflows', async () => {
-      setQueryParams({ batchInputType: 'search' });
+      setQueryParams({ batchActionInputType: 'search' });
       const { user, startBodies } = setup({ workflowCount: 2, totalCount: 5 });
 
       await user.click(
@@ -372,9 +375,9 @@ describe(DomainBatchActionsNewActionDetail.name, () => {
 
     it('submits the matching-set query when select all is active', async () => {
       setQueryParams({
-        batchInputType: 'search',
-        batchSearch: 'foo',
-        batchTimeRangeEnd: undefined,
+        batchActionInputType: 'search',
+        batchActionSearch: 'foo',
+        batchActionTimeRangeEnd: undefined,
       });
       const { user, startBodies } = setup({ workflowCount: 2, totalCount: 5 });
 

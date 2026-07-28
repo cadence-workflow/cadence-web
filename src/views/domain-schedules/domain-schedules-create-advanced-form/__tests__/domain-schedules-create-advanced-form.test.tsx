@@ -146,6 +146,37 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
     await user.clear(workflowIdPrefix);
     expect(getValues().workflowIdPrefix).toBeUndefined();
   });
+  it('shows retry sub-fields only after enabling retry policy', async () => {
+    const { user } = setup();
+
+    await user.click(
+      screen.getByRole('button', { name: /show advanced configurations/i })
+    );
+
+    expect(screen.queryByLabelText('Initial Interval')).not.toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole('checkbox', { name: /enable retry policy/i })
+    );
+    expect(screen.getByLabelText('Initial Interval')).toBeInTheDocument();
+    expect(screen.getByLabelText('Maximum Attempts')).toBeInTheDocument();
+  });
+
+  it('switches retry limit field between attempts and duration', async () => {
+    const { user } = setup();
+
+    await user.click(
+      screen.getByRole('button', { name: /show advanced configurations/i })
+    );
+    await user.click(
+      screen.getByRole('checkbox', { name: /enable retry policy/i })
+    );
+
+    expect(screen.getByLabelText('Maximum Attempts')).toBeInTheDocument();
+    await user.click(screen.getByRole('radio', { name: 'Duration' }));
+    expect(screen.getByLabelText('Expiration Interval')).toBeInTheDocument();
+    expect(screen.queryByLabelText('Maximum Attempts')).not.toBeInTheDocument();
+  });
 });
 
 function setup() {
@@ -156,6 +187,7 @@ function setup() {
     const {
       control,
       getValues: readValues,
+      clearErrors,
       formState: { errors: fieldErrors },
     } = useForm<DomainSchedulesCreateFormData>({
       defaultValues: {},
@@ -166,6 +198,7 @@ function setup() {
       <DomainSchedulesCreateAdvancedForm
         control={control}
         fieldErrors={fieldErrors}
+        clearErrors={clearErrors}
         cluster="test-cluster"
       />
     );

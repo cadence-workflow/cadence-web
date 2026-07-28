@@ -4,4 +4,5 @@ export type Props<T extends string> = {
   labelMap: Record<T, string>;
   label: string;
   placeholder: string;
+  clearable?: boolean;
 };

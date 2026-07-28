@@ -16,56 +16,59 @@ import { type WorkflowsHeaderInputType } from '@/views/shared/workflows-header/w
 
 // URL params scoped to the batch action draft.
 export const domainBatchActionsQueryParamsConfig: [
-  PageQueryParam<'batchInputType', WorkflowsHeaderInputType>,
-  PageQueryParam<'batchQuery', string>,
-  PageQueryParam<'batchSearch', string>,
-  PageQueryParamMultiValue<'batchStatuses', Array<WorkflowStatus> | undefined>,
-  PageQueryParam<'batchTimeRangeStart', DateFilterValue | undefined>,
-  PageQueryParam<'batchTimeRangeEnd', DateFilterValue>,
+  PageQueryParam<'batchActionInputType', WorkflowsHeaderInputType>,
+  PageQueryParam<'batchActionQuery', string>,
+  PageQueryParam<'batchActionSearch', string>,
+  PageQueryParamMultiValue<
+    'batchActionStatuses',
+    Array<WorkflowStatus> | undefined
+  >,
+  PageQueryParam<'batchActionTimeRangeStart', DateFilterValue | undefined>,
+  PageQueryParam<'batchActionTimeRangeEnd', DateFilterValue>,
   PageQueryParam<'batchActionId', string | undefined>,
   PageQueryParam<'batchActionWorkflowId', string | undefined>,
 ] = [
   {
-    key: 'batchInputType',
-    queryParamKey: 'batch-input',
+    key: 'batchActionInputType',
+    queryParamKey: 'bainput',
     defaultValue: 'query',
     parseValue: (value: string) => (value === 'search' ? 'search' : 'query'),
   },
   {
-    key: 'batchQuery',
-    queryParamKey: 'batch-query',
+    key: 'batchActionQuery',
+    queryParamKey: 'baquery',
     defaultValue: '',
   },
   {
-    key: 'batchSearch',
-    queryParamKey: 'batch-search',
+    key: 'batchActionSearch',
+    queryParamKey: 'basearch',
     defaultValue: '',
   },
   {
-    key: 'batchStatuses',
-    queryParamKey: 'batch-status',
+    key: 'batchActionStatuses',
+    queryParamKey: 'bastatus',
     isMultiValue: true,
     parseValue: (value: Array<string>) =>
       value.every(isWorkflowStatus) ? value : undefined,
   },
   {
-    key: 'batchTimeRangeStart',
-    queryParamKey: 'batch-start',
+    key: 'batchActionTimeRangeStart',
+    queryParamKey: 'bastart',
     parseValue: parseDateFilterValue,
   },
   {
-    key: 'batchTimeRangeEnd',
-    queryParamKey: 'batch-end',
+    key: 'batchActionTimeRangeEnd',
+    queryParamKey: 'baend',
     defaultValue: 'now',
     parseValue: (v) => parseDateFilterValue(v) ?? 'now',
   },
   {
     key: 'batchActionId',
-    queryParamKey: 'bid',
+    queryParamKey: 'baid',
   },
   {
     key: 'batchActionWorkflowId',
-    queryParamKey: 'bwid',
+    queryParamKey: 'bawid',
   },
 ] as const;
 

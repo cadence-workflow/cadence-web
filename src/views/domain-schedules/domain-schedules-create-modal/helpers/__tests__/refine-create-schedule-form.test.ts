@@ -97,7 +97,7 @@ describe(refineCreateScheduleForm.name, () => {
       })
     ).toEqual([
       expect.objectContaining({
-        path: ['startTime'],
+        path: ['endTime'],
         message: 'Start date must be before end date',
       }),
     ]);

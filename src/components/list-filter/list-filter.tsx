@@ -14,6 +14,7 @@ export default function ListFilter<T extends string>({
   labelMap,
   label,
   placeholder,
+  clearable,
 }: Props<T>) {
   const options = getOptionsFromLabelMap(labelMap);
   const optionValue = value
@@ -34,6 +35,7 @@ export default function ListFilter<T extends string>({
           )
         }
         placeholder={placeholder}
+        clearable={clearable}
       />
     </FormControl>
   );

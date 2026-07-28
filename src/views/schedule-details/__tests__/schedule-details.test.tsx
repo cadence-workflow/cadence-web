@@ -30,6 +30,14 @@ jest.mock(
   () => mockScheduleDetailsSectionsConfig
 );
 
+jest.mock(
+  '../schedule-details-runs-chart/schedule-details-runs-chart',
+  () =>
+    function MockScheduleDetailsRunsChart() {
+      return <div>Mock runs chart</div>;
+    }
+);
+
 const scheduleId = 'my-schedule';
 
 describe(ScheduleDetails.name, () => {
@@ -57,6 +65,7 @@ describe(ScheduleDetails.name, () => {
     expect(
       screen.getByRole('heading', { name: 'Mock policies section' })
     ).toBeInTheDocument();
+    expect(screen.getByText('Mock runs chart')).toBeInTheDocument();
     expect(
       screen.getByRole('rowheader', { name: 'Primary row' })
     ).toBeInTheDocument();

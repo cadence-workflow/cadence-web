@@ -1,5 +1,6 @@
 import { CRON_FIELD_ORDER } from '@/components/cron-schedule-input/cron-schedule-input.constants';
 import { type Json } from '@/route-handlers/start-workflow/start-workflow.types';
+import mapRetryPolicyFormToBody from '@/views/shared/retry-policy-fields/helpers/map-retry-policy-form-to-body';
 
 import {
   type StartWorkflowFormData,
@@ -18,6 +19,8 @@ export default function transformStartWorkflowFormToSubmission(
     workflowId: formData.workflowId,
     workflowIdReusePolicy: formData.workflowIdReusePolicy,
   };
+  const retryPolicy = mapRetryPolicyFormToBody(formData);
+
   const conditionalFormData: Partial<StartWorkflowSubmissionData> = {
     ...(formData.scheduleType === 'LATER' && {
       firstRunAt: formData.firstRunAt,
@@ -27,30 +30,7 @@ export default function transformStartWorkflowFormToSubmission(
         (key) => formData.cronSchedule?.[key]
       ).join(' '),
     }),
-    ...(formData.enableRetryPolicy && {
-      retryPolicy: {
-        initialIntervalSeconds: formData.retryPolicy?.initialIntervalSeconds
-          ? parseInt(formData.retryPolicy?.initialIntervalSeconds, 10)
-          : undefined,
-        backoffCoefficient: formData.retryPolicy?.backoffCoefficient
-          ? parseFloat(formData.retryPolicy?.backoffCoefficient)
-          : undefined,
-        maximumIntervalSeconds: formData.retryPolicy?.maximumIntervalSeconds
-          ? parseInt(formData.retryPolicy?.maximumIntervalSeconds, 10)
-          : undefined,
-        ...(formData.limitRetries === 'ATTEMPTS' && {
-          maximumAttempts: formData.retryPolicy?.maximumAttempts
-            ? parseInt(formData.retryPolicy?.maximumAttempts, 10)
-            : undefined,
-        }),
-        ...(formData.limitRetries === 'DURATION' && {
-          expirationIntervalSeconds: formData.retryPolicy
-            ?.expirationIntervalSeconds
-            ? parseInt(formData.retryPolicy?.expirationIntervalSeconds, 10)
-            : undefined,
-        }),
-      },
-    }),
+    ...(retryPolicy && { retryPolicy }),
   };
 
   const searchAttributesObject =

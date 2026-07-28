@@ -15,42 +15,42 @@ import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow
 const domainBatchActionsFiltersConfig: [
   PageFilterConfig<
     typeof domainPageQueryParamsConfig,
-    { batchStatuses: Array<WorkflowStatus> | undefined }
+    { batchActionStatuses: Array<WorkflowStatus> | undefined }
   >,
   PageFilterConfig<
     typeof domainPageQueryParamsConfig,
     {
-      batchTimeRangeStart: DateFilterValue | undefined;
-      batchTimeRangeEnd: DateFilterValue | undefined;
+      batchActionTimeRangeStart: DateFilterValue | undefined;
+      batchActionTimeRangeEnd: DateFilterValue | undefined;
     }
   >,
 ] = [
   {
     id: 'statuses',
-    getValue: (v) => ({ batchStatuses: v.batchStatuses }),
+    getValue: (v) => ({ batchActionStatuses: v.batchActionStatuses }),
     formatValue: (v) => v,
     component: ({ value, setValue }) =>
       createElement(MultiSelectFilter<WorkflowStatus>, {
         label: 'Status',
         placeholder: 'Show all statuses',
-        values: value.batchStatuses ?? [],
+        values: value.batchActionStatuses ?? [],
         onChangeValues: (v) =>
-          setValue({ batchStatuses: v.length > 0 ? v : undefined }),
+          setValue({ batchActionStatuses: v.length > 0 ? v : undefined }),
         optionsLabelMap: WORKFLOW_STATUS_NAMES,
       }),
   },
   {
     id: 'dates',
     getValue: (v) => ({
-      batchTimeRangeStart: v.batchTimeRangeStart,
-      batchTimeRangeEnd: v.batchTimeRangeEnd,
+      batchActionTimeRangeStart: v.batchActionTimeRangeStart,
+      batchActionTimeRangeEnd: v.batchActionTimeRangeEnd,
     }),
     formatValue: (v) => ({
-      batchTimeRangeStart: v.batchTimeRangeStart
-        ? stringifyDateFilterValue(v.batchTimeRangeStart)
+      batchActionTimeRangeStart: v.batchActionTimeRangeStart
+        ? stringifyDateFilterValue(v.batchActionTimeRangeStart)
         : undefined,
-      batchTimeRangeEnd: v.batchTimeRangeEnd
-        ? stringifyDateFilterValue(v.batchTimeRangeEnd)
+      batchActionTimeRangeEnd: v.batchActionTimeRangeEnd
+        ? stringifyDateFilterValue(v.batchActionTimeRangeEnd)
         : undefined,
     }),
     component: ({ value, setValue }) =>
@@ -58,11 +58,14 @@ const domainBatchActionsFiltersConfig: [
         label: 'Time range',
         placeholder: 'Select time range',
         dates: {
-          start: value.batchTimeRangeStart,
-          end: value.batchTimeRangeEnd,
+          start: value.batchActionTimeRangeStart,
+          end: value.batchActionTimeRangeEnd,
         },
         onChangeDates: ({ start, end }) =>
-          setValue({ batchTimeRangeStart: start, batchTimeRangeEnd: end }),
+          setValue({
+            batchActionTimeRangeStart: start,
+            batchActionTimeRangeEnd: end,
+          }),
       }),
   },
 ] as const;

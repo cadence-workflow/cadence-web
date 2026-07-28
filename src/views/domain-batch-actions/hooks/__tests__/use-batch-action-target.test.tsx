@@ -24,7 +24,7 @@ jest.mock('@/hooks/use-page-query-params/use-page-query-params', () => ({
 describe(useBatchActionTarget.name, () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    setQueryParams({ batchQuery: 'WorkflowType="foo"' });
+    setQueryParams({ batchActionQuery: 'WorkflowType="foo"' });
   });
 
   it('uses the count as the selected count in query mode', async () => {
@@ -43,7 +43,7 @@ describe(useBatchActionTarget.name, () => {
   });
 
   it('renders the default-query caption as the query hint', async () => {
-    setQueryParams({ batchQuery: BATCH_ACTION_DEFAULT_QUERY });
+    setQueryParams({ batchActionQuery: BATCH_ACTION_DEFAULT_QUERY });
     const { result } = setup({});
 
     await waitFor(() =>
@@ -56,7 +56,7 @@ describe(useBatchActionTarget.name, () => {
   });
 
   it('has no query hint once the query has been edited', async () => {
-    setQueryParams({ batchQuery: 'WorkflowType="foo"' });
+    setQueryParams({ batchActionQuery: 'WorkflowType="foo"' });
     const { result } = setup({});
 
     await waitFor(() =>
@@ -66,7 +66,7 @@ describe(useBatchActionTarget.name, () => {
   });
 
   it('only blocks submission and shows the error hint after a submit attempt', async () => {
-    setQueryParams({ batchQuery: '' });
+    setQueryParams({ batchActionQuery: '' });
     const { result } = setup({});
 
     await waitFor(() =>
@@ -87,7 +87,7 @@ describe(useBatchActionTarget.name, () => {
 
   describe('select mode', () => {
     beforeEach(() => {
-      setQueryParams({ batchInputType: 'search' });
+      setQueryParams({ batchActionInputType: 'search' });
     });
 
     it('starts with nothing selected and blocks submission immediately', async () => {
@@ -105,8 +105,8 @@ describe(useBatchActionTarget.name, () => {
 
     it('shows the default caption while only the running-status filter is applied', async () => {
       setQueryParams({
-        batchInputType: 'search',
-        batchStatuses: [WORKFLOW_STATUSES.running],
+        batchActionInputType: 'search',
+        batchActionStatuses: [WORKFLOW_STATUSES.running],
       });
       const { result } = setup({ workflowCount: 2, totalCount: 5 });
 
@@ -121,9 +121,9 @@ describe(useBatchActionTarget.name, () => {
 
     it('hides the default caption once the filters are edited', async () => {
       setQueryParams({
-        batchInputType: 'search',
-        batchStatuses: [WORKFLOW_STATUSES.running],
-        batchSearch: 'foo',
+        batchActionInputType: 'search',
+        batchActionStatuses: [WORKFLOW_STATUSES.running],
+        batchActionSearch: 'foo',
       });
       const { result } = setup({ workflowCount: 2, totalCount: 5 });
 
@@ -152,9 +152,9 @@ describe(useBatchActionTarget.name, () => {
 
     it('builds the matching-set query when select all is active', async () => {
       setQueryParams({
-        batchInputType: 'search',
-        batchSearch: 'foo',
-        batchTimeRangeEnd: undefined,
+        batchActionInputType: 'search',
+        batchActionSearch: 'foo',
+        batchActionTimeRangeEnd: undefined,
       });
       const { result } = setup({ workflowCount: 2, totalCount: 5 });
 
@@ -173,9 +173,9 @@ describe(useBatchActionTarget.name, () => {
 
     it('escapes quotes in the search term for the select-all query', async () => {
       setQueryParams({
-        batchInputType: 'search',
-        batchSearch: 'a"b',
-        batchTimeRangeEnd: undefined,
+        batchActionInputType: 'search',
+        batchActionSearch: 'a"b',
+        batchActionTimeRangeEnd: undefined,
       });
       const { result } = setup({ workflowCount: 2, totalCount: 5 });
 
@@ -204,7 +204,10 @@ describe(useBatchActionTarget.name, () => {
       });
       expect(result.current.selectedCount).toBe(1);
 
-      setQueryParams({ batchInputType: 'search', batchSearch: 'bar' });
+      setQueryParams({
+        batchActionInputType: 'search',
+        batchActionSearch: 'bar',
+      });
       rerender();
 
       await waitFor(() => expect(result.current.selectedCount).toBe(0));

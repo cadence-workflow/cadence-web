@@ -5,6 +5,7 @@ import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api
 import { CRON_FIELD_ORDER } from '@/components/cron-schedule-input/cron-schedule-input.constants';
 import { type CreateScheduleRequestBody } from '@/route-handlers/create-schedule/create-schedule.types';
 import { type Json } from '@/route-handlers/start-workflow/start-workflow.types';
+import mapRetryPolicyFormToBody from '@/views/shared/retry-policy-fields/helpers/map-retry-policy-form-to-body';
 
 import { type DomainSchedulesCreateFormData } from '../domain-schedules-create-modal.types';
 
@@ -18,6 +19,7 @@ export default function transformDomainSchedulesCreateFormToBody(
   const parsedInput = formData.input
     ?.filter((v) => v.trim() !== '')
     .map((v) => JSON.parse(v) as Json);
+  const mappedRetryPolicy = mapRetryPolicyFormToBody(formData);
   const parsedMemo =
     formData.memo && formData.memo.trim() !== ''
       ? (JSON.parse(formData.memo) as Record<string, unknown>)
@@ -39,6 +41,7 @@ export default function transformDomainSchedulesCreateFormToBody(
         formData.executionStartToCloseTimeoutSeconds,
       taskStartToCloseTimeoutSeconds: formData.taskStartToCloseTimeoutSeconds,
       ...(parsedInput && parsedInput.length > 0 ? { input: parsedInput } : {}),
+      ...(mappedRetryPolicy ? { retryPolicy: mappedRetryPolicy } : {}),
       ...(parsedMemo ? { memo: parsedMemo } : {}),
       ...(mappedSearchAttributes
         ? { searchAttributes: mappedSearchAttributes }

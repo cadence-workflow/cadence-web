@@ -71,6 +71,16 @@ describe(PageFiltersSearch.name, () => {
       search: 'test-search',
     });
   });
+
+  it('should cancel a pending debounced search on unmount', async () => {
+    const { user, unmount } = setup({ inputDebounceDurationMs: 400 });
+
+    await user.type(await screen.findByRole('textbox'), 'test-search');
+    unmount();
+    jest.advanceTimersByTime(1000);
+
+    expect(mockSetQueryParams).not.toHaveBeenCalled();
+  });
 });
 
 function setup({

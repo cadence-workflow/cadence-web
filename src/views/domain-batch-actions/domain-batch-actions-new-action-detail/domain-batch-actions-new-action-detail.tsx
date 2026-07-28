@@ -148,9 +148,9 @@ export default function DomainBatchActionsNewActionDetail({
           <WorkflowsHeader
             pageQueryParamsConfig={domainPageQueryParamsConfig}
             pageFiltersConfig={domainBatchActionsFiltersConfig}
-            inputTypeQueryParamKey="batchInputType"
-            searchQueryParamKey="batchSearch"
-            queryStringQueryParamKey="batchQuery"
+            inputTypeQueryParamKey="batchActionInputType"
+            searchQueryParamKey="batchActionSearch"
+            queryStringQueryParamKey="batchActionQuery"
             searchSegmentLabel="Select"
             refetchQuery={refetchAll}
             isQueryRunning={isQueryFetching}

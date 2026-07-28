@@ -38,7 +38,7 @@ export default function useBatchActionTarget({
 }: UseBatchActionTargetParams): UseBatchActionTargetResult {
   const [queryParams] = usePageQueryParams(domainPageQueryParamsConfig);
 
-  const isSelectMode = queryParams.batchInputType === 'search';
+  const isSelectMode = queryParams.batchActionInputType === 'search';
 
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const onSubmitAttempt = useCallback(() => setSubmitAttempted(true), []);
@@ -46,36 +46,43 @@ export default function useBatchActionTarget({
   // In "Select" mode the target set is defined by the search/filters plus the
   // checkbox selection; build the equivalent visibility query so the displayed
   // list, the count, and a "select all" submission all target the same set.
-  const batchTimeRange = useMemo(() => {
+  const batchActionTimeRange = useMemo(() => {
     const now = dayjs();
     return {
-      timeRangeStart: queryParams.batchTimeRangeStart
+      timeRangeStart: queryParams.batchActionTimeRangeStart
         ? getDayjsFromDateFilterValue(
-            queryParams.batchTimeRangeStart,
+            queryParams.batchActionTimeRangeStart,
             now
           ).toISOString()
         : undefined,
-      timeRangeEnd: queryParams.batchTimeRangeEnd
+      timeRangeEnd: queryParams.batchActionTimeRangeEnd
         ? getDayjsFromDateFilterValue(
-            queryParams.batchTimeRangeEnd,
+            queryParams.batchActionTimeRangeEnd,
             now
           ).toISOString()
         : undefined,
     };
-  }, [queryParams.batchTimeRangeStart, queryParams.batchTimeRangeEnd]);
+  }, [
+    queryParams.batchActionTimeRangeStart,
+    queryParams.batchActionTimeRangeEnd,
+  ]);
 
   const selectModeFilters = useMemo(
     () => ({
       // Escape the search term so quotes/backslashes cannot break out of the
       // quoted literal — this query also defines the target set when "select
       // all" submits the batch action.
-      search: escapeVisibilityQueryValue(queryParams.batchSearch),
-      workflowStatuses: queryParams.batchStatuses,
+      search: escapeVisibilityQueryValue(queryParams.batchActionSearch),
+      workflowStatuses: queryParams.batchActionStatuses,
       timeColumn: 'StartTime' as const,
-      timeRangeStart: batchTimeRange.timeRangeStart,
-      timeRangeEnd: batchTimeRange.timeRangeEnd,
+      timeRangeStart: batchActionTimeRange.timeRangeStart,
+      timeRangeEnd: batchActionTimeRange.timeRangeEnd,
     }),
-    [queryParams.batchSearch, queryParams.batchStatuses, batchTimeRange]
+    [
+      queryParams.batchActionSearch,
+      queryParams.batchActionStatuses,
+      batchActionTimeRange,
+    ]
   );
 
   // We omit ORDER BY: it is invalid for the count call, and the backend's default
@@ -103,7 +110,7 @@ export default function useBatchActionTarget({
         isDefaultFilters: isDefaultSelectFilters,
       })
     : getQueryModeStrategy({
-        batchQuery: queryParams.batchQuery,
+        batchActionQuery: queryParams.batchActionQuery,
         submitAttempted,
       });
 
@@ -140,11 +147,11 @@ export default function useBatchActionTarget({
     resetSelection();
   }, [
     resetSelection,
-    queryParams.batchInputType,
-    queryParams.batchSearch,
-    queryParams.batchStatuses,
-    queryParams.batchTimeRangeStart,
-    queryParams.batchTimeRangeEnd,
+    queryParams.batchActionInputType,
+    queryParams.batchActionSearch,
+    queryParams.batchActionStatuses,
+    queryParams.batchActionTimeRangeStart,
+    queryParams.batchActionTimeRangeEnd,
   ]);
 
   const selectedWorkflows = useMemo(

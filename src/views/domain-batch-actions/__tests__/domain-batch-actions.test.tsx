@@ -116,7 +116,7 @@ describe(DomainBatchActions.name, () => {
   beforeEach(() => {
     mockSetQueryParams.mockClear();
     mockUsePageQueryParams.mockReturnValue([
-      { ...mockDomainPageQueryParamsValues, batchQuery: '' },
+      { ...mockDomainPageQueryParamsValues, batchActionQuery: '' },
       mockSetQueryParams,
     ]);
   });
@@ -166,8 +166,8 @@ describe(DomainBatchActions.name, () => {
     expect(mockSetQueryParams).toHaveBeenCalledWith({
       ...BATCH_DRAFT_RESET_PARAMS,
       batchActionId: 'draft',
-      batchQuery: 'CloseTime = missing',
-      batchStatuses: BATCH_ACTION_DEFAULT_STATUSES,
+      batchActionQuery: 'CloseTime = missing',
+      batchActionStatuses: BATCH_ACTION_DEFAULT_STATUSES,
     });
   });
 
@@ -176,7 +176,7 @@ describe(DomainBatchActions.name, () => {
       {
         ...mockDomainPageQueryParamsValues,
         batchActionId: 'draft',
-        batchQuery: 'WorkflowType="foo"',
+        batchActionQuery: 'WorkflowType="foo"',
       },
       mockSetQueryParams,
     ]);
@@ -190,12 +190,12 @@ describe(DomainBatchActions.name, () => {
     expect(mockSetQueryParams).toHaveBeenCalledWith(BATCH_DRAFT_RESET_PARAMS);
   });
 
-  it('opens the draft when batchActionId is "draft" (no batchQuery)', async () => {
+  it('opens the draft when batchActionId is "draft" (no batchActionQuery)', async () => {
     mockUsePageQueryParams.mockReturnValue([
       {
         ...mockDomainPageQueryParamsValues,
         batchActionId: 'draft',
-        batchQuery: '',
+        batchActionQuery: '',
       },
       mockSetQueryParams,
     ]);
@@ -213,7 +213,7 @@ describe(DomainBatchActions.name, () => {
         ...mockDomainPageQueryParamsValues,
         batchActionId: '4',
         batchActionWorkflowId: 'wf-4',
-        batchQuery: '',
+        batchActionQuery: '',
       },
       mockSetQueryParams,
     ]);
@@ -234,7 +234,7 @@ describe(DomainBatchActions.name, () => {
         ...mockDomainPageQueryParamsValues,
         batchActionId: 'run-999',
         batchActionWorkflowId: 'wf-999',
-        batchQuery: '',
+        batchActionQuery: '',
       },
       mockSetQueryParams,
     ]);
@@ -254,7 +254,7 @@ describe(DomainBatchActions.name, () => {
         ...mockDomainPageQueryParamsValues,
         batchActionId: 'run-999',
         batchActionWorkflowId: 'wf-999',
-        batchQuery: '',
+        batchActionQuery: '',
       },
       mockSetQueryParams,
     ]);
@@ -287,7 +287,7 @@ describe(DomainBatchActions.name, () => {
         ...mockDomainPageQueryParamsValues,
         batchActionId: 'run-999',
         batchActionWorkflowId: undefined,
-        batchQuery: '',
+        batchActionQuery: '',
       },
       mockSetQueryParams,
     ]);
