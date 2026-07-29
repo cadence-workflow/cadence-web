@@ -1,5 +1,6 @@
 import { styled as createStyled, type Theme } from 'baseui';
 import { type ButtonOverrides } from 'baseui/button';
+import { type SkeletonOverrides } from 'baseui/skeleton/types';
 import { type StyleObject } from 'styletron-react';
 
 import {
@@ -63,6 +64,10 @@ export const styled = {
     ...$theme.typography.ParagraphSmall,
     color: $theme.colors.contentSecondary,
   })),
+  LoadingOverlay: createStyled('div', () => ({
+    width: '100%',
+    height: '100%',
+  })),
 };
 
 const toolbarButtonRootOverrides = {
@@ -80,4 +85,9 @@ export const overrides = {
   toolbarButton: {
     Root: toolbarButtonRootOverrides,
   } satisfies ButtonOverrides,
+  loadingSkeleton: {
+    Root: {
+      style: { height: '100%' },
+    },
+  } satisfies SkeletonOverrides,
 };

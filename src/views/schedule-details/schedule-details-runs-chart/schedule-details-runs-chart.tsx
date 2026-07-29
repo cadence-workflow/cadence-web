@@ -2,12 +2,13 @@
 import React, { useMemo } from 'react';
 
 import { useParentSize } from '@visx/responsive';
+import { Skeleton } from 'baseui/skeleton';
 import { MdGpsFixed, MdZoomIn, MdZoomOut } from 'react-icons/md';
 
 import Button from '@/components/button/button';
 import useCurrentTimeMs from '@/hooks/use-current-time-ms/use-current-time-ms';
+import useScheduleRunsChartData from '@/views/schedule-details/hooks/use-schedule-runs-chart-data/use-schedule-runs-chart-data';
 
-import buildScheduleRunsChartSeriesFixture from '../schedule-details-runs-chart-series/__fixtures__/schedule-details-runs-chart-series-fixture';
 import hasScheduleRunsChartData from '../schedule-details-runs-chart-series/helpers/has-schedule-runs-chart-data';
 import ScheduleDetailsRunsChartSeries from '../schedule-details-runs-chart-series/schedule-details-runs-chart-series';
 import ScheduleDetailsRunsChartTimeline from '../schedule-details-runs-chart-timeline/schedule-details-runs-chart-timeline';
@@ -18,6 +19,8 @@ import resolveChartTimeWindow from './helpers/resolve-chart-time-window';
 import {
   CHART_EMPTY_STATE_MESSAGE,
   CHART_HEIGHT_PX,
+  CHART_LOADING_ARIA_LABEL,
+  CHART_LOADING_TEST_ID,
   CHART_REGION_ARIA_LABEL,
   CHART_TOOLBAR_ARIA_LABEL,
   CHART_TOOLBAR_BUTTON_LABELS,
@@ -27,7 +30,7 @@ import {
 import { overrides, styled } from './schedule-details-runs-chart.styles';
 import { type Props } from './schedule-details-runs-chart.types';
 
-export default function ScheduleDetailsRunsChart(_props: Props) {
+export default function ScheduleDetailsRunsChart({ params }: Props) {
   const nowMs = useCurrentTimeMs({
     intervalMs: CURRENT_TIME_UPDATE_INTERVAL_MS,
   });
@@ -35,11 +38,12 @@ export default function ScheduleDetailsRunsChart(_props: Props) {
     initialSize: { width: 0, height: CHART_HEIGHT_PX },
   });
 
-  // TODO(PR09e): replace the static fixture with live schedule workflow data.
-  const chartData = useMemo(
-    () => buildScheduleRunsChartSeriesFixture(nowMs),
-    [nowMs]
-  );
+  const { data: chartData, isLoading } = useScheduleRunsChartData({
+    domain: params.domain,
+    cluster: params.cluster,
+    scheduleId: params.scheduleId,
+    nowMs,
+  });
   const hasChartData = hasScheduleRunsChartData(chartData);
 
   const xScale = useMemo(() => {
@@ -107,7 +111,21 @@ export default function ScheduleDetailsRunsChart(_props: Props) {
         role="region"
         aria-label={CHART_REGION_ARIA_LABEL}
       >
-        {xScale === null || !hasChartData ? (
+        {isLoading ? (
+          <styled.LoadingOverlay
+            role="status"
+            aria-label={CHART_LOADING_ARIA_LABEL}
+            data-testid={CHART_LOADING_TEST_ID}
+          >
+            <Skeleton
+              animation
+              rows={0}
+              width="100%"
+              height="100%"
+              overrides={overrides.loadingSkeleton}
+            />
+          </styled.LoadingOverlay>
+        ) : xScale === null || !hasChartData ? (
           <styled.EmptyState role="status">
             {CHART_EMPTY_STATE_MESSAGE}
           </styled.EmptyState>
