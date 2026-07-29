@@ -40,6 +40,7 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
     domain: params.domain,
     cluster: params.cluster,
     scheduleId: params.scheduleId,
+    nowMs,
   });
   const hasChartData = hasScheduleRunsChartData(chartData);
 

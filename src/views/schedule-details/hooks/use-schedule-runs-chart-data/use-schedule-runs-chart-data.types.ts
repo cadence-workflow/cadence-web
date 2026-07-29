@@ -4,6 +4,7 @@ export type UseScheduleRunsChartDataParams = {
   domain: string;
   cluster: string;
   scheduleId: string;
+  nowMs: number;
 };
 
 export type UseScheduleRunsChartDataResult = {
