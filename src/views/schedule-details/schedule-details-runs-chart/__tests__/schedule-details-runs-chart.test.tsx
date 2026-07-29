@@ -10,14 +10,47 @@ import {
   CHART_TOOLBAR_BUTTON_LABELS,
 } from '../schedule-details-runs-chart.constants';
 
+let mockChartWidthPx = 800;
+
+jest.mock('@visx/responsive', () => ({
+  useParentSize: () => ({
+    parentRef: { current: null },
+    width: mockChartWidthPx,
+  }),
+}));
+
+jest.mock(
+  '../../schedule-details-runs-chart-timeline/schedule-details-runs-chart-timeline',
+  () => jest.fn(() => <text>Mock timeline</text>)
+);
+
+jest.mock(
+  '../../schedule-details-runs-chart-series/schedule-details-runs-chart-series',
+  () => jest.fn(() => <div>Mock series</div>)
+);
+
 describe(ScheduleDetailsRunsChart.name, () => {
-  it('renders the empty state inside the chart region', () => {
+  it('draws the timeline once the region has been measured', () => {
     setup();
 
     expect(
-      within(
-        screen.getByRole('region', { name: CHART_REGION_ARIA_LABEL })
-      ).getByText(CHART_EMPTY_STATE_MESSAGE)
+      within(getChartRegion()).getByText('Mock timeline')
+    ).toBeInTheDocument();
+  });
+
+  it('draws the series once the region has been measured', () => {
+    setup();
+
+    expect(
+      within(getChartRegion()).getByText('Mock series')
+    ).toBeInTheDocument();
+  });
+
+  it('falls back to the empty state while the region has no drawable width', () => {
+    setup({ widthPx: 0 });
+
+    expect(
+      within(getChartRegion()).getByText(CHART_EMPTY_STATE_MESSAGE)
     ).toBeInTheDocument();
   });
 
@@ -36,7 +69,9 @@ describe(ScheduleDetailsRunsChart.name, () => {
   });
 });
 
-function setup() {
+function setup({ widthPx = 800 }: { widthPx?: number } = {}) {
+  mockChartWidthPx = widthPx;
+
   render(
     <ScheduleDetailsRunsChart
       params={{
@@ -47,4 +82,8 @@ function setup() {
       }}
     />
   );
+}
+
+function getChartRegion() {
+  return screen.getByRole('region', { name: CHART_REGION_ARIA_LABEL });
 }

@@ -19,6 +19,13 @@ export const CHART_REGION_ARIA_LABEL = 'Schedule runs chart';
 
 export const CHART_TOOLBAR_ARIA_LABEL = 'Chart controls';
 
+/**
+ * How often `now` is re-read. Every tick shifts the time window, re-rendering
+ * the timeline. That is well within budget at 1s, which is the coarsest the
+ * marker can move and still read as advancing rather than stepping.
+ */
+export const CURRENT_TIME_UPDATE_INTERVAL_MS = 1_000;
+
 /** Minimum time span when domain collapses to a single timestamp (ms). */
 export const CHART_MIN_DOMAIN_SPAN_MS = 5 * 60_000;
 

@@ -51,6 +51,9 @@ export const styled = {
     height: `${CHART_HEIGHT_PX}px`,
     backgroundColor: $theme.colors.backgroundPrimary,
   })),
+  ChartSvg: createStyled('svg', () => ({
+    display: 'block',
+  })),
   EmptyState: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
     alignItems: 'center',

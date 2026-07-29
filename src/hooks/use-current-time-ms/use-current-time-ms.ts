@@ -1,23 +1,22 @@
 import { useEffect, useState } from 'react';
 
-import { TIMELINE_UPDATE_INTERVAL_MS } from '../workflow-history-timeline.constants';
+import { type UseCurrentTimeMsParams } from './use-current-time-ms.types';
 
 export default function useCurrentTimeMs({
-  isWorkflowRunning,
-}: {
-  isWorkflowRunning: boolean;
-}) {
+  intervalMs,
+  isEnabled = true,
+}: UseCurrentTimeMsParams): number {
   const [currentTimeMs, setCurrentTimeMs] = useState<number>(Date.now());
 
   useEffect(() => {
-    if (!isWorkflowRunning) return;
+    if (!isEnabled) return;
 
     const intervalId = setInterval(() => {
       setCurrentTimeMs(Date.now());
-    }, TIMELINE_UPDATE_INTERVAL_MS);
+    }, intervalMs);
 
     return () => clearInterval(intervalId);
-  }, [isWorkflowRunning]);
+  }, [intervalMs, isEnabled]);
 
   return currentTimeMs;
 }
