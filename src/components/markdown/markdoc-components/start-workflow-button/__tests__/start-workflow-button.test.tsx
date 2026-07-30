@@ -3,7 +3,9 @@ import { HttpResponse } from 'msw';
 import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
 import { MarkdownContext } from '../../../markdown-context-provider/markdown-context-provider';
+import { type MarkdownContextType } from '../../../markdown-context-provider/markdown-context-provider.types';
 import StartWorkflowButton from '../start-workflow-button';
+import { type StartWorkflowButtonProps } from '../start-workflow-button.types';
 
 const mockEnqueue = jest.fn();
 jest.mock('baseui/snackbar', () => ({
@@ -30,7 +32,7 @@ const defaultProps = {
   domain: 'test-domain',
   cluster: 'test-cluster',
   taskList: 'test-task-list',
-};
+} satisfies StartWorkflowButtonProps;
 
 describe(StartWorkflowButton.name, () => {
   beforeEach(() => {
@@ -150,8 +152,8 @@ function setup({
 }: {
   error?: boolean;
   result?: { workflowId?: string; runId?: string };
-  propsOverrides?: Partial<typeof defaultProps>;
-  contextValue?: Partial<typeof defaultProps>;
+  propsOverrides?: Partial<StartWorkflowButtonProps>;
+  contextValue?: MarkdownContextType;
 }) {
   const user = userEvent.setup();
   let latestRequestPathname: string | undefined;

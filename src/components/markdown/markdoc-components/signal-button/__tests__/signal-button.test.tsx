@@ -3,8 +3,10 @@ import { HttpResponse } from 'msw';
 import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
 import { MarkdownContext } from '../../../markdown-context-provider/markdown-context-provider';
+import { type MarkdownContextType } from '../../../markdown-context-provider/markdown-context-provider.types';
 import SignalButton from '../signal-button';
 import { SIGNAL_SUCCESS_NOTIFICATION_DURATION_MS } from '../signal-button.constants';
+import { type SignalButtonProps } from '../signal-button.types';
 
 const mockEnqueue = jest.fn();
 jest.mock('baseui/snackbar', () => ({
@@ -27,7 +29,7 @@ const defaultProps = {
   cluster: 'test-cluster',
   workflowId: 'test-workflow-id',
   runId: 'test-run-id',
-};
+} satisfies SignalButtonProps;
 
 describe(SignalButton.name, () => {
   beforeEach(() => {
@@ -196,8 +198,8 @@ function setup({
   contextValue,
 }: {
   error?: boolean;
-  propsOverrides?: Partial<typeof defaultProps>;
-  contextValue?: Partial<typeof defaultProps>;
+  propsOverrides?: Partial<SignalButtonProps>;
+  contextValue?: MarkdownContextType;
 }) {
   const user = userEvent.setup();
   let latestRequestPathname: string | undefined;
