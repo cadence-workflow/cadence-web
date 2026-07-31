@@ -1,0 +1,25 @@
+import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
+
+import { type ChartXScale } from '../schedule-details-runs-chart/schedule-details-runs-chart.types';
+
+export type ChartSeriesRun = {
+  runId: string;
+  scheduledTimeMs: number;
+  status: WorkflowStatus;
+  isBackfill?: boolean;
+};
+
+export type ChartSeriesExecutionPoint = {
+  scheduledTimeMs: number;
+};
+
+export type ChartSeriesData = {
+  runs: ChartSeriesRun[];
+  skippedExecutions: ChartSeriesExecutionPoint[];
+  nextExecutionTimeMs: number | null;
+};
+
+export type Props = {
+  xScale: ChartXScale;
+  data: ChartSeriesData;
+};
