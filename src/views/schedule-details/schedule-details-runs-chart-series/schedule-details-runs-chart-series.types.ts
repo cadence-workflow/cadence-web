@@ -3,6 +3,7 @@ import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow
 import { type ChartXScale } from '../schedule-details-runs-chart/schedule-details-runs-chart.types';
 
 export type ChartSeriesRun = {
+  workflowId: string;
   runId: string;
   scheduledTimeMs: number;
   status: WorkflowStatus;

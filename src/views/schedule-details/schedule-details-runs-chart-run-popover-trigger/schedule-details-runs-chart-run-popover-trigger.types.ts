@@ -1,9 +1,9 @@
-import { type ChartSeriesRun } from '@/views/schedule-details/schedule-details-runs-chart-series/schedule-details-runs-chart-series.types';
+import { type ChartRunPopoverEntry } from '@/views/schedule-details/schedule-details-runs-chart-run-popover/schedule-details-runs-chart-run-popover.types';
 
 export type Props = {
   x: number;
   y: number;
-  runs: ChartSeriesRun[];
+  entries: ChartRunPopoverEntry[];
   domain: string;
   cluster: string;
   ariaLabel: string;

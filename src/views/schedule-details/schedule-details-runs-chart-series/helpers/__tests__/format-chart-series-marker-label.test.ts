@@ -12,6 +12,7 @@ describe(formatChartSeriesRunGroupLabel.name, () => {
     expect(
       formatChartSeriesRunGroupLabel([
         {
+          workflowId: 'wf-1',
           runId: 'run-1',
           scheduledTimeMs,
           status: WORKFLOW_STATUSES.completed,
@@ -30,6 +31,7 @@ describe(formatChartSeriesRunGroupLabel.name, () => {
     expect(
       formatChartSeriesRunGroupLabel([
         {
+          workflowId: 'wf-1',
           runId: 'run-1',
           scheduledTimeMs,
           status: WORKFLOW_STATUSES.completed,
@@ -37,6 +39,7 @@ describe(formatChartSeriesRunGroupLabel.name, () => {
           endedTimeMs: null,
         },
         {
+          workflowId: 'wf-2',
           runId: 'run-2',
           scheduledTimeMs,
           status: WORKFLOW_STATUSES.failed,

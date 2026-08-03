@@ -15,34 +15,35 @@ import { type Props } from './schedule-details-runs-chart-run-popover-trigger.ty
 export default function ScheduleDetailsRunsChartRunPopoverTrigger({
   x,
   y,
-  runs,
+  entries,
   domain,
   cluster,
   ariaLabel,
   testId,
 }: Props) {
   return (
-    <StatefulPopover
-      triggerType="hover"
-      accessibilityType="tooltip"
-      content={() => (
-        <ScheduleDetailsRunsChartRunPopover
-          runs={runs}
-          domain={domain}
-          cluster={cluster}
+    <styled.TriggerAnchor $x={x} $y={y}>
+      <StatefulPopover
+        triggerType="hover"
+        accessibilityType="tooltip"
+        content={() => (
+          <ScheduleDetailsRunsChartRunPopover
+            entries={entries}
+            domain={domain}
+            cluster={cluster}
+          />
+        )}
+        placement="top"
+        overrides={overrides.popover}
+        onMouseEnterDelay={CHART_RUN_POPOVER_ENTRY_DELAY_MS}
+        popoverMargin={0}
+      >
+        <styled.HitArea
+          type="button"
+          aria-label={ariaLabel}
+          data-testid={testId}
         />
-      )}
-      placement="top"
-      overrides={overrides.popover}
-      onMouseEnterDelay={CHART_RUN_POPOVER_ENTRY_DELAY_MS}
-    >
-      <styled.HitArea
-        type="button"
-        $x={x}
-        $y={y}
-        aria-label={ariaLabel}
-        data-testid={testId}
-      />
-    </StatefulPopover>
+      </StatefulPopover>
+    </styled.TriggerAnchor>
   );
 }

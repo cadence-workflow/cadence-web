@@ -35,6 +35,7 @@ export default function workflowsForScheduleToChartSeriesRuns(
         : undefined;
 
     runs.push({
+      workflowId: workflow.workflowID,
       runId: workflow.runID,
       status: workflow.status,
       scheduledTimeMs,

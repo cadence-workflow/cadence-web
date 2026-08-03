@@ -43,10 +43,12 @@ export const CHART_FUTURE_GUTTER_MS = 30 * 60_000;
 export const CHART_SIDE_PADDING_PX = 24;
 
 /** Radius of the invisible hit area around run glyphs (px). */
-export const CHART_GLYPH_HIT_AREA_RADIUS_PX = 14;
+export const CHART_GLYPH_HIT_AREA_RADIUS_PX = 10;
 
 export const CHART_RUN_POPOVER_ENTRY_DELAY_MS = 200;
 
 export const CHART_RUN_POPOVER_TEST_IDS = {
   runTrigger: 'schedule-runs-chart-run-popover-trigger',
+  skippedTrigger: 'schedule-runs-chart-skipped-popover-trigger',
+  nextTrigger: 'schedule-runs-chart-next-popover-trigger',
 } as const;

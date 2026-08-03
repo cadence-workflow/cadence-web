@@ -43,6 +43,42 @@ export function getMockDescribeScheduleResponseForRunsChartPopover() {
   });
 }
 
+export function getMockDescribeScheduleResponseForRunsChartPopoverWithSkipped() {
+  return getMockRunningDescribeScheduleResponse({
+    spec: {
+      cronExpression: '0 * * * *',
+      startTime: null,
+      endTime: null,
+      jitter: null,
+    },
+    info: {
+      lastRunTime: {
+        seconds: String(
+          SCHEDULE_RUNS_CHART_POPOVER_FIXTURE_NOW_MS / 1000 - 3600
+        ),
+        nanos: 0,
+      },
+      nextRunTime: {
+        seconds: String(
+          SCHEDULE_RUNS_CHART_POPOVER_FIXTURE_NOW_MS / 1000 + 3600
+        ),
+        nanos: 0,
+      },
+      totalRuns: '2',
+      createTime: {
+        seconds: String(
+          (SCHEDULE_RUNS_CHART_POPOVER_FIXTURE_NOW_MS - 3 * hourMs) / 1000
+        ),
+        nanos: 0,
+      },
+      lastUpdateTime: null,
+      missedRuns: '0',
+      skippedRuns: '0',
+      ongoingBackfills: [],
+    },
+  });
+}
+
 function scheduleTimeAttribute(scheduledTimeMs: number) {
   return {
     data: Buffer.from(
@@ -97,6 +133,32 @@ export function getMockWorkflowPagesForRunsChartPopover(): Array<ListWorkflowsRe
           searchAttributes: {
             [SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN]: scheduleTimeAttribute(
               stackedScheduleTimeMs
+            ),
+          },
+        }),
+      ],
+      nextPage: '',
+    },
+  ];
+}
+
+export function getMockWorkflowPagesForRunsChartPopoverWithSkipped(): Array<ListWorkflowsResponse> {
+  const recentScheduledTimeMs =
+    SCHEDULE_RUNS_CHART_POPOVER_FIXTURE_NOW_MS - hourMs;
+
+  return [
+    {
+      workflows: [
+        getMockWorkflowListItem({
+          workflowID: 'wf-recent',
+          runID: 'run-recent',
+          status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
+          historyLength: 10,
+          closeTime: recentScheduledTimeMs + 1000,
+          startTime: recentScheduledTimeMs,
+          searchAttributes: {
+            [SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN]: scheduleTimeAttribute(
+              recentScheduledTimeMs
             ),
           },
         }),

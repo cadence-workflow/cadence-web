@@ -50,6 +50,7 @@ const mockRun = (
       'runId' | 'scheduledTimeMs' | 'status'
     >
 ) => ({
+  workflowId: 'wf-1',
   startedTimeMs: null,
   endedTimeMs: null,
   ...overrides,
@@ -169,6 +170,32 @@ describe(ScheduleDetailsRunsChartSeries.name, () => {
     ).not.toBeInTheDocument();
   });
 
+  it('renders a popover trigger for the next execution when set', () => {
+    setup({
+      data: {
+        ...EMPTY_DATA,
+        nextExecutionTimeMs: Date.UTC(2024, 0, 1, 5, 0),
+      },
+    });
+
+    expect(
+      screen.getByTestId(CHART_RUN_POPOVER_TEST_IDS.nextTrigger)
+    ).toBeInTheDocument();
+  });
+
+  it('renders a popover trigger for each skipped execution', () => {
+    setup({
+      data: {
+        ...EMPTY_DATA,
+        skippedExecutions: [{ scheduledTimeMs: Date.UTC(2024, 0, 1, 3, 0) }],
+      },
+    });
+
+    expect(
+      screen.getByTestId(CHART_RUN_POPOVER_TEST_IDS.skippedTrigger)
+    ).toBeInTheDocument();
+  });
+
   it('renders markers in timeline order so right-side icons stack above left-side icons', () => {
     setup({
       data: {
@@ -195,9 +222,11 @@ describe(ScheduleDetailsRunsChartSeries.name, () => {
     expect(markerTestIds).toEqual([
       CHART_SERIES_TEST_IDS.loadingExecutionMarker,
       CHART_SERIES_TEST_IDS.skippedExecutionMarker,
+      CHART_RUN_POPOVER_TEST_IDS.skippedTrigger,
       CHART_SERIES_TEST_IDS.runMarker,
       CHART_RUN_POPOVER_TEST_IDS.runTrigger,
       CHART_SERIES_TEST_IDS.nextExecutionMarker,
+      CHART_RUN_POPOVER_TEST_IDS.nextTrigger,
     ]);
   });
 });

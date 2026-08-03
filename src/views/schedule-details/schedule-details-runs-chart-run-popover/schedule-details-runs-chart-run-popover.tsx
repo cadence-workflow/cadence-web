@@ -1,123 +1,117 @@
+'use client';
 import React from 'react';
 
-import {
-  MdAutorenew,
-  MdCancel,
-  MdCheckCircle,
-  MdError,
-  MdInfoOutline,
-  MdPlayArrow,
-  MdTimer,
-} from 'react-icons/md';
+import { useStyletron } from 'baseui';
+import { MdOpenInNew } from 'react-icons/md';
 
 import Link from '@/components/link/link';
-import useStyletronClasses from '@/hooks/use-styletron-classes';
-import formatDate from '@/utils/data-formatters/format-date';
-import {
-  WORKFLOW_STATUS_NAMES,
-  WORKFLOW_STATUSES,
-} from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
-import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
+import WorkflowStatusTag from '@/views/shared/workflow-status-tag/workflow-status-tag';
 
+import getRunPopoverTimestampRows from './helpers/get-run-popover-timestamp-rows';
 import {
   RUN_POPOVER_BACKFILL_LABEL,
+  RUN_POPOVER_NEXT_LABEL,
+  RUN_POPOVER_SKIPPED_LABEL,
+  RUN_POPOVER_STATUS_LABEL,
   RUN_POPOVER_TEST_IDS,
-  RUN_POPOVER_TIMESTAMP_LABELS,
 } from './schedule-details-runs-chart-run-popover.constants';
 import { styled } from './schedule-details-runs-chart-run-popover.styles';
-import { type Props } from './schedule-details-runs-chart-run-popover.types';
+import {
+  type PopoverEntryProps,
+  type Props,
+} from './schedule-details-runs-chart-run-popover.types';
 
-function formatTimestamp(timestampMs: number | null) {
-  if (timestampMs == null) {
-    return '—';
-  }
-
-  return formatDate(timestampMs);
+function PopoverEntry({ title, rows }: PopoverEntryProps) {
+  return (
+    <styled.Entry data-testid={RUN_POPOVER_TEST_IDS.entry}>
+      <styled.EntryTitle>{title}</styled.EntryTitle>
+      {rows.map(({ label, value }) => (
+        <React.Fragment key={label}>
+          <styled.RowLabel>{label}</styled.RowLabel>
+          <styled.RowValue>{value}</styled.RowValue>
+        </React.Fragment>
+      ))}
+    </styled.Entry>
+  );
 }
 
 export default function ScheduleDetailsRunsChartRunPopover({
-  runs,
+  entries,
   domain,
   cluster,
 }: Props) {
-  const { theme } = useStyletronClasses({});
+  const [, theme] = useStyletron();
 
   return (
     <styled.Content data-testid={RUN_POPOVER_TEST_IDS.content}>
-      {runs.map((run) => (
-        <styled.RunEntry
-          key={run.runId}
-          data-testid={RUN_POPOVER_TEST_IDS.runEntry}
-        >
-          <styled.RunHeader>
-            <styled.RunId>{run.runId}</styled.RunId>
-            <styled.Status>
-              <span data-testid={RUN_POPOVER_TEST_IDS.statusIcon}>
-                <StatusIcon status={run.status} />
-              </span>
-              <span>{WORKFLOW_STATUS_NAMES[run.status]}</span>
-            </styled.Status>
-          </styled.RunHeader>
-          {run.backfillId != null && (
-            <styled.BackfillRow>
-              <styled.TimestampLabel>
-                {RUN_POPOVER_BACKFILL_LABEL}
-              </styled.TimestampLabel>
+      {entries.map((entry) => {
+        if (entry.kind !== 'run') {
+          return (
+            <PopoverEntry
+              key={`${entry.kind}-${entry.scheduledTimeMs}`}
+              title={
+                entry.kind === 'skipped'
+                  ? RUN_POPOVER_SKIPPED_LABEL
+                  : RUN_POPOVER_NEXT_LABEL
+              }
+              rows={getRunPopoverTimestampRows({
+                scheduledTimeMs: entry.scheduledTimeMs,
+                startedTimeMs: null,
+                endedTimeMs: null,
+              })}
+            />
+          );
+        }
+
+        const { run } = entry;
+
+        return (
+          <PopoverEntry
+            key={run.runId}
+            title={
               <Link
-                href={`/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows?input=query&query=${encodeURIComponent(`CadenceScheduleBackfillID="${run.backfillId}"`)}`}
+                href={`/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows/${encodeURIComponent(run.workflowId)}/${encodeURIComponent(run.runId)}`}
               >
-                {run.backfillId}
+                {run.runId}
               </Link>
-            </styled.BackfillRow>
-          )}
-          <styled.TimestampRow>
-            <styled.TimestampLabel>
-              {RUN_POPOVER_TIMESTAMP_LABELS.scheduled}
-            </styled.TimestampLabel>
-            <styled.TimestampValue>
-              {formatTimestamp(run.scheduledTimeMs)}
-            </styled.TimestampValue>
-          </styled.TimestampRow>
-          <styled.TimestampRow>
-            <styled.TimestampLabel>
-              {RUN_POPOVER_TIMESTAMP_LABELS.started}
-            </styled.TimestampLabel>
-            <styled.TimestampValue>
-              {formatTimestamp(run.startedTimeMs)}
-            </styled.TimestampValue>
-          </styled.TimestampRow>
-          <styled.TimestampRow>
-            <styled.TimestampLabel>
-              {RUN_POPOVER_TIMESTAMP_LABELS.ended}
-            </styled.TimestampLabel>
-            <styled.TimestampValue>
-              {formatTimestamp(run.endedTimeMs)}
-            </styled.TimestampValue>
-          </styled.TimestampRow>
-        </styled.RunEntry>
-      ))}
+            }
+            rows={[
+              {
+                label: RUN_POPOVER_STATUS_LABEL,
+                value: (
+                  <span data-testid={RUN_POPOVER_TEST_IDS.statusIcon}>
+                    <WorkflowStatusTag status={run.status} />
+                  </span>
+                ),
+              },
+              ...(run.backfillId != null
+                ? [
+                    {
+                      label: RUN_POPOVER_BACKFILL_LABEL,
+                      value: (
+                        <styled.ValueWithIcon>
+                          <Link
+                            href={`/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows?input=query&query=${encodeURIComponent(`CadenceScheduleBackfillID="${run.backfillId}"`)}`}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {run.backfillId}
+                          </Link>
+                          <MdOpenInNew
+                            size={theme.sizing.scale500}
+                            color={theme.colors.contentPrimary}
+                            aria-hidden
+                          />
+                        </styled.ValueWithIcon>
+                      ),
+                    },
+                  ]
+                : []),
+              ...getRunPopoverTimestampRows(run),
+            ]}
+          />
+        );
+      })}
     </styled.Content>
   );
-
-  function StatusIcon({ status }: { status: WorkflowStatus }) {
-    switch (status) {
-      case WORKFLOW_STATUSES.completed:
-        return <MdCheckCircle color={theme.colors.contentPositive} size={14} />;
-      case WORKFLOW_STATUSES.failed:
-        return <MdError color={theme.colors.contentNegative} size={14} />;
-      case WORKFLOW_STATUSES.canceled:
-      case WORKFLOW_STATUSES.terminated:
-        return <MdCancel color={theme.colors.contentWarning} size={14} />;
-      case WORKFLOW_STATUSES.continuedAsNew:
-        return <MdAutorenew color={theme.colors.contentAccent} size={14} />;
-      case WORKFLOW_STATUSES.timedOut:
-        return <MdTimer color={theme.colors.contentWarning} size={14} />;
-      case WORKFLOW_STATUSES.running:
-        return <MdPlayArrow color={theme.colors.contentAccent} size={14} />;
-      default:
-        return (
-          <MdInfoOutline color={theme.colors.contentSecondary} size={14} />
-        );
-    }
-  }
 }

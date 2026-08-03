@@ -10,12 +10,17 @@ import { WORKFLOW_STATUS_NAMES } from '@/views/shared/workflow-status-tag/workfl
 
 import {
   RUN_POPOVER_BACKFILL_LABEL,
+  RUN_POPOVER_EMPTY_VALUE,
+  RUN_POPOVER_NEXT_LABEL,
+  RUN_POPOVER_SKIPPED_LABEL,
   RUN_POPOVER_TEST_IDS,
   RUN_POPOVER_TIMESTAMP_LABELS,
 } from '../../schedule-details-runs-chart-run-popover/schedule-details-runs-chart-run-popover.constants';
 import {
   getMockDescribeScheduleResponseForRunsChartPopover,
+  getMockDescribeScheduleResponseForRunsChartPopoverWithSkipped,
   getMockWorkflowPagesForRunsChartPopover,
+  getMockWorkflowPagesForRunsChartPopoverWithSkipped,
   MOCK_CLUSTER,
   MOCK_DOMAIN,
   MOCK_SCHEDULE_ID,
@@ -117,15 +122,20 @@ describe(`${ScheduleDetailsRunsChart.name} run popover`, () => {
     });
 
     await waitFor(() => {
-      expect(screen.getAllByTestId(RUN_POPOVER_TEST_IDS.runEntry)).toHaveLength(
-        2
-      );
+      expect(screen.getAllByTestId(RUN_POPOVER_TEST_IDS.entry)).toHaveLength(2);
     });
 
-    expect(screen.getByText('run-stack-a')).toBeInTheDocument();
-    expect(screen.getByText('run-stack-b')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'run-stack-a' })).toHaveAttribute(
+      'href',
+      `/domains/${MOCK_DOMAIN}/${MOCK_CLUSTER}/workflows/wf-stack-a/run-stack-a`
+    );
+    expect(
+      screen.getByRole('link', { name: 'run-stack-b' })
+    ).toBeInTheDocument();
     expect(screen.getByText(RUN_POPOVER_BACKFILL_LABEL)).toBeInTheDocument();
-    expect(screen.getByRole('link')).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'backfill-abc-123' })
+    ).toBeInTheDocument();
   });
 
   it('shows run details on focus over a run glyph', async () => {
@@ -160,12 +170,84 @@ describe(`${ScheduleDetailsRunsChart.name} run popover`, () => {
       expect(screen.getByText('run-recent')).toBeInTheDocument();
     });
   });
+
+  it('shows skipped run schedule time on hover', async () => {
+    const { user } = setup({
+      workflowPages: getMockWorkflowPagesForRunsChartPopoverWithSkipped(),
+      describeScheduleResponse:
+        getMockDescribeScheduleResponseForRunsChartPopoverWithSkipped(),
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.queryByTestId(CHART_LOADING_TEST_ID)
+      ).not.toBeInTheDocument();
+    });
+
+    const skippedTrigger = screen.getByRole('button', {
+      name: /Skipped run at 2024-01-01T09:00:00.000Z/i,
+    });
+
+    await user.hover(skippedTrigger);
+    act(() => {
+      jest.advanceTimersByTime(CHART_RUN_POPOVER_ENTRY_DELAY_MS);
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByTestId(RUN_POPOVER_TEST_IDS.content)
+      ).toBeInTheDocument();
+    });
+
+    expect(screen.getByText(RUN_POPOVER_SKIPPED_LABEL)).toBeInTheDocument();
+    expect(
+      screen.getByText(RUN_POPOVER_TIMESTAMP_LABELS.scheduled)
+    ).toBeInTheDocument();
+    expect(screen.getAllByText(RUN_POPOVER_EMPTY_VALUE)).toHaveLength(2);
+  });
+
+  it('shows next run schedule time on hover', async () => {
+    const { user } = setup({
+      workflowPages: getMockWorkflowPagesForRunsChartPopover(),
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.queryByTestId(CHART_LOADING_TEST_ID)
+      ).not.toBeInTheDocument();
+    });
+
+    const nextTrigger = screen.getByRole('button', {
+      name: /Next run at 2024-01-01T13:00:00.000Z/i,
+    });
+
+    await user.hover(nextTrigger);
+    act(() => {
+      jest.advanceTimersByTime(CHART_RUN_POPOVER_ENTRY_DELAY_MS);
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByTestId(RUN_POPOVER_TEST_IDS.content)
+      ).toBeInTheDocument();
+    });
+
+    expect(screen.getByText(RUN_POPOVER_NEXT_LABEL)).toBeInTheDocument();
+    expect(
+      screen.getByText(RUN_POPOVER_TIMESTAMP_LABELS.scheduled)
+    ).toBeInTheDocument();
+    expect(screen.getAllByText(RUN_POPOVER_EMPTY_VALUE)).toHaveLength(2);
+  });
 });
 
 function setup({
   workflowPages,
+  describeScheduleResponse = getMockDescribeScheduleResponseForRunsChartPopover(),
 }: {
   workflowPages: Array<ListWorkflowsResponse>;
+  describeScheduleResponse?: ReturnType<
+    typeof getMockDescribeScheduleResponseForRunsChartPopover
+  >;
 }) {
   const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 
@@ -183,10 +265,7 @@ function setup({
         {
           path: `/api/domains/${MOCK_DOMAIN}/${MOCK_CLUSTER}/schedules/${MOCK_SCHEDULE_ID}`,
           httpMethod: 'GET',
-          httpResolver: async () =>
-            HttpResponse.json(
-              getMockDescribeScheduleResponseForRunsChartPopover()
-            ),
+          httpResolver: async () => HttpResponse.json(describeScheduleResponse),
         },
         {
           path: `/api/domains/${MOCK_DOMAIN}/${MOCK_CLUSTER}/workflows`,
