@@ -42,8 +42,11 @@ export default function useScheduleRunsChartData({
     const describe = describeQuery.data;
     let nextExecutionTimeMs: number | null = null;
     if (!describe?.state?.paused) {
-      const ms = formatTimestampToDatetime(describe?.info?.nextRunTime)?.valueOf();
-      if (typeof ms === 'number' && Number.isFinite(ms)) nextExecutionTimeMs = ms;
+      const ms = formatTimestampToDatetime(
+        describe?.info?.nextRunTime
+      )?.valueOf();
+      if (typeof ms === 'number' && Number.isFinite(ms))
+        nextExecutionTimeMs = ms;
     }
 
     // Next run and the run list come from two independently polled APIs, so

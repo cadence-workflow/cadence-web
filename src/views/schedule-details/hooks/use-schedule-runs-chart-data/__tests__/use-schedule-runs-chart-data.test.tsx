@@ -131,7 +131,10 @@ describe(useScheduleRunsChartData.name, () => {
 
     expect(result.current.data.nextExecutionTimeMs).toBeNull();
     expect(result.current.data.runs).toEqual([
-      expect.objectContaining({ runId: 'run-1', scheduledTimeMs: nowMs - hourMs }),
+      expect.objectContaining({
+        runId: 'run-1',
+        scheduledTimeMs: nowMs - hourMs,
+      }),
     ]);
   });
 
