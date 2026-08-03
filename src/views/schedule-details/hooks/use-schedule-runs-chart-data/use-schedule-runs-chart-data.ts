@@ -1,9 +1,11 @@
 'use client';
 import { useMemo } from 'react';
 
+import formatDurationToSeconds from '@/utils/data-formatters/format-duration-to-seconds';
 import formatTimestampToMs from '@/utils/data-formatters/format-timestamp-to-ms';
 import useListWorkflowsForSchedule from '@/views/schedule-details/hooks/use-list-workflows-for-schedule/use-list-workflows-for-schedule';
 import useDescribeSchedule from '@/views/shared/hooks/use-describe-schedule/use-describe-schedule';
+import useDomainDescription from '@/views/shared/hooks/use-domain-description/use-domain-description';
 
 import getScheduleExecutionGaps from './helpers/get-schedule-execution-gaps';
 import getScheduleTimelineBounds from './helpers/get-schedule-timeline-bounds';
@@ -38,6 +40,7 @@ export default function useScheduleRunsChartData({
     refetchIntervalMs: CHART_WORKFLOWS_REFRESH_INTERVAL_MS,
     runsRevision: describeQuery.data?.info?.totalRuns,
   });
+  const domainQuery = useDomainDescription({ domain, cluster });
   // Rounded to the minute so a per-second `nowMs` tick does not re-walk the
   // cron timeline on every render.
   const cronEvaluationTimeMs = Math.floor(nowMs / 60_000) * 60_000;
@@ -62,19 +65,24 @@ export default function useScheduleRunsChartData({
         : null,
     [runs]
   );
+  const retentionSeconds = formatDurationToSeconds(
+    domainQuery.data?.workflowExecutionRetentionPeriod
+  );
   const timelineBounds = useMemo(
     () =>
       getScheduleTimelineBounds({
         describeSchedule: describeQuery.data,
+        retentionSeconds,
+        nowMs: cronEvaluationTimeMs,
       }),
-    [describeQuery.data]
+    [cronEvaluationTimeMs, describeQuery.data, retentionSeconds]
   );
   const cronExpression = describeQuery.data?.spec?.cronExpression ?? '';
   const { skippedExecutions, unconfirmedExecutions } = useMemo(
     () =>
       getScheduleExecutionGaps({
         cronExpression,
-        scheduleStartMs: timelineBounds.scheduleStartMs,
+        timelineStartMs: timelineBounds.timelineStartMs,
         scheduleEndMs: timelineBounds.scheduleEndMs,
         oldestLoadedScheduleTimeMs,
         hasNextPage: workflowsQuery.hasNextPage ?? false,
@@ -89,7 +97,7 @@ export default function useScheduleRunsChartData({
       nextExecutionTimeMs,
       oldestLoadedScheduleTimeMs,
       runs,
-      timelineBounds.scheduleStartMs,
+      timelineBounds.timelineStartMs,
       timelineBounds.scheduleEndMs,
       workflowsQuery.dataUpdatedAt,
       workflowsQuery.hasNextPage,
@@ -115,6 +123,9 @@ export default function useScheduleRunsChartData({
 
   return {
     data,
-    isLoading: describeQuery.isLoading || workflowsQuery.isLoading,
+    isLoading:
+      describeQuery.isLoading ||
+      domainQuery.isLoading ||
+      workflowsQuery.isLoading,
   };
 }

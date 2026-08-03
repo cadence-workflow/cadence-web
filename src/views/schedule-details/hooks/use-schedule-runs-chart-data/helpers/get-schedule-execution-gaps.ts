@@ -7,7 +7,7 @@ import getExpectedScheduleTimesMs from './get-expected-schedule-times-ms';
 
 export default function getScheduleExecutionGaps({
   cronExpression,
-  scheduleStartMs,
+  timelineStartMs,
   scheduleEndMs,
   oldestLoadedScheduleTimeMs,
   hasNextPage,
@@ -21,14 +21,14 @@ export default function getScheduleExecutionGaps({
     unconfirmedExecutions: [],
   };
 
-  if (scheduleStartMs == null) {
+  if (timelineStartMs == null) {
     return noGaps;
   }
 
   const trustworthyEndMs =
     scheduleEndMs == null ? nowMs : Math.min(nowMs, scheduleEndMs);
 
-  if (trustworthyEndMs < scheduleStartMs) {
+  if (trustworthyEndMs < timelineStartMs) {
     return noGaps;
   }
 
@@ -37,9 +37,9 @@ export default function getScheduleExecutionGaps({
   // or the whole window, if even that boundary is unknown - can't be diffed
   // against real data, so it's left unrendered rather than guessed at.
   const knownStartMs = !hasNextPage
-    ? scheduleStartMs
+    ? timelineStartMs
     : Math.max(
-        scheduleStartMs,
+        timelineStartMs,
         oldestLoadedScheduleTimeMs ?? trustworthyEndMs + 1
       );
 
@@ -62,7 +62,7 @@ export default function getScheduleExecutionGaps({
 
   for (const scheduledTimeMs of getExpectedScheduleTimesMs({
     cronExpression,
-    startMs: scheduleStartMs,
+    startMs: timelineStartMs,
     endMs: trustworthyEndMs,
   })) {
     if (scheduledTimeMs < knownStartMs) {
