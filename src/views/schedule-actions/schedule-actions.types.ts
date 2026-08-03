@@ -79,7 +79,9 @@ export type ScheduleActionModalForm<FormData, SubmissionData> =
           FormData extends FieldValues ? FormData : FieldValues
         >
       ) => ReactNode;
-      formSchema: z.ZodSchema<FormData>;
+      // Input is unknown rather than FormData: a form schema parses whatever
+      // the controls hold, which is not always the shape it validates into.
+      formSchema: z.ZodType<FormData, z.ZodTypeDef, unknown>;
       transformFormDataToSubmission: (formData: FormData) => SubmissionData;
     }
   | {

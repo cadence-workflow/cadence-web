@@ -28,6 +28,7 @@ describe(scheduleActionsEnabled.name, () => {
       resume: 'ENABLED',
       delete: 'ENABLED',
       backfill: 'ENABLED',
+      edit: 'ENABLED',
     });
   });
 
@@ -44,6 +45,7 @@ describe(scheduleActionsEnabled.name, () => {
       resume: 'DISABLED_UNAUTHORIZED',
       delete: 'DISABLED_UNAUTHORIZED',
       backfill: 'DISABLED_UNAUTHORIZED',
+      edit: 'DISABLED_UNAUTHORIZED',
     });
   });
 
@@ -60,6 +62,7 @@ describe(scheduleActionsEnabled.name, () => {
       resume: 'DISABLED_DEFAULT',
       delete: 'DISABLED_DEFAULT',
       backfill: 'DISABLED_DEFAULT',
+      edit: 'DISABLED_DEFAULT',
     });
   });
 });

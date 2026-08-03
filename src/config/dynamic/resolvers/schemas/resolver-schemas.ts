@@ -76,6 +76,7 @@ const resolverSchemas: ResolverSchemas = {
       resume: scheduleActionsEnabledValueSchema,
       delete: scheduleActionsEnabledValueSchema,
       backfill: scheduleActionsEnabledValueSchema,
+      edit: scheduleActionsEnabledValueSchema,
     }),
   },
   CRON_LIST_ENABLED: {
