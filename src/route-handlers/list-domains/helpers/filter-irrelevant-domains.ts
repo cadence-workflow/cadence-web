@@ -1,8 +1,8 @@
-import type { DomainData } from '../domains-page.types';
+import type { Domain } from '@/__generated__/proto-ts/uber/cadence/api/v1/Domain';
 
 export default function filterIrrelevantDomains(
   clusterName: string,
-  domains: DomainData[]
+  domains: Domain[]
 ) {
   return (domains || []).filter((domain) => {
     if (

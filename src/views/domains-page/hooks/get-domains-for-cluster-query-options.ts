@@ -5,7 +5,6 @@ import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
 
 import { type DomainData } from '../domains-page.types';
-import filterIrrelevantDomains from '../helpers/filter-irrelevant-domains';
 
 export default function getDomainsForClusterQueryOptions(
   clusterName: string
@@ -21,11 +20,10 @@ export default function getDomainsForClusterQueryOptions(
       request(`/api/cluster/${encodeURIComponent(cluster)}/domains`).then(
         (res) => res.json()
       ),
-    select: (data) => filterIrrelevantDomains(clusterName, data.domains),
+    select: (data) => data.domains,
     staleTime: 60_000,
-    gcTime: 5 * 60_000,
     retry: 3,
-    retryDelay: (attemptIndex: number) =>
-      Math.min(1000 * 2 ** attemptIndex, 10_000),
+    refetchOnWindowFocus: (query) => query.state.status !== 'error',
+    retryDelay: 5_000,
   };
 }

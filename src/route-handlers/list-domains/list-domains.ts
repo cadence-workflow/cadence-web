@@ -3,6 +3,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
+import filterIrrelevantDomains from './helpers/filter-irrelevant-domains';
 import { MAX_DOMAINS_TO_FETCH } from './list-domains.constants';
 import {
   type Context,
@@ -33,7 +34,9 @@ export async function listDomains(
       );
     }
 
-    return NextResponse.json({ domains } satisfies ListDomainsResponse);
+    return NextResponse.json({
+      domains: filterIrrelevantDomains(cluster, domains),
+    } satisfies ListDomainsResponse);
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
       { requestParams: requestParams.params, error: e },
