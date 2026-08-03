@@ -18,20 +18,6 @@ describe(getExpectedScheduleTimesMs.name, () => {
     ]);
   });
 
-  it('honors CRON_TZ and daylight-saving transitions', () => {
-    expect(
-      getExpectedScheduleTimesMs({
-        cronExpression: 'CRON_TZ=America/New_York 30 1 * * *',
-        startMs: Date.parse('2026-10-31T00:00:00Z'),
-        endMs: Date.parse('2026-11-02T23:59:59Z'),
-      })
-    ).toEqual([
-      Date.parse('2026-10-31T05:30:00Z'),
-      Date.parse('2026-11-01T05:30:00Z'),
-      Date.parse('2026-11-02T06:30:00Z'),
-    ]);
-  });
-
   it('rejects unsupported expressions and caps occurrence generation', () => {
     expect(
       getExpectedScheduleTimesMs({
