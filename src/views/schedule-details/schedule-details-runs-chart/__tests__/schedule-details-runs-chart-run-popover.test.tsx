@@ -9,14 +9,6 @@ import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list
 import { WORKFLOW_STATUS_NAMES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
 
 import {
-  RUN_POPOVER_BACKFILL_LABEL,
-  RUN_POPOVER_EMPTY_VALUE,
-  RUN_POPOVER_NEXT_LABEL,
-  RUN_POPOVER_SKIPPED_LABEL,
-  RUN_POPOVER_TEST_IDS,
-  RUN_POPOVER_TIMESTAMP_LABELS,
-} from '../../schedule-details-runs-chart-popover/schedule-details-runs-chart-popover.constants';
-import {
   getMockDescribeScheduleResponseForRunsChartPopover,
   getMockDescribeScheduleResponseForRunsChartPopoverWithSkipped,
   getMockWorkflowPagesForRunsChartPopover,
@@ -26,6 +18,14 @@ import {
   MOCK_SCHEDULE_ID,
   SCHEDULE_RUNS_CHART_POPOVER_FIXTURE_NOW_MS,
 } from '../../__fixtures__/schedule-details-runs-chart-popover';
+import {
+  RUN_POPOVER_BACKFILL_LABEL,
+  RUN_POPOVER_EMPTY_VALUE,
+  RUN_POPOVER_NEXT_LABEL,
+  RUN_POPOVER_SKIPPED_LABEL,
+  RUN_POPOVER_TEST_IDS,
+  RUN_POPOVER_TIMESTAMP_LABELS,
+} from '../../schedule-details-runs-chart-popover/schedule-details-runs-chart-popover.constants';
 import ScheduleDetailsRunsChart from '../schedule-details-runs-chart';
 import {
   CHART_LOADING_TEST_ID,
