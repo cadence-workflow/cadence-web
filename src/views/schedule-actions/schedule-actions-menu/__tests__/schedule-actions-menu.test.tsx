@@ -70,6 +70,7 @@ describe(ScheduleActionsMenu.name, () => {
         delete: 'DISABLED_DEFAULT',
         backfill: 'DISABLED_DEFAULT',
         start: 'DISABLED_DEFAULT',
+        edit: 'DISABLED_DEFAULT',
       },
     });
 
