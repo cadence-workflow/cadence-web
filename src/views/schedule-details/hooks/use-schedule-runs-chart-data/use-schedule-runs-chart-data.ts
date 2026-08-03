@@ -106,7 +106,9 @@ export default function useScheduleRunsChartData({
     return {
       runs: runs.filter(isBeforeNextExecution),
       skippedExecutions: skippedExecutions.filter(isBeforeNextExecution),
-      unconfirmedExecutions: unconfirmedExecutions.filter(isBeforeNextExecution),
+      unconfirmedExecutions: unconfirmedExecutions.filter(
+        isBeforeNextExecution
+      ),
       nextExecutionTimeMs,
     };
   }, [nextExecutionTimeMs, unconfirmedExecutions, runs, skippedExecutions]);

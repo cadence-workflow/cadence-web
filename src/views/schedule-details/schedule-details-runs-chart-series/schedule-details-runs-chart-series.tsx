@@ -20,12 +20,12 @@ export default function ScheduleDetailsRunsChartSeries({
   data,
 }: Props) {
   const markers = useMemo(() => {
-    const groupedExecutions = Object.values(groupBy(data.runs, 'scheduledTimeMs')).map(
-      (runs) => ({
-        scheduledTimeMs: runs[0].scheduledTimeMs,
-        runs,
-      })
-    );
+    const groupedExecutions = Object.values(
+      groupBy(data.runs, 'scheduledTimeMs')
+    ).map((runs) => ({
+      scheduledTimeMs: runs[0].scheduledTimeMs,
+      runs,
+    }));
     const nextExecution =
       data.nextExecutionTimeMs != null
         ? [{ scheduledTimeMs: data.nextExecutionTimeMs }]
