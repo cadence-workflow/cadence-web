@@ -20,32 +20,27 @@ export default function ScheduleDetailsRunsChartSeries({
   data,
 }: Props) {
   const markers = useMemo(() => {
-    const runGroups = Object.values(groupBy(data.runs, 'scheduledTimeMs')).map(
+    const groupedExecutions = Object.values(groupBy(data.runs, 'scheduledTimeMs')).map(
       (runs) => ({
         scheduledTimeMs: runs[0].scheduledTimeMs,
         runs,
       })
     );
+    const nextExecution =
+      data.nextExecutionTimeMs != null
+        ? [{ scheduledTimeMs: data.nextExecutionTimeMs }]
+        : [];
 
-    const items: ChartSeriesMarker[] = [
-      ...runGroups.map((group) => ({ kind: 'run' as const, ...group })),
-      ...data.skippedExecutions.map(({ scheduledTimeMs }) => ({
-        kind: 'skipped' as const,
-        scheduledTimeMs,
-      })),
-      ...data.pendingExecutions.map(({ scheduledTimeMs }) => ({
-        kind: 'pending' as const,
-        scheduledTimeMs,
-      })),
-      ...(data.nextExecutionTimeMs != null
-        ? [
-            {
-              kind: 'next' as const,
-              scheduledTimeMs: data.nextExecutionTimeMs,
-            },
-          ]
-        : []),
-    ];
+    const items: ChartSeriesMarker[] = (
+      [
+        ['run', groupedExecutions],
+        ['skipped', data.skippedExecutions],
+        ['pending', data.pendingExecutions],
+        ['next', nextExecution],
+      ] as const
+    ).flatMap(([kind, points]) =>
+      points.map((point) => ({ kind, ...point }) as ChartSeriesMarker)
+    );
 
     // Later markers in DOM stack above earlier ones — sort left-to-right on the timeline.
     return items.sort((a, b) => a.scheduledTimeMs - b.scheduledTimeMs);
