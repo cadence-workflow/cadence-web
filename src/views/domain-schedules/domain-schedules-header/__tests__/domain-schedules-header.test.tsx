@@ -12,6 +12,16 @@ jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
   jest.fn(() => [mockDomainPageQueryParamsValues, mockSetQueryParams])
 );
 
+jest.mock(
+  '../../domain-schedules-create-button/domain-schedules-create-button',
+  () =>
+    jest.fn(({ onClick }: { onClick: () => void }) => (
+      <button type="button" onClick={onClick}>
+        Create schedule
+      </button>
+    ))
+);
+
 describe(DomainSchedulesHeader.name, () => {
   it('renders the title without count when count is undefined', () => {
     setup({ count: undefined });
@@ -59,6 +69,8 @@ function setup(props: Partial<Pick<Props, 'count'>> = {}) {
   const user = userEvent.setup();
   render(
     <DomainSchedulesHeader
+      domain="test-domain"
+      cluster="test-cluster"
       onCreateScheduleClick={mockedOnCreateScheduleClick}
       count={props.count}
     />

@@ -2,8 +2,6 @@
 
 import React, { useMemo, useState } from 'react';
 
-import { MdAdd } from 'react-icons/md';
-
 import ErrorPanel from '@/components/error-panel/error-panel';
 import PanelSection from '@/components/panel-section/panel-section';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
@@ -13,6 +11,7 @@ import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-
 import useListSchedules from '@/views/shared/hooks/use-list-schedules/use-list-schedules';
 
 import schedulesTableConfig from './config/schedules-table.config';
+import DomainSchedulesCreateButton from './domain-schedules-create-button/domain-schedules-create-button';
 import DomainSchedulesCreateModal from './domain-schedules-create-modal/domain-schedules-create-modal';
 import DomainSchedulesHeader from './domain-schedules-header/domain-schedules-header';
 import { SCHEDULES_PAGE_SIZE } from './domain-schedules.constants';
@@ -83,12 +82,15 @@ export default function DomainSchedules({ domain, cluster }: Props) {
           omitLogging={true}
           actions={[
             {
-              kind: 'callback',
-              label: 'Create schedule',
-              onClick: () => setIsCreateModalOpen(true),
-              buttonKind: 'primary',
-              shape: 'default',
-              startEnhancer: <MdAdd size={16} aria-hidden />,
+              kind: 'custom',
+              key: 'create-schedule',
+              content: (
+                <DomainSchedulesCreateButton
+                  domain={domain}
+                  cluster={cluster}
+                  onClick={() => setIsCreateModalOpen(true)}
+                />
+              ),
             },
           ]}
         />
@@ -126,6 +128,8 @@ export default function DomainSchedules({ domain, cluster }: Props) {
     <styled.Root>
       <DomainSchedulesHeader
         count={isLoading ? undefined : filteredSchedules.length}
+        domain={domain}
+        cluster={cluster}
         onCreateScheduleClick={() => setIsCreateModalOpen(true)}
       />
       {content}
