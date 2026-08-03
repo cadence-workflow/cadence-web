@@ -8,7 +8,7 @@ import { type DomainSchedulesCreateFormData } from '../domain-schedules-create-m
 
 export type Props = {
   control: Control<DomainSchedulesCreateFormData>;
-  trigger: UseFormTrigger<DomainSchedulesCreateFormData>;
+  trigger?: UseFormTrigger<DomainSchedulesCreateFormData>;
   clearErrors: UseFormClearErrors<DomainSchedulesCreateFormData>;
   domain: string;
   cluster: string;

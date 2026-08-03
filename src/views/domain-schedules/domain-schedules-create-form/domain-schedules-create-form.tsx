@@ -105,7 +105,7 @@ export default function DomainSchedulesCreateForm({
               onChange={(value) => {
                 field.onChange(value);
                 // If form is submitted, trigger the validation to show fix immediately
-                if (isSubmitted) trigger('cronExpression');
+                if (isSubmitted) trigger?.('cronExpression');
               }}
               onBlur={field.onBlur}
               error={cronExpressionError}
@@ -212,7 +212,7 @@ export default function DomainSchedulesCreateForm({
               value={field.value}
               onChange={(value) => {
                 field.onChange(value);
-                if (isSubmitted) trigger('input');
+                if (isSubmitted) trigger?.('input');
               }}
               error={inputError}
               addButtonText="Add argument"
