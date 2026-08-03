@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { useQueryErrorResetBoundary } from '@tanstack/react-query';
 import { Banner } from 'baseui/banner';
@@ -69,7 +69,15 @@ export default function ErrorPanel({
       )}
       {props.actions && (
         <styled.ErrorActionsContainer>
-          {props.actions.map((action) => {
+          {props.actions.map((action, index) => {
+            if (action.kind === 'custom') {
+              return (
+                <React.Fragment key={action.key ?? index}>
+                  {action.content}
+                </React.Fragment>
+              );
+            }
+
             let startEnhancer;
             if (action.startEnhancer) {
               startEnhancer = action.startEnhancer;
