@@ -1,1 +1,0 @@
-export const MAX_SCHEDULE_CRON_OCCURRENCES = 10_000;

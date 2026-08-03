@@ -1,5 +1,5 @@
+import { MAX_SCHEDULE_CRON_OCCURRENCES } from '../../use-schedule-runs-chart-data.constants';
 import getExpectedScheduleTimesMs from '../get-expected-schedule-times-ms';
-import { MAX_SCHEDULE_CRON_OCCURRENCES } from '../get-expected-schedule-times-ms.constants';
 
 const MINUTE_MS = 60_000;
 

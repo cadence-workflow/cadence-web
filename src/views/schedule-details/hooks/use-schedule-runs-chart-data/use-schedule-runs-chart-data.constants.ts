@@ -13,3 +13,6 @@ export const CHART_DESCRIBE_REFRESH_INTERVAL_MS = 10_000;
  * stale status.
  */
 export const CHART_WORKFLOWS_REFRESH_INTERVAL_MS = 60_000;
+
+/** Upper bound on cron occurrences walked when inferring skipped/pending slots. */
+export const MAX_SCHEDULE_CRON_OCCURRENCES = 10_000;
