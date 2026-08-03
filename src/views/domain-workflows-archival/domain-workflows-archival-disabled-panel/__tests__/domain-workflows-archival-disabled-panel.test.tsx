@@ -14,11 +14,17 @@ jest.mock('@/components/error-panel/error-panel', () =>
     <div>
       <div>{message}</div>
       <div>{description}</div>
-      {actions?.map((action) => (
-        <button key={action.label} onClick={() => mockOnActionClick(action)}>
-          {action.label}
-        </button>
-      ))}
+      {actions?.map((action) => {
+        if (action.kind === 'custom') {
+          return action.content;
+        }
+
+        return (
+          <button key={action.label} onClick={() => mockOnActionClick(action)}>
+            {action.label}
+          </button>
+        );
+      })}
     </div>
   ))
 );
