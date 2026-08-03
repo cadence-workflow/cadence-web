@@ -39,11 +39,12 @@ export default function useScheduleRunsChartData({
   const data = useMemo(() => {
     const runs = workflowsForScheduleToChartSeriesRuns(workflowsQuery.data);
 
-    const nextExecutionTimeMs = describeQuery.data?.state?.paused
-      ? null
-      : formatTimestampToDatetime(
-          describeQuery.data?.info?.nextRunTime
-        )?.valueOf() ?? null;
+    const describe = describeQuery.data;
+    let nextExecutionTimeMs: number | null = null;
+    if (!describe?.state?.paused) {
+      const ms = formatTimestampToDatetime(describe?.info?.nextRunTime)?.valueOf();
+      if (typeof ms === 'number' && Number.isFinite(ms)) nextExecutionTimeMs = ms;
+    }
 
     // Next run and the run list come from two independently polled APIs, so
     // drop points at or after the next run until describe catches up.

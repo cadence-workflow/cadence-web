@@ -94,6 +94,47 @@ describe(useScheduleRunsChartData.name, () => {
     expect(result.current.data.nextExecutionTimeMs).toBeNull();
   });
 
+  it('keeps all runs when nextRunTime is invalid', async () => {
+    const { result } = setup({
+      describeScheduleResponse: getMockRunningDescribeScheduleResponse({
+        info: {
+          lastRunTime: null,
+          nextRunTime: { seconds: 'not-a-number', nanos: 0 },
+          totalRuns: '1',
+          createTime: null,
+          lastUpdateTime: null,
+          missedRuns: '0',
+          skippedRuns: '0',
+          ongoingBackfills: [],
+        },
+      }),
+      workflowsResponse: {
+        workflows: [
+          getMockWorkflowListItem({
+            workflowID: 'wf-1',
+            runID: 'run-1',
+            startTime: nowMs - hourMs,
+            searchAttributes: {
+              CadenceScheduleTime: {
+                data: Buffer.from(
+                  JSON.stringify(new Date(nowMs - hourMs).toISOString())
+                ).toString('base64'),
+              },
+            },
+          }),
+        ],
+        nextPage: '',
+      },
+    });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(result.current.data.nextExecutionTimeMs).toBeNull();
+    expect(result.current.data.runs).toEqual([
+      expect.objectContaining({ runId: 'run-1', scheduledTimeMs: nowMs - hourMs }),
+    ]);
+  });
+
   it('drops runs at or after the next execution time', async () => {
     const nextExecutionTimeMs = nowMs + hourMs;
 
