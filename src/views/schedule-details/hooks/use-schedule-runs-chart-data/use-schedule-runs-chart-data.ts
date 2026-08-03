@@ -7,9 +7,9 @@ import useDescribeSchedule from '@/views/shared/hooks/use-describe-schedule/use-
 import useDomainDescription from '@/views/shared/hooks/use-domain-description/use-domain-description';
 
 import getOldestLoadedScheduleTimeMs from './helpers/get-oldest-loaded-schedule-time-ms';
+import getScheduleExecutionGaps from './helpers/get-schedule-execution-gaps';
 import getScheduleNextExecutionTimeMs from './helpers/get-schedule-next-execution-time-ms';
 import getScheduleTimelineBounds from './helpers/get-schedule-timeline-bounds';
-import getSkippedScheduleExecutions from './helpers/get-skipped-schedule-executions';
 import workflowsForScheduleToChartSeriesRuns from './helpers/workflows-for-schedule-to-chart-series-runs';
 import {
   CHART_DESCRIBE_REFRESH_INTERVAL_MS,
@@ -72,14 +72,15 @@ export default function useScheduleRunsChartData({
     [cronEvaluationTimeMs, describeQuery.data, retentionSeconds]
   );
   const cronExpression = describeQuery.data?.spec?.cronExpression ?? '';
-  const skippedExecutions = useMemo(
+  const { skippedExecutions, pendingExecutions } = useMemo(
     () =>
-      getSkippedScheduleExecutions({
+      getScheduleExecutionGaps({
         cronExpression,
         inferenceStartMs: timelineBounds.inferenceStartMs,
         scheduleEndMs: timelineBounds.scheduleEndMs,
         oldestLoadedScheduleTimeMs,
         hasNextPage: workflowsQuery.hasNextPage ?? false,
+        lastFetchedAtMs: workflowsQuery.dataUpdatedAt || null,
         nowMs: cronEvaluationTimeMs,
         nextExecutionTimeMs,
         actualTimesMs: runs.map(({ scheduledTimeMs }) => scheduledTimeMs),
@@ -92,6 +93,7 @@ export default function useScheduleRunsChartData({
       runs,
       timelineBounds.inferenceStartMs,
       timelineBounds.scheduleEndMs,
+      workflowsQuery.dataUpdatedAt,
       workflowsQuery.hasNextPage,
     ]
   );
@@ -106,9 +108,10 @@ export default function useScheduleRunsChartData({
     return {
       runs: runs.filter(isBeforeNextExecution),
       skippedExecutions: skippedExecutions.filter(isBeforeNextExecution),
+      pendingExecutions: pendingExecutions.filter(isBeforeNextExecution),
       nextExecutionTimeMs,
     };
-  }, [nextExecutionTimeMs, runs, skippedExecutions]);
+  }, [nextExecutionTimeMs, pendingExecutions, runs, skippedExecutions]);
 
   return {
     data,

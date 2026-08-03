@@ -1,5 +1,8 @@
 import { type DescribeScheduleResponse } from '@/route-handlers/describe-schedule/describe-schedule.types';
-import { type ChartSeriesData } from '@/views/schedule-details/schedule-details-runs-chart-series/schedule-details-runs-chart-series.types';
+import {
+  type ChartSeriesData,
+  type ChartSeriesExecutionPoint,
+} from '@/views/schedule-details/schedule-details-runs-chart-series/schedule-details-runs-chart-series.types';
 
 export type UseScheduleRunsChartDataParams = {
   domain: string;
@@ -31,18 +34,20 @@ export type GetExpectedScheduleTimesMsParams = {
   limit?: number;
 };
 
-export type GetSkippedScheduleTimesMsParams = {
-  expectedTimesMs: number[];
-  actualTimesMs: number[];
-};
-
-export type GetSkippedScheduleExecutionsParams = {
+export type GetScheduleExecutionGapsParams = {
   cronExpression: string;
   inferenceStartMs: number | null;
   scheduleEndMs: number | null;
   oldestLoadedScheduleTimeMs: number | null;
   hasNextPage: boolean;
+  /** When the runs page was last (re)fetched; slots due after this can't be confirmed yet. */
+  lastFetchedAtMs: number | null;
   nowMs: number;
   nextExecutionTimeMs?: number | null;
   actualTimesMs: number[];
+};
+
+export type ScheduleExecutionGaps = {
+  skippedExecutions: ChartSeriesExecutionPoint[];
+  pendingExecutions: ChartSeriesExecutionPoint[];
 };

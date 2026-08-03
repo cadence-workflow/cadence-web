@@ -1,6 +1,15 @@
 import { styled as createStyled, type Theme } from 'baseui';
+import { type SkeletonOverrides } from 'baseui/skeleton/types';
 
 import { CHART_GLYPH_MARKER_SIZE_PX } from './schedule-details-runs-chart-glyph.constants';
+
+export const overrides = {
+  pendingSkeleton: {
+    Root: {
+      style: { borderRadius: '50%' },
+    },
+  } satisfies SkeletonOverrides,
+};
 
 export const styled = {
   Marker: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
