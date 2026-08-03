@@ -1,20 +1,16 @@
 'use client';
 import { useMemo } from 'react';
 
-import formatTimestampToDatetime from '@/utils/data-formatters/format-timestamp-to-datetime';
+import formatDurationToSeconds from '@/utils/data-formatters/format-duration-to-seconds';
 import useListWorkflowsForSchedule from '@/views/schedule-details/hooks/use-list-workflows-for-schedule/use-list-workflows-for-schedule';
 import useDescribeSchedule from '@/views/shared/hooks/use-describe-schedule/use-describe-schedule';
 import useDomainDescription from '@/views/shared/hooks/use-domain-description/use-domain-description';
 
-import {
-  getDomainRetentionSeconds,
-  getScheduleJitterMs,
-  getScheduleTimelineBounds,
-} from './helpers/get-schedule-cron-timeline';
+import getOldestLoadedScheduleTimeMs from './helpers/get-oldest-loaded-schedule-time-ms';
+import getScheduleNextExecutionTimeMs from './helpers/get-schedule-next-execution-time-ms';
+import getScheduleTimelineBounds from './helpers/get-schedule-timeline-bounds';
 import getSkippedScheduleExecutions from './helpers/get-skipped-schedule-executions';
-import workflowsForScheduleToChartSeriesRuns, {
-  getOldestLoadedScheduleTimeMs,
-} from './helpers/workflows-for-schedule-to-chart-series-runs';
+import workflowsForScheduleToChartSeriesRuns from './helpers/workflows-for-schedule-to-chart-series-runs';
 import {
   CHART_DESCRIBE_REFRESH_INTERVAL_MS,
   CHART_WORKFLOWS_PAGE_SIZE,
@@ -24,35 +20,6 @@ import {
   type UseScheduleRunsChartDataParams,
   type UseScheduleRunsChartDataResult,
 } from './use-schedule-runs-chart-data.types';
-
-function describeScheduleToNextExecutionMs(
-  describeSchedule: ReturnType<typeof useDescribeSchedule>['data']
-): number | null {
-  if (describeSchedule?.state?.paused) {
-    return null;
-  }
-
-  const ms = formatTimestampToDatetime(
-    describeSchedule?.info?.nextRunTime
-  )?.valueOf();
-  if (typeof ms === 'number' && Number.isFinite(ms)) {
-    return ms;
-  }
-
-  return null;
-}
-
-function filterChartPointsBeforeNextExecution<
-  TPoint extends { scheduledTimeMs: number },
->(points: TPoint[], nextExecutionTimeMs: number | null): TPoint[] {
-  if (nextExecutionTimeMs == null) {
-    return points;
-  }
-
-  return points.filter(
-    ({ scheduledTimeMs }) => scheduledTimeMs < nextExecutionTimeMs
-  );
-}
 
 export default function useScheduleRunsChartData({
   domain,
@@ -85,14 +52,14 @@ export default function useScheduleRunsChartData({
     [workflowsQuery.data]
   );
   const nextExecutionTimeMs = useMemo(
-    () => describeScheduleToNextExecutionMs(describeQuery.data),
+    () => getScheduleNextExecutionTimeMs(describeQuery.data),
     [describeQuery.data]
   );
   const oldestLoadedScheduleTimeMs = useMemo(
     () => getOldestLoadedScheduleTimeMs(workflowsQuery.data),
     [workflowsQuery.data]
   );
-  const retentionSeconds = getDomainRetentionSeconds(
+  const retentionSeconds = formatDurationToSeconds(
     domainQuery.data?.workflowExecutionRetentionPeriod
   );
   const timelineBounds = useMemo(
@@ -105,9 +72,6 @@ export default function useScheduleRunsChartData({
     [cronEvaluationTimeMs, describeQuery.data, retentionSeconds]
   );
   const cronExpression = describeQuery.data?.spec?.cronExpression ?? '';
-  // Depend on the jitter value rather than the polled response object, so
-  // re-expanding the cron timeline is driven by real changes only.
-  const jitterMs = getScheduleJitterMs(describeQuery.data);
   const skippedExecutions = useMemo(
     () =>
       getSkippedScheduleExecutions({
@@ -118,13 +82,11 @@ export default function useScheduleRunsChartData({
         hasNextPage: workflowsQuery.hasNextPage ?? false,
         nowMs: cronEvaluationTimeMs,
         nextExecutionTimeMs,
-        jitterMs,
         actualTimesMs: runs.map(({ scheduledTimeMs }) => scheduledTimeMs),
       }),
     [
       cronEvaluationTimeMs,
       cronExpression,
-      jitterMs,
       nextExecutionTimeMs,
       oldestLoadedScheduleTimeMs,
       runs,
@@ -134,17 +96,19 @@ export default function useScheduleRunsChartData({
     ]
   );
 
-  const data = useMemo(
-    () => ({
-      runs: filterChartPointsBeforeNextExecution(runs, nextExecutionTimeMs),
-      skippedExecutions: filterChartPointsBeforeNextExecution(
-        skippedExecutions,
-        nextExecutionTimeMs
-      ),
+  const data = useMemo(() => {
+    const isBeforeNextExecution = ({
+      scheduledTimeMs,
+    }: {
+      scheduledTimeMs: number;
+    }) => nextExecutionTimeMs == null || scheduledTimeMs < nextExecutionTimeMs;
+
+    return {
+      runs: runs.filter(isBeforeNextExecution),
+      skippedExecutions: skippedExecutions.filter(isBeforeNextExecution),
       nextExecutionTimeMs,
-    }),
-    [nextExecutionTimeMs, runs, skippedExecutions]
-  );
+    };
+  }, [nextExecutionTimeMs, runs, skippedExecutions]);
 
   return {
     data,

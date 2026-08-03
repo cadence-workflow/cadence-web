@@ -12,7 +12,6 @@ describe(getSkippedScheduleExecutions.name, () => {
         oldestLoadedScheduleTimeMs: 0,
         hasNextPage: false,
         nowMs: 3 * HOUR_MS,
-        jitterMs: 0,
         actualTimesMs: [HOUR_MS, 3 * HOUR_MS],
       })
     ).toEqual([{ scheduledTimeMs: 0 }, { scheduledTimeMs: 2 * HOUR_MS }]);
@@ -27,7 +26,6 @@ describe(getSkippedScheduleExecutions.name, () => {
         oldestLoadedScheduleTimeMs: 2 * HOUR_MS,
         hasNextPage: true,
         nowMs: 4 * HOUR_MS,
-        jitterMs: 0,
         actualTimesMs: [2 * HOUR_MS],
       }).map(({ scheduledTimeMs }) => scheduledTimeMs)
     ).toEqual([3 * HOUR_MS, 4 * HOUR_MS]);
@@ -42,13 +40,12 @@ describe(getSkippedScheduleExecutions.name, () => {
         oldestLoadedScheduleTimeMs: null,
         hasNextPage: true,
         nowMs: 4 * HOUR_MS,
-        jitterMs: 0,
         actualTimesMs: [],
       })
     ).toEqual([]);
   });
 
-  it('respects the schedule end and jitter window', () => {
+  it('respects the schedule end', () => {
     expect(
       getSkippedScheduleExecutions({
         cronExpression: '0 * * * *',
@@ -57,8 +54,7 @@ describe(getSkippedScheduleExecutions.name, () => {
         oldestLoadedScheduleTimeMs: 0,
         hasNextPage: false,
         nowMs: 4 * HOUR_MS,
-        jitterMs: 10 * 60_000,
-        actualTimesMs: [HOUR_MS + 5 * 60_000],
+        actualTimesMs: [HOUR_MS],
       }).map(({ scheduledTimeMs }) => scheduledTimeMs)
     ).toEqual([0, 2 * HOUR_MS]);
   });
@@ -73,7 +69,6 @@ describe(getSkippedScheduleExecutions.name, () => {
         hasNextPage: false,
         nowMs: 2 * HOUR_MS,
         nextExecutionTimeMs: 2 * HOUR_MS,
-        jitterMs: 0,
         actualTimesMs: [0, HOUR_MS],
       })
     ).toEqual([]);
