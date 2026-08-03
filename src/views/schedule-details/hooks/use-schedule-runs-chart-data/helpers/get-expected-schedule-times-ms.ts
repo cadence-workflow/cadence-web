@@ -2,9 +2,8 @@ import { CronExpressionParser } from 'cron-parser';
 
 import { cronValidate } from '@/utils/cron-validate/cron-validate';
 
+import { MAX_SCHEDULE_CRON_OCCURRENCES } from '../use-schedule-runs-chart-data.constants';
 import { type GetExpectedScheduleTimesMsParams } from '../use-schedule-runs-chart-data.types';
-
-import { MAX_SCHEDULE_CRON_OCCURRENCES } from './get-expected-schedule-times-ms.constants';
 
 export default function getExpectedScheduleTimesMs({
   cronExpression,

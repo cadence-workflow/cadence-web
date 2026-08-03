@@ -6,7 +6,6 @@ import useListWorkflowsForSchedule from '@/views/schedule-details/hooks/use-list
 import useDescribeSchedule from '@/views/shared/hooks/use-describe-schedule/use-describe-schedule';
 import useDomainDescription from '@/views/shared/hooks/use-domain-description/use-domain-description';
 
-import getOldestLoadedScheduleTimeMs from './helpers/get-oldest-loaded-schedule-time-ms';
 import getScheduleExecutionGaps from './helpers/get-schedule-execution-gaps';
 import getScheduleNextExecutionTimeMs from './helpers/get-schedule-next-execution-time-ms';
 import getScheduleTimelineBounds from './helpers/get-schedule-timeline-bounds';
@@ -55,9 +54,14 @@ export default function useScheduleRunsChartData({
     () => getScheduleNextExecutionTimeMs(describeQuery.data),
     [describeQuery.data]
   );
+  // Runs are already filtered to those with a parsable scheduled time, so the
+  // oldest loaded slot is just the minimum of what's already been mapped.
   const oldestLoadedScheduleTimeMs = useMemo(
-    () => getOldestLoadedScheduleTimeMs(workflowsQuery.data),
-    [workflowsQuery.data]
+    () =>
+      runs.length > 0
+        ? Math.min(...runs.map(({ scheduledTimeMs }) => scheduledTimeMs))
+        : null,
+    [runs]
   );
   const retentionSeconds = formatDurationToSeconds(
     domainQuery.data?.workflowExecutionRetentionPeriod
