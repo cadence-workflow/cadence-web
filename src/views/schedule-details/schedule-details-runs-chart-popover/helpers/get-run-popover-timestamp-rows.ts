@@ -4,8 +4,8 @@ import { type ChartSeriesRun } from '@/views/schedule-details/schedule-details-r
 import {
   RUN_POPOVER_EMPTY_VALUE,
   RUN_POPOVER_TIMESTAMP_LABELS,
-} from '../schedule-details-runs-chart-run-popover.constants';
-import { type PopoverEntryRow } from '../schedule-details-runs-chart-run-popover.types';
+} from '../schedule-details-runs-chart-popover.constants';
+import { type PopoverEntryRow } from '../schedule-details-runs-chart-popover.types';
 
 function formatTimestamp(timestampMs: number | null): string {
   if (timestampMs == null) {

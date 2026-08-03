@@ -29,9 +29,9 @@ jest.mock(
 );
 
 jest.mock(
-  '../../schedule-details-runs-chart-run-popover-trigger/schedule-details-runs-chart-run-popover-trigger',
+  '../../schedule-details-runs-chart-popover-trigger/schedule-details-runs-chart-popover-trigger',
   () =>
-    function MockScheduleDetailsRunsChartRunPopoverTrigger({
+    function MockScheduleDetailsRunsChartPopoverTrigger({
       testId,
     }: {
       testId: string;

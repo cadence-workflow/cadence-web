@@ -4,7 +4,7 @@ import groupBy from 'lodash/groupBy';
 
 import { CHART_RUN_POPOVER_TEST_IDS } from '../schedule-details-runs-chart/schedule-details-runs-chart.constants';
 import ScheduleDetailsRunsChartGlyph from '../schedule-details-runs-chart-glyph/schedule-details-runs-chart-glyph';
-import ScheduleDetailsRunsChartRunPopoverTrigger from '../schedule-details-runs-chart-run-popover-trigger/schedule-details-runs-chart-run-popover-trigger';
+import ScheduleDetailsRunsChartPopoverTrigger from '../schedule-details-runs-chart-popover-trigger/schedule-details-runs-chart-popover-trigger';
 import { CHART_TIMELINE_Y_PX } from '../schedule-details-runs-chart-timeline/schedule-details-runs-chart-timeline.constants';
 
 import {
@@ -73,7 +73,7 @@ export default function ScheduleDetailsRunsChartSeries({
                   label={label}
                   testId={markerTestId}
                 />
-                <ScheduleDetailsRunsChartRunPopoverTrigger
+                <ScheduleDetailsRunsChartPopoverTrigger
                   x={x}
                   y={CHART_TIMELINE_Y_PX}
                   entries={marker.runs.map((run) => ({
@@ -106,7 +106,7 @@ export default function ScheduleDetailsRunsChartSeries({
                   label={label}
                   testId={CHART_SERIES_TEST_IDS.skippedExecutionMarker}
                 />
-                <ScheduleDetailsRunsChartRunPopoverTrigger
+                <ScheduleDetailsRunsChartPopoverTrigger
                   x={x}
                   y={CHART_TIMELINE_Y_PX}
                   entries={[
@@ -153,7 +153,7 @@ export default function ScheduleDetailsRunsChartSeries({
                   label={label}
                   testId={CHART_SERIES_TEST_IDS.nextExecutionMarker}
                 />
-                <ScheduleDetailsRunsChartRunPopoverTrigger
+                <ScheduleDetailsRunsChartPopoverTrigger
                   x={x}
                   y={CHART_TIMELINE_Y_PX}
                   entries={[

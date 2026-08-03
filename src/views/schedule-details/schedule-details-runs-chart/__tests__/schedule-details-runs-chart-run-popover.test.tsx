@@ -15,7 +15,7 @@ import {
   RUN_POPOVER_SKIPPED_LABEL,
   RUN_POPOVER_TEST_IDS,
   RUN_POPOVER_TIMESTAMP_LABELS,
-} from '../../schedule-details-runs-chart-run-popover/schedule-details-runs-chart-run-popover.constants';
+} from '../../schedule-details-runs-chart-popover/schedule-details-runs-chart-popover.constants';
 import {
   getMockDescribeScheduleResponseForRunsChartPopover,
   getMockDescribeScheduleResponseForRunsChartPopoverWithSkipped,
@@ -25,7 +25,7 @@ import {
   MOCK_DOMAIN,
   MOCK_SCHEDULE_ID,
   SCHEDULE_RUNS_CHART_POPOVER_FIXTURE_NOW_MS,
-} from '../__fixtures__/schedule-details-runs-chart-popover-fixture';
+} from '../../__fixtures__/schedule-details-runs-chart-popover';
 import ScheduleDetailsRunsChart from '../schedule-details-runs-chart';
 import {
   CHART_LOADING_TEST_ID,

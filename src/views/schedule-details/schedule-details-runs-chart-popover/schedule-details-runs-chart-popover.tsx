@@ -14,12 +14,12 @@ import {
   RUN_POPOVER_SKIPPED_LABEL,
   RUN_POPOVER_STATUS_LABEL,
   RUN_POPOVER_TEST_IDS,
-} from './schedule-details-runs-chart-run-popover.constants';
-import { styled } from './schedule-details-runs-chart-run-popover.styles';
+} from './schedule-details-runs-chart-popover.constants';
+import { styled } from './schedule-details-runs-chart-popover.styles';
 import {
   type PopoverEntryProps,
   type Props,
-} from './schedule-details-runs-chart-run-popover.types';
+} from './schedule-details-runs-chart-popover.types';
 
 function PopoverEntry({ title, rows }: PopoverEntryProps) {
   return (
@@ -35,7 +35,7 @@ function PopoverEntry({ title, rows }: PopoverEntryProps) {
   );
 }
 
-export default function ScheduleDetailsRunsChartRunPopover({
+export default function ScheduleDetailsRunsChartPopover({
   entries,
   domain,
   cluster,

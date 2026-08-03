@@ -1,7 +1,7 @@
 import {
   RUN_POPOVER_EMPTY_VALUE,
   RUN_POPOVER_TIMESTAMP_LABELS,
-} from '../../schedule-details-runs-chart-run-popover.constants';
+} from '../../schedule-details-runs-chart-popover.constants';
 import getRunPopoverTimestampRows from '../get-run-popover-timestamp-rows';
 
 describe(getRunPopoverTimestampRows.name, () => {

@@ -4,15 +4,15 @@ import React from 'react';
 import { StatefulPopover } from 'baseui/popover';
 
 import { CHART_RUN_POPOVER_ENTRY_DELAY_MS } from '@/views/schedule-details/schedule-details-runs-chart/schedule-details-runs-chart.constants';
-import ScheduleDetailsRunsChartRunPopover from '@/views/schedule-details/schedule-details-runs-chart-run-popover/schedule-details-runs-chart-run-popover';
+import ScheduleDetailsRunsChartPopover from '@/views/schedule-details/schedule-details-runs-chart-popover/schedule-details-runs-chart-popover';
 
 import {
   overrides,
   styled,
-} from './schedule-details-runs-chart-run-popover-trigger.styles';
-import { type Props } from './schedule-details-runs-chart-run-popover-trigger.types';
+} from './schedule-details-runs-chart-popover-trigger.styles';
+import { type Props } from './schedule-details-runs-chart-popover-trigger.types';
 
-export default function ScheduleDetailsRunsChartRunPopoverTrigger({
+export default function ScheduleDetailsRunsChartPopoverTrigger({
   x,
   y,
   entries,
@@ -27,7 +27,7 @@ export default function ScheduleDetailsRunsChartRunPopoverTrigger({
         triggerType="hover"
         accessibilityType="tooltip"
         content={() => (
-          <ScheduleDetailsRunsChartRunPopover
+          <ScheduleDetailsRunsChartPopover
             entries={entries}
             domain={domain}
             cluster={cluster}
