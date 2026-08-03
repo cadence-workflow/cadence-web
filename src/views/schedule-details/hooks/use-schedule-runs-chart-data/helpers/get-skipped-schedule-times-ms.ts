@@ -1,4 +1,4 @@
-import { type GetSkippedScheduleTimesMsParams } from './get-skipped-schedule-times-ms.types';
+import { type GetSkippedScheduleTimesMsParams } from '../use-schedule-runs-chart-data.types';
 
 export default function getSkippedScheduleTimesMs({
   expectedTimesMs,

@@ -3,7 +3,7 @@ import formatTimestampToMs from '@/utils/data-formatters/format-timestamp-to-ms'
 import {
   type GetScheduleTimelineBoundsParams,
   type ScheduleTimelineBounds,
-} from './get-schedule-timeline-bounds.types';
+} from '../use-schedule-runs-chart-data.types';
 
 export default function getScheduleTimelineBounds({
   describeSchedule,

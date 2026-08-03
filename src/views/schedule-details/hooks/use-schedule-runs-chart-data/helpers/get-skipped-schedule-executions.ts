@@ -1,7 +1,8 @@
 import { type ChartSeriesExecutionPoint } from '@/views/schedule-details/schedule-details-runs-chart-series/schedule-details-runs-chart-series.types';
 
+import { type GetSkippedScheduleExecutionsParams } from '../use-schedule-runs-chart-data.types';
+
 import getExpectedScheduleTimesMs from './get-expected-schedule-times-ms';
-import { type GetSkippedScheduleExecutionsParams } from './get-skipped-schedule-executions.types';
 import getSkippedScheduleTimesMs from './get-skipped-schedule-times-ms';
 
 export default function getSkippedScheduleExecutions({
