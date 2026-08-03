@@ -122,6 +122,33 @@ describe(ScheduleDetailsRunsChartSeries.name, () => {
       screen.queryByTestId(CHART_SERIES_TEST_IDS.nextExecutionMarker)
     ).not.toBeInTheDocument();
   });
+
+  it('renders markers in timeline order so right-side icons stack above left-side icons', () => {
+    setup({
+      data: {
+        runs: [
+          {
+            runId: 'run-1',
+            scheduledTimeMs: Date.UTC(2024, 0, 1, 4, 0),
+            status: WORKFLOW_STATUSES.completed,
+          },
+        ],
+        skippedExecutions: [{ scheduledTimeMs: Date.UTC(2024, 0, 1, 2, 0) }],
+        nextExecutionTimeMs: Date.UTC(2024, 0, 1, 5, 0),
+      },
+    });
+
+    const overlay = screen.getByTestId(CHART_SERIES_TEST_IDS.overlay);
+    const markerTestIds = Array.from(overlay.children).map((child) =>
+      child.getAttribute('data-testid')
+    );
+
+    expect(markerTestIds).toEqual([
+      CHART_SERIES_TEST_IDS.skippedExecutionMarker,
+      CHART_SERIES_TEST_IDS.runMarker,
+      CHART_SERIES_TEST_IDS.nextExecutionMarker,
+    ]);
+  });
 });
 
 function setup({ data }: { data: ChartSeriesData }) {

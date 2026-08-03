@@ -1,9 +1,8 @@
 import { type ChartSeriesExecutionPoint } from '@/views/schedule-details/schedule-details-runs-chart-series/schedule-details-runs-chart-series.types';
 
-import {
-  getExpectedScheduleTimesMs,
-  getSkippedScheduleTimesMs,
-} from './get-schedule-cron-timeline';
+import getExpectedScheduleTimesMs from './get-expected-schedule-times-ms';
+import { type GetSkippedScheduleExecutionsParams } from './get-skipped-schedule-executions.types';
+import getSkippedScheduleTimesMs from './get-skipped-schedule-times-ms';
 
 export default function getSkippedScheduleExecutions({
   cronExpression,
@@ -13,19 +12,8 @@ export default function getSkippedScheduleExecutions({
   hasNextPage,
   nowMs,
   nextExecutionTimeMs,
-  jitterMs,
   actualTimesMs,
-}: {
-  cronExpression: string;
-  inferenceStartMs: number | null;
-  scheduleEndMs: number | null;
-  oldestLoadedScheduleTimeMs: number | null;
-  hasNextPage: boolean;
-  nowMs: number;
-  nextExecutionTimeMs?: number | null;
-  jitterMs: number;
-  actualTimesMs: number[];
-}): ChartSeriesExecutionPoint[] {
+}: GetSkippedScheduleExecutionsParams): ChartSeriesExecutionPoint[] {
   if (inferenceStartMs == null) {
     return [];
   }
@@ -56,7 +44,6 @@ export default function getSkippedScheduleExecutions({
       ...actualTimesMs,
       ...(nextExecutionTimeMs == null ? [] : [nextExecutionTimeMs]),
     ],
-    jitterMs,
   });
 
   return skippedTimesMs.map((scheduledTimeMs) => ({ scheduledTimeMs }));
