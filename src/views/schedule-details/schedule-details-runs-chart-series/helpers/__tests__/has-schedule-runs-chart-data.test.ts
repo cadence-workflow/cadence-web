@@ -3,11 +3,12 @@ import { WORKFLOW_STATUSES } from '@/views/shared/workflow-status-tag/workflow-s
 import hasScheduleRunsChartData from '../has-schedule-runs-chart-data';
 
 describe(hasScheduleRunsChartData.name, () => {
-  it('returns false when there are no runs, skips, or next execution', () => {
+  it('returns false when there are no runs, skips, pending slots, or next execution', () => {
     expect(
       hasScheduleRunsChartData({
         runs: [],
         skippedExecutions: [],
+        pendingExecutions: [],
         nextExecutionTimeMs: null,
       })
     ).toBe(false);
@@ -24,6 +25,7 @@ describe(hasScheduleRunsChartData.name, () => {
           },
         ],
         skippedExecutions: [],
+        pendingExecutions: [],
         nextExecutionTimeMs: null,
       })
     ).toBe(true);
@@ -34,6 +36,18 @@ describe(hasScheduleRunsChartData.name, () => {
       hasScheduleRunsChartData({
         runs: [],
         skippedExecutions: [{ scheduledTimeMs: 1 }],
+        pendingExecutions: [],
+        nextExecutionTimeMs: null,
+      })
+    ).toBe(true);
+  });
+
+  it('returns true when there is a pending execution', () => {
+    expect(
+      hasScheduleRunsChartData({
+        runs: [],
+        skippedExecutions: [],
+        pendingExecutions: [{ scheduledTimeMs: 1 }],
         nextExecutionTimeMs: null,
       })
     ).toBe(true);
@@ -44,6 +58,7 @@ describe(hasScheduleRunsChartData.name, () => {
       hasScheduleRunsChartData({
         runs: [],
         skippedExecutions: [],
+        pendingExecutions: [],
         nextExecutionTimeMs: 1,
       })
     ).toBe(true);

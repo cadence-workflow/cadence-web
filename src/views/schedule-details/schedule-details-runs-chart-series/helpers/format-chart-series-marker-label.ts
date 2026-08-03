@@ -12,10 +12,14 @@ export function formatChartSeriesRunGroupLabel(runs: ChartSeriesRun[]): string {
 }
 
 export function formatChartSeriesMomentLabel(
-  variant: 'skipped' | 'next',
+  variant: 'skipped' | 'pending' | 'next',
   scheduledTimeMs: number
 ): string {
-  const label = variant === 'next' ? 'Next run' : 'Skipped run';
+  const labels = {
+    skipped: 'Skipped run',
+    pending: 'Loading run',
+    next: 'Next run',
+  } satisfies Record<typeof variant, string>;
 
-  return `${label} at ${new Date(scheduledTimeMs).toISOString()}`;
+  return `${labels[variant]} at ${new Date(scheduledTimeMs).toISOString()}`;
 }

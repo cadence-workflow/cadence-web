@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { useStyletron } from 'baseui';
+import { Skeleton } from 'baseui/skeleton';
 import { Spinner } from 'baseui/spinner';
 import {
   MdAdjust,
@@ -17,7 +18,7 @@ import {
   CHART_GLYPH_MARKER_SIZE_PX,
   CHART_GLYPH_TEST_IDS,
 } from './schedule-details-runs-chart-glyph.constants';
-import { styled } from './schedule-details-runs-chart-glyph.styles';
+import { styled, overrides } from './schedule-details-runs-chart-glyph.styles';
 import { type Props } from './schedule-details-runs-chart-glyph.types';
 
 export default function ScheduleDetailsRunsChartGlyph({
@@ -72,6 +73,16 @@ export default function ScheduleDetailsRunsChartGlyph({
       break;
     case 'skipped':
       statusIcon = <styled.Skipped />;
+      break;
+    case 'pending':
+      statusIcon = (
+        <Skeleton
+          height={`${CHART_GLYPH_MARKER_SIZE_PX}px`}
+          width={`${CHART_GLYPH_MARKER_SIZE_PX}px`}
+          overrides={overrides.pendingSkeleton}
+          animation
+        />
+      );
       break;
     case 'next':
       statusIcon = (

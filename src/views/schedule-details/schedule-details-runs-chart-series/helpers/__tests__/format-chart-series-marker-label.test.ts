@@ -51,6 +51,14 @@ describe(formatChartSeriesMomentLabel.name, () => {
     );
   });
 
+  it('labels a pending (not yet loaded) execution', () => {
+    const scheduledTimeMs = Date.UTC(2024, 0, 1);
+
+    expect(formatChartSeriesMomentLabel('pending', scheduledTimeMs)).toBe(
+      `Loading run at ${new Date(scheduledTimeMs).toISOString()}`
+    );
+  });
+
   it('labels the next execution', () => {
     const scheduledTimeMs = Date.UTC(2024, 0, 1);
 

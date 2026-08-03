@@ -33,6 +33,10 @@ export default function ScheduleDetailsRunsChartSeries({
         kind: 'skipped' as const,
         scheduledTimeMs,
       })),
+      ...data.pendingExecutions.map(({ scheduledTimeMs }) => ({
+        kind: 'pending' as const,
+        scheduledTimeMs,
+      })),
       ...(data.nextExecutionTimeMs != null
         ? [
             {
@@ -83,6 +87,20 @@ export default function ScheduleDetailsRunsChartSeries({
                   marker.scheduledTimeMs
                 )}
                 testId={CHART_SERIES_TEST_IDS.skippedExecutionMarker}
+              />
+            );
+          case 'pending':
+            return (
+              <ScheduleDetailsRunsChartGlyph
+                key={`pending-${index}-${marker.scheduledTimeMs}`}
+                x={xScale(marker.scheduledTimeMs)}
+                y={CHART_TIMELINE_Y_PX}
+                variant="pending"
+                label={formatChartSeriesMomentLabel(
+                  'pending',
+                  marker.scheduledTimeMs
+                )}
+                testId={CHART_SERIES_TEST_IDS.pendingExecutionMarker}
               />
             );
           case 'next':

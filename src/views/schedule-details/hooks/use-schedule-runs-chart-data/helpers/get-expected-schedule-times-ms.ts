@@ -42,8 +42,6 @@ export default function getExpectedScheduleTimesMs({
       return occurrences;
     }
 
-    // ponytail: cap dense histories by walking backward; aggregate rendering can
-    // replace this newest-N ceiling if the chart later needs every old slot.
     const backwardInterval = CronExpressionParser.parse(cronExpression, {
       currentDate: endMs + 1,
       startDate: startMs,

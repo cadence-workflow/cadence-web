@@ -41,6 +41,14 @@ describe(ScheduleDetailsRunsChartGlyph.name, () => {
     ).toBeInTheDocument();
   });
 
+  it('renders a loading marker for a pending execution', () => {
+    setup({ variant: 'pending', label: 'Loading run' });
+
+    expect(
+      screen.getByRole('img', { name: 'Loading run' })
+    ).toBeInTheDocument();
+  });
+
   it('omits the backfill badge for grouped markers', () => {
     setup({
       variant: WORKFLOW_STATUSES.completed,

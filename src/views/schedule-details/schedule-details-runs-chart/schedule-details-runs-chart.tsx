@@ -50,6 +50,9 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
       ...chartData.skippedExecutions.map(
         ({ scheduledTimeMs }) => scheduledTimeMs
       ),
+      ...chartData.pendingExecutions.map(
+        ({ scheduledTimeMs }) => scheduledTimeMs
+      ),
     ];
     const timeWindow = resolveChartTimeWindow({
       timestampsMs,

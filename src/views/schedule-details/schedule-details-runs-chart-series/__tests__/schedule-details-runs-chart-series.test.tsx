@@ -32,6 +32,7 @@ const WINDOW_END_MS = Date.UTC(2024, 0, 1, 6, 0);
 const EMPTY_DATA: ChartSeriesData = {
   runs: [],
   skippedExecutions: [],
+  pendingExecutions: [],
   nextExecutionTimeMs: null,
 };
 
@@ -52,6 +53,7 @@ describe(ScheduleDetailsRunsChartSeries.name, () => {
           },
         ],
         skippedExecutions: [],
+        pendingExecutions: [],
         nextExecutionTimeMs: null,
       },
     });
@@ -77,6 +79,7 @@ describe(ScheduleDetailsRunsChartSeries.name, () => {
           },
         ],
         skippedExecutions: [],
+        pendingExecutions: [],
         nextExecutionTimeMs: null,
       },
     });
@@ -99,6 +102,19 @@ describe(ScheduleDetailsRunsChartSeries.name, () => {
 
     expect(
       screen.getByTestId(CHART_SERIES_TEST_IDS.skippedExecutionMarker)
+    ).toBeInTheDocument();
+  });
+
+  it('renders a marker for each pending execution', () => {
+    setup({
+      data: {
+        ...EMPTY_DATA,
+        pendingExecutions: [{ scheduledTimeMs: Date.UTC(2024, 0, 1, 3, 0) }],
+      },
+    });
+
+    expect(
+      screen.getByTestId(CHART_SERIES_TEST_IDS.pendingExecutionMarker)
     ).toBeInTheDocument();
   });
 
@@ -134,6 +150,7 @@ describe(ScheduleDetailsRunsChartSeries.name, () => {
           },
         ],
         skippedExecutions: [{ scheduledTimeMs: Date.UTC(2024, 0, 1, 2, 0) }],
+        pendingExecutions: [{ scheduledTimeMs: Date.UTC(2024, 0, 1, 1, 0) }],
         nextExecutionTimeMs: Date.UTC(2024, 0, 1, 5, 0),
       },
     });
@@ -144,6 +161,7 @@ describe(ScheduleDetailsRunsChartSeries.name, () => {
     );
 
     expect(markerTestIds).toEqual([
+      CHART_SERIES_TEST_IDS.pendingExecutionMarker,
       CHART_SERIES_TEST_IDS.skippedExecutionMarker,
       CHART_SERIES_TEST_IDS.runMarker,
       CHART_SERIES_TEST_IDS.nextExecutionMarker,
