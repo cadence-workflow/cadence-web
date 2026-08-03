@@ -7,20 +7,29 @@ import {
 
 export default function getScheduleTimelineBounds({
   describeSchedule,
+  retentionSeconds,
+  nowMs,
 }: GetScheduleTimelineBoundsParams): ScheduleTimelineBounds {
   const createTimeMs = formatTimestampToMs(describeSchedule?.info?.createTime);
   const specStartTimeMs = formatTimestampToMs(
     describeSchedule?.spec?.startTime
   );
   const scheduleEndMs = formatTimestampToMs(describeSchedule?.spec?.endTime);
-  const scheduleStartCandidates = [createTimeMs, specStartTimeMs].filter(
-    (value): value is number => value != null && Number.isFinite(value)
-  );
+  const retentionCutoffMs =
+    retentionSeconds != null && Number.isFinite(retentionSeconds)
+      ? nowMs - retentionSeconds * 1000
+      : null;
+
+  const timelineStartCandidates = [
+    createTimeMs,
+    retentionCutoffMs,
+    specStartTimeMs,
+  ].filter((value): value is number => value != null && Number.isFinite(value));
 
   return {
-    scheduleStartMs:
-      scheduleStartCandidates.length > 0
-        ? Math.max(...scheduleStartCandidates)
+    timelineStartMs:
+      timelineStartCandidates.length > 0
+        ? Math.max(...timelineStartCandidates)
         : null,
     scheduleEndMs,
   };

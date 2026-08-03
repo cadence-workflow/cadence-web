@@ -7,7 +7,7 @@ describe(getScheduleExecutionGaps.name, () => {
     expect(
       getScheduleExecutionGaps({
         cronExpression: '0 * * * *',
-        scheduleStartMs: 0,
+        timelineStartMs: 0,
         scheduleEndMs: null,
         oldestLoadedScheduleTimeMs: 0,
         hasNextPage: false,
@@ -28,7 +28,7 @@ describe(getScheduleExecutionGaps.name, () => {
     expect(
       getScheduleExecutionGaps({
         cronExpression: '0 * * * *',
-        scheduleStartMs: 0,
+        timelineStartMs: 0,
         scheduleEndMs: null,
         oldestLoadedScheduleTimeMs: 0,
         hasNextPage: false,
@@ -55,7 +55,7 @@ describe(getScheduleExecutionGaps.name, () => {
     expect(
       getScheduleExecutionGaps({
         cronExpression: '0 * * * *',
-        scheduleStartMs: 0,
+        timelineStartMs: 0,
         scheduleEndMs: null,
         oldestLoadedScheduleTimeMs: 0,
         hasNextPage: false,
@@ -77,7 +77,7 @@ describe(getScheduleExecutionGaps.name, () => {
     expect(
       getScheduleExecutionGaps({
         cronExpression: '0 * * * *',
-        scheduleStartMs: 0,
+        timelineStartMs: 0,
         scheduleEndMs: null,
         oldestLoadedScheduleTimeMs: 2 * HOUR_MS,
         hasNextPage: true,
@@ -98,7 +98,7 @@ describe(getScheduleExecutionGaps.name, () => {
     expect(
       getScheduleExecutionGaps({
         cronExpression: '0 * * * *',
-        scheduleStartMs: 0,
+        timelineStartMs: 0,
         scheduleEndMs: null,
         oldestLoadedScheduleTimeMs: null,
         hasNextPage: true,
@@ -113,7 +113,7 @@ describe(getScheduleExecutionGaps.name, () => {
     expect(
       getScheduleExecutionGaps({
         cronExpression: '0 * * * *',
-        scheduleStartMs: 0,
+        timelineStartMs: 0,
         scheduleEndMs: 2 * HOUR_MS,
         oldestLoadedScheduleTimeMs: 0,
         hasNextPage: false,
@@ -134,7 +134,7 @@ describe(getScheduleExecutionGaps.name, () => {
     expect(
       getScheduleExecutionGaps({
         cronExpression: '0 * * * *',
-        scheduleStartMs: 0,
+        timelineStartMs: 0,
         scheduleEndMs: null,
         oldestLoadedScheduleTimeMs: 0,
         hasNextPage: false,
@@ -152,7 +152,7 @@ describe(getScheduleExecutionGaps.name, () => {
     expect(
       getScheduleExecutionGaps({
         cronExpression: '0 * * * *',
-        scheduleStartMs: 0,
+        timelineStartMs: 0,
         scheduleEndMs: null,
         oldestLoadedScheduleTimeMs: 0,
         hasNextPage: false,
@@ -168,7 +168,7 @@ describe(getScheduleExecutionGaps.name, () => {
     expect(
       getScheduleExecutionGaps({
         cronExpression: '0 * * * *',
-        scheduleStartMs: 2 * HOUR_MS,
+        timelineStartMs: 2 * HOUR_MS,
         scheduleEndMs: HOUR_MS,
         oldestLoadedScheduleTimeMs: 0,
         hasNextPage: false,

@@ -3,7 +3,8 @@ import { getMockRunningDescribeScheduleResponse } from '@/route-handlers/describ
 import getScheduleTimelineBounds from '../get-schedule-timeline-bounds';
 
 describe(getScheduleTimelineBounds.name, () => {
-  it('uses creation and spec start bounds', () => {
+  it('uses retention cutoff when it is later than schedule start', () => {
+    const nowMs = Date.parse('2026-07-26T12:00:00Z');
     const timestamp = (value: string) => ({
       seconds: String(Date.parse(value) / 1000),
       nanos: 0,
@@ -21,7 +22,7 @@ describe(getScheduleTimelineBounds.name, () => {
       },
       spec: {
         cronExpression: '0 * * * *',
-        startTime: timestamp('2026-07-24T00:00:00Z'),
+        startTime: timestamp('2026-07-01T00:00:00Z'),
         endTime: timestamp('2026-08-01T00:00:00Z'),
         jitter: null,
       },
@@ -30,9 +31,11 @@ describe(getScheduleTimelineBounds.name, () => {
     expect(
       getScheduleTimelineBounds({
         describeSchedule,
+        retentionSeconds: 7 * 24 * 60 * 60,
+        nowMs,
       })
     ).toEqual({
-      scheduleStartMs: Date.parse('2026-07-24T00:00:00Z'),
+      timelineStartMs: Date.parse('2026-07-19T12:00:00Z'),
       scheduleEndMs: Date.parse('2026-08-01T00:00:00Z'),
     });
   });
