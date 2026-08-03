@@ -6,28 +6,17 @@ import { HttpResponse } from 'msw';
 
 import { render, screen } from '@/test-utils/rtl';
 
-import { type WorkflowActionEnabledConfigValue } from '@/config/dynamic/resolvers/workflow-actions-enabled.types';
+import { type ScheduleActionEnabledConfigValue } from '@/config/dynamic/resolvers/schedule-actions-enabled.types';
 import mockResolvedConfigValues from '@/utils/config/__fixtures__/resolved-config-values';
-import {
-  mockWorkflowActionsConfig,
-  mockStartActionConfig,
-} from '@/views/workflow-actions/__fixtures__/workflow-actions-config';
-import getActionDisabledReason from '@/views/workflow-actions/workflow-actions-menu/helpers/get-action-disabled-reason';
+import getActionDisabledReason from '@/views/schedule-actions/schedule-actions-menu/helpers/get-action-disabled-reason';
 
-import DomainPageStartWorkflowButton from '../domain-page-start-workflow-button';
-import type { Props } from '../domain-page-start-workflow-button.types';
-
-jest.mock('../../../workflow-actions/config/workflow-actions.config', () => {
-  return {
-    default: mockWorkflowActionsConfig,
-    startWorkflowActionConfig: mockStartActionConfig,
-  };
-});
+import DomainSchedulesCreateButton from '../domain-schedules-create-button';
+import { type Props } from '../domain-schedules-create-button.types';
 
 jest.mock('@/components/button/button', () =>
   jest.fn((props) => {
     return (
-      <button onClick={props.onClick} data-testid="start-workflow-button">
+      <button onClick={props.onClick} data-testid="create-schedule-button">
         {JSON.stringify({
           isLoading: props.isLoading,
           disabled: props.disabled,
@@ -37,7 +26,6 @@ jest.mock('@/components/button/button', () =>
   })
 );
 
-// mock StatefulTooltip
 jest.mock('baseui/tooltip', () => {
   return {
     ...jest.requireActual('baseui/tooltip'),
@@ -53,30 +41,16 @@ jest.mock('baseui/tooltip', () => {
 });
 
 jest.mock(
-  '@/views/workflow-actions/workflow-actions-menu/helpers/get-action-disabled-reason'
-);
-
-jest.mock(
-  '@/views/workflow-actions/workflow-actions-modal/workflow-actions-modal',
-  () =>
-    jest.fn((props) => {
-      return (
-        <div data-testid="actions-modal">
-          Actions Modal
-          <button data-testid="close-modal-button" onClick={props.onClose}>
-            Close
-          </button>
-        </div>
-      );
-    })
+  '@/views/schedule-actions/schedule-actions-menu/helpers/get-action-disabled-reason'
 );
 
 const mockGetActionDisabledReason = getActionDisabledReason as jest.Mock;
 
-describe('DomainPageStartWorkflowButton', () => {
+describe(DomainSchedulesCreateButton.name, () => {
   const defaultProps: Props = {
     domain: 'test-domain',
     cluster: 'test-cluster',
+    onClick: jest.fn(),
   };
 
   beforeEach(() => {
@@ -84,11 +58,10 @@ describe('DomainPageStartWorkflowButton', () => {
     mockGetActionDisabledReason.mockReturnValue(undefined);
   });
 
-  it('renders the start workflow button', async () => {
+  it('renders the create schedule button', async () => {
     await setup(defaultProps);
 
-    const button = screen.getByTestId('start-workflow-button');
-    expect(button).toBeInTheDocument();
+    expect(screen.getByTestId('create-schedule-button')).toBeInTheDocument();
   });
 
   it('calls getActionDisabledReason with correct parameters', async () => {
@@ -108,19 +81,22 @@ describe('DomainPageStartWorkflowButton', () => {
     setup(defaultProps, {
       isConfigLoading: true,
     });
-    expect(screen.getByTestId('start-workflow-button')).toHaveTextContent(
+
+    expect(screen.getByTestId('create-schedule-button')).toHaveTextContent(
       /"isLoading":true/
     );
   });
 
   it('disables button when action is disabled', async () => {
-    const disabledReason = 'Workflow action has been disabled';
-    mockGetActionDisabledReason.mockReturnValue(disabledReason);
+    mockGetActionDisabledReason.mockReturnValue(
+      'Schedule action has been disabled'
+    );
 
     await setup(defaultProps);
 
-    const button = screen.getByTestId('start-workflow-button');
-    expect(button).toHaveTextContent(/"disabled":true/);
+    expect(screen.getByTestId('create-schedule-button')).toHaveTextContent(
+      /"disabled":true/
+    );
   });
 
   it('shows tooltip with disabled reason when button is disabled', async () => {
@@ -128,35 +104,24 @@ describe('DomainPageStartWorkflowButton', () => {
     mockGetActionDisabledReason.mockReturnValue(disabledReason);
 
     setup(defaultProps);
+
     expect(screen.getByTestId('tooltip')).toHaveTextContent(disabledReason);
   });
 
-  it('opens modal when button is clicked', async () => {
-    const { user } = await setup(defaultProps, {
-      startActionEnabledConfig: 'ENABLED',
-      isConfigLoading: false,
-      isConfigError: false,
-    });
+  it('calls onClick when button is clicked', async () => {
+    const onClick = jest.fn();
+    const { user } = await setup(
+      { ...defaultProps, onClick },
+      {
+        startActionEnabledConfig: 'ENABLED',
+        isConfigLoading: false,
+        isConfigError: false,
+      }
+    );
 
-    const button = screen.getByTestId('start-workflow-button');
-    expect(screen.queryByTestId('actions-modal')).not.toBeInTheDocument();
-    await user.click(button);
+    await user.click(screen.getByTestId('create-schedule-button'));
 
-    expect(screen.getByTestId('actions-modal')).toBeInTheDocument();
-  });
-
-  it('closes modal when onClose is called', async () => {
-    const { user } = await setup(defaultProps);
-
-    const button = screen.getByTestId('start-workflow-button');
-    expect(button).toBeInTheDocument();
-
-    await user.click(button);
-
-    expect(screen.getByTestId('actions-modal')).toBeInTheDocument();
-    await user.click(screen.getByTestId('close-modal-button'));
-
-    expect(screen.queryByTestId('actions-modal')).not.toBeInTheDocument();
+    expect(onClick).toHaveBeenCalledTimes(1);
   });
 
   it('disables button when user lacks domain write access', async () => {
@@ -164,7 +129,7 @@ describe('DomainPageStartWorkflowButton', () => {
       ({
         actionEnabledConfig,
       }: {
-        actionEnabledConfig?: WorkflowActionEnabledConfigValue;
+        actionEnabledConfig?: ScheduleActionEnabledConfigValue;
       }) =>
         actionEnabledConfig === 'DISABLED_UNAUTHORIZED'
           ? 'Not authorized'
@@ -182,7 +147,7 @@ describe('DomainPageStartWorkflowButton', () => {
       });
     });
 
-    expect(screen.getByTestId('start-workflow-button')).toHaveTextContent(
+    expect(screen.getByTestId('create-schedule-button')).toHaveTextContent(
       /"disabled":true/
     );
     expect(screen.getByTestId('tooltip')).toHaveTextContent('Not authorized');
@@ -193,28 +158,29 @@ describe('DomainPageStartWorkflowButton', () => {
       isConfigError: true,
     });
 
-    const button = screen.getByTestId('start-workflow-button');
-    expect(button).toHaveTextContent(/"isLoading":true/);
+    expect(screen.getByTestId('create-schedule-button')).toHaveTextContent(
+      /"isLoading":true/
+    );
   });
 });
 
 function setup(
   props: Props,
   options: {
-    startActionEnabledConfig?: WorkflowActionEnabledConfigValue;
+    startActionEnabledConfig?: ScheduleActionEnabledConfigValue;
     isConfigLoading?: boolean;
     isConfigError?: boolean;
   } = {}
 ) {
   const user = userEvent.setup();
   const {
-    startActionEnabledConfig = mockResolvedConfigValues.WORKFLOW_ACTIONS_ENABLED
+    startActionEnabledConfig = mockResolvedConfigValues.SCHEDULE_ACTIONS_ENABLED
       .start,
     isConfigLoading = false,
     isConfigError = false,
   } = options;
 
-  const renderResult = render(<DomainPageStartWorkflowButton {...props} />, {
+  const renderResult = render(<DomainSchedulesCreateButton {...props} />, {
     endpointsMocks: [
       {
         path: '/api/config',
@@ -232,7 +198,7 @@ function setup(
           }
 
           return HttpResponse.json({
-            ...mockResolvedConfigValues.WORKFLOW_ACTIONS_ENABLED,
+            ...mockResolvedConfigValues.SCHEDULE_ACTIONS_ENABLED,
             start: startActionEnabledConfig,
           });
         },
