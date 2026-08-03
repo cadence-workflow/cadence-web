@@ -3,6 +3,10 @@ import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api
 import { getMockDescribeScheduleResponse } from '@/route-handlers/describe-schedule/__fixtures__/mock-describe-schedule-response';
 import { type DescribeScheduleResponse } from '@/route-handlers/describe-schedule/describe-schedule.types';
 
+export function encodePayload(json: string) {
+  return { data: Buffer.from(json, 'utf-8').toString('base64') };
+}
+
 /** A fully-populated schedule, used to check that every form field prefills. */
 export function getMockEditableDescribeScheduleResponse(
   overrides: Partial<DescribeScheduleResponse> = {}
@@ -22,15 +26,25 @@ export function getMockEditableDescribeScheduleResponse(
           kind: 'TASK_LIST_KIND_NORMAL',
           baseName: 'demo-task-list',
         },
-        input: {
-          data: Buffer.from('{"a":1} {"b":2}', 'utf-8').toString('base64'),
-        },
+        input: encodePayload('{"a":1} {"b":2}'),
         workflowIdPrefix: 'scheduled-demo-',
         executionStartToCloseTimeout: { seconds: '3600', nanos: 0 },
         taskStartToCloseTimeout: { seconds: '30', nanos: 0 },
-        retryPolicy: null,
-        memo: null,
-        searchAttributes: null,
+        retryPolicy: {
+          initialInterval: { seconds: '10', nanos: 0 },
+          backoffCoefficient: 2,
+          maximumInterval: { seconds: '600', nanos: 0 },
+          maximumAttempts: 5,
+          expirationInterval: null,
+          nonRetryableErrorReasons: [],
+        },
+        memo: { fields: { owner: encodePayload('"team-a"') } },
+        searchAttributes: {
+          indexedFields: {
+            CustomKeywordField: encodePayload('"keyword"'),
+            CustomIntField: encodePayload('7'),
+          },
+        },
       },
     },
     policies: {
