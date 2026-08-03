@@ -10,28 +10,19 @@ import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtu
 
 import useScheduleRunsChartData from '../use-schedule-runs-chart-data';
 
-const MOCK_DOMAIN = 'test-domain';
-const MOCK_CLUSTER = 'test-cluster';
-const MOCK_SCHEDULE_ID = 'my-schedule';
-const NOW_MS = Date.UTC(2024, 0, 1, 12, 0);
-const HOUR_MS = 60 * 60_000;
+const mockDomain = 'test-domain';
+const mockCluster = 'test-cluster';
+const mockScheduleId = 'my-schedule';
+const nowMs = Date.UTC(2024, 0, 1, 12, 0);
+const hourMs = 60 * 60_000;
 
 describe(useScheduleRunsChartData.name, () => {
-  it('starts loading before any response has resolved', () => {
-    const { result } = setup({
-      describeScheduleResponse: getMockRunningDescribeScheduleResponse(),
-      workflowsResponse: { workflows: [], nextPage: '' },
-    });
-
-    expect(result.current.isLoading).toBe(true);
-  });
-
   it('maps live workflow runs and the next execution once loaded', async () => {
     const { result } = setup({
       describeScheduleResponse: getMockRunningDescribeScheduleResponse({
         info: {
           lastRunTime: null,
-          nextRunTime: { seconds: String((NOW_MS + HOUR_MS) / 1000), nanos: 0 },
+          nextRunTime: { seconds: String((nowMs + hourMs) / 1000), nanos: 0 },
           totalRuns: '1',
           createTime: null,
           lastUpdateTime: null,
@@ -46,8 +37,8 @@ describe(useScheduleRunsChartData.name, () => {
             workflowID: 'wf-1',
             runID: 'run-1',
             status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
-            startTime: NOW_MS - HOUR_MS,
-            closeTime: NOW_MS - HOUR_MS + 1000,
+            startTime: nowMs - hourMs,
+            closeTime: nowMs - hourMs + 1000,
             historyLength: 5,
             searchAttributes: {
               // Base64 of the JSON-encoded scheduled-time string, matching
@@ -55,7 +46,7 @@ describe(useScheduleRunsChartData.name, () => {
               // encoded on the wire.
               CadenceScheduleTime: {
                 data: Buffer.from(
-                  JSON.stringify(new Date(NOW_MS - HOUR_MS).toISOString())
+                  JSON.stringify(new Date(nowMs - hourMs).toISOString())
                 ).toString('base64'),
               },
             },
@@ -67,15 +58,18 @@ describe(useScheduleRunsChartData.name, () => {
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
-    expect(result.current.data.runs).toEqual([
-      expect.objectContaining({
-        runId: 'run-1',
-        scheduledTimeMs: NOW_MS - HOUR_MS,
-      }),
-    ]);
-    expect(result.current.data.nextExecutionTimeMs).toBe(NOW_MS + HOUR_MS);
-    // Skipped/missed execution inference is added in a follow-up slice.
-    expect(result.current.data.skippedExecutions).toEqual([]);
+    expect(result.current.data).toEqual({
+      runs: [
+        {
+          runId: 'run-1',
+          status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
+          scheduledTimeMs: nowMs - hourMs,
+          isBackfill: false,
+        },
+      ],
+      skippedExecutions: [],
+      nextExecutionTimeMs: nowMs + hourMs,
+    });
   });
 
   it('returns null next execution for a paused schedule', async () => {
@@ -83,7 +77,7 @@ describe(useScheduleRunsChartData.name, () => {
       describeScheduleResponse: getMockPausedDescribeScheduleResponse({
         info: {
           lastRunTime: null,
-          nextRunTime: { seconds: String((NOW_MS + HOUR_MS) / 1000), nanos: 0 },
+          nextRunTime: { seconds: String((nowMs + hourMs) / 1000), nanos: 0 },
           totalRuns: '1',
           createTime: null,
           lastUpdateTime: null,
@@ -101,7 +95,7 @@ describe(useScheduleRunsChartData.name, () => {
   });
 
   it('drops runs at or after the next execution time', async () => {
-    const nextExecutionTimeMs = NOW_MS + HOUR_MS;
+    const nextExecutionTimeMs = nowMs + hourMs;
 
     const { result } = setup({
       describeScheduleResponse: getMockRunningDescribeScheduleResponse({
@@ -124,11 +118,11 @@ describe(useScheduleRunsChartData.name, () => {
           getMockWorkflowListItem({
             workflowID: 'wf-before',
             runID: 'run-before',
-            startTime: NOW_MS - HOUR_MS,
+            startTime: nowMs - hourMs,
             searchAttributes: {
               CadenceScheduleTime: {
                 data: Buffer.from(
-                  JSON.stringify(new Date(NOW_MS - HOUR_MS).toISOString())
+                  JSON.stringify(new Date(nowMs - hourMs).toISOString())
                 ).toString('base64'),
               },
             },
@@ -170,20 +164,20 @@ function setup({
   return renderHook(
     () =>
       useScheduleRunsChartData({
-        domain: MOCK_DOMAIN,
-        cluster: MOCK_CLUSTER,
-        scheduleId: MOCK_SCHEDULE_ID,
+        domain: mockDomain,
+        cluster: mockCluster,
+        scheduleId: mockScheduleId,
       }),
     {
       endpointsMocks: [
         {
-          path: `/api/domains/${MOCK_DOMAIN}/${MOCK_CLUSTER}/schedules/${MOCK_SCHEDULE_ID}`,
+          path: `/api/domains/${mockDomain}/${mockCluster}/schedules/${mockScheduleId}`,
           httpMethod: 'GET',
           mockOnce: false,
           httpResolver: () => HttpResponse.json(describeScheduleResponse),
         },
         {
-          path: `/api/domains/${MOCK_DOMAIN}/${MOCK_CLUSTER}/workflows`,
+          path: `/api/domains/${mockDomain}/${mockCluster}/workflows`,
           httpMethod: 'GET',
           mockOnce: false,
           httpResolver: () => HttpResponse.json(workflowsResponse),

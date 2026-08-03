@@ -1,5 +1,7 @@
 export const CHART_WORKFLOWS_PAGE_SIZE = 20;
 
+export const SCHEDULE_BACKFILL_SEARCH_ATTRIBUTE = 'CadenceScheduleBackfillID';
+
 /** How often the schedule description is repolled for a live next-run time and run count (ms). */
 export const CHART_DESCRIBE_REFRESH_INTERVAL_MS = 10_000;
 

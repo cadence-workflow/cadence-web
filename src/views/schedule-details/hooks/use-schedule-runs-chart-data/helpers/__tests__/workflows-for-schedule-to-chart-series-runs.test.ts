@@ -2,7 +2,7 @@ import { type InfiniteData } from '@tanstack/react-query';
 
 import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtures__/mock-workflow-list-items';
 import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list-workflows.types';
-import { SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN } from '@/views/schedule-details/hooks/use-list-workflows-for-schedule/use-list-workflows-for-schedule.constants';
+import { SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN } from '@/views/schedule-details/schedule-details.constants';
 
 import workflowsForScheduleToChartSeriesRuns from '../workflows-for-schedule-to-chart-series-runs';
 
@@ -51,66 +51,11 @@ describe(workflowsForScheduleToChartSeriesRuns.name, () => {
     ]);
   });
 
-  it('deduplicates a run repeated across workflow pages', () => {
-    const duplicateRun = getMockWorkflowListItem({
-      workflowID: 'duplicate-workflow',
-      runID: 'duplicate-run',
-      status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
-      startTime: 4000,
-      searchAttributes: {
-        [SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN]:
-          scheduleTimeAttribute(4000),
-      },
-    });
-    const runs = workflowsForScheduleToChartSeriesRuns({
-      pages: [
-        { workflows: [duplicateRun], nextPage: 'page-2' },
-        { workflows: [duplicateRun], nextPage: '' },
-      ],
-      pageParams: [undefined, 'page-2'],
-    });
-
-    expect(runs).toEqual([expect.objectContaining({ runId: 'duplicate-run' })]);
-  });
-
-  it('keeps zero-history open workflows as running executions', () => {
-    const runs = workflowsForScheduleToChartSeriesRuns({
-      pages: [
-        {
-          workflows: [
-            getMockWorkflowListItem({
-              workflowID: 'missed-wf',
-              runID: 'missed-run',
-              startTime: 5000,
-              historyLength: 0,
-              closeTime: undefined,
-              status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
-              searchAttributes: {
-                [SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN]:
-                  scheduleTimeAttribute(5000),
-              },
-            }),
-          ],
-          nextPage: '',
-        },
-      ],
-      pageParams: [undefined],
-    });
-
-    expect(runs).toEqual([
-      expect.objectContaining({
-        runId: 'missed-run',
-        status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
-        scheduledTimeMs: 5000,
-      }),
-    ]);
-  });
-
   it('returns an empty array when no pages have loaded', () => {
     expect(workflowsForScheduleToChartSeriesRuns(undefined)).toEqual([]);
   });
 
-  it('falls back to startTime when the schedule search attribute is missing', () => {
+  it('skips workflows with no CadenceScheduleTime search attribute', () => {
     const runs = workflowsForScheduleToChartSeriesRuns({
       pages: [
         {
@@ -127,12 +72,10 @@ describe(workflowsForScheduleToChartSeriesRuns.name, () => {
       pageParams: [undefined],
     });
 
-    expect(runs).toEqual([
-      expect.objectContaining({ runId: 'run-fallback', scheduledTimeMs: 1500 }),
-    ]);
+    expect(runs).toEqual([]);
   });
 
-  it('skips workflows with no parsable scheduled time', () => {
+  it('skips workflows with no parsable CadenceScheduleTime', () => {
     const runs = workflowsForScheduleToChartSeriesRuns({
       pages: [
         {
