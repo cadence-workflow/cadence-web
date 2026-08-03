@@ -18,7 +18,6 @@ describe(useScheduleRunsChartData.name, () => {
     const { result } = setup({
       describeScheduleResponse: getMockRunningDescribeScheduleResponse(),
       workflowsResponse: { workflows: [], nextPage: '' },
-      domainResponse: getMockDomainResponse(),
     });
 
     expect(result.current.isLoading).toBe(true);
@@ -70,7 +69,6 @@ describe(useScheduleRunsChartData.name, () => {
         ],
         nextPage: '',
       },
-      domainResponse: getMockDomainResponse(),
     });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
@@ -122,7 +120,6 @@ describe(useScheduleRunsChartData.name, () => {
         ],
         nextPage: '',
       },
-      domainResponse: getMockDomainResponse(),
     });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
@@ -193,7 +190,6 @@ describe(useScheduleRunsChartData.name, () => {
         ],
         nextPage: '',
       },
-      domainResponse: getMockDomainResponse(),
     });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
@@ -215,13 +211,11 @@ describe(useScheduleRunsChartData.name, () => {
 function setup({
   describeScheduleResponse,
   workflowsResponse,
-  domainResponse,
 }: {
   describeScheduleResponse: ReturnType<
     typeof getMockRunningDescribeScheduleResponse
   >;
   workflowsResponse: { workflows: unknown[]; nextPage: string };
-  domainResponse: ReturnType<typeof getMockDomainResponse>;
 }) {
   return renderHook(
     () =>
@@ -245,20 +239,7 @@ function setup({
           mockOnce: false,
           httpResolver: () => HttpResponse.json(workflowsResponse),
         },
-        {
-          path: `/api/domains/${mockDomain}/${mockCluster}`,
-          httpMethod: 'GET',
-          mockOnce: false,
-          httpResolver: () => HttpResponse.json(domainResponse),
-        },
       ],
     }
   );
-}
-
-function getMockDomainResponse(overrides: Record<string, unknown> = {}) {
-  return {
-    workflowExecutionRetentionPeriod: { seconds: '604800', nanos: 0 },
-    ...overrides,
-  };
 }

@@ -1,13 +1,11 @@
 'use client';
 import { useMemo } from 'react';
 
-import formatDurationToSeconds from '@/utils/data-formatters/format-duration-to-seconds';
+import formatTimestampToMs from '@/utils/data-formatters/format-timestamp-to-ms';
 import useListWorkflowsForSchedule from '@/views/schedule-details/hooks/use-list-workflows-for-schedule/use-list-workflows-for-schedule';
 import useDescribeSchedule from '@/views/shared/hooks/use-describe-schedule/use-describe-schedule';
-import useDomainDescription from '@/views/shared/hooks/use-domain-description/use-domain-description';
 
 import getScheduleExecutionGaps from './helpers/get-schedule-execution-gaps';
-import getScheduleNextExecutionTimeMs from './helpers/get-schedule-next-execution-time-ms';
 import getScheduleTimelineBounds from './helpers/get-schedule-timeline-bounds';
 import workflowsForScheduleToChartSeriesRuns from './helpers/workflows-for-schedule-to-chart-series-runs';
 import {
@@ -40,8 +38,6 @@ export default function useScheduleRunsChartData({
     refetchIntervalMs: CHART_WORKFLOWS_REFRESH_INTERVAL_MS,
     runsRevision: describeQuery.data?.info?.totalRuns,
   });
-  const domainQuery = useDomainDescription({ domain, cluster });
-
   // Rounded to the minute so a per-second `nowMs` tick does not re-walk the
   // cron timeline on every render.
   const cronEvaluationTimeMs = Math.floor(nowMs / 60_000) * 60_000;
@@ -50,10 +46,13 @@ export default function useScheduleRunsChartData({
     () => workflowsForScheduleToChartSeriesRuns(workflowsQuery.data),
     [workflowsQuery.data]
   );
-  const nextExecutionTimeMs = useMemo(
-    () => getScheduleNextExecutionTimeMs(describeQuery.data),
-    [describeQuery.data]
-  );
+  const nextExecutionTimeMs = useMemo(() => {
+    if (describeQuery.data?.state?.paused) {
+      return null;
+    }
+
+    return formatTimestampToMs(describeQuery.data?.info?.nextRunTime);
+  }, [describeQuery.data]);
   // Runs are already filtered to those with a parsable scheduled time, so the
   // oldest loaded slot is just the minimum of what's already been mapped.
   const oldestLoadedScheduleTimeMs = useMemo(
@@ -63,24 +62,19 @@ export default function useScheduleRunsChartData({
         : null,
     [runs]
   );
-  const retentionSeconds = formatDurationToSeconds(
-    domainQuery.data?.workflowExecutionRetentionPeriod
-  );
   const timelineBounds = useMemo(
     () =>
       getScheduleTimelineBounds({
         describeSchedule: describeQuery.data,
-        retentionSeconds,
-        nowMs: cronEvaluationTimeMs,
       }),
-    [cronEvaluationTimeMs, describeQuery.data, retentionSeconds]
+    [describeQuery.data]
   );
   const cronExpression = describeQuery.data?.spec?.cronExpression ?? '';
-  const { skippedExecutions, pendingExecutions } = useMemo(
+  const { skippedExecutions, unconfirmedExecutions } = useMemo(
     () =>
       getScheduleExecutionGaps({
         cronExpression,
-        inferenceStartMs: timelineBounds.inferenceStartMs,
+        scheduleStartMs: timelineBounds.scheduleStartMs,
         scheduleEndMs: timelineBounds.scheduleEndMs,
         oldestLoadedScheduleTimeMs,
         hasNextPage: workflowsQuery.hasNextPage ?? false,
@@ -95,7 +89,7 @@ export default function useScheduleRunsChartData({
       nextExecutionTimeMs,
       oldestLoadedScheduleTimeMs,
       runs,
-      timelineBounds.inferenceStartMs,
+      timelineBounds.scheduleStartMs,
       timelineBounds.scheduleEndMs,
       workflowsQuery.dataUpdatedAt,
       workflowsQuery.hasNextPage,
@@ -112,16 +106,13 @@ export default function useScheduleRunsChartData({
     return {
       runs: runs.filter(isBeforeNextExecution),
       skippedExecutions: skippedExecutions.filter(isBeforeNextExecution),
-      pendingExecutions: pendingExecutions.filter(isBeforeNextExecution),
+      unconfirmedExecutions: unconfirmedExecutions.filter(isBeforeNextExecution),
       nextExecutionTimeMs,
     };
-  }, [nextExecutionTimeMs, pendingExecutions, runs, skippedExecutions]);
+  }, [nextExecutionTimeMs, unconfirmedExecutions, runs, skippedExecutions]);
 
   return {
     data,
-    isLoading:
-      describeQuery.isLoading ||
-      domainQuery.isLoading ||
-      workflowsQuery.isLoading,
+    isLoading: describeQuery.isLoading || workflowsQuery.isLoading,
   };
 }

@@ -7,7 +7,7 @@ describe(getScheduleExecutionGaps.name, () => {
     expect(
       getScheduleExecutionGaps({
         cronExpression: '0 * * * *',
-        inferenceStartMs: 0,
+        scheduleStartMs: 0,
         scheduleEndMs: null,
         oldestLoadedScheduleTimeMs: 0,
         hasNextPage: false,
@@ -20,15 +20,15 @@ describe(getScheduleExecutionGaps.name, () => {
         { scheduledTimeMs: 0 },
         { scheduledTimeMs: 2 * HOUR_MS },
       ],
-      pendingExecutions: [],
+      unconfirmedExecutions: [],
     });
   });
 
-  it('reports slots due after the last fetch as pending', () => {
+  it('reports slots due after the last fetch as unconfirmed', () => {
     expect(
       getScheduleExecutionGaps({
         cronExpression: '0 * * * *',
-        inferenceStartMs: 0,
+        scheduleStartMs: 0,
         scheduleEndMs: null,
         oldestLoadedScheduleTimeMs: 0,
         hasNextPage: false,
@@ -44,7 +44,7 @@ describe(getScheduleExecutionGaps.name, () => {
         { scheduledTimeMs: 0 },
         { scheduledTimeMs: 2 * HOUR_MS },
       ],
-      pendingExecutions: [
+      unconfirmedExecutions: [
         { scheduledTimeMs: 3 * HOUR_MS },
         { scheduledTimeMs: 4 * HOUR_MS },
       ],
@@ -55,7 +55,7 @@ describe(getScheduleExecutionGaps.name, () => {
     expect(
       getScheduleExecutionGaps({
         cronExpression: '0 * * * *',
-        inferenceStartMs: 0,
+        scheduleStartMs: 0,
         scheduleEndMs: null,
         oldestLoadedScheduleTimeMs: 0,
         hasNextPage: false,
@@ -65,7 +65,7 @@ describe(getScheduleExecutionGaps.name, () => {
       })
     ).toEqual({
       skippedExecutions: [],
-      pendingExecutions: [
+      unconfirmedExecutions: [
         { scheduledTimeMs: 0 },
         { scheduledTimeMs: HOUR_MS },
         { scheduledTimeMs: 2 * HOUR_MS },
@@ -77,7 +77,7 @@ describe(getScheduleExecutionGaps.name, () => {
     expect(
       getScheduleExecutionGaps({
         cronExpression: '0 * * * *',
-        inferenceStartMs: 0,
+        scheduleStartMs: 0,
         scheduleEndMs: null,
         oldestLoadedScheduleTimeMs: 2 * HOUR_MS,
         hasNextPage: true,
@@ -90,7 +90,7 @@ describe(getScheduleExecutionGaps.name, () => {
         { scheduledTimeMs: 3 * HOUR_MS },
         { scheduledTimeMs: 4 * HOUR_MS },
       ],
-      pendingExecutions: [],
+      unconfirmedExecutions: [],
     });
   });
 
@@ -98,7 +98,7 @@ describe(getScheduleExecutionGaps.name, () => {
     expect(
       getScheduleExecutionGaps({
         cronExpression: '0 * * * *',
-        inferenceStartMs: 0,
+        scheduleStartMs: 0,
         scheduleEndMs: null,
         oldestLoadedScheduleTimeMs: null,
         hasNextPage: true,
@@ -106,14 +106,14 @@ describe(getScheduleExecutionGaps.name, () => {
         nowMs: 4 * HOUR_MS,
         actualTimesMs: [],
       })
-    ).toEqual({ skippedExecutions: [], pendingExecutions: [] });
+    ).toEqual({ skippedExecutions: [], unconfirmedExecutions: [] });
   });
 
   it('respects the schedule end', () => {
     expect(
       getScheduleExecutionGaps({
         cronExpression: '0 * * * *',
-        inferenceStartMs: 0,
+        scheduleStartMs: 0,
         scheduleEndMs: 2 * HOUR_MS,
         oldestLoadedScheduleTimeMs: 0,
         hasNextPage: false,
@@ -126,7 +126,7 @@ describe(getScheduleExecutionGaps.name, () => {
         { scheduledTimeMs: 0 },
         { scheduledTimeMs: 2 * HOUR_MS },
       ],
-      pendingExecutions: [],
+      unconfirmedExecutions: [],
     });
   });
 
@@ -134,7 +134,7 @@ describe(getScheduleExecutionGaps.name, () => {
     expect(
       getScheduleExecutionGaps({
         cronExpression: '0 * * * *',
-        inferenceStartMs: 0,
+        scheduleStartMs: 0,
         scheduleEndMs: null,
         oldestLoadedScheduleTimeMs: 0,
         hasNextPage: false,
@@ -144,7 +144,7 @@ describe(getScheduleExecutionGaps.name, () => {
       })
     ).toEqual({
       skippedExecutions: [{ scheduledTimeMs: 0 }],
-      pendingExecutions: [],
+      unconfirmedExecutions: [],
     });
   });
 
@@ -152,7 +152,7 @@ describe(getScheduleExecutionGaps.name, () => {
     expect(
       getScheduleExecutionGaps({
         cronExpression: '0 * * * *',
-        inferenceStartMs: 0,
+        scheduleStartMs: 0,
         scheduleEndMs: null,
         oldestLoadedScheduleTimeMs: 0,
         hasNextPage: false,
@@ -161,14 +161,14 @@ describe(getScheduleExecutionGaps.name, () => {
         nextExecutionTimeMs: 2 * HOUR_MS,
         actualTimesMs: [0, HOUR_MS],
       })
-    ).toEqual({ skippedExecutions: [], pendingExecutions: [] });
+    ).toEqual({ skippedExecutions: [], unconfirmedExecutions: [] });
   });
 
   it('returns no gaps once the schedule has ended before the inferred start', () => {
     expect(
       getScheduleExecutionGaps({
         cronExpression: '0 * * * *',
-        inferenceStartMs: 2 * HOUR_MS,
+        scheduleStartMs: 2 * HOUR_MS,
         scheduleEndMs: HOUR_MS,
         oldestLoadedScheduleTimeMs: 0,
         hasNextPage: false,
@@ -176,6 +176,6 @@ describe(getScheduleExecutionGaps.name, () => {
         nowMs: 4 * HOUR_MS,
         actualTimesMs: [],
       })
-    ).toEqual({ skippedExecutions: [], pendingExecutions: [] });
+    ).toEqual({ skippedExecutions: [], unconfirmedExecutions: [] });
   });
 });

@@ -35,7 +35,7 @@ export default function ScheduleDetailsRunsChartSeries({
       [
         ['run', groupedExecutions],
         ['skipped', data.skippedExecutions],
-        ['pending', data.pendingExecutions],
+        ['loading', data.unconfirmedExecutions],
         ['next', nextExecution],
       ] as const
     ).flatMap(([kind, points]) =>
@@ -84,18 +84,18 @@ export default function ScheduleDetailsRunsChartSeries({
                 testId={CHART_SERIES_TEST_IDS.skippedExecutionMarker}
               />
             );
-          case 'pending':
+          case 'loading':
             return (
               <ScheduleDetailsRunsChartGlyph
-                key={`pending-${index}-${marker.scheduledTimeMs}`}
+                key={`loading-${index}-${marker.scheduledTimeMs}`}
                 x={xScale(marker.scheduledTimeMs)}
                 y={CHART_TIMELINE_Y_PX}
-                variant="pending"
+                variant="loading"
                 label={formatChartSeriesMomentLabel(
-                  'pending',
+                  'loading',
                   marker.scheduledTimeMs
                 )}
-                testId={CHART_SERIES_TEST_IDS.pendingExecutionMarker}
+                testId={CHART_SERIES_TEST_IDS.loadingExecutionMarker}
               />
             );
           case 'next':

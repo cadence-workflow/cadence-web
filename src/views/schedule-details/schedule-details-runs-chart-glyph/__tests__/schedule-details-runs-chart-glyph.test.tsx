@@ -41,8 +41,8 @@ describe(ScheduleDetailsRunsChartGlyph.name, () => {
     ).toBeInTheDocument();
   });
 
-  it('renders a loading marker for a pending execution', () => {
-    setup({ variant: 'pending', label: 'Loading run' });
+  it('renders a loading marker for an unconfirmed execution', () => {
+    setup({ variant: 'loading', label: 'Loading run' });
 
     expect(
       screen.getByRole('img', { name: 'Loading run' })

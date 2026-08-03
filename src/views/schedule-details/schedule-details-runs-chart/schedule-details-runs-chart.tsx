@@ -50,7 +50,7 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
       ...chartData.skippedExecutions.map(
         ({ scheduledTimeMs }) => scheduledTimeMs
       ),
-      ...chartData.pendingExecutions.map(
+      ...chartData.unconfirmedExecutions.map(
         ({ scheduledTimeMs }) => scheduledTimeMs
       ),
     ];
