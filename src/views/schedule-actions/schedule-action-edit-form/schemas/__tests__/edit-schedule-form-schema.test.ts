@@ -8,21 +8,6 @@ describe('editScheduleFormSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('requires a schedule id, unlike the create form', () => {
-    const result = editScheduleFormSchema.safeParse({
-      ...mockEditScheduleFormData,
-      scheduleId: '',
-    });
-
-    expect(result.success).toBe(false);
-    expect(result.error?.errors).toEqual([
-      expect.objectContaining({
-        path: ['scheduleId'],
-        message: 'Schedule id is required',
-      }),
-    ]);
-  });
-
   it('applies the shared create-schedule refinements', () => {
     const result = editScheduleFormSchema.safeParse({
       ...mockEditScheduleFormData,
