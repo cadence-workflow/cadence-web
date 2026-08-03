@@ -3,12 +3,12 @@ import { WORKFLOW_STATUSES } from '@/views/shared/workflow-status-tag/workflow-s
 import hasScheduleRunsChartData from '../has-schedule-runs-chart-data';
 
 describe(hasScheduleRunsChartData.name, () => {
-  it('returns false when there are no runs, skips, pending slots, or next execution', () => {
+  it('returns false when there are no runs, skips, unconfirmed slots, or next execution', () => {
     expect(
       hasScheduleRunsChartData({
         runs: [],
         skippedExecutions: [],
-        pendingExecutions: [],
+        unconfirmedExecutions: [],
         nextExecutionTimeMs: null,
       })
     ).toBe(false);
@@ -25,7 +25,7 @@ describe(hasScheduleRunsChartData.name, () => {
           },
         ],
         skippedExecutions: [],
-        pendingExecutions: [],
+        unconfirmedExecutions: [],
         nextExecutionTimeMs: null,
       })
     ).toBe(true);
@@ -36,18 +36,18 @@ describe(hasScheduleRunsChartData.name, () => {
       hasScheduleRunsChartData({
         runs: [],
         skippedExecutions: [{ scheduledTimeMs: 1 }],
-        pendingExecutions: [],
+        unconfirmedExecutions: [],
         nextExecutionTimeMs: null,
       })
     ).toBe(true);
   });
 
-  it('returns true when there is a pending execution', () => {
+  it('returns true when there is an unconfirmed execution', () => {
     expect(
       hasScheduleRunsChartData({
         runs: [],
         skippedExecutions: [],
-        pendingExecutions: [{ scheduledTimeMs: 1 }],
+        unconfirmedExecutions: [{ scheduledTimeMs: 1 }],
         nextExecutionTimeMs: null,
       })
     ).toBe(true);
@@ -58,7 +58,7 @@ describe(hasScheduleRunsChartData.name, () => {
       hasScheduleRunsChartData({
         runs: [],
         skippedExecutions: [],
-        pendingExecutions: [],
+        unconfirmedExecutions: [],
         nextExecutionTimeMs: 1,
       })
     ).toBe(true);

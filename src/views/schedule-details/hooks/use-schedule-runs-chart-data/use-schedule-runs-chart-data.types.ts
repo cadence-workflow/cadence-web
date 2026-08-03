@@ -18,12 +18,10 @@ export type UseScheduleRunsChartDataResult = {
 
 export type GetScheduleTimelineBoundsParams = {
   describeSchedule: DescribeScheduleResponse | undefined;
-  retentionSeconds: number | null;
-  nowMs: number;
 };
 
 export type ScheduleTimelineBounds = {
-  inferenceStartMs: number | null;
+  scheduleStartMs: number | null;
   scheduleEndMs: number | null;
 };
 
@@ -36,7 +34,7 @@ export type GetExpectedScheduleTimesMsParams = {
 
 export type GetScheduleExecutionGapsParams = {
   cronExpression: string;
-  inferenceStartMs: number | null;
+  scheduleStartMs: number | null;
   scheduleEndMs: number | null;
   oldestLoadedScheduleTimeMs: number | null;
   hasNextPage: boolean;
@@ -49,5 +47,5 @@ export type GetScheduleExecutionGapsParams = {
 
 export type ScheduleExecutionGaps = {
   skippedExecutions: ChartSeriesExecutionPoint[];
-  pendingExecutions: ChartSeriesExecutionPoint[];
+  unconfirmedExecutions: ChartSeriesExecutionPoint[];
 };

@@ -16,14 +16,14 @@ export type ChartSeriesExecutionPoint = {
 export type ChartSeriesData = {
   runs: ChartSeriesRun[];
   skippedExecutions: ChartSeriesExecutionPoint[];
-  pendingExecutions: ChartSeriesExecutionPoint[];
+  unconfirmedExecutions: ChartSeriesExecutionPoint[];
   nextExecutionTimeMs: number | null;
 };
 
 export type ChartSeriesMarker =
   | { kind: 'run'; scheduledTimeMs: number; runs: ChartSeriesRun[] }
   | { kind: 'skipped'; scheduledTimeMs: number }
-  | { kind: 'pending'; scheduledTimeMs: number }
+  | { kind: 'loading'; scheduledTimeMs: number }
   | { kind: 'next'; scheduledTimeMs: number };
 
 export type Props = {

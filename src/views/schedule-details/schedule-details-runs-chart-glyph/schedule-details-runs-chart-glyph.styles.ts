@@ -4,7 +4,7 @@ import { type SkeletonOverrides } from 'baseui/skeleton/types';
 import { CHART_GLYPH_MARKER_SIZE_PX } from './schedule-details-runs-chart-glyph.constants';
 
 export const overrides = {
-  pendingSkeleton: {
+  loadingSkeleton: {
     Root: {
       style: { borderRadius: '50%' },
     },

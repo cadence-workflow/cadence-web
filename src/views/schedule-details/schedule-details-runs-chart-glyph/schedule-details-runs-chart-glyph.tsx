@@ -74,12 +74,12 @@ export default function ScheduleDetailsRunsChartGlyph({
     case 'skipped':
       statusIcon = <styled.Skipped />;
       break;
-    case 'pending':
+    case 'loading':
       statusIcon = (
         <Skeleton
           height={`${CHART_GLYPH_MARKER_SIZE_PX}px`}
           width={`${CHART_GLYPH_MARKER_SIZE_PX}px`}
-          overrides={overrides.pendingSkeleton}
+          overrides={overrides.loadingSkeleton}
           animation
         />
       );

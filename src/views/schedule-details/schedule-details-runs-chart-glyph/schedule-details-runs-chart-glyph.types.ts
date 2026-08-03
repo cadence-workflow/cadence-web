@@ -1,6 +1,6 @@
 import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
 
-export type ChartGlyphVariant = WorkflowStatus | 'skipped' | 'pending' | 'next';
+export type ChartGlyphVariant = WorkflowStatus | 'skipped' | 'loading' | 'next';
 
 export type Props = {
   /** Timeline pixel position of the marker's center. */

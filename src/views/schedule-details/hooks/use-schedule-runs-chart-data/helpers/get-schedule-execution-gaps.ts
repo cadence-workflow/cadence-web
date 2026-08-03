@@ -7,7 +7,7 @@ import getExpectedScheduleTimesMs from './get-expected-schedule-times-ms';
 
 export default function getScheduleExecutionGaps({
   cronExpression,
-  inferenceStartMs,
+  scheduleStartMs,
   scheduleEndMs,
   oldestLoadedScheduleTimeMs,
   hasNextPage,
@@ -18,17 +18,17 @@ export default function getScheduleExecutionGaps({
 }: GetScheduleExecutionGapsParams): ScheduleExecutionGaps {
   const noGaps: ScheduleExecutionGaps = {
     skippedExecutions: [],
-    pendingExecutions: [],
+    unconfirmedExecutions: [],
   };
 
-  if (inferenceStartMs == null) {
+  if (scheduleStartMs == null) {
     return noGaps;
   }
 
   const trustworthyEndMs =
     scheduleEndMs == null ? nowMs : Math.min(nowMs, scheduleEndMs);
 
-  if (trustworthyEndMs < inferenceStartMs) {
+  if (trustworthyEndMs < scheduleStartMs) {
     return noGaps;
   }
 
@@ -37,15 +37,15 @@ export default function getScheduleExecutionGaps({
   // or the whole window, if even that boundary is unknown - can't be diffed
   // against real data, so it's left unrendered rather than guessed at.
   const knownStartMs = !hasNextPage
-    ? inferenceStartMs
+    ? scheduleStartMs
     : Math.max(
-        inferenceStartMs,
+        scheduleStartMs,
         oldestLoadedScheduleTimeMs ?? trustworthyEndMs + 1
       );
 
   // A slot due after our last successful fetch may already have a real run
   // that just hasn't shown up yet (visibility indexing/poll lag), so it's
-  // reported as pending until a later fetch confirms it either way. With no
+  // reported as unconfirmed until a later fetch confirms it either way. With no
   // fetch to anchor on at all, nothing is confirmed.
   const knownEndMs =
     lastFetchedAtMs == null
@@ -57,11 +57,12 @@ export default function getScheduleExecutionGaps({
     ...(nextExecutionTimeMs == null ? [] : [nextExecutionTimeMs]),
   ]);
   const skippedExecutions: ScheduleExecutionGaps['skippedExecutions'] = [];
-  const pendingExecutions: ScheduleExecutionGaps['pendingExecutions'] = [];
+  const unconfirmedExecutions: ScheduleExecutionGaps['unconfirmedExecutions'] =
+    [];
 
   for (const scheduledTimeMs of getExpectedScheduleTimesMs({
     cronExpression,
-    startMs: inferenceStartMs,
+    startMs: scheduleStartMs,
     endMs: trustworthyEndMs,
   })) {
     if (scheduledTimeMs < knownStartMs) {
@@ -69,11 +70,11 @@ export default function getScheduleExecutionGaps({
     }
 
     if (scheduledTimeMs > knownEndMs) {
-      pendingExecutions.push({ scheduledTimeMs });
+      unconfirmedExecutions.push({ scheduledTimeMs });
     } else if (!coveredTimesMs.has(scheduledTimeMs)) {
       skippedExecutions.push({ scheduledTimeMs });
     }
   }
 
-  return { skippedExecutions, pendingExecutions };
+  return { skippedExecutions, unconfirmedExecutions };
 }
