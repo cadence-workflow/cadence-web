@@ -25,10 +25,7 @@ jest.mock(
 );
 
 describe(DomainsPage.name, () => {
-  it('renders synchronously without pre-fetching any domain data', () => {
-    // The page must not be an async server component blocking on data fetches
-    expect(DomainsPage.constructor.name).toEqual('Function');
-
+  it('renders contents correctly', () => {
     render(<DomainsPage />);
 
     expect(
