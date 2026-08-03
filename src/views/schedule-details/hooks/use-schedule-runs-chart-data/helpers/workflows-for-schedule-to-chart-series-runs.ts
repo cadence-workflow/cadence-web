@@ -29,12 +29,24 @@ export default function workflowsForScheduleToChartSeriesRuns(
       workflow,
       SCHEDULE_BACKFILL_SEARCH_ATTRIBUTE
     );
+    const normalizedBackfillId =
+      typeof backfillId === 'string' && backfillId.length > 0
+        ? backfillId
+        : undefined;
 
     runs.push({
       runId: workflow.runID,
       status: workflow.status,
       scheduledTimeMs,
-      isBackfill: typeof backfillId === 'string' && backfillId.length > 0,
+      startedTimeMs: Number.isFinite(workflow.startTime)
+        ? workflow.startTime
+        : null,
+      endedTimeMs:
+        workflow.closeTime != null && Number.isFinite(workflow.closeTime)
+          ? workflow.closeTime
+          : null,
+      isBackfill: normalizedBackfillId != null,
+      backfillId: normalizedBackfillId,
     });
 
     return runs;

@@ -6,7 +6,10 @@ export type ChartSeriesRun = {
   runId: string;
   scheduledTimeMs: number;
   status: WorkflowStatus;
+  startedTimeMs: number | null;
+  endedTimeMs: number | null;
   isBackfill?: boolean;
+  backfillId?: string;
 };
 
 export type ChartSeriesExecutionPoint = {
@@ -29,4 +32,6 @@ export type ChartSeriesMarker =
 export type Props = {
   xScale: ChartXScale;
   data: ChartSeriesData;
+  domain: string;
+  cluster: string;
 };

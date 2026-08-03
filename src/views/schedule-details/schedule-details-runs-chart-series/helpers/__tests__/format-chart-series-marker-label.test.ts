@@ -15,6 +15,8 @@ describe(formatChartSeriesRunGroupLabel.name, () => {
           runId: 'run-1',
           scheduledTimeMs,
           status: WORKFLOW_STATUSES.completed,
+          startedTimeMs: null,
+          endedTimeMs: null,
         },
       ])
     ).toBe(
@@ -31,11 +33,15 @@ describe(formatChartSeriesRunGroupLabel.name, () => {
           runId: 'run-1',
           scheduledTimeMs,
           status: WORKFLOW_STATUSES.completed,
+          startedTimeMs: null,
+          endedTimeMs: null,
         },
         {
           runId: 'run-2',
           scheduledTimeMs,
           status: WORKFLOW_STATUSES.failed,
+          startedTimeMs: null,
+          endedTimeMs: null,
         },
       ])
     ).toBe(`2 schedule runs at ${new Date(scheduledTimeMs).toISOString()}`);

@@ -31,6 +31,7 @@ describe(workflowsForScheduleToChartSeriesRuns.name, () => {
               runID: 'run-a',
               status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_FAILED',
               startTime: 4000,
+              closeTime: 5000,
               searchAttributes: {
                 [SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN]:
                   scheduleTimeAttribute(4000),
@@ -47,7 +48,13 @@ describe(workflowsForScheduleToChartSeriesRuns.name, () => {
     });
 
     expect(runs).toEqual([
-      expect.objectContaining({ runId: 'run-a', isBackfill: true }),
+      expect.objectContaining({
+        runId: 'run-a',
+        isBackfill: true,
+        backfillId: 'backfill-stack-123',
+        startedTimeMs: 4000,
+        endedTimeMs: 5000,
+      }),
     ]);
   });
 

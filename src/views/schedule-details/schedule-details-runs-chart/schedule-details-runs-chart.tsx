@@ -140,7 +140,12 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
                 nowMs={nowMs}
               />
             </styled.ChartSvg>
-            <ScheduleDetailsRunsChartSeries xScale={xScale} data={chartData} />
+            <ScheduleDetailsRunsChartSeries
+              xScale={xScale}
+              data={chartData}
+              domain={params.domain}
+              cluster={params.cluster}
+            />
           </>
         )}
       </styled.ChartRegion>

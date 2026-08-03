@@ -2,7 +2,9 @@ import React, { useMemo } from 'react';
 
 import groupBy from 'lodash/groupBy';
 
+import { CHART_RUN_POPOVER_TEST_IDS } from '../schedule-details-runs-chart/schedule-details-runs-chart.constants';
 import ScheduleDetailsRunsChartGlyph from '../schedule-details-runs-chart-glyph/schedule-details-runs-chart-glyph';
+import ScheduleDetailsRunsChartRunPopoverTrigger from '../schedule-details-runs-chart-run-popover-trigger/schedule-details-runs-chart-run-popover-trigger';
 import { CHART_TIMELINE_Y_PX } from '../schedule-details-runs-chart-timeline/schedule-details-runs-chart-timeline.constants';
 
 import {
@@ -18,6 +20,8 @@ import {
 export default function ScheduleDetailsRunsChartSeries({
   xScale,
   data,
+  domain,
+  cluster,
 }: Props) {
   const markers = useMemo(() => {
     const groupedExecutions = Object.values(
@@ -52,22 +56,33 @@ export default function ScheduleDetailsRunsChartSeries({
         switch (marker.kind) {
           case 'run': {
             const isGrouped = marker.runs.length > 1;
+            const x = xScale(marker.scheduledTimeMs);
+            const label = formatChartSeriesRunGroupLabel(marker.runs);
+            const markerTestId = isGrouped
+              ? CHART_SERIES_TEST_IDS.groupedMarker
+              : CHART_SERIES_TEST_IDS.runMarker;
 
             return (
-              <ScheduleDetailsRunsChartGlyph
-                key={`run-${index}-${marker.scheduledTimeMs}`}
-                x={xScale(marker.scheduledTimeMs)}
-                y={CHART_TIMELINE_Y_PX}
-                variant={marker.runs[0].status}
-                runCount={marker.runs.length}
-                isBackfill={marker.runs[0].isBackfill}
-                label={formatChartSeriesRunGroupLabel(marker.runs)}
-                testId={
-                  isGrouped
-                    ? CHART_SERIES_TEST_IDS.groupedMarker
-                    : CHART_SERIES_TEST_IDS.runMarker
-                }
-              />
+              <React.Fragment key={`run-${index}-${marker.scheduledTimeMs}`}>
+                <ScheduleDetailsRunsChartGlyph
+                  x={x}
+                  y={CHART_TIMELINE_Y_PX}
+                  variant={marker.runs[0].status}
+                  runCount={marker.runs.length}
+                  isBackfill={marker.runs[0].isBackfill}
+                  label={label}
+                  testId={markerTestId}
+                />
+                <ScheduleDetailsRunsChartRunPopoverTrigger
+                  x={x}
+                  y={CHART_TIMELINE_Y_PX}
+                  runs={marker.runs}
+                  domain={domain}
+                  cluster={cluster}
+                  ariaLabel={label}
+                  testId={CHART_RUN_POPOVER_TEST_IDS.runTrigger}
+                />
+              </React.Fragment>
             );
           }
           case 'skipped':
