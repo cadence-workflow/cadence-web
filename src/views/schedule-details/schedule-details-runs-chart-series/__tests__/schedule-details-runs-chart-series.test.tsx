@@ -109,7 +109,9 @@ describe(ScheduleDetailsRunsChartSeries.name, () => {
     setup({
       data: {
         ...EMPTY_DATA,
-        unconfirmedExecutions: [{ scheduledTimeMs: Date.UTC(2024, 0, 1, 3, 0) }],
+        unconfirmedExecutions: [
+          { scheduledTimeMs: Date.UTC(2024, 0, 1, 3, 0) },
+        ],
       },
     });
 
@@ -150,7 +152,9 @@ describe(ScheduleDetailsRunsChartSeries.name, () => {
           },
         ],
         skippedExecutions: [{ scheduledTimeMs: Date.UTC(2024, 0, 1, 2, 0) }],
-        unconfirmedExecutions: [{ scheduledTimeMs: Date.UTC(2024, 0, 1, 1, 0) }],
+        unconfirmedExecutions: [
+          { scheduledTimeMs: Date.UTC(2024, 0, 1, 1, 0) },
+        ],
         nextExecutionTimeMs: Date.UTC(2024, 0, 1, 5, 0),
       },
     });
