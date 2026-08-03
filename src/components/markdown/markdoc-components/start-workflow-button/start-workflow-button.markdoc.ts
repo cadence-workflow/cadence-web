@@ -11,11 +11,11 @@ export const startWorkflowButtonMarkdocSchema = {
     },
     domain: {
       type: String,
-      required: true,
+      required: false,
     },
     cluster: {
       type: String,
-      required: true,
+      required: false,
     },
     taskList: {
       type: String,

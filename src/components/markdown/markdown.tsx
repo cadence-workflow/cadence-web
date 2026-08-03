@@ -5,10 +5,17 @@ import { parse, renderers, transform } from '@markdoc/markdoc';
 
 import { markdocComponents } from './markdoc-components';
 import { markdocConfig } from './markdoc-schema';
+import MarkdownContextProvider from './markdown-context-provider/markdown-context-provider';
 import { styled } from './markdown.styles';
 import { type Props } from './markdown.types';
 
-export default function Markdown({ markdown }: Props) {
+export default function Markdown({
+  markdown,
+  domain,
+  cluster,
+  workflowId,
+  runId,
+}: Props) {
   let normalizedContent = markdown || '';
 
   // Remove base indentation from the first non-empty line
@@ -51,10 +58,17 @@ export default function Markdown({ markdown }: Props) {
 
   // Render to React with our custom components
   return (
-    <styled.ViewContainer>
-      {renderers.react(renderableTree, React, {
-        components: markdocComponents,
-      })}
-    </styled.ViewContainer>
+    <MarkdownContextProvider
+      domain={domain}
+      cluster={cluster}
+      workflowId={workflowId}
+      runId={runId}
+    >
+      <styled.ViewContainer>
+        {renderers.react(renderableTree, React, {
+          components: markdocComponents,
+        })}
+      </styled.ViewContainer>
+    </MarkdownContextProvider>
   );
 }
