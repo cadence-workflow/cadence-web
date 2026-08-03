@@ -117,17 +117,11 @@ function setup({ failingClusters = [] }: { failingClusters?: Array<string> }) {
     {
       endpointsMocks: [
         {
-          path: '/api/domains',
+          path: '/api/cluster/:cluster/domains',
           httpMethod: 'GET',
           mockOnce: false,
-          httpResolver: async ({ request }) => {
-            const cluster = new URL(request.url).searchParams.get('cluster');
-            if (!cluster) {
-              return HttpResponse.json(
-                { error: 'Invalid cluster provided', cluster: '' },
-                { status: 400 }
-              );
-            }
+          httpResolver: async ({ params }) => {
+            const cluster = String(params.cluster);
 
             requestedClusters.push(cluster);
 

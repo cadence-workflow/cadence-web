@@ -26,7 +26,11 @@ describe(getDomainsForClusterQueryOptions.name, () => {
       throw new Error('Expected retryDelay to be a function');
     }
 
-    const mockError = new RequestError('mock error', '/api/domains', 500);
+    const mockError = new RequestError(
+      'mock error',
+      '/api/cluster/test-cluster/domains',
+      500
+    );
     expect(retryDelay(0, mockError)).toEqual(1_000);
     expect(retryDelay(1, mockError)).toEqual(2_000);
     expect(retryDelay(2, mockError)).toEqual(4_000);

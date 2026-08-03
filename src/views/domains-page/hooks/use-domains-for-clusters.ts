@@ -28,7 +28,7 @@ export default function useDomainsForClusters(
         },
         []
       ),
-      isLoading: results.every((result) => result.status === 'pending'),
+      isLoading: results.length > 0 && results.every((result) => result.status === 'pending'),
     }),
   });
 }

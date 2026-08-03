@@ -18,7 +18,7 @@ export default function getDomainsForClusterQueryOptions(
   return {
     queryKey: ['domains', clusterName],
     queryFn: ({ queryKey: [_, cluster] }) =>
-      request(`/api/domains?cluster=${encodeURIComponent(cluster)}`).then(
+      request(`/api/cluster/${encodeURIComponent(cluster)}/domains`).then(
         (res) => res.json()
       ),
     select: (data) => filterIrrelevantDomains(clusterName, data.domains),

@@ -82,7 +82,7 @@ async function setup({ error }: { error?: Error }) {
     });
 
   const res = await listDomains(
-    new NextRequest('http://localhost/api/domains?cluster=mock-cluster1'),
+    new NextRequest('http://localhost/api/cluster/mock-cluster1/domains'),
     {
       params: {
         cluster: 'mock-cluster1',
