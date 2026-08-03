@@ -177,9 +177,35 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
     expect(screen.getByLabelText('Expiration Interval')).toBeInTheDocument();
     expect(screen.queryByLabelText('Maximum Attempts')).not.toBeInTheDocument();
   });
+
+  it('keeps the Schedule Id field editable by default', async () => {
+    const { user } = setup();
+
+    await user.click(
+      screen.getByRole('button', { name: /show advanced configurations/i })
+    );
+
+    expect(screen.getByLabelText('Schedule Id')).toBeEnabled();
+    expect(
+      screen.queryByText(/schedule id cannot be changed/i)
+    ).not.toBeInTheDocument();
+  });
+
+  it('disables the Schedule Id field and explains why when read-only', async () => {
+    const { user } = setup({ scheduleIdReadOnly: true });
+
+    await user.click(
+      screen.getByRole('button', { name: /show advanced configurations/i })
+    );
+
+    expect(screen.getByLabelText('Schedule Id')).toBeDisabled();
+    expect(
+      screen.getByText(/schedule id cannot be changed/i)
+    ).toBeInTheDocument();
+  });
 });
 
-function setup() {
+function setup({ scheduleIdReadOnly }: { scheduleIdReadOnly?: boolean } = {}) {
   const user = userEvent.setup();
   let getValues: () => DomainSchedulesCreateFormData;
 
@@ -200,6 +226,7 @@ function setup() {
         fieldErrors={fieldErrors}
         clearErrors={clearErrors}
         cluster="test-cluster"
+        scheduleIdReadOnly={scheduleIdReadOnly}
       />
     );
   }

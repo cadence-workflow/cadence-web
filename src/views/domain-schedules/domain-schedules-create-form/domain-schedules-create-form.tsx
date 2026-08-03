@@ -39,6 +39,7 @@ export default function DomainSchedulesCreateForm({
   clearErrors,
   domain,
   cluster,
+  scheduleIdReadOnly,
 }: Props) {
   const { errors: fieldErrors, isSubmitted } = useFormState({ control });
 
@@ -343,6 +344,7 @@ export default function DomainSchedulesCreateForm({
         isSubmitted={isSubmitted}
         clearErrors={clearErrors}
         cluster={cluster}
+        scheduleIdReadOnly={scheduleIdReadOnly}
       />
     </div>
   );

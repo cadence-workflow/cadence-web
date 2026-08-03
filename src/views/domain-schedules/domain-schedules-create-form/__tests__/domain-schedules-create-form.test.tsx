@@ -174,6 +174,16 @@ describe('DomainSchedulesCreateForm', () => {
       screen.getByText('This task list has no workers')
     ).toBeInTheDocument();
   });
+
+  it('passes scheduleIdReadOnly down to the advanced fields', async () => {
+    const { user } = await setup({ scheduleIdReadOnly: true });
+
+    await user.click(
+      screen.getByRole('button', { name: /show advanced configurations/i })
+    );
+
+    expect(screen.getByLabelText('Schedule Id')).toBeDisabled();
+  });
 });
 
 type SetupProps = {
@@ -181,14 +191,17 @@ type SetupProps = {
   /** Applies fixed `setError` calls (same role as passing `fieldErrors` into start form tests). */
   injectFieldErrors?: boolean;
   taskListValidation?: ReturnType<typeof mockUseTaskListFieldValidation>;
+  scheduleIdReadOnly?: boolean;
 };
 
 function TestWrapper({
   defaultValues,
   injectFieldErrors,
+  scheduleIdReadOnly,
 }: {
   defaultValues?: Partial<DomainSchedulesCreateFormData>;
   injectFieldErrors?: boolean;
+  scheduleIdReadOnly?: boolean;
 }) {
   const { control, trigger, setError, clearErrors } =
     useForm<DomainSchedulesCreateFormData>({
@@ -210,6 +223,7 @@ function TestWrapper({
       clearErrors={clearErrors}
       domain={MOCK_DOMAIN}
       cluster={MOCK_CLUSTER}
+      scheduleIdReadOnly={scheduleIdReadOnly}
     />
   );
 }
@@ -217,6 +231,7 @@ function TestWrapper({
 async function setup({
   defaultValues,
   injectFieldErrors = false,
+  scheduleIdReadOnly,
   taskListValidation = {
     isTaskListLoading: false,
     taskListCaptionMessage: null,
@@ -230,6 +245,7 @@ async function setup({
     <TestWrapper
       defaultValues={defaultValues}
       injectFieldErrors={injectFieldErrors}
+      scheduleIdReadOnly={scheduleIdReadOnly}
     />
   );
 
