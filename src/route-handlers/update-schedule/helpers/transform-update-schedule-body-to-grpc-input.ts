@@ -1,5 +1,6 @@
 import { type UpdateScheduleRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/UpdateScheduleRequest';
 
+// TODO: Move this to a shared helper file
 import transformCreateScheduleBodyToGrpcInput from '../../create-schedule/helpers/transform-create-schedule-body-to-grpc-input';
 import { type UpdateScheduleRequestBody } from '../update-schedule.types';
 

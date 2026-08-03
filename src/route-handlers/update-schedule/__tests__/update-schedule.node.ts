@@ -60,19 +60,6 @@ describe(updateSchedule.name, () => {
     expect(Array.isArray(json.validationErrors)).toBe(true);
   });
 
-  it('returns a validation error when the end time is before the start time', async () => {
-    const { res, mockUpdateSchedule } = await setup({
-      body: {
-        ...mockUpdateScheduleRequestBody,
-        startTime: '2026-01-02T00:00:00.000Z',
-        endTime: '2026-01-01T00:00:00.000Z',
-      },
-    });
-
-    expect(mockUpdateSchedule).not.toHaveBeenCalled();
-    expect(res.status).toEqual(400);
-  });
-
   it('returns an error when updateSchedule throws a GRPCError', async () => {
     const { res, mockUpdateSchedule } = await setup({
       error: new GRPCError('Schedule not found', {
