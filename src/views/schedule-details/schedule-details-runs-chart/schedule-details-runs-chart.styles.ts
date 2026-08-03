@@ -6,6 +6,8 @@ import { type StyleObject } from 'styletron-react';
 import {
   CHART_HEADER_MIN_HEIGHT_PX,
   CHART_HEIGHT_PX,
+  CHART_LOADING_ARIA_LABEL,
+  CHART_LOADING_TEST_ID,
   CHART_TOOLBAR_BUTTON_MIN_HEIGHT_PX,
 } from './schedule-details-runs-chart.constants';
 
@@ -64,10 +66,6 @@ export const styled = {
     ...$theme.typography.ParagraphSmall,
     color: $theme.colors.contentSecondary,
   })),
-  LoadingOverlay: createStyled('div', () => ({
-    width: '100%',
-    height: '100%',
-  })),
 };
 
 const toolbarButtonRootOverrides = {
@@ -87,6 +85,11 @@ export const overrides = {
   } satisfies ButtonOverrides,
   loadingSkeleton: {
     Root: {
+      props: {
+        role: 'status',
+        'aria-label': CHART_LOADING_ARIA_LABEL,
+        'data-testid': CHART_LOADING_TEST_ID,
+      },
       style: { height: '100%' },
     },
   } satisfies SkeletonOverrides,

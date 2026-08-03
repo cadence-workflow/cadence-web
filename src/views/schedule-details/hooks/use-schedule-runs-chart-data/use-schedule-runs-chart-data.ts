@@ -1,11 +1,10 @@
 'use client';
 import { useMemo } from 'react';
 
+import formatTimestampToDatetime from '@/utils/data-formatters/format-timestamp-to-datetime';
 import useListWorkflowsForSchedule from '@/views/schedule-details/hooks/use-list-workflows-for-schedule/use-list-workflows-for-schedule';
 import useDescribeSchedule from '@/views/shared/hooks/use-describe-schedule/use-describe-schedule';
 
-import describeScheduleToNextExecutionMs from './helpers/describe-schedule-to-next-execution';
-import filterChartPointsBeforeNextExecution from './helpers/filter-chart-points-before-next-execution';
 import workflowsForScheduleToChartSeriesRuns from './helpers/workflows-for-schedule-to-chart-series-runs';
 import {
   CHART_DESCRIBE_REFRESH_INTERVAL_MS,
@@ -21,7 +20,6 @@ export default function useScheduleRunsChartData({
   domain,
   cluster,
   scheduleId,
-  nowMs: _nowMs,
 }: UseScheduleRunsChartDataParams): UseScheduleRunsChartDataResult {
   const describeQuery = useDescribeSchedule({
     domain,
@@ -38,26 +36,33 @@ export default function useScheduleRunsChartData({
     runsRevision: describeQuery.data?.info?.totalRuns,
   });
 
-  const runs = useMemo(
-    () => workflowsForScheduleToChartSeriesRuns(workflowsQuery.data),
-    [workflowsQuery.data]
-  );
-  const nextExecutionTimeMs = useMemo(
-    () => describeScheduleToNextExecutionMs(describeQuery.data),
-    [describeQuery.data]
-  );
+  const data = useMemo(() => {
+    const runs = workflowsForScheduleToChartSeriesRuns(workflowsQuery.data);
 
-  const data = useMemo(
-    () => ({
-      runs: filterChartPointsBeforeNextExecution(runs, nextExecutionTimeMs),
-      // ponytail: skipped/missed executions are inferred from the cron
+    const nextExecutionTimeMs = describeQuery.data?.state?.paused
+      ? null
+      : formatTimestampToDatetime(
+          describeQuery.data?.info?.nextRunTime
+        )?.valueOf() ?? null;
+
+    // Next run and the run list come from two independently polled APIs, so
+    // drop points at or after the next run until describe catches up.
+    const filteredRuns =
+      nextExecutionTimeMs == null
+        ? runs
+        : runs.filter(
+            ({ scheduledTimeMs }) => scheduledTimeMs < nextExecutionTimeMs
+          );
+
+    return {
+      runs: filteredRuns,
+      // skipped/missed executions are inferred from the cron
       // schedule in a follow-up slice; until then the chart simply shows no
       // skipped markers.
       skippedExecutions: [],
       nextExecutionTimeMs,
-    }),
-    [nextExecutionTimeMs, runs]
-  );
+    };
+  }, [describeQuery.data, workflowsQuery.data]);
 
   return {
     data,

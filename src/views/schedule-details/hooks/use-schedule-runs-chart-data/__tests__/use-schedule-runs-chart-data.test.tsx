@@ -2,7 +2,10 @@ import { HttpResponse } from 'msw';
 
 import { renderHook, waitFor } from '@/test-utils/rtl';
 
-import { getMockRunningDescribeScheduleResponse } from '@/route-handlers/describe-schedule/__fixtures__/mock-describe-schedule-response';
+import {
+  getMockPausedDescribeScheduleResponse,
+  getMockRunningDescribeScheduleResponse,
+} from '@/route-handlers/describe-schedule/__fixtures__/mock-describe-schedule-response';
 import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtures__/mock-workflow-list-items';
 
 import useScheduleRunsChartData from '../use-schedule-runs-chart-data';
@@ -52,7 +55,7 @@ describe(useScheduleRunsChartData.name, () => {
               // encoded on the wire.
               CadenceScheduleTime: {
                 data: Buffer.from(
-                  JSON.stringify(String(NOW_MS - HOUR_MS))
+                  JSON.stringify(new Date(NOW_MS - HOUR_MS).toISOString())
                 ).toString('base64'),
               },
             },
@@ -60,7 +63,6 @@ describe(useScheduleRunsChartData.name, () => {
         ],
         nextPage: '',
       },
-      nowMs: NOW_MS,
     });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
@@ -75,18 +77,95 @@ describe(useScheduleRunsChartData.name, () => {
     // Skipped/missed execution inference is added in a follow-up slice.
     expect(result.current.data.skippedExecutions).toEqual([]);
   });
+
+  it('returns null next execution for a paused schedule', async () => {
+    const { result } = setup({
+      describeScheduleResponse: getMockPausedDescribeScheduleResponse({
+        info: {
+          lastRunTime: null,
+          nextRunTime: { seconds: String((NOW_MS + HOUR_MS) / 1000), nanos: 0 },
+          totalRuns: '1',
+          createTime: null,
+          lastUpdateTime: null,
+          missedRuns: '0',
+          skippedRuns: '0',
+          ongoingBackfills: [],
+        },
+      }),
+      workflowsResponse: { workflows: [], nextPage: '' },
+    });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(result.current.data.nextExecutionTimeMs).toBeNull();
+  });
+
+  it('drops runs at or after the next execution time', async () => {
+    const nextExecutionTimeMs = NOW_MS + HOUR_MS;
+
+    const { result } = setup({
+      describeScheduleResponse: getMockRunningDescribeScheduleResponse({
+        info: {
+          lastRunTime: null,
+          nextRunTime: {
+            seconds: String(nextExecutionTimeMs / 1000),
+            nanos: 0,
+          },
+          totalRuns: '2',
+          createTime: null,
+          lastUpdateTime: null,
+          missedRuns: '0',
+          skippedRuns: '0',
+          ongoingBackfills: [],
+        },
+      }),
+      workflowsResponse: {
+        workflows: [
+          getMockWorkflowListItem({
+            workflowID: 'wf-before',
+            runID: 'run-before',
+            startTime: NOW_MS - HOUR_MS,
+            searchAttributes: {
+              CadenceScheduleTime: {
+                data: Buffer.from(
+                  JSON.stringify(new Date(NOW_MS - HOUR_MS).toISOString())
+                ).toString('base64'),
+              },
+            },
+          }),
+          getMockWorkflowListItem({
+            workflowID: 'wf-at-next',
+            runID: 'run-at-next',
+            startTime: nextExecutionTimeMs,
+            searchAttributes: {
+              CadenceScheduleTime: {
+                data: Buffer.from(
+                  JSON.stringify(new Date(nextExecutionTimeMs).toISOString())
+                ).toString('base64'),
+              },
+            },
+          }),
+        ],
+        nextPage: '',
+      },
+    });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(result.current.data.runs).toEqual([
+      expect.objectContaining({ runId: 'run-before' }),
+    ]);
+  });
 });
 
 function setup({
   describeScheduleResponse,
   workflowsResponse,
-  nowMs = NOW_MS,
 }: {
   describeScheduleResponse: ReturnType<
     typeof getMockRunningDescribeScheduleResponse
   >;
   workflowsResponse: { workflows: unknown[]; nextPage: string };
-  nowMs?: number;
 }) {
   return renderHook(
     () =>
@@ -94,7 +173,6 @@ function setup({
         domain: MOCK_DOMAIN,
         cluster: MOCK_CLUSTER,
         scheduleId: MOCK_SCHEDULE_ID,
-        nowMs,
       }),
     {
       endpointsMocks: [

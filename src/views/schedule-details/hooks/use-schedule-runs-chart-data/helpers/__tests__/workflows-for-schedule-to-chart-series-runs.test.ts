@@ -4,20 +4,9 @@ import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtu
 import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list-workflows.types';
 import { SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN } from '@/views/schedule-details/hooks/use-list-workflows-for-schedule/use-list-workflows-for-schedule.constants';
 
-import workflowsForScheduleToChartSeriesRuns, {
-  flattenScheduleWorkflowPages,
-  getOldestLoadedScheduleTimeMs,
-} from '../workflows-for-schedule-to-chart-series-runs';
+import workflowsForScheduleToChartSeriesRuns from '../workflows-for-schedule-to-chart-series-runs';
 
 describe(workflowsForScheduleToChartSeriesRuns.name, () => {
-  it('flattens infinite query pages in server page order', () => {
-    const data = getMockInfiniteData();
-
-    expect(flattenScheduleWorkflowPages(data).map((w) => w.workflowID)).toEqual(
-      ['wf-1', 'wf-2', 'wf-3']
-    );
-  });
-
   it('maps CadenceScheduleTime search attributes to run markers', () => {
     const runs = workflowsForScheduleToChartSeriesRuns(getMockInfiniteData());
 
@@ -43,7 +32,8 @@ describe(workflowsForScheduleToChartSeriesRuns.name, () => {
               status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_FAILED',
               startTime: 4000,
               searchAttributes: {
-                [SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN]: { data: '4000' },
+                [SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN]:
+                  scheduleTimeAttribute(4000),
                 CadenceScheduleBackfillID: {
                   data: 'YmFja2ZpbGwtc3RhY2stMTIz',
                 },
@@ -68,7 +58,8 @@ describe(workflowsForScheduleToChartSeriesRuns.name, () => {
       status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
       startTime: 4000,
       searchAttributes: {
-        [SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN]: { data: '4000' },
+        [SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN]:
+          scheduleTimeAttribute(4000),
       },
     });
     const runs = workflowsForScheduleToChartSeriesRuns({
@@ -95,7 +86,8 @@ describe(workflowsForScheduleToChartSeriesRuns.name, () => {
               closeTime: undefined,
               status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
               searchAttributes: {
-                [SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN]: { data: '5000' },
+                [SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN]:
+                  scheduleTimeAttribute(5000),
               },
             }),
           ],
@@ -114,14 +106,67 @@ describe(workflowsForScheduleToChartSeriesRuns.name, () => {
     ]);
   });
 
-  it('returns the oldest loaded schedule time across pages', () => {
-    expect(getOldestLoadedScheduleTimeMs(getMockInfiniteData())).toBe(1000);
+  it('returns an empty array when no pages have loaded', () => {
+    expect(workflowsForScheduleToChartSeriesRuns(undefined)).toEqual([]);
   });
 
-  it('returns null when no pages have loaded', () => {
-    expect(getOldestLoadedScheduleTimeMs(undefined)).toBeNull();
+  it('falls back to startTime when the schedule search attribute is missing', () => {
+    const runs = workflowsForScheduleToChartSeriesRuns({
+      pages: [
+        {
+          workflows: [
+            getMockWorkflowListItem({
+              workflowID: 'wf-fallback',
+              runID: 'run-fallback',
+              startTime: 1500,
+            }),
+          ],
+          nextPage: '',
+        },
+      ],
+      pageParams: [undefined],
+    });
+
+    expect(runs).toEqual([
+      expect.objectContaining({ runId: 'run-fallback', scheduledTimeMs: 1500 }),
+    ]);
+  });
+
+  it('skips workflows with no parsable scheduled time', () => {
+    const runs = workflowsForScheduleToChartSeriesRuns({
+      pages: [
+        {
+          workflows: [
+            getMockWorkflowListItem({
+              workflowID: 'wf-unparsable',
+              runID: 'run-unparsable',
+              startTime: Number.NaN,
+              searchAttributes: {
+                [SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN]: {
+                  data: Buffer.from(JSON.stringify('not-a-date')).toString(
+                    'base64'
+                  ),
+                },
+              },
+            }),
+          ],
+          nextPage: '',
+        },
+      ],
+      pageParams: [undefined],
+    });
+
+    expect(runs).toEqual([]);
   });
 });
+
+function scheduleTimeAttribute(scheduledTimeMs: number) {
+  return {
+    data: Buffer.from(
+      JSON.stringify(new Date(scheduledTimeMs).toISOString())
+    ).toString('base64'),
+  };
+}
 
 function getMockInfiniteData(): InfiniteData<ListWorkflowsResponse> {
   return {
@@ -134,7 +179,8 @@ function getMockInfiniteData(): InfiniteData<ListWorkflowsResponse> {
             status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
             startTime: 3000,
             searchAttributes: {
-              [SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN]: { data: '3000' },
+              [SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN]:
+                scheduleTimeAttribute(3000),
             },
           }),
           getMockWorkflowListItem({
@@ -143,7 +189,8 @@ function getMockInfiniteData(): InfiniteData<ListWorkflowsResponse> {
             status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
             startTime: 2000,
             searchAttributes: {
-              [SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN]: { data: '2000' },
+              [SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN]:
+                scheduleTimeAttribute(2000),
             },
           }),
         ],
@@ -157,7 +204,8 @@ function getMockInfiniteData(): InfiniteData<ListWorkflowsResponse> {
             status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
             startTime: 1000,
             searchAttributes: {
-              [SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN]: { data: '1000' },
+              [SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN]:
+                scheduleTimeAttribute(1000),
             },
           }),
         ],

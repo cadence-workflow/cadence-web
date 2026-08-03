@@ -19,8 +19,6 @@ import resolveChartTimeWindow from './helpers/resolve-chart-time-window';
 import {
   CHART_EMPTY_STATE_MESSAGE,
   CHART_HEIGHT_PX,
-  CHART_LOADING_ARIA_LABEL,
-  CHART_LOADING_TEST_ID,
   CHART_REGION_ARIA_LABEL,
   CHART_TOOLBAR_ARIA_LABEL,
   CHART_TOOLBAR_BUTTON_LABELS,
@@ -42,7 +40,6 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
     domain: params.domain,
     cluster: params.cluster,
     scheduleId: params.scheduleId,
-    nowMs,
   });
   const hasChartData = hasScheduleRunsChartData(chartData);
 
@@ -66,6 +63,10 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
 
     return createChartXScale({ timeWindow, range });
   }, [chartData, nowMs, width]);
+
+  const showLoadingOverlay = isLoading;
+  const showEmptyState = !isLoading && (xScale === null || !hasChartData);
+  const showChart = !isLoading && xScale !== null && hasChartData;
 
   return (
     <styled.Container>
@@ -111,25 +112,21 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
         role="region"
         aria-label={CHART_REGION_ARIA_LABEL}
       >
-        {isLoading ? (
-          <styled.LoadingOverlay
-            role="status"
-            aria-label={CHART_LOADING_ARIA_LABEL}
-            data-testid={CHART_LOADING_TEST_ID}
-          >
-            <Skeleton
-              animation
-              rows={0}
-              width="100%"
-              height="100%"
-              overrides={overrides.loadingSkeleton}
-            />
-          </styled.LoadingOverlay>
-        ) : xScale === null || !hasChartData ? (
+        {showLoadingOverlay && (
+          <Skeleton
+            animation
+            rows={0}
+            width="100%"
+            height="100%"
+            overrides={overrides.loadingSkeleton}
+          />
+        )}
+        {showEmptyState && (
           <styled.EmptyState role="status">
             {CHART_EMPTY_STATE_MESSAGE}
           </styled.EmptyState>
-        ) : (
+        )}
+        {showChart && (
           <>
             <styled.ChartSvg width={width} height={CHART_HEIGHT_PX}>
               <ScheduleDetailsRunsChartTimeline
