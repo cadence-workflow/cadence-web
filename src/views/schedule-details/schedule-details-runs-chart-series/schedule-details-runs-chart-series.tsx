@@ -14,14 +14,22 @@ import {
 import { CHART_SERIES_TEST_IDS } from './schedule-details-runs-chart-series.constants';
 import {
   type ChartSeriesMarker,
+  type ChartSeriesNewTimesMs,
   type Props,
 } from './schedule-details-runs-chart-series.types';
+
+const NO_NEW_TIMES_MS: ChartSeriesNewTimesMs = {
+  runs: new Set(),
+  skipped: new Set(),
+  next: new Set(),
+};
 
 export default function ScheduleDetailsRunsChartSeries({
   xScale,
   data,
   domain,
   cluster,
+  newTimesMs = NO_NEW_TIMES_MS,
 }: Props) {
   const markers = useMemo(() => {
     const groupedExecutions = Object.values(
@@ -80,6 +88,7 @@ export default function ScheduleDetailsRunsChartSeries({
                   variant={marker.runs[0].status}
                   runCount={marker.runs.length}
                   isBackfill={marker.runs[0].isBackfill}
+                  isNew={newTimesMs.runs.has(marker.scheduledTimeMs)}
                   label={label}
                   testId={markerTestId}
                 />
@@ -111,6 +120,7 @@ export default function ScheduleDetailsRunsChartSeries({
               >
                 <ScheduleDetailsRunsChartGlyph
                   variant="skipped"
+                  isNew={newTimesMs.skipped.has(marker.scheduledTimeMs)}
                   label={label}
                   testId={CHART_SERIES_TEST_IDS.skippedExecutionMarker}
                 />
@@ -156,6 +166,7 @@ export default function ScheduleDetailsRunsChartSeries({
               >
                 <ScheduleDetailsRunsChartGlyph
                   variant="next"
+                  isNew={newTimesMs.next.has(marker.scheduledTimeMs)}
                   label={label}
                   testId={CHART_SERIES_TEST_IDS.nextExecutionMarker}
                 />

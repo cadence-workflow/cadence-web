@@ -76,6 +76,8 @@ export const CHART_RUN_POPOVER_TEST_IDS = {
   nextTrigger: 'schedule-runs-chart-next-popover-trigger',
 } as const;
 
+export const CHART_CANVAS_TEST_ID = 'schedule-runs-chart-canvas';
+
 /** Multiplier applied when zooming in (smaller span). */
 export const CHART_ZOOM_IN_FACTOR = 0.5;
 
@@ -87,3 +89,24 @@ export const CHART_NOW_ANCHOR_RATIO = 0.85;
 
 /** Horizontal position of the next run when following pulls it into view. */
 export const CHART_NEXT_RUN_ANCHOR_RATIO = 0.95;
+
+/** Comfortable px gap between consecutive markers at the initial zoom level. */
+export const CHART_EXPECTED_RUN_SLOT_PX = 48;
+
+/** Center-to-center px at max zoom-out; below glyph width for slight overlap. */
+export const CHART_MAX_ZOOM_OUT_MARKER_SPACING_PX = 12;
+
+/** Upper bound on expected occurrences considered when sizing the initial zoom. */
+export const CHART_INITIAL_EXPECTED_RUN_COUNT = 20;
+
+/** How close (as a ratio of the visible span) the loaded edge must be to the view edge before fetching the next page. */
+export const CHART_PAN_FETCH_EDGE_THRESHOLD_RATIO = 0.05;
+
+export const CHART_FETCH_LOADING_MESSAGE = 'Loading older runs…';
+export const CHART_FETCH_LOADING_SPINNER_SIZE_PX = 16;
+export const CHART_FETCH_LOADING_TEST_ID = 'schedule-runs-chart-fetch-loading';
+export const CHART_FETCH_RETRY_LABEL = 'Retry loading older runs';
+export const CHART_FETCH_RETRY_ICON_SIZE_PX = 16;
+
+/** Scale-up and fade-in played by a glyph that arrives on a live chart (ms). */
+export const CHART_GLYPH_ENTER_ANIMATION_MS = 260;

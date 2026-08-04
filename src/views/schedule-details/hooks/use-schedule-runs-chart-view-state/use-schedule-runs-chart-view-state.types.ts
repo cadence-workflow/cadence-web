@@ -8,9 +8,13 @@ export type UseScheduleRunsChartViewStateParams = {
 
 export type UseScheduleRunsChartViewStateResult = {
   visibleWindow: ChartTimeWindow | null;
+  isFollowing: boolean;
   canZoomIn: boolean;
   canZoomOut: boolean;
+  canPan: boolean;
   initializeWindow: (window: ChartTimeWindow, maxSpanMs: number) => void;
   zoomIn: () => void;
   zoomOut: () => void;
+  goToNow: () => void;
+  panByMs: (deltaMs: number) => boolean;
 };

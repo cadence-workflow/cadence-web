@@ -8,6 +8,7 @@ import {
   getChartTimeWindowSpanMs,
   isSameChartTimeWindow,
   resolveChartFollowTimeWindow,
+  shiftChartTimeWindow,
   zoomChartTimeWindow,
 } from '@/views/schedule-details/schedule-details-runs-chart/helpers/chart-view-state';
 import {
@@ -21,12 +22,6 @@ import {
   type UseScheduleRunsChartViewStateResult,
 } from './use-schedule-runs-chart-view-state.types';
 
-/**
- * Owns the chart's visible time window, always live-following `now` (and the
- * next scheduled run, if closer to the edge). Panning away from `now` and
- * resuming with "Now" land in a follow-up change; for now the window simply
- * tracks the clock.
- */
 export default function useScheduleRunsChartViewState({
   bounds,
   nowMs,
@@ -36,6 +31,7 @@ export default function useScheduleRunsChartViewState({
     null
   );
   const [maxSpanMs, setMaxSpanMs] = useState<number | null>(null);
+  const [isFollowing, setIsFollowing] = useState(true);
   const visibleWindowRef = useRef<ChartTimeWindow | null>(null);
 
   const updateVisibleWindow = useCallback(
@@ -65,17 +61,19 @@ export default function useScheduleRunsChartViewState({
       currentVisibleWindow,
       bounds
     );
-    const nextWindow = resolveChartFollowTimeWindow({
-      visibleWindow: clampedWindow,
-      bounds,
-      nowMs,
-      nextExecutionMs,
-    });
+    const nextWindow = isFollowing
+      ? resolveChartFollowTimeWindow({
+          visibleWindow: clampedWindow,
+          bounds,
+          nowMs,
+          nextExecutionMs,
+        })
+      : clampedWindow;
 
     if (!isSameChartTimeWindow(nextWindow, currentVisibleWindow)) {
       updateVisibleWindow(nextWindow);
     }
-  }, [bounds, nextExecutionMs, nowMs, updateVisibleWindow]);
+  }, [bounds, isFollowing, nextExecutionMs, nowMs, updateVisibleWindow]);
 
   const initializeWindow = useCallback(
     (window: ChartTimeWindow, resolvedMaxSpanMs: number) => {
@@ -113,37 +111,110 @@ export default function useScheduleRunsChartViewState({
         bounds,
         maxSpanMs,
         factor,
-        anchorMs: nowMs,
+        anchorMs: isFollowing
+          ? nowMs
+          : (currentVisibleWindow.minMs + currentVisibleWindow.maxMs) / 2,
       });
 
       updateVisibleWindow(
-        resolveChartFollowTimeWindow({
-          visibleWindow: zoomedWindow,
-          bounds,
-          nowMs,
-          nextExecutionMs,
-        })
+        isFollowing
+          ? resolveChartFollowTimeWindow({
+              visibleWindow: zoomedWindow,
+              bounds,
+              nowMs,
+              nextExecutionMs,
+            })
+          : zoomedWindow
       );
     },
-    [bounds, maxSpanMs, nextExecutionMs, nowMs, updateVisibleWindow]
+    [
+      bounds,
+      isFollowing,
+      maxSpanMs,
+      nextExecutionMs,
+      nowMs,
+      updateVisibleWindow,
+    ]
   );
 
   const zoomIn = useCallback(() => zoomBy(CHART_ZOOM_IN_FACTOR), [zoomBy]);
 
   const zoomOut = useCallback(() => zoomBy(CHART_ZOOM_OUT_FACTOR), [zoomBy]);
 
+  const goToNow = useCallback(() => {
+    const currentVisibleWindow = visibleWindowRef.current;
+
+    setIsFollowing(true);
+
+    if (!bounds || !currentVisibleWindow) {
+      return;
+    }
+
+    updateVisibleWindow(
+      resolveChartFollowTimeWindow({
+        visibleWindow: currentVisibleWindow,
+        bounds,
+        nowMs,
+        nextExecutionMs,
+      })
+    );
+  }, [bounds, nextExecutionMs, nowMs, updateVisibleWindow]);
+
+  const panByMs = useCallback(
+    (deltaMs: number) => {
+      const currentVisibleWindow = visibleWindowRef.current;
+
+      if (!bounds || !currentVisibleWindow) {
+        return false;
+      }
+
+      const pannedWindow = shiftChartTimeWindow({
+        visibleWindow: currentVisibleWindow,
+        deltaMs,
+        bounds,
+      });
+
+      if (isSameChartTimeWindow(pannedWindow, currentVisibleWindow)) {
+        return false;
+      }
+
+      updateVisibleWindow(pannedWindow);
+      setIsFollowing(false);
+      return true;
+    },
+    [bounds, updateVisibleWindow]
+  );
+
   return useMemo(
     () => ({
       visibleWindow,
+      isFollowing,
       canZoomIn: visibleWindow ? canZoomChartIn(visibleWindow) : false,
       canZoomOut:
         visibleWindow && maxSpanMs != null
           ? canZoomChartOut(visibleWindow, maxSpanMs)
           : false,
+      canPan:
+        visibleWindow != null &&
+        bounds != null &&
+        (visibleWindow.minMs > bounds.minMs ||
+          visibleWindow.maxMs < bounds.maxMs),
       initializeWindow,
       zoomIn,
       zoomOut,
+      goToNow,
+      panByMs,
     }),
-    [initializeWindow, maxSpanMs, visibleWindow, zoomIn, zoomOut]
+    [
+      bounds,
+      goToNow,
+      initializeWindow,
+      isFollowing,
+      maxSpanMs,
+      panByMs,
+      visibleWindow,
+      zoomIn,
+      zoomOut,
+    ]
   );
 }

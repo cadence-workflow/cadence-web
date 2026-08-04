@@ -57,3 +57,22 @@ export type ResolveChartFollowTimeWindowParams = {
   nowMs: number;
   nextExecutionMs?: number | null;
 };
+
+export type ShiftChartTimeWindowParams = {
+  visibleWindow: ChartTimeWindow;
+  deltaMs: number;
+  bounds?: ChartTimeWindow | null;
+};
+
+export type ResolveInitialChartTimeWindowParams = {
+  nowMs: number;
+  chartWidthPx: number;
+  cronExpression: string;
+  nextExecutionMs?: number | null;
+};
+
+export type ResolveInitialChartTimeWindowResult = {
+  window: ChartTimeWindow;
+  /** Widest span where consecutive markers slightly overlap on screen. */
+  maxSpanMs: number;
+};
