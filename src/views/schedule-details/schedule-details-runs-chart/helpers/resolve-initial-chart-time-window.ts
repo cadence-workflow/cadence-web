@@ -14,7 +14,35 @@ import {
   type ResolveInitialChartTimeWindowResult,
 } from '../schedule-details-runs-chart.types';
 
-import resolveChartSpanFromMarkerIntervalMs from './resolve-chart-span-from-marker-interval-ms';
+/** Maps a marker cadence to the time span that yields `pxPerInterval` on screen. */
+function resolveChartSpanFromMarkerIntervalMs({
+  intervalMs,
+  chartWidthPx,
+  pxPerInterval,
+  sidePaddingPx = CHART_SIDE_PADDING_PX,
+}: {
+  intervalMs: number;
+  chartWidthPx: number;
+  /** Target px distance between consecutive markers at this zoom level. */
+  pxPerInterval: number;
+  sidePaddingPx?: number;
+}): number {
+  const drawableWidthPx = chartWidthPx - sidePaddingPx * 2;
+
+  if (
+    !Number.isFinite(intervalMs) ||
+    intervalMs <= 0 ||
+    !Number.isFinite(chartWidthPx) ||
+    chartWidthPx <= 0 ||
+    !Number.isFinite(pxPerInterval) ||
+    pxPerInterval <= 0 ||
+    drawableWidthPx <= 0
+  ) {
+    return 0;
+  }
+
+  return (intervalMs * drawableWidthPx) / pxPerInterval;
+}
 
 export function getReadableExpectedRunCount(chartWidthPx: number): number {
   const drawableWidthPx = chartWidthPx - CHART_SIDE_PADDING_PX * 2;

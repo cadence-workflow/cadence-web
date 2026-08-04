@@ -12,6 +12,31 @@ const mockCluster = 'test-cluster';
 const mockScheduleId = 'my-schedule';
 const nowMs = Date.UTC(2024, 0, 1, 12, 0);
 const hourMs = 60 * 60_000;
+// createTime is 3 hours before nowMs; every hourly slot since then has no
+// matching run except the one an hour ago, so those are inferred as skipped.
+const SKIPPED_EXECUTIONS_SINCE_CREATE_TIME = [
+  { scheduledTimeMs: nowMs - 3 * hourMs },
+  { scheduledTimeMs: nowMs - 2 * hourMs },
+  { scheduledTimeMs: nowMs },
+];
+const HOURLY_SCHEDULE_OVERRIDES = {
+  spec: {
+    cronExpression: '0 * * * *',
+    startTime: null,
+    endTime: null,
+    jitter: null,
+  },
+  info: {
+    lastRunTime: null,
+    nextRunTime: { seconds: String((nowMs + hourMs) / 1000), nanos: 0 },
+    totalRuns: '2',
+    createTime: { seconds: String((nowMs - 3 * hourMs) / 1000), nanos: 0 },
+    lastUpdateTime: null,
+    missedRuns: '0',
+    skippedRuns: '0',
+    ongoingBackfills: [],
+  },
+};
 
 describe(useScheduleRunsChartData.name, () => {
   it('starts loading before any response has resolved', () => {
@@ -26,27 +51,9 @@ describe(useScheduleRunsChartData.name, () => {
 
   it('maps live workflow runs, skipped occurrences, and the next execution once loaded', async () => {
     const { result } = setup({
-      describeScheduleResponse: getMockRunningDescribeScheduleResponse({
-        spec: {
-          cronExpression: '0 * * * *',
-          startTime: null,
-          endTime: null,
-          jitter: null,
-        },
-        info: {
-          lastRunTime: null,
-          nextRunTime: { seconds: String((nowMs + hourMs) / 1000), nanos: 0 },
-          totalRuns: '2',
-          createTime: {
-            seconds: String((nowMs - 3 * hourMs) / 1000),
-            nanos: 0,
-          },
-          lastUpdateTime: null,
-          missedRuns: '0',
-          skippedRuns: '0',
-          ongoingBackfills: [],
-        },
-      }),
+      describeScheduleResponse: getMockRunningDescribeScheduleResponse(
+        HOURLY_SCHEDULE_OVERRIDES
+      ),
       workflowsResponse: {
         workflows: [
           getMockWorkflowListItem({
@@ -57,14 +64,7 @@ describe(useScheduleRunsChartData.name, () => {
             closeTime: nowMs - hourMs + 1000,
             historyLength: 5,
             searchAttributes: {
-              // Base64 of the JSON-encoded scheduled-time string, matching
-              // how Cadence visibility search attributes are actually
-              // encoded on the wire.
-              CadenceScheduleTime: {
-                data: Buffer.from(
-                  JSON.stringify(new Date(nowMs - hourMs).toISOString())
-                ).toString('base64'),
-              },
+              CadenceScheduleTime: scheduleTimeAttribute(nowMs - hourMs),
             },
           }),
         ],
@@ -82,13 +82,9 @@ describe(useScheduleRunsChartData.name, () => {
       }),
     ]);
     expect(result.current.data.nextExecutionTimeMs).toBe(nowMs + hourMs);
-    // Every hourly slot from the schedule's create time through now has no
-    // matching run except the one hour ago, so those are inferred as skipped.
-    expect(result.current.data.skippedExecutions).toEqual([
-      { scheduledTimeMs: nowMs - 3 * hourMs },
-      { scheduledTimeMs: nowMs - 2 * hourMs },
-      { scheduledTimeMs: nowMs },
-    ]);
+    expect(result.current.data.skippedExecutions).toEqual(
+      SKIPPED_EXECUTIONS_SINCE_CREATE_TIME
+    );
     expect(result.current.timelineStartMs).toBe(nowMs - 3 * hourMs);
     expect(result.current.oldestLoadedScheduleTimeMs).toBe(nowMs - hourMs);
     expect(result.current.hasNextPage).toBe(false);
@@ -104,11 +100,7 @@ describe(useScheduleRunsChartData.name, () => {
             runID: 'run-1',
             startTime: nowMs - hourMs,
             searchAttributes: {
-              CadenceScheduleTime: {
-                data: Buffer.from(
-                  JSON.stringify(new Date(nowMs - hourMs).toISOString())
-                ).toString('base64'),
-              },
+              CadenceScheduleTime: scheduleTimeAttribute(nowMs - hourMs),
             },
           }),
         ],
@@ -149,11 +141,7 @@ describe(useScheduleRunsChartData.name, () => {
             runID: 'run-1',
             startTime: nowMs - hourMs,
             searchAttributes: {
-              CadenceScheduleTime: {
-                data: Buffer.from(
-                  JSON.stringify(new Date(nowMs - hourMs).toISOString())
-                ).toString('base64'),
-              },
+              CadenceScheduleTime: scheduleTimeAttribute(nowMs - hourMs),
             },
           }),
         ],
@@ -177,30 +165,9 @@ describe(useScheduleRunsChartData.name, () => {
     const nextExecutionTimeMs = nowMs + hourMs;
 
     const { result } = setup({
-      describeScheduleResponse: getMockRunningDescribeScheduleResponse({
-        spec: {
-          cronExpression: '0 * * * *',
-          startTime: null,
-          endTime: null,
-          jitter: null,
-        },
-        info: {
-          lastRunTime: null,
-          nextRunTime: {
-            seconds: String(nextExecutionTimeMs / 1000),
-            nanos: 0,
-          },
-          totalRuns: '2',
-          createTime: {
-            seconds: String((nowMs - 3 * hourMs) / 1000),
-            nanos: 0,
-          },
-          lastUpdateTime: null,
-          missedRuns: '0',
-          skippedRuns: '0',
-          ongoingBackfills: [],
-        },
-      }),
+      describeScheduleResponse: getMockRunningDescribeScheduleResponse(
+        HOURLY_SCHEDULE_OVERRIDES
+      ),
       workflowsResponse: {
         workflows: [
           getMockWorkflowListItem({
@@ -208,11 +175,7 @@ describe(useScheduleRunsChartData.name, () => {
             runID: 'run-before',
             startTime: nowMs - hourMs,
             searchAttributes: {
-              CadenceScheduleTime: {
-                data: Buffer.from(
-                  JSON.stringify(new Date(nowMs - hourMs).toISOString())
-                ).toString('base64'),
-              },
+              CadenceScheduleTime: scheduleTimeAttribute(nowMs - hourMs),
             },
           }),
           getMockWorkflowListItem({
@@ -220,11 +183,7 @@ describe(useScheduleRunsChartData.name, () => {
             runID: 'run-at-next',
             startTime: nextExecutionTimeMs,
             searchAttributes: {
-              CadenceScheduleTime: {
-                data: Buffer.from(
-                  JSON.stringify(new Date(nextExecutionTimeMs).toISOString())
-                ).toString('base64'),
-              },
+              CadenceScheduleTime: scheduleTimeAttribute(nextExecutionTimeMs),
             },
           }),
         ],
@@ -239,15 +198,19 @@ describe(useScheduleRunsChartData.name, () => {
       expect.objectContaining({ runId: 'run-before' }),
     ]);
     expect(result.current.data.nextExecutionTimeMs).toBe(nowMs + hourMs);
-    // Every hourly slot from the schedule's create time through now has no
-    // matching run except the one hour ago, so those are inferred as skipped.
-    expect(result.current.data.skippedExecutions).toEqual([
-      { scheduledTimeMs: nowMs - 3 * hourMs },
-      { scheduledTimeMs: nowMs - 2 * hourMs },
-      { scheduledTimeMs: nowMs },
-    ]);
+    expect(result.current.data.skippedExecutions).toEqual(
+      SKIPPED_EXECUTIONS_SINCE_CREATE_TIME
+    );
   });
 });
+
+function scheduleTimeAttribute(scheduledTimeMs: number) {
+  return {
+    data: Buffer.from(
+      JSON.stringify(new Date(scheduledTimeMs).toISOString())
+    ).toString('base64'),
+  };
+}
 
 function setup({
   describeScheduleResponse,

@@ -8,9 +8,9 @@ import {
   getChartTimeWindowSpanMs,
   isSameChartTimeWindow,
   resolveChartFollowTimeWindow,
+  shiftChartTimeWindow,
   zoomChartTimeWindow,
 } from '@/views/schedule-details/schedule-details-runs-chart/helpers/chart-view-state';
-import shiftChartTimeWindow from '@/views/schedule-details/schedule-details-runs-chart/helpers/shift-chart-time-window';
 import {
   CHART_ZOOM_IN_FACTOR,
   CHART_ZOOM_OUT_FACTOR,
