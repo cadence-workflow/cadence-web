@@ -14,7 +14,13 @@ export const overrides = {
 export const styled = {
   Marker: createStyled<'div', { $positioned?: boolean }>(
     'div',
-    ({ $theme, $positioned = true }: { $theme: Theme; $positioned?: boolean }) => ({
+    ({
+      $theme,
+      $positioned = true,
+    }: {
+      $theme: Theme;
+      $positioned?: boolean;
+    }) => ({
       position: $positioned ? 'absolute' : 'relative',
       top: $positioned ? 0 : undefined,
       left: $positioned ? 0 : undefined,

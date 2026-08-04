@@ -38,11 +38,7 @@ jest.mock(
       testId: string;
       children?: React.ReactNode;
     }) {
-      return (
-        <div data-testid={testId}>
-          {children}
-        </div>
-      );
+      return <div data-testid={testId}>{children}</div>;
     }
 );
 
