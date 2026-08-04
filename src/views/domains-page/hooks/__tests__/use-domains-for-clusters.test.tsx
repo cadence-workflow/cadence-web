@@ -117,7 +117,7 @@ function setup({ failingClusters = [] }: { failingClusters?: Array<string> }) {
     {
       endpointsMocks: [
         {
-          path: '/api/cluster/:cluster/domains',
+          path: '/api/clusters/:cluster/domains',
           httpMethod: 'GET',
           mockOnce: false,
           httpResolver: async ({ params }) => {

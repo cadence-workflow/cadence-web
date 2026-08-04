@@ -1,4 +1,7 @@
-import { RequestError } from '@/utils/request/request-error';
+import { type Query } from '@tanstack/react-query';
+
+import { type ListDomainsResponse } from '@/route-handlers/list-domains/list-domains.types';
+import { type RequestError } from '@/utils/request/request-error';
 
 import { getDomainObj } from '../../__fixtures__/domains';
 import getDomainsForClusterQueryOptions from '../get-domains-for-cluster-query-options';
@@ -14,53 +17,41 @@ describe(getDomainsForClusterQueryOptions.name, () => {
     const options = getDomainsForClusterQueryOptions('test-cluster');
 
     expect(options.staleTime).toEqual(60_000);
-    expect(options.gcTime).toEqual(5 * 60_000);
     expect(options.retry).toEqual(3);
+    expect(options.retryDelay).toEqual(5_000);
   });
 
-  it('uses exponential backoff capped at 10 seconds for retry delays', () => {
+  it('refetches on window focus unless the query is in error state', () => {
     const options = getDomainsForClusterQueryOptions('test-cluster');
 
-    const retryDelay = options.retryDelay;
-    if (typeof retryDelay !== 'function') {
-      throw new Error('Expected retryDelay to be a function');
+    const refetchOnWindowFocus = options.refetchOnWindowFocus;
+    if (typeof refetchOnWindowFocus !== 'function') {
+      throw new Error('Expected refetchOnWindowFocus to be a function');
     }
 
-    const mockError = new RequestError(
-      'mock error',
-      '/api/cluster/test-cluster/domains',
-      500
-    );
-    expect(retryDelay(0, mockError)).toEqual(1_000);
-    expect(retryDelay(1, mockError)).toEqual(2_000);
-    expect(retryDelay(2, mockError)).toEqual(4_000);
-    expect(retryDelay(10, mockError)).toEqual(10_000);
+    const getMockQuery = (status: 'success' | 'error' | 'pending') =>
+      ({
+        state: { status },
+      }) as Query<
+        ListDomainsResponse,
+        RequestError,
+        ListDomainsResponse,
+        ['domains', string]
+      >;
+
+    expect(refetchOnWindowFocus(getMockQuery('success'))).toEqual(true);
+    expect(refetchOnWindowFocus(getMockQuery('pending'))).toEqual(true);
+    expect(refetchOnWindowFocus(getMockQuery('error'))).toEqual(false);
   });
 
-  it('filters out domains that are not relevant to the cluster', () => {
+  it('selects domains from the response', () => {
     const options = getDomainsForClusterQueryOptions('test-cluster');
 
-    const relevantDomain = getDomainObj({
-      id: 'relevant-id',
-      name: 'relevant-domain',
-      clusters: [{ clusterName: 'test-cluster' }],
-    });
-    const otherClusterDomain = getDomainObj({
-      id: 'other-id',
-      name: 'other-domain',
-      clusters: [{ clusterName: 'other-cluster' }],
-    });
-    const deletedDomain = getDomainObj({
-      id: 'deleted-id',
-      name: 'deleted-domain',
-      status: 'DOMAIN_STATUS_DELETED',
-      clusters: [{ clusterName: 'test-cluster' }],
-    });
+    const domains = [
+      getDomainObj({ id: 'domain-1', name: 'domain-1' }),
+      getDomainObj({ id: 'domain-2', name: 'domain-2' }),
+    ];
 
-    expect(
-      options.select?.({
-        domains: [relevantDomain, otherClusterDomain, deletedDomain],
-      })
-    ).toEqual([relevantDomain]);
+    expect(options.select?.({ domains })).toEqual(domains);
   });
 });

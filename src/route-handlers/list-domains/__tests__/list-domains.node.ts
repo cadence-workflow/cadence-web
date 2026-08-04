@@ -12,8 +12,16 @@ import type { Context } from '../list-domains.types';
 jest.mock('@/utils/logger');
 
 const mockDomains = [
-  getDomainObj({ id: 'mock-domain-id-1', name: 'mock-domain-1' }),
-  getDomainObj({ id: 'mock-domain-id-2', name: 'mock-domain-2' }),
+  getDomainObj({
+    id: 'mock-domain-id-1',
+    name: 'mock-domain-1',
+    clusters: [{ clusterName: 'mock-cluster1' }],
+  }),
+  getDomainObj({
+    id: 'mock-domain-id-2',
+    name: 'mock-domain-2',
+    clusters: [{ clusterName: 'mock-cluster1' }],
+  }),
 ];
 
 describe(listDomains.name, () => {
@@ -25,6 +33,34 @@ describe(listDomains.name, () => {
     const { res, mockListDomains } = await setup({});
 
     expect(mockListDomains).toHaveBeenCalledWith({ pageSize: 2000 });
+
+    expect(res.status).toEqual(200);
+    const responseJson = await res.json();
+    expect(responseJson).toEqual({
+      domains: [
+        expect.objectContaining({ name: 'mock-domain-1' }),
+        expect.objectContaining({ name: 'mock-domain-2' }),
+      ],
+    });
+  });
+
+  it('filters out domains that are not relevant to the requested cluster', async () => {
+    const { res } = await setup({
+      domains: [
+        ...mockDomains,
+        getDomainObj({
+          id: 'mock-domain-id-other',
+          name: 'mock-domain-other',
+          clusters: [{ clusterName: 'mock-cluster2' }],
+        }),
+        getDomainObj({
+          id: 'mock-domain-id-deleted',
+          name: 'mock-domain-deleted',
+          status: 'DOMAIN_STATUS_DELETED',
+          clusters: [{ clusterName: 'mock-cluster1' }],
+        }),
+      ],
+    });
 
     expect(res.status).toEqual(200);
     const responseJson = await res.json();
@@ -73,12 +109,18 @@ describe(listDomains.name, () => {
   });
 });
 
-async function setup({ error }: { error?: Error }) {
+async function setup({
+  error,
+  domains = mockDomains,
+}: {
+  error?: Error;
+  domains?: Array<ReturnType<typeof getDomainObj>>;
+}) {
   const mockListDomains = jest
     .spyOn(mockGrpcClusterMethods, 'listDomains')
     .mockImplementationOnce(async () => {
       if (error) throw error;
-      return { domains: mockDomains, nextPageToken: '' };
+      return { domains, nextPageToken: '' };
     });
 
   const res = await listDomains(

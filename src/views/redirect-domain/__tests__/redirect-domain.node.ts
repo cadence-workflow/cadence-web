@@ -50,7 +50,7 @@ jest.mock('next/navigation', () => ({
   },
 }));
 
-jest.mock('@/views/domains-page/helpers/get-cached-all-domains', () =>
+jest.mock('../helpers/get-cached-all-domains', () =>
   jest.fn(() => ({
     domains: MOCK_ALL_DOMAINS,
     failedClusters: [],
