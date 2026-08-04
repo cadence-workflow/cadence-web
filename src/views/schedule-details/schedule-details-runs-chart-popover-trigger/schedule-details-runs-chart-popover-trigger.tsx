@@ -4,7 +4,7 @@ import React from 'react';
 import { StatefulPopover } from 'baseui/popover';
 
 import { CHART_RUN_POPOVER_ENTRY_DELAY_MS } from '@/views/schedule-details/schedule-details-runs-chart/schedule-details-runs-chart.constants';
-import ScheduleDetailsRunsChartPopover from '@/views/schedule-details/schedule-details-runs-chart-popover/schedule-details-runs-chart-popover';
+import ScheduleDetailsRunsChartPopoverContent from '@/views/schedule-details/schedule-details-runs-chart-popover/schedule-details-runs-chart-popover-content';
 
 import {
   overrides,
@@ -20,6 +20,7 @@ export default function ScheduleDetailsRunsChartPopoverTrigger({
   cluster,
   ariaLabel,
   testId,
+  children,
 }: Props) {
   return (
     <styled.TriggerAnchor $x={x} $y={y}>
@@ -27,7 +28,7 @@ export default function ScheduleDetailsRunsChartPopoverTrigger({
         triggerType="hover"
         accessibilityType="tooltip"
         content={() => (
-          <ScheduleDetailsRunsChartPopover
+          <ScheduleDetailsRunsChartPopoverContent
             entries={entries}
             domain={domain}
             cluster={cluster}
@@ -42,7 +43,9 @@ export default function ScheduleDetailsRunsChartPopoverTrigger({
           type="button"
           aria-label={ariaLabel}
           data-testid={testId}
-        />
+        >
+          {children}
+        </styled.HitArea>
       </StatefulPopover>
     </styled.TriggerAnchor>
   );

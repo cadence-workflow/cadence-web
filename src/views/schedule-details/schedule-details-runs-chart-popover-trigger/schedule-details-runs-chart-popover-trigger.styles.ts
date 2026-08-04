@@ -19,6 +19,9 @@ export const styled = {
     })
   ),
   HitArea: createStyled('button', ({ $theme }: { $theme: Theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     width: '100%',
     height: '100%',
     padding: 0,

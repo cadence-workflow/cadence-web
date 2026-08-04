@@ -2,7 +2,7 @@ import { render, screen } from '@/test-utils/rtl';
 
 import { WORKFLOW_STATUS_NAMES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
 
-import ScheduleDetailsRunsChartPopover from '../schedule-details-runs-chart-popover';
+import ScheduleDetailsRunsChartPopoverContent from '../schedule-details-runs-chart-popover-content';
 import {
   RUN_POPOVER_BACKFILL_LABEL,
   RUN_POPOVER_EMPTY_VALUE,
@@ -17,7 +17,7 @@ import { type ChartRunPopoverEntry } from '../schedule-details-runs-chart-popove
 const mockDomain = 'test-domain';
 const mockCluster = 'test-cluster';
 
-describe(ScheduleDetailsRunsChartPopover.name, () => {
+describe(ScheduleDetailsRunsChartPopoverContent.name, () => {
   it('renders the run id, status and timestamps for a run entry', () => {
     setup({
       entries: [
@@ -134,7 +134,7 @@ describe(ScheduleDetailsRunsChartPopover.name, () => {
 
 function setup({ entries }: { entries: ChartRunPopoverEntry[] }) {
   render(
-    <ScheduleDetailsRunsChartPopover
+    <ScheduleDetailsRunsChartPopoverContent
       entries={entries}
       domain={mockDomain}
       cluster={mockCluster}

@@ -29,9 +29,9 @@ jest.mock('baseui/popover', () => {
 });
 
 jest.mock(
-  '@/views/schedule-details/schedule-details-runs-chart-popover/schedule-details-runs-chart-popover',
+  '@/views/schedule-details/schedule-details-runs-chart-popover/schedule-details-runs-chart-popover-content',
   () =>
-    function MockScheduleDetailsRunsChartPopover({
+    function MockScheduleDetailsRunsChartPopoverContent({
       entries,
       domain,
       cluster,
@@ -94,6 +94,8 @@ function setup() {
       cluster="test-cluster"
       ariaLabel="Skipped run"
       testId="skipped-trigger"
-    />
+    >
+      <span>glyph</span>
+    </ScheduleDetailsRunsChartPopoverTrigger>
   );
 }
