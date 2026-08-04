@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { useStyletron } from 'baseui';
+import { Skeleton } from 'baseui/skeleton';
 import { Spinner } from 'baseui/spinner';
 import {
   MdAdjust,
@@ -17,7 +18,7 @@ import {
   CHART_GLYPH_MARKER_SIZE_PX,
   CHART_GLYPH_TEST_IDS,
 } from './schedule-details-runs-chart-glyph.constants';
-import { styled } from './schedule-details-runs-chart-glyph.styles';
+import { styled, overrides } from './schedule-details-runs-chart-glyph.styles';
 import { type Props } from './schedule-details-runs-chart-glyph.types';
 
 export default function ScheduleDetailsRunsChartGlyph({
@@ -32,6 +33,7 @@ export default function ScheduleDetailsRunsChartGlyph({
   const [, theme] = useStyletron();
   const isGrouped = runCount > 1;
   const halfMarkerSizePx = CHART_GLYPH_MARKER_SIZE_PX / 2;
+  const isPositioned = x != null && y != null;
   const color = getChartGlyphColor(theme, variant);
   const iconProps = {
     color,
@@ -73,6 +75,16 @@ export default function ScheduleDetailsRunsChartGlyph({
     case 'skipped':
       statusIcon = <styled.Skipped />;
       break;
+    case 'loading':
+      statusIcon = (
+        <Skeleton
+          height={`${CHART_GLYPH_MARKER_SIZE_PX}px`}
+          width={`${CHART_GLYPH_MARKER_SIZE_PX}px`}
+          overrides={overrides.loadingSkeleton}
+          animation
+        />
+      );
+      break;
     case 'next':
       statusIcon = (
         <styled.Icon>
@@ -88,9 +100,14 @@ export default function ScheduleDetailsRunsChartGlyph({
       aria-label={label}
       title={label}
       data-testid={testId}
-      style={{
-        transform: `translate(${x - halfMarkerSizePx}px, ${y - halfMarkerSizePx}px)`,
-      }}
+      $positioned={isPositioned}
+      style={
+        isPositioned
+          ? {
+              transform: `translate(${x - halfMarkerSizePx}px, ${y - halfMarkerSizePx}px)`,
+            }
+          : undefined
+      }
     >
       {isGrouped ? (
         <styled.GroupedMarker>
