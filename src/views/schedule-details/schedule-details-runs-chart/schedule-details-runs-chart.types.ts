@@ -67,8 +67,12 @@ export type ShiftChartTimeWindowParams = {
 export type ResolveInitialChartTimeWindowParams = {
   nowMs: number;
   chartWidthPx: number;
+  cronExpression: string;
   nextExecutionMs?: number | null;
-  /** Actual run times plus inferred skipped/unconfirmed slots, used to size how much history reads well at the initial zoom. */
-  timestampsMs?: number[];
-  futureGutterMs?: number;
+};
+
+export type ResolveInitialChartTimeWindowResult = {
+  window: ChartTimeWindow;
+  /** Widest span where consecutive markers slightly overlap on screen. */
+  maxSpanMs: number;
 };

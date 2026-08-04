@@ -1,11 +1,8 @@
 'use client';
 import React from 'react';
 
-import { useStyletron } from 'baseui';
-import { MdOpenInNew } from 'react-icons/md';
-
 import Link from '@/components/link/link';
-import buildScheduleBackfillWorkflowsVisibilityQuery from '@/utils/visibility/build-schedule-backfill-workflows-visibility-query';
+import escapeVisibilityQueryValue from '@/utils/visibility/escape-visibility-query-value';
 import WorkflowStatusTag from '@/views/shared/workflow-status-tag/workflow-status-tag';
 
 import getRunPopoverTimestampRows from './helpers/get-run-popover-timestamp-rows';
@@ -27,23 +24,20 @@ function PopoverEntry({ title, rows }: PopoverEntryProps) {
     <styled.Entry data-testid={RUN_POPOVER_TEST_IDS.entry}>
       <styled.EntryTitle>{title}</styled.EntryTitle>
       {rows.map(({ label, value }) => (
-        <React.Fragment key={label}>
+        <styled.EntryRow key={label}>
           <styled.RowLabel>{label}</styled.RowLabel>
           <styled.RowValue>{value}</styled.RowValue>
-        </React.Fragment>
+        </styled.EntryRow>
       ))}
     </styled.Entry>
   );
 }
 
-export default function ScheduleDetailsRunsChartPopover({
+export default function ScheduleDetailsRunsChartPopoverContent({
   entries,
   domain,
   cluster,
-  scheduleId,
 }: Props) {
-  const [, theme] = useStyletron();
-
   return (
     <styled.Content data-testid={RUN_POPOVER_TEST_IDS.content}>
       {entries.map((entry) => {
@@ -91,20 +85,11 @@ export default function ScheduleDetailsRunsChartPopover({
                     {
                       label: RUN_POPOVER_BACKFILL_LABEL,
                       value: (
-                        <styled.ValueWithIcon>
-                          <Link
-                            href={`/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows?input=query&query=${encodeURIComponent(buildScheduleBackfillWorkflowsVisibilityQuery(scheduleId, run.backfillId))}`}
-                            target="_blank"
-                            rel="noreferrer"
-                          >
-                            {run.backfillId}
-                          </Link>
-                          <MdOpenInNew
-                            size={theme.sizing.scale500}
-                            color={theme.colors.contentPrimary}
-                            aria-hidden
-                          />
-                        </styled.ValueWithIcon>
+                        <Link
+                          href={`/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows?input=query&query=${encodeURIComponent(`CadenceScheduleBackfillID="${escapeVisibilityQueryValue(run.backfillId)}"`)}`}
+                        >
+                          {run.backfillId}
+                        </Link>
                       ),
                     },
                   ]

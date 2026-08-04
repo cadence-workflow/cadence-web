@@ -123,6 +123,7 @@ export default function useScheduleRunsChartData({
 
   return {
     data,
+    cronExpression,
     isLoading:
       describeQuery.isLoading ||
       domainQuery.isLoading ||

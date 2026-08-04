@@ -1,8 +1,6 @@
 import { render, screen } from '@/test-utils/rtl';
 
-import { WORKFLOW_STATUS_NAMES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
-
-import ScheduleDetailsRunsChartPopover from '../schedule-details-runs-chart-popover';
+import ScheduleDetailsRunsChartPopoverContent from '../schedule-details-runs-chart-popover-content';
 import {
   RUN_POPOVER_BACKFILL_LABEL,
   RUN_POPOVER_EMPTY_VALUE,
@@ -14,11 +12,18 @@ import {
 } from '../schedule-details-runs-chart-popover.constants';
 import { type ChartRunPopoverEntry } from '../schedule-details-runs-chart-popover.types';
 
+jest.mock('@/views/shared/workflow-status-tag/workflow-status-tag', () =>
+  jest.fn(({ status }: { status: string }) => (
+    <div data-testid="mock-workflow-status-tag">
+      Mock workflow status: {status}
+    </div>
+  ))
+);
+
 const mockDomain = 'test-domain';
 const mockCluster = 'test-cluster';
-const mockScheduleId = 'test-schedule';
 
-describe(ScheduleDetailsRunsChartPopover.name, () => {
+describe(ScheduleDetailsRunsChartPopoverContent.name, () => {
   it('renders the run id, status and timestamps for a run entry', () => {
     setup({
       entries: [
@@ -41,11 +46,9 @@ describe(ScheduleDetailsRunsChartPopover.name, () => {
       `/domains/${mockDomain}/${mockCluster}/workflows/wf-1/run-1`
     );
     expect(screen.getByText(RUN_POPOVER_STATUS_LABEL)).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        WORKFLOW_STATUS_NAMES.WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED
-      )
-    ).toBeInTheDocument();
+    expect(screen.getByTestId('mock-workflow-status-tag')).toHaveTextContent(
+      'Mock workflow status: WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED'
+    );
     expect(
       screen.getByText(RUN_POPOVER_TIMESTAMP_LABELS.started)
     ).toBeInTheDocument();
@@ -76,9 +79,7 @@ describe(ScheduleDetailsRunsChartPopover.name, () => {
     expect(screen.getByRole('link', { name: 'backfill-123' })).toHaveAttribute(
       'href',
       expect.stringContaining(
-        encodeURIComponent(
-          `CadenceScheduleID = "${mockScheduleId}" AND CadenceScheduleBackfillID = "backfill-123"`
-        )
+        encodeURIComponent('CadenceScheduleBackfillID="backfill-123"')
       )
     );
   });
@@ -137,11 +138,10 @@ describe(ScheduleDetailsRunsChartPopover.name, () => {
 
 function setup({ entries }: { entries: ChartRunPopoverEntry[] }) {
   render(
-    <ScheduleDetailsRunsChartPopover
+    <ScheduleDetailsRunsChartPopoverContent
       entries={entries}
       domain={mockDomain}
       cluster={mockCluster}
-      scheduleId={mockScheduleId}
     />
   );
 }

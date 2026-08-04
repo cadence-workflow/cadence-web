@@ -5,53 +5,55 @@ import { renderHook } from '@/test-utils/rtl';
 import {
   CHART_NOW_ANCHOR_RATIO,
   CHART_ZOOM_IN_FACTOR,
+  CHART_ZOOM_OUT_FACTOR,
 } from '@/views/schedule-details/schedule-details-runs-chart/schedule-details-runs-chart.constants';
 
 import useScheduleRunsChartViewState from '../use-schedule-runs-chart-view-state';
 
-const HOUR_MS = 60 * 60 * 1000;
-const MOCK_NOW_MS = new Date('2024-06-15T12:00:00Z').getTime();
-const BOUNDS = {
-  minMs: MOCK_NOW_MS - 12 * HOUR_MS,
-  maxMs: MOCK_NOW_MS + 4 * HOUR_MS,
+const hourMs = 60 * 60 * 1000;
+const mockNowMs = new Date('2024-06-15T12:00:00Z').getTime();
+const defaultBounds = {
+  minMs: mockNowMs - 12 * hourMs,
+  maxMs: mockNowMs + 4 * hourMs,
 };
-const WIDE_BOUNDS = {
-  minMs: MOCK_NOW_MS - 28 * HOUR_MS,
-  maxMs: MOCK_NOW_MS + 4 * HOUR_MS,
+const wideBounds = {
+  minMs: mockNowMs - 28 * hourMs,
+  maxMs: mockNowMs + 4 * hourMs,
 };
-const INITIAL_SPAN_MS = 4 * HOUR_MS;
-const INITIAL_WINDOW = {
-  minMs: MOCK_NOW_MS - INITIAL_SPAN_MS * CHART_NOW_ANCHOR_RATIO,
-  maxMs: MOCK_NOW_MS + INITIAL_SPAN_MS * (1 - CHART_NOW_ANCHOR_RATIO),
+const initialSpanMs = 4 * hourMs;
+const initialWindow = {
+  minMs: mockNowMs - initialSpanMs * CHART_NOW_ANCHOR_RATIO,
+  maxMs: mockNowMs + initialSpanMs * (1 - CHART_NOW_ANCHOR_RATIO),
 };
+const generousMaxSpanMs = 100 * hourMs;
 
 describe(useScheduleRunsChartViewState.name, () => {
   it('follows the clock from the initial window', () => {
     const { result, rerender } = setup();
 
     act(() => {
-      result.current.initializeWindow(INITIAL_WINDOW);
+      result.current.initializeWindow(initialWindow, generousMaxSpanMs);
     });
 
     expect(result.current.isFollowing).toBe(true);
 
-    rerender({ nowMs: MOCK_NOW_MS + 1_000 });
+    rerender({ nowMs: mockNowMs + 1_000, bounds: defaultBounds });
 
     expect(result.current.visibleWindow).toEqual({
-      minMs: INITIAL_WINDOW.minMs + 1_000,
-      maxMs: INITIAL_WINDOW.maxMs + 1_000,
+      minMs: initialWindow.minMs + 1_000,
+      maxMs: initialWindow.maxMs + 1_000,
     });
   });
 
   it('keeps the next run visible while following', () => {
-    const nextExecutionMs = MOCK_NOW_MS + HOUR_MS;
+    const nextExecutionMs = mockNowMs + hourMs;
     const { result, rerender } = setup({ nextExecutionMs });
 
     act(() => {
-      result.current.initializeWindow(INITIAL_WINDOW);
+      result.current.initializeWindow(initialWindow, generousMaxSpanMs);
     });
 
-    rerender({ nowMs: MOCK_NOW_MS + 1_000 });
+    rerender({ nowMs: mockNowMs + 1_000, bounds: defaultBounds });
 
     const visibleWindow = result.current.visibleWindow;
 
@@ -60,28 +62,28 @@ describe(useScheduleRunsChartViewState.name, () => {
     }
 
     expect(visibleWindow.maxMs).toBeGreaterThan(nextExecutionMs);
-    expect(visibleWindow.minMs).toBeLessThanOrEqual(MOCK_NOW_MS + 1_000);
+    expect(visibleWindow.minMs).toBeLessThanOrEqual(mockNowMs + 1_000);
   });
 
   it('stops following after a manual pan and resumes on going to now', () => {
     const { result, rerender } = setup();
 
     act(() => {
-      result.current.initializeWindow(INITIAL_WINDOW);
+      result.current.initializeWindow(initialWindow, generousMaxSpanMs);
     });
     act(() => {
-      expect(result.current.panByMs(-HOUR_MS)).toBe(true);
+      expect(result.current.panByMs(-hourMs)).toBe(true);
     });
 
     expect(result.current.isFollowing).toBe(false);
 
     const pannedWindow = result.current.visibleWindow;
     expect(pannedWindow).toEqual({
-      minMs: INITIAL_WINDOW.minMs - HOUR_MS,
-      maxMs: INITIAL_WINDOW.maxMs - HOUR_MS,
+      minMs: initialWindow.minMs - hourMs,
+      maxMs: initialWindow.maxMs - hourMs,
     });
 
-    rerender({ nowMs: MOCK_NOW_MS + 1_000 });
+    rerender({ nowMs: mockNowMs + 1_000, bounds: defaultBounds });
 
     expect(result.current.visibleWindow).toEqual(pannedWindow);
 
@@ -98,32 +100,34 @@ describe(useScheduleRunsChartViewState.name, () => {
     }
 
     const spanMs = followedWindow.maxMs - followedWindow.minMs;
-    expect((MOCK_NOW_MS + 1_000 - followedWindow.minMs) / spanMs).toBeCloseTo(
+    expect((mockNowMs + 1_000 - followedWindow.minMs) / spanMs).toBeCloseTo(
       CHART_NOW_ANCHOR_RATIO,
       5
     );
   });
 
-  it('keeps following when a pan is blocked at the navigation bounds', () => {
+  it('blocks pans that would move past the navigation bounds', () => {
     const { result } = setup();
 
     act(() => {
-      result.current.initializeWindow(BOUNDS);
+      result.current.initializeWindow(initialWindow, generousMaxSpanMs);
     });
     act(() => {
-      expect(result.current.panByMs(-HOUR_MS)).toBe(false);
+      result.current.panByMs(-(12 * hourMs));
     });
 
-    expect(result.current.isFollowing).toBe(true);
-    expect(result.current.canPan).toBe(false);
-    expect(result.current.visibleWindow).toEqual(BOUNDS);
+    expect(result.current.visibleWindow?.minMs).toBe(defaultBounds.minMs);
+
+    act(() => {
+      expect(result.current.panByMs(-hourMs)).toBe(false);
+    });
   });
 
   it('anchors zoom on now while following and on the center afterwards', () => {
     const { result } = setup();
 
     act(() => {
-      result.current.initializeWindow(INITIAL_WINDOW);
+      result.current.initializeWindow(initialWindow, generousMaxSpanMs);
     });
     act(() => {
       result.current.zoomIn();
@@ -135,18 +139,18 @@ describe(useScheduleRunsChartViewState.name, () => {
       throw new Error('Expected a visible window');
     }
 
-    const zoomedSpanMs = INITIAL_SPAN_MS * CHART_ZOOM_IN_FACTOR;
+    const zoomedSpanMs = initialSpanMs * CHART_ZOOM_IN_FACTOR;
     expect(followedZoomWindow.maxMs - followedZoomWindow.minMs).toBeCloseTo(
       zoomedSpanMs,
       -2
     );
-    expect((MOCK_NOW_MS - followedZoomWindow.minMs) / zoomedSpanMs).toBeCloseTo(
+    expect((mockNowMs - followedZoomWindow.minMs) / zoomedSpanMs).toBeCloseTo(
       CHART_NOW_ANCHOR_RATIO,
       5
     );
 
     act(() => {
-      result.current.panByMs(-HOUR_MS);
+      result.current.panByMs(-hourMs);
     });
 
     const pannedWindow = result.current.visibleWindow;
@@ -172,17 +176,51 @@ describe(useScheduleRunsChartViewState.name, () => {
     ).toBeCloseTo(pannedCenterMs, -2);
   });
 
-  it('limits zooming out to two steps beyond the initial readable span', () => {
-    const { result } = setup({ bounds: WIDE_BOUNDS });
+  it('anchors now on initialization even when bounds clamp the window', () => {
+    const tightBounds = {
+      minMs: mockNowMs - 12 * hourMs,
+      maxMs: mockNowMs + hourMs,
+    };
+    const { result } = setup({ bounds: tightBounds });
 
     act(() => {
-      result.current.initializeWindow(INITIAL_WINDOW);
+      result.current.initializeWindow(initialWindow, generousMaxSpanMs);
     });
 
-    expect(result.current.canZoomOut).toBe(true);
+    const visibleWindow = result.current.visibleWindow;
+
+    if (!visibleWindow) {
+      throw new Error('Expected a visible window');
+    }
+
+    const spanMs = visibleWindow.maxMs - visibleWindow.minMs;
+
+    expect((mockNowMs - visibleWindow.minMs) / spanMs).toBeCloseTo(
+      CHART_NOW_ANCHOR_RATIO,
+      5
+    );
+  });
+
+  it('does not jump when navigation bounds expand while following', () => {
+    const { result, rerender } = setup();
 
     act(() => {
-      result.current.zoomOut();
+      result.current.initializeWindow(initialWindow, generousMaxSpanMs);
+    });
+
+    const initialVisibleWindow = result.current.visibleWindow;
+
+    rerender({ bounds: wideBounds, nowMs: mockNowMs });
+
+    expect(result.current.visibleWindow).toEqual(initialVisibleWindow);
+  });
+
+  it('stops zooming out at the resolved overlap span', () => {
+    const maxSpanMs = initialSpanMs * CHART_ZOOM_OUT_FACTOR;
+    const { result } = setup({ bounds: wideBounds });
+
+    act(() => {
+      result.current.initializeWindow(initialWindow, maxSpanMs);
     });
 
     expect(result.current.canZoomOut).toBe(true);
@@ -198,7 +236,7 @@ describe(useScheduleRunsChartViewState.name, () => {
     }
 
     expect(visibleWindow.maxMs - visibleWindow.minMs).toBeCloseTo(
-      INITIAL_SPAN_MS * 4,
+      maxSpanMs,
       -2
     );
     expect(result.current.canZoomOut).toBe(false);
@@ -206,20 +244,28 @@ describe(useScheduleRunsChartViewState.name, () => {
 });
 
 function setup({
-  bounds = BOUNDS,
+  bounds = defaultBounds,
   nextExecutionMs,
 }: {
-  bounds?: typeof BOUNDS;
+  bounds?: typeof defaultBounds;
   nextExecutionMs?: number;
 } = {}) {
   return renderHook(
-    ({ nowMs }: { nowMs: number } = { nowMs: MOCK_NOW_MS }) =>
+    (
+      {
+        nowMs,
+        bounds: hookBounds,
+      }: {
+        nowMs: number;
+        bounds: typeof defaultBounds;
+      } = { nowMs: mockNowMs, bounds: defaultBounds }
+    ) =>
       useScheduleRunsChartViewState({
-        bounds,
+        bounds: hookBounds,
         nowMs,
         nextExecutionMs,
       }),
     undefined,
-    { initialProps: { nowMs: MOCK_NOW_MS } }
+    { initialProps: { nowMs: mockNowMs, bounds } }
   );
 }

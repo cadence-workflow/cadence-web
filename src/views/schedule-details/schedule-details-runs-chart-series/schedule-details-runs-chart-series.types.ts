@@ -41,6 +41,5 @@ export type Props = {
   data: ChartSeriesData;
   domain: string;
   cluster: string;
-  scheduleId: string;
   newTimesMs?: ChartSeriesNewTimesMs;
 };

@@ -33,16 +33,17 @@ jest.mock(
   () =>
     function MockScheduleDetailsRunsChartPopoverTrigger({
       testId,
+      children,
     }: {
       testId: string;
+      children?: React.ReactNode;
     }) {
-      return <div data-testid={testId} />;
+      return <div data-testid={testId}>{children}</div>;
     }
 );
 
 const mockDomain = 'test-domain';
 const mockCluster = 'test-cluster';
-const mockScheduleId = 'test-schedule';
 
 const mockRun = (
   overrides: Partial<ChartSeriesData['runs'][number]> &
@@ -222,11 +223,8 @@ describe(ScheduleDetailsRunsChartSeries.name, () => {
 
     expect(markerTestIds).toEqual([
       CHART_SERIES_TEST_IDS.loadingExecutionMarker,
-      CHART_SERIES_TEST_IDS.skippedExecutionMarker,
       CHART_RUN_POPOVER_TEST_IDS.skippedTrigger,
-      CHART_SERIES_TEST_IDS.runMarker,
       CHART_RUN_POPOVER_TEST_IDS.runTrigger,
-      CHART_SERIES_TEST_IDS.nextExecutionMarker,
       CHART_RUN_POPOVER_TEST_IDS.nextTrigger,
     ]);
   });
@@ -242,7 +240,6 @@ function setup({ data }: { data: ChartSeriesData }) {
       data={data}
       domain={mockDomain}
       cluster={mockCluster}
-      scheduleId={mockScheduleId}
     />
   );
 }

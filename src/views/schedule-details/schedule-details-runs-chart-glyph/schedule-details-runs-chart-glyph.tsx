@@ -34,6 +34,7 @@ export default function ScheduleDetailsRunsChartGlyph({
   const [, theme] = useStyletron();
   const isGrouped = runCount > 1;
   const halfMarkerSizePx = CHART_GLYPH_MARKER_SIZE_PX / 2;
+  const isPositioned = x != null && y != null;
   const color = getChartGlyphColor(theme, variant);
   const iconProps = {
     color,
@@ -101,9 +102,14 @@ export default function ScheduleDetailsRunsChartGlyph({
       aria-label={label}
       title={label}
       data-testid={testId}
-      style={{
-        transform: `translate(${x - halfMarkerSizePx}px, ${y - halfMarkerSizePx}px)`,
-      }}
+      $positioned={isPositioned}
+      style={
+        isPositioned
+          ? {
+              transform: `translate(${x - halfMarkerSizePx}px, ${y - halfMarkerSizePx}px)`,
+            }
+          : undefined
+      }
     >
       {isGrouped ? (
         <styled.GroupedMarker>

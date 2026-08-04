@@ -18,12 +18,12 @@ export const styled = {
   // Styletron mints a permanent class per distinct declaration, so panning
   // would inject a new rule per glyph per frame. `$isNew` is a two-valued
   // toggle set once on mount, so it stays safe as a styled prop.
-  Marker: createStyled<'div', { $isNew: boolean }>(
+  Marker: createStyled<'div', { $positioned?: boolean; $isNew: boolean }>(
     'div',
-    ({ $theme, $isNew }) => ({
-      position: 'absolute',
-      top: 0,
-      left: 0,
+    ({ $theme, $positioned = true, $isNew }) => ({
+      position: $positioned ? 'absolute' : 'relative',
+      top: $positioned ? 0 : undefined,
+      left: $positioned ? 0 : undefined,
       width: `${CHART_GLYPH_MARKER_SIZE_PX}px`,
       height: `${CHART_GLYPH_MARKER_SIZE_PX}px`,
       display: 'flex',

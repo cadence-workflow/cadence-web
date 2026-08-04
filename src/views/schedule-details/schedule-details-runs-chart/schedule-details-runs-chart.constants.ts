@@ -61,17 +61,17 @@ export const CHART_ZOOM_IN_FACTOR = 0.5;
 /** Multiplier applied when zooming out (larger span). */
 export const CHART_ZOOM_OUT_FACTOR = 2;
 
-/** Maximum zoom-out clicks beyond the initial readable view. */
-export const CHART_MAX_ZOOM_OUT_STEPS = 2;
-
 /** Horizontal position of `now` after panning (0 = left edge, 1 = right edge). */
 export const CHART_NOW_ANCHOR_RATIO = 0.85;
 
 /** Horizontal position of the next run when following pulls it into view. */
 export const CHART_NEXT_RUN_ANCHOR_RATIO = 0.95;
 
-/** Expected px width budgeted per readable expected occurrence on initial zoom. */
+/** Comfortable px gap between consecutive markers at the initial zoom level. */
 export const CHART_EXPECTED_RUN_SLOT_PX = 48;
+
+/** Center-to-center px at max zoom-out; below glyph width for slight overlap. */
+export const CHART_MAX_ZOOM_OUT_MARKER_SPACING_PX = 12;
 
 /** Upper bound on expected occurrences considered when sizing the initial zoom. */
 export const CHART_INITIAL_EXPECTED_RUN_COUNT = 20;

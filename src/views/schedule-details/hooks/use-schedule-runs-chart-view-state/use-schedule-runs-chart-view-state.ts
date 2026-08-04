@@ -12,7 +12,6 @@ import {
 } from '@/views/schedule-details/schedule-details-runs-chart/helpers/chart-view-state';
 import shiftChartTimeWindow from '@/views/schedule-details/schedule-details-runs-chart/helpers/shift-chart-time-window';
 import {
-  CHART_MAX_ZOOM_OUT_STEPS,
   CHART_ZOOM_IN_FACTOR,
   CHART_ZOOM_OUT_FACTOR,
 } from '@/views/schedule-details/schedule-details-runs-chart/schedule-details-runs-chart.constants';
@@ -62,49 +61,41 @@ export default function useScheduleRunsChartViewState({
       currentVisibleWindow,
       bounds
     );
+    const nextWindow = isFollowing
+      ? resolveChartFollowTimeWindow({
+          visibleWindow: clampedWindow,
+          bounds,
+          nowMs,
+          nextExecutionMs,
+        })
+      : clampedWindow;
 
-    if (!isSameChartTimeWindow(clampedWindow, currentVisibleWindow)) {
-      updateVisibleWindow(clampedWindow);
-    }
-  }, [bounds, updateVisibleWindow]);
-
-  useEffect(() => {
-    const currentVisibleWindow = visibleWindowRef.current;
-
-    if (!bounds || !currentVisibleWindow || !isFollowing) {
-      return;
-    }
-
-    const followWindow = resolveChartFollowTimeWindow({
-      visibleWindow: currentVisibleWindow,
-      bounds,
-      nowMs,
-      nextExecutionMs,
-    });
-
-    if (!isSameChartTimeWindow(followWindow, currentVisibleWindow)) {
-      updateVisibleWindow(followWindow);
+    if (!isSameChartTimeWindow(nextWindow, currentVisibleWindow)) {
+      updateVisibleWindow(nextWindow);
     }
   }, [bounds, isFollowing, nextExecutionMs, nowMs, updateVisibleWindow]);
 
   const initializeWindow = useCallback(
-    (window: ChartTimeWindow) => {
-      const initialWindow = bounds
-        ? clampChartVisibleTimeWindow(window, bounds)
-        : window;
+    (window: ChartTimeWindow, resolvedMaxSpanMs: number) => {
+      if (!bounds) {
+        updateVisibleWindow(window);
+        setMaxSpanMs(resolvedMaxSpanMs);
+        return;
+      }
+
+      const boundsSpanMs = getChartTimeWindowSpanMs(bounds);
+      const clampedWindow = clampChartVisibleTimeWindow(window, bounds);
+      const initialWindow = resolveChartFollowTimeWindow({
+        visibleWindow: clampedWindow,
+        bounds,
+        nowMs,
+        nextExecutionMs,
+      });
 
       updateVisibleWindow(initialWindow);
-      const initialSpanMs = getChartTimeWindowSpanMs(initialWindow);
-      setMaxSpanMs(
-        bounds
-          ? Math.min(
-              getChartTimeWindowSpanMs(bounds),
-              initialSpanMs * CHART_ZOOM_OUT_FACTOR ** CHART_MAX_ZOOM_OUT_STEPS
-            )
-          : initialSpanMs
-      );
+      setMaxSpanMs(Math.min(boundsSpanMs, resolvedMaxSpanMs));
     },
-    [bounds, updateVisibleWindow]
+    [bounds, nextExecutionMs, nowMs, updateVisibleWindow]
   );
 
   const zoomBy = useCallback(

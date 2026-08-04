@@ -12,7 +12,7 @@ export type UseScheduleRunsChartViewStateResult = {
   canZoomIn: boolean;
   canZoomOut: boolean;
   canPan: boolean;
-  initializeWindow: (window: ChartTimeWindow) => void;
+  initializeWindow: (window: ChartTimeWindow, maxSpanMs: number) => void;
   zoomIn: () => void;
   zoomOut: () => void;
   goToNow: () => void;

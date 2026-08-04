@@ -67,6 +67,7 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
 
   const {
     data: chartData,
+    cronExpression,
     isLoading,
     timelineStartMs,
     oldestLoadedScheduleTimeMs,
@@ -155,7 +156,7 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
   });
 
   // Initialization waits for the first non-zero measurement, so the starting
-  // zoom can be chosen from how many runs actually fit on screen.
+  // zoom can be sized from the cron cadence and drawable chart width.
   useEffect(() => {
     if (
       visibleWindow != null ||
@@ -166,21 +167,21 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
       return;
     }
 
-    initializeWindow(
-      resolveInitialChartTimeWindow({
-        nowMs,
-        chartWidthPx: width,
-        nextExecutionMs: chartData.nextExecutionTimeMs,
-        timestampsMs,
-      })
-    );
+    const { window: initialWindow, maxSpanMs } = resolveInitialChartTimeWindow({
+      nowMs,
+      chartWidthPx: width,
+      cronExpression,
+      nextExecutionMs: chartData.nextExecutionTimeMs,
+    });
+
+    initializeWindow(initialWindow, maxSpanMs);
   }, [
     chartData.nextExecutionTimeMs,
+    cronExpression,
     initializeWindow,
     isLoading,
     navigationBounds,
     nowMs,
-    timestampsMs,
     visibleWindow,
     width,
   ]);
@@ -447,7 +448,6 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
               data={visibleData}
               domain={params.domain}
               cluster={params.cluster}
-              scheduleId={params.scheduleId}
               newTimesMs={{
                 runs: newRunTimesMs,
                 skipped: newSkippedTimesMs,

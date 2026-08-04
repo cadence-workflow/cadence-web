@@ -1,18 +1,6 @@
 import { styled as createStyled, type Theme } from 'baseui';
 import { type StyleObject } from 'styletron-react';
 
-const rowStyles = ($theme: Theme): StyleObject => ({
-  display: 'flex',
-  alignItems: 'center',
-  paddingTop: $theme.sizing.scale200,
-  paddingBottom: $theme.sizing.scale200,
-  borderBottom: `1px solid ${$theme.colors.borderOpaque}`,
-  // the label and value of the last row make up the last two grid items
-  ':nth-last-child(-n+2)': {
-    borderBottomColor: 'transparent',
-  },
-});
-
 export const styled = {
   Content: createStyled(
     'div',
@@ -21,14 +9,14 @@ export const styled = {
       flexDirection: 'column',
       minWidth: '280px',
       maxWidth: '440px',
+      maxHeight: '50vh',
+      overflow: 'auto',
       ...$theme.typography.ParagraphXSmall,
     })
   ),
   Entry: createStyled(
     'div',
     ({ $theme }: { $theme: Theme }): StyleObject => ({
-      display: 'grid',
-      gridTemplateColumns: 'max-content minmax(0, 1fr)',
       ':not(:last-child)': {
         borderBottom: `1px solid ${$theme.colors.borderOpaque}`,
       },
@@ -37,7 +25,6 @@ export const styled = {
   EntryTitle: createStyled(
     'div',
     ({ $theme }: { $theme: Theme }): StyleObject => ({
-      gridColumn: '1 / -1',
       ...$theme.typography.LabelSmall,
       color: $theme.colors.contentPrimary,
       wordBreak: 'break-all',
@@ -47,10 +34,23 @@ export const styled = {
       marginRight: $theme.sizing.scale500,
     })
   ),
+  EntryRow: createStyled(
+    'div',
+    ({ $theme }: { $theme: Theme }): StyleObject => ({
+      display: 'grid',
+      gridTemplateColumns: 'max-content minmax(0, 1fr)',
+      alignItems: 'center',
+      paddingTop: $theme.sizing.scale200,
+      paddingBottom: $theme.sizing.scale200,
+      borderBottom: '1px solid transparent',
+      ':not(:last-child)': {
+        borderBottomColor: $theme.colors.borderOpaque,
+      },
+    })
+  ),
   RowLabel: createStyled(
     'div',
     ({ $theme }: { $theme: Theme }): StyleObject => ({
-      ...rowStyles($theme),
       ...$theme.typography.LabelXSmall,
       lineHeight: $theme.typography.ParagraphXSmall.lineHeight,
       color: $theme.colors.contentSecondary,
@@ -61,18 +61,9 @@ export const styled = {
   RowValue: createStyled(
     'div',
     ({ $theme }: { $theme: Theme }): StyleObject => ({
-      ...rowStyles($theme),
       color: $theme.colors.contentPrimary,
       wordBreak: 'break-all',
       marginRight: $theme.sizing.scale500,
-    })
-  ),
-  ValueWithIcon: createStyled(
-    'div',
-    ({ $theme }: { $theme: Theme }): StyleObject => ({
-      display: 'flex',
-      alignItems: 'center',
-      gap: $theme.sizing.scale200,
     })
   ),
 };

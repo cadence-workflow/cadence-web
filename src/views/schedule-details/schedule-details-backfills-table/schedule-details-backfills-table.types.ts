@@ -8,5 +8,4 @@ export type Props = {
   backfills: BackfillInfo[];
   domain: string;
   cluster: string;
-  scheduleId: string;
 };
