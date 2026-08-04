@@ -3,10 +3,7 @@ import React from 'react';
 
 import { StatefulPopover } from 'baseui/popover';
 
-import {
-  CHART_GLYPH_HIT_AREA_RADIUS_PX,
-  CHART_RUN_POPOVER_ENTRY_DELAY_MS,
-} from '@/views/schedule-details/schedule-details-runs-chart/schedule-details-runs-chart.constants';
+import { CHART_RUN_POPOVER_ENTRY_DELAY_MS } from '@/views/schedule-details/schedule-details-runs-chart/schedule-details-runs-chart.constants';
 import ScheduleDetailsRunsChartPopoverContent from '@/views/schedule-details/schedule-details-runs-chart-popover/schedule-details-runs-chart-popover-content';
 
 import {
@@ -26,11 +23,7 @@ export default function ScheduleDetailsRunsChartPopoverTrigger({
   children,
 }: Props) {
   return (
-    <styled.TriggerAnchor
-      style={{
-        transform: `translate(${x - CHART_GLYPH_HIT_AREA_RADIUS_PX}px, ${y - CHART_GLYPH_HIT_AREA_RADIUS_PX}px)`,
-      }}
-    >
+    <styled.TriggerAnchor $x={x} $y={y}>
       <StatefulPopover
         triggerType="hover"
         accessibilityType="tooltip"
