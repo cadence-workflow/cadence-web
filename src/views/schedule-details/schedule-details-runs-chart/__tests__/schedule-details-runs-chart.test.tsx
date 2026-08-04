@@ -1,8 +1,9 @@
 import React from 'react';
 
+import { act } from '@testing-library/react';
 import { HttpResponse } from 'msw';
 
-import { render, screen, within } from '@/test-utils/rtl';
+import { render, screen, userEvent, waitFor, within } from '@/test-utils/rtl';
 
 import { getMockRunningDescribeScheduleResponse } from '@/route-handlers/describe-schedule/__fixtures__/mock-describe-schedule-response';
 import { type DescribeScheduleResponse } from '@/route-handlers/describe-schedule/describe-schedule.types';
@@ -11,6 +12,7 @@ import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list
 
 import ScheduleDetailsRunsChart from '../schedule-details-runs-chart';
 import {
+  CHART_CANVAS_TEST_ID,
   CHART_EMPTY_STATE_MESSAGE,
   CHART_LOADING_TEST_ID,
   CHART_REGION_ARIA_LABEL,
@@ -30,6 +32,24 @@ const describeScheduleWithNextRun = getMockRunningDescribeScheduleResponse({
     nextRunTime: { seconds: String((nowMs + hourMs) / 1000), nanos: 0 },
     totalRuns: '1',
     createTime: null,
+    lastUpdateTime: null,
+    missedRuns: '0',
+    skippedRuns: '0',
+    ongoingBackfills: [],
+  },
+});
+
+// A schedule created long before its most recent run gives the navigation
+// bounds enough headroom beyond the initial view to actually pan/zoom out.
+const describeScheduleWithWideHistory = getMockRunningDescribeScheduleResponse({
+  info: {
+    lastRunTime: null,
+    nextRunTime: { seconds: String((nowMs + hourMs) / 1000), nanos: 0 },
+    totalRuns: '1',
+    createTime: {
+      seconds: String((nowMs - 30 * 24 * hourMs) / 1000),
+      nanos: 0,
+    },
     lastUpdateTime: null,
     missedRuns: '0',
     skippedRuns: '0',
@@ -131,8 +151,8 @@ describe(ScheduleDetailsRunsChart.name, () => {
     ).not.toBeInTheDocument();
   });
 
-  it('renders disabled toolbar controls', () => {
-    setup();
+  it('disables toolbar controls while the schedule data is loading', () => {
+    setup({ isLoading: true });
 
     const toolbar = screen.getByRole('toolbar', {
       name: CHART_TOOLBAR_ARIA_LABEL,
@@ -143,6 +163,65 @@ describe(ScheduleDetailsRunsChart.name, () => {
         within(toolbar).getByRole('button', { name: label })
       ).toBeDisabled();
     });
+  });
+
+  it('enables zoom controls once data has loaded, with "now" disabled while following', async () => {
+    setup();
+
+    const toolbar = screen.getByRole('toolbar', {
+      name: CHART_TOOLBAR_ARIA_LABEL,
+    });
+
+    await waitFor(() =>
+      expect(
+        within(toolbar).getByRole('button', {
+          name: CHART_TOOLBAR_BUTTON_LABELS.zoomOut,
+        })
+      ).not.toBeDisabled()
+    );
+    expect(
+      within(toolbar).getByRole('button', {
+        name: CHART_TOOLBAR_BUTTON_LABELS.zoomIn,
+      })
+    ).not.toBeDisabled();
+    expect(
+      within(toolbar).getByRole('button', {
+        name: CHART_TOOLBAR_BUTTON_LABELS.now,
+      })
+    ).toBeDisabled();
+  });
+
+  it('stops following once panned, and resumes following when "now" is clicked', async () => {
+    const { user } = setup({
+      describeScheduleResponse: describeScheduleWithWideHistory,
+    });
+
+    const toolbar = screen.getByRole('toolbar', {
+      name: CHART_TOOLBAR_ARIA_LABEL,
+    });
+    const nowButton = within(toolbar).getByRole('button', {
+      name: CHART_TOOLBAR_BUTTON_LABELS.now,
+    });
+    const canvas =
+      await within(getChartRegion()).findByTestId(CHART_CANVAS_TEST_ID);
+
+    await waitFor(() => expect(nowButton).toBeDisabled());
+
+    act(() => {
+      canvas.dispatchEvent(
+        new WheelEvent('wheel', {
+          bubbles: true,
+          cancelable: true,
+          deltaY: -300,
+        })
+      );
+    });
+
+    await waitFor(() => expect(nowButton).not.toBeDisabled());
+
+    await user.click(nowButton);
+
+    await waitFor(() => expect(nowButton).toBeDisabled());
   });
 });
 
@@ -158,6 +237,7 @@ function setup({
   workflowsResponse?: ListWorkflowsResponse;
 } = {}) {
   mockChartWidthPx = widthPx;
+  const user = userEvent.setup();
 
   render(
     <ScheduleDetailsRunsChart
@@ -176,6 +256,8 @@ function setup({
       }),
     }
   );
+
+  return { user };
 }
 
 function getChartDataEndpointMocks({
@@ -212,6 +294,20 @@ function getChartDataEndpointMocks({
         }
 
         return HttpResponse.json(workflowsResponse);
+      },
+    },
+    {
+      path: `/api/domains/${mockDomain}/${mockCluster}`,
+      httpMethod: 'GET' as const,
+      mockOnce: false,
+      httpResolver: async () => {
+        if (isLoading) {
+          return pendingResponse();
+        }
+
+        return HttpResponse.json({
+          workflowExecutionRetentionPeriod: { seconds: '2592000', nanos: 0 },
+        });
       },
     },
   ];

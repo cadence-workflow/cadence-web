@@ -73,6 +73,7 @@ export default function ScheduleDetails({ params }: Props) {
             backfills={formattedScheduleDetails.info?.ongoingBackfills ?? []}
             domain={decodedParams.domain}
             cluster={decodedParams.cluster}
+            scheduleId={decodedParams.scheduleId}
           />
         </styled.DetailsSectionsContainer>
         <styled.JsonPanel>

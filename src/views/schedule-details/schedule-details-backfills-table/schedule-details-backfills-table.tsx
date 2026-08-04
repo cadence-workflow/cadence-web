@@ -4,6 +4,7 @@ import React, { useState, useCallback } from 'react';
 import { Table } from 'baseui/table-semantic';
 
 import Link from '@/components/link/link';
+import buildScheduleBackfillWorkflowsVisibilityQuery from '@/utils/visibility/build-schedule-backfill-workflows-visibility-query';
 
 import { formatScheduleTimestamp } from '../helpers/format-schedule-timestamp';
 import ScheduleDetailsSectionHeader from '../schedule-details-section-header/schedule-details-section-header';
@@ -16,6 +17,7 @@ export default function ScheduleDetailsBackfillsTable({
   backfills,
   domain,
   cluster,
+  scheduleId,
 }: Props) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -46,7 +48,7 @@ export default function ScheduleDetailsBackfillsTable({
             data={backfills.map((b) => [
               <Link
                 key={b.backfillId}
-                href={`/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows?input=query&query=${encodeURIComponent(`CadenceScheduleBackfillID="${b.backfillId}"`)}`}
+                href={`/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows?input=query&query=${encodeURIComponent(buildScheduleBackfillWorkflowsVisibilityQuery(scheduleId, b.backfillId))}`}
               >
                 {b.backfillId}
               </Link>,

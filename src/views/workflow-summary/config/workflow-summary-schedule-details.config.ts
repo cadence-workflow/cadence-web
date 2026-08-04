@@ -1,7 +1,7 @@
 import { createElement } from 'react';
 
 import Link from '@/components/link/link';
-import escapeVisibilityQueryValue from '@/utils/visibility/escape-visibility-query-value';
+import buildScheduleBackfillWorkflowsVisibilityQuery from '@/utils/visibility/build-schedule-backfill-workflows-visibility-query';
 
 import { type WorkflowSummaryScheduleDetailsConfig } from '../workflow-summary-schedule-details/workflow-summary-schedule-details.types';
 
@@ -42,7 +42,10 @@ const workflowSummaryScheduleDetailsConfig: WorkflowSummaryScheduleDetailsConfig
           return null;
         }
 
-        const query = `CadenceScheduleID = "${escapeVisibilityQueryValue(scheduleId)}" AND CadenceScheduleBackfillID = "${escapeVisibilityQueryValue(backfillId)}"`;
+        const query = buildScheduleBackfillWorkflowsVisibilityQuery(
+          scheduleId,
+          backfillId
+        );
 
         return createElement(
           Link,

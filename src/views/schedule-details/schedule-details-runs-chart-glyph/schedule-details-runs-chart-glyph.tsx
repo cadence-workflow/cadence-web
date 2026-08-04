@@ -27,13 +27,13 @@ export default function ScheduleDetailsRunsChartGlyph({
   variant,
   runCount = 1,
   isBackfill = false,
+  isNew = false,
   label,
   testId,
 }: Props) {
   const [, theme] = useStyletron();
   const isGrouped = runCount > 1;
   const halfMarkerSizePx = CHART_GLYPH_MARKER_SIZE_PX / 2;
-  const isPositioned = x != null && y != null;
   const color = getChartGlyphColor(theme, variant);
   const iconProps = {
     color,
@@ -96,18 +96,14 @@ export default function ScheduleDetailsRunsChartGlyph({
 
   return (
     <styled.Marker
+      $isNew={isNew}
       role="img"
       aria-label={label}
       title={label}
       data-testid={testId}
-      $positioned={isPositioned}
-      style={
-        isPositioned
-          ? {
-              transform: `translate(${x - halfMarkerSizePx}px, ${y - halfMarkerSizePx}px)`,
-            }
-          : undefined
-      }
+      style={{
+        transform: `translate(${x - halfMarkerSizePx}px, ${y - halfMarkerSizePx}px)`,
+      }}
     >
       {isGrouped ? (
         <styled.GroupedMarker>

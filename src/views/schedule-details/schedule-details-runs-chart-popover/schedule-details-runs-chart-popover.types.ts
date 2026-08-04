@@ -36,4 +36,5 @@ export type Props = {
   entries: ChartRunPopoverEntry[];
   domain: string;
   cluster: string;
+  scheduleId: string;
 };

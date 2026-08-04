@@ -29,20 +29,22 @@ jest.mock('baseui/popover', () => {
 });
 
 jest.mock(
-  '@/views/schedule-details/schedule-details-runs-chart-popover/schedule-details-runs-chart-popover-content',
+  '@/views/schedule-details/schedule-details-runs-chart-popover/schedule-details-runs-chart-popover',
   () =>
-    function MockScheduleDetailsRunsChartPopoverContent({
+    function MockScheduleDetailsRunsChartPopover({
       entries,
       domain,
       cluster,
+      scheduleId,
     }: {
       entries: ChartRunPopoverEntry[];
       domain: string;
       cluster: string;
+      scheduleId: string;
     }) {
       return (
         <div data-testid="popover-content">
-          {JSON.stringify({ entries, domain, cluster })}
+          {JSON.stringify({ entries, domain, cluster, scheduleId })}
         </div>
       );
     }
@@ -79,6 +81,7 @@ describe(ScheduleDetailsRunsChartPopoverTrigger.name, () => {
         entries: mockEntries,
         domain: 'test-domain',
         cluster: 'test-cluster',
+        scheduleId: 'test-schedule',
       })
     );
   });
@@ -92,10 +95,9 @@ function setup() {
       entries={mockEntries}
       domain="test-domain"
       cluster="test-cluster"
+      scheduleId="test-schedule"
       ariaLabel="Skipped run"
       testId="skipped-trigger"
-    >
-      <span>glyph</span>
-    </ScheduleDetailsRunsChartPopoverTrigger>
+    />
   );
 }

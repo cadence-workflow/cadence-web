@@ -35,3 +35,40 @@ export type CreateChartXScaleParams = {
   timeWindow: ChartTimeWindow;
   range: ChartPixelRange;
 };
+
+export type ZoomChartTimeWindowParams = {
+  visibleWindow: ChartTimeWindow;
+  bounds: ChartTimeWindow;
+  maxSpanMs: number;
+  factor: number;
+  anchorMs: number;
+};
+
+export type PanChartTimeWindowToTimeParams = {
+  visibleWindow: ChartTimeWindow;
+  bounds: ChartTimeWindow;
+  timeMs: number;
+  anchorRatio?: number;
+};
+
+export type ResolveChartFollowTimeWindowParams = {
+  visibleWindow: ChartTimeWindow;
+  bounds: ChartTimeWindow;
+  nowMs: number;
+  nextExecutionMs?: number | null;
+};
+
+export type ShiftChartTimeWindowParams = {
+  visibleWindow: ChartTimeWindow;
+  deltaMs: number;
+  bounds?: ChartTimeWindow | null;
+};
+
+export type ResolveInitialChartTimeWindowParams = {
+  nowMs: number;
+  chartWidthPx: number;
+  nextExecutionMs?: number | null;
+  /** Actual run times plus inferred skipped/unconfirmed slots, used to size how much history reads well at the initial zoom. */
+  timestampsMs?: number[];
+  futureGutterMs?: number;
+};

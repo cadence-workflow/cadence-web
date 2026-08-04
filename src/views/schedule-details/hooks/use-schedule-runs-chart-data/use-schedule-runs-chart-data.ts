@@ -127,5 +127,11 @@ export default function useScheduleRunsChartData({
       describeQuery.isLoading ||
       domainQuery.isLoading ||
       workflowsQuery.isLoading,
+    timelineStartMs: timelineBounds.timelineStartMs,
+    oldestLoadedScheduleTimeMs,
+    hasNextPage: workflowsQuery.hasNextPage ?? false,
+    isFetchingNextPage: workflowsQuery.isFetchingNextPage,
+    isFetchNextPageError: workflowsQuery.isFetchNextPageError,
+    fetchNextPage: () => void workflowsQuery.fetchNextPage(),
   };
 }

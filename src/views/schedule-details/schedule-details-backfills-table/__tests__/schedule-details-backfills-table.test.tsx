@@ -75,7 +75,7 @@ describe(ScheduleDetailsBackfillsTable.name, () => {
     expect(link).toBeInTheDocument();
     expect(link).toHaveAttribute(
       'href',
-      `/domains/test-domain/test-cluster/workflows?input=query&query=${encodeURIComponent('CadenceScheduleBackfillID="backfill-abc-123"')}`
+      `/domains/test-domain/test-cluster/workflows?input=query&query=${encodeURIComponent('CadenceScheduleID = "test-schedule" AND CadenceScheduleBackfillID = "backfill-abc-123"')}`
     );
   });
 
@@ -121,13 +121,20 @@ describe(ScheduleDetailsBackfillsTable.name, () => {
   });
 });
 
-function setup({ backfills = mockBackfills }: { backfills?: BackfillInfo[] }) {
+function setup({
+  backfills = mockBackfills,
+  scheduleId = 'test-schedule',
+}: {
+  backfills?: BackfillInfo[];
+  scheduleId?: string;
+}) {
   const user = userEvent.setup();
   render(
     <ScheduleDetailsBackfillsTable
       backfills={backfills}
       domain="test-domain"
       cluster="test-cluster"
+      scheduleId={scheduleId}
     />
   );
   return { user };

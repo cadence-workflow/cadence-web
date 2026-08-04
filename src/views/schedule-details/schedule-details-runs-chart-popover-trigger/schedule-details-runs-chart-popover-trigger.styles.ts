@@ -7,21 +7,18 @@ import { CHART_GLYPH_HIT_AREA_RADIUS_PX } from '@/views/schedule-details/schedul
 const hitAreaDiameterPx = CHART_GLYPH_HIT_AREA_RADIUS_PX * 2;
 
 export const styled = {
-  TriggerAnchor: createStyled<'div', { $x: number; $y: number }>(
-    'div',
-    ({ $x, $y }: { $x: number; $y: number }) => ({
-      position: 'absolute',
-      left: `${$x - CHART_GLYPH_HIT_AREA_RADIUS_PX}px`,
-      top: `${$y - CHART_GLYPH_HIT_AREA_RADIUS_PX}px`,
-      width: `${hitAreaDiameterPx}px`,
-      height: `${hitAreaDiameterPx}px`,
-      pointerEvents: 'none',
-    })
-  ),
+  // Position is applied as an inline transform by the caller, not as a
+  // styled prop: Styletron mints a permanent class per distinct declaration,
+  // so panning would inject a new stylesheet rule per trigger per frame.
+  TriggerAnchor: createStyled('div', () => ({
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: `${hitAreaDiameterPx}px`,
+    height: `${hitAreaDiameterPx}px`,
+    pointerEvents: 'none',
+  })),
   HitArea: createStyled('button', ({ $theme }: { $theme: Theme }) => ({
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
     width: '100%',
     height: '100%',
     padding: 0,

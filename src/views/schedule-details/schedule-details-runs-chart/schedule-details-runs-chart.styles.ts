@@ -54,9 +54,41 @@ export const styled = {
     height: `${CHART_HEIGHT_PX}px`,
     backgroundColor: $theme.colors.backgroundPrimary,
   })),
+  // `$isPanning`/`$canPan` only flip on discrete pointer events (not per
+  // frame), so they stay safe as styled props unlike the glyphs' positions.
+  ChartCanvas: createStyled<'div', { $isPanning: boolean; $canPan: boolean }>(
+    'div',
+    ({ $isPanning, $canPan }) => ({
+      position: 'relative',
+      width: '100%',
+      height: '100%',
+      cursor: !$canPan ? 'default' : $isPanning ? 'grabbing' : 'grab',
+      touchAction: 'none',
+      userSelect: 'none',
+      WebkitUserSelect: 'none',
+    })
+  ),
   ChartSvg: createStyled('svg', () => ({
     display: 'block',
+    width: '100%',
+    height: '100%',
   })),
+  FetchLoadingContainer: createStyled<'div', { $isError: boolean }>(
+    'div',
+    ({ $theme, $isError }) => ({
+      position: 'absolute',
+      top: $theme.sizing.scale400,
+      left: $theme.sizing.scale400,
+      zIndex: 2,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: $isError ? 0 : $theme.sizing.scale200,
+      borderRadius: $isError ? '999px' : '50%',
+      backgroundColor: $theme.colors.backgroundPrimary,
+      boxShadow: $theme.lighting.shadow400,
+    })
+  ),
   EmptyState: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
     alignItems: 'center',

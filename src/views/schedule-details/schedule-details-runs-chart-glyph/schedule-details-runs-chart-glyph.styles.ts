@@ -1,6 +1,8 @@
 import { styled as createStyled, type Theme } from 'baseui';
 import { type SkeletonOverrides } from 'baseui/skeleton/types';
 
+import { CHART_GLYPH_ENTER_ANIMATION_MS } from '../schedule-details-runs-chart/schedule-details-runs-chart.constants';
+
 import { CHART_GLYPH_MARKER_SIZE_PX } from './schedule-details-runs-chart-glyph.constants';
 
 export const overrides = {
@@ -12,18 +14,16 @@ export const overrides = {
 };
 
 export const styled = {
-  Marker: createStyled<'div', { $positioned?: boolean }>(
+  // Position is applied as an inline transform, not as a styled prop:
+  // Styletron mints a permanent class per distinct declaration, so panning
+  // would inject a new rule per glyph per frame. `$isNew` is a two-valued
+  // toggle set once on mount, so it stays safe as a styled prop.
+  Marker: createStyled<'div', { $isNew: boolean }>(
     'div',
-    ({
-      $theme,
-      $positioned = true,
-    }: {
-      $theme: Theme;
-      $positioned?: boolean;
-    }) => ({
-      position: $positioned ? 'absolute' : 'relative',
-      top: $positioned ? 0 : undefined,
-      left: $positioned ? 0 : undefined,
+    ({ $theme, $isNew }) => ({
+      position: 'absolute',
+      top: 0,
+      left: 0,
       width: `${CHART_GLYPH_MARKER_SIZE_PX}px`,
       height: `${CHART_GLYPH_MARKER_SIZE_PX}px`,
       display: 'flex',
@@ -33,6 +33,19 @@ export const styled = {
       backgroundColor: $theme.colors.backgroundPrimary,
       borderRadius: '50%',
       pointerEvents: 'none',
+      ...($isNew
+        ? {
+            animationName: {
+              from: { opacity: 0, transform: 'scale(0.4)' },
+              to: { opacity: 1, transform: 'scale(1)' },
+            },
+            animationDuration: `${CHART_GLYPH_ENTER_ANIMATION_MS}ms`,
+            animationTimingFunction: 'ease-out',
+            '@media (prefers-reduced-motion: reduce)': {
+              animationName: 'none',
+            },
+          }
+        : {}),
     })
   ),
   Icon: createStyled('span', () => ({

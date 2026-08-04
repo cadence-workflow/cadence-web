@@ -14,14 +14,23 @@ import {
 import { CHART_SERIES_TEST_IDS } from './schedule-details-runs-chart-series.constants';
 import {
   type ChartSeriesMarker,
+  type ChartSeriesNewTimesMs,
   type Props,
 } from './schedule-details-runs-chart-series.types';
+
+const NO_NEW_TIMES_MS: ChartSeriesNewTimesMs = {
+  runs: new Set(),
+  skipped: new Set(),
+  next: new Set(),
+};
 
 export default function ScheduleDetailsRunsChartSeries({
   xScale,
   data,
   domain,
   cluster,
+  scheduleId,
+  newTimesMs = NO_NEW_TIMES_MS,
 }: Props) {
   const markers = useMemo(() => {
     const groupedExecutions = Object.values(
@@ -63,27 +72,31 @@ export default function ScheduleDetailsRunsChartSeries({
               : CHART_SERIES_TEST_IDS.runMarker;
 
             return (
-              <ScheduleDetailsRunsChartPopoverTrigger
-                key={`run-${index}-${marker.scheduledTimeMs}`}
-                x={x}
-                y={CHART_TIMELINE_Y_PX}
-                entries={marker.runs.map((run) => ({
-                  kind: 'run',
-                  run,
-                }))}
-                domain={domain}
-                cluster={cluster}
-                ariaLabel={label}
-                testId={CHART_RUN_POPOVER_TEST_IDS.runTrigger}
-              >
+              <React.Fragment key={`run-${index}-${marker.scheduledTimeMs}`}>
                 <ScheduleDetailsRunsChartGlyph
+                  x={x}
+                  y={CHART_TIMELINE_Y_PX}
                   variant={marker.runs[0].status}
                   runCount={marker.runs.length}
                   isBackfill={marker.runs[0].isBackfill}
+                  isNew={newTimesMs.runs.has(marker.scheduledTimeMs)}
                   label={label}
                   testId={markerTestId}
                 />
-              </ScheduleDetailsRunsChartPopoverTrigger>
+                <ScheduleDetailsRunsChartPopoverTrigger
+                  x={x}
+                  y={CHART_TIMELINE_Y_PX}
+                  entries={marker.runs.map((run) => ({
+                    kind: 'run',
+                    run,
+                  }))}
+                  domain={domain}
+                  cluster={cluster}
+                  scheduleId={scheduleId}
+                  ariaLabel={label}
+                  testId={CHART_RUN_POPOVER_TEST_IDS.runTrigger}
+                />
+              </React.Fragment>
             );
           }
           case 'skipped': {
@@ -94,27 +107,33 @@ export default function ScheduleDetailsRunsChartSeries({
             );
 
             return (
-              <ScheduleDetailsRunsChartPopoverTrigger
+              <React.Fragment
                 key={`skipped-${index}-${marker.scheduledTimeMs}`}
-                x={x}
-                y={CHART_TIMELINE_Y_PX}
-                entries={[
-                  {
-                    kind: 'skipped',
-                    scheduledTimeMs: marker.scheduledTimeMs,
-                  },
-                ]}
-                domain={domain}
-                cluster={cluster}
-                ariaLabel={label}
-                testId={CHART_RUN_POPOVER_TEST_IDS.skippedTrigger}
               >
                 <ScheduleDetailsRunsChartGlyph
+                  x={x}
+                  y={CHART_TIMELINE_Y_PX}
                   variant="skipped"
+                  isNew={newTimesMs.skipped.has(marker.scheduledTimeMs)}
                   label={label}
                   testId={CHART_SERIES_TEST_IDS.skippedExecutionMarker}
                 />
-              </ScheduleDetailsRunsChartPopoverTrigger>
+                <ScheduleDetailsRunsChartPopoverTrigger
+                  x={x}
+                  y={CHART_TIMELINE_Y_PX}
+                  entries={[
+                    {
+                      kind: 'skipped',
+                      scheduledTimeMs: marker.scheduledTimeMs,
+                    },
+                  ]}
+                  domain={domain}
+                  cluster={cluster}
+                  scheduleId={scheduleId}
+                  ariaLabel={label}
+                  testId={CHART_RUN_POPOVER_TEST_IDS.skippedTrigger}
+                />
+              </React.Fragment>
             );
           }
           case 'loading':
@@ -139,27 +158,31 @@ export default function ScheduleDetailsRunsChartSeries({
             );
 
             return (
-              <ScheduleDetailsRunsChartPopoverTrigger
-                key={`next-${index}-${marker.scheduledTimeMs}`}
-                x={x}
-                y={CHART_TIMELINE_Y_PX}
-                entries={[
-                  {
-                    kind: 'next',
-                    scheduledTimeMs: marker.scheduledTimeMs,
-                  },
-                ]}
-                domain={domain}
-                cluster={cluster}
-                ariaLabel={label}
-                testId={CHART_RUN_POPOVER_TEST_IDS.nextTrigger}
-              >
+              <React.Fragment key={`next-${index}-${marker.scheduledTimeMs}`}>
                 <ScheduleDetailsRunsChartGlyph
+                  x={x}
+                  y={CHART_TIMELINE_Y_PX}
                   variant="next"
+                  isNew={newTimesMs.next.has(marker.scheduledTimeMs)}
                   label={label}
                   testId={CHART_SERIES_TEST_IDS.nextExecutionMarker}
                 />
-              </ScheduleDetailsRunsChartPopoverTrigger>
+                <ScheduleDetailsRunsChartPopoverTrigger
+                  x={x}
+                  y={CHART_TIMELINE_Y_PX}
+                  entries={[
+                    {
+                      kind: 'next',
+                      scheduledTimeMs: marker.scheduledTimeMs,
+                    },
+                  ]}
+                  domain={domain}
+                  cluster={cluster}
+                  scheduleId={scheduleId}
+                  ariaLabel={label}
+                  testId={CHART_RUN_POPOVER_TEST_IDS.nextTrigger}
+                />
+              </React.Fragment>
             );
           }
         }

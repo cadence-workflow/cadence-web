@@ -3,8 +3,11 @@ import React from 'react';
 
 import { StatefulPopover } from 'baseui/popover';
 
-import { CHART_RUN_POPOVER_ENTRY_DELAY_MS } from '@/views/schedule-details/schedule-details-runs-chart/schedule-details-runs-chart.constants';
-import ScheduleDetailsRunsChartPopoverContent from '@/views/schedule-details/schedule-details-runs-chart-popover/schedule-details-runs-chart-popover-content';
+import {
+  CHART_GLYPH_HIT_AREA_RADIUS_PX,
+  CHART_RUN_POPOVER_ENTRY_DELAY_MS,
+} from '@/views/schedule-details/schedule-details-runs-chart/schedule-details-runs-chart.constants';
+import ScheduleDetailsRunsChartPopover from '@/views/schedule-details/schedule-details-runs-chart-popover/schedule-details-runs-chart-popover';
 
 import {
   overrides,
@@ -18,20 +21,25 @@ export default function ScheduleDetailsRunsChartPopoverTrigger({
   entries,
   domain,
   cluster,
+  scheduleId,
   ariaLabel,
   testId,
-  children,
 }: Props) {
   return (
-    <styled.TriggerAnchor $x={x} $y={y}>
+    <styled.TriggerAnchor
+      style={{
+        transform: `translate(${x - CHART_GLYPH_HIT_AREA_RADIUS_PX}px, ${y - CHART_GLYPH_HIT_AREA_RADIUS_PX}px)`,
+      }}
+    >
       <StatefulPopover
         triggerType="hover"
         accessibilityType="tooltip"
         content={() => (
-          <ScheduleDetailsRunsChartPopoverContent
+          <ScheduleDetailsRunsChartPopover
             entries={entries}
             domain={domain}
             cluster={cluster}
+            scheduleId={scheduleId}
           />
         )}
         placement="top"
@@ -43,9 +51,7 @@ export default function ScheduleDetailsRunsChartPopoverTrigger({
           type="button"
           aria-label={ariaLabel}
           data-testid={testId}
-        >
-          {children}
-        </styled.HitArea>
+        />
       </StatefulPopover>
     </styled.TriggerAnchor>
   );

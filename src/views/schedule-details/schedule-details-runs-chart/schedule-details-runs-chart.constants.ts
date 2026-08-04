@@ -52,3 +52,38 @@ export const CHART_RUN_POPOVER_TEST_IDS = {
   skippedTrigger: 'schedule-runs-chart-skipped-popover-trigger',
   nextTrigger: 'schedule-runs-chart-next-popover-trigger',
 } as const;
+
+export const CHART_CANVAS_TEST_ID = 'schedule-runs-chart-canvas';
+
+/** Multiplier applied when zooming in (smaller span). */
+export const CHART_ZOOM_IN_FACTOR = 0.5;
+
+/** Multiplier applied when zooming out (larger span). */
+export const CHART_ZOOM_OUT_FACTOR = 2;
+
+/** Maximum zoom-out clicks beyond the initial readable view. */
+export const CHART_MAX_ZOOM_OUT_STEPS = 2;
+
+/** Horizontal position of `now` after panning (0 = left edge, 1 = right edge). */
+export const CHART_NOW_ANCHOR_RATIO = 0.85;
+
+/** Horizontal position of the next run when following pulls it into view. */
+export const CHART_NEXT_RUN_ANCHOR_RATIO = 0.95;
+
+/** Expected px width budgeted per readable expected occurrence on initial zoom. */
+export const CHART_EXPECTED_RUN_SLOT_PX = 48;
+
+/** Upper bound on expected occurrences considered when sizing the initial zoom. */
+export const CHART_INITIAL_EXPECTED_RUN_COUNT = 20;
+
+/** How close (as a ratio of the visible span) the loaded edge must be to the view edge before fetching the next page. */
+export const CHART_PAN_FETCH_EDGE_THRESHOLD_RATIO = 0.05;
+
+export const CHART_FETCH_LOADING_MESSAGE = 'Loading older runs…';
+export const CHART_FETCH_LOADING_SPINNER_SIZE_PX = 16;
+export const CHART_FETCH_LOADING_TEST_ID = 'schedule-runs-chart-fetch-loading';
+export const CHART_FETCH_RETRY_LABEL = 'Retry loading older runs';
+export const CHART_FETCH_RETRY_ICON_SIZE_PX = 16;
+
+/** Scale-up and fade-in played by a glyph that arrives on a live chart (ms). */
+export const CHART_GLYPH_ENTER_ANIMATION_MS = 260;
