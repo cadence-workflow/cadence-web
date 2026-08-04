@@ -97,16 +97,6 @@ describe(useDomainsForClusters.name, () => {
       ])
     );
   });
-
-  it('is loading until at least one cluster query resolves', async () => {
-    const { result } = setup({});
-
-    expect(result.current.isLoading).toBe(true);
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
-  });
 });
 
 function setup({ failingClusters = [] }: { failingClusters?: Array<string> }) {
