@@ -185,6 +185,25 @@ export function shiftChartTimeWindow({
   return { minMs, maxMs };
 }
 
+export function resolveChartZoomAnchorMs({
+  visibleWindow,
+  nowMs,
+  isFollowing,
+}: {
+  visibleWindow: ChartTimeWindow;
+  nowMs: number;
+  isFollowing: boolean;
+}): number {
+  if (isFollowing) {
+    return nowMs;
+  }
+
+  const nowIsVisible =
+    nowMs >= visibleWindow.minMs && nowMs <= visibleWindow.maxMs;
+
+  return nowIsVisible ? nowMs : getWindowCenterMs(visibleWindow);
+}
+
 export function canZoomChartIn(visibleWindow: ChartTimeWindow): boolean {
   return getChartTimeWindowSpanMs(visibleWindow) > CHART_MIN_DOMAIN_SPAN_MS;
 }

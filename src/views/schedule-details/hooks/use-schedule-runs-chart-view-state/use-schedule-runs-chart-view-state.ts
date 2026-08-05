@@ -8,6 +8,7 @@ import {
   getChartTimeWindowSpanMs,
   isSameChartTimeWindow,
   resolveChartFollowTimeWindow,
+  resolveChartZoomAnchorMs,
   shiftChartTimeWindow,
   zoomChartTimeWindow,
 } from '@/views/schedule-details/schedule-details-runs-chart/helpers/chart-view-state';
@@ -111,9 +112,11 @@ export default function useScheduleRunsChartViewState({
         bounds,
         maxSpanMs,
         factor,
-        anchorMs: isFollowing
-          ? nowMs
-          : (currentVisibleWindow.minMs + currentVisibleWindow.maxMs) / 2,
+        anchorMs: resolveChartZoomAnchorMs({
+          visibleWindow: currentVisibleWindow,
+          nowMs,
+          isFollowing,
+        }),
       });
 
       updateVisibleWindow(

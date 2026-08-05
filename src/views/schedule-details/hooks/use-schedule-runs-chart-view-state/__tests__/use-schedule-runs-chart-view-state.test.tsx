@@ -123,7 +123,7 @@ describe(useScheduleRunsChartViewState.name, () => {
     });
   });
 
-  it('anchors zoom on now while following and on the center afterwards', () => {
+  it('anchors zoom on now while following and keeps now in view after panning', () => {
     const { result } = setup();
 
     act(() => {
@@ -150,7 +150,7 @@ describe(useScheduleRunsChartViewState.name, () => {
     );
 
     act(() => {
-      result.current.panByMs(-hourMs);
+      result.current.panByMs(hourMs / 4);
     });
 
     const pannedWindow = result.current.visibleWindow;
@@ -158,6 +158,44 @@ describe(useScheduleRunsChartViewState.name, () => {
     if (!pannedWindow) {
       throw new Error('Expected a visible window');
     }
+
+    expect(mockNowMs).toBeGreaterThanOrEqual(pannedWindow.minMs);
+    expect(mockNowMs).toBeLessThanOrEqual(pannedWindow.maxMs);
+
+    act(() => {
+      result.current.zoomIn();
+    });
+
+    const zoomedAfterPanWindow = result.current.visibleWindow;
+
+    if (!zoomedAfterPanWindow) {
+      throw new Error('Expected a visible window');
+    }
+
+    const afterPanSpanMs =
+      zoomedAfterPanWindow.maxMs - zoomedAfterPanWindow.minMs;
+    expect(afterPanSpanMs).toBeCloseTo(zoomedSpanMs * CHART_ZOOM_IN_FACTOR, -2);
+    expect(mockNowMs).toBeGreaterThanOrEqual(zoomedAfterPanWindow.minMs);
+    expect(mockNowMs).toBeLessThanOrEqual(zoomedAfterPanWindow.maxMs);
+  });
+
+  it('anchors zoom on the center when now is off-screen after panning', () => {
+    const { result } = setup();
+
+    act(() => {
+      result.current.initializeWindow(initialWindow, generousMaxSpanMs);
+    });
+    act(() => {
+      result.current.panByMs(-4 * hourMs);
+    });
+
+    const pannedWindow = result.current.visibleWindow;
+
+    if (!pannedWindow) {
+      throw new Error('Expected a visible window');
+    }
+
+    expect(mockNowMs).toBeGreaterThan(pannedWindow.maxMs);
 
     const pannedCenterMs = (pannedWindow.minMs + pannedWindow.maxMs) / 2;
 

@@ -7,6 +7,7 @@ import {
   isSameChartTimeWindow,
   panChartTimeWindowToTime,
   resolveChartFollowTimeWindow,
+  resolveChartZoomAnchorMs,
   shiftChartTimeWindow,
   zoomChartTimeWindow,
 } from '../chart-view-state';
@@ -182,6 +183,40 @@ describe(shiftChartTimeWindow.name, () => {
         bounds: { minMs: 0, maxMs: 100_000 },
       })
     ).toEqual({ minMs: 90_000, maxMs: 100_000 });
+  });
+});
+
+describe(resolveChartZoomAnchorMs.name, () => {
+  const visibleWindow = { minMs: 0, maxMs: 1 * HOUR_MS };
+
+  it('anchors on now while following', () => {
+    expect(
+      resolveChartZoomAnchorMs({
+        visibleWindow,
+        nowMs: 0.5 * HOUR_MS,
+        isFollowing: true,
+      })
+    ).toBe(0.5 * HOUR_MS);
+  });
+
+  it('anchors on now when it is still visible after panning', () => {
+    expect(
+      resolveChartZoomAnchorMs({
+        visibleWindow,
+        nowMs: 0.2 * HOUR_MS,
+        isFollowing: false,
+      })
+    ).toBe(0.2 * HOUR_MS);
+  });
+
+  it('falls back to the window center when now is off-screen', () => {
+    expect(
+      resolveChartZoomAnchorMs({
+        visibleWindow,
+        nowMs: 2 * HOUR_MS,
+        isFollowing: false,
+      })
+    ).toBe(0.5 * HOUR_MS);
   });
 });
 
