@@ -43,7 +43,7 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
     ).toBeInTheDocument();
     expect(screen.getByLabelText('Schedule ID')).toBeInTheDocument();
     expect(screen.getByLabelText('Jitter duration')).toBeInTheDocument();
-    expect(screen.getByLabelText('Workflow ID Prefix')).toBeInTheDocument();
+    expect(screen.getByLabelText('Workflow ID prefix')).toBeInTheDocument();
     expect(screen.getByLabelText('Schedule period start')).toBeInTheDocument();
     expect(screen.getByLabelText('Schedule period end')).toBeInTheDocument();
     expect(screen.getByLabelText('Memo')).toBeInTheDocument();
@@ -141,7 +141,7 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
     await user.clear(scheduleId);
     expect(getValues().scheduleId).toBeUndefined();
 
-    const workflowIdPrefix = screen.getByLabelText('Workflow ID Prefix');
+    const workflowIdPrefix = screen.getByLabelText('Workflow ID prefix');
     await user.type(workflowIdPrefix, 'prefix');
     await user.clear(workflowIdPrefix);
     expect(getValues().workflowIdPrefix).toBeUndefined();

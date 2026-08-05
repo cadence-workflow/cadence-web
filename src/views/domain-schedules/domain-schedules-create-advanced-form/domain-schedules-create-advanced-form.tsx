@@ -509,7 +509,7 @@ export default function DomainSchedulesCreateAdvancedForm({
         </DomainSchedulesHorizontalField>
 
         <DomainSchedulesHorizontalField
-          label="Workflow Id Prefix"
+          label="Workflow ID prefix"
           description={
             CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS.workflowIdPrefix
           }
@@ -525,7 +525,7 @@ export default function DomainSchedulesCreateAdvancedForm({
                 id={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.workflowIdPrefix}
                 // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
                 inputRef={ref}
-                aria-label="Workflow Id Prefix"
+                aria-label="Workflow ID prefix"
                 onChange={(e) => field.onChange(e.target.value || undefined)}
                 onBlur={field.onBlur}
                 error={Boolean(
