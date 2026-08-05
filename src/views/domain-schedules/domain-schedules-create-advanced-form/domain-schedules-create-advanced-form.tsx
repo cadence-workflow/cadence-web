@@ -133,7 +133,7 @@ export default function DomainSchedulesCreateAdvancedForm({
                 id={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.scheduleId}
                 // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
                 inputRef={ref}
-                aria-label="Schedule Id"
+                aria-label="Schedule ID"
                 disabled={scheduleIdReadOnly}
                 onChange={(e) => field.onChange(e.target.value || undefined)}
                 onBlur={field.onBlur}
