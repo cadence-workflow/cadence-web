@@ -6,7 +6,6 @@ import copy from 'copy-to-clipboard';
 import queryString from 'query-string';
 import { MdLink } from 'react-icons/md';
 
-import { overrides } from './workflow-history-event-link-button.styles';
 import { type Props } from './workflow-history-event-link-button.types';
 
 export default function WorkflowHistoryEventLinkButton({
@@ -21,19 +20,16 @@ export default function WorkflowHistoryEventLinkButton({
       placement="right"
       popoverMargin={8}
       accessibilityType="tooltip"
-      content={() =>
-        isEventLinkCopied ? 'Copied link to event' : 'Copy link to event'
-      }
+      content={() => (isEventLinkCopied ? 'Copied link to event' : null)}
       onMouseLeave={() => setIsEventLinkCopied(false)}
       returnFocus
       autoFocus
     >
       <Button
         aria-label="Copy link to event"
-        size="large"
-        shape="circle"
         kind="tertiary"
-        overrides={overrides.copyButton}
+        size="compact"
+        startEnhancer={<MdLink size={16} />}
         onClick={(e) => {
           e.stopPropagation();
           copy(
@@ -48,7 +44,7 @@ export default function WorkflowHistoryEventLinkButton({
           setIsEventLinkCopied(true);
         }}
       >
-        <MdLink />
+        Copy link
       </Button>
     </StatefulTooltip>
   );

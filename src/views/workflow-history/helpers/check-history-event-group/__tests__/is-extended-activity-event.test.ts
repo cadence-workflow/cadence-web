@@ -1,6 +1,6 @@
 import differenceBy from 'lodash/differenceBy';
 
-import { allWorkflowEventTypesAttrsExtended } from '@/views/workflow-history/__fixtures__/all-workflow-event-types-attributes';
+import { allWorkflowEventTypesAttrsExtended } from '../../../__fixtures__/all-workflow-event-types-attributes';
 import {
   cancelActivityTaskEvent,
   completeActivityTaskEvent,
@@ -8,13 +8,12 @@ import {
   scheduleActivityTaskEvent,
   startActivityTaskEvent,
   timeoutActivityTaskEvent,
-} from '@/views/workflow-history/__fixtures__/workflow-history-activity-events';
-import { pendingActivityTaskStartEvent } from '@/views/workflow-history/__fixtures__/workflow-history-pending-events';
+} from '../../../__fixtures__/workflow-history-activity-events';
+import { pendingActivityTaskStartEvent } from '../../../__fixtures__/workflow-history-pending-events';
 import {
   type ExtendedHistoryEvent,
   type ExtendedActivityHistoryEvent,
-} from '@/views/workflow-history/workflow-history.types';
-
+} from '../../../workflow-history.types';
 import isExtendedActivityEvent from '../is-extended-activity-event';
 
 const validEvents: ExtendedActivityHistoryEvent[] = [

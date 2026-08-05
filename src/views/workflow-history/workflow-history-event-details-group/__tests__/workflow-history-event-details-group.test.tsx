@@ -81,7 +81,7 @@ describe(WorkflowHistoryEventDetailsGroup.name, () => {
     expect(field3SubRows).toHaveLength(2);
   });
 
-  it('passes isNegative prop to WorkflowHistoryEventDetailsEntry when entry has isNegative property', () => {
+  it('passes isNegative prop to EventDetailsSingleEntry when entry has isNegative property', () => {
     render(
       <WorkflowHistoryEventDetailsGroup
         entries={[

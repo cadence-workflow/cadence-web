@@ -19,46 +19,48 @@ import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-h
 import { mockDescribeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
 import type workflowPageQueryParamsConfig from '@/views/workflow-page/config/workflow-page-query-params.config';
 
-import { completedActivityTaskEvents } from '../__fixtures__/workflow-history-activity-events';
-import { completedDecisionTaskEvents } from '../__fixtures__/workflow-history-decision-events';
+import {
+  completedActivityTaskEvents,
+  failedActivityTaskEvents,
+  scheduleActivityTaskEvent,
+} from '../__fixtures__/workflow-history-activity-events';
+import {
+  completedDecisionTaskEvents,
+  failedDecisionTaskEvents,
+  scheduleDecisionTaskEvent,
+} from '../__fixtures__/workflow-history-decision-events';
+import {
+  pendingActivityTaskStartEvent,
+  pendingDecisionTaskStartEvent,
+} from '../__fixtures__/workflow-history-pending-events';
 import WorkflowHistory from '../workflow-history';
 import { WorkflowHistoryContext } from '../workflow-history-context-provider/workflow-history-context-provider';
+import { type Props as NavbarProps } from '../workflow-history-navigation-bar/workflow-history-navigation-bar.types';
+import {
+  type PendingActivityTaskStartEvent,
+  type PendingDecisionTaskStartEvent,
+} from '../workflow-history.types';
 
 jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
   jest.fn(() => [{ historySelectedEventId: '1' }, jest.fn()])
 );
 
 // Mock the hook to use minimal throttle delay for faster tests
-jest.mock('../hooks/use-workflow-history-fetcher', () => {
-  const actual = jest.requireActual('../hooks/use-workflow-history-fetcher');
+jest.mock('@/views/workflow-history/hooks/use-workflow-history-fetcher', () => {
+  const actual = jest.requireActual(
+    '@/views/workflow-history/hooks/use-workflow-history-fetcher'
+  );
   return {
     __esModule: true,
-    default: jest.fn((params, { onEventsChange }) =>
-      actual.default(params, { onEventsChange, renderThrottleMs: 0 })
+    default: jest.fn((params, options) =>
+      actual.default(params, {
+        ...options,
+        renderThrottleMs: 0,
+        fetchThrottleMs: 0,
+      })
     ), // 0ms throttle for tests
   };
 });
-
-jest.mock(
-  '../workflow-history-compact-event-card/workflow-history-compact-event-card',
-  () => jest.fn(() => <div>Compact group Card</div>)
-);
-
-jest.mock(
-  '../workflow-history-timeline-group/workflow-history-timeline-group',
-  () =>
-    jest.fn(({ onReset, resetToDecisionEventId }) => (
-      <div>
-        Timeline group card
-        {resetToDecisionEventId && <button onClick={onReset}>Reset</button>}
-      </div>
-    ))
-);
-
-jest.mock(
-  '../workflow-history-timeline-load-more/workflow-history-timeline-load-more',
-  () => jest.fn(() => <div>Load more</div>)
-);
 
 jest.mock('@/components/page-filters/hooks/use-page-filters', () =>
   jest.fn().mockReturnValue({})
@@ -72,30 +74,83 @@ jest.mock(
 );
 
 jest.mock('../workflow-history-header/workflow-history-header', () =>
-  jest.fn(() => (
-    <div>
-      <div>Workflow history Header</div>
-    </div>
-  ))
+  jest.fn(
+    ({
+      isUngroupedHistoryViewEnabled,
+      onClickGroupModeToggle,
+      pageFiltersProps,
+    }) => (
+      <div data-testid="workflow-history-header">
+        <div>Workflow history Header</div>
+        <div data-testid="is-ungrouped-enabled">
+          {String(isUngroupedHistoryViewEnabled)}
+        </div>
+        <div data-testid="active-filters-count">
+          {pageFiltersProps.activeFiltersCount}
+        </div>
+        <button
+          data-testid="toggle-group-mode"
+          onClick={onClickGroupModeToggle}
+        >
+          Toggle Group Mode
+        </button>
+      </div>
+    )
+  )
 );
 
 jest.mock(
-  '../workflow-history-ungrouped-table/workflow-history-ungrouped-table',
-  () => jest.fn(() => <div>Ungrouped Table</div>)
-);
-
-jest.mock(
-  '@/views/workflow-actions/workflow-actions-modal/workflow-actions-modal',
+  '../workflow-history-grouped-table/workflow-history-grouped-table',
   () =>
-    jest.fn(({ onClose }) => (
-      <div>
-        <div>Workflow Actions</div>
-        <button onClick={onClose}>Close</button>
+    jest.fn(({ selectedEventId }: { selectedEventId?: string }) => (
+      <div data-testid="workflow-history-grouped-table">
+        Grouped Table
+        {selectedEventId && (
+          <div data-testid="grouped-selected-event-id">{selectedEventId}</div>
+        )}
       </div>
     ))
 );
 
-describe('WorkflowHistory', () => {
+jest.mock(
+  '../workflow-history-ungrouped-table/workflow-history-ungrouped-table',
+  () =>
+    jest.fn(({ selectedEventId }: { selectedEventId?: string }) => (
+      <div data-testid="workflow-history-ungrouped-table">
+        Ungrouped Table
+        {selectedEventId && (
+          <div data-testid="ungrouped-selected-event-id">{selectedEventId}</div>
+        )}
+      </div>
+    ))
+);
+
+jest.mock(
+  '../workflow-history-navigation-bar/workflow-history-navigation-bar',
+  () =>
+    jest.fn(
+      ({ failedEventsMenuItems, pendingEventsMenuItems }: NavbarProps) => (
+        <div data-testid="workflow-history-navigation-bar">
+          {failedEventsMenuItems && failedEventsMenuItems.length > 0 && (
+            <div data-testid="failed-events-menu-items-count">
+              {failedEventsMenuItems.length} failed events
+            </div>
+          )}
+          {pendingEventsMenuItems && pendingEventsMenuItems.length > 0 && (
+            <div data-testid="pending-events-menu-items-count">
+              {pendingEventsMenuItems.length} pending events
+            </div>
+          )}
+        </div>
+      )
+    )
+);
+
+jest.mock('@/utils/decode-url-params', () => jest.fn((params) => params));
+
+const mockResetAllFilters = jest.fn();
+
+describe(WorkflowHistory.name, () => {
   afterEach(() => {
     jest.restoreAllMocks();
   });
@@ -107,19 +162,18 @@ describe('WorkflowHistory', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders compact group cards', async () => {
+  it('renders grouped table', async () => {
     await setup({});
-    expect(await screen.findByText('Compact group Card')).toBeInTheDocument();
+    expect(
+      await screen.findByTestId('workflow-history-grouped-table')
+    ).toBeInTheDocument();
   });
 
-  it('renders timeline group cards', async () => {
+  it('renders navigation bar', async () => {
     await setup({});
-    expect(await screen.findByText('Timeline group card')).toBeInTheDocument();
-  });
-
-  it('renders load more section', async () => {
-    await setup({});
-    expect(await screen.findByText('Load more')).toBeInTheDocument();
+    expect(
+      await screen.findByTestId('workflow-history-navigation-bar')
+    ).toBeInTheDocument();
   });
 
   it('throws an error if the request fails', async () => {
@@ -190,43 +244,62 @@ describe('WorkflowHistory', () => {
     });
   });
 
-  it('should show no results when filtered events are empty and no next page', async () => {
-    await setup({ emptyEvents: true, hasNextPage: false });
-    expect(await screen.findByText('No Results')).toBeInTheDocument();
+  it('should render grouped table by default when ungroupedHistoryViewEnabled is not set and user preference is false', async () => {
+    await setup({ ungroupedViewPreference: false });
+    expect(
+      await screen.findByTestId('workflow-history-grouped-table')
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('workflow-history-ungrouped-table')
+    ).not.toBeInTheDocument();
   });
 
-  it('should not show no results when filtered events are empty but has next page', async () => {
+  it('should render grouped table by default when ungroupedHistoryViewEnabled is not set and user preference is null', async () => {
+    await setup({ ungroupedViewPreference: null });
+    expect(
+      await screen.findByTestId('workflow-history-grouped-table')
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('workflow-history-ungrouped-table')
+    ).not.toBeInTheDocument();
+  });
+
+  it('should render ungrouped table when ungroupedHistoryViewEnabled query param is true', async () => {
     await setup({
-      emptyEvents: true,
-      hasNextPage: true,
+      pageQueryParamsValues: {
+        ungroupedHistoryViewEnabled: true,
+      },
     });
-
-    // Should not show "No Results" when there's a next page
-    expect(screen.queryByText('No Results')).not.toBeInTheDocument();
-
-    // Should show the load more footer component instead
-    expect(screen.getByText('Load more')).toBeInTheDocument();
+    expect(
+      await screen.findByTestId('workflow-history-ungrouped-table')
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('workflow-history-grouped-table')
+    ).not.toBeInTheDocument();
   });
 
-  it('should not show no results when there are filtered events', async () => {
-    await setup({});
-    await waitFor(() => {
-      expect(screen.queryByText('No Results')).not.toBeInTheDocument();
+  it('should render grouped table when ungroupedHistoryViewEnabled query param is false', async () => {
+    await setup({
+      pageQueryParamsValues: {
+        ungroupedHistoryViewEnabled: false,
+      },
     });
+    expect(
+      await screen.findByTestId('workflow-history-grouped-table')
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('workflow-history-ungrouped-table')
+    ).not.toBeInTheDocument();
   });
 
-  it('should show ungrouped table when ungrouped view is enabled', async () => {
-    setup({ pageQueryParamsValues: { ungroupedHistoryViewEnabled: true } });
-    expect(await screen.findByText('Ungrouped Table')).toBeInTheDocument();
-  });
-
-  it('should show workflow actions modal when resetToDecisionEventId is set', async () => {
-    const { user } = await setup({ withResetModal: true });
-
-    const resetButton = await screen.findByText('Reset');
-    await user.click(resetButton);
-
-    expect(screen.getByText('Workflow Actions')).toBeInTheDocument();
+  it('should render ungrouped table when user preference is true and query param is not set', async () => {
+    await setup({ ungroupedViewPreference: true });
+    expect(
+      await screen.findByTestId('workflow-history-ungrouped-table')
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('workflow-history-grouped-table')
+    ).not.toBeInTheDocument();
   });
 
   it('should show ungrouped table when query param overrides preference', async () => {
@@ -236,7 +309,9 @@ describe('WorkflowHistory', () => {
     });
 
     // Should show ungrouped table even though preference is false
-    expect(await screen.findByText('Ungrouped Table')).toBeInTheDocument();
+    expect(
+      await screen.findByTestId('workflow-history-ungrouped-table')
+    ).toBeInTheDocument();
   });
 
   it('should use user preference when query param is undefined for ungrouped view', async () => {
@@ -246,7 +321,146 @@ describe('WorkflowHistory', () => {
     });
 
     // Should use preference (true) when query param is undefined
-    expect(await screen.findByText('Ungrouped Table')).toBeInTheDocument();
+    expect(
+      await screen.findByTestId('workflow-history-ungrouped-table')
+    ).toBeInTheDocument();
+  });
+
+  it('should call setUngroupedViewUserPreference and setQueryParams when toggle is clicked from grouped to ungrouped', async () => {
+    const { user, mockSetUngroupedViewUserPreference, mockSetQueryParams } =
+      await setup({
+        pageQueryParamsValues: {
+          ungroupedHistoryViewEnabled: false,
+        },
+      });
+
+    const toggleButton = await screen.findByTestId('toggle-group-mode');
+    await user.click(toggleButton);
+
+    expect(mockSetUngroupedViewUserPreference).toHaveBeenCalledWith(true);
+    expect(mockSetQueryParams).toHaveBeenCalledWith({
+      ungroupedHistoryViewEnabled: 'true',
+    });
+  });
+
+  it('should call setUngroupedViewUserPreference and setQueryParams when toggle is clicked from ungrouped to grouped', async () => {
+    const { user, mockSetUngroupedViewUserPreference, mockSetQueryParams } =
+      await setup({
+        pageQueryParamsValues: {
+          ungroupedHistoryViewEnabled: true,
+        },
+      });
+
+    const toggleButton = await screen.findByTestId('toggle-group-mode');
+    await user.click(toggleButton);
+
+    expect(mockSetUngroupedViewUserPreference).toHaveBeenCalledWith(false);
+    expect(mockSetQueryParams).toHaveBeenCalledWith({
+      ungroupedHistoryViewEnabled: 'false',
+    });
+  });
+
+  it('should calculate activeFiltersCount as 0 when both filter arrays are empty', async () => {
+    await setup({
+      pageQueryParamsValues: {
+        historyEventStatuses: [],
+        historyEventTypes: [],
+      },
+    });
+
+    const activeFiltersCountElement = await screen.findByTestId(
+      'active-filters-count'
+    );
+    expect(activeFiltersCountElement).toHaveTextContent('0');
+  });
+
+  it('should calculate activeFiltersCount as 0 when both filter arrays are undefined', async () => {
+    await setup({
+      pageQueryParamsValues: {
+        historyEventStatuses: undefined,
+        historyEventTypes: undefined,
+      },
+    });
+
+    const activeFiltersCountElement = await screen.findByTestId(
+      'active-filters-count'
+    );
+    expect(activeFiltersCountElement).toHaveTextContent('0');
+  });
+
+  it('should calculate activeFiltersCount as sum of both filter arrays', async () => {
+    await setup({
+      pageQueryParamsValues: {
+        historyEventStatuses: ['COMPLETED', 'FAILED'],
+        historyEventTypes: ['DECISION', 'ACTIVITY', 'SIGNAL'],
+      },
+    });
+
+    const activeFiltersCountElement = await screen.findByTestId(
+      'active-filters-count'
+    );
+    expect(activeFiltersCountElement).toHaveTextContent('5');
+  });
+
+  it('strips summary_ prefix from historySelectedEventId when present', async () => {
+    await setup({
+      pageQueryParamsValues: {
+        historySelectedEventId: 'summary_test-event-id',
+      },
+    });
+
+    expect(
+      await screen.findByTestId('grouped-selected-event-id')
+    ).toHaveTextContent('test-event-id');
+  });
+
+  it('passes historySelectedEventId as-is when it does not start with summary_', async () => {
+    await setup({
+      pageQueryParamsValues: {
+        historySelectedEventId: 'test-event-id',
+      },
+    });
+
+    expect(
+      await screen.findByTestId('grouped-selected-event-id')
+    ).toHaveTextContent('test-event-id');
+  });
+
+  it('passes stripped event ID to ungrouped table when summary_ prefix is present', async () => {
+    await setup({
+      pageQueryParamsValues: {
+        historySelectedEventId: 'summary_test-event-id',
+        ungroupedHistoryViewEnabled: true,
+      },
+    });
+
+    expect(
+      await screen.findByTestId('ungrouped-selected-event-id')
+    ).toHaveTextContent('test-event-id');
+  });
+
+  it('passes failed events menu items to navigation bar when failed events exist', async () => {
+    await setup({
+      historyEvents: [...failedActivityTaskEvents, ...failedDecisionTaskEvents],
+    });
+
+    const failedItemsCounter = await screen.findByTestId(
+      'failed-events-menu-items-count'
+    );
+    expect(failedItemsCounter).toHaveTextContent('2 failed events');
+  });
+
+  it('passes pending events menu items to navigation bar when pending events exist', async () => {
+    await setup({
+      historyEvents: [scheduleActivityTaskEvent, scheduleDecisionTaskEvent],
+      pendingActivities: [pendingActivityTaskStartEvent],
+      pendingDecision: pendingDecisionTaskStartEvent,
+    });
+
+    const pendingItemsCounter = await screen.findByTestId(
+      'pending-events-menu-items-count'
+    );
+    expect(pendingItemsCounter).toHaveTextContent('2 pending events');
   });
 });
 
@@ -256,9 +470,10 @@ async function setup({
   resolveLoadMoreManually,
   pageQueryParamsValues = {},
   hasNextPage,
-  emptyEvents,
-  withResetModal,
   ungroupedViewPreference,
+  historyEvents = completedActivityTaskEvents,
+  pendingActivities,
+  pendingDecision,
 }: {
   error?: boolean;
   summaryError?: boolean;
@@ -267,21 +482,20 @@ async function setup({
     PageQueryParamValues<typeof workflowPageQueryParamsConfig>
   >;
   hasNextPage?: boolean;
-  emptyEvents?: boolean;
-  withResetModal?: boolean;
-  ungroupedViewPreference?: boolean;
-}) {
+  ungroupedViewPreference?: boolean | null;
+  historyEvents?: Array<HistoryEvent>;
+  pendingActivities?: Array<PendingActivityTaskStartEvent>;
+  pendingDecision?: PendingDecisionTaskStartEvent | null;
+} = {}) {
   const user = userEvent.setup();
 
   const mockSetQueryParams = jest.fn();
-  if (pageQueryParamsValues) {
-    jest.spyOn(usePageFiltersModule, 'default').mockReturnValue({
-      queryParams: pageQueryParamsValues,
-      setQueryParams: mockSetQueryParams,
-      activeFiltersCount: 0,
-      resetAllFilters: jest.fn(),
-    });
-  }
+  jest.spyOn(usePageFiltersModule, 'default').mockReturnValue({
+    queryParams: pageQueryParamsValues,
+    setQueryParams: mockSetQueryParams,
+    activeFiltersCount: 0,
+    resetAllFilters: mockResetAllFilters,
+  });
 
   const mockSetUngroupedViewUserPreference = jest.fn();
 
@@ -298,8 +512,6 @@ async function setup({
         value={{
           ungroupedViewUserPreference: ungroupedViewPreference ?? null,
           setUngroupedViewUserPreference: mockSetUngroupedViewUserPreference,
-          isWorkflowHistoryV2Selected: false,
-          setIsWorkflowHistoryV2Selected: jest.fn(),
         }}
       >
         <WorkflowHistory
@@ -343,17 +555,10 @@ async function setup({
                 );
               }
 
-              let events: Array<HistoryEvent> = completedActivityTaskEvents;
-              if (emptyEvents) {
-                events = [];
-              } else if (withResetModal) {
-                events = completedDecisionTaskEvents;
-              }
-
               return HttpResponse.json(
                 {
                   history: {
-                    events,
+                    events: historyEvents,
                   },
                   archived: false,
                   nextPageToken: hasNextPage ? 'mock-next-page-token' : '',
@@ -377,7 +582,18 @@ async function setup({
                 },
               }
             : {
-                jsonResponse: mockDescribeWorkflowResponse,
+                httpResolver: () => {
+                  const describeResponse = {
+                    ...mockDescribeWorkflowResponse,
+                    ...(pendingActivities && pendingActivities.length > 0
+                      ? {
+                          pendingActivities,
+                        }
+                      : {}),
+                    ...(pendingDecision ? { pendingDecision } : {}),
+                  };
+                  return HttpResponse.json(describeResponse, { status: 200 });
+                },
               }),
         },
       ],

@@ -2,7 +2,6 @@ import { z } from 'zod';
 
 import { type ResolverSchemas } from '../../../../utils/config/config.types';
 import AUTH_STRATEGY_VALUES_CONFIG from '../auth-strategy-values.config';
-import HISTORY_PAGE_V2_ENABLED_VALUES_CONFIG from '../history-page-v2-enabled-values.config';
 import SCHEDULE_ACTIONS_DISABLED_VALUES_CONFIG from '../schedule-actions-disabled-values.config';
 import WORKFLOW_ACTIONS_DISABLED_VALUES_CONFIG from '../workflow-actions-disabled-values.config';
 
@@ -111,10 +110,6 @@ const resolverSchemas: ResolverSchemas = {
   FAILOVER_HISTORY_ENABLED: {
     args: z.undefined(),
     returnType: z.boolean(),
-  },
-  HISTORY_PAGE_V2_ENABLED: {
-    args: z.undefined(),
-    returnType: z.enum(HISTORY_PAGE_V2_ENABLED_VALUES_CONFIG),
   },
   SCHEDULES_ENABLED: {
     args: z.object({

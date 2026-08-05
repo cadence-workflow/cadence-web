@@ -1,16 +1,44 @@
+import React from 'react';
+
 import { VirtuosoMockContext } from 'react-virtuoso';
 
 import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
-import { RequestError } from '@/utils/request/request-error';
+import { type RequestError } from '@/utils/request/request-error';
+import { mockActivityEventGroup } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
 import { type WorkflowPageTabsParams } from '@/views/workflow-page/workflow-page-tabs/workflow-page-tabs.types';
 
-import { scheduleDecisionTaskEvent } from '../../__fixtures__/workflow-history-decision-events';
-import { startWorkflowExecutionEvent } from '../../__fixtures__/workflow-history-single-events';
-import { type WorkflowHistoryUngroupedEventInfo } from '../../workflow-history-ungrouped-event/workflow-history-ungrouped-event.types';
+import { createUngroupedEventsInfo } from '../../__fixtures__/ungrouped-events-info';
+import type WorkflowHistoryTableFooter from '../../workflow-history-table-footer/workflow-history-table-footer';
 import WorkflowHistoryUngroupedTable from '../workflow-history-ungrouped-table';
+import { type UngroupedEventInfo } from '../workflow-history-ungrouped-table.types';
 
-// Mock child components
+jest.mock<typeof WorkflowHistoryTableFooter>(
+  '../../workflow-history-table-footer/workflow-history-table-footer',
+  () =>
+    jest.fn(
+      ({
+        error,
+        canFetchMoreEvents,
+        isFetchingMoreEvents,
+        fetchMoreEvents,
+      }) => (
+        <div data-testid="timeline-load-more">
+          {error && <div data-testid="load-more-error">Error loading more</div>}
+          {canFetchMoreEvents && (
+            <div data-testid="has-next-page">Has more</div>
+          )}
+          {isFetchingMoreEvents && (
+            <div data-testid="is-fetching">Fetching...</div>
+          )}
+          <button onClick={fetchMoreEvents} data-testid="fetch-more-button">
+            Fetch More
+          </button>
+        </div>
+      )
+    )
+);
+
 jest.mock(
   '../../workflow-history-ungrouped-event/workflow-history-ungrouped-event',
   () =>
@@ -20,222 +48,259 @@ jest.mock(
         isExpanded,
         toggleIsExpanded,
         onReset,
+        onClickShowInTimeline,
         animateOnEnter,
       }) => (
         <div
-          data-testid="mock-event"
+          data-testid="workflow-history-ungrouped-event"
           data-expanded={isExpanded}
           data-animate-on-enter={animateOnEnter}
+          data-event-id={eventInfo.id}
         >
           <button onClick={toggleIsExpanded}>Toggle Event</button>
           <div>Event ID: {eventInfo.id}</div>
+          <div>Label: {eventInfo.label}</div>
           {onReset && <button onClick={onReset}>Reset Event</button>}
+          <button onClick={onClickShowInTimeline}>Show in timeline</button>
         </div>
       )
     )
 );
 
-jest.mock(
-  '../../workflow-history-timeline-load-more/workflow-history-timeline-load-more',
-  () =>
-    jest.fn(({ error, hasNextPage, isFetchingNextPage }) => (
-      <div data-testid="mock-load-more">
-        {error && <div>Error: {error.message}</div>}
-        {hasNextPage && <div>Has more events</div>}
-        {isFetchingNextPage && <div>Loading more...</div>}
-      </div>
-    ))
-);
-
-const mockEventsInfo: WorkflowHistoryUngroupedEventInfo[] = [
-  {
-    id: '1',
-    label: 'Workflow Execution Started',
-    event: startWorkflowExecutionEvent,
-    eventMetadata: {
-      label: 'Completed',
-      status: 'COMPLETED',
-      timeMs: 1704067200000,
-      timeLabel: 'Mock time label',
-    },
-  },
-  {
-    id: '2',
-    label: 'Decision Task Scheduled',
-    event: scheduleDecisionTaskEvent,
-    eventMetadata: {
-      label: 'Completed',
-      status: 'COMPLETED',
-      timeMs: 1704067200000,
-      timeLabel: 'Mock time label',
-    },
-  },
-];
-
-const mockDecodedPageUrlParams: WorkflowPageTabsParams = {
-  cluster: 'test-cluster',
-  domain: 'test-domain',
-  workflowId: 'test-workflow',
-  runId: 'test-run',
-  workflowTab: 'history',
-};
-
 describe(WorkflowHistoryUngroupedTable.name, () => {
-  it('renders the table header with correct columns', () => {
+  it('should render all column headers in correct order', () => {
     setup();
 
     expect(screen.getByText('ID')).toBeInTheDocument();
-    expect(screen.getByText('Type')).toBeInTheDocument();
-    expect(screen.getByText('Event')).toBeInTheDocument();
+    expect(screen.getByText('Event group')).toBeInTheDocument();
+    expect(screen.getByText('Status')).toBeInTheDocument();
     expect(screen.getByText('Time')).toBeInTheDocument();
     expect(screen.getByText('Elapsed')).toBeInTheDocument();
+    expect(screen.getByText('Details')).toBeInTheDocument();
   });
 
-  it('renders events using Virtuoso', () => {
-    setup();
+  it('should render events from event groups', () => {
+    const ungroupedEventsInfo = createUngroupedEventsInfo([
+      ['group-1', mockActivityEventGroup],
+    ]);
+    setup({ ungroupedEventsInfo });
 
-    const events = screen.getAllByTestId('mock-event');
-    expect(events).toHaveLength(2);
-    expect(events[0]).toHaveTextContent('Event ID: 1');
-    expect(events[1]).toHaveTextContent('Event ID: 2');
+    const events = screen.getAllByTestId('workflow-history-ungrouped-event');
+    expect(events.length).toBeGreaterThan(0);
+    expect(events[0]).toHaveTextContent('Event ID:');
   });
 
-  it('handles event expansion toggle', async () => {
-    const { user, mockToggleIsEventExpanded } = setup();
+  it('should render events with correct labels from groups', () => {
+    const ungroupedEventsInfo = createUngroupedEventsInfo([
+      ['group-1', mockActivityEventGroup],
+    ]);
+    setup({ ungroupedEventsInfo });
+
+    const events = screen.getAllByTestId('workflow-history-ungrouped-event');
+    expect(events[0]).toHaveTextContent(
+      `Label: ${mockActivityEventGroup.label}`
+    );
+  });
+
+  it('should handle event expansion toggle', async () => {
+    const ungroupedEventsInfo = createUngroupedEventsInfo([
+      ['group-1', mockActivityEventGroup],
+    ]);
+    const { user, mockToggleIsEventExpanded } = setup({
+      ungroupedEventsInfo,
+    });
 
     const toggleButtons = screen.getAllByText('Toggle Event');
     await user.click(toggleButtons[0]);
 
-    expect(mockToggleIsEventExpanded).toHaveBeenCalledWith('1');
+    const firstEventId =
+      mockActivityEventGroup.events[0].eventId ??
+      mockActivityEventGroup.events[0].computedEventId;
+    expect(mockToggleIsEventExpanded).toHaveBeenCalledWith(firstEventId);
   });
 
-  it('shows error state in load more component', () => {
+  it('should pass isExpanded state to events', () => {
+    const ungroupedEventsInfo = createUngroupedEventsInfo([
+      ['group-1', mockActivityEventGroup],
+    ]);
+    const firstEventId =
+      mockActivityEventGroup.events[0].eventId ??
+      mockActivityEventGroup.events[0].computedEventId;
+
     setup({
-      error: new RequestError('Test error', 'test-url', 500),
+      ungroupedEventsInfo,
+      getIsEventExpanded: jest.fn((id) => id === firstEventId),
     });
 
-    const loadMore = screen.getByTestId('mock-load-more');
-    expect(loadMore).toHaveTextContent('Error: Test error');
+    const events = screen.getAllByTestId('workflow-history-ungrouped-event');
+    expect(events[0]).toHaveAttribute('data-expanded', 'true');
+    if (events.length > 1) {
+      expect(events[1]).toHaveAttribute('data-expanded', 'false');
+    }
   });
 
-  it('shows loading and has more states in load more component', () => {
+  it('should pass hasMoreEvents to load more component', () => {
     setup({
       hasMoreEvents: true,
-      isFetchingMoreEvents: true,
+      isFetchingMoreEvents: false,
+      fetchMoreEvents: jest.fn(),
     });
 
-    const loadMore = screen.getByTestId('mock-load-more');
-    expect(loadMore).toHaveTextContent('Has more events');
-    expect(loadMore).toHaveTextContent('Loading more...');
+    expect(screen.getByTestId('timeline-load-more')).toBeInTheDocument();
+    expect(screen.getByTestId('has-next-page')).toBeInTheDocument();
   });
 
-  it('scrolls to selected event when provided', async () => {
-    setup({ selectedEventId: '2' });
+  it('should pass animateOnEnter for selectedEventId', async () => {
+    const ungroupedEventsInfo = createUngroupedEventsInfo([
+      ['group-1', mockActivityEventGroup],
+    ]);
+    const firstEventId =
+      mockActivityEventGroup.events[0].eventId ??
+      mockActivityEventGroup.events[0].computedEventId;
+
+    setup({
+      ungroupedEventsInfo,
+      selectedEventId: firstEventId,
+    });
 
     await waitFor(() => {
-      const events = screen.getAllByTestId('mock-event');
-      expect(events).toHaveLength(2);
+      const events = screen.getAllByTestId('workflow-history-ungrouped-event');
+      expect(events[0]).toHaveAttribute('data-animate-on-enter', 'true');
     });
   });
 
-  it('calls onResetToEventId when reset button is clicked on resettable event', async () => {
-    const { user, mockOnResetToEventId } = setup({
-      eventsInfo: [
+  it('should call resetToDecisionEventId when reset button is clicked on resettable event', async () => {
+    const ungroupedEventsInfo = createUngroupedEventsInfo([
+      [
+        'group-1',
         {
-          ...mockEventsInfo[0],
-          canReset: true,
+          ...mockActivityEventGroup,
+          resetToDecisionEventId: mockActivityEventGroup.events[0].eventId,
         },
-        mockEventsInfo[1],
       ],
+    ]);
+    const { user, mockResetToDecisionEventId } = setup({
+      ungroupedEventsInfo,
     });
 
     const resetButtons = screen.getAllByText('Reset Event');
     await user.click(resetButtons[0]);
 
-    expect(mockOnResetToEventId).toHaveBeenCalledWith('1');
+    const firstEventId =
+      mockActivityEventGroup.events[0].eventId ??
+      mockActivityEventGroup.events[0].computedEventId;
+    expect(mockResetToDecisionEventId).toHaveBeenCalledWith(firstEventId);
   });
 
-  it('renders correctly when selectedEventId is not found in eventsInfo', async () => {
-    setup({
-      selectedEventId: '3',
-    });
+  it('should not show reset button for non-resettable events', () => {
+    const ungroupedEventsInfo = createUngroupedEventsInfo([
+      [
+        'group-1',
+        {
+          ...mockActivityEventGroup,
+          resetToDecisionEventId: undefined,
+        },
+      ],
+    ]);
+    setup({ ungroupedEventsInfo });
 
-    expect(screen.getByText('ID')).toBeInTheDocument();
-
-    const events = await screen.findAllByTestId('mock-event');
-    expect(events).toHaveLength(2);
-    events.forEach((e) =>
-      expect(e).toHaveAttribute('data-animate-on-enter', 'false')
-    );
+    expect(screen.queryByText('Reset Event')).not.toBeInTheDocument();
   });
 
-  it('renders correctly when selectedEventId is found in eventsInfo', async () => {
-    setup({
-      selectedEventId: '2',
+  it('should call onClickShowGroupInTimeline with correct groupId when show in timeline is clicked', async () => {
+    const groupId = 'group-1';
+    const ungroupedEventsInfo = createUngroupedEventsInfo([
+      [groupId, mockActivityEventGroup],
+    ]);
+    const { user, mockOnClickShowEventInTimeline } = setup({
+      ungroupedEventsInfo,
     });
 
-    expect(screen.getByText('ID')).toBeInTheDocument();
-    const events = await screen.findAllByTestId('mock-event');
-    expect(events).toHaveLength(2);
-    expect(screen.getByText('Event ID: 2')).toBeInTheDocument();
-    expect(events[1]).toHaveAttribute('data-animate-on-enter', 'true');
+    const showInTimelineButtons = screen.getAllByText('Show in timeline');
+    await user.click(showInTimelineButtons[0]);
+
+    expect(mockOnClickShowEventInTimeline).toHaveBeenCalledWith(groupId);
   });
 });
 
 function setup({
-  eventsInfo = mockEventsInfo,
+  ungroupedEventsInfo = [],
+  workflowStartTimeMs = null,
   error = null,
   hasMoreEvents = false,
   isFetchingMoreEvents = false,
+  fetchMoreEvents = jest.fn(),
+  setVisibleRange = jest.fn(),
+  decodedPageUrlParams = {
+    domain: 'test-domain',
+    cluster: 'test-cluster',
+    workflowId: 'test-workflow-id',
+    runId: 'test-run-id',
+    workflowTab: 'history',
+  },
   selectedEventId,
+  getIsEventExpanded = jest.fn(() => false),
+  toggleIsEventExpanded = jest.fn(),
+  resetToDecisionEventId = jest.fn(),
+  onClickShowGroupInTimeline = jest.fn(),
 }: {
-  eventsInfo?: WorkflowHistoryUngroupedEventInfo[];
+  ungroupedEventsInfo?: Array<UngroupedEventInfo>;
+  workflowStartTimeMs?: number | null;
   error?: RequestError | null;
   hasMoreEvents?: boolean;
   isFetchingMoreEvents?: boolean;
+  fetchMoreEvents?: () => void;
+  setVisibleRange?: ({
+    startIndex,
+    endIndex,
+  }: {
+    startIndex: number;
+    endIndex: number;
+  }) => void;
+  initialStartIndex?: number;
+  decodedPageUrlParams?: WorkflowPageTabsParams;
   selectedEventId?: string;
+  getIsEventExpanded?: (eventId: string) => boolean;
+  toggleIsEventExpanded?: (eventId: string) => void;
+  resetToDecisionEventId?: (decisionEventId: string) => void;
+  onClickShowGroupInTimeline?: (eventGroupId: string) => void;
 } = {}) {
-  const mockFetchMoreEvents = jest.fn();
-  const mockGetIsEventExpanded = jest.fn(() => false);
-  const mockToggleIsEventExpanded = jest.fn();
-  const mockOnVisibleRangeChange = jest.fn();
-  const mockOnResetToEventId = jest.fn();
-
-  const props = {
-    eventsInfo,
-    decodedPageUrlParams: mockDecodedPageUrlParams,
-    error,
-    hasMoreEvents,
-    isFetchingMoreEvents,
-    fetchMoreEvents: mockFetchMoreEvents,
-    getIsEventExpanded: mockGetIsEventExpanded,
-    toggleIsEventExpanded: mockToggleIsEventExpanded,
-    onVisibleRangeChange: mockOnVisibleRangeChange,
-    virtuosoRef: { current: null },
-    selectedEventId,
-    onResetToEventId: mockOnResetToEventId,
-    workflowIsArchived: false,
-    workflowCloseStatus: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID' as const,
-    loadingMoreEvents: false,
-  };
-
+  const virtuosoRef = { current: null };
   const user = userEvent.setup();
 
   render(
     <VirtuosoMockContext.Provider
-      value={{ viewportHeight: 1000, itemHeight: 100 }}
+      value={{ viewportHeight: 1000, itemHeight: 36 }}
     >
-      <WorkflowHistoryUngroupedTable {...props} />
+      <WorkflowHistoryUngroupedTable
+        ungroupedEventsInfo={ungroupedEventsInfo}
+        workflowStartTimeMs={workflowStartTimeMs}
+        virtuosoRef={virtuosoRef}
+        setVisibleRange={setVisibleRange}
+        decodedPageUrlParams={decodedPageUrlParams}
+        selectedEventId={selectedEventId}
+        getIsEventExpanded={getIsEventExpanded}
+        toggleIsEventExpanded={toggleIsEventExpanded}
+        resetToDecisionEventId={resetToDecisionEventId}
+        workflowIsArchived={false}
+        workflowCloseStatus={'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'}
+        loadingMoreEvents={false}
+        error={error}
+        hasMoreEvents={hasMoreEvents}
+        fetchMoreEvents={fetchMoreEvents}
+        isFetchingMoreEvents={isFetchingMoreEvents}
+        onClickShowGroupInTimeline={onClickShowGroupInTimeline}
+      />
     </VirtuosoMockContext.Provider>
   );
 
   return {
-    props,
     user,
-    mockFetchMoreEvents,
-    mockGetIsEventExpanded,
-    mockToggleIsEventExpanded,
-    mockOnVisibleRangeChange,
-    mockOnResetToEventId,
+    virtuosoRef,
+    mockFetchMoreEvents: fetchMoreEvents,
+    mockSetVisibleRange: setVisibleRange,
+    mockToggleIsEventExpanded: toggleIsEventExpanded,
+    mockResetToDecisionEventId: resetToDecisionEventId,
+    mockOnClickShowEventInTimeline: onClickShowGroupInTimeline,
   };
 }

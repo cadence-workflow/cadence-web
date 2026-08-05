@@ -1,6 +1,6 @@
 import React from 'react';
 
-import WorkflowHistoryEventDetailsEntry from '../workflow-history-event-details-entry/workflow-history-event-details-entry';
+import EventDetailsSingleEntry from '../workflow-history-event-details-entry/workflow-history-event-details-entry';
 
 import getDetailsFieldLabel from './helpers/get-details-field-label';
 import { styled } from './workflow-history-event-details-group.styles';
@@ -52,7 +52,7 @@ export default function WorkflowHistoryEventDetailsGroup({
                   />
                 </styled.IndentedDetails>
               ) : (
-                <WorkflowHistoryEventDetailsEntry
+                <EventDetailsSingleEntry
                   entryKey={entry.key}
                   entryPath={entry.path}
                   entryValue={entry.value}
