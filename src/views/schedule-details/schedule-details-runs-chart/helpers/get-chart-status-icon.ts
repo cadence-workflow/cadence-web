@@ -8,13 +8,7 @@ import {
 
 import { WORKFLOW_STATUSES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
 
-import { type ChartGlyphVariant } from '../../schedule-details-runs-chart-glyph/schedule-details-runs-chart-glyph.types';
-
-/** Variants with a fixed icon, shared by the timeline glyph and the legend. */
-export type ChartStatusIconVariant = Exclude<
-  ChartGlyphVariant,
-  typeof WORKFLOW_STATUSES.running | 'skipped' | 'loading'
->;
+import { type ChartStatusIconVariant } from '../../schedule-details-runs-chart-glyph/schedule-details-runs-chart-glyph.types';
 
 export default function getChartStatusIcon(
   variant: ChartStatusIconVariant
