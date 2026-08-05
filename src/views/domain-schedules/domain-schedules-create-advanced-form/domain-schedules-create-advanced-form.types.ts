@@ -14,6 +14,6 @@ export type Props = {
   isSubmitted?: boolean;
   clearErrors: UseFormClearErrors<DomainSchedulesCreateFormData>;
   cluster: string;
-  /** Renders the Schedule Id field disabled, for flows where the id is fixed. */
+  /** Renders the Schedule ID field disabled, for flows where the id is fixed. */
   scheduleIdReadOnly?: boolean;
 };

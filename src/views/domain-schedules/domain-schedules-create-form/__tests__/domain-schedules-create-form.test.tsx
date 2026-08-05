@@ -182,7 +182,7 @@ describe('DomainSchedulesCreateForm', () => {
       screen.getByRole('button', { name: /show advanced configurations/i })
     );
 
-    expect(screen.getByLabelText('Schedule Id')).toBeDisabled();
+    expect(screen.getByLabelText('Schedule ID')).toBeDisabled();
   });
 });
 
