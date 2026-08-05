@@ -21,6 +21,7 @@ export default function getChartGlyphColor(
     case WORKFLOW_STATUSES.terminated:
       return theme.colors.warning400;
     case 'skipped':
+    case 'loading':
     case 'next':
       return theme.colors.contentSecondary;
   }

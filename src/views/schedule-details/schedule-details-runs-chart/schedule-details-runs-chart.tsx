@@ -2,12 +2,13 @@
 import React, { useMemo } from 'react';
 
 import { useParentSize } from '@visx/responsive';
+import { Skeleton } from 'baseui/skeleton';
 import { MdGpsFixed, MdZoomIn, MdZoomOut } from 'react-icons/md';
 
 import Button from '@/components/button/button';
 import useCurrentTimeMs from '@/hooks/use-current-time-ms/use-current-time-ms';
+import useScheduleRunsChartData from '@/views/schedule-details/hooks/use-schedule-runs-chart-data/use-schedule-runs-chart-data';
 
-import buildScheduleRunsChartSeriesFixture from '../schedule-details-runs-chart-series/__fixtures__/schedule-details-runs-chart-series-fixture';
 import hasScheduleRunsChartData from '../schedule-details-runs-chart-series/helpers/has-schedule-runs-chart-data';
 import ScheduleDetailsRunsChartSeries from '../schedule-details-runs-chart-series/schedule-details-runs-chart-series';
 import ScheduleDetailsRunsChartTimeline from '../schedule-details-runs-chart-timeline/schedule-details-runs-chart-timeline';
@@ -27,7 +28,7 @@ import {
 import { overrides, styled } from './schedule-details-runs-chart.styles';
 import { type Props } from './schedule-details-runs-chart.types';
 
-export default function ScheduleDetailsRunsChart(_props: Props) {
+export default function ScheduleDetailsRunsChart({ params }: Props) {
   const nowMs = useCurrentTimeMs({
     intervalMs: CURRENT_TIME_UPDATE_INTERVAL_MS,
   });
@@ -35,17 +36,21 @@ export default function ScheduleDetailsRunsChart(_props: Props) {
     initialSize: { width: 0, height: CHART_HEIGHT_PX },
   });
 
-  // TODO(PR09e): replace the static fixture with live schedule workflow data.
-  const chartData = useMemo(
-    () => buildScheduleRunsChartSeriesFixture(nowMs),
-    [nowMs]
-  );
+  const { data: chartData, isLoading } = useScheduleRunsChartData({
+    domain: params.domain,
+    cluster: params.cluster,
+    scheduleId: params.scheduleId,
+    nowMs,
+  });
   const hasChartData = hasScheduleRunsChartData(chartData);
 
   const xScale = useMemo(() => {
     const timestampsMs = [
       ...chartData.runs.map(({ scheduledTimeMs }) => scheduledTimeMs),
       ...chartData.skippedExecutions.map(
+        ({ scheduledTimeMs }) => scheduledTimeMs
+      ),
+      ...chartData.unconfirmedExecutions.map(
         ({ scheduledTimeMs }) => scheduledTimeMs
       ),
     ];
@@ -62,6 +67,10 @@ export default function ScheduleDetailsRunsChart(_props: Props) {
 
     return createChartXScale({ timeWindow, range });
   }, [chartData, nowMs, width]);
+
+  const showLoadingOverlay = isLoading;
+  const showEmptyState = !isLoading && (xScale === null || !hasChartData);
+  const showChart = !isLoading && xScale !== null && hasChartData;
 
   return (
     <styled.Container>
@@ -107,11 +116,21 @@ export default function ScheduleDetailsRunsChart(_props: Props) {
         role="region"
         aria-label={CHART_REGION_ARIA_LABEL}
       >
-        {xScale === null || !hasChartData ? (
+        {showLoadingOverlay && (
+          <Skeleton
+            animation
+            rows={0}
+            width="100%"
+            height="100%"
+            overrides={overrides.loadingSkeleton}
+          />
+        )}
+        {showEmptyState && (
           <styled.EmptyState role="status">
             {CHART_EMPTY_STATE_MESSAGE}
           </styled.EmptyState>
-        ) : (
+        )}
+        {showChart && (
           <>
             <styled.ChartSvg width={width} height={CHART_HEIGHT_PX}>
               <ScheduleDetailsRunsChartTimeline
@@ -121,7 +140,12 @@ export default function ScheduleDetailsRunsChart(_props: Props) {
                 nowMs={nowMs}
               />
             </styled.ChartSvg>
-            <ScheduleDetailsRunsChartSeries xScale={xScale} data={chartData} />
+            <ScheduleDetailsRunsChartSeries
+              xScale={xScale}
+              data={chartData}
+              domain={params.domain}
+              cluster={params.cluster}
+            />
           </>
         )}
       </styled.ChartRegion>

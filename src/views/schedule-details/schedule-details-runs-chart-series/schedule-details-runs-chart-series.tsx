@@ -2,7 +2,9 @@ import React, { useMemo } from 'react';
 
 import groupBy from 'lodash/groupBy';
 
+import { CHART_RUN_POPOVER_TEST_IDS } from '../schedule-details-runs-chart/schedule-details-runs-chart.constants';
 import ScheduleDetailsRunsChartGlyph from '../schedule-details-runs-chart-glyph/schedule-details-runs-chart-glyph';
+import ScheduleDetailsRunsChartPopoverTrigger from '../schedule-details-runs-chart-popover-trigger/schedule-details-runs-chart-popover-trigger';
 import { CHART_TIMELINE_Y_PX } from '../schedule-details-runs-chart-timeline/schedule-details-runs-chart-timeline.constants';
 
 import {
@@ -10,62 +12,158 @@ import {
   formatChartSeriesRunGroupLabel,
 } from './helpers/format-chart-series-marker-label';
 import { CHART_SERIES_TEST_IDS } from './schedule-details-runs-chart-series.constants';
-import { type Props } from './schedule-details-runs-chart-series.types';
+import {
+  type ChartSeriesMarker,
+  type Props,
+} from './schedule-details-runs-chart-series.types';
 
 export default function ScheduleDetailsRunsChartSeries({
   xScale,
   data,
+  domain,
+  cluster,
 }: Props) {
-  const runGroups = useMemo(
-    () =>
-      Object.values(groupBy(data.runs, 'scheduledTimeMs')).map((runs) => ({
-        scheduledTimeMs: runs[0].scheduledTimeMs,
-        runs,
-      })),
-    [data.runs]
-  );
+  const markers = useMemo(() => {
+    const groupedExecutions = Object.values(
+      groupBy(data.runs, 'scheduledTimeMs')
+    ).map((runs) => ({
+      scheduledTimeMs: runs[0].scheduledTimeMs,
+      runs,
+    }));
+    const nextExecution =
+      data.nextExecutionTimeMs != null
+        ? [{ scheduledTimeMs: data.nextExecutionTimeMs }]
+        : [];
+
+    const items: ChartSeriesMarker[] = (
+      [
+        ['run', groupedExecutions],
+        ['skipped', data.skippedExecutions],
+        ['loading', data.unconfirmedExecutions],
+        ['next', nextExecution],
+      ] as const
+    ).flatMap(([kind, points]) =>
+      points.map((point) => ({ kind, ...point }) as ChartSeriesMarker)
+    );
+
+    // Later markers in DOM stack above earlier ones — sort left-to-right on the timeline.
+    return items.sort((a, b) => a.scheduledTimeMs - b.scheduledTimeMs);
+  }, [data]);
 
   return (
     <div data-testid={CHART_SERIES_TEST_IDS.overlay}>
-      {runGroups.map((group, index) => {
-        const isGrouped = group.runs.length > 1;
+      {markers.map((marker, index) => {
+        switch (marker.kind) {
+          case 'run': {
+            const isGrouped = marker.runs.length > 1;
+            const x = xScale(marker.scheduledTimeMs);
+            const label = formatChartSeriesRunGroupLabel(marker.runs);
+            const markerTestId = isGrouped
+              ? CHART_SERIES_TEST_IDS.groupedMarker
+              : CHART_SERIES_TEST_IDS.runMarker;
 
-        return (
-          <ScheduleDetailsRunsChartGlyph
-            key={`run-${index}-${group.scheduledTimeMs}`}
-            x={xScale(group.scheduledTimeMs)}
-            y={CHART_TIMELINE_Y_PX}
-            variant={group.runs[0].status}
-            runCount={group.runs.length}
-            isBackfill={group.runs[0].isBackfill}
-            label={formatChartSeriesRunGroupLabel(group.runs)}
-            testId={
-              isGrouped
-                ? CHART_SERIES_TEST_IDS.groupedMarker
-                : CHART_SERIES_TEST_IDS.runMarker
-            }
-          />
-        );
+            return (
+              <ScheduleDetailsRunsChartPopoverTrigger
+                key={`run-${index}-${marker.scheduledTimeMs}`}
+                x={x}
+                y={CHART_TIMELINE_Y_PX}
+                entries={marker.runs.map((run) => ({
+                  kind: 'run',
+                  run,
+                }))}
+                domain={domain}
+                cluster={cluster}
+                ariaLabel={label}
+                testId={CHART_RUN_POPOVER_TEST_IDS.runTrigger}
+              >
+                <ScheduleDetailsRunsChartGlyph
+                  variant={marker.runs[0].status}
+                  runCount={marker.runs.length}
+                  isBackfill={marker.runs[0].isBackfill}
+                  label={label}
+                  testId={markerTestId}
+                />
+              </ScheduleDetailsRunsChartPopoverTrigger>
+            );
+          }
+          case 'skipped': {
+            const x = xScale(marker.scheduledTimeMs);
+            const label = formatChartSeriesMomentLabel(
+              'skipped',
+              marker.scheduledTimeMs
+            );
+
+            return (
+              <ScheduleDetailsRunsChartPopoverTrigger
+                key={`skipped-${index}-${marker.scheduledTimeMs}`}
+                x={x}
+                y={CHART_TIMELINE_Y_PX}
+                entries={[
+                  {
+                    kind: 'skipped',
+                    scheduledTimeMs: marker.scheduledTimeMs,
+                  },
+                ]}
+                domain={domain}
+                cluster={cluster}
+                ariaLabel={label}
+                testId={CHART_RUN_POPOVER_TEST_IDS.skippedTrigger}
+              >
+                <ScheduleDetailsRunsChartGlyph
+                  variant="skipped"
+                  label={label}
+                  testId={CHART_SERIES_TEST_IDS.skippedExecutionMarker}
+                />
+              </ScheduleDetailsRunsChartPopoverTrigger>
+            );
+          }
+          case 'loading':
+            return (
+              <ScheduleDetailsRunsChartGlyph
+                key={`loading-${index}-${marker.scheduledTimeMs}`}
+                x={xScale(marker.scheduledTimeMs)}
+                y={CHART_TIMELINE_Y_PX}
+                variant="loading"
+                label={formatChartSeriesMomentLabel(
+                  'loading',
+                  marker.scheduledTimeMs
+                )}
+                testId={CHART_SERIES_TEST_IDS.loadingExecutionMarker}
+              />
+            );
+          case 'next': {
+            const x = xScale(marker.scheduledTimeMs);
+            const label = formatChartSeriesMomentLabel(
+              'next',
+              marker.scheduledTimeMs
+            );
+
+            return (
+              <ScheduleDetailsRunsChartPopoverTrigger
+                key={`next-${index}-${marker.scheduledTimeMs}`}
+                x={x}
+                y={CHART_TIMELINE_Y_PX}
+                entries={[
+                  {
+                    kind: 'next',
+                    scheduledTimeMs: marker.scheduledTimeMs,
+                  },
+                ]}
+                domain={domain}
+                cluster={cluster}
+                ariaLabel={label}
+                testId={CHART_RUN_POPOVER_TEST_IDS.nextTrigger}
+              >
+                <ScheduleDetailsRunsChartGlyph
+                  variant="next"
+                  label={label}
+                  testId={CHART_SERIES_TEST_IDS.nextExecutionMarker}
+                />
+              </ScheduleDetailsRunsChartPopoverTrigger>
+            );
+          }
+        }
       })}
-      {data.skippedExecutions.map(({ scheduledTimeMs }, index) => (
-        <ScheduleDetailsRunsChartGlyph
-          key={`skipped-${index}-${scheduledTimeMs}`}
-          x={xScale(scheduledTimeMs)}
-          y={CHART_TIMELINE_Y_PX}
-          variant="skipped"
-          label={formatChartSeriesMomentLabel('skipped', scheduledTimeMs)}
-          testId={CHART_SERIES_TEST_IDS.skippedExecutionMarker}
-        />
-      ))}
-      {data.nextExecutionTimeMs != null && (
-        <ScheduleDetailsRunsChartGlyph
-          x={xScale(data.nextExecutionTimeMs)}
-          y={CHART_TIMELINE_Y_PX}
-          variant="next"
-          label={formatChartSeriesMomentLabel('next', data.nextExecutionTimeMs)}
-          testId={CHART_SERIES_TEST_IDS.nextExecutionMarker}
-        />
-      )}
     </div>
   );
 }

@@ -1,10 +1,13 @@
 import { styled as createStyled, type Theme } from 'baseui';
 import { type ButtonOverrides } from 'baseui/button';
+import { type SkeletonOverrides } from 'baseui/skeleton/types';
 import { type StyleObject } from 'styletron-react';
 
 import {
   CHART_HEADER_MIN_HEIGHT_PX,
   CHART_HEIGHT_PX,
+  CHART_LOADING_ARIA_LABEL,
+  CHART_LOADING_TEST_ID,
   CHART_TOOLBAR_BUTTON_MIN_HEIGHT_PX,
 } from './schedule-details-runs-chart.constants';
 
@@ -80,4 +83,14 @@ export const overrides = {
   toolbarButton: {
     Root: toolbarButtonRootOverrides,
   } satisfies ButtonOverrides,
+  loadingSkeleton: {
+    Root: {
+      props: {
+        role: 'status',
+        'aria-label': CHART_LOADING_ARIA_LABEL,
+        'data-testid': CHART_LOADING_TEST_ID,
+      },
+      style: { height: '100%' },
+    },
+  } satisfies SkeletonOverrides,
 };

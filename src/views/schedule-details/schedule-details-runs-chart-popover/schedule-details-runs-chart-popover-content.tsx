@@ -1,0 +1,104 @@
+'use client';
+import React from 'react';
+
+import Link from '@/components/link/link';
+import escapeVisibilityQueryValue from '@/utils/visibility/escape-visibility-query-value';
+import WorkflowStatusTag from '@/views/shared/workflow-status-tag/workflow-status-tag';
+
+import getRunPopoverTimestampRows from './helpers/get-run-popover-timestamp-rows';
+import {
+  RUN_POPOVER_BACKFILL_LABEL,
+  RUN_POPOVER_NEXT_LABEL,
+  RUN_POPOVER_SKIPPED_LABEL,
+  RUN_POPOVER_STATUS_LABEL,
+  RUN_POPOVER_TEST_IDS,
+} from './schedule-details-runs-chart-popover.constants';
+import { styled } from './schedule-details-runs-chart-popover.styles';
+import {
+  type PopoverEntryProps,
+  type Props,
+} from './schedule-details-runs-chart-popover.types';
+
+function PopoverEntry({ title, rows }: PopoverEntryProps) {
+  return (
+    <styled.Entry data-testid={RUN_POPOVER_TEST_IDS.entry}>
+      <styled.EntryTitle>{title}</styled.EntryTitle>
+      {rows.map(({ label, value }) => (
+        <styled.EntryRow key={label}>
+          <styled.RowLabel>{label}</styled.RowLabel>
+          <styled.RowValue>{value}</styled.RowValue>
+        </styled.EntryRow>
+      ))}
+    </styled.Entry>
+  );
+}
+
+export default function ScheduleDetailsRunsChartPopoverContent({
+  entries,
+  domain,
+  cluster,
+}: Props) {
+  return (
+    <styled.Content data-testid={RUN_POPOVER_TEST_IDS.content}>
+      {entries.map((entry) => {
+        if (entry.kind !== 'run') {
+          return (
+            <PopoverEntry
+              key={`${entry.kind}-${entry.scheduledTimeMs}`}
+              title={
+                entry.kind === 'skipped'
+                  ? RUN_POPOVER_SKIPPED_LABEL
+                  : RUN_POPOVER_NEXT_LABEL
+              }
+              rows={getRunPopoverTimestampRows({
+                scheduledTimeMs: entry.scheduledTimeMs,
+                startedTimeMs: null,
+                endedTimeMs: null,
+              })}
+            />
+          );
+        }
+
+        const { run } = entry;
+
+        return (
+          <PopoverEntry
+            key={run.runId}
+            title={
+              <Link
+                href={`/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows/${encodeURIComponent(run.workflowId)}/${encodeURIComponent(run.runId)}`}
+              >
+                {run.runId}
+              </Link>
+            }
+            rows={[
+              {
+                label: RUN_POPOVER_STATUS_LABEL,
+                value: (
+                  <span data-testid={RUN_POPOVER_TEST_IDS.statusIcon}>
+                    <WorkflowStatusTag status={run.status} />
+                  </span>
+                ),
+              },
+              ...(run.backfillId != null
+                ? [
+                    {
+                      label: RUN_POPOVER_BACKFILL_LABEL,
+                      value: (
+                        <Link
+                          href={`/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows?input=query&query=${encodeURIComponent(`CadenceScheduleBackfillID="${escapeVisibilityQueryValue(run.backfillId)}"`)}`}
+                        >
+                          {run.backfillId}
+                        </Link>
+                      ),
+                    },
+                  ]
+                : []),
+              ...getRunPopoverTimestampRows(run),
+            ]}
+          />
+        );
+      })}
+    </styled.Content>
+  );
+}

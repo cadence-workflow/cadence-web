@@ -15,6 +15,10 @@ export const CHART_TOOLBAR_BUTTON_LABELS = {
 
 export const CHART_EMPTY_STATE_MESSAGE = 'No chart data available yet';
 
+export const CHART_LOADING_ARIA_LABEL = 'Loading schedule runs chart';
+
+export const CHART_LOADING_TEST_ID = 'schedule-runs-chart-loading-skeleton';
+
 export const CHART_REGION_ARIA_LABEL = 'Schedule runs chart';
 
 export const CHART_TOOLBAR_ARIA_LABEL = 'Chart controls';
@@ -37,3 +41,14 @@ export const CHART_FUTURE_GUTTER_MS = 30 * 60_000;
 
 /** Horizontal inset applied to the chart drawable area (px). */
 export const CHART_SIDE_PADDING_PX = 24;
+
+/** Radius of the invisible hit area around run glyphs (px). */
+export const CHART_GLYPH_HIT_AREA_RADIUS_PX = 10;
+
+export const CHART_RUN_POPOVER_ENTRY_DELAY_MS = 200;
+
+export const CHART_RUN_POPOVER_TEST_IDS = {
+  runTrigger: 'schedule-runs-chart-run-popover-trigger',
+  skippedTrigger: 'schedule-runs-chart-skipped-popover-trigger',
+  nextTrigger: 'schedule-runs-chart-next-popover-trigger',
+} as const;

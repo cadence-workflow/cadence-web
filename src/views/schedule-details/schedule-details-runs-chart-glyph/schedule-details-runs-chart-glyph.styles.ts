@@ -1,22 +1,40 @@
 import { styled as createStyled, type Theme } from 'baseui';
+import { type SkeletonOverrides } from 'baseui/skeleton/types';
 
 import { CHART_GLYPH_MARKER_SIZE_PX } from './schedule-details-runs-chart-glyph.constants';
 
+export const overrides = {
+  loadingSkeleton: {
+    Root: {
+      style: { borderRadius: '50%' },
+    },
+  } satisfies SkeletonOverrides,
+};
+
 export const styled = {
-  Marker: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: `${CHART_GLYPH_MARKER_SIZE_PX}px`,
-    height: `${CHART_GLYPH_MARKER_SIZE_PX}px`,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    // The opaque background hides the timeline line behind outline icons
-    backgroundColor: $theme.colors.backgroundPrimary,
-    borderRadius: '50%',
-    pointerEvents: 'none',
-  })),
+  Marker: createStyled<'div', { $positioned?: boolean }>(
+    'div',
+    ({
+      $theme,
+      $positioned = true,
+    }: {
+      $theme: Theme;
+      $positioned?: boolean;
+    }) => ({
+      position: $positioned ? 'absolute' : 'relative',
+      top: $positioned ? 0 : undefined,
+      left: $positioned ? 0 : undefined,
+      width: `${CHART_GLYPH_MARKER_SIZE_PX}px`,
+      height: `${CHART_GLYPH_MARKER_SIZE_PX}px`,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      // The opaque background hides the timeline line behind outline icons
+      backgroundColor: $theme.colors.backgroundPrimary,
+      borderRadius: '50%',
+      pointerEvents: 'none',
+    })
+  ),
   Icon: createStyled('span', () => ({
     display: 'inline-flex',
     alignItems: 'center',
