@@ -42,6 +42,22 @@ function expandWindowToMinSpan(window: ChartTimeWindow): ChartTimeWindow {
   };
 }
 
+function shiftWindowToBounds(
+  window: ChartTimeWindow,
+  bounds: ChartTimeWindow
+): ChartTimeWindow {
+  const spanMs = getChartTimeWindowSpanMs(window);
+  let minMs = Math.max(window.minMs, bounds.minMs);
+  let maxMs = minMs + spanMs;
+
+  if (maxMs > bounds.maxMs) {
+    maxMs = bounds.maxMs;
+    minMs = maxMs - spanMs;
+  }
+
+  return { minMs, maxMs };
+}
+
 export function clampChartVisibleTimeWindow(
   visibleWindow: ChartTimeWindow,
   bounds: ChartTimeWindow
@@ -53,15 +69,15 @@ export function clampChartVisibleTimeWindow(
     return bounds;
   }
 
-  let minMs = Math.max(visibleWindow.minMs, bounds.minMs);
-  let maxMs = minMs + visibleSpanMs;
+  const clampedWindow = shiftWindowToBounds(visibleWindow, bounds);
+  const expandedWindow = expandWindowToMinSpan(clampedWindow);
+  const expandedSpanMs = getChartTimeWindowSpanMs(expandedWindow);
 
-  if (maxMs > bounds.maxMs) {
-    maxMs = bounds.maxMs;
-    minMs = maxMs - visibleSpanMs;
+  if (expandedSpanMs >= boundsSpanMs) {
+    return bounds;
   }
 
-  return expandWindowToMinSpan({ minMs, maxMs });
+  return shiftWindowToBounds(expandedWindow, bounds);
 }
 
 export function zoomChartTimeWindow({

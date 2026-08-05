@@ -57,6 +57,20 @@ describe(clampChartVisibleTimeWindow.name, () => {
       )
     ).toEqual(bounds);
   });
+
+  it('expands a sub-min span near the lower bound without leaving bounds', () => {
+    expect(
+      clampChartVisibleTimeWindow({ minMs: 0, maxMs: 60_000 }, bounds)
+    ).toEqual({ minMs: 0, maxMs: CHART_MIN_DOMAIN_SPAN_MS });
+  });
+
+  it('returns full bounds when the minimum span exceeds the navigable range', () => {
+    const narrowBounds = { minMs: 0, maxMs: 2 * 60_000 };
+
+    expect(
+      clampChartVisibleTimeWindow({ minMs: 0, maxMs: 60_000 }, narrowBounds)
+    ).toEqual(narrowBounds);
+  });
 });
 
 describe(zoomChartTimeWindow.name, () => {
