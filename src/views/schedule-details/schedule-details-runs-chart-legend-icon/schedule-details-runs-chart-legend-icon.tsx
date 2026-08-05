@@ -5,8 +5,8 @@ import { Spinner } from 'baseui/spinner';
 
 import { WORKFLOW_STATUSES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
 
-import getChartGlyphColor from '../schedule-details-runs-chart-glyph/helpers/get-chart-glyph-color';
-import getChartStatusIcon from '../schedule-details-runs-chart-glyph/helpers/get-chart-status-icon';
+import getChartGlyphColor from '../schedule-details-runs-chart/helpers/get-chart-glyph-color';
+import getChartStatusIcon from '../schedule-details-runs-chart/helpers/get-chart-status-icon';
 
 import {
   staticSpinnerStyle,
