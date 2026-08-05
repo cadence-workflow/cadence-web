@@ -35,6 +35,25 @@ export const styled = {
     paddingRight: $theme.sizing.scale100,
     borderBottom: `1px solid ${$theme.colors.borderOpaque}`,
   })),
+  Summary: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    flex: '1 1 auto',
+    alignItems: 'center',
+    minWidth: 0,
+    gap: $theme.sizing.scale300,
+    ...$theme.typography.LabelXSmall,
+  })),
+  SummaryTitle: createStyled('span', ({ $theme }: { $theme: Theme }) => ({
+    color: $theme.colors.contentPrimary,
+    fontWeight: 500,
+  })),
+  SummaryItem: createStyled('span', ({ $theme }: { $theme: Theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    gap: $theme.sizing.scale100,
+  })),
   Toolbar: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
     flexDirection: 'row',

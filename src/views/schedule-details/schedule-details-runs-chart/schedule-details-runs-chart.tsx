@@ -8,6 +8,7 @@ import { MdGpsFixed, MdZoomIn, MdZoomOut } from 'react-icons/md';
 import Button from '@/components/button/button';
 import useCurrentTimeMs from '@/hooks/use-current-time-ms/use-current-time-ms';
 import useScheduleRunsChartData from '@/views/schedule-details/hooks/use-schedule-runs-chart-data/use-schedule-runs-chart-data';
+import ScheduleDetailsRunsChartLegendIcon from '@/views/schedule-details/schedule-details-runs-chart-legend-icon/schedule-details-runs-chart-legend-icon';
 
 import hasScheduleRunsChartData from '../schedule-details-runs-chart-series/helpers/has-schedule-runs-chart-data';
 import ScheduleDetailsRunsChartSeries from '../schedule-details-runs-chart-series/schedule-details-runs-chart-series';
@@ -19,7 +20,11 @@ import resolveChartTimeWindow from './helpers/resolve-chart-time-window';
 import {
   CHART_EMPTY_STATE_MESSAGE,
   CHART_HEIGHT_PX,
+  CHART_LEGEND_ICON_SIZE_PX,
+  CHART_LEGEND_ITEMS,
+  CHART_LEGEND_TITLE,
   CHART_REGION_ARIA_LABEL,
+  CHART_SUMMARY_TEST_ID,
   CHART_TOOLBAR_ARIA_LABEL,
   CHART_TOOLBAR_BUTTON_LABELS,
   CHART_TOOLBAR_ICON_SIZE_PX,
@@ -75,6 +80,18 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
   return (
     <styled.Container>
       <styled.Header>
+        <styled.Summary data-testid={CHART_SUMMARY_TEST_ID}>
+          <styled.SummaryTitle>{CHART_LEGEND_TITLE}</styled.SummaryTitle>
+          {CHART_LEGEND_ITEMS.map(({ variant, label }) => (
+            <styled.SummaryItem key={variant}>
+              <ScheduleDetailsRunsChartLegendIcon
+                variant={variant}
+                size={CHART_LEGEND_ICON_SIZE_PX}
+              />
+              {label}
+            </styled.SummaryItem>
+          ))}
+        </styled.Summary>
         <styled.Toolbar role="toolbar" aria-label={CHART_TOOLBAR_ARIA_LABEL}>
           <Button
             size="mini"

@@ -1,3 +1,7 @@
+import { WORKFLOW_STATUSES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
+
+import { type ChartLegendVariant } from '../schedule-details-runs-chart-legend-icon/schedule-details-runs-chart-legend-icon.types';
+
 export const CHART_HEIGHT_PX = 82;
 
 /** Header row height, sized to fit the mini toolbar buttons (px). */
@@ -22,6 +26,29 @@ export const CHART_LOADING_TEST_ID = 'schedule-runs-chart-loading-skeleton';
 export const CHART_REGION_ARIA_LABEL = 'Schedule runs chart';
 
 export const CHART_TOOLBAR_ARIA_LABEL = 'Chart controls';
+
+export const CHART_LEGEND_TITLE = 'Runs';
+
+/** Icon size for the legend status glyphs (px). */
+export const CHART_LEGEND_ICON_SIZE_PX = 12;
+
+export const CHART_SUMMARY_TEST_ID = 'schedule-runs-chart-summary';
+
+/** Legend rows, in render order, mapping a status glyph to its label. */
+export const CHART_LEGEND_ITEMS = [
+  { variant: WORKFLOW_STATUSES.completed, label: 'Completed' },
+  {
+    variant: WORKFLOW_STATUSES.failed,
+    label: 'Terminated/Timed out/Failed',
+  },
+  { variant: WORKFLOW_STATUSES.running, label: 'Running' },
+  { variant: WORKFLOW_STATUSES.canceled, label: 'Cancelled' },
+  { variant: 'skipped', label: 'Skipped' },
+  { variant: 'next', label: 'Next run' },
+] as const satisfies ReadonlyArray<{
+  variant: ChartLegendVariant;
+  label: string;
+}>;
 
 /**
  * How often `now` is re-read. Every tick shifts the time window, re-rendering

@@ -12,8 +12,11 @@ import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list
 import ScheduleDetailsRunsChart from '../schedule-details-runs-chart';
 import {
   CHART_EMPTY_STATE_MESSAGE,
+  CHART_LEGEND_ITEMS,
+  CHART_LEGEND_TITLE,
   CHART_LOADING_TEST_ID,
   CHART_REGION_ARIA_LABEL,
+  CHART_SUMMARY_TEST_ID,
   CHART_TOOLBAR_ARIA_LABEL,
   CHART_TOOLBAR_BUTTON_LABELS,
 } from '../schedule-details-runs-chart.constants';
@@ -85,6 +88,17 @@ jest.mock(
 );
 
 describe(ScheduleDetailsRunsChart.name, () => {
+  it('renders the runs title and status legend in the header', () => {
+    setup();
+
+    const summary = screen.getByTestId(CHART_SUMMARY_TEST_ID);
+
+    expect(within(summary).getByText(CHART_LEGEND_TITLE)).toBeInTheDocument();
+    CHART_LEGEND_ITEMS.forEach(({ label }) => {
+      expect(within(summary).getByText(label)).toBeInTheDocument();
+    });
+  });
+
   it('draws the timeline once the region has been measured', async () => {
     setup();
 
