@@ -48,7 +48,7 @@ jest.mock(
 
 jest.mock('../config/schedules-table.config', () => [
   {
-    name: 'Schedule ID',
+    name: 'Schedule Id',
     id: 'ScheduleId',
     renderCell: ({ scheduleId }: { scheduleId: string }) => scheduleId,
     width: '25%',
@@ -88,7 +88,7 @@ describe(DomainSchedules.name, () => {
     setup();
 
     expect(await screen.findByText(/count=2/)).toBeInTheDocument();
-    expect(screen.getByText('Schedule ID')).toBeInTheDocument();
+    expect(screen.getByText('Schedule Id')).toBeInTheDocument();
     expect(screen.getByText('mock-schedule-id-0-0')).toBeInTheDocument();
   });
 

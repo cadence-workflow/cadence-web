@@ -33,7 +33,7 @@ export default function ScheduleRunsBackfillCell(props: Props) {
       accessibilityType="tooltip"
       content={
         <>
-          <strong>Backfill ID:</strong> {backfillId}
+          <strong>Backfill Id:</strong> {backfillId}
         </>
       }
       showArrow

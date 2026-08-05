@@ -114,7 +114,7 @@ export default function DomainSchedulesCreateAdvancedForm({
         },
       })}
     >
-      <>ID
+      <>
         <DomainSchedulesHorizontalField
           label="Schedule ID"
           description={CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS.scheduleId}
@@ -128,7 +128,7 @@ export default function DomainSchedulesCreateAdvancedForm({
             name="scheduleId"
             control={control}
             render={({ field: { ref, ...field } }) => (
-              <InputID
+              <Input
                 {...field}
                 id={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.scheduleId}
                 // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
@@ -503,7 +503,7 @@ export default function DomainSchedulesCreateAdvancedForm({
                 size="compact"
                 placeholder="Add Jitter duration"
                 endEnhancer={<LabelXSmall>Seconds</LabelXSmall>}
-              />ID
+              />
             )}
           />
         </DomainSchedulesHorizontalField>
@@ -519,7 +519,7 @@ export default function DomainSchedulesCreateAdvancedForm({
           <Controller
             name="workflowIdPrefix"
             control={control}
-            render={({ field: { ref, ID.field } }) => (
+            render={({ field: { ref, ...field } }) => (
               <Input
                 {...field}
                 id={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.workflowIdPrefix}

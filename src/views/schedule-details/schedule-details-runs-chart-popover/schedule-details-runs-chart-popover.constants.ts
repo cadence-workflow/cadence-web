@@ -6,7 +6,7 @@ export const RUN_POPOVER_TIMESTAMP_LABELS = {
 
 export const RUN_POPOVER_STATUS_LABEL = 'Status';
 
-export const RUN_POPOVER_BACKFILL_LABEL = 'Backfill ID';
+export const RUN_POPOVER_BACKFILL_LABEL = 'Backfill Id';
 
 export const RUN_POPOVER_SKIPPED_LABEL = 'Skipped run';
 
