@@ -12,7 +12,7 @@ import {
 export const MAX_CATCH_UP_WINDOW_DAYS = 90;
 
 export const SCHEDULE_ID_READ_ONLY_CAPTION =
-  'Schedule Id cannot be changed after the schedule is created.';
+  'Schedule ID cannot be changed after the schedule is created.';
 
 /** Stable ids for advanced create-schedule horizontal fields. */
 export const CREATE_SCHEDULE_ADVANCED_FIELD_IDS = {
