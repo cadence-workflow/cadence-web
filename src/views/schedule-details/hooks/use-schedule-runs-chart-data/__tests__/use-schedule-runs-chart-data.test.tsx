@@ -14,12 +14,12 @@ const nowMs = Date.UTC(2024, 0, 1, 12, 0);
 const hourMs = 60 * 60_000;
 // createTime is 3 hours before nowMs; every hourly slot since then has no
 // matching run except the one an hour ago, so those are inferred as skipped.
-const SKIPPED_EXECUTIONS_SINCE_CREATE_TIME = [
+const skippedExecutionsSinceCreateTime = [
   { scheduledTimeMs: nowMs - 3 * hourMs },
   { scheduledTimeMs: nowMs - 2 * hourMs },
   { scheduledTimeMs: nowMs },
 ];
-const HOURLY_SCHEDULE_OVERRIDES = {
+const hourlyScheduleOverrides = {
   spec: {
     cronExpression: '0 * * * *',
     startTime: null,
@@ -52,7 +52,7 @@ describe(useScheduleRunsChartData.name, () => {
   it('maps live workflow runs, skipped occurrences, and the next execution once loaded', async () => {
     const { result } = setup({
       describeScheduleResponse: getMockRunningDescribeScheduleResponse(
-        HOURLY_SCHEDULE_OVERRIDES
+        hourlyScheduleOverrides
       ),
       workflowsResponse: {
         workflows: [
@@ -83,7 +83,7 @@ describe(useScheduleRunsChartData.name, () => {
     ]);
     expect(result.current.data.nextExecutionTimeMs).toBe(nowMs + hourMs);
     expect(result.current.data.skippedExecutions).toEqual(
-      SKIPPED_EXECUTIONS_SINCE_CREATE_TIME
+      skippedExecutionsSinceCreateTime
     );
     expect(result.current.timelineStartMs).toBe(nowMs - 3 * hourMs);
   });
@@ -134,7 +134,7 @@ describe(useScheduleRunsChartData.name, () => {
 
     const { result } = setup({
       describeScheduleResponse: getMockRunningDescribeScheduleResponse(
-        HOURLY_SCHEDULE_OVERRIDES
+        hourlyScheduleOverrides
       ),
       workflowsResponse: {
         workflows: [
@@ -167,7 +167,7 @@ describe(useScheduleRunsChartData.name, () => {
     ]);
     expect(result.current.data.nextExecutionTimeMs).toBe(nowMs + hourMs);
     expect(result.current.data.skippedExecutions).toEqual(
-      SKIPPED_EXECUTIONS_SINCE_CREATE_TIME
+      skippedExecutionsSinceCreateTime
     );
   });
 });

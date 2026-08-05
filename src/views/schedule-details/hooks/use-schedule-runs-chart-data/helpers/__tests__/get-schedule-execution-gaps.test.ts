@@ -1,6 +1,6 @@
 import getScheduleExecutionGaps from '../get-schedule-execution-gaps';
 
-const HOUR_MS = 60 * 60_000;
+const hourMs = 60 * 60_000;
 
 describe(getScheduleExecutionGaps.name, () => {
   it('subtracts actual runs from expected cron occurrences', () => {
@@ -11,14 +11,14 @@ describe(getScheduleExecutionGaps.name, () => {
         scheduleEndMs: null,
         oldestLoadedScheduleTimeMs: 0,
         hasNextPage: false,
-        lastFetchedAtMs: 3 * HOUR_MS,
-        nowMs: 3 * HOUR_MS,
-        actualTimesMs: [HOUR_MS, 3 * HOUR_MS],
+        lastFetchedAtMs: 3 * hourMs,
+        nowMs: 3 * hourMs,
+        actualTimesMs: [hourMs, 3 * hourMs],
       })
     ).toEqual({
       skippedExecutions: [
         { scheduledTimeMs: 0 },
-        { scheduledTimeMs: 2 * HOUR_MS },
+        { scheduledTimeMs: 2 * hourMs },
       ],
       unconfirmedExecutions: [],
     });
@@ -35,18 +35,18 @@ describe(getScheduleExecutionGaps.name, () => {
         // The runs page was last fetched two hours ago: slots strictly after
         // that can't be confirmed skipped yet, since a run may not have
         // shown up in the response due to visibility indexing/poll lag.
-        lastFetchedAtMs: 2 * HOUR_MS,
-        nowMs: 4 * HOUR_MS,
-        actualTimesMs: [HOUR_MS],
+        lastFetchedAtMs: 2 * hourMs,
+        nowMs: 4 * hourMs,
+        actualTimesMs: [hourMs],
       })
     ).toEqual({
       skippedExecutions: [
         { scheduledTimeMs: 0 },
-        { scheduledTimeMs: 2 * HOUR_MS },
+        { scheduledTimeMs: 2 * hourMs },
       ],
       unconfirmedExecutions: [
-        { scheduledTimeMs: 3 * HOUR_MS },
-        { scheduledTimeMs: 4 * HOUR_MS },
+        { scheduledTimeMs: 3 * hourMs },
+        { scheduledTimeMs: 4 * hourMs },
       ],
     });
   });
@@ -60,15 +60,15 @@ describe(getScheduleExecutionGaps.name, () => {
         oldestLoadedScheduleTimeMs: 0,
         hasNextPage: false,
         lastFetchedAtMs: null,
-        nowMs: 2 * HOUR_MS,
+        nowMs: 2 * hourMs,
         actualTimesMs: [],
       })
     ).toEqual({
       skippedExecutions: [],
       unconfirmedExecutions: [
         { scheduledTimeMs: 0 },
-        { scheduledTimeMs: HOUR_MS },
-        { scheduledTimeMs: 2 * HOUR_MS },
+        { scheduledTimeMs: hourMs },
+        { scheduledTimeMs: 2 * hourMs },
       ],
     });
   });
@@ -79,16 +79,16 @@ describe(getScheduleExecutionGaps.name, () => {
         cronExpression: '0 * * * *',
         timelineStartMs: 0,
         scheduleEndMs: null,
-        oldestLoadedScheduleTimeMs: 2 * HOUR_MS,
+        oldestLoadedScheduleTimeMs: 2 * hourMs,
         hasNextPage: true,
-        lastFetchedAtMs: 4 * HOUR_MS,
-        nowMs: 4 * HOUR_MS,
-        actualTimesMs: [2 * HOUR_MS],
+        lastFetchedAtMs: 4 * hourMs,
+        nowMs: 4 * hourMs,
+        actualTimesMs: [2 * hourMs],
       })
     ).toEqual({
       skippedExecutions: [
-        { scheduledTimeMs: 3 * HOUR_MS },
-        { scheduledTimeMs: 4 * HOUR_MS },
+        { scheduledTimeMs: 3 * hourMs },
+        { scheduledTimeMs: 4 * hourMs },
       ],
       unconfirmedExecutions: [],
     });
@@ -102,8 +102,8 @@ describe(getScheduleExecutionGaps.name, () => {
         scheduleEndMs: null,
         oldestLoadedScheduleTimeMs: null,
         hasNextPage: true,
-        lastFetchedAtMs: 4 * HOUR_MS,
-        nowMs: 4 * HOUR_MS,
+        lastFetchedAtMs: 4 * hourMs,
+        nowMs: 4 * hourMs,
         actualTimesMs: [],
       })
     ).toEqual({ skippedExecutions: [], unconfirmedExecutions: [] });
@@ -114,17 +114,17 @@ describe(getScheduleExecutionGaps.name, () => {
       getScheduleExecutionGaps({
         cronExpression: '0 * * * *',
         timelineStartMs: 0,
-        scheduleEndMs: 2 * HOUR_MS,
+        scheduleEndMs: 2 * hourMs,
         oldestLoadedScheduleTimeMs: 0,
         hasNextPage: false,
-        lastFetchedAtMs: 4 * HOUR_MS,
-        nowMs: 4 * HOUR_MS,
-        actualTimesMs: [HOUR_MS],
+        lastFetchedAtMs: 4 * hourMs,
+        nowMs: 4 * hourMs,
+        actualTimesMs: [hourMs],
       })
     ).toEqual({
       skippedExecutions: [
         { scheduledTimeMs: 0 },
-        { scheduledTimeMs: 2 * HOUR_MS },
+        { scheduledTimeMs: 2 * hourMs },
       ],
       unconfirmedExecutions: [],
     });
@@ -138,9 +138,9 @@ describe(getScheduleExecutionGaps.name, () => {
         scheduleEndMs: null,
         oldestLoadedScheduleTimeMs: 0,
         hasNextPage: false,
-        lastFetchedAtMs: HOUR_MS,
-        nowMs: HOUR_MS,
-        actualTimesMs: [HOUR_MS, HOUR_MS],
+        lastFetchedAtMs: hourMs,
+        nowMs: hourMs,
+        actualTimesMs: [hourMs, hourMs],
       })
     ).toEqual({
       skippedExecutions: [{ scheduledTimeMs: 0 }],
@@ -156,10 +156,10 @@ describe(getScheduleExecutionGaps.name, () => {
         scheduleEndMs: null,
         oldestLoadedScheduleTimeMs: 0,
         hasNextPage: false,
-        lastFetchedAtMs: 2 * HOUR_MS,
-        nowMs: 2 * HOUR_MS,
-        nextExecutionTimeMs: 2 * HOUR_MS,
-        actualTimesMs: [0, HOUR_MS],
+        lastFetchedAtMs: 2 * hourMs,
+        nowMs: 2 * hourMs,
+        nextExecutionTimeMs: 2 * hourMs,
+        actualTimesMs: [0, hourMs],
       })
     ).toEqual({ skippedExecutions: [], unconfirmedExecutions: [] });
   });
@@ -168,12 +168,12 @@ describe(getScheduleExecutionGaps.name, () => {
     expect(
       getScheduleExecutionGaps({
         cronExpression: '0 * * * *',
-        timelineStartMs: 2 * HOUR_MS,
-        scheduleEndMs: HOUR_MS,
+        timelineStartMs: 2 * hourMs,
+        scheduleEndMs: hourMs,
         oldestLoadedScheduleTimeMs: 0,
         hasNextPage: false,
-        lastFetchedAtMs: 4 * HOUR_MS,
-        nowMs: 4 * HOUR_MS,
+        lastFetchedAtMs: 4 * hourMs,
+        nowMs: 4 * hourMs,
         actualTimesMs: [],
       })
     ).toEqual({ skippedExecutions: [], unconfirmedExecutions: [] });
