@@ -53,6 +53,7 @@ export default function ScheduleDetailsRunsChartGlyph({
       break;
     case WORKFLOW_STATUSES.failed:
     case WORKFLOW_STATUSES.timedOut:
+    case WORKFLOW_STATUSES.terminated:
       statusIcon = (
         <styled.Icon>
           <MdReportGmailerrorred {...iconProps} />
@@ -65,7 +66,6 @@ export default function ScheduleDetailsRunsChartGlyph({
       );
       break;
     case WORKFLOW_STATUSES.canceled:
-    case WORKFLOW_STATUSES.terminated:
       statusIcon = (
         <styled.Icon>
           <MdBlock {...iconProps} />

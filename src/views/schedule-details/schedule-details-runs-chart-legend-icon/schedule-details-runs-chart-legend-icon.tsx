@@ -37,6 +37,7 @@ export default function ScheduleDetailsRunsChartLegendIcon({
       );
     case WORKFLOW_STATUSES.failed:
     case WORKFLOW_STATUSES.timedOut:
+    case WORKFLOW_STATUSES.terminated:
       return (
         <styled.Icon $size={size}>
           <MdReportGmailerrorred {...iconProps} />
@@ -52,7 +53,6 @@ export default function ScheduleDetailsRunsChartLegendIcon({
         />
       );
     case WORKFLOW_STATUSES.canceled:
-    case WORKFLOW_STATUSES.terminated:
       return (
         <styled.Icon $size={size}>
           <MdBlock {...iconProps} />
