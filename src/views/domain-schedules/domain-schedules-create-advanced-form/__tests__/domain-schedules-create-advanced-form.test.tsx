@@ -28,7 +28,7 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
     expect(
       screen.getByRole('button', { name: /show advanced configurations/i })
     ).toBeInTheDocument();
-    expect(screen.queryByLabelText('Schedule Id')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Schedule ID')).not.toBeInTheDocument();
   });
 
   it('expands advanced fields when the toggle is clicked', async () => {
@@ -41,9 +41,9 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
     expect(
       screen.getByRole('button', { name: /hide advanced configurations/i })
     ).toBeInTheDocument();
-    expect(screen.getByLabelText('Schedule Id')).toBeInTheDocument();
+    expect(screen.getByLabelText('Schedule ID')).toBeInTheDocument();
     expect(screen.getByLabelText('Jitter duration')).toBeInTheDocument();
-    expect(screen.getByLabelText('Workflow Id Prefix')).toBeInTheDocument();
+    expect(screen.getByLabelText('Workflow ID Prefix')).toBeInTheDocument();
     expect(screen.getByLabelText('Schedule period start')).toBeInTheDocument();
     expect(screen.getByLabelText('Schedule period end')).toBeInTheDocument();
     expect(screen.getByLabelText('Memo')).toBeInTheDocument();
@@ -62,7 +62,7 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
     await user.click(
       screen.getByRole('button', { name: /show advanced configurations/i })
     );
-    expect(screen.getByLabelText('Schedule Id')).toBeInTheDocument();
+    expect(screen.getByLabelText('Schedule ID')).toBeInTheDocument();
 
     await user.click(
       screen.getByRole('button', { name: /hide advanced configurations/i })
@@ -136,12 +136,12 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
       screen.getByRole('button', { name: /show advanced configurations/i })
     );
 
-    const scheduleId = screen.getByLabelText('Schedule Id');
+    const scheduleId = screen.getByLabelText('Schedule ID');
     await user.type(scheduleId, 'my-schedule');
     await user.clear(scheduleId);
     expect(getValues().scheduleId).toBeUndefined();
 
-    const workflowIdPrefix = screen.getByLabelText('Workflow Id Prefix');
+    const workflowIdPrefix = screen.getByLabelText('Workflow ID Prefix');
     await user.type(workflowIdPrefix, 'prefix');
     await user.clear(workflowIdPrefix);
     expect(getValues().workflowIdPrefix).toBeUndefined();
