@@ -24,6 +24,6 @@ export default function getDomainsForClusterQueryOptions(
     staleTime: 60_000,
     retry: 3,
     refetchOnWindowFocus: (query) => query.state.status !== 'error',
-    retryDelay: 5_000,
+    retryDelay: 3_000,
   };
 }
