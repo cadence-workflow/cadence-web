@@ -58,6 +58,8 @@ import { type UnpauseScheduleRequest__Input } from '@/__generated__/proto-ts/ube
 import { type UnpauseScheduleResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/UnpauseScheduleResponse';
 import { type UpdateDomainRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/UpdateDomainRequest';
 import { type UpdateDomainResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/UpdateDomainResponse';
+import { type UpdateScheduleRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/UpdateScheduleRequest';
+import { type UpdateScheduleResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/UpdateScheduleResponse';
 import { type ClusterConfig } from '@/config/dynamic/resolvers/clusters.types';
 
 import grpcServiceConfigurations from '../../config/grpc/grpc-services-config';
@@ -99,6 +101,9 @@ export type GRPCClusterMethods = {
   describeSchedule: (
     payload: DescribeScheduleRequest__Input
   ) => Promise<DescribeScheduleResponse>;
+  updateSchedule: (
+    payload: UpdateScheduleRequest__Input
+  ) => Promise<UpdateScheduleResponse>;
   describeCluster: (
     payload: DescribeClusterRequest__Input
   ) => Promise<DescribeClusterResponse>;
@@ -299,6 +304,13 @@ const getClusterServicesMethods = async (
       DescribeScheduleResponse
     >({
       method: 'DescribeSchedule',
+      metadata: metadata,
+    }),
+    updateSchedule: scheduleService.request<
+      UpdateScheduleRequest__Input,
+      UpdateScheduleResponse
+    >({
+      method: 'UpdateSchedule',
       metadata: metadata,
     }),
     describeCluster: adminService.request<

@@ -28,7 +28,7 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
     expect(
       screen.getByRole('button', { name: /show advanced configurations/i })
     ).toBeInTheDocument();
-    expect(screen.queryByLabelText('Schedule Id')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Schedule ID')).not.toBeInTheDocument();
   });
 
   it('expands advanced fields when the toggle is clicked', async () => {
@@ -41,9 +41,9 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
     expect(
       screen.getByRole('button', { name: /hide advanced configurations/i })
     ).toBeInTheDocument();
-    expect(screen.getByLabelText('Schedule Id')).toBeInTheDocument();
+    expect(screen.getByLabelText('Schedule ID')).toBeInTheDocument();
     expect(screen.getByLabelText('Jitter duration')).toBeInTheDocument();
-    expect(screen.getByLabelText('Workflow Id Prefix')).toBeInTheDocument();
+    expect(screen.getByLabelText('Workflow ID prefix')).toBeInTheDocument();
     expect(screen.getByLabelText('Schedule period start')).toBeInTheDocument();
     expect(screen.getByLabelText('Schedule period end')).toBeInTheDocument();
     expect(screen.getByLabelText('Memo')).toBeInTheDocument();
@@ -62,7 +62,7 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
     await user.click(
       screen.getByRole('button', { name: /show advanced configurations/i })
     );
-    expect(screen.getByLabelText('Schedule Id')).toBeInTheDocument();
+    expect(screen.getByLabelText('Schedule ID')).toBeInTheDocument();
 
     await user.click(
       screen.getByRole('button', { name: /hide advanced configurations/i })
@@ -136,12 +136,12 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
       screen.getByRole('button', { name: /show advanced configurations/i })
     );
 
-    const scheduleId = screen.getByLabelText('Schedule Id');
+    const scheduleId = screen.getByLabelText('Schedule ID');
     await user.type(scheduleId, 'my-schedule');
     await user.clear(scheduleId);
     expect(getValues().scheduleId).toBeUndefined();
 
-    const workflowIdPrefix = screen.getByLabelText('Workflow Id Prefix');
+    const workflowIdPrefix = screen.getByLabelText('Workflow ID prefix');
     await user.type(workflowIdPrefix, 'prefix');
     await user.clear(workflowIdPrefix);
     expect(getValues().workflowIdPrefix).toBeUndefined();
@@ -177,9 +177,35 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
     expect(screen.getByLabelText('Expiration Interval')).toBeInTheDocument();
     expect(screen.queryByLabelText('Maximum Attempts')).not.toBeInTheDocument();
   });
+
+  it('keeps the Schedule ID field editable by default', async () => {
+    const { user } = setup();
+
+    await user.click(
+      screen.getByRole('button', { name: /show advanced configurations/i })
+    );
+
+    expect(screen.getByLabelText('Schedule ID')).toBeEnabled();
+    expect(
+      screen.queryByText(/schedule id cannot be changed/i)
+    ).not.toBeInTheDocument();
+  });
+
+  it('disables the Schedule ID field and explains why when read-only', async () => {
+    const { user } = setup({ scheduleIdReadOnly: true });
+
+    await user.click(
+      screen.getByRole('button', { name: /show advanced configurations/i })
+    );
+
+    expect(screen.getByLabelText('Schedule ID')).toBeDisabled();
+    expect(
+      screen.getByText(/schedule id cannot be changed/i)
+    ).toBeInTheDocument();
+  });
 });
 
-function setup() {
+function setup({ scheduleIdReadOnly }: { scheduleIdReadOnly?: boolean } = {}) {
   const user = userEvent.setup();
   let getValues: () => DomainSchedulesCreateFormData;
 
@@ -200,6 +226,7 @@ function setup() {
         fieldErrors={fieldErrors}
         clearErrors={clearErrors}
         cluster="test-cluster"
+        scheduleIdReadOnly={scheduleIdReadOnly}
       />
     );
   }
