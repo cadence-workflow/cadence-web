@@ -27,8 +27,6 @@ export const CHART_REGION_ARIA_LABEL = 'Schedule runs chart';
 
 export const CHART_TOOLBAR_ARIA_LABEL = 'Chart controls';
 
-export const CHART_LEGEND_TITLE = 'Runs';
-
 /** Icon size for the legend status glyphs (px). */
 export const CHART_LEGEND_ICON_SIZE_PX = 12;
 

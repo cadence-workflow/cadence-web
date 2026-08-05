@@ -47,7 +47,7 @@ export const styled = {
   })),
   SummaryTitle: createStyled('span', ({ $theme }: { $theme: Theme }) => ({
     color: $theme.colors.contentPrimary,
-    fontWeight: 500,
+    ...$theme.typography.LabelSmall,
   })),
   SummaryItem: createStyled('span', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',

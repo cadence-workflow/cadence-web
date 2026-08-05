@@ -13,7 +13,6 @@ import ScheduleDetailsRunsChart from '../schedule-details-runs-chart';
 import {
   CHART_EMPTY_STATE_MESSAGE,
   CHART_LEGEND_ITEMS,
-  CHART_LEGEND_TITLE,
   CHART_LOADING_TEST_ID,
   CHART_REGION_ARIA_LABEL,
   CHART_SUMMARY_TEST_ID,
@@ -93,7 +92,7 @@ describe(ScheduleDetailsRunsChart.name, () => {
 
     const summary = screen.getByTestId(CHART_SUMMARY_TEST_ID);
 
-    expect(within(summary).getByText(CHART_LEGEND_TITLE)).toBeInTheDocument();
+    expect(within(summary).getByText('Runs:')).toBeInTheDocument();
     CHART_LEGEND_ITEMS.forEach(({ label }) => {
       expect(within(summary).getByText(label)).toBeInTheDocument();
     });

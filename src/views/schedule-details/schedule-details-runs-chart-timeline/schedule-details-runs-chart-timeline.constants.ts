@@ -8,8 +8,6 @@ export const CHART_TIMELINE_Y_PX = 58;
 /** Baseline of the time tick labels, measured from the chart top (px). */
 export const CHART_TICK_LABEL_Y_PX = 14;
 
-export const CHART_TICK_FONT_SIZE_PX = 11;
-
 export const CHART_NOW_STROKE_WIDTH_PX = 2;
 
 /** Horizontal space a `MMM D, HH:mm` tick label needs to stay legible (px). */

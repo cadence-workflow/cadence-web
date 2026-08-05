@@ -22,7 +22,6 @@ import {
   CHART_HEIGHT_PX,
   CHART_LEGEND_ICON_SIZE_PX,
   CHART_LEGEND_ITEMS,
-  CHART_LEGEND_TITLE,
   CHART_REGION_ARIA_LABEL,
   CHART_SUMMARY_TEST_ID,
   CHART_TOOLBAR_ARIA_LABEL,
@@ -81,7 +80,7 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
     <styled.Container>
       <styled.Header>
         <styled.Summary data-testid={CHART_SUMMARY_TEST_ID}>
-          <styled.SummaryTitle>{CHART_LEGEND_TITLE}</styled.SummaryTitle>
+          <styled.SummaryTitle>Runs:</styled.SummaryTitle>
           {CHART_LEGEND_ITEMS.map(({ variant, label }) => (
             <styled.SummaryItem key={variant}>
               <ScheduleDetailsRunsChartLegendIcon
