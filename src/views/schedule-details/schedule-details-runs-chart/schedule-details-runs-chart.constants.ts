@@ -27,12 +27,10 @@ export const CHART_REGION_ARIA_LABEL = 'Schedule runs chart';
 
 export const CHART_TOOLBAR_ARIA_LABEL = 'Chart controls';
 
-/** Icon size for the legend status glyphs (px). */
-export const CHART_LEGEND_ICON_SIZE_PX = 12;
+export const CHART_LEGEND_ICON_SIZE_PX = 14;
 
 export const CHART_SUMMARY_TEST_ID = 'schedule-runs-chart-summary';
 
-/** Legend rows, in render order, mapping a status glyph to its label. */
 export const CHART_LEGEND_ITEMS = [
   { variant: WORKFLOW_STATUSES.completed, label: 'Completed' },
   {
