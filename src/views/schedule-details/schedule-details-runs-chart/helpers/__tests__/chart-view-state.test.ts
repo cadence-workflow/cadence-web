@@ -187,36 +187,36 @@ describe(shiftChartTimeWindow.name, () => {
 });
 
 describe(resolveChartZoomAnchorMs.name, () => {
-  const visibleWindow = { minMs: 0, maxMs: 1 * HOUR_MS };
+  const visibleWindow = { minMs: 0, maxMs: 1 * hourMs };
 
   it('anchors on now while following', () => {
     expect(
       resolveChartZoomAnchorMs({
         visibleWindow,
-        nowMs: 0.5 * HOUR_MS,
+        nowMs: 0.5 * hourMs,
         isFollowing: true,
       })
-    ).toBe(0.5 * HOUR_MS);
+    ).toBe(0.5 * hourMs);
   });
 
   it('anchors on now when it is still visible after panning', () => {
     expect(
       resolveChartZoomAnchorMs({
         visibleWindow,
-        nowMs: 0.2 * HOUR_MS,
+        nowMs: 0.2 * hourMs,
         isFollowing: false,
       })
-    ).toBe(0.2 * HOUR_MS);
+    ).toBe(0.2 * hourMs);
   });
 
   it('falls back to the window center when now is off-screen', () => {
     expect(
       resolveChartZoomAnchorMs({
         visibleWindow,
-        nowMs: 2 * HOUR_MS,
+        nowMs: 2 * hourMs,
         isFollowing: false,
       })
-    ).toBe(0.5 * HOUR_MS);
+    ).toBe(0.5 * hourMs);
   });
 });
 
