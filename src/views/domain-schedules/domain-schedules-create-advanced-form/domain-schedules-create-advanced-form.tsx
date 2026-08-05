@@ -116,7 +116,7 @@ export default function DomainSchedulesCreateAdvancedForm({
     >
       <>
         <DomainSchedulesHorizontalField
-          label="Schedule Id"
+          label="Schedule ID"
           description={CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS.scheduleId}
           htmlFor={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.scheduleId}
           caption={
