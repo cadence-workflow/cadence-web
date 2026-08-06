@@ -8,6 +8,7 @@ export const mockGrpcClusterMethods: GRPCClusterMethods = {
   backfillSchedule: jest.fn(),
   deleteSchedule: jest.fn(),
   describeSchedule: jest.fn(),
+  updateSchedule: jest.fn(),
   describeCluster: jest.fn(),
   describeDomain: jest.fn(),
   updateDomain: jest.fn(),

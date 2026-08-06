@@ -1,3 +1,7 @@
+import { WORKFLOW_STATUSES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
+
+import { type ChartLegendVariant } from '../schedule-details-runs-chart-legend-icon/schedule-details-runs-chart-legend-icon.types';
+
 export const CHART_HEIGHT_PX = 82;
 
 /** Header row height, sized to fit the mini toolbar buttons (px). */
@@ -22,6 +26,25 @@ export const CHART_LOADING_TEST_ID = 'schedule-runs-chart-loading-skeleton';
 export const CHART_REGION_ARIA_LABEL = 'Schedule runs chart';
 
 export const CHART_TOOLBAR_ARIA_LABEL = 'Chart controls';
+
+export const CHART_LEGEND_ICON_SIZE_PX = 14;
+
+export const CHART_SUMMARY_TEST_ID = 'schedule-runs-chart-summary';
+
+export const CHART_LEGEND_ITEMS = [
+  { variant: WORKFLOW_STATUSES.completed, label: 'Completed' },
+  {
+    variant: WORKFLOW_STATUSES.failed,
+    label: 'Terminated/Timed out/Failed',
+  },
+  { variant: WORKFLOW_STATUSES.running, label: 'Running' },
+  { variant: WORKFLOW_STATUSES.canceled, label: 'Cancelled' },
+  { variant: 'skipped', label: 'Skipped' },
+  { variant: 'next', label: 'Next run' },
+] as const satisfies ReadonlyArray<{
+  variant: ChartLegendVariant;
+  label: string;
+}>;
 
 /**
  * How often `now` is re-read. Every tick shifts the time window, re-rendering
@@ -52,3 +75,15 @@ export const CHART_RUN_POPOVER_TEST_IDS = {
   skippedTrigger: 'schedule-runs-chart-skipped-popover-trigger',
   nextTrigger: 'schedule-runs-chart-next-popover-trigger',
 } as const;
+
+/** Multiplier applied when zooming in (smaller span). */
+export const CHART_ZOOM_IN_FACTOR = 0.5;
+
+/** Multiplier applied when zooming out (larger span). */
+export const CHART_ZOOM_OUT_FACTOR = 2;
+
+/** Horizontal position of `now` after panning (0 = left edge, 1 = right edge). */
+export const CHART_NOW_ANCHOR_RATIO = 0.85;
+
+/** Horizontal position of the next run when following pulls it into view. */
+export const CHART_NEXT_RUN_ANCHOR_RATIO = 0.95;

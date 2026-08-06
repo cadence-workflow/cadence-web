@@ -3,17 +3,13 @@ import React from 'react';
 import { useStyletron } from 'baseui';
 import { Skeleton } from 'baseui/skeleton';
 import { Spinner } from 'baseui/spinner';
-import {
-  MdAdjust,
-  MdBlock,
-  MdCheckCircleOutline,
-  MdHistory,
-  MdReportGmailerrorred,
-} from 'react-icons/md';
+import { MdHistory } from 'react-icons/md';
 
 import { WORKFLOW_STATUSES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
 
-import getChartGlyphColor from './helpers/get-chart-glyph-color';
+import getChartGlyphColor from '../schedule-details-runs-chart/helpers/get-chart-glyph-color';
+import getChartStatusIcon from '../schedule-details-runs-chart/helpers/get-chart-status-icon';
+
 import {
   CHART_GLYPH_MARKER_SIZE_PX,
   CHART_GLYPH_TEST_IDS,
@@ -43,33 +39,9 @@ export default function ScheduleDetailsRunsChartGlyph({
 
   let statusIcon: React.ReactNode;
   switch (variant) {
-    case WORKFLOW_STATUSES.completed:
-    case WORKFLOW_STATUSES.continuedAsNew:
-      statusIcon = (
-        <styled.Icon>
-          <MdCheckCircleOutline {...iconProps} />
-        </styled.Icon>
-      );
-      break;
-    case WORKFLOW_STATUSES.failed:
-    case WORKFLOW_STATUSES.timedOut:
-      statusIcon = (
-        <styled.Icon>
-          <MdReportGmailerrorred {...iconProps} />
-        </styled.Icon>
-      );
-      break;
     case WORKFLOW_STATUSES.running:
       statusIcon = (
         <Spinner $size={CHART_GLYPH_MARKER_SIZE_PX} $color={color} />
-      );
-      break;
-    case WORKFLOW_STATUSES.canceled:
-    case WORKFLOW_STATUSES.terminated:
-      statusIcon = (
-        <styled.Icon>
-          <MdBlock {...iconProps} />
-        </styled.Icon>
       );
       break;
     case 'skipped':
@@ -85,13 +57,14 @@ export default function ScheduleDetailsRunsChartGlyph({
         />
       );
       break;
-    case 'next':
+    default: {
+      const StatusIcon = getChartStatusIcon(variant);
       statusIcon = (
         <styled.Icon>
-          <MdAdjust {...iconProps} />
+          <StatusIcon {...iconProps} />
         </styled.Icon>
       );
-      break;
+    }
   }
 
   return (

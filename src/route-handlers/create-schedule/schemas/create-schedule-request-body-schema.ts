@@ -37,41 +37,50 @@ const scheduleStartWorkflowBodySchema = z.object({
     .optional(),
 });
 
-const createScheduleRequestBodySchema = z
-  .object({
-    // Schedule identity (server generates one when omitted)
-    scheduleId: z.string().min(1).optional(),
+/**
+ * Spec, policies and action fields shared by create and update. UpdateSchedule
+ * accepts the same payload minus the schedule id, which it takes from the URL.
+ */
+export const scheduleBodyFieldsSchema = z.object({
+  // Schedule spec
+  cronExpression: z.string().min(1),
+  startTime: z.string().datetime().optional(),
+  endTime: z.string().datetime().optional(),
+  jitterSeconds: z.number().nonnegative().optional(),
 
-    // Schedule spec
-    cronExpression: z.string().min(1),
-    startTime: z.string().datetime().optional(),
-    endTime: z.string().datetime().optional(),
-    jitterSeconds: z.number().nonnegative().optional(),
+  // Schedule policies
+  overlapPolicy: z.enum(SCHEDULE_OVERLAP_POLICIES).optional(),
+  catchUpPolicy: z.enum(SCHEDULE_CATCH_UP_POLICIES).optional(),
+  catchUpWindowSeconds: z.number().nonnegative().optional(),
+  pauseOnFailure: z.boolean().optional(),
+  bufferLimit: z.number().int().nonnegative().optional(),
+  concurrencyLimit: z.number().int().nonnegative().optional(),
 
-    // Schedule policies
-    overlapPolicy: z.enum(SCHEDULE_OVERLAP_POLICIES).optional(),
-    catchUpPolicy: z.enum(SCHEDULE_CATCH_UP_POLICIES).optional(),
-    catchUpWindowSeconds: z.number().nonnegative().optional(),
-    pauseOnFailure: z.boolean().optional(),
-    bufferLimit: z.number().int().nonnegative().optional(),
-    concurrencyLimit: z.number().int().nonnegative().optional(),
+  // Start-workflow action
+  startWorkflow: scheduleStartWorkflowBodySchema,
+});
 
-    // Start-workflow action
-    startWorkflow: scheduleStartWorkflowBodySchema,
-  })
-  .superRefine((data, ctx) => {
-    const schedulePeriodError = getSchedulePeriodError(
-      data.startTime,
-      data.endTime
-    );
+export function refineScheduleBodyPeriod(
+  data: { startTime?: string; endTime?: string },
+  ctx: z.RefinementCtx
+) {
+  const schedulePeriodError = getSchedulePeriodError(
+    data.startTime,
+    data.endTime
+  );
 
-    if (schedulePeriodError) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: schedulePeriodError.message,
-        path: ['endTime'],
-      });
-    }
-  });
+  if (schedulePeriodError) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: schedulePeriodError.message,
+      path: ['endTime'],
+    });
+  }
+}
+
+const createScheduleRequestBodySchema = scheduleBodyFieldsSchema
+  // Schedule identity (server generates one when omitted)
+  .extend({ scheduleId: z.string().min(1).optional() })
+  .superRefine(refineScheduleBodyPeriod);
 
 export default createScheduleRequestBodySchema;

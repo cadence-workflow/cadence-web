@@ -10,7 +10,7 @@ import { TABLE_CELL_PLACEHOLDER_TEXT } from '../domain-schedules.constants';
 
 const schedulesTableConfig = [
   {
-    name: 'Schedule Id',
+    name: 'Schedule ID',
     id: 'ScheduleId',
     renderCell: (row: ScheduleListEntry) =>
       createElement(

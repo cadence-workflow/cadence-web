@@ -127,5 +127,6 @@ export default function useScheduleRunsChartData({
       describeQuery.isLoading ||
       domainQuery.isLoading ||
       workflowsQuery.isLoading,
+    timelineStartMs: timelineBounds.timelineStartMs,
   };
 }

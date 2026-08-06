@@ -8,14 +8,14 @@ import ScheduleDetailsRunsChartGlyph from '../schedule-details-runs-chart-glyph'
 import { CHART_GLYPH_TEST_IDS } from '../schedule-details-runs-chart-glyph.constants';
 import { type Props } from '../schedule-details-runs-chart-glyph.types';
 
-const COMPLETED_LABEL = 'Completed schedule run run-1';
+const completedLabel = 'Completed schedule run run-1';
 
 describe(ScheduleDetailsRunsChartGlyph.name, () => {
   it('renders a single marker with an accessible label', () => {
-    setup({ variant: WORKFLOW_STATUSES.completed, label: COMPLETED_LABEL });
+    setup({ variant: WORKFLOW_STATUSES.completed, label: completedLabel });
 
     expect(
-      screen.getByRole('img', { name: COMPLETED_LABEL })
+      screen.getByRole('img', { name: completedLabel })
     ).toBeInTheDocument();
   });
 
@@ -33,7 +33,7 @@ describe(ScheduleDetailsRunsChartGlyph.name, () => {
     setup({
       variant: WORKFLOW_STATUSES.completed,
       isBackfill: true,
-      label: COMPLETED_LABEL,
+      label: completedLabel,
     });
 
     expect(

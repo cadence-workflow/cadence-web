@@ -38,6 +38,16 @@ describe(ScheduleDetailsRunsChartTimeline.name, () => {
     expect(labels[labels.length - 1]).toHaveAttribute('text-anchor', 'end');
   });
 
+  it('uses theme typography for tick labels', () => {
+    setup();
+
+    const label = getTickLabels()[0];
+
+    expect(label).toHaveAttribute('font-family');
+    expect(label).toHaveAttribute('font-size');
+    expect(label).toHaveAttribute('font-weight');
+  });
+
   it('thins the labels out on a chart too narrow to fit them', () => {
     setup({ width: 120 });
 

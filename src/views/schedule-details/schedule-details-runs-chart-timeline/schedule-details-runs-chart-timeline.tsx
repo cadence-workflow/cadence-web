@@ -9,7 +9,6 @@ import resolveChartTickCount from './helpers/resolve-chart-tick-count';
 import {
   CHART_NOW_MARKER_TEST_ID,
   CHART_NOW_STROKE_WIDTH_PX,
-  CHART_TICK_FONT_SIZE_PX,
   CHART_TICK_LABEL_Y_PX,
   CHART_TIMELINE_TEST_ID,
   CHART_TIMELINE_Y_PX,
@@ -23,6 +22,7 @@ export default function ScheduleDetailsRunsChartTimeline({
   nowMs,
 }: Props) {
   const [, theme] = useStyletron();
+  const tickLabelTypography = theme.typography.LabelXSmall;
   const [visibleMinMs, visibleMaxMs] = xScale.domain();
   const tickCount = resolveChartTickCount(width);
   const tickStepMs = (visibleMaxMs - visibleMinMs) / (tickCount - 1);
@@ -51,13 +51,13 @@ export default function ScheduleDetailsRunsChartTimeline({
             x={xScale(timestampMs)}
             y={CHART_TICK_LABEL_Y_PX}
             textAnchor={textAnchor}
-            fontSize={CHART_TICK_FONT_SIZE_PX}
+            fontFamily={tickLabelTypography.fontFamily}
+            fontSize={tickLabelTypography.fontSize}
+            fontWeight={tickLabelTypography.fontWeight}
             pointerEvents="none"
           >
             <tspan fill={theme.colors.contentTertiary}>{date} </tspan>
-            <tspan fill={theme.colors.contentPrimary} fontWeight={500}>
-              {time}
-            </tspan>
+            <tspan fill={theme.colors.contentPrimary}>{time}</tspan>
           </text>
         );
       })}

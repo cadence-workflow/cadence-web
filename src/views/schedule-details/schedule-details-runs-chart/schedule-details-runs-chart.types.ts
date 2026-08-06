@@ -35,3 +35,25 @@ export type CreateChartXScaleParams = {
   timeWindow: ChartTimeWindow;
   range: ChartPixelRange;
 };
+
+export type ZoomChartTimeWindowParams = {
+  visibleWindow: ChartTimeWindow;
+  bounds: ChartTimeWindow;
+  maxSpanMs: number;
+  factor: number;
+  anchorMs: number;
+};
+
+export type PanChartTimeWindowToTimeParams = {
+  visibleWindow: ChartTimeWindow;
+  bounds: ChartTimeWindow;
+  timeMs: number;
+  anchorRatio?: number;
+};
+
+export type ResolveChartFollowTimeWindowParams = {
+  visibleWindow: ChartTimeWindow;
+  bounds: ChartTimeWindow;
+  nowMs: number;
+  nextExecutionMs?: number | null;
+};

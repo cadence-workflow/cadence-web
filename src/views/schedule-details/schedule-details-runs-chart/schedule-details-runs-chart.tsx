@@ -1,5 +1,5 @@
 'use client';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import { useParentSize } from '@visx/responsive';
 import { Skeleton } from 'baseui/skeleton';
@@ -8,25 +8,35 @@ import { MdGpsFixed, MdZoomIn, MdZoomOut } from 'react-icons/md';
 import Button from '@/components/button/button';
 import useCurrentTimeMs from '@/hooks/use-current-time-ms/use-current-time-ms';
 import useScheduleRunsChartData from '@/views/schedule-details/hooks/use-schedule-runs-chart-data/use-schedule-runs-chart-data';
+import useScheduleRunsChartViewState from '@/views/schedule-details/hooks/use-schedule-runs-chart-view-state/use-schedule-runs-chart-view-state';
+import ScheduleDetailsRunsChartLegendIcon from '@/views/schedule-details/schedule-details-runs-chart-legend-icon/schedule-details-runs-chart-legend-icon';
 
 import hasScheduleRunsChartData from '../schedule-details-runs-chart-series/helpers/has-schedule-runs-chart-data';
 import ScheduleDetailsRunsChartSeries from '../schedule-details-runs-chart-series/schedule-details-runs-chart-series';
 import ScheduleDetailsRunsChartTimeline from '../schedule-details-runs-chart-timeline/schedule-details-runs-chart-timeline';
 
+import { getChartTimeWindowSpanMs } from './helpers/chart-view-state';
 import createChartXScale from './helpers/create-chart-x-scale';
+import filterChartSeriesDataToVisibleWindow from './helpers/filter-chart-series-data-to-visible-window';
 import resolveChartPixelRange from './helpers/resolve-chart-pixel-range';
 import resolveChartTimeWindow from './helpers/resolve-chart-time-window';
 import {
   CHART_EMPTY_STATE_MESSAGE,
   CHART_HEIGHT_PX,
+  CHART_LEGEND_ICON_SIZE_PX,
+  CHART_LEGEND_ITEMS,
   CHART_REGION_ARIA_LABEL,
+  CHART_SUMMARY_TEST_ID,
   CHART_TOOLBAR_ARIA_LABEL,
   CHART_TOOLBAR_BUTTON_LABELS,
   CHART_TOOLBAR_ICON_SIZE_PX,
   CURRENT_TIME_UPDATE_INTERVAL_MS,
 } from './schedule-details-runs-chart.constants';
 import { overrides, styled } from './schedule-details-runs-chart.styles';
-import { type Props } from './schedule-details-runs-chart.types';
+import {
+  type ChartTimeWindow,
+  type Props,
+} from './schedule-details-runs-chart.types';
 
 export default function ScheduleDetailsRunsChart({ params }: Props) {
   const nowMs = useCurrentTimeMs({
@@ -36,7 +46,11 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
     initialSize: { width: 0, height: CHART_HEIGHT_PX },
   });
 
-  const { data: chartData, isLoading } = useScheduleRunsChartData({
+  const {
+    data: chartData,
+    isLoading,
+    timelineStartMs,
+  } = useScheduleRunsChartData({
     domain: params.domain,
     cluster: params.cluster,
     scheduleId: params.scheduleId,
@@ -44,8 +58,8 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
   });
   const hasChartData = hasScheduleRunsChartData(chartData);
 
-  const xScale = useMemo(() => {
-    const timestampsMs = [
+  const timestampsMs = useMemo(
+    () => [
       ...chartData.runs.map(({ scheduledTimeMs }) => scheduledTimeMs),
       ...chartData.skippedExecutions.map(
         ({ scheduledTimeMs }) => scheduledTimeMs
@@ -53,20 +67,91 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
       ...chartData.unconfirmedExecutions.map(
         ({ scheduledTimeMs }) => scheduledTimeMs
       ),
-    ];
-    const timeWindow = resolveChartTimeWindow({
-      timestampsMs,
-      nowMs,
-      nextExecutionMs: chartData.nextExecutionTimeMs,
-    });
+    ],
+    [chartData]
+  );
+
+  // The chart's current auto-fit window doubles as both the loaded-data
+  // bounds and the initial zoom level. Sizing the initial zoom from the
+  // schedule's cron cadence instead is a follow-up.
+  const loadedTimeWindow = useMemo(
+    () =>
+      resolveChartTimeWindow({
+        timestampsMs,
+        nowMs,
+        nextExecutionMs: chartData.nextExecutionTimeMs,
+        minimumTimeMs: timelineStartMs,
+      }),
+    [chartData.nextExecutionTimeMs, nowMs, timelineStartMs, timestampsMs]
+  );
+
+  const navigationBounds = useMemo<ChartTimeWindow | null>(
+    () =>
+      loadedTimeWindow
+        ? {
+            minMs: Math.min(
+              timelineStartMs ?? loadedTimeWindow.minMs,
+              loadedTimeWindow.minMs
+            ),
+            maxMs: loadedTimeWindow.maxMs,
+          }
+        : null,
+    [loadedTimeWindow, timelineStartMs]
+  );
+
+  const {
+    visibleWindow,
+    canZoomIn,
+    canZoomOut,
+    initializeWindow,
+    zoomIn,
+    zoomOut,
+  } = useScheduleRunsChartViewState({
+    bounds: navigationBounds,
+    nowMs,
+    nextExecutionMs: chartData.nextExecutionTimeMs,
+  });
+
+  useEffect(() => {
+    if (
+      visibleWindow != null ||
+      isLoading ||
+      loadedTimeWindow == null ||
+      navigationBounds == null
+    ) {
+      return;
+    }
+
+    // Zooming out is capped at the full navigable range, since there is no
+    // cron-cadence-aware sizing yet to pick a tighter max span.
+    initializeWindow(
+      loadedTimeWindow,
+      getChartTimeWindowSpanMs(navigationBounds)
+    );
+  }, [
+    initializeWindow,
+    isLoading,
+    loadedTimeWindow,
+    navigationBounds,
+    visibleWindow,
+  ]);
+
+  const toolbarEnabled = hasChartData && visibleWindow != null && !isLoading;
+
+  const xScale = useMemo(() => {
     const range = resolveChartPixelRange({ widthPx: width });
 
-    if (timeWindow === null || range === null) {
+    if (range === null || visibleWindow === null) {
       return null;
     }
 
-    return createChartXScale({ timeWindow, range });
-  }, [chartData, nowMs, width]);
+    return createChartXScale({ timeWindow: visibleWindow, range });
+  }, [visibleWindow, width]);
+
+  const visibleData = useMemo(
+    () => filterChartSeriesDataToVisibleWindow(chartData, visibleWindow),
+    [chartData, visibleWindow]
+  );
 
   const showLoadingOverlay = isLoading;
   const showEmptyState = !isLoading && (xScale === null || !hasChartData);
@@ -75,12 +160,26 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
   return (
     <styled.Container>
       <styled.Header>
+        <styled.Summary data-testid={CHART_SUMMARY_TEST_ID}>
+          <styled.SummaryTitle>Runs:</styled.SummaryTitle>
+          {CHART_LEGEND_ITEMS.map(({ variant, label }) => (
+            <styled.SummaryItem key={variant}>
+              <ScheduleDetailsRunsChartLegendIcon
+                variant={variant}
+                size={CHART_LEGEND_ICON_SIZE_PX}
+              />
+              {label}
+            </styled.SummaryItem>
+          ))}
+        </styled.Summary>
         <styled.Toolbar role="toolbar" aria-label={CHART_TOOLBAR_ARIA_LABEL}>
           <Button
             size="mini"
             kind="tertiary"
-            disabled
+            disabled={!toolbarEnabled || !canZoomOut}
+            aria-disabled={!toolbarEnabled || !canZoomOut}
             overrides={overrides.toolbarButton}
+            onClick={zoomOut}
           >
             <styled.ControlContent>
               <MdZoomOut size={CHART_TOOLBAR_ICON_SIZE_PX} />
@@ -90,8 +189,10 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
           <Button
             size="mini"
             kind="tertiary"
-            disabled
+            disabled={!toolbarEnabled || !canZoomIn}
+            aria-disabled={!toolbarEnabled || !canZoomIn}
             overrides={overrides.toolbarButton}
+            onClick={zoomIn}
           >
             <styled.ControlContent>
               <MdZoomIn size={CHART_TOOLBAR_ICON_SIZE_PX} />
@@ -142,7 +243,7 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
             </styled.ChartSvg>
             <ScheduleDetailsRunsChartSeries
               xScale={xScale}
-              data={chartData}
+              data={visibleData}
               domain={params.domain}
               cluster={params.cluster}
             />

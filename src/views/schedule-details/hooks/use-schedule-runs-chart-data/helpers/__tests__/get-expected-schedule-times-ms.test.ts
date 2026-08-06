@@ -1,7 +1,7 @@
 import { MAX_SCHEDULE_CRON_OCCURRENCES } from '../../use-schedule-runs-chart-data.constants';
 import getExpectedScheduleTimesMs from '../get-expected-schedule-times-ms';
 
-const MINUTE_MS = 60_000;
+const minuteMs = 60_000;
 
 describe(getExpectedScheduleTimesMs.name, () => {
   it('iterates Cadence cron expressions within an inclusive range', () => {
@@ -23,18 +23,18 @@ describe(getExpectedScheduleTimesMs.name, () => {
       getExpectedScheduleTimesMs({
         cronExpression: '@every 1m',
         startMs: 0,
-        endMs: 10 * MINUTE_MS,
+        endMs: 10 * minuteMs,
       })
     ).toEqual([]);
     const cappedOccurrences = getExpectedScheduleTimesMs({
       cronExpression: '* * * * *',
       startMs: 0,
-      endMs: (MAX_SCHEDULE_CRON_OCCURRENCES + 1) * MINUTE_MS,
+      endMs: (MAX_SCHEDULE_CRON_OCCURRENCES + 1) * minuteMs,
     });
 
     expect(cappedOccurrences).toHaveLength(MAX_SCHEDULE_CRON_OCCURRENCES);
     expect(cappedOccurrences.at(-1)).toBe(
-      (MAX_SCHEDULE_CRON_OCCURRENCES + 1) * MINUTE_MS
+      (MAX_SCHEDULE_CRON_OCCURRENCES + 1) * minuteMs
     );
   });
 });
