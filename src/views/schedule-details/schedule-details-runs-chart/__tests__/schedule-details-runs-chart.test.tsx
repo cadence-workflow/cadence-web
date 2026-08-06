@@ -3,7 +3,14 @@ import React from 'react';
 import { act } from '@testing-library/react';
 import { HttpResponse } from 'msw';
 
-import { render, screen, userEvent, waitFor, within } from '@/test-utils/rtl';
+import {
+  fireEvent,
+  render,
+  screen,
+  userEvent,
+  waitFor,
+  within,
+} from '@/test-utils/rtl';
 
 import { getMockRunningDescribeScheduleResponse } from '@/route-handlers/describe-schedule/__fixtures__/mock-describe-schedule-response';
 import { type DescribeScheduleResponse } from '@/route-handlers/describe-schedule/describe-schedule.types';
@@ -102,6 +109,15 @@ jest.mock(
   '../../schedule-details-runs-chart-series/schedule-details-runs-chart-series',
   () => jest.fn(() => <div>Mock series</div>)
 );
+
+// jsdom has no PointerEvent/setPointerCapture support, and its rAF never
+// fires without a "visual" window; polyfill just enough to dispatch a drag
+// through the real pointer handlers below.
+window.PointerEvent ??= window.MouseEvent as unknown as typeof PointerEvent;
+Element.prototype.setPointerCapture ??= () => undefined;
+window.requestAnimationFrame = (callback) =>
+  window.setTimeout(() => callback(Date.now()), 0);
+window.cancelAnimationFrame = (handle) => window.clearTimeout(handle);
 
 describe(ScheduleDetailsRunsChart.name, () => {
   it('renders the runs title and status legend in the header', () => {
@@ -232,6 +248,39 @@ describe(ScheduleDetailsRunsChart.name, () => {
     await user.click(nowButton);
 
     await waitFor(() => expect(nowButton).toBeDisabled());
+  });
+
+  it('batches a drag\u2019s pointermove events into a single pan per animation frame', async () => {
+    setup({ describeScheduleResponse: describeScheduleWithWideHistory });
+
+    const toolbar = screen.getByRole('toolbar', { name: 'Chart controls' });
+    const nowButton = within(toolbar).getByRole('button', {
+      name: CHART_TOOLBAR_BUTTON_LABELS.now,
+    });
+    const canvas =
+      await within(getChartRegion()).findByTestId(CHART_CANVAS_TEST_ID);
+
+    await waitFor(() => expect(nowButton).toBeDisabled());
+
+    act(() => {
+      fireEvent.pointerDown(canvas, { button: 0, clientX: 400 });
+    });
+
+    act(() => {
+      fireEvent.pointerMove(window, { clientX: 420 });
+      fireEvent.pointerMove(window, { clientX: 440 });
+      fireEvent.pointerMove(window, { clientX: 460 });
+    });
+
+    // Several move events land in the same tick, before the batched
+    // animation-frame flush runs -- the pan should not be applied yet.
+    expect(nowButton).toBeDisabled();
+
+    await waitFor(() => expect(nowButton).not.toBeDisabled());
+
+    act(() => {
+      fireEvent.pointerUp(window);
+    });
   });
 });
 

@@ -51,7 +51,10 @@ export default function resolveInitialChartTimeWindow({
           CHART_DEFAULT_PAST_WINDOW_MS /
             Math.min(
               CHART_INITIAL_EXPECTED_RUN_COUNT,
-              Math.max(1, Math.floor(drawableWidthPx / CHART_EXPECTED_RUN_SLOT_PX))
+              Math.max(
+                1,
+                Math.floor(drawableWidthPx / CHART_EXPECTED_RUN_SLOT_PX)
+              )
             )
         );
 
