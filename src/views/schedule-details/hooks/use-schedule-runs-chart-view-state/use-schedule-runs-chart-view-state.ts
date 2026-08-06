@@ -8,8 +8,6 @@ import {
   getChartTimeWindowSpanMs,
   isSameChartTimeWindow,
   resolveChartFollowTimeWindow,
-  resolveChartZoomAnchorMs,
-  shiftChartTimeWindow,
   zoomChartTimeWindow,
 } from '@/views/schedule-details/schedule-details-runs-chart/helpers/chart-view-state';
 import {
@@ -112,11 +110,8 @@ export default function useScheduleRunsChartViewState({
         bounds,
         maxSpanMs,
         factor,
-        anchorMs: resolveChartZoomAnchorMs({
-          visibleWindow: currentVisibleWindow,
-          nowMs,
-          isFollowing,
-        }),
+        nowMs,
+        isFollowing,
       });
 
       updateVisibleWindow(
@@ -171,11 +166,21 @@ export default function useScheduleRunsChartViewState({
         return false;
       }
 
-      const pannedWindow = shiftChartTimeWindow({
-        visibleWindow: currentVisibleWindow,
-        deltaMs,
-        bounds,
-      });
+      const spanMs = getChartTimeWindowSpanMs(currentVisibleWindow);
+      let minMs = currentVisibleWindow.minMs + deltaMs;
+      let maxMs = currentVisibleWindow.maxMs + deltaMs;
+
+      if (minMs < bounds.minMs) {
+        minMs = bounds.minMs;
+        maxMs = minMs + spanMs;
+      }
+
+      if (maxMs > bounds.maxMs) {
+        maxMs = bounds.maxMs;
+        minMs = maxMs - spanMs;
+      }
+
+      const pannedWindow = { minMs, maxMs };
 
       if (isSameChartTimeWindow(pannedWindow, currentVisibleWindow)) {
         return false;

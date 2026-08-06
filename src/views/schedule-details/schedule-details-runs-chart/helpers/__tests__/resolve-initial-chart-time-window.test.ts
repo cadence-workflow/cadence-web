@@ -3,25 +3,11 @@ import {
   CHART_MAX_ZOOM_OUT_MARKER_SPACING_PX,
   CHART_NOW_ANCHOR_RATIO,
 } from '../../schedule-details-runs-chart.constants';
-import resolveInitialChartTimeWindow, {
-  getReadableExpectedRunCount,
-} from '../resolve-initial-chart-time-window';
+import resolveInitialChartTimeWindow from '../resolve-initial-chart-time-window';
 
 const mockNowMs = new Date('2024-06-15T12:00:00Z').getTime();
 const hourMs = 60 * 60_000;
 const chartWidthPx = 800;
-
-describe(getReadableExpectedRunCount.name, () => {
-  it('scales with the available chart width', () => {
-    expect(getReadableExpectedRunCount(200)).toBeLessThan(
-      getReadableExpectedRunCount(2000)
-    );
-  });
-
-  it('never returns less than one', () => {
-    expect(getReadableExpectedRunCount(0)).toBeGreaterThanOrEqual(1);
-  });
-});
 
 describe(resolveInitialChartTimeWindow.name, () => {
   it('sizes initial zoom so markers stay proportionally spaced when zoomed out', () => {

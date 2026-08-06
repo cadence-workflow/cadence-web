@@ -1,4 +1,6 @@
-import resolveCronScheduleIntervalMs from '@/views/schedule-details/hooks/use-schedule-runs-chart-data/helpers/resolve-cron-schedule-interval-ms';
+import { CronExpressionParser } from 'cron-parser';
+
+import { cronValidate } from '@/utils/cron-validate/cron-validate';
 
 import {
   CHART_DEFAULT_PAST_WINDOW_MS,
@@ -14,86 +16,58 @@ import {
   type ResolveInitialChartTimeWindowResult,
 } from '../schedule-details-runs-chart.types';
 
-/** Maps a marker cadence to the time span that yields `pxPerInterval` on screen. */
-function resolveChartSpanFromMarkerIntervalMs({
-  intervalMs,
-  chartWidthPx,
-  pxPerInterval,
-  sidePaddingPx = CHART_SIDE_PADDING_PX,
-}: {
-  intervalMs: number;
-  chartWidthPx: number;
-  /** Target px distance between consecutive markers at this zoom level. */
-  pxPerInterval: number;
-  sidePaddingPx?: number;
-}): number {
-  const drawableWidthPx = chartWidthPx - sidePaddingPx * 2;
-
-  if (
-    !Number.isFinite(intervalMs) ||
-    intervalMs <= 0 ||
-    !Number.isFinite(chartWidthPx) ||
-    chartWidthPx <= 0 ||
-    !Number.isFinite(pxPerInterval) ||
-    pxPerInterval <= 0 ||
-    drawableWidthPx <= 0
-  ) {
-    return 0;
-  }
-
-  return (intervalMs * drawableWidthPx) / pxPerInterval;
-}
-
-export function getReadableExpectedRunCount(chartWidthPx: number): number {
-  const drawableWidthPx = chartWidthPx - CHART_SIDE_PADDING_PX * 2;
-
-  return Math.min(
-    CHART_INITIAL_EXPECTED_RUN_COUNT,
-    Math.max(1, Math.floor(drawableWidthPx / CHART_EXPECTED_RUN_SLOT_PX))
-  );
-}
-
-function resolveFallbackScheduleIntervalMs({
-  nowMs,
-  chartWidthPx,
-  nextExecutionMs,
-}: Pick<
-  ResolveInitialChartTimeWindowParams,
-  'nowMs' | 'chartWidthPx' | 'nextExecutionMs'
->): number {
-  if (
-    nextExecutionMs != null &&
-    Number.isFinite(nextExecutionMs) &&
-    nextExecutionMs > nowMs
-  ) {
-    return nextExecutionMs - nowMs;
-  }
-
-  return Math.max(
-    CHART_MIN_DOMAIN_SPAN_MS,
-    CHART_DEFAULT_PAST_WINDOW_MS / getReadableExpectedRunCount(chartWidthPx)
-  );
-}
-
 export default function resolveInitialChartTimeWindow({
   nowMs,
   chartWidthPx,
   cronExpression,
   nextExecutionMs,
 }: ResolveInitialChartTimeWindowParams): ResolveInitialChartTimeWindowResult {
-  const scheduleIntervalMs =
-    resolveCronScheduleIntervalMs(cronExpression, nowMs) ??
-    resolveFallbackScheduleIntervalMs({ nowMs, chartWidthPx, nextExecutionMs });
-  const comfortableSpanMs = resolveChartSpanFromMarkerIntervalMs({
-    intervalMs: scheduleIntervalMs,
-    chartWidthPx,
-    pxPerInterval: CHART_EXPECTED_RUN_SLOT_PX,
-  });
-  const maxSpanMs = resolveChartSpanFromMarkerIntervalMs({
-    intervalMs: scheduleIntervalMs,
-    chartWidthPx,
-    pxPerInterval: CHART_MAX_ZOOM_OUT_MARKER_SPACING_PX,
-  });
+  const drawableWidthPx = chartWidthPx - CHART_SIDE_PADDING_PX * 2;
+  let scheduleIntervalMs: number | null = null;
+
+  if (cronValidate(cronExpression).isValid() && Number.isFinite(nowMs)) {
+    try {
+      const cronInterval = CronExpressionParser.parse(cronExpression, {
+        currentDate: nowMs,
+        tz: 'UTC',
+      });
+      const nextOccurrenceMs = cronInterval.next().toDate().getTime();
+      const followingOccurrenceMs = cronInterval.next().toDate().getTime();
+      const intervalMs = followingOccurrenceMs - nextOccurrenceMs;
+
+      scheduleIntervalMs = intervalMs > 0 ? intervalMs : null;
+    } catch {
+      scheduleIntervalMs = null;
+    }
+  }
+
+  scheduleIntervalMs ??=
+    nextExecutionMs != null &&
+    Number.isFinite(nextExecutionMs) &&
+    nextExecutionMs > nowMs
+      ? nextExecutionMs - nowMs
+      : Math.max(
+          CHART_MIN_DOMAIN_SPAN_MS,
+          CHART_DEFAULT_PAST_WINDOW_MS /
+            Math.min(
+              CHART_INITIAL_EXPECTED_RUN_COUNT,
+              Math.max(1, Math.floor(drawableWidthPx / CHART_EXPECTED_RUN_SLOT_PX))
+            )
+        );
+
+  const canResolveSpan =
+    Number.isFinite(scheduleIntervalMs) &&
+    scheduleIntervalMs > 0 &&
+    Number.isFinite(chartWidthPx) &&
+    chartWidthPx > 0 &&
+    drawableWidthPx > 0;
+  const comfortableSpanMs = canResolveSpan
+    ? (scheduleIntervalMs * drawableWidthPx) / CHART_EXPECTED_RUN_SLOT_PX
+    : 0;
+  const maxSpanMs = canResolveSpan
+    ? (scheduleIntervalMs * drawableWidthPx) /
+      CHART_MAX_ZOOM_OUT_MARKER_SPACING_PX
+    : 0;
   const windowSpanMs = Math.max(comfortableSpanMs, CHART_MIN_DOMAIN_SPAN_MS);
   const resolvedMaxSpanMs = Math.max(maxSpanMs, windowSpanMs);
   const window = {

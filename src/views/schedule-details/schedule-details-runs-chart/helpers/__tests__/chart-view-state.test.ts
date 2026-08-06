@@ -7,8 +7,6 @@ import {
   isSameChartTimeWindow,
   panChartTimeWindowToTime,
   resolveChartFollowTimeWindow,
-  resolveChartZoomAnchorMs,
-  shiftChartTimeWindow,
   zoomChartTimeWindow,
 } from '../chart-view-state';
 
@@ -84,7 +82,8 @@ describe(zoomChartTimeWindow.name, () => {
       bounds,
       maxSpanMs: 10 * hourMs,
       factor: 0.5,
-      anchorMs: 5 * hourMs,
+      nowMs: 5 * hourMs,
+      isFollowing: false,
     });
 
     expect(getChartTimeWindowSpanMs(zoomed)).toBe(1 * hourMs);
@@ -100,7 +99,8 @@ describe(zoomChartTimeWindow.name, () => {
       bounds,
       maxSpanMs: 10 * hourMs,
       factor: 0.1,
-      anchorMs: 5 * hourMs,
+      nowMs: 5 * hourMs,
+      isFollowing: false,
     });
 
     expect(getChartTimeWindowSpanMs(zoomed)).toBe(CHART_MIN_DOMAIN_SPAN_MS);
@@ -112,19 +112,21 @@ describe(zoomChartTimeWindow.name, () => {
       bounds,
       maxSpanMs: 2.5 * hourMs,
       factor: 4,
-      anchorMs: 5 * hourMs,
+      nowMs: 5 * hourMs,
+      isFollowing: false,
     });
 
     expect(getChartTimeWindowSpanMs(zoomed)).toBe(2.5 * hourMs);
   });
 
-  it('anchors on the window center when the anchor is off-screen', () => {
+  it('anchors on the window center when now is off-screen after panning', () => {
     const zoomed = zoomChartTimeWindow({
       visibleWindow,
       bounds,
       maxSpanMs: 10 * hourMs,
       factor: 0.5,
-      anchorMs: 9.9 * hourMs,
+      nowMs: 9.9 * hourMs,
+      isFollowing: false,
     });
 
     expect(zoomed).toEqual({ minMs: 4.5 * hourMs, maxMs: 5.5 * hourMs });
@@ -152,71 +154,6 @@ describe(panChartTimeWindowToTime.name, () => {
     });
 
     expect(panned.maxMs).toBe(bounds.maxMs);
-  });
-});
-
-describe(shiftChartTimeWindow.name, () => {
-  it('shifts both bounds by deltaMs when unbounded', () => {
-    expect(
-      shiftChartTimeWindow({
-        visibleWindow: { minMs: 10_000, maxMs: 20_000 },
-        deltaMs: -5_000,
-      })
-    ).toEqual({ minMs: 5_000, maxMs: 15_000 });
-  });
-
-  it('clamps the shift to the lower bound, preserving span', () => {
-    expect(
-      shiftChartTimeWindow({
-        visibleWindow: { minMs: 10_000, maxMs: 20_000 },
-        deltaMs: -50_000,
-        bounds: { minMs: 0, maxMs: 100_000 },
-      })
-    ).toEqual({ minMs: 0, maxMs: 10_000 });
-  });
-
-  it('clamps the shift to the upper bound, preserving span', () => {
-    expect(
-      shiftChartTimeWindow({
-        visibleWindow: { minMs: 10_000, maxMs: 20_000 },
-        deltaMs: 500_000,
-        bounds: { minMs: 0, maxMs: 100_000 },
-      })
-    ).toEqual({ minMs: 90_000, maxMs: 100_000 });
-  });
-});
-
-describe(resolveChartZoomAnchorMs.name, () => {
-  const visibleWindow = { minMs: 0, maxMs: 1 * hourMs };
-
-  it('anchors on now while following', () => {
-    expect(
-      resolveChartZoomAnchorMs({
-        visibleWindow,
-        nowMs: 0.5 * hourMs,
-        isFollowing: true,
-      })
-    ).toBe(0.5 * hourMs);
-  });
-
-  it('anchors on now when it is still visible after panning', () => {
-    expect(
-      resolveChartZoomAnchorMs({
-        visibleWindow,
-        nowMs: 0.2 * hourMs,
-        isFollowing: false,
-      })
-    ).toBe(0.2 * hourMs);
-  });
-
-  it('falls back to the window center when now is off-screen', () => {
-    expect(
-      resolveChartZoomAnchorMs({
-        visibleWindow,
-        nowMs: 2 * hourMs,
-        isFollowing: false,
-      })
-    ).toBe(0.5 * hourMs);
   });
 });
 

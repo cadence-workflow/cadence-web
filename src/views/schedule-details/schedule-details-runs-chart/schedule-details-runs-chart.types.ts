@@ -41,7 +41,8 @@ export type ZoomChartTimeWindowParams = {
   bounds: ChartTimeWindow;
   maxSpanMs: number;
   factor: number;
-  anchorMs: number;
+  nowMs: number;
+  isFollowing: boolean;
 };
 
 export type PanChartTimeWindowToTimeParams = {
@@ -56,12 +57,6 @@ export type ResolveChartFollowTimeWindowParams = {
   bounds: ChartTimeWindow;
   nowMs: number;
   nextExecutionMs?: number | null;
-};
-
-export type ShiftChartTimeWindowParams = {
-  visibleWindow: ChartTimeWindow;
-  deltaMs: number;
-  bounds?: ChartTimeWindow | null;
 };
 
 export type ResolveInitialChartTimeWindowParams = {
