@@ -32,9 +32,9 @@ export default function useNewChartTimesMs({
 
     const previousLatestSeenMs = latestSeenMsRef.current;
 
-    latestSeenMsRef.current = Math.max(
-      previousLatestSeenMs ?? -Infinity,
-      ...timesMs
+    latestSeenMsRef.current = timesMs.reduce(
+      (latestMs, timeMs) => Math.max(latestMs, timeMs),
+      previousLatestSeenMs ?? -Infinity
     );
 
     if (previousLatestSeenMs == null) {

@@ -14,9 +14,9 @@ export default function workflowsForScheduleToChartSeriesRuns(
   // shifts, which would otherwise double-count it into a false "grouped"
   // marker.
   const runsByRunId = new Map<string, ChartSeriesRun>();
+  const workflows = data?.pages.flatMap((page) => page.workflows ?? []) ?? [];
 
-  for (const workflow of data?.pages.flatMap((page) => page.workflows ?? []) ??
-    []) {
+  for (const workflow of workflows) {
     const scheduleTime = getSearchAttributeValue(
       workflow,
       SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN

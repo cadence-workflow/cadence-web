@@ -230,17 +230,29 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
     fetchNextPage();
   }, [fetchNextPage, shouldFetchOlderRuns, visibleWindow]);
 
+  // Read from a ref rather than closing over `visibleWindow` directly, so
+  // this stays stable while following/panning update the window every tick
+  // instead of tearing down and re-registering the pointermove/wheel
+  // listeners below on every one of those renders.
+  const visibleWindowRef = useRef(visibleWindow);
+  useEffect(() => {
+    visibleWindowRef.current = visibleWindow;
+  }, [visibleWindow]);
+
   const panByClientDelta = useCallback(
     (deltaClientX: number) => {
-      if (width <= 0 || visibleWindow == null) {
+      const currentVisibleWindow = visibleWindowRef.current;
+
+      if (width <= 0 || currentVisibleWindow == null) {
         return false;
       }
 
-      const viewSpanMs = visibleWindow.maxMs - visibleWindow.minMs;
+      const viewSpanMs =
+        currentVisibleWindow.maxMs - currentVisibleWindow.minMs;
 
       return panByMs(-(deltaClientX / width) * viewSpanMs);
     },
-    [panByMs, visibleWindow, width]
+    [panByMs, width]
   );
 
   const handlePanStart = useCallback(
@@ -316,24 +328,30 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
     };
   }, [isPanning, panByClientDelta]);
 
+  const hasVisibleWindow = visibleWindow != null;
+
   // Native listener so the gesture can stay scrollable at the chart edges:
   // React attaches `onWheel` passively, where `preventDefault` has no effect.
   useEffect(() => {
     const canvas = canvasRef.current;
 
-    if (canvas == null || visibleWindow == null) {
+    if (canvas == null || !hasVisibleWindow) {
       return;
     }
 
     const handleWheel = (event: WheelEvent) => {
-      const horizontalDelta =
-        Math.abs(event.deltaX) > Math.abs(event.deltaY)
-          ? event.deltaX
-          : event.deltaY;
+      const isHorizontalSwipe = Math.abs(event.deltaX) > Math.abs(event.deltaY);
+      const horizontalDelta = isHorizontalSwipe ? event.deltaX : event.deltaY;
 
       // Scrolling forward (positive delta) should reveal later times, the
       // opposite of a drag by the same client-space delta.
-      if (panByClientDelta(-horizontalDelta)) {
+      const panned = panByClientDelta(-horizontalDelta);
+
+      // Claim horizontal trackpad swipes over the whole pannable chart, not
+      // just the ones that actually moved the window -- otherwise a swipe
+      // that hits the bounds falls through un-prevented and the browser
+      // reads it as a back/forward navigation gesture.
+      if (panned || (canPan && isHorizontalSwipe)) {
         event.preventDefault();
       }
     };
@@ -341,7 +359,7 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
     canvas.addEventListener('wheel', handleWheel, { passive: false });
 
     return () => canvas.removeEventListener('wheel', handleWheel);
-  }, [panByClientDelta, visibleWindow]);
+  }, [canPan, hasVisibleWindow, panByClientDelta]);
 
   const showFetchMoreError = isFetchNextPageError && !isFetchingNextPage;
   const toolbarEnabled = hasChartData && visibleWindow != null && !isLoading;

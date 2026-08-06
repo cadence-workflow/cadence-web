@@ -41,22 +41,26 @@ export default function resolveInitialChartTimeWindow({
     }
   }
 
-  scheduleIntervalMs ??=
+  // No cron cadence or next-execution time to size from: fall back to
+  // spreading the default past window over as many runs as the chart can
+  // comfortably fit.
+  const fallbackIntervalMs = Math.max(
+    CHART_MIN_DOMAIN_SPAN_MS,
+    CHART_DEFAULT_PAST_WINDOW_MS /
+      Math.min(
+        CHART_INITIAL_EXPECTED_RUN_COUNT,
+        Math.max(1, Math.floor(drawableWidthPx / CHART_EXPECTED_RUN_SLOT_PX))
+      )
+  );
+
+  const nextExecutionIntervalMs =
     nextExecutionMs != null &&
     Number.isFinite(nextExecutionMs) &&
     nextExecutionMs > nowMs
       ? nextExecutionMs - nowMs
-      : Math.max(
-          CHART_MIN_DOMAIN_SPAN_MS,
-          CHART_DEFAULT_PAST_WINDOW_MS /
-            Math.min(
-              CHART_INITIAL_EXPECTED_RUN_COUNT,
-              Math.max(
-                1,
-                Math.floor(drawableWidthPx / CHART_EXPECTED_RUN_SLOT_PX)
-              )
-            )
-        );
+      : null;
+
+  scheduleIntervalMs ??= nextExecutionIntervalMs ?? fallbackIntervalMs;
 
   const canResolveSpan =
     Number.isFinite(scheduleIntervalMs) &&
@@ -64,6 +68,7 @@ export default function resolveInitialChartTimeWindow({
     Number.isFinite(chartWidthPx) &&
     chartWidthPx > 0 &&
     drawableWidthPx > 0;
+
   const comfortableSpanMs = canResolveSpan
     ? (scheduleIntervalMs * drawableWidthPx) / CHART_EXPECTED_RUN_SLOT_PX
     : 0;

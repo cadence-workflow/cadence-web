@@ -82,7 +82,9 @@ export const styled = {
       width: '100%',
       height: '100%',
       cursor: !$canPan ? 'default' : $isPanning ? 'grabbing' : 'grab',
-      touchAction: 'none',
+      // Only the horizontal gesture is handled here, so leave vertical
+      // touch-scrolling to the browser instead of blocking it outright.
+      touchAction: 'pan-y',
       userSelect: 'none',
       WebkitUserSelect: 'none',
     })

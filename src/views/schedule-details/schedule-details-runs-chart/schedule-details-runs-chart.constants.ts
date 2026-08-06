@@ -32,7 +32,7 @@ export const CHART_LEGEND_ITEMS = [
     label: 'Terminated/Timed out/Failed',
   },
   { variant: WORKFLOW_STATUSES.running, label: 'Running' },
-  { variant: WORKFLOW_STATUSES.canceled, label: 'Cancelled' },
+  { variant: WORKFLOW_STATUSES.canceled, label: 'Canceled' },
   { variant: 'skipped', label: 'Skipped' },
   { variant: 'next', label: 'Next run' },
 ] as const satisfies ReadonlyArray<{

@@ -17,17 +17,22 @@ describe(useNewChartTimesMs.name, () => {
   });
 
   it('does not animate the glyphs the chart opened with', () => {
-    const { result } = setup({ timesMs: minutesMs(1, 2) });
+    const { result } = setup({ timesMs: [MINUTE_MS, 2 * MINUTE_MS] });
 
     expect(result.current.size).toBe(0);
   });
 
   it('animates a glyph that arrives while the chart is open, until it has played', () => {
-    const { result, rerender } = setup({ timesMs: minutesMs(1, 2) });
+    const { result, rerender } = setup({
+      timesMs: [MINUTE_MS, 2 * MINUTE_MS],
+    });
 
-    rerender({ timesMs: minutesMs(1, 2, 3), isEnabled: true });
+    rerender({
+      timesMs: [MINUTE_MS, 2 * MINUTE_MS, 3 * MINUTE_MS],
+      isEnabled: true,
+    });
 
-    expect(Array.from(result.current)).toEqual(minutesMs(3));
+    expect(Array.from(result.current)).toEqual([3 * MINUTE_MS]);
 
     act(() => {
       jest.advanceTimersByTime(CHART_GLYPH_ENTER_ANIMATION_MS);
@@ -37,9 +42,14 @@ describe(useNewChartTimesMs.name, () => {
   });
 
   it('ignores older glyphs loaded by paging back through history', () => {
-    const { result, rerender } = setup({ timesMs: minutesMs(2, 3) });
+    const { result, rerender } = setup({
+      timesMs: [2 * MINUTE_MS, 3 * MINUTE_MS],
+    });
 
-    rerender({ timesMs: minutesMs(1, 2, 3), isEnabled: true });
+    rerender({
+      timesMs: [MINUTE_MS, 2 * MINUTE_MS, 3 * MINUTE_MS],
+      isEnabled: true,
+    });
 
     expect(result.current.size).toBe(0);
   });
@@ -47,7 +57,7 @@ describe(useNewChartTimesMs.name, () => {
   it('treats the first loaded snapshot as the baseline, not as arrivals', () => {
     const { result, rerender } = setup({ timesMs: [], isEnabled: false });
 
-    rerender({ timesMs: minutesMs(1, 2), isEnabled: true });
+    rerender({ timesMs: [MINUTE_MS, 2 * MINUTE_MS], isEnabled: true });
 
     expect(result.current.size).toBe(0);
   });
@@ -55,23 +65,19 @@ describe(useNewChartTimesMs.name, () => {
   it('animates the first glyph of a series that had none', () => {
     const { result, rerender } = setup({ timesMs: [] });
 
-    rerender({ timesMs: minutesMs(1), isEnabled: true });
+    rerender({ timesMs: [MINUTE_MS], isEnabled: true });
 
-    expect(Array.from(result.current)).toEqual(minutesMs(1));
+    expect(Array.from(result.current)).toEqual([MINUTE_MS]);
   });
 
   it('animates a single-glyph series moving forward, as the next run does', () => {
-    const { result, rerender } = setup({ timesMs: minutesMs(15) });
+    const { result, rerender } = setup({ timesMs: [15 * MINUTE_MS] });
 
-    rerender({ timesMs: minutesMs(30), isEnabled: true });
+    rerender({ timesMs: [30 * MINUTE_MS], isEnabled: true });
 
-    expect(Array.from(result.current)).toEqual(minutesMs(30));
+    expect(Array.from(result.current)).toEqual([30 * MINUTE_MS]);
   });
 });
-
-function minutesMs(...minutes: number[]): number[] {
-  return minutes.map((minute) => minute * MINUTE_MS);
-}
 
 type Params = Parameters<typeof useNewChartTimesMs>[0];
 
