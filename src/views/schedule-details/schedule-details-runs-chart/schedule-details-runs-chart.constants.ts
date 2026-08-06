@@ -17,15 +17,9 @@ export const CHART_TOOLBAR_BUTTON_LABELS = {
   now: 'Now',
 } as const;
 
-export const CHART_EMPTY_STATE_MESSAGE = 'No chart data available yet';
-
 export const CHART_LOADING_ARIA_LABEL = 'Loading schedule runs chart';
 
 export const CHART_LOADING_TEST_ID = 'schedule-runs-chart-loading-skeleton';
-
-export const CHART_REGION_ARIA_LABEL = 'Schedule runs chart';
-
-export const CHART_TOOLBAR_ARIA_LABEL = 'Chart controls';
 
 export const CHART_LEGEND_ICON_SIZE_PX = 14;
 
@@ -102,10 +96,8 @@ export const CHART_INITIAL_EXPECTED_RUN_COUNT = 20;
 /** How close (as a ratio of the visible span) the loaded edge must be to the view edge before fetching the next page. */
 export const CHART_PAN_FETCH_EDGE_THRESHOLD_RATIO = 0.05;
 
-export const CHART_FETCH_LOADING_MESSAGE = 'Loading older runs…';
 export const CHART_FETCH_LOADING_SPINNER_SIZE_PX = 16;
 export const CHART_FETCH_LOADING_TEST_ID = 'schedule-runs-chart-fetch-loading';
-export const CHART_FETCH_RETRY_LABEL = 'Retry loading older runs';
 export const CHART_FETCH_RETRY_ICON_SIZE_PX = 16;
 
 /** Scale-up and fade-in played by a glyph that arrives on a live chart (ms). */

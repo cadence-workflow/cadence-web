@@ -34,19 +34,14 @@ import resolveChartTimeWindow from './helpers/resolve-chart-time-window';
 import resolveInitialChartTimeWindow from './helpers/resolve-initial-chart-time-window';
 import {
   CHART_CANVAS_TEST_ID,
-  CHART_EMPTY_STATE_MESSAGE,
-  CHART_FETCH_LOADING_MESSAGE,
   CHART_FETCH_LOADING_SPINNER_SIZE_PX,
   CHART_FETCH_LOADING_TEST_ID,
   CHART_FETCH_RETRY_ICON_SIZE_PX,
-  CHART_FETCH_RETRY_LABEL,
   CHART_HEIGHT_PX,
   CHART_LEGEND_ICON_SIZE_PX,
   CHART_LEGEND_ITEMS,
   CHART_PAN_FETCH_EDGE_THRESHOLD_RATIO,
-  CHART_REGION_ARIA_LABEL,
   CHART_SUMMARY_TEST_ID,
-  CHART_TOOLBAR_ARIA_LABEL,
   CHART_TOOLBAR_BUTTON_LABELS,
   CHART_TOOLBAR_ICON_SIZE_PX,
   CURRENT_TIME_UPDATE_INTERVAL_MS,
@@ -99,21 +94,29 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
     ],
     [chartData]
   );
+  const { runTimesMs, skippedTimesMs, nextTimesMs } = useMemo(
+    () => ({
+      runTimesMs: chartData.runs.map(({ scheduledTimeMs }) => scheduledTimeMs),
+      skippedTimesMs: chartData.skippedExecutions.map(
+        ({ scheduledTimeMs }) => scheduledTimeMs
+      ),
+      nextTimesMs:
+        chartData.nextExecutionTimeMs == null
+          ? []
+          : [chartData.nextExecutionTimeMs],
+    }),
+    [chartData]
+  );
   const newRunTimesMs = useNewChartTimesMs({
-    timesMs: chartData.runs.map(({ scheduledTimeMs }) => scheduledTimeMs),
+    timesMs: runTimesMs,
     isEnabled: !isLoading,
   });
   const newSkippedTimesMs = useNewChartTimesMs({
-    timesMs: chartData.skippedExecutions.map(
-      ({ scheduledTimeMs }) => scheduledTimeMs
-    ),
+    timesMs: skippedTimesMs,
     isEnabled: !isLoading,
   });
   const newNextTimesMs = useNewChartTimesMs({
-    timesMs:
-      chartData.nextExecutionTimeMs == null
-        ? []
-        : [chartData.nextExecutionTimeMs],
+    timesMs: nextTimesMs,
     isEnabled: !isLoading,
   });
 
@@ -299,9 +302,10 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
         Math.abs(event.deltaX) > Math.abs(event.deltaY)
           ? event.deltaX
           : event.deltaY;
-      const viewSpanMs = visibleWindow.maxMs - visibleWindow.minMs;
 
-      if (panByMs((horizontalDelta / (width || 1)) * viewSpanMs)) {
+      // Scrolling forward (positive delta) should reveal later times, the
+      // opposite of a drag by the same client-space delta.
+      if (panByClientDelta(-horizontalDelta)) {
         event.preventDefault();
       }
     };
@@ -309,7 +313,7 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
     canvas.addEventListener('wheel', handleWheel, { passive: false });
 
     return () => canvas.removeEventListener('wheel', handleWheel);
-  }, [panByMs, visibleWindow, width]);
+  }, [panByClientDelta, visibleWindow]);
 
   const showFetchMoreError = isFetchNextPageError && !isFetchingNextPage;
   const toolbarEnabled = hasChartData && visibleWindow != null && !isLoading;
@@ -348,7 +352,7 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
             </styled.SummaryItem>
           ))}
         </styled.Summary>
-        <styled.Toolbar role="toolbar" aria-label={CHART_TOOLBAR_ARIA_LABEL}>
+        <styled.Toolbar role="toolbar" aria-label="Chart controls">
           <Button
             size="mini"
             kind="tertiary"
@@ -393,7 +397,7 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
       <styled.ChartRegion
         ref={parentRef}
         role="region"
-        aria-label={CHART_REGION_ARIA_LABEL}
+        aria-label="Schedule runs chart"
       >
         {showLoadingOverlay && (
           <Skeleton
@@ -406,7 +410,7 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
         )}
         {showEmptyState && (
           <styled.EmptyState role="status">
-            {CHART_EMPTY_STATE_MESSAGE}
+            No chart data available yet
           </styled.EmptyState>
         )}
         {showChart && (
@@ -431,8 +435,8 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
                 role={showFetchMoreError ? 'alert' : 'status'}
                 aria-label={
                   showFetchMoreError
-                    ? CHART_FETCH_RETRY_LABEL
-                    : CHART_FETCH_LOADING_MESSAGE
+                    ? 'Retry loading older runs'
+                    : 'Loading older runs…'
                 }
                 data-testid={CHART_FETCH_LOADING_TEST_ID}
                 onPointerDown={(event: React.PointerEvent<HTMLDivElement>) =>
@@ -443,7 +447,7 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
                   <Button
                     size="mini"
                     kind="tertiary"
-                    aria-label={CHART_FETCH_RETRY_LABEL}
+                    aria-label="Retry loading older runs"
                     overrides={overrides.toolbarButton}
                     onClick={fetchNextPage}
                   >

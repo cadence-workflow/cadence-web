@@ -13,12 +13,9 @@ import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list
 import ScheduleDetailsRunsChart from '../schedule-details-runs-chart';
 import {
   CHART_CANVAS_TEST_ID,
-  CHART_EMPTY_STATE_MESSAGE,
   CHART_LEGEND_ITEMS,
   CHART_LOADING_TEST_ID,
-  CHART_REGION_ARIA_LABEL,
   CHART_SUMMARY_TEST_ID,
-  CHART_TOOLBAR_ARIA_LABEL,
   CHART_TOOLBAR_BUTTON_LABELS,
 } from '../schedule-details-runs-chart.constants';
 
@@ -138,7 +135,7 @@ describe(ScheduleDetailsRunsChart.name, () => {
     setup({ widthPx: 0 });
 
     expect(
-      await within(getChartRegion()).findByText(CHART_EMPTY_STATE_MESSAGE)
+      await within(getChartRegion()).findByText('No chart data available yet')
     ).toBeInTheDocument();
   });
 
@@ -149,7 +146,7 @@ describe(ScheduleDetailsRunsChart.name, () => {
     });
 
     expect(
-      await within(getChartRegion()).findByText(CHART_EMPTY_STATE_MESSAGE)
+      await within(getChartRegion()).findByText('No chart data available yet')
     ).toBeInTheDocument();
   });
 
@@ -168,7 +165,7 @@ describe(ScheduleDetailsRunsChart.name, () => {
     setup({ isLoading: true });
 
     const toolbar = screen.getByRole('toolbar', {
-      name: CHART_TOOLBAR_ARIA_LABEL,
+      name: 'Chart controls',
     });
 
     Object.values(CHART_TOOLBAR_BUTTON_LABELS).forEach((label) => {
@@ -182,7 +179,7 @@ describe(ScheduleDetailsRunsChart.name, () => {
     setup();
 
     const toolbar = screen.getByRole('toolbar', {
-      name: CHART_TOOLBAR_ARIA_LABEL,
+      name: 'Chart controls',
     });
 
     await waitFor(() =>
@@ -210,7 +207,7 @@ describe(ScheduleDetailsRunsChart.name, () => {
     });
 
     const toolbar = screen.getByRole('toolbar', {
-      name: CHART_TOOLBAR_ARIA_LABEL,
+      name: 'Chart controls',
     });
     const nowButton = within(toolbar).getByRole('button', {
       name: CHART_TOOLBAR_BUTTON_LABELS.now,
@@ -327,5 +324,5 @@ function getChartDataEndpointMocks({
 }
 
 function getChartRegion() {
-  return screen.getByRole('region', { name: CHART_REGION_ARIA_LABEL });
+  return screen.getByRole('region', { name: 'Schedule runs chart' });
 }

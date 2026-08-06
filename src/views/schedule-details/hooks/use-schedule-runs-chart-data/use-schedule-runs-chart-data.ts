@@ -120,7 +120,6 @@ export default function useScheduleRunsChartData({
       nextExecutionTimeMs,
     };
   }, [nextExecutionTimeMs, unconfirmedExecutions, runs, skippedExecutions]);
-
   return {
     data,
     cronExpression,
@@ -133,6 +132,6 @@ export default function useScheduleRunsChartData({
     hasNextPage: workflowsQuery.hasNextPage ?? false,
     isFetchingNextPage: workflowsQuery.isFetchingNextPage,
     isFetchNextPageError: workflowsQuery.isFetchNextPageError,
-    fetchNextPage: () => void workflowsQuery.fetchNextPage(),
+    fetchNextPage: workflowsQuery.fetchNextPage,
   };
 }
