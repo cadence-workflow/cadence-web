@@ -20,6 +20,14 @@ jest.mock('react-icons/md', () => ({
   MdDeleteOutline: () => <div>Delete Icon</div>,
 }));
 
+jest.mock(
+  '@/components/guided-tour/guided-tour-provider/guided-tour-provider',
+  () => ({
+    __esModule: true,
+    default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  })
+);
+
 jest.mock('next/navigation', () => ({
   ...jest.requireActual('next/navigation'),
   useRouter: () => ({ push: jest.fn() }),
