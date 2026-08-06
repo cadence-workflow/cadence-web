@@ -258,10 +258,28 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
     [canPan, visibleWindow]
   );
 
+  // Coalesces pointermove into one pan per animation frame: a drag can fire
+  // far more move events than the browser paints, and each one otherwise
+  // triggers its own re-render and visible-window re-filter.
   useEffect(() => {
     if (!isPanning) {
       return;
     }
+
+    let pendingDeltaClientX = 0;
+    let animationFrameId: number | null = null;
+
+    const flushPendingDelta = () => {
+      animationFrameId = null;
+
+      if (pendingDeltaClientX === 0) {
+        return;
+      }
+
+      const deltaClientX = pendingDeltaClientX;
+      pendingDeltaClientX = 0;
+      panByClientDelta(deltaClientX);
+    };
 
     const handlePointerMove = (event: PointerEvent) => {
       const lastPanClientX = lastPanClientXRef.current;
@@ -271,12 +289,18 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
       }
 
       lastPanClientXRef.current = event.clientX;
-      panByClientDelta(event.clientX - lastPanClientX);
+      pendingDeltaClientX += event.clientX - lastPanClientX;
+      animationFrameId ??= window.requestAnimationFrame(flushPendingDelta);
     };
 
     const handlePointerUp = () => {
       lastPanClientXRef.current = null;
       setIsPanning(false);
+
+      if (animationFrameId != null) {
+        window.cancelAnimationFrame(animationFrameId);
+        flushPendingDelta();
+      }
     };
 
     window.addEventListener('pointermove', handlePointerMove);
@@ -285,6 +309,10 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
     return () => {
       window.removeEventListener('pointermove', handlePointerMove);
       window.removeEventListener('pointerup', handlePointerUp);
+
+      if (animationFrameId != null) {
+        window.cancelAnimationFrame(animationFrameId);
+      }
     };
   }, [isPanning, panByClientDelta]);
 
