@@ -209,13 +209,9 @@ In jsdom tests, localStorage is empty, so `GuidedTourProvider` auto-starts its t
 Unit tests for views wrapped in `GuidedTourProvider` should mock the provider to render only its children:
 
 ```tsx
-jest.mock(
-  '@/components/guided-tour/guided-tour-provider/guided-tour-provider',
-  () => ({
-    __esModule: true,
-    default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  })
-);
+jest.mock('@/components/guided-tour/guided-tour-provider/guided-tour-provider');
 ```
 
-The provider's own behavior is covered by `src/components/guided-tour/guided-tour-provider/__tests__/guided-tour-provider.test.tsx`.
+This picks up the shared manual mock in `guided-tour-provider/__mocks__/`, which renders only `{children}` — no joyride, no context.
+
+The provider's own behavior is covered by `src/components/guided-tour/guided-tour-provider/__tests__/guided-tour-provider.test.tsx`, which uses the real module and mocks `react-joyride` directly.

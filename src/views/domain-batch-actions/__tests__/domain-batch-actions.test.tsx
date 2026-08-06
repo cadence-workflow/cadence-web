@@ -26,13 +26,7 @@ jest.mock('@/hooks/use-page-query-params/use-page-query-params', () => ({
   default: (...args: Array<unknown>) => mockUsePageQueryParams(...args),
 }));
 
-jest.mock(
-  '@/components/guided-tour/guided-tour-provider/guided-tour-provider',
-  () => ({
-    __esModule: true,
-    default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  })
-);
+jest.mock('@/components/guided-tour/guided-tour-provider/guided-tour-provider');
 
 const mockNotFound = jest.fn();
 jest.mock('next/navigation', () => ({

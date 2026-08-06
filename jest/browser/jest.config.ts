@@ -49,6 +49,7 @@ const config: Config = {
     '/node_modules/',
     'src/test-utils',
     '/__fixtures__/',
+    '/__mocks__/',
     '\\.config\\.ts(x)?$',
   ],
 
