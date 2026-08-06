@@ -58,9 +58,9 @@ const mockRun = (
   ...overrides,
 });
 
-const WINDOW_START_MS = Date.UTC(2024, 0, 1, 0, 0);
-const WINDOW_END_MS = Date.UTC(2024, 0, 1, 6, 0);
-const EMPTY_DATA: ChartSeriesData = {
+const windowStartMs = Date.UTC(2024, 0, 1, 0, 0);
+const windowEndMs = Date.UTC(2024, 0, 1, 6, 0);
+const emptyData: ChartSeriesData = {
   runs: [],
   skippedExecutions: [],
   unconfirmedExecutions: [],
@@ -126,7 +126,7 @@ describe(ScheduleDetailsRunsChartSeries.name, () => {
   it('renders a marker for each skipped execution', () => {
     setup({
       data: {
-        ...EMPTY_DATA,
+        ...emptyData,
         skippedExecutions: [{ scheduledTimeMs: Date.UTC(2024, 0, 1, 3, 0) }],
       },
     });
@@ -139,7 +139,7 @@ describe(ScheduleDetailsRunsChartSeries.name, () => {
   it('renders a marker for each unconfirmed execution', () => {
     setup({
       data: {
-        ...EMPTY_DATA,
+        ...emptyData,
         unconfirmedExecutions: [
           { scheduledTimeMs: Date.UTC(2024, 0, 1, 3, 0) },
         ],
@@ -154,7 +154,7 @@ describe(ScheduleDetailsRunsChartSeries.name, () => {
   it('renders the next execution marker when set', () => {
     setup({
       data: {
-        ...EMPTY_DATA,
+        ...emptyData,
         nextExecutionTimeMs: Date.UTC(2024, 0, 1, 5, 0),
       },
     });
@@ -165,7 +165,7 @@ describe(ScheduleDetailsRunsChartSeries.name, () => {
   });
 
   it('omits the next execution marker when unset', () => {
-    setup({ data: EMPTY_DATA });
+    setup({ data: emptyData });
 
     expect(
       screen.queryByTestId(CHART_SERIES_TEST_IDS.nextExecutionMarker)
@@ -175,7 +175,7 @@ describe(ScheduleDetailsRunsChartSeries.name, () => {
   it('renders a popover trigger for the next execution when set', () => {
     setup({
       data: {
-        ...EMPTY_DATA,
+        ...emptyData,
         nextExecutionTimeMs: Date.UTC(2024, 0, 1, 5, 0),
       },
     });
@@ -188,7 +188,7 @@ describe(ScheduleDetailsRunsChartSeries.name, () => {
   it('renders a popover trigger for each skipped execution', () => {
     setup({
       data: {
-        ...EMPTY_DATA,
+        ...emptyData,
         skippedExecutions: [{ scheduledTimeMs: Date.UTC(2024, 0, 1, 3, 0) }],
       },
     });
@@ -234,7 +234,7 @@ function setup({ data }: { data: ChartSeriesData }) {
   render(
     <ScheduleDetailsRunsChartSeries
       xScale={scaleLinear({
-        domain: [WINDOW_START_MS, WINDOW_END_MS],
+        domain: [windowStartMs, windowEndMs],
         range: [0, 800],
       })}
       data={data}

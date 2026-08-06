@@ -2,7 +2,7 @@ import React from 'react';
 
 import { HttpResponse } from 'msw';
 
-import { render, screen, within } from '@/test-utils/rtl';
+import { render, screen, waitFor, within } from '@/test-utils/rtl';
 
 import { getMockRunningDescribeScheduleResponse } from '@/route-handlers/describe-schedule/__fixtures__/mock-describe-schedule-response';
 import { type DescribeScheduleResponse } from '@/route-handlers/describe-schedule/describe-schedule.types';
@@ -32,6 +32,24 @@ const describeScheduleWithNextRun = getMockRunningDescribeScheduleResponse({
     nextRunTime: { seconds: String((nowMs + hourMs) / 1000), nanos: 0 },
     totalRuns: '1',
     createTime: null,
+    lastUpdateTime: null,
+    missedRuns: '0',
+    skippedRuns: '0',
+    ongoingBackfills: [],
+  },
+});
+
+// A schedule created long before its most recent run gives the navigation
+// bounds enough headroom beyond the initial view to actually zoom out.
+const describeScheduleWithWideHistory = getMockRunningDescribeScheduleResponse({
+  info: {
+    lastRunTime: null,
+    nextRunTime: { seconds: String((nowMs + hourMs) / 1000), nanos: 0 },
+    totalRuns: '1',
+    createTime: {
+      seconds: String((nowMs - 30 * 24 * hourMs) / 1000),
+      nanos: 0,
+    },
     lastUpdateTime: null,
     missedRuns: '0',
     skippedRuns: '0',
@@ -144,8 +162,8 @@ describe(ScheduleDetailsRunsChart.name, () => {
     ).not.toBeInTheDocument();
   });
 
-  it('renders disabled toolbar controls', () => {
-    setup();
+  it('disables toolbar controls while the schedule data is loading', () => {
+    setup({ isLoading: true });
 
     const toolbar = screen.getByRole('toolbar', {
       name: CHART_TOOLBAR_ARIA_LABEL,
@@ -156,6 +174,32 @@ describe(ScheduleDetailsRunsChart.name, () => {
         within(toolbar).getByRole('button', { name: label })
       ).toBeDisabled();
     });
+  });
+
+  it('enables zoom controls once data has loaded, with "now" disabled', async () => {
+    setup({ describeScheduleResponse: describeScheduleWithWideHistory });
+
+    const toolbar = screen.getByRole('toolbar', {
+      name: CHART_TOOLBAR_ARIA_LABEL,
+    });
+
+    await waitFor(() =>
+      expect(
+        within(toolbar).getByRole('button', {
+          name: CHART_TOOLBAR_BUTTON_LABELS.zoomOut,
+        })
+      ).not.toBeDisabled()
+    );
+    expect(
+      within(toolbar).getByRole('button', {
+        name: CHART_TOOLBAR_BUTTON_LABELS.zoomIn,
+      })
+    ).not.toBeDisabled();
+    expect(
+      within(toolbar).getByRole('button', {
+        name: CHART_TOOLBAR_BUTTON_LABELS.now,
+      })
+    ).toBeDisabled();
   });
 });
 

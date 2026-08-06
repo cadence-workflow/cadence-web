@@ -14,6 +14,8 @@ export type UseScheduleRunsChartDataParams = {
 export type UseScheduleRunsChartDataResult = {
   data: ChartSeriesData;
   isLoading: boolean;
+  /** Earliest time the visible window may navigate back to (retention/schedule creation). */
+  timelineStartMs: number | null;
 };
 
 export type GetScheduleTimelineBoundsParams = {

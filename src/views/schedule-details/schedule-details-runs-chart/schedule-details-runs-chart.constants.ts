@@ -75,3 +75,15 @@ export const CHART_RUN_POPOVER_TEST_IDS = {
   skippedTrigger: 'schedule-runs-chart-skipped-popover-trigger',
   nextTrigger: 'schedule-runs-chart-next-popover-trigger',
 } as const;
+
+/** Multiplier applied when zooming in (smaller span). */
+export const CHART_ZOOM_IN_FACTOR = 0.5;
+
+/** Multiplier applied when zooming out (larger span). */
+export const CHART_ZOOM_OUT_FACTOR = 2;
+
+/** Horizontal position of `now` after panning (0 = left edge, 1 = right edge). */
+export const CHART_NOW_ANCHOR_RATIO = 0.85;
+
+/** Horizontal position of the next run when following pulls it into view. */
+export const CHART_NEXT_RUN_ANCHOR_RATIO = 0.95;
