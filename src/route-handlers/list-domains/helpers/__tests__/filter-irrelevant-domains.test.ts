@@ -1,5 +1,6 @@
-import { getDomainObj } from '../../__fixtures__/domains';
-import type { DomainData } from '../../domains-page.types';
+import { type Domain } from '@/__generated__/proto-ts/uber/cadence/api/v1/Domain';
+import { getDomainObj } from '@/views/domains-page/__fixtures__/domains';
+
 import filterIrrelevantDomains from '../filter-irrelevant-domains';
 
 describe(filterIrrelevantDomains.name, () => {
@@ -61,7 +62,7 @@ describe(filterIrrelevantDomains.name, () => {
   });
 
   it('should return an empty array if domains array is empty', () => {
-    const domains: DomainData[] = [];
+    const domains: Domain[] = [];
 
     const result = filterIrrelevantDomains('ClusterA', domains);
 
