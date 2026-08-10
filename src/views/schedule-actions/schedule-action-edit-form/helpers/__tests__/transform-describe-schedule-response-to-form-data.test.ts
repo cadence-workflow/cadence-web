@@ -47,7 +47,6 @@ describe(transformDescribeScheduleResponseToFormData.name, () => {
         workflowType: { name: 'DemoWorkflow' },
         taskList: { name: 'demo-task-list' },
         executionStartToCloseTimeoutSeconds: 3600,
-        taskStartToCloseTimeoutSeconds: 30,
         workflowIdPrefix: 'scheduled-demo-',
         workerSDKLanguage: 'GO',
       })
@@ -108,7 +107,6 @@ describe(transformDescribeScheduleResponseToFormData.name, () => {
       workflowType: { name: '' },
       taskList: { name: '' },
       executionStartToCloseTimeoutSeconds: 0,
-      taskStartToCloseTimeoutSeconds: 0,
       workerSDKLanguage: 'GO',
       input: [''],
       workflowIdPrefix: undefined,
