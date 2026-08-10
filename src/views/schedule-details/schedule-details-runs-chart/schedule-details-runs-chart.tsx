@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 
 import { useParentSize } from '@visx/responsive';
+import { useStyletron } from 'baseui';
 import { Skeleton } from 'baseui/skeleton';
 import { Spinner } from 'baseui/spinner';
 import {
@@ -22,6 +23,7 @@ import useCurrentTimeMs from '@/hooks/use-current-time-ms/use-current-time-ms';
 import useScheduleRunsChartData from '@/views/schedule-details/hooks/use-schedule-runs-chart-data/use-schedule-runs-chart-data';
 import useScheduleRunsChartViewState from '@/views/schedule-details/hooks/use-schedule-runs-chart-view-state/use-schedule-runs-chart-view-state';
 import ScheduleDetailsRunsChartLegendIcon from '@/views/schedule-details/schedule-details-runs-chart-legend-icon/schedule-details-runs-chart-legend-icon';
+import { WORKFLOW_STATUSES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
 
 import hasScheduleRunsChartData from '../schedule-details-runs-chart-series/helpers/has-schedule-runs-chart-data';
 import ScheduleDetailsRunsChartSeries from '../schedule-details-runs-chart-series/schedule-details-runs-chart-series';
@@ -29,6 +31,7 @@ import ScheduleDetailsRunsChartTimeline from '../schedule-details-runs-chart-tim
 
 import createChartXScale from './helpers/create-chart-x-scale';
 import filterChartSeriesDataToVisibleWindow from './helpers/filter-chart-series-data-to-visible-window';
+import getChartGlyphColor from './helpers/get-chart-glyph-color';
 import resolveChartPixelRange from './helpers/resolve-chart-pixel-range';
 import resolveChartTimeWindow from './helpers/resolve-chart-time-window';
 import resolveInitialChartTimeWindow from './helpers/resolve-initial-chart-time-window';
@@ -54,6 +57,7 @@ import {
 import useNewChartTimesMs from './use-new-chart-times-ms';
 
 export default function ScheduleDetailsRunsChart({ params }: Props) {
+  const [, theme] = useStyletron();
   const [isPanning, setIsPanning] = useState(false);
   const lastPanClientXRef = useRef<number | null>(null);
   const canvasRef = useRef<HTMLDivElement | null>(null);
@@ -501,6 +505,10 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
                       <MdReportGmailerrorred
                         aria-hidden
                         size={CHART_FETCH_RETRY_ICON_SIZE_PX}
+                        color={getChartGlyphColor(
+                          theme,
+                          WORKFLOW_STATUSES.failed
+                        )}
                       />
                     </styled.ControlContent>
                   </Button>
