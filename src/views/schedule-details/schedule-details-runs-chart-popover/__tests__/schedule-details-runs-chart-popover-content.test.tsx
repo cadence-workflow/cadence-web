@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@/test-utils/rtl';
+import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import ScheduleDetailsRunsChartPopoverContent from '../schedule-details-runs-chart-popover-content';
 import {
@@ -135,8 +135,9 @@ describe(ScheduleDetailsRunsChartPopoverContent.name, () => {
     expect(screen.getAllByTestId(RUN_POPOVER_TEST_IDS.entry)).toHaveLength(2);
   });
 
-  it('stops pointerdown propagation so chart pan does not capture link clicks', () => {
+  it('does not propagate pointer events to chart pan when clicking a run link', async () => {
     const handleParentPointerDown = jest.fn();
+    const user = userEvent.setup();
 
     render(
       <div onPointerDown={handleParentPointerDown}>
@@ -160,9 +161,7 @@ describe(ScheduleDetailsRunsChartPopoverContent.name, () => {
       </div>
     );
 
-    fireEvent.pointerDown(screen.getByTestId(RUN_POPOVER_TEST_IDS.content), {
-      button: 0,
-    });
+    await user.click(screen.getByRole('link', { name: 'run-1' }));
 
     expect(handleParentPointerDown).not.toHaveBeenCalled();
   });
