@@ -43,6 +43,9 @@ export default function ScheduleDetailsRunsChartPopoverTrigger({
           type="button"
           aria-label={ariaLabel}
           data-testid={testId}
+          onPointerDown={(event: React.PointerEvent<HTMLButtonElement>) =>
+            event.stopPropagation()
+          }
         >
           {children}
         </styled.HitArea>

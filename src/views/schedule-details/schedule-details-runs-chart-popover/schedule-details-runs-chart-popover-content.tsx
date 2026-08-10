@@ -39,7 +39,12 @@ export default function ScheduleDetailsRunsChartPopoverContent({
   cluster,
 }: Props) {
   return (
-    <styled.Content data-testid={RUN_POPOVER_TEST_IDS.content}>
+    <styled.Content
+      data-testid={RUN_POPOVER_TEST_IDS.content}
+      onPointerDown={(event: React.PointerEvent<HTMLDivElement>) =>
+        event.stopPropagation()
+      }
+    >
       {entries.map((entry) => {
         if (entry.kind !== 'run') {
           return (

@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { type StatefulPopoverProps } from 'baseui/popover';
 
-import { render, screen, userEvent } from '@/test-utils/rtl';
+import { fireEvent, render, screen, userEvent } from '@/test-utils/rtl';
 
 import { type ChartRunPopoverEntry } from '@/views/schedule-details/schedule-details-runs-chart-popover/schedule-details-runs-chart-popover.types';
 
@@ -81,6 +81,32 @@ describe(ScheduleDetailsRunsChartPopoverTrigger.name, () => {
         cluster: 'test-cluster',
       })
     );
+  });
+
+  it('stops pointerdown propagation so chart pan does not capture the event', () => {
+    const handleParentPointerDown = jest.fn();
+
+    render(
+      <div onPointerDown={handleParentPointerDown}>
+        <ScheduleDetailsRunsChartPopoverTrigger
+          x={10}
+          y={20}
+          entries={mockEntries}
+          domain="test-domain"
+          cluster="test-cluster"
+          ariaLabel="Skipped run"
+          testId="skipped-trigger"
+        >
+          <span>glyph</span>
+        </ScheduleDetailsRunsChartPopoverTrigger>
+      </div>
+    );
+
+    fireEvent.pointerDown(screen.getByRole('button', { name: 'Skipped run' }), {
+      button: 0,
+    });
+
+    expect(handleParentPointerDown).not.toHaveBeenCalled();
   });
 });
 
