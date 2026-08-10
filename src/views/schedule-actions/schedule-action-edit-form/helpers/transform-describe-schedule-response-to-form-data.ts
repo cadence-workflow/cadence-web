@@ -41,8 +41,6 @@ export default function transformDescribeScheduleResponseToFormData(
     taskList: { name: startWorkflow?.taskList?.name ?? '' },
     executionStartToCloseTimeoutSeconds:
       formatDurationToSeconds(startWorkflow?.executionStartToCloseTimeout) ?? 0,
-    taskStartToCloseTimeoutSeconds:
-      formatDurationToSeconds(startWorkflow?.taskStartToCloseTimeout) ?? 0,
     // The worker SDK is not stored on the schedule, only the input encoding it
     // produced, which is ambiguous between languages. Fall back to the same
     // default the create form uses.
