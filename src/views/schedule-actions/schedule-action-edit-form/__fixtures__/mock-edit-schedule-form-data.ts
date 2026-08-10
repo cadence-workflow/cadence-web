@@ -13,7 +13,6 @@ export const mockEditScheduleFormData: EditScheduleFormData = {
   taskList: { name: 'demo-task-list' },
   workerSDKLanguage: 'GO',
   executionStartToCloseTimeoutSeconds: 3600,
-  taskStartToCloseTimeoutSeconds: 30,
   input: [''],
   pauseOnFailure: false,
 };
