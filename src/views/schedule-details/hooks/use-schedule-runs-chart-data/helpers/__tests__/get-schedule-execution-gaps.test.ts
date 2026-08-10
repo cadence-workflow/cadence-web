@@ -1,3 +1,4 @@
+import { SKIPPED_INFERENCE_VISIBILITY_BUFFER_MS } from '../../use-schedule-runs-chart-data.constants';
 import getScheduleExecutionGaps from '../get-schedule-execution-gaps';
 
 const hourMs = 60 * 60_000;
@@ -32,23 +33,42 @@ describe(getScheduleExecutionGaps.name, () => {
         scheduleEndMs: null,
         oldestLoadedScheduleTimeMs: 0,
         hasNextPage: false,
-        // The runs page was last fetched two hours ago: slots strictly after
-        // that can't be confirmed skipped yet, since a run may not have
-        // shown up in the response due to visibility indexing/poll lag.
+        // The runs page was last fetched two hours ago: slots at or shortly
+        // before that boundary can't be confirmed skipped yet, since a run may
+        // not have shown up in the response due to visibility indexing/poll lag.
         lastFetchedAtMs: 2 * hourMs,
         nowMs: 4 * hourMs,
         actualTimesMs: [hourMs],
       })
     ).toEqual({
-      skippedExecutions: [
-        { scheduledTimeMs: 0 },
-        { scheduledTimeMs: 2 * hourMs },
-      ],
+      skippedExecutions: [{ scheduledTimeMs: 0 }],
       unconfirmedExecutions: [
+        { scheduledTimeMs: 2 * hourMs },
         { scheduledTimeMs: 3 * hourMs },
         { scheduledTimeMs: 4 * hourMs },
       ],
     });
+  });
+
+  it('treats a slot within the visibility buffer before last fetch as unconfirmed', () => {
+    const lastFetchedAtMs = 2 * hourMs;
+
+    expect(
+      getScheduleExecutionGaps({
+        cronExpression: '0 * * * *',
+        timelineStartMs: 0,
+        scheduleEndMs: null,
+        oldestLoadedScheduleTimeMs: 0,
+        hasNextPage: false,
+        lastFetchedAtMs,
+        nowMs: lastFetchedAtMs,
+        actualTimesMs: [hourMs],
+      })
+    ).toEqual({
+      skippedExecutions: [{ scheduledTimeMs: 0 }],
+      unconfirmedExecutions: [{ scheduledTimeMs: lastFetchedAtMs }],
+    });
+    expect(SKIPPED_INFERENCE_VISIBILITY_BUFFER_MS).toBe(2_000);
   });
 
   it('treats a missing fetch timestamp as fully unconfirmed', () => {
@@ -86,11 +106,8 @@ describe(getScheduleExecutionGaps.name, () => {
         actualTimesMs: [2 * hourMs],
       })
     ).toEqual({
-      skippedExecutions: [
-        { scheduledTimeMs: 3 * hourMs },
-        { scheduledTimeMs: 4 * hourMs },
-      ],
-      unconfirmedExecutions: [],
+      skippedExecutions: [{ scheduledTimeMs: 3 * hourMs }],
+      unconfirmedExecutions: [{ scheduledTimeMs: 4 * hourMs }],
     });
   });
 
