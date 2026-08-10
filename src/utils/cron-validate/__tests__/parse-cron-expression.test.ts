@@ -15,6 +15,13 @@ describe(parseCronExpression.name, () => {
     });
   });
 
+  it('falls back to UTC when CRON_TZ names an unrecognized timezone', () => {
+    expect(parseCronExpression('CRON_TZ=Not/AZone 0 5 * * 0')).toEqual({
+      expression: '0 5 * * 0',
+      timezone: 'UTC',
+    });
+  });
+
   it('returns null for unsupported expressions', () => {
     expect(parseCronExpression('@every 1m')).toBeNull();
   });

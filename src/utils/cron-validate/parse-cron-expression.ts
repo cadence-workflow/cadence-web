@@ -1,6 +1,15 @@
 import { cronValidate } from './cron-validate';
 import { type ParsedCronExpression } from './cron-validate.types';
 
+function isValidTimezone(timezone: string): boolean {
+  try {
+    Intl.DateTimeFormat(undefined, { timeZone: timezone });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export default function parseCronExpression(
   cronExpression: string
 ): ParsedCronExpression | null {
@@ -13,8 +22,12 @@ export default function parseCronExpression(
     return null;
   }
 
+  const timezonePrefix = timezoneMatch?.[1];
+  const timezone =
+    timezonePrefix && isValidTimezone(timezonePrefix) ? timezonePrefix : 'UTC';
+
   return {
     expression,
-    timezone: timezoneMatch?.[1] ?? 'UTC',
+    timezone,
   };
 }
