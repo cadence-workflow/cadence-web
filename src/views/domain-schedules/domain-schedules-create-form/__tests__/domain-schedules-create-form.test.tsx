@@ -28,7 +28,6 @@ const REQUIRED_FORM_FIELD_PATHS: FieldPath<DomainSchedulesCreateFormData>[] = [
   'workflowType.name',
   'taskList.name',
   'executionStartToCloseTimeoutSeconds',
-  'taskStartToCloseTimeoutSeconds',
   'cronExpression',
   'input',
 ];
@@ -53,10 +52,10 @@ describe('DomainSchedulesCreateForm', () => {
       })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('spinbutton', {
+      screen.queryByRole('spinbutton', {
         name: 'Task Start-to-Close Timeout',
       })
-    ).toBeInTheDocument();
+    ).not.toBeInTheDocument();
     expect(
       screen.getByRole('radiogroup', { name: 'Worker SDK' })
     ).toBeInTheDocument();
@@ -89,12 +88,6 @@ describe('DomainSchedulesCreateForm', () => {
       })
     ).toHaveAttribute('aria-invalid', 'true');
 
-    expect(
-      screen.getByRole('spinbutton', {
-        name: 'Task Start-to-Close Timeout',
-      })
-    ).toHaveAttribute('aria-invalid', 'true');
-
     expect(screen.getByLabelText('Minute')).toHaveAttribute(
       'aria-invalid',
       'true'
@@ -120,12 +113,6 @@ describe('DomainSchedulesCreateForm', () => {
     });
     fireEvent.change(executionTimeout, { target: { value: '400' } });
     expect(executionTimeout).toHaveValue(400);
-
-    const taskTimeout = screen.getByRole('spinbutton', {
-      name: 'Task Start-to-Close Timeout',
-    });
-    fireEvent.change(taskTimeout, { target: { value: '90' } });
-    expect(taskTimeout).toHaveValue(90);
   });
 
   it('renders with default worker SDK and pause-on-failure defaults', async () => {
