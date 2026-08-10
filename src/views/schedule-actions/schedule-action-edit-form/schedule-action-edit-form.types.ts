@@ -1,8 +1,20 @@
 import { type z } from 'zod';
 
+import { type CreateScheduleRequestBody } from '@/route-handlers/create-schedule/create-schedule.types';
+
 import { type editScheduleFormSchema } from './schemas/edit-schedule-form-schema';
 
 export type EditScheduleFormData = z.infer<typeof editScheduleFormSchema>;
+
+/**
+ * UpdateSchedule replaces the whole schedule definition, so the body matches
+ * the create one. The schedule id is display-only in the edit form: the PUT URL
+ * already carries it and the schedule id of an existing schedule cannot change.
+ */
+export type EditScheduleSubmissionData = Omit<
+  CreateScheduleRequestBody,
+  'scheduleId'
+>;
 
 /**
  * Forces every key of T to be explicitly assigned, including optional fields,
