@@ -61,9 +61,13 @@ export default function transformCreateScheduleBodyToGrpcInput({
     executionStartToCloseTimeout: getGrpcDurationFromSeconds(
       startWorkflow.executionStartToCloseTimeoutSeconds
     ),
-    taskStartToCloseTimeout: getGrpcDurationFromSeconds(
-      startWorkflow.taskStartToCloseTimeoutSeconds
-    ),
+    ...(startWorkflow.taskStartToCloseTimeoutSeconds !== undefined
+      ? {
+          taskStartToCloseTimeout: getGrpcDurationFromSeconds(
+            startWorkflow.taskStartToCloseTimeoutSeconds
+          ),
+        }
+      : {}),
     retryPolicy: grpcRetryPolicy,
     memo: startWorkflow.memo
       ? {

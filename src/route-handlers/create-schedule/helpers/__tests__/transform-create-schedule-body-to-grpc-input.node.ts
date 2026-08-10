@@ -13,7 +13,6 @@ function minimalStartWorkflow(
     workerSDKLanguage: 'GO',
     workflowIdPrefix: 'scheduled-demo-',
     executionStartToCloseTimeoutSeconds: 3600,
-    taskStartToCloseTimeoutSeconds: 30,
     ...overrides,
   };
 }
@@ -50,13 +49,28 @@ describe(transformCreateScheduleBodyToGrpcInput.name, () => {
         taskList: { name: 'demo-task-list' },
         workflowIdPrefix: 'scheduled-demo-',
         executionStartToCloseTimeout: { seconds: 3600, nanos: 0 },
-        taskStartToCloseTimeout: { seconds: 30, nanos: 0 },
         retryPolicy: undefined,
         memo: undefined,
         searchAttributes: undefined,
         input: undefined,
       })
     );
+  });
+
+  it('maps taskStartToCloseTimeout when provided in the body', () => {
+    const grpc = transformCreateScheduleBodyToGrpcInput({
+      domain: 'test-domain',
+      body: minimalBody({
+        startWorkflow: minimalStartWorkflow({
+          taskStartToCloseTimeoutSeconds: 30,
+        }),
+      }),
+    });
+
+    expect(grpc.action?.startWorkflow?.taskStartToCloseTimeout).toEqual({
+      seconds: 30,
+      nanos: 0,
+    });
   });
 
   it('maps ISO schedule bounds and jitter to spec timestamps and duration', () => {
