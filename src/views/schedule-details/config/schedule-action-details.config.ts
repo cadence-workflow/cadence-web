@@ -34,6 +34,8 @@ const scheduleActionDetailsConfig: ScheduleDetailRowConfig[] = [
     getLabel: () => 'Task start to close timeout',
     getValue: ({ formattedScheduleDetails: { action } }) =>
       formatScheduleDuration(action?.startWorkflow?.taskStartToCloseTimeout),
+    hide: ({ formattedScheduleDetails: { action } }) =>
+      !action?.startWorkflow?.taskStartToCloseTimeout,
   },
   {
     key: 'executionStartToCloseTimeout',
