@@ -82,10 +82,6 @@ export const createScheduleFormFieldsSchema = z.object({
       required_error: 'Execution timeout is required',
     })
     .positive('Execution timeout must be positive'),
-  taskStartToCloseTimeoutSeconds: z
-    .number()
-    .positive('Task timeout must be positive')
-    .optional(),
   // TODO(refactor): WORKER_SDK_LANGUAGES imported from start-workflow — extract to shared constants
   workerSDKLanguage: z.enum(WORKER_SDK_LANGUAGES),
   input: z

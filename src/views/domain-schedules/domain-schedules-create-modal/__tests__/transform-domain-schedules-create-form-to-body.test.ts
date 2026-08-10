@@ -42,15 +42,6 @@ describe(transformDomainSchedulesCreateFormToBody.name, () => {
     });
   });
 
-  it('includes taskStartToCloseTimeoutSeconds when provided', () => {
-    const result = transformDomainSchedulesCreateFormToBody({
-      ...mockDomainSchedulesCreateFormData,
-      taskStartToCloseTimeoutSeconds: 45,
-    });
-
-    expect(result.startWorkflow.taskStartToCloseTimeoutSeconds).toBe(45);
-  });
-
   it('includes parsed JSON inputs when provided', () => {
     const result = transformDomainSchedulesCreateFormToBody({
       ...mockDomainSchedulesCreateFormData,

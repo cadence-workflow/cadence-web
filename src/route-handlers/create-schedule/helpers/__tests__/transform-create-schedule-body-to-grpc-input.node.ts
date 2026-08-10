@@ -57,22 +57,6 @@ describe(transformCreateScheduleBodyToGrpcInput.name, () => {
     );
   });
 
-  it('maps taskStartToCloseTimeout when provided in the body', () => {
-    const grpc = transformCreateScheduleBodyToGrpcInput({
-      domain: 'test-domain',
-      body: minimalBody({
-        startWorkflow: minimalStartWorkflow({
-          taskStartToCloseTimeoutSeconds: 30,
-        }),
-      }),
-    });
-
-    expect(grpc.action?.startWorkflow?.taskStartToCloseTimeout).toEqual({
-      seconds: 30,
-      nanos: 0,
-    });
-  });
-
   it('maps ISO schedule bounds and jitter to spec timestamps and duration', () => {
     const grpc = transformCreateScheduleBodyToGrpcInput({
       domain: 'd',

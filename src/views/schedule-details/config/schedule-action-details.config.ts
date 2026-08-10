@@ -29,6 +29,7 @@ const scheduleActionDetailsConfig: ScheduleDetailRowConfig[] = [
       });
     },
   },
+  // Not settable via the web UI; shown only when present on the schedule (e.g. added via CLI).
   {
     key: 'taskStartToCloseTimeout',
     getLabel: () => 'Task start to close timeout',
