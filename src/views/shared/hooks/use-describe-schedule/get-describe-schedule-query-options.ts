@@ -28,6 +28,9 @@ export default function getDescribeScheduleQueryOptions({
       }
       return false;
     },
+    // Override global staleTime: Infinity so revisiting a schedule details page
+    // refetches in the background while still rendering the cached snapshot instantly.
+    staleTime: 0,
     ...queryOptions,
   };
 }

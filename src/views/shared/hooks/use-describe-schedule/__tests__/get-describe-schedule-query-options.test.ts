@@ -108,4 +108,19 @@ describe(getDescribeScheduleQueryOptions.name, () => {
 
     expect(options.throwOnError).toBe(true);
   });
+
+  it('overrides global staleTime: Infinity with staleTime: 0', () => {
+    const options = getDescribeScheduleQueryOptions(params);
+
+    expect(options.staleTime).toBe(0);
+  });
+
+  it('allows callers to override staleTime via query options', () => {
+    const options = getDescribeScheduleQueryOptions({
+      ...params,
+      staleTime: 30_000,
+    });
+
+    expect(options.staleTime).toBe(30_000);
+  });
 });
