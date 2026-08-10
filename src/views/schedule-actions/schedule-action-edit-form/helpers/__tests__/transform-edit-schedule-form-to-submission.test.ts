@@ -15,7 +15,6 @@ describe(transformEditScheduleFormToSubmission.name, () => {
         taskList: { name: 'demo-task-list' },
         workerSDKLanguage: 'GO',
         executionStartToCloseTimeoutSeconds: 3600,
-        taskStartToCloseTimeoutSeconds: 30,
       },
     });
   });
