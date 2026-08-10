@@ -6,7 +6,9 @@ import { MdOutlineCircle } from 'react-icons/md';
 import formatDate from '@/utils/data-formatters/format-date';
 import formatTimeDiff from '@/utils/datetime/format-time-diff';
 import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
+import isPendingHistoryEvent from '@/views/workflow-history/workflow-history-event-details/helpers/is-pending-history-event';
 import WorkflowHistoryGroupLabel from '@/views/workflow-history/workflow-history-group-label/workflow-history-group-label';
+import WorkflowHistoryRemainingDurationBadge from '@/views/workflow-history/workflow-history-remaining-duration-badge/workflow-history-remaining-duration-badge';
 import WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 
 import workflowHistoryEventGroupCategoryColorsConfig from '../config/workflow-history-event-group-category-colors.config';
@@ -26,6 +28,9 @@ export default function WorkflowHistoryUngroupedEvent({
   eventInfo,
   animateOnEnter,
   workflowStartTimeMs,
+  workflowIsArchived,
+  workflowCloseStatus,
+  loadingMoreEvents,
   onReset,
   decodedPageUrlParams,
   isExpanded,
@@ -49,6 +54,8 @@ export default function WorkflowHistoryUngroupedEvent({
     ([eventId]) => eventId === eventInfo.id
   )?.[1].eventDetails;
 
+  const isPendingEvent = isPendingHistoryEvent(eventInfo.event);
+
   return (
     <Panel
       title={
@@ -59,7 +66,9 @@ export default function WorkflowHistoryUngroupedEvent({
                 .content
             }
           />
-          <styled.HeaderLabel>{eventInfo.id}</styled.HeaderLabel>
+          <styled.HeaderLabel>
+            {isPendingEvent ? '-' : eventInfo.id}
+          </styled.HeaderLabel>
           <styled.HeaderLabel>
             <WorkflowHistoryGroupLabel
               label={eventInfo.label}
@@ -77,14 +86,27 @@ export default function WorkflowHistoryUngroupedEvent({
               ? formatDate(parseGrpcTimestamp(eventInfo.event.eventTime))
               : null}
           </div>
-          <div>
+          <styled.ElapsedContainer>
             {eventInfo.event.eventTime && workflowStartTimeMs
               ? formatTimeDiff(
                   workflowStartTimeMs,
                   parseGrpcTimestamp(eventInfo.event.eventTime)
                 )
               : null}
-          </div>
+            {eventInfo.eventGroup.expectedEndTimeInfo &&
+              eventInfo.event.eventTime && (
+                <WorkflowHistoryRemainingDurationBadge
+                  startTime={parseGrpcTimestamp(eventInfo.event.eventTime)}
+                  expectedEndTime={
+                    eventInfo.eventGroup.expectedEndTimeInfo.timeMs
+                  }
+                  prefix={eventInfo.eventGroup.expectedEndTimeInfo.prefix}
+                  workflowIsArchived={workflowIsArchived}
+                  workflowCloseStatus={workflowCloseStatus}
+                  loadingMoreEvents={loadingMoreEvents}
+                />
+              )}
+          </styled.ElapsedContainer>
           <styled.SummarizedDetailsContainer>
             {eventSummaryDetails && eventSummaryDetails.length > 0 ? (
               <WorkflowHistoryDetailsRow

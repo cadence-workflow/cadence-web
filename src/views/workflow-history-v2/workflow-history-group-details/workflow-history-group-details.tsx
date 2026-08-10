@@ -48,7 +48,9 @@ export default function WorkflowHistoryGroupDetails({
           overrides={overrides.buttonGroup}
         >
           {groupDetailsEntries.map(([eventId, eventDetailsTabContent]) => (
-            <Button key={eventId}>{eventDetailsTabContent.eventLabel}</Button>
+            <Button overrides={overrides.button} key={eventId}>
+              {eventDetailsTabContent.eventLabel}
+            </Button>
           ))}
         </ButtonGroup>
         <styled.ExtraActions>

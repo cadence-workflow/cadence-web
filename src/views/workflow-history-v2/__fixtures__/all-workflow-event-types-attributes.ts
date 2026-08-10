@@ -61,6 +61,7 @@ const allAttrsArr = arrayOfAllAttrs([
   'workflowExecutionCanceledEventAttributes',
   'workflowExecutionContinuedAsNewEventAttributes',
   'upsertWorkflowSearchAttributesEventAttributes',
+  undefined,
 ]);
 
 const allAttrsArrExtended = arrayOfAllAttrsExtended([

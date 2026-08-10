@@ -40,7 +40,6 @@ describe('isSignalExternalWorkflowExecutionEvent', () => {
     expect(isSignalExternalWorkflowExecutionEvent(null)).toBe(false);
     //@ts-expect-error undefined is not of type HistoryEvent
     expect(isSignalExternalWorkflowExecutionEvent(undefined)).toBe(false);
-    //@ts-expect-error {} is not of type HistoryEvent
     expect(isSignalExternalWorkflowExecutionEvent({})).toBe(false);
   });
 });

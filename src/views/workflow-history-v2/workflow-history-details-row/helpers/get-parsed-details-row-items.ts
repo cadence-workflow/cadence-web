@@ -52,6 +52,7 @@ export default function getParsedDetailsRowItems(
       invertTooltipColors: parserConfig?.invertTooltipColors,
       omitWrapping: parserConfig?.omitWrapping,
       hasClickableContent: parserConfig?.hasClickableContent,
+      badgeColor: parserConfig?.badgeColor,
     });
 
     return acc;

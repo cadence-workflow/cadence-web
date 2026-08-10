@@ -72,7 +72,7 @@ describe('useDebouncedValue', () => {
   });
 
   it('should cancel pending debounce on unmount', () => {
-    const { result, rerender, unmount } = renderHook(
+    const { rerender, unmount } = renderHook(
       ({ value }) => useDebouncedValue(value, DEBOUNCE_MS),
       { initialProps: { value: 'initial' } }
     );

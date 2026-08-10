@@ -25,6 +25,11 @@ jest.mock(
   () => jest.fn(() => <div>Mock archival table</div>)
 );
 
+jest.mock(
+  '../domain-workflows-archival-list/domain-workflows-archival-list',
+  () => jest.fn(() => <div>Mock archival list</div>)
+);
+
 const mockSetQueryParams = jest.fn();
 jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
   jest.fn(() => [mockDomainPageQueryParamsValues, mockSetQueryParams])
@@ -46,6 +51,17 @@ describe(DomainWorkflowsArchival.name, () => {
     expect(await screen.findByText('Mock archival table')).toBeInTheDocument();
   });
 
+  it('renders archival header and list when workflows list is enabled', async () => {
+    await setup({
+      isArchivalEnabled: true,
+      isNewWorkflowsListEnabled: true,
+    });
+
+    expect(await screen.findByText('Mock archival header')).toBeInTheDocument();
+    expect(await screen.findByText('Mock archival list')).toBeInTheDocument();
+    expect(screen.queryByText('Mock archival table')).not.toBeInTheDocument();
+  });
+
   it('does not render if the initial call fails', async () => {
     let renderErrorMessage;
     try {
@@ -64,9 +80,11 @@ describe(DomainWorkflowsArchival.name, () => {
 
 async function setup({
   isArchivalEnabled,
+  isNewWorkflowsListEnabled = false,
   isError,
 }: {
   isArchivalEnabled?: boolean;
+  isNewWorkflowsListEnabled?: boolean;
   isError?: boolean;
 }) {
   render(
@@ -75,6 +93,12 @@ async function setup({
     </Suspense>,
     {
       endpointsMocks: [
+        {
+          path: '/api/config',
+          httpMethod: 'GET',
+          mockOnce: false,
+          jsonResponse: isNewWorkflowsListEnabled,
+        },
         {
           path: '/api/domains/:domain/:cluster',
           httpMethod: 'GET',

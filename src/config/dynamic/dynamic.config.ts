@@ -7,27 +7,50 @@ import type {
 } from '../../utils/config/config.types';
 
 import archivalDefaultSearchEnabled from './resolvers/archival-default-search-enabled';
+import authStrategy from './resolvers/auth-strategy';
+import { type AuthStrategyConfigValue } from './resolvers/auth-strategy.types';
+import batchActionsUiEnabled from './resolvers/batch-actions-ui-enabled';
+import { type BatchActionsUiEnabledResolverParams } from './resolvers/batch-actions-ui-enabled.types';
 import clusters from './resolvers/clusters';
 import clustersPublic from './resolvers/clusters-public';
 import { type PublicClustersConfigs } from './resolvers/clusters-public.types';
 import { type ClustersConfigs } from './resolvers/clusters.types';
 import cronListEnabled from './resolvers/cron-list-enabled';
 import { type CronListEnabledResolverParams } from './resolvers/cron-list-enabled.types';
+import domainAccess from './resolvers/domain-access';
+import {
+  type DomainAccessResolverParams,
+  type DomainAccessResolverValue,
+} from './resolvers/domain-access.types';
 import extendedDomainInfoEnabled from './resolvers/extended-domain-info-enabled';
 import { type ExtendedDomainInfoEnabledConfig } from './resolvers/extended-domain-info-enabled.types';
 import failoverHistoryEnabled from './resolvers/failover-history-enabled';
 import historyPageV2Enabled from './resolvers/history-page-v2-enabled';
 import { type HistoryPageV2EnabledConfigValue } from './resolvers/history-page-v2-enabled.types';
+import listWorkflowsPartialMatchEnabled from './resolvers/list-workflows-partial-match-enabled';
+import scheduleActionsEnabled from './resolvers/schedule-actions-enabled';
+import {
+  type ScheduleActionsEnabledResolverParams,
+  type ScheduleActionsEnabledConfig,
+} from './resolvers/schedule-actions-enabled.types';
+import schedulesEnabled from './resolvers/schedules-enabled';
+import { type SchedulesEnabledResolverParams } from './resolvers/schedules-enabled.types';
 import workflowActionsEnabled from './resolvers/workflow-actions-enabled';
 import {
   type WorkflowActionsEnabledResolverParams,
   type WorkflowActionsEnabledConfig,
 } from './resolvers/workflow-actions-enabled.types';
 import workflowDiagnosticsEnabled from './resolvers/workflow-diagnostics-enabled';
+import workflowsListEnabled from './resolvers/workflows-list-enabled';
 
 const dynamicConfigs: {
   CADENCE_WEB_PORT: ConfigEnvDefinition;
   ADMIN_SECURITY_TOKEN: ConfigEnvDefinition;
+  CADENCE_WEB_AUTH_STRATEGY: ConfigSyncResolverDefinition<
+    undefined,
+    AuthStrategyConfigValue,
+    'serverStart'
+  >;
   CLUSTERS: ConfigSyncResolverDefinition<
     undefined,
     ClustersConfigs,
@@ -42,6 +65,12 @@ const dynamicConfigs: {
   CRON_LIST_ENABLED: ConfigAsyncResolverDefinition<
     CronListEnabledResolverParams,
     boolean,
+    'request',
+    true
+  >;
+  DOMAIN_ACCESS: ConfigAsyncResolverDefinition<
+    DomainAccessResolverParams,
+    DomainAccessResolverValue,
     'request',
     true
   >;
@@ -69,6 +98,12 @@ const dynamicConfigs: {
     'request',
     true
   >;
+  BATCH_ACTIONS_UI_ENABLED: ConfigAsyncResolverDefinition<
+    BatchActionsUiEnabledResolverParams,
+    boolean,
+    'request',
+    true
+  >;
   FAILOVER_HISTORY_ENABLED: ConfigAsyncResolverDefinition<
     undefined,
     boolean,
@@ -78,6 +113,30 @@ const dynamicConfigs: {
   HISTORY_PAGE_V2_ENABLED: ConfigAsyncResolverDefinition<
     undefined,
     HistoryPageV2EnabledConfigValue,
+    'request',
+    true
+  >;
+  SCHEDULE_ACTIONS_ENABLED: ConfigAsyncResolverDefinition<
+    ScheduleActionsEnabledResolverParams,
+    ScheduleActionsEnabledConfig,
+    'request',
+    true
+  >;
+  SCHEDULES_ENABLED: ConfigAsyncResolverDefinition<
+    SchedulesEnabledResolverParams,
+    boolean,
+    'request',
+    true
+  >;
+  WORKFLOWS_LIST_ENABLED: ConfigAsyncResolverDefinition<
+    undefined,
+    boolean,
+    'request',
+    true
+  >;
+  LIST_WORKFLOWS_PARTIAL_MATCH_ENABLED: ConfigAsyncResolverDefinition<
+    undefined,
+    boolean,
     'request',
     true
   >;
@@ -91,6 +150,10 @@ const dynamicConfigs: {
     env: 'CADENCE_ADMIN_SECURITY_TOKEN',
     default: '',
   },
+  CADENCE_WEB_AUTH_STRATEGY: {
+    resolver: authStrategy,
+    evaluateOn: 'serverStart',
+  },
   CLUSTERS: {
     resolver: clusters,
     evaluateOn: 'serverStart',
@@ -102,6 +165,11 @@ const dynamicConfigs: {
   },
   CRON_LIST_ENABLED: {
     resolver: cronListEnabled,
+    evaluateOn: 'request',
+    isPublic: true,
+  },
+  DOMAIN_ACCESS: {
+    resolver: domainAccess,
     evaluateOn: 'request',
     isPublic: true,
   },
@@ -125,6 +193,11 @@ const dynamicConfigs: {
     evaluateOn: 'request',
     isPublic: true,
   },
+  BATCH_ACTIONS_UI_ENABLED: {
+    resolver: batchActionsUiEnabled,
+    evaluateOn: 'request',
+    isPublic: true,
+  },
   FAILOVER_HISTORY_ENABLED: {
     resolver: failoverHistoryEnabled,
     evaluateOn: 'request',
@@ -132,6 +205,26 @@ const dynamicConfigs: {
   },
   HISTORY_PAGE_V2_ENABLED: {
     resolver: historyPageV2Enabled,
+    evaluateOn: 'request',
+    isPublic: true,
+  },
+  SCHEDULE_ACTIONS_ENABLED: {
+    resolver: scheduleActionsEnabled,
+    evaluateOn: 'request',
+    isPublic: true,
+  },
+  SCHEDULES_ENABLED: {
+    resolver: schedulesEnabled,
+    evaluateOn: 'request',
+    isPublic: true,
+  },
+  WORKFLOWS_LIST_ENABLED: {
+    resolver: workflowsListEnabled,
+    evaluateOn: 'request',
+    isPublic: true,
+  },
+  LIST_WORKFLOWS_PARTIAL_MATCH_ENABLED: {
+    resolver: listWorkflowsPartialMatchEnabled,
     evaluateOn: 'request',
     isPublic: true,
   },

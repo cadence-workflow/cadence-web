@@ -5,6 +5,7 @@ import {
   type PageQueryParams,
 } from '@/hooks/use-page-query-params/use-page-query-params.types';
 import { type ListWorkflowsRequestQueryParams } from '@/route-handlers/list-workflows/list-workflows.types';
+import { type Props as ColumnsPickerProps } from '@/views/shared/workflows-list-columns-picker/workflows-list-columns-picker.types';
 
 export type WorkflowsHeaderInputType =
   ListWorkflowsRequestQueryParams['inputType'];
@@ -28,4 +29,8 @@ export type Props<
   isQueryRunning: boolean;
   expandFiltersByDefault?: boolean;
   showQueryInputOnly?: boolean;
+  noSpacing?: boolean;
+  columnsPickerProps?: ColumnsPickerProps;
+  // Label for the non-query toggle segment (default "Search")
+  searchSegmentLabel?: string;
 };

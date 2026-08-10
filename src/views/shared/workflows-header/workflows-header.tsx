@@ -11,6 +11,7 @@ import {
   type PageQueryParamKeys,
   type PageQueryParams,
 } from '@/hooks/use-page-query-params/use-page-query-params.types';
+import WorkflowsListColumnsPicker from '@/views/shared/workflows-list-columns-picker/workflows-list-columns-picker';
 
 import WORKFLOWS_SEARCH_DEBOUNCE_MS from './config/workflows-search-debounce-ms.config';
 import { overrides, styled } from './workflows-header.styles';
@@ -36,6 +37,9 @@ export default function WorkflowsHeader<
   isQueryRunning,
   expandFiltersByDefault,
   showQueryInputOnly,
+  noSpacing,
+  columnsPickerProps,
+  searchSegmentLabel = 'Search',
 }: Props<P, I, S, Q>) {
   const [areFiltersShown, setAreFiltersShown] = useState(
     expandFiltersByDefault ?? false
@@ -53,7 +57,7 @@ export default function WorkflowsHeader<
   const query = queryParams[queryStringQueryParamKey];
 
   return (
-    <styled.HeaderContainer>
+    <styled.HeaderContainer $noSpacing={noSpacing}>
       <styled.InputContainer>
         <SegmentedControl
           activeKey={inputType}
@@ -69,7 +73,7 @@ export default function WorkflowsHeader<
             <Segment
               overrides={overrides.inputToggleSegment}
               key="search"
-              label="Search"
+              label={searchSegmentLabel}
             />
           )}
           <Segment
@@ -98,13 +102,16 @@ export default function WorkflowsHeader<
               inputDebounceDurationMs={WORKFLOWS_SEARCH_DEBOUNCE_MS}
             />
             <PageFiltersToggle
-              isActive={areFiltersShown}
+              isActive={areFiltersShown || activeFiltersCount > 0}
               onClick={() => {
                 setAreFiltersShown((value) => !value);
               }}
               activeFiltersCount={activeFiltersCount}
             />
           </styled.SearchContainer>
+        )}
+        {columnsPickerProps && (
+          <WorkflowsListColumnsPicker {...columnsPickerProps} />
         )}
       </styled.InputContainer>
       {inputType === 'search' && areFiltersShown && (

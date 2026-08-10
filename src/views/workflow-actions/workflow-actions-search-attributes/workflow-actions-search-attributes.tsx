@@ -3,6 +3,7 @@ import React, { useCallback, useMemo } from 'react';
 
 import { Button } from 'baseui/button';
 import { DatePicker } from 'baseui/datepicker';
+import { FormControl } from 'baseui/form-control';
 import { Input } from 'baseui/input';
 import { Select } from 'baseui/select';
 import { MdAdd, MdDeleteOutline } from 'react-icons/md';
@@ -17,6 +18,7 @@ import {
 import {
   cssStyles,
   overrides,
+  styled,
 } from './workflow-actions-search-attributes.styles';
 import type {
   Props,
@@ -31,6 +33,8 @@ export default function WorkflowActionsSearchAttributes({
   error,
   searchAttributes,
   addButtonText = 'Add search attribute',
+  showSectionBorder = true,
+  showFieldErrorMessages = false,
 }: Props) {
   const { cls } = useStyletronClasses(cssStyles);
 
@@ -46,14 +50,12 @@ export default function WorkflowActionsSearchAttributes({
   }, [searchAttributes, value]);
 
   const getFieldError = useCallback(
-    (index: number, field: 'key' | 'value'): boolean => {
-      if (typeof error === 'string') return true; // Global error affects all
+    (index: number, field: 'key' | 'value'): string | true | undefined => {
+      if (typeof error === 'string') return true;
       if (Array.isArray(error)) {
-        const fieldError = error[index];
-        if (!fieldError) return false;
-        return Boolean(fieldError[field]);
+        return error[index]?.[field];
       }
-      return false;
+      return undefined;
     },
     [error]
   );
@@ -166,17 +168,16 @@ export default function WorkflowActionsSearchAttributes({
   const renderValueInput = useCallback(
     (item: SearchAttributeItem, index: number) => {
       const selectedAttribute = selectedAttributes[index];
-      const inputError = getFieldError(index, 'value');
+      const valueError = getFieldError(index, 'value');
       const inputPlaceholder =
         INPUT_PLACEHOLDERS_FOR_VALUE_TYPE[selectedAttribute?.valueType] ||
         'Enter value';
 
-      // Common input value props
       const commonInputProps = {
         'aria-label': 'Search attribute value',
         placeholder: inputPlaceholder,
         size: 'compact' as const,
-        error: inputError,
+        error: valueError !== undefined,
         overrides: overrides.valueInput,
       };
 
@@ -255,7 +256,7 @@ export default function WorkflowActionsSearchAttributes({
   );
 
   return (
-    <div className={cls.container}>
+    <styled.Container $showSectionBorder={showSectionBorder}>
       {displayValue.map((item: SearchAttributeItem, index: number) => {
         const isEmptyRow = !item.key && !item.value;
         const isLastItem = displayValue.length === 1;
@@ -263,30 +264,43 @@ export default function WorkflowActionsSearchAttributes({
         const deleteButtonLabel =
           isLastItem && !isEmptyRow ? 'Clear attribute' : 'Delete attribute';
 
+        const keyError = getFieldError(index, 'key');
+        const valueError = getFieldError(index, 'value');
+
         return (
           <div key={item.key || `empty-${index}`} className={cls.attributeRow}>
             <div className={cls.keyContainer}>
-              <Select
-                aria-label="Search attribute key"
-                options={getAttributeOptionsForRow(item.key)}
-                value={item.key ? [{ id: item.key, label: item.key }] : []}
-                onChange={(params) => {
-                  const newKey = String(params.value[0]?.id || '');
-                  handleKeyChange(index, newKey);
-                }}
-                placeholder="Select attribute"
-                size="compact"
-                error={getFieldError(index, 'key')}
-                overrides={overrides.keySelect}
-                searchable
-                clearable={false}
-                disabled={isLoading}
-                isLoading={isLoading}
-              />
+              <FormControl
+                error={showFieldErrorMessages ? keyError : undefined}
+                overrides={overrides.fieldFormControl}
+              >
+                <Select
+                  aria-label="Search attribute key"
+                  options={getAttributeOptionsForRow(item.key)}
+                  value={item.key ? [{ id: item.key, label: item.key }] : []}
+                  onChange={(params) => {
+                    const newKey = String(params.value[0]?.id || '');
+                    handleKeyChange(index, newKey);
+                  }}
+                  placeholder="Select attribute"
+                  size="compact"
+                  error={keyError !== undefined}
+                  overrides={overrides.keySelect}
+                  searchable
+                  clearable={false}
+                  disabled={isLoading}
+                  isLoading={isLoading}
+                />
+              </FormControl>
             </div>
 
             <div className={cls.valueContainer}>
-              {renderValueInput(item, index)}
+              <FormControl
+                error={showFieldErrorMessages ? valueError : undefined}
+                overrides={overrides.fieldFormControl}
+              >
+                {renderValueInput(item, index)}
+              </FormControl>
             </div>
 
             <div className={cls.buttonContainer}>
@@ -321,6 +335,6 @@ export default function WorkflowActionsSearchAttributes({
           {addButtonText}
         </Button>
       </div>
-    </div>
+    </styled.Container>
   );
 }

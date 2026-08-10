@@ -176,6 +176,7 @@ export default function WorkflowHistory({ params }: Props) {
               shortLabel: group.shortLabel,
               id: event.eventId ?? event.computedEventId,
               canReset: group.resetToDecisionEventId === event.eventId,
+              expectedEndTimeInfo: group.expectedEndTimeInfo,
             })),
           ])
           .flat(1)
@@ -397,6 +398,11 @@ export default function WorkflowHistory({ params }: Props) {
                   eventsInfo={sortedUngroupedEvents}
                   selectedEventId={queryParams.historySelectedEventId}
                   decodedPageUrlParams={decodedParams}
+                  workflowIsArchived={
+                    workflowExecutionInfo?.isArchived || false
+                  }
+                  workflowCloseStatus={workflowExecutionInfo?.closeStatus}
+                  loadingMoreEvents={false}
                   error={error}
                   hasMoreEvents={hasNextPage}
                   isFetchingMoreEvents={isFetchingNextPage}

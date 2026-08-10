@@ -1,17 +1,24 @@
-import React from 'react';
+import { useContext } from 'react';
 
 import { render, screen } from '@testing-library/react';
 
 import Markdown from '@/components/markdown/markdown';
+import { MarkdownContext } from '@/components/markdown/markdown-context-provider/markdown-context-provider';
 
-// Mock the signal button to avoid needing full workflow context
+// Mock the signal button to expose its props and context for assertions.
+function MockSignalButton(props: Record<string, unknown>) {
+  const context = useContext(MarkdownContext);
+  return (
+    <>
+      <button data-testid="signal-button">{props.label as string}</button>
+      <pre data-testid="signal-button-props">{JSON.stringify(props)}</pre>
+      <pre data-testid="markdown-context">{JSON.stringify(context)}</pre>
+    </>
+  );
+}
 jest.mock(
   '@/components/markdown/markdoc-components/signal-button/signal-button',
-  () => {
-    return function MockSignalButton({ label }: { label: string }) {
-      return <button data-testid="signal-button">{label}</button>;
-    };
-  }
+  () => MockSignalButton
 );
 
 describe('Markdown with Markdoc', () => {
@@ -160,5 +167,60 @@ console.log('Hello');
     const innerEl = screen.getByText('inner');
     expect(innerEl).toBeInTheDocument();
     expect(innerEl).toHaveStyle({ color: 'red' });
+  });
+
+  describe('markdown context propagation', () => {
+    it('provides domain/cluster/workflowId/runId props to MarkdownContext for descendants', () => {
+      const content = '{% signal signalName="test" label="Go" /%}';
+      render(
+        <Markdown
+          markdown={content}
+          domain="my-domain"
+          cluster="cluster0"
+          workflowId="wf-123"
+          runId="run-456"
+        />
+      );
+
+      expect(screen.getByTestId('signal-button')).toBeInTheDocument();
+      expect(screen.getByTestId('markdown-context')).toHaveTextContent(
+        JSON.stringify({
+          domain: 'my-domain',
+          cluster: 'cluster0',
+          workflowId: 'wf-123',
+          runId: 'run-456',
+        })
+      );
+    });
+
+    it('provides an empty context when <Markdown> receives no page params', () => {
+      const content = '{% signal signalName="test" label="Go" /%}';
+      render(<Markdown markdown={content} />);
+
+      expect(screen.getByTestId('markdown-context')).toHaveTextContent('{}');
+    });
+
+    it('passes explicit tag attributes through regardless of markdown context', () => {
+      const content =
+        '{% signal signalName="s" label="L" domain="other" cluster="c1" workflowId="w1" runId="r1" /%}';
+      render(
+        <Markdown
+          markdown={content}
+          domain="page-domain"
+          cluster="page-cluster"
+          workflowId="page-wf"
+          runId="page-run"
+        />
+      );
+
+      expect(
+        JSON.parse(screen.getByTestId('signal-button-props').textContent ?? '')
+      ).toMatchObject({
+        domain: 'other',
+        cluster: 'c1',
+        workflowId: 'w1',
+        runId: 'r1',
+      });
+    });
   });
 });

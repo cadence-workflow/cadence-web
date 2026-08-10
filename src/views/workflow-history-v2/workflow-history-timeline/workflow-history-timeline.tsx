@@ -9,6 +9,7 @@ import { Bar, Line } from '@visx/shape';
 import { StatefulPopover } from 'baseui/popover';
 import { Virtuoso } from 'react-virtuoso';
 
+import useCurrentTimeMs from '@/hooks/use-current-time-ms/use-current-time-ms';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 
 import workflowHistoryEventGroupCategoryColorsConfig from '../config/workflow-history-event-group-category-colors.config';
@@ -17,7 +18,6 @@ import WorkflowHistoryTimelineEventGroup from '../workflow-history-timeline-even
 
 import formatTickDuration from './helpers/format-tick-duration';
 import getTimelineRowFromEventGroup from './helpers/get-timeline-row-from-event-group';
-import useCurrentTimeMs from './hooks/use-current-time-ms';
 import useTimelineMaxRangeMs from './hooks/use-timeline-max-range-ms';
 import {
   ROW_HEIGHT_PX,
@@ -25,6 +25,7 @@ import {
   TIMELINE_ITEM_TOOLTIP_ENTRY_DELAY_MS,
   TIMELINE_LABEL_COLUMN_WIDTH,
   TIMELINE_SIDE_PADDING,
+  TIMELINE_UPDATE_INTERVAL_MS,
 } from './workflow-history-timeline.constants';
 import {
   cssStyles,
@@ -69,7 +70,10 @@ export default function WorkflowHistoryTimeline({
   const isWorkflowRunning =
     workflowCloseTimeMs === null || workflowCloseTimeMs === undefined;
 
-  const currentTimeMs = useCurrentTimeMs({ isWorkflowRunning });
+  const currentTimeMs = useCurrentTimeMs({
+    intervalMs: TIMELINE_UPDATE_INTERVAL_MS,
+    isEnabled: isWorkflowRunning,
+  });
 
   const currentTimeOffsetMs = useMemo(
     () => currentTimeMs - workflowStartTimeMs,

@@ -5,6 +5,10 @@ import {
   startActivityTaskEvent,
 } from '@/views/workflow-history/__fixtures__/workflow-history-activity-events';
 import { mockActivityEventGroup } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
+import {
+  pendingActivityTaskStartEvent,
+  pendingDecisionTaskStartEvent,
+} from '@/views/workflow-history/__fixtures__/workflow-history-pending-events';
 import type WorkflowHistoryGroupLabel from '@/views/workflow-history/workflow-history-group-label/workflow-history-group-label';
 import type WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 
@@ -97,6 +101,16 @@ jest.mock<typeof WorkflowHistoryTimelineResetButton>(
 
 jest.mock('@/utils/datetime/format-time-diff', () => jest.fn(() => '1m 30s'));
 
+jest.mock(
+  '@/views/workflow-history/workflow-history-remaining-duration-badge/workflow-history-remaining-duration-badge',
+  () => ({
+    __esModule: true,
+    default: ({ prefix }: { prefix: string }) => (
+      <div data-testid="remaining-duration-badge">{prefix}</div>
+    ),
+  })
+);
+
 const mockActivityEventGroupWithMetadata: ActivityHistoryGroup = {
   ...mockActivityEventGroup,
   eventsMetadata: [
@@ -120,6 +134,21 @@ const mockActivityEventGroupWithMetadata: ActivityHistoryGroup = {
     },
   ],
 };
+
+const createMockPendingEventInfo = (
+  event:
+    | typeof pendingActivityTaskStartEvent
+    | typeof pendingDecisionTaskStartEvent
+): UngroupedEventInfo => ({
+  ...createMockEventInfo(event),
+  id: event.computedEventId,
+  eventMetadata: {
+    label: 'Pending',
+    status: 'WAITING',
+    timeMs: null,
+    timeLabel: 'Pending',
+  },
+});
 
 const createMockEventInfo = (
   event: ExtendedHistoryEvent = scheduleActivityTaskEvent,
@@ -440,6 +469,47 @@ describe(WorkflowHistoryUngroupedEvent.name, () => {
 
     expect(screen.getByText('Scheduled')).toBeInTheDocument();
   });
+
+  it('renders dash instead of event id for pending activity event', () => {
+    const eventInfo = createMockPendingEventInfo(pendingActivityTaskStartEvent);
+    setup({ eventInfo });
+
+    expect(screen.getByText('-')).toBeInTheDocument();
+    expect(
+      screen.queryByText(pendingActivityTaskStartEvent.computedEventId)
+    ).not.toBeInTheDocument();
+  });
+
+  it('renders dash instead of event id for pending decision event', () => {
+    const eventInfo = createMockPendingEventInfo(pendingDecisionTaskStartEvent);
+    setup({ eventInfo });
+
+    expect(screen.getByText('-')).toBeInTheDocument();
+    expect(
+      screen.queryByText(pendingDecisionTaskStartEvent.computedEventId)
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows remaining duration badge alongside elapsed time when expectedEndTimeInfo exists', () => {
+    const eventInfo = createMockEventInfo();
+    eventInfo.eventGroup = {
+      ...eventInfo.eventGroup,
+      expectedEndTimeInfo: {
+        timeMs: Date.now() + 60000,
+        prefix: 'Starts in',
+      },
+    };
+    setup({
+      eventInfo,
+      workflowIsArchived: false,
+      workflowCloseStatus: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
+      loadingMoreEvents: false,
+    });
+
+    expect(screen.getByTestId('remaining-duration-badge')).toBeInTheDocument();
+    expect(screen.getByText('Starts in')).toBeInTheDocument();
+    expect(screen.getByText('1m 30s')).toBeInTheDocument();
+  });
 });
 
 function setup({
@@ -452,6 +522,9 @@ function setup({
     runId: 'test-run-id',
     workflowTab: 'history',
   },
+  workflowIsArchived = false,
+  workflowCloseStatus = 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
+  loadingMoreEvents = false,
   isExpanded = false,
   toggleIsExpanded = jest.fn(),
   animateOnEnter = false,
@@ -511,6 +584,11 @@ function setup({
       eventInfo={eventInfo ?? defaultEventInfo}
       workflowStartTimeMs={workflowStartTimeMs}
       decodedPageUrlParams={decodedPageUrlParams}
+      workflowIsArchived={workflowIsArchived ?? false}
+      workflowCloseStatus={
+        workflowCloseStatus ?? 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
+      }
+      loadingMoreEvents={loadingMoreEvents ?? false}
       isExpanded={isExpanded}
       toggleIsExpanded={mockToggleIsExpanded}
       animateOnEnter={animateOnEnter}

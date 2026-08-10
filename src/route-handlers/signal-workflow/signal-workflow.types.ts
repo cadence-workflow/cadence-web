@@ -9,7 +9,9 @@ export type RequestParams = {
     domain: string;
     cluster: string;
     workflowId: string;
-    runId: string;
+    // Omitted when signaling via the run-less route, meaning "the current
+    // run of workflowId" per Cadence API semantics.
+    runId?: string;
   };
 };
 

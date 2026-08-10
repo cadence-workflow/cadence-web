@@ -18,6 +18,9 @@ export default function WorkflowHistoryUngroupedTable({
   getIsEventExpanded,
   toggleIsEventExpanded,
   resetToDecisionEventId,
+  workflowIsArchived,
+  workflowCloseStatus,
+  loadingMoreEvents,
   error,
   hasMoreEvents,
   fetchMoreEvents,
@@ -39,7 +42,7 @@ export default function WorkflowHistoryUngroupedTable({
         <div>Event group</div>
         <div>Status</div>
         <div>Time</div>
-        <div>Duration</div>
+        <div>Elapsed</div>
         <div>Details</div>
       </styled.TableHeader>
       <Virtuoso
@@ -53,6 +56,9 @@ export default function WorkflowHistoryUngroupedTable({
             eventInfo={eventInfo}
             workflowStartTimeMs={workflowStartTimeMs}
             decodedPageUrlParams={decodedPageUrlParams}
+            workflowIsArchived={workflowIsArchived}
+            workflowCloseStatus={workflowCloseStatus}
+            loadingMoreEvents={loadingMoreEvents}
             isExpanded={getIsEventExpanded(eventInfo.id)}
             toggleIsExpanded={() => toggleIsEventExpanded(eventInfo.id)}
             animateOnEnter={eventInfo.id === selectedEventId}

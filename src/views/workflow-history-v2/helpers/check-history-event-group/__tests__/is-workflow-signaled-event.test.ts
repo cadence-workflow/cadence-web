@@ -34,7 +34,6 @@ describe(isWorkflowSignaledEvent.name, () => {
     expect(isWorkflowSignaledEvent(null)).toBe(false);
     //@ts-expect-error undefined is not of type HistoryEvent
     expect(isWorkflowSignaledEvent(undefined)).toBe(false);
-    //@ts-expect-error {} is not of type HistoryEvent
     expect(isWorkflowSignaledEvent({})).toBe(false);
   });
 });

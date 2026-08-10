@@ -7,6 +7,7 @@ import { type DomainPageTabErrorConfig } from '../domain-page-tabs-error/domain-
 export type DomainPageTabConfig = {
   title: string;
   artwork: PageTab['artwork'];
+  endEnhancer?: PageTab['endEnhancer'];
   content: React.ComponentType<DomainPageTabContentProps>;
   getErrorConfig: (err: Error) => DomainPageTabErrorConfig;
 };

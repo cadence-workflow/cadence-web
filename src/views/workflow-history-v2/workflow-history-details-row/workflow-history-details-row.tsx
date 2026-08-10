@@ -58,6 +58,7 @@ export default function WorkflowHistoryDetailsRow({
             <styled.DetailsFieldContainer
               $isNegative={isNegative}
               $omitWrapping={item.omitWrapping ?? false}
+              $badgeColor={item.badgeColor}
               {...(item.hasClickableContent
                 ? {
                     onClick: (e: React.MouseEvent<HTMLDivElement>) =>

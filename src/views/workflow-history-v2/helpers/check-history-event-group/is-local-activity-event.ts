@@ -1,7 +1,7 @@
 import type { LocalActivityHistoryEvent } from '../../workflow-history-v2.types';
 
 export default function isLocalActivityEvent(event: {
-  attributes: string;
+  attributes?: string;
   markerRecordedEventAttributes?: {
     markerName?: string;
   } | null;

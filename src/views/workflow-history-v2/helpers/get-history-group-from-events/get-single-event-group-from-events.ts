@@ -82,11 +82,11 @@ export default function getSingleEventGroupFromEvents(
 
   const eventToNegativeFields: HistoryGroupEventToNegativeFieldsMap<SingleEventHistoryGroup> =
     {
-      workflowExecutionFailedEventAttributes: ['details', 'reason'],
-      workflowExecutionTerminatedEventAttributes: ['details', 'reason'],
+      workflowExecutionFailedEventAttributes: ['reason', 'details'],
+      workflowExecutionTerminatedEventAttributes: ['reason', 'details'],
       workflowExecutionContinuedAsNewEventAttributes: [
-        'failureDetails',
         'failureReason',
+        'failureDetails',
       ],
     };
 
@@ -98,11 +98,11 @@ export default function getSingleEventGroupFromEvents(
         'attempt',
       ],
       workflowExecutionCompletedEventAttributes: ['result'],
-      workflowExecutionFailedEventAttributes: ['details', 'reason'],
-      workflowExecutionTerminatedEventAttributes: ['details', 'reason'],
+      workflowExecutionFailedEventAttributes: ['reason', 'details'],
+      workflowExecutionTerminatedEventAttributes: ['reason', 'details'],
       workflowExecutionContinuedAsNewEventAttributes: [
-        'failureDetails',
         'failureReason',
+        'failureDetails',
         'newExecutionRunId',
       ],
     };

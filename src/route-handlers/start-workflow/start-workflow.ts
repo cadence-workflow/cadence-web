@@ -47,6 +47,7 @@ export async function startWorkflow(
     memo,
     searchAttributes,
     header,
+    activeClusterSelectionPolicy,
   } = data;
 
   const resolvedWorkflowId = workflowId || crypto.randomUUID();
@@ -123,6 +124,7 @@ export async function startWorkflow(
             ),
           }
         : undefined,
+      activeClusterSelectionPolicy: activeClusterSelectionPolicy ?? undefined,
       identity: ctx.userInfo?.id,
       requestId: crypto.randomUUID(),
     });

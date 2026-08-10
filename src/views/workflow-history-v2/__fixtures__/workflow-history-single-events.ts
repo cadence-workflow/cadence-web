@@ -19,6 +19,7 @@ export const startWorkflowExecutionEvent = {
     taskList: {
       name: 'cadence-tasklist',
       kind: 'TASK_LIST_KIND_INVALID',
+      baseName: '',
     },
     input: {
       data: 'InN0cmluZyB2YWx1ZSIsCiJ0b2tlbiIs',
@@ -216,6 +217,7 @@ export const continueAsNewWorkflowExecutionEvent = {
     taskList: {
       name: 'cadence-task-queue',
       kind: 'TASK_LIST_KIND_INVALID',
+      baseName: '',
     },
     input: {
       data: 'InN0cmluZyB2YWx1ZSIsCiJ0b2tlbiIs',

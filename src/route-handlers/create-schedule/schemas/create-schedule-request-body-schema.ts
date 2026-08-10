@@ -1,0 +1,86 @@
+import { z } from 'zod';
+
+import { jsonValueSchema } from '../../start-workflow/schemas/json-value-schema';
+import {
+  SCHEDULE_CATCH_UP_POLICIES,
+  SCHEDULE_OVERLAP_POLICIES,
+  WORKER_SDK_LANGUAGES,
+} from '../create-schedule.constants';
+import getSchedulePeriodError from '../helpers/get-schedule-period-error';
+
+const retryPolicySchema = z
+  .object({
+    initialIntervalSeconds: z.number().optional(),
+    backoffCoefficient: z.number().optional(),
+    maximumIntervalSeconds: z.number().optional(),
+    expirationIntervalSeconds: z.number().optional(),
+    maximumAttempts: z.number().optional(),
+  })
+  .optional();
+
+const scheduleStartWorkflowBodySchema = z.object({
+  workflowType: z.object({
+    name: z.string().min(1),
+  }),
+  taskList: z.object({
+    name: z.string().min(1),
+  }),
+  workerSDKLanguage: z.enum(WORKER_SDK_LANGUAGES),
+  input: z.array(jsonValueSchema).optional(),
+  workflowIdPrefix: z.string().optional(),
+  executionStartToCloseTimeoutSeconds: z.number().positive(),
+  taskStartToCloseTimeoutSeconds: z.number().positive(),
+  retryPolicy: retryPolicySchema,
+  memo: z.record(z.any()).optional(),
+  searchAttributes: z
+    .record(z.union([z.string(), z.number(), z.boolean()]))
+    .optional(),
+});
+
+/**
+ * Spec, policies and action fields shared by create and update. UpdateSchedule
+ * accepts the same payload minus the schedule id, which it takes from the URL.
+ */
+export const scheduleBodyFieldsSchema = z.object({
+  // Schedule spec
+  cronExpression: z.string().min(1),
+  startTime: z.string().datetime().optional(),
+  endTime: z.string().datetime().optional(),
+  jitterSeconds: z.number().nonnegative().optional(),
+
+  // Schedule policies
+  overlapPolicy: z.enum(SCHEDULE_OVERLAP_POLICIES).optional(),
+  catchUpPolicy: z.enum(SCHEDULE_CATCH_UP_POLICIES).optional(),
+  catchUpWindowSeconds: z.number().nonnegative().optional(),
+  pauseOnFailure: z.boolean().optional(),
+  bufferLimit: z.number().int().nonnegative().optional(),
+  concurrencyLimit: z.number().int().nonnegative().optional(),
+
+  // Start-workflow action
+  startWorkflow: scheduleStartWorkflowBodySchema,
+});
+
+export function refineScheduleBodyPeriod(
+  data: { startTime?: string; endTime?: string },
+  ctx: z.RefinementCtx
+) {
+  const schedulePeriodError = getSchedulePeriodError(
+    data.startTime,
+    data.endTime
+  );
+
+  if (schedulePeriodError) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: schedulePeriodError.message,
+      path: ['endTime'],
+    });
+  }
+}
+
+const createScheduleRequestBodySchema = scheduleBodyFieldsSchema
+  // Schedule identity (server generates one when omitted)
+  .extend({ scheduleId: z.string().min(1).optional() })
+  .superRefine(refineScheduleBodyPeriod);
+
+export default createScheduleRequestBodySchema;

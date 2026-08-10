@@ -15,7 +15,8 @@ const workflowPageCliCommandsConfig: CliCommandConfig[] = [
   {
     label: 'Update domain active cluster',
     command:
-      'cadence --domain {domain-name} domain update -active_cluster {cluster-name}',
+      'cadence --domain {domain-name} domain failover --active_cluster {cluster-name}',
+    description: '(Available on CLI version: 1.1.21 or higher)',
     group: 'domain',
   },
   {

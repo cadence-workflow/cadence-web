@@ -17,6 +17,7 @@ export const scheduleActivityTaskEvent = {
     taskList: {
       name: 'task-queue',
       kind: 'TASK_LIST_KIND_INVALID',
+      baseName: '',
     },
     input: {
       data: 'MTcyNTc0NzM3MDU3NTQwOTg0MwoiZ2FkZW5jZS1jYW5hcnkteGRjIgoid29ya2Zsb3cuc2FuaXR5Igo=',

@@ -29,10 +29,10 @@ jest.mock('next/navigation', () => ({
 }));
 
 jest.mock(
-  '../../domain-page-start-workflow-button/domain-page-start-workflow-button',
+  '../../domain-page-actions-dropdown/domain-page-actions-dropdown',
   () =>
     jest.fn(() => (
-      <button data-testid="start-workflow-button">Start Workflow</button>
+      <button data-testid="domain-actions-dropdown">Domain actions</button>
     ))
 );
 
@@ -40,6 +40,10 @@ jest.mock('../../config/domain-page-tabs.config', () => ({
   workflows: {
     title: 'Workflows',
     artwork: () => <div data-testid="workflows-artwork" />,
+  },
+  schedules: {
+    title: 'Schedules',
+    artwork: () => <div data-testid="schedules-artwork" />,
   },
   'cron-list': {
     title: 'Cron',
@@ -81,7 +85,14 @@ describe(DomainPageTabs.name, () => {
     expect(screen.getByText('Archival')).toBeInTheDocument();
 
     expect(screen.queryByText('Cron')).toBeNull();
+    expect(screen.queryByText('Schedules')).toBeNull();
     expect(screen.queryByText('Failovers')).toBeNull();
+  });
+
+  it('renders Schedules tab when schedules feature is enabled', async () => {
+    await setup({ enableSchedules: true });
+
+    expect(screen.getByText('Schedules')).toBeInTheDocument();
   });
 
   it('renders tabs with cron and failover history enabled', async () => {
@@ -139,6 +150,7 @@ describe(DomainPageTabs.name, () => {
     expect(screen.getByTestId('settings-artwork')).toBeInTheDocument();
     expect(screen.getByTestId('archival-artwork')).toBeInTheDocument();
     expect(screen.queryByTestId('failovers-artwork')).toBeNull();
+    expect(screen.queryByTestId('schedules-artwork')).toBeNull();
   });
 
   it('handles errors gracefully', async () => {
@@ -170,10 +182,10 @@ describe(DomainPageTabs.name, () => {
     expect(screen.getByText('Help Button')).toBeInTheDocument();
   });
 
-  it('renders the start workflow button', async () => {
+  it('renders the domain actions dropdown', async () => {
     await setup({});
 
-    expect(screen.getByTestId('start-workflow-button')).toBeInTheDocument();
+    expect(screen.getByTestId('domain-actions-dropdown')).toBeInTheDocument();
   });
 });
 
@@ -181,8 +193,16 @@ async function setup(opts?: {
   error?: boolean;
   enableFailoverHistory?: boolean;
   enableCronList?: boolean;
+  enableSchedules?: boolean;
+  enableBatchActions?: boolean;
 }) {
-  const { error, enableFailoverHistory, enableCronList } = opts ?? {};
+  const {
+    error,
+    enableFailoverHistory,
+    enableCronList,
+    enableSchedules,
+    enableBatchActions,
+  } = opts ?? {};
   const user = userEvent.setup();
 
   render(
@@ -199,19 +219,40 @@ async function setup(opts?: {
           path: '/api/config',
           httpMethod: 'GET',
           mockOnce: false,
-          httpResolver: async () => {
+          httpResolver: async ({ request }) => {
             if (error) {
               return HttpResponse.json(
                 { message: 'Failed to fetch config' },
                 { status: 500 }
               );
-            } else {
-              return HttpResponse.json(
-                ((enableFailoverHistory ??
-                  false) satisfies GetConfigResponse<'FAILOVER_HISTORY_ENABLED'>) ||
-                  ((enableCronList ??
-                    false) satisfies GetConfigResponse<'CRON_LIST_ENABLED'>)
-              );
+            }
+
+            const url = new URL(request.url);
+            const configKey = url.searchParams.get('configKey');
+
+            switch (configKey) {
+              case 'FAILOVER_HISTORY_ENABLED':
+                return HttpResponse.json(
+                  (enableFailoverHistory ??
+                    false) satisfies GetConfigResponse<'FAILOVER_HISTORY_ENABLED'>
+                );
+              case 'CRON_LIST_ENABLED':
+                return HttpResponse.json(
+                  (enableCronList ??
+                    false) satisfies GetConfigResponse<'CRON_LIST_ENABLED'>
+                );
+              case 'BATCH_ACTIONS_UI_ENABLED':
+                return HttpResponse.json(
+                  (enableBatchActions ??
+                    false) satisfies GetConfigResponse<'BATCH_ACTIONS_UI_ENABLED'>
+                );
+              case 'SCHEDULES_ENABLED':
+                return HttpResponse.json(
+                  (enableSchedules ??
+                    false) satisfies GetConfigResponse<'SCHEDULES_ENABLED'>
+                );
+              default:
+                return HttpResponse.json(false);
             }
           },
         },

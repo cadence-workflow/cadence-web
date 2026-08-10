@@ -33,7 +33,6 @@ describe(isLocalActivityEvent.name, () => {
     expect(isLocalActivityEvent(null)).toBe(false);
     //@ts-expect-error undefined is not of type event
     expect(isLocalActivityEvent(undefined)).toBe(false);
-    //@ts-expect-error {} is not of type event
     expect(isLocalActivityEvent({})).toBe(false);
   });
 });

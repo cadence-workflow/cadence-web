@@ -214,6 +214,9 @@ function setup({
     virtuosoRef: { current: null },
     selectedEventId,
     onResetToEventId: mockOnResetToEventId,
+    workflowIsArchived: false,
+    workflowCloseStatus: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID' as const,
+    loadingMoreEvents: false,
   };
 
   const user = userEvent.setup();

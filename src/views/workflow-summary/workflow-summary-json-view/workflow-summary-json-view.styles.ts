@@ -1,3 +1,4 @@
+import { styled as createStyled, type Theme } from 'baseui';
 import { type ButtonOverrides } from 'baseui/button';
 
 import type {
@@ -5,14 +6,22 @@ import type {
   StyletronCSSObjectOf,
 } from '@/hooks/use-styletron-classes';
 
+export const styled = {
+  JsonViewContainer: createStyled<'div', { $isNegative: boolean }>(
+    'div',
+    ({ $theme, $isNegative }: { $theme: Theme; $isNegative: boolean }) => ({
+      padding: $theme.sizing.scale600,
+      backgroundColor: $isNegative
+        ? $theme.colors.backgroundNegativeLight
+        : $theme.colors.backgroundSecondary,
+      borderRadius: $theme.borders.radius300,
+    })
+  ),
+};
+
 const cssStylesObj = {
   jsonStaticTitle: (theme) => ({
     ...theme.typography.LabelSmall,
-  }),
-  jsonViewContainer: (theme) => ({
-    padding: theme.sizing.scale600,
-    backgroundColor: theme.colors.backgroundSecondary,
-    borderRadius: theme.borders.radius300,
   }),
   jsonViewHeader: (theme) => ({
     display: 'flex',

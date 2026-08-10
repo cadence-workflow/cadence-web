@@ -407,8 +407,8 @@ describe('getActivityGroupFromEvents', () => {
 
     // The failed event should have summaryFields
     expect(group.eventsMetadata[0].summaryFields).toEqual([
-      'details',
       'reason',
+      'details',
     ]);
   });
 

@@ -49,9 +49,16 @@ describe('DomainWorkflows', () => {
 async function setup({
   isAdvancedVisibility = false,
   error,
+  authResponse = {
+    authEnabled: false,
+    auth: { isValidToken: false },
+    isAdmin: false,
+    groups: [],
+  },
 }: {
   error?: boolean;
   isAdvancedVisibility?: boolean;
+  authResponse?: Record<string, unknown>;
 }) {
   const props: DomainPageTabContentProps = {
     domain: 'test-domain',
@@ -64,6 +71,18 @@ async function setup({
     </Suspense>,
     {
       endpointsMocks: [
+        {
+          path: '/api/config',
+          httpMethod: 'GET',
+          mockOnce: false,
+          jsonResponse: false,
+        },
+        {
+          path: '/api/auth/me',
+          httpMethod: 'GET',
+          mockOnce: false,
+          jsonResponse: authResponse,
+        },
         {
           path: '/api/clusters/test-cluster',
           httpMethod: 'GET',

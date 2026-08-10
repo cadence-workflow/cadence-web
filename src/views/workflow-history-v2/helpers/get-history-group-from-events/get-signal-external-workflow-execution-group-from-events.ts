@@ -56,6 +56,7 @@ export default function getSignalExternalWorkflowExecutionGroupFromEvents(
   const eventToSummaryFields: HistoryGroupEventToSummaryFieldsMap<SignalExternalWorkflowExecutionHistoryGroup> =
     {
       signalExternalWorkflowExecutionInitiatedEventAttributes: [
+        'workflowExecution',
         'signalName',
         'input',
       ],

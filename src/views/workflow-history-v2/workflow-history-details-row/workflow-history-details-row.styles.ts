@@ -12,35 +12,53 @@ export const styled = {
   })),
   DetailsFieldContainer: createStyled<
     'div',
-    { $isNegative: boolean; $omitWrapping: boolean }
+    {
+      $isNegative: boolean;
+      $omitWrapping: boolean;
+      $badgeColor?: 'warning';
+    }
   >(
     'div',
     ({
       $theme,
       $isNegative,
       $omitWrapping,
+      $badgeColor,
     }: {
       $theme: Theme;
       $isNegative: boolean;
       $omitWrapping: boolean;
-    }) => ({
-      display: 'flex',
-      alignItems: 'center',
-      gap: $theme.sizing.scale100,
-      color: $isNegative
-        ? $theme.colors.contentNegative
-        : $theme.colors.contentPrimary,
-      height: $theme.sizing.scale700,
-      ...($omitWrapping
-        ? {}
-        : {
-            padding: `${$theme.sizing.scale0} ${$theme.sizing.scale100}`,
-            backgroundColor: $isNegative
-              ? $theme.colors.backgroundNegativeLight
-              : $theme.colors.backgroundSecondary,
-            borderRadius: $theme.borders.radius200,
-          }),
-    })
+      $badgeColor?: 'warning';
+    }) => {
+      let color: string;
+      let backgroundColorWhenWrapped: string;
+
+      if ($isNegative) {
+        color = $theme.colors.contentNegative;
+        backgroundColorWhenWrapped = $theme.colors.backgroundNegativeLight;
+      } else if ($badgeColor === 'warning') {
+        color = $theme.colors.warning700;
+        backgroundColorWhenWrapped = $theme.colors.backgroundWarningLight;
+      } else {
+        color = $theme.colors.contentPrimary;
+        backgroundColorWhenWrapped = $theme.colors.backgroundSecondary;
+      }
+
+      return {
+        display: 'flex',
+        alignItems: 'center',
+        gap: $theme.sizing.scale100,
+        color,
+        height: $theme.sizing.scale700,
+        ...($omitWrapping
+          ? {}
+          : {
+              padding: `${$theme.sizing.scale0} ${$theme.sizing.scale100}`,
+              backgroundColor: backgroundColorWhenWrapped,
+              borderRadius: $theme.borders.radius200,
+            }),
+      };
+    }
   ),
 };
 

@@ -46,7 +46,6 @@ describe('isExtendedDecisionEvent', () => {
     expect(isExtendedDecisionEvent(null)).toBe(false);
     //@ts-expect-error undefined is not of type HistoryEvent
     expect(isExtendedDecisionEvent(undefined)).toBe(false);
-    //@ts-expect-error {} is not of type HistoryEvent
     expect(isExtendedDecisionEvent({})).toBe(false);
   });
 });

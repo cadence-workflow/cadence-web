@@ -1,4 +1,5 @@
 import { styled as createStyled, type Theme } from 'baseui';
+import { type ButtonOverrides } from 'baseui/button';
 import { type ButtonGroupProps } from 'baseui/button-group';
 import { type StyleObject } from 'styletron-react';
 
@@ -33,4 +34,21 @@ export const overrides = {
       }),
     },
   } satisfies ButtonGroupProps['overrides'],
+  button: {
+    BaseButton: {
+      style: ({
+        $theme,
+        $isSelected,
+      }: {
+        $theme: Theme;
+        $isSelected: boolean;
+      }): StyleObject => ({
+        backgroundColor: $isSelected
+          ? $theme.colors.backgroundSecondary
+          : $theme.colors.backgroundPrimary,
+        boxShadow: 'none',
+        transition: 'none',
+      }),
+    },
+  } satisfies ButtonOverrides,
 };

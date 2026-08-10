@@ -54,7 +54,8 @@ export const failSignalExternalWorkflowEvent = {
   version: '575102',
   taskId: '8090823672',
   signalExternalWorkflowExecutionFailedEventAttributes: {
-    cause: 'SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_INVALID',
+    cause:
+      'SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_UNKNOWN_EXTERNAL_WORKFLOW_EXECUTION',
     decisionTaskCompletedEventId: '4',
     initiatedEventId: '30',
     domain: 'cadence-domain',

@@ -3,6 +3,7 @@ import { type LoadedConfigResolvedValues } from '../config.types';
 const mockResolvedConfigValues: LoadedConfigResolvedValues = {
   ADMIN_SECURITY_TOKEN: 'mock-secret',
   CADENCE_WEB_PORT: '3000',
+  CADENCE_WEB_AUTH_STRATEGY: 'disabled',
   CLUSTERS: [
     {
       clusterName: 'mock-cluster1',
@@ -28,6 +29,10 @@ const mockResolvedConfigValues: LoadedConfigResolvedValues = {
     },
   ],
   CRON_LIST_ENABLED: false,
+  DOMAIN_ACCESS: {
+    canRead: true,
+    canWrite: true,
+  },
   WORKFLOW_ACTIONS_ENABLED: {
     terminate: 'ENABLED',
     cancel: 'ENABLED',
@@ -42,7 +47,18 @@ const mockResolvedConfigValues: LoadedConfigResolvedValues = {
   },
   WORKFLOW_DIAGNOSTICS_ENABLED: false,
   ARCHIVAL_DEFAULT_SEARCH_ENABLED: false,
+  BATCH_ACTIONS_UI_ENABLED: false,
   FAILOVER_HISTORY_ENABLED: false,
   HISTORY_PAGE_V2_ENABLED: 'DISABLED',
+  SCHEDULE_ACTIONS_ENABLED: {
+    pause: 'ENABLED',
+    resume: 'ENABLED',
+    delete: 'ENABLED',
+    backfill: 'ENABLED',
+    start: 'ENABLED',
+  },
+  SCHEDULES_ENABLED: false,
+  WORKFLOWS_LIST_ENABLED: false,
+  LIST_WORKFLOWS_PARTIAL_MATCH_ENABLED: false,
 };
 export default mockResolvedConfigValues;

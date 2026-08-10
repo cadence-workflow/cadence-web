@@ -45,7 +45,6 @@ describe('isRequestCancelExternalWorkflowExecutionEvent', () => {
     expect(isRequestCancelExternalWorkflowExecutionEvent(undefined)).toBe(
       false
     );
-    //@ts-expect-error {} is not of type HistoryEvent
     expect(isRequestCancelExternalWorkflowExecutionEvent({})).toBe(false);
   });
 });

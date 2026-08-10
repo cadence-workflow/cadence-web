@@ -173,7 +173,7 @@ export default function getActivityGroupFromEvents(
         'attempt',
       ],
       activityTaskCompletedEventAttributes: ['result'],
-      activityTaskFailedEventAttributes: ['details', 'reason'],
+      activityTaskFailedEventAttributes: ['reason', 'details'],
     };
 
   const shouldShowPendingEvent = Boolean(

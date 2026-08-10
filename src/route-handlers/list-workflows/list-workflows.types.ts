@@ -49,6 +49,10 @@ export type WorkflowListItem = {
   clusterAttributeScope: string | undefined;
   clusterAttributeName: string | undefined;
   searchAttributes?: Record<string, Payload>;
+  // TODO @adhitya.mamallan - add these after pulling the latest IDLs in
+  // cronSchedule
+  // executionStatus
+  // scheduledExecutionTime
 };
 
 export type Context = DefaultMiddlewaresContext;

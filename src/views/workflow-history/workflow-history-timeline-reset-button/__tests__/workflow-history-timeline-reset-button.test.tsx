@@ -45,7 +45,7 @@ describe('WorkflowHistoryTimelineResetButton', () => {
 
   it('does not render when reset action is not enabled', () => {
     setup({
-      resetActionsEnabledConfig: 'DISABLED',
+      resetActionsEnabledConfig: 'DISABLED_DEFAULT',
     });
 
     expect(screen.queryByText('Reset')).not.toBeInTheDocument();
@@ -86,6 +86,14 @@ describe('WorkflowHistoryTimelineResetButton', () => {
   it('does not render when actions config has error', () => {
     setup({
       isActionsEnabledError: true,
+    });
+
+    expect(screen.queryByText('Reset')).not.toBeInTheDocument();
+  });
+
+  it('does not render when user lacks domain write access', () => {
+    setup({
+      resetActionsEnabledConfig: 'DISABLED_UNAUTHORIZED',
     });
 
     expect(screen.queryByText('Reset')).not.toBeInTheDocument();

@@ -14,6 +14,7 @@ import { type Props } from './domain-workflows-archival-header.types';
 export default function DomainWorkflowsArchivalHeader({
   domain,
   cluster,
+  columnsPickerProps,
   timeRangeStart,
   timeRangeEnd,
 }: Props) {
@@ -46,6 +47,7 @@ export default function DomainWorkflowsArchivalHeader({
       isQueryRunning={isFetching}
       expandFiltersByDefault={true}
       showQueryInputOnly={forceQueryInputOnly}
+      columnsPickerProps={columnsPickerProps}
     />
   );
 }

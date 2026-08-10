@@ -33,8 +33,8 @@ export default function WorkflowHistoryTimelineResetButton({
     isLoading: isActionsEnabledLoading,
     isError: isActionsEnabledError,
   } = useConfigValue('WORKFLOW_ACTIONS_ENABLED', {
-    domain: domain,
-    cluster: cluster,
+    domain,
+    cluster,
   });
 
   const isResetRunnable =

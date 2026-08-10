@@ -135,23 +135,26 @@ function setup({
       {
         path: '/api/config',
         httpMethod: 'GET',
+        mockOnce: false,
         httpResolver: () => {
           if (isConfigError) {
             return HttpResponse.json(
               { message: 'Failed to fetch config' },
               { status: 500 }
             );
-          } else {
-            return HttpResponse.json(
-              {
-                terminate: true,
-                cancel: true,
-              },
-              {
-                status: 200,
-              }
-            );
           }
+
+          return HttpResponse.json(
+            {
+              terminate: 'ENABLED',
+              cancel: 'ENABLED',
+              signal: 'ENABLED',
+              restart: 'ENABLED',
+              reset: 'ENABLED',
+              start: 'ENABLED',
+            },
+            { status: 200 }
+          );
         },
       },
     ],

@@ -1,3 +1,5 @@
+import sortBy from 'lodash/sortBy';
+
 import formatPendingWorkflowHistoryEvent from '@/utils/data-formatters/format-pending-workflow-history-event';
 import formatWorkflowHistoryEvent from '@/utils/data-formatters/format-workflow-history-event';
 import isPendingHistoryEvent from '@/views/workflow-history/workflow-history-event-details/helpers/is-pending-history-event';
@@ -40,8 +42,11 @@ export default function generateHistoryGroupDetails(
       } satisfies EventDetailsTabContent,
     ]);
 
-    const eventSummaryDetails = eventDetails.filter((detail) =>
-      eventMetadata.summaryFields?.includes(detail.path)
+    const eventSummaryDetails = sortBy(
+      eventDetails.filter((detail) =>
+        eventMetadata.summaryFields?.includes(detail.path)
+      ),
+      (detail) => eventMetadata.summaryFields?.indexOf(detail.path)
     );
 
     if (eventSummaryDetails.length > 0) {

@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useMemo } from 'react';
 
-import { Tag, VARIANT, KIND } from 'baseui/tag';
+import { Tag } from 'baseui/tag';
 import dynamic from 'next/dynamic';
 
 import { type TimelineItem } from '@/components/timeline/timeline.types';
@@ -61,10 +61,10 @@ export default function WorkflowHistoryTimelineChart({
       {isLoading && (
         <styled.LoaderContainer>
           <Tag
-            variant={VARIANT.solid}
+            hierarchy="primary"
             closeable={false}
-            kind={KIND.accent}
-            startEnhancer={styled.Spinner}
+            kind="accent"
+            startEnhancer={() => <styled.Spinner />}
             overrides={overrides.tag}
           >
             Loading events

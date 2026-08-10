@@ -1,10 +1,16 @@
 import React from 'react';
 
 import { type PanelProps } from 'baseui/accordion';
+import { HttpResponse } from 'msw';
 import { useForm } from 'react-hook-form';
 
 import { fireEvent, render, screen, userEvent } from '@/test-utils/rtl';
 
+import { type GetSearchAttributesResponse } from '@/route-handlers/get-search-attributes/get-search-attributes.types';
+import { mockDomainDescription } from '@/views/domain-page/__fixtures__/domain-description';
+import { mockActiveActiveDomain } from '@/views/shared/active-active/__fixtures__/active-active-domain';
+
+import { type StartWorkflowFormData } from '../../workflow-action-start-form/workflow-action-start-form.types';
 import WorkflowActionStartOptionalSection from '../workflow-action-start-optional-section';
 import { type Props } from '../workflow-action-start-optional-section.types';
 
@@ -28,12 +34,10 @@ jest.mock('baseui/accordion/panel', () => {
   return { __esModule: true, default: SimplePanel };
 });
 
-jest.mock(
-  '../../workflow-action-start-retry-policy/workflow-action-start-retry-policy',
-  () =>
-    jest.fn(() => {
-      return <div>Retry Policy Fields</div>;
-    })
+jest.mock('@/views/shared/retry-policy-fields/retry-policy-fields', () =>
+  jest.fn(() => {
+    return <div>Retry Policy Fields</div>;
+  })
 );
 
 jest.mock(
@@ -51,7 +55,15 @@ jest.mock(
     })
 );
 
-describe('WorkflowActionStartForm', () => {
+jest.mock(
+  '../../workflow-actions-cluster-attribute/workflow-actions-cluster-attribute',
+  () =>
+    jest.fn(() => {
+      return <div>Cluster Attribute Fields</div>;
+    })
+);
+
+describe(WorkflowActionStartOptionalSection.name, () => {
   it('displays error when form has errors', async () => {
     const formErrors = {
       header: {
@@ -157,15 +169,37 @@ describe('WorkflowActionStartForm', () => {
 
     // Search attributes input checks are done in its own component test
   });
+
+  it('shows cluster attribute field for active-active domains', async () => {
+    const { user } = await setup({ isActiveActiveDomain: true });
+
+    await user.click(
+      screen.getByRole('button', { name: /Show Optional Configurations/i })
+    );
+
+    expect(screen.getByText('Cluster Attribute Fields')).toBeInTheDocument();
+  });
+
+  it('does not show cluster attribute field for non-active-active domains', async () => {
+    const { user } = await setup({});
+
+    await user.click(
+      screen.getByRole('button', { name: /Show Optional Configurations/i })
+    );
+
+    expect(
+      screen.queryByText('Cluster Attribute Fields')
+    ).not.toBeInTheDocument();
+  });
 });
 
 type TestProps = {
-  formData: Props['formData'];
+  formData: StartWorkflowFormData;
   fieldErrors: Props['fieldErrors'];
 };
 
 function TestWrapper({ formData, fieldErrors }: TestProps) {
-  const methods = useForm<Props['formData']>({
+  const methods = useForm<StartWorkflowFormData>({
     defaultValues: formData,
   });
 
@@ -173,9 +207,10 @@ function TestWrapper({ formData, fieldErrors }: TestProps) {
     <WorkflowActionStartOptionalSection
       control={methods.control}
       clearErrors={methods.clearErrors}
-      formData={formData}
       fieldErrors={fieldErrors}
+      trigger={methods.trigger}
       cluster="test-cluster"
+      domain="test-domain"
     />
   );
 }
@@ -193,10 +228,40 @@ async function setup({
     retryPolicy: undefined,
   },
   fieldErrors = {},
-}: Partial<TestProps>) {
+  isActiveActiveDomain = false,
+}: Partial<TestProps> & { isActiveActiveDomain?: boolean }) {
   const user = userEvent.setup();
 
-  render(<TestWrapper formData={formData} fieldErrors={fieldErrors} />);
+  render(<TestWrapper formData={formData} fieldErrors={fieldErrors} />, {
+    endpointsMocks: [
+      {
+        path: '/api/clusters/:cluster/search-attributes',
+        httpMethod: 'GET',
+        mockOnce: false,
+        httpResolver: () => {
+          return HttpResponse.json({
+            keys: {},
+          } satisfies GetSearchAttributesResponse);
+        },
+      },
+      {
+        path: '/api/domains/:domain/:cluster',
+        httpMethod: 'GET',
+        mockOnce: false,
+        httpResolver: () => {
+          return HttpResponse.json(
+            isActiveActiveDomain
+              ? mockActiveActiveDomain
+              : mockDomainDescription
+          );
+        },
+      },
+    ],
+  });
+
+  // Wait for HTTP mock responses to settle — the toggle button's data-testid
+  // switches from "loading" to "loaded" once both queries have resolved.
+  await screen.findByTestId('workflow-action-start-optional-section-loaded');
 
   return { user };
 }

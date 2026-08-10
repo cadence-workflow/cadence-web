@@ -75,7 +75,7 @@ describe(WorkflowHistoryUngroupedTable.name, () => {
     expect(screen.getByText('Event group')).toBeInTheDocument();
     expect(screen.getByText('Status')).toBeInTheDocument();
     expect(screen.getByText('Time')).toBeInTheDocument();
-    expect(screen.getByText('Duration')).toBeInTheDocument();
+    expect(screen.getByText('Elapsed')).toBeInTheDocument();
     expect(screen.getByText('Details')).toBeInTheDocument();
   });
 
@@ -282,6 +282,9 @@ function setup({
         getIsEventExpanded={getIsEventExpanded}
         toggleIsEventExpanded={toggleIsEventExpanded}
         resetToDecisionEventId={resetToDecisionEventId}
+        workflowIsArchived={false}
+        workflowCloseStatus={'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'}
+        loadingMoreEvents={false}
         error={error}
         hasMoreEvents={hasMoreEvents}
         fetchMoreEvents={fetchMoreEvents}

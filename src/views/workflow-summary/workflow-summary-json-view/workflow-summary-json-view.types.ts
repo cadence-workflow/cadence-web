@@ -7,6 +7,7 @@ export type Props = {
   inputJson: PrettyJsonValue;
   resultJson: PrettyJsonValue;
   isWorkflowRunning: boolean;
+  isWorkflowError: boolean;
   isArchived: boolean;
   defaultTab?: WorkflowSummaryJsonTab;
   hideTabToggle?: boolean;

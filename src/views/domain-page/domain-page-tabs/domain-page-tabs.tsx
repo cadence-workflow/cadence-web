@@ -9,8 +9,8 @@ import useSuspenseConfigValue from '@/hooks/use-config-value/use-suspense-config
 import decodeUrlParams from '@/utils/decode-url-params';
 
 import domainPageTabsConfig from '../config/domain-page-tabs.config';
+import DomainPageActionsDropdown from '../domain-page-actions-dropdown/domain-page-actions-dropdown';
 import DomainPageHelp from '../domain-page-help/domain-page-help';
-import DomainPageStartWorkflowButton from '../domain-page-start-workflow-button/domain-page-start-workflow-button';
 
 import { styled } from './domain-page-tabs.styles';
 import {
@@ -35,6 +35,22 @@ export default function DomainPageTabs() {
     }
   );
 
+  const { data: isBatchActionsEnabled } = useSuspenseConfigValue(
+    'BATCH_ACTIONS_UI_ENABLED',
+    {
+      domain: decodedParams.domain,
+      cluster: decodedParams.cluster,
+    }
+  );
+
+  const { data: isSchedulesEnabled } = useSuspenseConfigValue(
+    'SCHEDULES_ENABLED',
+    {
+      domain: decodedParams.domain,
+      cluster: decodedParams.cluster,
+    }
+  );
+
   const tabsConfig = useMemo<Partial<typeof domainPageTabsConfig>>(() => {
     const tabsToHide: Array<DomainPageTabName> = [];
 
@@ -46,8 +62,21 @@ export default function DomainPageTabs() {
       tabsToHide.push('cron-list');
     }
 
+    if (!isBatchActionsEnabled) {
+      tabsToHide.push('batch-actions');
+    }
+
+    if (!isSchedulesEnabled) {
+      tabsToHide.push('schedules');
+    }
+
     return omit(domainPageTabsConfig, tabsToHide);
-  }, [isFailoverHistoryEnabled, isCronListEnabled]);
+  }, [
+    isFailoverHistoryEnabled,
+    isCronListEnabled,
+    isBatchActionsEnabled,
+    isSchedulesEnabled,
+  ]);
 
   const tabList = useMemo(
     () =>
@@ -55,6 +84,7 @@ export default function DomainPageTabs() {
         key,
         title: tabConfig.title,
         artwork: tabConfig.artwork,
+        endEnhancer: tabConfig.endEnhancer,
       })),
     [tabsConfig]
   );
@@ -71,7 +101,7 @@ export default function DomainPageTabs() {
         }}
         endEnhancer={
           <styled.EndButtonsContainer>
-            <DomainPageStartWorkflowButton {...decodedParams} />
+            <DomainPageActionsDropdown {...decodedParams} />
             <DomainPageHelp />
           </styled.EndButtonsContainer>
         }

@@ -2,9 +2,8 @@ import { type ArchivalDisabledPanelConfig } from '../domain-workflows-archival-d
 
 const domainWorkflowsArchivalDisabledPanelConfig = {
   title: 'Archival not enabled for domain',
-  details: [
+  description:
     'This domain currently does not have history archival and/or visibility archival enabled.',
-  ],
   links: [
     {
       text: 'Check out the docs',

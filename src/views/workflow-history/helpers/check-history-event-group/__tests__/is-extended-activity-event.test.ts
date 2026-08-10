@@ -51,7 +51,6 @@ describe('isExtendedActivityEvent', () => {
     expect(isExtendedActivityEvent(null)).toBe(false);
     //@ts-expect-error undefined is not of type HistoryEvent
     expect(isExtendedActivityEvent(undefined)).toBe(false);
-    //@ts-expect-error {} is not of type HistoryEvent
     expect(isExtendedActivityEvent({})).toBe(false);
   });
 });
