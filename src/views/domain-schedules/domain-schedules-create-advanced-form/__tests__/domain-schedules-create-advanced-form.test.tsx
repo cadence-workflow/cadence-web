@@ -2,7 +2,7 @@ import React from 'react';
 
 import { useForm } from 'react-hook-form';
 
-import { render, screen, userEvent } from '@/test-utils/rtl';
+import { render, screen, userEvent, within } from '@/test-utils/rtl';
 
 import { type DomainSchedulesCreateFormData } from '../../domain-schedules-create-modal/domain-schedules-create-modal.types';
 import DomainSchedulesCreateAdvancedForm from '../domain-schedules-create-advanced-form';
@@ -212,19 +212,19 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
 
     await user.click(screen.getByLabelText('Schedule period start'));
     expect(
-      screen
-        .getAllByText('Start time')
-        .some((el) => el.getAttribute('data-baseweb') === 'form-control-label')
-    ).toBe(true);
+      within(
+        document.querySelector('[data-baseweb="popover"]') as HTMLElement
+      ).getByText('Start time')
+    ).toBeInTheDocument();
 
     await user.keyboard('{Escape}');
     await user.click(screen.getByLabelText('Schedule period end'));
     expect(
-      screen
-        .getAllByText('End time')
-        .some((el) => el.getAttribute('data-baseweb') === 'form-control-label')
-    ).toBe(true);
-      });
+      within(
+        document.querySelector('[data-baseweb="popover"]') as HTMLElement
+      ).getByText('End time')
+    ).toBeInTheDocument();
+  });
 });
 
 function setup({ scheduleIdReadOnly }: { scheduleIdReadOnly?: boolean } = {}) {

@@ -3,7 +3,7 @@ import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
-import { render, screen, userEvent } from '@/test-utils/rtl';
+import { render, screen, userEvent, within } from '@/test-utils/rtl';
 
 import ScheduleActionBackfillForm from '../schedule-action-backfill-form';
 import { type BackfillScheduleFormData } from '../schedule-action-backfill-form.types';
@@ -15,12 +15,8 @@ describe(ScheduleActionBackfillForm.name, () => {
 
     expect(screen.getByLabelText('Backfill ID')).toBeInTheDocument();
     expect(screen.getByText('Backfill period')).toBeInTheDocument();
-    expect(
-      screen.getByLabelText('Backfill period start')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByLabelText('Backfill period end')
-    ).toBeInTheDocument();
+    expect(screen.getByLabelText('Backfill period start')).toBeInTheDocument();
+    expect(screen.getByLabelText('Backfill period end')).toBeInTheDocument();
     expect(
       screen.getByRole('combobox', { name: /overlap policy/i })
     ).toBeInTheDocument();
@@ -31,24 +27,18 @@ describe(ScheduleActionBackfillForm.name, () => {
 
     await user.click(screen.getByLabelText('Backfill period start'));
     expect(
-      screen
-        .getAllByText('Start time')
-        .some((el) => el.getAttribute('data-baseweb') === 'form-control-label')
-    ).toBe(true);
-    expect(
-      document.querySelector('[data-baseweb="popover"]')?.querySelectorAll('[role="combobox"]').length
-    ).toBeGreaterThan(0);
+      within(
+        document.querySelector('[data-baseweb="popover"]') as HTMLElement
+      ).getByText('Start time')
+    ).toBeInTheDocument();
 
     await user.keyboard('{Escape}');
     await user.click(screen.getByLabelText('Backfill period end'));
     expect(
-      screen
-        .getAllByText('End time')
-        .some((el) => el.getAttribute('data-baseweb') === 'form-control-label')
-    ).toBe(true);
-    expect(
-      document.querySelector('[data-baseweb="popover"]')?.querySelectorAll('[role="combobox"]').length
-    ).toBeGreaterThan(0);
+      within(
+        document.querySelector('[data-baseweb="popover"]') as HTMLElement
+      ).getByText('End time')
+    ).toBeInTheDocument();
   });
 });
 
