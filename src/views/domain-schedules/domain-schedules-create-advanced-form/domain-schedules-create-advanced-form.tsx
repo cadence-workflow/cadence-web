@@ -2,8 +2,6 @@
 
 import React, { useMemo } from 'react';
 
-import { ScheduleCatchUpPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleCatchUpPolicy';
-import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
 import { StatefulPanel } from 'baseui/accordion';
 import { Button } from 'baseui/button';
 import { DatePicker } from 'baseui/datepicker';
@@ -17,6 +15,8 @@ import { LabelXSmall } from 'baseui/typography';
 import { Controller, useWatch } from 'react-hook-form';
 import { MdExpandLess, MdExpandMore } from 'react-icons/md';
 
+import { ScheduleCatchUpPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleCatchUpPolicy';
+import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
 import DomainSchedulesHorizontalField from '@/views/domain-schedules/domain-schedules-horizontal-field/domain-schedules-horizontal-field';
 import useSearchAttributes from '@/views/shared/hooks/use-search-attributes/use-search-attributes';
 import RetryPolicyFields from '@/views/shared/retry-policy-fields/retry-policy-fields';
