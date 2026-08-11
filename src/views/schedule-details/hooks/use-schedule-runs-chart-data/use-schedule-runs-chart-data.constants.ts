@@ -16,3 +16,10 @@ export const CHART_WORKFLOWS_REFRESH_INTERVAL_MS = 60_000;
 
 /** Upper bound on cron occurrences walked when inferring skipped/unconfirmed slots. */
 export const MAX_SCHEDULE_CRON_OCCURRENCES = 10_000;
+
+/**
+ * Slots due within this window before the last runs fetch are treated as
+ * unconfirmed rather than skipped, so visibility indexing lag does not surface
+ * a false skipped marker for a run that has not appeared in the response yet.
+ */
+export const SKIPPED_INFERENCE_VISIBILITY_BUFFER_MS = 2_000;
