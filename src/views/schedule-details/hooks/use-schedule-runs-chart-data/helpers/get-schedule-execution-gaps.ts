@@ -1,3 +1,4 @@
+import { SKIPPED_INFERENCE_VISIBILITY_BUFFER_MS } from '../use-schedule-runs-chart-data.constants';
 import {
   type GetScheduleExecutionGapsParams,
   type ScheduleExecutionGaps,
@@ -46,11 +47,15 @@ export default function getScheduleExecutionGaps({
   // A slot due after our last successful fetch may already have a real run
   // that just hasn't shown up yet (visibility indexing/poll lag), so it's
   // reported as unconfirmed until a later fetch confirms it either way. With no
-  // fetch to anchor on at all, nothing is confirmed.
+  // fetch to anchor on at all, nothing is confirmed. A short buffer before the
+  // fetch timestamp keeps near-boundary slots unconfirmed instead of skipped.
   const knownEndMs =
     lastFetchedAtMs == null
       ? knownStartMs - 1
-      : Math.min(trustworthyEndMs, lastFetchedAtMs);
+      : Math.min(
+          trustworthyEndMs,
+          lastFetchedAtMs - SKIPPED_INFERENCE_VISIBILITY_BUFFER_MS
+        );
 
   const coveredTimesMs = new Set([
     ...actualTimesMs,
@@ -69,9 +74,13 @@ export default function getScheduleExecutionGaps({
       continue;
     }
 
+    if (coveredTimesMs.has(scheduledTimeMs)) {
+      continue;
+    }
+
     if (scheduledTimeMs > knownEndMs) {
       unconfirmedExecutions.push({ scheduledTimeMs });
-    } else if (!coveredTimesMs.has(scheduledTimeMs)) {
+    } else {
       skippedExecutions.push({ scheduledTimeMs });
     }
   }
