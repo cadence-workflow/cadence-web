@@ -331,7 +331,7 @@ export default function DomainSchedulesCreateAdvancedForm({
               <styled.SchedulePeriodInputLabel
                 htmlFor={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.startTime}
               >
-                Start date/time
+                Start time
               </styled.SchedulePeriodInputLabel>
               <FormControl
                 error={startTimeErrorMessage}
@@ -346,7 +346,7 @@ export default function DomainSchedulesCreateAdvancedForm({
                       // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
                       inputRef={ref}
                       id={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.startTime}
-                      aria-label="Schedule period start date/time"
+                      aria-label="Schedule period start time"
                       value={value ? [new Date(value)] : []}
                       onChange={({ date }) => {
                         const d = Array.isArray(date) ? date[0] : date;
@@ -371,7 +371,7 @@ export default function DomainSchedulesCreateAdvancedForm({
               <styled.SchedulePeriodInputLabel
                 htmlFor={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.endTime}
               >
-                End date/time
+                End time
               </styled.SchedulePeriodInputLabel>
               <FormControl
                 error={endTimeErrorMessage}
@@ -386,7 +386,7 @@ export default function DomainSchedulesCreateAdvancedForm({
                       // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
                       inputRef={ref}
                       id={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.endTime}
-                      aria-label="Schedule period end date/time"
+                      aria-label="Schedule period end time"
                       value={value ? [new Date(value)] : []}
                       onChange={({ date }) => {
                         const d = Array.isArray(date) ? date[0] : date;
@@ -402,6 +402,7 @@ export default function DomainSchedulesCreateAdvancedForm({
                       timeSelectStart
                       formatString="yyyy/MM/dd HH:mm"
                       clearable
+                      overrides={overrides.endTimeDatePicker}
                     />
                   )}
                 />

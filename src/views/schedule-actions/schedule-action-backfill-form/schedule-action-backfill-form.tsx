@@ -71,7 +71,7 @@ export default function ScheduleActionBackfillForm({
             <styled.SchedulePeriodInputLabel
               htmlFor={SCHEDULE_ACTION_BACKFILL_FORM_FIELD_IDS.startTime}
             >
-              Start date/time
+              Start time
             </styled.SchedulePeriodInputLabel>
             <FormControl
               error={startTimeErrorMessage}
@@ -86,7 +86,7 @@ export default function ScheduleActionBackfillForm({
                     // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
                     inputRef={ref}
                     id={SCHEDULE_ACTION_BACKFILL_FORM_FIELD_IDS.startTime}
-                    aria-label="Backfill period start date/time"
+                    aria-label="Backfill period start time"
                     value={value ? [new Date(value)] : []}
                     onChange={({ date }) => {
                       const d = Array.isArray(date) ? date[0] : date;
@@ -112,7 +112,7 @@ export default function ScheduleActionBackfillForm({
             <styled.SchedulePeriodInputLabel
               htmlFor={SCHEDULE_ACTION_BACKFILL_FORM_FIELD_IDS.endTime}
             >
-              End date/time
+              End time
             </styled.SchedulePeriodInputLabel>
             <FormControl
               error={endTimeErrorMessage}
@@ -127,7 +127,7 @@ export default function ScheduleActionBackfillForm({
                     // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
                     inputRef={ref}
                     id={SCHEDULE_ACTION_BACKFILL_FORM_FIELD_IDS.endTime}
-                    aria-label="Backfill period end date/time"
+                    aria-label="Backfill period end time"
                     value={value ? [new Date(value)] : []}
                     onChange={({ date }) => {
                       const d = Array.isArray(date) ? date[0] : date;
@@ -143,6 +143,7 @@ export default function ScheduleActionBackfillForm({
                     timeSelectStart
                     formatString="yyyy/MM/dd HH:mm"
                     clearable
+                    overrides={overrides.endTimeDatePicker}
                   />
                 )}
               />

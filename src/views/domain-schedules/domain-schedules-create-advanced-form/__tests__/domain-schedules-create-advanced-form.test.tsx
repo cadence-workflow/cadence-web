@@ -44,12 +44,8 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
     expect(screen.getByLabelText('Schedule ID')).toBeInTheDocument();
     expect(screen.getByLabelText('Jitter duration')).toBeInTheDocument();
     expect(screen.getByLabelText('Workflow ID prefix')).toBeInTheDocument();
-    expect(
-      screen.getByLabelText('Schedule period start date/time')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByLabelText('Schedule period end date/time')
-    ).toBeInTheDocument();
+    expect(screen.getByLabelText('Schedule period start time')).toBeInTheDocument();
+    expect(screen.getByLabelText('Schedule period end time')).toBeInTheDocument();
     expect(screen.getByLabelText('Memo')).toBeInTheDocument();
     expect(screen.getByLabelText('Search attribute key')).toBeInTheDocument();
     expect(
@@ -207,20 +203,20 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
       screen.getByText(/schedule id cannot be changed/i)
     ).toBeInTheDocument();
   });
-  it('labels schedule period fields as date/time', async () => {
+  it('labels schedule period fields as start time and end time', async () => {
     const { user } = setup();
 
     await user.click(
       screen.getByRole('button', { name: /show advanced configurations/i })
     );
 
-    expect(screen.getByText('Start date/time')).toBeInTheDocument();
-    expect(screen.getByText('End date/time')).toBeInTheDocument();
+    expect(screen.getByText('Start time')).toBeInTheDocument();
+    expect(screen.getByText('End time')).toBeInTheDocument();
     expect(
-      screen.getByLabelText('Schedule period start date/time')
+      screen.getByLabelText('Schedule period start time')
     ).toBeInTheDocument();
     expect(
-      screen.getByLabelText('Schedule period end date/time')
+      screen.getByLabelText('Schedule period end time')
     ).toBeInTheDocument();
   });
 
@@ -231,11 +227,20 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
       screen.getByRole('button', { name: /show advanced configurations/i })
     );
 
-    await user.click(screen.getByLabelText('Schedule period start date/time'));
-    expect(screen.getByText('Start time')).toBeInTheDocument();
+    await user.click(screen.getByLabelText('Schedule period start time'));
+    expect(
+      screen
+        .getAllByText('Start time')
+        .some((el) => el.getAttribute('data-baseweb') === 'form-control-label')
+    ).toBe(true);
 
-    await user.click(screen.getByLabelText('Schedule period end date/time'));
-    expect(screen.getAllByText('Start time').length).toBeGreaterThanOrEqual(1);
+    await user.keyboard('{Escape}');
+    await user.click(screen.getByLabelText('Schedule period end time'));
+    expect(
+      screen
+        .getAllByText('End time')
+        .some((el) => el.getAttribute('data-baseweb') === 'form-control-label')
+    ).toBe(true);
   });
 });
 

@@ -16,37 +16,46 @@ describe(ScheduleActionBackfillForm.name, () => {
     expect(screen.getByLabelText('Backfill ID')).toBeInTheDocument();
     expect(screen.getByText('Backfill period')).toBeInTheDocument();
     expect(
-      screen.getByLabelText('Backfill period start date/time')
+      screen.getByLabelText('Backfill period start time')
     ).toBeInTheDocument();
     expect(
-      screen.getByLabelText('Backfill period end date/time')
+      screen.getByLabelText('Backfill period end time')
     ).toBeInTheDocument();
     expect(
       screen.getByRole('combobox', { name: /overlap policy/i })
     ).toBeInTheDocument();
   });
 
-  it('labels backfill period fields as date/time', () => {
+  it('labels backfill period fields as start time and end time', () => {
     setup();
 
-    expect(screen.getByText('Start date/time')).toBeInTheDocument();
-    expect(screen.getByText('End date/time')).toBeInTheDocument();
+    expect(screen.getByText('Start time')).toBeInTheDocument();
+    expect(screen.getByText('End time')).toBeInTheDocument();
     expect(
-      screen.getByLabelText('Backfill period start date/time')
+      screen.getByLabelText('Backfill period start time')
     ).toBeInTheDocument();
     expect(
-      screen.getByLabelText('Backfill period end date/time')
+      screen.getByLabelText('Backfill period end time')
     ).toBeInTheDocument();
   });
 
   it('shows time picker when opening backfill period date pickers', async () => {
     const { user } = setup();
 
-    await user.click(screen.getByLabelText('Backfill period start date/time'));
-    expect(screen.getByText('Start time')).toBeInTheDocument();
+    await user.click(screen.getByLabelText('Backfill period start time'));
+    expect(
+      screen
+        .getAllByText('Start time')
+        .some((el) => el.getAttribute('data-baseweb') === 'form-control-label')
+    ).toBe(true);
 
-    await user.click(screen.getByLabelText('Backfill period end date/time'));
-    expect(screen.getAllByText('Start time').length).toBeGreaterThanOrEqual(1);
+    await user.keyboard('{Escape}');
+    await user.click(screen.getByLabelText('Backfill period end time'));
+    expect(
+      screen
+        .getAllByText('End time')
+        .some((el) => el.getAttribute('data-baseweb') === 'form-control-label')
+    ).toBe(true);
   });
 });
 
