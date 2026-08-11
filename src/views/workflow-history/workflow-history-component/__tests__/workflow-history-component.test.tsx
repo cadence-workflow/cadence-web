@@ -1,6 +1,7 @@
 import { render, screen } from '@/test-utils/rtl';
 
-import { WorkflowHistoryContext } from '../../workflow-history-context-provider/workflow-history-context-provider';
+import { WorkflowHistoryContext } from '@/views/workflow-history-v2/workflow-history-context-provider/workflow-history-context-provider';
+
 import { type Props } from '../../workflow-history.types';
 import WorkflowHistoryComponent from '../workflow-history-component';
 

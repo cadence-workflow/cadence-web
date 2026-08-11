@@ -1,10 +1,10 @@
 import { useContext } from 'react';
 
 import useConfigValue from '@/hooks/use-config-value/use-config-value';
+import { WorkflowHistoryContext } from '@/views/workflow-history-v2/workflow-history-context-provider/workflow-history-context-provider';
 import WorkflowHistoryViewToggleButton from '@/views/workflow-history-v2/workflow-history-view-toggle-button/workflow-history-view-toggle-button';
 
 import workflowHistorySwitchToV2ButtonTooltipContentConfig from '../config/workflow-history-switch-to-v2-button-tooltip-content.config';
-import { WorkflowHistoryContext } from '../workflow-history-context-provider/workflow-history-context-provider';
 
 export default function WorkflowHistorySwitchToV2Button() {
   const { data: historyPageV2Config } = useConfigValue(

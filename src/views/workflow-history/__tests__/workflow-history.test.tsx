@@ -16,13 +16,13 @@ import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/
 import * as usePageFiltersModule from '@/components/page-filters/hooks/use-page-filters';
 import { type PageQueryParamValues } from '@/hooks/use-page-query-params/use-page-query-params.types';
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
+import { WorkflowHistoryContext } from '@/views/workflow-history-v2/workflow-history-context-provider/workflow-history-context-provider';
 import { mockDescribeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
 import type workflowPageQueryParamsConfig from '@/views/workflow-page/config/workflow-page-query-params.config';
 
 import { completedActivityTaskEvents } from '../__fixtures__/workflow-history-activity-events';
 import { completedDecisionTaskEvents } from '../__fixtures__/workflow-history-decision-events';
 import WorkflowHistory from '../workflow-history';
-import { WorkflowHistoryContext } from '../workflow-history-context-provider/workflow-history-context-provider';
 
 jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
   jest.fn(() => [{ historySelectedEventId: '1' }, jest.fn()])
