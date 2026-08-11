@@ -267,50 +267,6 @@ export default function DomainSchedulesCreateForm({
       </DomainSchedulesHorizontalField>
 
       <DomainSchedulesHorizontalField
-        label="Task Start-to-Close Timeout"
-        description={
-          CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.taskStartToCloseTimeout
-        }
-        htmlFor={CREATE_SCHEDULE_FORM_FIELD_IDS.taskStartToCloseTimeout}
-        error={getFieldErrorMessage(
-          fieldErrors,
-          'taskStartToCloseTimeoutSeconds'
-        )}
-      >
-        <Controller
-          name="taskStartToCloseTimeoutSeconds"
-          control={control}
-          render={({ field: { ref, ...field } }) => (
-            <Input
-              {...field}
-              id={CREATE_SCHEDULE_FORM_FIELD_IDS.taskStartToCloseTimeout}
-              value={field.value ?? ''}
-              // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
-              inputRef={ref}
-              aria-label="Task Start-to-Close Timeout"
-              type="number"
-              min={1}
-              onChange={(e) =>
-                field.onChange(
-                  e.target.value ? parseInt(e.target.value, 10) : undefined
-                )
-              }
-              onBlur={field.onBlur}
-              error={Boolean(
-                getFieldErrorMessage(
-                  fieldErrors,
-                  'taskStartToCloseTimeoutSeconds'
-                )
-              )}
-              size="compact"
-              placeholder="Enter timeout in seconds"
-              endEnhancer={<LabelXSmall>Seconds</LabelXSmall>}
-            />
-          )}
-        />
-      </DomainSchedulesHorizontalField>
-
-      <DomainSchedulesHorizontalField
         label="Pause on failure"
         description={CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.pauseOnFailure}
         htmlFor={CREATE_SCHEDULE_FORM_FIELD_IDS.pauseOnFailure}

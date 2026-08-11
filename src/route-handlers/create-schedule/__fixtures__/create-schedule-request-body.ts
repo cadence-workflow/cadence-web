@@ -9,6 +9,5 @@ export const mockCreateScheduleRequestBody: CreateScheduleRequestBody = {
     workerSDKLanguage: 'GO',
     workflowIdPrefix: 'scheduled-demo-',
     executionStartToCloseTimeoutSeconds: 3600,
-    taskStartToCloseTimeoutSeconds: 30,
   },
 };
