@@ -27,6 +27,7 @@ export default function ScheduleDetails({ params }: Props) {
     cluster: decodedParams.cluster,
     scheduleId: decodedParams.scheduleId,
     throwOnError: true,
+    staleTime: 0,
   });
 
   if (isLoading || isPending) {
