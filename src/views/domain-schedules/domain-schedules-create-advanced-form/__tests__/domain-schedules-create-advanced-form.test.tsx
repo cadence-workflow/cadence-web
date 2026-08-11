@@ -111,7 +111,7 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
 
     expect(screen.queryByLabelText('Catch-up window')).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole('radio', { name: 'Catch-up all' }));
+    await user.click(screen.getByRole('radio', { name: /Catch-up all/i }));
     expect(screen.getByLabelText('Catch-up window')).toBeInTheDocument();
   });
 
@@ -122,10 +122,10 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
       screen.getByRole('button', { name: /show advanced configurations/i })
     );
 
-    await user.click(screen.getByRole('radio', { name: 'Catch-up all' }));
+    await user.click(screen.getByRole('radio', { name: /Catch-up all/i }));
     expect(screen.getByLabelText('Catch-up window')).toBeInTheDocument();
 
-    await user.click(screen.getByRole('radio', { name: 'Skip' }));
+    await user.click(screen.getByRole('radio', { name: /^Skip/i }));
     expect(screen.queryByLabelText('Catch-up window')).not.toBeInTheDocument();
   });
 
