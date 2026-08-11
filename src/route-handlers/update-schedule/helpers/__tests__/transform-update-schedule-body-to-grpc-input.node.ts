@@ -28,7 +28,6 @@ describe(transformUpdateScheduleBodyToGrpcInput.name, () => {
           workflowType: { name: 'DemoWorkflow' },
           taskList: { name: 'demo-task-list' },
           executionStartToCloseTimeout: { seconds: 3600, nanos: 0 },
-          taskStartToCloseTimeout: { seconds: 30, nanos: 0 },
         }),
       },
       policies: expect.objectContaining({
