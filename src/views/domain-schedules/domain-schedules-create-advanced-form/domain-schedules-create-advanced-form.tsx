@@ -166,6 +166,19 @@ export default function DomainSchedulesCreateAdvancedForm({
                 onChange={(params) => {
                   onChange(params.value[0]?.id);
                 }}
+                getOptionLabel={({ option }) => (
+                  <styled.SelectOptionContent>
+                    <styled.SelectOptionLabel>
+                      {option.label}
+                    </styled.SelectOptionLabel>
+                    {option.description ? (
+                      <styled.SelectOptionDescription>
+                        {option.description}
+                      </styled.SelectOptionDescription>
+                    ) : null}
+                  </styled.SelectOptionContent>
+                )}
+                getValueLabel={({ option }) => option.label}
                 error={Boolean(
                   getFieldErrorMessage(fieldErrors, 'overlapPolicy')
                 )}
@@ -270,10 +283,14 @@ export default function DomainSchedulesCreateAdvancedForm({
                 error={Boolean(
                   getFieldErrorMessage(fieldErrors, 'catchUpPolicy')
                 )}
-                align="horizontal"
+                align="vertical"
               >
                 {CATCH_UP_POLICY_OPTIONS.map((option) => (
-                  <Radio key={option.id} value={option.id}>
+                  <Radio
+                    key={option.id}
+                    value={option.id}
+                    description={option.description}
+                  >
                     {option.label}
                   </Radio>
                 ))}

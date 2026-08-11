@@ -67,4 +67,28 @@ export const styled = {
       backgroundColor: $theme.colors.borderOpaque,
     })
   ),
+  SelectOptionContent: createStyled(
+    'div',
+    (): StyleObject => ({
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+      whiteSpace: 'normal',
+    })
+  ),
+  SelectOptionLabel: createStyled(
+    'div',
+    ({ $theme }: { $theme: Theme }): StyleObject => ({
+      ...$theme.typography.font250,
+      color: $theme.colors.contentPrimary,
+    })
+  ),
+  SelectOptionDescription: createStyled(
+    'div',
+    ({ $theme }: { $theme: Theme }): StyleObject => ({
+      ...$theme.typography.font100,
+      color: $theme.colors.contentTertiary,
+      marginTop: $theme.sizing.scale100,
+    })
+  ),
 };

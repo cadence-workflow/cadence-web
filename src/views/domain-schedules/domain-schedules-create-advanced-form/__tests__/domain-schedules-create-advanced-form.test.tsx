@@ -203,6 +203,60 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
       screen.getByText(/schedule id cannot be changed/i)
     ).toBeInTheDocument();
   });
+
+  it('shows per-option descriptions for overlap and catch-up policies', async () => {
+    const { user } = setup();
+
+    await user.click(
+      screen.getByRole('button', { name: /show advanced configurations/i })
+    );
+
+    await user.click(
+      screen.getByRole('combobox', { name: /overlap policy/i })
+    );
+
+    expect(
+      screen.getByText(
+        'Do not start a new run while the previous scheduled action is still running.'
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Queue upcoming runs while the previous action is still running, up to the buffer limit.'
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Allow multiple scheduled actions to run at the same time, up to the concurrency limit.'
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Cancel the previous run when the next scheduled time arrives.'
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Terminate the previous run when the next scheduled time arrives.'
+      )
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText(
+        'Do not start workflows for schedule times missed during downtime.'
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Start at most one missed workflow after the schedule becomes active again.'
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Start all missed workflows within the catch-up window after downtime.'
+      )
+    ).toBeInTheDocument();
+  });
 });
 
 function setup({ scheduleIdReadOnly }: { scheduleIdReadOnly?: boolean } = {}) {
