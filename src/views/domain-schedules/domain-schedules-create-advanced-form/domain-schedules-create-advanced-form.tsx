@@ -346,7 +346,7 @@ export default function DomainSchedulesCreateAdvancedForm({
                       // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
                       inputRef={ref}
                       id={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.startTime}
-                      aria-label="Schedule period start time"
+                      aria-label="Schedule period start"
                       value={value ? [new Date(value)] : []}
                       onChange={({ date }) => {
                         const d = Array.isArray(date) ? date[0] : date;
@@ -386,7 +386,7 @@ export default function DomainSchedulesCreateAdvancedForm({
                       // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
                       inputRef={ref}
                       id={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.endTime}
-                      aria-label="Schedule period end time"
+                      aria-label="Schedule period end"
                       value={value ? [new Date(value)] : []}
                       onChange={({ date }) => {
                         const d = Array.isArray(date) ? date[0] : date;

@@ -44,8 +44,8 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
     expect(screen.getByLabelText('Schedule ID')).toBeInTheDocument();
     expect(screen.getByLabelText('Jitter duration')).toBeInTheDocument();
     expect(screen.getByLabelText('Workflow ID prefix')).toBeInTheDocument();
-    expect(screen.getByLabelText('Schedule period start time')).toBeInTheDocument();
-    expect(screen.getByLabelText('Schedule period end time')).toBeInTheDocument();
+    expect(screen.getByLabelText('Schedule period start')).toBeInTheDocument();
+    expect(screen.getByLabelText('Schedule period end')).toBeInTheDocument();
     expect(screen.getByLabelText('Memo')).toBeInTheDocument();
     expect(screen.getByLabelText('Search attribute key')).toBeInTheDocument();
     expect(
@@ -203,23 +203,6 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
       screen.getByText(/schedule id cannot be changed/i)
     ).toBeInTheDocument();
   });
-  it('labels schedule period fields as start time and end time', async () => {
-    const { user } = setup();
-
-    await user.click(
-      screen.getByRole('button', { name: /show advanced configurations/i })
-    );
-
-    expect(screen.getByText('Start time')).toBeInTheDocument();
-    expect(screen.getByText('End time')).toBeInTheDocument();
-    expect(
-      screen.getByLabelText('Schedule period start time')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByLabelText('Schedule period end time')
-    ).toBeInTheDocument();
-  });
-
   it('shows time picker when opening schedule period date pickers', async () => {
     const { user } = setup();
 
@@ -227,7 +210,7 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
       screen.getByRole('button', { name: /show advanced configurations/i })
     );
 
-    await user.click(screen.getByLabelText('Schedule period start time'));
+    await user.click(screen.getByLabelText('Schedule period start'));
     expect(
       screen
         .getAllByText('Start time')
@@ -235,13 +218,13 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
     ).toBe(true);
 
     await user.keyboard('{Escape}');
-    await user.click(screen.getByLabelText('Schedule period end time'));
+    await user.click(screen.getByLabelText('Schedule period end'));
     expect(
       screen
         .getAllByText('End time')
         .some((el) => el.getAttribute('data-baseweb') === 'form-control-label')
     ).toBe(true);
-  });
+      });
 });
 
 function setup({ scheduleIdReadOnly }: { scheduleIdReadOnly?: boolean } = {}) {
