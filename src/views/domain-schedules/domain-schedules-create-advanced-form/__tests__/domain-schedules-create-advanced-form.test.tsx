@@ -3,6 +3,10 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 
 import { render, screen, userEvent } from '@/test-utils/rtl';
+import {
+  SCHEDULE_CATCH_UP_POLICY_DESCRIPTIONS,
+  SCHEDULE_OVERLAP_POLICY_DESCRIPTIONS,
+} from '@/views/shared/constants/schedule-policy-labels.constants';
 
 import { type DomainSchedulesCreateFormData } from '../../domain-schedules-create-modal/domain-schedules-create-modal.types';
 import DomainSchedulesCreateAdvancedForm from '../domain-schedules-create-advanced-form';
@@ -210,50 +214,14 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
     await user.click(
       screen.getByRole('button', { name: /show advanced configurations/i })
     );
-
     await user.click(screen.getByRole('combobox', { name: /overlap policy/i }));
 
-    expect(
-      screen.getByText(
-        'Do not start a new run while the previous scheduled action is still running.'
-      )
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        'Queue upcoming runs while the previous action is still running, up to the buffer limit.'
-      )
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        'Allow multiple scheduled actions to run at the same time, up to the concurrency limit.'
-      )
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        'Cancel the previous run when the next scheduled time arrives.'
-      )
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        'Terminate the previous run when the next scheduled time arrives.'
-      )
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByText(
-        'Do not start workflows for schedule times missed during downtime.'
-      )
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        'Start at most one missed workflow after the schedule becomes active again.'
-      )
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        'Start all missed workflows within the catch-up window after downtime.'
-      )
-    ).toBeInTheDocument();
+    for (const description of [
+      ...Object.values(SCHEDULE_OVERLAP_POLICY_DESCRIPTIONS),
+      ...Object.values(SCHEDULE_CATCH_UP_POLICY_DESCRIPTIONS),
+    ]) {
+      expect(screen.getByText(description)).toBeInTheDocument();
+    }
   });
 });
 

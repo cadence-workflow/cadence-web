@@ -1,7 +1,6 @@
 import { styled as createStyled, type Theme } from 'baseui';
 import { type PanelOverrides } from 'baseui/accordion';
 import { type FormControlOverrides } from 'baseui/form-control';
-import { PLACEMENT } from 'baseui/popover';
 import { type SelectOverrides } from 'baseui/select';
 import { type StyleObject } from 'styletron-react';
 
@@ -29,23 +28,6 @@ export const overrides = {
     },
   } satisfies FormControlOverrides,
   overlapPolicySelect: {
-    Root: {
-      style: {
-        width: '100%',
-      },
-    },
-    Popover: {
-      props: {
-        placement: PLACEMENT.bottomLeft,
-        popperOptions: {
-          modifiers: {
-            computeStyle: {
-              gpuAcceleration: false,
-            },
-          },
-        },
-      },
-    },
     DropdownListItem: {
       style: {
         alignItems: 'flex-start',
