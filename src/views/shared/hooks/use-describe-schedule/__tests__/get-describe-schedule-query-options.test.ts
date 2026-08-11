@@ -6,9 +6,7 @@ import {
 } from '@/route-handlers/describe-schedule/__fixtures__/mock-describe-schedule-response';
 import { type RequestError } from '@/utils/request/request-error';
 
-import getDescribeScheduleQueryOptions, {
-  describeScheduleThrowOnError,
-} from '../get-describe-schedule-query-options';
+import getDescribeScheduleQueryOptions from '../get-describe-schedule-query-options';
 import {
   type DescribeScheduleQueryKey,
   type DescribeScheduleResponse,
@@ -102,49 +100,12 @@ describe(getDescribeScheduleQueryOptions.name, () => {
     expect(options.queryKey).toEqual(['describeSchedule', params]);
   });
 
-  it('maps throwOnError true to only throw when cached data is unavailable', () => {
+  it('passes through query options configuration', () => {
     const options = getDescribeScheduleQueryOptions({
       ...params,
       throwOnError: true,
     });
 
-    expect(options.throwOnError).toBe(describeScheduleThrowOnError);
-  });
-
-  it('passes through custom throwOnError handlers', () => {
-    const customThrowOnError = jest.fn(() => false);
-
-    const options = getDescribeScheduleQueryOptions({
-      ...params,
-      throwOnError: customThrowOnError,
-    });
-
-    expect(options.throwOnError).toBe(customThrowOnError);
-  });
-});
-
-describe(describeScheduleThrowOnError.name, () => {
-  it('returns true when query has no cached data', () => {
-    const mockQuery = {
-      state: {
-        data: undefined,
-      },
-    } as RefetchTypeIntervalArg;
-
-    expect(describeScheduleThrowOnError({} as RequestError, mockQuery)).toBe(
-      true
-    );
-  });
-
-  it('returns false when query has cached data', () => {
-    const mockQuery = {
-      state: {
-        data: mockRunningDescribeScheduleResponse as DescribeScheduleResponse,
-      },
-    } as RefetchTypeIntervalArg;
-
-    expect(describeScheduleThrowOnError({} as RequestError, mockQuery)).toBe(
-      false
-    );
+    expect(options.throwOnError).toBe(true);
   });
 });

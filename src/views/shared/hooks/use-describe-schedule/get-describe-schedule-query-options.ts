@@ -1,33 +1,16 @@
-import { type Query } from '@tanstack/react-query';
-
 import request from '@/utils/request';
-import { type RequestError } from '@/utils/request/request-error';
 
 import {
   type DescribeScheduleQueryKey,
-  type DescribeScheduleResponse,
   type UseDescribeScheduleParams,
   type UseDescribeScheduleQueryOptions,
 } from './use-describe-schedule.types';
-
-export function describeScheduleThrowOnError(
-  _err: RequestError,
-  query: Query<
-    DescribeScheduleResponse,
-    RequestError,
-    DescribeScheduleResponse,
-    DescribeScheduleQueryKey
-  >
-): boolean {
-  return query.state.data === undefined;
-}
 
 export default function getDescribeScheduleQueryOptions({
   domain,
   cluster,
   scheduleId,
   runningScheduleRefetchIntervalMs = 10000, // 10 seconds
-  throwOnError,
   ...queryOptions
 }: UseDescribeScheduleParams): UseDescribeScheduleQueryOptions {
   const params = { domain, cluster, scheduleId };
@@ -45,8 +28,6 @@ export default function getDescribeScheduleQueryOptions({
       }
       return false;
     },
-    throwOnError:
-      throwOnError === true ? describeScheduleThrowOnError : throwOnError,
     ...queryOptions,
   };
 }
