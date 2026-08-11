@@ -1,4 +1,4 @@
-import { completeActivityTaskEvent } from '@/views/workflow-history/__fixtures__/workflow-history-activity-events';
+import { completeActivityTaskEvent } from '@/views/workflow-history-v2/__fixtures__/workflow-history-activity-events';
 
 import formatTimestampToDatetime from '../format-timestamp-to-datetime';
 import formatWorkflowHistory from '../format-workflow-history';

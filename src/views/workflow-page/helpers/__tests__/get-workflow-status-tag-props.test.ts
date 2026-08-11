@@ -1,6 +1,6 @@
 // Import the function to be tested
 import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
-import { continueAsNewWorkflowExecutionEvent } from '@/views/workflow-history/__fixtures__/workflow-history-single-events';
+import { continueAsNewWorkflowExecutionEvent } from '@/views/workflow-history-v2/__fixtures__/workflow-history-single-events';
 
 import getWorkflowIsCompleted from '../get-workflow-is-completed';
 import getWorkflowStatusTagProps from '../get-workflow-status-tag-props';

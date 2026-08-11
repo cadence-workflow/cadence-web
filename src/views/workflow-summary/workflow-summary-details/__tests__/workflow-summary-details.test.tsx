@@ -7,7 +7,7 @@ import formatWorkflowHistoryEvent from '@/utils/data-formatters/format-workflow-
 import {
   completeWorkflowExecutionEvent,
   startWorkflowExecutionEvent,
-} from '@/views/workflow-history/__fixtures__/workflow-history-single-events';
+} from '@/views/workflow-history-v2/__fixtures__/workflow-history-single-events';
 
 import { mockFormattedFirstEvent } from '../../__fixtures__/formatted-first-history-event';
 import WorkflowSummaryDetails from '../workflow-summary-details';
