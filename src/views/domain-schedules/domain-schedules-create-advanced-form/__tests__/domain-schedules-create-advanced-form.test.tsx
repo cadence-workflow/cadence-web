@@ -111,7 +111,7 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
 
     expect(screen.queryByLabelText('Catch-up window')).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole('radio', { name: /Catch-up all/i }));
+    await user.click(screen.getByRole('radio', { name: 'Catch-up all' }));
     expect(screen.getByLabelText('Catch-up window')).toBeInTheDocument();
   });
 
@@ -122,10 +122,10 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
       screen.getByRole('button', { name: /show advanced configurations/i })
     );
 
-    await user.click(screen.getByRole('radio', { name: /Catch-up all/i }));
+    await user.click(screen.getByRole('radio', { name: 'Catch-up all' }));
     expect(screen.getByLabelText('Catch-up window')).toBeInTheDocument();
 
-    await user.click(screen.getByRole('radio', { name: /^Skip/i }));
+    await user.click(screen.getByRole('radio', { name: 'Skip' }));
     expect(screen.queryByLabelText('Catch-up window')).not.toBeInTheDocument();
   });
 
@@ -211,9 +211,7 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
       screen.getByRole('button', { name: /show advanced configurations/i })
     );
 
-    await user.click(
-      screen.getByRole('combobox', { name: /overlap policy/i })
-    );
+    await user.click(screen.getByRole('combobox', { name: /overlap policy/i }));
 
     expect(
       screen.getByText(
