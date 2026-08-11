@@ -18,6 +18,7 @@ import useThrottledState from '@/hooks/use-throttled-state';
 import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
 import decodeUrlParams from '@/utils/decode-url-params';
 import sortBy from '@/utils/sort-by';
+import { WorkflowHistoryContext } from '@/views/workflow-history-v2/workflow-history-context-provider/workflow-history-context-provider';
 
 import { resetWorkflowActionConfig } from '../workflow-actions/config/workflow-actions.config';
 import WorkflowActionsModal from '../workflow-actions/workflow-actions-modal/workflow-actions-modal';
@@ -36,7 +37,6 @@ import useInitialSelectedEvent from './hooks/use-initial-selected-event';
 import useWorkflowHistoryFetcher from './hooks/use-workflow-history-fetcher';
 import useWorkflowHistoryGrouper from './hooks/use-workflow-history-grouper';
 import WorkflowHistoryCompactEventCard from './workflow-history-compact-event-card/workflow-history-compact-event-card';
-import { WorkflowHistoryContext } from './workflow-history-context-provider/workflow-history-context-provider';
 import WorkflowHistoryHeader from './workflow-history-header/workflow-history-header';
 import WorkflowHistoryTimelineGroup from './workflow-history-timeline-group/workflow-history-timeline-group';
 import WorkflowHistoryTimelineLoadMore from './workflow-history-timeline-load-more/workflow-history-timeline-load-more';

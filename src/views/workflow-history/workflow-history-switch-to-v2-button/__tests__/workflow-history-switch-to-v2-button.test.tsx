@@ -4,7 +4,8 @@ import { HttpResponse } from 'msw';
 
 import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
-import { WorkflowHistoryContext } from '../../workflow-history-context-provider/workflow-history-context-provider';
+import { WorkflowHistoryContext } from '@/views/workflow-history-v2/workflow-history-context-provider/workflow-history-context-provider';
+
 import WorkflowHistorySwitchToV2Button from '../workflow-history-switch-to-v2-button';
 
 jest.mock(
