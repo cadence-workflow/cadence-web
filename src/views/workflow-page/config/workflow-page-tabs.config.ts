@@ -8,7 +8,7 @@ import { RiStethoscopeLine } from 'react-icons/ri';
 
 import getWorkflowDiagnosticsErrorConfig from '@/views/workflow-diagnostics/helpers/get-workflow-diagnostics-error-config';
 import WorkflowDiagnostics from '@/views/workflow-diagnostics/workflow-diagnostics';
-import WorkflowHistoryV2Wrapper from '@/views/workflow-history-v2/workflow-history-v2-wrapper/workflow-history-v2-wrapper';
+import WorkflowHistoryWrapper from '@/views/workflow-history/workflow-history-wrapper/workflow-history-wrapper';
 import WorkflowQueries from '@/views/workflow-queries/workflow-queries';
 import WorkflowStackTrace from '@/views/workflow-stack-trace/workflow-stack-trace';
 import WorkflowSummary from '@/views/workflow-summary/workflow-summary';
@@ -36,7 +36,7 @@ const workflowPageTabsConfig: WorkflowPageTabsConfig<
     title: 'History',
     endEnhancer: WorkflowPagePendingEventsBadge,
     artwork: MdOutlineHistory,
-    content: WorkflowHistoryV2Wrapper,
+    content: WorkflowHistoryWrapper,
     getErrorConfig: (err) =>
       getWorkflowPageErrorConfig(
         err,

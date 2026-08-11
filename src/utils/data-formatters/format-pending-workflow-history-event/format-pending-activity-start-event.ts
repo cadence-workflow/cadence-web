@@ -1,4 +1,4 @@
-import { type PendingActivityTaskStartEvent } from '@/views/workflow-history-v2/workflow-history-v2.types';
+import { type PendingActivityTaskStartEvent } from '@/views/workflow-history/workflow-history.types';
 
 import formatEnum from '../format-enum';
 import formatFailureDetails from '../format-failure-details';

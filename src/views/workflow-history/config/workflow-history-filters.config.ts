@@ -1,0 +1,56 @@
+import { createElement } from 'react';
+
+import TagFilter from '@/components/tag-filter/tag-filter';
+
+import filterGroupsByCategory from '../workflow-history-filters-menu/helpers/filter-groups-by-category';
+import filterGroupsByStatus from '../workflow-history-filters-menu/helpers/filter-groups-by-status';
+import {
+  type EventGroupCategory,
+  type EventGroupStatusFilterValue,
+  type EventGroupCategoryFilterValue,
+  type EventGroupStatus,
+} from '../workflow-history-filters-menu/workflow-history-filters-menu.types';
+import { type WorkflowHistoryFilterConfig } from '../workflow-history.types';
+
+import workflowHistoryFiltersStatusOptionsConfig from './workflow-history-filters-status-options.config';
+import workflowHistoryFiltersTypeOptionsConfig from './workflow-history-filters-type-options.config';
+
+const workflowHistoryFiltersConfig: [
+  WorkflowHistoryFilterConfig<EventGroupCategoryFilterValue>,
+  WorkflowHistoryFilterConfig<EventGroupStatusFilterValue>,
+] = [
+  {
+    id: 'historyEventTypes',
+    getValue: (v) => ({ historyEventTypes: v.historyEventTypes }),
+    formatValue: (v) => v,
+    component: ({ value, setValue }) =>
+      createElement(TagFilter<EventGroupCategory>, {
+        label: 'Type',
+        values: value.historyEventTypes ?? [],
+        onChangeValues: (newValues) =>
+          setValue({
+            historyEventTypes: newValues.length > 0 ? newValues : undefined,
+          }),
+        optionsConfig: workflowHistoryFiltersTypeOptionsConfig,
+      }),
+    filterFunc: filterGroupsByCategory,
+  },
+  {
+    id: 'historyEventStatuses',
+    getValue: (v) => ({ historyEventStatuses: v.historyEventStatuses }),
+    formatValue: (v) => v,
+    component: ({ value, setValue }) =>
+      createElement(TagFilter<EventGroupStatus>, {
+        label: 'Status',
+        values: value.historyEventStatuses ?? [],
+        onChangeValues: (newValues) =>
+          setValue({
+            historyEventStatuses: newValues.length > 0 ? newValues : undefined,
+          }),
+        optionsConfig: workflowHistoryFiltersStatusOptionsConfig,
+      }),
+    filterFunc: filterGroupsByStatus,
+  },
+] as const;
+
+export default workflowHistoryFiltersConfig;

@@ -1,5 +1,5 @@
 import logger from '@/utils/logger';
-import { type PendingHistoryEvent } from '@/views/workflow-history-v2/workflow-history-v2.types';
+import { type PendingHistoryEvent } from '@/views/workflow-history/workflow-history.types';
 
 import {
   getFormatPendingEventSchema,

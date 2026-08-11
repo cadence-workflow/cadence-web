@@ -1,6 +1,6 @@
 import { type z } from 'zod';
 
-import { type PendingHistoryEvent } from '@/views/workflow-history-v2/workflow-history-v2.types';
+import { type PendingHistoryEvent } from '@/views/workflow-history/workflow-history.types';
 
 import formatPendingActivityTaskStartEvent from '../format-pending-workflow-history-event/format-pending-activity-start-event';
 import formatPendingDecisionTaskStartEvent from '../format-pending-workflow-history-event/format-pending-decision-start-event';
