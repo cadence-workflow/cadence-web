@@ -1,4 +1,4 @@
-import { render, screen } from '@/test-utils/rtl';
+import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import ScheduleDetailsRunsChartPopoverContent from '../schedule-details-runs-chart-popover-content';
 import {
@@ -133,6 +133,37 @@ describe(ScheduleDetailsRunsChartPopoverContent.name, () => {
     });
 
     expect(screen.getAllByTestId(RUN_POPOVER_TEST_IDS.entry)).toHaveLength(2);
+  });
+
+  it('does not propagate pointer events to chart pan when clicking a run link', async () => {
+    const handleParentPointerDown = jest.fn();
+    const user = userEvent.setup();
+
+    render(
+      <div onPointerDown={handleParentPointerDown}>
+        <ScheduleDetailsRunsChartPopoverContent
+          entries={[
+            {
+              kind: 'run',
+              run: {
+                workflowId: 'wf-1',
+                runId: 'run-1',
+                status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
+                scheduledTimeMs: Date.UTC(2024, 0, 1, 10, 0),
+                startedTimeMs: null,
+                endedTimeMs: null,
+              },
+            },
+          ]}
+          domain={mockDomain}
+          cluster={mockCluster}
+        />
+      </div>
+    );
+
+    await user.click(screen.getByRole('link', { name: 'run-1' }));
+
+    expect(handleParentPointerDown).not.toHaveBeenCalled();
   });
 });
 
