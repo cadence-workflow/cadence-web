@@ -515,8 +515,6 @@ async function setup({
         value={{
           ungroupedViewUserPreference: ungroupedViewPreference ?? null,
           setUngroupedViewUserPreference: mockSetUngroupedViewUserPreference,
-          isWorkflowHistoryV2Selected: false,
-          setIsWorkflowHistoryV2Selected: jest.fn(),
         }}
       >
         <WorkflowHistoryV2

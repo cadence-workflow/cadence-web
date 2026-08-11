@@ -11,7 +11,6 @@ import PageSection from '@/components/page-section/page-section';
 import WorkflowHistoryExportJsonButton from '@/views/workflow-history-v2/workflow-history-export-json-button/workflow-history-export-json-button';
 
 import WorkflowHistoryFiltersMenu from '../workflow-history-filters-menu/workflow-history-filters-menu';
-import WorkflowHistorySwitchToV1Button from '../workflow-history-switch-to-v1-button/workflow-history-switch-to-v1-button';
 import WorkflowHistoryTimeline from '../workflow-history-timeline/workflow-history-timeline';
 
 import { overrides, styled } from './workflow-history-header.styles';
@@ -62,10 +61,7 @@ export default function WorkflowHistoryHeader({
       >
         <PageSection>
           <styled.Header>
-            <styled.Heading>
-              Workflow history
-              <WorkflowHistorySwitchToV1Button />
-            </styled.Heading>
+            <styled.Heading>Workflow history</styled.Heading>
             <styled.Actions>
               <WorkflowHistoryExportJsonButton {...wfHistoryRequestArgs} />
               <SegmentedControl
