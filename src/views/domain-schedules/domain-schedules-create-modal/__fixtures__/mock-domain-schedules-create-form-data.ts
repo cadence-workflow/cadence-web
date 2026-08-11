@@ -13,7 +13,6 @@ export const mockDomainSchedulesCreateFormData = {
   taskList: { name: 'demo-tl' },
   workerSDKLanguage: 'GO',
   executionStartToCloseTimeoutSeconds: 3600,
-  taskStartToCloseTimeoutSeconds: 45,
   enableRetryPolicy: false,
   limitRetries: 'ATTEMPTS',
 } satisfies DomainSchedulesCreateFormData;
