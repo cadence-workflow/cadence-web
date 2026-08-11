@@ -4,7 +4,7 @@ import { Spinner } from 'baseui/icon';
 import { MdCancel, MdCheckCircle, MdReport } from 'react-icons/md';
 
 import { type TagFilterOptionConfig } from '@/components/tag-filter/tag-filter.types';
-import { type HistoryEventFilterStatus } from '@/views/workflow-history/workflow-history-filters-status/workflow-history-filters-status.types';
+import { type HistoryEventFilterStatus } from '@/views/workflow-history-v2/workflow-history-filters-status/workflow-history-filters-status.types';
 
 const workflowHistoryFiltersStatusOptionsConfig = {
   PENDING: {

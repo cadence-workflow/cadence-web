@@ -1,0 +1,128 @@
+import { toaster } from 'baseui/toast';
+import { HttpResponse } from 'msw';
+
+import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
+
+import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
+import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
+
+import type { Props as MSWMocksHandlersProps } from '../../../../test-utils/msw-mock-handlers/msw-mock-handlers.types';
+import { completedActivityTaskEvents } from '../../__fixtures__/workflow-history-activity-events';
+import WorkflowHistoryExportJsonButton from '../workflow-history-export-json-button';
+import { type Props } from '../workflow-history-export-json-button.types';
+
+jest.mock('@/utils/logger');
+jest.mock('baseui/toast', () => ({
+  ...jest.requireActual('baseui/toast'),
+  toaster: {
+    negative: jest.fn(),
+  },
+}));
+
+const mockDownloadJson = jest.fn();
+jest.mock('@/utils/download-json', () =>
+  jest.fn((json, filename) => mockDownloadJson(json, filename))
+);
+
+describe('WorkflowHistoryExportJsonButton', () => {
+  it('should render the button with "Export JSON"', () => {
+    setup({});
+    expect(screen.getByText('Export JSON')).toBeInTheDocument();
+  });
+
+  it('should show spinner when loading', async () => {
+    const { user, getRequestResolver } = setup({ wait: true });
+    await user.click(screen.getByText('Export JSON'));
+
+    expect(
+      screen.queryByRole('progressbar', { hidden: true })
+    ).toBeInTheDocument();
+
+    getRequestResolver()();
+
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('progressbar', { hidden: true })
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it('should call request API and download JSON file', async () => {
+    const { user } = setup({});
+
+    await user.click(screen.getByText('Export JSON'));
+
+    await waitFor(() => {
+      expect(mockDownloadJson).toHaveBeenCalled();
+    });
+  });
+
+  it('should handle error and show toast', async () => {
+    const { user } = setup({ error: true });
+    await user.click(screen.getByText('Export JSON'));
+
+    await waitFor(() => {
+      expect(toaster.negative).toHaveBeenCalledWith(
+        'Failed to export workflow history'
+      );
+    });
+  });
+});
+
+function setup({
+  error,
+  wait,
+  ...overrides
+}: Partial<Props> & { error?: boolean; loading?: boolean; wait?: boolean }) {
+  const user = userEvent.setup();
+  const defaultProps: Props = {
+    domain: 'test-domain',
+    cluster: 'test-cluster',
+    workflowId: 'test-workflowId',
+    runId: 'test-runId',
+  };
+  const mockEvents: HistoryEvent[] = completedActivityTaskEvents;
+  const totalEventsCount = mockEvents.length;
+  let currentEventIndex = 0;
+  let requestResolver = () => {};
+  const getRequestResolver = () => requestResolver;
+
+  render(<WorkflowHistoryExportJsonButton {...defaultProps} {...overrides} />, {
+    endpointsMocks: [
+      {
+        path: '/api/domains/:domain/:cluster/workflows/:workflowId/:runId/history',
+        httpMethod: 'GET',
+        httpResolver: async () => {
+          const index = currentEventIndex;
+          currentEventIndex = currentEventIndex + 1;
+          if (wait && index === 0) {
+            await new Promise<void>((resolve) => {
+              requestResolver = () => {
+                resolve();
+              };
+            });
+          }
+          if (error)
+            return HttpResponse.json(
+              { message: 'Failed to fetch workflow history' },
+              { status: 500 }
+            );
+
+          return HttpResponse.json(
+            {
+              history: {
+                events: [mockEvents[index]],
+              },
+              archived: false,
+              nextPageToken: index < totalEventsCount - 1 ? '' : `${index + 1}`,
+              rawHistory: [],
+            } satisfies GetWorkflowHistoryResponse,
+            { status: 200 }
+          );
+        },
+      },
+    ] as MSWMocksHandlersProps['endpointsMocks'],
+  });
+
+  return { user, getRequestResolver };
+}

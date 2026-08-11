@@ -4,13 +4,13 @@ import {
   completedActivityTaskEvents,
   scheduleActivityTaskEvent,
   startActivityTaskEvent,
-} from '@/views/workflow-history/__fixtures__/workflow-history-activity-events';
+} from '@/views/workflow-history-v2/__fixtures__/workflow-history-activity-events';
 import {
   mockActivityEventGroup,
   mockDecisionEventGroup,
-} from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
-import type WorkflowHistoryGroupLabel from '@/views/workflow-history/workflow-history-group-label/workflow-history-group-label';
-import type WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
+} from '@/views/workflow-history-v2/__fixtures__/workflow-history-event-groups';
+import type WorkflowHistoryGroupLabel from '@/views/workflow-history-v2/workflow-history-group-label/workflow-history-group-label';
+import type WorkflowHistoryTimelineResetButton from '@/views/workflow-history-v2/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 
 import * as generateHistoryGroupDetailsModule from '../../helpers/generate-history-group-details';
 import type { EventDetailsEntries } from '../../workflow-history-event-details/workflow-history-event-details.types';
@@ -70,12 +70,12 @@ jest.mock<typeof WorkflowHistoryEventStatusBadge>(
 );
 
 jest.mock<typeof WorkflowHistoryGroupLabel>(
-  '@/views/workflow-history/workflow-history-group-label/workflow-history-group-label',
+  '@/views/workflow-history-v2/workflow-history-group-label/workflow-history-group-label',
   () => jest.fn((props) => <>{props.label}</>)
 );
 
 jest.mock<typeof WorkflowHistoryTimelineResetButton>(
-  '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button',
+  '@/views/workflow-history-v2/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button',
   () =>
     jest.fn((props) => (
       <button onClick={props.onReset} data-testid="reset-button">

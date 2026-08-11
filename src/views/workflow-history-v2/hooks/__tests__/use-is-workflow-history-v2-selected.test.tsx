@@ -5,7 +5,7 @@ import { renderHook, waitFor, act } from '@/test-utils/rtl';
 import { type UseSuspenseConfigValueResult } from '@/hooks/use-config-value/use-config-value.types';
 import useSuspenseConfigValue from '@/hooks/use-config-value/use-suspense-config-value';
 import * as localStorageModule from '@/utils/local-storage';
-import workflowHistoryUserPreferencesConfig from '@/views/workflow-history/config/workflow-history-user-preferences.config';
+import workflowHistoryUserPreferencesConfig from '@/views/workflow-history-v2/config/workflow-history-user-preferences.config';
 
 import useIsWorkflowHistoryV2Selected from '../use-is-workflow-history-v2-selected';
 

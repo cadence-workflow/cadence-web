@@ -2,7 +2,7 @@ import {
   mockActivityEventGroup,
   mockDecisionEventGroup,
   mockTimerEventGroup,
-} from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
+} from '@/views/workflow-history-v2/__fixtures__/workflow-history-event-groups';
 
 import { type TimelineRow } from '../../workflow-history-timeline.types';
 import getTimelineMaxTimeMs from '../get-timeline-max-time-ms';

@@ -17,7 +17,7 @@ jest.mock('@/utils/datetime/format-time-diff', () =>
 );
 
 jest.mock(
-  '@/views/workflow-history/workflow-history-remaining-duration-badge/workflow-history-remaining-duration-badge',
+  '@/views/workflow-history-v2/workflow-history-remaining-duration-badge/workflow-history-remaining-duration-badge',
   () => {
     return function MockWorkflowHistoryRemainingDurationBadge({
       prefix,

@@ -3,14 +3,14 @@ import { render, screen, userEvent } from '@/test-utils/rtl';
 import {
   scheduleActivityTaskEvent,
   startActivityTaskEvent,
-} from '@/views/workflow-history/__fixtures__/workflow-history-activity-events';
-import { mockActivityEventGroup } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
+} from '@/views/workflow-history-v2/__fixtures__/workflow-history-activity-events';
+import { mockActivityEventGroup } from '@/views/workflow-history-v2/__fixtures__/workflow-history-event-groups';
 import {
   pendingActivityTaskStartEvent,
   pendingDecisionTaskStartEvent,
-} from '@/views/workflow-history/__fixtures__/workflow-history-pending-events';
-import type WorkflowHistoryGroupLabel from '@/views/workflow-history/workflow-history-group-label/workflow-history-group-label';
-import type WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
+} from '@/views/workflow-history-v2/__fixtures__/workflow-history-pending-events';
+import type WorkflowHistoryGroupLabel from '@/views/workflow-history-v2/workflow-history-group-label/workflow-history-group-label';
+import type WorkflowHistoryTimelineResetButton from '@/views/workflow-history-v2/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 
 import * as generateHistoryGroupDetailsModule from '../../helpers/generate-history-group-details';
 import type { EventDetailsEntries } from '../../workflow-history-event-details/workflow-history-event-details.types';
@@ -85,12 +85,12 @@ jest.mock<typeof WorkflowHistoryEventStatusBadge>(
 );
 
 jest.mock<typeof WorkflowHistoryGroupLabel>(
-  '@/views/workflow-history/workflow-history-group-label/workflow-history-group-label',
+  '@/views/workflow-history-v2/workflow-history-group-label/workflow-history-group-label',
   () => jest.fn((props) => <>{props.label}</>)
 );
 
 jest.mock<typeof WorkflowHistoryTimelineResetButton>(
-  '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button',
+  '@/views/workflow-history-v2/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button',
   () =>
     jest.fn((props) => (
       <button onClick={props.onReset} data-testid="reset-button">
@@ -102,7 +102,7 @@ jest.mock<typeof WorkflowHistoryTimelineResetButton>(
 jest.mock('@/utils/datetime/format-time-diff', () => jest.fn(() => '1m 30s'));
 
 jest.mock(
-  '@/views/workflow-history/workflow-history-remaining-duration-badge/workflow-history-remaining-duration-badge',
+  '@/views/workflow-history-v2/workflow-history-remaining-duration-badge/workflow-history-remaining-duration-badge',
   () => ({
     __esModule: true,
     default: ({ prefix }: { prefix: string }) => (

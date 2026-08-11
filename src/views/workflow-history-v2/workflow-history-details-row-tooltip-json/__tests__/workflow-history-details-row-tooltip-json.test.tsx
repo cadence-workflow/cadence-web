@@ -3,7 +3,7 @@ import { render, screen } from '@/test-utils/rtl';
 import WorkflowHistoryDetailsRowTooltipJson from '../workflow-history-details-row-tooltip-json';
 
 jest.mock(
-  '@/views/workflow-history/workflow-history-event-details-json/workflow-history-event-details-json',
+  '@/views/workflow-history-v2/workflow-history-event-details-json/workflow-history-event-details-json',
   () =>
     jest.fn(({ entryValue, isNegative }) => (
       <div data-testid="event-details-json">

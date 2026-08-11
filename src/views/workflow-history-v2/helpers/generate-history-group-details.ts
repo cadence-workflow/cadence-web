@@ -2,7 +2,7 @@ import sortBy from 'lodash/sortBy';
 
 import formatPendingWorkflowHistoryEvent from '@/utils/data-formatters/format-pending-workflow-history-event';
 import formatWorkflowHistoryEvent from '@/utils/data-formatters/format-workflow-history-event';
-import isPendingHistoryEvent from '@/views/workflow-history/workflow-history-event-details/helpers/is-pending-history-event';
+import isPendingHistoryEvent from '@/views/workflow-history-v2/workflow-history-event-details/helpers/is-pending-history-event';
 
 import generateHistoryEventDetails from '../helpers/generate-history-event-details';
 import { type EventDetailsTabContent } from '../workflow-history-group-details/workflow-history-group-details.types';

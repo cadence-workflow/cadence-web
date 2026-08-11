@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 
 import useConfigValue from '@/hooks/use-config-value/use-config-value';
-import { WorkflowHistoryContext } from '@/views/workflow-history/workflow-history-context-provider/workflow-history-context-provider';
+import { WorkflowHistoryContext } from '@/views/workflow-history-v2/workflow-history-context-provider/workflow-history-context-provider';
 
 import workflowHistorySwitchToV1ButtonTooltipContentConfig from '../config/workflow-history-switch-to-v1-button-tooltip-content.config';
 import WorkflowHistoryViewToggleButton from '../workflow-history-view-toggle-button/workflow-history-view-toggle-button';
