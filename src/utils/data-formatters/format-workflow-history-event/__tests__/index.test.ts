@@ -1,7 +1,7 @@
 import { ZodError } from 'zod';
 
 import logger from '@/utils/logger';
-import { allWorkflowEvents } from '@/views/workflow-history-v2/__fixtures__/all-workflow-event-types';
+import { allWorkflowEvents } from '@/views/workflow-history/__fixtures__/all-workflow-event-types';
 
 import formatWorkflowHistoryEvent from '..';
 

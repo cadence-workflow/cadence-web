@@ -1,5 +1,5 @@
 import formatWorkflowHistoryEvent from '@/utils/data-formatters/format-workflow-history-event';
-import { startWorkflowExecutionEvent } from '@/views/workflow-history-v2/__fixtures__/workflow-history-single-events';
+import { startWorkflowExecutionEvent } from '@/views/workflow-history/__fixtures__/workflow-history-single-events';
 
 import { type FormattedFirstHistoryEvent } from '../workflow-summary-details/workflow-summary-details.types';
 

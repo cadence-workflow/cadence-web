@@ -1,0 +1,152 @@
+import { useCallback } from 'react';
+
+import { Panel } from 'baseui/accordion';
+import { MdOutlineCircle } from 'react-icons/md';
+
+import formatDate from '@/utils/data-formatters/format-date';
+import formatTimeDiff from '@/utils/datetime/format-time-diff';
+import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
+import isPendingHistoryEvent from '@/views/workflow-history/workflow-history-event-details/helpers/is-pending-history-event';
+import WorkflowHistoryGroupLabel from '@/views/workflow-history/workflow-history-group-label/workflow-history-group-label';
+import WorkflowHistoryRemainingDurationBadge from '@/views/workflow-history/workflow-history-remaining-duration-badge/workflow-history-remaining-duration-badge';
+import WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
+
+import workflowHistoryEventGroupCategoryColorsConfig from '../config/workflow-history-event-group-category-colors.config';
+import getEventGroupCategory from '../helpers/get-event-group-category';
+import useGroupDetailsEntries from '../hooks/use-group-details-entries';
+import WorkflowHistoryDetailsRow from '../workflow-history-details-row/workflow-history-details-row';
+import WorkflowHistoryEventStatusBadge from '../workflow-history-event-status-badge/workflow-history-event-status-badge';
+import WorkflowHistoryGroupDetails from '../workflow-history-group-details/workflow-history-group-details';
+
+import {
+  styled,
+  overrides as getOverrides,
+} from './workflow-history-ungrouped-event.styles';
+import { type Props } from './workflow-history-ungrouped-event.types';
+
+export default function WorkflowHistoryUngroupedEvent({
+  eventInfo,
+  animateOnEnter,
+  workflowStartTimeMs,
+  workflowIsArchived,
+  workflowCloseStatus,
+  loadingMoreEvents,
+  onReset,
+  decodedPageUrlParams,
+  isExpanded,
+  toggleIsExpanded,
+  onClickShowInTimeline,
+}: Props) {
+  const eventGroupCategory = getEventGroupCategory(eventInfo.eventGroup);
+
+  const overrides = getOverrides(eventGroupCategory, animateOnEnter);
+
+  const handleReset = useCallback(() => {
+    if (onReset) {
+      onReset();
+    }
+  }, [onReset]);
+
+  const { summaryDetailsEntries, groupDetailsEntriesWithSummary } =
+    useGroupDetailsEntries(eventInfo.eventGroup);
+
+  const eventSummaryDetails = summaryDetailsEntries.find(
+    ([eventId]) => eventId === eventInfo.id
+  )?.[1].eventDetails;
+
+  const isPendingEvent = isPendingHistoryEvent(eventInfo.event);
+
+  return (
+    <Panel
+      title={
+        <styled.HeaderContent>
+          <MdOutlineCircle
+            color={
+              workflowHistoryEventGroupCategoryColorsConfig[eventGroupCategory]
+                .content
+            }
+          />
+          <styled.HeaderLabel>
+            {isPendingEvent ? '-' : eventInfo.id}
+          </styled.HeaderLabel>
+          <styled.HeaderLabel>
+            <WorkflowHistoryGroupLabel
+              label={eventInfo.label}
+              shortLabel={eventInfo.shortLabel}
+            />
+          </styled.HeaderLabel>
+          <styled.StatusContainer>
+            <WorkflowHistoryEventStatusBadge
+              status={eventInfo.eventMetadata.status}
+              statusText={eventInfo.eventMetadata.label}
+            />
+          </styled.StatusContainer>
+          <div>
+            {eventInfo.event.eventTime
+              ? formatDate(parseGrpcTimestamp(eventInfo.event.eventTime))
+              : null}
+          </div>
+          <styled.ElapsedContainer>
+            {eventInfo.event.eventTime && workflowStartTimeMs
+              ? formatTimeDiff(
+                  workflowStartTimeMs,
+                  parseGrpcTimestamp(eventInfo.event.eventTime)
+                )
+              : null}
+            {eventInfo.eventGroup.expectedEndTimeInfo &&
+              eventInfo.event.eventTime && (
+                <WorkflowHistoryRemainingDurationBadge
+                  startTime={parseGrpcTimestamp(eventInfo.event.eventTime)}
+                  expectedEndTime={
+                    eventInfo.eventGroup.expectedEndTimeInfo.timeMs
+                  }
+                  prefix={eventInfo.eventGroup.expectedEndTimeInfo.prefix}
+                  workflowIsArchived={workflowIsArchived}
+                  workflowCloseStatus={workflowCloseStatus}
+                  loadingMoreEvents={loadingMoreEvents}
+                />
+              )}
+          </styled.ElapsedContainer>
+          <styled.SummarizedDetailsContainer>
+            {eventSummaryDetails && eventSummaryDetails.length > 0 ? (
+              <WorkflowHistoryDetailsRow
+                detailsEntries={eventSummaryDetails}
+                {...decodedPageUrlParams}
+              />
+            ) : (
+              <div />
+            )}
+          </styled.SummarizedDetailsContainer>
+          <styled.ActionsContainer>
+            {eventInfo.canReset && (
+              <WorkflowHistoryTimelineResetButton
+                workflowId={decodedPageUrlParams.workflowId}
+                runId={decodedPageUrlParams.runId}
+                domain={decodedPageUrlParams.domain}
+                cluster={decodedPageUrlParams.cluster}
+                onReset={handleReset}
+              />
+            )}
+          </styled.ActionsContainer>
+        </styled.HeaderContent>
+      }
+      expanded={isExpanded}
+      onChange={toggleIsExpanded}
+      overrides={overrides.panel}
+    >
+      <styled.GroupDetailsGridContainer>
+        <styled.GroupDetailsNameSpacer />
+        <styled.GroupDetailsContainer>
+          <WorkflowHistoryGroupDetails
+            groupDetailsEntries={groupDetailsEntriesWithSummary}
+            initialEventId={eventInfo.id}
+            isUngroupedView={true}
+            workflowPageParams={decodedPageUrlParams}
+            onClose={() => toggleIsExpanded()}
+            onClickShowInTimeline={onClickShowInTimeline}
+          />
+        </styled.GroupDetailsContainer>
+      </styled.GroupDetailsGridContainer>
+    </Panel>
+  );
+}
