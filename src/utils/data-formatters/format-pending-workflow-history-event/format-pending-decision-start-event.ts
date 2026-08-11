@@ -1,4 +1,4 @@
-import { type PendingDecisionTaskStartEvent } from '@/views/workflow-history/workflow-history.types';
+import { type PendingDecisionTaskStartEvent } from '@/views/workflow-history-v2/workflow-history-v2.types';
 
 import formatEnum from '../format-enum';
 import formatTimestampToDatetime from '../format-timestamp-to-datetime';

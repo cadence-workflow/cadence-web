@@ -7,7 +7,7 @@ import {
   pendingActivityTaskStartEventWithStartedState,
   pendingDecisionTaskStartEvent,
   pendingDecisionTaskStartEventWithStartedState,
-} from '@/views/workflow-history/__fixtures__/workflow-history-pending-events';
+} from '@/views/workflow-history-v2/__fixtures__/workflow-history-pending-events';
 
 import formatPendingWorkflowHistoryEvent from '..';
 
