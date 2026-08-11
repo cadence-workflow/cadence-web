@@ -72,6 +72,10 @@ export const styled = {
     alignItems: 'center',
     color: $theme.colors.negative400,
   })),
+  FetchRetryLabel: createStyled('span', ({ $theme }: { $theme: Theme }) => ({
+    color: $theme.colors.negative400,
+    ...$theme.typography.LabelXSmall,
+  })),
   ChartRegion: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     position: 'relative',
     width: '100%',
