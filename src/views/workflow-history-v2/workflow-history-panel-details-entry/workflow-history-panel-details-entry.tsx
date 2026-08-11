@@ -1,4 +1,4 @@
-import WorkflowHistoryEventDetailsGroup from '@/views/workflow-history/workflow-history-event-details-group/workflow-history-event-details-group';
+import WorkflowHistoryEventDetailsGroup from '@/views/workflow-history-v2/workflow-history-event-details-group/workflow-history-event-details-group';
 
 import { styled } from './workflow-history-panel-details-entry.styles';
 import { type Props } from './workflow-history-panel-details-entry.types';

@@ -1,6 +1,6 @@
 import { render, screen } from '@/test-utils/rtl';
 
-import type WorkflowHistoryEventDetailsGroup from '@/views/workflow-history/workflow-history-event-details-group/workflow-history-event-details-group';
+import type WorkflowHistoryEventDetailsGroup from '@/views/workflow-history-v2/workflow-history-event-details-group/workflow-history-event-details-group';
 import { type WorkflowPageParams } from '@/views/workflow-page/workflow-page.types';
 
 import {
@@ -10,7 +10,7 @@ import {
 import WorkflowHistoryPanelDetailsEntry from '../workflow-history-panel-details-entry';
 
 jest.mock<typeof WorkflowHistoryEventDetailsGroup>(
-  '@/views/workflow-history/workflow-history-event-details-group/workflow-history-event-details-group',
+  '@/views/workflow-history-v2/workflow-history-event-details-group/workflow-history-event-details-group',
   () =>
     jest.fn(({ entries, parentGroupPath }) => (
       <div data-testid="event-details-group">

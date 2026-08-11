@@ -4,7 +4,7 @@ import formatDate from '@/utils/data-formatters/format-date';
 import formatDuration from '@/utils/data-formatters/format-duration';
 import CronScheduleWithDescription from '@/views/shared/cron-schedule-description/cron-schedule-description';
 import WorkflowEventDetailsExecutionLink from '@/views/shared/workflow-event-details-execution-link/workflow-event-details-execution-link';
-import WorkflowHistoryEventDetailsPlaceholderText from '@/views/workflow-history/workflow-history-event-details-placeholder-text/workflow-history-event-details-placeholder-text';
+import WorkflowHistoryEventDetailsPlaceholderText from '@/views/workflow-history-v2/workflow-history-event-details-placeholder-text/workflow-history-event-details-placeholder-text';
 
 import WorkflowHistoryEventDetailsTaskListLink from '../../shared/workflow-history-event-details-task-list-link/workflow-history-event-details-task-list-link';
 import { type EventDetailsConfig } from '../workflow-history-event-details/workflow-history-event-details.types';

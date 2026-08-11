@@ -5,7 +5,7 @@ import {
   getLocalStorageValue,
   setLocalStorageValue,
 } from '@/utils/local-storage';
-import workflowHistoryUserPreferencesConfig from '@/views/workflow-history/config/workflow-history-user-preferences.config';
+import workflowHistoryUserPreferencesConfig from '@/views/workflow-history-v2/config/workflow-history-user-preferences.config';
 
 /**
  * Manages Workflow History V2 selected state based on config and localStorage.

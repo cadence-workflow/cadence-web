@@ -4,8 +4,8 @@ import { Panel } from 'baseui/accordion';
 import { MdCircle } from 'react-icons/md';
 
 import formatDate from '@/utils/data-formatters/format-date';
-import WorkflowHistoryGroupLabel from '@/views/workflow-history/workflow-history-group-label/workflow-history-group-label';
-import WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
+import WorkflowHistoryGroupLabel from '@/views/workflow-history-v2/workflow-history-group-label/workflow-history-group-label';
+import WorkflowHistoryTimelineResetButton from '@/views/workflow-history-v2/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 
 import workflowHistoryEventGroupCategoryColorsConfig from '../config/workflow-history-event-group-category-colors.config';
 import getEventGroupCategory from '../helpers/get-event-group-category';

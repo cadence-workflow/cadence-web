@@ -5,7 +5,7 @@ import { VirtuosoMockContext } from 'react-virtuoso';
 import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
 import { type RequestError } from '@/utils/request/request-error';
-import { mockActivityEventGroup } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
+import { mockActivityEventGroup } from '@/views/workflow-history-v2/__fixtures__/workflow-history-event-groups';
 import { type WorkflowPageTabsParams } from '@/views/workflow-page/workflow-page-tabs/workflow-page-tabs.types';
 
 import { createUngroupedEventsInfo } from '../../__fixtures__/ungrouped-events-info';

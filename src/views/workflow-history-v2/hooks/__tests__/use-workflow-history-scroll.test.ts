@@ -4,7 +4,7 @@ import {
   mockActivityEventGroup,
   mockDecisionEventGroup,
   mockTimerEventGroup,
-} from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
+} from '@/views/workflow-history-v2/__fixtures__/workflow-history-event-groups';
 
 import { createUngroupedEventsInfo } from '../../__fixtures__/ungrouped-events-info';
 import { type UngroupedEventInfo } from '../../workflow-history-ungrouped-table/workflow-history-ungrouped-table.types';

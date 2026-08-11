@@ -1,6 +1,6 @@
 import { render, screen } from '@/test-utils/rtl';
 
-import { mockActivityEventGroup } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
+import { mockActivityEventGroup } from '@/views/workflow-history-v2/__fixtures__/workflow-history-event-groups';
 
 import * as generateHistoryGroupDetailsModule from '../../helpers/generate-history-group-details';
 import type WorkflowHistoryGroupDetails from '../../workflow-history-group-details/workflow-history-group-details';

@@ -1,4 +1,4 @@
-import WorkflowHistoryEventDetailsJson from '@/views/workflow-history/workflow-history-event-details-json/workflow-history-event-details-json';
+import WorkflowHistoryEventDetailsJson from '@/views/workflow-history-v2/workflow-history-event-details-json/workflow-history-event-details-json';
 
 import { type DetailsRowValueComponentProps } from '../workflow-history-details-row/workflow-history-details-row.types';
 

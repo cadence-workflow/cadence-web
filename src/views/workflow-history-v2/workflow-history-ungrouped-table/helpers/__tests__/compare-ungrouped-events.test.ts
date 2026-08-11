@@ -2,8 +2,8 @@ import { type Timestamp } from '@/__generated__/proto-ts/google/protobuf/Timesta
 import {
   pendingActivityTaskStartEvent,
   pendingDecisionTaskStartEvent,
-} from '@/views/workflow-history/__fixtures__/workflow-history-pending-events';
-import { startWorkflowExecutionEvent } from '@/views/workflow-history/__fixtures__/workflow-history-single-events';
+} from '@/views/workflow-history-v2/__fixtures__/workflow-history-pending-events';
+import { startWorkflowExecutionEvent } from '@/views/workflow-history-v2/__fixtures__/workflow-history-single-events';
 
 import {
   type HistoryEventsGroup,

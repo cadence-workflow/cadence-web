@@ -1,5 +1,5 @@
 import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
-import isPendingHistoryEvent from '@/views/workflow-history/workflow-history-event-details/helpers/is-pending-history-event';
+import isPendingHistoryEvent from '@/views/workflow-history-v2/workflow-history-event-details/helpers/is-pending-history-event';
 
 import { type UngroupedEventInfo } from '../workflow-history-ungrouped-table.types';
 

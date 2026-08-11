@@ -8,7 +8,7 @@ import {
   mockActivityEventGroup,
   mockChildWorkflowEventGroup,
   mockDecisionEventGroup,
-} from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
+} from '@/views/workflow-history-v2/__fixtures__/workflow-history-event-groups';
 
 import { type EventGroupEntry } from '../../workflow-history-v2.types';
 import WorkflowHistoryTimeline from '../workflow-history-timeline';

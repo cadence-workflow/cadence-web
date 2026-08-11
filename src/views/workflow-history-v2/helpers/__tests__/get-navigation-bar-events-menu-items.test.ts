@@ -1,7 +1,7 @@
 import {
   mockActivityEventGroup,
   mockDecisionEventGroup,
-} from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
+} from '@/views/workflow-history-v2/__fixtures__/workflow-history-event-groups';
 
 import {
   type HistoryEventsGroup,

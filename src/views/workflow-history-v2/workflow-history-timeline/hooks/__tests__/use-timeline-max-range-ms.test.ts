@@ -1,6 +1,6 @@
 import { renderHook } from '@/test-utils/rtl';
 
-import { mockActivityEventGroup } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
+import { mockActivityEventGroup } from '@/views/workflow-history-v2/__fixtures__/workflow-history-event-groups';
 
 import { TIMELINE_RANGE_BUFFER_RATIO } from '../../workflow-history-timeline.constants';
 import { type TimelineRow } from '../../workflow-history-timeline.types';

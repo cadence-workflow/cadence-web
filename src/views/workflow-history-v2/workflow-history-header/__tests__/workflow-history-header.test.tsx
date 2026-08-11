@@ -11,7 +11,7 @@ import WorkflowHistoryHeader from '../workflow-history-header';
 import { type Props } from '../workflow-history-header.types';
 
 jest.mock(
-  '@/views/workflow-history/workflow-history-export-json-button/workflow-history-export-json-button',
+  '@/views/workflow-history-v2/workflow-history-export-json-button/workflow-history-export-json-button',
   () => jest.fn(() => <button>Export JSON</button>)
 );
 

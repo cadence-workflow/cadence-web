@@ -2,7 +2,7 @@ import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
 import {
   mockActivityEventGroup,
   mockTimerEventGroup,
-} from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
+} from '@/views/workflow-history-v2/__fixtures__/workflow-history-event-groups';
 
 import getTimelineRowFromEventGroup from '../get-timeline-row-from-event-group';
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import formatTimeDiff from '@/utils/datetime/format-time-diff';
-import WorkflowHistoryRemainingDurationBadge from '@/views/workflow-history/workflow-history-remaining-duration-badge/workflow-history-remaining-duration-badge';
+import WorkflowHistoryRemainingDurationBadge from '@/views/workflow-history-v2/workflow-history-remaining-duration-badge/workflow-history-remaining-duration-badge';
 
 import { styled } from './workflow-history-event-group-duration.styles';
 import { type Props } from './workflow-history-event-group-duration.types';

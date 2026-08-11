@@ -6,10 +6,10 @@ import { MdOutlineCircle } from 'react-icons/md';
 import formatDate from '@/utils/data-formatters/format-date';
 import formatTimeDiff from '@/utils/datetime/format-time-diff';
 import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
-import isPendingHistoryEvent from '@/views/workflow-history/workflow-history-event-details/helpers/is-pending-history-event';
-import WorkflowHistoryGroupLabel from '@/views/workflow-history/workflow-history-group-label/workflow-history-group-label';
-import WorkflowHistoryRemainingDurationBadge from '@/views/workflow-history/workflow-history-remaining-duration-badge/workflow-history-remaining-duration-badge';
-import WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
+import isPendingHistoryEvent from '@/views/workflow-history-v2/workflow-history-event-details/helpers/is-pending-history-event';
+import WorkflowHistoryGroupLabel from '@/views/workflow-history-v2/workflow-history-group-label/workflow-history-group-label';
+import WorkflowHistoryRemainingDurationBadge from '@/views/workflow-history-v2/workflow-history-remaining-duration-badge/workflow-history-remaining-duration-badge';
+import WorkflowHistoryTimelineResetButton from '@/views/workflow-history-v2/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 
 import workflowHistoryEventGroupCategoryColorsConfig from '../config/workflow-history-event-group-category-colors.config';
 import getEventGroupCategory from '../helpers/get-event-group-category';

@@ -4,7 +4,7 @@ import type { HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/
 import {
   mockActivityEventGroup,
   mockDecisionEventGroup,
-} from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
+} from '@/views/workflow-history-v2/__fixtures__/workflow-history-event-groups';
 
 import {
   pendingActivityTaskStartEvent,

@@ -19,7 +19,7 @@ jest.mock<typeof WorkflowHistoryPanelDetailsEntry>(
 );
 
 jest.mock(
-  '@/views/workflow-history/workflow-history-event-details-group/workflow-history-event-details-group',
+  '@/views/workflow-history-v2/workflow-history-event-details-group/workflow-history-event-details-group',
   () =>
     jest.fn(({ entries }: { entries: EventDetailsEntries }) => (
       <div data-testid="event-details-group">
