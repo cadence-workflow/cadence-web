@@ -67,11 +67,14 @@ export const styled = {
     alignItems: 'center',
     gap: $theme.sizing.scale100,
   })),
-  FetchRetryIconContainer: createStyled('span', ({ $theme }: { $theme: Theme }) => ({
-    display: 'inline-flex',
-    alignItems: 'center',
-    color: $theme.colors.negative400,
-  })),
+  FetchRetryIconContainer: createStyled(
+    'span',
+    ({ $theme }: { $theme: Theme }) => ({
+      display: 'inline-flex',
+      alignItems: 'center',
+      color: $theme.colors.negative400,
+    })
+  ),
   FetchRetryLabel: createStyled('span', ({ $theme }: { $theme: Theme }) => ({
     color: $theme.colors.negative400,
     ...$theme.typography.LabelXSmall,
