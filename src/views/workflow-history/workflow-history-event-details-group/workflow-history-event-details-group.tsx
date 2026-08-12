@@ -17,11 +17,7 @@ export default function WorkflowHistoryEventDetailsGroup({
   return (
     <>
       {entries.map((entry, index) => {
-        const forceWrap =
-          entry.isGroup ||
-          Boolean(
-            (entry.renderConfig as { forceWrap?: boolean } | null)?.forceWrap
-          );
+        const forceWrap = entry.isGroup || entry.renderConfig?.forceWrap;
 
         let labelKind: EventDetailsLabelKind = 'regular';
         if (entry.isGroup) {

@@ -1,9 +1,6 @@
 import { z } from 'zod';
 
-type WorkflowHistoryUserPreferenceConfig<T> = {
-  key: string;
-  schema: z.ZodType<T, z.ZodTypeDef, string>;
-};
+import { type WorkflowHistoryUserPreferenceConfig } from '../workflow-history.types';
 
 const workflowHistoryUserPreferencesConfig = {
   ungroupedViewEnabled: {

@@ -23,19 +23,19 @@ import {
   completedActivityTaskEvents,
   failedActivityTaskEvents,
   scheduleActivityTaskEvent,
-} from '.././__fixtures__/workflow-history-activity-events';
+} from '../__fixtures__/workflow-history-activity-events';
 import {
   completedDecisionTaskEvents,
   failedDecisionTaskEvents,
   scheduleDecisionTaskEvent,
-} from '.././__fixtures__/workflow-history-decision-events';
+} from '../__fixtures__/workflow-history-decision-events';
 import {
   pendingActivityTaskStartEvent,
   pendingDecisionTaskStartEvent,
-} from '.././__fixtures__/workflow-history-pending-events';
-import { WorkflowHistoryContext } from '.././workflow-history-context-provider/workflow-history-context-provider';
-import { type Props as NavbarProps } from '../workflow-history-navigation-bar/workflow-history-navigation-bar.types';
+} from '../__fixtures__/workflow-history-pending-events';
 import WorkflowHistory from '../workflow-history';
+import { WorkflowHistoryContext } from '../workflow-history-context-provider/workflow-history-context-provider';
+import { type Props as NavbarProps } from '../workflow-history-navigation-bar/workflow-history-navigation-bar.types';
 import {
   type PendingActivityTaskStartEvent,
   type PendingDecisionTaskStartEvent,
@@ -46,24 +46,21 @@ jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
 );
 
 // Mock the hook to use minimal throttle delay for faster tests
-jest.mock(
-  '@/views/workflow-history/hooks/use-workflow-history-fetcher',
-  () => {
-    const actual = jest.requireActual(
-      '@/views/workflow-history/hooks/use-workflow-history-fetcher'
-    );
-    return {
-      __esModule: true,
-      default: jest.fn((params, options) =>
-        actual.default(params, {
-          ...options,
-          renderThrottleMs: 0,
-          fetchThrottleMs: 0,
-        })
-      ), // 0ms throttle for tests
-    };
-  }
-);
+jest.mock('@/views/workflow-history/hooks/use-workflow-history-fetcher', () => {
+  const actual = jest.requireActual(
+    '@/views/workflow-history/hooks/use-workflow-history-fetcher'
+  );
+  return {
+    __esModule: true,
+    default: jest.fn((params, options) =>
+      actual.default(params, {
+        ...options,
+        renderThrottleMs: 0,
+        fetchThrottleMs: 0,
+      })
+    ), // 0ms throttle for tests
+  };
+});
 
 jest.mock('@/components/page-filters/hooks/use-page-filters', () =>
   jest.fn().mockReturnValue({})
