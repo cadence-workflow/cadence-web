@@ -44,6 +44,12 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source:
+          '/domains/:domain/:cluster/workflows/:workflowPath([^/]+(?:/(?:summary|history|queries|stack-trace|diagnostics))?)',
+        destination: '/redirects/workflow/:domain/:cluster/:workflowPath',
+        permanent: true,
+      },
+      {
         source: '/domains/:domain/:cluster/workflows/:workflowId/:runId',
         destination:
           '/domains/:domain/:cluster/workflows/:workflowId/:runId/summary',
@@ -51,8 +57,7 @@ const nextConfig = {
       },
       {
         source: '/domains/:domain/:cluster/schedules/:scheduleId',
-        destination:
-          '/domains/:domain/:cluster/schedules/:scheduleId/details',
+        destination: '/domains/:domain/:cluster/schedules/:scheduleId/details',
         permanent: true,
       },
     ];
