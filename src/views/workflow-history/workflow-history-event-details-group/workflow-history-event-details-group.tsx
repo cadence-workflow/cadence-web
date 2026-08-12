@@ -17,8 +17,6 @@ export default function WorkflowHistoryEventDetailsGroup({
   return (
     <>
       {entries.map((entry, index) => {
-        const forceWrap = entry.isGroup || entry.renderConfig?.forceWrap;
-
         let labelKind: EventDetailsLabelKind = 'regular';
         if (entry.isGroup) {
           labelKind = 'group';
@@ -29,18 +27,21 @@ export default function WorkflowHistoryEventDetailsGroup({
         return (
           <styled.DetailsRow
             data-testid="details-row"
-            $forceWrap={forceWrap}
+            $forceWrap={entry.isGroup}
             key={`${entry.key}-${entry.path}-${index}${
               !entry.isGroup && entry.renderConfig
                 ? '-' + entry.renderConfig.name
                 : ''
             }`}
           >
-            <styled.DetailsLabel $forceWrap={forceWrap} $labelKind={labelKind}>
+            <styled.DetailsLabel
+              $forceWrap={entry.isGroup}
+              $labelKind={labelKind}
+            >
               {getDetailsFieldLabel(entry, parentGroupPath)}
             </styled.DetailsLabel>
             <styled.DetailsValue
-              $forceWrap={forceWrap}
+              $forceWrap={entry.isGroup}
               $isNegative={entry.isNegative}
             >
               {entry.isGroup ? (

@@ -46,10 +46,6 @@ export type EventDetailsConfig = {
    * Useful for complex fields like JSON that benefit from dedicated display areas.
    */
   showInPanels?: boolean;
-  /**
-   * If true, forces the label and value onto separate lines instead of wrapping inline.
-   */
-  forceWrap?: boolean;
 } & (
   | {
       /** Matches fields where the key exactly equals the specified string */
