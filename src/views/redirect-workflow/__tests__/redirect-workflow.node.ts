@@ -93,6 +93,10 @@ describe(RedirectWorkflow.name, () => {
           test.assertOnError?.(e);
         } else if (e instanceof Error && e.message === 'Redirected') {
           expect(mockRedirect).toHaveBeenCalledWith(test.expectedRedirect);
+        } else {
+          throw new Error(
+            `test failure: ${e instanceof Error ? e.message : 'unknown reason'}`
+          );
         }
       }
 
