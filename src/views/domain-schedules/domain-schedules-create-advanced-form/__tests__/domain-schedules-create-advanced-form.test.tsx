@@ -4,6 +4,11 @@ import { useForm } from 'react-hook-form';
 
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
+import {
+  SCHEDULE_CATCH_UP_POLICY_DESCRIPTIONS,
+  SCHEDULE_OVERLAP_POLICY_DESCRIPTIONS,
+} from '@/views/shared/constants/schedule-policy-labels.constants';
+
 import { type DomainSchedulesCreateFormData } from '../../domain-schedules-create-modal/domain-schedules-create-modal.types';
 import DomainSchedulesCreateAdvancedForm from '../domain-schedules-create-advanced-form';
 
@@ -202,6 +207,22 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
     expect(
       screen.getByText(/schedule id cannot be changed/i)
     ).toBeInTheDocument();
+  });
+
+  it('shows per-option descriptions for overlap and catch-up policies', async () => {
+    const { user } = setup();
+
+    await user.click(
+      screen.getByRole('button', { name: /show advanced configurations/i })
+    );
+    await user.click(screen.getByRole('combobox', { name: /overlap policy/i }));
+
+    for (const description of [
+      ...Object.values(SCHEDULE_OVERLAP_POLICY_DESCRIPTIONS),
+      ...Object.values(SCHEDULE_CATCH_UP_POLICY_DESCRIPTIONS),
+    ]) {
+      expect(screen.getByText(description)).toBeInTheDocument();
+    }
   });
 });
 

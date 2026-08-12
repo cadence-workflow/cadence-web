@@ -1,5 +1,7 @@
 import { toString as cronToString } from 'cronstrue';
 
+import parseCronExpression from '@/utils/cron-validate/parse-cron-expression';
+
 export function formatScheduleCronExpression(
   cronExpression: string | null | undefined
 ) {
@@ -7,8 +9,14 @@ export function formatScheduleCronExpression(
     return null;
   }
 
+  const parsed = parseCronExpression(cronExpression);
+
+  if (!parsed) {
+    return cronExpression;
+  }
+
   try {
-    return `${cronToString(cronExpression)} (${cronExpression})`;
+    return `${cronToString(parsed.expression)} (${parsed.expression}), ${parsed.timezone}`;
   } catch {
     return cronExpression;
   }

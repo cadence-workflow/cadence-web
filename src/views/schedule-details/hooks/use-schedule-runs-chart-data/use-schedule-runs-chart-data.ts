@@ -31,6 +31,7 @@ export default function useScheduleRunsChartData({
     cluster,
     scheduleId,
     runningScheduleRefetchIntervalMs: CHART_DESCRIBE_REFRESH_INTERVAL_MS,
+    staleTime: 0,
   });
   const workflowsQuery = useListWorkflowsForSchedule({
     domain,
