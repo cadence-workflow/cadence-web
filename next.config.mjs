@@ -28,13 +28,27 @@ const nextConfig = {
     }
     return config;
   },
+  /**
+   * Redirects are matched top-down; the first match wins.
+   *
+   * Some rules fill in a missing URL part by sending the request to a resolver
+   * page under /redirects, which looks up the value and redirects again.
+   *
+   * A missing cluster goes to /redirects/domain,
+   * and a missing run ID goes to /redirects/workflow.
+   *
+   * The tab names below are copied by hand from domain-page-tabs.config.ts and
+   * workflow-page-tabs.config.ts. Add new tabs here too, otherwise a cluster-less
+   * domain tab is read as a cluster name, and a workflow tab is read as a run ID,
+   * breaking URLs.
+   *
+   * TODO - load tabs configs here to dynamically define redirects.
+   */
   redirects: async () => {
-    // TODO - load tabs configs here to dynamically define redirects
     return [
       {
-        // This regex matches paths that try to load a domain or workflow without specifying the active cluster
         source:
-          '/domains/:path((?:[^/]+)(?:/(?:workflows|metadata|settings|archival|task-lists)(?:/.*)?)?)',
+          '/domains/:path((?:[^/]+)(?:/(?:workflows|schedules|cron-list|metadata|failovers|settings|archival|batch-actions|task-lists)(?:/.*)?)?)',
         destination: '/redirects/domain/:path',
         permanent: true,
       },
