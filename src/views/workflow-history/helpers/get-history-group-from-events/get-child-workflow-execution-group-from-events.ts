@@ -78,8 +78,8 @@ export default function getChildWorkflowExecutionGroupFromEvents(
   const eventToNegativeFields: HistoryGroupEventToNegativeFieldsMap<ChildWorkflowExecutionHistoryGroup> =
     {
       startChildWorkflowExecutionFailedEventAttributes: ['cause'],
-      childWorkflowExecutionFailedEventAttributes: ['details', 'reason'],
-      childWorkflowExecutionTimedOutEventAttributes: ['details', 'reason'],
+      childWorkflowExecutionFailedEventAttributes: ['reason', 'details'],
+      childWorkflowExecutionTimedOutEventAttributes: ['reason', 'details'],
     };
 
   const eventToSummaryFields: HistoryGroupEventToSummaryFieldsMap<ChildWorkflowExecutionHistoryGroup> =
@@ -88,22 +88,21 @@ export default function getChildWorkflowExecutionGroupFromEvents(
       startChildWorkflowExecutionFailedEventAttributes: ['cause'],
       childWorkflowExecutionStartedEventAttributes: ['workflowExecution'],
       childWorkflowExecutionCompletedEventAttributes: ['result'],
-      childWorkflowExecutionFailedEventAttributes: ['details', 'reason'],
+      childWorkflowExecutionFailedEventAttributes: ['reason', 'details'],
     };
 
   return {
     label,
     hasMissingEvents,
     groupType,
-    ...getCommonHistoryGroupFields<ChildWorkflowExecutionHistoryGroup>(
+    ...getCommonHistoryGroupFields<ChildWorkflowExecutionHistoryGroup>({
       events,
-      eventToStatus,
-      eventToLabel,
-      {},
-      closeEvent || startFailedEvent,
-      eventToNegativeFields,
-      undefined,
-      eventToSummaryFields
-    ),
+      historyGroupEventToStatusMap: eventToStatus,
+      eventToLabelMap: eventToLabel,
+      eventToTimeLabelPrefixMap: {},
+      closeEvent: closeEvent || startFailedEvent,
+      eventToNegativeFieldsMap: eventToNegativeFields,
+      eventToSummaryFieldsMap: eventToSummaryFields,
+    }),
   };
 }

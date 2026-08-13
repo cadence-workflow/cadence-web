@@ -86,6 +86,38 @@ describe(useScheduleRunsChartData.name, () => {
       skippedExecutionsSinceCreateTime
     );
     expect(result.current.timelineStartMs).toBe(nowMs - 3 * hourMs);
+    expect(result.current.oldestLoadedScheduleTimeMs).toBe(nowMs - hourMs);
+    expect(result.current.hasNextPage).toBe(false);
+  });
+
+  it('exposes pagination state and fetches the next page of runs on request', async () => {
+    const { result } = setup({
+      describeScheduleResponse: getMockRunningDescribeScheduleResponse(),
+      workflowsResponse: {
+        workflows: [
+          getMockWorkflowListItem({
+            workflowID: 'wf-1',
+            runID: 'run-1',
+            startTime: nowMs - hourMs,
+            searchAttributes: {
+              CadenceScheduleTime: scheduleTimeAttribute(nowMs - hourMs),
+            },
+          }),
+        ],
+        nextPage: 'page-2',
+      },
+      domainResponse: getMockDomainResponse(),
+    });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(result.current.hasNextPage).toBe(true);
+    expect(result.current.isFetchingNextPage).toBe(false);
+    expect(result.current.isFetchNextPageError).toBe(false);
+
+    result.current.fetchNextPage();
+
+    await waitFor(() => expect(result.current.isFetchingNextPage).toBe(false));
   });
 
   it('keeps all runs when nextRunTime is invalid', async () => {

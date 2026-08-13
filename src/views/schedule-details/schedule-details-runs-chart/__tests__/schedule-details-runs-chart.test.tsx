@@ -1,8 +1,16 @@
 import React from 'react';
 
+import { act } from '@testing-library/react';
 import { HttpResponse } from 'msw';
 
-import { render, screen, waitFor, within } from '@/test-utils/rtl';
+import {
+  fireEvent,
+  render,
+  screen,
+  userEvent,
+  waitFor,
+  within,
+} from '@/test-utils/rtl';
 
 import { getMockRunningDescribeScheduleResponse } from '@/route-handlers/describe-schedule/__fixtures__/mock-describe-schedule-response';
 import { type DescribeScheduleResponse } from '@/route-handlers/describe-schedule/describe-schedule.types';
@@ -11,12 +19,10 @@ import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list
 
 import ScheduleDetailsRunsChart from '../schedule-details-runs-chart';
 import {
-  CHART_EMPTY_STATE_MESSAGE,
+  CHART_CANVAS_TEST_ID,
   CHART_LEGEND_ITEMS,
   CHART_LOADING_TEST_ID,
-  CHART_REGION_ARIA_LABEL,
   CHART_SUMMARY_TEST_ID,
-  CHART_TOOLBAR_ARIA_LABEL,
   CHART_TOOLBAR_BUTTON_LABELS,
 } from '../schedule-details-runs-chart.constants';
 
@@ -40,7 +46,7 @@ const describeScheduleWithNextRun = getMockRunningDescribeScheduleResponse({
 });
 
 // A schedule created long before its most recent run gives the navigation
-// bounds enough headroom beyond the initial view to actually zoom out.
+// bounds enough headroom beyond the initial view to actually pan/zoom out.
 const describeScheduleWithWideHistory = getMockRunningDescribeScheduleResponse({
   info: {
     lastRunTime: null,
@@ -104,6 +110,15 @@ jest.mock(
   () => jest.fn(() => <div>Mock series</div>)
 );
 
+// jsdom has no PointerEvent/setPointerCapture support, and its rAF never
+// fires without a "visual" window; polyfill just enough to dispatch a drag
+// through the real pointer handlers below.
+window.PointerEvent ??= window.MouseEvent as unknown as typeof PointerEvent;
+Element.prototype.setPointerCapture ??= () => undefined;
+window.requestAnimationFrame = (callback) =>
+  window.setTimeout(() => callback(Date.now()), 0);
+window.cancelAnimationFrame = (handle) => window.clearTimeout(handle);
+
 describe(ScheduleDetailsRunsChart.name, () => {
   it('renders the runs title and status legend in the header', () => {
     setup();
@@ -136,7 +151,7 @@ describe(ScheduleDetailsRunsChart.name, () => {
     setup({ widthPx: 0 });
 
     expect(
-      await within(getChartRegion()).findByText(CHART_EMPTY_STATE_MESSAGE)
+      await within(getChartRegion()).findByText('No chart data available yet')
     ).toBeInTheDocument();
   });
 
@@ -147,7 +162,7 @@ describe(ScheduleDetailsRunsChart.name, () => {
     });
 
     expect(
-      await within(getChartRegion()).findByText(CHART_EMPTY_STATE_MESSAGE)
+      await within(getChartRegion()).findByText('No chart data available yet')
     ).toBeInTheDocument();
   });
 
@@ -166,7 +181,7 @@ describe(ScheduleDetailsRunsChart.name, () => {
     setup({ isLoading: true });
 
     const toolbar = screen.getByRole('toolbar', {
-      name: CHART_TOOLBAR_ARIA_LABEL,
+      name: 'Chart controls',
     });
 
     Object.values(CHART_TOOLBAR_BUTTON_LABELS).forEach((label) => {
@@ -176,11 +191,11 @@ describe(ScheduleDetailsRunsChart.name, () => {
     });
   });
 
-  it('enables zoom controls once data has loaded, with "now" disabled', async () => {
-    setup({ describeScheduleResponse: describeScheduleWithWideHistory });
+  it('enables zoom controls once data has loaded, with "now" disabled while following', async () => {
+    setup();
 
     const toolbar = screen.getByRole('toolbar', {
-      name: CHART_TOOLBAR_ARIA_LABEL,
+      name: 'Chart controls',
     });
 
     await waitFor(() =>
@@ -201,6 +216,72 @@ describe(ScheduleDetailsRunsChart.name, () => {
       })
     ).toBeDisabled();
   });
+
+  it('stops following once panned, and resumes following when "now" is clicked', async () => {
+    const { user } = setup({
+      describeScheduleResponse: describeScheduleWithWideHistory,
+    });
+
+    const toolbar = screen.getByRole('toolbar', {
+      name: 'Chart controls',
+    });
+    const nowButton = within(toolbar).getByRole('button', {
+      name: CHART_TOOLBAR_BUTTON_LABELS.now,
+    });
+    const canvas =
+      await within(getChartRegion()).findByTestId(CHART_CANVAS_TEST_ID);
+
+    await waitFor(() => expect(nowButton).toBeDisabled());
+
+    act(() => {
+      canvas.dispatchEvent(
+        new WheelEvent('wheel', {
+          bubbles: true,
+          cancelable: true,
+          deltaY: -300,
+        })
+      );
+    });
+
+    await waitFor(() => expect(nowButton).not.toBeDisabled());
+
+    await user.click(nowButton);
+
+    await waitFor(() => expect(nowButton).toBeDisabled());
+  });
+
+  it('batches a drag\u2019s pointermove events into a single pan per animation frame', async () => {
+    setup({ describeScheduleResponse: describeScheduleWithWideHistory });
+
+    const toolbar = screen.getByRole('toolbar', { name: 'Chart controls' });
+    const nowButton = within(toolbar).getByRole('button', {
+      name: CHART_TOOLBAR_BUTTON_LABELS.now,
+    });
+    const canvas =
+      await within(getChartRegion()).findByTestId(CHART_CANVAS_TEST_ID);
+
+    await waitFor(() => expect(nowButton).toBeDisabled());
+
+    act(() => {
+      fireEvent.pointerDown(canvas, { button: 0, clientX: 400 });
+    });
+
+    act(() => {
+      fireEvent.pointerMove(window, { clientX: 420 });
+      fireEvent.pointerMove(window, { clientX: 440 });
+      fireEvent.pointerMove(window, { clientX: 460 });
+    });
+
+    // Several move events land in the same tick, before the batched
+    // animation-frame flush runs -- the pan should not be applied yet.
+    expect(nowButton).toBeDisabled();
+
+    await waitFor(() => expect(nowButton).not.toBeDisabled());
+
+    act(() => {
+      fireEvent.pointerUp(window);
+    });
+  });
 });
 
 function setup({
@@ -215,6 +296,7 @@ function setup({
   workflowsResponse?: ListWorkflowsResponse;
 } = {}) {
   mockChartWidthPx = widthPx;
+  const user = userEvent.setup();
 
   render(
     <ScheduleDetailsRunsChart
@@ -233,6 +315,8 @@ function setup({
       }),
     }
   );
+
+  return { user };
 }
 
 function getChartDataEndpointMocks({
@@ -271,9 +355,23 @@ function getChartDataEndpointMocks({
         return HttpResponse.json(workflowsResponse);
       },
     },
+    {
+      path: `/api/domains/${mockDomain}/${mockCluster}`,
+      httpMethod: 'GET' as const,
+      mockOnce: false,
+      httpResolver: async () => {
+        if (isLoading) {
+          return pendingResponse();
+        }
+
+        return HttpResponse.json({
+          workflowExecutionRetentionPeriod: { seconds: '2592000', nanos: 0 },
+        });
+      },
+    },
   ];
 }
 
 function getChartRegion() {
-  return screen.getByRole('region', { name: CHART_REGION_ARIA_LABEL });
+  return screen.getByRole('region', { name: 'Schedule runs chart' });
 }

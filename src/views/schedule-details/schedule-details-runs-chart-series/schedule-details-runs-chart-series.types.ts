@@ -30,9 +30,16 @@ export type ChartSeriesMarker =
   | { kind: 'loading'; scheduledTimeMs: number }
   | { kind: 'next'; scheduledTimeMs: number };
 
+export type ChartSeriesNewTimesMs = {
+  runs: ReadonlySet<number>;
+  skipped: ReadonlySet<number>;
+  next: ReadonlySet<number>;
+};
+
 export type Props = {
   xScale: ChartXScale;
   data: ChartSeriesData;
   domain: string;
   cluster: string;
+  newTimesMs?: ChartSeriesNewTimesMs;
 };

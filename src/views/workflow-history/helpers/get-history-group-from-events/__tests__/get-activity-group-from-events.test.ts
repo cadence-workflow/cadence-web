@@ -5,21 +5,20 @@ import {
   scheduleActivityTaskEvent,
   startActivityTaskEvent,
   timeoutActivityTaskEvent,
-} from '@/views/workflow-history/__fixtures__/workflow-history-activity-events';
+} from '../../../__fixtures__/workflow-history-activity-events';
 import {
   pendingActivityTaskStartEvent,
   pendingActivityTaskStartEventWithCancelRequestedState,
   pendingActivityTaskStartEventWithStartedState,
-} from '@/views/workflow-history/__fixtures__/workflow-history-pending-events';
-import * as shortenGroupLabelsConfigModule from '@/views/workflow-history/config/workflow-history-should-shorten-group-labels.config';
-
+} from '../../../__fixtures__/workflow-history-pending-events';
+import * as shortenGroupLabelsConfigModule from '../../../config/workflow-history-should-shorten-group-labels.config';
 import type { ExtendedActivityHistoryEvent } from '../../../workflow-history.types';
 import getActivityGroupFromEvents from '../get-activity-group-from-events';
 
 jest.useFakeTimers().setSystemTime(new Date('2024-05-25'));
 
 jest.mock(
-  '@/views/workflow-history/config/workflow-history-should-shorten-group-labels.config',
+  '../../../config/workflow-history-should-shorten-group-labels.config',
   () => ({
     __esModule: true,
     get default() {
@@ -36,9 +35,9 @@ describe('getActivityGroupFromEvents', () => {
   it('should return a group with a proper label when scheduled event exists', () => {
     const events: ExtendedActivityHistoryEvent[] = [scheduleActivityTaskEvent];
 
-    const scheduelAttrs =
+    const scheduleAttrs =
       scheduleActivityTaskEvent.activityTaskScheduledEventAttributes;
-    const expectedLabel = `Activity ${scheduelAttrs?.activityId}: ${scheduelAttrs?.activityType?.name}`;
+    const expectedLabel = `Activity ${scheduleAttrs?.activityId}: ${scheduleAttrs?.activityType?.name}`;
 
     const group = getActivityGroupFromEvents(events);
 
@@ -85,7 +84,7 @@ describe('getActivityGroupFromEvents', () => {
         assertionValue: true,
       },
       {
-        name: 'missingTimoutAndCloseEvent',
+        name: 'missingTimeoutAndCloseEvent',
         events: [scheduleActivityTaskEvent],
         assertionValue: true,
       },
@@ -408,8 +407,8 @@ describe('getActivityGroupFromEvents', () => {
 
     // The failed event should have summaryFields
     expect(group.eventsMetadata[0].summaryFields).toEqual([
-      'details',
       'reason',
+      'details',
     ]);
   });
 

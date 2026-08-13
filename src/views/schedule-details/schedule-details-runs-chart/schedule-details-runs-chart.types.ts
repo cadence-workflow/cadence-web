@@ -41,7 +41,8 @@ export type ZoomChartTimeWindowParams = {
   bounds: ChartTimeWindow;
   maxSpanMs: number;
   factor: number;
-  anchorMs: number;
+  nowMs: number;
+  isFollowing: boolean;
 };
 
 export type PanChartTimeWindowToTimeParams = {
@@ -56,4 +57,17 @@ export type ResolveChartFollowTimeWindowParams = {
   bounds: ChartTimeWindow;
   nowMs: number;
   nextExecutionMs?: number | null;
+};
+
+export type ResolveInitialChartTimeWindowParams = {
+  nowMs: number;
+  chartWidthPx: number;
+  cronExpression: string;
+  nextExecutionMs?: number | null;
+};
+
+export type ResolveInitialChartTimeWindowResult = {
+  window: ChartTimeWindow;
+  /** Widest span where consecutive markers slightly overlap on screen. */
+  maxSpanMs: number;
 };

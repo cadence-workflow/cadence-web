@@ -82,7 +82,8 @@ describe(zoomChartTimeWindow.name, () => {
       bounds,
       maxSpanMs: 10 * hourMs,
       factor: 0.5,
-      anchorMs: 5 * hourMs,
+      nowMs: 5 * hourMs,
+      isFollowing: false,
     });
 
     expect(getChartTimeWindowSpanMs(zoomed)).toBe(1 * hourMs);
@@ -98,7 +99,8 @@ describe(zoomChartTimeWindow.name, () => {
       bounds,
       maxSpanMs: 10 * hourMs,
       factor: 0.1,
-      anchorMs: 5 * hourMs,
+      nowMs: 5 * hourMs,
+      isFollowing: false,
     });
 
     expect(getChartTimeWindowSpanMs(zoomed)).toBe(CHART_MIN_DOMAIN_SPAN_MS);
@@ -110,19 +112,21 @@ describe(zoomChartTimeWindow.name, () => {
       bounds,
       maxSpanMs: 2.5 * hourMs,
       factor: 4,
-      anchorMs: 5 * hourMs,
+      nowMs: 5 * hourMs,
+      isFollowing: false,
     });
 
     expect(getChartTimeWindowSpanMs(zoomed)).toBe(2.5 * hourMs);
   });
 
-  it('anchors on the window center when the anchor is off-screen', () => {
+  it('anchors on the window center when now is off-screen after panning', () => {
     const zoomed = zoomChartTimeWindow({
       visibleWindow,
       bounds,
       maxSpanMs: 10 * hourMs,
       factor: 0.5,
-      anchorMs: 9.9 * hourMs,
+      nowMs: 9.9 * hourMs,
+      isFollowing: false,
     });
 
     expect(zoomed).toEqual({ minMs: 4.5 * hourMs, maxMs: 5.5 * hourMs });

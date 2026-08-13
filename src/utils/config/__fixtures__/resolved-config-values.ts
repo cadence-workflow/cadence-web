@@ -49,7 +49,6 @@ const mockResolvedConfigValues: LoadedConfigResolvedValues = {
   ARCHIVAL_DEFAULT_SEARCH_ENABLED: false,
   BATCH_ACTIONS_UI_ENABLED: false,
   FAILOVER_HISTORY_ENABLED: false,
-  HISTORY_PAGE_V2_ENABLED: 'DISABLED',
   SCHEDULE_ACTIONS_ENABLED: {
     pause: 'ENABLED',
     resume: 'ENABLED',

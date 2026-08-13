@@ -19,7 +19,6 @@ describe(transformDomainSchedulesCreateFormToBody.name, () => {
     taskList: { name: 'demo-tl' },
     workerSDKLanguage: 'GO',
     executionStartToCloseTimeoutSeconds: 3600,
-    taskStartToCloseTimeoutSeconds: 45,
     pauseOnFailure: false,
     overlapPolicy: ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_SKIP_NEW,
     catchUpPolicy: ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_SKIP,
@@ -39,7 +38,6 @@ describe(transformDomainSchedulesCreateFormToBody.name, () => {
         taskList: { name: 'demo-tl' },
         workerSDKLanguage: 'GO',
         executionStartToCloseTimeoutSeconds: 3600,
-        taskStartToCloseTimeoutSeconds: 45,
       },
     });
   });

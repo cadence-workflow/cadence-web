@@ -23,6 +23,7 @@ export default function ScheduleDetailsRunsChartGlyph({
   variant,
   runCount = 1,
   isBackfill = false,
+  isNew = false,
   label,
   testId,
 }: Props) {
@@ -69,6 +70,7 @@ export default function ScheduleDetailsRunsChartGlyph({
 
   return (
     <styled.Marker
+      $isNew={isNew}
       role="img"
       aria-label={label}
       title={label}

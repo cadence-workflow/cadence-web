@@ -25,8 +25,6 @@ import {
 import extendedDomainInfoEnabled from './resolvers/extended-domain-info-enabled';
 import { type ExtendedDomainInfoEnabledConfig } from './resolvers/extended-domain-info-enabled.types';
 import failoverHistoryEnabled from './resolvers/failover-history-enabled';
-import historyPageV2Enabled from './resolvers/history-page-v2-enabled';
-import { type HistoryPageV2EnabledConfigValue } from './resolvers/history-page-v2-enabled.types';
 import listWorkflowsPartialMatchEnabled from './resolvers/list-workflows-partial-match-enabled';
 import scheduleActionsEnabled from './resolvers/schedule-actions-enabled';
 import {
@@ -107,12 +105,6 @@ const dynamicConfigs: {
   FAILOVER_HISTORY_ENABLED: ConfigAsyncResolverDefinition<
     undefined,
     boolean,
-    'request',
-    true
-  >;
-  HISTORY_PAGE_V2_ENABLED: ConfigAsyncResolverDefinition<
-    undefined,
-    HistoryPageV2EnabledConfigValue,
     'request',
     true
   >;
@@ -200,11 +192,6 @@ const dynamicConfigs: {
   },
   FAILOVER_HISTORY_ENABLED: {
     resolver: failoverHistoryEnabled,
-    evaluateOn: 'request',
-    isPublic: true,
-  },
-  HISTORY_PAGE_V2_ENABLED: {
-    resolver: historyPageV2Enabled,
     evaluateOn: 'request',
     isPublic: true,
   },

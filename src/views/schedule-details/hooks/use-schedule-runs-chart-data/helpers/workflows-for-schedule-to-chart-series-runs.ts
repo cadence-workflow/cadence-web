@@ -9,20 +9,25 @@ import getSearchAttributeValue from '@/views/shared/workflows-list/helpers/get-s
 export default function workflowsForScheduleToChartSeriesRuns(
   data: InfiniteData<ListWorkflowsResponse> | undefined
 ): ChartSeriesRun[] {
-  return (data?.pages.flatMap((page) => page.workflows ?? []) ?? []).reduce<
-    ChartSeriesRun[]
-  >((runs, workflow) => {
+  // Keyed by runID: when several runs tie on CadenceScheduleTime, paginated
+  // fetches can return the same run on more than one page as the tie order
+  // shifts, which would otherwise double-count it into a false "grouped"
+  // marker.
+  const runsByRunId = new Map<string, ChartSeriesRun>();
+  const workflows = data?.pages.flatMap((page) => page.workflows ?? []) ?? [];
+
+  for (const workflow of workflows) {
     const scheduleTime = getSearchAttributeValue(
       workflow,
       SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN
     );
     if (typeof scheduleTime !== 'string') {
-      return runs;
+      continue;
     }
 
     const scheduledTimeMs = Date.parse(scheduleTime);
     if (!Number.isFinite(scheduledTimeMs)) {
-      return runs;
+      continue;
     }
 
     const backfillId = getSearchAttributeValue(
@@ -34,7 +39,7 @@ export default function workflowsForScheduleToChartSeriesRuns(
         ? backfillId
         : undefined;
 
-    runs.push({
+    runsByRunId.set(workflow.runID, {
       workflowId: workflow.workflowID,
       runId: workflow.runID,
       status: workflow.status,
@@ -49,7 +54,7 @@ export default function workflowsForScheduleToChartSeriesRuns(
       isBackfill: normalizedBackfillId != null,
       backfillId: normalizedBackfillId,
     });
+  }
 
-    return runs;
-  }, []);
+  return Array.from(runsByRunId.values());
 }

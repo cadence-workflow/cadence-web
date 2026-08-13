@@ -58,6 +58,31 @@ describe(workflowsForScheduleToChartSeriesRuns.name, () => {
     ]);
   });
 
+  it('deduplicates a run returned on more than one page', () => {
+    const duplicateRun = getMockWorkflowListItem({
+      workflowID: 'wf-tied',
+      runID: 'run-tied',
+      status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
+      startTime: 3000,
+      searchAttributes: {
+        [SCHEDULE_WORKFLOWS_VISIBILITY_SORT_COLUMN]:
+          scheduleTimeAttribute(3000),
+      },
+    });
+
+    const runs = workflowsForScheduleToChartSeriesRuns({
+      pages: [
+        { workflows: [duplicateRun], nextPage: 'page-2' },
+        { workflows: [duplicateRun], nextPage: '' },
+      ],
+      pageParams: [undefined, 'page-2'],
+    });
+
+    expect(runs).toEqual([
+      expect.objectContaining({ runId: 'run-tied', scheduledTimeMs: 3000 }),
+    ]);
+  });
+
   it('returns an empty array when no pages have loaded', () => {
     expect(workflowsForScheduleToChartSeriesRuns(undefined)).toEqual([]);
   });

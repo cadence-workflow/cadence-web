@@ -31,6 +31,7 @@ export default function useScheduleRunsChartData({
     cluster,
     scheduleId,
     runningScheduleRefetchIntervalMs: CHART_DESCRIBE_REFRESH_INTERVAL_MS,
+    staleTime: 0,
   });
   const workflowsQuery = useListWorkflowsForSchedule({
     domain,
@@ -120,13 +121,18 @@ export default function useScheduleRunsChartData({
       nextExecutionTimeMs,
     };
   }, [nextExecutionTimeMs, unconfirmedExecutions, runs, skippedExecutions]);
-
   return {
     data,
+    cronExpression,
     isLoading:
       describeQuery.isLoading ||
       domainQuery.isLoading ||
       workflowsQuery.isLoading,
     timelineStartMs: timelineBounds.timelineStartMs,
+    oldestLoadedScheduleTimeMs,
+    hasNextPage: workflowsQuery.hasNextPage ?? false,
+    isFetchingNextPage: workflowsQuery.isFetchingNextPage,
+    isFetchNextPageError: workflowsQuery.isFetchNextPageError,
+    fetchNextPage: workflowsQuery.fetchNextPage,
   };
 }

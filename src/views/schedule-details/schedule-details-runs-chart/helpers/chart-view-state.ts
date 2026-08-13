@@ -85,10 +85,18 @@ export function zoomChartTimeWindow({
   bounds,
   maxSpanMs,
   factor,
-  anchorMs,
+  nowMs,
+  isFollowing,
 }: ZoomChartTimeWindowParams): ChartTimeWindow {
   const currentSpanMs = getChartTimeWindowSpanMs(visibleWindow);
   const nextSpanMs = Math.min(currentSpanMs * factor, maxSpanMs);
+  const nowIsVisible =
+    nowMs >= visibleWindow.minMs && nowMs <= visibleWindow.maxMs;
+  const anchorMs = isFollowing
+    ? nowMs
+    : nowIsVisible
+      ? nowMs
+      : getWindowCenterMs(visibleWindow);
   const anchorIsVisible =
     anchorMs >= visibleWindow.minMs && anchorMs <= visibleWindow.maxMs;
   const effectiveAnchorMs = anchorIsVisible

@@ -17,6 +17,8 @@ export type Props = {
   /** More than one run at this position renders a stacked count marker instead of a status icon. */
   runCount?: number;
   isBackfill?: boolean;
+  /** Plays a brief scale/fade-in enter animation, for a glyph that just arrived on a live chart. */
+  isNew?: boolean;
   label: string;
   testId: string;
 };
