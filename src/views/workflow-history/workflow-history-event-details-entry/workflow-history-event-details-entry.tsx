@@ -1,6 +1,6 @@
 import { type Props } from './workflow-history-event-details-entry.types';
 
-export default function WorkflowHistoryEventDetailsEntry({
+export default function EventDetailsSingleEntry({
   entryKey,
   entryPath,
   entryValue,

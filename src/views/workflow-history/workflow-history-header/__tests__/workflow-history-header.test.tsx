@@ -11,62 +11,28 @@ import WorkflowHistoryHeader from '../workflow-history-header';
 import { type Props } from '../workflow-history-header.types';
 
 jest.mock(
-  '../../workflow-history-expand-all-events-button/workflow-history-expand-all-events-button',
-  () =>
-    jest.fn(({ isExpandAllEvents, toggleIsExpandAllEvents }) => (
-      <button onClick={toggleIsExpandAllEvents}>
-        {isExpandAllEvents ? 'Collapse All' : 'Expand All'}
-      </button>
-    ))
-);
-
-jest.mock(
-  '../../workflow-history-export-json-button/workflow-history-export-json-button',
+  '@/views/workflow-history/workflow-history-export-json-button/workflow-history-export-json-button',
   () => jest.fn(() => <button>Export JSON</button>)
 );
 
 jest.mock(
-  '@/components/page-filters/page-filters-toggle/page-filters-toggle',
-  () =>
-    jest.fn(({ onClick, isActive }) => (
-      <button onClick={onClick}>
-        {isActive ? 'Hide Filters' : 'Show Filters'}
-      </button>
-    ))
-);
-
-jest.mock(
-  '@/components/page-filters/page-filters-fields/page-filters-fields',
-  () =>
-    jest.fn(() => <div data-testid="page-filters-fields">Filter Fields</div>)
-);
-
-jest.mock(
-  '../../workflow-history-timeline-chart/workflow-history-timeline-chart',
+  '../../workflow-history-filters-menu/workflow-history-filters-menu',
   () =>
     jest.fn(() => (
-      <div data-testid="workflow-history-timeline-chart">Timeline Chart</div>
+      <div data-testid="workflow-history-filters-menu">Filters Menu</div>
     ))
 );
 
-jest.mock(
-  '../../workflow-history-switch-to-v2-button/workflow-history-switch-to-v2-button',
-  () => jest.fn(() => <button>Switch to V2</button>)
+jest.mock('../../workflow-history-timeline/workflow-history-timeline', () =>
+  jest.fn(() => (
+    <div data-testid="workflow-history-timeline">Mock Timeline</div>
+  ))
 );
 
 describe(WorkflowHistoryHeader.name, () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   it('should render the header with title', () => {
     setup();
     expect(screen.getByText('Workflow history')).toBeInTheDocument();
-  });
-
-  it('should render expand all events button', () => {
-    setup();
-    expect(screen.getByText('Expand All')).toBeInTheDocument();
   });
 
   it('should render export JSON button', () => {
@@ -74,84 +40,36 @@ describe(WorkflowHistoryHeader.name, () => {
     expect(screen.getByText('Export JSON')).toBeInTheDocument();
   });
 
-  it('should render switch to V2 button', () => {
+  it('should render segmented control with grouped and ungrouped segments', () => {
     setup();
-    expect(screen.getByText('Switch to V2')).toBeInTheDocument();
+    expect(screen.getByText('Grouped')).toBeInTheDocument();
+    expect(screen.getByText('Ungrouped')).toBeInTheDocument();
   });
 
-  it('should call toggleIsExpandAllEvents when expand button is clicked', async () => {
-    const { user, mockToggleIsExpandAllEvents } = setup();
-    const expandButton = screen.getByText('Expand All');
-
-    await user.click(expandButton);
-
-    expect(mockToggleIsExpandAllEvents).toHaveBeenCalledTimes(1);
-  });
-
-  it('should show "Ungroup" button in grouped view', () => {
-    setup({ isUngroupedHistoryViewEnabled: false });
-    expect(screen.getByText('Ungroup')).toBeInTheDocument();
-  });
-
-  it('should show "Group" button when in ungrouped view', () => {
-    setup({ isUngroupedHistoryViewEnabled: true });
-    expect(screen.getByText('Group')).toBeInTheDocument();
-  });
-
-  it('should call onClickGroupModeToggle when group/ungroup button is clicked', async () => {
+  it('should call onClickGroupModeToggle when segmented control segment is clicked', async () => {
     const { user, mockOnClickGroupModeToggle } = setup();
-    const ungroupButton = screen.getByText('Ungroup');
+    const groupedSegment = screen.getByText('Grouped');
 
-    await user.click(ungroupButton);
+    await user.click(groupedSegment);
 
     expect(mockOnClickGroupModeToggle).toHaveBeenCalledTimes(1);
   });
 
-  it('should show filters by default', () => {
+  it('should render filters button', () => {
     setup();
-    expect(screen.getByTestId('page-filters-fields')).toBeInTheDocument();
+    expect(screen.getByText('Filters')).toBeInTheDocument();
   });
 
-  it('should toggle filters visibility when filter toggle is clicked', async () => {
-    const { user } = setup();
-
-    // Filters shown by default
-    expect(screen.getByTestId('page-filters-fields')).toBeInTheDocument();
-
-    const filterToggle = screen.getByText('Hide Filters');
-    await user.click(filterToggle);
-
-    // Filters should be hidden
-    expect(screen.queryByTestId('page-filters-fields')).not.toBeInTheDocument();
-  });
-
-  it('should show Timeline button with secondary kind by default', () => {
+  it('should show filters button without count when no filters are active', () => {
     setup();
-    const timelineButton = screen.getByText('Timeline');
-    expect(timelineButton).toBeInTheDocument();
+    expect(screen.getByText('Filters')).toBeInTheDocument();
+    expect(screen.queryByText('Filters (0)')).not.toBeInTheDocument();
   });
 
-  it('should not show timeline chart by default', () => {
-    setup();
-    expect(
-      screen.queryByTestId('workflow-history-timeline-chart')
-    ).not.toBeInTheDocument();
-  });
-
-  it('should toggle timeline chart visibility when Timeline button is clicked', async () => {
-    const mockTimelineChartProps = {
-      eventGroupsEntries: [],
-      selectedEventId: 'event-1',
-      isLoading: false,
-      hasMoreEvents: false,
-      isFetchingMoreEvents: false,
-      fetchMoreEvents: jest.fn(),
-      onClickEventGroup: jest.fn(),
-    };
-
-    const { user } = setup({
+  it('should display active filters count in filters button', () => {
+    setup({
       pageFiltersProps: {
-        activeFiltersCount: 0,
+        activeFiltersCount: 3,
         queryParams: {
           historyEventTypes: undefined,
           historyEventStatuses: undefined,
@@ -162,46 +80,66 @@ describe(WorkflowHistoryHeader.name, () => {
         setQueryParams: jest.fn(),
         resetAllFilters: jest.fn(),
       },
-      timelineChartProps: mockTimelineChartProps,
     });
+    expect(screen.getByText('Filters (3)')).toBeInTheDocument();
+  });
 
-    expect(
-      screen.queryByTestId('workflow-history-timeline-chart')
-    ).not.toBeInTheDocument();
+  it('should render sentinel when sticky is enabled', () => {
+    setup({ isStickyEnabled: true });
+    expect(screen.getByTestId('sentinel')).toBeInTheDocument();
+  });
 
-    const timelineButton = screen.getByText('Timeline');
-    await user.click(timelineButton);
-
-    expect(
-      screen.getByTestId('workflow-history-timeline-chart')
-    ).toBeInTheDocument();
+  it('should not render sentinel when sticky is disabled', () => {
+    setup({ isStickyEnabled: false });
+    expect(screen.queryByTestId('sentinel')).not.toBeInTheDocument();
   });
 
   it('should set up intersection observer when sticky is enabled', () => {
     setup({ isStickyEnabled: true });
 
     const sentinel = screen.getByTestId('sentinel');
-    expect(sentinel).toBeInTheDocument();
-
     const instance = intersectionMockInstance(sentinel);
     expect(instance.observe).toHaveBeenCalledWith(sentinel);
   });
 
-  it('should render sentinel when sticky is enabled', () => {
-    setup({ isStickyEnabled: true });
-
-    const sentinel = screen.getByTestId('sentinel');
-    expect(sentinel).toBeInTheDocument();
-  });
-
-  it('should not render sentinel when sticky is disabled', () => {
+  it('should not set up intersection observer when sticky is disabled', () => {
     setup({ isStickyEnabled: false });
 
     const sentinel = screen.queryByTestId('sentinel');
     expect(sentinel).not.toBeInTheDocument();
   });
 
-  it('should toggle shadow on toggling intersection', () => {
+  it('should set sticky state to false when sentinel is in view', () => {
+    setup({ isStickyEnabled: true });
+
+    const wrapper = screen.getByTestId('workflow-history-header-wrapper');
+    const sentinel = screen.getByTestId('sentinel');
+
+    expect(wrapper).toHaveAttribute('data-is-sticky', 'false');
+
+    act(() => {
+      mockIsIntersecting(sentinel, 1);
+    });
+
+    expect(wrapper).toHaveAttribute('data-is-sticky', 'false');
+  });
+
+  it('should set sticky state to true when sentinel is out of view', () => {
+    setup({ isStickyEnabled: true });
+
+    const wrapper = screen.getByTestId('workflow-history-header-wrapper');
+    const sentinel = screen.getByTestId('sentinel');
+
+    expect(wrapper).toHaveAttribute('data-is-sticky', 'false');
+
+    act(() => {
+      mockIsIntersecting(sentinel, 0);
+    });
+
+    expect(wrapper).toHaveAttribute('data-is-sticky', 'true');
+  });
+
+  it('should toggle sticky state when sentinel visibility changes', () => {
     setup({ isStickyEnabled: true });
 
     const wrapper = screen.getByTestId('workflow-history-header-wrapper');
@@ -221,18 +159,95 @@ describe(WorkflowHistoryHeader.name, () => {
 
     expect(wrapper).toHaveAttribute('data-is-sticky', 'false');
   });
+
+  it('should disable sticky when isStickyEnabled changes to false', () => {
+    const { rerender } = setup({ isStickyEnabled: true });
+
+    const wrapper = screen.getByTestId('workflow-history-header-wrapper');
+    const sentinel = screen.getByTestId('sentinel');
+
+    act(() => {
+      mockIsIntersecting(sentinel, 0);
+    });
+
+    expect(wrapper).toHaveAttribute('data-is-sticky', 'true');
+
+    rerender(
+      <WorkflowHistoryHeader {...getDefaultProps()} isStickyEnabled={false} />
+    );
+
+    expect(screen.queryByTestId('sentinel')).not.toBeInTheDocument();
+    const newWrapper = screen.getByTestId('workflow-history-header-wrapper');
+    expect(newWrapper).toHaveAttribute('data-is-sticky', 'false');
+  });
+
+  it('should show Timeline button when workflowStartTimeMs is provided', () => {
+    setup({ workflowStartTimeMs: 1000 });
+    expect(screen.getByText('Timeline')).toBeInTheDocument();
+  });
+
+  it('should not show Timeline button when workflowStartTimeMs is null', () => {
+    setup({ workflowStartTimeMs: null });
+    expect(screen.queryByText('Timeline')).not.toBeInTheDocument();
+  });
+
+  it('should not show timeline when isTimelineShown is false', () => {
+    setup({ workflowStartTimeMs: 1000, isTimelineShown: false });
+    expect(
+      screen.queryByTestId('workflow-history-timeline')
+    ).not.toBeInTheDocument();
+  });
+
+  it('should show timeline when isTimelineShown is true', () => {
+    setup({
+      workflowStartTimeMs: 1000,
+      isTimelineShown: true,
+      eventGroupsEntries: [['group1', {} as any]],
+    });
+
+    expect(screen.getByTestId('workflow-history-timeline')).toBeInTheDocument();
+  });
+
+  it('should call setIsTimelineShown when Timeline button is clicked', async () => {
+    const { user, mockSetIsTimelineShown } = setup({
+      workflowStartTimeMs: 1000,
+      eventGroupsEntries: [['group1', {} as any]],
+    });
+
+    const timelineButton = screen.getByText('Timeline');
+    await user.click(timelineButton);
+
+    expect(mockSetIsTimelineShown).toHaveBeenCalledTimes(1);
+  });
 });
 
 function setup(props: Partial<Props> = {}) {
   const user = userEvent.setup();
-  const mockToggleIsExpandAllEvents = jest.fn();
   const mockOnClickGroupModeToggle = jest.fn();
+  const mockSetIsTimelineShown = jest.fn();
 
-  const defaultProps: Props = {
-    isExpandAllEvents: false,
-    toggleIsExpandAllEvents: mockToggleIsExpandAllEvents,
-    isUngroupedHistoryViewEnabled: false,
+  const defaultProps = getDefaultProps();
+  const mergedProps = {
+    ...defaultProps,
     onClickGroupModeToggle: mockOnClickGroupModeToggle,
+    setIsTimelineShown: mockSetIsTimelineShown,
+    ...props,
+  };
+
+  const renderResult = render(<WorkflowHistoryHeader {...mergedProps} />);
+
+  return {
+    user,
+    mockOnClickGroupModeToggle,
+    mockSetIsTimelineShown,
+    ...renderResult,
+  };
+}
+
+function getDefaultProps(): Props {
+  return {
+    isUngroupedHistoryViewEnabled: false,
+    onClickGroupModeToggle: jest.fn(),
     wfHistoryRequestArgs: {
       domain: 'test-domain',
       cluster: 'test-cluster',
@@ -251,24 +266,21 @@ function setup(props: Partial<Props> = {}) {
       setQueryParams: jest.fn(),
       resetAllFilters: jest.fn(),
     },
-    timelineChartProps: {
-      eventGroupsEntries: [],
-      selectedEventId: 'event-1',
-      isLoading: false,
-      hasMoreEvents: false,
-      isFetchingMoreEvents: false,
-      fetchMoreEvents: jest.fn(),
-      onClickEventGroup: jest.fn(),
+    isStickyEnabled: true,
+    eventGroupsEntries: [],
+    workflowStartTimeMs: null,
+    workflowCloseTimeMs: null,
+    selectedEventId: undefined,
+    onClickShowInTable: jest.fn(),
+    decodedPageUrlParams: {
+      domain: 'test-domain',
+      cluster: 'test-cluster',
+      workflowId: 'test-workflowId',
+      runId: 'test-runId',
+      workflowTab: 'history',
     },
-    ...props,
-  };
-
-  const renderResult = render(<WorkflowHistoryHeader {...defaultProps} />);
-
-  return {
-    user,
-    mockToggleIsExpandAllEvents,
-    mockOnClickGroupModeToggle,
-    ...renderResult,
+    isTimelineShown: false,
+    setIsTimelineShown: jest.fn(),
+    timelineVirtuosoRef: { current: null },
   };
 }

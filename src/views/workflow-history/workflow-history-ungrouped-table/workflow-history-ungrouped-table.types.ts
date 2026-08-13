@@ -1,21 +1,24 @@
-import { type ListRange, type VirtuosoHandle } from 'react-virtuoso';
+import { type RefObject } from 'react';
+
+import { type VirtuosoHandle } from 'react-virtuoso';
 
 import { type WorkflowExecutionCloseStatus } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionCloseStatus';
 import { type RequestError } from '@/utils/request/request-error';
 import { type WorkflowPageTabsParams } from '@/views/workflow-page/workflow-page-tabs/workflow-page-tabs.types';
 
 import {
-  type GetIsEventExpanded,
-  type ToggleIsEventExpanded,
-} from '../hooks/use-event-expansion-toggle.types';
-import { type WorkflowHistoryUngroupedEventInfo } from '../workflow-history-ungrouped-event/workflow-history-ungrouped-event.types';
+  type HistoryGroupEventMetadata,
+  type ExtendedHistoryEvent,
+  type HistoryEventsGroup,
+} from '../workflow-history.types';
 
 export type Props = {
   // Data and state props
-  eventsInfo: Array<WorkflowHistoryUngroupedEventInfo>;
+  ungroupedEventsInfo: Array<UngroupedEventInfo>;
+  workflowStartTimeMs: number | null;
   selectedEventId?: string;
   decodedPageUrlParams: WorkflowPageTabsParams;
-  onResetToEventId: (eventId: string) => void;
+  resetToDecisionEventId: (decisionEventId: string) => void;
 
   // Workflow state props
   workflowIsArchived: boolean;
@@ -29,10 +32,30 @@ export type Props = {
   fetchMoreEvents: () => void;
 
   // Event expansion state management
-  getIsEventExpanded: GetIsEventExpanded;
-  toggleIsEventExpanded: ToggleIsEventExpanded;
+  getIsEventExpanded: (eventId: string) => boolean;
+  toggleIsEventExpanded: (eventId: string) => void;
 
   // Virtualization props
-  onVisibleRangeChange: (r: ListRange) => void;
-  virtuosoRef: React.RefObject<VirtuosoHandle>;
+  setVisibleRange: ({
+    startIndex,
+    endIndex,
+  }: {
+    startIndex: number;
+    endIndex: number;
+  }) => void;
+  virtuosoRef: RefObject<VirtuosoHandle>;
+
+  // Timeline integration
+  onClickShowGroupInTimeline: (eventGroupId: string) => void;
+};
+
+export type UngroupedEventInfo = {
+  id: string;
+  groupId: string;
+  event: ExtendedHistoryEvent;
+  eventMetadata: HistoryGroupEventMetadata;
+  eventGroup: HistoryEventsGroup;
+  label: string;
+  shortLabel?: string;
+  canReset?: boolean;
 };

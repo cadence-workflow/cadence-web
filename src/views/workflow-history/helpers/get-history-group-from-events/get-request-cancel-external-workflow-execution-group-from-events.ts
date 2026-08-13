@@ -57,11 +57,13 @@ export default function getRequestCancelExternalWorkflowExecutionGroupFromEvents
     hasMissingEvents,
     groupType,
     ...getCommonHistoryGroupFields<RequestCancelExternalWorkflowExecutionHistoryGroup>(
-      events,
-      eventToStatus,
-      eventToLabel,
-      {},
-      closeEvent
+      {
+        events,
+        historyGroupEventToStatusMap: eventToStatus,
+        eventToLabelMap: eventToLabel,
+        eventToTimeLabelPrefixMap: {},
+        closeEvent,
+      }
     ),
   };
 }

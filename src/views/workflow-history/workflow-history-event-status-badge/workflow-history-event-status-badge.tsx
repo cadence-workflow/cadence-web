@@ -1,70 +1,49 @@
-import React from 'react';
-
-import { useStyletron } from 'baseui';
+import { Badge } from 'baseui/badge';
 import { Skeleton } from 'baseui/skeleton';
-import { Spinner } from 'baseui/spinner';
-import {
-  MdCheck,
-  MdClose,
-  MdHourglassTop,
-  MdReportGmailerrorred,
-} from 'react-icons/md';
 
-import getBadgeContainerSize from './helpers/get-badge-container-size';
-import getBadgeIconSize from './helpers/get-badge-icon-size';
+import workflowHistoryEventStatusBadgesConfig from '../config/workflow-history-event-status-badges.config';
+
 import {
-  WORKFLOW_EVENT_STATUS,
-  WORKFLOW_EVENT_STATUS_BADGE_SIZES,
-} from './workflow-history-event-status-badge.constants';
-import {
-  styled,
   overrides,
+  styled,
 } from './workflow-history-event-status-badge.styles';
-import type { Props } from './workflow-history-event-status-badge.types';
+import { type Props } from './workflow-history-event-status-badge.types';
 
 export default function WorkflowHistoryEventStatusBadge({
   status,
-  statusReady,
-  size = WORKFLOW_EVENT_STATUS_BADGE_SIZES.medium,
+  statusText,
+  isLoading,
 }: Props) {
-  const [_, theme] = useStyletron();
-
-  if (!statusReady) {
-    const skeletonSize = getBadgeContainerSize(theme, size);
+  if (isLoading) {
     return (
       <Skeleton
-        height={skeletonSize}
-        width={skeletonSize}
-        overrides={overrides.circularSkeleton}
+        height="20px"
+        width="80px"
+        overrides={overrides.badgeSkeleton}
         animation
       />
     );
   }
 
-  if (!WORKFLOW_EVENT_STATUS[status]) return null;
+  const {
+    icon: Icon,
+    hierarchy,
+    color,
+  } = workflowHistoryEventStatusBadgesConfig[status];
 
-  const renderIcon = () => {
-    const iconSize = getBadgeIconSize(theme, size);
-
-    if (iconSize === undefined) return null;
-
-    switch (status) {
-      case WORKFLOW_EVENT_STATUS.COMPLETED:
-        return <MdCheck size={iconSize} />;
-      case WORKFLOW_EVENT_STATUS.FAILED:
-        return <MdReportGmailerrorred size={iconSize} />;
-      case WORKFLOW_EVENT_STATUS.CANCELED:
-        return <MdClose size={iconSize} />;
-      case WORKFLOW_EVENT_STATUS.ONGOING:
-        return <Spinner $size={iconSize} />;
-      case WORKFLOW_EVENT_STATUS.WAITING:
-        return <MdHourglassTop size={iconSize} />;
-    }
-  };
-
+  // TODO @adhitya.mamallan - once we update Baseweb to 16, use the new Tag here
   return (
-    <styled.BadgeContainer $size={size} $status={status}>
-      {renderIcon()}
-    </styled.BadgeContainer>
+    <Badge
+      aria-label={`status-badge-${status}`}
+      hierarchy={hierarchy}
+      color={color}
+      overrides={overrides.badge}
+      content={
+        <styled.BadgeContentContainer>
+          <Icon size={14} />
+          {statusText}
+        </styled.BadgeContentContainer>
+      }
+    />
   );
 }

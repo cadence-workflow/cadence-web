@@ -1,9 +1,9 @@
 import { type WorkflowPageParams } from '@/views/workflow-page/workflow-page.types';
 
-import { type WorkflowHistoryEventDetailsEntries } from '../workflow-history-event-details/workflow-history-event-details.types';
+import { type EventDetailsEntries } from '../workflow-history-event-details/workflow-history-event-details.types';
 
 export type Props = {
-  entries: WorkflowHistoryEventDetailsEntries;
+  entries: EventDetailsEntries;
   parentGroupPath?: string;
   decodedPageUrlParams: WorkflowPageParams;
 };

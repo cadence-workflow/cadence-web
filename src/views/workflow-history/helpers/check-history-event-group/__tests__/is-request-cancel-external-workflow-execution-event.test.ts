@@ -1,9 +1,9 @@
 import differenceBy from 'lodash/differenceBy';
 
 import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
-import { allWorkflowEventTypesAttrs } from '@/views/workflow-history/__fixtures__/all-workflow-event-types-attributes';
-import type { RequestCancelExternalWorkflowExecutionHistoryEvent } from '@/views/workflow-history/workflow-history.types';
 
+import { allWorkflowEventTypesAttrs } from '../../../__fixtures__/all-workflow-event-types-attributes';
+import type { RequestCancelExternalWorkflowExecutionHistoryEvent } from '../../../workflow-history.types';
 import isRequestCancelExternalWorkflowExecutionEvent from '../is-request-cancel-external-workflow-execution-event';
 
 const validEvents: Pick<

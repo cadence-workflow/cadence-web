@@ -704,7 +704,7 @@ exports[`formatWorkflowHistoryEvent should format workflow workflowExecutionSign
     "cadence.signal",
   ],
   "requestId": "488cd24f-37b0-48f7-955a-c5c8c7653290",
-  "signalName": "signal-name",
+  "signalName": "test-signal",
   "taskId": "22647173801",
   "timestamp": 2024-08-27T08:30:15.549Z,
   "version": "575102",

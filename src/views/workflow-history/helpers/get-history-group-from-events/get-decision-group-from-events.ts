@@ -117,16 +117,16 @@ export default function getDecisionGroupFromEvents(
 
   const eventToNegativeFields: HistoryGroupEventToNegativeFieldsMap<DecisionHistoryGroup> =
     {
-      decisionTaskFailedEventAttributes: ['reason', 'details'],
+      decisionTaskFailedEventAttributes: ['reason', 'details', 'cause'],
+      decisionTaskTimedOutEventAttributes: ['reason', 'cause'],
     };
 
   const eventToSummaryFields: HistoryGroupEventToSummaryFieldsMap<DecisionHistoryGroup> =
     {
-      decisionTaskScheduledEventAttributes: [
-        'startToCloseTimeoutSeconds',
-        'attempt',
-      ],
+      decisionTaskScheduledEventAttributes: ['attempt'],
       pendingDecisionTaskStartEventAttributes: ['attempt'],
+      decisionTaskFailedEventAttributes: ['reason', 'details', 'cause'],
+      decisionTaskTimedOutEventAttributes: ['reason', 'cause'],
     };
 
   return {
@@ -135,17 +135,16 @@ export default function getDecisionGroupFromEvents(
     groupType,
     badges,
     resetToDecisionEventId,
-    ...getCommonHistoryGroupFields<DecisionHistoryGroup>(
+    ...getCommonHistoryGroupFields<DecisionHistoryGroup>({
       events,
-      eventToStatus,
-      eventToLabel,
-      {
+      historyGroupEventToStatusMap: eventToStatus,
+      eventToLabelMap: eventToLabel,
+      eventToTimeLabelPrefixMap: {
         pendingDecisionTaskStartEventAttributes: pendingStartEventTimePrefix,
       },
-      closeEvent || timeoutEvent,
-      eventToNegativeFields,
-      undefined,
-      eventToSummaryFields
-    ),
+      closeEvent: closeEvent || timeoutEvent,
+      eventToNegativeFieldsMap: eventToNegativeFields,
+      eventToSummaryFieldsMap: eventToSummaryFields,
+    }),
   };
 }

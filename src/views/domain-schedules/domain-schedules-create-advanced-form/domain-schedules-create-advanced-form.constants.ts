@@ -5,7 +5,9 @@ import {
   SCHEDULE_OVERLAP_POLICIES,
 } from '@/route-handlers/create-schedule/create-schedule.constants';
 import {
+  SCHEDULE_CATCH_UP_POLICY_DESCRIPTIONS,
   SCHEDULE_CATCH_UP_POLICY_LABELS,
+  SCHEDULE_OVERLAP_POLICY_DESCRIPTIONS,
   SCHEDULE_OVERLAP_POLICY_LABELS,
 } from '@/views/shared/constants/schedule-policy-labels.constants';
 
@@ -58,6 +60,7 @@ export const OVERLAP_POLICY_OPTIONS = SCHEDULE_OVERLAP_POLICIES.map(
   (policy) => ({
     id: policy,
     label: SCHEDULE_OVERLAP_POLICY_LABELS[policy],
+    description: SCHEDULE_OVERLAP_POLICY_DESCRIPTIONS[policy],
   })
 );
 
@@ -65,5 +68,6 @@ export const CATCH_UP_POLICY_OPTIONS = SCHEDULE_CATCH_UP_POLICIES.map(
   (policy) => ({
     id: policy,
     label: SCHEDULE_CATCH_UP_POLICY_LABELS[policy],
+    description: SCHEDULE_CATCH_UP_POLICY_DESCRIPTIONS[policy],
   })
 );
