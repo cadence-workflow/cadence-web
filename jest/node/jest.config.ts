@@ -22,6 +22,11 @@ const config: Config = {
   },
   rootDir: '../../',
   preset: 'ts-jest',
+  globals: {
+    'ts-jest': {
+      isolatedModules: true,
+    },
+  },
   setupFilesAfterEnv: ['<rootDir>/jest/node/jest.setup.ts'],
   testEnvironment: 'node',
   testMatch: ['**/__tests__/**/*.node.ts'],

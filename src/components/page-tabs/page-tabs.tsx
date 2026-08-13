@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Tabs, Tab } from 'baseui/tabs-motion';
 
-import { overrides, styled } from './page-tabs.styles';
+import { overrides as getOverrides, styled } from './page-tabs.styles';
 import { type Props } from './page-tabs.types';
 
 export default function PageTabs({
@@ -10,7 +10,11 @@ export default function PageTabs({
   selectedTab,
   setSelectedTab,
   endEnhancer,
+  removeTabBarGridGutters = false,
+  hideTabBarBorder = false,
 }: Props) {
+  const overrides = getOverrides({ removeTabBarGridGutters, hideTabBarBorder });
+
   return (
     <Tabs
       activeKey={selectedTab}

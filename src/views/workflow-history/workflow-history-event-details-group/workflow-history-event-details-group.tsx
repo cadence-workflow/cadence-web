@@ -1,6 +1,6 @@
 import React from 'react';
 
-import WorkflowHistoryEventDetailsEntry from '../workflow-history-event-details-entry/workflow-history-event-details-entry';
+import EventDetailsSingleEntry from '../workflow-history-event-details-entry/workflow-history-event-details-entry';
 
 import getDetailsFieldLabel from './helpers/get-details-field-label';
 import { styled } from './workflow-history-event-details-group.styles';
@@ -17,8 +17,6 @@ export default function WorkflowHistoryEventDetailsGroup({
   return (
     <>
       {entries.map((entry, index) => {
-        const forceWrap = entry.isGroup || entry.renderConfig?.forceWrap;
-
         let labelKind: EventDetailsLabelKind = 'regular';
         if (entry.isGroup) {
           labelKind = 'group';
@@ -29,18 +27,21 @@ export default function WorkflowHistoryEventDetailsGroup({
         return (
           <styled.DetailsRow
             data-testid="details-row"
-            $forceWrap={forceWrap}
+            $forceWrap={entry.isGroup}
             key={`${entry.key}-${entry.path}-${index}${
               !entry.isGroup && entry.renderConfig
                 ? '-' + entry.renderConfig.name
                 : ''
             }`}
           >
-            <styled.DetailsLabel $forceWrap={forceWrap} $labelKind={labelKind}>
+            <styled.DetailsLabel
+              $forceWrap={entry.isGroup}
+              $labelKind={labelKind}
+            >
               {getDetailsFieldLabel(entry, parentGroupPath)}
             </styled.DetailsLabel>
             <styled.DetailsValue
-              $forceWrap={forceWrap}
+              $forceWrap={entry.isGroup}
               $isNegative={entry.isNegative}
             >
               {entry.isGroup ? (
@@ -52,7 +53,7 @@ export default function WorkflowHistoryEventDetailsGroup({
                   />
                 </styled.IndentedDetails>
               ) : (
-                <WorkflowHistoryEventDetailsEntry
+                <EventDetailsSingleEntry
                   entryKey={entry.key}
                   entryPath={entry.path}
                   entryValue={entry.value}

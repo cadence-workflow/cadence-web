@@ -3,17 +3,17 @@ import React from 'react';
 import { render } from '@/test-utils/rtl';
 
 import { workflowPageUrlParams } from '../../__fixtures__/workflow-page-url-params';
-import { type WorkflowHistoryEventDetailsValueComponentProps } from '../../workflow-history-event-details/workflow-history-event-details.types';
-import WorkflowHistoryEventDetailsEntry from '../workflow-history-event-details-entry';
+import { type EventDetailsValueComponentProps } from '../../workflow-history-event-details/workflow-history-event-details.types';
+import EventDetailsSingleEntry from '../workflow-history-event-details-entry';
 import { type Props } from '../workflow-history-event-details-entry.types';
 
-describe(WorkflowHistoryEventDetailsEntry.name, () => {
+describe(EventDetailsSingleEntry.name, () => {
   it('renders the custom ValueComponent when provided', () => {
     const CustomComponent = ({
       entryKey,
       entryPath,
       entryValue,
-    }: WorkflowHistoryEventDetailsValueComponentProps) => (
+    }: EventDetailsValueComponentProps) => (
       <div>
         {entryKey} - {entryPath} - {entryValue}
       </div>
@@ -31,9 +31,7 @@ describe(WorkflowHistoryEventDetailsEntry.name, () => {
       ...workflowPageUrlParams,
     };
 
-    const { getByText } = render(
-      <WorkflowHistoryEventDetailsEntry {...props} />
-    );
+    const { getByText } = render(<EventDetailsSingleEntry {...props} />);
 
     expect(getByText('key1 - path1 - value1')).toBeInTheDocument();
   });
@@ -50,9 +48,7 @@ describe(WorkflowHistoryEventDetailsEntry.name, () => {
       ...workflowPageUrlParams,
     };
 
-    const { getByText } = render(
-      <WorkflowHistoryEventDetailsEntry {...props} />
-    );
+    const { getByText } = render(<EventDetailsSingleEntry {...props} />);
 
     expect(getByText('value2')).toBeInTheDocument();
   });
@@ -63,7 +59,7 @@ describe(WorkflowHistoryEventDetailsEntry.name, () => {
       entryPath,
       entryValue,
       isNegative,
-    }: WorkflowHistoryEventDetailsValueComponentProps) => (
+    }: EventDetailsValueComponentProps) => (
       <div>
         {entryKey} - {entryPath} - {entryValue} -{' '}
         {isNegative ? 'negative' : 'positive'}
@@ -83,9 +79,7 @@ describe(WorkflowHistoryEventDetailsEntry.name, () => {
       ...workflowPageUrlParams,
     };
 
-    const { getByText } = render(
-      <WorkflowHistoryEventDetailsEntry {...props} />
-    );
+    const { getByText } = render(<EventDetailsSingleEntry {...props} />);
 
     expect(getByText('key1 - path1 - value1 - negative')).toBeInTheDocument();
   });
@@ -96,7 +90,7 @@ describe(WorkflowHistoryEventDetailsEntry.name, () => {
       entryPath,
       entryValue,
       isNegative,
-    }: WorkflowHistoryEventDetailsValueComponentProps) => (
+    }: EventDetailsValueComponentProps) => (
       <div>
         {entryKey} - {entryPath} - {entryValue} -{' '}
         {isNegative ? 'negative' : 'positive'}
@@ -115,9 +109,7 @@ describe(WorkflowHistoryEventDetailsEntry.name, () => {
       ...workflowPageUrlParams,
     };
 
-    const { getByText } = render(
-      <WorkflowHistoryEventDetailsEntry {...props} />
-    );
+    const { getByText } = render(<EventDetailsSingleEntry {...props} />);
 
     expect(getByText('key1 - path1 - value1 - positive')).toBeInTheDocument();
   });

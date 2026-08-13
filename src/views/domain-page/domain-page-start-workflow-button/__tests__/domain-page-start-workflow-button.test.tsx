@@ -53,21 +53,11 @@ jest.mock('baseui/tooltip', () => {
 });
 
 jest.mock(
-  '../../../workflow-actions/workflow-actions-menu/helpers/get-action-disabled-reason',
-  () =>
-    jest.fn(
-      ({
-        actionEnabledConfig,
-      }: {
-        actionEnabledConfig?: WorkflowActionEnabledConfigValue;
-      }) =>
-        actionEnabledConfig === 'ENABLED'
-          ? undefined
-          : 'Mock workflow action disabled reason'
-    )
+  '@/views/workflow-actions/workflow-actions-menu/helpers/get-action-disabled-reason'
 );
+
 jest.mock(
-  '../../../workflow-actions/workflow-actions-modal/workflow-actions-modal',
+  '@/views/workflow-actions/workflow-actions-modal/workflow-actions-modal',
   () =>
     jest.fn((props) => {
       return (
@@ -81,9 +71,6 @@ jest.mock(
     })
 );
 
-jest.mock(
-  '@/views/workflow-actions/workflow-actions-menu/helpers/get-action-disabled-reason'
-);
 const mockGetActionDisabledReason = getActionDisabledReason as jest.Mock;
 
 describe('DomainPageStartWorkflowButton', () => {

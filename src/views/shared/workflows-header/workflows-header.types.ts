@@ -31,4 +31,6 @@ export type Props<
   showQueryInputOnly?: boolean;
   noSpacing?: boolean;
   columnsPickerProps?: ColumnsPickerProps;
+  // Label for the non-query toggle segment (default "Search")
+  searchSegmentLabel?: string;
 };

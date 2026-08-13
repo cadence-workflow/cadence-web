@@ -18,7 +18,7 @@ const workflowsListColumnsConfig: ReadonlyArray<WorkflowsListColumnConfig> = [
   {
     match: (name) => name === 'CloseStatus',
     name: 'Status',
-    width: '120px',
+    width: '140px',
     renderCell: (row) =>
       createElement(WorkflowStatusTag, { status: row.status }),
   },

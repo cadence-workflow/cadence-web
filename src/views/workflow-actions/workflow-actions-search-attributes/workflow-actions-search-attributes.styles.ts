@@ -1,4 +1,5 @@
-import { type Theme } from 'baseui';
+import { styled as createStyled, type Theme } from 'baseui';
+import { type FormControlOverrides } from 'baseui/form-control';
 import { type InputOverrides } from 'baseui/input';
 import { type SelectOverrides } from 'baseui/select';
 import { type StyleObject } from 'styletron-react';
@@ -8,7 +9,29 @@ import type {
   StyletronCSSObjectOf,
 } from '@/hooks/use-styletron-classes';
 
+export const styled = {
+  Container: createStyled<'div', { $showSectionBorder?: boolean }>(
+    'div',
+    ({ $theme, $showSectionBorder }) => ({
+      display: 'flex',
+      flexDirection: 'column',
+      gap: $theme.sizing.scale600,
+      ...($showSectionBorder && {
+        borderLeft: `2px solid ${$theme.colors.borderOpaque}`,
+        paddingLeft: $theme.sizing.scale600,
+      }),
+    })
+  ),
+};
+
 export const overrides = {
+  fieldFormControl: {
+    ControlContainer: {
+      style: {
+        marginBottom: 0,
+      },
+    },
+  } satisfies FormControlOverrides,
   keySelect: {
     Root: {
       style: (): StyleObject => ({
@@ -27,13 +50,6 @@ export const overrides = {
 };
 
 const cssStylesObj = {
-  container: (theme: Theme) => ({
-    display: 'flex',
-    flexDirection: 'column',
-    gap: theme.sizing.scale600,
-    borderLeft: `2px solid ${theme.colors.borderOpaque}`,
-    paddingLeft: theme.sizing.scale600,
-  }),
   attributeRow: (theme: Theme) => ({
     display: 'flex',
     alignItems: 'flex-start',

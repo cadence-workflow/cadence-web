@@ -1,11 +1,21 @@
-import { type BatchAction } from '../domain-batch-actions.types';
+import {
+  type BatchActionListItem,
+  type BatchActionStatus,
+} from '@/route-handlers/list-batch-actions/list-batch-actions.types';
 
 export type Props = {
-  batchActions: BatchAction[];
+  batchActions: BatchActionListItem[];
   isDraftOpen: boolean;
   isDraftSelected: boolean;
   selectedActionId: string | null;
-  onSelectAction: (id: string) => void;
+  // Live status of the selected action from its detail query. When it diverges
+  // from the sidebar's copy, the list is refreshed so the sidebar catches up.
+  selectedActionDetailStatus: BatchActionStatus | undefined;
+  onSelectAction: (action: BatchActionListItem) => void;
   onSelectDraft: () => void;
   onCreateNew: () => void;
+  fetchNextPage: () => void;
+  hasNextPage: boolean;
+  isFetchingNextPage: boolean;
+  error: Error | null;
 };

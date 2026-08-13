@@ -3,72 +3,97 @@ import { type PanelOverrides } from 'baseui/accordion';
 import { type BadgeOverrides } from 'baseui/badge';
 import { type StyleObject } from 'styletron-react';
 
+import workflowHistoryEventGroupCategoryColorsConfig from '../config/workflow-history-event-group-category-colors.config';
+import { type EventGroupCategory } from '../workflow-history-filters-menu/workflow-history-filters-menu.types';
 import { WORKFLOW_HISTORY_UNGROUPED_GRID_TEMPLATE_COLUMNS } from '../workflow-history-ungrouped-table/workflow-history-ungrouped-table.constants';
 
 export const styled = {
-  CardHeaderContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
-    ...$theme.typography.LabelSmall,
-    display: 'grid',
-    gridTemplateColumns: WORKFLOW_HISTORY_UNGROUPED_GRID_TEMPLATE_COLUMNS,
-    gap: $theme.sizing.scale600,
-    width: '100%',
-    alignItems: 'center',
-  })),
-  CardStatusContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+  HeaderContent: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+    ...$theme.typography.ParagraphSmall,
     display: 'flex',
-    alignItems: 'center',
-    gap: $theme.sizing.scale500,
-    overflowWrap: 'anywhere',
+    flexDirection: 'column',
+    gap: $theme.sizing.scale200,
+    paddingBottom: $theme.sizing.scale300,
+    [$theme.mediaQuery.medium]: {
+      display: 'grid',
+      gridTemplateColumns: WORKFLOW_HISTORY_UNGROUPED_GRID_TEMPLATE_COLUMNS,
+      width: '100%',
+      alignItems: 'center',
+      gap: $theme.sizing.scale600,
+      paddingBottom: 0,
+    },
   })),
-  CardHeaderFieldContainer: createStyled('div', {
-    overflowWrap: 'anywhere',
+  HeaderLabel: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+    ...$theme.typography.LabelSmall,
+    minWidth: 0,
+    whiteSpace: 'wrap',
+    wordBreak: 'break-all',
+  })),
+  StatusContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+    display: 'flex',
+    gap: $theme.sizing.scale300,
+    alignItems: 'center',
+  })),
+  SummarizedDetailsContainer: createStyled('div', {
+    minWidth: 0,
   }),
   ElapsedContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     gap: $theme.sizing.scale100,
   })),
-  CardLabelContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+  ActionsContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
+    gap: $theme.sizing.scale300,
     alignItems: 'center',
-    gap: $theme.sizing.scale400,
+    [$theme.mediaQuery.medium]: {
+      margin: `-${$theme.sizing.scale200} 0`,
+    },
   })),
-  ResetButtonContainer: createStyled(
+  GroupDetailsGridContainer: createStyled('div', {
+    display: 'grid',
+    gridTemplateColumns: WORKFLOW_HISTORY_UNGROUPED_GRID_TEMPLATE_COLUMNS,
+  }),
+  GroupDetailsNameSpacer: createStyled(
     'div',
     ({ $theme }: { $theme: Theme }) => ({
-      display: 'flex',
-      justifyContent: 'flex-end',
-      paddingRight: $theme.sizing.scale400,
+      display: 'none',
+      [$theme.mediaQuery.medium]: {
+        gridColumn: '1 / span 3',
+      },
     })
   ),
-  EventSummaryContainer: createStyled('div', {
-    overflow: 'hidden',
-  }),
+  GroupDetailsContainer: createStyled(
+    'div',
+    ({ $theme }: { $theme: Theme }) => ({
+      gridColumn: '1 / -1',
+      [$theme.mediaQuery.medium]: {
+        gridColumn: '4 / -1',
+      },
+      border: `2px solid ${$theme.colors.borderOpaque}`,
+      borderRadius: $theme.borders.radius400,
+      padding: $theme.sizing.scale500,
+      backgroundColor: $theme.colors.backgroundPrimary,
+    })
+  ),
 };
 
-export const overrides = (animateOnEnter?: boolean) => ({
+export const overrides = (
+  eventGroupCategory: EventGroupCategory,
+  animateOnEnter?: boolean
+) => ({
   panel: {
     PanelContainer: {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
-        ...$theme.borders.border100,
-        borderRadius: $theme.borders.radius300,
-        borderWidth: '0px',
-        marginTop: $theme.sizing.scale0,
-        marginBottom: $theme.sizing.scale0,
-        ':hover': {
-          boxShadow: `0px 0px 0px 2px ${$theme.colors.borderTransparent}`,
-        },
-        ...(animateOnEnter && {
-          animationDuration: '2s',
-          animationName: {
-            from: {
-              boxShadow: `0px 0px 0px 2px ${$theme.colors.primary}`,
-            },
-            to: {
-              boxShadow: `0px 0px 0px 0px rgba(0, 0, 0, 0)`,
-            },
-          },
-        }),
+        borderColor: $theme.borders.border100.borderColor,
+        borderStyle: $theme.borders.border100.borderStyle,
+        borderRadius: 0,
+        borderTopWidth: $theme.borders.border100.borderWidth,
+        borderBottomWidth: 0,
+        borderLeftWidth: 0,
+        borderRightWidth: 0,
+        marginTop: 0,
+        marginBottom: 0,
         overflow: 'hidden',
       }),
     },
@@ -76,11 +101,32 @@ export const overrides = (animateOnEnter?: boolean) => ({
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
         // https://github.com/uber/baseweb/blob/main/src/accordion/styled-components.ts#L50
         // Since the original Panel uses longhand properties, we need to use longhand in overrides
-        paddingTop: $theme.sizing.scale200,
-        paddingBottom: $theme.sizing.scale200,
-        paddingLeft: $theme.sizing.scale700,
-        paddingRight: $theme.sizing.scale700,
+        paddingTop: $theme.sizing.scale300,
+        paddingBottom: $theme.sizing.scale300,
+        paddingLeft: $theme.sizing.scale300,
+        paddingRight: $theme.sizing.scale300,
         backgroundColor: 'inherit',
+        display: 'flex',
+        alignItems: 'center',
+        ':hover': {
+          backgroundColor:
+            workflowHistoryEventGroupCategoryColorsConfig[eventGroupCategory]
+              .backgroundHighlighted,
+        },
+        ...(animateOnEnter && {
+          animationDuration: '2s',
+          animationName: {
+            from: {
+              backgroundColor:
+                workflowHistoryEventGroupCategoryColorsConfig[
+                  eventGroupCategory
+                ].backgroundHighlighted,
+            },
+            to: {
+              backgroundColor: 'inherit',
+            },
+          },
+        }),
       }),
     },
     Content: {
@@ -89,10 +135,19 @@ export const overrides = (animateOnEnter?: boolean) => ({
         // Since the original Panel uses longhand properties, we need to use longhand in overrides
         paddingTop: 0,
         paddingBottom: $theme.sizing.scale600,
-        paddingLeft: $theme.sizing.scale700,
-        paddingRight: $theme.sizing.scale700,
+        paddingLeft: 0,
+        paddingRight: 0,
+        [$theme.mediaQuery.medium]: {
+          paddingLeft: $theme.sizing.scale700,
+          paddingRight: $theme.sizing.scale700,
+        },
         backgroundColor: 'inherit',
       }),
+    },
+    ToggleIcon: {
+      style: {
+        display: 'none',
+      },
     },
   } satisfies PanelOverrides,
   badge: {

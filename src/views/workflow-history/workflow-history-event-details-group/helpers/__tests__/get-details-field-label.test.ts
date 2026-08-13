@@ -1,10 +1,10 @@
 import {
-  type WorkflowHistoryEventDetailsGroupEntry,
-  type WorkflowHistoryEventDetailsEntry,
+  type EventDetailsGroupEntry,
+  type EventDetailsSingleEntry,
 } from '../../../workflow-history-event-details/workflow-history-event-details.types';
 import getDetailsFieldLabel from '../get-details-field-label';
 
-const singleEntry: WorkflowHistoryEventDetailsEntry = {
+const singleEntry: EventDetailsSingleEntry = {
   key: 'testKey',
   path: 'testKey',
   isGroup: false,
@@ -15,7 +15,7 @@ const singleEntry: WorkflowHistoryEventDetailsEntry = {
   },
 };
 
-const groupEntry: WorkflowHistoryEventDetailsGroupEntry = {
+const groupEntry: EventDetailsGroupEntry = {
   key: 'testKey',
   path: 'testKey',
   isGroup: true,

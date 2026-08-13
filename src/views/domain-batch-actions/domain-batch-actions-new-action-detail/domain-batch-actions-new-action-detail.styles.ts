@@ -32,4 +32,15 @@ export const styled = {
     alignSelf: 'center',
     display: 'flex',
   })),
+  QueryHint: createStyled<'div', { $kind: 'error' | 'caption' }>(
+    'div',
+    ({ $theme, $kind }) => ({
+      ...$theme.typography.ParagraphXSmall,
+      color:
+        $kind === 'error'
+          ? $theme.colors.contentNegative
+          : $theme.colors.contentSecondary,
+      marginTop: $theme.sizing.scale100,
+    })
+  ),
 };

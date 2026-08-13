@@ -39,6 +39,7 @@ export default function WorkflowsHeader<
   showQueryInputOnly,
   noSpacing,
   columnsPickerProps,
+  searchSegmentLabel = 'Search',
 }: Props<P, I, S, Q>) {
   const [areFiltersShown, setAreFiltersShown] = useState(
     expandFiltersByDefault ?? false
@@ -72,7 +73,7 @@ export default function WorkflowsHeader<
             <Segment
               overrides={overrides.inputToggleSegment}
               key="search"
-              label="Search"
+              label={searchSegmentLabel}
             />
           )}
           <Segment

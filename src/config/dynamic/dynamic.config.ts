@@ -9,7 +9,8 @@ import type {
 import archivalDefaultSearchEnabled from './resolvers/archival-default-search-enabled';
 import authStrategy from './resolvers/auth-strategy';
 import { type AuthStrategyConfigValue } from './resolvers/auth-strategy.types';
-import batchActionsEnabled from './resolvers/batch-actions-enabled';
+import batchActionsUiEnabled from './resolvers/batch-actions-ui-enabled';
+import { type BatchActionsUiEnabledResolverParams } from './resolvers/batch-actions-ui-enabled.types';
 import clusters from './resolvers/clusters';
 import clustersPublic from './resolvers/clusters-public';
 import { type PublicClustersConfigs } from './resolvers/clusters-public.types';
@@ -24,8 +25,12 @@ import {
 import extendedDomainInfoEnabled from './resolvers/extended-domain-info-enabled';
 import { type ExtendedDomainInfoEnabledConfig } from './resolvers/extended-domain-info-enabled.types';
 import failoverHistoryEnabled from './resolvers/failover-history-enabled';
-import historyPageV2Enabled from './resolvers/history-page-v2-enabled';
-import { type HistoryPageV2EnabledConfigValue } from './resolvers/history-page-v2-enabled.types';
+import listWorkflowsPartialMatchEnabled from './resolvers/list-workflows-partial-match-enabled';
+import scheduleActionsEnabled from './resolvers/schedule-actions-enabled';
+import {
+  type ScheduleActionsEnabledResolverParams,
+  type ScheduleActionsEnabledConfig,
+} from './resolvers/schedule-actions-enabled.types';
 import schedulesEnabled from './resolvers/schedules-enabled';
 import { type SchedulesEnabledResolverParams } from './resolvers/schedules-enabled.types';
 import workflowActionsEnabled from './resolvers/workflow-actions-enabled';
@@ -91,8 +96,8 @@ const dynamicConfigs: {
     'request',
     true
   >;
-  BATCH_ACTIONS_ENABLED: ConfigAsyncResolverDefinition<
-    undefined,
+  BATCH_ACTIONS_UI_ENABLED: ConfigAsyncResolverDefinition<
+    BatchActionsUiEnabledResolverParams,
     boolean,
     'request',
     true
@@ -103,9 +108,9 @@ const dynamicConfigs: {
     'request',
     true
   >;
-  HISTORY_PAGE_V2_ENABLED: ConfigAsyncResolverDefinition<
-    undefined,
-    HistoryPageV2EnabledConfigValue,
+  SCHEDULE_ACTIONS_ENABLED: ConfigAsyncResolverDefinition<
+    ScheduleActionsEnabledResolverParams,
+    ScheduleActionsEnabledConfig,
     'request',
     true
   >;
@@ -116,6 +121,12 @@ const dynamicConfigs: {
     true
   >;
   WORKFLOWS_LIST_ENABLED: ConfigAsyncResolverDefinition<
+    undefined,
+    boolean,
+    'request',
+    true
+  >;
+  LIST_WORKFLOWS_PARTIAL_MATCH_ENABLED: ConfigAsyncResolverDefinition<
     undefined,
     boolean,
     'request',
@@ -174,8 +185,8 @@ const dynamicConfigs: {
     evaluateOn: 'request',
     isPublic: true,
   },
-  BATCH_ACTIONS_ENABLED: {
-    resolver: batchActionsEnabled,
+  BATCH_ACTIONS_UI_ENABLED: {
+    resolver: batchActionsUiEnabled,
     evaluateOn: 'request',
     isPublic: true,
   },
@@ -184,8 +195,8 @@ const dynamicConfigs: {
     evaluateOn: 'request',
     isPublic: true,
   },
-  HISTORY_PAGE_V2_ENABLED: {
-    resolver: historyPageV2Enabled,
+  SCHEDULE_ACTIONS_ENABLED: {
+    resolver: scheduleActionsEnabled,
     evaluateOn: 'request',
     isPublic: true,
   },
@@ -196,6 +207,11 @@ const dynamicConfigs: {
   },
   WORKFLOWS_LIST_ENABLED: {
     resolver: workflowsListEnabled,
+    evaluateOn: 'request',
+    isPublic: true,
+  },
+  LIST_WORKFLOWS_PARTIAL_MATCH_ENABLED: {
+    resolver: listWorkflowsPartialMatchEnabled,
     evaluateOn: 'request',
     isPublic: true,
   },

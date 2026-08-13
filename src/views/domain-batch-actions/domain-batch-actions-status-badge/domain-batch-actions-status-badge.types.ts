@@ -1,4 +1,4 @@
-import { type BatchActionStatus } from '@/views/domain-batch-actions/domain-batch-actions.types';
+import { type BatchActionStatus } from '@/route-handlers/list-batch-actions/list-batch-actions.types';
 
 export type Props = {
   status: BatchActionStatus;

@@ -1,38 +1,38 @@
 import React, { useEffect, useState } from 'react';
 
 import { Button } from 'baseui/button';
-import {
-  MdOutlineViewStream,
-  MdOutlineViewAgenda,
-  MdSchedule,
-} from 'react-icons/md';
+import { Filter } from 'baseui/icon';
+import { StatefulPopover } from 'baseui/popover';
+import { SegmentedControl, Segment } from 'baseui/segmented-control';
+import { MdSchedule } from 'react-icons/md';
 import { useInView } from 'react-intersection-observer';
 
-import PageFiltersFields from '@/components/page-filters/page-filters-fields/page-filters-fields';
-import PageFiltersToggle from '@/components/page-filters/page-filters-toggle/page-filters-toggle';
 import PageSection from '@/components/page-section/page-section';
+import WorkflowHistoryExportJsonButton from '@/views/workflow-history/workflow-history-export-json-button/workflow-history-export-json-button';
 
-import workflowHistoryFiltersConfig from '../config/workflow-history-filters.config';
-import WorkflowHistoryExpandAllEventsButton from '../workflow-history-expand-all-events-button/workflow-history-expand-all-events-button';
-import WorkflowHistoryExportJsonButton from '../workflow-history-export-json-button/workflow-history-export-json-button';
-import WorkflowHistorySwitchToV2Button from '../workflow-history-switch-to-v2-button/workflow-history-switch-to-v2-button';
-import WorkflowHistoryTimelineChart from '../workflow-history-timeline-chart/workflow-history-timeline-chart';
+import WorkflowHistoryFiltersMenu from '../workflow-history-filters-menu/workflow-history-filters-menu';
+import WorkflowHistoryTimeline from '../workflow-history-timeline/workflow-history-timeline';
 
-import { styled, overrides } from './workflow-history-header.styles';
+import { overrides, styled } from './workflow-history-header.styles';
 import { type Props } from './workflow-history-header.types';
 
 export default function WorkflowHistoryHeader({
-  isExpandAllEvents,
-  toggleIsExpandAllEvents,
   isUngroupedHistoryViewEnabled,
   onClickGroupModeToggle,
   wfHistoryRequestArgs,
   pageFiltersProps,
-  timelineChartProps,
-  isStickyEnabled = false,
+  isStickyEnabled = true,
+  eventGroupsEntries,
+  workflowStartTimeMs,
+  workflowCloseTimeMs,
+  selectedEventId,
+  onClickShowInTable,
+  decodedPageUrlParams,
+  isTimelineShown,
+  setIsTimelineShown,
+  timelineVirtuosoRef,
+  timelineItemToHighlightId,
 }: Props) {
-  const [areFiltersShown, setAreFiltersShown] = useState(true);
-  const [isTimelineChartShown, setIsTimelineChartShown] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
   useEffect(() => {
     if (!isStickyEnabled && isSticky) setIsSticky(false);
@@ -46,12 +46,7 @@ export default function WorkflowHistoryHeader({
     skip: !isStickyEnabled,
   });
 
-  const {
-    activeFiltersCount,
-    queryParams,
-    setQueryParams,
-    ...pageFiltersRest
-  } = pageFiltersProps;
+  const { activeFiltersCount } = pageFiltersProps;
 
   return (
     <>
@@ -61,63 +56,85 @@ export default function WorkflowHistoryHeader({
       <styled.Container
         $isSticky={isSticky}
         $isStickyEnabled={isStickyEnabled}
-        //testing attributes for testing
         data-testid="workflow-history-header-wrapper"
         data-is-sticky={isSticky}
       >
         <PageSection>
           <styled.Header>
-            <styled.Heading>
-              Workflow history
-              <WorkflowHistorySwitchToV2Button />
-            </styled.Heading>
+            <styled.Heading>Workflow history</styled.Heading>
             <styled.Actions>
-              <WorkflowHistoryExpandAllEventsButton
-                isExpandAllEvents={isExpandAllEvents}
-                toggleIsExpandAllEvents={toggleIsExpandAllEvents}
-              />
-              <Button
-                $size="compact"
-                kind="secondary"
-                onClick={onClickGroupModeToggle}
-                startEnhancer={
-                  isUngroupedHistoryViewEnabled ? (
-                    <MdOutlineViewStream size={16} />
-                  ) : (
-                    <MdOutlineViewAgenda size={16} />
-                  )
-                }
-                overrides={overrides.toggleButton}
-              >
-                {isUngroupedHistoryViewEnabled ? 'Group' : 'Ungroup'}
-              </Button>
               <WorkflowHistoryExportJsonButton {...wfHistoryRequestArgs} />
-              <PageFiltersToggle
-                activeFiltersCount={activeFiltersCount}
-                onClick={() => setAreFiltersShown((v) => !v)}
-                isActive={areFiltersShown}
-              />
-              <Button
-                $size="compact"
-                kind={isTimelineChartShown ? 'primary' : 'secondary'}
-                onClick={() => setIsTimelineChartShown((v) => !v)}
-                startEnhancer={<MdSchedule size={16} />}
-                overrides={overrides.toggleButton}
+              <SegmentedControl
+                activeKey={
+                  isUngroupedHistoryViewEnabled ? 'ungrouped' : 'grouped'
+                }
+                onChange={() => onClickGroupModeToggle()}
+                overrides={overrides.groupToggle}
               >
-                Timeline
-              </Button>
+                <Segment
+                  key="grouped"
+                  label="Grouped"
+                  overrides={overrides.groupToggleSegment}
+                />
+                <Segment
+                  key="ungrouped"
+                  label="Ungrouped"
+                  overrides={overrides.groupToggleSegment}
+                />
+              </SegmentedControl>
+              <StatefulPopover
+                placement="bottomRight"
+                overrides={overrides.popover}
+                content={() => (
+                  <WorkflowHistoryFiltersMenu
+                    activeFiltersCount={activeFiltersCount}
+                    queryParams={pageFiltersProps.queryParams}
+                    setQueryParams={pageFiltersProps.setQueryParams}
+                    resetAllFilters={pageFiltersProps.resetAllFilters}
+                  />
+                )}
+                returnFocus
+                autoFocus
+              >
+                <Button
+                  size="compact"
+                  kind="secondary"
+                  startEnhancer={<Filter size={16} />}
+                  overrides={overrides.filtersButton}
+                >
+                  {activeFiltersCount === 0
+                    ? 'Filters'
+                    : `Filters (${activeFiltersCount})`}
+                </Button>
+              </StatefulPopover>
+              {workflowStartTimeMs && (
+                <styled.TimelineButtonContainer>
+                  <Button
+                    size="compact"
+                    kind={isTimelineShown ? 'primary' : 'secondary'}
+                    startEnhancer={<MdSchedule size={16} />}
+                    overrides={overrides.filtersButton}
+                    onClick={() => setIsTimelineShown((v) => !v)}
+                  >
+                    Timeline
+                  </Button>
+                </styled.TimelineButtonContainer>
+              )}
             </styled.Actions>
           </styled.Header>
-          {areFiltersShown && (
-            <PageFiltersFields
-              pageFiltersConfig={workflowHistoryFiltersConfig}
-              queryParams={queryParams}
-              setQueryParams={setQueryParams}
-              {...pageFiltersRest}
-            />
-          )}
-          {typeof window !== 'undefined' && isTimelineChartShown && (
-            <WorkflowHistoryTimelineChart {...timelineChartProps} />
+          {isTimelineShown && workflowStartTimeMs && (
+            <styled.TimelineContainer>
+              <WorkflowHistoryTimeline
+                eventGroupsEntries={eventGroupsEntries}
+                workflowStartTimeMs={workflowStartTimeMs}
+                workflowCloseTimeMs={workflowCloseTimeMs}
+                selectedEventId={selectedEventId}
+                onClickShowInTable={onClickShowInTable}
+                decodedPageUrlParams={decodedPageUrlParams}
+                virtuosoRef={timelineVirtuosoRef}
+                itemToHighlightId={timelineItemToHighlightId}
+              />
+            </styled.TimelineContainer>
           )}
         </PageSection>
       </styled.Container>

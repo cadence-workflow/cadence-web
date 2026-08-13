@@ -30,6 +30,13 @@ export const styled = {
     margin: 0,
     padding: 0,
   })),
+  LoaderWrapper: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: $theme.sizing.scale600,
+    paddingBottom: $theme.sizing.scale600,
+  })),
   DraftIcon: createStyled('span', ({ $theme }: { $theme: Theme }) => ({
     display: 'inline-flex',
     fontSize: $theme.sizing.scale600,

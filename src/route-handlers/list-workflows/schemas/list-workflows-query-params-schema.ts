@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { SORT_ORDERS } from '@/utils/sort-by';
+import escapeVisibilityQueryValue from '@/utils/visibility/escape-visibility-query-value';
 import isWorkflowStatus from '@/views/shared/workflow-status-tag/helpers/is-workflow-status';
 import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
 
@@ -18,9 +19,7 @@ export const visibilityQuerySchema = z.object({
     .trim()
     .optional()
     .transform((search) =>
-      search === undefined
-        ? undefined
-        : search.replace(/['"]/g, (match) => `\\${match}`)
+      search === undefined ? undefined : escapeVisibilityQueryValue(search)
     ),
   query: z.string().optional(),
   statuses: z

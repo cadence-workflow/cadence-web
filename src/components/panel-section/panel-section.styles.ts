@@ -5,7 +5,6 @@ export const styled = {
     'section',
     ({ $theme }: { $theme: Theme }) => ({
       display: 'flex',
-      alignItems: 'center',
       flex: 1,
       flexDirection: 'column',
       gap: $theme.sizing.scale600,

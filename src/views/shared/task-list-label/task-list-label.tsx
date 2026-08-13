@@ -1,4 +1,4 @@
-import { Tag, KIND, VARIANT } from 'baseui/tag';
+import { Tag } from 'baseui/tag';
 
 import { styled, overrides } from './task-list-label.styles';
 import { type Props } from './task-list-label.types';
@@ -9,8 +9,8 @@ export default function TaskListLabel(props: Props) {
     <styled.LabelContainer $isHighlighted={props.isHighlighted}>
       {props.taskList.name}
       <Tag
-        kind={numWorkers === 0 ? KIND.negative : KIND.accent}
-        variant={VARIANT.solid}
+        kind={numWorkers === 0 ? 'negative' : 'accent'}
+        hierarchy="primary"
         closeable={false}
         overrides={overrides.tag}
       >

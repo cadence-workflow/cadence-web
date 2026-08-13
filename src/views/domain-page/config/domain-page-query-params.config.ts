@@ -5,12 +5,72 @@ import {
   type PageQueryParam,
 } from '@/hooks/use-page-query-params/use-page-query-params.types';
 import { type SortOrder } from '@/utils/sort-by';
+import { type DomainSchedulesStatus } from '@/views/domain-schedules/domain-schedules.types';
+import { isDomainSchedulesStatus } from '@/views/domain-schedules/helpers/is-domain-schedules-status';
 import { type WorkflowStatusClosed } from '@/views/domain-workflows-archival/domain-workflows-archival-header/domain-workflows-archival-header.types';
 import { type WorkflowStatusBasicVisibility } from '@/views/domain-workflows-basic/domain-workflows-basic-filters/domain-workflows-basic-filters.types';
 import isWorkflowStatusBasicVisibility from '@/views/domain-workflows-basic/domain-workflows-basic-filters/helpers/is-workflow-status-basic-visibility';
 import isWorkflowStatus from '@/views/shared/workflow-status-tag/helpers/is-workflow-status';
 import { type WorkflowStatus } from '@/views/shared/workflow-status-tag/workflow-status-tag.types';
 import { type WorkflowsHeaderInputType } from '@/views/shared/workflows-header/workflows-header.types';
+
+// URL params scoped to the batch action draft.
+export const domainBatchActionsQueryParamsConfig: [
+  PageQueryParam<'batchActionInputType', WorkflowsHeaderInputType>,
+  PageQueryParam<'batchActionQuery', string>,
+  PageQueryParam<'batchActionSearch', string>,
+  PageQueryParamMultiValue<
+    'batchActionStatuses',
+    Array<WorkflowStatus> | undefined
+  >,
+  PageQueryParam<'batchActionTimeRangeStart', DateFilterValue | undefined>,
+  PageQueryParam<'batchActionTimeRangeEnd', DateFilterValue>,
+  PageQueryParam<'batchActionId', string | undefined>,
+  PageQueryParam<'batchActionWorkflowId', string | undefined>,
+] = [
+  {
+    key: 'batchActionInputType',
+    queryParamKey: 'bainput',
+    defaultValue: 'query',
+    parseValue: (value: string) => (value === 'search' ? 'search' : 'query'),
+  },
+  {
+    key: 'batchActionQuery',
+    queryParamKey: 'baquery',
+    defaultValue: '',
+  },
+  {
+    key: 'batchActionSearch',
+    queryParamKey: 'basearch',
+    defaultValue: '',
+  },
+  {
+    key: 'batchActionStatuses',
+    queryParamKey: 'bastatus',
+    isMultiValue: true,
+    parseValue: (value: Array<string>) =>
+      value.every(isWorkflowStatus) ? value : undefined,
+  },
+  {
+    key: 'batchActionTimeRangeStart',
+    queryParamKey: 'bastart',
+    parseValue: parseDateFilterValue,
+  },
+  {
+    key: 'batchActionTimeRangeEnd',
+    queryParamKey: 'baend',
+    defaultValue: 'now',
+    parseValue: (v) => parseDateFilterValue(v) ?? 'now',
+  },
+  {
+    key: 'batchActionId',
+    queryParamKey: 'baid',
+  },
+  {
+    key: 'batchActionWorkflowId',
+    queryParamKey: 'bawid',
+  },
+] as const;
 
 const domainPageQueryParamsConfig: [
   PageQueryParam<'inputType', WorkflowsHeaderInputType>,
@@ -23,10 +83,8 @@ const domainPageQueryParamsConfig: [
   PageQueryParam<'sortOrder', SortOrder>,
   // Query input
   PageQueryParam<'query', string>,
-  // Batch actions query input (uses separate URL params so the workflows tab
-  // and the batch action draft do not overwrite each other's state).
-  PageQueryParam<'batchInputType', WorkflowsHeaderInputType>,
-  PageQueryParam<'batchQuery', string>,
+  // Batch actions query params (Query + Select mode), defined and exported above.
+  ...typeof domainBatchActionsQueryParamsConfig,
   // Basic Visibility inputs
   PageQueryParam<'workflowId', string>,
   PageQueryParam<'workflowType', string>,
@@ -48,6 +106,9 @@ const domainPageQueryParamsConfig: [
   // Failovers Tab query params
   PageQueryParam<'clusterAttributeScope', string | undefined>,
   PageQueryParam<'clusterAttributeValue', string | undefined>,
+  // Schedules Tab query params
+  PageQueryParam<'schedulesSearch', string>,
+  PageQueryParam<'schedulesStatus', DomainSchedulesStatus | undefined>,
 ] = [
   {
     key: 'inputType',
@@ -92,17 +153,7 @@ const domainPageQueryParamsConfig: [
     key: 'query',
     defaultValue: '',
   },
-  {
-    key: 'batchInputType',
-    queryParamKey: 'batch-input',
-    defaultValue: 'query',
-    parseValue: (value: string) => (value === 'search' ? 'search' : 'query'),
-  },
-  {
-    key: 'batchQuery',
-    queryParamKey: 'batch-query',
-    defaultValue: '',
-  },
+  ...domainBatchActionsQueryParamsConfig,
   {
     key: 'workflowId',
     defaultValue: '',
@@ -188,6 +239,17 @@ const domainPageQueryParamsConfig: [
   {
     key: 'clusterAttributeValue',
     queryParamKey: 'cv',
+  },
+  {
+    key: 'schedulesSearch',
+    queryParamKey: 'schsearch',
+    defaultValue: '',
+  },
+  {
+    key: 'schedulesStatus',
+    queryParamKey: 'schstatus',
+    parseValue: (value: string) =>
+      isDomainSchedulesStatus(value) ? value : undefined,
   },
 ] as const;
 

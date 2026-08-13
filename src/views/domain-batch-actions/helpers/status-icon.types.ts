@@ -1,5 +1,5 @@
-import { type BatchAction } from '../domain-batch-actions.types';
+import { type BatchActionListItem } from '@/route-handlers/list-batch-actions/list-batch-actions.types';
 
 export type Props = {
-  action: BatchAction;
+  action: BatchActionListItem;
 };

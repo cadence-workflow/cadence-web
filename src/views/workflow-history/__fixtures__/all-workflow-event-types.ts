@@ -48,7 +48,6 @@ import {
   failWorkflowExecutionEvent,
   recordMarkerExecutionEvent,
   requestCancelWorkflowExecutionEvent,
-  signalWorkflowExecutionEvent,
   terminateWorkflowExecutionEvent,
   timeoutWorkflowExecutionEvent,
   upsertWorkflowSearchAttributesEvent,
@@ -58,6 +57,7 @@ import {
   cancelTimerTaskEvent,
   fireTimerTaskEvent,
 } from './workflow-history-timer-events';
+import { workflowSignaledEvent } from './workflow-history-workflow-signaled-events';
 
 export const allWorkflowEvents = [
   scheduleActivityTaskEvent,
@@ -98,7 +98,7 @@ export const allWorkflowEvents = [
   failWorkflowExecutionEvent,
   recordMarkerExecutionEvent,
   requestCancelWorkflowExecutionEvent,
-  signalWorkflowExecutionEvent,
+  workflowSignaledEvent,
   terminateWorkflowExecutionEvent,
   timeoutWorkflowExecutionEvent,
   upsertWorkflowSearchAttributesEvent,

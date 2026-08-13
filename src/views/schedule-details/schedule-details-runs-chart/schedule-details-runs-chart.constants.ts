@@ -1,0 +1,104 @@
+import { WORKFLOW_STATUSES } from '@/views/shared/workflow-status-tag/workflow-status-tag.constants';
+
+import { type ChartLegendVariant } from '../schedule-details-runs-chart-legend-icon/schedule-details-runs-chart-legend-icon.types';
+
+export const CHART_HEIGHT_PX = 82;
+
+/** Header row height, sized to fit the mini toolbar buttons (px). */
+export const CHART_HEADER_MIN_HEIGHT_PX = 28;
+export const CHART_TOOLBAR_BUTTON_MIN_HEIGHT_PX = 26;
+
+/** Icon size for the toolbar control glyphs (px). */
+export const CHART_TOOLBAR_ICON_SIZE_PX = 12;
+
+export const CHART_TOOLBAR_BUTTON_LABELS = {
+  zoomOut: 'Zoom out',
+  zoomIn: 'Zoom in',
+  now: 'Now',
+} as const;
+
+export const CHART_LOADING_ARIA_LABEL = 'Loading schedule runs chart';
+
+export const CHART_LOADING_TEST_ID = 'schedule-runs-chart-loading-skeleton';
+
+export const CHART_LEGEND_ICON_SIZE_PX = 14;
+
+export const CHART_SUMMARY_TEST_ID = 'schedule-runs-chart-summary';
+
+export const CHART_LEGEND_ITEMS = [
+  { variant: WORKFLOW_STATUSES.completed, label: 'Completed' },
+  {
+    variant: WORKFLOW_STATUSES.failed,
+    label: 'Terminated/Timed out/Failed',
+  },
+  { variant: WORKFLOW_STATUSES.running, label: 'Running' },
+  { variant: WORKFLOW_STATUSES.canceled, label: 'Canceled' },
+  { variant: 'skipped', label: 'Skipped' },
+  { variant: 'next', label: 'Next run' },
+] as const satisfies ReadonlyArray<{
+  variant: ChartLegendVariant;
+  label: string;
+}>;
+
+/**
+ * How often `now` is re-read. Every tick shifts the time window, re-rendering
+ * the timeline. That is well within budget at 1s, which is the coarsest the
+ * marker can move and still read as advancing rather than stepping.
+ */
+export const CURRENT_TIME_UPDATE_INTERVAL_MS = 1_000;
+
+/** Minimum time span when domain collapses to a single timestamp (ms). */
+export const CHART_MIN_DOMAIN_SPAN_MS = 5 * 60_000;
+
+/** Default past window when no run timestamps are available (ms). */
+export const CHART_DEFAULT_PAST_WINDOW_MS = 6 * 60 * 60_000;
+
+/** Padding to the right of `now` reserved for upcoming expected executions (ms). */
+export const CHART_FUTURE_GUTTER_MS = 30 * 60_000;
+
+/** Horizontal inset applied to the chart drawable area (px). */
+export const CHART_SIDE_PADDING_PX = 24;
+
+/** Radius of the invisible hit area around run glyphs (px). */
+export const CHART_GLYPH_HIT_AREA_RADIUS_PX = 10;
+
+export const CHART_RUN_POPOVER_ENTRY_DELAY_MS = 200;
+
+export const CHART_RUN_POPOVER_TEST_IDS = {
+  runTrigger: 'schedule-runs-chart-run-popover-trigger',
+  skippedTrigger: 'schedule-runs-chart-skipped-popover-trigger',
+  nextTrigger: 'schedule-runs-chart-next-popover-trigger',
+} as const;
+
+export const CHART_CANVAS_TEST_ID = 'schedule-runs-chart-canvas';
+
+/** Multiplier applied when zooming in (smaller span). */
+export const CHART_ZOOM_IN_FACTOR = 0.5;
+
+/** Multiplier applied when zooming out (larger span). */
+export const CHART_ZOOM_OUT_FACTOR = 2;
+
+/** Horizontal position of `now` after panning (0 = left edge, 1 = right edge). */
+export const CHART_NOW_ANCHOR_RATIO = 0.85;
+
+/** Horizontal position of the next run when following pulls it into view. */
+export const CHART_NEXT_RUN_ANCHOR_RATIO = 0.95;
+
+/** Comfortable px gap between consecutive markers at the initial zoom level. */
+export const CHART_EXPECTED_RUN_SLOT_PX = 48;
+
+/** Center-to-center px at max zoom-out; below glyph width for slight overlap. */
+export const CHART_MAX_ZOOM_OUT_MARKER_SPACING_PX = 12;
+
+/** Upper bound on expected occurrences considered when sizing the initial zoom. */
+export const CHART_INITIAL_EXPECTED_RUN_COUNT = 20;
+
+/** How close (as a ratio of the visible span) the loaded edge must be to the view edge before fetching the next page. */
+export const CHART_PAN_FETCH_EDGE_THRESHOLD_RATIO = 0.05;
+
+export const CHART_FETCH_LOADING_SPINNER_SIZE_PX = 16;
+export const CHART_FETCH_LOADING_TEST_ID = 'schedule-runs-chart-fetch-loading';
+export const CHART_FETCH_RETRY_ICON_SIZE_PX = 16;
+
+/** Scale-up and fade-in played by a glyph that arrives on a live chart (ms). */
+export const CHART_GLYPH_ENTER_ANIMATION_MS = 260;

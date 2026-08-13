@@ -20,7 +20,7 @@ const workflowDiagnosticsMetadataParsersConfig: Array<WorkflowDiagnosticsMetadat
           Link,
           {
             href: queryString.stringifyUrl({
-              url: `/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows/${encodeURIComponent(workflowId)}/${encodeURIComponent(runId)}/history`,
+              url: `/domains/${domain}/${cluster}/workflows/${workflowId}/${runId}/history`,
               query: {
                 he: value,
               },

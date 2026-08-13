@@ -377,6 +377,9 @@ export const getFormatHistoryEventSchema = (event: HistoryEvent) => {
     case 'upsertWorkflowSearchAttributesEventAttributes':
       return formatUpsertWorkflowSearchAttributesEventSchema;
 
+    case undefined:
+      return null;
+
     default:
       return unExistingEventType(event.attributes); // used to show a type error if any attributes cases are covered
   }

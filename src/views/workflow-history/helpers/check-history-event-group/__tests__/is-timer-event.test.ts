@@ -1,9 +1,9 @@
 import differenceBy from 'lodash/differenceBy';
 
 import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
-import { allWorkflowEventTypesAttrs } from '@/views/workflow-history/__fixtures__/all-workflow-event-types-attributes';
-import type { TimerHistoryEvent } from '@/views/workflow-history/workflow-history.types';
 
+import { allWorkflowEventTypesAttrs } from '../../../__fixtures__/all-workflow-event-types-attributes';
+import type { TimerHistoryEvent } from '../../../workflow-history.types';
 import isTimerEvent from '../is-timer-event';
 
 const validEvents: Pick<TimerHistoryEvent, 'attributes'>[] = [
@@ -37,7 +37,6 @@ describe('isTimerEvent', () => {
     expect(isTimerEvent(null)).toBe(false);
     //@ts-expect-error undefined is not of type HistoryEvent
     expect(isTimerEvent(undefined)).toBe(false);
-    //@ts-expect-error {} is not of type HistoryEvent
     expect(isTimerEvent({})).toBe(false);
   });
 });

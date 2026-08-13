@@ -1,10 +1,18 @@
 import { type DescribeClusterRequest__Input } from '@/__generated__/proto-ts/uber/cadence/admin/v1/DescribeClusterRequest';
 import { type DescribeClusterResponse } from '@/__generated__/proto-ts/uber/cadence/admin/v1/DescribeClusterResponse';
 import { type DescribeWorkflowExecutionRequest__Input } from '@/__generated__/proto-ts/uber/cadence/admin/v1/DescribeWorkflowExecutionRequest';
+import { type BackfillScheduleRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/BackfillScheduleRequest';
+import { type BackfillScheduleResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/BackfillScheduleResponse';
 import { type CountWorkflowExecutionsRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/CountWorkflowExecutionsRequest';
 import { type CountWorkflowExecutionsResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/CountWorkflowExecutionsResponse';
+import { type CreateScheduleRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/CreateScheduleRequest';
+import { type CreateScheduleResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/CreateScheduleResponse';
+import { type DeleteScheduleRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/DeleteScheduleRequest';
+import { type DeleteScheduleResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/DeleteScheduleResponse';
 import { type DescribeDomainRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeDomainRequest';
 import { type DescribeDomainResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeDomainResponse';
+import { type DescribeScheduleRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeScheduleRequest';
+import { type DescribeScheduleResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeScheduleResponse';
 import { type DescribeTaskListRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeTaskListRequest';
 import { type DescribeTaskListResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeTaskListResponse';
 import { type DescribeWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeWorkflowExecutionResponse';
@@ -30,6 +38,8 @@ import { type ListTaskListPartitionsRequest__Input } from '@/__generated__/proto
 import { type ListTaskListPartitionsResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListTaskListPartitionsResponse';
 import { type ListWorkflowExecutionsRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListWorkflowExecutionsRequest';
 import { type ListWorkflowExecutionsResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListWorkflowExecutionsResponse';
+import { type PauseScheduleRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/PauseScheduleRequest';
+import { type PauseScheduleResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/PauseScheduleResponse';
 import { type QueryWorkflowRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/QueryWorkflowRequest';
 import { type QueryWorkflowResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/QueryWorkflowResponse';
 import { type RequestCancelWorkflowExecutionRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/RequestCancelWorkflowExecutionRequest';
@@ -44,8 +54,12 @@ import { type StartWorkflowExecutionRequest__Input } from '@/__generated__/proto
 import { type StartWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/StartWorkflowExecutionResponse';
 import { type TerminateWorkflowExecutionRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/TerminateWorkflowExecutionRequest';
 import { type TerminateWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/TerminateWorkflowExecutionResponse';
+import { type UnpauseScheduleRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/UnpauseScheduleRequest';
+import { type UnpauseScheduleResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/UnpauseScheduleResponse';
 import { type UpdateDomainRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/UpdateDomainRequest';
 import { type UpdateDomainResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/UpdateDomainResponse';
+import { type UpdateScheduleRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/UpdateScheduleRequest';
+import { type UpdateScheduleResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/UpdateScheduleResponse';
 import { type ClusterConfig } from '@/config/dynamic/resolvers/clusters.types';
 
 import grpcServiceConfigurations from '../../config/grpc/grpc-services-config';
@@ -75,6 +89,21 @@ export type GRPCClusterMethods = {
   countWorkflows: (
     payload: CountWorkflowExecutionsRequest__Input
   ) => Promise<CountWorkflowExecutionsResponse>;
+  createSchedule: (
+    payload: CreateScheduleRequest__Input
+  ) => Promise<CreateScheduleResponse>;
+  backfillSchedule: (
+    payload: BackfillScheduleRequest__Input
+  ) => Promise<BackfillScheduleResponse>;
+  deleteSchedule: (
+    payload: DeleteScheduleRequest__Input
+  ) => Promise<DeleteScheduleResponse>;
+  describeSchedule: (
+    payload: DescribeScheduleRequest__Input
+  ) => Promise<DescribeScheduleResponse>;
+  updateSchedule: (
+    payload: UpdateScheduleRequest__Input
+  ) => Promise<UpdateScheduleResponse>;
   describeCluster: (
     payload: DescribeClusterRequest__Input
   ) => Promise<DescribeClusterResponse>;
@@ -105,6 +134,12 @@ export type GRPCClusterMethods = {
   listSchedules: (
     payload: ListSchedulesRequest__Input
   ) => Promise<ListSchedulesResponse>;
+  pauseSchedule: (
+    payload: PauseScheduleRequest__Input
+  ) => Promise<PauseScheduleResponse>;
+  unpauseSchedule: (
+    payload: UnpauseScheduleRequest__Input
+  ) => Promise<UnpauseScheduleResponse>;
   listTaskListPartitions: (
     payload: ListTaskListPartitionsRequest__Input
   ) => Promise<ListTaskListPartitionsResponse>;
@@ -243,6 +278,41 @@ const getClusterServicesMethods = async (
       method: 'CountWorkflowExecutions',
       metadata: metadata,
     }),
+    createSchedule: scheduleService.request<
+      CreateScheduleRequest__Input,
+      CreateScheduleResponse
+    >({
+      method: 'CreateSchedule',
+      metadata: metadata,
+    }),
+    backfillSchedule: scheduleService.request<
+      BackfillScheduleRequest__Input,
+      BackfillScheduleResponse
+    >({
+      method: 'BackfillSchedule',
+      metadata: metadata,
+    }),
+    deleteSchedule: scheduleService.request<
+      DeleteScheduleRequest__Input,
+      DeleteScheduleResponse
+    >({
+      method: 'DeleteSchedule',
+      metadata: metadata,
+    }),
+    describeSchedule: scheduleService.request<
+      DescribeScheduleRequest__Input,
+      DescribeScheduleResponse
+    >({
+      method: 'DescribeSchedule',
+      metadata: metadata,
+    }),
+    updateSchedule: scheduleService.request<
+      UpdateScheduleRequest__Input,
+      UpdateScheduleResponse
+    >({
+      method: 'UpdateSchedule',
+      metadata: metadata,
+    }),
     describeCluster: adminService.request<
       DescribeClusterRequest__Input,
       DescribeClusterResponse
@@ -308,6 +378,20 @@ const getClusterServicesMethods = async (
       ListSchedulesResponse
     >({
       method: 'ListSchedules',
+      metadata: metadata,
+    }),
+    pauseSchedule: scheduleService.request<
+      PauseScheduleRequest__Input,
+      PauseScheduleResponse
+    >({
+      method: 'PauseSchedule',
+      metadata: metadata,
+    }),
+    unpauseSchedule: scheduleService.request<
+      UnpauseScheduleRequest__Input,
+      UnpauseScheduleResponse
+    >({
+      method: 'UnpauseSchedule',
       metadata: metadata,
     }),
     listTaskListPartitions: workflowService.request<

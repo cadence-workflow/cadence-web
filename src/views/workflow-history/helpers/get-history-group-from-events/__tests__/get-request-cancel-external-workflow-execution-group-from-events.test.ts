@@ -1,8 +1,7 @@
 import {
   initiateRequestCancelExternalWorkflowEvent,
   requestCancelExternalWorkflowEvent,
-} from '@/views/workflow-history/__fixtures__/workflow-history-request-cancel-external-workflow-events';
-
+} from '../../../__fixtures__/workflow-history-request-cancel-external-workflow-events';
 import type { RequestCancelExternalWorkflowExecutionHistoryEvent } from '../../../workflow-history.types';
 import getRequestCancelExternalWorkflowExecutionGroupFromEvents from '../get-request-cancel-external-workflow-execution-group-from-events';
 

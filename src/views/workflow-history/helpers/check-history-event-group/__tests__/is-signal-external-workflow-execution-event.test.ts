@@ -1,9 +1,9 @@
 import differenceBy from 'lodash/differenceBy';
 
 import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
-import { allWorkflowEventTypesAttrs } from '@/views/workflow-history/__fixtures__/all-workflow-event-types-attributes';
-import type { SignalExternalWorkflowExecutionHistoryEvent } from '@/views/workflow-history/workflow-history.types';
 
+import { allWorkflowEventTypesAttrs } from '../../../__fixtures__/all-workflow-event-types-attributes';
+import type { SignalExternalWorkflowExecutionHistoryEvent } from '../../../workflow-history.types';
 import isSignalExternalWorkflowExecutionEvent from '../is-signal-external-workflow-execution-event';
 
 const validEvents: Pick<
@@ -40,7 +40,6 @@ describe('isSignalExternalWorkflowExecutionEvent', () => {
     expect(isSignalExternalWorkflowExecutionEvent(null)).toBe(false);
     //@ts-expect-error undefined is not of type HistoryEvent
     expect(isSignalExternalWorkflowExecutionEvent(undefined)).toBe(false);
-    //@ts-expect-error {} is not of type HistoryEvent
     expect(isSignalExternalWorkflowExecutionEvent({})).toBe(false);
   });
 });

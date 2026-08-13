@@ -3,9 +3,8 @@ import type { Timestamp__Input } from '@/__generated__/proto-ts/google/protobuf/
 export default function getGrpcTimestampFromIso(
   isoDate: string
 ): Timestamp__Input {
-  const date = new Date(isoDate);
-  return {
-    seconds: date.getTime() / 1000,
-    nanos: date.getUTCMilliseconds() * 1000000,
-  };
+  const ms = Date.parse(isoDate);
+  const seconds = Math.floor(ms / 1000);
+  const nanos = (ms - seconds * 1000) * 1_000_000;
+  return { seconds, nanos };
 }

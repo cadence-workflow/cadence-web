@@ -1,78 +1,295 @@
 'use client';
-import React, { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
+import { Banner, HIERARCHY, KIND } from 'baseui/banner';
+import { notFound } from 'next/navigation';
+import { MdErrorOutline } from 'react-icons/md';
+
+import ErrorPanel from '@/components/error-panel/error-panel';
+import GuidedTourProvider from '@/components/guided-tour/guided-tour-provider/guided-tour-provider';
+import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
+import useConfigValue from '@/hooks/use-config-value/use-config-value';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
+import { type BatchActionListItem } from '@/route-handlers/list-batch-actions/list-batch-actions.types';
 import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
 import { type DomainPageTabContentProps } from '@/views/domain-page/domain-page-content/domain-page-content.types';
+import useDescribeBatchAction from '@/views/shared/hooks/use-describe-batch-action/use-describe-batch-action';
+import useListBatchActions from '@/views/shared/hooks/use-list-batch-actions/use-list-batch-actions';
 
+import {
+  domainBatchActionsOverviewEmptyTourConfig,
+  domainBatchActionsOverviewTourConfig,
+} from './config/domain-batch-actions-tour.config';
 import DomainBatchActionDetail from './domain-batch-actions-detail/domain-batch-actions-detail';
 import DomainBatchActionsNewActionDetail from './domain-batch-actions-new-action-detail/domain-batch-actions-new-action-detail';
+import DomainBatchActionsNoActionsPlaceholder from './domain-batch-actions-no-actions-placeholder/domain-batch-actions-no-actions-placeholder';
 import DomainBatchActionsSidebar from './domain-batch-actions-sidebar/domain-batch-actions-sidebar';
-import { MOCK_BATCH_ACTIONS } from './domain-batch-actions.constants';
+import {
+  BATCH_ACTIONS_PAGE_SIZE,
+  BATCH_ACTIONS_LIST_REFETCH_INTERVAL,
+  BATCH_ACTION_DEFAULT_QUERY,
+  BATCH_ACTION_DEFAULT_STATUSES,
+  BATCH_ACTION_DETAIL_REFETCH_INTERVAL,
+  BATCH_DRAFT_RESET_PARAMS,
+  DRAFT_ACTION_ID,
+} from './domain-batch-actions.constants';
 import { styled } from './domain-batch-actions.styles';
+import resolveSelectedBatchAction from './helpers/resolve-selected-batch-action';
 
 export default function DomainBatchActions(props: DomainPageTabContentProps) {
-  const [queryParams] = usePageQueryParams(domainPageQueryParamsConfig);
+  const { data: isBatchActionsEnabled, isLoading: isConfigLoading } =
+    useConfigValue('BATCH_ACTIONS_UI_ENABLED', {
+      domain: props.domain,
+      cluster: props.cluster,
+    });
 
-  // TODO: replace with useSuspenseQuery once the batch-actions list endpoint exists
-  const batchActions = MOCK_BATCH_ACTIONS;
+  if (isConfigLoading) {
+    return <SectionLoadingIndicator />;
+  }
 
-  // TODO: lift selectedActionId into a query param to support deep linking.
-  const [selectedActionId, setSelectedActionId] = useState<string | null>(
-    batchActions[0]?.id ?? null
+  if (!isBatchActionsEnabled) {
+    return notFound();
+  }
+
+  return <DomainBatchActionsContent {...props} />;
+}
+
+function DomainBatchActionsContent(props: DomainPageTabContentProps) {
+  const [queryParams, setQueryParams] = usePageQueryParams(
+    domainPageQueryParamsConfig
   );
-  // The "Batch workflow actions" dropdown is the only producer of `batch-query`
-  // in the URL; its presence signals that the user wants the draft open.
-  const isNewActionRequested = Boolean(queryParams.batchQuery);
-  const [isDraftOpen, setIsDraftOpen] = useState(isNewActionRequested);
-  const [isDraftSelected, setIsDraftSelected] = useState(isNewActionRequested);
 
-  const selectedAction = batchActions.find((a) => a.id === selectedActionId);
+  const {
+    data,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+  } = useListBatchActions({
+    domain: props.domain,
+    cluster: props.cluster,
+    pageSize: BATCH_ACTIONS_PAGE_SIZE,
+    // Poll while any action is still RUNNING so new actions and status changes
+    // appear without a manual refresh; stop once everything is terminal.
+    refetchInterval: (query) =>
+      query.state.data?.pages.some((page) =>
+        page.batchActions?.some((action) => action.status === 'RUNNING')
+      )
+        ? BATCH_ACTIONS_LIST_REFETCH_INTERVAL
+        : false,
+    // Throw only when the initial load fails (no data yet) so the route-level
+    // error boundary renders the tab error. Next-page failures keep the
+    // sidebar visible and are surfaced inline by TableInfiniteScrollLoader.
+    throwOnError: (_err, query) => query.state.data === undefined,
+  });
+
+  const isDraftSelected = queryParams.batchActionId === DRAFT_ACTION_ID;
+
+  // Keep the draft entry visible in the sidebar even after the user navigates
+  // to another action, until they explicitly discard it.
+  const [isDraftOpen, setIsDraftOpen] = useState(isDraftSelected);
+
+  // Sync sidebar draft visibility when URL changes to draft (e.g. back/forward)
+  useEffect(() => {
+    if (isDraftSelected) {
+      setIsDraftOpen(true);
+    }
+  }, [isDraftSelected]);
+
+  // Computed defensively (data may be undefined while loading) so the hooks
+  // below are always called unconditionally, before any early return.
+  const batchActions = useMemo(
+    () => data?.pages.flatMap((p) => p.batchActions ?? []) ?? [],
+    [data]
+  );
+
+  const { selectedActionId, selectedWorkflowId } = resolveSelectedBatchAction({
+    batchActions,
+    batchActionId: queryParams.batchActionId,
+    batchActionWorkflowId: queryParams.batchActionWorkflowId,
+  });
+
+  const {
+    data: batchActionDetail,
+    isLoading: isLoadingBatchActionDetail,
+    error: batchActionDetailError,
+    refetch: refetchBatchActionDetail,
+  } = useDescribeBatchAction({
+    domain: props.domain,
+    cluster: props.cluster,
+    workflowId: selectedWorkflowId ?? '',
+    runId: selectedActionId ?? '',
+    enabled: !isDraftSelected && !!selectedActionId && !!selectedWorkflowId,
+    refetchInterval: (query) =>
+      query.state.data?.status === 'RUNNING'
+        ? BATCH_ACTION_DETAIL_REFETCH_INTERVAL
+        : false,
+  });
+
+  // The URL carries only one of the two required ids, so no action could be
+  // resolved (see resolveSelectedBatchAction).
+  const isInvalidSelection =
+    !isDraftSelected &&
+    !selectedActionId &&
+    (Boolean(queryParams.batchActionId) ||
+      Boolean(queryParams.batchActionWorkflowId));
+
+  // The selection can't be shown: it's an invalid URL pair, or describe
+  // reported the action isn't a batch action / doesn't exist.
+  const isSelectedActionNotFound =
+    !isDraftSelected &&
+    (isInvalidSelection ||
+      (!!selectedActionId && batchActionDetailError?.status === 404));
+
+  if (isLoading) {
+    return <SectionLoadingIndicator />;
+  }
+  // Should never happen as we have throwOnError but better for type safety
+  if (!data) {
+    throw new Error('Batch actions failed to load');
+  }
 
   const handleCreateNew = () => {
     setIsDraftOpen(true);
-    setIsDraftSelected(true);
+    setQueryParams({
+      ...BATCH_DRAFT_RESET_PARAMS,
+      batchActionId: DRAFT_ACTION_ID,
+      batchActionQuery: BATCH_ACTION_DEFAULT_QUERY,
+      batchActionStatuses: BATCH_ACTION_DEFAULT_STATUSES,
+    });
   };
 
-  const handleSelectAction = (id: string) => {
-    setSelectedActionId(id);
-    setIsDraftSelected(false);
+  const handleSelectAction = (action: BatchActionListItem) => {
+    setQueryParams({
+      batchActionId: action.runId,
+      batchActionWorkflowId: action.workflowId,
+    });
+  };
+
+  const handleClearSelectedAction = () => {
+    setQueryParams({
+      batchActionId: undefined,
+      batchActionWorkflowId: undefined,
+    });
   };
 
   const handleSelectDraft = () => {
-    setIsDraftSelected(true);
+    setQueryParams({ batchActionId: DRAFT_ACTION_ID });
   };
 
   const handleDiscard = () => {
     setIsDraftOpen(false);
-    setIsDraftSelected(false);
+    setQueryParams(BATCH_DRAFT_RESET_PARAMS);
   };
 
+  const isEmpty = batchActions.length === 0 && !isDraftOpen;
+
   return (
-    <styled.Container>
-      <styled.Sidebar>
-        <DomainBatchActionsSidebar
-          batchActions={batchActions}
-          isDraftOpen={isDraftOpen}
-          isDraftSelected={isDraftSelected}
-          selectedActionId={selectedActionId}
-          onSelectAction={handleSelectAction}
-          onSelectDraft={handleSelectDraft}
-          onCreateNew={handleCreateNew}
-        />
-      </styled.Sidebar>
-      <styled.DetailPanel>
-        {isDraftSelected && (
-          <DomainBatchActionsNewActionDetail
-            domain={props.domain}
-            cluster={props.cluster}
-            onDiscard={handleDiscard}
-          />
-        )}
-        {!isDraftSelected && selectedAction && (
-          <DomainBatchActionDetail batchAction={selectedAction} />
-        )}
-      </styled.DetailPanel>
-    </styled.Container>
+    <GuidedTourProvider
+      tourId={isEmpty ? 'batch-actions-empty' : 'batch-actions-overview'}
+      steps={
+        isEmpty
+          ? domainBatchActionsOverviewEmptyTourConfig
+          : domainBatchActionsOverviewTourConfig
+      }
+      // Don't auto-start the overview while a draft is open (e.g. deep link)
+      autoStart={!isDraftOpen}
+    >
+      {isEmpty ? (
+        <DomainBatchActionsNoActionsPlaceholder onCreateNew={handleCreateNew} />
+      ) : (
+        <styled.Container>
+          <styled.Sidebar>
+            <DomainBatchActionsSidebar
+              batchActions={batchActions}
+              isDraftOpen={isDraftOpen}
+              isDraftSelected={isDraftSelected}
+              selectedActionId={selectedActionId}
+              selectedActionDetailStatus={batchActionDetail?.status}
+              onSelectAction={handleSelectAction}
+              onSelectDraft={handleSelectDraft}
+              onCreateNew={handleCreateNew}
+              fetchNextPage={fetchNextPage}
+              hasNextPage={hasNextPage}
+              isFetchingNextPage={isFetchingNextPage}
+              error={error}
+            />
+          </styled.Sidebar>
+          <styled.DetailPanel>
+            {isDraftSelected && (
+              <DomainBatchActionsNewActionDetail
+                domain={props.domain}
+                cluster={props.cluster}
+                onDiscard={handleDiscard}
+              />
+            )}
+            {!isDraftSelected &&
+              (selectedActionId || isInvalidSelection) &&
+              (isSelectedActionNotFound ? (
+                <ErrorPanel
+                  message="Batch action not found"
+                  description="This batch action does not exist or is no longer available."
+                  actions={[
+                    {
+                      kind: 'callback',
+                      label: 'View batch actions',
+                      onClick: handleClearSelectedAction,
+                    },
+                  ]}
+                />
+              ) : batchActionDetailError && !batchActionDetail ? (
+                <ErrorPanel
+                  error={batchActionDetailError}
+                  message="Failed to load batch action details"
+                  actions={[
+                    {
+                      kind: 'callback',
+                      label: 'Retry',
+                      onClick: () => refetchBatchActionDetail(),
+                    },
+                  ]}
+                />
+              ) : (
+                selectedWorkflowId &&
+                (isLoadingBatchActionDetail || batchActionDetail) && (
+                  <>
+                    {batchActionDetailError && batchActionDetail && (
+                      <Banner
+                        hierarchy={HIERARCHY.low}
+                        kind={KIND.warning}
+                        artwork={{ icon: MdErrorOutline }}
+                        action={{
+                          label: 'Retry',
+                          onClick: () => refetchBatchActionDetail(),
+                        }}
+                      >
+                        Showing last known data. Could not refresh batch action
+                        details.
+                      </Banner>
+                    )}
+                    {batchActionDetail?.progressError && (
+                      <Banner
+                        hierarchy={HIERARCHY.low}
+                        kind={KIND.warning}
+                        artwork={{ icon: MdErrorOutline }}
+                      >
+                        Could not load batch action progress.
+                      </Banner>
+                    )}
+                    <DomainBatchActionDetail
+                      domain={props.domain}
+                      cluster={props.cluster}
+                      workflowId={selectedWorkflowId}
+                      batchAction={batchActionDetail}
+                      loading={isLoadingBatchActionDetail}
+                    />
+                  </>
+                )
+              ))}
+          </styled.DetailPanel>
+        </styled.Container>
+      )}
+    </GuidedTourProvider>
   );
 }

@@ -1,4 +1,10 @@
 import { styled as createStyled, type Theme } from 'baseui';
+import { type ButtonOverrides } from 'baseui/button';
+import { type PopoverOverrides } from 'baseui/popover';
+import {
+  type SegmentOverrides,
+  type SegmentedControlOverrides,
+} from 'baseui/segmented-control';
 import { type StyleObject } from 'styletron-react';
 
 export const styled = {
@@ -70,15 +76,76 @@ export const styled = {
       },
     })
   ),
+  TimelineContainer: createStyled(
+    'div',
+    ({ $theme }: { $theme: Theme }): StyleObject => ({
+      display: 'none',
+      [$theme.mediaQuery.medium]: {
+        display: 'block',
+      },
+    })
+  ),
+  TimelineButtonContainer: createStyled(
+    'div',
+    ({ $theme }: { $theme: Theme }): StyleObject => ({
+      display: 'none',
+      [$theme.mediaQuery.medium]: {
+        display: 'block',
+      },
+    })
+  ),
 };
 
 export const overrides = {
-  toggleButton: {
-    BaseButton: {
-      style: ({ $theme }: { $theme: Theme }) => ({
-        paddingLeft: $theme.sizing.scale500,
-        paddingRight: $theme.sizing.scale500,
+  groupToggle: {
+    Root: {
+      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+        height: $theme.sizing.scale950,
+        padding: $theme.sizing.scale0,
+        borderRadius: $theme.borders.radius300,
+        ...$theme.typography.ParagraphSmall,
+        width: 'auto',
+        flexGrow: 1,
+        [$theme.mediaQuery.medium]: {
+          flexGrow: 0,
+        },
       }),
     },
-  },
+    SegmentList: {
+      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+        height: $theme.sizing.scale950,
+        ...$theme.typography.ParagraphSmall,
+      }),
+    },
+    Active: {
+      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+        height: $theme.sizing.scale900,
+        top: 0,
+      }),
+    },
+  } satisfies SegmentedControlOverrides,
+  groupToggleSegment: {
+    Segment: {
+      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+        height: $theme.sizing.scale900,
+        whiteSpace: 'nowrap',
+      }),
+    },
+  } satisfies SegmentOverrides,
+  popover: {
+    Inner: {
+      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+        backgroundColor: $theme.colors.backgroundPrimary,
+        padding: $theme.sizing.scale600,
+        maxWidth: '400px',
+      }),
+    },
+  } satisfies PopoverOverrides,
+  filtersButton: {
+    Root: {
+      style: {
+        whiteSpace: 'nowrap',
+      },
+    },
+  } satisfies ButtonOverrides,
 };

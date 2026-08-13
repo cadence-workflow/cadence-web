@@ -1,0 +1,240 @@
+import React, { useEffect } from 'react';
+
+import { useForm, type FieldPath } from 'react-hook-form';
+
+import {
+  fireEvent,
+  render,
+  screen,
+  userEvent,
+  waitFor,
+} from '@/test-utils/rtl';
+
+import { type DomainSchedulesCreateFormData } from '../../domain-schedules-create-modal/domain-schedules-create-modal.types';
+import DomainSchedulesCreateForm from '../domain-schedules-create-form';
+
+const mockUseTaskListFieldValidation = jest.fn();
+
+jest.mock(
+  '@/views/workflow-actions/workflow-action-start-form/hooks/use-task-list-field-validation',
+  () => jest.fn((...args) => mockUseTaskListFieldValidation(...args))
+);
+
+const MOCK_DOMAIN = 'test-domain';
+const MOCK_CLUSTER = 'test-cluster';
+
+/** Required fields rendered by `DomainSchedulesCreateForm` (excludes optional input / pause / prefix / SDK default). */
+const REQUIRED_FORM_FIELD_PATHS: FieldPath<DomainSchedulesCreateFormData>[] = [
+  'workflowType.name',
+  'taskList.name',
+  'executionStartToCloseTimeoutSeconds',
+  'cronExpression',
+  'input',
+];
+
+describe('DomainSchedulesCreateForm', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('renders form fields', async () => {
+    await setup({});
+
+    expect(
+      screen.getByRole('textbox', { name: 'Workflow Type' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('textbox', { name: 'Task List' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('spinbutton', {
+        name: 'Execution Start-to-Close Timeout',
+      })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('spinbutton', {
+        name: 'Task Start-to-Close Timeout',
+      })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('radiogroup', { name: 'Worker SDK' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('textbox', { name: 'JSON input arguments (optional)' })
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText('Minute')).toBeInTheDocument();
+    expect(
+      screen.getByRole('checkbox', { name: 'Enable pause on failure' })
+    ).toBeInTheDocument();
+  });
+
+  it('displays field errors wired from react-hook-form state', async () => {
+    await setup({ injectFieldErrors: true });
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('textbox', { name: 'Workflow Type' })
+      ).toHaveAttribute('aria-invalid', 'true');
+    });
+
+    expect(screen.getByRole('textbox', { name: 'Task List' })).toHaveAttribute(
+      'aria-invalid',
+      'true'
+    );
+
+    expect(
+      screen.getByRole('spinbutton', {
+        name: 'Execution Start-to-Close Timeout',
+      })
+    ).toHaveAttribute('aria-invalid', 'true');
+
+    expect(screen.getByLabelText('Minute')).toHaveAttribute(
+      'aria-invalid',
+      'true'
+    );
+  });
+
+  it('handles text & number input changes correctly', async () => {
+    const { user } = await setup({});
+
+    const taskListInput = screen.getByRole('textbox', { name: 'Task List' });
+    await user.type(taskListInput, 'test-task-list');
+    expect(taskListInput).toHaveValue('test-task-list');
+
+    const workflowTypeInput = screen.getByRole('textbox', {
+      name: 'Workflow Type',
+    });
+    await user.clear(workflowTypeInput);
+    await user.type(workflowTypeInput, 'my-workflow');
+    expect(workflowTypeInput).toHaveValue('my-workflow');
+
+    const executionTimeout = screen.getByRole('spinbutton', {
+      name: 'Execution Start-to-Close Timeout',
+    });
+    fireEvent.change(executionTimeout, { target: { value: '400' } });
+    expect(executionTimeout).toHaveValue(400);
+  });
+
+  it('renders with default worker SDK and pause-on-failure defaults', async () => {
+    await setup({});
+
+    expect(screen.getByRole('radio', { name: 'GO' })).toBeChecked();
+    expect(
+      screen.getByRole('checkbox', { name: 'Enable pause on failure' })
+    ).not.toBeChecked();
+  });
+
+  it('handles worker SDK language selection', async () => {
+    const { user } = await setup({});
+
+    const javaRadio = screen.getByRole('radio', { name: 'JAVA' });
+    await user.click(javaRadio);
+    expect(javaRadio).toBeChecked();
+
+    const goRadio = screen.getByRole('radio', { name: 'GO' });
+    await user.click(goRadio);
+    expect(goRadio).toBeChecked();
+  });
+
+  it('toggles pause on failure', async () => {
+    const { user } = await setup({});
+
+    const checkbox = screen.getByRole('checkbox', {
+      name: 'Enable pause on failure',
+    });
+    await user.click(checkbox);
+    expect(checkbox).toBeChecked();
+
+    await user.click(checkbox);
+    expect(checkbox).not.toBeChecked();
+  });
+
+  it('shows warning caption when taskListCaptionMessage exists', async () => {
+    await setup({
+      taskListValidation: {
+        isTaskListLoading: false,
+        taskListCaptionMessage: 'This task list has no workers',
+      },
+    });
+
+    expect(
+      screen.getByText('This task list has no workers')
+    ).toBeInTheDocument();
+  });
+
+  it('passes scheduleIdReadOnly down to the advanced fields', async () => {
+    const { user } = await setup({ scheduleIdReadOnly: true });
+
+    await user.click(
+      screen.getByRole('button', { name: /show advanced configurations/i })
+    );
+
+    expect(screen.getByLabelText('Schedule ID')).toBeDisabled();
+  });
+});
+
+type SetupProps = {
+  defaultValues?: Partial<DomainSchedulesCreateFormData>;
+  /** Applies fixed `setError` calls (same role as passing `fieldErrors` into start form tests). */
+  injectFieldErrors?: boolean;
+  taskListValidation?: ReturnType<typeof mockUseTaskListFieldValidation>;
+  scheduleIdReadOnly?: boolean;
+};
+
+function TestWrapper({
+  defaultValues,
+  injectFieldErrors,
+  scheduleIdReadOnly,
+}: {
+  defaultValues?: Partial<DomainSchedulesCreateFormData>;
+  injectFieldErrors?: boolean;
+  scheduleIdReadOnly?: boolean;
+}) {
+  const { control, trigger, setError, clearErrors } =
+    useForm<DomainSchedulesCreateFormData>({
+      defaultValues: { ...defaultValues },
+      mode: 'onSubmit',
+    });
+
+  useEffect(() => {
+    if (!injectFieldErrors) return;
+    for (const path of REQUIRED_FORM_FIELD_PATHS) {
+      setError(path, { type: 'required', message: 'is required' });
+    }
+  }, [injectFieldErrors, setError]);
+
+  return (
+    <DomainSchedulesCreateForm
+      control={control}
+      trigger={trigger}
+      clearErrors={clearErrors}
+      domain={MOCK_DOMAIN}
+      cluster={MOCK_CLUSTER}
+      scheduleIdReadOnly={scheduleIdReadOnly}
+    />
+  );
+}
+
+async function setup({
+  defaultValues,
+  injectFieldErrors = false,
+  scheduleIdReadOnly,
+  taskListValidation = {
+    isTaskListLoading: false,
+    taskListCaptionMessage: null,
+  },
+}: Partial<SetupProps> = {}) {
+  mockUseTaskListFieldValidation.mockReturnValue(taskListValidation);
+
+  const user = userEvent.setup();
+
+  render(
+    <TestWrapper
+      defaultValues={defaultValues}
+      injectFieldErrors={injectFieldErrors}
+      scheduleIdReadOnly={scheduleIdReadOnly}
+    />
+  );
+
+  return { user };
+}

@@ -1,64 +1,61 @@
-import { styled as createStyled } from 'baseui';
+import { styled as createStyled, withStyle, type Theme } from 'baseui';
+import { type BadgeProps, type BadgeOverrides } from 'baseui/badge';
 import { type SkeletonOverrides } from 'baseui/skeleton/types';
-
-import type { StyletronCSSObjectValue } from '@/hooks/use-styletron-classes';
-
-import getBadgeContainerSize from './helpers/get-badge-container-size';
-import { WORKFLOW_EVENT_STATUS } from './workflow-history-event-status-badge.constants';
-import type {
-  Props,
-  WorkflowEventStatusBadgeSize,
-} from './workflow-history-event-status-badge.types';
-
-export const overrides = {
-  circularSkeleton: {
-    Root: {
-      style: {
-        borderRadius: '50%',
-        flexShrink: 0, // prevent badge from shrinking in flex containers
-      },
-    },
-  } satisfies SkeletonOverrides,
-};
+import { Spinner } from 'baseui/spinner';
+import { type StyleObject } from 'styletron-react';
 
 export const styled = {
-  BadgeContainer: createStyled<
+  BadgeContentContainer: createStyled(
     'div',
-    { $status: Props['status']; $size: WorkflowEventStatusBadgeSize }
-  >('div', ({ $size, $status, $theme }) => {
-    const containerSize = getBadgeContainerSize($theme, $size);
-
-    return {
+    ({ $theme }: { $theme: Theme }) => ({
+      ...$theme.typography.LabelXSmall,
       display: 'flex',
+      flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'center',
-      borderRadius: '16px',
-      flexShrink: 0,
-      width: containerSize,
-      height: containerSize,
-      ...(
-        {
-          [WORKFLOW_EVENT_STATUS.COMPLETED]: {
-            color: '#009A51',
-            backgroundColor: '#D3EFDA',
-          },
-          [WORKFLOW_EVENT_STATUS.ONGOING]: {
-            backgroundColor: '#DEE9FE',
-          },
-          [WORKFLOW_EVENT_STATUS.FAILED]: {
-            color: $theme.colors.negative,
-            backgroundColor: '#FFE1DE',
-          },
-          [WORKFLOW_EVENT_STATUS.CANCELED]: {
-            color: $theme.colors.negative,
-            backgroundColor: '#FFE1DE',
-          },
-          [WORKFLOW_EVENT_STATUS.WAITING]: {
-            color: $theme.colors.black,
-            backgroundColor: $theme.colors.backgroundSecondary,
-          },
-        } satisfies Record<Props['status'], StyletronCSSObjectValue>
-      )[$status],
-    };
-  }),
+      gap: $theme.sizing.scale100,
+    })
+  ),
+  OngoingSpinner: withStyle(Spinner, ({ $theme }) => ({
+    width: $theme.sizing.scale500,
+    height: $theme.sizing.scale500,
+    borderWidth: '2px',
+    marginRight: '1px',
+    marginLeft: '1px',
+    borderTopColor: $theme.colors.contentInversePrimary,
+    borderRightColor: $theme.colors.accent300,
+    borderLeftColor: $theme.colors.accent300,
+    borderBottomColor: $theme.colors.accent300,
+  })),
+};
+
+export const overrides = {
+  badge: {
+    Badge: {
+      style: ({
+        $theme,
+        $color,
+        $hierarchy,
+      }: {
+        $theme: Theme;
+        $color: BadgeProps['color'];
+        $hierarchy: BadgeProps['hierarchy'];
+      }): StyleObject => {
+        if ($color === 'positive' && $hierarchy === 'secondary') {
+          return {
+            color: $theme.colors.positive500,
+          };
+        }
+
+        return {};
+      },
+    },
+  } satisfies BadgeOverrides,
+  badgeSkeleton: {
+    Root: {
+      style: ({ $theme }: { $theme: Theme }) => ({
+        borderRadius: $theme.borders.radius200,
+        flexShrink: 0,
+      }),
+    },
+  } satisfies SkeletonOverrides,
 };

@@ -36,7 +36,11 @@ export default function DomainPageTabs() {
   );
 
   const { data: isBatchActionsEnabled } = useSuspenseConfigValue(
-    'BATCH_ACTIONS_ENABLED'
+    'BATCH_ACTIONS_UI_ENABLED',
+    {
+      domain: decodedParams.domain,
+      cluster: decodedParams.cluster,
+    }
   );
 
   const { data: isSchedulesEnabled } = useSuspenseConfigValue(
@@ -97,10 +101,7 @@ export default function DomainPageTabs() {
         }}
         endEnhancer={
           <styled.EndButtonsContainer>
-            <DomainPageActionsDropdown
-              {...decodedParams}
-              isBatchActionsEnabled={isBatchActionsEnabled}
-            />
+            <DomainPageActionsDropdown {...decodedParams} />
             <DomainPageHelp />
           </styled.EndButtonsContainer>
         }

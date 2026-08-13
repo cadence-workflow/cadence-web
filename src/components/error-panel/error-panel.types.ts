@@ -28,11 +28,19 @@ type CallbackAction = BaseAction & {
   onClick: () => void;
 };
 
+type CustomAction = {
+  kind: 'custom';
+  /** Optional stable key for the action slot. */
+  key?: string;
+  content: ReactNode;
+};
+
 export type ErrorAction =
   | RetryAction
   | InternalLinkAction
   | ExternalLinkAction
-  | CallbackAction;
+  | CallbackAction
+  | CustomAction;
 
 export type Props = {
   /** Optional underlying `Error` used for logging and the expandable details banner. */

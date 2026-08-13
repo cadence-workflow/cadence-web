@@ -14,11 +14,11 @@ export default function DomainBatchActionStatusBadge({ status }: Props) {
   const [_, theme] = useStyletron();
 
   const icon =
-    status === 'running' ? (
+    status === 'RUNNING' ? (
       <Spinner $size={theme.sizing.scale500} />
-    ) : status === 'completed' ? (
+    ) : status === 'COMPLETED' ? (
       <MdCheckCircle />
-    ) : status === 'failed' ? (
+    ) : status === 'FAILED' ? (
       <MdWarning />
     ) : (
       <MdOutlineCancel />

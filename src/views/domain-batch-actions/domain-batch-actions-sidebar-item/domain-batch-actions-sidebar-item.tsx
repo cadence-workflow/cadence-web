@@ -6,6 +6,7 @@ import { type Props } from './domain-batch-actions-sidebar-item.types';
 
 export default function DomainBatchActionsSidebarItem({
   label,
+  subLabel,
   icon,
   isSelected,
   isActive,
@@ -22,8 +23,11 @@ export default function DomainBatchActionsSidebarItem({
       role="button"
       tabIndex={0}
     >
-      {icon}
-      {label}
+      <span>{icon}</span>
+      <styled.TextContainer>
+        <span>{label}</span>
+        {subLabel && <styled.SubLabel>{subLabel}</styled.SubLabel>}
+      </styled.TextContainer>
     </styled.ListItem>
   );
 }

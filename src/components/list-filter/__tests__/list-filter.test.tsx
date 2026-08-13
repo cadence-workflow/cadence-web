@@ -53,9 +53,20 @@ describe(ListFilter.name, () => {
 
     expect(mockOnChangeValue).toHaveBeenCalledWith(undefined);
   });
+
+  it('can disable clearing the filter', () => {
+    setup({ override: 'opt2', clearable: false });
+    expect(screen.queryByLabelText('Clear value')).not.toBeInTheDocument();
+  });
 });
 
-function setup({ override }: { override?: MockListFilterOption }) {
+function setup({
+  override,
+  clearable,
+}: {
+  override?: MockListFilterOption;
+  clearable?: boolean;
+}) {
   const mockOnChangeValue = jest.fn();
   const user = userEvent.setup();
 
@@ -66,6 +77,7 @@ function setup({ override }: { override?: MockListFilterOption }) {
       value={override ?? undefined}
       onChangeValue={mockOnChangeValue}
       labelMap={MOCK_LIST_FILTER_LABELS}
+      clearable={clearable}
     />
   );
 

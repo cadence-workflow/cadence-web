@@ -1,12 +1,10 @@
 import {
-  type WorkflowHistoryEventDetailsGroupEntry,
-  type WorkflowHistoryEventDetailsEntry,
+  type EventDetailsGroupEntry,
+  type EventDetailsSingleEntry,
 } from '../../workflow-history-event-details/workflow-history-event-details.types';
 
 export default function getDetailsFieldLabel(
-  entry:
-    | WorkflowHistoryEventDetailsEntry
-    | WorkflowHistoryEventDetailsGroupEntry,
+  entry: EventDetailsSingleEntry | EventDetailsGroupEntry,
   parentGroupPath: string = ''
 ) {
   const defaultLabel =

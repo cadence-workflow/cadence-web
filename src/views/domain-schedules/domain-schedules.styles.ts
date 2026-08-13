@@ -12,23 +12,4 @@ export const styled = {
       marginBottom: $theme.sizing.scale900,
     })
   ),
-  Toolbar: createStyled(
-    'div',
-    ({ $theme }: { $theme: Theme }): StyleObject => ({
-      display: 'flex',
-      flexWrap: 'wrap',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      gap: $theme.sizing.scale600,
-    })
-  ),
-  ToolbarTitle: createStyled(
-    'h2',
-    ({ $theme }: { $theme: Theme }): StyleObject => ({
-      ...$theme.typography.HeadingXSmall,
-      color: $theme.colors.contentPrimary,
-      marginTop: 0,
-      marginBottom: 0,
-    })
-  ),
 };

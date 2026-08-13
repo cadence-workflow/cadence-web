@@ -1,15 +1,15 @@
 import differenceBy from 'lodash/differenceBy';
 
 import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
-import { allWorkflowEventTypesAttrs } from '@/views/workflow-history/__fixtures__/all-workflow-event-types-attributes';
+
+import { allWorkflowEventTypesAttrs } from '../../../__fixtures__/all-workflow-event-types-attributes';
 import {
   scheduleDecisionTaskEvent,
   startDecisionTaskEvent,
   completeDecisionTaskEvent,
-} from '@/views/workflow-history/__fixtures__/workflow-history-decision-events';
-import { pendingDecisionTaskStartEvent } from '@/views/workflow-history/__fixtures__/workflow-history-pending-events';
-import type { ExtendedDecisionHistoryEvent } from '@/views/workflow-history/workflow-history.types';
-
+} from '../../../__fixtures__/workflow-history-decision-events';
+import { pendingDecisionTaskStartEvent } from '../../../__fixtures__/workflow-history-pending-events';
+import type { ExtendedDecisionHistoryEvent } from '../../../workflow-history.types';
 import isExtendedDecisionEvent from '../is-extended-decision-event';
 
 const validEvents: Pick<ExtendedDecisionHistoryEvent, 'attributes'>[] = [
@@ -46,7 +46,6 @@ describe('isExtendedDecisionEvent', () => {
     expect(isExtendedDecisionEvent(null)).toBe(false);
     //@ts-expect-error undefined is not of type HistoryEvent
     expect(isExtendedDecisionEvent(undefined)).toBe(false);
-    //@ts-expect-error {} is not of type HistoryEvent
     expect(isExtendedDecisionEvent({})).toBe(false);
   });
 });

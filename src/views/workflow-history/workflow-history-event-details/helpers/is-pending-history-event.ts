@@ -1,7 +1,7 @@
 import type { PendingHistoryEvent } from '../../workflow-history.types';
 
 export default function isPendingHistoryEvent(event: {
-  attributes: string;
+  attributes?: string;
 }): event is PendingHistoryEvent {
   return (
     event?.attributes === 'pendingActivityTaskStartEventAttributes' ||

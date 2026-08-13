@@ -1,108 +1,108 @@
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
-import { type WorkflowExecutionCloseStatus } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionCloseStatus';
-import { type WorkflowPageTabsParams } from '@/views/workflow-page/workflow-page-tabs/workflow-page-tabs.types';
-
+import {
+  scheduleActivityTaskEvent,
+  startActivityTaskEvent,
+} from '@/views/workflow-history/__fixtures__/workflow-history-activity-events';
+import { mockActivityEventGroup } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
 import {
   pendingActivityTaskStartEvent,
   pendingDecisionTaskStartEvent,
-} from '../../__fixtures__/workflow-history-pending-events';
-import { startWorkflowExecutionEvent } from '../../__fixtures__/workflow-history-single-events';
-import getRetriesForHistoryEvent from '../helpers/get-retries-for-history-event';
+} from '@/views/workflow-history/__fixtures__/workflow-history-pending-events';
+import type WorkflowHistoryGroupLabel from '@/views/workflow-history/workflow-history-group-label/workflow-history-group-label';
+import type WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
+
+import * as generateHistoryGroupDetailsModule from '../../helpers/generate-history-group-details';
+import type { EventDetailsEntries } from '../../workflow-history-event-details/workflow-history-event-details.types';
+import type WorkflowHistoryEventStatusBadge from '../../workflow-history-event-status-badge/workflow-history-event-status-badge';
+import type WorkflowHistoryGroupDetails from '../../workflow-history-group-details/workflow-history-group-details';
+import type { GroupDetailsEntries } from '../../workflow-history-group-details/workflow-history-group-details.types';
+import type { UngroupedEventInfo } from '../../workflow-history-ungrouped-table/workflow-history-ungrouped-table.types';
+import {
+  type ExtendedHistoryEvent,
+  type ActivityHistoryGroup,
+} from '../../workflow-history.types';
 import WorkflowHistoryUngroupedEvent from '../workflow-history-ungrouped-event';
-import { type WorkflowHistoryUngroupedEventInfo } from '../workflow-history-ungrouped-event.types';
+import type { Props } from '../workflow-history-ungrouped-event.types';
 
-jest.mock('react-icons/md', () => ({
-  ...jest.requireActual('react-icons/md'),
-  MdHourglassTop: () => <div data-testid="hourglass-icon" />,
-}));
+jest.mock('@/utils/data-formatters/format-date', () =>
+  jest.fn((timeMs: number) => `Formatted: ${timeMs}`)
+);
 
-jest.mock('../helpers/get-retries-for-history-event', () => ({
-  __esModule: true,
-  default: jest.fn().mockReturnValue(undefined),
-}));
+jest.mock('@/utils/datetime/parse-grpc-timestamp', () =>
+  jest.fn((timestamp) => {
+    if (timestamp?.seconds) {
+      return (
+        parseInt(timestamp.seconds) * 1000 + (timestamp.nanos || 0) / 1000000
+      );
+    }
+    return null;
+  })
+);
 
-jest.mock(
+jest.mock('../../helpers/generate-history-group-details', () => jest.fn());
+
+jest.mock<typeof WorkflowHistoryGroupDetails>(
+  '../../workflow-history-group-details/workflow-history-group-details',
+  () =>
+    jest.fn(({ groupDetailsEntries, initialEventId, onClose }) => (
+      <div data-testid="workflow-history-group-details">
+        <div data-testid="group-details-count">
+          {groupDetailsEntries.length} events
+        </div>
+        {groupDetailsEntries.map(([eventId, { eventLabel }]) => (
+          <div key={eventId} data-testid={`event-${eventId}`}>
+            {eventLabel}
+          </div>
+        ))}
+        {initialEventId && (
+          <div data-testid="initial-event-id">{initialEventId}</div>
+        )}
+        {onClose && (
+          <button onClick={onClose} data-testid="group-details-close">
+            Close
+          </button>
+        )}
+      </div>
+    ))
+);
+
+jest.mock<typeof WorkflowHistoryEventStatusBadge>(
   '../../workflow-history-event-status-badge/workflow-history-event-status-badge',
-  () => ({
-    __esModule: true,
-    default: ({
-      status,
-      statusReady,
-    }: {
-      status: string;
-      statusReady: boolean;
-    }) => (
-      <div
-        data-testid="status-badge"
-        data-status={status}
-        data-ready={statusReady}
-      >
-        {status}
+  () =>
+    jest.fn((props) => (
+      <div data-testid="status-badge">
+        {props.isLoading ? (
+          'Loading'
+        ) : (
+          <>
+            {props.status}
+            {props.statusText && <span>{props.statusText}</span>}
+          </>
+        )}
       </div>
-    ),
-  })
+    ))
 );
 
-jest.mock(
-  '../../workflow-history-event-link-button/workflow-history-event-link-button',
-  () => ({
-    __esModule: true,
-    default: ({
-      historyEventId,
-      isUngroupedView,
-    }: {
-      historyEventId: string;
-      isUngroupedView: boolean;
-    }) => (
-      <div
-        data-testid="event-link-button"
-        data-event-id={historyEventId}
-        data-ungrouped={isUngroupedView}
-      >
-        Link to Event {historyEventId}
-      </div>
-    ),
-  })
+jest.mock<typeof WorkflowHistoryGroupLabel>(
+  '@/views/workflow-history/workflow-history-group-label/workflow-history-group-label',
+  () => jest.fn((props) => <>{props.label}</>)
 );
 
-jest.mock(
-  '../../workflow-history-event-details/workflow-history-event-details',
-  () => ({
-    __esModule: true,
-    default: ({ event }: { event: any; decodedPageUrlParams: any }) => (
-      <div
-        data-testid="event-details"
-        data-event-id={event.eventId || event.computedEventId}
-      >
-        Expanded Content
-      </div>
-    ),
-  })
-);
-
-jest.mock(
-  '../../workflow-history-timeline-reset-button/workflow-history-timeline-reset-button',
-  () => ({
-    __esModule: true,
-    default: ({ onReset }: { onReset: () => void }) => (
-      <button onClick={onReset} data-testid="reset-button">
-        Reset
+jest.mock<typeof WorkflowHistoryTimelineResetButton>(
+  '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button',
+  () =>
+    jest.fn((props) => (
+      <button onClick={props.onReset} data-testid="reset-button">
+        Reset Button
       </button>
-    ),
-  })
+    ))
 );
 
-jest.mock(
-  '../../workflow-history-event-summary/workflow-history-event-summary',
-  () => ({
-    __esModule: true,
-    default: () => <div>Event summary</div>,
-  })
-);
+jest.mock('@/utils/datetime/format-time-diff', () => jest.fn(() => '1m 30s'));
 
 jest.mock(
-  '../../workflow-history-remaining-duration-badge/workflow-history-remaining-duration-badge',
+  '@/views/workflow-history/workflow-history-remaining-duration-badge/workflow-history-remaining-duration-badge',
   () => ({
     __esModule: true,
     default: ({ prefix }: { prefix: string }) => (
@@ -111,185 +111,396 @@ jest.mock(
   })
 );
 
-const mockEventInfo: WorkflowHistoryUngroupedEventInfo = {
-  id: '1',
-  label: 'Workflow Execution Started',
-  event: startWorkflowExecutionEvent,
-  eventMetadata: {
-    label: 'Completed',
-    status: 'COMPLETED',
-    timeMs: 1704067200000,
-    timeLabel: 'Mock time label',
-    summaryFields: ['field1', 'field2'],
-  },
+const mockActivityEventGroupWithMetadata: ActivityHistoryGroup = {
+  ...mockActivityEventGroup,
+  eventsMetadata: [
+    {
+      label: 'Scheduled',
+      status: 'COMPLETED',
+      timeMs: 1725747370599,
+      timeLabel: 'Scheduled at 07 Sep, 22:16:10 UTC',
+    },
+    {
+      label: 'Started',
+      status: 'COMPLETED',
+      timeMs: 1725747370612,
+      timeLabel: 'Started at 07 Sep, 22:16:10 UTC',
+    },
+    {
+      label: 'Completed',
+      status: 'COMPLETED',
+      timeMs: 1725747370632,
+      timeLabel: 'Completed at 07 Sep, 22:16:10 UTC',
+    },
+  ],
 };
 
-const mockPendingActivityEventInfo: WorkflowHistoryUngroupedEventInfo = {
-  id: 'pending-7',
-  label: 'Activity Task Started',
-  event: pendingActivityTaskStartEvent,
+const createMockPendingEventInfo = (
+  event:
+    | typeof pendingActivityTaskStartEvent
+    | typeof pendingDecisionTaskStartEvent
+): UngroupedEventInfo => ({
+  ...createMockEventInfo(event),
+  id: event.computedEventId,
   eventMetadata: {
     label: 'Pending',
     status: 'WAITING',
     timeMs: null,
     timeLabel: 'Pending',
   },
-};
+});
 
-const mockPendingDecisionEventInfo: WorkflowHistoryUngroupedEventInfo = {
-  id: 'pending-7',
-  label: 'Decision Task Started',
-  event: pendingDecisionTaskStartEvent,
-  eventMetadata: {
-    label: 'Pending',
-    status: 'WAITING',
-    timeMs: null,
-    timeLabel: 'Pending',
-  },
-};
-
-const mockDecodedPageUrlParams: WorkflowPageTabsParams = {
-  cluster: 'test-cluster',
-  domain: 'test-domain',
-  workflowId: 'test-workflow',
-  runId: 'test-run',
-  workflowTab: 'history' as const,
-};
+const createMockEventInfo = (
+  event: ExtendedHistoryEvent = scheduleActivityTaskEvent,
+  eventMetadataIndex = 0
+): UngroupedEventInfo => ({
+  id: event.eventId ?? 'unknown',
+  groupId: 'groupId',
+  event: event,
+  eventMetadata:
+    mockActivityEventGroupWithMetadata.eventsMetadata[eventMetadataIndex],
+  eventGroup: mockActivityEventGroupWithMetadata,
+  label: mockActivityEventGroupWithMetadata.label,
+  shortLabel: mockActivityEventGroupWithMetadata.shortLabel,
+  canReset: false,
+});
 
 describe(WorkflowHistoryUngroupedEvent.name, () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.restoreAllMocks();
   });
 
-  it('renders event info correctly', () => {
-    setup();
+  it('renders event correctly', () => {
+    const eventInfo = createMockEventInfo();
+    setup({ eventInfo });
 
-    expect(screen.getByText('1')).toBeInTheDocument();
-    expect(screen.getByText('Workflow Execution Started')).toBeInTheDocument();
-    expect(screen.getByText('Completed')).toBeInTheDocument();
+    expect(screen.getByText(eventInfo.id)).toBeInTheDocument();
+    expect(
+      screen.getByText(mockActivityEventGroupWithMetadata.label)
+    ).toBeInTheDocument();
+    expect(screen.getByText('1m 30s')).toBeInTheDocument();
+    expect(screen.getByTestId('status-badge')).toBeInTheDocument();
+    expect(screen.getByText('COMPLETED')).toBeInTheDocument();
+    expect(screen.getByText('Scheduled')).toBeInTheDocument();
   });
 
-  it('handles expansion toggle', async () => {
-    const { user, mockToggleIsExpanded } = setup();
+  it('renders formatted date when eventTime is provided', () => {
+    const eventInfo = createMockEventInfo();
+    setup({ eventInfo });
 
-    const toggleButton = screen.getByRole('button');
-    await user.click(toggleButton);
-
-    expect(mockToggleIsExpanded).toHaveBeenCalled();
+    expect(screen.getByText(/Formatted:/)).toBeInTheDocument();
   });
 
-  it('shows expanded content when isExpanded is true', () => {
-    setup({ isExpanded: true });
+  it('does not render date when eventTime is missing', () => {
+    const eventInfo = createMockEventInfo({
+      ...scheduleActivityTaskEvent,
+      eventTime: null,
+    });
+    setup({ eventInfo });
 
-    expect(screen.getByTestId('event-details')).toBeInTheDocument();
+    expect(screen.queryByText(/Formatted:/)).not.toBeInTheDocument();
   });
 
-  it('renders pending activity event correctly', () => {
-    setup({ eventInfo: mockPendingActivityEventInfo });
+  it('renders duration when eventTime and workflowStartTimeMs are provided', () => {
+    const eventInfo = createMockEventInfo();
+    setup({ eventInfo, workflowStartTimeMs: 1725747370000 });
 
-    expect(screen.getByTestId('hourglass-icon')).toBeInTheDocument();
-    expect(screen.getByText('Activity Task Started')).toBeInTheDocument();
-    expect(screen.getByText('Pending')).toBeInTheDocument();
+    expect(screen.getByText('1m 30s')).toBeInTheDocument();
   });
 
-  it('renders pending decision event correctly', () => {
-    setup({ eventInfo: mockPendingDecisionEventInfo });
+  it('does not render duration when workflowStartTimeMs is missing', () => {
+    const eventInfo = createMockEventInfo();
+    setup({ eventInfo, workflowStartTimeMs: null });
 
-    expect(screen.getByTestId('hourglass-icon')).toBeInTheDocument();
-    expect(screen.getByText('Decision Task Started')).toBeInTheDocument();
-    expect(screen.getByText('Pending')).toBeInTheDocument();
+    expect(screen.queryByText('1m 30s')).not.toBeInTheDocument();
   });
 
-  it('shows retry badge when event has retries', () => {
-    (getRetriesForHistoryEvent as jest.Mock).mockReturnValue(2);
-    setup();
+  it('renders reset button when canReset is true', () => {
+    const eventInfo = createMockEventInfo();
+    const eventInfoWithReset = {
+      ...eventInfo,
+      canReset: true,
+    };
+    setup({ eventInfo: eventInfoWithReset });
 
-    expect(screen.getByText('2 retries')).toBeInTheDocument();
-  });
-
-  it('shows single retry badge when event has one retry', () => {
-    (getRetriesForHistoryEvent as jest.Mock).mockReturnValue(1);
-    setup();
-
-    expect(screen.getByText('1 retry')).toBeInTheDocument();
-  });
-
-  it('does not show retry badge when event has no retries', () => {
-    (getRetriesForHistoryEvent as jest.Mock).mockReturnValue(0);
-    setup();
-
-    expect(screen.queryByText(/retry/)).not.toBeInTheDocument();
-  });
-
-  it('renders reset button when onReset function is provided', async () => {
-    const mockOnReset = jest.fn();
-    setup({ onReset: mockOnReset });
-
-    expect(await screen.findByTestId('reset-button')).toBeInTheDocument();
-    expect(await screen.findByText('Reset')).toBeInTheDocument();
-  });
-
-  it('does not render reset button when onReset function is not provided', () => {
-    setup({ onReset: undefined });
-
-    expect(screen.queryByTestId('reset-button')).not.toBeInTheDocument();
+    expect(screen.getByTestId('reset-button')).toBeInTheDocument();
   });
 
   it('calls onReset when reset button is clicked', async () => {
-    const mockOnReset = jest.fn();
-    const { user } = setup({ onReset: mockOnReset });
+    const eventInfo = createMockEventInfo();
+    const eventInfoWithReset = {
+      ...eventInfo,
+      canReset: true,
+    };
+    const { mockOnReset, user } = setup({ eventInfo: eventInfoWithReset });
 
-    const resetButton = await screen.findByTestId('reset-button');
+    const resetButton = screen.getByTestId('reset-button');
     await user.click(resetButton);
 
     expect(mockOnReset).toHaveBeenCalledTimes(1);
   });
 
-  it('should show copy button for regular event when expanded', () => {
-    setup({ isExpanded: true });
+  it('expands panel when isExpanded is true', () => {
+    const eventInfo = createMockEventInfo();
+    setup({ eventInfo, isExpanded: true });
 
-    expect(screen.getByTestId('event-link-button')).toBeInTheDocument();
-    expect(screen.getByTestId('event-link-button')).toHaveAttribute(
-      'data-event-id',
-      startWorkflowExecutionEvent.eventId
-    );
-    expect(screen.getByTestId('event-link-button')).toHaveAttribute(
-      'data-ungrouped',
-      'true'
-    );
+    expect(
+      screen.getByTestId('workflow-history-group-details')
+    ).toBeInTheDocument();
   });
 
-  it('should not show copy button for pending event even when expanded', () => {
-    setup({
-      eventInfo: mockPendingActivityEventInfo,
+  it('does not expand panel when isExpanded is false', () => {
+    const eventInfo = createMockEventInfo();
+    setup({ eventInfo, isExpanded: false });
+
+    expect(
+      screen.queryByTestId('workflow-history-group-details')
+    ).not.toBeInTheDocument();
+  });
+
+  it('calls toggleIsExpanded when panel is toggled', async () => {
+    const eventInfo = createMockEventInfo();
+    const { mockToggleIsExpanded, user } = setup({ eventInfo });
+
+    const headerLabel = screen.getByText(eventInfo.id);
+    await user.click(headerLabel);
+
+    expect(mockToggleIsExpanded).toHaveBeenCalledTimes(1);
+  });
+
+  it('calls toggleIsExpanded when WorkflowHistoryGroupDetails onClose is called', async () => {
+    const eventInfo = createMockEventInfo();
+    const { mockToggleIsExpanded, user } = setup({
+      eventInfo,
       isExpanded: true,
     });
 
-    expect(screen.queryByTestId('event-link-button')).not.toBeInTheDocument();
+    const closeButton = screen.getByTestId('group-details-close');
+    await user.click(closeButton);
+
+    expect(mockToggleIsExpanded).toHaveBeenCalledTimes(1);
   });
 
-  it('should show summary when accordion is not expanded', () => {
-    setup({ isExpanded: false });
+  it('renders event summary details when available', () => {
+    const mockEventDetails: EventDetailsEntries = [
+      {
+        key: 'input',
+        path: 'input',
+        value: 'test input value',
+        isGroup: false,
+        renderConfig: null,
+      },
+    ];
 
-    expect(screen.getByText('Event summary')).toBeInTheDocument();
+    const mockSummaryDetails: EventDetailsEntries = [
+      {
+        key: 'activityType',
+        path: 'activityType',
+        value: 'TestActivity',
+        isGroup: false,
+        renderConfig: null,
+      },
+    ];
+
+    const eventInfo = createMockEventInfo();
+    setup({
+      eventInfo,
+      mockGroupDetails: {
+        groupDetailsEntries: [
+          [
+            eventInfo.id,
+            {
+              eventLabel: 'Scheduled',
+              eventDetails: mockEventDetails,
+            },
+          ],
+        ],
+        summaryDetailsEntries: [
+          [
+            eventInfo.id,
+            {
+              eventLabel: 'Scheduled',
+              eventDetails: mockSummaryDetails,
+            },
+          ],
+        ],
+      },
+    });
+
+    // Summary details should be rendered in the header
+    expect(screen.getByText('TestActivity')).toBeInTheDocument();
   });
 
-  it('should not show summary when accordion is expanded', () => {
-    setup({ isExpanded: true });
+  it('renders empty div when event summary details are not available', () => {
+    const eventInfo = createMockEventInfo();
+    setup({ eventInfo });
 
-    expect(screen.queryByText('Event summary')).not.toBeInTheDocument();
+    // Should render an empty div in the summarized details container
+    const container = screen.getByTestId('status-badge').parentElement;
+    expect(container).toBeInTheDocument();
   });
 
-  it('shows remaining duration badge instead of elapsed time when expectedEndTimeInfo exists', () => {
-    const eventInfoWithExpectedEnd: WorkflowHistoryUngroupedEventInfo = {
-      ...mockEventInfo,
+  it('includes summary tab in groupDetailsEntries when expanded', () => {
+    const mockEventDetails: EventDetailsEntries = [
+      {
+        key: 'input',
+        path: 'input',
+        value: 'test input value',
+        isGroup: false,
+        renderConfig: null,
+      },
+    ];
+
+    const mockSummaryDetails: EventDetailsEntries = [
+      {
+        key: 'activityType',
+        path: 'activityType',
+        value: 'TestActivity',
+        isGroup: false,
+        renderConfig: null,
+      },
+    ];
+
+    const eventInfo = createMockEventInfo();
+    const secondEventInfo = createMockEventInfo(startActivityTaskEvent, 1);
+    setup({
+      eventInfo,
+      isExpanded: true,
+      mockGroupDetails: {
+        groupDetailsEntries: [
+          [
+            eventInfo.id,
+            {
+              eventLabel: 'Scheduled',
+              eventDetails: mockEventDetails,
+            },
+          ],
+          [
+            secondEventInfo.id,
+            {
+              eventLabel: 'Started',
+              eventDetails: mockEventDetails,
+            },
+          ],
+        ],
+        summaryDetailsEntries: [
+          [
+            eventInfo.id,
+            {
+              eventLabel: 'Scheduled',
+              eventDetails: mockSummaryDetails,
+            },
+          ],
+          [
+            secondEventInfo.id,
+            {
+              eventLabel: 'Started',
+              eventDetails: mockSummaryDetails,
+            },
+          ],
+        ],
+      },
+    });
+
+    expect(screen.getByText('Summary')).toBeInTheDocument();
+  });
+
+  it('does not include summary tab in groupDetailsEntries when there is only one entry', () => {
+    const mockEventDetails: EventDetailsEntries = [
+      {
+        key: 'input',
+        path: 'input',
+        value: 'test input value',
+        isGroup: false,
+        renderConfig: null,
+      },
+    ];
+
+    const mockSummaryDetails: EventDetailsEntries = [
+      {
+        key: 'activityType',
+        path: 'activityType',
+        value: 'TestActivity',
+        isGroup: false,
+        renderConfig: null,
+      },
+    ];
+
+    const eventInfo = createMockEventInfo();
+    setup({
+      eventInfo,
+      isExpanded: true,
+      mockGroupDetails: {
+        groupDetailsEntries: [
+          [
+            eventInfo.id,
+            {
+              eventLabel: 'Scheduled',
+              eventDetails: mockEventDetails,
+            },
+          ],
+        ],
+        summaryDetailsEntries: [
+          [
+            eventInfo.id,
+            {
+              eventLabel: 'Scheduled',
+              eventDetails: mockSummaryDetails,
+            },
+          ],
+        ],
+      },
+    });
+
+    expect(screen.queryByText('Summary')).not.toBeInTheDocument();
+  });
+
+  it('renders status badge with correct status', () => {
+    const eventInfo = createMockEventInfo();
+    setup({ eventInfo });
+
+    expect(screen.getByTestId('status-badge')).toBeInTheDocument();
+    expect(screen.getByText('COMPLETED')).toBeInTheDocument();
+  });
+
+  it('renders event metadata label', () => {
+    const eventInfo = createMockEventInfo();
+    setup({ eventInfo });
+
+    expect(screen.getByText('Scheduled')).toBeInTheDocument();
+  });
+
+  it('renders dash instead of event id for pending activity event', () => {
+    const eventInfo = createMockPendingEventInfo(pendingActivityTaskStartEvent);
+    setup({ eventInfo });
+
+    expect(screen.getByText('-')).toBeInTheDocument();
+    expect(
+      screen.queryByText(pendingActivityTaskStartEvent.computedEventId)
+    ).not.toBeInTheDocument();
+  });
+
+  it('renders dash instead of event id for pending decision event', () => {
+    const eventInfo = createMockPendingEventInfo(pendingDecisionTaskStartEvent);
+    setup({ eventInfo });
+
+    expect(screen.getByText('-')).toBeInTheDocument();
+    expect(
+      screen.queryByText(pendingDecisionTaskStartEvent.computedEventId)
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows remaining duration badge alongside elapsed time when expectedEndTimeInfo exists', () => {
+    const eventInfo = createMockEventInfo();
+    eventInfo.eventGroup = {
+      ...eventInfo.eventGroup,
       expectedEndTimeInfo: {
         timeMs: Date.now() + 60000,
         prefix: 'Starts in',
       },
     };
     setup({
-      eventInfo: eventInfoWithExpectedEnd,
+      eventInfo,
       workflowIsArchived: false,
       workflowCloseStatus: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
       loadingMoreEvents: false,
@@ -297,51 +508,99 @@ describe(WorkflowHistoryUngroupedEvent.name, () => {
 
     expect(screen.getByTestId('remaining-duration-badge')).toBeInTheDocument();
     expect(screen.getByText('Starts in')).toBeInTheDocument();
+    expect(screen.getByText('1m 30s')).toBeInTheDocument();
   });
 });
 
 function setup({
-  eventInfo = mockEventInfo,
-  isExpanded = false,
-  animateBorderOnEnter = false,
+  eventInfo,
+  workflowStartTimeMs = 1725747370000,
+  decodedPageUrlParams = {
+    domain: 'test-domain',
+    cluster: 'test-cluster',
+    workflowId: 'test-workflow-id',
+    runId: 'test-run-id',
+    workflowTab: 'history',
+  },
   workflowIsArchived = false,
-  workflowCloseStatus = 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID' as const,
+  workflowCloseStatus = 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
   loadingMoreEvents = false,
-  onReset,
-}: {
-  eventInfo?: WorkflowHistoryUngroupedEventInfo;
-  isExpanded?: boolean;
-  animateBorderOnEnter?: boolean;
-  workflowIsArchived?: boolean;
-  workflowCloseStatus?: WorkflowExecutionCloseStatus;
-  loadingMoreEvents?: boolean;
-  onReset?: (() => void) | undefined;
-} = {}) {
-  const mockToggleIsExpanded = jest.fn();
-
-  const props = {
-    eventInfo,
-    workflowStartTime: {
-      seconds: '1704067200',
-      nanos: 0,
-    },
-    decodedPageUrlParams: mockDecodedPageUrlParams,
-    workflowIsArchived,
-    workflowCloseStatus,
-    loadingMoreEvents,
-    isExpanded,
-    toggleIsExpanded: mockToggleIsExpanded,
-    animateBorderOnEnter,
-    onReset,
+  isExpanded = false,
+  toggleIsExpanded = jest.fn(),
+  animateOnEnter = false,
+  onReset = jest.fn(),
+  onClickShowInTimeline = jest.fn(),
+  mockGroupDetails,
+}: Partial<Props> & {
+  mockGroupDetails?: {
+    groupDetailsEntries: GroupDetailsEntries;
+    summaryDetailsEntries: GroupDetailsEntries;
   };
+} = {}) {
+  const mockGenerateHistoryGroupDetails = jest.spyOn(
+    generateHistoryGroupDetailsModule,
+    'default'
+  );
 
+  if (mockGroupDetails) {
+    mockGenerateHistoryGroupDetails.mockReturnValue(mockGroupDetails);
+  } else {
+    const defaultMockEventDetails: EventDetailsEntries = [
+      {
+        key: 'testKey',
+        path: 'testPath',
+        value: 'testValue',
+        isGroup: false,
+        renderConfig: null,
+      },
+    ];
+
+    const defaultEventInfo = eventInfo ?? createMockEventInfo();
+    mockGenerateHistoryGroupDetails.mockReturnValue({
+      groupDetailsEntries: defaultEventInfo.eventGroup.events
+        .filter((event) => event.eventId)
+        .map((event, index) => [
+          event.eventId!,
+          {
+            eventLabel:
+              defaultEventInfo.eventGroup.eventsMetadata[index]?.label ??
+              'Unknown',
+            eventDetails: defaultMockEventDetails,
+          },
+        ]),
+      summaryDetailsEntries: [],
+    });
+  }
+
+  const mockToggleIsExpanded = toggleIsExpanded || jest.fn();
+  const mockOnReset = onReset || jest.fn();
+  const mockOnClickShowInTimeline = onClickShowInTimeline || jest.fn();
   const user = userEvent.setup();
 
-  render(<WorkflowHistoryUngroupedEvent {...props} />);
+  const defaultEventInfo = eventInfo ?? createMockEventInfo();
+
+  render(
+    <WorkflowHistoryUngroupedEvent
+      eventInfo={eventInfo ?? defaultEventInfo}
+      workflowStartTimeMs={workflowStartTimeMs}
+      decodedPageUrlParams={decodedPageUrlParams}
+      workflowIsArchived={workflowIsArchived ?? false}
+      workflowCloseStatus={
+        workflowCloseStatus ?? 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
+      }
+      loadingMoreEvents={loadingMoreEvents ?? false}
+      isExpanded={isExpanded}
+      toggleIsExpanded={mockToggleIsExpanded}
+      animateOnEnter={animateOnEnter}
+      onReset={mockOnReset}
+      onClickShowInTimeline={mockOnClickShowInTimeline}
+    />
+  );
 
   return {
-    props,
-    user,
     mockToggleIsExpanded,
+    mockOnReset,
+    mockOnClickShowInTimeline,
+    user,
   };
 }

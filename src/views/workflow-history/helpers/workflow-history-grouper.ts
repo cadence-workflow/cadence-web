@@ -5,7 +5,7 @@ import type {
   ExtendedActivityHistoryEvent,
   ExtendedDecisionHistoryEvent,
   HistoryEventsGroup,
-  HistoryEventsGroups,
+  HistoryEventsGroupsMap,
   PendingActivityTaskStartEvent,
   PendingDecisionTaskStartEvent,
 } from '../workflow-history.types';
@@ -13,18 +13,22 @@ import type {
 import isChildWorkflowExecutionEvent from './check-history-event-group/is-child-workflow-execution-event';
 import isExtendedActivityEvent from './check-history-event-group/is-extended-activity-event';
 import isExtendedDecisionEvent from './check-history-event-group/is-extended-decision-event';
+import isLocalActivityEvent from './check-history-event-group/is-local-activity-event';
 import isRequestCancelExternalWorkflowExecutionEvent from './check-history-event-group/is-request-cancel-external-workflow-execution-event';
 import isSignalExternalWorkflowExecutionEvent from './check-history-event-group/is-signal-external-workflow-execution-event';
 import isSingleEvent from './check-history-event-group/is-single-event';
 import isTimerEvent from './check-history-event-group/is-timer-event';
+import isWorkflowSignaledEvent from './check-history-event-group/is-workflow-signaled-event';
 import getHistoryEventGroupId from './get-history-event-group-id';
 import getActivityGroupFromEvents from './get-history-group-from-events/get-activity-group-from-events';
 import getChildWorkflowExecutionGroupFromEvents from './get-history-group-from-events/get-child-workflow-execution-group-from-events';
 import getDecisionGroupFromEvents from './get-history-group-from-events/get-decision-group-from-events';
+import getLocalActivityGroupFromEvents from './get-history-group-from-events/get-local-activity-group-from-events';
 import getRequestCancelExternalWorkflowExecutionGroupFromEvents from './get-history-group-from-events/get-request-cancel-external-workflow-execution-group-from-events';
 import getSignalExternalWorkflowExecutionGroupFromEvents from './get-history-group-from-events/get-signal-external-workflow-execution-group-from-events';
 import getSingleEventGroupFromEvents from './get-history-group-from-events/get-single-event-group-from-events';
 import getTimerGroupFromEvents from './get-history-group-from-events/get-timer-group-from-events';
+import getWorkflowSignaledGroupFromEvents from './get-history-group-from-events/get-workflow-signaled-group-from-events';
 import placeEventInGroupEvents from './place-event-in-group-events';
 import {
   type GroupingProcessState,
@@ -43,7 +47,7 @@ import {
 export default class WorkflowHistoryGrouper {
   private allEvents: HistoryEvent[] = [];
   private lastProcessedEventIndex: number = -1;
-  private groups: HistoryEventsGroups = {};
+  private groups: HistoryEventsGroupsMap = {};
   private currentPendingActivities: PendingActivityTaskStartEvent[] = [];
   private currentPendingDecision: PendingDecisionTaskStartEvent | null = null;
   private subscribers: Set<(state: GroupingProcessState) => void> = new Set();
@@ -263,8 +267,8 @@ export default class WorkflowHistoryGrouper {
   private groupEvents(
     startIndex: number,
     endIndex: number,
-    existingGroups: HistoryEventsGroups
-  ): HistoryEventsGroups {
+    existingGroups: HistoryEventsGroupsMap
+  ): HistoryEventsGroupsMap {
     const groups = { ...existingGroups };
 
     // Process new history events using indices (avoids array slicing)
@@ -295,6 +299,8 @@ export default class WorkflowHistoryGrouper {
 
       if (updatedEventsArr.every(isExtendedActivityEvent)) {
         groups[groupId] = getActivityGroupFromEvents(updatedEventsArr);
+      } else if (updatedEventsArr.every(isLocalActivityEvent)) {
+        groups[groupId] = getLocalActivityGroupFromEvents(updatedEventsArr);
       } else if (updatedEventsArr.every(isExtendedDecisionEvent)) {
         // If there are more than 2 decision events, filter out the pending decision task start event
         // Pending decision task start event is only added to the group when the scheduled decision task event is added
@@ -324,6 +330,8 @@ export default class WorkflowHistoryGrouper {
           getRequestCancelExternalWorkflowExecutionGroupFromEvents(
             updatedEventsArr
           );
+      } else if (updatedEventsArr.every(isWorkflowSignaledEvent)) {
+        groups[groupId] = getWorkflowSignaledGroupFromEvents(updatedEventsArr);
       } else if (updatedEventsArr.every(isSingleEvent)) {
         groups[groupId] = getSingleEventGroupFromEvents(updatedEventsArr);
       } else {
