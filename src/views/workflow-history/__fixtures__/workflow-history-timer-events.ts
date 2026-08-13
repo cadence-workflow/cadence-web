@@ -56,7 +56,7 @@ export const cancelTimerTaskEvents: TimerHistoryEvent[] = [
   cancelTimerTaskEvent,
 ];
 
-export const firedActivityTaskEvents: TimerHistoryEvent[] = [
+export const firedTimerTaskEvents: TimerHistoryEvent[] = [
   startTimerTaskEvent,
   fireTimerTaskEvent,
 ];

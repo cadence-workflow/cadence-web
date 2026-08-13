@@ -1,11 +1,11 @@
 import { renderHook, act } from '@testing-library/react';
 
 import type { HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
-
 import {
   mockActivityEventGroup,
   mockDecisionEventGroup,
-} from '../../__fixtures__/workflow-history-event-groups';
+} from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
+
 import {
   pendingActivityTaskStartEvent,
   pendingDecisionTaskStartEvent,

@@ -1,6 +1,5 @@
 import {
   startWorkflowExecutionEvent,
-  signalWorkflowExecutionEvent,
   recordMarkerExecutionEvent,
   failWorkflowExecutionEvent,
   terminateWorkflowExecutionEvent,
@@ -13,8 +12,7 @@ import {
   requestCancelWorkflowExecutionEvent,
   upsertWorkflowSearchAttributesEvent,
   cancelWorkflowExecutionEvent,
-} from '@/views/workflow-history/__fixtures__/workflow-history-single-events';
-
+} from '../../../__fixtures__/workflow-history-single-events';
 import type {
   HistoryGroupEventToStatusMap,
   HistoryGroupEventToStringMap,
@@ -26,7 +24,6 @@ import getSingleEventGroupFromEvents from '../get-single-event-group-from-events
 describe('getSingleEventGroupFromEvents', () => {
   const events: SingleHistoryEvent[] = [
     startWorkflowExecutionEvent,
-    signalWorkflowExecutionEvent,
     recordMarkerExecutionEvent,
     failWorkflowExecutionEvent,
     terminateWorkflowExecutionEvent,
@@ -52,7 +49,6 @@ describe('getSingleEventGroupFromEvents', () => {
       workflowExecutionCompletedEventAttributes: 'Workflow Completed',
       workflowExecutionFailedEventAttributes: 'Workflow Failed',
       workflowExecutionTimedOutEventAttributes: 'Workflow Timed out',
-      workflowExecutionSignaledEventAttributes: 'Workflow Signaled',
       workflowExecutionTerminatedEventAttributes: 'Workflow Terminated',
       workflowExecutionCancelRequestedEventAttributes:
         'Workflow Cancel Request',
@@ -92,7 +88,6 @@ describe('getSingleEventGroupFromEvents', () => {
         workflowExecutionCompletedEventAttributes: 'Completed',
         workflowExecutionFailedEventAttributes: 'Failed',
         workflowExecutionTimedOutEventAttributes: 'Timed out',
-        workflowExecutionSignaledEventAttributes: 'Signaled',
         workflowExecutionTerminatedEventAttributes: 'Terminated',
         workflowExecutionCancelRequestedEventAttributes: 'Requested',
         workflowExecutionCanceledEventAttributes: 'Canceled',
@@ -118,7 +113,6 @@ describe('getSingleEventGroupFromEvents', () => {
         workflowExecutionCompletedEventAttributes: 'COMPLETED',
         workflowExecutionFailedEventAttributes: 'FAILED',
         workflowExecutionTimedOutEventAttributes: 'FAILED',
-        workflowExecutionSignaledEventAttributes: 'COMPLETED',
         workflowExecutionTerminatedEventAttributes: 'FAILED',
         workflowExecutionCancelRequestedEventAttributes: 'COMPLETED',
         workflowExecutionCanceledEventAttributes: 'CANCELED',
@@ -144,7 +138,7 @@ describe('getSingleEventGroupFromEvents', () => {
     const eventMetadata = group.eventsMetadata[0];
 
     expect(eventMetadata.status).toBe('FAILED');
-    expect(eventMetadata.negativeFields).toEqual(['details', 'reason']);
+    expect(eventMetadata.negativeFields).toEqual(['reason', 'details']);
   });
 
   it('should include negativeFields for terminated workflow execution events', () => {
@@ -154,7 +148,7 @@ describe('getSingleEventGroupFromEvents', () => {
     const eventMetadata = group.eventsMetadata[0];
 
     expect(eventMetadata.status).toBe('FAILED');
-    expect(eventMetadata.negativeFields).toEqual(['details', 'reason']);
+    expect(eventMetadata.negativeFields).toEqual(['reason', 'details']);
   });
 
   it('should include negativeFields for continued as new workflow execution events', () => {
@@ -165,17 +159,9 @@ describe('getSingleEventGroupFromEvents', () => {
 
     expect(eventMetadata.status).toBe('COMPLETED');
     expect(eventMetadata.negativeFields).toEqual([
-      'failureDetails',
       'failureReason',
+      'failureDetails',
     ]);
-  });
-
-  it('should include summaryFields for workflow execution signaled events', () => {
-    const group = getSingleEventGroupFromEvents([signalWorkflowExecutionEvent]);
-    const eventMetadata = group.eventsMetadata[0];
-
-    expect(eventMetadata.status).toBe('COMPLETED');
-    expect(eventMetadata.summaryFields).toEqual(['signalName', 'input']);
   });
 
   it('should include summaryFields for started workflow execution events', () => {
@@ -205,7 +191,7 @@ describe('getSingleEventGroupFromEvents', () => {
     const eventMetadata = group.eventsMetadata[0];
 
     expect(eventMetadata.status).toBe('FAILED');
-    expect(eventMetadata.summaryFields).toEqual(['details', 'reason']);
+    expect(eventMetadata.summaryFields).toEqual(['reason', 'details']);
   });
 
   it('should include summaryFields for terminated workflow execution events', () => {
@@ -215,7 +201,7 @@ describe('getSingleEventGroupFromEvents', () => {
     const eventMetadata = group.eventsMetadata[0];
 
     expect(eventMetadata.status).toBe('FAILED');
-    expect(eventMetadata.summaryFields).toEqual(['details', 'reason']);
+    expect(eventMetadata.summaryFields).toEqual(['reason', 'details']);
   });
 
   it('should include summaryFields for continued as new workflow execution events', () => {
@@ -226,8 +212,8 @@ describe('getSingleEventGroupFromEvents', () => {
 
     expect(eventMetadata.status).toBe('COMPLETED');
     expect(eventMetadata.summaryFields).toEqual([
-      'failureDetails',
       'failureReason',
+      'failureDetails',
       'newExecutionRunId',
     ]);
   });
@@ -243,7 +229,6 @@ describe('getSingleEventGroupFromEvents', () => {
 
   it('should not calculate expectedEndTimeInfo for non-workflow-started events', () => {
     const nonStartedEvents = [
-      signalWorkflowExecutionEvent,
       recordMarkerExecutionEvent,
       failWorkflowExecutionEvent,
       completeWorkflowExecutionEvent,

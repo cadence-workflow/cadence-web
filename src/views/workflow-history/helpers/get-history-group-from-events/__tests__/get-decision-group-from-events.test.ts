@@ -4,12 +4,11 @@ import {
   scheduleDecisionTaskEvent,
   startDecisionTaskEvent,
   timeoutDecisionTaskEvent,
-} from '@/views/workflow-history/__fixtures__/workflow-history-decision-events';
+} from '../../../__fixtures__/workflow-history-decision-events';
 import {
   pendingDecisionTaskStartEvent,
   pendingDecisionTaskStartEventWithStartedState,
-} from '@/views/workflow-history/__fixtures__/workflow-history-pending-events';
-
+} from '../../../__fixtures__/workflow-history-pending-events';
 import type {
   ExtendedDecisionHistoryEvent,
   PendingDecisionTaskStartEvent,
@@ -39,7 +38,7 @@ describe('getDecisionGroupFromEvents', () => {
         assertionValue: true,
       },
       {
-        name: 'missingTimoutAndCloseEvent',
+        name: 'missingTimeoutAndCloseEvent',
         events: [scheduleDecisionTaskEvent],
         assertionValue: true,
       },
@@ -230,7 +229,7 @@ describe('getDecisionGroupFromEvents', () => {
     );
   });
 
-  it('should return a badge if schedueled attempts are greater than zero', () => {
+  it('should return a badge if scheduled attempts are greater than zero', () => {
     const retryEvent = {
       ...scheduleDecisionTaskEvent,
       decisionTaskScheduledEventAttributes: {
@@ -341,19 +340,34 @@ describe('getDecisionGroupFromEvents', () => {
     ];
     const group = getDecisionGroupFromEvents(events);
 
-    // The failed event should have negativeFields
     const failedEventMetadata = group.eventsMetadata.find(
-      (metadata) => metadata.status === 'FAILED'
+      (metadata) => metadata.label === 'Failed'
     );
-    expect(failedEventMetadata?.negativeFields).toEqual(['reason', 'details']);
+    expect(failedEventMetadata?.negativeFields).toEqual([
+      'reason',
+      'details',
+      'cause',
+    ]);
 
-    // Other events should not have negativeFields
     const otherEventsMetadata = group.eventsMetadata.filter(
-      (metadata) => metadata.status !== 'FAILED'
+      (metadata) => metadata.label !== 'Failed'
     );
     otherEventsMetadata.forEach((metadata) => {
       expect(metadata.negativeFields).toBeUndefined();
     });
+  });
+
+  it('should include negativeFields for timed out decision events', () => {
+    const events: ExtendedDecisionHistoryEvent[] = [
+      scheduleDecisionTaskEvent,
+      timeoutDecisionTaskEvent,
+    ];
+    const group = getDecisionGroupFromEvents(events);
+
+    const timedOutEventMetadata = group.eventsMetadata.find(
+      (metadata) => metadata.label === 'Timed out'
+    );
+    expect(timedOutEventMetadata?.negativeFields).toEqual(['reason', 'cause']);
   });
 
   it('should include summaryFields for scheduled decision events', () => {
@@ -364,22 +378,49 @@ describe('getDecisionGroupFromEvents', () => {
     ];
     const group = getDecisionGroupFromEvents(events);
 
-    // The scheduled event should have summaryFields
     const scheduledEventMetadata = group.eventsMetadata.find(
       (metadata) => metadata.label === 'Scheduled'
     );
-    expect(scheduledEventMetadata?.summaryFields).toEqual([
-      'startToCloseTimeoutSeconds',
-      'attempt',
-    ]);
+    expect(scheduledEventMetadata?.summaryFields).toEqual(['attempt']);
 
-    // Other events should not have summaryFields
     const otherEventsMetadata = group.eventsMetadata.filter(
       (metadata) => metadata.label !== 'Scheduled'
     );
     otherEventsMetadata.forEach((metadata) => {
       expect(metadata.summaryFields).toBeUndefined();
     });
+  });
+
+  it('should include summaryFields for failed decision events', () => {
+    const events: ExtendedDecisionHistoryEvent[] = [
+      scheduleDecisionTaskEvent,
+      startDecisionTaskEvent,
+      failedDecisionTaskEvent,
+    ];
+    const group = getDecisionGroupFromEvents(events);
+
+    const failedEventMetadata = group.eventsMetadata.find(
+      (metadata) => metadata.label === 'Failed'
+    );
+    expect(failedEventMetadata?.summaryFields).toEqual([
+      'reason',
+      'details',
+      'cause',
+    ]);
+  });
+
+  it('should include summaryFields for timed out decision events', () => {
+    const events: ExtendedDecisionHistoryEvent[] = [
+      scheduleDecisionTaskEvent,
+      startDecisionTaskEvent,
+      timeoutDecisionTaskEvent,
+    ];
+    const group = getDecisionGroupFromEvents(events);
+
+    const timeoutEventMetadata = group.eventsMetadata.find(
+      (metadata) => metadata.label === 'Timed out'
+    );
+    expect(timeoutEventMetadata?.summaryFields).toEqual(['reason', 'cause']);
   });
 
   it('should include summaryFields for pending decision start events', () => {
@@ -395,13 +436,9 @@ describe('getDecisionGroupFromEvents', () => {
     );
     expect(pendingStartEventMetadata?.summaryFields).toEqual(['attempt']);
 
-    // Other events should not have the same summaryFields
     const scheduledEventMetadata = group.eventsMetadata.find(
       (metadata) => metadata.label === 'Scheduled'
     );
-    expect(scheduledEventMetadata?.summaryFields).toEqual([
-      'startToCloseTimeoutSeconds',
-      'attempt',
-    ]);
+    expect(scheduledEventMetadata?.summaryFields).toEqual(['attempt']);
   });
 });

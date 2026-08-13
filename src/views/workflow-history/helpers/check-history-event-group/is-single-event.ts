@@ -1,9 +1,19 @@
 import type { SingleHistoryEvent } from '../../workflow-history.types';
 
+import isLocalActivityEvent from './is-local-activity-event';
+
 export default function isSingleEvent(event: {
   attributes?: string;
+  markerRecordedEventAttributes?: {
+    markerName?: string;
+  } | null;
 }): event is SingleHistoryEvent {
   if (!event?.attributes) return false;
+
+  // Local activity events are marker events but should be handled separately
+  if (isLocalActivityEvent(event)) {
+    return false;
+  }
 
   return [
     'activityTaskCancelRequestedEventAttributes',
@@ -11,7 +21,6 @@ export default function isSingleEvent(event: {
     'cancelTimerFailedEventAttributes',
     'markerRecordedEventAttributes',
     'upsertWorkflowSearchAttributesEventAttributes',
-    'workflowExecutionSignaledEventAttributes',
     'workflowExecutionStartedEventAttributes',
     'workflowExecutionCompletedEventAttributes',
     'workflowExecutionFailedEventAttributes',

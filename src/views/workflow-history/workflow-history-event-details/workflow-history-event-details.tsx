@@ -1,48 +1,51 @@
-'use client';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
-import useStyletronClasses from '@/hooks/use-styletron-classes';
-import formatPendingWorkflowHistoryEvent from '@/utils/data-formatters/format-pending-workflow-history-event';
-import formatWorkflowHistoryEvent from '@/utils/data-formatters/format-workflow-history-event';
+import partition from 'lodash/partition';
 
-import WorkflowHistoryEventDetailsGroup from '../workflow-history-event-details-group/workflow-history-event-details-group';
+import WorkflowHistoryEventDetailsGroup from '@/views/workflow-history/workflow-history-event-details-group/workflow-history-event-details-group';
 
-import generateHistoryEventDetails from './helpers/generate-history-event-details';
-import isPendingHistoryEvent from './helpers/is-pending-history-event';
-import { cssStyles } from './workflow-history-event-details.styles';
-import type { Props } from './workflow-history-event-details.types';
+import WorkflowHistoryPanelDetailsEntry from '../workflow-history-panel-details-entry/workflow-history-panel-details-entry';
+
+import { styled } from './workflow-history-event-details.styles';
+import { type Props } from './workflow-history-event-details.types';
 
 export default function WorkflowHistoryEventDetails({
-  event,
-  decodedPageUrlParams,
-  negativeFields,
-  additionalDetails,
+  eventDetails,
+  isScrollable,
+  workflowPageParams,
 }: Props) {
-  const { cls } = useStyletronClasses(cssStyles);
+  const [panelDetails, restDetails] = useMemo(
+    () =>
+      partition(eventDetails, (detail) => detail.renderConfig?.showInPanels),
+    [eventDetails]
+  );
 
-  const detailsEntries = useMemo(() => {
-    const result = isPendingHistoryEvent(event)
-      ? formatPendingWorkflowHistoryEvent(event)
-      : formatWorkflowHistoryEvent(event);
-
-    return result
-      ? generateHistoryEventDetails({
-          details: {
-            ...result,
-            ...additionalDetails,
-          },
-          negativeFields,
-        })
-      : [];
-  }, [event, negativeFields, additionalDetails]);
-
-  if (detailsEntries.length === 0)
-    return <div className={cls.emptyDetails}>No Details</div>;
+  if (eventDetails.length === 0) {
+    return <styled.EmptyDetails>No Details</styled.EmptyDetails>;
+  }
 
   return (
-    <WorkflowHistoryEventDetailsGroup
-      entries={detailsEntries}
-      decodedPageUrlParams={decodedPageUrlParams}
-    />
+    <styled.EventDetailsContainer>
+      {panelDetails.length > 0 && (
+        <styled.PanelDetails>
+          {panelDetails.map((detail) => {
+            return (
+              <styled.PanelContainer key={detail.path}>
+                <WorkflowHistoryPanelDetailsEntry
+                  detail={detail}
+                  {...workflowPageParams}
+                />
+              </styled.PanelContainer>
+            );
+          })}
+        </styled.PanelDetails>
+      )}
+      <styled.RestDetails $isScrollable={isScrollable}>
+        <WorkflowHistoryEventDetailsGroup
+          entries={restDetails}
+          decodedPageUrlParams={workflowPageParams}
+        />
+      </styled.RestDetails>
+    </styled.EventDetailsContainer>
   );
 }
