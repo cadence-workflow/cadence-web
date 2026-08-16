@@ -2,8 +2,7 @@ import {
   initiateSignalExternalWorkflowEvent,
   signalExternalWorkflowEvent,
   failSignalExternalWorkflowEvent,
-} from '@/views/workflow-history/__fixtures__/workflow-history-signal-external-workflow-events';
-
+} from '../../../__fixtures__/workflow-history-signal-external-workflow-events';
 import type { SignalExternalWorkflowExecutionHistoryEvent } from '../../../workflow-history.types';
 import getSignalExternalWorkflowExecutionGroupFromEvents from '../get-signal-external-workflow-execution-group-from-events';
 
@@ -150,6 +149,7 @@ describe('getSignalExternalWorkflowExecutionGroupFromEvents', () => {
       (metadata) => metadata.label === 'Initiated'
     );
     expect(initiatedEventMetadata?.summaryFields).toEqual([
+      'workflowExecution',
       'signalName',
       'input',
     ]);

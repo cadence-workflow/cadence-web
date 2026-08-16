@@ -41,11 +41,18 @@ export default async function describeWorkflow(
       res.workflowExecutionInfo.closeStatus !==
         'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
     ) {
+      // When runId is omitted the backend resolves it to the last run, so we pin
+      // the close event lookup to the run we just described rather than letting
+      // it resolve "last run" a second time.
+      const resolvedRunId =
+        describeWorkflowResponse.workflowExecutionInfo?.workflowExecution
+          ?.runId ?? params.runId;
+
       const closeEventResponse = await ctx.grpcClusterMethods.getHistory({
         domain: params.domain,
         workflowExecution: {
           workflowId: params.workflowId,
-          runId: params.runId,
+          runId: resolvedRunId,
         },
         historyEventFilterType: 'EVENT_FILTER_TYPE_CLOSE_EVENT',
       });
@@ -84,6 +91,7 @@ export default async function describeWorkflow(
           executionStartToCloseTimeout,
           taskStartToCloseTimeout,
           workflowType: type,
+          originalExecutionRunId,
         },
       } = archivedHistoryEvents[0];
 
@@ -95,7 +103,8 @@ export default async function describeWorkflow(
         },
         workflowExecutionInfo: {
           workflowExecution: {
-            runId: params.runId,
+            // Falls back to the started event's run when the caller omitted runId
+            runId: params.runId ?? originalExecutionRunId,
             workflowId: params.workflowId,
           },
           isArchived: true,

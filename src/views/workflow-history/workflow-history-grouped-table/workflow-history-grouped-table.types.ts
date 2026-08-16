@@ -1,37 +1,39 @@
-import { type ListRange, type VirtuosoHandle } from 'react-virtuoso';
+import { type RefObject } from 'react';
 
+import { type VirtuosoHandle } from 'react-virtuoso';
+
+import { type WorkflowExecutionCloseStatus } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionCloseStatus';
 import { type RequestError } from '@/utils/request/request-error';
-import { type WorkflowPageTabsParams } from '@/views/workflow-page/workflow-page-tabs/workflow-page-tabs.types';
 
 import {
-  type GetIsEventExpanded,
-  type ToggleIsEventExpanded,
-} from '../../workflow-history/hooks/use-event-expansion-toggle.types';
-import { type HistoryEventsGroup } from '../../workflow-history/workflow-history.types';
+  type HistoryEventsGroup,
+  type Props as WorkflowHistoryProps,
+} from '../workflow-history.types';
 
 export type Props = {
-  // Data and state props
-  eventGroupsEntries: Array<[string, HistoryEventsGroup]>;
+  eventGroupsById: Array<[string, HistoryEventsGroup]>;
+  virtuosoRef: RefObject<VirtuosoHandle>;
+  initialStartIndex?: number;
+  setVisibleRange: ({
+    startIndex,
+    endIndex,
+  }: {
+    startIndex: number;
+    endIndex: number;
+  }) => void;
+  decodedPageUrlParams: WorkflowHistoryProps['params'];
+  reachedEndOfAvailableHistory: boolean;
+  workflowCloseStatus?: WorkflowExecutionCloseStatus | null;
+  workflowIsArchived: boolean;
+  workflowCloseTimeMs?: number | null;
   selectedEventId?: string;
-  decodedPageUrlParams: WorkflowPageTabsParams;
-  onResetToEventId: (eventId: string) => void;
-
-  // React Query props
+  resetToDecisionEventId: (decisionEventId: string) => void;
+  getIsEventExpanded: (eventId: string) => boolean;
+  toggleIsEventExpanded: (eventId: string) => void;
+  // Props to fetch more history
   error: RequestError | null;
   hasMoreEvents: boolean;
-  isFetchingMoreEvents: boolean;
   fetchMoreEvents: () => void;
-
-  // Event expansion state management
-  getIsEventExpanded: GetIsEventExpanded;
-  toggleIsEventExpanded: ToggleIsEventExpanded;
-
-  // Virtualization props
-  onVisibleRangeChange: (r: ListRange) => void;
-  virtuosoRef: React.RefObject<VirtuosoHandle>;
-
-  // Workflow info
-  workflowCloseTimeMs?: number | null;
-  workflowIsArchived: boolean;
-  reachedAvailableHistoryEnd: boolean;
+  isFetchingMoreEvents: boolean;
+  onClickShowGroupInTimeline: (groupId: string) => void;
 };

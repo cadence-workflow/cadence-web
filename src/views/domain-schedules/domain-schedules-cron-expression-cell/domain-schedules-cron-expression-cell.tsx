@@ -1,4 +1,4 @@
-import { toString as cronToString } from 'cronstrue';
+import { formatScheduleCronExpression } from '@/views/schedule-details/helpers/format-schedule-cron-expression';
 
 type Props = {
   cronExpression: string;
@@ -7,9 +7,5 @@ type Props = {
 export default function DomainSchedulesCronExpressionCell({
   cronExpression,
 }: Props) {
-  try {
-    return `${cronToString(cronExpression)} (${cronExpression})`;
-  } catch {
-    return cronExpression;
-  }
+  return formatScheduleCronExpression(cronExpression) ?? cronExpression;
 }

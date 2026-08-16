@@ -1,150 +1,152 @@
+import { useCallback } from 'react';
+
 import { Panel } from 'baseui/accordion';
-import { Badge } from 'baseui/badge';
-import { MdHourglassTop } from 'react-icons/md';
+import { MdOutlineCircle } from 'react-icons/md';
 
 import formatDate from '@/utils/data-formatters/format-date';
+import formatTimeDiff from '@/utils/datetime/format-time-diff';
 import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
+import isPendingHistoryEvent from '@/views/workflow-history/workflow-history-event-details/helpers/is-pending-history-event';
+import WorkflowHistoryGroupLabel from '@/views/workflow-history/workflow-history-group-label/workflow-history-group-label';
+import WorkflowHistoryRemainingDurationBadge from '@/views/workflow-history/workflow-history-remaining-duration-badge/workflow-history-remaining-duration-badge';
+import WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 
-import isPendingHistoryEvent from '../workflow-history-event-details/helpers/is-pending-history-event';
-import WorkflowHistoryEventDetails from '../workflow-history-event-details/workflow-history-event-details';
-import WorkflowHistoryEventLinkButton from '../workflow-history-event-link-button/workflow-history-event-link-button';
+import workflowHistoryEventGroupCategoryColorsConfig from '../config/workflow-history-event-group-category-colors.config';
+import getEventGroupCategory from '../helpers/get-event-group-category';
+import useGroupDetailsEntries from '../hooks/use-group-details-entries';
+import WorkflowHistoryDetailsRow from '../workflow-history-details-row/workflow-history-details-row';
 import WorkflowHistoryEventStatusBadge from '../workflow-history-event-status-badge/workflow-history-event-status-badge';
-import WorkflowHistoryEventSummary from '../workflow-history-event-summary/workflow-history-event-summary';
-import getFormattedEventsDuration from '../workflow-history-events-duration-badge/helpers/get-formatted-events-duration';
-import WorkflowHistoryGroupLabel from '../workflow-history-group-label/workflow-history-group-label';
-import WorkflowHistoryRemainingDurationBadge from '../workflow-history-remaining-duration-badge/workflow-history-remaining-duration-badge';
-import WorkflowHistoryTimelineResetButton from '../workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
+import WorkflowHistoryGroupDetails from '../workflow-history-group-details/workflow-history-group-details';
 
-import getRetriesForHistoryEvent from './helpers/get-retries-for-history-event';
 import {
-  overrides as getOverrides,
   styled,
+  overrides as getOverrides,
 } from './workflow-history-ungrouped-event.styles';
 import { type Props } from './workflow-history-ungrouped-event.types';
 
 export default function WorkflowHistoryUngroupedEvent({
   eventInfo,
-  workflowStartTime,
-  decodedPageUrlParams,
+  animateOnEnter,
+  workflowStartTimeMs,
   workflowIsArchived,
   workflowCloseStatus,
   loadingMoreEvents,
+  onReset,
+  decodedPageUrlParams,
   isExpanded,
   toggleIsExpanded,
-  animateOnEnter,
-  onReset,
+  onClickShowInTimeline,
 }: Props) {
-  const retries = getRetriesForHistoryEvent(eventInfo.event);
-  const overrides = getOverrides(animateOnEnter);
+  const eventGroupCategory = getEventGroupCategory(eventInfo.eventGroup);
+
+  const overrides = getOverrides(eventGroupCategory, animateOnEnter);
+
+  const handleReset = useCallback(() => {
+    if (onReset) {
+      onReset();
+    }
+  }, [onReset]);
+
+  const { summaryDetailsEntries, groupDetailsEntriesWithSummary } =
+    useGroupDetailsEntries(eventInfo.eventGroup);
+
+  const eventSummaryDetails = summaryDetailsEntries.find(
+    ([eventId]) => eventId === eventInfo.id
+  )?.[1].eventDetails;
+
+  const isPendingEvent = isPendingHistoryEvent(eventInfo.event);
 
   return (
     <Panel
-      overrides={overrides.panel}
       title={
-        <styled.CardHeaderContainer>
-          <styled.CardHeaderFieldContainer>
-            {isPendingHistoryEvent(eventInfo.event) ? (
-              <MdHourglassTop size={16} display="block" />
-            ) : (
-              eventInfo.id
-            )}
-          </styled.CardHeaderFieldContainer>
-          <styled.CardHeaderFieldContainer>
-            <styled.CardLabelContainer>
-              <WorkflowHistoryGroupLabel
-                label={eventInfo.label}
-                shortLabel={eventInfo.shortLabel}
-              />
-              {eventInfo.event.eventId && isExpanded && (
-                <WorkflowHistoryEventLinkButton
-                  historyEventId={eventInfo.id}
-                  isUngroupedView
-                />
-              )}
-            </styled.CardLabelContainer>
-          </styled.CardHeaderFieldContainer>
-          <styled.CardStatusContainer>
-            <WorkflowHistoryEventStatusBadge
-              statusReady={true}
-              size="small"
-              status={eventInfo.eventMetadata.status}
+        <styled.HeaderContent>
+          <MdOutlineCircle
+            color={
+              workflowHistoryEventGroupCategoryColorsConfig[eventGroupCategory]
+                .content
+            }
+          />
+          <styled.HeaderLabel>
+            {isPendingEvent ? '-' : eventInfo.id}
+          </styled.HeaderLabel>
+          <styled.HeaderLabel>
+            <WorkflowHistoryGroupLabel
+              label={eventInfo.label}
+              shortLabel={eventInfo.shortLabel}
             />
-            {eventInfo.eventMetadata.label}
-            {retries ? (
-              <Badge
-                overrides={overrides.badge}
-                content={retries === 1 ? '1 retry' : `${retries} retries`}
-                shape="rectangle"
-                color="primary"
-              />
-            ) : null}
-          </styled.CardStatusContainer>
-          {eventInfo.event.eventTime ? (
-            <styled.CardHeaderFieldContainer>
-              {formatDate(parseGrpcTimestamp(eventInfo.event.eventTime))}
-            </styled.CardHeaderFieldContainer>
-          ) : (
-            <div />
-          )}
-          {eventInfo.event.eventTime && workflowStartTime ? (
-            <styled.ElapsedContainer>
-              {getFormattedEventsDuration(
-                parseGrpcTimestamp(workflowStartTime),
-                parseGrpcTimestamp(eventInfo.event.eventTime)
-              )}
-              {eventInfo.expectedEndTimeInfo && (
+          </styled.HeaderLabel>
+          <styled.StatusContainer>
+            <WorkflowHistoryEventStatusBadge
+              status={eventInfo.eventMetadata.status}
+              statusText={eventInfo.eventMetadata.label}
+            />
+          </styled.StatusContainer>
+          <div>
+            {eventInfo.event.eventTime
+              ? formatDate(parseGrpcTimestamp(eventInfo.event.eventTime))
+              : null}
+          </div>
+          <styled.ElapsedContainer>
+            {eventInfo.event.eventTime && workflowStartTimeMs
+              ? formatTimeDiff(
+                  workflowStartTimeMs,
+                  parseGrpcTimestamp(eventInfo.event.eventTime)
+                )
+              : null}
+            {eventInfo.eventGroup.expectedEndTimeInfo &&
+              eventInfo.event.eventTime && (
                 <WorkflowHistoryRemainingDurationBadge
                   startTime={parseGrpcTimestamp(eventInfo.event.eventTime)}
-                  expectedEndTime={eventInfo.expectedEndTimeInfo.timeMs}
-                  prefix={eventInfo.expectedEndTimeInfo.prefix}
+                  expectedEndTime={
+                    eventInfo.eventGroup.expectedEndTimeInfo.timeMs
+                  }
+                  prefix={eventInfo.eventGroup.expectedEndTimeInfo.prefix}
                   workflowIsArchived={workflowIsArchived}
                   workflowCloseStatus={workflowCloseStatus}
                   loadingMoreEvents={loadingMoreEvents}
                 />
               )}
-            </styled.ElapsedContainer>
-          ) : (
-            <div />
-          )}
-          {eventInfo.eventMetadata.summaryFields && !isExpanded ? (
-            <styled.EventSummaryContainer>
-              <WorkflowHistoryEventSummary
-                event={eventInfo.event}
-                eventMetadata={eventInfo.eventMetadata}
-                shouldReverseRow
-                domain={decodedPageUrlParams.domain}
-                cluster={decodedPageUrlParams.cluster}
-                workflowId={decodedPageUrlParams.workflowId}
-                runId={decodedPageUrlParams.runId}
+          </styled.ElapsedContainer>
+          <styled.SummarizedDetailsContainer>
+            {eventSummaryDetails && eventSummaryDetails.length > 0 ? (
+              <WorkflowHistoryDetailsRow
+                detailsEntries={eventSummaryDetails}
+                {...decodedPageUrlParams}
               />
-            </styled.EventSummaryContainer>
-          ) : (
-            <div />
-          )}
-          {typeof onReset === 'function' ? (
-            <styled.ResetButtonContainer>
+            ) : (
+              <div />
+            )}
+          </styled.SummarizedDetailsContainer>
+          <styled.ActionsContainer>
+            {eventInfo.canReset && (
               <WorkflowHistoryTimelineResetButton
-                domain={decodedPageUrlParams.domain}
-                cluster={decodedPageUrlParams.cluster}
                 workflowId={decodedPageUrlParams.workflowId}
                 runId={decodedPageUrlParams.runId}
-                onReset={onReset}
+                domain={decodedPageUrlParams.domain}
+                cluster={decodedPageUrlParams.cluster}
+                onReset={handleReset}
               />
-            </styled.ResetButtonContainer>
-          ) : (
-            <div />
-          )}
-        </styled.CardHeaderContainer>
+            )}
+          </styled.ActionsContainer>
+        </styled.HeaderContent>
       }
       expanded={isExpanded}
-      onChange={() => toggleIsExpanded()}
+      onChange={toggleIsExpanded}
+      overrides={overrides.panel}
     >
-      <WorkflowHistoryEventDetails
-        event={eventInfo.event}
-        decodedPageUrlParams={decodedPageUrlParams}
-        negativeFields={eventInfo.eventMetadata.negativeFields}
-        additionalDetails={eventInfo.eventMetadata.additionalDetails}
-      />
+      <styled.GroupDetailsGridContainer>
+        <styled.GroupDetailsNameSpacer />
+        <styled.GroupDetailsContainer>
+          <WorkflowHistoryGroupDetails
+            groupDetailsEntries={groupDetailsEntriesWithSummary}
+            initialEventId={eventInfo.id}
+            isUngroupedView={true}
+            workflowPageParams={decodedPageUrlParams}
+            onClose={() => toggleIsExpanded()}
+            onClickShowInTimeline={onClickShowInTimeline}
+          />
+        </styled.GroupDetailsContainer>
+      </styled.GroupDetailsGridContainer>
     </Panel>
   );
 }

@@ -173,7 +173,7 @@ export default function getActivityGroupFromEvents(
         'attempt',
       ],
       activityTaskCompletedEventAttributes: ['result'],
-      activityTaskFailedEventAttributes: ['details', 'reason'],
+      activityTaskFailedEventAttributes: ['reason', 'details'],
     };
 
   const shouldShowPendingEvent = Boolean(
@@ -194,15 +194,17 @@ export default function getActivityGroupFromEvents(
     hasMissingEvents,
     groupType,
     badges,
-    ...getCommonHistoryGroupFields<ActivityHistoryGroup>(
-      finalEvents,
-      eventToStatus,
-      eventToLabel,
-      { pendingActivityTaskStartEventAttributes: pendingStartEventTimePrefix },
-      closeEvent || timeoutEvent,
-      eventToNegativeFields,
-      eventToAdditionalDetails,
-      eventToSummaryFields
-    ),
+    ...getCommonHistoryGroupFields<ActivityHistoryGroup>({
+      events: finalEvents,
+      historyGroupEventToStatusMap: eventToStatus,
+      eventToLabelMap: eventToLabel,
+      eventToTimeLabelPrefixMap: {
+        pendingActivityTaskStartEventAttributes: pendingStartEventTimePrefix,
+      },
+      closeEvent: closeEvent || timeoutEvent,
+      eventToNegativeFieldsMap: eventToNegativeFields,
+      eventToAdditionalDetailsMap: eventToAdditionalDetails,
+      eventToSummaryFieldsMap: eventToSummaryFields,
+    }),
   };
 }

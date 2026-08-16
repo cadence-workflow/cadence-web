@@ -1,6 +1,6 @@
 import { CronExpressionParser } from 'cron-parser';
 
-import { cronValidate } from '@/utils/cron-validate/cron-validate';
+import parseCronExpression from '@/utils/cron-validate/parse-cron-expression';
 
 import { MAX_SCHEDULE_CRON_OCCURRENCES } from '../use-schedule-runs-chart-data.constants';
 import { type GetExpectedScheduleTimesMsParams } from '../use-schedule-runs-chart-data.types';
@@ -11,8 +11,10 @@ export default function getExpectedScheduleTimesMs({
   endMs,
   limit = MAX_SCHEDULE_CRON_OCCURRENCES,
 }: GetExpectedScheduleTimesMsParams): number[] {
+  const cron = parseCronExpression(cronExpression);
+
   if (
-    !cronValidate(cronExpression).isValid() ||
+    !cron ||
     !Number.isFinite(startMs) ||
     !Number.isFinite(endMs) ||
     endMs < startMs
@@ -21,11 +23,12 @@ export default function getExpectedScheduleTimesMs({
   }
 
   try {
-    // Cadence schedule cron expressions are always evaluated in UTC.
-    const forwardInterval = CronExpressionParser.parse(cronExpression, {
+    // Forward iteration is authoritative: walking backward across a DST
+    // fall-back emits the repeated wall-clock time twice.
+    const forwardInterval = CronExpressionParser.parse(cron.expression, {
       currentDate: startMs - 1,
       endDate: endMs,
-      tz: 'UTC',
+      tz: cron.timezone,
     });
     const occurrences: number[] = [];
 
@@ -41,10 +44,10 @@ export default function getExpectedScheduleTimesMs({
       return occurrences;
     }
 
-    const backwardInterval = CronExpressionParser.parse(cronExpression, {
+    const backwardInterval = CronExpressionParser.parse(cron.expression, {
       currentDate: endMs + 1,
       startDate: startMs,
-      tz: 'UTC',
+      tz: cron.timezone,
     });
     const latestOccurrences: number[] = [];
 

@@ -1,8 +1,0 @@
-const HISTORY_PAGE_V2_ENABLED_VALUES_CONFIG = [
-  'DISABLED',
-  'OPT_IN',
-  'OPT_OUT',
-  'ENABLED',
-] as const;
-
-export default HISTORY_PAGE_V2_ENABLED_VALUES_CONFIG;
