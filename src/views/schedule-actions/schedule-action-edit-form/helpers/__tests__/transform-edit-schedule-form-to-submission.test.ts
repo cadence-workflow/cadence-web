@@ -17,13 +17,6 @@ describe(transformEditScheduleFormToSubmission.name, () => {
         executionStartToCloseTimeoutSeconds: 3600,
       },
     });
-  });
-
-  it('omits the schedule id, which the update URL carries instead', () => {
-    const result = transformEditScheduleFormToSubmission(
-      mockEditScheduleFormData
-    );
-
     expect(result).not.toHaveProperty('scheduleId');
   });
 });
