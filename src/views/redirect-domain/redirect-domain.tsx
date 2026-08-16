@@ -1,8 +1,7 @@
 import { notFound, redirect } from 'next/navigation';
 import queryString from 'query-string';
 
-import getCachedAllDomains from '../domains-page/helpers/get-cached-all-domains';
-
+import describeDomainAcrossClusters from './helpers/describe-domain-across-clusters';
 import { type Props } from './redirect-domain.types';
 
 export default async function RedirectDomain(props: Props) {
@@ -13,26 +12,32 @@ export default async function RedirectDomain(props: Props) {
 
   const domain = decodeURIComponent(encodedDomain);
 
-  const { domains } = await getCachedAllDomains();
+  const { domains, hasPermissionDenied, unexpectedError } =
+    await describeDomainAcrossClusters(domain);
 
-  const [domainDetails, ...restDomains] = domains.filter(
-    (d) => d.name === domain
-  );
-
-  if (!domainDetails) {
+  if (domains.length === 0) {
+    if (unexpectedError) {
+      throw unexpectedError;
+    }
+    if (hasPermissionDenied) {
+      throw new Error(`Access denied for domain "${domain}"`);
+    }
     notFound();
-  } else if (restDomains.length > 0) {
+  }
+
+  if (domains.length > 1) {
     redirect(
       queryString.stringifyUrl({
         url: '/domains',
         query: {
-          // TODO @assem.hafez: see if this type can be asserted
           s: domain,
           d: 'true',
         },
       })
     );
   }
+
+  const domainDetails = domains[0];
 
   const baseUrl = `/domains/${encodeURIComponent(domain)}/${encodeURIComponent(domainDetails.activeClusterName)}`;
 

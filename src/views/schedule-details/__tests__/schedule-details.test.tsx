@@ -148,6 +148,47 @@ describe(ScheduleDetails.name, () => {
     ).not.toBeInTheDocument();
   });
 
+  it('keeps showing cached schedule details when a background refetch fails', async () => {
+    jest.useFakeTimers();
+    try {
+      let callCount = 0;
+      const describeResponse = getMockRunningDescribeScheduleResponse({
+        policies: {
+          overlapPolicy: ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_BUFFER,
+        },
+      } as Partial<DescribeScheduleResponse>);
+
+      const describeResolver = jest.fn(async () => {
+        callCount += 1;
+        if (callCount === 1) {
+          return HttpResponse.json(describeResponse);
+        }
+
+        return HttpResponse.json(
+          { message: 'Failed to describe schedule' },
+          { status: 500 }
+        );
+      });
+
+      setup({ describeResolver });
+
+      expect(
+        await screen.findByRole('heading', { name: 'Mock policies section' })
+      ).toBeInTheDocument();
+
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(10_000);
+      });
+
+      expect(
+        screen.getByRole('heading', { name: 'Mock policies section' })
+      ).toBeInTheDocument();
+      expect(describeResolver).toHaveBeenCalledTimes(2);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
   it('throws into error boundary when describe fails', async () => {
     const describeResolver = jest.fn(() =>
       HttpResponse.json(
