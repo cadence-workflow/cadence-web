@@ -17,6 +17,17 @@ export type EditScheduleSubmissionData = Omit<
 >;
 
 /**
+ * Prefill values for the edit form. `workerSDKLanguage` is explicitly unset
+ * because Cadence does not persist it; the field is still required on submit.
+ */
+export type EditScheduleFormPrefillValues = Omit<
+  ExhaustiveDefaults<EditScheduleFormData>,
+  'workerSDKLanguage'
+> & {
+  workerSDKLanguage: undefined;
+};
+
+/**
  * Forces every key of T to be explicitly assigned, including optional fields,
  * whose value may still be `undefined`. Adding a field to T without updating a
  * literal typed as `ExhaustiveDefaults<T>` is a compile error, which is what

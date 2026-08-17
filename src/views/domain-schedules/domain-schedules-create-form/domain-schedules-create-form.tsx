@@ -40,6 +40,7 @@ export default function DomainSchedulesCreateForm({
   domain,
   cluster,
   scheduleIdReadOnly,
+  prefillWorkerSDKLanguage = true,
 }: Props) {
   const { errors: fieldErrors, isSubmitted } = useFormState({ control });
 
@@ -164,7 +165,9 @@ export default function DomainSchedulesCreateForm({
         <Controller
           name="workerSDKLanguage"
           control={control}
-          defaultValue={WORKER_SDK_LANGUAGES[0]}
+          defaultValue={
+            prefillWorkerSDKLanguage ? WORKER_SDK_LANGUAGES[0] : undefined
+          }
           render={({ field: { value, onChange, ref, ...field } }) => (
             <RadioGroup
               {...field}
