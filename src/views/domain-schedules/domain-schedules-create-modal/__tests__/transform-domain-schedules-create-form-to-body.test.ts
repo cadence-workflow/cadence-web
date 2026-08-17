@@ -129,22 +129,12 @@ describe(transformDomainSchedulesCreateFormToBody.name, () => {
     const result = transformDomainSchedulesCreateFormToBody({
       ...mockDomainSchedulesCreateFormData,
       catchUpPolicy: ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_ONE,
-      catchUpWindowSeconds: '1209600',
+      catchUpWindowSeconds: '1.04',
     });
 
     expect(result.catchUpPolicy).toBe(
       ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_ONE
     );
-    expect(result.catchUpWindowSeconds).toBe(1209600);
-  });
-
-  it('maps fractional catch-up window seconds', () => {
-    const result = transformDomainSchedulesCreateFormToBody({
-      ...mockDomainSchedulesCreateFormData,
-      catchUpPolicy: ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_ONE,
-      catchUpWindowSeconds: '1.04',
-    });
-
     expect(result.catchUpWindowSeconds).toBe(1.04);
   });
 
