@@ -50,12 +50,13 @@ export default function refineCreateScheduleForm(
     data.catchUpPolicy !== undefined &&
     data.catchUpPolicy !==
       ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_SKIP &&
-    (data.catchUpWindowDays === '' || data.catchUpWindowDays === undefined)
+    (data.catchUpWindowSeconds === '' ||
+      data.catchUpWindowSeconds === undefined)
   ) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       message: 'Catch-up window is required',
-      path: ['catchUpWindowDays'],
+      path: ['catchUpWindowSeconds'],
     });
   }
 

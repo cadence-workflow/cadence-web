@@ -32,7 +32,7 @@ import {
   CREATE_SCHEDULE_ADVANCED_FIELD_IDS,
   DEFAULT_CATCH_UP_POLICY,
   DEFAULT_OVERLAP_POLICY,
-  MAX_CATCH_UP_WINDOW_DAYS,
+  MAX_CATCH_UP_WINDOW_SECONDS,
   OVERLAP_POLICY_OPTIONS,
   SCHEDULE_ID_READ_ONLY_CAPTION,
 } from './domain-schedules-create-advanced-form.constants';
@@ -307,33 +307,33 @@ export default function DomainSchedulesCreateAdvancedForm({
             subfield={true}
             label="Catch-up window"
             description={
-              CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS.catchUpWindowDays
+              CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS.catchUpWindowSeconds
             }
-            htmlFor={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.catchUpWindowDays}
-            error={getFieldErrorMessage(fieldErrors, 'catchUpWindowDays')}
+            htmlFor={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.catchUpWindowSeconds}
+            error={getFieldErrorMessage(fieldErrors, 'catchUpWindowSeconds')}
           >
             <Controller
-              name="catchUpWindowDays"
+              name="catchUpWindowSeconds"
               control={control}
               render={({ field: { ref, ...field } }) => (
                 <Input
                   {...field}
-                  id={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.catchUpWindowDays}
+                  id={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.catchUpWindowSeconds}
                   value={field.value ?? ''}
                   // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
                   inputRef={ref}
                   aria-label="Catch-up window"
                   type="number"
                   min={1}
-                  max={MAX_CATCH_UP_WINDOW_DAYS}
+                  max={MAX_CATCH_UP_WINDOW_SECONDS}
                   step={0.01}
                   onBlur={field.onBlur}
                   error={Boolean(
-                    getFieldErrorMessage(fieldErrors, 'catchUpWindowDays')
+                    getFieldErrorMessage(fieldErrors, 'catchUpWindowSeconds')
                   )}
                   size="compact"
                   placeholder="Set catch-up window"
-                  endEnhancer={<LabelXSmall>Days</LabelXSmall>}
+                  endEnhancer={<LabelXSmall>Seconds</LabelXSmall>}
                 />
               )}
             />

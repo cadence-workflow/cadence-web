@@ -34,7 +34,7 @@ describe(refineCreateScheduleForm.name, () => {
     expect(
       getIssues({
         catchUpPolicy: ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_ONE,
-        catchUpWindowDays: '7',
+        catchUpWindowSeconds: '604800',
       })
     ).toEqual([]);
   });
@@ -83,7 +83,7 @@ describe(refineCreateScheduleForm.name, () => {
       })
     ).toEqual([
       expect.objectContaining({
-        path: ['catchUpWindowDays'],
+        path: ['catchUpWindowSeconds'],
         message: 'Catch-up window is required',
       }),
     ]);

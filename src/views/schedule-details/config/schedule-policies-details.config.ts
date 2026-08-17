@@ -7,6 +7,7 @@ import {
   SCHEDULE_OVERLAP_POLICY_LABELS,
 } from '@/views/shared/constants/schedule-policy-labels.constants';
 
+import { formatScheduleDuration } from '../helpers/format-schedule-duration';
 import { formatScheduleEnumWithDefault } from '../helpers/format-schedule-enum-with-default';
 import { formatScheduleLimitValue } from '../helpers/format-schedule-limit-value';
 
@@ -30,6 +31,12 @@ const schedulePoliciesDetailsConfig: ScheduleDetailRowConfig[] = [
         SCHEDULE_CATCH_UP_POLICY_LABELS,
         SERVER_CATCH_UP_POLICY_DEFAULT
       ),
+  },
+  {
+    key: 'catchUpWindow',
+    getLabel: () => 'Catch-up window',
+    getValue: ({ formattedScheduleDetails: { policies } }) =>
+      formatScheduleDuration(policies?.catchUpWindow),
   },
   {
     key: 'pauseOnFailure',

@@ -117,7 +117,11 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
     expect(screen.queryByLabelText('Catch-up window')).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('radio', { name: 'Catch-up all' }));
-    expect(screen.getByLabelText('Catch-up window')).toBeInTheDocument();
+    const catchUpWindow = screen.getByLabelText('Catch-up window');
+    expect(catchUpWindow).toBeInTheDocument();
+    expect(catchUpWindow.closest('[data-baseweb="input"]')).toHaveTextContent(
+      'Seconds'
+    );
   });
 
   it('hides catch-up window when switching catch-up policy back to Skip', async () => {
