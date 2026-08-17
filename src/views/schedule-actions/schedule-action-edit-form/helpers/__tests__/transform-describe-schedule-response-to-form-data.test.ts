@@ -39,6 +39,21 @@ describe(transformDescribeScheduleResponseToFormData.name, () => {
     ).toEqual(EMPTY_CRON_EXPRESSION_FIELDS);
   });
 
+  it('leaves the cron fields empty for a non-UTC timezone', () => {
+    expect(
+      transform(
+        getMockEditableDescribeScheduleResponse({
+          spec: {
+            cronExpression: 'CRON_TZ=America/New_York 30 9 1 * *',
+            startTime: null,
+            endTime: null,
+            jitter: null,
+          },
+        })
+      ).cronExpression
+    ).toEqual(EMPTY_CRON_EXPRESSION_FIELDS);
+  });
+
   it('prefills the start workflow action fields', () => {
     const formData = transform();
 
@@ -62,7 +77,7 @@ describe(transformDescribeScheduleResponseToFormData.name, () => {
       expect.objectContaining({
         overlapPolicy: ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_BUFFER,
         catchUpPolicy: ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_ALL,
-        catchUpWindowDays: '2',
+        catchUpWindowSeconds: '172800',
         bufferLimit: '5',
         concurrencyLimit: '0',
         pauseOnFailure: true,
@@ -80,7 +95,7 @@ describe(transformDescribeScheduleResponseToFormData.name, () => {
     );
   });
 
-  it('rounds a partial catch-up window day up, so the window is never narrowed', () => {
+  it('prefills catch-up window as seconds', () => {
     expect(
       transform(
         getMockEditableDescribeScheduleResponse({
@@ -94,8 +109,8 @@ describe(transformDescribeScheduleResponseToFormData.name, () => {
             concurrencyLimit: 0,
           },
         })
-      ).catchUpWindowDays
-    ).toEqual('2');
+      ).catchUpWindowSeconds
+    ).toEqual('90000');
   });
 
   it('falls back to blank values for an empty schedule', () => {
@@ -115,7 +130,7 @@ describe(transformDescribeScheduleResponseToFormData.name, () => {
       bufferLimit: undefined,
       concurrencyLimit: undefined,
       catchUpPolicy: undefined,
-      catchUpWindowDays: undefined,
+      catchUpWindowSeconds: undefined,
       jitterSeconds: undefined,
       startTime: undefined,
       endTime: undefined,

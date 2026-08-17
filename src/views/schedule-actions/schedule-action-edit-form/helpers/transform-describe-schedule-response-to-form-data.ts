@@ -1,4 +1,5 @@
-import { CRON_FIELD_ORDER } from '@/components/cron-schedule-input/cron-schedule-input.constants';
+import isNil from 'lodash/isNil';
+
 import {
   SCHEDULE_CATCH_UP_POLICIES,
   SCHEDULE_OVERLAP_POLICIES,
@@ -11,13 +12,11 @@ import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
 import losslessJsonStringify from '@/utils/lossless-json-stringify';
 
 import {
-  EMPTY_CRON_EXPRESSION_FIELDS,
-  SECONDS_PER_DAY,
-} from '../schedule-action-edit-form.constants';
-import {
   type EditScheduleFormData,
   type ExhaustiveDefaults,
 } from '../schedule-action-edit-form.types';
+
+import mapCronExpressionToFormFields from './map-cron-expression-to-form-fields';
 
 /**
  * Builds the edit form's default values from an existing schedule.
@@ -36,7 +35,9 @@ export default function transformDescribeScheduleResponseToFormData(
 
   return {
     scheduleId,
-    cronExpression: splitCronExpression(schedule.spec?.cronExpression),
+    cronExpression: mapCronExpressionToFormFields(
+      schedule.spec?.cronExpression
+    ),
     workflowType: { name: startWorkflow?.workflowType?.name ?? '' },
     taskList: { name: startWorkflow?.taskList?.name ?? '' },
     executionStartToCloseTimeoutSeconds:
@@ -54,17 +55,26 @@ export default function transformDescribeScheduleResponseToFormData(
     overlapPolicy: SCHEDULE_OVERLAP_POLICIES.find(
       (policy) => policy === policies?.overlapPolicy
     ),
-    bufferLimit: stringifyLimit(policies?.bufferLimit),
-    concurrencyLimit: stringifyLimit(policies?.concurrencyLimit),
+    bufferLimit: isNil(policies?.bufferLimit)
+      ? undefined
+      : String(policies?.bufferLimit),
+    concurrencyLimit: isNil(policies?.concurrencyLimit)
+      ? undefined
+      : String(policies.concurrencyLimit),
     catchUpPolicy: SCHEDULE_CATCH_UP_POLICIES.find(
       (policy) => policy === policies?.catchUpPolicy
     ),
-    catchUpWindowDays: formatCatchUpWindowDays(policies?.catchUpWindow),
+    catchUpWindowSeconds:
+      formatDurationToSeconds(policies?.catchUpWindow)?.toString() ?? undefined,
 
     jitterSeconds:
       formatDurationToSeconds(schedule.spec?.jitter)?.toString() ?? undefined,
-    startTime: formatTimestampToIso(schedule.spec?.startTime),
-    endTime: formatTimestampToIso(schedule.spec?.endTime),
+    startTime: schedule.spec?.startTime
+      ? new Date(parseGrpcTimestamp(schedule.spec.startTime)).toISOString()
+      : undefined,
+    endTime: schedule.spec?.endTime
+      ? new Date(parseGrpcTimestamp(schedule.spec.endTime)).toISOString()
+      : undefined,
 
     // TODO(PR08d): decode the schedule's retry policy, search attributes and memo.
     enableRetryPolicy: false,
@@ -73,48 +83,4 @@ export default function transformDescribeScheduleResponseToFormData(
     searchAttributes: undefined,
     memo: undefined,
   };
-}
-
-/**
- * ponytail: only plain 5-field cron expressions map onto the cron inputs. A
- * schedule using another syntax (for example `@every 1h`) prefills empty, so the
- * form asks for a cron rather than silently mangling it. Upgrade path: teach
- * `CronScheduleInput` about the other syntaxes and widen this.
- */
-function splitCronExpression(
-  cronExpression: string | undefined
-): EditScheduleFormData['cronExpression'] {
-  const fields = cronExpression?.trim().split(/\s+/) ?? [];
-
-  if (fields.length !== CRON_FIELD_ORDER.length) {
-    return EMPTY_CRON_EXPRESSION_FIELDS;
-  }
-
-  return Object.fromEntries(
-    CRON_FIELD_ORDER.map((field, index) => [field, fields[index]])
-  ) as EditScheduleFormData['cronExpression'];
-}
-
-function stringifyLimit(limit: number | undefined): string | undefined {
-  return limit === undefined ? undefined : String(limit);
-}
-
-/**
- * The form only accepts whole days, so a partial day rounds up rather than down
- * to avoid narrowing the window the schedule already runs with.
- */
-function formatCatchUpWindowDays(
-  catchUpWindow: Parameters<typeof formatDurationToSeconds>[0]
-): string | undefined {
-  const seconds = formatDurationToSeconds(catchUpWindow);
-
-  return seconds ? String(Math.ceil(seconds / SECONDS_PER_DAY)) : undefined;
-}
-
-function formatTimestampToIso(
-  timestamp: Parameters<typeof parseGrpcTimestamp>[0] | null | undefined
-): string | undefined {
-  return timestamp
-    ? new Date(parseGrpcTimestamp(timestamp)).toISOString()
-    : undefined;
 }
