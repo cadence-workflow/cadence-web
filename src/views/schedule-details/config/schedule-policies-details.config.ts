@@ -40,7 +40,7 @@ const schedulePoliciesDetailsConfig: ScheduleDetailRowConfig[] = [
       formatScheduleDuration(policies?.catchUpWindow),
     hide: ({ formattedScheduleDetails: { policies } }) =>
       policies?.catchUpPolicy ===
-        ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_SKIP,
+      ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_SKIP,
   },
   {
     key: 'pauseOnFailure',
