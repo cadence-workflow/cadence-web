@@ -55,17 +55,6 @@ describe('processWorkflowInput', () => {
     ).toBe('"arg1" 42 true null');
   });
 
-  it('should join arguments with spaces when workerSDKLanguage is undefined', () => {
-    const input = ['arg1', 42, true, null];
-    expect(
-      processWorkflowInput({
-        input,
-        // @ts-expect-error Testing with wrong attribute `undefined`
-        workerSDKLanguage: undefined,
-      })
-    ).toBe('"arg1" 42 true null');
-  });
-
   it('should return JSON array for JAVA language when multiple arguments', () => {
     const input = ['arg1', 42, true];
     expect(

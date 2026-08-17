@@ -3,7 +3,6 @@ import isNil from 'lodash/isNil';
 import {
   SCHEDULE_CATCH_UP_POLICIES,
   SCHEDULE_OVERLAP_POLICIES,
-  WORKER_SDK_LANGUAGES,
 } from '@/route-handlers/create-schedule/create-schedule.constants';
 import { type DescribeScheduleResponse } from '@/route-handlers/describe-schedule/describe-schedule.types';
 import formatDurationToSeconds from '@/utils/data-formatters/format-duration-to-seconds';
@@ -11,10 +10,7 @@ import formatInputPayload from '@/utils/data-formatters/format-input-payload';
 import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
 import losslessJsonStringify from '@/utils/lossless-json-stringify';
 
-import {
-  type EditScheduleFormData,
-  type ExhaustiveDefaults,
-} from '../schedule-action-edit-form.types';
+import { type EditScheduleFormPrefillValues } from '../schedule-action-edit-form.types';
 
 import mapCronExpressionToFormFields from './map-cron-expression-to-form-fields';
 
@@ -28,7 +24,7 @@ import mapCronExpressionToFormFields from './map-cron-expression-to-form-fields'
 export default function transformDescribeScheduleResponseToFormData(
   schedule: DescribeScheduleResponse,
   scheduleId: string
-): ExhaustiveDefaults<EditScheduleFormData> {
+): EditScheduleFormPrefillValues {
   const startWorkflow = schedule.action?.startWorkflow;
   const policies = schedule.policies;
   const parsedInput = formatInputPayload(startWorkflow?.input);
@@ -42,10 +38,8 @@ export default function transformDescribeScheduleResponseToFormData(
     taskList: { name: startWorkflow?.taskList?.name ?? '' },
     executionStartToCloseTimeoutSeconds:
       formatDurationToSeconds(startWorkflow?.executionStartToCloseTimeout) ?? 0,
-    // The worker SDK is not stored on the schedule, only the input encoding it
-    // produced, which is ambiguous between languages. Fall back to the same
-    // default the create form uses.
-    workerSDKLanguage: WORKER_SDK_LANGUAGES[0],
+    // Cadence stores encoded input bytes only; the worker SDK is not persisted.
+    workerSDKLanguage: undefined,
     input: parsedInput?.length
       ? parsedInput.map((value) => losslessJsonStringify(value))
       : [''],

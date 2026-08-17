@@ -10,6 +10,8 @@ import {
   waitFor,
 } from '@/test-utils/rtl';
 
+import { WORKER_SDK_LANGUAGES } from '@/route-handlers/start-workflow/start-workflow.constants';
+
 import { type DomainSchedulesCreateFormData } from '../../domain-schedules-create-modal/domain-schedules-create-modal.types';
 import DomainSchedulesCreateForm from '../domain-schedules-create-form';
 
@@ -171,6 +173,14 @@ describe('DomainSchedulesCreateForm', () => {
 
     expect(screen.getByLabelText('Schedule ID')).toBeDisabled();
   });
+
+  it('leaves Worker SDK unset when prefillWorkerSDKLanguage is false', async () => {
+    await setup({ prefillWorkerSDKLanguage: false });
+
+    for (const language of WORKER_SDK_LANGUAGES) {
+      expect(screen.getByRole('radio', { name: language })).not.toBeChecked();
+    }
+  });
 });
 
 type SetupProps = {
@@ -179,16 +189,19 @@ type SetupProps = {
   injectFieldErrors?: boolean;
   taskListValidation?: ReturnType<typeof mockUseTaskListFieldValidation>;
   scheduleIdReadOnly?: boolean;
+  prefillWorkerSDKLanguage?: boolean;
 };
 
 function TestWrapper({
   defaultValues,
   injectFieldErrors,
   scheduleIdReadOnly,
+  prefillWorkerSDKLanguage,
 }: {
   defaultValues?: Partial<DomainSchedulesCreateFormData>;
   injectFieldErrors?: boolean;
   scheduleIdReadOnly?: boolean;
+  prefillWorkerSDKLanguage?: boolean;
 }) {
   const { control, trigger, setError, clearErrors } =
     useForm<DomainSchedulesCreateFormData>({
@@ -211,6 +224,7 @@ function TestWrapper({
       domain={MOCK_DOMAIN}
       cluster={MOCK_CLUSTER}
       scheduleIdReadOnly={scheduleIdReadOnly}
+      prefillWorkerSDKLanguage={prefillWorkerSDKLanguage}
     />
   );
 }
@@ -219,6 +233,7 @@ async function setup({
   defaultValues,
   injectFieldErrors = false,
   scheduleIdReadOnly,
+  prefillWorkerSDKLanguage,
   taskListValidation = {
     isTaskListLoading: false,
     taskListCaptionMessage: null,
@@ -233,6 +248,7 @@ async function setup({
       defaultValues={defaultValues}
       injectFieldErrors={injectFieldErrors}
       scheduleIdReadOnly={scheduleIdReadOnly}
+      prefillWorkerSDKLanguage={prefillWorkerSDKLanguage}
     />
   );
 
