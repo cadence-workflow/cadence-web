@@ -138,6 +138,16 @@ describe(transformDomainSchedulesCreateFormToBody.name, () => {
     expect(result.catchUpWindowSeconds).toBe(14 * 24 * 60 * 60);
   });
 
+  it('maps fractional catch-up window days to seconds', () => {
+    const result = transformDomainSchedulesCreateFormToBody({
+      ...mockDomainSchedulesCreateFormData,
+      catchUpPolicy: ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_ONE,
+      catchUpWindowDays: '1.04',
+    });
+
+    expect(result.catchUpWindowSeconds).toBe(1.04 * 24 * 60 * 60);
+  });
+
   it('omits catch-up window seconds for skip catch-up policy', () => {
     const result = transformDomainSchedulesCreateFormToBody({
       ...mockDomainSchedulesCreateFormData,

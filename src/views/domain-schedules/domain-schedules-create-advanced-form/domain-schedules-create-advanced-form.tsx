@@ -326,6 +326,7 @@ export default function DomainSchedulesCreateAdvancedForm({
                   type="number"
                   min={1}
                   max={MAX_CATCH_UP_WINDOW_DAYS}
+                  step={0.01}
                   onBlur={field.onBlur}
                   error={Boolean(
                     getFieldErrorMessage(fieldErrors, 'catchUpWindowDays')
