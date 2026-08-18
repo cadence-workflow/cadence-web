@@ -4,7 +4,6 @@ import { getMockDescribeScheduleResponse } from '@/route-handlers/describe-sched
 import { type DescribeScheduleResponse } from '@/route-handlers/describe-schedule/describe-schedule.types';
 
 import {
-  encodePayload,
   getMockEditableDescribeScheduleResponse,
   withStartWorkflow,
 } from '../../__fixtures__/mock-editable-describe-schedule-response';
@@ -164,7 +163,11 @@ describe(transformDescribeScheduleResponseToFormData.name, () => {
       transform(
         withStartWorkflow({
           searchAttributes: {
-            indexedFields: { CustomListField: encodePayload('["a","b"]') },
+            indexedFields: {
+              CustomListField: {
+                data: Buffer.from('["a","b"]', 'utf-8').toString('base64'),
+              },
+            },
           },
         })
       ).searchAttributes
