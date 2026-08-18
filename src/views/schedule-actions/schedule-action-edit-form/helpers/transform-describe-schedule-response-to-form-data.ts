@@ -37,7 +37,8 @@ export default function transformDescribeScheduleResponseToFormData(
     workflowType: { name: startWorkflow?.workflowType?.name ?? '' },
     taskList: { name: startWorkflow?.taskList?.name ?? '' },
     executionStartToCloseTimeoutSeconds:
-      formatDurationToSeconds(startWorkflow?.executionStartToCloseTimeout) ?? 0,
+      formatDurationToSeconds(startWorkflow?.executionStartToCloseTimeout) ??
+      undefined,
     // Cadence stores encoded input bytes only; the worker SDK is not persisted.
     workerSDKLanguage: undefined,
     input: parsedInput?.length
