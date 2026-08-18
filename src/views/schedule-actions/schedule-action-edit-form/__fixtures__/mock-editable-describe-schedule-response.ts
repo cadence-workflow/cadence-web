@@ -58,3 +58,23 @@ export function getMockEditableDescribeScheduleResponse(
     ...overrides,
   });
 }
+
+type EditableStartWorkflow = NonNullable<
+  NonNullable<DescribeScheduleResponse['action']>['startWorkflow']
+>;
+
+/** Overrides fields on the editable mock's start-workflow action, keeping the rest. */
+export function withStartWorkflow(
+  startWorkflowOverrides: Partial<EditableStartWorkflow> = {}
+): DescribeScheduleResponse {
+  const mock = getMockEditableDescribeScheduleResponse();
+  const startWorkflow = mock.action?.startWorkflow;
+
+  if (!startWorkflow) {
+    throw new Error('mock is missing a start workflow action');
+  }
+
+  return getMockEditableDescribeScheduleResponse({
+    action: { startWorkflow: { ...startWorkflow, ...startWorkflowOverrides } },
+  });
+}
