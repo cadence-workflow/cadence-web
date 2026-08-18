@@ -13,16 +13,9 @@ export default function mapSearchAttributesToFormDefaults(
     return undefined;
   }
 
-  const searchAttributesFormValues = Object.entries(decoded).flatMap(
-    ([key, value]) =>
-      typeof value === 'string' ||
-      typeof value === 'number' ||
-      typeof value === 'boolean'
-        ? [{ key, value }]
-        : []
-  );
-
-  return searchAttributesFormValues.length > 0
-    ? searchAttributesFormValues
-    : undefined;
+  return Object.entries(decoded).map(([key, value]) => ({
+    key,
+    // ponytail: cast only; zod rejects non-primitives on submit instead of dropping them
+    value: value as string | number | boolean,
+  }));
 }

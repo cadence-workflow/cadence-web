@@ -158,7 +158,7 @@ describe(transformDescribeScheduleResponseToFormData.name, () => {
     ]);
   });
 
-  it('omits search attributes that are not Cadence indexed primitives', () => {
+  it('prefills non-primitive search attribute values so validation rejects on submit', () => {
     expect(
       transform(
         withStartWorkflow({
@@ -167,7 +167,7 @@ describe(transformDescribeScheduleResponseToFormData.name, () => {
           },
         })
       ).searchAttributes
-    ).toBeUndefined();
+    ).toEqual([{ key: 'CustomListField', value: ['a', 'b'] }]);
   });
 
   it('decodes the memo into formatted JSON for the textarea', () => {
