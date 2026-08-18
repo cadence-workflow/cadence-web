@@ -6,6 +6,7 @@ import { type DescribeScheduleResponse } from '@/route-handlers/describe-schedul
 import {
   encodePayload,
   getMockEditableDescribeScheduleResponse,
+  withStartWorkflow,
 } from '../../__fixtures__/mock-editable-describe-schedule-response';
 import { EMPTY_CRON_EXPRESSION_FIELDS } from '../../schedule-action-edit-form.constants';
 import transformDescribeScheduleResponseToFormData from '../transform-describe-schedule-response-to-form-data';
@@ -215,23 +216,4 @@ function transform(
     schedule,
     MOCK_SCHEDULE_ID
   );
-}
-
-/** Overrides fields on the mock's start-workflow action, keeping the rest. */
-function withStartWorkflow(
-  overrides: Partial<
-    NonNullable<
-      NonNullable<DescribeScheduleResponse['action']>['startWorkflow']
-    >
-  >
-): DescribeScheduleResponse {
-  const mock = getMockEditableDescribeScheduleResponse();
-  const startWorkflow = mock.action?.startWorkflow;
-
-  if (!startWorkflow)
-    throw new Error('mock is missing a start workflow action');
-
-  return getMockEditableDescribeScheduleResponse({
-    action: { startWorkflow: { ...startWorkflow, ...overrides } },
-  });
 }
