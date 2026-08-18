@@ -21,6 +21,7 @@ export default function ScheduleActionEditForm({
       domain={domain}
       cluster={cluster}
       scheduleIdReadOnly
+      prefillWorkerSDKLanguage={false}
     />
   );
 }
