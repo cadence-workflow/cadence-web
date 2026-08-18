@@ -37,6 +37,14 @@ describe(ScheduleActionEditForm.name, () => {
     );
   });
 
+  it('does not pre-select worker SDK, since schedules do not persist it', () => {
+    setup();
+
+    expect(mockCreateForm).toHaveBeenCalledWith(
+      expect.objectContaining({ prefillWorkerSDKLanguage: false })
+    );
+  });
+
   it('forwards the domain, cluster and form handles', () => {
     setup();
 
