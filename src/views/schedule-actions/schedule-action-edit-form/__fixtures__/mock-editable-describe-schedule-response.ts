@@ -3,7 +3,7 @@ import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api
 import { getMockDescribeScheduleResponse } from '@/route-handlers/describe-schedule/__fixtures__/mock-describe-schedule-response';
 import { type DescribeScheduleResponse } from '@/route-handlers/describe-schedule/describe-schedule.types';
 
-export function encodePayload(json: string) {
+function encodePayload(json: string) {
   return { data: Buffer.from(json, 'utf-8').toString('base64') };
 }
 
