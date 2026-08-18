@@ -19,12 +19,14 @@ export type EditScheduleSubmissionData = Omit<
 /**
  * Prefill values for the edit form. `workerSDKLanguage` is explicitly unset
  * because Cadence does not persist it; the field is still required on submit.
+ * `executionStartToCloseTimeoutSeconds` may be unset when describe has no timeout.
  */
 export type EditScheduleFormPrefillValues = Omit<
   ExhaustiveDefaults<EditScheduleFormData>,
-  'workerSDKLanguage'
+  'workerSDKLanguage' | 'executionStartToCloseTimeoutSeconds'
 > & {
   workerSDKLanguage: undefined;
+  executionStartToCloseTimeoutSeconds: number | undefined;
 };
 
 /**

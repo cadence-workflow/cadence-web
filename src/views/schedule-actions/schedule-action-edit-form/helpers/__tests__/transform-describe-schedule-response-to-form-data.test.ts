@@ -121,7 +121,7 @@ describe(transformDescribeScheduleResponseToFormData.name, () => {
       cronExpression: EMPTY_CRON_EXPRESSION_FIELDS,
       workflowType: { name: '' },
       taskList: { name: '' },
-      executionStartToCloseTimeoutSeconds: 0,
+      executionStartToCloseTimeoutSeconds: undefined,
       workerSDKLanguage: undefined,
       input: [''],
       workflowIdPrefix: undefined,
