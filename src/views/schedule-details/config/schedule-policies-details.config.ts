@@ -1,3 +1,4 @@
+import { ScheduleCatchUpPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleCatchUpPolicy';
 import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
 import { type ScheduleDetailRowConfig } from '@/views/schedule-details/schedule-details.types';
 import {
@@ -7,6 +8,7 @@ import {
   SCHEDULE_OVERLAP_POLICY_LABELS,
 } from '@/views/shared/constants/schedule-policy-labels.constants';
 
+import { formatScheduleDuration } from '../helpers/format-schedule-duration';
 import { formatScheduleEnumWithDefault } from '../helpers/format-schedule-enum-with-default';
 import { formatScheduleLimitValue } from '../helpers/format-schedule-limit-value';
 
@@ -30,6 +32,15 @@ const schedulePoliciesDetailsConfig: ScheduleDetailRowConfig[] = [
         SCHEDULE_CATCH_UP_POLICY_LABELS,
         SERVER_CATCH_UP_POLICY_DEFAULT
       ),
+  },
+  {
+    key: 'catchUpWindow',
+    getLabel: () => 'Catch-up window',
+    getValue: ({ formattedScheduleDetails: { policies } }) =>
+      formatScheduleDuration(policies?.catchUpWindow),
+    hide: ({ formattedScheduleDetails: { policies } }) =>
+      policies?.catchUpPolicy ===
+      ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_SKIP,
   },
   {
     key: 'pauseOnFailure',

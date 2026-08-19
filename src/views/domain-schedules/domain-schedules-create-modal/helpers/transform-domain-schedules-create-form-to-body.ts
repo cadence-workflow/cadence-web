@@ -72,8 +72,8 @@ export default function transformDomainSchedulesCreateFormToBody(
           formData.catchUpPolicy !== undefined &&
           formData.catchUpPolicy !==
             ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_SKIP &&
-          formData.catchUpWindowDays
-            ? parseInt(formData.catchUpWindowDays, 10) * 24 * 60 * 60
+          formData.catchUpWindowSeconds
+            ? parseFloat(formData.catchUpWindowSeconds)
             : undefined,
         scheduleId: formData.scheduleId?.trim() || undefined,
         startTime: formData.startTime || undefined,

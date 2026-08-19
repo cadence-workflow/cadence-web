@@ -125,24 +125,24 @@ describe(transformDomainSchedulesCreateFormToBody.name, () => {
     expect(result.bufferLimit).toBeUndefined();
   });
 
-  it('maps catch-up window days to seconds for non-skip catch-up policy', () => {
+  it('maps catch-up window seconds for non-skip catch-up policy', () => {
     const result = transformDomainSchedulesCreateFormToBody({
       ...mockDomainSchedulesCreateFormData,
       catchUpPolicy: ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_ONE,
-      catchUpWindowDays: '14',
+      catchUpWindowSeconds: '1.04',
     });
 
     expect(result.catchUpPolicy).toBe(
       ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_ONE
     );
-    expect(result.catchUpWindowSeconds).toBe(14 * 24 * 60 * 60);
+    expect(result.catchUpWindowSeconds).toBe(1.04);
   });
 
   it('omits catch-up window seconds for skip catch-up policy', () => {
     const result = transformDomainSchedulesCreateFormToBody({
       ...mockDomainSchedulesCreateFormData,
       catchUpPolicy: ScheduleCatchUpPolicy.SCHEDULE_CATCH_UP_POLICY_SKIP,
-      catchUpWindowDays: '14',
+      catchUpWindowSeconds: '1209600',
     });
 
     expect(result.catchUpPolicy).toBe(
