@@ -83,7 +83,10 @@ export const createScheduleFormFieldsSchema = z.object({
     })
     .positive('Execution timeout must be positive'),
   // TODO(refactor): WORKER_SDK_LANGUAGES imported from start-workflow — extract to shared constants
-  workerSDKLanguage: z.enum(WORKER_SDK_LANGUAGES),
+  workerSDKLanguage: z.enum(WORKER_SDK_LANGUAGES, {
+    required_error: 'Worker SDK is required',
+    invalid_type_error: 'Worker SDK is required',
+  }),
   input: z
     .array(z.string())
     .optional()

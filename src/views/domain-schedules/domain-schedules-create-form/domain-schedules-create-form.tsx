@@ -161,6 +161,7 @@ export default function DomainSchedulesCreateForm({
       <DomainSchedulesHorizontalField
         label="Worker SDK"
         description={CREATE_SCHEDULE_MAIN_FIELD_DESCRIPTIONS.workerSDK}
+        error={getFieldErrorMessage(fieldErrors, 'workerSDKLanguage')}
       >
         <Controller
           name="workerSDKLanguage"
