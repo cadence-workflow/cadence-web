@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-import { useForm, type FieldPath } from 'react-hook-form';
+import { type FieldError, type FieldPath, useForm } from 'react-hook-form';
 
 import {
   fireEvent,
@@ -24,15 +24,6 @@ jest.mock(
 
 const MOCK_DOMAIN = 'test-domain';
 const MOCK_CLUSTER = 'test-cluster';
-
-/** Required fields rendered by `DomainSchedulesCreateForm` (excludes optional input / pause / prefix / SDK default). */
-const REQUIRED_FORM_FIELD_PATHS: FieldPath<DomainSchedulesCreateFormData>[] = [
-  'workflowType.name',
-  'taskList.name',
-  'executionStartToCloseTimeoutSeconds',
-  'cronExpression',
-  'input',
-];
 
 describe('DomainSchedulesCreateForm', () => {
   beforeEach(() => {
@@ -71,7 +62,17 @@ describe('DomainSchedulesCreateForm', () => {
   });
 
   it('displays field errors wired from react-hook-form state', async () => {
-    await setup({ injectFieldErrors: true });
+    await setup({
+      fieldErrors: {
+        'workflowType.name': { type: 'required', message: 'required' },
+        'taskList.name': { type: 'required', message: 'required' },
+        executionStartToCloseTimeoutSeconds: {
+          type: 'required',
+          message: 'required',
+        },
+        cronExpression: { type: 'custom', message: 'required' },
+      },
+    });
 
     await waitFor(() => {
       expect(
@@ -181,12 +182,27 @@ describe('DomainSchedulesCreateForm', () => {
       expect(screen.getByRole('radio', { name: language })).not.toBeChecked();
     }
   });
+
+  it('displays worker SDK error when unset and validation fails', async () => {
+    await setup({
+      prefillWorkerSDKLanguage: false,
+      fieldErrors: {
+        workerSDKLanguage: {
+          type: 'required',
+          message: 'Worker SDK is required',
+        },
+      },
+    });
+
+    expect(screen.getByText('Worker SDK is required')).toBeInTheDocument();
+  });
 });
 
 type SetupProps = {
   defaultValues?: Partial<DomainSchedulesCreateFormData>;
-  /** Applies fixed `setError` calls (same role as passing `fieldErrors` into start form tests). */
-  injectFieldErrors?: boolean;
+  fieldErrors?: Partial<
+    Record<FieldPath<DomainSchedulesCreateFormData>, FieldError>
+  >;
   taskListValidation?: ReturnType<typeof mockUseTaskListFieldValidation>;
   scheduleIdReadOnly?: boolean;
   prefillWorkerSDKLanguage?: boolean;
@@ -194,15 +210,16 @@ type SetupProps = {
 
 function TestWrapper({
   defaultValues,
-  injectFieldErrors,
+  fieldErrors,
   scheduleIdReadOnly,
   prefillWorkerSDKLanguage,
-}: {
-  defaultValues?: Partial<DomainSchedulesCreateFormData>;
-  injectFieldErrors?: boolean;
-  scheduleIdReadOnly?: boolean;
-  prefillWorkerSDKLanguage?: boolean;
-}) {
+}: Pick<
+  SetupProps,
+  | 'defaultValues'
+  | 'fieldErrors'
+  | 'scheduleIdReadOnly'
+  | 'prefillWorkerSDKLanguage'
+>) {
   const { control, trigger, setError, clearErrors } =
     useForm<DomainSchedulesCreateFormData>({
       defaultValues: { ...defaultValues },
@@ -210,11 +227,12 @@ function TestWrapper({
     });
 
   useEffect(() => {
-    if (!injectFieldErrors) return;
-    for (const path of REQUIRED_FORM_FIELD_PATHS) {
-      setError(path, { type: 'required', message: 'is required' });
+    if (!fieldErrors) return;
+    for (const [path, error] of Object.entries(fieldErrors)) {
+      if (!error) continue;
+      setError(path as FieldPath<DomainSchedulesCreateFormData>, error);
     }
-  }, [injectFieldErrors, setError]);
+  }, [fieldErrors, setError]);
 
   return (
     <DomainSchedulesCreateForm
@@ -231,7 +249,7 @@ function TestWrapper({
 
 async function setup({
   defaultValues,
-  injectFieldErrors = false,
+  fieldErrors,
   scheduleIdReadOnly,
   prefillWorkerSDKLanguage,
   taskListValidation = {
@@ -246,7 +264,7 @@ async function setup({
   render(
     <TestWrapper
       defaultValues={defaultValues}
-      injectFieldErrors={injectFieldErrors}
+      fieldErrors={fieldErrors}
       scheduleIdReadOnly={scheduleIdReadOnly}
       prefillWorkerSDKLanguage={prefillWorkerSDKLanguage}
     />
