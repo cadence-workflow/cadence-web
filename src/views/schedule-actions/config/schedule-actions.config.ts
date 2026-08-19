@@ -1,6 +1,7 @@
 import {
   MdDeleteOutline,
   MdHistory,
+  MdOutlineEdit,
   MdOutlineWarningAmber,
   MdPauseCircleOutline,
   MdPlayCircleOutline,
@@ -10,11 +11,19 @@ import { type BackfillScheduleResponse } from '@/route-handlers/backfill-schedul
 import { type DeleteScheduleResponse } from '@/route-handlers/delete-schedule/delete-schedule.types';
 import { type PauseScheduleResponse } from '@/route-handlers/pause-schedule/pause-schedule.types';
 import { type UnpauseScheduleResponse } from '@/route-handlers/unpause-schedule/unpause-schedule.types';
+import { type UpdateScheduleResponse } from '@/route-handlers/update-schedule/update-schedule.types';
 
 import transformBackfillScheduleFormToSubmission from '../schedule-action-backfill-form/helpers/transform-backfill-schedule-form-to-submission';
 import ScheduleActionBackfillForm from '../schedule-action-backfill-form/schedule-action-backfill-form';
 import { type BackfillScheduleFormData } from '../schedule-action-backfill-form/schedule-action-backfill-form.types';
 import { backfillScheduleFormSchema } from '../schedule-action-backfill-form/schemas/backfill-schedule-form-schema';
+import transformEditScheduleFormToSubmission from '../schedule-action-edit-form/helpers/transform-edit-schedule-form-to-submission';
+import ScheduleActionEditForm from '../schedule-action-edit-form/schedule-action-edit-form';
+import {
+  type EditScheduleFormData,
+  type EditScheduleSubmissionData,
+} from '../schedule-action-edit-form/schedule-action-edit-form.types';
+import { editScheduleFormSchema } from '../schedule-action-edit-form/schemas/edit-schedule-form-schema';
 import ScheduleActionPauseForm from '../schedule-action-pause-form/schedule-action-pause-form';
 import { type PauseScheduleFormData } from '../schedule-action-pause-form/schedule-action-pause-form.types';
 import { pauseScheduleFormSchema } from '../schedule-action-pause-form/schemas/pause-schedule-form-schema';
@@ -136,11 +145,42 @@ const backfillScheduleActionConfig: ScheduleAction<
   renderSuccessMessage: () => 'Schedule backfill has been started.',
 };
 
+const editScheduleActionConfig: ScheduleAction<
+  UpdateScheduleResponse,
+  EditScheduleFormData,
+  EditScheduleSubmissionData
+> = {
+  id: 'edit',
+  label: 'Edit',
+  subtitle: 'Edit this schedule’s configuration',
+  modal: {
+    banner: {
+      kind: 'warning',
+      icon: MdOutlineWarningAmber,
+      // Static rather than shown only on cron changes: UpdateSchedule has no
+      // partial-update mode, so any save has these consequences.
+      render: () =>
+        'Attention: Updating this schedule replaces the entire specification and clears all pending backfills. Ensure any critical backfills are completed or documented before saving changes.',
+    },
+    withForm: true,
+    form: ScheduleActionEditForm,
+    formSchema: editScheduleFormSchema,
+    transformFormDataToSubmission: transformEditScheduleFormToSubmission,
+  },
+  icon: MdOutlineEdit,
+  getRunnableStatus: () => 'RUNNABLE',
+  apiRoute: (params) =>
+    `/api/domains/${encodeURIComponent(params.domain)}/${encodeURIComponent(params.cluster)}/schedules/${encodeURIComponent(params.scheduleId)}`,
+  httpMethod: 'PUT',
+  renderSuccessMessage: () => 'Schedule has been updated.',
+};
+
 const scheduleActionsConfig = [
   pauseScheduleActionConfig,
   resumeScheduleActionConfig,
   deleteScheduleActionConfig,
   backfillScheduleActionConfig,
+  editScheduleActionConfig,
 ] as const;
 
 /** Discriminated union of configured actions; use at menu/selection boundaries. */

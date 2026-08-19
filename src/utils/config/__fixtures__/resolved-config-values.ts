@@ -55,6 +55,7 @@ const mockResolvedConfigValues: LoadedConfigResolvedValues = {
     delete: 'ENABLED',
     backfill: 'ENABLED',
     start: 'ENABLED',
+    edit: 'ENABLED',
   },
   SCHEDULES_ENABLED: false,
   WORKFLOWS_LIST_ENABLED: false,
