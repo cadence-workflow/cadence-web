@@ -3,7 +3,10 @@ import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api
 import { getMockDescribeScheduleResponse } from '@/route-handlers/describe-schedule/__fixtures__/mock-describe-schedule-response';
 import { type DescribeScheduleResponse } from '@/route-handlers/describe-schedule/describe-schedule.types';
 
-import { getMockEditableDescribeScheduleResponse } from '../../__fixtures__/mock-editable-describe-schedule-response';
+import {
+  getMockEditableDescribeScheduleResponse,
+  withStartWorkflow,
+} from '../../__fixtures__/mock-editable-describe-schedule-response';
 import { EMPTY_CRON_EXPRESSION_FIELDS } from '../../schedule-action-edit-form.constants';
 import transformDescribeScheduleResponseToFormData from '../transform-describe-schedule-response-to-form-data';
 
@@ -111,6 +114,72 @@ describe(transformDescribeScheduleResponseToFormData.name, () => {
         })
       ).catchUpWindowSeconds
     ).toEqual('90000');
+  });
+
+  it('prefills the retry policy and limits retries by attempts', () => {
+    expect(transform()).toEqual(
+      expect.objectContaining({
+        enableRetryPolicy: true,
+        limitRetries: 'ATTEMPTS',
+        retryPolicy: {
+          initialIntervalSeconds: '10',
+          backoffCoefficient: '2',
+          maximumIntervalSeconds: '600',
+          maximumAttempts: '5',
+          expirationIntervalSeconds: undefined,
+        },
+      })
+    );
+  });
+
+  it('limits retries by duration when the policy has an expiration interval', () => {
+    const formData = transform(
+      withStartWorkflow({
+        retryPolicy: {
+          initialInterval: { seconds: '10', nanos: 0 },
+          backoffCoefficient: 2,
+          maximumInterval: null,
+          maximumAttempts: 0,
+          expirationInterval: { seconds: '3600', nanos: 0 },
+          nonRetryableErrorReasons: [],
+        },
+      })
+    );
+
+    expect(formData.limitRetries).toEqual('DURATION');
+    expect(formData.retryPolicy?.expirationIntervalSeconds).toEqual('3600');
+    expect(formData.retryPolicy?.maximumAttempts).toBeUndefined();
+  });
+
+  it('decodes search attribute payloads into key/value pairs', () => {
+    expect(transform().searchAttributes).toEqual([
+      { key: 'CustomKeywordField', value: 'keyword' },
+      { key: 'CustomIntField', value: 7 },
+    ]);
+  });
+
+  it('prefills non-primitive search attribute values so validation rejects on submit', () => {
+    expect(
+      transform(
+        withStartWorkflow({
+          searchAttributes: {
+            indexedFields: {
+              CustomListField: {
+                data: Buffer.from('["a","b"]', 'utf-8').toString('base64'),
+              },
+            },
+          },
+        })
+      ).searchAttributes
+    ).toEqual([{ key: 'CustomListField', value: ['a', 'b'] }]);
+  });
+
+  it('decodes the memo into formatted JSON for the textarea', () => {
+    expect(transform().memo).toEqual('{\n  "owner": "team-a"\n}');
+  });
+
+  it('leaves the memo unset when the schedule has none', () => {
+    expect(transform(withStartWorkflow({ memo: null })).memo).toBeUndefined();
   });
 
   it('falls back to blank values for an empty schedule', () => {

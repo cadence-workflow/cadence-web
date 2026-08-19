@@ -13,6 +13,9 @@ import losslessJsonStringify from '@/utils/lossless-json-stringify';
 import { type EditScheduleFormPrefillValues } from '../schedule-action-edit-form.types';
 
 import mapCronExpressionToFormFields from './map-cron-expression-to-form-fields';
+import mapMemoToFormDefault from './map-memo-to-form-default';
+import mapRetryPolicyToFormDefaults from './map-retry-policy-to-form-defaults';
+import mapSearchAttributesToFormDefaults from './map-search-attributes-to-form-defaults';
 
 /**
  * Builds the edit form's default values from an existing schedule.
@@ -71,11 +74,10 @@ export default function transformDescribeScheduleResponseToFormData(
       ? new Date(parseGrpcTimestamp(schedule.spec.endTime)).toISOString()
       : undefined,
 
-    // TODO(PR08d): decode the schedule's retry policy, search attributes and memo.
-    enableRetryPolicy: false,
-    limitRetries: undefined,
-    retryPolicy: undefined,
-    searchAttributes: undefined,
-    memo: undefined,
+    ...mapRetryPolicyToFormDefaults(startWorkflow?.retryPolicy),
+    searchAttributes: mapSearchAttributesToFormDefaults(
+      startWorkflow?.searchAttributes
+    ),
+    memo: mapMemoToFormDefault(startWorkflow?.memo),
   };
 }
