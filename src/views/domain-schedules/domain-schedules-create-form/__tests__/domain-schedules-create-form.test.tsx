@@ -1,11 +1,6 @@
 import React, { useEffect } from 'react';
 
-import {
-  type FieldError,
-  type FieldErrors,
-  type FieldPath,
-  useForm,
-} from 'react-hook-form';
+import { type FieldError, type FieldPath, useForm } from 'react-hook-form';
 
 import {
   fireEvent,
@@ -205,7 +200,9 @@ describe('DomainSchedulesCreateForm', () => {
 
 type SetupProps = {
   defaultValues?: Partial<DomainSchedulesCreateFormData>;
-  fieldErrors?: FieldErrors<DomainSchedulesCreateFormData>;
+  fieldErrors?: Partial<
+    Record<FieldPath<DomainSchedulesCreateFormData>, FieldError>
+  >;
   taskListValidation?: ReturnType<typeof mockUseTaskListFieldValidation>;
   scheduleIdReadOnly?: boolean;
   prefillWorkerSDKLanguage?: boolean;
@@ -218,18 +215,22 @@ function TestWrapper({
   prefillWorkerSDKLanguage,
 }: Pick<
   SetupProps,
-  'defaultValues' | 'fieldErrors' | 'scheduleIdReadOnly' | 'prefillWorkerSDKLanguage'
+  | 'defaultValues'
+  | 'fieldErrors'
+  | 'scheduleIdReadOnly'
+  | 'prefillWorkerSDKLanguage'
 >) {
-  const { control, trigger, setError, clearErrors } = useForm<DomainSchedulesCreateFormData>({
-    defaultValues: { ...defaultValues },
-    mode: 'onSubmit',
-  });
+  const { control, trigger, setError, clearErrors } =
+    useForm<DomainSchedulesCreateFormData>({
+      defaultValues: { ...defaultValues },
+      mode: 'onSubmit',
+    });
 
   useEffect(() => {
     if (!fieldErrors) return;
     for (const [path, error] of Object.entries(fieldErrors)) {
-      if (!error || Array.isArray(error) || !('message' in error)) continue;
-      setError(path as FieldPath<DomainSchedulesCreateFormData>, error as FieldError);
+      if (!error) continue;
+      setError(path as FieldPath<DomainSchedulesCreateFormData>, error);
     }
   }, [fieldErrors, setError]);
 
