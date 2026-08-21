@@ -26,14 +26,16 @@ export default function ScheduleDetails({ params }: Props) {
     domain: decodedParams.domain,
     cluster: decodedParams.cluster,
     scheduleId: decodedParams.scheduleId,
-    throwOnError: true,
+    // Throw only when the initial load fails (no data yet) so the route-level
+    // error boundary renders the tab error. Refetch failures keep cached details visible.
+    throwOnError: (_err, query) => query.state.data === undefined,
   });
 
   if (isLoading || isPending) {
     return <SectionLoadingIndicator />;
   }
 
-  // Should never happen as we have throwOnError set to true but it is for better type safety below
+  // Should never happen as we have throwOnError but better for type safety
   if (!data) {
     throw new Error('Schedule data is unavailable');
   }

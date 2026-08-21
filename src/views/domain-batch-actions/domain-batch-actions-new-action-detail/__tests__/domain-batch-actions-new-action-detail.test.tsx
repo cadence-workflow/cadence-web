@@ -20,6 +20,8 @@ jest.mock('react-icons/md', () => ({
   MdDeleteOutline: () => <div>Delete Icon</div>,
 }));
 
+jest.mock('@/components/guided-tour/guided-tour-provider/guided-tour-provider');
+
 jest.mock('next/navigation', () => ({
   ...jest.requireActual('next/navigation'),
   useRouter: () => ({ push: jest.fn() }),

@@ -1,5 +1,6 @@
 import { styled as createStyled, type Theme } from 'baseui';
 import { type PanelOverrides } from 'baseui/accordion';
+import { type DatepickerOverrides } from 'baseui/datepicker';
 import { type FormControlOverrides } from 'baseui/form-control';
 import { type SelectOverrides } from 'baseui/select';
 import { type StyleObject } from 'styletron-react';
@@ -27,6 +28,13 @@ export const overrides = {
       },
     },
   } satisfies FormControlOverrides,
+  endTimeDatePicker: {
+    TimeSelectFormControl: {
+      props: {
+        label: 'End time',
+      },
+    },
+  } satisfies DatepickerOverrides,
   overlapPolicySelect: {
     DropdownListItem: {
       style: {

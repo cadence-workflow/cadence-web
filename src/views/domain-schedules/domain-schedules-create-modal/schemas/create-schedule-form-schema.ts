@@ -7,7 +7,7 @@ import {
 } from '@/route-handlers/create-schedule/create-schedule.constants';
 // TODO(refactor): WORKER_SDK_LANGUAGES is imported from start-workflow — extract to shared constants once both features stabilise
 import { WORKER_SDK_LANGUAGES } from '@/route-handlers/start-workflow/start-workflow.constants';
-import { MAX_CATCH_UP_WINDOW_DAYS } from '@/views/domain-schedules/domain-schedules-create-advanced-form/domain-schedules-create-advanced-form.constants';
+import { MAX_CATCH_UP_WINDOW_SECONDS } from '@/views/domain-schedules/domain-schedules-create-advanced-form/domain-schedules-create-advanced-form.constants';
 import refineCreateScheduleForm from '@/views/domain-schedules/domain-schedules-create-modal/helpers/refine-create-schedule-form';
 import { retryPolicyFormFieldsShape } from '@/views/shared/retry-policy-fields/schemas/retry-policy-form-schema';
 import { getCronFieldsError } from '@/views/workflow-actions/workflow-action-start-form/helpers/get-cron-fields-error';
@@ -114,13 +114,14 @@ export const createScheduleFormFieldsSchema = z.object({
   bufferLimit: z.string().optional(),
   concurrencyLimit: z.string().optional(),
   catchUpPolicy: z.enum(SCHEDULE_CATCH_UP_POLICIES).optional(),
-  catchUpWindowDays: z
+  catchUpWindowSeconds: z
     .string()
     .refine(
       (v) =>
-        v === '' || (Number(v) >= 1 && Number(v) <= MAX_CATCH_UP_WINDOW_DAYS),
+        v === '' ||
+        (Number(v) >= 1 && Number(v) <= MAX_CATCH_UP_WINDOW_SECONDS),
       {
-        message: `Catch-up window must be between 1 and ${MAX_CATCH_UP_WINDOW_DAYS} days`,
+        message: `Catch-up window must be between 1 and ${MAX_CATCH_UP_WINDOW_SECONDS} seconds`,
       }
     )
     .optional(),

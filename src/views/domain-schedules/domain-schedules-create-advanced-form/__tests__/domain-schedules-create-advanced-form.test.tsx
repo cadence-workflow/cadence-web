@@ -2,7 +2,7 @@ import React from 'react';
 
 import { useForm } from 'react-hook-form';
 
-import { render, screen, userEvent } from '@/test-utils/rtl';
+import { render, screen, userEvent, within } from '@/test-utils/rtl';
 
 import {
   SCHEDULE_CATCH_UP_POLICY_DESCRIPTIONS,
@@ -117,7 +117,11 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
     expect(screen.queryByLabelText('Catch-up window')).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('radio', { name: 'Catch-up all' }));
-    expect(screen.getByLabelText('Catch-up window')).toBeInTheDocument();
+    const catchUpWindow = screen.getByLabelText('Catch-up window');
+    expect(catchUpWindow).toBeInTheDocument();
+    expect(catchUpWindow.closest('[data-baseweb="input"]')).toHaveTextContent(
+      'Seconds'
+    );
   });
 
   it('hides catch-up window when switching catch-up policy back to Skip', async () => {
@@ -206,6 +210,28 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
     expect(screen.getByLabelText('Schedule ID')).toBeDisabled();
     expect(
       screen.getByText(/schedule id cannot be changed/i)
+    ).toBeInTheDocument();
+  });
+  it('shows time picker when opening schedule period date pickers', async () => {
+    const { user } = setup();
+
+    await user.click(
+      screen.getByRole('button', { name: /show advanced configurations/i })
+    );
+
+    await user.click(screen.getByLabelText('Schedule period start'));
+    expect(
+      within(
+        document.querySelector('[data-baseweb="popover"]') as HTMLElement
+      ).getByText('Start time')
+    ).toBeInTheDocument();
+
+    await user.keyboard('{Escape}');
+    await user.click(screen.getByLabelText('Schedule period end'));
+    expect(
+      within(
+        document.querySelector('[data-baseweb="popover"]') as HTMLElement
+      ).getByText('End time')
     ).toBeInTheDocument();
   });
 

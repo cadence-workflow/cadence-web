@@ -201,3 +201,17 @@ Use `target: 'body'` with `placement: 'center'` for modal-style steps (welcome/c
 - **Close button (X)**: Exits the tour.
 - **Next/Back buttons**: Navigate between steps.
 - **Escape key**: Closes the current step.
+
+## Testing
+
+In jsdom tests, localStorage is empty, so `GuidedTourProvider` auto-starts its tour on every render. react-joyride's tooltip mounts asynchronously and steals focus, which races with `userEvent` typing and can cause keystrokes to land in the tooltip instead of the intended input.
+
+Unit tests for views wrapped in `GuidedTourProvider` should mock the provider to render only its children:
+
+```tsx
+jest.mock('@/components/guided-tour/guided-tour-provider/guided-tour-provider');
+```
+
+This picks up the shared manual mock in `guided-tour-provider/__mocks__/`, which renders only `{children}` — no joyride, no context.
+
+The provider's own behavior is covered by `src/components/guided-tour/guided-tour-provider/__tests__/guided-tour-provider.test.tsx`, which uses the real module and mocks `react-joyride` directly.

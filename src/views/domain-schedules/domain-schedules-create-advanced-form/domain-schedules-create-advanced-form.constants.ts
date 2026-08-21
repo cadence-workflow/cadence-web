@@ -11,7 +11,7 @@ import {
   SCHEDULE_OVERLAP_POLICY_LABELS,
 } from '@/views/shared/constants/schedule-policy-labels.constants';
 
-export const MAX_CATCH_UP_WINDOW_DAYS = 90;
+export const MAX_CATCH_UP_WINDOW_SECONDS = 90 * 24 * 60 * 60;
 
 export const SCHEDULE_ID_READ_ONLY_CAPTION =
   'Schedule ID cannot be changed after the schedule is created.';
@@ -23,7 +23,7 @@ export const CREATE_SCHEDULE_ADVANCED_FIELD_IDS = {
   workflowIdPrefix: 'domain-schedules-create-form-workflow-id-prefix',
   bufferLimit: 'domain-schedules-create-form-buffer-limit',
   concurrencyLimit: 'domain-schedules-create-form-concurrency-limit',
-  catchUpWindowDays: 'domain-schedules-create-form-catch-up-window-days',
+  catchUpWindowSeconds: 'domain-schedules-create-form-catch-up-window-seconds',
   startTime: 'domain-schedules-create-form-start-time',
   endTime: 'domain-schedules-create-form-end-time',
   memo: 'domain-schedules-create-form-memo',
@@ -38,7 +38,7 @@ export const CREATE_SCHEDULE_ADVANCED_FIELD_DESCRIPTIONS = {
   concurrencyLimit:
     'Max number of concurrently running workflows allowed for Concurrent overlap policy.',
   catchUpPolicy: 'Controls whether missed schedules should run after downtime.',
-  catchUpWindowDays:
+  catchUpWindowSeconds:
     'Maximum age of missed schedules that can still be started.',
   schedulePeriod: 'Optional time range that limits when this schedule can run.',
   searchAttributes:

@@ -71,7 +71,7 @@ export default function ScheduleActionBackfillForm({
             <styled.SchedulePeriodInputLabel
               htmlFor={SCHEDULE_ACTION_BACKFILL_FORM_FIELD_IDS.startTime}
             >
-              Start date
+              Start time
             </styled.SchedulePeriodInputLabel>
             <FormControl
               error={startTimeErrorMessage}
@@ -112,7 +112,7 @@ export default function ScheduleActionBackfillForm({
             <styled.SchedulePeriodInputLabel
               htmlFor={SCHEDULE_ACTION_BACKFILL_FORM_FIELD_IDS.endTime}
             >
-              End date
+              End time
             </styled.SchedulePeriodInputLabel>
             <FormControl
               error={endTimeErrorMessage}
@@ -143,6 +143,7 @@ export default function ScheduleActionBackfillForm({
                     timeSelectStart
                     formatString="yyyy/MM/dd HH:mm"
                     clearable
+                    overrides={overrides.endTimeDatePicker}
                   />
                 )}
               />

@@ -11,8 +11,8 @@ import { useParentSize } from '@visx/responsive';
 import { Skeleton } from 'baseui/skeleton';
 import { Spinner } from 'baseui/spinner';
 import {
+  MdErrorOutline,
   MdGpsFixed,
-  MdReportGmailerrorred,
   MdZoomIn,
   MdZoomOut,
 } from 'react-icons/md';
@@ -498,10 +498,13 @@ export default function ScheduleDetailsRunsChart({ params }: Props) {
                     onClick={fetchNextPage}
                   >
                     <styled.ControlContent>
-                      <MdReportGmailerrorred
-                        aria-hidden
-                        size={CHART_FETCH_RETRY_ICON_SIZE_PX}
-                      />
+                      <styled.FetchRetryIconContainer>
+                        <MdErrorOutline
+                          aria-hidden
+                          size={CHART_FETCH_RETRY_ICON_SIZE_PX}
+                        />
+                      </styled.FetchRetryIconContainer>
+                      <styled.FetchRetryLabel>Retry</styled.FetchRetryLabel>
                     </styled.ControlContent>
                   </Button>
                 ) : (
