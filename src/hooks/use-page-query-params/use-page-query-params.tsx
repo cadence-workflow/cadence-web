@@ -39,10 +39,29 @@ export default function usePageQueryParams<P extends PageQueryParams>(
     )
       return searchQueryParams.toString();
 
+    // First client render: a router navigation (e.g. opening another tab with
+    // query params) can commit with the new params already in searchQueryParams
+    // while window.location.search still shows the previous URL — and since
+    // searchQueryParams won't change again, the hook would otherwise stay stuck
+    // on that stale value. In this case searchQueryParams is the source of truth.
+    //
+    // The exception is an in-app history.pushState update (pageRerender:false):
+    // useSearchParams does not track it, so window.location is ahead and
+    // searchQueryParams is the *stale* one. Such updates record their href in
+    // stateUrl, so when stateUrl matches the current URL we keep reading
+    // window.location. We also fall back to window.location when searchQueryParams
+    // is empty (the static-render case where useSearchParams is initially empty).
+    const historyStateIsCurrent =
+      stateUrl === pathname + window.location.search;
+    if (!prevSearchQueryParam && !historyStateIsCurrent) {
+      const searchFromParams = searchQueryParams.toString();
+      if (searchFromParams) return searchFromParams;
+    }
+
     return window.location.search;
     // stateUrl is needed in deps to recalculate window.location.search
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQueryParams, prevSearchQueryParam, stateUrl]);
+  }, [searchQueryParams, prevSearchQueryParam, stateUrl, pathname]);
 
   const values: PageQueryParamValues<P> = useMemo(() => {
     const urlQueryParamsObject = queryString.parse(search);
