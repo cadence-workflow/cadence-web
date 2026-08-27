@@ -1,21 +1,18 @@
-import { Tag } from 'baseui/tag';
+'use client';
 
-import { styled, overrides } from './task-list-label.styles';
+import TaskListWorkersBadge from '@/views/shared/task-list-workers-badge/task-list-workers-badge';
+
+import { styled } from './task-list-label.styles';
 import { type Props } from './task-list-label.types';
 
 export default function TaskListLabel(props: Props) {
-  const numWorkers = props.taskList.workers.length;
   return (
     <styled.LabelContainer $isHighlighted={props.isHighlighted}>
       {props.taskList.name}
-      <Tag
-        kind={numWorkers === 0 ? 'negative' : 'accent'}
-        hierarchy="primary"
-        closeable={false}
-        overrides={overrides.tag}
-      >
-        {`${numWorkers} ${numWorkers === 1 ? 'worker' : 'workers'}`}
-      </Tag>
+      <TaskListWorkersBadge
+        variant="workers"
+        count={props.taskList.workers.length}
+      />
     </styled.LabelContainer>
   );
 }
