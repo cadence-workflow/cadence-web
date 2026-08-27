@@ -69,10 +69,10 @@ const workflowHistoryEventGroupDetailsConfig = [
     name: 'WorkflowExecution as link',
     pathRegex:
       '(parentWorkflowExecution|externalWorkflowExecution|workflowExecution)$',
-    getLabel: ({ path, value }) =>
+    getLabel: ({ key, value }) =>
       value?.runId
-        ? path
-        : path.replace(/([wW])orkflowExecution$/, '$1orkflowId'), // events that only reference a workflow id should not claim to identify a run
+        ? key
+        : key.replace(/([wW])orkflowExecution$/, '$1orkflowId'), // events that only reference a workflow id should not claim to identify a run
     valueComponent: ({ entryValue, domain, cluster }) => {
       return createElement(WorkflowEventDetailsExecutionLink, {
         domain,
