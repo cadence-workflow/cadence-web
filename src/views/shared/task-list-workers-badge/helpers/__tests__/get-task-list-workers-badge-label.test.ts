@@ -5,8 +5,8 @@ describe(getTaskListWorkersBadgeLabel.name, () => {
     expect(getTaskListWorkersBadgeLabel({ variant: 'workers', count: 0 })).toBe(
       '0 workers'
     );
-    expect(
-      getTaskListWorkersBadgeLabel({ variant: 'workers', count: 1 })
-    ).toBe('1 worker');
+    expect(getTaskListWorkersBadgeLabel({ variant: 'workers', count: 1 })).toBe(
+      '1 worker'
+    );
   });
 });

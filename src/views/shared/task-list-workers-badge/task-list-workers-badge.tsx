@@ -8,10 +8,7 @@ import { TASK_LIST_WORKERS_BADGE_TOOLTIPS } from './task-list-workers-badge.cons
 import { overrides } from './task-list-workers-badge.styles';
 import { type Props } from './task-list-workers-badge.types';
 
-export default function TaskListWorkersBadge({
-  variant,
-  count,
-}: Props) {
+export default function TaskListWorkersBadge({ variant, count }: Props) {
   const label = getTaskListWorkersBadgeLabel({ variant, count });
 
   return (

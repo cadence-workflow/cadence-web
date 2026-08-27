@@ -66,7 +66,6 @@ describe(TaskListWorkersBadge.name, () => {
       );
     });
   });
-
 });
 
 function setup(props: Props) {
