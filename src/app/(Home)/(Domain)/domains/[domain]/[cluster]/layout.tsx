@@ -1,14 +1,6 @@
-import { type Metadata } from 'next';
-
 import DomainPage from '@/views/domain-page/domain-page';
+import { generateDomainPageMetadata } from '@/views/domain-page/domain-page.metadata';
 
-type Props = {
-  params: Promise<{ domain: string; cluster: string }>;
-};
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { domain } = await params;
-  return { title: domain };
-}
+export { generateDomainPageMetadata as generateMetadata };
 
 export default DomainPage;

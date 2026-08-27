@@ -1,14 +1,6 @@
-import { type Metadata } from 'next';
-
 import TaskListPage from '@/views/task-list-page/task-list-page';
+import { generateTaskListPageMetadata } from '@/views/task-list-page/task-list-page.metadata';
 
-type Props = {
-  params: Promise<{ domain: string; cluster: string; taskListName: string }>;
-};
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { domain, taskListName } = await params;
-  return { title: `${domain} - ${taskListName}` };
-}
+export { generateTaskListPageMetadata as generateMetadata };
 
 export default TaskListPage;
