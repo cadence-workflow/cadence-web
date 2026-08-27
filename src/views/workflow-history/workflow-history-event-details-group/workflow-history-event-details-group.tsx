@@ -59,6 +59,7 @@ export default function WorkflowHistoryEventDetailsGroup({
                   entryValue={entry.value}
                   renderConfig={entry.renderConfig}
                   isNegative={entry.isNegative}
+                  eventType={entry.eventType}
                   {...decodedPageUrlParams}
                 />
               )}

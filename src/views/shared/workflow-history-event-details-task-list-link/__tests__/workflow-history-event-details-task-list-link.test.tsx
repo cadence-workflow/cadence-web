@@ -106,6 +106,22 @@ describe('WorkflowHistoryEventDetailsTaskListLink', () => {
     );
   });
 
+  it('should count decision handlers when handlerKind is decision', () => {
+    setup({ handlerKind: 'decision' });
+
+    expect(screen.getByTestId('badge-decision')).toHaveTextContent(
+      'decision:2'
+    );
+  });
+
+  it('should count activity handlers when handlerKind is activity', () => {
+    setup({ handlerKind: 'activity' });
+
+    expect(screen.getByTestId('badge-activity')).toHaveTextContent(
+      'activity:2'
+    );
+  });
+
   it('should show a loading badge while fetching', () => {
     setup({}, { isLoading: true, data: undefined });
 

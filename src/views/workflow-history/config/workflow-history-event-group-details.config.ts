@@ -6,6 +6,7 @@ import CronScheduleWithDescription from '@/views/shared/cron-schedule-descriptio
 import WorkflowEventDetailsExecutionLink from '@/views/shared/workflow-event-details-execution-link/workflow-event-details-execution-link';
 import WorkflowHistoryEventDetailsPlaceholderText from '@/views/workflow-history/workflow-history-event-details-placeholder-text/workflow-history-event-details-placeholder-text';
 
+import getTaskListHandlerKindForEventType from '../../shared/workflow-history-event-details-task-list-link/helpers/get-task-list-handler-kind-for-event-type';
 import WorkflowHistoryEventDetailsTaskListLink from '../../shared/workflow-history-event-details-task-list-link/workflow-history-event-details-task-list-link';
 import { type EventDetailsConfig } from '../workflow-history-event-details/workflow-history-event-details.types';
 import WorkflowHistoryGroupDetailsJson from '../workflow-history-group-details-json/workflow-history-group-details-json';
@@ -43,11 +44,12 @@ const workflowHistoryEventGroupDetailsConfig = [
   {
     name: 'Tasklists as links',
     key: 'taskList',
-    valueComponent: ({ entryValue, domain, cluster }) => {
+    valueComponent: ({ entryValue, domain, cluster, eventType }) => {
       return createElement(WorkflowHistoryEventDetailsTaskListLink, {
         domain: domain,
         cluster: cluster,
         taskList: entryValue,
+        handlerKind: getTaskListHandlerKindForEventType(eventType),
       });
     },
   },

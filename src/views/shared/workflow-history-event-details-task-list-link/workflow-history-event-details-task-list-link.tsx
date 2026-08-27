@@ -6,6 +6,7 @@ import Link from '@/components/link/link';
 import useDescribeTaskList from '@/views/shared/hooks/use-describe-task-list/use-describe-task-list';
 import TaskListWorkersBadge from '@/views/shared/task-list-workers-badge/task-list-workers-badge';
 
+import getTaskListWorkerCount from './helpers/get-task-list-worker-count';
 import { styled } from './workflow-history-event-details-task-list-link.styles';
 import { type Props } from './workflow-history-event-details-task-list-link.types';
 
@@ -13,6 +14,7 @@ export default function WorkflowHistoryEventDetailsTaskListLink({
   cluster,
   domain,
   taskList,
+  handlerKind = 'workers',
 }: Props) {
   const taskListName = taskList?.name ?? '';
   const isSticky = taskList?.kind === 'STICKY';
@@ -41,8 +43,12 @@ export default function WorkflowHistoryEventDetailsTaskListLink({
   const workersBadge =
     shouldFetch && !isError ? (
       <TaskListWorkersBadge
-        variant="workers"
-        count={data?.taskList.workers.length}
+        variant={handlerKind}
+        count={
+          data
+            ? getTaskListWorkerCount(data.taskList.workers, handlerKind)
+            : undefined
+        }
         isLoading={isLoading || !data}
       />
     ) : null;
