@@ -11,6 +11,10 @@ jest.mock('baseui/tag', () => ({
   )),
 }));
 
+jest.mock('baseui/skeleton', () => ({
+  Skeleton: jest.fn(() => <div data-testid="skeleton" />),
+}));
+
 jest.mock('baseui/tooltip', () => ({
   StatefulTooltip: jest.fn(({ content, children }) => (
     <div>
@@ -53,6 +57,13 @@ describe(TaskListWorkersBadge.name, () => {
       kind: 'negative',
       tooltip: TASK_LIST_WORKERS_BADGE_TOOLTIPS.workers,
     },
+    {
+      name: 'renders sticky badge',
+      props: { variant: 'sticky' },
+      text: 'Sticky',
+      kind: 'accent',
+      tooltip: TASK_LIST_WORKERS_BADGE_TOOLTIPS.sticky,
+    },
   ];
 
   cases.forEach((test) => {
@@ -65,6 +76,13 @@ describe(TaskListWorkersBadge.name, () => {
         test.tooltip
       );
     });
+  });
+
+  it('renders a skeleton while loading', () => {
+    setup({ variant: 'workers', count: 2, isLoading: true });
+
+    expect(screen.getByTestId('skeleton')).toBeInTheDocument();
+    expect(screen.queryByText('2 workers')).not.toBeInTheDocument();
   });
 });
 

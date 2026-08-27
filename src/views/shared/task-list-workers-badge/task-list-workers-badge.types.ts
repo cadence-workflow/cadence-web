@@ -1,4 +1,7 @@
+export type TaskListWorkersBadgeVariant = 'workers' | 'sticky';
+
 export type Props = {
-  variant: 'workers';
-  count: number;
+  variant: TaskListWorkersBadgeVariant;
+  count?: number;
+  isLoading?: boolean;
 };

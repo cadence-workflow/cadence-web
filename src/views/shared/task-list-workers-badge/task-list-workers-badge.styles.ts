@@ -1,4 +1,5 @@
 import { type Theme } from 'baseui';
+import { type SkeletonOverrides } from 'baseui/skeleton/types';
 import type { TagKind, TagOverrides } from 'baseui/tag/types';
 import { type StyleObject } from 'styletron-react';
 
@@ -31,4 +32,12 @@ export const overrides = {
       }),
     },
   } satisfies TagOverrides,
+  skeleton: {
+    Root: {
+      style: ({ $theme }: { $theme: Theme }) => ({
+        borderRadius: $theme.borders.radius200,
+        flexShrink: 0,
+      }),
+    },
+  } satisfies SkeletonOverrides,
 };
