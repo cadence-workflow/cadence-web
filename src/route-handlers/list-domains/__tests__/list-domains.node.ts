@@ -29,10 +29,13 @@ describe(listDomains.name, () => {
     jest.resetAllMocks();
   });
 
-  it('returns domains for the requested cluster', async () => {
+  it('returns domains with default page size when no query params provided', async () => {
     const { res, mockListDomains } = await setup({});
 
-    expect(mockListDomains).toHaveBeenCalledWith({ pageSize: 2000 });
+    expect(mockListDomains).toHaveBeenCalledWith({
+      pageSize: 2000,
+      nextPageToken: undefined,
+    });
 
     expect(res.status).toEqual(200);
     const responseJson = await res.json();
@@ -41,7 +44,42 @@ describe(listDomains.name, () => {
         expect.objectContaining({ name: 'mock-domain-1' }),
         expect.objectContaining({ name: 'mock-domain-2' }),
       ],
+      nextPage: '',
     });
+  });
+
+  it('uses custom pageSize and nextPage from query params', async () => {
+    const { res, mockListDomains } = await setup({
+      queryParams: { pageSize: '10', nextPage: 'token123' },
+    });
+
+    expect(mockListDomains).toHaveBeenCalledWith({
+      pageSize: 10,
+      nextPageToken: 'token123',
+    });
+
+    expect(res.status).toEqual(200);
+    const responseJson = await res.json();
+    expect(responseJson).toEqual({
+      domains: [
+        expect.objectContaining({ name: 'mock-domain-1' }),
+        expect.objectContaining({ name: 'mock-domain-2' }),
+      ],
+      nextPage: 'next-token-abc',
+    });
+  });
+
+  it('returns 400 for invalid pageSize', async () => {
+    const { res } = await setup({
+      queryParams: { pageSize: '-5' },
+    });
+
+    expect(res.status).toEqual(400);
+    const responseJson = await res.json();
+    expect(responseJson.error).toEqual(
+      'Invalid argument(s) for domain listing'
+    );
+    expect(responseJson.validationErrors).toBeDefined();
   });
 
   it('filters out domains that are not relevant to the requested cluster', async () => {
@@ -69,6 +107,7 @@ describe(listDomains.name, () => {
         expect.objectContaining({ name: 'mock-domain-1' }),
         expect.objectContaining({ name: 'mock-domain-2' }),
       ],
+      nextPage: '',
     });
   });
 
@@ -112,19 +151,29 @@ describe(listDomains.name, () => {
 async function setup({
   error,
   domains = mockDomains,
+  queryParams,
 }: {
   error?: Error;
   domains?: Array<ReturnType<typeof getDomainObj>>;
+  queryParams?: { pageSize?: string; nextPage?: string };
 }) {
+  const nextPageToken = queryParams?.nextPage ? 'next-token-abc' : '';
+
   const mockListDomains = jest
     .spyOn(mockGrpcClusterMethods, 'listDomains')
     .mockImplementationOnce(async () => {
       if (error) throw error;
-      return { domains, nextPageToken: '' };
+      return { domains, nextPageToken };
     });
 
+  const url = new URL('http://localhost/api/cluster/mock-cluster1/domains');
+  if (queryParams?.pageSize)
+    url.searchParams.set('pageSize', queryParams.pageSize);
+  if (queryParams?.nextPage)
+    url.searchParams.set('nextPage', queryParams.nextPage);
+
   const res = await listDomains(
-    new NextRequest('http://localhost/api/cluster/mock-cluster1/domains'),
+    new NextRequest(url),
     {
       params: {
         cluster: 'mock-cluster1',
