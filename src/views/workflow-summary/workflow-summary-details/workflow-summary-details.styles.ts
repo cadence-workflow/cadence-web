@@ -15,7 +15,7 @@ export const overrides = {
         height: $theme.sizing.scale650,
         width: $theme.sizing.scale650,
         padding: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0)',
+        backgroundColor: 'transparent',
       }),
     },
   } satisfies ButtonOverrides,
