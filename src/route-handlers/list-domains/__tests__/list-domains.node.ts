@@ -1,5 +1,6 @@
 import { status } from '@grpc/grpc-js';
 import { NextRequest } from 'next/server';
+import { type z } from 'zod';
 
 import { GRPCError } from '@/utils/grpc/grpc-error';
 import logger from '@/utils/logger';
@@ -8,6 +9,7 @@ import { getDomainObj } from '@/views/domains-page/__fixtures__/domains';
 
 import { listDomains } from '../list-domains';
 import type { Context } from '../list-domains.types';
+import type listDomainsQueryParamsSchema from '../schemas/list-domains-query-params-schema';
 
 jest.mock('@/utils/logger');
 
@@ -27,25 +29,6 @@ const mockDomains = [
 describe(listDomains.name, () => {
   beforeEach(() => {
     jest.resetAllMocks();
-  });
-
-  it('returns domains with default page size when no query params provided', async () => {
-    const { res, mockListDomains } = await setup({});
-
-    expect(mockListDomains).toHaveBeenCalledWith({
-      pageSize: 2000,
-      nextPageToken: undefined,
-    });
-
-    expect(res.status).toEqual(200);
-    const responseJson = await res.json();
-    expect(responseJson).toEqual({
-      domains: [
-        expect.objectContaining({ name: 'mock-domain-1' }),
-        expect.objectContaining({ name: 'mock-domain-2' }),
-      ],
-      nextPage: '',
-    });
   });
 
   it('uses custom pageSize and nextPage from query params', async () => {
@@ -98,6 +81,7 @@ describe(listDomains.name, () => {
           clusters: [{ clusterName: 'mock-cluster1' }],
         }),
       ],
+      queryParams: { pageSize: '20' },
     });
 
     expect(res.status).toEqual(200);
@@ -113,6 +97,7 @@ describe(listDomains.name, () => {
 
   it('returns error with mapped HTTP status code if gRPC call throws GRPCError', async () => {
     const { res } = await setup({
+      queryParams: { pageSize: '20' },
       error: new GRPCError('Too many requests', {
         grpcStatusCode: status.RESOURCE_EXHAUSTED,
       }),
@@ -136,6 +121,7 @@ describe(listDomains.name, () => {
 
   it('returns 500 if gRPC call throws generic error', async () => {
     const { res } = await setup({
+      queryParams: { pageSize: '20' },
       error: new Error('Network error'),
     });
 
@@ -155,7 +141,7 @@ async function setup({
 }: {
   error?: Error;
   domains?: Array<ReturnType<typeof getDomainObj>>;
-  queryParams?: { pageSize?: string; nextPage?: string };
+  queryParams: z.input<typeof listDomainsQueryParamsSchema>;
 }) {
   const nextPageToken = queryParams?.nextPage ? 'next-token-abc' : '';
 
@@ -167,8 +153,7 @@ async function setup({
     });
 
   const url = new URL('http://localhost/api/cluster/mock-cluster1/domains');
-  if (queryParams?.pageSize)
-    url.searchParams.set('pageSize', queryParams.pageSize);
+  url.searchParams.set('pageSize', queryParams.pageSize);
   if (queryParams?.nextPage)
     url.searchParams.set('nextPage', queryParams.nextPage);
 
