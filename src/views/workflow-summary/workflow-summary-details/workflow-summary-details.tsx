@@ -1,8 +1,6 @@
 'use client';
 import React from 'react';
 
-import { KIND } from 'baseui/button';
-
 import CopyTextButton from '@/components/copy-text-button/copy-text-button';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 
@@ -57,7 +55,7 @@ export default function WorkflowSummaryDetails({
                       <CopyTextButton
                         textToCopy={copyText}
                         aria-label={`Copy ${c.getLabel()}`}
-                        kind={KIND.tertiary}
+                        kind="tertiary"
                         overrides={overrides.copyButton}
                       />
                     </span>
