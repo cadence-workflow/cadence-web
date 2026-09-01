@@ -7,4 +7,9 @@ export type DomainsTableColumns = TableConfig<DomainData>;
 export type Props = {
   domains: Array<DomainData>;
   tableColumns?: DomainsTableColumns;
+  fetchNextPage: () => void;
+  hasNextPage: boolean;
+  isFetchingNextPage: boolean;
+  isLoading: boolean;
+  error: Error | null;
 };

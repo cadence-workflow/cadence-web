@@ -4,5 +4,5 @@ export type Props = {
 
 export type DomainsListingFailedCluster = {
   clusterName: string;
-  httpStatus: number;
+  httpStatus: number | undefined;
 };
