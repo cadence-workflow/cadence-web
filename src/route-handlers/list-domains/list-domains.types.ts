@@ -1,10 +1,9 @@
-import { type ZodIssue } from 'zod';
+import { type z, type ZodIssue } from 'zod';
 
+import { type Domain } from '@/__generated__/proto-ts/uber/cadence/api/v1/Domain';
 import { type DefaultMiddlewaresContext } from '@/utils/route-handlers-middleware';
 
 import type listDomainsQueryParamsSchema from './schemas/list-domains-query-params-schema';
-
-import { type Domain } from '@/__generated__/proto-ts/uber/cadence/api/v1/Domain';
 
 export type RouteParams = {
   cluster: string;
@@ -14,7 +13,7 @@ export type RequestParams = {
   params: RouteParams;
 };
 
-export type ListDomainsQueryParams = Zod.input<
+export type ListDomainsQueryParams = z.input<
   typeof listDomainsQueryParamsSchema
 >;
 
