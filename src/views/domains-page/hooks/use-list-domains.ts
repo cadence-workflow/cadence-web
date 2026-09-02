@@ -2,52 +2,29 @@
 
 import { useCallback, useEffect, useMemo } from 'react';
 
-import queryString from 'query-string';
-
 import useSuspenseConfigValue from '@/hooks/use-config-value/use-suspense-config-value';
 import useMergedInfiniteQueries from '@/hooks/use-merged-infinite-queries/use-merged-infinite-queries';
 import { type ListDomainsResponse } from '@/route-handlers/list-domains/list-domains.types';
-import request from '@/utils/request';
 import { RequestError } from '@/utils/request/request-error';
 
 import { type DomainsListingFailedCluster } from '../domains-page-error-banner/domains-page-error-banner.types';
+import { LIST_DOMAINS_API_PAGE_SIZE } from '../domains-page.constants';
 import { type DomainData } from '../domains-page.types';
 import getUniqueDomains from '../helpers/get-unique-domains';
 
-const PAGE_SIZE = 100;
+import getListDomainsQueryOptions from './helpers/get-list-domains-query-options';
 
 export default function useListDomains() {
   const { data: clusters } = useSuspenseConfigValue('CLUSTERS_PUBLIC');
 
   const queries = useMemo(
     () =>
-      clusters.map((cluster) => ({
-        queryKey: ['listDomains', cluster.clusterName] as const,
-        initialPageParam: undefined as string | undefined,
-        getNextPageParam: (lastPage: ListDomainsResponse) => {
-          if (!lastPage.nextPage) return undefined;
-          return lastPage.nextPage;
-        },
-        queryFn: async ({
-          pageParam,
-          queryKey: [_, clusterName],
-        }: {
-          pageParam: string | undefined;
-          queryKey: readonly [string, string];
-        }) =>
-          request(
-            queryString.stringifyUrl({
-              url: `/api/clusters/${clusterName}/domains`,
-              query: {
-                pageSize: PAGE_SIZE.toString(),
-                nextPage: pageParam,
-              },
-            })
-          ).then((res) => res.json()),
-        retry: false as const,
-        refetchOnWindowFocus: (query: { state: { status: string } }) =>
-          query.state.status !== 'error',
-      })),
+      clusters.map((cluster) =>
+        getListDomainsQueryOptions({
+          cluster: cluster.clusterName,
+          pageSize: LIST_DOMAINS_API_PAGE_SIZE,
+        })
+      ),
     [clusters]
   );
 
@@ -63,16 +40,17 @@ export default function useListDomains() {
     readonly [string, string]
   >({
     queries,
-    pageSize: PAGE_SIZE,
+    pageSize: LIST_DOMAINS_API_PAGE_SIZE,
     flattenResponse,
     compare: compareDomains,
   });
 
+  const { hasNextPage, isFetchingNextPage, fetchNextPage } = mergedResults;
   useEffect(() => {
-    if (mergedResults.hasNextPage && !mergedResults.isFetchingNextPage) {
-      mergedResults.fetchNextPage();
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
     }
-  }, [mergedResults]);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const uniqueData = useMemo(
     () => getUniqueDomains(mergedResults.data),
