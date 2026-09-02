@@ -10,7 +10,6 @@ type MockAPIResponse = {
   entries: Array<number>;
   nextPage: number;
 };
-
 const PAGE_SIZE = 5;
 
 const compare = (a: number, b: number) => (a < b ? -1 : 1);
@@ -221,7 +220,7 @@ describe(useMergedInfiniteQueries.name, () => {
     const secondQueries = createQueries('second');
 
     const { result, rerender } = renderHook(
-      (props?: { queries: typeof firstQueries }) =>
+      (props) =>
         useMergedInfiniteQueries({
           queries: props?.queries ?? firstQueries,
           pageSize: PAGE_SIZE,
