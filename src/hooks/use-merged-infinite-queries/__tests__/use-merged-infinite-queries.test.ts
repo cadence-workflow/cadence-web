@@ -221,9 +221,9 @@ describe(useMergedInfiniteQueries.name, () => {
     const secondQueries = createQueries('second');
 
     const { result, rerender } = renderHook(
-      ({ queries }) =>
+      (props?: { queries: typeof firstQueries }) =>
         useMergedInfiniteQueries({
-          queries,
+          queries: props?.queries ?? firstQueries,
           pageSize: PAGE_SIZE,
           flattenResponse: (response) => response,
           compare,
