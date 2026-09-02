@@ -1,57 +1,48 @@
+import React, { Suspense } from 'react';
+
+import {
+  HttpResponse,
+  type HttpResponseResolver,
+  type StrictResponse,
+} from 'msw';
+
 import { renderHook, waitFor } from '@/test-utils/rtl';
 
-import useSuspenseConfigValue from '@/hooks/use-config-value/use-suspense-config-value';
 import { type ListDomainsResponse } from '@/route-handlers/list-domains/list-domains.types';
-import { RequestError } from '@/utils/request/request-error';
+import type { HttpEndpointMock } from '@/test-utils/msw-mock-handlers/msw-mock-handlers.types';
 
 import { getDomainObj } from '../../__fixtures__/domains';
-
 import useListDomains from '../use-list-domains';
-
-jest.mock('@/hooks/use-config-value/use-suspense-config-value');
-jest.mock('@/utils/request');
-
-const mockUseSuspenseConfigValue =
-  useSuspenseConfigValue as jest.MockedFunction<any>;
 
 const mockClusters = [
   { clusterName: 'cluster-a' },
   { clusterName: 'cluster-b' },
 ];
 
-const mockDomainsClusterA: ListDomainsResponse = {
-  domains: [
-    getDomainObj({ id: '1', name: 'alpha-domain', activeClusterName: 'cluster-a' }),
-    getDomainObj({ id: '2', name: 'charlie-domain', activeClusterName: 'cluster-a' }),
-  ],
-  nextPage: '',
-};
+const mockDomainsClusterA = [
+  getDomainObj({
+    id: '1',
+    name: 'alpha-domain',
+    activeClusterName: 'cluster-a',
+  }),
+  getDomainObj({
+    id: '2',
+    name: 'charlie-domain',
+    activeClusterName: 'cluster-a',
+  }),
+];
 
-const mockDomainsClusterB: ListDomainsResponse = {
-  domains: [
-    getDomainObj({ id: '3', name: 'bravo-domain', activeClusterName: 'cluster-b' }),
-  ],
-  nextPage: '',
-};
-
-const mockRequest = jest.requireMock('@/utils/request');
+const mockDomainsClusterB = [
+  getDomainObj({
+    id: '3',
+    name: 'bravo-domain',
+    activeClusterName: 'cluster-b',
+  }),
+];
 
 describe(useListDomains.name, () => {
-  beforeEach(() => {
-    mockUseSuspenseConfigValue.mockReturnValue({ data: mockClusters });
-    mockRequest.default.mockImplementation((url: string) => {
-      if (url.includes('cluster-a')) {
-        return Promise.resolve({ json: () => mockDomainsClusterA });
-      }
-      if (url.includes('cluster-b')) {
-        return Promise.resolve({ json: () => mockDomainsClusterB });
-      }
-      return Promise.reject(new Error('Unknown cluster'));
-    });
-  });
-
-  it('returns merged and deduplicated domains from all clusters', async () => {
-    const { result } = renderHook(() => useListDomains());
+  it('returns merged domains from all clusters', async () => {
+    const { result } = setup({});
 
     await waitFor(() => {
       expect(result.current.data.length).toBe(3);
@@ -61,6 +52,7 @@ describe(useListDomains.name, () => {
     expect(names).toContain('alpha-domain');
     expect(names).toContain('bravo-domain');
     expect(names).toContain('charlie-domain');
+    expect(result.current.failedClusters).toEqual([]);
   });
 
   it('deduplicates domains that appear in multiple clusters', async () => {
@@ -70,36 +62,26 @@ describe(useListDomains.name, () => {
       activeClusterName: 'cluster-a',
     });
 
-    mockRequest.default.mockImplementation((url: string) => {
-      if (url.includes('cluster-a')) {
-        return Promise.resolve({
-          json: () => ({ domains: [sharedDomain], nextPage: '' }),
-        });
-      }
-      if (url.includes('cluster-b')) {
-        return Promise.resolve({
-          json: () => ({ domains: [sharedDomain], nextPage: '' }),
-        });
-      }
-      return Promise.reject(new Error('Unknown cluster'));
+    const { result } = setup({
+      clusterADomains: [sharedDomain],
+      clusterBDomains: [sharedDomain],
     });
-
-    const { result } = renderHook(() => useListDomains());
 
     await waitFor(() => {
-      expect(result.current.data.length).toBe(1);
+      expect(result.current.status).toBe('success');
     });
+
+    expect(result.current.data.length).toBe(1);
   });
 
-  it('reports failed clusters when a request errors', async () => {
-    mockRequest.default.mockImplementation((url: string) => {
-      if (url.includes('cluster-a')) {
-        return Promise.resolve({ json: () => mockDomainsClusterA });
-      }
-      return Promise.reject(new RequestError('Server error', url, 503));
+  it('reports failed clusters with HTTP status when a request errors', async () => {
+    const { result } = setup({
+      clusterBResolver: () =>
+        HttpResponse.json(
+          { message: 'Server error', cluster: 'cluster-b' },
+          { status: 503 }
+        ),
     });
-
-    const { result } = renderHook(() => useListDomains());
 
     await waitFor(() => {
       expect(result.current.failedClusters).toEqual([
@@ -110,15 +92,12 @@ describe(useListDomains.name, () => {
     expect(result.current.data.length).toBe(2);
   });
 
-  it('sets httpStatus to undefined for non-RequestError failures', async () => {
-    mockRequest.default.mockImplementation((url: string) => {
-      if (url.includes('cluster-a')) {
-        return Promise.resolve({ json: () => mockDomainsClusterA });
-      }
-      return Promise.reject(new Error('Network failure'));
+  it('sets httpStatus to undefined for network failures', async () => {
+    const { result } = setup({
+      // HttpResponse.error() returns a plain Response (network error), which
+      // MSW's resolver type doesn't accept without narrowing
+      clusterBResolver: () => HttpResponse.error() as StrictResponse<never>,
     });
-
-    const { result } = renderHook(() => useListDomains());
 
     await waitFor(() => {
       expect(result.current.failedClusters).toEqual([
@@ -128,16 +107,76 @@ describe(useListDomains.name, () => {
   });
 
   it('returns empty data and all failed clusters when all requests fail', async () => {
-    mockRequest.default.mockImplementation((url: string) => {
-      return Promise.reject(new RequestError('Server error', url, 500));
+    const errorResolver: HttpResponseResolver = () =>
+      HttpResponse.json({ message: 'Server error' }, { status: 500 });
+
+    const { result } = setup({
+      clusterAResolver: errorResolver,
+      clusterBResolver: errorResolver,
     });
 
-    const { result } = renderHook(() => useListDomains());
-
     await waitFor(() => {
-      expect(result.current.failedClusters.length).toBe(2);
+      expect(result.current.failedClusters).toEqual([
+        { clusterName: 'cluster-a', httpStatus: 500 },
+        { clusterName: 'cluster-b', httpStatus: 500 },
+      ]);
     });
 
     expect(result.current.data).toEqual([]);
   });
 });
+
+function setup({
+  clusterADomains = mockDomainsClusterA,
+  clusterBDomains = mockDomainsClusterB,
+  clusterAResolver,
+  clusterBResolver,
+}: {
+  clusterADomains?: typeof mockDomainsClusterA;
+  clusterBDomains?: typeof mockDomainsClusterB;
+  clusterAResolver?: HttpResponseResolver;
+  clusterBResolver?: HttpResponseResolver;
+}) {
+  const endpointsMocks: HttpEndpointMock[] = [
+    {
+      path: '/api/config',
+      httpMethod: 'GET',
+      mockOnce: false,
+      jsonResponse: mockClusters,
+    },
+    {
+      path: '/api/clusters/cluster-a/domains',
+      httpMethod: 'GET',
+      mockOnce: false,
+      ...(clusterAResolver
+        ? { httpResolver: clusterAResolver }
+        : {
+            jsonResponse: {
+              domains: clusterADomains,
+              nextPage: '',
+            } satisfies ListDomainsResponse,
+          }),
+    },
+    {
+      path: '/api/clusters/cluster-b/domains',
+      httpMethod: 'GET',
+      mockOnce: false,
+      ...(clusterBResolver
+        ? { httpResolver: clusterBResolver }
+        : {
+            jsonResponse: {
+              domains: clusterBDomains,
+              nextPage: '',
+            } satisfies ListDomainsResponse,
+          }),
+    },
+  ];
+
+  return renderHook(
+    () => useListDomains(),
+    { endpointsMocks },
+    {
+      wrapper: ({ children }) => <Suspense>{children}</Suspense>,
+    }
+  );
+}
