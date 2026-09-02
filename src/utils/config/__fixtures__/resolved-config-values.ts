@@ -46,6 +46,7 @@ const mockResolvedConfigValues: LoadedConfigResolvedValues = {
     issues: false,
   },
   WORKFLOW_DIAGNOSTICS_ENABLED: false,
+  WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED: false,
   ARCHIVAL_DEFAULT_SEARCH_ENABLED: false,
   BATCH_ACTIONS_UI_ENABLED: false,
   FAILOVER_HISTORY_ENABLED: false,
