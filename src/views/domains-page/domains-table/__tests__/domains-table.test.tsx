@@ -1,8 +1,11 @@
 import React from 'react';
 
-import { render, screen } from '@/test-utils/rtl';
+import { render, screen, userEvent } from '@/test-utils/rtl';
+
+import { type Props as LoaderProps } from '@/components/table/table-infinite-scroll-loader/table-infinite-scroll-loader.types';
 
 import { getDomainObj } from '../../__fixtures__/domains';
+import { type DomainData } from '../../domains-page.types';
 import DomainsTable from '../domains-table';
 import { type Props } from '../domains-table.types';
 
@@ -13,8 +16,8 @@ jest.mock(
       data,
       endMessageProps,
     }: {
-      data: any[];
-      endMessageProps: any;
+      data: Array<DomainData>;
+      endMessageProps: LoaderProps;
     }) {
       return (
         <div data-testid="mock-table">
@@ -109,7 +112,6 @@ describe(DomainsTable.name, () => {
 });
 
 function setup(overrides: Partial<Props>) {
-  const { userEvent } = jest.requireActual('@testing-library/user-event');
   const user = userEvent.setup();
   const mockFetchNextPage = jest.fn();
 
