@@ -1,3 +1,5 @@
+'use client';
+
 import { useQuery } from '@tanstack/react-query';
 
 import { type DescribeTaskListResponse } from '@/route-handlers/describe-task-list/describe-task-list.types';

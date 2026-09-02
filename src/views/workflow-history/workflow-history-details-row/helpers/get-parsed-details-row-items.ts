@@ -13,7 +13,7 @@ export default function getParsedDetailsRowItems(
   return detailsEntries.reduce<Array<DetailsRowItem>>((acc, detailsConfig) => {
     if (detailsConfig.isGroup) return acc;
 
-    const { key, path, value, renderConfig } = detailsConfig;
+    const { key, path, value, renderConfig, eventType } = detailsConfig;
 
     const parserConfig = workflowHistoryDetailsRowParsersConfig.find((config) =>
       config.matcher(path, value)
@@ -36,6 +36,7 @@ export default function getParsedDetailsRowItems(
           entryPath: path,
           entryValue: value,
           isNegative,
+          eventType,
           ...workflowPageParams,
         });
     } else {
