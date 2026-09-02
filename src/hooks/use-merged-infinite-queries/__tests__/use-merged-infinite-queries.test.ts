@@ -11,6 +11,28 @@ type MockAPIResponse = {
   nextPage: number;
 };
 
+const PAGE_SIZE = 5;
+
+const compare = (a: number, b: number) => (a < b ? -1 : 1);
+
+function createQueries(
+  queryName: string
+): Array<SingleInfiniteQueryOptions<number[], number, [string, string]>> {
+  return [
+    {
+      queryKey: ['entries', queryName],
+      queryFn: async ({ pageParam }) =>
+        Array.from(
+          { length: pageParam === 0 ? PAGE_SIZE : 2 },
+          (_, index) => pageParam * 100 + index
+        ),
+      getNextPageParam: (lastPage, _allPages, lastPageParam) =>
+        lastPage.length === PAGE_SIZE ? lastPageParam + 1 : undefined,
+      initialPageParam: 0,
+    },
+  ];
+}
+
 const MOCK_QUERY_CONFIG: Array<
   SingleInfiniteQueryOptions<MockAPIResponse, number, [string]>
 > = [
@@ -61,9 +83,9 @@ describe(useMergedInfiniteQueries.name, () => {
     const { result } = renderHook(() =>
       useMergedInfiniteQueries({
         queries: MOCK_QUERY_CONFIG,
-        pageSize: 5,
+        pageSize: PAGE_SIZE,
         flattenResponse: (res) => res.entries,
-        compare: (a, b) => (a < b ? -1 : 1),
+        compare,
       })
     );
 
@@ -96,9 +118,9 @@ describe(useMergedInfiniteQueries.name, () => {
     const { result } = renderHook(() =>
       useMergedInfiniteQueries({
         queries: MOCK_QUERY_CONFIG_WITH_ERROR,
-        pageSize: 5,
+        pageSize: PAGE_SIZE,
         flattenResponse: (res) => res.entries,
-        compare: (a, b) => (a < b ? -1 : 1),
+        compare,
       })
     );
 
@@ -114,9 +136,9 @@ describe(useMergedInfiniteQueries.name, () => {
     const { result } = renderHook(() =>
       useMergedInfiniteQueries({
         queries: MOCK_QUERY_CONFIG,
-        pageSize: 5,
+        pageSize: PAGE_SIZE,
         flattenResponse: (res) => res.entries,
-        compare: (a, b) => (a < b ? -1 : 1),
+        compare,
       })
     );
 
@@ -151,9 +173,9 @@ describe(useMergedInfiniteQueries.name, () => {
     const { result } = renderHook(() =>
       useMergedInfiniteQueries({
         queries: MOCK_QUERY_CONFIG,
-        pageSize: 5,
+        pageSize: PAGE_SIZE,
         flattenResponse: (res) => res.entries,
-        compare: (a, b) => (a < b ? -1 : 1),
+        compare,
       })
     );
 
@@ -192,5 +214,58 @@ describe(useMergedInfiniteQueries.name, () => {
       expect(queryResults[0].data?.pages.length).toStrictEqual(2);
       expect(queryResults[1].data?.pages.length).toStrictEqual(2);
     });
+  });
+
+  it('should keep hasNextPage true while fetched items are not displayed yet', async () => {
+    const firstQueries = createQueries('first');
+    const secondQueries = createQueries('second');
+
+    const { result, rerender } = renderHook(
+      ({ queries }) =>
+        useMergedInfiniteQueries({
+          queries,
+          pageSize: PAGE_SIZE,
+          flattenResponse: (response) => response,
+          compare,
+        }),
+      undefined,
+      { initialProps: { queries: firstQueries } }
+    );
+
+    await waitFor(() => {
+      expect(result.current[0].data).toHaveLength(PAGE_SIZE);
+    });
+    expect(result.current[0].hasNextPage).toBe(true);
+
+    await act(async () => {
+      await result.current[0].fetchNextPage();
+    });
+
+    await waitFor(() => {
+      expect(result.current[0].data).toHaveLength(PAGE_SIZE + 2);
+    });
+    expect(result.current[0].hasNextPage).toBe(false);
+
+    // Switching queries and coming back resets how many items are displayed, while the
+    // fetched pages stay cached, so the remaining entries have to stay reachable
+    rerender({ queries: secondQueries });
+    await waitFor(() => {
+      expect(result.current[0].data).toHaveLength(PAGE_SIZE);
+    });
+
+    rerender({ queries: firstQueries });
+    await waitFor(() => {
+      expect(result.current[0].data).toHaveLength(PAGE_SIZE);
+    });
+    expect(result.current[0].hasNextPage).toBe(true);
+
+    await act(async () => {
+      await result.current[0].fetchNextPage();
+    });
+
+    await waitFor(() => {
+      expect(result.current[0].data).toHaveLength(PAGE_SIZE + 2);
+    });
+    expect(result.current[0].hasNextPage).toBe(false);
   });
 });
