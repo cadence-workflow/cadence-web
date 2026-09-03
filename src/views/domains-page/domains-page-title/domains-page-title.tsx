@@ -13,7 +13,7 @@ export default function DomainsPageTitle({ countBadge }: Props) {
   return (
     <PageSection>
       <div className={cls.titleContainer}>
-        <LabelLarge>All domains</LabelLarge>
+        <LabelLarge>Domains</LabelLarge>
         {countBadge}
       </div>
     </PageSection>
