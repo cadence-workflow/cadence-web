@@ -1,10 +1,6 @@
 import { type Metadata } from 'next';
 
-import { type Props } from './workflow-page.types';
-
-type GenerateMetadataProps = {
-  params: Promise<Props['params']>;
-};
+import { type GenerateMetadataProps } from './workflow-page.types';
 
 export async function generateWorkflowPageMetadata({
   params,

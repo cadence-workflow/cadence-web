@@ -1,10 +1,6 @@
 import { type Metadata } from 'next';
 
-import { type Props } from './task-list-page.types';
-
-type GenerateMetadataProps = {
-  params: Promise<Props['params']>;
-};
+import { type GenerateMetadataProps } from './task-list-page.types';
 
 export async function generateTaskListPageMetadata({
   params,

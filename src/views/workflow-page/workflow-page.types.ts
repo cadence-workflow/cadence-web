@@ -11,3 +11,7 @@ export type Props = {
   params: WorkflowPageParams;
   children: React.ReactNode;
 };
+
+export type GenerateMetadataProps = {
+  params: Promise<Props['params']>;
+};

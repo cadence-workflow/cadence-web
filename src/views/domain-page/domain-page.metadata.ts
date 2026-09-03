@@ -1,10 +1,6 @@
 import { type Metadata } from 'next';
 
-import { type Props } from './domain-page.types';
-
-type GenerateMetadataProps = {
-  params: Promise<Props['params']>;
-};
+import { type GenerateMetadataProps } from './domain-page.types';
 
 export async function generateDomainPageMetadata({
   params,
