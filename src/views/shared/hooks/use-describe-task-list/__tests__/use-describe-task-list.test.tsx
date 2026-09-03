@@ -23,7 +23,7 @@ const mockTaskListResponse: DescribeTaskListResponse = {
   },
 };
 
-describe('useDescribeTaskList', () => {
+describe(useDescribeTaskList.name, () => {
   it('does not fetch when task list name is empty', () => {
     const { result } = setup({ taskListName: '' });
 

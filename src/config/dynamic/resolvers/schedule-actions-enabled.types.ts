@@ -5,7 +5,8 @@ export type ScheduleActionID =
   | 'resume'
   | 'delete'
   | 'backfill'
-  | 'start';
+  | 'start'
+  | 'edit';
 
 export type ScheduleActionDisabledValue =
   (typeof SCHEDULE_ACTIONS_DISABLED_VALUES_CONFIG)[number];

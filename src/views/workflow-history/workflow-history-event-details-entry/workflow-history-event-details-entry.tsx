@@ -6,6 +6,7 @@ export default function EventDetailsSingleEntry({
   entryValue,
   renderConfig,
   isNegative,
+  eventType,
   ...decodedPageUrlParams
 }: Props) {
   const ValueComponent = renderConfig?.valueComponent;
@@ -17,6 +18,7 @@ export default function EventDetailsSingleEntry({
         entryPath={entryPath}
         entryValue={entryValue}
         isNegative={isNegative}
+        eventType={eventType}
         {...decodedPageUrlParams}
       />
     );

@@ -8,6 +8,7 @@ import {
   type Control,
   type FieldErrors,
   type FieldValues,
+  type UseFormClearErrors,
   type UseFormTrigger,
 } from 'react-hook-form';
 import { type z } from 'zod';
@@ -37,6 +38,7 @@ export type ScheduleActionFormProps<FormData extends FieldValues> = {
   fieldErrors: FieldErrors<FormData>;
   control: Control<FormData>;
   trigger?: UseFormTrigger<FormData>;
+  clearErrors: UseFormClearErrors<FormData>;
   isSubmitted?: boolean;
   cluster: string;
   domain: string;
@@ -77,7 +79,9 @@ export type ScheduleActionModalForm<FormData, SubmissionData> =
           FormData extends FieldValues ? FormData : FieldValues
         >
       ) => ReactNode;
-      formSchema: z.ZodSchema<FormData>;
+      // Input is unknown rather than FormData: a form schema parses whatever
+      // the controls hold, which is not always the shape it validates into.
+      formSchema: z.ZodType<FormData, z.ZodTypeDef, unknown>;
       transformFormDataToSubmission: (formData: FormData) => SubmissionData;
     }
   | {

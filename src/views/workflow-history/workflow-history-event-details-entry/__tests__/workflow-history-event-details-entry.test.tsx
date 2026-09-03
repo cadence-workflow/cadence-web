@@ -113,4 +113,32 @@ describe(EventDetailsSingleEntry.name, () => {
 
     expect(getByText('key1 - path1 - value1 - positive')).toBeInTheDocument();
   });
+
+  it('passes eventType prop to custom ValueComponent when provided', () => {
+    const CustomComponent = ({
+      entryKey,
+      eventType,
+    }: EventDetailsValueComponentProps) => (
+      <div>
+        {entryKey} - {eventType}
+      </div>
+    );
+
+    const props: Props = {
+      entryKey: 'taskList',
+      entryPath: 'taskList',
+      entryValue: { name: 'tl' },
+      eventType: 'ActivityTaskScheduled',
+      renderConfig: {
+        name: 'Mock render config with custom component',
+        customMatcher: () => true,
+        valueComponent: CustomComponent,
+      },
+      ...workflowPageUrlParams,
+    };
+
+    const { getByText } = render(<EventDetailsSingleEntry {...props} />);
+
+    expect(getByText('taskList - ActivityTaskScheduled')).toBeInTheDocument();
+  });
 });

@@ -16,6 +16,7 @@ export default function WorkflowHistoryPanelDetailsEntry({
         entryPath={detail.path}
         entryValue={detail.value}
         isNegative={detail.isNegative}
+        eventType={detail.eventType}
         {...workflowPageParams}
       />
     );
