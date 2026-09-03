@@ -13,4 +13,11 @@ export type DomainsPageFilterConfig<
     queryParams: PageQueryParamValues<typeof domainsPageQueryParamsConfig>,
     pageCtx: DomainsPageContextType
   ) => boolean;
+  /**
+   * Filters with this flag define the scope of the listed domains rather than
+   * narrowing within it. They are applied before computing the total count in
+   * the page title badge; filters without it (and the search text) only narrow
+   * the visible list and produce the "X of Y" count.
+   */
+  appliesToTotalCount?: boolean;
 };

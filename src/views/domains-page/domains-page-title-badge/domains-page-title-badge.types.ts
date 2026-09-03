@@ -1,3 +1,6 @@
 export type Props = {
-  content: string | number;
+  count: number;
+  totalCount: number;
+  isLoading: boolean;
+  hasNextPage: boolean;
 };

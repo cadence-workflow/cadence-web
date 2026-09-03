@@ -1,5 +1,5 @@
 'use client';
-import React, { useContext, useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 import PageSection from '@/components/page-section/page-section';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
@@ -11,10 +11,8 @@ import sortBy, {
   type SortOrder,
 } from '@/utils/sort-by';
 
-import domainsPageFiltersConfig from '../config/domains-page-filters.config';
 import domainsPageQueryParamsConfig from '../config/domains-page-query-params.config';
 import domainsTableColumnsConfig from '../config/domains-table-columns.config';
-import { DomainsPageContext } from '../domains-page-context-provider/domains-page-context-provider';
 import type { DomainData } from '../domains-page.types';
 
 import { type Props } from './domains-table.types';
@@ -32,28 +30,15 @@ function DomainsTable({
     domainsPageQueryParamsConfig,
     { pageRerender: false }
   );
-  const pageCtx = useContext(DomainsPageContext);
-  const filteredDomains = useMemo(() => {
-    const lowerCaseSearch = queryParams.searchText?.toLowerCase();
-    return domains.filter(
-      (d) =>
-        (!lowerCaseSearch ||
-          d.id.toLowerCase() === lowerCaseSearch ||
-          d.name.toLowerCase().includes(lowerCaseSearch)) &&
-        domainsPageFiltersConfig.every((f) =>
-          f.filterFunc(d, queryParams, pageCtx)
-        )
-    );
-  }, [domains, queryParams, pageCtx]);
+
   const sortedDomains = useMemo(() => {
-    if (!queryParams.sortColumn || !queryParams.sortOrder)
-      return filteredDomains;
+    if (!queryParams.sortColumn || !queryParams.sortOrder) return domains;
     return sortBy<DomainData>(
-      filteredDomains,
+      domains,
       (d) => d[queryParams.sortColumn as keyof DomainData] as SortByReturnValue,
       queryParams.sortOrder
     );
-  }, [filteredDomains, queryParams.sortColumn, queryParams.sortOrder]);
+  }, [domains, queryParams.sortColumn, queryParams.sortOrder]);
 
   if (isLoading) {
     return <SectionLoadingIndicator />;
