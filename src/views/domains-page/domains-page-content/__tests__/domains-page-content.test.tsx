@@ -4,11 +4,16 @@ import { HttpResponse, type HttpResponseResolver } from 'msw';
 
 import { render, screen, waitFor } from '@/test-utils/rtl';
 
+import { type PageQueryParamValues } from '@/hooks/use-page-query-params/use-page-query-params.types';
+import { type ListDomainsResponse } from '@/route-handlers/list-domains/list-domains.types';
 import type { HttpEndpointMock } from '@/test-utils/msw-mock-handlers/msw-mock-handlers.types';
 
 import { getDomainObj } from '../../__fixtures__/domains';
+import { mockDomainsPageQueryParamsValues } from '../../__fixtures__/domains-page-query-params';
+import type domainsPageQueryParamsConfig from '../../config/domains-page-query-params.config';
 import DomainsPageContextProvider from '../../domains-page-context-provider/domains-page-context-provider';
 import { type Props as ErrorBannerProps } from '../../domains-page-error-banner/domains-page-error-banner.types';
+import { type Props as BadgeProps } from '../../domains-page-title-badge/domains-page-title-badge.types';
 import { type Props as DomainsTableProps } from '../../domains-table/domains-table.types';
 import DomainsPageContent from '../domains-page-content';
 
@@ -19,8 +24,13 @@ jest.mock('../../domains-page-title/domains-page-title', () =>
 );
 
 jest.mock('../../domains-page-title-badge/domains-page-title-badge', () =>
-  jest.fn(({ content }: { content: string | number }) => (
-    <span data-testid="mock-badge">{content}</span>
+  jest.fn(({ count, totalCount, hasNextPage, isLoading }: BadgeProps) => (
+    <div data-testid="mock-badge">
+      {isLoading && <span data-testid="badge-loading" />}
+      <span data-testid="badge-count">{count}</span>
+      <span data-testid="badge-total">{totalCount}</span>
+      <span data-testid="badge-has-next-page">{String(hasNextPage)}</span>
+    </div>
   ))
 );
 
@@ -57,6 +67,12 @@ jest.mock('../../domains-table/domains-table', () =>
     );
   })
 );
+
+const mockUsePageQueryParams = jest.fn();
+jest.mock('@/hooks/use-page-query-params/use-page-query-params', () => ({
+  __esModule: true,
+  default: (...args: Array<unknown>) => mockUsePageQueryParams(...args),
+}));
 
 const mockClusterA = [
   getDomainObj({
@@ -98,8 +114,9 @@ describe(DomainsPageContent.name, () => {
     setup({});
 
     await waitFor(() => {
-      expect(screen.getByTestId('mock-badge')).toHaveTextContent('3');
+      expect(screen.getByTestId('badge-count')).toHaveTextContent('3');
     });
+    expect(screen.getByTestId('badge-total')).toHaveTextContent('3');
   });
 
   it('renders filters', async () => {
@@ -123,8 +140,9 @@ describe(DomainsPageContent.name, () => {
       expect(screen.getByTestId('mock-error-banner')).toHaveTextContent(
         'cluster-b'
       );
-      expect(screen.getByTestId('mock-badge')).toHaveTextContent('2');
+      expect(screen.getByTestId('badge-count')).toHaveTextContent('2');
     });
+    expect(screen.getByTestId('badge-total')).toHaveTextContent('2');
   });
 
   it('shows error banner for all clusters when all fail', async () => {
@@ -142,7 +160,8 @@ describe(DomainsPageContent.name, () => {
       );
     });
 
-    expect(screen.getByTestId('mock-badge')).toHaveTextContent('0');
+    expect(screen.getByTestId('badge-count')).toHaveTextContent('0');
+    expect(screen.getByTestId('badge-total')).toHaveTextContent('0');
   });
 
   it('deduplicates domains that appear in multiple clusters', async () => {
@@ -161,7 +180,87 @@ describe(DomainsPageContent.name, () => {
       expect(screen.getAllByTestId('domain-item')).toHaveLength(1);
     });
 
-    expect(screen.getByTestId('mock-badge')).toHaveTextContent('1');
+    expect(screen.getByTestId('badge-count')).toHaveTextContent('1');
+    expect(screen.getByTestId('badge-total')).toHaveTextContent('1');
+  });
+
+  it('narrows the count when a search term is applied without changing the total', async () => {
+    setup({ queryParams: { searchText: 'alpha' } });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('domain-count')).toHaveTextContent('1');
+    });
+
+    expect(screen.getByTestId('badge-count')).toHaveTextContent('1');
+    expect(screen.getByTestId('badge-total')).toHaveTextContent('3');
+  });
+
+  describe('deprecated domains scope', () => {
+    const clusterADomainsWithDeprecated = [
+      ...mockClusterA,
+      getDomainObj({
+        id: '4',
+        name: 'delta-domain',
+        activeClusterName: 'cluster-a',
+        status: 'DOMAIN_STATUS_DEPRECATED',
+      }),
+    ];
+
+    it('excludes deprecated domains from the total by default', async () => {
+      setup({ clusterADomains: clusterADomainsWithDeprecated });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('badge-total')).toHaveTextContent('3');
+      });
+      expect(screen.getByTestId('badge-count')).toHaveTextContent('3');
+    });
+
+    it('includes deprecated domains in the total once the toggle is on', async () => {
+      setup({
+        clusterADomains: clusterADomainsWithDeprecated,
+        queryParams: { showDeprecated: true },
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('badge-total')).toHaveTextContent('4');
+      });
+      expect(screen.getByTestId('badge-count')).toHaveTextContent('4');
+    });
+
+    it('narrows the count by search while the total still includes deprecated domains', async () => {
+      setup({
+        clusterADomains: clusterADomainsWithDeprecated,
+        queryParams: { showDeprecated: true, searchText: 'delta' },
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('badge-total')).toHaveTextContent('4');
+      });
+      expect(screen.getByTestId('badge-count')).toHaveTextContent('1');
+    });
+  });
+
+  it('shows hasNextPage as true while a next page is still pending', async () => {
+    const clusterAResolver: HttpResponseResolver = ({ request }) => {
+      const nextPage = new URL(request.url).searchParams.get('nextPage');
+
+      if (!nextPage) {
+        return HttpResponse.json({
+          domains: [mockClusterA[0]],
+          nextPage: 'page-2',
+        } satisfies ListDomainsResponse);
+      }
+
+      return HttpResponse.json({ message: 'Server error' }, { status: 500 });
+    };
+
+    setup({ clusterAResolver });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('badge-has-next-page')).toHaveTextContent(
+        'true'
+      );
+    });
   });
 });
 
@@ -170,12 +269,21 @@ function setup({
   clusterBDomains = mockClusterB,
   clusterAResolver,
   clusterBResolver,
+  queryParams,
 }: {
   clusterADomains?: typeof mockClusterA;
   clusterBDomains?: typeof mockClusterB;
   clusterAResolver?: HttpResponseResolver;
   clusterBResolver?: HttpResponseResolver;
+  queryParams?: Partial<
+    PageQueryParamValues<typeof domainsPageQueryParamsConfig>
+  >;
 }) {
+  mockUsePageQueryParams.mockReturnValue([
+    { ...mockDomainsPageQueryParamsValues, ...queryParams },
+    jest.fn(),
+  ]);
+
   const endpointsMocks: HttpEndpointMock[] = [
     {
       path: '/api/config',

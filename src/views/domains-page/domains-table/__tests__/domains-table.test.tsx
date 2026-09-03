@@ -51,15 +51,6 @@ jest.mock(
     }
 );
 
-jest.mock(
-  '../../domains-page-context-provider/domains-page-context-provider',
-  () => ({
-    DomainsPageContext: {
-      ...jest.requireActual('react').createContext({}),
-    },
-  })
-);
-
 const mockSetQueryParams = jest.fn();
 jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
   jest.fn(() => [{}, mockSetQueryParams])

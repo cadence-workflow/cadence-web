@@ -90,6 +90,13 @@ export default function useListDomains() {
 
   return {
     ...mergedResults,
+    // useMergedInfiniteQueries populates queryResults in an effect, so the very
+    // first committed render has isLoading: false, status: 'idle' before any
+    // cluster query has run. Treat that as loading too so the badge/table show
+    // a loading state instead of a one-frame flash of empty data.
+    isLoading:
+      mergedResults.isLoading ||
+      (mergedResults.status === 'idle' && clusters.length > 0),
     data: uniqueData,
     failedClusters,
   };
