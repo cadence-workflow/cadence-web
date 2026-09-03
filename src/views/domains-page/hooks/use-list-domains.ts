@@ -42,15 +42,21 @@ export default function useListDomains() {
     queries,
     pageSize: LIST_DOMAINS_API_PAGE_SIZE,
     flattenResponse,
-    compare: compareDomains,
+    compare: (a, b) => a.name.localeCompare(b.name),
   });
 
   const { hasNextPage, isFetchingNextPage, fetchNextPage } = mergedResults;
+
+  const hasNextPageError = individualResults.some(
+    (qr) => qr.isFetchNextPageError
+  );
+
+  // Eagerly load all pages
   useEffect(() => {
-    if (hasNextPage && !isFetchingNextPage) {
+    if (hasNextPage && !isFetchingNextPage && !hasNextPageError) {
       fetchNextPage();
     }
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage, hasNextPageError]);
 
   const uniqueData = useMemo(
     () => getUniqueDomains(mergedResults.data),
@@ -82,8 +88,4 @@ export default function useListDomains() {
     data: uniqueData,
     failedClusters,
   };
-}
-
-function compareDomains(a: DomainData, b: DomainData): number {
-  return a.name.localeCompare(b.name);
 }
