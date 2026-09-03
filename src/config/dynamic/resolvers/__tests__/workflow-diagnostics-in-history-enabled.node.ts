@@ -14,7 +14,12 @@ describe(workflowDiagnosticsInHistoryEnabled.name, () => {
   });
 
   afterEach(() => {
-    process.env.CADENCE_WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED = originalValue;
+    if (originalValue === undefined) {
+      delete process.env.CADENCE_WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED;
+    } else {
+      process.env.CADENCE_WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED =
+        originalValue;
+    }
   });
 
   it('returns true when the env variable is set and workflow diagnostics are enabled', async () => {
