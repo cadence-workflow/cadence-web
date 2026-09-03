@@ -87,9 +87,8 @@ describe(useListDomains.name, () => {
       expect(result.current.failedClusters).toEqual([
         { clusterName: 'cluster-b', httpStatus: 503 },
       ]);
+      expect(result.current.data.length).toBe(2);
     });
-
-    expect(result.current.data.length).toBe(2);
   });
 
   it('sets httpStatus to undefined for network failures', async () => {
@@ -155,13 +154,13 @@ describe(useListDomains.name, () => {
 
     await waitFor(() => {
       expect(result.current.data.length).toBe(3);
+      expect(result.current.failedClusters).toEqual([
+        { clusterName: 'cluster-b', httpStatus: 503 },
+      ]);
     });
 
     expect(clusterACallCount).toBe(3);
     expect(result.current.hasNextPage).toBe(false);
-    expect(result.current.failedClusters).toEqual([
-      { clusterName: 'cluster-b', httpStatus: 503 },
-    ]);
 
     // Settle window: confirm the dead cluster is not re-fetched.
     await act(() => new Promise((r) => setTimeout(r, 200)));

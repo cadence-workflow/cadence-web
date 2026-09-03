@@ -33,6 +33,11 @@ export default function useListDomains() {
     []
   );
 
+  const compareDomains = useCallback(
+    (a: DomainData, b: DomainData) => a.name.localeCompare(b.name),
+    []
+  );
+
   const [mergedResults, individualResults] = useMergedInfiniteQueries<
     DomainData,
     ListDomainsResponse,
@@ -42,7 +47,7 @@ export default function useListDomains() {
     queries,
     pageSize: LIST_DOMAINS_API_PAGE_SIZE,
     flattenResponse,
-    compare: (a, b) => a.name.localeCompare(b.name),
+    compare: compareDomains,
   });
 
   const { hasNextPage, isFetchingNextPage, fetchNextPage } = mergedResults;
