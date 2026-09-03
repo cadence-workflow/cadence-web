@@ -6,7 +6,7 @@ import {
   type StrictResponse,
 } from 'msw';
 
-import { renderHook, waitFor } from '@/test-utils/rtl';
+import { act, renderHook, waitFor } from '@/test-utils/rtl';
 
 import { type ListDomainsResponse } from '@/route-handlers/list-domains/list-domains.types';
 import type { HttpEndpointMock } from '@/test-utils/msw-mock-handlers/msw-mock-handlers.types';
@@ -123,6 +123,83 @@ describe(useListDomains.name, () => {
     });
 
     expect(result.current.data).toEqual([]);
+  });
+
+  it('keeps eagerly loading healthy clusters when another cluster fails its initial load', async () => {
+    const pages = ['page-2', 'page-3', ''];
+    let clusterACallCount = 0;
+    const clusterAResolver: HttpResponseResolver = ({ request }) => {
+      const pageIndex = clusterACallCount;
+      clusterACallCount += 1;
+      const nextPage = new URL(request.url).searchParams.get('nextPage');
+
+      return HttpResponse.json({
+        domains: [
+          getDomainObj({
+            id: `a-${pageIndex}`,
+            name: `cluster-a-domain-${pageIndex}`,
+            activeClusterName: 'cluster-a',
+          }),
+        ],
+        // page N carries the token for page N+1; last page carries ''
+        nextPage:
+          nextPage === null ? pages[0] : pages[pages.indexOf(nextPage) + 1],
+      } satisfies ListDomainsResponse);
+    };
+
+    const { result } = setup({
+      clusterAResolver,
+      clusterBResolver: () =>
+        HttpResponse.json({ message: 'Server error' }, { status: 503 }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.data.length).toBe(3);
+    });
+
+    expect(clusterACallCount).toBe(3);
+    expect(result.current.hasNextPage).toBe(false);
+    expect(result.current.failedClusters).toEqual([
+      { clusterName: 'cluster-b', httpStatus: 503 },
+    ]);
+
+    // Settle window: confirm the dead cluster is not re-fetched.
+    await act(() => new Promise((r) => setTimeout(r, 200)));
+    expect(clusterACallCount).toBe(3);
+  });
+
+  it('stops eager loading after a next-page error (does not loop)', async () => {
+    let callCount = 0;
+    const clusterAResolver: HttpResponseResolver = ({ request }) => {
+      callCount += 1;
+      const nextPage = new URL(request.url).searchParams.get('nextPage');
+
+      if (!nextPage) {
+        return HttpResponse.json({
+          domains: [mockDomainsClusterA[0]],
+          nextPage: 'page-2',
+        } satisfies ListDomainsResponse);
+      }
+
+      return HttpResponse.json({ message: 'Server error' }, { status: 500 });
+    };
+
+    const { result } = setup({ clusterAResolver });
+
+    await waitFor(() => {
+      expect(result.current.status).toBe('error');
+    });
+
+    expect(callCount).toBe(2);
+
+    // Give the effect a chance to loop before asserting it settled.
+    await act(() => new Promise((r) => setTimeout(r, 200)));
+
+    expect(callCount).toBe(2);
+    expect(result.current.failedClusters).toEqual([
+      { clusterName: 'cluster-a', httpStatus: 500 },
+    ]);
+    expect(result.current.data.map((d) => d.name)).toContain('alpha-domain');
   });
 });
 
