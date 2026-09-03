@@ -84,7 +84,7 @@ describe(DomainsPageContent.name, () => {
     setup({});
 
     await waitFor(() => {
-      expect(screen.getByTestId('mock-table')).toBeInTheDocument();
+      expect(screen.getAllByTestId('domain-item')).toHaveLength(3);
     });
 
     const items = screen.getAllByTestId('domain-item');
@@ -123,9 +123,8 @@ describe(DomainsPageContent.name, () => {
       expect(screen.getByTestId('mock-error-banner')).toHaveTextContent(
         'cluster-b'
       );
+      expect(screen.getByTestId('mock-badge')).toHaveTextContent('2');
     });
-
-    expect(screen.getByTestId('mock-badge')).toHaveTextContent('2');
   });
 
   it('shows error banner for all clusters when all fail', async () => {
@@ -138,15 +137,11 @@ describe(DomainsPageContent.name, () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId('mock-error-banner')).toBeInTheDocument();
+      expect(screen.getByTestId('mock-error-banner')).toHaveTextContent(
+        'cluster-a, cluster-b'
+      );
     });
 
-    expect(screen.getByTestId('mock-error-banner')).toHaveTextContent(
-      'cluster-a'
-    );
-    expect(screen.getByTestId('mock-error-banner')).toHaveTextContent(
-      'cluster-b'
-    );
     expect(screen.getByTestId('mock-badge')).toHaveTextContent('0');
   });
 
@@ -163,10 +158,9 @@ describe(DomainsPageContent.name, () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId('mock-table')).toBeInTheDocument();
+      expect(screen.getAllByTestId('domain-item')).toHaveLength(1);
     });
 
-    expect(screen.getAllByTestId('domain-item')).toHaveLength(1);
     expect(screen.getByTestId('mock-badge')).toHaveTextContent('1');
   });
 });
