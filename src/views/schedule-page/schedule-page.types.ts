@@ -10,3 +10,7 @@ export type Props = {
   params: SchedulePageParams;
   children: React.ReactNode;
 };
+
+export type GenerateMetadataProps = {
+  params: Promise<Props['params']>;
+};

@@ -1,10 +1,6 @@
 import { type Metadata } from 'next';
 
-import { type Props } from './schedule-page.types';
-
-type GenerateMetadataProps = {
-  params: Promise<Props['params']>;
-};
+import { type GenerateMetadataProps } from './schedule-page.types';
 
 export async function generateSchedulePageMetadata({
   params,
