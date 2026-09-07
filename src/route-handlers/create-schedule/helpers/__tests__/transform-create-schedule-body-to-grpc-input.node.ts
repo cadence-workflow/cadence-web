@@ -2,7 +2,6 @@ import { ScheduleCatchUpPolicy } from '@/__generated__/proto-ts/uber/cadence/api
 import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
 
 import { DEFAULT_TASK_START_TO_CLOSE_TIMEOUT_SECONDS } from '../../../start-workflow/start-workflow.constants';
-
 import { type CreateScheduleRequestBody } from '../../create-schedule.types';
 import transformCreateScheduleBodyToGrpcInput from '../transform-create-schedule-body-to-grpc-input';
 
