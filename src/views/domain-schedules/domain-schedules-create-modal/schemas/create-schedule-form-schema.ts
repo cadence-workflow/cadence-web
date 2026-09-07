@@ -82,6 +82,9 @@ export const createScheduleFormFieldsSchema = z.object({
       required_error: 'Execution timeout is required',
     })
     .positive('Execution timeout must be positive'),
+  // Hidden on create/edit: Cadence requires a decision-task timeout, and edit
+  // must round-trip the existing value so a full-replace update does not clobber it.
+  taskStartToCloseTimeoutSeconds: z.number().positive().optional(),
   // TODO(refactor): WORKER_SDK_LANGUAGES imported from start-workflow — extract to shared constants
   workerSDKLanguage: z.enum(WORKER_SDK_LANGUAGES, {
     required_error: 'Worker SDK is required',
