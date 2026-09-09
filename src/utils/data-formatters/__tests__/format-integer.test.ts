@@ -2,7 +2,7 @@ import formatInteger from '../format-integer';
 
 describe('formatInteger', () => {
   it('groups digits using the requested locale', () => {
-    expect(formatInteger(12472988, 'en-US')).toBe('12,472,988');
+    expect(formatInteger(12472988)).toBe('12,472,988');
     expect(formatInteger(12472988, 'de-DE')).toBe('12.472.988');
   });
 
