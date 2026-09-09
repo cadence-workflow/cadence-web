@@ -9,6 +9,7 @@ import { MdCheckCircle, MdHourglassTop, MdWarning } from 'react-icons/md';
 import formatInteger from '@/utils/data-formatters/format-integer';
 
 import formatBatchActionProgressPercent from '../helpers/format-batch-action-progress-percent';
+import getBatchActionEtaDuration from '../helpers/get-batch-action-eta-duration';
 import getStatIconColor from '../helpers/get-stat-icon-color';
 import getStatusBackgroundColor from '../helpers/get-status-background-color';
 
@@ -23,6 +24,7 @@ export default function DomainBatchActionsProgressBar({
   status,
   progress,
   actionType,
+  startTime,
 }: Props) {
   const [, theme] = useStyletron();
 
@@ -71,6 +73,13 @@ export default function DomainBatchActionsProgressBar({
 
   const isTerminal = status === 'COMPLETED' || status === 'FAILED';
   const remainingLabel = isTerminal ? 'skipped' : 'remaining';
+  const eta = getBatchActionEtaDuration({
+    status,
+    remaining,
+    completed,
+    startTime,
+  });
+  const remainingText = `${formatInteger(remaining)} ${remainingLabel}`;
 
   return (
     <styled.Container>
@@ -103,7 +112,7 @@ export default function DomainBatchActionsProgressBar({
             size={iconSize}
             color={getStatIconColor('neutral', remainingMuted, theme)}
           />
-          {`${formatInteger(remaining)} ${remainingLabel}`}
+          {eta ? `${remainingText} · ~${eta} left` : remainingText}
         </styled.Stat>
       </styled.Label>
     </styled.Container>
