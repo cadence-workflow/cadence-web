@@ -112,7 +112,7 @@ export default function DomainBatchActionsProgressBar({
             size={iconSize}
             color={getStatIconColor('neutral', remainingMuted, theme)}
           />
-          {eta ? `${remainingText} · ~${eta} left` : remainingText}
+          {eta ? `${remainingText} (ETA: ~${eta})` : remainingText}
         </styled.Stat>
       </styled.Label>
     </styled.Container>
