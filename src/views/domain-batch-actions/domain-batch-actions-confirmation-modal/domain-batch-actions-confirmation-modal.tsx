@@ -4,6 +4,7 @@ import { Modal, ModalButton } from 'baseui/modal';
 import { type FieldValues, useForm } from 'react-hook-form';
 import { MdList, MdOpenInNew } from 'react-icons/md';
 
+import formatInteger from '@/utils/data-formatters/format-integer';
 import { type SignalWorkflowSubmissionData } from '@/views/workflow-actions/workflow-action-signal-form/workflow-action-signal-form.types';
 
 import DomainBatchActionsBanner from '../domain-batch-actions-banner/domain-batch-actions-banner';
@@ -77,7 +78,7 @@ export default function DomainBatchActionsConfirmationModal({
               onActionClick={onClose}
             >
               <styled.SelectionText>
-                {selectedCount} workflows selected
+                {formatInteger(selectedCount)} workflows selected
               </styled.SelectionText>
             </DomainBatchActionsBanner>
             {config.withForm && (

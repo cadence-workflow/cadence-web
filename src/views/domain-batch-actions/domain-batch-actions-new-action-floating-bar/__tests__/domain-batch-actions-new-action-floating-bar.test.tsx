@@ -22,6 +22,14 @@ describe(DomainBatchActionsNewActionFloatingBar.name, () => {
     expect(screen.getByText('5 of 32 workflows included')).toBeInTheDocument();
   });
 
+  it('groups large selection counts', () => {
+    setup({ selectedCount: 92000, totalCount: 12472988 });
+
+    expect(
+      screen.getByText('92,000 of 12,472,988 workflows included')
+    ).toBeInTheDocument();
+  });
+
   it('renders one button per action', () => {
     setup({});
 
