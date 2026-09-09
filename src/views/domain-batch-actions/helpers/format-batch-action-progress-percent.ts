@@ -4,7 +4,7 @@ const MINIMUM_DISPLAYED_PERCENT = 10 ** -MAXIMUM_FRACTION_DIGITS / 100;
 export default function formatBatchActionProgressPercent(
   completed: number,
   total: number,
-  locale?: Intl.LocalesArgument
+  locale: Intl.LocalesArgument = 'en-US'
 ): string {
   const formatter = new Intl.NumberFormat(locale, {
     style: 'percent',
