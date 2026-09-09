@@ -31,6 +31,24 @@ describe(DomainBatchActionsProgressBar.name, () => {
     ).toBeInTheDocument();
   });
 
+  it('groups large workflow counts', () => {
+    setup({
+      status: 'RUNNING',
+      progress: {
+        totalEstimate: 12472988,
+        successCount: 92000,
+        errorCount: 0,
+      },
+      actionType: 'terminate',
+    });
+
+    expect(
+      screen.getByText('Terminated 92,000 of 12,472,988 workflows:')
+    ).toBeInTheDocument();
+    expect(screen.getByText('92,000 succeeded')).toBeInTheDocument();
+    expect(screen.getByText('12,380,988 remaining')).toBeInTheDocument();
+  });
+
   it('renders the succeeded, failed and remaining counts', () => {
     setup({ status: 'RUNNING', progress: PROGRESS, actionType: 'terminate' });
 

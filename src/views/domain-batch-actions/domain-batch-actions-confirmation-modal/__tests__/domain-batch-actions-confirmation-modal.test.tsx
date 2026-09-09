@@ -74,6 +74,14 @@ describe(DomainBatchActionsConfirmationModal.name, () => {
     expect(screen.getByText('42 workflows selected')).toBeInTheDocument();
   });
 
+  it('groups a large selection count', () => {
+    setup({ actionId: 'cancel', selectedCount: 12472988 });
+
+    expect(
+      screen.getByText('12,472,988 workflows selected')
+    ).toBeInTheDocument();
+  });
+
   it('calls onClose when Close button is clicked', async () => {
     const { user, mockOnClose } = setup({ actionId: 'terminate' });
 
