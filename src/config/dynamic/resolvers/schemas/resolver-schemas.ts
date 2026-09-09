@@ -76,6 +76,7 @@ const resolverSchemas: ResolverSchemas = {
       delete: scheduleActionsEnabledValueSchema,
       backfill: scheduleActionsEnabledValueSchema,
       start: scheduleActionsEnabledValueSchema,
+      edit: scheduleActionsEnabledValueSchema,
     }),
   },
   CRON_LIST_ENABLED: {
@@ -93,6 +94,10 @@ const resolverSchemas: ResolverSchemas = {
     }),
   },
   WORKFLOW_DIAGNOSTICS_ENABLED: {
+    args: z.undefined(),
+    returnType: z.boolean(),
+  },
+  WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED: {
     args: z.undefined(),
     returnType: z.boolean(),
   },

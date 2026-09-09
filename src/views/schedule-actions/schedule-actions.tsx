@@ -15,6 +15,7 @@ import { type SchedulePageParams } from '@/views/schedule-page/schedule-page.typ
 import useDescribeSchedule from '@/views/shared/hooks/use-describe-schedule/use-describe-schedule';
 
 import { type SelectableScheduleAction } from './config/schedule-actions.config';
+import transformDescribeScheduleResponseToFormData from './schedule-action-edit-form/helpers/transform-describe-schedule-response-to-form-data';
 import ScheduleActionsMenu from './schedule-actions-menu/schedule-actions-menu';
 import ScheduleActionsModal from './schedule-actions-modal/schedule-actions-modal';
 import { overrides } from './schedule-actions.styles';
@@ -78,6 +79,14 @@ export default function ScheduleActions() {
         {...scheduleDetailsParams}
         schedule={schedule}
         action={selectedAction as ErasedScheduleAction | undefined}
+        initialFormValues={
+          selectedAction?.id === 'edit' && schedule
+            ? transformDescribeScheduleResponseToFormData(
+                schedule,
+                params.scheduleId
+              )
+            : undefined
+        }
         onClose={() => setSelectedAction(undefined)}
       />
     </>

@@ -308,4 +308,31 @@ describe(generateHistoryEventDetails.name, () => {
     expect(reasonEntry.path).toBe('error.reason');
     expect(reasonEntry.isNegative).toBe(true);
   });
+
+  it('should attach eventType from the formatted event to every entry', () => {
+    const details = {
+      eventType: 'ActivityTaskScheduled',
+      taskList: { name: 'tl', kind: 'NORMAL' },
+      nested: {
+        a: 1,
+        b: 2,
+      },
+    };
+
+    const result = generateHistoryEventDetails({ details });
+
+    expect(
+      result.every((entry) => entry.eventType === 'ActivityTaskScheduled')
+    ).toBe(true);
+
+    const nestedGroup = result.find((entry) => entry.path === 'nested');
+    expect(nestedGroup?.isGroup).toBe(true);
+    if (nestedGroup?.isGroup) {
+      expect(
+        nestedGroup.groupEntries.every(
+          (entry) => entry.eventType === 'ActivityTaskScheduled'
+        )
+      ).toBe(true);
+    }
+  });
 });

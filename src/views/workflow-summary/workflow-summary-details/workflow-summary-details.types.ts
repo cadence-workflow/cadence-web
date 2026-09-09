@@ -36,4 +36,5 @@ export type WorkflowSummaryDetailsConfig = {
   getLabel: () => string;
   valueComponent: React.ComponentType<WorkflowSummaryFieldArgs>;
   hide?: (args: WorkflowSummaryFieldArgs) => boolean;
+  getCopyText?: (args: WorkflowSummaryFieldArgs) => string | undefined;
 };

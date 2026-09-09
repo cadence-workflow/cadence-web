@@ -12,14 +12,19 @@ export default function generateHistoryEventDetails({
   details,
   negativeFields,
   parentPath = '',
+  eventType: eventTypeArg,
 }: {
   details: object;
   negativeFields?: Array<string>;
   parentPath?: string;
+  eventType?: string;
 }): EventDetailsEntries {
   if (details === null || details === undefined) {
     return [];
   }
+
+  const eventType = eventTypeArg ?? getEventTypeFromDetails(details);
+  const eventTypeFields = eventType ? { eventType } : {};
 
   const result: EventDetailsEntries = [];
 
@@ -44,6 +49,7 @@ export default function generateHistoryEventDetails({
             details: value,
             parentPath: path,
             negativeFields,
+            eventType,
           })
         );
       } else {
@@ -55,8 +61,10 @@ export default function generateHistoryEventDetails({
             details: value,
             parentPath: path,
             negativeFields,
+            eventType,
           }),
           renderConfig,
+          ...eventTypeFields,
         };
         result.push(groupEntry);
       }
@@ -69,6 +77,7 @@ export default function generateHistoryEventDetails({
       value,
       renderConfig,
       isGroup: false,
+      ...eventTypeFields,
       ...(negativeFields && negativeFields.includes(path)
         ? { isNegative: true }
         : {}),
@@ -77,4 +86,15 @@ export default function generateHistoryEventDetails({
   });
 
   return result;
+}
+
+function getEventTypeFromDetails(details: object): string | undefined {
+  if (
+    'eventType' in details &&
+    typeof details.eventType === 'string' &&
+    details.eventType.length > 0
+  ) {
+    return details.eventType;
+  }
+  return undefined;
 }

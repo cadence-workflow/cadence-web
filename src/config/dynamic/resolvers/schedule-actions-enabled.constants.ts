@@ -7,6 +7,7 @@ export const AUTHORIZED_SCHEDULE_ACTIONS_CONFIG: ScheduleActionsEnabledConfig =
     delete: 'ENABLED',
     backfill: 'ENABLED',
     start: 'ENABLED',
+    edit: 'ENABLED',
   };
 
 export const UNAUTHORIZED_SCHEDULE_ACTIONS_CONFIG: ScheduleActionsEnabledConfig =
@@ -16,6 +17,7 @@ export const UNAUTHORIZED_SCHEDULE_ACTIONS_CONFIG: ScheduleActionsEnabledConfig 
     delete: 'DISABLED_UNAUTHORIZED',
     backfill: 'DISABLED_UNAUTHORIZED',
     start: 'DISABLED_UNAUTHORIZED',
+    edit: 'DISABLED_UNAUTHORIZED',
   };
 
 export const DEFAULT_DISABLED_SCHEDULE_ACTIONS_CONFIG: ScheduleActionsEnabledConfig =
@@ -25,4 +27,5 @@ export const DEFAULT_DISABLED_SCHEDULE_ACTIONS_CONFIG: ScheduleActionsEnabledCon
     delete: 'DISABLED_DEFAULT',
     backfill: 'DISABLED_DEFAULT',
     start: 'DISABLED_DEFAULT',
+    edit: 'DISABLED_DEFAULT',
   };

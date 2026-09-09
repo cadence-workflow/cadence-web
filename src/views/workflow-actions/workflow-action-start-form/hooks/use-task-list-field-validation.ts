@@ -1,10 +1,10 @@
 import { useWatch, type FieldPath } from 'react-hook-form';
 
 import useDebouncedValue from '@/hooks/use-debounced-value/use-debounced-value';
+import useDescribeTaskList from '@/views/shared/hooks/use-describe-task-list/use-describe-task-list';
 
 import getTaskListCaptionMessage from '../helpers/get-task-list-caption-message';
 
-import useDescribeTaskList from './use-describe-task-list';
 import { TASK_LIST_DEBOUNCE_MS } from './use-describe-task-list.constants';
 import {
   type TaskListFieldValues,

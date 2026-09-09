@@ -24,6 +24,7 @@ jest.mock(
         key: 'testKey1',
         getLabel: () => 'Test Label 1',
         valueComponent: () => <span>Test Value 1</span>,
+        getCopyText: () => 'Test Copy Text 1',
       },
       {
         key: 'testKey2',
@@ -37,7 +38,26 @@ jest.mock(
         getLabel: () => 'Hidden Label 3',
         valueComponent: () => <span>Hidden Value 3</span>,
       },
+      {
+        key: 'testKey4',
+        getLabel: () => 'Test Label 4',
+        valueComponent: () => <span>Test Value 4</span>,
+        getCopyText: () => undefined,
+      },
     ] satisfies WorkflowSummaryDetailsConfig[]
+);
+
+jest.mock(
+  '@/components/copy-text-button/copy-text-button',
+  () =>
+    function MockCopyTextButton({
+      textToCopy,
+      ...buttonProps
+    }: {
+      textToCopy: string;
+    }) {
+      return <button {...buttonProps}>{textToCopy}</button>;
+    }
 );
 
 const params: Props['decodedPageUrlParams'] = {
@@ -57,36 +77,15 @@ const mockWorkflowDetails: DescribeWorkflowResponse = {
 };
 
 describe('WorkflowSummaryDetails', () => {
-  const formattedCloseHistoryEvent = formatWorkflowHistoryEvent(
-    completeWorkflowExecutionEvent
-  );
   it('should render workflow type name from firstHistoryEvent', () => {
-    render(
-      <WorkflowSummaryDetails
-        firstHistoryEvent={startWorkflowExecutionEvent}
-        closeHistoryEvent={completeWorkflowExecutionEvent}
-        formattedFirstHistoryEvent={mockFormattedFirstEvent}
-        formattedCloseHistoryEvent={formattedCloseHistoryEvent}
-        workflowDetails={mockWorkflowDetails}
-        decodedPageUrlParams={params}
-      />
-    );
+    setup();
 
     expect(screen.getByText(/Workflow:/)).toBeInTheDocument();
     expect(screen.getByText('workflow.cron')).toBeInTheDocument();
   });
 
   it('should render all detail rows that are not hidden', () => {
-    render(
-      <WorkflowSummaryDetails
-        firstHistoryEvent={startWorkflowExecutionEvent}
-        closeHistoryEvent={completeWorkflowExecutionEvent}
-        formattedFirstHistoryEvent={mockFormattedFirstEvent}
-        formattedCloseHistoryEvent={formattedCloseHistoryEvent}
-        workflowDetails={mockWorkflowDetails}
-        decodedPageUrlParams={params}
-      />
-    );
+    setup();
 
     expect(screen.getByText('Test Label 1')).toBeInTheDocument();
     expect(screen.getByText('Test Value 1')).toBeInTheDocument();
@@ -95,18 +94,43 @@ describe('WorkflowSummaryDetails', () => {
   });
 
   it('should not render detail rows that are hidden', () => {
-    render(
-      <WorkflowSummaryDetails
-        firstHistoryEvent={startWorkflowExecutionEvent}
-        closeHistoryEvent={completeWorkflowExecutionEvent}
-        formattedFirstHistoryEvent={mockFormattedFirstEvent}
-        formattedCloseHistoryEvent={formattedCloseHistoryEvent}
-        workflowDetails={mockWorkflowDetails}
-        decodedPageUrlParams={params}
-      />
-    );
+    setup();
 
     expect(screen.queryByText('Hidden Label 3')).not.toBeInTheDocument();
     expect(screen.queryByText('Hidden Value 3')).not.toBeInTheDocument();
   });
+
+  it('should render a copy button for rows that provide copy text', () => {
+    setup();
+
+    expect(
+      screen.getByRole('button', { name: 'Copy Test Label 1' })
+    ).toHaveTextContent('Test Copy Text 1');
+  });
+
+  it('should not render a copy button for rows without copy text', () => {
+    setup();
+
+    expect(
+      screen.queryByRole('button', { name: 'Copy Test Label 2' })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'Copy Test Label 4' })
+    ).not.toBeInTheDocument();
+  });
 });
+
+function setup() {
+  render(
+    <WorkflowSummaryDetails
+      firstHistoryEvent={startWorkflowExecutionEvent}
+      closeHistoryEvent={completeWorkflowExecutionEvent}
+      formattedFirstHistoryEvent={mockFormattedFirstEvent}
+      formattedCloseHistoryEvent={formatWorkflowHistoryEvent(
+        completeWorkflowExecutionEvent
+      )}
+      workflowDetails={mockWorkflowDetails}
+      decodedPageUrlParams={params}
+    />
+  );
+}

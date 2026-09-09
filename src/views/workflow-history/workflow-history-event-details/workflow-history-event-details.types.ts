@@ -17,6 +17,7 @@ export type EventDetailsValueComponentProps = {
   entryPath: string;
   entryValue: any;
   isNegative?: boolean;
+  eventType?: string;
 } & WorkflowPageParams;
 
 /**
@@ -72,6 +73,7 @@ type EventDetailsEntryBase = {
   path: string;
   isGroup?: boolean;
   isNegative?: boolean;
+  eventType?: string;
   renderConfig: EventDetailsConfig | null;
 };
 

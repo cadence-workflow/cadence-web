@@ -36,7 +36,9 @@ import {
  *   - For more details, see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#comparefn
  *
  * @returns A tuple [mergedQueryResults, queryResults]:
- *   - `mergedQueryResults`: The merged and sorted results from all queries.
+ *   - `mergedQueryResults`: The merged and sorted results from all queries. Its `hasNextPage`
+ *     covers both already fetched items that are not displayed yet and pages that are still
+ *     unfetched, so it stays true for as long as `fetchNextPage` can add items to `data`.
  *   - `queryResults`: An array containing individual results from each query.
  */
 export default function useMergedInfiniteQueries<
@@ -95,6 +97,16 @@ export default function useMergedInfiniteQueries<
     });
   }, [flattenedDataArrays, count, compare]);
 
+  // The queries fetch further ahead than what is displayed, and their pages stay in
+  // the react-query cache when the queries change, so items can be waiting to be
+  // displayed while no query has another page left to fetch.
+  const hasUndisplayedItems = useMemo(
+    () =>
+      sortedArray.length <
+      flattenedDataArrays.reduce((total, items) => total + items.length, 0),
+    [sortedArray, flattenedDataArrays]
+  );
+
   const refetchQueriesWithError = useCallback(() => {
     queryResults.forEach((res) => {
       if (res.isError) {
@@ -109,7 +121,8 @@ export default function useMergedInfiniteQueries<
     isLoading: queryResults.some((qr) => qr.isLoading),
     isFetching: queryResults.some((qr) => qr.isFetching),
     isFetchingNextPage: queryResults.some((qr) => qr.isFetchingNextPage),
-    hasNextPage: queryResults.some((qr) => qr.hasNextPage),
+    hasNextPage:
+      hasUndisplayedItems || queryResults.some((qr) => qr.hasNextPage),
     fetchNextPage: getMergedFetchNextPage({
       queryResults,
       flattenedDataArrays,

@@ -39,6 +39,7 @@ export default function transformDomainSchedulesCreateFormToBody(
       workerSDKLanguage: formData.workerSDKLanguage,
       executionStartToCloseTimeoutSeconds:
         formData.executionStartToCloseTimeoutSeconds,
+      taskStartToCloseTimeoutSeconds: formData.taskStartToCloseTimeoutSeconds,
       ...(parsedInput && parsedInput.length > 0 ? { input: parsedInput } : {}),
       ...(mappedRetryPolicy ? { retryPolicy: mappedRetryPolicy } : {}),
       ...(parsedMemo ? { memo: parsedMemo } : {}),
