@@ -19,7 +19,7 @@ describe(DomainBatchActionsProgressBar.name, () => {
 
     // completed = successCount + errorCount = 125
     expect(
-      screen.getByText('Terminated 125 of 200 workflows:')
+      screen.getByText('Terminated 125 of 200 workflows (62.5%):')
     ).toBeInTheDocument();
   });
 
@@ -27,7 +27,7 @@ describe(DomainBatchActionsProgressBar.name, () => {
     setup({ status: 'RUNNING', progress: PROGRESS });
 
     expect(
-      screen.getByText('Processed 125 of 200 workflows:')
+      screen.getByText('Processed 125 of 200 workflows (62.5%):')
     ).toBeInTheDocument();
   });
 
@@ -43,7 +43,7 @@ describe(DomainBatchActionsProgressBar.name, () => {
     });
 
     expect(
-      screen.getByText('Terminated 92,000 of 12,472,988 workflows:')
+      screen.getByText('Terminated 92,000 of 12,472,988 workflows (0.74%):')
     ).toBeInTheDocument();
     expect(screen.getByText('92,000 succeeded')).toBeInTheDocument();
     expect(screen.getByText('12,380,988 remaining')).toBeInTheDocument();
@@ -82,7 +82,7 @@ describe(DomainBatchActionsProgressBar.name, () => {
     setup({ status: 'COMPLETED', progress: PROGRESS, actionType: 'cancel' });
 
     expect(
-      screen.getByText('Cancelled 125 of 200 workflows:')
+      screen.getByText('Cancelled 125 of 200 workflows (62.5%):')
     ).toBeInTheDocument();
     expect(screen.getByText('120 succeeded')).toBeInTheDocument();
     expect(screen.getByText('5 failed')).toBeInTheDocument();
@@ -107,7 +107,7 @@ describe(DomainBatchActionsProgressBar.name, () => {
     setup({ status: 'FAILED', progress: PROGRESS, actionType: 'terminate' });
 
     expect(
-      screen.getByText('Terminated 125 of 200 workflows:')
+      screen.getByText('Terminated 125 of 200 workflows (62.5%):')
     ).toBeInTheDocument();
     expect(screen.getByText('120 succeeded')).toBeInTheDocument();
     expect(screen.getByText('5 failed')).toBeInTheDocument();

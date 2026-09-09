@@ -8,6 +8,7 @@ import { MdCheckCircle, MdHourglassTop, MdWarning } from 'react-icons/md';
 
 import formatInteger from '@/utils/data-formatters/format-integer';
 
+import formatBatchActionProgressPercent from '../helpers/format-batch-action-progress-percent';
 import getStatIconColor from '../helpers/get-stat-icon-color';
 import getStatusBackgroundColor from '../helpers/get-status-background-color';
 
@@ -81,7 +82,7 @@ export default function DomainBatchActionsProgressBar({
       />
       <styled.Label>
         <styled.LabelText>
-          {`${verb} ${formatInteger(completed)} of ${formatInteger(total)} workflows:`}
+          {`${verb} ${formatInteger(completed)} of ${formatInteger(total)} workflows (${formatBatchActionProgressPercent(completed, total)}):`}
         </styled.LabelText>
         <styled.Stat>
           <MdCheckCircle
