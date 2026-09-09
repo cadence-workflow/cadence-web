@@ -129,7 +129,7 @@ describe(DomainBatchActionsProgressBar.name, () => {
       startTime: now - 30_000,
     });
 
-    expect(screen.getByText('75 remaining · ~18s left')).toBeInTheDocument();
+    expect(screen.getByText('75 remaining (ETA: ~18s)')).toBeInTheDocument();
   });
 });
 
