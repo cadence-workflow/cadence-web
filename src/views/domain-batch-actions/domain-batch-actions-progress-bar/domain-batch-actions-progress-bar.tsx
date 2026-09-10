@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { useStyletron } from 'baseui';
 import { mergeOverrides } from 'baseui/helpers/overrides';
@@ -47,6 +47,16 @@ export default function DomainBatchActionsProgressBar({
   const showProgressBar =
     status === 'RUNNING' ||
     ((status === 'COMPLETED' || status === 'FAILED') && hasProgress);
+  const eta = useMemo(
+    () =>
+      getBatchActionEtaDuration({
+        status,
+        remaining,
+        completed,
+        startTime,
+      }),
+    [status, remaining, completed, startTime]
+  );
 
   if (!showProgressBar) {
     return null;
@@ -73,12 +83,6 @@ export default function DomainBatchActionsProgressBar({
 
   const isTerminal = status === 'COMPLETED' || status === 'FAILED';
   const remainingLabel = isTerminal ? 'skipped' : 'remaining';
-  const eta = getBatchActionEtaDuration({
-    status,
-    remaining,
-    completed,
-    startTime,
-  });
   const remainingText = `${formatInteger(remaining)} ${remainingLabel}`;
 
   return (
