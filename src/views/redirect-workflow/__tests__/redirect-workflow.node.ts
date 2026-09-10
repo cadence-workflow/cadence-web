@@ -70,7 +70,7 @@ describe(RedirectWorkflow.name, () => {
     },
     {
       name: 'should encode special characters exactly once',
-      urlParams: ['mock domain', 'mock-cluster', 'mock/wfid@1'],
+      urlParams: ['mock%20domain', 'mock-cluster', 'mock%2Fwfid%401'],
       expectedRedirect:
         '/domains/mock%20domain/mock-cluster/workflows/mock%2Fwfid%401/mock-runid',
       expectedRequestUrl:
