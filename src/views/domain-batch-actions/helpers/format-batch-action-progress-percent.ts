@@ -1,5 +1,5 @@
 const MAXIMUM_FRACTION_DIGITS = 2;
-const MINIMUM_DISPLAYED_PERCENT = 10 ** -MAXIMUM_FRACTION_DIGITS / 100;
+const MINIMUM_DISPLAYED_PROGRESS = 10 ** -MAXIMUM_FRACTION_DIGITS / 100;
 
 export default function formatBatchActionProgressPercent(
   completed: number,
@@ -18,7 +18,7 @@ export default function formatBatchActionProgressPercent(
   const formattedProgress = formatter.format(progress);
 
   if (completed > 0 && formattedProgress === formatter.format(0)) {
-    return `<${formatter.format(MINIMUM_DISPLAYED_PERCENT)}`;
+    return `<${formatter.format(MINIMUM_DISPLAYED_PROGRESS)}`;
   }
 
   return formattedProgress;
