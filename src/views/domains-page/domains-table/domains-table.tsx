@@ -2,6 +2,7 @@
 import React, { useContext, useMemo } from 'react';
 
 import PageSection from '@/components/page-section/page-section';
+import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import TableVirtualized from '@/components/table-virtualized/table-virtualized';
 import usePageQueryParams from '@/hooks/use-page-query-params/use-page-query-params';
 import sortBy, {
@@ -21,6 +22,11 @@ import { type Props } from './domains-table.types';
 function DomainsTable({
   domains,
   tableColumns = domainsTableColumnsConfig,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
+  isLoading,
+  error,
 }: Props) {
   const [queryParams, setQueryParams] = usePageQueryParams(
     domainsPageQueryParamsConfig,
@@ -49,6 +55,10 @@ function DomainsTable({
     );
   }, [filteredDomains, queryParams.sortColumn, queryParams.sortOrder]);
 
+  if (isLoading) {
+    return <SectionLoadingIndicator />;
+  }
+
   return (
     <PageSection>
       <TableVirtualized
@@ -71,10 +81,10 @@ function DomainsTable({
         endMessageProps={{
           kind: 'infinite-scroll',
           hasData: sortedDomains.length > 0,
-          hasNextPage: false,
-          fetchNextPage: () => {},
-          isFetchingNextPage: false,
-          error: null,
+          hasNextPage: hasNextPage,
+          fetchNextPage: fetchNextPage,
+          isFetchingNextPage: isFetchingNextPage,
+          error: error,
         }}
       />
     </PageSection>

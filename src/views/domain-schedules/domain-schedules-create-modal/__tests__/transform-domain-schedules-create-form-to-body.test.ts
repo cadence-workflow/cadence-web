@@ -38,8 +38,26 @@ describe(transformDomainSchedulesCreateFormToBody.name, () => {
         taskList: { name: 'demo-tl' },
         workerSDKLanguage: 'GO',
         executionStartToCloseTimeoutSeconds: 3600,
+        taskStartToCloseTimeoutSeconds: undefined,
       },
     });
+  });
+
+  it('includes a task start-to-close timeout when the form has one', () => {
+    const result = transformDomainSchedulesCreateFormToBody({
+      ...mockDomainSchedulesCreateFormData,
+      taskStartToCloseTimeoutSeconds: 30,
+    });
+
+    expect(result.startWorkflow.taskStartToCloseTimeoutSeconds).toBe(30);
+  });
+
+  it('omits the task start-to-close timeout when the form has none', () => {
+    const result = transformDomainSchedulesCreateFormToBody(
+      mockDomainSchedulesCreateFormData
+    );
+
+    expect(result.startWorkflow.taskStartToCloseTimeoutSeconds).toBeUndefined();
   });
 
   it('includes parsed JSON inputs when provided', () => {
