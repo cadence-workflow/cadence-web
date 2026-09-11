@@ -6,10 +6,22 @@ import { type PageQueryParamValues } from '@/hooks/use-page-query-params/use-pag
 
 import { getDomainObj } from '../../__fixtures__/domains';
 import { mockDomainsPageQueryParamsValues } from '../../__fixtures__/domains-page-query-params';
+import domainsPageFiltersConfig from '../../config/domains-page-filters.config';
 import type domainsPageQueryParamsConfig from '../../config/domains-page-query-params.config';
 import { DomainsPageContext } from '../../domains-page-context-provider/domains-page-context-provider';
-import { type DomainData } from '../../domains-page.types';
+import { type DomainsPageContextType } from '../../domains-page-context-provider/domains-page-context-provider.types';
+import {
+  type DomainData,
+  type FilteredDomains,
+} from '../../domains-page.types';
+import getFilteredDomains from '../../helpers/get-filtered-domains';
 import useFilteredDomains from '../use-filtered-domains';
+
+jest.mock('../../config/domains-page-filters.config', () => [
+  { filterFunc: () => true },
+]);
+
+jest.mock('../../helpers/get-filtered-domains', () => jest.fn());
 
 const mockUsePageQueryParams = jest.fn();
 jest.mock('@/hooks/use-page-query-params/use-page-query-params', () => ({
@@ -17,44 +29,87 @@ jest.mock('@/hooks/use-page-query-params/use-page-query-params', () => ({
   default: (...args: Array<unknown>) => mockUsePageQueryParams(...args),
 }));
 
-const domains: Array<DomainData> = [
+const mockGetFilteredDomains = jest.mocked(getFilteredDomains);
+
+const mockDomains: Array<DomainData> = [
   getDomainObj({ id: '1', name: 'alpha-domain' }),
   getDomainObj({ id: '2', name: 'beta-domain' }),
 ];
 
-describe(useFilteredDomains.name, () => {
-  it('returns all domains and the total count when nothing narrows the list', () => {
-    const { result } = setup({});
+const mockPageCtx: DomainsPageContextType = {
+  pageConfig: {
+    CLUSTERS_PUBLIC: [
+      { clusterName: 'cluster-a' },
+      { clusterName: 'cluster-b' },
+    ],
+  },
+};
 
-    expect(result.current.filteredDomains).toHaveLength(2);
-    expect(result.current.totalCount).toBe(2);
+const mockFilteredDomainsResult: FilteredDomains = {
+  filteredDomains: [mockDomains[0]],
+  totalCount: 2,
+};
+
+describe(useFilteredDomains.name, () => {
+  it('calls getFilteredDomains with the domains, query params, page context and filters config', () => {
+    setup({ queryParams: { searchText: 'alpha', showDeprecated: true } });
+
+    expect(mockGetFilteredDomains).toHaveBeenCalledWith({
+      domains: mockDomains,
+      queryParams: {
+        ...mockDomainsPageQueryParamsValues,
+        searchText: 'alpha',
+        showDeprecated: true,
+      },
+      pageCtx: mockPageCtx,
+      filtersConfig: domainsPageFiltersConfig,
+    });
   });
 
-  it('narrows the filtered list by search text while the total count stays the same', () => {
-    const { result } = setup({ searchText: 'alpha' });
+  it('returns the result from getFilteredDomains', () => {
+    const { result } = setup({});
 
-    expect(result.current.filteredDomains.map((d) => d.id)).toEqual(['1']);
-    expect(result.current.totalCount).toBe(2);
+    expect(result.current).toEqual(mockFilteredDomainsResult);
+  });
+
+  it('recomputes when the domains change', () => {
+    const { rerender } = setup({});
+    const newDomains = [getDomainObj({ id: '3', name: 'gamma-domain' })];
+
+    rerender({ domains: newDomains });
+
+    expect(mockGetFilteredDomains).toHaveBeenLastCalledWith(
+      expect.objectContaining({ domains: newDomains })
+    );
   });
 });
 
-function setup(
-  queryParams: Partial<
+function setup({
+  domains = mockDomains,
+  queryParams,
+}: {
+  domains?: Array<DomainData>;
+  queryParams?: Partial<
     PageQueryParamValues<typeof domainsPageQueryParamsConfig>
-  >
-) {
+  >;
+}) {
   mockUsePageQueryParams.mockReturnValue([
     { ...mockDomainsPageQueryParamsValues, ...queryParams },
     jest.fn(),
   ]);
+  mockGetFilteredDomains.mockReturnValue(mockFilteredDomainsResult);
 
-  return renderHook(() => useFilteredDomains(domains), undefined, {
-    wrapper: ({ children }) => (
-      <DomainsPageContext.Provider
-        value={{ pageConfig: { CLUSTERS_PUBLIC: [] } }}
-      >
-        {children}
-      </DomainsPageContext.Provider>
-    ),
-  });
+  return renderHook(
+    (props?: { domains: Array<DomainData> }) =>
+      useFilteredDomains(props?.domains ?? domains),
+    undefined,
+    {
+      initialProps: { domains },
+      wrapper: ({ children }) => (
+        <DomainsPageContext.Provider value={mockPageCtx}>
+          {children}
+        </DomainsPageContext.Provider>
+      ),
+    }
+  );
 }

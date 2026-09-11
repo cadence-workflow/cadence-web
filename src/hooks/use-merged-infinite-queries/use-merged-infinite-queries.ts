@@ -2,6 +2,8 @@ import { useMemo, useState, useEffect, useCallback } from 'react';
 
 import {
   InfiniteQueryObserver,
+  type DefaultedInfiniteQueryObserverOptions,
+  type InfiniteData,
   type QueryKey,
   useQueryClient,
 } from '@tanstack/react-query';
@@ -56,17 +58,42 @@ export default function useMergedInfiniteQueries<
   Array<SingleInfiniteQueryResult<TResponse>>,
 ] {
   const [count, setCount] = useState(pageSize);
+  const queryClient = useQueryClient();
+
+  // Created synchronously (and memoised) rather than inside the effect below, so that
+  // the lazy useState initialiser for queryResults can use them to compute each query's
+  // optimistic result before the first commit, the same way TanStack's useBaseQuery does.
+  const observers = useMemo(
+    () => (queries || []).map((q) => new InfiniteQueryObserver(queryClient, q)),
+    [queries, queryClient]
+  );
 
   const [queryResults, setQueryResults] = useState<
     Array<SingleInfiniteQueryResult<TResponse>>
-  >([]);
-  const queryClient = useQueryClient();
+  >(() =>
+    observers.map((observer, index) => {
+      // queryClient.defaultQueryOptions() always returns the base
+      // DefaultedQueryObserverOptions type (it does not vary its return type based on
+      // whether the input included infinite-query-only fields like getNextPageParam),
+      // even though the defaulted object it returns does carry those fields through from
+      // `queries[index]`. This mirrors what TanStack's own useBaseQuery does internally.
+      const defaultedOptions = {
+        ...queryClient.defaultQueryOptions(queries[index]),
+        _optimisticResults: 'optimistic',
+      } as DefaultedInfiniteQueryObserverOptions<
+        TResponse,
+        Error,
+        InfiniteData<TResponse, TPageParam>,
+        TResponse,
+        TQueryKey,
+        TPageParam
+      >;
+      return observer.getOptimisticResult(defaultedOptions);
+    })
+  );
 
   useEffect(() => {
     setCount(pageSize);
-    const observers = (queries || []).map((q) => {
-      return new InfiniteQueryObserver(queryClient, q);
-    });
 
     setQueryResults(observers.map((ob) => ob.getCurrentResult()));
 
@@ -80,7 +107,7 @@ export default function useMergedInfiniteQueries<
       })
     );
     return () => unsubscribes.forEach((unsubscribe) => unsubscribe());
-  }, [queries, queryClient, pageSize]);
+  }, [observers, pageSize]);
 
   const flattenedDataArrays: Array<Array<TData>> = useMemo(() => {
     return queryResults.map((queryResult) => {
