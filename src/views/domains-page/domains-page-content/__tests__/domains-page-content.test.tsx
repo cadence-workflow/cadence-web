@@ -1,14 +1,21 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 
-import { render, screen, userEvent } from '@/test-utils/rtl';
+import { HttpResponse, type HttpResponseResolver } from 'msw';
+
+import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
+
+import { type ListDomainsResponse } from '@/route-handlers/list-domains/list-domains.types';
+import type { HttpEndpointMock } from '@/test-utils/msw-mock-handlers/msw-mock-handlers.types';
 
 import { getDomainObj } from '../../__fixtures__/domains';
 import { type Props as ErrorBannerProps } from '../../domains-page-error-banner/domains-page-error-banner.types';
 import { type Props as BadgeProps } from '../../domains-page-title-badge/domains-page-title-badge.types';
-import { type FilteredDomains } from '../../domains-page.types';
+import {
+  type DomainData,
+  type FilteredDomains,
+} from '../../domains-page.types';
 import { type Props as DomainsTableProps } from '../../domains-table/domains-table.types';
 import useFilteredDomains from '../../hooks/use-filtered-domains';
-import useListDomains from '../../hooks/use-list-domains';
 import DomainsPageContent from '../domains-page-content';
 
 jest.mock('../../domains-page-title/domains-page-title', () =>
@@ -64,127 +71,235 @@ jest.mock('../../domains-table/domains-table', () =>
   )
 );
 
-jest.mock('../../hooks/use-list-domains', () => jest.fn());
 jest.mock('../../hooks/use-filtered-domains', () => jest.fn());
 
-const mockUseListDomains = jest.mocked(useListDomains);
 const mockUseFilteredDomains = jest.mocked(useFilteredDomains);
 
-type ListDomainsResult = ReturnType<typeof useListDomains>;
+const passThroughFilter = (domains: Array<DomainData>): FilteredDomains => ({
+  filteredDomains: domains,
+  totalCount: domains.length,
+});
 
-const mockDomains = [
-  getDomainObj({ id: '1', name: 'alpha-domain' }),
-  getDomainObj({ id: '2', name: 'bravo-domain' }),
-  getDomainObj({ id: '3', name: 'charlie-domain' }),
+const mockClusterA = [
+  getDomainObj({
+    id: '1',
+    name: 'alpha-domain',
+    activeClusterName: 'cluster-a',
+  }),
+  getDomainObj({
+    id: '2',
+    name: 'charlie-domain',
+    activeClusterName: 'cluster-a',
+  }),
+];
+
+const mockClusterB = [
+  getDomainObj({
+    id: '3',
+    name: 'bravo-domain',
+    activeClusterName: 'cluster-b',
+  }),
 ];
 
 describe(DomainsPageContent.name, () => {
-  it('passes the filtered domains to the table', () => {
+  it('passes the filtered domains to the table', async () => {
     setup({});
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('domain-item')).toHaveLength(3);
+    });
 
     const names = screen
       .getAllByTestId('domain-item')
       .map((el) => el.textContent);
-    expect(names).toEqual(['alpha-domain', 'bravo-domain']);
+    expect(names).toEqual(['alpha-domain', 'bravo-domain', 'charlie-domain']);
   });
 
-  it('passes the filtered count and the total count to the title badge', () => {
+  it('derives the filtered domains from the listed domains', async () => {
     setup({});
 
-    expect(screen.getByTestId('badge-count')).toHaveTextContent('2');
-    expect(screen.getByTestId('badge-total')).toHaveTextContent('3');
+    await waitFor(() => {
+      expect(screen.getAllByTestId('domain-item')).toHaveLength(3);
+    });
+
+    const lastCallDomains = mockUseFilteredDomains.mock.lastCall?.[0] ?? [];
+    expect(lastCallDomains.map((d) => d.name)).toEqual([
+      'alpha-domain',
+      'bravo-domain',
+      'charlie-domain',
+    ]);
   });
 
-  it('passes the loading state to the badge and the table', () => {
-    setup({ listDomainsResult: { isLoading: true } });
-
-    expect(screen.getByTestId('badge-loading')).toBeInTheDocument();
-    expect(screen.getByTestId('mock-table-loading')).toBeInTheDocument();
-  });
-
-  it('passes hasNextPage to the badge and the table', () => {
-    setup({ listDomainsResult: { hasNextPage: true } });
-
-    expect(screen.getByTestId('badge-has-next-page')).toHaveTextContent('true');
-    expect(screen.getByTestId('has-next-page')).toHaveTextContent('true');
-  });
-
-  it('wires fetchNextPage to the table', async () => {
-    const { user, listDomainsResult } = setup({});
-
-    await user.click(screen.getByRole('button', { name: 'fetch next page' }));
-
-    expect(listDomainsResult.fetchNextPage).toHaveBeenCalledTimes(1);
-  });
-
-  it('passes failed clusters to the error banner', () => {
+  it('passes the filtered count and the total count to the title badge', async () => {
     setup({
-      listDomainsResult: {
-        failedClusters: [{ clusterName: 'cluster-b', httpStatus: 503 }],
+      filterDomains: (domains) => ({
+        filteredDomains: domains.slice(0, 1),
+        totalCount: domains.length,
+      }),
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('badge-total')).toHaveTextContent('3');
+    });
+    expect(screen.getByTestId('badge-count')).toHaveTextContent('1');
+    expect(screen.getAllByTestId('domain-item')).toHaveLength(1);
+  });
+
+  it('shows the loading state in the badge and the table until domains arrive', async () => {
+    let releaseClusterA: () => void = () => {};
+    const clusterAGate = new Promise<void>((resolve) => {
+      releaseClusterA = resolve;
+    });
+
+    setup({
+      clusterAResolver: async () => {
+        await clusterAGate;
+        return HttpResponse.json({
+          domains: mockClusterA,
+          nextPage: '',
+        } satisfies ListDomainsResponse);
       },
     });
 
-    expect(screen.getByTestId('mock-error-banner')).toHaveTextContent(
-      'cluster-b'
-    );
+    expect(await screen.findByTestId('badge-loading')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-table-loading')).toBeInTheDocument();
+
+    releaseClusterA();
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('domain-item')).toHaveLength(3);
+    });
+    expect(screen.queryByTestId('badge-loading')).not.toBeInTheDocument();
   });
 
-  it('does not render the error banner when no cluster failed', () => {
+  it('passes hasNextPage to the badge and the table, and wires fetchNextPage to the table', async () => {
+    let clusterACallCount = 0;
+    const clusterAResolver: HttpResponseResolver = ({ request }) => {
+      clusterACallCount += 1;
+      const nextPage = new URL(request.url).searchParams.get('nextPage');
+
+      if (!nextPage) {
+        return HttpResponse.json({
+          domains: [mockClusterA[0]],
+          nextPage: 'page-2',
+        } satisfies ListDomainsResponse);
+      }
+
+      return HttpResponse.json({ message: 'Server error' }, { status: 500 });
+    };
+
+    const { user } = setup({ clusterAResolver });
+
+    // Page 1 succeeds and the eager load of page 2 fails, so a next page is
+    // still pending and no further requests are made automatically.
+    await waitFor(() => {
+      expect(clusterACallCount).toBe(2);
+    });
+    expect(screen.getByTestId('badge-has-next-page')).toHaveTextContent('true');
+    expect(screen.getByTestId('has-next-page')).toHaveTextContent('true');
+
+    await user.click(screen.getByRole('button', { name: 'fetch next page' }));
+
+    await waitFor(() => {
+      expect(clusterACallCount).toBe(3);
+    });
+  });
+
+  it('passes failed clusters to the error banner', async () => {
+    setup({
+      clusterBResolver: () =>
+        HttpResponse.json(
+          { message: 'Server error', cluster: 'cluster-b' },
+          { status: 503 }
+        ),
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('mock-error-banner')).toHaveTextContent(
+        'cluster-b'
+      );
+    });
+    expect(screen.getAllByTestId('domain-item')).toHaveLength(2);
+  });
+
+  it('does not render the error banner when every cluster loads', async () => {
     setup({});
 
+    await waitFor(() => {
+      expect(screen.getAllByTestId('domain-item')).toHaveLength(3);
+    });
     expect(screen.queryByTestId('mock-error-banner')).not.toBeInTheDocument();
   });
 
-  it('renders the filters', () => {
+  it('renders the filters', async () => {
     setup({});
 
-    expect(screen.getByTestId('mock-filters')).toBeInTheDocument();
-  });
-
-  it('derives the filtered domains from the listed domains', () => {
-    const { listDomainsResult } = setup({});
-
-    expect(mockUseFilteredDomains).toHaveBeenCalledWith(listDomainsResult.data);
+    await waitFor(() => {
+      expect(screen.getByTestId('mock-filters')).toBeInTheDocument();
+    });
   });
 });
 
 function setup({
-  listDomainsResult,
-  filteredDomains,
+  clusterADomains = mockClusterA,
+  clusterBDomains = mockClusterB,
+  clusterAResolver,
+  clusterBResolver,
+  filterDomains = passThroughFilter,
 }: {
-  listDomainsResult?: Partial<ListDomainsResult>;
-  filteredDomains?: Partial<FilteredDomains>;
+  clusterADomains?: typeof mockClusterA;
+  clusterBDomains?: typeof mockClusterB;
+  clusterAResolver?: HttpResponseResolver;
+  clusterBResolver?: HttpResponseResolver;
+  filterDomains?: typeof useFilteredDomains;
 }) {
   const user = userEvent.setup();
+  mockUseFilteredDomains.mockImplementation(filterDomains);
 
-  const fullListDomainsResult: ListDomainsResult = {
-    data: mockDomains,
-    failedClusters: [],
-    status: 'success',
-    isLoading: false,
-    isFetching: false,
-    isFetchingNextPage: false,
-    hasNextPage: false,
-    fetchNextPage: jest.fn(),
-    error: null,
-    refetch: jest.fn(),
-    ...listDomainsResult,
-  };
+  const endpointsMocks: HttpEndpointMock[] = [
+    {
+      path: '/api/config',
+      httpMethod: 'GET',
+      mockOnce: false,
+      jsonResponse: [
+        { clusterName: 'cluster-a' },
+        { clusterName: 'cluster-b' },
+      ],
+    },
+    {
+      path: '/api/clusters/cluster-a/domains',
+      httpMethod: 'GET',
+      mockOnce: false,
+      ...(clusterAResolver
+        ? { httpResolver: clusterAResolver }
+        : {
+            jsonResponse: {
+              domains: clusterADomains,
+              nextPage: '',
+            } satisfies ListDomainsResponse,
+          }),
+    },
+    {
+      path: '/api/clusters/cluster-b/domains',
+      httpMethod: 'GET',
+      mockOnce: false,
+      ...(clusterBResolver
+        ? { httpResolver: clusterBResolver }
+        : {
+            jsonResponse: {
+              domains: clusterBDomains,
+              nextPage: '',
+            } satisfies ListDomainsResponse,
+          }),
+    },
+  ];
 
-  const fullFilteredDomains: FilteredDomains = {
-    filteredDomains: mockDomains.slice(0, 2),
-    totalCount: 3,
-    ...filteredDomains,
-  };
+  render(
+    <Suspense fallback={<div>Loading...</div>}>
+      <DomainsPageContent />
+    </Suspense>,
+    { endpointsMocks }
+  );
 
-  mockUseListDomains.mockReturnValue(fullListDomainsResult);
-  mockUseFilteredDomains.mockReturnValue(fullFilteredDomains);
-
-  render(<DomainsPageContent />);
-
-  return {
-    user,
-    listDomainsResult: fullListDomainsResult,
-    filteredDomains: fullFilteredDomains,
-  };
+  return { user };
 }
