@@ -6,6 +6,8 @@ import { mergeOverrides } from 'baseui/helpers/overrides';
 import { ProgressBar } from 'baseui/progress-bar';
 import { MdCheckCircle, MdHourglassTop, MdWarning } from 'react-icons/md';
 
+import formatInteger from '@/utils/data-formatters/format-integer';
+
 import getStatIconColor from '../helpers/get-stat-icon-color';
 import getStatusBackgroundColor from '../helpers/get-status-background-color';
 
@@ -79,28 +81,28 @@ export default function DomainBatchActionsProgressBar({
       />
       <styled.Label>
         <styled.LabelText>
-          {`${verb} ${completed} of ${total} workflows:`}
+          {`${verb} ${formatInteger(completed)} of ${formatInteger(total)} workflows:`}
         </styled.LabelText>
         <styled.Stat>
           <MdCheckCircle
             size={iconSize}
             color={getStatIconColor('positive', false, theme)}
           />
-          {`${successCount} succeeded`}
+          {`${formatInteger(successCount)} succeeded`}
         </styled.Stat>
         <styled.Stat $muted={failedMuted}>
           <MdWarning
             size={iconSize}
             color={getStatIconColor('warning', failedMuted, theme)}
           />
-          {`${errorCount} failed`}
+          {`${formatInteger(errorCount)} failed`}
         </styled.Stat>
         <styled.Stat $muted={remainingMuted}>
           <MdHourglassTop
             size={iconSize}
             color={getStatIconColor('neutral', remainingMuted, theme)}
           />
-          {`${remaining} ${remainingLabel}`}
+          {`${formatInteger(remaining)} ${remainingLabel}`}
         </styled.Stat>
       </styled.Label>
     </styled.Container>
