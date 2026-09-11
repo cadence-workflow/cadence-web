@@ -88,9 +88,5 @@ export default function useListDomains() {
     [individualResults, clusters]
   );
 
-  return {
-    ...mergedResults,
-    data: uniqueData,
-    failedClusters,
-  };
+  return { ...mergedResults, data: uniqueData, failedClusters };
 }

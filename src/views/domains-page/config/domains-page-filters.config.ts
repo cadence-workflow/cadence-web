@@ -33,6 +33,7 @@ const domainsPageFiltersConfig: [
     }),
     component: DomainsPageFilterDeprecated,
     mini: true,
+    deductFilteredResultFromTotal: true,
   },
 ] as const;
 
