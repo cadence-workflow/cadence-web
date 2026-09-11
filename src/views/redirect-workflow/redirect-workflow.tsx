@@ -8,12 +8,16 @@ import { RequestError } from '@/utils/request/request-error';
 import { type Props } from './redirect-workflow.types';
 
 export default async function RedirectWorkflow(props: Props) {
-  const [domain, cluster, workflowId, ...restParams] =
+  const [encodedDomain, encodedCluster, encodedWorkflowId, ...restParams] =
     props.params.workflowParams;
 
-  if (!domain || !cluster || !workflowId) {
+  if (!encodedDomain || !encodedCluster || !encodedWorkflowId) {
     throw new Error('Invalid workflow URL param');
   }
+
+  const domain = decodeURIComponent(encodedDomain);
+  const cluster = decodeURIComponent(encodedCluster);
+  const workflowId = decodeURIComponent(encodedWorkflowId);
 
   let runId: string | null | undefined;
 
