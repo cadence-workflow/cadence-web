@@ -1,4 +1,5 @@
 import { getDomainObj } from '../../__fixtures__/domains';
+import { mockDomainsPageFiltersConfig } from '../../__fixtures__/domains-page-filters-config';
 import { mockDomainsPageQueryParamsValues } from '../../__fixtures__/domains-page-query-params';
 import { type DomainsPageContextType } from '../../domains-page-context-provider/domains-page-context-provider.types';
 import { type DomainData } from '../../domains-page.types';
@@ -21,6 +22,7 @@ describe(getFilteredDomains.name, () => {
       domains,
       queryParams: mockDomainsPageQueryParamsValues,
       pageCtx,
+      filtersConfig: mockDomainsPageFiltersConfig,
     });
 
     expect(result.filteredDomains.map((d) => d.id)).toEqual(['1']);
@@ -44,6 +46,7 @@ describe(getFilteredDomains.name, () => {
         showDeprecated: true,
       },
       pageCtx,
+      filtersConfig: mockDomainsPageFiltersConfig,
     });
 
     expect(result.filteredDomains.map((d) => d.id).sort()).toEqual(['1', '2']);
@@ -60,6 +63,7 @@ describe(getFilteredDomains.name, () => {
       domains,
       queryParams: { ...mockDomainsPageQueryParamsValues, searchText: 'alpha' },
       pageCtx,
+      filtersConfig: mockDomainsPageFiltersConfig,
     });
 
     expect(result.filteredDomains.map((d) => d.id)).toEqual(['1']);
@@ -78,6 +82,7 @@ describe(getFilteredDomains.name, () => {
         searchText: 'ABC123',
       },
       pageCtx,
+      filtersConfig: mockDomainsPageFiltersConfig,
     });
     expect(exactMatch.filteredDomains.map((d) => d.id)).toEqual(['abc123']);
 
@@ -85,6 +90,7 @@ describe(getFilteredDomains.name, () => {
       domains,
       queryParams: { ...mockDomainsPageQueryParamsValues, searchText: 'abc' },
       pageCtx,
+      filtersConfig: mockDomainsPageFiltersConfig,
     });
     expect(partialMatch.filteredDomains).toEqual([]);
   });
@@ -110,13 +116,14 @@ describe(getFilteredDomains.name, () => {
         clusterName: 'clusterA',
       },
       pageCtx,
+      filtersConfig: mockDomainsPageFiltersConfig,
     });
 
     expect(result.filteredDomains.map((d) => d.id)).toEqual(['1']);
     expect(result.totalCount).toBe(2);
   });
 
-  it('combines search text with the deprecated scope filter', () => {
+  it('combines search text with the filter deducted from the total', () => {
     const domains: Array<DomainData> = [
       getDomainObj({ id: '1', name: 'alpha-domain' }),
       getDomainObj({
@@ -130,6 +137,7 @@ describe(getFilteredDomains.name, () => {
       domains,
       queryParams: { ...mockDomainsPageQueryParamsValues, searchText: 'alpha' },
       pageCtx,
+      filtersConfig: mockDomainsPageFiltersConfig,
     });
     expect(hiddenDeprecated.filteredDomains.map((d) => d.id)).toEqual(['1']);
     expect(hiddenDeprecated.totalCount).toBe(1);
@@ -142,11 +150,50 @@ describe(getFilteredDomains.name, () => {
         showDeprecated: true,
       },
       pageCtx,
+      filtersConfig: mockDomainsPageFiltersConfig,
     });
     expect(shownDeprecated.filteredDomains.map((d) => d.id).sort()).toEqual([
       '1',
       '2',
     ]);
     expect(shownDeprecated.totalCount).toBe(2);
+  });
+
+  it('counts and returns every domain when there are no filters', () => {
+    const domains: Array<DomainData> = [
+      getDomainObj({ id: '1', name: 'alpha-domain' }),
+      getDomainObj({
+        id: '2',
+        name: 'beta-domain',
+        status: 'DOMAIN_STATUS_DEPRECATED',
+      }),
+    ];
+
+    const result = getFilteredDomains({
+      domains,
+      queryParams: mockDomainsPageQueryParamsValues,
+      pageCtx,
+      filtersConfig: [],
+    });
+
+    expect(result.filteredDomains.map((d) => d.id).sort()).toEqual(['1', '2']);
+    expect(result.totalCount).toBe(2);
+  });
+
+  it('search text still narrows the list when there are no filters', () => {
+    const domains: Array<DomainData> = [
+      getDomainObj({ id: '1', name: 'alpha-domain' }),
+      getDomainObj({ id: '2', name: 'beta-domain' }),
+    ];
+
+    const result = getFilteredDomains({
+      domains,
+      queryParams: { ...mockDomainsPageQueryParamsValues, searchText: 'alpha' },
+      pageCtx,
+      filtersConfig: [],
+    });
+
+    expect(result.filteredDomains.map((d) => d.id)).toEqual(['1']);
+    expect(result.totalCount).toBe(2);
   });
 });
