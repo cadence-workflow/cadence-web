@@ -7,3 +7,5 @@ export const BATCH_ACTION_PROGRESS_VERB: Record<BatchActionType, string> = {
 };
 
 export const DEFAULT_BATCH_ACTION_PROGRESS_VERB = 'Processed';
+
+export const BATCH_ACTION_ETA_MINIMUM_ELAPSED_MS = 15_000;

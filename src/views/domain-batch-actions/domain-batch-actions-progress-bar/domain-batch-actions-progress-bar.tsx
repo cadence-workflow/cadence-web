@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { useStyletron } from 'baseui';
 import { mergeOverrides } from 'baseui/helpers/overrides';
@@ -9,6 +9,7 @@ import { MdCheckCircle, MdHourglassTop, MdWarning } from 'react-icons/md';
 import formatInteger from '@/utils/data-formatters/format-integer';
 
 import formatBatchActionProgressPercent from '../helpers/format-batch-action-progress-percent';
+import getBatchActionEtaDuration from '../helpers/get-batch-action-eta-duration';
 import getStatIconColor from '../helpers/get-stat-icon-color';
 import getStatusBackgroundColor from '../helpers/get-status-background-color';
 
@@ -23,6 +24,7 @@ export default function DomainBatchActionsProgressBar({
   status,
   progress,
   actionType,
+  startTime,
 }: Props) {
   const [, theme] = useStyletron();
 
@@ -45,6 +47,16 @@ export default function DomainBatchActionsProgressBar({
   const showProgressBar =
     status === 'RUNNING' ||
     ((status === 'COMPLETED' || status === 'FAILED') && hasProgress);
+  const eta = useMemo(
+    () =>
+      getBatchActionEtaDuration({
+        status,
+        remaining,
+        completed,
+        startTime,
+      }),
+    [status, remaining, completed, startTime]
+  );
 
   if (!showProgressBar) {
     return null;
@@ -71,6 +83,7 @@ export default function DomainBatchActionsProgressBar({
 
   const isTerminal = status === 'COMPLETED' || status === 'FAILED';
   const remainingLabel = isTerminal ? 'skipped' : 'remaining';
+  const remainingText = `${formatInteger(remaining)} ${remainingLabel}`;
 
   return (
     <styled.Container>
@@ -103,7 +116,7 @@ export default function DomainBatchActionsProgressBar({
             size={iconSize}
             color={getStatIconColor('neutral', remainingMuted, theme)}
           />
-          {`${formatInteger(remaining)} ${remainingLabel}`}
+          {eta ? `${remainingText} (ETA: ~${eta})` : remainingText}
         </styled.Stat>
       </styled.Label>
     </styled.Container>

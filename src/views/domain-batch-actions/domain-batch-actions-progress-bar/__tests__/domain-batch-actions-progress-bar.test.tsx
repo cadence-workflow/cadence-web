@@ -120,18 +120,31 @@ describe(DomainBatchActionsProgressBar.name, () => {
     expect(screen.queryByText(/workflows:/)).not.toBeInTheDocument();
     expect(screen.queryByText('Calculating progress…')).not.toBeInTheDocument();
   });
+
+  it('renders an observed-rate ETA after the minimum elapsed time', () => {
+    const now = Date.now();
+    setup({
+      status: 'RUNNING',
+      progress: PROGRESS,
+      startTime: now - 30_000,
+    });
+
+    expect(screen.getByText('75 remaining (ETA: ~18s)')).toBeInTheDocument();
+  });
 });
 
 function setup({
   status = 'RUNNING',
   progress,
   actionType,
+  startTime,
 }: Partial<Props> = {}) {
   render(
     <DomainBatchActionsProgressBar
       status={status}
       progress={progress}
       actionType={actionType}
+      startTime={startTime}
     />
   );
 }
