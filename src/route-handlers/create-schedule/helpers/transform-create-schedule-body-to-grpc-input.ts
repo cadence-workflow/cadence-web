@@ -6,6 +6,7 @@ import getGrpcDurationFromSeconds from '@/utils/datetime/get-grpc-duration-from-
 import getGrpcTimestampFromIso from '@/utils/datetime/get-grpc-timestamp-from-iso';
 
 import processWorkflowInput from '../../start-workflow/helpers/process-workflow-input';
+import { DEFAULT_TASK_START_TO_CLOSE_TIMEOUT_SECONDS } from '../../start-workflow/start-workflow.constants';
 import { type CreateScheduleRequestBody } from '../create-schedule.types';
 
 export default function transformCreateScheduleBodyToGrpcInput({
@@ -60,6 +61,12 @@ export default function transformCreateScheduleBodyToGrpcInput({
     workflowIdPrefix: startWorkflow.workflowIdPrefix?.trim() ?? '',
     executionStartToCloseTimeout: getGrpcDurationFromSeconds(
       startWorkflow.executionStartToCloseTimeoutSeconds
+    ),
+    // Cadence rejects a scheduled start with no decision task timeout, so send
+    // the same default the start-workflow route handler applies.
+    taskStartToCloseTimeout: getGrpcDurationFromSeconds(
+      startWorkflow.taskStartToCloseTimeoutSeconds ??
+        DEFAULT_TASK_START_TO_CLOSE_TIMEOUT_SECONDS
     ),
     retryPolicy: grpcRetryPolicy,
     memo: startWorkflow.memo
