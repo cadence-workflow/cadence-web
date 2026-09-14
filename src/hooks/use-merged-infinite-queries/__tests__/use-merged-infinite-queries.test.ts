@@ -55,6 +55,13 @@ const MOCK_QUERY_CONFIG: Array<
   },
 ];
 
+// Kept as a stable reference on purpose: the hook (like its callers) expects a
+// memoised `queries` array, and an inline `[]` would be a new array on every
+// render, re-creating the observers and re-running the subscribe effect forever.
+const NO_QUERIES: Array<
+  SingleInfiniteQueryOptions<MockAPIResponse, number, [string]>
+> = [];
+
 const MOCK_QUERY_CONFIG_WITH_ERROR: Array<
   SingleInfiniteQueryOptions<MockAPIResponse, number, [string]>
 > = [
@@ -78,6 +85,53 @@ const MOCK_QUERY_CONFIG_WITH_ERROR: Array<
 ];
 
 describe(useMergedInfiniteQueries.name, () => {
+  it('reports a loading state on the very first render, before observers are subscribed', () => {
+    const renders: Array<{ status: string; isLoading: boolean }> = [];
+    renderHook(() => {
+      const res = useMergedInfiniteQueries({
+        queries: MOCK_QUERY_CONFIG,
+        pageSize: PAGE_SIZE,
+        flattenResponse: (r) => r.entries,
+        compare,
+      });
+      renders.push({ status: res[0].status, isLoading: res[0].isLoading });
+      return res;
+    });
+
+    expect(renders[0]).toEqual({ status: 'loading', isLoading: true });
+  });
+
+  it('reports an idle state on the first render when there are no queries', () => {
+    const renders: Array<{
+      status: string;
+      isLoading: boolean;
+      hasNextPage: boolean;
+      data: Array<number>;
+    }> = [];
+    renderHook(() => {
+      const res = useMergedInfiniteQueries({
+        queries: NO_QUERIES,
+        pageSize: PAGE_SIZE,
+        flattenResponse: (r) => r.entries,
+        compare,
+      });
+      renders.push({
+        status: res[0].status,
+        isLoading: res[0].isLoading,
+        hasNextPage: res[0].hasNextPage,
+        data: res[0].data,
+      });
+      return res;
+    });
+
+    expect(renders[0]).toEqual({
+      status: 'idle',
+      isLoading: false,
+      hasNextPage: false,
+      data: [],
+    });
+  });
+
   it('should merge infinite query results, and return correct loading states', async () => {
     const { result } = renderHook(() =>
       useMergedInfiniteQueries({

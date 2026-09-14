@@ -6,6 +6,7 @@ import DomainsPageFilters from '../domains-page-filters/domains-page-filters';
 import DomainsPageTitle from '../domains-page-title/domains-page-title';
 import DomainsPageTitleBadge from '../domains-page-title-badge/domains-page-title-badge';
 import DomainsTable from '../domains-table/domains-table';
+import useFilteredDomains from '../hooks/use-filtered-domains';
 import useListDomains from '../hooks/use-list-domains';
 
 export default function DomainsPageContent() {
@@ -19,15 +20,24 @@ export default function DomainsPageContent() {
     error,
   } = useListDomains();
 
+  const { filteredDomains, totalCount } = useFilteredDomains(data);
+
   return (
     <>
       <DomainsPageTitle
-        countBadge={<DomainsPageTitleBadge content={data.length} />}
+        countBadge={
+          <DomainsPageTitleBadge
+            count={filteredDomains.length}
+            totalCount={totalCount}
+            isLoading={isLoading}
+            hasNextPage={hasNextPage}
+          />
+        }
       />
       <DomainsPageFilters />
       <DomainsPageErrorBanner failedClusters={failedClusters} />
       <DomainsTable
-        domains={data}
+        domains={filteredDomains}
         fetchNextPage={fetchNextPage}
         hasNextPage={hasNextPage}
         isFetchingNextPage={isFetchingNextPage}
