@@ -63,6 +63,7 @@ export default function DomainBatchActionDetail({
             status={status}
             progress={batchAction?.progress}
             actionType={batchAction?.actionType}
+            startTime={batchAction?.startTime}
           />
         )}
       </styled.ProgressSection>

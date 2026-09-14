@@ -1,11 +1,15 @@
 'use client';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { useStyletron } from 'baseui';
 import { mergeOverrides } from 'baseui/helpers/overrides';
 import { ProgressBar } from 'baseui/progress-bar';
 import { MdCheckCircle, MdHourglassTop, MdWarning } from 'react-icons/md';
 
+import formatInteger from '@/utils/data-formatters/format-integer';
+
+import formatBatchActionProgressPercent from '../helpers/format-batch-action-progress-percent';
+import getBatchActionEtaDuration from '../helpers/get-batch-action-eta-duration';
 import getStatIconColor from '../helpers/get-stat-icon-color';
 import getStatusBackgroundColor from '../helpers/get-status-background-color';
 
@@ -20,6 +24,7 @@ export default function DomainBatchActionsProgressBar({
   status,
   progress,
   actionType,
+  startTime,
 }: Props) {
   const [, theme] = useStyletron();
 
@@ -42,6 +47,16 @@ export default function DomainBatchActionsProgressBar({
   const showProgressBar =
     status === 'RUNNING' ||
     ((status === 'COMPLETED' || status === 'FAILED') && hasProgress);
+  const eta = useMemo(
+    () =>
+      getBatchActionEtaDuration({
+        status,
+        remaining,
+        completed,
+        startTime,
+      }),
+    [status, remaining, completed, startTime]
+  );
 
   if (!showProgressBar) {
     return null;
@@ -68,6 +83,7 @@ export default function DomainBatchActionsProgressBar({
 
   const isTerminal = status === 'COMPLETED' || status === 'FAILED';
   const remainingLabel = isTerminal ? 'skipped' : 'remaining';
+  const remainingText = `${formatInteger(remaining)} ${remainingLabel}`;
 
   return (
     <styled.Container>
@@ -79,28 +95,28 @@ export default function DomainBatchActionsProgressBar({
       />
       <styled.Label>
         <styled.LabelText>
-          {`${verb} ${completed} of ${total} workflows:`}
+          {`${verb} ${formatInteger(completed)} of ${formatInteger(total)} workflows (${formatBatchActionProgressPercent(completed, total)}):`}
         </styled.LabelText>
         <styled.Stat>
           <MdCheckCircle
             size={iconSize}
             color={getStatIconColor('positive', false, theme)}
           />
-          {`${successCount} succeeded`}
+          {`${formatInteger(successCount)} succeeded`}
         </styled.Stat>
         <styled.Stat $muted={failedMuted}>
           <MdWarning
             size={iconSize}
             color={getStatIconColor('warning', failedMuted, theme)}
           />
-          {`${errorCount} failed`}
+          {`${formatInteger(errorCount)} failed`}
         </styled.Stat>
         <styled.Stat $muted={remainingMuted}>
           <MdHourglassTop
             size={iconSize}
             color={getStatIconColor('neutral', remainingMuted, theme)}
           />
-          {`${remaining} ${remainingLabel}`}
+          {eta ? `${remainingText} (ETA: ~${eta})` : remainingText}
         </styled.Stat>
       </styled.Label>
     </styled.Container>

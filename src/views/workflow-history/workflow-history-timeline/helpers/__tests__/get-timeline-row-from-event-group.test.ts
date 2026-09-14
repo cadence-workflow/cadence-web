@@ -38,6 +38,16 @@ describe(getTimelineRowFromEventGroup.name, () => {
     );
   });
 
+  it('should use shortLabel when available', () => {
+    const result = getTimelineRowFromEventGroup(
+      'test-group-id',
+      { ...mockActivityEventGroup, shortLabel: 'Activity 0: Start' },
+      0
+    );
+
+    expect(result?.label).toBe('Activity 0: Start');
+  });
+
   it('should return undefined when group.events is empty', () => {
     const groupWithNoEvents = {
       ...mockActivityEventGroup,

@@ -13,8 +13,18 @@ import { type Props } from '../domain-batch-actions-detail.types';
 jest.mock(
   '../../domain-batch-actions-progress-bar/domain-batch-actions-progress-bar',
   () =>
-    function MockProgressBar({ status }: { status: string }) {
-      return <div>Mock progress bar: {status}</div>;
+    function MockProgressBar({
+      status,
+      startTime,
+    }: {
+      status: string;
+      startTime?: number;
+    }) {
+      return (
+        <div data-testid="mock-progress-bar" data-start-time={startTime}>
+          Mock progress bar: {status}
+        </div>
+      );
     }
 );
 
@@ -96,10 +106,15 @@ describe(DomainBatchActionDetail.name, () => {
         runId: '8',
         status: 'RUNNING',
         progress: PROGRESS,
+        startTime: 123456,
       },
     });
 
     expect(screen.getByText('Mock progress bar: RUNNING')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-progress-bar')).toHaveAttribute(
+      'data-start-time',
+      '123456'
+    );
   });
 
   it('does not render the progress bar when there is no status', () => {
