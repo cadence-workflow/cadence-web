@@ -69,6 +69,8 @@ export default function useMergedInfiniteQueries<
     Array<SingleInfiniteQueryResult<TResponse>>
   >(() =>
     observers.map((observer, index) => {
+      // `_optimisticResults` is a TanStack internal, used here the same way as in useBaseQuery.
+      // The cast hides a rename from the type checker; the first-render test finds it.
       const defaultedOptions = {
         ...queryClient.defaultQueryOptions(queries[index]),
         _optimisticResults: 'optimistic',
