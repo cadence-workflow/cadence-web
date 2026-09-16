@@ -69,8 +69,14 @@ export default function useMergedInfiniteQueries<
     Array<SingleInfiniteQueryResult<TResponse>>
   >(() =>
     observers.map((observer, index) => {
-      // `_optimisticResults` is a TanStack internal, used here the same way as in useBaseQuery.
-      // The cast hides a rename from the type checker; the first-render test finds it.
+      /**
+       * _optimisticResults is a TanStack internal option, used here the same way as in useBaseQuery.
+       * With 'optimistic', the observer reports the fetch that subscribe() will start, so the first
+       * render shows loading.
+       * defaultQueryOptions() drops the infinite-query fields from its return type, hence the cast.
+       *
+       * @see https://github.com/TanStack/query/blob/v5.51.1/packages/react-query/src/useBaseQuery.ts#L57-L59
+       */
       const defaultedOptions = {
         ...queryClient.defaultQueryOptions(queries[index]),
         _optimisticResults: 'optimistic',
