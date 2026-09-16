@@ -9,7 +9,7 @@ import routeHandlersDefaultMiddlewares from '@/utils/route-handlers-middleware/c
 
 export async function GET(
   request: NextRequest,
-  options: { params: RouteParams }
+  options: { params: Promise<RouteParams> }
 ) {
   return routeHandlerWithMiddlewares(
     describeSchedule,
@@ -21,7 +21,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  options: { params: RouteParams }
+  options: { params: Promise<RouteParams> }
 ) {
   return routeHandlerWithMiddlewares(
     updateSchedule,
@@ -33,7 +33,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  options: { params: RouteParams }
+  options: { params: Promise<RouteParams> }
 ) {
   return routeHandlerWithMiddlewares(
     deleteSchedule,

@@ -43,4 +43,4 @@ jobs:
     - run: npm run lint
     - run: npm run typecheck
     - run: npm run test
-    - run: npx next@14 build --experimental-build-mode compile
+    - run: npx next@15 build --experimental-build-mode compile
