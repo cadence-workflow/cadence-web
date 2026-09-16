@@ -7,7 +7,7 @@ import routeHandlersDefaultMiddlewares from '@/utils/route-handlers-middleware/c
 
 export async function POST(
   request: NextRequest,
-  options: { params: RequestParams['params'] }
+  options: { params: Promise<RequestParams['params']> }
 ) {
   return routeHandlerWithMiddlewares(
     signalWorkflow,

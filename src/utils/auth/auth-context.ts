@@ -49,7 +49,7 @@ export async function resolveAuthContext(
   const authStrategy = await getConfigValue('CADENCE_WEB_AUTH_STRATEGY');
   const authEnabled = authStrategy === 'jwt';
 
-  const cookies = cookieStore ?? getRequestCookies();
+  const cookies = cookieStore ?? (await getRequestCookies());
   const tokenFromCookie = cookies.get(CADENCE_AUTH_COOKIE_NAME)?.value?.trim();
   const token = tokenFromCookie || undefined;
 

@@ -15,7 +15,7 @@ export default async function request(
     absoluteUrl = `http://127.0.0.1:${port}${url}`;
     // propagate user headers from browser to server API calls
     userHeaders = Object.fromEntries(
-      await (await import('next/headers')).headers().entries()
+      (await (await import('next/headers')).headers()).entries()
     );
   }
 
