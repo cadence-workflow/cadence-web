@@ -60,9 +60,6 @@ export default function useMergedInfiniteQueries<
   const [count, setCount] = useState(pageSize);
   const queryClient = useQueryClient();
 
-  // Created synchronously (and memoised) rather than inside the effect below, so that
-  // the lazy useState initialiser for queryResults can use them to compute each query's
-  // optimistic result before the first commit, the same way TanStack's useBaseQuery does.
   const observers = useMemo(
     () => (queries || []).map((q) => new InfiniteQueryObserver(queryClient, q)),
     [queries, queryClient]
@@ -72,11 +69,6 @@ export default function useMergedInfiniteQueries<
     Array<SingleInfiniteQueryResult<TResponse>>
   >(() =>
     observers.map((observer, index) => {
-      // queryClient.defaultQueryOptions() always returns the base
-      // DefaultedQueryObserverOptions type (it does not vary its return type based on
-      // whether the input included infinite-query-only fields like getNextPageParam),
-      // even though the defaulted object it returns does carry those fields through from
-      // `queries[index]`. This mirrors what TanStack's own useBaseQuery does internally.
       const defaultedOptions = {
         ...queryClient.defaultQueryOptions(queries[index]),
         _optimisticResults: 'optimistic',

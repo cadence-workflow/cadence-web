@@ -55,9 +55,7 @@ const MOCK_QUERY_CONFIG: Array<
   },
 ];
 
-// Kept as a stable reference on purpose: the hook (like its callers) expects a
-// memoised `queries` array, and an inline `[]` would be a new array on every
-// render, re-creating the observers and re-running the subscribe effect forever.
+// Stable reference, to prevent the hook from re-rendering constantly when testing
 const NO_QUERIES: Array<
   SingleInfiniteQueryOptions<MockAPIResponse, number, [string]>
 > = [];

@@ -3,7 +3,6 @@ import { type DomainsPageFilterRule } from '../domains-page-filters/domains-page
 export const mockDomainsPageFiltersConfig: ReadonlyArray<DomainsPageFilterRule> =
   [
     {
-      // narrows only
       filterFunc: (domain, queryParams) =>
         Boolean(
           !queryParams.clusterName ||
@@ -13,7 +12,6 @@ export const mockDomainsPageFiltersConfig: ReadonlyArray<DomainsPageFilterRule> 
         ),
     },
     {
-      // deducted from total
       filterFunc: (domain, queryParams) =>
         queryParams.showDeprecated
           ? true
