@@ -1,0 +1,70 @@
+# Builds Storybook and publishes it to this repository's GitHub Pages site.
+# Requires the Pages source to be "GitHub Actions" in the repository settings.
+
+name: Storybook Pages
+
+on:
+  push:
+    branches:
+      - onboard-to-storybook
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one deployment at a time. Do not cancel a deployment in progress.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      # Same cache keys as build.yml, so the two workflows share caches
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Cache generated IDL
+        id: cache-idl
+        uses: actions/cache@v4
+        with:
+          path: src/__generated__
+          key: ${{ runner.os }}-idl-${{ hashFiles('package.json') }}
+
+      - name: Generate IDL
+        if: steps.cache-idl.outputs.cache-hit != 'true'
+        run: npm run install-idl && npm run generate:idl
+
+      - name: Build Storybook
+        run: npm run build-storybook
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: storybook-static
+
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
