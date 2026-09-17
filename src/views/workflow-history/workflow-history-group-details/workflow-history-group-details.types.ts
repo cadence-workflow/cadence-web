@@ -19,5 +19,5 @@ export type Props = {
   onClose?: () => void;
   onClickShowInTimeline?: () => void;
   onClickShowInTable?: () => void;
-  diagnosticsIssuesByEventId?: WorkflowDiagnosticsIssuesByEventId;
+  diagnosticsIssuesByEventId: WorkflowDiagnosticsIssuesByEventId;
 };

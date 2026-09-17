@@ -22,7 +22,7 @@ export default function WorkflowHistoryGroupDetails({
   onClose,
   onClickShowInTimeline,
   onClickShowInTable,
-  diagnosticsIssuesByEventId = {},
+  diagnosticsIssuesByEventId,
 }: Props) {
   const [selectedIndex, setSelectedIndex] = useState<number>(
     (() => {

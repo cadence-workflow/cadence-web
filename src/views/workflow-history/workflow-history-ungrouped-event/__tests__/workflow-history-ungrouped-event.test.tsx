@@ -531,6 +531,7 @@ function setup({
   onReset = jest.fn(),
   onClickShowInTimeline = jest.fn(),
   mockGroupDetails,
+  workflowDiagnosticsByEventIdMap = {},
 }: Partial<Props> & {
   mockGroupDetails?: {
     groupDetailsEntries: GroupDetailsEntries;
@@ -594,6 +595,7 @@ function setup({
       animateOnEnter={animateOnEnter}
       onReset={mockOnReset}
       onClickShowInTimeline={mockOnClickShowInTimeline}
+      workflowDiagnosticsByEventIdMap={workflowDiagnosticsByEventIdMap}
     />
   );
 

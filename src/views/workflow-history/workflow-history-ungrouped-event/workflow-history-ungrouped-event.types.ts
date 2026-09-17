@@ -2,6 +2,7 @@ import { type WorkflowExecutionCloseStatus } from '@/__generated__/proto-ts/uber
 import { type WorkflowPageTabsParams } from '@/views/workflow-page/workflow-page-tabs/workflow-page-tabs.types';
 
 import { type UngroupedEventInfo } from '../workflow-history-ungrouped-table/workflow-history-ungrouped-table.types';
+import { type WorkflowDiagnosticsIssuesByEventId } from '../workflow-history.types';
 
 export type Props = {
   // Core data props
@@ -22,4 +23,7 @@ export type Props = {
   animateOnEnter?: boolean;
   onReset?: () => void;
   onClickShowInTimeline: () => void;
+
+  // Diagnostics
+  workflowDiagnosticsByEventIdMap: WorkflowDiagnosticsIssuesByEventId;
 };
