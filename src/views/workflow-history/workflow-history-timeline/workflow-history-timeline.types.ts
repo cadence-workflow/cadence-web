@@ -5,6 +5,7 @@ import {
   type HistoryEventsGroup,
   type EventGroupEntry,
   type Props as WorkflowHistoryProps,
+  type WorkflowDiagnosticsIssuesByEventId,
 } from '../workflow-history.types';
 
 export type TimelineRow = {
@@ -26,4 +27,5 @@ export type Props = {
   decodedPageUrlParams: WorkflowHistoryProps['params'];
   virtuosoRef: React.RefObject<VirtuosoHandle>;
   itemToHighlightId?: string;
+  workflowDiagnosticsByEventIdMap: WorkflowDiagnosticsIssuesByEventId;
 };

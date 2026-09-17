@@ -337,6 +337,7 @@ function setup({
         onClickShowInTable={onClickShowInTable}
         decodedPageUrlParams={decodedPageUrlParams}
         virtuosoRef={virtuosoRef}
+        workflowDiagnosticsByEventIdMap={{}}
       />
     </VirtuosoMockContext.Provider>
   );

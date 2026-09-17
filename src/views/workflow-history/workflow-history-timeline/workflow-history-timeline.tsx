@@ -13,6 +13,7 @@ import useCurrentTimeMs from '@/hooks/use-current-time-ms/use-current-time-ms';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 
 import workflowHistoryEventGroupCategoryColorsConfig from '../config/workflow-history-event-group-category-colors.config';
+import scopeDiagnosticsToGroup from '../helpers/scope-diagnostics-to-group';
 import WorkflowHistoryEventStatusBadge from '../workflow-history-event-status-badge/workflow-history-event-status-badge';
 import WorkflowHistoryTimelineEventGroup from '../workflow-history-timeline-event-group/workflow-history-timeline-event-group';
 
@@ -45,6 +46,7 @@ export default function WorkflowHistoryTimeline({
   decodedPageUrlParams,
   virtuosoRef,
   itemToHighlightId,
+  workflowDiagnosticsByEventIdMap,
 }: Props) {
   const { cls, theme } = useStyletronClasses(cssStyles);
 
@@ -185,6 +187,11 @@ export default function WorkflowHistoryTimeline({
                 const popoverOffset = (rowStart + rowEnd - contentWidth) / 2;
                 const animateOnEnter = row.id === itemToHighlightId;
 
+                const scopedDiagnostics = scopeDiagnosticsToGroup(
+                  row.group.events,
+                  workflowDiagnosticsByEventIdMap
+                );
+
                 return (
                   <styled.RowContainer
                     $isEven={isEven}
@@ -207,6 +214,7 @@ export default function WorkflowHistoryTimeline({
                               close();
                             }}
                             onClose={() => close()}
+                            workflowDiagnosticsByEventIdMap={scopedDiagnostics}
                           />
                         )}
                         placement="bottom"

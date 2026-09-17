@@ -564,6 +564,7 @@ function setup({
   getIsEventExpanded = jest.fn(() => false),
   toggleIsEventExpanded = jest.fn(),
   mockGroupDetails,
+  workflowDiagnosticsByEventIdMap = {},
 }: Partial<Props> & {
   mockGroupDetails?: {
     groupDetailsEntries: GroupDetailsEntries;
@@ -618,6 +619,7 @@ function setup({
       getIsEventExpanded={getIsEventExpanded}
       toggleIsEventExpanded={toggleIsEventExpanded}
       onClickShowInTimeline={jest.fn()}
+      workflowDiagnosticsByEventIdMap={workflowDiagnosticsByEventIdMap}
     />
   );
 

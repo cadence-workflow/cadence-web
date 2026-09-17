@@ -32,6 +32,7 @@ export default function WorkflowHistoryHeader({
   setIsTimelineShown,
   timelineVirtuosoRef,
   timelineItemToHighlightId,
+  workflowDiagnosticsByEventIdMap,
 }: Props) {
   const [isSticky, setIsSticky] = useState(false);
   useEffect(() => {
@@ -133,6 +134,9 @@ export default function WorkflowHistoryHeader({
                 decodedPageUrlParams={decodedPageUrlParams}
                 virtuosoRef={timelineVirtuosoRef}
                 itemToHighlightId={timelineItemToHighlightId}
+                workflowDiagnosticsByEventIdMap={
+                  workflowDiagnosticsByEventIdMap
+                }
               />
             </styled.TimelineContainer>
           )}

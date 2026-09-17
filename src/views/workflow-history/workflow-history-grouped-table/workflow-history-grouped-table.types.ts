@@ -8,6 +8,7 @@ import { type RequestError } from '@/utils/request/request-error';
 import {
   type HistoryEventsGroup,
   type Props as WorkflowHistoryProps,
+  type WorkflowDiagnosticsIssuesByEventId,
 } from '../workflow-history.types';
 
 export type Props = {
@@ -36,4 +37,5 @@ export type Props = {
   fetchMoreEvents: () => void;
   isFetchingMoreEvents: boolean;
   onClickShowGroupInTimeline: (groupId: string) => void;
+  workflowDiagnosticsByEventIdMap: WorkflowDiagnosticsIssuesByEventId;
 };

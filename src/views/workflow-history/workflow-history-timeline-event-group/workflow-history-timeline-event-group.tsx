@@ -8,6 +8,7 @@ export default function WorkflowHistoryTimelineEventGroup({
   decodedPageUrlParams,
   onClickShowInTable,
   onClose,
+  workflowDiagnosticsByEventIdMap,
 }: Props) {
   const { groupDetailsEntriesWithSummary } = useGroupDetailsEntries(eventGroup);
 
@@ -19,6 +20,7 @@ export default function WorkflowHistoryTimelineEventGroup({
       onClickShowInTable={onClickShowInTable}
       onClose={onClose}
       isScrollable
+      diagnosticsIssuesByEventId={workflowDiagnosticsByEventIdMap}
     />
   );
 }

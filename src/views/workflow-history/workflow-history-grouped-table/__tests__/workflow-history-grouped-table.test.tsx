@@ -10,7 +10,10 @@ import { mockActivityEventGroup } from '@/views/workflow-history/__fixtures__/wo
 import { type WorkflowPageTabContentParams } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
 import type WorkflowHistoryTableFooter from '../../workflow-history-table-footer/workflow-history-table-footer';
-import { type HistoryEventsGroup } from '../../workflow-history.types';
+import {
+  type HistoryEventsGroup,
+  type WorkflowDiagnosticsIssuesByEventId,
+} from '../../workflow-history.types';
 import WorkflowHistoryGroupedTable from '../workflow-history-grouped-table';
 
 jest.mock<typeof WorkflowHistoryTableFooter>(
@@ -155,6 +158,7 @@ function setup({
   getIsEventExpanded = jest.fn(() => false),
   toggleIsEventExpanded = jest.fn(),
   resetToDecisionEventId = jest.fn(),
+  workflowDiagnosticsByEventIdMap = {},
 }: {
   eventGroupsById?: Array<[string, HistoryEventsGroup]>;
   error?: RequestError | null;
@@ -178,6 +182,7 @@ function setup({
   getIsEventExpanded?: (eventId: string) => boolean;
   toggleIsEventExpanded?: (eventId: string) => void;
   resetToDecisionEventId?: (decisionEventId: string) => void;
+  workflowDiagnosticsByEventIdMap?: WorkflowDiagnosticsIssuesByEventId;
 } = {}) {
   const virtuosoRef = { current: null };
   const user = userEvent.setup();
@@ -205,6 +210,7 @@ function setup({
         fetchMoreEvents={fetchMoreEvents}
         isFetchingMoreEvents={isFetchingMoreEvents}
         onClickShowGroupInTimeline={jest.fn()}
+        workflowDiagnosticsByEventIdMap={workflowDiagnosticsByEventIdMap}
       />
     </VirtuosoMockContext.Provider>
   );

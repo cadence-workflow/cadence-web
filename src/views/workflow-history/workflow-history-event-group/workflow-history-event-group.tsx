@@ -33,6 +33,7 @@ export default function WorkflowHistoryEventGroup({
   getIsEventExpanded,
   toggleIsEventExpanded,
   onClickShowInTimeline,
+  workflowDiagnosticsByEventIdMap,
 }: Props) {
   const {
     status,
@@ -147,6 +148,7 @@ export default function WorkflowHistoryEventGroup({
             workflowPageParams={decodedPageUrlParams}
             onClose={() => handleGroupExpansionStateChange(false)}
             onClickShowInTimeline={onClickShowInTimeline}
+            diagnosticsIssuesByEventId={workflowDiagnosticsByEventIdMap}
           />
         </styled.GroupDetailsContainer>
       </styled.GroupDetailsGridContainer>
