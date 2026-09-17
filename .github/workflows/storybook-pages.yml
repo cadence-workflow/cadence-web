@@ -4,9 +4,6 @@
 name: Storybook Pages
 
 on:
-  push:
-    branches:
-      - onboard-to-storybook
   workflow_dispatch:
 
 permissions:
