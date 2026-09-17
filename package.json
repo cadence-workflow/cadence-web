@@ -20,7 +20,9 @@
     "test:unit": "npm run test:unit:browser && npm run test:unit:node",
     "test:unit:browser": "TZ=UTC jest --config jest/browser/jest.config.ts",
     "test:unit:node": "TZ=UTC jest --config jest/node/jest.config.ts",
-    "test:types": "tstyche"
+    "test:types": "tstyche",
+    "storybook": "storybook dev -p 6006 --no-open",
+    "build-storybook": "storybook build"
   },
   "engines": {
     "node": ">=24.0.0",
@@ -110,7 +112,13 @@
     "tsx": "^4.19.3",
     "typescript": "^5.3.3",
     "typescript-eslint": "^7.18.0",
-    "undici": "^6.28.0"
+    "undici": "^6.28.0",
+    "storybook": "^10.6.0",
+    "@storybook/nextjs": "^10.6.0",
+    "@storybook/addon-a11y": "^10.6.0",
+    "@storybook/addon-docs": "^10.6.0",
+    "@storybook/addon-onboarding": "^10.6.0",
+    "eslint-plugin-storybook": "^10.6.0"
   },
   "overrides": {
     "d3-color": "3.1.0",
