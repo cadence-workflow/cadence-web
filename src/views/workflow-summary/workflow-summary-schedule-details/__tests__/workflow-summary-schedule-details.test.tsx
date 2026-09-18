@@ -59,7 +59,7 @@ describe(WorkflowSummaryScheduleDetails.name, () => {
     expect(
       await screen.findByRole('table', { name: 'Schedule details' })
     ).toBeInTheDocument();
-    expect(screen.getByText('2026-07-21T12:00:00Z')).toBeInTheDocument();
+    expect(screen.getByText('21 Jul, 12:00:00 UTC')).toBeInTheDocument();
     expect(screen.getByRole('cell', { name: 'No' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'schedule/id' })).toHaveAttribute(
       'href',
