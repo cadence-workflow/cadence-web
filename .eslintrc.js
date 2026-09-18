@@ -1,13 +1,6 @@
 module.exports = {
   ignorePatterns: ['src/__generated__/'],
-  extends: [
-    'next/core-web-vitals',
-    'plugin:react/recommended',
-    'plugin:prettier/recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:import/recommended',
-    'plugin:import/typescript',
-  ],
+  extends: ['next/core-web-vitals', 'plugin:react/recommended', 'plugin:prettier/recommended', 'plugin:@typescript-eslint/recommended', 'plugin:import/recommended', 'plugin:import/typescript', 'plugin:storybook/recommended'],
   plugins: ['react'],
   rules: {
     'react/react-in-jsx-scope': 'off',
