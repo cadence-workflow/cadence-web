@@ -4,6 +4,7 @@ import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import { type Props as LoaderProps } from '@/components/table/table-infinite-scroll-loader/table-infinite-scroll-loader.types';
 import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtures__/mock-workflow-list-items';
+import { type PublicProviderProps } from '@/test-utils/rtl.types';
 
 import { mockWorkflowsListColumns } from '../__fixtures__/mock-workflows-list-columns';
 import WorkflowsList from '../workflows-list';
@@ -60,6 +61,49 @@ describe(WorkflowsList.name, () => {
     expect(links).toHaveLength(2);
     expect(links[0]).toHaveAttribute('href', '/workflows/wf-1/run-1');
     expect(links[1]).toHaveAttribute('href', '/workflows/wf-2/run-2');
+  });
+
+  it('renders each row link as non-draggable so drag-to-select works', () => {
+    setup({});
+
+    for (const link of screen.getAllByRole('link')) {
+      expect(link).toHaveAttribute('draggable', 'false');
+    }
+  });
+
+  // `event.defaultPrevented` is true after every click regardless of our fix
+  // (next/link's own handler also calls preventDefault before navigating),
+  // so it can't distinguish the two cases. `onPush` only fires when
+  // next/link actually reaches its navigation step, which it skips whenever
+  // our handler already prevented the default - so it's a reliable signal
+  // for whether navigation was actually triggered.
+  it('triggers navigation on a plain click with no text selected', async () => {
+    const onPush = jest.fn();
+    const { user } = setup({}, { router: { onPush } });
+
+    await user.click(screen.getAllByRole('link')[0]);
+
+    expect(onPush).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not trigger navigation when dragging to select text on a row', async () => {
+    const onPush = jest.fn();
+    const { user } = setup({}, { router: { onPush } });
+
+    // A real drag-to-select is a single pointer gesture: press, move (which
+    // extends the selection), then release (which fires the click). Setting
+    // a selection via the Range API and firing a separate click wouldn't
+    // work here since a plain click's own mousedown handling collapses any
+    // pre-existing selection first, same as in a real browser.
+    const cell = screen.getByText('wf-1');
+    await user.pointer([
+      { target: cell, offset: 0, keys: '[MouseLeft>]' },
+      { target: cell, offset: 4 },
+      { keys: '[/MouseLeft]' },
+    ]);
+
+    expect(window.getSelection()?.toString()).toBe('wf-1');
+    expect(onPush).not.toHaveBeenCalled();
   });
 
   it('encodes workflow and run IDs in the link href', () => {
@@ -324,15 +368,18 @@ function makeSelection(
   };
 }
 
-function setup({
-  workflows = MOCK_WORKFLOWS,
-  columns = mockWorkflowsListColumns,
-  error = null,
-  hasNextPage = false,
-  isFetchingNextPage = false,
-  sortParams,
-  selection,
-}: Partial<React.ComponentProps<typeof WorkflowsList>> = {}) {
+function setup(
+  {
+    workflows = MOCK_WORKFLOWS,
+    columns = mockWorkflowsListColumns,
+    error = null,
+    hasNextPage = false,
+    isFetchingNextPage = false,
+    sortParams,
+    selection,
+  }: Partial<React.ComponentProps<typeof WorkflowsList>> = {},
+  providerProps?: PublicProviderProps
+) {
   const user = userEvent.setup();
   render(
     <WorkflowsList
@@ -344,7 +391,8 @@ function setup({
       isFetchingNextPage={isFetchingNextPage}
       sortParams={sortParams}
       selection={selection}
-    />
+    />,
+    providerProps
   );
   return { user };
 }
