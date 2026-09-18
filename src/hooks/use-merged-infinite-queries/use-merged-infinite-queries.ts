@@ -2,6 +2,8 @@ import { useMemo, useState, useEffect, useCallback } from 'react';
 
 import {
   InfiniteQueryObserver,
+  type DefaultedInfiniteQueryObserverOptions,
+  type InfiniteData,
   type QueryKey,
   useQueryClient,
 } from '@tanstack/react-query';
@@ -56,17 +58,42 @@ export default function useMergedInfiniteQueries<
   Array<SingleInfiniteQueryResult<TResponse>>,
 ] {
   const [count, setCount] = useState(pageSize);
+  const queryClient = useQueryClient();
+
+  const observers = useMemo(
+    () => (queries || []).map((q) => new InfiniteQueryObserver(queryClient, q)),
+    [queries, queryClient]
+  );
 
   const [queryResults, setQueryResults] = useState<
     Array<SingleInfiniteQueryResult<TResponse>>
-  >([]);
-  const queryClient = useQueryClient();
+  >(() =>
+    observers.map((observer, index) => {
+      /**
+       * _optimisticResults is a TanStack internal option, used here the same way as in useBaseQuery.
+       * With 'optimistic', the observer reports the fetch that subscribe() will start, so the first
+       * render shows loading.
+       * defaultQueryOptions() drops the infinite-query fields from its return type, hence the cast.
+       *
+       * @see https://github.com/TanStack/query/blob/v5.51.1/packages/react-query/src/useBaseQuery.ts#L57-L59
+       */
+      const defaultedOptions = {
+        ...queryClient.defaultQueryOptions(queries[index]),
+        _optimisticResults: 'optimistic',
+      } as DefaultedInfiniteQueryObserverOptions<
+        TResponse,
+        Error,
+        InfiniteData<TResponse, TPageParam>,
+        TResponse,
+        TQueryKey,
+        TPageParam
+      >;
+      return observer.getOptimisticResult(defaultedOptions);
+    })
+  );
 
   useEffect(() => {
     setCount(pageSize);
-    const observers = (queries || []).map((q) => {
-      return new InfiniteQueryObserver(queryClient, q);
-    });
 
     setQueryResults(observers.map((ob) => ob.getCurrentResult()));
 
@@ -80,7 +107,7 @@ export default function useMergedInfiniteQueries<
       })
     );
     return () => unsubscribes.forEach((unsubscribe) => unsubscribe());
-  }, [queries, queryClient, pageSize]);
+  }, [observers, pageSize]);
 
   const flattenedDataArrays: Array<Array<TData>> = useMemo(() => {
     return queryResults.map((queryResult) => {

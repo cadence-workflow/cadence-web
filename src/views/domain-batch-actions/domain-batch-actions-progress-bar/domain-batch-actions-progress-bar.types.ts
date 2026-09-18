@@ -8,4 +8,5 @@ export type Props = {
   status: BatchActionStatus;
   progress?: BatchActionProgress;
   actionType?: BatchActionType;
+  startTime?: number;
 };

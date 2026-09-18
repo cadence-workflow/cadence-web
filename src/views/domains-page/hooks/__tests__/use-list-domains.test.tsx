@@ -41,6 +41,22 @@ const mockDomainsClusterB = [
 ];
 
 describe(useListDomains.name, () => {
+  it('reports isLoading on the first render after config resolves', async () => {
+    const loadingStates: Array<boolean> = [];
+    const { result } = setup({
+      onRender: (r) => loadingStates.push(r.isLoading),
+    });
+
+    await waitFor(() => {
+      expect(result.current.data.length).toBe(3);
+    });
+
+    // The first render that gets past the config suspense must already be
+    // loading, so the badge/table never flash an empty state.
+    expect(loadingStates[0]).toBe(true);
+    expect(result.current.isLoading).toBe(false);
+  });
+
   it('returns merged domains from all clusters', async () => {
     const { result } = setup({});
 
@@ -207,11 +223,13 @@ function setup({
   clusterBDomains = mockDomainsClusterB,
   clusterAResolver,
   clusterBResolver,
+  onRender,
 }: {
   clusterADomains?: typeof mockDomainsClusterA;
   clusterBDomains?: typeof mockDomainsClusterB;
   clusterAResolver?: HttpResponseResolver;
   clusterBResolver?: HttpResponseResolver;
+  onRender?: (result: ReturnType<typeof useListDomains>) => void;
 }) {
   const endpointsMocks: HttpEndpointMock[] = [
     {
@@ -249,7 +267,11 @@ function setup({
   ];
 
   return renderHook(
-    () => useListDomains(),
+    () => {
+      const result = useListDomains();
+      onRender?.(result);
+      return result;
+    },
     { endpointsMocks },
     {
       wrapper: ({ children }) => <Suspense>{children}</Suspense>,

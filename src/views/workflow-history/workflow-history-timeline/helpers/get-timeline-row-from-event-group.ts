@@ -43,7 +43,7 @@ export default function getTimelineRowFromEventGroup(
 
   return {
     id: groupId,
-    label: group.label,
+    label: group.shortLabel ?? group.label,
     startTimeMs: groupStartMs,
     endTimeMs: groupEndMs,
     category: eventGroupCategory,
