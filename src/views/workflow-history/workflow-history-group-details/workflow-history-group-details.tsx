@@ -4,7 +4,10 @@ import { Button } from 'baseui/button';
 import { ButtonGroup } from 'baseui/button-group';
 import { MdClose, MdList, MdSchedule } from 'react-icons/md';
 
+import useExpansionToggle from '@/hooks/use-expansion-toggle/use-expansion-toggle';
+
 import WorkflowHistoryEventDetails from '../workflow-history-event-details/workflow-history-event-details';
+import WorkflowHistoryEventDiagnostics from '../workflow-history-event-diagnostics/workflow-history-event-diagnostics';
 import WorkflowHistoryEventLinkButton from '../workflow-history-event-link-button/workflow-history-event-link-button';
 
 import { overrides, styled } from './workflow-history-group-details.styles';
@@ -19,6 +22,7 @@ export default function WorkflowHistoryGroupDetails({
   onClose,
   onClickShowInTimeline,
   onClickShowInTable,
+  diagnosticsIssuesByEventId = {},
 }: Props) {
   const [selectedIndex, setSelectedIndex] = useState<number>(
     (() => {
@@ -33,6 +37,29 @@ export default function WorkflowHistoryGroupDetails({
     () => groupDetailsEntries[selectedIndex],
     [groupDetailsEntries, selectedIndex]
   );
+
+  const diagnosticsIssues = useMemo(() => {
+    if (selectedEventId.startsWith('summary_')) {
+      return Object.values(diagnosticsIssuesByEventId).flat();
+    }
+    return diagnosticsIssuesByEventId[selectedEventId] ?? [];
+  }, [selectedEventId, diagnosticsIssuesByEventId]);
+
+  const allIssueExpansionIds = useMemo(
+    () =>
+      Object.values(diagnosticsIssuesByEventId)
+        .flat()
+        .map((issue) => `${issue.invariantType}.${issue.issueId}`),
+    [diagnosticsIssuesByEventId]
+  );
+
+  const {
+    getIsItemExpanded: getIsIssueExpanded,
+    toggleIsItemExpanded: toggleIsIssueExpanded,
+  } = useExpansionToggle<string>({
+    items: allIssueExpansionIds,
+    initialState: {},
+  });
 
   return (
     <styled.GroupDetailsContainer>
@@ -92,6 +119,14 @@ export default function WorkflowHistoryGroupDetails({
           )}
         </styled.ExtraActions>
       </styled.ActionsRow>
+      {diagnosticsIssues.length > 0 && (
+        <WorkflowHistoryEventDiagnostics
+          issues={diagnosticsIssues}
+          getIsIssueExpanded={getIsIssueExpanded}
+          toggleIsIssueExpanded={toggleIsIssueExpanded}
+          {...workflowPageParams}
+        />
+      )}
       <WorkflowHistoryEventDetails
         eventDetails={selectedEventTabContent.eventDetails ?? []}
         isScrollable={isScrollable}
