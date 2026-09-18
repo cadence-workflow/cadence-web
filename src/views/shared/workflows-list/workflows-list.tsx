@@ -105,7 +105,7 @@ export default function WorkflowsList({
                   $gridTemplateColumns={gridTemplateColumns}
                   draggable={false}
                   onClick={(event: MouseEvent) => {
-                    if (shouldPreventLinkNavigation()) {
+                    if (shouldPreventLinkNavigation(event)) {
                       event.preventDefault();
                     }
                   }}

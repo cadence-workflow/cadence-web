@@ -34,6 +34,12 @@ const MOCK_WORKFLOWS = [
 ];
 
 describe(WorkflowsList.name, () => {
+  afterEach(() => {
+    // A selection outlives RTL cleanup, and a leftover one would suppress
+    // link navigation in whichever test runs next.
+    window.getSelection()?.removeAllRanges();
+  });
+
   it('renders column headers', () => {
     setup({});
 
@@ -104,6 +110,22 @@ describe(WorkflowsList.name, () => {
 
     expect(window.getSelection()?.toString()).toBe('wf-1');
     expect(onPush).not.toHaveBeenCalled();
+  });
+
+  it('triggers navigation on keyboard activation while text is selected', async () => {
+    const onPush = jest.fn();
+    const { user } = setup({}, { router: { onPush } });
+
+    const cell = screen.getByText('wf-1');
+    await user.pointer([
+      { target: cell, offset: 0, keys: '[MouseLeft>]' },
+      { target: cell, offset: 4 },
+      { keys: '[/MouseLeft]' },
+    ]);
+    await user.keyboard('{Enter}');
+
+    expect(window.getSelection()?.toString()).toBe('wf-1');
+    expect(onPush).toHaveBeenCalledTimes(1);
   });
 
   it('encodes workflow and run IDs in the link href', () => {
