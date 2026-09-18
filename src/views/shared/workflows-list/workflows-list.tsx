@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, type MouseEvent } from 'react';
 
 import { Checkbox } from 'baseui/checkbox';
 import ChevronDown from 'baseui/icon/chevron-down';
@@ -8,6 +8,7 @@ import NextLink from 'next/link';
 
 import TableInfiniteScrollLoader from '@/components/table/table-infinite-scroll-loader/table-infinite-scroll-loader';
 
+import shouldPreventLinkNavigation from './helpers/should-prevent-link-navigation';
 import WorkflowsListSelectionCell from './workflows-list-selection-cell/workflows-list-selection-cell';
 import { styled as selectionCellStyled } from './workflows-list-selection-cell/workflows-list-selection-cell.styles';
 import { styled } from './workflows-list.styles';
@@ -102,6 +103,12 @@ export default function WorkflowsList({
                   href={`workflows/${encodeURIComponent(workflow.workflowID)}/${encodeURIComponent(workflow.runID)}`}
                   prefetch={false}
                   $gridTemplateColumns={gridTemplateColumns}
+                  draggable={false}
+                  onClick={(event: MouseEvent) => {
+                    if (shouldPreventLinkNavigation(event)) {
+                      event.preventDefault();
+                    }
+                  }}
                 >
                   {selection && (
                     <WorkflowsListSelectionCell

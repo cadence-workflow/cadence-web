@@ -119,7 +119,7 @@ export const TestProvider = ({
       })}
     >
       <MSWMockHandlers endpointsMocks={endpointsMocks} />
-      <MemoryRouterProvider url={router.initialUrl}>
+      <MemoryRouterProvider url={router.initialUrl} onPush={router.onPush}>
         <QueryClientProvider client={client}>{children}</QueryClientProvider>
       </MemoryRouterProvider>
     </StyletronProvider>
