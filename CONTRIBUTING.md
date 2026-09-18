@@ -19,3 +19,28 @@ For development check the [Building & developing cadence-web](./README.md#buildi
 ## Working with the source code
 
 Follow [this great guide](https://gist.github.com/Chaser324/ce0505fbed06b947d962) on how to work with a GitHub fork and submit a pull request.
+
+## Publish a personal Storybook preview
+
+This step is optional. Use it for larger UI changes. You can deploy your fork to your own GitHub Pages site, giving you a shareable URL such as `https://<your-username>.github.io/cadence-web/`.
+
+**Deploy a branch**
+
+1. In your fork, open the Actions tab. The first time, click "I understand my workflows, go ahead and enable them".
+2. Select the "Storybook Pages" workflow.
+3. Run workflow, choose your branch, then Run workflow.
+4. Wait 1 to 2 minutes for it to finish.
+5. Open `https://<your-username>.github.io/cadence-web/`.
+
+**One-time setup, after your first deploy**
+
+1. In your fork, go to Settings, then Pages.
+2. Under Build and deployment, set Source to "Deploy from a branch".
+3. Set Branch to `gh-pages` and Folder to `/ (root)`, then Save.
+
+The first deploy creates the `gh-pages` branch, which is why this comes second. GitHub can take up to 10 minutes to publish.
+
+**Good to know**
+
+- It only runs when you trigger it manually.
+- It's one live site per fork; each run replaces what was there before.

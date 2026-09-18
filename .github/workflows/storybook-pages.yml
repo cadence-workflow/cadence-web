@@ -1,5 +1,5 @@
-# Builds Storybook and publishes it to this repository's GitHub Pages site.
-# Requires the Pages source to be "GitHub Actions" in the repository settings.
+# Builds Storybook and publishes it to the gh-pages branch of this repository.
+# Requires the Pages source to be "Deploy from a branch": branch gh-pages, folder /.
 
 name: Storybook Pages
 
@@ -7,24 +7,21 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
-# Allow one deployment at a time. Do not cancel a deployment in progress.
+# One deploy at a time. Do not cancel a deploy in progress.
 concurrency:
-  group: pages
+  group: gh-pages
   cancel-in-progress: false
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Use Node.js
         uses: actions/setup-node@v4
@@ -57,11 +54,14 @@ jobs:
       - name: Build Storybook
         run: npm run build-storybook
 
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: storybook-static
+      # Stop GitHub Pages from running Jekyll, which drops files that start with "_"
+      - name: Disable Jekyll
+        run: touch storybook-static/.nojekyll
 
-      - name: Deploy to GitHub Pages
-        id: deploy
-        uses: actions/deploy-pages@v4
+      - name: Deploy to gh-pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: storybook-static
+          clean: true
+          single-commit: true

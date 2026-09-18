@@ -178,6 +178,28 @@ You can customize the YAML file or reuse configurations from the [cadence reposi
 
 After running `cadence`, start `cadence-web` for development using one of the previous methods ([Running development environment](#running-development-environment), [VSCode Dev Containers](#using-vscode-dev-containers))
 
+### Storybook
+
+Storybook shows UI components on their own, with mock data.
+
+To run Storybook locally:
+
+```
+npm run storybook
+```
+
+Open `localhost:6006` to view it.
+
+To build a static Storybook site:
+
+```
+npm run build-storybook
+```
+
+This writes static files to `storybook-static`.
+
+To share a live preview link from your fork, see [Publish a personal Storybook preview](./CONTRIBUTING.md#publish-a-personal-storybook-preview) in `CONTRIBUTING.md`.
+
 ### Updating IDLs
 
 To update the Cadence IDL files:
@@ -221,6 +243,8 @@ npm run lint && npm run typecheck && npm run test
 | test:unit:node    | Run only node unit tests                                                                         |
 | lint              | Run eslint                                                                                       |
 | typecheck         | Run typescript checks                                                                            |
+| storybook         | Run Storybook locally on port 6006                                                               |
+| build-storybook   | Build a static Storybook site into `storybook-static`                                            |
 
 ## Contributing
 
