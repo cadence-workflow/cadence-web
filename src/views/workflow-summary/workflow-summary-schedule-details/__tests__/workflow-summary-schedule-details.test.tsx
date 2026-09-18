@@ -18,6 +18,8 @@ jest.mock(
     }
 );
 
+jest.useFakeTimers().setSystemTime(new Date('2026-09-18T00:00:00Z'));
+
 describe(WorkflowSummaryScheduleDetails.name, () => {
   it('does not render when schedules are disabled', async () => {
     setup({
