@@ -10,6 +10,7 @@ import { type WorkflowPageTabsParams } from '@/views/workflow-page/workflow-page
 
 import { createUngroupedEventsInfo } from '../../__fixtures__/ungrouped-events-info';
 import type WorkflowHistoryTableFooter from '../../workflow-history-table-footer/workflow-history-table-footer';
+import { type WorkflowDiagnosticsIssuesByEventId } from '../../workflow-history.types';
 import WorkflowHistoryUngroupedTable from '../workflow-history-ungrouped-table';
 import { type UngroupedEventInfo } from '../workflow-history-ungrouped-table.types';
 
@@ -243,6 +244,7 @@ function setup({
   toggleIsEventExpanded = jest.fn(),
   resetToDecisionEventId = jest.fn(),
   onClickShowGroupInTimeline = jest.fn(),
+  workflowDiagnosticsByEventIdMap = {},
 }: {
   ungroupedEventsInfo?: Array<UngroupedEventInfo>;
   workflowStartTimeMs?: number | null;
@@ -264,6 +266,7 @@ function setup({
   toggleIsEventExpanded?: (eventId: string) => void;
   resetToDecisionEventId?: (decisionEventId: string) => void;
   onClickShowGroupInTimeline?: (eventGroupId: string) => void;
+  workflowDiagnosticsByEventIdMap?: WorkflowDiagnosticsIssuesByEventId;
 } = {}) {
   const virtuosoRef = { current: null };
   const user = userEvent.setup();
@@ -290,6 +293,7 @@ function setup({
         fetchMoreEvents={fetchMoreEvents}
         isFetchingMoreEvents={isFetchingMoreEvents}
         onClickShowGroupInTimeline={onClickShowGroupInTimeline}
+        workflowDiagnosticsByEventIdMap={workflowDiagnosticsByEventIdMap}
       />
     </VirtuosoMockContext.Provider>
   );

@@ -15,6 +15,7 @@ import {
 import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
 import * as usePageFiltersModule from '@/components/page-filters/hooks/use-page-filters';
 import { type PageQueryParamValues } from '@/hooks/use-page-query-params/use-page-query-params.types';
+import { mockWorkflowDiagnosticsResult } from '@/route-handlers/diagnose-workflow/__fixtures__/mock-workflow-diagnostics-result';
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
 import { mockDescribeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
 import type workflowPageQueryParamsConfig from '@/views/workflow-page/config/workflow-page-query-params.config';
@@ -462,6 +463,26 @@ describe(WorkflowHistory.name, () => {
     );
     expect(pendingItemsCounter).toHaveTextContent('2 pending events');
   });
+
+  it('does not call the diagnose endpoint when the in-history diagnostics flag is off', async () => {
+    const { mockDiagnoseResolver } = await setup({
+      isDiagnosticsInHistoryEnabled: false,
+    });
+
+    await screen.findByText('Workflow history Header');
+
+    expect(mockDiagnoseResolver).not.toHaveBeenCalled();
+  });
+
+  it('calls the diagnose endpoint once when the in-history diagnostics flag is on', async () => {
+    const { mockDiagnoseResolver } = await setup({
+      isDiagnosticsInHistoryEnabled: true,
+    });
+
+    await waitFor(() => {
+      expect(mockDiagnoseResolver).toHaveBeenCalledTimes(1);
+    });
+  });
 });
 
 async function setup({
@@ -474,6 +495,7 @@ async function setup({
   historyEvents = completedActivityTaskEvents,
   pendingActivities,
   pendingDecision,
+  isDiagnosticsInHistoryEnabled = false,
 }: {
   error?: boolean;
   summaryError?: boolean;
@@ -486,6 +508,7 @@ async function setup({
   historyEvents?: Array<HistoryEvent>;
   pendingActivities?: Array<PendingActivityTaskStartEvent>;
   pendingDecision?: PendingDecisionTaskStartEvent | null;
+  isDiagnosticsInHistoryEnabled?: boolean;
 } = {}) {
   const user = userEvent.setup();
 
@@ -505,6 +528,13 @@ async function setup({
   const getRequestResolver = () => requestResolver;
   const getRequestRejector = () => requestRejector;
   let requestIndex = -1;
+
+  const mockDiagnoseResolver = jest.fn(() =>
+    HttpResponse.json({
+      result: mockWorkflowDiagnosticsResult,
+      parsingError: null,
+    })
+  );
 
   const renderResult = render(
     <Suspense fallback={'Suspense placeholder'}>
@@ -596,6 +626,20 @@ async function setup({
                 },
               }),
         },
+        {
+          path: '/api/config',
+          httpMethod: 'GET',
+          mockOnce: false,
+          httpResolver: async () => {
+            return HttpResponse.json(isDiagnosticsInHistoryEnabled);
+          },
+        },
+        {
+          path: '/api/domains/:domain/:cluster/workflows/:workflowId/:runId/diagnose',
+          httpMethod: 'GET',
+          mockOnce: false,
+          httpResolver: mockDiagnoseResolver,
+        },
       ],
     },
     {
@@ -620,5 +664,6 @@ async function setup({
     ...renderResult,
     mockSetQueryParams,
     mockSetUngroupedViewUserPreference,
+    mockDiagnoseResolver,
   };
 }

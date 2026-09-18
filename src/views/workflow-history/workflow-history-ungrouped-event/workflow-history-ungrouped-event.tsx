@@ -36,6 +36,7 @@ export default function WorkflowHistoryUngroupedEvent({
   isExpanded,
   toggleIsExpanded,
   onClickShowInTimeline,
+  workflowDiagnosticsByEventIdMap,
 }: Props) {
   const eventGroupCategory = getEventGroupCategory(eventInfo.eventGroup);
 
@@ -144,6 +145,7 @@ export default function WorkflowHistoryUngroupedEvent({
             workflowPageParams={decodedPageUrlParams}
             onClose={() => toggleIsExpanded()}
             onClickShowInTimeline={onClickShowInTimeline}
+            diagnosticsIssuesByEventId={workflowDiagnosticsByEventIdMap}
           />
         </styled.GroupDetailsContainer>
       </styled.GroupDetailsGridContainer>

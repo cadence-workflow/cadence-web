@@ -63,6 +63,7 @@ function setup(propsOverrides: Partial<Props> = {}) {
     },
     onClickShowInTable: jest.fn(),
     onClose: jest.fn(),
+    workflowDiagnosticsByEventIdMap: {},
     ...propsOverrides,
   };
 

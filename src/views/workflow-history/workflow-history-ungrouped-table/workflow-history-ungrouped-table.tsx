@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 
 import { Virtuoso } from 'react-virtuoso';
 
+import scopeDiagnosticsToGroup from '../helpers/scope-diagnostics-to-group';
 import WorkflowHistoryTableFooter from '../workflow-history-table-footer/workflow-history-table-footer';
 import WorkflowHistoryUngroupedEvent from '../workflow-history-ungrouped-event/workflow-history-ungrouped-event';
 
@@ -26,6 +27,7 @@ export default function WorkflowHistoryUngroupedTable({
   fetchMoreEvents,
   isFetchingMoreEvents,
   onClickShowGroupInTimeline,
+  workflowDiagnosticsByEventIdMap,
 }: Props) {
   const maybeHighlightedEventIndex = useMemo(
     () => ungroupedEventsInfo.findIndex((v) => v.id === selectedEventId),
@@ -65,6 +67,10 @@ export default function WorkflowHistoryUngroupedTable({
             onClickShowInTimeline={() =>
               onClickShowGroupInTimeline(eventInfo.groupId)
             }
+            workflowDiagnosticsByEventIdMap={scopeDiagnosticsToGroup(
+              eventInfo.eventGroup.events,
+              workflowDiagnosticsByEventIdMap
+            )}
             {...(eventInfo.canReset
               ? { onReset: () => resetToDecisionEventId(eventInfo.id) }
               : {})}

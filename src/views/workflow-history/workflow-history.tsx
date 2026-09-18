@@ -2,6 +2,7 @@ import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import usePageFilters from '@/components/page-filters/hooks/use-page-filters';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
+import useConfigValue from '@/hooks/use-config-value/use-config-value';
 import useExpansionToggle from '@/hooks/use-expansion-toggle/use-expansion-toggle';
 import useThrottledState from '@/hooks/use-throttled-state';
 import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
@@ -19,10 +20,12 @@ import workflowHistoryFiltersConfig from './config/workflow-history-filters.conf
 import { WORKFLOW_HISTORY_PAGE_SIZE_CONFIG } from './config/workflow-history-page-size.config';
 import WORKFLOW_HISTORY_RENDER_FETCHED_EVENTS_THROTTLE_MS_CONFIG from './config/workflow-history-render-fetched-events-throttle-ms.config';
 import WORKFLOW_HISTORY_SET_RANGE_THROTTLE_MS_CONFIG from './config/workflow-history-set-range-throttle-ms.config';
+import getDiagnosticsIssuesByEventId from './helpers/get-diagnostics-issues-by-event-id';
 import getNavigationBarEventsMenuItems from './helpers/get-navigation-bar-events-menu-items';
 import getSortableEventId from './helpers/get-sortable-event-id';
 import pendingActivitiesInfoToEvents from './helpers/pending-activities-info-to-events';
 import pendingDecisionInfoToEvent from './helpers/pending-decision-info-to-event';
+import useDiagnoseWorkflow from './hooks/use-diagnose-workflow/use-diagnose-workflow';
 import useInitialSelectedEvent from './hooks/use-initial-selected-event';
 import useWorkflowHistoryFetcher from './hooks/use-workflow-history-fetcher';
 import useWorkflowHistoryGrouper from './hooks/use-workflow-history-grouper';
@@ -39,6 +42,7 @@ import { styled } from './workflow-history.styles';
 import {
   type VisibleHistoryRanges,
   type Props,
+  type WorkflowDiagnosticsIssuesByEventId,
 } from './workflow-history.types';
 
 export default function WorkflowHistory({ params }: Props) {
@@ -73,6 +77,28 @@ export default function WorkflowHistory({ params }: Props) {
   });
 
   const { workflowExecutionInfo } = wfExecutionDescription;
+
+  const { data: isDiagnosticsInHistoryEnabled } = useConfigValue(
+    'WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED'
+  );
+
+  const { data: workflowDiagnostics } = useDiagnoseWorkflow(
+    {
+      domain: decodedParams.domain,
+      cluster: decodedParams.cluster,
+      workflowId: decodedParams.workflowId,
+      runId: decodedParams.runId,
+    },
+    { enabled: Boolean(isDiagnosticsInHistoryEnabled) }
+  );
+
+  const workflowDiagnosticsByEventIdMap: WorkflowDiagnosticsIssuesByEventId =
+    useMemo(() => {
+      if (workflowDiagnostics?.parsingError || !workflowDiagnostics?.result)
+        return {};
+
+      return getDiagnosticsIssuesByEventId(workflowDiagnostics.result);
+    }, [workflowDiagnostics]);
 
   const {
     eventGroups,
@@ -398,6 +424,7 @@ export default function WorkflowHistory({ params }: Props) {
         setIsTimelineShown={setIsTimelineShown}
         timelineVirtuosoRef={timelineVirtuosoRef}
         timelineItemToHighlightId={timelineScrollTargetEventGroupId}
+        workflowDiagnosticsByEventIdMap={workflowDiagnosticsByEventIdMap}
       />
       <styled.ContentSection>
         {isUngroupedHistoryViewEnabled ? (
@@ -427,6 +454,7 @@ export default function WorkflowHistory({ params }: Props) {
             fetchMoreEvents={startLoadingHistory}
             isFetchingMoreEvents={isFetchingNextPage}
             onClickShowGroupInTimeline={handleShowGroupInTimeline}
+            workflowDiagnosticsByEventIdMap={workflowDiagnosticsByEventIdMap}
           />
         ) : (
           <WorkflowHistoryGroupedTable
@@ -456,6 +484,7 @@ export default function WorkflowHistory({ params }: Props) {
             fetchMoreEvents={startLoadingHistory}
             isFetchingMoreEvents={isFetchingNextPage}
             onClickShowGroupInTimeline={handleShowGroupInTimeline}
+            workflowDiagnosticsByEventIdMap={workflowDiagnosticsByEventIdMap}
           />
         )}
       </styled.ContentSection>

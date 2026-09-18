@@ -1,5 +1,6 @@
 import { Virtuoso } from 'react-virtuoso';
 
+import scopeDiagnosticsToGroup from '../helpers/scope-diagnostics-to-group';
 import WorkflowHistoryEventGroup from '../workflow-history-event-group/workflow-history-event-group';
 import WorkflowHistoryTableFooter from '../workflow-history-table-footer/workflow-history-table-footer';
 
@@ -25,6 +26,7 @@ export default function WorkflowHistoryGroupedTable({
   fetchMoreEvents,
   isFetchingMoreEvents,
   onClickShowGroupInTimeline,
+  workflowDiagnosticsByEventIdMap,
 }: Props) {
   const noEventsToDisplay = eventGroupsById.length === 0;
 
@@ -72,6 +74,10 @@ export default function WorkflowHistoryGroupedTable({
               }
             }}
             onClickShowInTimeline={() => onClickShowGroupInTimeline(groupId)}
+            workflowDiagnosticsByEventIdMap={scopeDiagnosticsToGroup(
+              group.events,
+              workflowDiagnosticsByEventIdMap
+            )}
           />
         )}
         components={{
