@@ -1,6 +1,7 @@
 import { createElement } from 'react';
 
 import Link from '@/components/link/link';
+import formatDate from '@/utils/data-formatters/format-date';
 import escapeVisibilityQueryValue from '@/utils/visibility/escape-visibility-query-value';
 
 import { type WorkflowSummaryScheduleDetailsConfig } from '../workflow-summary-schedule-details/workflow-summary-schedule-details.types';
@@ -23,8 +24,15 @@ const workflowSummaryScheduleDetailsConfig: WorkflowSummaryScheduleDetailsConfig
       key: 'scheduleTime',
       getLabel: () => 'Schedule time',
       getValue: ({ searchAttributes }) => {
-        const scheduleTime = searchAttributes?.CadenceScheduleTime;
-        return typeof scheduleTime === 'string' ? scheduleTime : '-';
+        const timestampMs = Date.parse(
+          String(searchAttributes?.CadenceScheduleTime ?? '')
+        );
+
+        return createElement(
+          'div',
+          { suppressHydrationWarning: true },
+          timestampMs ? formatDate(timestampMs) : '-'
+        );
       },
     },
     {
