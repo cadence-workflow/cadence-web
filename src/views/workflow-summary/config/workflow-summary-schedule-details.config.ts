@@ -24,20 +24,14 @@ const workflowSummaryScheduleDetailsConfig: WorkflowSummaryScheduleDetailsConfig
       key: 'scheduleTime',
       getLabel: () => 'Schedule time',
       getValue: ({ searchAttributes }) => {
-        const scheduleTime = searchAttributes?.CadenceScheduleTime;
-        if (typeof scheduleTime !== 'string') {
-          return '-';
-        }
-
-        const timestampMs = Date.parse(scheduleTime);
-        if (Number.isNaN(timestampMs)) {
-          return '-';
-        }
+        const timestampMs = Date.parse(
+          String(searchAttributes?.CadenceScheduleTime ?? '')
+        );
 
         return createElement(
           'div',
           { suppressHydrationWarning: true },
-          formatDate(timestampMs)
+          timestampMs ? formatDate(timestampMs) : '-'
         );
       },
     },
