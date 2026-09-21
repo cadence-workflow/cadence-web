@@ -1,4 +1,7 @@
- import { WORKFLOW_DIAGNOSTICS_EVENT_ID_KEY, WORKFLOW_STARTED_EVENT_ID } from '../workflow-history.constants';
+import {
+  WORKFLOW_DIAGNOSTICS_EVENT_ID_KEY,
+  WORKFLOW_STARTED_EVENT_ID,
+} from '../workflow-history.constants';
 
 export default function getCanonicalEventIdFromIssueMetadata(
   metadata: any

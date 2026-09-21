@@ -1,3 +1,3 @@
 export const WORKFLOW_STARTED_EVENT_ID = '1';
 
-export const WORKFLOW_DIAGNOSTICS_EVENT_ID_KEY = 'EventID'
+export const WORKFLOW_DIAGNOSTICS_EVENT_ID_KEY = 'EventID';
