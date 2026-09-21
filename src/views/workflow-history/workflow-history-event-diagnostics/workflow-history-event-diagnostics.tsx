@@ -7,6 +7,8 @@ import { Button } from 'baseui/button';
 import { MdArrowDropDown, MdArrowDropUp, MdOpenInNew } from 'react-icons/md';
 import { RiStethoscopeLine } from 'react-icons/ri';
 
+import WorkflowHistoryEventDiagnosticsTable from '../workflow-history-event-diagnostics-table/workflow-history-event-diagnostics-table';
+
 import { overrides, styled } from './workflow-history-event-diagnostics.styles';
 import { type Props } from './workflow-history-event-diagnostics.types';
 
@@ -76,8 +78,15 @@ export default function WorkflowHistoryEventDiagnostics({
               expanded={getIsIssueExpanded(issueExpansionId)}
               onChange={() => toggleIsIssueExpanded(issueExpansionId)}
             >
-              {/* Placeholder for actual metadata table */}
-              {JSON.stringify({ issue, workflowPageParams })}
+              <WorkflowHistoryEventDiagnosticsTable
+                metadata={{
+                  issueId: issue.issueId,
+                  ...issue.metadata,
+                  rootCause: issue.rootCauseType,
+                  ...issue.rootCauseMetadata,
+                }}
+                {...workflowPageParams}
+              />
             </Panel>
           </styled.IssueContainer>
         );
