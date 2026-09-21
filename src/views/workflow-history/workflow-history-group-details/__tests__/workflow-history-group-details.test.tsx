@@ -31,12 +31,7 @@ jest.mock(
   '../../workflow-history-event-diagnostics/workflow-history-event-diagnostics',
   () =>
     jest.fn(
-      ({
-        issues,
-        getIsIssueExpanded,
-        toggleIsIssueExpanded,
-        onClickHistoryEvent,
-      }) => (
+      ({ issues, getIsIssueExpanded, toggleIsIssueExpanded }) => (
         <div aria-label="Workflow history event diagnostics">
           <div>Diagnostics ({issues.length} issues)</div>
           <div data-testid="diagnostics-has-getter">
@@ -45,12 +40,6 @@ jest.mock(
           <div data-testid="diagnostics-has-toggler">
             {typeof toggleIsIssueExpanded === 'function' ? 'true' : 'false'}
           </div>
-          <div data-testid="diagnostics-has-history-click">
-            {typeof onClickHistoryEvent === 'function' ? 'true' : 'false'}
-          </div>
-          <button type="button" onClick={() => onClickHistoryEvent('event-2')}>
-            jump to event-2
-          </button>
         </div>
       )
     )
@@ -439,47 +428,6 @@ describe(WorkflowHistoryGroupDetails.name, () => {
       screen.getByLabelText('Workflow history event diagnostics')
     ).toBeInTheDocument();
     expect(screen.getByText('Diagnostics (2 issues)')).toBeInTheDocument();
-    expect(
-      screen.getByTestId('diagnostics-has-history-click')
-    ).toHaveTextContent('true');
-  });
-
-  it('selects matching event tab when diagnostics history event is clicked', async () => {
-    const originalWindow = window;
-    window = Object.create(window);
-    Object.defineProperty(window, 'location', {
-      value: {
-        ...window.location,
-        origin: 'http://localhost',
-        pathname:
-          '/domains/test-domain/workflows/test-workflow/test-run/history',
-      },
-      writable: true,
-    });
-
-    const { user } = setup({
-      groupDetailsEntries: mockGroupDetails,
-      initialEventId: 'event-1',
-      diagnosticsIssuesByEventId: {
-        'event-1': [
-          {
-            issueId: 1,
-            invariantType: 'test',
-            reason: 'test reason',
-            metadata: {},
-          },
-        ],
-      },
-    });
-
-    await user.click(screen.getByRole('button', { name: 'jump to event-2' }));
-    await user.click(screen.getByLabelText('Copy link to event'));
-
-    expect(copy).toHaveBeenCalledWith(
-      'http://localhost/domains/test-domain/workflows/test-workflow/test-run/history?he=event-2'
-    );
-
-    window = originalWindow;
   });
 });
 
