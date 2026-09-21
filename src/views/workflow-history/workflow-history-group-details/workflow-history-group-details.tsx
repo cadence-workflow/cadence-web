@@ -124,7 +124,14 @@ export default function WorkflowHistoryGroupDetails({
           issues={diagnosticsIssues}
           getIsIssueExpanded={getIsIssueExpanded}
           toggleIsIssueExpanded={toggleIsIssueExpanded}
-          {...workflowPageParams}
+          onClickHistoryEvent={(eventId) => {
+            const selectedIdx = groupDetailsEntries.findIndex(
+              ([id]) => id === String(eventId)
+            );
+            if (selectedIdx >= 0) {
+              setSelectedIndex(selectedIdx);
+            }
+          }}
         />
       )}
       <WorkflowHistoryEventDetails
