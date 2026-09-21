@@ -33,10 +33,10 @@ This step is optional. Use it to share a preview of a new component, or a change
 3. Run workflow, choose your branch, then Run workflow.
 4. Wait 1 to 2 minutes for it to finish.
 5. Before you deploy:
-  a. In your fork, go to Settings, then Pages.
-  b. Under Build and deployment, set Source to "GitHub Actions".
-  c. In your fork, go to Settings, then Environments, then `github-pages`.
-  d. Under Deployment branches and tags, add a rule for your branch name (or `*` for any branch).
+  - In your fork, go to Settings, then Pages.
+  - Under Build and deployment, set Source to "GitHub Actions".
+  - In your fork, go to Settings, then Environments, then `github-pages`.
+  - Under Deployment branches and tags, add a rule for your branch name (or `*` for any branch).
 6. Open `https://<your-username>.github.io/cadence-web/`.
 
 **Good to know**
