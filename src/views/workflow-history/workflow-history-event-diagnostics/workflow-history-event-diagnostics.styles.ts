@@ -64,7 +64,7 @@ export const overrides = {
         ...$theme.typography.ParagraphSmall,
         color: $theme.colors.contentPrimary,
         backgroundColor: $theme.colors.backgroundWarningLight,
-        paddingTop: $theme.sizing.scale600,
+        paddingTop: $theme.sizing.scale400,
         paddingBottom: $theme.sizing.scale400,
         paddingLeft: $theme.sizing.scale850,
       }),

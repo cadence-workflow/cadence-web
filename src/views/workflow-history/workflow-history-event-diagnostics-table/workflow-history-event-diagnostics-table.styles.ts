@@ -6,7 +6,6 @@ export const styled = {
     ({ $theme }: { $theme: Theme }) => ({
       display: 'flex',
       flexDirection: 'column',
-      gap: $theme.sizing.scale500,
       paddingTop: $theme.sizing.scale100,
       paddingBottom: $theme.sizing.scale100,
     })
@@ -17,10 +16,13 @@ export const styled = {
       display: 'flex',
       flexDirection: $forceWrap ? 'column' : 'row',
       gap: $theme.sizing.scale300,
+      alignItems: 'baseline',
+      paddingTop: $theme.sizing.scale200,
+      paddingBottom: $theme.sizing.scale200,
       wordBreak: 'break-word',
       ...(!$forceWrap && { flexWrap: 'wrap' }),
       ':not(:last-child)': {
-        borderBottom: `1px solid ${$theme.colors.borderWarning}`,
+        borderBottom: `1px solid hsla(0, 0%, 0%, 0.08)`,
       },
     })
   ),

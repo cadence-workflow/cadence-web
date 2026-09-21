@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import workflowDiagnosticsMetadataParsersConfig from '@/views/workflow-diagnostics/config/workflow-diagnostics-metadata-parsers.config';
+import workflowHistoryDiagnosticsParsersConfig from '../config/workflow-history-diagnostics-parsers.config';
 
 import { styled } from './workflow-history-event-diagnostics-table.styles';
 import {
@@ -10,13 +10,13 @@ import {
 
 export default function WorkflowHistoryEventDiagnosticsTable({
   metadata,
-  ...workflowPageParams
+  onClickHistoryEvent,
 }: Props) {
   const parsedMetadataItems = useMemo(
     () =>
       Object.entries(metadata)
         .map(([key, value]) => {
-          const renderConfig = workflowDiagnosticsMetadataParsersConfig.find(
+          const renderConfig = workflowHistoryDiagnosticsParsersConfig.find(
             (c) => c.matcher(key, value)
           );
 
@@ -28,7 +28,10 @@ export default function WorkflowHistoryEventDiagnosticsTable({
             key,
             label: key,
             value: renderConfig ? (
-              <renderConfig.renderValue value={value} {...workflowPageParams} />
+              <renderConfig.renderValue
+                value={value}
+                onClickHistoryEvent={onClickHistoryEvent}
+              />
             ) : (
               String(value)
             ),
@@ -38,7 +41,7 @@ export default function WorkflowHistoryEventDiagnosticsTable({
         .filter(
           (field) => field !== null
         ) as Array<ParsedWorkflowHistoryEventDiagnosticsField>,
-    [metadata, workflowPageParams]
+    [metadata, onClickHistoryEvent]
   );
 
   return (

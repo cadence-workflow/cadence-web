@@ -4,16 +4,17 @@ import WorkflowHistoryEventDiagnostics from '../workflow-history-event-diagnosti
 import { type Props } from '../workflow-history-event-diagnostics.types';
 
 jest.mock(
-  '@/views/workflow-diagnostics/workflow-diagnostics-metadata-table/workflow-diagnostics-metadata-table',
-  () => jest.fn(() => <div data-testid="metadata-table">Metadata Table</div>)
+  '../../workflow-history-event-diagnostics-table/workflow-history-event-diagnostics-table',
+  () =>
+    jest.fn(({ metadata, onClickHistoryEvent }) => (
+      <div data-testid="metadata-table">
+        <span>{JSON.stringify(metadata)}</span>
+        <button onClick={() => onClickHistoryEvent('123')}>
+          click history event
+        </button>
+      </div>
+    ))
 );
-
-const mockWorkflowPageParams = {
-  domain: 'test-domain',
-  cluster: 'test-cluster',
-  workflowId: 'test-workflow-id',
-  runId: 'test-run-id',
-};
 
 describe('WorkflowHistoryEventDiagnostics', () => {
   const defaultIssues: Props['issues'] = [
@@ -36,21 +37,28 @@ describe('WorkflowHistoryEventDiagnostics', () => {
     issues = defaultIssues,
     getIsIssueExpanded = jest.fn(() => false),
     toggleIsIssueExpanded = jest.fn(),
+    onClickHistoryEvent = jest.fn(),
   }: Partial<Props> = {}) {
     const user = userEvent.setup();
     const mockGetIsIssueExpanded = getIsIssueExpanded;
     const mockToggleIsIssueExpanded = toggleIsIssueExpanded;
+    const mockOnClickHistoryEvent = onClickHistoryEvent;
 
     render(
       <WorkflowHistoryEventDiagnostics
         issues={issues}
         getIsIssueExpanded={mockGetIsIssueExpanded}
         toggleIsIssueExpanded={mockToggleIsIssueExpanded}
-        {...mockWorkflowPageParams}
+        onClickHistoryEvent={mockOnClickHistoryEvent}
       />
     );
 
-    return { user, mockGetIsIssueExpanded, mockToggleIsIssueExpanded };
+    return {
+      user,
+      mockGetIsIssueExpanded,
+      mockToggleIsIssueExpanded,
+      mockOnClickHistoryEvent,
+    };
   }
 
   it('renders null when issues array is empty', () => {
@@ -106,6 +114,44 @@ describe('WorkflowHistoryEventDiagnostics', () => {
     });
 
     expect(screen.getByTestId('metadata-table')).toBeInTheDocument();
+  });
+
+  it('passes issue metadata along with root cause and issue ID to the metadata table', () => {
+    setup({
+      issues: [
+        {
+          ...defaultIssues[0],
+          metadata: { ActivityScheduledID: 5 },
+          rootCauseType: 'Activity Timeout',
+          rootCauseMetadata: { ExpectedTimeout: 30 },
+        },
+      ],
+      getIsIssueExpanded: jest.fn(() => true),
+    });
+
+    expect(
+      screen.getByText(
+        JSON.stringify({
+          rootCause: 'Activity Timeout',
+          ActivityScheduledID: 5,
+          ExpectedTimeout: 30,
+          issueId: 0,
+        })
+      )
+    ).toBeInTheDocument();
+  });
+
+  it('passes onClickHistoryEvent to the metadata table', async () => {
+    const { user, mockOnClickHistoryEvent } = setup({
+      issues: [defaultIssues[0]],
+      getIsIssueExpanded: jest.fn(() => true),
+    });
+
+    await user.click(
+      screen.getByRole('button', { name: 'click history event' })
+    );
+
+    expect(mockOnClickHistoryEvent).toHaveBeenCalledWith('123');
   });
 
   it('hides metadata table when issue is collapsed', () => {

@@ -16,7 +16,7 @@ export default function WorkflowHistoryEventDiagnostics({
   issues,
   getIsIssueExpanded,
   toggleIsIssueExpanded,
-  ...workflowPageParams
+  onClickHistoryEvent,
 }: Props) {
   if (issues.length === 0) {
     return null;
@@ -80,12 +80,12 @@ export default function WorkflowHistoryEventDiagnostics({
             >
               <WorkflowHistoryEventDiagnosticsTable
                 metadata={{
-                  issueId: issue.issueId,
-                  ...issue.metadata,
                   rootCause: issue.rootCauseType,
+                  ...issue.metadata,
                   ...issue.rootCauseMetadata,
+                  issueId: issue.issueId,
                 }}
-                {...workflowPageParams}
+                onClickHistoryEvent={onClickHistoryEvent}
               />
             </Panel>
           </styled.IssueContainer>
