@@ -1,8 +1,6 @@
-// A drag-to-select leaves a non-empty selection at click time; a plain click
-// collapses it. Checking this native state is enough to tell them apart.
-// Keyboard and assistive-technology activation dispatch a click with
-// `detail === 0` without collapsing any existing selection, so they must stay
-// navigable regardless of what is selected on the page.
+// A drag-to-select ends as a click with text still selected; a plain click
+// collapses it. detail > 0 keeps keyboard clicks (detail === 0) navigable.
+// https://developer.mozilla.org/en-US/docs/Web/API/UIEvent/detail
 export default function shouldPreventLinkNavigation(event: {
   detail: number;
 }): boolean {

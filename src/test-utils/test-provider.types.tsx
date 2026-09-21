@@ -12,9 +12,7 @@ export type Props = {
   router?: {
     initialUrl?: string;
     pathnames?: string[];
-    // Fires when next/link actually triggers client-side navigation (i.e.
-    // its own preventDefault-then-push was reached). Lets tests assert
-    // navigation was/wasn't triggered.
+    // Fires when next/link actually performs client-side navigation.
     onPush?: (url: string, options: { shallow: boolean }) => void;
   };
   queryClientConfig?: QueryClientConfig;

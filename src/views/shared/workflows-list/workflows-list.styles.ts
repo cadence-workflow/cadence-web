@@ -76,11 +76,7 @@ export const styled = {
       cursor: 'pointer',
       textDecoration: 'none',
       color: 'inherit',
-      // Anchors are draggable by default; starting a mouse-drag on one fires
-      // the browser's native "drag this link" gesture instead of extending a
-      // text selection. Disabling it (WebKit/Blink key off this property,
-      // not the `draggable` attribute) lets drag-to-select work from
-      // anywhere in the row, including starting on the link itself.
+      // Disable the native link-drag gesture so drag-to-select works.
       WebkitUserDrag: 'none',
       ':hover': {
         backgroundColor: `${$theme.colors.contentPrimary}0A`,

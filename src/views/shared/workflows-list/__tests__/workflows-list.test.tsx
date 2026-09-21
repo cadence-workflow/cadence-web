@@ -77,12 +77,8 @@ describe(WorkflowsList.name, () => {
     }
   });
 
-  // `event.defaultPrevented` is true after every click regardless of our fix
-  // (next/link's own handler also calls preventDefault before navigating),
-  // so it can't distinguish the two cases. `onPush` only fires when
-  // next/link actually reaches its navigation step, which it skips whenever
-  // our handler already prevented the default - so it's a reliable signal
-  // for whether navigation was actually triggered.
+  // next/link always preventDefaults, so defaultPrevented can't tell whether
+  // navigation happened; onPush only fires when it actually navigates.
   it('triggers navigation on a plain click with no text selected', async () => {
     const onPush = jest.fn();
     const { user } = setup({}, { router: { onPush } });
@@ -96,11 +92,8 @@ describe(WorkflowsList.name, () => {
     const onPush = jest.fn();
     const { user } = setup({}, { router: { onPush } });
 
-    // A real drag-to-select is a single pointer gesture: press, move (which
-    // extends the selection), then release (which fires the click). Setting
-    // a selection via the Range API and firing a separate click wouldn't
-    // work here since a plain click's own mousedown handling collapses any
-    // pre-existing selection first, same as in a real browser.
+    // One pointer gesture: a Range-API selection would be collapsed by the
+    // click's own mousedown, same as in a real browser.
     const cell = screen.getByText('wf-1');
     await user.pointer([
       { target: cell, offset: 0, keys: '[MouseLeft>]' },
