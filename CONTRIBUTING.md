@@ -32,14 +32,15 @@ This step is optional. Use it to share a preview of a new component, or a change
 2. Select the "Storybook Pages" workflow.
 3. Run workflow, choose your branch, then Run workflow.
 4. Wait 1 to 2 minutes for it to finish.
-5. (first time only) Before your very first deploy:
+5. Before you deploy:
   a. In your fork, go to Settings, then Pages.
-  b. Under Build and deployment, set Source to "Deploy from a branch" (and not "GitHub Actions").
-  c. Set Branch to `gh-pages` and Folder to `/ (root)`, then Save.
+  b. Under Build and deployment, set Source to "GitHub Actions".
+  c. In your fork, go to Settings, then Environments, then `github-pages`.
+  d. Under Deployment branches and tags, add a rule for your branch name (or `*` for any branch).
 6. Open `https://<your-username>.github.io/cadence-web/`.
 
 **Good to know**
 
-- The first deploy creates the `gh-pages` branch, which is why you need to set the fork manually in step 5.
+- Without step 5, the workflow fails with a protection-rule error instead of deploying.
 - It only runs when you trigger it manually.
 - It's one live site per fork; each run replaces what was there before.
