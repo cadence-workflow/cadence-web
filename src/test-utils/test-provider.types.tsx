@@ -12,7 +12,6 @@ export type Props = {
   router?: {
     initialUrl?: string;
     pathnames?: string[];
-    // Fires when next/link actually performs client-side navigation.
     onPush?: (url: string, options: { shallow: boolean }) => void;
   };
   queryClientConfig?: QueryClientConfig;

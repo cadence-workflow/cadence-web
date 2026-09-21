@@ -76,7 +76,6 @@ export const styled = {
       cursor: 'pointer',
       textDecoration: 'none',
       color: 'inherit',
-      // Disable the native link-drag gesture so drag-to-select works.
       WebkitUserDrag: 'none',
       ':hover': {
         backgroundColor: `${$theme.colors.contentPrimary}0A`,

@@ -77,8 +77,6 @@ describe(WorkflowsList.name, () => {
     }
   });
 
-  // next/link always preventDefaults, so defaultPrevented can't tell whether
-  // navigation happened; onPush only fires when it actually navigates.
   it('triggers navigation on a plain click with no text selected', async () => {
     const onPush = jest.fn();
     const { user } = setup({}, { router: { onPush } });
@@ -92,8 +90,6 @@ describe(WorkflowsList.name, () => {
     const onPush = jest.fn();
     const { user } = setup({}, { router: { onPush } });
 
-    // One pointer gesture: a Range-API selection would be collapsed by the
-    // click's own mousedown, same as in a real browser.
     const cell = screen.getByText('wf-1');
     await user.pointer([
       { target: cell, offset: 0, keys: '[MouseLeft>]' },
