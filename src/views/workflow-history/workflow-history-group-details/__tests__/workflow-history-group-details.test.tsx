@@ -30,19 +30,17 @@ jest.mock(
 jest.mock(
   '../../workflow-history-event-diagnostics/workflow-history-event-diagnostics',
   () =>
-    jest.fn(
-      ({ issues, getIsIssueExpanded, toggleIsIssueExpanded }) => (
-        <div aria-label="Workflow history event diagnostics">
-          <div>Diagnostics ({issues.length} issues)</div>
-          <div data-testid="diagnostics-has-getter">
-            {typeof getIsIssueExpanded === 'function' ? 'true' : 'false'}
-          </div>
-          <div data-testid="diagnostics-has-toggler">
-            {typeof toggleIsIssueExpanded === 'function' ? 'true' : 'false'}
-          </div>
+    jest.fn(({ issues, getIsIssueExpanded, toggleIsIssueExpanded }) => (
+      <div aria-label="Workflow history event diagnostics">
+        <div>Diagnostics ({issues.length} issues)</div>
+        <div data-testid="diagnostics-has-getter">
+          {typeof getIsIssueExpanded === 'function' ? 'true' : 'false'}
         </div>
-      )
-    )
+        <div data-testid="diagnostics-has-toggler">
+          {typeof toggleIsIssueExpanded === 'function' ? 'true' : 'false'}
+        </div>
+      </div>
+    ))
 );
 
 describe(WorkflowHistoryGroupDetails.name, () => {
