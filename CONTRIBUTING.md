@@ -22,7 +22,9 @@ Follow [this great guide](https://gist.github.com/Chaser324/ce0505fbed06b947d962
 
 ## Publish a personal Storybook preview
 
-This step is optional. Use it share a preview of a new component, or a change to an existing one. You can deploy your fork to your own GitHub Pages site, giving you a shareable URL such as `https://<your-username>.github.io/cadence-web/`.
+You can deploy your fork to your own GitHub Pages site, giving you a shareable URL such as `https://<your-username>.github.io/cadence-web/`.
+
+This step is optional. Use it to share a preview of a new component, or a change to an existing one. 
 
 **Deploy a branch**
 
@@ -30,17 +32,14 @@ This step is optional. Use it share a preview of a new component, or a change to
 2. Select the "Storybook Pages" workflow.
 3. Run workflow, choose your branch, then Run workflow.
 4. Wait 1 to 2 minutes for it to finish.
-5. Open `https://<your-username>.github.io/cadence-web/`.
-
-**One-time setup, after your first deploy**
-
-1. In your fork, go to Settings, then Pages.
-2. Under Build and deployment, set Source to "Deploy from a branch" (and not "GitHub Actions").
-3. Set Branch to `gh-pages` and Folder to `/ (root)`, then Save.
-
-The first deploy creates the `gh-pages` branch, which is why this comes second. GitHub can take up to 10 minutes to publish.
+5. (first time only) Before your very first deploy:
+  a. In your fork, go to Settings, then Pages.
+  b. Under Build and deployment, set Source to "Deploy from a branch" (and not "GitHub Actions").
+  c. Set Branch to `gh-pages` and Folder to `/ (root)`, then Save.
+6. Open `https://<your-username>.github.io/cadence-web/`.
 
 **Good to know**
 
+- The first deploy creates the `gh-pages` branch, which is why you need to set the fork manually in step 5.
 - It only runs when you trigger it manually.
 - It's one live site per fork; each run replaces what was there before.
