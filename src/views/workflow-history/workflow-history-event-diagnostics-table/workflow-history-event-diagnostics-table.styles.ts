@@ -16,15 +16,17 @@ export const styled = {
       display: 'flex',
       flexDirection: $forceWrap ? 'column' : 'row',
       gap: $theme.sizing.scale300,
-      alignItems: 'baseline',
+      alignItems: 'stretch',
       paddingTop: $theme.sizing.scale200,
-      paddingBottom: $theme.sizing.scale200,
+      paddingBottom: $theme.sizing.scale500,
       wordBreak: 'break-word',
       ...(!$forceWrap && {
+        alignItems: 'baseline',
         flexWrap: 'wrap',
-        paddingBottom: $theme.sizing.scale500,
+        paddingBottom: $theme.sizing.scale200,
       }),
       ':not(:last-child)': {
+        // Matches $theme.borders.border200, which only applies to full borders
         borderBottom: `1px solid hsla(0, 0%, 0%, 0.08)`,
       },
     })
