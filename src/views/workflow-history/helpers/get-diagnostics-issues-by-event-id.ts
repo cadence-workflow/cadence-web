@@ -12,7 +12,7 @@ import getCanonicalEventIdFromIssueMetadata from './get-canonical-event-id-from-
 export default function getDiagnosticsIssuesByEventId(
   diagnosticsResult: WorkflowDiagnosticsResult
 ): WorkflowDiagnosticsIssuesByEventId {
-  const mergedIssues: Array<WorkflowDiagnosticsIssue> = [];
+  const flattenedIssues: Array<WorkflowDiagnosticsIssue> = [];
 
   for (const group of Object.values(diagnosticsResult.result)) {
     if (!group) continue;
@@ -23,7 +23,7 @@ export default function getDiagnosticsIssuesByEventId(
 
     for (const issue of group.issues) {
       const rootCause = rootCausesById.get(issue.issueId);
-      mergedIssues.push({
+      flattenedIssues.push({
         ...issue,
         rootCauseType: rootCause?.rootCauseType,
         rootCauseMetadata: rootCause?.metadata,
@@ -32,7 +32,7 @@ export default function getDiagnosticsIssuesByEventId(
     }
   }
 
-  return groupBy(mergedIssues, (issue) =>
+  return groupBy(flattenedIssues, (issue) =>
     getCanonicalEventIdFromIssueMetadata(issue.metadata)
   );
 }
