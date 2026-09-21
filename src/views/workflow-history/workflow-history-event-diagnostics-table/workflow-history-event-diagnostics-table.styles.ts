@@ -20,7 +20,10 @@ export const styled = {
       paddingTop: $theme.sizing.scale200,
       paddingBottom: $theme.sizing.scale200,
       wordBreak: 'break-word',
-      ...(!$forceWrap && { flexWrap: 'wrap' }),
+      ...(!$forceWrap && {
+        flexWrap: 'wrap',
+        paddingBottom: $theme.sizing.scale500,
+      }),
       ':not(:last-child)': {
         borderBottom: `1px solid hsla(0, 0%, 0%, 0.08)`,
       },
