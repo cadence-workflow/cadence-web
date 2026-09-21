@@ -6,12 +6,9 @@ import { type Props } from '../workflow-history-event-diagnostics.types';
 jest.mock(
   '../../workflow-history-event-diagnostics-table/workflow-history-event-diagnostics-table',
   () =>
-    jest.fn(({ metadata, onClickHistoryEvent }) => (
+    jest.fn(({ metadata }) => (
       <div data-testid="metadata-table">
         <span>{JSON.stringify(metadata)}</span>
-        <button onClick={() => onClickHistoryEvent('123')}>
-          click history event
-        </button>
       </div>
     ))
 );
@@ -37,19 +34,16 @@ describe('WorkflowHistoryEventDiagnostics', () => {
     issues = defaultIssues,
     getIsIssueExpanded = jest.fn(() => false),
     toggleIsIssueExpanded = jest.fn(),
-    onClickHistoryEvent = jest.fn(),
   }: Partial<Props> = {}) {
     const user = userEvent.setup();
     const mockGetIsIssueExpanded = getIsIssueExpanded;
     const mockToggleIsIssueExpanded = toggleIsIssueExpanded;
-    const mockOnClickHistoryEvent = onClickHistoryEvent;
 
     render(
       <WorkflowHistoryEventDiagnostics
         issues={issues}
         getIsIssueExpanded={mockGetIsIssueExpanded}
         toggleIsIssueExpanded={mockToggleIsIssueExpanded}
-        onClickHistoryEvent={mockOnClickHistoryEvent}
       />
     );
 
@@ -57,7 +51,6 @@ describe('WorkflowHistoryEventDiagnostics', () => {
       user,
       mockGetIsIssueExpanded,
       mockToggleIsIssueExpanded,
-      mockOnClickHistoryEvent,
     };
   }
 
@@ -139,19 +132,6 @@ describe('WorkflowHistoryEventDiagnostics', () => {
         })
       )
     ).toBeInTheDocument();
-  });
-
-  it('passes onClickHistoryEvent to the metadata table', async () => {
-    const { user, mockOnClickHistoryEvent } = setup({
-      issues: [defaultIssues[0]],
-      getIsIssueExpanded: jest.fn(() => true),
-    });
-
-    await user.click(
-      screen.getByRole('button', { name: 'click history event' })
-    );
-
-    expect(mockOnClickHistoryEvent).toHaveBeenCalledWith('123');
   });
 
   it('hides metadata table when issue is collapsed', () => {

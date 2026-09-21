@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { render, screen, userEvent } from '@/test-utils/rtl';
+import { render, screen } from '@/test-utils/rtl';
 
 import WorkflowHistoryEventDiagnosticsTable from '../workflow-history-event-diagnostics-table';
 import {
@@ -15,11 +15,7 @@ jest.mock(
       {
         name: 'Test Link Parser',
         matcher: (key, value) => key === 'ActivityScheduledID' && value !== 0,
-        renderValue: ({ value, onClickHistoryEvent }) => (
-          <button onClick={() => onClickHistoryEvent(value)}>
-            Link: {String(value)}
-          </button>
-        ),
+        renderValue: ({ value }) => <span>Link: {String(value)}</span>,
       },
       {
         name: 'Test Object Parser',
@@ -74,9 +70,7 @@ describe(WorkflowHistoryEventDiagnosticsTable.name, () => {
     setup({ metadata });
 
     expect(screen.getByText('ActivityScheduledID')).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: 'Link: 456' })
-    ).toBeInTheDocument();
+    expect(screen.getByText('Link: 456')).toBeInTheDocument();
 
     expect(screen.getByText('objectKey')).toBeInTheDocument();
     expect(screen.getByTestId('json-renderer')).toBeInTheDocument();
@@ -84,16 +78,6 @@ describe(WorkflowHistoryEventDiagnosticsTable.name, () => {
 
     expect(screen.getByText('emptyKey')).toBeInTheDocument();
     expect(screen.getByTestId('empty-string')).toBeInTheDocument();
-  });
-
-  it('passes onClickHistoryEvent to matching parsers', async () => {
-    const { user, mockOnClickHistoryEvent } = setup({
-      metadata: { ActivityScheduledID: 456 },
-    });
-
-    await user.click(screen.getByRole('button', { name: 'Link: 456' }));
-
-    expect(mockOnClickHistoryEvent).toHaveBeenCalledWith(456);
   });
 
   it('hides values when parser is configured with hide: true', () => {
@@ -178,15 +162,9 @@ function setup({
 }: {
   metadata?: Record<string, any>;
 } = {}) {
-  const user = userEvent.setup();
-  const mockOnClickHistoryEvent = jest.fn();
-
   const props: Props = {
     metadata,
-    onClickHistoryEvent: mockOnClickHistoryEvent,
   };
 
   render(<WorkflowHistoryEventDiagnosticsTable {...props} />);
-
-  return { user, mockOnClickHistoryEvent };
 }

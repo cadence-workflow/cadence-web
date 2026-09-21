@@ -4,5 +4,4 @@ export type Props = {
   issues: Array<WorkflowDiagnosticsIssue>;
   getIsIssueExpanded: (issueExpansionId: string) => boolean;
   toggleIsIssueExpanded: (issueExpansionId: string) => void;
-  onClickHistoryEvent: (eventId: string) => void;
 };

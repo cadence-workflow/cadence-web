@@ -10,7 +10,6 @@ import {
 
 export default function WorkflowHistoryEventDiagnosticsTable({
   metadata,
-  onClickHistoryEvent,
 }: Props) {
   const parsedMetadataItems = useMemo(
     () =>
@@ -28,10 +27,7 @@ export default function WorkflowHistoryEventDiagnosticsTable({
             key,
             label: key,
             value: renderConfig ? (
-              <renderConfig.renderValue
-                value={value}
-                onClickHistoryEvent={onClickHistoryEvent}
-              />
+              <renderConfig.renderValue value={value} />
             ) : (
               String(value)
             ),
@@ -41,7 +37,7 @@ export default function WorkflowHistoryEventDiagnosticsTable({
         .filter(
           (field) => field !== null
         ) as Array<ParsedWorkflowHistoryEventDiagnosticsField>,
-    [metadata, onClickHistoryEvent]
+    [metadata]
   );
 
   return (

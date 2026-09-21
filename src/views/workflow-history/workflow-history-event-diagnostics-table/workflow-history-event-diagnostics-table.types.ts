@@ -2,12 +2,10 @@ import { type ComponentType } from 'react';
 
 export type Props = {
   metadata: any;
-  onClickHistoryEvent: (eventId: string) => void;
 };
 
 export type MetadataValueComponentProps = {
   value: any;
-  onClickHistoryEvent: (eventId: string) => void;
 };
 
 export type WorkflowHistoryEventDiagnosticsParser = {
