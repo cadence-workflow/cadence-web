@@ -26,21 +26,21 @@ You can deploy your fork to your own GitHub Pages site, giving you a shareable U
 
 This step is optional. Use it to share a preview of a new component, or a change to an existing one. 
 
+**Before you deploy**
+1. In your fork, go to Settings, then Pages.
+2. Under Build and deployment, set Source to "GitHub Actions".
+3. In your fork, go to Settings, then Environments, then `github-pages`.
+4. Under Deployment branches and tags, add a rule for your branch name (or `*` for any branch).
+
 **Deploy a branch**
 
 1. In your fork, open the Actions tab. The first time, click "I understand my workflows, go ahead and enable them".
 2. Select the "Storybook Pages" workflow.
 3. Run workflow, choose your branch, then Run workflow.
 4. Wait 1 to 2 minutes for it to finish.
-5. Before you deploy:
-  - In your fork, go to Settings, then Pages.
-  - Under Build and deployment, set Source to "GitHub Actions".
-  - In your fork, go to Settings, then Environments, then `github-pages`.
-  - Under Deployment branches and tags, add a rule for your branch name (or `*` for any branch).
-6. Open `https://<your-username>.github.io/cadence-web/`.
+5. Open `https://<your-username>.github.io/cadence-web/`.
 
 **Good to know**
 
-- Without step 5, the workflow fails with a protection-rule error instead of deploying.
 - It only runs when you trigger it manually.
 - It's one live site per fork; each run replaces what was there before.
