@@ -1,4 +1,5 @@
 import WORKFLOW_HISTORY_DIAGNOSTICS_EVENT_ID_KEY from '../config/workflow-history-diagnostics-event-id-key.config';
+import { WORKFLOW_STARTED_EVENT_ID } from '../workflow-history.constants';
 
 export default function getCanonicalEventIdFromIssueMetadata(
   metadata: any
@@ -10,5 +11,5 @@ export default function getCanonicalEventIdFromIssueMetadata(
     }
   }
 
-  return '1';
+  return WORKFLOW_STARTED_EVENT_ID;
 }
