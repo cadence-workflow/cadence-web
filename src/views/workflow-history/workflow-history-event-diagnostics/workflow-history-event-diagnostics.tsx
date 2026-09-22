@@ -66,6 +66,7 @@ export default function WorkflowHistoryEventDiagnostics({
                         target="_blank"
                         rel="noreferrer"
                         href={issue.runbook}
+                        onClick={(event) => event.stopPropagation()}
                         endEnhancer={<MdOpenInNew />}
                       >
                         Runbook
