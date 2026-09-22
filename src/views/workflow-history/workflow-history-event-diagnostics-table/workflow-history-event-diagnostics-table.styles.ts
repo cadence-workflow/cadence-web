@@ -26,8 +26,12 @@ export const styled = {
         paddingBottom: $theme.sizing.scale200,
       }),
       ':not(:last-child)': {
-        // Matches $theme.borders.border200, which only applies to full borders
-        borderBottom: `1px solid hsla(0, 0%, 0%, 0.08)`,
+        borderColor: $theme.borders.border200.borderColor,
+        borderStyle: $theme.borders.border200.borderStyle,
+        borderBottomWidth: $theme.borders.border200.borderWidth,
+        borderTopWidth: 0,
+        borderLeftWidth: 0,
+        borderRightWidth: 0,
       },
     })
   ),
