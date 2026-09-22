@@ -46,7 +46,7 @@ export default function WorkflowSummaryDiagnosticsBanner({
         href={`/domains/${domain}/${cluster}/workflows/${workflowId}/${runId}/${isWorkflowDiagnosticsInHistoryEnabled ? 'history' : 'diagnostics'}`}
       >
         {isWorkflowDiagnosticsInHistoryEnabled
-          ? 'View in History'
+          ? 'View history'
           : `View ${issuesCount === 1 ? 'issue' : 'issues'}`}
       </Button>
     </styled.Banner>

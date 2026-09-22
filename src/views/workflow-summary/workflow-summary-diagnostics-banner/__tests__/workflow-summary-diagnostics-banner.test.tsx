@@ -39,7 +39,7 @@ describe(WorkflowSummaryDiagnosticsBanner.name, () => {
     expect(screen.getByText('View issues')).toBeInTheDocument();
   });
 
-  it('should render View in History when diagnostics in history is enabled', () => {
+  it('should render View history when diagnostics in history is enabled', () => {
     setup({
       mockIssuesCount: 1,
       isWorkflowDiagnosticsInHistoryEnabled: true,
@@ -48,7 +48,7 @@ describe(WorkflowSummaryDiagnosticsBanner.name, () => {
     expect(
       screen.getByText('1 issue was detected on this workflow')
     ).toBeInTheDocument();
-    expect(screen.getByText('View in History')).toBeInTheDocument();
+    expect(screen.getByText('View history')).toBeInTheDocument();
     expect(screen.queryByText('View issue')).not.toBeInTheDocument();
   });
 
@@ -80,7 +80,7 @@ describe(WorkflowSummaryDiagnosticsBanner.name, () => {
       isWorkflowDiagnosticsInHistoryEnabled: true,
     });
 
-    const link = screen.getByRole('link', { name: 'View in History' });
+    const link = screen.getByRole('link', { name: 'View history' });
     expect(link).toHaveAttribute(
       'href',
       '/domains/mock-domain/cluster_1/workflows/mock-workflow-id/mock-run-id/history'
