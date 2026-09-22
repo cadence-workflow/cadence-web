@@ -56,7 +56,10 @@ export default function WorkflowHistoryEventDiagnostics({
                       <styled.IssueReason>{issue.reason}</styled.IssueReason>
                     </styled.IssueHeaderText>
                   </styled.IssueHeaderSection>
-                  <styled.IssueHeaderSection>
+                  <styled.IssueHeaderSection
+                    onClick={(event) => event.stopPropagation()}
+                    onKeyDown={(event) => event.stopPropagation()}
+                  >
                     {issue.runbook && (
                       <Button
                         kind="tertiary"
@@ -66,7 +69,6 @@ export default function WorkflowHistoryEventDiagnostics({
                         target="_blank"
                         rel="noreferrer"
                         href={issue.runbook}
-                        onClick={(event) => event.stopPropagation()}
                         endEnhancer={<MdOpenInNew />}
                       >
                         Runbook
