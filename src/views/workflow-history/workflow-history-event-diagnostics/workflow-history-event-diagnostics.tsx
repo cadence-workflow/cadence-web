@@ -60,8 +60,12 @@ export default function WorkflowHistoryEventDiagnostics({
                     // Panel toggles on click and Enter/Space keydown. This section
                     // stops both so that nested actions do not expand the panel.
                     // https://github.com/uber/baseweb/blob/main/src/accordion/panel.tsx
-                    onClick={(event) => event.stopPropagation()}
-                    onKeyDown={(event) => event.stopPropagation()}
+                    onClick={(event: React.MouseEvent<HTMLDivElement>) =>
+                      event.stopPropagation()
+                    }
+                    onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) =>
+                      event.stopPropagation()
+                    }
                   >
                     {issue.runbook && (
                       <Button
