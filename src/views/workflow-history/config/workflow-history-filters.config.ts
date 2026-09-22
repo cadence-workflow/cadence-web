@@ -2,10 +2,12 @@ import { createElement } from 'react';
 
 import TagFilter from '@/components/tag-filter/tag-filter';
 
+import WorkflowHistoryFiltersIssues from '../workflow-history-filters-issues/workflow-history-filters-issues';
 import filterGroupsByCategory from '../workflow-history-filters-menu/helpers/filter-groups-by-category';
 import filterGroupsByStatus from '../workflow-history-filters-menu/helpers/filter-groups-by-status';
 import {
   type EventGroupCategory,
+  type EventGroupIssuesFilterValue,
   type EventGroupStatusFilterValue,
   type EventGroupCategoryFilterValue,
   type EventGroupStatus,
@@ -16,9 +18,19 @@ import workflowHistoryFiltersStatusOptionsConfig from './workflow-history-filter
 import workflowHistoryFiltersTypeOptionsConfig from './workflow-history-filters-type-options.config';
 
 const workflowHistoryFiltersConfig: [
+  WorkflowHistoryFilterConfig<EventGroupIssuesFilterValue>,
   WorkflowHistoryFilterConfig<EventGroupCategoryFilterValue>,
   WorkflowHistoryFilterConfig<EventGroupStatusFilterValue>,
 ] = [
+  {
+    id: 'historyEventIssues',
+    getValue: (v) => ({ historyEventIssues: v.historyEventIssues }),
+    formatValue: (v) => ({
+      historyEventIssues: v.historyEventIssues ? 'true' : undefined,
+    }),
+    component: WorkflowHistoryFiltersIssues,
+    filterFunc: () => true,
+  },
   {
     id: 'historyEventTypes',
     getValue: (v) => ({ historyEventTypes: v.historyEventTypes }),

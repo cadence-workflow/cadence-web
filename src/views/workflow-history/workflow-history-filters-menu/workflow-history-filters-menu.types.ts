@@ -42,3 +42,7 @@ export type EventGroupStatus = 'COMPLETED' | 'FAILED' | 'CANCELED' | 'PENDING';
 export type EventGroupStatusFilterValue = {
   historyEventStatuses: EventGroupStatus[] | undefined;
 };
+
+export type EventGroupIssuesFilterValue = {
+  historyEventIssues: boolean | undefined;
+};
