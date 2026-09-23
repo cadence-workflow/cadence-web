@@ -1,17 +1,9 @@
-import { HttpResponse } from 'msw';
-
-import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
-
-import { type GetConfigResponse } from '@/route-handlers/get-config/get-config.types';
+import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import WorkflowHistoryFiltersMenu from '../workflow-history-filters-menu';
 import { type Props } from '../workflow-history-filters-menu.types';
 
 jest.mock('../../config/workflow-history-filters.config', () => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const useConfigValue =
-    require('@/hooks/use-config-value/use-config-value').default;
-
   return {
     __esModule: true,
     default: [
@@ -69,29 +61,34 @@ jest.mock('../../config/workflow-history-filters.config', () => {
         formatValue: (v: any) => ({
           historyEventIssues: v.historyEventIssues ? 'true' : undefined,
         }),
-        component: function MockIssuesFilter({ value, setValue }: any) {
-          const { data: isDiagnosticsInHistoryEnabled } = useConfigValue(
-            'WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED'
-          );
-          if (!isDiagnosticsInHistoryEnabled) return null;
-          return (
-            <label>
-              <input
-                type="checkbox"
-                role="switch"
-                aria-label="Only show events with issues"
-                checked={value.historyEventIssues ?? false}
-                onChange={(e: any) =>
-                  setValue({
-                    historyEventIssues: e.target.checked || undefined,
-                  })
-                }
-              />
-              Only show events with issues
-            </label>
-          );
-        },
-        filterFunc: () => true,
+        component: ({ value, setValue }: any) => (
+          <div data-testid="filter-issues">
+            <div data-testid="filter-issues-value">
+              {value.historyEventIssues ? 'true' : 'empty'}
+            </div>
+            <button
+              data-testid="filter-issues-change"
+              onClick={() =>
+                setValue({
+                  historyEventIssues: true,
+                })
+              }
+            >
+              Change Issues
+            </button>
+            <button
+              data-testid="filter-issues-clear"
+              onClick={() =>
+                setValue({
+                  historyEventIssues: undefined,
+                })
+              }
+            >
+              Clear Issues
+            </button>
+          </div>
+        ),
+        filterFunc: jest.fn(),
       },
     ],
   };
@@ -127,6 +124,7 @@ describe(WorkflowHistoryFiltersMenu.name, () => {
     setup();
     expect(screen.getByTestId('filter-type')).toBeInTheDocument();
     expect(screen.getByTestId('filter-status')).toBeInTheDocument();
+    expect(screen.getByTestId('filter-issues')).toBeInTheDocument();
   });
 
   it('passes correct values to Type filter when queryParams has historyEventTypes', () => {
@@ -233,71 +231,38 @@ describe(WorkflowHistoryFiltersMenu.name, () => {
     });
   });
 
-  it('renders the issues toggle when diagnostics in history is enabled', async () => {
-    setup({}, { enableDiagnosticsInHistory: true });
-
-    expect(
-      await screen.findByRole('switch', {
-        name: 'Only show events with issues',
-      })
-    ).toBeInTheDocument();
-  });
-
-  it('hides the issues toggle when diagnostics in history is disabled', async () => {
-    setup({}, { enableDiagnosticsInHistory: false });
-
-    await waitFor(() => {
-      expect(screen.getByText('Filters (0)')).toBeInTheDocument();
-    });
-    expect(
-      screen.queryByRole('switch', { name: 'Only show events with issues' })
-    ).not.toBeInTheDocument();
-  });
-
-  it('calls setQueryParams with historyEventIssues true when the issues toggle is checked', async () => {
-    const { user, mockSetQueryParams } = setup(
-      {
-        queryParams: {
-          historyEventTypes: undefined,
-          historyEventStatuses: undefined,
-          historySelectedEventId: undefined,
-          ungroupedHistoryViewEnabled: undefined,
-          historyEventIssues: undefined,
-          selectedQueryName: undefined,
-        },
+  it('calls setQueryParams with historyEventIssues true when Issues filter setValue is called', async () => {
+    const { user, mockSetQueryParams } = setup({
+      queryParams: {
+        historyEventTypes: undefined,
+        historyEventStatuses: undefined,
+        historySelectedEventId: undefined,
+        ungroupedHistoryViewEnabled: undefined,
+        historyEventIssues: undefined,
+        selectedQueryName: undefined,
       },
-      { enableDiagnosticsInHistory: true }
-    );
-
-    const toggle = await screen.findByRole('switch', {
-      name: 'Only show events with issues',
     });
-    await user.click(toggle);
+
+    await user.click(screen.getByTestId('filter-issues-change'));
 
     expect(mockSetQueryParams).toHaveBeenCalledWith({
       historyEventIssues: 'true',
     });
   });
 
-  it('calls setQueryParams with historyEventIssues undefined when the issues toggle is unchecked', async () => {
-    const { user, mockSetQueryParams } = setup(
-      {
-        queryParams: {
-          historyEventTypes: undefined,
-          historyEventStatuses: undefined,
-          historySelectedEventId: undefined,
-          ungroupedHistoryViewEnabled: undefined,
-          historyEventIssues: true,
-          selectedQueryName: undefined,
-        },
+  it('calls setQueryParams with historyEventIssues undefined when Issues filter is cleared', async () => {
+    const { user, mockSetQueryParams } = setup({
+      queryParams: {
+        historyEventTypes: undefined,
+        historyEventStatuses: undefined,
+        historySelectedEventId: undefined,
+        ungroupedHistoryViewEnabled: undefined,
+        historyEventIssues: true,
+        selectedQueryName: undefined,
       },
-      { enableDiagnosticsInHistory: true }
-    );
-
-    const toggle = await screen.findByRole('switch', {
-      name: 'Only show events with issues',
     });
-    await user.click(toggle);
+
+    await user.click(screen.getByTestId('filter-issues-clear'));
 
     expect(mockSetQueryParams).toHaveBeenCalledWith({
       historyEventIssues: undefined,
@@ -305,10 +270,7 @@ describe(WorkflowHistoryFiltersMenu.name, () => {
   });
 });
 
-function setup(
-  props: Partial<Props> = {},
-  configOptions: { enableDiagnosticsInHistory?: boolean } = {}
-) {
+function setup(props: Partial<Props> = {}) {
   const user = userEvent.setup();
   const mockResetAllFilters = jest.fn();
   const mockSetQueryParams = jest.fn();
@@ -332,20 +294,7 @@ function setup(
     ...props,
   };
 
-  render(<WorkflowHistoryFiltersMenu {...mergedProps} />, {
-    endpointsMocks: [
-      {
-        path: '/api/config',
-        httpMethod: 'GET',
-        mockOnce: false,
-        httpResolver: async () =>
-          HttpResponse.json(
-            (configOptions.enableDiagnosticsInHistory ??
-              false) satisfies GetConfigResponse<'WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED'>
-          ),
-      },
-    ],
-  });
+  render(<WorkflowHistoryFiltersMenu {...mergedProps} />);
 
   return {
     user,
