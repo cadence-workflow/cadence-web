@@ -28,7 +28,7 @@ export default function WorkflowHistoryEventDiagnostics({
               overrides={overrides.panel}
               title={
                 <styled.IssueHeader>
-                  <styled.IssueHeaderSection>
+                  <styled.IssueHeaderContent>
                     <styled.IssueHeaderIconContainer>
                       <RiStethoscopeLine size={18} />
                     </styled.IssueHeaderIconContainer>
@@ -36,8 +36,8 @@ export default function WorkflowHistoryEventDiagnostics({
                       <styled.IssueType>{issue.invariantType}</styled.IssueType>
                       <styled.IssueReason>{issue.reason}</styled.IssueReason>
                     </styled.IssueHeaderText>
-                  </styled.IssueHeaderSection>
-                  <styled.IssueHeaderSection
+                  </styled.IssueHeaderContent>
+                  <styled.IssueHeaderActions
                     // Panel toggles on click and Enter/Space keydown. This section
                     // stops both so that nested actions do not expand the panel.
                     // https://github.com/uber/baseweb/blob/main/src/accordion/panel.tsx
@@ -78,7 +78,7 @@ export default function WorkflowHistoryEventDiagnostics({
                     >
                       Details
                     </Button>
-                  </styled.IssueHeaderSection>
+                  </styled.IssueHeaderActions>
                 </styled.IssueHeader>
               }
               expanded={isIssueExpanded}

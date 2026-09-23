@@ -18,23 +18,42 @@ export const styled = {
   })),
   IssueHeader: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     flex: 1,
+    minWidth: 0,
     display: 'flex',
-    alignItems: 'center',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
     gap: $theme.sizing.scale400,
-    flexWrap: 'wrap',
+    [$theme.mediaQuery.medium]: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
   })),
-  IssueHeaderSection: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+  IssueHeaderContent: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
     alignItems: 'center',
     columnGap: $theme.sizing.scale400,
+    minWidth: 0,
+    flex: 1,
+  })),
+  IssueHeaderActions: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+    display: 'flex',
+    alignSelf: 'flex-end',
+    alignItems: 'center',
+    columnGap: $theme.sizing.scale400,
+    flexShrink: 0,
+    [$theme.mediaQuery.medium]: {
+      alignSelf: 'center',
+    },
   })),
   IssueHeaderIconContainer: createStyled('div', {
-    flex: 1,
+    flexShrink: 0,
   }),
   IssueHeaderText: createStyled('div', {
     display: 'flex',
     flexDirection: 'column',
+    minWidth: 0,
+    overflowWrap: 'anywhere',
   }),
   IssueType: createStyled('span', ({ $theme }: { $theme: Theme }) => ({
     fontWeight: $theme.typography.LabelSmall.fontWeight,
@@ -53,6 +72,7 @@ export const overrides = {
         color: $theme.colors.contentPrimary,
         backgroundColor: $theme.colors.backgroundWarningLight,
         padding: 0,
+        minWidth: 0,
       }),
     },
     PanelContainer: {

@@ -35,6 +35,47 @@ const decisionFailedIssue: WorkflowDiagnosticsIssue = {
   },
 };
 
+const longDiagnosticsIssue: WorkflowDiagnosticsIssue = {
+  issueId: 42,
+  invariantType:
+    'Activity Failed After Exhausting All Retry Attempts Across Multiple Task Lists',
+  reason:
+    'Activity timed out after 30 seconds while polling task list cadence-sys-tl-workers-us-east-1-prod-long-running-batch-processor. Worker identity cadence-worker-7f8a9c2d@ip-10-23-45-67.ec2.internal reported heartbeat lag of 184 seconds before the task was dropped. Subsequent retries (attempt 8 of 8) failed with the same timeout because the activity implementation blocked on a downstream RPC that never returned: https://internal.example.com/services/payments/v2/authorize?merchantId=merch_9f2c1a8b7d6e5f4a3b2c1d0e9f8a7b6c&idempotencyKey=idem_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+  metadata: {
+    Identity:
+      'cadence-worker-7f8a9c2d@ip-10-23-45-67.ec2.internal.really-long-hostname.cluster.internal',
+    ActivityType:
+      'com.example.payments.batch.LongRunningAuthorizeAndCaptureActivity',
+    ActivityScheduledID: 12847,
+    TaskList:
+      'cadence-sys-tl-workers-us-east-1-prod-long-running-batch-processor',
+    lastFailure: {
+      message:
+        'context deadline exceeded while waiting for downstream authorization; nested cause: rpc error: code = DeadlineExceeded desc = timeout awaiting response from payments-gateway.prod.svc.cluster.local:443 after 30s',
+      type: 'timeout',
+      stackTrace: Array.from(
+        { length: 24 },
+        (_, index) =>
+          `at com.example.payments.batch.LongRunningAuthorizeAndCaptureActivity.execute(LongRunningAuthorizeAndCaptureActivity.java:${120 + index})`
+      ).join('\n'),
+      details: {
+        attempt: 8,
+        maxAttempts: 8,
+        heartbeatDetails:
+          'processedItems=18429 remainingItems=90210 lastCheckpointId=ckpt_very_long_opaque_token_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
+  },
+  runbook:
+    'https://cadenceworkflow.io/docs/workflow-troubleshooting/activity-failures/?utm_source=cadence-web&utm_campaign=diagnostics-runbook-with-an-unreasonably-long-query-string-to-stress-header-wrapping',
+  rootCauseType:
+    'Downstream RPC Timeout During Activity Heartbeat Window Exceeding Configured ScheduleToClose Timeout',
+  rootCauseMetadata: {
+    ExpectedTimeout: 30,
+    ObservedHeartbeatLagSeconds: 184,
+  },
+};
+
 function getIssueExpansionId(issue: WorkflowDiagnosticsIssue) {
   return `${issue.invariantType}.${issue.issueId}`;
 }
@@ -115,24 +156,15 @@ export const WithoutRunbook: Story = {
   },
 };
 
+export const LongDiagnostics: Story = {
+  args: {
+    issues: [longDiagnosticsIssue],
+    expandedIssueIds: [getIssueExpansionId(longDiagnosticsIssue)],
+  },
+};
+
 export const NoIssues: Story = {
   args: {
     issues: [],
   },
-};
-
-export const Narrow: Story = {
-  args: {
-    expandedIssueIds: [getIssueExpansionId(activityFailedIssue)],
-  },
-  globals: {
-    viewport: { value: 'mobile1' },
-  },
-  decorators: [
-    (Story) => (
-      <div style={{ width: 320 }}>
-        <Story />
-      </div>
-    ),
-  ],
 };
