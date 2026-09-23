@@ -13,47 +13,23 @@ jest.mock(
     ))
 );
 
+const defaultIssues: Props['issues'] = [
+  {
+    issueId: 0,
+    invariantType: 'Activity Failed',
+    reason: 'Activity timed out after 30 seconds',
+    metadata: {},
+    runbook: 'https://example.com/runbook',
+  },
+  {
+    issueId: 1,
+    invariantType: 'Decision Failed',
+    reason: 'Decision task failed with error',
+    metadata: {},
+  },
+];
+
 describe('WorkflowHistoryEventDiagnostics', () => {
-  const defaultIssues: Props['issues'] = [
-    {
-      issueId: 0,
-      invariantType: 'Activity Failed',
-      reason: 'Activity timed out after 30 seconds',
-      metadata: {},
-      runbook: 'https://example.com/runbook',
-    },
-    {
-      issueId: 1,
-      invariantType: 'Decision Failed',
-      reason: 'Decision task failed with error',
-      metadata: {},
-    },
-  ];
-
-  function setup({
-    issues = defaultIssues,
-    getIsIssueExpanded = jest.fn(() => false),
-    toggleIsIssueExpanded = jest.fn(),
-  }: Partial<Props> = {}) {
-    const user = userEvent.setup();
-    const mockGetIsIssueExpanded = getIsIssueExpanded;
-    const mockToggleIsIssueExpanded = toggleIsIssueExpanded;
-
-    render(
-      <WorkflowHistoryEventDiagnostics
-        issues={issues}
-        getIsIssueExpanded={mockGetIsIssueExpanded}
-        toggleIsIssueExpanded={mockToggleIsIssueExpanded}
-      />
-    );
-
-    return {
-      user,
-      mockGetIsIssueExpanded,
-      mockToggleIsIssueExpanded,
-    };
-  }
-
   it('renders null when issues array is empty', () => {
     setup({ issues: [] });
     expect(screen.queryByText('Activity Failed')).not.toBeInTheDocument();
@@ -143,3 +119,27 @@ describe('WorkflowHistoryEventDiagnostics', () => {
     expect(screen.queryByTestId('metadata-table')).not.toBeInTheDocument();
   });
 });
+
+function setup({
+  issues = defaultIssues,
+  getIsIssueExpanded = jest.fn(() => false),
+  toggleIsIssueExpanded = jest.fn(),
+}: Partial<Props> = {}) {
+  const user = userEvent.setup();
+  const mockGetIsIssueExpanded = getIsIssueExpanded;
+  const mockToggleIsIssueExpanded = toggleIsIssueExpanded;
+
+  render(
+    <WorkflowHistoryEventDiagnostics
+      issues={issues}
+      getIsIssueExpanded={mockGetIsIssueExpanded}
+      toggleIsIssueExpanded={mockToggleIsIssueExpanded}
+    />
+  );
+
+  return {
+    user,
+    mockGetIsIssueExpanded,
+    mockToggleIsIssueExpanded,
+  };
+}
