@@ -15,7 +15,7 @@ import WorkflowSummary from '@/views/workflow-summary/workflow-summary';
 
 import getWorkflowPageErrorConfig from '../helpers/get-workflow-page-error-config';
 import WorkflowPageDiagnosticsBadge from '../workflow-page-diagnostics-badge/workflow-page-diagnostics-badge';
-import WorkflowPagePendingEventsBadge from '../workflow-page-pending-events-badge/workflow-page-pending-events-badge';
+import WorkflowPageHistoryTabBadges from '../workflow-page-history-tab-badges/workflow-page-history-tab-badges';
 import type { WorkflowPageTabsConfig } from '../workflow-page-tabs/workflow-page-tabs.types';
 
 const workflowPageTabsConfig: WorkflowPageTabsConfig<
@@ -34,7 +34,7 @@ const workflowPageTabsConfig: WorkflowPageTabsConfig<
   },
   history: {
     title: 'History',
-    endEnhancer: WorkflowPagePendingEventsBadge,
+    endEnhancer: WorkflowPageHistoryTabBadges,
     artwork: MdOutlineHistory,
     content: WorkflowHistoryWrapper,
     getErrorConfig: (err) =>
