@@ -18,11 +18,15 @@ import useWorkflowHistoryFiltersConfig from '../use-workflow-history-filters-con
 
 describe(useWorkflowHistoryFiltersConfig.name, () => {
   it('returns base filters when diagnostics in history is disabled', async () => {
-    const { result } = setup({ isDiagnosticsInHistoryEnabled: false });
+    const { result, configResolver } = setup({
+      isDiagnosticsInHistoryEnabled: false,
+    });
 
     await waitFor(() => {
-      expect(result.current).toBe(workflowHistoryFiltersConfig);
+      expect(configResolver).toHaveBeenCalled();
     });
+
+    expect(result.current).toBe(workflowHistoryFiltersConfig);
   });
 
   it('returns issue filters when diagnostics in history is enabled', async () => {
@@ -39,13 +43,19 @@ function setup({
 }: {
   isDiagnosticsInHistoryEnabled: boolean;
 }) {
-  return renderHook(() => useWorkflowHistoryFiltersConfig(), {
+  const configResolver = jest.fn(() =>
+    HttpResponse.json(isDiagnosticsInHistoryEnabled)
+  );
+
+  const rendered = renderHook(() => useWorkflowHistoryFiltersConfig(), {
     endpointsMocks: [
       {
         path: '/api/config',
         httpMethod: 'GET',
-        httpResolver: () => HttpResponse.json(isDiagnosticsInHistoryEnabled),
+        httpResolver: configResolver,
       },
     ],
   });
+
+  return { ...rendered, configResolver };
 }
