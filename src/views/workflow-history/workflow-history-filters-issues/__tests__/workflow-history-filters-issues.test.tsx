@@ -1,57 +1,59 @@
-import { render, screen, userEvent } from '@/test-utils/rtl';
+import { HttpResponse } from 'msw';
 
-import * as useConfigValueModule from '@/hooks/use-config-value/use-config-value';
+import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
+
+import { type GetConfigResponse } from '@/route-handlers/get-config/get-config.types';
 
 import { type EventGroupIssuesFilterValue } from '../../workflow-history-filters-menu/workflow-history-filters-menu.types';
 import WorkflowHistoryFiltersIssues from '../workflow-history-filters-issues';
 
-jest.mock('@/hooks/use-config-value/use-config-value', () =>
-  jest.fn(() => ({ data: false }))
-);
-
 describe(WorkflowHistoryFiltersIssues.name, () => {
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
-  it('renders nothing when diagnostics in history is disabled', () => {
+  it('renders nothing when diagnostics in history is disabled', async () => {
     const { container } = setup({
       isDiagnosticsInHistoryEnabled: false,
     });
 
-    expect(container.firstChild?.firstChild).toBeNull();
+    await waitFor(() => {
+      expect(container.firstChild?.firstChild).toBeNull();
+    });
     expect(
       screen.queryByRole('switch', { name: 'Only show events with issues' })
     ).not.toBeInTheDocument();
   });
 
-  it('renders switch when diagnostics in history is enabled', () => {
+  it('renders switch when diagnostics in history is enabled', async () => {
     setup({ isDiagnosticsInHistoryEnabled: true });
 
     expect(
-      screen.getByRole('switch', { name: 'Only show events with issues' })
+      await screen.findByRole('switch', {
+        name: 'Only show events with issues',
+      })
     ).toBeInTheDocument();
   });
 
-  it('renders switch unchecked when historyEventIssues is undefined', () => {
+  it('renders switch unchecked when historyEventIssues is undefined', async () => {
     setup({
       isDiagnosticsInHistoryEnabled: true,
       value: { historyEventIssues: undefined },
     });
 
     expect(
-      screen.getByRole('switch', { name: 'Only show events with issues' })
+      await screen.findByRole('switch', {
+        name: 'Only show events with issues',
+      })
     ).not.toBeChecked();
   });
 
-  it('renders switch checked when historyEventIssues is true', () => {
+  it('renders switch checked when historyEventIssues is true', async () => {
     setup({
       isDiagnosticsInHistoryEnabled: true,
       value: { historyEventIssues: true },
     });
 
     expect(
-      screen.getByRole('switch', { name: 'Only show events with issues' })
+      await screen.findByRole('switch', {
+        name: 'Only show events with issues',
+      })
     ).toBeChecked();
   });
 
@@ -62,7 +64,9 @@ describe(WorkflowHistoryFiltersIssues.name, () => {
     });
 
     await user.click(
-      screen.getByRole('switch', { name: 'Only show events with issues' })
+      await screen.findByRole('switch', {
+        name: 'Only show events with issues',
+      })
     );
 
     expect(mockSetValue).toHaveBeenCalledWith({ historyEventIssues: true });
@@ -75,7 +79,9 @@ describe(WorkflowHistoryFiltersIssues.name, () => {
     });
 
     await user.click(
-      screen.getByRole('switch', { name: 'Only show events with issues' })
+      await screen.findByRole('switch', {
+        name: 'Only show events with issues',
+      })
     );
 
     expect(mockSetValue).toHaveBeenCalledWith({
@@ -94,12 +100,21 @@ function setup({
   const user = userEvent.setup();
   const mockSetValue = jest.fn();
 
-  jest.spyOn(useConfigValueModule, 'default').mockReturnValue({
-    data: isDiagnosticsInHistoryEnabled,
-  } as ReturnType<typeof useConfigValueModule.default>);
-
   const result = render(
-    <WorkflowHistoryFiltersIssues value={value} setValue={mockSetValue} />
+    <WorkflowHistoryFiltersIssues value={value} setValue={mockSetValue} />,
+    {
+      endpointsMocks: [
+        {
+          path: '/api/config',
+          httpMethod: 'GET',
+          mockOnce: false,
+          httpResolver: async () =>
+            HttpResponse.json(
+              isDiagnosticsInHistoryEnabled satisfies GetConfigResponse<'WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED'>
+            ),
+        },
+      ],
+    }
   );
 
   return {
