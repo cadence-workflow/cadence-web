@@ -1,4 +1,5 @@
 import WorkflowHistoryFiltersIssues from '../workflow-history-filters-issues/workflow-history-filters-issues';
+import filterGroupsByIssues from '../workflow-history-filters-menu/helpers/filter-groups-by-issues';
 import {
   type EventGroupIssuesFilterValue,
   type EventGroupStatusFilterValue,
@@ -16,7 +17,7 @@ const workflowHistoryIssuesFilterConfig: WorkflowHistoryFilterConfig<EventGroupI
       historyEventIssues: v.historyEventIssues ? 'true' : undefined,
     }),
     component: WorkflowHistoryFiltersIssues,
-    filterFunc: () => true,
+    filterFunc: filterGroupsByIssues,
   };
 
 const workflowHistoryFiltersWithIssuesConfig: [
