@@ -3,10 +3,10 @@ import { render, screen, userEvent } from '@/test-utils/rtl';
 import WorkflowHistoryFiltersMenu from '../workflow-history-filters-menu';
 import { type Props } from '../workflow-history-filters-menu.types';
 
-jest.mock('../../config/workflow-history-filters.config', () => {
+jest.mock('../../hooks/use-workflow-history-filters-config', () => {
   return {
     __esModule: true,
-    default: [
+    default: jest.fn(() => [
       {
         id: 'historyEventTypes',
         getValue: (v: any) => ({ historyEventTypes: v.historyEventTypes }),
@@ -90,7 +90,7 @@ jest.mock('../../config/workflow-history-filters.config', () => {
         ),
         filterFunc: jest.fn(),
       },
-    ],
+    ]),
   };
 });
 

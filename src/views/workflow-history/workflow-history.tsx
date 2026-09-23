@@ -16,7 +16,6 @@ import { useSuspenseDescribeWorkflow } from '../workflow-page/hooks/use-describe
 import { type WorkflowPageTabContentParams } from '../workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
 import WORKFLOW_HISTORY_FETCH_EVENTS_THROTTLE_MS_CONFIG from './config/workflow-history-fetch-events-throttle-ms.config';
-import workflowHistoryFiltersConfig from './config/workflow-history-filters.config';
 import { WORKFLOW_HISTORY_PAGE_SIZE_CONFIG } from './config/workflow-history-page-size.config';
 import WORKFLOW_HISTORY_RENDER_FETCHED_EVENTS_THROTTLE_MS_CONFIG from './config/workflow-history-render-fetched-events-throttle-ms.config';
 import WORKFLOW_HISTORY_SET_RANGE_THROTTLE_MS_CONFIG from './config/workflow-history-set-range-throttle-ms.config';
@@ -29,6 +28,7 @@ import scopeDiagnosticsToGroup from './helpers/scope-diagnostics-to-group';
 import useDiagnoseWorkflow from './hooks/use-diagnose-workflow/use-diagnose-workflow';
 import useInitialSelectedEvent from './hooks/use-initial-selected-event';
 import useWorkflowHistoryFetcher from './hooks/use-workflow-history-fetcher';
+import useWorkflowHistoryFiltersConfig from './hooks/use-workflow-history-filters-config';
 import useWorkflowHistoryGrouper from './hooks/use-workflow-history-grouper';
 import useWorkflowHistoryScroll from './hooks/use-workflow-history-scroll';
 import { WorkflowHistoryContext } from './workflow-history-context-provider/workflow-history-context-provider';
@@ -48,6 +48,7 @@ import {
 
 export default function WorkflowHistory({ params }: Props) {
   const decodedParams = decodeUrlParams<WorkflowPageTabContentParams>(params);
+  const workflowHistoryFiltersConfig = useWorkflowHistoryFiltersConfig();
 
   const { workflowTab, ...encodedHistoryQueryParams } = params;
   const wfHistoryRequestArgs = {
@@ -56,12 +57,7 @@ export default function WorkflowHistory({ params }: Props) {
     waitForNewEvent: true,
   };
 
-  const {
-    activeFiltersCount: _unusedActiveFiltersCount,
-    queryParams,
-    setQueryParams,
-    resetAllFilters,
-  } = usePageFilters({
+  const { queryParams, setQueryParams, resetAllFilters } = usePageFilters({
     pageQueryParamsConfig: workflowPageQueryParamsConfig,
     pageFiltersConfig: workflowHistoryFiltersConfig,
   });
@@ -221,6 +217,7 @@ export default function WorkflowHistory({ params }: Props) {
       queryParams.historyEventStatuses,
       queryParams.historyEventIssues,
       groupKeysWithIssues,
+      workflowHistoryFiltersConfig,
     ]
   );
 

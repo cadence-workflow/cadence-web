@@ -22,6 +22,12 @@ export const styled = {
   MenuFilters: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
     flexDirection: 'column',
-    gap: $theme.sizing.scale700,
+    gap: $theme.sizing.scale500,
+  })),
+  MenuFilterContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+    paddingBottom: $theme.sizing.scale500,
+    ':not(:last-child)': {
+      borderBottom: `1px solid ${$theme.colors.borderOpaque}`,
+    },
   })),
 };
