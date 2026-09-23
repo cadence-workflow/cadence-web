@@ -21,7 +21,8 @@ export const styled = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    columnGap: $theme.sizing.scale400,
+    gap: $theme.sizing.scale400,
+    flexWrap: 'wrap',
   })),
   IssueHeaderSection: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
@@ -68,6 +69,12 @@ export const overrides = {
         paddingBottom: $theme.sizing.scale400,
         paddingLeft: $theme.sizing.scale850,
       }),
+    },
+    // hiding the default toggle icon
+    ToggleIcon: {
+      style: {
+        display: 'none',
+      },
     },
   } satisfies PanelOverrides,
   button: {

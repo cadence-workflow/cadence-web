@@ -1,8 +1,4 @@
-import { mergeOverrides } from 'baseui';
-import {
-  Panel,
-  type SharedStylePropsArg as AccordionStyledComponentProps,
-} from 'baseui/accordion';
+import { Panel } from 'baseui/accordion';
 import { Button } from 'baseui/button';
 import { MdArrowDropDown, MdArrowDropUp, MdOpenInNew } from 'react-icons/md';
 import { RiStethoscopeLine } from 'react-icons/ri';
@@ -25,26 +21,11 @@ export default function WorkflowHistoryEventDiagnostics({
     <styled.Container>
       {issues.map((issue) => {
         const issueExpansionId = `${issue.invariantType}.${issue.issueId}`;
+        const isIssueExpanded = getIsIssueExpanded(issueExpansionId);
         return (
           <styled.IssueContainer key={issueExpansionId}>
             <Panel
-              overrides={mergeOverrides(overrides.panel, {
-                ToggleIcon: {
-                  component: ({ $expanded }: AccordionStyledComponentProps) => (
-                    <Button
-                      size="compact"
-                      kind="secondary"
-                      shape="rounded"
-                      endEnhancer={
-                        $expanded ? <MdArrowDropUp /> : <MdArrowDropDown />
-                      }
-                      overrides={overrides.button}
-                    >
-                      Details
-                    </Button>
-                  ),
-                },
-              })}
+              overrides={overrides.panel}
               title={
                 <styled.IssueHeader>
                   <styled.IssueHeaderSection>
@@ -81,10 +62,26 @@ export default function WorkflowHistoryEventDiagnostics({
                         Runbook
                       </Button>
                     )}
+                    <Button
+                      size="compact"
+                      kind="secondary"
+                      shape="rounded"
+                      endEnhancer={
+                        isIssueExpanded ? (
+                          <MdArrowDropUp />
+                        ) : (
+                          <MdArrowDropDown />
+                        )
+                      }
+                      overrides={overrides.button}
+                      onClick={() => toggleIsIssueExpanded(issueExpansionId)}
+                    >
+                      Details
+                    </Button>
                   </styled.IssueHeaderSection>
                 </styled.IssueHeader>
               }
-              expanded={getIsIssueExpanded(issueExpansionId)}
+              expanded={isIssueExpanded}
               onChange={() => toggleIsIssueExpanded(issueExpansionId)}
             >
               <WorkflowHistoryEventDiagnosticsTable

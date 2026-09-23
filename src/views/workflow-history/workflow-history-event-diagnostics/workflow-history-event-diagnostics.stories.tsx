@@ -120,3 +120,19 @@ export const NoIssues: Story = {
     issues: [],
   },
 };
+
+export const Narrow: Story = {
+  args: {
+    expandedIssueIds: [getIssueExpansionId(activityFailedIssue)],
+  },
+  globals: {
+    viewport: { value: 'mobile1' },
+  },
+  decorators: [
+    (Story) => (
+      <div style={{ width: 320 }}>
+        <Story />
+      </div>
+    ),
+  ],
+};
