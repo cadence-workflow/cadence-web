@@ -67,7 +67,10 @@ jest.mock('@/components/page-filters/hooks/use-page-filters', () =>
   jest.fn().mockReturnValue({})
 );
 
-jest.mock('../config/workflow-history-filters.config', () => []);
+jest.mock('../hooks/use-workflow-history-filters-config', () => ({
+  __esModule: true,
+  default: jest.fn(() => []),
+}));
 
 jest.mock(
   '@/components/section-loading-indicator/section-loading-indicator',
