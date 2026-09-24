@@ -16,8 +16,17 @@ import { type ValidateAndReplayResult } from './validate-and-replay-auth-cookie-
 
 const EXPIRES_EPOCH_ATTRIBUTE = '; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
 
+/** Byte length on the wire (UTF-8), not JS UTF-16 code units. */
+function wireBytes(value: string): number {
+  return new TextEncoder().encode(value).length;
+}
+
 /** Serialized size of one mutation as the replay will emit it — the strategy
- * cannot know this total (the options builder adds the attributes). */
+ * cannot know this total (the options builder adds the attributes). Mirrors
+ * `@edge-runtime/cookies` serialization: values are `encodeURIComponent`'d
+ * (escaped chars take up to 3 bytes each) and a truthy `maxAge` also emits an
+ * auto-derived `Expires` attribute (any RFC 1123 GMT date has the epoch
+ * stand-in's exact length). */
 function measureMutationBytes(
   mutation: CookieMutation,
   secure: boolean
@@ -25,12 +34,15 @@ function measureMutationBytes(
   const secureAttribute = secure ? '; Secure' : '';
   if ('set' in mutation) {
     const { name, value, maxAge } = mutation.set;
+    const expiresAttribute = maxAge ? EXPIRES_EPOCH_ATTRIBUTE : '';
     const maxAgeAttribute = maxAge !== undefined ? `; Max-Age=${maxAge}` : '';
-    return `${name}=${value}; Path=/; HttpOnly; SameSite=Lax${secureAttribute}${maxAgeAttribute}`
-      .length;
+    return wireBytes(
+      `${name}=${encodeURIComponent(value)}; Path=/; HttpOnly; SameSite=Lax${secureAttribute}${expiresAttribute}${maxAgeAttribute}`
+    );
   }
-  return `${mutation.clear.name}=; Path=/; HttpOnly; SameSite=Lax${secureAttribute}${EXPIRES_EPOCH_ATTRIBUTE}; Max-Age=0`
-    .length;
+  return wireBytes(
+    `${mutation.clear.name}=; Path=/; HttpOnly; SameSite=Lax${secureAttribute}${EXPIRES_EPOCH_ATTRIBUTE}; Max-Age=0`
+  );
 }
 
 /**
@@ -58,10 +70,10 @@ export function measureAuthCookieMutationsBytes(
  * is applied and the caller substitutes its own outcome (recover route:
  * cleanupMutations; OIDC callback: loud login failure).
  *
- * Staging note: `cookieNames` is a parameter until the registry lands (S3);
- * the reference end-state resolves the ACTIVE entry internally via
- * `getActiveAuthServerEntry()` — the token-route migration (S6) makes that
- * swap when its callers exist.
+ * Staging note: `cookieNames` is a parameter until the strategy registry
+ * lands; the end state resolves the ACTIVE entry internally via
+ * `getActiveAuthServerEntry()` — the token-route migration makes that swap
+ * when its callers exist.
  */
 export default async function validateAndReplayAuthCookieMutations(
   request: NextRequest,
