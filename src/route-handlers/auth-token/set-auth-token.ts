@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
 import { CADENCE_AUTH_COOKIE_NAME } from '@/utils/auth/auth-context';
+import getCookieSecureAttribute from '@/utils/auth/helpers/get-cookie-secure-attribute';
 
 import {
   AUTH_TOKEN_COOKIE_OPTIONS,
@@ -10,7 +11,6 @@ import {
   NO_STORE_HEADERS,
 } from './auth-token.constants';
 import { type AuthTokenResponse } from './auth-token.types';
-import getCookieSecureAttribute from './helpers/get-cookie-secure-attribute';
 import tokenRequestBodySchema from './schemas/token-request-body-schema';
 
 const badRequest = (message: string) =>
