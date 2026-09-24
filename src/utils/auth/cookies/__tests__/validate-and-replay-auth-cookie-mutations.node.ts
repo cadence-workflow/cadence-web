@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import logger from '../../../logger';
-import { OIDC_SESSION_COOKIE_MAX_BYTES } from '../../auth.constants';
+import { AUTH_COOKIE_MUTATIONS_MAX_BYTES } from '../../auth.constants';
 import { type CookieMutation } from '../../auth.types';
 import validateAndReplayAuthCookieMutations, {
   measureAuthCookieMutationsBytes,
@@ -82,7 +82,7 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
       {
         set: {
           name: 'oidc-session.0',
-          value: 'x'.repeat(OIDC_SESSION_COOKIE_MAX_BYTES),
+          value: 'x'.repeat(AUTH_COOKIE_MUTATIONS_MAX_BYTES),
         },
       },
     ];
@@ -221,7 +221,7 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
         {
           set: {
             name: 'oidc-session.0',
-            value: '{'.repeat(OIDC_SESSION_COOKIE_MAX_BYTES - 47),
+            value: '{'.repeat(AUTH_COOKIE_MUTATIONS_MAX_BYTES - 47),
           },
         },
       ];
