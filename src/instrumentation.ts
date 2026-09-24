@@ -30,6 +30,22 @@ export async function register() {
     try {
       const configs = await getTransformedConfigs();
       setLoadedGlobalConfigs(configs);
+
+      // Fail-closed at boot: resolving the active auth server
+      // policy surfaces strategy config ERRORS at boot, not first request.
+      // An unrecognized CADENCE_WEB_AUTH_STRATEGY value is not an error — the
+      // resolver falls back to 'disabled' (master's exact behavior);
+      // recognized-but-unimplemented strategies throw from their registry
+      // entry (the placeholder-entry pattern).
+      const { default: getConfigValue } = await import(
+        '@/utils/config/get-config-value'
+      );
+      const authStrategy = await getConfigValue('CADENCE_WEB_AUTH_STRATEGY');
+      const { getActiveAuthServerEntry } = await import(
+        '@/utils/auth/strategies/auth-server-registry'
+      );
+      await getActiveAuthServerEntry();
+      logger.info({ message: `Auth strategy: ${authStrategy}` });
     } catch (e) {
       // manually catching and logging the error to prevent the error being replaced
       // by "Cannot set property message of [object Object] which has only a getter"
