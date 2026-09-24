@@ -5,11 +5,15 @@ import { VirtuosoMockContext } from 'react-virtuoso';
 import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
 import { type RequestError } from '@/utils/request/request-error';
-import { mockActivityEventGroup } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
+import {
+  mockActivityEventGroup,
+  mockDecisionEventGroup,
+} from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
 import { type WorkflowPageTabsParams } from '@/views/workflow-page/workflow-page-tabs/workflow-page-tabs.types';
 
 import { createUngroupedEventsInfo } from '../../__fixtures__/ungrouped-events-info';
 import type WorkflowHistoryTableFooter from '../../workflow-history-table-footer/workflow-history-table-footer';
+import WorkflowHistoryUngroupedEvent from '../../workflow-history-ungrouped-event/workflow-history-ungrouped-event';
 import { type WorkflowDiagnosticsIssuesByEventId } from '../../workflow-history.types';
 import WorkflowHistoryUngroupedTable from '../workflow-history-ungrouped-table';
 import { type UngroupedEventInfo } from '../workflow-history-ungrouped-table.types';
@@ -51,9 +55,11 @@ jest.mock(
         onReset,
         onClickShowInTimeline,
         animateOnEnter,
+        workflowDiagnosticsByEventIdMap,
       }) => (
         <div
           data-testid="workflow-history-ungrouped-event"
+          data-diagnostics={JSON.stringify(workflowDiagnosticsByEventIdMap)}
           data-expanded={isExpanded}
           data-animate-on-enter={animateOnEnter}
           data-event-id={eventInfo.id}
@@ -68,7 +74,38 @@ jest.mock(
     )
 );
 
+const mockDiagnosticsIssuesByEventId: WorkflowDiagnosticsIssuesByEventId = {
+  '7': [
+    {
+      issueId: 0,
+      invariantType: 'Activity Failed',
+      reason: 'Activity timed out',
+      metadata: null,
+    },
+  ],
+  '2': [
+    {
+      issueId: 1,
+      invariantType: 'Decision Failed',
+      reason: 'Decision task failed',
+      metadata: null,
+    },
+  ],
+  '999': [
+    {
+      issueId: 2,
+      invariantType: 'Unrelated',
+      reason: 'Issue for an event that is not rendered',
+      metadata: null,
+    },
+  ],
+};
+
 describe(WorkflowHistoryUngroupedTable.name, () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should render all column headers in correct order', () => {
     setup();
 
@@ -222,6 +259,63 @@ describe(WorkflowHistoryUngroupedTable.name, () => {
 
     expect(mockOnClickShowEventInTimeline).toHaveBeenCalledWith(groupId);
   });
+
+  it('should pass diagnostics scoped to the event group to WorkflowHistoryUngroupedEvent', () => {
+    setup({
+      ungroupedEventsInfo: createUngroupedEventsInfo([
+        ['group-1', mockActivityEventGroup],
+        ['group-2', mockDecisionEventGroup],
+      ]),
+      workflowDiagnosticsByEventIdMap: mockDiagnosticsIssuesByEventId,
+    });
+
+    const expectedDiagnosticsByEventId: Record<string, string> = {
+      ...Object.fromEntries(
+        mockActivityEventGroup.events.map((event) => [
+          event.eventId,
+          JSON.stringify({ '7': mockDiagnosticsIssuesByEventId['7'] }),
+        ])
+      ),
+      ...Object.fromEntries(
+        mockDecisionEventGroup.events.map((event) => [
+          event.eventId,
+          JSON.stringify({ '2': mockDiagnosticsIssuesByEventId['2'] }),
+        ])
+      ),
+    };
+
+    const events = screen.getAllByTestId('workflow-history-ungrouped-event');
+    expect(events).toHaveLength(
+      Object.keys(expectedDiagnosticsByEventId).length
+    );
+    events.forEach((event) => {
+      expect(event).toHaveAttribute(
+        'data-diagnostics',
+        expectedDiagnosticsByEventId[event.getAttribute('data-event-id') ?? '']
+      );
+    });
+  });
+
+  it('should pass the same diagnostics map to events in a group across re-renders', () => {
+    const { rerender } = setup({
+      ungroupedEventsInfo: createUngroupedEventsInfo([
+        ['group-1', mockActivityEventGroup],
+      ]),
+      workflowDiagnosticsByEventIdMap: mockDiagnosticsIssuesByEventId,
+    });
+
+    rerender();
+
+    const diagnosticsMaps = jest
+      .mocked(WorkflowHistoryUngroupedEvent)
+      .mock.calls.map(([props]) => props.workflowDiagnosticsByEventIdMap);
+    expect(diagnosticsMaps.length).toBeGreaterThan(
+      mockActivityEventGroup.events.length
+    );
+    diagnosticsMaps.forEach((diagnosticsMap) =>
+      expect(diagnosticsMap).toBe(diagnosticsMaps[0])
+    );
+  });
 });
 
 function setup({
@@ -271,7 +365,7 @@ function setup({
   const virtuosoRef = { current: null };
   const user = userEvent.setup();
 
-  render(
+  const renderTable = () => (
     <VirtuosoMockContext.Provider
       value={{ viewportHeight: 1000, itemHeight: 36 }}
     >
@@ -298,9 +392,12 @@ function setup({
     </VirtuosoMockContext.Provider>
   );
 
+  const { rerender } = render(renderTable());
+
   return {
     user,
     virtuosoRef,
+    rerender: () => rerender(renderTable()),
     mockFetchMoreEvents: fetchMoreEvents,
     mockSetVisibleRange: setVisibleRange,
     mockToggleIsEventExpanded: toggleIsEventExpanded,
