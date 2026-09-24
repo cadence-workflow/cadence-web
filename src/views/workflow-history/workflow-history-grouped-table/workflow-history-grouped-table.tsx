@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 import { Virtuoso } from 'react-virtuoso';
 
 import scopeDiagnosticsToGroup from '../helpers/scope-diagnostics-to-group';
@@ -29,6 +31,20 @@ export default function WorkflowHistoryGroupedTable({
   workflowDiagnosticsByEventIdMap,
 }: Props) {
   const noEventsToDisplay = eventGroupsById.length === 0;
+
+  const diagnosticsByGroupId = useMemo(
+    () =>
+      Object.fromEntries(
+        eventGroupsById.map(([groupId, group]) => [
+          groupId,
+          scopeDiagnosticsToGroup(
+            group.events,
+            workflowDiagnosticsByEventIdMap
+          ),
+        ])
+      ),
+    [eventGroupsById, workflowDiagnosticsByEventIdMap]
+  );
 
   return (
     <>
@@ -74,10 +90,7 @@ export default function WorkflowHistoryGroupedTable({
               }
             }}
             onClickShowInTimeline={() => onClickShowGroupInTimeline(groupId)}
-            workflowDiagnosticsByEventIdMap={scopeDiagnosticsToGroup(
-              group.events,
-              workflowDiagnosticsByEventIdMap
-            )}
+            workflowDiagnosticsByEventIdMap={diagnosticsByGroupId[groupId]}
           />
         )}
         components={{
