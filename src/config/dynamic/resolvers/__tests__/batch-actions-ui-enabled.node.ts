@@ -1,6 +1,6 @@
 import { resolveAuthContext } from '@/utils/auth/auth-context';
 import { FULL_ACCESS, NO_ACCESS } from '@/utils/auth/auth-shared.constants';
-import { type PrivateAuthContext } from '@/utils/auth/auth-shared.types';
+import { type AuthContext } from '@/utils/auth/auth.types';
 
 import batchActionsUiEnabled from '../batch-actions-ui-enabled';
 import domainAccess from '../domain-access';
@@ -15,12 +15,10 @@ const mockResolveAuthContext = jest.mocked(resolveAuthContext);
 
 const PARAMS = { cluster: 'test-cluster', domain: 'test-domain' };
 
-function makeAuthContext(
-  overrides: Partial<PrivateAuthContext> = {}
-): PrivateAuthContext {
+function makeAuthContext(overrides: Partial<AuthContext> = {}): AuthContext {
   return {
     authEnabled: true,
-    auth: { isValidToken: true },
+    auth: { isValidToken: true, canRefresh: false },
     groups: [],
     isAdmin: false,
     ...overrides,
