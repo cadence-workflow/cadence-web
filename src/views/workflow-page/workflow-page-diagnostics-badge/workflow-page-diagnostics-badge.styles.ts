@@ -7,7 +7,7 @@ export const overrides = {
     Badge: {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
         color: $theme.colors.contentPrimary,
-        backgroundColor: $theme.colors.backgroundWarningLight,
+        backgroundColor: $theme.colors.backgroundTertiary,
         borderRadius: '20px',
         padding: `${$theme.sizing.scale0} ${$theme.sizing.scale300}`,
         ...$theme.typography.LabelXSmall,

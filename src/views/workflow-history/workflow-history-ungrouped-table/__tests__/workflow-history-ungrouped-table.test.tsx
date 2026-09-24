@@ -343,7 +343,7 @@ function setup({
   const virtuosoRef = { current: null };
   const user = userEvent.setup();
 
-  const renderTable = () => (
+  render(
     <VirtuosoMockContext.Provider
       value={{ viewportHeight: 1000, itemHeight: 36 }}
     >
@@ -370,12 +370,9 @@ function setup({
     </VirtuosoMockContext.Provider>
   );
 
-  const { rerender } = render(renderTable());
-
   return {
     user,
     virtuosoRef,
-    rerender: () => rerender(renderTable()),
     mockFetchMoreEvents: fetchMoreEvents,
     mockSetVisibleRange: setVisibleRange,
     mockToggleIsEventExpanded: toggleIsEventExpanded,
