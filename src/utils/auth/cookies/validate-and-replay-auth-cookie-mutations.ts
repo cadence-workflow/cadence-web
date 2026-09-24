@@ -4,7 +4,7 @@ import { type NextRequest, type NextResponse } from 'next/server';
 
 import logger from '@/utils/logger';
 
-import { OIDC_SESSION_COOKIE_MAX_BYTES } from '../auth.constants';
+import { AUTH_COOKIE_MUTATIONS_MAX_BYTES } from '../auth.constants';
 import {
   type AuthServerRegistryEntry,
   type CookieMutation,
@@ -97,7 +97,7 @@ export default async function validateAndReplayAuthCookieMutations(
 
   const options = buildAuthCookieOptions(request);
   const totalBytes = measureAuthCookieMutationsBytes(mutations, options.secure);
-  if (totalBytes > OIDC_SESSION_COOKIE_MAX_BYTES) {
+  if (totalBytes > AUTH_COOKIE_MUTATIONS_MAX_BYTES) {
     return { ok: false, reason: 'over-budget', totalBytes };
   }
 
