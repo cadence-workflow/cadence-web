@@ -29,7 +29,7 @@ describe(domainAccess.name, () => {
   it('returns full access when auth is disabled', async () => {
     mockResolveAuthContext.mockResolvedValue({
       authEnabled: false,
-      auth: { isValidToken: false },
+      auth: { isValidToken: false, canRefresh: false },
       isAdmin: false,
       groups: [],
     });
@@ -49,7 +49,7 @@ describe(domainAccess.name, () => {
   it('returns full access for admin users', async () => {
     mockResolveAuthContext.mockResolvedValue({
       authEnabled: true,
-      auth: { isValidToken: true, token: 'jwt-token' },
+      auth: { isValidToken: true, canRefresh: false },
       isAdmin: true,
       groups: [],
     });
@@ -69,7 +69,7 @@ describe(domainAccess.name, () => {
   it('returns no access for unauthenticated users', async () => {
     mockResolveAuthContext.mockResolvedValue({
       authEnabled: true,
-      auth: { isValidToken: false },
+      auth: { isValidToken: false, canRefresh: false },
       isAdmin: false,
       groups: [],
     });
@@ -89,7 +89,7 @@ describe(domainAccess.name, () => {
   it('derives access from the domain resolver for authenticated users', async () => {
     mockResolveAuthContext.mockResolvedValue({
       authEnabled: true,
-      auth: { isValidToken: true, token: 'jwt-token' },
+      auth: { isValidToken: true, canRefresh: false },
       isAdmin: false,
       groups: ['reader'],
     });
@@ -123,7 +123,7 @@ describe(domainAccess.name, () => {
   it('rethrows when the domain lookup fails', async () => {
     mockResolveAuthContext.mockResolvedValue({
       authEnabled: true,
-      auth: { isValidToken: true, token: 'jwt-token' },
+      auth: { isValidToken: true, canRefresh: false },
       isAdmin: false,
       groups: ['writer'],
     });
