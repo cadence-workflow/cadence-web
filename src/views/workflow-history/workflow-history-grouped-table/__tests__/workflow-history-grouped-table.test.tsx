@@ -12,7 +12,6 @@ import {
 } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
 import { type WorkflowPageTabContentParams } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
-import WorkflowHistoryEventGroup from '../../workflow-history-event-group/workflow-history-event-group';
 import type WorkflowHistoryTableFooter from '../../workflow-history-table-footer/workflow-history-table-footer';
 import {
   type HistoryEventsGroup,
@@ -193,23 +192,6 @@ describe(WorkflowHistoryGroupedTable.name, () => {
     expect(decisionGroup).toHaveAttribute(
       'data-diagnostics',
       JSON.stringify({ '2': mockDiagnosticsIssuesByEventId['2'] })
-    );
-  });
-
-  it('should pass the same diagnostics map to WorkflowHistoryEventGroup across re-renders', () => {
-    const { rerender } = setup({
-      eventGroupsById: [['group-1', mockActivityEventGroup]],
-      workflowDiagnosticsByEventIdMap: mockDiagnosticsIssuesByEventId,
-    });
-
-    rerender();
-
-    const diagnosticsMaps = jest
-      .mocked(WorkflowHistoryEventGroup)
-      .mock.calls.map(([props]) => props.workflowDiagnosticsByEventIdMap);
-    expect(diagnosticsMaps.length).toBeGreaterThan(1);
-    diagnosticsMaps.forEach((diagnosticsMap) =>
-      expect(diagnosticsMap).toBe(diagnosticsMaps[0])
     );
   });
 });

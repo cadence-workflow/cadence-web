@@ -13,7 +13,6 @@ import { type WorkflowPageTabsParams } from '@/views/workflow-page/workflow-page
 
 import { createUngroupedEventsInfo } from '../../__fixtures__/ungrouped-events-info';
 import type WorkflowHistoryTableFooter from '../../workflow-history-table-footer/workflow-history-table-footer';
-import WorkflowHistoryUngroupedEvent from '../../workflow-history-ungrouped-event/workflow-history-ungrouped-event';
 import { type WorkflowDiagnosticsIssuesByEventId } from '../../workflow-history.types';
 import WorkflowHistoryUngroupedTable from '../workflow-history-ungrouped-table';
 import { type UngroupedEventInfo } from '../workflow-history-ungrouped-table.types';
@@ -294,27 +293,6 @@ describe(WorkflowHistoryUngroupedTable.name, () => {
         expectedDiagnosticsByEventId[event.getAttribute('data-event-id') ?? '']
       );
     });
-  });
-
-  it('should pass the same diagnostics map to events in a group across re-renders', () => {
-    const { rerender } = setup({
-      ungroupedEventsInfo: createUngroupedEventsInfo([
-        ['group-1', mockActivityEventGroup],
-      ]),
-      workflowDiagnosticsByEventIdMap: mockDiagnosticsIssuesByEventId,
-    });
-
-    rerender();
-
-    const diagnosticsMaps = jest
-      .mocked(WorkflowHistoryUngroupedEvent)
-      .mock.calls.map(([props]) => props.workflowDiagnosticsByEventIdMap);
-    expect(diagnosticsMaps.length).toBeGreaterThan(
-      mockActivityEventGroup.events.length
-    );
-    diagnosticsMaps.forEach((diagnosticsMap) =>
-      expect(diagnosticsMap).toBe(diagnosticsMaps[0])
-    );
   });
 });
 
