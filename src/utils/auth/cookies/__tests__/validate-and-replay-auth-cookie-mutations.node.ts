@@ -3,7 +3,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import logger from '../../../logger';
 import { OIDC_SESSION_COOKIE_MAX_BYTES } from '../../auth.constants';
 import { type CookieMutation } from '../../auth.types';
-import validateAndReplayAuthCookieMutations from '../validate-and-replay-auth-cookie-mutations';
+import validateAndReplayAuthCookieMutations, {
+  measureAuthCookieMutationsBytes,
+} from '../validate-and-replay-auth-cookie-mutations';
 
 jest.mock('@/utils/logger', () => ({
   __esModule: true,
@@ -167,5 +169,72 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
     // clears carry Secure too (same discipline)
     expect(cookie?.secure).toBe(true);
     expect(cookie?.expires && new Date(cookie.expires).getTime()).toBe(0);
+  });
+
+  describe('measurement mirrors ResponseCookies serialization', () => {
+    it('counts the encodeURIComponent-escaped value, not the raw value', () => {
+      // '{' escapes to '%7B': 1 byte raw, 3 bytes on the wire
+      const value = '{'.repeat(100);
+      expect(
+        measureAuthCookieMutationsBytes(
+          [{ set: { name: 'oidc-session.0', value } }],
+          false
+        )
+      ).toBe(
+        `oidc-session.0=${encodeURIComponent(value)}; Path=/; HttpOnly; SameSite=Lax`
+          .length
+      );
+    });
+
+    it('adds the auto-derived Expires attribute when maxAge is set', () => {
+      const withMaxAge = measureAuthCookieMutationsBytes(
+        [{ set: { name: 'oidc-session.0', value: 'v', maxAge: 3600 } }],
+        false
+      );
+      const withoutMaxAge = measureAuthCookieMutationsBytes(
+        [{ set: { name: 'oidc-session.0', value: 'v' } }],
+        false
+      );
+      // @edge-runtime/cookies derives Expires from a truthy maxAge; any
+      // RFC 1123 GMT date has the epoch stand-in's exact length
+      expect(withMaxAge - withoutMaxAge).toBe(
+        '; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=3600'.length
+      );
+    });
+
+    it('counts UTF-8 wire bytes for non-ASCII values', () => {
+      // 'é' → '%C3%A9' (6 bytes on the wire; 2 raw UTF-8 bytes)
+      expect(
+        measureAuthCookieMutationsBytes(
+          [{ set: { name: 'oidc-session.0', value: 'é' } }],
+          false
+        )
+      ).toBe('oidc-session.0=%C3%A9; Path=/; HttpOnly; SameSite=Lax'.length);
+    });
+
+    it('rejects a set whose raw value fits but whose escaped wire form exceeds the budget', async () => {
+      const response = NextResponse.json({});
+      // Overhead for this set is 47 bytes (name + '=' + attributes, no
+      // Secure on plain-http loopback). Raw value length 4000-47 measures
+      // exactly at budget; escaped ('{' → '%7B') it triples over.
+      const mutations: CookieMutation[] = [
+        {
+          set: {
+            name: 'oidc-session.0',
+            value: '{'.repeat(OIDC_SESSION_COOKIE_MAX_BYTES - 47),
+          },
+        },
+      ];
+
+      const result = await validateAndReplayAuthCookieMutations(
+        buildRequest(),
+        response,
+        mutations,
+        COOKIE_NAMES
+      );
+
+      expect(result).toMatchObject({ ok: false, reason: 'over-budget' });
+      expect(getReplayedCookieNames(response)).toEqual([]);
+    });
   });
 });
