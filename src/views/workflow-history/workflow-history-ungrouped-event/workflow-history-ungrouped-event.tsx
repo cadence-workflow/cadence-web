@@ -55,6 +55,8 @@ export default function WorkflowHistoryUngroupedEvent({
     ([eventId]) => eventId === eventInfo.id
   )?.[1].eventDetails;
 
+  const diagnosticsIssues = workflowDiagnosticsByEventIdMap[eventInfo.id];
+
   const isPendingEvent = isPendingHistoryEvent(eventInfo.event);
 
   return (
@@ -109,9 +111,11 @@ export default function WorkflowHistoryUngroupedEvent({
               )}
           </styled.ElapsedContainer>
           <styled.SummarizedDetailsContainer>
-            {eventSummaryDetails && eventSummaryDetails.length > 0 ? (
+            {(eventSummaryDetails && eventSummaryDetails.length > 0) ||
+            (diagnosticsIssues && diagnosticsIssues.length > 0) ? (
               <WorkflowHistoryDetailsRow
-                detailsEntries={eventSummaryDetails}
+                detailsEntries={eventSummaryDetails ?? []}
+                diagnosticsIssues={diagnosticsIssues}
                 {...decodedPageUrlParams}
               />
             ) : (
