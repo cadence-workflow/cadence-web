@@ -1,3 +1,11 @@
+// --- Login surfaces ---
+
+export const DEFAULT_AUTH_RETURN_TO = '/';
+
+export const JWT_LOGIN_PATH = '/login';
+
+// --- Cookie writing ---
+
 /** shared attribute set for all auth cookies */
 export const AUTH_COOKIE_OPTIONS = {
   httpOnly: true,
