@@ -10,37 +10,33 @@ const buildRequest = (options?: {
   if (options?.xForwardedProto) {
     headers.set('x-forwarded-proto', options.xForwardedProto);
   }
-
-  return new NextRequest(
-    `${options?.proto ?? 'http'}://localhost/api/auth/token`,
-    {
-      headers,
-    }
-  );
+  return new NextRequest(`${options?.proto ?? 'http'}://localhost/`, {
+    headers,
+  });
 };
 
 describe(getCookieSecureAttribute.name, () => {
-  it('returns true when x-forwarded-proto is https', () => {
+  it('honors x-forwarded-proto when present', () => {
     expect(
       getCookieSecureAttribute(buildRequest({ xForwardedProto: 'https' }))
     ).toBe(true);
-  });
-
-  it('returns false when x-forwarded-proto is http', () => {
     expect(
       getCookieSecureAttribute(buildRequest({ xForwardedProto: 'http' }))
     ).toBe(false);
   });
 
-  it('uses the first x-forwarded-proto value', () => {
+  it('uses the first entry of a comma-separated x-forwarded-proto', () => {
     expect(
       getCookieSecureAttribute(buildRequest({ xForwardedProto: 'https, http' }))
     ).toBe(true);
   });
 
-  it('falls back to the request protocol when x-forwarded-proto is missing', () => {
+  it('falls back to the request URL protocol', () => {
     expect(getCookieSecureAttribute(buildRequest({ proto: 'https' }))).toBe(
       true
+    );
+    expect(getCookieSecureAttribute(buildRequest({ proto: 'http' }))).toBe(
+      false
     );
   });
 });
