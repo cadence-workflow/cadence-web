@@ -14,6 +14,7 @@ const mockRequest = {
   cookies: {
     get: jest.fn(),
   },
+  headers: new Headers({ 'x-forwarded-host': 'cadence.example' }),
 } as unknown as NextRequest;
 const mockOptions = { params: {} };
 
@@ -50,6 +51,8 @@ describe('grpc-metadata middleware', () => {
       cookies: mockRequest.cookies,
       headers: mockRequest.headers,
     });
+    // identity, not just shape: the real request headers object is forwarded
+    expect(getGrpcMetadata.mock.calls[0][1].headers).toBe(mockRequest.headers);
   });
 
   it('returns undefined metadata when the policy provides none', async () => {
