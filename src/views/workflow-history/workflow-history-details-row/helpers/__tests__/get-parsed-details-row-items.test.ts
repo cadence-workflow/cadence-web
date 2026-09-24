@@ -1,7 +1,12 @@
 import * as workflowHistoryDetailsRowParsersConfigModule from '../../../config/workflow-history-details-row-parsers.config';
 import { type EventDetailsEntries } from '../../../workflow-history-event-details/workflow-history-event-details.types';
+import { type WorkflowDiagnosticsIssue } from '../../../workflow-history.types';
 import { type DetailsRowItemParser } from '../../workflow-history-details-row.types';
 import getParsedDetailsRowItems from '../get-parsed-details-row-items';
+
+jest.mock('../get-diagnostics-issues-row-item', () =>
+  jest.fn((issues) => ({ path: 'mockDiagnosticsIssues', value: issues }))
+);
 
 // Mock the parser config
 jest.mock('../../../config/workflow-history-details-row-parsers.config', () => {
@@ -373,5 +378,41 @@ describe(getParsedDetailsRowItems.name, () => {
 
     expect(result).toHaveLength(1);
     expect(result[0].badgeColor).toBe('warning');
+  });
+
+  it('should not add a diagnostics item when there are no diagnostics issues', () => {
+    expect(getParsedDetailsRowItems([], [])).toEqual([]);
+    expect(getParsedDetailsRowItems([], undefined)).toEqual([]);
+  });
+
+  it('should add the diagnostics item after the details items when there are diagnostics issues', () => {
+    const detailsEntries: EventDetailsEntries = [
+      {
+        key: 'attempt',
+        path: 'attempt',
+        value: 2,
+        renderConfig: {
+          name: 'Test Config',
+          key: 'test',
+        },
+        isGroup: false,
+      },
+    ];
+    const diagnosticsIssues: Array<WorkflowDiagnosticsIssue> = [
+      {
+        issueId: 1,
+        invariantType: 'Activity Failed',
+        reason: 'The activity returned an error',
+        metadata: null,
+      },
+    ];
+
+    const result = getParsedDetailsRowItems(detailsEntries, diagnosticsIssues);
+
+    expect(result).toHaveLength(2);
+    expect(result[1]).toEqual({
+      path: 'mockDiagnosticsIssues',
+      value: diagnosticsIssues,
+    });
   });
 });
