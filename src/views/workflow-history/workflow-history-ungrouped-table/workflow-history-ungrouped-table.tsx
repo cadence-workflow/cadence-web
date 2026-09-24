@@ -5,6 +5,7 @@ import { Virtuoso } from 'react-virtuoso';
 import scopeDiagnosticsToGroup from '../helpers/scope-diagnostics-to-group';
 import WorkflowHistoryTableFooter from '../workflow-history-table-footer/workflow-history-table-footer';
 import WorkflowHistoryUngroupedEvent from '../workflow-history-ungrouped-event/workflow-history-ungrouped-event';
+import { type WorkflowDiagnosticsIssuesByEventId } from '../workflow-history.types';
 
 import { styled } from './workflow-history-ungrouped-table.styles';
 import { type Props } from './workflow-history-ungrouped-table.types';
@@ -35,6 +36,17 @@ export default function WorkflowHistoryUngroupedTable({
   );
 
   const noEventsToDisplay = ungroupedEventsInfo.length === 0;
+
+  const diagnosticsByGroupId = useMemo(() => {
+    const result: Record<string, WorkflowDiagnosticsIssuesByEventId> = {};
+    for (const { groupId, eventGroup } of ungroupedEventsInfo) {
+      result[groupId] ??= scopeDiagnosticsToGroup(
+        eventGroup.events,
+        workflowDiagnosticsByEventIdMap
+      );
+    }
+    return result;
+  }, [ungroupedEventsInfo, workflowDiagnosticsByEventIdMap]);
 
   return (
     <>
@@ -67,10 +79,9 @@ export default function WorkflowHistoryUngroupedTable({
             onClickShowInTimeline={() =>
               onClickShowGroupInTimeline(eventInfo.groupId)
             }
-            workflowDiagnosticsByEventIdMap={scopeDiagnosticsToGroup(
-              eventInfo.eventGroup.events,
-              workflowDiagnosticsByEventIdMap
-            )}
+            workflowDiagnosticsByEventIdMap={
+              diagnosticsByGroupId[eventInfo.groupId]
+            }
             {...(eventInfo.canReset
               ? { onReset: () => resetToDecisionEventId(eventInfo.id) }
               : {})}
