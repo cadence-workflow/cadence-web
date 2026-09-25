@@ -29,6 +29,8 @@ export default function WorkflowHistoryGroupedTable({
   isFetchingMoreEvents,
   onClickShowGroupInTimeline,
   workflowDiagnosticsByEventIdMap,
+  getIsDiagnosticsIssueExpanded,
+  toggleIsDiagnosticsIssueExpanded,
 }: Props) {
   const noEventsToDisplay = eventGroupsById.length === 0;
 
@@ -91,6 +93,8 @@ export default function WorkflowHistoryGroupedTable({
             }}
             onClickShowInTimeline={() => onClickShowGroupInTimeline(groupId)}
             workflowDiagnosticsByEventIdMap={diagnosticsByGroupId[groupId]}
+            getIsDiagnosticsIssueExpanded={getIsDiagnosticsIssueExpanded}
+            toggleIsDiagnosticsIssueExpanded={toggleIsDiagnosticsIssueExpanded}
           />
         )}
         components={{

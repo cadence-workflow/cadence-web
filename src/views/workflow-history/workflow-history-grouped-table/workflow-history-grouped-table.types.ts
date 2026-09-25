@@ -38,4 +38,6 @@ export type Props = {
   isFetchingMoreEvents: boolean;
   onClickShowGroupInTimeline: (groupId: string) => void;
   workflowDiagnosticsByEventIdMap: WorkflowDiagnosticsIssuesByEventId;
+  getIsDiagnosticsIssueExpanded: (issueExpansionId: string) => boolean;
+  toggleIsDiagnosticsIssueExpanded: (issueExpansionId: string) => void;
 };

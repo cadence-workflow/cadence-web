@@ -532,6 +532,8 @@ function setup({
   onClickShowInTimeline = jest.fn(),
   mockGroupDetails,
   workflowDiagnosticsByEventIdMap = {},
+  getIsDiagnosticsIssueExpanded = jest.fn(() => false),
+  toggleIsDiagnosticsIssueExpanded = jest.fn(),
 }: Partial<Props> & {
   mockGroupDetails?: {
     groupDetailsEntries: GroupDetailsEntries;
@@ -596,6 +598,8 @@ function setup({
       onReset={mockOnReset}
       onClickShowInTimeline={mockOnClickShowInTimeline}
       workflowDiagnosticsByEventIdMap={workflowDiagnosticsByEventIdMap}
+      getIsDiagnosticsIssueExpanded={getIsDiagnosticsIssueExpanded}
+      toggleIsDiagnosticsIssueExpanded={toggleIsDiagnosticsIssueExpanded}
     />
   );
 

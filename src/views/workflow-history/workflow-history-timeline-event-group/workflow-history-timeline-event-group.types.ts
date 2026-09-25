@@ -10,4 +10,6 @@ export type Props = {
   onClickShowInTable: () => void;
   onClose: () => void;
   workflowDiagnosticsByEventIdMap: WorkflowDiagnosticsIssuesByEventId;
+  getIsDiagnosticsIssueExpanded: (issueExpansionId: string) => boolean;
+  toggleIsDiagnosticsIssueExpanded: (issueExpansionId: string) => void;
 };

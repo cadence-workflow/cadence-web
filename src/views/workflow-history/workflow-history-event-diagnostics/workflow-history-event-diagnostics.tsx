@@ -3,6 +3,7 @@ import { Button } from 'baseui/button';
 import { MdArrowDropDown, MdArrowDropUp, MdOpenInNew } from 'react-icons/md';
 import { RiStethoscopeLine } from 'react-icons/ri';
 
+import getDiagnosticsIssueExpansionId from '../helpers/get-diagnostics-issue-expansion-id';
 import WorkflowHistoryEventDiagnosticsTable from '../workflow-history-event-diagnostics-table/workflow-history-event-diagnostics-table';
 
 import { overrides, styled } from './workflow-history-event-diagnostics.styles';
@@ -20,7 +21,7 @@ export default function WorkflowHistoryEventDiagnostics({
   return (
     <styled.Container>
       {issues.map((issue) => {
-        const issueExpansionId = `${issue.invariantType}.${issue.issueId}`;
+        const issueExpansionId = getDiagnosticsIssueExpansionId(issue);
         const isIssueExpanded = getIsIssueExpanded(issueExpansionId);
         return (
           <styled.IssueContainer key={issueExpansionId}>

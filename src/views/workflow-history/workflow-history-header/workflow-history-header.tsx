@@ -33,6 +33,8 @@ export default function WorkflowHistoryHeader({
   timelineVirtuosoRef,
   timelineItemToHighlightId,
   workflowDiagnosticsByEventIdMap,
+  getIsDiagnosticsIssueExpanded,
+  toggleIsDiagnosticsIssueExpanded,
 }: Props) {
   const [isSticky, setIsSticky] = useState(false);
   useEffect(() => {
@@ -136,6 +138,10 @@ export default function WorkflowHistoryHeader({
                 itemToHighlightId={timelineItemToHighlightId}
                 workflowDiagnosticsByEventIdMap={
                   workflowDiagnosticsByEventIdMap
+                }
+                getIsDiagnosticsIssueExpanded={getIsDiagnosticsIssueExpanded}
+                toggleIsDiagnosticsIssueExpanded={
+                  toggleIsDiagnosticsIssueExpanded
                 }
               />
             </styled.TimelineContainer>

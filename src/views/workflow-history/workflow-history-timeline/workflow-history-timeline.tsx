@@ -47,6 +47,8 @@ export default function WorkflowHistoryTimeline({
   virtuosoRef,
   itemToHighlightId,
   workflowDiagnosticsByEventIdMap,
+  getIsDiagnosticsIssueExpanded,
+  toggleIsDiagnosticsIssueExpanded,
 }: Props) {
   const { cls, theme } = useStyletronClasses(cssStyles);
 
@@ -215,6 +217,12 @@ export default function WorkflowHistoryTimeline({
                             }}
                             onClose={() => close()}
                             workflowDiagnosticsByEventIdMap={scopedDiagnostics}
+                            getIsDiagnosticsIssueExpanded={
+                              getIsDiagnosticsIssueExpanded
+                            }
+                            toggleIsDiagnosticsIssueExpanded={
+                              toggleIsDiagnosticsIssueExpanded
+                            }
                           />
                         )}
                         placement="bottom"

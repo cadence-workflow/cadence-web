@@ -375,6 +375,30 @@ describe(WorkflowHistoryGroupDetails.name, () => {
     expect(screen.getByText('Diagnostics (1 issues)')).toBeInTheDocument();
   });
 
+  it('passes getIsDiagnosticsIssueExpanded and toggleIsDiagnosticsIssueExpanded through to the diagnostics component', () => {
+    setup({
+      groupDetailsEntries: mockGroupDetails,
+      initialEventId: 'event-1',
+      diagnosticsIssuesByEventId: {
+        'event-1': [
+          {
+            issueId: 1,
+            invariantType: 'test',
+            reason: 'test reason',
+            metadata: {},
+          },
+        ],
+      },
+    });
+
+    expect(screen.getByTestId('diagnostics-has-getter')).toHaveTextContent(
+      'true'
+    );
+    expect(screen.getByTestId('diagnostics-has-toggler')).toHaveTextContent(
+      'true'
+    );
+  });
+
   it('does not render diagnostics component when no issues exist', () => {
     setup({
       groupDetailsEntries: mockGroupDetails,
@@ -442,6 +466,8 @@ function setup({
   onClickShowInTimeline,
   onClickShowInTable,
   diagnosticsIssuesByEventId = {},
+  getIsDiagnosticsIssueExpanded = jest.fn(() => false),
+  toggleIsDiagnosticsIssueExpanded = jest.fn(),
 }: {
   groupDetailsEntries: GroupDetailsEntries;
   initialEventId?: string;
@@ -450,6 +476,8 @@ function setup({
   onClickShowInTimeline?: () => void;
   onClickShowInTable?: () => void;
   diagnosticsIssuesByEventId?: WorkflowDiagnosticsIssuesByEventId;
+  getIsDiagnosticsIssueExpanded?: (issueExpansionId: string) => boolean;
+  toggleIsDiagnosticsIssueExpanded?: (issueExpansionId: string) => void;
 }) {
   const user = userEvent.setup();
 
@@ -462,8 +490,14 @@ function setup({
       onClickShowInTimeline={onClickShowInTimeline}
       onClickShowInTable={onClickShowInTable}
       diagnosticsIssuesByEventId={diagnosticsIssuesByEventId}
+      getIsDiagnosticsIssueExpanded={getIsDiagnosticsIssueExpanded}
+      toggleIsDiagnosticsIssueExpanded={toggleIsDiagnosticsIssueExpanded}
     />
   );
 
-  return { user };
+  return {
+    user,
+    getIsDiagnosticsIssueExpanded,
+    toggleIsDiagnosticsIssueExpanded,
+  };
 }
