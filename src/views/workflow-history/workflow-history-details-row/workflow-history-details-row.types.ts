@@ -10,6 +10,7 @@ export type DetailsRowValueComponentProps = {
   label: string;
   value: any;
   isNegative?: boolean;
+  onClose?: () => void;
 } & WorkflowPageParams;
 
 /**

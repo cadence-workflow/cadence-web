@@ -38,14 +38,15 @@ export default function WorkflowHistoryDetailsRow({
         return (
           <StatefulTooltip
             key={item.path}
-            content={
+            content={({ close }) => (
               <item.renderTooltip
                 label={item.label}
                 value={item.value}
                 isNegative={isNegative}
+                onClose={close}
                 {...workflowPageParams}
               />
-            }
+            )}
             ignoreBoundary
             placement="bottom"
             showArrow
