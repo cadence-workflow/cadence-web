@@ -5,10 +5,19 @@ export type Props = {
   isUngroupedHistoryView: boolean;
   menuItems: Array<NavigationBarEventsMenuItem>;
   onClickEvent: (eventId: string) => void;
+  onClickSubItem?: (subItem: NavigationBarEventsSubMenuItem) => void;
+  subItemIcon?: React.ReactNode;
 };
 
 export type NavigationBarEventsMenuItem = {
   category: EventGroupCategory;
+  eventId: string;
+  label: string;
+  subItems?: Array<NavigationBarEventsSubMenuItem>;
+};
+
+export type NavigationBarEventsSubMenuItem = {
+  id: string;
   eventId: string;
   label: string;
 };

@@ -157,11 +157,95 @@ describe(WorkflowHistoryNavigationBarEventsMenu.name, () => {
     expect(screen.getByText('Event 11')).toBeInTheDocument();
     expect(screen.getByText('Event 15')).toBeInTheDocument();
   });
+
+  it('renders sub items below their group when the menu is open', async () => {
+    const { user } = setup({
+      menuItems: [
+        {
+          eventId: 'event-1',
+          label: 'Group With Issues',
+          category: 'ACTIVITY',
+          subItems: [
+            { id: 'sub-1', eventId: 'event-1', label: 'Issue A' },
+            { id: 'sub-2', eventId: 'event-1', label: 'Issue B' },
+          ],
+        },
+      ],
+    });
+
+    expect(screen.queryByText('Issue A')).not.toBeInTheDocument();
+
+    await user.click(screen.getByText('Open Popover'));
+
+    expect(screen.getByText('Group With Issues')).toBeInTheDocument();
+    expect(screen.getByText('Issue A')).toBeInTheDocument();
+    expect(screen.getByText('Issue B')).toBeInTheDocument();
+  });
+
+  it('renders the sub item icon when provided', async () => {
+    const { user } = setup({
+      menuItems: [
+        {
+          eventId: 'event-1',
+          label: 'Group With Issues',
+          category: 'ACTIVITY',
+          subItems: [{ id: 'sub-1', eventId: 'event-1', label: 'Issue A' }],
+        },
+      ],
+      subItemIcon: <span data-testid="sub-item-icon" />,
+    });
+
+    await user.click(screen.getByText('Open Popover'));
+
+    expect(screen.getByText('Issue A').closest('button')).toContainElement(
+      screen.getByTestId('sub-item-icon')
+    );
+  });
+
+  it('renders no sub items for items without subItems', async () => {
+    const { user } = setup({
+      menuItems: [
+        { eventId: 'event-1', label: 'No Sub Items', category: 'ACTIVITY' },
+      ],
+    });
+
+    await user.click(screen.getByText('Open Popover'));
+
+    const noSubItemsButton = screen
+      .getByText('No Sub Items')
+      .closest('button')!;
+
+    expect(noSubItemsButton.querySelectorAll('svg')).toHaveLength(1);
+  });
+
+  it('calls onClickSubItem and closes the menu when a sub-item is clicked', async () => {
+    const { user, mockOnClickSubItem } = setup({
+      menuItems: [
+        {
+          eventId: 'event-1',
+          label: 'Group With Issues',
+          category: 'ACTIVITY',
+          subItems: [{ id: 'sub-1', eventId: 'event-1', label: 'Issue A' }],
+        },
+      ],
+    });
+
+    await user.click(screen.getByText('Open Popover'));
+    await user.click(screen.getByText('Issue A'));
+
+    expect(mockOnClickSubItem).toHaveBeenCalledWith({
+      id: 'sub-1',
+      eventId: 'event-1',
+      label: 'Issue A',
+    });
+    expect(screen.queryByTestId('popover-content')).not.toBeInTheDocument();
+  });
 });
 
 function setup(overrides: Partial<Props> = {}) {
   const user = userEvent.setup();
   const mockOnClickEvent = jest.fn();
+  const mockOnClickSubItem = jest.fn();
 
   render(
     <WorkflowHistoryNavigationBarEventsMenu
@@ -174,6 +258,7 @@ function setup(overrides: Partial<Props> = {}) {
         },
       ]}
       onClickEvent={mockOnClickEvent}
+      onClickSubItem={mockOnClickSubItem}
       {...overrides}
     >
       <button>Open Popover</button>
@@ -183,5 +268,6 @@ function setup(overrides: Partial<Props> = {}) {
   return {
     user,
     mockOnClickEvent,
+    mockOnClickSubItem,
   };
 }
