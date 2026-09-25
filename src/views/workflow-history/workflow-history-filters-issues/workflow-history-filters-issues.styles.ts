@@ -16,6 +16,9 @@ export const overrides = {
     Label: {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
         ...$theme.typography.LabelSmall,
+        display: 'flex',
+        alignItems: 'center',
+        gap: $theme.sizing.scale200,
       }),
     },
   } satisfies SwitchOverrides,

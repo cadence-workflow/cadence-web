@@ -1,4 +1,5 @@
 import { Switch } from 'baseui/switch';
+import { RiStethoscopeLine } from 'react-icons/ri';
 
 import { type PageFilterComponentProps } from '@/components/page-filters/page-filters.types';
 
@@ -12,14 +13,13 @@ export default function WorkflowHistoryFiltersIssues({
 }: PageFilterComponentProps<EventGroupIssuesFilterValue>) {
   return (
     <Switch
-      checked={value.historyEventIssues ?? false}
+      checked={value.historyEventIssues}
       size="small"
       labelPlacement="left"
-      onChange={(e) =>
-        setValue({ historyEventIssues: e.target.checked || undefined })
-      }
+      onChange={(e) => setValue({ historyEventIssues: e.target.checked })}
       overrides={overrides.switch}
     >
+      <RiStethoscopeLine size={16} aria-hidden />
       Only show events with issues
     </Switch>
   );

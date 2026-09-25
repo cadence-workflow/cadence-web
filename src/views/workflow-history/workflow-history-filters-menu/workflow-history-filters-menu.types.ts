@@ -44,5 +44,5 @@ export type EventGroupStatusFilterValue = {
 };
 
 export type EventGroupIssuesFilterValue = {
-  historyEventIssues: boolean | undefined;
+  historyEventIssues: boolean;
 };

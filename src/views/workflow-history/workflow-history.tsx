@@ -2,7 +2,6 @@ import { useContext, useEffect, useMemo, useState, useCallback } from 'react';
 
 import usePageFilters from '@/components/page-filters/hooks/use-page-filters';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
-import useConfigValue from '@/hooks/use-config-value/use-config-value';
 import useExpansionToggle from '@/hooks/use-expansion-toggle/use-expansion-toggle';
 import useThrottledState from '@/hooks/use-throttled-state';
 import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
@@ -16,19 +15,19 @@ import { useSuspenseDescribeWorkflow } from '../workflow-page/hooks/use-describe
 import { type WorkflowPageTabContentParams } from '../workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
 import WORKFLOW_HISTORY_FETCH_EVENTS_THROTTLE_MS_CONFIG from './config/workflow-history-fetch-events-throttle-ms.config';
+import workflowHistoryFiltersConfig from './config/workflow-history-filters.config';
 import { WORKFLOW_HISTORY_PAGE_SIZE_CONFIG } from './config/workflow-history-page-size.config';
 import WORKFLOW_HISTORY_RENDER_FETCHED_EVENTS_THROTTLE_MS_CONFIG from './config/workflow-history-render-fetched-events-throttle-ms.config';
 import WORKFLOW_HISTORY_SET_RANGE_THROTTLE_MS_CONFIG from './config/workflow-history-set-range-throttle-ms.config';
-import getDiagnosticsIssuesByEventId from './helpers/get-diagnostics-issues-by-event-id';
 import getNavigationBarEventsMenuItems from './helpers/get-navigation-bar-events-menu-items';
 import getSortableEventId from './helpers/get-sortable-event-id';
 import pendingActivitiesInfoToEvents from './helpers/pending-activities-info-to-events';
 import pendingDecisionInfoToEvent from './helpers/pending-decision-info-to-event';
-import useDiagnoseWorkflow from './hooks/use-diagnose-workflow/use-diagnose-workflow';
 import useInitialSelectedEvent from './hooks/use-initial-selected-event';
 import useWorkflowHistoryFetcher from './hooks/use-workflow-history-fetcher';
 import useWorkflowHistoryFiltersConfig from './hooks/use-workflow-history-filters-config';
 import useWorkflowHistoryGrouper from './hooks/use-workflow-history-grouper';
+import useWorkflowHistoryPageContext from './hooks/use-workflow-history-page-context';
 import useWorkflowHistoryScroll from './hooks/use-workflow-history-scroll';
 import { WorkflowHistoryContext } from './workflow-history-context-provider/workflow-history-context-provider';
 import filterGroupsByStatus from './workflow-history-filters-menu/helpers/filter-groups-by-status';
@@ -42,12 +41,12 @@ import { styled } from './workflow-history.styles';
 import {
   type VisibleHistoryRanges,
   type Props,
-  type WorkflowDiagnosticsIssuesByEventId,
 } from './workflow-history.types';
 
 export default function WorkflowHistory({ params }: Props) {
   const decodedParams = decodeUrlParams<WorkflowPageTabContentParams>(params);
-  const workflowHistoryFiltersConfig = useWorkflowHistoryFiltersConfig();
+  const filteredWorkflowHistoryFiltersConfig =
+    useWorkflowHistoryFiltersConfig();
 
   const { workflowTab, ...encodedHistoryQueryParams } = params;
   const wfHistoryRequestArgs = {
@@ -56,6 +55,7 @@ export default function WorkflowHistory({ params }: Props) {
     waitForNewEvent: true,
   };
 
+  // Use the full config so that reset always clears historyEventIssues.
   const { queryParams, setQueryParams, resetAllFilters } = usePageFilters({
     pageQueryParamsConfig: workflowPageQueryParamsConfig,
     pageFiltersConfig: workflowHistoryFiltersConfig,
@@ -67,9 +67,19 @@ export default function WorkflowHistory({ params }: Props) {
 
   const { workflowExecutionInfo } = wfExecutionDescription;
 
-  const { data: isDiagnosticsInHistoryEnabled } = useConfigValue(
-    'WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED'
-  );
+  const workflowHistoryPageContext = useWorkflowHistoryPageContext({
+    domain: decodedParams.domain,
+    cluster: decodedParams.cluster,
+    workflowId: decodedParams.workflowId,
+    runId: decodedParams.runId,
+  });
+
+  const {
+    pageConfig: {
+      WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED: isDiagnosticsInHistoryEnabled,
+    },
+    diagnosticsByEventId: workflowDiagnosticsByEventIdMap,
+  } = workflowHistoryPageContext;
 
   const activeFiltersCount = useMemo(
     () =>
@@ -83,24 +93,6 @@ export default function WorkflowHistory({ params }: Props) {
       isDiagnosticsInHistoryEnabled,
     ]
   );
-
-  const { data: workflowDiagnostics } = useDiagnoseWorkflow(
-    {
-      domain: decodedParams.domain,
-      cluster: decodedParams.cluster,
-      workflowId: decodedParams.workflowId,
-      runId: decodedParams.runId,
-    },
-    { enabled: Boolean(isDiagnosticsInHistoryEnabled) }
-  );
-
-  const workflowDiagnosticsByEventIdMap: WorkflowDiagnosticsIssuesByEventId =
-    useMemo(() => {
-      if (workflowDiagnostics?.parsingError || !workflowDiagnostics?.result)
-        return {};
-
-      return getDiagnosticsIssuesByEventId(workflowDiagnostics.result);
-    }, [workflowDiagnostics]);
 
   const {
     eventGroups,
@@ -179,7 +171,7 @@ export default function WorkflowHistory({ params }: Props) {
   const filteredEventGroupsEntries = useMemo(
     () =>
       sortedEventGroupsEntries.filter(([, g]) =>
-        workflowHistoryFiltersConfig.every((f) =>
+        filteredWorkflowHistoryFiltersConfig.every((f) =>
           f.filterFunc(
             g,
             {
@@ -187,9 +179,7 @@ export default function WorkflowHistory({ params }: Props) {
               historyEventStatuses: queryParams.historyEventStatuses,
               historyEventIssues: queryParams.historyEventIssues,
             },
-            {
-              diagnosticsByEventId: workflowDiagnosticsByEventIdMap,
-            }
+            workflowHistoryPageContext
           )
         )
       ),
@@ -198,8 +188,8 @@ export default function WorkflowHistory({ params }: Props) {
       queryParams.historyEventTypes,
       queryParams.historyEventStatuses,
       queryParams.historyEventIssues,
-      workflowDiagnosticsByEventIdMap,
-      workflowHistoryFiltersConfig,
+      workflowHistoryPageContext,
+      filteredWorkflowHistoryFiltersConfig,
     ]
   );
 
