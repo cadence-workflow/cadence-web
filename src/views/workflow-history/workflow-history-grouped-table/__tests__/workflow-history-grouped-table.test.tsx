@@ -6,7 +6,10 @@ import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import { type WorkflowExecutionCloseStatus } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionCloseStatus';
 import { RequestError } from '@/utils/request/request-error';
-import { mockActivityEventGroup } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
+import {
+  mockActivityEventGroup,
+  mockDecisionEventGroup,
+} from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
 import { type WorkflowPageTabContentParams } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
 import type WorkflowHistoryTableFooter from '../../workflow-history-table-footer/workflow-history-table-footer';
@@ -49,11 +52,16 @@ jest.mock(
       ({
         eventGroup,
         selectedEventId,
+        workflowDiagnosticsByEventIdMap,
       }: {
         eventGroup: HistoryEventsGroup;
         selectedEventId?: string;
+        workflowDiagnosticsByEventIdMap: WorkflowDiagnosticsIssuesByEventId;
       }) => (
-        <div data-testid="workflow-history-event-group">
+        <div
+          data-testid="workflow-history-event-group"
+          data-diagnostics={JSON.stringify(workflowDiagnosticsByEventIdMap)}
+        >
           {JSON.stringify(eventGroup)}
           {selectedEventId && (
             <div data-testid="selected-event-id">{selectedEventId}</div>
@@ -63,7 +71,38 @@ jest.mock(
     )
 );
 
+const mockDiagnosticsIssuesByEventId: WorkflowDiagnosticsIssuesByEventId = {
+  '7': [
+    {
+      issueId: 0,
+      invariantType: 'Activity Failed',
+      reason: 'Activity timed out',
+      metadata: null,
+    },
+  ],
+  '2': [
+    {
+      issueId: 1,
+      invariantType: 'Decision Failed',
+      reason: 'Decision task failed',
+      metadata: null,
+    },
+  ],
+  '999': [
+    {
+      issueId: 2,
+      invariantType: 'Unrelated',
+      reason: 'Issue for an event that is not rendered',
+      metadata: null,
+    },
+  ],
+};
+
 describe(WorkflowHistoryGroupedTable.name, () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should render all column headers in correct order', () => {
     setup();
 
@@ -132,6 +171,28 @@ describe(WorkflowHistoryGroupedTable.name, () => {
     setup({ eventGroupsById: mockEventGroups, selectedEventId: undefined });
 
     expect(screen.queryByTestId('selected-event-id')).not.toBeInTheDocument();
+  });
+
+  it('should pass diagnostics scoped to each group to WorkflowHistoryEventGroup', () => {
+    setup({
+      eventGroupsById: [
+        ['group-1', mockActivityEventGroup],
+        ['group-2', mockDecisionEventGroup],
+      ],
+      workflowDiagnosticsByEventIdMap: mockDiagnosticsIssuesByEventId,
+    });
+
+    const [activityGroup, decisionGroup] = screen.getAllByTestId(
+      'workflow-history-event-group'
+    );
+    expect(activityGroup).toHaveAttribute(
+      'data-diagnostics',
+      JSON.stringify({ '7': mockDiagnosticsIssuesByEventId['7'] })
+    );
+    expect(decisionGroup).toHaveAttribute(
+      'data-diagnostics',
+      JSON.stringify({ '2': mockDiagnosticsIssuesByEventId['2'] })
+    );
   });
 });
 

@@ -5,7 +5,10 @@ import { VirtuosoMockContext } from 'react-virtuoso';
 import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
 import { type RequestError } from '@/utils/request/request-error';
-import { mockActivityEventGroup } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
+import {
+  mockActivityEventGroup,
+  mockDecisionEventGroup,
+} from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
 import { type WorkflowPageTabsParams } from '@/views/workflow-page/workflow-page-tabs/workflow-page-tabs.types';
 
 import { createUngroupedEventsInfo } from '../../__fixtures__/ungrouped-events-info';
@@ -51,9 +54,11 @@ jest.mock(
         onReset,
         onClickShowInTimeline,
         animateOnEnter,
+        workflowDiagnosticsByEventIdMap,
       }) => (
         <div
           data-testid="workflow-history-ungrouped-event"
+          data-diagnostics={JSON.stringify(workflowDiagnosticsByEventIdMap)}
           data-expanded={isExpanded}
           data-animate-on-enter={animateOnEnter}
           data-event-id={eventInfo.id}
@@ -68,7 +73,38 @@ jest.mock(
     )
 );
 
+const mockDiagnosticsIssuesByEventId: WorkflowDiagnosticsIssuesByEventId = {
+  '7': [
+    {
+      issueId: 0,
+      invariantType: 'Activity Failed',
+      reason: 'Activity timed out',
+      metadata: null,
+    },
+  ],
+  '2': [
+    {
+      issueId: 1,
+      invariantType: 'Decision Failed',
+      reason: 'Decision task failed',
+      metadata: null,
+    },
+  ],
+  '999': [
+    {
+      issueId: 2,
+      invariantType: 'Unrelated',
+      reason: 'Issue for an event that is not rendered',
+      metadata: null,
+    },
+  ],
+};
+
 describe(WorkflowHistoryUngroupedTable.name, () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should render all column headers in correct order', () => {
     setup();
 
@@ -221,6 +257,42 @@ describe(WorkflowHistoryUngroupedTable.name, () => {
     await user.click(showInTimelineButtons[0]);
 
     expect(mockOnClickShowEventInTimeline).toHaveBeenCalledWith(groupId);
+  });
+
+  it('should pass diagnostics scoped to the event group to WorkflowHistoryUngroupedEvent', () => {
+    setup({
+      ungroupedEventsInfo: createUngroupedEventsInfo([
+        ['group-1', mockActivityEventGroup],
+        ['group-2', mockDecisionEventGroup],
+      ]),
+      workflowDiagnosticsByEventIdMap: mockDiagnosticsIssuesByEventId,
+    });
+
+    const expectedDiagnosticsByEventId: Record<string, string> = {
+      ...Object.fromEntries(
+        mockActivityEventGroup.events.map((event) => [
+          event.eventId,
+          JSON.stringify({ '7': mockDiagnosticsIssuesByEventId['7'] }),
+        ])
+      ),
+      ...Object.fromEntries(
+        mockDecisionEventGroup.events.map((event) => [
+          event.eventId,
+          JSON.stringify({ '2': mockDiagnosticsIssuesByEventId['2'] }),
+        ])
+      ),
+    };
+
+    const events = screen.getAllByTestId('workflow-history-ungrouped-event');
+    expect(events).toHaveLength(
+      Object.keys(expectedDiagnosticsByEventId).length
+    );
+    events.forEach((event) => {
+      expect(event).toHaveAttribute(
+        'data-diagnostics',
+        expectedDiagnosticsByEventId[event.getAttribute('data-event-id') ?? '']
+      );
+    });
   });
 });
 
