@@ -12,10 +12,16 @@ export const styled = {
     backgroundColor: $theme.colors.backgroundPrimary,
     borderRadius: $theme.borders.radius400,
   })),
-  MenuItemContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+  MenuItemContainer: createStyled('div', () => ({
     display: 'flex',
-    gap: $theme.sizing.scale500,
-    alignItems: 'flex-start',
+    flexDirection: 'column',
+    alignItems: 'stretch',
+  })),
+  SubItemsContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    paddingLeft: `calc(${$theme.sizing.scale600} + ${$theme.sizing.scale300})`,
   })),
   PaginationContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
@@ -52,6 +58,17 @@ export const overrides = {
         width: '100%',
         justifyContent: 'flex-start',
       } satisfies StyleObject,
+    },
+  } satisfies ButtonOverrides,
+  subItemButton: {
+    BaseButton: {
+      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+        ...$theme.typography.LabelXSmall,
+        paddingTop: $theme.sizing.scale100,
+        paddingBottom: $theme.sizing.scale100,
+        width: '100%',
+        justifyContent: 'flex-start',
+      }),
     },
   } satisfies ButtonOverrides,
 };

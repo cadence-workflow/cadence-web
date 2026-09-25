@@ -19,6 +19,8 @@ export default function WorkflowHistoryNavigationBarEventsMenu({
   isUngroupedHistoryView,
   menuItems,
   onClickEvent,
+  onClickSubItem,
+  subItemIcon,
 }: Props) {
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -40,7 +42,7 @@ export default function WorkflowHistoryNavigationBarEventsMenu({
     <StatefulPopover
       content={({ close }) => (
         <styled.MenuItemsContainer>
-          {paginatedItems.map(({ eventId, label, category }) => (
+          {paginatedItems.map(({ eventId, label, category, subItems }) => (
             <styled.MenuItemContainer key={eventId}>
               <Button
                 onClick={() => {
@@ -61,6 +63,25 @@ export default function WorkflowHistoryNavigationBarEventsMenu({
               >
                 {label}
               </Button>
+              {subItems && subItems.length > 0 && (
+                <styled.SubItemsContainer>
+                  {subItems.map((subItem) => (
+                    <Button
+                      key={subItem.id}
+                      onClick={() => {
+                        onClickSubItem?.(subItem);
+                        close();
+                      }}
+                      overrides={overrides.subItemButton}
+                      size="compact"
+                      kind="tertiary"
+                      startEnhancer={subItemIcon}
+                    >
+                      {subItem.label}
+                    </Button>
+                  ))}
+                </styled.SubItemsContainer>
+              )}
             </styled.MenuItemContainer>
           ))}
           {totalPages > 1 && (
