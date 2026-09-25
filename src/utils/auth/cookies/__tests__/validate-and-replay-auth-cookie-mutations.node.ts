@@ -151,6 +151,20 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
     expect(mockLoggerWarn).not.toHaveBeenCalled();
   });
 
+  it('does not warn for an empty mutation list', async () => {
+    const response = NextResponse.json({});
+
+    const result = await validateAndReplayAuthCookieMutations(
+      buildRequest('http://cadence.internal.example/api/auth/recover'),
+      response,
+      [],
+      COOKIE_NAMES
+    );
+
+    expect(result).toEqual({ ok: true });
+    expect(mockLoggerWarn).not.toHaveBeenCalled();
+  });
+
   it('replays clears with the shared attributes and an epoch expiry', async () => {
     const response = NextResponse.json({});
     const request = new NextRequest('http://localhost/api/auth/recover', {
@@ -228,10 +242,25 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
     });
 
     it('rejects a set whose raw value fits but whose escaped wire form exceeds the budget', async () => {
-      const response = NextResponse.json({});
       // Overhead for this set is 47 bytes (name + '=' + attributes, no
-      // Secure on plain-http loopback). Raw value length 4000-47 measures
-      // exactly at budget; escaped ('{' → '%7B') it triples over.
+      // Secure on plain-http loopback). A raw value of 4000-47 measures
+      // exactly at budget; escaped ('{' → '%7B') the same length triples over.
+      const atBudget = await validateAndReplayAuthCookieMutations(
+        buildRequest(),
+        NextResponse.json({}),
+        [
+          {
+            set: {
+              name: 'oidc-session.0',
+              value: 'x'.repeat(AUTH_COOKIE_MUTATIONS_MAX_BYTES - 47),
+            },
+          },
+        ],
+        COOKIE_NAMES
+      );
+      expect(atBudget).toEqual({ ok: true });
+
+      const response = NextResponse.json({});
       const mutations: CookieMutation[] = [
         {
           set: {
