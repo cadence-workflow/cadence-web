@@ -16,7 +16,7 @@ import { useSuspenseDescribeWorkflow } from '../workflow-page/hooks/use-describe
 import { type WorkflowPageTabContentParams } from '../workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
 import WORKFLOW_HISTORY_FETCH_EVENTS_THROTTLE_MS_CONFIG from './config/workflow-history-fetch-events-throttle-ms.config';
-import workflowHistoryFiltersConfig from './config/workflow-history-filters.config';
+import fullWorkflowHistoryFiltersConfig from './config/workflow-history-filters.config';
 import { WORKFLOW_HISTORY_PAGE_SIZE_CONFIG } from './config/workflow-history-page-size.config';
 import WORKFLOW_HISTORY_RENDER_FETCHED_EVENTS_THROTTLE_MS_CONFIG from './config/workflow-history-render-fetched-events-throttle-ms.config';
 import WORKFLOW_HISTORY_SET_RANGE_THROTTLE_MS_CONFIG from './config/workflow-history-set-range-throttle-ms.config';
@@ -48,8 +48,7 @@ import {
 
 export default function WorkflowHistory({ params }: Props) {
   const decodedParams = decodeUrlParams<WorkflowPageTabContentParams>(params);
-  const filteredWorkflowHistoryFiltersConfig =
-    useWorkflowHistoryFiltersConfig();
+  const workflowHistoryFiltersConfig = useWorkflowHistoryFiltersConfig();
 
   const { workflowTab, ...encodedHistoryQueryParams } = params;
   const wfHistoryRequestArgs = {
@@ -60,7 +59,7 @@ export default function WorkflowHistory({ params }: Props) {
 
   const { queryParams, setQueryParams, resetAllFilters } = usePageFilters({
     pageQueryParamsConfig: workflowPageQueryParamsConfig,
-    pageFiltersConfig: workflowHistoryFiltersConfig,
+    pageFiltersConfig: fullWorkflowHistoryFiltersConfig,
   });
 
   const { data: wfExecutionDescription } = useSuspenseDescribeWorkflow({
@@ -181,7 +180,7 @@ export default function WorkflowHistory({ params }: Props) {
   const filteredEventGroupsEntries = useMemo(
     () =>
       sortedEventGroupsEntries.filter(([, g]) =>
-        filteredWorkflowHistoryFiltersConfig.every((f) =>
+        workflowHistoryFiltersConfig.every((f) =>
           f.filterFunc(
             g,
             {
@@ -201,7 +200,7 @@ export default function WorkflowHistory({ params }: Props) {
       queryParams.historyEventStatuses,
       queryParams.historyEventIssues,
       workflowDiagnosticsByEventIdMap,
-      filteredWorkflowHistoryFiltersConfig,
+      workflowHistoryFiltersConfig,
     ]
   );
 

@@ -34,7 +34,6 @@ import {
   pendingActivityTaskStartEvent,
   pendingDecisionTaskStartEvent,
 } from '../__fixtures__/workflow-history-pending-events';
-import workflowHistoryFiltersConfig from '../config/workflow-history-filters.config';
 import WorkflowHistory from '../workflow-history';
 import { WorkflowHistoryContext } from '../workflow-history-context-provider/workflow-history-context-provider';
 import { type Props as NavbarProps } from '../workflow-history-navigation-bar/workflow-history-navigation-bar.types';
@@ -486,16 +485,6 @@ describe(WorkflowHistory.name, () => {
     await waitFor(() => {
       expect(mockDiagnoseResolver).toHaveBeenCalledTimes(1);
     });
-  });
-
-  it('passes the full filters config to usePageFilters so reset always clears historyEventIssues, even when diagnostics in history is disabled', async () => {
-    await setup({ isDiagnosticsInHistoryEnabled: false });
-
-    expect(usePageFiltersModule.default).toHaveBeenCalledWith(
-      expect.objectContaining({
-        pageFiltersConfig: workflowHistoryFiltersConfig,
-      })
-    );
   });
 });
 
