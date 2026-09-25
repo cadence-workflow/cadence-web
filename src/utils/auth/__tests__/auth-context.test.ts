@@ -1,12 +1,12 @@
 import { type Domain } from '@/__generated__/proto-ts/uber/cadence/api/v1/Domain';
 import {
-  CADENCE_AUTH_COOKIE_NAME,
-  decodeCadenceJwtClaims,
   getPublicAuthContext,
-  getGrpcMetadataFromAuth,
   resolveAuthContext,
 } from '@/utils/auth/auth-context';
 import { getDomainAccessForUser } from '@/utils/auth/auth-shared';
+import { type AuthRequest } from '@/utils/auth/auth.types';
+import { getActiveAuthServerEntry } from '@/utils/auth/strategies/auth-server-registry';
+import { CADENCE_AUTH_COOKIE_NAME } from '@/utils/auth/strategies/jwt/jwt-auth.constants';
 import getConfigValue from '@/utils/config/get-config-value';
 
 jest.mock('@/utils/config/get-config-value');
@@ -25,27 +25,45 @@ const buildTokenWithNonJsonPayload = (payloadText: string) => {
   return ['header', payload, 'signature'].join('.');
 };
 
+const buildAuthRequest = (token?: string): AuthRequest => ({
+  cookies: {
+    get: (name: string) =>
+      name === CADENCE_AUTH_COOKIE_NAME && token !== undefined
+        ? { value: token }
+        : undefined,
+  },
+  headers: new Headers(),
+});
+
+const mockAuthStrategy = (strategy: 'jwt' | 'disabled') =>
+  mockGetConfigValue.mockImplementation(async (key: string) => {
+    if (key === 'CADENCE_WEB_AUTH_STRATEGY') return strategy;
+    return '';
+  });
+
 describe('auth-context utilities', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
+  // Characterization: master's jwt/disabled cases, unchanged in outcome,
+  // now exercised through the server-registry dispatch (the active strategy's
+  // policy resolves the context). The credential itself no longer enters the
+  // context — it is reachable only through the policy, covered by
+  // the getGrpcMetadata block below.
   describe(resolveAuthContext.name, () => {
     it('returns unauthenticated context when auth is disabled', async () => {
-      mockGetConfigValue.mockImplementation(async (key: string) => {
-        if (key === 'CADENCE_WEB_AUTH_STRATEGY') return 'disabled';
-        return '';
-      });
+      mockAuthStrategy('disabled');
 
       const authContext = await resolveAuthContext({
-        get: () => undefined,
+        cookies: { get: () => undefined },
+        headers: new Headers(),
       });
 
       expect(authContext).toMatchObject({
         authEnabled: false,
         auth: {
           isValidToken: false,
-          token: undefined,
         },
         isAdmin: false,
         groups: [],
@@ -59,21 +77,14 @@ describe('auth-context utilities', () => {
         groups: 'worker',
         admin: true,
       });
-      mockGetConfigValue.mockImplementation(async (key: string) => {
-        if (key === 'CADENCE_WEB_AUTH_STRATEGY') return 'jwt';
-        return '';
-      });
+      mockAuthStrategy('jwt');
 
-      const authContext = await resolveAuthContext({
-        get: (name: string) =>
-          name === CADENCE_AUTH_COOKIE_NAME ? { value: token } : undefined,
-      });
+      const authContext = await resolveAuthContext(buildAuthRequest(token));
 
       expect(authContext).toMatchObject({
         authEnabled: true,
         auth: {
           isValidToken: true,
-          token,
         },
         isAdmin: true,
         groups: ['worker'],
@@ -83,41 +94,31 @@ describe('auth-context utilities', () => {
     });
 
     it('returns unauthenticated context when cookie is missing', async () => {
-      mockGetConfigValue.mockImplementation(async (key: string) => {
-        if (key === 'CADENCE_WEB_AUTH_STRATEGY') return 'jwt';
-        return '';
-      });
+      mockAuthStrategy('jwt');
 
       const authContext = await resolveAuthContext({
-        get: () => undefined,
+        cookies: { get: () => undefined },
+        headers: new Headers(),
       });
 
       expect(authContext).toMatchObject({
         authEnabled: true,
         auth: {
           isValidToken: false,
-          token: undefined,
         },
       });
     });
 
     it('treats undecodable tokens as unauthenticated', async () => {
       const token = buildTokenWithNonJsonPayload('not-json');
-      mockGetConfigValue.mockImplementation(async (key: string) => {
-        if (key === 'CADENCE_WEB_AUTH_STRATEGY') return 'jwt';
-        return '';
-      });
+      mockAuthStrategy('jwt');
 
-      const authContext = await resolveAuthContext({
-        get: (name: string) =>
-          name === CADENCE_AUTH_COOKIE_NAME ? { value: token } : undefined,
-      });
+      const authContext = await resolveAuthContext(buildAuthRequest(token));
 
       expect(authContext).toMatchObject({
         authEnabled: true,
         auth: {
           isValidToken: false,
-          token: undefined,
         },
         groups: [],
         isAdmin: false,
@@ -127,21 +128,14 @@ describe('auth-context utilities', () => {
 
     it('treats empty-claims tokens as unauthenticated', async () => {
       const token = buildToken({});
-      mockGetConfigValue.mockImplementation(async (key: string) => {
-        if (key === 'CADENCE_WEB_AUTH_STRATEGY') return 'jwt';
-        return '';
-      });
+      mockAuthStrategy('jwt');
 
-      const authContext = await resolveAuthContext({
-        get: (name: string) =>
-          name === CADENCE_AUTH_COOKIE_NAME ? { value: token } : undefined,
-      });
+      const authContext = await resolveAuthContext(buildAuthRequest(token));
 
       expect(authContext).toMatchObject({
         authEnabled: true,
         auth: {
           isValidToken: false,
-          token: undefined,
         },
         groups: [],
         isAdmin: false,
@@ -160,21 +154,14 @@ describe('auth-context utilities', () => {
         admin: true,
         exp: Math.floor(nowMs / 1000) - 10,
       });
-      mockGetConfigValue.mockImplementation(async (key: string) => {
-        if (key === 'CADENCE_WEB_AUTH_STRATEGY') return 'jwt';
-        return '';
-      });
+      mockAuthStrategy('jwt');
 
-      const authContext = await resolveAuthContext({
-        get: (name: string) =>
-          name === CADENCE_AUTH_COOKIE_NAME ? { value: token } : undefined,
-      });
+      const authContext = await resolveAuthContext(buildAuthRequest(token));
 
       expect(authContext).toMatchObject({
         authEnabled: true,
         auth: {
           isValidToken: false,
-          token: undefined,
           expiresAtMs: undefined,
         },
         isAdmin: false,
@@ -194,15 +181,9 @@ describe('auth-context utilities', () => {
         sub: 'exp-user',
         exp: expSeconds,
       });
-      mockGetConfigValue.mockImplementation(async (key: string) => {
-        if (key === 'CADENCE_WEB_AUTH_STRATEGY') return 'jwt';
-        return '';
-      });
+      mockAuthStrategy('jwt');
 
-      const authContext = await resolveAuthContext({
-        get: (name: string) =>
-          name === CADENCE_AUTH_COOKIE_NAME ? { value: token } : undefined,
-      });
+      const authContext = await resolveAuthContext(buildAuthRequest(token));
 
       expect(authContext.auth.expiresAtMs).toBe(expSeconds * 1000);
 
@@ -214,57 +195,12 @@ describe('auth-context utilities', () => {
         sub: 'legacy-admin',
         admin: true,
       });
-      mockGetConfigValue.mockImplementation(async (key: string) => {
-        if (key === 'CADENCE_WEB_AUTH_STRATEGY') return 'disabled';
-        return '';
-      });
+      mockAuthStrategy('disabled');
 
-      const authContext = await resolveAuthContext({
-        get: (name: string) =>
-          name === CADENCE_AUTH_COOKIE_NAME ? { value: token } : undefined,
-      });
+      const authContext = await resolveAuthContext(buildAuthRequest(token));
 
-      expect(authContext.auth.token).toBeUndefined();
       expect(authContext.auth.isValidToken).toBe(false);
       expect(authContext.isAdmin).toBe(false);
-    });
-  });
-
-  describe(decodeCadenceJwtClaims.name, () => {
-    it('returns undefined for invalid tokens', () => {
-      expect(decodeCadenceJwtClaims('invalid.token')).toBeUndefined();
-    });
-
-    it('decodes valid payloads', () => {
-      const claims = { name: 'test-user', groups: 'group-a', admin: true };
-      const token = buildToken(claims);
-
-      expect(decodeCadenceJwtClaims(token)).toMatchObject(claims);
-    });
-
-    it('returns undefined when groups claim is not a string', () => {
-      const token = buildToken({
-        name: 'test-user',
-        groups: ['group-a'],
-        admin: true,
-      });
-
-      expect(decodeCadenceJwtClaims(token)).toBeUndefined();
-    });
-
-    it('returns undefined when claim types are invalid', () => {
-      const token = buildToken({
-        name: 123,
-        admin: 'true',
-      });
-
-      expect(decodeCadenceJwtClaims(token)).toBeUndefined();
-    });
-
-    it('returns undefined for empty claims objects', () => {
-      const token = buildToken({});
-
-      expect(decodeCadenceJwtClaims(token)).toBeUndefined();
     });
   });
 
@@ -471,37 +407,46 @@ describe('auth-context utilities', () => {
     });
   });
 
-  describe(getGrpcMetadataFromAuth.name, () => {
-    it('returns metadata when token is present', () => {
-      expect(
-        getGrpcMetadataFromAuth({
-          auth: { isValidToken: true, token: 'abc' },
-          groups: [],
-          isAdmin: false,
-          authEnabled: true,
-        })
-      ).toEqual({ 'cadence-authorization': 'abc' });
+  // Master's getGrpcMetadataFromAuth cases, dispatched through the active
+  // strategy's server policy (same metadata key, same credential as master).
+  describe('getGrpcMetadata through the active server policy', () => {
+    it('returns metadata when token is present', async () => {
+      const token = buildToken({ sub: 'user-id' });
+      mockAuthStrategy('jwt');
+
+      const request = buildAuthRequest(token);
+      const authContext = await resolveAuthContext(request);
+      const entry = await getActiveAuthServerEntry();
+
+      // jwt/disabled policies are synchronous; awaiting also satisfies the
+      // contract's promise-permissive return type.
+      expect(await entry.policy.getGrpcMetadata(authContext, request)).toEqual({
+        'cadence-authorization': token,
+      });
     });
 
-    it('returns undefined when token is missing', () => {
+    it('returns undefined when token is missing', async () => {
+      mockAuthStrategy('jwt');
+
+      const request = buildAuthRequest();
+      const authContext = await resolveAuthContext(request);
+      const entry = await getActiveAuthServerEntry();
+
       expect(
-        getGrpcMetadataFromAuth({
-          authEnabled: true,
-          auth: { isValidToken: false },
-          groups: [],
-          isAdmin: false,
-        })
+        await entry.policy.getGrpcMetadata(authContext, request)
       ).toBeUndefined();
     });
 
-    it('returns undefined when auth is disabled even if token is present', () => {
+    it('returns undefined when auth is disabled even if token is present', async () => {
+      const token = buildToken({ sub: 'user-id' });
+      mockAuthStrategy('disabled');
+
+      const request = buildAuthRequest(token);
+      const authContext = await resolveAuthContext(request);
+      const entry = await getActiveAuthServerEntry();
+
       expect(
-        getGrpcMetadataFromAuth({
-          authEnabled: false,
-          auth: { isValidToken: true, token: 'abc' },
-          groups: [],
-          isAdmin: false,
-        })
+        await entry.policy.getGrpcMetadata(authContext, request)
       ).toBeUndefined();
     });
   });
