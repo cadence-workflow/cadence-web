@@ -1,17 +1,12 @@
-import { Button } from 'baseui/button';
 import { RiStethoscopeLine } from 'react-icons/ri';
 
 import { type DetailsRowValueComponentProps } from '../workflow-history-details-row/workflow-history-details-row.types';
 import { type WorkflowDiagnosticsIssue } from '../workflow-history.types';
 
-import {
-  overrides,
-  styled,
-} from './workflow-history-details-row-diagnostics-tooltip.styles';
+import { styled } from './workflow-history-details-row-diagnostics-tooltip.styles';
 
 export default function WorkflowHistoryDetailsRowDiagnosticsTooltip({
   value,
-  onClose,
 }: DetailsRowValueComponentProps) {
   const issues: Array<WorkflowDiagnosticsIssue> = value;
 
@@ -28,14 +23,6 @@ export default function WorkflowHistoryDetailsRowDiagnosticsTooltip({
           </styled.IssueText>
         </styled.Issue>
       ))}
-      <Button
-        kind="secondary"
-        size="mini"
-        onClick={onClose}
-        overrides={overrides.seeMoreButton}
-      >
-        See more
-      </Button>
     </styled.IssuesContainer>
   );
 }

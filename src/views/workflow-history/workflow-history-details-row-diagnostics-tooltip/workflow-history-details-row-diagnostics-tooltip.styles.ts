@@ -1,6 +1,4 @@
 import { styled as createStyled } from 'baseui';
-import { type ButtonOverrides } from 'baseui/button';
-import { type StyleObject } from 'styletron-react';
 
 export const styled = {
   IssuesContainer: createStyled('div', ({ $theme }) => ({
@@ -41,14 +39,4 @@ export const styled = {
     color: $theme.colors.contentSecondary,
     lineHeight: $theme.typography.LabelXSmall.lineHeight,
   })),
-};
-
-export const overrides = {
-  seeMoreButton: {
-    BaseButton: {
-      style: (): StyleObject => ({
-        alignSelf: 'flex-start',
-      }),
-    },
-  } satisfies ButtonOverrides,
 };
