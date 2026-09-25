@@ -1,6 +1,7 @@
-/** True for localhost, 127.0.0.1, ::1 (brackets ignored), and names ending in .localhost.
- * Trust checks should pass a configured host, not the request host.
-*/
+/**
+ * @param hostname - The hostname to check.
+ * @returns True for localhost, 127.0.0.1, ::1, [::1], and names ending in .localhost
+ */
 export default function isLoopbackHost(hostname: string): boolean {
   const normalized = hostname.replace(/^\[|\]$/g, '').toLowerCase();
   return (
