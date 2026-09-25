@@ -166,7 +166,7 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
     expect(cookie?.maxAge).toBe(0);
     expect(cookie?.httpOnly).toBe(true);
     expect(cookie?.path).toBe('/');
-    // clears carry Secure too (same discipline)
+    // clears use the same flags, including Secure
     expect(cookie?.secure).toBe(true);
     expect(cookie?.expires && new Date(cookie.expires).getTime()).toBe(0);
   });

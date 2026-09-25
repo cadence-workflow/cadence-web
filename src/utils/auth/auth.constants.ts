@@ -6,11 +6,7 @@ export const AUTH_COOKIE_OPTIONS = {
 } as const;
 
 /**
- * Deliverable total budget for one auth cookie write set:
- * name + value + attributes across all mutations, measured at write time by
- * validateAndReplayAuthCookieMutations. ~4KB total stays comfortably under
- * Node's 16KB maxHeaderSize and common per-header proxy limits. Shared by all
- * strategies; sized for the largest write set (the OIDC session) — smaller
- * write sets never approach it.
+ * ~4KB Max bytes for all auth cookie mutations. Shared by all auth strategies
+ * but sized for the largest known strategy (the OIDC session).
  */
 export const AUTH_COOKIE_MUTATIONS_MAX_BYTES = 4000;

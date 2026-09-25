@@ -16,17 +16,13 @@ import { type ValidateAndReplayResult } from './validate-and-replay-auth-cookie-
 
 const EXPIRES_EPOCH_ATTRIBUTE = '; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
 
-/** Byte length on the wire (UTF-8), not JS UTF-16 code units. */
+/** UTF-8 size of the string as it is sent. */
 function wireBytes(value: string): number {
   return new TextEncoder().encode(value).length;
 }
 
-/** Serialized size of one mutation as the replay will emit it — the strategy
- * cannot know this total (the options builder adds the attributes). Mirrors
- * `@edge-runtime/cookies` serialization: values are `encodeURIComponent`'d
- * (escaped chars take up to 3 bytes each) and a truthy `maxAge` also emits an
- * auto-derived `Expires` attribute (any RFC 1123 GMT date has the epoch
- * stand-in's exact length). */
+/** Size of one cookie after flags are added.
+ * The value is percent-encoded. maxAge also adds an Expires date. */
 function measureMutationBytes(
   mutation: CookieMutation,
   secure: boolean
@@ -45,12 +41,8 @@ function measureMutationBytes(
   );
 }
 
-/**
- * Total serialized size of a mutation array as the replay will emit it.
- * Exported for the OIDC strategy's session-trim decision (the strategy trims
- * before the route's authoritative validation) — the one measurement
- * implementation shared by both so the two never drift.
- */
+/** Total size of a mutation list after flags are added.
+ * Exported so a strategy can trim a session before this check runs. */
 export function measureAuthCookieMutationsBytes(
   mutations: CookieMutation[],
   secure: boolean
@@ -61,20 +53,9 @@ export function measureAuthCookieMutationsBytes(
   );
 }
 
-/**
- * The one auth-cookie-writing function: validates the whole
- * mutation array against the strategy registry-entry cookie-name set (exact
- * names + declared prefixes — never a module-wide union, so a buggy fork
- * strategy cannot name another strategy's cookie) and the total-byte
- * budget, THEN replays in order. Validate-then-replay: on any failure nothing
- * is applied and the caller substitutes its own outcome (recover route:
- * cleanupMutations; OIDC callback: loud login failure).
- *
- * Staging note: `cookieNames` is a parameter until the strategy registry
- * lands; the end state resolves the ACTIVE entry internally via
- * `getActiveAuthServerEntry()` — the token-route migration makes that swap
- * when its callers exist.
- */
+/** Checks the mutation list, then writes every cookie.
+ * Rejects a name outside cookieNames, or a total over the byte budget.
+ * If either check fails, nothing is written. */
 export default async function validateAndReplayAuthCookieMutations(
   request: NextRequest,
   response: NextResponse,
@@ -101,8 +82,8 @@ export default async function validateAndReplayAuthCookieMutations(
     return { ok: false, reason: 'over-budget', totalBytes };
   }
 
-  // A non-Secure session-cookie write to a non-loopback host means the
-  // deployment is serving plain HTTP beyond a dev box — loud, never silent.
+  // Warn when auth cookies are written over plain HTTP on a non-local host.
+  // The write still happens. Localhost stays quiet.
   if (!options.secure && !isLoopbackHost(request.nextUrl.hostname)) {
     logger.warn(
       { host: request.nextUrl.host, mutationCount: mutations.length },
