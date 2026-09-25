@@ -14,9 +14,9 @@ describe(WorkflowHistoryFiltersIssues.name, () => {
     ).toBeInTheDocument();
   });
 
-  it('renders switch unchecked when historyEventIssues is undefined', () => {
+  it('renders switch unchecked when historyEventIssues is false', () => {
     setup({
-      value: { historyEventIssues: undefined },
+      value: { historyEventIssues: false },
     });
 
     expect(
@@ -40,7 +40,7 @@ describe(WorkflowHistoryFiltersIssues.name, () => {
 
   it('calls setValue with true when switch is checked', async () => {
     const { user, mockSetValue } = setup({
-      value: { historyEventIssues: undefined },
+      value: { historyEventIssues: false },
     });
 
     await user.click(
@@ -52,7 +52,7 @@ describe(WorkflowHistoryFiltersIssues.name, () => {
     expect(mockSetValue).toHaveBeenCalledWith({ historyEventIssues: true });
   });
 
-  it('calls setValue with undefined when switch is unchecked', async () => {
+  it('calls setValue with false when switch is unchecked', async () => {
     const { user, mockSetValue } = setup({
       value: { historyEventIssues: true },
     });
@@ -64,13 +64,13 @@ describe(WorkflowHistoryFiltersIssues.name, () => {
     );
 
     expect(mockSetValue).toHaveBeenCalledWith({
-      historyEventIssues: undefined,
+      historyEventIssues: false,
     });
   });
 });
 
 function setup({
-  value = { historyEventIssues: undefined },
+  value = { historyEventIssues: false },
 }: {
   value?: EventGroupIssuesFilterValue;
 } = {}) {

@@ -134,7 +134,7 @@ describe(WorkflowHistoryFiltersMenu.name, () => {
         historyEventStatuses: undefined,
         historySelectedEventId: undefined,
         ungroupedHistoryViewEnabled: undefined,
-        historyEventIssues: undefined,
+        historyEventIssues: false,
         selectedQueryName: undefined,
       },
     });
@@ -150,7 +150,7 @@ describe(WorkflowHistoryFiltersMenu.name, () => {
         historyEventStatuses: undefined,
         historySelectedEventId: undefined,
         ungroupedHistoryViewEnabled: undefined,
-        historyEventIssues: undefined,
+        historyEventIssues: false,
         selectedQueryName: undefined,
       },
     });
@@ -166,7 +166,7 @@ describe(WorkflowHistoryFiltersMenu.name, () => {
         historyEventStatuses: ['FAILED', 'CANCELED'],
         historySelectedEventId: undefined,
         ungroupedHistoryViewEnabled: undefined,
-        historyEventIssues: undefined,
+        historyEventIssues: false,
         selectedQueryName: undefined,
       },
     });
@@ -182,7 +182,7 @@ describe(WorkflowHistoryFiltersMenu.name, () => {
         historyEventStatuses: undefined,
         historySelectedEventId: undefined,
         ungroupedHistoryViewEnabled: undefined,
-        historyEventIssues: undefined,
+        historyEventIssues: false,
         selectedQueryName: undefined,
       },
     });
@@ -198,7 +198,7 @@ describe(WorkflowHistoryFiltersMenu.name, () => {
         historyEventStatuses: undefined,
         historySelectedEventId: undefined,
         ungroupedHistoryViewEnabled: undefined,
-        historyEventIssues: undefined,
+        historyEventIssues: false,
         selectedQueryName: undefined,
       },
     });
@@ -218,7 +218,7 @@ describe(WorkflowHistoryFiltersMenu.name, () => {
         historyEventStatuses: undefined,
         historySelectedEventId: undefined,
         ungroupedHistoryViewEnabled: undefined,
-        historyEventIssues: undefined,
+        historyEventIssues: false,
         selectedQueryName: undefined,
       },
     });
@@ -238,7 +238,7 @@ describe(WorkflowHistoryFiltersMenu.name, () => {
         historyEventStatuses: undefined,
         historySelectedEventId: undefined,
         ungroupedHistoryViewEnabled: undefined,
-        historyEventIssues: undefined,
+        historyEventIssues: false,
         selectedQueryName: undefined,
       },
     });
@@ -283,7 +283,7 @@ function setup(props: Partial<Props> = {}) {
       historyEventStatuses: undefined,
       historySelectedEventId: undefined,
       ungroupedHistoryViewEnabled: undefined,
-      historyEventIssues: undefined,
+      historyEventIssues: false,
       selectedQueryName: undefined,
     },
     setQueryParams: mockSetQueryParams,
