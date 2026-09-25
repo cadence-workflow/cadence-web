@@ -6,9 +6,37 @@ import { type Props } from '../workflow-history-navigation-bar.types';
 jest.mock(
   '../../workflow-history-navigation-bar-events-menu/workflow-history-navigation-bar-events-menu',
   () =>
-    jest.fn(({ children }: { children: React.ReactNode }) => {
-      return <div>{children}</div>;
-    })
+    jest.fn(
+      ({
+        children,
+        onClickSubItem,
+      }: {
+        children: React.ReactNode;
+        onClickSubItem?: (subItem: {
+          id: string;
+          eventId: string;
+          label: string;
+        }) => void;
+      }) => (
+        <div>
+          {children}
+          {onClickSubItem && (
+            <button
+              data-testid="mock-sub-item-click"
+              onClick={() =>
+                onClickSubItem({
+                  id: 'Activity Failed.0',
+                  eventId: 'event-1',
+                  label: 'Activity Failed',
+                })
+              }
+            >
+              mock sub item
+            </button>
+          )}
+        </div>
+      )
+    )
 );
 
 describe(WorkflowHistoryNavigationBar.name, () => {
@@ -130,6 +158,101 @@ describe(WorkflowHistoryNavigationBar.name, () => {
 
     expect(screen.getByText('2 pending events')).toBeInTheDocument();
   });
+
+  it('does not render diagnostics issues button when diagnosticsMenuItems is empty', () => {
+    setup({ diagnosticsMenuItems: [] });
+
+    expect(
+      screen.queryByLabelText('Diagnostics issues')
+    ).not.toBeInTheDocument();
+  });
+
+  it('renders diagnostics issues button with singular text for one issue', () => {
+    setup({
+      diagnosticsMenuItems: [
+        {
+          eventId: 'event-1',
+          label: 'Group 1',
+          category: 'ACTIVITY',
+          subItems: [
+            {
+              id: 'Activity Failed.0',
+              eventId: 'event-1',
+              label: 'Activity Failed',
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(screen.getByLabelText('Diagnostics issues')).toBeInTheDocument();
+    expect(screen.getByText('1 issue')).toBeInTheDocument();
+  });
+
+  it('renders diagnostics issues button with total issue count across groups', () => {
+    setup({
+      diagnosticsMenuItems: [
+        {
+          eventId: 'event-1',
+          label: 'Group 1',
+          category: 'ACTIVITY',
+          subItems: [
+            {
+              id: 'Activity Failed.0',
+              eventId: 'event-1',
+              label: 'Activity Failed',
+            },
+            {
+              id: 'Activity Timeout.1',
+              eventId: 'event-1',
+              label: 'Activity Timeout',
+            },
+          ],
+        },
+        {
+          eventId: 'event-2',
+          label: 'Group 2',
+          category: 'DECISION',
+          subItems: [
+            {
+              id: 'Decision Failed.2',
+              eventId: 'event-2',
+              label: 'Decision Failed',
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(screen.getByText('3 issues')).toBeInTheDocument();
+  });
+
+  it('passes onClickDiagnosticsIssue to the menu as onClickSubItem', async () => {
+    const { user, mockOnClickDiagnosticsIssue } = setup({
+      diagnosticsMenuItems: [
+        {
+          eventId: 'event-1',
+          label: 'Group 1',
+          category: 'ACTIVITY',
+          subItems: [
+            {
+              id: 'Activity Failed.0',
+              eventId: 'event-1',
+              label: 'Activity Failed',
+            },
+          ],
+        },
+      ],
+    });
+
+    await user.click(screen.getByTestId('mock-sub-item-click'));
+
+    expect(mockOnClickDiagnosticsIssue).toHaveBeenCalledWith({
+      id: 'Activity Failed.0',
+      eventId: 'event-1',
+      label: 'Activity Failed',
+    });
+  });
 });
 
 function setup(overrides: Partial<Props> = {}) {
@@ -138,6 +261,7 @@ function setup(overrides: Partial<Props> = {}) {
   const mockOnScrollDown = jest.fn();
   const mockOnToggleAllItemsExpanded = jest.fn();
   const mockOnClickEvent = jest.fn();
+  const mockOnClickDiagnosticsIssue = jest.fn();
 
   render(
     <WorkflowHistoryNavigationBar
@@ -148,7 +272,9 @@ function setup(overrides: Partial<Props> = {}) {
       isUngroupedView={false}
       failedEventsMenuItems={[]}
       pendingEventsMenuItems={[]}
+      diagnosticsMenuItems={[]}
       onClickEvent={mockOnClickEvent}
+      onClickDiagnosticsIssue={mockOnClickDiagnosticsIssue}
       {...overrides}
     />
   );
@@ -159,5 +285,6 @@ function setup(overrides: Partial<Props> = {}) {
     mockOnScrollDown,
     mockOnToggleAllItemsExpanded,
     mockOnClickEvent,
+    mockOnClickDiagnosticsIssue,
   };
 }

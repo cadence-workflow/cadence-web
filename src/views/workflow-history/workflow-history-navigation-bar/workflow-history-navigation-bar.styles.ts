@@ -66,4 +66,16 @@ export const overrides = {
       }),
     },
   } satisfies ButtonOverrides,
+  diagnosticsIssuesButton: {
+    Root: buttonRootOverrides,
+    BaseButton: {
+      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+        backgroundColor: $theme.colors.backgroundWarning,
+        color: $theme.colors.contentOnColorInverse,
+        ':hover': {
+          backgroundColor: $theme.colors.backgroundWarning,
+        },
+      }),
+    },
+  } satisfies ButtonOverrides,
 };

@@ -22,6 +22,7 @@ import WORKFLOW_HISTORY_RENDER_FETCHED_EVENTS_THROTTLE_MS_CONFIG from './config/
 import WORKFLOW_HISTORY_SET_RANGE_THROTTLE_MS_CONFIG from './config/workflow-history-set-range-throttle-ms.config';
 import getDiagnosticsIssueExpansionId from './helpers/get-diagnostics-issue-expansion-id';
 import getDiagnosticsIssuesByEventId from './helpers/get-diagnostics-issues-by-event-id';
+import getNavigationBarDiagnosticsMenuItems from './helpers/get-navigation-bar-diagnostics-menu-items';
 import getNavigationBarEventsMenuItems from './helpers/get-navigation-bar-events-menu-items';
 import getSortableEventId from './helpers/get-sortable-event-id';
 import pendingActivitiesInfoToEvents from './helpers/pending-activities-info-to-events';
@@ -36,6 +37,7 @@ import filterGroupsByStatus from './workflow-history-filters-menu/helpers/filter
 import WorkflowHistoryGroupedTable from './workflow-history-grouped-table/workflow-history-grouped-table';
 import WorkflowHistoryHeader from './workflow-history-header/workflow-history-header';
 import WorkflowHistoryNavigationBar from './workflow-history-navigation-bar/workflow-history-navigation-bar';
+import { type NavigationBarEventsSubMenuItem } from './workflow-history-navigation-bar-events-menu/workflow-history-navigation-bar-events-menu.types';
 import compareUngroupedEvents from './workflow-history-ungrouped-table/helpers/compare-ungrouped-events';
 import WorkflowHistoryUngroupedTable from './workflow-history-ungrouped-table/workflow-history-ungrouped-table';
 import { type UngroupedEventInfo } from './workflow-history-ungrouped-table/workflow-history-ungrouped-table.types';
@@ -387,6 +389,15 @@ export default function WorkflowHistory({ params }: Props) {
     [sortedEventGroupsEntries]
   );
 
+  const diagnosticsMenuItems = useMemo(
+    () =>
+      getNavigationBarDiagnosticsMenuItems(
+        sortedEventGroupsEntries,
+        workflowDiagnosticsByEventIdMap
+      ),
+    [sortedEventGroupsEntries, workflowDiagnosticsByEventIdMap]
+  );
+
   const handleClickNavMenuEvent = useCallback(
     (eventId: string) => {
       const isEventVisible = filteredEventGroupsEntries.some(
@@ -412,6 +423,20 @@ export default function WorkflowHistory({ params }: Props) {
       scrollToTableEvent,
       getIsItemExpanded,
       toggleIsItemExpanded,
+    ]
+  );
+
+  const handleClickNavMenuDiagnosticsIssue = useCallback(
+    (subItem: NavigationBarEventsSubMenuItem) => {
+      handleClickNavMenuEvent(subItem.eventId);
+      if (!getIsDiagnosticsIssueExpanded(subItem.id)) {
+        toggleIsDiagnosticsIssueExpanded(subItem.id);
+      }
+    },
+    [
+      handleClickNavMenuEvent,
+      getIsDiagnosticsIssueExpanded,
+      toggleIsDiagnosticsIssueExpanded,
     ]
   );
 
@@ -541,7 +566,9 @@ export default function WorkflowHistory({ params }: Props) {
         isUngroupedView={isUngroupedHistoryViewEnabled}
         failedEventsMenuItems={failedEventsMenuItems}
         pendingEventsMenuItems={pendingEventsMenuItems}
+        diagnosticsMenuItems={diagnosticsMenuItems}
         onClickEvent={handleClickNavMenuEvent}
+        onClickDiagnosticsIssue={handleClickNavMenuDiagnosticsIssue}
       />
     </styled.Container>
   );

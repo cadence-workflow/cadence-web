@@ -34,6 +34,7 @@ import {
   pendingActivityTaskStartEvent,
   pendingDecisionTaskStartEvent,
 } from '../__fixtures__/workflow-history-pending-events';
+import { startWorkflowExecutionEvent } from '../__fixtures__/workflow-history-single-events';
 import WorkflowHistory from '../workflow-history';
 import { WorkflowHistoryContext } from '../workflow-history-context-provider/workflow-history-context-provider';
 import { type Props as NavbarProps } from '../workflow-history-navigation-bar/workflow-history-navigation-bar.types';
@@ -144,6 +145,7 @@ jest.mock(
       ({
         failedEventsMenuItems,
         pendingEventsMenuItems,
+        diagnosticsMenuItems,
         onToggleAllItemsExpanded,
       }: NavbarProps) => (
         <div data-testid="workflow-history-navigation-bar">
@@ -158,6 +160,11 @@ jest.mock(
           {pendingEventsMenuItems && pendingEventsMenuItems.length > 0 && (
             <div data-testid="pending-events-menu-items-count">
               {pendingEventsMenuItems.length} pending events
+            </div>
+          )}
+          {diagnosticsMenuItems && diagnosticsMenuItems.length > 0 && (
+            <div data-testid="diagnostics-menu-items-count">
+              {diagnosticsMenuItems.length} groups with issues
             </div>
           )}
         </div>
@@ -515,6 +522,21 @@ describe(WorkflowHistory.name, () => {
 
     await user.click(screen.getByText('Toggle all expanded'));
     expect(issueExpandedState).toHaveTextContent('false');
+  });
+
+  it('passes diagnostics menu items to the navigation bar when diagnostics issues exist', async () => {
+    await setup({
+      historyEvents: [
+        startWorkflowExecutionEvent,
+        ...completedActivityTaskEvents,
+      ],
+      isDiagnosticsInHistoryEnabled: true,
+    });
+
+    const diagnosticsItemsCounter = await screen.findByTestId(
+      'diagnostics-menu-items-count'
+    );
+    expect(diagnosticsItemsCounter).toHaveTextContent('1 groups with issues');
   });
 });
 

@@ -6,6 +6,7 @@ import {
   MdUnfoldLess,
   MdUnfoldMore,
 } from 'react-icons/md';
+import { RiStethoscopeLine } from 'react-icons/ri';
 
 import Button from '@/components/button/button';
 
@@ -22,8 +23,15 @@ export default function WorkflowHistoryNavigationBar({
   isUngroupedView,
   failedEventsMenuItems,
   pendingEventsMenuItems,
+  diagnosticsMenuItems,
   onClickEvent,
+  onClickDiagnosticsIssue,
 }: Props) {
+  const diagnosticsIssuesCount = diagnosticsMenuItems.reduce(
+    (count, item) => count + (item.subItems?.length ?? 0),
+    0
+  );
+
   return (
     <styled.NavBarContainer>
       <Button
@@ -101,6 +109,30 @@ export default function WorkflowHistoryNavigationBar({
               {pendingEventsMenuItems.length === 1
                 ? '1 pending event'
                 : `${pendingEventsMenuItems.length} pending events`}
+            </Button>
+          </WorkflowHistoryNavigationBarEventsMenu>
+        </>
+      )}
+      {diagnosticsMenuItems.length > 0 && (
+        <>
+          <styled.SectionDivider />
+          <WorkflowHistoryNavigationBarEventsMenu
+            menuItems={diagnosticsMenuItems}
+            onClickEvent={onClickEvent}
+            onClickSubItem={onClickDiagnosticsIssue}
+            subItemIcon={<RiStethoscopeLine size={12} />}
+            isUngroupedHistoryView={isUngroupedView}
+          >
+            <Button
+              size="mini"
+              shape="pill"
+              overrides={overrides.diagnosticsIssuesButton}
+              startEnhancer={<RiStethoscopeLine size={12} />}
+              aria-label="Diagnostics issues"
+            >
+              {diagnosticsIssuesCount === 1
+                ? '1 issue detected'
+                : `${diagnosticsIssuesCount} issues detected`}
             </Button>
           </WorkflowHistoryNavigationBarEventsMenu>
         </>
