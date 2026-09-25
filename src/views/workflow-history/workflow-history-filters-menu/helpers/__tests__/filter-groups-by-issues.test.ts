@@ -1,9 +1,5 @@
 import { scheduleActivityTaskEvent } from '../../../__fixtures__/workflow-history-activity-events';
-import {
-  type ActivityHistoryGroup,
-  type WorkflowDiagnosticsIssuesByEventId,
-  type WorkflowHistoryPageContextType,
-} from '../../../workflow-history.types';
+import { type ActivityHistoryGroup } from '../../../workflow-history.types';
 import { type EventGroupIssuesFilterValue } from '../../workflow-history-filters-menu.types';
 import filterGroupsByIssues from '../filter-groups-by-issues';
 
@@ -20,25 +16,18 @@ const ACTIVITY_HISTORY_GROUP: ActivityHistoryGroup = {
   firstEventId: null,
 };
 
-function buildContext(
-  diagnosticsByEventId: WorkflowDiagnosticsIssuesByEventId
-): WorkflowHistoryPageContextType {
-  return {
-    pageConfig: { WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED: true },
-    diagnosticsByEventId,
-  };
-}
-
-const DIAGNOSTICS_WITH_GROUP_ISSUE = buildContext({
-  '7': [
-    {
-      issueId: 0,
-      invariantType: 'Activity Failed',
-      reason: 'Activity failed on event 7',
-      metadata: {},
-    },
-  ],
-});
+const DIAGNOSTICS_WITH_GROUP_ISSUE = {
+  diagnosticsByEventId: {
+    '7': [
+      {
+        issueId: 0,
+        invariantType: 'Activity Failed',
+        reason: 'Activity failed on event 7',
+        metadata: {},
+      },
+    ],
+  },
+};
 
 describe(filterGroupsByIssues.name, () => {
   it('should return true if historyEventIssues is false', () => {
@@ -46,9 +35,7 @@ describe(filterGroupsByIssues.name, () => {
       historyEventIssues: false,
     };
 
-    expect(
-      filterGroupsByIssues(ACTIVITY_HISTORY_GROUP, value, buildContext({}))
-    ).toBe(true);
+    expect(filterGroupsByIssues(ACTIVITY_HISTORY_GROUP, value)).toBe(true);
   });
 
   it('should return true if historyEventIssues is set and group has scoped issues', () => {
@@ -71,10 +58,8 @@ describe(filterGroupsByIssues.name, () => {
     };
 
     expect(
-      filterGroupsByIssues(
-        ACTIVITY_HISTORY_GROUP,
-        value,
-        buildContext({
+      filterGroupsByIssues(ACTIVITY_HISTORY_GROUP, value, {
+        diagnosticsByEventId: {
           '99': [
             {
               issueId: 1,
@@ -83,8 +68,8 @@ describe(filterGroupsByIssues.name, () => {
               metadata: {},
             },
           ],
-        })
-      )
+        },
+      })
     ).toBe(false);
   });
 
@@ -94,7 +79,17 @@ describe(filterGroupsByIssues.name, () => {
     };
 
     expect(
-      filterGroupsByIssues(ACTIVITY_HISTORY_GROUP, value, buildContext({}))
+      filterGroupsByIssues(ACTIVITY_HISTORY_GROUP, value, {
+        diagnosticsByEventId: {},
+      })
     ).toBe(false);
+  });
+
+  it('should return false if historyEventIssues is set and context is missing', () => {
+    const value: EventGroupIssuesFilterValue = {
+      historyEventIssues: true,
+    };
+
+    expect(filterGroupsByIssues(ACTIVITY_HISTORY_GROUP, value)).toBe(false);
   });
 });

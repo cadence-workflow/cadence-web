@@ -277,10 +277,7 @@ export type SingleHistoryEvent = HistoryEvent & {
     | 'upsertWorkflowSearchAttributesEventAttributes';
 };
 
-export type WorkflowHistoryPageContextType = {
-  pageConfig: {
-    WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED: boolean;
-  };
+export type WorkflowHistoryFilterContext = {
   diagnosticsByEventId: WorkflowDiagnosticsIssuesByEventId;
 };
 
@@ -290,7 +287,7 @@ export type WorkflowHistoryFilterConfig<
   filterFunc: (
     d: HistoryEventsGroup,
     value: V,
-    context: WorkflowHistoryPageContextType
+    context?: WorkflowHistoryFilterContext
   ) => boolean;
 };
 
