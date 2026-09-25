@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { type NextRequest, type NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 
 import logger from '@/utils/logger';
 
@@ -12,50 +12,64 @@ import {
 import isLoopbackHost from '../helpers/is-loopback-host';
 
 import buildAuthCookieOptions from './build-auth-cookie-options';
-import { type ValidateAndReplayResult } from './validate-and-replay-auth-cookie-mutations.types';
+import {
+  type AuthCookieParams,
+  type ValidateAndReplayResult,
+} from './validate-and-replay-auth-cookie-mutations.types';
 
-const EXPIRES_EPOCH_ATTRIBUTE = '; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
-
-/** UTF-8 size of the string as it is sent. */
-function wireBytes(value: string): number {
-  return new TextEncoder().encode(value).length;
+/** One entry per cookie to write, with the exact options the write uses.
+ * Shared by measurement and the write so the two cannot drift. */
+function buildAuthCookieParams(
+  request: NextRequest,
+  mutations: CookieMutation[]
+): AuthCookieParams[] {
+  const sharedOptions = buildAuthCookieOptions(request);
+  return mutations.map((mutation) => {
+    if ('set' in mutation) {
+      return {
+        name: mutation.set.name,
+        value: mutation.set.value,
+        options: buildAuthCookieOptions(request, mutation.set.maxAge),
+      };
+    }
+    return {
+      name: mutation.clear.name,
+      value: '',
+      options: { ...sharedOptions, expires: new Date(0), maxAge: 0 },
+    };
+  });
 }
 
-/** Size of one cookie after flags are added.
- * The value is percent-encoded. maxAge also adds an Expires date. */
-function measureMutationBytes(
-  mutation: CookieMutation,
-  secure: boolean
-): number {
-  const secureAttribute = secure ? '; Secure' : '';
-  if ('set' in mutation) {
-    const { name, value, maxAge } = mutation.set;
-    const expiresAttribute = maxAge ? EXPIRES_EPOCH_ATTRIBUTE : '';
-    const maxAgeAttribute = maxAge !== undefined ? `; Max-Age=${maxAge}` : '';
-    return wireBytes(
-      `${name}=${encodeURIComponent(value)}; Path=/; HttpOnly; SameSite=Lax${secureAttribute}${expiresAttribute}${maxAgeAttribute}`
-    );
+/** Total Set-Cookie bytes for the cookies, measured on a throwaway
+ * response so the count matches what the real write serializes.
+ * @param cookies - cookies with the exact options used for the write
+ * @returns totalBytes, and exceedsBudget when over the byte budget
+ */
+export function measureAuthCookieMutationsBytes(cookies: AuthCookieParams[]): {
+  totalBytes: number;
+  exceedsBudget: boolean;
+} {
+  const measured = new NextResponse();
+  for (const { name, value, options } of cookies) {
+    measured.cookies.set(name, value, options);
   }
-  return wireBytes(
-    `${mutation.clear.name}=; Path=/; HttpOnly; SameSite=Lax${secureAttribute}${EXPIRES_EPOCH_ATTRIBUTE}; Max-Age=0`
-  );
-}
-
-/** Total size of a mutation list after flags are added.
- * Exported so a strategy can trim a session before this check runs. */
-export function measureAuthCookieMutationsBytes(
-  mutations: CookieMutation[],
-  secure: boolean
-): number {
-  return mutations.reduce(
-    (sum, mutation) => sum + measureMutationBytes(mutation, secure),
-    0
-  );
+  const totalBytes = measured.headers
+    .getSetCookie()
+    .reduce((sum, header) => sum + new TextEncoder().encode(header).length, 0);
+  return {
+    totalBytes,
+    exceedsBudget: totalBytes > AUTH_COOKIE_MUTATIONS_MAX_BYTES,
+  };
 }
 
 /** Checks the mutation list, then writes every cookie.
- * Rejects a name outside cookieNames, or a total over the byte budget.
- * If either check fails, nothing is written. */
+ * Rejects writing all cookies when a name is outside cookieNames or the total over the byte budget.
+ * @param request - incoming request, source of the Secure attribute decision
+ * @param response - response the cookies are written to
+ * @param mutations - set/clear operations to validate, then replay
+ * @param cookieNames - active strategy's declared exact names and prefixes
+ * @returns ok when written; the rejection reason otherwise
+ */
 export default async function validateAndReplayAuthCookieMutations(
   request: NextRequest,
   response: NextResponse,
@@ -76,35 +90,25 @@ export default async function validateAndReplayAuthCookieMutations(
     }
   }
 
-  const options = buildAuthCookieOptions(request);
-  const totalBytes = measureAuthCookieMutationsBytes(mutations, options.secure);
-  if (totalBytes > AUTH_COOKIE_MUTATIONS_MAX_BYTES) {
+  const { secure } = buildAuthCookieOptions(request);
+  const cookies = buildAuthCookieParams(request, mutations);
+  const { totalBytes, exceedsBudget } =
+    measureAuthCookieMutationsBytes(cookies);
+  if (exceedsBudget) {
     return { ok: false, reason: 'over-budget', totalBytes };
   }
 
   // Warn when auth cookies are written over plain HTTP on a non-local host.
-  // The write still happens. Localhost stays quiet.
-  if (!options.secure && !isLoopbackHost(request.nextUrl.hostname)) {
+  // The write still happens.
+  if (!secure && !isLoopbackHost(request.nextUrl.hostname)) {
     logger.warn(
       { host: request.nextUrl.host, mutationCount: mutations.length },
       'Writing auth cookies without the Secure attribute on a non-loopback host'
     );
   }
 
-  for (const mutation of mutations) {
-    if ('set' in mutation) {
-      response.cookies.set(
-        mutation.set.name,
-        mutation.set.value,
-        buildAuthCookieOptions(request, mutation.set.maxAge)
-      );
-    } else {
-      response.cookies.set(mutation.clear.name, '', {
-        ...options,
-        expires: new Date(0),
-        maxAge: 0,
-      });
-    }
+  for (const { name, value, options } of cookies) {
+    response.cookies.set(name, value, options);
   }
 
   return { ok: true };
