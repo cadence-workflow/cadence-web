@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState, useCallback } from 'react';
 
 import usePageFilters from '@/components/page-filters/hooks/use-page-filters';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
@@ -26,6 +26,7 @@ import getSortableEventId from './helpers/get-sortable-event-id';
 import pendingActivitiesInfoToEvents from './helpers/pending-activities-info-to-events';
 import pendingDecisionInfoToEvent from './helpers/pending-decision-info-to-event';
 import useDiagnoseWorkflow from './hooks/use-diagnose-workflow/use-diagnose-workflow';
+import useEnabledWorkflowHistoryFiltersConfig from './hooks/use-enabled-workflow-history-filters-config';
 import useInitialSelectedEvent from './hooks/use-initial-selected-event';
 import useWorkflowHistoryFetcher from './hooks/use-workflow-history-fetcher';
 import useWorkflowHistoryGrouper from './hooks/use-workflow-history-grouper';
@@ -47,6 +48,8 @@ import {
 
 export default function WorkflowHistory({ params }: Props) {
   const decodedParams = decodeUrlParams<WorkflowPageTabContentParams>(params);
+  const enabledWorkflowHistoryFiltersConfig =
+    useEnabledWorkflowHistoryFiltersConfig();
 
   const { workflowTab, ...encodedHistoryQueryParams } = params;
   const wfHistoryRequestArgs = {
@@ -55,22 +58,10 @@ export default function WorkflowHistory({ params }: Props) {
     waitForNewEvent: true,
   };
 
-  const {
-    activeFiltersCount: _unusedActiveFiltersCount,
-    queryParams,
-    setQueryParams,
-    ...pageFiltersRest
-  } = usePageFilters({
+  const { queryParams, setQueryParams, resetAllFilters } = usePageFilters({
     pageQueryParamsConfig: workflowPageQueryParamsConfig,
     pageFiltersConfig: workflowHistoryFiltersConfig,
   });
-
-  const activeFiltersCount = useMemo(
-    () =>
-      (queryParams.historyEventStatuses?.length ?? 0) +
-      (queryParams.historyEventTypes?.length ?? 0),
-    [queryParams.historyEventStatuses, queryParams.historyEventTypes]
-  );
 
   const { data: wfExecutionDescription } = useSuspenseDescribeWorkflow({
     ...params,
@@ -80,6 +71,19 @@ export default function WorkflowHistory({ params }: Props) {
 
   const { data: isDiagnosticsInHistoryEnabled } = useConfigValue(
     'WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED'
+  );
+
+  const activeFiltersCount = useMemo(
+    () =>
+      (queryParams.historyEventStatuses?.length ?? 0) +
+      (queryParams.historyEventTypes?.length ?? 0) +
+      (isDiagnosticsInHistoryEnabled && queryParams.historyEventIssues ? 1 : 0),
+    [
+      queryParams.historyEventStatuses,
+      queryParams.historyEventTypes,
+      queryParams.historyEventIssues,
+      isDiagnosticsInHistoryEnabled,
+    ]
   );
 
   const { data: workflowDiagnostics } = useDiagnoseWorkflow(
@@ -176,18 +180,28 @@ export default function WorkflowHistory({ params }: Props) {
 
   const filteredEventGroupsEntries = useMemo(
     () =>
-      sortedEventGroupsEntries.filter(([_, g]) =>
-        workflowHistoryFiltersConfig.every((f) =>
-          f.filterFunc(g, {
-            historyEventTypes: queryParams.historyEventTypes,
-            historyEventStatuses: queryParams.historyEventStatuses,
-          })
+      sortedEventGroupsEntries.filter(([, g]) =>
+        enabledWorkflowHistoryFiltersConfig.every((f) =>
+          f.filterFunc(
+            g,
+            {
+              historyEventTypes: queryParams.historyEventTypes,
+              historyEventStatuses: queryParams.historyEventStatuses,
+              historyEventIssues: queryParams.historyEventIssues,
+            },
+            {
+              diagnosticsByEventId: workflowDiagnosticsByEventIdMap,
+            }
+          )
         )
       ),
     [
       sortedEventGroupsEntries,
       queryParams.historyEventTypes,
       queryParams.historyEventStatuses,
+      queryParams.historyEventIssues,
+      workflowDiagnosticsByEventIdMap,
+      enabledWorkflowHistoryFiltersConfig,
     ]
   );
 
@@ -371,7 +385,11 @@ export default function WorkflowHistory({ params }: Props) {
 
       if (!isEventVisible) {
         setQueryParams(
-          { historyEventStatuses: undefined, historyEventTypes: undefined },
+          {
+            historyEventStatuses: undefined,
+            historyEventTypes: undefined,
+            historyEventIssues: undefined,
+          },
           { replace: true }
         );
       }
@@ -412,7 +430,7 @@ export default function WorkflowHistory({ params }: Props) {
           activeFiltersCount,
           queryParams,
           setQueryParams,
-          ...pageFiltersRest,
+          resetAllFilters,
         }}
         eventGroupsEntries={filteredEventGroupsEntries}
         workflowStartTimeMs={workflowStartTimeMs}

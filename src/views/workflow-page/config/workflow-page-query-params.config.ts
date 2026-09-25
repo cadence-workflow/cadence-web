@@ -18,6 +18,7 @@ const workflowPageQueryParamsConfig: [
   >,
   PageQueryParam<'historySelectedEventId', string | undefined>,
   PageQueryParam<'ungroupedHistoryViewEnabled', boolean | undefined>,
+  PageQueryParam<'historyEventIssues', boolean>,
   PageQueryParam<'selectedQueryName', string | undefined>,
 ] = [
   {
@@ -60,6 +61,12 @@ const workflowPageQueryParamsConfig: [
       if (v === 'false') return false;
       return undefined;
     },
+  },
+  {
+    key: 'historyEventIssues',
+    queryParamKey: 'hdi',
+    defaultValue: false,
+    parseValue: (v) => v === 'true',
   },
   {
     key: 'selectedQueryName',
