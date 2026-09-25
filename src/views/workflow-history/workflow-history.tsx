@@ -55,7 +55,6 @@ export default function WorkflowHistory({ params }: Props) {
     waitForNewEvent: true,
   };
 
-  // Use the full config so that reset always clears historyEventIssues.
   const { queryParams, setQueryParams, resetAllFilters } = usePageFilters({
     pageQueryParamsConfig: workflowPageQueryParamsConfig,
     pageFiltersConfig: workflowHistoryFiltersConfig,
