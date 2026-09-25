@@ -20,4 +20,6 @@ export type Props = {
   onClickShowInTimeline?: () => void;
   onClickShowInTable?: () => void;
   diagnosticsIssuesByEventId: WorkflowDiagnosticsIssuesByEventId;
+  getIsDiagnosticsIssueExpanded: (issueExpansionId: string) => boolean;
+  toggleIsDiagnosticsIssueExpanded: (issueExpansionId: string) => void;
 };

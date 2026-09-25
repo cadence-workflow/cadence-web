@@ -28,4 +28,6 @@ export type Props = {
   virtuosoRef: React.RefObject<VirtuosoHandle>;
   itemToHighlightId?: string;
   workflowDiagnosticsByEventIdMap: WorkflowDiagnosticsIssuesByEventId;
+  getIsDiagnosticsIssueExpanded: (issueExpansionId: string) => boolean;
+  toggleIsDiagnosticsIssueExpanded: (issueExpansionId: string) => void;
 };

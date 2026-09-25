@@ -41,4 +41,6 @@ export type Props = {
   timelineVirtuosoRef: React.RefObject<VirtuosoHandle>;
   timelineItemToHighlightId?: string;
   workflowDiagnosticsByEventIdMap: WorkflowDiagnosticsIssuesByEventId;
+  getIsDiagnosticsIssueExpanded: (issueExpansionId: string) => boolean;
+  toggleIsDiagnosticsIssueExpanded: (issueExpansionId: string) => void;
 };
