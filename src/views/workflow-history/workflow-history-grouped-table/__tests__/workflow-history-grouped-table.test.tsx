@@ -159,6 +159,8 @@ function setup({
   toggleIsEventExpanded = jest.fn(),
   resetToDecisionEventId = jest.fn(),
   workflowDiagnosticsByEventIdMap = {},
+  getIsDiagnosticsIssueExpanded = jest.fn(() => false),
+  toggleIsDiagnosticsIssueExpanded = jest.fn(),
 }: {
   eventGroupsById?: Array<[string, HistoryEventsGroup]>;
   error?: RequestError | null;
@@ -183,6 +185,8 @@ function setup({
   toggleIsEventExpanded?: (eventId: string) => void;
   resetToDecisionEventId?: (decisionEventId: string) => void;
   workflowDiagnosticsByEventIdMap?: WorkflowDiagnosticsIssuesByEventId;
+  getIsDiagnosticsIssueExpanded?: (issueExpansionId: string) => boolean;
+  toggleIsDiagnosticsIssueExpanded?: (issueExpansionId: string) => void;
 } = {}) {
   const virtuosoRef = { current: null };
   const user = userEvent.setup();
@@ -211,6 +215,8 @@ function setup({
         isFetchingMoreEvents={isFetchingMoreEvents}
         onClickShowGroupInTimeline={jest.fn()}
         workflowDiagnosticsByEventIdMap={workflowDiagnosticsByEventIdMap}
+        getIsDiagnosticsIssueExpanded={getIsDiagnosticsIssueExpanded}
+        toggleIsDiagnosticsIssueExpanded={toggleIsDiagnosticsIssueExpanded}
       />
     </VirtuosoMockContext.Provider>
   );
