@@ -3,11 +3,7 @@ import { type NextRequest } from 'next/server';
 import { AUTH_COOKIE_OPTIONS } from '../auth.constants';
 import getCookieSecureAttribute from '../helpers/get-cookie-secure-attribute';
 
-/**
- * The one shared cookie-options builder: strategies supply only
- * name/value/maxAge; all attributes come from here so a strategy bug or fork
- * strategy cannot downgrade a session cookie. Clears carry `Secure` too.
- */
+/** Shared flags for every auth cookie. Callers only pass name, value, and maxAge. */
 export default function buildAuthCookieOptions(
   request: NextRequest,
   maxAge?: number
