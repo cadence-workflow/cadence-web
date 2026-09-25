@@ -8,15 +8,13 @@ import { type Props } from './workflow-history-details-row.types';
 
 export default function WorkflowHistoryDetailsRow({
   detailsEntries,
+  diagnosticsIssues,
   ...workflowPageParams
 }: Props) {
-  const rowItems = useMemo(() => {
-    if (detailsEntries.length === 0) {
-      return [];
-    }
-
-    return getParsedDetailsRowItems(detailsEntries);
-  }, [detailsEntries]);
+  const rowItems = useMemo(
+    () => getParsedDetailsRowItems(detailsEntries, diagnosticsIssues),
+    [detailsEntries, diagnosticsIssues]
+  );
 
   const negativePathsSet = useMemo(
     () =>

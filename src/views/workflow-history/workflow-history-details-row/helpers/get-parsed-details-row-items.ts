@@ -2,60 +2,73 @@ import { createElement, type ComponentType } from 'react';
 
 import workflowHistoryDetailsRowParsersConfig from '../../config/workflow-history-details-row-parsers.config';
 import { type EventDetailsEntries } from '../../workflow-history-event-details/workflow-history-event-details.types';
+import { type WorkflowDiagnosticsIssue } from '../../workflow-history.types';
 import {
   type DetailsRowValueComponentProps,
   type DetailsRowItem,
 } from '../workflow-history-details-row.types';
 
+import getDiagnosticsIssuesRowItem from './get-diagnostics-issues-row-item';
+
 export default function getParsedDetailsRowItems(
-  detailsEntries: EventDetailsEntries
+  detailsEntries: EventDetailsEntries,
+  diagnosticsIssues?: Array<WorkflowDiagnosticsIssue>
 ): Array<DetailsRowItem> {
-  return detailsEntries.reduce<Array<DetailsRowItem>>((acc, detailsConfig) => {
-    if (detailsConfig.isGroup) return acc;
+  const rowItems = detailsEntries.reduce<Array<DetailsRowItem>>(
+    (acc, detailsConfig) => {
+      if (detailsConfig.isGroup) return acc;
 
-    const { key, path, value, renderConfig, eventType } = detailsConfig;
+      const { key, path, value, renderConfig, eventType } = detailsConfig;
 
-    const parserConfig = workflowHistoryDetailsRowParsersConfig.find((config) =>
-      config.matcher(path, value)
-    );
+      const parserConfig = workflowHistoryDetailsRowParsersConfig.find(
+        (config) => config.matcher(path, value)
+      );
 
-    if (parserConfig?.hide?.(path, value)) {
+      if (parserConfig?.hide?.(path, value)) {
+        return acc;
+      }
+
+      const label = renderConfig?.getLabel?.({ key, path, value }) ?? path;
+
+      let renderValue: ComponentType<DetailsRowValueComponentProps>;
+      if (parserConfig?.customRenderValue) {
+        renderValue = parserConfig.customRenderValue;
+      } else if (renderConfig?.valueComponent) {
+        const detailsRenderValue = renderConfig.valueComponent;
+        renderValue = ({ value, label, isNegative, ...workflowPageParams }) =>
+          createElement(detailsRenderValue, {
+            entryKey: key,
+            entryPath: path,
+            entryValue: value,
+            isNegative,
+            eventType,
+            ...workflowPageParams,
+          });
+      } else {
+        renderValue = ({ value }) => String(value);
+      }
+
+      acc.push({
+        path,
+        label,
+        value,
+        icon: parserConfig?.icon ?? null,
+        renderValue,
+        renderTooltip: parserConfig?.customTooltipContent ?? (() => label),
+        invertTooltipColors: parserConfig?.invertTooltipColors,
+        omitWrapping: parserConfig?.omitWrapping,
+        hasClickableContent: parserConfig?.hasClickableContent,
+        badgeColor: parserConfig?.badgeColor,
+      });
+
       return acc;
-    }
+    },
+    []
+  );
 
-    const label = renderConfig?.getLabel?.({ key, path, value }) ?? path;
+  if (diagnosticsIssues && diagnosticsIssues.length > 0) {
+    rowItems.push(getDiagnosticsIssuesRowItem(diagnosticsIssues));
+  }
 
-    let renderValue: ComponentType<DetailsRowValueComponentProps>;
-    if (parserConfig?.customRenderValue) {
-      renderValue = parserConfig.customRenderValue;
-    } else if (renderConfig?.valueComponent) {
-      const detailsRenderValue = renderConfig.valueComponent;
-      renderValue = ({ value, label, isNegative, ...workflowPageParams }) =>
-        createElement(detailsRenderValue, {
-          entryKey: key,
-          entryPath: path,
-          entryValue: value,
-          isNegative,
-          eventType,
-          ...workflowPageParams,
-        });
-    } else {
-      renderValue = ({ value }) => String(value);
-    }
-
-    acc.push({
-      path,
-      label,
-      value,
-      icon: parserConfig?.icon ?? null,
-      renderValue,
-      renderTooltip: parserConfig?.customTooltipContent ?? (() => label),
-      invertTooltipColors: parserConfig?.invertTooltipColors,
-      omitWrapping: parserConfig?.omitWrapping,
-      hasClickableContent: parserConfig?.hasClickableContent,
-      badgeColor: parserConfig?.badgeColor,
-    });
-
-    return acc;
-  }, []);
+  return rowItems;
 }

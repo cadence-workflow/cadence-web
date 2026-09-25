@@ -37,7 +37,7 @@ export const styled = {
         color = $theme.colors.contentNegative;
         backgroundColorWhenWrapped = $theme.colors.backgroundNegativeLight;
       } else if ($badgeColor === 'warning') {
-        color = $theme.colors.warning700;
+        color = $theme.colors.contentPrimary;
         backgroundColorWhenWrapped = $theme.colors.backgroundWarningLight;
       } else {
         color = $theme.colors.contentPrimary;
@@ -66,7 +66,7 @@ export const overrides = {
   popover: {
     Inner: {
       style: {
-        maxWidth: '500px',
+        maxWidth: '400px',
       },
     },
   },
@@ -80,7 +80,7 @@ export const overrides = {
       style: ({ $theme }: { $theme: Theme }): StyleObject => ({
         backgroundColor: $theme.colors.backgroundPrimary,
         color: $theme.colors.contentPrimary,
-        maxWidth: '500px',
+        maxWidth: '400px',
       }),
     },
   } satisfies PopoverOverrides,

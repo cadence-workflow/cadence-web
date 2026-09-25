@@ -5,6 +5,7 @@ import { type IconProps } from 'baseui/icon';
 import { type WorkflowPageParams } from '@/views/workflow-page/workflow-page.types';
 
 import { type EventDetailsEntries } from '../workflow-history-event-details/workflow-history-event-details.types';
+import { type WorkflowDiagnosticsIssue } from '../workflow-history.types';
 
 export type DetailsRowValueComponentProps = {
   label: string;
@@ -75,4 +76,5 @@ export type DetailsRowItem = {
 
 export type Props = {
   detailsEntries: EventDetailsEntries;
+  diagnosticsIssues?: Array<WorkflowDiagnosticsIssue>;
 } & WorkflowPageParams;
