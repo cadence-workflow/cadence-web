@@ -76,6 +76,10 @@ export default async function validateAndReplayAuthCookieMutations(
   mutations: CookieMutation[],
   cookieNames: AuthServerRegistryEntry['cookieNames']
 ): Promise<ValidateAndReplayResult> {
+  if (mutations.length === 0) {
+    return { ok: true };
+  }
+
   for (const mutation of mutations) {
     const name = 'set' in mutation ? mutation.set.name : mutation.clear.name;
     const isKnown =
