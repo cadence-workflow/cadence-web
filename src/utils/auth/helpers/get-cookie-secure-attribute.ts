@@ -1,6 +1,9 @@
 import { type NextRequest } from 'next/server';
 
-/** True when the client used HTTPS. Uses x-forwarded-proto when a proxy set it. */
+/**
+ * @param request - The Next.js request object
+ * @returns True if the client used HTTPS, false otherwise
+ */
 export default function getCookieSecureAttribute(request: NextRequest) {
   const xfProto = request.headers.get('x-forwarded-proto');
   const proto = xfProto?.split(',')[0]?.trim().toLowerCase();
