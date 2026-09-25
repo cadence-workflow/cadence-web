@@ -352,12 +352,22 @@ export default function WorkflowHistory({ params }: Props) {
   );
 
   const {
+    setExpandedItems: setExpandedDiagnosticsIssues,
     getIsItemExpanded: getIsDiagnosticsIssueExpanded,
     toggleIsItemExpanded: toggleIsDiagnosticsIssueExpanded,
   } = useExpansionToggle<string>({
     items: allDiagnosticsIssueExpansionIds,
     initialState: {},
   });
+
+  const handleToggleAllItemsExpanded = useCallback(() => {
+    setExpandedDiagnosticsIssues(areAllItemsExpanded ? {} : true);
+    toggleAreAllItemsExpanded();
+  }, [
+    areAllItemsExpanded,
+    setExpandedDiagnosticsIssues,
+    toggleAreAllItemsExpanded,
+  ]);
 
   const failedEventsMenuItems = useMemo(
     () =>
@@ -527,7 +537,7 @@ export default function WorkflowHistory({ params }: Props) {
         onScrollUp={handleTableScrollUp}
         onScrollDown={handleTableScrollDown}
         areAllItemsExpanded={areAllItemsExpanded}
-        onToggleAllItemsExpanded={toggleAreAllItemsExpanded}
+        onToggleAllItemsExpanded={handleToggleAllItemsExpanded}
         isUngroupedView={isUngroupedHistoryViewEnabled}
         failedEventsMenuItems={failedEventsMenuItems}
         pendingEventsMenuItems={pendingEventsMenuItems}

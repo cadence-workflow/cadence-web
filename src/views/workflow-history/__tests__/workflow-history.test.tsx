@@ -103,14 +103,25 @@ jest.mock('../workflow-history-header/workflow-history-header', () =>
 jest.mock(
   '../workflow-history-grouped-table/workflow-history-grouped-table',
   () =>
-    jest.fn(({ selectedEventId }: { selectedEventId?: string }) => (
-      <div data-testid="workflow-history-grouped-table">
-        Grouped Table
-        {selectedEventId && (
-          <div data-testid="grouped-selected-event-id">{selectedEventId}</div>
-        )}
-      </div>
-    ))
+    jest.fn(
+      ({
+        selectedEventId,
+        getIsDiagnosticsIssueExpanded,
+      }: {
+        selectedEventId?: string;
+        getIsDiagnosticsIssueExpanded: (issueExpansionId: string) => boolean;
+      }) => (
+        <div data-testid="workflow-history-grouped-table">
+          Grouped Table
+          {selectedEventId && (
+            <div data-testid="grouped-selected-event-id">{selectedEventId}</div>
+          )}
+          <div data-testid="grouped-diagnostics-issue-expanded">
+            {String(getIsDiagnosticsIssueExpanded('mock-issue'))}
+          </div>
+        </div>
+      )
+    )
 );
 
 jest.mock(
@@ -130,8 +141,15 @@ jest.mock(
   '../workflow-history-navigation-bar/workflow-history-navigation-bar',
   () =>
     jest.fn(
-      ({ failedEventsMenuItems, pendingEventsMenuItems }: NavbarProps) => (
+      ({
+        failedEventsMenuItems,
+        pendingEventsMenuItems,
+        onToggleAllItemsExpanded,
+      }: NavbarProps) => (
         <div data-testid="workflow-history-navigation-bar">
+          <button onClick={onToggleAllItemsExpanded}>
+            Toggle all expanded
+          </button>
           {failedEventsMenuItems && failedEventsMenuItems.length > 0 && (
             <div data-testid="failed-events-menu-items-count">
               {failedEventsMenuItems.length} failed events
@@ -482,6 +500,21 @@ describe(WorkflowHistory.name, () => {
     await waitFor(() => {
       expect(mockDiagnoseResolver).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it('expands and collapses all diagnostics issues with the expand all toggle', async () => {
+    const { user } = await setup({});
+
+    const issueExpandedState = await screen.findByTestId(
+      'grouped-diagnostics-issue-expanded'
+    );
+    expect(issueExpandedState).toHaveTextContent('false');
+
+    await user.click(screen.getByText('Toggle all expanded'));
+    expect(issueExpandedState).toHaveTextContent('true');
+
+    await user.click(screen.getByText('Toggle all expanded'));
+    expect(issueExpandedState).toHaveTextContent('false');
   });
 });
 
