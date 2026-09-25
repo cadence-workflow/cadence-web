@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import logger from '../../../logger';
-import { AUTH_COOKIE_MUTATIONS_MAX_BYTES } from '../../auth.constants';
+import {
+  AUTH_COOKIE_MUTATIONS_MAX_BYTES,
+  AUTH_COOKIE_OPTIONS,
+} from '../../auth.constants';
 import { type CookieMutation } from '../../auth.types';
 import validateAndReplayAuthCookieMutations, {
   measureAuthCookieMutationsBytes,
@@ -171,15 +174,18 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
     expect(cookie?.expires && new Date(cookie.expires).getTime()).toBe(0);
   });
 
-  describe('measurement mirrors ResponseCookies serialization', () => {
+  describe('measurement uses ResponseCookies serialization', () => {
     it('counts the encodeURIComponent-escaped value, not the raw value', () => {
       // '{' escapes to '%7B': 1 byte raw, 3 bytes on the wire
       const value = '{'.repeat(100);
       expect(
-        measureAuthCookieMutationsBytes(
-          [{ set: { name: 'oidc-session.0', value } }],
-          false
-        )
+        measureAuthCookieMutationsBytes([
+          {
+            name: 'oidc-session.0',
+            value,
+            options: { ...AUTH_COOKIE_OPTIONS, secure: false },
+          },
+        ]).totalBytes
       ).toBe(
         `oidc-session.0=${encodeURIComponent(value)}; Path=/; HttpOnly; SameSite=Lax`
           .length
@@ -187,14 +193,20 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
     });
 
     it('adds the auto-derived Expires attribute when maxAge is set', () => {
-      const withMaxAge = measureAuthCookieMutationsBytes(
-        [{ set: { name: 'oidc-session.0', value: 'v', maxAge: 3600 } }],
-        false
-      );
-      const withoutMaxAge = measureAuthCookieMutationsBytes(
-        [{ set: { name: 'oidc-session.0', value: 'v' } }],
-        false
-      );
+      const { totalBytes: withMaxAge } = measureAuthCookieMutationsBytes([
+        {
+          name: 'oidc-session.0',
+          value: 'v',
+          options: { ...AUTH_COOKIE_OPTIONS, secure: false, maxAge: 3600 },
+        },
+      ]);
+      const { totalBytes: withoutMaxAge } = measureAuthCookieMutationsBytes([
+        {
+          name: 'oidc-session.0',
+          value: 'v',
+          options: { ...AUTH_COOKIE_OPTIONS, secure: false },
+        },
+      ]);
       // @edge-runtime/cookies derives Expires from a truthy maxAge; any
       // RFC 1123 GMT date has the epoch stand-in's exact length
       expect(withMaxAge - withoutMaxAge).toBe(
@@ -205,10 +217,13 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
     it('counts UTF-8 wire bytes for non-ASCII values', () => {
       // 'é' → '%C3%A9' (6 bytes on the wire; 2 raw UTF-8 bytes)
       expect(
-        measureAuthCookieMutationsBytes(
-          [{ set: { name: 'oidc-session.0', value: 'é' } }],
-          false
-        )
+        measureAuthCookieMutationsBytes([
+          {
+            name: 'oidc-session.0',
+            value: 'é',
+            options: { ...AUTH_COOKIE_OPTIONS, secure: false },
+          },
+        ]).totalBytes
       ).toBe('oidc-session.0=%C3%A9; Path=/; HttpOnly; SameSite=Lax'.length);
     });
 
