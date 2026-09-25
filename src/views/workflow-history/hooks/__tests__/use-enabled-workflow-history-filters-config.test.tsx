@@ -3,9 +3,9 @@ import { HttpResponse } from 'msw';
 import { renderHook, waitFor } from '@/test-utils/rtl';
 
 import workflowHistoryFiltersConfig from '../../config/workflow-history-filters.config';
-import useWorkflowHistoryFiltersConfig from '../use-workflow-history-filters-config';
+import useEnabledWorkflowHistoryFiltersConfig from '../use-enabled-workflow-history-filters-config';
 
-describe(useWorkflowHistoryFiltersConfig.name, () => {
+describe(useEnabledWorkflowHistoryFiltersConfig.name, () => {
   it('excludes the issues filter when diagnostics in history is disabled', async () => {
     const { result, configResolver } = setup({
       isDiagnosticsInHistoryEnabled: false,
@@ -48,7 +48,7 @@ function setup({
     HttpResponse.json(isDiagnosticsInHistoryEnabled)
   );
 
-  const rendered = renderHook(() => useWorkflowHistoryFiltersConfig(), {
+  const rendered = renderHook(() => useEnabledWorkflowHistoryFiltersConfig(), {
     endpointsMocks: [
       {
         path: '/api/config',
