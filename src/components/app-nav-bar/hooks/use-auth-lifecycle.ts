@@ -1,52 +1,37 @@
 'use client';
 import { useCallback } from 'react';
 
-import request from '@/utils/request';
+import { type AuthLogoutNotice } from '@/utils/auth/auth.types';
+import jwtClientPolicy from '@/utils/auth/strategies/jwt/jwt-client-policy';
 import useUserInfo from '@/views/shared/hooks/use-user-info/use-user-info';
 
-import { type AuthLifecycle } from '../use-auth-lifecycle.types';
+import { type AuthLifecycle } from './use-auth-lifecycle.types';
 
 export default function useAuthLifecycle(): AuthLifecycle {
-  const { data: authInfo, isLoading: isAuthLoading, refetch } = useUserInfo();
+  const { data: authInfo, isLoading: isAuthLoading } = useUserInfo();
 
-  const isAuthEnabled = authInfo?.authEnabled === true;
-  const isValidToken = authInfo?.auth?.isValidToken === true;
-  const isAdmin = authInfo?.isAdmin === true;
-  const userName = authInfo?.userName;
-  const expiresAtMs =
-    typeof authInfo?.auth?.expiresAtMs === 'number'
-      ? authInfo.auth.expiresAtMs
-      : undefined;
+  // jwt is the only auth-enabled strategy, so the nav dispatches to the jwt
+  // client policy directly; its items render only when auth is enabled.
+  const login = useCallback((returnTo?: string) => {
+    jwtClientPolicy.login(returnTo);
+  }, []);
 
-  const saveToken = useCallback(
-    async (token: string) => {
-      await request('/api/auth/token', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ token }),
-      });
-      const { data } = await refetch();
-      return data?.auth?.isValidToken === true;
-    },
-    [refetch]
-  );
-
-  const logout = useCallback(async () => {
-    try {
-      await request('/api/auth/token', { method: 'DELETE' });
-    } finally {
-      await refetch();
-    }
-  }, [refetch]);
+  const logout = useCallback((options?: { notice?: AuthLogoutNotice }) => {
+    return jwtClientPolicy.logout(options);
+  }, []);
 
   return {
-    isAuthEnabled,
-    isValidToken,
+    isAuthEnabled: authInfo?.authEnabled === true,
+    isValidToken: authInfo?.auth?.isValidToken === true,
     isAuthLoading,
-    isAdmin,
-    userName,
-    expiresAtMs,
-    saveToken,
+    isAdmin: authInfo?.isAdmin === true,
+    userName: authInfo?.userName,
+    expiresAtMs:
+      typeof authInfo?.auth?.expiresAtMs === 'number'
+        ? authInfo.auth.expiresAtMs
+        : undefined,
+    labels: jwtClientPolicy.labels,
+    login,
     logout,
   };
 }

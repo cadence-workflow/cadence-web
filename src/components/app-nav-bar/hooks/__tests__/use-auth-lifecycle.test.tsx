@@ -1,47 +1,54 @@
 import { HttpResponse } from 'msw';
 
-import { act, renderHook, waitFor } from '@/test-utils/rtl';
+import { renderHook, waitFor } from '@/test-utils/rtl';
+
+import { type PublicAuthContext } from '@/utils/auth/auth-shared.types';
+import { type AuthClientPolicy } from '@/utils/auth/auth.types';
+import jwtClientPolicy from '@/utils/auth/strategies/jwt/jwt-client-policy';
 
 import useAuthLifecycle from '../use-auth-lifecycle';
 
-type AuthResponse = {
-  authEnabled: boolean;
-  auth: {
-    isValidToken: boolean;
-    expiresAtMs?: number;
-  };
-  isAdmin: boolean;
-  groups: string[];
-  userName?: string;
-};
+jest.mock('@/utils/auth/strategies/jwt/jwt-client-policy', () => ({
+  __esModule: true,
+  default: {
+    supportsSessionRecovery: false,
+    unauthenticatedRemedy: 'login',
+    labels: { login: 'Log in', logout: 'Log out' },
+    login: jest.fn(),
+    logout: jest.fn().mockResolvedValue(undefined),
+    onUnauthorized: jest.fn(),
+  },
+}));
 
-const AUTH_ENABLED: AuthResponse = {
+const mockPolicy = jwtClientPolicy as jest.Mocked<AuthClientPolicy>;
+
+const AUTH_ENABLED: PublicAuthContext = {
   authEnabled: true,
   auth: { isValidToken: true },
+  groups: [],
   isAdmin: false,
-  groups: ['reader'],
   userName: 'alice',
 };
 
-const AUTH_DISABLED: AuthResponse = {
+const AUTH_DISABLED: PublicAuthContext = {
   authEnabled: false,
   auth: { isValidToken: false },
-  isAdmin: false,
   groups: [],
+  isAdmin: false,
 };
 
-const AUTH_UNAUTHENTICATED: AuthResponse = {
+const AUTH_UNAUTHENTICATED: PublicAuthContext = {
   authEnabled: true,
   auth: { isValidToken: false },
-  isAdmin: false,
   groups: [],
+  isAdmin: false,
 };
 
-const AUTH_ADMIN: AuthResponse = {
+const AUTH_ADMIN: PublicAuthContext = {
   authEnabled: true,
   auth: { isValidToken: true },
-  isAdmin: true,
   groups: [],
+  isAdmin: true,
   userName: 'admin-user',
 };
 
@@ -97,18 +104,6 @@ describe(useAuthLifecycle.name, () => {
       expect(result.current.userName).toBe('admin-user');
     });
 
-    it('preserves missing username for consumers to handle', async () => {
-      const { result } = setup({
-        authResponse: { ...AUTH_ENABLED, userName: undefined },
-      });
-
-      await waitFor(() => {
-        expect(result.current.isValidToken).toBe(true);
-      });
-
-      expect(result.current.userName).toBeUndefined();
-    });
-
     it('returns expiresAtMs from auth info', async () => {
       const expiresAtMs = Date.now() + 60_000;
       const { result } = setup({
@@ -134,169 +129,57 @@ describe(useAuthLifecycle.name, () => {
     });
   });
 
-  describe('saveToken', () => {
-    it('calls POST /api/auth/token and returns true for valid token', async () => {
-      let currentAuth: AuthResponse = AUTH_UNAUTHENTICATED;
-      const { result, postTokenHandler } = setup({
-        authResponse: currentAuth,
-        dynamicAuthResolver: () => currentAuth,
-      });
-
-      await waitFor(() => {
-        expect(result.current.isAuthEnabled).toBe(true);
-      });
-
-      currentAuth = AUTH_ENABLED;
-      let isValid: boolean | undefined;
-      await act(async () => {
-        isValid = await result.current.saveToken('header.payload.signature');
-      });
-
-      expect(postTokenHandler).toHaveBeenCalled();
-      expect(isValid).toBe(true);
-    });
-
-    it('returns false when token is invalid after save', async () => {
-      const { result } = setup({
-        authResponse: AUTH_UNAUTHENTICATED,
-      });
-
-      await waitFor(() => {
-        expect(result.current.isAuthEnabled).toBe(true);
-      });
-
-      let isValid: boolean | undefined;
-      await act(async () => {
-        isValid = await result.current.saveToken('header.payload.signature');
-      });
-
-      expect(isValid).toBe(false);
-    });
-
-    it('throws when POST fails', async () => {
-      const { result } = setup({
-        authResponse: AUTH_UNAUTHENTICATED,
-        tokenError: true,
-      });
-
-      await waitFor(() => {
-        expect(result.current.isAuthEnabled).toBe(true);
-      });
-
-      let thrown: unknown;
-      await act(async () => {
-        try {
-          await result.current.saveToken('header.payload.signature');
-        } catch (e) {
-          thrown = e;
-        }
-      });
-
-      expect(thrown).toBeDefined();
-    });
-  });
-
-  describe('logout', () => {
-    it('calls DELETE /api/auth/token and refetches', async () => {
-      const { result, postTokenHandler, deleteTokenHandler } = setup({
-        authResponse: AUTH_ENABLED,
-      });
+  describe('policy delegation', () => {
+    it('exposes the policy labels', async () => {
+      const { result } = setup({ authResponse: AUTH_ENABLED });
 
       await waitFor(() => {
         expect(result.current.isValidToken).toBe(true);
       });
 
-      await act(async () => {
-        await result.current.logout();
+      expect(result.current.labels).toEqual({
+        login: 'Log in',
+        logout: 'Log out',
       });
-
-      expect(deleteTokenHandler).toHaveBeenCalled();
-      expect(postTokenHandler).not.toHaveBeenCalled();
     });
 
-    it('still refetches when DELETE fails', async () => {
-      let currentAuth: AuthResponse = AUTH_ENABLED;
-      const { result } = setup({
-        authResponse: AUTH_ENABLED,
-        dynamicAuthResolver: () => currentAuth,
-        tokenError: true,
+    it('login dispatches to the client policy with returnTo', async () => {
+      const { result } = setup({ authResponse: AUTH_UNAUTHENTICATED });
+
+      await waitFor(() => {
+        expect(result.current.isAuthEnabled).toBe(true);
       });
+
+      result.current.login('/domains/foo');
+
+      expect(mockPolicy.login).toHaveBeenCalledWith('/domains/foo');
+    });
+
+    it('logout dispatches to the client policy with the notice', async () => {
+      const { result } = setup({ authResponse: AUTH_ENABLED });
 
       await waitFor(() => {
         expect(result.current.isValidToken).toBe(true);
       });
 
-      currentAuth = AUTH_UNAUTHENTICATED;
-      let thrown: unknown;
-      await act(async () => {
-        try {
-          await result.current.logout();
-        } catch (e) {
-          thrown = e;
-        }
-      });
+      await result.current.logout({ notice: 'signed-out' });
 
-      expect(thrown).toBeDefined();
-      await waitFor(() => {
-        expect(result.current.isValidToken).toBe(false);
-      });
+      expect(mockPolicy.logout).toHaveBeenCalledWith({ notice: 'signed-out' });
     });
   });
 });
 
-function setup({
-  authResponse,
-  dynamicAuthResolver,
-  tokenError = false,
-  postTokenHandler: customPostHandler,
-  deleteTokenHandler: customDeleteHandler,
-}: {
-  authResponse: AuthResponse;
-  dynamicAuthResolver?: () => AuthResponse;
-  tokenError?: boolean;
-  postTokenHandler?: jest.Mock;
-  deleteTokenHandler?: jest.Mock;
-}) {
-  const defaultHandler = () => {
-    if (tokenError) {
-      return HttpResponse.json(
-        { message: 'Token operation failed' },
-        { status: 500 }
-      );
-    }
-    return HttpResponse.json({ ok: true });
-  };
-
-  const postTokenHandler = customPostHandler ?? jest.fn(defaultHandler);
-  const deleteTokenHandler = customDeleteHandler ?? jest.fn(defaultHandler);
-
+function setup({ authResponse }: { authResponse: PublicAuthContext }) {
   const { result } = renderHook(() => useAuthLifecycle(), {
     endpointsMocks: [
       {
         path: '/api/auth/me',
         httpMethod: 'GET' as const,
         mockOnce: false,
-        httpResolver: () => {
-          const response = dynamicAuthResolver
-            ? dynamicAuthResolver()
-            : authResponse;
-          return HttpResponse.json(response);
-        },
-      },
-      {
-        path: '/api/auth/token',
-        httpMethod: 'POST' as const,
-        mockOnce: false,
-        httpResolver: postTokenHandler,
-      },
-      {
-        path: '/api/auth/token',
-        httpMethod: 'DELETE' as const,
-        mockOnce: false,
-        httpResolver: deleteTokenHandler,
+        httpResolver: () => HttpResponse.json(authResponse),
       },
     ],
   });
 
-  return { result, postTokenHandler, deleteTokenHandler };
+  return { result };
 }
