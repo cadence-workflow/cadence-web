@@ -211,11 +211,9 @@ describe(WorkflowHistoryNavigationBarEventsMenu.name, () => {
 
     await user.click(screen.getByText('Open Popover'));
 
-    const noSubItemsButton = screen
-      .getByText('No Sub Items')
-      .closest('button')!;
-
-    expect(noSubItemsButton.querySelectorAll('svg')).toHaveLength(1);
+    expect(
+      screen.getByTestId('popover-content').querySelectorAll('button')
+    ).toHaveLength(1);
   });
 
   it('calls onClickSubItem and closes the menu when a sub-item is clicked', async () => {
