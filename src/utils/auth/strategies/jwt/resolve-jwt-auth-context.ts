@@ -4,17 +4,7 @@ import { splitGroupList } from '@/utils/auth/auth-shared';
 import { type AuthContext, type AuthRequest } from '@/utils/auth/auth.types';
 import decodeCadenceJwtClaims from '@/utils/auth/helpers/decode-cadence-jwt-claims';
 
-import { CADENCE_AUTH_COOKIE_NAME } from './jwt-auth.constants';
-
-/** Reads the raw JWT cookie — the credential never enters AuthContext.auth;
- * it is reachable only through the policy (getGrpcMetadata/getSessionKey). */
-export function getJwtTokenFromRequest(
-  request: AuthRequest
-): string | undefined {
-  return (
-    request.cookies.get(CADENCE_AUTH_COOKIE_NAME)?.value?.trim() || undefined
-  );
-}
+import getJwtTokenFromRequest from './get-jwt-token-from-request';
 
 export default async function resolveJwtAuthContext(
   request: AuthRequest

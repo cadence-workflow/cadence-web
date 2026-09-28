@@ -1,9 +1,9 @@
 import { type AuthClientPolicy } from '@/utils/auth/auth.types';
 
-import buildJwtLoginPath from './build-jwt-login-path';
+import { buildJwtLoginPath } from './jwt-login-path';
 
 const jwtClientPolicy: AuthClientPolicy = {
-  // JWT recovery always redirects to the login page; nothing silent to try.
+  // There is no background refresh. An expired session goes to the login page.
   supportsSessionRecovery: false,
   unauthenticatedRemedy: 'login',
   labels: { login: 'Log in', logout: 'Log out' },
@@ -17,8 +17,7 @@ const jwtClientPolicy: AuthClientPolicy = {
       window.location.assign(buildJwtLoginPath(undefined, options?.notice));
     }
   },
-  // jwt's recoverSession returns the redirect outcome, so the pipeline may
-  // attempt it.
+  // An unauthorized response starts recovery, which redirects to the login page.
   onUnauthorized: () => true,
 };
 

@@ -70,7 +70,7 @@ describe('jwtServerPolicy', () => {
           'session-expired'
         )
       ).toBe(
-        `/login?returnTo=${encodeURIComponent('/domains/foo')}&notice=session-expired`
+        `/login?notice=session-expired&returnTo=${encodeURIComponent('/domains/foo')}`
       );
     });
 
@@ -146,6 +146,16 @@ describe('jwtServerPolicy', () => {
     it('defaults returnTo to the shared auth return path', async () => {
       await expect(
         jwtServerPolicy.recoverSession(buildRequest('abc'), {})
+      ).resolves.toMatchObject({
+        result: { kind: 'redirect', returnTo: DEFAULT_AUTH_RETURN_TO },
+      });
+    });
+
+    it('sanitizes protocol-relative returnTo values', async () => {
+      await expect(
+        jwtServerPolicy.recoverSession(buildRequest('abc'), {
+          returnTo: '//evil.test',
+        })
       ).resolves.toMatchObject({
         result: { kind: 'redirect', returnTo: DEFAULT_AUTH_RETURN_TO },
       });

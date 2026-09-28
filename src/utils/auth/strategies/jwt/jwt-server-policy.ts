@@ -1,26 +1,16 @@
 import 'server-only';
 
-import {
-  DEFAULT_AUTH_RETURN_TO,
-  JWT_LOGIN_PATH,
-} from '@/utils/auth/auth.constants';
 import { type AuthServerPolicy } from '@/utils/auth/auth.types';
 import getImplicitAuthRequest from '@/utils/auth/helpers/get-implicit-auth-request';
+import { sanitizeReturnTo } from '@/utils/auth/helpers/sanitize-return-to';
 
-import buildJwtLoginPath from './build-jwt-login-path';
+import getJwtTokenFromRequest from './get-jwt-token-from-request';
 import {
   CADENCE_AUTH_COOKIE_NAME,
   CADENCE_AUTH_GRPC_METADATA_KEY,
 } from './jwt-auth.constants';
-import resolveJwtAuthContext, {
-  getJwtTokenFromRequest,
-} from './resolve-jwt-auth-context';
-
-function isJwtLoginReturnTo(returnTo: string): boolean {
-  return (
-    returnTo === JWT_LOGIN_PATH || returnTo.startsWith(`${JWT_LOGIN_PATH}?`)
-  );
-}
+import { buildJwtLoginPath, isJwtLoginReturnTo } from './jwt-login-path';
+import resolveJwtAuthContext from './resolve-jwt-auth-context';
 
 const jwtServerPolicy: AuthServerPolicy = {
   resolveAuthContext(request) {
@@ -45,12 +35,9 @@ const jwtServerPolicy: AuthServerPolicy = {
     return buildJwtLoginPath(returnTo, notice);
   },
 
-  // jwt has no silent grant: recovery is a redirect to the login page plus a
-  // clear of the dead credential. The freshness early return is the
-  // contract's MUST: a sibling tab may already have re-authenticated —
-  // never clear a live credential.
   async recoverSession(request, ctx) {
     const authContext = await resolveJwtAuthContext(request);
+    // A still-valid JWT is left in place: another tab may have signed in again.
     if (authContext.auth.isValidToken) {
       return {
         result: {
@@ -61,10 +48,11 @@ const jwtServerPolicy: AuthServerPolicy = {
         },
       };
     }
+    // An invalid or missing JWT is cleared, and the caller is sent to the login page.
     return {
       result: {
         kind: 'redirect' as const,
-        returnTo: ctx.returnTo ?? DEFAULT_AUTH_RETURN_TO,
+        returnTo: sanitizeReturnTo(ctx.returnTo),
         ...(ctx.notice ? { notice: ctx.notice } : {}),
       },
       cookieMutations: [{ clear: { name: CADENCE_AUTH_COOKIE_NAME } }],

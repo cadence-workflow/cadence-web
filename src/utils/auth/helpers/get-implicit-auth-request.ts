@@ -8,9 +8,8 @@ import {
 import { type AuthRequest } from '../auth.types';
 
 /**
- * Builds an AuthRequest from the implicit request scope (the no-arg
- * resolveAuthContext form). next/headers throws outside a request scope —
- * the contract's fail-closed behavior.
+ * Reads cookies and headers from the current Next.js request.
+ * Throws outside a request, so a missing request is not treated as signed out.
  */
 export default function getImplicitAuthRequest(): AuthRequest {
   return { cookies: getRequestCookies(), headers: getRequestHeaders() };

@@ -1,9 +1,7 @@
 import { type AuthRequest } from '@/utils/auth/auth.types';
 
 import { CADENCE_AUTH_COOKIE_NAME } from '../jwt-auth.constants';
-import resolveJwtAuthContext, {
-  getJwtTokenFromRequest,
-} from '../resolve-jwt-auth-context';
+import resolveJwtAuthContext from '../resolve-jwt-auth-context';
 
 const buildToken = (claims: Record<string, unknown>) => {
   const payload = Buffer.from(JSON.stringify(claims)).toString('base64url');
@@ -120,16 +118,5 @@ describe(resolveJwtAuthContext.name, () => {
     expect(authContext.auth.expiresAtMs).toBe(expSeconds * 1000);
 
     dateNowSpy.mockRestore();
-  });
-});
-
-describe(getJwtTokenFromRequest.name, () => {
-  it('returns the trimmed token', () => {
-    expect(getJwtTokenFromRequest(buildRequest('  abc  '))).toBe('abc');
-  });
-
-  it('returns undefined when the cookie is absent or blank', () => {
-    expect(getJwtTokenFromRequest(buildRequest())).toBeUndefined();
-    expect(getJwtTokenFromRequest(buildRequest('   '))).toBeUndefined();
   });
 });

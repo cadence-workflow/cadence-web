@@ -55,7 +55,7 @@ describe('jwtClientPolicy', () => {
       cache: 'no-store',
     });
     expect(mockAssign).toHaveBeenCalledWith(
-      `/login?returnTo=${encodeURIComponent('/')}&notice=session-expired`
+      `/login?notice=session-expired&returnTo=${encodeURIComponent('/')}`
     );
   });
 

@@ -2,7 +2,7 @@ import { type AuthClientPolicy } from '@/utils/auth/auth.types';
 
 const disabledClientPolicy: AuthClientPolicy = {
   supportsSessionRecovery: false,
-  // Unused: with auth disabled there is no unauthenticated surface to remedy.
+  // Not shown: with auth disabled there is no signed-out page.
   unauthenticatedRemedy: 'login',
   login() {},
   logout: () => Promise.resolve(),
