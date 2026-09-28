@@ -4,6 +4,7 @@ import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import { type WorkflowPageParams } from '@/views/workflow-page/workflow-page.types';
 
+import WorkflowHistoryEventDiagnostics from '../../workflow-history-event-diagnostics/workflow-history-event-diagnostics';
 import { type WorkflowDiagnosticsIssuesByEventId } from '../../workflow-history.types';
 import WorkflowHistoryGroupDetails from '../workflow-history-group-details';
 import { type GroupDetailsEntries } from '../workflow-history-group-details.types';
@@ -30,15 +31,9 @@ jest.mock(
 jest.mock(
   '../../workflow-history-event-diagnostics/workflow-history-event-diagnostics',
   () =>
-    jest.fn(({ issues, getIsIssueExpanded, toggleIsIssueExpanded }) => (
+    jest.fn(({ issues }) => (
       <div aria-label="Workflow history event diagnostics">
         <div>Diagnostics ({issues.length} issues)</div>
-        <div data-testid="diagnostics-has-getter">
-          {typeof getIsIssueExpanded === 'function' ? 'true' : 'false'}
-        </div>
-        <div data-testid="diagnostics-has-toggler">
-          {typeof toggleIsIssueExpanded === 'function' ? 'true' : 'false'}
-        </div>
       </div>
     ))
 );
@@ -376,26 +371,28 @@ describe(WorkflowHistoryGroupDetails.name, () => {
   });
 
   it('passes getIsDiagnosticsIssueExpanded and toggleIsDiagnosticsIssueExpanded through to the diagnostics component', () => {
-    setup({
-      groupDetailsEntries: mockGroupDetails,
-      initialEventId: 'event-1',
-      diagnosticsIssuesByEventId: {
-        'event-1': [
-          {
-            issueId: 1,
-            invariantType: 'test',
-            reason: 'test reason',
-            metadata: {},
-          },
-        ],
-      },
-    });
+    const { getIsDiagnosticsIssueExpanded, toggleIsDiagnosticsIssueExpanded } =
+      setup({
+        groupDetailsEntries: mockGroupDetails,
+        initialEventId: 'event-1',
+        diagnosticsIssuesByEventId: {
+          'event-1': [
+            {
+              issueId: 1,
+              invariantType: 'test',
+              reason: 'test reason',
+              metadata: {},
+            },
+          ],
+        },
+      });
 
-    expect(screen.getByTestId('diagnostics-has-getter')).toHaveTextContent(
-      'true'
-    );
-    expect(screen.getByTestId('diagnostics-has-toggler')).toHaveTextContent(
-      'true'
+    expect(WorkflowHistoryEventDiagnostics).toHaveBeenCalledWith(
+      expect.objectContaining({
+        getIsIssueExpanded: getIsDiagnosticsIssueExpanded,
+        toggleIsIssueExpanded: toggleIsDiagnosticsIssueExpanded,
+      }),
+      expect.anything()
     );
   });
 
