@@ -186,7 +186,7 @@ describe(WorkflowHistoryNavigationBar.name, () => {
     });
 
     expect(screen.getByLabelText('Diagnostics issues')).toBeInTheDocument();
-    expect(screen.getByText('1 issue')).toBeInTheDocument();
+    expect(screen.getByText('1 issue detected')).toBeInTheDocument();
   });
 
   it('renders diagnostics issues button with total issue count across groups', () => {
@@ -224,7 +224,7 @@ describe(WorkflowHistoryNavigationBar.name, () => {
       ],
     });
 
-    expect(screen.getByText('3 issues')).toBeInTheDocument();
+    expect(screen.getByText('3 issues detected')).toBeInTheDocument();
   });
 
   it('passes onClickDiagnosticsIssue to the menu as onClickSubItem', async () => {
