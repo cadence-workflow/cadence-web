@@ -1,5 +1,5 @@
-import AUTH_STRATEGY_VALUES_CONFIG from './auth-strategy-values.config';
-import { type AuthStrategyConfigValue } from './auth-strategy.types';
+import AUTH_STRATEGY_VALUES_CONFIG from '@/config/auth/auth-strategy-values.config';
+import { type AuthStrategyConfigValue } from '@/config/auth/auth-strategy.types';
 
 export default function authStrategy(): AuthStrategyConfigValue {
   const envValue = process.env.CADENCE_WEB_AUTH_STRATEGY;

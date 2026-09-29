@@ -1,10 +1,22 @@
+import AUTH_SERVER_STRATEGIES_CONFIG from '@/config/auth/auth-server-strategies.config';
 import getConfigValue from '@/utils/config/get-config-value';
 
 import { getActiveAuthServerEntry } from '../auth-server-registry';
-import disabledServerPolicy from '../disabled/disabled-server-policy';
-import jwtServerPolicy from '../jwt/jwt-server-policy';
 
 jest.mock('@/utils/config/get-config-value');
+jest.mock('@/config/auth/auth-server-strategies.config', () => ({
+  __esModule: true,
+  default: {
+    disabled: {
+      policy: { name: 'eager' },
+      cookieNames: { exact: [], prefixes: [] },
+    },
+    jwt: {
+      policy: () => Promise.resolve({ name: 'lazy' }),
+      cookieNames: { exact: ['mock-cookie'], prefixes: ['mock-prefix-'] },
+    },
+  },
+}));
 
 const mockGetConfigValue = getConfigValue as jest.MockedFunction<
   typeof getConfigValue
@@ -22,21 +34,24 @@ describe(getActiveAuthServerEntry.name, () => {
     jest.clearAllMocks();
   });
 
-  it('resolves the jwt policy with its cookie names', async () => {
-    setAuthStrategy('jwt');
-
-    const entry = await getActiveAuthServerEntry();
-
-    expect(entry.policy).toBe(jwtServerPolicy);
-    expect(entry.cookieNames.exact).toContain('cadence-authorization');
-  });
-
-  it('resolves the disabled policy with no cookie declarations', async () => {
+  it('returns the active strategy policy and cookie names', async () => {
     setAuthStrategy('disabled');
 
     const entry = await getActiveAuthServerEntry();
 
-    expect(entry.policy).toBe(disabledServerPolicy);
+    expect(entry.policy).toBe(AUTH_SERVER_STRATEGIES_CONFIG.disabled.policy);
     expect(entry.cookieNames).toEqual({ exact: [], prefixes: [] });
+  });
+
+  it('loads a lazy policy before returning it', async () => {
+    setAuthStrategy('jwt');
+
+    const entry = await getActiveAuthServerEntry();
+
+    expect(entry.policy).toEqual({ name: 'lazy' });
+    expect(entry.cookieNames).toEqual({
+      exact: ['mock-cookie'],
+      prefixes: ['mock-prefix-'],
+    });
   });
 });
