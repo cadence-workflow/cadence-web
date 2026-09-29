@@ -8,7 +8,9 @@ import { type DomainsPageContextType } from '../../domains-page-context-provider
 import { type DomainData } from '../../domains-page.types';
 import getFilteredDomains from '../get-filtered-domains';
 
-const pageCtx: DomainsPageContextType = { pageConfig: { CLUSTERS_PUBLIC: [] } };
+const pageCtx = {
+  mockContextValue: 'mock',
+} as unknown as DomainsPageContextType;
 
 describe(getFilteredDomains.name, () => {
   it('removes domains failing a deducting rule from both the list and the total', () => {

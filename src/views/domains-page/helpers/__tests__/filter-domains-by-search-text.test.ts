@@ -3,7 +3,9 @@ import { mockDomainsPageQueryParamsValues } from '../../__fixtures__/domains-pag
 import { type DomainsPageContextType } from '../../domains-page-context-provider/domains-page-context-provider.types';
 import filterDomainsBySearchText from '../filter-domains-by-search-text';
 
-const pageCtx: DomainsPageContextType = { pageConfig: { CLUSTERS_PUBLIC: [] } };
+const pageCtx = {
+  mockContextValue: 'mock',
+} as unknown as DomainsPageContextType;
 
 describe(filterDomainsBySearchText.name, () => {
   it('passes every domain when the search text is empty', () => {

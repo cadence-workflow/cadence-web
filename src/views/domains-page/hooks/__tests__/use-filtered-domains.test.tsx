@@ -39,14 +39,9 @@ const mockDomains: Array<DomainData> = [
   getDomainObj({ id: '2', name: 'beta-domain' }),
 ];
 
-const mockPageCtx: DomainsPageContextType = {
-  pageConfig: {
-    CLUSTERS_PUBLIC: [
-      { clusterName: 'cluster-a' },
-      { clusterName: 'cluster-b' },
-    ],
-  },
-};
+const mockPageCtx = {
+  mockContextValue: 'mock',
+} as unknown as DomainsPageContextType;
 
 const mockFilteredDomainsResult: FilteredDomains = {
   filteredDomains: [mockDomains[0]],
