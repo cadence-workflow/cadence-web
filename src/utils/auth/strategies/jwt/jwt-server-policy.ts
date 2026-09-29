@@ -1,14 +1,12 @@
 import 'server-only';
 
+import { CADENCE_AUTH_GRPC_METADATA_KEY } from '@/utils/auth/auth.constants';
 import { type AuthServerPolicy } from '@/utils/auth/auth.types';
 import getImplicitAuthRequest from '@/utils/auth/helpers/get-implicit-auth-request';
 import { sanitizeReturnTo } from '@/utils/auth/helpers/sanitize-return-to';
 
 import getJwtTokenFromRequest from './get-jwt-token-from-request';
-import {
-  CADENCE_AUTH_COOKIE_NAME,
-  CADENCE_AUTH_GRPC_METADATA_KEY,
-} from './jwt-auth.constants';
+import { JWT_AUTH_COOKIE_NAME } from './jwt-auth.constants';
 import { buildJwtLoginPath, isJwtLoginReturnTo } from './jwt-login-path';
 import resolveJwtAuthContext from './resolve-jwt-auth-context';
 
@@ -55,7 +53,7 @@ const jwtServerPolicy: AuthServerPolicy = {
         returnTo: sanitizeReturnTo(ctx.returnTo),
         ...(ctx.notice ? { notice: ctx.notice } : {}),
       },
-      cookieMutations: [{ clear: { name: CADENCE_AUTH_COOKIE_NAME } }],
+      cookieMutations: [{ clear: { name: JWT_AUTH_COOKIE_NAME } }],
     };
   },
 

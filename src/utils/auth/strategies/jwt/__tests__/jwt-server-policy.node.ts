@@ -1,13 +1,13 @@
 import { DEFAULT_AUTH_RETURN_TO } from '@/utils/auth/auth.constants';
 import { type AuthContext, type AuthRequest } from '@/utils/auth/auth.types';
 
-import { CADENCE_AUTH_COOKIE_NAME } from '../jwt-auth.constants';
+import { JWT_AUTH_COOKIE_NAME } from '../jwt-auth.constants';
 import jwtServerPolicy from '../jwt-server-policy';
 
 const buildRequest = (token?: string): AuthRequest => ({
   cookies: {
     get: (name: string) =>
-      name === CADENCE_AUTH_COOKIE_NAME && token !== undefined
+      name === JWT_AUTH_COOKIE_NAME && token !== undefined
         ? { value: token }
         : undefined,
   },
@@ -123,7 +123,7 @@ describe('jwtServerPolicy', () => {
         jwtServerPolicy.recoverSession(buildRequest(token), {})
       ).resolves.toEqual({
         result: { kind: 'redirect', returnTo: DEFAULT_AUTH_RETURN_TO },
-        cookieMutations: [{ clear: { name: CADENCE_AUTH_COOKIE_NAME } }],
+        cookieMutations: [{ clear: { name: JWT_AUTH_COOKIE_NAME } }],
       });
     });
 
@@ -139,7 +139,7 @@ describe('jwtServerPolicy', () => {
           returnTo: '/domains/foo',
           notice: 'session-expired',
         },
-        cookieMutations: [{ clear: { name: CADENCE_AUTH_COOKIE_NAME } }],
+        cookieMutations: [{ clear: { name: JWT_AUTH_COOKIE_NAME } }],
       });
     });
 

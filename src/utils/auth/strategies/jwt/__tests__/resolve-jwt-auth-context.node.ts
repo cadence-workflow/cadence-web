@@ -1,6 +1,6 @@
 import { type AuthRequest } from '@/utils/auth/auth.types';
 
-import { CADENCE_AUTH_COOKIE_NAME } from '../jwt-auth.constants';
+import { JWT_AUTH_COOKIE_NAME } from '../jwt-auth.constants';
 import resolveJwtAuthContext from '../resolve-jwt-auth-context';
 
 const buildToken = (claims: Record<string, unknown>) => {
@@ -16,7 +16,7 @@ const buildTokenWithNonJsonPayload = (payloadText: string) => {
 const buildRequest = (token?: string): AuthRequest => ({
   cookies: {
     get: (name: string) =>
-      name === CADENCE_AUTH_COOKIE_NAME && token !== undefined
+      name === JWT_AUTH_COOKIE_NAME && token !== undefined
         ? { value: token }
         : undefined,
   },

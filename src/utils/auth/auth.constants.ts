@@ -4,6 +4,11 @@ export const DEFAULT_AUTH_RETURN_TO = '/';
 
 export const JWT_LOGIN_PATH = '/login';
 
+// --- Cadence backend ---
+
+/** gRPC metadata key the Cadence server reads the auth token from */
+export const CADENCE_AUTH_GRPC_METADATA_KEY = 'cadence-authorization';
+
 // --- Cookie writing ---
 
 /** shared attribute set for all auth cookies */
