@@ -277,10 +277,18 @@ export type SingleHistoryEvent = HistoryEvent & {
     | 'upsertWorkflowSearchAttributesEventAttributes';
 };
 
+export type WorkflowHistoryFilterContext = {
+  diagnosticsByEventId: WorkflowDiagnosticsIssuesByEventId;
+};
+
 export type WorkflowHistoryFilterConfig<
   V extends Partial<PageQueryParamValues<typeof workflowPageQueryParamsConfig>>,
 > = PageFilterConfig<typeof workflowPageQueryParamsConfig, V> & {
-  filterFunc: (d: HistoryEventsGroup, value: V) => boolean;
+  filterFunc: (
+    d: HistoryEventsGroup,
+    value: V,
+    context?: WorkflowHistoryFilterContext
+  ) => boolean;
 };
 
 export type EventGroupEntry = [string, HistoryEventsGroup];

@@ -2,7 +2,7 @@ import { Button } from 'baseui/button';
 import { Filter } from 'baseui/icon';
 import { MdReplay } from 'react-icons/md';
 
-import workflowHistoryFiltersConfig from '../config/workflow-history-filters.config';
+import useEnabledWorkflowHistoryFiltersConfig from '../hooks/use-enabled-workflow-history-filters-config';
 import { type WorkflowHistoryFilterConfig } from '../workflow-history.types';
 
 import { styled } from './workflow-history-filters-menu.styles';
@@ -14,6 +14,9 @@ export default function WorkflowHistoryFiltersMenu({
   activeFiltersCount,
   resetAllFilters,
 }: Props) {
+  const enabledWorkflowHistoryFiltersConfig =
+    useEnabledWorkflowHistoryFiltersConfig();
+
   return (
     <styled.MenuContainer>
       <styled.MenuHeader>
@@ -31,15 +34,16 @@ export default function WorkflowHistoryFiltersMenu({
         </Button>
       </styled.MenuHeader>
       <styled.MenuFilters>
-        {workflowHistoryFiltersConfig.map(
+        {enabledWorkflowHistoryFiltersConfig.map(
           (filter: WorkflowHistoryFilterConfig<any>) => (
-            <filter.component
-              key={filter.id}
-              value={filter.getValue(queryParams)}
-              setValue={(newValue) =>
-                setQueryParams(filter.formatValue(newValue))
-              }
-            />
+            <styled.MenuFilterContainer key={filter.id}>
+              <filter.component
+                value={filter.getValue(queryParams)}
+                setValue={(newValue) =>
+                  setQueryParams(filter.formatValue(newValue))
+                }
+              />
+            </styled.MenuFilterContainer>
           )
         )}
       </styled.MenuFilters>
