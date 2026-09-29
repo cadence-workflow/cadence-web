@@ -1,6 +1,9 @@
 import { getDomainObj } from '../../__fixtures__/domains';
-import { mockDomainsPageFiltersConfig } from '../../__fixtures__/domains-page-filters-config';
-import { mockDomainsPageQueryParamsValues } from '../../__fixtures__/domains-page-query-params';
+import { mockDomainsPageFilterRules } from '../../__fixtures__/domains-page-filters-config';
+import {
+  mockQueryParamsValues,
+  type mockQueryParamsConfig,
+} from '../../__fixtures__/domains-page-mock-query-params-config';
 import { type DomainsPageContextType } from '../../domains-page-context-provider/domains-page-context-provider.types';
 import { type DomainData } from '../../domains-page.types';
 import getFilteredDomains from '../get-filtered-domains';
@@ -8,7 +11,7 @@ import getFilteredDomains from '../get-filtered-domains';
 const pageCtx: DomainsPageContextType = { pageConfig: { CLUSTERS_PUBLIC: [] } };
 
 describe(getFilteredDomains.name, () => {
-  it('excludes deprecated domains from both the list and the total by default', () => {
+  it('removes domains failing a deducting rule from both the list and the total', () => {
     const domains: Array<DomainData> = [
       getDomainObj({ id: '1', name: 'alpha-domain' }),
       getDomainObj({
@@ -20,16 +23,16 @@ describe(getFilteredDomains.name, () => {
 
     const result = getFilteredDomains({
       domains,
-      queryParams: mockDomainsPageQueryParamsValues,
+      queryParams: mockQueryParamsValues,
       pageCtx,
-      filtersConfig: mockDomainsPageFiltersConfig,
+      filterRules: mockDomainsPageFilterRules,
     });
 
     expect(result.filteredDomains.map((d) => d.id)).toEqual(['1']);
     expect(result.totalCount).toBe(1);
   });
 
-  it('includes deprecated domains in both the list and the total when showDeprecated is true', () => {
+  it('keeps domains in both the list and the total when the deducting rule passes', () => {
     const domains: Array<DomainData> = [
       getDomainObj({ id: '1', name: 'alpha-domain' }),
       getDomainObj({
@@ -41,19 +44,16 @@ describe(getFilteredDomains.name, () => {
 
     const result = getFilteredDomains({
       domains,
-      queryParams: {
-        ...mockDomainsPageQueryParamsValues,
-        showDeprecated: true,
-      },
+      queryParams: { ...mockQueryParamsValues, mockShowDeprecated: true },
       pageCtx,
-      filtersConfig: mockDomainsPageFiltersConfig,
+      filterRules: mockDomainsPageFilterRules,
     });
 
-    expect(result.filteredDomains.map((d) => d.id).sort()).toEqual(['1', '2']);
+    expect(result.filteredDomains.map((d) => d.id)).toEqual(['1', '2']);
     expect(result.totalCount).toBe(2);
   });
 
-  it('narrows the list by search text without changing the total', () => {
+  it('removes domains failing a narrowing rule from the list only', () => {
     const domains: Array<DomainData> = [
       getDomainObj({ id: '1', name: 'alpha-domain' }),
       getDomainObj({ id: '2', name: 'beta-domain' }),
@@ -61,69 +61,16 @@ describe(getFilteredDomains.name, () => {
 
     const result = getFilteredDomains({
       domains,
-      queryParams: { ...mockDomainsPageQueryParamsValues, searchText: 'alpha' },
+      queryParams: { ...mockQueryParamsValues, mockNameFilter: 'alpha' },
       pageCtx,
-      filtersConfig: mockDomainsPageFiltersConfig,
+      filterRules: mockDomainsPageFilterRules,
     });
 
     expect(result.filteredDomains.map((d) => d.id)).toEqual(['1']);
     expect(result.totalCount).toBe(2);
   });
 
-  it('matches search text against an exact (case-insensitive) id', () => {
-    const domains: Array<DomainData> = [
-      getDomainObj({ id: 'abc123', name: 'zzz-domain' }),
-    ];
-
-    const exactMatch = getFilteredDomains({
-      domains,
-      queryParams: {
-        ...mockDomainsPageQueryParamsValues,
-        searchText: 'ABC123',
-      },
-      pageCtx,
-      filtersConfig: mockDomainsPageFiltersConfig,
-    });
-    expect(exactMatch.filteredDomains.map((d) => d.id)).toEqual(['abc123']);
-
-    const partialMatch = getFilteredDomains({
-      domains,
-      queryParams: { ...mockDomainsPageQueryParamsValues, searchText: 'abc' },
-      pageCtx,
-      filtersConfig: mockDomainsPageFiltersConfig,
-    });
-    expect(partialMatch.filteredDomains).toEqual([]);
-  });
-
-  it('narrows the list by clusterName without changing the total', () => {
-    const domains: Array<DomainData> = [
-      getDomainObj({
-        id: '1',
-        name: 'alpha-domain',
-        clusters: [{ clusterName: 'clusterA' }],
-      }),
-      getDomainObj({
-        id: '2',
-        name: 'beta-domain',
-        clusters: [{ clusterName: 'clusterB' }],
-      }),
-    ];
-
-    const result = getFilteredDomains({
-      domains,
-      queryParams: {
-        ...mockDomainsPageQueryParamsValues,
-        clusterName: 'clusterA',
-      },
-      pageCtx,
-      filtersConfig: mockDomainsPageFiltersConfig,
-    });
-
-    expect(result.filteredDomains.map((d) => d.id)).toEqual(['1']);
-    expect(result.totalCount).toBe(2);
-  });
-
-  it('combines search text with the filter deducted from the total', () => {
+  it('combines narrowing and deducting rules', () => {
     const domains: Array<DomainData> = [
       getDomainObj({ id: '1', name: 'alpha-domain' }),
       getDomainObj({
@@ -131,35 +78,36 @@ describe(getFilteredDomains.name, () => {
         name: 'alpha-deprecated-domain',
         status: 'DOMAIN_STATUS_DEPRECATED',
       }),
+      getDomainObj({ id: '3', name: 'beta-domain' }),
     ];
 
     const hiddenDeprecated = getFilteredDomains({
       domains,
-      queryParams: { ...mockDomainsPageQueryParamsValues, searchText: 'alpha' },
+      queryParams: { ...mockQueryParamsValues, mockNameFilter: 'alpha' },
       pageCtx,
-      filtersConfig: mockDomainsPageFiltersConfig,
+      filterRules: mockDomainsPageFilterRules,
     });
     expect(hiddenDeprecated.filteredDomains.map((d) => d.id)).toEqual(['1']);
-    expect(hiddenDeprecated.totalCount).toBe(1);
+    expect(hiddenDeprecated.totalCount).toBe(2);
 
     const shownDeprecated = getFilteredDomains({
       domains,
       queryParams: {
-        ...mockDomainsPageQueryParamsValues,
-        searchText: 'alpha',
-        showDeprecated: true,
+        ...mockQueryParamsValues,
+        mockNameFilter: 'alpha',
+        mockShowDeprecated: true,
       },
       pageCtx,
-      filtersConfig: mockDomainsPageFiltersConfig,
+      filterRules: mockDomainsPageFilterRules,
     });
-    expect(shownDeprecated.filteredDomains.map((d) => d.id).sort()).toEqual([
+    expect(shownDeprecated.filteredDomains.map((d) => d.id)).toEqual([
       '1',
       '2',
     ]);
-    expect(shownDeprecated.totalCount).toBe(2);
+    expect(shownDeprecated.totalCount).toBe(3);
   });
 
-  it('counts and returns every domain when there are no filters', () => {
+  it('counts and returns every domain when there are no rules', () => {
     const domains: Array<DomainData> = [
       getDomainObj({ id: '1', name: 'alpha-domain' }),
       getDomainObj({
@@ -169,31 +117,43 @@ describe(getFilteredDomains.name, () => {
       }),
     ];
 
-    const result = getFilteredDomains({
+    const result = getFilteredDomains<typeof mockQueryParamsConfig>({
       domains,
-      queryParams: mockDomainsPageQueryParamsValues,
+      queryParams: mockQueryParamsValues,
       pageCtx,
-      filtersConfig: [],
+      filterRules: [],
     });
 
-    expect(result.filteredDomains.map((d) => d.id).sort()).toEqual(['1', '2']);
+    expect(result.filteredDomains.map((d) => d.id)).toEqual(['1', '2']);
     expect(result.totalCount).toBe(2);
   });
 
-  it('search text still narrows the list when there are no filters', () => {
+  it('passes the domain, query params and page context to the rules', () => {
     const domains: Array<DomainData> = [
       getDomainObj({ id: '1', name: 'alpha-domain' }),
-      getDomainObj({ id: '2', name: 'beta-domain' }),
     ];
+    const narrowingFunc = jest.fn(() => true);
+    const deductingFunc = jest.fn(() => true);
 
-    const result = getFilteredDomains({
+    getFilteredDomains<typeof mockQueryParamsConfig>({
       domains,
-      queryParams: { ...mockDomainsPageQueryParamsValues, searchText: 'alpha' },
+      queryParams: mockQueryParamsValues,
       pageCtx,
-      filtersConfig: [],
+      filterRules: [
+        { filterFunc: narrowingFunc },
+        { filterFunc: deductingFunc, deductFilteredResultFromTotal: true },
+      ],
     });
 
-    expect(result.filteredDomains.map((d) => d.id)).toEqual(['1']);
-    expect(result.totalCount).toBe(2);
+    expect(narrowingFunc).toHaveBeenCalledWith(
+      domains[0],
+      mockQueryParamsValues,
+      pageCtx
+    );
+    expect(deductingFunc).toHaveBeenCalledWith(
+      domains[0],
+      mockQueryParamsValues,
+      pageCtx
+    );
   });
 });

@@ -7,6 +7,7 @@ import domainsPageFiltersConfig from '../config/domains-page-filters.config';
 import domainsPageQueryParamsConfig from '../config/domains-page-query-params.config';
 import { DomainsPageContext } from '../domains-page-context-provider/domains-page-context-provider';
 import { type DomainData, type FilteredDomains } from '../domains-page.types';
+import filterDomainsBySearchText from '../helpers/filter-domains-by-search-text';
 import getFilteredDomains from '../helpers/get-filtered-domains';
 
 export default function useFilteredDomains(
@@ -21,7 +22,10 @@ export default function useFilteredDomains(
         domains,
         queryParams,
         pageCtx,
-        filtersConfig: domainsPageFiltersConfig,
+        filterRules: [
+          { filterFunc: filterDomainsBySearchText },
+          ...domainsPageFiltersConfig,
+        ],
       }),
     [domains, queryParams, pageCtx]
   );

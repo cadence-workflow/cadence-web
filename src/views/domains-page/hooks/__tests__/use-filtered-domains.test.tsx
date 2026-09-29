@@ -14,12 +14,15 @@ import {
   type DomainData,
   type FilteredDomains,
 } from '../../domains-page.types';
+import filterDomainsBySearchText from '../../helpers/filter-domains-by-search-text';
 import getFilteredDomains from '../../helpers/get-filtered-domains';
 import useFilteredDomains from '../use-filtered-domains';
 
 jest.mock('../../config/domains-page-filters.config', () => [
   { filterFunc: () => true },
 ]);
+
+jest.mock('../../helpers/filter-domains-by-search-text', () => jest.fn());
 
 jest.mock('../../helpers/get-filtered-domains', () => jest.fn());
 
@@ -51,7 +54,7 @@ const mockFilteredDomainsResult: FilteredDomains = {
 };
 
 describe(useFilteredDomains.name, () => {
-  it('calls getFilteredDomains with the domains, query params, page context and filters config', () => {
+  it('calls getFilteredDomains with the domains, query params, page context and filter rules', () => {
     setup({ queryParams: { searchText: 'alpha', showDeprecated: true } });
 
     expect(mockGetFilteredDomains).toHaveBeenCalledWith({
@@ -62,7 +65,10 @@ describe(useFilteredDomains.name, () => {
         showDeprecated: true,
       },
       pageCtx: mockPageCtx,
-      filtersConfig: domainsPageFiltersConfig,
+      filterRules: [
+        { filterFunc: filterDomainsBySearchText },
+        ...domainsPageFiltersConfig,
+      ],
     });
   });
 

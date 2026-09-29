@@ -4,9 +4,17 @@ import { type DomainsPageFiltersClusterNameValue } from '../domains-page-filters
 import DomainsPageFilterDeprecated from '../domains-page-filters-deprecated/domains-page-filters-deprecated';
 import { type DomainsPageFiltersDeprecatedValue } from '../domains-page-filters-deprecated/domains-page-filters-deprecated.types';
 
+import type domainsPageQueryParamsConfig from './domains-page-query-params.config';
+
 const domainsPageFiltersConfig: [
-  DomainsPageFilterConfig<DomainsPageFiltersClusterNameValue>,
-  DomainsPageFilterConfig<DomainsPageFiltersDeprecatedValue>,
+  DomainsPageFilterConfig<
+    typeof domainsPageQueryParamsConfig,
+    DomainsPageFiltersClusterNameValue
+  >,
+  DomainsPageFilterConfig<
+    typeof domainsPageQueryParamsConfig,
+    DomainsPageFiltersDeprecatedValue
+  >,
 ] = [
   {
     id: 'clusterName',
