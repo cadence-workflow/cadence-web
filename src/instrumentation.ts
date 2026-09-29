@@ -30,13 +30,19 @@ export async function register() {
     try {
       const configs = await getTransformedConfigs();
       setLoadedGlobalConfigs(configs);
+    } catch (e) {
+      // manually catching and logging the error to prevent the error being replaced
+      // by "Cannot set property message of [object Object] which has only a getter"
+      logger.error({
+        message: 'Failed to load configs',
+        error: e,
+      });
+      process.exit(1); // use process.exit to exit without an extra error log from instrumentation
+    }
 
-      // Fail-closed at boot: resolving the active auth server
-      // policy surfaces strategy config ERRORS at boot, not first request.
-      // An unrecognized CADENCE_WEB_AUTH_STRATEGY value is not an error — the
-      // resolver falls back to 'disabled' (master's exact behavior);
-      // recognized-but-unimplemented strategies throw from their registry
-      // entry (the placeholder-entry pattern).
+    try {
+      // getConfigValue reads the configs stored above. A lazy policy loader
+      // runs here so an unimplemented strategy exits before the first request.
       const { default: getConfigValue } = await import(
         '@/utils/config/get-config-value'
       );
@@ -47,13 +53,11 @@ export async function register() {
       await getActiveAuthServerEntry();
       logger.info({ message: `Auth strategy: ${authStrategy}` });
     } catch (e) {
-      // manually catching and logging the error to prevent the error being replaced
-      // by "Cannot set property message of [object Object] which has only a getter"
       logger.error({
-        message: 'Failed to load configs',
+        message: 'Failed to resolve auth strategy',
         error: e,
       });
-      process.exit(1); // use process.exit to exit without an extra error log from instrumentation
+      process.exit(1);
     }
   }
 }
