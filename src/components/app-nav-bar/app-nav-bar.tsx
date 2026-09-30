@@ -8,7 +8,7 @@ import useStyletronClasses from '@/hooks/use-styletron-classes';
 
 import { cssStyles } from './app-nav-bar.styles';
 import useAuthLifecycle from './hooks/use-auth-lifecycle';
-import { LOGIN_ITEM, LOGOUT_ITEM } from './use-auth-lifecycle.constants';
+import { LOGOUT_ITEM } from './use-auth-lifecycle.constants';
 import { type UserMenuItem } from './use-auth-lifecycle.types';
 
 export default function AppNavBar() {
@@ -21,8 +21,6 @@ export default function AppNavBar() {
     isAdmin,
     userName,
     expiresAtMs,
-    labels,
-    login,
     logout,
   } = useAuthLifecycle();
 
@@ -95,12 +93,9 @@ export default function AppNavBar() {
   }, [expiresAtMs, isValidToken, isAuthEnabled, handleLogout]);
 
   const userItems = useMemo<UserMenuItem[] | undefined>(() => {
-    if (!isAuthEnabled || !labels) return undefined;
-    if (!isValidToken) {
-      return [{ label: labels.login, info: LOGIN_ITEM }];
-    }
-    return [{ label: labels.logout, info: LOGOUT_ITEM }];
-  }, [isAuthEnabled, isValidToken, labels]);
+    if (!isAuthEnabled || !isValidToken) return undefined;
+    return [{ label: 'Log out', info: LOGOUT_ITEM }];
+  }, [isAuthEnabled, isValidToken]);
 
   const username = useMemo(() => {
     if (!isAuthEnabled) {
@@ -138,9 +133,7 @@ export default function AppNavBar() {
       usernameSubtitle={userItems ? usernameSubtitle : undefined}
       userItems={userItems}
       onUserItemSelect={(item) => {
-        if (item.info === LOGIN_ITEM) {
-          login(`${window.location.pathname}${window.location.search}`);
-        } else if (item.info === LOGOUT_ITEM) {
+        if (item.info === LOGOUT_ITEM) {
           void handleLogout('manual');
         }
       }}
