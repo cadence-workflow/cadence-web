@@ -3,20 +3,21 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
-import { Banner, HIERARCHY, KIND as BANNER_KIND } from 'baseui/banner';
 import { Button } from 'baseui/button';
 import { FormControl } from 'baseui/form-control';
 import { Textarea } from 'baseui/textarea';
-import NextLink from 'next/link';
+import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { MdVpnKey } from 'react-icons/md';
 
+import cadenceLogo from '@/assets/cadence-logo-black.svg';
 import { isAuthLogoutNotice } from '@/utils/auth/helpers/is-auth-logout-notice';
 import { sanitizeReturnTo } from '@/utils/auth/helpers/sanitize-return-to';
 import request from '@/utils/request';
 import useUserInfo from '@/views/shared/hooks/use-user-info/use-user-info';
 
 import getNoticeMessage from './helpers/get-notice-message';
-import { styled } from './jwt-login-page.styles';
+import { overrides, styled } from './jwt-login-page.styles';
 
 /**
  * The jwt strategy's login page: a token paste form. The not-jwt redirect
@@ -65,7 +66,7 @@ export default function JwtLoginPage() {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ token: token.trim() }),
       });
-      const { data } = await refetch();
+      const { data } = await refetch({ throwOnError: true });
       if (data?.auth?.isValidToken !== true) {
         setError('Token is expired or invalid');
         return;
@@ -84,46 +85,43 @@ export default function JwtLoginPage() {
 
   return (
     <styled.Page>
-      <styled.Title>Authenticate with JWT</styled.Title>
-      <styled.Description>
-        Paste a Cadence-compatible JWT issued by your identity provider.
-      </styled.Description>
-
       {notice ? (
-        <Banner
-          hierarchy={HIERARCHY.low}
-          kind={
-            notice === 'session-expired'
-              ? BANNER_KIND.negative
-              : BANNER_KIND.info
-          }
-        >
+        <styled.Notice>
+          <MdVpnKey aria-hidden size={20} />
           {getNoticeMessage(notice)}
-        </Banner>
+        </styled.Notice>
       ) : null}
 
-      <FormControl label="Cadence JWT" error={error || null}>
-        <Textarea
-          value={token}
-          onChange={(event) =>
-            setToken((event?.target as HTMLTextAreaElement)?.value || '')
-          }
-          clearOnEscape
-          disabled={isSubmitting || isAuthLoading}
-          rows={6}
+      <styled.Card>
+        <Image
+          src={cadenceLogo}
+          width={48}
+          height={48}
+          alt="Cadence"
+          priority
         />
-      </FormControl>
-
-      <styled.Actions>
+        <styled.Heading>
+          <styled.Title>Cadence · JWT authentication</styled.Title>
+          <styled.Description>
+            Paste a Cadence-compatible JWT
+          </styled.Description>
+        </styled.Heading>
+        <styled.TokenField>
+          <FormControl error={error || null}>
+            <Textarea
+              aria-label="Cadence JWT"
+              value={token}
+              onChange={(event) =>
+                setToken((event?.target as HTMLTextAreaElement)?.value || '')
+              }
+              clearOnEscape
+              disabled={isSubmitting || isAuthLoading}
+              rows={4}
+            />
+          </FormControl>
+        </styled.TokenField>
         <Button
-          $as={NextLink}
-          href={returnTo}
-          kind="tertiary"
-          disabled={isSubmitting}
-        >
-          Cancel
-        </Button>
-        <Button
+          overrides={overrides.saveButton}
           onClick={() => void handleSubmit()}
           isLoading={isSubmitting}
           disabled={isAuthLoading}
@@ -131,7 +129,7 @@ export default function JwtLoginPage() {
         >
           Save token
         </Button>
-      </styled.Actions>
+      </styled.Card>
     </styled.Page>
   );
 }

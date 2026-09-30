@@ -45,7 +45,7 @@ describe(JwtLoginPage.name, () => {
     setup({ authResolver: () => jwtInvalid });
 
     expect(
-      await screen.findByText('Authenticate with JWT')
+      await screen.findByText('Cadence · JWT authentication')
     ).toBeInTheDocument();
     expect(screen.getByTestId('jwt-login-submit')).toBeInTheDocument();
   });
@@ -86,7 +86,7 @@ describe(JwtLoginPage.name, () => {
     setup({ authResolver: () => jwtInvalid });
 
     expect(
-      await screen.findByText('Authenticate with JWT')
+      await screen.findByText('Cadence · JWT authentication')
     ).toBeInTheDocument();
     expect(screen.queryByText(/Paste a new JWT/)).not.toBeInTheDocument();
   });
@@ -96,7 +96,7 @@ describe(JwtLoginPage.name, () => {
       authResolver: () => jwtInvalid,
     });
 
-    await screen.findByText('Authenticate with JWT');
+    await screen.findByText('Cadence · JWT authentication');
     await user.click(screen.getByTestId('jwt-login-submit'));
 
     expect(
@@ -115,7 +115,7 @@ describe(JwtLoginPage.name, () => {
       },
     });
 
-    await screen.findByText('Authenticate with JWT');
+    await screen.findByText('Cadence · JWT authentication');
     // the textarea is disabled while /api/auth/me loads — typing before it
     // enables silently no-ops
     await waitFor(() => expect(screen.getByRole('textbox')).toBeEnabled());
@@ -131,7 +131,7 @@ describe(JwtLoginPage.name, () => {
   it('shows an error when the session is still invalid after saving', async () => {
     const { user } = setup({ authResolver: () => jwtInvalid });
 
-    await screen.findByText('Authenticate with JWT');
+    await screen.findByText('Cadence · JWT authentication');
     // the textarea is disabled while /api/auth/me loads — typing before it
     // enables silently no-ops
     await waitFor(() => expect(screen.getByRole('textbox')).toBeEnabled());
@@ -142,16 +142,38 @@ describe(JwtLoginPage.name, () => {
       await screen.findByText('Token is expired or invalid')
     ).toBeInTheDocument();
   });
+
+  it('shows the request error when auth validation cannot be completed', async () => {
+    const { user } = setup({
+      authResolver: () => jwtInvalid,
+      authErrorAfterPost: true,
+    });
+
+    await waitFor(() => expect(screen.getByRole('textbox')).toBeEnabled());
+    await user.type(screen.getByRole('textbox'), 'header.payload.signature');
+    await user.click(screen.getByTestId('jwt-login-submit'));
+
+    expect(
+      await screen.findByText('Authentication service unavailable')
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText('Token is expired or invalid')
+    ).not.toBeInTheDocument();
+  });
 });
 
 function setup({
   authResolver,
   onPostToken,
+  authErrorAfterPost = false,
 }: {
   authResolver: () => PublicAuthContext;
   onPostToken?: () => void;
+  authErrorAfterPost?: boolean;
 }) {
+  let tokenPosted = false;
   const postTokenHandler = jest.fn(async () => {
+    tokenPosted = true;
     onPostToken?.();
     return HttpResponse.json({ ok: true });
   });
@@ -163,7 +185,13 @@ function setup({
         path: '/api/auth/me',
         httpMethod: 'GET' as const,
         mockOnce: false,
-        httpResolver: () => HttpResponse.json(authResolver()),
+        httpResolver: () =>
+          authErrorAfterPost && tokenPosted
+            ? HttpResponse.json(
+                { message: 'Authentication service unavailable' },
+                { status: 503 }
+              )
+            : HttpResponse.json(authResolver()),
       },
       {
         path: '/api/auth/token',
