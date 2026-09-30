@@ -1,7 +1,7 @@
 import AUTH_SERVER_STRATEGIES_CONFIG from '@/config/auth/auth-server-strategies.config';
 import getConfigValue from '@/utils/config/get-config-value';
 
-import { getActiveAuthServerEntry } from '../auth-server-registry';
+import getActiveAuthServerEntry from '../get-active-auth-server-entry';
 
 jest.mock('@/utils/config/get-config-value');
 jest.mock('@/config/auth/auth-server-strategies.config', () => ({

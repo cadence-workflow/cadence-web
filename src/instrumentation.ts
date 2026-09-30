@@ -47,8 +47,8 @@ export async function register() {
         '@/utils/config/get-config-value'
       );
       const authStrategy = await getConfigValue('CADENCE_WEB_AUTH_STRATEGY');
-      const { getActiveAuthServerEntry } = await import(
-        '@/utils/auth/strategies/auth-server-registry'
+      const { default: getActiveAuthServerEntry } = await import(
+        '@/utils/auth/strategies/get-active-auth-server-entry'
       );
       await getActiveAuthServerEntry();
       logger.info({ message: `Auth strategy: ${authStrategy}` });

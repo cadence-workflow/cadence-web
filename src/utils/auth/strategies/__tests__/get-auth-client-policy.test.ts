@@ -1,6 +1,6 @@
 import AUTH_CLIENT_STRATEGIES_CONFIG from '@/config/auth/auth-client-strategies.config';
 
-import getAuthClientPolicy from '../auth-client-registry';
+import getAuthClientPolicy from '../get-auth-client-policy';
 
 jest.mock('@/config/auth/auth-client-strategies.config', () => ({
   __esModule: true,

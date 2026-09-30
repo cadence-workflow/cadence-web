@@ -11,7 +11,7 @@ import {
 /**
  * Resolves the active strategy's registry entry.
  */
-export async function getActiveAuthServerEntry(): Promise<ResolvedAuthServerRegistryEntry> {
+export default async function getActiveAuthServerEntry(): Promise<ResolvedAuthServerRegistryEntry> {
   const strategy = await getConfigValue('CADENCE_WEB_AUTH_STRATEGY');
   const entry: AuthServerRegistryEntry =
     AUTH_SERVER_STRATEGIES_CONFIG[strategy];
