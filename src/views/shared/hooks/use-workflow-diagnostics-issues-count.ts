@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
 
 import useConfigValue from '@/hooks/use-config-value/use-config-value';
-import useDiagnoseWorkflow from '@/views/workflow-diagnostics/hooks/use-diagnose-workflow/use-diagnose-workflow';
-import { type UseDiagnoseWorkflowParams } from '@/views/workflow-diagnostics/hooks/use-diagnose-workflow/use-diagnose-workflow.types';
+import decodeUrlParams from '@/utils/decode-url-params';
+import useDiagnoseWorkflow from '@/views/workflow-history/hooks/use-diagnose-workflow/use-diagnose-workflow';
+import { type UseDiagnoseWorkflowParams } from '@/views/workflow-history/hooks/use-diagnose-workflow/use-diagnose-workflow.types';
 import { useDescribeWorkflow } from '@/views/workflow-page/hooks/use-describe-workflow';
 
 export default function useWorkflowDiagnosticsIssuesCount(
@@ -29,9 +30,11 @@ export default function useWorkflowDiagnosticsIssuesCount(
     (Boolean(isWorkflowDiagnosticsEnabled) && isWorkflowClosed) ||
     Boolean(isWorkflowDiagnosticsInHistoryEnabled);
 
-  const { data: diagnoseWorkflowResponse } = useDiagnoseWorkflow(params, {
-    enabled: shouldEvaluateDiagnostics,
-  });
+  // Decoded to share the diagnose query cache with the workflow history view
+  const { data: diagnoseWorkflowResponse } = useDiagnoseWorkflow(
+    decodeUrlParams(params),
+    { enabled: shouldEvaluateDiagnostics }
+  );
 
   const totalIssuesCount = useMemo(() => {
     if (
