@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { act, render, screen, userEvent } from '@/test-utils/rtl';
+import { act, render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
 import AppNavBar from '../app-nav-bar';
 import useAuthLifecycle from '../hooks/use-auth-lifecycle';
@@ -57,7 +57,11 @@ describe(AppNavBar.name, () => {
 
     await user.click(screen.getByLabelText('alice'));
     await user.click(await screen.findByText('Log out'));
+    await waitFor(() => expect(logout).toHaveBeenCalledTimes(1));
+    await user.click(screen.getByLabelText('alice'));
+    await user.click(await screen.findByText('Log out'));
 
+    expect(logout).toHaveBeenCalledTimes(2);
     expect(logout).toHaveBeenCalledWith({ notice: 'signed-out' });
   });
 
