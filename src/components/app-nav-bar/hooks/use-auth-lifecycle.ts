@@ -10,12 +10,6 @@ import { type AuthLifecycle } from './use-auth-lifecycle.types';
 export default function useAuthLifecycle(): AuthLifecycle {
   const { data: authInfo, isLoading: isAuthLoading } = useUserInfo();
 
-  // jwt is the only auth-enabled strategy, so the nav dispatches to the jwt
-  // client policy directly; its items render only when auth is enabled.
-  const login = useCallback((returnTo?: string) => {
-    jwtClientPolicy.login(returnTo);
-  }, []);
-
   const logout = useCallback((options?: { notice?: AuthLogoutNotice }) => {
     return jwtClientPolicy.logout(options);
   }, []);
@@ -30,8 +24,6 @@ export default function useAuthLifecycle(): AuthLifecycle {
       typeof authInfo?.auth?.expiresAtMs === 'number'
         ? authInfo.auth.expiresAtMs
         : undefined,
-    labels: jwtClientPolicy.labels,
-    login,
     logout,
   };
 }

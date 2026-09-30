@@ -25,10 +25,6 @@ describe('jwtClientPolicy', () => {
   it('declares no silent recovery and the login remedy', () => {
     expect(jwtClientPolicy.supportsSessionRecovery).toBe(false);
     expect(jwtClientPolicy.unauthenticatedRemedy).toBe('login');
-    expect(jwtClientPolicy.labels).toEqual({
-      login: 'Log in',
-      logout: 'Log out',
-    });
   });
 
   it('login navigates to the login page with a sanitized returnTo', () => {

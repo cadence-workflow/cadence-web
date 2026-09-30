@@ -36,18 +36,11 @@ describe(AppNavBar.name, () => {
     expect(screen.queryByText('Log in')).not.toBeInTheDocument();
   });
 
-  it('dispatches login with the current path from the user menu, without opening a modal', async () => {
-    const user = userEvent.setup();
-    const login = jest.fn();
-    setup({ lifecycle: { isValidToken: false, login } });
+  it('renders no login item for an invalid session', () => {
+    setup({ lifecycle: { isValidToken: false } });
 
-    await user.click(screen.getByLabelText('Authenticate'));
-    await user.click(await screen.findByText('Log in'));
-
-    expect(login).toHaveBeenCalledWith(
-      `${window.location.pathname}${window.location.search}`
-    );
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.queryByText('Authenticate')).not.toBeInTheDocument();
+    expect(screen.queryByText('Log in')).not.toBeInTheDocument();
   });
 
   it('dispatches logout with the signed-out notice from the user menu', async () => {
@@ -55,10 +48,10 @@ describe(AppNavBar.name, () => {
     const logout = jest.fn().mockResolvedValue(undefined);
     setup({ lifecycle: { logout } });
 
-    await user.click(screen.getByLabelText('alice'));
+    await user.click(screen.getAllByLabelText('alice')[0]);
     await user.click(await screen.findByText('Log out'));
     await waitFor(() => expect(logout).toHaveBeenCalledTimes(1));
-    await user.click(screen.getByLabelText('alice'));
+    await user.click(screen.getAllByLabelText('alice')[0]);
     await user.click(await screen.findByText('Log out'));
 
     expect(logout).toHaveBeenCalledTimes(2);
@@ -126,8 +119,6 @@ function buildLifecycle(overrides?: Partial<AuthLifecycle>): AuthLifecycle {
     isAdmin: false,
     userName: 'alice',
     expiresAtMs: undefined,
-    labels: { login: 'Log in', logout: 'Log out' },
-    login: jest.fn(),
     logout: jest.fn().mockResolvedValue(undefined),
     ...overrides,
   };

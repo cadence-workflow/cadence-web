@@ -13,7 +13,6 @@ jest.mock('@/utils/auth/strategies/jwt/jwt-client-policy', () => ({
   default: {
     supportsSessionRecovery: false,
     unauthenticatedRemedy: 'login',
-    labels: { login: 'Log in', logout: 'Log out' },
     login: jest.fn(),
     logout: jest.fn().mockResolvedValue(undefined),
     onUnauthorized: jest.fn(),
@@ -130,31 +129,6 @@ describe(useAuthLifecycle.name, () => {
   });
 
   describe('policy delegation', () => {
-    it('exposes the policy labels', async () => {
-      const { result } = setup({ authResponse: AUTH_ENABLED });
-
-      await waitFor(() => {
-        expect(result.current.isValidToken).toBe(true);
-      });
-
-      expect(result.current.labels).toEqual({
-        login: 'Log in',
-        logout: 'Log out',
-      });
-    });
-
-    it('login dispatches to the client policy with returnTo', async () => {
-      const { result } = setup({ authResponse: AUTH_UNAUTHENTICATED });
-
-      await waitFor(() => {
-        expect(result.current.isAuthEnabled).toBe(true);
-      });
-
-      result.current.login('/domains/foo');
-
-      expect(mockPolicy.login).toHaveBeenCalledWith('/domains/foo');
-    });
-
     it('logout dispatches to the client policy with the notice', async () => {
       const { result } = setup({ authResponse: AUTH_ENABLED });
 
