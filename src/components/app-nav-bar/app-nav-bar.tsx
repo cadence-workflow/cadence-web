@@ -40,6 +40,8 @@ export default function AppNavBar() {
         await logout({
           notice: trigger === 'manual' ? 'signed-out' : 'session-expired',
         });
+      } catch {
+        // The client policy navigates to login even when clearing the token fails.
       } finally {
         logoutInFlightRef.current = false;
       }
