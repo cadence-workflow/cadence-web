@@ -12,6 +12,10 @@ export default function useWorkflowDiagnosticsIssuesCount(
     'WORKFLOW_DIAGNOSTICS_ENABLED'
   );
 
+  const { data: isWorkflowDiagnosticsInHistoryEnabled } = useConfigValue(
+    'WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED'
+  );
+
   const { data: describeWorkflowResponse } = useDescribeWorkflow(params);
 
   const isWorkflowClosed = Boolean(
@@ -21,17 +25,20 @@ export default function useWorkflowDiagnosticsIssuesCount(
         'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
   );
 
+  const shouldEvaluateDiagnostics =
+    (Boolean(isWorkflowDiagnosticsEnabled) && isWorkflowClosed) ||
+    Boolean(isWorkflowDiagnosticsInHistoryEnabled);
+
   const { data: diagnoseWorkflowResponse } = useDiagnoseWorkflow(params, {
-    enabled: isWorkflowDiagnosticsEnabled && isWorkflowClosed,
+    enabled: shouldEvaluateDiagnostics,
   });
 
   const totalIssuesCount = useMemo(() => {
     if (
-      !isWorkflowDiagnosticsEnabled ||
+      !shouldEvaluateDiagnostics ||
       !describeWorkflowResponse ||
-      !isWorkflowClosed ||
       !diagnoseWorkflowResponse ||
-      diagnoseWorkflowResponse?.parsingError
+      diagnoseWorkflowResponse.parsingError
     )
       return undefined;
 
@@ -43,9 +50,8 @@ export default function useWorkflowDiagnosticsIssuesCount(
       0
     );
   }, [
+    shouldEvaluateDiagnostics,
     describeWorkflowResponse,
-    isWorkflowDiagnosticsEnabled,
-    isWorkflowClosed,
     diagnoseWorkflowResponse,
   ]);
 
