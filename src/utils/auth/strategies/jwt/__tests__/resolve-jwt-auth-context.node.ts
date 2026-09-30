@@ -1,6 +1,4 @@
-import { type AuthRequest } from '@/utils/auth/auth.types';
-
-import { JWT_AUTH_COOKIE_NAME } from '../jwt-auth.constants';
+import { getMockJwtAuthRequest } from '../__fixtures__/mock-jwt-auth-request';
 import resolveJwtAuthContext from '../resolve-jwt-auth-context';
 
 const buildToken = (claims: Record<string, unknown>) => {
@@ -13,16 +11,6 @@ const buildTokenWithNonJsonPayload = (payloadText: string) => {
   return ['header', payload, 'signature'].join('.');
 };
 
-const buildRequest = (token?: string): AuthRequest => ({
-  cookies: {
-    get: (name: string) =>
-      name === JWT_AUTH_COOKIE_NAME && token !== undefined
-        ? { value: token }
-        : undefined,
-  },
-  headers: new Headers(),
-});
-
 describe(resolveJwtAuthContext.name, () => {
   it('resolves a valid token into the context, without exposing it', async () => {
     const token = buildToken({
@@ -32,7 +20,9 @@ describe(resolveJwtAuthContext.name, () => {
       admin: true,
     });
 
-    const authContext = await resolveJwtAuthContext(buildRequest(token));
+    const authContext = await resolveJwtAuthContext(
+      getMockJwtAuthRequest(token)
+    );
 
     expect(authContext).toEqual({
       authEnabled: true,
@@ -50,7 +40,7 @@ describe(resolveJwtAuthContext.name, () => {
   });
 
   it('returns an invalid context when the cookie is missing', async () => {
-    const authContext = await resolveJwtAuthContext(buildRequest());
+    const authContext = await resolveJwtAuthContext(getMockJwtAuthRequest());
 
     expect(authContext).toMatchObject({
       authEnabled: true,
@@ -62,7 +52,7 @@ describe(resolveJwtAuthContext.name, () => {
 
   it('treats undecodable tokens as unauthenticated', async () => {
     const authContext = await resolveJwtAuthContext(
-      buildRequest(buildTokenWithNonJsonPayload('not-json'))
+      getMockJwtAuthRequest(buildTokenWithNonJsonPayload('not-json'))
     );
 
     expect(authContext).toMatchObject({
@@ -76,7 +66,7 @@ describe(resolveJwtAuthContext.name, () => {
 
   it('treats empty-claims tokens as unauthenticated', async () => {
     const authContext = await resolveJwtAuthContext(
-      buildRequest(buildToken({}))
+      getMockJwtAuthRequest(buildToken({}))
     );
 
     expect(authContext.auth.isValidToken).toBe(false);
@@ -93,7 +83,9 @@ describe(resolveJwtAuthContext.name, () => {
       exp: Math.floor(nowMs / 1000) - 10,
     });
 
-    const authContext = await resolveJwtAuthContext(buildRequest(token));
+    const authContext = await resolveJwtAuthContext(
+      getMockJwtAuthRequest(token)
+    );
 
     expect(authContext).toMatchObject({
       authEnabled: true,
@@ -112,7 +104,7 @@ describe(resolveJwtAuthContext.name, () => {
     const expSeconds = Math.floor(nowMs / 1000) + 60;
 
     const authContext = await resolveJwtAuthContext(
-      buildRequest(buildToken({ sub: 'exp-user', exp: expSeconds }))
+      getMockJwtAuthRequest(buildToken({ sub: 'exp-user', exp: expSeconds }))
     );
 
     expect(authContext.auth.expiresAtMs).toBe(expSeconds * 1000);

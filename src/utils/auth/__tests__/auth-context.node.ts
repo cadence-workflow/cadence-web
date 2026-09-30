@@ -1,5 +1,7 @@
+import { getMockAuthContext } from '../__fixtures__/mock-auth-context';
+import { getMockAuthRequest } from '../__fixtures__/mock-auth-request';
+import { getMockAuthServerRegistryEntry } from '../__fixtures__/mock-auth-server-registry-entry';
 import { resolveAuthContext } from '../auth-context';
-import { type AuthContext } from '../auth.types';
 import getActiveAuthServerEntry from '../strategies/get-active-auth-server-entry';
 
 jest.mock('../strategies/get-active-auth-server-entry', () => ({
@@ -15,21 +17,15 @@ describe(resolveAuthContext.name, () => {
   });
 
   it('delegates to the active server policy', async () => {
-    const context: AuthContext = {
-      authEnabled: true,
-      auth: { isValidToken: true, canRefresh: false },
-      isAdmin: false,
-      groups: [],
-    };
+    const context = getMockAuthContext();
     const resolveAuthContextMock = jest.fn().mockResolvedValue(context);
-    mockGetActiveAuthServerEntry.mockResolvedValue({
-      policy: { resolveAuthContext: resolveAuthContextMock },
-    } as unknown as Awaited<ReturnType<typeof getActiveAuthServerEntry>>);
+    mockGetActiveAuthServerEntry.mockResolvedValue(
+      getMockAuthServerRegistryEntry({
+        resolveAuthContext: resolveAuthContextMock,
+      })
+    );
 
-    const request = {
-      cookies: { get: () => undefined },
-      headers: new Headers(),
-    };
+    const request = getMockAuthRequest();
 
     await expect(resolveAuthContext(request)).resolves.toBe(context);
     expect(resolveAuthContextMock).toHaveBeenCalledWith(request);

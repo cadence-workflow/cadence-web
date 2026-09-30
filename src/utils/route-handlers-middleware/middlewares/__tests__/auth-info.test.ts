@@ -1,7 +1,7 @@
 import { type NextRequest } from 'next/server';
 
+import { getMockAuthContext } from '@/utils/auth/__fixtures__/mock-auth-context';
 import { resolveAuthContext } from '@/utils/auth/auth-context';
-import { type AuthContext } from '@/utils/auth/auth.types';
 
 import authInfoMiddleware from '../auth-info';
 
@@ -23,12 +23,7 @@ describe('auth-info middleware', () => {
   });
 
   it('returns auth context from resolveAuthContext', async () => {
-    const mockAuthContext: AuthContext = {
-      authEnabled: true,
-      auth: { isValidToken: true, canRefresh: false },
-      isAdmin: false,
-      groups: [],
-    };
+    const mockAuthContext = getMockAuthContext();
     mockResolveAuthContext.mockResolvedValue(mockAuthContext);
 
     const result = await authInfoMiddleware(mockRequest, mockOptions, {});

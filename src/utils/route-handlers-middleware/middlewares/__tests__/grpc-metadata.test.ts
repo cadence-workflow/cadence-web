@@ -1,6 +1,7 @@
 import { type NextRequest } from 'next/server';
 
-import { type AuthContext } from '@/utils/auth/auth.types';
+import { getMockAuthContext } from '@/utils/auth/__fixtures__/mock-auth-context';
+import { getMockAuthServerRegistryEntry } from '@/utils/auth/__fixtures__/mock-auth-server-registry-entry';
 import getActiveAuthServerEntry from '@/utils/auth/strategies/get-active-auth-server-entry';
 
 import grpcMetadataMiddleware from '../grpc-metadata';
@@ -19,13 +20,6 @@ const mockRequest = {
 } as unknown as NextRequest;
 const mockOptions = { params: {} };
 
-const buildAuthInfo = (): AuthContext => ({
-  authEnabled: true,
-  auth: { isValidToken: true, canRefresh: false },
-  isAdmin: false,
-  groups: [],
-});
-
 describe('grpc-metadata middleware', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -35,11 +29,11 @@ describe('grpc-metadata middleware', () => {
     const getGrpcMetadata = jest
       .fn()
       .mockReturnValue({ 'cadence-authorization': 'abc' });
-    mockGetActiveAuthServerEntry.mockResolvedValue({
-      policy: { getGrpcMetadata },
-    } as unknown as Awaited<ReturnType<typeof getActiveAuthServerEntry>>);
+    mockGetActiveAuthServerEntry.mockResolvedValue(
+      getMockAuthServerRegistryEntry({ getGrpcMetadata })
+    );
 
-    const authInfo = buildAuthInfo();
+    const authInfo = getMockAuthContext();
     const result = await grpcMetadataMiddleware(mockRequest, mockOptions, {
       authInfo,
     });
@@ -57,12 +51,14 @@ describe('grpc-metadata middleware', () => {
   });
 
   it('returns undefined metadata when the policy provides none', async () => {
-    mockGetActiveAuthServerEntry.mockResolvedValue({
-      policy: { getGrpcMetadata: jest.fn().mockReturnValue(undefined) },
-    } as unknown as Awaited<ReturnType<typeof getActiveAuthServerEntry>>);
+    mockGetActiveAuthServerEntry.mockResolvedValue(
+      getMockAuthServerRegistryEntry({
+        getGrpcMetadata: jest.fn().mockReturnValue(undefined),
+      })
+    );
 
     const result = await grpcMetadataMiddleware(mockRequest, mockOptions, {
-      authInfo: buildAuthInfo(),
+      authInfo: getMockAuthContext(),
     });
 
     expect(result).toEqual(['grpcMetadata', undefined]);

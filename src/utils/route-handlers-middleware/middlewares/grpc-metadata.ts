@@ -15,8 +15,6 @@ const grpcMetadata: MiddlewareFunction<
   const entry = await getActiveAuthServerEntry();
   return [
     'grpcMetadata',
-    // Awaited: oidc's implementation decrypts the session cookie (async);
-    // sync policies pass through await unchanged.
     await entry.policy.getGrpcMetadata(authContext, {
       cookies: request.cookies,
       headers: request.headers,

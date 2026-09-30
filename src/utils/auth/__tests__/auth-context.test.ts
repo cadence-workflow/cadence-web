@@ -1,12 +1,12 @@
 import { type Domain } from '@/__generated__/proto-ts/uber/cadence/api/v1/Domain';
+import { getMockAuthRequest } from '@/utils/auth/__fixtures__/mock-auth-request';
 import {
   getPublicAuthContext,
   resolveAuthContext,
 } from '@/utils/auth/auth-context';
 import { getDomainAccessForUser } from '@/utils/auth/auth-shared';
-import { type AuthRequest } from '@/utils/auth/auth.types';
 import getActiveAuthServerEntry from '@/utils/auth/strategies/get-active-auth-server-entry';
-import { JWT_AUTH_COOKIE_NAME } from '@/utils/auth/strategies/jwt/jwt-auth.constants';
+import { getMockJwtAuthRequest } from '@/utils/auth/strategies/jwt/__fixtures__/mock-jwt-auth-request';
 import getConfigValue from '@/utils/config/get-config-value';
 
 jest.mock('@/utils/config/get-config-value');
@@ -24,16 +24,6 @@ const buildTokenWithNonJsonPayload = (payloadText: string) => {
   const payload = Buffer.from(payloadText).toString('base64url');
   return ['header', payload, 'signature'].join('.');
 };
-
-const buildAuthRequest = (token?: string): AuthRequest => ({
-  cookies: {
-    get: (name: string) =>
-      name === JWT_AUTH_COOKIE_NAME && token !== undefined
-        ? { value: token }
-        : undefined,
-  },
-  headers: new Headers(),
-});
 
 const mockAuthStrategy = (strategy: 'jwt' | 'disabled') =>
   mockGetConfigValue.mockImplementation(async (key: string) => {
@@ -79,7 +69,9 @@ describe('auth-context utilities', () => {
       });
       mockAuthStrategy('jwt');
 
-      const authContext = await resolveAuthContext(buildAuthRequest(token));
+      const authContext = await resolveAuthContext(
+        getMockJwtAuthRequest(token)
+      );
 
       expect(authContext).toMatchObject({
         authEnabled: true,
@@ -113,7 +105,9 @@ describe('auth-context utilities', () => {
       const token = buildTokenWithNonJsonPayload('not-json');
       mockAuthStrategy('jwt');
 
-      const authContext = await resolveAuthContext(buildAuthRequest(token));
+      const authContext = await resolveAuthContext(
+        getMockJwtAuthRequest(token)
+      );
 
       expect(authContext).toMatchObject({
         authEnabled: true,
@@ -130,7 +124,9 @@ describe('auth-context utilities', () => {
       const token = buildToken({});
       mockAuthStrategy('jwt');
 
-      const authContext = await resolveAuthContext(buildAuthRequest(token));
+      const authContext = await resolveAuthContext(
+        getMockJwtAuthRequest(token)
+      );
 
       expect(authContext).toMatchObject({
         authEnabled: true,
@@ -156,7 +152,9 @@ describe('auth-context utilities', () => {
       });
       mockAuthStrategy('jwt');
 
-      const authContext = await resolveAuthContext(buildAuthRequest(token));
+      const authContext = await resolveAuthContext(
+        getMockJwtAuthRequest(token)
+      );
 
       expect(authContext).toMatchObject({
         authEnabled: true,
@@ -183,7 +181,9 @@ describe('auth-context utilities', () => {
       });
       mockAuthStrategy('jwt');
 
-      const authContext = await resolveAuthContext(buildAuthRequest(token));
+      const authContext = await resolveAuthContext(
+        getMockJwtAuthRequest(token)
+      );
 
       expect(authContext.auth.expiresAtMs).toBe(expSeconds * 1000);
 
@@ -197,7 +197,9 @@ describe('auth-context utilities', () => {
       });
       mockAuthStrategy('disabled');
 
-      const authContext = await resolveAuthContext(buildAuthRequest(token));
+      const authContext = await resolveAuthContext(
+        getMockJwtAuthRequest(token)
+      );
 
       expect(authContext.auth.isValidToken).toBe(false);
       expect(authContext.isAdmin).toBe(false);
@@ -414,7 +416,7 @@ describe('auth-context utilities', () => {
       const token = buildToken({ sub: 'user-id' });
       mockAuthStrategy('jwt');
 
-      const request = buildAuthRequest(token);
+      const request = getMockJwtAuthRequest(token);
       const authContext = await resolveAuthContext(request);
       const entry = await getActiveAuthServerEntry();
 
@@ -428,7 +430,7 @@ describe('auth-context utilities', () => {
     it('returns undefined when token is missing', async () => {
       mockAuthStrategy('jwt');
 
-      const request = buildAuthRequest();
+      const request = getMockAuthRequest();
       const authContext = await resolveAuthContext(request);
       const entry = await getActiveAuthServerEntry();
 
@@ -441,7 +443,7 @@ describe('auth-context utilities', () => {
       const token = buildToken({ sub: 'user-id' });
       mockAuthStrategy('disabled');
 
-      const request = buildAuthRequest(token);
+      const request = getMockJwtAuthRequest(token);
       const authContext = await resolveAuthContext(request);
       const entry = await getActiveAuthServerEntry();
 

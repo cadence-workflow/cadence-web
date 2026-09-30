@@ -1,3 +1,4 @@
+import { getMockAuthContext } from '@/utils/auth/__fixtures__/mock-auth-context';
 import { resolveAuthContext } from '@/utils/auth/auth-context';
 import logger from '@/utils/logger';
 import request from '@/utils/request';
@@ -27,12 +28,12 @@ describe(domainAccess.name, () => {
   });
 
   it('returns full access when auth is disabled', async () => {
-    mockResolveAuthContext.mockResolvedValue({
-      authEnabled: false,
-      auth: { isValidToken: false, canRefresh: false },
-      isAdmin: false,
-      groups: [],
-    });
+    mockResolveAuthContext.mockResolvedValue(
+      getMockAuthContext({
+        authEnabled: false,
+        auth: { isValidToken: false, canRefresh: false },
+      })
+    );
 
     const result = await domainAccess({
       cluster: 'test-cluster',
@@ -47,12 +48,9 @@ describe(domainAccess.name, () => {
   });
 
   it('returns full access for admin users', async () => {
-    mockResolveAuthContext.mockResolvedValue({
-      authEnabled: true,
-      auth: { isValidToken: true, canRefresh: false },
-      isAdmin: true,
-      groups: [],
-    });
+    mockResolveAuthContext.mockResolvedValue(
+      getMockAuthContext({ isAdmin: true })
+    );
 
     const result = await domainAccess({
       cluster: 'test-cluster',
@@ -67,12 +65,11 @@ describe(domainAccess.name, () => {
   });
 
   it('returns no access for unauthenticated users', async () => {
-    mockResolveAuthContext.mockResolvedValue({
-      authEnabled: true,
-      auth: { isValidToken: false, canRefresh: false },
-      isAdmin: false,
-      groups: [],
-    });
+    mockResolveAuthContext.mockResolvedValue(
+      getMockAuthContext({
+        auth: { isValidToken: false, canRefresh: false },
+      })
+    );
 
     const result = await domainAccess({
       cluster: 'test-cluster',
@@ -87,12 +84,9 @@ describe(domainAccess.name, () => {
   });
 
   it('derives access from the domain resolver for authenticated users', async () => {
-    mockResolveAuthContext.mockResolvedValue({
-      authEnabled: true,
-      auth: { isValidToken: true, canRefresh: false },
-      isAdmin: false,
-      groups: ['reader'],
-    });
+    mockResolveAuthContext.mockResolvedValue(
+      getMockAuthContext({ groups: ['reader'] })
+    );
     mockRequest.mockResolvedValue({
       json: jest.fn().mockResolvedValue(
         getDomainObj({
@@ -121,12 +115,9 @@ describe(domainAccess.name, () => {
   });
 
   it('rethrows when the domain lookup fails', async () => {
-    mockResolveAuthContext.mockResolvedValue({
-      authEnabled: true,
-      auth: { isValidToken: true, canRefresh: false },
-      isAdmin: false,
-      groups: ['writer'],
-    });
+    mockResolveAuthContext.mockResolvedValue(
+      getMockAuthContext({ groups: ['writer'] })
+    );
     mockRequest.mockRejectedValue(new Error('boom'));
 
     await expect(
