@@ -1,13 +1,13 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
 import { CADENCE_AUTH_COOKIE_NAME } from '@/utils/auth/auth-context';
+import getCookieSecureAttribute from '@/utils/auth/helpers/get-cookie-secure-attribute';
 
 import {
   AUTH_TOKEN_COOKIE_OPTIONS,
   AUTH_TOKEN_SUCCESS_RESPONSE,
 } from './auth-token.constants';
 import { type AuthTokenResponse } from './auth-token.types';
-import getCookieSecureAttribute from './helpers/get-cookie-secure-attribute';
 
 export async function clearAuthToken(request: NextRequest) {
   const response = NextResponse.json(
