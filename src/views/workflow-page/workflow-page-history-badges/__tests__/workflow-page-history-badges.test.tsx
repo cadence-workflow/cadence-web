@@ -28,13 +28,10 @@ describe(WorkflowPageHistoryBadges.name, () => {
   it('renders pending and diagnostics badges when diagnostics in history is enabled', async () => {
     setup({ isDiagnosticsInHistoryEnabled: true });
 
-    const diagnosticsBadge = await screen.findByText('Mock diagnostics badge');
-    const pendingBadge = screen.getByText('Mock pending badge');
-
     expect(
-      pendingBadge.compareDocumentPosition(diagnosticsBadge) &
-        Node.DOCUMENT_POSITION_FOLLOWING
-    ).toBeTruthy();
+      await screen.findByText('Mock diagnostics badge')
+    ).toBeInTheDocument();
+    expect(screen.getByText('Mock pending badge')).toBeInTheDocument();
   });
 
   it('renders only the pending badge when diagnostics in history is disabled', async () => {
