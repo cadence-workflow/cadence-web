@@ -48,24 +48,28 @@ describe(AppNavBar.name, () => {
     const logout = jest.fn().mockResolvedValue(undefined);
     setup({ lifecycle: { logout } });
 
-    await user.click(screen.getAllByLabelText('alice')[0]);
+    await user.click(screen.getByLabelText('alice'));
+    await user.click(await screen.findByText('Log out'));
+
+    expect(logout).toHaveBeenCalledTimes(1);
+    expect(logout).toHaveBeenCalledWith({ notice: 'signed-out' });
+  });
+
+  it('handles logout failure after the policy redirects to login', async () => {
+    const user = userEvent.setup();
+    const logout = jest
+      .fn()
+      .mockRejectedValueOnce(new Error('network failure'))
+      .mockResolvedValue(undefined);
+    setup({ lifecycle: { logout } });
+
+    await user.click(screen.getByLabelText('alice'));
     await user.click(await screen.findByText('Log out'));
     await waitFor(() => expect(logout).toHaveBeenCalledTimes(1));
     await user.click(screen.getAllByLabelText('alice')[0]);
     await user.click(await screen.findByText('Log out'));
 
     expect(logout).toHaveBeenCalledTimes(2);
-    expect(logout).toHaveBeenCalledWith({ notice: 'signed-out' });
-  });
-
-  it('handles logout failure after the policy redirects to login', async () => {
-    const user = userEvent.setup();
-    const logout = jest.fn().mockRejectedValue(new Error('network failure'));
-    setup({ lifecycle: { logout } });
-
-    await user.click(screen.getByLabelText('alice'));
-    await user.click(await screen.findByText('Log out'));
-
     expect(logout).toHaveBeenCalledWith({ notice: 'signed-out' });
   });
 
