@@ -44,10 +44,27 @@ describe(JwtLoginPage.name, () => {
   it('renders the token form', async () => {
     setup({ authResolver: () => jwtInvalid });
 
+    expect(await screen.findByTestId('jwt-login-submit')).toBeInTheDocument();
     expect(
-      await screen.findByText('Cadence · JWT authentication')
+      screen.getByText('Cadence · JWT authentication')
     ).toBeInTheDocument();
-    expect(screen.getByTestId('jwt-login-submit')).toBeInTheDocument();
+  });
+
+  it('shows a spinner in the card while auth loads', async () => {
+    let releaseAuth!: (value: PublicAuthContext) => void;
+    const authPending = new Promise<PublicAuthContext>((resolve) => {
+      releaseAuth = resolve;
+    });
+    setup({ authResolver: () => authPending });
+
+    expect(await screen.findByTestId('jwt-login-loading')).toBeInTheDocument();
+    expect(
+      screen.getByText('Cadence · JWT authentication')
+    ).toBeInTheDocument();
+    expect(screen.queryByTestId('jwt-login-submit')).not.toBeInTheDocument();
+
+    releaseAuth(jwtInvalid);
+    expect(await screen.findByTestId('jwt-login-submit')).toBeInTheDocument();
   });
 
   it('redirects to returnTo when the session is already valid', async () => {
@@ -57,6 +74,7 @@ describe(JwtLoginPage.name, () => {
     await waitFor(() => {
       expect(mockReplace).toHaveBeenCalledWith('/domains/foo');
     });
+    expect(screen.queryByTestId('jwt-login-submit')).not.toBeInTheDocument();
   });
 
   it('shows the session-expired copy only for notice=session-expired', async () => {
@@ -68,6 +86,7 @@ describe(JwtLoginPage.name, () => {
         'Your session expired. Paste a new JWT to continue.'
       )
     ).toBeInTheDocument();
+    expect(await screen.findByTestId('jwt-login-submit')).toBeInTheDocument();
   });
 
   it('shows the signed-out copy for notice=signed-out', async () => {
@@ -79,15 +98,14 @@ describe(JwtLoginPage.name, () => {
         'You have been signed out. Paste a new JWT to continue.'
       )
     ).toBeInTheDocument();
+    expect(await screen.findByTestId('jwt-login-submit')).toBeInTheDocument();
   });
 
   it('renders no banner for an unknown notice value', async () => {
     mockSearchParams = new URLSearchParams({ notice: 'bogus' });
     setup({ authResolver: () => jwtInvalid });
 
-    expect(
-      await screen.findByText('Cadence · JWT authentication')
-    ).toBeInTheDocument();
+    expect(await screen.findByTestId('jwt-login-submit')).toBeInTheDocument();
     expect(screen.queryByText(/Paste a new JWT/)).not.toBeInTheDocument();
   });
 
@@ -96,7 +114,7 @@ describe(JwtLoginPage.name, () => {
       authResolver: () => jwtInvalid,
     });
 
-    await screen.findByText('Cadence · JWT authentication');
+    await screen.findByTestId('jwt-login-submit');
     await user.click(screen.getByTestId('jwt-login-submit'));
 
     expect(
@@ -115,9 +133,8 @@ describe(JwtLoginPage.name, () => {
       },
     });
 
-    await screen.findByText('Cadence · JWT authentication');
-    // the textarea is disabled while /api/auth/me loads — typing before it
-    // enables silently no-ops
+    await screen.findByTestId('jwt-login-submit');
+    // Disabled while auth loads — type before enable silently no-ops.
     await waitFor(() => expect(screen.getByRole('textbox')).toBeEnabled());
     await user.type(screen.getByRole('textbox'), 'header.payload.signature');
     await user.click(screen.getByTestId('jwt-login-submit'));
@@ -131,9 +148,7 @@ describe(JwtLoginPage.name, () => {
   it('shows an error when the session is still invalid after saving', async () => {
     const { user } = setup({ authResolver: () => jwtInvalid });
 
-    await screen.findByText('Cadence · JWT authentication');
-    // the textarea is disabled while /api/auth/me loads — typing before it
-    // enables silently no-ops
+    await screen.findByTestId('jwt-login-submit');
     await waitFor(() => expect(screen.getByRole('textbox')).toBeEnabled());
     await user.type(screen.getByRole('textbox'), 'header.payload.signature');
     await user.click(screen.getByTestId('jwt-login-submit'));
@@ -167,7 +182,7 @@ function setup({
   onPostToken,
   authErrorAfterPost = false,
 }: {
-  authResolver: () => PublicAuthContext;
+  authResolver: () => PublicAuthContext | Promise<PublicAuthContext>;
   onPostToken?: () => void;
   authErrorAfterPost?: boolean;
 }) {
@@ -185,13 +200,13 @@ function setup({
         path: '/api/auth/me',
         httpMethod: 'GET' as const,
         mockOnce: false,
-        httpResolver: () =>
+        httpResolver: async () =>
           authErrorAfterPost && tokenPosted
             ? HttpResponse.json(
                 { message: 'Authentication service unavailable' },
                 { status: 503 }
               )
-            : HttpResponse.json(authResolver()),
+            : HttpResponse.json(await authResolver()),
       },
       {
         path: '/api/auth/token',
