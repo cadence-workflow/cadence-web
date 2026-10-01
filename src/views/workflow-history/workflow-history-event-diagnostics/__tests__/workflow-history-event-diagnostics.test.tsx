@@ -103,7 +103,7 @@ describe('WorkflowHistoryEventDiagnostics', () => {
     ).toBeInTheDocument();
   });
 
-  it('passes a single root cause under the Root Cause key', () => {
+  it('passes a single root cause under the RootCause key', () => {
     const rootCauses = [
       {
         issueId: 0,
@@ -127,13 +127,13 @@ describe('WorkflowHistoryEventDiagnostics', () => {
         JSON.stringify({
           ActivityScheduledID: 5,
           issueId: 0,
-          'Root Cause': rootCauses,
+          RootCause: rootCauses,
         })
       )
     ).toBeInTheDocument();
   });
 
-  it('passes multiple root causes under the Root Causes key', () => {
+  it('passes multiple root causes under the RootCauses key', () => {
     const rootCauses = [
       { issueId: 0, rootCauseType: 'Activity Timeout', metadata: {} },
       { issueId: 0, rootCauseType: 'Worker Unavailable', metadata: {} },
@@ -144,9 +144,7 @@ describe('WorkflowHistoryEventDiagnostics', () => {
     });
 
     expect(
-      screen.getByText(
-        JSON.stringify({ issueId: 0, 'Root Causes': rootCauses })
-      )
+      screen.getByText(JSON.stringify({ issueId: 0, RootCauses: rootCauses }))
     ).toBeInTheDocument();
   });
 
