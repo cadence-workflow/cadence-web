@@ -15,8 +15,20 @@ export const styled = {
     flexDirection: 'column',
     gap: $theme.sizing.scale300,
   })),
+  RootCauseHeader: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: $theme.sizing.scale300,
+  })),
+  RootCauseBullet: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    flexShrink: 0,
+    height: String($theme.typography.ParagraphSmall.lineHeight),
+    color: $theme.colors.contentTertiary,
+  })),
   RootCauseType: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
-    ...$theme.typography.LabelSmall,
+    ...$theme.typography.ParagraphSmall,
     color: $theme.colors.contentPrimary,
   })),
   RootCauseMetadata: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
