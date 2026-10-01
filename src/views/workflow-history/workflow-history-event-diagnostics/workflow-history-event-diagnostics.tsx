@@ -3,6 +3,10 @@ import { Button } from 'baseui/button';
 import { MdArrowDropDown, MdArrowDropUp, MdOpenInNew } from 'react-icons/md';
 import { RiStethoscopeLine } from 'react-icons/ri';
 
+import {
+  ROOT_CAUSE_METADATA_KEY,
+  ROOT_CAUSES_METADATA_KEY,
+} from '../workflow-history-event-diagnostics-root-causes/workflow-history-event-diagnostics-root-causes.constants';
 import WorkflowHistoryEventDiagnosticsTable from '../workflow-history-event-diagnostics-table/workflow-history-event-diagnostics-table';
 
 import { overrides, styled } from './workflow-history-event-diagnostics.styles';
@@ -90,8 +94,8 @@ export default function WorkflowHistoryEventDiagnostics({
                   issueId: issue.issueId,
                   ...(issue.rootCauses.length > 0 && {
                     [issue.rootCauses.length === 1
-                      ? 'rootCause'
-                      : 'rootCauses']: issue.rootCauses,
+                      ? ROOT_CAUSE_METADATA_KEY
+                      : ROOT_CAUSES_METADATA_KEY]: issue.rootCauses,
                   }),
                 }}
               />

@@ -15,7 +15,7 @@ jest.mock(
       {
         name: 'Test Root Causes Parser',
         matcher: (key, value) =>
-          ['rootCause', 'rootCauses'].includes(key) && Array.isArray(value),
+          ['Root Cause', 'Root Causes'].includes(key) && Array.isArray(value),
         renderValue: ({ value }) => (
           <div data-testid="root-causes-renderer">
             {value.length} root causes
@@ -91,24 +91,24 @@ describe(WorkflowHistoryEventDiagnosticsTable.name, () => {
     expect(screen.getByTestId('empty-string')).toBeInTheDocument();
   });
 
-  it('uses the root causes renderer for rootCause and rootCauses keys', () => {
+  it('uses the root causes renderer for Root Cause and Root Causes keys', () => {
     const metadata = {
-      rootCause: [{ rootCauseType: 'A' }],
-      rootCauses: [{ rootCauseType: 'B' }, { rootCauseType: 'C' }],
+      'Root Cause': [{ rootCauseType: 'A' }],
+      'Root Causes': [{ rootCauseType: 'B' }, { rootCauseType: 'C' }],
     };
 
     setup({ metadata });
 
-    expect(screen.getByText('rootCause')).toBeInTheDocument();
-    expect(screen.getByText('rootCauses')).toBeInTheDocument();
+    expect(screen.getByText('Root Cause')).toBeInTheDocument();
+    expect(screen.getByText('Root Causes')).toBeInTheDocument();
     expect(screen.getAllByTestId('root-causes-renderer')).toHaveLength(2);
     expect(screen.getByText('1 root causes')).toBeInTheDocument();
     expect(screen.getByText('2 root causes')).toBeInTheDocument();
     expect(screen.queryByTestId('json-renderer')).not.toBeInTheDocument();
   });
 
-  it('falls back to the object renderer when rootCause is not an array', () => {
-    setup({ metadata: { rootCause: { nested: 'value' } } });
+  it('falls back to the object renderer when Root Cause is not an array', () => {
+    setup({ metadata: { 'Root Cause': { nested: 'value' } } });
 
     expect(screen.getByTestId('json-renderer')).toBeInTheDocument();
     expect(
