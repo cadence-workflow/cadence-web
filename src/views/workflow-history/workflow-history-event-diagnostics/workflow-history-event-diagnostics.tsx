@@ -26,6 +26,11 @@ export default function WorkflowHistoryEventDiagnostics({
       {issues.map((issue) => {
         const issueExpansionId = `${issue.invariantType}.${issue.issueId}`;
         const isIssueExpanded = getIsIssueExpanded(issueExpansionId);
+        const rootCausesKey =
+          issue.rootCauses.length > 0 && issue.rootCauses.length === 1
+            ? ROOT_CAUSE_METADATA_KEY
+            : ROOT_CAUSES_METADATA_KEY;
+
         return (
           <styled.IssueContainer key={issueExpansionId}>
             <Panel
@@ -93,9 +98,7 @@ export default function WorkflowHistoryEventDiagnostics({
                   ...issue.metadata,
                   issueId: issue.issueId,
                   ...(issue.rootCauses.length > 0 && {
-                    [issue.rootCauses.length === 1
-                      ? ROOT_CAUSE_METADATA_KEY
-                      : ROOT_CAUSES_METADATA_KEY]: issue.rootCauses,
+                    [rootCausesKey]: issue.rootCauses,
                   }),
                 }}
               />
