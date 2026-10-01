@@ -76,14 +76,37 @@ describe(getDiagnosticsIssuesByEventId.name, () => {
       }),
     });
 
-    expect(result['100'][0].rootCauseType).toBe('Worker failure');
-    expect(result['100'][0].rootCauseMetadata).toEqual({
-      Identity: 'worker-1',
-    });
+    expect(result['100'][0].rootCauses).toEqual([
+      {
+        issueId: 0,
+        rootCauseType: 'Worker failure',
+        metadata: { Identity: 'worker-1' },
+      },
+    ]);
     expect(result['100'][0].runbook).toBe('https://example.com/runbook');
   });
 
-  it('leaves root cause fields undefined when no matching root cause exists', () => {
+  it('keeps all root causes that share the same issue ID', () => {
+    mockedGetCanonicalEventIdFromIssueMetadata.mockReturnValue('100');
+
+    const { result } = setup({
+      diagnosticsResult: createDiagnosticsResult({
+        issues: [createIssue({ issueId: 0 })],
+        rootCauses: [
+          { issueId: 0, rootCauseType: 'Worker failure', metadata: { a: 1 } },
+          { issueId: 1, rootCauseType: 'Other issue', metadata: {} },
+          { issueId: 0, rootCauseType: 'Timeout', metadata: { b: 2 } },
+        ],
+      }),
+    });
+
+    expect(result['100'][0].rootCauses).toEqual([
+      { issueId: 0, rootCauseType: 'Worker failure', metadata: { a: 1 } },
+      { issueId: 0, rootCauseType: 'Timeout', metadata: { b: 2 } },
+    ]);
+  });
+
+  it('sets root causes to an empty array when no matching root cause exists', () => {
     mockedGetCanonicalEventIdFromIssueMetadata.mockReturnValue('100');
 
     const { result } = setup({
@@ -94,8 +117,7 @@ describe(getDiagnosticsIssuesByEventId.name, () => {
       }),
     });
 
-    expect(result['100'][0].rootCauseType).toBeUndefined();
-    expect(result['100'][0].rootCauseMetadata).toBeUndefined();
+    expect(result['100'][0].rootCauses).toEqual([]);
     expect(result['100'][0].runbook).toBe('https://example.com/runbook');
   });
 

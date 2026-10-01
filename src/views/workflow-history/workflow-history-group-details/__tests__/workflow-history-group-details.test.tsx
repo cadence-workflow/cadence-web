@@ -364,6 +364,7 @@ describe(WorkflowHistoryGroupDetails.name, () => {
             invariantType: 'test',
             reason: 'test reason',
             metadata: {},
+            rootCauses: [],
           },
         ],
       },
@@ -409,6 +410,7 @@ describe(WorkflowHistoryGroupDetails.name, () => {
             invariantType: 'test1',
             reason: 'reason1',
             metadata: {},
+            rootCauses: [],
           },
         ],
         'event-2': [
@@ -417,6 +419,7 @@ describe(WorkflowHistoryGroupDetails.name, () => {
             invariantType: 'test2',
             reason: 'reason2',
             metadata: {},
+            rootCauses: [],
           },
         ],
       },
