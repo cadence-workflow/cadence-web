@@ -8,6 +8,7 @@ import { renderHook, waitFor } from '@/test-utils/rtl';
 import { type DescribeWorkflowResponse } from '@/route-handlers/describe-workflow/describe-workflow.types';
 import { mockWorkflowDiagnosticsResult } from '@/route-handlers/diagnose-workflow/__fixtures__/mock-workflow-diagnostics-result';
 import { type DiagnoseWorkflowResponse } from '@/route-handlers/diagnose-workflow/diagnose-workflow.types';
+import { type GetConfigResponse } from '@/route-handlers/get-config/get-config.types';
 import { mockDescribeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
 
 import useWorkflowDiagnosticsIssuesCount from '../use-workflow-diagnostics-issues-count';
@@ -29,11 +30,22 @@ describe(useWorkflowDiagnosticsIssuesCount.name, () => {
     });
   });
 
-  it('should return undefined when workflow is not closed', async () => {
+  it('should return undefined when workflow is running and diagnostics in history is disabled', async () => {
     const { result } = setup({ isWorkflowClosed: false });
 
     await waitFor(() => {
       expect(result.current).toBeUndefined();
+    });
+  });
+
+  it('should return total issues count when workflow is running and diagnostics in history is enabled', async () => {
+    const { result } = setup({
+      isWorkflowClosed: false,
+      isDiagnosticsInHistoryEnabled: true,
+    });
+
+    await waitFor(() => {
+      expect(result.current).toBe(5);
     });
   });
 
@@ -105,6 +117,7 @@ describe(useWorkflowDiagnosticsIssuesCount.name, () => {
 
 function setup({
   isDiagnosticsEnabled = true,
+  isDiagnosticsInHistoryEnabled = false,
   isWorkflowClosed = true,
   diagnosticsResponse = {
     result: mockWorkflowDiagnosticsResult,
@@ -115,6 +128,7 @@ function setup({
   diagnosticsError = false,
 }: {
   isDiagnosticsEnabled?: boolean;
+  isDiagnosticsInHistoryEnabled?: boolean;
   isWorkflowClosed?: boolean;
   diagnosticsResponse?: DiagnoseWorkflowResponse;
   configError?: boolean;
@@ -135,14 +149,30 @@ function setup({
           path: '/api/config',
           httpMethod: 'GET',
           mockOnce: false,
-          httpResolver: async () => {
+          httpResolver: async ({ request }) => {
             if (configError) {
               return HttpResponse.json(
                 { message: 'Failed to fetch config' },
                 { status: 500 }
               );
             }
-            return HttpResponse.json(isDiagnosticsEnabled);
+
+            const configKey = new URL(request.url).searchParams.get(
+              'configKey'
+            );
+
+            switch (configKey) {
+              case 'WORKFLOW_DIAGNOSTICS_ENABLED':
+                return HttpResponse.json(
+                  isDiagnosticsEnabled satisfies GetConfigResponse<'WORKFLOW_DIAGNOSTICS_ENABLED'>
+                );
+              case 'WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED':
+                return HttpResponse.json(
+                  isDiagnosticsInHistoryEnabled satisfies GetConfigResponse<'WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED'>
+                );
+              default:
+                return HttpResponse.json(false);
+            }
           },
         },
         {
@@ -170,24 +200,20 @@ function setup({
             } satisfies DescribeWorkflowResponse);
           },
         },
-        ...(isDiagnosticsEnabled
-          ? [
-              {
-                path: '/api/domains/:domain/:cluster/workflows/:workflowId/:runId/diagnose',
-                httpMethod: 'GET' as const,
-                mockOnce: false,
-                httpResolver: async () => {
-                  if (diagnosticsError) {
-                    return HttpResponse.json(
-                      { message: 'Failed to fetch diagnostics' },
-                      { status: 500 }
-                    );
-                  }
-                  return HttpResponse.json(diagnosticsResponse);
-                },
-              },
-            ]
-          : []),
+        {
+          path: '/api/domains/:domain/:cluster/workflows/:workflowId/:runId/diagnose',
+          httpMethod: 'GET',
+          mockOnce: false,
+          httpResolver: async () => {
+            if (diagnosticsError) {
+              return HttpResponse.json(
+                { message: 'Failed to fetch diagnostics' },
+                { status: 500 }
+              );
+            }
+            return HttpResponse.json(diagnosticsResponse);
+          },
+        },
       ],
     },
     {
