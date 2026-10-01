@@ -20,7 +20,9 @@ export default function WorkflowHistoryEventDiagnosticsRootCauses({
           </styled.RootCauseHeader>
           <styled.RootCauseMetadata>
             {isEmpty(rootCause.metadata) ? (
-              <WorkflowHistoryEventDiagnosticsPlaceholderText placeholderText="No metadata" />
+              <styled.RootCauseMetadataPlaceholder>
+                <WorkflowHistoryEventDiagnosticsPlaceholderText placeholderText="No metadata" />
+              </styled.RootCauseMetadataPlaceholder>
             ) : (
               <WorkflowHistoryEventDiagnosticsTable
                 metadata={rootCause.metadata}
