@@ -9,12 +9,14 @@ const mockIssues: Array<WorkflowDiagnosticsIssue> = [
     invariantType: 'Activity Failed',
     reason: 'The activity returned an error',
     metadata: null,
+    rootCauses: [],
   },
   {
     issueId: 2,
     invariantType: 'Decision Timed Out',
     reason: 'The decision task timed out',
     metadata: null,
+    rootCauses: [],
   },
 ];
 

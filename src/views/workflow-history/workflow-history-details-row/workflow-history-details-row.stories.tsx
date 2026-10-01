@@ -43,12 +43,14 @@ const diagnosticsIssues: Array<WorkflowDiagnosticsIssue> = [
     invariantType: 'Activity Failed',
     reason: 'Activity timed out after 30 seconds',
     metadata: null,
+    rootCauses: [],
   },
   {
     issueId: 1,
     invariantType: 'Decision Failed',
     reason: 'Decision task failed with error',
     metadata: null,
+    rootCauses: [],
   },
 ];
 

@@ -1,18 +1,29 @@
 import { styled as createStyled, type Theme } from 'baseui';
 
 export const styled = {
-  MetadataTableContainer: createStyled(
+  MetadataTableContainer: createStyled<'div', { $isCompact?: boolean }>(
     'div',
-    ({ $theme }: { $theme: Theme }) => ({
+    ({ $theme, $isCompact }: { $theme: Theme; $isCompact?: boolean }) => ({
       display: 'flex',
       flexDirection: 'column',
-      paddingTop: $theme.sizing.scale100,
-      paddingBottom: $theme.sizing.scale100,
+      paddingTop: $isCompact ? 0 : $theme.sizing.scale100,
+      paddingBottom: $isCompact ? 0 : $theme.sizing.scale100,
     })
   ),
-  MetadataItemRow: createStyled<'div', { $forceWrap?: boolean }>(
+  MetadataItemRow: createStyled<
     'div',
-    ({ $theme, $forceWrap }: { $theme: Theme; $forceWrap?: boolean }) => ({
+    { $forceWrap?: boolean; $isCompact?: boolean }
+  >(
+    'div',
+    ({
+      $theme,
+      $forceWrap,
+      $isCompact,
+    }: {
+      $theme: Theme;
+      $forceWrap?: boolean;
+      $isCompact?: boolean;
+    }) => ({
       display: 'flex',
       flexDirection: $forceWrap ? 'column' : 'row',
       gap: $theme.sizing.scale300,
@@ -33,6 +44,13 @@ export const styled = {
         borderLeftWidth: 0,
         borderRightWidth: 0,
       },
+      ...($isCompact && {
+        paddingTop: $theme.sizing.scale0,
+        paddingBottom: $theme.sizing.scale0,
+        ':not(:last-child)': {
+          borderWidth: 0,
+        },
+      }),
     })
   ),
   MetadataItemValue: createStyled('div', ({ $theme }: { $theme: Theme }) => ({

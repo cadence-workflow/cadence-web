@@ -9,6 +9,7 @@ const activityFailedIssue: WorkflowDiagnosticsIssue = {
   invariantType: 'Activity Failed',
   reason: 'Activity timed out after 30 seconds',
   metadata: null,
+  rootCauses: [],
 };
 
 const decisionFailedIssue: WorkflowDiagnosticsIssue = {
@@ -16,6 +17,7 @@ const decisionFailedIssue: WorkflowDiagnosticsIssue = {
   invariantType: 'Decision Failed',
   reason: 'Decision task failed with error',
   metadata: null,
+  rootCauses: [],
 };
 
 const longIssue: WorkflowDiagnosticsIssue = {
@@ -25,6 +27,7 @@ const longIssue: WorkflowDiagnosticsIssue = {
   reason:
     'Activity timed out after 30 seconds while polling task list cadence-sys-tl-workers-us-east-1-prod-long-running-batch-processor. Subsequent retries (attempt 8 of 8) failed with the same timeout.',
   metadata: null,
+  rootCauses: [],
 };
 
 const meta = {

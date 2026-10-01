@@ -404,6 +404,7 @@ describe(getParsedDetailsRowItems.name, () => {
         invariantType: 'Activity Failed',
         reason: 'The activity returned an error',
         metadata: null,
+        rootCauses: [],
       },
     ];
 

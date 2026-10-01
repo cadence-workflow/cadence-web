@@ -13,6 +13,17 @@ jest.mock(
   () =>
     [
       {
+        name: 'Test Root Causes Parser',
+        matcher: (key, value) =>
+          ['RootCause', 'RootCauses'].includes(key) && Array.isArray(value),
+        renderValue: ({ value }) => (
+          <div data-testid="root-causes-renderer">
+            {value.length} root causes
+          </div>
+        ),
+        forceWrap: true,
+      },
+      {
         name: 'Test Link Parser',
         matcher: (key, value) => key === 'ActivityScheduledID' && value !== 0,
         renderValue: ({ value }) => <span>Link: {String(value)}</span>,
@@ -78,6 +89,31 @@ describe(WorkflowHistoryEventDiagnosticsTable.name, () => {
 
     expect(screen.getByText('emptyKey')).toBeInTheDocument();
     expect(screen.getByTestId('empty-string')).toBeInTheDocument();
+  });
+
+  it('uses the root causes renderer for RootCause and RootCauses keys', () => {
+    const metadata = {
+      RootCause: [{ rootCauseType: 'A' }],
+      RootCauses: [{ rootCauseType: 'B' }, { rootCauseType: 'C' }],
+    };
+
+    setup({ metadata });
+
+    expect(screen.getByText('RootCause')).toBeInTheDocument();
+    expect(screen.getByText('RootCauses')).toBeInTheDocument();
+    expect(screen.getAllByTestId('root-causes-renderer')).toHaveLength(2);
+    expect(screen.getByText('1 root causes')).toBeInTheDocument();
+    expect(screen.getByText('2 root causes')).toBeInTheDocument();
+    expect(screen.queryByTestId('json-renderer')).not.toBeInTheDocument();
+  });
+
+  it('falls back to the object renderer when RootCause is not an array', () => {
+    setup({ metadata: { RootCause: { nested: 'value' } } });
+
+    expect(screen.getByTestId('json-renderer')).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('root-causes-renderer')
+    ).not.toBeInTheDocument();
   });
 
   it('hides values when parser is configured with hide: true', () => {
@@ -155,15 +191,37 @@ describe(WorkflowHistoryEventDiagnosticsTable.name, () => {
     expect(screen.getByText('arrayWithEmptyObject')).toBeInTheDocument();
     expect(screen.getByText('[{}]')).toBeInTheDocument();
   });
+  it('renders rows with dividers and default padding', () => {
+    setup({ metadata: { firstKey: 'first', secondKey: 'second' } });
+
+    expect(screen.getByText('firstKey').parentElement).toHaveStyle({
+      paddingTop: '6px',
+      borderBottomWidth: '1px',
+    });
+  });
+
+  it('renders rows without dividers and with smaller padding in compact mode', () => {
+    setup({
+      metadata: { firstKey: 'first', secondKey: 'second' },
+      isCompact: true,
+    });
+
+    const firstRow = screen.getByText('firstKey').parentElement;
+    expect(firstRow).toHaveStyle({ paddingTop: '2px', paddingBottom: '2px' });
+    expect(firstRow).not.toHaveStyle({ borderBottomWidth: '1px' });
+  });
 });
 
 function setup({
   metadata = {},
+  isCompact,
 }: {
   metadata?: Record<string, any>;
+  isCompact?: boolean;
 } = {}) {
   const props: Props = {
     metadata,
+    isCompact,
   };
 
   render(<WorkflowHistoryEventDiagnosticsTable {...props} />);
