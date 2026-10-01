@@ -1,5 +1,6 @@
 import isEmpty from 'lodash/isEmpty';
 
+import WorkflowHistoryEventDiagnosticsPlaceholderText from '../workflow-history-event-diagnostics-placeholder-text/workflow-history-event-diagnostics-placeholder-text';
 import WorkflowHistoryEventDiagnosticsTable from '../workflow-history-event-diagnostics-table/workflow-history-event-diagnostics-table';
 
 import { styled } from './workflow-history-event-diagnostics-root-causes.styles';
@@ -17,14 +18,16 @@ export default function WorkflowHistoryEventDiagnosticsRootCauses({
               {rootCause.rootCauseType}
             </styled.RootCauseType>
           </styled.RootCauseHeader>
-          {!isEmpty(rootCause.metadata) && (
-            <styled.RootCauseMetadata>
+          <styled.RootCauseMetadata>
+            {isEmpty(rootCause.metadata) ? (
+              <WorkflowHistoryEventDiagnosticsPlaceholderText placeholderText="No metadata" />
+            ) : (
               <WorkflowHistoryEventDiagnosticsTable
                 metadata={rootCause.metadata}
                 isCompact
               />
-            </styled.RootCauseMetadata>
-          )}
+            )}
+          </styled.RootCauseMetadata>
         </styled.RootCauseItem>
       ))}
     </styled.RootCausesList>
