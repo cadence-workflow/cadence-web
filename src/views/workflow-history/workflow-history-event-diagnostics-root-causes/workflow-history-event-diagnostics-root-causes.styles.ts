@@ -31,4 +31,11 @@ export const styled = {
     borderBottomWidth: 0,
     borderRightWidth: 0,
   })),
+  RootCauseMetadataPlaceholder: createStyled(
+    'div',
+    ({ $theme }: { $theme: Theme }) => ({
+      paddingTop: $theme.sizing.scale0,
+      paddingBottom: $theme.sizing.scale0,
+    })
+  ),
 };
