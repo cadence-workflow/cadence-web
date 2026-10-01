@@ -14,6 +14,7 @@ const mockIssuesByEventId: WorkflowDiagnosticsIssuesByEventId = {
       invariantType: 'Activity Failed',
       reason: 'Activity failed on event 7',
       metadata: {},
+      rootCauses: [],
     },
   ],
   '10': [
@@ -22,12 +23,14 @@ const mockIssuesByEventId: WorkflowDiagnosticsIssuesByEventId = {
       invariantType: 'Activity Timeout',
       reason: 'Activity timed out on event 10',
       metadata: {},
+      rootCauses: [],
     },
     {
       issueId: 2,
       invariantType: 'Retry Policy',
       reason: 'Retry policy issue on event 10',
       metadata: {},
+      rootCauses: [],
     },
   ],
   '43': [
@@ -36,6 +39,7 @@ const mockIssuesByEventId: WorkflowDiagnosticsIssuesByEventId = {
       invariantType: 'Activity Failed',
       reason: 'Activity failed on event 43',
       metadata: {},
+      rootCauses: [],
     },
   ],
   'pending-7': [
@@ -44,6 +48,7 @@ const mockIssuesByEventId: WorkflowDiagnosticsIssuesByEventId = {
       invariantType: 'Activity Pending',
       reason: 'Activity is still pending',
       metadata: {},
+      rootCauses: [],
     },
   ],
 };

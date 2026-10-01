@@ -80,6 +80,7 @@ const mockDiagnosticsIssuesByEventId: WorkflowDiagnosticsIssuesByEventId = {
       invariantType: 'Activity Failed',
       reason: 'Activity timed out',
       metadata: null,
+      rootCauses: [],
     },
   ],
   '2': [
@@ -88,6 +89,7 @@ const mockDiagnosticsIssuesByEventId: WorkflowDiagnosticsIssuesByEventId = {
       invariantType: 'Decision Failed',
       reason: 'Decision task failed',
       metadata: null,
+      rootCauses: [],
     },
   ],
   '999': [
@@ -96,6 +98,7 @@ const mockDiagnosticsIssuesByEventId: WorkflowDiagnosticsIssuesByEventId = {
       invariantType: 'Unrelated',
       reason: 'Issue for an event that is not rendered',
       metadata: null,
+      rootCauses: [],
     },
   ],
 };

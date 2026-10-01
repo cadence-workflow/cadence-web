@@ -30,5 +30,6 @@ function getMockIssues(count: number): Array<WorkflowDiagnosticsIssue> {
     invariantType: 'Activity Failed',
     reason: 'The activity returned an error',
     metadata: null,
+    rootCauses: [],
   }));
 }

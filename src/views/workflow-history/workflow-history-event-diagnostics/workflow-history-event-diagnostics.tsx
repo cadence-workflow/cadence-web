@@ -87,10 +87,13 @@ export default function WorkflowHistoryEventDiagnostics({
             >
               <WorkflowHistoryEventDiagnosticsTable
                 metadata={{
-                  rootCause: issue.rootCauseType,
                   ...issue.metadata,
-                  ...issue.rootCauseMetadata,
                   issueId: issue.issueId,
+                  ...(issue.rootCauses.length > 0 && {
+                    [issue.rootCauses.length === 1
+                      ? 'rootCause'
+                      : 'rootCauses']: issue.rootCauses,
+                  }),
                 }}
               />
             </Panel>

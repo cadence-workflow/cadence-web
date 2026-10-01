@@ -18,8 +18,13 @@ const activityFailedIssue: WorkflowDiagnosticsIssue = {
   },
   runbook:
     'https://cadenceworkflow.io/docs/workflow-troubleshooting/activity-failures/',
-  rootCauseType: 'Activity Timeout',
-  rootCauseMetadata: { ExpectedTimeout: 30 },
+  rootCauses: [
+    {
+      issueId: 0,
+      rootCauseType: 'Activity Timeout',
+      metadata: { ExpectedTimeout: 30 },
+    },
+  ],
 };
 
 const decisionFailedIssue: WorkflowDiagnosticsIssue = {
@@ -33,6 +38,29 @@ const decisionFailedIssue: WorkflowDiagnosticsIssue = {
       type: 'timeout',
     },
   },
+  rootCauses: [],
+};
+
+const multipleRootCausesIssue: WorkflowDiagnosticsIssue = {
+  issueId: 2,
+  invariantType: 'Activity Failed',
+  reason: 'Activity failed repeatedly',
+  metadata: {
+    Identity: 'test-worker@test-host',
+    ActivityScheduledID: 20,
+  },
+  rootCauses: [
+    {
+      issueId: 2,
+      rootCauseType: 'Activity Timeout',
+      metadata: { ExpectedTimeout: 30, ObservedDuration: 45 },
+    },
+    {
+      issueId: 2,
+      rootCauseType: 'Worker Unavailable',
+      metadata: {},
+    },
+  ],
 };
 
 const longDiagnosticsIssue: WorkflowDiagnosticsIssue = {
@@ -68,12 +96,17 @@ const longDiagnosticsIssue: WorkflowDiagnosticsIssue = {
   },
   runbook:
     'https://cadenceworkflow.io/docs/workflow-troubleshooting/activity-failures/?utm_source=cadence-web&utm_campaign=diagnostics-runbook-with-an-unreasonably-long-query-string-to-stress-header-wrapping',
-  rootCauseType:
-    'Downstream RPC Timeout During Activity Heartbeat Window Exceeding Configured ScheduleToClose Timeout',
-  rootCauseMetadata: {
-    ExpectedTimeout: 30,
-    ObservedHeartbeatLagSeconds: 184,
-  },
+  rootCauses: [
+    {
+      issueId: 42,
+      rootCauseType:
+        'Downstream RPC Timeout During Activity Heartbeat Window Exceeding Configured ScheduleToClose Timeout',
+      metadata: {
+        ExpectedTimeout: 30,
+        ObservedHeartbeatLagSeconds: 184,
+      },
+    },
+  ],
 };
 
 function getIssueExpansionId(issue: WorkflowDiagnosticsIssue) {
@@ -153,6 +186,13 @@ export const WithRunbook: Story = {
 export const WithoutRunbook: Story = {
   args: {
     issues: [decisionFailedIssue],
+  },
+};
+
+export const WithMultipleRootCauses: Story = {
+  args: {
+    issues: [multipleRootCausesIssue],
+    expandedIssueIds: [getIssueExpansionId(multipleRootCausesIssue)],
   },
 };
 
