@@ -24,5 +24,6 @@ export const styled = {
   })),
   RootCauseMetadata: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     paddingLeft: $theme.sizing.scale600,
+    borderLeft: `${$theme.sizing.scale0} solid ${$theme.colors.borderOpaque}`,
   })),
 };
