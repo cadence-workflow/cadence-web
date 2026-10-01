@@ -10,6 +10,7 @@ import {
 
 export default function WorkflowHistoryEventDiagnosticsTable({
   metadata,
+  isCompact,
 }: Props) {
   const parsedMetadataItems = useMemo(
     () =>
@@ -41,10 +42,11 @@ export default function WorkflowHistoryEventDiagnosticsTable({
   );
 
   return (
-    <styled.MetadataTableContainer>
+    <styled.MetadataTableContainer $isCompact={isCompact}>
       {parsedMetadataItems.map((metadataItem) => (
         <styled.MetadataItemRow
           $forceWrap={metadataItem.forceWrap}
+          $isCompact={isCompact}
           key={metadataItem.key}
         >
           <styled.MetadataItemLabel $forceWrap={metadataItem.forceWrap}>

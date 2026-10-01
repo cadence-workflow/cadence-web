@@ -191,15 +191,37 @@ describe(WorkflowHistoryEventDiagnosticsTable.name, () => {
     expect(screen.getByText('arrayWithEmptyObject')).toBeInTheDocument();
     expect(screen.getByText('[{}]')).toBeInTheDocument();
   });
+  it('renders rows with dividers and default padding', () => {
+    setup({ metadata: { firstKey: 'first', secondKey: 'second' } });
+
+    expect(screen.getByText('firstKey').parentElement).toHaveStyle({
+      paddingTop: '6px',
+      borderBottomWidth: '1px',
+    });
+  });
+
+  it('renders rows without dividers and with smaller padding in compact mode', () => {
+    setup({
+      metadata: { firstKey: 'first', secondKey: 'second' },
+      isCompact: true,
+    });
+
+    const firstRow = screen.getByText('firstKey').parentElement;
+    expect(firstRow).toHaveStyle({ paddingTop: '2px', paddingBottom: '2px' });
+    expect(firstRow).not.toHaveStyle({ borderBottomWidth: '1px' });
+  });
 });
 
 function setup({
   metadata = {},
+  isCompact,
 }: {
   metadata?: Record<string, any>;
+  isCompact?: boolean;
 } = {}) {
   const props: Props = {
     metadata,
+    isCompact,
   };
 
   render(<WorkflowHistoryEventDiagnosticsTable {...props} />);
