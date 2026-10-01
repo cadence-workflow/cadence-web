@@ -2,6 +2,7 @@ import { type ComponentType } from 'react';
 
 export type Props = {
   metadata: any;
+  isCompact?: boolean;
 };
 
 export type MetadataValueComponentProps = {

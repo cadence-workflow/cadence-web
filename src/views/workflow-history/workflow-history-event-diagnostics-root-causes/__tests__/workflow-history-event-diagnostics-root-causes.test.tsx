@@ -7,8 +7,10 @@ import WorkflowHistoryEventDiagnosticsRootCauses from '../workflow-history-event
 jest.mock(
   '../../workflow-history-event-diagnostics-table/workflow-history-event-diagnostics-table',
   () =>
-    jest.fn(({ metadata }) => (
-      <div data-testid="metadata-table">{JSON.stringify(metadata)}</div>
+    jest.fn(({ metadata, isCompact }) => (
+      <div data-testid="metadata-table" data-compact={String(isCompact)}>
+        {JSON.stringify(metadata)}
+      </div>
     ))
 );
 
@@ -42,6 +44,7 @@ describe(WorkflowHistoryEventDiagnosticsRootCauses.name, () => {
     const tables = screen.getAllByTestId('metadata-table');
     expect(tables).toHaveLength(1);
     expect(tables[0]).toHaveTextContent('{"ExpectedTimeout":30}');
+    expect(tables[0]).toHaveAttribute('data-compact', 'true');
   });
 });
 

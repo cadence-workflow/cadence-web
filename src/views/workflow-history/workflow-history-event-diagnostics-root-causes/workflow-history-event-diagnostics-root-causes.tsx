@@ -1,5 +1,4 @@
 import isEmpty from 'lodash/isEmpty';
-import { MdCircle } from 'react-icons/md';
 
 import WorkflowHistoryEventDiagnosticsTable from '../workflow-history-event-diagnostics-table/workflow-history-event-diagnostics-table';
 
@@ -14,9 +13,6 @@ export default function WorkflowHistoryEventDiagnosticsRootCauses({
       {value.map((rootCause, index) => (
         <styled.RootCauseItem key={`${rootCause.rootCauseType}.${index}`}>
           <styled.RootCauseHeader>
-            <styled.RootCauseBullet>
-              <MdCircle size={8} />
-            </styled.RootCauseBullet>
             <styled.RootCauseType>
               {rootCause.rootCauseType}
             </styled.RootCauseType>
@@ -25,6 +21,7 @@ export default function WorkflowHistoryEventDiagnosticsRootCauses({
             <styled.RootCauseMetadata>
               <WorkflowHistoryEventDiagnosticsTable
                 metadata={rootCause.metadata}
+                isCompact
               />
             </styled.RootCauseMetadata>
           )}
