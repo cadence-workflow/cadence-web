@@ -517,10 +517,9 @@ describe(WorkflowHistory.name, () => {
       isDiagnosticsFetchedElsewhere: true,
     });
 
-    await waitFor(() => {
-      expect(mockDiagnoseResolver).toHaveBeenCalledTimes(1);
-    });
+    await screen.findByTestId('diagnostics-fetched-elsewhere');
 
+    expect(mockDiagnoseResolver).toHaveBeenCalledTimes(1);
     expect(
       screen.getByTestId('grouped-diagnostics-events-count')
     ).toHaveTextContent(/^0$/);
@@ -529,13 +528,13 @@ describe(WorkflowHistory.name, () => {
 
 // TODO: delete this once the old Workflow Diagnostics view has been deleted
 function MockDiagnosticsFetcher() {
-  useDiagnoseWorkflow({
+  const { data } = useDiagnoseWorkflow({
     domain: 'test-domain',
     cluster: 'test-cluster',
     workflowId: 'test-workflowId',
     runId: 'test-runid',
   });
-  return null;
+  return data ? <div data-testid="diagnostics-fetched-elsewhere" /> : null;
 }
 
 async function setup({
