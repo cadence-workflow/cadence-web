@@ -1,12 +1,12 @@
 import { type Domain } from '@/__generated__/proto-ts/uber/cadence/api/v1/Domain';
 import {
-  CADENCE_AUTH_COOKIE_NAME,
   decodeCadenceJwtClaims,
   getPublicAuthContext,
   getGrpcMetadataFromAuth,
   resolveAuthContext,
 } from '@/utils/auth/auth-context';
 import { getDomainAccessForUser } from '@/utils/auth/auth-shared';
+import { JWT_AUTH_COOKIE_NAME } from '@/utils/auth/strategies/jwt/jwt-auth.constants';
 import getConfigValue from '@/utils/config/get-config-value';
 
 jest.mock('@/utils/config/get-config-value');
@@ -66,7 +66,7 @@ describe('auth-context utilities', () => {
 
       const authContext = await resolveAuthContext({
         get: (name: string) =>
-          name === CADENCE_AUTH_COOKIE_NAME ? { value: token } : undefined,
+          name === JWT_AUTH_COOKIE_NAME ? { value: token } : undefined,
       });
 
       expect(authContext).toMatchObject({
@@ -110,7 +110,7 @@ describe('auth-context utilities', () => {
 
       const authContext = await resolveAuthContext({
         get: (name: string) =>
-          name === CADENCE_AUTH_COOKIE_NAME ? { value: token } : undefined,
+          name === JWT_AUTH_COOKIE_NAME ? { value: token } : undefined,
       });
 
       expect(authContext).toMatchObject({
@@ -134,7 +134,7 @@ describe('auth-context utilities', () => {
 
       const authContext = await resolveAuthContext({
         get: (name: string) =>
-          name === CADENCE_AUTH_COOKIE_NAME ? { value: token } : undefined,
+          name === JWT_AUTH_COOKIE_NAME ? { value: token } : undefined,
       });
 
       expect(authContext).toMatchObject({
@@ -167,7 +167,7 @@ describe('auth-context utilities', () => {
 
       const authContext = await resolveAuthContext({
         get: (name: string) =>
-          name === CADENCE_AUTH_COOKIE_NAME ? { value: token } : undefined,
+          name === JWT_AUTH_COOKIE_NAME ? { value: token } : undefined,
       });
 
       expect(authContext).toMatchObject({
@@ -201,7 +201,7 @@ describe('auth-context utilities', () => {
 
       const authContext = await resolveAuthContext({
         get: (name: string) =>
-          name === CADENCE_AUTH_COOKIE_NAME ? { value: token } : undefined,
+          name === JWT_AUTH_COOKIE_NAME ? { value: token } : undefined,
       });
 
       expect(authContext.auth.expiresAtMs).toBe(expSeconds * 1000);
@@ -221,7 +221,7 @@ describe('auth-context utilities', () => {
 
       const authContext = await resolveAuthContext({
         get: (name: string) =>
-          name === CADENCE_AUTH_COOKIE_NAME ? { value: token } : undefined,
+          name === JWT_AUTH_COOKIE_NAME ? { value: token } : undefined,
       });
 
       expect(authContext.auth.token).toBeUndefined();

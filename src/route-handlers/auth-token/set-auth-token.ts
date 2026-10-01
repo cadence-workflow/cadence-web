@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { CADENCE_AUTH_COOKIE_NAME } from '@/utils/auth/auth-context';
 import getCookieSecureAttribute from '@/utils/auth/helpers/get-cookie-secure-attribute';
+import { JWT_AUTH_COOKIE_NAME } from '@/utils/auth/strategies/jwt/jwt-auth.constants';
 
 import {
   AUTH_TOKEN_COOKIE_OPTIONS,
@@ -29,7 +29,7 @@ export async function setAuthToken(request: NextRequest) {
       AUTH_TOKEN_SUCCESS_RESPONSE satisfies AuthTokenResponse
     );
     response.headers.set('Cache-Control', 'no-store');
-    response.cookies.set(CADENCE_AUTH_COOKIE_NAME, data.token, {
+    response.cookies.set(JWT_AUTH_COOKIE_NAME, data.token, {
       ...AUTH_TOKEN_COOKIE_OPTIONS,
       secure: getCookieSecureAttribute(request),
     });

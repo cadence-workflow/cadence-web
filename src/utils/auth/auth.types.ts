@@ -23,8 +23,7 @@ export type AuthContext = {
   userName?: string;
   id?: string;
   pictureUrl?: string;
-  /** Server-only; never sent to the browser.
-   * TODO: remove when the backend permissions contract lands. */
+  /** Group names used for access checks on the server. Not sent to the browser. */
   groups: string[];
 };
 
@@ -73,13 +72,13 @@ export type AuthClientPolicy = {
   onUnauthorized(response: Response): boolean;
 };
 
-/** allows lazy loading of policies */
+/** A server policy, either already constructed or loaded on first use. */
 export type AuthServerRegistryEntry = {
   policy: AuthServerPolicy | (() => Promise<AuthServerPolicy>);
   cookieNames: { exact: string[]; prefixes: string[] };
 };
 
-/** same as AuthServerRegistryEntry, with the policy already loaded */
+/** Registry entry after its policy has been loaded. */
 export type ResolvedAuthServerRegistryEntry = {
   policy: AuthServerPolicy;
   cookieNames: { exact: string[]; prefixes: string[] };

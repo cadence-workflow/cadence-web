@@ -2,6 +2,7 @@ import 'server-only';
 
 import { cookies as getRequestCookies } from 'next/headers';
 
+import { JWT_AUTH_COOKIE_NAME } from '@/utils/auth/strategies/jwt/jwt-auth.constants';
 import { type GRPCMetadata } from '@/utils/grpc/grpc-service';
 
 import getConfigValue from '../config/get-config-value';
@@ -12,9 +13,8 @@ import {
   type PublicAuthContext,
   type PrivateAuthContext,
 } from './auth-shared.types';
+import { CADENCE_AUTH_GRPC_METADATA_KEY } from './auth.constants';
 import { cadenceJwtClaimsSchema } from './schemas/cadence-jwt-claims-schema';
-
-export const CADENCE_AUTH_COOKIE_NAME = 'cadence-authorization';
 
 export function decodeCadenceJwtClaims(
   token: string
@@ -50,7 +50,7 @@ export async function resolveAuthContext(
   const authEnabled = authStrategy === 'jwt';
 
   const cookies = cookieStore ?? getRequestCookies();
-  const tokenFromCookie = cookies.get(CADENCE_AUTH_COOKIE_NAME)?.value?.trim();
+  const tokenFromCookie = cookies.get(JWT_AUTH_COOKIE_NAME)?.value?.trim();
   const token = tokenFromCookie || undefined;
 
   const claims = token ? decodeCadenceJwtClaims(token) : undefined;
@@ -93,7 +93,7 @@ export function getGrpcMetadataFromAuth(
   }
 
   return {
-    'cadence-authorization': authContext.auth.token,
+    [CADENCE_AUTH_GRPC_METADATA_KEY]: authContext.auth.token,
   };
 }
 
