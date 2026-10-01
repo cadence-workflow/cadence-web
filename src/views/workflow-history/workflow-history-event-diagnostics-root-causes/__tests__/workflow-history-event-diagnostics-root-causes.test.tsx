@@ -14,6 +14,14 @@ jest.mock(
     ))
 );
 
+jest.mock(
+  '../../workflow-history-event-diagnostics-placeholder-text/workflow-history-event-diagnostics-placeholder-text',
+  () =>
+    jest.fn(({ placeholderText }) => (
+      <div data-testid="placeholder-text">{placeholderText}</div>
+    ))
+);
+
 describe(WorkflowHistoryEventDiagnosticsRootCauses.name, () => {
   it('renders the type of each root cause', () => {
     setup({
@@ -27,7 +35,7 @@ describe(WorkflowHistoryEventDiagnosticsRootCauses.name, () => {
     expect(screen.getByText('Worker Unavailable')).toBeInTheDocument();
   });
 
-  it('renders a metadata table only for root causes with non-empty metadata', () => {
+  it('renders a metadata table for non-empty metadata and a placeholder otherwise', () => {
     setup({
       value: [
         {
@@ -45,6 +53,12 @@ describe(WorkflowHistoryEventDiagnosticsRootCauses.name, () => {
     expect(tables).toHaveLength(1);
     expect(tables[0]).toHaveTextContent('{"ExpectedTimeout":30}');
     expect(tables[0]).toHaveAttribute('data-compact', 'true');
+
+    const placeholders = screen.getAllByTestId('placeholder-text');
+    expect(placeholders).toHaveLength(3);
+    placeholders.forEach((placeholder) =>
+      expect(placeholder).toHaveTextContent('No metadata')
+    );
   });
 });
 
