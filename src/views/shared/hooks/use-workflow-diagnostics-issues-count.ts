@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
 
 import useConfigValue from '@/hooks/use-config-value/use-config-value';
-import useDiagnoseWorkflow from '@/views/workflow-diagnostics/hooks/use-diagnose-workflow/use-diagnose-workflow';
-import { type UseDiagnoseWorkflowParams } from '@/views/workflow-diagnostics/hooks/use-diagnose-workflow/use-diagnose-workflow.types';
+import decodeUrlParams from '@/utils/decode-url-params';
+import useDiagnoseWorkflow from '@/views/workflow-history/hooks/use-diagnose-workflow/use-diagnose-workflow';
+import { type UseDiagnoseWorkflowParams } from '@/views/workflow-history/hooks/use-diagnose-workflow/use-diagnose-workflow.types';
 import { useDescribeWorkflow } from '@/views/workflow-page/hooks/use-describe-workflow';
 
 export default function useWorkflowDiagnosticsIssuesCount(
@@ -10,6 +11,10 @@ export default function useWorkflowDiagnosticsIssuesCount(
 ): number | undefined {
   const { data: isWorkflowDiagnosticsEnabled } = useConfigValue(
     'WORKFLOW_DIAGNOSTICS_ENABLED'
+  );
+
+  const { data: isWorkflowDiagnosticsInHistoryEnabled } = useConfigValue(
+    'WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED'
   );
 
   const { data: describeWorkflowResponse } = useDescribeWorkflow(params);
@@ -21,17 +26,22 @@ export default function useWorkflowDiagnosticsIssuesCount(
         'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID'
   );
 
-  const { data: diagnoseWorkflowResponse } = useDiagnoseWorkflow(params, {
-    enabled: isWorkflowDiagnosticsEnabled && isWorkflowClosed,
-  });
+  const shouldEvaluateDiagnostics =
+    (Boolean(isWorkflowDiagnosticsEnabled) && isWorkflowClosed) ||
+    Boolean(isWorkflowDiagnosticsInHistoryEnabled);
+
+  // Decoded to share the diagnose query cache with the workflow history view
+  const { data: diagnoseWorkflowResponse } = useDiagnoseWorkflow(
+    decodeUrlParams(params),
+    { enabled: shouldEvaluateDiagnostics }
+  );
 
   const totalIssuesCount = useMemo(() => {
     if (
-      !isWorkflowDiagnosticsEnabled ||
+      !shouldEvaluateDiagnostics ||
       !describeWorkflowResponse ||
-      !isWorkflowClosed ||
       !diagnoseWorkflowResponse ||
-      diagnoseWorkflowResponse?.parsingError
+      diagnoseWorkflowResponse.parsingError
     )
       return undefined;
 
@@ -43,9 +53,8 @@ export default function useWorkflowDiagnosticsIssuesCount(
       0
     );
   }, [
+    shouldEvaluateDiagnostics,
     describeWorkflowResponse,
-    isWorkflowDiagnosticsEnabled,
-    isWorkflowClosed,
     diagnoseWorkflowResponse,
   ]);
 
