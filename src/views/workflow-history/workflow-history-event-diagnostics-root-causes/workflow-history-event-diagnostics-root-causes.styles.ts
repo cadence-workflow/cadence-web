@@ -34,8 +34,8 @@ export const styled = {
   RootCauseMetadataPlaceholder: createStyled(
     'div',
     ({ $theme }: { $theme: Theme }) => ({
-      paddingTop: $theme.sizing.scale0,
-      paddingBottom: $theme.sizing.scale0,
+      paddingTop: $theme.sizing.scale100,
+      paddingBottom: $theme.sizing.scale100,
     })
   ),
 };
