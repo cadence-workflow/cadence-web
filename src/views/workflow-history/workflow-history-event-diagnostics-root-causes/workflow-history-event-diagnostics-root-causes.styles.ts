@@ -24,6 +24,11 @@ export const styled = {
   })),
   RootCauseMetadata: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     paddingLeft: $theme.sizing.scale600,
-    borderLeft: `${$theme.sizing.scale0} solid ${$theme.colors.borderOpaque}`,
+    borderColor: $theme.borders.border200.borderColor,
+    borderStyle: $theme.borders.border200.borderStyle,
+    borderLeftWidth: $theme.borders.border200.borderWidth,
+    borderTopWidth: 0,
+    borderBottomWidth: 0,
+    borderRightWidth: 0,
   })),
 };
