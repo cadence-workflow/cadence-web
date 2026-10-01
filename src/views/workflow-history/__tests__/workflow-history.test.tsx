@@ -42,7 +42,6 @@ import { type Props as NavbarProps } from '../workflow-history-navigation-bar/wo
 import {
   type PendingActivityTaskStartEvent,
   type PendingDecisionTaskStartEvent,
-  type WorkflowDiagnosticsIssuesByEventId,
 } from '../workflow-history.types';
 
 jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
@@ -547,13 +546,13 @@ describe(WorkflowHistory.name, () => {
 
 // TODO: delete this once the old Workflow Diagnostics view has been deleted
 function MockDiagnosticsFetcher() {
-  useDiagnoseWorkflow({
+  const { data } = useDiagnoseWorkflow({
     domain: 'test-domain',
     cluster: 'test-cluster',
     workflowId: 'test-workflowId',
     runId: 'test-runid',
   });
-  return null;
+  return data ? <div data-testid="diagnostics-fetched-elsewhere" /> : null;
 }
 
 async function setup({
