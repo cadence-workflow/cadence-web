@@ -309,4 +309,18 @@ describe('DELETE /api/auth/token', () => {
 
     expectNoStore(response);
   });
+
+  it('returns 500 with a structured log when the cookie writer fails for infrastructure reasons', async () => {
+    mockGetConfigValue.mockRejectedValueOnce(new Error('config store down'));
+    const response = await DELETE(buildDeleteRequest());
+    const body = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(body.message).toBe('Unexpected error');
+    expectNoStore(response);
+    expect(mockLoggerError).toHaveBeenCalledWith(
+      expect.objectContaining({ error: expect.any(Error) }),
+      'Failed to clear auth token cookie'
+    );
+  });
 });
