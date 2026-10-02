@@ -5,6 +5,11 @@ import getConfigValue from '@/utils/config/get-config-value';
 
 import { GET } from '../route';
 
+// NextResponse.json() parses in the edge-runtime realm — its objects fail
+// toStrictEqual's prototype check. Parse via text() in this realm instead.
+const parseJson = async (response: Response) =>
+  JSON.parse(await response.text());
+
 jest.mock('@/utils/config/get-config-value');
 
 const mockGetConfigValue = getConfigValue as jest.MockedFunction<
@@ -39,7 +44,7 @@ describe('GET /api/auth/me', () => {
     jest.clearAllMocks();
   });
 
-  it('returns authenticated context for a valid token', async () => {
+  it('returns the exact contract shape for a valid token', async () => {
     setAuthStrategy('jwt');
 
     const token = buildToken({
@@ -50,46 +55,47 @@ describe('GET /api/auth/me', () => {
     });
 
     const response = await GET(buildRequest(token));
-    const body = await response.json();
+    const body = await parseJson(response);
 
     expect(response.status).toBe(200);
-    expect(body).toMatchObject({
+    // pins the public contract: no groups, no credential, identity only when valid
+    expect(body).toStrictEqual({
       authEnabled: true,
-      auth: { isValidToken: true },
+      authStrategy: 'jwt',
+      auth: { isValidToken: true, canRefresh: false },
       isAdmin: false,
-      groups: ['reader', 'writer'],
       userName: 'test-user',
       id: 'user-id',
     });
-    expect(body).not.toHaveProperty('token');
   });
 
-  it('returns unauthenticated context when no cookie is present', async () => {
+  it('omits identity fields when no cookie is present', async () => {
     setAuthStrategy('jwt');
 
     const response = await GET(buildRequest());
-    const body = await response.json();
+    const body = await parseJson(response);
 
     expect(response.status).toBe(200);
-    expect(body).toMatchObject({
+    expect(body).toStrictEqual({
       authEnabled: true,
-      auth: { isValidToken: false },
+      authStrategy: 'jwt',
+      auth: { isValidToken: false, canRefresh: false },
       isAdmin: false,
-      groups: [],
     });
-    expect(body).not.toHaveProperty('token');
   });
 
   it('returns auth-disabled context when strategy is disabled', async () => {
     setAuthStrategy('disabled');
 
     const response = await GET(buildRequest());
-    const body = await response.json();
+    const body = await parseJson(response);
 
     expect(response.status).toBe(200);
-    expect(body).toMatchObject({
+    expect(body).toStrictEqual({
       authEnabled: false,
-      auth: { isValidToken: false },
+      authStrategy: 'disabled',
+      auth: { isValidToken: false, canRefresh: false },
+      isAdmin: false,
     });
   });
 
@@ -98,9 +104,8 @@ describe('GET /api/auth/me', () => {
 
     const token = buildToken({ sub: 'user-id', name: 'test-user' });
     const response = await GET(buildRequest(token));
-    const body = await response.json();
+    const body = await parseJson(response);
 
-    expect(body).not.toHaveProperty('token');
     expect(JSON.stringify(body)).not.toContain(token);
   });
 
