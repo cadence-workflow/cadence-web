@@ -1,6 +1,5 @@
 import { styled as createStyled, type Theme } from 'baseui';
 import { type ButtonOverrides } from 'baseui/button';
-import { type TextareaOverrides } from 'baseui/textarea';
 import { type StyleObject } from 'styletron-react';
 
 export const overrides = {
@@ -11,16 +10,6 @@ export const overrides = {
       } satisfies StyleObject,
     },
   } satisfies ButtonOverrides,
-  // Credential field: keep browser text-assistance off the JWT.
-  tokenInput: {
-    Input: {
-      props: {
-        spellCheck: false,
-        autoCorrect: 'off',
-        autoCapitalize: 'off',
-      },
-    },
-  } satisfies TextareaOverrides,
 };
 
 export const styled = {

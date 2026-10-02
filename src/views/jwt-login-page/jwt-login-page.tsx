@@ -6,7 +6,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from 'baseui/button';
 import { FormControl } from 'baseui/form-control';
 import { Spinner } from 'baseui/spinner';
-import { Textarea } from 'baseui/textarea';
+import { Textarea, type TextareaOverrides } from 'baseui/textarea';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { MdVpnKey } from 'react-icons/md';
@@ -143,7 +143,15 @@ export default function JwtLoginPage() {
               autoComplete="off"
               disabled={saveToken.isPending}
               rows={4}
-              overrides={overrides.tokenInput}
+              overrides={{
+                Input: {
+                  props: {
+                    spellCheck: false,
+                    autoCorrect: 'off',
+                    autoCapitalize: 'off',
+                  },
+                },
+              } satisfies TextareaOverrides}
             />
           </FormControl>
         </styled.TokenField>
