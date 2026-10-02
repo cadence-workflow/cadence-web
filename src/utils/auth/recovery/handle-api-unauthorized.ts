@@ -25,19 +25,17 @@ let recoveryInFlight: Promise<AuthRecoveryResult | undefined> | null = null;
 export async function handleApiUnauthorized(
   ctx: HandleApiUnauthorizedContext
 ): Promise<AuthRecoveryResult | undefined> {
-  // In-tab dedup: concurrent 401s in one tab share one recovery promise.
+  // In-tab dedup: concurrent 401s in one tab share one recovery attempt.
+  // The window covers only the lock + recover exchange. Post-recovery
+  // invalidation runs after it closes: invalidateQueries awaits active
+  // refetches, a refetch's 401 re-enters this function, and joining the
+  // in-flight promise from inside its own continuation would deadlock.
   if (!recoveryInFlight) {
-    recoveryInFlight = recoverAndApply(ctx).finally(() => {
+    recoveryInFlight = runSerializedRecovery(ctx).finally(() => {
       recoveryInFlight = null;
     });
   }
-  return recoveryInFlight;
-}
-
-async function recoverAndApply(
-  ctx: HandleApiUnauthorizedContext
-): Promise<AuthRecoveryResult | undefined> {
-  const result = await runSerializedRecovery(ctx);
+  const result = await recoveryInFlight;
 
   if (result?.kind === 'redirect') {
     window.location.assign(buildRecoveryRedirectUrl(result));
@@ -59,9 +57,14 @@ async function runSerializedRecovery(
   if (typeof navigator.locks === 'undefined') {
     return recoverOnce(ctx);
   }
-  return navigator.locks.request(AUTH_RECOVERY_LOCK_NAME, () =>
-    recoverOnce(ctx)
-  );
+  try {
+    return await navigator.locks.request(AUTH_RECOVERY_LOCK_NAME, () =>
+      recoverOnce(ctx)
+    );
+  } catch {
+    // Lock-manager failures decline recovery; the caller's 401 stands.
+    return undefined;
+  }
 }
 
 async function recoverOnce(
@@ -86,16 +89,27 @@ async function recoverOnce(
     // fall through to the recover route
   }
 
-  const response = await fetch('/api/auth/recover', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ returnTo: ctx.returnTo, notice: ctx.notice }),
-    cache: 'no-store',
-  });
+  // Transport and payload failures decline recovery (undefined) rather than
+  // replacing the caller's 401 with a raw TypeError/SyntaxError.
+  let response: Response;
+  try {
+    response = await fetch('/api/auth/recover', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ returnTo: ctx.returnTo, notice: ctx.notice }),
+      cache: 'no-store',
+    });
+  } catch {
+    return undefined;
+  }
   if (!response.ok) {
     return undefined;
   }
-  return (await response.json()) as AuthRecoveryResult;
+  try {
+    return (await response.json()) as AuthRecoveryResult;
+  } catch {
+    return undefined;
+  }
 }
 
 /**
