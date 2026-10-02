@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
 import getCookieSecureAttribute from '@/utils/auth/helpers/get-cookie-secure-attribute';
+import isSameOriginRequest from '@/utils/auth/helpers/is-same-origin-request';
 import { JWT_AUTH_COOKIE_NAME } from '@/utils/auth/strategies/jwt/jwt-auth.constants';
 
 import {
@@ -17,6 +18,13 @@ const badRequest = (message: string) =>
   NextResponse.json({ message }, { status: 400, headers: NO_STORE_HEADERS });
 
 export async function setAuthToken(request: NextRequest) {
+  if (!isSameOriginRequest(request)) {
+    return NextResponse.json(
+      { message: 'Cross-origin request rejected' },
+      { status: 403, headers: NO_STORE_HEADERS }
+    );
+  }
+
   try {
     const requestBody = await request.json();
     const { data, error } = tokenRequestBodySchema.safeParse(requestBody);
