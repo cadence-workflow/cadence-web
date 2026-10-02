@@ -1,9 +1,6 @@
 import { type Domain } from '@/__generated__/proto-ts/uber/cadence/api/v1/Domain';
 import { getMockAuthRequest } from '@/utils/auth/__fixtures__/mock-auth-request';
-import {
-  getPublicAuthContext,
-  resolveAuthContext,
-} from '@/utils/auth/auth-context';
+import { resolveAuthContext } from '@/utils/auth/auth-context';
 import { getDomainAccessForUser } from '@/utils/auth/auth-shared';
 import getActiveAuthServerEntry from '@/utils/auth/strategies/get-active-auth-server-entry';
 import { getMockJwtAuthRequest } from '@/utils/auth/strategies/jwt/__fixtures__/mock-jwt-auth-request';
@@ -378,34 +375,6 @@ describe('auth-context utilities', () => {
       );
 
       expect(access).toEqual({ canRead: true, canWrite: false });
-    });
-  });
-
-  describe(getPublicAuthContext.name, () => {
-    it('omits private fields but preserves flags', () => {
-      const authContext = {
-        authEnabled: true,
-        auth: {
-          isValidToken: true,
-          token: 'secret',
-        },
-        groups: ['worker'],
-        isAdmin: true,
-        userName: 'worker',
-        id: 'worker',
-      };
-
-      expect(getPublicAuthContext(authContext)).toEqual({
-        authEnabled: true,
-        auth: {
-          isValidToken: true,
-          expiresAtMs: undefined,
-        },
-        groups: ['worker'],
-        isAdmin: true,
-        userName: 'worker',
-        id: 'worker',
-      });
     });
   });
 

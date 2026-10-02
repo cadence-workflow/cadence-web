@@ -2,7 +2,7 @@ import { HttpResponse } from 'msw';
 
 import { render, screen, waitFor, userEvent } from '@/test-utils/rtl';
 
-import { type PublicAuthContext } from '@/utils/auth/auth-shared.types';
+import { type AuthMeResponse } from '@/utils/auth/auth.types';
 
 import JwtLoginPage from '../jwt-login-page';
 
@@ -20,17 +20,17 @@ jest.mock('next/navigation', () => ({
   useSearchParams: () => mockSearchParams,
 }));
 
-const jwtInvalid: PublicAuthContext = {
+const jwtInvalid: AuthMeResponse = {
   authEnabled: true,
+  authStrategy: 'jwt',
   auth: { isValidToken: false },
-  groups: [],
   isAdmin: false,
 };
 
-const jwtValid: PublicAuthContext = {
+const jwtValid: AuthMeResponse = {
   authEnabled: true,
+  authStrategy: 'jwt',
   auth: { isValidToken: true },
-  groups: [],
   isAdmin: false,
   userName: 'alice',
 };
@@ -54,8 +54,8 @@ describe(JwtLoginPage.name, () => {
   });
 
   it('shows a spinner in the card while auth loads', async () => {
-    let releaseAuth!: (value: PublicAuthContext) => void;
-    const authPending = new Promise<PublicAuthContext>((resolve) => {
+    let releaseAuth!: (value: AuthMeResponse) => void;
+    const authPending = new Promise<AuthMeResponse>((resolve) => {
       releaseAuth = resolve;
     });
     setup({ authResolver: () => authPending });
@@ -191,7 +191,7 @@ function setup({
   onPostToken,
   authErrorAfterPost = false,
 }: {
-  authResolver: () => PublicAuthContext | Promise<PublicAuthContext>;
+  authResolver: () => AuthMeResponse | Promise<AuthMeResponse>;
   onPostToken?: () => void;
   authErrorAfterPost?: boolean;
 }) {
