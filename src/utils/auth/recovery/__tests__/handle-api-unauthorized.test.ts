@@ -431,6 +431,45 @@ describe('handleApiUnauthorized', () => {
       expect(recoverResolver).toHaveBeenCalledTimes(1);
     });
 
+    it('shares one me read across concurrent first-time strategy resolutions', async () => {
+      const meResolver = jest.fn(async () =>
+        HttpResponse.json({
+          authEnabled: true,
+          authStrategy: 'jwt',
+          auth: { isValidToken: false },
+          isAdmin: false,
+        })
+      );
+      const recoverResolver = jest.fn(() => HttpResponse.json(RECOVERED));
+      mswMockEndpoints([
+        {
+          httpMethod: 'GET',
+          path: '/api/auth/me',
+          httpResolver: meResolver,
+          mockOnce: false,
+        },
+        {
+          httpMethod: 'POST',
+          path: '/api/auth/recover',
+          httpResolver: recoverResolver,
+          mockOnce: false,
+        },
+      ]);
+
+      const { handleApiUnauthorized } = await loadModule();
+      const [first, second] = await Promise.all([
+        handleApiUnauthorized(CTX),
+        handleApiUnauthorized(CTX),
+      ]);
+
+      expect(first).toEqual(RECOVERED);
+      expect(second).toEqual(RECOVERED);
+      // One shared strategy resolution + one in-lock validity re-check —
+      // not one strategy resolution per caller.
+      expect(meResolver).toHaveBeenCalledTimes(2);
+      expect(recoverResolver).toHaveBeenCalledTimes(1);
+    });
+
     it('enters recovery when the policy accepts the 401 response', async () => {
       const recoverResolver = jest.fn(() => HttpResponse.json(RECOVERED));
       mswMockEndpoints([

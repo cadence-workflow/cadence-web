@@ -19,6 +19,8 @@ export function getCachedAuthStrategyConfig():
   return cachedAuthStrategyConfig;
 }
 
+let resolveInFlight: Promise<AuthStrategyConfigValue | undefined> | null = null;
+
 /** Returns the cached strategy, fetching /api/auth/me when the cache is empty. */
 export async function resolveCachedAuthStrategy(): Promise<
   AuthStrategyConfigValue | undefined
@@ -27,6 +29,17 @@ export async function resolveCachedAuthStrategy(): Promise<
     return cachedAuthStrategyConfig;
   }
 
+  // Concurrent first-time resolutions (a burst of 401s before any consumer
+  // has seeded the cache) share one /api/auth/me read.
+  if (!resolveInFlight) {
+    resolveInFlight = fetchStrategy().finally(() => {
+      resolveInFlight = null;
+    });
+  }
+  return resolveInFlight;
+}
+
+async function fetchStrategy(): Promise<AuthStrategyConfigValue | undefined> {
   try {
     const response = await fetch('/api/auth/me', { cache: 'no-store' });
     if (!response.ok) {

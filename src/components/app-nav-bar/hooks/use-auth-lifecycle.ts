@@ -1,7 +1,8 @@
 'use client';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { type AuthLogoutNotice } from '@/utils/auth/auth.types';
+import { setCachedAuthStrategyConfig } from '@/utils/auth/helpers/auth-strategy-config-cache';
 import { handleApiUnauthorized } from '@/utils/auth/recovery/handle-api-unauthorized';
 import getAuthClientPolicy from '@/utils/auth/strategies/get-auth-client-policy';
 import useUserInfo from '@/views/shared/hooks/use-user-info/use-user-info';
@@ -15,6 +16,16 @@ import { type AuthLifecycle } from './use-auth-lifecycle.types';
  */
 export default function useAuthLifecycle(): AuthLifecycle {
   const { data: authInfo, isLoading: isAuthLoading } = useUserInfo();
+
+  // Seed the per-tab strategy cache from the already-loaded user info, so
+  // the recovery entry point's policy gate resolves synchronously instead of
+  // re-fetching /api/auth/me on a first 401 (a read whose failure would
+  // decline recovery outright).
+  useEffect(() => {
+    if (authInfo?.authStrategy) {
+      setCachedAuthStrategyConfig(authInfo.authStrategy);
+    }
+  }, [authInfo?.authStrategy]);
 
   const policy = getAuthClientPolicy(authInfo?.authStrategy);
 

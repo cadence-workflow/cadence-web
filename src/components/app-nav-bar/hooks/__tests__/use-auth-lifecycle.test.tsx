@@ -6,6 +6,10 @@ import {
   type AuthClientPolicy,
   type AuthMeResponse,
 } from '@/utils/auth/auth.types';
+import {
+  getCachedAuthStrategyConfig,
+  setCachedAuthStrategyConfig,
+} from '@/utils/auth/helpers/auth-strategy-config-cache';
 import { handleApiUnauthorized } from '@/utils/auth/recovery/handle-api-unauthorized';
 import getAuthClientPolicy from '@/utils/auth/strategies/get-auth-client-policy';
 import { server } from '@/utils/msw/node';
@@ -71,6 +75,10 @@ describe(useAuthLifecycle.name, () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockPolicy.supportsSessionRecovery = false;
+  });
+
+  afterEach(() => {
+    setCachedAuthStrategyConfig(undefined);
   });
 
   describe('derived state', () => {
@@ -154,6 +162,18 @@ describe(useAuthLifecycle.name, () => {
       });
 
       expect(mockGetAuthClientPolicy).toHaveBeenCalledWith('jwt');
+    });
+
+    it('seeds the per-tab strategy cache from the loaded user info', async () => {
+      const { result } = setup({ authResponse: AUTH_ENABLED });
+
+      await waitFor(() => {
+        expect(result.current.isValidToken).toBe(true);
+      });
+
+      // The recovery entry point's policy gate reads this synchronously
+      // instead of re-fetching /api/auth/me on a first 401.
+      expect(getCachedAuthStrategyConfig()).toBe('jwt');
     });
 
     it('logout dispatches to the client policy with the notice', async () => {

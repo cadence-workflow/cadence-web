@@ -185,8 +185,11 @@ describe(AppNavBar.name, () => {
       jest.advanceTimersByTime(300_000);
     });
 
-    // A URL-only change must not re-arm the timer either.
+    // A URL-only change must not re-arm the timer either. The mocked hooks
+    // change too, so a URL-dependent effect would actually re-fire.
     window.history.replaceState({}, '', '/domains?cluster=other');
+    mockPathname = '/domains';
+    mockSearchParams = new URLSearchParams('cluster=other');
     rerender(<AppNavBar />);
     await act(async () => {
       jest.advanceTimersByTime(300_000);
