@@ -34,7 +34,6 @@ describe('auth-info middleware', () => {
       cookies: mockRequest.cookies,
       headers: mockRequest.headers,
     });
-    // identity, not just shape: the real request headers object is forwarded
     expect(mockResolveAuthContext.mock.calls[0][0]?.headers).toBe(
       mockRequest.headers
     );
