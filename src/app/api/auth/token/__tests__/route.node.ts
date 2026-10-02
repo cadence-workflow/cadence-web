@@ -16,6 +16,7 @@ const mockGetConfigValue = getConfigValue as jest.MockedFunction<
   typeof getConfigValue
 >;
 const mockLoggerWarn = jest.mocked(logger.warn);
+const mockLoggerError = jest.mocked(logger.error);
 
 mockGetConfigValue.mockImplementation(async (key: string) => {
   if (key === 'CADENCE_WEB_AUTH_STRATEGY') return 'jwt';
@@ -169,6 +170,19 @@ describe('POST /api/auth/token', () => {
 
     expect(response.status).toBe(400);
     expect(body.message).toBe('Invalid request body');
+  });
+
+  it('returns 500, not 400, when the cookie writer fails for infrastructure reasons', async () => {
+    mockGetConfigValue.mockRejectedValueOnce(new Error('config store down'));
+    const response = await POST(buildRequest({ token: VALID_JWT }));
+    const body = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(body.message).toBe('Unexpected error');
+    expect(mockLoggerError).toHaveBeenCalledWith(
+      expect.objectContaining({ error: expect.any(Error) }),
+      'Failed to write auth token cookie'
+    );
   });
 
   it('uses the resolved secure attribute when setting the auth cookie', async () => {
