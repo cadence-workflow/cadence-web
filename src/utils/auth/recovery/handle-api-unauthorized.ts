@@ -30,19 +30,29 @@ export async function handleApiUnauthorized(
   // invalidation runs after it closes: invalidateQueries awaits active
   // refetches, a refetch's 401 re-enters this function, and joining the
   // in-flight promise from inside its own continuation would deadlock.
-  if (!recoveryInFlight) {
-    recoveryInFlight = runSerializedRecovery(ctx).finally(() => {
+  const isOwner = recoveryInFlight === null;
+  // ??= keeps the awaited local non-nullable; the module-level variable is
+  // nullable because the finally callback clears it.
+  const inFlight = (recoveryInFlight ??= runSerializedRecovery(ctx).finally(
+    () => {
       recoveryInFlight = null;
-    });
-  }
-  const result = await recoveryInFlight;
+    }
+  ));
+  const result = await inFlight;
 
   if (result?.kind === 'redirect') {
-    window.location.assign(buildRecoveryRedirectUrl(result));
+    // Only the caller that ran the recovery navigates; joiners suspend
+    // alongside it (navigation is tab-global).
+    if (isOwner) {
+      window.location.assign(buildRecoveryRedirectUrl(result));
+    }
     return suspendForever();
   }
 
-  if (result?.kind === 'recovered') {
+  // Side effects run once per recovery, not once per deduped caller:
+  // invalidateQueries cancels in-flight refetches by default, so N callers
+  // invalidating in a row would cascade cancelled auth-me refetches.
+  if (result?.kind === 'recovered' && isOwner) {
     await invalidatePostRecovery();
   }
   return result;
