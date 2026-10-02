@@ -8,10 +8,9 @@ import { type AuthContext, type AuthRequest } from './auth.types';
 import getActiveAuthServerEntry from './strategies/get-active-auth-server-entry';
 
 /**
- * Resolves the request's auth context through the active strategy's server
- * policy (the registry owns per-strategy behavior; this module is
- * strategy-agnostic plumbing). No-arg form reads the request implicitly via
- * next/headers and THROWS outside a request scope.
+ * Resolves the auth context using the active strategy's server policy.
+ * If no request is passed, the policy decides how to get one. It may read it
+ * implicitly, which can throw outside a request scope, or not need one at all.
  */
 export async function resolveAuthContext(
   request?: AuthRequest
