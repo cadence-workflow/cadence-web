@@ -1,3 +1,14 @@
+import { type AuthLogoutNotice } from './auth.types';
+
+// --- Logout notices ---
+
+export const AUTH_LOGOUT_NOTICES = [
+  'signed-out',
+  'session-expired',
+] as const satisfies readonly AuthLogoutNotice[];
+
+export const AUTH_LOGOUT_NOTICE_SET = new Set<string>(AUTH_LOGOUT_NOTICES);
+
 // --- Login surfaces ---
 
 export const DEFAULT_AUTH_RETURN_TO = '/';
