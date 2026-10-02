@@ -1,7 +1,16 @@
 import { getQueryClient } from '@/utils/query-client/query-client';
 
-import { AUTH_LOOP_MARKER_PARAM, AUTH_NOTICE_PARAM } from '../auth.constants';
+import {
+  AUTH_LOOP_MARKER_PARAM,
+  AUTH_NOTICE_PARAM,
+  AUTH_UNAVAILABLE_PATH,
+} from '../auth.constants';
 import { type AuthRecoveryResult } from '../auth.types';
+import {
+  getCachedAuthStrategyConfig,
+  resolveCachedAuthStrategy,
+} from '../helpers/auth-strategy-config-cache';
+import getAuthClientPolicy from '../strategies/get-auth-client-policy';
 
 import {
   AUTH_RECOVERY_INVALIDATION_QUERY_KEYS,
@@ -10,12 +19,13 @@ import {
 import { type HandleApiUnauthorizedContext } from './handle-api-unauthorized.types';
 
 /**
- * The single client recovery entry point: the request() 401 pipeline enters
- * here — no other code path calls /api/auth/recover.
+ * The single client recovery entry point: the request() 401 pipeline, the
+ * proactive-recovery timer, and the nav's recoverSession all enter here —
+ * no other code path calls /api/auth/recover.
  *
- * Flow: in-tab dedup → Web Locks serialization → re-check validity (a
- * sibling tab may already have recovered; the browser has the winner's
- * cookie) → POST /api/auth/recover → on 'recovered' invalidate the
+ * Flow: policy gate → in-tab dedup → Web Locks serialization → re-check
+ * validity (a sibling tab may already have recovered; the browser has the
+ * winner's cookie) → POST /api/auth/recover → on 'recovered' invalidate the
  * post-recovery query set; on 'redirect' navigate AFTER the lock callback
  * returned, then suspend — a never-settling promise inside the lock callback
  * would hold the cross-tab lock forever on a failed navigation.
@@ -25,6 +35,23 @@ let recoveryInFlight: Promise<AuthRecoveryResult | undefined> | null = null;
 export async function handleApiUnauthorized(
   ctx: HandleApiUnauthorizedContext
 ): Promise<AuthRecoveryResult | undefined> {
+  const authStrategy =
+    getCachedAuthStrategyConfig() ?? (await resolveCachedAuthStrategy());
+  const policy = getAuthClientPolicy(authStrategy);
+  if (!policy) {
+    return undefined;
+  }
+
+  // Policies that opt out of recovery (disabled, trusted-header) never reach
+  // /api/auth/recover — the remedy surface named by the policy takes over.
+  if (ctx.response && !policy.onUnauthorized(ctx.response)) {
+    if (policy.unauthenticatedRemedy === 'unavailable') {
+      window.location.assign(AUTH_UNAVAILABLE_PATH);
+      return suspendForever();
+    }
+    return undefined;
+  }
+
   // In-tab dedup: concurrent 401s in one tab share one recovery attempt.
   // The window covers only the lock + recover exchange. Post-recovery
   // invalidation runs after it closes: invalidateQueries awaits active
