@@ -1,21 +1,57 @@
 import { NextRequest } from 'next/server';
 
 import { JWT_AUTH_COOKIE_NAME } from '@/utils/auth/strategies/jwt/jwt-auth.constants';
+import getConfigValue from '@/utils/config/get-config-value';
+import logger from '@/utils/logger';
 
 import { DELETE, POST } from '../route';
+
+jest.mock('@/utils/config/get-config-value');
+jest.mock('@/utils/logger', () => ({
+  __esModule: true,
+  default: { warn: jest.fn(), error: jest.fn(), info: jest.fn() },
+}));
+
+const mockGetConfigValue = getConfigValue as jest.MockedFunction<
+  typeof getConfigValue
+>;
+const mockLoggerWarn = jest.mocked(logger.warn);
+const mockLoggerError = jest.mocked(logger.error);
+
+mockGetConfigValue.mockImplementation(async (key: string) => {
+  if (key === 'CADENCE_WEB_AUTH_STRATEGY') return 'jwt';
+  return '';
+});
 
 const VALID_JWT = 'header.payload.signature';
 
 const buildRequest = (
   body: unknown,
-  options?: { proto?: string; xForwardedProto?: string }
+  options?: {
+    proto?: string;
+    xForwardedProto?: string;
+    origin?: string;
+    xForwardedHost?: string;
+    host?: string;
+    hostname?: string;
+  }
 ) => {
   const headers = new Headers({ 'content-type': 'application/json' });
   if (options?.xForwardedProto) {
     headers.set('x-forwarded-proto', options.xForwardedProto);
   }
+  if (options?.host) {
+    headers.set('host', options.host);
+  }
+  if (options?.origin) {
+    headers.set('origin', options.origin);
+  }
+  if (options?.xForwardedHost) {
+    headers.set('x-forwarded-host', options.xForwardedHost);
+  }
   const protocol = options?.proto ?? 'http';
-  return new NextRequest(`${protocol}://localhost/api/auth/token`, {
+  const hostname = options?.hostname ?? 'localhost';
+  return new NextRequest(`${protocol}://${hostname}/api/auth/token`, {
     method: 'POST',
     headers,
     body: JSON.stringify(body),
@@ -136,6 +172,19 @@ describe('POST /api/auth/token', () => {
     expect(body.message).toBe('Invalid request body');
   });
 
+  it('returns 500, not 400, when the cookie writer fails for infrastructure reasons', async () => {
+    mockGetConfigValue.mockRejectedValueOnce(new Error('config store down'));
+    const response = await POST(buildRequest({ token: VALID_JWT }));
+    const body = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(body.message).toBe('Unexpected error');
+    expect(mockLoggerError).toHaveBeenCalledWith(
+      expect.objectContaining({ error: expect.any(Error) }),
+      'Failed to write auth token cookie'
+    );
+  });
+
   it('uses the resolved secure attribute when setting the auth cookie', async () => {
     const response = await POST(
       buildRequest({ token: VALID_JWT }, { xForwardedProto: 'https' })
@@ -145,12 +194,87 @@ describe('POST /api/auth/token', () => {
     expect(authCookie!.attributes).toHaveProperty('secure', true);
   });
 
+  it('warns when writing the auth cookie over plain HTTP to a non-loopback host', async () => {
+    const response = await POST(
+      buildRequest(
+        { token: VALID_JWT },
+        { hostname: 'cadence.internal.example' }
+      )
+    );
+
+    expect(response.status).toBe(200);
+    expect(mockLoggerWarn).toHaveBeenCalledWith(
+      expect.objectContaining({ host: 'cadence.internal.example' }),
+      'Writing auth cookies without the Secure attribute on a non-loopback host'
+    );
+  });
+
   it('sets Cache-Control: no-store on all responses', async () => {
     const success = await POST(buildRequest({ token: VALID_JWT }));
     const failure = await POST(buildRequest({}));
 
     expectNoStore(success);
     expectNoStore(failure);
+  });
+
+  describe('same-origin guard', () => {
+    it('accepts a request without an Origin header', async () => {
+      const response = await POST(buildRequest({ token: VALID_JWT }));
+
+      expect(response.status).toBe(200);
+    });
+
+    it('accepts a request whose Origin matches the request host', async () => {
+      const response = await POST(
+        buildRequest(
+          { token: VALID_JWT },
+          { origin: 'http://localhost', host: 'localhost' }
+        )
+      );
+
+      expect(response.status).toBe(200);
+    });
+
+    it('rejects a cross-site request and sets no cookie', async () => {
+      const response = await POST(
+        buildRequest({ token: VALID_JWT }, { origin: 'https://evil.example' })
+      );
+      const body = await response.json();
+
+      expect(response.status).toBe(403);
+      expect(body.message).toBe('Cross-origin request rejected');
+      expect(response.headers.getSetCookie()).toHaveLength(0);
+      expectNoStore(response);
+    });
+
+    it('rejects a malformed Origin header', async () => {
+      const response = await POST(
+        buildRequest({ token: VALID_JWT }, { origin: 'not a url' })
+      );
+
+      expect(response.status).toBe(403);
+    });
+
+    it('compares Origin against the forwarded host when present', async () => {
+      const accepted = await POST(
+        buildRequest(
+          { token: VALID_JWT },
+          {
+            origin: 'https://cadence.example',
+            xForwardedHost: 'cadence.example',
+          }
+        )
+      );
+      expect(accepted.status).toBe(200);
+
+      const rejected = await POST(
+        buildRequest(
+          { token: VALID_JWT },
+          { origin: 'https://evil.example', xForwardedHost: 'cadence.example' }
+        )
+      );
+      expect(rejected.status).toBe(403);
+    });
   });
 });
 
@@ -184,5 +308,19 @@ describe('DELETE /api/auth/token', () => {
     const response = await DELETE(buildDeleteRequest());
 
     expectNoStore(response);
+  });
+
+  it('returns 500 with a structured log when the cookie writer fails for infrastructure reasons', async () => {
+    mockGetConfigValue.mockRejectedValueOnce(new Error('config store down'));
+    const response = await DELETE(buildDeleteRequest());
+    const body = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(body.message).toBe('Unexpected error');
+    expectNoStore(response);
+    expect(mockLoggerError).toHaveBeenCalledWith(
+      expect.objectContaining({ error: expect.any(Error) }),
+      'Failed to clear auth token cookie'
+    );
   });
 });
