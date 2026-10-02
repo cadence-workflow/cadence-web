@@ -14,6 +14,7 @@ import useSuspenseDomainDescription from '../shared/hooks/use-domain-description
 import DomainWorkflowsArchivalDisabledPanel from './domain-workflows-archival-disabled-panel/domain-workflows-archival-disabled-panel';
 import DomainWorkflowsArchivalHeader from './domain-workflows-archival-header/domain-workflows-archival-header';
 import DomainWorkflowsArchivalList from './domain-workflows-archival-list/domain-workflows-archival-list';
+import DomainWorkflowsArchivalLookup from './domain-workflows-archival-lookup/domain-workflows-archival-lookup';
 import DomainWorkflowsArchivalTable from './domain-workflows-archival-table/domain-workflows-archival-table';
 
 export default function DomainWorkflowsArchival(
@@ -55,10 +56,16 @@ export default function DomainWorkflowsArchival(
     };
   }, [queryParams.timeRangeStartArchival, queryParams.timeRangeEndArchival]);
 
-  if (
-    historyArchivalStatus !== 'ARCHIVAL_STATUS_ENABLED' ||
-    visibilityArchivalStatus !== 'ARCHIVAL_STATUS_ENABLED'
-  ) {
+  if (visibilityArchivalStatus !== 'ARCHIVAL_STATUS_ENABLED') {
+    if (historyArchivalStatus === 'ARCHIVAL_STATUS_ENABLED') {
+      return (
+        <DomainWorkflowsArchivalLookup
+          domain={props.domain}
+          cluster={props.cluster}
+        />
+      );
+    }
+
     return <DomainWorkflowsArchivalDisabledPanel />;
   }
 
