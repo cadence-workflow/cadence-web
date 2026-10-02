@@ -244,6 +244,94 @@ describe('handleApiUnauthorized', () => {
     await expect(handleApiUnauthorized(CTX)).resolves.toBeUndefined();
   });
 
+  it('declines recovery when the recover fetch fails at the transport level', async () => {
+    mswMockEndpoints([
+      { httpMethod: 'GET', path: '/api/auth/me', jsonResponse: ME_INVALID },
+      {
+        httpMethod: 'POST',
+        path: '/api/auth/recover',
+        httpResolver: async () => HttpResponse.error() as StrictResponse<never>,
+      },
+    ]);
+
+    const { handleApiUnauthorized } = await loadModule();
+    // The caller's original 401 stands; no raw TypeError escapes.
+    await expect(handleApiUnauthorized(CTX)).resolves.toBeUndefined();
+  });
+
+  it('declines recovery when the recover route returns an unparseable body', async () => {
+    mswMockEndpoints([
+      { httpMethod: 'GET', path: '/api/auth/me', jsonResponse: ME_INVALID },
+      {
+        httpMethod: 'POST',
+        path: '/api/auth/recover',
+        httpResolver: async () => HttpResponse.text('not-json'),
+      },
+    ]);
+
+    const { handleApiUnauthorized } = await loadModule();
+    await expect(handleApiUnauthorized(CTX)).resolves.toBeUndefined();
+  });
+
+  it('declines recovery when the lock manager rejects', async () => {
+    Object.defineProperty(navigator, 'locks', {
+      configurable: true,
+      value: {
+        request: jest.fn(async () => {
+          throw new DOMException('Aborted', 'AbortError');
+        }),
+      },
+    });
+    const recoverResolver = jest.fn(() => HttpResponse.json(RECOVERED));
+    mswMockEndpoints([
+      { httpMethod: 'GET', path: '/api/auth/me', jsonResponse: ME_INVALID },
+      {
+        httpMethod: 'POST',
+        path: '/api/auth/recover',
+        httpResolver: recoverResolver,
+      },
+    ]);
+
+    const { handleApiUnauthorized } = await loadModule();
+    await expect(handleApiUnauthorized(CTX)).resolves.toBeUndefined();
+    expect(recoverResolver).not.toHaveBeenCalled();
+  });
+
+  it('does not deadlock when a refetch 401 re-enters recovery during invalidation', async () => {
+    const recoverResolver = jest.fn(() => HttpResponse.json(RECOVERED));
+    mswMockEndpoints([
+      {
+        httpMethod: 'GET',
+        path: '/api/auth/me',
+        jsonResponse: ME_INVALID,
+        mockOnce: false,
+      },
+      {
+        httpMethod: 'POST',
+        path: '/api/auth/recover',
+        httpResolver: recoverResolver,
+        mockOnce: false,
+      },
+    ]);
+
+    const { handleApiUnauthorized, queryClient } = await loadModule();
+    const originalInvalidate = queryClient.invalidateQueries.bind(queryClient);
+    jest
+      .spyOn(queryClient, 'invalidateQueries')
+      // A refetch kicked off by invalidateQueries can 401; its recovery must
+      // settle before the invalidation completes. Joining the in-flight
+      // recovery here is the deadlock this test guards against.
+      .mockImplementationOnce(async (filters) => {
+        await handleApiUnauthorized(CTX);
+        return originalInvalidate(filters);
+      });
+
+    await expect(handleApiUnauthorized(CTX)).resolves.toEqual(RECOVERED);
+    // The re-entrant call ran its own recovery instead of joining the
+    // in-flight one (whose continuation it was blocking).
+    expect(recoverResolver).toHaveBeenCalledTimes(2);
+  });
+
   it('falls through to the recover route when the re-check fetch fails', async () => {
     const recoverResolver = jest.fn(() => HttpResponse.json(RECOVERED));
     mswMockEndpoints([
