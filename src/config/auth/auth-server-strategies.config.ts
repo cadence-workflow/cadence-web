@@ -24,6 +24,16 @@ const AUTH_SERVER_STRATEGIES_CONFIG = {
     policy: jwtServerPolicy,
     cookieNames: { exact: [JWT_AUTH_COOKIE_NAME], prefixes: [] },
   },
+  'trusted-header': {
+    // Lazy loader so the policy module loads only when the strategy is
+    // selected. No cookie declarations: this strategy writes no cookies
+    // (the credential lives at the perimeter).
+    policy: () =>
+      import(
+        '@/utils/auth/strategies/trusted-header/trusted-header-server-policy'
+      ).then((module) => module.default),
+    cookieNames: { exact: [], prefixes: [] },
+  },
 } satisfies Record<AuthStrategyConfigValue, AuthServerRegistryEntry>;
 
 export default AUTH_SERVER_STRATEGIES_CONFIG;

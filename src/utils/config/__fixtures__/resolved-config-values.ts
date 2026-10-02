@@ -61,5 +61,6 @@ const mockResolvedConfigValues: LoadedConfigResolvedValues = {
   SCHEDULES_ENABLED: false,
   WORKFLOWS_LIST_ENABLED: false,
   LIST_WORKFLOWS_PARTIAL_MATCH_ENABLED: false,
+  TRUSTED_HEADER_AUTH_CONFIG: null,
 };
 export default mockResolvedConfigValues;
