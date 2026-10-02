@@ -143,15 +143,17 @@ export default function JwtLoginPage() {
               autoComplete="off"
               disabled={saveToken.isPending}
               rows={4}
-              overrides={{
-                Input: {
-                  props: {
-                    spellCheck: false,
-                    autoCorrect: 'off',
-                    autoCapitalize: 'off',
+              overrides={
+                {
+                  Input: {
+                    props: {
+                      spellCheck: false,
+                      autoCorrect: 'off',
+                      autoCapitalize: 'off',
+                    },
                   },
-                },
-              } satisfies TextareaOverrides}
+                } satisfies TextareaOverrides
+              }
             />
           </FormControl>
         </styled.TokenField>
