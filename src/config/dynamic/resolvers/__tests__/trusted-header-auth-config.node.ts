@@ -127,6 +127,62 @@ describe(trustedHeaderAuthConfig.name, () => {
       /must be "inbound-header:outbound-key"/
     );
   });
+
+  it('throws on a gRPC metadata map entry with extra segments (silently dropped data)', () => {
+    setMinimalEnv();
+    process.env.CADENCE_WEB_TRUSTED_HEADER_GRPC_METADATA =
+      'x-cadence-user-id:cadence-user:dropped';
+
+    expect(() => trustedHeaderAuthConfig()).toThrow(
+      /must be "inbound-header:outbound-key"/
+    );
+  });
+
+  it.each([
+    ['x-cadence-user-id:not a key', /invalid outbound key/],
+    ['x-cadence-cert:cadence-cert-bin', /-bin/],
+  ])(
+    'throws on an outbound key grpc-js would reject per call (%s)',
+    (metadataEnv, pattern) => {
+      setMinimalEnv();
+      process.env.CADENCE_WEB_TRUSTED_HEADER_GRPC_METADATA = metadataEnv;
+
+      expect(() => trustedHeaderAuthConfig()).toThrow(pattern);
+    }
+  );
+
+  it('throws on an invalid inbound header name in the metadata map', () => {
+    setMinimalEnv();
+    process.env.CADENCE_WEB_TRUSTED_HEADER_GRPC_METADATA =
+      'bad header:cadence-user';
+
+    expect(() => trustedHeaderAuthConfig()).toThrow(
+      /not a valid HTTP header name/
+    );
+  });
+
+  it.each([
+    ['CADENCE_WEB_TRUSTED_HEADER_USER_ID'],
+    ['CADENCE_WEB_TRUSTED_HEADER_EMAIL'],
+    ['CADENCE_WEB_TRUSTED_HEADER_NAME'],
+    ['CADENCE_WEB_TRUSTED_HEADER_GROUPS'],
+    ['CADENCE_WEB_TRUSTED_HEADER_ADMIN'],
+    ['CADENCE_WEB_TRUSTED_HEADER_SHARED_SECRET_HEADER'],
+  ])(
+    'throws at boot on an invalid header name in %s (Headers.get would throw per request)',
+    (envVar) => {
+      setMinimalEnv();
+      process.env[envVar] = 'bad header';
+      if (envVar === 'CADENCE_WEB_TRUSTED_HEADER_SHARED_SECRET_HEADER') {
+        process.env.CADENCE_WEB_TRUSTED_HEADER_SHARED_SECRET =
+          'test-only-shared-secret';
+      }
+
+      expect(() => trustedHeaderAuthConfig()).toThrow(
+        new RegExp(`${envVar} is not a valid HTTP header name`)
+      );
+    }
+  );
 });
 
 function setMinimalEnv() {
