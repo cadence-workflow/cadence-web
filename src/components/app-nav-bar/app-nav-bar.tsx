@@ -28,6 +28,12 @@ export default function AppNavBar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { enqueue } = useSnackbar();
+  // baseui's enqueue is a plain closure with a new identity per render
+  // (SnackbarContext value is rebuilt each provider render), so the effects
+  // below call it through a ref instead of depending on it — depending on it
+  // would re-fire them on every render.
+  const enqueueRef = useRef(enqueue);
+  enqueueRef.current = enqueue;
 
   const {
     isAuthEnabled,
@@ -46,6 +52,8 @@ export default function AppNavBar() {
   const latestExpiresAtRef = useRef(expiresAtMs);
   latestExpiresAtRef.current = expiresAtMs;
   const expiryTimeoutIdRef = useRef<number | null>(null);
+  const warnedExpiryRef = useRef<number | null>(null);
+  const handledNoticeKeyRef = useRef<string | null>(null);
 
   const currentReturnTo = useMemo(() => {
     const search = searchParams.toString();
@@ -149,14 +157,20 @@ export default function AppNavBar() {
       return;
     }
 
-    const showWarning = () =>
-      enqueue(
+    // Once per expiry value: an unrelated re-render while already inside the
+    // warning window must not stack duplicate snackbars.
+    if (warnedExpiryRef.current === expiresAtMs) return;
+
+    const showWarning = () => {
+      warnedExpiryRef.current = expiresAtMs;
+      enqueueRef.current(
         {
           message: 'Session expiring soon. You will be signed out shortly.',
           overrides: overrides.warningSnackbar,
         },
         DURATION.long
       );
+    };
 
     const warningInMs =
       expiresAtMs - SESSION_EXPIRY_WARNING_LEAD_MS - Date.now();
@@ -166,7 +180,7 @@ export default function AppNavBar() {
     }
     const warningTimeoutId = window.setTimeout(showWarning, warningInMs);
     return () => window.clearTimeout(warningTimeoutId);
-  }, [isAuthEnabled, isValidToken, canRecover, expiresAtMs, enqueue]);
+  }, [isAuthEnabled, isValidToken, canRecover, expiresAtMs]);
 
   // authNotice/authLoop: the logout and recovery redirects stamp notices on
   // the final landing URL; render the snackbar post-login and strip the
@@ -175,9 +189,20 @@ export default function AppNavBar() {
   useEffect(() => {
     const noticeParam = searchParams.get(AUTH_NOTICE_PARAM);
     const hasLoopMarker = searchParams.has(AUTH_LOOP_MARKER_PARAM);
-    if ((!noticeParam && !hasLoopMarker) || isAuthLoading) {
+    if (!noticeParam && !hasLoopMarker) {
+      // Re-arm once the stripped URL lands.
+      handledNoticeKeyRef.current = null;
       return;
     }
+    if (isAuthLoading) {
+      return;
+    }
+
+    // router.replace is async: until the stripped URL lands, any re-render
+    // re-runs this effect with the same params. Handle each notice URL once.
+    const noticeKey = `${pathname}?${searchParams.toString()}`;
+    if (handledNoticeKeyRef.current === noticeKey) return;
+    handledNoticeKeyRef.current = noticeKey;
 
     const nextParams = new URLSearchParams(searchParams.toString());
     nextParams.delete(AUTH_NOTICE_PARAM);
@@ -188,7 +213,7 @@ export default function AppNavBar() {
     if (!isValidToken || !isAuthLogoutNotice(noticeParam)) {
       return;
     }
-    enqueue(
+    enqueueRef.current(
       {
         message: getAuthNoticeMessage(noticeParam),
         ...(noticeParam === 'session-expired'
@@ -197,7 +222,7 @@ export default function AppNavBar() {
       },
       DURATION.long
     );
-  }, [searchParams, pathname, router, isAuthLoading, isValidToken, enqueue]);
+  }, [searchParams, pathname, router, isAuthLoading, isValidToken]);
 
   const userItems = useMemo<UserMenuItem[] | undefined>(() => {
     if (!isAuthEnabled || !isValidToken) return undefined;

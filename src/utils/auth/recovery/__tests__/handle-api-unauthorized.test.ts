@@ -268,7 +268,9 @@ describe('handleApiUnauthorized', () => {
       },
     ]);
 
-    const { handleApiUnauthorized } = await loadModule();
+    const { handleApiUnauthorized, setCachedAuthStrategyConfig } =
+      await loadModule();
+    setCachedAuthStrategyConfig('jwt');
     // The caller's original 401 stands; no raw TypeError escapes.
     await expect(handleApiUnauthorized(CTX)).resolves.toBeUndefined();
   });
@@ -283,7 +285,9 @@ describe('handleApiUnauthorized', () => {
       },
     ]);
 
-    const { handleApiUnauthorized } = await loadModule();
+    const { handleApiUnauthorized, setCachedAuthStrategyConfig } =
+      await loadModule();
+    setCachedAuthStrategyConfig('jwt');
     await expect(handleApiUnauthorized(CTX)).resolves.toBeUndefined();
   });
 
@@ -306,7 +310,9 @@ describe('handleApiUnauthorized', () => {
       },
     ]);
 
-    const { handleApiUnauthorized } = await loadModule();
+    const { handleApiUnauthorized, setCachedAuthStrategyConfig } =
+      await loadModule();
+    setCachedAuthStrategyConfig('jwt');
     await expect(handleApiUnauthorized(CTX)).resolves.toBeUndefined();
     expect(recoverResolver).not.toHaveBeenCalled();
   });
@@ -328,7 +334,9 @@ describe('handleApiUnauthorized', () => {
       },
     ]);
 
-    const { handleApiUnauthorized, queryClient } = await loadModule();
+    const { handleApiUnauthorized, queryClient, setCachedAuthStrategyConfig } =
+      await loadModule();
+    setCachedAuthStrategyConfig('jwt');
     const originalInvalidate = queryClient.invalidateQueries.bind(queryClient);
     jest
       .spyOn(queryClient, 'invalidateQueries')

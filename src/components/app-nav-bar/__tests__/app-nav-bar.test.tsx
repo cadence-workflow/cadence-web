@@ -11,8 +11,11 @@ jest.mock('../hooks/use-auth-lifecycle');
 const mockEnqueue = jest.fn();
 jest.mock('baseui/snackbar', () => ({
   ...jest.requireActual('baseui/snackbar'),
+  // baseui's real enqueue is a new closure per provider render; mirror that
+  // so an effect depending on its identity re-fires here the way it would
+  // in production.
   useSnackbar: () => ({
-    enqueue: mockEnqueue,
+    enqueue: (...args: Parameters<typeof mockEnqueue>) => mockEnqueue(...args),
     dequeue: jest.fn(),
   }),
 }));
@@ -241,6 +244,18 @@ describe(AppNavBar.name, () => {
     );
   });
 
+  it('warns once per expiry value across re-renders inside the warning window', () => {
+    const { rerender } = setup({
+      lifecycle: { canRecover: false, expiresAtMs: Date.now() + 10_000 },
+    });
+    expect(mockEnqueue).toHaveBeenCalledTimes(1);
+
+    rerender(<AppNavBar />);
+    rerender(<AppNavBar />);
+
+    expect(mockEnqueue).toHaveBeenCalledTimes(1);
+  });
+
   it('logs out with the session-expired notice when the token flips invalid in place', () => {
     const logout = jest.fn().mockResolvedValue(undefined);
     const { rerender } = setup({ lifecycle: { logout } });
@@ -301,6 +316,17 @@ describe(AppNavBar.name, () => {
       setup({ lifecycle: { isAuthLoading: true } });
 
       expect(mockReplace).not.toHaveBeenCalled();
+    });
+
+    it('handles a notice URL once across re-renders while the strip is in flight', () => {
+      mockSearchParams = new URLSearchParams('authNotice=signed-out');
+      const { rerender } = setup({});
+
+      rerender(<AppNavBar />);
+      rerender(<AppNavBar />);
+
+      expect(mockReplace).toHaveBeenCalledTimes(1);
+      expect(mockEnqueue).toHaveBeenCalledTimes(1);
     });
 
     it('never navigates away from the current path when stripping (no /auth-unavailable trap)', () => {
