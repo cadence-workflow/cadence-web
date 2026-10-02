@@ -44,7 +44,9 @@ export async function handleApiUnauthorized(
 
   // Policies that opt out of recovery (disabled, trusted-header) never reach
   // /api/auth/recover — the remedy surface named by the policy takes over.
-  if (ctx.response && !policy.onUnauthorized(ctx.response)) {
+  // Response-less callers (the expiry timer) ask the same question without a
+  // response; jwt answers true because its recovery IS the login redirect.
+  if (!policy.onUnauthorized(ctx.response)) {
     if (policy.unauthenticatedRemedy === 'unavailable') {
       window.location.assign(AUTH_UNAVAILABLE_PATH);
       return suspendForever();

@@ -503,6 +503,70 @@ describe('handleApiUnauthorized', () => {
       expect(settled).toBe(false);
     });
 
+    it('gates response-less recovery through onUnauthorized (disabled opts out)', async () => {
+      const recoverResolver = jest.fn(() => HttpResponse.json(RECOVERED));
+      mswMockEndpoints([
+        {
+          httpMethod: 'POST',
+          path: '/api/auth/recover',
+          httpResolver: recoverResolver,
+        },
+      ]);
+      const mockAssign = mockLocationAssign();
+
+      const { handleApiUnauthorized, setCachedAuthStrategyConfig } =
+        await loadModule();
+      setCachedAuthStrategyConfig('disabled');
+
+      // No response on the context: the expiry-timer entry point.
+      const result = await handleApiUnauthorized(CTX);
+
+      expect(result).toBeUndefined();
+      expect(mockAssign).not.toHaveBeenCalled();
+      expect(recoverResolver).not.toHaveBeenCalled();
+    });
+
+    it('sends response-less recovery to the status page for an unavailable-remedy policy', async () => {
+      const fixturePolicy: AuthClientPolicy = {
+        supportsSessionRecovery: false,
+        unauthenticatedRemedy: 'unavailable',
+        login: jest.fn(),
+        logout: jest.fn().mockResolvedValue(undefined),
+        onUnauthorized: () => false,
+      };
+      const recoverResolver = jest.fn(() => HttpResponse.json(RECOVERED));
+      mswMockEndpoints([
+        {
+          httpMethod: 'POST',
+          path: '/api/auth/recover',
+          httpResolver: recoverResolver,
+        },
+      ]);
+      const mockAssign = mockLocationAssign();
+
+      const { handleApiUnauthorized, setCachedAuthStrategyConfig } =
+        await loadModule({ clientPolicy: fixturePolicy });
+      setCachedAuthStrategyConfig('jwt');
+
+      let settled = false;
+      void handleApiUnauthorized(CTX).then(
+        () => {
+          settled = true;
+        },
+        () => {
+          settled = true;
+        }
+      );
+
+      await waitFor(() =>
+        expect(mockAssign).toHaveBeenCalledWith(AUTH_UNAVAILABLE_PATH)
+      );
+      expect(recoverResolver).not.toHaveBeenCalled();
+
+      await new Promise((resolve) => setTimeout(resolve, 20));
+      expect(settled).toBe(false);
+    });
+
     it('returns undefined for a policy that opts out with the login remedy (disabled)', async () => {
       const recoverResolver = jest.fn(() => HttpResponse.json(RECOVERED));
       mswMockEndpoints([

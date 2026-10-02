@@ -55,11 +55,6 @@ export default function AppNavBar() {
   const warnedExpiryRef = useRef<number | null>(null);
   const handledNoticeKeyRef = useRef<string | null>(null);
 
-  const currentReturnTo = useMemo(() => {
-    const search = searchParams.toString();
-    return search ? `${pathname}?${search}` : pathname;
-  }, [pathname, searchParams]);
-
   const handleLogout = useCallback(
     async (trigger: 'manual' | 'expired') => {
       if (logoutInFlightRef.current) return;
@@ -119,10 +114,19 @@ export default function AppNavBar() {
       // 'redirect' the entry point has already navigated and the promise
       // never settles.
       if (canRecover) {
-        void recoverSession(currentReturnTo).then((recovery) => {
-          if (recovery?.kind === 'recovered') return;
-          void handleLogout('expired');
-        });
+        // The return URL is read at fire time, not captured in deps: a
+        // URL-only change must not re-arm this timer (an unchanged
+        // expiresAtMs plus a navigation would re-fire recovery immediately).
+        // A rejected recovery takes the same expired-session fallback as a
+        // declined one — the timer is one-shot, so skipping logout here
+        // would strand the session.
+        const returnTo = `${window.location.pathname}${window.location.search}`;
+        void recoverSession(returnTo)
+          .catch(() => undefined)
+          .then((recovery) => {
+            if (recovery?.kind === 'recovered') return;
+            void handleLogout('expired');
+          });
         return;
       }
 
@@ -140,7 +144,6 @@ export default function AppNavBar() {
     isValidToken,
     isAuthEnabled,
     canRecover,
-    currentReturnTo,
     recoverSession,
     handleLogout,
   ]);

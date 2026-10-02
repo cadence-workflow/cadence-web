@@ -17,7 +17,7 @@ const mockPolicy: jest.Mocked<AuthClientPolicy> = {
   unauthenticatedRemedy: 'login',
   login: jest.fn(),
   logout: jest.fn().mockResolvedValue(undefined),
-  onUnauthorized: jest.fn((_response: Response) => true),
+  onUnauthorized: jest.fn((_response?: Response) => true),
 };
 
 jest.mock('@/utils/auth/strategies/get-auth-client-policy', () => ({

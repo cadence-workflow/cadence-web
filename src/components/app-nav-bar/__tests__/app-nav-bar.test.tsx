@@ -49,6 +49,7 @@ describe(AppNavBar.name, () => {
 
   afterEach(() => {
     jest.useRealTimers();
+    window.history.replaceState({}, '', '/');
   });
 
   it('renders the user avatar for a valid session', () => {
@@ -115,7 +116,8 @@ describe(AppNavBar.name, () => {
     expect(logout).toHaveBeenCalledWith({ notice: 'session-expired' });
   });
 
-  it('recovers through the timer at expiry when canRecover is true', async () => {
+  it('recovers through the timer at expiry when canRecover is true, reading the live URL', async () => {
+    window.history.replaceState({}, '', '/domains?cluster=prod');
     const recoverSession = jest.fn().mockResolvedValue({ kind: 'recovered' });
     const logout = jest.fn().mockResolvedValue(undefined);
     setup({
@@ -133,8 +135,32 @@ describe(AppNavBar.name, () => {
     });
 
     expect(recoverSession).toHaveBeenCalledTimes(1);
-    expect(recoverSession).toHaveBeenCalledWith('/domains');
+    // Read at fire time from the real browser URL, not captured in deps.
+    expect(recoverSession).toHaveBeenCalledWith('/domains?cluster=prod');
     expect(logout).not.toHaveBeenCalled();
+  });
+
+  it('logs out with the session-expired notice when recovery rejects at expiry', async () => {
+    const recoverSession = jest
+      .fn()
+      .mockRejectedValue(new Error('network down'));
+    const logout = jest.fn().mockResolvedValue(undefined);
+    setup({
+      lifecycle: {
+        canRecover: true,
+        expiresAtMs: NOW + 30_000,
+        recoverSession,
+        logout,
+      },
+      fakeTimers: true,
+    });
+
+    await act(async () => {
+      jest.advanceTimersByTime(30_000);
+    });
+
+    expect(recoverSession).toHaveBeenCalledTimes(1);
+    expect(logout).toHaveBeenCalledWith({ notice: 'session-expired' });
   });
 
   it('does not re-fire the timer when recovery returns an unchanged expiresAtMs (livelock pin)', async () => {
@@ -143,7 +169,7 @@ describe(AppNavBar.name, () => {
     const recoverSession = jest
       .fn()
       .mockResolvedValue({ kind: 'recovered', expiresAtMs: NOW + 30_000 });
-    setup({
+    const { rerender } = setup({
       lifecycle: {
         canRecover: true,
         expiresAtMs: NOW + 30_000,
@@ -155,6 +181,13 @@ describe(AppNavBar.name, () => {
     await act(async () => {
       jest.advanceTimersByTime(30_000);
     });
+    await act(async () => {
+      jest.advanceTimersByTime(300_000);
+    });
+
+    // A URL-only change must not re-arm the timer either.
+    window.history.replaceState({}, '', '/domains?cluster=other');
+    rerender(<AppNavBar />);
     await act(async () => {
       jest.advanceTimersByTime(300_000);
     });
