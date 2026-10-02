@@ -1,7 +1,8 @@
 import { z } from 'zod';
 
+import AUTH_STRATEGY_VALUES_CONFIG from '@/config/auth/auth-strategy-values.config';
+
 import { type ResolverSchemas } from '../../../../utils/config/config.types';
-import AUTH_STRATEGY_VALUES_CONFIG from '../auth-strategy-values.config';
 import SCHEDULE_ACTIONS_DISABLED_VALUES_CONFIG from '../schedule-actions-disabled-values.config';
 import WORKFLOW_ACTIONS_DISABLED_VALUES_CONFIG from '../workflow-actions-disabled-values.config';
 

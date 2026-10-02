@@ -1,5 +1,7 @@
 import 'server-only';
 
+import { type AuthStrategyConfigValue } from '@/config/auth/auth-strategy.types';
+
 import type {
   ConfigAsyncResolverDefinition,
   ConfigEnvDefinition,
@@ -8,7 +10,6 @@ import type {
 
 import archivalDefaultSearchEnabled from './resolvers/archival-default-search-enabled';
 import authStrategy from './resolvers/auth-strategy';
-import { type AuthStrategyConfigValue } from './resolvers/auth-strategy.types';
 import batchActionsUiEnabled from './resolvers/batch-actions-ui-enabled';
 import { type BatchActionsUiEnabledResolverParams } from './resolvers/batch-actions-ui-enabled.types';
 import clusters from './resolvers/clusters';
