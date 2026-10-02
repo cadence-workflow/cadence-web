@@ -1,5 +1,6 @@
 import { type z } from 'zod';
 
+import { type AuthStrategyConfigValue } from '@/config/auth/auth-strategy.types';
 import { type GRPCMetadata } from '@/utils/grpc/grpc-service';
 
 import { type cadenceJwtClaimsSchema } from './schemas/cadence-jwt-claims-schema';
@@ -28,6 +29,19 @@ export type AuthContext = {
 };
 
 export type AuthLogoutNotice = 'session-expired' | 'signed-out';
+
+/** Wire shape for GET /api/auth/me. `auth` is an explicit projection of
+ * AuthContext.auth — a field added to the context never leaks to the client
+ * by accident; groups never leave the server. */
+export type AuthMeResponse = {
+  authEnabled: boolean;
+  authStrategy: AuthStrategyConfigValue;
+  auth: { isValidToken: boolean; expiresAtMs?: number; canRefresh?: boolean };
+  userName?: string;
+  id?: string;
+  pictureUrl?: string;
+  isAdmin: boolean;
+};
 
 export type AuthRecoveryResult =
   | { kind: 'recovered'; expiresAtMs?: number }
