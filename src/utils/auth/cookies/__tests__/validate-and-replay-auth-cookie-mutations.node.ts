@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import logger from '../../../logger';
+import { getMockAuthServerRegistryEntry } from '../../__fixtures__/mock-auth-server-registry-entry';
 import {
   AUTH_COOKIE_MUTATIONS_MAX_BYTES,
   AUTH_COOKIE_OPTIONS,
 } from '../../auth.constants';
 import { type CookieMutation } from '../../auth.types';
+import getActiveAuthServerEntry from '../../strategies/get-active-auth-server-entry';
 import validateAndReplayAuthCookieMutations, {
   measureAuthCookieMutationsBytes,
 } from '../validate-and-replay-auth-cookie-mutations';
@@ -15,6 +17,12 @@ jest.mock('@/utils/logger', () => ({
   default: { warn: jest.fn(), error: jest.fn(), info: jest.fn() },
 }));
 
+jest.mock('../../strategies/get-active-auth-server-entry', () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+const mockGetActiveAuthServerEntry = jest.mocked(getActiveAuthServerEntry);
 const mockLoggerWarn = jest.mocked(logger.warn);
 
 const COOKIE_NAMES = {
@@ -31,6 +39,11 @@ const getReplayedCookieNames = (response: NextResponse) =>
 describe(validateAndReplayAuthCookieMutations.name, () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    const entry = getMockAuthServerRegistryEntry();
+    mockGetActiveAuthServerEntry.mockResolvedValue({
+      ...entry,
+      cookieNames: COOKIE_NAMES,
+    });
   });
 
   it('replays exact-name and declared-prefix mutations in order', async () => {
@@ -43,8 +56,7 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
         { set: { name: 'cadence-authorization', value: 'token' } },
         { set: { name: 'oidc-session.0', value: 'chunk0', maxAge: 3600 } },
         { clear: { name: 'oidc-session.1' } },
-      ],
-      COOKIE_NAMES
+      ]
     );
 
     expect(result).toEqual({ ok: true });
@@ -65,8 +77,7 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
       [
         { set: { name: 'cadence-authorization', value: 'token' } },
         { set: { name: 'other-strategy-cookie', value: 'x' } },
-      ],
-      COOKIE_NAMES
+      ]
     );
 
     expect(result).toEqual({
@@ -93,8 +104,7 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
     const result = await validateAndReplayAuthCookieMutations(
       buildRequest(),
       response,
-      mutations,
-      COOKIE_NAMES
+      mutations
     );
 
     expect(result).toMatchObject({ ok: false, reason: 'over-budget' });
@@ -107,8 +117,7 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
     const result = await validateAndReplayAuthCookieMutations(
       buildRequest('http://cadence.internal.example/api/auth/recover'),
       response,
-      [{ set: { name: 'cadence-authorization', value: 'token' } }],
-      COOKIE_NAMES
+      [{ set: { name: 'cadence-authorization', value: 'token' } }]
     );
 
     expect(result).toEqual({ ok: true });
@@ -126,8 +135,7 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
       await validateAndReplayAuthCookieMutations(
         buildRequest(`http://${host}/api/auth/recover`),
         response,
-        [{ set: { name: 'cadence-authorization', value: 'token' } }],
-        COOKIE_NAMES
+        [{ set: { name: 'cadence-authorization', value: 'token' } }]
       );
 
       expect(mockLoggerWarn).not.toHaveBeenCalled();
@@ -141,12 +149,9 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
       { headers: { 'x-forwarded-proto': 'https' } }
     );
 
-    await validateAndReplayAuthCookieMutations(
-      request,
-      response,
-      [{ set: { name: 'cadence-authorization', value: 'token' } }],
-      COOKIE_NAMES
-    );
+    await validateAndReplayAuthCookieMutations(request, response, [
+      { set: { name: 'cadence-authorization', value: 'token' } },
+    ]);
 
     expect(mockLoggerWarn).not.toHaveBeenCalled();
   });
@@ -157,8 +162,7 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
     const result = await validateAndReplayAuthCookieMutations(
       buildRequest('http://cadence.internal.example/api/auth/recover'),
       response,
-      [],
-      COOKIE_NAMES
+      []
     );
 
     expect(result).toEqual({ ok: true });
@@ -171,12 +175,9 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
       headers: { 'x-forwarded-proto': 'https' },
     });
 
-    await validateAndReplayAuthCookieMutations(
-      request,
-      response,
-      [{ clear: { name: 'cadence-authorization' } }],
-      COOKIE_NAMES
-    );
+    await validateAndReplayAuthCookieMutations(request, response, [
+      { clear: { name: 'cadence-authorization' } },
+    ]);
 
     const cookie = response.cookies.get('cadence-authorization');
     expect(cookie?.value).toBe('');
@@ -255,8 +256,7 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
               value: 'x'.repeat(AUTH_COOKIE_MUTATIONS_MAX_BYTES - 47),
             },
           },
-        ],
-        COOKIE_NAMES
+        ]
       );
       expect(atBudget).toEqual({ ok: true });
 
@@ -273,8 +273,7 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
       const result = await validateAndReplayAuthCookieMutations(
         buildRequest(),
         response,
-        mutations,
-        COOKIE_NAMES
+        mutations
       );
 
       expect(result).toMatchObject({ ok: false, reason: 'over-budget' });

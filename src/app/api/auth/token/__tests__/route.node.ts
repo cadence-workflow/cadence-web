@@ -1,8 +1,26 @@
 import { NextRequest } from 'next/server';
 
 import { JWT_AUTH_COOKIE_NAME } from '@/utils/auth/strategies/jwt/jwt-auth.constants';
+import getConfigValue from '@/utils/config/get-config-value';
+import logger from '@/utils/logger';
 
 import { DELETE, POST } from '../route';
+
+jest.mock('@/utils/config/get-config-value');
+jest.mock('@/utils/logger', () => ({
+  __esModule: true,
+  default: { warn: jest.fn(), error: jest.fn(), info: jest.fn() },
+}));
+
+const mockGetConfigValue = getConfigValue as jest.MockedFunction<
+  typeof getConfigValue
+>;
+const mockLoggerWarn = jest.mocked(logger.warn);
+
+mockGetConfigValue.mockImplementation(async (key: string) => {
+  if (key === 'CADENCE_WEB_AUTH_STRATEGY') return 'jwt';
+  return '';
+});
 
 const VALID_JWT = 'header.payload.signature';
 
@@ -14,6 +32,7 @@ const buildRequest = (
     origin?: string;
     xForwardedHost?: string;
     host?: string;
+    hostname?: string;
   }
 ) => {
   const headers = new Headers({ 'content-type': 'application/json' });
@@ -30,7 +49,8 @@ const buildRequest = (
     headers.set('x-forwarded-host', options.xForwardedHost);
   }
   const protocol = options?.proto ?? 'http';
-  return new NextRequest(`${protocol}://localhost/api/auth/token`, {
+  const hostname = options?.hostname ?? 'localhost';
+  return new NextRequest(`${protocol}://${hostname}/api/auth/token`, {
     method: 'POST',
     headers,
     body: JSON.stringify(body),
@@ -158,6 +178,21 @@ describe('POST /api/auth/token', () => {
     const authCookie = getAuthCookie(response);
 
     expect(authCookie!.attributes).toHaveProperty('secure', true);
+  });
+
+  it('warns when writing the auth cookie over plain HTTP to a non-loopback host', async () => {
+    const response = await POST(
+      buildRequest(
+        { token: VALID_JWT },
+        { hostname: 'cadence.internal.example' }
+      )
+    );
+
+    expect(response.status).toBe(200);
+    expect(mockLoggerWarn).toHaveBeenCalledWith(
+      expect.objectContaining({ host: 'cadence.internal.example' }),
+      'Writing auth cookies without the Secure attribute on a non-loopback host'
+    );
   });
 
   it('sets Cache-Control: no-store on all responses', async () => {

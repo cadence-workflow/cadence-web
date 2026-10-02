@@ -1,11 +1,11 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
-import getCookieSecureAttribute from '@/utils/auth/helpers/get-cookie-secure-attribute';
+import validateAndReplayAuthCookieMutations from '@/utils/auth/cookies/validate-and-replay-auth-cookie-mutations';
 import isSameOriginRequest from '@/utils/auth/helpers/is-same-origin-request';
 import { JWT_AUTH_COOKIE_NAME } from '@/utils/auth/strategies/jwt/jwt-auth.constants';
+import logger from '@/utils/logger';
 
 import {
-  AUTH_TOKEN_COOKIE_OPTIONS,
   AUTH_TOKEN_SUCCESS_RESPONSE,
   INVALID_REQUEST_BODY_MESSAGE,
   INVALID_REQUEST_MESSAGE,
@@ -34,13 +34,20 @@ export async function setAuthToken(request: NextRequest) {
     }
 
     const response = NextResponse.json(
-      AUTH_TOKEN_SUCCESS_RESPONSE satisfies AuthTokenResponse
+      AUTH_TOKEN_SUCCESS_RESPONSE satisfies AuthTokenResponse,
+      { headers: NO_STORE_HEADERS }
     );
-    response.headers.set('Cache-Control', 'no-store');
-    response.cookies.set(JWT_AUTH_COOKIE_NAME, data.token, {
-      ...AUTH_TOKEN_COOKIE_OPTIONS,
-      secure: getCookieSecureAttribute(request),
-    });
+    const replay = await validateAndReplayAuthCookieMutations(
+      request,
+      response,
+      [{ set: { name: JWT_AUTH_COOKIE_NAME, value: data.token } }]
+    );
+    if (!replay.ok) {
+      // Under any non-jwt strategy the jwt cookie is outside the active
+      // strategy's declared set, so the write is rejected here.
+      logger.warn({ reason: replay.reason }, 'Rejected auth token write');
+      return badRequest(INVALID_REQUEST_MESSAGE);
+    }
     return response;
   } catch {
     return badRequest(INVALID_REQUEST_BODY_MESSAGE);
