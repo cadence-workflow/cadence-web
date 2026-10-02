@@ -12,8 +12,10 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { MdVpnKey } from 'react-icons/md';
 
 import cadenceLogo from '@/assets/cadence-logo-black.svg';
+import { DEFAULT_AUTH_RETURN_TO } from '@/utils/auth/auth.constants';
 import { isAuthLogoutNotice } from '@/utils/auth/helpers/is-auth-logout-notice';
 import { sanitizeReturnTo } from '@/utils/auth/helpers/sanitize-return-to';
+import { isJwtLoginReturnTo } from '@/utils/auth/strategies/jwt/jwt-login-path';
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
 import useUserInfo from '@/views/shared/hooks/use-user-info/use-user-info';
@@ -29,10 +31,11 @@ export default function JwtLoginPage() {
   const [token, setToken] = useState('');
   const [clientError, setClientError] = useState<string | null>(null);
 
-  const returnTo = useMemo(
-    () => sanitizeReturnTo(searchParams.get('returnTo')),
-    [searchParams]
-  );
+  const returnTo = useMemo(() => {
+    const sanitized = sanitizeReturnTo(searchParams.get('returnTo'));
+    // /login as a destination loops back into this page (blank self-redirect).
+    return isJwtLoginReturnTo(sanitized) ? DEFAULT_AUTH_RETURN_TO : sanitized;
+  }, [searchParams]);
   const notice = useMemo(() => {
     const value = searchParams.get('notice');
     return isAuthLogoutNotice(value) ? value : undefined;
@@ -137,8 +140,10 @@ export default function JwtLoginPage() {
               }
               clearOnEscape
               autoFocus
+              autoComplete="off"
               disabled={saveToken.isPending}
               rows={4}
+              overrides={overrides.tokenInput}
             />
           </FormControl>
         </styled.TokenField>

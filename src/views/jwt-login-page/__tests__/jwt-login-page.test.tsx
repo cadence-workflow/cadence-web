@@ -48,6 +48,9 @@ describe(JwtLoginPage.name, () => {
     expect(
       screen.getByText('Cadence · JWT authentication')
     ).toBeInTheDocument();
+    const tokenInput = screen.getByRole('textbox');
+    expect(tokenInput).toHaveAttribute('autocomplete', 'off');
+    expect(tokenInput).toHaveAttribute('spellcheck', 'false');
   });
 
   it('shows a spinner in the card while auth loads', async () => {
@@ -75,6 +78,15 @@ describe(JwtLoginPage.name, () => {
       expect(mockReplace).toHaveBeenCalledWith('/domains/foo');
     });
     expect(screen.queryByTestId('jwt-login-submit')).not.toBeInTheDocument();
+  });
+
+  it('normalizes returnTo=/login to / for an already-valid session', async () => {
+    mockSearchParams = new URLSearchParams({ returnTo: '/login' });
+    setup({ authResolver: () => jwtValid });
+
+    await waitFor(() => {
+      expect(mockReplace).toHaveBeenCalledWith('/');
+    });
   });
 
   it('shows the session-expired copy only for notice=session-expired', async () => {
@@ -134,8 +146,6 @@ describe(JwtLoginPage.name, () => {
     });
 
     await screen.findByTestId('jwt-login-submit');
-    // Disabled while auth loads — type before enable silently no-ops.
-    await waitFor(() => expect(screen.getByRole('textbox')).toBeEnabled());
     await user.type(screen.getByRole('textbox'), 'header.payload.signature');
     await user.click(screen.getByTestId('jwt-login-submit'));
 
@@ -149,7 +159,6 @@ describe(JwtLoginPage.name, () => {
     const { user } = setup({ authResolver: () => jwtInvalid });
 
     await screen.findByTestId('jwt-login-submit');
-    await waitFor(() => expect(screen.getByRole('textbox')).toBeEnabled());
     await user.type(screen.getByRole('textbox'), 'header.payload.signature');
     await user.click(screen.getByTestId('jwt-login-submit'));
 
@@ -164,7 +173,7 @@ describe(JwtLoginPage.name, () => {
       authErrorAfterPost: true,
     });
 
-    await waitFor(() => expect(screen.getByRole('textbox')).toBeEnabled());
+    await screen.findByTestId('jwt-login-submit');
     await user.type(screen.getByRole('textbox'), 'header.payload.signature');
     await user.click(screen.getByTestId('jwt-login-submit'));
 
