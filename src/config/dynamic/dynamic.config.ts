@@ -34,6 +34,8 @@ import {
 } from './resolvers/schedule-actions-enabled.types';
 import schedulesEnabled from './resolvers/schedules-enabled';
 import { type SchedulesEnabledResolverParams } from './resolvers/schedules-enabled.types';
+import trustedHeaderAuthConfig from './resolvers/trusted-header-auth-config';
+import { type TrustedHeaderAuthConfig } from './resolvers/trusted-header-auth-config.types';
 import workflowActionsEnabled from './resolvers/workflow-actions-enabled';
 import {
   type WorkflowActionsEnabledResolverParams,
@@ -140,6 +142,11 @@ const dynamicConfigs: {
     'request',
     true
   >;
+  TRUSTED_HEADER_AUTH_CONFIG: ConfigSyncResolverDefinition<
+    undefined,
+    TrustedHeaderAuthConfig | null,
+    'serverStart'
+  >;
 } = {
   CADENCE_WEB_PORT: {
     env: 'CADENCE_WEB_PORT',
@@ -227,6 +234,11 @@ const dynamicConfigs: {
     resolver: listWorkflowsPartialMatchEnabled,
     evaluateOn: 'request',
     isPublic: true,
+  },
+  // Server-only: carries the trusted-header shared secret.
+  TRUSTED_HEADER_AUTH_CONFIG: {
+    resolver: trustedHeaderAuthConfig,
+    evaluateOn: 'serverStart',
   },
 } as const;
 
