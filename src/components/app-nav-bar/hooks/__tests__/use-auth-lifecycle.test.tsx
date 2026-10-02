@@ -1,27 +1,45 @@
 import { HttpResponse } from 'msw';
 
-import { renderHook, waitFor } from '@/test-utils/rtl';
+import { act, renderHook, waitFor } from '@/test-utils/rtl';
 
 import {
   type AuthClientPolicy,
   type AuthMeResponse,
 } from '@/utils/auth/auth.types';
-import jwtClientPolicy from '@/utils/auth/strategies/jwt/jwt-client-policy';
+import {
+  getCachedAuthStrategyConfig,
+  setCachedAuthStrategyConfig,
+} from '@/utils/auth/helpers/auth-strategy-config-cache';
+import { handleApiUnauthorized } from '@/utils/auth/recovery/handle-api-unauthorized';
+import getAuthClientPolicy from '@/utils/auth/strategies/get-auth-client-policy';
+import { server } from '@/utils/msw/node';
 
 import useAuthLifecycle from '../use-auth-lifecycle';
 
-jest.mock('@/utils/auth/strategies/jwt/jwt-client-policy', () => ({
+const mockPolicy: jest.Mocked<AuthClientPolicy> = {
+  supportsSessionRecovery: false,
+  unauthenticatedRemedy: 'login',
+  login: jest.fn(),
+  logout: jest.fn().mockResolvedValue(undefined),
+  onUnauthorized: jest.fn((_response?: Response) => true),
+};
+
+jest.mock('@/utils/auth/strategies/get-auth-client-policy', () => ({
   __esModule: true,
-  default: {
-    supportsSessionRecovery: false,
-    unauthenticatedRemedy: 'login',
-    login: jest.fn(),
-    logout: jest.fn().mockResolvedValue(undefined),
-    onUnauthorized: jest.fn(),
-  },
+  default: jest.fn(() => mockPolicy),
 }));
 
-const mockPolicy = jwtClientPolicy as jest.Mocked<AuthClientPolicy>;
+jest.mock('@/utils/auth/recovery/handle-api-unauthorized', () => ({
+  handleApiUnauthorized: jest.fn(),
+}));
+
+const mockGetAuthClientPolicy = getAuthClientPolicy as jest.MockedFunction<
+  typeof getAuthClientPolicy
+>;
+
+const mockHandleApiUnauthorized = handleApiUnauthorized as jest.MockedFunction<
+  typeof handleApiUnauthorized
+>;
 
 const AUTH_ENABLED: AuthMeResponse = {
   authEnabled: true,
@@ -56,6 +74,11 @@ const AUTH_ADMIN: AuthMeResponse = {
 describe(useAuthLifecycle.name, () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockPolicy.supportsSessionRecovery = false;
+  });
+
+  afterEach(() => {
+    setCachedAuthStrategyConfig(undefined);
   });
 
   describe('derived state', () => {
@@ -131,6 +154,28 @@ describe(useAuthLifecycle.name, () => {
   });
 
   describe('policy delegation', () => {
+    it('resolves the policy from the me response strategy', async () => {
+      const { result } = setup({ authResponse: AUTH_ENABLED });
+
+      await waitFor(() => {
+        expect(result.current.isValidToken).toBe(true);
+      });
+
+      expect(mockGetAuthClientPolicy).toHaveBeenCalledWith('jwt');
+    });
+
+    it('seeds the per-tab strategy cache from the loaded user info', async () => {
+      const { result } = setup({ authResponse: AUTH_ENABLED });
+
+      await waitFor(() => {
+        expect(result.current.isValidToken).toBe(true);
+      });
+
+      // The recovery entry point's policy gate reads this synchronously
+      // instead of re-fetching /api/auth/me on a first 401.
+      expect(getCachedAuthStrategyConfig()).toBe('jwt');
+    });
+
     it('logout dispatches to the client policy with the notice', async () => {
       const { result } = setup({ authResponse: AUTH_ENABLED });
 
@@ -141,6 +186,93 @@ describe(useAuthLifecycle.name, () => {
       await result.current.logout({ notice: 'signed-out' });
 
       expect(mockPolicy.logout).toHaveBeenCalledWith({ notice: 'signed-out' });
+    });
+  });
+
+  describe('canRecover conjunction', () => {
+    it('is true only when the policy supports recovery AND the session can refresh', async () => {
+      mockPolicy.supportsSessionRecovery = true;
+      const { result } = setup({
+        authResponse: {
+          ...AUTH_ENABLED,
+          auth: { isValidToken: true, canRefresh: true },
+        },
+      });
+
+      await waitFor(() => {
+        expect(result.current.canRecover).toBe(true);
+      });
+    });
+
+    it('is false for a refresh-less session on a recovery-capable policy', async () => {
+      mockPolicy.supportsSessionRecovery = true;
+      const { result } = setup({ authResponse: AUTH_ENABLED });
+
+      await waitFor(() => {
+        expect(result.current.isValidToken).toBe(true);
+      });
+
+      expect(result.current.canRecover).toBe(false);
+    });
+
+    it('is false for a refreshable session on a policy without recovery', async () => {
+      mockPolicy.supportsSessionRecovery = false;
+      const { result } = setup({
+        authResponse: {
+          ...AUTH_ENABLED,
+          auth: { isValidToken: true, canRefresh: true },
+        },
+      });
+
+      await waitFor(() => {
+        expect(result.current.isValidToken).toBe(true);
+      });
+
+      expect(result.current.canRecover).toBe(false);
+    });
+  });
+
+  describe('recoverSession', () => {
+    it('funnels through the single recovery entry point', async () => {
+      mockHandleApiUnauthorized.mockResolvedValue({ kind: 'recovered' });
+      const { result } = setup({ authResponse: AUTH_ENABLED });
+
+      await waitFor(() => {
+        expect(result.current.isValidToken).toBe(true);
+      });
+
+      await act(async () => {
+        await result.current.recoverSession('/domains/foo');
+      });
+
+      expect(mockHandleApiUnauthorized).toHaveBeenCalledTimes(1);
+      expect(mockHandleApiUnauthorized).toHaveBeenCalledWith({
+        returnTo: '/domains/foo',
+        notice: 'session-expired',
+      });
+    });
+  });
+
+  describe('me query', () => {
+    it('fetches me once and never queries a divergent auth-user endpoint', async () => {
+      const calls = { me: 0, user: 0 };
+      const onRequest = (args: { request: Request }) => {
+        if (args.request.url.endsWith('/api/auth/me')) calls.me += 1;
+        if (args.request.url.endsWith('/api/auth/user')) calls.user += 1;
+      };
+      server.events.on('request:start', onRequest);
+      try {
+        const { result } = setup({ authResponse: AUTH_ENABLED });
+
+        await waitFor(() => {
+          expect(result.current.isValidToken).toBe(true);
+        });
+
+        expect(calls.me).toBe(1);
+        expect(calls.user).toBe(0);
+      } finally {
+        server.events.removeListener('request:start', onRequest);
+      }
     });
   });
 });

@@ -82,7 +82,12 @@ export type AuthClientPolicy = {
   unauthenticatedRemedy: 'login' | 'unavailable';
   login(returnTo?: string): void;
   logout(options?: { notice?: AuthLogoutNotice }): Promise<void>;
-  onUnauthorized(response: Response): boolean;
+  /**
+   * Should this unauthenticated state enter recovery? Called with the 401
+   * response from the request pipeline, or without one by response-less
+   * entry points (the expiry timer).
+   */
+  onUnauthorized(response?: Response): boolean;
 };
 
 /** A server policy, either already constructed or loaded on first use. */
