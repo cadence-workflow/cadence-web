@@ -13,6 +13,15 @@ export const AUTH_LOGOUT_NOTICE_SET = new Set<string>(AUTH_LOGOUT_NOTICES);
 
 export const DEFAULT_AUTH_RETURN_TO = '/';
 
+/**
+ * Cross-strategy URL params: `authNotice` carries an allowlisted
+ * logout/expiry notice to the final landing URL; the nav bar renders it as a
+ * snackbar and strips it. `authLoop` marks an auth redirect loop detection;
+ * the nav strips it on the success path.
+ */
+export const AUTH_NOTICE_PARAM = 'authNotice';
+export const AUTH_LOOP_MARKER_PARAM = 'authLoop';
+
 export const JWT_LOGIN_PATH = '/login';
 
 // --- Cadence backend ---
@@ -34,3 +43,7 @@ export const AUTH_COOKIE_OPTIONS = {
  * but sized for the largest known strategy (the OIDC session).
  */
 export const AUTH_COOKIE_MUTATIONS_MAX_BYTES = 4000;
+
+export const NO_STORE_HEADERS = {
+  'Cache-Control': 'no-store',
+} as const;

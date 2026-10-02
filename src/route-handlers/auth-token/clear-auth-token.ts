@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
+import { NO_STORE_HEADERS } from '@/utils/auth/auth.constants';
 import validateAndReplayAuthCookieMutations from '@/utils/auth/cookies/validate-and-replay-auth-cookie-mutations';
 import { JWT_AUTH_COOKIE_NAME } from '@/utils/auth/strategies/jwt/jwt-auth.constants';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
@@ -7,7 +8,6 @@ import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 import {
   AUTH_TOKEN_SUCCESS_RESPONSE,
   INVALID_REQUEST_MESSAGE,
-  NO_STORE_HEADERS,
 } from './auth-token.constants';
 import { type AuthTokenResponse } from './auth-token.types';
 

@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
+import { NO_STORE_HEADERS } from '@/utils/auth/auth.constants';
 import validateAndReplayAuthCookieMutations from '@/utils/auth/cookies/validate-and-replay-auth-cookie-mutations';
 import isSameOriginRequest from '@/utils/auth/helpers/is-same-origin-request';
 import { JWT_AUTH_COOKIE_NAME } from '@/utils/auth/strategies/jwt/jwt-auth.constants';
@@ -9,7 +10,6 @@ import {
   AUTH_TOKEN_SUCCESS_RESPONSE,
   INVALID_REQUEST_BODY_MESSAGE,
   INVALID_REQUEST_MESSAGE,
-  NO_STORE_HEADERS,
 } from './auth-token.constants';
 import { type AuthTokenResponse } from './auth-token.types';
 import tokenRequestBodySchema from './schemas/token-request-body-schema';
