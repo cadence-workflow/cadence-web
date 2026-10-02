@@ -5,11 +5,9 @@ import { type NextRequest, NextResponse } from 'next/server';
 import logger from '@/utils/logger';
 
 import { AUTH_COOKIE_MUTATIONS_MAX_BYTES } from '../auth.constants';
-import {
-  type AuthServerRegistryEntry,
-  type CookieMutation,
-} from '../auth.types';
+import { type CookieMutation } from '../auth.types';
 import isLoopbackHost from '../helpers/is-loopback-host';
+import getActiveAuthServerEntry from '../strategies/get-active-auth-server-entry';
 
 import buildAuthCookieOptions from './build-auth-cookie-options';
 import {
@@ -63,22 +61,23 @@ export function measureAuthCookieMutationsBytes(cookies: AuthCookieParams[]): {
 }
 
 /** Checks the mutation list, then writes every cookie.
- * Rejects writing all cookies when a name is outside cookieNames or the total over the byte budget.
+ * Rejects writing all cookies when a name is outside the active strategy's
+ * declared set or the total over the byte budget.
  * @param request - incoming request, source of the Secure attribute decision
  * @param response - response the cookies are written to
  * @param mutations - set/clear operations to validate, then replay
- * @param cookieNames - active strategy's declared exact names and prefixes
  * @returns ok when written; the rejection reason otherwise
  */
 export default async function validateAndReplayAuthCookieMutations(
   request: NextRequest,
   response: NextResponse,
-  mutations: CookieMutation[],
-  cookieNames: AuthServerRegistryEntry['cookieNames']
+  mutations: CookieMutation[]
 ): Promise<ValidateAndReplayResult> {
   if (mutations.length === 0) {
     return { ok: true };
   }
+
+  const { cookieNames } = await getActiveAuthServerEntry();
 
   for (const mutation of mutations) {
     const name = 'set' in mutation ? mutation.set.name : mutation.clear.name;
