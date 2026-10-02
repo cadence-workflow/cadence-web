@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 
 import validateAndReplayAuthCookieMutations from '@/utils/auth/cookies/validate-and-replay-auth-cookie-mutations';
 import { JWT_AUTH_COOKIE_NAME } from '@/utils/auth/strategies/jwt/jwt-auth.constants';
-import logger from '@/utils/logger';
+import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
 import {
   AUTH_TOKEN_SUCCESS_RESPONSE,
@@ -16,9 +16,23 @@ export async function clearAuthToken(request: NextRequest) {
     AUTH_TOKEN_SUCCESS_RESPONSE satisfies AuthTokenResponse,
     { headers: NO_STORE_HEADERS }
   );
-  const replay = await validateAndReplayAuthCookieMutations(request, response, [
-    { clear: { name: JWT_AUTH_COOKIE_NAME } },
-  ]);
+  let replay: Awaited<ReturnType<typeof validateAndReplayAuthCookieMutations>>;
+  try {
+    replay = await validateAndReplayAuthCookieMutations(request, response, [
+      { clear: { name: JWT_AUTH_COOKIE_NAME } },
+    ]);
+  } catch (e) {
+    // Strategy/config resolution failing is infrastructure, not input —
+    // same reporting as the POST writer.
+    logger.error<RouteHandlerErrorPayload>(
+      { error: e },
+      'Failed to clear auth token cookie'
+    );
+    return NextResponse.json(
+      { message: 'Unexpected error' },
+      { status: 500, headers: NO_STORE_HEADERS }
+    );
+  }
   if (!replay.ok) {
     logger.warn({ reason: replay.reason }, 'Rejected auth token clear');
     return NextResponse.json(
