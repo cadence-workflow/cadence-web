@@ -24,6 +24,12 @@ export const AUTH_LOOP_MARKER_PARAM = 'authLoop';
 
 export const JWT_LOGIN_PATH = '/login';
 
+/**
+ * The no-interaction status page for strategies with no login flow; also the
+ * redirect-loop terminus. Lives outside the (Home) gated route group.
+ */
+export const AUTH_UNAVAILABLE_PATH = '/auth-unavailable';
+
 // --- Cadence backend ---
 
 /** gRPC metadata key the Cadence server reads the auth token from */
