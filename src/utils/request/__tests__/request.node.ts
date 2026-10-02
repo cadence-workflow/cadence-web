@@ -1,5 +1,6 @@
 import { headers } from 'next/headers';
 
+import { handleApiUnauthorized } from '@/utils/auth/recovery/handle-api-unauthorized';
 import getConfigValue from '@/utils/config/get-config-value';
 
 import request from '../request';
@@ -9,6 +10,14 @@ jest.mock('next/headers', () => ({
     entries: jest.fn().mockReturnValue([]),
   }),
 }));
+
+jest.mock('@/utils/auth/recovery/handle-api-unauthorized', () => ({
+  handleApiUnauthorized: jest.fn(),
+}));
+
+const mockHandleApiUnauthorized = handleApiUnauthorized as jest.MockedFunction<
+  typeof handleApiUnauthorized
+>;
 
 describe('request on node env', () => {
   afterEach(() => {
@@ -102,5 +111,18 @@ describe('request on node env', () => {
       },
       method: 'POST',
     });
+  });
+
+  it('never enters the recovery pipeline on the server (401 throws directly)', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      status: 401,
+      json: async () => ({ message: 'unauthorized' }),
+    } as Response);
+
+    await expect(request('/api/data', { method: 'GET' })).rejects.toThrow(
+      'unauthorized'
+    );
+    expect(mockHandleApiUnauthorized).not.toHaveBeenCalled();
   });
 });
