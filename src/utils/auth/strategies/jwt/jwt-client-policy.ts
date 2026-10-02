@@ -6,7 +6,6 @@ const jwtClientPolicy: AuthClientPolicy = {
   // There is no background refresh. An expired session goes to the login page.
   supportsSessionRecovery: false,
   unauthenticatedRemedy: 'login',
-  labels: { login: 'Log in', logout: 'Log out' },
   login(returnTo) {
     window.location.assign(buildJwtLoginPath(returnTo));
   },
