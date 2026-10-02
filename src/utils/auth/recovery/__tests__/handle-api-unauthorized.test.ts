@@ -126,7 +126,8 @@ describe('handleApiUnauthorized', () => {
       },
     ]);
 
-    const { handleApiUnauthorized } = await loadModule();
+    const { handleApiUnauthorized, queryClient } = await loadModule();
+    const invalidateSpy = jest.spyOn(queryClient, 'invalidateQueries');
     const [first, second] = await Promise.all([
       handleApiUnauthorized(CTX),
       handleApiUnauthorized(CTX),
@@ -135,6 +136,10 @@ describe('handleApiUnauthorized', () => {
     expect(first).toEqual(RECOVERED);
     expect(second).toEqual(RECOVERED);
     expect(recoverResolver).toHaveBeenCalledTimes(1);
+    // Side effects run once per recovery, not once per deduped caller —
+    // invalidateQueries cancels in-flight refetches, so per-caller
+    // invalidation would cascade cancelled auth-me refetches in a 401 burst.
+    expect(invalidateSpy).toHaveBeenCalledTimes(2);
   });
 
   it('invalidates the post-recovery query set on recovered', async () => {
