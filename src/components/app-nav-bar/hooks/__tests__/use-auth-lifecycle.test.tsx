@@ -2,8 +2,10 @@ import { HttpResponse } from 'msw';
 
 import { renderHook, waitFor } from '@/test-utils/rtl';
 
-import { type PublicAuthContext } from '@/utils/auth/auth-shared.types';
-import { type AuthClientPolicy } from '@/utils/auth/auth.types';
+import {
+  type AuthClientPolicy,
+  type AuthMeResponse,
+} from '@/utils/auth/auth.types';
 import jwtClientPolicy from '@/utils/auth/strategies/jwt/jwt-client-policy';
 
 import useAuthLifecycle from '../use-auth-lifecycle';
@@ -21,32 +23,32 @@ jest.mock('@/utils/auth/strategies/jwt/jwt-client-policy', () => ({
 
 const mockPolicy = jwtClientPolicy as jest.Mocked<AuthClientPolicy>;
 
-const AUTH_ENABLED: PublicAuthContext = {
+const AUTH_ENABLED: AuthMeResponse = {
   authEnabled: true,
+  authStrategy: 'jwt',
   auth: { isValidToken: true },
-  groups: [],
   isAdmin: false,
   userName: 'alice',
 };
 
-const AUTH_DISABLED: PublicAuthContext = {
+const AUTH_DISABLED: AuthMeResponse = {
   authEnabled: false,
+  authStrategy: 'disabled',
   auth: { isValidToken: false },
-  groups: [],
   isAdmin: false,
 };
 
-const AUTH_UNAUTHENTICATED: PublicAuthContext = {
+const AUTH_UNAUTHENTICATED: AuthMeResponse = {
   authEnabled: true,
+  authStrategy: 'jwt',
   auth: { isValidToken: false },
-  groups: [],
   isAdmin: false,
 };
 
-const AUTH_ADMIN: PublicAuthContext = {
+const AUTH_ADMIN: AuthMeResponse = {
   authEnabled: true,
+  authStrategy: 'jwt',
   auth: { isValidToken: true },
-  groups: [],
   isAdmin: true,
   userName: 'admin-user',
 };
@@ -143,7 +145,7 @@ describe(useAuthLifecycle.name, () => {
   });
 });
 
-function setup({ authResponse }: { authResponse: PublicAuthContext }) {
+function setup({ authResponse }: { authResponse: AuthMeResponse }) {
   const { result } = renderHook(() => useAuthLifecycle(), {
     endpointsMocks: [
       {
