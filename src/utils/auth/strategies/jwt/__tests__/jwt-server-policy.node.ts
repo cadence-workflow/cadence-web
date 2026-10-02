@@ -1,40 +1,28 @@
+import { getMockAuthContext } from '@/utils/auth/__fixtures__/mock-auth-context';
 import { DEFAULT_AUTH_RETURN_TO } from '@/utils/auth/auth.constants';
-import { type AuthContext, type AuthRequest } from '@/utils/auth/auth.types';
 
+import { getMockJwtAuthRequest } from '../__fixtures__/mock-jwt-auth-request';
 import { JWT_AUTH_COOKIE_NAME } from '../jwt-auth.constants';
 import jwtServerPolicy from '../jwt-server-policy';
-
-const buildRequest = (token?: string): AuthRequest => ({
-  cookies: {
-    get: (name: string) =>
-      name === JWT_AUTH_COOKIE_NAME && token !== undefined
-        ? { value: token }
-        : undefined,
-  },
-  headers: new Headers(),
-});
-
-const buildContext = (overrides: Partial<AuthContext> = {}): AuthContext => ({
-  authEnabled: true,
-  auth: { isValidToken: true, canRefresh: false },
-  isAdmin: false,
-  groups: [],
-  ...overrides,
-});
 
 describe('jwtServerPolicy', () => {
   describe('getGrpcMetadata', () => {
     it('returns the cadence-authorization metadata for a valid context', () => {
       expect(
-        jwtServerPolicy.getGrpcMetadata(buildContext(), buildRequest('abc'))
+        jwtServerPolicy.getGrpcMetadata(
+          getMockAuthContext(),
+          getMockJwtAuthRequest('abc')
+        )
       ).toEqual({ 'cadence-authorization': 'abc' });
     });
 
     it('returns undefined when the context is invalid even if a token is present', () => {
       expect(
         jwtServerPolicy.getGrpcMetadata(
-          buildContext({ auth: { isValidToken: false, canRefresh: false } }),
-          buildRequest('abc')
+          getMockAuthContext({
+            auth: { isValidToken: false, canRefresh: false },
+          }),
+          getMockJwtAuthRequest('abc')
         )
       ).toBeUndefined();
     });
@@ -42,15 +30,18 @@ describe('jwtServerPolicy', () => {
     it('returns undefined when auth is disabled', () => {
       expect(
         jwtServerPolicy.getGrpcMetadata(
-          buildContext({ authEnabled: false }),
-          buildRequest('abc')
+          getMockAuthContext({ authEnabled: false }),
+          getMockJwtAuthRequest('abc')
         )
       ).toBeUndefined();
     });
 
     it('returns undefined when the cookie is gone', () => {
       expect(
-        jwtServerPolicy.getGrpcMetadata(buildContext(), buildRequest())
+        jwtServerPolicy.getGrpcMetadata(
+          getMockAuthContext(),
+          getMockJwtAuthRequest()
+        )
       ).toBeUndefined();
     });
   });
@@ -58,14 +49,19 @@ describe('jwtServerPolicy', () => {
   describe('getLoginRedirectIfNeeded', () => {
     it('returns null for a valid context', () => {
       expect(
-        jwtServerPolicy.getLoginRedirectIfNeeded(buildContext(), '/domains')
+        jwtServerPolicy.getLoginRedirectIfNeeded(
+          getMockAuthContext(),
+          '/domains'
+        )
       ).toBeNull();
     });
 
     it('redirects to /login with a sanitized returnTo and notice', () => {
       expect(
         jwtServerPolicy.getLoginRedirectIfNeeded(
-          buildContext({ auth: { isValidToken: false, canRefresh: false } }),
+          getMockAuthContext({
+            auth: { isValidToken: false, canRefresh: false },
+          }),
           '/domains/foo',
           'session-expired'
         )
@@ -77,7 +73,9 @@ describe('jwtServerPolicy', () => {
     it('never loops onto the login page itself', () => {
       expect(
         jwtServerPolicy.getLoginRedirectIfNeeded(
-          buildContext({ auth: { isValidToken: false, canRefresh: false } }),
+          getMockAuthContext({
+            auth: { isValidToken: false, canRefresh: false },
+          }),
           '/login?returnTo=%2Fdomains'
         )
       ).toBeNull();
@@ -86,7 +84,9 @@ describe('jwtServerPolicy', () => {
     it('sanitizes protocol-relative returnTo values', () => {
       expect(
         jwtServerPolicy.getLoginRedirectIfNeeded(
-          buildContext({ auth: { isValidToken: false, canRefresh: false } }),
+          getMockAuthContext({
+            auth: { isValidToken: false, canRefresh: false },
+          }),
           '//evil.test'
         )
       ).toBe(`/login?returnTo=${encodeURIComponent('/')}`);
@@ -104,7 +104,7 @@ describe('jwtServerPolicy', () => {
       const token = buildJwt({ sub: 'user', exp: expSeconds });
 
       await expect(
-        jwtServerPolicy.recoverSession(buildRequest(token), {
+        jwtServerPolicy.recoverSession(getMockJwtAuthRequest(token), {
           returnTo: '/domains/foo',
           notice: 'session-expired',
         })
@@ -120,7 +120,7 @@ describe('jwtServerPolicy', () => {
       });
 
       await expect(
-        jwtServerPolicy.recoverSession(buildRequest(token), {})
+        jwtServerPolicy.recoverSession(getMockJwtAuthRequest(token), {})
       ).resolves.toEqual({
         result: { kind: 'redirect', returnTo: DEFAULT_AUTH_RETURN_TO },
         cookieMutations: [{ clear: { name: JWT_AUTH_COOKIE_NAME } }],
@@ -129,7 +129,7 @@ describe('jwtServerPolicy', () => {
 
     it('returns the redirect outcome with a clear mutation for the jwt cookie', async () => {
       await expect(
-        jwtServerPolicy.recoverSession(buildRequest('abc'), {
+        jwtServerPolicy.recoverSession(getMockJwtAuthRequest('abc'), {
           returnTo: '/domains/foo',
           notice: 'session-expired',
         })
@@ -145,7 +145,7 @@ describe('jwtServerPolicy', () => {
 
     it('defaults returnTo to the shared auth return path', async () => {
       await expect(
-        jwtServerPolicy.recoverSession(buildRequest('abc'), {})
+        jwtServerPolicy.recoverSession(getMockJwtAuthRequest('abc'), {})
       ).resolves.toMatchObject({
         result: { kind: 'redirect', returnTo: DEFAULT_AUTH_RETURN_TO },
       });
@@ -153,7 +153,7 @@ describe('jwtServerPolicy', () => {
 
     it('sanitizes protocol-relative returnTo values', async () => {
       await expect(
-        jwtServerPolicy.recoverSession(buildRequest('abc'), {
+        jwtServerPolicy.recoverSession(getMockJwtAuthRequest('abc'), {
           returnTo: '//evil.test',
         })
       ).resolves.toMatchObject({
@@ -165,13 +165,13 @@ describe('jwtServerPolicy', () => {
   describe('getSessionKey', () => {
     it('returns the raw token', async () => {
       await expect(
-        jwtServerPolicy.getSessionKey(buildRequest('abc'))
+        jwtServerPolicy.getSessionKey(getMockJwtAuthRequest('abc'))
       ).resolves.toBe('abc');
     });
 
     it('returns undefined without a cookie', async () => {
       await expect(
-        jwtServerPolicy.getSessionKey(buildRequest())
+        jwtServerPolicy.getSessionKey(getMockJwtAuthRequest())
       ).resolves.toBeUndefined();
     });
   });

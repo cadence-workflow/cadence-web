@@ -1,17 +1,13 @@
-import { type AuthContext, type AuthRequest } from '../../../auth.types';
+import { getMockAuthContext } from '../../../__fixtures__/mock-auth-context';
+import { getMockAuthRequest } from '../../../__fixtures__/mock-auth-request';
 import disabledServerPolicy from '../disabled-server-policy';
 
-const AUTH_CONTEXT: AuthContext = {
+const AUTH_CONTEXT = getMockAuthContext({
   authEnabled: false,
   auth: { isValidToken: false, canRefresh: false },
-  isAdmin: false,
-  groups: [],
-};
+});
 
-const REQUEST: AuthRequest = {
-  cookies: { get: () => undefined },
-  headers: new Headers(),
-};
+const REQUEST = getMockAuthRequest();
 
 describe('disabledServerPolicy', () => {
   it('resolves an auth-disabled context', async () => {

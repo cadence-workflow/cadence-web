@@ -1,102 +1,28 @@
 import 'server-only';
 
-import { cookies as getRequestCookies } from 'next/headers';
-
-import { JWT_AUTH_COOKIE_NAME } from '@/utils/auth/strategies/jwt/jwt-auth.constants';
-import { type GRPCMetadata } from '@/utils/grpc/grpc-service';
-
-import getConfigValue from '../config/get-config-value';
-
-import { type CadenceJwtClaims, type CookieReader } from './auth-context.types';
-import { splitGroupList } from './auth-shared';
 import {
-  type PublicAuthContext,
   type PrivateAuthContext,
+  type PublicAuthContext,
 } from './auth-shared.types';
-import { CADENCE_AUTH_GRPC_METADATA_KEY } from './auth.constants';
-import { cadenceJwtClaimsSchema } from './schemas/cadence-jwt-claims-schema';
+import { type AuthContext, type AuthRequest } from './auth.types';
+import getActiveAuthServerEntry from './strategies/get-active-auth-server-entry';
 
-export function decodeCadenceJwtClaims(
-  token: string
-): CadenceJwtClaims | undefined {
-  const [, payload] = token.split('.');
-  if (!payload) {
-    return undefined;
-  }
-
-  try {
-    const normalizedPayload = payload.replace(/-/g, '+').replace(/_/g, '/');
-    const paddedPayload =
-      normalizedPayload + '='.repeat((4 - (normalizedPayload.length % 4)) % 4);
-    const decodedPayload = Buffer.from(paddedPayload, 'base64').toString(
-      'utf8'
-    );
-
-    const parsed = JSON.parse(decodedPayload);
-    const result = cadenceJwtClaimsSchema.safeParse(parsed);
-    if (!result.success) {
-      return undefined;
-    }
-    return result.data;
-  } catch {
-    return undefined;
-  }
-}
-
+/**
+ * Resolves the auth context using the active strategy's server policy.
+ * If no request is passed, the policy decides how to get one. It may read it
+ * implicitly, which can throw outside a request scope, or not need one at all.
+ */
 export async function resolveAuthContext(
-  cookieStore?: CookieReader
-): Promise<PrivateAuthContext> {
-  const authStrategy = await getConfigValue('CADENCE_WEB_AUTH_STRATEGY');
-  const authEnabled = authStrategy === 'jwt';
-
-  const cookies = cookieStore ?? getRequestCookies();
-  const tokenFromCookie = cookies.get(JWT_AUTH_COOKIE_NAME)?.value?.trim();
-  const token = tokenFromCookie || undefined;
-
-  const claims = token ? decodeCadenceJwtClaims(token) : undefined;
-  const isInvalidToken = token !== undefined && claims === undefined;
-  const expiresAtMsRaw =
-    typeof claims?.exp === 'number' ? claims.exp * 1000 : undefined;
-  const isExpired =
-    expiresAtMsRaw !== undefined && Date.now() >= expiresAtMsRaw;
-  const shouldDropToken = !authEnabled || isInvalidToken || isExpired;
-  const effectiveClaims = shouldDropToken ? undefined : claims;
-  const expiresAtMs = shouldDropToken ? undefined : expiresAtMsRaw;
-  const effectiveToken = shouldDropToken ? undefined : token;
-
-  const groups = effectiveClaims?.groups
-    ? splitGroupList(effectiveClaims.groups)
-    : [];
-  const id = effectiveClaims?.sub || effectiveClaims?.name || undefined;
-  const userName = effectiveClaims?.name || effectiveClaims?.sub || undefined;
-  const isAdmin = effectiveClaims?.admin === true;
-
-  return {
-    authEnabled,
-    auth: {
-      isValidToken: Boolean(effectiveToken),
-      token: effectiveToken,
-      expiresAtMs,
-    },
-    groups,
-    isAdmin,
-    userName,
-    id,
-  };
+  request?: AuthRequest
+): Promise<AuthContext> {
+  const entry = await getActiveAuthServerEntry();
+  return entry.policy.resolveAuthContext(request);
 }
 
-export function getGrpcMetadataFromAuth(
-  authContext: PrivateAuthContext | null | undefined
-): GRPCMetadata | undefined {
-  if (!authContext?.authEnabled || !authContext.auth.token) {
-    return undefined;
-  }
-
-  return {
-    [CADENCE_AUTH_GRPC_METADATA_KEY]: authContext.auth.token,
-  };
-}
-
+// Compatibility alias (removed when the /api/auth/me reshape lands): the
+// `me` projection over the alias types (auth-shared.types.ts). The
+// registry-dispatched AuthContext is structurally assignable to
+// PrivateAuthContext, so the `me` route keeps its exact master behavior.
 export const getPublicAuthContext = ({
   auth,
   ...publicFields

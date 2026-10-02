@@ -1,6 +1,6 @@
+import { getMockAuthContext } from '@/utils/auth/__fixtures__/mock-auth-context';
 import { resolveAuthContext } from '@/utils/auth/auth-context';
 import { FULL_ACCESS, NO_ACCESS } from '@/utils/auth/auth-shared.constants';
-import { type PrivateAuthContext } from '@/utils/auth/auth-shared.types';
 
 import batchActionsUiEnabled from '../batch-actions-ui-enabled';
 import domainAccess from '../domain-access';
@@ -14,18 +14,6 @@ const mockDomainAccess = jest.mocked(domainAccess);
 const mockResolveAuthContext = jest.mocked(resolveAuthContext);
 
 const PARAMS = { cluster: 'test-cluster', domain: 'test-domain' };
-
-function makeAuthContext(
-  overrides: Partial<PrivateAuthContext> = {}
-): PrivateAuthContext {
-  return {
-    authEnabled: true,
-    auth: { isValidToken: true },
-    groups: [],
-    isAdmin: false,
-    ...overrides,
-  };
-}
 
 describe(batchActionsUiEnabled.name, () => {
   const originalMode = process.env.CADENCE_BATCH_ACTIONS_UI_ENABLED;
@@ -76,7 +64,7 @@ describe(batchActionsUiEnabled.name, () => {
   it('returns true in "ADMIN" mode for an admin user', async () => {
     process.env.CADENCE_BATCH_ACTIONS_UI_ENABLED = 'ADMIN';
     mockResolveAuthContext.mockResolvedValue(
-      makeAuthContext({ isAdmin: true })
+      getMockAuthContext({ isAdmin: true })
     );
 
     expect(await batchActionsUiEnabled(PARAMS)).toBe(true);
@@ -85,7 +73,7 @@ describe(batchActionsUiEnabled.name, () => {
   it('returns false in "ADMIN" mode for a non-admin user', async () => {
     process.env.CADENCE_BATCH_ACTIONS_UI_ENABLED = 'ADMIN';
     mockResolveAuthContext.mockResolvedValue(
-      makeAuthContext({ isAdmin: false })
+      getMockAuthContext({ isAdmin: false })
     );
 
     expect(await batchActionsUiEnabled(PARAMS)).toBe(false);
@@ -94,7 +82,7 @@ describe(batchActionsUiEnabled.name, () => {
   it('returns true in "ADMIN" mode when auth is disabled', async () => {
     process.env.CADENCE_BATCH_ACTIONS_UI_ENABLED = 'ADMIN';
     mockResolveAuthContext.mockResolvedValue(
-      makeAuthContext({ authEnabled: false })
+      getMockAuthContext({ authEnabled: false })
     );
 
     expect(await batchActionsUiEnabled(PARAMS)).toBe(true);
