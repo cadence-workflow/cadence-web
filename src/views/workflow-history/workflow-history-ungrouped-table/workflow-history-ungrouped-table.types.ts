@@ -51,6 +51,8 @@ export type Props = {
 
   // Diagnostics
   workflowDiagnosticsByEventIdMap: WorkflowDiagnosticsIssuesByEventId;
+  getIsDiagnosticsIssueExpanded: (issueExpansionId: string) => boolean;
+  toggleIsDiagnosticsIssueExpanded: (issueExpansionId: string) => void;
 };
 
 export type UngroupedEventInfo = {

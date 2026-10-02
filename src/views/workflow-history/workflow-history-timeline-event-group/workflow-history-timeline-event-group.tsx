@@ -9,6 +9,8 @@ export default function WorkflowHistoryTimelineEventGroup({
   onClickShowInTable,
   onClose,
   workflowDiagnosticsByEventIdMap,
+  getIsDiagnosticsIssueExpanded,
+  toggleIsDiagnosticsIssueExpanded,
 }: Props) {
   const { groupDetailsEntriesWithSummary } = useGroupDetailsEntries(eventGroup);
 
@@ -21,6 +23,8 @@ export default function WorkflowHistoryTimelineEventGroup({
       onClose={onClose}
       isScrollable
       diagnosticsIssuesByEventId={workflowDiagnosticsByEventIdMap}
+      getIsDiagnosticsIssueExpanded={getIsDiagnosticsIssueExpanded}
+      toggleIsDiagnosticsIssueExpanded={toggleIsDiagnosticsIssueExpanded}
     />
   );
 }

@@ -338,6 +338,8 @@ function setup({
         decodedPageUrlParams={decodedPageUrlParams}
         virtuosoRef={virtuosoRef}
         workflowDiagnosticsByEventIdMap={{}}
+        getIsDiagnosticsIssueExpanded={jest.fn(() => false)}
+        toggleIsDiagnosticsIssueExpanded={jest.fn()}
       />
     </VirtuosoMockContext.Provider>
   );

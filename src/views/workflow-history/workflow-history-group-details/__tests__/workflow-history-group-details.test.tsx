@@ -4,6 +4,7 @@ import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import { type WorkflowPageParams } from '@/views/workflow-page/workflow-page.types';
 
+import WorkflowHistoryEventDiagnostics from '../../workflow-history-event-diagnostics/workflow-history-event-diagnostics';
 import { type WorkflowDiagnosticsIssuesByEventId } from '../../workflow-history.types';
 import WorkflowHistoryGroupDetails from '../workflow-history-group-details';
 import { type GroupDetailsEntries } from '../workflow-history-group-details.types';
@@ -30,15 +31,9 @@ jest.mock(
 jest.mock(
   '../../workflow-history-event-diagnostics/workflow-history-event-diagnostics',
   () =>
-    jest.fn(({ issues, getIsIssueExpanded, toggleIsIssueExpanded }) => (
+    jest.fn(({ issues }) => (
       <div aria-label="Workflow history event diagnostics">
         <div>Diagnostics ({issues.length} issues)</div>
-        <div data-testid="diagnostics-has-getter">
-          {typeof getIsIssueExpanded === 'function' ? 'true' : 'false'}
-        </div>
-        <div data-testid="diagnostics-has-toggler">
-          {typeof toggleIsIssueExpanded === 'function' ? 'true' : 'false'}
-        </div>
       </div>
     ))
 );
@@ -375,6 +370,32 @@ describe(WorkflowHistoryGroupDetails.name, () => {
     expect(screen.getByText('Diagnostics (1 issues)')).toBeInTheDocument();
   });
 
+  it('passes getIsDiagnosticsIssueExpanded and toggleIsDiagnosticsIssueExpanded through to the diagnostics component', () => {
+    const { getIsDiagnosticsIssueExpanded, toggleIsDiagnosticsIssueExpanded } =
+      setup({
+        groupDetailsEntries: mockGroupDetails,
+        initialEventId: 'event-1',
+        diagnosticsIssuesByEventId: {
+          'event-1': [
+            {
+              issueId: 1,
+              invariantType: 'test',
+              reason: 'test reason',
+              metadata: {},
+            },
+          ],
+        },
+      });
+
+    expect(WorkflowHistoryEventDiagnostics).toHaveBeenCalledWith(
+      expect.objectContaining({
+        getIsIssueExpanded: getIsDiagnosticsIssueExpanded,
+        toggleIsIssueExpanded: toggleIsDiagnosticsIssueExpanded,
+      }),
+      expect.anything()
+    );
+  });
+
   it('does not render diagnostics component when no issues exist', () => {
     setup({
       groupDetailsEntries: mockGroupDetails,
@@ -442,6 +463,8 @@ function setup({
   onClickShowInTimeline,
   onClickShowInTable,
   diagnosticsIssuesByEventId = {},
+  getIsDiagnosticsIssueExpanded = jest.fn(() => false),
+  toggleIsDiagnosticsIssueExpanded = jest.fn(),
 }: {
   groupDetailsEntries: GroupDetailsEntries;
   initialEventId?: string;
@@ -450,6 +473,8 @@ function setup({
   onClickShowInTimeline?: () => void;
   onClickShowInTable?: () => void;
   diagnosticsIssuesByEventId?: WorkflowDiagnosticsIssuesByEventId;
+  getIsDiagnosticsIssueExpanded?: (issueExpansionId: string) => boolean;
+  toggleIsDiagnosticsIssueExpanded?: (issueExpansionId: string) => void;
 }) {
   const user = userEvent.setup();
 
@@ -462,8 +487,14 @@ function setup({
       onClickShowInTimeline={onClickShowInTimeline}
       onClickShowInTable={onClickShowInTable}
       diagnosticsIssuesByEventId={diagnosticsIssuesByEventId}
+      getIsDiagnosticsIssueExpanded={getIsDiagnosticsIssueExpanded}
+      toggleIsDiagnosticsIssueExpanded={toggleIsDiagnosticsIssueExpanded}
     />
   );
 
-  return { user };
+  return {
+    user,
+    getIsDiagnosticsIssueExpanded,
+    toggleIsDiagnosticsIssueExpanded,
+  };
 }

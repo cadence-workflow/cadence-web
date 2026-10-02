@@ -29,6 +29,8 @@ export default function WorkflowHistoryUngroupedTable({
   isFetchingMoreEvents,
   onClickShowGroupInTimeline,
   workflowDiagnosticsByEventIdMap,
+  getIsDiagnosticsIssueExpanded,
+  toggleIsDiagnosticsIssueExpanded,
 }: Props) {
   const maybeHighlightedEventIndex = useMemo(
     () => ungroupedEventsInfo.findIndex((v) => v.id === selectedEventId),
@@ -82,6 +84,8 @@ export default function WorkflowHistoryUngroupedTable({
             workflowDiagnosticsByEventIdMap={
               diagnosticsByGroupId[eventInfo.groupId]
             }
+            getIsDiagnosticsIssueExpanded={getIsDiagnosticsIssueExpanded}
+            toggleIsDiagnosticsIssueExpanded={toggleIsDiagnosticsIssueExpanded}
             {...(eventInfo.canReset
               ? { onReset: () => resetToDecisionEventId(eventInfo.id) }
               : {})}
