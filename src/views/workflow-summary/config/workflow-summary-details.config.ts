@@ -51,17 +51,21 @@ const workflowSummaryDetailsConfig: WorkflowSummaryDetailsConfig[] = [
     getLabel: () => 'Workflow ID',
     valueComponent: ({ decodedPageUrlParams }) =>
       decodedPageUrlParams.workflowId,
+    getCopyText: ({ decodedPageUrlParams }) => decodedPageUrlParams.workflowId,
   },
   {
     key: 'workflowType',
     getLabel: () => 'Workflow type',
     valueComponent: ({ firstEvent }) =>
       firstEvent?.workflowExecutionStartedEventAttributes?.workflowType?.name,
+    getCopyText: ({ firstEvent }) =>
+      firstEvent?.workflowExecutionStartedEventAttributes?.workflowType?.name,
   },
   {
     key: 'runId',
     getLabel: () => 'Run ID',
     valueComponent: ({ decodedPageUrlParams }) => decodedPageUrlParams.runId,
+    getCopyText: ({ decodedPageUrlParams }) => decodedPageUrlParams.runId,
   },
   {
     key: 'startTime',

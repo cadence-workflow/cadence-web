@@ -1,5 +1,6 @@
 import type { Theme } from 'baseui';
 import type { BadgeOverrides } from 'baseui/badge';
+import { type SkeletonOverrides } from 'baseui/skeleton/types';
 import type { StyleObject } from 'styletron-react';
 
 export const overrides = {
@@ -14,4 +15,14 @@ export const overrides = {
       }),
     },
   } satisfies BadgeOverrides,
+  skeleton: {
+    Root: {
+      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+        height: $theme.sizing.scale700,
+        width: $theme.sizing.scale1000,
+        borderRadius: $theme.borders.radius400,
+        flexShrink: 0,
+      }),
+    },
+  } satisfies SkeletonOverrides,
 };

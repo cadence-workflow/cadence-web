@@ -5,7 +5,6 @@ import {
   getLocalStorageValue,
   setLocalStorageValue,
 } from '@/utils/local-storage';
-import useIsWorkflowHistoryV2Selected from '@/views/workflow-history-v2/hooks/use-is-workflow-history-v2-selected';
 
 import workflowHistoryUserPreferencesConfig from '../config/workflow-history-user-preferences.config';
 
@@ -38,16 +37,11 @@ export default function WorkflowHistoryContextProvider({
     []
   );
 
-  const [isWorkflowHistoryV2Selected, setIsWorkflowHistoryV2Selected] =
-    useIsWorkflowHistoryV2Selected();
-
   return (
     <WorkflowHistoryContext.Provider
       value={{
         ungroupedViewUserPreference: ungroupedViewPreference,
         setUngroupedViewUserPreference,
-        isWorkflowHistoryV2Selected,
-        setIsWorkflowHistoryV2Selected,
       }}
     >
       {children}

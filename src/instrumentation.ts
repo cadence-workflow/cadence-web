@@ -39,5 +39,25 @@ export async function register() {
       });
       process.exit(1); // use process.exit to exit without an extra error log from instrumentation
     }
+
+    try {
+      // getConfigValue reads the configs stored above. A lazy policy loader
+      // runs here so an unimplemented strategy exits before the first request.
+      const { default: getConfigValue } = await import(
+        '@/utils/config/get-config-value'
+      );
+      const authStrategy = await getConfigValue('CADENCE_WEB_AUTH_STRATEGY');
+      const { default: getActiveAuthServerEntry } = await import(
+        '@/utils/auth/strategies/get-active-auth-server-entry'
+      );
+      await getActiveAuthServerEntry();
+      logger.info({ message: `Auth strategy: ${authStrategy}` });
+    } catch (e) {
+      logger.error({
+        message: 'Failed to resolve auth strategy',
+        error: e,
+      });
+      process.exit(1);
+    }
   }
 }

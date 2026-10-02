@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 
-import { CADENCE_AUTH_COOKIE_NAME } from '@/utils/auth/auth-context';
+import { JWT_AUTH_COOKIE_NAME } from '@/utils/auth/strategies/jwt/jwt-auth.constants';
 
 import { DELETE, POST } from '../route';
 
@@ -54,7 +54,7 @@ const getSetCookie = (response: Response) => {
 
 const getAuthCookie = (response: Response) => {
   const authCookie = getSetCookie(response).find(
-    (c) => c.name === CADENCE_AUTH_COOKIE_NAME
+    (c) => c.name === JWT_AUTH_COOKIE_NAME
   );
   expect(authCookie).toBeDefined();
   return authCookie!;

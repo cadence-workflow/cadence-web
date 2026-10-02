@@ -14,6 +14,11 @@ export const overrides = {
         margin: '0px',
       }),
     },
+    LabelContainer: {
+      style: (): StyleObject => ({
+        margin: '0px',
+      }),
+    },
   } satisfies FormControlOverrides,
 };
 

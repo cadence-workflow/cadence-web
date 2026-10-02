@@ -41,6 +41,29 @@ export const styled = {
     paddingRight: $theme.sizing.scale600,
     whiteSpace: 'wrap',
   })),
+  SortableHeaderCell: createStyled(
+    'button',
+    ({ $theme }: { $theme: Theme }) => ({
+      ...$theme.typography.LabelSmall,
+      display: 'flex',
+      alignItems: 'center',
+      columnGap: $theme.sizing.scale300,
+      color: $theme.colors.contentSecondary,
+      paddingTop: $theme.sizing.scale400,
+      paddingBottom: $theme.sizing.scale400,
+      paddingLeft: $theme.sizing.scale600,
+      paddingRight: $theme.sizing.scale600,
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      background: 'none',
+      border: 'none',
+      cursor: 'pointer',
+      ':hover': {
+        color: $theme.colors.contentPrimary,
+      },
+    })
+  ),
   GridRow: createStyled<'a', { $gridTemplateColumns: string }>(
     'a',
     ({ $theme, $gridTemplateColumns }) => ({
@@ -53,6 +76,7 @@ export const styled = {
       cursor: 'pointer',
       textDecoration: 'none',
       color: 'inherit',
+      WebkitUserDrag: 'none',
       ':hover': {
         backgroundColor: `${$theme.colors.contentPrimary}0A`,
       },
@@ -67,6 +91,7 @@ export const styled = {
     overflowWrap: 'break-word',
     wordBreak: 'break-word',
     minWidth: 0,
+    userSelect: 'text',
   })),
   CellPlaceholder: createStyled('span', ({ $theme }: { $theme: Theme }) => ({
     color: $theme.colors.contentTertiary,

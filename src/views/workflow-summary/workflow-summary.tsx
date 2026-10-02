@@ -20,11 +20,13 @@ import type { WorkflowPageTabContentProps } from '@/views/workflow-page/workflow
 import getWorkflowIsCompleted from '../workflow-page/helpers/get-workflow-is-completed';
 import { useDescribeWorkflow } from '../workflow-page/hooks/use-describe-workflow';
 
+import getWorkflowIsError from './helpers/get-workflow-is-error';
 import getWorkflowResultJson from './helpers/get-workflow-result-json';
 import WorkflowSummaryDetails from './workflow-summary-details/workflow-summary-details';
 import WorkflowSummaryDiagnosticsBanner from './workflow-summary-diagnostics-banner/workflow-summary-diagnostics-banner';
 import WorkflowSummaryJsonView from './workflow-summary-json-view/workflow-summary-json-view';
 import { type Props as JsonViewProps } from './workflow-summary-json-view/workflow-summary-json-view.types';
+import WorkflowSummaryScheduleDetails from './workflow-summary-schedule-details/workflow-summary-schedule-details';
 import { cssStyles } from './workflow-summary.styles';
 
 export default function WorkflowSummary({
@@ -85,6 +87,9 @@ export default function WorkflowSummary({
     !closeEvent.attributes ||
     !getWorkflowIsCompleted(closeEvent.attributes);
 
+  const isWorkflowError =
+    !!closeEvent?.attributes && getWorkflowIsError(closeEvent.attributes);
+
   const baseJsonViewProps: JsonViewProps = {
     inputJson:
       formattedStartEvent && 'input' in formattedStartEvent
@@ -92,6 +97,7 @@ export default function WorkflowSummary({
         : [],
     resultJson,
     isWorkflowRunning,
+    isWorkflowError,
     isArchived,
     ...params,
   };
@@ -108,6 +114,13 @@ export default function WorkflowSummary({
             formattedCloseHistoryEvent={formattedCloseEvent}
             workflowDetails={workflowDetails}
             decodedPageUrlParams={decodedParams}
+          />
+          <WorkflowSummaryScheduleDetails
+            cluster={decodedParams.cluster}
+            domain={decodedParams.domain}
+            searchAttributes={
+              formattedStartEvent?.searchAttributes?.indexedFields
+            }
           />
         </div>
         {/* On narrow screens */}

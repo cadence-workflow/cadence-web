@@ -213,6 +213,9 @@ describe(listWorkflowsBasic.name, () => {
           taskListInfo: null,
           activeClusterSelectionPolicy: null,
           cronOverlapPolicy: 'CRON_OVERLAP_POLICY_INVALID',
+          cronSchedule: '',
+          executionStatus: 'WORKFLOW_EXECUTION_STATUS_INVALID',
+          scheduledExecutionTime: null,
         },
       ],
     });

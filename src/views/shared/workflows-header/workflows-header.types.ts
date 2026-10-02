@@ -29,5 +29,8 @@ export type Props<
   isQueryRunning: boolean;
   expandFiltersByDefault?: boolean;
   showQueryInputOnly?: boolean;
+  noSpacing?: boolean;
   columnsPickerProps?: ColumnsPickerProps;
+  // Label for the non-query toggle segment (default "Search")
+  searchSegmentLabel?: string;
 };

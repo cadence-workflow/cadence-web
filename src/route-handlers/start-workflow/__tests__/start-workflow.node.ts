@@ -249,6 +249,41 @@ describe(startWorkflow.name, () => {
     expect(responseData.validationErrors).toBeDefined();
   });
 
+  it('trims whitespace from identifier fields', async () => {
+    const { mockStartWorkflow } = await setup({
+      requestBody: {
+        ...defaultRequestBody,
+        workflowId: '  test-workflow-id  ',
+        workflowType: { name: '  TestWorkflow  ' },
+        taskList: { name: '  test-task-list  ' },
+      },
+    });
+
+    expect(mockStartWorkflow).toHaveBeenCalledWith(
+      expect.objectContaining({
+        workflowId: 'test-workflow-id',
+        workflowType: { name: 'TestWorkflow' },
+        taskList: { name: 'test-task-list' },
+      })
+    );
+  });
+
+  it('treats whitespace-only workflowId as missing and generates one', async () => {
+    const generatedWorkflowId = '123e4567-e89b-12d3-a456-426614174000';
+    jest.spyOn(crypto, 'randomUUID').mockReturnValue(generatedWorkflowId);
+
+    const { mockStartWorkflow } = await setup({
+      requestBody: {
+        ...defaultRequestBody,
+        workflowId: '   ',
+      } as StartWorkflowRequestBody,
+    });
+
+    expect(mockStartWorkflow).toHaveBeenCalledWith(
+      expect.objectContaining({ workflowId: generatedWorkflowId })
+    );
+  });
+
   it('handles GRPC errors correctly', async () => {
     const { res, mockStartWorkflow } = await setup({
       error: 'Internal server error',

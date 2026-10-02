@@ -1,61 +1,21 @@
-import type {
-  StyletronCSSObject,
-  StyletronCSSObjectOf,
-} from '@/hooks/use-styletron-classes';
+import { styled as createStyled, withStyle } from 'baseui';
 
-const cssStylesObj = {
-  container: {
+import PageSection from '@/components/page-section/page-section';
+
+export const styled = {
+  Container: createStyled('div', {
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
-    // This is to ensure the header section z-index is relative to this container and do not
-    // show above external elements like popovers and modals
+    // This ensures the header section's z-index is relative to this container and does not
+    // appear above external elements like popovers and modals.
     position: 'relative',
     zIndex: 0,
-  },
-  contentSection: {
+  }),
+  ContentSection: withStyle(PageSection, ({ $theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
-  },
-  eventsContainer: (theme) => ({
-    display: 'flex',
-    marginTop: theme.sizing.scale600,
-  }),
-  ungroupedEventsContainer: (theme) => ({
-    flex: 1,
-    marginTop: theme.sizing.scale500,
-  }),
-  compactSection: (theme) => ({
-    display: 'none',
-    [theme.mediaQuery.large]: {
-      display: 'flex',
-      flexDirection: 'column',
-      width: '362px',
-      maxHeight: `calc(100vh - ${theme.sizing.scale900})`, // fill page height excluding page bottom margin
-      overflow: 'auto',
-      position: 'sticky',
-      top: 0,
-      paddingRight: theme.sizing.scale800,
-    },
-  }),
-  compactCardContainer: (theme) => ({
-    display: 'flex',
-    flexDirection: 'column',
-    padding: `${theme.sizing.scale200} 0`,
-    marginRight: theme.sizing.scale700,
-  }),
-  timelineSection: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 1,
-  },
-  noResultsContainer: (theme) => ({
-    textAlign: 'center',
-    padding: `${theme.sizing.scale900} 0`,
-    ...theme.typography.LabelSmall,
-  }),
-} satisfies StyletronCSSObject;
-
-export const cssStyles: StyletronCSSObjectOf<typeof cssStylesObj> =
-  cssStylesObj;
+    paddingBottom: $theme.sizing.scale950,
+  })),
+};

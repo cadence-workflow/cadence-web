@@ -2,6 +2,8 @@ import { useMemo, useState, useEffect, useCallback } from 'react';
 
 import {
   InfiniteQueryObserver,
+  type DefaultedInfiniteQueryObserverOptions,
+  type InfiniteData,
   type QueryKey,
   useQueryClient,
 } from '@tanstack/react-query';
@@ -36,7 +38,9 @@ import {
  *   - For more details, see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#comparefn
  *
  * @returns A tuple [mergedQueryResults, queryResults]:
- *   - `mergedQueryResults`: The merged and sorted results from all queries.
+ *   - `mergedQueryResults`: The merged and sorted results from all queries. Its `hasNextPage`
+ *     covers both already fetched items that are not displayed yet and pages that are still
+ *     unfetched, so it stays true for as long as `fetchNextPage` can add items to `data`.
  *   - `queryResults`: An array containing individual results from each query.
  */
 export default function useMergedInfiniteQueries<
@@ -54,17 +58,42 @@ export default function useMergedInfiniteQueries<
   Array<SingleInfiniteQueryResult<TResponse>>,
 ] {
   const [count, setCount] = useState(pageSize);
+  const queryClient = useQueryClient();
+
+  const observers = useMemo(
+    () => (queries || []).map((q) => new InfiniteQueryObserver(queryClient, q)),
+    [queries, queryClient]
+  );
 
   const [queryResults, setQueryResults] = useState<
     Array<SingleInfiniteQueryResult<TResponse>>
-  >([]);
-  const queryClient = useQueryClient();
+  >(() =>
+    observers.map((observer, index) => {
+      /**
+       * _optimisticResults is a TanStack internal option, used here the same way as in useBaseQuery.
+       * With 'optimistic', the observer reports the fetch that subscribe() will start, so the first
+       * render shows loading.
+       * defaultQueryOptions() drops the infinite-query fields from its return type, hence the cast.
+       *
+       * @see https://github.com/TanStack/query/blob/v5.51.1/packages/react-query/src/useBaseQuery.ts#L57-L59
+       */
+      const defaultedOptions = {
+        ...queryClient.defaultQueryOptions(queries[index]),
+        _optimisticResults: 'optimistic',
+      } as DefaultedInfiniteQueryObserverOptions<
+        TResponse,
+        Error,
+        InfiniteData<TResponse, TPageParam>,
+        TResponse,
+        TQueryKey,
+        TPageParam
+      >;
+      return observer.getOptimisticResult(defaultedOptions);
+    })
+  );
 
   useEffect(() => {
     setCount(pageSize);
-    const observers = (queries || []).map((q) => {
-      return new InfiniteQueryObserver(queryClient, q);
-    });
 
     setQueryResults(observers.map((ob) => ob.getCurrentResult()));
 
@@ -78,7 +107,7 @@ export default function useMergedInfiniteQueries<
       })
     );
     return () => unsubscribes.forEach((unsubscribe) => unsubscribe());
-  }, [queries, queryClient, pageSize]);
+  }, [observers, pageSize]);
 
   const flattenedDataArrays: Array<Array<TData>> = useMemo(() => {
     return queryResults.map((queryResult) => {
@@ -95,6 +124,16 @@ export default function useMergedInfiniteQueries<
     });
   }, [flattenedDataArrays, count, compare]);
 
+  // The queries fetch further ahead than what is displayed, and their pages stay in
+  // the react-query cache when the queries change, so items can be waiting to be
+  // displayed while no query has another page left to fetch.
+  const hasUndisplayedItems = useMemo(
+    () =>
+      sortedArray.length <
+      flattenedDataArrays.reduce((total, items) => total + items.length, 0),
+    [sortedArray, flattenedDataArrays]
+  );
+
   const refetchQueriesWithError = useCallback(() => {
     queryResults.forEach((res) => {
       if (res.isError) {
@@ -109,7 +148,8 @@ export default function useMergedInfiniteQueries<
     isLoading: queryResults.some((qr) => qr.isLoading),
     isFetching: queryResults.some((qr) => qr.isFetching),
     isFetchingNextPage: queryResults.some((qr) => qr.isFetchingNextPage),
-    hasNextPage: queryResults.some((qr) => qr.hasNextPage),
+    hasNextPage:
+      hasUndisplayedItems || queryResults.some((qr) => qr.hasNextPage),
     fetchNextPage: getMergedFetchNextPage({
       queryResults,
       flattenedDataArrays,

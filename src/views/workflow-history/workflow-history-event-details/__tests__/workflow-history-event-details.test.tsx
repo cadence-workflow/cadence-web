@@ -1,166 +1,202 @@
-import React from 'react';
-
 import { render, screen } from '@/test-utils/rtl';
 
-import { completeActivityTaskEvent } from '../../__fixtures__/workflow-history-activity-events';
-import { pendingActivityTaskStartEvent } from '../../__fixtures__/workflow-history-pending-events';
-import { workflowPageUrlParams } from '../../__fixtures__/workflow-page-url-params';
-import generateHistoryEventDetails from '../helpers/generate-history-event-details';
-import WorkflowHistoryEventDetails from '../workflow-history-event-details';
-import { type WorkflowHistoryEventDetailsEntries } from '../workflow-history-event-details.types';
+import { type WorkflowPageParams } from '@/views/workflow-page/workflow-page.types';
 
-jest.mock('@/utils/data-formatters/format-workflow-history-event', () =>
-  jest.fn((event) => (event ? { mockFormatted: true } : null))
+import type WorkflowHistoryPanelDetailsEntry from '../../workflow-history-panel-details-entry/workflow-history-panel-details-entry';
+import WorkflowHistoryEventDetails from '../workflow-history-event-details';
+import { type EventDetailsEntries } from '../workflow-history-event-details.types';
+
+jest.mock<typeof WorkflowHistoryPanelDetailsEntry>(
+  '../../workflow-history-panel-details-entry/workflow-history-panel-details-entry',
+  () =>
+    jest.fn(({ detail }) => (
+      <div data-testid="panel-details-entry">
+        Panel Entry: {detail.path} ={' '}
+        {JSON.stringify(detail.isGroup ? detail.groupEntries : detail.value)}
+        {detail.isNegative && ' (negative)'}
+      </div>
+    ))
 );
 
-jest.mock('../helpers/generate-history-event-details', () => jest.fn());
-const mockGenerateHistoryEventDetails =
-  generateHistoryEventDetails as jest.Mock;
-
 jest.mock(
-  '../../workflow-history-event-details-group/workflow-history-event-details-group',
+  '@/views/workflow-history/workflow-history-event-details-group/workflow-history-event-details-group',
   () =>
-    jest.fn(({ entries }) => <div>Mock details: {JSON.stringify(entries)}</div>)
+    jest.fn(({ entries }: { entries: EventDetailsEntries }) => (
+      <div data-testid="event-details-group">
+        Event Details Group ({entries.length} entries)
+      </div>
+    ))
 );
 
 describe(WorkflowHistoryEventDetails.name, () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
+  it('renders "No Details" when eventDetails is empty', () => {
+    setup({ eventDetails: [] });
 
-  it('renders null when detailsEntries is empty', () => {
-    mockGenerateHistoryEventDetails.mockReturnValue([]);
-
-    render(
-      <WorkflowHistoryEventDetails
-        event={completeActivityTaskEvent}
-        decodedPageUrlParams={workflowPageUrlParams}
-      />
-    );
     expect(screen.getByText('No Details')).toBeInTheDocument();
+    expect(screen.queryByTestId('panel-details-entry')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('event-details-group')).not.toBeInTheDocument();
   });
 
-  it('renders details with path and value', () => {
-    mockGenerateHistoryEventDetails.mockReturnValue([
+  it('renders only rest details when no entries have showInPanels', () => {
+    const eventDetails: EventDetailsEntries = [
       {
-        key: 'testKey',
-        path: 'testPath',
+        key: 'key1',
+        path: 'path1',
+        value: 'value1',
         isGroup: false,
-        value: 'testValue',
         renderConfig: {
-          name: 'Mock render config without custom label',
-          customMatcher: () => true,
+          name: 'Test Config',
+          key: 'key1',
         },
       },
-    ] satisfies WorkflowHistoryEventDetailsEntries);
+      {
+        key: 'key2',
+        path: 'path2',
+        value: 'value2',
+        isGroup: false,
+        renderConfig: null,
+      },
+    ];
 
-    render(
-      <WorkflowHistoryEventDetails
-        event={completeActivityTaskEvent}
-        decodedPageUrlParams={workflowPageUrlParams}
-      />
-    );
+    setup({ eventDetails });
 
-    expect(screen.getByText(/"testValue"/)).toBeInTheDocument();
+    expect(screen.queryByTestId('panel-details-entry')).not.toBeInTheDocument();
+    expect(screen.getByTestId('event-details-group')).toBeInTheDocument();
+    expect(
+      screen.getByText('Event Details Group (2 entries)')
+    ).toBeInTheDocument();
   });
 
-  it('renders pending event details with path and value', () => {
-    mockGenerateHistoryEventDetails.mockReturnValue([
+  it('renders panel details when entries have showInPanels flag', () => {
+    const eventDetails: EventDetailsEntries = [
       {
-        key: 'testKey',
-        path: 'testPath',
+        key: 'key1',
+        path: 'path1',
+        value: 'value1',
         isGroup: false,
-        value: 'testValue',
         renderConfig: {
-          name: 'Mock render config without custom label',
-          customMatcher: () => true,
+          name: 'Panel Config',
+          key: 'key1',
+          showInPanels: true,
         },
       },
-    ] satisfies WorkflowHistoryEventDetailsEntries);
-
-    render(
-      <WorkflowHistoryEventDetails
-        event={pendingActivityTaskStartEvent}
-        decodedPageUrlParams={workflowPageUrlParams}
-      />
-    );
-
-    expect(screen.getByText(/"testValue"/)).toBeInTheDocument();
-  });
-
-  it('passes negativeFields to generateHistoryEventDetails when provided', () => {
-    const negativeFields = ['reason', 'details'];
-    mockGenerateHistoryEventDetails.mockReturnValue([]);
-
-    render(
-      <WorkflowHistoryEventDetails
-        event={completeActivityTaskEvent}
-        decodedPageUrlParams={workflowPageUrlParams}
-        negativeFields={negativeFields}
-      />
-    );
-
-    expect(mockGenerateHistoryEventDetails).toHaveBeenCalledWith({
-      details: { mockFormatted: true },
-      negativeFields,
-    });
-  });
-
-  it('does not pass negativeFields to generateHistoryEventDetails when not provided', () => {
-    mockGenerateHistoryEventDetails.mockReturnValue([]);
-
-    render(
-      <WorkflowHistoryEventDetails
-        event={completeActivityTaskEvent}
-        decodedPageUrlParams={workflowPageUrlParams}
-      />
-    );
-
-    expect(mockGenerateHistoryEventDetails).toHaveBeenCalledWith({
-      details: { mockFormatted: true },
-    });
-  });
-
-  it('passes empty negativeFields array to generateHistoryEventDetails when provided as empty', () => {
-    const negativeFields: string[] = [];
-    mockGenerateHistoryEventDetails.mockReturnValue([]);
-
-    render(
-      <WorkflowHistoryEventDetails
-        event={completeActivityTaskEvent}
-        decodedPageUrlParams={workflowPageUrlParams}
-        negativeFields={negativeFields}
-      />
-    );
-
-    expect(mockGenerateHistoryEventDetails).toHaveBeenCalledWith({
-      details: { mockFormatted: true },
-      negativeFields,
-    });
-  });
-
-  it('passes additionalDetails merged with formatted event details to generateHistoryEventDetails', () => {
-    const additionalDetails = {
-      key1: 'value1',
-      key2: {
-        value: 2,
+      {
+        key: 'key2',
+        path: 'path2',
+        value: 'value2',
+        isGroup: false,
+        renderConfig: {
+          name: 'Rest Config',
+          key: 'key2',
+        },
       },
-    };
-    mockGenerateHistoryEventDetails.mockReturnValue([]);
+    ];
 
-    render(
-      <WorkflowHistoryEventDetails
-        event={completeActivityTaskEvent}
-        decodedPageUrlParams={workflowPageUrlParams}
-        additionalDetails={additionalDetails}
-      />
-    );
+    setup({ eventDetails });
 
-    expect(mockGenerateHistoryEventDetails).toHaveBeenCalledWith({
-      details: {
-        mockFormatted: true,
-        ...additionalDetails,
+    expect(screen.getByTestId('panel-details-entry')).toBeInTheDocument();
+    expect(
+      screen.getByText(/Panel Entry: path1 = "value1"/)
+    ).toBeInTheDocument();
+    expect(screen.getByTestId('event-details-group')).toBeInTheDocument();
+    expect(
+      screen.getByText('Event Details Group (1 entries)')
+    ).toBeInTheDocument();
+  });
+
+  it('renders multiple panel details', () => {
+    const eventDetails: EventDetailsEntries = [
+      {
+        key: 'key1',
+        path: 'path1',
+        value: 'value1',
+        isGroup: false,
+        renderConfig: {
+          name: 'Panel Config 1',
+          key: 'key1',
+          showInPanels: true,
+        },
       },
-    });
+      {
+        key: 'key2',
+        path: 'path2',
+        value: { nested: 'value2' },
+        isGroup: false,
+        renderConfig: {
+          name: 'Panel Config 2',
+          key: 'key2',
+          showInPanels: true,
+        },
+      },
+      {
+        key: 'key3',
+        path: 'path3',
+        value: 'value3',
+        isGroup: false,
+        renderConfig: {
+          name: 'Rest Config',
+          key: 'key3',
+        },
+      },
+    ];
+
+    setup({ eventDetails });
+
+    const panelEntries = screen.getAllByTestId('panel-details-entry');
+    expect(panelEntries).toHaveLength(2);
+    expect(
+      screen.getByText(/Panel Entry: path1 = "value1"/)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Panel Entry: path2 = \{"nested":"value2"\}/)
+    ).toBeInTheDocument();
+    expect(screen.getByTestId('event-details-group')).toBeInTheDocument();
+    expect(
+      screen.getByText('Event Details Group (1 entries)')
+    ).toBeInTheDocument();
+  });
+
+  it('correctly renders panel details entry', () => {
+    const eventDetails: EventDetailsEntries = [
+      {
+        key: 'key1',
+        path: 'path1',
+        value: 'value1',
+        isGroup: false,
+        isNegative: true,
+        renderConfig: {
+          name: 'Panel Config',
+          key: 'key1',
+          showInPanels: true,
+        },
+      },
+    ];
+
+    setup({ eventDetails });
+
+    expect(
+      screen.getByText(/Panel Entry: path1 = "value1"/)
+    ).toBeInTheDocument();
+    expect(screen.getByText(/\(negative\)/)).toBeInTheDocument();
   });
 });
+
+function setup({
+  eventDetails,
+  workflowPageParams = {
+    domain: 'test-domain',
+    cluster: 'test-cluster',
+    workflowId: 'test-workflow-id',
+    runId: 'test-run-id',
+  },
+}: {
+  eventDetails: EventDetailsEntries;
+  workflowPageParams?: WorkflowPageParams;
+}) {
+  render(
+    <WorkflowHistoryEventDetails
+      eventDetails={eventDetails}
+      workflowPageParams={workflowPageParams}
+    />
+  );
+}

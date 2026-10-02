@@ -14,6 +14,15 @@ export const styled = {
   ErrorText: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     ...$theme.typography.HeadingXSmall,
   })),
+  ErrorDescription: createStyled('p', ({ $theme }: { $theme: Theme }) => ({
+    ...$theme.typography.ParagraphSmall,
+    color: $theme.colors.contentTertiary,
+    marginTop: 0,
+    marginBottom: 0,
+    width: '100%',
+    maxWidth: 'min(600px, 100%)',
+    textAlign: 'center',
+  })),
   ErrorActionsContainer: createStyled(
     'div',
     ({ $theme }: { $theme: Theme }) => ({

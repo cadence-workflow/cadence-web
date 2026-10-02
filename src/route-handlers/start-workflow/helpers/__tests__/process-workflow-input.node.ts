@@ -14,6 +14,12 @@ describe('processWorkflowInput', () => {
         workerSDKLanguage: 'JAVA',
       })
     ).toBeUndefined();
+    expect(
+      processWorkflowInput({
+        input: undefined,
+        workerSDKLanguage: 'PYTHON',
+      })
+    ).toBeUndefined();
   });
 
   it('should return undefined when input is empty array', () => {
@@ -28,6 +34,13 @@ describe('processWorkflowInput', () => {
       processWorkflowInput({
         input: [],
         workerSDKLanguage: 'JAVA',
+      })
+    ).toBeUndefined();
+
+    expect(
+      processWorkflowInput({
+        input: [],
+        workerSDKLanguage: 'PYTHON',
       })
     ).toBeUndefined();
   });
@@ -109,6 +122,16 @@ describe('processWorkflowInput', () => {
     ).toBe('42');
   });
 
+  it('should join arguments with spaces for PYTHON language', () => {
+    const input = ['arg1', 42, true, null];
+    expect(
+      processWorkflowInput({
+        input,
+        workerSDKLanguage: 'PYTHON',
+      })
+    ).toBe('"arg1" 42 true null');
+  });
+
   it('should handle empty string in input', () => {
     const input = [''];
     const expectedResult = '""';
@@ -122,6 +145,12 @@ describe('processWorkflowInput', () => {
       processWorkflowInput({
         input,
         workerSDKLanguage: 'JAVA',
+      })
+    ).toBe(expectedResult);
+    expect(
+      processWorkflowInput({
+        input,
+        workerSDKLanguage: 'PYTHON',
       })
     ).toBe(expectedResult);
   });
@@ -140,6 +169,13 @@ describe('processWorkflowInput', () => {
       processWorkflowInput({
         input: specialCharacters,
         workerSDKLanguage: 'JAVA',
+      })
+    ).toBe(expectedResult);
+
+    expect(
+      processWorkflowInput({
+        input: specialCharacters,
+        workerSDKLanguage: 'PYTHON',
       })
     ).toBe(expectedResult);
   });

@@ -2,71 +2,106 @@ import { useMemo } from 'react';
 
 import { Virtuoso } from 'react-virtuoso';
 
-import WorkflowHistoryTimelineLoadMore from '../workflow-history-timeline-load-more/workflow-history-timeline-load-more';
+import scopeDiagnosticsToGroup from '../helpers/scope-diagnostics-to-group';
+import WorkflowHistoryTableFooter from '../workflow-history-table-footer/workflow-history-table-footer';
 import WorkflowHistoryUngroupedEvent from '../workflow-history-ungrouped-event/workflow-history-ungrouped-event';
+import { type WorkflowDiagnosticsIssuesByEventId } from '../workflow-history.types';
 
 import { styled } from './workflow-history-ungrouped-table.styles';
 import { type Props } from './workflow-history-ungrouped-table.types';
 
 export default function WorkflowHistoryUngroupedTable({
-  eventsInfo,
-  selectedEventId,
+  ungroupedEventsInfo,
+  workflowStartTimeMs,
+  virtuosoRef,
+  setVisibleRange,
   decodedPageUrlParams,
-  onResetToEventId,
-  error,
-  hasMoreEvents,
-  isFetchingMoreEvents,
-  fetchMoreEvents,
+  selectedEventId,
   getIsEventExpanded,
   toggleIsEventExpanded,
-  onVisibleRangeChange,
-  virtuosoRef,
+  resetToDecisionEventId,
+  workflowIsArchived,
+  workflowCloseStatus,
+  loadingMoreEvents,
+  error,
+  hasMoreEvents,
+  fetchMoreEvents,
+  isFetchingMoreEvents,
+  onClickShowGroupInTimeline,
+  workflowDiagnosticsByEventIdMap,
 }: Props) {
-  const workflowStartTime =
-    eventsInfo.length > 0 ? eventsInfo[0].event.eventTime : null;
-
-  const maybeHighlightedEventId = useMemo(
-    () => eventsInfo.findIndex((v) => v.id === selectedEventId),
-    [eventsInfo, selectedEventId]
+  const maybeHighlightedEventIndex = useMemo(
+    () => ungroupedEventsInfo.findIndex((v) => v.id === selectedEventId),
+    [ungroupedEventsInfo, selectedEventId]
   );
+
+  const noEventsToDisplay = ungroupedEventsInfo.length === 0;
+
+  const diagnosticsByGroupId = useMemo(() => {
+    const result: Record<string, WorkflowDiagnosticsIssuesByEventId> = {};
+    for (const { groupId, eventGroup } of ungroupedEventsInfo) {
+      result[groupId] ??= scopeDiagnosticsToGroup(
+        eventGroup.events,
+        workflowDiagnosticsByEventIdMap
+      );
+    }
+    return result;
+  }, [ungroupedEventsInfo, workflowDiagnosticsByEventIdMap]);
 
   return (
     <>
       <styled.TableHeader>
+        <div />
         <div>ID</div>
-        <div>Type</div>
-        <div>Event</div>
+        <div>Event group</div>
+        <div>Status</div>
         <div>Time</div>
         <div>Elapsed</div>
+        <div>Details</div>
       </styled.TableHeader>
       <Virtuoso
-        ref={virtuosoRef}
         useWindowScroll
-        data={eventsInfo}
+        data={ungroupedEventsInfo}
+        ref={virtuosoRef}
+        defaultItemHeight={36}
+        rangeChanged={setVisibleRange}
         itemContent={(_, eventInfo) => (
           <WorkflowHistoryUngroupedEvent
             eventInfo={eventInfo}
-            workflowStartTime={workflowStartTime}
+            workflowStartTimeMs={workflowStartTimeMs}
             decodedPageUrlParams={decodedPageUrlParams}
+            workflowIsArchived={workflowIsArchived}
+            workflowCloseStatus={workflowCloseStatus}
+            loadingMoreEvents={loadingMoreEvents}
             isExpanded={getIsEventExpanded(eventInfo.id)}
             toggleIsExpanded={() => toggleIsEventExpanded(eventInfo.id)}
             animateOnEnter={eventInfo.id === selectedEventId}
+            onClickShowInTimeline={() =>
+              onClickShowGroupInTimeline(eventInfo.groupId)
+            }
+            workflowDiagnosticsByEventIdMap={
+              diagnosticsByGroupId[eventInfo.groupId]
+            }
             {...(eventInfo.canReset
-              ? { onReset: () => onResetToEventId(eventInfo.id) }
+              ? { onReset: () => resetToDecisionEventId(eventInfo.id) }
               : {})}
           />
         )}
-        {...(maybeHighlightedEventId !== -1 && {
-          initialTopMostItemIndex: maybeHighlightedEventId,
+        {...(maybeHighlightedEventIndex !== -1 && {
+          initialTopMostItemIndex: {
+            index: maybeHighlightedEventIndex,
+            align: 'center',
+            behavior: 'auto',
+          },
         })}
-        rangeChanged={onVisibleRangeChange}
         components={{
           Footer: () => (
-            <WorkflowHistoryTimelineLoadMore
+            <WorkflowHistoryTableFooter
               error={error}
-              fetchNextPage={fetchMoreEvents}
-              hasNextPage={hasMoreEvents}
-              isFetchingNextPage={isFetchingMoreEvents}
+              noEventsToDisplay={noEventsToDisplay}
+              canFetchMoreEvents={hasMoreEvents}
+              fetchMoreEvents={fetchMoreEvents}
+              isFetchingMoreEvents={isFetchingMoreEvents}
             />
           ),
         }}

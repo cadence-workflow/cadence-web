@@ -6,19 +6,34 @@ import { type PendingActivityInfo } from '@/__generated__/proto-ts/uber/cadence/
 import { type PendingDecisionInfo } from '@/__generated__/proto-ts/uber/cadence/api/v1/PendingDecisionInfo';
 import { type PageFilterConfig } from '@/components/page-filters/page-filters.types';
 import { type PageQueryParamValues } from '@/hooks/use-page-query-params/use-page-query-params.types';
+import { type WorkflowDiagnosticsIssue as RouteHandlerWorkflowDiagnosticsIssue } from '@/route-handlers/diagnose-workflow/diagnose-workflow.types';
 
 import type workflowPageQueryParamsConfig from '../workflow-page/config/workflow-page-query-params.config';
 import { type WorkflowPageTabContentProps } from '../workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
-import type { WorkflowEventStatus } from './workflow-history-event-status-badge/workflow-history-event-status-badge.types';
+export type Props = WorkflowPageTabContentProps;
+
+export type WorkflowHistoryUserPreferenceConfig<T> = {
+  key: string;
+  schema: z.ZodType<T, z.ZodTypeDef, string>;
+};
+
+export type WorkflowEventStatus =
+  | 'ONGOING'
+  | 'WAITING'
+  | 'COMPLETED'
+  | 'FAILED'
+  | 'CANCELED';
 
 export type HistoryEventGroupType =
   | 'Activity'
+  | 'LocalActivity'
   | 'Decision'
   | 'Timer'
   | 'ChildWorkflowExecution'
   | 'SignalExternalWorkflowExecution'
   | 'RequestCancelExternalWorkflowExecution'
+  | 'WorkflowSignaled'
   | 'Event';
 
 export type HistoryGroupEventMetadata = {
@@ -31,6 +46,7 @@ export type HistoryGroupEventMetadata = {
   summaryFields?: Array<string>;
 };
 
+// TODO @adhitya.mamallan - remove this type when moving grouping logic to v2
 export type HistoryGroupBadge = {
   content: string;
 };
@@ -64,6 +80,7 @@ export type HistoryGroupEventToAdditionalDetailsMap<
 >;
 
 type BaseHistoryGroup = {
+  groupType: HistoryEventGroupType;
   label: string;
   shortLabel?: string;
   eventsMetadata: HistoryGroupEventMetadata[];
@@ -81,6 +98,7 @@ type BaseHistoryGroup = {
   badges?: HistoryGroupBadge[];
   resetToDecisionEventId?: string | null;
 };
+
 export type PendingDecisionScheduleInfo = Omit<PendingDecisionInfo, 'state'> & {
   state: 'PENDING_DECISION_STATE_SCHEDULED' | 'PENDING_DECISION_STATE_STARTED';
 };
@@ -153,21 +171,33 @@ export type RequestCancelExternalWorkflowExecutionHistoryGroup =
     events: RequestCancelExternalWorkflowExecutionHistoryEvent[];
   };
 
+export type WorkflowSignaledHistoryGroup = BaseHistoryGroup & {
+  groupType: 'WorkflowSignaled';
+  events: WorkflowSignaledHistoryEvent[];
+};
+
 export type SingleEventHistoryGroup = BaseHistoryGroup & {
   groupType: 'Event';
   events: SingleHistoryEvent[];
 };
 
+export type LocalActivityHistoryGroup = BaseHistoryGroup & {
+  groupType: 'LocalActivity';
+  events: LocalActivityHistoryEvent[];
+};
+
 export type HistoryEventsGroup =
   | ActivityHistoryGroup
+  | LocalActivityHistoryGroup
   | DecisionHistoryGroup
   | TimerHistoryGroup
   | ChildWorkflowExecutionHistoryGroup
   | SignalExternalWorkflowExecutionHistoryGroup
   | RequestCancelExternalWorkflowExecutionHistoryGroup
+  | WorkflowSignaledHistoryGroup
   | SingleEventHistoryGroup;
 
-export type HistoryEventsGroups = Record<string, HistoryEventsGroup>;
+export type HistoryEventsGroupsMap = Record<string, HistoryEventsGroup>;
 
 export type ActivityHistoryEvent = HistoryEvent & {
   attributes:
@@ -222,6 +252,14 @@ export type RequestCancelExternalWorkflowExecutionHistoryEvent =
       | 'externalWorkflowExecutionCancelRequestedEventAttributes';
   };
 
+export type WorkflowSignaledHistoryEvent = HistoryEvent & {
+  attributes: 'workflowExecutionSignaledEventAttributes';
+};
+
+export type LocalActivityHistoryEvent = HistoryEvent & {
+  attributes: 'markerRecordedEventAttributes';
+};
+
 export type SingleHistoryEvent = HistoryEvent & {
   attributes:
     | 'workflowExecutionStartedEventAttributes'
@@ -232,7 +270,6 @@ export type SingleHistoryEvent = HistoryEvent & {
     | 'requestCancelActivityTaskFailedEventAttributes'
     | 'cancelTimerFailedEventAttributes'
     | 'markerRecordedEventAttributes'
-    | 'workflowExecutionSignaledEventAttributes'
     | 'workflowExecutionTerminatedEventAttributes'
     | 'workflowExecutionCancelRequestedEventAttributes'
     | 'workflowExecutionCanceledEventAttributes'
@@ -240,24 +277,36 @@ export type SingleHistoryEvent = HistoryEvent & {
     | 'upsertWorkflowSearchAttributesEventAttributes';
 };
 
+export type WorkflowHistoryFilterContext = {
+  diagnosticsByEventId: WorkflowDiagnosticsIssuesByEventId;
+};
+
 export type WorkflowHistoryFilterConfig<
   V extends Partial<PageQueryParamValues<typeof workflowPageQueryParamsConfig>>,
 > = PageFilterConfig<typeof workflowPageQueryParamsConfig, V> & {
-  filterFunc: (d: HistoryEventsGroup, value: V) => boolean;
+  filterFunc: (
+    d: HistoryEventsGroup,
+    value: V,
+    context?: WorkflowHistoryFilterContext
+  ) => boolean;
 };
 
-export type VisibleHistoryGroupRanges = {
-  startIndex: number;
-  endIndex: number;
-  compactStartIndex: number;
-  compactEndIndex: number;
+export type EventGroupEntry = [string, HistoryEventsGroup];
+
+export type VisibleHistoryRanges = {
+  groupedStartIndex: number;
+  groupedEndIndex: number;
   ungroupedStartIndex: number;
   ungroupedEndIndex: number;
 };
 
-export type Props = WorkflowPageTabContentProps;
-
-export type WorkflowHistoryUserPreferenceConfig<T> = {
-  key: string;
-  schema: z.ZodType<T, z.ZodTypeDef, string>;
+export type WorkflowDiagnosticsIssue = RouteHandlerWorkflowDiagnosticsIssue & {
+  runbook?: string;
+  rootCauseType?: string;
+  rootCauseMetadata?: any;
 };
+
+export type WorkflowDiagnosticsIssuesByEventId = Record<
+  string,
+  Array<WorkflowDiagnosticsIssue>
+>;

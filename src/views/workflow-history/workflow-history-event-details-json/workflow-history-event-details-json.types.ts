@@ -1,6 +1,6 @@
-import { type WorkflowHistoryEventDetailsValueComponentProps } from '../workflow-history-event-details/workflow-history-event-details.types';
+import { type EventDetailsValueComponentProps } from '../workflow-history-event-details/workflow-history-event-details.types';
 
 export type Props = Pick<
-  WorkflowHistoryEventDetailsValueComponentProps,
+  EventDetailsValueComponentProps,
   'entryValue' | 'isNegative'
 >;

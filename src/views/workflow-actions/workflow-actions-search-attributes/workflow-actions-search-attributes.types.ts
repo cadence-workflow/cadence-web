@@ -19,4 +19,6 @@ export type Props = {
   error?: string | Array<Partial<Record<'key' | 'value', string>> | undefined>;
   searchAttributes: Array<SearchAttributeOption>;
   addButtonText?: string;
+  showSectionBorder?: boolean;
+  showFieldErrorMessages?: boolean;
 };

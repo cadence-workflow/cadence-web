@@ -5,15 +5,17 @@ import {
   WORKER_SDK_LANGUAGES,
   WORKFLOW_ID_REUSE_POLICIES,
 } from '@/route-handlers/start-workflow/start-workflow.constants';
+import refineRetryPolicyForm from '@/views/shared/retry-policy-fields/helpers/refine-retry-policy-form';
+import { retryPolicyFormFieldsShape } from '@/views/shared/retry-policy-fields/schemas/retry-policy-form-schema';
 
 import { getCronFieldsError } from '../helpers/get-cron-fields-error';
 
 const baseSchema = z.object({
   workflowType: z.object({
-    name: z.string().min(1, 'Workflow type name is required'),
+    name: z.string().trim().min(1, 'Workflow type name is required'),
   }),
   taskList: z.object({
-    name: z.string().min(1, 'Task list name is required'),
+    name: z.string().trim().min(1, 'Task list name is required'),
   }),
   workerSDKLanguage: z.enum(WORKER_SDK_LANGUAGES),
   input: z
@@ -38,7 +40,7 @@ const baseSchema = z.object({
         }
       }
     }),
-  workflowId: z.string().optional(),
+  workflowId: z.string().trim().optional(),
   executionStartToCloseTimeoutSeconds: z.number().positive(),
   taskStartToCloseTimeoutSeconds: z.number().positive().optional(),
   workflowIdReusePolicy: z.enum(WORKFLOW_ID_REUSE_POLICIES).optional(),
@@ -132,17 +134,7 @@ const baseSchema = z.object({
     })
     .optional(),
   // Retry policy fields
-  enableRetryPolicy: z.boolean().optional(),
-  limitRetries: z.enum(['ATTEMPTS', 'DURATION']).optional(),
-  retryPolicy: z
-    .object({
-      initialIntervalSeconds: z.string().optional(),
-      backoffCoefficient: z.string().optional(),
-      maximumIntervalSeconds: z.string().optional(),
-      maximumAttempts: z.string().optional(),
-      expirationIntervalSeconds: z.string().optional(),
-    })
-    .optional(),
+  ...retryPolicyFormFieldsShape,
 });
 
 export const startWorkflowFormSchema = baseSchema.superRefine((data, ctx) => {
@@ -163,47 +155,5 @@ export const startWorkflowFormSchema = baseSchema.superRefine((data, ctx) => {
     });
   }
 
-  // Validate retry policy configuration when enabled
-  if (data.enableRetryPolicy) {
-    // Check required fields for retry policy
-    if (!data.retryPolicy?.initialIntervalSeconds) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Initial interval is required when retry policy is enabled',
-        path: ['retryPolicy', 'initialIntervalSeconds'],
-      });
-    }
-
-    if (!data.retryPolicy?.backoffCoefficient) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Backoff coefficient is required when retry policy is enabled',
-        path: ['retryPolicy', 'backoffCoefficient'],
-      });
-    }
-
-    // Validate retry limit specific requirements
-    if (
-      data.limitRetries === 'ATTEMPTS' &&
-      !data.retryPolicy?.maximumAttempts
-    ) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Maximum attempts is required when retries limit is ATTEMPTS',
-        path: ['retryPolicy', 'maximumAttempts'],
-      });
-    }
-
-    if (
-      data.limitRetries === 'DURATION' &&
-      !data.retryPolicy?.expirationIntervalSeconds
-    ) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message:
-          'Expiration interval is required when retries limit is DURATION',
-        path: ['retryPolicy', 'expirationIntervalSeconds'],
-      });
-    }
-  }
+  refineRetryPolicyForm(data, ctx);
 });

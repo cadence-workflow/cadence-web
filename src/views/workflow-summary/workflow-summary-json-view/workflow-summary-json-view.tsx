@@ -12,7 +12,11 @@ import useStyletronClasses from '@/hooks/use-styletron-classes';
 import losslessJsonStringify from '@/utils/lossless-json-stringify';
 
 import { jsonTabLabelMap } from './workflow-summary-json-view.constants';
-import { cssStyles, overrides } from './workflow-summary-json-view.styles';
+import {
+  cssStyles,
+  overrides,
+  styled,
+} from './workflow-summary-json-view.styles';
 import type {
   Props,
   WorkflowSummaryJsonTab,
@@ -22,6 +26,7 @@ export default function WorkflowSummaryJsonView({
   inputJson,
   resultJson,
   isWorkflowRunning,
+  isWorkflowError,
   isArchived,
   domain,
   cluster,
@@ -46,7 +51,9 @@ export default function WorkflowSummaryJsonView({
   }, [jsonMap, activeTab]);
 
   return (
-    <div className={cls.jsonViewContainer}>
+    <styled.JsonViewContainer
+      $isNegative={activeTab === 'result' && isWorkflowError}
+    >
       <div className={cls.jsonViewHeader}>
         {hideTabToggle ? (
           <div className={cls.jsonStaticTitle}>
@@ -94,6 +101,6 @@ export default function WorkflowSummaryJsonView({
           {!isWorkflowRunning && <PrettyJson json={jsonMap[activeTab]} />}
         </>
       )}
-    </div>
+    </styled.JsonViewContainer>
   );
 }

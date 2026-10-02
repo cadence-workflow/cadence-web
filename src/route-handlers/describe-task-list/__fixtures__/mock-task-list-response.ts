@@ -24,6 +24,7 @@ export const mockDecisionTaskListResponse: DescribeTaskListResponse = {
   taskList: {
     name: 'mock-task-list',
     kind: 'TASK_LIST_KIND_NORMAL',
+    baseName: '',
   },
 };
 
@@ -51,5 +52,6 @@ export const mockActivityTaskListResponse: DescribeTaskListResponse = {
   taskList: {
     name: 'mock-task-list',
     kind: 'TASK_LIST_KIND_NORMAL',
+    baseName: '',
   },
 };

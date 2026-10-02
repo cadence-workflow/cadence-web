@@ -80,15 +80,8 @@ function TestWrapper({ formErrors, formData }: TestProps) {
 
   return (
     <WorkflowActionSignalForm
-      trigger={methods.trigger}
       control={methods.control}
-      clearErrors={methods.clearErrors}
       fieldErrors={formErrors}
-      formData={formData}
-      cluster="test-cluster"
-      domain="test-domain"
-      workflowId="test-workflow-id"
-      runId="test-run-id"
     />
   );
 }

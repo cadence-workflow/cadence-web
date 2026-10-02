@@ -1,11 +1,12 @@
 import { type Props } from './workflow-history-event-details-entry.types';
 
-export default function WorkflowHistoryEventDetailsEntry({
+export default function EventDetailsSingleEntry({
   entryKey,
   entryPath,
   entryValue,
   renderConfig,
   isNegative,
+  eventType,
   ...decodedPageUrlParams
 }: Props) {
   const ValueComponent = renderConfig?.valueComponent;
@@ -17,6 +18,7 @@ export default function WorkflowHistoryEventDetailsEntry({
         entryPath={entryPath}
         entryValue={entryValue}
         isNegative={isNegative}
+        eventType={eventType}
         {...decodedPageUrlParams}
       />
     );
