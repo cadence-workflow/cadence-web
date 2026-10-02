@@ -3,7 +3,7 @@ import { type StyleObject } from 'styletron-react';
 
 export const styled = {
   Page: createStyled(
-    'div',
+    'main',
     ({ $theme }: { $theme: Theme }): StyleObject => ({
       display: 'flex',
       flexDirection: 'column',
