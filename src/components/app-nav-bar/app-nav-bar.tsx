@@ -2,17 +2,32 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { AppNavBar as BaseAppNavBar } from 'baseui/app-nav-bar';
+import { DURATION, useSnackbar } from 'baseui/snackbar';
 import NextLink from 'next/link';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import useStyletronClasses from '@/hooks/use-styletron-classes';
+import {
+  AUTH_LOOP_MARKER_PARAM,
+  AUTH_NOTICE_PARAM,
+} from '@/utils/auth/auth.constants';
+import { isAuthLogoutNotice } from '@/utils/auth/helpers/is-auth-logout-notice';
 
-import { cssStyles } from './app-nav-bar.styles';
+import { cssStyles, overrides } from './app-nav-bar.styles';
+import getAuthNoticeMessage from './helpers/get-auth-notice-message';
 import useAuthLifecycle from './hooks/use-auth-lifecycle';
-import { LOGOUT_ITEM } from './use-auth-lifecycle.constants';
+import {
+  LOGOUT_ITEM,
+  SESSION_EXPIRY_WARNING_LEAD_MS,
+} from './use-auth-lifecycle.constants';
 import { type UserMenuItem } from './use-auth-lifecycle.types';
 
 export default function AppNavBar() {
   const { cls } = useStyletronClasses(cssStyles);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const { enqueue } = useSnackbar();
 
   const {
     isAuthEnabled,
@@ -21,7 +36,9 @@ export default function AppNavBar() {
     isAdmin,
     userName,
     expiresAtMs,
+    canRecover,
     logout,
+    recoverSession,
   } = useAuthLifecycle();
 
   const logoutInFlightRef = useRef(false);
@@ -29,6 +46,11 @@ export default function AppNavBar() {
   const latestExpiresAtRef = useRef(expiresAtMs);
   latestExpiresAtRef.current = expiresAtMs;
   const expiryTimeoutIdRef = useRef<number | null>(null);
+
+  const currentReturnTo = useMemo(() => {
+    const search = searchParams.toString();
+    return search ? `${pathname}?${search}` : pathname;
+  }, [pathname, searchParams]);
 
   const handleLogout = useCallback(
     async (trigger: 'manual' | 'expired') => {
@@ -78,19 +100,104 @@ export default function AppNavBar() {
     }
 
     const timeoutMs = expiresAtMs - Date.now();
-    const logoutIfExpiryMatches = () => {
+    const handleExpiry = () => {
       if (logoutInFlightRef.current) return;
       if (latestExpiresAtRef.current !== expiresAtMs) return;
+
+      // Proactive recovery, keyed on the effective canRecover and entering
+      // the single recovery entry point. On 'recovered' the invalidation
+      // fan-out resyncs expiresAtMs and this effect re-arms only when the
+      // value changed — an unchanged expiresAtMs never re-fires. On
+      // 'redirect' the entry point has already navigated and the promise
+      // never settles.
+      if (canRecover) {
+        void recoverSession(currentReturnTo).then((recovery) => {
+          if (recovery?.kind === 'recovered') return;
+          void handleLogout('expired');
+        });
+        return;
+      }
+
       void handleLogout('expired');
     };
 
     expiryTimeoutIdRef.current = window.setTimeout(
-      logoutIfExpiryMatches,
+      handleExpiry,
       Math.max(0, timeoutMs)
     );
 
     return clearExpiryTimeout;
-  }, [expiresAtMs, isValidToken, isAuthEnabled, handleLogout]);
+  }, [
+    expiresAtMs,
+    isValidToken,
+    isAuthEnabled,
+    canRecover,
+    currentReturnTo,
+    recoverSession,
+    handleLogout,
+  ]);
+
+  // Expiry warning: shows only when the session cannot silently refresh — a
+  // refresh-less session gets this warning, never a doomed silent recovery.
+  useEffect(() => {
+    if (
+      !isAuthEnabled ||
+      !isValidToken ||
+      canRecover ||
+      expiresAtMs === undefined
+    ) {
+      return;
+    }
+
+    const showWarning = () =>
+      enqueue(
+        {
+          message: 'Session expiring soon. You will be signed out shortly.',
+          overrides: overrides.warningSnackbar,
+        },
+        DURATION.long
+      );
+
+    const warningInMs =
+      expiresAtMs - SESSION_EXPIRY_WARNING_LEAD_MS - Date.now();
+    if (warningInMs <= 0) {
+      showWarning();
+      return;
+    }
+    const warningTimeoutId = window.setTimeout(showWarning, warningInMs);
+    return () => window.clearTimeout(warningTimeoutId);
+  }, [isAuthEnabled, isValidToken, canRecover, expiresAtMs, enqueue]);
+
+  // authNotice/authLoop: the logout and recovery redirects stamp notices on
+  // the final landing URL; render the snackbar post-login and strip the
+  // params. The strip preserves the current path — navigating away (e.g. a
+  // hardcoded '/') could trap the /auth-unavailable terminus in a loop.
+  useEffect(() => {
+    const noticeParam = searchParams.get(AUTH_NOTICE_PARAM);
+    const hasLoopMarker = searchParams.has(AUTH_LOOP_MARKER_PARAM);
+    if ((!noticeParam && !hasLoopMarker) || isAuthLoading) {
+      return;
+    }
+
+    const nextParams = new URLSearchParams(searchParams.toString());
+    nextParams.delete(AUTH_NOTICE_PARAM);
+    nextParams.delete(AUTH_LOOP_MARKER_PARAM);
+    const nextSearch = nextParams.toString();
+    router.replace(nextSearch ? `${pathname}?${nextSearch}` : pathname);
+
+    if (!isValidToken || !isAuthLogoutNotice(noticeParam)) {
+      return;
+    }
+    enqueue(
+      {
+        message: getAuthNoticeMessage(noticeParam),
+        ...(noticeParam === 'session-expired'
+          ? { overrides: overrides.errorSnackbar }
+          : {}),
+      },
+      DURATION.long
+    );
+  }, [searchParams, pathname, router, isAuthLoading, isValidToken, enqueue]);
 
   const userItems = useMemo<UserMenuItem[] | undefined>(() => {
     if (!isAuthEnabled || !isValidToken) return undefined;
