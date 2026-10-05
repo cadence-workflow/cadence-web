@@ -101,11 +101,16 @@ export default function WorkflowHistory({ params }: Props) {
 
   const workflowDiagnosticsByEventIdMap: WorkflowDiagnosticsIssuesByEventId =
     useMemo(() => {
-      if (workflowDiagnostics?.parsingError || !workflowDiagnostics?.result)
+      // Other components can fill the diagnose query cache, so check the flag here too.
+      if (
+        !isDiagnosticsInHistoryEnabled ||
+        workflowDiagnostics?.parsingError ||
+        !workflowDiagnostics?.result
+      )
         return {};
 
       return getDiagnosticsIssuesByEventId(workflowDiagnostics.result);
-    }, [workflowDiagnostics]);
+    }, [isDiagnosticsInHistoryEnabled, workflowDiagnostics]);
 
   const {
     eventGroups,
