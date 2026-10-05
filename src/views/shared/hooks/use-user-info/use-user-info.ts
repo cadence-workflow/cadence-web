@@ -12,5 +12,8 @@ export default function useUserInfo() {
       const res = await request('/api/auth/me', { method: 'GET' });
       return res.json();
     },
+    // The global staleTime is Infinity; auth must still recheck when a tab
+    // becomes visible so a login/logout in another tab is picked up.
+    refetchOnWindowFocus: 'always',
   });
 }
