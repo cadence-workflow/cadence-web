@@ -21,7 +21,7 @@ this way?
 <!-- Include specific test commands and setup. Please include the exact commands such that
 another maintainer or contributor can reproduce the test steps taken.
 - e.g. Unit test commands with exact invocation
-  `npm run test -- src/views/workflow-list/workflow-list-filters.test.tsx`
+  `npm run test:unit:<browser/node> -- src/views/workflow-list/workflow-list-filters.test.tsx`
 - For running the full test suite
   `npm run test`
 - For environment-specific tests (browser DOM vs Node.js server)
