@@ -1,18 +1,17 @@
 <!-- If you are new to contributing or want a refresher, please read ./pull_request_guidance.md -->
-**What changed?**
+### What changed?
 
 
-**Why?**
+### Why?
 
 
-**How did you test it?**
+### How did you test it?
 
 
-**Potential risks**
+### Potential risks
 
 
-**Release notes**
+### Release notes
 
 
-**Documentation Changes**
-
+### Documentation Changes

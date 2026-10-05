@@ -4,6 +4,7 @@ import { MdArrowDropDown, MdArrowDropUp, MdOpenInNew } from 'react-icons/md';
 import { RiStethoscopeLine } from 'react-icons/ri';
 
 import getDiagnosticsIssueExpansionId from '../helpers/get-diagnostics-issue-expansion-id';
+import { ROOT_CAUSES_METADATA_KEY } from '../workflow-history-event-diagnostics-root-causes/workflow-history-event-diagnostics-root-causes.constants';
 import WorkflowHistoryEventDiagnosticsTable from '../workflow-history-event-diagnostics-table/workflow-history-event-diagnostics-table';
 
 import { overrides, styled } from './workflow-history-event-diagnostics.styles';
@@ -23,6 +24,7 @@ export default function WorkflowHistoryEventDiagnostics({
       {issues.map((issue) => {
         const issueExpansionId = getDiagnosticsIssueExpansionId(issue);
         const isIssueExpanded = getIsIssueExpanded(issueExpansionId);
+
         return (
           <styled.IssueContainer key={issueExpansionId}>
             <Panel
@@ -87,10 +89,11 @@ export default function WorkflowHistoryEventDiagnostics({
             >
               <WorkflowHistoryEventDiagnosticsTable
                 metadata={{
-                  rootCause: issue.rootCauseType,
                   ...issue.metadata,
-                  ...issue.rootCauseMetadata,
                   issueId: issue.issueId,
+                  ...(issue.rootCauses.length > 0 && {
+                    [ROOT_CAUSES_METADATA_KEY]: issue.rootCauses,
+                  }),
                 }}
               />
             </Panel>

@@ -20,12 +20,14 @@ const defaultIssues: Props['issues'] = [
     reason: 'Activity timed out after 30 seconds',
     metadata: {},
     runbook: 'https://example.com/runbook',
+    rootCauses: [],
   },
   {
     issueId: 1,
     invariantType: 'Decision Failed',
     reason: 'Decision task failed with error',
     metadata: {},
+    rootCauses: [],
   },
 ];
 
@@ -85,14 +87,36 @@ describe('WorkflowHistoryEventDiagnostics', () => {
     expect(screen.getByTestId('metadata-table')).toBeInTheDocument();
   });
 
-  it('passes issue metadata along with root cause and issue ID to the metadata table', () => {
+  it('passes issue metadata and issue ID to the metadata table without root causes', () => {
     setup({
       issues: [
         {
           ...defaultIssues[0],
           metadata: { ActivityScheduledID: 5 },
-          rootCauseType: 'Activity Timeout',
-          rootCauseMetadata: { ExpectedTimeout: 30 },
+        },
+      ],
+      getIsIssueExpanded: jest.fn(() => true),
+    });
+
+    expect(
+      screen.getByText(JSON.stringify({ ActivityScheduledID: 5, issueId: 0 }))
+    ).toBeInTheDocument();
+  });
+
+  it('passes a single root cause under the RootCauses key', () => {
+    const rootCauses = [
+      {
+        issueId: 0,
+        rootCauseType: 'Activity Timeout',
+        metadata: { ExpectedTimeout: 30 },
+      },
+    ];
+    setup({
+      issues: [
+        {
+          ...defaultIssues[0],
+          metadata: { ActivityScheduledID: 5 },
+          rootCauses,
         },
       ],
       getIsIssueExpanded: jest.fn(() => true),
@@ -101,12 +125,26 @@ describe('WorkflowHistoryEventDiagnostics', () => {
     expect(
       screen.getByText(
         JSON.stringify({
-          rootCause: 'Activity Timeout',
           ActivityScheduledID: 5,
-          ExpectedTimeout: 30,
           issueId: 0,
+          RootCauses: rootCauses,
         })
       )
+    ).toBeInTheDocument();
+  });
+
+  it('passes multiple root causes under the RootCauses key', () => {
+    const rootCauses = [
+      { issueId: 0, rootCauseType: 'Activity Timeout', metadata: {} },
+      { issueId: 0, rootCauseType: 'Worker Unavailable', metadata: {} },
+    ];
+    setup({
+      issues: [{ ...defaultIssues[0], rootCauses }],
+      getIsIssueExpanded: jest.fn(() => true),
+    });
+
+    expect(
+      screen.getByText(JSON.stringify({ issueId: 0, RootCauses: rootCauses }))
     ).toBeInTheDocument();
   });
 

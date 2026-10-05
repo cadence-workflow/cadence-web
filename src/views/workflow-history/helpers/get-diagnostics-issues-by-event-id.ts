@@ -17,16 +17,12 @@ export default function getDiagnosticsIssuesByEventId(
   for (const group of Object.values(diagnosticsResult.result)) {
     if (!group) continue;
 
-    const rootCausesById = new Map(
-      (group.rootCauses ?? []).map((rc) => [rc.issueId, rc])
-    );
-
     for (const issue of group.issues) {
-      const rootCause = rootCausesById.get(issue.issueId);
       flattenedIssues.push({
         ...issue,
-        rootCauseType: rootCause?.rootCauseType,
-        rootCauseMetadata: rootCause?.metadata,
+        rootCauses: (group.rootCauses ?? []).filter(
+          (rc) => rc.issueId === issue.issueId
+        ),
         runbook: group.runbook,
       });
     }
