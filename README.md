@@ -58,7 +58,7 @@ To integrate an upstream proxy / IdP, set the cookie for the cadence-web origin:
 Set-Cookie: cadence-authorization=<JWT>; Path=/; HttpOnly; SameSite=Lax; Secure
 ```
 
-You can also set/clear the cookie via `POST /api/auth/token` and `DELETE /api/auth/token`; or use `Login with JWT` button in the UI.
+You can also set/clear the cookie via `POST /api/auth/token` and `DELETE /api/auth/token`, or paste a JWT on the `/login` page. Requests without a valid session are redirected there.
 
 #### Feature flags
 
