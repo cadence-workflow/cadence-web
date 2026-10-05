@@ -168,105 +168,103 @@ describe('POST /api/auth/token', () => {
     expectNoStore(failure);
   });
 
-  describe('same-origin guard', () => {
-    it('accepts a request without an Origin header', async () => {
-      const response = await POST(buildRequest({ token: VALID_JWT }));
+  it('accepts a request without an Origin header', async () => {
+    const response = await POST(buildRequest({ token: VALID_JWT }));
 
-      expect(response.status).toBe(200);
-    });
+    expect(response.status).toBe(200);
+  });
 
-    it('accepts a request whose Origin matches the request host', async () => {
-      const response = await POST(
-        buildRequest(
-          { token: VALID_JWT },
-          { origin: 'http://localhost', host: 'localhost' }
-        )
-      );
+  it('accepts a request whose Origin matches the request host', async () => {
+    const response = await POST(
+      buildRequest(
+        { token: VALID_JWT },
+        { origin: 'http://localhost', host: 'localhost' }
+      )
+    );
 
-      expect(response.status).toBe(200);
-    });
+    expect(response.status).toBe(200);
+  });
 
-    it('rejects a cross-site request and sets no cookie', async () => {
-      const response = await POST(
-        buildRequest({ token: VALID_JWT }, { origin: 'https://evil.example' })
-      );
-      const body = await response.json();
+  it('rejects a cross-site request and sets no cookie', async () => {
+    const response = await POST(
+      buildRequest({ token: VALID_JWT }, { origin: 'https://evil.example' })
+    );
+    const body = await response.json();
 
-      expect(response.status).toBe(403);
-      expect(body.message).toBe('Cross-origin request rejected');
-      expect(response.headers.getSetCookie()).toHaveLength(0);
-      expectNoStore(response);
-    });
+    expect(response.status).toBe(403);
+    expect(body.message).toBe('Cross-origin request rejected');
+    expect(response.headers.getSetCookie()).toHaveLength(0);
+    expectNoStore(response);
+  });
 
-    it('rejects a malformed Origin header', async () => {
-      const response = await POST(
-        buildRequest({ token: VALID_JWT }, { origin: 'not a url' })
-      );
+  it('rejects a malformed Origin header', async () => {
+    const response = await POST(
+      buildRequest({ token: VALID_JWT }, { origin: 'not a url' })
+    );
 
-      expect(response.status).toBe(403);
-    });
+    expect(response.status).toBe(403);
+  });
 
-    it('compares Origin against the forwarded host when present', async () => {
-      const accepted = await POST(
-        buildRequest(
-          { token: VALID_JWT },
-          {
-            origin: 'https://cadence.example',
-            xForwardedHost: 'cadence.example',
-          }
-        )
-      );
-      expect(accepted.status).toBe(200);
+  it('compares Origin against the forwarded host when present', async () => {
+    const accepted = await POST(
+      buildRequest(
+        { token: VALID_JWT },
+        {
+          origin: 'https://cadence.example',
+          xForwardedHost: 'cadence.example',
+        }
+      )
+    );
+    expect(accepted.status).toBe(200);
 
-      const rejected = await POST(
-        buildRequest(
-          { token: VALID_JWT },
-          { origin: 'https://evil.example', xForwardedHost: 'cadence.example' }
-        )
-      );
-      expect(rejected.status).toBe(403);
-    });
+    const rejected = await POST(
+      buildRequest(
+        { token: VALID_JWT },
+        { origin: 'https://evil.example', xForwardedHost: 'cadence.example' }
+      )
+    );
+    expect(rejected.status).toBe(403);
+  });
 
-    it('rejects an http Origin when the forwarded protocol is https', async () => {
-      const rejected = await POST(
-        buildRequest(
-          { token: VALID_JWT },
-          {
-            origin: 'http://cadence.example',
-            xForwardedHost: 'cadence.example',
-            xForwardedProto: 'https',
-          }
-        )
-      );
-      expect(rejected.status).toBe(403);
+  it('rejects an http Origin when the forwarded protocol is https', async () => {
+    const rejected = await POST(
+      buildRequest(
+        { token: VALID_JWT },
+        {
+          origin: 'http://cadence.example',
+          xForwardedHost: 'cadence.example',
+          xForwardedProto: 'https',
+        }
+      )
+    );
+    expect(rejected.status).toBe(403);
 
-      const accepted = await POST(
-        buildRequest(
-          { token: VALID_JWT },
-          {
-            origin: 'https://cadence.example',
-            xForwardedHost: 'cadence.example',
-            xForwardedProto: 'https',
-          }
-        )
-      );
-      expect(accepted.status).toBe(200);
-    });
+    const accepted = await POST(
+      buildRequest(
+        { token: VALID_JWT },
+        {
+          origin: 'https://cadence.example',
+          xForwardedHost: 'cadence.example',
+          xForwardedProto: 'https',
+        }
+      )
+    );
+    expect(accepted.status).toBe(200);
+  });
 
-    it('accepts an https Origin when the forwarded protocol is http', async () => {
-      const response = await POST(
-        buildRequest(
-          { token: VALID_JWT },
-          {
-            origin: 'https://cadence.example',
-            xForwardedHost: 'cadence.example',
-            xForwardedProto: 'http',
-          }
-        )
-      );
+  it('accepts an https Origin when the forwarded protocol is http', async () => {
+    const response = await POST(
+      buildRequest(
+        { token: VALID_JWT },
+        {
+          origin: 'https://cadence.example',
+          xForwardedHost: 'cadence.example',
+          xForwardedProto: 'http',
+        }
+      )
+    );
 
-      expect(response.status).toBe(200);
-    });
+    expect(response.status).toBe(200);
   });
 });
 
