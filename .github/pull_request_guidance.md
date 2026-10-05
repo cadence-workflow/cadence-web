@@ -2,7 +2,7 @@
 - Always link the relevant project's GitHub issue, unless it is a minor bugfix
 - Good: "Added workflow search filter component with debounced input #123"
 - Bad: "updated component" -->
-**What changed?**
+### What changed?
 
 
 <!-- Your goal is to provide all the required context for a future maintainer
@@ -15,23 +15,23 @@ this way?
   server-side gRPC query with debounced input, reducing initial payload and improving
   perceived responsiveness from ~5s to <200ms."
 - Bad: "Improves workflow list" -->
-**Why?**
+### Why?
 
 
 <!-- Include specific test commands and setup. Please include the exact commands such that
 another maintainer or contributor can reproduce the test steps taken.
 - e.g. Unit test commands with exact invocation
-  `npx jest src/views/workflow-list/workflow-list-filters.test.tsx`
+  `npm run test -- src/views/workflow-list/workflow-list-filters.test.tsx`
 - For running the full test suite
   `npm run test`
 - For environment-specific tests (browser DOM vs Node.js server)
   `npm run test:unit:browser` or `npm run test:unit:node`
-- For UI changes, include manual verification steps
+- For UI changes, include manual verification steps, or links to Storybook.
   Example: "Started local dev server with `npm run dev`, navigated to /domains/sample/workflows,
   verified filter input debounces correctly and results update within 200ms"
 - Good: Full commands that reviewers can copy-paste to verify
 - Bad: "Tested locally" or "Added tests" -->
-**How did you test it?**
+### How did you test it?
 
 
 <!-- If there are risks that the release engineer should know about, document them here.
@@ -43,13 +43,13 @@ For example:
 - Has a feature flag been re-used for a new purpose?
 - Could this affect accessibility (screen readers, keyboard navigation)?
 - If truly N/A, you can mark it as such -->
-**Potential risks**
+### Potential risks
 
 
 <!-- If this PR completes a user-facing feature or changes functionality, add release notes here.
 Your release notes should allow a user and the release engineer to understand the changes with little context.
 Always ensure that the description contains a link to the relevant GitHub issue. -->
-**Release notes**
+### Release notes
 
 
 <!-- Consider whether this change requires documentation updates
@@ -57,5 +57,5 @@ Always ensure that the description contains a link to the relevant GitHub issue.
   or related documentation
 - If in doubt, add a note about potential doc needs
 - Only mark N/A if you're certain no docs are affected -->
-**Documentation Changes**
+### Documentation Changes
 
