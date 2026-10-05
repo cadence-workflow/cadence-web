@@ -6,7 +6,10 @@ import { type PendingActivityInfo } from '@/__generated__/proto-ts/uber/cadence/
 import { type PendingDecisionInfo } from '@/__generated__/proto-ts/uber/cadence/api/v1/PendingDecisionInfo';
 import { type PageFilterConfig } from '@/components/page-filters/page-filters.types';
 import { type PageQueryParamValues } from '@/hooks/use-page-query-params/use-page-query-params.types';
-import { type WorkflowDiagnosticsIssue as RouteHandlerWorkflowDiagnosticsIssue } from '@/route-handlers/diagnose-workflow/diagnose-workflow.types';
+import {
+  type WorkflowDiagnosticsIssue as RouteHandlerWorkflowDiagnosticsIssue,
+  type WorkflowDiagnosticsRootCause,
+} from '@/route-handlers/diagnose-workflow/diagnose-workflow.types';
 
 import type workflowPageQueryParamsConfig from '../workflow-page/config/workflow-page-query-params.config';
 import { type WorkflowPageTabContentProps } from '../workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
@@ -302,8 +305,7 @@ export type VisibleHistoryRanges = {
 
 export type WorkflowDiagnosticsIssue = RouteHandlerWorkflowDiagnosticsIssue & {
   runbook?: string;
-  rootCauseType?: string;
-  rootCauseMetadata?: any;
+  rootCauses: Array<WorkflowDiagnosticsRootCause>;
 };
 
 export type WorkflowDiagnosticsIssuesByEventId = Record<
