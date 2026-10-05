@@ -18,6 +18,11 @@ export default function useGroupDetailsEntries(eventGroup: HistoryEventsGroup) {
     [summaryDetailsEntries]
   );
 
+  const groupDiagnosticsIssues = useMemo(
+    () => groupDetailsEntries.flatMap(([, c]) => c.diagnosticsIssues ?? []),
+    [groupDetailsEntries]
+  );
+
   const groupDetailsEntriesWithSummary = useMemo(
     () => [
       ...(groupSummaryDetails.length > 0 &&
@@ -27,12 +32,18 @@ export default function useGroupDetailsEntries(eventGroup: HistoryEventsGroup) {
             getSummaryTabContentEntry({
               groupId: eventGroup.firstEventId,
               summaryDetails: groupSummaryDetails,
+              diagnosticsIssues: groupDiagnosticsIssues,
             }),
           ]
         : []),
       ...groupDetailsEntries,
     ],
-    [eventGroup.firstEventId, groupDetailsEntries, groupSummaryDetails]
+    [
+      eventGroup.firstEventId,
+      groupDetailsEntries,
+      groupSummaryDetails,
+      groupDiagnosticsIssues,
+    ]
   );
 
   return {

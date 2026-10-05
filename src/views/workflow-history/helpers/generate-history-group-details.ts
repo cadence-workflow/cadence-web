@@ -39,6 +39,9 @@ export default function generateHistoryGroupDetails(
       {
         eventLabel: eventMetadata.label,
         eventDetails,
+        ...(eventMetadata.diagnosticsIssues && {
+          diagnosticsIssues: eventMetadata.diagnosticsIssues,
+        }),
       } satisfies EventDetailsTabContent,
     ]);
 

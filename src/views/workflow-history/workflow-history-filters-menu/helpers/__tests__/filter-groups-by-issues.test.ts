@@ -1,97 +1,82 @@
 import { scheduleActivityTaskEvent } from '../../../__fixtures__/workflow-history-activity-events';
-import { type ActivityHistoryGroup } from '../../../workflow-history.types';
+import {
+  type ActivityHistoryGroup,
+  type HistoryGroupEventMetadata,
+} from '../../../workflow-history.types';
 import { type EventGroupIssuesFilterValue } from '../../workflow-history-filters-menu.types';
 import filterGroupsByIssues from '../filter-groups-by-issues';
 
-const ACTIVITY_HISTORY_GROUP: ActivityHistoryGroup = {
-  label: 'Mock activity',
-  eventsMetadata: [],
+const BASE_METADATA: HistoryGroupEventMetadata = {
+  label: 'Scheduled',
   status: 'COMPLETED',
-  hasMissingEvents: false,
   timeMs: 123456789,
-  startTimeMs: 123456789,
   timeLabel: 'Mock time label',
-  groupType: 'Activity',
-  events: [scheduleActivityTaskEvent],
-  firstEventId: null,
 };
 
-const DIAGNOSTICS_WITH_GROUP_ISSUE = {
-  diagnosticsByEventId: {
-    '7': [
-      {
-        issueId: 0,
-        invariantType: 'Activity Failed',
-        reason: 'Activity failed on event 7',
-        metadata: {},
-        rootCauses: [],
-      },
-    ],
-  },
+const DIAGNOSTICS_ISSUE = {
+  issueId: 0,
+  invariantType: 'Activity Failed',
+  reason: 'Activity failed on event 7',
+  metadata: {},
+  rootCauses: [],
 };
 
 describe(filterGroupsByIssues.name, () => {
   it('should return true if historyEventIssues is false', () => {
-    const value: EventGroupIssuesFilterValue = {
-      historyEventIssues: false,
-    };
-
-    expect(filterGroupsByIssues(ACTIVITY_HISTORY_GROUP, value)).toBe(true);
+    expect(
+      filterGroupsByIssues(buildGroup([BASE_METADATA]), {
+        historyEventIssues: false,
+      })
+    ).toBe(true);
   });
 
-  it('should return true if historyEventIssues is set and group has scoped issues', () => {
-    const value: EventGroupIssuesFilterValue = {
-      historyEventIssues: true,
-    };
-
+  it('should return true if historyEventIssues is set and an event has issues', () => {
     expect(
       filterGroupsByIssues(
-        ACTIVITY_HISTORY_GROUP,
-        value,
-        DIAGNOSTICS_WITH_GROUP_ISSUE
+        buildGroup([
+          BASE_METADATA,
+          { ...BASE_METADATA, diagnosticsIssues: [DIAGNOSTICS_ISSUE] },
+        ]),
+        ISSUES_ONLY
       )
     ).toBe(true);
   });
 
-  it('should return false if historyEventIssues is set and group has no scoped issues', () => {
-    const value: EventGroupIssuesFilterValue = {
-      historyEventIssues: true,
-    };
+  it('should return false if historyEventIssues is set and no event has issues', () => {
+    expect(filterGroupsByIssues(buildGroup([BASE_METADATA]), ISSUES_ONLY)).toBe(
+      false
+    );
+  });
 
+  it('should return false if historyEventIssues is set and issues are empty', () => {
     expect(
-      filterGroupsByIssues(ACTIVITY_HISTORY_GROUP, value, {
-        diagnosticsByEventId: {
-          '99': [
-            {
-              issueId: 1,
-              invariantType: 'Activity Timeout',
-              reason: 'Unrelated event',
-              metadata: {},
-              rootCauses: [],
-            },
-          ],
-        },
-      })
+      filterGroupsByIssues(
+        buildGroup([{ ...BASE_METADATA, diagnosticsIssues: [] }]),
+        ISSUES_ONLY
+      )
     ).toBe(false);
   });
 
-  it('should return false if historyEventIssues is set and diagnostics map is empty', () => {
-    const value: EventGroupIssuesFilterValue = {
-      historyEventIssues: true,
-    };
-
-    expect(
-      filterGroupsByIssues(ACTIVITY_HISTORY_GROUP, value, {
-        diagnosticsByEventId: {},
-      })
-    ).toBe(false);
-  });
-
-  it('should return false if historyEventIssues is set and context is missing', () => {
-    const value: EventGroupIssuesFilterValue = {
-      historyEventIssues: true,
-    };
-
-    expect(filterGroupsByIssues(ACTIVITY_HISTORY_GROUP, value)).toBe(false);
+  it('should return false if historyEventIssues is set and group has no events metadata', () => {
+    expect(filterGroupsByIssues(buildGroup([]), ISSUES_ONLY)).toBe(false);
   });
 });
+
+const ISSUES_ONLY: EventGroupIssuesFilterValue = { historyEventIssues: true };
+
+function buildGroup(
+  eventsMetadata: Array<HistoryGroupEventMetadata>
+): ActivityHistoryGroup {
+  return {
+    label: 'Mock activity',
+    eventsMetadata,
+    status: 'COMPLETED',
+    hasMissingEvents: false,
+    timeMs: 123456789,
+    startTimeMs: 123456789,
+    timeLabel: 'Mock time label',
+    groupType: 'Activity',
+    events: [scheduleActivityTaskEvent],
+    firstEventId: null,
+  };
+}

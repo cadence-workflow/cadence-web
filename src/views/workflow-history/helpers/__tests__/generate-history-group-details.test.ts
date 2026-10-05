@@ -512,4 +512,49 @@ describe(generateHistoryGroupDetails.name, () => {
       negativeFields: ['error'],
     });
   });
+
+  it('should add event diagnostics issues to group entries only', () => {
+    const issue = {
+      issueId: 1,
+      invariantType: 'Activity Failed',
+      reason: 'Activity failed',
+      metadata: {},
+      rootCauses: [],
+    };
+    const eventGroup: HistoryEventsGroup = {
+      ...mockActivityEventGroup,
+      events: [
+        scheduleActivityTaskEvent,
+        { ...startActivityTaskEvent, eventId: '8' },
+      ],
+      eventsMetadata: [
+        {
+          label: 'Scheduled',
+          status: 'COMPLETED',
+          timeMs: 1725747370599,
+          timeLabel: 'Scheduled at 07 Sep, 22:16:10 UTC',
+          summaryFields: ['activityId'],
+          diagnosticsIssues: [issue],
+        },
+        {
+          label: 'Started',
+          status: 'COMPLETED',
+          timeMs: 1725747370612,
+          timeLabel: 'Started at 07 Sep, 22:16:10 UTC',
+          summaryFields: ['activityId'],
+        },
+      ],
+    };
+
+    const result = generateHistoryGroupDetails(eventGroup);
+
+    expect(result.groupDetailsEntries[0][1].diagnosticsIssues).toEqual([issue]);
+    expect(result.groupDetailsEntries[1][1]).not.toHaveProperty(
+      'diagnosticsIssues'
+    );
+    expect(result.summaryDetailsEntries).toHaveLength(2);
+    result.summaryDetailsEntries.forEach(([, content]) => {
+      expect(content).not.toHaveProperty('diagnosticsIssues');
+    });
+  });
 });

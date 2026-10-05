@@ -5,7 +5,7 @@ import { render, screen, userEvent } from '@/test-utils/rtl';
 import { type WorkflowPageParams } from '@/views/workflow-page/workflow-page.types';
 
 import WorkflowHistoryEventDiagnostics from '../../workflow-history-event-diagnostics/workflow-history-event-diagnostics';
-import { type WorkflowDiagnosticsIssuesByEventId } from '../../workflow-history.types';
+import { type WorkflowDiagnosticsIssue } from '../../workflow-history.types';
 import WorkflowHistoryGroupDetails from '../workflow-history-group-details';
 import { type GroupDetailsEntries } from '../workflow-history-group-details.types';
 
@@ -350,19 +350,10 @@ describe(WorkflowHistoryGroupDetails.name, () => {
 
   it('renders diagnostics component when issues exist for selected event', () => {
     setup({
-      groupDetailsEntries: mockGroupDetails,
+      groupDetailsEntries: withIssues(mockGroupDetails, 'event-1', [
+        MOCK_ISSUE_1,
+      ]),
       initialEventId: 'event-1',
-      diagnosticsIssuesByEventId: {
-        'event-1': [
-          {
-            issueId: 1,
-            invariantType: 'test',
-            reason: 'test reason',
-            metadata: {},
-            rootCauses: [],
-          },
-        ],
-      },
     });
 
     expect(
@@ -374,19 +365,10 @@ describe(WorkflowHistoryGroupDetails.name, () => {
   it('passes getIsDiagnosticsIssueExpanded and toggleIsDiagnosticsIssueExpanded through to the diagnostics component', () => {
     const { getIsDiagnosticsIssueExpanded, toggleIsDiagnosticsIssueExpanded } =
       setup({
-        groupDetailsEntries: mockGroupDetails,
+        groupDetailsEntries: withIssues(mockGroupDetails, 'event-1', [
+          MOCK_ISSUE_1,
+        ]),
         initialEventId: 'event-1',
-        diagnosticsIssuesByEventId: {
-          'event-1': [
-            {
-              issueId: 1,
-              invariantType: 'test',
-              reason: 'test reason',
-              metadata: {},
-              rootCauses: [],
-            },
-          ],
-        },
       });
 
     expect(WorkflowHistoryEventDiagnostics).toHaveBeenCalledWith(
@@ -402,7 +384,6 @@ describe(WorkflowHistoryGroupDetails.name, () => {
     setup({
       groupDetailsEntries: mockGroupDetails,
       initialEventId: 'event-1',
-      diagnosticsIssuesByEventId: {},
     });
 
     expect(
@@ -417,6 +398,7 @@ describe(WorkflowHistoryGroupDetails.name, () => {
         {
           eventLabel: 'Summary',
           eventDetails: [],
+          diagnosticsIssues: [MOCK_ISSUE_1, MOCK_ISSUE_2],
         },
       ],
       ...mockGroupDetails,
@@ -425,26 +407,6 @@ describe(WorkflowHistoryGroupDetails.name, () => {
     setup({
       groupDetailsEntries: groupDetailsWithSummary,
       initialEventId: 'summary_1',
-      diagnosticsIssuesByEventId: {
-        'event-1': [
-          {
-            issueId: 1,
-            invariantType: 'test1',
-            reason: 'reason1',
-            metadata: {},
-            rootCauses: [],
-          },
-        ],
-        'event-2': [
-          {
-            issueId: 2,
-            invariantType: 'test2',
-            reason: 'reason2',
-            metadata: {},
-            rootCauses: [],
-          },
-        ],
-      },
     });
 
     expect(
@@ -453,6 +415,32 @@ describe(WorkflowHistoryGroupDetails.name, () => {
     expect(screen.getByText('Diagnostics (2 issues)')).toBeInTheDocument();
   });
 });
+
+const MOCK_ISSUE_1: WorkflowDiagnosticsIssue = {
+  issueId: 1,
+  invariantType: 'test1',
+  reason: 'reason1',
+  metadata: {},
+  rootCauses: [],
+};
+
+const MOCK_ISSUE_2: WorkflowDiagnosticsIssue = {
+  issueId: 2,
+  invariantType: 'test2',
+  reason: 'reason2',
+  metadata: {},
+  rootCauses: [],
+};
+
+function withIssues(
+  entries: GroupDetailsEntries,
+  eventId: string,
+  diagnosticsIssues: Array<WorkflowDiagnosticsIssue>
+): GroupDetailsEntries {
+  return entries.map(([id, content]) =>
+    id === eventId ? [id, { ...content, diagnosticsIssues }] : [id, content]
+  );
+}
 
 function setup({
   groupDetailsEntries,
@@ -466,7 +454,6 @@ function setup({
   onClose,
   onClickShowInTimeline,
   onClickShowInTable,
-  diagnosticsIssuesByEventId = {},
   getIsDiagnosticsIssueExpanded = jest.fn(() => false),
   toggleIsDiagnosticsIssueExpanded = jest.fn(),
 }: {
@@ -476,7 +463,6 @@ function setup({
   onClose?: () => void;
   onClickShowInTimeline?: () => void;
   onClickShowInTable?: () => void;
-  diagnosticsIssuesByEventId?: WorkflowDiagnosticsIssuesByEventId;
   getIsDiagnosticsIssueExpanded?: (issueExpansionId: string) => boolean;
   toggleIsDiagnosticsIssueExpanded?: (issueExpansionId: string) => void;
 }) {
@@ -490,7 +476,6 @@ function setup({
       onClose={onClose}
       onClickShowInTimeline={onClickShowInTimeline}
       onClickShowInTable={onClickShowInTable}
-      diagnosticsIssuesByEventId={diagnosticsIssuesByEventId}
       getIsDiagnosticsIssueExpanded={getIsDiagnosticsIssueExpanded}
       toggleIsDiagnosticsIssueExpanded={toggleIsDiagnosticsIssueExpanded}
     />

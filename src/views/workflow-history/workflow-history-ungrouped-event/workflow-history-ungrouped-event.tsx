@@ -151,7 +151,6 @@ export default function WorkflowHistoryUngroupedEvent({
             workflowPageParams={decodedPageUrlParams}
             onClose={() => toggleIsExpanded()}
             onClickShowInTimeline={onClickShowInTimeline}
-            diagnosticsIssuesByEventId={workflowDiagnosticsByEventIdMap}
             getIsDiagnosticsIssueExpanded={getIsDiagnosticsIssueExpanded}
             toggleIsDiagnosticsIssueExpanded={toggleIsDiagnosticsIssueExpanded}
           />

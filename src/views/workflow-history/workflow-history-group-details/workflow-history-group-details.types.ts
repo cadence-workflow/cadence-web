@@ -1,11 +1,12 @@
 import { type WorkflowPageParams } from '@/views/workflow-page/workflow-page.types';
 
 import { type EventDetailsEntries } from '../workflow-history-event-details/workflow-history-event-details.types';
-import { type WorkflowDiagnosticsIssuesByEventId } from '../workflow-history.types';
+import { type WorkflowDiagnosticsIssue } from '../workflow-history.types';
 
 export type EventDetailsTabContent = {
   eventDetails: EventDetailsEntries;
   eventLabel: string;
+  diagnosticsIssues?: Array<WorkflowDiagnosticsIssue>;
 };
 
 export type GroupDetailsEntries = Array<[string, EventDetailsTabContent]>;
@@ -19,7 +20,6 @@ export type Props = {
   onClose?: () => void;
   onClickShowInTimeline?: () => void;
   onClickShowInTable?: () => void;
-  diagnosticsIssuesByEventId: WorkflowDiagnosticsIssuesByEventId;
   getIsDiagnosticsIssueExpanded: (issueExpansionId: string) => boolean;
   toggleIsDiagnosticsIssueExpanded: (issueExpansionId: string) => void;
 };
