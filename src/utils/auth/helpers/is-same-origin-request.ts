@@ -20,10 +20,18 @@ export default function isSameOriginRequest(request: NextRequest): boolean {
     request.headers.get('x-forwarded-host')?.split(',')[0]?.trim() ||
     request.headers.get('host');
 
+  // The external scheme is only known when the proxy declares it: behind a
+  // TLS-terminating proxy the server's own URL is http while the browser's
+  // Origin is https. Enforce the scheme when declared, fall back to
+  // host-only otherwise.
+  const proto = request.headers.get('x-forwarded-proto')?.split(',')[0]?.trim();
+
   try {
-    // Host-only comparison: the externally visible protocol may differ from
-    // what the server sees behind a TLS-terminating proxy.
-    return new URL(origin).host === host;
+    const originUrl = new URL(origin);
+    if (originUrl.host !== host) {
+      return false;
+    }
+    return !proto || originUrl.protocol === `${proto}:`;
   } catch {
     return false;
   }

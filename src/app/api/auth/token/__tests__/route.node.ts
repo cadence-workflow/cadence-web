@@ -226,6 +226,43 @@ describe('POST /api/auth/token', () => {
       );
       expect(rejected.status).toBe(403);
     });
+
+    it('enforces the scheme when the proxy declares the external protocol', async () => {
+      const rejected = await POST(
+        buildRequest(
+          { token: VALID_JWT },
+          {
+            origin: 'http://cadence.example',
+            xForwardedHost: 'cadence.example',
+            xForwardedProto: 'https',
+          }
+        )
+      );
+      expect(rejected.status).toBe(403);
+
+      const accepted = await POST(
+        buildRequest(
+          { token: VALID_JWT },
+          {
+            origin: 'https://cadence.example',
+            xForwardedHost: 'cadence.example',
+            xForwardedProto: 'https',
+          }
+        )
+      );
+      expect(accepted.status).toBe(200);
+    });
+
+    it('ignores the scheme when no forwarded protocol is present', async () => {
+      const response = await POST(
+        buildRequest(
+          { token: VALID_JWT },
+          { origin: 'https://localhost', host: 'localhost' }
+        )
+      );
+
+      expect(response.status).toBe(200);
+    });
   });
 });
 
