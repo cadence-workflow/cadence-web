@@ -33,6 +33,7 @@ describe(getNavigationBarDiagnosticsMenuItems.name, () => {
           invariantType: 'Activity Failed',
           reason: 'r',
           metadata: {},
+          rootCauses: [],
         },
       ],
     };
@@ -57,6 +58,7 @@ describe(getNavigationBarDiagnosticsMenuItems.name, () => {
           invariantType: 'Activity Failed',
           reason: 'r',
           metadata: {},
+          rootCauses: [],
         },
       ],
       '10': [
@@ -65,6 +67,7 @@ describe(getNavigationBarDiagnosticsMenuItems.name, () => {
           invariantType: 'Activity Timeout',
           reason: 'r',
           metadata: {},
+          rootCauses: [],
         },
       ],
     };
@@ -91,6 +94,7 @@ describe(getNavigationBarDiagnosticsMenuItems.name, () => {
           invariantType: 'Activity Failed',
           reason: 'r',
           metadata: {},
+          rootCauses: [],
         },
       ],
       '10': [
@@ -99,6 +103,7 @@ describe(getNavigationBarDiagnosticsMenuItems.name, () => {
           invariantType: 'Activity Timeout',
           reason: 'r',
           metadata: {},
+          rootCauses: [],
         },
       ],
     };
@@ -127,6 +132,7 @@ describe(getNavigationBarDiagnosticsMenuItems.name, () => {
           invariantType: 'Activity Failed',
           reason: 'r',
           metadata: {},
+          rootCauses: [],
         },
       ],
       '4': [
@@ -135,6 +141,7 @@ describe(getNavigationBarDiagnosticsMenuItems.name, () => {
           invariantType: 'Decision Failed',
           reason: 'r',
           metadata: {},
+          rootCauses: [],
         },
       ],
     };
