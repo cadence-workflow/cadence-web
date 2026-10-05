@@ -103,7 +103,7 @@ describe('WorkflowHistoryEventDiagnostics', () => {
     ).toBeInTheDocument();
   });
 
-  it('passes a single root cause under the RootCause key', () => {
+  it('passes a single root cause under the RootCauses key', () => {
     const rootCauses = [
       {
         issueId: 0,
@@ -127,7 +127,7 @@ describe('WorkflowHistoryEventDiagnostics', () => {
         JSON.stringify({
           ActivityScheduledID: 5,
           issueId: 0,
-          RootCause: rootCauses,
+          RootCauses: rootCauses,
         })
       )
     ).toBeInTheDocument();

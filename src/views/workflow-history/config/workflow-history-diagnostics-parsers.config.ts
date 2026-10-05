@@ -3,7 +3,7 @@ import { createElement } from 'react';
 import WorkflowHistoryEventDiagnosticsJson from '../workflow-history-event-diagnostics-json/workflow-history-event-diagnostics-json';
 import WorkflowHistoryEventDiagnosticsPlaceholderText from '../workflow-history-event-diagnostics-placeholder-text/workflow-history-event-diagnostics-placeholder-text';
 import WorkflowHistoryEventDiagnosticsRootCauses from '../workflow-history-event-diagnostics-root-causes/workflow-history-event-diagnostics-root-causes';
-import { ROOT_CAUSE_METADATA_KEYS } from '../workflow-history-event-diagnostics-root-causes/workflow-history-event-diagnostics-root-causes.constants';
+import { ROOT_CAUSES_METADATA_KEY } from '../workflow-history-event-diagnostics-root-causes/workflow-history-event-diagnostics-root-causes.constants';
 import { type WorkflowHistoryEventDiagnosticsParser } from '../workflow-history-event-diagnostics-table/workflow-history-event-diagnostics-table.types';
 
 const workflowHistoryDiagnosticsParsersConfig: Array<WorkflowHistoryEventDiagnosticsParser> =
@@ -11,7 +11,7 @@ const workflowHistoryDiagnosticsParsersConfig: Array<WorkflowHistoryEventDiagnos
     {
       name: 'Root causes with nested metadata',
       matcher: (key, value) =>
-        ROOT_CAUSE_METADATA_KEYS.includes(key) && Array.isArray(value),
+        key === ROOT_CAUSES_METADATA_KEY && Array.isArray(value),
       renderValue: WorkflowHistoryEventDiagnosticsRootCauses,
       forceWrap: true,
     },

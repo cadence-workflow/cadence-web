@@ -1,7 +1,1 @@
-export const ROOT_CAUSE_METADATA_KEY = 'RootCause';
 export const ROOT_CAUSES_METADATA_KEY = 'RootCauses';
-
-export const ROOT_CAUSE_METADATA_KEYS = [
-  ROOT_CAUSE_METADATA_KEY,
-  ROOT_CAUSES_METADATA_KEY,
-];
