@@ -15,6 +15,7 @@ import type {
   GroupingProcessState,
   ProcessEventsParams,
 } from '../../helpers/workflow-history-grouper.types';
+import type { WorkflowDiagnosticsIssuesByEventId } from '../../workflow-history.types';
 import useWorkflowHistoryGrouper from '../use-workflow-history-grouper';
 
 jest.mock('../../helpers/workflow-history-grouper');
@@ -158,6 +159,33 @@ describe(useWorkflowHistoryGrouper.name, () => {
     );
   });
 
+  it('should call grouper.updateDiagnostics with provided map', () => {
+    const {
+      result: { current },
+      mockGrouperInstance,
+    } = setup();
+
+    const diagnosticsMap: WorkflowDiagnosticsIssuesByEventId = {
+      '7': [
+        {
+          issueId: 0,
+          invariantType: 'Activity Failed',
+          reason: 'r',
+          metadata: {},
+          rootCauses: [],
+        },
+      ],
+    };
+
+    act(() => {
+      current.updateDiagnostics(diagnosticsMap);
+    });
+
+    expect(mockGrouperInstance.updateDiagnostics).toHaveBeenCalledWith(
+      diagnosticsMap
+    );
+  });
+
   it('should unsubscribe from onChange on unmount', () => {
     const { unmount, mockUnsubscribe } = setup();
 
@@ -260,6 +288,11 @@ function setup(options?: {
     'updatePendingEvents'
   );
 
+  const updateDiagnosticsSpy = jest.spyOn(
+    HistoryEventsGrouper.prototype,
+    'updateDiagnostics'
+  );
+
   const destroySpy = jest.spyOn(HistoryEventsGrouper.prototype, 'destroy');
 
   // Render the hook (constructor will create instance with spied methods)
@@ -274,6 +307,7 @@ function setup(options?: {
       onChange: onChangeSpy,
       updateEvents: updateEventsSpy,
       updatePendingEvents: updatePendingEventsSpy,
+      updateDiagnostics: updateDiagnosticsSpy,
       destroy: destroySpy,
     },
     getMockOnChangeCallback: () => mockOnChangeCallback,

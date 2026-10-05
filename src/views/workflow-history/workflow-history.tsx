@@ -116,7 +116,12 @@ export default function WorkflowHistory({ params }: Props) {
     eventGroups,
     updateEvents: updateGrouperEvents,
     updatePendingEvents: updateGrouperPendingEvents,
+    updateDiagnostics: updateGrouperDiagnostics,
   } = useWorkflowHistoryGrouper();
+
+  useEffect(() => {
+    updateGrouperDiagnostics(workflowDiagnosticsByEventIdMap);
+  }, [workflowDiagnosticsByEventIdMap, updateGrouperDiagnostics]);
 
   const isWorkflowRunning =
     !workflowExecutionInfo?.closeStatus ||

@@ -47,6 +47,7 @@ export type HistoryGroupEventMetadata = {
   negativeFields?: Array<string>;
   additionalDetails?: Record<string, any>;
   summaryFields?: Array<string>;
+  diagnosticsIssues?: Array<WorkflowDiagnosticsIssue>;
 };
 
 // TODO @adhitya.mamallan - remove this type when moving grouping logic to v2

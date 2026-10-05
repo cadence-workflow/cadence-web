@@ -40,6 +40,7 @@ import WorkflowHistory from '../workflow-history';
 import { WorkflowHistoryContext } from '../workflow-history-context-provider/workflow-history-context-provider';
 import { type Props as NavbarProps } from '../workflow-history-navigation-bar/workflow-history-navigation-bar.types';
 import {
+  type HistoryEventsGroup,
   type PendingActivityTaskStartEvent,
   type PendingDecisionTaskStartEvent,
 } from '../workflow-history.types';
@@ -112,15 +113,24 @@ jest.mock(
       ({
         selectedEventId,
         getIsDiagnosticsIssueExpanded,
+        eventGroupsById,
       }: {
         selectedEventId?: string;
         getIsDiagnosticsIssueExpanded: (issueExpansionId: string) => boolean;
+        eventGroupsById: Array<[string, HistoryEventsGroup]>;
       }) => (
         <div data-testid="workflow-history-grouped-table">
           Grouped Table
           {selectedEventId && (
             <div data-testid="grouped-selected-event-id">{selectedEventId}</div>
           )}
+          <div data-testid="grouped-metadata-issues-count">
+            {
+              eventGroupsById
+                .flatMap(([, group]) => group.eventsMetadata)
+                .flatMap((metadata) => metadata.diagnosticsIssues ?? []).length
+            }
+          </div>
           <div data-testid="grouped-diagnostics-issue-expanded">
             {String(getIsDiagnosticsIssueExpanded('mock-issue'))}
           </div>
@@ -541,6 +551,36 @@ describe(WorkflowHistory.name, () => {
       'diagnostics-menu-items-count'
     );
     expect(diagnosticsItemsCounter).toHaveTextContent('1 groups with issues');
+  });
+
+  it('attaches diagnostics issues to event metadata in the grouped table groups', async () => {
+    await setup({
+      historyEvents: [
+        startWorkflowExecutionEvent,
+        ...completedActivityTaskEvents,
+      ],
+      isDiagnosticsInHistoryEnabled: true,
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByTestId('grouped-metadata-issues-count')
+      ).toHaveTextContent(/^[1-9]\d*$/);
+    });
+  });
+
+  it('does not attach diagnostics issues to event metadata when the flag is off', async () => {
+    await setup({
+      historyEvents: [
+        startWorkflowExecutionEvent,
+        ...completedActivityTaskEvents,
+      ],
+      isDiagnosticsInHistoryEnabled: false,
+    });
+
+    expect(
+      await screen.findByTestId('grouped-metadata-issues-count')
+    ).toHaveTextContent('0');
   });
 
   it('does not show diagnostics issues when the flag is off even if diagnose data is cached by another component', async () => {
