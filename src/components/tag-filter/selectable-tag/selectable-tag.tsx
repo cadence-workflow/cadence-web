@@ -12,7 +12,7 @@ export default function SelectableTag({ value, onClick, ...tagProps }: Props) {
     <Tag
       closeable={false}
       kind={value ? 'primary' : 'neutral'}
-      variant="solid"
+      hierarchy="primary"
       color={value ? theme.colors.contentPrimary : theme.colors.contentTertiary}
       onClick={onClick}
       {...tagProps}

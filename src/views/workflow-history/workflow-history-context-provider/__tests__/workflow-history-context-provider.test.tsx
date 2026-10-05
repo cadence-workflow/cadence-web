@@ -34,14 +34,6 @@ jest.mock('@/utils/local-storage', () => ({
   clearLocalStorageValue: jest.fn(),
 }));
 
-jest.mock(
-  '@/views/workflow-history-v2/hooks/use-is-workflow-history-v2-selected',
-  () => ({
-    __esModule: true,
-    default: jest.fn(() => [false, jest.fn()]),
-  })
-);
-
 describe(WorkflowHistoryContextProvider.name, () => {
   afterEach(() => {
     jest.restoreAllMocks();

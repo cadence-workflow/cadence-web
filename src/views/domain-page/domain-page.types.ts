@@ -6,6 +6,10 @@ export type Props = {
   children: React.ReactNode;
 };
 
+export type GenerateMetadataProps = {
+  params: Promise<Props['params']>;
+};
+
 export type DomainDescription = DescribeDomainResponse;
 
 export type DomainWorkflow = WorkflowListItem;

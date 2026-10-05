@@ -22,6 +22,14 @@ describe(DomainBatchActionsNewActionFloatingBar.name, () => {
     expect(screen.getByText('5 of 32 workflows included')).toBeInTheDocument();
   });
 
+  it('groups large selection counts', () => {
+    setup({ selectedCount: 92000, totalCount: 12472988 });
+
+    expect(
+      screen.getByText('92,000 of 12,472,988 workflows included')
+    ).toBeInTheDocument();
+  });
+
   it('renders one button per action', () => {
     setup({});
 
@@ -46,16 +54,26 @@ describe(DomainBatchActionsNewActionFloatingBar.name, () => {
 
     expect(screen.queryAllByRole('button')).toHaveLength(0);
   });
+
+  it('disables action buttons when disabled is true', () => {
+    setup({ disabled: true });
+
+    expect(screen.getByRole('button', { name: /Cancel/ })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /Terminate/ })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /Signal/ })).toBeDisabled();
+  });
 });
 
 function setup({
   selectedCount = 32,
   totalCount = 32,
   actions = mockActions,
+  disabled,
 }: {
   selectedCount?: number;
   totalCount?: number;
   actions?: DomainBatchActionsNewActionFloatingBarActionConfig[];
+  disabled?: boolean;
 }) {
   const onActionClick = jest.fn();
   const user = userEvent.setup();
@@ -66,6 +84,7 @@ function setup({
       totalCount={totalCount}
       actions={actions}
       onActionClick={onActionClick}
+      disabled={disabled}
     />
   );
 

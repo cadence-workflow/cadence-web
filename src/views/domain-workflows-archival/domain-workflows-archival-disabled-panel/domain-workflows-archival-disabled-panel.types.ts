@@ -5,7 +5,7 @@ export type Props = {
 
 export type ArchivalDisabledPanelConfig = {
   title: string;
-  details: Array<string>;
+  description: string;
   links: Array<{
     href: string;
     text: string;

@@ -37,3 +37,10 @@ next-env.d.ts
 
 #generated
 src/__generated__
+
+# Local agent / planning features (not versioned)
+.agents/features/
+
+# Storybook generated files
+*storybook.log
+storybook-static

@@ -51,6 +51,19 @@ describe(signalWorkflow.name, () => {
     );
   });
 
+  it('signals the current run when runId param is omitted', async () => {
+    const { mockSignalWorkflow } = await setup({ omitRunId: true });
+
+    expect(mockSignalWorkflow).toHaveBeenCalledWith(
+      expect.objectContaining({
+        workflowExecution: {
+          workflowId: 'mock-wfid',
+          runId: undefined,
+        },
+      })
+    );
+  });
+
   it('returns an error if something went wrong in the backend', async () => {
     const { res, mockSignalWorkflow } = await setup({
       error: true,
@@ -89,9 +102,11 @@ describe(signalWorkflow.name, () => {
 async function setup({
   requestBody = JSON.stringify(defaultRequestBody),
   error,
+  omitRunId,
 }: {
   requestBody?: string;
   error?: true;
+  omitRunId?: boolean;
 }) {
   const mockSignalWorkflow = jest
     .spyOn(mockGrpcClusterMethods, 'signalWorkflow')
@@ -112,7 +127,7 @@ async function setup({
         domain: 'mock-domain',
         cluster: 'mock-cluster',
         workflowId: 'mock-wfid',
-        runId: 'mock-runid',
+        runId: omitRunId ? undefined : 'mock-runid',
       },
     },
     {

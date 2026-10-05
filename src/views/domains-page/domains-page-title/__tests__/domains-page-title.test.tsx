@@ -7,7 +7,7 @@ import DomainsPageTitle from '../domains-page-title';
 describe('DomainsPageTitle', () => {
   it('should render title', async () => {
     render(<DomainsPageTitle countBadge={null} />);
-    await screen.findByText('All domains');
+    await screen.findByText('Domains');
   });
 
   it('should render passed count badge', async () => {

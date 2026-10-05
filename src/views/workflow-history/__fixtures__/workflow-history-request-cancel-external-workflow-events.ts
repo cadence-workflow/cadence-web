@@ -56,7 +56,8 @@ export const failRequestCancelExternalWorkflowEvent = {
       runId: '',
     },
     control: '',
-    cause: 'CANCEL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_INVALID',
+    cause:
+      'CANCEL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_UNKNOWN_EXTERNAL_WORKFLOW_EXECUTION',
     initiatedEventId: '25',
   },
   attributes: 'requestCancelExternalWorkflowExecutionFailedEventAttributes',

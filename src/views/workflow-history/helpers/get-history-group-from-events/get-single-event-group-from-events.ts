@@ -24,7 +24,6 @@ export default function getSingleEventGroupFromEvents(
     workflowExecutionCompletedEventAttributes: 'Workflow Completed',
     workflowExecutionFailedEventAttributes: 'Workflow Failed',
     workflowExecutionTimedOutEventAttributes: 'Workflow Timed out',
-    workflowExecutionSignaledEventAttributes: 'Workflow Signaled',
     workflowExecutionTerminatedEventAttributes: 'Workflow Terminated',
     workflowExecutionCancelRequestedEventAttributes: 'Workflow Cancel Request',
     workflowExecutionCanceledEventAttributes: 'Workflow Canceled',
@@ -59,7 +58,6 @@ export default function getSingleEventGroupFromEvents(
     workflowExecutionCompletedEventAttributes: 'Completed',
     workflowExecutionFailedEventAttributes: 'Failed',
     workflowExecutionTimedOutEventAttributes: 'Timed out',
-    workflowExecutionSignaledEventAttributes: 'Signaled',
     workflowExecutionTerminatedEventAttributes: 'Terminated',
     workflowExecutionCancelRequestedEventAttributes: 'Requested',
     workflowExecutionCanceledEventAttributes: 'Canceled',
@@ -76,7 +74,6 @@ export default function getSingleEventGroupFromEvents(
     workflowExecutionCompletedEventAttributes: 'COMPLETED',
     workflowExecutionFailedEventAttributes: 'FAILED',
     workflowExecutionTimedOutEventAttributes: 'FAILED',
-    workflowExecutionSignaledEventAttributes: 'COMPLETED',
     workflowExecutionTerminatedEventAttributes: 'FAILED',
     workflowExecutionCancelRequestedEventAttributes: 'COMPLETED',
     workflowExecutionCanceledEventAttributes: 'CANCELED',
@@ -85,28 +82,27 @@ export default function getSingleEventGroupFromEvents(
 
   const eventToNegativeFields: HistoryGroupEventToNegativeFieldsMap<SingleEventHistoryGroup> =
     {
-      workflowExecutionFailedEventAttributes: ['details', 'reason'],
-      workflowExecutionTerminatedEventAttributes: ['details', 'reason'],
+      workflowExecutionFailedEventAttributes: ['reason', 'details'],
+      workflowExecutionTerminatedEventAttributes: ['reason', 'details'],
       workflowExecutionContinuedAsNewEventAttributes: [
-        'failureDetails',
         'failureReason',
+        'failureDetails',
       ],
     };
 
   const eventToSummaryFields: HistoryGroupEventToSummaryFieldsMap<SingleEventHistoryGroup> =
     {
-      workflowExecutionSignaledEventAttributes: ['signalName', 'input'],
       workflowExecutionStartedEventAttributes: [
         'input',
         'executionStartToCloseTimeoutSeconds',
         'attempt',
       ],
       workflowExecutionCompletedEventAttributes: ['result'],
-      workflowExecutionFailedEventAttributes: ['details', 'reason'],
-      workflowExecutionTerminatedEventAttributes: ['details', 'reason'],
+      workflowExecutionFailedEventAttributes: ['reason', 'details'],
+      workflowExecutionTerminatedEventAttributes: ['reason', 'details'],
       workflowExecutionContinuedAsNewEventAttributes: [
-        'failureDetails',
         'failureReason',
+        'failureDetails',
         'newExecutionRunId',
       ],
     };
@@ -131,16 +127,15 @@ export default function getSingleEventGroupFromEvents(
     hasMissingEvents,
     groupType,
     badges,
-    ...getCommonHistoryGroupFields<SingleEventHistoryGroup>(
+    ...getCommonHistoryGroupFields<SingleEventHistoryGroup>({
       events,
-      eventToStatus,
-      eventToLabel,
-      {},
-      undefined,
-      eventToNegativeFields,
-      undefined,
-      eventToSummaryFields
-    ),
+      historyGroupEventToStatusMap: eventToStatus,
+      eventToLabelMap: eventToLabel,
+      eventToTimeLabelPrefixMap: {},
+      closeEvent: undefined,
+      eventToNegativeFieldsMap: eventToNegativeFields,
+      eventToSummaryFieldsMap: eventToSummaryFields,
+    }),
     ...(expectedFirstDecisionScheduleTimeMs
       ? {
           expectedEndTimeInfo: {

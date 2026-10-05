@@ -76,6 +76,7 @@ export const styled = {
       cursor: 'pointer',
       textDecoration: 'none',
       color: 'inherit',
+      WebkitUserDrag: 'none',
       ':hover': {
         backgroundColor: `${$theme.colors.contentPrimary}0A`,
       },
@@ -90,6 +91,7 @@ export const styled = {
     overflowWrap: 'break-word',
     wordBreak: 'break-word',
     minWidth: 0,
+    userSelect: 'text',
   })),
   CellPlaceholder: createStyled('span', ({ $theme }: { $theme: Theme }) => ({
     color: $theme.colors.contentTertiary,

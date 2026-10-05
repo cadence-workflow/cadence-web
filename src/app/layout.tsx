@@ -13,7 +13,10 @@ import './globals.css';
 const inter = Rubik({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Cadence',
+  title: {
+    template: '%s | Cadence',
+    default: 'Cadence',
+  },
   description:
     'Fault-Tolerant Stateful Code Platform, focus on your business logic and let Cadence take care of the complexity of distributed systems',
 };

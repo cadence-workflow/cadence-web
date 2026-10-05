@@ -4,6 +4,7 @@ import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import { type Props as LoaderProps } from '@/components/table/table-infinite-scroll-loader/table-infinite-scroll-loader.types';
 import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtures__/mock-workflow-list-items';
+import { type PublicProviderProps } from '@/test-utils/rtl.types';
 
 import { mockWorkflowsListColumns } from '../__fixtures__/mock-workflows-list-columns';
 import WorkflowsList from '../workflows-list';
@@ -33,6 +34,12 @@ const MOCK_WORKFLOWS = [
 ];
 
 describe(WorkflowsList.name, () => {
+  afterEach(() => {
+    // A selection outlives RTL cleanup, and a leftover one would suppress
+    // link navigation in whichever test runs next.
+    window.getSelection()?.removeAllRanges();
+  });
+
   it('renders column headers', () => {
     setup({});
 
@@ -60,6 +67,54 @@ describe(WorkflowsList.name, () => {
     expect(links).toHaveLength(2);
     expect(links[0]).toHaveAttribute('href', '/workflows/wf-1/run-1');
     expect(links[1]).toHaveAttribute('href', '/workflows/wf-2/run-2');
+  });
+
+  it('renders each row link as non-draggable so drag-to-select works', () => {
+    setup({});
+
+    for (const link of screen.getAllByRole('link')) {
+      expect(link).toHaveAttribute('draggable', 'false');
+    }
+  });
+
+  it('triggers navigation on a plain click with no text selected', async () => {
+    const onPush = jest.fn();
+    const { user } = setup({}, { router: { onPush } });
+
+    await user.click(screen.getAllByRole('link')[0]);
+
+    expect(onPush).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not trigger navigation when dragging to select text on a row', async () => {
+    const onPush = jest.fn();
+    const { user } = setup({}, { router: { onPush } });
+
+    const cell = screen.getByText('wf-1');
+    await user.pointer([
+      { target: cell, offset: 0, keys: '[MouseLeft>]' },
+      { target: cell, offset: 4 },
+      { keys: '[/MouseLeft]' },
+    ]);
+
+    expect(window.getSelection()?.toString()).toBe('wf-1');
+    expect(onPush).not.toHaveBeenCalled();
+  });
+
+  it('triggers navigation on keyboard activation while text is selected', async () => {
+    const onPush = jest.fn();
+    const { user } = setup({}, { router: { onPush } });
+
+    const cell = screen.getByText('wf-1');
+    await user.pointer([
+      { target: cell, offset: 0, keys: '[MouseLeft>]' },
+      { target: cell, offset: 4 },
+      { keys: '[/MouseLeft]' },
+    ]);
+    await user.keyboard('{Enter}');
+
+    expect(window.getSelection()?.toString()).toBe('wf-1');
+    expect(onPush).toHaveBeenCalledTimes(1);
   });
 
   it('encodes workflow and run IDs in the link href', () => {
@@ -220,16 +275,122 @@ describe(WorkflowsList.name, () => {
     expect(screen.getByText('Workflow ID')).toBeInTheDocument();
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
+
+  it('does not render checkboxes when selection is not provided', () => {
+    setup({});
+
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
+  });
+
+  it('renders a select-all checkbox and one checkbox per row when selection is provided', () => {
+    setup({ selection: makeSelection() });
+
+    // select-all + one per row
+    expect(screen.getAllByRole('checkbox')).toHaveLength(3);
+    expect(
+      screen.getByRole('checkbox', { name: 'Select all workflows' })
+    ).toBeInTheDocument();
+  });
+
+  it('toggles a row without navigating when its checkbox is clicked', async () => {
+    const selection = makeSelection();
+    const { user } = setup({ selection });
+
+    await user.click(
+      screen.getByRole('checkbox', { name: 'Select workflow wf-1 run run-1' })
+    );
+
+    expect(selection.onToggle).toHaveBeenCalledTimes(1);
+    expect(selection.onToggle).toHaveBeenCalledWith(MOCK_WORKFLOWS[0]);
+  });
+
+  it('calls onToggleAll when the select-all checkbox is clicked', async () => {
+    const selection = makeSelection();
+    const { user } = setup({ selection });
+
+    await user.click(
+      screen.getByRole('checkbox', { name: 'Select all workflows' })
+    );
+
+    expect(selection.onToggleAll).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders rows checked and disabled while select all is active', () => {
+    setup({
+      selection: makeSelection({
+        isAllSelected: true,
+        isRowToggleDisabled: true,
+        isSelected: () => true,
+      }),
+    });
+
+    const rowCheckbox = screen.getByRole('checkbox', {
+      name: 'Select workflow wf-1 run run-1',
+    });
+    expect(rowCheckbox).toBeChecked();
+    expect(rowCheckbox).toBeDisabled();
+  });
+
+  it('does not toggle a disabled row checkbox', async () => {
+    const selection = makeSelection({
+      isAllSelected: true,
+      isRowToggleDisabled: true,
+      isSelected: () => true,
+    });
+    const { user } = setup({ selection });
+
+    await user.click(
+      screen.getByRole('checkbox', { name: 'Select workflow wf-1 run run-1' })
+    );
+
+    expect(selection.onToggle).not.toHaveBeenCalled();
+  });
+
+  it('shows the disabled-reason tooltip when hovering a disabled row checkbox', async () => {
+    const { user } = setup({
+      selection: makeSelection({
+        isAllSelected: true,
+        isRowToggleDisabled: true,
+        isSelected: () => true,
+        rowToggleDisabledReason: 'All selected',
+      }),
+    });
+
+    await user.hover(
+      screen.getByRole('checkbox', { name: 'Select workflow wf-1 run run-1' })
+    );
+
+    expect(await screen.findByText('All selected')).toBeInTheDocument();
+  });
 });
 
-function setup({
-  workflows = MOCK_WORKFLOWS,
-  columns = mockWorkflowsListColumns,
-  error = null,
-  hasNextPage = false,
-  isFetchingNextPage = false,
-  sortParams,
-}: Partial<React.ComponentProps<typeof WorkflowsList>> = {}) {
+function makeSelection(
+  overrides: Partial<
+    React.ComponentProps<typeof WorkflowsList>['selection']
+  > = {}
+): NonNullable<React.ComponentProps<typeof WorkflowsList>['selection']> {
+  return {
+    isAllSelected: false,
+    onToggleAll: jest.fn(),
+    isSelected: () => false,
+    isRowToggleDisabled: false,
+    onToggle: jest.fn(),
+    ...overrides,
+  };
+}
+
+function setup(
+  {
+    workflows = MOCK_WORKFLOWS,
+    columns = mockWorkflowsListColumns,
+    error = null,
+    hasNextPage = false,
+    isFetchingNextPage = false,
+    sortParams,
+    selection,
+  }: Partial<React.ComponentProps<typeof WorkflowsList>> = {},
+  providerProps?: PublicProviderProps
+) {
   const user = userEvent.setup();
   render(
     <WorkflowsList
@@ -240,7 +401,9 @@ function setup({
       fetchNextPage={jest.fn()}
       isFetchingNextPage={isFetchingNextPage}
       sortParams={sortParams}
-    />
+      selection={selection}
+    />,
+    providerProps
   );
   return { user };
 }

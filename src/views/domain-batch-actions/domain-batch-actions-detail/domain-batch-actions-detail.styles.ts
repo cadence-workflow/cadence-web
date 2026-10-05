@@ -1,5 +1,7 @@
 import { styled as createStyled, type Theme } from 'baseui';
 import { type ButtonOverrides } from 'baseui/button';
+import type { SkeletonOverrides } from 'baseui/skeleton/types';
+import type { StyleObject } from 'styletron-react';
 
 export const overrides = {
   abortButton: {
@@ -10,10 +12,18 @@ export const overrides = {
     },
     StartEnhancer: {
       style: ({ $theme }: { $theme: Theme }) => ({
-        fontSize: $theme.sizing.scale700,
+        fontSize: $theme.sizing.scale600,
       }),
     },
   } satisfies ButtonOverrides,
+  titleSkeleton: {
+    Root: {
+      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+        width: $theme.sizing.scale4800,
+        height: $theme.sizing.scale800,
+      }),
+    },
+  } satisfies SkeletonOverrides,
 };
 
 export const styled = {

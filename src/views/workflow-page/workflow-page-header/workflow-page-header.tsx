@@ -2,12 +2,11 @@
 import React, { Suspense } from 'react';
 
 import { Breadcrumbs } from 'baseui/breadcrumbs';
-import { StyledLink } from 'baseui/link';
 import Image from 'next/image';
-import Link from 'next/link';
 import queryString from 'query-string';
 
 import cadenceLogoBlack from '@/assets/cadence-logo-black.svg';
+import Link from '@/components/link/link';
 import PageSection from '@/components/page-section/page-section';
 import { type PageQueryParamSetterValues } from '@/hooks/use-page-query-params/use-page-query-params.types';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
@@ -41,9 +40,7 @@ export default function WorkflowPageHeader({
             alt="Cadence Icon"
             src={cadenceLogoBlack}
           />
-          <StyledLink $as={Link} href={domainLink}>
-            {domain}
-          </StyledLink>
+          <Link href={domainLink}>{domain}</Link>
           <Suspense fallback={null}>
             <WorkflowPageHeaderClusterSelector
               domain={domain}
@@ -51,8 +48,7 @@ export default function WorkflowPageHeader({
             />
           </Suspense>
         </div>
-        <StyledLink
-          $as={Link}
+        <Link
           href={queryString.stringifyUrl({
             url:
               domainLink +
@@ -69,7 +65,7 @@ export default function WorkflowPageHeader({
           })}
         >
           {workflowId}
-        </StyledLink>
+        </Link>
         <div className={cls.breadcrumbItemContainer}>
           {runId}
           <WorkflowPageStatusTag />

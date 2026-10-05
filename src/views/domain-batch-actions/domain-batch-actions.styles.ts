@@ -1,10 +1,11 @@
 import { styled as createStyled, type Theme } from 'baseui';
+import { type SnackbarElementOverrides } from 'baseui/snackbar';
+import { type StyleObject } from 'styletron-react';
 
 export const styled = {
   Container: createStyled('div', () => ({
     display: 'flex',
     flexDirection: 'row',
-    height: '100%',
   })),
   Sidebar: createStyled('aside', () => ({
     width: '20%',
@@ -16,6 +17,15 @@ export const styled = {
     display: 'flex',
     flexDirection: 'column',
     padding: $theme.sizing.scale600,
-    overflow: 'auto',
   })),
+};
+
+export const overrides = {
+  errorSnackbar: {
+    Root: {
+      style: ({ $theme }: { $theme: Theme }): StyleObject => ({
+        backgroundColor: $theme.colors.contentNegative,
+      }),
+    },
+  } satisfies SnackbarElementOverrides,
 };

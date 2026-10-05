@@ -1,9 +1,10 @@
 import differenceBy from 'lodash/differenceBy';
 
 import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
-import { allWorkflowEventTypesAttrs } from '@/views/workflow-history/__fixtures__/all-workflow-event-types-attributes';
-import type { SingleHistoryEvent } from '@/views/workflow-history/workflow-history.types';
 
+import { allWorkflowEventTypesAttrs } from '../../../__fixtures__/all-workflow-event-types-attributes';
+import { localActivityMarkerEvent } from '../../../__fixtures__/workflow-history-local-activity-events';
+import type { SingleHistoryEvent } from '../../../workflow-history.types';
 import isSingleEvent from '../is-single-event';
 
 const validEvents: Pick<SingleHistoryEvent, 'attributes'>[] = [
@@ -13,7 +14,6 @@ const validEvents: Pick<SingleHistoryEvent, 'attributes'>[] = [
   { attributes: 'cancelTimerFailedEventAttributes' },
   { attributes: 'markerRecordedEventAttributes' },
   { attributes: 'upsertWorkflowSearchAttributesEventAttributes' },
-  { attributes: 'workflowExecutionSignaledEventAttributes' },
   { attributes: 'workflowExecutionStartedEventAttributes' },
   { attributes: 'workflowExecutionCompletedEventAttributes' },
   { attributes: 'workflowExecutionFailedEventAttributes' },
@@ -37,7 +37,7 @@ describe('isSingleEvent', () => {
     });
   });
 
-  it('should return false for invalid timer events', () => {
+  it('should return false for invalid single events', () => {
     invalidEvents.forEach((event) => {
       expect(isSingleEvent(event)).toBe(false);
     });
@@ -48,7 +48,10 @@ describe('isSingleEvent', () => {
     expect(isSingleEvent(null)).toBe(false);
     //@ts-expect-error undefined is not of type HistoryEvent
     expect(isSingleEvent(undefined)).toBe(false);
-    //@ts-expect-error {} is not of type HistoryEvent
     expect(isSingleEvent({})).toBe(false);
+  });
+
+  it('should return false for local activity marker events', () => {
+    expect(isSingleEvent(localActivityMarkerEvent)).toBe(false);
   });
 });

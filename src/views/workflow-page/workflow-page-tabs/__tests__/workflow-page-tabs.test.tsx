@@ -5,6 +5,7 @@ import { HttpResponse } from 'msw';
 import { render, screen, act, fireEvent } from '@/test-utils/rtl';
 
 import ErrorBoundary from '@/components/error-boundary/error-boundary';
+import { type GetConfigResponse } from '@/route-handlers/get-config/get-config.types';
 
 import { mockWorkflowPageTabsConfig } from '../../__fixtures__/workflow-page-tabs-config';
 import WorkflowPageTabs from '../workflow-page-tabs';
@@ -59,14 +60,30 @@ describe('WorkflowPageTabs', () => {
     expect(screen.queryByText('Diagnostics')).toBeNull();
   });
 
-  it('renders tabs with diagnostics enabled', async () => {
-    await setup({ enableDiagnostics: true });
+  it('renders diagnostics tab when diagnostics enabled and not in history', async () => {
+    await setup({
+      enableDiagnostics: true,
+      enableDiagnosticsInHistory: false,
+    });
 
     expect(screen.getByText('Summary')).toBeInTheDocument();
     expect(screen.getByText('History')).toBeInTheDocument();
     expect(screen.getByText('Queries')).toBeInTheDocument();
     expect(screen.getByText('Stack Trace')).toBeInTheDocument();
     expect(screen.getByText('Diagnostics')).toBeInTheDocument();
+  });
+
+  it('hides diagnostics tab when diagnostics shown in history', async () => {
+    await setup({
+      enableDiagnostics: true,
+      enableDiagnosticsInHistory: true,
+    });
+
+    expect(screen.getByText('Summary')).toBeInTheDocument();
+    expect(screen.getByText('History')).toBeInTheDocument();
+    expect(screen.getByText('Queries')).toBeInTheDocument();
+    expect(screen.getByText('Stack Trace')).toBeInTheDocument();
+    expect(screen.queryByText('Diagnostics')).toBeNull();
   });
 
   it('renders tabs buttons correctly', async () => {
@@ -86,14 +103,30 @@ describe('WorkflowPageTabs', () => {
     expect(screen.queryByTestId('diagnostics-artwork')).toBeNull();
   });
 
-  it('renders tabs artworks correctly with diagnostics enabled', async () => {
-    await setup({ enableDiagnostics: true });
+  it('renders tabs artworks correctly with diagnostics enabled and not in history', async () => {
+    await setup({
+      enableDiagnostics: true,
+      enableDiagnosticsInHistory: false,
+    });
 
     expect(screen.getByTestId('summary-artwork')).toBeInTheDocument();
     expect(screen.getByTestId('history-artwork')).toBeInTheDocument();
     expect(screen.getByTestId('queries-artwork')).toBeInTheDocument();
     expect(screen.getByTestId('stack-trace-artwork')).toBeInTheDocument();
     expect(screen.getByTestId('diagnostics-artwork')).toBeInTheDocument();
+  });
+
+  it('hides diagnostics artwork when diagnostics shown in history', async () => {
+    await setup({
+      enableDiagnostics: true,
+      enableDiagnosticsInHistory: true,
+    });
+
+    expect(screen.getByTestId('summary-artwork')).toBeInTheDocument();
+    expect(screen.getByTestId('history-artwork')).toBeInTheDocument();
+    expect(screen.getByTestId('queries-artwork')).toBeInTheDocument();
+    expect(screen.getByTestId('stack-trace-artwork')).toBeInTheDocument();
+    expect(screen.queryByTestId('diagnostics-artwork')).toBeNull();
   });
 
   it('reroutes when new tab is clicked', async () => {
@@ -119,9 +152,11 @@ describe('WorkflowPageTabs', () => {
 async function setup({
   error,
   enableDiagnostics,
+  enableDiagnosticsInHistory,
 }: {
   error?: boolean;
   enableDiagnostics?: boolean;
+  enableDiagnosticsInHistory?: boolean;
 }) {
   render(
     <ErrorBoundary
@@ -137,14 +172,30 @@ async function setup({
           path: '/api/config',
           httpMethod: 'GET',
           mockOnce: false,
-          httpResolver: async () => {
+          httpResolver: async ({ request }) => {
             if (error) {
               return HttpResponse.json(
                 { message: 'Failed to fetch config' },
                 { status: 500 }
               );
-            } else {
-              return HttpResponse.json(enableDiagnostics ?? false);
+            }
+
+            const url = new URL(request.url);
+            const configKey = url.searchParams.get('configKey');
+
+            switch (configKey) {
+              case 'WORKFLOW_DIAGNOSTICS_ENABLED':
+                return HttpResponse.json(
+                  (enableDiagnostics ??
+                    false) satisfies GetConfigResponse<'WORKFLOW_DIAGNOSTICS_ENABLED'>
+                );
+              case 'WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED':
+                return HttpResponse.json(
+                  (enableDiagnosticsInHistory ??
+                    false) satisfies GetConfigResponse<'WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED'>
+                );
+              default:
+                return HttpResponse.json(false);
             }
           },
         },

@@ -2,6 +2,7 @@
 import React from 'react';
 
 import Button from '@/components/button/button';
+import formatInteger from '@/utils/data-formatters/format-integer';
 
 import {
   overrides,
@@ -14,11 +15,12 @@ export default function DomainBatchActionsNewActionFloatingBar({
   totalCount,
   actions,
   onActionClick,
+  disabled,
 }: Props) {
   return (
     <styled.Container role="region" aria-label="Batch action floating bar">
       <styled.Summary>
-        {selectedCount} of {totalCount} workflows included
+        {`${formatInteger(selectedCount)} of ${formatInteger(totalCount)} workflows included`}
       </styled.Summary>
       <styled.Actions>
         {actions.map((action) => (
@@ -30,6 +32,7 @@ export default function DomainBatchActionsNewActionFloatingBar({
             overrides={overrides.actionButton}
             startEnhancer={<action.icon />}
             onClick={() => onActionClick(action.id)}
+            disabled={disabled}
           >
             {action.label}
           </Button>

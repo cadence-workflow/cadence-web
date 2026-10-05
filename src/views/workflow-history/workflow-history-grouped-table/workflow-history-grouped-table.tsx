@@ -1,0 +1,114 @@
+import { useMemo } from 'react';
+
+import { Virtuoso } from 'react-virtuoso';
+
+import scopeDiagnosticsToGroup from '../helpers/scope-diagnostics-to-group';
+import WorkflowHistoryEventGroup from '../workflow-history-event-group/workflow-history-event-group';
+import WorkflowHistoryTableFooter from '../workflow-history-table-footer/workflow-history-table-footer';
+
+import { styled } from './workflow-history-grouped-table.styles';
+import { type Props } from './workflow-history-grouped-table.types';
+
+export default function WorkflowHistoryGroupedTable({
+  eventGroupsById,
+  virtuosoRef,
+  initialStartIndex,
+  setVisibleRange,
+  decodedPageUrlParams,
+  reachedEndOfAvailableHistory,
+  workflowCloseStatus,
+  workflowIsArchived,
+  workflowCloseTimeMs,
+  selectedEventId,
+  getIsEventExpanded,
+  toggleIsEventExpanded,
+  resetToDecisionEventId,
+  error,
+  hasMoreEvents,
+  fetchMoreEvents,
+  isFetchingMoreEvents,
+  onClickShowGroupInTimeline,
+  workflowDiagnosticsByEventIdMap,
+  getIsDiagnosticsIssueExpanded,
+  toggleIsDiagnosticsIssueExpanded,
+}: Props) {
+  const noEventsToDisplay = eventGroupsById.length === 0;
+
+  const diagnosticsByGroupId = useMemo(
+    () =>
+      Object.fromEntries(
+        eventGroupsById.map(([groupId, group]) => [
+          groupId,
+          scopeDiagnosticsToGroup(
+            group.events,
+            workflowDiagnosticsByEventIdMap
+          ),
+        ])
+      ),
+    [eventGroupsById, workflowDiagnosticsByEventIdMap]
+  );
+
+  return (
+    <>
+      <styled.TableHeader>
+        <div />
+        <div>Event group</div>
+        <div>Status</div>
+        <div>Time</div>
+        <div>Duration</div>
+        <div>Details</div>
+      </styled.TableHeader>
+      <Virtuoso
+        useWindowScroll
+        data={eventGroupsById}
+        ref={virtuosoRef}
+        defaultItemHeight={36}
+        rangeChanged={setVisibleRange}
+        {...(initialStartIndex === undefined
+          ? {}
+          : {
+              initialTopMostItemIndex: {
+                index: initialStartIndex,
+                align: 'center',
+                behavior: 'auto',
+              },
+            })}
+        itemContent={(_, [groupId, group]) => (
+          <WorkflowHistoryEventGroup
+            eventGroup={group}
+            getIsEventExpanded={getIsEventExpanded}
+            toggleIsEventExpanded={toggleIsEventExpanded}
+            showLoadingMoreEvents={
+              group.hasMissingEvents && !reachedEndOfAvailableHistory
+            }
+            decodedPageUrlParams={decodedPageUrlParams}
+            selectedEventId={selectedEventId}
+            workflowCloseStatus={workflowCloseStatus}
+            workflowIsArchived={workflowIsArchived}
+            workflowCloseTimeMs={workflowCloseTimeMs}
+            onReset={() => {
+              if (group.resetToDecisionEventId) {
+                resetToDecisionEventId(group.resetToDecisionEventId);
+              }
+            }}
+            onClickShowInTimeline={() => onClickShowGroupInTimeline(groupId)}
+            workflowDiagnosticsByEventIdMap={diagnosticsByGroupId[groupId]}
+            getIsDiagnosticsIssueExpanded={getIsDiagnosticsIssueExpanded}
+            toggleIsDiagnosticsIssueExpanded={toggleIsDiagnosticsIssueExpanded}
+          />
+        )}
+        components={{
+          Footer: () => (
+            <WorkflowHistoryTableFooter
+              error={error}
+              noEventsToDisplay={noEventsToDisplay}
+              canFetchMoreEvents={hasMoreEvents}
+              fetchMoreEvents={fetchMoreEvents}
+              isFetchingMoreEvents={isFetchingMoreEvents}
+            />
+          ),
+        }}
+      />
+    </>
+  );
+}

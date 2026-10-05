@@ -14,6 +14,7 @@ import { type Props } from './domain-batch-actions-editable-value.types';
 export default function DomainBatchActionEditableValue({
   value,
   editable,
+  onEdit,
 }: Props) {
   return (
     <styled.Container>
@@ -24,6 +25,7 @@ export default function DomainBatchActionEditableValue({
           size="mini"
           overrides={overrides.editButton}
           startEnhancer={<MdOutlineEdit />}
+          onClick={onEdit}
         >
           Edit
         </Button>

@@ -1,0 +1,377 @@
+import React from 'react';
+
+import { act } from '@testing-library/react';
+import { HttpResponse } from 'msw';
+
+import {
+  fireEvent,
+  render,
+  screen,
+  userEvent,
+  waitFor,
+  within,
+} from '@/test-utils/rtl';
+
+import { getMockRunningDescribeScheduleResponse } from '@/route-handlers/describe-schedule/__fixtures__/mock-describe-schedule-response';
+import { type DescribeScheduleResponse } from '@/route-handlers/describe-schedule/describe-schedule.types';
+import { getMockWorkflowListItem } from '@/route-handlers/list-workflows/__fixtures__/mock-workflow-list-items';
+import { type ListWorkflowsResponse } from '@/route-handlers/list-workflows/list-workflows.types';
+
+import ScheduleDetailsRunsChart from '../schedule-details-runs-chart';
+import {
+  CHART_CANVAS_TEST_ID,
+  CHART_LEGEND_ITEMS,
+  CHART_LOADING_TEST_ID,
+  CHART_SUMMARY_TEST_ID,
+  CHART_TOOLBAR_BUTTON_LABELS,
+} from '../schedule-details-runs-chart.constants';
+
+const mockDomain = 'test-domain';
+const mockCluster = 'test-cluster';
+const mockScheduleId = 'my-schedule';
+const nowMs = Date.UTC(2024, 0, 1, 12, 0);
+const hourMs = 60 * 60_000;
+
+const describeScheduleWithNextRun = getMockRunningDescribeScheduleResponse({
+  info: {
+    lastRunTime: null,
+    nextRunTime: { seconds: String((nowMs + hourMs) / 1000), nanos: 0 },
+    totalRuns: '1',
+    createTime: null,
+    lastUpdateTime: null,
+    missedRuns: '0',
+    skippedRuns: '0',
+    ongoingBackfills: [],
+  },
+});
+
+// A schedule created long before its most recent run gives the navigation
+// bounds enough headroom beyond the initial view to actually pan/zoom out.
+const describeScheduleWithWideHistory = getMockRunningDescribeScheduleResponse({
+  info: {
+    lastRunTime: null,
+    nextRunTime: { seconds: String((nowMs + hourMs) / 1000), nanos: 0 },
+    totalRuns: '1',
+    createTime: {
+      seconds: String((nowMs - 30 * 24 * hourMs) / 1000),
+      nanos: 0,
+    },
+    lastUpdateTime: null,
+    missedRuns: '0',
+    skippedRuns: '0',
+    ongoingBackfills: [],
+  },
+});
+
+const workflowsWithRun: ListWorkflowsResponse = {
+  workflows: [
+    getMockWorkflowListItem({
+      workflowID: 'wf-1',
+      runID: 'run-1',
+      status: 'WORKFLOW_EXECUTION_CLOSE_STATUS_COMPLETED',
+      startTime: nowMs - hourMs,
+      closeTime: nowMs - hourMs + 1000,
+      historyLength: 5,
+      searchAttributes: {
+        CadenceScheduleTime: {
+          data: Buffer.from(
+            JSON.stringify(new Date(nowMs - hourMs).toISOString())
+          ).toString('base64'),
+        },
+      },
+    }),
+  ],
+  nextPage: '',
+};
+
+const emptyWorkflows: ListWorkflowsResponse = {
+  workflows: [],
+  nextPage: '',
+};
+
+let mockChartWidthPx = 800;
+
+jest.mock('@visx/responsive', () => ({
+  useParentSize: () => ({
+    parentRef: { current: null },
+    width: mockChartWidthPx,
+  }),
+}));
+
+jest.mock('@/hooks/use-current-time-ms/use-current-time-ms', () => () => nowMs);
+
+jest.mock(
+  '../../schedule-details-runs-chart-timeline/schedule-details-runs-chart-timeline',
+  () => jest.fn(() => <text>Mock timeline</text>)
+);
+
+jest.mock(
+  '../../schedule-details-runs-chart-series/schedule-details-runs-chart-series',
+  () => jest.fn(() => <div>Mock series</div>)
+);
+
+// jsdom has no PointerEvent/setPointerCapture support, and its rAF never
+// fires without a "visual" window; polyfill just enough to dispatch a drag
+// through the real pointer handlers below.
+window.PointerEvent ??= window.MouseEvent as unknown as typeof PointerEvent;
+Element.prototype.setPointerCapture ??= () => undefined;
+window.requestAnimationFrame = (callback) =>
+  window.setTimeout(() => callback(Date.now()), 0);
+window.cancelAnimationFrame = (handle) => window.clearTimeout(handle);
+
+describe(ScheduleDetailsRunsChart.name, () => {
+  it('renders the runs title and status legend in the header', () => {
+    setup();
+
+    const summary = screen.getByTestId(CHART_SUMMARY_TEST_ID);
+
+    expect(within(summary).getByText('Runs:')).toBeInTheDocument();
+    CHART_LEGEND_ITEMS.forEach(({ label }) => {
+      expect(within(summary).getByText(label)).toBeInTheDocument();
+    });
+  });
+
+  it('draws the timeline once the region has been measured', async () => {
+    setup();
+
+    expect(
+      await within(getChartRegion()).findByText('Mock timeline')
+    ).toBeInTheDocument();
+  });
+
+  it('draws the series once the region has been measured', async () => {
+    setup();
+
+    expect(
+      await within(getChartRegion()).findByText('Mock series')
+    ).toBeInTheDocument();
+  });
+
+  it('falls back to the empty state while the region has no drawable width', async () => {
+    setup({ widthPx: 0 });
+
+    expect(
+      await within(getChartRegion()).findByText('No chart data available yet')
+    ).toBeInTheDocument();
+  });
+
+  it('falls back to the empty state while there is no chart data', async () => {
+    setup({
+      describeScheduleResponse: getMockRunningDescribeScheduleResponse(),
+      workflowsResponse: emptyWorkflows,
+    });
+
+    expect(
+      await within(getChartRegion()).findByText('No chart data available yet')
+    ).toBeInTheDocument();
+  });
+
+  it('shows a loading skeleton while the schedule data is being fetched', () => {
+    setup({ isLoading: true });
+
+    expect(
+      within(getChartRegion()).getByTestId(CHART_LOADING_TEST_ID)
+    ).toBeInTheDocument();
+    expect(
+      within(getChartRegion()).queryByText('Mock series')
+    ).not.toBeInTheDocument();
+  });
+
+  it('disables toolbar controls while the schedule data is loading', () => {
+    setup({ isLoading: true });
+
+    const toolbar = screen.getByRole('toolbar', {
+      name: 'Chart controls',
+    });
+
+    Object.values(CHART_TOOLBAR_BUTTON_LABELS).forEach((label) => {
+      expect(
+        within(toolbar).getByRole('button', { name: label })
+      ).toBeDisabled();
+    });
+  });
+
+  it('enables zoom controls once data has loaded, with "now" disabled while following', async () => {
+    setup();
+
+    const toolbar = screen.getByRole('toolbar', {
+      name: 'Chart controls',
+    });
+
+    await waitFor(() =>
+      expect(
+        within(toolbar).getByRole('button', {
+          name: CHART_TOOLBAR_BUTTON_LABELS.zoomOut,
+        })
+      ).not.toBeDisabled()
+    );
+    expect(
+      within(toolbar).getByRole('button', {
+        name: CHART_TOOLBAR_BUTTON_LABELS.zoomIn,
+      })
+    ).not.toBeDisabled();
+    expect(
+      within(toolbar).getByRole('button', {
+        name: CHART_TOOLBAR_BUTTON_LABELS.now,
+      })
+    ).toBeDisabled();
+  });
+
+  it('stops following once panned, and resumes following when "now" is clicked', async () => {
+    const { user } = setup({
+      describeScheduleResponse: describeScheduleWithWideHistory,
+    });
+
+    const toolbar = screen.getByRole('toolbar', {
+      name: 'Chart controls',
+    });
+    const nowButton = within(toolbar).getByRole('button', {
+      name: CHART_TOOLBAR_BUTTON_LABELS.now,
+    });
+    const canvas =
+      await within(getChartRegion()).findByTestId(CHART_CANVAS_TEST_ID);
+
+    await waitFor(() => expect(nowButton).toBeDisabled());
+
+    act(() => {
+      canvas.dispatchEvent(
+        new WheelEvent('wheel', {
+          bubbles: true,
+          cancelable: true,
+          deltaY: -300,
+        })
+      );
+    });
+
+    await waitFor(() => expect(nowButton).not.toBeDisabled());
+
+    await user.click(nowButton);
+
+    await waitFor(() => expect(nowButton).toBeDisabled());
+  });
+
+  it('batches a drag\u2019s pointermove events into a single pan per animation frame', async () => {
+    setup({ describeScheduleResponse: describeScheduleWithWideHistory });
+
+    const toolbar = screen.getByRole('toolbar', { name: 'Chart controls' });
+    const nowButton = within(toolbar).getByRole('button', {
+      name: CHART_TOOLBAR_BUTTON_LABELS.now,
+    });
+    const canvas =
+      await within(getChartRegion()).findByTestId(CHART_CANVAS_TEST_ID);
+
+    await waitFor(() => expect(nowButton).toBeDisabled());
+
+    act(() => {
+      fireEvent.pointerDown(canvas, { button: 0, clientX: 400 });
+    });
+
+    act(() => {
+      fireEvent.pointerMove(window, { clientX: 420 });
+      fireEvent.pointerMove(window, { clientX: 440 });
+      fireEvent.pointerMove(window, { clientX: 460 });
+    });
+
+    // Several move events land in the same tick, before the batched
+    // animation-frame flush runs -- the pan should not be applied yet.
+    expect(nowButton).toBeDisabled();
+
+    await waitFor(() => expect(nowButton).not.toBeDisabled());
+
+    act(() => {
+      fireEvent.pointerUp(window);
+    });
+  });
+});
+
+function setup({
+  widthPx = 800,
+  isLoading = false,
+  describeScheduleResponse = describeScheduleWithNextRun,
+  workflowsResponse = workflowsWithRun,
+}: {
+  widthPx?: number;
+  isLoading?: boolean;
+  describeScheduleResponse?: DescribeScheduleResponse;
+  workflowsResponse?: ListWorkflowsResponse;
+} = {}) {
+  mockChartWidthPx = widthPx;
+  const user = userEvent.setup();
+
+  render(
+    <ScheduleDetailsRunsChart
+      params={{
+        domain: mockDomain,
+        cluster: mockCluster,
+        scheduleId: mockScheduleId,
+        scheduleTab: 'details',
+      }}
+    />,
+    {
+      endpointsMocks: getChartDataEndpointMocks({
+        isLoading,
+        describeScheduleResponse,
+        workflowsResponse,
+      }),
+    }
+  );
+
+  return { user };
+}
+
+function getChartDataEndpointMocks({
+  isLoading,
+  describeScheduleResponse,
+  workflowsResponse,
+}: {
+  isLoading: boolean;
+  describeScheduleResponse: DescribeScheduleResponse;
+  workflowsResponse: ListWorkflowsResponse;
+}) {
+  const pendingResponse = () => new Promise<never>(() => {});
+
+  return [
+    {
+      path: `/api/domains/${mockDomain}/${mockCluster}/schedules/${mockScheduleId}`,
+      httpMethod: 'GET' as const,
+      mockOnce: false,
+      httpResolver: async () => {
+        if (isLoading) {
+          return pendingResponse();
+        }
+
+        return HttpResponse.json(describeScheduleResponse);
+      },
+    },
+    {
+      path: `/api/domains/${mockDomain}/${mockCluster}/workflows`,
+      httpMethod: 'GET' as const,
+      mockOnce: false,
+      httpResolver: async () => {
+        if (isLoading) {
+          return pendingResponse();
+        }
+
+        return HttpResponse.json(workflowsResponse);
+      },
+    },
+    {
+      path: `/api/domains/${mockDomain}/${mockCluster}`,
+      httpMethod: 'GET' as const,
+      mockOnce: false,
+      httpResolver: async () => {
+        if (isLoading) {
+          return pendingResponse();
+        }
+
+        return HttpResponse.json({
+          workflowExecutionRetentionPeriod: { seconds: '2592000', nanos: 0 },
+        });
+      },
+    },
+  ];
+}
+
+function getChartRegion() {
+  return screen.getByRole('region', { name: 'Schedule runs chart' });
+}

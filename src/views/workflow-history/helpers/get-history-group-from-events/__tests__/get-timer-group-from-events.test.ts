@@ -2,8 +2,7 @@ import {
   cancelTimerTaskEvent,
   startTimerTaskEvent,
   fireTimerTaskEvent,
-} from '@/views/workflow-history/__fixtures__/workflow-history-timer-events';
-
+} from '../../../__fixtures__/workflow-history-timer-events';
 import type { TimerHistoryEvent } from '../../../workflow-history.types';
 import getTimerGroupFromEvents from '../get-timer-group-from-events';
 

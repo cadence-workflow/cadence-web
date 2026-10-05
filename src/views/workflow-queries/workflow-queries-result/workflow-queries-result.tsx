@@ -35,7 +35,13 @@ export default function WorkflowQueriesResult(props: Props) {
         )}
       {queryResultContent.contentType === 'markdown' &&
         queryResultContent.content !== undefined && (
-          <Markdown markdown={queryResultContent.content} />
+          <Markdown
+            markdown={queryResultContent.content}
+            domain={props.domain}
+            cluster={props.cluster}
+            workflowId={props.workflowId}
+            runId={props.runId}
+          />
         )}
       {queryResultContent.contentType === 'blocks' &&
         queryResultContent.content !== undefined && (

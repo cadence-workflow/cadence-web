@@ -11,7 +11,6 @@ import { MdWarning } from 'react-icons/md';
 
 import CronScheduleInput from '@/components/cron-schedule-input/cron-schedule-input';
 import MultiJsonInput from '@/components/multi-json-input/multi-json-input';
-import useDebouncedValue from '@/hooks/use-debounced-value/use-debounced-value';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import { WORKER_SDK_LANGUAGES } from '@/route-handlers/start-workflow/start-workflow.constants';
 
@@ -20,9 +19,7 @@ import WorkflowActionStartOptionalSection from '../workflow-action-start-optiona
 import getFieldErrorMessage from './helpers/get-field-error-message';
 import getFieldObjectErrorMessages from './helpers/get-field-object-error-messages';
 import getMultiJsonErrorMessage from './helpers/get-multi-json-error-message';
-import getTaskListCaptionMessage from './helpers/get-task-list-caption-message';
-import useDescribeTaskList from './hooks/use-describe-task-list';
-import { TASK_LIST_DEBOUNCE_MS } from './hooks/use-describe-task-list.constants';
+import useTaskListFieldValidation from './hooks/use-task-list-field-validation';
 import { overrides, cssStyles } from './workflow-action-start-form.styles';
 import { type Props } from './workflow-action-start-form.types';
 
@@ -30,7 +27,6 @@ export default function WorkflowActionStartForm({
   fieldErrors,
   control,
   clearErrors,
-  formData,
   trigger,
   cluster,
   domain,
@@ -44,34 +40,14 @@ export default function WorkflowActionStartForm({
     defaultValue: 'NOW',
   });
 
-  const taskListName = useWatch({
-    control,
-    name: 'taskList.name',
-    defaultValue: '',
-  });
+  const { isTaskListLoading, taskListCaptionMessage } =
+    useTaskListFieldValidation({
+      control,
+      domain,
+      cluster,
+    });
 
-  const { debouncedValue: debouncedTaskListName, isDebouncePending } =
-    useDebouncedValue(taskListName, TASK_LIST_DEBOUNCE_MS);
-
-  const {
-    data: taskListData,
-    isLoading: isTaskListQueryLoading,
-    isError: isTaskListError,
-  } = useDescribeTaskList({
-    domain,
-    cluster,
-    taskListName: debouncedTaskListName,
-  });
-
-  const isTaskListLoading =
-    (isDebouncePending && taskListName.length > 0) || isTaskListQueryLoading;
-
-  const taskListCaptionMessage = getTaskListCaptionMessage({
-    taskListData,
-    isTaskListLoading,
-    isTaskListError,
-    taskListName,
-  });
+  const inputError = getMultiJsonErrorMessage(fieldErrors, 'input');
 
   return (
     <div>
@@ -99,12 +75,6 @@ export default function WorkflowActionStartForm({
               // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
               inputRef={ref}
               aria-label="Task List"
-              onChange={(e) => {
-                field.onChange(e.target.value.trim());
-              }}
-              onBlur={() => {
-                field.onBlur();
-              }}
               error={Boolean(
                 getFieldErrorMessage(fieldErrors, 'taskList.name')
               )}
@@ -207,21 +177,27 @@ export default function WorkflowActionStartForm({
         />
       </FormControl>
 
-      <Controller
-        name="input"
-        control={control}
-        defaultValue={['']}
-        render={({ field }) => (
-          <MultiJsonInput
-            label="JSON input arguments (optional)"
-            placeholder="Enter JSON input"
-            value={field.value}
-            onChange={field.onChange}
-            error={getMultiJsonErrorMessage(fieldErrors, 'input')}
-            addButtonText="Add argument"
-          />
-        )}
-      />
+      {/* TODO(refactor): wrap getMultiJsonErrorMessage + FormControl pattern in a shared helper once schedules uses the same field */}
+      <FormControl label="JSON input arguments (optional)">
+        <Controller
+          name="input"
+          control={control}
+          defaultValue={['']}
+          render={({ field }) => (
+            <MultiJsonInput
+              label="JSON input arguments (optional)"
+              placeholder="Enter JSON input"
+              value={field.value}
+              onChange={(value) => {
+                field.onChange(value);
+                trigger('input');
+              }}
+              error={inputError}
+              addButtonText="Add argument"
+            />
+          )}
+        />
+      </FormControl>
 
       <FormControl label="Schedule Time">
         <Controller
@@ -306,8 +282,8 @@ export default function WorkflowActionStartForm({
       <WorkflowActionStartOptionalSection
         control={control}
         clearErrors={clearErrors}
-        formData={formData}
         fieldErrors={fieldErrors}
+        trigger={trigger}
         cluster={cluster}
         domain={domain}
       />

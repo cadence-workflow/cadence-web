@@ -1,8 +1,8 @@
-import { type BatchActionStatus } from '@/views/domain-batch-actions/domain-batch-actions.types';
+import { type BatchActionStatus } from '@/route-handlers/list-batch-actions/list-batch-actions.types';
 
 export const BATCH_WORKFLOW_STATUS_LABELS: Record<BatchActionStatus, string> = {
-  running: 'Processing',
-  completed: 'Completed',
-  aborted: 'Aborted',
-  failed: 'Failed',
+  RUNNING: 'Processing',
+  COMPLETED: 'Completed',
+  ABORTED: 'Aborted',
+  FAILED: 'Failed',
 };

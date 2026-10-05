@@ -9,12 +9,16 @@ import { jsonValueSchema } from './json-value-schema';
 
 const startWorkflowRequestBodySchema = z.object({
   workflowType: z.object({
-    name: z.string().min(1),
+    name: z.string().trim().min(1),
   }),
   taskList: z.object({
-    name: z.string().min(1),
+    name: z.string().trim().min(1),
   }),
-  workflowId: z.string().optional(),
+  workflowId: z
+    .string()
+    .trim()
+    .optional()
+    .transform((v) => v || undefined),
   workerSDKLanguage: z.enum(WORKER_SDK_LANGUAGES),
   input: z.array(jsonValueSchema).optional(),
   executionStartToCloseTimeoutSeconds: z.number().positive(),

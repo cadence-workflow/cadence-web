@@ -36,7 +36,19 @@ export default function DomainPageTabs() {
   );
 
   const { data: isBatchActionsEnabled } = useSuspenseConfigValue(
-    'BATCH_ACTIONS_ENABLED'
+    'BATCH_ACTIONS_UI_ENABLED',
+    {
+      domain: decodedParams.domain,
+      cluster: decodedParams.cluster,
+    }
+  );
+
+  const { data: isSchedulesEnabled } = useSuspenseConfigValue(
+    'SCHEDULES_ENABLED',
+    {
+      domain: decodedParams.domain,
+      cluster: decodedParams.cluster,
+    }
   );
 
   const tabsConfig = useMemo<Partial<typeof domainPageTabsConfig>>(() => {
@@ -54,8 +66,17 @@ export default function DomainPageTabs() {
       tabsToHide.push('batch-actions');
     }
 
+    if (!isSchedulesEnabled) {
+      tabsToHide.push('schedules');
+    }
+
     return omit(domainPageTabsConfig, tabsToHide);
-  }, [isFailoverHistoryEnabled, isCronListEnabled, isBatchActionsEnabled]);
+  }, [
+    isFailoverHistoryEnabled,
+    isCronListEnabled,
+    isBatchActionsEnabled,
+    isSchedulesEnabled,
+  ]);
 
   const tabList = useMemo(
     () =>
@@ -80,10 +101,7 @@ export default function DomainPageTabs() {
         }}
         endEnhancer={
           <styled.EndButtonsContainer>
-            <DomainPageActionsDropdown
-              {...decodedParams}
-              isBatchActionsEnabled={isBatchActionsEnabled}
-            />
+            <DomainPageActionsDropdown {...decodedParams} />
             <DomainPageHelp />
           </styled.EndButtonsContainer>
         }

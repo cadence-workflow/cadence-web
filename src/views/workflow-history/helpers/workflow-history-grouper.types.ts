@@ -1,5 +1,5 @@
 import type {
-  HistoryEventsGroups,
+  HistoryEventsGroupsMap,
   PendingActivityTaskStartEvent,
   PendingDecisionTaskStartEvent,
 } from '../workflow-history.types';
@@ -19,7 +19,7 @@ export type ProcessingStatus = 'idle' | 'processing';
  */
 export type GroupingProcessState = {
   /** Current groups accumulated so far */
-  groups: HistoryEventsGroups;
+  groups: HistoryEventsGroupsMap;
   /** Number of events that have been successfully processed since the grouper was created/reset */
   processedEventsCount: number;
   /** Number of events that are still pending (not yet processed) */

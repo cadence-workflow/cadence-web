@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 
-import { CADENCE_AUTH_COOKIE_NAME } from '@/utils/auth/auth-context';
+import { JWT_AUTH_COOKIE_NAME } from '@/utils/auth/strategies/jwt/jwt-auth.constants';
 import getConfigValue from '@/utils/config/get-config-value';
 
 import { GET } from '../route';
@@ -26,7 +26,7 @@ const buildToken = (claims: Record<string, unknown>) => {
 const buildRequest = (cookie?: string) => {
   const headers = new Headers();
   if (cookie) {
-    headers.set('cookie', `${CADENCE_AUTH_COOKIE_NAME}=${cookie}`);
+    headers.set('cookie', `${JWT_AUTH_COOKIE_NAME}=${cookie}`);
   }
   return new NextRequest('http://localhost/api/auth/me', {
     method: 'GET',

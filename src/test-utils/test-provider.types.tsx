@@ -12,6 +12,7 @@ export type Props = {
   router?: {
     initialUrl?: string;
     pathnames?: string[];
+    onPush?: (url: string, options: { shallow: boolean }) => void;
   };
   queryClientConfig?: QueryClientConfig;
   endpointsMocks?: MSWMocksHandlersProps['endpointsMocks'];

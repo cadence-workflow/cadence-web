@@ -1,7 +1,7 @@
 import { toaster } from 'baseui/toast';
 import { HttpResponse } from 'msw';
 
-import { render, fireEvent, screen, act, waitFor } from '@/test-utils/rtl';
+import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
 import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
@@ -31,21 +31,26 @@ describe('WorkflowHistoryExportJsonButton', () => {
   });
 
   it('should show spinner when loading', async () => {
-    const { getRequestResolver } = setup({ wait: true });
-    fireEvent.click(screen.getByText('Export JSON'));
+    const { user, getRequestResolver } = setup({ wait: true });
+    await user.click(screen.getByText('Export JSON'));
 
-    expect(screen.queryByRole('progressbar')).toBeInTheDocument();
-    await act(() => {
-      const resolver = getRequestResolver();
-      resolver();
+    expect(
+      screen.queryByRole('progressbar', { hidden: true })
+    ).toBeInTheDocument();
+
+    getRequestResolver()();
+
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('progressbar', { hidden: true })
+      ).not.toBeInTheDocument();
     });
-    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
   });
 
   it('should call request API and download JSON file', async () => {
-    setup({});
+    const { user } = setup({});
 
-    fireEvent.click(screen.getByText('Export JSON'));
+    await user.click(screen.getByText('Export JSON'));
 
     await waitFor(() => {
       expect(mockDownloadJson).toHaveBeenCalled();
@@ -53,8 +58,8 @@ describe('WorkflowHistoryExportJsonButton', () => {
   });
 
   it('should handle error and show toast', async () => {
-    setup({ error: true });
-    fireEvent.click(screen.getByText('Export JSON'));
+    const { user } = setup({ error: true });
+    await user.click(screen.getByText('Export JSON'));
 
     await waitFor(() => {
       expect(toaster.negative).toHaveBeenCalledWith(
@@ -69,6 +74,7 @@ function setup({
   wait,
   ...overrides
 }: Partial<Props> & { error?: boolean; loading?: boolean; wait?: boolean }) {
+  const user = userEvent.setup();
   const defaultProps: Props = {
     domain: 'test-domain',
     cluster: 'test-cluster',
@@ -89,7 +95,7 @@ function setup({
         httpResolver: async () => {
           const index = currentEventIndex;
           currentEventIndex = currentEventIndex + 1;
-          if (wait && currentEventIndex === 0) {
+          if (wait && index === 0) {
             await new Promise<void>((resolve) => {
               requestResolver = () => {
                 resolve();
@@ -118,5 +124,5 @@ function setup({
     ] as MSWMocksHandlersProps['endpointsMocks'],
   });
 
-  return { getRequestResolver };
+  return { user, getRequestResolver };
 }

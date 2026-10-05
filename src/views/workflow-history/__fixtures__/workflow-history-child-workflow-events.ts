@@ -17,6 +17,7 @@ export const initiateChildWorkflowEvent = {
     taskList: {
       name: 'canary-task-queue',
       kind: 'TASK_LIST_KIND_INVALID',
+      baseName: '',
     },
     input: {
       data: 'MTcyNjQ5Mjc1MTc5ODgxMjMwOAozMDAwMDAwMDAwMAo=',
@@ -65,7 +66,7 @@ export const initiateFailureChildWorkflowEvent = {
     },
     control: '',
     decisionTaskCompletedEventId: '4',
-    cause: 'CHILD_WORKFLOW_EXECUTION_FAILED_CAUSE_INVALID',
+    cause: 'CHILD_WORKFLOW_EXECUTION_FAILED_CAUSE_WORKFLOW_ALREADY_RUNNING',
     initiatedEventId: '',
   },
   attributes: 'startChildWorkflowExecutionFailedEventAttributes',

@@ -1,7 +1,6 @@
 import formatDate from '@/utils/data-formatters/format-date';
 import parseGrpcTimestamp from '@/utils/datetime/parse-grpc-timestamp';
 
-import { type WorkflowEventStatus } from '../workflow-history-event-status-badge/workflow-history-event-status-badge.types';
 import {
   type HistoryGroupEventToNegativeFieldsMap,
   type HistoryEventsGroup,
@@ -9,20 +8,30 @@ import {
   type HistoryGroupEventToStringMap,
   type HistoryGroupEventToAdditionalDetailsMap,
   type HistoryGroupEventToSummaryFieldsMap,
+  type WorkflowEventStatus,
 } from '../workflow-history.types';
 
 export default function getCommonHistoryGroupFields<
   GroupT extends HistoryEventsGroup,
->(
-  events: GroupT['events'],
-  historyGroupEventToStatusMap: HistoryGroupEventToStatusMap<GroupT>,
-  eventToLabelMap: HistoryGroupEventToStringMap<GroupT>,
-  eventToTimeLabelPrefixMap: Partial<HistoryGroupEventToStringMap<GroupT>>,
-  closeEvent: GroupT['events'][number] | null | undefined,
-  eventToNegativeFieldsMap?: HistoryGroupEventToNegativeFieldsMap<GroupT>,
-  eventToAdditionalDetailsMap?: HistoryGroupEventToAdditionalDetailsMap<GroupT>,
-  eventToSummaryFieldsMap?: HistoryGroupEventToSummaryFieldsMap<GroupT>
-): Pick<
+>({
+  events,
+  historyGroupEventToStatusMap,
+  eventToLabelMap,
+  eventToTimeLabelPrefixMap,
+  closeEvent,
+  eventToNegativeFieldsMap,
+  eventToAdditionalDetailsMap,
+  eventToSummaryFieldsMap,
+}: {
+  events: GroupT['events'];
+  historyGroupEventToStatusMap: HistoryGroupEventToStatusMap<GroupT>;
+  eventToLabelMap: HistoryGroupEventToStringMap<GroupT>;
+  eventToTimeLabelPrefixMap: Partial<HistoryGroupEventToStringMap<GroupT>>;
+  closeEvent: GroupT['events'][number] | null | undefined;
+  eventToNegativeFieldsMap?: HistoryGroupEventToNegativeFieldsMap<GroupT>;
+  eventToAdditionalDetailsMap?: HistoryGroupEventToAdditionalDetailsMap<GroupT>;
+  eventToSummaryFieldsMap?: HistoryGroupEventToSummaryFieldsMap<GroupT>;
+}): Pick<
   GroupT,
   | 'eventsMetadata'
   | 'events'
@@ -64,6 +73,7 @@ export default function getCommonHistoryGroupFields<
   const groupStatus = eventsMetadata[eventsMetadata.length - 1].status;
   const groupTimeMs = eventsMetadata[eventsMetadata.length - 1].timeMs;
   const groupStartTimeMs = eventsMetadata[0].timeMs;
+  // TODO @adhitya.mamallan - replace this with a groupStatusLabel, it is unused in History V2
   const groupTimeLabel = eventsMetadata[eventsMetadata.length - 1].timeLabel;
   const groupCloseTimeMs = closeEvent?.eventTime
     ? parseGrpcTimestamp(closeEvent.eventTime)

@@ -1,20 +1,24 @@
 import {
   type TimerHistoryGroup,
   type ActivityHistoryGroup,
+  type LocalActivityHistoryGroup,
   type SingleEventHistoryGroup,
   type DecisionHistoryGroup,
   type ChildWorkflowExecutionHistoryGroup,
   type SignalExternalWorkflowExecutionHistoryGroup,
   type RequestCancelExternalWorkflowExecutionHistoryGroup,
+  type WorkflowSignaledHistoryGroup,
 } from '../workflow-history.types';
 
 import { completedActivityTaskEvents } from './workflow-history-activity-events';
 import { completedChildWorkflowEvents } from './workflow-history-child-workflow-events';
 import { completedDecisionTaskEvents } from './workflow-history-decision-events';
+import { localActivityMarkerEvent } from './workflow-history-local-activity-events';
 import { requestedCancelExternalWorkflowEvents } from './workflow-history-request-cancel-external-workflow-events';
 import { signaledExternalWorkflowEvents } from './workflow-history-signal-external-workflow-events';
 import { startWorkflowExecutionEvent } from './workflow-history-single-events';
 import { startTimerTaskEvent } from './workflow-history-timer-events';
+import { workflowSignaledEvents } from './workflow-history-workflow-signaled-events';
 
 export const mockActivityEventGroup: ActivityHistoryGroup = {
   label: 'Mock event',
@@ -27,6 +31,19 @@ export const mockActivityEventGroup: ActivityHistoryGroup = {
   timeLabel: 'Mock time label',
   events: completedActivityTaskEvents,
   firstEventId: completedActivityTaskEvents[0].eventId,
+};
+
+export const mockLocalActivityEventGroup: LocalActivityHistoryGroup = {
+  label: 'Mock local activity',
+  groupType: 'LocalActivity',
+  status: 'COMPLETED',
+  eventsMetadata: [],
+  hasMissingEvents: false,
+  timeMs: 1724747615549,
+  startTimeMs: 1724747615549,
+  timeLabel: 'Mock time label',
+  events: [localActivityMarkerEvent],
+  firstEventId: localActivityMarkerEvent.eventId,
 };
 
 export const mockDecisionEventGroup: DecisionHistoryGroup = {
@@ -107,4 +124,17 @@ export const mockSingleEventGroup: SingleEventHistoryGroup = {
   timeLabel: 'Mock time label',
   events: [startWorkflowExecutionEvent],
   firstEventId: startWorkflowExecutionEvent.eventId,
+};
+
+export const mockWorkflowSignaledEventGroup: WorkflowSignaledHistoryGroup = {
+  label: 'Mock workflow signaled',
+  groupType: 'WorkflowSignaled',
+  status: 'COMPLETED',
+  eventsMetadata: [],
+  hasMissingEvents: false,
+  timeMs: 1724747415549,
+  startTimeMs: 1724747415549,
+  timeLabel: 'Mock time label',
+  events: workflowSignaledEvents,
+  firstEventId: workflowSignaledEvents[0].eventId,
 };

@@ -6,7 +6,8 @@ const config = {
     'src/test-utils',
     '\\.config\\.ts$',
   ],
-  coverageProvider: 'v8',
+  coverageProvider: 'babel',
+  coverageReporters: ['text-summary'],
   coverageThreshold: {
     global: {
       branches: 85,

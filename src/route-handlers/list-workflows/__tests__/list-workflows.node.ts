@@ -2,17 +2,19 @@ import { status } from '@grpc/grpc-js';
 import { NextRequest } from 'next/server';
 import queryString from 'query-string';
 
+import * as getConfigValueModule from '@/utils/config/get-config-value';
 import { GRPCError } from '@/utils/grpc/grpc-error';
 import logger from '@/utils/logger';
 import { mockGrpcClusterMethods } from '@/utils/route-handlers-middleware/middlewares/__mocks__/grpc-cluster-methods';
+import * as getVisibilityQueryModule from '@/utils/visibility/get-visibility-query';
 
 import { mockWorkflowExecutions } from '../__fixtures__/mock-workflow-executions';
-import * as getListWorkflowExecutionsQueryModule from '../helpers/get-list-workflow-executions-query';
 import { listWorkflows } from '../list-workflows';
 import type { Context } from '../list-workflows.types';
 
 jest.mock('@/utils/logger');
-jest.mock('../helpers/get-list-workflow-executions-query');
+jest.mock('@/utils/visibility/get-visibility-query');
+jest.mock('@/utils/config/get-config-value');
 
 describe(listWorkflows.name, () => {
   beforeEach(() => {
@@ -50,6 +52,28 @@ describe(listWorkflows.name, () => {
           taskList: 'mock-task-list',
         },
       ],
+      nextPage: 'mock-next-page-token',
+    });
+  });
+
+  it('swallows getConfigValue errors and still returns workflows', async () => {
+    const { res, mockListWorkflows, mockGetConfigValue } = await setup({
+      queryParams: {
+        pageSize: '10',
+        listType: 'default',
+        inputType: 'search',
+      },
+      configError: new Error('config blew up'),
+    });
+
+    expect(mockGetConfigValue).toHaveBeenCalledWith(
+      'LIST_WORKFLOWS_PARTIAL_MATCH_ENABLED'
+    );
+    expect(mockListWorkflows).toHaveBeenCalled();
+
+    expect(res.status).toEqual(200);
+    const responseJson = await res.json();
+    expect(responseJson).toMatchObject({
       nextPage: 'mock-next-page-token',
     });
   });
@@ -282,12 +306,23 @@ describe(listWorkflows.name, () => {
 async function setup({
   queryParams,
   error,
+  configError,
 }: {
   queryParams: Record<string, string | string[] | undefined>;
   error?: Error;
+  configError?: Error;
 }) {
+  const mockGetConfigValue = (
+    jest.spyOn(getConfigValueModule, 'default') as jest.Mock
+  ).mockImplementation(async () => {
+    if (configError) {
+      throw configError;
+    }
+    return false;
+  });
+
   const mockGetListWorkflowExecutionsQuery = jest
-    .spyOn(getListWorkflowExecutionsQueryModule, 'default')
+    .spyOn(getVisibilityQueryModule, 'default')
     .mockReturnValue('mock list workflow executions query');
 
   const mockListWorkflows = jest
@@ -332,5 +367,6 @@ async function setup({
     mockListWorkflows,
     mockArchivedWorkflows,
     mockGetListWorkflowExecutionsQuery,
+    mockGetConfigValue,
   };
 }
