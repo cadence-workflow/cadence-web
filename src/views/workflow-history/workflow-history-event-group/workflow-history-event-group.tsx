@@ -33,7 +33,6 @@ export default function WorkflowHistoryEventGroup({
   getIsEventExpanded,
   toggleIsEventExpanded,
   onClickShowInTimeline,
-  workflowDiagnosticsByEventIdMap,
   getIsDiagnosticsIssueExpanded,
   toggleIsDiagnosticsIssueExpanded,
 }: Props) {
@@ -81,8 +80,8 @@ export default function WorkflowHistoryEventGroup({
   );
 
   const diagnosticsIssues = useMemo(
-    () => Object.values(workflowDiagnosticsByEventIdMap).flat(),
-    [workflowDiagnosticsByEventIdMap]
+    () => eventsMetadata.flatMap((m) => m.diagnosticsIssues ?? []),
+    [eventsMetadata]
   );
 
   const overrides = getOverrides(eventGroupCategory, animateOnEnter);

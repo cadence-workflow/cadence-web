@@ -505,7 +505,6 @@ export default function WorkflowHistory({ params }: Props) {
         setIsTimelineShown={setIsTimelineShown}
         timelineVirtuosoRef={timelineVirtuosoRef}
         timelineItemToHighlightId={timelineScrollTargetEventGroupId}
-        workflowDiagnosticsByEventIdMap={workflowDiagnosticsByEventIdMap}
         getIsDiagnosticsIssueExpanded={getIsDiagnosticsIssueExpanded}
         toggleIsDiagnosticsIssueExpanded={toggleIsDiagnosticsIssueExpanded}
       />
@@ -537,7 +536,6 @@ export default function WorkflowHistory({ params }: Props) {
             fetchMoreEvents={startLoadingHistory}
             isFetchingMoreEvents={isFetchingNextPage}
             onClickShowGroupInTimeline={handleShowGroupInTimeline}
-            workflowDiagnosticsByEventIdMap={workflowDiagnosticsByEventIdMap}
             getIsDiagnosticsIssueExpanded={getIsDiagnosticsIssueExpanded}
             toggleIsDiagnosticsIssueExpanded={toggleIsDiagnosticsIssueExpanded}
           />
@@ -569,7 +567,6 @@ export default function WorkflowHistory({ params }: Props) {
             fetchMoreEvents={startLoadingHistory}
             isFetchingMoreEvents={isFetchingNextPage}
             onClickShowGroupInTimeline={handleShowGroupInTimeline}
-            workflowDiagnosticsByEventIdMap={workflowDiagnosticsByEventIdMap}
             getIsDiagnosticsIssueExpanded={getIsDiagnosticsIssueExpanded}
             toggleIsDiagnosticsIssueExpanded={toggleIsDiagnosticsIssueExpanded}
           />

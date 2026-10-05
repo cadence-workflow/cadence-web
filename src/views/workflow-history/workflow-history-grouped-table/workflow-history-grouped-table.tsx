@@ -1,8 +1,5 @@
-import { useMemo } from 'react';
-
 import { Virtuoso } from 'react-virtuoso';
 
-import scopeDiagnosticsToGroup from '../helpers/scope-diagnostics-to-group';
 import WorkflowHistoryEventGroup from '../workflow-history-event-group/workflow-history-event-group';
 import WorkflowHistoryTableFooter from '../workflow-history-table-footer/workflow-history-table-footer';
 
@@ -28,25 +25,10 @@ export default function WorkflowHistoryGroupedTable({
   fetchMoreEvents,
   isFetchingMoreEvents,
   onClickShowGroupInTimeline,
-  workflowDiagnosticsByEventIdMap,
   getIsDiagnosticsIssueExpanded,
   toggleIsDiagnosticsIssueExpanded,
 }: Props) {
   const noEventsToDisplay = eventGroupsById.length === 0;
-
-  const diagnosticsByGroupId = useMemo(
-    () =>
-      Object.fromEntries(
-        eventGroupsById.map(([groupId, group]) => [
-          groupId,
-          scopeDiagnosticsToGroup(
-            group.events,
-            workflowDiagnosticsByEventIdMap
-          ),
-        ])
-      ),
-    [eventGroupsById, workflowDiagnosticsByEventIdMap]
-  );
 
   return (
     <>
@@ -92,7 +74,6 @@ export default function WorkflowHistoryGroupedTable({
               }
             }}
             onClickShowInTimeline={() => onClickShowGroupInTimeline(groupId)}
-            workflowDiagnosticsByEventIdMap={diagnosticsByGroupId[groupId]}
             getIsDiagnosticsIssueExpanded={getIsDiagnosticsIssueExpanded}
             toggleIsDiagnosticsIssueExpanded={toggleIsDiagnosticsIssueExpanded}
           />

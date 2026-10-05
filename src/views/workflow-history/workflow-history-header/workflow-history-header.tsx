@@ -32,7 +32,6 @@ export default function WorkflowHistoryHeader({
   setIsTimelineShown,
   timelineVirtuosoRef,
   timelineItemToHighlightId,
-  workflowDiagnosticsByEventIdMap,
   getIsDiagnosticsIssueExpanded,
   toggleIsDiagnosticsIssueExpanded,
 }: Props) {
@@ -136,9 +135,6 @@ export default function WorkflowHistoryHeader({
                 decodedPageUrlParams={decodedPageUrlParams}
                 virtuosoRef={timelineVirtuosoRef}
                 itemToHighlightId={timelineItemToHighlightId}
-                workflowDiagnosticsByEventIdMap={
-                  workflowDiagnosticsByEventIdMap
-                }
                 getIsDiagnosticsIssueExpanded={getIsDiagnosticsIssueExpanded}
                 toggleIsDiagnosticsIssueExpanded={
                   toggleIsDiagnosticsIssueExpanded

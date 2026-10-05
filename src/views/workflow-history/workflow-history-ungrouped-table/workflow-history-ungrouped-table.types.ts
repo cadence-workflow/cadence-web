@@ -10,7 +10,6 @@ import {
   type HistoryGroupEventMetadata,
   type ExtendedHistoryEvent,
   type HistoryEventsGroup,
-  type WorkflowDiagnosticsIssuesByEventId,
 } from '../workflow-history.types';
 
 export type Props = {
@@ -50,7 +49,6 @@ export type Props = {
   onClickShowGroupInTimeline: (eventGroupId: string) => void;
 
   // Diagnostics
-  workflowDiagnosticsByEventIdMap: WorkflowDiagnosticsIssuesByEventId;
   getIsDiagnosticsIssueExpanded: (issueExpansionId: string) => boolean;
   toggleIsDiagnosticsIssueExpanded: (issueExpansionId: string) => void;
 };

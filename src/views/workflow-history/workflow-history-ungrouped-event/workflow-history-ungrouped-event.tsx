@@ -36,7 +36,6 @@ export default function WorkflowHistoryUngroupedEvent({
   isExpanded,
   toggleIsExpanded,
   onClickShowInTimeline,
-  workflowDiagnosticsByEventIdMap,
   getIsDiagnosticsIssueExpanded,
   toggleIsDiagnosticsIssueExpanded,
 }: Props) {
@@ -57,7 +56,7 @@ export default function WorkflowHistoryUngroupedEvent({
     ([eventId]) => eventId === eventInfo.id
   )?.[1].eventDetails;
 
-  const diagnosticsIssues = workflowDiagnosticsByEventIdMap[eventInfo.id];
+  const diagnosticsIssues = eventInfo.eventMetadata.diagnosticsIssues;
 
   const isPendingEvent = isPendingHistoryEvent(eventInfo.event);
 

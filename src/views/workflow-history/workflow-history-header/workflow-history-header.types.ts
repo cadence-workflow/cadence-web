@@ -10,7 +10,6 @@ import type workflowPageQueryParamsConfig from '../../workflow-page/config/workf
 import {
   type HistoryEventsGroup,
   type Props as WorkflowHistoryProps,
-  type WorkflowDiagnosticsIssuesByEventId,
 } from '../workflow-history.types';
 
 type WorkflowPageQueryParamsConfig = typeof workflowPageQueryParamsConfig;
@@ -40,7 +39,6 @@ export type Props = {
   setIsTimelineShown: React.Dispatch<React.SetStateAction<boolean>>;
   timelineVirtuosoRef: React.RefObject<VirtuosoHandle>;
   timelineItemToHighlightId?: string;
-  workflowDiagnosticsByEventIdMap: WorkflowDiagnosticsIssuesByEventId;
   getIsDiagnosticsIssueExpanded: (issueExpansionId: string) => boolean;
   toggleIsDiagnosticsIssueExpanded: (issueExpansionId: string) => void;
 };
