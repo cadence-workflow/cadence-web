@@ -383,6 +383,7 @@ describe(WorkflowHistoryGroupDetails.name, () => {
               invariantType: 'test',
               reason: 'test reason',
               metadata: {},
+              rootCauses: [],
             },
           ],
         },
