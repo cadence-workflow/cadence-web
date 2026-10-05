@@ -20,10 +20,9 @@ export default function isSameOriginRequest(request: NextRequest): boolean {
     request.headers.get('x-forwarded-host')?.split(',')[0]?.trim() ||
     request.headers.get('host');
 
-  // The external scheme is only known when the proxy declares it: behind a
-  // TLS-terminating proxy the server's own URL is http while the browser's
-  // Origin is https. Enforce the scheme when declared, fall back to
-  // host-only otherwise.
+  // Next.js defaults x-forwarded-proto to 'http' when the proxy omits it, so
+  // 'http' is not authoritative (a TLS-terminating proxy may sit in front).
+  // Only an explicit 'https' is trusted, to block an http Origin downgrade.
   const proto = request.headers.get('x-forwarded-proto')?.split(',')[0]?.trim();
 
   try {
@@ -31,7 +30,7 @@ export default function isSameOriginRequest(request: NextRequest): boolean {
     if (originUrl.host !== host) {
       return false;
     }
-    return !proto || originUrl.protocol === `${proto}:`;
+    return !(proto === 'https' && originUrl.protocol !== 'https:');
   } catch {
     return false;
   }

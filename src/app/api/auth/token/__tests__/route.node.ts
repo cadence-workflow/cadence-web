@@ -227,7 +227,7 @@ describe('POST /api/auth/token', () => {
       expect(rejected.status).toBe(403);
     });
 
-    it('enforces the scheme when the proxy declares the external protocol', async () => {
+    it('rejects an http Origin when the forwarded protocol is https', async () => {
       const rejected = await POST(
         buildRequest(
           { token: VALID_JWT },
@@ -253,11 +253,15 @@ describe('POST /api/auth/token', () => {
       expect(accepted.status).toBe(200);
     });
 
-    it('ignores the scheme when no forwarded protocol is present', async () => {
+    it('accepts an https Origin when the forwarded protocol is http', async () => {
       const response = await POST(
         buildRequest(
           { token: VALID_JWT },
-          { origin: 'https://localhost', host: 'localhost' }
+          {
+            origin: 'https://cadence.example',
+            xForwardedHost: 'cadence.example',
+            xForwardedProto: 'http',
+          }
         )
       );
 
