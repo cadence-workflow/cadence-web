@@ -542,6 +542,23 @@ describe(WorkflowHistory.name, () => {
     );
     expect(diagnosticsItemsCounter).toHaveTextContent('1 groups with issues');
   });
+
+  it('does not show diagnostics issues when the flag is off even if diagnose data is cached by another component', async () => {
+    await setup({
+      historyEvents: [
+        startWorkflowExecutionEvent,
+        ...completedActivityTaskEvents,
+      ],
+      isDiagnosticsInHistoryEnabled: false,
+      isDiagnosticsFetchedElsewhere: true,
+    });
+
+    await screen.findByTestId('diagnostics-fetched-elsewhere');
+
+    expect(
+      screen.queryByTestId('diagnostics-menu-items-count')
+    ).not.toBeInTheDocument();
+  });
 });
 
 // TODO: delete this once the old Workflow Diagnostics view has been deleted
