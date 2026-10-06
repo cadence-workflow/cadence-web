@@ -79,11 +79,6 @@ export default function WorkflowHistoryEventGroup({
     [groupDetailsEntriesWithSummary, selectedEventId]
   );
 
-  const diagnosticsIssues = useMemo(
-    () => eventsMetadata.flatMap((m) => m.diagnosticsIssues ?? []),
-    [eventsMetadata]
-  );
-
   const overrides = getOverrides(eventGroupCategory, animateOnEnter);
 
   return (
@@ -123,7 +118,7 @@ export default function WorkflowHistoryEventGroup({
           <styled.SummarizedDetailsContainer>
             <WorkflowHistoryDetailsRow
               detailsEntries={groupSummaryDetails}
-              diagnosticsIssues={diagnosticsIssues}
+              diagnosticsIssues={eventGroup.diagnosticsIssues}
               {...decodedPageUrlParams}
             />
           </styled.SummarizedDetailsContainer>

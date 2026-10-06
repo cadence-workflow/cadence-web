@@ -271,46 +271,18 @@ describe(WorkflowHistoryEventGroup.name, () => {
     expect(screen.queryByText(/Formatted:/)).not.toBeInTheDocument();
   });
 
-  it('renders a combined diagnostics issues pill from all events metadata', () => {
-    const [first, second, third] =
-      mockActivityEventGroupWithMetadata.eventsMetadata;
+  it('passes the group diagnostics issues to the details row', () => {
+    const issue = (issueId: number) => ({
+      issueId,
+      invariantType: 'Activity Failed',
+      reason: `Reason ${issueId}`,
+      metadata: {},
+      rootCauses: [],
+    });
     setup({
       eventGroup: {
         ...mockActivityEventGroupWithMetadata,
-        eventsMetadata: [
-          {
-            ...first,
-            diagnosticsIssues: [
-              {
-                issueId: 0,
-                invariantType: 'Activity Failed',
-                reason: 'Reason 0',
-                metadata: {},
-                rootCauses: [],
-              },
-            ],
-          },
-          second,
-          {
-            ...third,
-            diagnosticsIssues: [
-              {
-                issueId: 1,
-                invariantType: 'Activity Failed',
-                reason: 'Reason 1',
-                metadata: {},
-                rootCauses: [],
-              },
-              {
-                issueId: 2,
-                invariantType: 'Activity Failed',
-                reason: 'Reason 2',
-                metadata: {},
-                rootCauses: [],
-              },
-            ],
-          },
-        ],
+        diagnosticsIssues: [issue(0), issue(1), issue(2)],
       },
     });
 

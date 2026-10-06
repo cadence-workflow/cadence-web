@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { Panel } from 'baseui/accordion';
 import { MdOutlineCircle } from 'react-icons/md';
@@ -12,6 +12,7 @@ import WorkflowHistoryRemainingDurationBadge from '@/views/workflow-history/work
 import WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 
 import workflowHistoryEventGroupCategoryColorsConfig from '../config/workflow-history-event-group-category-colors.config';
+import getEventDiagnosticsIssues from '../helpers/get-event-diagnostics-issues';
 import getEventGroupCategory from '../helpers/get-event-group-category';
 import useGroupDetailsEntries from '../hooks/use-group-details-entries';
 import WorkflowHistoryDetailsRow from '../workflow-history-details-row/workflow-history-details-row';
@@ -56,7 +57,10 @@ export default function WorkflowHistoryUngroupedEvent({
     ([eventId]) => eventId === eventInfo.id
   )?.[1].eventDetails;
 
-  const diagnosticsIssues = eventInfo.eventMetadata.diagnosticsIssues;
+  const diagnosticsIssues = useMemo(
+    () => getEventDiagnosticsIssues(eventInfo.eventGroup, eventInfo.id),
+    [eventInfo.eventGroup, eventInfo.id]
+  );
 
   const isPendingEvent = isPendingHistoryEvent(eventInfo.event);
 
@@ -113,7 +117,7 @@ export default function WorkflowHistoryUngroupedEvent({
           </styled.ElapsedContainer>
           <styled.SummarizedDetailsContainer>
             {(eventSummaryDetails && eventSummaryDetails.length > 0) ||
-            (diagnosticsIssues && diagnosticsIssues.length > 0) ? (
+            diagnosticsIssues.length > 0 ? (
               <WorkflowHistoryDetailsRow
                 detailsEntries={eventSummaryDetails ?? []}
                 diagnosticsIssues={diagnosticsIssues}

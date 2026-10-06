@@ -19,6 +19,7 @@ import type WorkflowHistoryEventStatusBadge from '../../workflow-history-event-s
 import type WorkflowHistoryGroupDetails from '../../workflow-history-group-details/workflow-history-group-details';
 import type { GroupDetailsEntries } from '../../workflow-history-group-details/workflow-history-group-details.types';
 import type { UngroupedEventInfo } from '../../workflow-history-ungrouped-table/workflow-history-ungrouped-table.types';
+import { WORKFLOW_DIAGNOSTICS_EVENT_ID_KEY } from '../../workflow-history.constants';
 import {
   type ExtendedHistoryEvent,
   type ActivityHistoryGroup,
@@ -349,28 +350,24 @@ describe(WorkflowHistoryUngroupedEvent.name, () => {
     expect(screen.getByText('TestActivity')).toBeInTheDocument();
   });
 
-  it('renders diagnostics issues pill from event metadata', () => {
+  it('renders diagnostics issues pill for issues of this event only', () => {
     const eventInfo = createMockEventInfo();
+    const issue = (issueId: number, eventId: number) => ({
+      issueId,
+      invariantType: 'Activity Failed',
+      reason: `Reason ${issueId}`,
+      metadata: { [WORKFLOW_DIAGNOSTICS_EVENT_ID_KEY]: eventId },
+      rootCauses: [],
+    });
     setup({
       eventInfo: {
         ...eventInfo,
-        eventMetadata: {
-          ...eventInfo.eventMetadata,
+        eventGroup: {
+          ...eventInfo.eventGroup,
           diagnosticsIssues: [
-            {
-              issueId: 0,
-              invariantType: 'Activity Failed',
-              reason: 'Reason 0',
-              metadata: {},
-              rootCauses: [],
-            },
-            {
-              issueId: 1,
-              invariantType: 'Activity Failed',
-              reason: 'Reason 1',
-              metadata: {},
-              rootCauses: [],
-            },
+            issue(0, Number(eventInfo.id)),
+            issue(1, Number(eventInfo.id)),
+            issue(2, Number(eventInfo.id) + 100),
           ],
         },
       },
@@ -381,7 +378,7 @@ describe(WorkflowHistoryUngroupedEvent.name, () => {
     );
   });
 
-  it('does not render a diagnostics issues pill when event metadata has no issues', () => {
+  it('does not render a diagnostics issues pill when the group has no issues', () => {
     setup({ eventInfo: createMockEventInfo() });
 
     expect(
