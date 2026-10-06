@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { act, render, screen, userEvent, waitFor } from '@/test-utils/rtl';
+import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
 import AppNavBar from '../app-nav-bar';
 import useAuthLifecycle from '../hooks/use-auth-lifecycle';
@@ -21,15 +21,9 @@ const mockUseAuthLifecycle = useAuthLifecycle as jest.MockedFunction<
   typeof useAuthLifecycle
 >;
 
-const NOW = new Date('2026-09-23T12:00:00Z').getTime();
-
 describe(AppNavBar.name, () => {
   beforeEach(() => {
     jest.clearAllMocks();
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
   });
 
   it('renders the user avatar for a valid session', () => {
@@ -87,46 +81,27 @@ describe(AppNavBar.name, () => {
     expect(logout).toHaveBeenCalledWith({ notice: 'signed-out' });
   });
 
-  it('logs out with the session-expired notice at token expiry', async () => {
-    const logout = jest.fn().mockResolvedValue(undefined);
-    setup({
-      lifecycle: { expiresAtMs: NOW + 30_000, logout },
-      fakeTimers: true,
-    });
-
-    await act(async () => {
-      jest.advanceTimersByTime(30_000);
-    });
-
-    expect(logout).toHaveBeenCalledWith({ notice: 'session-expired' });
-  });
-
-  it('logs out with the session-expired notice when the token flips invalid in place', () => {
-    const logout = jest.fn().mockResolvedValue(undefined);
-    const { rerender } = setup({ lifecycle: { logout } });
+  it('expires the session when the token flips invalid in place', () => {
+    const { rerender, logout, expireSession } = setup({});
 
     mockUseAuthLifecycle.mockReturnValue(
-      buildLifecycle({ isValidToken: false, logout })
+      buildLifecycle({ isValidToken: false, logout, expireSession })
     );
     rerender(<AppNavBar />);
 
-    expect(logout).toHaveBeenCalledWith({ notice: 'session-expired' });
+    expect(expireSession).toHaveBeenCalledTimes(1);
+    expect(logout).not.toHaveBeenCalled();
   });
 });
 
-function setup({
-  lifecycle,
-  fakeTimers,
-}: {
-  lifecycle?: Partial<AuthLifecycle>;
-  fakeTimers?: boolean;
-}) {
-  if (fakeTimers) {
-    jest.useFakeTimers();
-    jest.setSystemTime(NOW);
-  }
-  mockUseAuthLifecycle.mockReturnValue(buildLifecycle(lifecycle));
-  return render(<AppNavBar />);
+function setup({ lifecycle }: { lifecycle?: Partial<AuthLifecycle> }) {
+  const built = buildLifecycle(lifecycle);
+  mockUseAuthLifecycle.mockReturnValue(built);
+  return {
+    ...render(<AppNavBar />),
+    logout: built.logout as jest.Mock,
+    expireSession: built.expireSession as jest.Mock,
+  };
 }
 
 function buildLifecycle(overrides?: Partial<AuthLifecycle>): AuthLifecycle {
@@ -136,8 +111,8 @@ function buildLifecycle(overrides?: Partial<AuthLifecycle>): AuthLifecycle {
     isAuthLoading: false,
     isAdmin: false,
     userName: 'alice',
-    expiresAtMs: undefined,
     logout: jest.fn().mockResolvedValue(undefined),
+    expireSession: jest.fn(),
     ...overrides,
   };
 }
