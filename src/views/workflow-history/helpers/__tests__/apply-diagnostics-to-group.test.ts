@@ -4,7 +4,6 @@ import {
   type ActivityHistoryGroup,
   type HistoryGroupEventMetadata,
   type WorkflowDiagnosticsIssue,
-  type WorkflowDiagnosticsIssuesByEventId,
 } from '../../workflow-history.types';
 import applyDiagnosticsToGroup from '../apply-diagnostics-to-group';
 
@@ -17,15 +16,18 @@ const mockIssue: WorkflowDiagnosticsIssue = {
 };
 
 describe(applyDiagnosticsToGroup.name, () => {
-  it('sets issues on events matched by eventId', () => {
+  it('collects issues across multiple events in event order', () => {
     const group = createGroup();
-    const issues = [mockIssue];
+    const issueA = { ...mockIssue, issueId: 1 };
+    const issueB = { ...mockIssue, issueId: 2 };
+    const issueC = { ...mockIssue, issueId: 3 };
 
-    const result = applyDiagnosticsToGroup(group, { '9': issues });
+    const result = applyDiagnosticsToGroup(group, {
+      '9': [issueB, issueC],
+      [String(completedActivityTaskEvents[0].eventId)]: [issueA],
+    });
 
-    expect(result.eventsMetadata[1].diagnosticsIssues).toBe(issues);
-    expect(result.eventsMetadata[0]).not.toHaveProperty('diagnosticsIssues');
-    expect(result.eventsMetadata[2]).not.toHaveProperty('diagnosticsIssues');
+    expect(result.diagnosticsIssues).toEqual([issueA, issueB, issueC]);
   });
 
   it('sets issues on pending events matched by computedEventId', () => {
@@ -38,23 +40,23 @@ describe(applyDiagnosticsToGroup.name, () => {
       [pendingActivityTaskStartEvent.computedEventId]: issues,
     });
 
-    expect(result.eventsMetadata[3].diagnosticsIssues).toBe(issues);
+    expect(result.diagnosticsIssues).toEqual(issues);
   });
 
   it('removes stale issues without leaving the key behind', () => {
-    const group = createGroup({ withIssuesOnIndex: 1 });
+    const group = createGroup({ withIssues: true });
 
     const result = applyDiagnosticsToGroup(group, {});
 
-    expect(result.eventsMetadata[1]).not.toHaveProperty('diagnosticsIssues');
+    expect(result).not.toHaveProperty('diagnosticsIssues');
   });
 
   it('removes issues when the list for the event is empty', () => {
-    const group = createGroup({ withIssuesOnIndex: 1 });
+    const group = createGroup({ withIssues: true });
 
     const result = applyDiagnosticsToGroup(group, { '9': [] });
 
-    expect(result.eventsMetadata[1]).not.toHaveProperty('diagnosticsIssues');
+    expect(result).not.toHaveProperty('diagnosticsIssues');
   });
 
   it('returns the same group when nothing changes', () => {
@@ -63,43 +65,31 @@ describe(applyDiagnosticsToGroup.name, () => {
     expect(applyDiagnosticsToGroup(group, {})).toBe(group);
   });
 
-  it('returns the same group when the same issues list is applied again', () => {
+  it('returns the same group when equal issues are applied again', () => {
     const issues = [mockIssue];
-    const map: WorkflowDiagnosticsIssuesByEventId = { '9': issues };
-    const first = applyDiagnosticsToGroup(createGroup(), map);
+    const first = applyDiagnosticsToGroup(createGroup(), { '9': issues });
 
-    expect(applyDiagnosticsToGroup(first, map)).toBe(first);
+    expect(applyDiagnosticsToGroup(first, { '9': [...issues] })).toBe(first);
   });
 
   it('does not mutate the input group', () => {
     const group = createGroup();
-    const originalMetadata = group.eventsMetadata;
-    const snapshot = structuredClone(group.eventsMetadata);
+    const snapshot = structuredClone(group);
 
     const result = applyDiagnosticsToGroup(group, { '9': [mockIssue] });
 
     expect(result).not.toBe(group);
-    expect(group.eventsMetadata).toBe(originalMetadata);
-    expect(group.eventsMetadata).toEqual(snapshot);
-  });
-
-  it('keeps identity of metadata entries that did not change', () => {
-    const group = createGroup();
-
-    const result = applyDiagnosticsToGroup(group, { '9': [mockIssue] });
-
-    expect(result.eventsMetadata[0]).toBe(group.eventsMetadata[0]);
-    expect(result.eventsMetadata[1]).not.toBe(group.eventsMetadata[1]);
-    expect(result.eventsMetadata[2]).toBe(group.eventsMetadata[2]);
+    expect(group).toEqual(snapshot);
+    expect(group).not.toHaveProperty('diagnosticsIssues');
   });
 });
 
 function createGroup({
   events = completedActivityTaskEvents,
-  withIssuesOnIndex,
+  withIssues,
 }: {
   events?: ActivityHistoryGroup['events'];
-  withIssuesOnIndex?: number;
+  withIssues?: boolean;
 } = {}): ActivityHistoryGroup {
   const eventsMetadata: Array<HistoryGroupEventMetadata> = events.map(
     (_, index) => ({
@@ -107,7 +97,6 @@ function createGroup({
       status: 'COMPLETED',
       timeMs: 1725747370632,
       timeLabel: 'Mock time label',
-      ...(index === withIssuesOnIndex && { diagnosticsIssues: [mockIssue] }),
     })
   );
 
@@ -116,6 +105,7 @@ function createGroup({
     groupType: 'Activity',
     status: 'COMPLETED',
     eventsMetadata,
+    ...(withIssues && { diagnosticsIssues: [mockIssue] }),
     hasMissingEvents: false,
     timeMs: 1725747370632,
     startTimeMs: 1725747370599,

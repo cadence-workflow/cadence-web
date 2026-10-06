@@ -655,8 +655,7 @@ describe(WorkflowHistoryGrouper.name, () => {
       grouper.updateDiagnostics({ '9': [mockIssue] });
 
       const group = grouper.getState().groups['7'];
-      expect(group.eventsMetadata[1].diagnosticsIssues).toEqual([mockIssue]);
-      expect(group.eventsMetadata[0].diagnosticsIssues).toBeUndefined();
+      expect(group.diagnosticsIssues).toEqual([mockIssue]);
       expect(handleStateChange).toHaveBeenCalledTimes(1);
     });
 
@@ -668,7 +667,7 @@ describe(WorkflowHistoryGrouper.name, () => {
       await waitForProcessing();
 
       const group = grouper.getState().groups['7'];
-      expect(group.eventsMetadata[1].diagnosticsIssues).toEqual([mockIssue]);
+      expect(group.diagnosticsIssues).toEqual([mockIssue]);
     });
 
     it('should keep issues on the activity group when pending activities update', async () => {
@@ -687,8 +686,7 @@ describe(WorkflowHistoryGrouper.name, () => {
 
       let group = grouper.getState().groups['7'];
       expect(group.events).toHaveLength(2);
-      expect(group.eventsMetadata[0].diagnosticsIssues).toEqual([mockIssue]);
-      expect(group.eventsMetadata[1].diagnosticsIssues).toEqual([mockIssue]);
+      expect(group.diagnosticsIssues).toEqual([mockIssue, mockIssue]);
 
       grouper.updatePendingEvents({
         pendingStartActivities: [],
@@ -697,7 +695,7 @@ describe(WorkflowHistoryGrouper.name, () => {
 
       group = grouper.getState().groups['7'];
       expect(group.events).toHaveLength(1);
-      expect(group.eventsMetadata[0].diagnosticsIssues).toEqual([mockIssue]);
+      expect(group.diagnosticsIssues).toEqual([mockIssue]);
     });
 
     it('should clear issues when called with an empty map', async () => {
@@ -709,9 +707,7 @@ describe(WorkflowHistoryGrouper.name, () => {
       grouper.updateDiagnostics({});
 
       const group = grouper.getState().groups['7'];
-      expect(group.eventsMetadata.some((m) => 'diagnosticsIssues' in m)).toBe(
-        false
-      );
+      expect(group).not.toHaveProperty('diagnosticsIssues');
     });
 
     it('should clear the stored map on reset', async () => {
@@ -723,9 +719,7 @@ describe(WorkflowHistoryGrouper.name, () => {
       await waitForProcessing();
 
       const group = grouper.getState().groups['7'];
-      expect(group.eventsMetadata.some((m) => 'diagnosticsIssues' in m)).toBe(
-        false
-      );
+      expect(group).not.toHaveProperty('diagnosticsIssues');
     });
   });
 

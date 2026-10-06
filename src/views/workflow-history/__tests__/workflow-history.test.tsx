@@ -124,12 +124,12 @@ jest.mock(
           {selectedEventId && (
             <div data-testid="grouped-selected-event-id">{selectedEventId}</div>
           )}
-          <div data-testid="grouped-metadata-issues-count">
-            {
-              eventGroupsById
-                .flatMap(([, group]) => group.eventsMetadata)
-                .flatMap((metadata) => metadata.diagnosticsIssues ?? []).length
-            }
+          <div data-testid="grouped-issues-count">
+            {eventGroupsById.reduce(
+              (count, [, group]) =>
+                count + (group.diagnosticsIssues?.length ?? 0),
+              0
+            )}
           </div>
           <div data-testid="grouped-diagnostics-issue-expanded">
             {String(getIsDiagnosticsIssueExpanded('mock-issue'))}
@@ -553,7 +553,7 @@ describe(WorkflowHistory.name, () => {
     expect(diagnosticsItemsCounter).toHaveTextContent('1 groups with issues');
   });
 
-  it('attaches diagnostics issues to event metadata in the grouped table groups', async () => {
+  it('attaches diagnostics issues to the grouped table groups', async () => {
     await setup({
       historyEvents: [
         startWorkflowExecutionEvent,
@@ -563,9 +563,9 @@ describe(WorkflowHistory.name, () => {
     });
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId('grouped-metadata-issues-count')
-      ).toHaveTextContent(/^[1-9]\d*$/);
+      expect(screen.getByTestId('grouped-issues-count')).toHaveTextContent(
+        /^[1-9]\d*$/
+      );
     });
   });
 
@@ -585,9 +585,7 @@ describe(WorkflowHistory.name, () => {
       screen.queryByTestId('diagnostics-menu-items-count')
     ).not.toBeInTheDocument();
 
-    expect(
-      screen.getByTestId('grouped-metadata-issues-count')
-    ).toHaveTextContent('0');
+    expect(screen.getByTestId('grouped-issues-count')).toHaveTextContent('0');
   });
 });
 
