@@ -22,8 +22,6 @@ export async function clearAuthToken(request: NextRequest) {
       { clear: { name: JWT_AUTH_COOKIE_NAME } },
     ]);
   } catch (e) {
-    // Strategy/config resolution failing is infrastructure, not input —
-    // same reporting as the POST writer.
     logger.error<RouteHandlerErrorPayload>(
       { error: e },
       'Failed to clear auth token cookie'

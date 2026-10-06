@@ -47,8 +47,7 @@ export async function setAuthToken(request: NextRequest) {
       { set: { name: JWT_AUTH_COOKIE_NAME, value: data.token } },
     ]);
   } catch (e) {
-    // Strategy/config resolution failing is infrastructure, not input —
-    // report it as such instead of a misleading 400.
+    // Not the client's fault (e.g. config lookup failed), so 500 not 400.
     logger.error<RouteHandlerErrorPayload>(
       { error: e },
       'Failed to write auth token cookie'
@@ -59,8 +58,7 @@ export async function setAuthToken(request: NextRequest) {
     );
   }
   if (!replay.ok) {
-    // Under any non-jwt strategy the jwt cookie is outside the active
-    // strategy's declared set, so the write is rejected here.
+    // With a non-jwt strategy active, the jwt cookie isn't allowed, so we land here.
     logger.warn({ reason: replay.reason }, 'Rejected auth token write');
     return badRequest(INVALID_REQUEST_MESSAGE);
   }

@@ -61,8 +61,8 @@ export function measureAuthCookieMutationsBytes(cookies: AuthCookieParams[]): {
 }
 
 /** Checks the mutation list, then writes every cookie.
- * Rejects writing all cookies when a name is outside the active strategy's
- * declared set or the total over the byte budget.
+ * Writes nothing if a name isn't allowed for the active strategy or the
+ * total size is over budget.
  * @param request - incoming request, source of the Secure attribute decision
  * @param response - response the cookies are written to
  * @param mutations - set/clear operations to validate, then replay

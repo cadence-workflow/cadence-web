@@ -172,7 +172,7 @@ describe('POST /api/auth/token', () => {
     expect(body.message).toBe('Invalid request body');
   });
 
-  it('returns 500, not 400, when the cookie writer fails for infrastructure reasons', async () => {
+  it('returns 500, not 400, when the cookie writer throws', async () => {
     mockGetConfigValue.mockRejectedValueOnce(new Error('config store down'));
     const response = await POST(buildRequest({ token: VALID_JWT }));
     const body = await response.json();
@@ -349,7 +349,7 @@ describe('DELETE /api/auth/token', () => {
     expectNoStore(response);
   });
 
-  it('returns 500 with a structured log when the cookie writer fails for infrastructure reasons', async () => {
+  it('returns 500 and logs when the cookie writer throws', async () => {
     mockGetConfigValue.mockRejectedValueOnce(new Error('config store down'));
     const response = await DELETE(buildDeleteRequest());
     const body = await response.json();
