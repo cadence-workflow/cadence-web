@@ -1,3 +1,4 @@
+import { type AuthMeResponse } from '@/route-handlers/auth-me/auth-me.types';
 import { getQueryClient } from '@/utils/query-client/query-client';
 
 import { AUTH_LOOP_MARKER_PARAM, AUTH_NOTICE_PARAM } from '../auth.constants';
@@ -9,30 +10,20 @@ import {
 } from './auth-recovery.constants';
 import { type HandleApiUnauthorizedContext } from './handle-api-unauthorized.types';
 
-/**
- * The single client recovery entry point: the request() 401 pipeline enters
- * here — no other code path calls /api/auth/recover.
- *
- * Flow: in-tab dedup → Web Locks serialization → re-check validity (a
- * sibling tab may already have recovered; the browser has the winner's
- * cookie) → POST /api/auth/recover → on 'recovered' invalidate the
- * post-recovery query set; on 'redirect' navigate AFTER the lock callback
- * returned, then suspend — a never-settling promise inside the lock callback
- * would hold the cross-tab lock forever on a failed navigation.
- */
 let recoveryInFlight: Promise<AuthRecoveryResult | undefined> | null = null;
 
+/**
+ * Called by request() on a 401. Recovers the session once per tab and across
+ * tabs (Web Locks), then refreshes auth-related queries or redirects.
+ * Resolves undefined when recovery fails, so the caller's 401 stands.
+ */
 export async function handleApiUnauthorized(
   ctx: HandleApiUnauthorizedContext
 ): Promise<AuthRecoveryResult | undefined> {
-  // In-tab dedup: concurrent 401s in one tab share one recovery attempt.
-  // The window covers only the lock + recover exchange. Post-recovery
-  // invalidation runs after it closes: invalidateQueries awaits active
-  // refetches, a refetch's 401 re-enters this function, and joining the
-  // in-flight promise from inside its own continuation would deadlock.
+  // Concurrent 401s in a tab share one recovery. It is cleared before the
+  // invalidation below, because invalidating refetches queries, a refetch can
+  // 401 and re-enter here, and joining the recovery it is part of would hang.
   const isOwner = recoveryInFlight === null;
-  // ??= keeps the awaited local non-nullable; the module-level variable is
-  // nullable because the finally callback clears it.
   const inFlight = (recoveryInFlight ??= runSerializedRecovery(ctx).finally(
     () => {
       recoveryInFlight = null;
@@ -41,17 +32,15 @@ export async function handleApiUnauthorized(
   const result = await inFlight;
 
   if (result?.kind === 'redirect') {
-    // Only the caller that ran the recovery navigates; joiners suspend
-    // alongside it (navigation is tab-global).
+    // Only the caller that started the recovery navigates.
     if (isOwner) {
       window.location.assign(buildRecoveryRedirectUrl(result));
     }
     return suspendForever();
   }
 
-  // Side effects run once per recovery, not once per deduped caller:
-  // invalidateQueries cancels in-flight refetches by default, so N callers
-  // invalidating in a row would cascade cancelled auth-me refetches.
+  // Invalidate once per recovery, not per caller: each invalidation cancels
+  // in-flight refetches, so N callers would cancel each other's auth-me fetch.
   if (result?.kind === 'recovered' && isOwner) {
     await invalidatePostRecovery();
   }
@@ -61,9 +50,8 @@ export async function handleApiUnauthorized(
 async function runSerializedRecovery(
   ctx: HandleApiUnauthorizedContext
 ): Promise<AuthRecoveryResult | undefined> {
-  // Lock-less browsers (and jsdom) fall back to a direct call; the
-  // server-side freshness check in the policy's recoverSession is the
-  // mitigation for the residual double-grant window.
+  // Without Web Locks (old browsers, jsdom) recover directly. Two tabs may
+  // then recover at once; the server-side freshness check covers that.
   if (typeof navigator.locks === 'undefined') {
     return recoverOnce(ctx);
   }
@@ -72,7 +60,7 @@ async function runSerializedRecovery(
       recoverOnce(ctx)
     );
   } catch {
-    // Lock-manager failures decline recovery; the caller's 401 stands.
+    // Lock failed, so skip recovery and let the caller's 401 stand.
     return undefined;
   }
 }
@@ -80,27 +68,22 @@ async function runSerializedRecovery(
 async function recoverOnce(
   ctx: HandleApiUnauthorizedContext
 ): Promise<AuthRecoveryResult | undefined> {
-  // Re-check inside the lock: a sibling tab may already have recovered, and
-  // the browser already has the winner's new cookie — running a grant (or, for
-  // jwt, clearing the fresh cookie) would clobber it. The re-check is an
-  // optimization; a failed read falls through to the authoritative recover
-  // route (whose server-side freshness check is the equivalent).
+  // Another tab may have recovered while we waited for the lock. Recovering
+  // again would overwrite its fresh cookie, so check the session first.
   try {
     const me = await fetch('/api/auth/me', { cache: 'no-store' });
     if (me.ok) {
-      const data = (await me.json()) as {
-        auth?: { isValidToken?: boolean; expiresAtMs?: number };
-      };
-      if (data.auth?.isValidToken === true) {
+      const data = (await me.json()) as Pick<AuthMeResponse, 'auth'>;
+      if (data.auth.isValidToken) {
         return { kind: 'recovered', expiresAtMs: data.auth.expiresAtMs };
       }
     }
   } catch {
-    // fall through to the recover route
+    // Could not read the session; try the recover route.
   }
 
-  // Transport and payload failures decline recovery (undefined) rather than
-  // replacing the caller's 401 with a raw TypeError/SyntaxError.
+  // Network or parse errors return undefined so the caller still sees its 401
+  // instead of a TypeError.
   let response: Response;
   try {
     response = await fetch('/api/auth/recover', {
@@ -122,12 +105,6 @@ async function recoverOnce(
   }
 }
 
-/**
- * The redirect outcome carries {returnTo, notice}; the notice rides to the
- * final landing URL as `authNotice` (the channel the nav renders and
- * strips). The layout gate re-dispatches to the strategy's login surface from
- * there. Any stale loop marker on the previous URL is dropped.
- */
 function buildRecoveryRedirectUrl(result: {
   returnTo: string;
   notice?: string;
@@ -149,12 +126,8 @@ async function invalidatePostRecovery(): Promise<void> {
   );
 }
 
-/**
- * Once navigation has been issued the caller suspends (never settles) so the
- * stale 401 is not also thrown into a page that is leaving. Tradeoff, named:
- * a failed navigation leaves a pending query — the recoverable case; a
- * permanently held lock would deadlock recovery in every tab.
- */
+// After navigating, the promise never settles so the old 401 isn't thrown
+// into a page that is going away.
 function suspendForever(): Promise<never> {
   return new Promise<never>(() => {});
 }

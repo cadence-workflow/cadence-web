@@ -15,11 +15,6 @@ export function makeQueryClient(): QueryClient {
 
 let browserQueryClient: QueryClient | undefined = undefined;
 
-/**
- * Browser: the one shared client — the ReactQueryProvider and the
- * post-recovery invalidation fan-out must see the same cache. Server: always
- * a fresh client per render.
- */
 export function getQueryClient(): QueryClient {
   if (typeof window === 'undefined') {
     // Server: always make a new query client

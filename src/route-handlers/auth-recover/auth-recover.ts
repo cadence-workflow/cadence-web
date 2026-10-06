@@ -34,14 +34,8 @@ async function parseRecoverContext(
   }
 }
 
-/**
- * POST /api/auth/recover — strategy-agnostic plumbing: parse body → call the
- * active policy's recoverSession (pure) → validate the whole mutation array
- * → construct the JSON response → replay in order. Over-budget write set:
- * the route substitutes the redirect outcome ({kind:'redirect',
- * notice:'session-expired'} + WARN) and replays the policy's
- * cleanupMutations instead — the old session is burnt, not preserved.
- */
+// If the recovered cookies are too big to write, redirect to login with a
+// "session expired" notice and clear the old session instead.
 export async function handleAuthRecover(request: NextRequest) {
   if (!isSameOriginRequest(request)) {
     return NextResponse.json(

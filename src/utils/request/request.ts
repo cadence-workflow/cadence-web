@@ -54,27 +54,22 @@ export default async function request(
   });
 
   if (
-    !response.ok &&
     response.status === 401 &&
     shouldAttemptAuthRecovery(url, { skipAuthRecovery, _authRetried })
   ) {
     const recovery = await handleApiUnauthorized({
       returnTo: `${window.location.pathname}${window.location.search}`,
       notice: 'session-expired',
-      response,
     });
 
     if (recovery?.kind === 'recovered') {
-      // Retry exactly once: a second 401 hits the _authRetried exclusion and
-      // throws, so a backend rejecting a fresh-looking token cannot loop
-      // recovery forever while holding the cross-tab lock.
+      // Retry once; _authRetried stops a second 401 from recovering again.
       return request(url, {
         ...options,
         _authRetried: true,
       });
     }
-    // 'redirect': handleApiUnauthorized has navigated and never settles, so
-    // this point is unreachable. undefined: recovery declined or failed —
+    // On redirect handleApiUnauthorized never returns. If recovery failed,
     // fall through and throw the original 401.
   }
 

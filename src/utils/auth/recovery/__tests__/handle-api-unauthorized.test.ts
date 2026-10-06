@@ -62,7 +62,6 @@ describe('handleApiUnauthorized', () => {
       AUTH_RECOVERY_LOCK_NAME,
       expect.any(Function)
     );
-    // The recover POST runs inside the lock callback.
     expect(order).toEqual(['lock-acquired', 'recover-post', 'lock-released']);
     expect(postedBody).toEqual({
       returnTo: CTX.returnTo,
@@ -136,9 +135,7 @@ describe('handleApiUnauthorized', () => {
     expect(first).toEqual(RECOVERED);
     expect(second).toEqual(RECOVERED);
     expect(recoverResolver).toHaveBeenCalledTimes(1);
-    // Side effects run once per recovery, not once per deduped caller —
-    // invalidateQueries cancels in-flight refetches, so per-caller
-    // invalidation would cascade cancelled auth-me refetches in a 401 burst.
+    // One invalidation per query key, not one per caller.
     expect(invalidateSpy).toHaveBeenCalledTimes(2);
   });
 
@@ -216,12 +213,10 @@ describe('handleApiUnauthorized', () => {
       );
 
       await waitFor(() => expect(mockAssign).toHaveBeenCalledTimes(1));
-      // The loop marker is dropped and the notice rides as authNotice.
       expect(mockAssign).toHaveBeenCalledWith(
         `/domains/foo?x=1&${AUTH_NOTICE_PARAM}=session-expired`
       );
-      // Navigation happens only after the lock callback returned, so a
-      // suspended caller never holds the cross-tab lock.
+      // Navigation must not happen while still holding the lock.
       expect(lockCallbackReturned).toBe(true);
 
       await new Promise((resolve) => setTimeout(resolve, 20));
@@ -260,7 +255,7 @@ describe('handleApiUnauthorized', () => {
     ]);
 
     const { handleApiUnauthorized } = await loadModule();
-    // The caller's original 401 stands; no raw TypeError escapes.
+    // The caller's own 401 is kept, not a TypeError.
     await expect(handleApiUnauthorized(CTX)).resolves.toBeUndefined();
   });
 
@@ -323,17 +318,14 @@ describe('handleApiUnauthorized', () => {
     const originalInvalidate = queryClient.invalidateQueries.bind(queryClient);
     jest
       .spyOn(queryClient, 'invalidateQueries')
-      // A refetch kicked off by invalidateQueries can 401; its recovery must
-      // settle before the invalidation completes. Joining the in-flight
-      // recovery here is the deadlock this test guards against.
+      // Simulates a refetch from the invalidation hitting a 401 itself.
       .mockImplementationOnce(async (filters) => {
         await handleApiUnauthorized(CTX);
         return originalInvalidate(filters);
       });
 
     await expect(handleApiUnauthorized(CTX)).resolves.toEqual(RECOVERED);
-    // The re-entrant call ran its own recovery instead of joining the
-    // in-flight one (whose continuation it was blocking).
+    // The nested call ran its own recovery; joining the first would hang.
     expect(recoverResolver).toHaveBeenCalledTimes(2);
   });
 
@@ -343,7 +335,6 @@ describe('handleApiUnauthorized', () => {
       {
         httpMethod: 'GET',
         path: '/api/auth/me',
-        // HttpResponse.error() returns a plain Response (network error).
         httpResolver: async () => HttpResponse.error() as StrictResponse<never>,
       },
       {
@@ -361,11 +352,8 @@ describe('handleApiUnauthorized', () => {
   });
 });
 
-/**
- * recoveryInFlight is module state: each test loads a fresh module registry
- * so dedup never leaks between tests. The query client is read from the same
- * fresh registry so invalidation spies see the module-under-test's instance.
- */
+// Fresh module per test: the in-flight recovery is module state, and the query
+// client must come from the same registry as the module under test.
 async function loadModule() {
   jest.resetModules();
   const { handleApiUnauthorized } = await import('../handle-api-unauthorized');

@@ -121,7 +121,6 @@ describe('request on browser env', () => {
       expect(mockHandleApiUnauthorized).toHaveBeenCalledWith({
         returnTo: `${window.location.pathname}${window.location.search}`,
         notice: 'session-expired',
-        response: expect.objectContaining({ status: 401 }),
       });
       expect(fetch).toHaveBeenCalledTimes(2);
     });
@@ -133,7 +132,7 @@ describe('request on browser env', () => {
       await expect(request('/api/data', { method: 'GET' })).rejects.toThrow(
         new RequestError('unauthorized', '/api/data', 401)
       );
-      // One recover call, two fetches: the second 401 is never recovered.
+      // One recovery, two fetches: the second 401 is not recovered again.
       expect(mockHandleApiUnauthorized).toHaveBeenCalledTimes(1);
       expect(fetch).toHaveBeenCalledTimes(2);
     });

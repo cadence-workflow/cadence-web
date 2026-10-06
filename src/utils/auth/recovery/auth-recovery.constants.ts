@@ -1,16 +1,9 @@
-/**
- * Cross-tab recovery lock name. A constant per-origin name: one cookie jar
- * per browser profile means one session, and a session-derived name would
- * leak the session identifier via navigator.locks.query().
- */
+// Fixed name: a browser profile has one session, and a name derived from the
+// session would expose it through navigator.locks.query().
 export const AUTH_RECOVERY_LOCK_NAME = 'cadence-auth-recover';
 
-/**
- * Post-recovery invalidation fan-out: prefix-matched query keys, co-located
- * with the single entry point. 'auth-me' resyncs expiresAtMs and canRefresh;
- * 'dynamic_config' resyncs every authorization-derived answer. Key producers:
- * userInfoQueryOptions and getConfigValueQueryOptions.
- */
+// Queries to refetch after a session recovery: auth-me picks up the new expiry,
+// dynamic_config picks up permission-dependent values.
 export const AUTH_RECOVERY_INVALIDATION_QUERY_KEYS = [
   ['auth-me'],
   ['dynamic_config'],

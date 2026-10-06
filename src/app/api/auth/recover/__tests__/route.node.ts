@@ -110,7 +110,7 @@ describe('POST /api/auth/recover', () => {
       returnTo: '/domains/foo',
       notice: 'session-expired',
     });
-    // The oversized value is discarded; the cleanup clear is replayed.
+    // The oversized cookie is dropped and the cleanup clear is written.
     const setCookie = response.headers.getSetCookie().join(';');
     expect(setCookie).toContain('cadence-authorization=');
     expect(setCookie).not.toContain('xxx');
@@ -150,7 +150,7 @@ function buildRequest(options: {
   const headers = new Headers({
     'content-type': options.contentType ?? 'application/json',
   });
-  // Default to a same-origin request; pass origin explicitly to override.
+  // Same-origin by default; pass origin to override.
   if (options.origin !== undefined) {
     headers.set('origin', options.origin);
   }

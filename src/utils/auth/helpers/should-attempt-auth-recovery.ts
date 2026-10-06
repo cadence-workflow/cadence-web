@@ -1,10 +1,6 @@
 import { type RequestOptions } from '@/utils/request/request.types';
 
-/**
- * Auth-internal endpoints never trigger recovery: a 401 from them is the
- * outcome of an auth check, not a recoverable session failure. Callers
- * hitting non-Cadence URLs opt out via `skipAuthRecovery`.
- */
+// A 401 from the auth endpoints is an answer, not a failure to recover from.
 const AUTH_API_PREFIX = '/api/auth/';
 
 export function shouldAttemptAuthRecovery(
