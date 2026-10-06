@@ -569,20 +569,6 @@ describe(WorkflowHistory.name, () => {
     });
   });
 
-  it('does not attach diagnostics issues to event metadata when the flag is off', async () => {
-    await setup({
-      historyEvents: [
-        startWorkflowExecutionEvent,
-        ...completedActivityTaskEvents,
-      ],
-      isDiagnosticsInHistoryEnabled: false,
-    });
-
-    expect(
-      await screen.findByTestId('grouped-metadata-issues-count')
-    ).toHaveTextContent('0');
-  });
-
   it('does not show diagnostics issues when the flag is off even if diagnose data is cached by another component', async () => {
     await setup({
       historyEvents: [
@@ -598,6 +584,10 @@ describe(WorkflowHistory.name, () => {
     expect(
       screen.queryByTestId('diagnostics-menu-items-count')
     ).not.toBeInTheDocument();
+
+    expect(
+      screen.getByTestId('grouped-metadata-issues-count')
+    ).toHaveTextContent('0');
   });
 });
 
