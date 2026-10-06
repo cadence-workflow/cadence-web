@@ -30,9 +30,8 @@ export type AuthContext = {
 
 export type AuthLogoutNotice = 'session-expired' | 'signed-out';
 
-/** Wire shape for GET /api/auth/me. `auth` is an explicit projection of
- * AuthContext.auth — a field added to the context never leaks to the client
- * by accident; groups never leave the server. */
+/** Response body of GET /api/auth/me. Same as AuthContext minus `groups`,
+ * which stay on the server. */
 export type AuthMeResponse = {
   authEnabled: boolean;
   authStrategy: AuthStrategyConfigValue;
