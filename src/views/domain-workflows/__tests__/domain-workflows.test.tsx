@@ -50,16 +50,9 @@ describe('DomainWorkflows', () => {
 async function setup({
   isAdvancedVisibility = false,
   error,
-  authResponse = {
-    authEnabled: false,
-    authStrategy: 'disabled',
-    auth: { isValidToken: false },
-    isAdmin: false,
-  },
 }: {
   error?: boolean;
   isAdvancedVisibility?: boolean;
-  authResponse?: AuthMeResponse;
 }) {
   const props: DomainPageTabContentProps = {
     domain: 'test-domain',
@@ -82,7 +75,12 @@ async function setup({
           path: '/api/auth/me',
           httpMethod: 'GET',
           mockOnce: false,
-          jsonResponse: authResponse,
+          jsonResponse: {
+            authEnabled: false,
+            authStrategy: 'disabled',
+            auth: { isValidToken: false },
+            isAdmin: false,
+          } satisfies AuthMeResponse,
         },
         {
           path: '/api/clusters/test-cluster',
