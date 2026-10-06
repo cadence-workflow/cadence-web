@@ -5,8 +5,7 @@ import getConfigValue from '@/utils/config/get-config-value';
 
 import { GET } from '../route';
 
-// NextResponse.json() parses in the edge-runtime realm — its objects fail
-// toStrictEqual's prototype check. Parse via text() in this realm instead.
+// response.json() objects fail toStrictEqual's prototype check, so parse the text.
 const parseJson = async (response: Response) =>
   JSON.parse(await response.text());
 
@@ -58,7 +57,6 @@ describe('GET /api/auth/me', () => {
     const body = await parseJson(response);
 
     expect(response.status).toBe(200);
-    // pins the public contract: no groups, no credential, identity only when valid
     expect(body).toStrictEqual({
       authEnabled: true,
       authStrategy: 'jwt',
