@@ -1,13 +1,14 @@
 import { Suspense } from 'react';
 
-import { useSuspenseQuery } from '@tanstack/react-query';
 import { HttpResponse } from 'msw';
 
 import { render, screen } from '@/test-utils/rtl';
 
 import { type AuthMeResponse } from '@/utils/auth/auth.types';
 
-import useUserInfo, { userInfoQueryOptions } from '../use-user-info';
+import getUserInfoQueryOptions from '../get-user-info-query-options';
+import useSuspenseUserInfo from '../use-suspense-user-info';
+import useUserInfo from '../use-user-info';
 
 const mockAuthMeResponse: AuthMeResponse = {
   authEnabled: false,
@@ -22,13 +23,13 @@ function QueryConsumer() {
 }
 
 function SuspenseConsumer() {
-  const { data } = useSuspenseQuery(userInfoQueryOptions());
+  const { data } = useSuspenseUserInfo();
   return <div>{data ? 'suspense-loaded' : null}</div>;
 }
 
-describe('userInfoQueryOptions', () => {
+describe('getUserInfoQueryOptions', () => {
   it('pins the shared auth-me query key', () => {
-    expect(userInfoQueryOptions().queryKey).toEqual(['auth-me']);
+    expect(getUserInfoQueryOptions().queryKey).toEqual(['auth-me']);
   });
 
   it('shares a single /api/auth/me request between concurrent query and suspense consumers', async () => {
