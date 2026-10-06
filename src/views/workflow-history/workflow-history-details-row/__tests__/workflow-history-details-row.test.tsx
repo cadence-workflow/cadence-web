@@ -3,7 +3,10 @@ import { render, screen, userEvent } from '@/test-utils/rtl';
 import type { WorkflowPageParams } from '@/views/workflow-page/workflow-page.types';
 
 import { type EventDetailsEntries } from '../../workflow-history-event-details/workflow-history-event-details.types';
+import { type WorkflowDiagnosticsIssue } from '../../workflow-history.types';
+import getParsedDetailsRowItems from '../helpers/get-parsed-details-row-items';
 import WorkflowHistoryDetailsRow from '../workflow-history-details-row';
+import { DIAGNOSTICS_ISSUES_DETAILS_PATH } from '../workflow-history-details-row.constants';
 import { type DetailsRowItem } from '../workflow-history-details-row.types';
 
 jest.mock('../helpers/get-parsed-details-row-items', () =>
@@ -22,7 +25,7 @@ jest.mock('../helpers/get-parsed-details-row-items', () =>
               data-testid={`field-${entry.path}`}
               data-negative={isNegative}
             >
-              {value}
+              {String(value)}
             </span>
           ),
           renderTooltip: ({ label }: any) => (
@@ -141,14 +144,46 @@ describe(WorkflowHistoryDetailsRow.name, () => {
 
     expect(onParentClick).toHaveBeenCalled();
   });
+
+  it('should forward diagnostics issues as the last details entry', () => {
+    const issues: Array<WorkflowDiagnosticsIssue> = [
+      {
+        issueId: 0,
+        invariantType: 'Activity Failed',
+        reason: 'Reason 0',
+        metadata: {},
+        rootCauses: [],
+      },
+    ];
+
+    setup({ diagnosticsIssues: issues });
+
+    expect(getParsedDetailsRowItems).toHaveBeenLastCalledWith([
+      ...mockDetailsEntries,
+      expect.objectContaining({
+        path: DIAGNOSTICS_ISSUES_DETAILS_PATH,
+        value: issues,
+      }),
+    ]);
+  });
+
+  it('should not forward a diagnostics entry when there are no issues', () => {
+    setup({ diagnosticsIssues: [] });
+
+    expect(getParsedDetailsRowItems).toHaveBeenLastCalledWith(
+      mockDetailsEntries
+    );
+  });
 });
 
 function setup({
   detailsEntries = mockDetailsEntries,
+  diagnosticsIssues,
   workflowPageParams = mockWorkflowPageParams,
   wrapper,
 }: {
   detailsEntries?: EventDetailsEntries;
+  diagnosticsIssues?: Array<WorkflowDiagnosticsIssue>;
   workflowPageParams?: WorkflowPageParams;
   wrapper?: React.ComponentType<{ children: React.ReactNode }>;
 } = {}) {
@@ -157,6 +192,7 @@ function setup({
   const renderResult = render(
     <WorkflowHistoryDetailsRow
       detailsEntries={detailsEntries}
+      diagnosticsIssues={diagnosticsIssues}
       {...workflowPageParams}
     />,
     undefined,

@@ -3,12 +3,26 @@ import {
   MdOutlineMonitorHeart,
   MdReplay,
 } from 'react-icons/md';
+import { RiStethoscopeLine } from 'react-icons/ri';
 
+import { DIAGNOSTICS_ISSUES_DETAILS_PATH } from '../workflow-history-details-row/workflow-history-details-row.constants';
 import { type DetailsRowItemParser } from '../workflow-history-details-row/workflow-history-details-row.types';
+import WorkflowHistoryDetailsRowDiagnosticsTooltip from '../workflow-history-details-row-diagnostics-tooltip/workflow-history-details-row-diagnostics-tooltip';
 import WorkflowHistoryDetailsRowJson from '../workflow-history-details-row-json/workflow-history-details-row-json';
 import WorkflowHistoryDetailsRowTooltipJson from '../workflow-history-details-row-tooltip-json/workflow-history-details-row-tooltip-json';
 
 const workflowHistoryDetailsRowParsersConfig: Array<DetailsRowItemParser> = [
+  {
+    name: 'Diagnostics issues as issues count',
+    matcher: (name) => name === DIAGNOSTICS_ISSUES_DETAILS_PATH,
+    hide: (_, value) => Array.isArray(value) && value.length === 0,
+    icon: RiStethoscopeLine,
+    customRenderValue: ({ value }) =>
+      value.length === 1 ? '1 issue' : `${value.length} issues`,
+    customTooltipContent: WorkflowHistoryDetailsRowDiagnosticsTooltip,
+    invertTooltipColors: true,
+    badgeColor: 'warning',
+  },
   {
     name: 'Heartbeat time',
     matcher: (name) => name === 'lastHeartbeatTime',
