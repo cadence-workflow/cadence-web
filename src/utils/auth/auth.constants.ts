@@ -14,6 +14,7 @@ export const AUTH_LOGOUT_NOTICE_SET = new Set<string>(AUTH_LOGOUT_NOTICES);
 export const DEFAULT_AUTH_RETURN_TO = '/';
 
 export const JWT_LOGIN_PATH = '/login';
+export const AUTH_UNAVAILABLE_PATH = '/auth-unavailable';
 
 // --- Cadence backend ---
 
