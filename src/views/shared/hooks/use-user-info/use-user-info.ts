@@ -5,10 +5,7 @@ import { type AuthMeResponse } from '@/utils/auth/auth.types';
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
 
-/**
- * The single producer of the ['auth-me'] query. Suspense consumers use the
- * same options with useSuspenseQuery.
- */
+/** Query options for ['auth-me']. Reuse with useSuspenseQuery when needed. */
 export function userInfoQueryOptions() {
   return queryOptions<AuthMeResponse, RequestError>({
     queryKey: ['auth-me'],

@@ -5,10 +5,9 @@ import { type AuthMeResponse } from '@/utils/auth/auth.types';
 import getConfigValue from '@/utils/config/get-config-value';
 
 /**
- * GET /api/auth/me — the one identity+session endpoint. `auth` is an
- * EXPLICIT projection of AuthContext.auth — a field added to the context can
- * never leak to the client by accident; identity fields are top-level and
- * present only with a valid session; groups never leave the server.
+ * Returns who the user is and whether their session is valid.
+ * Fields are picked one by one, so a new field on AuthContext is not sent to
+ * the browser unless added here. User fields only appear with a valid session.
  */
 export async function GET(request: NextRequest) {
   const [authContext, authStrategy] = await Promise.all([
