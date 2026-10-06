@@ -9,6 +9,7 @@ import { mockActivityEventGroup } from '@/views/workflow-history/__fixtures__/wo
 import { pendingActivityTaskStartEvent } from '@/views/workflow-history/__fixtures__/workflow-history-pending-events';
 import isPendingHistoryEvent from '@/views/workflow-history/workflow-history-event-details/helpers/is-pending-history-event';
 
+import { WORKFLOW_DIAGNOSTICS_EVENT_ID_KEY } from '../../workflow-history.constants';
 import { type HistoryEventsGroup } from '../../workflow-history.types';
 import generateHistoryEventDetails from '../generate-history-event-details';
 import generateHistoryGroupDetails from '../generate-history-group-details';
@@ -518,11 +519,12 @@ describe(generateHistoryGroupDetails.name, () => {
       issueId: 1,
       invariantType: 'Activity Failed',
       reason: 'Activity failed',
-      metadata: {},
+      metadata: { [WORKFLOW_DIAGNOSTICS_EVENT_ID_KEY]: 7 },
       rootCauses: [],
     };
     const eventGroup: HistoryEventsGroup = {
       ...mockActivityEventGroup,
+      diagnosticsIssues: [issue],
       events: [
         scheduleActivityTaskEvent,
         { ...startActivityTaskEvent, eventId: '8' },
@@ -534,7 +536,6 @@ describe(generateHistoryGroupDetails.name, () => {
           timeMs: 1725747370599,
           timeLabel: 'Scheduled at 07 Sep, 22:16:10 UTC',
           summaryFields: ['activityId'],
-          diagnosticsIssues: [issue],
         },
         {
           label: 'Started',

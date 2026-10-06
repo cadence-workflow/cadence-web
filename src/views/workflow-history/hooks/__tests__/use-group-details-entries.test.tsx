@@ -349,7 +349,7 @@ describe(useGroupDetailsEntries.name, () => {
     expect(result.current.groupDetailsEntriesWithSummary[1][0]).toBe('event-2');
   });
 
-  it('should give the summary entry the issues of all event entries', () => {
+  it('should give the summary entry the issues of the group', () => {
     const issue1 = {
       issueId: 1,
       invariantType: 'test1',
@@ -371,7 +371,6 @@ describe(useGroupDetailsEntries.name, () => {
         {
           eventLabel: 'Event 1',
           eventDetails: [detail],
-          diagnosticsIssues: [issue1],
         },
       ],
       [
@@ -379,13 +378,16 @@ describe(useGroupDetailsEntries.name, () => {
         {
           eventLabel: 'Event 2',
           eventDetails: [detail],
-          diagnosticsIssues: [issue2],
         },
       ],
     ];
 
     const { result } = setup({
-      eventGroup: { ...mockActivityEventGroup, firstEventId: 'event-1' },
+      eventGroup: {
+        ...mockActivityEventGroup,
+        firstEventId: 'event-1',
+        diagnosticsIssues: [issue1, issue2],
+      },
       mockGroupDetails: {
         groupDetailsEntries,
         summaryDetailsEntries: [

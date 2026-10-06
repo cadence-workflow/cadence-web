@@ -7,7 +7,7 @@ const filterGroupsByIssues = (
 ) => {
   if (!historyEventIssues) return true;
 
-  return group.eventsMetadata.some((m) => Boolean(m.diagnosticsIssues?.length));
+  return Boolean(group.diagnosticsIssues?.length);
 };
 
 export default filterGroupsByIssues;

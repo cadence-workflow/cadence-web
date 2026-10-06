@@ -8,6 +8,8 @@ import generateHistoryEventDetails from '../helpers/generate-history-event-detai
 import { type EventDetailsTabContent } from '../workflow-history-group-details/workflow-history-group-details.types';
 import { type HistoryEventsGroup } from '../workflow-history.types';
 
+import getEventDiagnosticsIssues from './get-event-diagnostics-issues';
+
 export default function generateHistoryGroupDetails(
   eventGroup: HistoryEventsGroup
 ) {
@@ -34,13 +36,18 @@ export default function generateHistoryGroupDetails(
         })
       : [];
 
+    const eventDiagnosticsIssues = getEventDiagnosticsIssues(
+      eventGroup,
+      eventId
+    );
+
     groupDetailsEntries.push([
       eventId,
       {
         eventLabel: eventMetadata.label,
         eventDetails,
-        ...(eventMetadata.diagnosticsIssues && {
-          diagnosticsIssues: eventMetadata.diagnosticsIssues,
+        ...(eventDiagnosticsIssues.length > 0 && {
+          diagnosticsIssues: eventDiagnosticsIssues,
         }),
       } satisfies EventDetailsTabContent,
     ]);

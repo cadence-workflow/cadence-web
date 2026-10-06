@@ -2,6 +2,7 @@ import { scheduleActivityTaskEvent } from '../../../__fixtures__/workflow-histor
 import {
   type ActivityHistoryGroup,
   type HistoryGroupEventMetadata,
+  type WorkflowDiagnosticsIssue,
 } from '../../../workflow-history.types';
 import { type EventGroupIssuesFilterValue } from '../../workflow-history-filters-menu.types';
 import filterGroupsByIssues from '../filter-groups-by-issues';
@@ -13,7 +14,7 @@ const BASE_METADATA: HistoryGroupEventMetadata = {
   timeLabel: 'Mock time label',
 };
 
-const DIAGNOSTICS_ISSUE = {
+const DIAGNOSTICS_ISSUE: WorkflowDiagnosticsIssue = {
   issueId: 0,
   invariantType: 'Activity Failed',
   reason: 'Activity failed on event 7',
@@ -33,10 +34,7 @@ describe(filterGroupsByIssues.name, () => {
   it('should return true if historyEventIssues is set and an event has issues', () => {
     expect(
       filterGroupsByIssues(
-        buildGroup([
-          BASE_METADATA,
-          { ...BASE_METADATA, diagnosticsIssues: [DIAGNOSTICS_ISSUE] },
-        ]),
+        buildGroup([BASE_METADATA, BASE_METADATA], [DIAGNOSTICS_ISSUE]),
         ISSUES_ONLY
       )
     ).toBe(true);
@@ -50,10 +48,7 @@ describe(filterGroupsByIssues.name, () => {
 
   it('should return false if historyEventIssues is set and issues are empty', () => {
     expect(
-      filterGroupsByIssues(
-        buildGroup([{ ...BASE_METADATA, diagnosticsIssues: [] }]),
-        ISSUES_ONLY
-      )
+      filterGroupsByIssues(buildGroup([BASE_METADATA], []), ISSUES_ONLY)
     ).toBe(false);
   });
 
@@ -65,7 +60,8 @@ describe(filterGroupsByIssues.name, () => {
 const ISSUES_ONLY: EventGroupIssuesFilterValue = { historyEventIssues: true };
 
 function buildGroup(
-  eventsMetadata: Array<HistoryGroupEventMetadata>
+  eventsMetadata: Array<HistoryGroupEventMetadata>,
+  diagnosticsIssues?: Array<WorkflowDiagnosticsIssue>
 ): ActivityHistoryGroup {
   return {
     label: 'Mock activity',
@@ -78,5 +74,6 @@ function buildGroup(
     groupType: 'Activity',
     events: [scheduleActivityTaskEvent],
     firstEventId: null,
+    ...(diagnosticsIssues && { diagnosticsIssues }),
   };
 }
