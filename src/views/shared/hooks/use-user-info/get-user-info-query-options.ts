@@ -1,6 +1,6 @@
 import { queryOptions } from '@tanstack/react-query';
 
-import { type AuthMeResponse } from '@/utils/auth/auth.types';
+import { type AuthMeResponse } from '@/route-handlers/auth-me/auth-me.types';
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
 
