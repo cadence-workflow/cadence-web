@@ -20,6 +20,7 @@ import workflowHistoryFiltersConfig from './config/workflow-history-filters.conf
 import { WORKFLOW_HISTORY_PAGE_SIZE_CONFIG } from './config/workflow-history-page-size.config';
 import WORKFLOW_HISTORY_RENDER_FETCHED_EVENTS_THROTTLE_MS_CONFIG from './config/workflow-history-render-fetched-events-throttle-ms.config';
 import WORKFLOW_HISTORY_SET_RANGE_THROTTLE_MS_CONFIG from './config/workflow-history-set-range-throttle-ms.config';
+import addDiagnosticsToGroups from './helpers/add-diagnostics-to-groups';
 import getDiagnosticsIssueExpansionId from './helpers/get-diagnostics-issue-expansion-id';
 import getDiagnosticsIssuesByEventId from './helpers/get-diagnostics-issues-by-event-id';
 import getNavigationBarDiagnosticsMenuItems from './helpers/get-navigation-bar-diagnostics-menu-items';
@@ -116,12 +117,12 @@ export default function WorkflowHistory({ params }: Props) {
     eventGroups,
     updateEvents: updateGrouperEvents,
     updatePendingEvents: updateGrouperPendingEvents,
-    updateDiagnostics: updateGrouperDiagnostics,
   } = useWorkflowHistoryGrouper();
 
-  useEffect(() => {
-    updateGrouperDiagnostics(workflowDiagnosticsByEventIdMap);
-  }, [workflowDiagnosticsByEventIdMap, updateGrouperDiagnostics]);
+  const eventGroupsWithDiagnostics = useMemo(
+    () => addDiagnosticsToGroups(eventGroups, workflowDiagnosticsByEventIdMap),
+    [eventGroups, workflowDiagnosticsByEventIdMap]
+  );
 
   const isWorkflowRunning =
     !workflowExecutionInfo?.closeStatus ||
@@ -184,11 +185,11 @@ export default function WorkflowHistory({ params }: Props) {
   const sortedEventGroupsEntries = useMemo(
     () =>
       sortBy(
-        Object.entries(eventGroups),
+        Object.entries(eventGroupsWithDiagnostics),
         ([_, { firstEventId }]) => getSortableEventId(firstEventId),
         'ASC'
       ),
-    [eventGroups]
+    [eventGroupsWithDiagnostics]
   );
 
   const filteredEventGroupsEntries = useMemo(
@@ -304,7 +305,7 @@ export default function WorkflowHistory({ params }: Props) {
     shouldSearchForInitialEvent,
   } = useInitialSelectedEvent({
     selectedEventId: selectedEventIdWithinGroup,
-    eventGroups,
+    eventGroups: eventGroupsWithDiagnostics,
     filteredEventGroupsEntries,
   });
 

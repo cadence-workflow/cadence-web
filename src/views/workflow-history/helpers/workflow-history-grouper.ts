@@ -8,10 +8,8 @@ import type {
   HistoryEventsGroupsMap,
   PendingActivityTaskStartEvent,
   PendingDecisionTaskStartEvent,
-  WorkflowDiagnosticsIssuesByEventId,
 } from '../workflow-history.types';
 
-import applyDiagnosticsToGroup from './apply-diagnostics-to-group';
 import isChildWorkflowExecutionEvent from './check-history-event-group/is-child-workflow-execution-event';
 import isExtendedActivityEvent from './check-history-event-group/is-extended-activity-event';
 import isExtendedDecisionEvent from './check-history-event-group/is-extended-decision-event';
@@ -55,7 +53,6 @@ export default class WorkflowHistoryGrouper {
   private subscribers: Set<(state: GroupingProcessState) => void> = new Set();
   private batchSize?: number;
   private isProcessing: boolean = false;
-  private diagnosticsIssuesByEventId: WorkflowDiagnosticsIssuesByEventId = {};
 
   // Buffer for pending events that arrived before their group exists
   private bufferedPendingActivities: PendingActivityTaskStartEvent[] = [];
@@ -121,28 +118,6 @@ export default class WorkflowHistoryGrouper {
   }
 
   /**
-   * Updates the diagnostics issues attached to event metadata.
-   * Applies them to all current groups and to groups written later.
-   */
-  public updateDiagnostics(
-    diagnosticsIssuesByEventId: WorkflowDiagnosticsIssuesByEventId
-  ): void {
-    this.diagnosticsIssuesByEventId = diagnosticsIssuesByEventId;
-
-    const updatedGroups: HistoryEventsGroupsMap = {};
-    Object.entries(this.groups).forEach(([groupId, group]) => {
-      updatedGroups[groupId] = applyDiagnosticsToGroup(
-        group,
-        diagnosticsIssuesByEventId
-      );
-    });
-    this.groups = updatedGroups;
-
-    const state = this.getState();
-    this.subscribers.forEach((callback) => callback(state));
-  }
-
-  /**
    * Resets the grouper state, clearing all processed events and groups.
    * Useful for reprocessing events from scratch.
    */
@@ -154,7 +129,6 @@ export default class WorkflowHistoryGrouper {
     this.currentPendingDecision = null;
     this.bufferedPendingActivities = [];
     this.bufferedPendingDecision = null;
-    this.diagnosticsIssuesByEventId = {};
     this.isProcessing = false;
   }
 
@@ -192,10 +166,6 @@ export default class WorkflowHistoryGrouper {
   // ============================================================================
   // Private Implementation
   // ============================================================================
-
-  private withDiagnostics<G extends HistoryEventsGroup>(group: G): G {
-    return applyDiagnosticsToGroup(group, this.diagnosticsIssuesByEventId);
-  }
 
   /**
    * Starts the processing cycle.
@@ -328,13 +298,9 @@ export default class WorkflowHistoryGrouper {
       );
 
       if (updatedEventsArr.every(isExtendedActivityEvent)) {
-        groups[groupId] = this.withDiagnostics(
-          getActivityGroupFromEvents(updatedEventsArr)
-        );
+        groups[groupId] = getActivityGroupFromEvents(updatedEventsArr);
       } else if (updatedEventsArr.every(isLocalActivityEvent)) {
-        groups[groupId] = this.withDiagnostics(
-          getLocalActivityGroupFromEvents(updatedEventsArr)
-        );
+        groups[groupId] = getLocalActivityGroupFromEvents(updatedEventsArr);
       } else if (updatedEventsArr.every(isExtendedDecisionEvent)) {
         // If there are more than 2 decision events, filter out the pending decision task start event
         // Pending decision task start event is only added to the group when the scheduled decision task event is added
@@ -346,39 +312,28 @@ export default class WorkflowHistoryGrouper {
                   e.attributes !== 'pendingDecisionTaskStartEventAttributes'
               )
             : updatedEventsArr;
-        groups[groupId] = this.withDiagnostics(
-          getDecisionGroupFromEvents(filteredDecisionEvents)
-        );
+        groups[groupId] = getDecisionGroupFromEvents(filteredDecisionEvents);
       } else if (updatedEventsArr.every(isTimerEvent)) {
-        groups[groupId] = this.withDiagnostics(
-          getTimerGroupFromEvents(updatedEventsArr)
-        );
+        groups[groupId] = getTimerGroupFromEvents(updatedEventsArr);
       } else if (updatedEventsArr.every(isChildWorkflowExecutionEvent)) {
-        groups[groupId] = this.withDiagnostics(
-          getChildWorkflowExecutionGroupFromEvents(updatedEventsArr)
-        );
+        groups[groupId] =
+          getChildWorkflowExecutionGroupFromEvents(updatedEventsArr);
       } else if (
         updatedEventsArr.every(isSignalExternalWorkflowExecutionEvent)
       ) {
-        groups[groupId] = this.withDiagnostics(
-          getSignalExternalWorkflowExecutionGroupFromEvents(updatedEventsArr)
-        );
+        groups[groupId] =
+          getSignalExternalWorkflowExecutionGroupFromEvents(updatedEventsArr);
       } else if (
         updatedEventsArr.every(isRequestCancelExternalWorkflowExecutionEvent)
       ) {
-        groups[groupId] = this.withDiagnostics(
+        groups[groupId] =
           getRequestCancelExternalWorkflowExecutionGroupFromEvents(
             updatedEventsArr
-          )
-        );
+          );
       } else if (updatedEventsArr.every(isWorkflowSignaledEvent)) {
-        groups[groupId] = this.withDiagnostics(
-          getWorkflowSignaledGroupFromEvents(updatedEventsArr)
-        );
+        groups[groupId] = getWorkflowSignaledGroupFromEvents(updatedEventsArr);
       } else if (updatedEventsArr.every(isSingleEvent)) {
-        groups[groupId] = this.withDiagnostics(
-          getSingleEventGroupFromEvents(updatedEventsArr)
-        );
+        groups[groupId] = getSingleEventGroupFromEvents(updatedEventsArr);
       } else {
         logger.warn(
           {
@@ -411,12 +366,10 @@ export default class WorkflowHistoryGrouper {
         (e) => e.attributes !== 'pendingActivityTaskStartEventAttributes'
       ) as ExtendedActivityHistoryEvent[];
 
-      this.groups[groupId] = this.withDiagnostics(
-        getActivityGroupFromEvents([
-          ...filteredEvents,
-          pendingActivity as ExtendedActivityHistoryEvent,
-        ])
-      );
+      this.groups[groupId] = getActivityGroupFromEvents([
+        ...filteredEvents,
+        pendingActivity as ExtendedActivityHistoryEvent,
+      ]);
     }
   }
 
@@ -445,14 +398,10 @@ export default class WorkflowHistoryGrouper {
           ...filteredEvents,
           pendingDecision,
         ];
-        this.groups[groupId] = this.withDiagnostics(
-          getDecisionGroupFromEvents(updatedEventsArr)
-        );
+        this.groups[groupId] = getDecisionGroupFromEvents(updatedEventsArr);
       } else {
         // Just update without pending decision
-        this.groups[groupId] = this.withDiagnostics(
-          getDecisionGroupFromEvents(filteredEvents)
-        );
+        this.groups[groupId] = getDecisionGroupFromEvents(filteredEvents);
       }
     }
   }
@@ -504,9 +453,7 @@ export default class WorkflowHistoryGrouper {
             (e) => e.attributes !== 'pendingActivityTaskStartEventAttributes'
           );
 
-          this.groups[groupId] = this.withDiagnostics(
-            getActivityGroupFromEvents(filteredEvents)
-          );
+          this.groups[groupId] = getActivityGroupFromEvents(filteredEvents);
         }
       }
     });

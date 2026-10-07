@@ -8,7 +8,6 @@ import type {
   GroupingProcessState,
   ProcessEventsParams,
 } from '../helpers/workflow-history-grouper.types';
-import type { WorkflowDiagnosticsIssuesByEventId } from '../workflow-history.types';
 
 import { BATCH_SIZE } from './use-workflow-history-grouper.constants';
 
@@ -66,22 +65,11 @@ export default function useWorkflowHistoryGrouper(throttleMs = 2000) {
     grouperRef.current.updatePendingEvents(params);
   }, []);
 
-  const updateDiagnostics = useCallback(
-    (diagnosticsIssuesByEventId: WorkflowDiagnosticsIssuesByEventId) => {
-      if (!grouperRef.current) {
-        return;
-      }
-      grouperRef.current.updateDiagnostics(diagnosticsIssuesByEventId);
-    },
-    []
-  );
-
   return {
     eventGroups: groupingState?.groups ?? {},
     isProcessing: groupingState?.status === 'processing',
     groupingState,
     updateEvents,
     updatePendingEvents,
-    updateDiagnostics,
   };
 }

@@ -10,20 +10,11 @@ import {
   createScheduleDecisionEvent,
   pendingActivityTaskStartEvent,
 } from '../../__fixtures__/workflow-history-pending-events';
-import { type WorkflowDiagnosticsIssue } from '../../workflow-history.types';
 import WorkflowHistoryGrouper from '../workflow-history-grouper';
 import type {
   GroupingStateChangeCallback,
   Props,
 } from '../workflow-history-grouper.types';
-
-const mockIssue: WorkflowDiagnosticsIssue = {
-  issueId: 0,
-  invariantType: 'Activity Failed',
-  reason: 'r',
-  metadata: {},
-  rootCauses: [],
-};
 
 // Track all setups for cleanup
 const allCleanups: Array<() => void> = [];
@@ -643,84 +634,6 @@ describe(WorkflowHistoryGrouper.name, () => {
 
     // Verify onChange was NOT called after destroy
     expect(handleStateChange).not.toHaveBeenCalled();
-  });
-
-  describe('updateDiagnostics', () => {
-    it('should apply issues to existing groups and notify subscribers', async () => {
-      const { grouper, handleStateChange, waitForProcessing } = setup();
-      grouper.updateEvents(completedActivityTaskEvents);
-      await waitForProcessing();
-      handleStateChange.mockClear();
-
-      grouper.updateDiagnostics({ '9': [mockIssue] });
-
-      const group = grouper.getState().groups['7'];
-      expect(group.diagnosticsIssues).toEqual([mockIssue]);
-      expect(handleStateChange).toHaveBeenCalledTimes(1);
-    });
-
-    it('should apply issues to events grouped after the call', async () => {
-      const { grouper, waitForProcessing } = setup();
-      grouper.updateDiagnostics({ '9': [mockIssue] });
-
-      grouper.updateEvents(completedActivityTaskEvents);
-      await waitForProcessing();
-
-      const group = grouper.getState().groups['7'];
-      expect(group.diagnosticsIssues).toEqual([mockIssue]);
-    });
-
-    it('should keep issues on the activity group when pending activities update', async () => {
-      const { grouper, waitForProcessing } = setup();
-      grouper.updateEvents([createScheduleActivityEvent('7')]);
-      await waitForProcessing();
-      grouper.updateDiagnostics({
-        '7': [mockIssue],
-        [pendingActivityTaskStartEvent.computedEventId]: [mockIssue],
-      });
-
-      grouper.updatePendingEvents({
-        pendingStartActivities: [pendingActivityTaskStartEvent],
-        pendingStartDecision: null,
-      });
-
-      let group = grouper.getState().groups['7'];
-      expect(group.events).toHaveLength(2);
-      expect(group.diagnosticsIssues).toEqual([mockIssue, mockIssue]);
-
-      grouper.updatePendingEvents({
-        pendingStartActivities: [],
-        pendingStartDecision: null,
-      });
-
-      group = grouper.getState().groups['7'];
-      expect(group.events).toHaveLength(1);
-      expect(group.diagnosticsIssues).toEqual([mockIssue]);
-    });
-
-    it('should clear issues when called with an empty map', async () => {
-      const { grouper, waitForProcessing } = setup();
-      grouper.updateEvents(completedActivityTaskEvents);
-      await waitForProcessing();
-      grouper.updateDiagnostics({ '9': [mockIssue] });
-
-      grouper.updateDiagnostics({});
-
-      const group = grouper.getState().groups['7'];
-      expect(group).not.toHaveProperty('diagnosticsIssues');
-    });
-
-    it('should clear the stored map on reset', async () => {
-      const { grouper, waitForProcessing } = setup();
-      grouper.updateDiagnostics({ '9': [mockIssue] });
-      grouper.reset();
-
-      grouper.updateEvents(completedActivityTaskEvents);
-      await waitForProcessing();
-
-      const group = grouper.getState().groups['7'];
-      expect(group).not.toHaveProperty('diagnosticsIssues');
-    });
   });
 
   it('should return current state via getState', async () => {
