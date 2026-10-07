@@ -27,8 +27,9 @@ function isTruthyHeaderValue(value: string | null): boolean {
 }
 
 /**
- * Shared-secret check: `crypto.timingSafeEqual`, length-mismatch-safe —
- * unequal lengths are invalid (no padding, no try/catch default-allow).
+ * Shared-secret check: both values are hashed to a fixed length, then compared
+ * with `crypto.timingSafeEqual`, so neither the content nor the length of the
+ * secret leaks through timing.
  * When no pair is configured the boot WARN has already fired and bare
  * headers are accepted: perimeter stripping is the only defense.
  */
@@ -48,13 +49,10 @@ function hasValidSharedSecret(
   // (instrumentation → dynamic config → resolvers → server registry) though
   // it never executes it, and a static crypto import fails that build. This
   // module is server-only and only ever runs in the Node.js runtime.
-  const { timingSafeEqual } = process.getBuiltinModule('node:crypto');
-  const providedBytes = Buffer.from(provided);
-  const expectedBytes = Buffer.from(config.sharedSecret);
-  if (providedBytes.length !== expectedBytes.length) {
-    return false;
-  }
-  return timingSafeEqual(providedBytes, expectedBytes);
+  const { createHash, timingSafeEqual } =
+    process.getBuiltinModule('node:crypto');
+  const digest = (value: string) => createHash('sha256').update(value).digest();
+  return timingSafeEqual(digest(provided), digest(config.sharedSecret));
 }
 
 export default async function resolveTrustedHeaderAuthContext(

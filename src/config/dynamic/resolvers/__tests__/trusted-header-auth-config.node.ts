@@ -110,6 +110,34 @@ describe(trustedHeaderAuthConfig.name, () => {
     expect(() => trustedHeaderAuthConfig()).toThrow(/must be set together/);
   });
 
+  it.each([
+    ['CADENCE_WEB_TRUSTED_HEADER_USER_ID', 'X-Cadence-Secret'],
+    ['CADENCE_WEB_TRUSTED_HEADER_NAME', 'x-cadence-secret'],
+    ['CADENCE_WEB_TRUSTED_HEADER_ADMIN', 'x-cadence-secret'],
+  ])(
+    'throws when the shared-secret header is reused as %s',
+    (envVar, headerName) => {
+      setMinimalEnv();
+      process.env.CADENCE_WEB_TRUSTED_HEADER_SHARED_SECRET_HEADER =
+        'x-cadence-secret';
+      process.env.CADENCE_WEB_TRUSTED_HEADER_SHARED_SECRET = 'test-secret';
+      process.env[envVar] = headerName;
+
+      expect(() => trustedHeaderAuthConfig()).toThrow(/must not be reused/);
+    }
+  );
+
+  it('throws when the shared-secret header is forwarded through the metadata map', () => {
+    setMinimalEnv();
+    process.env.CADENCE_WEB_TRUSTED_HEADER_SHARED_SECRET_HEADER =
+      'x-cadence-secret';
+    process.env.CADENCE_WEB_TRUSTED_HEADER_SHARED_SECRET = 'test-secret';
+    process.env.CADENCE_WEB_TRUSTED_HEADER_GRPC_METADATA =
+      'X-Cadence-Secret:leaked';
+
+    expect(() => trustedHeaderAuthConfig()).toThrow(/must not be reused/);
+  });
+
   it('WARNs at boot when the secret pair is absent (bare headers)', () => {
     setMinimalEnv();
 

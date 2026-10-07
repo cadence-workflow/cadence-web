@@ -99,6 +99,27 @@ export default function trustedHeaderAuthConfig(): TrustedHeaderAuthConfig | nul
       'CADENCE_WEB_TRUSTED_HEADER_SHARED_SECRET_HEADER and CADENCE_WEB_TRUSTED_HEADER_SHARED_SECRET must be set together'
     );
   }
+  const grpcMetadataMap = parseGrpcMetadataMap(
+    process.env.CADENCE_WEB_TRUSTED_HEADER_GRPC_METADATA
+  );
+  if (sharedSecretHeader) {
+    // The secret must never be read back as identity or forwarded to Cadence.
+    const secretHeader = sharedSecretHeader.toLowerCase();
+    const otherHeaders = [
+      ...Object.entries(headerNameEnvVars)
+        .filter(
+          ([envVar]) =>
+            envVar !== 'CADENCE_WEB_TRUSTED_HEADER_SHARED_SECRET_HEADER'
+        )
+        .map(([, name]) => name),
+      ...grpcMetadataMap.map((m) => m.inboundHeader),
+    ];
+    if (otherHeaders.some((name) => name?.toLowerCase() === secretHeader)) {
+      throw new Error(
+        `CADENCE_WEB_TRUSTED_HEADER_SHARED_SECRET_HEADER "${sharedSecretHeader}" must not be reused as an identity, admin, groups or metadata-map header`
+      );
+    }
+  }
   if (!sharedSecret) {
     logger.warn(
       'trusted-header: no shared-secret pair configured; identity accepted from bare headers — perimeter stripping is the only defense'
@@ -111,9 +132,7 @@ export default function trustedHeaderAuthConfig(): TrustedHeaderAuthConfig | nul
     nameHeader: headerNameEnvVars.CADENCE_WEB_TRUSTED_HEADER_NAME,
     groupsHeader: headerNameEnvVars.CADENCE_WEB_TRUSTED_HEADER_GROUPS,
     adminHeader: headerNameEnvVars.CADENCE_WEB_TRUSTED_HEADER_ADMIN,
-    grpcMetadataMap: parseGrpcMetadataMap(
-      process.env.CADENCE_WEB_TRUSTED_HEADER_GRPC_METADATA
-    ),
+    grpcMetadataMap,
     sharedSecretHeader,
     sharedSecret,
   };
