@@ -87,6 +87,7 @@ type BaseHistoryGroup = {
   label: string;
   shortLabel?: string;
   eventsMetadata: HistoryGroupEventMetadata[];
+  diagnosticsIssues?: Array<WorkflowDiagnosticsIssue>;
   status: WorkflowEventStatus;
   hasMissingEvents: boolean;
   timeMs: number | null;

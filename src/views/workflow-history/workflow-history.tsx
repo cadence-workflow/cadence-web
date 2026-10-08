@@ -20,6 +20,7 @@ import workflowHistoryFiltersConfig from './config/workflow-history-filters.conf
 import { WORKFLOW_HISTORY_PAGE_SIZE_CONFIG } from './config/workflow-history-page-size.config';
 import WORKFLOW_HISTORY_RENDER_FETCHED_EVENTS_THROTTLE_MS_CONFIG from './config/workflow-history-render-fetched-events-throttle-ms.config';
 import WORKFLOW_HISTORY_SET_RANGE_THROTTLE_MS_CONFIG from './config/workflow-history-set-range-throttle-ms.config';
+import applyDiagnosticsToGroup from './helpers/apply-diagnostics-to-group';
 import getDiagnosticsIssueExpansionId from './helpers/get-diagnostics-issue-expansion-id';
 import getDiagnosticsIssuesByEventId from './helpers/get-diagnostics-issues-by-event-id';
 import getNavigationBarDiagnosticsMenuItems from './helpers/get-navigation-bar-diagnostics-menu-items';
@@ -44,6 +45,7 @@ import WorkflowHistoryUngroupedTable from './workflow-history-ungrouped-table/wo
 import { type UngroupedEventInfo } from './workflow-history-ungrouped-table/workflow-history-ungrouped-table.types';
 import { styled } from './workflow-history.styles';
 import {
+  type EventGroupEntry,
   type VisibleHistoryRanges,
   type Props,
   type WorkflowDiagnosticsIssuesByEventId,
@@ -176,7 +178,7 @@ export default function WorkflowHistory({ params }: Props) {
     });
   }, [wfExecutionDescription, updateGrouperPendingEvents]);
 
-  const sortedEventGroupsEntries = useMemo(
+  const sortedRawEventGroupsEntries = useMemo(
     () =>
       sortBy(
         Object.entries(eventGroups),
@@ -184,6 +186,17 @@ export default function WorkflowHistory({ params }: Props) {
         'ASC'
       ),
     [eventGroups]
+  );
+
+  const sortedEventGroupsEntries = useMemo(
+    () =>
+      sortedRawEventGroupsEntries.map(
+        ([groupId, group]): EventGroupEntry => [
+          groupId,
+          applyDiagnosticsToGroup(group, workflowDiagnosticsByEventIdMap),
+        ]
+      ),
+    [sortedRawEventGroupsEntries, workflowDiagnosticsByEventIdMap]
   );
 
   const filteredEventGroupsEntries = useMemo(
