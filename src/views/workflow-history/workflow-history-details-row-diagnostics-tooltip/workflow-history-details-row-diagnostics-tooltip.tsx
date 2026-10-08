@@ -9,7 +9,6 @@ import { styled } from './workflow-history-details-row-diagnostics-tooltip.style
 export default function WorkflowHistoryDetailsRowDiagnosticsTooltip({
   value,
   onClickOpenEvent,
-  isEventOpen,
   closeTooltip,
 }: DetailsRowTooltipComponentProps) {
   const issues: Array<WorkflowDiagnosticsIssue> = value;
@@ -33,7 +32,6 @@ export default function WorkflowHistoryDetailsRowDiagnosticsTooltip({
             kind="secondary"
             size="mini"
             shape="pill"
-            disabled={isEventOpen}
             onClick={(e) => {
               // The tooltip portal still bubbles React events to the accordion header
               e.stopPropagation();

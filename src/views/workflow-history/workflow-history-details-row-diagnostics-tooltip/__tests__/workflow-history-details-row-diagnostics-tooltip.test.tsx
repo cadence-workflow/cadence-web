@@ -63,20 +63,6 @@ describe(WorkflowHistoryDetailsRowDiagnosticsTooltip.name, () => {
     expect(closeTooltip).toHaveBeenCalledTimes(1);
   });
 
-  it('disables the open event button when the event is open', async () => {
-    const { user, onClickOpenEvent } = setup({
-      onClickOpenEvent: jest.fn(),
-      isEventOpen: true,
-    });
-
-    const button = screen.getByRole('button', { name: 'Open event' });
-    expect(button).toBeDisabled();
-
-    await user.click(button);
-
-    expect(onClickOpenEvent).not.toHaveBeenCalled();
-  });
-
   it('does not propagate the click to parent elements', async () => {
     const onParentClick = jest.fn();
     const { user } = setup({ onClickOpenEvent: jest.fn() }, ({ children }) => (

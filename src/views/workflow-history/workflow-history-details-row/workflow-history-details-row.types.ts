@@ -16,7 +16,6 @@ export type DetailsRowValueComponentProps = {
 export type DetailsRowTooltipComponentProps = DetailsRowValueComponentProps & {
   closeTooltip?: () => void;
   onClickOpenEvent?: () => void;
-  isEventOpen?: boolean;
 };
 
 /**
@@ -83,8 +82,6 @@ export type DetailsRowItem = {
 export type Props = {
   detailsEntries: EventDetailsEntries;
   diagnosticsIssues?: Array<WorkflowDiagnosticsIssue>;
-  /** Shows an "Open event" button in the diagnostics tooltip when set */
+  /** Shows an "Open event" button in the diagnostics tooltip when set; omit when the event is open */
   onClickOpenEvent?: () => void;
-  /** Disables the "Open event" button when the event is already open */
-  isEventOpen?: boolean;
 } & WorkflowPageParams;

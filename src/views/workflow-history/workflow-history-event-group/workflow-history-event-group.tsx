@@ -128,8 +128,7 @@ export default function WorkflowHistoryEventGroup({
             <WorkflowHistoryDetailsRow
               detailsEntries={groupSummaryDetails}
               diagnosticsIssues={eventGroup.diagnosticsIssues}
-              onClickOpenEvent={handleOpenGroup}
-              isEventOpen={isGroupExpanded}
+              onClickOpenEvent={isGroupExpanded ? undefined : handleOpenGroup}
               {...decodedPageUrlParams}
             />
           </styled.SummarizedDetailsContainer>

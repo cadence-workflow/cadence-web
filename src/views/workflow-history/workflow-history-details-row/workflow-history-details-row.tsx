@@ -11,7 +11,6 @@ export default function WorkflowHistoryDetailsRow({
   detailsEntries,
   diagnosticsIssues,
   onClickOpenEvent,
-  isEventOpen,
   ...workflowPageParams
 }: Props) {
   const rowItems = useMemo(
@@ -54,7 +53,6 @@ export default function WorkflowHistoryDetailsRow({
                 isNegative={isNegative}
                 closeTooltip={close}
                 onClickOpenEvent={onClickOpenEvent}
-                isEventOpen={isEventOpen}
                 {...workflowPageParams}
               />
             )}
