@@ -121,6 +121,8 @@ export default function WorkflowHistoryUngroupedEvent({
               <WorkflowHistoryDetailsRow
                 detailsEntries={eventSummaryDetails ?? []}
                 diagnosticsIssues={diagnosticsIssues}
+                onClickOpenEvent={toggleIsExpanded}
+                isEventOpen={isExpanded}
                 {...decodedPageUrlParams}
               />
             ) : (

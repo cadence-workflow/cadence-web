@@ -567,6 +567,62 @@ describe(WorkflowHistoryUngroupedEvent.name, () => {
   });
 });
 
+describe('WorkflowHistoryUngroupedEvent diagnostics open event button', () => {
+  beforeEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('expands the event when the open event button is clicked', async () => {
+    const eventInfo = createMockEventInfo();
+    const { user, mockToggleIsExpanded } = setup({
+      eventInfo,
+      isExpanded: false,
+      workflowDiagnosticsByEventIdMap: {
+        [eventInfo.id]: [
+          {
+            issueId: 1,
+            invariantType: 'Activity Failed',
+            reason: 'The activity returned an error',
+            metadata: null,
+          },
+        ],
+      },
+    });
+
+    await user.hover(screen.getByText('1 issue'));
+    const button = await screen.findByRole('button', { name: 'Open event' });
+    expect(button).toBeEnabled();
+
+    await user.click(button);
+
+    expect(mockToggleIsExpanded).toHaveBeenCalledTimes(1);
+  });
+
+  it('disables the open event button when the event is expanded', async () => {
+    const eventInfo = createMockEventInfo();
+    const { user } = setup({
+      eventInfo,
+      isExpanded: true,
+      workflowDiagnosticsByEventIdMap: {
+        [eventInfo.id]: [
+          {
+            issueId: 1,
+            invariantType: 'Activity Failed',
+            reason: 'The activity returned an error',
+            metadata: null,
+          },
+        ],
+      },
+    });
+
+    await user.hover(screen.getByText('1 issue'));
+
+    expect(
+      await screen.findByRole('button', { name: 'Open event' })
+    ).toBeDisabled();
+  });
+});
+
 function setup({
   eventInfo,
   workflowStartTimeMs = 1725747370000,
