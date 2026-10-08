@@ -284,7 +284,6 @@ function getDefaultProps(): Props {
     isTimelineShown: false,
     setIsTimelineShown: jest.fn(),
     timelineVirtuosoRef: { current: null },
-    workflowDiagnosticsByEventIdMap: {},
     getIsDiagnosticsIssueExpanded: jest.fn(() => false),
     toggleIsDiagnosticsIssueExpanded: jest.fn(),
   };

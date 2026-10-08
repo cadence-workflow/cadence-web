@@ -5,15 +5,11 @@ import { VirtuosoMockContext } from 'react-virtuoso';
 import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
 import { type RequestError } from '@/utils/request/request-error';
-import {
-  mockActivityEventGroup,
-  mockDecisionEventGroup,
-} from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
+import { mockActivityEventGroup } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
 import { type WorkflowPageTabsParams } from '@/views/workflow-page/workflow-page-tabs/workflow-page-tabs.types';
 
 import { createUngroupedEventsInfo } from '../../__fixtures__/ungrouped-events-info';
 import type WorkflowHistoryTableFooter from '../../workflow-history-table-footer/workflow-history-table-footer';
-import { type WorkflowDiagnosticsIssuesByEventId } from '../../workflow-history.types';
 import WorkflowHistoryUngroupedTable from '../workflow-history-ungrouped-table';
 import { type UngroupedEventInfo } from '../workflow-history-ungrouped-table.types';
 
@@ -54,11 +50,9 @@ jest.mock(
         onReset,
         onClickShowInTimeline,
         animateOnEnter,
-        workflowDiagnosticsByEventIdMap,
       }) => (
         <div
           data-testid="workflow-history-ungrouped-event"
-          data-diagnostics={JSON.stringify(workflowDiagnosticsByEventIdMap)}
           data-expanded={isExpanded}
           data-animate-on-enter={animateOnEnter}
           data-event-id={eventInfo.id}
@@ -72,36 +66,6 @@ jest.mock(
       )
     )
 );
-
-const mockDiagnosticsIssuesByEventId: WorkflowDiagnosticsIssuesByEventId = {
-  '7': [
-    {
-      issueId: 0,
-      invariantType: 'Activity Failed',
-      reason: 'Activity timed out',
-      metadata: null,
-      rootCauses: [],
-    },
-  ],
-  '2': [
-    {
-      issueId: 1,
-      invariantType: 'Decision Failed',
-      reason: 'Decision task failed',
-      metadata: null,
-      rootCauses: [],
-    },
-  ],
-  '999': [
-    {
-      issueId: 2,
-      invariantType: 'Unrelated',
-      reason: 'Issue for an event that is not rendered',
-      metadata: null,
-      rootCauses: [],
-    },
-  ],
-};
 
 describe(WorkflowHistoryUngroupedTable.name, () => {
   afterEach(() => {
@@ -261,42 +225,6 @@ describe(WorkflowHistoryUngroupedTable.name, () => {
 
     expect(mockOnClickShowEventInTimeline).toHaveBeenCalledWith(groupId);
   });
-
-  it('should pass diagnostics scoped to the event group to WorkflowHistoryUngroupedEvent', () => {
-    setup({
-      ungroupedEventsInfo: createUngroupedEventsInfo([
-        ['group-1', mockActivityEventGroup],
-        ['group-2', mockDecisionEventGroup],
-      ]),
-      workflowDiagnosticsByEventIdMap: mockDiagnosticsIssuesByEventId,
-    });
-
-    const expectedDiagnosticsByEventId: Record<string, string> = {
-      ...Object.fromEntries(
-        mockActivityEventGroup.events.map((event) => [
-          event.eventId,
-          JSON.stringify({ '7': mockDiagnosticsIssuesByEventId['7'] }),
-        ])
-      ),
-      ...Object.fromEntries(
-        mockDecisionEventGroup.events.map((event) => [
-          event.eventId,
-          JSON.stringify({ '2': mockDiagnosticsIssuesByEventId['2'] }),
-        ])
-      ),
-    };
-
-    const events = screen.getAllByTestId('workflow-history-ungrouped-event');
-    expect(events).toHaveLength(
-      Object.keys(expectedDiagnosticsByEventId).length
-    );
-    events.forEach((event) => {
-      expect(event).toHaveAttribute(
-        'data-diagnostics',
-        expectedDiagnosticsByEventId[event.getAttribute('data-event-id') ?? '']
-      );
-    });
-  });
 });
 
 function setup({
@@ -319,7 +247,6 @@ function setup({
   toggleIsEventExpanded = jest.fn(),
   resetToDecisionEventId = jest.fn(),
   onClickShowGroupInTimeline = jest.fn(),
-  workflowDiagnosticsByEventIdMap = {},
   getIsDiagnosticsIssueExpanded = jest.fn(() => false),
   toggleIsDiagnosticsIssueExpanded = jest.fn(),
 }: {
@@ -343,7 +270,6 @@ function setup({
   toggleIsEventExpanded?: (eventId: string) => void;
   resetToDecisionEventId?: (decisionEventId: string) => void;
   onClickShowGroupInTimeline?: (eventGroupId: string) => void;
-  workflowDiagnosticsByEventIdMap?: WorkflowDiagnosticsIssuesByEventId;
   getIsDiagnosticsIssueExpanded?: (issueExpansionId: string) => boolean;
   toggleIsDiagnosticsIssueExpanded?: (issueExpansionId: string) => void;
 } = {}) {
@@ -372,7 +298,6 @@ function setup({
         fetchMoreEvents={fetchMoreEvents}
         isFetchingMoreEvents={isFetchingMoreEvents}
         onClickShowGroupInTimeline={onClickShowGroupInTimeline}
-        workflowDiagnosticsByEventIdMap={workflowDiagnosticsByEventIdMap}
         getIsDiagnosticsIssueExpanded={getIsDiagnosticsIssueExpanded}
         toggleIsDiagnosticsIssueExpanded={toggleIsDiagnosticsIssueExpanded}
       />

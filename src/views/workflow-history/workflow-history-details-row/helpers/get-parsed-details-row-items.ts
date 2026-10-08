@@ -2,17 +2,13 @@ import { createElement, type ComponentType } from 'react';
 
 import workflowHistoryDetailsRowParsersConfig from '../../config/workflow-history-details-row-parsers.config';
 import { type EventDetailsEntries } from '../../workflow-history-event-details/workflow-history-event-details.types';
-import { type WorkflowDiagnosticsIssue } from '../../workflow-history.types';
 import {
   type DetailsRowValueComponentProps,
   type DetailsRowItem,
 } from '../workflow-history-details-row.types';
 
-import getDiagnosticsIssuesRowItem from './get-diagnostics-issues-row-item';
-
 export default function getParsedDetailsRowItems(
-  detailsEntries: EventDetailsEntries,
-  diagnosticsIssues?: Array<WorkflowDiagnosticsIssue>
+  detailsEntries: EventDetailsEntries
 ): Array<DetailsRowItem> {
   const rowItems = detailsEntries.reduce<Array<DetailsRowItem>>(
     (acc, detailsConfig) => {
@@ -65,10 +61,6 @@ export default function getParsedDetailsRowItems(
     },
     []
   );
-
-  if (diagnosticsIssues && diagnosticsIssues.length > 0) {
-    rowItems.push(getDiagnosticsIssuesRowItem(diagnosticsIssues));
-  }
 
   return rowItems;
 }

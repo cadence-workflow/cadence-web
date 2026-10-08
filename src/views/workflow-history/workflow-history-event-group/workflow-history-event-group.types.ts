@@ -3,7 +3,6 @@ import { type WorkflowExecutionCloseStatus } from '@/__generated__/proto-ts/uber
 import {
   type HistoryEventsGroup,
   type Props as WorkflowHistoryProps,
-  type WorkflowDiagnosticsIssuesByEventId,
 } from '../workflow-history.types';
 
 export type Props = {
@@ -25,7 +24,6 @@ export type Props = {
   onClickShowInTimeline: () => void;
 
   // Diagnostics
-  workflowDiagnosticsByEventIdMap: WorkflowDiagnosticsIssuesByEventId;
   getIsDiagnosticsIssueExpanded: (issueExpansionId: string) => boolean;
   toggleIsDiagnosticsIssueExpanded: (issueExpansionId: string) => void;
 };

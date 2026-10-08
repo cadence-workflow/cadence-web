@@ -13,11 +13,13 @@ import type WorkflowHistoryGroupLabel from '@/views/workflow-history/workflow-hi
 import type WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 
 import * as generateHistoryGroupDetailsModule from '../../helpers/generate-history-group-details';
+import type WorkflowHistoryDetailsRow from '../../workflow-history-details-row/workflow-history-details-row';
 import type { EventDetailsEntries } from '../../workflow-history-event-details/workflow-history-event-details.types';
 import type WorkflowHistoryEventStatusBadge from '../../workflow-history-event-status-badge/workflow-history-event-status-badge';
 import type WorkflowHistoryGroupDetails from '../../workflow-history-group-details/workflow-history-group-details';
 import type { GroupDetailsEntries } from '../../workflow-history-group-details/workflow-history-group-details.types';
 import type { UngroupedEventInfo } from '../../workflow-history-ungrouped-table/workflow-history-ungrouped-table.types';
+import { WORKFLOW_DIAGNOSTICS_EVENT_ID_KEY } from '../../workflow-history.constants';
 import {
   type ExtendedHistoryEvent,
   type ActivityHistoryGroup,
@@ -63,6 +65,23 @@ jest.mock<typeof WorkflowHistoryGroupDetails>(
             Close
           </button>
         )}
+      </div>
+    ))
+);
+
+jest.mock<typeof WorkflowHistoryDetailsRow>(
+  '../../workflow-history-details-row/workflow-history-details-row',
+  () =>
+    jest.fn(({ detailsEntries, diagnosticsIssues }) => (
+      <div>
+        {detailsEntries.map((entry) =>
+          entry.isGroup ? null : (
+            <span key={entry.path}>{String(entry.value)}</span>
+          )
+        )}
+        <div data-testid="details-row-issues-count">
+          {diagnosticsIssues?.length ?? 0}
+        </div>
       </div>
     ))
 );
@@ -331,6 +350,42 @@ describe(WorkflowHistoryUngroupedEvent.name, () => {
     expect(screen.getByText('TestActivity')).toBeInTheDocument();
   });
 
+  it('renders diagnostics issues pill for issues of this event only', () => {
+    const eventInfo = createMockEventInfo();
+    const issue = (issueId: number, eventId: number) => ({
+      issueId,
+      invariantType: 'Activity Failed',
+      reason: `Reason ${issueId}`,
+      metadata: { [WORKFLOW_DIAGNOSTICS_EVENT_ID_KEY]: eventId },
+      rootCauses: [],
+    });
+    setup({
+      eventInfo: {
+        ...eventInfo,
+        eventGroup: {
+          ...eventInfo.eventGroup,
+          diagnosticsIssues: [
+            issue(0, Number(eventInfo.id)),
+            issue(1, Number(eventInfo.id)),
+            issue(2, Number(eventInfo.id) + 100),
+          ],
+        },
+      },
+    });
+
+    expect(screen.getByTestId('details-row-issues-count')).toHaveTextContent(
+      '2'
+    );
+  });
+
+  it('does not render a diagnostics issues pill when the group has no issues', () => {
+    setup({ eventInfo: createMockEventInfo() });
+
+    expect(
+      screen.queryByTestId('details-row-issues-count')
+    ).not.toBeInTheDocument();
+  });
+
   it('renders empty div when event summary details are not available', () => {
     const eventInfo = createMockEventInfo();
     setup({ eventInfo });
@@ -531,7 +586,6 @@ function setup({
   onReset = jest.fn(),
   onClickShowInTimeline = jest.fn(),
   mockGroupDetails,
-  workflowDiagnosticsByEventIdMap = {},
   getIsDiagnosticsIssueExpanded = jest.fn(() => false),
   toggleIsDiagnosticsIssueExpanded = jest.fn(),
 }: Partial<Props> & {
@@ -597,7 +651,6 @@ function setup({
       animateOnEnter={animateOnEnter}
       onReset={mockOnReset}
       onClickShowInTimeline={mockOnClickShowInTimeline}
-      workflowDiagnosticsByEventIdMap={workflowDiagnosticsByEventIdMap}
       getIsDiagnosticsIssueExpanded={getIsDiagnosticsIssueExpanded}
       toggleIsDiagnosticsIssueExpanded={toggleIsDiagnosticsIssueExpanded}
     />

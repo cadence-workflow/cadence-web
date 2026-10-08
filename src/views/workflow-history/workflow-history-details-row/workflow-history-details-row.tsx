@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 
 import { StatefulTooltip } from 'baseui/tooltip';
 
+import getDiagnosticsIssuesDetailsEntry from './helpers/get-diagnostics-issues-details-entry';
 import getParsedDetailsRowItems from './helpers/get-parsed-details-row-items';
 import { overrides, styled } from './workflow-history-details-row.styles';
 import { type Props } from './workflow-history-details-row.types';
@@ -12,7 +13,15 @@ export default function WorkflowHistoryDetailsRow({
   ...workflowPageParams
 }: Props) {
   const rowItems = useMemo(
-    () => getParsedDetailsRowItems(detailsEntries, diagnosticsIssues),
+    () =>
+      getParsedDetailsRowItems(
+        diagnosticsIssues && diagnosticsIssues.length > 0
+          ? [
+              ...detailsEntries,
+              getDiagnosticsIssuesDetailsEntry(diagnosticsIssues),
+            ]
+          : detailsEntries
+      ),
     [detailsEntries, diagnosticsIssues]
   );
 

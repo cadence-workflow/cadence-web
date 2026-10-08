@@ -6,17 +6,11 @@ import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import { type WorkflowExecutionCloseStatus } from '@/__generated__/proto-ts/uber/cadence/api/v1/WorkflowExecutionCloseStatus';
 import { RequestError } from '@/utils/request/request-error';
-import {
-  mockActivityEventGroup,
-  mockDecisionEventGroup,
-} from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
+import { mockActivityEventGroup } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
 import { type WorkflowPageTabContentParams } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
 import type WorkflowHistoryTableFooter from '../../workflow-history-table-footer/workflow-history-table-footer';
-import {
-  type HistoryEventsGroup,
-  type WorkflowDiagnosticsIssuesByEventId,
-} from '../../workflow-history.types';
+import { type HistoryEventsGroup } from '../../workflow-history.types';
 import WorkflowHistoryGroupedTable from '../workflow-history-grouped-table';
 
 jest.mock<typeof WorkflowHistoryTableFooter>(
@@ -52,16 +46,11 @@ jest.mock(
       ({
         eventGroup,
         selectedEventId,
-        workflowDiagnosticsByEventIdMap,
       }: {
         eventGroup: HistoryEventsGroup;
         selectedEventId?: string;
-        workflowDiagnosticsByEventIdMap: WorkflowDiagnosticsIssuesByEventId;
       }) => (
-        <div
-          data-testid="workflow-history-event-group"
-          data-diagnostics={JSON.stringify(workflowDiagnosticsByEventIdMap)}
-        >
+        <div data-testid="workflow-history-event-group">
           {JSON.stringify(eventGroup)}
           {selectedEventId && (
             <div data-testid="selected-event-id">{selectedEventId}</div>
@@ -70,36 +59,6 @@ jest.mock(
       )
     )
 );
-
-const mockDiagnosticsIssuesByEventId: WorkflowDiagnosticsIssuesByEventId = {
-  '7': [
-    {
-      issueId: 0,
-      invariantType: 'Activity Failed',
-      reason: 'Activity timed out',
-      metadata: null,
-      rootCauses: [],
-    },
-  ],
-  '2': [
-    {
-      issueId: 1,
-      invariantType: 'Decision Failed',
-      reason: 'Decision task failed',
-      metadata: null,
-      rootCauses: [],
-    },
-  ],
-  '999': [
-    {
-      issueId: 2,
-      invariantType: 'Unrelated',
-      reason: 'Issue for an event that is not rendered',
-      metadata: null,
-      rootCauses: [],
-    },
-  ],
-};
 
 describe(WorkflowHistoryGroupedTable.name, () => {
   afterEach(() => {
@@ -175,28 +134,6 @@ describe(WorkflowHistoryGroupedTable.name, () => {
 
     expect(screen.queryByTestId('selected-event-id')).not.toBeInTheDocument();
   });
-
-  it('should pass diagnostics scoped to each group to WorkflowHistoryEventGroup', () => {
-    setup({
-      eventGroupsById: [
-        ['group-1', mockActivityEventGroup],
-        ['group-2', mockDecisionEventGroup],
-      ],
-      workflowDiagnosticsByEventIdMap: mockDiagnosticsIssuesByEventId,
-    });
-
-    const [activityGroup, decisionGroup] = screen.getAllByTestId(
-      'workflow-history-event-group'
-    );
-    expect(activityGroup).toHaveAttribute(
-      'data-diagnostics',
-      JSON.stringify({ '7': mockDiagnosticsIssuesByEventId['7'] })
-    );
-    expect(decisionGroup).toHaveAttribute(
-      'data-diagnostics',
-      JSON.stringify({ '2': mockDiagnosticsIssuesByEventId['2'] })
-    );
-  });
 });
 
 function setup({
@@ -222,7 +159,6 @@ function setup({
   getIsEventExpanded = jest.fn(() => false),
   toggleIsEventExpanded = jest.fn(),
   resetToDecisionEventId = jest.fn(),
-  workflowDiagnosticsByEventIdMap = {},
   getIsDiagnosticsIssueExpanded = jest.fn(() => false),
   toggleIsDiagnosticsIssueExpanded = jest.fn(),
 }: {
@@ -248,7 +184,6 @@ function setup({
   getIsEventExpanded?: (eventId: string) => boolean;
   toggleIsEventExpanded?: (eventId: string) => void;
   resetToDecisionEventId?: (decisionEventId: string) => void;
-  workflowDiagnosticsByEventIdMap?: WorkflowDiagnosticsIssuesByEventId;
   getIsDiagnosticsIssueExpanded?: (issueExpansionId: string) => boolean;
   toggleIsDiagnosticsIssueExpanded?: (issueExpansionId: string) => void;
 } = {}) {
@@ -278,7 +213,6 @@ function setup({
         fetchMoreEvents={fetchMoreEvents}
         isFetchingMoreEvents={isFetchingMoreEvents}
         onClickShowGroupInTimeline={jest.fn()}
-        workflowDiagnosticsByEventIdMap={workflowDiagnosticsByEventIdMap}
         getIsDiagnosticsIssueExpanded={getIsDiagnosticsIssueExpanded}
         toggleIsDiagnosticsIssueExpanded={toggleIsDiagnosticsIssueExpanded}
       />
