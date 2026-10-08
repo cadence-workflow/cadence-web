@@ -1,6 +1,6 @@
-import { type DetailsRowValueComponentProps } from '../workflow-history-details-row/workflow-history-details-row.types';
+import { type DetailsRowTooltipComponentProps } from '../workflow-history-details-row/workflow-history-details-row.types';
 
-export type Props = DetailsRowValueComponentProps & {
+export type Props = DetailsRowTooltipComponentProps & {
   onClickOpenEvent?: () => void;
   isEventOpen?: boolean;
 };

@@ -1,4 +1,4 @@
-import { render, screen, userEvent } from '@/test-utils/rtl';
+import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
 import type { WorkflowPageParams } from '@/views/workflow-page/workflow-page.types';
 
@@ -28,8 +28,11 @@ jest.mock('../helpers/get-parsed-details-row-items', () =>
               {String(value)}
             </span>
           ),
-          renderTooltip: ({ label }: any) => (
-            <span data-testid={`tooltip-${entry.path}`}>{label}</span>
+          renderTooltip: ({ label, closeTooltip }: any) => (
+            <span data-testid={`tooltip-${entry.path}`}>
+              {label}
+              <button onClick={closeTooltip}>Close {entry.path}</button>
+            </span>
           ),
           invertTooltipColors: acc.length === 1, // Second item has inverted tooltip
           omitWrapping: acc.length === 2, // Third item omits wrapping
@@ -117,6 +120,19 @@ describe(WorkflowHistoryDetailsRow.name, () => {
 
     expect(await screen.findByTestId('tooltip-field1')).toBeInTheDocument();
     expect(screen.getByText('field1')).toBeInTheDocument();
+  });
+
+  it('should close the tooltip when the tooltip content calls closeTooltip', async () => {
+    const { user } = setup();
+
+    await user.hover(screen.getByTestId('field-field1'));
+    await user.click(
+      await screen.findByRole('button', { name: 'Close field1' })
+    );
+
+    await waitFor(() =>
+      expect(screen.queryByTestId('tooltip-field1')).not.toBeInTheDocument()
+    );
   });
 
   it('should stop click event propagation when hasClickableContent is true', async () => {

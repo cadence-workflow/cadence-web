@@ -13,6 +13,10 @@ export type DetailsRowValueComponentProps = {
   isNegative?: boolean;
 } & WorkflowPageParams;
 
+export type DetailsRowTooltipComponentProps = DetailsRowValueComponentProps & {
+  closeTooltip?: () => void;
+};
+
 /**
  * Configuration object for parsing and rendering workflow history details row items.
  * Parsers are matched against event details entries to determine how they should be displayed.
@@ -67,7 +71,7 @@ export type DetailsRowItem = {
     color?: IconProps['color'];
   }> | null;
   renderValue: ComponentType<DetailsRowValueComponentProps>;
-  renderTooltip: ComponentType<DetailsRowValueComponentProps>;
+  renderTooltip: ComponentType<DetailsRowTooltipComponentProps>;
   invertTooltipColors?: boolean;
   omitWrapping?: boolean;
   hasClickableContent?: boolean;

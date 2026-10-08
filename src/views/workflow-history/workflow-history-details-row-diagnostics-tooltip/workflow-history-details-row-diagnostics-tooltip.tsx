@@ -10,6 +10,7 @@ export default function WorkflowHistoryDetailsRowDiagnosticsTooltip({
   value,
   onClickOpenEvent,
   isEventOpen,
+  closeTooltip,
 }: Props) {
   const issues: Array<WorkflowDiagnosticsIssue> = value;
 
@@ -37,6 +38,7 @@ export default function WorkflowHistoryDetailsRowDiagnosticsTooltip({
               // The tooltip portal still bubbles React events to the accordion header
               e.stopPropagation();
               onClickOpenEvent();
+              closeTooltip?.();
             }}
           >
             Open event

@@ -54,6 +54,15 @@ describe(WorkflowHistoryDetailsRowDiagnosticsTooltip.name, () => {
     expect(onClickOpenEvent).toHaveBeenCalledTimes(1);
   });
 
+  it('closes the tooltip when the open event button is clicked', async () => {
+    const closeTooltip = jest.fn();
+    const { user } = setup({ onClickOpenEvent: jest.fn(), closeTooltip });
+
+    await user.click(screen.getByRole('button', { name: 'Open event' }));
+
+    expect(closeTooltip).toHaveBeenCalledTimes(1);
+  });
+
   it('disables the open event button when the event is open', async () => {
     const { user, onClickOpenEvent } = setup({
       onClickOpenEvent: jest.fn(),
