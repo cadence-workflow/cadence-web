@@ -39,7 +39,7 @@ export default function WorkflowHistoryDetailsRowDiagnosticsTooltip({
               closeTooltip?.();
             }}
           >
-            Open event
+            Show issues
           </Button>
         </styled.ButtonContainer>
       )}

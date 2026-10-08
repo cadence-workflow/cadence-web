@@ -33,20 +33,20 @@ describe(WorkflowHistoryDetailsRowDiagnosticsTooltip.name, () => {
     expect(screen.getByText('The decision task timed out')).toBeInTheDocument();
   });
 
-  it('does not render the open event button without a callback', () => {
+  it('does not render the show issues button without a callback', () => {
     setup();
 
     expect(
-      screen.queryByRole('button', { name: 'Open event' })
+      screen.queryByRole('button', { name: 'Show issues' })
     ).not.toBeInTheDocument();
   });
 
-  it('calls onClickOpenEvent when the open event button is clicked', async () => {
+  it('calls onClickOpenEvent when the show issues button is clicked', async () => {
     const { user, onClickOpenEvent } = setup({
       onClickOpenEvent: jest.fn(),
     });
 
-    const button = screen.getByRole('button', { name: 'Open event' });
+    const button = screen.getByRole('button', { name: 'Show issues' });
     expect(button).toBeEnabled();
 
     await user.click(button);
@@ -54,11 +54,11 @@ describe(WorkflowHistoryDetailsRowDiagnosticsTooltip.name, () => {
     expect(onClickOpenEvent).toHaveBeenCalledTimes(1);
   });
 
-  it('closes the tooltip when the open event button is clicked', async () => {
+  it('closes the tooltip when the show issues button is clicked', async () => {
     const closeTooltip = jest.fn();
     const { user } = setup({ onClickOpenEvent: jest.fn(), closeTooltip });
 
-    await user.click(screen.getByRole('button', { name: 'Open event' }));
+    await user.click(screen.getByRole('button', { name: 'Show issues' }));
 
     expect(closeTooltip).toHaveBeenCalledTimes(1);
   });
@@ -69,7 +69,7 @@ describe(WorkflowHistoryDetailsRowDiagnosticsTooltip.name, () => {
       <div onClick={onParentClick}>{children}</div>
     ));
 
-    await user.click(screen.getByRole('button', { name: 'Open event' }));
+    await user.click(screen.getByRole('button', { name: 'Show issues' }));
 
     expect(onParentClick).not.toHaveBeenCalled();
   });

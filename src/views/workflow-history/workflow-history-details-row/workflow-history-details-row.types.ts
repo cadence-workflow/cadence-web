@@ -82,6 +82,6 @@ export type DetailsRowItem = {
 export type Props = {
   detailsEntries: EventDetailsEntries;
   diagnosticsIssues?: Array<WorkflowDiagnosticsIssue>;
-  /** Shows an "Open event" button in the diagnostics tooltip when set; omit when the event is open */
+  /** Shows a "Show issues" button in the diagnostics tooltip when set; omit when the event is open */
   onClickOpenEvent?: () => void;
 } & WorkflowPageParams;
