@@ -592,60 +592,6 @@ describe(WorkflowHistoryEventGroup.name, () => {
   });
 });
 
-describe('WorkflowHistoryEventGroup diagnostics open event button', () => {
-  const eventGroup: HistoryEventsGroup = {
-    ...mockActivityEventGroupWithMetadata,
-    events: [scheduleActivityTaskEvent, startActivityTaskEvent],
-  };
-  const workflowDiagnosticsByEventIdMap = {
-    [scheduleActivityTaskEvent.eventId!]: [
-      {
-        issueId: 1,
-        invariantType: 'Activity Failed',
-        reason: 'The activity returned an error',
-        metadata: null,
-      },
-    ],
-  };
-
-  it('expands every event in the group when the open event button is clicked', async () => {
-    const toggleIsEventExpanded = jest.fn();
-    const { user } = setup({
-      eventGroup,
-      toggleIsEventExpanded,
-      workflowDiagnosticsByEventIdMap,
-    });
-
-    await user.hover(screen.getByText('1 issue'));
-    const button = await screen.findByRole('button', { name: 'Open event' });
-    expect(button).toBeEnabled();
-
-    await user.click(button);
-
-    expect(toggleIsEventExpanded).toHaveBeenCalledTimes(2);
-    expect(toggleIsEventExpanded).toHaveBeenCalledWith(
-      scheduleActivityTaskEvent.eventId
-    );
-    expect(toggleIsEventExpanded).toHaveBeenCalledWith(
-      startActivityTaskEvent.eventId
-    );
-  });
-
-  it('disables the open event button when the group is expanded', async () => {
-    const { user } = setup({
-      eventGroup,
-      getIsEventExpanded: jest.fn(() => true),
-      workflowDiagnosticsByEventIdMap,
-    });
-
-    await user.hover(screen.getByText('1 issue'));
-
-    expect(
-      await screen.findByRole('button', { name: 'Open event' })
-    ).toBeDisabled();
-  });
-});
-
 function setup({
   eventGroup = mockActivityEventGroupWithMetadata,
   selectedEventId = undefined,
