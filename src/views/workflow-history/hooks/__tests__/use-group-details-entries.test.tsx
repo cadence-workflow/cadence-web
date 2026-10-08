@@ -348,6 +348,59 @@ describe(useGroupDetailsEntries.name, () => {
     expect(result.current.groupDetailsEntriesWithSummary[0][0]).toBe('event-1');
     expect(result.current.groupDetailsEntriesWithSummary[1][0]).toBe('event-2');
   });
+
+  it('should give the summary entry the issues of the group', () => {
+    const issue1 = {
+      issueId: 1,
+      invariantType: 'test1',
+      reason: 'reason1',
+      metadata: {},
+      rootCauses: [],
+    };
+    const issue2 = { ...issue1, issueId: 2, invariantType: 'test2' };
+    const detail: EventDetailsTabContent['eventDetails'][number] = {
+      key: 'key1',
+      path: 'path1',
+      value: 'value1',
+      isGroup: false,
+      renderConfig: null,
+    };
+    const groupDetailsEntries: Array<[string, EventDetailsTabContent]> = [
+      [
+        'event-1',
+        {
+          eventLabel: 'Event 1',
+          eventDetails: [detail],
+        },
+      ],
+      [
+        'event-2',
+        {
+          eventLabel: 'Event 2',
+          eventDetails: [detail],
+        },
+      ],
+    ];
+
+    const { result } = setup({
+      eventGroup: {
+        ...mockActivityEventGroup,
+        firstEventId: 'event-1',
+        diagnosticsIssues: [issue1, issue2],
+      },
+      mockGroupDetails: {
+        groupDetailsEntries,
+        summaryDetailsEntries: [
+          ['event-1', { eventLabel: 'Event 1', eventDetails: [detail] }],
+        ],
+      },
+    });
+
+    const [summaryId, summaryContent] =
+      result.current.groupDetailsEntriesWithSummary[0];
+    expect(summaryId).toBe('summary_event-1');
+    expect(summaryContent.diagnosticsIssues).toEqual([issue1, issue2]);
+  });
 });
 
 function setup({

@@ -27,12 +27,18 @@ export default function useGroupDetailsEntries(eventGroup: HistoryEventsGroup) {
             getSummaryTabContentEntry({
               groupId: eventGroup.firstEventId,
               summaryDetails: groupSummaryDetails,
+              diagnosticsIssues: eventGroup.diagnosticsIssues,
             }),
           ]
         : []),
       ...groupDetailsEntries,
     ],
-    [eventGroup.firstEventId, groupDetailsEntries, groupSummaryDetails]
+    [
+      eventGroup.firstEventId,
+      eventGroup.diagnosticsIssues,
+      groupDetailsEntries,
+      groupSummaryDetails,
+    ]
   );
 
   return {

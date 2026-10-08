@@ -20,7 +20,6 @@ export default function WorkflowHistoryGroupDetails({
   onClose,
   onClickShowInTimeline,
   onClickShowInTable,
-  diagnosticsIssuesByEventId,
   getIsDiagnosticsIssueExpanded,
   toggleIsDiagnosticsIssueExpanded,
 }: Props) {
@@ -38,12 +37,7 @@ export default function WorkflowHistoryGroupDetails({
     [groupDetailsEntries, selectedIndex]
   );
 
-  const diagnosticsIssues = useMemo(() => {
-    if (selectedEventId.startsWith('summary_')) {
-      return Object.values(diagnosticsIssuesByEventId).flat();
-    }
-    return diagnosticsIssuesByEventId[selectedEventId] ?? [];
-  }, [selectedEventId, diagnosticsIssuesByEventId]);
+  const diagnosticsIssues = selectedEventTabContent.diagnosticsIssues ?? [];
 
   return (
     <styled.GroupDetailsContainer>

@@ -8,7 +8,6 @@ export default function WorkflowHistoryTimelineEventGroup({
   decodedPageUrlParams,
   onClickShowInTable,
   onClose,
-  workflowDiagnosticsByEventIdMap,
   getIsDiagnosticsIssueExpanded,
   toggleIsDiagnosticsIssueExpanded,
 }: Props) {
@@ -22,7 +21,6 @@ export default function WorkflowHistoryTimelineEventGroup({
       onClickShowInTable={onClickShowInTable}
       onClose={onClose}
       isScrollable
-      diagnosticsIssuesByEventId={workflowDiagnosticsByEventIdMap}
       getIsDiagnosticsIssueExpanded={getIsDiagnosticsIssueExpanded}
       toggleIsDiagnosticsIssueExpanded={toggleIsDiagnosticsIssueExpanded}
     />

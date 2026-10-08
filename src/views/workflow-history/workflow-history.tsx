@@ -203,17 +203,11 @@ export default function WorkflowHistory({ params }: Props) {
     () =>
       sortedEventGroupsEntries.filter(([, g]) =>
         enabledWorkflowHistoryFiltersConfig.every((f) =>
-          f.filterFunc(
-            g,
-            {
-              historyEventTypes: queryParams.historyEventTypes,
-              historyEventStatuses: queryParams.historyEventStatuses,
-              historyEventIssues: queryParams.historyEventIssues,
-            },
-            {
-              diagnosticsByEventId: workflowDiagnosticsByEventIdMap,
-            }
-          )
+          f.filterFunc(g, {
+            historyEventTypes: queryParams.historyEventTypes,
+            historyEventStatuses: queryParams.historyEventStatuses,
+            historyEventIssues: queryParams.historyEventIssues,
+          })
         )
       ),
     [
@@ -221,7 +215,6 @@ export default function WorkflowHistory({ params }: Props) {
       queryParams.historyEventTypes,
       queryParams.historyEventStatuses,
       queryParams.historyEventIssues,
-      workflowDiagnosticsByEventIdMap,
       enabledWorkflowHistoryFiltersConfig,
     ]
   );

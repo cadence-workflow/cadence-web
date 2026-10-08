@@ -9,6 +9,7 @@ import { mockActivityEventGroup } from '@/views/workflow-history/__fixtures__/wo
 import { pendingActivityTaskStartEvent } from '@/views/workflow-history/__fixtures__/workflow-history-pending-events';
 import isPendingHistoryEvent from '@/views/workflow-history/workflow-history-event-details/helpers/is-pending-history-event';
 
+import { WORKFLOW_DIAGNOSTICS_EVENT_ID_KEY } from '../../workflow-history.constants';
 import { type HistoryEventsGroup } from '../../workflow-history.types';
 import generateHistoryEventDetails from '../generate-history-event-details';
 import generateHistoryGroupDetails from '../generate-history-group-details';
@@ -510,6 +511,51 @@ describe(generateHistoryGroupDetails.name, () => {
         customField: 'custom value',
       },
       negativeFields: ['error'],
+    });
+  });
+
+  it('should add event diagnostics issues to group entries only', () => {
+    const issue = {
+      issueId: 1,
+      invariantType: 'Activity Failed',
+      reason: 'Activity failed',
+      metadata: { [WORKFLOW_DIAGNOSTICS_EVENT_ID_KEY]: 7 },
+      rootCauses: [],
+    };
+    const eventGroup: HistoryEventsGroup = {
+      ...mockActivityEventGroup,
+      diagnosticsIssues: [issue],
+      events: [
+        scheduleActivityTaskEvent,
+        { ...startActivityTaskEvent, eventId: '8' },
+      ],
+      eventsMetadata: [
+        {
+          label: 'Scheduled',
+          status: 'COMPLETED',
+          timeMs: 1725747370599,
+          timeLabel: 'Scheduled at 07 Sep, 22:16:10 UTC',
+          summaryFields: ['activityId'],
+        },
+        {
+          label: 'Started',
+          status: 'COMPLETED',
+          timeMs: 1725747370612,
+          timeLabel: 'Started at 07 Sep, 22:16:10 UTC',
+          summaryFields: ['activityId'],
+        },
+      ],
+    };
+
+    const result = generateHistoryGroupDetails(eventGroup);
+
+    expect(result.groupDetailsEntries[0][1].diagnosticsIssues).toEqual([issue]);
+    expect(result.groupDetailsEntries[1][1]).not.toHaveProperty(
+      'diagnosticsIssues'
+    );
+    expect(result.summaryDetailsEntries).toHaveLength(2);
+    result.summaryDetailsEntries.forEach(([, content]) => {
+      expect(content).not.toHaveProperty('diagnosticsIssues');
     });
   });
 });

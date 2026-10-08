@@ -156,7 +156,6 @@ export default function WorkflowHistoryEventGroup({
             workflowPageParams={decodedPageUrlParams}
             onClose={() => handleGroupExpansionStateChange(false)}
             onClickShowInTimeline={onClickShowInTimeline}
-            diagnosticsIssuesByEventId={workflowDiagnosticsByEventIdMap}
             getIsDiagnosticsIssueExpanded={getIsDiagnosticsIssueExpanded}
             toggleIsDiagnosticsIssueExpanded={toggleIsDiagnosticsIssueExpanded}
           />
