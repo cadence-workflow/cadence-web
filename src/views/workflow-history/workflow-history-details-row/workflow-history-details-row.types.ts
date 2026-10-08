@@ -15,6 +15,8 @@ export type DetailsRowValueComponentProps = {
 
 export type DetailsRowTooltipComponentProps = DetailsRowValueComponentProps & {
   closeTooltip?: () => void;
+  onClickOpenEvent?: () => void;
+  isEventOpen?: boolean;
 };
 
 /**
@@ -49,9 +51,9 @@ export type DetailsRowItemParser = {
   customRenderValue?: ComponentType<DetailsRowValueComponentProps>;
   /**
    * Optional React component to use for rendering tooltip content instead of the default label.
-   * Receives DetailsRowValueComponentProps.
+   * Receives DetailsRowTooltipComponentProps.
    */
-  customTooltipContent?: ComponentType<DetailsRowValueComponentProps>;
+  customTooltipContent?: ComponentType<DetailsRowTooltipComponentProps>;
   /** Optional flag to invert the tooltip color scheme (default: dark tooltip in light mode). */
   invertTooltipColors?: boolean;
   /** Optional flag to remove padding and background from the details row item */

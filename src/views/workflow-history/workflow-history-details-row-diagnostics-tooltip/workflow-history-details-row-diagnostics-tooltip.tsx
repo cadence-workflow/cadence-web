@@ -1,17 +1,17 @@
 import { Button } from 'baseui/button';
 import { RiStethoscopeLine } from 'react-icons/ri';
 
+import { type DetailsRowTooltipComponentProps } from '../workflow-history-details-row/workflow-history-details-row.types';
 import { type WorkflowDiagnosticsIssue } from '../workflow-history.types';
 
 import { styled } from './workflow-history-details-row-diagnostics-tooltip.styles';
-import { type Props } from './workflow-history-details-row-diagnostics-tooltip.types';
 
 export default function WorkflowHistoryDetailsRowDiagnosticsTooltip({
   value,
   onClickOpenEvent,
   isEventOpen,
   closeTooltip,
-}: Props) {
+}: DetailsRowTooltipComponentProps) {
   const issues: Array<WorkflowDiagnosticsIssue> = value;
 
   return (

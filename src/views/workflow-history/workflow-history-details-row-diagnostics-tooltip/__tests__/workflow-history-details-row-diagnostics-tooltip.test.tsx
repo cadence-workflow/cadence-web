@@ -1,8 +1,8 @@
 import { render, screen, userEvent } from '@/test-utils/rtl';
 
+import { type DetailsRowTooltipComponentProps } from '../../workflow-history-details-row/workflow-history-details-row.types';
 import { type WorkflowDiagnosticsIssue } from '../../workflow-history.types';
 import WorkflowHistoryDetailsRowDiagnosticsTooltip from '../workflow-history-details-row-diagnostics-tooltip';
-import { type Props } from '../workflow-history-details-row-diagnostics-tooltip.types';
 
 const mockIssues: Array<WorkflowDiagnosticsIssue> = [
   {
@@ -90,7 +90,7 @@ describe(WorkflowHistoryDetailsRowDiagnosticsTooltip.name, () => {
 });
 
 function setup(
-  props: Partial<Props> = {},
+  props: Partial<DetailsRowTooltipComponentProps> = {},
   wrapper?: React.ComponentType<{ children: React.ReactNode }>
 ) {
   const user = userEvent.setup();

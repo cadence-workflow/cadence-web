@@ -20,18 +20,29 @@ jest.mock('../helpers/get-parsed-details-row-items', () =>
           icon: ({ size }: any) => (
             <span data-testid={`icon-${entry.path}`} data-size={size} />
           ),
-          renderValue: ({ value, isNegative }: any) => (
+          renderValue: ({ value, isNegative, onClickOpenEvent }: any) => (
             <span
               data-testid={`field-${entry.path}`}
               data-negative={isNegative}
+              data-has-open-event={Boolean(onClickOpenEvent)}
             >
               {String(value)}
             </span>
           ),
-          renderTooltip: ({ label, closeTooltip }: any) => (
+          renderTooltip: ({
+            label,
+            closeTooltip,
+            onClickOpenEvent,
+            isEventOpen,
+          }: any) => (
             <span data-testid={`tooltip-${entry.path}`}>
               {label}
               <button onClick={closeTooltip}>Close {entry.path}</button>
+              {onClickOpenEvent && (
+                <button onClick={onClickOpenEvent} disabled={isEventOpen}>
+                  Open {entry.path}
+                </button>
+              )}
             </span>
           ),
           invertTooltipColors: acc.length === 1, // Second item has inverted tooltip
@@ -135,6 +146,31 @@ describe(WorkflowHistoryDetailsRow.name, () => {
     );
   });
 
+  it('should pass the open event props to the tooltip content only', async () => {
+    const onClickOpenEvent = jest.fn();
+    const { user } = setup({ onClickOpenEvent, isEventOpen: false });
+
+    const field1 = screen.getByTestId('field-field1');
+    expect(field1).toHaveAttribute('data-has-open-event', 'false');
+
+    await user.hover(field1);
+    await user.click(
+      await screen.findByRole('button', { name: 'Open field1' })
+    );
+
+    expect(onClickOpenEvent).toHaveBeenCalledTimes(1);
+  });
+
+  it('should pass isEventOpen to the tooltip content', async () => {
+    const { user } = setup({ onClickOpenEvent: jest.fn(), isEventOpen: true });
+
+    await user.hover(screen.getByTestId('field-field1'));
+
+    expect(
+      await screen.findByRole('button', { name: 'Open field1' })
+    ).toBeDisabled();
+  });
+
   it('should stop click event propagation when hasClickableContent is true', async () => {
     const onParentClick = jest.fn();
     const { user } = setup({
@@ -195,11 +231,15 @@ describe(WorkflowHistoryDetailsRow.name, () => {
 function setup({
   detailsEntries = mockDetailsEntries,
   diagnosticsIssues,
+  onClickOpenEvent,
+  isEventOpen,
   workflowPageParams = mockWorkflowPageParams,
   wrapper,
 }: {
   detailsEntries?: EventDetailsEntries;
   diagnosticsIssues?: Array<WorkflowDiagnosticsIssue>;
+  onClickOpenEvent?: () => void;
+  isEventOpen?: boolean;
   workflowPageParams?: WorkflowPageParams;
   wrapper?: React.ComponentType<{ children: React.ReactNode }>;
 } = {}) {
@@ -209,6 +249,8 @@ function setup({
     <WorkflowHistoryDetailsRow
       detailsEntries={detailsEntries}
       diagnosticsIssues={diagnosticsIssues}
+      onClickOpenEvent={onClickOpenEvent}
+      isEventOpen={isEventOpen}
       {...workflowPageParams}
     />,
     undefined,
