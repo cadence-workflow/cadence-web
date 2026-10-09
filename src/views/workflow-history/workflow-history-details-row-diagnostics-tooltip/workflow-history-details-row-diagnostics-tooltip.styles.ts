@@ -20,6 +20,11 @@ export const styled = {
       paddingBottom: $theme.sizing.scale400,
     },
   })),
+  ButtonContainer: createStyled('div', ({ $theme }) => ({
+    display: 'flex',
+    justifyContent: 'flex-end',
+    paddingTop: $theme.sizing.scale200,
+  })),
   IssueIcon: createStyled('div', ({ $theme }) => ({
     display: 'flex',
     flexShrink: 0,

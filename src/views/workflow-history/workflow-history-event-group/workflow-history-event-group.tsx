@@ -71,6 +71,20 @@ export default function WorkflowHistoryEventGroup({
     [events, getIsEventExpanded, toggleIsEventExpanded]
   );
 
+  const handleExpandGroup = useCallback(
+    () => handleGroupExpansionStateChange(true),
+    [handleGroupExpansionStateChange]
+  );
+
+  const handleCollapseGroup = useCallback(
+    () => handleGroupExpansionStateChange(false),
+    [handleGroupExpansionStateChange]
+  );
+
+  const isGroupExpanded = events.some(
+    ({ eventId }) => eventId && getIsEventExpanded(eventId)
+  );
+
   const animateOnEnter = useMemo(
     () =>
       groupDetailsEntriesWithSummary.some(
@@ -119,6 +133,9 @@ export default function WorkflowHistoryEventGroup({
             <WorkflowHistoryDetailsRow
               detailsEntries={groupSummaryDetails}
               diagnosticsIssues={eventGroup.diagnosticsIssues}
+              isEventExpanded={isGroupExpanded}
+              onExpandEvent={handleExpandGroup}
+              onCollapseEvent={handleCollapseGroup}
               {...decodedPageUrlParams}
             />
           </styled.SummarizedDetailsContainer>
@@ -135,9 +152,7 @@ export default function WorkflowHistoryEventGroup({
           </styled.ActionsContainer>
         </styled.HeaderContent>
       }
-      expanded={events.some(
-        ({ eventId }) => eventId && getIsEventExpanded(eventId)
-      )}
+      expanded={isGroupExpanded}
       onChange={({ expanded }) => handleGroupExpansionStateChange(expanded)}
       overrides={overrides.panel}
     >

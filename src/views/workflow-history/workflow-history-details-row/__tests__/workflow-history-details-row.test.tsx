@@ -1,4 +1,4 @@
-import { render, screen, userEvent } from '@/test-utils/rtl';
+import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
 import type { WorkflowPageParams } from '@/views/workflow-page/workflow-page.types';
 
@@ -20,16 +20,41 @@ jest.mock('../helpers/get-parsed-details-row-items', () =>
           icon: ({ size }: any) => (
             <span data-testid={`icon-${entry.path}`} data-size={size} />
           ),
-          renderValue: ({ value, isNegative }: any) => (
+          renderValue: ({
+            value,
+            isNegative,
+            isEventExpanded,
+            onExpandEvent,
+            onCollapseEvent,
+          }: any) => (
             <span
               data-testid={`field-${entry.path}`}
               data-negative={isNegative}
+              data-has-expansion-props={Boolean(
+                isEventExpanded || onExpandEvent || onCollapseEvent
+              )}
             >
               {String(value)}
             </span>
           ),
-          renderTooltip: ({ label }: any) => (
-            <span data-testid={`tooltip-${entry.path}`}>{label}</span>
+          renderTooltip: ({
+            label,
+            onCloseTooltip,
+            isEventExpanded,
+            onExpandEvent,
+            onCollapseEvent,
+          }: any) => (
+            <span data-testid={`tooltip-${entry.path}`}>
+              {label}
+              <button onClick={onCloseTooltip}>Close {entry.path}</button>
+              {isEventExpanded && <span>Expanded {entry.path}</span>}
+              {onExpandEvent && (
+                <button onClick={onExpandEvent}>Expand {entry.path}</button>
+              )}
+              {onCollapseEvent && (
+                <button onClick={onCollapseEvent}>Collapse {entry.path}</button>
+              )}
+            </span>
           ),
           invertTooltipColors: acc.length === 1, // Second item has inverted tooltip
           omitWrapping: acc.length === 2, // Third item omits wrapping
@@ -119,6 +144,41 @@ describe(WorkflowHistoryDetailsRow.name, () => {
     expect(screen.getByText('field1')).toBeInTheDocument();
   });
 
+  it('should close the tooltip when the tooltip content calls onCloseTooltip', async () => {
+    const { user } = setup();
+
+    await user.hover(screen.getByTestId('field-field1'));
+    await user.click(
+      await screen.findByRole('button', { name: 'Close field1' })
+    );
+
+    await waitFor(() =>
+      expect(screen.queryByTestId('tooltip-field1')).not.toBeInTheDocument()
+    );
+  });
+
+  it('should pass the expansion props to the tooltip content only', async () => {
+    const onExpandEvent = jest.fn();
+    const onCollapseEvent = jest.fn();
+    const { user } = setup({
+      isEventExpanded: true,
+      onExpandEvent,
+      onCollapseEvent,
+    });
+
+    const field1 = screen.getByTestId('field-field1');
+    expect(field1).toHaveAttribute('data-has-expansion-props', 'false');
+
+    await user.hover(field1);
+    expect(await screen.findByText('Expanded field1')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Expand field1' }));
+    expect(onExpandEvent).toHaveBeenCalledTimes(1);
+
+    await user.click(screen.getByRole('button', { name: 'Collapse field1' }));
+    expect(onCollapseEvent).toHaveBeenCalledTimes(1);
+  });
+
   it('should stop click event propagation when hasClickableContent is true', async () => {
     const onParentClick = jest.fn();
     const { user } = setup({
@@ -179,11 +239,17 @@ describe(WorkflowHistoryDetailsRow.name, () => {
 function setup({
   detailsEntries = mockDetailsEntries,
   diagnosticsIssues,
+  isEventExpanded,
+  onExpandEvent,
+  onCollapseEvent,
   workflowPageParams = mockWorkflowPageParams,
   wrapper,
 }: {
   detailsEntries?: EventDetailsEntries;
   diagnosticsIssues?: Array<WorkflowDiagnosticsIssue>;
+  isEventExpanded?: boolean;
+  onExpandEvent?: () => void;
+  onCollapseEvent?: () => void;
   workflowPageParams?: WorkflowPageParams;
   wrapper?: React.ComponentType<{ children: React.ReactNode }>;
 } = {}) {
@@ -193,6 +259,9 @@ function setup({
     <WorkflowHistoryDetailsRow
       detailsEntries={detailsEntries}
       diagnosticsIssues={diagnosticsIssues}
+      isEventExpanded={isEventExpanded}
+      onExpandEvent={onExpandEvent}
+      onCollapseEvent={onCollapseEvent}
       {...workflowPageParams}
     />,
     undefined,

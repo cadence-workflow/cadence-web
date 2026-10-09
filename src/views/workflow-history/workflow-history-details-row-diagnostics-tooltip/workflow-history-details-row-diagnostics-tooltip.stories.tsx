@@ -73,3 +73,11 @@ export const LongIssue: Story = {
     value: [activityFailedIssue, longIssue],
   },
 };
+
+export const WithOpenEventButton: Story = {
+  args: {
+    onExpandEvent: () => {},
+    onCollapseEvent: () => {},
+    isEventExpanded: false,
+  },
+};

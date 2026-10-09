@@ -13,6 +13,13 @@ export type DetailsRowValueComponentProps = {
   isNegative?: boolean;
 } & WorkflowPageParams;
 
+export type DetailsRowTooltipComponentProps = DetailsRowValueComponentProps & {
+  onCloseTooltip?: () => void;
+  isEventExpanded?: boolean;
+  onExpandEvent?: () => void;
+  onCollapseEvent?: () => void;
+};
+
 /**
  * Configuration object for parsing and rendering workflow history details row items.
  * Parsers are matched against event details entries to determine how they should be displayed.
@@ -45,9 +52,9 @@ export type DetailsRowItemParser = {
   customRenderValue?: ComponentType<DetailsRowValueComponentProps>;
   /**
    * Optional React component to use for rendering tooltip content instead of the default label.
-   * Receives DetailsRowValueComponentProps.
+   * Receives DetailsRowTooltipComponentProps.
    */
-  customTooltipContent?: ComponentType<DetailsRowValueComponentProps>;
+  customTooltipContent?: ComponentType<DetailsRowTooltipComponentProps>;
   /** Optional flag to invert the tooltip color scheme (default: dark tooltip in light mode). */
   invertTooltipColors?: boolean;
   /** Optional flag to remove padding and background from the details row item */
@@ -67,7 +74,7 @@ export type DetailsRowItem = {
     color?: IconProps['color'];
   }> | null;
   renderValue: ComponentType<DetailsRowValueComponentProps>;
-  renderTooltip: ComponentType<DetailsRowValueComponentProps>;
+  renderTooltip: ComponentType<DetailsRowTooltipComponentProps>;
   invertTooltipColors?: boolean;
   omitWrapping?: boolean;
   hasClickableContent?: boolean;
@@ -77,4 +84,7 @@ export type DetailsRowItem = {
 export type Props = {
   detailsEntries: EventDetailsEntries;
   diagnosticsIssues?: Array<WorkflowDiagnosticsIssue>;
+  isEventExpanded?: boolean;
+  onExpandEvent?: () => void;
+  onCollapseEvent?: () => void;
 } & WorkflowPageParams;
