@@ -6,6 +6,7 @@ import { act } from 'react-dom/test-utils';
 import { render, screen } from '@/test-utils/rtl';
 
 import { type DescribeClusterResponse } from '@/route-handlers/describe-cluster/describe-cluster.types';
+import { type AuthMeResponse } from '@/route-handlers/get-auth-me/get-auth-me.types';
 import { type DomainPageTabContentProps } from '@/views/domain-page/domain-page-content/domain-page-content.types';
 
 import DomainWorkflows from '../domain-workflows';
@@ -51,14 +52,14 @@ async function setup({
   error,
   authResponse = {
     authEnabled: false,
+    authStrategy: 'disabled',
     auth: { isValidToken: false },
     isAdmin: false,
-    groups: [],
   },
 }: {
   error?: boolean;
   isAdvancedVisibility?: boolean;
-  authResponse?: Record<string, unknown>;
+  authResponse?: AuthMeResponse;
 }) {
   const props: DomainPageTabContentProps = {
     domain: 'test-domain',
