@@ -8,6 +8,15 @@ import { type AuthLifecycle } from '../hooks/use-auth-lifecycle.types';
 
 jest.mock('../hooks/use-auth-lifecycle');
 
+const mockEnqueue = jest.fn();
+jest.mock('baseui/snackbar', () => ({
+  ...jest.requireActual('baseui/snackbar'),
+  useSnackbar: () => ({
+    enqueue: mockEnqueue,
+    dequeue: jest.fn(),
+  }),
+}));
+
 const mockUseAuthLifecycle = useAuthLifecycle as jest.MockedFunction<
   typeof useAuthLifecycle
 >;
@@ -55,7 +64,7 @@ describe(AppNavBar.name, () => {
     expect(logout).toHaveBeenCalledWith({ notice: 'signed-out' });
   });
 
-  it('handles logout failure after the policy redirects to login', async () => {
+  it('surfaces logout failure and allows retry when the cookie was not cleared', async () => {
     const user = userEvent.setup();
     const logout = jest
       .fn()
@@ -66,6 +75,11 @@ describe(AppNavBar.name, () => {
     await user.click(screen.getByLabelText('alice'));
     await user.click(await screen.findByText('Log out'));
     await waitFor(() => expect(logout).toHaveBeenCalledTimes(1));
+    expect(mockEnqueue).toHaveBeenCalledWith(
+      { message: 'network failure' },
+      expect.any(Number)
+    );
+
     await user.click(screen.getAllByLabelText('alice')[0]);
     await user.click(await screen.findByText('Log out'));
 

@@ -10,11 +10,14 @@ const jwtClientPolicy: AuthClientPolicy = {
     window.location.assign(buildJwtLoginPath(returnTo));
   },
   async logout(options) {
-    try {
-      await fetch('/api/auth/token', { method: 'DELETE', cache: 'no-store' });
-    } finally {
-      window.location.assign(buildJwtLoginPath(undefined, options?.notice));
+    const response = await fetch('/api/auth/token', {
+      method: 'DELETE',
+      cache: 'no-store',
+    });
+    if (!response.ok) {
+      throw new Error('Failed to clear session');
     }
+    window.location.assign(buildJwtLoginPath(undefined, options?.notice));
   },
   // An unauthorized response starts recovery, which redirects to the login page.
   onUnauthorized: () => true,

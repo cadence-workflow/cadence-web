@@ -36,8 +36,8 @@ Cadence Web does **not** implement a full identity provider and does **not** ver
 
 **Login page.** With `jwt`, the server layout redirects any request without a valid session to `/login?returnTo=<path and query>`. After a token is saved, the page sends the user back to `returnTo`. Only relative in-app paths are accepted; anything else falls back to `/`. The page shows a notice banner when `notice` is set:
 
-- `notice=session-expired` — the session cookie was present but the token is invalid or expired, or the token expired while the app was open.
-- `notice=signed-out` — the user chose **Log out**.
+- `notice=session-expired` — the session cookie was present but the token is invalid or expired, the token expired while the app was open, or another tab ended the session (window-focus refetch).
+- `notice=signed-out` — the user chose **Log out** in this tab.
 
 **API routes (server).**
 

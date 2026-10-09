@@ -2,6 +2,7 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { AppNavBar as BaseAppNavBar } from 'baseui/app-nav-bar';
+import { DURATION, useSnackbar } from 'baseui/snackbar';
 import NextLink from 'next/link';
 
 import useStyletronClasses from '@/hooks/use-styletron-classes';
@@ -13,6 +14,7 @@ import { type UserMenuItem } from './use-auth-lifecycle.types';
 
 export default function AppNavBar() {
   const { cls } = useStyletronClasses(cssStyles);
+  const { enqueue } = useSnackbar();
 
   const {
     isAuthEnabled,
@@ -38,16 +40,19 @@ export default function AppNavBar() {
         await logout({
           notice: trigger === 'manual' ? 'signed-out' : 'session-expired',
         });
-      } catch {
-        // The client policy navigates to login even when clearing the token fails.
+      } catch (e) {
+        // Stay on the page when the cookie was not cleared so /login cannot
+        // bounce the still-valid session back into the app.
+        const message = e instanceof Error ? e.message : 'Failed to sign out';
+        enqueue({ message }, DURATION.medium);
       } finally {
         logoutInFlightRef.current = false;
       }
     },
-    [logout]
+    [logout, enqueue]
   );
 
-  // JWT validity-flip (the token expired or was replaced in another tab):
+  // JWT validity-flip (token expired, cleared, or replaced in another tab):
   // sign out with the session-expired notice; the login page renders it.
   useEffect(() => {
     if (!isAuthEnabled || isAuthLoading) return;
