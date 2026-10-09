@@ -344,7 +344,7 @@ describe(CronScheduleInput.name, () => {
       });
 
       expect(
-        screen.getByText('At 09:00 AM, Monday through Friday')
+        screen.getByText('At 09:00, Monday through Friday')
       ).toBeInTheDocument();
     });
 
