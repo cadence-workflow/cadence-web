@@ -76,6 +76,8 @@ export const LongIssue: Story = {
 
 export const WithOpenEventButton: Story = {
   args: {
-    onClickOpenEvent: () => {},
+    onExpandEvent: () => {},
+    onCollapseEvent: () => {},
+    isEventExpanded: false,
   },
 };

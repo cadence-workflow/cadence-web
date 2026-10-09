@@ -15,7 +15,9 @@ export type DetailsRowValueComponentProps = {
 
 export type DetailsRowTooltipComponentProps = DetailsRowValueComponentProps & {
   closeTooltip?: () => void;
-  onClickOpenEvent?: () => void;
+  isEventExpanded?: boolean;
+  onExpandEvent?: () => void;
+  onCollapseEvent?: () => void;
 };
 
 /**
@@ -82,6 +84,7 @@ export type DetailsRowItem = {
 export type Props = {
   detailsEntries: EventDetailsEntries;
   diagnosticsIssues?: Array<WorkflowDiagnosticsIssue>;
-  /** Shows a "Show issues" button in the diagnostics tooltip when set; omit when the event is open */
-  onClickOpenEvent?: () => void;
+  isEventExpanded?: boolean;
+  onExpandEvent?: () => void;
+  onCollapseEvent?: () => void;
 } & WorkflowPageParams;

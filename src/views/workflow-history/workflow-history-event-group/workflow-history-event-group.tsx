@@ -71,8 +71,13 @@ export default function WorkflowHistoryEventGroup({
     [events, getIsEventExpanded, toggleIsEventExpanded]
   );
 
-  const handleOpenGroup = useCallback(
+  const handleExpandGroup = useCallback(
     () => handleGroupExpansionStateChange(true),
+    [handleGroupExpansionStateChange]
+  );
+
+  const handleCollapseGroup = useCallback(
+    () => handleGroupExpansionStateChange(false),
     [handleGroupExpansionStateChange]
   );
 
@@ -128,7 +133,9 @@ export default function WorkflowHistoryEventGroup({
             <WorkflowHistoryDetailsRow
               detailsEntries={groupSummaryDetails}
               diagnosticsIssues={eventGroup.diagnosticsIssues}
-              onClickOpenEvent={isGroupExpanded ? undefined : handleOpenGroup}
+              isEventExpanded={isGroupExpanded}
+              onExpandEvent={handleExpandGroup}
+              onCollapseEvent={handleCollapseGroup}
               {...decodedPageUrlParams}
             />
           </styled.SummarizedDetailsContainer>

@@ -44,6 +44,14 @@ export default function WorkflowHistoryUngroupedEvent({
 
   const overrides = getOverrides(eventGroupCategory, animateOnEnter);
 
+  const handleExpand = useCallback(() => {
+    if (!isExpanded) toggleIsExpanded();
+  }, [isExpanded, toggleIsExpanded]);
+
+  const handleCollapse = useCallback(() => {
+    if (isExpanded) toggleIsExpanded();
+  }, [isExpanded, toggleIsExpanded]);
+
   const handleReset = useCallback(() => {
     if (onReset) {
       onReset();
@@ -121,7 +129,9 @@ export default function WorkflowHistoryUngroupedEvent({
               <WorkflowHistoryDetailsRow
                 detailsEntries={eventSummaryDetails ?? []}
                 diagnosticsIssues={diagnosticsIssues}
-                onClickOpenEvent={isExpanded ? undefined : toggleIsExpanded}
+                isEventExpanded={isExpanded}
+                onExpandEvent={handleExpand}
+                onCollapseEvent={handleCollapse}
                 {...decodedPageUrlParams}
               />
             ) : (

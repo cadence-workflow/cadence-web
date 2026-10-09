@@ -20,21 +20,39 @@ jest.mock('../helpers/get-parsed-details-row-items', () =>
           icon: ({ size }: any) => (
             <span data-testid={`icon-${entry.path}`} data-size={size} />
           ),
-          renderValue: ({ value, isNegative, onClickOpenEvent }: any) => (
+          renderValue: ({
+            value,
+            isNegative,
+            isEventExpanded,
+            onExpandEvent,
+            onCollapseEvent,
+          }: any) => (
             <span
               data-testid={`field-${entry.path}`}
               data-negative={isNegative}
-              data-has-open-event={Boolean(onClickOpenEvent)}
+              data-has-expansion-props={Boolean(
+                isEventExpanded || onExpandEvent || onCollapseEvent
+              )}
             >
               {String(value)}
             </span>
           ),
-          renderTooltip: ({ label, closeTooltip, onClickOpenEvent }: any) => (
+          renderTooltip: ({
+            label,
+            closeTooltip,
+            isEventExpanded,
+            onExpandEvent,
+            onCollapseEvent,
+          }: any) => (
             <span data-testid={`tooltip-${entry.path}`}>
               {label}
               <button onClick={closeTooltip}>Close {entry.path}</button>
-              {onClickOpenEvent && (
-                <button onClick={onClickOpenEvent}>Open {entry.path}</button>
+              {isEventExpanded && <span>Expanded {entry.path}</span>}
+              {onExpandEvent && (
+                <button onClick={onExpandEvent}>Expand {entry.path}</button>
+              )}
+              {onCollapseEvent && (
+                <button onClick={onCollapseEvent}>Collapse {entry.path}</button>
               )}
             </span>
           ),
@@ -139,19 +157,26 @@ describe(WorkflowHistoryDetailsRow.name, () => {
     );
   });
 
-  it('should pass the open event props to the tooltip content only', async () => {
-    const onClickOpenEvent = jest.fn();
-    const { user } = setup({ onClickOpenEvent });
+  it('should pass the expansion props to the tooltip content only', async () => {
+    const onExpandEvent = jest.fn();
+    const onCollapseEvent = jest.fn();
+    const { user } = setup({
+      isEventExpanded: true,
+      onExpandEvent,
+      onCollapseEvent,
+    });
 
     const field1 = screen.getByTestId('field-field1');
-    expect(field1).toHaveAttribute('data-has-open-event', 'false');
+    expect(field1).toHaveAttribute('data-has-expansion-props', 'false');
 
     await user.hover(field1);
-    await user.click(
-      await screen.findByRole('button', { name: 'Open field1' })
-    );
+    expect(await screen.findByText('Expanded field1')).toBeInTheDocument();
 
-    expect(onClickOpenEvent).toHaveBeenCalledTimes(1);
+    await user.click(screen.getByRole('button', { name: 'Expand field1' }));
+    expect(onExpandEvent).toHaveBeenCalledTimes(1);
+
+    await user.click(screen.getByRole('button', { name: 'Collapse field1' }));
+    expect(onCollapseEvent).toHaveBeenCalledTimes(1);
   });
 
   it('should stop click event propagation when hasClickableContent is true', async () => {
@@ -214,13 +239,17 @@ describe(WorkflowHistoryDetailsRow.name, () => {
 function setup({
   detailsEntries = mockDetailsEntries,
   diagnosticsIssues,
-  onClickOpenEvent,
+  isEventExpanded,
+  onExpandEvent,
+  onCollapseEvent,
   workflowPageParams = mockWorkflowPageParams,
   wrapper,
 }: {
   detailsEntries?: EventDetailsEntries;
   diagnosticsIssues?: Array<WorkflowDiagnosticsIssue>;
-  onClickOpenEvent?: () => void;
+  isEventExpanded?: boolean;
+  onExpandEvent?: () => void;
+  onCollapseEvent?: () => void;
   workflowPageParams?: WorkflowPageParams;
   wrapper?: React.ComponentType<{ children: React.ReactNode }>;
 } = {}) {
@@ -230,7 +259,9 @@ function setup({
     <WorkflowHistoryDetailsRow
       detailsEntries={detailsEntries}
       diagnosticsIssues={diagnosticsIssues}
-      onClickOpenEvent={onClickOpenEvent}
+      isEventExpanded={isEventExpanded}
+      onExpandEvent={onExpandEvent}
+      onCollapseEvent={onCollapseEvent}
       {...workflowPageParams}
     />,
     undefined,

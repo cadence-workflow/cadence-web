@@ -41,9 +41,17 @@ describe(WorkflowHistoryDetailsRowDiagnosticsTooltip.name, () => {
     ).not.toBeInTheDocument();
   });
 
-  it('calls onClickOpenEvent when the show issues button is clicked', async () => {
-    const { user, onClickOpenEvent } = setup({
-      onClickOpenEvent: jest.fn(),
+  it('does not render the show issues button when the event is expanded', () => {
+    setup({ onExpandEvent: jest.fn(), isEventExpanded: true });
+
+    expect(
+      screen.queryByRole('button', { name: 'Show issues' })
+    ).not.toBeInTheDocument();
+  });
+
+  it('calls onExpandEvent when the show issues button is clicked', async () => {
+    const { user, onExpandEvent } = setup({
+      onExpandEvent: jest.fn(),
     });
 
     const button = screen.getByRole('button', { name: 'Show issues' });
@@ -51,12 +59,12 @@ describe(WorkflowHistoryDetailsRowDiagnosticsTooltip.name, () => {
 
     await user.click(button);
 
-    expect(onClickOpenEvent).toHaveBeenCalledTimes(1);
+    expect(onExpandEvent).toHaveBeenCalledTimes(1);
   });
 
   it('closes the tooltip when the show issues button is clicked', async () => {
     const closeTooltip = jest.fn();
-    const { user } = setup({ onClickOpenEvent: jest.fn(), closeTooltip });
+    const { user } = setup({ onExpandEvent: jest.fn(), closeTooltip });
 
     await user.click(screen.getByRole('button', { name: 'Show issues' }));
 
@@ -65,7 +73,7 @@ describe(WorkflowHistoryDetailsRowDiagnosticsTooltip.name, () => {
 
   it('does not propagate the click to parent elements', async () => {
     const onParentClick = jest.fn();
-    const { user } = setup({ onClickOpenEvent: jest.fn() }, ({ children }) => (
+    const { user } = setup({ onExpandEvent: jest.fn() }, ({ children }) => (
       <div onClick={onParentClick}>{children}</div>
     ));
 
@@ -95,5 +103,5 @@ function setup(
     { wrapper }
   );
 
-  return { user, onClickOpenEvent: props.onClickOpenEvent };
+  return { user, onExpandEvent: props.onExpandEvent };
 }
