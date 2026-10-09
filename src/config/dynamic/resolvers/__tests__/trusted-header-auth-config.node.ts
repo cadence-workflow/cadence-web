@@ -32,6 +32,7 @@ describe(trustedHeaderAuthConfig.name, () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    ENV_KEYS.forEach((key) => delete process.env[key]);
     mockAuthStrategy.mockReturnValue('trusted-header');
   });
 
