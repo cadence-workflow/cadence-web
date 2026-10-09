@@ -14,7 +14,7 @@ export type DetailsRowValueComponentProps = {
 } & WorkflowPageParams;
 
 export type DetailsRowTooltipComponentProps = DetailsRowValueComponentProps & {
-  closeTooltip?: () => void;
+  onCloseTooltip?: () => void;
   isEventExpanded?: boolean;
   onExpandEvent?: () => void;
   onCollapseEvent?: () => void;

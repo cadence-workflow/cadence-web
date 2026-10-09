@@ -63,12 +63,12 @@ describe(WorkflowHistoryDetailsRowDiagnosticsTooltip.name, () => {
   });
 
   it('closes the tooltip when the show issues button is clicked', async () => {
-    const closeTooltip = jest.fn();
-    const { user } = setup({ onExpandEvent: jest.fn(), closeTooltip });
+    const onCloseTooltip = jest.fn();
+    const { user } = setup({ onExpandEvent: jest.fn(), onCloseTooltip });
 
     await user.click(screen.getByRole('button', { name: 'Show issues' }));
 
-    expect(closeTooltip).toHaveBeenCalledTimes(1);
+    expect(onCloseTooltip).toHaveBeenCalledTimes(1);
   });
 
   it('does not propagate the click to parent elements', async () => {

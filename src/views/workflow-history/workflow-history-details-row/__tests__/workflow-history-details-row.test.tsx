@@ -39,14 +39,14 @@ jest.mock('../helpers/get-parsed-details-row-items', () =>
           ),
           renderTooltip: ({
             label,
-            closeTooltip,
+            onCloseTooltip,
             isEventExpanded,
             onExpandEvent,
             onCollapseEvent,
           }: any) => (
             <span data-testid={`tooltip-${entry.path}`}>
               {label}
-              <button onClick={closeTooltip}>Close {entry.path}</button>
+              <button onClick={onCloseTooltip}>Close {entry.path}</button>
               {isEventExpanded && <span>Expanded {entry.path}</span>}
               {onExpandEvent && (
                 <button onClick={onExpandEvent}>Expand {entry.path}</button>
@@ -144,7 +144,7 @@ describe(WorkflowHistoryDetailsRow.name, () => {
     expect(screen.getByText('field1')).toBeInTheDocument();
   });
 
-  it('should close the tooltip when the tooltip content calls closeTooltip', async () => {
+  it('should close the tooltip when the tooltip content calls onCloseTooltip', async () => {
     const { user } = setup();
 
     await user.hover(screen.getByTestId('field-field1'));

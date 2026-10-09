@@ -53,7 +53,7 @@ export default function WorkflowHistoryDetailsRow({
                 label={item.label}
                 value={item.value}
                 isNegative={isNegative}
-                closeTooltip={close}
+                onCloseTooltip={close}
                 isEventExpanded={isEventExpanded}
                 onExpandEvent={onExpandEvent}
                 onCollapseEvent={onCollapseEvent}
