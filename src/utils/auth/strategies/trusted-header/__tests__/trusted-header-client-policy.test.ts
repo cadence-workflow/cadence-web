@@ -1,3 +1,5 @@
+import { AUTH_UNAVAILABLE_PATH } from '@/utils/auth/auth.constants';
+
 import trustedHeaderClientPolicy from '../trusted-header-client-policy';
 
 describe('trustedHeaderClientPolicy', () => {
@@ -9,10 +11,17 @@ describe('trustedHeaderClientPolicy', () => {
     );
   });
 
-  it('has no browser credential actions (login/logout happen upstream)', async () => {
+  it('login sends the browser to the auth-unavailable page', () => {
     const assign = mockLocationAssign();
 
     trustedHeaderClientPolicy.login('/domains');
+
+    expect(assign).toHaveBeenCalledWith(AUTH_UNAVAILABLE_PATH);
+  });
+
+  it('logout is a no-op (sign-out happens at the perimeter)', async () => {
+    const assign = mockLocationAssign();
+
     await trustedHeaderClientPolicy.logout();
 
     expect(assign).not.toHaveBeenCalled();

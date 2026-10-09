@@ -1,13 +1,17 @@
+import { AUTH_UNAVAILABLE_PATH } from '@/utils/auth/auth.constants';
 import { type AuthClientPolicy } from '@/utils/auth/auth.types';
 
 /**
- * Browser half of the trusted-header strategy. Login and logout happen
- * upstream at the trusted perimeter, so the browser has nothing to do.
+ * Browser half of the trusted-header strategy. Credentials come from the
+ * perimeter; when identity disappears the browser can only land on the
+ * status page (same destination as the server layout gate).
  */
 const trustedHeaderClientPolicy: AuthClientPolicy = {
   supportsSessionRecovery: false,
   unauthenticatedRemedy: 'unavailable',
-  login() {},
+  login() {
+    window.location.assign(AUTH_UNAVAILABLE_PATH);
+  },
   logout: () => Promise.resolve(),
   onUnauthorized: () => false,
 };
