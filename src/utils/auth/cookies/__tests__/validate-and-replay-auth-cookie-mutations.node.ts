@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import logger from '../../../logger';
+import { getMockAuthServerRegistryEntry } from '../../__fixtures__/mock-auth-server-registry-entry';
 import {
   AUTH_COOKIE_MUTATIONS_MAX_BYTES,
   AUTH_COOKIE_OPTIONS,
 } from '../../auth.constants';
 import { type CookieMutation } from '../../auth.types';
+import getActiveAuthServerEntry from '../../strategies/get-active-auth-server-entry';
+import getDeclaredAuthCookieNames from '../../strategies/get-declared-auth-cookie-names';
 import validateAndReplayAuthCookieMutations, {
   measureAuthCookieMutationsBytes,
 } from '../validate-and-replay-auth-cookie-mutations';
@@ -15,6 +18,18 @@ jest.mock('@/utils/logger', () => ({
   default: { warn: jest.fn(), error: jest.fn(), info: jest.fn() },
 }));
 
+jest.mock('../../strategies/get-active-auth-server-entry', () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+jest.mock('../../strategies/get-declared-auth-cookie-names', () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+const mockGetActiveAuthServerEntry = jest.mocked(getActiveAuthServerEntry);
+const mockGetDeclaredAuthCookieNames = jest.mocked(getDeclaredAuthCookieNames);
 const mockLoggerWarn = jest.mocked(logger.warn);
 
 const COOKIE_NAMES = {
@@ -31,6 +46,12 @@ const getReplayedCookieNames = (response: NextResponse) =>
 describe(validateAndReplayAuthCookieMutations.name, () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    const entry = getMockAuthServerRegistryEntry();
+    mockGetActiveAuthServerEntry.mockResolvedValue({
+      ...entry,
+      cookieNames: COOKIE_NAMES,
+    });
+    mockGetDeclaredAuthCookieNames.mockReturnValue(COOKIE_NAMES);
   });
 
   it('replays exact-name and declared-prefix mutations in order', async () => {
@@ -43,8 +64,7 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
         { set: { name: 'cadence-authorization', value: 'token' } },
         { set: { name: 'oidc-session.0', value: 'chunk0', maxAge: 3600 } },
         { clear: { name: 'oidc-session.1' } },
-      ],
-      COOKIE_NAMES
+      ]
     );
 
     expect(result).toEqual({ ok: true });
@@ -56,7 +76,7 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
     expect(response.cookies.get('oidc-session.0')?.maxAge).toBe(3600);
   });
 
-  it('rejects a name outside the declared set and replays nothing', async () => {
+  it('rejects a set outside the active strategy and replays nothing', async () => {
     const response = NextResponse.json({});
 
     const result = await validateAndReplayAuthCookieMutations(
@@ -65,8 +85,7 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
       [
         { set: { name: 'cadence-authorization', value: 'token' } },
         { set: { name: 'other-strategy-cookie', value: 'x' } },
-      ],
-      COOKIE_NAMES
+      ]
     );
 
     expect(result).toEqual({
@@ -77,6 +96,59 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
     // validate-then-replay: even the valid first mutation is not applied
     expect(getReplayedCookieNames(response)).toEqual([]);
     expect(mockLoggerWarn).toHaveBeenCalled();
+  });
+
+  it('allows clearing a previously declared cookie after the active strategy changes', async () => {
+    const entry = getMockAuthServerRegistryEntry();
+    mockGetActiveAuthServerEntry.mockResolvedValue({
+      ...entry,
+      cookieNames: { exact: [], prefixes: [] },
+    });
+    mockGetDeclaredAuthCookieNames.mockReturnValue({
+      exact: ['cadence-authorization'],
+      prefixes: [],
+    });
+    const response = NextResponse.json({});
+
+    const clearResult = await validateAndReplayAuthCookieMutations(
+      buildRequest(),
+      response,
+      [{ clear: { name: 'cadence-authorization' } }]
+    );
+
+    expect(clearResult).toEqual({ ok: true });
+    expect(getReplayedCookieNames(response)).toEqual(['cadence-authorization']);
+
+    const setResponse = NextResponse.json({});
+    const setResult = await validateAndReplayAuthCookieMutations(
+      buildRequest(),
+      setResponse,
+      [{ set: { name: 'cadence-authorization', value: 'token' } }]
+    );
+
+    expect(setResult).toEqual({
+      ok: false,
+      reason: 'unknown-cookie-name',
+      name: 'cadence-authorization',
+    });
+    expect(getReplayedCookieNames(setResponse)).toEqual([]);
+  });
+
+  it('rejects a clear outside every strategy declaration', async () => {
+    const response = NextResponse.json({});
+
+    const result = await validateAndReplayAuthCookieMutations(
+      buildRequest(),
+      response,
+      [{ clear: { name: 'unknown-auth-cookie' } }]
+    );
+
+    expect(result).toEqual({
+      ok: false,
+      reason: 'unknown-cookie-name',
+      name: 'unknown-auth-cookie',
+    });
+    expect(getReplayedCookieNames(response)).toEqual([]);
   });
 
   it('rejects an over-budget mutation set and replays nothing', async () => {
@@ -93,8 +165,7 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
     const result = await validateAndReplayAuthCookieMutations(
       buildRequest(),
       response,
-      mutations,
-      COOKIE_NAMES
+      mutations
     );
 
     expect(result).toMatchObject({ ok: false, reason: 'over-budget' });
@@ -107,8 +178,7 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
     const result = await validateAndReplayAuthCookieMutations(
       buildRequest('http://cadence.internal.example/api/auth/recover'),
       response,
-      [{ set: { name: 'cadence-authorization', value: 'token' } }],
-      COOKIE_NAMES
+      [{ set: { name: 'cadence-authorization', value: 'token' } }]
     );
 
     expect(result).toEqual({ ok: true });
@@ -126,8 +196,7 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
       await validateAndReplayAuthCookieMutations(
         buildRequest(`http://${host}/api/auth/recover`),
         response,
-        [{ set: { name: 'cadence-authorization', value: 'token' } }],
-        COOKIE_NAMES
+        [{ set: { name: 'cadence-authorization', value: 'token' } }]
       );
 
       expect(mockLoggerWarn).not.toHaveBeenCalled();
@@ -141,12 +210,9 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
       { headers: { 'x-forwarded-proto': 'https' } }
     );
 
-    await validateAndReplayAuthCookieMutations(
-      request,
-      response,
-      [{ set: { name: 'cadence-authorization', value: 'token' } }],
-      COOKIE_NAMES
-    );
+    await validateAndReplayAuthCookieMutations(request, response, [
+      { set: { name: 'cadence-authorization', value: 'token' } },
+    ]);
 
     expect(mockLoggerWarn).not.toHaveBeenCalled();
   });
@@ -157,8 +223,7 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
     const result = await validateAndReplayAuthCookieMutations(
       buildRequest('http://cadence.internal.example/api/auth/recover'),
       response,
-      [],
-      COOKIE_NAMES
+      []
     );
 
     expect(result).toEqual({ ok: true });
@@ -171,12 +236,9 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
       headers: { 'x-forwarded-proto': 'https' },
     });
 
-    await validateAndReplayAuthCookieMutations(
-      request,
-      response,
-      [{ clear: { name: 'cadence-authorization' } }],
-      COOKIE_NAMES
-    );
+    await validateAndReplayAuthCookieMutations(request, response, [
+      { clear: { name: 'cadence-authorization' } },
+    ]);
 
     const cookie = response.cookies.get('cadence-authorization');
     expect(cookie?.value).toBe('');
@@ -242,9 +304,7 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
     });
 
     it('rejects a set whose raw value fits but whose escaped wire form exceeds the budget', async () => {
-      // Overhead for this set is 47 bytes (name + '=' + attributes, no
-      // Secure on plain-http loopback). A raw value of 4000-47 measures
-      // exactly at budget; escaped ('{' → '%7B') the same length triples over.
+      // 47 = name + attributes on this Set-Cookie.
       const atBudget = await validateAndReplayAuthCookieMutations(
         buildRequest(),
         NextResponse.json({}),
@@ -255,8 +315,7 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
               value: 'x'.repeat(AUTH_COOKIE_MUTATIONS_MAX_BYTES - 47),
             },
           },
-        ],
-        COOKIE_NAMES
+        ]
       );
       expect(atBudget).toEqual({ ok: true });
 
@@ -265,6 +324,7 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
         {
           set: {
             name: 'oidc-session.0',
+            // '{' → '%7B' (3 bytes) -> same char count over budget on the wire
             value: '{'.repeat(AUTH_COOKIE_MUTATIONS_MAX_BYTES - 47),
           },
         },
@@ -273,8 +333,7 @@ describe(validateAndReplayAuthCookieMutations.name, () => {
       const result = await validateAndReplayAuthCookieMutations(
         buildRequest(),
         response,
-        mutations,
-        COOKIE_NAMES
+        mutations
       );
 
       expect(result).toMatchObject({ ok: false, reason: 'over-budget' });

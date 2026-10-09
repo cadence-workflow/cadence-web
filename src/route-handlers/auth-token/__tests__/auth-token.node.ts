@@ -1,8 +1,27 @@
 import { NextRequest } from 'next/server';
 
 import { JWT_AUTH_COOKIE_NAME } from '@/utils/auth/strategies/jwt/jwt-auth.constants';
+import * as getConfigValueModule from '@/utils/config/get-config-value';
+import logger from '@/utils/logger';
 
-import { DELETE, POST } from '../route';
+import { clearAuthToken } from '../clear-auth-token';
+import { setAuthToken } from '../set-auth-token';
+
+jest.mock('@/utils/config/get-config-value');
+jest.mock('@/utils/logger');
+
+const mockGetConfigValue = jest.spyOn(
+  getConfigValueModule,
+  'default'
+) as jest.Mock;
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  mockGetConfigValue.mockImplementation(async (key: string) => {
+    if (key === 'CADENCE_WEB_AUTH_STRATEGY') return 'jwt';
+    return '';
+  });
+});
 
 const VALID_JWT = 'header.payload.signature';
 
@@ -14,6 +33,7 @@ const buildRequest = (
     origin?: string;
     xForwardedHost?: string;
     host?: string;
+    hostname?: string;
   }
 ) => {
   const headers = new Headers({ 'content-type': 'application/json' });
@@ -30,7 +50,8 @@ const buildRequest = (
     headers.set('x-forwarded-host', options.xForwardedHost);
   }
   const protocol = options?.proto ?? 'http';
-  return new NextRequest(`${protocol}://localhost/api/auth/token`, {
+  const hostname = options?.hostname ?? 'localhost';
+  return new NextRequest(`${protocol}://${hostname}/api/auth/token`, {
     method: 'POST',
     headers,
     body: JSON.stringify(body),
@@ -79,10 +100,10 @@ const expectNoStore = (response: Response) => {
   expect(response.headers.get('Cache-Control')).toBe('no-store');
 };
 
-describe('POST /api/auth/token', () => {
+describe(setAuthToken.name, () => {
   it('sets auth cookie for a valid JWT', async () => {
     const token = VALID_JWT;
-    const response = await POST(buildRequest({ token }));
+    const response = await setAuthToken(buildRequest({ token }));
     const body = await response.json();
 
     expect(response.status).toBe(200);
@@ -98,7 +119,9 @@ describe('POST /api/auth/token', () => {
   });
 
   it('strips "Bearer " prefix from token', async () => {
-    const response = await POST(buildRequest({ token: `Bearer ${VALID_JWT}` }));
+    const response = await setAuthToken(
+      buildRequest({ token: `Bearer ${VALID_JWT}` })
+    );
     const authCookie = getAuthCookie(response);
 
     expect(response.status).toBe(200);
@@ -106,7 +129,9 @@ describe('POST /api/auth/token', () => {
   });
 
   it('strips "bearer " prefix case-insensitively', async () => {
-    const response = await POST(buildRequest({ token: `bEaReR ${VALID_JWT}` }));
+    const response = await setAuthToken(
+      buildRequest({ token: `bEaReR ${VALID_JWT}` })
+    );
     const authCookie = getAuthCookie(response);
 
     expect(response.status).toBe(200);
@@ -126,7 +151,7 @@ describe('POST /api/auth/token', () => {
   ])(
     'rejects %s',
     async (_name, requestBody, expectedMessage: string | RegExp) => {
-      const response = await POST(buildRequest(requestBody));
+      const response = await setAuthToken(buildRequest(requestBody));
       const body = await response.json();
 
       expect(response.status).toBe(400);
@@ -144,15 +169,28 @@ describe('POST /api/auth/token', () => {
       headers: { 'content-type': 'application/json' },
       body: '{bad json',
     });
-    const response = await POST(request);
+    const response = await setAuthToken(request);
     const body = await response.json();
 
     expect(response.status).toBe(400);
     expect(body.message).toBe('Invalid request body');
   });
 
+  it('returns 500, not 400, when the cookie writer throws', async () => {
+    mockGetConfigValue.mockRejectedValueOnce(new Error('config store down'));
+    const response = await setAuthToken(buildRequest({ token: VALID_JWT }));
+    const body = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(body.message).toBe('Unexpected error');
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.objectContaining({ error: expect.any(Error) }),
+      'Failed to write auth token cookie'
+    );
+  });
+
   it('uses the resolved secure attribute when setting the auth cookie', async () => {
-    const response = await POST(
+    const response = await setAuthToken(
       buildRequest({ token: VALID_JWT }, { xForwardedProto: 'https' })
     );
     const authCookie = getAuthCookie(response);
@@ -160,22 +198,37 @@ describe('POST /api/auth/token', () => {
     expect(authCookie!.attributes).toHaveProperty('secure', true);
   });
 
+  it('warns when writing the auth cookie over plain HTTP to a non-loopback host', async () => {
+    const response = await setAuthToken(
+      buildRequest(
+        { token: VALID_JWT },
+        { hostname: 'cadence.internal.example' }
+      )
+    );
+
+    expect(response.status).toBe(200);
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.objectContaining({ host: 'cadence.internal.example' }),
+      'Writing auth cookies without the Secure attribute on a non-loopback host'
+    );
+  });
+
   it('sets Cache-Control: no-store on all responses', async () => {
-    const success = await POST(buildRequest({ token: VALID_JWT }));
-    const failure = await POST(buildRequest({}));
+    const success = await setAuthToken(buildRequest({ token: VALID_JWT }));
+    const failure = await setAuthToken(buildRequest({}));
 
     expectNoStore(success);
     expectNoStore(failure);
   });
 
   it('accepts a request without an Origin header', async () => {
-    const response = await POST(buildRequest({ token: VALID_JWT }));
+    const response = await setAuthToken(buildRequest({ token: VALID_JWT }));
 
     expect(response.status).toBe(200);
   });
 
   it('accepts a request whose Origin matches the request host', async () => {
-    const response = await POST(
+    const response = await setAuthToken(
       buildRequest(
         { token: VALID_JWT },
         { origin: 'http://localhost', host: 'localhost' }
@@ -186,7 +239,7 @@ describe('POST /api/auth/token', () => {
   });
 
   it('rejects a cross-site request and sets no cookie', async () => {
-    const response = await POST(
+    const response = await setAuthToken(
       buildRequest({ token: VALID_JWT }, { origin: 'https://evil.example' })
     );
     const body = await response.json();
@@ -198,7 +251,7 @@ describe('POST /api/auth/token', () => {
   });
 
   it('rejects a malformed Origin header', async () => {
-    const response = await POST(
+    const response = await setAuthToken(
       buildRequest({ token: VALID_JWT }, { origin: 'not a url' })
     );
 
@@ -206,7 +259,7 @@ describe('POST /api/auth/token', () => {
   });
 
   it('compares Origin against the forwarded host when present', async () => {
-    const accepted = await POST(
+    const accepted = await setAuthToken(
       buildRequest(
         { token: VALID_JWT },
         {
@@ -217,7 +270,7 @@ describe('POST /api/auth/token', () => {
     );
     expect(accepted.status).toBe(200);
 
-    const rejected = await POST(
+    const rejected = await setAuthToken(
       buildRequest(
         { token: VALID_JWT },
         { origin: 'https://evil.example', xForwardedHost: 'cadence.example' }
@@ -227,7 +280,7 @@ describe('POST /api/auth/token', () => {
   });
 
   it('rejects an http Origin when the forwarded protocol is https', async () => {
-    const rejected = await POST(
+    const rejected = await setAuthToken(
       buildRequest(
         { token: VALID_JWT },
         {
@@ -239,7 +292,7 @@ describe('POST /api/auth/token', () => {
     );
     expect(rejected.status).toBe(403);
 
-    const accepted = await POST(
+    const accepted = await setAuthToken(
       buildRequest(
         { token: VALID_JWT },
         {
@@ -253,7 +306,7 @@ describe('POST /api/auth/token', () => {
   });
 
   it('accepts an https Origin when the forwarded protocol is http', async () => {
-    const response = await POST(
+    const response = await setAuthToken(
       buildRequest(
         { token: VALID_JWT },
         {
@@ -268,9 +321,9 @@ describe('POST /api/auth/token', () => {
   });
 });
 
-describe('DELETE /api/auth/token', () => {
+describe(clearAuthToken.name, () => {
   it('clears the auth cookie', async () => {
-    const response = await DELETE(buildDeleteRequest());
+    const response = await clearAuthToken(buildDeleteRequest());
     const body = await response.json();
 
     expect(response.status).toBe(200);
@@ -286,7 +339,7 @@ describe('DELETE /api/auth/token', () => {
   });
 
   it('sets secure=true when behind HTTPS proxy', async () => {
-    const response = await DELETE(
+    const response = await clearAuthToken(
       buildDeleteRequest({ xForwardedProto: 'https' })
     );
     const authCookie = getAuthCookie(response);
@@ -295,8 +348,36 @@ describe('DELETE /api/auth/token', () => {
   });
 
   it('sets Cache-Control: no-store', async () => {
-    const response = await DELETE(buildDeleteRequest());
+    const response = await clearAuthToken(buildDeleteRequest());
 
     expectNoStore(response);
+  });
+
+  it('returns 500 and logs when the cookie writer throws', async () => {
+    mockGetConfigValue.mockRejectedValueOnce(new Error('config store down'));
+    const response = await clearAuthToken(buildDeleteRequest());
+    const body = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(body.message).toBe('Unexpected error');
+    expectNoStore(response);
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.objectContaining({ error: expect.any(Error) }),
+      'Failed to clear auth token cookie'
+    );
+  });
+
+  it('clears the JWT cookie after the active strategy changes away from jwt', async () => {
+    mockGetConfigValue.mockImplementation(async (key: string) => {
+      if (key === 'CADENCE_WEB_AUTH_STRATEGY') return 'disabled';
+      return '';
+    });
+
+    const response = await clearAuthToken(buildDeleteRequest());
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body).toEqual({ ok: true });
+    expect(getAuthCookie(response).value).toBe('');
   });
 });

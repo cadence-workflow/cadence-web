@@ -1,9 +1,3 @@
-export const AUTH_TOKEN_COOKIE_OPTIONS = {
-  httpOnly: true,
-  sameSite: 'lax' as const,
-  path: '/',
-};
-
 export const NO_STORE_HEADERS = {
   'Cache-Control': 'no-store',
 };

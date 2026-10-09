@@ -5,17 +5,26 @@ import { type NextRequest, NextResponse } from 'next/server';
 import logger from '@/utils/logger';
 
 import { AUTH_COOKIE_MUTATIONS_MAX_BYTES } from '../auth.constants';
-import {
-  type AuthServerRegistryEntry,
-  type CookieMutation,
-} from '../auth.types';
+import { type CookieMutation } from '../auth.types';
 import isLoopbackHost from '../helpers/is-loopback-host';
+import getActiveAuthServerEntry from '../strategies/get-active-auth-server-entry';
+import getDeclaredAuthCookieNames from '../strategies/get-declared-auth-cookie-names';
 
 import buildAuthCookieOptions from './build-auth-cookie-options';
 import {
   type AuthCookieParams,
   type ValidateAndReplayResult,
 } from './validate-and-replay-auth-cookie-mutations.types';
+
+function isCookieNameDeclared(
+  name: string,
+  cookieNames: { exact: string[]; prefixes: string[] }
+): boolean {
+  return (
+    cookieNames.exact.includes(name) ||
+    cookieNames.prefixes.some((prefix) => name.startsWith(prefix))
+  );
+}
 
 /** One entry per cookie to write, with the exact options the write uses.
  * Shared by measurement and the write so the two cannot drift. */
@@ -63,34 +72,52 @@ export function measureAuthCookieMutationsBytes(cookies: AuthCookieParams[]): {
 }
 
 /** Checks the mutation list, then writes every cookie.
- * Rejects writing all cookies when a name is outside cookieNames or the total over the byte budget.
+ * Sets must use a name declared by the active strategy. Clears may use any
+ * name declared by any strategy, so a leftover cookie can still be expired
+ * after a strategy change. Writes nothing if a name is rejected or the
+ * total size is over budget.
  * @param request - incoming request, source of the Secure attribute decision
  * @param response - response the cookies are written to
  * @param mutations - set/clear operations to validate, then replay
- * @param cookieNames - active strategy's declared exact names and prefixes
  * @returns ok when written; the rejection reason otherwise
  */
 export default async function validateAndReplayAuthCookieMutations(
   request: NextRequest,
   response: NextResponse,
-  mutations: CookieMutation[],
-  cookieNames: AuthServerRegistryEntry['cookieNames']
+  mutations: CookieMutation[]
 ): Promise<ValidateAndReplayResult> {
   if (mutations.length === 0) {
     return { ok: true };
   }
 
+  const { cookieNames: activeCookieNames } = await getActiveAuthServerEntry();
+  const clearableCookieNames = getDeclaredAuthCookieNames();
+
   for (const mutation of mutations) {
-    const name = 'set' in mutation ? mutation.set.name : mutation.clear.name;
-    const isKnown =
-      cookieNames.exact.includes(name) ||
-      cookieNames.prefixes.some((prefix) => name.startsWith(prefix));
-    if (!isKnown) {
+    if ('set' in mutation) {
+      if (!isCookieNameDeclared(mutation.set.name, activeCookieNames)) {
+        logger.warn(
+          { name: mutation.set.name },
+          "Auth cookie set rejected: name outside the active strategy's declared set"
+        );
+        return {
+          ok: false,
+          reason: 'unknown-cookie-name',
+          name: mutation.set.name,
+        };
+      }
+      continue;
+    }
+    if (!isCookieNameDeclared(mutation.clear.name, clearableCookieNames)) {
       logger.warn(
-        { name },
-        "Auth cookie mutation rejected: name outside the active strategy's declared set"
+        { name: mutation.clear.name },
+        'Auth cookie clear rejected: name outside the declared auth-cookie set'
       );
-      return { ok: false, reason: 'unknown-cookie-name', name };
+      return {
+        ok: false,
+        reason: 'unknown-cookie-name',
+        name: mutation.clear.name,
+      };
     }
   }
 
