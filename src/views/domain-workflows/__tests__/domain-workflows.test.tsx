@@ -5,7 +5,7 @@ import { act } from 'react-dom/test-utils';
 
 import { render, screen } from '@/test-utils/rtl';
 
-import { type AuthMeResponse } from '@/route-handlers/auth-me/auth-me.types';
+import { type AuthMeResponse } from '@/route-handlers/get-auth-me/get-auth-me.types';
 import { type DescribeClusterResponse } from '@/route-handlers/describe-cluster/describe-cluster.types';
 import { type DomainPageTabContentProps } from '@/views/domain-page/domain-page-content/domain-page-content.types';
 

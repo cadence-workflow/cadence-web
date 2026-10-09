@@ -2,7 +2,7 @@ import { HttpResponse } from 'msw';
 
 import { renderHook, waitFor } from '@/test-utils/rtl';
 
-import { type AuthMeResponse } from '@/route-handlers/auth-me/auth-me.types';
+import { type AuthMeResponse } from '@/route-handlers/get-auth-me/get-auth-me.types';
 import { type AuthClientPolicy } from '@/utils/auth/auth.types';
 import jwtClientPolicy from '@/utils/auth/strategies/jwt/jwt-client-policy';
 

@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { resolveAuthContext } from '@/utils/auth/auth-context';
 import getConfigValue from '@/utils/config/get-config-value';
 
-import { type AuthMeResponse } from './auth-me.types';
+import { type AuthMeResponse } from './get-auth-me.types';
 
 export async function getAuthMe(request: NextRequest) {
   const [authContext, authStrategy] = await Promise.all([

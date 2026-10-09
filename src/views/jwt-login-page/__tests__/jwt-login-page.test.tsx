@@ -2,7 +2,7 @@ import { HttpResponse } from 'msw';
 
 import { render, screen, waitFor, userEvent } from '@/test-utils/rtl';
 
-import { type AuthMeResponse } from '@/route-handlers/auth-me/auth-me.types';
+import { type AuthMeResponse } from '@/route-handlers/get-auth-me/get-auth-me.types';
 
 import JwtLoginPage from '../jwt-login-page';
 
