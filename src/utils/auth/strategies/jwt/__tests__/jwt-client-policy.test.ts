@@ -57,6 +57,7 @@ describe('jwtClientPolicy', () => {
     expect(mockFetch).toHaveBeenCalledWith('/api/auth/token', {
       method: 'DELETE',
       cache: 'no-store',
+      headers: {},
     });
     expect(mockAssign).toHaveBeenCalledWith(
       `/login?notice=session-expired&returnTo=${encodeURIComponent('/')}`
@@ -71,11 +72,17 @@ describe('jwtClientPolicy', () => {
   });
 
   it('logout does not navigate when the delete response is not ok', async () => {
-    mockFetch.mockResolvedValueOnce({ ok: false, status: 500 });
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      json: async () => ({ message: 'Unexpected error' }),
+    });
 
-    await expect(jwtClientPolicy.logout()).rejects.toThrow(
-      'Failed to clear session'
-    );
+    await expect(jwtClientPolicy.logout()).rejects.toMatchObject({
+      name: 'RequestError',
+      message: 'Unexpected error',
+      status: 500,
+    });
     expect(mockAssign).not.toHaveBeenCalled();
   });
 
