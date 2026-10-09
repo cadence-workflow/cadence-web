@@ -18,7 +18,7 @@ const nextConfig = {
       ...config.resolve.alias,
       '@': path.resolve(__dirname, './src'),
     };
-    if (options.isServer) {
+    if (options.isServer && options.nextRuntime === 'nodejs') {
       config.externals.push(
         '@grpc/grpc-js',
         'require-in-the-middle',

@@ -32,7 +32,12 @@ Cadence Web does **not** implement a full identity provider and does **not** ver
 
 **Backend calls.** When strategy is `jwt` and a valid token is present, `getGrpcMetadataFromAuth` adds `cadence-authorization: <JWT>` to gRPC metadata so Cadence can authorize the request.
 
-**UI and dynamic config.** `DOMAIN_ACCESS` uses auth context plus domain metadata from the server to compute per-domain access. `WORKFLOW_ACTIONS_ENABLED` combines that with other flags so buttons and actions match what the backend will allow. The nav bar and hooks such as `useUserInfo` / `useAuthLifecycle` drive login, logout, and expiry-aware behavior.
+**UI and dynamic config.** `DOMAIN_ACCESS` uses auth context plus domain metadata from the server to compute per-domain access. `WORKFLOW_ACTIONS_ENABLED` combines that with other flags so buttons and actions match what the backend will allow. The nav bar and hooks such as `useUserInfo` / `useAuthLifecycle` drive logout and expiry-aware behavior. `useUserInfo` refetches `GET /api/auth/me` when the window regains focus, so a login or logout in another tab is picked up.
+
+**Login page.** With `jwt`, the server layout redirects any request without a valid session to `/login?returnTo=<path and query>`. After a token is saved, the page sends the user back to `returnTo`. Only relative in-app paths are accepted; anything else falls back to `/`. The page shows a notice banner when `notice` is set:
+
+- `notice=session-expired` — the session cookie was present but the token is invalid or expired, the token expired while the app was open, or another tab ended the session (window-focus refetch).
+- `notice=signed-out` — the user chose **Log out** in this tab.
 
 **API routes (server).**
 
@@ -48,9 +53,9 @@ Cadence Web does **not** implement a full identity provider and does **not** ver
 
 1. Set `CADENCE_WEB_AUTH_STRATEGY=jwt` (Restart Cadence Web after changing this value if it was running)
 2. Obtain a JWT issued for your Cadence environment (same claims your server expects).
-3. Use **Login with JWT** on the UI (calls `POST /api/auth/token`).
+3. Open Cadence Web. You are redirected to `/login`; paste the JWT there (calls `POST /api/auth/token`).
 
-Logout: use the UI logout control or `DELETE /api/auth/token`.
+Logout: use **Log out** in the user menu (lands on `/login?notice=signed-out`) or `DELETE /api/auth/token`.
 
 ### Example JWT claims (illustrative)
 

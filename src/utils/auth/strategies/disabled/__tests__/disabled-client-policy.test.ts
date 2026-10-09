@@ -1,10 +1,9 @@
 import disabledClientPolicy from '../disabled-client-policy';
 
 describe('disabledClientPolicy', () => {
-  it('declares no recovery surface and no auth menu labels', () => {
+  it('declares no recovery surface', () => {
     expect(disabledClientPolicy.supportsSessionRecovery).toBe(false);
     expect(disabledClientPolicy.unauthenticatedRemedy).toBe('login');
-    expect(disabledClientPolicy.labels).toBeUndefined();
   });
 
   it('login is a no-op and logout resolves', async () => {

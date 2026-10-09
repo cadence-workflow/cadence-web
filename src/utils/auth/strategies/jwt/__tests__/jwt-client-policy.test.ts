@@ -11,7 +11,7 @@ describe('jwtClientPolicy', () => {
       writable: true,
       value: { ...originalLocation, assign: mockAssign },
     });
-    global.fetch = mockFetch.mockResolvedValue(undefined);
+    global.fetch = mockFetch.mockResolvedValue({ ok: true });
   });
 
   afterAll(() => {
@@ -25,10 +25,6 @@ describe('jwtClientPolicy', () => {
   it('declares no silent recovery and the login remedy', () => {
     expect(jwtClientPolicy.supportsSessionRecovery).toBe(false);
     expect(jwtClientPolicy.unauthenticatedRemedy).toBe('login');
-    expect(jwtClientPolicy.labels).toEqual({
-      login: 'Log in',
-      logout: 'Log out',
-    });
   });
 
   it('login navigates to the login page with a sanitized returnTo', () => {
@@ -59,13 +55,20 @@ describe('jwtClientPolicy', () => {
     );
   });
 
-  it('logout navigates even when the delete request fails', async () => {
+  it('logout does not navigate when the delete request fails', async () => {
     mockFetch.mockRejectedValueOnce(new Error('network failure'));
 
     await expect(jwtClientPolicy.logout()).rejects.toThrow('network failure');
-    expect(mockAssign).toHaveBeenCalledWith(
-      `/login?returnTo=${encodeURIComponent('/')}`
+    expect(mockAssign).not.toHaveBeenCalled();
+  });
+
+  it('logout does not navigate when the delete response is not ok', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: false, status: 500 });
+
+    await expect(jwtClientPolicy.logout()).rejects.toThrow(
+      'Failed to clear session'
     );
+    expect(mockAssign).not.toHaveBeenCalled();
   });
 
   it('allows the recovery pipeline to attempt recovery', () => {
