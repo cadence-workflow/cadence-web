@@ -20,5 +20,5 @@ export default function getDeclaredAuthCookieNames(): AuthServerRegistryEntry['c
       prefixes.add(prefix);
     }
   }
-  return { exact: [...exact], prefixes: [...prefixes] };
+  return { exact: Array.from(exact), prefixes: Array.from(prefixes) };
 }
