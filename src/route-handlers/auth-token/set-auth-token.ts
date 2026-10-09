@@ -1,11 +1,11 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
-import getCookieSecureAttribute from '@/utils/auth/helpers/get-cookie-secure-attribute';
+import validateAndReplayAuthCookieMutations from '@/utils/auth/cookies/validate-and-replay-auth-cookie-mutations';
 import isSameOriginRequest from '@/utils/auth/helpers/is-same-origin-request';
 import { JWT_AUTH_COOKIE_NAME } from '@/utils/auth/strategies/jwt/jwt-auth.constants';
+import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
 import {
-  AUTH_TOKEN_COOKIE_OPTIONS,
   AUTH_TOKEN_SUCCESS_RESPONSE,
   INVALID_REQUEST_BODY_MESSAGE,
   INVALID_REQUEST_MESSAGE,
@@ -25,24 +25,42 @@ export async function setAuthToken(request: NextRequest) {
     );
   }
 
+  let requestBody: unknown;
   try {
-    const requestBody = await request.json();
-    const { data, error } = tokenRequestBodySchema.safeParse(requestBody);
-
-    if (error) {
-      return badRequest(error.errors[0]?.message ?? INVALID_REQUEST_MESSAGE);
-    }
-
-    const response = NextResponse.json(
-      AUTH_TOKEN_SUCCESS_RESPONSE satisfies AuthTokenResponse
-    );
-    response.headers.set('Cache-Control', 'no-store');
-    response.cookies.set(JWT_AUTH_COOKIE_NAME, data.token, {
-      ...AUTH_TOKEN_COOKIE_OPTIONS,
-      secure: getCookieSecureAttribute(request),
-    });
-    return response;
+    requestBody = await request.json();
   } catch {
     return badRequest(INVALID_REQUEST_BODY_MESSAGE);
   }
+
+  const { data, error } = tokenRequestBodySchema.safeParse(requestBody);
+  if (error) {
+    return badRequest(error.errors[0]?.message ?? INVALID_REQUEST_MESSAGE);
+  }
+
+  const response = NextResponse.json(
+    AUTH_TOKEN_SUCCESS_RESPONSE satisfies AuthTokenResponse,
+    { headers: NO_STORE_HEADERS }
+  );
+  let replay: Awaited<ReturnType<typeof validateAndReplayAuthCookieMutations>>;
+  try {
+    replay = await validateAndReplayAuthCookieMutations(request, response, [
+      { set: { name: JWT_AUTH_COOKIE_NAME, value: data.token } },
+    ]);
+  } catch (e) {
+    // Not the client's fault (e.g. config lookup failed), so 500 not 400.
+    logger.error<RouteHandlerErrorPayload>(
+      { error: e },
+      'Failed to write auth token cookie'
+    );
+    return NextResponse.json(
+      { message: 'Unexpected error' },
+      { status: 500, headers: NO_STORE_HEADERS }
+    );
+  }
+  if (!replay.ok) {
+    // With a non-jwt strategy active, the jwt cookie isn't allowed, so we land here.
+    logger.warn({ reason: replay.reason }, 'Rejected auth token write');
+    return badRequest(INVALID_REQUEST_MESSAGE);
+  }
+  return response;
 }

@@ -9,7 +9,9 @@ import { type AuthStrategyConfigValue } from './auth-strategy.types';
 
 /**
  * Every value in AUTH_STRATEGY_VALUES_CONFIG needs an entry here.
- * cookieNames is the allowlist for cookies the policy may set or clear.
+ * cookieNames is the allowlist for cookies the policy may set. Clears are
+ * allowed for any name declared by any strategy so logout still works after
+ * a strategy change.
  * New strategies should use a lazy loader so their policy loads only when selected:
  * `policy: () => import('...').then((m) => m.default)`.
  */

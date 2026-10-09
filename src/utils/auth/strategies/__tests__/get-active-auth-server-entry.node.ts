@@ -2,6 +2,7 @@ import AUTH_SERVER_STRATEGIES_CONFIG from '@/config/auth/auth-server-strategies.
 import getConfigValue from '@/utils/config/get-config-value';
 
 import getActiveAuthServerEntry from '../get-active-auth-server-entry';
+import getDeclaredAuthCookieNames from '../get-declared-auth-cookie-names';
 
 jest.mock('@/utils/config/get-config-value');
 jest.mock('@/config/auth/auth-server-strategies.config', () => ({
@@ -50,6 +51,15 @@ describe(getActiveAuthServerEntry.name, () => {
 
     expect(entry.policy).toEqual({ name: 'lazy' });
     expect(entry.cookieNames).toEqual({
+      exact: ['mock-cookie'],
+      prefixes: ['mock-prefix-'],
+    });
+  });
+});
+
+describe(getDeclaredAuthCookieNames.name, () => {
+  it('unions cookie names across every registered strategy', () => {
+    expect(getDeclaredAuthCookieNames()).toEqual({
       exact: ['mock-cookie'],
       prefixes: ['mock-prefix-'],
     });
