@@ -66,7 +66,7 @@ export type AuthServerPolicy = {
 export type AuthClientPolicy = {
   supportsSessionRecovery: boolean;
   unauthenticatedRemedy: 'login' | 'unavailable';
-  login(returnTo?: string): void;
+  login(returnTo?: string, notice?: AuthLogoutNotice): void;
   logout(options?: { notice?: AuthLogoutNotice }): Promise<void>;
   onUnauthorized(response: Response): boolean;
 };

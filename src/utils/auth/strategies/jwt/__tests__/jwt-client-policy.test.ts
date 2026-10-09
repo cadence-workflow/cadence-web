@@ -35,6 +35,14 @@ describe('jwtClientPolicy', () => {
     );
   });
 
+  it('login passes the notice to the login page', () => {
+    jwtClientPolicy.login(undefined, 'session-expired');
+
+    expect(mockAssign).toHaveBeenCalledWith(
+      `/login?notice=session-expired&returnTo=${encodeURIComponent('/')}`
+    );
+  });
+
   it('login sanitizes external returnTo values', () => {
     jwtClientPolicy.login('//evil.test');
 

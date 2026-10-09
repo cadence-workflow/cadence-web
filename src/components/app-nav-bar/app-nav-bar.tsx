@@ -22,24 +22,23 @@ export default function AppNavBar() {
     isAuthLoading,
     isAdmin,
     userName,
-    expiresAtMs,
     logout,
+    expireSession,
   } = useAuthLifecycle();
 
   const logoutInFlightRef = useRef(false);
   const prevIsValidTokenRef = useRef<boolean | null>(null);
-  const latestExpiresAtRef = useRef(expiresAtMs);
-  latestExpiresAtRef.current = expiresAtMs;
-  const expiryTimeoutIdRef = useRef<number | null>(null);
 
   const handleLogout = useCallback(
     async (trigger: 'manual' | 'expired') => {
       if (logoutInFlightRef.current) return;
       logoutInFlightRef.current = true;
       try {
-        await logout({
-          notice: trigger === 'manual' ? 'signed-out' : 'session-expired',
-        });
+        if (trigger === 'manual') {
+          await logout({ notice: 'signed-out' });
+        } else {
+          expireSession();
+        }
       } catch (e) {
         // Stay on the page when the cookie was not cleared so /login cannot
         // bounce the still-valid session back into the app.
@@ -49,11 +48,11 @@ export default function AppNavBar() {
         logoutInFlightRef.current = false;
       }
     },
-    [logout, enqueue]
+    [logout, expireSession, enqueue]
   );
 
   // JWT validity-flip (token expired, cleared, or replaced in another tab):
-  // sign out with the session-expired notice; the login page renders it.
+  // send the user to login with the session-expired notice (cookie left alone).
   useEffect(() => {
     if (!isAuthEnabled || isAuthLoading) return;
     const prevIsValidToken = prevIsValidTokenRef.current;
@@ -63,39 +62,6 @@ export default function AppNavBar() {
       void handleLogout('expired');
     }
   }, [isValidToken, isAuthLoading, isAuthEnabled, handleLogout]);
-
-  useEffect(() => {
-    const clearExpiryTimeout = () => {
-      if (expiryTimeoutIdRef.current === null) return;
-      window.clearTimeout(expiryTimeoutIdRef.current);
-      expiryTimeoutIdRef.current = null;
-    };
-
-    clearExpiryTimeout();
-
-    if (
-      !isAuthEnabled ||
-      !isValidToken ||
-      expiresAtMs === undefined ||
-      logoutInFlightRef.current
-    ) {
-      return clearExpiryTimeout;
-    }
-
-    const timeoutMs = expiresAtMs - Date.now();
-    const logoutIfExpiryMatches = () => {
-      if (logoutInFlightRef.current) return;
-      if (latestExpiresAtRef.current !== expiresAtMs) return;
-      void handleLogout('expired');
-    };
-
-    expiryTimeoutIdRef.current = window.setTimeout(
-      logoutIfExpiryMatches,
-      Math.max(0, timeoutMs)
-    );
-
-    return clearExpiryTimeout;
-  }, [expiresAtMs, isValidToken, isAuthEnabled, handleLogout]);
 
   const userItems = useMemo<UserMenuItem[] | undefined>(() => {
     if (!isAuthEnabled || !isValidToken) return undefined;

@@ -102,30 +102,6 @@ describe(useAuthLifecycle.name, () => {
       expect(result.current.isAdmin).toBe(true);
       expect(result.current.userName).toBe('admin-user');
     });
-
-    it('returns expiresAtMs from auth info', async () => {
-      const expiresAtMs = Date.now() + 60_000;
-      const { result } = setup({
-        authResponse: {
-          ...AUTH_ENABLED,
-          auth: { isValidToken: true, expiresAtMs },
-        },
-      });
-
-      await waitFor(() => {
-        expect(result.current.expiresAtMs).toBe(expiresAtMs);
-      });
-    });
-
-    it('returns undefined expiresAtMs when absent', async () => {
-      const { result } = setup({ authResponse: AUTH_ENABLED });
-
-      await waitFor(() => {
-        expect(result.current.isValidToken).toBe(true);
-      });
-
-      expect(result.current.expiresAtMs).toBeUndefined();
-    });
   });
 
   describe('policy delegation', () => {
@@ -139,6 +115,31 @@ describe(useAuthLifecycle.name, () => {
       await result.current.logout({ notice: 'signed-out' });
 
       expect(mockPolicy.logout).toHaveBeenCalledWith({ notice: 'signed-out' });
+    });
+
+    it('expireSession sends the user to login from the current page with the session-expired notice', async () => {
+      window.history.replaceState({}, '', '/domains/foo?tab=1');
+      const { result } = setup({ authResponse: AUTH_ENABLED });
+
+      await waitFor(() => {
+        expect(result.current.isValidToken).toBe(true);
+      });
+
+      result.current.expireSession();
+
+      expect(mockPolicy.login).toHaveBeenCalledWith(
+        '/domains/foo?tab=1',
+        'session-expired'
+      );
+      expect(mockPolicy.logout).not.toHaveBeenCalled();
+    });
+
+    it('does nothing before the strategy is known', () => {
+      const { result } = setup({ authResponse: AUTH_ENABLED });
+
+      result.current.expireSession();
+
+      expect(mockPolicy.login).not.toHaveBeenCalled();
     });
   });
 });
