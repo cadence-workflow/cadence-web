@@ -9,9 +9,7 @@ const mockGetConfigValue = getConfigValue as jest.MockedFunction<
   typeof getConfigValue
 >;
 
-const CONFIG: TrustedHeaderAuthConfig = {
-  grpcMetadataMap: [],
-};
+const CONFIG: TrustedHeaderAuthConfig = [];
 
 const requestWith = (headers: Record<string, string>) => ({
   cookies: { get: () => undefined },

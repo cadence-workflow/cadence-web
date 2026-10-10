@@ -135,14 +135,12 @@ const resolverSchemas: ResolverSchemas = {
   TRUSTED_HEADER_AUTH_CONFIG: {
     args: z.undefined(),
     returnType: z
-      .object({
-        grpcMetadataMap: z.array(
-          z.object({
-            inboundHeader: z.string(),
-            outboundKey: z.string(),
-          })
-        ),
-      })
+      .array(
+        z.object({
+          inboundHeader: z.string(),
+          outboundKey: z.string(),
+        })
+      )
       .nullable(),
   },
 };

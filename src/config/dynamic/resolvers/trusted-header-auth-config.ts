@@ -23,21 +23,18 @@ function parseGrpcMetadataMap(
 }
 
 /**
- * trusted-header strategy config, evaluated at serverStart. Identity comes
- * from Cadence, not headers. This resolver stays inert until trusted-header
- * is a registered strategy value.
+ * trusted-header config, parsed at serverStart. Identity comes from Cadence,
+ * not headers. Inert until trusted-header is a registered strategy value.
  */
 export default function trustedHeaderAuthConfig(): TrustedHeaderAuthConfig | null {
   // Widen the compare: trusted-header is not a registered strategy value yet,
-  // so unknown env values still resolve to disabled and this resolver stays inert.
+  // so unknown env values still resolve to disabled and this stays inert.
   const strategy: string = authStrategy();
   if (strategy !== 'trusted-header') {
     return null;
   }
 
-  return {
-    grpcMetadataMap: parseGrpcMetadataMap(
-      process.env.CADENCE_WEB_TRUSTED_HEADER_GRPC_METADATA
-    ),
-  };
+  return parseGrpcMetadataMap(
+    process.env.CADENCE_WEB_TRUSTED_HEADER_GRPC_METADATA
+  );
 }

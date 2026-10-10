@@ -39,21 +39,17 @@ describe(trustedHeaderAuthConfig.name, () => {
   });
 
   it('resolves an empty metadata map', () => {
-    expect(trustedHeaderAuthConfig()).toEqual({
-      grpcMetadataMap: [],
-    });
+    expect(trustedHeaderAuthConfig()).toEqual([]);
   });
 
   it('parses the gRPC metadata map', () => {
     process.env.CADENCE_WEB_TRUSTED_HEADER_GRPC_METADATA =
       'x-cadence-user-id:cadence-user, x-cadence-groups:cadence-groups';
 
-    expect(trustedHeaderAuthConfig()).toEqual({
-      grpcMetadataMap: [
-        { inboundHeader: 'x-cadence-user-id', outboundKey: 'cadence-user' },
-        { inboundHeader: 'x-cadence-groups', outboundKey: 'cadence-groups' },
-      ],
-    });
+    expect(trustedHeaderAuthConfig()).toEqual([
+      { inboundHeader: 'x-cadence-user-id', outboundKey: 'cadence-user' },
+      { inboundHeader: 'x-cadence-groups', outboundKey: 'cadence-groups' },
+    ]);
   });
 
   it('throws on a malformed gRPC metadata map entry', () => {
