@@ -22,6 +22,7 @@ export type AuthContext = {
   isAdmin: boolean;
   userName?: string;
   id?: string;
+  email?: string;
   pictureUrl?: string;
   /** Group names used for access checks on the server. Not sent to the browser. */
   groups: string[];

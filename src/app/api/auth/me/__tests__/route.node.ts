@@ -49,6 +49,7 @@ describe('GET /api/auth/me', () => {
     const token = buildToken({
       sub: 'user-id',
       name: 'test-user',
+      email: 'test-user@example.com',
       groups: 'reader writer',
       admin: false,
     });
@@ -64,6 +65,7 @@ describe('GET /api/auth/me', () => {
       isAdmin: false,
       userName: 'test-user',
       id: 'user-id',
+      email: 'test-user@example.com',
     });
   });
 

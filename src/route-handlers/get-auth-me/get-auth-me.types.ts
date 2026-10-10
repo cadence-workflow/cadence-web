@@ -6,6 +6,7 @@ export type AuthMeResponse = {
   auth: { isValidToken: boolean; expiresAtMs?: number; canRefresh?: boolean };
   userName?: string;
   id?: string;
+  email?: string;
   pictureUrl?: string;
   isAdmin: boolean;
 };

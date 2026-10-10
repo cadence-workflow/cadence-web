@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const cadenceJwtClaimsSchema = z
   .object({
     admin: z.boolean().optional(),
+    email: z.string().trim().min(1).optional(),
     exp: z.number().optional(),
     groups: z.string().optional(),
     name: z.string().trim().min(1).optional(),

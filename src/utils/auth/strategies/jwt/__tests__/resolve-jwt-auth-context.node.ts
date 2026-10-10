@@ -16,6 +16,7 @@ describe(resolveJwtAuthContext.name, () => {
     const token = buildToken({
       sub: 'cookie-user-id',
       name: 'cookie-user',
+      email: 'cookie-user@example.com',
       groups: 'worker',
       admin: true,
     });
@@ -35,6 +36,7 @@ describe(resolveJwtAuthContext.name, () => {
       groups: ['worker'],
       userName: 'cookie-user',
       id: 'cookie-user-id',
+      email: 'cookie-user@example.com',
       pictureUrl: undefined,
     });
   });
