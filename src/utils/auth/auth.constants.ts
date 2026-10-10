@@ -15,6 +15,9 @@ export const DEFAULT_AUTH_RETURN_TO = '/';
 
 export const JWT_LOGIN_PATH = '/login';
 
+/** No-interaction status page for strategies without a login form. */
+export const AUTH_UNAVAILABLE_PATH = '/auth-unavailable';
+
 // --- Cadence backend ---
 
 /** gRPC metadata key the Cadence server reads the auth token from */
