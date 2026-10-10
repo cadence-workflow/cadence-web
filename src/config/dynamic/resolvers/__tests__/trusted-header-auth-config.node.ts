@@ -7,7 +7,6 @@ const mockAuthStrategy = authStrategy as jest.Mock;
 
 const ENV_KEYS = [
   'CADENCE_WEB_AUTH_STRATEGY',
-  'CADENCE_WEB_TRUSTED_HEADER_USER_ID',
   'CADENCE_WEB_TRUSTED_HEADER_GRPC_METADATA',
 ] as const;
 
@@ -34,34 +33,22 @@ describe(trustedHeaderAuthConfig.name, () => {
   });
 
   it('returns null when the strategy is not trusted-header', () => {
-    setMinimalEnv();
     mockAuthStrategy.mockReturnValue('jwt');
 
     expect(trustedHeaderAuthConfig()).toBeNull();
   });
 
-  it('throws when the designated identity header is missing', () => {
-    expect(() => trustedHeaderAuthConfig()).toThrow(
-      /CADENCE_WEB_TRUSTED_HEADER_USER_ID/
-    );
-  });
-
-  it('resolves the user-id header and an empty metadata map', () => {
-    setMinimalEnv();
-
+  it('resolves an empty metadata map', () => {
     expect(trustedHeaderAuthConfig()).toEqual({
-      userIdHeader: 'x-cadence-user-id',
       grpcMetadataMap: [],
     });
   });
 
   it('parses the gRPC metadata map', () => {
-    setMinimalEnv();
     process.env.CADENCE_WEB_TRUSTED_HEADER_GRPC_METADATA =
       'x-cadence-user-id:cadence-user, x-cadence-groups:cadence-groups';
 
     expect(trustedHeaderAuthConfig()).toEqual({
-      userIdHeader: 'x-cadence-user-id',
       grpcMetadataMap: [
         { inboundHeader: 'x-cadence-user-id', outboundKey: 'cadence-user' },
         { inboundHeader: 'x-cadence-groups', outboundKey: 'cadence-groups' },
@@ -70,7 +57,6 @@ describe(trustedHeaderAuthConfig.name, () => {
   });
 
   it('throws on a malformed gRPC metadata map entry', () => {
-    setMinimalEnv();
     process.env.CADENCE_WEB_TRUSTED_HEADER_GRPC_METADATA = 'x-cadence-user-id';
 
     expect(() => trustedHeaderAuthConfig()).toThrow(
@@ -78,8 +64,3 @@ describe(trustedHeaderAuthConfig.name, () => {
     );
   });
 });
-
-function setMinimalEnv() {
-  process.env.CADENCE_WEB_AUTH_STRATEGY = 'trusted-header';
-  process.env.CADENCE_WEB_TRUSTED_HEADER_USER_ID = 'x-cadence-user-id';
-}

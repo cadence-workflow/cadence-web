@@ -23,10 +23,9 @@ function parseGrpcMetadataMap(
 }
 
 /**
- * trusted-header strategy config, evaluated at serverStart so a missing
- * user-id header fails boot. Name, email, groups, and admin are not read
- * from headers; a later identity call owns them. This resolver stays inert
- * until trusted-header is a registered strategy value.
+ * trusted-header strategy config, evaluated at serverStart. Identity comes
+ * from Cadence, not headers. This resolver stays inert until trusted-header
+ * is a registered strategy value.
  */
 export default function trustedHeaderAuthConfig(): TrustedHeaderAuthConfig | null {
   // Widen the compare: trusted-header is not a registered strategy value yet,
@@ -36,15 +35,7 @@ export default function trustedHeaderAuthConfig(): TrustedHeaderAuthConfig | nul
     return null;
   }
 
-  const userIdHeader = process.env.CADENCE_WEB_TRUSTED_HEADER_USER_ID?.trim();
-  if (!userIdHeader) {
-    throw new Error(
-      'CADENCE_WEB_AUTH_STRATEGY=trusted-header requires: CADENCE_WEB_TRUSTED_HEADER_USER_ID'
-    );
-  }
-
   return {
-    userIdHeader,
     grpcMetadataMap: parseGrpcMetadataMap(
       process.env.CADENCE_WEB_TRUSTED_HEADER_GRPC_METADATA
     ),

@@ -10,7 +10,6 @@ const mockGetConfigValue = getConfigValue as jest.MockedFunction<
 >;
 
 const CONFIG: TrustedHeaderAuthConfig = {
-  userIdHeader: 'x-cadence-user-id',
   grpcMetadataMap: [],
 };
 
@@ -27,27 +26,17 @@ describe(getAuthenticatedUserInfo.name, () => {
   it('returns null when trusted-header config is absent', async () => {
     mockGetConfigValue.mockResolvedValue(null);
 
-    await expect(
-      getAuthenticatedUserInfo(requestWith({ 'x-cadence-user-id': 'alice' }))
-    ).resolves.toBeNull();
-  });
-
-  it('returns null when the fallback user-id header is missing', async () => {
-    mockGetConfigValue.mockResolvedValue(CONFIG);
-
     await expect(getAuthenticatedUserInfo(requestWith({}))).resolves.toBeNull();
   });
 
-  it('falls back to the user-id header until the backend identity call exists', async () => {
+  it('returns the temporary backend identity response', async () => {
     mockGetConfigValue.mockResolvedValue(CONFIG);
 
     await expect(
-      getAuthenticatedUserInfo(
-        requestWith({ 'x-cadence-user-id': '  alice  ' })
-      )
+      getAuthenticatedUserInfo(requestWith({ 'x-forwarded-user': 'alice' }))
     ).resolves.toEqual({
-      id: 'alice',
-      userName: 'alice',
+      id: 'trusted-header-user',
+      userName: 'Trusted Header User',
       isAdmin: false,
       groups: [],
     });

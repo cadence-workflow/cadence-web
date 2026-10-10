@@ -235,7 +235,7 @@ const dynamicConfigs: {
     evaluateOn: 'request',
     isPublic: true,
   },
-  // Server-only: trusted-header fallback user-id header and gRPC metadata map.
+  // Server-only: trusted-header gRPC metadata map.
   TRUSTED_HEADER_AUTH_CONFIG: {
     resolver: trustedHeaderAuthConfig,
     evaluateOn: 'serverStart',

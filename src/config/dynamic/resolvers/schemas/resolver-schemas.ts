@@ -136,7 +136,6 @@ const resolverSchemas: ResolverSchemas = {
     args: z.undefined(),
     returnType: z
       .object({
-        userIdHeader: z.string(),
         grpcMetadataMap: z.array(
           z.object({
             inboundHeader: z.string(),
