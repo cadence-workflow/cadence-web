@@ -25,6 +25,5 @@ export default async function getAuthenticatedUserInfo(
     userName: 'Trusted Header User',
     email: 'trusted-header-user@cadence.local',
     isAdmin: false,
-    groups: [],
   };
 }

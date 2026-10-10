@@ -37,7 +37,6 @@ describe(getAuthenticatedUserInfo.name, () => {
       userName: 'Trusted Header User',
       email: 'trusted-header-user@cadence.local',
       isAdmin: false,
-      groups: [],
     });
   });
 });

@@ -1,9 +1,8 @@
-/** Identity fields `/api/auth/me` can show. Groups stay server-side. */
+/** Identity fields `/api/auth/me` can show. */
 export type AuthenticatedUserInfo = {
   id: string;
   userName: string;
   email?: string;
   pictureUrl?: string;
   isAdmin: boolean;
-  groups: string[];
 };
