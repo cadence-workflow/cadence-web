@@ -132,6 +132,17 @@ const resolverSchemas: ResolverSchemas = {
     args: z.undefined(),
     returnType: z.boolean(),
   },
+  TRUSTED_HEADER_AUTH_CONFIG: {
+    args: z.undefined(),
+    returnType: z
+      .array(
+        z.object({
+          inboundHeader: z.string(),
+          outboundKey: z.string(),
+        })
+      )
+      .nullable(),
+  },
 };
 
 export default resolverSchemas;
