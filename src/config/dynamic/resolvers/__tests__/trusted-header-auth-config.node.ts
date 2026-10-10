@@ -1,9 +1,4 @@
-import authStrategy from '../auth-strategy';
 import trustedHeaderAuthConfig from '../trusted-header-auth-config';
-
-jest.mock('../auth-strategy', () => jest.fn(() => 'trusted-header'));
-
-const mockAuthStrategy = authStrategy as jest.Mock;
 
 const ENV_KEYS = [
   'CADENCE_WEB_AUTH_STRATEGY',
@@ -16,9 +11,8 @@ describe(trustedHeaderAuthConfig.name, () => {
   );
 
   beforeEach(() => {
-    jest.clearAllMocks();
     ENV_KEYS.forEach((key) => delete process.env[key]);
-    mockAuthStrategy.mockReturnValue('trusted-header');
+    process.env.CADENCE_WEB_AUTH_STRATEGY = 'trusted-header';
   });
 
   afterEach(() => {
@@ -33,7 +27,7 @@ describe(trustedHeaderAuthConfig.name, () => {
   });
 
   it('returns null when the strategy is not trusted-header', () => {
-    mockAuthStrategy.mockReturnValue('jwt');
+    process.env.CADENCE_WEB_AUTH_STRATEGY = 'jwt';
 
     expect(trustedHeaderAuthConfig()).toBeNull();
   });

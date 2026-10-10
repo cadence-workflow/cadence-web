@@ -50,13 +50,10 @@ function parseGrpcMetadataMap(
 
 /**
  * trusted-header config, parsed at serverStart. Identity comes from Cadence,
- * not headers. Inert until trusted-header is a registered strategy value.
+ * not headers.
  */
 export default function trustedHeaderAuthConfig(): TrustedHeaderAuthConfig | null {
-  // Widen the compare: trusted-header is not a registered strategy value yet,
-  // so unknown env values still resolve to disabled and this stays inert.
-  const strategy: string = authStrategy();
-  if (strategy !== 'trusted-header') {
+  if (authStrategy() !== 'trusted-header') {
     return null;
   }
 
