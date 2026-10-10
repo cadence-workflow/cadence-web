@@ -137,18 +137,12 @@ const resolverSchemas: ResolverSchemas = {
     returnType: z
       .object({
         userIdHeader: z.string(),
-        emailHeader: z.string().optional(),
-        nameHeader: z.string().optional(),
-        groupsHeader: z.string().optional(),
-        adminHeader: z.string().optional(),
         grpcMetadataMap: z.array(
           z.object({
             inboundHeader: z.string(),
             outboundKey: z.string(),
           })
         ),
-        sharedSecretHeader: z.string().optional(),
-        sharedSecret: z.string().optional(),
       })
       .nullable(),
   },

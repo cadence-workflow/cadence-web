@@ -8,32 +8,20 @@ export type TrustedHeaderGrpcMetadataMapping = {
 /**
  * trusted-header strategy config, evaluated at serverStart.
  *
- * Header semantics (operator contract): header names match
- * case-insensitively (Node lowercases inbound header names; `Headers.get` is
- * case-insensitive), and Node JOINS duplicate inbound headers with `', '` —
- * operators must configure headers the perimeter *sets* (overwrites), never
- * ones it appends to, or a smuggled duplicate turns the value into a joined
- * list (which the exact-allowlist boolean parsing fails closed on).
+ * The user-id header is a temporary fallback for `/api/auth/me` until Cadence
+ * answers identity. Name, email, groups, and admin are not header config —
+ * they belong to that backend identity result.
+ *
+ * `grpcMetadataMap` is the only header forwarding. The user-id header is not
+ * forwarded unless an operator lists it here.
+ *
+ * Header names match case-insensitively. Node joins duplicate inbound headers
+ * with `', '`, so operators must configure headers the perimeter sets
+ * (overwrites), never ones it appends.
  */
 export type TrustedHeaderAuthConfig = {
-  /** The designated identity header — exactly one. It is the identity source
-   * for resolveAuthContext AND the getSessionKey pre-image (the verbatim raw
-   * value; groups/admin headers never enter the pre-image). */
+  /** Fallback identity header until the backend identity call exists. */
   userIdHeader: string;
-  /** Optional display-identity headers (userName falls back name → email → id). */
-  emailHeader?: string;
-  nameHeader?: string;
-  /** Optional group-membership header (comma/whitespace-separated list). */
-  groupsHeader?: string;
-  /** Optional admin flag header — exact allowlist 'true'/'1'/'yes' (trimmed,
-   * lowercased), never JS truthiness. */
-  adminHeader?: string;
-  /** Inbound-header → outbound-gRPC-metadata map, forwarded only when the web
-   * tier's own auth context is valid (the forwarding gate). */
+  /** Inbound-header → outbound-gRPC-metadata map. */
   grpcMetadataMap: TrustedHeaderGrpcMetadataMapping[];
-  /** Optional shared-secret pair (set together or not at all). When absent,
-   * boot WARNs: identity is accepted from bare headers and perimeter
-   * stripping is the only defense. */
-  sharedSecretHeader?: string;
-  sharedSecret?: string;
 };

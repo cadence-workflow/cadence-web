@@ -1,5 +1,3 @@
-import logger from '@/utils/logger';
-
 import authStrategy from './auth-strategy';
 import {
   type TrustedHeaderAuthConfig,
@@ -25,12 +23,10 @@ function parseGrpcMetadataMap(
 }
 
 /**
- * trusted-header strategy config, evaluated at serverStart so
- * misconfiguration fails boot. The shared-secret pair is
- * optional-but-strongly-recommended: when it is entirely unset, boot carries
- * a prominent WARN — on direct network paths that bypass the perimeter
- * (pod-to-pod, SSRF, port-forward) the secret is the only thing
- * distinguishing a perimeter-injected header from a forged one.
+ * trusted-header strategy config, evaluated at serverStart so a missing
+ * user-id header fails boot. Name, email, groups, and admin are not read
+ * from headers; a later identity call owns them. This resolver stays inert
+ * until trusted-header is a registered strategy value.
  */
 export default function trustedHeaderAuthConfig(): TrustedHeaderAuthConfig | null {
   // Widen the compare: trusted-header is not a registered strategy value yet,
@@ -47,36 +43,10 @@ export default function trustedHeaderAuthConfig(): TrustedHeaderAuthConfig | nul
     );
   }
 
-  const sharedSecretHeader =
-    process.env.CADENCE_WEB_TRUSTED_HEADER_SHARED_SECRET_HEADER?.trim() ||
-    undefined;
-  const sharedSecret =
-    process.env.CADENCE_WEB_TRUSTED_HEADER_SHARED_SECRET?.trim() || undefined;
-  if (Boolean(sharedSecretHeader) !== Boolean(sharedSecret)) {
-    throw new Error(
-      'CADENCE_WEB_TRUSTED_HEADER_SHARED_SECRET_HEADER and CADENCE_WEB_TRUSTED_HEADER_SHARED_SECRET must be set together'
-    );
-  }
-  if (!sharedSecret) {
-    logger.warn(
-      'trusted-header: no shared-secret pair configured; identity accepted from bare headers — perimeter stripping is the only defense'
-    );
-  }
-
   return {
     userIdHeader,
-    emailHeader:
-      process.env.CADENCE_WEB_TRUSTED_HEADER_EMAIL?.trim() || undefined,
-    nameHeader:
-      process.env.CADENCE_WEB_TRUSTED_HEADER_NAME?.trim() || undefined,
-    groupsHeader:
-      process.env.CADENCE_WEB_TRUSTED_HEADER_GROUPS?.trim() || undefined,
-    adminHeader:
-      process.env.CADENCE_WEB_TRUSTED_HEADER_ADMIN?.trim() || undefined,
     grpcMetadataMap: parseGrpcMetadataMap(
       process.env.CADENCE_WEB_TRUSTED_HEADER_GRPC_METADATA
     ),
-    sharedSecretHeader,
-    sharedSecret,
   };
 }
