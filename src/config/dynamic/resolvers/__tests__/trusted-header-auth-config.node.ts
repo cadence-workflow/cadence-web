@@ -59,4 +59,47 @@ describe(trustedHeaderAuthConfig.name, () => {
       /must be "inbound-header:outbound-key"/
     );
   });
+
+  it('throws when a map entry has extra colon segments', () => {
+    process.env.CADENCE_WEB_TRUSTED_HEADER_GRPC_METADATA =
+      'x-cadence-user-id:cadence-user:extra';
+
+    expect(() => trustedHeaderAuthConfig()).toThrow(
+      /must be "inbound-header:outbound-key"/
+    );
+  });
+
+  it('throws on an invalid inbound header name', () => {
+    process.env.CADENCE_WEB_TRUSTED_HEADER_GRPC_METADATA =
+      'x cadence user id:cadence-user';
+
+    expect(() => trustedHeaderAuthConfig()).toThrow(
+      /is not a valid HTTP header name/
+    );
+  });
+
+  it('throws on an invalid outbound gRPC metadata key', () => {
+    process.env.CADENCE_WEB_TRUSTED_HEADER_GRPC_METADATA =
+      'x-cadence-user-id:cadence user';
+
+    expect(() => trustedHeaderAuthConfig()).toThrow(
+      /has an invalid outbound key/
+    );
+  });
+
+  it('throws on a -bin outbound gRPC metadata key', () => {
+    process.env.CADENCE_WEB_TRUSTED_HEADER_GRPC_METADATA =
+      'x-cadence-user-id:cadence-user-bin';
+
+    expect(() => trustedHeaderAuthConfig()).toThrow(/-bin/);
+  });
+
+  it('preserves the outbound key casing', () => {
+    process.env.CADENCE_WEB_TRUSTED_HEADER_GRPC_METADATA =
+      'x-cadence-user-id:Cadence-User';
+
+    expect(trustedHeaderAuthConfig()).toEqual([
+      { inboundHeader: 'x-cadence-user-id', outboundKey: 'Cadence-User' },
+    ]);
+  });
 });
