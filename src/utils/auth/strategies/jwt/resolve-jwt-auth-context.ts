@@ -27,6 +27,7 @@ export default async function resolveJwtAuthContext(
     : [];
   const id = effectiveClaims?.sub || effectiveClaims?.name || undefined;
   const userName = effectiveClaims?.name || effectiveClaims?.sub || undefined;
+  const email = effectiveClaims?.email || undefined;
   const isAdmin = effectiveClaims?.admin === true;
 
   return {
@@ -40,5 +41,6 @@ export default async function resolveJwtAuthContext(
     isAdmin,
     userName,
     id,
+    email,
   };
 }

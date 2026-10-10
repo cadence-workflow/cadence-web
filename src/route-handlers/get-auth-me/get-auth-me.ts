@@ -24,6 +24,7 @@ export async function getAuthMe(request: NextRequest) {
       ? {
           userName: authContext.userName,
           id: authContext.id,
+          email: authContext.email,
           pictureUrl: authContext.pictureUrl,
         }
       : {}),

@@ -36,6 +36,18 @@ describe(decodeCadenceJwtClaims.name, () => {
     expect(decodeCadenceJwtClaims(token)).toBeUndefined();
   });
 
+  it('drops a malformed email claim instead of rejecting the token', () => {
+    const token = buildToken({
+      name: 'test-user',
+      email: '',
+    });
+
+    expect(decodeCadenceJwtClaims(token)).toEqual({
+      name: 'test-user',
+      email: undefined,
+    });
+  });
+
   it('returns undefined for empty claims objects', () => {
     const token = buildToken({});
 
