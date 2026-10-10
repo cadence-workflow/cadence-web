@@ -37,6 +37,7 @@ describe(getAuthenticatedUserInfo.name, () => {
     ).resolves.toEqual({
       id: 'trusted-header-user',
       userName: 'Trusted Header User',
+      email: 'trusted-header-user@cadence.local',
       isAdmin: false,
       groups: [],
     });

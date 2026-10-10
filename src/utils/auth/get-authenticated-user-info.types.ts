@@ -2,6 +2,7 @@
 export type AuthenticatedUserInfo = {
   id: string;
   userName: string;
+  email?: string;
   pictureUrl?: string;
   isAdmin: boolean;
   groups: string[];
