@@ -45,6 +45,7 @@ describe('WorkflowActionResetForm', () => {
 
     expect(screen.getByPlaceholderText('Find Event ID')).toBeInTheDocument();
     expect(screen.getByText('Skip signal re-apply')).toBeInTheDocument();
+    expect(screen.getByText('Reason (optional)')).toBeInTheDocument();
     expect(
       screen.getByPlaceholderText('Enter reason for reset')
     ).toBeInTheDocument();

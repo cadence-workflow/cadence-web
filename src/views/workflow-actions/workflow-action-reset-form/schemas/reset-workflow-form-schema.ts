@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 const baseSchema = z.object({
-  reason: z.string().min(1),
+  reason: z.string().trim().optional(),
   skipSignalReapply: z.boolean().optional(),
 });
 

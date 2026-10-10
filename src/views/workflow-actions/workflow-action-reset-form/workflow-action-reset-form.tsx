@@ -178,7 +178,7 @@ export default function WorkflowActionResetForm({
         />
       </FormControl>
 
-      <FormControl label="Reason">
+      <FormControl label="Reason (optional)">
         <Controller
           name="reason"
           control={control}

@@ -10,6 +10,6 @@ export type Props = WorkflowActionFormProps<ResetWorkflowFormData>;
 
 export type ResetWorkflowFormData = z.infer<typeof resetWorkflowFormSchema>;
 
-export type ResetWorkflowSubmissionData = z.infer<
+export type ResetWorkflowSubmissionData = z.input<
   typeof resetWorkflowRequestBodySchema
 >;
