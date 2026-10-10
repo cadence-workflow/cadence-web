@@ -11,7 +11,7 @@ describe(authStrategy.name, () => {
     }
   });
 
-  it.each(['disabled', 'jwt'] as const)(
+  it.each(['disabled', 'jwt', 'trusted-header'] as const)(
     'returns %s when configured',
     (strategy) => {
       process.env.CADENCE_WEB_AUTH_STRATEGY = strategy;
