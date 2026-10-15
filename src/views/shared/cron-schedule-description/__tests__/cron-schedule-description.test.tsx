@@ -13,7 +13,7 @@ describe(CronScheduleWithDescription.name, () => {
     render(<CronScheduleWithDescription cronSchedule="0 0 * * *" />);
 
     expect(screen.getByText(/0 0 \* \* \*/)).toBeInTheDocument();
-    expect(screen.getByText(/At 12:00 AM/)).toBeInTheDocument();
+    expect(screen.getByText(/At 00:00/)).toBeInTheDocument();
   });
 
   it('renders human-readable description for complex cron expression', () => {
@@ -21,7 +21,7 @@ describe(CronScheduleWithDescription.name, () => {
 
     expect(
       screen.getByText(
-        /Every 15 minutes, between 09:00 AM and 05:59 PM, Monday through Friday/
+        /Every 15 minutes, between 09:00 and 17:59, Monday through Friday/
       )
     ).toBeInTheDocument();
   });
