@@ -16,15 +16,23 @@ export default async function routeHandlersWithMiddlewares<
 >(
   requestHandler: RequestHandlerFunction<M, Options>,
   request: NextRequest,
-  options: Options,
+  options: Omit<Options, 'params'> & {
+    params: Options['params'] | Promise<Options['params']>;
+  },
   middlewares: M
 ) {
+  // Next.js 15 passes route params as a Promise; resolve once so that
+  // middlewares and handlers keep receiving plain params.
+  const resolvedOptions = {
+    ...options,
+    params: await options.params,
+  } as Options;
   let ctx: Partial<
     CombineMiddlewareContextType<GetAllMiddlewaresReturnTypes<M>>
   > = {};
   for (const middlewareFunction of middlewares) {
     try {
-      const result = await middlewareFunction(request, options, ctx);
+      const result = await middlewareFunction(request, resolvedOptions, ctx);
       if (result instanceof NextResponse) {
         return result;
       } else if (Array.isArray(result) && typeof result[0] === 'string') {
@@ -49,7 +57,7 @@ export default async function routeHandlersWithMiddlewares<
   }
   return requestHandler(
     request,
-    options,
+    resolvedOptions,
     ctx as CombineMiddlewareContextType<GetAllMiddlewaresReturnTypes<M>>
   );
 }
