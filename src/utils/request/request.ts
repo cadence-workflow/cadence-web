@@ -14,9 +14,9 @@ export default async function request(
     const port = await getConfigValue('CADENCE_WEB_PORT');
     absoluteUrl = `http://127.0.0.1:${port}${url}`;
     // propagate user headers from browser to server API calls
-    userHeaders = Object.fromEntries(
-      await (await import('next/headers')).headers().entries()
-    );
+    // await headers() for Next 15 (Promise); Next 14 still accepts await on sync value.
+    const headersList = await (await import('next/headers')).headers();
+    userHeaders = Object.fromEntries(headersList.entries());
   }
 
   const { omitUserHeaders, headers, ...requestOptions } = options || {};
