@@ -43,7 +43,7 @@ describe(DomainBatchActionsNoActionsPlaceholder.name, () => {
           'Click the button below to get started'
         ),
       }),
-      {}
+      undefined
     );
   });
 

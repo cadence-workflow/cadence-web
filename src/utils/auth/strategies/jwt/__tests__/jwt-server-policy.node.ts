@@ -7,42 +7,42 @@ import jwtServerPolicy from '../jwt-server-policy';
 
 describe('jwtServerPolicy', () => {
   describe('getGrpcMetadata', () => {
-    it('returns the cadence-authorization metadata for a valid context', () => {
-      expect(
+    it('returns the cadence-authorization metadata for a valid context', async () => {
+      await expect(
         jwtServerPolicy.getGrpcMetadata(
           getMockAuthContext(),
           getMockJwtAuthRequest('abc')
         )
-      ).toEqual({ 'cadence-authorization': 'abc' });
+      ).resolves.toEqual({ 'cadence-authorization': 'abc' });
     });
 
-    it('returns undefined when the context is invalid even if a token is present', () => {
-      expect(
+    it('returns undefined when the context is invalid even if a token is present', async () => {
+      await expect(
         jwtServerPolicy.getGrpcMetadata(
           getMockAuthContext({
             auth: { isValidToken: false, canRefresh: false },
           }),
           getMockJwtAuthRequest('abc')
         )
-      ).toBeUndefined();
+      ).resolves.toBeUndefined();
     });
 
-    it('returns undefined when auth is disabled', () => {
-      expect(
+    it('returns undefined when auth is disabled', async () => {
+      await expect(
         jwtServerPolicy.getGrpcMetadata(
           getMockAuthContext({ authEnabled: false }),
           getMockJwtAuthRequest('abc')
         )
-      ).toBeUndefined();
+      ).resolves.toBeUndefined();
     });
 
-    it('returns undefined when the cookie is gone', () => {
-      expect(
+    it('returns undefined when the cookie is gone', async () => {
+      await expect(
         jwtServerPolicy.getGrpcMetadata(
           getMockAuthContext(),
           getMockJwtAuthRequest()
         )
-      ).toBeUndefined();
+      ).resolves.toBeUndefined();
     });
   });
 

@@ -28,7 +28,9 @@ export default function useTerminateBatchAction({
   // Keep the loading state up through the post-success invalidate delay so the
   // button doesn't flip back to idle before the list refreshes.
   const [isSettling, setIsSettling] = useState(false);
-  const settleTimer = useRef<ReturnType<typeof setTimeout>>();
+  const settleTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined
+  );
 
   useEffect(() => () => clearTimeout(settleTimer.current), []);
 

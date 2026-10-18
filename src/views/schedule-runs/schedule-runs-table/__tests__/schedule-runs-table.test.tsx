@@ -35,7 +35,7 @@ describe(ScheduleRunsTable.name, () => {
         columns: scheduleRunsTableConfig,
         shouldShowResults: true,
       }),
-      {}
+      undefined
     );
   });
 
@@ -48,7 +48,7 @@ describe(ScheduleRunsTable.name, () => {
         shouldShowResults: false,
         endMessageProps: expect.objectContaining({ hasData: false }),
       }),
-      {}
+      undefined
     );
   });
 
@@ -67,7 +67,7 @@ describe(ScheduleRunsTable.name, () => {
           isFetchingNextPage: true,
         },
       }),
-      {}
+      undefined
     );
   });
 });

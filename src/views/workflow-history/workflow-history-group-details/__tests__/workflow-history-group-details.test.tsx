@@ -376,7 +376,7 @@ describe(WorkflowHistoryGroupDetails.name, () => {
         getIsIssueExpanded: getIsDiagnosticsIssueExpanded,
         toggleIsIssueExpanded: toggleIsDiagnosticsIssueExpanded,
       }),
-      expect.anything()
+      undefined
     );
   });
 

@@ -24,7 +24,7 @@ export type Props = {
   selectedEventId?: string;
   onClickShowInTable: (eventId: string) => void;
   decodedPageUrlParams: WorkflowHistoryProps['params'];
-  virtuosoRef: React.RefObject<VirtuosoHandle>;
+  virtuosoRef: React.RefObject<VirtuosoHandle | null>;
   itemToHighlightId?: string;
   getIsDiagnosticsIssueExpanded: (issueExpansionId: string) => boolean;
   toggleIsDiagnosticsIssueExpanded: (issueExpansionId: string) => void;
