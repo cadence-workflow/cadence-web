@@ -7,7 +7,7 @@ import routeHandlersDefaultMiddlewares from '@/utils/route-handlers-middleware/c
 
 export async function GET(
   request: NextRequest,
-  options: { params: RouteParams }
+  options: { params: Promise<RouteParams> }
 ) {
   return routeHandlerWithMiddlewares(
     countWorkflows,
