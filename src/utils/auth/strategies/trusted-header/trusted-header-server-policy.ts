@@ -10,8 +10,10 @@ import getTrustedHeaderGrpcMetadata from './get-trusted-header-grpc-metadata';
 import resolveTrustedHeaderAuthContext from './resolve-trusted-header-auth-context';
 
 const trustedHeaderServerPolicy: AuthServerPolicy = {
-  resolveAuthContext(request) {
-    return resolveTrustedHeaderAuthContext(request ?? getImplicitAuthRequest());
+  async resolveAuthContext(request) {
+    return resolveTrustedHeaderAuthContext(
+      request ?? (await getImplicitAuthRequest())
+    );
   },
 
   async getGrpcMetadata(
@@ -21,7 +23,9 @@ const trustedHeaderServerPolicy: AuthServerPolicy = {
     if (!authContext.authEnabled || !authContext.auth.isValidToken) {
       return undefined;
     }
-    return getTrustedHeaderGrpcMetadata(request ?? getImplicitAuthRequest());
+    return getTrustedHeaderGrpcMetadata(
+      request ?? (await getImplicitAuthRequest())
+    );
   },
 
   getLoginRedirectIfNeeded(authContext) {

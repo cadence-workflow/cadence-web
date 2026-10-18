@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
 import { type DescribeWorkflowResponse } from '@/route-handlers/describe-workflow/describe-workflow.types';
 import {
@@ -19,8 +21,8 @@ export type Props = {
 };
 
 export type WorkflowSummaryDetailsComponent =
-  | keyof JSX.IntrinsicElements
-  | React.JSXElementConstructor<any>;
+  | keyof React.JSX.IntrinsicElements
+  | React.JSXElementConstructor<unknown>;
 
 export type WorkflowSummaryFieldArgs = {
   firstEvent: HistoryEvent;

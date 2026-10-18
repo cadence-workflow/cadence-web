@@ -32,10 +32,10 @@ describe(getLoginRedirect.name, () => {
     );
     jest
       .mocked(headers)
-      .mockReturnValue(new Headers({ 'x-cadence-return-to': '/domains' }));
-    jest.mocked(cookies).mockReturnValue({
+      .mockResolvedValue(new Headers({ 'x-cadence-return-to': '/domains' }));
+    jest.mocked(cookies).mockResolvedValue({
       getAll: () => [],
-    } as unknown as ReturnType<typeof cookies>);
+    } as unknown as Awaited<ReturnType<typeof cookies>>);
 
     await expect(getLoginRedirect()).resolves.toBe(
       '/login?returnTo=%2Fdomains'
@@ -60,10 +60,10 @@ describe(getLoginRedirect.name, () => {
     });
     entry.cookieNames.exact.push('cadence-authorization');
     mockGetActiveAuthServerEntry.mockResolvedValue(entry);
-    jest.mocked(headers).mockReturnValue(new Headers());
-    jest.mocked(cookies).mockReturnValue({
+    jest.mocked(headers).mockResolvedValue(new Headers());
+    jest.mocked(cookies).mockResolvedValue({
       getAll: () => [{ name: 'cadence-authorization', value: 'expired' }],
-    } as unknown as ReturnType<typeof cookies>);
+    } as unknown as Awaited<ReturnType<typeof cookies>>);
 
     await getLoginRedirect();
 
