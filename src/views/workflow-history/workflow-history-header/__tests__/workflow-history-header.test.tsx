@@ -144,6 +144,21 @@ describe(WorkflowHistoryHeader.name, () => {
     expect(wrapper).toHaveAttribute('data-is-sticky', 'true');
   });
 
+  it('should set sticky state to true when the sentinel starts out of view', () => {
+    setup({ isStickyEnabled: true });
+
+    const wrapper = screen.getByTestId('workflow-history-header-wrapper');
+    const sentinel = screen.getByTestId('sentinel');
+
+    // No enter-view first: the first observation may already be out of view
+    // (e.g. restored scroll position); initialInView makes it register.
+    act(() => {
+      mockIsIntersecting(sentinel, 0);
+    });
+
+    expect(wrapper).toHaveAttribute('data-is-sticky', 'true');
+  });
+
   it('should toggle sticky state when sentinel visibility changes', () => {
     setup({ isStickyEnabled: true });
 
