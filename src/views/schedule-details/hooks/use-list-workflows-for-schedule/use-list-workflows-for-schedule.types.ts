@@ -36,7 +36,6 @@ export type ListWorkflowsForScheduleQueryOptions = UseInfiniteQueryOptions<
   ListWorkflowsResponse,
   RequestError,
   InfiniteData<ListWorkflowsResponse>,
-  ListWorkflowsResponse,
   ListWorkflowsForScheduleQueryKey,
   string | undefined
 >;

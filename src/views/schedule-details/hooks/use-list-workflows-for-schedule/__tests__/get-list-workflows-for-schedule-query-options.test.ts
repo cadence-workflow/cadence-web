@@ -1,3 +1,4 @@
+import { QueryClient } from '@tanstack/react-query';
 import queryString from 'query-string';
 
 import request from '@/utils/request';
@@ -101,6 +102,7 @@ async function fetchPage(pageParam: string | undefined) {
   >;
 
   await queryFn({
+    client: new QueryClient(),
     pageParam,
     queryKey: options.queryKey,
     signal: new AbortController().signal,

@@ -1,6 +1,7 @@
 import {
   type UseQueryOptions,
   type UseQueryResult,
+  type UseSuspenseQueryOptions,
   type UseSuspenseQueryResult,
 } from '@tanstack/react-query';
 
@@ -31,3 +32,11 @@ export type UseConfigQueryOptions<K extends GetConfigKeys> = UseQueryOptions<
   GetConfigResponse<K>,
   [string, GetConfigRequestQuery<K>]
 >;
+
+export type UseSuspenseConfigQueryOptions<K extends GetConfigKeys> =
+  UseSuspenseQueryOptions<
+    GetConfigResponse<K>,
+    RequestError,
+    GetConfigResponse<K>,
+    [string, GetConfigRequestQuery<K>]
+  >;
