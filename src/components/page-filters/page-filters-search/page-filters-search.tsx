@@ -26,7 +26,7 @@ export default function PageFiltersSearch<
 }: Props<P, K>) {
   const [queryParams, setQueryParams] = usePageQueryParams(
     pageQueryParamsConfig,
-    { replace: true, pageRerender: false }
+    { replace: true }
   );
 
   const queryParamsSearch = queryParams[searchQueryParamKey];

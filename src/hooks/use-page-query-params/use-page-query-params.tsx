@@ -1,11 +1,8 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import isObjectLike from 'lodash/isObjectLike';
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import queryString from 'query-string';
-import { useBetween } from 'use-between';
-
-import usePreviousValue from '@/hooks/use-previous-value';
 
 import getPageQueryParamsValues from './helpers/get-page-query-params-values';
 import getUpdatedUrlSearch from './helpers/get-updated-url-search';
@@ -16,74 +13,65 @@ import type {
   QueryParamSetterExtraConfig,
 } from './use-page-query-params.types';
 
-const useShared_HistoryState = () => useBetween(useState<string>);
+// Lets sibling hook instances re-read the URL after a History write.
+const QUERY_PARAMS_SYNC_EVENT = 'cadence:page-query-params';
+
+const readWindowSearch = () => window.location.search.replace(/^\?/, '');
 
 export default function usePageQueryParams<P extends PageQueryParams>(
   config: P,
   extraConfig?: QueryParamSetterExtraConfig
 ): [PageQueryParamValues<P>, PageQueryParamSetter<P>] {
-  // state shared across all usePageQueryParams instances so that when one of the hook uses history state (which doesn't cause full page rerender)
-  // other usePageQueryParams hooks will get rerendered and update their internal value of window.location.search
-  const [stateUrl, rerender] = useShared_HistoryState();
-  const searchQueryParams = useSearchParams();
-  const pathname = usePathname();
-  const router = useRouter();
-  const prevSearchQueryParam = usePreviousValue(searchQueryParams);
+  const nextSearch = useSearchParams().toString();
+  // null only until mount: SSR, hydration and the first render after a Link navigation (URL bar not updated yet) use Next's value.
+  // After mount window.location is the source of truth: after racing Back/Forward Next's router state can stay stale.
+  const [windowSearch, setWindowSearch] = useState<string | null>(null);
 
-  const search = useMemo(() => {
-    // get changed value from searchQueryParams if it was changed or in case of server side rendering
-    // otherwise change would be due history state change and search value is available in window.location.search
-    if (
-      typeof window === 'undefined' ||
-      (prevSearchQueryParam && prevSearchQueryParam !== searchQueryParams)
-    )
-      return searchQueryParams.toString();
+  useEffect(() => {
+    const sync = () => setWindowSearch(readWindowSearch());
+    window.addEventListener('popstate', sync);
+    window.addEventListener(QUERY_PARAMS_SYNC_EVENT, sync);
+    return () => {
+      window.removeEventListener('popstate', sync);
+      window.removeEventListener(QUERY_PARAMS_SYNC_EVENT, sync);
+    };
+  }, []);
 
-    return window.location.search;
-    // stateUrl is needed in deps to recalculate window.location.search
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQueryParams, prevSearchQueryParam, stateUrl]);
+  // Next navigated (Link/router): the URL bar is updated by now.
+  useEffect(() => {
+    setWindowSearch(readWindowSearch());
+  }, [nextSearch]);
 
-  const values: PageQueryParamValues<P> = useMemo(() => {
-    const urlQueryParamsObject = queryString.parse(search);
-    return getPageQueryParamsValues<P>(config, urlQueryParamsObject);
-  }, [config, search]);
+  const search = windowSearch ?? nextSearch;
+
+  const values: PageQueryParamValues<P> = useMemo(
+    () => getPageQueryParamsValues<P>(config, queryString.parse(search)),
+    [config, search]
+  );
 
   const setter = useCallback<PageQueryParamSetter<P>>(
     (newParams, setterExtraConfig) => {
-      if (!isObjectLike(newParams)) {
-        return;
-      }
+      if (!isObjectLike(newParams)) return;
       const replace =
         setterExtraConfig?.replace ?? extraConfig?.replace ?? false;
-      const pageRerender =
-        setterExtraConfig?.pageRerender ?? extraConfig?.pageRerender ?? true;
 
-      const updatedUrlSearch = getUpdatedUrlSearch(config, newParams, search);
-      const routerNavigate = replace ? router.replace : router.push;
-      const stateNavigate = replace
-        ? window.history.replaceState
-        : window.history.pushState;
+      // read at call time: render-time search is stale for back-to-back setters
+      const { pathname, search: currentSearch } = window.location;
+      const updatedUrlSearch = getUpdatedUrlSearch(
+        config,
+        newParams,
+        currentSearch
+      );
       const newHref =
         pathname + (updatedUrlSearch ? `?${updatedUrlSearch}` : '');
+      if (newHref === pathname + currentSearch) return;
 
-      if (pageRerender) {
-        routerNavigate(newHref);
-      } else {
-        stateNavigate(window.history.state, '', newHref);
-        rerender(newHref);
-      }
+      // null state: with Next's __NA state its History patch skips the useSearchParams sync
+      if (replace) window.history.replaceState(null, '', newHref);
+      else window.history.pushState(null, '', newHref);
+      window.dispatchEvent(new Event(QUERY_PARAMS_SYNC_EVENT));
     },
-    [
-      extraConfig?.replace,
-      extraConfig?.pageRerender,
-      search,
-      config,
-      router.replace,
-      router.push,
-      pathname,
-      rerender,
-    ]
+    [extraConfig?.replace, config]
   );
 
   return [values, setter];

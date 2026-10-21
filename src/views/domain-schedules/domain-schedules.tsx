@@ -36,9 +36,7 @@ export default function DomainSchedules({ domain, cluster }: Props) {
     pageSize: SCHEDULES_PAGE_SIZE,
   });
 
-  const [queryParams] = usePageQueryParams(domainPageQueryParamsConfig, {
-    pageRerender: false,
-  });
+  const [queryParams] = usePageQueryParams(domainPageQueryParamsConfig);
 
   const schedules = useMemo(
     () => data?.pages.flatMap((page) => page.schedules ?? []) ?? [],

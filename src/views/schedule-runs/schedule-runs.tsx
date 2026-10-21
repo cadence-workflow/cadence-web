@@ -24,8 +24,7 @@ import { type Props } from './schedule-runs.types';
 
 export default function ScheduleRuns({ params }: Props) {
   const [queryParams, setQueryParams] = usePageQueryParams(
-    schedulePageQueryParamsConfig,
-    { pageRerender: false }
+    schedulePageQueryParamsConfig
   );
   const { data: isPartialMatchingEnabled = false } = useConfigValue(
     'LIST_WORKFLOWS_PARTIAL_MATCH_ENABLED'
