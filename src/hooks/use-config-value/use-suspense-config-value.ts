@@ -7,7 +7,7 @@ import {
   type GetConfigKeysWithoutArgs,
 } from '@/route-handlers/get-config/get-config.types';
 
-import { getConfigValueSuspenseQueryOptions } from './get-config-value-query-options';
+import getConfigValueQueryOptions from './get-config-value-query-options';
 import { type UseSuspenseConfigValueResult } from './use-config-value.types';
 
 export default function useSuspenseConfigValue<
@@ -24,6 +24,6 @@ export default function useSuspenseConfigValue<K extends GetConfigKeys>(
   args?: GetConfigArgs<K>
 ): UseSuspenseConfigValueResult<K> {
   return useSuspenseQuery(
-    getConfigValueSuspenseQueryOptions({ key, args: args as GetConfigArgs<K> })
+    getConfigValueQueryOptions({ key, args: args as GetConfigArgs<K> })
   );
 }

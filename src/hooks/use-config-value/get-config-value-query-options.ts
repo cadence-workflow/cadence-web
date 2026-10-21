@@ -1,30 +1,30 @@
+import { queryOptions } from '@tanstack/react-query';
 import queryString from 'query-string';
 
 import {
   type GetConfigKeys,
   type GetConfigRequestQuery,
+  type GetConfigResponse,
 } from '@/route-handlers/get-config/get-config.types';
 import request from '@/utils/request';
+import { type RequestError } from '@/utils/request/request-error';
 
-import {
-  type UseConfigQueryOptions,
-  type UseConfigValueParams,
-  type UseSuspenseConfigQueryOptions,
-} from './use-config-value.types';
+import { type UseConfigValueParams } from './use-config-value.types';
 
-function buildConfigValueQueryOptions<K extends GetConfigKeys>(
+export default function getConfigValueQueryOptions<K extends GetConfigKeys>(
   params: UseConfigValueParams<K>
-): UseConfigQueryOptions<K> {
-  return {
+) {
+  return queryOptions<
+    GetConfigResponse<K>,
+    RequestError,
+    GetConfigResponse<K>,
+    [string, GetConfigRequestQuery<K>]
+  >({
     queryKey: [
       'dynamic_config',
       { configKey: params.key, jsonArgs: params.args },
     ],
-    queryFn: ({
-      queryKey: [_, { configKey, jsonArgs }],
-    }: {
-      queryKey: [string, GetConfigRequestQuery<K>];
-    }) =>
+    queryFn: ({ queryKey: [_, { configKey, jsonArgs }] }) =>
       request(
         queryString.stringifyUrl({
           url: '/api/config',
@@ -37,20 +37,5 @@ function buildConfigValueQueryOptions<K extends GetConfigKeys>(
           method: 'GET',
         }
       ).then((res) => res.json()),
-  };
-}
-
-export default function getConfigValueQueryOptions<K extends GetConfigKeys>(
-  params: UseConfigValueParams<K>
-): UseConfigQueryOptions<K> {
-  return buildConfigValueQueryOptions(params);
-}
-
-export function getConfigValueSuspenseQueryOptions<K extends GetConfigKeys>(
-  params: UseConfigValueParams<K>
-): UseSuspenseConfigQueryOptions<K> {
-  // Same shape as the non-suspense helper; suspense options omit skipToken from queryFn.
-  return buildConfigValueQueryOptions(
-    params
-  ) as UseSuspenseConfigQueryOptions<K>;
+  });
 }

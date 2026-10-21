@@ -3,8 +3,8 @@ import React from 'react';
 
 import { useSuspenseQuery } from '@tanstack/react-query';
 
-import { getConfigValueSuspenseQueryOptions } from '@/hooks/use-config-value/get-config-value-query-options';
-import { getDomainDescriptionSuspenseQueryOptions } from '@/views/shared/hooks/use-domain-description/get-domain-description-query-options';
+import getConfigValueQueryOptions from '@/hooks/use-config-value/get-config-value-query-options';
+import getDomainDescriptionQueryOptions from '@/views/shared/hooks/use-domain-description/get-domain-description-query-options';
 
 import { type DomainPageTabContentProps } from '../domain-page-content/domain-page-content.types';
 import DomainPageMetadataTable from '../domain-page-metadata-table/domain-page-metadata-table';
@@ -13,7 +13,7 @@ import { type DomainMetadata } from './domain-page-metadata.types';
 
 export default function DomainPageMetadata(props: DomainPageTabContentProps) {
   const { data: domainDescription } = useSuspenseQuery(
-    getDomainDescriptionSuspenseQueryOptions({
+    getDomainDescriptionQueryOptions({
       domain: props.domain,
       cluster: props.cluster,
     })
@@ -21,7 +21,7 @@ export default function DomainPageMetadata(props: DomainPageTabContentProps) {
   const {
     data: { metadata: isExtendedMetadataEnabled },
   } = useSuspenseQuery(
-    getConfigValueSuspenseQueryOptions({
+    getConfigValueQueryOptions({
       key: 'EXTENDED_DOMAIN_INFO_ENABLED',
       args: undefined,
     })

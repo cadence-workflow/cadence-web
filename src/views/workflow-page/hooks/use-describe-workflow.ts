@@ -1,9 +1,9 @@
 'use client';
 
 import {
+  queryOptions,
   useQuery,
   useSuspenseQuery,
-  type UseSuspenseQueryOptions,
 } from '@tanstack/react-query';
 
 import { type DescribeWorkflowResponse } from '@/route-handlers/describe-workflow/describe-workflow.types';
@@ -17,28 +17,27 @@ import {
   type DescribeWorkflowQueryKey,
   type UseDescribeWorkflowParams,
   type UseQueryDescribeWorkflowParams,
-  type UseDescribeWorkflowQueryOptions,
 } from './use-describe-workflow.types';
 
-function buildDescribeWorkflowQueryOptions({
+function getDescribeWorkflowQueryOptions({
   domain,
   cluster,
   workflowId,
   runId,
   refetchInterval = WORKFLOW_PAGE_STATUS_REFETCH_INTERVAL,
 }: UseDescribeWorkflowParams) {
-  return {
-    queryKey: [
-      'describe_workflow',
-      { domain, cluster, workflowId, runId },
-    ] as DescribeWorkflowQueryKey,
-    queryFn: ({ queryKey: [_, p] }: { queryKey: DescribeWorkflowQueryKey }) =>
+  return queryOptions<
+    DescribeWorkflowResponse,
+    RequestError,
+    DescribeWorkflowResponse,
+    DescribeWorkflowQueryKey
+  >({
+    queryKey: ['describe_workflow', { domain, cluster, workflowId, runId }],
+    queryFn: ({ queryKey: [_, p] }) =>
       request(
         `/api/domains/${p.domain}/${p.cluster}/workflows/${p.workflowId}/${p.runId}`
       ).then((res) => res.json()),
-    refetchInterval: (query: {
-      state: { data?: DescribeWorkflowResponse };
-    }) => {
+    refetchInterval: (query) => {
       const { closeStatus } = query.state.data?.workflowExecutionInfo || {};
       if (
         !closeStatus ||
@@ -48,66 +47,45 @@ function buildDescribeWorkflowQueryOptions({
 
       return false;
     },
-  };
+  });
 }
 
-const getDefaultConfigurations = ({
+export function useDescribeWorkflow({
   domain,
   cluster,
   workflowId,
   runId,
   refetchInterval,
-  ...queryOptions
-}: UseQueryDescribeWorkflowParams): UseDescribeWorkflowQueryOptions => ({
-  ...buildDescribeWorkflowQueryOptions({
-    domain,
-    cluster,
-    workflowId,
-    runId,
-    refetchInterval,
-  }),
-  ...queryOptions,
-});
+  ...queryOpts
+}: UseQueryDescribeWorkflowParams) {
+  return useQuery({
+    ...getDescribeWorkflowQueryOptions({
+      domain,
+      cluster,
+      workflowId,
+      runId,
+      refetchInterval,
+    }),
+    ...queryOpts,
+  });
+}
 
-const getSuspenseDefaultConfigurations = ({
+export function useSuspenseDescribeWorkflow({
   domain,
   cluster,
   workflowId,
   runId,
   refetchInterval,
-  ...queryOptions
-}: UseSuspenseQueryDescribeWorkflowParams): UseSuspenseQueryOptions<
-  DescribeWorkflowResponse,
-  RequestError,
-  DescribeWorkflowResponse,
-  DescribeWorkflowQueryKey
-> => ({
-  ...buildDescribeWorkflowQueryOptions({
-    domain,
-    cluster,
-    workflowId,
-    runId,
-    refetchInterval,
-  }),
-  ...queryOptions,
-});
-
-export function useDescribeWorkflow(params: UseQueryDescribeWorkflowParams) {
-  return useQuery<
-    DescribeWorkflowResponse,
-    RequestError,
-    DescribeWorkflowResponse,
-    DescribeWorkflowQueryKey
-  >(getDefaultConfigurations(params));
-}
-
-export function useSuspenseDescribeWorkflow(
-  params: UseSuspenseQueryDescribeWorkflowParams
-) {
-  return useSuspenseQuery<
-    DescribeWorkflowResponse,
-    RequestError,
-    DescribeWorkflowResponse,
-    DescribeWorkflowQueryKey
-  >(getSuspenseDefaultConfigurations(params));
+  ...queryOpts
+}: UseSuspenseQueryDescribeWorkflowParams) {
+  return useSuspenseQuery({
+    ...getDescribeWorkflowQueryOptions({
+      domain,
+      cluster,
+      workflowId,
+      runId,
+      refetchInterval,
+    }),
+    ...queryOpts,
+  });
 }
