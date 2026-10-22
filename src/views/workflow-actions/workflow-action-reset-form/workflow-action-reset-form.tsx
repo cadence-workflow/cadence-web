@@ -12,7 +12,7 @@ import { Select } from 'baseui/select';
 import { Textarea } from 'baseui/textarea';
 import { Controller, useWatch } from 'react-hook-form';
 
-import { useDescribeWorkflow } from '@/views/workflow-page/hooks/use-describe-workflow';
+import useDescribeWorkflow from '@/views/workflow-page/hooks/use-describe-workflow/use-describe-workflow';
 
 import { overrides } from './workflow-action-reset-form.styles';
 import { type Props } from './workflow-action-reset-form.types';

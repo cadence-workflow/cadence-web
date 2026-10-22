@@ -1,25 +1,17 @@
-'use client';
-
-import {
-  queryOptions,
-  useQuery,
-  useSuspenseQuery,
-} from '@tanstack/react-query';
+import { queryOptions } from '@tanstack/react-query';
 
 import { type DescribeWorkflowResponse } from '@/route-handlers/describe-workflow/describe-workflow.types';
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
 
-import WORKFLOW_PAGE_STATUS_REFETCH_INTERVAL from '../config/workflow-page-status-refetch-interval.config';
+import WORKFLOW_PAGE_STATUS_REFETCH_INTERVAL from '../../config/workflow-page-status-refetch-interval.config';
 
 import {
-  type UseSuspenseQueryDescribeWorkflowParams,
   type DescribeWorkflowQueryKey,
   type UseDescribeWorkflowParams,
-  type UseQueryDescribeWorkflowParams,
 } from './use-describe-workflow.types';
 
-function getDescribeWorkflowQueryOptions({
+export default function getDescribeWorkflowQueryOptions({
   domain,
   cluster,
   workflowId,
@@ -47,45 +39,5 @@ function getDescribeWorkflowQueryOptions({
 
       return false;
     },
-  });
-}
-
-export function useDescribeWorkflow({
-  domain,
-  cluster,
-  workflowId,
-  runId,
-  refetchInterval,
-  ...queryOpts
-}: UseQueryDescribeWorkflowParams) {
-  return useQuery({
-    ...getDescribeWorkflowQueryOptions({
-      domain,
-      cluster,
-      workflowId,
-      runId,
-      refetchInterval,
-    }),
-    ...queryOpts,
-  });
-}
-
-export function useSuspenseDescribeWorkflow({
-  domain,
-  cluster,
-  workflowId,
-  runId,
-  refetchInterval,
-  ...queryOpts
-}: UseSuspenseQueryDescribeWorkflowParams) {
-  return useSuspenseQuery({
-    ...getDescribeWorkflowQueryOptions({
-      domain,
-      cluster,
-      workflowId,
-      runId,
-      refetchInterval,
-    }),
-    ...queryOpts,
   });
 }
