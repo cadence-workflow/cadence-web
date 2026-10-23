@@ -132,6 +132,6 @@
     "@next/eslint-plugin-next": {
       "glob": "10.5.0"
     },
-    "postcss": "8.5.6"
+    "postcss": "8.5.29"
   }
 }
