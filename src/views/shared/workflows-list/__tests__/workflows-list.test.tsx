@@ -54,6 +54,14 @@ describe(WorkflowsList.name, () => {
     expect(screen.getByText('wf-2')).toBeInTheDocument();
   });
 
+  it('renders headers, rows, and the footer when maxHeight is set', () => {
+    setup({ maxHeight: '10vh' });
+
+    expect(screen.getByText('Workflow ID')).toBeInTheDocument();
+    expect(screen.getByText('wf-1')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-loader')).toBeInTheDocument();
+  });
+
   it('does not render workflow rows when workflows array is empty', () => {
     setup({ workflows: [] });
 
@@ -65,8 +73,14 @@ describe(WorkflowsList.name, () => {
 
     const links = screen.getAllByRole('link');
     expect(links).toHaveLength(2);
-    expect(links[0]).toHaveAttribute('href', '/workflows/wf-1/run-1');
-    expect(links[1]).toHaveAttribute('href', '/workflows/wf-2/run-2');
+    expect(links[0]).toHaveAttribute(
+      'href',
+      '/domains/mock-domain/mock-cluster/workflows/wf-1/run-1'
+    );
+    expect(links[1]).toHaveAttribute(
+      'href',
+      '/domains/mock-domain/mock-cluster/workflows/wf-2/run-2'
+    );
   });
 
   it('renders each row link as non-draggable so drag-to-select works', () => {
@@ -130,7 +144,7 @@ describe(WorkflowsList.name, () => {
     const link = screen.getByRole('link');
     expect(link).toHaveAttribute(
       'href',
-      '/workflows/wf%2Fspecial%20id/run%2Fspecial%20id'
+      '/domains/mock-domain/mock-cluster/workflows/wf%2Fspecial%20id/run%2Fspecial%20id'
     );
   });
 
@@ -394,6 +408,8 @@ function setup(
   const user = userEvent.setup();
   render(
     <WorkflowsList
+      domain="mock-domain"
+      cluster="mock-cluster"
       workflows={workflows}
       columns={columns}
       error={error}
