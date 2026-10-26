@@ -71,6 +71,8 @@ export default function DomainWorkflowsArchivalList({
 
   return (
     <WorkflowsList
+      domain={domain}
+      cluster={cluster}
       workflows={workflows}
       columns={visibleColumns}
       error={error}
