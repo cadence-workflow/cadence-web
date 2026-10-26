@@ -6,6 +6,8 @@ export type StartWorkflowButtonProps = {
   taskList: string;
   wfId?: string;
   input?: Record<string, any>;
+  fields?: Record<string, string>;
+  memo?: Record<string, unknown>;
   timeoutSeconds?: number;
   sdkLanguage?: string;
 };

@@ -5,6 +5,7 @@ import CodeBlock from './code-block/code-block';
 import Heading from './heading/heading';
 import Image from './image/image';
 import InlineCode from './inline-code/inline-code';
+import InputField from './input-field/input-field';
 import List from './list/list';
 import SignalButton from './signal-button/signal-button';
 import StartWorkflowButton from './start-workflow-button/start-workflow-button';
@@ -13,6 +14,7 @@ import StartWorkflowButton from './start-workflow-button/start-workflow-button';
 export const markdocComponents = {
   SignalButton,
   StartWorkflowButton,
+  InputField,
   Heading,
   List,
   CodeBlock,
