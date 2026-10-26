@@ -1,5 +1,3 @@
-import { z } from 'zod';
-
 import { UseMergedInfiniteQueriesError } from '@/hooks/use-merged-infinite-queries/use-merged-infinite-queries-error';
 import { RequestError } from '@/utils/request/request-error';
 
@@ -26,7 +24,7 @@ describe(getWorkflowsBasicErrorPanelProps.name, () => {
         error: new UseMergedInfiniteQueriesError('Test error', [
           new RequestError('Invalid input', '/query1', 400, [
             {
-              code: z.ZodIssueCode.custom,
+              code: 'custom',
               path: ['test-path'],
               message: 'Incorrect field value',
             },

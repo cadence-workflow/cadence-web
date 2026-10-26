@@ -71,6 +71,11 @@ export type ScheduleActionModalBanner = {
   render: (schedule?: DescribeScheduleResponse) => ReactNode;
 };
 
+// useForm needs FieldValues; actions without a form use FormData = undefined.
+export type ScheduleActionFormValues<FormData> = FormData extends FieldValues
+  ? FormData
+  : FieldValues;
+
 export type ScheduleActionModalForm<FormData, SubmissionData> =
   | {
       withForm: true;
@@ -79,10 +84,13 @@ export type ScheduleActionModalForm<FormData, SubmissionData> =
           FormData extends FieldValues ? FormData : FieldValues
         >
       ) => ReactNode;
-      // Input is unknown rather than FormData: a form schema parses whatever
-      // the controls hold, which is not always the shape it validates into.
-      formSchema: z.ZodType<FormData, z.ZodTypeDef, unknown>;
-      transformFormDataToSubmission: (formData: FormData) => SubmissionData;
+      formSchema: z.ZodType<
+        ScheduleActionFormValues<FormData>,
+        ScheduleActionFormValues<FormData>
+      >;
+      transformFormDataToSubmission: (
+        formData: ScheduleActionFormValues<FormData>
+      ) => SubmissionData;
     }
   | {
       withForm: false;

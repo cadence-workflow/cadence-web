@@ -32,7 +32,7 @@ type BatchActionModalFormVariant<FormData, SubmissionData> = {
   form: (
     props: BatchActionFormProps<FormData extends FieldValues ? FormData : any>
   ) => ReactNode;
-  formSchema: z.ZodSchema<FormData>;
+  formSchema: z.ZodType<FormData, FormData>;
   transformFormDataToSubmission: (formData: FormData) => SubmissionData;
 };
 

@@ -245,7 +245,7 @@ describe(listWorkflowsBasic.name, () => {
         message: 'Invalid argument(s) for workflow listing',
         validationErrors: expect.arrayContaining([
           expect.objectContaining({
-            message: 'Expected number, received nan',
+            message: 'Invalid input: expected number, received NaN',
           }),
         ]),
       })

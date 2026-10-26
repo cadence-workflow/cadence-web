@@ -5,7 +5,7 @@ const workflowDiagnosticsIssueSchema = z
     IssueID: z.number(),
     InvariantType: z.string(),
     Reason: z.string(),
-    Metadata: z.any(),
+    Metadata: z.any().optional(),
   })
   .transform(({ IssueID, InvariantType, Reason, Metadata }) => ({
     issueId: IssueID,

@@ -4,13 +4,16 @@ import { Banner, HIERARCHY, KIND as BANNER_KIND } from 'baseui/banner';
 import { KIND as BUTTON_KIND, SIZE } from 'baseui/button';
 import { ModalButton } from 'baseui/modal';
 import { useSnackbar } from 'baseui/snackbar';
-import { type DefaultValues, type FieldValues, useForm } from 'react-hook-form';
+import { type DefaultValues, useForm } from 'react-hook-form';
 import { MdCheckCircle, MdErrorOutline, MdOpenInNew } from 'react-icons/md';
 
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
 
-import { type WorkflowActionInput } from '../workflow-actions.types';
+import {
+  type WorkflowActionFormValues,
+  type WorkflowActionInput,
+} from '../workflow-actions.types';
 
 import { overrides, styled } from './workflow-actions-modal-content.styles';
 import { type Props } from './workflow-actions-modal-content.types';
@@ -27,9 +30,7 @@ export default function WorkflowActionsModalContent<
 }: Props<Result, FormData, SubmissionData>) {
   const queryClient = useQueryClient();
   const { enqueue, dequeue } = useSnackbar();
-
-  // useForm doesn't accept form data that is not a FieldValues (e.g. undefined)
-  type OptionalFormData = FormData extends FieldValues ? FormData : any;
+  type OptionalFormData = WorkflowActionFormValues<FormData>;
 
   const {
     handleSubmit,
@@ -83,7 +84,7 @@ export default function WorkflowActionsModalContent<
     queryClient
   );
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = (data: OptionalFormData) => {
     mutate({
       ...params,
       submissionData: action.modal.withForm

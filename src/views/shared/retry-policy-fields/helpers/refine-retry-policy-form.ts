@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { type z } from 'zod';
 
 import { type RetryPolicyFormFields } from '../schemas/retry-policy-form-schema';
 
@@ -12,7 +12,7 @@ export default function refineRetryPolicyForm(
 
   if (!data.retryPolicy?.initialIntervalSeconds) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: 'custom',
       message: 'Initial interval is required',
       path: ['retryPolicy', 'initialIntervalSeconds'],
     });
@@ -20,7 +20,7 @@ export default function refineRetryPolicyForm(
 
   if (!data.retryPolicy?.backoffCoefficient) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: 'custom',
       message: 'Backoff coefficient is required',
       path: ['retryPolicy', 'backoffCoefficient'],
     });
@@ -29,14 +29,14 @@ export default function refineRetryPolicyForm(
   if (data.limitRetries === 'ATTEMPTS') {
     if (!data.retryPolicy?.maximumAttempts) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         message: 'Maximum attempts is required',
         path: ['retryPolicy', 'maximumAttempts'],
       });
     }
   } else if (!data.retryPolicy?.expirationIntervalSeconds) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: 'custom',
       message: 'Expiration interval is required',
       path: ['retryPolicy', 'expirationIntervalSeconds'],
     });
