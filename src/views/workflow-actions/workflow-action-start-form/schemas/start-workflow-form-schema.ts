@@ -33,7 +33,7 @@ const baseSchema = z.object({
           JSON.parse(val); // TODO: consider using losslessJsonParse
         } catch {
           ctx.addIssue({
-            code: z.ZodIssueCode.custom,
+            code: 'custom',
             message: 'Input must be valid JSON',
             path: [i],
           });
@@ -112,13 +112,13 @@ const baseSchema = z.object({
 
       if (cronFieldsErrors?.general) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: 'custom',
           message: 'Invalid cron schedule format',
         });
       } else {
         Object.entries(cronFieldsErrors).forEach(([errorKey, errorMessage]) => {
           ctx.addIssue({
-            code: z.ZodIssueCode.custom,
+            code: 'custom',
             message: errorMessage,
             path: [errorKey],
           });
@@ -141,7 +141,7 @@ export const startWorkflowFormSchema = baseSchema.superRefine((data, ctx) => {
   // Validate schedule type specific requirements
   if (data.scheduleType === 'LATER' && !data.firstRunAt) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: 'custom',
       message: 'First run time is required when schedule type is LATER',
       path: ['firstRunAt'],
     });
@@ -149,7 +149,7 @@ export const startWorkflowFormSchema = baseSchema.superRefine((data, ctx) => {
 
   if (data.scheduleType === 'CRON' && !data.cronSchedule) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: 'custom',
       message: 'Cron schedule is required when schedule type is CRON',
       path: ['cronSchedule'],
     });

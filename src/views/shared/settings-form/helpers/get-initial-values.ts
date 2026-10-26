@@ -1,7 +1,7 @@
 import { type z } from 'zod';
 
 import {
-  type SettingsFormValues,
+  type SettingsFormFieldValues,
   type SettingsFormConfig,
 } from '../settings-form.types';
 
@@ -14,7 +14,7 @@ export default function getInitialValues<
 }: {
   data: D;
   formConfig: SettingsFormConfig<D, Z>;
-}): SettingsFormValues<Z> {
+}): SettingsFormFieldValues<Z> {
   return Object.fromEntries(
     formConfig.map((field) => [field.path, field.getInitialValue(data)])
   );

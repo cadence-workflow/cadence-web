@@ -9,7 +9,7 @@ import {
 import { type z } from 'zod';
 
 export type Props<FormData extends FieldValues> = {
-  schema?: z.ZodType<FormData, z.ZodTypeDef, unknown>;
+  schema?: z.ZodType<FormData, FormData>;
   initialFormValues?: DefaultValues<FormData>;
   onSubmit: SubmitHandler<FormData>;
   onConfirm: () => void;
@@ -20,5 +20,5 @@ export type ValidatedProps<FormData extends FieldValues> = Omit<
   Props<FormData>,
   'schema' | 'onConfirm'
 > & {
-  schema: z.ZodType<FormData, z.ZodTypeDef, unknown>;
+  schema: z.ZodType<FormData, FormData>;
 };

@@ -72,7 +72,7 @@ function getIssues(
     limitRetries: 'ATTEMPTS',
   }
 ) {
-  const issues: Array<z.IssueData> = [];
+  const issues: Array<string | z.core.$ZodSuperRefineIssue> = [];
 
   refineRetryPolicyForm(
     {
