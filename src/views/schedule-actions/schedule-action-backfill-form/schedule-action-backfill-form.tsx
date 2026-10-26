@@ -1,9 +1,10 @@
-import { DatePicker } from 'baseui/datepicker';
 import { FormControl } from 'baseui/form-control';
 import { Input } from 'baseui/input';
 import { Select } from 'baseui/select';
 import { Controller } from 'react-hook-form';
 
+import DateTimePicker from '@/components/date-time-picker/date-time-picker';
+import { DATE_TIME_FORMAT_MINUTES } from '@/components/date-time-picker/date-time-picker.constants';
 import DomainSchedulesHorizontalField from '@/views/domain-schedules/domain-schedules-horizontal-field/domain-schedules-horizontal-field';
 import getFieldErrorMessage from '@/views/workflow-actions/workflow-action-start-form/helpers/get-field-error-message';
 
@@ -80,27 +81,19 @@ export default function ScheduleActionBackfillForm({
               <Controller
                 name="startTime"
                 control={control}
-                render={({ field: { value, onChange, ref, ...field } }) => (
-                  <DatePicker
-                    {...field}
-                    // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
+                render={({ field: { value, onChange, ref } }) => (
+                  <DateTimePicker
                     inputRef={ref}
                     id={SCHEDULE_ACTION_BACKFILL_FORM_FIELD_IDS.startTime}
                     aria-label="Backfill period start"
-                    value={value ? [new Date(value)] : []}
-                    onChange={({ date }) => {
-                      const d = Array.isArray(date) ? date[0] : date;
-                      if (d) {
-                        onChange(d.toISOString());
-                      } else {
-                        onChange(undefined);
-                      }
+                    value={value || undefined}
+                    onChange={(next) => {
+                      onChange(next);
                       revalidateBackfillPeriod();
                     }}
                     error={Boolean(startTimeErrorMessage)}
                     size="compact"
-                    timeSelectStart
-                    formatString="yyyy/MM/dd HH:mm"
+                    displayFormat={DATE_TIME_FORMAT_MINUTES}
                     clearable
                   />
                 )}
@@ -121,29 +114,20 @@ export default function ScheduleActionBackfillForm({
               <Controller
                 name="endTime"
                 control={control}
-                render={({ field: { value, onChange, ref, ...field } }) => (
-                  <DatePicker
-                    {...field}
-                    // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
+                render={({ field: { value, onChange, ref } }) => (
+                  <DateTimePicker
                     inputRef={ref}
                     id={SCHEDULE_ACTION_BACKFILL_FORM_FIELD_IDS.endTime}
                     aria-label="Backfill period end"
-                    value={value ? [new Date(value)] : []}
-                    onChange={({ date }) => {
-                      const d = Array.isArray(date) ? date[0] : date;
-                      if (d) {
-                        onChange(d.toISOString());
-                      } else {
-                        onChange(undefined);
-                      }
+                    value={value || undefined}
+                    onChange={(next) => {
+                      onChange(next);
                       revalidateBackfillPeriod();
                     }}
                     error={Boolean(endTimeErrorMessage)}
                     size="compact"
-                    timeSelectStart
-                    formatString="yyyy/MM/dd HH:mm"
+                    displayFormat={DATE_TIME_FORMAT_MINUTES}
                     clearable
-                    overrides={overrides.endTimeDatePicker}
                   />
                 )}
               />

@@ -1,5 +1,4 @@
 import { styled as createStyled, type Theme } from 'baseui';
-import { type DatepickerOverrides } from 'baseui/datepicker';
 import { type FormControlOverrides } from 'baseui/form-control';
 import { type StyleObject } from 'styletron-react';
 
@@ -11,13 +10,6 @@ export const overrides = {
       },
     },
   } satisfies FormControlOverrides,
-  endTimeDatePicker: {
-    TimeSelectFormControl: {
-      props: {
-        label: 'End time',
-      },
-    },
-  } satisfies DatepickerOverrides,
 };
 
 export const styled = {
