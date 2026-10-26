@@ -72,6 +72,7 @@ export default function SignalButton({
         },
         SIGNAL_SUCCESS_NOTIFICATION_DURATION_MS
       );
+      markdownContext.onActionSuccess?.();
     },
     onError: (error: Error) => {
       enqueue({

@@ -13,11 +13,12 @@ export default function MarkdownContextProvider({
   cluster,
   workflowId,
   runId,
+  onActionSuccess,
   children,
 }: Props) {
   const contextValue = useMemo(
-    () => ({ domain, cluster, workflowId, runId }),
-    [domain, cluster, workflowId, runId]
+    () => ({ domain, cluster, workflowId, runId, onActionSuccess }),
+    [domain, cluster, workflowId, runId, onActionSuccess]
   );
 
   return (
