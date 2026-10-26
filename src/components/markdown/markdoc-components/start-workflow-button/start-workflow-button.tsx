@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 
 import request from '@/utils/request';
 
-import applyFieldValues from '../../helpers/apply-field-values';
+import getMissingFields from '../../helpers/get-missing-fields';
 import { MarkdownContext } from '../../markdown-context-provider/markdown-context-provider';
 
 import { overrides } from './start-workflow-button.styles';
@@ -27,7 +27,7 @@ export default function StartWorkflowButton({
   taskList,
   wfId,
   input,
-  fields,
+  variableNames,
   memo,
   timeoutSeconds = 60,
   sdkLanguage = 'GO',
@@ -39,9 +39,9 @@ export default function StartWorkflowButton({
   const { enqueue } = useSnackbar();
 
   const { fieldValues, fieldMeta } = markdownContext;
-  const { input: resolvedInput, missingRequired } = useMemo(
-    () => applyFieldValues(input, fields, fieldValues, fieldMeta),
-    [input, fields, fieldValues, fieldMeta]
+  const missingRequired = useMemo(
+    () => getMissingFields(variableNames ?? [], fieldValues, fieldMeta),
+    [variableNames, fieldValues, fieldMeta]
   );
   const router = useRouter();
 
@@ -53,7 +53,7 @@ export default function StartWorkflowButton({
         );
       }
 
-      const workflowInput = resolvedInput ? [resolvedInput] : undefined;
+      const workflowInput = input ? [input] : undefined;
 
       const response = await request(
         `/api/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows/start`,

@@ -8,7 +8,7 @@ import { useSnackbar } from 'baseui/snackbar';
 import losslessJsonStringify from '@/utils/lossless-json-stringify';
 import request from '@/utils/request';
 
-import applyFieldValues from '../../helpers/apply-field-values';
+import getMissingFields from '../../helpers/get-missing-fields';
 import { MarkdownContext } from '../../markdown-context-provider/markdown-context-provider';
 
 import { SIGNAL_SUCCESS_NOTIFICATION_DURATION_MS } from './signal-button.constants';
@@ -19,7 +19,7 @@ export default function SignalButton({
   signalName,
   label,
   input,
-  fields,
+  variableNames,
   workflowId: workflowIdProp,
   runId: runIdProp,
   domain: domainProp,
@@ -41,9 +41,9 @@ export default function SignalButton({
   const { enqueue } = useSnackbar();
 
   const { fieldValues, fieldMeta } = markdownContext;
-  const { input: resolvedInput, missingRequired } = useMemo(
-    () => applyFieldValues(input, fields, fieldValues, fieldMeta),
-    [input, fields, fieldValues, fieldMeta]
+  const missingRequired = useMemo(
+    () => getMissingFields(variableNames ?? [], fieldValues, fieldMeta),
+    [variableNames, fieldValues, fieldMeta]
   );
 
   const { mutate, isPending } = useMutation({
@@ -55,9 +55,7 @@ export default function SignalButton({
       }
 
       const signalInput =
-        resolvedInput === undefined
-          ? undefined
-          : losslessJsonStringify(resolvedInput);
+        input === undefined ? undefined : losslessJsonStringify(input);
 
       const runIdPathSegment = runId ? `/${encodeURIComponent(runId)}` : '';
 
