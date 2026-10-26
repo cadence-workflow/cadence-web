@@ -33,7 +33,7 @@ const scheduleStartWorkflowBodySchema = z.object({
   retryPolicy: retryPolicySchema,
   memo: z.record(z.string(), z.any()).optional(),
   searchAttributes: z
-    .record(z.union([z.string(), z.number(), z.boolean()]))
+    .record(z.string(), z.union([z.string(), z.number(), z.boolean()]))
     .optional(),
 });
 
