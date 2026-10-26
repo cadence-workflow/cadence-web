@@ -1,6 +1,7 @@
 import { useContext } from 'react';
 
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import Markdown from '@/components/markdown/markdown';
 import { MarkdownContext } from '@/components/markdown/markdown-context-provider/markdown-context-provider';
@@ -32,6 +33,59 @@ describe('Markdown with Markdoc', () => {
     );
 
     expect(screen.getByLabelText('Amount')).toHaveValue(84.5);
+  });
+
+  it('resolves a field value into the button input', async () => {
+    const user = userEvent.setup();
+    render(
+      <Markdown
+        markdown={`{% field name="amount" label="Amount" type="number" /%}
+
+{% signal signalName="s" label="Go" input={"amount":$amount} /%}`}
+      />
+    );
+
+    expect(getButtonProps().input).toEqual({});
+    expect(getButtonProps().variableNames).toEqual(['amount']);
+
+    await user.type(screen.getByLabelText('Amount'), '125');
+
+    expect(screen.getByLabelText('Amount')).toHaveValue(125);
+    expect(getButtonProps().input).toEqual({ amount: 125 });
+  });
+
+  it('drops the key of an empty optional field', async () => {
+    const user = userEvent.setup();
+    render(
+      <Markdown
+        markdown={`{% field name="note" label="Note" /%}
+
+{% signal signalName="s" label="Go" input={"a":1,"note":$note} /%}`}
+      />
+    );
+
+    expect(getButtonProps().input).toEqual({ a: 1 });
+
+    await user.type(screen.getByLabelText('Note'), 'hi');
+
+    expect(getButtonProps().input).toEqual({ a: 1, note: 'hi' });
+  });
+
+  it('shows the field value in text', async () => {
+    const user = userEvent.setup();
+    render(
+      <Markdown
+        markdown={`{% field name="amount" label="Amount" type="number" default=5 /%}
+
+Total: {% $amount %}`}
+      />
+    );
+
+    expect(screen.getByText('Total: 5')).toBeInTheDocument();
+
+    await user.type(screen.getByLabelText('Amount'), '7');
+
+    expect(screen.getByText('Total: 57')).toBeInTheDocument();
   });
 
   it('renders basic markdown', () => {
@@ -283,4 +337,10 @@ Use \`code\` here.`;
 
 function getContext() {
   return JSON.parse(screen.getByTestId('markdown-context').textContent ?? '');
+}
+
+function getButtonProps() {
+  return JSON.parse(
+    screen.getByTestId('signal-button-props').textContent ?? ''
+  );
 }

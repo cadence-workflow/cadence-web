@@ -128,8 +128,8 @@ describe(StartWorkflowButton.name, () => {
   it('sends the field value in the workflow input', async () => {
     const { user, getLatestBody } = setup({
       propsOverrides: {
-        input: { items: [{ amount: 0, name: 'Lunch' }] },
-        fields: { 'items[0].amount': 'newAmount' },
+        input: { items: [{ amount: 84.5, name: 'Lunch' }] },
+        variableNames: ['newAmount'],
       },
       contextValue: {
         fieldValues: { newAmount: '84.5' },
@@ -151,8 +151,8 @@ describe(StartWorkflowButton.name, () => {
   it('disables the button while a required field is empty', () => {
     setup({
       propsOverrides: {
-        input: { amount: 0 },
-        fields: { amount: 'newAmount' },
+        input: {},
+        variableNames: ['newAmount'],
       },
       contextValue: {
         fieldValues: {},
