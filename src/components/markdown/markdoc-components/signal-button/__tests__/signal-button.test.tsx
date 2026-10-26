@@ -156,8 +156,8 @@ describe(SignalButton.name, () => {
   it('sends the field value in the signal input', async () => {
     const { user, getLatestBody } = setup({
       propsOverrides: {
-        input: { amount: 0, reviewer: 'a' },
-        fields: { amount: 'approved' },
+        input: { amount: 12.5, reviewer: 'a' },
+        variableNames: ['approved'],
       },
       contextValue: {
         fieldValues: { approved: '12.5' },
@@ -177,7 +177,7 @@ describe(SignalButton.name, () => {
 
   it('disables the button while a required field is empty', () => {
     setup({
-      propsOverrides: { input: { amount: 0 }, fields: { amount: 'approved' } },
+      propsOverrides: { input: {}, variableNames: ['approved'] },
       contextValue: {
         fieldValues: { approved: '' },
         fieldMeta: { approved: { type: 'number', required: true } },

@@ -127,7 +127,7 @@ When rendered on a workflow page, \`domain\` and \`cluster\` are inherited from 
 
 ## Input Fields
 
-Let the viewer type a value that a \`signal\` or \`start\` button sends. Add a \`field\` tag, then map it to a path in the button \`input\` with the \`fields\` attribute.
+Let the viewer type a value that a \`signal\` or \`start\` button sends. A \`field\` tag defines a variable with the same name. Use \`$name\` in any button attribute.
 
 ### Example
 
@@ -137,31 +137,29 @@ Let the viewer type a value that a \`signal\` or \`start\` button sends. Add a \
 {% signal
   signalName="approve_partial"
   label="Approve amount"
-  input={"reviewer":"finance-ops","amount":0}
-  fields={"amount": "amount"}
+  input={"reviewer":"finance-ops","amount":$amount}
 /%}
 
 {% start
   workflowType="MyWorkflow"
   label="Start"
   taskList="my-task-list"
-  input={"items":[{"amount":0}]}
-  fields={"items[0].amount": "amount"}
+  input={"items":[{"amount":$amount}]}
 /%}
 \`\`\`
 
 ### Field Attributes
 
-- \`name\` (string, **required**) -- name that buttons use in \`fields\`. Must be unique within a page
+- \`name\` (string, **required**) -- variable name, used as \`$name\`. Must be unique within a page
 - \`label\` (string, optional) -- text above the input
 - \`type\` (string, optional, default: "text") -- \`text\` or \`number\`
 - \`default\` (string or number, optional) -- starting value
 - \`required\` (boolean, optional) -- buttons that use this field stay disabled until it has a value
 - \`placeholder\` (string, optional) -- hint text
 
-### The fields Attribute
+### Using Field Values
 
-Both \`signal\` and \`start\` accept \`fields\`, an object that maps a path in \`input\` to a field name. The button sets that path to the field value before it sends the input. Number fields are sent as numbers. An empty optional field keeps the value from \`input\`. A name that no \`field\` tag defines counts as missing, so the button stays disabled.
+Number fields are numbers. An empty optional field leaves its variable undefined, so its key is left out. A button that uses an undefined or empty required field stays disabled. Use \`{% $name %}\` in text to show the current value.
 
 
 ## Images
