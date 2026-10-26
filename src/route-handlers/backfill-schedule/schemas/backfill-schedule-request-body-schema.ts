@@ -19,7 +19,7 @@ const backfillScheduleRequestBodySchema = z
 
     if (schedulePeriodError) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         message: schedulePeriodError.message,
         path: ['endTime'],
       });

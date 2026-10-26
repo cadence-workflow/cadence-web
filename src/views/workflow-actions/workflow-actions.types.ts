@@ -29,6 +29,11 @@ export type WorkflowActionInput<SubmissionData> = WorkflowActionInputParams & {
   submissionData: SubmissionData;
 };
 
+// useForm needs FieldValues; actions without a form use FormData = undefined.
+export type WorkflowActionFormValues<FormData> = FormData extends FieldValues
+  ? FormData
+  : FieldValues;
+
 export type WorkflowActionFormProps<FormData extends FieldValues> = {
   formData: FormData;
   fieldErrors: FieldErrors<FormData>;
@@ -62,8 +67,13 @@ export type WorkflowActionModalForm<FormData, SubmissionData> =
           FormData extends FieldValues ? FormData : any
         >
       ) => ReactNode;
-      formSchema: z.ZodSchema<FormData>;
-      transformFormDataToSubmission: (formData: FormData) => SubmissionData;
+      formSchema: z.ZodType<
+        WorkflowActionFormValues<FormData>,
+        WorkflowActionFormValues<FormData>
+      >;
+      transformFormDataToSubmission: (
+        formData: WorkflowActionFormValues<FormData>
+      ) => SubmissionData;
     }
   | {
       withForm: false;

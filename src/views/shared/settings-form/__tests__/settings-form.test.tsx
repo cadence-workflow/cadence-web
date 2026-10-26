@@ -108,11 +108,11 @@ describe(SettingsForm.name, () => {
 
     expect(formFieldC).toHaveAttribute(
       'error',
-      'Expected boolean, received string'
+      'Invalid input: expected boolean, received string'
     );
 
     expect(
-      screen.getByText('Expected boolean, received string')
+      screen.getByText('Invalid input: expected boolean, received string')
     ).toBeInTheDocument();
   });
 });

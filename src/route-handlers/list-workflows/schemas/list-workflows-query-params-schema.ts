@@ -42,8 +42,8 @@ export const getRefinedVisibilityQuerySchema = <
   T extends typeof visibilityQuerySchema,
 >(
   schema: T = visibilityQuerySchema as T
-): z.ZodEffects<T> => {
-  return schema.superRefine(validateArchivedQueryParams) as z.ZodEffects<T>;
+): T => {
+  return schema.superRefine(validateArchivedQueryParams);
 };
 
 const listWorkflowsQueryParamSchema = getRefinedVisibilityQuerySchema(
