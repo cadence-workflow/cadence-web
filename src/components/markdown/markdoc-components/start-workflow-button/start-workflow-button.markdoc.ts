@@ -29,6 +29,14 @@ export const startWorkflowButtonMarkdocSchema = {
       type: Object,
       required: false,
     },
+    fields: {
+      type: Object,
+      required: false,
+    },
+    memo: {
+      type: Object,
+      required: false,
+    },
     timeoutSeconds: {
       type: Number,
       required: false,

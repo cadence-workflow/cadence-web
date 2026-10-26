@@ -22,6 +22,18 @@ jest.mock(
 );
 
 describe('Markdown with Markdoc', () => {
+  it('renders a field tag as an input', () => {
+    render(
+      <Markdown
+        markdown={
+          '{% field name="amount" label="Amount" type="number" default=84.5 /%}'
+        }
+      />
+    );
+
+    expect(screen.getByLabelText('Amount')).toHaveValue(84.5);
+  });
+
   it('renders basic markdown', () => {
     const content = '# Hello World\n\nThis is a test.';
     render(<Markdown markdown={content} />);
@@ -178,6 +190,8 @@ Use \`code\` here.`;
         cluster: 'cluster0',
         workflowId: 'wf-123',
         runId: 'run-456',
+        fieldValues: {},
+        fieldMeta: {},
       })
     );
   });
@@ -186,7 +200,40 @@ Use \`code\` here.`;
     const content = '{% signal signalName="test" label="Go" /%}';
     render(<Markdown markdown={content} />);
 
-    expect(screen.getByTestId('markdown-context')).toHaveTextContent('{}');
+    expect(screen.getByTestId('markdown-context')).toHaveTextContent(
+      JSON.stringify({ fieldValues: {}, fieldMeta: {} })
+    );
+  });
+
+  it('removes field metadata when a field tag is removed', () => {
+    const field = '{% field name="amount" label="Amount" /%}';
+    const signal = '{% signal signalName="s" label="Go" /%}';
+    const { rerender } = render(
+      <Markdown markdown={`${field}\n\n${signal}`} />
+    );
+
+    expect(getContext().fieldMeta).toHaveProperty('amount');
+
+    rerender(<Markdown markdown={signal} />);
+
+    expect(getContext().fieldMeta).toEqual({});
+  });
+
+  it('removes the old field metadata when a field is renamed', () => {
+    const signal = '{% signal signalName="s" label="Go" /%}';
+    const { rerender } = render(
+      <Markdown
+        markdown={`{% field name="amount" label="Amount" /%}\n\n${signal}`}
+      />
+    );
+
+    rerender(
+      <Markdown
+        markdown={`{% field name="total" label="Total" /%}\n\n${signal}`}
+      />
+    );
+
+    expect(Object.keys(getContext().fieldMeta)).toEqual(['total']);
   });
 
   it('passes explicit tag attributes through regardless of markdown context', () => {
@@ -233,3 +280,7 @@ Use \`code\` here.`;
     expect(screen.getByTestId('greeting')).toHaveTextContent('Hello Cadence');
   });
 });
+
+function getContext() {
+  return JSON.parse(screen.getByTestId('markdown-context').textContent ?? '');
+}
