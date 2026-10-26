@@ -30,7 +30,7 @@ export async function listWorkflows(
     return NextResponse.json(
       {
         message: 'Invalid argument(s) for workflow search',
-        validationErrors: error.errors,
+        validationErrors: error.issues,
       },
       {
         status: 400,

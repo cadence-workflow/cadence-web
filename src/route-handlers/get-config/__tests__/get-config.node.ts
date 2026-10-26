@@ -16,7 +16,7 @@ describe('getConfig', () => {
   it('should return 400 if query parameters are invalid', async () => {
     (getConfigValueQueryParamsSchema.safeParse as jest.Mock).mockReturnValue({
       data: null,
-      error: { errors: ['Invalid query parameters'] },
+      error: { issues: ['Invalid query parameters'] },
     });
 
     const { res } = await setup({

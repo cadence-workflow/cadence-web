@@ -28,7 +28,7 @@ export async function countWorkflows(
     return NextResponse.json(
       {
         message: 'Invalid argument(s) for workflow count',
-        validationErrors: error.errors,
+        validationErrors: error.issues,
       },
       {
         status: 400,

@@ -31,7 +31,7 @@ const scheduleStartWorkflowBodySchema = z.object({
   executionStartToCloseTimeoutSeconds: z.number().positive(),
   taskStartToCloseTimeoutSeconds: z.number().positive().optional(),
   retryPolicy: retryPolicySchema,
-  memo: z.record(z.any()).optional(),
+  memo: z.record(z.string(), z.any()).optional(),
   searchAttributes: z
     .record(z.union([z.string(), z.number(), z.boolean()]))
     .optional(),

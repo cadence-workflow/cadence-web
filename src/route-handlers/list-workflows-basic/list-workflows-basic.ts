@@ -30,7 +30,7 @@ export async function listWorkflowsBasic(
     return NextResponse.json(
       {
         message: 'Invalid argument(s) for workflow listing',
-        validationErrors: error.errors,
+        validationErrors: error.issues,
       },
       {
         status: 400,

@@ -25,7 +25,7 @@ export default async function getWorkflowHistory(
     return NextResponse.json(
       {
         message: 'Invalid query param(s)',
-        validationErrors: error.errors,
+        validationErrors: error.issues,
       },
       {
         status: 400,

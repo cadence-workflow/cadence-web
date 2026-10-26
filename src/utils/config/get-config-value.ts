@@ -45,7 +45,7 @@ export default async function getConfigValue<K extends keyof LoadedConfigs>(
       resolverSchemas[k].args.safeParse(arg);
     if (argsValidationError) {
       throw new Error(
-        `Failed to parse config '${k}' arguments: ${argsValidationError.errors[0].message}`
+        `Failed to parse config '${k}' arguments: ${argsValidationError.issues[0].message}`
       );
     }
     const resolvedValue = await value(validatedArg);
@@ -53,7 +53,7 @@ export default async function getConfigValue<K extends keyof LoadedConfigs>(
       resolverSchemas[k].returnType.safeParse(resolvedValue);
     if (valueValidationError) {
       throw new Error(
-        `Failed to parse config '${k}' resolved value: ${valueValidationError.errors[0].message}`
+        `Failed to parse config '${k}' resolved value: ${valueValidationError.issues[0].message}`
       );
     }
     return validatedValue as LoadedConfigValue<K>;

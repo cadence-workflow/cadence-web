@@ -24,7 +24,7 @@ export async function updateSchedule(
     return NextResponse.json(
       {
         message: 'Invalid values provided for schedule update',
-        validationErrors: error.errors,
+        validationErrors: error.issues,
       },
       { status: 400 }
     );

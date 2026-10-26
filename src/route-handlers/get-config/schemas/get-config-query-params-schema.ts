@@ -52,7 +52,7 @@ const getConfigValueQueryParamsSchema = z
       if (error) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: `Invalid jsonArgs type provided. ${error.errors[0].message}`,
+          message: `Invalid jsonArgs type provided. ${error.issues[0].message}`,
           fatal: true,
         });
         return z.NEVER;

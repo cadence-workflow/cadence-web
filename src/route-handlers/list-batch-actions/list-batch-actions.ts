@@ -31,7 +31,7 @@ export async function listBatchActions(
     return NextResponse.json(
       {
         message: 'Invalid argument(s) for listing batch actions',
-        validationErrors: error.errors,
+        validationErrors: error.issues,
       },
       {
         status: 400,

@@ -23,7 +23,7 @@ export async function pauseSchedule(
     return NextResponse.json(
       {
         message: 'Invalid values provided for schedule pause',
-        validationErrors: error.errors,
+        validationErrors: error.issues,
       },
       { status: 400 }
     );

@@ -23,7 +23,7 @@ export async function cancelWorkflow(
     return NextResponse.json(
       {
         message: 'Invalid values provided for workflow cancellation',
-        validationErrors: error.errors,
+        validationErrors: error.issues,
       },
       { status: 400 }
     );
