@@ -14,7 +14,7 @@ jest.mock('@/components/copy-text-button/copy-text-button', () =>
   jest.fn(({ textToCopy }) => <div>Copy Button: {textToCopy}</div>)
 );
 
-jest.mock('@/components/markdown/markdown', () =>
+jest.mock('@/views/shared/cadence-markdown/cadence-markdown', () =>
   jest.fn(({ markdown }) => <div>Markdown Mock: {markdown}</div>)
 );
 
