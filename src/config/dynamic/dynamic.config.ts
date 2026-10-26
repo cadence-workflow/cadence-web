@@ -43,6 +43,7 @@ import {
 } from './resolvers/workflow-actions-enabled.types';
 import workflowDiagnosticsEnabled from './resolvers/workflow-diagnostics-enabled';
 import workflowDiagnosticsInHistoryEnabled from './resolvers/workflow-diagnostics-in-history-enabled';
+import workflowHomeEnabled from './resolvers/workflow-home-enabled';
 import workflowsListEnabled from './resolvers/workflows-list-enabled';
 
 const dynamicConfigs: {
@@ -95,6 +96,12 @@ const dynamicConfigs: {
     true
   >;
   WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED: ConfigAsyncResolverDefinition<
+    undefined,
+    boolean,
+    'request',
+    true
+  >;
+  WORKFLOW_HOME_ENABLED: ConfigAsyncResolverDefinition<
     undefined,
     boolean,
     'request',
@@ -197,6 +204,11 @@ const dynamicConfigs: {
   },
   WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED: {
     resolver: workflowDiagnosticsInHistoryEnabled,
+    evaluateOn: 'request',
+    isPublic: true,
+  },
+  WORKFLOW_HOME_ENABLED: {
+    resolver: workflowHomeEnabled,
     evaluateOn: 'request',
     isPublic: true,
   },
