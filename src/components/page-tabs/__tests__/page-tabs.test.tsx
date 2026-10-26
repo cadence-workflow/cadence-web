@@ -45,6 +45,21 @@ describe('PageTabs', () => {
     });
   });
 
+  it('sets the full title as the native title of the tab title', () => {
+    const { getByText } = render(
+      <PageTabs
+        tabList={[{ key: 'long', title: 'A very long tab title that is cut' }]}
+        selectedTab="long"
+        setSelectedTab={setSelectedTab}
+      />
+    );
+
+    expect(getByText('A very long tab title that is cut')).toHaveAttribute(
+      'title',
+      'A very long tab title that is cut'
+    );
+  });
+
   it('renders tabs with correct end enhancer', () => {
     const { getByTestId } = render(
       <PageTabs

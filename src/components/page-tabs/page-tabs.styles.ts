@@ -7,6 +7,12 @@ import { getMediaQueryMargins } from '@/utils/media-query/get-media-queries-marg
 import type { Props } from './page-tabs.types';
 
 export const styled = {
+  TabTitle: createStyled('span', ({ $theme }: { $theme: Theme }) => ({
+    maxWidth: $theme.sizing.scale4800,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  })),
   TabTitleContainer: createStyled('div', ({ $theme }: { $theme: Theme }) => ({
     display: 'flex',
     flexDirection: 'row',

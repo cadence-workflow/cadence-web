@@ -18,6 +18,7 @@ import WorkflowSummary from '@/views/workflow-summary/workflow-summary';
 import getWorkflowPageErrorConfig from '../helpers/get-workflow-page-error-config';
 import WorkflowPageDiagnosticsBadge from '../workflow-page-diagnostics-badge/workflow-page-diagnostics-badge';
 import WorkflowPageHistoryBadges from '../workflow-page-history-badges/workflow-page-history-badges';
+import WorkflowPageHomeBadge from '../workflow-page-home-badge/workflow-page-home-badge';
 import type { WorkflowPageTabsConfig } from '../workflow-page-tabs/workflow-page-tabs.types';
 
 const workflowPageTabsConfig: WorkflowPageTabsConfig<
@@ -36,6 +37,7 @@ const workflowPageTabsConfig: WorkflowPageTabsConfig<
   },
   home: {
     title: 'Home',
+    endEnhancer: WorkflowPageHomeBadge,
     artwork: MdOutlineHome,
     content: WorkflowHome,
     getErrorConfig: (err) =>

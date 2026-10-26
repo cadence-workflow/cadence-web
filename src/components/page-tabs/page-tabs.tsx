@@ -30,7 +30,7 @@ export default function PageTabs({
           key={tab.key}
           title={
             <styled.TabTitleContainer>
-              {tab.title}
+              <styled.TabTitle title={tab.title}>{tab.title}</styled.TabTitle>
               {tab.endEnhancer ? <tab.endEnhancer /> : null}
             </styled.TabTitleContainer>
           }
