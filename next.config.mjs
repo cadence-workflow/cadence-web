@@ -59,7 +59,7 @@ const nextConfig = {
       },
       {
         source:
-          '/domains/:domain/:cluster/workflows/:workflowPath([^/]+(?:/(?:summary|history|queries|stack-trace|diagnostics))?)',
+          '/domains/:domain/:cluster/workflows/:workflowPath([^/]+(?:/(?:summary|home|history|queries|stack-trace|diagnostics))?)',
         destination: '/redirects/workflow/:domain/:cluster/:workflowPath',
         permanent: true,
       },
