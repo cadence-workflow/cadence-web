@@ -39,6 +39,7 @@ export async function cancelWorkflow(
         runId: params.runId,
       },
       cause: data.cause,
+      identity: ctx.userInfo?.id,
     });
 
     return NextResponse.json({} satisfies CancelWorkflowResponse);
