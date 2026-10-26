@@ -24,7 +24,7 @@ export default async function transformConfigs<
           resolverSchema.returnType.safeParse(resolvedValue);
         if (error) {
           throw new Error(
-            `Failed to parse config '${key}' resolved value: ${JSON.stringify(error.errors)}`
+            `Failed to parse config '${key}' resolved value: ${JSON.stringify(error.issues)}`
           );
         }
         return [key, validatedValue];

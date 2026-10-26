@@ -27,7 +27,7 @@ export async function listSchedules(
     return NextResponse.json(
       {
         message: 'Invalid argument(s) for listing schedules',
-        validationErrors: error.errors,
+        validationErrors: error.issues,
       },
       {
         status: 400,

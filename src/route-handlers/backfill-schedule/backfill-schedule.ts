@@ -24,7 +24,7 @@ export async function backfillSchedule(
     return NextResponse.json(
       {
         message: 'Invalid values provided for schedule backfill',
-        validationErrors: error.errors,
+        validationErrors: error.issues,
       },
       { status: 400 }
     );
