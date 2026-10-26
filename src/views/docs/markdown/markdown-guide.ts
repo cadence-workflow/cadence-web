@@ -120,8 +120,48 @@ When rendered on a workflow page, \`domain\` and \`cluster\` are inherited from 
 - \`cluster\` (string, optional) -- inherited from page context if omitted
 - \`wfId\` (string, optional) -- custom workflow ID
 - \`input\` (object, optional) -- workflow input payload
+- \`memo\` (object, optional) -- workflow memo, for example \`memo={"owner":"finance-ops"}\`
 - \`timeoutSeconds\` (number, optional, default: 60) -- execution timeout
 - \`sdkLanguage\` (string, optional, default: "GO") -- worker SDK language
+
+
+## Input Fields
+
+Let the viewer type a value that a \`signal\` or \`start\` button sends. Add a \`field\` tag, then map it to a path in the button \`input\` with the \`fields\` attribute.
+
+### Example
+
+\`\`\`
+{% field name="amount" label="Amount (USD)" type="number" default=84.5 required=true placeholder="0.00" /%}
+
+{% signal
+  signalName="approve_partial"
+  label="Approve amount"
+  input={"reviewer":"finance-ops","amount":0}
+  fields={"amount": "amount"}
+/%}
+
+{% start
+  workflowType="MyWorkflow"
+  label="Start"
+  taskList="my-task-list"
+  input={"items":[{"amount":0}]}
+  fields={"items[0].amount": "amount"}
+/%}
+\`\`\`
+
+### Field Attributes
+
+- \`name\` (string, **required**) -- name that buttons use in \`fields\`. Must be unique within a page
+- \`label\` (string, optional) -- text above the input
+- \`type\` (string, optional, default: "text") -- \`text\` or \`number\`
+- \`default\` (string or number, optional) -- starting value
+- \`required\` (boolean, optional) -- buttons that use this field stay disabled until it has a value
+- \`placeholder\` (string, optional) -- hint text
+
+### The fields Attribute
+
+Both \`signal\` and \`start\` accept \`fields\`, an object that maps a path in \`input\` to a field name. The button sets that path to the field value before it sends the input. Number fields are sent as numbers. An empty optional field keeps the value from \`input\`. A name that no \`field\` tag defines counts as missing, so the button stays disabled.
 
 
 ## Images
