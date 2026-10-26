@@ -15,8 +15,14 @@ jest.mock('@/components/markdown/markdown', () =>
 );
 
 describe(CadenceMarkdown.name, () => {
-  it('registers the workflows tag', () => {
+  it('registers the Cadence tags', () => {
     expect(CADENCE_MARKDOC_TAGS).toHaveProperty('workflows');
+    expect(CADENCE_MARKDOC_TAGS).toHaveProperty('input');
+    expect(CADENCE_MARKDOC_TAGS).toHaveProperty('result');
+    expect(CADENCE_MARKDOC_TAGS).toHaveProperty('searchAttributes');
+    expect(CADENCE_MARKDOC_COMPONENTS).toHaveProperty(
+      'MarkdocWorkflowSearchAttributes'
+    );
     expect(CADENCE_MARKDOC_COMPONENTS).toHaveProperty('MarkdocWorkflowsList');
   });
 
