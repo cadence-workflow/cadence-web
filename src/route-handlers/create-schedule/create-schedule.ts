@@ -22,7 +22,7 @@ export async function createSchedule(
     return NextResponse.json(
       {
         message: 'Invalid values provided for schedule create',
-        validationErrors: error.errors,
+        validationErrors: error.issues,
       },
       { status: 400 }
     );

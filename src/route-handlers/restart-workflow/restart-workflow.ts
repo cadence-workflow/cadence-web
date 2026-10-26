@@ -19,7 +19,7 @@ export async function restartWorkflow(
     return NextResponse.json(
       {
         message: 'Invalid values provided for workflow restart',
-        validationErrors: error.errors,
+        validationErrors: error.issues,
       },
       { status: 400 }
     );

@@ -16,7 +16,7 @@ export async function logToServer(request: NextRequest) {
     return NextResponse.json(
       {
         message: 'Could not log browser log on server',
-        cause: error.errors,
+        cause: error.issues,
       },
       {
         status: 400,

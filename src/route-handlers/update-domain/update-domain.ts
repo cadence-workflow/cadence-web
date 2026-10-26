@@ -24,7 +24,7 @@ export async function updateDomain(
     return NextResponse.json(
       {
         message: 'Invalid values provided for domain update',
-        validationErrors: error.errors,
+        validationErrors: error.issues,
       },
       { status: 400 }
     );

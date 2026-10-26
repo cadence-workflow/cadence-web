@@ -24,7 +24,7 @@ export async function unpauseSchedule(
     return NextResponse.json(
       {
         message: 'Invalid values provided for schedule unpause',
-        validationErrors: error.errors,
+        validationErrors: error.issues,
       },
       { status: 400 }
     );

@@ -14,7 +14,7 @@ export default async function getConfig(request: NextRequest) {
     return NextResponse.json(
       {
         message: 'Invalid values provided for config key/args',
-        cause: error.errors,
+        cause: error.issues,
       },
       {
         status: 400,
