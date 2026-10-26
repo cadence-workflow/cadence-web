@@ -4,7 +4,7 @@ const workflowDiagnosticsRootCauseSchema = z
   .object({
     IssueID: z.number(),
     RootCauseType: z.string(),
-    Metadata: z.any(),
+    Metadata: z.any().optional(),
   })
   .transform(({ IssueID, RootCauseType, Metadata }) => ({
     rootCauseType: RootCauseType,

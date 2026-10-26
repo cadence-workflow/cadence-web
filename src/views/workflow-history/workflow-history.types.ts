@@ -18,7 +18,7 @@ export type Props = WorkflowPageTabContentProps;
 
 export type WorkflowHistoryUserPreferenceConfig<T> = {
   key: string;
-  schema: z.ZodType<T, z.ZodTypeDef, string>;
+  schema: z.ZodType<T, string>;
 };
 
 export type WorkflowEventStatus =

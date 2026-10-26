@@ -22,10 +22,10 @@ const getConfigValueQueryParamsSchema = z
     // validate configKey
     if (!publicConfigKeys.includes(configKey)) {
       ctx.addIssue({
-        code: z.ZodIssueCode.invalid_enum_value,
-        options: publicConfigKeys,
-        received: configKey,
-        fatal: true,
+        code: 'invalid_value',
+        values: [...publicConfigKeys],
+        input: configKey,
+        continue: false,
       });
 
       return z.NEVER;
@@ -51,9 +51,9 @@ const getConfigValueQueryParamsSchema = z
       validatedArgs = data;
       if (error) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: 'custom',
           message: `Invalid jsonArgs type provided. ${error.issues[0].message}`,
-          fatal: true,
+          continue: false,
         });
         return z.NEVER;
       }

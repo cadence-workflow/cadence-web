@@ -71,7 +71,7 @@ export function refineScheduleBodyPeriod(
 
   if (schedulePeriodError) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: 'custom',
       message: schedulePeriodError.message,
       path: ['endTime'],
     });

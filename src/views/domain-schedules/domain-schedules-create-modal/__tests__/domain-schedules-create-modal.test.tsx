@@ -13,6 +13,13 @@ import { type DomainSchedulesCreateFormData } from '../domain-schedules-create-m
 const { useForm: useFormActual } =
   jest.requireActual<typeof reactHookForm>('react-hook-form');
 
+// react-hook-form's CJS build has no __esModule flag, which stops jest.spyOn from
+// reaching the component's import. This restores the flag without replacing the module.
+jest.mock('react-hook-form', () => ({
+  __esModule: true,
+  ...jest.requireActual('react-hook-form'),
+}));
+
 const MOCK_DOMAIN = 'd1';
 const MOCK_CLUSTER = 'c1';
 

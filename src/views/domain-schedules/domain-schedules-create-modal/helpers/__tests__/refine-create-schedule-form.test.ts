@@ -127,7 +127,7 @@ describe(refineCreateScheduleForm.name, () => {
 });
 
 function getIssues(overrides: Partial<CreateScheduleFormRefineInput> = {}) {
-  const issues: Array<z.IssueData> = [];
+  const issues: Array<string | z.core.$ZodSuperRefineIssue> = [];
 
   refineCreateScheduleForm(createDomainSchedulesCreateFormData(overrides), {
     addIssue: (issue) => {

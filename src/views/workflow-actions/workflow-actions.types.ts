@@ -61,7 +61,7 @@ export type WorkflowActionModalForm<
   | {
       withForm: true;
       form: (props: WorkflowActionFormProps<FormData>) => ReactNode;
-      formSchema: z.ZodSchema<FormData>;
+      formSchema: z.ZodType<FormData, FormData>;
       transformFormDataToSubmission: (formData: FormData) => SubmissionData;
     }
   | {
