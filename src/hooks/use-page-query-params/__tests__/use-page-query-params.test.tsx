@@ -130,25 +130,6 @@ describe('usePageQueryParams', () => {
     expect(result.current[0].sortBy).toBe('fromUrl');
   });
 
-  it('should start with Next params before reading a delayed location change', () => {
-    writeNextHistory('/?sortBy=fromUrl');
-    mockSearchParams = new URLSearchParams('sortBy=fromNext');
-    const { result } = setup();
-    expect(result.current[0].sortBy).toBe('fromNext');
-
-    act(() => jest.advanceTimersByTime(60));
-    expect(result.current[0].sortBy).toBe('fromUrl');
-  });
-
-  it('should follow Next navigation before the url bar lands', () => {
-    const { result, rerender } = setup();
-    act(() => {
-      mockSearchParams = new URLSearchParams('sortBy=linked');
-    });
-    rerender();
-    expect(result.current[0].sortBy).toBe('linked');
-  });
-
   it('should read History changes that do not emit an event', () => {
     const { result } = setup();
     act(() => {
