@@ -26,6 +26,5 @@ export const WORKFLOW_HOME_GO_SNIPPET = `workflow.SetQueryHandler(ctx, "${WORKFL
         "format":              "text/markdown",
         "data":                "## Hello from my workflow",
         "title":               "My workflow",
-        "badgeName":           "Workflow",
     }, nil
 })`;

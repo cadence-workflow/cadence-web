@@ -12,20 +12,21 @@ const getResult = (
 });
 
 describe(getHomePage.name, () => {
-  it('returns the content, title and badge name', () => {
-    expect(
-      getHomePage(getResult('# Hi', { title: 'My page', badgeName: 'Badge' }))
-    ).toEqual({ content: '# Hi', title: 'My page', badgeName: 'Badge' });
+  it('returns the content and title', () => {
+    expect(getHomePage(getResult('# Hi', { title: 'My page' }))).toEqual({
+      content: '# Hi',
+      title: 'My page',
+    });
   });
 
-  it('returns only the content when there is no title or badge name', () => {
+  it('returns only the content when there is no title', () => {
     expect(getHomePage(getResult('# Hi'))).toEqual({ content: '# Hi' });
   });
 
-  it('drops an invalid title and keeps the content and badge name', () => {
-    expect(
-      getHomePage(getResult('# Hi', { title: 5, badgeName: ' Badge ' }))
-    ).toEqual({ content: '# Hi', badgeName: 'Badge' });
+  it('drops an invalid title and keeps the content', () => {
+    expect(getHomePage(getResult('# Hi', { title: 5 }))).toEqual({
+      content: '# Hi',
+    });
   });
 
   it('returns undefined for another format', () => {
