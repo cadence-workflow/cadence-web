@@ -10,5 +10,4 @@ export type WorkflowHomeContent =
 export type HomePage = {
   content: string;
   title?: string;
-  badgeName?: string;
 };
