@@ -48,6 +48,17 @@ describe(useWorkflowHomeQuery.name, () => {
     const { getCalls } = setup({ enabled: true, refetchInterval: 50 });
     await waitFor(() => expect(getCalls()).toBeGreaterThan(2));
   });
+
+  it('stops polling when the worker has no handler for the query', async () => {
+    const { result, getCalls } = setup({
+      enabled: true,
+      refetchInterval: 50,
+      error: 'missing-handler',
+    });
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    expect(getCalls()).toBe(1);
+  });
 });
 
 function setup({

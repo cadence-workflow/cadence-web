@@ -33,11 +33,16 @@ export default function useWorkflowHomeQuery(
         { method: 'POST' }
       ).then((res) => res.json()),
     enabled,
-    // A missing query handler will not appear on retry, so only retry other errors
+    // A missing query handler will not appear on retry or on the next poll,
+    // so only retry and poll after other errors
     retry: (failureCount, error) =>
       !parseErrorMessageForQueryTypes(error.message) &&
       failureCount < WORKFLOW_HOME_QUERY_MAX_RETRIES,
     retryDelay: WORKFLOW_HOME_QUERY_RETRY_DELAY_MS,
-    refetchInterval,
+    refetchInterval: (query) =>
+      query.state.error &&
+      parseErrorMessageForQueryTypes(query.state.error.message)
+        ? false
+        : refetchInterval,
   });
 }
