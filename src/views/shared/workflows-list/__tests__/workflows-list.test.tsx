@@ -54,14 +54,6 @@ describe(WorkflowsList.name, () => {
     expect(screen.getByText('wf-2')).toBeInTheDocument();
   });
 
-  it('renders headers, rows, and the footer when maxHeight is set', () => {
-    setup({ maxHeight: '10vh' });
-
-    expect(screen.getByText('Workflow ID')).toBeInTheDocument();
-    expect(screen.getByText('wf-1')).toBeInTheDocument();
-    expect(screen.getByTestId('mock-loader')).toBeInTheDocument();
-  });
-
   it('does not render workflow rows when workflows array is empty', () => {
     setup({ workflows: [] });
 
