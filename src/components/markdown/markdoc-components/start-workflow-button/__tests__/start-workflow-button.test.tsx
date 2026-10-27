@@ -39,6 +39,15 @@ describe(StartWorkflowButton.name, () => {
     jest.clearAllMocks();
   });
 
+  it('calls onActionSuccess from markdown context after starting', async () => {
+    const onActionSuccess = jest.fn();
+    const { user } = setup({ contextValue: { onActionSuccess } });
+
+    await user.click(screen.getByRole('button', { name: 'Start Workflow' }));
+
+    await waitFor(() => expect(onActionSuccess).toHaveBeenCalledTimes(1));
+  });
+
   it('renders the button with the provided label', () => {
     setup({});
 

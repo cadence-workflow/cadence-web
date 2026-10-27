@@ -69,6 +69,15 @@ describe(SignalButton.name, () => {
     });
   });
 
+  it('calls onActionSuccess from markdown context after signaling', async () => {
+    const onActionSuccess = jest.fn();
+    const { user } = setup({ contextValue: { onActionSuccess } });
+
+    await user.click(screen.getByRole('button', { name: 'Send Signal' }));
+
+    await waitFor(() => expect(onActionSuccess).toHaveBeenCalledTimes(1));
+  });
+
   it('shows an error snackbar without auto-dismiss duration on failure', async () => {
     const { user } = setup({ error: true });
 
