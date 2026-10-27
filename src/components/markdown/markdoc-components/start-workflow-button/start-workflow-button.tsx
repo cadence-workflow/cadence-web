@@ -28,7 +28,6 @@ export default function StartWorkflowButton({
   wfId,
   input,
   variableNames,
-  memo,
   timeoutSeconds = 60,
   sdkLanguage = 'GO',
 }: StartWorkflowButtonProps) {
@@ -65,7 +64,6 @@ export default function StartWorkflowButton({
             workflowId: wfId,
             workerSDKLanguage: sdkLanguage,
             input: workflowInput,
-            memo,
             executionStartToCloseTimeoutSeconds: timeoutSeconds,
           }),
         }

@@ -33,10 +33,6 @@ export const startWorkflowButtonMarkdocSchema = {
       type: Array,
       required: false,
     },
-    memo: {
-      type: Object,
-      required: false,
-    },
     timeoutSeconds: {
       type: Number,
       required: false,

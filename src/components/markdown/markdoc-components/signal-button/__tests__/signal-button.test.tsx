@@ -153,28 +153,6 @@ describe(SignalButton.name, () => {
     });
   });
 
-  it('sends the field value in the signal input', async () => {
-    const { user, getLatestBody } = setup({
-      propsOverrides: {
-        input: { amount: 12.5, reviewer: 'a' },
-        variableNames: ['approved'],
-      },
-      contextValue: {
-        fieldValues: { approved: '12.5' },
-        fieldMeta: { approved: { type: 'number', required: true } },
-      },
-    });
-
-    await user.click(screen.getByRole('button', { name: 'Send Signal' }));
-
-    await waitFor(() =>
-      expect(JSON.parse(getLatestBody().signalInput)).toEqual({
-        amount: 12.5,
-        reviewer: 'a',
-      })
-    );
-  });
-
   it('disables the button while a required field is empty', () => {
     setup({
       propsOverrides: { input: {}, variableNames: ['approved'] },

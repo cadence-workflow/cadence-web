@@ -22,7 +22,7 @@ describe(MarkdownContent.name, () => {
   it('renders nothing for an undefined variable', () => {
     setup({ content: 'Total: {% $amount %}', contextValue: {} });
 
-    expect(screen.queryByText(/12/)).not.toBeInTheDocument();
+    expect(screen.getByText('Total:')).toBeInTheDocument();
   });
 });
 

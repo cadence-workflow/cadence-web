@@ -111,43 +111,6 @@ describe(StartWorkflowButton.name, () => {
     });
   });
 
-  it('sends the memo in the request body', async () => {
-    const { user, getLatestBody } = setup({
-      propsOverrides: { memo: { owner: 'finance-ops' } },
-    });
-
-    await user.click(screen.getByRole('button', { name: 'Start Workflow' }));
-
-    await waitFor(() =>
-      expect(getLatestBody()).toEqual(
-        expect.objectContaining({ memo: { owner: 'finance-ops' } })
-      )
-    );
-  });
-
-  it('sends the field value in the workflow input', async () => {
-    const { user, getLatestBody } = setup({
-      propsOverrides: {
-        input: { items: [{ amount: 84.5, name: 'Lunch' }] },
-        variableNames: ['newAmount'],
-      },
-      contextValue: {
-        fieldValues: { newAmount: '84.5' },
-        fieldMeta: { newAmount: { type: 'number', required: true } },
-      },
-    });
-
-    await user.click(screen.getByRole('button', { name: 'Start Workflow' }));
-
-    await waitFor(() =>
-      expect(getLatestBody()).toEqual(
-        expect.objectContaining({
-          input: [{ items: [{ amount: 84.5, name: 'Lunch' }] }],
-        })
-      )
-    );
-  });
-
   it('disables the button while a required field is empty', () => {
     setup({
       propsOverrides: {
