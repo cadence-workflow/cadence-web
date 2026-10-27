@@ -62,6 +62,17 @@ describe(MarkdocWorkflowPayload.name, () => {
     ).toBeInTheDocument();
   });
 
+  it('does not encode context values again, since they are already encoded', () => {
+    setup({
+      Component: MarkdocWorkflowInput,
+      props: {},
+      ctx: { ...context, workflowId: 'orders%2F42' },
+    });
+    expect(
+      screen.getByText('Mock content: input no-path d c orders%2F42 r')
+    ).toBeInTheDocument();
+  });
+
   it('does not inherit the context runId for an explicit workflowId', () => {
     setup({
       Component: MarkdocWorkflowResult,
