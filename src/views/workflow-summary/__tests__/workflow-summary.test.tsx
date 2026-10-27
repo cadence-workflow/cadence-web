@@ -8,6 +8,7 @@ import { startWorkflowExecutionEvent } from '@/views/workflow-history/__fixtures
 import { type WorkflowPageTabContentProps } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
 import WorkflowSummary from '../workflow-summary';
+import WorkflowSummaryScheduleDetails from '../workflow-summary-schedule-details/workflow-summary-schedule-details';
 
 jest.mock('../workflow-summary-details/workflow-summary-details', () =>
   jest.fn(() => <div>MockWorkflowSummaryDetails</div>)
@@ -94,5 +95,60 @@ describe('WorkflowSummary', () => {
     expect(
       await screen.findByText('MockWorkflowSummaryScheduleDetails')
     ).toBeInTheDocument();
+  });
+
+  it('should pass the decoded search attributes from the describe response to the schedule details', async () => {
+    render(
+      <Suspense>
+        <WorkflowSummary params={params} />
+      </Suspense>,
+      {
+        endpointsMocks: [
+          {
+            path: '/api/domains/:domain/:cluster/workflows/:workflowId/:runId/history',
+            httpMethod: 'GET',
+            jsonResponse: {
+              history: {
+                events: [startWorkflowExecutionEvent],
+              },
+              rawHistory: [],
+              nextPageToken: '',
+              archived: false,
+            } satisfies GetWorkflowExecutionHistoryResponse,
+          },
+          {
+            path: '/api/domains/:domain/:cluster/workflows/:workflowId/:runId',
+            httpMethod: 'GET',
+            jsonResponse: {
+              executionConfiguration: null,
+              pendingChildren: [],
+              pendingActivities: [],
+              pendingDecision: null,
+              workflowExecutionInfo: {
+                closeEvent: null,
+                isArchived: false,
+                searchAttributes: {
+                  indexedFields: {
+                    CadenceScheduleID: {
+                      data: Buffer.from('"my-schedule"').toString('base64'),
+                    },
+                  },
+                },
+              },
+            } as unknown as DescribeWorkflowExecutionResponse,
+          },
+        ],
+      }
+    );
+
+    expect(
+      await screen.findByText('MockWorkflowSummaryScheduleDetails')
+    ).toBeInTheDocument();
+    expect(WorkflowSummaryScheduleDetails).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        searchAttributes: { CadenceScheduleID: 'my-schedule' },
+      }),
+      expect.anything()
+    );
   });
 });
