@@ -20,6 +20,16 @@ describe(getFieldVariables.name, () => {
     expect(getFieldVariables({ a: '1' }, undefined)).toEqual({});
   });
 
+  it('keeps a field named __proto__ as an own variable', () => {
+    const variables = getFieldVariables(
+      { ['__proto__']: '12' },
+      { ['__proto__']: { type: 'number', required: true } }
+    );
+
+    expect(Object.hasOwn(variables, '__proto__')).toBe(true);
+    expect(variables['__proto__']).toBe(12);
+  });
+
   it('ignores values for fields without meta', () => {
     expect(getFieldVariables({ a: '1' }, {})).toEqual({});
   });

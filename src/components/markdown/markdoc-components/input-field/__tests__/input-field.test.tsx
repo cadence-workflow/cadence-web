@@ -24,6 +24,12 @@ describe(InputField.name, () => {
     expect(screen.getByLabelText('Amount')).toHaveAttribute('type', 'number');
   });
 
+  it('uses the field name as the accessible name when there is no label', () => {
+    setup({});
+
+    expect(screen.getByRole('textbox', { name: 'note' })).toBeInTheDocument();
+  });
+
   it('shows the placeholder', () => {
     setup({ label: 'Note', placeholder: '0.00' });
 

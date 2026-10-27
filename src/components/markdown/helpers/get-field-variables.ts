@@ -6,7 +6,8 @@ export default function getFieldVariables(
   fieldValues: Record<string, string> | undefined,
   fieldMeta: Record<string, FieldMeta> | undefined
 ): Record<string, string | number> {
-  const variables: Record<string, string | number> = {};
+  // A null prototype keeps a field named __proto__ as an own variable.
+  const variables: Record<string, string | number> = Object.create(null);
   if (!fieldMeta) return variables;
 
   for (const name of Object.keys(fieldMeta)) {
