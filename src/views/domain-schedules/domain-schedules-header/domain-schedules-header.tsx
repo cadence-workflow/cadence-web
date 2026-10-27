@@ -3,6 +3,7 @@ import React from 'react';
 
 import PageFilters from '@/components/page-filters/page-filters';
 import domainPageQueryParamsConfig from '@/views/domain-page/config/domain-page-query-params.config';
+import WORKFLOWS_SEARCH_DEBOUNCE_MS from '@/views/shared/workflows-header/config/workflows-search-debounce-ms.config';
 
 import domainSchedulesFiltersConfig from '../config/domain-schedules-filters.config';
 import DomainSchedulesCreateButton from '../domain-schedules-create-button/domain-schedules-create-button';
@@ -30,6 +31,7 @@ export default function DomainSchedulesHeader({
             searchPlaceholder="Find schedule by ID or workflow type"
             pageFiltersConfig={domainSchedulesFiltersConfig}
             pageQueryParamsConfig={domainPageQueryParamsConfig}
+            inputDebounceDurationMs={WORKFLOWS_SEARCH_DEBOUNCE_MS}
           />
         </styled.FiltersSlot>
         <styled.CreateButtonWrap>
