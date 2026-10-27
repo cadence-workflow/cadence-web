@@ -120,7 +120,6 @@ When rendered on a workflow page, \`domain\` and \`cluster\` are inherited from 
 - \`cluster\` (string, optional) -- inherited from page context if omitted
 - \`wfId\` (string, optional) -- custom workflow ID
 - \`input\` (object, optional) -- workflow input payload
-- \`memo\` (object, optional) -- workflow memo, for example \`memo={"owner":"finance-ops"}\`
 - \`timeoutSeconds\` (number, optional, default: 60) -- execution timeout
 - \`sdkLanguage\` (string, optional, default: "GO") -- worker SDK language
 
