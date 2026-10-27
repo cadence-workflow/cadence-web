@@ -35,6 +35,7 @@ export default function InputField({
         size="compact"
         id={`markdown-field-${name}`}
         name={name}
+        aria-label={label ? undefined : name}
         type={type === 'number' ? 'number' : 'text'}
         required={required}
         placeholder={placeholder}
