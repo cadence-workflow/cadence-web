@@ -28,6 +28,14 @@
     "node": ">=24.0.0",
     "npm": ">=11.10.0"
   },
+  "browserslist": [
+    "chrome >= 93",
+    "edge >= 93",
+    "firefox >= 92",
+    "safari >= 15.4",
+    "ios_saf >= 15.4",
+    "opera >= 79"
+  ],
   "dependencies": {
     "@grpc/grpc-js": "^1.14.6",
     "@grpc/proto-loader": "^0.8.1",
