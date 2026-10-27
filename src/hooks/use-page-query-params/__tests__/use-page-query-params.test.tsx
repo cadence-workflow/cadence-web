@@ -162,6 +162,18 @@ describe('usePageQueryParams', () => {
     expect(result.current[0].sortBy).toBe('late');
   });
 
+  // Known limit: the watchdog stops after its final recheck, so a History
+  // write after that point is not read until the hook updates again.
+  it('should not read a History change after the final recheck', () => {
+    const { result } = setup();
+    act(() => jest.advanceTimersByTime(300));
+    act(() => {
+      window.history.replaceState({ __NA: true }, '', '/?sortBy=afterWindow');
+    });
+    act(() => jest.advanceTimersByTime(1000));
+    expect(result.current[0].sortBy).toBeUndefined();
+  });
+
   it('should replace stale Next params with location params', () => {
     const { result, rerender } = setup();
     act(() => {
