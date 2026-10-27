@@ -21,14 +21,12 @@ The \`home\` query of a workflow returns a result with the format \`text/markdow
   "cadenceResponseType": "formattedData",
   "format": "text/markdown",
   "data": "## Details ...",
-  "title": "Expense report EXP-1001",
-  "badgeName": "Expense report"
+  "title": "Expense report EXP-1001"
 }
 \`\`\`
 
 - \`data\` (string, required) -- the Markdown page
 - \`title\` (string, optional) -- heading at the top of the home page
-- \`badgeName\` (string, optional) -- short, descriptive name of the page, shown in a badge next to the Home tab name
 
 
 ## Signal Workflow

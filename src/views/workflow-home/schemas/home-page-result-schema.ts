@@ -8,7 +8,6 @@ const homePageResultSchema = z.object({
   format: z.literal('text/markdown'),
   data: z.string(),
   title: optionalText,
-  badgeName: optionalText,
 });
 
 export default homePageResultSchema;
