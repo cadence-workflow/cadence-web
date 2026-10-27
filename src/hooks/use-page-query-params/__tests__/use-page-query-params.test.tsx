@@ -3,6 +3,12 @@ import { renderHook, act } from '@/test-utils/rtl';
 import { queryParamsConfig } from '../__fixtures__/page-query-params.fixtures';
 import usePageQueryParams from '../use-page-query-params';
 
+// Writes a History entry the way Next's App Router does. Next marks its own
+// entries with __NA, and Next does not update useSearchParams from them.
+function writeNextHistory(url: string) {
+  window.history.replaceState({ __NA: true }, '', url);
+}
+
 let mockSearchParams = new URLSearchParams();
 let mockPathname = '/';
 jest.mock('next/navigation', () => ({
@@ -125,7 +131,7 @@ describe('usePageQueryParams', () => {
   });
 
   it('should start with Next params before reading a delayed location change', () => {
-    window.history.replaceState({ __NA: true }, '', '/?sortBy=fromUrl');
+    writeNextHistory('/?sortBy=fromUrl');
     mockSearchParams = new URLSearchParams('sortBy=fromNext');
     const { result } = setup();
     expect(result.current[0].sortBy).toBe('fromNext');
@@ -146,7 +152,7 @@ describe('usePageQueryParams', () => {
   it('should read History changes that do not emit an event', () => {
     const { result } = setup();
     act(() => {
-      window.history.replaceState({ __NA: true }, '', '/?sortBy=stamped');
+      writeNextHistory('/?sortBy=stamped');
     });
     act(() => jest.advanceTimersByTime(60));
     expect(result.current[0].sortBy).toBe('stamped');
@@ -156,7 +162,7 @@ describe('usePageQueryParams', () => {
     const { result } = setup();
     act(() => jest.advanceTimersByTime(60));
     act(() => {
-      window.history.replaceState({ __NA: true }, '', '/?sortBy=late');
+      writeNextHistory('/?sortBy=late');
     });
     act(() => jest.advanceTimersByTime(200));
     expect(result.current[0].sortBy).toBe('late');
@@ -168,7 +174,7 @@ describe('usePageQueryParams', () => {
     const { result } = setup();
     act(() => jest.advanceTimersByTime(300));
     act(() => {
-      window.history.replaceState({ __NA: true }, '', '/?sortBy=afterWindow');
+      writeNextHistory('/?sortBy=afterWindow');
     });
     act(() => jest.advanceTimersByTime(1000));
     expect(result.current[0].sortBy).toBeUndefined();
