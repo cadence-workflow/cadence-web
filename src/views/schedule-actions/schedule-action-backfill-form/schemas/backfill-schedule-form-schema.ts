@@ -14,14 +14,14 @@ export const backfillScheduleFormSchema = z
           iss.input === undefined ? 'Start date is required' : undefined,
       })
       .min(1, 'Start date is required')
-      .datetime('Start date is required'),
+      .check(z.iso.datetime('Start date is required')),
     endTime: z
       .string({
         error: (iss) =>
           iss.input === undefined ? 'End date is required' : undefined,
       })
       .min(1, 'End date is required')
-      .datetime('End date is required'),
+      .check(z.iso.datetime('End date is required')),
     overlapPolicy: z
       .union([
         z.literal(USE_SCHEDULE_OVERLAP_POLICY),

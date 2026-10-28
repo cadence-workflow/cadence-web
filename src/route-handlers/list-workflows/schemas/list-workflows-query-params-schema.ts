@@ -32,8 +32,8 @@ export const visibilityQuerySchema = z.object({
     .enum(['StartTime', 'CloseTime'])
     .optional()
     .default('StartTime'),
-  timeRangeStart: z.string().datetime().optional(),
-  timeRangeEnd: z.string().datetime().optional(),
+  timeRangeStart: z.iso.datetime().optional(),
+  timeRangeEnd: z.iso.datetime().optional(),
   sortColumn: z.string().optional(),
   sortOrder: z.enum(SORT_ORDERS, { message: 'Invalid sort order' }).optional(),
 });

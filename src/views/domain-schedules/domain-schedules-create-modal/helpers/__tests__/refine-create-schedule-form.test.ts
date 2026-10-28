@@ -7,6 +7,8 @@ import { createDomainSchedulesCreateFormData } from '../../__fixtures__/mock-dom
 import { type CreateScheduleFormRefineInput } from '../../domain-schedules-create-modal.types';
 import refineCreateScheduleForm from '../refine-create-schedule-form';
 
+type RefinementIssue = Parameters<z.RefinementCtx['addIssue']>[0];
+
 describe(refineCreateScheduleForm.name, () => {
   it('accepts when advanced fields are omitted', () => {
     expect(getIssues({})).toEqual([]);
@@ -127,7 +129,7 @@ describe(refineCreateScheduleForm.name, () => {
 });
 
 function getIssues(overrides: Partial<CreateScheduleFormRefineInput> = {}) {
-  const issues: Array<string | z.core.$ZodSuperRefineIssue> = [];
+  const issues: RefinementIssue[] = [];
 
   refineCreateScheduleForm(createDomainSchedulesCreateFormData(overrides), {
     addIssue: (issue) => {

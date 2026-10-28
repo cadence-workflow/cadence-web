@@ -138,8 +138,8 @@ export const createScheduleFormFieldsSchema = z.object({
       message: 'Jitter seconds must be zero or positive',
     })
     .optional(),
-  startTime: z.string().datetime('Start time must be valid').optional(),
-  endTime: z.string().datetime('End time must be valid').optional(),
+  startTime: z.iso.datetime('Start time must be valid').optional(),
+  endTime: z.iso.datetime('End time must be valid').optional(),
   ...retryPolicyFormFieldsShape,
   memo: z.string().optional(),
   searchAttributes: z
