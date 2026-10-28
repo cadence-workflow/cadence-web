@@ -5,6 +5,7 @@ export type MarkdownContextType = {
   cluster?: string;
   workflowId?: string;
   runId?: string;
+  onActionSuccess?: () => void;
 };
 
 export type Props = MarkdownContextType & {
