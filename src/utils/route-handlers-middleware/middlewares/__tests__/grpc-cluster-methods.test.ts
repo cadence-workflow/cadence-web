@@ -18,10 +18,8 @@ const mockParams = {
 
 const mockRequest = {
   cookies: {},
-  geo: {},
-  ip: '',
   nextUrl: new URL('http://localhost'),
-} as unknown as NextRequest;
+} as NextRequest;
 
 describe('grpcClusterMethods middleware', () => {
   beforeEach(() => {
