@@ -8,7 +8,6 @@ import useSuspenseConfigValue from '@/hooks/use-config-value/use-suspense-config
 import CadenceMarkdown from '@/views/shared/cadence-markdown/cadence-markdown';
 
 import { useDescribeWorkflow } from '../workflow-page/hooks/use-describe-workflow';
-import { type WorkflowPageTabContentProps } from '../workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
 import getWorkflowHomeContent from './helpers/get-workflow-home-content';
 import useWorkflowHomeQuery from './hooks/use-workflow-home-query';
@@ -17,10 +16,10 @@ import WorkflowHomeHeader from './workflow-home-header/workflow-home-header';
 import {
   WORKFLOW_HOME_ACTION_REFETCH_DELAY_MS,
   WORKFLOW_HOME_MESSAGES,
-  WORKFLOW_HOME_REFRESH_INTERVAL_MS,
 } from './workflow-home.constants';
+import { type Props } from './workflow-home.types';
 
-export default function WorkflowHome({ params }: WorkflowPageTabContentProps) {
+export default function WorkflowHome({ params }: Props) {
   const { domain, cluster, workflowId, runId } = params;
 
   const { data: isHomeEnabled } = useSuspenseConfigValue(
@@ -31,17 +30,11 @@ export default function WorkflowHome({ params }: WorkflowPageTabContentProps) {
     useDescribeWorkflow({ domain, cluster, workflowId, runId });
   const isArchived =
     workflowDetails?.workflowExecutionInfo?.isArchived ?? false;
-  // Same check as useDescribeWorkflow, which keeps polling until the workflow closes
-  const closeStatus = workflowDetails?.workflowExecutionInfo?.closeStatus;
-  const isRunning =
-    !closeStatus || closeStatus === 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID';
 
   const homeQuery = useWorkflowHomeQuery(
     { domain, cluster, workflowId, runId },
     {
       enabled: isHomeEnabled && !isArchived && !isDetailsLoading,
-      // Pauses on its own while the browser tab is hidden
-      refetchInterval: isRunning ? WORKFLOW_HOME_REFRESH_INTERVAL_MS : false,
     }
   );
 
@@ -59,7 +52,7 @@ export default function WorkflowHome({ params }: WorkflowPageTabContentProps) {
     );
   }, [refetchHome]);
 
-  // Spin only for manual refreshes, not for background polling
+  // Spin only for manual refreshes, not for refetches after actions
   const [isManualRefresh, setIsManualRefresh] = useState(false);
   const handleRefresh = useCallback(async () => {
     setIsManualRefresh(true);
@@ -77,11 +70,11 @@ export default function WorkflowHome({ params }: WorkflowPageTabContentProps) {
     },
   });
 
-  if (isDetailsLoading || content.mode === 'loading') {
+  if (isDetailsLoading || content.state === 'loading') {
     return <SectionLoadingIndicator />;
   }
 
-  switch (content.mode) {
+  switch (content.state) {
     case 'disabled':
       return (
         <ErrorPanel omitLogging message={WORKFLOW_HOME_MESSAGES.disabled} />

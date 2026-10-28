@@ -7,5 +7,4 @@ export type UseWorkflowHomeQueryParams = Pick<
 
 export type UseWorkflowHomeQueryOptions = {
   enabled: boolean;
-  refetchInterval?: number | false;
 };

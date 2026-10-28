@@ -3,7 +3,7 @@ import { type QueryWorkflowResponse } from '@/route-handlers/query-workflow/quer
 import { type RequestError } from '@/utils/request/request-error';
 
 import { WORKFLOW_HOME_QUERY_NAME } from '../workflow-home.constants';
-import { type WorkflowHomeContent } from '../workflow-home.types';
+import { type WorkflowHomeState } from '../workflow-home.types';
 
 import getHomePage from './get-home-page';
 
@@ -19,44 +19,44 @@ export default function getWorkflowHomeContent({
     error?: RequestError | null;
     isLoading?: boolean;
   };
-}): WorkflowHomeContent {
+}): WorkflowHomeState {
   if (!isEnabled) {
-    return { mode: 'disabled' };
+    return { state: 'disabled' };
   }
 
   if (isArchived) {
-    return { mode: 'archived' };
+    return { state: 'archived' };
   }
 
   // A failed background refetch keeps showing the last good page
   if (homeQuery.error && !homeQuery.data) {
     // A workflow without the query handler lists its known query types in the error
     if (parseErrorMessageForQueryTypes(homeQuery.error.message)) {
-      return { mode: 'not-set-up' };
+      return { state: 'not-set-up' };
     }
-    return { mode: 'error', description: homeQuery.error.message };
+    return { state: 'error', description: homeQuery.error.message };
   }
 
   if (homeQuery.isLoading || !homeQuery.data) {
-    return { mode: 'loading' };
+    return { state: 'loading' };
   }
 
   const { data } = homeQuery;
 
   if (data.rejected) {
     return {
-      mode: 'error',
+      state: 'error',
       description: `The workflow is closed with status ${data.rejected.closeStatus}`,
     };
   }
 
   const homePage = getHomePage(data.result);
   if (homePage) {
-    return { mode: 'ready', content: homePage.content, title: homePage.title };
+    return { state: 'ready', content: homePage.content, title: homePage.title };
   }
 
   return {
-    mode: 'invalid-format',
+    state: 'invalid-format',
     description: `The "${WORKFLOW_HOME_QUERY_NAME}" query must return a formattedData result with the format "text/markdown".`,
   };
 }

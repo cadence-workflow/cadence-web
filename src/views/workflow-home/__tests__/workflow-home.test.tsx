@@ -2,17 +2,19 @@ import { Suspense } from 'react';
 
 import { HttpResponse } from 'msw';
 
-import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
+import { act, render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
 import { mockDescribeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
 
 import WorkflowHome from '../workflow-home';
-import { WORKFLOW_HOME_QUERY_NAME } from '../workflow-home.constants';
+import {
+  WORKFLOW_HOME_ACTION_REFETCH_DELAY_MS,
+  WORKFLOW_HOME_QUERY_NAME,
+} from '../workflow-home.constants';
 
 jest.mock('../workflow-home.constants', () => ({
   ...jest.requireActual('../workflow-home.constants'),
   WORKFLOW_HOME_QUERY_RETRY_DELAY_MS: 0,
-  WORKFLOW_HOME_REFRESH_INTERVAL_MS: 50,
 }));
 
 jest.mock('@/components/error-panel/error-panel', () =>
@@ -51,6 +53,7 @@ const params = {
 
 describe(WorkflowHome.name, () => {
   beforeEach(() => jest.clearAllMocks());
+  afterEach(() => jest.useRealTimers());
 
   it('renders the disabled state when the feature is off', async () => {
     await setup({ enabled: false });
@@ -128,24 +131,14 @@ describe(WorkflowHome.name, () => {
   it('refetches the home page query on action success, then again after a delay', async () => {
     const { getHomeQueryCalls } = await setup({});
     await screen.findByText('Mock Markdown: # Home');
+    jest.useFakeTimers();
     mockMarkdownProps.mock.calls[0][0].onActionSuccess();
+    await act(() => jest.advanceTimersByTimeAsync(0));
     await waitFor(() => expect(getHomeQueryCalls()).toBe(2));
-    await waitFor(() => expect(getHomeQueryCalls()).toBe(3), {
-      timeout: 2000,
-    });
-  });
-
-  it('polls the home page query while the workflow is running', async () => {
-    const { getHomeQueryCalls } = await setup({ isRunning: true });
-    await screen.findByText('Mock Markdown: # Home');
-    await waitFor(() => expect(getHomeQueryCalls()).toBeGreaterThan(2));
-  });
-
-  it('does not poll the home page query when the workflow is closed', async () => {
-    const { getHomeQueryCalls } = await setup({});
-    await screen.findByText('Mock Markdown: # Home');
-    await new Promise((resolve) => setTimeout(resolve, 200));
-    expect(getHomeQueryCalls()).toBe(1);
+    await act(() =>
+      jest.advanceTimersByTimeAsync(WORKFLOW_HOME_ACTION_REFETCH_DELAY_MS)
+    );
+    await waitFor(() => expect(getHomeQueryCalls()).toBe(3));
   });
 });
 
@@ -157,7 +150,6 @@ async function setup({
   nonMarkdown,
   content = '# Home',
   title,
-  isRunning = false,
 }: {
   enabled?: boolean;
   queryError?: boolean;
@@ -166,7 +158,6 @@ async function setup({
   nonMarkdown?: boolean;
   content?: string;
   title?: string;
-  isRunning?: boolean;
 }) {
   const user = userEvent.setup();
   let homeQueryCalls = 0;
@@ -187,24 +178,15 @@ async function setup({
           path: '/api/domains/:domain/:cluster/workflows/:workflowId/:runId',
           httpMethod: 'GET',
           mockOnce: false,
-          jsonResponse: isRunning
+          jsonResponse: archived
             ? {
                 ...mockDescribeWorkflowResponse,
                 workflowExecutionInfo: {
                   ...mockDescribeWorkflowResponse.workflowExecutionInfo,
-                  closeStatus: null,
-                  closeEvent: null,
+                  isArchived: true,
                 },
               }
-            : archived
-              ? {
-                  ...mockDescribeWorkflowResponse,
-                  workflowExecutionInfo: {
-                    ...mockDescribeWorkflowResponse.workflowExecutionInfo,
-                    isArchived: true,
-                  },
-                }
-              : mockDescribeWorkflowResponse,
+            : mockDescribeWorkflowResponse,
         },
         {
           path: `/api/domains/:domain/:cluster/workflows/:workflowId/:runId/query/${WORKFLOW_HOME_QUERY_NAME}`,

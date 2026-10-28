@@ -13,11 +13,11 @@ const homePageResponse = {
 
 describe(getWorkflowHomeContent.name, () => {
   it('returns disabled when the feature is disabled', () => {
-    expect(setup({ isEnabled: false })).toEqual({ mode: 'disabled' });
+    expect(setup({ isEnabled: false })).toEqual({ state: 'disabled' });
   });
 
   it('returns archived for archived workflows', () => {
-    expect(setup({ isArchived: true })).toEqual({ mode: 'archived' });
+    expect(setup({ isArchived: true })).toEqual({ state: 'archived' });
   });
 
   it('returns not-set-up when the error lists the known query types', () => {
@@ -30,7 +30,7 @@ describe(getWorkflowHomeContent.name, () => {
           } as RequestError,
         },
       })
-    ).toEqual({ mode: 'not-set-up' });
+    ).toEqual({ state: 'not-set-up' });
   });
 
   it('returns not-set-up when the known query types list is empty', () => {
@@ -42,17 +42,17 @@ describe(getWorkflowHomeContent.name, () => {
           } as RequestError,
         },
       })
-    ).toEqual({ mode: 'not-set-up' });
+    ).toEqual({ state: 'not-set-up' });
   });
 
   it('returns loading while the home page query loads', () => {
     expect(setup({ homeQuery: { isLoading: true } })).toEqual({
-      mode: 'loading',
+      state: 'loading',
     });
   });
 
   it('returns loading when the home page query has not started', () => {
-    expect(setup({ homeQuery: {} })).toEqual({ mode: 'loading' });
+    expect(setup({ homeQuery: {} })).toEqual({ state: 'loading' });
   });
 
   it('returns an error when the home page query fails', () => {
@@ -60,7 +60,7 @@ describe(getWorkflowHomeContent.name, () => {
       setup({
         homeQuery: { error: { message: 'timeout' } as RequestError },
       })
-    ).toEqual({ mode: 'error', description: 'timeout' });
+    ).toEqual({ state: 'error', description: 'timeout' });
   });
 
   it('returns an error when the home page query is rejected', () => {
@@ -74,7 +74,7 @@ describe(getWorkflowHomeContent.name, () => {
         },
       })
     ).toEqual({
-      mode: 'error',
+      state: 'error',
       description:
         'The workflow is closed with status WORKFLOW_EXECUTION_CLOSE_STATUS_FAILED',
     });
@@ -84,7 +84,7 @@ describe(getWorkflowHomeContent.name, () => {
     expect(
       setup({
         homeQuery: { data: { result: { a: 1 }, rejected: null } },
-      }).mode
+      }).state
     ).toBe('invalid-format');
   });
 
@@ -101,7 +101,7 @@ describe(getWorkflowHomeContent.name, () => {
             rejected: null,
           },
         },
-      }).mode
+      }).state
     ).toBe('invalid-format');
   });
 
@@ -109,7 +109,7 @@ describe(getWorkflowHomeContent.name, () => {
     expect(
       setup({
         homeQuery: { data: { result: null, rejected: null } },
-      }).mode
+      }).state
     ).toBe('invalid-format');
   });
 
@@ -121,11 +121,11 @@ describe(getWorkflowHomeContent.name, () => {
           error: { message: 'timeout' } as RequestError,
         },
       })
-    ).toEqual({ mode: 'ready', content: '# Hello' });
+    ).toEqual({ state: 'ready', content: '# Hello' });
   });
 
   it('returns ready with the content', () => {
-    expect(setup({})).toEqual({ mode: 'ready', content: '# Hello' });
+    expect(setup({})).toEqual({ state: 'ready', content: '# Hello' });
   });
 
   it('returns ready with the title', () => {
@@ -142,7 +142,7 @@ describe(getWorkflowHomeContent.name, () => {
           },
         },
       })
-    ).toEqual({ mode: 'ready', content: '# Hello', title: 'My page' });
+    ).toEqual({ state: 'ready', content: '# Hello', title: 'My page' });
   });
 });
 
