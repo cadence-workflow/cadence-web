@@ -1,7 +1,7 @@
 'use client';
 import React, { useMemo } from 'react';
 
-import { parse, renderers, transform } from '@markdoc/markdoc';
+import { type Config, parse, renderers, transform } from '@markdoc/markdoc';
 
 import { markdocComponents } from './markdoc-components';
 import { markdocConfig } from './markdoc-schema';
@@ -15,6 +15,9 @@ export default function Markdown({
   cluster,
   workflowId,
   runId,
+  onActionSuccess,
+  extraTags,
+  extraComponents,
 }: Props) {
   let normalizedContent = markdown || '';
 
@@ -51,10 +54,23 @@ export default function Markdown({
   }
 
   // Parse and transform the markdown content (memoized to prevent unnecessary recalculations)
+  const mergedConfig = useMemo<Config>(
+    () => ({
+      ...markdocConfig,
+      tags: { ...markdocConfig.tags, ...extraTags },
+    }),
+    [extraTags]
+  );
+
+  const mergedComponents = useMemo(
+    () => ({ ...markdocComponents, ...extraComponents }),
+    [extraComponents]
+  );
+
   const renderableTree = useMemo(() => {
     const ast = parse(normalizedContent);
-    return transform(ast, markdocConfig);
-  }, [normalizedContent]);
+    return transform(ast, mergedConfig);
+  }, [normalizedContent, mergedConfig]);
 
   // Render to React with our custom components
   return (
@@ -63,10 +79,11 @@ export default function Markdown({
       cluster={cluster}
       workflowId={workflowId}
       runId={runId}
+      onActionSuccess={onActionSuccess}
     >
       <styled.ViewContainer>
         {renderers.react(renderableTree, React, {
-          components: markdocComponents,
+          components: mergedComponents,
         })}
       </styled.ViewContainer>
     </MarkdownContextProvider>
