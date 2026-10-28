@@ -1,12 +1,10 @@
 'use client';
 import React from 'react';
 
-import CopyTextButton from '@/components/copy-text-button/copy-text-button';
 import ErrorPanel from '@/components/error-panel/error-panel';
 
 import {
   WORKFLOW_HOME_EMPTY_DESCRIPTION,
-  WORKFLOW_HOME_GO_SNIPPET,
   WORKFLOW_HOME_MESSAGES,
 } from '../workflow-home.constants';
 
@@ -20,12 +18,6 @@ export default function WorkflowHomeEmpty() {
       description={
         <styled.Description>
           <span>{WORKFLOW_HOME_EMPTY_DESCRIPTION}</span>
-          <styled.Snippet>
-            <styled.Code>{WORKFLOW_HOME_GO_SNIPPET}</styled.Code>
-            <styled.CopyButtonContainer>
-              <CopyTextButton textToCopy={WORKFLOW_HOME_GO_SNIPPET} />
-            </styled.CopyButtonContainer>
-          </styled.Snippet>
         </styled.Description>
       }
       actions={[

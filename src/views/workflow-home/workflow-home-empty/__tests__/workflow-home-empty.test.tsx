@@ -2,10 +2,6 @@ import { render, screen } from '@/test-utils/rtl';
 
 import WorkflowHomeEmpty from '../workflow-home-empty';
 
-jest.mock('@/components/copy-text-button/copy-text-button', () =>
-  jest.fn(({ textToCopy }) => <button>Copy: {textToCopy}</button>)
-);
-
 jest.mock('@/components/error-panel/error-panel', () =>
   jest.fn(({ message, description, actions }) => (
     <div>
@@ -24,17 +20,7 @@ describe(WorkflowHomeEmpty.name, () => {
   it('renders the message', () => {
     setup();
     expect(
-      screen.getByText('This workflow has no home page.')
-    ).toBeInTheDocument();
-  });
-
-  it('renders the Go snippet with a copy button', () => {
-    setup();
-    expect(
-      screen.getByText(/Copy: workflow\.SetQueryHandler/)
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/workflow\.SetQueryHandler/, { selector: 'pre' })
+      screen.getByText('This workflow has no home page')
     ).toBeInTheDocument();
   });
 
