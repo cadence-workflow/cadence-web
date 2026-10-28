@@ -7,7 +7,7 @@ import { RequestError } from '@/utils/request/request-error';
 
 import { type Props } from './redirect-workflow.types';
 
-export default async function RedirectWorkflow(props: Props) {
+export default async function RedirectWorkflow(props: Props): Promise<never> {
   const [encodedDomain, encodedCluster, encodedWorkflowId, ...restParams] =
     props.params.workflowParams;
 
