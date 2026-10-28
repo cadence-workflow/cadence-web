@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
 import { BATCH_ACTION_BATCHER_DOMAIN } from '@/route-handlers/list-batch-actions/list-batch-actions.constants';
-import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
+import { getHTTPStatusCode, isGRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
 import {
@@ -90,14 +90,12 @@ export async function describeBatchAction(
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
       { requestParams: params, error: e },
-      'Error fetching batch action' +
-        (e instanceof GRPCError ? ': ' + e.message : '')
+      'Error fetching batch action' + (isGRPCError(e) ? ': ' + e.message : '')
     );
 
     return NextResponse.json(
       {
-        message:
-          e instanceof GRPCError ? e.message : 'Error fetching batch action',
+        message: isGRPCError(e) ? e.message : 'Error fetching batch action',
         cause: e,
       },
       {

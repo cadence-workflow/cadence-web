@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
+import { getHTTPStatusCode, isGRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
 import terminateWorkflowRequestBodySchema from './schemas/terminate-workflow-request-body-schema';
@@ -51,8 +51,7 @@ export async function terminateWorkflow(
 
     return NextResponse.json(
       {
-        message:
-          e instanceof GRPCError ? e.message : 'Error terminating workflow',
+        message: isGRPCError(e) ? e.message : 'Error terminating workflow',
         cause: e,
       },
       { status: getHTTPStatusCode(e) }

@@ -1,7 +1,7 @@
 import omit from 'lodash/omit';
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
+import { getHTTPStatusCode, isGRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
 import {
@@ -34,8 +34,7 @@ export async function describeCluster(
 
     return NextResponse.json(
       {
-        message:
-          e instanceof GRPCError ? e.message : 'Error fetching cluster info',
+        message: isGRPCError(e) ? e.message : 'Error fetching cluster info',
         cause: e,
       },
       { status: getHTTPStatusCode(e) }

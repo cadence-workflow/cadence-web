@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
+import { getHTTPStatusCode, isGRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
 import transformUpdateScheduleBodyToGrpcInput from './helpers/transform-update-schedule-body-to-grpc-input';
@@ -50,7 +50,7 @@ export async function updateSchedule(
 
     return NextResponse.json(
       {
-        message: e instanceof GRPCError ? e.message : 'Error updating schedule',
+        message: isGRPCError(e) ? e.message : 'Error updating schedule',
         cause: e,
       },
       { status: getHTTPStatusCode(e) }

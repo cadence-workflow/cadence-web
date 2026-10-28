@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
-import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
+import { getHTTPStatusCode, isGRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
 import {
@@ -35,7 +35,7 @@ export default async function fetchWorkflowQueryTypes(
   } catch (e) {
     // This is a workaround to parse the error message for valid query types if the client
     // does not have a query handler for __query_types (as is the case with the Java client)
-    if (e instanceof GRPCError) {
+    if (isGRPCError(e)) {
       const parsedQueryTypes = parseErrorMessageForQueryTypes(e.message);
       if (parsedQueryTypes) {
         return Response.json({ queryTypes: parsedQueryTypes });
@@ -49,10 +49,9 @@ export default async function fetchWorkflowQueryTypes(
 
     return NextResponse.json(
       {
-        message:
-          e instanceof GRPCError
-            ? e.message
-            : 'Error querying workflow for query types',
+        message: isGRPCError(e)
+          ? e.message
+          : 'Error querying workflow for query types',
         cause: e,
       },
       { status: getHTTPStatusCode(e) }

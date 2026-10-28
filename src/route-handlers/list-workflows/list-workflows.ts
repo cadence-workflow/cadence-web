@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import queryString from 'query-string';
 
 import getConfigValue from '@/utils/config/get-config-value';
-import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
+import { getHTTPStatusCode, isGRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 import getVisibilityQuery from '@/utils/visibility/get-visibility-query';
 
@@ -81,14 +81,12 @@ export async function listWorkflows(
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
       { requestParams: params, queryParams, error: e },
-      'Error fetching workflows' +
-        (e instanceof GRPCError ? ': ' + e.message : '')
+      'Error fetching workflows' + (isGRPCError(e) ? ': ' + e.message : '')
     );
 
     return NextResponse.json(
       {
-        message:
-          e instanceof GRPCError ? e.message : 'Error fetching workflows',
+        message: isGRPCError(e) ? e.message : 'Error fetching workflows',
         cause: e,
       },
       {
