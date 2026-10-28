@@ -1,10 +1,10 @@
-import { type DefaultValues } from 'react-hook-form';
+import { type DefaultValues, type FieldValues } from 'react-hook-form';
 
 import { type DescribeScheduleResponse } from '@/route-handlers/describe-schedule/describe-schedule.types';
 
 import { type ScheduleAction } from '../schedule-actions.types';
 
-export type Props<Result, FormData, SubmissionData> = {
+export type Props<Result, FormData extends FieldValues, SubmissionData> = {
   domain: string;
   cluster: string;
   scheduleId: string;

@@ -71,14 +71,13 @@ export type ScheduleActionModalBanner = {
   render: (schedule?: DescribeScheduleResponse) => ReactNode;
 };
 
-export type ScheduleActionModalForm<FormData, SubmissionData> =
+export type ScheduleActionModalForm<
+  FormData extends FieldValues,
+  SubmissionData,
+> =
   | {
       withForm: true;
-      form: (
-        props: ScheduleActionFormProps<
-          FormData extends FieldValues ? FormData : FieldValues
-        >
-      ) => ReactNode;
+      form: (props: ScheduleActionFormProps<FormData>) => ReactNode;
       // Input is unknown rather than FormData: a form schema parses whatever
       // the controls hold, which is not always the shape it validates into.
       formSchema: z.ZodType<FormData, z.ZodTypeDef, unknown>;
@@ -95,7 +94,7 @@ export type ScheduleActionHttpMethod = 'POST' | 'PUT' | 'DELETE';
 
 export type ScheduleAction<
   Result,
-  FormData = undefined,
+  FormData extends FieldValues = FieldValues,
   SubmissionData = undefined,
 > = {
   id: ScheduleActionID;
