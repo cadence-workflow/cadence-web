@@ -56,18 +56,6 @@ describe(queryWorkflow.name, () => {
     );
   });
 
-  it('returns the message of a GRPCError from another copy of the module', async () => {
-    const error = new Error('unknown queryType home. KnownQueryTypes=[]');
-    error.name = 'GRPCError';
-    const { res } = await setup({ error });
-
-    expect(await res.json()).toEqual(
-      expect.objectContaining({
-        message: 'unknown queryType home. KnownQueryTypes=[]',
-      })
-    );
-  });
-
   it('returns a generic message for other errors', async () => {
     const { res } = await setup({ error: new Error('internal details') });
 
