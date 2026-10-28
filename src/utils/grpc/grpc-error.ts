@@ -1,5 +1,6 @@
 import * as grpc from '@grpc/grpc-js';
 import { type Status } from '@grpc/grpc-js/build/src/constants';
+import isError from 'lodash/isError';
 
 const GRPC_ERROR_STATUS_TO_HTTP_ERROR_CODE_MAP: { [index: string]: number } = {
   [grpc.status.INVALID_ARGUMENT]: 400,
@@ -36,8 +37,12 @@ export type GRPCInputError = Error & {
   code?: number;
 };
 
+export function isGRPCError(e: unknown): e is GRPCError {
+  return isError(e) && e.name === 'GRPCError';
+}
+
 export function getHTTPStatusCode(error: unknown) {
-  if (error instanceof GRPCError) {
+  if (isGRPCError(error)) {
     return error.httpStatusCode || 500;
   }
   return 500;

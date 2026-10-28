@@ -14,17 +14,8 @@ export const WORKFLOW_HOME_MESSAGES = {
   archived: 'Home pages are not available for archived workflows',
   error: 'Could not load the home page',
   invalidFormat: 'The home page is not in a supported format',
-  empty: 'This workflow has no home page.',
+  empty: 'This workflow has no home page',
 } as const;
 
 export const WORKFLOW_HOME_EMPTY_DESCRIPTION =
-  'The worker code of a workflow defines this page with a query that returns a home page result.';
-
-export const WORKFLOW_HOME_GO_SNIPPET = `workflow.SetQueryHandler(ctx, "${WORKFLOW_HOME_QUERY_NAME}", func() (map[string]interface{}, error) {
-    return map[string]interface{}{
-        "cadenceResponseType": "formattedData",
-        "format":              "text/markdown",
-        "data":                "## Hello from my workflow",
-        "title":               "My workflow",
-    }, nil
-})`;
+  'To set one up, follow the guide below to add a home page query handler to your worker code.';
