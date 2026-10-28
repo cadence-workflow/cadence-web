@@ -18,7 +18,7 @@ export async function resetWorkflow(
     return NextResponse.json(
       {
         message: 'Invalid values provided for workflow reset',
-        validationErrors: error.errors,
+        validationErrors: error.issues,
       },
       { status: 400 }
     );

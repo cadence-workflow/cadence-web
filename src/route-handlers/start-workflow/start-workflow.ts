@@ -26,7 +26,7 @@ export async function startWorkflow(
     return NextResponse.json(
       {
         message: 'Invalid values provided for workflow start',
-        validationErrors: error.errors,
+        validationErrors: error.issues,
       },
       { status: 400 }
     );

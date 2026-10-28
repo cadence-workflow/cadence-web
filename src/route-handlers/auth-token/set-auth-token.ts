@@ -34,7 +34,7 @@ export async function setAuthToken(request: NextRequest) {
 
   const { data, error } = tokenRequestBodySchema.safeParse(requestBody);
   if (error) {
-    return badRequest(error.errors[0]?.message ?? INVALID_REQUEST_MESSAGE);
+    return badRequest(error.issues[0]?.message ?? INVALID_REQUEST_MESSAGE);
   }
 
   const response = NextResponse.json(

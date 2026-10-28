@@ -28,7 +28,7 @@ export async function listFailoverHistory(
     return NextResponse.json(
       {
         message: 'Invalid argument(s) for fetching failover history',
-        validationErrors: error.errors,
+        validationErrors: error.issues,
       },
       {
         status: 400,

@@ -161,7 +161,7 @@ import requestBodySchema from './schemas/request-body-schema';
 export async function handlerName(request: NextRequest, requestParams: RequestParams, ctx: Context) {
   const { data, error } = requestBodySchema.safeParse(await request.json());
   if (error) {
-    return NextResponse.json({ message: 'Invalid values provided', validationErrors: error.errors }, { status: 400 });
+    return NextResponse.json({ message: 'Invalid values provided', validationErrors: error.issues }, { status: 400 });
   }
 
   const params = requestParams.params; // already decoded — do not decode again
