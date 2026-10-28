@@ -1,14 +1,14 @@
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Banner, HIERARCHY, KIND as BANNER_KIND } from 'baseui/banner';
 import { KIND as BUTTON_KIND, SIZE } from 'baseui/button';
 import { ModalButton } from 'baseui/modal';
 import { useSnackbar } from 'baseui/snackbar';
-import { type DefaultValues, type FieldValues, useForm } from 'react-hook-form';
+import { type FieldValues, type UseFormReturn } from 'react-hook-form';
 import { MdCheckCircle, MdErrorOutline, MdOpenInNew } from 'react-icons/md';
 
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
+import ActionModalForm from '@/views/shared/action-modal-form/action-modal-form';
 
 import { type WorkflowActionInput } from '../workflow-actions.types';
 
@@ -17,7 +17,7 @@ import { type Props } from './workflow-actions-modal-content.types';
 
 export default function WorkflowActionsModalContent<
   Result,
-  FormData,
+  FormData extends FieldValues,
   SubmissionData,
 >({
   action,
@@ -27,23 +27,6 @@ export default function WorkflowActionsModalContent<
 }: Props<Result, FormData, SubmissionData>) {
   const queryClient = useQueryClient();
   const { enqueue, dequeue } = useSnackbar();
-
-  // useForm doesn't accept form data that is not a FieldValues (e.g. undefined)
-  type OptionalFormData = FormData extends FieldValues ? FormData : any;
-
-  const {
-    handleSubmit,
-    formState: { errors: validationErrors, isSubmitting },
-    control,
-    watch,
-    clearErrors,
-    trigger,
-  } = useForm<OptionalFormData>({
-    resolver: action.modal.formSchema
-      ? zodResolver(action.modal.formSchema)
-      : undefined,
-    defaultValues: initialFormValues as DefaultValues<OptionalFormData>,
-  });
 
   const { mutate, isPending, error } = useMutation<
     Result,
@@ -84,12 +67,15 @@ export default function WorkflowActionsModalContent<
   );
 
   const onSubmit = (data: FormData) => {
+    if (!action.modal.withForm) return;
     mutate({
       ...params,
-      submissionData: action.modal.withForm
-        ? action.modal.transformFormDataToSubmission(data)
-        : (undefined as SubmissionData),
+      submissionData: action.modal.transformFormDataToSubmission(data),
     });
+  };
+
+  const onConfirm = () => {
+    mutate({ ...params, submissionData: undefined as SubmissionData });
   };
 
   const modalText = Array.isArray(action.modal.text) ? (
@@ -99,71 +85,80 @@ export default function WorkflowActionsModalContent<
   );
 
   const Form = action.modal.form;
-  const isSubmitDisabled = Object.keys(validationErrors).length > 0;
+  const renderContent = (form?: UseFormReturn<FormData>) => (
+    <>
+      <styled.ModalBody>
+        {modalText}
+        {action.modal.docsLink && (
+          <styled.Link
+            href={action.modal.docsLink.href}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {action.modal.docsLink.text}
+            <MdOpenInNew />
+          </styled.Link>
+        )}
+        {action.modal.withForm && Form && form && (
+          <Form
+            formData={form.watch()}
+            fieldErrors={form.formState.errors}
+            clearErrors={form.clearErrors}
+            control={form.control}
+            trigger={form.trigger}
+            cluster={params.cluster}
+            domain={params.domain}
+            workflowId={params.workflowId}
+            runId={params.runId}
+          />
+        )}
+        {error && (
+          <Banner
+            hierarchy={HIERARCHY.low}
+            kind={BANNER_KIND.negative}
+            overrides={overrides.banner}
+            artwork={{
+              icon: MdErrorOutline,
+            }}
+          >
+            {error.message}
+          </Banner>
+        )}
+      </styled.ModalBody>
+      <styled.ModalFooter>
+        <ModalButton
+          autoFocus={!action.modal.withForm}
+          size={SIZE.compact}
+          type="button"
+          kind={BUTTON_KIND.secondary}
+          onClick={onCloseModal}
+        >
+          Cancel
+        </ModalButton>
+        <ModalButton
+          size={SIZE.compact}
+          kind={BUTTON_KIND.primary}
+          type="submit"
+          isLoading={isPending || form?.formState.isSubmitting}
+          disabled={Object.keys(form?.formState.errors ?? {}).length > 0}
+        >
+          {action.label} workflow
+        </ModalButton>
+      </styled.ModalFooter>
+    </>
+  );
 
   return (
     <>
       <styled.ModalHeader>{action.label} workflow</styled.ModalHeader>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <styled.ModalBody>
-          {modalText}
-          {action.modal.docsLink && (
-            <styled.Link
-              href={action.modal.docsLink.href}
-              target="_blank"
-              rel="noreferrer"
-            >
-              {action.modal.docsLink.text}
-              <MdOpenInNew />
-            </styled.Link>
-          )}
-          {action.modal.withForm && Form && (
-            <Form
-              formData={watch()}
-              fieldErrors={validationErrors}
-              clearErrors={clearErrors}
-              control={control}
-              trigger={trigger}
-              cluster={params.cluster}
-              domain={params.domain}
-              workflowId={params.workflowId}
-              runId={params.runId}
-            />
-          )}
-          {error && (
-            <Banner
-              hierarchy={HIERARCHY.low}
-              kind={BANNER_KIND.negative}
-              overrides={overrides.banner}
-              artwork={{
-                icon: MdErrorOutline,
-              }}
-            >
-              {error.message}
-            </Banner>
-          )}
-        </styled.ModalBody>
-        <styled.ModalFooter>
-          <ModalButton
-            autoFocus={!action.modal.withForm}
-            size={SIZE.compact}
-            type="button"
-            kind={BUTTON_KIND.secondary}
-            onClick={onCloseModal}
-          >
-            Cancel
-          </ModalButton>
-          <ModalButton
-            size={SIZE.compact}
-            kind={BUTTON_KIND.primary}
-            type="submit"
-            isLoading={isPending || isSubmitting}
-            disabled={isSubmitDisabled}
-          >
-            {action.label} workflow
-          </ModalButton>
-        </styled.ModalFooter>
-      </form>
+      <ActionModalForm
+        schema={action.modal.formSchema}
+        initialFormValues={initialFormValues}
+        onSubmit={onSubmit}
+        onConfirm={onConfirm}
+      >
+        {renderContent}
+      </ActionModalForm>
     </>
   );
 }

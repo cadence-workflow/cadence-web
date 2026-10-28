@@ -1,11 +1,16 @@
 import { Modal } from 'baseui/modal';
+import { type FieldValues } from 'react-hook-form';
 
 import ScheduleActionsModalContent from '../schedule-actions-modal-content/schedule-actions-modal-content';
 
 import { overrides } from './schedule-actions-modal.styles';
 import { type Props } from './schedule-actions-modal.types';
 
-export default function ScheduleActionsModal<Result, FormData, SubmissionData>({
+export default function ScheduleActionsModal<
+  Result,
+  FormData extends FieldValues,
+  SubmissionData,
+>({
   action,
   onClose,
   initialFormValues,

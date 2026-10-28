@@ -54,14 +54,13 @@ export type WorkflowActionRunnableStatus =
   | 'RUNNABLE'
   | WorkflowActionNonRunnableStatus;
 
-export type WorkflowActionModalForm<FormData, SubmissionData> =
+export type WorkflowActionModalForm<
+  FormData extends FieldValues,
+  SubmissionData,
+> =
   | {
       withForm: true;
-      form: (
-        props: WorkflowActionFormProps<
-          FormData extends FieldValues ? FormData : any
-        >
-      ) => ReactNode;
+      form: (props: WorkflowActionFormProps<FormData>) => ReactNode;
       formSchema: z.ZodSchema<FormData>;
       transformFormDataToSubmission: (formData: FormData) => SubmissionData;
     }
@@ -74,7 +73,7 @@ export type WorkflowActionModalForm<FormData, SubmissionData> =
 
 export type WorkflowAction<
   Result,
-  FormData = undefined,
+  FormData extends FieldValues = FieldValues,
   SubmissionData = undefined,
 > = {
   id: WorkflowActionID;

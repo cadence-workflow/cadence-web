@@ -1,17 +1,17 @@
 import { useEffect, useRef } from 'react';
 
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Banner, HIERARCHY, KIND as BANNER_KIND } from 'baseui/banner';
 import { KIND as BUTTON_KIND, SIZE } from 'baseui/button';
 import { ModalButton } from 'baseui/modal';
 import { useSnackbar } from 'baseui/snackbar';
 import { useRouter } from 'next/navigation';
-import { type DefaultValues, type FieldValues, useForm } from 'react-hook-form';
+import { type FieldValues, type UseFormReturn } from 'react-hook-form';
 import { MdCheckCircle, MdErrorOutline } from 'react-icons/md';
 
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
+import ActionModalForm from '@/views/shared/action-modal-form/action-modal-form';
 
 import { type ScheduleActionInput } from '../schedule-actions.types';
 
@@ -20,7 +20,7 @@ import { type Props } from './schedule-actions-modal-content.types';
 
 export default function ScheduleActionsModalContent<
   Result,
-  FormData,
+  FormData extends FieldValues,
   SubmissionData,
 >({
   action,
@@ -33,23 +33,6 @@ export default function ScheduleActionsModalContent<
   const router = useRouter();
   const { enqueue, dequeue } = useSnackbar();
   const errorAlertRef = useRef<HTMLDivElement>(null);
-
-  type OptionalFormData = FormData extends FieldValues ? FormData : FieldValues;
-
-  const {
-    handleSubmit,
-    formState: { errors: validationErrors, isSubmitting, isSubmitted },
-    control,
-    trigger,
-    clearErrors,
-  } = useForm<OptionalFormData>({
-    resolver: action.modal.formSchema
-      ? zodResolver(action.modal.formSchema)
-      : undefined,
-    mode: 'onSubmit',
-    reValidateMode: 'onChange',
-    defaultValues: initialFormValues as DefaultValues<OptionalFormData>,
-  });
 
   const { mutate, isPending, error } = useMutation<
     Result,
@@ -101,17 +84,21 @@ export default function ScheduleActionsModalContent<
     }
   }, [error]);
 
-  const onSubmit = (data: OptionalFormData) => {
+  const onSubmit = (data: FormData) => {
+    if (!action.modal.withForm) return;
     mutate({
       ...params,
-      submissionData: action.modal.withForm
-        ? action.modal.transformFormDataToSubmission(data as FormData)
-        : action.getConfirmSubmissionData?.() ?? (undefined as SubmissionData),
+      submissionData: action.modal.transformFormDataToSubmission(data),
     });
   };
 
-  const Form = action.modal.form;
-  const isSubmitDisabled = Object.keys(validationErrors).length > 0;
+  const onConfirm = () => {
+    mutate({
+      ...params,
+      submissionData:
+        action.getConfirmSubmissionData?.() ?? (undefined as SubmissionData),
+    });
+  };
 
   const modalBanner = action.modal.banner ? (
     <Banner
@@ -125,63 +112,74 @@ export default function ScheduleActionsModalContent<
       {action.modal.banner.render(schedule)}
     </Banner>
   ) : null;
+  const Form = action.modal.form;
+  const renderContent = (form?: UseFormReturn<FormData>) => (
+    <>
+      <styled.ModalBody>
+        {modalBanner}
+        {error && (
+          <div ref={errorAlertRef} role="alert">
+            <Banner
+              hierarchy={HIERARCHY.low}
+              kind={BANNER_KIND.negative}
+              overrides={overrides.banner}
+              artwork={{
+                icon: MdErrorOutline,
+              }}
+            >
+              {error.message}
+            </Banner>
+          </div>
+        )}
+        <styled.ModalBodyContent>
+          {action.modal.withForm && Form && form && (
+            <Form
+              fieldErrors={form.formState.errors}
+              control={form.control}
+              trigger={form.trigger}
+              clearErrors={form.clearErrors}
+              cluster={params.cluster}
+              domain={params.domain}
+              scheduleId={params.scheduleId}
+              isSubmitted={form.formState.isSubmitted}
+            />
+          )}
+        </styled.ModalBodyContent>
+      </styled.ModalBody>
+      <styled.ModalFooter>
+        <ModalButton
+          autoFocus={!action.modal.withForm}
+          size={SIZE.compact}
+          type="button"
+          kind={BUTTON_KIND.secondary}
+          onClick={onCloseModal}
+        >
+          Cancel
+        </ModalButton>
+        <ModalButton
+          size={SIZE.compact}
+          kind={BUTTON_KIND.primary}
+          type="submit"
+          isLoading={isPending || form?.formState.isSubmitting}
+          disabled={Object.keys(form?.formState.errors ?? {}).length > 0}
+        >
+          {`${action.label} schedule`}
+        </ModalButton>
+      </styled.ModalFooter>
+    </>
+  );
 
   return (
     <>
       <styled.ModalHeader>{`${action.label} schedule`}</styled.ModalHeader>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <styled.ModalBody>
-          {modalBanner}
-          {error && (
-            <div ref={errorAlertRef} role="alert">
-              <Banner
-                hierarchy={HIERARCHY.low}
-                kind={BANNER_KIND.negative}
-                overrides={overrides.banner}
-                artwork={{
-                  icon: MdErrorOutline,
-                }}
-              >
-                {error.message}
-              </Banner>
-            </div>
-          )}
-          <styled.ModalBodyContent>
-            {action.modal.withForm && Form && (
-              <Form
-                fieldErrors={validationErrors}
-                control={control}
-                trigger={trigger}
-                clearErrors={clearErrors}
-                cluster={params.cluster}
-                domain={params.domain}
-                scheduleId={params.scheduleId}
-                isSubmitted={isSubmitted}
-              />
-            )}
-          </styled.ModalBodyContent>
-        </styled.ModalBody>
-        <styled.ModalFooter>
-          <ModalButton
-            autoFocus={!action.modal.withForm}
-            size={SIZE.compact}
-            type="button"
-            kind={BUTTON_KIND.secondary}
-            onClick={onCloseModal}
-          >
-            Cancel
-          </ModalButton>
-          <ModalButton
-            size={SIZE.compact}
-            kind={BUTTON_KIND.primary}
-            type="submit"
-            isLoading={isPending || isSubmitting}
-            disabled={isSubmitDisabled}
-          >
-            {`${action.label} schedule`}
-          </ModalButton>
-        </styled.ModalFooter>
-      </form>
+      <ActionModalForm
+        schema={action.modal.formSchema}
+        initialFormValues={initialFormValues}
+        onSubmit={onSubmit}
+        onConfirm={onConfirm}
+      >
+        {renderContent}
+      </ActionModalForm>
     </>
   );
 }

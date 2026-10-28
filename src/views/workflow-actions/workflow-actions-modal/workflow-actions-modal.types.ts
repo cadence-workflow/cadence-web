@@ -1,8 +1,8 @@
-import { type DefaultValues } from 'react-hook-form';
+import { type DefaultValues, type FieldValues } from 'react-hook-form';
 
 import { type WorkflowAction } from '../workflow-actions.types';
 
-export type Props<Result, FormData, SubmissionData> = {
+export type Props<Result, FormData extends FieldValues, SubmissionData> = {
   domain: string;
   cluster: string;
   workflowId: string;

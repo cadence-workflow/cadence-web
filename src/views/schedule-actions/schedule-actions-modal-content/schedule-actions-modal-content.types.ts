@@ -1,4 +1,4 @@
-import { type DefaultValues } from 'react-hook-form';
+import { type DefaultValues, type FieldValues } from 'react-hook-form';
 
 import { type DescribeScheduleResponse } from '@/route-handlers/describe-schedule/describe-schedule.types';
 
@@ -7,7 +7,7 @@ import {
   type ScheduleActionInputParams,
 } from '../schedule-actions.types';
 
-export type Props<Result, FormData, SubmissionData> = {
+export type Props<Result, FormData extends FieldValues, SubmissionData> = {
   action: ScheduleAction<Result, FormData, SubmissionData>;
   params: ScheduleActionInputParams;
   schedule?: DescribeScheduleResponse;
