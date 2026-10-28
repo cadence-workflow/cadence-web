@@ -34,9 +34,12 @@ export type ScheduleActionInput<SubmissionData> = ScheduleActionInputParams & {
   submissionData: SubmissionData;
 };
 
-export type ScheduleActionFormProps<FormData extends FieldValues> = {
+export type ScheduleActionFormProps<
+  FormData extends FieldValues,
+  Output = FormData,
+> = {
   fieldErrors: FieldErrors<FormData>;
-  control: Control<FormData>;
+  control: Control<FormData, unknown, Output>;
   trigger?: UseFormTrigger<FormData>;
   clearErrors: UseFormClearErrors<FormData>;
   isSubmitted?: boolean;
@@ -71,14 +74,20 @@ export type ScheduleActionModalBanner = {
   render: (schedule?: DescribeScheduleResponse) => ReactNode;
 };
 
-export type ScheduleActionModalForm<
-  FormData extends FieldValues,
-  SubmissionData,
-> =
+export type ScheduleActionFormValues<FormData> = FormData extends FieldValues
+  ? FormData
+  : FieldValues;
+
+export type ScheduleActionModalForm<FormData, SubmissionData> =
   | {
       withForm: true;
-      form: (props: ScheduleActionFormProps<FormData>) => ReactNode;
-      formSchema: z.ZodType<FormData, FormData>;
+      form: (
+        props: ScheduleActionFormProps<
+          ScheduleActionFormValues<FormData>,
+          FormData
+        >
+      ) => ReactNode;
+      formSchema: z.ZodType<FormData, ScheduleActionFormValues<FormData>>;
       transformFormDataToSubmission: (formData: FormData) => SubmissionData;
     }
   | {
@@ -92,7 +101,7 @@ export type ScheduleActionHttpMethod = 'POST' | 'PUT' | 'DELETE';
 
 export type ScheduleAction<
   Result,
-  FormData extends FieldValues = FieldValues,
+  FormData = undefined,
   SubmissionData = undefined,
 > = {
   id: ScheduleActionID;

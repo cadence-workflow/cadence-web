@@ -53,7 +53,11 @@ export const mockResetActionConfig: WorkflowAction<
     `Mock reset notification (Run ID: ${result.runId})`,
 };
 
-export const mockCancelActionConfig: WorkflowAction<CancelWorkflowResponse> = {
+export const mockCancelActionConfig: WorkflowAction<
+  CancelWorkflowResponse,
+  undefined,
+  undefined
+> = {
   id: 'cancel',
   label: 'Mock cancel',
   subtitle: 'Mock cancel a workflow execution',

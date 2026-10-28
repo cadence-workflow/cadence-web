@@ -29,10 +29,17 @@ export type WorkflowActionInput<SubmissionData> = WorkflowActionInputParams & {
   submissionData: SubmissionData;
 };
 
-export type WorkflowActionFormProps<FormData extends FieldValues> = {
+export type WorkflowActionFormValues<FormData> = FormData extends FieldValues
+  ? FormData
+  : FieldValues;
+
+export type WorkflowActionFormProps<
+  FormData extends FieldValues,
+  Output = FormData,
+> = {
   formData: FormData;
   fieldErrors: FieldErrors<FormData>;
-  control: Control<FormData>;
+  control: Control<FormData, unknown, Output>;
   clearErrors: UseFormClearErrors<FormData>;
   trigger: UseFormTrigger<FormData>;
   cluster: string;
@@ -54,14 +61,16 @@ export type WorkflowActionRunnableStatus =
   | 'RUNNABLE'
   | WorkflowActionNonRunnableStatus;
 
-export type WorkflowActionModalForm<
-  FormData extends FieldValues,
-  SubmissionData,
-> =
+export type WorkflowActionModalForm<FormData, SubmissionData> =
   | {
       withForm: true;
-      form: (props: WorkflowActionFormProps<FormData>) => ReactNode;
-      formSchema: z.ZodType<FormData, FormData>;
+      form: (
+        props: WorkflowActionFormProps<
+          WorkflowActionFormValues<FormData>,
+          FormData
+        >
+      ) => ReactNode;
+      formSchema: z.ZodType<FormData, WorkflowActionFormValues<FormData>>;
       transformFormDataToSubmission: (formData: FormData) => SubmissionData;
     }
   | {
@@ -73,7 +82,7 @@ export type WorkflowActionModalForm<
 
 export type WorkflowAction<
   Result,
-  FormData extends FieldValues = FieldValues,
+  FormData = undefined,
   SubmissionData = undefined,
 > = {
   id: WorkflowActionID;
