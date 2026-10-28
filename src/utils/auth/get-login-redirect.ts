@@ -11,9 +11,12 @@ import getActiveAuthServerEntry from './strategies/get-active-auth-server-entry'
 
 export default async function getLoginRedirect(): Promise<string | null> {
   const entry = await getActiveAuthServerEntry();
-  const authContext = await entry.policy.resolveAuthContext();
   const requestHeaders = await getRequestHeaders();
   const requestCookies = await getRequestCookies();
+  const authContext = await entry.policy.resolveAuthContext({
+    cookies: requestCookies,
+    headers: requestHeaders,
+  });
   const returnTo =
     requestHeaders.get('x-cadence-return-to') ?? DEFAULT_AUTH_RETURN_TO;
   const notice =

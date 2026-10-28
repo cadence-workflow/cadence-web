@@ -23,9 +23,7 @@ const trustedHeaderServerPolicy: AuthServerPolicy = {
     if (!authContext.authEnabled || !authContext.auth.isValidToken) {
       return undefined;
     }
-    return getTrustedHeaderGrpcMetadata(
-      request ?? (await getImplicitAuthRequest())
-    );
+    return getTrustedHeaderGrpcMetadata(request);
   },
 
   getLoginRedirectIfNeeded(authContext) {

@@ -15,13 +15,11 @@ const jwtServerPolicy: AuthServerPolicy = {
     return resolveJwtAuthContext(request ?? (await getImplicitAuthRequest()));
   },
 
-  async getGrpcMetadata(authContext, request) {
+  getGrpcMetadata(authContext, request) {
     if (!authContext.authEnabled || !authContext.auth.isValidToken) {
       return undefined;
     }
-    const token = getJwtTokenFromRequest(
-      request ?? (await getImplicitAuthRequest())
-    );
+    const token = getJwtTokenFromRequest(request);
     if (!token) {
       return undefined;
     }

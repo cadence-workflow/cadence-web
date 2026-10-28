@@ -24,22 +24,27 @@ describe(getLoginRedirect.name, () => {
     const getLoginRedirectIfNeeded = jest
       .fn()
       .mockReturnValue('/login?returnTo=%2Fdomains');
+    const resolveAuthContext = jest.fn().mockResolvedValue(authContext);
     mockGetActiveAuthServerEntry.mockResolvedValue(
       getMockAuthServerRegistryEntry({
-        resolveAuthContext: jest.fn().mockResolvedValue(authContext),
+        resolveAuthContext,
         getLoginRedirectIfNeeded,
       })
     );
-    jest
-      .mocked(headers)
-      .mockResolvedValue(new Headers({ 'x-cadence-return-to': '/domains' }));
-    jest.mocked(cookies).mockResolvedValue({
+    const requestHeaders = new Headers({ 'x-cadence-return-to': '/domains' });
+    const requestCookies = {
       getAll: () => [],
-    } as unknown as Awaited<ReturnType<typeof cookies>>);
+    } as unknown as Awaited<ReturnType<typeof cookies>>;
+    jest.mocked(headers).mockResolvedValue(requestHeaders);
+    jest.mocked(cookies).mockResolvedValue(requestCookies);
 
     await expect(getLoginRedirect()).resolves.toBe(
       '/login?returnTo=%2Fdomains'
     );
+    expect(resolveAuthContext).toHaveBeenCalledWith({
+      cookies: requestCookies,
+      headers: requestHeaders,
+    });
     expect(getLoginRedirectIfNeeded).toHaveBeenCalledWith(
       authContext,
       '/domains',
