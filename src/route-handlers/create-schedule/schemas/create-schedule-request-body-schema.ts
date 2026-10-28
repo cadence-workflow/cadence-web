@@ -44,8 +44,8 @@ const scheduleStartWorkflowBodySchema = z.object({
 export const scheduleBodyFieldsSchema = z.object({
   // Schedule spec
   cronExpression: z.string().min(1),
-  startTime: z.string().datetime().optional(),
-  endTime: z.string().datetime().optional(),
+  startTime: z.iso.datetime().optional(),
+  endTime: z.iso.datetime().optional(),
   jitterSeconds: z.number().nonnegative().optional(),
 
   // Schedule policies

@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 
+import mockResolvedConfigValues from '@/utils/config/__fixtures__/resolved-config-values';
 import getConfigValue from '@/utils/config/get-config-value';
 
 import getConfig from '../get-config';
@@ -13,7 +14,7 @@ describe('getConfig', () => {
 
   it('should return 400 if the config key is not a public config key', async () => {
     const { res } = await setup({
-      configKey: 'testKey',
+      configKey: 'CLUSTERS',
       jsonArgs: '',
     });
     const responseJson = await res.json();
@@ -26,7 +27,9 @@ describe('getConfig', () => {
   });
 
   it('should return config value if query parameters are valid', async () => {
-    (getConfigValue as jest.Mock).mockResolvedValue('value');
+    (getConfigValue as jest.Mock).mockResolvedValue(
+      mockResolvedConfigValues.CLUSTERS_PUBLIC
+    );
 
     const { res } = await setup({
       configKey: 'CLUSTERS_PUBLIC',
@@ -35,7 +38,7 @@ describe('getConfig', () => {
 
     expect(getConfigValue).toHaveBeenCalledWith('CLUSTERS_PUBLIC', undefined);
     const responseJson = await res.json();
-    expect(responseJson).toEqual('value');
+    expect(responseJson).toEqual(mockResolvedConfigValues.CLUSTERS_PUBLIC);
   });
 
   it('should handle errors from getConfigValue', async () => {

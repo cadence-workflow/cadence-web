@@ -21,8 +21,8 @@ const listWorkflowsBasicQueryParamsSchema = z
         message: 'Invalid workflow status',
       })
       .optional(),
-    timeRangeStart: z.string().datetime().transform(getGrpcTimestampFromIso),
-    timeRangeEnd: z.string().datetime().transform(getGrpcTimestampFromIso),
+    timeRangeStart: z.iso.datetime().transform(getGrpcTimestampFromIso),
+    timeRangeEnd: z.iso.datetime().transform(getGrpcTimestampFromIso),
     nextPage: z.string().optional(),
   })
   .refine((params) => {
