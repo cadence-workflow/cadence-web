@@ -9,10 +9,7 @@ import { type z } from 'zod';
 
 import getInitialValues from './helpers/get-initial-values';
 import { styled } from './settings-form.styles';
-import {
-  type SettingsFormFieldValues,
-  type Props,
-} from './settings-form.types';
+import { type SettingsFormValues, type Props } from './settings-form.types';
 
 export default function SettingsForm<D extends object, Z extends z.ZodTypeAny>({
   data,
@@ -23,7 +20,7 @@ export default function SettingsForm<D extends object, Z extends z.ZodTypeAny>({
   onSubmitError,
 }: Props<D, Z>) {
   const { control, handleSubmit, formState, reset } = useForm<
-    SettingsFormFieldValues<Z>
+    SettingsFormValues<Z>
   >({
     mode: 'onBlur',
     values: getInitialValues({ data, formConfig }),
