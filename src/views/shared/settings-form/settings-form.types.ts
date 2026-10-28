@@ -14,11 +14,8 @@ export type FieldComponentProps<V> = {
   error?: string;
 };
 
-export type SettingsFormValues<Z extends z.ZodTypeAny> = z.infer<Z>;
-
-// useForm needs FieldValues. Kept separate so field paths stay checked against z.infer<Z>.
-export type SettingsFormFieldValues<Z extends z.ZodTypeAny> =
-  SettingsFormValues<Z> & FieldValues;
+export type SettingsFormValues<Z extends z.ZodTypeAny> =
+  z.infer<Z> extends FieldValues ? z.infer<Z> : FieldValues;
 
 export type SettingsFormField<
   D extends object,
@@ -39,7 +36,7 @@ export type SettingsFormConfig<
 
 export type Props<D extends object, Z extends z.ZodTypeAny> = {
   data: D;
-  zodSchema: z.ZodType<SettingsFormFieldValues<Z>, SettingsFormFieldValues<Z>>;
+  zodSchema: z.ZodType<SettingsFormValues<Z>, SettingsFormValues<Z>>;
   formConfig: SettingsFormConfig<D, Z>;
   onSubmit: SubmitHandler<SettingsFormValues<Z>>;
   submitButtonText: string;
