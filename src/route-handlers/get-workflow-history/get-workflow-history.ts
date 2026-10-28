@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
-import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
+import { getHTTPStatusCode, isGRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
 import {
@@ -48,7 +48,7 @@ export default async function getWorkflowHistory(
     return Response.json(res);
   } catch (e) {
     if (
-      e instanceof GRPCError &&
+      isGRPCError(e) &&
       e.message ===
         'Requested workflow history not found, may have passed retention period.'
     ) {
@@ -68,10 +68,7 @@ export default async function getWorkflowHistory(
 
     return NextResponse.json(
       {
-        message:
-          e instanceof GRPCError
-            ? e.message
-            : 'Error fetching workflow history',
+        message: isGRPCError(e) ? e.message : 'Error fetching workflow history',
         cause: e,
       },
       { status: getHTTPStatusCode(e) }

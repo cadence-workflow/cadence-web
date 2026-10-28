@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import queryString from 'query-string';
 
-import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
+import { getHTTPStatusCode, isGRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
 import filterIrrelevantDomains from './helpers/filter-irrelevant-domains';
@@ -52,12 +52,12 @@ export async function listDomains(
     logger.error<RouteHandlerErrorPayload>(
       { requestParams: requestParams.params, error: e },
       `Failed to fetch domains for cluster ${cluster}` +
-        (e instanceof GRPCError ? `: ${e.message}` : '')
+        (isGRPCError(e) ? `: ${e.message}` : '')
     );
 
     return NextResponse.json(
       {
-        error: e instanceof GRPCError ? e.message : 'Failed to fetch domains',
+        error: isGRPCError(e) ? e.message : 'Failed to fetch domains',
         cluster,
       } satisfies ListDomainsErrorResponse,
       { status: getHTTPStatusCode(e) }

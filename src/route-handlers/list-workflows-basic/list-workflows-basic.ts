@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
 import { type ListOpenWorkflowExecutionsRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListOpenWorkflowExecutionsRequest';
-import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
+import { getHTTPStatusCode, isGRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
 import getWorkflowListItemFromExecution from '../list-workflows/helpers/get-workflow-list-item-from-execution';
@@ -89,14 +89,12 @@ export async function listWorkflowsBasic(
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
       { requestParams: params, queryParams, error: e },
-      'Error fetching workflows' +
-        (e instanceof GRPCError ? ': ' + e.message : '')
+      'Error fetching workflows' + (isGRPCError(e) ? ': ' + e.message : '')
     );
 
     return NextResponse.json(
       {
-        message:
-          e instanceof GRPCError ? e.message : 'Error fetching workflows',
+        message: isGRPCError(e) ? e.message : 'Error fetching workflows',
         cause: e,
       },
       {
