@@ -23,11 +23,11 @@ jest.mock(
 );
 
 describe('Markdown with Markdoc', () => {
-  it('renders a field tag as an input', () => {
+  it('renders an input-field tag as an input', () => {
     render(
       <Markdown
         markdown={
-          '{% field name="amount" label="Amount" type="number" default=84.5 /%}'
+          '{% input-field name="amount" label="Amount" type="number" default=84.5 /%}'
         }
       />
     );
@@ -39,7 +39,7 @@ describe('Markdown with Markdoc', () => {
     const user = userEvent.setup();
     render(
       <Markdown
-        markdown={`{% field name="amount" label="Amount" type="number" /%}
+        markdown={`{% input-field name="amount" label="Amount" type="number" /%}
 
 {% signal signalName="s" label="Go" input={"amount":$amount} /%}`}
       />
@@ -58,7 +58,7 @@ describe('Markdown with Markdoc', () => {
     const user = userEvent.setup();
     render(
       <Markdown
-        markdown={`{% field name="note" label="Note" /%}
+        markdown={`{% input-field name="note" label="Note" /%}
 
 {% signal signalName="s" label="Go" input={"a":1,"note":$note} /%}`}
       />
@@ -75,7 +75,7 @@ describe('Markdown with Markdoc', () => {
     const user = userEvent.setup();
     render(
       <Markdown
-        markdown={`{% field name="amount" label="Amount" type="number" default=5 /%}
+        markdown={`{% input-field name="amount" label="Amount" type="number" default=5 /%}
 
 Total: {% $amount %}`}
       />
@@ -259,8 +259,8 @@ Use \`code\` here.`;
     );
   });
 
-  it('removes field metadata when a field tag is removed', () => {
-    const field = '{% field name="amount" label="Amount" /%}';
+  it('removes field metadata when an input-field tag is removed', () => {
+    const field = '{% input-field name="amount" label="Amount" /%}';
     const signal = '{% signal signalName="s" label="Go" /%}';
     const { rerender } = render(
       <Markdown markdown={`${field}\n\n${signal}`} />
@@ -277,13 +277,13 @@ Use \`code\` here.`;
     const signal = '{% signal signalName="s" label="Go" /%}';
     const { rerender } = render(
       <Markdown
-        markdown={`{% field name="amount" label="Amount" /%}\n\n${signal}`}
+        markdown={`{% input-field name="amount" label="Amount" /%}\n\n${signal}`}
       />
     );
 
     rerender(
       <Markdown
-        markdown={`{% field name="total" label="Total" /%}\n\n${signal}`}
+        markdown={`{% input-field name="total" label="Total" /%}\n\n${signal}`}
       />
     );
 

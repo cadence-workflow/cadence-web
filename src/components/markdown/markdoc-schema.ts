@@ -14,7 +14,7 @@ export const markdocConfig: Config = {
   tags: {
     signal: signalButtonMarkdocSchema,
     start: startWorkflowButtonMarkdocSchema,
-    field: inputFieldMarkdocSchema,
+    'input-field': inputFieldMarkdocSchema,
     image: imageSchema,
     br: brSchema,
   },
