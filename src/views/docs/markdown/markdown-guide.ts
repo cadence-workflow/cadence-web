@@ -126,12 +126,12 @@ When rendered on a workflow page, \`domain\` and \`cluster\` are inherited from 
 
 ## Input Fields
 
-Let the viewer type a value that a \`signal\` or \`start\` button sends. A \`field\` tag defines a variable with the same name. Use \`$name\` in any button attribute.
+Let the viewer type a value that a \`signal\` or \`start\` button sends. An \`input-field\` tag defines a variable with the same name. Use \`$name\` in any button attribute.
 
 ### Example
 
 \`\`\`
-{% field name="amount" label="Amount (USD)" type="number" default=84.5 required=true placeholder="0.00" /%}
+{% input-field name="amount" label="Amount (USD)" type="number" default=84.5 required=true placeholder="0.00" /%}
 
 {% signal
   signalName="approve_partial"
