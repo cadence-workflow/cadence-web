@@ -1,6 +1,10 @@
 import type React from 'react';
 
-import { type SubmitHandler, type Path } from 'react-hook-form';
+import {
+  type FieldValues,
+  type SubmitHandler,
+  type Path,
+} from 'react-hook-form';
 import { type z } from 'zod';
 
 export type FieldComponentProps<V> = {
@@ -10,7 +14,8 @@ export type FieldComponentProps<V> = {
   error?: string;
 };
 
-export type SettingsFormValues<Z extends z.ZodTypeAny> = z.infer<Z>;
+export type SettingsFormValues<Z extends z.ZodTypeAny> =
+  z.infer<Z> extends FieldValues ? z.infer<Z> : FieldValues;
 
 export type SettingsFormField<
   D extends object,
@@ -31,7 +36,7 @@ export type SettingsFormConfig<
 
 export type Props<D extends object, Z extends z.ZodTypeAny> = {
   data: D;
-  zodSchema: Z;
+  zodSchema: z.ZodType<SettingsFormValues<Z>, SettingsFormValues<Z>>;
   formConfig: SettingsFormConfig<D, Z>;
   onSubmit: SubmitHandler<SettingsFormValues<Z>>;
   submitButtonText: string;

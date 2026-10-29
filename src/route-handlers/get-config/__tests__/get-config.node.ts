@@ -1,11 +1,10 @@
 import { NextRequest } from 'next/server';
 
+import mockResolvedConfigValues from '@/utils/config/__fixtures__/resolved-config-values';
 import getConfigValue from '@/utils/config/get-config-value';
 
 import getConfig from '../get-config';
-import getConfigValueQueryParamsSchema from '../schemas/get-config-query-params-schema';
 
-jest.mock('../schemas/get-config-query-params-schema');
 jest.mock('@/utils/config/get-config-value');
 
 describe('getConfig', () => {
@@ -13,17 +12,13 @@ describe('getConfig', () => {
     jest.clearAllMocks();
   });
 
-  it('should return 400 if query parameters are invalid', async () => {
-    (getConfigValueQueryParamsSchema.safeParse as jest.Mock).mockReturnValue({
-      data: null,
-      error: { issues: ['Invalid query parameters'] },
-    });
-
+  it('should return 400 if the config key is not a public config key', async () => {
     const { res } = await setup({
-      configKey: 'testKey',
+      configKey: 'CLUSTERS',
       jsonArgs: '',
     });
     const responseJson = await res.json();
+    expect(res.status).toBe(400);
     expect(responseJson).toEqual(
       expect.objectContaining({
         message: 'Invalid values provided for config key/args',
@@ -32,32 +27,26 @@ describe('getConfig', () => {
   });
 
   it('should return config value if query parameters are valid', async () => {
-    (getConfigValueQueryParamsSchema.safeParse as jest.Mock).mockReturnValue({
-      data: { configKey: 'testKey', jsonArgs: '{}' },
-      error: null,
-    });
-    (getConfigValue as jest.Mock).mockResolvedValue('value');
+    (getConfigValue as jest.Mock).mockResolvedValue(
+      mockResolvedConfigValues.CLUSTERS_PUBLIC
+    );
 
     const { res } = await setup({
-      configKey: 'testKey',
-      jsonArgs: '{}',
+      configKey: 'CLUSTERS_PUBLIC',
+      jsonArgs: '',
     });
 
-    expect(getConfigValue).toHaveBeenCalledWith('testKey', '{}');
+    expect(getConfigValue).toHaveBeenCalledWith('CLUSTERS_PUBLIC', undefined);
     const responseJson = await res.json();
-    expect(responseJson).toEqual('value');
+    expect(responseJson).toEqual(mockResolvedConfigValues.CLUSTERS_PUBLIC);
   });
 
   it('should handle errors from getConfigValue', async () => {
-    (getConfigValueQueryParamsSchema.safeParse as jest.Mock).mockReturnValue({
-      data: { configKey: 'testKey', jsonArgs: '{}' },
-      error: null,
-    });
     (getConfigValue as jest.Mock).mockRejectedValue(new Error('Config error'));
 
     await expect(
       setup({
-        configKey: 'testKey',
+        configKey: 'CLUSTERS_PUBLIC',
         jsonArgs: '',
       })
     ).rejects.toThrow('Config error');
@@ -70,7 +59,6 @@ async function setup({
 }: {
   configKey: string;
   jsonArgs: string;
-  error?: true;
 }) {
   const res = await getConfig(
     new NextRequest(

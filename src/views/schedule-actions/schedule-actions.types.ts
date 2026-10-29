@@ -34,9 +34,12 @@ export type ScheduleActionInput<SubmissionData> = ScheduleActionInputParams & {
   submissionData: SubmissionData;
 };
 
-export type ScheduleActionFormProps<FormData extends FieldValues> = {
+export type ScheduleActionFormProps<
+  FormData extends FieldValues,
+  Output = FormData,
+> = {
   fieldErrors: FieldErrors<FormData>;
-  control: Control<FormData>;
+  control: Control<FormData, unknown, Output>;
   trigger?: UseFormTrigger<FormData>;
   clearErrors: UseFormClearErrors<FormData>;
   isSubmitted?: boolean;
@@ -71,17 +74,20 @@ export type ScheduleActionModalBanner = {
   render: (schedule?: DescribeScheduleResponse) => ReactNode;
 };
 
+export type ScheduleActionFormValues<FormData> = FormData extends FieldValues
+  ? FormData
+  : FieldValues;
+
 export type ScheduleActionModalForm<FormData, SubmissionData> =
   | {
       withForm: true;
       form: (
         props: ScheduleActionFormProps<
-          FormData extends FieldValues ? FormData : FieldValues
+          ScheduleActionFormValues<FormData>,
+          FormData
         >
       ) => ReactNode;
-      // Input is unknown rather than FormData: a form schema parses whatever
-      // the controls hold, which is not always the shape it validates into.
-      formSchema: z.ZodType<FormData, z.ZodTypeDef, unknown>;
+      formSchema: z.ZodType<FormData, ScheduleActionFormValues<FormData>>;
       transformFormDataToSubmission: (formData: FormData) => SubmissionData;
     }
   | {

@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { type z } from 'zod';
 
 export default function validateArchivedQueryParams(
   queryParams: {
@@ -16,14 +16,14 @@ export default function validateArchivedQueryParams(
   ) {
     if (queryParams.timeColumn === 'StartTime') {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         message: 'Cannot search for archived workflows by start time',
       });
     }
 
     if (!queryParams.timeRangeStart || !queryParams.timeRangeEnd) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         message:
           'Start and End time need to be passed for searching archived workflows',
       });

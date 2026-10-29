@@ -15,7 +15,7 @@ export default function getLocalStorageValue<
       return schema.parse(localStorageVal);
     }
 
-    return localStorageVal;
+    return localStorageVal as z.infer<S>;
   } catch (error) {
     logger.warn({ key, error }, 'Failed to get value from local storage');
     return null;

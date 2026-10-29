@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, SIZE } from 'baseui/button';
 import { FormControl } from 'baseui/form-control';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, useWatch, Controller } from 'react-hook-form';
 import { type z } from 'zod';
 
 import getInitialValues from './helpers/get-initial-values';
@@ -26,6 +26,11 @@ export default function SettingsForm<D extends object, Z extends z.ZodTypeAny>({
     values: getInitialValues({ data, formConfig }),
     resolver: zodResolver(zodSchema),
   });
+
+  // react-hook-form 7.55+ recomputes isValid only on blur in onBlur mode. Check the
+  // schema on every change so the submit button still enables while typing.
+  const formValues = useWatch({ control });
+  const isFormValid = zodSchema.safeParse(formValues).success;
 
   useEffect(() => {
     reset();
@@ -74,7 +79,7 @@ export default function SettingsForm<D extends object, Z extends z.ZodTypeAny>({
         <Button
           type="submit"
           size={SIZE.compact}
-          disabled={!formState.isDirty || !formState.isValid}
+          disabled={!formState.isDirty || !isFormValid}
           isLoading={formState.isSubmitting || formState.isSubmitSuccessful}
         >
           {submitButtonText}

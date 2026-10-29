@@ -154,7 +154,9 @@ describe(listWorkflows.name, () => {
       expect.objectContaining({
         message: 'Invalid argument(s) for workflow search',
         validationErrors: expect.arrayContaining([
-          expect.objectContaining({ message: 'Expected number, received nan' }),
+          expect.objectContaining({
+            message: 'Invalid input: expected number, received NaN',
+          }),
         ]),
       })
     );

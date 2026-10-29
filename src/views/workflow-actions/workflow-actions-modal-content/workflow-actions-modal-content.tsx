@@ -4,13 +4,16 @@ import { Banner, HIERARCHY, KIND as BANNER_KIND } from 'baseui/banner';
 import { KIND as BUTTON_KIND, SIZE } from 'baseui/button';
 import { ModalButton } from 'baseui/modal';
 import { useSnackbar } from 'baseui/snackbar';
-import { type DefaultValues, type FieldValues, useForm } from 'react-hook-form';
+import { type DefaultValues, useForm } from 'react-hook-form';
 import { MdCheckCircle, MdErrorOutline, MdOpenInNew } from 'react-icons/md';
 
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
 
-import { type WorkflowActionInput } from '../workflow-actions.types';
+import {
+  type WorkflowActionFormValues,
+  type WorkflowActionInput,
+} from '../workflow-actions.types';
 
 import { overrides, styled } from './workflow-actions-modal-content.styles';
 import { type Props } from './workflow-actions-modal-content.types';
@@ -28,9 +31,6 @@ export default function WorkflowActionsModalContent<
   const queryClient = useQueryClient();
   const { enqueue, dequeue } = useSnackbar();
 
-  // useForm doesn't accept form data that is not a FieldValues (e.g. undefined)
-  type OptionalFormData = FormData extends FieldValues ? FormData : any;
-
   const {
     handleSubmit,
     formState: { errors: validationErrors, isSubmitting },
@@ -38,11 +38,13 @@ export default function WorkflowActionsModalContent<
     watch,
     clearErrors,
     trigger,
-  } = useForm<OptionalFormData>({
+  } = useForm<WorkflowActionFormValues<FormData>, unknown, FormData>({
     resolver: action.modal.formSchema
       ? zodResolver(action.modal.formSchema)
       : undefined,
-    defaultValues: initialFormValues as DefaultValues<OptionalFormData>,
+    defaultValues: initialFormValues as DefaultValues<
+      WorkflowActionFormValues<FormData>
+    >,
   });
 
   const { mutate, isPending, error } = useMutation<

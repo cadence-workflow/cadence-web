@@ -7,13 +7,16 @@ import { KIND as BUTTON_KIND, SIZE } from 'baseui/button';
 import { ModalButton } from 'baseui/modal';
 import { useSnackbar } from 'baseui/snackbar';
 import { useRouter } from 'next/navigation';
-import { type DefaultValues, type FieldValues, useForm } from 'react-hook-form';
+import { type DefaultValues, useForm } from 'react-hook-form';
 import { MdCheckCircle, MdErrorOutline } from 'react-icons/md';
 
 import request from '@/utils/request';
 import { type RequestError } from '@/utils/request/request-error';
 
-import { type ScheduleActionInput } from '../schedule-actions.types';
+import {
+  type ScheduleActionFormValues,
+  type ScheduleActionInput,
+} from '../schedule-actions.types';
 
 import { overrides, styled } from './schedule-actions-modal-content.styles';
 import { type Props } from './schedule-actions-modal-content.types';
@@ -34,21 +37,21 @@ export default function ScheduleActionsModalContent<
   const { enqueue, dequeue } = useSnackbar();
   const errorAlertRef = useRef<HTMLDivElement>(null);
 
-  type OptionalFormData = FormData extends FieldValues ? FormData : FieldValues;
-
   const {
     handleSubmit,
     formState: { errors: validationErrors, isSubmitting, isSubmitted },
     control,
     trigger,
     clearErrors,
-  } = useForm<OptionalFormData>({
+  } = useForm<ScheduleActionFormValues<FormData>, unknown, FormData>({
     resolver: action.modal.formSchema
       ? zodResolver(action.modal.formSchema)
       : undefined,
     mode: 'onSubmit',
     reValidateMode: 'onChange',
-    defaultValues: initialFormValues as DefaultValues<OptionalFormData>,
+    defaultValues: initialFormValues as DefaultValues<
+      ScheduleActionFormValues<FormData>
+    >,
   });
 
   const { mutate, isPending, error } = useMutation<
@@ -101,11 +104,11 @@ export default function ScheduleActionsModalContent<
     }
   }, [error]);
 
-  const onSubmit = (data: OptionalFormData) => {
+  const onSubmit = (data: FormData) => {
     mutate({
       ...params,
       submissionData: action.modal.withForm
-        ? action.modal.transformFormDataToSubmission(data as FormData)
+        ? action.modal.transformFormDataToSubmission(data)
         : action.getConfirmSubmissionData?.() ?? (undefined as SubmissionData),
     });
   };

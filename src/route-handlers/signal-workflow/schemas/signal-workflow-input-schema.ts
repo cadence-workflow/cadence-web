@@ -3,13 +3,12 @@ import { z } from 'zod';
 import losslessJsonParse from '@/utils/lossless-json-parse';
 
 const signalWorkflowInputSchema = z.string().superRefine((str, ctx) => {
-  if (!str) return undefined;
+  if (!str) return;
 
   try {
-    return losslessJsonParse(str);
+    losslessJsonParse(str);
   } catch {
     ctx.addIssue({ code: 'custom', message: 'Invalid JSON' });
-    return z.NEVER;
   }
 });
 

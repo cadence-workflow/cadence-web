@@ -67,3 +67,20 @@ describe(getWorkflowsBasicErrorPanelProps.name, () => {
     ).toBeUndefined();
   });
 });
+
+it('displays one message when the API returns multiple native Zod issues', () => {
+  const result = z
+    .object({ name: z.string().min(1, 'Workflow type is required') })
+    .safeParse({ name: [] });
+  expect(result.error?.issues).toHaveLength(2);
+  const props = getWorkflowsBasicErrorPanelProps({
+    error: new UseMergedInfiniteQueriesError('Validation failed', [
+      new RequestError('Invalid input', '/query', 400, result.error?.issues),
+    ]),
+    areSearchParamsAbsent: false,
+  });
+  expect(props?.message).toBe(
+    'Validation error: ' + result.error?.issues[0]?.message
+  );
+  expect(props?.message).not.toContain('Workflow type is required');
+});
