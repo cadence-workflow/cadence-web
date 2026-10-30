@@ -18,7 +18,6 @@ export type UseListBatchActionsQueryOptions = UseInfiniteQueryOptions<
   ListBatchActionsResponse,
   RequestError,
   InfiniteData<ListBatchActionsResponse>,
-  ListBatchActionsResponse,
   ListBatchActionsQueryKey,
   string | undefined
 >;

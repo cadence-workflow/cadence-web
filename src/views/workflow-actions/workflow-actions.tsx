@@ -11,7 +11,7 @@ import { MdArrowDropDown } from 'react-icons/md';
 
 import Button from '@/components/button/button';
 import useConfigValue from '@/hooks/use-config-value/use-config-value';
-import { useDescribeWorkflow } from '@/views/workflow-page/hooks/use-describe-workflow';
+import useDescribeWorkflow from '@/views/workflow-page/hooks/use-describe-workflow/use-describe-workflow';
 import { type WorkflowPageParams } from '@/views/workflow-page/workflow-page.types';
 
 import WorkflowActionsMenu from './workflow-actions-menu/workflow-actions-menu';

@@ -18,7 +18,7 @@ import { type RequestError } from '@/utils/request/request-error';
 import type { WorkflowPageTabContentProps } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
 import getWorkflowIsCompleted from '../workflow-page/helpers/get-workflow-is-completed';
-import { useDescribeWorkflow } from '../workflow-page/hooks/use-describe-workflow';
+import useDescribeWorkflow from '../workflow-page/hooks/use-describe-workflow/use-describe-workflow';
 
 import getWorkflowIsError from './helpers/get-workflow-is-error';
 import getWorkflowResultJson from './helpers/get-workflow-result-json';

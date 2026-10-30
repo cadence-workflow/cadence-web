@@ -18,7 +18,6 @@ export type WorkflowHistoryInfiniteQueryObserver = InfiniteQueryObserver<
   GetWorkflowHistoryResponse,
   RequestError,
   InfiniteData<GetWorkflowHistoryResponse>,
-  GetWorkflowHistoryResponse,
   WorkflowHistoryQueryKey,
   string | undefined
 >;
@@ -28,7 +27,6 @@ export type WorkflowHistoryInfiniteQueryOptions = UseInfiniteQueryOptions<
   GetWorkflowHistoryResponse,
   RequestError,
   InfiniteData<GetWorkflowHistoryResponse>,
-  GetWorkflowHistoryResponse,
   WorkflowHistoryQueryKey,
   string | undefined
 >;

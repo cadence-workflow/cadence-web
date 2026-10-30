@@ -1,3 +1,4 @@
+import { QueryClient } from '@tanstack/react-query';
 import queryString from 'query-string';
 
 import request from '@/utils/request';
@@ -93,14 +94,15 @@ describe(getListWorkflowsForScheduleQueryOptions.name, () => {
 
 async function fetchPage(pageParam: string | undefined) {
   const options = getListWorkflowsForScheduleQueryOptions(params);
-  // `queryFn` is also typed to accept React Query's `skipToken` symbol, which
-  // this factory never returns.
+  // The type of `queryFn` also allows `skipToken` and `undefined`. This factory
+  // always returns a function, so narrow the type to call it.
   const queryFn = options.queryFn as Exclude<
     typeof options.queryFn,
     symbol | undefined
   >;
 
   await queryFn({
+    client: new QueryClient(),
     pageParam,
     queryKey: options.queryKey,
     signal: new AbortController().signal,

@@ -84,7 +84,6 @@ export default function useMergedInfiniteQueries<
         TResponse,
         Error,
         InfiniteData<TResponse, TPageParam>,
-        TResponse,
         TQueryKey,
         TPageParam
       >;

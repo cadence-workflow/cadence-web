@@ -6,20 +6,6 @@ import {
 import { type DescribeWorkflowResponse } from '@/route-handlers/describe-workflow/describe-workflow.types';
 import { type RequestError } from '@/utils/request/request-error';
 
-export type UseDescribeWorkflowQueryOptions =
-  | UseSuspenseQueryOptions<
-      DescribeWorkflowResponse,
-      RequestError,
-      DescribeWorkflowResponse,
-      DescribeWorkflowQueryKey
-    >
-  | UseQueryOptions<
-      DescribeWorkflowResponse,
-      RequestError,
-      DescribeWorkflowResponse,
-      DescribeWorkflowQueryKey
-    >;
-
 export type UseDescribeWorkflowParams = {
   domain: string;
   cluster: string;
@@ -27,6 +13,11 @@ export type UseDescribeWorkflowParams = {
   runId: string;
   refetchInterval?: number;
 };
+
+export type DescribeWorkflowQueryKey = [
+  'describe_workflow',
+  Omit<UseDescribeWorkflowParams, 'refetchInterval'>,
+];
 
 export type UseSuspenseQueryDescribeWorkflowParams = UseDescribeWorkflowParams &
   Partial<
@@ -47,8 +38,3 @@ export type UseQueryDescribeWorkflowParams = UseDescribeWorkflowParams &
       DescribeWorkflowQueryKey
     >
   >;
-
-export type DescribeWorkflowQueryKey = [
-  'describe_workflow',
-  Omit<UseDescribeWorkflowParams, 'refetchInterval'>,
-];
