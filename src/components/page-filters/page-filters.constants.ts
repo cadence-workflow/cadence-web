@@ -1,0 +1,1 @@
+export const PAGE_FILTERS_SEARCH_DEBOUNCE_MS = 250;

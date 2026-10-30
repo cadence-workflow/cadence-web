@@ -1,5 +1,6 @@
 'use client';
 import PageFilters from '@/components/page-filters/page-filters';
+import { PAGE_FILTERS_SEARCH_DEBOUNCE_MS } from '@/components/page-filters/page-filters.constants';
 
 import taskListFiltersConfig from '../config/task-list-filters.config';
 import taskListPageQueryParamsConfig from '../config/task-list-page-query-params.config';
@@ -14,6 +15,7 @@ export default function TaskListFilters() {
         searchPlaceholder="Find worker by identity"
         pageFiltersConfig={taskListFiltersConfig}
         pageQueryParamsConfig={taskListPageQueryParamsConfig}
+        inputDebounceDurationMs={PAGE_FILTERS_SEARCH_DEBOUNCE_MS}
       />
     </styled.FiltersContainer>
   );

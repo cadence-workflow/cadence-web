@@ -6,6 +6,7 @@ import usePageFilters from '@/components/page-filters/hooks/use-page-filters';
 import PageFiltersFields from '@/components/page-filters/page-filters-fields/page-filters-fields';
 import PageFiltersSearch from '@/components/page-filters/page-filters-search/page-filters-search';
 import PageFiltersToggle from '@/components/page-filters/page-filters-toggle/page-filters-toggle';
+import { PAGE_FILTERS_SEARCH_DEBOUNCE_MS } from '@/components/page-filters/page-filters.constants';
 import {
   type PageQueryParamSetterValues,
   type PageQueryParamKeys,
@@ -13,7 +14,6 @@ import {
 } from '@/hooks/use-page-query-params/use-page-query-params.types';
 import WorkflowsListColumnsPicker from '@/views/shared/workflows-list-columns-picker/workflows-list-columns-picker';
 
-import WORKFLOWS_SEARCH_DEBOUNCE_MS from './config/workflows-search-debounce-ms.config';
 import { overrides, styled } from './workflows-header.styles';
 import {
   type WorkflowsHeaderInputType,
@@ -99,7 +99,7 @@ export default function WorkflowsHeader<
               pageQueryParamsConfig={pageQueryParamsConfig}
               searchQueryParamKey={searchQueryParamKey}
               searchPlaceholder="Search for Workflow ID, Run ID, or Workflow Type"
-              inputDebounceDurationMs={WORKFLOWS_SEARCH_DEBOUNCE_MS}
+              inputDebounceDurationMs={PAGE_FILTERS_SEARCH_DEBOUNCE_MS}
             />
             <PageFiltersToggle
               isActive={areFiltersShown || activeFiltersCount > 0}

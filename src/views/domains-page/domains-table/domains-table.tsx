@@ -27,8 +27,7 @@ function DomainsTable({
   error,
 }: Props) {
   const [queryParams, setQueryParams] = usePageQueryParams(
-    domainsPageQueryParamsConfig,
-    { pageRerender: false }
+    domainsPageQueryParamsConfig
   );
 
   const sortedDomains = useMemo(() => {
