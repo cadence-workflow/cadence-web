@@ -4,7 +4,7 @@ import snakeCase from 'lodash/snakeCase';
 import { NextResponse, type NextRequest } from 'next/server';
 
 import getConfigValue from '@/utils/config/get-config-value';
-import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
+import { getHTTPStatusCode, isGRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
 import updateDomainValuesSchema from './schemas/update-domain-values-schema';
@@ -58,10 +58,9 @@ export async function updateDomain(
 
     return NextResponse.json(
       {
-        message:
-          e instanceof GRPCError
-            ? e.message
-            : 'Error updating domain information',
+        message: isGRPCError(e)
+          ? e.message
+          : 'Error updating domain information',
         cause: e,
       },
       { status: getHTTPStatusCode(e) }

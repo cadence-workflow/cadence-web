@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import { NextResponse, type NextRequest } from 'next/server';
 
-import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
+import { getHTTPStatusCode, isGRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
 import { type Context, type RequestParams } from './create-schedule.types';
@@ -40,13 +40,12 @@ export async function createSchedule(
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
       { requestParams: params, error: e },
-      'Error creating schedule' +
-        (e instanceof GRPCError ? ': ' + e.message : '')
+      'Error creating schedule' + (isGRPCError(e) ? ': ' + e.message : '')
     );
 
     return NextResponse.json(
       {
-        message: e instanceof GRPCError ? e.message : 'Error creating schedule',
+        message: isGRPCError(e) ? e.message : 'Error creating schedule',
         cause: e,
       },
       { status: getHTTPStatusCode(e) }

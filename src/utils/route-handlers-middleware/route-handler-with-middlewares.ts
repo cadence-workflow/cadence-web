@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { GRPCError, getHTTPStatusCode } from '../grpc/grpc-error';
+import { getHTTPStatusCode, isGRPCError } from '../grpc/grpc-error';
 import logger from '../logger';
 
 import type {
@@ -39,8 +39,7 @@ export default async function routeHandlersWithMiddlewares<
 
       return NextResponse.json(
         {
-          message:
-            e instanceof GRPCError ? e.message : 'Failed to handle request',
+          message: isGRPCError(e) ? e.message : 'Failed to handle request',
           cause: e,
         },
         { status: getHTTPStatusCode(e) }

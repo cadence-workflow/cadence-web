@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import queryString from 'query-string';
 
-import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
+import { getHTTPStatusCode, isGRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
 import type {
@@ -52,15 +52,12 @@ export async function listFailoverHistory(
     logger.error<RouteHandlerErrorPayload>(
       { requestParams: params, queryParams, error: e },
       'Error fetching failover history' +
-        (e instanceof GRPCError ? ': ' + e.message : '')
+        (isGRPCError(e) ? ': ' + e.message : '')
     );
 
     return NextResponse.json(
       {
-        message:
-          e instanceof GRPCError
-            ? e.message
-            : 'Error fetching failover history',
+        message: isGRPCError(e) ? e.message : 'Error fetching failover history',
         cause: e,
       },
       {

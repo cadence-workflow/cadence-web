@@ -4,7 +4,7 @@ import isEmpty from 'lodash/isEmpty';
 import { NextResponse, type NextRequest } from 'next/server';
 
 import dayjs from '@/utils/datetime/dayjs';
-import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
+import { getHTTPStatusCode, isGRPCError } from '@/utils/grpc/grpc-error';
 import logger from '@/utils/logger';
 import { type RouteHandlerErrorPayload } from '@/utils/logger/logger.types';
 
@@ -135,7 +135,7 @@ export async function startWorkflow(
     });
   } catch (e) {
     const isDuplicateWorkflowError =
-      e instanceof GRPCError && e.grpcStatusCode === status.ALREADY_EXISTS;
+      isGRPCError(e) && e.grpcStatusCode === status.ALREADY_EXISTS;
 
     const errorMessage = isDuplicateWorkflowError
       ? 'Error starting workflow: Duplicate workflow'
@@ -146,7 +146,7 @@ export async function startWorkflow(
 
     return NextResponse.json(
       {
-        message: e instanceof GRPCError ? e.message : errorMessage,
+        message: isGRPCError(e) ? e.message : errorMessage,
         cause: e,
       },
       { status: getHTTPStatusCode(e) }

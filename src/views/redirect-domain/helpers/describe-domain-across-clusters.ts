@@ -5,7 +5,7 @@ import * as grpc from '@grpc/grpc-js';
 import { type Domain } from '@/__generated__/proto-ts/uber/cadence/api/v1/Domain';
 import getConfigValue from '@/utils/config/get-config-value';
 import * as grpcClient from '@/utils/grpc/grpc-client';
-import { GRPCError } from '@/utils/grpc/grpc-error';
+import { isGRPCError } from '@/utils/grpc/grpc-error';
 import logger from '@/utils/logger';
 
 import { type DescribeDomainAcrossClustersResult } from '../redirect-domain.types';
@@ -34,13 +34,13 @@ export default async function describeDomainAcrossClusters(
       domains.push(result.value);
     } else if (result.status === 'rejected') {
       if (
-        result.reason instanceof GRPCError &&
+        isGRPCError(result.reason) &&
         result.reason.grpcStatusCode === grpc.status.PERMISSION_DENIED
       ) {
         hasPermissionDenied = true;
       } else if (
         !(
-          result.reason instanceof GRPCError &&
+          isGRPCError(result.reason) &&
           result.reason.grpcStatusCode === grpc.status.NOT_FOUND
         )
       ) {

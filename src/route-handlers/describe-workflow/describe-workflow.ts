@@ -1,7 +1,7 @@
 import merge from 'lodash/merge';
 import { NextResponse, type NextRequest } from 'next/server';
 
-import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
+import { getHTTPStatusCode, isGRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
 import {
@@ -66,7 +66,7 @@ export default async function describeWorkflow(
     // DescribeWorkflow depends on a temp datasource, so sometimes data is not available
     // to make it more reliable we depend on history to construct similar response in case data is not available
     try {
-      if (e instanceof GRPCError && e.httpStatusCode !== 404) {
+      if (isGRPCError(e) && e.httpStatusCode !== 404) {
         throw e;
       }
       const archivedHistoryResponse = await ctx.grpcClusterMethods.getHistory({
@@ -139,7 +139,7 @@ export default async function describeWorkflow(
       // skips logs for NotFound errors
       // treat 400 responses for requesting unconfigured archives as 404
       if (
-        e instanceof GRPCError &&
+        isGRPCError(e) &&
         (e.httpStatusCode === 404 ||
           (e.httpStatusCode === 400 &&
             e.message ===
@@ -160,10 +160,9 @@ export default async function describeWorkflow(
 
         return NextResponse.json(
           {
-            message:
-              e instanceof GRPCError
-                ? e.message
-                : 'Error fetching workflow execution info',
+            message: isGRPCError(e)
+              ? e.message
+              : 'Error fetching workflow execution info',
             cause: e,
           },
           { status: getHTTPStatusCode(e) }
