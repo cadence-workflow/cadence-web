@@ -2,24 +2,23 @@
 import React from 'react';
 
 import { useQuery } from '@tanstack/react-query';
-import queryString from 'query-string';
 
 import PageSection from '@/components/page-section/page-section';
 import { type PrettyJsonValue } from '@/components/pretty-json/pretty-json.types';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
-import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
 import formatWorkflowHistory from '@/utils/data-formatters/format-workflow-history';
 import formatWorkflowHistoryEvent from '@/utils/data-formatters/format-workflow-history-event';
 import { type FormattedHistoryEventForType } from '@/utils/data-formatters/schema/format-history-event-schema';
 import decodeUrlParams from '@/utils/decode-url-params';
-import request from '@/utils/request';
-import { type RequestError } from '@/utils/request/request-error';
 import type { WorkflowPageTabContentProps } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
-import getWorkflowIsCompleted from '../workflow-page/helpers/get-workflow-is-completed';
+import getWorkflowFirstHistoryPageQueryOptions from '../workflow-page/helpers/get-workflow-first-history-page-query-options';
+import getWorkflowIsRunning from '../workflow-page/helpers/get-workflow-is-running';
+import getWorkflowSearchAttributes from '../workflow-page/helpers/get-workflow-search-attributes';
 import { useDescribeWorkflow } from '../workflow-page/hooks/use-describe-workflow';
 
+import getWorkflowInputJson from './helpers/get-workflow-input-json';
 import getWorkflowIsError from './helpers/get-workflow-is-error';
 import getWorkflowResultJson from './helpers/get-workflow-result-json';
 import WorkflowSummaryDetails from './workflow-summary-details/workflow-summary-details';
@@ -36,19 +35,9 @@ export default function WorkflowSummary({
   const decodedParams =
     decodeUrlParams<WorkflowPageTabContentProps['params']>(params);
   const { workflowTab, ...paramsWithoutTab } = params;
-  const historyParams = { ...paramsWithoutTab, pageSize: 1 };
   const { data: workflowHistory, isLoading: isWorkflowHistoryLoading } =
-    useQuery<
-      GetWorkflowHistoryResponse,
-      RequestError,
-      GetWorkflowHistoryResponse,
-      [string, typeof historyParams]
-    >({
-      queryKey: ['workflow_history', historyParams] as const,
-      queryFn: ({ queryKey: [_, p] }) =>
-        request(
-          `/api/domains/${p.domain}/${p.cluster}/workflows/${p.workflowId}/${p.runId}/history?${queryString.stringify({ pageSize: p.pageSize })}`
-        ).then((res) => res.json()),
+    useQuery({
+      ...getWorkflowFirstHistoryPageQueryOptions(paramsWithoutTab),
       throwOnError: true,
     });
 
@@ -82,19 +71,13 @@ export default function WorkflowSummary({
     formattedCloseEvent ? getWorkflowResultJson(formattedCloseEvent) : undefined
   ) as PrettyJsonValue;
 
-  const isWorkflowRunning =
-    !closeEvent ||
-    !closeEvent.attributes ||
-    !getWorkflowIsCompleted(closeEvent.attributes);
+  const isWorkflowRunning = getWorkflowIsRunning(closeEvent);
 
   const isWorkflowError =
     !!closeEvent?.attributes && getWorkflowIsError(closeEvent.attributes);
 
   const baseJsonViewProps: JsonViewProps = {
-    inputJson:
-      formattedStartEvent && 'input' in formattedStartEvent
-        ? (formattedStartEvent?.input as PrettyJsonValue)
-        : [],
+    inputJson: getWorkflowInputJson(formattedStartEvent),
     resultJson,
     isWorkflowRunning,
     isWorkflowError,
@@ -118,9 +101,10 @@ export default function WorkflowSummary({
           <WorkflowSummaryScheduleDetails
             cluster={decodedParams.cluster}
             domain={decodedParams.domain}
-            searchAttributes={
-              formattedStartEvent?.searchAttributes?.indexedFields
-            }
+            searchAttributes={getWorkflowSearchAttributes(
+              workflowDetails.workflowExecutionInfo?.searchAttributes
+                ?.indexedFields
+            )}
           />
         </div>
         {/* On narrow screens */}
