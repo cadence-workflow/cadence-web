@@ -65,7 +65,7 @@ describe('Button', () => {
       expect.objectContaining({
         'aria-label': 'loading Save changes',
       }),
-      expect.anything()
+      undefined
     );
   });
 
@@ -79,7 +79,7 @@ describe('Button', () => {
       expect.objectContaining({
         'aria-label': 'content is loading',
       }),
-      expect.anything()
+      undefined
     );
   });
 
@@ -110,7 +110,7 @@ describe('Button', () => {
       expect.objectContaining({
         isLoading: true,
       }),
-      expect.anything()
+      undefined
     );
   });
 
@@ -126,7 +126,7 @@ describe('Button', () => {
       expect.objectContaining({
         isLoading: false,
       }),
-      expect.anything()
+      undefined
     );
   });
 
@@ -155,7 +155,7 @@ describe('Button', () => {
           }),
         }),
       }),
-      expect.anything()
+      undefined
     );
   });
 
@@ -169,7 +169,7 @@ describe('Button', () => {
       expect.objectContaining({
         isLoading: true,
       }),
-      expect.anything()
+      undefined
     );
   });
 
@@ -187,7 +187,7 @@ describe('Button', () => {
         kind: 'secondary',
         shape: 'pill',
       }),
-      expect.anything()
+      undefined
     );
   });
 

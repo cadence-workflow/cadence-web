@@ -18,7 +18,7 @@ import { RequestError } from '@/utils/request/request-error';
 import { type Props } from './workflow-history-export-json-button.types';
 
 export default function WorkflowHistoryExportJsonButton(props: Props) {
-  const nextPage = useRef<string>();
+  const nextPage = useRef<string | undefined>(undefined);
   const [loadingState, setLoadingState] = useState<
     'loading' | 'error' | 'idle'
   >('idle');

@@ -32,7 +32,9 @@ export default function useStartBatchAction({
 
   // Track the deferred-invalidation timer so it is cleared on unmount and never
   // fires against a torn-down view (prevents cross-test bleed in tests).
-  const invalidateTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const invalidateTimeoutRef = useRef<
+    ReturnType<typeof setTimeout> | undefined
+  >(undefined);
   useEffect(() => () => clearTimeout(invalidateTimeoutRef.current), []);
 
   return useMutation<

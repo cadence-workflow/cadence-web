@@ -18,10 +18,6 @@ export type Props = {
   decodedPageUrlParams: WorkflowPageTabContentProps['params'];
 };
 
-export type WorkflowSummaryDetailsComponent =
-  | keyof JSX.IntrinsicElements
-  | React.JSXElementConstructor<any>;
-
 export type WorkflowSummaryFieldArgs = {
   firstEvent: HistoryEvent;
   closeEvent: HistoryEvent | null;
