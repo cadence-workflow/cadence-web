@@ -1,8 +1,7 @@
-import logger from '@/utils/logger';
-
 import losslessJsonParse from '../lossless-json-parse';
 
 import formatBase64Payload from './format-base64-payload';
+import formatPayload from './format-payload';
 
 const separators = ['\n', ' '];
 
@@ -15,7 +14,15 @@ const formatInputPayload = (
   }
 
   const parsedData = formatBase64Payload(data);
-  return parseMultipleInputs(parsedData);
+
+  // try parsing as JSON values, one per input
+  try {
+    return parseMultipleInputs(parsedData);
+  } catch {
+    // fall back to formatting it like a single payload, as a list of inputs
+    const formatted = formatPayload(payload);
+    return Array.isArray(formatted) ? formatted : [formatted];
+  }
 };
 
 const parseMultipleInputs = (input: string) => {
@@ -28,28 +35,16 @@ const parseMultipleInputs = (input: string) => {
     }
     if (currentIndex >= input.length) break;
 
-    try {
-      const { startIndex, endIndex, jsonString } = extractJsonValue(
-        input,
-        currentIndex
-      );
+    const { startIndex, endIndex, jsonString } = extractJsonValue(
+      input,
+      currentIndex
+    );
 
-      if (endIndex > startIndex) {
-        // move to the end of the string before parsing to avoid parsing the same string if the parsing fails
-        currentIndex = endIndex;
-        results.push(losslessJsonParse(jsonString));
-      } else {
-        currentIndex++;
-      }
-    } catch (error) {
-      logger.error(
-        {
-          input,
-          currentIndex,
-          error,
-        },
-        'Error parsing JSON string'
-      );
+    if (endIndex > startIndex) {
+      currentIndex = endIndex;
+      results.push(losslessJsonParse(jsonString));
+    } else {
+      currentIndex++;
     }
   }
 
