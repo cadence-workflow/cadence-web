@@ -86,13 +86,44 @@ describe('formatInputPayload', () => {
     expect(formatInputPayload(input)).toEqual(expected);
   });
 
-  test('should handle base64 encoded malformed JSON gracefully', () => {
+  test('should fall back to the raw lines if any input is malformed JSON', () => {
     const input = {
       data: btoa(`{"name": "John", "age": 30}\n{malformed JSON}`),
     };
-    const expected = [{ name: 'John', age: 30 }];
+    const expected = ['{name: John, age: 30}', '{malformed JSON}'];
     expect(formatInputPayload(input)).toEqual(expected);
   });
+
+  test('should fall back to the raw string if the input is not JSON', () => {
+    const input = { data: btoa('hello world') };
+    const expected = ['hello world'];
+    expect(formatInputPayload(input)).toEqual(expected);
+  });
+
+  test('should fall back to the raw lines if a multi-line input is not JSON', () => {
+    const input = { data: btoa('first line\nsecond line\n') };
+    const expected = ['first line', 'second line'];
+    expect(formatInputPayload(input)).toEqual(expected);
+  });
+
+  test('should fall back to the raw string if a non-ASCII input is not JSON', () => {
+    const input = { data: Buffer.from('Русский 中文 🚀').toString('base64') };
+    const expected = ['Русский 中文 🚀'];
+    expect(formatInputPayload(input)).toEqual(expected);
+  });
+
+  test('should fall back to the raw string without double quotes if the input is not JSON', () => {
+    const input = { data: btoa('say "hello" world') };
+    const expected = ['say hello world'];
+    expect(formatInputPayload(input)).toEqual(expected);
+  });
+
+  test('should fall back to the raw string if the input is not UTF-8', () => {
+    const input = { data: btoa('caf\xe9\xff\x00') };
+    const expected = ['caf\uFFFD\uFFFD\u0000'];
+    expect(formatInputPayload(input)).toEqual(expected);
+  });
+
   test('should handle base64 encoded mix of numbers, strings, arrays, nulls', () => {
     const input = { data: btoa(`42\n"Hello, World!"\n[1, 2, 3]\nnull`) };
     const expected = [42, 'Hello, World!', [1, 2, 3], null];
