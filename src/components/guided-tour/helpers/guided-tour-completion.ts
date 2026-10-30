@@ -5,7 +5,7 @@ import setLocalStorageValue from '@/utils/local-storage/set-local-storage-value'
 
 import { COMPLETED_TOURS_STORAGE_KEY } from '../guided-tour.constants';
 
-const completedToursSchema = z.record(z.literal(true));
+const completedToursSchema = z.record(z.string(), z.literal(true));
 
 function readCompletedTours(): Record<string, true> {
   const raw = getLocalStorageValue(COMPLETED_TOURS_STORAGE_KEY);

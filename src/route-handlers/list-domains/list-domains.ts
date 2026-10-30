@@ -30,7 +30,7 @@ export async function listDomains(
       {
         error: 'Invalid argument(s) for domain listing',
         cluster,
-        validationErrors: validationError.errors,
+        validationErrors: validationError.issues,
       } satisfies ListDomainsErrorResponse,
       { status: 400 }
     );

@@ -211,4 +211,25 @@ Use \`code\` here.`;
       runId: 'r1',
     });
   });
+
+  it('renders extra tags through extra components', () => {
+    function Greeting({ name }: { name: string }) {
+      return <span data-testid="greeting">Hello {name}</span>;
+    }
+    render(
+      <Markdown
+        markdown={'{% greeting name="Cadence" /%}'}
+        extraTags={{
+          greeting: {
+            render: 'Greeting',
+            selfClosing: true,
+            attributes: { name: { type: String } },
+          },
+        }}
+        extraComponents={{ Greeting }}
+      />
+    );
+
+    expect(screen.getByTestId('greeting')).toHaveTextContent('Hello Cadence');
+  });
 });

@@ -78,6 +78,7 @@ export default function StartWorkflowButton({
           }
         },
       });
+      markdownContext.onActionSuccess?.();
     },
     onError: (error: Error) => {
       enqueue({
