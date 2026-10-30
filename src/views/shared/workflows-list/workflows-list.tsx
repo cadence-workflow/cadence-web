@@ -1,4 +1,4 @@
-import { useMemo, type MouseEvent } from 'react';
+import { useMemo, useState, type MouseEvent, type UIEvent } from 'react';
 
 import { Checkbox } from 'baseui/checkbox';
 import ChevronDown from 'baseui/icon/chevron-down';
@@ -15,6 +15,8 @@ import { styled } from './workflows-list.styles';
 import { type Props } from './workflows-list.types';
 
 export default function WorkflowsList({
+  domain,
+  cluster,
   workflows,
   columns,
   error,
@@ -23,6 +25,7 @@ export default function WorkflowsList({
   isFetchingNextPage,
   sortParams,
   selection,
+  maxHeight,
 }: Props) {
   const gridTemplateColumns = useMemo(() => {
     const columnWidths = columns.map((col) => col.width);
@@ -36,11 +39,37 @@ export default function WorkflowsList({
 
   const hasWorkflows = workflows.length > 0;
 
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  const footer = (
+    <styled.FooterContainer>
+      <TableInfiniteScrollLoader
+        hasData={hasWorkflows}
+        error={error}
+        fetchNextPage={fetchNextPage}
+        hasNextPage={hasNextPage}
+        isFetchingNextPage={isFetchingNextPage}
+      />
+    </styled.FooterContainer>
+  );
+
   return (
     <div>
       <styled.ScrollArea>
-        <styled.Container>
-          <styled.GridHeader $gridTemplateColumns={gridTemplateColumns}>
+        <styled.Container
+          $maxHeight={maxHeight}
+          onScroll={
+            maxHeight
+              ? (event: UIEvent<HTMLDivElement>) =>
+                  setIsScrolled(event.currentTarget.scrollTop > 0)
+              : undefined
+          }
+        >
+          <styled.GridHeader
+            $gridTemplateColumns={gridTemplateColumns}
+            $isSticky={Boolean(maxHeight)}
+            $isScrolled={isScrolled}
+          >
             {/* TODO: once baseui is upgraded to >=16.1, switch to checkbox-v2
                 (baseui/checkbox-v2) and use `isIndeterminate` here for the
                 some-but-not-all-selected state, and `containsInteractiveElement`
@@ -100,7 +129,7 @@ export default function WorkflowsList({
                 <styled.GridRow
                   key={`${workflow.workflowID}-${workflow.runID}-${index}`}
                   $as={NextLink}
-                  href={`workflows/${encodeURIComponent(workflow.workflowID)}/${encodeURIComponent(workflow.runID)}`}
+                  href={`/domains/${encodeURIComponent(domain)}/${encodeURIComponent(cluster)}/workflows/${encodeURIComponent(workflow.workflowID)}/${encodeURIComponent(workflow.runID)}`}
                   prefetch={false}
                   $gridTemplateColumns={gridTemplateColumns}
                   draggable={false}
@@ -131,17 +160,10 @@ export default function WorkflowsList({
                 </styled.GridRow>
               );
             })}
+          {maxHeight && footer}
         </styled.Container>
       </styled.ScrollArea>
-      <styled.FooterContainer>
-        <TableInfiniteScrollLoader
-          hasData={hasWorkflows}
-          error={error}
-          fetchNextPage={fetchNextPage}
-          hasNextPage={hasNextPage}
-          isFetchingNextPage={isFetchingNextPage}
-        />
-      </styled.FooterContainer>
+      {!maxHeight && footer}
     </div>
   );
 }
