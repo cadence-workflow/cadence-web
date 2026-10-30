@@ -1,10 +1,11 @@
 'use client';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
-import { type Config, parse, renderers, transform } from '@markdoc/markdoc';
+import { type Config } from '@markdoc/markdoc';
 
 import { markdocComponents } from './markdoc-components';
 import { markdocConfig } from './markdoc-schema';
+import MarkdownContent from './markdown-content/markdown-content';
 import MarkdownContextProvider from './markdown-context-provider/markdown-context-provider';
 import { styled } from './markdown.styles';
 import { type Props } from './markdown.types';
@@ -53,7 +54,6 @@ export default function Markdown({
     normalizedContent = normalizedContent.trim();
   }
 
-  // Parse and transform the markdown content (memoized to prevent unnecessary recalculations)
   const mergedConfig = useMemo<Config>(
     () => ({
       ...markdocConfig,
@@ -67,12 +67,6 @@ export default function Markdown({
     [extraComponents]
   );
 
-  const renderableTree = useMemo(() => {
-    const ast = parse(normalizedContent);
-    return transform(ast, mergedConfig);
-  }, [normalizedContent, mergedConfig]);
-
-  // Render to React with our custom components
   return (
     <MarkdownContextProvider
       domain={domain}
@@ -82,9 +76,11 @@ export default function Markdown({
       onActionSuccess={onActionSuccess}
     >
       <styled.ViewContainer>
-        {renderers.react(renderableTree, React, {
-          components: mergedComponents,
-        })}
+        <MarkdownContent
+          content={normalizedContent}
+          config={mergedConfig}
+          components={mergedComponents}
+        />
       </styled.ViewContainer>
     </MarkdownContextProvider>
   );

@@ -111,6 +111,26 @@ describe(StartWorkflowButton.name, () => {
     });
   });
 
+  it('disables the button while a required field is empty', () => {
+    setup({
+      propsOverrides: {
+        input: {},
+        variableNames: ['newAmount'],
+      },
+      contextValue: {
+        fieldValues: {},
+        fieldMeta: { newAmount: { type: 'number', required: true } },
+      },
+    });
+
+    const button = screen.getByRole('button', { name: 'Start Workflow' });
+    expect(button).toHaveAttribute('disabled');
+    expect(button).toHaveAttribute(
+      'title',
+      'Fill in required fields: newAmount'
+    );
+  });
+
   it('shows a success snackbar with a "View" action that navigates to the new workflow run', async () => {
     const { user } = setup({
       result: { workflowId: 'new-workflow-id', runId: 'new-run-id' },
@@ -166,6 +186,7 @@ function setup({
 }) {
   const user = userEvent.setup();
   let latestRequestPathname: string | undefined;
+  let latestBody: unknown;
 
   render(
     <StartWorkflowButton {...defaultProps} {...propsOverrides} />,
@@ -177,6 +198,7 @@ function setup({
           mockOnce: false,
           httpResolver: async ({ request }) => {
             latestRequestPathname = new URL(request.url).pathname;
+            latestBody = await request.clone().json();
             if (error) {
               return HttpResponse.json(
                 { message: 'Failed to start workflow' },
@@ -201,6 +223,7 @@ function setup({
 
   return {
     user,
+    getLatestBody: () => latestBody,
     getLatestRequest: () => {
       if (!latestRequestPathname) {
         throw new Error('No request was captured yet');

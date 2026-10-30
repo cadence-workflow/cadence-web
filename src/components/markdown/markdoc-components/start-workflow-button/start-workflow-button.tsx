@@ -1,5 +1,5 @@
 'use client';
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 
 import { useMutation } from '@tanstack/react-query';
 import { Button } from 'baseui/button';
@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 
 import request from '@/utils/request';
 
+import getMissingFields from '../../helpers/get-missing-fields';
 import { MarkdownContext } from '../../markdown-context-provider/markdown-context-provider';
 
 import { overrides } from './start-workflow-button.styles';
@@ -26,6 +27,7 @@ export default function StartWorkflowButton({
   taskList,
   wfId,
   input,
+  variableNames,
   timeoutSeconds = 60,
   sdkLanguage = 'GO',
 }: StartWorkflowButtonProps) {
@@ -34,6 +36,12 @@ export default function StartWorkflowButton({
   const cluster = clusterProp ?? markdownContext.cluster;
 
   const { enqueue } = useSnackbar();
+
+  const { fieldValues, fieldMeta } = markdownContext;
+  const missingRequired = useMemo(
+    () => getMissingFields(variableNames ?? [], fieldValues, fieldMeta),
+    [variableNames, fieldValues, fieldMeta]
+  );
   const router = useRouter();
 
   const { mutate, isPending } = useMutation<StartWorkflowResult>({
@@ -88,7 +96,9 @@ export default function StartWorkflowButton({
     },
   });
 
-  const isDisabled = !domain || !cluster || !workflowType || !taskList;
+  const hasMissingFields = missingRequired.length > 0;
+  const isDisabled =
+    !domain || !cluster || !workflowType || !taskList || hasMissingFields;
 
   const handleClick = () => {
     if (!isDisabled) {
@@ -101,6 +111,11 @@ export default function StartWorkflowButton({
       disabled={isDisabled}
       onClick={handleClick}
       isLoading={isPending}
+      title={
+        hasMissingFields
+          ? `Fill in required fields: ${missingRequired.join(', ')}`
+          : undefined
+      }
       overrides={overrides.button}
     >
       {label}

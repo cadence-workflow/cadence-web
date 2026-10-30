@@ -1,5 +1,5 @@
 'use client';
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 
 import { useMutation } from '@tanstack/react-query';
 import { Button } from 'baseui/button';
@@ -8,6 +8,7 @@ import { useSnackbar } from 'baseui/snackbar';
 import losslessJsonStringify from '@/utils/lossless-json-stringify';
 import request from '@/utils/request';
 
+import getMissingFields from '../../helpers/get-missing-fields';
 import { MarkdownContext } from '../../markdown-context-provider/markdown-context-provider';
 
 import { SIGNAL_SUCCESS_NOTIFICATION_DURATION_MS } from './signal-button.constants';
@@ -18,6 +19,7 @@ export default function SignalButton({
   signalName,
   label,
   input,
+  variableNames,
   workflowId: workflowIdProp,
   runId: runIdProp,
   domain: domainProp,
@@ -37,6 +39,12 @@ export default function SignalButton({
       : runIdProp;
 
   const { enqueue } = useSnackbar();
+
+  const { fieldValues, fieldMeta } = markdownContext;
+  const missingRequired = useMemo(
+    () => getMissingFields(variableNames ?? [], fieldValues, fieldMeta),
+    [variableNames, fieldValues, fieldMeta]
+  );
 
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
@@ -82,7 +90,8 @@ export default function SignalButton({
     },
   });
 
-  const isDisabled = !domain || !cluster || !workflowId;
+  const hasMissingFields = missingRequired.length > 0;
+  const isDisabled = !domain || !cluster || !workflowId || hasMissingFields;
 
   const handleClick = () => {
     if (!isDisabled) {
@@ -95,6 +104,11 @@ export default function SignalButton({
       disabled={isDisabled}
       onClick={handleClick}
       isLoading={isPending}
+      title={
+        hasMissingFields
+          ? `Fill in required fields: ${missingRequired.join(', ')}`
+          : undefined
+      }
       overrides={overrides.button}
     >
       {label}
