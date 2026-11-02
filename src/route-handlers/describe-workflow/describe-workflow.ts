@@ -92,6 +92,7 @@ export default async function describeWorkflow(
           taskStartToCloseTimeout,
           workflowType: type,
           originalExecutionRunId,
+          searchAttributes,
         },
       } = archivedHistoryEvents[0];
 
@@ -117,7 +118,7 @@ export default async function describeWorkflow(
           parentExecutionInfo: null,
           executionTime: null,
           memo: null,
-          searchAttributes: null,
+          searchAttributes: searchAttributes ?? null,
           autoResetPoints: null,
           taskList: '',
           isCron: null,

@@ -1,13 +1,14 @@
 import { render, screen } from '@/test-utils/rtl';
 
-import useWorkflowInputResult from '../../hooks/use-workflow-input-result';
-import MarkdocWorkflowPayloadContent from '../markdoc-workflow-payload-content';
-import { type ContentProps } from '../markdoc-workflow-payload.types';
+import { RequestError } from '@/utils/request/request-error';
+import useWorkflowPayloads from '@/views/shared/hooks/use-workflow-payloads/use-workflow-payloads';
+import { type UseWorkflowPayloadsReturn } from '@/views/shared/hooks/use-workflow-payloads/use-workflow-payloads.types';
 
-jest.mock('../../hooks/use-workflow-input-result');
-const mockHook = useWorkflowInputResult as jest.MockedFunction<
-  typeof useWorkflowInputResult
->;
+import MarkdocWorkflowPayloadContent from '../markdoc-workflow-payload-content';
+import { type Props } from '../markdoc-workflow-payload-content.types';
+
+jest.mock('@/views/shared/hooks/use-workflow-payloads/use-workflow-payloads');
+const mockHook = jest.mocked(useWorkflowPayloads);
 
 jest.mock('@/components/pretty-json/pretty-json', () =>
   jest.fn(({ json }) => <div>Mock JSON: {JSON.stringify(json)}</div>)
@@ -17,13 +18,13 @@ jest.mock('@/components/error-panel/error-panel', () =>
   jest.fn(({ message }: { message: string }) => <div>{message}</div>)
 );
 
-const baseState = {
-  input: [{ order: { id: 7, items: ['a', 'b'] } }] as never,
-  result: 'done' as never,
+const baseState: UseWorkflowPayloadsReturn = {
+  input: [{ order: { id: 7, items: ['a', 'b'] } }],
+  result: 'done',
   searchAttributes: {
     CustomKeywordField: 'pending',
     CustomDoubleField: 12.5,
-  } as never,
+  },
   isRunning: false,
   isArchived: false,
   isLoading: false,
@@ -44,7 +45,7 @@ describe(MarkdocWorkflowPayloadContent.name, () => {
   it('applies the path to the payload', () => {
     mockHook.mockReturnValue({
       ...baseState,
-      input: { order: { id: 7 } } as never,
+      input: { order: { id: 7 } },
     });
     render(
       <MarkdocWorkflowPayloadContent {...props} kind="input" path="order.id" />
@@ -53,7 +54,7 @@ describe(MarkdocWorkflowPayloadContent.name, () => {
   });
 
   it('shows a placeholder when the path has no value', () => {
-    mockHook.mockReturnValue({ ...baseState, input: { a: 1 } as never });
+    mockHook.mockReturnValue({ ...baseState, input: { a: 1 } });
     render(<MarkdocWorkflowPayloadContent {...props} kind="input" path="b" />);
     expect(screen.getByText('No value')).toBeInTheDocument();
   });
@@ -106,15 +107,6 @@ describe(MarkdocWorkflowPayloadContent.name, () => {
     expect(screen.getByText('No value')).toBeInTheDocument();
   });
 
-  it('shows that search attributes are not available for archived workflows', () => {
-    setup({ kind: 'searchAttributes', state: { isArchived: true } });
-    expect(
-      screen.getByText(
-        'Search attributes are not available for archived workflows'
-      )
-    ).toBeInTheDocument();
-  });
-
   it('shows search attributes of a running workflow', () => {
     setup({ kind: 'searchAttributes', state: { isRunning: true } });
     expect(screen.getByText(/Mock JSON:/)).toBeInTheDocument();
@@ -126,7 +118,7 @@ describe(MarkdocWorkflowPayloadContent.name, () => {
   it('shows an error message when loading fails', () => {
     setup({
       kind: 'input',
-      state: { error: new Error('x') as never },
+      state: { error: new RequestError('x', '/api/test', 500) },
     });
     expect(
       screen.getByText('Failed to load workflow data')
@@ -145,8 +137,8 @@ function setup({
   kind,
   state,
 }: {
-  kind: ContentProps['kind'];
-  state?: Partial<ReturnType<typeof useWorkflowInputResult>>;
+  kind: Props['kind'];
+  state?: Partial<UseWorkflowPayloadsReturn>;
 }) {
   mockHook.mockReturnValue({ ...baseState, ...state });
   render(<MarkdocWorkflowPayloadContent {...props} kind={kind} />);

@@ -2,14 +2,12 @@ import { type ComponentType } from 'react';
 
 import { type Config } from '@markdoc/markdoc';
 
-import MarkdocWorkflowInput from '../markdoc-workflow-payload/markdoc-workflow-input';
+import MarkdocWorkflowPayload from '../markdoc-workflow-payload/markdoc-workflow-payload';
 import {
   workflowInputMarkdocSchema,
   workflowResultMarkdocSchema,
   workflowSearchAttributesMarkdocSchema,
 } from '../markdoc-workflow-payload/markdoc-workflow-payload.markdoc';
-import MarkdocWorkflowResult from '../markdoc-workflow-payload/markdoc-workflow-result';
-import MarkdocWorkflowSearchAttributes from '../markdoc-workflow-payload/markdoc-workflow-search-attributes';
 import MarkdocWorkflowsList from '../markdoc-workflows-list/markdoc-workflows-list';
 import { workflowsListMarkdocSchema } from '../markdoc-workflows-list/markdoc-workflows-list.markdoc';
 
@@ -22,7 +20,5 @@ export const CADENCE_MARKDOC_TAGS: NonNullable<Config['tags']> = {
 
 export const CADENCE_MARKDOC_COMPONENTS: Record<string, ComponentType<any>> = {
   MarkdocWorkflowsList,
-  MarkdocWorkflowInput,
-  MarkdocWorkflowResult,
-  MarkdocWorkflowSearchAttributes,
+  MarkdocWorkflowPayload,
 };

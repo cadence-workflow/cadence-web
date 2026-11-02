@@ -3,7 +3,10 @@ import { type FormattedHistoryEventForType } from '@/utils/data-formatters/schem
 
 export default function getWorkflowInputJson(
   startEvent:
-    | FormattedHistoryEventForType<'WorkflowExecutionStarted'>
+    | Pick<
+        Partial<FormattedHistoryEventForType<'WorkflowExecutionStarted'>>,
+        'input'
+      >
     | undefined
 ): PrettyJsonValue {
   return startEvent && 'input' in startEvent

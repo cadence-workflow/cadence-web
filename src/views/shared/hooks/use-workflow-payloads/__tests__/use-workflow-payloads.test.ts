@@ -6,9 +6,9 @@ import { type DescribeWorkflowResponse } from '@/route-handlers/describe-workflo
 import { startWorkflowExecutionEvent } from '@/views/workflow-history/__fixtures__/workflow-history-single-events';
 import { mockDescribeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
 
-import useWorkflowInputResult from '../use-workflow-input-result';
+import useWorkflowPayloads from '../use-workflow-payloads';
 
-describe(useWorkflowInputResult.name, () => {
+describe(useWorkflowPayloads.name, () => {
   it('returns the input and the result of a closed workflow', async () => {
     const { result } = setup({});
 
@@ -68,7 +68,7 @@ function setup({
 
   return renderHook(
     () =>
-      useWorkflowInputResult({
+      useWorkflowPayloads({
         domain: 'd',
         cluster: 'c',
         workflowId: 'w',

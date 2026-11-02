@@ -1,8 +1,9 @@
-import request from '@/utils/request';
+import { useQuery } from '@tanstack/react-query';
+import { HttpResponse } from 'msw';
+
+import { renderHook, waitFor } from '@/test-utils/rtl';
 
 import getWorkflowFirstHistoryPageQueryOptions from '../get-workflow-first-history-page-query-options';
-
-jest.mock('@/utils/request', () => jest.fn());
 
 const params = {
   domain: 'test-domain',
@@ -12,12 +13,6 @@ const params = {
 };
 
 describe(getWorkflowFirstHistoryPageQueryOptions.name, () => {
-  beforeEach(() => {
-    jest.mocked(request).mockResolvedValue({
-      json: async () => ({ history: { events: [] } }),
-    } as Response);
-  });
-
   it('returns a query key with the params and a page size of one', () => {
     const options = getWorkflowFirstHistoryPageQueryOptions(params);
 
@@ -28,20 +23,36 @@ describe(getWorkflowFirstHistoryPageQueryOptions.name, () => {
   });
 
   it('requests the first history page', async () => {
-    const options = getWorkflowFirstHistoryPageQueryOptions(params);
-    const queryFn = options.queryFn as Exclude<
-      typeof options.queryFn,
-      symbol | undefined
-    >;
+    const requestedUrls: Array<string> = [];
 
-    await queryFn({
-      queryKey: options.queryKey,
-      signal: new AbortController().signal,
-      meta: undefined,
-    });
-
-    expect(request).toHaveBeenCalledWith(
-      '/api/domains/test-domain/test-cluster/workflows/test-workflow-id/test-run-id/history?pageSize=1'
+    const { result } = renderHook(
+      () => useQuery(getWorkflowFirstHistoryPageQueryOptions(params)),
+      {
+        endpointsMocks: [
+          {
+            path: '/api/domains/:domain/:cluster/workflows/:workflowId/:runId/history',
+            httpMethod: 'GET',
+            mockOnce: false,
+            httpResolver: async ({ request }) => {
+              requestedUrls.push(request.url);
+              return HttpResponse.json({
+                history: { events: [] },
+                rawHistory: [],
+                nextPageToken: '',
+              });
+            },
+          },
+        ],
+      }
     );
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(requestedUrls).toHaveLength(1);
+    const url = new URL(requestedUrls[0]);
+    expect(url.pathname).toBe(
+      '/api/domains/test-domain/test-cluster/workflows/test-workflow-id/test-run-id/history'
+    );
+    expect(url.searchParams.get('pageSize')).toBe('1');
   });
 });

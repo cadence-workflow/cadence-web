@@ -20,9 +20,7 @@ describe(CadenceMarkdown.name, () => {
     expect(CADENCE_MARKDOC_TAGS).toHaveProperty('input');
     expect(CADENCE_MARKDOC_TAGS).toHaveProperty('result');
     expect(CADENCE_MARKDOC_TAGS).toHaveProperty('searchAttributes');
-    expect(CADENCE_MARKDOC_COMPONENTS).toHaveProperty(
-      'MarkdocWorkflowSearchAttributes'
-    );
+    expect(CADENCE_MARKDOC_COMPONENTS).toHaveProperty('MarkdocWorkflowPayload');
     expect(CADENCE_MARKDOC_COMPONENTS).toHaveProperty('MarkdocWorkflowsList');
   });
 

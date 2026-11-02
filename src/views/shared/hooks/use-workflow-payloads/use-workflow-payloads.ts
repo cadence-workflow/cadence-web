@@ -1,47 +1,55 @@
 'use client';
 import { useMemo } from 'react';
 
-import { useQuery } from '@tanstack/react-query';
+import { useQueries, type UseQueryOptions } from '@tanstack/react-query';
 
 import { type PrettyJsonValue } from '@/components/pretty-json/pretty-json.types';
+import { type DescribeWorkflowResponse } from '@/route-handlers/describe-workflow/describe-workflow.types';
+import formatPayloadMap from '@/utils/data-formatters/format-payload-map';
 import formatWorkflowHistory from '@/utils/data-formatters/format-workflow-history';
 import formatWorkflowHistoryEvent from '@/utils/data-formatters/format-workflow-history-event';
 import { type FormattedHistoryEventForType } from '@/utils/data-formatters/schema/format-history-event-schema';
+import { type RequestError } from '@/utils/request/request-error';
 import getWorkflowFirstHistoryPageQueryOptions from '@/views/workflow-page/helpers/get-workflow-first-history-page-query-options';
 import getWorkflowIsRunning from '@/views/workflow-page/helpers/get-workflow-is-running';
-import getWorkflowSearchAttributes from '@/views/workflow-page/helpers/get-workflow-search-attributes';
-import { useDescribeWorkflow } from '@/views/workflow-page/hooks/use-describe-workflow';
+import { getDescribeWorkflowQueryOptions } from '@/views/workflow-page/hooks/use-describe-workflow';
+import { type DescribeWorkflowQueryKey } from '@/views/workflow-page/hooks/use-describe-workflow.types';
 import getWorkflowInputJson from '@/views/workflow-summary/helpers/get-workflow-input-json';
 import getWorkflowResultJson from '@/views/workflow-summary/helpers/get-workflow-result-json';
 
 import {
-  type UseWorkflowInputResultParams,
-  type UseWorkflowInputResultReturn,
-} from './use-workflow-input-result.types';
+  type UseWorkflowPayloadsParams,
+  type UseWorkflowPayloadsReturn,
+} from './use-workflow-payloads.types';
 
-/**
- * Loads a workflow's decoded input, result and search attributes.
- */
-export default function useWorkflowInputResult({
+export default function useWorkflowPayloads({
   domain,
   cluster,
   workflowId,
   runId,
-}: UseWorkflowInputResultParams): UseWorkflowInputResultReturn {
-  const history = useQuery(
-    getWorkflowFirstHistoryPageQueryOptions({
-      domain,
-      cluster,
-      workflowId,
-      runId,
-    })
-  );
-
-  const describe = useDescribeWorkflow({
+}: UseWorkflowPayloadsParams): UseWorkflowPayloadsReturn {
+  const describeOptions: UseQueryOptions<
+    DescribeWorkflowResponse,
+    RequestError,
+    DescribeWorkflowResponse,
+    DescribeWorkflowQueryKey
+  > = getDescribeWorkflowQueryOptions({
     domain,
     cluster,
     workflowId,
     runId,
+  });
+
+  const [history, describe] = useQueries({
+    queries: [
+      getWorkflowFirstHistoryPageQueryOptions({
+        domain,
+        cluster,
+        workflowId,
+        runId,
+      }),
+      describeOptions,
+    ],
   });
 
   const input = useMemo<PrettyJsonValue>(() => {
@@ -64,21 +72,23 @@ export default function useWorkflowInputResult({
       : undefined;
   }, [closeEvent]);
 
-  const indexedFields =
-    describe.data?.workflowExecutionInfo?.searchAttributes?.indexedFields;
+  const searchAttributesPayloads =
+    describe.data?.workflowExecutionInfo?.searchAttributes;
 
-  const searchAttributes = useMemo(
-    () => getWorkflowSearchAttributes(indexedFields),
-    [indexedFields]
+  const searchAttributes = useMemo<
+    UseWorkflowPayloadsReturn['searchAttributes']
+  >(
+    () =>
+      formatPayloadMap(searchAttributesPayloads, 'indexedFields')
+        ?.indexedFields,
+    [searchAttributesPayloads]
   );
-
-  const isRunning = getWorkflowIsRunning(closeEvent);
 
   return {
     input,
     result,
     searchAttributes,
-    isRunning,
+    isRunning: getWorkflowIsRunning(closeEvent?.attributes),
     isArchived: describe.data?.workflowExecutionInfo?.isArchived ?? false,
     isLoading: history.isLoading || describe.isLoading,
     error: history.error ?? describe.error ?? null,

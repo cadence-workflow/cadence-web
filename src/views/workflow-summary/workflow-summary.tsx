@@ -7,6 +7,7 @@ import PageSection from '@/components/page-section/page-section';
 import { type PrettyJsonValue } from '@/components/pretty-json/pretty-json.types';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
+import formatPayloadMap from '@/utils/data-formatters/format-payload-map';
 import formatWorkflowHistory from '@/utils/data-formatters/format-workflow-history';
 import formatWorkflowHistoryEvent from '@/utils/data-formatters/format-workflow-history-event';
 import { type FormattedHistoryEventForType } from '@/utils/data-formatters/schema/format-history-event-schema';
@@ -15,7 +16,6 @@ import type { WorkflowPageTabContentProps } from '@/views/workflow-page/workflow
 
 import getWorkflowFirstHistoryPageQueryOptions from '../workflow-page/helpers/get-workflow-first-history-page-query-options';
 import getWorkflowIsRunning from '../workflow-page/helpers/get-workflow-is-running';
-import getWorkflowSearchAttributes from '../workflow-page/helpers/get-workflow-search-attributes';
 import useDescribeWorkflow from '../workflow-page/hooks/use-describe-workflow/use-describe-workflow';
 
 import getWorkflowInputJson from './helpers/get-workflow-input-json';
@@ -71,7 +71,7 @@ export default function WorkflowSummary({
     formattedCloseEvent ? getWorkflowResultJson(formattedCloseEvent) : undefined
   ) as PrettyJsonValue;
 
-  const isWorkflowRunning = getWorkflowIsRunning(closeEvent);
+  const isWorkflowRunning = getWorkflowIsRunning(closeEvent?.attributes);
 
   const isWorkflowError =
     !!closeEvent?.attributes && getWorkflowIsError(closeEvent.attributes);
@@ -101,10 +101,12 @@ export default function WorkflowSummary({
           <WorkflowSummaryScheduleDetails
             cluster={decodedParams.cluster}
             domain={decodedParams.domain}
-            searchAttributes={getWorkflowSearchAttributes(
-              workflowDetails.workflowExecutionInfo?.searchAttributes
-                ?.indexedFields
-            )}
+            searchAttributes={
+              formatPayloadMap(
+                workflowDetails.workflowExecutionInfo?.searchAttributes,
+                'indexedFields'
+              )?.indexedFields
+            }
           />
         </div>
         {/* On narrow screens */}

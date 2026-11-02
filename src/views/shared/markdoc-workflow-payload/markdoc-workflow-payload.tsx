@@ -3,7 +3,7 @@ import React, { useContext } from 'react';
 
 import { MarkdownContext } from '@/components/markdown/markdown-context-provider/markdown-context-provider';
 
-import MarkdocWorkflowPayloadContent from './markdoc-workflow-payload-content';
+import MarkdocWorkflowPayloadContent from './markdoc-workflow-payload-content/markdoc-workflow-payload-content';
 import { MARKDOC_WORKFLOW_PAYLOAD_PLACEHOLDERS as PLACEHOLDERS } from './markdoc-workflow-payload.constants';
 import { styled } from './markdoc-workflow-payload.styles';
 import { type Props } from './markdoc-workflow-payload.types';

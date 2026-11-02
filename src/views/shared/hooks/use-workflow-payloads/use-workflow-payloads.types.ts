@@ -1,14 +1,14 @@
 import { type PrettyJsonValue } from '@/components/pretty-json/pretty-json.types';
 import { type RequestError } from '@/utils/request/request-error';
 
-export type UseWorkflowInputResultParams = {
+export type UseWorkflowPayloadsParams = {
   domain: string;
   cluster: string;
   workflowId: string;
   runId: string;
 };
 
-export type UseWorkflowInputResultReturn = {
+export type UseWorkflowPayloadsReturn = {
   input: PrettyJsonValue;
   result: PrettyJsonValue;
   searchAttributes: Record<string, PrettyJsonValue> | undefined;

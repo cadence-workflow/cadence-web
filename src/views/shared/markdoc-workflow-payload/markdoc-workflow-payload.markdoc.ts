@@ -1,4 +1,6 @@
-import { type Schema } from '@markdoc/markdoc';
+import { type Schema, Tag } from '@markdoc/markdoc';
+
+import { type WorkflowPayloadKind } from './markdoc-workflow-payload.types';
 
 const attributes = {
   workflowId: { type: String, required: false },
@@ -8,26 +10,30 @@ const attributes = {
   path: { type: String, required: false },
 };
 
-export const workflowSearchAttributesMarkdocSchema: Schema = {
-  render: 'MarkdocWorkflowSearchAttributes',
+const getSchema = (
+  kind: WorkflowPayloadKind,
+  schemaAttributes: Schema['attributes']
+): Schema => ({
   selfClosing: true,
-  attributes: {
+  attributes: schemaAttributes,
+  transform: (node, config) =>
+    new Tag('MarkdocWorkflowPayload', {
+      ...node.transformAttributes(config),
+      kind,
+    }),
+});
+
+export const workflowSearchAttributesMarkdocSchema = getSchema(
+  'searchAttributes',
+  {
     workflowId: attributes.workflowId,
     runId: attributes.runId,
     domain: attributes.domain,
     cluster: attributes.cluster,
     name: { type: String, required: false },
-  },
-};
+  }
+);
 
-export const workflowInputMarkdocSchema: Schema = {
-  render: 'MarkdocWorkflowInput',
-  selfClosing: true,
-  attributes,
-};
+export const workflowInputMarkdocSchema = getSchema('input', attributes);
 
-export const workflowResultMarkdocSchema: Schema = {
-  render: 'MarkdocWorkflowResult',
-  selfClosing: true,
-  attributes,
-};
+export const workflowResultMarkdocSchema = getSchema('result', attributes);

@@ -6,20 +6,21 @@ import ErrorPanel from '@/components/error-panel/error-panel';
 import PrettyJson from '@/components/pretty-json/pretty-json';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import losslessJsonStringify from '@/utils/lossless-json-stringify';
-import useWorkflowInputResult from '@/views/shared/hooks/use-workflow-input-result';
+import useWorkflowPayloads from '@/views/shared/hooks/use-workflow-payloads/use-workflow-payloads';
 
-import getWorkflowPayloadValue from './helpers/get-workflow-payload-value';
-import getWorkflowSearchAttributeValue from './helpers/get-workflow-search-attribute-value';
-import { MARKDOC_WORKFLOW_PAYLOAD_PLACEHOLDERS as PLACEHOLDERS } from './markdoc-workflow-payload.constants';
-import { overrides, styled } from './markdoc-workflow-payload.styles';
-import { type ContentProps } from './markdoc-workflow-payload.types';
+import getWorkflowPayloadValue from '../helpers/get-workflow-payload-value';
+import getWorkflowSearchAttributeValue from '../helpers/get-workflow-search-attribute-value';
+import { MARKDOC_WORKFLOW_PAYLOAD_PLACEHOLDERS as PLACEHOLDERS } from '../markdoc-workflow-payload.constants';
+
+import { overrides, styled } from './markdoc-workflow-payload-content.styles';
+import { type Props } from './markdoc-workflow-payload-content.types';
 
 export default function MarkdocWorkflowPayloadContent({
   kind,
   path,
   name,
   ...workflowParams
-}: ContentProps) {
+}: Props) {
   const {
     input,
     result,
@@ -28,7 +29,7 @@ export default function MarkdocWorkflowPayloadContent({
     isArchived,
     isLoading,
     error,
-  } = useWorkflowInputResult(workflowParams);
+  } = useWorkflowPayloads(workflowParams);
 
   const value = useMemo(() => {
     if (kind === 'searchAttributes') {
@@ -48,14 +49,6 @@ export default function MarkdocWorkflowPayloadContent({
         error={error}
         omitLogging
       />
-    );
-  }
-
-  if (kind === 'searchAttributes' && isArchived) {
-    return (
-      <styled.Placeholder>
-        {PLACEHOLDERS.archivedSearchAttributes}
-      </styled.Placeholder>
     );
   }
 

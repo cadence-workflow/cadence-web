@@ -15,9 +15,4 @@ describe(getWorkflowPayloadValue.name, () => {
   it('returns undefined for a missing path', () => {
     expect(getWorkflowPayloadValue(payload, 'order.nope')).toBeUndefined();
   });
-
-  it('returns undefined when the payload is a scalar and a path is given', () => {
-    expect(getWorkflowPayloadValue('text', 'a')).toBeUndefined();
-    expect(getWorkflowPayloadValue(null, 'a')).toBeUndefined();
-  });
 });

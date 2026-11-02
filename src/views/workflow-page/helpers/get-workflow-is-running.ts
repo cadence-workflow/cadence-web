@@ -1,13 +1,7 @@
-import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
-
 import getWorkflowIsCompleted from './get-workflow-is-completed';
 
 export default function getWorkflowIsRunning(
-  closeEvent: HistoryEvent | null
+  closeEventAttributes: string | null | undefined
 ): boolean {
-  return (
-    !closeEvent ||
-    !closeEvent.attributes ||
-    !getWorkflowIsCompleted(closeEvent.attributes)
-  );
+  return !closeEventAttributes || !getWorkflowIsCompleted(closeEventAttributes);
 }

@@ -4,7 +4,9 @@ import { render, screen } from '@/test-utils/rtl';
 
 import { type DescribeWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeWorkflowExecutionResponse';
 import { type GetWorkflowExecutionHistoryResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/GetWorkflowExecutionHistoryResponse';
+import { type DescribeWorkflowResponse } from '@/route-handlers/describe-workflow/describe-workflow.types';
 import { startWorkflowExecutionEvent } from '@/views/workflow-history/__fixtures__/workflow-history-single-events';
+import { mockDescribeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
 import { type WorkflowPageTabContentProps } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
 import WorkflowSummary from '../workflow-summary';
@@ -120,13 +122,9 @@ describe('WorkflowSummary', () => {
             path: '/api/domains/:domain/:cluster/workflows/:workflowId/:runId',
             httpMethod: 'GET',
             jsonResponse: {
-              executionConfiguration: null,
-              pendingChildren: [],
-              pendingActivities: [],
-              pendingDecision: null,
+              ...mockDescribeWorkflowResponse,
               workflowExecutionInfo: {
-                closeEvent: null,
-                isArchived: false,
+                ...mockDescribeWorkflowResponse.workflowExecutionInfo,
                 searchAttributes: {
                   indexedFields: {
                     CadenceScheduleID: {
@@ -135,7 +133,7 @@ describe('WorkflowSummary', () => {
                   },
                 },
               },
-            } as unknown as DescribeWorkflowExecutionResponse,
+            } satisfies DescribeWorkflowResponse,
           },
         ],
       }

@@ -6,7 +6,5 @@ export default function getWorkflowPayloadValue(
   payload: PrettyJsonValue,
   path?: string
 ): PrettyJsonValue {
-  if (!path) return payload;
-  if (payload === null || typeof payload !== 'object') return undefined;
-  return get(payload, path) as PrettyJsonValue;
+  return path ? get(payload, path) : payload;
 }
