@@ -28,18 +28,6 @@ export default function useWorkflowPayloads({
   workflowId,
   runId,
 }: UseWorkflowPayloadsParams): UseWorkflowPayloadsReturn {
-  const describeOptions: UseQueryOptions<
-    DescribeWorkflowResponse,
-    RequestError,
-    DescribeWorkflowResponse,
-    DescribeWorkflowQueryKey
-  > = getDescribeWorkflowQueryOptions({
-    domain,
-    cluster,
-    workflowId,
-    runId,
-  });
-
   const [history, describe] = useQueries({
     queries: [
       getWorkflowFirstHistoryPageQueryOptions({
@@ -48,7 +36,12 @@ export default function useWorkflowPayloads({
         workflowId,
         runId,
       }),
-      describeOptions,
+      getDescribeWorkflowQueryOptions({
+        domain,
+        cluster,
+        workflowId,
+        runId,
+      }),
     ],
   });
 
