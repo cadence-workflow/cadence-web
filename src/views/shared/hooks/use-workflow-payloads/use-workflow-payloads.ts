@@ -12,8 +12,8 @@ import { type FormattedHistoryEventForType } from '@/utils/data-formatters/schem
 import { type RequestError } from '@/utils/request/request-error';
 import getWorkflowFirstHistoryPageQueryOptions from '@/views/workflow-page/helpers/get-workflow-first-history-page-query-options';
 import getWorkflowIsRunning from '@/views/workflow-page/helpers/get-workflow-is-running';
-import { getDescribeWorkflowQueryOptions } from '@/views/workflow-page/hooks/use-describe-workflow';
-import { type DescribeWorkflowQueryKey } from '@/views/workflow-page/hooks/use-describe-workflow.types';
+import getDescribeWorkflowQueryOptions from '@/views/workflow-page/hooks/use-describe-workflow/get-describe-workflow-query-options';
+import { type DescribeWorkflowQueryKey } from '@/views/workflow-page/hooks/use-describe-workflow/use-describe-workflow.types';
 import getWorkflowInputJson from '@/views/workflow-summary/helpers/get-workflow-input-json';
 import getWorkflowResultJson from '@/views/workflow-summary/helpers/get-workflow-result-json';
 
