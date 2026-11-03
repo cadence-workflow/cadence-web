@@ -52,6 +52,14 @@ describe(SignalButton.name, () => {
     );
   });
 
+  it('disables the button when the signal name is empty', () => {
+    setup({ propsOverrides: { signalName: undefined } });
+
+    expect(screen.getByRole('button', { name: 'Send Signal' })).toHaveAttribute(
+      'disabled'
+    );
+  });
+
   it('shows a success snackbar with auto-dismiss duration after signaling', async () => {
     const { user } = setup({});
 

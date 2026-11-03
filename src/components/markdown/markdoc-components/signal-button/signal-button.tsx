@@ -91,7 +91,8 @@ export default function SignalButton({
   });
 
   const hasMissingFields = missingRequired.length > 0;
-  const isDisabled = !domain || !cluster || !workflowId || hasMissingFields;
+  const isDisabled =
+    !signalName || !domain || !cluster || !workflowId || hasMissingFields;
 
   const handleClick = () => {
     if (!isDisabled) {

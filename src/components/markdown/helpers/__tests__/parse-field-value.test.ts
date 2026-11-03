@@ -27,4 +27,10 @@ describe(parseFieldValue.name, () => {
       parseFieldValue('abc', { type: 'number', required: false })
     ).toBeUndefined();
   });
+
+  it('returns undefined for a number field that overflows', () => {
+    expect(
+      parseFieldValue('1e309', { type: 'number', required: false })
+    ).toBeUndefined();
+  });
 });

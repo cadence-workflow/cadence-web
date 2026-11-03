@@ -7,7 +7,7 @@ export default function parseFieldValue(
   if (raw === undefined || raw.trim() === '') return undefined;
   if (meta.type === 'number') {
     const value = Number(raw);
-    return Number.isNaN(value) ? undefined : value;
+    return Number.isFinite(value) ? value : undefined;
   }
   return raw;
 }
