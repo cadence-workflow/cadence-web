@@ -46,7 +46,7 @@ export default function getWorkflowHomeContent({
   if (data.rejected) {
     return {
       state: 'error',
-      description: `The workflow is closed with status ${data.rejected.closeStatus}`,
+      description: 'The home page query was rejected',
     };
   }
 

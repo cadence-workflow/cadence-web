@@ -75,8 +75,7 @@ describe(getWorkflowHomeContent.name, () => {
       })
     ).toEqual({
       state: 'error',
-      description:
-        'The workflow is closed with status WORKFLOW_EXECUTION_CLOSE_STATUS_FAILED',
+      description: 'The home page query was rejected',
     });
   });
 
