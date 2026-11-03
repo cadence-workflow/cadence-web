@@ -43,6 +43,10 @@ CADENCE_GRPC_SERVICES_NAMES=cadence-frontend-cluster0,cadence-frontend-cluster1
 CADENCE_CLUSTERS_NAMES=cluster0,cluster1
 ```
 
+#### Health check
+
+`GET /api/health` is an unauthenticated liveness endpoint. A process that is serving returns HTTP 200 and `{ "status": "ok" }`. The response sets `Cache-Control: no-store`. The probe does not call Cadence. Point load balancer and orchestrator probes at this path.
+
 #### JWT Authentication (cookie)
 
 `CADENCE_WEB_AUTH_STRATEGY` is resolved server-side to one of the supported auth strategies: `disabled` or `jwt`. Invalid or unset values fall back to `disabled`.
