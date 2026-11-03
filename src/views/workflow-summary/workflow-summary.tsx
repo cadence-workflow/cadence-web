@@ -77,7 +77,7 @@ export default function WorkflowSummary({
     !!closeEvent?.attributes && getWorkflowIsError(closeEvent.attributes);
 
   const baseJsonViewProps: JsonViewProps = {
-    inputJson: getWorkflowInputJson(formattedStartEvent) as PrettyJsonValue,
+    inputJson: getWorkflowInputJson(formattedStartEvent),
     resultJson,
     isWorkflowRunning,
     isWorkflowError,

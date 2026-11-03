@@ -1,3 +1,4 @@
+import { type PrettyJsonValue } from '@/components/pretty-json/pretty-json.types';
 import { type RequestError } from '@/utils/request/request-error';
 
 export type UseWorkflowPayloadsParams = {
@@ -8,9 +9,9 @@ export type UseWorkflowPayloadsParams = {
 };
 
 export type UseWorkflowPayloadsReturn = {
-  input: unknown;
-  result: unknown;
-  searchAttributes: Record<string, unknown> | undefined;
+  input: PrettyJsonValue;
+  result: PrettyJsonValue;
+  searchAttributes: Record<string, PrettyJsonValue> | undefined;
   isRunning: boolean;
   isArchived: boolean;
   isLoading: boolean;

@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 
 import { useQueries } from '@tanstack/react-query';
 
+import { type PrettyJsonValue } from '@/components/pretty-json/pretty-json.types';
 import formatPayloadMap from '@/utils/data-formatters/format-payload-map';
 import formatWorkflowHistory from '@/utils/data-formatters/format-workflow-history';
 import formatWorkflowHistoryEvent from '@/utils/data-formatters/format-workflow-history-event';
@@ -41,7 +42,7 @@ export default function useWorkflowPayloads({
     ],
   });
 
-  const input = useMemo<unknown>(() => {
+  const input = useMemo<PrettyJsonValue>(() => {
     if (!history.data) return undefined;
     const startEvent = formatWorkflowHistory(history.data)?.history
       ?.events?.[0] as
@@ -52,12 +53,12 @@ export default function useWorkflowPayloads({
 
   const closeEvent = describe.data?.workflowExecutionInfo?.closeEvent ?? null;
 
-  const result = useMemo<unknown>(() => {
+  const result = useMemo<PrettyJsonValue>(() => {
     const formattedCloseEvent = closeEvent
       ? formatWorkflowHistoryEvent(closeEvent)
       : null;
     return formattedCloseEvent
-      ? getWorkflowResultJson(formattedCloseEvent)
+      ? (getWorkflowResultJson(formattedCloseEvent) as PrettyJsonValue)
       : undefined;
   }, [closeEvent]);
 
