@@ -1,10 +1,8 @@
 import get from 'lodash/get';
 
-import { type PrettyJsonValue } from '@/components/pretty-json/pretty-json.types';
-
 export default function getWorkflowPayloadValue(
-  payload: PrettyJsonValue,
+  payload: unknown,
   path?: string
-): PrettyJsonValue {
+): unknown {
   return path ? get(payload, path) : payload;
 }

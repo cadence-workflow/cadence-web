@@ -1,9 +1,7 @@
-import { type PrettyJsonValue } from '@/components/pretty-json/pretty-json.types';
-
 export default function getWorkflowSearchAttributeValue(
-  searchAttributes: Record<string, PrettyJsonValue> | undefined,
+  searchAttributes: Record<string, unknown> | undefined,
   name?: string
-): PrettyJsonValue {
+): unknown {
   if (!name) return searchAttributes;
   if (!searchAttributes || !Object.hasOwn(searchAttributes, name)) {
     return undefined;

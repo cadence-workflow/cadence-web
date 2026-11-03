@@ -4,6 +4,7 @@ import React, { useMemo } from 'react';
 import CopyTextButton from '@/components/copy-text-button/copy-text-button';
 import ErrorPanel from '@/components/error-panel/error-panel';
 import PrettyJson from '@/components/pretty-json/pretty-json';
+import { type PrettyJsonValue } from '@/components/pretty-json/pretty-json.types';
 import SectionLoadingIndicator from '@/components/section-loading-indicator/section-loading-indicator';
 import losslessJsonStringify from '@/utils/lossless-json-stringify';
 import useWorkflowPayloads from '@/views/shared/hooks/use-workflow-payloads/use-workflow-payloads';
@@ -67,7 +68,7 @@ export default function MarkdocWorkflowPayloadContent({
   if (value !== null && typeof value === 'object') {
     return (
       <styled.Container>
-        <PrettyJson json={value} />
+        <PrettyJson json={value as PrettyJsonValue} />
         <CopyTextButton
           textToCopy={losslessJsonStringify(value, null, '\t')}
           overrides={overrides.copyButton}
