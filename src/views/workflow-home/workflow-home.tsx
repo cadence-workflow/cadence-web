@@ -7,7 +7,7 @@ import SectionLoadingIndicator from '@/components/section-loading-indicator/sect
 import useSuspenseConfigValue from '@/hooks/use-config-value/use-suspense-config-value';
 import CadenceMarkdown from '@/views/shared/cadence-markdown/cadence-markdown';
 
-import { useDescribeWorkflow } from '../workflow-page/hooks/use-describe-workflow';
+import useDescribeWorkflow from '../workflow-page/hooks/use-describe-workflow/use-describe-workflow';
 
 import getWorkflowHomeContent from './helpers/get-workflow-home-content';
 import useWorkflowHomeQuery from './hooks/use-workflow-home-query';
