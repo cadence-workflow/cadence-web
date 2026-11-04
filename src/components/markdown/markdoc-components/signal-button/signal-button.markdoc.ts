@@ -13,6 +13,10 @@ export const signalButtonMarkdocSchema = {
       type: Object,
       required: false,
     },
+    variableNames: {
+      type: Array,
+      required: false,
+    },
     domain: {
       type: String,
       required: false,
