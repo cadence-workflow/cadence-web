@@ -171,6 +171,35 @@ describe(describeWorkflow.name, () => {
     });
   });
 
+  it('reports the search attributes of the started event in the archived fallback', async () => {
+    const searchAttributes = {
+      indexedFields: { CustomKeywordField: { data: 'ImtleSI=' } },
+    };
+    const { res } = await setup({
+      describeError: notFoundError(),
+      historyResponse: {
+        ...mockStartedEventHistory,
+        history: {
+          events: [
+            {
+              ...mockStartedEventHistory.history!.events[0],
+              workflowExecutionStartedEventAttributes: {
+                ...mockStartedEventHistory.history!.events[0]
+                  .workflowExecutionStartedEventAttributes!,
+                searchAttributes,
+              },
+            },
+          ],
+        },
+      },
+    });
+
+    const responseJson = await res.json();
+    expect(responseJson.workflowExecutionInfo.searchAttributes).toEqual(
+      searchAttributes
+    );
+  });
+
   it('returns 404 when neither describeWorkflow nor history have the workflow', async () => {
     const { res } = await setup({
       describeError: notFoundError(),
