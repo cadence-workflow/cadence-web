@@ -1,0 +1,1 @@
+export const MARKDOC_WORKFLOWS_LIST_MAX_HEIGHT = '20vh';
