@@ -41,7 +41,9 @@ export default function WorkflowHome({ params }: Props) {
   // The worker may not have handled a signal yet when the first refetch runs,
   // so refetch once more after a short delay.
   const { refetch: refetchHome } = homeQuery;
-  const delayedRefetchRef = useRef<ReturnType<typeof setTimeout>>();
+  const delayedRefetchRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined
+  );
   useEffect(() => () => clearTimeout(delayedRefetchRef.current), []);
   const handleActionSuccess = useCallback(() => {
     refetchHome();

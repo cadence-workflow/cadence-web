@@ -146,7 +146,7 @@ describe('WorkflowSummary', () => {
       expect.objectContaining({
         searchAttributes: { CadenceScheduleID: 'my-schedule' },
       }),
-      expect.anything()
+      undefined
     );
   });
 });

@@ -30,7 +30,7 @@ describe(MarkdocWorkflowsListContent.name, () => {
     await screen.findByText('Mock list: 1');
     expect(WorkflowsList).toHaveBeenCalledWith(
       expect.objectContaining({ maxHeight: '20vh' }),
-      expect.anything()
+      undefined
     );
   });
 
