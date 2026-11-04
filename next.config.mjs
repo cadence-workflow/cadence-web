@@ -13,6 +13,14 @@ const BUILD_OUTPUT =
     : undefined;
 
 const nextConfig = {
+  // ESM-only deps. next/jest also builds its transformIgnorePatterns from this list.
+  transpilePackages: [
+    'query-string',
+    'decode-uri-component',
+    'split-on-first',
+    'filter-obj',
+    'react-movable',
+  ],
   webpack: (config, options) => {
     config.resolve.alias = {
       ...config.resolve.alias,
