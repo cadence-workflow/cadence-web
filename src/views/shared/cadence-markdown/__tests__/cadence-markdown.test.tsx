@@ -33,7 +33,7 @@ describe(CadenceMarkdown.name, () => {
         extraTags: CADENCE_MARKDOC_TAGS,
         extraComponents: CADENCE_MARKDOC_COMPONENTS,
       }),
-      expect.anything()
+      undefined
     );
   });
 });

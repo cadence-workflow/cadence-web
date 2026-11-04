@@ -4,7 +4,7 @@ import queryString from 'query-string';
 import describeDomainAcrossClusters from './helpers/describe-domain-across-clusters';
 import { type Props } from './redirect-domain.types';
 
-export default async function RedirectDomain(props: Props) {
+export default async function RedirectDomain(props: Props): Promise<never> {
   const [encodedDomain, ...restParams] = props.params.domainParams;
   if (!encodedDomain) {
     throw new Error('Invalid domain URL param');

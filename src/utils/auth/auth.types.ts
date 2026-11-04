@@ -50,7 +50,7 @@ export type AuthServerPolicy = {
   resolveAuthContext(request?: AuthRequest): Promise<AuthContext>;
   getGrpcMetadata(
     authContext: AuthContext,
-    request?: AuthRequest
+    request: AuthRequest
   ): GRPCMetadata | undefined | Promise<GRPCMetadata | undefined>;
   getLoginRedirectIfNeeded(
     authContext: AuthContext,
