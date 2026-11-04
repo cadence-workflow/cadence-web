@@ -12,6 +12,23 @@ Cadence markdown support is implemented using [Markdoc](https://markdoc.io/).
 Markdoc is a markdown parser and renderer that is used to safely render the markdown content.
 
 
+## Home Page Result
+
+The \`home\` query of a workflow returns a result with the format \`text/markdown\`. The Home tab shows it.
+
+\`\`\`json
+{
+  "cadenceResponseType": "formattedData",
+  "format": "text/markdown",
+  "data": "## Details ...",
+  "title": "Expense report EXP-1001"
+}
+\`\`\`
+
+- \`data\` (string, required) -- the Markdown page
+- \`title\` (string, optional) -- heading at the top of the home page
+
+
 ## Signal Workflow
 
 Send a signal to a running workflow using the \`signal\` tag.

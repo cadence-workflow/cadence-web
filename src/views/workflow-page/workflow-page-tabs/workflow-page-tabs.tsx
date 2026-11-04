@@ -28,15 +28,20 @@ export default function WorkflowPageTabs() {
   const { data: isWorkflowDiagnosticsInHistoryEnabled } =
     useSuspenseConfigValue('WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED');
 
+  const { data: isWorkflowHomeEnabled } = useSuspenseConfigValue(
+    'WORKFLOW_HOME_ENABLED'
+  );
+
   const shouldShowDiagnosticsInSeparateTab =
     isWorkflowDiagnosticsEnabled && !isWorkflowDiagnosticsInHistoryEnabled;
 
   const filteredTabsConfig = useMemo(
     () =>
-      shouldShowDiagnosticsInSeparateTab
-        ? workflowPageTabsConfig
-        : omit(workflowPageTabsConfig, 'diagnostics'),
-    [shouldShowDiagnosticsInSeparateTab]
+      omit(workflowPageTabsConfig, [
+        ...(shouldShowDiagnosticsInSeparateTab ? [] : ['diagnostics' as const]),
+        ...(isWorkflowHomeEnabled ? [] : ['home' as const]),
+      ]),
+    [shouldShowDiagnosticsInSeparateTab, isWorkflowHomeEnabled]
   );
 
   const tabList = useMemo(

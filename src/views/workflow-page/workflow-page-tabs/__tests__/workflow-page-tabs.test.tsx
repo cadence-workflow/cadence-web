@@ -86,6 +86,22 @@ describe('WorkflowPageTabs', () => {
     expect(screen.queryByText('Diagnostics')).toBeNull();
   });
 
+  it('renders the home page tab when the feature is enabled', async () => {
+    await setup({ enableHome: true });
+
+    expect(screen.getByText('Summary')).toBeInTheDocument();
+    expect(screen.getByText('Home')).toBeInTheDocument();
+    expect(screen.getByTestId('home-artwork')).toBeInTheDocument();
+  });
+
+  it('hides the home page tab when the feature is disabled', async () => {
+    await setup({ enableHome: false });
+
+    expect(screen.getByText('Summary')).toBeInTheDocument();
+    expect(screen.queryByText('Home')).toBeNull();
+    expect(screen.queryByTestId('home-artwork')).toBeNull();
+  });
+
   it('renders tabs buttons correctly', async () => {
     await setup({ enableDiagnostics: false });
 
@@ -153,10 +169,12 @@ async function setup({
   error,
   enableDiagnostics,
   enableDiagnosticsInHistory,
+  enableHome,
 }: {
   error?: boolean;
   enableDiagnostics?: boolean;
   enableDiagnosticsInHistory?: boolean;
+  enableHome?: boolean;
 }) {
   render(
     <ErrorBoundary
@@ -193,6 +211,11 @@ async function setup({
                 return HttpResponse.json(
                   (enableDiagnosticsInHistory ??
                     false) satisfies GetConfigResponse<'WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED'>
+                );
+              case 'WORKFLOW_HOME_ENABLED':
+                return HttpResponse.json(
+                  (enableHome ??
+                    false) satisfies GetConfigResponse<'WORKFLOW_HOME_ENABLED'>
                 );
               default:
                 return HttpResponse.json(false);
