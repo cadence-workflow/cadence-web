@@ -43,7 +43,7 @@ export type Props = {
     startIndex: number;
     endIndex: number;
   }) => void;
-  virtuosoRef: RefObject<VirtuosoHandle>;
+  virtuosoRef: RefObject<VirtuosoHandle | null>;
 
   // Timeline integration
   onClickShowGroupInTimeline: (eventGroupId: string) => void;

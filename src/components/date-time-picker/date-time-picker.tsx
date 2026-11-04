@@ -6,6 +6,7 @@ import {
   useState,
   type KeyboardEvent,
   type MouseEvent,
+  type RefObject,
 } from 'react';
 
 import { Calendar } from 'baseui/datepicker';
@@ -153,7 +154,8 @@ export default function DateTimePicker({
       <div>
         <Input
           id={id}
-          inputRef={inputElRef}
+          // baseui types inputRef as non-null RefObject; React 19 refs are nullable.
+          inputRef={inputElRef as RefObject<HTMLInputElement>}
           aria-label={ariaLabel}
           placeholder={placeholder}
           size={size}
