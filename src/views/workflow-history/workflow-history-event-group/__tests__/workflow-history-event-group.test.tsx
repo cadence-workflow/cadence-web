@@ -9,6 +9,7 @@ import {
   mockActivityEventGroup,
   mockDecisionEventGroup,
 } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
+import { pendingDecisionTaskStartEvent } from '@/views/workflow-history/__fixtures__/workflow-history-pending-events';
 import type WorkflowHistoryGroupLabel from '@/views/workflow-history/workflow-history-group-label/workflow-history-group-label';
 import type WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflow-history-timeline-reset-button/workflow-history-timeline-reset-button';
 
@@ -257,6 +258,42 @@ describe(WorkflowHistoryEventGroup.name, () => {
     await user.click(headerLabel);
 
     expect(toggleIsEventExpanded).toHaveBeenCalledTimes(2);
+  });
+
+  it('keys expansion off computedEventId for pending synthetic events', async () => {
+    const eventGroup: HistoryEventsGroup = {
+      ...mockDecisionEventGroup,
+      events: [pendingDecisionTaskStartEvent],
+    };
+
+    const toggleIsEventExpanded = jest.fn();
+    const { user } = setup({ eventGroup, toggleIsEventExpanded });
+
+    const headerLabel = screen.getByText('Mock decision');
+    await user.click(headerLabel);
+
+    expect(toggleIsEventExpanded).toHaveBeenCalledTimes(1);
+    expect(toggleIsEventExpanded).toHaveBeenCalledWith(
+      pendingDecisionTaskStartEvent.computedEventId
+    );
+  });
+
+  it('expands panel when a pending synthetic event is expanded via computedEventId', () => {
+    const eventGroup: HistoryEventsGroup = {
+      ...mockDecisionEventGroup,
+      events: [pendingDecisionTaskStartEvent],
+    };
+
+    const getIsEventExpanded = jest.fn(
+      (eventId: string) =>
+        eventId === pendingDecisionTaskStartEvent.computedEventId
+    );
+
+    setup({ eventGroup, getIsEventExpanded });
+
+    expect(
+      screen.getByTestId('workflow-history-group-details')
+    ).toBeInTheDocument();
   });
 
   it('handles missing event group time gracefully', () => {
