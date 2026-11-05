@@ -6,14 +6,6 @@
 import type { Config } from 'jest';
 import nextJest from 'next/jest.js';
 
-const esModules = [
-  'query-string',
-  'decode-uri-component',
-  'split-on-first',
-  'filter-obj',
-  'react-movable',
-];
-
 const createJestConfig = nextJest({
   // Provide the path to your Next.js app to load next.config.js and .env files in your test environment
   dir: './',
@@ -213,7 +205,6 @@ const config: Config = {
   // transform: undefined,
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
-  transformIgnorePatterns: [`/node_modules/(?!(${esModules.join('|')})/)`],
   // transformIgnorePatterns: [
   //   "/node_modules/",
   //   "\\.pnp\\.[^\\/]+$"
@@ -232,16 +223,5 @@ const config: Config = {
   // watchman: true,
 };
 
-const getCustomizedConfig = async () => {
-  const jestConfig = await createJestConfig(config)();
-  return {
-    ...jestConfig,
-    // replacing nextjs node_modules ignore patterns with a pattern that doesn't ignore es modules
-    // link to discussion and fix https://github.com/vercel/next.js/issues/40183#issuecomment-1249077718
-    transformIgnorePatterns: jestConfig.transformIgnorePatterns?.filter(
-      (ptn) => ptn !== '/node_modules/'
-    ),
-  };
-};
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
-export default getCustomizedConfig;
+export default createJestConfig(config);

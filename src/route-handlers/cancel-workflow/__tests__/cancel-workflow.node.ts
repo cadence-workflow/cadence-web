@@ -24,6 +24,7 @@ describe(cancelWorkflow.name, () => {
         runId: 'mock-runid',
       },
       cause: 'Requesting workflow cancellation from cadence-web UI',
+      identity: 'mock-user-id',
     });
 
     const responseJson = await res.json();
@@ -109,6 +110,7 @@ async function setup({
     },
     {
       grpcClusterMethods: mockGrpcClusterMethods,
+      userInfo: { id: 'mock-user-id' },
     } as Context
   );
 

@@ -67,7 +67,7 @@ export default function CronScheduleInput({
     if (!hasAllFields) return null;
 
     try {
-      return cronToString(cronExpression);
+      return cronToString(cronExpression, { use24HourTimeFormat: true });
     } catch {
       return null;
     }

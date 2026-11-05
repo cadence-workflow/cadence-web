@@ -2,7 +2,7 @@ import React from 'react';
 
 import { useForm } from 'react-hook-form';
 
-import { render, screen, userEvent, within } from '@/test-utils/rtl';
+import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import {
   SCHEDULE_CATCH_UP_POLICY_DESCRIPTIONS,
@@ -212,7 +212,7 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
       screen.getByText(/schedule id cannot be changed/i)
     ).toBeInTheDocument();
   });
-  it('shows time picker when opening schedule period date pickers', async () => {
+  it('opens DateTimePicker calendar for schedule period fields', async () => {
     const { user } = setup();
 
     await user.click(
@@ -221,17 +221,13 @@ describe(DomainSchedulesCreateAdvancedForm.name, () => {
 
     await user.click(screen.getByLabelText('Schedule period start'));
     expect(
-      within(
-        document.querySelector('[data-baseweb="popover"]') as HTMLElement
-      ).getByText('Start time')
+      document.querySelector('[data-baseweb="calendar"]')
     ).toBeInTheDocument();
 
     await user.keyboard('{Escape}');
     await user.click(screen.getByLabelText('Schedule period end'));
     expect(
-      within(
-        document.querySelector('[data-baseweb="popover"]') as HTMLElement
-      ).getByText('End time')
+      document.querySelector('[data-baseweb="calendar"]')
     ).toBeInTheDocument();
   });
 

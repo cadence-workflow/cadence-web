@@ -25,7 +25,7 @@ import { type WorkflowQueryURLParams } from './workflow-queries.types';
 export default function WorkflowQueries(props: WorkflowPageTabContentProps) {
   const [queryParams, setQueryParams] = usePageQueryParams(
     workflowPageQueryParamsConfig,
-    { pageRerender: false, replace: true }
+    { replace: true }
   );
 
   const {

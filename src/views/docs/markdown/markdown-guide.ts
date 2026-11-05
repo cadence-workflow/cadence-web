@@ -12,6 +12,23 @@ Cadence markdown support is implemented using [Markdoc](https://markdoc.io/).
 Markdoc is a markdown parser and renderer that is used to safely render the markdown content.
 
 
+## Home Page Result
+
+The \`home\` query of a workflow returns a result with the format \`text/markdown\`. The Home tab shows it.
+
+\`\`\`json
+{
+  "cadenceResponseType": "formattedData",
+  "format": "text/markdown",
+  "data": "## Details ...",
+  "title": "Expense report EXP-1001"
+}
+\`\`\`
+
+- \`data\` (string, required) -- the Markdown page
+- \`title\` (string, optional) -- heading at the top of the home page
+
+
 ## Signal Workflow
 
 Send a signal to a running workflow using the \`signal\` tag.
@@ -122,6 +139,43 @@ When rendered on a workflow page, \`domain\` and \`cluster\` are inherited from 
 - \`input\` (object, optional) -- workflow input payload
 - \`timeoutSeconds\` (number, optional, default: 60) -- execution timeout
 - \`sdkLanguage\` (string, optional, default: "GO") -- worker SDK language
+
+
+## Input Fields
+
+Let the viewer type a value that a \`signal\` or \`start\` button sends. An \`input-field\` tag defines a variable with the same name. Use \`$name\` in any button attribute.
+
+### Example
+
+\`\`\`
+{% input-field name="amount" label="Amount (USD)" type="number" default=84.5 required=true placeholder="0.00" /%}
+
+{% signal
+  signalName="approve_partial"
+  label="Approve amount"
+  input={"reviewer":"finance-ops","amount":$amount}
+/%}
+
+{% start
+  workflowType="MyWorkflow"
+  label="Start"
+  taskList="my-task-list"
+  input={"items":[{"amount":$amount}]}
+/%}
+\`\`\`
+
+### Field Attributes
+
+- \`name\` (string, **required**) -- variable name, used as \`$name\`. Must be unique within a page
+- \`label\` (string, optional) -- text above the input
+- \`type\` (string, optional, default: "text") -- \`text\` or \`number\`
+- \`default\` (string or number, optional) -- starting value
+- \`required\` (boolean, optional) -- buttons that use this field stay disabled until it has a value
+- \`placeholder\` (string, optional) -- hint text
+
+### Using Field Values
+
+Number fields are numbers. An empty optional field leaves its variable undefined, so its key is left out. A button that uses an undefined or empty required field stays disabled. Use \`{% $name %}\` in text to show the current value.
 
 
 ## Images

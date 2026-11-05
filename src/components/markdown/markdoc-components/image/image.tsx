@@ -1,3 +1,5 @@
+import { styled } from './image.styles';
+
 export type ImageProps = {
   src: string;
   alt?: string;
@@ -29,6 +31,5 @@ export default function Image({ src, alt, title, width, height }: ImageProps) {
     }
   }
 
-  // eslint-disable-next-line @next/next/no-img-element
-  return <img src={src} alt={alt} title={title} style={style} />;
+  return <styled.Image src={src} alt={alt} title={title} style={style} />;
 }

@@ -8,7 +8,7 @@ import type { Props } from './cron-schedule-description.types';
 export default function CronScheduleWithDescription({ cronSchedule }: Props) {
   const humanReadable = useMemo(() => {
     try {
-      return cronToString(cronSchedule);
+      return cronToString(cronSchedule, { use24HourTimeFormat: true });
     } catch {
       return null;
     }

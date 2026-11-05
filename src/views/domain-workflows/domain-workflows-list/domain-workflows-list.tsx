@@ -74,6 +74,8 @@ export default function DomainWorkflowsList({
 
   return (
     <WorkflowsList
+      domain={domain}
+      cluster={cluster}
       workflows={workflows}
       columns={visibleColumns}
       error={error}

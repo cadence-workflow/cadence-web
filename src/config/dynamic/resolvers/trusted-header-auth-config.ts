@@ -12,10 +12,7 @@ import { type TrustedHeaderAuthConfig } from './trusted-header-auth-config.types
  * metadata (e.g. client `X-User-Id: evil` + proxy append → `"evil, real"`).
  */
 export default function trustedHeaderAuthConfig(): TrustedHeaderAuthConfig | null {
-  // cast to string:trusted-header is not registered yet.
-  // TODO: remove cast once trusted-header is registered.
-  const strategy: string = authStrategy();
-  if (strategy !== 'trusted-header') {
+  if (authStrategy() !== 'trusted-header') {
     return null;
   }
 

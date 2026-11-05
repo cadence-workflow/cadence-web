@@ -29,7 +29,6 @@ export type SingleInfiniteQueryOptions<
   TResponse,
   Error,
   InfiniteData<TResponse, TPageParam>,
-  TResponse,
   TQueryKey,
   TPageParam
 >;

@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
+import { getHTTPStatusCode, isGRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
 import {
@@ -24,7 +24,7 @@ export async function backfillSchedule(
     return NextResponse.json(
       {
         message: 'Invalid values provided for schedule backfill',
-        validationErrors: error.errors,
+        validationErrors: error.issues,
       },
       { status: 400 }
     );
@@ -50,8 +50,7 @@ export async function backfillSchedule(
 
     return NextResponse.json(
       {
-        message:
-          e instanceof GRPCError ? e.message : 'Error backfilling schedule',
+        message: isGRPCError(e) ? e.message : 'Error backfilling schedule',
         cause: e,
       },
       { status: getHTTPStatusCode(e) }

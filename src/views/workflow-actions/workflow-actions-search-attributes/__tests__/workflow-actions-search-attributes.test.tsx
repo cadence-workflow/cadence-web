@@ -61,7 +61,7 @@ describe(SearchAttributesInput.name, () => {
 
     expect(screen.getByDisplayValue('MyWorkflow')).toBeInTheDocument();
 
-    expect(screen.getByDisplayValue('2023–01–01 00:00:00')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('2023-01-01 00:00:00')).toBeInTheDocument();
   });
 
   it('should allow selecting an attribute key', async () => {

@@ -1,8 +1,8 @@
 import { createElement } from 'react';
 
 import { type ScheduleDetailRowConfig } from '@/views/schedule-details/schedule-details.types';
+import ScheduleCronExpression from '@/views/shared/schedule-cron-expression/schedule-cron-expression';
 
-import { formatScheduleCronExpression } from '../helpers/format-schedule-cron-expression';
 import { formatScheduleDuration } from '../helpers/format-schedule-duration';
 import { formatScheduleTimestamp } from '../helpers/format-schedule-timestamp';
 import ScheduleDetailsBadges from '../schedule-details-badges/schedule-details-badges';
@@ -17,7 +17,11 @@ const scheduleSpecificationsDetailsConfig: ScheduleDetailRowConfig[] = [
     key: 'cronExpression',
     getLabel: () => 'Cron execution',
     getValue: ({ formattedScheduleDetails: { spec } }) =>
-      formatScheduleCronExpression(spec?.cronExpression),
+      spec?.cronExpression
+        ? createElement(ScheduleCronExpression, {
+            cronExpression: spec.cronExpression,
+          })
+        : null,
   },
   {
     key: 'nextRunTime',

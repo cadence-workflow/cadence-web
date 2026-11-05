@@ -1,16 +1,16 @@
 'use client';
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 
 import { AppNavBar as BaseAppNavBar } from 'baseui/app-nav-bar';
 import { DURATION, useSnackbar } from 'baseui/snackbar';
 import NextLink from 'next/link';
 
+import useAuthLifecycle from '@/hooks/use-auth-lifecycle/use-auth-lifecycle';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 
+import { LOGOUT_ITEM } from './app-nav-bar.constants';
 import { cssStyles } from './app-nav-bar.styles';
-import useAuthLifecycle from './hooks/use-auth-lifecycle';
-import { LOGOUT_ITEM } from './use-auth-lifecycle.constants';
-import { type UserMenuItem } from './use-auth-lifecycle.types';
+import { type UserMenuItem } from './app-nav-bar.types';
 
 export default function AppNavBar() {
   const { cls } = useStyletronClasses(cssStyles);
@@ -23,45 +23,24 @@ export default function AppNavBar() {
     isAdmin,
     userName,
     logout,
-    expireSession,
   } = useAuthLifecycle();
 
   const logoutInFlightRef = useRef(false);
-  const prevIsValidTokenRef = useRef<boolean | null>(null);
 
-  const handleLogout = useCallback(
-    async (trigger: 'manual' | 'expired') => {
-      if (logoutInFlightRef.current) return;
-      logoutInFlightRef.current = true;
-      try {
-        if (trigger === 'manual') {
-          await logout({ notice: 'signed-out' });
-        } else {
-          expireSession();
-        }
-      } catch (e) {
-        // Stay on the page when the cookie was not cleared so /login cannot
-        // bounce the still-valid session back into the app.
-        const message = e instanceof Error ? e.message : 'Failed to sign out';
-        enqueue({ message }, DURATION.medium);
-      } finally {
-        logoutInFlightRef.current = false;
-      }
-    },
-    [logout, expireSession, enqueue]
-  );
-
-  // JWT validity-flip (token expired, cleared, or replaced in another tab):
-  // send the user to login with the session-expired notice (cookie left alone).
-  useEffect(() => {
-    if (!isAuthEnabled || isAuthLoading) return;
-    const prevIsValidToken = prevIsValidTokenRef.current;
-    prevIsValidTokenRef.current = isValidToken;
-
-    if (prevIsValidToken === true && !isValidToken) {
-      void handleLogout('expired');
+  const handleLogout = useCallback(async () => {
+    if (logoutInFlightRef.current) return;
+    logoutInFlightRef.current = true;
+    try {
+      await logout({ notice: 'signed-out' });
+    } catch (e) {
+      // Stay on the page when the cookie was not cleared so /login cannot
+      // bounce the still-valid session back into the app.
+      const message = e instanceof Error ? e.message : 'Failed to sign out';
+      enqueue({ message }, DURATION.medium);
+    } finally {
+      logoutInFlightRef.current = false;
     }
-  }, [isValidToken, isAuthLoading, isAuthEnabled, handleLogout]);
+  }, [logout, enqueue]);
 
   const userItems = useMemo<UserMenuItem[] | undefined>(() => {
     if (!isAuthEnabled || !isValidToken) return undefined;
@@ -105,7 +84,7 @@ export default function AppNavBar() {
       userItems={userItems}
       onUserItemSelect={(item) => {
         if (item.info === LOGOUT_ITEM) {
-          void handleLogout('manual');
+          void handleLogout();
         }
       }}
     />

@@ -11,7 +11,8 @@ jest.mock('@/utils/logger');
 const mockRequest = {
   url: 'http://localhost',
 } as NextRequest;
-const mockOptions = { params: {} };
+const mockParams = { cluster: 'mock-cluster' };
+const mockOptions = { params: Promise.resolve(mockParams) };
 const mockResponse = NextResponse.json({ message: 'Success' });
 
 const mockRequestHandler: RequestHandlerFunction<any, any> = jest
@@ -52,9 +53,13 @@ describe('routeHandlerWithMiddlewares', () => {
     );
 
     expect(result).toBe(mockResponse);
-    expect(mockRequestHandler).toHaveBeenCalledWith(mockRequest, mockOptions, {
-      key: 'value',
-    });
+    expect(mockRequestHandler).toHaveBeenCalledWith(
+      mockRequest,
+      { params: mockParams },
+      {
+        key: 'value',
+      }
+    );
   });
 
   it('should log error and return error response if middleware throws', async () => {
@@ -92,8 +97,12 @@ describe('routeHandlerWithMiddlewares', () => {
     );
 
     expect(result).toBe(mockResponse);
-    expect(mockRequestHandler).toHaveBeenCalledWith(mockRequest, mockOptions, {
-      grpcClusterMethods: {},
-    });
+    expect(mockRequestHandler).toHaveBeenCalledWith(
+      mockRequest,
+      { params: mockParams },
+      {
+        grpcClusterMethods: {},
+      }
+    );
   });
 });

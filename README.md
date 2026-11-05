@@ -43,6 +43,10 @@ CADENCE_GRPC_SERVICES_NAMES=cadence-frontend-cluster0,cadence-frontend-cluster1
 CADENCE_CLUSTERS_NAMES=cluster0,cluster1
 ```
 
+#### Health check
+
+`GET /api/health` is an unauthenticated liveness endpoint. A process that is serving returns HTTP 200 and `{ "status": "ok" }`. The response sets `Cache-Control: no-store`. The probe does not call Cadence. Point load balancer and orchestrator probes at this path.
+
 #### JWT Authentication (cookie)
 
 `CADENCE_WEB_AUTH_STRATEGY` is resolved server-side to one of the supported auth strategies: `disabled` or `jwt`. Invalid or unset values fall back to `disabled`.
@@ -60,20 +64,23 @@ Set-Cookie: cadence-authorization=<JWT>; Path=/; HttpOnly; SameSite=Lax; Secure
 
 You can also set/clear the cookie via `POST /api/auth/token` and `DELETE /api/auth/token`, or paste a JWT on the `/login` page. Requests without a valid session are redirected there.
 
+See [docs/auth.md](docs/auth.md) for operator setup (`disabled` / `jwt`) and a developer guide to the strategy architecture and adding new strategies.
+
 #### Feature flags
 
 Feature flags control various UI features and functionality in `cadence-web`. These can be configured using environment variables.
 
-| Feature                         | Description                                                                                                                                                                                                     | Environment Variable Configuration                                | Minimum Cadence Server Version          |
-| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- | --------------------------------------- |
-| **Extended Domain Information** | Enhanced domain metadata display and help menu UI                                                                                                                                                               | `CADENCE_EXTENDED_DOMAIN_INFO_METADATA_ENABLED=true`              | N/A                                     |
-| **Workflow Diagnostics**        | Workflow diagnostics APIs and UI for debugging workflows                                                                                                                                                        | `CADENCE_WORKFLOW_DIAGNOSTICS_ENABLED=true`                       | 1.2.13+ (1.3.1+ for full functionality) |
-| **Default Archival Search**     | Shows the default workflow search input and query input for archival workflows page. Default search is disabled by default as it doesn't work well with S3 implementation                                       | `CADENCE_ARCHIVAL_DEFAULT_SEARCH_ENABLED=true`                    | N/A                                     |
-| **Failover History List**       | List and filter domain failovers                                                                                                                                                                                | `CADENCE_FAILOVER_HISTORY_ENABLED=true`                           | 1.4.0+                                  |
-| **Batch Actions**               | View/hide batch actions (terminate/cancel/signal) UI for workflows. Only works for users with access for cadence-system domain. Access can be scoped: everyone, domain admins, or users with domain write access | `CADENCE_BATCH_ACTIONS_UI_ENABLED=ENABLED` (or `ADMIN`/`WRITE`)   | 1.4.0+                                  |
-| **Schedules**                   | UI for viewing and managing Cadence Schedules (create, list, pause/unpause, view schedule details and runs)                                                                                                     | `CADENCE_SCHEDULES_ENABLED=true`                                  | 1.4.1+                                  |
-| **Workflows List**              | New & customizable Workflows List for viewing workflows                                                                                                                                                         | `CADENCE_WORKFLOWS_LIST_ENABLED=true`                             | N/A                                     |
-| **List Workflows Partial Match** | Partial (prefix) matching on workflow search inputs when listing workflows. Requires advanced visibility to be enabled on the cluster                                                                           | `CADENCE_LIST_WORKFLOWS_PARTIAL_MATCH_ENABLED=true`               | 1.4.1+                                  |
+| Feature                          | Description                                                                                                                                                                                                      | Environment Variable Configuration                              | Minimum Cadence Server Version          |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | --------------------------------------- |
+| **Extended Domain Information**  | Enhanced domain metadata display and help menu UI                                                                                                                                                                | `CADENCE_EXTENDED_DOMAIN_INFO_METADATA_ENABLED=true`            | N/A                                     |
+| **Workflow Diagnostics**         | Workflow diagnostics APIs and UI for debugging workflows                                                                                                                                                         | `CADENCE_WORKFLOW_DIAGNOSTICS_ENABLED=true`                     | 1.2.13+ (1.3.1+ for full functionality) |
+| **Workflow Home Page**           | Renders a Markdoc page from the `home` workflow query in a Home tab.                                                                                                                                             | `CADENCE_WORKFLOW_HOME_ENABLED=true`                            | N/A                                     |
+| **Default Archival Search**      | Shows the default workflow search input and query input for archival workflows page. Default search is disabled by default as it doesn't work well with S3 implementation                                        | `CADENCE_ARCHIVAL_DEFAULT_SEARCH_ENABLED=true`                  | N/A                                     |
+| **Failover History List**        | List and filter domain failovers                                                                                                                                                                                 | `CADENCE_FAILOVER_HISTORY_ENABLED=true`                         | 1.4.0+                                  |
+| **Batch Actions**                | View/hide batch actions (terminate/cancel/signal) UI for workflows. Only works for users with access for cadence-system domain. Access can be scoped: everyone, domain admins, or users with domain write access | `CADENCE_BATCH_ACTIONS_UI_ENABLED=ENABLED` (or `ADMIN`/`WRITE`) | 1.4.0+                                  |
+| **Schedules**                    | UI for viewing and managing Cadence Schedules (create, list, pause/unpause, view schedule details and runs)                                                                                                      | `CADENCE_SCHEDULES_ENABLED=true`                                | 1.4.1+                                  |
+| **Workflows List**               | New & customizable Workflows List for viewing workflows                                                                                                                                                          | `CADENCE_WORKFLOWS_LIST_ENABLED=true`                           | N/A                                     |
+| **List Workflows Partial Match** | Partial (prefix) matching on workflow search inputs when listing workflows. Requires advanced visibility to be enabled on the cluster                                                                            | `CADENCE_LIST_WORKFLOWS_PARTIAL_MATCH_ENABLED=true`             | 1.4.1+                                  |
 
 **Note:** For advanced customization, feature flags can be modified through resolvers in the dynamic config system ([`src/config/dynamic/resolvers`](src/config/dynamic/resolvers)).
 

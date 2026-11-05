@@ -10,5 +10,9 @@ export const literalSchema = z.union([
 ]);
 
 export const jsonValueSchema: z.ZodType<Json> = z.lazy(() =>
-  z.union([literalSchema, z.array(jsonValueSchema), z.record(jsonValueSchema)])
+  z.union([
+    literalSchema,
+    z.array(jsonValueSchema),
+    z.record(z.string(), jsonValueSchema),
+  ])
 );

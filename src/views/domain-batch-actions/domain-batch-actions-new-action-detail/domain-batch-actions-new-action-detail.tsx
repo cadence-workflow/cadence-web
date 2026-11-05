@@ -170,6 +170,8 @@ export default function DomainBatchActionsNewActionDetail({
         )}
         {!isDataLoading && !errorPanelProps && (
           <WorkflowsList
+            domain={domain}
+            cluster={cluster}
             workflows={workflows}
             columns={visibleColumns}
             error={queryError}

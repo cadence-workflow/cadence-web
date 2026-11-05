@@ -12,7 +12,7 @@ import sortBy from '@/utils/sort-by';
 import { resetWorkflowActionConfig } from '../workflow-actions/config/workflow-actions.config';
 import WorkflowActionsModal from '../workflow-actions/workflow-actions-modal/workflow-actions-modal';
 import workflowPageQueryParamsConfig from '../workflow-page/config/workflow-page-query-params.config';
-import { useSuspenseDescribeWorkflow } from '../workflow-page/hooks/use-describe-workflow';
+import useSuspenseDescribeWorkflow from '../workflow-page/hooks/use-describe-workflow/use-suspense-describe-workflow';
 import { type WorkflowPageTabContentParams } from '../workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
 import WORKFLOW_HISTORY_FETCH_EVENTS_THROTTLE_MS_CONFIG from './config/workflow-history-fetch-events-throttle-ms.config';

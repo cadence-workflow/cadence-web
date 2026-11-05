@@ -1,6 +1,7 @@
 import { type AuthClientPolicy } from '@/utils/auth/auth.types';
 import disabledClientPolicy from '@/utils/auth/strategies/disabled/disabled-client-policy';
 import jwtClientPolicy from '@/utils/auth/strategies/jwt/jwt-client-policy';
+import trustedHeaderClientPolicy from '@/utils/auth/strategies/trusted-header/trusted-header-client-policy';
 
 import { type AuthStrategyConfigValue } from './auth-strategy.types';
 
@@ -11,6 +12,7 @@ import { type AuthStrategyConfigValue } from './auth-strategy.types';
 const AUTH_CLIENT_STRATEGIES_CONFIG = {
   disabled: disabledClientPolicy,
   jwt: jwtClientPolicy,
+  'trusted-header': trustedHeaderClientPolicy,
 } satisfies Record<AuthStrategyConfigValue, AuthClientPolicy>;
 
 export default AUTH_CLIENT_STRATEGIES_CONFIG;

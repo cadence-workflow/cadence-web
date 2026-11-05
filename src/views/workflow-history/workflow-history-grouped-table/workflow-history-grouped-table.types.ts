@@ -12,7 +12,7 @@ import {
 
 export type Props = {
   eventGroupsById: Array<[string, HistoryEventsGroup]>;
-  virtuosoRef: RefObject<VirtuosoHandle>;
+  virtuosoRef: RefObject<VirtuosoHandle | null>;
   initialStartIndex?: number;
   setVisibleRange: ({
     startIndex,

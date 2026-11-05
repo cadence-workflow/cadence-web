@@ -247,7 +247,7 @@ export const workflowExecutionStartedEventSchema =
       prevAutoResetPoints: resetPointsSchema.nullable(),
       header: headerSchema.nullable(),
       firstScheduledTime: timestampSchema.nullable(),
-      partitionConfig: z.record(z.string()),
+      partitionConfig: z.record(z.string(), z.string()),
       requestId: z.string(),
       cronOverlapPolicy: cronOverlapPolicySchema,
       activeClusterSelectionPolicy:

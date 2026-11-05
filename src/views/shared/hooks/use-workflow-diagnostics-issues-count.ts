@@ -4,7 +4,7 @@ import useConfigValue from '@/hooks/use-config-value/use-config-value';
 import decodeUrlParams from '@/utils/decode-url-params';
 import useDiagnoseWorkflow from '@/views/workflow-history/hooks/use-diagnose-workflow/use-diagnose-workflow';
 import { type UseDiagnoseWorkflowParams } from '@/views/workflow-history/hooks/use-diagnose-workflow/use-diagnose-workflow.types';
-import { useDescribeWorkflow } from '@/views/workflow-page/hooks/use-describe-workflow';
+import useDescribeWorkflow from '@/views/workflow-page/hooks/use-describe-workflow/use-describe-workflow';
 
 export default function useWorkflowDiagnosticsIssuesCount(
   params: UseDiagnoseWorkflowParams

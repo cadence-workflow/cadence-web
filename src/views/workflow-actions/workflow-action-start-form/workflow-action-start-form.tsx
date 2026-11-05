@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 
-import { DatePicker } from 'baseui/datepicker';
 import { FormControl } from 'baseui/form-control';
 import { Input } from 'baseui/input';
 import { RadioGroup, Radio } from 'baseui/radio';
@@ -10,6 +9,8 @@ import { Controller, useWatch } from 'react-hook-form';
 import { MdWarning } from 'react-icons/md';
 
 import CronScheduleInput from '@/components/cron-schedule-input/cron-schedule-input';
+import DateTimePicker from '@/components/date-time-picker/date-time-picker';
+import { DATE_TIME_FORMAT_MINUTES } from '@/components/date-time-picker/date-time-picker.constants';
 import MultiJsonInput from '@/components/multi-json-input/multi-json-input';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 import { WORKER_SDK_LANGUAGES } from '@/route-handlers/start-workflow/start-workflow.constants';
@@ -233,25 +234,15 @@ export default function WorkflowActionStartForm({
             name="firstRunAt"
             control={control}
             defaultValue=""
-            render={({ field: { value, onChange, ref, ...field } }) => (
-              <DatePicker
-                {...field}
-                // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
+            render={({ field: { value, onChange, ref } }) => (
+              <DateTimePicker
                 inputRef={ref}
                 aria-label="Run At"
-                value={value ? [new Date(value)] : []}
-                onChange={({ date }) => {
-                  const d = Array.isArray(date) ? date[0] : date;
-                  if (d) {
-                    onChange(d.toISOString());
-                  } else {
-                    onChange(undefined);
-                  }
-                }}
+                value={value || undefined}
+                onChange={onChange}
                 error={Boolean(getFieldErrorMessage(fieldErrors, 'firstRunAt'))}
                 size="compact"
-                timeSelectStart
-                formatString="yyyy/MM/dd HH:mm"
+                displayFormat={DATE_TIME_FORMAT_MINUTES}
                 minDate={now}
               />
             )}

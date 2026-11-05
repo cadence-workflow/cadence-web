@@ -35,6 +35,10 @@ module.exports = {
     'import/no-unresolved': 'error',
     'import/no-duplicates': 'error',
     'import/named': 'error',
+    'no-restricted-imports': [
+      'error',
+      require('./eslint/baseui-incompatible-components'),
+    ],
     'import/order': [
       'error',
       {

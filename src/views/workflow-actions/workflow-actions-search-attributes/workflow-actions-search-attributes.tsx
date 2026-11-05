@@ -2,18 +2,18 @@
 import React, { useCallback, useMemo } from 'react';
 
 import { Button } from 'baseui/button';
-import { DatePicker } from 'baseui/datepicker';
 import { FormControl } from 'baseui/form-control';
 import { Input } from 'baseui/input';
 import { Select } from 'baseui/select';
 import { MdAdd, MdDeleteOutline } from 'react-icons/md';
 
+import DateTimePicker from '@/components/date-time-picker/date-time-picker';
+import { DATE_TIME_FORMAT_SECONDS } from '@/components/date-time-picker/date-time-picker.constants';
 import useStyletronClasses from '@/hooks/use-styletron-classes';
 
 import {
   INPUT_PLACEHOLDERS_FOR_VALUE_TYPE,
   BOOLEAN_OPTIONS,
-  DATE_TIME_FORMAT,
 } from './workflow-actions-search-attributes.constants';
 import {
   cssStyles,
@@ -207,19 +207,14 @@ export default function WorkflowActionsSearchAttributes({
 
         case 'INDEXED_VALUE_TYPE_DATETIME':
           return (
-            <DatePicker
-              {...commonInputProps}
-              value={item.value ? [new Date(String(item.value))] : []}
-              onChange={({ date }) => {
-                const d = Array.isArray(date) ? date[0] : date;
-                if (d) {
-                  handleValueChange(index, d.toISOString());
-                } else {
-                  handleValueChange(index, '');
-                }
-              }}
-              timeSelectStart
-              formatString={DATE_TIME_FORMAT}
+            <DateTimePicker
+              aria-label="Search attribute value"
+              placeholder={inputPlaceholder}
+              size="compact"
+              error={valueError !== undefined}
+              value={item.value ? String(item.value) : undefined}
+              onChange={(next) => handleValueChange(index, next ?? '')}
+              displayFormat={DATE_TIME_FORMAT_SECONDS}
             />
           );
 

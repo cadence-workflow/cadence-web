@@ -180,6 +180,7 @@ describe('WorkflowActionStartForm', () => {
     await user.click(laterRadio);
 
     expect(screen.getByText('Run At')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('YYYY/MM/DD HH:mm')).toBeInTheDocument();
 
     // Test switching to Cron
     const cronRadio = screen.getByRole('radio', { name: 'Cron' });

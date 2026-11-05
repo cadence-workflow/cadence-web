@@ -2,11 +2,12 @@ import React from 'react';
 
 import { render, screen, userEvent, waitFor } from '@/test-utils/rtl';
 
-import AppNavBar from '../app-nav-bar';
-import useAuthLifecycle from '../hooks/use-auth-lifecycle';
-import { type AuthLifecycle } from '../hooks/use-auth-lifecycle.types';
+import useAuthLifecycle from '@/hooks/use-auth-lifecycle/use-auth-lifecycle';
+import { type AuthLifecycle } from '@/hooks/use-auth-lifecycle/use-auth-lifecycle.types';
 
-jest.mock('../hooks/use-auth-lifecycle');
+import AppNavBar from '../app-nav-bar';
+
+jest.mock('@/hooks/use-auth-lifecycle/use-auth-lifecycle');
 
 const mockEnqueue = jest.fn();
 jest.mock('baseui/snackbar', () => ({
@@ -80,18 +81,6 @@ describe(AppNavBar.name, () => {
     expect(logout).toHaveBeenCalledTimes(2);
     expect(logout).toHaveBeenCalledWith({ notice: 'signed-out' });
   });
-
-  it('expires the session when the token flips invalid in place', () => {
-    const { rerender, logout, expireSession } = setup({});
-
-    mockUseAuthLifecycle.mockReturnValue(
-      buildLifecycle({ isValidToken: false, logout, expireSession })
-    );
-    rerender(<AppNavBar />);
-
-    expect(expireSession).toHaveBeenCalledTimes(1);
-    expect(logout).not.toHaveBeenCalled();
-  });
 });
 
 function setup({ lifecycle }: { lifecycle?: Partial<AuthLifecycle> }) {
@@ -100,7 +89,6 @@ function setup({ lifecycle }: { lifecycle?: Partial<AuthLifecycle> }) {
   return {
     ...render(<AppNavBar />),
     logout: built.logout as jest.Mock,
-    expireSession: built.expireSession as jest.Mock,
   };
 }
 

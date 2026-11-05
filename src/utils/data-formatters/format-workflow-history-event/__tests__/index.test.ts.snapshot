@@ -663,7 +663,10 @@ exports[`formatWorkflowHistoryEvent should format workflow workflowExecutionCont
     "fields": {},
   },
   "initiator": "CRON_SCHEDULE",
-  "input": [],
+  "input": [
+    "string value,",
+    "token,",
+  ],
   "lastCompletionResult": null,
   "memo": null,
   "newExecutionRunId": "8f27807a-9125-4833-b8f1-d52a4c59be9a",
@@ -734,7 +737,10 @@ exports[`formatWorkflowHistoryEvent should format workflow workflowExecutionStar
   },
   "identity": null,
   "initiator": "CRON_SCHEDULE",
-  "input": [],
+  "input": [
+    "string value,",
+    "token,",
+  ],
   "lastCompletionResult": null,
   "memo": null,
   "originalExecutionRunId": "9c42ffa3-c9b1-430d-a993-b84fdce8c9f2",

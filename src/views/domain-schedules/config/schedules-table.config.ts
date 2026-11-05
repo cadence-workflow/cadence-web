@@ -3,9 +3,9 @@ import { createElement } from 'react';
 import Link from '@/components/link/link';
 import { type TableColumn } from '@/components/table/table.types';
 import { type ScheduleListEntry } from '@/route-handlers/list-schedules/list-schedules.types';
+import ScheduleCronExpression from '@/views/shared/schedule-cron-expression/schedule-cron-expression';
 import ScheduleStatusTag from '@/views/shared/schedule-status-tag/schedule-status-tag';
 
-import DomainSchedulesCronExpressionCell from '../domain-schedules-cron-expression-cell/domain-schedules-cron-expression-cell';
 import { TABLE_CELL_PLACEHOLDER_TEXT } from '../domain-schedules.constants';
 
 const schedulesTableConfig = [
@@ -43,7 +43,7 @@ const schedulesTableConfig = [
     id: 'CronExpression',
     renderCell: (row: ScheduleListEntry) =>
       row.cronExpression
-        ? createElement(DomainSchedulesCronExpressionCell, {
+        ? createElement(ScheduleCronExpression, {
             cronExpression: row.cronExpression,
           })
         : TABLE_CELL_PLACEHOLDER_TEXT,

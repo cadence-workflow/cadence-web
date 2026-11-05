@@ -6,7 +6,7 @@ import { MdRefresh } from 'react-icons/md';
 
 import useConfigValue from '@/hooks/use-config-value/use-config-value';
 import { resetWorkflowActionConfig } from '@/views/workflow-actions/config/workflow-actions.config';
-import { useDescribeWorkflow } from '@/views/workflow-page/hooks/use-describe-workflow';
+import useDescribeWorkflow from '@/views/workflow-page/hooks/use-describe-workflow/use-describe-workflow';
 
 import type Props from './workflow-history-timeline-reset-button.types';
 

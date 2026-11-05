@@ -6,7 +6,7 @@ import {
 import { type TrustedHeaderGrpcMetadataMapping } from './parse-trusted-header-grpc-metadata-map.types';
 
 /**
- * Parse `inbound-header:outbound-key` pairs for trusted-header → gRPC metadata.
+ * Parse inbound-header:outbound-key pairs for trusted-header gRPC metadata.
  * Throws on malformed entries so bad config fails at boot.
  */
 export default function parseTrustedHeaderGrpcMetadataMap(
@@ -38,6 +38,13 @@ export default function parseTrustedHeaderGrpcMetadataMap(
     ) {
       throw new Error(
         `${source} entry "${pair}" has an invalid outbound key "${outboundKey}": keys must match ${GRPC_METADATA_KEY_PATTERN} and string values cannot use the -bin suffix`
+      );
+    }
+    // __proto__ matches the key pattern but assignment on a plain object
+    // hits Object.prototype.__proto__ and silently drops the entry.
+    if (outboundKey.toLowerCase() === '__proto__') {
+      throw new Error(
+        `${source} entry "${pair}" has an invalid outbound key "${outboundKey}"`
       );
     }
     return { inboundHeader, outboundKey };

@@ -52,6 +52,14 @@ describe(SignalButton.name, () => {
     );
   });
 
+  it('disables the button when the signal name is empty', () => {
+    setup({ propsOverrides: { signalName: undefined } });
+
+    expect(screen.getByRole('button', { name: 'Send Signal' })).toHaveAttribute(
+      'disabled'
+    );
+  });
+
   it('shows a success snackbar with auto-dismiss duration after signaling', async () => {
     const { user } = setup({});
 
@@ -67,6 +75,15 @@ describe(SignalButton.name, () => {
         SIGNAL_SUCCESS_NOTIFICATION_DURATION_MS
       );
     });
+  });
+
+  it('calls onActionSuccess from markdown context after signaling', async () => {
+    const onActionSuccess = jest.fn();
+    const { user } = setup({ contextValue: { onActionSuccess } });
+
+    await user.click(screen.getByRole('button', { name: 'Send Signal' }));
+
+    await waitFor(() => expect(onActionSuccess).toHaveBeenCalledTimes(1));
   });
 
   it('shows an error snackbar without auto-dismiss duration on failure', async () => {
@@ -144,6 +161,23 @@ describe(SignalButton.name, () => {
     });
   });
 
+  it('disables the button while a required field is empty', () => {
+    setup({
+      propsOverrides: { input: {}, variableNames: ['approved'] },
+      contextValue: {
+        fieldValues: { approved: '' },
+        fieldMeta: { approved: { type: 'number', required: true } },
+      },
+    });
+
+    const button = screen.getByRole('button', { name: 'Send Signal' });
+    expect(button).toHaveAttribute('disabled');
+    expect(button).toHaveAttribute(
+      'title',
+      'Fill in required fields: approved'
+    );
+  });
+
   it('signals the current run when workflowId is explicit and no runId is provided anywhere', async () => {
     const { user, getLatestRequest } = setup({
       propsOverrides: { runId: undefined },
@@ -203,9 +237,11 @@ function setup({
 }) {
   const user = userEvent.setup();
   let latestRequestPathname: string | undefined;
+  let latestBody: { signalInput?: string } = {};
 
   const httpResolver = async ({ request }: { request: Request }) => {
     latestRequestPathname = new URL(request.url).pathname;
+    latestBody = await request.clone().json();
     if (error) {
       return HttpResponse.json(
         { message: 'Failed to signal workflow' },
@@ -246,6 +282,7 @@ function setup({
 
   return {
     user,
+    getLatestBody: () => latestBody as { signalInput: string },
     getLatestRequest: () => {
       if (!latestRequestPathname) {
         throw new Error('No request was captured yet');

@@ -1,5 +1,6 @@
 import { default as dayjs } from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import duration from 'dayjs/plugin/duration';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import timezone from 'dayjs/plugin/timezone';
@@ -10,5 +11,6 @@ dayjs.extend(duration);
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(advancedFormat);
+dayjs.extend(customParseFormat);
 
 export default dayjs;

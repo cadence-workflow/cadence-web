@@ -3,7 +3,7 @@ import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
-import { render, screen, userEvent, within } from '@/test-utils/rtl';
+import { render, screen, userEvent } from '@/test-utils/rtl';
 
 import ScheduleActionBackfillForm from '../schedule-action-backfill-form';
 import { type BackfillScheduleFormData } from '../schedule-action-backfill-form.types';
@@ -22,22 +22,18 @@ describe(ScheduleActionBackfillForm.name, () => {
     ).toBeInTheDocument();
   });
 
-  it('shows time picker when opening backfill period date pickers', async () => {
+  it('opens DateTimePicker calendar for backfill period fields', async () => {
     const { user } = setup();
 
     await user.click(screen.getByLabelText('Backfill period start'));
     expect(
-      within(
-        document.querySelector('[data-baseweb="popover"]') as HTMLElement
-      ).getByText('Start time')
+      document.querySelector('[data-baseweb="calendar"]')
     ).toBeInTheDocument();
 
     await user.keyboard('{Escape}');
     await user.click(screen.getByLabelText('Backfill period end'));
     expect(
-      within(
-        document.querySelector('[data-baseweb="popover"]') as HTMLElement
-      ).getByText('End time')
+      document.querySelector('[data-baseweb="calendar"]')
     ).toBeInTheDocument();
   });
 });

@@ -50,6 +50,12 @@ describe(parseTrustedHeaderGrpcMetadataMap.name, () => {
     ).toThrow(/-bin/);
   });
 
+  it('throws on a __proto__ outbound gRPC metadata key', () => {
+    expect(() =>
+      parseTrustedHeaderGrpcMetadataMap('x-cadence-user-id:__proto__')
+    ).toThrow(/__proto__/);
+  });
+
   it('preserves the outbound key casing', () => {
     expect(
       parseTrustedHeaderGrpcMetadataMap('x-cadence-user-id:Cadence-User')

@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
+import { getHTTPStatusCode, isGRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
 import {
@@ -23,7 +23,7 @@ export async function cancelWorkflow(
     return NextResponse.json(
       {
         message: 'Invalid values provided for workflow cancellation',
-        validationErrors: error.errors,
+        validationErrors: error.issues,
       },
       { status: 400 }
     );
@@ -39,6 +39,7 @@ export async function cancelWorkflow(
         runId: params.runId,
       },
       cause: data.cause,
+      identity: ctx.userInfo?.id,
     });
 
     return NextResponse.json({} satisfies CancelWorkflowResponse);
@@ -50,8 +51,7 @@ export async function cancelWorkflow(
 
     return NextResponse.json(
       {
-        message:
-          e instanceof GRPCError ? e.message : 'Error cancelling workflow',
+        message: isGRPCError(e) ? e.message : 'Error cancelling workflow',
         cause: e,
       },
       { status: getHTTPStatusCode(e) }

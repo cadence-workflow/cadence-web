@@ -30,7 +30,6 @@ export type DomainFailoverHistoryQueryOptions = UseInfiniteQueryOptions<
   ListFailoverHistoryResponse,
   RequestError,
   InfiniteData<ListFailoverHistoryResponse, string | undefined>,
-  ListFailoverHistoryResponse,
   DomainFailoverHistoryQueryKey,
   string | undefined
 >;

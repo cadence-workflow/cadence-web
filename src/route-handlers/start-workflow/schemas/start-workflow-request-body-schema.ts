@@ -36,11 +36,11 @@ const startWorkflowRequestBodySchema = z.object({
       maximumAttempts: z.number().optional(),
     })
     .optional(),
-  memo: z.record(z.any()).optional(),
+  memo: z.record(z.string(), z.any()).optional(),
   searchAttributes: z
-    .record(z.union([z.string(), z.number(), z.boolean()]))
+    .record(z.string(), z.union([z.string(), z.number(), z.boolean()]))
     .optional(),
-  header: z.record(z.string()).optional(),
+  header: z.record(z.string(), z.string()).optional(),
   activeClusterSelectionPolicy: z
     .object({
       clusterAttribute: z.object({

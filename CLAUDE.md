@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Next.js 14+ (App Router) web UI for [Cadence Workflow](https://cadenceworkflow.io/). TypeScript throughout. Talks to a Cadence backend over gRPC.
+Next.js 15 (App Router) web UI for [Cadence Workflow](https://cadenceworkflow.io/). TypeScript throughout. Talks to a Cadence backend over gRPC.
 
 ## Key Commands
 
@@ -20,7 +20,7 @@ npm run build        # Production build
 
 | Layer | Technology |
 |---|---|
-| Framework | Next.js 14 App Router |
+| Framework | Next.js 15 App Router (React 19) |
 | Language | TypeScript |
 | UI components | [Base Web (baseui)](https://baseweb.design/) — Uber's design system |
 | Styling | `baseui`'s `styled()` utility (Styletron under the hood) |
@@ -161,7 +161,7 @@ import requestBodySchema from './schemas/request-body-schema';
 export async function handlerName(request: NextRequest, requestParams: RequestParams, ctx: Context) {
   const { data, error } = requestBodySchema.safeParse(await request.json());
   if (error) {
-    return NextResponse.json({ message: 'Invalid values provided', validationErrors: error.errors }, { status: 400 });
+    return NextResponse.json({ message: 'Invalid values provided', validationErrors: error.issues }, { status: 400 });
   }
 
   const params = requestParams.params; // already decoded — do not decode again

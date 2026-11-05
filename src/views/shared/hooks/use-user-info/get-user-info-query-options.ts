@@ -19,7 +19,7 @@ export default function getUserInfoQueryOptions() {
     // The global staleTime is Infinity, but auth must recheck when a tab
     // becomes visible so a login/logout in another tab is picked up.
     refetchOnWindowFocus: 'always',
-    // Recheck at token expiry; the nav redirects once the server says invalid.
+    // Recheck at token expiry; AuthSessionWatcher (Home shell) redirects once the server says invalid.
     // A browser clock ahead of the server keeps rechecking instead of looping.
     refetchInterval: (query) => {
       const auth = query.state.data?.auth;

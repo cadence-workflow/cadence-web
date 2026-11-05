@@ -11,9 +11,8 @@ const UNAUTHENTICATED_CONTEXT: AuthContext = {
 };
 
 /**
- * trusted-header context comes from the identity adapter, not headers. The
- * adapter is the seam for the Cadence WhoAmI RPC. Trust that the perimeter
- * strips forwarded headers is enforced where the metadata map is applied.
+ * Resolve trusted-header auth context from getAuthenticatedUserInfo.
+ * That call will become Cadence WhoAmI; identity is not read from headers here.
  */
 export default async function resolveTrustedHeaderAuthContext(
   request: AuthRequest

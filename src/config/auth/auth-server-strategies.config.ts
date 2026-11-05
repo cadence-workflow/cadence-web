@@ -24,6 +24,13 @@ const AUTH_SERVER_STRATEGIES_CONFIG = {
     policy: jwtServerPolicy,
     cookieNames: { exact: [JWT_AUTH_COOKIE_NAME], prefixes: [] },
   },
+  'trusted-header': {
+    policy: () =>
+      import(
+        '@/utils/auth/strategies/trusted-header/trusted-header-server-policy'
+      ).then((m) => m.default),
+    cookieNames: { exact: [], prefixes: [] },
+  },
 } satisfies Record<AuthStrategyConfigValue, AuthServerRegistryEntry>;
 
 export default AUTH_SERVER_STRATEGIES_CONFIG;

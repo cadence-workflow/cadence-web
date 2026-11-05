@@ -4,7 +4,6 @@ import React, { useMemo } from 'react';
 
 import { StatefulPanel } from 'baseui/accordion';
 import { Button } from 'baseui/button';
-import { DatePicker } from 'baseui/datepicker';
 import { FormControl } from 'baseui/form-control';
 import { mergeOverrides } from 'baseui/helpers/overrides';
 import { Input } from 'baseui/input';
@@ -17,6 +16,8 @@ import { MdExpandLess, MdExpandMore } from 'react-icons/md';
 
 import { ScheduleCatchUpPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleCatchUpPolicy';
 import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
+import DateTimePicker from '@/components/date-time-picker/date-time-picker';
+import { DATE_TIME_FORMAT_MINUTES } from '@/components/date-time-picker/date-time-picker.constants';
 import DomainSchedulesHorizontalField from '@/views/domain-schedules/domain-schedules-horizontal-field/domain-schedules-horizontal-field';
 import useSearchAttributes from '@/views/shared/hooks/use-search-attributes/use-search-attributes';
 import RetryPolicyFields from '@/views/shared/retry-policy-fields/retry-policy-fields';
@@ -360,27 +361,19 @@ export default function DomainSchedulesCreateAdvancedForm({
                 <Controller
                   name="startTime"
                   control={control}
-                  render={({ field: { value, onChange, ref, ...field } }) => (
-                    <DatePicker
-                      {...field}
-                      // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
+                  render={({ field: { value, onChange, ref } }) => (
+                    <DateTimePicker
                       inputRef={ref}
                       id={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.startTime}
                       aria-label="Schedule period start"
-                      value={value ? [new Date(value)] : []}
-                      onChange={({ date }) => {
-                        const d = Array.isArray(date) ? date[0] : date;
-                        if (d) {
-                          onChange(d.toISOString());
-                        } else {
-                          onChange(undefined);
-                        }
+                      value={value || undefined}
+                      onChange={(next) => {
+                        onChange(next);
                         revalidateSchedulePeriod();
                       }}
                       error={Boolean(startTimeErrorMessage)}
                       size="compact"
-                      timeSelectStart
-                      formatString="yyyy/MM/dd HH:mm"
+                      displayFormat={DATE_TIME_FORMAT_MINUTES}
                       clearable
                     />
                   )}
@@ -400,29 +393,20 @@ export default function DomainSchedulesCreateAdvancedForm({
                 <Controller
                   name="endTime"
                   control={control}
-                  render={({ field: { value, onChange, ref, ...field } }) => (
-                    <DatePicker
-                      {...field}
-                      // @ts-expect-error - inputRef expects ref object while ref is a callback. It should support both.
+                  render={({ field: { value, onChange, ref } }) => (
+                    <DateTimePicker
                       inputRef={ref}
                       id={CREATE_SCHEDULE_ADVANCED_FIELD_IDS.endTime}
                       aria-label="Schedule period end"
-                      value={value ? [new Date(value)] : []}
-                      onChange={({ date }) => {
-                        const d = Array.isArray(date) ? date[0] : date;
-                        if (d) {
-                          onChange(d.toISOString());
-                        } else {
-                          onChange(undefined);
-                        }
+                      value={value || undefined}
+                      onChange={(next) => {
+                        onChange(next);
                         revalidateSchedulePeriod();
                       }}
                       error={Boolean(endTimeErrorMessage)}
                       size="compact"
-                      timeSelectStart
-                      formatString="yyyy/MM/dd HH:mm"
+                      displayFormat={DATE_TIME_FORMAT_MINUTES}
                       clearable
-                      overrides={overrides.endTimeDatePicker}
                     />
                   )}
                 />
