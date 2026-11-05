@@ -25,13 +25,27 @@ export default function getDecisionGroupFromEvents(
     'decisionTaskFailedEventAttributes',
   ];
 
+  const nonPendingEvents = events.filter(
+    (e) => e.attributes !== pendingStartAttr
+  );
+  const pendingEvents = events.filter((e) => e.attributes === pendingStartAttr);
+  const hasCompleted = nonPendingEvents.some(
+    (e) => e.attributes === 'decisionTaskCompletedEventAttributes'
+  );
+  // Completed is terminal for a decision: drop pending at any attempt (stale
+  // describe poll vs history backfill race). Otherwise keep pending last so
+  // last-event-wins derives WAITING for a live retry.
+  const normalizedEvents = hasCompleted
+    ? nonPendingEvents
+    : [...nonPendingEvents, ...pendingEvents];
+
   let scheduleEvent: ExtendedDecisionHistoryEvent | undefined;
   let pendingStartEvent: PendingDecisionTaskStartEvent | undefined;
   let timeoutEvent: ExtendedDecisionHistoryEvent | undefined;
   let startEvent: ExtendedDecisionHistoryEvent | undefined;
   let closeEvent: ExtendedDecisionHistoryEvent | undefined;
 
-  events.forEach((e) => {
+  normalizedEvents.forEach((e) => {
     if (e.attributes === pendingStartAttr) pendingStartEvent = e;
     if (e.attributes === scheduleAttr) scheduleEvent = e;
     if (e.attributes === timeoutAttr) timeoutEvent = e;
@@ -47,19 +61,21 @@ export default function getDecisionGroupFromEvents(
   let retryAttemptNumber = 0;
 
   if (
-    pendingStartEvent &&
-    pendingStartAttr in pendingStartEvent &&
-    pendingStartEvent[pendingStartAttr]?.attempt
-  ) {
-    retryAttemptNumber = pendingStartEvent[pendingStartAttr].attempt;
-  }
-
-  if (
     scheduleEvent &&
     scheduleAttr in scheduleEvent &&
     scheduleEvent[scheduleAttr]?.attempt
   ) {
     retryAttemptNumber = scheduleEvent[scheduleAttr].attempt;
+  }
+
+  // Live pending attempt is authoritative: a first-written scheduled event can
+  // lag at attempt 0 while the retry loop has already advanced
+  if (
+    pendingStartEvent &&
+    pendingStartAttr in pendingStartEvent &&
+    pendingStartEvent[pendingStartAttr]?.attempt
+  ) {
+    retryAttemptNumber = pendingStartEvent[pendingStartAttr].attempt;
   }
 
   if (retryAttemptNumber) {
@@ -136,7 +152,7 @@ export default function getDecisionGroupFromEvents(
     badges,
     resetToDecisionEventId,
     ...getCommonHistoryGroupFields<DecisionHistoryGroup>({
-      events,
+      events: normalizedEvents,
       historyGroupEventToStatusMap: eventToStatus,
       eventToLabelMap: eventToLabel,
       eventToTimeLabelPrefixMap: {

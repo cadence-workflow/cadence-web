@@ -116,7 +116,8 @@ export function createPendingActivity(
 }
 
 export function createPendingDecision(
-  scheduleId: string
+  scheduleId: string,
+  options?: { attempt?: number }
 ): PendingDecisionTaskStartEvent {
   return {
     ...pendingDecisionTaskStartEvent,
@@ -124,6 +125,7 @@ export function createPendingDecision(
     pendingDecisionTaskStartEventAttributes: {
       ...pendingDecisionTaskStartEvent.pendingDecisionTaskStartEventAttributes,
       scheduleId,
+      ...(options?.attempt !== undefined && { attempt: options.attempt }),
     },
   } as PendingDecisionTaskStartEvent;
 }
