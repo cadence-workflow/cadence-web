@@ -414,6 +414,57 @@ describe(WorkflowHistoryGroupDetails.name, () => {
     ).toBeInTheDocument();
     expect(screen.getByText('Diagnostics (2 issues)')).toBeInTheDocument();
   });
+
+  it('clamps the selected tab when entries shrink below the selected index', async () => {
+    const threeTabEntries: GroupDetailsEntries = [
+      mockGroupDetails[0],
+      [
+        'event-2',
+        {
+          eventLabel: 'Event 2 Label',
+          eventDetails: [
+            ...mockGroupDetails[1][1].eventDetails,
+            {
+              key: 'key2b',
+              path: 'path2b',
+              value: 'value2b',
+              isGroup: false,
+              renderConfig: null,
+            },
+          ],
+        },
+      ],
+      mockGroupDetails[2],
+    ];
+    const { user, rerenderWithEntries } = setup({
+      groupDetailsEntries: threeTabEntries,
+    });
+
+    await user.click(screen.getByText('Event 3 Label'));
+    expect(screen.getByText('Event Details (1 entries)')).toBeInTheDocument();
+
+    rerenderWithEntries(threeTabEntries.slice(0, 2));
+
+    // event-2 carries two detail entries, so this also proves the clamp
+    // landed on the last tab rather than resetting to the first
+    expect(screen.getByText('Event Details (2 entries)')).toBeInTheDocument();
+  });
+
+  it('renders null when entries become empty, and recovers when they return', async () => {
+    const { rerenderWithEntries } = setup({
+      groupDetailsEntries: mockGroupDetails,
+    });
+
+    rerenderWithEntries([]);
+    expect(
+      screen.queryByLabelText('Workflow history event details')
+    ).not.toBeInTheDocument();
+
+    rerenderWithEntries(mockGroupDetails);
+    expect(
+      screen.getByLabelText('Workflow history event details')
+    ).toBeInTheDocument();
+  });
 });
 
 const MOCK_ISSUE_1: WorkflowDiagnosticsIssue = {
@@ -468,7 +519,7 @@ function setup({
 }) {
   const user = userEvent.setup();
 
-  render(
+  const { rerender } = render(
     <WorkflowHistoryGroupDetails
       groupDetailsEntries={groupDetailsEntries}
       initialEventId={initialEventId}
@@ -485,5 +536,18 @@ function setup({
     user,
     getIsDiagnosticsIssueExpanded,
     toggleIsDiagnosticsIssueExpanded,
+    rerenderWithEntries: (entries: GroupDetailsEntries) =>
+      rerender(
+        <WorkflowHistoryGroupDetails
+          groupDetailsEntries={entries}
+          initialEventId={initialEventId}
+          workflowPageParams={workflowPageParams}
+          onClose={onClose}
+          onClickShowInTimeline={onClickShowInTimeline}
+          onClickShowInTable={onClickShowInTable}
+          getIsDiagnosticsIssueExpanded={getIsDiagnosticsIssueExpanded}
+          toggleIsDiagnosticsIssueExpanded={toggleIsDiagnosticsIssueExpanded}
+        />
+      ),
   };
 }
