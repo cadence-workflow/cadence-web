@@ -9,6 +9,7 @@ import InputField from './input-field/input-field';
 import List from './list/list';
 import SignalButton from './signal-button/signal-button';
 import StartWorkflowButton from './start-workflow-button/start-workflow-button';
+import Style from './style/style';
 
 // Export all components that Markdoc can use
 export const markdocComponents = {
@@ -21,6 +22,7 @@ export const markdocComponents = {
   InlineCode,
   Image,
   Br,
+  Style,
   Paragraph: styled.Paragraph,
   Link: styled.Link,
   ListItem: styled.ListItem,
