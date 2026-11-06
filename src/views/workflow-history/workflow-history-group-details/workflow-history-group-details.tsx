@@ -32,10 +32,19 @@ export default function WorkflowHistoryGroupDetails({
     })()
   );
 
-  const [selectedEventId, selectedEventTabContent] = useMemo(
-    () => groupDetailsEntries[selectedIndex],
-    [groupDetailsEntries, selectedIndex]
+  // Entries shrink when a pending event clears. The stored index can point
+  // past the end, so clamp at read time and return null when nothing is left.
+  const clampedSelectedIndex = Math.min(
+    Math.max(selectedIndex, 0),
+    Math.max(groupDetailsEntries.length - 1, 0)
   );
+
+  const [selectedEventId, selectedEventTabContent] = useMemo(
+    () => groupDetailsEntries[clampedSelectedIndex] ?? [],
+    [groupDetailsEntries, clampedSelectedIndex]
+  );
+
+  if (!selectedEventId || !selectedEventTabContent) return null;
 
   const diagnosticsIssues = selectedEventTabContent.diagnosticsIssues ?? [];
 
@@ -46,7 +55,7 @@ export default function WorkflowHistoryGroupDetails({
           mode="radio"
           size="compact"
           kind="tertiary"
-          selected={selectedIndex}
+          selected={clampedSelectedIndex}
           onClick={(_, index) => {
             setSelectedIndex(index);
           }}
