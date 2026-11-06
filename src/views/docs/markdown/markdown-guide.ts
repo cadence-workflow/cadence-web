@@ -221,7 +221,7 @@ Use the \`color\` attribute to set the text color:
 
 {% style color="red" %}red text{% /style %}
 
-{% style color="green" %}green text{% /style %}
+{% style color="#0070f3" %}blue text{% /style %}
 
 ### Background
 
