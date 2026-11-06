@@ -4,10 +4,16 @@ import {
 } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
 
 import {
+  createPendingDecision,
+  pendingActivityTaskStartEvent,
+  pendingDecisionTaskStartEvent,
+} from '../../__fixtures__/workflow-history-pending-events';
+import {
   type HistoryEventsGroup,
   type EventGroupEntry,
 } from '../../workflow-history.types';
 import getNavigationBarEventsMenuItems from '../get-navigation-bar-events-menu-items';
+import WorkflowHistoryGrouper from '../workflow-history-grouper';
 
 describe(getNavigationBarEventsMenuItems.name, () => {
   it('should return an empty array when eventGroupsEntries is empty', () => {
@@ -123,5 +129,96 @@ describe(getNavigationBarEventsMenuItems.name, () => {
     // completedActivityTaskEvents has events with ids: '7', '9', '10'
     // Last eventId should be '10'
     expect(result[0].eventId).toBe('10');
+  });
+
+  it('should include pending-only groups keyed by computedEventId', () => {
+    const pendingOnlyGroup: HistoryEventsGroup = {
+      ...mockDecisionEventGroup,
+      shortLabel: 'Decision',
+      events: [pendingDecisionTaskStartEvent],
+    };
+    const eventGroupsEntries: Array<EventGroupEntry> = [
+      ['group1', pendingOnlyGroup],
+    ];
+
+    const result = getNavigationBarEventsMenuItems(
+      eventGroupsEntries,
+      () => true
+    );
+
+    expect(result).toEqual([
+      {
+        eventId: pendingDecisionTaskStartEvent.computedEventId,
+        label: 'Decision',
+        category: 'DECISION',
+      },
+    ]);
+  });
+
+  it('should target the last persisted event when the group ends with a pending synthetic event', () => {
+    const groupEndingWithPending: HistoryEventsGroup = {
+      ...mockDecisionEventGroup,
+      shortLabel: 'Decision',
+      events: [mockDecisionEventGroup.events[0], pendingDecisionTaskStartEvent],
+    };
+    const eventGroupsEntries: Array<EventGroupEntry> = [
+      ['group1', groupEndingWithPending],
+    ];
+
+    const result = getNavigationBarEventsMenuItems(
+      eventGroupsEntries,
+      () => true
+    );
+
+    expect(result).toEqual([
+      {
+        eventId: mockDecisionEventGroup.events[0].eventId,
+        label: 'Decision',
+        category: 'DECISION',
+      },
+    ]);
+  });
+
+  it('should not list an activity group that ends with a pending event', () => {
+    const activityGroupEndingWithPending: HistoryEventsGroup = {
+      ...mockActivityEventGroup,
+      events: [
+        mockActivityEventGroup.events[0],
+        pendingActivityTaskStartEvent,
+      ],
+    };
+    const eventGroupsEntries: Array<EventGroupEntry> = [
+      ['group1', activityGroupEndingWithPending],
+    ];
+
+    const result = getNavigationBarEventsMenuItems(
+      eventGroupsEntries,
+      () => true
+    );
+
+    expect(result).toEqual([]);
+  });
+
+  it('should list a grouper-produced pending-only decision group by computedEventId', async () => {
+    const grouper = new WorkflowHistoryGrouper();
+    try {
+      await grouper.updatePendingEvents({
+        pendingStartActivities: [],
+        pendingStartDecision: createPendingDecision('2'),
+      });
+
+      const result = getNavigationBarEventsMenuItems(
+        Object.entries(grouper.getState().groups),
+        () => true
+      );
+
+      expect(result).toHaveLength(1);
+      expect(result[0].eventId).toBe(
+        createPendingDecision('2').computedEventId
+      );
+      expect(result[0].category).toBe('DECISION');
+    } finally {
+      grouper.destroy();
+    }
   });
 });
