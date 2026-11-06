@@ -436,14 +436,14 @@ describe(WorkflowHistoryGroupDetails.name, () => {
       ],
       mockGroupDetails[2],
     ];
-    const { user, rerenderWithEntries } = setup({
+    const { user, rerender } = setup({
       groupDetailsEntries: threeTabEntries,
     });
 
     await user.click(screen.getByText('Event 3 Label'));
     expect(screen.getByText('Event Details (1 entries)')).toBeInTheDocument();
 
-    rerenderWithEntries(threeTabEntries.slice(0, 2));
+    rerender({ groupDetailsEntries: threeTabEntries.slice(0, 2) });
 
     // event-2 has two detail entries, so the assertion fails if the clamp
     // resets to the first tab instead of staying on the last one
@@ -451,16 +451,16 @@ describe(WorkflowHistoryGroupDetails.name, () => {
   });
 
   it('renders null when entries become empty, and recovers when they return', async () => {
-    const { rerenderWithEntries } = setup({
+    const { rerender } = setup({
       groupDetailsEntries: mockGroupDetails,
     });
 
-    rerenderWithEntries([]);
+    rerender({ groupDetailsEntries: [] });
     expect(
       screen.queryByLabelText('Workflow history event details')
     ).not.toBeInTheDocument();
 
-    rerenderWithEntries(mockGroupDetails);
+    rerender({ groupDetailsEntries: mockGroupDetails });
     expect(
       screen.getByLabelText('Workflow history event details')
     ).toBeInTheDocument();
@@ -536,9 +536,7 @@ function setup({
     user,
     getIsDiagnosticsIssueExpanded,
     toggleIsDiagnosticsIssueExpanded,
-    rerenderWithEntries: (entries: GroupDetailsEntries) =>
-      rerender(
-        <WorkflowHistoryGroupDetails {...props} groupDetailsEntries={entries} />
-      ),
+    rerender: (nextProps: Partial<typeof props>) =>
+      rerender(<WorkflowHistoryGroupDetails {...props} {...nextProps} />),
   };
 }
