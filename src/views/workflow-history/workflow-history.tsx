@@ -428,7 +428,7 @@ export default function WorkflowHistory({ params }: Props) {
       const isEventVisible = filteredEventGroupsEntries.some(
         ([_, eventGroup]) =>
           eventGroup.events.some(
-            ({ eventId: eventIdInGroup }) => eventId === eventIdInGroup
+            (event) => (event.eventId ?? event.computedEventId) === eventId
           )
       );
 

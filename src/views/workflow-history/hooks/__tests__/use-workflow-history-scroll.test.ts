@@ -7,6 +7,7 @@ import {
 } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
 
 import { createUngroupedEventsInfo } from '../../__fixtures__/ungrouped-events-info';
+import { pendingDecisionTaskStartEvent } from '../../__fixtures__/workflow-history-pending-events';
 import { type UngroupedEventInfo } from '../../workflow-history-ungrouped-table/workflow-history-ungrouped-table.types';
 import { type EventGroupEntry } from '../../workflow-history.types';
 import useWorkflowHistoryScroll from '../use-workflow-history-scroll';
@@ -122,6 +123,34 @@ describe(useWorkflowHistoryScroll.name, () => {
     act(() => {
       // event '10' is in mockActivityEventGroup, which is at index 1
       result.current.scrollToTableEvent('10');
+    });
+
+    expect(mockGroupedScrollToIndex).toHaveBeenCalledWith({
+      index: 1,
+      behavior: 'auto',
+      align: 'center',
+    });
+  });
+
+  it('should find correct index in grouped view by computedEventId', () => {
+    const pendingOnlyGroup = {
+      ...mockDecisionEventGroup,
+      events: [pendingDecisionTaskStartEvent],
+    };
+    const filteredEventGroupsEntries: Array<EventGroupEntry> = [
+      ['activity-1', mockActivityEventGroup],
+      ['pending-decision', pendingOnlyGroup],
+    ];
+
+    const { result, mockGroupedScrollToIndex } = setup({
+      filteredEventGroupsEntries,
+      isUngroupedHistoryViewEnabled: false,
+    });
+
+    act(() => {
+      result.current.scrollToTableEvent(
+        pendingDecisionTaskStartEvent.computedEventId
+      );
     });
 
     expect(mockGroupedScrollToIndex).toHaveBeenCalledWith({
