@@ -445,8 +445,8 @@ describe(WorkflowHistoryGroupDetails.name, () => {
 
     rerenderWithEntries(threeTabEntries.slice(0, 2));
 
-    // event-2 carries two detail entries, so this also proves the clamp
-    // landed on the last tab rather than resetting to the first
+    // event-2 has two detail entries, so the assertion fails if the clamp
+    // resets to the first tab instead of staying on the last one
     expect(screen.getByText('Event Details (2 entries)')).toBeInTheDocument();
   });
 
@@ -519,18 +519,18 @@ function setup({
 }) {
   const user = userEvent.setup();
 
-  const { rerender } = render(
-    <WorkflowHistoryGroupDetails
-      groupDetailsEntries={groupDetailsEntries}
-      initialEventId={initialEventId}
-      workflowPageParams={workflowPageParams}
-      onClose={onClose}
-      onClickShowInTimeline={onClickShowInTimeline}
-      onClickShowInTable={onClickShowInTable}
-      getIsDiagnosticsIssueExpanded={getIsDiagnosticsIssueExpanded}
-      toggleIsDiagnosticsIssueExpanded={toggleIsDiagnosticsIssueExpanded}
-    />
-  );
+  const props = {
+    groupDetailsEntries,
+    initialEventId,
+    workflowPageParams,
+    onClose,
+    onClickShowInTimeline,
+    onClickShowInTable,
+    getIsDiagnosticsIssueExpanded,
+    toggleIsDiagnosticsIssueExpanded,
+  };
+
+  const { rerender } = render(<WorkflowHistoryGroupDetails {...props} />);
 
   return {
     user,
@@ -538,16 +538,7 @@ function setup({
     toggleIsDiagnosticsIssueExpanded,
     rerenderWithEntries: (entries: GroupDetailsEntries) =>
       rerender(
-        <WorkflowHistoryGroupDetails
-          groupDetailsEntries={entries}
-          initialEventId={initialEventId}
-          workflowPageParams={workflowPageParams}
-          onClose={onClose}
-          onClickShowInTimeline={onClickShowInTimeline}
-          onClickShowInTable={onClickShowInTable}
-          getIsDiagnosticsIssueExpanded={getIsDiagnosticsIssueExpanded}
-          toggleIsDiagnosticsIssueExpanded={toggleIsDiagnosticsIssueExpanded}
-        />
+        <WorkflowHistoryGroupDetails {...props} groupDetailsEntries={entries} />
       ),
   };
 }

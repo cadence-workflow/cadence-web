@@ -32,8 +32,8 @@ export default function WorkflowHistoryGroupDetails({
     })()
   );
 
-  // Entries shrink when a pending event clears; the stored index can point
-  // past the end, so clamp at read time and bail when nothing is left.
+  // Entries shrink when a pending event clears. The stored index can point
+  // past the end, so clamp at read time and return null when nothing is left.
   const clampedSelectedIndex = Math.min(
     Math.max(selectedIndex, 0),
     Math.max(groupDetailsEntries.length - 1, 0)
