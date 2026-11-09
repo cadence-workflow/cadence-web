@@ -22,7 +22,6 @@ export default function getNavigationBarEventsMenuItems(
       // Decision groups: prefer a persisted event so expansion/scroll survive
       // the pending tab disappearing; fall back to the pending synthetic id
       // for pending-only groups. Other group types keep last-event targeting.
-      // lodash findLast: the native method is not covered by Next's polyfills.
       const lastEventId =
         group.groupType === 'Decision'
           ? findLast(events, (e) => Boolean(e.eventId))?.eventId ||
