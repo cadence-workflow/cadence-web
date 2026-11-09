@@ -164,29 +164,18 @@ describe('getDecisionGroupFromEvents', () => {
       ]);
     });
 
-    it('should hide a non-retrying pending event once the decision started', () => {
-      expect(
-        labels([
-          scheduleDecisionTaskEvent,
-          startDecisionTaskEvent,
-          withAttempt(0),
-        ])
-      ).toEqual(['Scheduled', 'Started']);
-    });
-
-    it('should keep a retrying pending event after the decision started', () => {
-      const group = getDecisionGroupFromEvents([
-        scheduleDecisionTaskEvent,
-        startDecisionTaskEvent,
-        withAttempt(1),
-      ]);
-      expect(group.eventsMetadata.map((m) => m.label)).toEqual([
-        'Scheduled',
-        'Started',
-        'Starting',
-      ]);
-      expect(group.status).toBe('WAITING');
-    });
+    it.each([0, 1])(
+      'should hide a pending event at attempt %i once the decision started',
+      (attempt) => {
+        expect(
+          labels([
+            scheduleDecisionTaskEvent,
+            startDecisionTaskEvent,
+            withAttempt(attempt),
+          ])
+        ).toEqual(['Scheduled', 'Started']);
+      }
+    );
 
     it.each([
       ['completed', completeDecisionTaskEvent],

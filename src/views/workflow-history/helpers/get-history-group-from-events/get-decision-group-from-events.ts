@@ -8,7 +8,6 @@ import type {
   PendingDecisionTaskStartEvent,
 } from '../../workflow-history.types';
 import getCommonHistoryGroupFields from '../get-common-history-group-fields';
-import isRetryingPendingDecision from '../is-retrying-pending-decision';
 
 export default function getDecisionGroupFromEvents(
   events: ExtendedDecisionHistoryEvent[]
@@ -40,13 +39,10 @@ export default function getDecisionGroupFromEvents(
     if (closeAttrs.includes(e.attributes)) closeEvent = e;
   });
 
-  // Any close or timeout hides the pending event, so a stale describe result
-  // cannot flip a finished decision back to WAITING. A started decision hides
-  // it too, unless it is a live retry.
+  // Same rule as activities. Once the decision starts, closes, or times out,
+  // a stale describe result must not flip it back to WAITING.
   const shouldShowPendingEvent = Boolean(
-    pendingStartEvent &&
-      !(closeEvent || timeoutEvent) &&
-      (!startEvent || isRetryingPendingDecision(pendingStartEvent))
+    pendingStartEvent && !(startEvent || closeEvent || timeoutEvent)
   );
   const shownPendingEvent = shouldShowPendingEvent
     ? pendingStartEvent
