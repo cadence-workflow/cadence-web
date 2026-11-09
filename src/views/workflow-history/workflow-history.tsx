@@ -155,14 +155,12 @@ export default function WorkflowHistory({ params }: Props) {
     isFetchNextPageError,
   } = historyQuery;
 
-  const allEventIds = useMemo(
+  const allEventKeys = useMemo(
     () =>
-      (result?.pages || [])
-        .flat(1)
-        .map(({ history }) => history?.events || [])
-        .flat(1)
-        .map(({ eventId }) => eventId),
-    [result]
+      Object.values(eventGroups).flatMap((group) =>
+        group.events.map(getEventKey)
+      ),
+    [eventGroups]
   );
 
   useEffect(() => {
@@ -364,7 +362,7 @@ export default function WorkflowHistory({ params }: Props) {
     getIsItemExpanded,
     toggleIsItemExpanded,
   } = useExpansionToggle({
-    items: allEventIds,
+    items: allEventKeys,
     initialState: selectedEventIdWithinGroup
       ? {
           [selectedEventIdWithinGroup]: true,
