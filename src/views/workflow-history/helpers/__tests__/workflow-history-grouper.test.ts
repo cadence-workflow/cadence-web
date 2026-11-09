@@ -617,7 +617,7 @@ describe(WorkflowHistoryGrouper.name, () => {
     ).toBe(true);
   });
 
-  it('should keep a retrying pending decision last when a later history event joins the group', async () => {
+  it('should drop a retrying pending decision when the decision starts', async () => {
     const { grouper, waitForProcessing } = setup();
 
     grouper.updateEvents([createScheduleDecisionEvent('2')]);
@@ -636,11 +636,8 @@ describe(WorkflowHistoryGrouper.name, () => {
     await waitForProcessing();
 
     const group = grouper.getState().groups['2'];
-    expect(group.events).toHaveLength(3);
-    expect(group.events.at(-1)?.attributes).toBe(
-      'pendingDecisionTaskStartEventAttributes'
-    );
-    expect(group.status).toBe('WAITING');
+    expect(group.events).toHaveLength(2);
+    expect(group.status).toBe('ONGOING');
   });
 
   it('should create a pending-only group for a retrying pending decision with no history group', async () => {
