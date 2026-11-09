@@ -42,6 +42,10 @@ export default function WorkflowHistoryHeader({
 
   const { ref: sentinelRef } = useInView({
     threshold: 1,
+    // v11 fires onChange only on transitions; starting from true ensures the
+    // first observation of an out-of-view sentinel (e.g. restored scroll)
+    // still registers, matching the initial isSticky=false.
+    initialInView: true,
     onChange: (inView) => {
       setIsSticky(!inView);
     },

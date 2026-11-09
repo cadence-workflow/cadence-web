@@ -4,10 +4,13 @@ import { render, screen } from '@/test-utils/rtl';
 
 import { type DescribeWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeWorkflowExecutionResponse';
 import { type GetWorkflowExecutionHistoryResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/GetWorkflowExecutionHistoryResponse';
+import { type DescribeWorkflowResponse } from '@/route-handlers/describe-workflow/describe-workflow.types';
 import { startWorkflowExecutionEvent } from '@/views/workflow-history/__fixtures__/workflow-history-single-events';
+import { mockDescribeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
 import { type WorkflowPageTabContentProps } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
 import WorkflowSummary from '../workflow-summary';
+import WorkflowSummaryScheduleDetails from '../workflow-summary-schedule-details/workflow-summary-schedule-details';
 
 jest.mock('../workflow-summary-details/workflow-summary-details', () =>
   jest.fn(() => <div>MockWorkflowSummaryDetails</div>)
@@ -94,5 +97,56 @@ describe('WorkflowSummary', () => {
     expect(
       await screen.findByText('MockWorkflowSummaryScheduleDetails')
     ).toBeInTheDocument();
+  });
+
+  it('should pass the decoded search attributes from the describe response to the schedule details', async () => {
+    render(
+      <Suspense>
+        <WorkflowSummary params={params} />
+      </Suspense>,
+      {
+        endpointsMocks: [
+          {
+            path: '/api/domains/:domain/:cluster/workflows/:workflowId/:runId/history',
+            httpMethod: 'GET',
+            jsonResponse: {
+              history: {
+                events: [startWorkflowExecutionEvent],
+              },
+              rawHistory: [],
+              nextPageToken: '',
+              archived: false,
+            } satisfies GetWorkflowExecutionHistoryResponse,
+          },
+          {
+            path: '/api/domains/:domain/:cluster/workflows/:workflowId/:runId',
+            httpMethod: 'GET',
+            jsonResponse: {
+              ...mockDescribeWorkflowResponse,
+              workflowExecutionInfo: {
+                ...mockDescribeWorkflowResponse.workflowExecutionInfo,
+                searchAttributes: {
+                  indexedFields: {
+                    CadenceScheduleID: {
+                      data: Buffer.from('"my-schedule"').toString('base64'),
+                    },
+                  },
+                },
+              },
+            } satisfies DescribeWorkflowResponse,
+          },
+        ],
+      }
+    );
+
+    expect(
+      await screen.findByText('MockWorkflowSummaryScheduleDetails')
+    ).toBeInTheDocument();
+    expect(WorkflowSummaryScheduleDetails).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        searchAttributes: { CadenceScheduleID: 'my-schedule' },
+      }),
+      undefined
+    );
   });
 });

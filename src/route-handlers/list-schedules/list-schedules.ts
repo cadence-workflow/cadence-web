@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import queryString from 'query-string';
 
-import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
+import { getHTTPStatusCode, isGRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
 import type {
@@ -47,14 +47,12 @@ export async function listSchedules(
   } catch (e) {
     logger.error<RouteHandlerErrorPayload>(
       { requestParams: params, queryParams, error: e },
-      'Error fetching schedules' +
-        (e instanceof GRPCError ? ': ' + e.message : '')
+      'Error fetching schedules' + (isGRPCError(e) ? ': ' + e.message : '')
     );
 
     return NextResponse.json(
       {
-        message:
-          e instanceof GRPCError ? e.message : 'Error fetching schedules',
+        message: isGRPCError(e) ? e.message : 'Error fetching schedules',
         cause: e,
       },
       {

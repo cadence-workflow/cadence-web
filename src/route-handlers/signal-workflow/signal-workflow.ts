@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
+import { getHTTPStatusCode, isGRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
 import signalWorkflowRequestBodySchema from './schemas/signal-workflow-request-body-schema';
@@ -50,8 +50,7 @@ export async function signalWorkflow(
 
     return NextResponse.json(
       {
-        message:
-          e instanceof GRPCError ? e.message : 'Error signaling workflow',
+        message: isGRPCError(e) ? e.message : 'Error signaling workflow',
         cause: e,
       },
       { status: getHTTPStatusCode(e) }

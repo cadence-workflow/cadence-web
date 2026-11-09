@@ -2,7 +2,6 @@ export type { ParsedQuery } from 'query-string';
 export type QueryParamSetterExtraConfig =
   | {
       replace?: boolean;
-      pageRerender?: boolean; // by default when url changes the whole pages rerender, set to false if only components that uses the hook(& their children) needs to be rerenderd
     }
   | undefined;
 

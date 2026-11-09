@@ -1,21 +1,29 @@
+import { queryOptions } from '@tanstack/react-query';
 import queryString from 'query-string';
 
-import { type GetConfigKeys } from '@/route-handlers/get-config/get-config.types';
-import request from '@/utils/request';
-
 import {
-  type UseConfigQueryOptions,
-  type UseConfigValueParams,
-} from './use-config-value.types';
+  type GetConfigKeys,
+  type GetConfigRequestQuery,
+  type GetConfigResponse,
+} from '@/route-handlers/get-config/get-config.types';
+import request from '@/utils/request';
+import { type RequestError } from '@/utils/request/request-error';
+
+import { type UseConfigValueParams } from './use-config-value.types';
 
 export default function getConfigValueQueryOptions<K extends GetConfigKeys>(
   params: UseConfigValueParams<K>
-): UseConfigQueryOptions<K> {
-  return {
+) {
+  return queryOptions<
+    GetConfigResponse<K>,
+    RequestError,
+    GetConfigResponse<K>,
+    [string, GetConfigRequestQuery<K>]
+  >({
     queryKey: [
       'dynamic_config',
       { configKey: params.key, jsonArgs: params.args },
-    ] as const,
+    ],
     queryFn: ({ queryKey: [_, { configKey, jsonArgs }] }) =>
       request(
         queryString.stringifyUrl({
@@ -29,5 +37,5 @@ export default function getConfigValueQueryOptions<K extends GetConfigKeys>(
           method: 'GET',
         }
       ).then((res) => res.json()),
-  };
+  });
 }

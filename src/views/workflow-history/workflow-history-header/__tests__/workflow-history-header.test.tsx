@@ -133,6 +133,25 @@ describe(WorkflowHistoryHeader.name, () => {
 
     expect(wrapper).toHaveAttribute('data-is-sticky', 'false');
 
+    // rio v11 only fires onChange when intersection state changes — enter view first.
+    act(() => {
+      mockIsIntersecting(sentinel, 1);
+    });
+    act(() => {
+      mockIsIntersecting(sentinel, 0);
+    });
+
+    expect(wrapper).toHaveAttribute('data-is-sticky', 'true');
+  });
+
+  it('should set sticky state to true when the sentinel starts out of view', () => {
+    setup({ isStickyEnabled: true });
+
+    const wrapper = screen.getByTestId('workflow-history-header-wrapper');
+    const sentinel = screen.getByTestId('sentinel');
+
+    // No enter-view first: the first observation may already be out of view
+    // (e.g. restored scroll position); initialInView makes it register.
     act(() => {
       mockIsIntersecting(sentinel, 0);
     });
@@ -148,6 +167,9 @@ describe(WorkflowHistoryHeader.name, () => {
 
     expect(wrapper).toHaveAttribute('data-is-sticky', 'false');
 
+    act(() => {
+      mockIsIntersecting(sentinel, 1);
+    });
     act(() => {
       mockIsIntersecting(sentinel, 0);
     });
@@ -167,6 +189,9 @@ describe(WorkflowHistoryHeader.name, () => {
     const wrapper = screen.getByTestId('workflow-history-header-wrapper');
     const sentinel = screen.getByTestId('sentinel');
 
+    act(() => {
+      mockIsIntersecting(sentinel, 1);
+    });
     act(() => {
       mockIsIntersecting(sentinel, 0);
     });

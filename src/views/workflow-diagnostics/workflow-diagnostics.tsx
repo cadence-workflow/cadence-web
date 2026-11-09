@@ -6,7 +6,7 @@ import SectionLoadingIndicator from '@/components/section-loading-indicator/sect
 import useSuspenseConfigValue from '@/hooks/use-config-value/use-suspense-config-value';
 import { type WorkflowPageTabContentProps } from '@/views/workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
-import { useSuspenseDescribeWorkflow } from '../workflow-page/hooks/use-describe-workflow';
+import useSuspenseDescribeWorkflow from '../workflow-page/hooks/use-describe-workflow/use-suspense-describe-workflow';
 
 import useDiagnoseWorkflow from './hooks/use-diagnose-workflow/use-diagnose-workflow';
 import WorkflowDiagnosticsContent from './workflow-diagnostics-content/workflow-diagnostics-content';

@@ -29,6 +29,10 @@ export const startWorkflowButtonMarkdocSchema = {
       type: Object,
       required: false,
     },
+    variableNames: {
+      type: Array,
+      required: false,
+    },
     timeoutSeconds: {
       type: Number,
       required: false,

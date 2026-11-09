@@ -50,13 +50,7 @@ jest.mock(
 );
 
 jest.mock('@visx/responsive', () => ({
-  ParentSize: ({
-    children,
-  }: {
-    children: (args: { width: number }) => React.ReactNode;
-  }) => {
-    return <>{children({ width: 1000 })}</>;
-  },
+  useParentSize: () => ({ parentRef: jest.fn(), width: 1000 }),
 }));
 
 const mockNow = new Date('2024-09-10').getTime();

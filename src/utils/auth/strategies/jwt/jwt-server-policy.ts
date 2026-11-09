@@ -11,15 +11,15 @@ import { buildJwtLoginPath, isJwtLoginReturnTo } from './jwt-login-path';
 import resolveJwtAuthContext from './resolve-jwt-auth-context';
 
 const jwtServerPolicy: AuthServerPolicy = {
-  resolveAuthContext(request) {
-    return resolveJwtAuthContext(request ?? getImplicitAuthRequest());
+  async resolveAuthContext(request) {
+    return resolveJwtAuthContext(request ?? (await getImplicitAuthRequest()));
   },
 
   getGrpcMetadata(authContext, request) {
     if (!authContext.authEnabled || !authContext.auth.isValidToken) {
       return undefined;
     }
-    const token = getJwtTokenFromRequest(request ?? getImplicitAuthRequest());
+    const token = getJwtTokenFromRequest(request);
     if (!token) {
       return undefined;
     }

@@ -2,7 +2,11 @@ import { status } from '@grpc/grpc-js';
 import { type NextRequest, NextResponse } from 'next/server';
 import pRetry from 'p-retry';
 
-import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
+import {
+  getHTTPStatusCode,
+  GRPCError,
+  isGRPCError,
+} from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
 import {
@@ -95,8 +99,7 @@ export async function diagnoseWorkflow(
 
     return NextResponse.json(
       {
-        message:
-          e instanceof GRPCError ? e.message : 'Error diagnosing workflow',
+        message: isGRPCError(e) ? e.message : 'Error diagnosing workflow',
         cause: e,
       },
       { status: getHTTPStatusCode(e) }

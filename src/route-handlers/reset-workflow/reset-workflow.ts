@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { getHTTPStatusCode, GRPCError } from '@/utils/grpc/grpc-error';
+import { getHTTPStatusCode, isGRPCError } from '@/utils/grpc/grpc-error';
 import logger, { type RouteHandlerErrorPayload } from '@/utils/logger';
 
 import { type Context, type RequestParams } from './reset-workflow.types';
@@ -48,8 +48,7 @@ export async function resetWorkflow(
 
     return NextResponse.json(
       {
-        message:
-          e instanceof GRPCError ? e.message : 'Error resetting workflow',
+        message: isGRPCError(e) ? e.message : 'Error resetting workflow',
         cause: e,
       },
       { status: getHTTPStatusCode(e) }

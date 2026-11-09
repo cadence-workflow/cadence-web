@@ -1,14 +1,19 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import isObjectLike from 'lodash/isObjectLike';
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import queryString from 'query-string';
-import { useBetween } from 'use-between';
-
-import usePreviousValue from '@/hooks/use-previous-value';
 
 import getPageQueryParamsValues from './helpers/get-page-query-params-values';
-import getUpdatedUrlSearch from './helpers/get-updated-url-search';
+import isSameSearch from './helpers/is-same-search';
+import readWindowSearch from './helpers/read-window-search';
+import resolveLocationSearch from './helpers/resolve-location-search';
+import resolveMountSearch from './helpers/resolve-mount-search';
+import writeQueryParams from './helpers/write-query-params';
+import {
+  QUERY_PARAMS_SYNC_EVENT,
+  WATCHDOG_DELAY_MS,
+  WATCHDOG_RECHECK_MS,
+} from './use-page-query-params.constants';
 import type {
   PageQueryParamSetter,
   PageQueryParamValues,
@@ -16,74 +21,74 @@ import type {
   QueryParamSetterExtraConfig,
 } from './use-page-query-params.types';
 
-const useShared_HistoryState = () => useBetween(useState<string>);
-
 export default function usePageQueryParams<P extends PageQueryParams>(
   config: P,
   extraConfig?: QueryParamSetterExtraConfig
 ): [PageQueryParamValues<P>, PageQueryParamSetter<P>] {
-  // state shared across all usePageQueryParams instances so that when one of the hook uses history state (which doesn't cause full page rerender)
-  // other usePageQueryParams hooks will get rerendered and update their internal value of window.location.search
-  const [stateUrl, rerender] = useShared_HistoryState();
-  const searchQueryParams = useSearchParams();
   const pathname = usePathname();
-  const router = useRouter();
-  const prevSearchQueryParam = usePreviousValue(searchQueryParams);
+  const basePath = process.env.__NEXT_ROUTER_BASEPATH ?? '';
+  const routePathname = pathname === null ? null : basePath + pathname;
+  const nextSearch = useSearchParams().toString();
+  const [search, setSearch] = useState<string | null>(null);
+  const lastNextUrlRef = useRef(`${routePathname}?${nextSearch}`);
 
-  const search = useMemo(() => {
-    // get changed value from searchQueryParams if it was changed or in case of server side rendering
-    // otherwise change would be due history state change and search value is available in window.location.search
-    if (
-      typeof window === 'undefined' ||
-      (prevSearchQueryParam && prevSearchQueryParam !== searchQueryParams)
-    )
-      return searchQueryParams.toString();
+  useEffect(() => {
+    setSearch(resolveMountSearch(routePathname, nextSearch));
 
-    return window.location.search;
-    // stateUrl is needed in deps to recalculate window.location.search
+    const onUrlChange = () => setSearch(readWindowSearch());
+    const urlEvents = ['popstate', QUERY_PARAMS_SYNC_EVENT];
+    urlEvents.forEach((event) => window.addEventListener(event, onUrlChange));
+    return () =>
+      urlEvents.forEach((event) =>
+        window.removeEventListener(event, onUrlChange)
+      );
+    // These values capture the URL from the first render.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQueryParams, prevSearchQueryParam, stateUrl]);
+  }, []);
 
-  const values: PageQueryParamValues<P> = useMemo(() => {
-    const urlQueryParamsObject = queryString.parse(search);
-    return getPageQueryParamsValues<P>(config, urlQueryParamsObject);
-  }, [config, search]);
+  useEffect(() => {
+    const key = `${routePathname}?${nextSearch}`;
+    if (lastNextUrlRef.current === key) return;
+    lastNextUrlRef.current = key;
+    setSearch((prev) =>
+      prev !== null && isSameSearch(nextSearch, prev) ? prev : nextSearch
+    );
+  }, [nextSearch, routePathname]);
+
+  // Next can change window.location after its search params have updated.
+  useEffect(() => {
+    if (search === null) return;
+    const readLocation = () =>
+      setSearch((current) => resolveLocationSearch(routePathname, current));
+    let recheck: ReturnType<typeof setTimeout> | undefined;
+    const timer = setTimeout(() => {
+      readLocation();
+      recheck = setTimeout(readLocation, WATCHDOG_RECHECK_MS);
+    }, WATCHDOG_DELAY_MS);
+    return () => {
+      clearTimeout(timer);
+      if (recheck) clearTimeout(recheck);
+    };
+  }, [search, routePathname]);
+
+  const values: PageQueryParamValues<P> = useMemo(
+    () =>
+      getPageQueryParamsValues<P>(
+        config,
+        queryString.parse(search ?? nextSearch)
+      ),
+    [config, search, nextSearch]
+  );
 
   const setter = useCallback<PageQueryParamSetter<P>>(
-    (newParams, setterExtraConfig) => {
-      if (!isObjectLike(newParams)) {
-        return;
-      }
-      const replace =
-        setterExtraConfig?.replace ?? extraConfig?.replace ?? false;
-      const pageRerender =
-        setterExtraConfig?.pageRerender ?? extraConfig?.pageRerender ?? true;
-
-      const updatedUrlSearch = getUpdatedUrlSearch(config, newParams, search);
-      const routerNavigate = replace ? router.replace : router.push;
-      const stateNavigate = replace
-        ? window.history.replaceState
-        : window.history.pushState;
-      const newHref =
-        pathname + (updatedUrlSearch ? `?${updatedUrlSearch}` : '');
-
-      if (pageRerender) {
-        routerNavigate(newHref);
-      } else {
-        stateNavigate(window.history.state, '', newHref);
-        rerender(newHref);
-      }
-    },
-    [
-      extraConfig?.replace,
-      extraConfig?.pageRerender,
-      search,
-      config,
-      router.replace,
-      router.push,
-      pathname,
-      rerender,
-    ]
+    (newParams, setterExtraConfig) =>
+      writeQueryParams({
+        config,
+        newParams,
+        replace: setterExtraConfig?.replace ?? extraConfig?.replace ?? false,
+        routePathname,
+      }),
+    [extraConfig?.replace, config, routePathname]
   );
 
   return [values, setter];

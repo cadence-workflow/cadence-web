@@ -18,7 +18,6 @@ export default function getListSchedulesQueryOptions({
   ListSchedulesResponse,
   RequestError,
   InfiniteData<ListSchedulesResponse>,
-  ListSchedulesResponse,
   [string, UseListSchedulesParams],
   string | undefined
 > {

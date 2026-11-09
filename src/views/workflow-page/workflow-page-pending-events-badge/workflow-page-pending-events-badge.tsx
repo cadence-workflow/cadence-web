@@ -4,7 +4,7 @@ import React from 'react';
 import { Badge } from 'baseui/badge';
 import { useParams } from 'next/navigation';
 
-import { useDescribeWorkflow } from '../hooks/use-describe-workflow';
+import useDescribeWorkflow from '../hooks/use-describe-workflow/use-describe-workflow';
 import { type WorkflowPageTabsParams } from '../workflow-page-tabs/workflow-page-tabs.types';
 
 import { overrides } from './workflow-page-pending-events-badge.styles';

@@ -1,6 +1,7 @@
 import { useContext } from 'react';
 
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import Markdown from '@/components/markdown/markdown';
 import { MarkdownContext } from '@/components/markdown/markdown-context-provider/markdown-context-provider';
@@ -22,6 +23,71 @@ jest.mock(
 );
 
 describe('Markdown with Markdoc', () => {
+  it('renders an input-field tag as an input', () => {
+    render(
+      <Markdown
+        markdown={
+          '{% input-field name="amount" label="Amount" type="number" default=84.5 /%}'
+        }
+      />
+    );
+
+    expect(screen.getByLabelText('Amount')).toHaveValue(84.5);
+  });
+
+  it('resolves a field value into the button input', async () => {
+    const user = userEvent.setup();
+    render(
+      <Markdown
+        markdown={`{% input-field name="amount" label="Amount" type="number" /%}
+
+{% signal signalName="s" label="Go" input={"amount":$amount} /%}`}
+      />
+    );
+
+    expect(getButtonProps().input).toEqual({});
+    expect(getButtonProps().variableNames).toEqual(['amount']);
+
+    await user.type(screen.getByLabelText('Amount'), '125');
+
+    expect(screen.getByLabelText('Amount')).toHaveValue(125);
+    expect(getButtonProps().input).toEqual({ amount: 125 });
+  });
+
+  it('drops the key of an empty optional field', async () => {
+    const user = userEvent.setup();
+    render(
+      <Markdown
+        markdown={`{% input-field name="note" label="Note" /%}
+
+{% signal signalName="s" label="Go" input={"a":1,"note":$note} /%}`}
+      />
+    );
+
+    expect(getButtonProps().input).toEqual({ a: 1 });
+
+    await user.type(screen.getByLabelText('Note'), 'hi');
+
+    expect(getButtonProps().input).toEqual({ a: 1, note: 'hi' });
+  });
+
+  it('shows the field value in text', async () => {
+    const user = userEvent.setup();
+    render(
+      <Markdown
+        markdown={`{% input-field name="amount" label="Amount" type="number" default=5 /%}
+
+Total: {% $amount %}`}
+      />
+    );
+
+    expect(screen.getByText('Total: 5')).toBeInTheDocument();
+
+    await user.type(screen.getByLabelText('Amount'), '7');
+
+    expect(screen.getByText('Total: 57')).toBeInTheDocument();
+  });
+
   it('renders basic markdown', () => {
     const content = '# Hello World\n\nThis is a test.';
     render(<Markdown markdown={content} />);
@@ -178,6 +244,8 @@ Use \`code\` here.`;
         cluster: 'cluster0',
         workflowId: 'wf-123',
         runId: 'run-456',
+        fieldValues: {},
+        fieldMeta: {},
       })
     );
   });
@@ -186,7 +254,40 @@ Use \`code\` here.`;
     const content = '{% signal signalName="test" label="Go" /%}';
     render(<Markdown markdown={content} />);
 
-    expect(screen.getByTestId('markdown-context')).toHaveTextContent('{}');
+    expect(screen.getByTestId('markdown-context')).toHaveTextContent(
+      JSON.stringify({ fieldValues: {}, fieldMeta: {} })
+    );
+  });
+
+  it('removes field metadata when an input-field tag is removed', () => {
+    const field = '{% input-field name="amount" label="Amount" /%}';
+    const signal = '{% signal signalName="s" label="Go" /%}';
+    const { rerender } = render(
+      <Markdown markdown={`${field}\n\n${signal}`} />
+    );
+
+    expect(getContext().fieldMeta).toHaveProperty('amount');
+
+    rerender(<Markdown markdown={signal} />);
+
+    expect(getContext().fieldMeta).toEqual({});
+  });
+
+  it('removes the old field metadata when a field is renamed', () => {
+    const signal = '{% signal signalName="s" label="Go" /%}';
+    const { rerender } = render(
+      <Markdown
+        markdown={`{% input-field name="amount" label="Amount" /%}\n\n${signal}`}
+      />
+    );
+
+    rerender(
+      <Markdown
+        markdown={`{% input-field name="total" label="Total" /%}\n\n${signal}`}
+      />
+    );
+
+    expect(Object.keys(getContext().fieldMeta)).toEqual(['total']);
   });
 
   it('passes explicit tag attributes through regardless of markdown context', () => {
@@ -233,3 +334,13 @@ Use \`code\` here.`;
     expect(screen.getByTestId('greeting')).toHaveTextContent('Hello Cadence');
   });
 });
+
+function getContext() {
+  return JSON.parse(screen.getByTestId('markdown-context').textContent ?? '');
+}
+
+function getButtonProps() {
+  return JSON.parse(
+    screen.getByTestId('signal-button-props').textContent ?? ''
+  );
+}

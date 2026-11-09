@@ -13,6 +13,14 @@ const BUILD_OUTPUT =
     : undefined;
 
 const nextConfig = {
+  // ESM-only deps. next/jest also builds its transformIgnorePatterns from this list.
+  transpilePackages: [
+    'query-string',
+    'decode-uri-component',
+    'split-on-first',
+    'filter-obj',
+    'react-movable',
+  ],
   webpack: (config, options) => {
     config.resolve.alias = {
       ...config.resolve.alias,
@@ -59,7 +67,7 @@ const nextConfig = {
       },
       {
         source:
-          '/domains/:domain/:cluster/workflows/:workflowPath([^/]+(?:/(?:summary|history|queries|stack-trace|diagnostics))?)',
+          '/domains/:domain/:cluster/workflows/:workflowPath([^/]+(?:/(?:summary|home|history|queries|stack-trace|diagnostics))?)',
         destination: '/redirects/workflow/:domain/:cluster/:workflowPath',
         permanent: true,
       },
@@ -77,9 +85,6 @@ const nextConfig = {
     ];
   },
   output: BUILD_OUTPUT,
-  experimental: {
-    instrumentationHook: true,
-  },
 };
 
 export default nextConfig;
