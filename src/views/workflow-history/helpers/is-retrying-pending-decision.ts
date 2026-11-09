@@ -1,9 +1,7 @@
 import { type PendingDecisionTaskStartEvent } from '../workflow-history.types';
 
-// ponytail: PendingDecision.attempt is the server's DecisionAttempt retry
-// generation (increments on fail/timeout replication; sticky schedule-to-start
-// requeue uses FailDecision(false) and does not increment). If server semantics
-// change, this is the one place to fix.
+// attempt is the server's DecisionAttempt. It is 0 on the first try and
+// increases each time the decision fails or times out.
 export default function isRetryingPendingDecision(
   pending: PendingDecisionTaskStartEvent
 ): boolean {
