@@ -20,7 +20,7 @@ export default function getNavigationBarEventsMenuItems(
       // alone would hide pending events from the array's element type.
       const events: Array<ExtendedHistoryEvent> = group.events;
       // Prefer a persisted event so expansion and scroll survive the pending
-      // tab disappearing; fall back to the pending event's synthetic id.
+      // tab disappearing. Fall back to the pending event's synthetic id.
       const lastEventId =
         findLast(events, (e) => Boolean(e.eventId))?.eventId ||
         findLast(events, isPendingHistoryEvent)?.computedEventId;
