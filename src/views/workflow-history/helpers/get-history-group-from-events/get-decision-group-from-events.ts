@@ -8,6 +8,7 @@ import type {
   PendingDecisionTaskStartEvent,
 } from '../../workflow-history.types';
 import getCommonHistoryGroupFields from '../get-common-history-group-fields';
+import isRetryingPendingDecision from '../is-retrying-pending-decision';
 
 export default function getDecisionGroupFromEvents(
   events: ExtendedDecisionHistoryEvent[]
@@ -25,33 +26,35 @@ export default function getDecisionGroupFromEvents(
     'decisionTaskFailedEventAttributes',
   ];
 
-  const nonPendingEvents = events.filter(
-    (e) => e.attributes !== pendingStartAttr
-  );
-  const pendingEvents = events.filter((e) => e.attributes === pendingStartAttr);
-  const hasCompleted = nonPendingEvents.some(
-    (e) => e.attributes === 'decisionTaskCompletedEventAttributes'
-  );
-  // Completed is terminal for a decision: drop pending at any attempt (stale
-  // describe poll vs history backfill race). Otherwise keep pending last so
-  // last-event-wins derives WAITING for a live retry.
-  const normalizedEvents = hasCompleted
-    ? nonPendingEvents
-    : [...nonPendingEvents, ...pendingEvents];
-
   let scheduleEvent: ExtendedDecisionHistoryEvent | undefined;
   let pendingStartEvent: PendingDecisionTaskStartEvent | undefined;
   let timeoutEvent: ExtendedDecisionHistoryEvent | undefined;
   let startEvent: ExtendedDecisionHistoryEvent | undefined;
   let closeEvent: ExtendedDecisionHistoryEvent | undefined;
 
-  normalizedEvents.forEach((e) => {
+  events.forEach((e) => {
     if (e.attributes === pendingStartAttr) pendingStartEvent = e;
     if (e.attributes === scheduleAttr) scheduleEvent = e;
     if (e.attributes === timeoutAttr) timeoutEvent = e;
     if (e.attributes === startAttr) startEvent = e;
     if (closeAttrs.includes(e.attributes)) closeEvent = e;
   });
+
+  // Any close or timeout hides the pending event, so a stale describe result
+  // cannot flip a finished decision back to WAITING. A started decision hides
+  // it too, unless it is a live retry.
+  const shouldShowPendingEvent = Boolean(
+    pendingStartEvent &&
+      !(closeEvent || timeoutEvent) &&
+      (!startEvent || isRetryingPendingDecision(pendingStartEvent))
+  );
+  const shownPendingEvent = shouldShowPendingEvent
+    ? pendingStartEvent
+    : undefined;
+
+  const finalEvents = shouldShowPendingEvent
+    ? events
+    : events.filter((e) => e.attributes !== pendingStartAttr);
 
   const hasAllTimeoutEvents = scheduleEvent && timeoutEvent;
   const hasAllCloseEvents = scheduleEvent && startEvent && closeEvent;
@@ -71,11 +74,11 @@ export default function getDecisionGroupFromEvents(
   // Live pending attempt is authoritative: a first-written scheduled event can
   // lag at attempt 0 while the retry loop has already advanced
   if (
-    pendingStartEvent &&
-    pendingStartAttr in pendingStartEvent &&
-    pendingStartEvent[pendingStartAttr]?.attempt
+    shownPendingEvent &&
+    pendingStartAttr in shownPendingEvent &&
+    shownPendingEvent[pendingStartAttr]?.attempt
   ) {
-    retryAttemptNumber = pendingStartEvent[pendingStartAttr].attempt;
+    retryAttemptNumber = shownPendingEvent[pendingStartAttr].attempt;
   }
 
   if (retryAttemptNumber) {
@@ -101,7 +104,7 @@ export default function getDecisionGroupFromEvents(
     PENDING_DECISION_STATE_SCHEDULED: 'Starting',
     PENDING_DECISION_STATE_STARTED: 'Running',
   };
-  const pendingState = pendingStartEvent?.[pendingStartAttr].state;
+  const pendingState = shownPendingEvent?.[pendingStartAttr].state;
 
   // populate event to label and status maps
   const eventToLabel: HistoryGroupEventToStringMap<DecisionHistoryGroup> = {
@@ -126,7 +129,7 @@ export default function getDecisionGroupFromEvents(
     decisionTaskTimedOutEventAttributes: 'FAILED',
   };
 
-  const pendingStartEventTimePrefix = pendingStartEvent?.[pendingStartAttr]
+  const shownPendingEventTimePrefix = shownPendingEvent?.[pendingStartAttr]
     .startedTime
     ? 'Started at'
     : 'Scheduled at';
@@ -152,11 +155,11 @@ export default function getDecisionGroupFromEvents(
     badges,
     resetToDecisionEventId,
     ...getCommonHistoryGroupFields<DecisionHistoryGroup>({
-      events: normalizedEvents,
+      events: finalEvents,
       historyGroupEventToStatusMap: eventToStatus,
       eventToLabelMap: eventToLabel,
       eventToTimeLabelPrefixMap: {
-        pendingDecisionTaskStartEventAttributes: pendingStartEventTimePrefix,
+        pendingDecisionTaskStartEventAttributes: shownPendingEventTimePrefix,
       },
       closeEvent: closeEvent || timeoutEvent,
       eventToNegativeFieldsMap: eventToNegativeFields,

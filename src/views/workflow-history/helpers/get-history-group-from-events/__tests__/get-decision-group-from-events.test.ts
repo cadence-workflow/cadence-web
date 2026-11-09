@@ -106,17 +106,15 @@ describe('getDecisionGroupFromEvents', () => {
     expect(eventsWithInvalidState.eventsMetadata[1].label).toBe('Starting');
   });
 
-  it('should return group eventsMetadata with correct labels, dropping pending when completed is present', () => {
+  it('should return group eventsMetadata with correct labels', () => {
     const events: ExtendedDecisionHistoryEvent[] = [
       scheduleDecisionTaskEvent,
-      pendingDecisionTaskStartEvent,
       startDecisionTaskEvent,
       completeDecisionTaskEvent,
       failedDecisionTaskEvent,
       timeoutDecisionTaskEvent,
     ];
     const group = getDecisionGroupFromEvents(events);
-    // A completed decision is terminal: the pending event is filtered out
     expect(group.eventsMetadata.map(({ label }) => label)).toEqual([
       'Scheduled',
       'Started',
@@ -124,47 +122,6 @@ describe('getDecisionGroupFromEvents', () => {
       'Failed',
       'Timed out',
     ]);
-  });
-
-  it('should drop pending decision events at any attempt when a completed event is present', () => {
-    const group = getDecisionGroupFromEvents([
-      scheduleDecisionTaskEvent,
-      startDecisionTaskEvent,
-      completeDecisionTaskEvent,
-      pendingDecisionTaskStartEvent, // attempt 1, stale poll after success
-    ]);
-
-    expect(group.status).toBe('COMPLETED');
-    expect(
-      group.events.some(
-        (e) => e.attributes === 'pendingDecisionTaskStartEventAttributes'
-      )
-    ).toBe(false);
-    expect(group.badges).toEqual([]);
-  });
-
-  it('should move pending decision events last and derive WAITING after a failed attempt', () => {
-    const group = getDecisionGroupFromEvents([
-      pendingDecisionTaskStartEvent, // synthetic events sort first in raw arrays (null eventId)
-      scheduleDecisionTaskEvent,
-      startDecisionTaskEvent,
-      failedDecisionTaskEvent,
-    ]);
-
-    expect(group.eventsMetadata.map(({ label }) => label)).toEqual([
-      'Scheduled',
-      'Started',
-      'Failed',
-      'Starting',
-    ]);
-    expect(group.eventsMetadata.map(({ status }) => status)).toEqual([
-      'COMPLETED',
-      'COMPLETED',
-      'FAILED',
-      'WAITING',
-    ]);
-    expect(group.status).toBe('WAITING');
-    expect(group.badges).toEqual([{ content: '1 Retry' }]);
   });
 
   it('should prefer the live pending attempt over the scheduled attempt for the retry badge', () => {
@@ -187,6 +144,68 @@ describe('getDecisionGroupFromEvents', () => {
       pendingWithHigherAttempt,
     ]);
     expect(group.badges).toEqual([{ content: '5 Retries' }]);
+  });
+
+  describe('pending event visibility', () => {
+    const withAttempt = (attempt: number) => ({
+      ...pendingDecisionTaskStartEvent,
+      pendingDecisionTaskStartEventAttributes: {
+        ...pendingDecisionTaskStartEvent.pendingDecisionTaskStartEventAttributes,
+        attempt,
+      },
+    });
+    const labels = (events: ExtendedDecisionHistoryEvent[]) =>
+      getDecisionGroupFromEvents(events).eventsMetadata.map((m) => m.label);
+
+    it('should show a pending event on a scheduled decision', () => {
+      expect(labels([scheduleDecisionTaskEvent, withAttempt(0)])).toEqual([
+        'Scheduled',
+        'Starting',
+      ]);
+    });
+
+    it('should hide a non-retrying pending event once the decision started', () => {
+      expect(
+        labels([
+          scheduleDecisionTaskEvent,
+          startDecisionTaskEvent,
+          withAttempt(0),
+        ])
+      ).toEqual(['Scheduled', 'Started']);
+    });
+
+    it('should keep a retrying pending event after the decision started', () => {
+      const group = getDecisionGroupFromEvents([
+        scheduleDecisionTaskEvent,
+        startDecisionTaskEvent,
+        withAttempt(1),
+      ]);
+      expect(group.eventsMetadata.map((m) => m.label)).toEqual([
+        'Scheduled',
+        'Started',
+        'Starting',
+      ]);
+      expect(group.status).toBe('WAITING');
+    });
+
+    it.each([
+      ['completed', completeDecisionTaskEvent],
+      ['failed', failedDecisionTaskEvent],
+      ['timed out', timeoutDecisionTaskEvent],
+    ])('should hide a retrying pending event once the decision %s', (_, e) => {
+      const group = getDecisionGroupFromEvents([
+        scheduleDecisionTaskEvent,
+        startDecisionTaskEvent,
+        e,
+        withAttempt(3),
+      ]);
+      expect(group.events).not.toContainEqual(
+        expect.objectContaining({
+          attributes: 'pendingDecisionTaskStartEventAttributes',
+        })
+      );
+      expect(group.badges).toEqual([]);
+    });
   });
 
   it('should return group eventsMetadata with correct status', () => {
