@@ -26,37 +26,37 @@ describe(useWorkflowHistoryScroll.name, () => {
 
     expect(result.current.groupedTableVirtuosoRef).toBeDefined();
     expect(result.current.ungroupedTableVirtuosoRef).toBeDefined();
-    expect(result.current.tableScrollTargetEventId).toBeUndefined();
+    expect(result.current.tableScrollTargetEventKey).toBeUndefined();
     expect(result.current.scrollToTableEvent).toBeInstanceOf(Function);
     expect(result.current.handleTableScrollUp).toBeInstanceOf(Function);
     expect(result.current.handleTableScrollDown).toBeInstanceOf(Function);
   });
 
-  it('should set tableScrollTargetEventId when scrollToTableEvent is called', () => {
+  it('should set tableScrollTargetEventKey when scrollToTableEvent is called', () => {
     const { result } = setup({});
 
     act(() => {
       result.current.scrollToTableEvent('event-123');
     });
 
-    expect(result.current.tableScrollTargetEventId).toBe('event-123');
+    expect(result.current.tableScrollTargetEventKey).toBe('event-123');
   });
 
-  it('should clear tableScrollTargetEventId after 2 seconds', async () => {
+  it('should clear tableScrollTargetEventKey after 2 seconds', async () => {
     const { result } = setup({});
 
     act(() => {
       result.current.scrollToTableEvent('event-123');
     });
 
-    expect(result.current.tableScrollTargetEventId).toBe('event-123');
+    expect(result.current.tableScrollTargetEventKey).toBe('event-123');
 
     act(() => {
       jest.advanceTimersByTime(2000);
     });
 
     await waitFor(() => {
-      expect(result.current.tableScrollTargetEventId).toBeUndefined();
+      expect(result.current.tableScrollTargetEventKey).toBeUndefined();
     });
   });
 
@@ -76,27 +76,27 @@ describe(useWorkflowHistoryScroll.name, () => {
       result.current.scrollToTableEvent('2');
     });
 
-    expect(result.current.tableScrollTargetEventId).toBe('2');
+    expect(result.current.tableScrollTargetEventKey).toBe('2');
 
     // 1.5s
     act(() => {
       jest.advanceTimersByTime(1500);
     });
 
-    expect(result.current.tableScrollTargetEventId).toBe('2');
+    expect(result.current.tableScrollTargetEventKey).toBe('2');
 
     act(() => {
       result.current.scrollToTableEvent('7');
     });
 
-    expect(result.current.tableScrollTargetEventId).toBe('7');
+    expect(result.current.tableScrollTargetEventKey).toBe('7');
 
     // 2s
     act(() => {
       jest.advanceTimersByTime(500);
     });
 
-    expect(result.current.tableScrollTargetEventId).toBe('7');
+    expect(result.current.tableScrollTargetEventKey).toBe('7');
 
     // 3.5s
     act(() => {
@@ -104,7 +104,7 @@ describe(useWorkflowHistoryScroll.name, () => {
     });
 
     await waitFor(() => {
-      expect(result.current.tableScrollTargetEventId).toBeUndefined();
+      expect(result.current.tableScrollTargetEventKey).toBeUndefined();
     });
   });
 

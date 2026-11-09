@@ -1,3 +1,4 @@
+import getEventKey from '../helpers/get-event-key';
 import compareUngroupedEvents from '../workflow-history-ungrouped-table/helpers/compare-ungrouped-events';
 import { type UngroupedEventInfo } from '../workflow-history-ungrouped-table/workflow-history-ungrouped-table.types';
 import { type HistoryEventsGroup } from '../workflow-history.types';
@@ -8,7 +9,7 @@ export function createUngroupedEventsInfo(
   return eventGroupsById
     .map(([groupId, group]) => [
       ...group.events.map((event, index) => ({
-        id: event.eventId ?? event.computedEventId,
+        id: getEventKey(event),
         groupId,
         event,
         eventMetadata: group.eventsMetadata[index],

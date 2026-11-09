@@ -155,7 +155,7 @@ export default function WorkflowHistory({ params }: Props) {
     isFetchNextPageError,
   } = historyQuery;
 
-  const allEventIds = useMemo(
+  const allEventKeys = useMemo(
     () =>
       Object.values(eventGroups).flatMap((group) =>
         group.events.map(getEventKey)
@@ -261,7 +261,7 @@ export default function WorkflowHistory({ params }: Props) {
       filteredEventGroupsEntries
         .map(([groupId, group]) => [
           ...group.events.map((event, index) => ({
-            id: event.eventId ?? event.computedEventId,
+            id: getEventKey(event),
             groupId,
             event,
             eventMetadata: group.eventsMetadata[index],
@@ -330,7 +330,7 @@ export default function WorkflowHistory({ params }: Props) {
     groupedTableVirtuosoRef,
     ungroupedTableVirtuosoRef,
     timelineVirtuosoRef,
-    tableScrollTargetEventId,
+    tableScrollTargetEventKey,
     timelineScrollTargetEventGroupId,
     scrollToTableEvent,
     scrollToTimelineEventGroup,
@@ -362,7 +362,7 @@ export default function WorkflowHistory({ params }: Props) {
     getIsItemExpanded,
     toggleIsItemExpanded,
   } = useExpansionToggle({
-    items: allEventIds,
+    items: allEventKeys,
     initialState: selectedEventIdWithinGroup
       ? {
           [selectedEventIdWithinGroup]: true,
@@ -424,12 +424,10 @@ export default function WorkflowHistory({ params }: Props) {
   );
 
   const handleClickNavMenuEvent = useCallback(
-    (eventId: string) => {
+    (eventKey: string) => {
       const isEventVisible = filteredEventGroupsEntries.some(
         ([_, eventGroup]) =>
-          eventGroup.events.some(
-            (event) => (event.eventId ?? event.computedEventId) === eventId
-          )
+          eventGroup.events.some((event) => getEventKey(event) === eventKey)
       );
 
       if (!isEventVisible) {
@@ -443,8 +441,8 @@ export default function WorkflowHistory({ params }: Props) {
         );
       }
 
-      scrollToTableEvent(eventId);
-      if (!getIsItemExpanded(eventId)) toggleIsItemExpanded(eventId);
+      scrollToTableEvent(eventKey);
+      if (!getIsItemExpanded(eventKey)) toggleIsItemExpanded(eventKey);
     },
     [
       filteredEventGroupsEntries,
@@ -457,7 +455,7 @@ export default function WorkflowHistory({ params }: Props) {
 
   const handleClickNavMenuDiagnosticsIssue = useCallback(
     (subItem: NavigationBarEventsSubMenuItem) => {
-      handleClickNavMenuEvent(subItem.eventId);
+      handleClickNavMenuEvent(subItem.eventKey);
       if (!getIsDiagnosticsIssueExpanded(subItem.id)) {
         toggleIsDiagnosticsIssueExpanded(subItem.id);
       }
@@ -523,7 +521,7 @@ export default function WorkflowHistory({ params }: Props) {
             }
             decodedPageUrlParams={decodedParams}
             selectedEventId={
-              tableScrollTargetEventId ?? selectedEventIdWithinGroup
+              tableScrollTargetEventKey ?? selectedEventIdWithinGroup
             }
             resetToDecisionEventId={setResetToDecisionEventId}
             getIsEventExpanded={getIsItemExpanded}
@@ -557,7 +555,7 @@ export default function WorkflowHistory({ params }: Props) {
             workflowIsArchived={workflowExecutionInfo?.isArchived || false}
             workflowCloseTimeMs={workflowCloseTimeMs}
             selectedEventId={
-              tableScrollTargetEventId ?? queryParams.historySelectedEventId
+              tableScrollTargetEventKey ?? queryParams.historySelectedEventId
             }
             resetToDecisionEventId={setResetToDecisionEventId}
             getIsEventExpanded={getIsItemExpanded}

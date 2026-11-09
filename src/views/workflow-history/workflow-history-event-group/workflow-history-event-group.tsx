@@ -65,9 +65,9 @@ export default function WorkflowHistoryEventGroup({
   const handleGroupExpansionStateChange = useCallback(
     (newExpanded: boolean) => {
       events.forEach((event) => {
-        const eventId = getEventKey(event);
-        if (eventId && getIsEventExpanded(eventId) !== newExpanded)
-          toggleIsEventExpanded(eventId);
+        const eventKey = getEventKey(event);
+        if (eventKey && getIsEventExpanded(eventKey) !== newExpanded)
+          toggleIsEventExpanded(eventKey);
       });
     },
     [events, getIsEventExpanded, toggleIsEventExpanded]
@@ -84,14 +84,14 @@ export default function WorkflowHistoryEventGroup({
   );
 
   const isGroupExpanded = events.some((event) => {
-    const eventId = getEventKey(event);
-    return !!eventId && getIsEventExpanded(eventId);
+    const eventKey = getEventKey(event);
+    return !!eventKey && getIsEventExpanded(eventKey);
   });
 
   const animateOnEnter = useMemo(
     () =>
       groupDetailsEntriesWithSummary.some(
-        ([eventId]) => eventId === selectedEventId
+        ([eventKey]) => eventKey === selectedEventId
       ),
     [groupDetailsEntriesWithSummary, selectedEventId]
   );

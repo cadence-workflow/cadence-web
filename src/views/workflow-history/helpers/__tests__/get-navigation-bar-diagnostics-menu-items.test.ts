@@ -46,7 +46,7 @@ describe(getNavigationBarDiagnosticsMenuItems.name, () => {
     expect(result).toEqual([]);
   });
 
-  it('uses the first event with issues as the item eventId, keeping label and category', () => {
+  it('uses the first event with issues as the item eventKey, keeping label and category', () => {
     const eventGroupsEntries: Array<EventGroupEntry> = [
       ['group1', mockActivityEventGroup],
     ];
@@ -78,12 +78,12 @@ describe(getNavigationBarDiagnosticsMenuItems.name, () => {
     );
 
     expect(result).toHaveLength(1);
-    expect(result[0].eventId).toBe('9');
+    expect(result[0].eventKey).toBe('9');
     expect(result[0].label).toBe(mockActivityEventGroup.label);
     expect(result[0].category).toBe('ACTIVITY');
   });
 
-  it('keeps each issue tied to its own eventId within a group', () => {
+  it('keeps each issue tied to its own eventKey within a group', () => {
     const eventGroupsEntries: Array<EventGroupEntry> = [
       ['group1', mockActivityEventGroup],
     ];
@@ -115,8 +115,8 @@ describe(getNavigationBarDiagnosticsMenuItems.name, () => {
 
     expect(result).toHaveLength(1);
     expect(result[0].subItems).toEqual([
-      { id: 'Activity Failed.0', eventId: '7', label: 'Activity Failed' },
-      { id: 'Activity Timeout.1', eventId: '10', label: 'Activity Timeout' },
+      { id: 'Activity Failed.0', eventKey: '7', label: 'Activity Failed' },
+      { id: 'Activity Timeout.1', eventKey: '10', label: 'Activity Timeout' },
     ]);
   });
 
@@ -152,7 +152,7 @@ describe(getNavigationBarDiagnosticsMenuItems.name, () => {
     );
 
     expect(result).toHaveLength(2);
-    expect(result[0].eventId).toBe('7');
-    expect(result[1].eventId).toBe('4');
+    expect(result[0].eventKey).toBe('7');
+    expect(result[1].eventKey).toBe('4');
   });
 });
