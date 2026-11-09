@@ -731,6 +731,51 @@ describe(WorkflowHistoryGrouper.name, () => {
     expect(grouper.getState().groups['pending-2']).toBeUndefined();
   });
 
+  it('should migrate a pending-only retry group into the real decision group once history lands', async () => {
+    const { grouper, waitForProcessing } = setup();
+
+    await grouper.updatePendingEvents({
+      pendingStartActivities: [],
+      pendingStartDecision: createPendingDecision('2'),
+    });
+    expect(grouper.getState().groups['pending-2']).toBeDefined();
+    expect(grouper.getState().groups['2']).toBeUndefined();
+
+    grouper.updateEvents([createScheduleDecisionEvent('2')]);
+    await waitForProcessing();
+
+    const groups = grouper.getState().groups;
+    expect(groups['pending-2']).toBeUndefined();
+    expect(groups['2'].groupType).toBe('Decision');
+    expect(groups['2'].events).toHaveLength(2);
+    expect(groups['2'].events.at(-1)?.attributes).toBe(
+      'pendingDecisionTaskStartEventAttributes'
+    );
+    expect(groups['2'].status).toBe('WAITING');
+  });
+
+  it('should drop the pending-only group when history lands as a completed decision', async () => {
+    const { grouper, waitForProcessing } = setup();
+
+    await grouper.updatePendingEvents({
+      pendingStartActivities: [],
+      pendingStartDecision: createPendingDecision('2'),
+    });
+    expect(grouper.getState().groups['pending-2']).toBeDefined();
+
+    grouper.updateEvents(completedDecisionTaskEvents);
+    await waitForProcessing();
+
+    const groups = grouper.getState().groups;
+    expect(groups['pending-2']).toBeUndefined();
+    expect(groups['2'].status).toBe('COMPLETED');
+    expect(
+      groups['2'].events.some(
+        (e) => e.attributes === 'pendingDecisionTaskStartEventAttributes'
+      )
+    ).toBe(false);
+  });
+
   it('should drop a stale retrying pending decision when the group has a completed event', async () => {
     const { grouper, waitForProcessing } = setup();
 

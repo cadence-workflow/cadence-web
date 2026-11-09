@@ -239,6 +239,11 @@ export default class WorkflowHistoryGrouper {
     // whose groups may now exist
     this.applyBufferedPendingEvents();
 
+    // History may have just created the decision group a pending-only retry
+    // was waiting for. Fold Pending-X into X so the table does not keep both
+    // until the next describe poll.
+    this.migratePendingOnlyDecisionGroup();
+
     // Move pointer forward
     this.lastProcessedEventIndex = batchEnd - 1;
 
@@ -540,6 +545,24 @@ export default class WorkflowHistoryGrouper {
       } else {
         this.bufferedPendingDecision = newPendingDecision;
       }
+    }
+  }
+
+  /**
+   * Moves a pending-only retry group (keyed by computedEventId) into the real
+   * decision group once history creates it. Without this, Pending-X and X
+   * both show until the next describe-driven updatePendingDecision.
+   */
+  private migratePendingOnlyDecisionGroup(): void {
+    const pending = this.currentPendingDecision;
+    if (!pending || !this.groups[pending.computedEventId]) {
+      return;
+    }
+
+    const groupId = getHistoryEventGroupId(pending);
+    if (groupId && this.groups[groupId]?.groupType === 'Decision') {
+      delete this.groups[pending.computedEventId];
+      this.updatePendingDecisionInGroup(groupId, pending);
     }
   }
 
