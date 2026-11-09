@@ -9,6 +9,7 @@ import { type EventDetailsTabContent } from '../workflow-history-group-details/w
 import { type HistoryEventsGroup } from '../workflow-history.types';
 
 import getEventDiagnosticsIssues from './get-event-diagnostics-issues';
+import getEventKey from './get-event-key';
 
 export default function generateHistoryGroupDetails(
   eventGroup: HistoryEventsGroup
@@ -17,7 +18,7 @@ export default function generateHistoryGroupDetails(
     summaryDetailsEntries: Array<[string, EventDetailsTabContent]> = [];
 
   eventGroup.events.forEach((event, index) => {
-    const eventId = event.eventId ?? event.computedEventId;
+    const eventKey = getEventKey(event);
 
     const eventMetadata = eventGroup.eventsMetadata[index];
     if (!eventMetadata) return;
@@ -38,11 +39,11 @@ export default function generateHistoryGroupDetails(
 
     const eventDiagnosticsIssues = getEventDiagnosticsIssues(
       eventGroup,
-      eventId
+      eventKey
     );
 
     groupDetailsEntries.push([
-      eventId,
+      eventKey,
       {
         eventLabel: eventMetadata.label,
         eventDetails,
@@ -61,7 +62,7 @@ export default function generateHistoryGroupDetails(
 
     if (eventSummaryDetails.length > 0) {
       summaryDetailsEntries.push([
-        eventId,
+        eventKey,
         {
           eventLabel: eventMetadata.label,
           eventDetails: eventSummaryDetails,

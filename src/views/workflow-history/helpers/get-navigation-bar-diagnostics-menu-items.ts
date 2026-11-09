@@ -9,6 +9,7 @@ import {
 
 import getDiagnosticsIssueExpansionId from './get-diagnostics-issue-expansion-id';
 import getEventGroupCategory from './get-event-group-category';
+import getEventKey from './get-event-key';
 
 export default function getNavigationBarDiagnosticsMenuItems(
   eventGroupsEntries: Array<EventGroupEntry>,
@@ -20,16 +21,16 @@ export default function getNavigationBarDiagnosticsMenuItems(
       const subItems: Array<NavigationBarEventsSubMenuItem> = [];
 
       for (const event of group.events) {
-        const eventId = event.eventId ?? event.computedEventId;
-        const issues = diagnosticsIssuesByEventId[eventId];
+        const eventKey = getEventKey(event);
+        const issues = diagnosticsIssuesByEventId[eventKey];
         if (!issues || issues.length === 0) continue;
 
-        firstEventIdWithIssues ??= eventId;
+        firstEventIdWithIssues ??= eventKey;
 
         for (const issue of issues) {
           subItems.push({
             id: getDiagnosticsIssueExpansionId(issue),
-            eventId,
+            eventId: eventKey,
             label: issue.invariantType,
           });
         }
