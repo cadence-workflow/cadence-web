@@ -307,8 +307,8 @@ export default class WorkflowHistoryGrouper {
       } else if (updatedEventsArr.every(isLocalActivityEvent)) {
         groups[groupId] = getLocalActivityGroupFromEvents(updatedEventsArr);
       } else if (updatedEventsArr.every(isExtendedDecisionEvent)) {
-        // Pending events have no eventId and sort first. Keep them last so
-        // the group status follows them.
+        // Pending events have no eventId and sort first. Put them last so the
+        // last event sets the group status.
         const isPending = (e: ExtendedDecisionHistoryEvent) =>
           e.attributes === 'pendingDecisionTaskStartEventAttributes';
         groups[groupId] = getDecisionGroupFromEvents([
@@ -390,8 +390,8 @@ export default class WorkflowHistoryGrouper {
         (e) => e.attributes !== 'pendingDecisionTaskStartEventAttributes'
       ) as ExtendedDecisionHistoryEvent[];
 
-      // Pending-only group losing its pending: sweep it. Rebuilding an empty
-      // group would throw in getDecisionGroupFromEvents (events[0] access).
+      // Delete a pending-only group that lost its pending event. Rebuilding an
+      // empty group would throw in getDecisionGroupFromEvents (events[0] access).
       if (filteredEvents.length === 0) {
         delete this.groups[groupId];
         return;

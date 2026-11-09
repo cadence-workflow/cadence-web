@@ -67,8 +67,8 @@ export default function getDecisionGroupFromEvents(
     retryAttemptNumber = scheduleEvent[scheduleAttr].attempt;
   }
 
-  // Live pending attempt is authoritative: a first-written scheduled event can
-  // lag at attempt 0 while the retry loop has already advanced
+  // The live pending attempt wins. The scheduled event can still say attempt 0
+  // while the retry loop has advanced.
   if (
     shownPendingEvent &&
     pendingStartAttr in shownPendingEvent &&
