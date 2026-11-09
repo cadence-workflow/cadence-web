@@ -307,14 +307,7 @@ export default class WorkflowHistoryGrouper {
       } else if (updatedEventsArr.every(isLocalActivityEvent)) {
         groups[groupId] = getLocalActivityGroupFromEvents(updatedEventsArr);
       } else if (updatedEventsArr.every(isExtendedDecisionEvent)) {
-        // Pending events have no eventId and sort first. Put them last so the
-        // last event sets the group status.
-        const isPending = (e: ExtendedDecisionHistoryEvent) =>
-          e.attributes === 'pendingDecisionTaskStartEventAttributes';
-        groups[groupId] = getDecisionGroupFromEvents([
-          ...updatedEventsArr.filter((e) => !isPending(e)),
-          ...updatedEventsArr.filter(isPending),
-        ]);
+        groups[groupId] = getDecisionGroupFromEvents(updatedEventsArr);
       } else if (updatedEventsArr.every(isTimerEvent)) {
         groups[groupId] = getTimerGroupFromEvents(updatedEventsArr);
       } else if (updatedEventsArr.every(isChildWorkflowExecutionEvent)) {
