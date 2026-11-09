@@ -2,9 +2,9 @@ import getEventNavigationId from '../get-event-navigation-id';
 
 describe(getEventNavigationId.name, () => {
   it('returns eventId for persisted events', () => {
-    expect(
-      getEventNavigationId({ eventId: '7', computedEventId: '7' })
-    ).toBe('7');
+    expect(getEventNavigationId({ eventId: '7', computedEventId: '7' })).toBe(
+      '7'
+    );
   });
 
   it('returns computedEventId when eventId is null (synthetic pending event)', () => {
