@@ -39,8 +39,8 @@ export default function getDecisionGroupFromEvents(
     if (closeAttrs.includes(e.attributes)) closeEvent = e;
   });
 
-  // Same rule as activities. Once the decision starts, closes, or times out,
-  // a stale describe result must not flip it back to WAITING.
+  // The pending event stands in for events history has not written yet.
+  // Drop it once history has the start, close, or timeout.
   const shouldShowPendingEvent = Boolean(
     pendingStartEvent && !(startEvent || closeEvent || timeoutEvent)
   );
