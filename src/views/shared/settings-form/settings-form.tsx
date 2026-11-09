@@ -11,7 +11,7 @@ import getInitialValues from './helpers/get-initial-values';
 import { styled } from './settings-form.styles';
 import { type SettingsFormValues, type Props } from './settings-form.types';
 
-export default function SettingsForm<D extends object, Z extends z.ZodTypeAny>({
+export default function SettingsForm<D extends object, Z extends z.ZodType>({
   data,
   zodSchema,
   formConfig,

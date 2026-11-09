@@ -14,12 +14,12 @@ export type FieldComponentProps<V> = {
   error?: string;
 };
 
-export type SettingsFormValues<Z extends z.ZodTypeAny> =
+export type SettingsFormValues<Z extends z.ZodType> =
   z.infer<Z> extends FieldValues ? z.infer<Z> : FieldValues;
 
 export type SettingsFormField<
   D extends object,
-  Z extends z.ZodTypeAny,
+  Z extends z.ZodType,
   K extends keyof SettingsFormValues<Z>,
 > = {
   path: K extends Path<SettingsFormValues<Z>> ? K : never;
@@ -29,14 +29,13 @@ export type SettingsFormField<
   component: React.ComponentType<FieldComponentProps<SettingsFormValues<Z>[K]>>;
 };
 
-export type SettingsFormConfig<
-  D extends object,
-  Z extends z.ZodTypeAny,
-> = Array<SettingsFormField<D, Z, any>>;
+export type SettingsFormConfig<D extends object, Z extends z.ZodType> = Array<
+  SettingsFormField<D, Z, any>
+>;
 
-export type Props<D extends object, Z extends z.ZodTypeAny> = {
+export type Props<D extends object, Z extends z.ZodType> = {
   data: D;
-  zodSchema: z.ZodType<SettingsFormValues<Z>, SettingsFormValues<Z>>;
+  zodSchema: Z & z.ZodType<SettingsFormValues<Z>, SettingsFormValues<Z>>;
   formConfig: SettingsFormConfig<D, Z>;
   onSubmit: SubmitHandler<SettingsFormValues<Z>>;
   submitButtonText: string;
