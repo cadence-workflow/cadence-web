@@ -270,7 +270,8 @@ export default function WorkflowHistory({ params }: Props) {
             eventGroup: group,
             label: group.label,
             shortLabel: group.shortLabel,
-            canReset: group.resetToDecisionEventId === event.eventId,
+            canReset:
+              !!event.eventId && group.resetToDecisionEventId === event.eventId,
           })),
         ])
         .flat(1)
