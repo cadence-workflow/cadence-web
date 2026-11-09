@@ -457,7 +457,7 @@ export default function WorkflowHistory({ params }: Props) {
 
   const handleClickNavMenuDiagnosticsIssue = useCallback(
     (subItem: NavigationBarEventsSubMenuItem) => {
-      handleClickNavMenuEvent(subItem.eventId);
+      handleClickNavMenuEvent(subItem.eventKey);
       if (!getIsDiagnosticsIssueExpanded(subItem.id)) {
         toggleIsDiagnosticsIssueExpanded(subItem.id);
       }

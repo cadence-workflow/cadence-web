@@ -54,7 +54,7 @@ describe(getNavigationBarEventsMenuItems.name, () => {
 
     expect(result).toHaveLength(1);
     expect(result[0]).toEqual({
-      eventId: '4', // last eventId from completedDecisionTaskEvents
+      eventKey: '4', // last eventId from completedDecisionTaskEvents
       label: 'Mock decision',
       category: 'DECISION',
     });
@@ -73,12 +73,12 @@ describe(getNavigationBarEventsMenuItems.name, () => {
 
     expect(result).toHaveLength(2);
     expect(result[0]).toEqual({
-      eventId: '10', // last eventId from completedActivityTaskEvents
+      eventKey: '10', // last eventId from completedActivityTaskEvents
       label: 'Mock event',
       category: 'ACTIVITY',
     });
     expect(result[1]).toEqual({
-      eventId: '4', // last eventId from completedDecisionTaskEvents
+      eventKey: '4', // last eventId from completedDecisionTaskEvents
       label: 'Mock decision',
       category: 'DECISION',
     });
@@ -122,6 +122,6 @@ describe(getNavigationBarEventsMenuItems.name, () => {
     expect(result).toHaveLength(1);
     // completedActivityTaskEvents has events with ids: '7', '9', '10'
     // Last eventId should be '10'
-    expect(result[0].eventId).toBe('10');
+    expect(result[0].eventKey).toBe('10');
   });
 });

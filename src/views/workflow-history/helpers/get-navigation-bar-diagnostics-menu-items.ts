@@ -17,7 +17,7 @@ export default function getNavigationBarDiagnosticsMenuItems(
 ): Array<NavigationBarEventsMenuItem> {
   return eventGroupsEntries.reduce<Array<NavigationBarEventsMenuItem>>(
     (acc, [_, group]) => {
-      let firstEventIdWithIssues: string | undefined;
+      let firstEventKeyWithIssues: string | undefined;
       const subItems: Array<NavigationBarEventsSubMenuItem> = [];
 
       for (const event of group.events) {
@@ -25,21 +25,21 @@ export default function getNavigationBarDiagnosticsMenuItems(
         const issues = diagnosticsIssuesByEventId[eventKey];
         if (!issues || issues.length === 0) continue;
 
-        firstEventIdWithIssues ??= eventKey;
+        firstEventKeyWithIssues ??= eventKey;
 
         for (const issue of issues) {
           subItems.push({
             id: getDiagnosticsIssueExpansionId(issue),
-            eventId: eventKey,
+            eventKey,
             label: issue.invariantType,
           });
         }
       }
 
-      if (!firstEventIdWithIssues) return acc;
+      if (!firstEventKeyWithIssues) return acc;
 
       acc.push({
-        eventId: firstEventIdWithIssues,
+        eventKey: firstEventKeyWithIssues,
         label: group.shortLabel ?? group.label,
         category: getEventGroupCategory(group),
         subItems,

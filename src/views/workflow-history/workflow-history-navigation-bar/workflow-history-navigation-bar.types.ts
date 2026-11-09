@@ -12,6 +12,6 @@ export type Props = {
   failedEventsMenuItems: Array<NavigationBarEventsMenuItem>;
   pendingEventsMenuItems: Array<NavigationBarEventsMenuItem>;
   diagnosticsMenuItems: Array<NavigationBarEventsMenuItem>;
-  onClickEvent: (eventId: string) => void;
+  onClickEvent: (eventKey: string) => void;
   onClickDiagnosticsIssue: (subItem: NavigationBarEventsSubMenuItem) => void;
 };

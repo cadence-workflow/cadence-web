@@ -12,13 +12,13 @@ export default function getNavigationBarEventsMenuItems(
 ): Array<NavigationBarEventsMenuItem> {
   return eventGroupsEntries.reduce<Array<NavigationBarEventsMenuItem>>(
     (acc, [_, group]) => {
-      const lastEventId = group.events.at(-1)?.eventId;
-      if (!lastEventId) return acc;
+      const lastEventKey = group.events.at(-1)?.eventId;
+      if (!lastEventKey) return acc;
 
       if (!filterFn(group)) return acc;
 
       acc.push({
-        eventId: lastEventId,
+        eventKey: lastEventKey,
         label: group.shortLabel ?? group.label,
         category: getEventGroupCategory(group),
       });
