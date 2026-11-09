@@ -239,8 +239,7 @@ export default class WorkflowHistoryGrouper {
     // whose groups may now exist
     this.applyBufferedPendingEvents();
 
-    // History may have just created the decision group a pending-only retry
-    // was waiting for. Fold Pending-X into X so the table does not keep both
+    // Fold Pending-X into X so the table does not keep both
     // until the next describe poll.
     this.migratePendingOnlyDecisionGroup();
 
@@ -308,17 +307,14 @@ export default class WorkflowHistoryGrouper {
       } else if (updatedEventsArr.every(isLocalActivityEvent)) {
         groups[groupId] = getLocalActivityGroupFromEvents(updatedEventsArr);
       } else if (updatedEventsArr.every(isExtendedDecisionEvent)) {
-        // A third event means the decision has started or closed. Drop the
-        // pending row here; the next describe poll attaches it again when
-        // the pending decision is still a live retry.
-        const filteredDecisionEvents =
-          updatedEventsArr.length > 2
-            ? updatedEventsArr.filter(
-                (e) =>
-                  e.attributes !== 'pendingDecisionTaskStartEventAttributes'
-              )
-            : updatedEventsArr;
-        groups[groupId] = getDecisionGroupFromEvents(filteredDecisionEvents);
+        // Pending events have no eventId and sort first. Keep them last so
+        // the group status follows them.
+        const isPending = (e: ExtendedDecisionHistoryEvent) =>
+          e.attributes === 'pendingDecisionTaskStartEventAttributes';
+        groups[groupId] = getDecisionGroupFromEvents([
+          ...updatedEventsArr.filter((e) => !isPending(e)),
+          ...updatedEventsArr.filter(isPending),
+        ]);
       } else if (updatedEventsArr.every(isTimerEvent)) {
         groups[groupId] = getTimerGroupFromEvents(updatedEventsArr);
       } else if (updatedEventsArr.every(isChildWorkflowExecutionEvent)) {
@@ -380,9 +376,8 @@ export default class WorkflowHistoryGrouper {
   }
 
   /**
-   * Syncs a decision group with the latest pending event: removes the old one,
-   * deletes the group if it goes empty, then attaches to a bare [Scheduled]
-   * group or any decision group when retrying (attempt > 0).
+   * Strip the group's pending decision, then attach the new one if given.
+   * Deletes the group if stripping leaves it empty.
    */
   private updatePendingDecisionInGroup(
     groupId: string,
@@ -402,24 +397,10 @@ export default class WorkflowHistoryGrouper {
         return;
       }
 
-      // Attach to a bare scheduled group (today's behavior), or anywhere in a
-      // decision group when the pending is a live retry
-      if (
-        pendingDecision &&
-        ((filteredEvents.length === 1 &&
-          filteredEvents[0].attributes ===
-            'decisionTaskScheduledEventAttributes') ||
-          isRetryingPendingDecision(pendingDecision))
-      ) {
-        const updatedEventsArr: ExtendedDecisionHistoryEvent[] = [
-          ...filteredEvents,
-          pendingDecision,
-        ];
-        this.groups[groupId] = getDecisionGroupFromEvents(updatedEventsArr);
-      } else {
-        // Just update without pending decision
-        this.groups[groupId] = getDecisionGroupFromEvents(filteredEvents);
-      }
+      // getDecisionGroupFromEvents decides whether the pending event shows.
+      this.groups[groupId] = getDecisionGroupFromEvents(
+        pendingDecision ? [...filteredEvents, pendingDecision] : filteredEvents
+      );
     }
   }
 
@@ -537,9 +518,8 @@ export default class WorkflowHistoryGrouper {
       if (this.groups[groupId]?.groupType === 'Decision') {
         this.updatePendingDecisionInGroup(groupId, newPendingDecision);
       } else if (isRetryingPendingDecision(newPendingDecision)) {
-        // No decision group at scheduleId: transient retry pointing past
-        // written history, or the reserved slot was taken by an unrelated
-        // event. Render a pending-only group keyed by the synthetic id.
+        // No Decision group at this schedule id, so there is nothing to attach to.
+        // Show the retry on its own under computedEventId instead of buffering it.
         this.groups[newPendingDecision.computedEventId] =
           getDecisionGroupFromEvents([newPendingDecision]);
       } else {

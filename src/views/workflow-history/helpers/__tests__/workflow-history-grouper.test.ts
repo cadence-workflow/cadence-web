@@ -4,7 +4,9 @@ import {
 } from '../../__fixtures__/workflow-history-activity-events';
 import {
   completedDecisionTaskEvents,
+  failedDecisionTaskEvents,
   startDecisionTaskEvent,
+  timedoutDecisionTaskEvents,
 } from '../../__fixtures__/workflow-history-decision-events';
 import {
   createPendingActivity,
@@ -615,7 +617,7 @@ describe(WorkflowHistoryGrouper.name, () => {
     ).toBe(true);
   });
 
-  it('should strip a retrying pending decision when a later history event grows the group, then reattach it on the next poll', async () => {
+  it('should keep a retrying pending decision last when a later history event joins the group', async () => {
     const { grouper, waitForProcessing } = setup();
 
     grouper.updateEvents([createScheduleDecisionEvent('2')]);
@@ -633,21 +635,7 @@ describe(WorkflowHistoryGrouper.name, () => {
     ]);
     await waitForProcessing();
 
-    let group = grouper.getState().groups['2'];
-    expect(group.events).toHaveLength(2);
-    expect(
-      group.events.some(
-        (e) => e.attributes === 'pendingDecisionTaskStartEventAttributes'
-      )
-    ).toBe(false);
-    expect(group.status).toBe('ONGOING');
-
-    await grouper.updatePendingEvents({
-      pendingStartActivities: [],
-      pendingStartDecision: createPendingDecision('2'),
-    });
-
-    group = grouper.getState().groups['2'];
+    const group = grouper.getState().groups['2'];
     expect(group.events).toHaveLength(3);
     expect(group.events.at(-1)?.attributes).toBe(
       'pendingDecisionTaskStartEventAttributes'
@@ -776,25 +764,32 @@ describe(WorkflowHistoryGrouper.name, () => {
     ).toBe(false);
   });
 
-  it('should drop a stale retrying pending decision when the group has a completed event', async () => {
-    const { grouper, waitForProcessing } = setup();
+  it.each([
+    ['completed', completedDecisionTaskEvents, 'COMPLETED'],
+    ['failed', failedDecisionTaskEvents, 'FAILED'],
+    ['timed out', timedoutDecisionTaskEvents, 'FAILED'],
+  ])(
+    'should not attach a stale retrying pending decision when the decision %s',
+    async (_name, events, status) => {
+      const { grouper, waitForProcessing } = setup();
 
-    grouper.updateEvents(completedDecisionTaskEvents);
-    await waitForProcessing();
+      grouper.updateEvents(events);
+      await waitForProcessing();
 
-    await grouper.updatePendingEvents({
-      pendingStartActivities: [],
-      pendingStartDecision: createPendingDecision('2'),
-    });
+      await grouper.updatePendingEvents({
+        pendingStartActivities: [],
+        pendingStartDecision: createPendingDecision('2'),
+      });
 
-    const group = grouper.getState().groups['2'];
-    expect(group.status).toBe('COMPLETED');
-    expect(
-      group.events.some(
-        (e) => e.attributes === 'pendingDecisionTaskStartEventAttributes'
-      )
-    ).toBe(false);
-  });
+      const group = grouper.getState().groups['2'];
+      expect(group.status).toBe(status);
+      expect(
+        group.events.some(
+          (e) => e.attributes === 'pendingDecisionTaskStartEventAttributes'
+        )
+      ).toBe(false);
+    }
+  );
 
   it('should clean up all resources when destroy is called', async () => {
     const { grouper, handleStateChange, waitForProcessing } = setup();
