@@ -23,6 +23,7 @@ import WORKFLOW_HISTORY_SET_RANGE_THROTTLE_MS_CONFIG from './config/workflow-his
 import applyDiagnosticsToGroup from './helpers/apply-diagnostics-to-group';
 import getDiagnosticsIssueExpansionId from './helpers/get-diagnostics-issue-expansion-id';
 import getDiagnosticsIssuesByEventId from './helpers/get-diagnostics-issues-by-event-id';
+import getEventKey from './helpers/get-event-key';
 import getNavigationBarDiagnosticsMenuItems from './helpers/get-navigation-bar-diagnostics-menu-items';
 import getNavigationBarEventsMenuItems from './helpers/get-navigation-bar-events-menu-items';
 import getSortableEventId from './helpers/get-sortable-event-id';
@@ -154,7 +155,7 @@ export default function WorkflowHistory({ params }: Props) {
     isFetchNextPageError,
   } = historyQuery;
 
-  const allEventKeys = useMemo(
+  const allEventIds = useMemo(
     () =>
       Object.values(eventGroups).flatMap((group) =>
         group.events.map(getEventKey)
@@ -361,7 +362,7 @@ export default function WorkflowHistory({ params }: Props) {
     getIsItemExpanded,
     toggleIsItemExpanded,
   } = useExpansionToggle({
-    items: allEventKeys,
+    items: allEventIds,
     initialState: selectedEventIdWithinGroup
       ? {
           [selectedEventIdWithinGroup]: true,

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { type VirtuosoHandle } from 'react-virtuoso';
 
-import getEventNavigationId from '../helpers/get-event-navigation-id';
+import getEventKey from '../helpers/get-event-key';
 import { type UngroupedEventInfo } from '../workflow-history-ungrouped-table/workflow-history-ungrouped-table.types';
 import { type EventGroupEntry } from '../workflow-history.types';
 
@@ -54,9 +54,7 @@ export default function useWorkflowHistoryScroll({
     return isUngroupedHistoryViewEnabled
       ? ungroupedEventsInfo.findIndex((e) => e.id === tableScrollTargetEventId)
       : filteredEventGroupsEntries.findIndex(([_, group]) =>
-          group.events.some(
-            (e) => getEventNavigationId(e) === tableScrollTargetEventId
-          )
+          group.events.some((e) => getEventKey(e) === tableScrollTargetEventId)
         );
   }, [
     tableScrollTargetEventId,
