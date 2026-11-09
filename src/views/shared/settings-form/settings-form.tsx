@@ -27,6 +27,7 @@ export default function SettingsForm<D extends object, Z extends z.ZodType>({
     values: getInitialValues({ data, formConfig }),
     resolver: zodResolver(zodSchema),
   });
+  const { isDirty, isValid } = formState;
 
   useEffect(() => {
     reset();
@@ -75,7 +76,7 @@ export default function SettingsForm<D extends object, Z extends z.ZodType>({
         <Button
           type="submit"
           size={SIZE.compact}
-          disabled={!formState.isDirty || !formState.isValid}
+          disabled={!isDirty || !isValid}
           isLoading={formState.isSubmitting || formState.isSubmitSuccessful}
         >
           {submitButtonText}
