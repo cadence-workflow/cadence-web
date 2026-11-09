@@ -20,10 +20,12 @@ export default function getNavigationBarEventsMenuItems(
       // Decision groups: prefer a persisted event so expansion/scroll survive
       // the pending tab disappearing; fall back to the pending synthetic id
       // for pending-only groups. Other group types keep last-event targeting.
+      // Next's polyfills cover at() but not findLast, so scan a reversed copy.
+      const reversedEvents = [...events].reverse();
       const lastEventId =
         group.groupType === 'Decision'
-          ? events.findLast((e) => e.eventId)?.eventId ||
-            events.findLast(isPendingHistoryEvent)?.computedEventId
+          ? reversedEvents.find((e) => e.eventId)?.eventId ||
+            reversedEvents.find(isPendingHistoryEvent)?.computedEventId
           : events.at(-1)?.eventId;
 
       if (!lastEventId) return acc;

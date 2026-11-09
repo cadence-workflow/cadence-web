@@ -182,10 +182,7 @@ describe(getNavigationBarEventsMenuItems.name, () => {
   it('should not list an activity group that ends with a pending event', () => {
     const activityGroupEndingWithPending: HistoryEventsGroup = {
       ...mockActivityEventGroup,
-      events: [
-        mockActivityEventGroup.events[0],
-        pendingActivityTaskStartEvent,
-      ],
+      events: [mockActivityEventGroup.events[0], pendingActivityTaskStartEvent],
     };
     const eventGroupsEntries: Array<EventGroupEntry> = [
       ['group1', activityGroupEndingWithPending],
