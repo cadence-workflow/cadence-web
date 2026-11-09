@@ -179,7 +179,7 @@ describe(getNavigationBarEventsMenuItems.name, () => {
     ]);
   });
 
-  it('should not list an activity group that ends with a pending event', () => {
+  it('should list an activity group that ends with a pending event, targeting the last persisted event', () => {
     const activityGroupEndingWithPending: HistoryEventsGroup = {
       ...mockActivityEventGroup,
       events: [mockActivityEventGroup.events[0], pendingActivityTaskStartEvent],
@@ -193,7 +193,13 @@ describe(getNavigationBarEventsMenuItems.name, () => {
       () => true
     );
 
-    expect(result).toEqual([]);
+    expect(result).toEqual([
+      {
+        eventId: mockActivityEventGroup.events[0].eventId,
+        label: 'Mock event',
+        category: 'ACTIVITY',
+      },
+    ]);
   });
 
   it('should list a grouper-produced pending-only decision group by computedEventId', async () => {

@@ -19,13 +19,11 @@ export default function getNavigationBarEventsMenuItems(
       // Widened so isPendingHistoryEvent can narrow it; groupType narrowing
       // alone would hide pending events from the array's element type.
       const events: Array<ExtendedHistoryEvent> = group.events;
-      // Prefer a persisted event for decision groups so expansion and scroll
-      // survive the pending tab disappearing.
+      // Prefer a persisted event so expansion and scroll survive the pending
+      // tab disappearing; fall back to the pending event's synthetic id.
       const lastEventId =
-        group.groupType === 'Decision'
-          ? findLast(events, (e) => Boolean(e.eventId))?.eventId ||
-            findLast(events, isPendingHistoryEvent)?.computedEventId
-          : events.at(-1)?.eventId;
+        findLast(events, (e) => Boolean(e.eventId))?.eventId ||
+        findLast(events, isPendingHistoryEvent)?.computedEventId;
 
       if (!lastEventId) return acc;
 
