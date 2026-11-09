@@ -148,7 +148,7 @@ describe(getNavigationBarEventsMenuItems.name, () => {
 
     expect(result).toEqual([
       {
-        eventId: pendingDecisionTaskStartEvent.computedEventId,
+        eventKey: pendingDecisionTaskStartEvent.computedEventId,
         label: 'Decision',
         category: 'DECISION',
       },
@@ -172,7 +172,7 @@ describe(getNavigationBarEventsMenuItems.name, () => {
 
     expect(result).toEqual([
       {
-        eventId: mockDecisionEventGroup.events[0].eventId,
+        eventKey: mockDecisionEventGroup.events[0].eventId,
         label: 'Decision',
         category: 'DECISION',
       },
@@ -182,10 +182,7 @@ describe(getNavigationBarEventsMenuItems.name, () => {
   it('should not list an activity group that ends with a pending event', () => {
     const activityGroupEndingWithPending: HistoryEventsGroup = {
       ...mockActivityEventGroup,
-      events: [
-        mockActivityEventGroup.events[0],
-        pendingActivityTaskStartEvent,
-      ],
+      events: [mockActivityEventGroup.events[0], pendingActivityTaskStartEvent],
     };
     const eventGroupsEntries: Array<EventGroupEntry> = [
       ['group1', activityGroupEndingWithPending],
@@ -213,7 +210,7 @@ describe(getNavigationBarEventsMenuItems.name, () => {
       );
 
       expect(result).toHaveLength(1);
-      expect(result[0].eventId).toBe(
+      expect(result[0].eventKey).toBe(
         createPendingDecision('2').computedEventId
       );
       expect(result[0].category).toBe('DECISION');
