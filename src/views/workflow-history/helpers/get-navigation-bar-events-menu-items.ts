@@ -1,3 +1,5 @@
+import findLast from 'lodash/findLast';
+
 import isPendingHistoryEvent from '../workflow-history-event-details/helpers/is-pending-history-event';
 import { type NavigationBarEventsMenuItem } from '../workflow-history-navigation-bar-events-menu/workflow-history-navigation-bar-events-menu.types';
 import {
@@ -20,12 +22,11 @@ export default function getNavigationBarEventsMenuItems(
       // Decision groups: prefer a persisted event so expansion/scroll survive
       // the pending tab disappearing; fall back to the pending synthetic id
       // for pending-only groups. Other group types keep last-event targeting.
-      // Next's polyfills cover at() but not findLast, so scan a reversed copy.
-      const reversedEvents = [...events].reverse();
+      // lodash findLast: the native method is not covered by Next's polyfills.
       const lastEventId =
         group.groupType === 'Decision'
-          ? reversedEvents.find((e) => e.eventId)?.eventId ||
-            reversedEvents.find(isPendingHistoryEvent)?.computedEventId
+          ? findLast(events, (e) => Boolean(e.eventId))?.eventId ||
+            findLast(events, isPendingHistoryEvent)?.computedEventId
           : events.at(-1)?.eventId;
 
       if (!lastEventId) return acc;
