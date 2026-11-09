@@ -23,6 +23,7 @@ import WORKFLOW_HISTORY_SET_RANGE_THROTTLE_MS_CONFIG from './config/workflow-his
 import applyDiagnosticsToGroup from './helpers/apply-diagnostics-to-group';
 import getDiagnosticsIssueExpansionId from './helpers/get-diagnostics-issue-expansion-id';
 import getDiagnosticsIssuesByEventId from './helpers/get-diagnostics-issues-by-event-id';
+import getEventKey from './helpers/get-event-key';
 import getNavigationBarDiagnosticsMenuItems from './helpers/get-navigation-bar-diagnostics-menu-items';
 import getNavigationBarEventsMenuItems from './helpers/get-navigation-bar-events-menu-items';
 import getSortableEventId from './helpers/get-sortable-event-id';
@@ -262,7 +263,7 @@ export default function WorkflowHistory({ params }: Props) {
       filteredEventGroupsEntries
         .map(([groupId, group]) => [
           ...group.events.map((event, index) => ({
-            id: event.eventId ?? event.computedEventId,
+            id: getEventKey(event),
             groupId,
             event,
             eventMetadata: group.eventsMetadata[index],
@@ -330,7 +331,7 @@ export default function WorkflowHistory({ params }: Props) {
     groupedTableVirtuosoRef,
     ungroupedTableVirtuosoRef,
     timelineVirtuosoRef,
-    tableScrollTargetEventId,
+    tableScrollTargetEventKey,
     timelineScrollTargetEventGroupId,
     scrollToTableEvent,
     scrollToTimelineEventGroup,
@@ -424,12 +425,10 @@ export default function WorkflowHistory({ params }: Props) {
   );
 
   const handleClickNavMenuEvent = useCallback(
-    (eventId: string) => {
+    (eventKey: string) => {
       const isEventVisible = filteredEventGroupsEntries.some(
         ([_, eventGroup]) =>
-          eventGroup.events.some(
-            (event) => (event.eventId ?? event.computedEventId) === eventId
-          )
+          eventGroup.events.some((event) => getEventKey(event) === eventKey)
       );
 
       if (!isEventVisible) {
@@ -443,8 +442,8 @@ export default function WorkflowHistory({ params }: Props) {
         );
       }
 
-      scrollToTableEvent(eventId);
-      if (!getIsItemExpanded(eventId)) toggleIsItemExpanded(eventId);
+      scrollToTableEvent(eventKey);
+      if (!getIsItemExpanded(eventKey)) toggleIsItemExpanded(eventKey);
     },
     [
       filteredEventGroupsEntries,
@@ -523,7 +522,7 @@ export default function WorkflowHistory({ params }: Props) {
             }
             decodedPageUrlParams={decodedParams}
             selectedEventId={
-              tableScrollTargetEventId ?? selectedEventIdWithinGroup
+              tableScrollTargetEventKey ?? selectedEventIdWithinGroup
             }
             resetToDecisionEventId={setResetToDecisionEventId}
             getIsEventExpanded={getIsItemExpanded}
@@ -557,7 +556,7 @@ export default function WorkflowHistory({ params }: Props) {
             workflowIsArchived={workflowExecutionInfo?.isArchived || false}
             workflowCloseTimeMs={workflowCloseTimeMs}
             selectedEventId={
-              tableScrollTargetEventId ?? queryParams.historySelectedEventId
+              tableScrollTargetEventKey ?? queryParams.historySelectedEventId
             }
             resetToDecisionEventId={setResetToDecisionEventId}
             getIsEventExpanded={getIsItemExpanded}
