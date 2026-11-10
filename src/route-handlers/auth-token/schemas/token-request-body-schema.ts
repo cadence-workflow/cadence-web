@@ -6,8 +6,10 @@ const tokenRequestBodySchema = z.object(
   {
     token: z
       .string({
-        required_error: 'Token is required',
-        invalid_type_error: 'Token must be a string',
+        error: (iss) =>
+          iss.input === undefined
+            ? 'Token is required'
+            : 'Token must be a string',
       })
       .transform((token) => token.trim().replace(/^bearer\s+/i, ''))
       .refine((token) => token.length > 0, {
@@ -18,7 +20,7 @@ const tokenRequestBodySchema = z.object(
       }),
   },
   {
-    invalid_type_error: 'Request body must be a JSON object',
+    error: 'Request body must be a JSON object',
   }
 );
 

@@ -7,7 +7,7 @@ import {
 
 export default function getInitialValues<
   D extends object,
-  Z extends z.ZodTypeAny,
+  Z extends z.ZodType,
 >({
   data,
   formConfig,
