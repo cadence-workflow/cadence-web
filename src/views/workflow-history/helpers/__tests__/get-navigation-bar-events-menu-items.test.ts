@@ -60,7 +60,7 @@ describe(getNavigationBarEventsMenuItems.name, () => {
 
     expect(result).toHaveLength(1);
     expect(result[0]).toEqual({
-      eventId: '4', // last eventId from completedDecisionTaskEvents
+      eventKey: '4', // last eventId from completedDecisionTaskEvents
       label: 'Mock decision',
       category: 'DECISION',
     });
@@ -79,12 +79,12 @@ describe(getNavigationBarEventsMenuItems.name, () => {
 
     expect(result).toHaveLength(2);
     expect(result[0]).toEqual({
-      eventId: '10', // last eventId from completedActivityTaskEvents
+      eventKey: '10', // last eventId from completedActivityTaskEvents
       label: 'Mock event',
       category: 'ACTIVITY',
     });
     expect(result[1]).toEqual({
-      eventId: '4', // last eventId from completedDecisionTaskEvents
+      eventKey: '4', // last eventId from completedDecisionTaskEvents
       label: 'Mock decision',
       category: 'DECISION',
     });
@@ -128,7 +128,7 @@ describe(getNavigationBarEventsMenuItems.name, () => {
     expect(result).toHaveLength(1);
     // completedActivityTaskEvents has events with ids: '7', '9', '10'
     // Last eventId should be '10'
-    expect(result[0].eventId).toBe('10');
+    expect(result[0].eventKey).toBe('10');
   });
 
   it('should include pending-only groups keyed by computedEventId', () => {
@@ -148,7 +148,7 @@ describe(getNavigationBarEventsMenuItems.name, () => {
 
     expect(result).toEqual([
       {
-        eventId: pendingDecisionTaskStartEvent.computedEventId,
+        eventKey: pendingDecisionTaskStartEvent.computedEventId,
         label: 'Decision',
         category: 'DECISION',
       },
@@ -172,7 +172,7 @@ describe(getNavigationBarEventsMenuItems.name, () => {
 
     expect(result).toEqual([
       {
-        eventId: mockDecisionEventGroup.events[0].eventId,
+        eventKey: mockDecisionEventGroup.events[0].eventId,
         label: 'Decision',
         category: 'DECISION',
       },
@@ -195,7 +195,7 @@ describe(getNavigationBarEventsMenuItems.name, () => {
 
     expect(result).toEqual([
       {
-        eventId: mockActivityEventGroup.events[0].eventId,
+        eventKey: mockActivityEventGroup.events[0].eventId,
         label: 'Mock event',
         category: 'ACTIVITY',
       },
@@ -216,7 +216,7 @@ describe(getNavigationBarEventsMenuItems.name, () => {
       );
 
       expect(result).toHaveLength(1);
-      expect(result[0].eventId).toBe(
+      expect(result[0].eventKey).toBe(
         createPendingDecision('2').computedEventId
       );
       expect(result[0].category).toBe('DECISION');

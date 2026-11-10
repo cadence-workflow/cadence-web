@@ -9,6 +9,7 @@ import {
 
 import getDiagnosticsIssueExpansionId from './get-diagnostics-issue-expansion-id';
 import getEventGroupCategory from './get-event-group-category';
+import getEventKey from './get-event-key';
 
 export default function getNavigationBarDiagnosticsMenuItems(
   eventGroupsEntries: Array<EventGroupEntry>,
@@ -16,29 +17,29 @@ export default function getNavigationBarDiagnosticsMenuItems(
 ): Array<NavigationBarEventsMenuItem> {
   return eventGroupsEntries.reduce<Array<NavigationBarEventsMenuItem>>(
     (acc, [_, group]) => {
-      let firstEventIdWithIssues: string | undefined;
+      let firstEventKeyWithIssues: string | undefined;
       const subItems: Array<NavigationBarEventsSubMenuItem> = [];
 
       for (const event of group.events) {
-        const eventId = event.eventId ?? event.computedEventId;
-        const issues = diagnosticsIssuesByEventId[eventId];
+        const eventKey = getEventKey(event);
+        const issues = diagnosticsIssuesByEventId[eventKey];
         if (!issues || issues.length === 0) continue;
 
-        firstEventIdWithIssues ??= eventId;
+        firstEventKeyWithIssues ??= eventKey;
 
         for (const issue of issues) {
           subItems.push({
             id: getDiagnosticsIssueExpansionId(issue),
-            eventId,
+            eventKey,
             label: issue.invariantType,
           });
         }
       }
 
-      if (!firstEventIdWithIssues) return acc;
+      if (!firstEventKeyWithIssues) return acc;
 
       acc.push({
-        eventId: firstEventIdWithIssues,
+        eventKey: firstEventKeyWithIssues,
         label: group.shortLabel ?? group.label,
         category: getEventGroupCategory(group),
         subItems,

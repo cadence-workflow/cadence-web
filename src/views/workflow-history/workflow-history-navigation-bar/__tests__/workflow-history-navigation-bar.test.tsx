@@ -14,7 +14,7 @@ jest.mock(
         children: React.ReactNode;
         onClickSubItem?: (subItem: {
           id: string;
-          eventId: string;
+          eventKey: string;
           label: string;
         }) => void;
       }) => (
@@ -26,7 +26,7 @@ jest.mock(
               onClick={() =>
                 onClickSubItem({
                   id: 'Activity Failed.0',
-                  eventId: 'event-1',
+                  eventKey: 'event-1',
                   label: 'Activity Failed',
                 })
               }
@@ -95,7 +95,7 @@ describe(WorkflowHistoryNavigationBar.name, () => {
     setup({
       failedEventsMenuItems: [
         {
-          eventId: 'event-1',
+          eventKey: 'event-1',
           label: 'Failed Event 1',
           category: 'ACTIVITY',
         },
@@ -110,12 +110,12 @@ describe(WorkflowHistoryNavigationBar.name, () => {
     setup({
       failedEventsMenuItems: [
         {
-          eventId: 'event-1',
+          eventKey: 'event-1',
           label: 'Failed Event 1',
           category: 'ACTIVITY',
         },
         {
-          eventId: 'event-2',
+          eventKey: 'event-2',
           label: 'Failed Event 2',
           category: 'DECISION',
         },
@@ -129,7 +129,7 @@ describe(WorkflowHistoryNavigationBar.name, () => {
     setup({
       pendingEventsMenuItems: [
         {
-          eventId: 'event-1',
+          eventKey: 'event-1',
           label: 'Pending Event 1',
           category: 'ACTIVITY',
         },
@@ -144,12 +144,12 @@ describe(WorkflowHistoryNavigationBar.name, () => {
     setup({
       pendingEventsMenuItems: [
         {
-          eventId: 'event-1',
+          eventKey: 'event-1',
           label: 'Pending Event 1',
           category: 'ACTIVITY',
         },
         {
-          eventId: 'event-2',
+          eventKey: 'event-2',
           label: 'Pending Event 2',
           category: 'DECISION',
         },
@@ -171,13 +171,13 @@ describe(WorkflowHistoryNavigationBar.name, () => {
     setup({
       diagnosticsMenuItems: [
         {
-          eventId: 'event-1',
+          eventKey: 'event-1',
           label: 'Group 1',
           category: 'ACTIVITY',
           subItems: [
             {
               id: 'Activity Failed.0',
-              eventId: 'event-1',
+              eventKey: 'event-1',
               label: 'Activity Failed',
             },
           ],
@@ -193,30 +193,30 @@ describe(WorkflowHistoryNavigationBar.name, () => {
     setup({
       diagnosticsMenuItems: [
         {
-          eventId: 'event-1',
+          eventKey: 'event-1',
           label: 'Group 1',
           category: 'ACTIVITY',
           subItems: [
             {
               id: 'Activity Failed.0',
-              eventId: 'event-1',
+              eventKey: 'event-1',
               label: 'Activity Failed',
             },
             {
               id: 'Activity Timeout.1',
-              eventId: 'event-1',
+              eventKey: 'event-1',
               label: 'Activity Timeout',
             },
           ],
         },
         {
-          eventId: 'event-2',
+          eventKey: 'event-2',
           label: 'Group 2',
           category: 'DECISION',
           subItems: [
             {
               id: 'Decision Failed.2',
-              eventId: 'event-2',
+              eventKey: 'event-2',
               label: 'Decision Failed',
             },
           ],
@@ -231,13 +231,13 @@ describe(WorkflowHistoryNavigationBar.name, () => {
     const { user, mockOnClickDiagnosticsIssue } = setup({
       diagnosticsMenuItems: [
         {
-          eventId: 'event-1',
+          eventKey: 'event-1',
           label: 'Group 1',
           category: 'ACTIVITY',
           subItems: [
             {
               id: 'Activity Failed.0',
-              eventId: 'event-1',
+              eventKey: 'event-1',
               label: 'Activity Failed',
             },
           ],
@@ -249,7 +249,7 @@ describe(WorkflowHistoryNavigationBar.name, () => {
 
     expect(mockOnClickDiagnosticsIssue).toHaveBeenCalledWith({
       id: 'Activity Failed.0',
-      eventId: 'event-1',
+      eventKey: 'event-1',
       label: 'Activity Failed',
     });
   });
