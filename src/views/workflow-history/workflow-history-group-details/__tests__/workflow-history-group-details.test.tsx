@@ -414,6 +414,57 @@ describe(WorkflowHistoryGroupDetails.name, () => {
     ).toBeInTheDocument();
     expect(screen.getByText('Diagnostics (2 issues)')).toBeInTheDocument();
   });
+
+  it('clamps the selected tab when entries shrink below the selected index', async () => {
+    const threeTabEntries: GroupDetailsEntries = [
+      mockGroupDetails[0],
+      [
+        'event-2',
+        {
+          eventLabel: 'Event 2 Label',
+          eventDetails: [
+            ...mockGroupDetails[1][1].eventDetails,
+            {
+              key: 'key2b',
+              path: 'path2b',
+              value: 'value2b',
+              isGroup: false,
+              renderConfig: null,
+            },
+          ],
+        },
+      ],
+      mockGroupDetails[2],
+    ];
+    const { user, rerender } = setup({
+      groupDetailsEntries: threeTabEntries,
+    });
+
+    await user.click(screen.getByText('Event 3 Label'));
+    expect(screen.getByText('Event Details (1 entries)')).toBeInTheDocument();
+
+    rerender({ groupDetailsEntries: threeTabEntries.slice(0, 2) });
+
+    // event-2 has two detail entries, so the assertion fails if the clamp
+    // resets to the first tab instead of staying on the last one
+    expect(screen.getByText('Event Details (2 entries)')).toBeInTheDocument();
+  });
+
+  it('renders null when entries become empty, and recovers when they return', async () => {
+    const { rerender } = setup({
+      groupDetailsEntries: mockGroupDetails,
+    });
+
+    rerender({ groupDetailsEntries: [] });
+    expect(
+      screen.queryByLabelText('Workflow history event details')
+    ).not.toBeInTheDocument();
+
+    rerender({ groupDetailsEntries: mockGroupDetails });
+    expect(
+      screen.getByLabelText('Workflow history event details')
+    ).toBeInTheDocument();
+  });
 });
 
 const MOCK_ISSUE_1: WorkflowDiagnosticsIssue = {
@@ -468,22 +519,24 @@ function setup({
 }) {
   const user = userEvent.setup();
 
-  render(
-    <WorkflowHistoryGroupDetails
-      groupDetailsEntries={groupDetailsEntries}
-      initialEventId={initialEventId}
-      workflowPageParams={workflowPageParams}
-      onClose={onClose}
-      onClickShowInTimeline={onClickShowInTimeline}
-      onClickShowInTable={onClickShowInTable}
-      getIsDiagnosticsIssueExpanded={getIsDiagnosticsIssueExpanded}
-      toggleIsDiagnosticsIssueExpanded={toggleIsDiagnosticsIssueExpanded}
-    />
-  );
+  const props = {
+    groupDetailsEntries,
+    initialEventId,
+    workflowPageParams,
+    onClose,
+    onClickShowInTimeline,
+    onClickShowInTable,
+    getIsDiagnosticsIssueExpanded,
+    toggleIsDiagnosticsIssueExpanded,
+  };
+
+  const { rerender } = render(<WorkflowHistoryGroupDetails {...props} />);
 
   return {
     user,
     getIsDiagnosticsIssueExpanded,
     toggleIsDiagnosticsIssueExpanded,
+    rerender: (nextProps: Partial<typeof props>) =>
+      rerender(<WorkflowHistoryGroupDetails {...props} {...nextProps} />),
   };
 }
