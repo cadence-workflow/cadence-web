@@ -23,6 +23,7 @@ import WORKFLOW_HISTORY_SET_RANGE_THROTTLE_MS_CONFIG from './config/workflow-his
 import applyDiagnosticsToGroup from './helpers/apply-diagnostics-to-group';
 import getDiagnosticsIssueExpansionId from './helpers/get-diagnostics-issue-expansion-id';
 import getDiagnosticsIssuesByEventId from './helpers/get-diagnostics-issues-by-event-id';
+import getEventKey from './helpers/get-event-key';
 import getNavigationBarDiagnosticsMenuItems from './helpers/get-navigation-bar-diagnostics-menu-items';
 import getNavigationBarEventsMenuItems from './helpers/get-navigation-bar-events-menu-items';
 import getSortableEventId from './helpers/get-sortable-event-id';
@@ -156,12 +157,10 @@ export default function WorkflowHistory({ params }: Props) {
 
   const allEventIds = useMemo(
     () =>
-      (result?.pages || [])
-        .flat(1)
-        .map(({ history }) => history?.events || [])
-        .flat(1)
-        .map(({ eventId }) => eventId),
-    [result]
+      Object.values(eventGroups).flatMap((group) =>
+        group.events.map(getEventKey)
+      ),
+    [eventGroups]
   );
 
   useEffect(() => {
@@ -269,7 +268,8 @@ export default function WorkflowHistory({ params }: Props) {
             eventGroup: group,
             label: group.label,
             shortLabel: group.shortLabel,
-            canReset: group.resetToDecisionEventId === event.eventId,
+            canReset:
+              !!event.eventId && group.resetToDecisionEventId === event.eventId,
           })),
         ])
         .flat(1)
@@ -428,7 +428,7 @@ export default function WorkflowHistory({ params }: Props) {
       const isEventVisible = filteredEventGroupsEntries.some(
         ([_, eventGroup]) =>
           eventGroup.events.some(
-            ({ eventId: eventIdInGroup }) => eventId === eventIdInGroup
+            (event) => (event.eventId ?? event.computedEventId) === eventId
           )
       );
 

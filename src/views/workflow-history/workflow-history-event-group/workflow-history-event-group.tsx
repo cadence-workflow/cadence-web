@@ -9,6 +9,7 @@ import WorkflowHistoryTimelineResetButton from '@/views/workflow-history/workflo
 
 import workflowHistoryEventGroupCategoryColorsConfig from '../config/workflow-history-event-group-category-colors.config';
 import getEventGroupCategory from '../helpers/get-event-group-category';
+import getEventKey from '../helpers/get-event-key';
 import useGroupDetailsEntries from '../hooks/use-group-details-entries';
 import WorkflowHistoryDetailsRow from '../workflow-history-details-row/workflow-history-details-row';
 import WorkflowHistoryEventGroupDuration from '../workflow-history-event-group-duration/workflow-history-event-group-duration';
@@ -63,7 +64,8 @@ export default function WorkflowHistoryEventGroup({
 
   const handleGroupExpansionStateChange = useCallback(
     (newExpanded: boolean) => {
-      events.forEach(({ eventId }) => {
+      events.forEach((event) => {
+        const eventId = getEventKey(event);
         if (eventId && getIsEventExpanded(eventId) !== newExpanded)
           toggleIsEventExpanded(eventId);
       });
@@ -81,9 +83,10 @@ export default function WorkflowHistoryEventGroup({
     [handleGroupExpansionStateChange]
   );
 
-  const isGroupExpanded = events.some(
-    ({ eventId }) => eventId && getIsEventExpanded(eventId)
-  );
+  const isGroupExpanded = events.some((event) => {
+    const eventId = getEventKey(event);
+    return !!eventId && getIsEventExpanded(eventId);
+  });
 
   const animateOnEnter = useMemo(
     () =>
