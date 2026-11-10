@@ -51,12 +51,12 @@ describe(WorkflowHistoryNavigationBarEventsMenu.name, () => {
     const { user } = setup({
       menuItems: [
         {
-          eventId: 'event-1',
+          eventKey: 'event-1',
           label: 'Event 1',
           category: 'ACTIVITY',
         },
         {
-          eventId: 'event-2',
+          eventKey: 'event-2',
           label: 'Event 2',
           category: 'DECISION',
         },
@@ -74,7 +74,7 @@ describe(WorkflowHistoryNavigationBarEventsMenu.name, () => {
     const { user, mockOnClickEvent } = setup({
       menuItems: [
         {
-          eventId: 'event-1',
+          eventKey: 'event-1',
           label: 'Event 1',
           category: 'ACTIVITY',
         },
@@ -96,7 +96,7 @@ describe(WorkflowHistoryNavigationBarEventsMenu.name, () => {
   it('shows pagination when there are more than 10 items', async () => {
     const { user } = setup({
       menuItems: Array.from({ length: 15 }, (_, i) => ({
-        eventId: `event-${i + 1}`,
+        eventKey: `event-${i + 1}`,
         label: `Event ${i + 1}`,
         category: 'ACTIVITY',
       })),
@@ -110,7 +110,7 @@ describe(WorkflowHistoryNavigationBarEventsMenu.name, () => {
   it('does not show pagination when there are 10 or fewer items', async () => {
     const { user } = setup({
       menuItems: Array.from({ length: 10 }, (_, i) => ({
-        eventId: `event-${i + 1}`,
+        eventKey: `event-${i + 1}`,
         label: `Event ${i + 1}`,
         category: 'ACTIVITY',
       })),
@@ -126,7 +126,7 @@ describe(WorkflowHistoryNavigationBarEventsMenu.name, () => {
   it('shows first 10 items on initial page', async () => {
     const { user } = setup({
       menuItems: Array.from({ length: 15 }, (_, i) => ({
-        eventId: `event-${i + 1}`,
+        eventKey: `event-${i + 1}`,
         label: `Event ${i + 1}`,
         category: 'ACTIVITY',
       })),
@@ -142,7 +142,7 @@ describe(WorkflowHistoryNavigationBarEventsMenu.name, () => {
   it('shows correct items when pagination page is changed', async () => {
     const { user } = setup({
       menuItems: Array.from({ length: 15 }, (_, i) => ({
-        eventId: `event-${i + 1}`,
+        eventKey: `event-${i + 1}`,
         label: `Event ${i + 1}`,
         category: 'ACTIVITY',
       })),
@@ -162,12 +162,12 @@ describe(WorkflowHistoryNavigationBarEventsMenu.name, () => {
     const { user } = setup({
       menuItems: [
         {
-          eventId: 'event-1',
+          eventKey: 'event-1',
           label: 'Group With Issues',
           category: 'ACTIVITY',
           subItems: [
-            { id: 'sub-1', eventId: 'event-1', label: 'Issue A' },
-            { id: 'sub-2', eventId: 'event-1', label: 'Issue B' },
+            { id: 'sub-1', eventKey: 'event-1', label: 'Issue A' },
+            { id: 'sub-2', eventKey: 'event-1', label: 'Issue B' },
           ],
         },
       ],
@@ -186,10 +186,10 @@ describe(WorkflowHistoryNavigationBarEventsMenu.name, () => {
     const { user } = setup({
       menuItems: [
         {
-          eventId: 'event-1',
+          eventKey: 'event-1',
           label: 'Group With Issues',
           category: 'ACTIVITY',
-          subItems: [{ id: 'sub-1', eventId: 'event-1', label: 'Issue A' }],
+          subItems: [{ id: 'sub-1', eventKey: 'event-1', label: 'Issue A' }],
         },
       ],
       subItemIcon: <span data-testid="sub-item-icon" />,
@@ -205,7 +205,7 @@ describe(WorkflowHistoryNavigationBarEventsMenu.name, () => {
   it('renders no sub items for items without subItems', async () => {
     const { user } = setup({
       menuItems: [
-        { eventId: 'event-1', label: 'No Sub Items', category: 'ACTIVITY' },
+        { eventKey: 'event-1', label: 'No Sub Items', category: 'ACTIVITY' },
       ],
     });
 
@@ -220,10 +220,10 @@ describe(WorkflowHistoryNavigationBarEventsMenu.name, () => {
     const { user, mockOnClickSubItem } = setup({
       menuItems: [
         {
-          eventId: 'event-1',
+          eventKey: 'event-1',
           label: 'Group With Issues',
           category: 'ACTIVITY',
-          subItems: [{ id: 'sub-1', eventId: 'event-1', label: 'Issue A' }],
+          subItems: [{ id: 'sub-1', eventKey: 'event-1', label: 'Issue A' }],
         },
       ],
     });
@@ -233,7 +233,7 @@ describe(WorkflowHistoryNavigationBarEventsMenu.name, () => {
 
     expect(mockOnClickSubItem).toHaveBeenCalledWith({
       id: 'sub-1',
-      eventId: 'event-1',
+      eventKey: 'event-1',
       label: 'Issue A',
     });
     expect(screen.queryByTestId('popover-content')).not.toBeInTheDocument();
@@ -250,7 +250,7 @@ function setup(overrides: Partial<Props> = {}) {
       isUngroupedHistoryView={false}
       menuItems={[
         {
-          eventId: 'event-1',
+          eventKey: 'event-1',
           label: 'Event 1',
           category: 'ACTIVITY',
         },

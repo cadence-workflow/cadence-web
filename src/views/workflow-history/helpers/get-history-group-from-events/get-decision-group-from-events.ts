@@ -39,6 +39,19 @@ export default function getDecisionGroupFromEvents(
     if (closeAttrs.includes(e.attributes)) closeEvent = e;
   });
 
+  // The pending event stands in for events history has not written yet.
+  // Drop it once history has the start, close, or timeout.
+  const shouldShowPendingEvent = Boolean(
+    pendingStartEvent && !(startEvent || closeEvent || timeoutEvent)
+  );
+  const shownPendingEvent = shouldShowPendingEvent
+    ? pendingStartEvent
+    : undefined;
+
+  const finalEvents = shouldShowPendingEvent
+    ? events
+    : events.filter((e) => e.attributes !== pendingStartAttr);
+
   const hasAllTimeoutEvents = scheduleEvent && timeoutEvent;
   const hasAllCloseEvents = scheduleEvent && startEvent && closeEvent;
   const hasMissingEvents = !hasAllTimeoutEvents && !hasAllCloseEvents;
@@ -47,19 +60,21 @@ export default function getDecisionGroupFromEvents(
   let retryAttemptNumber = 0;
 
   if (
-    pendingStartEvent &&
-    pendingStartAttr in pendingStartEvent &&
-    pendingStartEvent[pendingStartAttr]?.attempt
-  ) {
-    retryAttemptNumber = pendingStartEvent[pendingStartAttr].attempt;
-  }
-
-  if (
     scheduleEvent &&
     scheduleAttr in scheduleEvent &&
     scheduleEvent[scheduleAttr]?.attempt
   ) {
     retryAttemptNumber = scheduleEvent[scheduleAttr].attempt;
+  }
+
+  // The live pending attempt wins. The scheduled event can still say attempt 0
+  // while the retry loop has advanced.
+  if (
+    shownPendingEvent &&
+    pendingStartAttr in shownPendingEvent &&
+    shownPendingEvent[pendingStartAttr]?.attempt
+  ) {
+    retryAttemptNumber = shownPendingEvent[pendingStartAttr].attempt;
   }
 
   if (retryAttemptNumber) {
@@ -85,7 +100,7 @@ export default function getDecisionGroupFromEvents(
     PENDING_DECISION_STATE_SCHEDULED: 'Starting',
     PENDING_DECISION_STATE_STARTED: 'Running',
   };
-  const pendingState = pendingStartEvent?.[pendingStartAttr].state;
+  const pendingState = shownPendingEvent?.[pendingStartAttr].state;
 
   // populate event to label and status maps
   const eventToLabel: HistoryGroupEventToStringMap<DecisionHistoryGroup> = {
@@ -110,7 +125,7 @@ export default function getDecisionGroupFromEvents(
     decisionTaskTimedOutEventAttributes: 'FAILED',
   };
 
-  const pendingStartEventTimePrefix = pendingStartEvent?.[pendingStartAttr]
+  const shownPendingEventTimePrefix = shownPendingEvent?.[pendingStartAttr]
     .startedTime
     ? 'Started at'
     : 'Scheduled at';
@@ -136,11 +151,11 @@ export default function getDecisionGroupFromEvents(
     badges,
     resetToDecisionEventId,
     ...getCommonHistoryGroupFields<DecisionHistoryGroup>({
-      events,
+      events: finalEvents,
       historyGroupEventToStatusMap: eventToStatus,
       eventToLabelMap: eventToLabel,
       eventToTimeLabelPrefixMap: {
-        pendingDecisionTaskStartEventAttributes: pendingStartEventTimePrefix,
+        pendingDecisionTaskStartEventAttributes: shownPendingEventTimePrefix,
       },
       closeEvent: closeEvent || timeoutEvent,
       eventToNegativeFieldsMap: eventToNegativeFields,
