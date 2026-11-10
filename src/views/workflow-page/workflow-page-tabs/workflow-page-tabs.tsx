@@ -21,27 +21,16 @@ export default function WorkflowPageTabs() {
   const params = useParams<WorkflowPageTabsParams>();
   const decodedParams = decodeUrlParams(params) as WorkflowPageTabsParams;
 
-  const { data: isWorkflowDiagnosticsEnabled } = useSuspenseConfigValue(
-    'WORKFLOW_DIAGNOSTICS_ENABLED'
-  );
-
-  const { data: isWorkflowDiagnosticsInHistoryEnabled } =
-    useSuspenseConfigValue('WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED');
-
   const { data: isWorkflowHomeEnabled } = useSuspenseConfigValue(
     'WORKFLOW_HOME_ENABLED'
   );
 
-  const shouldShowDiagnosticsInSeparateTab =
-    isWorkflowDiagnosticsEnabled && !isWorkflowDiagnosticsInHistoryEnabled;
-
   const filteredTabsConfig = useMemo(
     () =>
       omit(workflowPageTabsConfig, [
-        ...(shouldShowDiagnosticsInSeparateTab ? [] : ['diagnostics' as const]),
         ...(isWorkflowHomeEnabled ? [] : ['home' as const]),
       ]),
-    [shouldShowDiagnosticsInSeparateTab, isWorkflowHomeEnabled]
+    [isWorkflowHomeEnabled]
   );
 
   const tabList = useMemo(

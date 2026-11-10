@@ -42,7 +42,6 @@ const mockResolvedConfigValues: LoadedConfigResolvedValues = {
     start: 'ENABLED',
   },
   WORKFLOW_DIAGNOSTICS_ENABLED: false,
-  WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED: false,
   WORKFLOW_HOME_ENABLED: false,
   ARCHIVAL_DEFAULT_SEARCH_ENABLED: false,
   BATCH_ACTIONS_UI_ENABLED: false,

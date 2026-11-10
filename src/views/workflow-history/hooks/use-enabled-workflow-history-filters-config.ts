@@ -7,15 +7,15 @@ import workflowHistoryFiltersConfig from '../config/workflow-history-filters.con
 export default function useEnabledWorkflowHistoryFiltersConfig(): Array<
   (typeof workflowHistoryFiltersConfig)[number]
 > {
-  const { data: isDiagnosticsInHistoryEnabled } = useConfigValue(
-    'WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED'
+  const { data: isWorkflowDiagnosticsEnabled } = useConfigValue(
+    'WORKFLOW_DIAGNOSTICS_ENABLED'
   );
 
   return useMemo(
     () =>
       workflowHistoryFiltersConfig.filter(
-        (f) => isDiagnosticsInHistoryEnabled || f.id !== 'historyEventIssues'
+        (f) => isWorkflowDiagnosticsEnabled || f.id !== 'historyEventIssues'
       ),
-    [isDiagnosticsInHistoryEnabled]
+    [isWorkflowDiagnosticsEnabled]
   );
 }

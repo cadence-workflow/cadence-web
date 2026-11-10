@@ -75,20 +75,20 @@ export default function WorkflowHistory({ params }: Props) {
 
   const { workflowExecutionInfo } = wfExecutionDescription;
 
-  const { data: isDiagnosticsInHistoryEnabled } = useConfigValue(
-    'WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED'
+  const { data: isWorkflowDiagnosticsEnabled } = useConfigValue(
+    'WORKFLOW_DIAGNOSTICS_ENABLED'
   );
 
   const activeFiltersCount = useMemo(
     () =>
       (queryParams.historyEventStatuses?.length ?? 0) +
       (queryParams.historyEventTypes?.length ?? 0) +
-      (isDiagnosticsInHistoryEnabled && queryParams.historyEventIssues ? 1 : 0),
+      (isWorkflowDiagnosticsEnabled && queryParams.historyEventIssues ? 1 : 0),
     [
       queryParams.historyEventStatuses,
       queryParams.historyEventTypes,
       queryParams.historyEventIssues,
-      isDiagnosticsInHistoryEnabled,
+      isWorkflowDiagnosticsEnabled,
     ]
   );
 
@@ -99,21 +99,16 @@ export default function WorkflowHistory({ params }: Props) {
       workflowId: decodedParams.workflowId,
       runId: decodedParams.runId,
     },
-    { enabled: Boolean(isDiagnosticsInHistoryEnabled) }
+    { enabled: Boolean(isWorkflowDiagnosticsEnabled) }
   );
 
   const workflowDiagnosticsByEventIdMap: WorkflowDiagnosticsIssuesByEventId =
     useMemo(() => {
-      // Other components can fill the diagnose query cache, so check the flag here too.
-      if (
-        !isDiagnosticsInHistoryEnabled ||
-        workflowDiagnostics?.parsingError ||
-        !workflowDiagnostics?.result
-      )
+      if (workflowDiagnostics?.parsingError || !workflowDiagnostics?.result)
         return {};
 
       return getDiagnosticsIssuesByEventId(workflowDiagnostics.result);
-    }, [isDiagnosticsInHistoryEnabled, workflowDiagnostics]);
+    }, [workflowDiagnostics]);
 
   const {
     eventGroups,
