@@ -113,12 +113,15 @@ describe(SettingsForm.name, () => {
     await user.type(formFieldC, 'definitely_not_a_boolean');
 
     const submitButton = screen.getByRole('button');
-    await user.click(submitButton);
-    expect(submitButton).toHaveAttribute('disabled');
+    await waitFor(() => expect(submitButton).toHaveAttribute('disabled'));
 
-    expect(formFieldC).toHaveAttribute(
-      'error',
-      'Invalid input: expected boolean, received string'
+    await user.click(submitButton);
+
+    await waitFor(() =>
+      expect(formFieldC).toHaveAttribute(
+        'error',
+        'Invalid input: expected boolean, received string'
+      )
     );
 
     expect(
