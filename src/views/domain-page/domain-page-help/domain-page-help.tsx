@@ -2,8 +2,6 @@ import { Button } from 'baseui/button';
 import { StatefulPopover } from 'baseui/popover';
 import { MdArrowDropDown, MdSupport } from 'react-icons/md';
 
-import useSuspenseConfigValue from '@/hooks/use-config-value/use-suspense-config-value';
-
 import domainPageHelpMenuConfig from '../config/domain-page-help-menu.config';
 import DomainPageHelpItemButton from '../domain-page-help-item-button/domain-page-help-item-button';
 
@@ -11,12 +9,6 @@ import { overrides, styled } from './domain-page-help.styles';
 import { type DomainPageHelpGroup } from './domain-page-help.types';
 
 export default function DomainPageHelp() {
-  const {
-    data: { metadata: isExtendedMetadataEnabled },
-  } = useSuspenseConfigValue('EXTENDED_DOMAIN_INFO_ENABLED');
-
-  if (!isExtendedMetadataEnabled) return null;
-
   return (
     <StatefulPopover
       placement="bottomRight"

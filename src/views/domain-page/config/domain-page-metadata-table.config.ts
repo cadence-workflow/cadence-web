@@ -1,40 +1,62 @@
 import { createElement } from 'react';
 
-import type { ListTableItem } from '@/components/list-table/list-table.types';
 import isActiveActiveDomain from '@/views/shared/active-active/helpers/is-active-active-domain';
 
 import DomainPageMetadataClusters from '../domain-page-metadata-clusters/domain-page-metadata-clusters';
+import DomainPageMetadataDescription from '../domain-page-metadata-description/domain-page-metadata-description';
 import DomainPageMetadataFailoverVersionActiveActive from '../domain-page-metadata-failover-version-active-active/domain-page-metadata-failover-version-active-active';
-import { type DomainDescription } from '../domain-page.types';
+import { type MetadataItem } from '../domain-page-metadata-table/domain-page-metadata-table.types';
+import DomainPageMetadataViewJson from '../domain-page-metadata-view-json/domain-page-metadata-view-json';
 import getClusterOperationMode from '../helpers/get-cluster-operation-mode';
 
-const domainPageMetadataTableConfig: Array<ListTableItem<DomainDescription>> = [
+const domainPageMetadataTableConfig = [
   {
     key: 'domainId',
     label: 'Domain ID',
-    renderValue: (domainDescription: DomainDescription) => domainDescription.id,
+    description: 'The UUID of the Cadence domain',
+    kind: 'simple',
+    getValue: ({ domainDescription }) => domainDescription.id,
+  },
+  {
+    key: 'description',
+    label: 'Description',
+    description: 'Brief, high-level description of the Cadence domain',
+    kind: 'simple',
+    getValue: ({ domainDescription }) =>
+      createElement(DomainPageMetadataDescription, {
+        description: domainDescription.description,
+      }),
   },
   {
     key: 'owner',
     label: 'Owner',
-    renderValue: (domainDescription: DomainDescription) =>
-      domainDescription.ownerEmail,
+    description: 'E-mail of the domain owner',
+    kind: 'simple',
+    getValue: ({ domainDescription }) =>
+      domainDescription.ownerEmail || 'Unknown',
   },
   {
     key: 'clusters',
     label: 'Clusters',
-    renderValue: DomainPageMetadataClusters,
+    description: 'Clusters that the domain runs in',
+    kind: 'simple',
+    getValue: ({ domainDescription }) =>
+      createElement(DomainPageMetadataClusters, domainDescription),
   },
   {
     key: 'mode',
     label: 'Mode',
-    renderValue: (domainDescription: DomainDescription) =>
+    description: 'Domain operation mode in multi-cluster setup',
+    kind: 'simple',
+    getValue: ({ domainDescription }) =>
       getClusterOperationMode(domainDescription),
   },
   {
     key: 'failoverVersion',
     label: 'Failover version',
-    renderValue: (domainDescription: DomainDescription) =>
+    description: 'The failover version of the domain',
+    kind: 'simple',
+    getValue: ({ domainDescription }) =>
       isActiveActiveDomain(domainDescription)
         ? createElement(
             DomainPageMetadataFailoverVersionActiveActive,
@@ -42,6 +64,14 @@ const domainPageMetadataTableConfig: Array<ListTableItem<DomainDescription>> = [
           )
         : domainDescription.failoverVersion,
   },
-];
+  {
+    key: 'describeDomainJson',
+    label: 'DescribeDomain response',
+    description: 'View raw DescribeDomain response as JSON',
+    kind: 'simple',
+    getValue: ({ domainDescription }) =>
+      createElement(DomainPageMetadataViewJson, { domainDescription }),
+  },
+] as const satisfies Array<MetadataItem>;
 
 export default domainPageMetadataTableConfig;

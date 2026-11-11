@@ -1,12 +1,8 @@
-import { Suspense, useState } from 'react';
+import { useState } from 'react';
 
 import { type StatefulPopoverProps } from 'baseui/popover';
-import { HttpResponse } from 'msw';
-import { ErrorBoundary } from 'react-error-boundary';
 
 import { render, screen, userEvent } from '@/test-utils/rtl';
-
-import { type GetConfigResponse } from '@/route-handlers/get-config/get-config.types';
 
 import { mockDomainPageHelpMenuConfig } from '../../__fixtures__/domain-page-help-menu-config';
 import DomainPageHelp from '../domain-page-help';
@@ -43,11 +39,10 @@ jest.mock(
 );
 
 describe(DomainPageHelp.name, () => {
-  it('renders the help button and popover when feature flag is enabled', async () => {
-    const { user } = await setup({ isExtendedMetadataEnabled: true });
+  it('renders the help button and popover', async () => {
+    const { user } = setup();
 
-    const helpButton = await screen.findByText('Help');
-    expect(helpButton).toBeInTheDocument();
+    expect(screen.getByText('Help')).toBeInTheDocument();
 
     expect(screen.queryByTestId('popover-content')).not.toBeInTheDocument();
 
@@ -62,63 +57,12 @@ describe(DomainPageHelp.name, () => {
     expect(screen.getByText('Domain commands')).toBeInTheDocument();
     expect(screen.getByText('Custom action')).toBeInTheDocument();
   });
-
-  it('does not render when feature flag is disabled', async () => {
-    await setup({ isExtendedMetadataEnabled: false });
-
-    expect(screen.queryByText('Help')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('popover')).not.toBeInTheDocument();
-  });
-
-  it('handles API error gracefully', async () => {
-    await setup({ error: true });
-
-    expect(
-      await screen.findByText('Error loading help menu')
-    ).toBeInTheDocument();
-    expect(screen.queryByText('Help')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('popover')).not.toBeInTheDocument();
-  });
 });
 
-async function setup({
-  isExtendedMetadataEnabled = false,
-  error = false,
-}: {
-  isExtendedMetadataEnabled?: boolean;
-  error?: boolean;
-}) {
+function setup() {
   const user = userEvent.setup();
 
-  const result = render(
-    <ErrorBoundary fallback={<div>Error loading help menu</div>}>
-      <Suspense fallback={<div>Loading...</div>}>
-        <DomainPageHelp />
-      </Suspense>
-    </ErrorBoundary>,
-    {
-      endpointsMocks: [
-        {
-          path: '/api/config',
-          httpMethod: 'GET',
-          mockOnce: false,
-          httpResolver: async () => {
-            if (error) {
-              return HttpResponse.json(
-                { message: 'Failed to fetch feature flag' },
-                { status: 500 }
-              );
-            }
-
-            return HttpResponse.json({
-              metadata: isExtendedMetadataEnabled,
-              issues: false,
-            } satisfies GetConfigResponse<'EXTENDED_DOMAIN_INFO_ENABLED'>);
-          },
-        },
-      ],
-    }
-  );
+  const result = render(<DomainPageHelp />);
 
   return { user, ...result };
 }

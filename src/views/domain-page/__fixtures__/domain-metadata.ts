@@ -4,5 +4,4 @@ import { mockDomainDescription } from './domain-description';
 
 export const mockDomainMetadata = {
   domainDescription: mockDomainDescription,
-  isExtendedMetadataEnabled: false,
 } as const satisfies DomainMetadata;
