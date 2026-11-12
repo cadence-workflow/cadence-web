@@ -29,6 +29,7 @@ import getSignalExternalWorkflowExecutionGroupFromEvents from './get-history-gro
 import getSingleEventGroupFromEvents from './get-history-group-from-events/get-single-event-group-from-events';
 import getTimerGroupFromEvents from './get-history-group-from-events/get-timer-group-from-events';
 import getWorkflowSignaledGroupFromEvents from './get-history-group-from-events/get-workflow-signaled-group-from-events';
+import isRetryingPendingDecision from './is-retrying-pending-decision';
 import placeEventInGroupEvents from './place-event-in-group-events';
 import {
   type GroupingProcessState,
@@ -238,6 +239,10 @@ export default class WorkflowHistoryGrouper {
     // whose groups may now exist
     this.applyBufferedPendingEvents();
 
+    // Fold Pending-X into X so the table does not keep both
+    // until the next describe poll.
+    this.migratePendingOnlyDecisionGroup();
+
     // Move pointer forward
     this.lastProcessedEventIndex = batchEnd - 1;
 
@@ -302,17 +307,7 @@ export default class WorkflowHistoryGrouper {
       } else if (updatedEventsArr.every(isLocalActivityEvent)) {
         groups[groupId] = getLocalActivityGroupFromEvents(updatedEventsArr);
       } else if (updatedEventsArr.every(isExtendedDecisionEvent)) {
-        // If there are more than 2 decision events, filter out the pending decision task start event
-        // Pending decision task start event is only added to the group when the scheduled decision task event is added
-        // This logic can be moved later to getDecisionGroupFromEvents
-        const filteredDecisionEvents =
-          updatedEventsArr.length > 2
-            ? updatedEventsArr.filter(
-                (e) =>
-                  e.attributes !== 'pendingDecisionTaskStartEventAttributes'
-              )
-            : updatedEventsArr;
-        groups[groupId] = getDecisionGroupFromEvents(filteredDecisionEvents);
+        groups[groupId] = getDecisionGroupFromEvents(updatedEventsArr);
       } else if (updatedEventsArr.every(isTimerEvent)) {
         groups[groupId] = getTimerGroupFromEvents(updatedEventsArr);
       } else if (updatedEventsArr.every(isChildWorkflowExecutionEvent)) {
@@ -374,8 +369,8 @@ export default class WorkflowHistoryGrouper {
   }
 
   /**
-   * Adds a pending decision to a group, removing any existing pending decision first.
-   * Only adds if the group has exactly one scheduled event.
+   * Strip the group's pending decision, then attach the new one if given.
+   * Deletes the group if stripping leaves it empty.
    */
   private updatePendingDecisionInGroup(
     groupId: string,
@@ -388,21 +383,17 @@ export default class WorkflowHistoryGrouper {
         (e) => e.attributes !== 'pendingDecisionTaskStartEventAttributes'
       ) as ExtendedDecisionHistoryEvent[];
 
-      // Only add pending decision if group has exactly one scheduled event
-      if (
-        pendingDecision &&
-        filteredEvents.length === 1 &&
-        filteredEvents[0].attributes === 'decisionTaskScheduledEventAttributes'
-      ) {
-        const updatedEventsArr: ExtendedDecisionHistoryEvent[] = [
-          ...filteredEvents,
-          pendingDecision,
-        ];
-        this.groups[groupId] = getDecisionGroupFromEvents(updatedEventsArr);
-      } else {
-        // Just update without pending decision
-        this.groups[groupId] = getDecisionGroupFromEvents(filteredEvents);
+      // Delete a pending-only group that lost its pending event. Rebuilding an
+      // empty group would throw in getDecisionGroupFromEvents (events[0] access).
+      if (filteredEvents.length === 0) {
+        delete this.groups[groupId];
+        return;
       }
+
+      // getDecisionGroupFromEvents decides whether the pending event shows.
+      this.groups[groupId] = getDecisionGroupFromEvents(
+        pendingDecision ? [...filteredEvents, pendingDecision] : filteredEvents
+      );
     }
   }
 
@@ -490,15 +481,20 @@ export default class WorkflowHistoryGrouper {
     currentPendingDecision: PendingDecisionTaskStartEvent | null,
     newPendingDecision: PendingDecisionTaskStartEvent | null
   ): void {
-    // Remove old pending decision from its group (if exists)
+    // Remove old pending decision from its group (if exists). Pending-only
+    // groups are keyed by computedEventId, so sweep both keys.
     if (currentPendingDecision) {
       const groupId = getHistoryEventGroupId(currentPendingDecision);
       if (groupId) {
         this.updatePendingDecisionInGroup(groupId, null);
       }
+      this.updatePendingDecisionInGroup(
+        currentPendingDecision.computedEventId,
+        null
+      );
     }
 
-    // Add new pending decision (to group or buffer)
+    // Add new pending decision (to group, its own group, or buffer)
     if (newPendingDecision) {
       const groupId = getHistoryEventGroupId(newPendingDecision);
       if (!groupId) {
@@ -512,11 +508,34 @@ export default class WorkflowHistoryGrouper {
         return;
       }
 
-      if (this.groups[groupId]) {
+      if (this.groups[groupId]?.groupType === 'Decision') {
         this.updatePendingDecisionInGroup(groupId, newPendingDecision);
+      } else if (isRetryingPendingDecision(newPendingDecision)) {
+        // No Decision group at this schedule id, so there is nothing to attach to.
+        // Show the retry on its own under computedEventId instead of buffering it.
+        this.groups[newPendingDecision.computedEventId] =
+          getDecisionGroupFromEvents([newPendingDecision]);
       } else {
         this.bufferedPendingDecision = newPendingDecision;
       }
+    }
+  }
+
+  /**
+   * Moves a pending-only retry group (keyed by computedEventId) into the real
+   * decision group once history creates it. Without this, Pending-X and X
+   * both show until the next describe-driven updatePendingDecision.
+   */
+  private migratePendingOnlyDecisionGroup(): void {
+    const pending = this.currentPendingDecision;
+    if (!pending || !this.groups[pending.computedEventId]) {
+      return;
+    }
+
+    const groupId = getHistoryEventGroupId(pending);
+    if (groupId && this.groups[groupId]?.groupType === 'Decision') {
+      delete this.groups[pending.computedEventId];
+      this.updatePendingDecisionInGroup(groupId, pending);
     }
   }
 

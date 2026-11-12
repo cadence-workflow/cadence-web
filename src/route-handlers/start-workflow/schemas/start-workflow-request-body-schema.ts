@@ -17,13 +17,13 @@ const startWorkflowRequestBodySchema = z.object({
   workflowId: z
     .string()
     .trim()
-    .optional()
-    .transform((v) => v || undefined),
+    .transform((v) => v || undefined)
+    .optional(),
   workerSDKLanguage: z.enum(WORKER_SDK_LANGUAGES),
   input: z.array(jsonValueSchema).optional(),
   executionStartToCloseTimeoutSeconds: z.number().positive(),
   taskStartToCloseTimeoutSeconds: z.number().positive().optional(),
-  firstRunAt: z.string().datetime().optional(),
+  firstRunAt: z.iso.datetime().optional(),
   cronSchedule: z.string().optional(),
 
   workflowIdReusePolicy: z.enum(WORKFLOW_ID_REUSE_POLICIES).optional(),

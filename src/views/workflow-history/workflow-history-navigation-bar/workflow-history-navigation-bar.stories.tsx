@@ -9,45 +9,49 @@ import { type Props } from './workflow-history-navigation-bar.types';
 
 const failedEventsMenuItems: Array<NavigationBarEventsMenuItem> = [
   {
-    eventId: '12',
+    eventKey: '12',
     label: 'Activity 0: helloWorldActivity',
     category: 'ACTIVITY',
   },
-  { eventId: '18', label: 'Decision Task', category: 'DECISION' },
+  { eventKey: '18', label: 'Decision Task', category: 'DECISION' },
 ];
 
 const pendingEventsMenuItems: Array<NavigationBarEventsMenuItem> = [
-  { eventId: '24', label: 'Timer 1 (5m)', category: 'TIMER' },
+  { eventKey: '24', label: 'Timer 1 (5m)', category: 'TIMER' },
 ];
 
 const diagnosticsMenuItems: Array<NavigationBarEventsMenuItem> = [
   {
-    eventId: '1',
+    eventKey: '1',
     label: 'Workflow Execution Started',
     category: 'WORKFLOW',
     subItems: [
-      { id: 'Workflow Timed Out.0', eventId: '1', label: 'Workflow Timed Out' },
+      {
+        id: 'Workflow Timed Out.0',
+        eventKey: '1',
+        label: 'Workflow Timed Out',
+      },
     ],
   },
   {
-    eventId: '12',
+    eventKey: '12',
     label: 'Activity 0: helloWorldActivity',
     category: 'ACTIVITY',
     subItems: [
-      { id: 'Activity Failed.1', eventId: '12', label: 'Activity Failed' },
+      { id: 'Activity Failed.1', eventKey: '12', label: 'Activity Failed' },
       {
         id: 'Activity Timed Out.2',
-        eventId: '14',
+        eventKey: '14',
         label: 'Activity Timed Out',
       },
     ],
   },
   {
-    eventId: '18',
+    eventKey: '18',
     label: 'Decision Task',
     category: 'DECISION',
     subItems: [
-      { id: 'Decision Failed.3', eventId: '18', label: 'Decision Failed' },
+      { id: 'Decision Failed.3', eventKey: '18', label: 'Decision Failed' },
     ],
   },
 ];
@@ -55,15 +59,15 @@ const diagnosticsMenuItems: Array<NavigationBarEventsMenuItem> = [
 const manyDiagnosticsMenuItems: Array<NavigationBarEventsMenuItem> = Array.from(
   { length: 14 },
   (_, index) => {
-    const eventId = String(10 + index * 6);
+    const eventKey = String(10 + index * 6);
     return {
-      eventId,
+      eventKey,
       label: `Activity ${index}: processBatchActivity`,
       category: 'ACTIVITY',
       subItems: [
         {
           id: `Activity Failed.${index}`,
-          eventId,
+          eventKey,
           label: 'Activity Failed',
         },
       ],

@@ -2,7 +2,12 @@ import {
   completedActivityTaskEvents,
   startActivityTaskEvent,
 } from '../../__fixtures__/workflow-history-activity-events';
-import { startDecisionTaskEvent } from '../../__fixtures__/workflow-history-decision-events';
+import {
+  completedDecisionTaskEvents,
+  failedDecisionTaskEvents,
+  startDecisionTaskEvent,
+  timedoutDecisionTaskEvents,
+} from '../../__fixtures__/workflow-history-decision-events';
 import {
   createPendingActivity,
   createPendingDecision,
@@ -264,18 +269,19 @@ describe(WorkflowHistoryGrouper.name, () => {
     );
   });
 
-  it('should buffer pending decision when group does not exist yet', async () => {
+  it('should buffer pending decision when group does not exist yet and it is not retrying', async () => {
     const { grouper, waitForProcessing } = setup();
 
-    // Add pending decision BEFORE scheduled event exists
+    // Add non-retrying pending decision BEFORE scheduled event exists
     await grouper.updatePendingEvents({
       pendingStartActivities: [],
-      pendingStartDecision: createPendingDecision('2'),
+      pendingStartDecision: createPendingDecision('2', { attempt: 0 }),
     });
 
     // Group should NOT exist yet (pending event is buffered)
     let groups = grouper.getState().groups;
     expect(groups['2']).toBeUndefined();
+    expect(groups['pending-2']).toBeUndefined();
 
     // Now add the scheduled event
     grouper.updateEvents([createScheduleDecisionEvent('2')]);
@@ -499,16 +505,16 @@ describe(WorkflowHistoryGrouper.name, () => {
   it('should handle pending decision buffer clearing when decision changes', async () => {
     const { grouper, waitForProcessing } = setup();
 
-    // Buffer first decision for scheduleId: '2'
+    // Buffer first non-retrying decision for scheduleId: '2'
     await grouper.updatePendingEvents({
       pendingStartActivities: [],
-      pendingStartDecision: createPendingDecision('2'),
+      pendingStartDecision: createPendingDecision('2', { attempt: 0 }),
     });
 
     // Update with different decision for scheduleId: '10' (old one should be removed from buffer)
     await grouper.updatePendingEvents({
       pendingStartActivities: [],
-      pendingStartDecision: createPendingDecision('10'),
+      pendingStartDecision: createPendingDecision('10', { attempt: 0 }),
     });
 
     // No groups should exist yet (still buffered)
@@ -542,7 +548,7 @@ describe(WorkflowHistoryGrouper.name, () => {
     ).toBe(true);
   });
 
-  it('should filter out pending decision when decision group has more than 2 events', async () => {
+  it('should filter out non-retrying pending decision when decision group has more than 2 events', async () => {
     const { grouper, waitForProcessing } = setup();
 
     // Add scheduled event and pending decision
@@ -551,7 +557,7 @@ describe(WorkflowHistoryGrouper.name, () => {
 
     await grouper.updatePendingEvents({
       pendingStartActivities: [],
-      pendingStartDecision: createPendingDecision('2'),
+      pendingStartDecision: createPendingDecision('2', { attempt: 0 }),
     });
 
     // Group should have 2 events (scheduled + pending)
@@ -577,7 +583,7 @@ describe(WorkflowHistoryGrouper.name, () => {
     // even if pending event is updated again, it should not be added to the group
     await grouper.updatePendingEvents({
       pendingStartActivities: [],
-      pendingStartDecision: createPendingDecision('2'),
+      pendingStartDecision: createPendingDecision('2', { attempt: 0 }),
     });
 
     groups = grouper.getState().groups;
@@ -610,6 +616,177 @@ describe(WorkflowHistoryGrouper.name, () => {
       )
     ).toBe(true);
   });
+
+  it('should drop a retrying pending decision when the decision starts', async () => {
+    const { grouper, waitForProcessing } = setup();
+
+    grouper.updateEvents([createScheduleDecisionEvent('2')]);
+    await waitForProcessing();
+
+    // createPendingDecision defaults to attempt 1 (retrying)
+    await grouper.updatePendingEvents({
+      pendingStartActivities: [],
+      pendingStartDecision: createPendingDecision('2'),
+    });
+
+    grouper.updateEvents([
+      createScheduleDecisionEvent('2'),
+      startDecisionTaskEvent,
+    ]);
+    await waitForProcessing();
+
+    const group = grouper.getState().groups['2'];
+    expect(group.events).toHaveLength(2);
+    expect(group.status).toBe('ONGOING');
+  });
+
+  it('should create a pending-only group for a retrying pending decision with no history group', async () => {
+    const { grouper } = setup();
+
+    await grouper.updatePendingEvents({
+      pendingStartActivities: [],
+      pendingStartDecision: createPendingDecision('2'),
+    });
+
+    const groups = grouper.getState().groups;
+    expect(groups['2']).toBeUndefined();
+    const pendingOnlyGroup = groups['pending-2'];
+    expect(pendingOnlyGroup.groupType).toBe('Decision');
+    expect(pendingOnlyGroup.events).toHaveLength(1);
+    expect(pendingOnlyGroup.status).toBe('WAITING');
+    expect(pendingOnlyGroup.badges).toEqual([{ content: '1 Retry' }]);
+  });
+
+  it('should promote a buffered attempt-0 pending decision to a pending-only group once it retries', async () => {
+    const { grouper } = setup();
+
+    // Pass 1: attempt 0 (not retrying) with no history group — buffered, no group
+    await grouper.updatePendingEvents({
+      pendingStartActivities: [],
+      pendingStartDecision: createPendingDecision('2', { attempt: 0 }),
+    });
+    expect(Object.keys(grouper.getState().groups)).toHaveLength(0);
+
+    // Pass 2: same pending decision at attempt 1 — exactly one pending-only group
+    await grouper.updatePendingEvents({
+      pendingStartActivities: [],
+      pendingStartDecision: createPendingDecision('2', { attempt: 1 }),
+    });
+
+    const groups = grouper.getState().groups;
+    expect(Object.keys(groups)).toEqual(['pending-2']);
+    expect(groups['pending-2'].groupType).toBe('Decision');
+    expect(groups['pending-2'].events).toHaveLength(1);
+    expect(groups['pending-2'].events[0].attributes).toBe(
+      'pendingDecisionTaskStartEventAttributes'
+    );
+  });
+
+  it('should not attach a retrying pending decision to a non-decision group', async () => {
+    const { grouper, waitForProcessing } = setup();
+
+    grouper.updateEvents([createScheduleActivityEvent('7')]);
+    await waitForProcessing();
+
+    await grouper.updatePendingEvents({
+      pendingStartActivities: [],
+      pendingStartDecision: createPendingDecision('7'),
+    });
+
+    const groups = grouper.getState().groups;
+    expect(groups['7'].groupType).toBe('Activity');
+    expect(groups['7'].events).toHaveLength(1);
+    expect(groups['pending-7'].groupType).toBe('Decision');
+    expect(groups['pending-7'].events).toHaveLength(1);
+  });
+
+  it('should delete a pending-only group when the pending decision clears', async () => {
+    const { grouper } = setup();
+
+    await grouper.updatePendingEvents({
+      pendingStartActivities: [],
+      pendingStartDecision: createPendingDecision('2'),
+    });
+    expect(grouper.getState().groups['pending-2']).toBeDefined();
+
+    await grouper.updatePendingEvents({
+      pendingStartActivities: [],
+      pendingStartDecision: null,
+    });
+    expect(grouper.getState().groups['pending-2']).toBeUndefined();
+  });
+
+  it('should migrate a pending-only retry group into the real decision group once history lands', async () => {
+    const { grouper, waitForProcessing } = setup();
+
+    await grouper.updatePendingEvents({
+      pendingStartActivities: [],
+      pendingStartDecision: createPendingDecision('2'),
+    });
+    expect(grouper.getState().groups['pending-2']).toBeDefined();
+    expect(grouper.getState().groups['2']).toBeUndefined();
+
+    grouper.updateEvents([createScheduleDecisionEvent('2')]);
+    await waitForProcessing();
+
+    const groups = grouper.getState().groups;
+    expect(groups['pending-2']).toBeUndefined();
+    expect(groups['2'].groupType).toBe('Decision');
+    expect(groups['2'].events).toHaveLength(2);
+    expect(groups['2'].events.at(-1)?.attributes).toBe(
+      'pendingDecisionTaskStartEventAttributes'
+    );
+    expect(groups['2'].status).toBe('WAITING');
+  });
+
+  it('should drop the pending-only group when history lands as a completed decision', async () => {
+    const { grouper, waitForProcessing } = setup();
+
+    await grouper.updatePendingEvents({
+      pendingStartActivities: [],
+      pendingStartDecision: createPendingDecision('2'),
+    });
+    expect(grouper.getState().groups['pending-2']).toBeDefined();
+
+    grouper.updateEvents(completedDecisionTaskEvents);
+    await waitForProcessing();
+
+    const groups = grouper.getState().groups;
+    expect(groups['pending-2']).toBeUndefined();
+    expect(groups['2'].status).toBe('COMPLETED');
+    expect(
+      groups['2'].events.some(
+        (e) => e.attributes === 'pendingDecisionTaskStartEventAttributes'
+      )
+    ).toBe(false);
+  });
+
+  it.each([
+    ['completed', completedDecisionTaskEvents, 'COMPLETED'],
+    ['failed', failedDecisionTaskEvents, 'FAILED'],
+    ['timed out', timedoutDecisionTaskEvents, 'FAILED'],
+  ])(
+    'should not attach a stale retrying pending decision when the decision %s',
+    async (_name, events, status) => {
+      const { grouper, waitForProcessing } = setup();
+
+      grouper.updateEvents(events);
+      await waitForProcessing();
+
+      await grouper.updatePendingEvents({
+        pendingStartActivities: [],
+        pendingStartDecision: createPendingDecision('2'),
+      });
+
+      const group = grouper.getState().groups['2'];
+      expect(group.status).toBe(status);
+      expect(
+        group.events.some(
+          (e) => e.attributes === 'pendingDecisionTaskStartEventAttributes'
+        )
+      ).toBe(false);
+    }
+  );
 
   it('should clean up all resources when destroy is called', async () => {
     const { grouper, handleStateChange, waitForProcessing } = setup();

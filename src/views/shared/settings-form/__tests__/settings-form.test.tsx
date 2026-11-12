@@ -2,7 +2,7 @@ import React from 'react';
 
 import { userEvent } from '@testing-library/user-event';
 
-import { render, screen } from '@/test-utils/rtl';
+import { render, screen, waitFor } from '@/test-utils/rtl';
 
 import {
   mockZodSchema,
@@ -26,6 +26,16 @@ describe(SettingsForm.name, () => {
     expect(submitButton).toHaveTextContent('Submit form');
     expect(submitButton).toHaveAttribute('type', 'submit');
     expect(submitButton).toHaveAttribute('disabled');
+  });
+
+  it('should enable submit after a single keystroke', async () => {
+    const { user } = setup({});
+
+    const submitButton = screen.getByRole('button');
+
+    await user.type(screen.getByDisplayValue('mock_data_A'), 'x');
+
+    await waitFor(() => expect(submitButton).not.toHaveAttribute('disabled'));
   });
 
   it('should accept form submission once any of the fields are modified', async () => {
@@ -103,16 +113,19 @@ describe(SettingsForm.name, () => {
     await user.type(formFieldC, 'definitely_not_a_boolean');
 
     const submitButton = screen.getByRole('button');
-    await user.click(submitButton);
-    expect(submitButton).toHaveAttribute('disabled');
+    await waitFor(() => expect(submitButton).toHaveAttribute('disabled'));
 
-    expect(formFieldC).toHaveAttribute(
-      'error',
-      'Expected boolean, received string'
+    await user.click(submitButton);
+
+    await waitFor(() =>
+      expect(formFieldC).toHaveAttribute(
+        'error',
+        'Invalid input: expected boolean, received string'
+      )
     );
 
     expect(
-      screen.getByText('Expected boolean, received string')
+      screen.getByText('Invalid input: expected boolean, received string')
     ).toBeInTheDocument();
   });
 });

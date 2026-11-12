@@ -42,11 +42,11 @@ export default function WorkflowHistoryNavigationBarEventsMenu({
     <StatefulPopover
       content={({ close }) => (
         <styled.MenuItemsContainer>
-          {paginatedItems.map(({ eventId, label, category, subItems }) => (
-            <styled.MenuItemContainer key={eventId}>
+          {paginatedItems.map(({ eventKey, label, category, subItems }) => (
+            <styled.MenuItemContainer key={eventKey}>
               <Button
                 onClick={() => {
-                  onClickEvent(eventId);
+                  onClickEvent(eventKey);
                   close();
                 }}
                 overrides={overrides.button}

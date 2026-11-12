@@ -1,5 +1,5 @@
 import isPlainObject from 'lodash/isPlainObject';
-import { z } from 'zod';
+import { type z } from 'zod';
 
 import { ScheduleCatchUpPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleCatchUpPolicy';
 import { ScheduleOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ScheduleOverlapPolicy';
@@ -23,7 +23,7 @@ export default function refineCreateScheduleForm(
     )
   ) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: 'custom',
       message: 'Buffer limit must be a non-negative integer',
       path: ['bufferLimit'],
     });
@@ -40,7 +40,7 @@ export default function refineCreateScheduleForm(
     )
   ) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: 'custom',
       message: 'Concurrency limit must be a non-negative integer',
       path: ['concurrencyLimit'],
     });
@@ -54,7 +54,7 @@ export default function refineCreateScheduleForm(
       data.catchUpWindowSeconds === undefined)
   ) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: 'custom',
       message: 'Catch-up window is required',
       path: ['catchUpWindowSeconds'],
     });
@@ -67,7 +67,7 @@ export default function refineCreateScheduleForm(
 
   if (schedulePeriodError) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: 'custom',
       message: schedulePeriodError.message,
       path: ['endTime'],
     });
@@ -80,14 +80,14 @@ export default function refineCreateScheduleForm(
       const parsedMemo = JSON.parse(data.memo);
       if (!isPlainObject(parsedMemo)) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: 'custom',
           message: 'Memo must be a JSON object',
           path: ['memo'],
         });
       }
     } catch {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         message: 'Memo must be valid JSON',
         path: ['memo'],
       });

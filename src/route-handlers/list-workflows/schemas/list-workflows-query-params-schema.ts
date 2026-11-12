@@ -32,8 +32,8 @@ export const visibilityQuerySchema = z.object({
     .enum(['StartTime', 'CloseTime'])
     .optional()
     .default('StartTime'),
-  timeRangeStart: z.string().datetime().optional(),
-  timeRangeEnd: z.string().datetime().optional(),
+  timeRangeStart: z.iso.datetime().optional(),
+  timeRangeEnd: z.iso.datetime().optional(),
   sortColumn: z.string().optional(),
   sortOrder: z.enum(SORT_ORDERS, { message: 'Invalid sort order' }).optional(),
 });
@@ -42,8 +42,8 @@ export const getRefinedVisibilityQuerySchema = <
   T extends typeof visibilityQuerySchema,
 >(
   schema: T = visibilityQuerySchema as T
-): z.ZodEffects<T> => {
-  return schema.superRefine(validateArchivedQueryParams) as z.ZodEffects<T>;
+): T => {
+  return schema.superRefine(validateArchivedQueryParams);
 };
 
 const listWorkflowsQueryParamSchema = getRefinedVisibilityQuerySchema(

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { type VirtuosoHandle } from 'react-virtuoso';
 
+import getEventKey from '../helpers/get-event-key';
 import { type UngroupedEventInfo } from '../workflow-history-ungrouped-table/workflow-history-ungrouped-table.types';
 import { type EventGroupEntry } from '../workflow-history.types';
 
@@ -14,7 +15,7 @@ import { type EventGroupEntry } from '../workflow-history.types';
  * - Header timeline
  *
  * Features:
- * - `scrollToTableEvent(eventId)` - Scrolls the active table to a specific event
+ * - `scrollToTableEvent(eventKey)` - Scrolls the active table to a specific event
  * - `scrollToTimelineEventGroup(groupId)` - Scrolls the timeline to a specific event group
  * - `handleTableScrollUp/Down` - Scrolls the active table to top/bottom
  * - Automatically clears scroll targets after 2 seconds to allow re-scrolling to the same target
@@ -37,7 +38,7 @@ export default function useWorkflowHistoryScroll({
     ? ungroupedTableVirtuosoRef
     : groupedTableVirtuosoRef;
 
-  const [tableScrollTargetEventId, setTableScrollTargetEventId] = useState<
+  const [tableScrollTargetEventKey, setTableScrollTargetEventKey] = useState<
     string | undefined
   >(undefined);
 
@@ -48,15 +49,15 @@ export default function useWorkflowHistoryScroll({
 
   // Table scroll handler implementation
   const tableScrollTargetEventIndex = useMemo(() => {
-    if (!tableScrollTargetEventId) return undefined;
+    if (!tableScrollTargetEventKey) return undefined;
 
     return isUngroupedHistoryViewEnabled
-      ? ungroupedEventsInfo.findIndex((e) => e.id === tableScrollTargetEventId)
+      ? ungroupedEventsInfo.findIndex((e) => e.id === tableScrollTargetEventKey)
       : filteredEventGroupsEntries.findIndex(([_, group]) =>
-          group.events.some((e) => e.eventId === tableScrollTargetEventId)
+          group.events.some((e) => getEventKey(e) === tableScrollTargetEventKey)
         );
   }, [
-    tableScrollTargetEventId,
+    tableScrollTargetEventKey,
     isUngroupedHistoryViewEnabled,
     ungroupedEventsInfo,
     filteredEventGroupsEntries,
@@ -77,15 +78,15 @@ export default function useWorkflowHistoryScroll({
     }
 
     const timeoutId = setTimeout(
-      () => setTableScrollTargetEventId(undefined),
+      () => setTableScrollTargetEventKey(undefined),
       2000
     );
 
     return () => clearTimeout(timeoutId);
   }, [tableScrollTargetEventIndex, activeTableVirtuosoRef]);
 
-  const scrollToTableEvent = useCallback((eventId: string) => {
-    setTableScrollTargetEventId(eventId);
+  const scrollToTableEvent = useCallback((eventKey: string) => {
+    setTableScrollTargetEventKey(eventKey);
   }, []);
 
   // Timeline scroll handler implementation
@@ -148,7 +149,7 @@ export default function useWorkflowHistoryScroll({
     groupedTableVirtuosoRef,
     ungroupedTableVirtuosoRef,
     timelineVirtuosoRef,
-    tableScrollTargetEventId,
+    tableScrollTargetEventKey,
     timelineScrollTargetEventGroupId,
     scrollToTableEvent,
     scrollToTimelineEventGroup,

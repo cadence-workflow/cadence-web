@@ -7,6 +7,7 @@ import {
 } from '@/views/workflow-history/__fixtures__/workflow-history-event-groups';
 
 import { createUngroupedEventsInfo } from '../../__fixtures__/ungrouped-events-info';
+import { pendingDecisionTaskStartEvent } from '../../__fixtures__/workflow-history-pending-events';
 import { type UngroupedEventInfo } from '../../workflow-history-ungrouped-table/workflow-history-ungrouped-table.types';
 import { type EventGroupEntry } from '../../workflow-history.types';
 import useWorkflowHistoryScroll from '../use-workflow-history-scroll';
@@ -25,37 +26,37 @@ describe(useWorkflowHistoryScroll.name, () => {
 
     expect(result.current.groupedTableVirtuosoRef).toBeDefined();
     expect(result.current.ungroupedTableVirtuosoRef).toBeDefined();
-    expect(result.current.tableScrollTargetEventId).toBeUndefined();
+    expect(result.current.tableScrollTargetEventKey).toBeUndefined();
     expect(result.current.scrollToTableEvent).toBeInstanceOf(Function);
     expect(result.current.handleTableScrollUp).toBeInstanceOf(Function);
     expect(result.current.handleTableScrollDown).toBeInstanceOf(Function);
   });
 
-  it('should set tableScrollTargetEventId when scrollToTableEvent is called', () => {
+  it('should set tableScrollTargetEventKey when scrollToTableEvent is called', () => {
     const { result } = setup({});
 
     act(() => {
       result.current.scrollToTableEvent('event-123');
     });
 
-    expect(result.current.tableScrollTargetEventId).toBe('event-123');
+    expect(result.current.tableScrollTargetEventKey).toBe('event-123');
   });
 
-  it('should clear tableScrollTargetEventId after 2 seconds', async () => {
+  it('should clear tableScrollTargetEventKey after 2 seconds', async () => {
     const { result } = setup({});
 
     act(() => {
       result.current.scrollToTableEvent('event-123');
     });
 
-    expect(result.current.tableScrollTargetEventId).toBe('event-123');
+    expect(result.current.tableScrollTargetEventKey).toBe('event-123');
 
     act(() => {
       jest.advanceTimersByTime(2000);
     });
 
     await waitFor(() => {
-      expect(result.current.tableScrollTargetEventId).toBeUndefined();
+      expect(result.current.tableScrollTargetEventKey).toBeUndefined();
     });
   });
 
@@ -75,27 +76,27 @@ describe(useWorkflowHistoryScroll.name, () => {
       result.current.scrollToTableEvent('2');
     });
 
-    expect(result.current.tableScrollTargetEventId).toBe('2');
+    expect(result.current.tableScrollTargetEventKey).toBe('2');
 
     // 1.5s
     act(() => {
       jest.advanceTimersByTime(1500);
     });
 
-    expect(result.current.tableScrollTargetEventId).toBe('2');
+    expect(result.current.tableScrollTargetEventKey).toBe('2');
 
     act(() => {
       result.current.scrollToTableEvent('7');
     });
 
-    expect(result.current.tableScrollTargetEventId).toBe('7');
+    expect(result.current.tableScrollTargetEventKey).toBe('7');
 
     // 2s
     act(() => {
       jest.advanceTimersByTime(500);
     });
 
-    expect(result.current.tableScrollTargetEventId).toBe('7');
+    expect(result.current.tableScrollTargetEventKey).toBe('7');
 
     // 3.5s
     act(() => {
@@ -103,7 +104,7 @@ describe(useWorkflowHistoryScroll.name, () => {
     });
 
     await waitFor(() => {
-      expect(result.current.tableScrollTargetEventId).toBeUndefined();
+      expect(result.current.tableScrollTargetEventKey).toBeUndefined();
     });
   });
 
@@ -122,6 +123,34 @@ describe(useWorkflowHistoryScroll.name, () => {
     act(() => {
       // event '10' is in mockActivityEventGroup, which is at index 1
       result.current.scrollToTableEvent('10');
+    });
+
+    expect(mockGroupedScrollToIndex).toHaveBeenCalledWith({
+      index: 1,
+      behavior: 'auto',
+      align: 'center',
+    });
+  });
+
+  it('should find correct index in grouped view by computedEventId', () => {
+    const pendingOnlyGroup = {
+      ...mockDecisionEventGroup,
+      events: [pendingDecisionTaskStartEvent],
+    };
+    const filteredEventGroupsEntries: Array<EventGroupEntry> = [
+      ['activity-1', mockActivityEventGroup],
+      ['pending-decision', pendingOnlyGroup],
+    ];
+
+    const { result, mockGroupedScrollToIndex } = setup({
+      filteredEventGroupsEntries,
+      isUngroupedHistoryViewEnabled: false,
+    });
+
+    act(() => {
+      result.current.scrollToTableEvent(
+        pendingDecisionTaskStartEvent.computedEventId
+      );
     });
 
     expect(mockGroupedScrollToIndex).toHaveBeenCalledWith({

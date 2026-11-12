@@ -1,6 +1,6 @@
 import getFieldErrorMessage from '../get-field-error-message';
 
-describe('getFieldErrorMessage', () => {
+describe(getFieldErrorMessage.name, () => {
   it('should return undefined when field has no error', () => {
     const fieldErrors = {};
 

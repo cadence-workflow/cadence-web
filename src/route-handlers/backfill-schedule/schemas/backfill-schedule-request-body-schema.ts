@@ -6,8 +6,8 @@ import getSchedulePeriodError from '@/route-handlers/create-schedule/helpers/get
 
 const backfillScheduleRequestBodySchema = z
   .object({
-    startTime: z.string().datetime(),
-    endTime: z.string().datetime(),
+    startTime: z.iso.datetime(),
+    endTime: z.iso.datetime(),
     overlapPolicy: z.nativeEnum(ScheduleOverlapPolicy).optional(),
     backfillId: z.string().optional(),
   })
@@ -19,7 +19,7 @@ const backfillScheduleRequestBodySchema = z
 
     if (schedulePeriodError) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         message: schedulePeriodError.message,
         path: ['endTime'],
       });

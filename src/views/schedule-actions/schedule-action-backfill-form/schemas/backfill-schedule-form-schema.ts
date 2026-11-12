@@ -9,13 +9,19 @@ export const backfillScheduleFormSchema = z
   .object({
     backfillId: z.string().trim().optional(),
     startTime: z
-      .string({ required_error: 'Start date is required' })
+      .string({
+        error: (iss) =>
+          iss.input === undefined ? 'Start date is required' : undefined,
+      })
       .min(1, 'Start date is required')
-      .datetime('Start date is required'),
+      .check(z.iso.datetime('Start date is required')),
     endTime: z
-      .string({ required_error: 'End date is required' })
+      .string({
+        error: (iss) =>
+          iss.input === undefined ? 'End date is required' : undefined,
+      })
       .min(1, 'End date is required')
-      .datetime('End date is required'),
+      .check(z.iso.datetime('End date is required')),
     overlapPolicy: z
       .union([
         z.literal(USE_SCHEDULE_OVERLAP_POLICY),
@@ -31,7 +37,7 @@ export const backfillScheduleFormSchema = z
 
     if (schedulePeriodError) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         message: schedulePeriodError.message,
         path: ['startTime'],
       });

@@ -33,7 +33,7 @@ const cronExpressionFieldsSchema = z
 
     if (!allFieldsHasValue) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         message: 'Cron expression is required',
       });
       // If there are missing fields, no need to validate the cron schedule format.
@@ -47,20 +47,20 @@ const cronExpressionFieldsSchema = z
 
     if (cronFieldsErrors?.general) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         message: 'Invalid cron schedule format',
       });
     } else {
       // multi error format exposes the general error along with field errors
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         message: 'Invalid cron schedule format',
         path: ['general'],
       });
 
       Object.entries(cronFieldsErrors).forEach(([errorKey, errorMessage]) => {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: 'custom',
           message: errorMessage,
           path: [errorKey],
         });
@@ -79,7 +79,8 @@ export const createScheduleFormFieldsSchema = z.object({
   }),
   executionStartToCloseTimeoutSeconds: z
     .number({
-      required_error: 'Execution timeout is required',
+      error: (iss) =>
+        iss.input === undefined ? 'Execution timeout is required' : undefined,
     })
     .positive('Execution timeout must be positive'),
   // Hidden on create/edit: Cadence requires a decision-task timeout, and edit
@@ -87,8 +88,8 @@ export const createScheduleFormFieldsSchema = z.object({
   taskStartToCloseTimeoutSeconds: z.number().positive().optional(),
   // TODO(refactor): WORKER_SDK_LANGUAGES imported from start-workflow — extract to shared constants
   workerSDKLanguage: z.enum(WORKER_SDK_LANGUAGES, {
-    required_error: 'Worker SDK is required',
-    invalid_type_error: 'Worker SDK is required',
+    error: (iss) =>
+      typeof iss.input !== 'string' ? 'Worker SDK is required' : undefined,
   }),
   input: z
     .array(z.string())
@@ -105,7 +106,7 @@ export const createScheduleFormFieldsSchema = z.object({
           JSON.parse(val);
         } catch {
           ctx.addIssue({
-            code: z.ZodIssueCode.custom,
+            code: 'custom',
             message: 'Input must be valid JSON',
             path: [i],
           });
@@ -137,8 +138,8 @@ export const createScheduleFormFieldsSchema = z.object({
       message: 'Jitter seconds must be zero or positive',
     })
     .optional(),
-  startTime: z.string().datetime('Start time must be valid').optional(),
-  endTime: z.string().datetime('End time must be valid').optional(),
+  startTime: z.iso.datetime('Start time must be valid').optional(),
+  endTime: z.iso.datetime('End time must be valid').optional(),
   ...retryPolicyFormFieldsShape,
   memo: z.string().optional(),
   searchAttributes: z

@@ -2,6 +2,8 @@ import { type z } from 'zod';
 
 import refineRetryPolicyForm from '../refine-retry-policy-form';
 
+type RefinementIssue = Parameters<z.RefinementCtx['addIssue']>[0];
+
 describe(refineRetryPolicyForm.name, () => {
   it('accepts when retry policy is disabled', () => {
     expect(getIssues({ enableRetryPolicy: false })).toEqual([]);
@@ -72,7 +74,7 @@ function getIssues(
     limitRetries: 'ATTEMPTS',
   }
 ) {
-  const issues: Array<z.IssueData> = [];
+  const issues: RefinementIssue[] = [];
 
   refineRetryPolicyForm(
     {
