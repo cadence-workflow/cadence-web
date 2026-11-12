@@ -1,7 +1,9 @@
 import { useContext } from 'react';
 
-import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { LightTheme } from 'baseui';
+
+import { render, screen } from '@/test-utils/rtl';
 
 import Markdown from '@/components/markdown/markdown';
 import { MarkdownContext } from '@/components/markdown/markdown-context-provider/markdown-context-provider';
@@ -198,67 +200,82 @@ console.log('Hello');
   });
 
   it('renders style tag with color', () => {
-    const content = '{% style color="red" %}red text{% /style %}';
+    const content = '{% style color="red400" %}red text{% /style %}';
     render(<Markdown markdown={content} />);
 
     const styledEl = screen.getByText('red text');
     expect(styledEl).toBeInTheDocument();
-    expect(styledEl).toHaveStyle({ color: 'red' });
+    expect(styledEl).toHaveStyle({ color: LightTheme.colors.red400 });
   });
 
   it('renders style tag with background color', () => {
-    const content = '{% style bg="yellow" %}highlighted text{% /style %}';
+    const content = '{% style bg="yellow200" %}highlighted text{% /style %}';
     render(<Markdown markdown={content} />);
 
     const styledEl = screen.getByText('highlighted text');
     expect(styledEl).toBeInTheDocument();
-    expect(styledEl).toHaveStyle({ backgroundColor: 'yellow' });
+    expect(styledEl).toHaveStyle({
+      backgroundColor: LightTheme.colors.yellow200,
+    });
   });
 
   it('renders style tag with both color and background', () => {
     const content =
-      '{% style color="white" bg="blue" %}styled text{% /style %}';
+      '{% style color="white" bg="blue500" %}styled text{% /style %}';
     render(<Markdown markdown={content} />);
 
     const styledEl = screen.getByText('styled text');
     expect(styledEl).toBeInTheDocument();
-    expect(styledEl).toHaveStyle({ color: 'white', backgroundColor: 'blue' });
+    expect(styledEl).toHaveStyle({
+      color: LightTheme.colors.white,
+      backgroundColor: LightTheme.colors.blue500,
+    });
   });
 
   it('renders nested style tags', () => {
     const content =
-      '{% style color="blue" %}outer {% style color="red" %}inner{% /style %}{% /style %}';
+      '{% style color="blue500" %}outer {% style color="red400" %}inner{% /style %}{% /style %}';
     render(<Markdown markdown={content} />);
 
     const innerEl = screen.getByText('inner');
     expect(innerEl).toBeInTheDocument();
-    expect(innerEl).toHaveStyle({ color: 'red' });
-    expect(innerEl.parentElement).toHaveStyle({ color: 'blue' });
+    expect(innerEl).toHaveStyle({ color: LightTheme.colors.red400 });
+    expect(innerEl.parentElement).toHaveStyle({
+      color: LightTheme.colors.blue500,
+    });
   });
 
   it('preserves color when nesting background inside color', () => {
     const content =
-      '{% style color="blue" %}Blue text with {% style bg="yellow" %}yellow highlight{% /style %}{% /style %}';
+      '{% style color="blue500" %}Blue text with {% style bg="yellow200" %}yellow highlight{% /style %}{% /style %}';
     render(<Markdown markdown={content} />);
 
     const highlightEl = screen.getByText('yellow highlight');
-    expect(highlightEl).toHaveStyle({ backgroundColor: 'yellow' });
-    expect(highlightEl.parentElement).toHaveStyle({ color: 'blue' });
+    expect(highlightEl).toHaveStyle({
+      backgroundColor: LightTheme.colors.yellow200,
+    });
+    expect(highlightEl.parentElement).toHaveStyle({
+      color: LightTheme.colors.blue500,
+    });
   });
 
-  it('rejects invalid color values', () => {
+  it('ignores colors that are not Baseweb color names', () => {
     const cases = [
-      '{% style color="rgb(0,0,0) ; position: fixed)" %}text{% /style %}',
+      '{% style color="red" %}text{% /style %}',
+      '{% style color="#ff0000" %}text{% /style %}',
+      '{% style color="red400; position: fixed" %}text{% /style %}',
       '{% style color="javascript:alert(1)" %}text{% /style %}',
+      '{% style color="constructor" %}text{% /style %}',
       '{% style color="" %}text{% /style %}',
-      '{% style color=" " %}text{% /style %}',
+      '{% style bg=" " %}text{% /style %}',
     ];
 
     for (const content of cases) {
       const { unmount } = render(<Markdown markdown={content} />);
-      const el = screen.getByText('text');
-      expect(el).toBeInTheDocument();
-      expect((el as HTMLElement).style.color).toBe('');
+      const el = screen.getByText('text') as HTMLElement;
+      expect(el.style.color).toBe('');
+      expect(el.style.backgroundColor).toBe('');
+      expect(el).not.toHaveStyle({ position: 'fixed' });
       unmount();
     }
   });

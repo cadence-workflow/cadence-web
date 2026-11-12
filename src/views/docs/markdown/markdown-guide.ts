@@ -208,52 +208,52 @@ Image with 100px width and 100px height:
 
 ## Styled Text
 
-Use the \`{% style %}\` tag to apply custom text color or background color to any content.
+Use the \`{% style %}\` tag to apply a text color or background color to any content. Colors must be Baseweb color names: \`white\`, \`black\`, or a hue with a shade, such as \`red400\`, \`green600\` or \`yellow200\`. Available hues are gray, platinum, blue, teal, red, green, orange, amber, magenta, purple, yellow and lime (shades 50 to 900), and brown and cobalt (shades 50 to 700). Other values are ignored.
 
 ### Color
 
 Use the \`color\` attribute to set the text color:
 
 \`\`\`
-{% style color="red" %}red text{% /style %}
-{% style color="#0070f3" %}blue text{% /style %}
+{% style color="red400" %}red text{% /style %}
+{% style color="blue500" %}blue text{% /style %}
 \`\`\`
 
-{% style color="red" %}red text{% /style %}
+{% style color="red400" %}red text{% /style %}
 
-{% style color="#0070f3" %}blue text{% /style %}
+{% style color="blue500" %}blue text{% /style %}
 
 ### Background
 
 Use the \`bg\` attribute to set the background color:
 
 \`\`\`
-{% style bg="yellow" %}highlighted text{% /style %}
+{% style bg="yellow200" %}highlighted text{% /style %}
 \`\`\`
 
-{% style bg="yellow" %}highlighted text{% /style %}
+{% style bg="yellow200" %}highlighted text{% /style %}
 
 ### Combined
 
 Use both \`color\` and \`bg\` together:
 
 \`\`\`
-{% style color="white" bg="blue" %}white text on blue background{% /style %}
+{% style color="white" bg="blue500" %}white text on blue background{% /style %}
 \`\`\`
 
-{% style color="white" bg="blue" %}white text on blue background{% /style %}
+{% style color="white" bg="blue500" %}white text on blue background{% /style %}
 
 ### Nesting
 
 Tags can be nested for fine-grained control:
 
 \`\`\`
-{% style color="blue" %}
-  This is blue text, {% style color="red" %}this part is red{% /style %}, and back to blue.
+{% style color="blue500" %}
+  This is blue text, {% style color="red400" %}this part is red{% /style %}, and back to blue.
 {% /style %}
 \`\`\`
 
-{% style color="blue" %}This is blue text, {% style color="red" %}this part is red{% /style %}, and back to blue.{% /style %}
+{% style color="blue500" %}This is blue text, {% style color="red400" %}this part is red{% /style %}, and back to blue.{% /style %}
 
 `;
 
