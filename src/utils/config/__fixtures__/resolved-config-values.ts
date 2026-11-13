@@ -41,10 +41,6 @@ const mockResolvedConfigValues: LoadedConfigResolvedValues = {
     reset: 'ENABLED',
     start: 'ENABLED',
   },
-  EXTENDED_DOMAIN_INFO_ENABLED: {
-    metadata: false,
-    issues: false,
-  },
   WORKFLOW_DIAGNOSTICS_ENABLED: false,
   WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED: false,
   WORKFLOW_HOME_ENABLED: false,

@@ -87,13 +87,6 @@ const resolverSchemas: ResolverSchemas = {
     }),
     returnType: z.boolean(),
   },
-  EXTENDED_DOMAIN_INFO_ENABLED: {
-    args: z.undefined(),
-    returnType: z.object({
-      metadata: z.boolean(),
-      issues: z.boolean(),
-    }),
-  },
   WORKFLOW_DIAGNOSTICS_ENABLED: {
     args: z.undefined(),
     returnType: z.boolean(),

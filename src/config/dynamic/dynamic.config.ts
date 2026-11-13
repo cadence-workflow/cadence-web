@@ -23,8 +23,6 @@ import {
   type DomainAccessResolverParams,
   type DomainAccessResolverValue,
 } from './resolvers/domain-access.types';
-import extendedDomainInfoEnabled from './resolvers/extended-domain-info-enabled';
-import { type ExtendedDomainInfoEnabledConfig } from './resolvers/extended-domain-info-enabled.types';
 import failoverHistoryEnabled from './resolvers/failover-history-enabled';
 import listWorkflowsPartialMatchEnabled from './resolvers/list-workflows-partial-match-enabled';
 import scheduleActionsEnabled from './resolvers/schedule-actions-enabled';
@@ -80,12 +78,6 @@ const dynamicConfigs: {
   WORKFLOW_ACTIONS_ENABLED: ConfigAsyncResolverDefinition<
     WorkflowActionsEnabledResolverParams,
     WorkflowActionsEnabledConfig,
-    'request',
-    true
-  >;
-  EXTENDED_DOMAIN_INFO_ENABLED: ConfigAsyncResolverDefinition<
-    undefined,
-    ExtendedDomainInfoEnabledConfig,
     'request',
     true
   >;
@@ -189,11 +181,6 @@ const dynamicConfigs: {
   },
   WORKFLOW_ACTIONS_ENABLED: {
     resolver: workflowActionsEnabled,
-    evaluateOn: 'request',
-    isPublic: true,
-  },
-  EXTENDED_DOMAIN_INFO_ENABLED: {
-    resolver: extendedDomainInfoEnabled,
     evaluateOn: 'request',
     isPublic: true,
   },
