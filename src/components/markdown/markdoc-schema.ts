@@ -9,6 +9,7 @@ import { inputFieldMarkdocSchema } from './markdoc-components/input-field/input-
 import { listMarkdocSchema } from './markdoc-components/list/list.markdoc';
 import { signalButtonMarkdocSchema } from './markdoc-components/signal-button/signal-button.markdoc';
 import { startWorkflowButtonMarkdocSchema } from './markdoc-components/start-workflow-button/start-workflow-button.markdoc';
+import { styleMarkdocSchema } from './markdoc-components/style/style.markdoc';
 
 export const markdocConfig: Config = {
   tags: {
@@ -17,6 +18,7 @@ export const markdocConfig: Config = {
     'input-field': inputFieldMarkdocSchema,
     image: imageSchema,
     br: brSchema,
+    style: styleMarkdocSchema,
   },
   nodes: {
     // Standard HTML nodes
