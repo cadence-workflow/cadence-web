@@ -50,40 +50,13 @@ describe('WorkflowPageTabs', () => {
     jest.clearAllMocks();
   });
 
-  it('renders tabs titles correctly with diagnostics disabled', async () => {
-    await setup({ enableDiagnostics: false });
+  it('renders tabs titles correctly', async () => {
+    await setup({});
 
     expect(screen.getByText('Summary')).toBeInTheDocument();
     expect(screen.getByText('History')).toBeInTheDocument();
     expect(screen.getByText('Queries')).toBeInTheDocument();
     expect(screen.getByText('Stack Trace')).toBeInTheDocument();
-    expect(screen.queryByText('Diagnostics')).toBeNull();
-  });
-
-  it('renders diagnostics tab when diagnostics enabled and not in history', async () => {
-    await setup({
-      enableDiagnostics: true,
-      enableDiagnosticsInHistory: false,
-    });
-
-    expect(screen.getByText('Summary')).toBeInTheDocument();
-    expect(screen.getByText('History')).toBeInTheDocument();
-    expect(screen.getByText('Queries')).toBeInTheDocument();
-    expect(screen.getByText('Stack Trace')).toBeInTheDocument();
-    expect(screen.getByText('Diagnostics')).toBeInTheDocument();
-  });
-
-  it('hides diagnostics tab when diagnostics shown in history', async () => {
-    await setup({
-      enableDiagnostics: true,
-      enableDiagnosticsInHistory: true,
-    });
-
-    expect(screen.getByText('Summary')).toBeInTheDocument();
-    expect(screen.getByText('History')).toBeInTheDocument();
-    expect(screen.getByText('Queries')).toBeInTheDocument();
-    expect(screen.getByText('Stack Trace')).toBeInTheDocument();
-    expect(screen.queryByText('Diagnostics')).toBeNull();
   });
 
   it('renders the home page tab when the feature is enabled', async () => {
@@ -103,50 +76,23 @@ describe('WorkflowPageTabs', () => {
   });
 
   it('renders tabs buttons correctly', async () => {
-    await setup({ enableDiagnostics: false });
+    await setup({});
 
     expect(screen.getByText('CLI Commands')).toBeInTheDocument();
     expect(screen.getByText('Actions')).toBeInTheDocument();
   });
 
-  it('renders tabs artworks correctly with diagnostics disabled', async () => {
-    await setup({ enableDiagnostics: false });
+  it('renders tabs artworks correctly', async () => {
+    await setup({});
 
     expect(screen.getByTestId('summary-artwork')).toBeInTheDocument();
     expect(screen.getByTestId('history-artwork')).toBeInTheDocument();
     expect(screen.getByTestId('queries-artwork')).toBeInTheDocument();
     expect(screen.getByTestId('stack-trace-artwork')).toBeInTheDocument();
-    expect(screen.queryByTestId('diagnostics-artwork')).toBeNull();
-  });
-
-  it('renders tabs artworks correctly with diagnostics enabled and not in history', async () => {
-    await setup({
-      enableDiagnostics: true,
-      enableDiagnosticsInHistory: false,
-    });
-
-    expect(screen.getByTestId('summary-artwork')).toBeInTheDocument();
-    expect(screen.getByTestId('history-artwork')).toBeInTheDocument();
-    expect(screen.getByTestId('queries-artwork')).toBeInTheDocument();
-    expect(screen.getByTestId('stack-trace-artwork')).toBeInTheDocument();
-    expect(screen.getByTestId('diagnostics-artwork')).toBeInTheDocument();
-  });
-
-  it('hides diagnostics artwork when diagnostics shown in history', async () => {
-    await setup({
-      enableDiagnostics: true,
-      enableDiagnosticsInHistory: true,
-    });
-
-    expect(screen.getByTestId('summary-artwork')).toBeInTheDocument();
-    expect(screen.getByTestId('history-artwork')).toBeInTheDocument();
-    expect(screen.getByTestId('queries-artwork')).toBeInTheDocument();
-    expect(screen.getByTestId('stack-trace-artwork')).toBeInTheDocument();
-    expect(screen.queryByTestId('diagnostics-artwork')).toBeNull();
   });
 
   it('reroutes when new tab is clicked', async () => {
-    await setup({ enableDiagnostics: false });
+    await setup({});
 
     const historyTab = await screen.findByText('History');
     act(() => {
@@ -167,13 +113,9 @@ describe('WorkflowPageTabs', () => {
 
 async function setup({
   error,
-  enableDiagnostics,
-  enableDiagnosticsInHistory,
   enableHome,
 }: {
   error?: boolean;
-  enableDiagnostics?: boolean;
-  enableDiagnosticsInHistory?: boolean;
   enableHome?: boolean;
 }) {
   render(
@@ -202,16 +144,6 @@ async function setup({
             const configKey = url.searchParams.get('configKey');
 
             switch (configKey) {
-              case 'WORKFLOW_DIAGNOSTICS_ENABLED':
-                return HttpResponse.json(
-                  (enableDiagnostics ??
-                    false) satisfies GetConfigResponse<'WORKFLOW_DIAGNOSTICS_ENABLED'>
-                );
-              case 'WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED':
-                return HttpResponse.json(
-                  (enableDiagnosticsInHistory ??
-                    false) satisfies GetConfigResponse<'WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED'>
-                );
               case 'WORKFLOW_HOME_ENABLED':
                 return HttpResponse.json(
                   (enableHome ??

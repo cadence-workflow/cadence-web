@@ -6,9 +6,9 @@ import workflowHistoryFiltersConfig from '../../config/workflow-history-filters.
 import useEnabledWorkflowHistoryFiltersConfig from '../use-enabled-workflow-history-filters-config';
 
 describe(useEnabledWorkflowHistoryFiltersConfig.name, () => {
-  it('excludes the issues filter when diagnostics in history is disabled', async () => {
+  it('excludes the issues filter when diagnostics is disabled', async () => {
     const { result, configResolver } = setup({
-      isDiagnosticsInHistoryEnabled: false,
+      isWorkflowDiagnosticsEnabled: false,
     });
 
     await waitFor(() => {
@@ -24,9 +24,9 @@ describe(useEnabledWorkflowHistoryFiltersConfig.name, () => {
     });
   });
 
-  it('includes the issues filter when diagnostics in history is enabled', async () => {
+  it('includes the issues filter when diagnostics is enabled', async () => {
     const { result, configResolver } = setup({
-      isDiagnosticsInHistoryEnabled: true,
+      isWorkflowDiagnosticsEnabled: true,
     });
 
     await waitFor(() => {
@@ -40,12 +40,12 @@ describe(useEnabledWorkflowHistoryFiltersConfig.name, () => {
 });
 
 function setup({
-  isDiagnosticsInHistoryEnabled,
+  isWorkflowDiagnosticsEnabled,
 }: {
-  isDiagnosticsInHistoryEnabled: boolean;
+  isWorkflowDiagnosticsEnabled: boolean;
 }) {
   const configResolver = jest.fn(() =>
-    HttpResponse.json(isDiagnosticsInHistoryEnabled)
+    HttpResponse.json(isWorkflowDiagnosticsEnabled)
   );
 
   const rendered = renderHook(() => useEnabledWorkflowHistoryFiltersConfig(), {

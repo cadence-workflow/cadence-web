@@ -5,10 +5,7 @@ import {
   MdOutlineTerminal,
   MdOutlineHome,
 } from 'react-icons/md';
-import { RiStethoscopeLine } from 'react-icons/ri';
 
-import getWorkflowDiagnosticsErrorConfig from '@/views/workflow-diagnostics/helpers/get-workflow-diagnostics-error-config';
-import WorkflowDiagnostics from '@/views/workflow-diagnostics/workflow-diagnostics';
 import WorkflowHistoryWrapper from '@/views/workflow-history/workflow-history-wrapper/workflow-history-wrapper';
 import WorkflowHome from '@/views/workflow-home/workflow-home';
 import WorkflowQueries from '@/views/workflow-queries/workflow-queries';
@@ -16,12 +13,11 @@ import WorkflowStackTrace from '@/views/workflow-stack-trace/workflow-stack-trac
 import WorkflowSummary from '@/views/workflow-summary/workflow-summary';
 
 import getWorkflowPageErrorConfig from '../helpers/get-workflow-page-error-config';
-import WorkflowPageDiagnosticsBadge from '../workflow-page-diagnostics-badge/workflow-page-diagnostics-badge';
 import WorkflowPageHistoryBadges from '../workflow-page-history-badges/workflow-page-history-badges';
 import type { WorkflowPageTabsConfig } from '../workflow-page-tabs/workflow-page-tabs.types';
 
 const workflowPageTabsConfig: WorkflowPageTabsConfig<
-  'summary' | 'home' | 'history' | 'queries' | 'stack-trace' | 'diagnostics'
+  'summary' | 'home' | 'history' | 'queries' | 'stack-trace'
 > = {
   summary: {
     title: 'Summary',
@@ -52,13 +48,6 @@ const workflowPageTabsConfig: WorkflowPageTabsConfig<
         'Failed to load workflow history',
         'history'
       ),
-  },
-  diagnostics: {
-    title: 'Diagnostics',
-    endEnhancer: WorkflowPageDiagnosticsBadge,
-    artwork: RiStethoscopeLine,
-    content: WorkflowDiagnostics,
-    getErrorConfig: getWorkflowDiagnosticsErrorConfig,
   },
   queries: {
     title: 'Queries',

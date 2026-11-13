@@ -5,16 +5,14 @@ import { ZodError } from 'zod';
 
 import { renderHook, waitFor } from '@/test-utils/rtl';
 
-import { type DescribeWorkflowResponse } from '@/route-handlers/describe-workflow/describe-workflow.types';
 import { mockWorkflowDiagnosticsResult } from '@/route-handlers/diagnose-workflow/__fixtures__/mock-workflow-diagnostics-result';
 import { type DiagnoseWorkflowResponse } from '@/route-handlers/diagnose-workflow/diagnose-workflow.types';
 import { type GetConfigResponse } from '@/route-handlers/get-config/get-config.types';
-import { mockDescribeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
 
 import useWorkflowDiagnosticsIssuesCount from '../use-workflow-diagnostics-issues-count';
 
 describe(useWorkflowDiagnosticsIssuesCount.name, () => {
-  it('should return total issues count when diagnostics is enabled and workflow is closed', async () => {
+  it('should return total issues count when diagnostics is enabled', async () => {
     const { result } = setup();
 
     await waitFor(() => {
@@ -27,25 +25,6 @@ describe(useWorkflowDiagnosticsIssuesCount.name, () => {
 
     await waitFor(() => {
       expect(result.current).toBeUndefined();
-    });
-  });
-
-  it('should return undefined when workflow is running and diagnostics in history is disabled', async () => {
-    const { result } = setup({ isWorkflowClosed: false });
-
-    await waitFor(() => {
-      expect(result.current).toBeUndefined();
-    });
-  });
-
-  it('should return total issues count when workflow is running and diagnostics in history is enabled', async () => {
-    const { result } = setup({
-      isWorkflowClosed: false,
-      isDiagnosticsInHistoryEnabled: true,
-    });
-
-    await waitFor(() => {
-      expect(result.current).toBe(5);
     });
   });
 
@@ -98,14 +77,6 @@ describe(useWorkflowDiagnosticsIssuesCount.name, () => {
     });
   });
 
-  it('should handle describe workflow API errors gracefully', async () => {
-    const { result } = setup({ describeWorkflowError: true });
-
-    await waitFor(() => {
-      expect(result.current).toBeUndefined();
-    });
-  });
-
   it('should handle diagnostics API errors gracefully', async () => {
     const { result } = setup({ diagnosticsError: true });
 
@@ -117,22 +88,16 @@ describe(useWorkflowDiagnosticsIssuesCount.name, () => {
 
 function setup({
   isDiagnosticsEnabled = true,
-  isDiagnosticsInHistoryEnabled = false,
-  isWorkflowClosed = true,
   diagnosticsResponse = {
     result: mockWorkflowDiagnosticsResult,
     parsingError: null,
   },
   configError = false,
-  describeWorkflowError = false,
   diagnosticsError = false,
 }: {
   isDiagnosticsEnabled?: boolean;
-  isDiagnosticsInHistoryEnabled?: boolean;
-  isWorkflowClosed?: boolean;
   diagnosticsResponse?: DiagnoseWorkflowResponse;
   configError?: boolean;
-  describeWorkflowError?: boolean;
   diagnosticsError?: boolean;
 } = {}) {
   return renderHook(
@@ -166,38 +131,9 @@ function setup({
                 return HttpResponse.json(
                   isDiagnosticsEnabled satisfies GetConfigResponse<'WORKFLOW_DIAGNOSTICS_ENABLED'>
                 );
-              case 'WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED':
-                return HttpResponse.json(
-                  isDiagnosticsInHistoryEnabled satisfies GetConfigResponse<'WORKFLOW_DIAGNOSTICS_IN_HISTORY_ENABLED'>
-                );
               default:
                 return HttpResponse.json(false);
             }
-          },
-        },
-        {
-          path: '/api/domains/:domain/:cluster/workflows/:workflowId/:runId',
-          httpMethod: 'GET',
-          mockOnce: false,
-          httpResolver: async () => {
-            if (describeWorkflowError) {
-              return HttpResponse.json(
-                { message: 'Failed to fetch workflow' },
-                { status: 500 }
-              );
-            }
-            return HttpResponse.json({
-              ...mockDescribeWorkflowResponse,
-              workflowExecutionInfo: {
-                ...mockDescribeWorkflowResponse.workflowExecutionInfo,
-                ...(isWorkflowClosed
-                  ? { closeStatus: 'WORKFLOW_EXECUTION_CLOSE_STATUS_FAILED' }
-                  : {
-                      closeStatus: 'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
-                      closeEvent: null,
-                    }),
-              },
-            } satisfies DescribeWorkflowResponse);
           },
         },
         {

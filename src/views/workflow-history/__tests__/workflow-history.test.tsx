@@ -17,7 +17,6 @@ import * as usePageFiltersModule from '@/components/page-filters/hooks/use-page-
 import { type PageQueryParamValues } from '@/hooks/use-page-query-params/use-page-query-params.types';
 import { mockWorkflowDiagnosticsResult } from '@/route-handlers/diagnose-workflow/__fixtures__/mock-workflow-diagnostics-result';
 import { type GetWorkflowHistoryResponse } from '@/route-handlers/get-workflow-history/get-workflow-history.types';
-import useDiagnoseWorkflow from '@/views/workflow-diagnostics/hooks/use-diagnose-workflow/use-diagnose-workflow';
 import { mockDescribeWorkflowResponse } from '@/views/workflow-page/__fixtures__/describe-workflow-response';
 import type workflowPageQueryParamsConfig from '@/views/workflow-page/config/workflow-page-query-params.config';
 
@@ -503,9 +502,9 @@ describe(WorkflowHistory.name, () => {
     expect(pendingItemsCounter).toHaveTextContent('2 pending events');
   });
 
-  it('does not call the diagnose endpoint when the in-history diagnostics flag is off', async () => {
+  it('does not call the diagnose endpoint when the diagnostics flag is off', async () => {
     const { mockDiagnoseResolver } = await setup({
-      isDiagnosticsInHistoryEnabled: false,
+      isWorkflowDiagnosticsEnabled: false,
     });
 
     await screen.findByText('Workflow history Header');
@@ -513,9 +512,9 @@ describe(WorkflowHistory.name, () => {
     expect(mockDiagnoseResolver).not.toHaveBeenCalled();
   });
 
-  it('calls the diagnose endpoint once when the in-history diagnostics flag is on', async () => {
+  it('calls the diagnose endpoint once when the diagnostics flag is on', async () => {
     const { mockDiagnoseResolver } = await setup({
-      isDiagnosticsInHistoryEnabled: true,
+      isWorkflowDiagnosticsEnabled: true,
     });
 
     await waitFor(() => {
@@ -544,7 +543,7 @@ describe(WorkflowHistory.name, () => {
         startWorkflowExecutionEvent,
         ...completedActivityTaskEvents,
       ],
-      isDiagnosticsInHistoryEnabled: true,
+      isWorkflowDiagnosticsEnabled: true,
     });
 
     const diagnosticsItemsCounter = await screen.findByTestId(
@@ -559,7 +558,7 @@ describe(WorkflowHistory.name, () => {
         startWorkflowExecutionEvent,
         ...completedActivityTaskEvents,
       ],
-      isDiagnosticsInHistoryEnabled: true,
+      isWorkflowDiagnosticsEnabled: true,
     });
 
     await waitFor(() => {
@@ -568,37 +567,7 @@ describe(WorkflowHistory.name, () => {
       );
     });
   });
-
-  it('does not show diagnostics issues when the flag is off even if diagnose data is cached by another component', async () => {
-    await setup({
-      historyEvents: [
-        startWorkflowExecutionEvent,
-        ...completedActivityTaskEvents,
-      ],
-      isDiagnosticsInHistoryEnabled: false,
-      isDiagnosticsFetchedElsewhere: true,
-    });
-
-    await screen.findByTestId('diagnostics-fetched-elsewhere');
-
-    expect(
-      screen.queryByTestId('diagnostics-menu-items-count')
-    ).not.toBeInTheDocument();
-
-    expect(screen.getByTestId('grouped-issues-count')).toHaveTextContent('0');
-  });
 });
-
-// TODO: delete this once the old Workflow Diagnostics view has been deleted
-function MockDiagnosticsFetcher() {
-  const { data } = useDiagnoseWorkflow({
-    domain: 'test-domain',
-    cluster: 'test-cluster',
-    workflowId: 'test-workflowId',
-    runId: 'test-runid',
-  });
-  return data ? <div data-testid="diagnostics-fetched-elsewhere" /> : null;
-}
 
 async function setup({
   error,
@@ -610,9 +579,7 @@ async function setup({
   historyEvents = completedActivityTaskEvents,
   pendingActivities,
   pendingDecision,
-  isDiagnosticsInHistoryEnabled = false,
-  // TODO: delete this once the old Workflow Diagnostics view has been deleted
-  isDiagnosticsFetchedElsewhere = false,
+  isWorkflowDiagnosticsEnabled = false,
 }: {
   error?: boolean;
   summaryError?: boolean;
@@ -625,9 +592,7 @@ async function setup({
   historyEvents?: Array<HistoryEvent>;
   pendingActivities?: Array<PendingActivityTaskStartEvent>;
   pendingDecision?: PendingDecisionTaskStartEvent | null;
-  isDiagnosticsInHistoryEnabled?: boolean;
-  // TODO: delete this once the old Workflow Diagnostics view has been deleted
-  isDiagnosticsFetchedElsewhere?: boolean;
+  isWorkflowDiagnosticsEnabled?: boolean;
 } = {}) {
   const user = userEvent.setup();
 
@@ -657,8 +622,6 @@ async function setup({
 
   const renderResult = render(
     <Suspense fallback={'Suspense placeholder'}>
-      {/* TODO: delete this once the old Workflow Diagnostics view has been deleted */}
-      {isDiagnosticsFetchedElsewhere && <MockDiagnosticsFetcher />}
       <WorkflowHistoryContext.Provider
         value={{
           ungroupedViewUserPreference: ungroupedViewPreference ?? null,
@@ -752,7 +715,7 @@ async function setup({
           httpMethod: 'GET',
           mockOnce: false,
           httpResolver: async () => {
-            return HttpResponse.json(isDiagnosticsInHistoryEnabled);
+            return HttpResponse.json(isWorkflowDiagnosticsEnabled);
           },
         },
         {

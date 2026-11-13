@@ -72,6 +72,13 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source:
+          '/domains/:domain/:cluster/workflows/:workflowId/:runId/diagnostics',
+        destination:
+          '/domains/:domain/:cluster/workflows/:workflowId/:runId/history',
+        permanent: true,
+      },
+      {
         source: '/domains/:domain/:cluster/workflows/:workflowId/:runId',
         destination:
           '/domains/:domain/:cluster/workflows/:workflowId/:runId/summary',
