@@ -28,6 +28,7 @@ describe('formatRetryPolicy', () => {
       initialInterval: { seconds: '30', nanos: 0 },
       maximumInterval: { seconds: '300', nanos: 0 },
       backoffCoefficient: 10,
+      jitterCoefficient: 0,
       maximumAttempts: 10,
       nonRetryableErrorReasons: [],
     };
@@ -45,6 +46,7 @@ describe('formatRetryPolicy', () => {
       initialIntervalInSeconds: formattedInitialInterval,
       maximumIntervalInSeconds: formattedMaximumInterval,
       backoffCoefficient: 10,
+      jitterCoefficient: 0,
       maximumAttempts: 10,
       nonRetryableErrorReasons: [],
     };

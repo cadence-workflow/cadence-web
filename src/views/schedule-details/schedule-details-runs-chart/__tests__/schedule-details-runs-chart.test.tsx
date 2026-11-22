@@ -41,6 +41,8 @@ const describeScheduleWithNextRun = getMockRunningDescribeScheduleResponse({
     lastUpdateTime: null,
     missedRuns: '0',
     skippedRuns: '0',
+    bufferedFireCount: '0',
+    runningWorkflowCount: '0',
     ongoingBackfills: [],
   },
 });
@@ -59,6 +61,8 @@ const describeScheduleWithWideHistory = getMockRunningDescribeScheduleResponse({
     lastUpdateTime: null,
     missedRuns: '0',
     skippedRuns: '0',
+    bufferedFireCount: '0',
+    runningWorkflowCount: '0',
     ongoingBackfills: [],
   },
 });

@@ -73,6 +73,7 @@ export const failedDecisionTaskEvent = {
     failure: {
       reason: '',
       details: 'V29ya2Zsb3dJZCBleGNlZWRzIGxlbmd0aCBsaW1pdC4=',
+      options: null,
     },
     identity: 'cadence@958ab341-a375-431b-a27a-ed7d8a97ba91',
     baseRunId: '',
