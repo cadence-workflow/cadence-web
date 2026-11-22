@@ -69,6 +69,14 @@ jest.mock('@/components/page-filters/hooks/use-page-filters', () =>
   jest.fn().mockReturnValue({})
 );
 
+jest.mock(
+  '../config/workflow-history-diagnostics-refetch-interval-ms.config',
+  () => ({
+    __esModule: true,
+    default: 50,
+  })
+);
+
 jest.mock('../hooks/use-enabled-workflow-history-filters-config', () => ({
   __esModule: true,
   default: jest.fn(() => []),
@@ -522,6 +530,31 @@ describe(WorkflowHistory.name, () => {
     });
   });
 
+  it('periodically refetches diagnostics while the workflow is running', async () => {
+    const { mockDiagnoseResolver } = await setup({
+      isWorkflowDiagnosticsEnabled: true,
+      isWorkflowRunning: true,
+    });
+
+    await waitFor(() => {
+      expect(mockDiagnoseResolver.mock.calls.length).toBeGreaterThan(1);
+    });
+  });
+
+  it('does not refetch diagnostics when the workflow is closed', async () => {
+    const { mockDiagnoseResolver } = await setup({
+      isWorkflowDiagnosticsEnabled: true,
+    });
+
+    await waitFor(() => {
+      expect(mockDiagnoseResolver).toHaveBeenCalledTimes(1);
+    });
+
+    await act(() => new Promise((resolve) => setTimeout(resolve, 200)));
+
+    expect(mockDiagnoseResolver).toHaveBeenCalledTimes(1);
+  });
+
   it('expands and collapses all diagnostics issues with the expand all toggle', async () => {
     const { user } = await setup({});
 
@@ -580,6 +613,7 @@ async function setup({
   pendingActivities,
   pendingDecision,
   isWorkflowDiagnosticsEnabled = false,
+  isWorkflowRunning = false,
 }: {
   error?: boolean;
   summaryError?: boolean;
@@ -593,6 +627,7 @@ async function setup({
   pendingActivities?: Array<PendingActivityTaskStartEvent>;
   pendingDecision?: PendingDecisionTaskStartEvent | null;
   isWorkflowDiagnosticsEnabled?: boolean;
+  isWorkflowRunning?: boolean;
 } = {}) {
   const user = userEvent.setup();
 
@@ -705,6 +740,16 @@ async function setup({
                         }
                       : {}),
                     ...(pendingDecision ? { pendingDecision } : {}),
+                    ...(isWorkflowRunning
+                      ? {
+                          workflowExecutionInfo: {
+                            ...mockDescribeWorkflowResponse.workflowExecutionInfo,
+                            closeStatus:
+                              'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
+                            closeTime: null,
+                          },
+                        }
+                      : {}),
                   };
                   return HttpResponse.json(describeResponse, { status: 200 });
                 },
