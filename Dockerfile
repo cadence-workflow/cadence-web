@@ -1,10 +1,10 @@
-FROM node:24-alpine AS base
-# Alpine ships security fixes before Docker rebuilds the node image.
-RUN apk upgrade --no-cache
+FROM node:24-trixie-slim  AS base
 
 FROM base AS dev
 # Install git + CA bundle so git https can verify TLS
-RUN apk add --no-cache git ca-certificates
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends git ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 # Supply-chain cooldown: only effective where the lockfile is generated
 # (npm install), i.e. local dev inside this container. No-op for npm ci.
@@ -15,7 +15,9 @@ COPY . .
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
-RUN apk add --no-cache git ca-certificates
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends git ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
 COPY package.json package-lock.json ./
 RUN npm ci
 RUN npm run install-idl
