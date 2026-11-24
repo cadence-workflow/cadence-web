@@ -34,6 +34,8 @@ const hourlyScheduleOverrides = {
     lastUpdateTime: null,
     missedRuns: '0',
     skippedRuns: '0',
+    bufferedFireCount: '0',
+    runningWorkflowCount: '0',
     ongoingBackfills: [],
   },
 };
@@ -131,6 +133,8 @@ describe(useScheduleRunsChartData.name, () => {
           lastUpdateTime: null,
           missedRuns: '0',
           skippedRuns: '0',
+          bufferedFireCount: '0',
+          runningWorkflowCount: '0',
           ongoingBackfills: [],
         },
       }),

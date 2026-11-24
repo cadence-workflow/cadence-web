@@ -7,6 +7,7 @@ import { ContinueAsNewInitiator } from '@/__generated__/proto-ts/uber/cadence/ap
 import { CronOverlapPolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/CronOverlapPolicy';
 import { DecisionTaskFailedCause } from '@/__generated__/proto-ts/uber/cadence/api/v1/DecisionTaskFailedCause';
 import { DecisionTaskTimedOutCause } from '@/__generated__/proto-ts/uber/cadence/api/v1/DecisionTaskTimedOutCause';
+import { FailureCategory } from '@/__generated__/proto-ts/uber/cadence/api/v1/FailureCategory';
 import { type HistoryEvent } from '@/__generated__/proto-ts/uber/cadence/api/v1/HistoryEvent';
 import { ParentClosePolicy } from '@/__generated__/proto-ts/uber/cadence/api/v1/ParentClosePolicy';
 import { SignalExternalWorkflowExecutionFailedCause } from '@/__generated__/proto-ts/uber/cadence/api/v1/SignalExternalWorkflowExecutionFailedCause';
@@ -162,14 +163,28 @@ const activeClusterSelectionPolicySchema = z
   .nullable()
   .catch(null) as z.ZodType<ActiveClusterSelectionPolicy | null>;
 
+const failureCategorySchema = z.enum([
+  FailureCategory.FAILURE_CATEGORY_INVALID,
+  FailureCategory.FAILURE_CATEGORY_POLL,
+  FailureCategory.FAILURE_CATEGORY_STANDARD,
+  FailureCategory.FAILURE_CATEGORY_FATAL,
+]);
+
 const failureSchema = z.object({
   reason: z.string(),
   details: z.string(),
+  options: z
+    .object({
+      failureCategory: failureCategorySchema,
+      nextRetryInterval: durationSchema.nullable(),
+    })
+    .nullable(),
 });
 
 const retryPolicySchema = z.object({
   initialInterval: durationSchema.nullable(),
   backoffCoefficient: z.number(),
+  jitterCoefficient: z.number(),
   maximumInterval: durationSchema.nullable(),
   maximumAttempts: z.number(),
   nonRetryableErrorReasons: z.array(z.string()),

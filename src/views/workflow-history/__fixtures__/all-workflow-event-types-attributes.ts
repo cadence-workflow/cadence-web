@@ -61,6 +61,10 @@ const allAttrsArr = arrayOfAllAttrs([
   'workflowExecutionCanceledEventAttributes',
   'workflowExecutionContinuedAsNewEventAttributes',
   'upsertWorkflowSearchAttributesEventAttributes',
+  'semaphoreAcquireInitiatedEventAttributes',
+  'semaphoreAcquiredEventAttributes',
+  'semaphoreAcquireFailedEventAttributes',
+  'semaphoreReleasedEventAttributes',
   undefined,
 ]);
 
