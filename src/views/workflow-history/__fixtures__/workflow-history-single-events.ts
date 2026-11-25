@@ -102,6 +102,7 @@ export const failWorkflowExecutionEvent = {
       reason: 'cadenceInternal:Generic',
       details:
         'bmV3IGV4ZWN1dGlvbiB0cmlnZ2VyZWQgYnkgcmVzZXQgaXMgbm90IGNvbXBsZXRlZA==',
+      options: null,
     },
     decisionTaskCompletedEventId: '4',
   },

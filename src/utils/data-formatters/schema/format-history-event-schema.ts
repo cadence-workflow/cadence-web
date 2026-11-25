@@ -377,6 +377,12 @@ export const getFormatHistoryEventSchema = (event: HistoryEvent) => {
     case 'upsertWorkflowSearchAttributesEventAttributes':
       return formatUpsertWorkflowSearchAttributesEventSchema;
 
+    // Semaphore events are not displayed yet; skipping them matches how events
+    // unknown to the IDL were handled before they were added to it.
+    case 'semaphoreAcquireInitiatedEventAttributes':
+    case 'semaphoreAcquiredEventAttributes':
+    case 'semaphoreAcquireFailedEventAttributes':
+    case 'semaphoreReleasedEventAttributes':
     case undefined:
       return null;
 

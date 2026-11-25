@@ -30,6 +30,7 @@ export const pendingActivityTaskStartEvent = {
     lastFailure: {
       reason: '',
       details: '',
+      options: null,
     },
     lastHeartbeatTime: null,
     lastStartedTime: null,

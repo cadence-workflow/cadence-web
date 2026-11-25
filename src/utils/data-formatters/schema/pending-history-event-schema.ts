@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { FailureCategory } from '@/__generated__/proto-ts/uber/cadence/api/v1/FailureCategory';
 import { PendingActivityState } from '@/__generated__/proto-ts/uber/cadence/api/v1/PendingActivityState';
 import { PendingDecisionState } from '@/__generated__/proto-ts/uber/cadence/api/v1/PendingDecisionState';
 
@@ -16,9 +17,25 @@ const activityTypeSchema = z.object({
   name: z.string(),
 });
 
+const durationSchema = z.object({
+  seconds: z.coerce.string(),
+  nanos: z.number(),
+});
+
 const failureSchema = z.object({
   reason: z.string(),
   details: z.string(),
+  options: z
+    .object({
+      failureCategory: z.enum([
+        FailureCategory.FAILURE_CATEGORY_INVALID,
+        FailureCategory.FAILURE_CATEGORY_POLL,
+        FailureCategory.FAILURE_CATEGORY_STANDARD,
+        FailureCategory.FAILURE_CATEGORY_FATAL,
+      ]),
+      nextRetryInterval: durationSchema.nullable(),
+    })
+    .nullable(),
 });
 
 export const pendingActivityTaskStartSchema = z.object({

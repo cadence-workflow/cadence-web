@@ -139,6 +139,7 @@ describe(transformDescribeScheduleResponseToFormData.name, () => {
         retryPolicy: {
           initialInterval: { seconds: '10', nanos: 0 },
           backoffCoefficient: 2,
+          jitterCoefficient: 0,
           maximumInterval: null,
           maximumAttempts: 0,
           expirationInterval: { seconds: '3600', nanos: 0 },

@@ -79,6 +79,7 @@ describe(formatScheduleDetails.name, () => {
           retryPolicy: {
             initialInterval: { seconds: '10', nanos: 0 },
             backoffCoefficient: 2,
+            jitterCoefficient: 0,
             maximumInterval: { seconds: '100', nanos: 0 },
             expirationInterval: { seconds: '1000', nanos: 0 },
             maximumAttempts: 3,
@@ -97,6 +98,7 @@ describe(formatScheduleDetails.name, () => {
       maximumIntervalInSeconds: 100,
       expirationIntervalInSeconds: 1000,
       backoffCoefficient: 2,
+      jitterCoefficient: 0,
       maximumAttempts: 3,
       nonRetryableErrorReasons: [],
     });

@@ -8,6 +8,8 @@ export function getMockScheduleListEntry(
     workflowType: { name: 'mock-workflow-type' },
     state: { paused: false, pauseInfo: null },
     cronExpression: '0 * * * *',
+    memo: null,
+    searchAttributes: null,
     ...overrides,
   };
 }

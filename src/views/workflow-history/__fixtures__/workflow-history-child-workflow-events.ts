@@ -216,6 +216,7 @@ export const failChildWorkflowEvent = {
     failure: {
       details: '',
       reason: '',
+      options: null,
     },
   },
   attributes: 'childWorkflowExecutionFailedEventAttributes',

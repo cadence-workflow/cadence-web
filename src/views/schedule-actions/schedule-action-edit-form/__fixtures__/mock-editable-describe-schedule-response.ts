@@ -33,6 +33,7 @@ export function getMockEditableDescribeScheduleResponse(
         retryPolicy: {
           initialInterval: { seconds: '10', nanos: 0 },
           backoffCoefficient: 2,
+          jitterCoefficient: 0,
           maximumInterval: { seconds: '600', nanos: 0 },
           maximumAttempts: 5,
           expirationInterval: null,

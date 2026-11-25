@@ -67,6 +67,7 @@ export const startActivityTaskEvent = {
     lastFailure: {
       reason: '',
       details: '',
+      options: null,
     },
   },
   attributes: 'activityTaskStartedEventAttributes',
