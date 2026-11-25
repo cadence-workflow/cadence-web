@@ -4,7 +4,8 @@ RUN apk upgrade --no-cache
 
 FROM base AS dev
 # Install git + CA bundle so git https can verify TLS
-RUN apk add --no-cache git ca-certificates
+# Cursor Dev Containers need bash and util-linux flock to install their server
+RUN apk add --no-cache git ca-certificates bash flock
 WORKDIR /app
 # Supply-chain cooldown: only effective where the lockfile is generated
 # (npm install), i.e. local dev inside this container. No-op for npm ci.
