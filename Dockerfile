@@ -1,10 +1,11 @@
-FROM node:24-bookworm-slim  AS base
+FROM node:24-alpine AS base
+# Alpine ships security fixes before Docker rebuilds the node image.
+RUN apk upgrade --no-cache
 
 FROM base AS dev
 # Install git + CA bundle so git https can verify TLS
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends git ca-certificates \
-  && rm -rf /var/lib/apt/lists/*
+# Cursor Dev Containers need bash and util-linux flock to install their server
+RUN apk add --no-cache git ca-certificates bash flock
 WORKDIR /app
 # Supply-chain cooldown: only effective where the lockfile is generated
 # (npm install), i.e. local dev inside this container. No-op for npm ci.
@@ -15,9 +16,7 @@ COPY . .
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends git ca-certificates \
-  && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache git ca-certificates
 COPY package.json package-lock.json ./
 RUN npm ci
 RUN npm run install-idl

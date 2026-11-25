@@ -3,6 +3,10 @@ const GRPC_SERVICES_CONFIGS = {
     schemaPath: 'uber/cadence/admin/v1/service.proto',
     servicePath: 'uber.cadence.admin.v1.AdminAPI',
   },
+  batchServiceConfig: {
+    schemaPath: 'uber/cadence/api/v1/service_batch.proto',
+    servicePath: 'uber.cadence.api.v1.BatchAPI',
+  },
   domainServiceConfig: {
     schemaPath: 'uber/cadence/api/v1/service_domain.proto',
     servicePath: 'uber.cadence.api.v1.DomainAPI',
