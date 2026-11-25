@@ -9,6 +9,8 @@ import { type CreateScheduleRequest__Input } from '@/__generated__/proto-ts/uber
 import { type CreateScheduleResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/CreateScheduleResponse';
 import { type DeleteScheduleRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/DeleteScheduleRequest';
 import { type DeleteScheduleResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/DeleteScheduleResponse';
+import { type DescribeBatchOperationRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeBatchOperationRequest';
+import { type DescribeBatchOperationResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeBatchOperationResponse';
 import { type DescribeDomainRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeDomainRequest';
 import { type DescribeDomainResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeDomainResponse';
 import { type DescribeScheduleRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/DescribeScheduleRequest';
@@ -24,6 +26,8 @@ import { type GetWorkflowExecutionHistoryRequest__Input } from '@/__generated__/
 import { type GetWorkflowExecutionHistoryResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/GetWorkflowExecutionHistoryResponse';
 import { type ListArchivedWorkflowExecutionsRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListArchivedWorkflowExecutionsRequest';
 import { type ListArchivedWorkflowExecutionsResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListArchivedWorkflowExecutionsResponse';
+import { type ListBatchOperationsRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListBatchOperationsRequest';
+import { type ListBatchOperationsResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListBatchOperationsResponse';
 import { type ListClosedWorkflowExecutionsRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListClosedWorkflowExecutionsRequest';
 import { type ListClosedWorkflowExecutionsResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListClosedWorkflowExecutionsResponse';
 import { type ListDomainsRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/ListDomainsRequest';
@@ -50,12 +54,18 @@ import { type RestartWorkflowExecutionRequest__Input } from '@/__generated__/pro
 import { type RestartWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/RestartWorkflowExecutionResponse';
 import { type SignalWorkflowExecutionRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/SignalWorkflowExecutionRequest';
 import { type SignalWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/SignalWorkflowExecutionResponse';
+import { type StartBatchOperationRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/StartBatchOperationRequest';
+import { type StartBatchOperationResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/StartBatchOperationResponse';
 import { type StartWorkflowExecutionRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/StartWorkflowExecutionRequest';
 import { type StartWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/StartWorkflowExecutionResponse';
+import { type StopBatchOperationRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/StopBatchOperationRequest';
+import { type StopBatchOperationResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/StopBatchOperationResponse';
 import { type TerminateWorkflowExecutionRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/TerminateWorkflowExecutionRequest';
 import { type TerminateWorkflowExecutionResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/TerminateWorkflowExecutionResponse';
 import { type UnpauseScheduleRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/UnpauseScheduleRequest';
 import { type UnpauseScheduleResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/UnpauseScheduleResponse';
+import { type UpdateBatchOperationRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/UpdateBatchOperationRequest';
+import { type UpdateBatchOperationResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/UpdateBatchOperationResponse';
 import { type UpdateDomainRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/UpdateDomainRequest';
 import { type UpdateDomainResponse } from '@/__generated__/proto-ts/uber/cadence/api/v1/UpdateDomainResponse';
 import { type UpdateScheduleRequest__Input } from '@/__generated__/proto-ts/uber/cadence/api/v1/UpdateScheduleRequest';
@@ -72,6 +82,7 @@ import GRPCService, {
 } from './grpc-service';
 type ClusterService = Record<
   | 'adminService'
+  | 'batchService'
   | 'domainService'
   | 'scheduleService'
   | 'visibilityService'
@@ -176,6 +187,21 @@ export type GRPCClusterMethods = {
   listFailoverHistory: (
     payload: ListFailoverHistoryRequest__Input
   ) => Promise<ListFailoverHistoryResponse>;
+  startBatchOperation: (
+    payload: StartBatchOperationRequest__Input
+  ) => Promise<StartBatchOperationResponse>;
+  describeBatchOperation: (
+    payload: DescribeBatchOperationRequest__Input
+  ) => Promise<DescribeBatchOperationResponse>;
+  listBatchOperations: (
+    payload: ListBatchOperationsRequest__Input
+  ) => Promise<ListBatchOperationsResponse>;
+  stopBatchOperation: (
+    payload: StopBatchOperationRequest__Input
+  ) => Promise<StopBatchOperationResponse>;
+  updateBatchOperation: (
+    payload: UpdateBatchOperationRequest__Input
+  ) => Promise<UpdateBatchOperationResponse>;
 };
 
 // cache services instances
@@ -200,6 +226,11 @@ const getClusterServices = async (c: ClusterConfig) => {
     requestConfig,
     ...grpcServiceConfigurations.adminServiceConfig,
   });
+  const batchService = new GRPCService({
+    peer: c.grpc.peer,
+    requestConfig,
+    ...grpcServiceConfigurations.batchServiceConfig,
+  });
   const domainService = new GRPCService({
     peer: c.grpc.peer,
     requestConfig,
@@ -223,6 +254,7 @@ const getClusterServices = async (c: ClusterConfig) => {
 
   const services: ClusterService = {
     adminService,
+    batchService,
     domainService,
     scheduleService,
     visibilityService,
@@ -251,6 +283,7 @@ const getClusterServicesMethods = async (
   const {
     visibilityService,
     adminService,
+    batchService,
     domainService,
     scheduleService,
     workflowService,
@@ -476,6 +509,41 @@ const getClusterServicesMethods = async (
       ListFailoverHistoryResponse
     >({
       method: 'ListFailoverHistory',
+      metadata: metadata,
+    }),
+    startBatchOperation: batchService.request<
+      StartBatchOperationRequest__Input,
+      StartBatchOperationResponse
+    >({
+      method: 'StartBatchOperation',
+      metadata: metadata,
+    }),
+    describeBatchOperation: batchService.request<
+      DescribeBatchOperationRequest__Input,
+      DescribeBatchOperationResponse
+    >({
+      method: 'DescribeBatchOperation',
+      metadata: metadata,
+    }),
+    listBatchOperations: batchService.request<
+      ListBatchOperationsRequest__Input,
+      ListBatchOperationsResponse
+    >({
+      method: 'ListBatchOperations',
+      metadata: metadata,
+    }),
+    stopBatchOperation: batchService.request<
+      StopBatchOperationRequest__Input,
+      StopBatchOperationResponse
+    >({
+      method: 'StopBatchOperation',
+      metadata: metadata,
+    }),
+    updateBatchOperation: batchService.request<
+      UpdateBatchOperationRequest__Input,
+      UpdateBatchOperationResponse
+    >({
+      method: 'UpdateBatchOperation',
       metadata: metadata,
     }),
   };
