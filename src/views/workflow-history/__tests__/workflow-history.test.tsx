@@ -35,6 +35,7 @@ import {
   pendingDecisionTaskStartEvent,
 } from '../__fixtures__/workflow-history-pending-events';
 import { startWorkflowExecutionEvent } from '../__fixtures__/workflow-history-single-events';
+import WORKFLOW_HISTORY_DIAGNOSTICS_REFETCH_INTERVAL_MS_CONFIG from '../config/workflow-history-diagnostics-refetch-interval-ms.config';
 import WorkflowHistory from '../workflow-history';
 import { WorkflowHistoryContext } from '../workflow-history-context-provider/workflow-history-context-provider';
 import { type Props as NavbarProps } from '../workflow-history-navigation-bar/workflow-history-navigation-bar.types';
@@ -522,6 +523,55 @@ describe(WorkflowHistory.name, () => {
     });
   });
 
+  it('periodically refetches diagnostics while the workflow is running', async () => {
+    jest.useFakeTimers();
+    try {
+      const { mockDiagnoseResolver } = await setup({
+        isWorkflowDiagnosticsEnabled: true,
+        isWorkflowRunning: true,
+      });
+
+      await waitFor(() => {
+        expect(mockDiagnoseResolver).toHaveBeenCalledTimes(1);
+      });
+
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(
+          WORKFLOW_HISTORY_DIAGNOSTICS_REFETCH_INTERVAL_MS_CONFIG
+        );
+      });
+
+      await waitFor(() => {
+        expect(mockDiagnoseResolver).toHaveBeenCalledTimes(2);
+      });
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  it('does not refetch diagnostics when the workflow is closed', async () => {
+    jest.useFakeTimers();
+    try {
+      const { mockDiagnoseResolver } = await setup({
+        isWorkflowDiagnosticsEnabled: true,
+      });
+
+      await waitFor(() => {
+        expect(mockDiagnoseResolver).toHaveBeenCalledTimes(1);
+      });
+
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(
+          WORKFLOW_HISTORY_DIAGNOSTICS_REFETCH_INTERVAL_MS_CONFIG * 2
+        );
+      });
+
+      expect(mockDiagnoseResolver).toHaveBeenCalledTimes(1);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
   it('expands and collapses all diagnostics issues with the expand all toggle', async () => {
     const { user } = await setup({});
 
@@ -580,6 +630,7 @@ async function setup({
   pendingActivities,
   pendingDecision,
   isWorkflowDiagnosticsEnabled = false,
+  isWorkflowRunning = false,
 }: {
   error?: boolean;
   summaryError?: boolean;
@@ -593,6 +644,7 @@ async function setup({
   pendingActivities?: Array<PendingActivityTaskStartEvent>;
   pendingDecision?: PendingDecisionTaskStartEvent | null;
   isWorkflowDiagnosticsEnabled?: boolean;
+  isWorkflowRunning?: boolean;
 } = {}) {
   const user = userEvent.setup();
 
@@ -686,6 +738,8 @@ async function setup({
         {
           path: '/api/domains/:domain/:cluster/workflows/:workflowId/:runId',
           httpMethod: 'GET',
+          // Running workflows poll describe, so keep serving it across refetches
+          ...(isWorkflowRunning ? { mockOnce: false } : {}),
           ...(summaryError
             ? {
                 httpResolver: () => {
@@ -705,6 +759,16 @@ async function setup({
                         }
                       : {}),
                     ...(pendingDecision ? { pendingDecision } : {}),
+                    ...(isWorkflowRunning
+                      ? {
+                          workflowExecutionInfo: {
+                            ...mockDescribeWorkflowResponse.workflowExecutionInfo,
+                            closeStatus:
+                              'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID',
+                            closeTime: null,
+                          },
+                        }
+                      : {}),
                   };
                   return HttpResponse.json(describeResponse, { status: 200 });
                 },

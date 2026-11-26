@@ -15,6 +15,7 @@ import workflowPageQueryParamsConfig from '../workflow-page/config/workflow-page
 import useSuspenseDescribeWorkflow from '../workflow-page/hooks/use-describe-workflow/use-suspense-describe-workflow';
 import { type WorkflowPageTabContentParams } from '../workflow-page/workflow-page-tab-content/workflow-page-tab-content.types';
 
+import WORKFLOW_HISTORY_DIAGNOSTICS_REFETCH_INTERVAL_MS_CONFIG from './config/workflow-history-diagnostics-refetch-interval-ms.config';
 import WORKFLOW_HISTORY_FETCH_EVENTS_THROTTLE_MS_CONFIG from './config/workflow-history-fetch-events-throttle-ms.config';
 import workflowHistoryFiltersConfig from './config/workflow-history-filters.config';
 import { WORKFLOW_HISTORY_PAGE_SIZE_CONFIG } from './config/workflow-history-page-size.config';
@@ -92,6 +93,11 @@ export default function WorkflowHistory({ params }: Props) {
     ]
   );
 
+  const isWorkflowRunning =
+    !workflowExecutionInfo?.closeStatus ||
+    workflowExecutionInfo.closeStatus ===
+      'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID';
+
   const { data: workflowDiagnostics } = useDiagnoseWorkflow(
     {
       domain: decodedParams.domain,
@@ -99,7 +105,14 @@ export default function WorkflowHistory({ params }: Props) {
       workflowId: decodedParams.workflowId,
       runId: decodedParams.runId,
     },
-    { enabled: Boolean(isWorkflowDiagnosticsEnabled) }
+    {
+      enabled: Boolean(isWorkflowDiagnosticsEnabled),
+      // Diagnostics can change while the workflow is still running,
+      // so periodically refresh them until the workflow closes.
+      refetchInterval: isWorkflowRunning
+        ? WORKFLOW_HISTORY_DIAGNOSTICS_REFETCH_INTERVAL_MS_CONFIG
+        : false,
+    }
   );
 
   const workflowDiagnosticsByEventIdMap: WorkflowDiagnosticsIssuesByEventId =
@@ -115,11 +128,6 @@ export default function WorkflowHistory({ params }: Props) {
     updateEvents: updateGrouperEvents,
     updatePendingEvents: updateGrouperPendingEvents,
   } = useWorkflowHistoryGrouper();
-
-  const isWorkflowRunning =
-    !workflowExecutionInfo?.closeStatus ||
-    workflowExecutionInfo.closeStatus ===
-      'WORKFLOW_EXECUTION_CLOSE_STATUS_INVALID';
 
   const { historyQuery, startLoadingHistory } = useWorkflowHistoryFetcher(
     {
