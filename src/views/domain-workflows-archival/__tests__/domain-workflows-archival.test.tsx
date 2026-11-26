@@ -30,6 +30,11 @@ jest.mock(
   () => jest.fn(() => <div>Mock archival list</div>)
 );
 
+jest.mock(
+  '../domain-workflows-archival-lookup/domain-workflows-archival-lookup',
+  () => jest.fn(() => <div>Mock archival lookup</div>)
+);
+
 const mockSetQueryParams = jest.fn();
 jest.mock('@/hooks/use-page-query-params/use-page-query-params', () =>
   jest.fn(() => [mockDomainPageQueryParamsValues, mockSetQueryParams])
@@ -62,6 +67,16 @@ describe(DomainWorkflowsArchival.name, () => {
     expect(screen.queryByText('Mock archival table')).not.toBeInTheDocument();
   });
 
+  it('renders the archival lookup panel when only history archival is enabled', async () => {
+    await setup({ archivalStatusOverride: 'HISTORY_ONLY' });
+
+    expect(await screen.findByText('Mock archival lookup')).toBeInTheDocument();
+    expect(
+      screen.queryByText('Mock archival disabled panel')
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('Mock archival header')).not.toBeInTheDocument();
+  });
+
   it('does not render if the initial call fails', async () => {
     let renderErrorMessage;
     try {
@@ -82,11 +97,31 @@ async function setup({
   isArchivalEnabled,
   isNewWorkflowsListEnabled = false,
   isError,
+  archivalStatusOverride,
 }: {
   isArchivalEnabled?: boolean;
   isNewWorkflowsListEnabled?: boolean;
   isError?: boolean;
+  archivalStatusOverride?: 'HISTORY_ONLY';
 }) {
+  const archivalStatusFields = (() => {
+    if (archivalStatusOverride === 'HISTORY_ONLY') {
+      return {
+        historyArchivalStatus: 'ARCHIVAL_STATUS_ENABLED',
+        visibilityArchivalStatus: 'ARCHIVAL_STATUS_DISABLED',
+      };
+    }
+
+    if (isArchivalEnabled) {
+      return {
+        historyArchivalStatus: 'ARCHIVAL_STATUS_ENABLED',
+        visibilityArchivalStatus: 'ARCHIVAL_STATUS_ENABLED',
+      };
+    }
+
+    return {};
+  })();
+
   render(
     <Suspense>
       <DomainWorkflowsArchival domain="mock-domain" cluster="mock-cluster" />
@@ -114,12 +149,7 @@ async function setup({
             : {
                 jsonResponse: {
                   ...mockDomainDescription,
-                  ...(isArchivalEnabled
-                    ? {
-                        historyArchivalStatus: 'ARCHIVAL_STATUS_ENABLED',
-                        visibilityArchivalStatus: 'ARCHIVAL_STATUS_ENABLED',
-                      }
-                    : {}),
+                  ...archivalStatusFields,
                 } satisfies DescribeDomainResponse,
               }),
         },
