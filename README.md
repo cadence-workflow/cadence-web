@@ -110,15 +110,17 @@ docker run -it --rm \
   -p 8088:8088  \
   -v /path/on/host/ca.pem:/etc/certs/ca.pem:ro \
   -e CADENCE_GRPC_TLS_CA_FILE=/etc/certs/ca.pem \
-  ubercadence/server:master-auto-setup
+  -e CADENCE_GRPC_PEERS=<cadence-frontend-host>:7833 \
+  ubercadence/web:latest
 ```
 
 - Replace `/path/on/host/ca.pem` with the actual location of your CA certificate on the host system.
 - `CADENCE_GRPC_TLS_CA_FILE` must point to the path inside the container where the certificate is mounted.
+- Replace `<cadence-frontend-host>` with the host of the TLS-enabled Cadence frontend. Without `CADENCE_GRPC_PEERS`, the container uses the default `127.0.0.1:7833`, which is the container itself.
 
 ## Building & developing cadence-web
 
-`cadence-web` requires node `v18` or greater to be able to run correctly.
+`cadence-web` requires node `v24` or greater and npm `v11.10` or greater to be able to run correctly (see `engines` in [package.json](package.json)).
 
 ### Creating a production build
 
