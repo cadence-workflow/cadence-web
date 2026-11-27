@@ -110,7 +110,7 @@ docker run -it --rm \
   -p 8088:8088  \
   -v /path/on/host/ca.pem:/etc/certs/ca.pem:ro \
   -e CADENCE_GRPC_TLS_CA_FILE=/etc/certs/ca.pem \
-  ubercadence/server:master-auto-setup
+  ubercadence/web:latest
 ```
 
 - Replace `/path/on/host/ca.pem` with the actual location of your CA certificate on the host system.
@@ -118,7 +118,7 @@ docker run -it --rm \
 
 ## Building & developing cadence-web
 
-`cadence-web` requires node `v18` or greater to be able to run correctly.
+`cadence-web` requires node `v24` or greater and npm `v11.10` or greater to be able to run correctly (see `engines` in [package.json](package.json)).
 
 ### Creating a production build
 

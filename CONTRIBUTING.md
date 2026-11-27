@@ -14,7 +14,7 @@ Join our community on the CNCF Slack workspace at [cloud-native.slack.com](https
 
 Node.js. Check [package.json](https://github.com/cadence-workflow/cadence-web/blob/master/package.json) for the current (engines > node) version required.
 
-For development check the [Building & developing cadence-web](./README.md#building-&-developing-cadence-web)section
+For development check the [Building & developing cadence-web](./README.md#building--developing-cadence-web) section
 
 ## Working with the source code
 
