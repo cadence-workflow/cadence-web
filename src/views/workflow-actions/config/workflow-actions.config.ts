@@ -17,6 +17,7 @@ import { type TerminateWorkflowResponse } from '@/route-handlers/terminate-workf
 
 import getWorkflowIsCompleted from '../../workflow-page/helpers/get-workflow-is-completed';
 import WorkflowActionNewRunSuccessMsg from '../workflow-action-new-run-success-msg/workflow-action-new-run-success-msg';
+import transformResetWorkflowFormToSubmission from '../workflow-action-reset-form/helpers/transform-reset-workflow-form-to-submission';
 import { resetWorkflowFormSchema } from '../workflow-action-reset-form/schemas/reset-workflow-form-schema';
 import WorkflowActionResetForm from '../workflow-action-reset-form/workflow-action-reset-form';
 import {
@@ -194,19 +195,7 @@ export const resetWorkflowActionConfig: WorkflowAction<
     withForm: true,
     form: WorkflowActionResetForm,
     formSchema: resetWorkflowFormSchema,
-    transformFormDataToSubmission: (
-      formData: ResetWorkflowFormData
-    ): ResetWorkflowSubmissionData => {
-      const decisionFinishEventId =
-        formData.resetType === 'BinaryChecksum'
-          ? formData.binaryChecksumFirstDecisionCompletedId
-          : formData.decisionFinishEventId;
-      return {
-        reason: formData.reason,
-        decisionFinishEventId,
-        skipSignalReapply: formData.skipSignalReapply,
-      };
-    },
+    transformFormDataToSubmission: transformResetWorkflowFormToSubmission,
   },
   icon: MdRefresh,
   getRunnableStatus: () => 'RUNNABLE',

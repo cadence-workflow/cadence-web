@@ -50,6 +50,15 @@ describe('WorkflowActionResetForm', () => {
     ).toBeInTheDocument();
   });
 
+  it('marks the reason field as optional', async () => {
+    await setup({});
+
+    expect(screen.getByText('Reason (optional)')).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText('Enter reason for reset')
+    ).not.toBeRequired();
+  });
+
   it('displays error when form has errors', async () => {
     const formErrors = {
       decisionFinishEventId: {
