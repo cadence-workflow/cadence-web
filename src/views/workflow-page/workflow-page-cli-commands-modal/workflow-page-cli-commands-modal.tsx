@@ -40,8 +40,13 @@ export default function WorkflowPageCliCommandsModal({
   const substituteParams = (command: string) =>
     substituteCliCommandParams(command, decodedParams);
 
+  // Open on the Workflow tab when the modal is opened from a workflow page,
+  // otherwise on the first tab (Domain).
   const [selectedTab, setSelectedTab] = useState<CliCommandGroups>(
-    workflowPageCliCommandsGroupsConfig[0].name
+    () =>
+      workflowPageCliCommandsGroupsConfig.find(
+        ({ name }) => name === 'workflow' && Boolean(rawParams?.workflowId)
+      )?.name ?? workflowPageCliCommandsGroupsConfig[0].name
   );
   const currentTabCommands = useMemo(() => {
     return workflowPageCliCommandsConfig.filter(
